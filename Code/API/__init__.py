@@ -1,5 +1,7 @@
-"""Executable module entrypoint for backend server."""
-from api.server import run
+"""API package exports."""
 
-if __name__ == "__main__":
-    run()
+from __future__ import annotations
+
+from .server import app, run_backend
+
+__all__ = ["app", "run_backend"]
