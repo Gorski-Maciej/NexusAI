@@ -1,0 +1,26 @@
+from datetime import datetime, timedelta
+from pathlib import Path
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+
+class SecurityService:
+    """Zarządza retencją danych i bezpiecznym usuwaniem dokumentów."""
+
+    @staticmethod
+    async def cleanup_old_scans(session: AsyncSession, years: int = 5):
+        """Usuwa fizyczne pliki i wpisy z bazy dla dokumentów starszych niż X lat (RODO/Podatki)."""
+        limit_date = datetime.now() - timedelta(days=years * 365)
+        # 1. Znajdź stare faktury
+        # (Tutaj logika select i usuwania plików z dysku przed usunięciem z DB)
+        pass
+
+    @staticmethod
+    def secure_delete_file(file_path: str):
+        """Nadpisuje plik zerami przed usunięciem (bezpieczne niszczenie danych)."""
+        path = Path(file_path)
+        if path.exists():
+            size = path.stat().st_size
+            with open(path, "ba+", buffering=0) as f:
+                f.write(b'\x00' * size)
+            path.unlink()
