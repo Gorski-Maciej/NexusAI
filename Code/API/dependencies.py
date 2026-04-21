@@ -1,17 +1,26 @@
+from __future__ import annotations
+
 from collections.abc import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession
-from db.database import create_oltp_engine, create_session_factory
-from db.analytics import DuckDBManager
-from core.config import AppConfig
 
-# Singletony inicjalizowane przy starcie
+from core.config import AppConfig
+from db.database import create_oltp_engine, create_session_factory
+from db.analytics import DuckDBLimits, DuckDBManager
+
 _config = AppConfig()
 _engine = create_oltp_engine(_config)
 _session_factory = create_session_factory(_engine)
-_duckdb_mgr = DuckDBManager(_config)
+_duckdb_mgr = DuckDBManager(
+    db_path=_config.duckdb_path,
+    limits=DuckDBLimits(memory_limit=_config.duckdb_memory_limit, threads=_config.duckdb_threads),
+)
+
+
+def provide_config() -> AppConfig:
+    return _config
+
 
 async def provide_db_session() -> AsyncGenerator[AsyncSession, None]:
-    """Dostarcza asynchroniczną sesję SQLite (OLTP) dla każdego requestu."""
     async with _session_factory() as session:
         try:
             yield session
@@ -19,6 +28,6 @@ async def provide_db_session() -> AsyncGenerator[AsyncSession, None]:
             await session.rollback()
             raise
 
+
 async def provide_duckdb() -> DuckDBManager:
-    """Dostarcza managera DuckDB (OLAP) do zapytań analitycznych."""
     return _duckdb_mgr
