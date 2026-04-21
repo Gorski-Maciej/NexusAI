@@ -157,6 +157,25 @@ class AsyncNexusApiClient:
         response.raise_for_status()
         return response.json()
 
+
+
+    async def approve_bulk(self, invoice_ids: list[str]) -> bool:
+        """Wysyła żądanie masowego zatwierdzenia faktur."""
+        response = await self.client.post("/invoices/bulk-approve", json={"ids": invoice_ids})
+        if response.status_code in (200, 204):
+            return True
+        response.raise_for_status()
+        return False
+
+    async def get_high_confidence_ids(self, threshold: float = 0.95) -> list[str]:
+        """Pobiera ID faktur, które AI oceniło jako pewne."""
+        response = await self.client.get(f"/invoices/high-confidence?min={threshold}")
+        response.raise_for_status()
+        payload = response.json()
+        if isinstance(payload, list):
+            return [str(item) for item in payload]
+        return []
+
     async def close(self):
         """Zamyka połączenie (ważne przy wyłączaniu aplikacji)."""
         await self.client.aclose()
@@ -222,6 +241,41 @@ class NexusAPIClientUI:
             return response.json().get("count", 0)
         except Exception:
             return 0
+
+
+
+    async def approve_bulk(self, invoice_ids: list[str]) -> bool:
+        """UI helper for bulk invoice approval action."""
+        try:
+            response = await self._client.post(
+                f"{self.base_url}/invoices/bulk-approve",
+                headers=self._get_headers(),
+                json={"ids": invoice_ids},
+            )
+            if response.status_code in (200, 204):
+                return True
+            response.raise_for_status()
+            return False
+        except Exception as e:
+            logger.error(f"Błąd masowego zatwierdzania: {e}")
+            return False
+
+    async def get_high_confidence_ids(self, threshold: float = 0.95) -> list[str]:
+        """Pobiera ID faktur o wysokiej pewności z modelu AI."""
+        try:
+            response = await self._client.get(
+                f"{self.base_url}/invoices/high-confidence",
+                headers=self._get_headers(),
+                params={"min": threshold},
+            )
+            response.raise_for_status()
+            payload = response.json()
+            if isinstance(payload, list):
+                return [str(item) for item in payload]
+            return []
+        except Exception as e:
+            logger.error(f"Błąd pobierania high-confidence IDs: {e}")
+            return []
 
     async def close(self):
         await self._client.aclose()
