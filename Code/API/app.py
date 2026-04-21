@@ -1,55 +1,55 @@
-from litestar import Litestar
+from __future__ import annotations
+
+from litestar import Litestar, get
 from litestar.config.cors import CORSConfig
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.plugins import SwaggerRenderPlugin
-from litestar.di import Provide
 
-from core.config import AppConfig
-from api.dependencies import provide_db_session, provide_duckdb
-from api.routes.invoices import InvoiceController
+from api.dependencies import provide_config, provide_db_session, provide_duckdb
+from api.exceptions import global_exception_handler
+from api.middleware import CorrelationAndDeprecationMiddleware
 from api.routes.analytics import AnalyticsController
 from api.routes.exports import ExportController
 from api.routes.health import HealthController
+from api.routes.invoices import InvoiceController
 from api.routes.tasks import TaskController
 from api.routes.ws import progress_websocket
-from api.exceptions import global_exception_handler
 from api.static import get_static_config
-from api.middleware import AuditMiddleware
+
+
+@get("/api/v2/health")
+async def health_v2() -> dict[str, str]:
+    return {"api": "OK", "version": "v2"}
+
 
 def create_app() -> Litestar:
-    """Fabryka aplikacji dla absolutnego maksimum (Enterprise)."""
-    config = AppConfig()
-
-    cors_config = CORSConfig(
-        allow_origins=["*"], # W produkcji ograniczyć do UI
-        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allow_headers=["*"]
-    )
-
-    openapi_config = OpenAPIConfig(
-        title="Nexus AI API",
-        version="1.0.0",
-        description="API do zarządzania fakturami i analityką",
-        render_plugins=[SwaggerRenderPlugin()]
-    )
+    """Single official backend bootstrap point."""
+    config = provide_config()
 
     return Litestar(
         route_handlers=[
             HealthController,
+            health_v2,
             InvoiceController,
             AnalyticsController,
             TaskController,
             ExportController,
-            progress_websocket
+            progress_websocket,
         ],
         dependencies={
-            "config": lambda: config, # Singleton konfiguracji
+            "config": provide_config,
             "db_session": provide_db_session,
             "duckdb": provide_duckdb,
         },
         exception_handlers={Exception: global_exception_handler},
-        middleware=[AuditMiddleware], # Aktywacja audytu
-        static_files_config=get_static_config(config), # Serwowanie PDF
-        compression_config={"backend": "gzip", "minimum_size": 1024},
-        debug=config.debug
+        middleware=[CorrelationAndDeprecationMiddleware],
+        cors_config=CORSConfig(allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]),
+        openapi_config=OpenAPIConfig(
+            title="Nexus AI API",
+            version="2.0.0",
+            description="API lifecycle: /api/v1 (deprecated) and /api/v2 (current)",
+            render_plugins=[SwaggerRenderPlugin()],
+        ),
+        static_files_config=get_static_config(config),
+        debug=config.debug,
     )
