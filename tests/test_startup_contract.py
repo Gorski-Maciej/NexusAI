@@ -25,3 +25,4 @@ def test_v1_and_v2_paths_defined() -> None:
     source = Path("Code/API/app.py").read_text(encoding="utf-8")
     assert "/api/v2/health" in source
     assert "InvoiceController" in source
+    assert "ArchitectureController" in source

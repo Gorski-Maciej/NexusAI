@@ -9,6 +9,7 @@ from api.dependencies import provide_config, provide_db_session, provide_duckdb
 from api.exceptions import global_exception_handler
 from api.middleware import CorrelationAndDeprecationMiddleware
 from api.routes.analytics import AnalyticsController
+from api.routes.architecture import ArchitectureController
 from api.routes.exports import ExportController
 from api.routes.health import HealthController
 from api.routes.invoices import InvoiceController
@@ -32,6 +33,7 @@ def create_app() -> Litestar:
             health_v2,
             InvoiceController,
             AnalyticsController,
+            ArchitectureController,
             TaskController,
             ExportController,
             progress_websocket,
