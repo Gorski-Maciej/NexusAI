@@ -1,0 +1,80 @@
+### 📦 ZAKRES ZADAŃ I WYMAGANIA BIZNESOWE - SZCZEGÓŁOWA SPECYFIKACJA
+
+#### MODUŁ 1: `Company_creator` (Główny Silnik Drzew Decyzyjnych i Inicjalizacji ZPK)
+UWAGA KRYTYCZNA: Ten moduł to "Mózg" systemu. Opiera się na załączonych plikach PDF dotyczących "Drzew decyzyjnych" i "Form gospodarczych". Kod musi być elastycznym silnikiem reguł, a nie prostym CRUD-em.
+
+Musisz zaimplementować architekturę opartą na połączeniu wzorców: **Strategy Pattern** oraz **Composite Pattern** (aby obsłużyć wielopoziomowe drzewa możliwości).
+
+**Zadanie 1: Struktura Drzewa Decyzyjnego (Python Logic):**
+- Zbuduj bazę klas dla form prawnych (JDG, Spółka z o.o., S.A., Spółka Cywilna).
+- Każda forma prawna musi dynamicznie determinować dopuszczalne gałęzie podatkowe (np. klasa `SpZoo` ma dostęp do strategii `CitEstonianStrategy` oraz `StandardCitStrategy`, ale rzuca wyjątek `InvalidTaxPolicyError` przy próbie przypięcia `LumpSumStrategy` - ryczałtu).
+- Uwzględnij logikę "Wspólników" (Szczególnie dla Spółki Cywilnej, która księgowo jest osobnym bytem, ale podatkowo rozkłada się na udziałowców).
+
+**Zadanie 2: Inicjalizacja Zakładowego Planu Kont (ZPK) i Mapowanie TigerBeetle:**
+- Kiedy obiekt z drzewa decyzji zostanie zatwierdzony, moduł wywołuje funkcję `generate_ledger_topology()`.
+- Funkcja ta musi generować strukturę polskich kont (ZPK) dedykowaną dla danej formy (np. Księgi Handlowe dla Sp. z o.o. vs Uproszczone rejestry dla JDG).
+- **CRITICAL:** Zaimplementuj klasę `TigerBeetleMapper`. Ponieważ TigerBeetle wymaga kont jako `uint128`, Mapper musi przekonwertować polskie numery kont (np. '401-02') na hashe lub ustrukturyzowane integery (np. konto 4010200000) i zapisać tę "mapę tłumaczeń" na trwale w PostgreSQL jako JSONB (kolumna `tigerbeetle_ledger_map` w tabeli `CompanyProfile`).
+
+**Zadanie 3: Realia prawne (Stan na 2026 rok):**
+- System musi wymusić flagi integracyjne: `ksef_active` musi być ustawione domyślnie na True, z wymogiem podania tokenu KSeF.
+- Polisy VAT (współczynnik proporcji VAT dla działalności mieszanej) muszą być zapisane jako zmienne do późniejszego wykorzystania przez Agenty CrewAI w module `Roboton`.
+
+**Wynik prac dla Modułu 1 ma zawierać:**
+1. `models/company.py` - modele SQLAlchemy przechowujące strukturę drzewa.
+2. `core/decision_trees.py` - implementacja logiki wzorców projektowych.
+3. `services/ledger_initializer.py` - logika mapowania ZPK na TigerBeetle i zapis do bazy.
+
+
+
+
+Jesteś Głównym Architektem Oprogramowania (Principal Software Engineer) oraz Ekspertem ds. Systemów Finansowo-Księgowych (FinTech Architect). Twoim zadaniem jest wygenerowanie kompletnego kodu backendowego w języku Python 3.11+ dla dwóch kluczowych modułów systemu klasy Enterprise: `Company_creator` oraz `Roboton_reflekton`. 
+
+System ten to autonomiczny agent księgowy AI, działający w architekturze Modularnego Monolitu. Współpracuje on z istniejącym systemem NexusAI (który zajmuje się OCR i agregacją w DuckDB). Komunikacja między modułami odbywa się poprzez broker NATS JetStream.
+
+### 🛠 STOS TECHNOLOGICZNY (Wymogi bezwzględne):
+1. **Język:** Python 3.11+ (ścisłe typowanie, asynchroniczność).
+2. **API Framework:** Litestar.
+3. **Bazy Danych:** - PostgreSQL (SQLAlchemy 2.0 + Alembic) jako "Control Plane" dla metadanych, profili firm i słowników (np. PKD 2025).
+   - TigerBeetle jako "Data Plane" dla twardej księgowości (podwójny zapis księgowy, konta, transfery).
+4. **Komunikacja asynchroniczna:** Taskiq + NATS JetStream (EOM Protocol).
+5. **AI / Agenci:** CrewAI (do klasyfikacji podatkowej i dekretacji).
+6. **Architektura kodu:** Wzorce projektowe: Strategy Pattern (dla logiki podatkowej), Dependency Injection, Configuration as Code.
+
+---
+
+### 📦 ZAKRES ZADAŃ I WYMAGANIA BIZNESOWE
+
+#### MODUŁ 1: `Company_creator` (Silnik Reguł i Inicjalizacji)
+Ten moduł nie jest zwykłym CRUD-em. To kreator, który na podstawie wyboru użytkownika buduje "Configuration as Code" (plik np. `company_policy.json` lub rekord w bazie) i inicjuje odpowiednie struktury w TigerBeetle.
+Zaimplementuj wzorzec Strategy Pattern dla form działalności (Zgodnie z przepisami PL 2025/2026):
+- **Formy prawne:** JDG (w tym logika Spółki Cywilnej jako agregatu JDG), Spółka z o.o., Prosta Spółka Akcyjna.
+- **Formy opodatkowania:** Ryczałt (Ewidencja Przychodów, stawki 2-17%), Skala Podatkowa (12%/32%), Podatek Liniowy (19%), CIT Estoński (odroczenie podatku).
+- **Zależności:** Aktywacja/dezaktywacja kosztów PIT (np. wyłączone dla Ryczałtu), limity VAT (współczynniki), KSeF 2.0 (wymagane od lutego 2026 dla >200mln, od kwietnia dla reszty).
+- **Wynik działania:** Funkcja `configure_ledger()`, która tworzy odpowiedni Zakładowy Plan Kont w TigerBeetle (np. uproszczony dla JDG Ryczałt, pełny dla Sp. z o.o.).
+
+#### MODUŁ 2: `Roboton_reflekton` (Silnik Wykonawczy i Księgowy)
+Ten moduł to cyfrowy księgowy (Human-in-the-Loop).
+1. **Bramka NATS:** Odbiera wiadomości zdarzeniowe z NexusAI (np. `invoice.extracted` lub paczki podsumowujące miesiąc `eom.summary`).
+2. **Tax_Classifier_AI:** Wykorzystaj CrewAI do analizy odebranych danych (np. pozycja z faktury + context firmy z `Company_creator`). Agent musi zdecydować o dekretacji (np. KUP 75% dla auta mieszanego) i zwrócić wynik w formacie zdatnym do zapisu.
+3. **Ledger Engine (TigerBeetle):** Zaimplementuj dwufazowe przelewy (Two-Phase Transfers). Agent zapisuje dekret jako "Pending". Jeśli użytkownik zatwierdzi dokument, system wykonuje operację "Post". Po stronie TigerBeetle używamy 128-bitowych UUID faktur z Postgresa w polach `user_data`.
+
+---
+
+### 🚀 PLAN WYKONANIA (Wygeneruj kod w poniższej kolejności)
+
+**Krok 1: Struktura i Modele Bazodanowe (PostgreSQL)**
+Napisz plik `models.py` (SQLAlchemy 2.0). Stwórz modele dla `CompanyProfile`, `TaxPolicy`, uwzględniając relacje (np. wspólnicy w Spółce Cywilnej) oraz zapisywanie preferencji (VAT, KSeF).
+
+**Krok 2: Wzorzec Strategii dla Company_creator**
+Napisz plik `strategies.py`. Zdefiniuj abstrakcyjną klasę `TaxStrategy` oraz konkretne implementacje: `JdgLumpSumStrategy`, `CorpFullLedgerStrategy` itp. Niech generują one konfigurację zdatną do zapisu w formacie JSON i wywołują mockowaną inicjalizację kont.
+
+**Krok 3: Klient TigerBeetle (Wrapper)**
+Napisz plik `ledger_client.py`. Skonfiguruj klienta TigerBeetle dla Pythona. Zaimplementuj metody: `create_accounts()` (dla ZPK) oraz `create_two_phase_transfer()` (Wn / Ma z wykorzystaniem `flags.pending`).
+
+**Krok 4: Integracja AI i NATS (Roboton)**
+Napisz plik `roboton_worker.py`. Zdefiniuj nasłuchiwanie na `Taskiq` (NATS broker) na kolejkę EOM. Zaimplementuj prosty przepływ: odbierz dane z NexusAI -> odpytaj `CompanyProfile` -> wywołaj Agenta CrewAI (przygotuj prompt systemowy do dekretacji) -> zapisz wynik w TigerBeetle jako 'Pending'.
+
+**Krok 5: API Endpointy (Litestar)**
+Napisz plik `api.py`. Wystaw asynchroniczne endpointy: `POST /company/create` (inicjuje proces Company_creator) oraz `POST /ledger/approve-transfer` (zatwierdza pending transfer w TigerBeetle po sprawdzeniu przez człowieka).
+
+Nie pomijaj szczegółów (typing, walidacje). Skup się na architekturze gotowej na produkcję (Solid principles, czysty kod). Jeśli kod będzie zbyt długi na jedną odpowiedź, zatrzymaj się po Kroku 2 i zapytaj "Czy wygenerować Krok 3 i kolejne?". Rozpocznij od Kroku 1.
