@@ -1,0 +1,91 @@
+from __future__ import annotations
+
+import uuid
+from dataclasses import dataclass
+
+from litestar import Litestar, post
+from litestar.di import Provide
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+from .decision_trees import CompanyDecisionTree
+from .ledger_client import TigerBeetleClient
+from .ledger_initializer import LedgerInitializer
+from .models import CompanyProfile, LegalForm, TaxForm, TaxPolicy
+
+engine = create_async_engine("postgresql+asyncpg://postgres:postgres@localhost:5432/nexus", echo=False)
+SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
+
+
+async def provide_session() -> AsyncSession:
+    async with SessionLocal() as session:
+        yield session
+
+
+@dataclass
+class CompanyCreateRequest:
+    name: str
+    nip: str
+    legal_form: LegalForm
+    tax_form: TaxForm
+    ksef_token: str
+    vat_proportion: float = 1.0
+
+
+@dataclass
+class ApproveTransferRequest:
+    pending_id: int
+
+
+@post("/company/create")
+async def create_company(data: CompanyCreateRequest, session: AsyncSession) -> dict:
+    if not data.ksef_token.strip():
+        raise ValueError("Token KSeF jest wymagany.")
+
+    tree = CompanyDecisionTree(
+        legal_form=data.legal_form,
+        tax_form=data.tax_form,
+        ksef_active=True,
+        vat_proportion=data.vat_proportion,
+    )
+    decision_tree, policy = tree.validate_and_build()
+
+    ledger = await LedgerInitializer(tb_client=TigerBeetleClient()).configure_ledger(
+        legal_form=data.legal_form,
+        tax_form=data.tax_form,
+    )
+
+    company = CompanyProfile(
+        name=data.name,
+        nip=data.nip,
+        legal_form=data.legal_form,
+        ksef_active=True,
+        ksef_token=data.ksef_token,
+        vat_proportion=data.vat_proportion,
+        tigerbeetle_ledger_map=ledger,
+        company_policy={"decision_tree": decision_tree, "tax_policy": policy},
+    )
+    session.add(company)
+    await session.flush()
+
+    tax_policy = TaxPolicy(
+        company_id=company.id,
+        tax_form=data.tax_form,
+        pit_costs_enabled=bool(policy.get("pit_costs_enabled", True)),
+        requires_full_ledger=bool(policy.get("requires_full_ledger", False)),
+    )
+    session.add(tax_policy)
+    await session.commit()
+
+    return {"company_id": str(company.id), "ledger_accounts": len(ledger)}
+
+
+@post("/ledger/approve-transfer")
+async def approve_transfer(data: ApproveTransferRequest) -> dict:
+    approved = await TigerBeetleClient().post_pending_transfer(data.pending_id)
+    return {"pending_id": data.pending_id, "approved": approved}
+
+
+app = Litestar(
+    route_handlers=[create_company, approve_transfer],
+    dependencies={"session": Provide(provide_session)},
+)
