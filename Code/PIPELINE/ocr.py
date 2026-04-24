@@ -80,7 +80,6 @@ class DocumentProcessor:
 
 
 """OCR/ML document intelligence pipeline for invoices."""
-from __future__ import annotations
 import hashlib
 import math
 import numpy as np
