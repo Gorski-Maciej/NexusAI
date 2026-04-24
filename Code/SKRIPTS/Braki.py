@@ -20,18 +20,18 @@ if getattr(sys, 'frozen', False):
     base_path = Path(sys._MEIPASS)
 else:
     # Jeśli uruchamiamy z kodu źródłowego
-    base_path = Path(__file__).parent [cite: 7, 8, 11, 192-196]
+    base_path = Path(__file__).parent
 
 # Wymuszenie ścieżek dla wag modeli (Surya OCR / Transformers)
 models_cache_dir = base_path / "models"
 os.environ["HF_HOME"] = str(models_cache_dir)
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
-os.environ["TORCH_HOME"] = str(models_cache_dir / "torch") [cite: 13, 14, 198-200]
+os.environ["TORCH_HOME"] = str(models_cache_dir / "torch")
 
 # Optymalizacja CPU/RAM (Max Performance)
 os.environ["OMP_NUM_THREADS"] = "4"
 os.environ["OPENBLAS_NUM_THREADS"] = "4"
-os.environ["MKL_NUM_THREADS"] = "4" [cite: 70-72, 201-203]
+os.environ["MKL_NUM_THREADS"] = "4"
 
 # --- 2. KONFIGURACJA LOGOWANIA ---
 logging.basicConfig(
@@ -43,14 +43,14 @@ logging.basicConfig(
         logging.FileHandler("worker_error.log", encoding="utf-8")
     ]
 )
-logger = logging.getLogger("nexus.worker") [cite: 55-60, 205-213]
+logger = logging.getLogger("nexus.worker")
 
 # --- 3. IMPORTY RDZENIA APLIKACJI ---
 # Eksponujemy obiekt 'broker', aby CLI taskiq mogło go użyć.
 from core.broker import broker
 # KRYTYCZNE: Importujemy tasks, aby Taskiq zarejestrował funkcje z @broker.task.
 import core.tasks
-from core.config import AppConfig [cite: 74, 75, 215-217]
+from core.config import AppConfig
 
 # --- 4. ZAAWANSOWANY MONITOR I WATCHDOG (Absolutny Max) ---
 class WorkerGuard:
@@ -76,7 +76,7 @@ class WorkerGuard:
         while True:
             uptime = datetime.now(timezone.utc) - self.start_time
             logger.debug(f"Heartbeat: Uptime {uptime}, RAM: {self.process.memory_info().rss/1024**2:.1f}MB")
-            await asyncio.sleep(60) [cite: 218-236]
+            await asyncio.sleep(60)
 
 # --- 5. HOOKI TASKIQ (Zarządzanie Cyklem Życia) ---
 @broker.on_event(TaskiqEvents.WORKER_STARTUP)
@@ -91,13 +91,13 @@ async def startup_event(state):
     state.heartbeat_task = asyncio.create_task(state.guard.heartbeat())
 
     gpu_available = torch.cuda.is_available()
-    logger.info(f">>> Worker gotowy. OS: {platform.system()}, Urządzenie: {'CUDA / GPU' if gpu_available else 'CPU Only'}") [cite: 136-143, 238-246]
+    logger.info(f">>> Worker gotowy. OS: {platform.system()}, Urządzenie: {'CUDA / GPU' if gpu_available else 'CPU Only'}")
 
 @broker.on_event(TaskiqEvents.TASK_POST_EXECUTION)
 async def post_task(state, task_result):
     """Zwolnienie zasobów natychmiast po przetworzeniu faktury."""
     state.guard.check_resources()
-    logger.debug(f"Zakończono zadanie {task_result.task_id}. Pamięć sprawdzona.") [cite: 144-148, 247, 248]
+    logger.debug(f"Zakończono zadanie {task_result.task_id}. Pamięć sprawdzona.")
 
 @broker.on_event(TaskiqEvents.WORKER_SHUTDOWN)
 async def shutdown_event(state):
@@ -107,7 +107,7 @@ async def shutdown_event(state):
         state.heartbeat_task.cancel()
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
-    gc.collect() [cite: 249-255]
+    gc.collect()
 
 # --- 6. OBSŁUGA SYGNAŁÓW I PORZĄDKÓW ---
 shutdown_event = asyncio.Event()
@@ -115,14 +115,14 @@ shutdown_event = asyncio.Event()
 def handle_shutdown(sig, frame):
     """Przechwytuje sygnały zamknięcia (Ctrl+C), aby bezpiecznie zakończyć przetwarzanie."""
     logger.info(f"Otrzymano sygnał przerwania ({sig}). Trwa bezpieczne zamykanie workera...")
-    shutdown_event.set() [cite: 78-81, 257-259]
+    shutdown_event.set()
 
 def cleanup_temp_artifacts():
     """Usuwa pozostałości po renderowaniu stron PDF do obrazów."""
     temp_dir = Path(os.environ.get("TEMP", "/tmp")) / "nexus_ocr"
     if temp_dir.exists():
         shutil.rmtree(temp_dir)
-        logger.info("Wyczyszczono pliki tymczasowe OCR.") [cite: 157-162, 175]
+        logger.info("Wyczyszczono pliki tymczasowe OCR.")
 
 # --- 7. LOGIKA KOLEJEK I PRZETWARZANIA (NATS JetStream) ---
 async def process_messages(nats_client):
@@ -151,7 +151,7 @@ async def process_messages(nats_client):
                 # await mark_as_dead_letter(msg.data, str(e))
                 await msg.term()
             else:
-                await msg.nak() [cite: 294-310]
+                await msg.nak()
 
 # --- 8. GŁÓWNY PUNKT WEJŚCIA ---
 async def main():
@@ -189,7 +189,7 @@ async def main():
     finally:
         logger.info("Odłączanie od brokera i czyszczenie pamięci...")
         await broker.shutdown()
-        logger.info("Worker zamknięty pomyślnie.") [cite: 82-109, 260-285, 310]
+        logger.info("Worker zamknięty pomyślnie.")
 
 if __name__ == "__main__":
     # Rozwiązanie problemu z pętlą zdarzeń na Windows (Taskiq/NATS)
@@ -200,4 +200,4 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        pass [cite: 112-115, 175-178, 286-292]
+        pass

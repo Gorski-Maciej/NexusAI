@@ -367,11 +367,11 @@ if getattr(sys, 'frozen', False):
     base_path = Path(sys._MEIPASS)
 else:
     # Jeśli uruchamiamy z kodu źródłowego
-    base_path = Path(__file__).parent [cite: 52]
+    base_path = Path(__file__).parent
 
 models_cache_dir = base_path / "models"
 os.environ["HF_HOME"] = str(models_cache_dir)
-os.environ["TRANSFORMERS_OFFLINE"] = "1"  # Twarde wymuszenie trybu offline [cite: 54, 55]
+os.environ["TRANSFORMERS_OFFLINE"] = "1"  # Twarde wymuszenie trybu offline
 
 # --- 2. KONFIGURACJA LOGOWANIA ---
 log_dir = Path("logs")
@@ -386,7 +386,7 @@ logging.basicConfig(
         logging.FileHandler(log_file, encoding="utf-8")
     ]
 )
-logger = logging.getLogger("nexus.main") [cite: 228-233, 33]
+logger = logging.getLogger("nexus.main")
 
 # --- 3. IMPORTY WEWNĘTRZNE (Po konfiguracji środowiska) ---
 from core.config import AppConfig
@@ -398,7 +398,7 @@ def get_free_port() -> int:
     """Dynamicznie znajduje wolny port na localhost."""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(('', 0))
-        return s.getsockname()[1] [cite: 71, 72, 155]
+        return s.getsockname()[1]
 
 def is_already_running(port=47999):
     """Zapobiega uruchomieniu wielu instancji aplikacji (Single Instance Lock)."""
@@ -408,7 +408,7 @@ def is_already_running(port=47999):
         globals()["_lock_socket"] = lock_socket
         return False
     except socket.error:
-        return True [cite: 28, 29]
+        return True
 
 # --- 5. ORKIESTRATOR PROCESÓW (WATCHDOG) ---
 class NexusOrchestrator:
@@ -418,7 +418,7 @@ class NexusOrchestrator:
         self.nats_process = None
         self.worker_process = None
         self.api_task = None
-        self.bootstrap_token = secrets.token_urlsafe(32) [cite: 93, 235]
+        self.bootstrap_token = secrets.token_urlsafe(32)
 
     async def start_nats(self):
         """Uruchamia lokalny serwer NATS z obsługą JetStream."""
@@ -434,13 +434,13 @@ class NexusOrchestrator:
             )
             await asyncio.sleep(2)
         else:
-            logger.error("Nie znaleziono binarki NATS w folderze głównym!") [cite: 241-255, 34]
+            logger.error("Nie znaleziono binarki NATS w folderze głównym!")
 
     async def start_worker(self):
         """Uruchamia proces roboczy Taskiq (OCR/AI)."""
         logger.info("Uruchamianie silnika AI (Worker)...")
         cmd = [sys.executable, "-m", "taskiq", "worker", "worker:broker", "--fs-startup"]
-        self.worker_process = subprocess.Popen(cmd) [cite: 261-266]
+        self.worker_process = subprocess.Popen(cmd)
 
     async def start_backend_api(self, port: int):
         """Uruchamia serwer API (Litestar) w pętli zdarzeń."""
@@ -455,7 +455,7 @@ class NexusOrchestrator:
         config = uvicorn.Config(app, host="127.0.0.1", port=port, log_level="error")
         server = uvicorn.Server(config)
         logger.info(f"Inicjalizacja API na http://127.0.0.1:{port}")
-        self.api_task = asyncio.create_task(server.serve()) [cite: 168-178, 256-260]
+        self.api_task = asyncio.create_task(server.serve())
 
     def cleanup(self):
         """Krytyczne sprzątanie procesów przy wyjściu z aplikacji."""
@@ -466,7 +466,7 @@ class NexusOrchestrator:
             self.nats_process.terminate()
         if self.api_task:
             self.api_task.cancel()
-        logger.info("System zamknięty pomyślnie.") [cite: 195-198, 267-269, 34]
+        logger.info("System zamknięty pomyślnie.")
 
 # --- 6. LOGIKA INTERFEJSU (Flet) ---
 async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
@@ -531,7 +531,7 @@ async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
     from ui.root import NexusRootUI
     app_ui = NexusRootUI(page, orchestrator)
     await app_ui.build()
-    page.update() [cite: 31, 35, 36, 186-190, 274-279]
+    page.update()
 
 # --- 7. GŁÓWNY START SYSTEMU ---
 async def start_app():
@@ -550,14 +550,14 @@ async def start_app():
     except Exception as e:
         logger.critical(f"BŁĄD KRYTYCZNY STARTU: {e}")
     finally:
-        orchestrator.cleanup() [cite: 281-294, 32, 33]
+        orchestrator.cleanup()
 
 if __name__ == "__main__":
     if os.name == "nt":
         # Wymagane dla poprawnego działania asyncio i procesów na Windows
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy()) [cite: 298]
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
     try:
         asyncio.run(start_app())
     except KeyboardInterrupt:
-        pass [cite: 299-301]
+        pass
