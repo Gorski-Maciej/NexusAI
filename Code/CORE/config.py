@@ -21,6 +21,7 @@ class AppConfig:
     storage_dir_name: str = os.getenv("NEXUS_STORAGE_DIR", "app_data/uploads")
     idempotency_db_name: str = os.getenv("NEXUS_IDEMPOTENCY_DB", "idempotency.sqlite")
     debug: bool = os.getenv("NEXUS_DEBUG", "0") == "1"
+    sqlcipher_key_env: str = os.getenv("NEXUS_SQLCIPHER_KEY_ENV", "NEXUS_SQLCIPHER_KEY")
 
     jwt_secret: str = os.getenv("NEXUS_JWT_SECRET", "")
     encryption_key: str = os.getenv("NEXUS_ENCRYPTION_KEY", "")
@@ -44,6 +45,8 @@ class AppConfig:
             "encryption_key": self.encryption_key,
         }
         if self.environment in {"stage", "prod"}:
+            if self.debug:
+                raise ConfigValidationError("NEXUS_DEBUG cannot be enabled in stage/prod")
             missing = [k for k, v in required_in_stage_prod.items() if not v]
             if missing:
                 raise ConfigValidationError(
