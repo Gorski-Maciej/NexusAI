@@ -1,5 +1,6 @@
 import os
 import asyncio
+import logging
 from datetime import datetime
 from decimal import Decimal
 from taskiq_nats import PullBasedJetStreamBroker
@@ -9,6 +10,7 @@ from db.database import get_session
 from core.config import AppConfig
 
 broker = PullBasedJetStreamBroker()
+logger = logging.getLogger("nexus.api.tasks")
 
 @broker.task(schedule=[{"cron": "*/5 * * * *"}])
 async def run_data_replication():
@@ -17,7 +19,11 @@ async def run_data_replication():
     # Tworzymy osobną sesję dla workera
     async for db_session in get_session():
         result = await sync_sqlite_to_duckdb(db_session, config)
-        print(f"[REPLICATION] Status: {result['status']}. Rows: {result.get('synced_rows', 0)}")
+        logger.info(
+            "[REPLICATION] Status: %s. Rows: %s",
+            result["status"],
+            result.get("synced_rows", 0),
+        )
 
 @broker.task(task_name="process_invoice_ocr")
 async def process_invoice_task(invoice_id: str, image_path: str):

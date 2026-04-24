@@ -11,7 +11,12 @@ class Vault:
 
     def __init__(self, config: AppConfig):
         # Tworzy mocny klucz Fernet na podstawie zmiennej środowiskowej
-        master_key = os.getenv(config.sqlcipher_key_env, "default-dev-nexus-secret").encode()
+        configured_key = config.encryption_key.strip()
+        if configured_key:
+            master_key = configured_key.encode()
+        else:
+            env_key = os.getenv(config.sqlcipher_key_env, "").strip()
+            master_key = env_key.encode() if env_key else os.urandom(32)
 
         # Deriwacja klucza (KDF) dla zwiększonego bezpieczeństwa
         kdf = PBKDF2HMAC(

@@ -1,4 +1,6 @@
 import os
+import secrets
+import logging
 from datetime import timedelta
 from litestar.security.jwt import JWTAuth, Token
 from litestar.connection import ASGIConnection
@@ -7,8 +9,21 @@ from litestar.exceptions import NotAuthorizedException
 from litestar.config.rate_limit import RateLimitConfig
 from models.user import User # Założenie, że model użytkownika istnieje
 
-# W środowisku produkcyjnym klucz musi pochodzić z env lub SOPS
-SECRET_KEY = "super-secret-nexus-offline-key-change-me"
+logger = logging.getLogger("nexus.api.security")
+
+def _resolve_jwt_secret() -> str:
+    """Pobiera klucz JWT z env; brak twardo zakodowanego klucza w repozytorium."""
+    env_secret = os.getenv("NEXUS_JWT_SECRET", "").strip()
+    if env_secret:
+        return env_secret
+
+    # Fallback wyłącznie dla środowisk lokalnych/deweloperskich.
+    # Nie zapisujemy stałego sekretu w kodzie.
+    generated = secrets.token_urlsafe(48)
+    logger.warning("NEXUS_JWT_SECRET is missing; using ephemeral dev-only JWT secret.")
+    return generated
+
+SECRET_KEY = _resolve_jwt_secret()
 
 async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> User | None:
     # Tutaj weryfikujemy użytkownika w SQLite
