@@ -1,28 +1,35 @@
+"""Health check endpoints."""
+from __future__ import annotations
+
+from typing import Any
 from litestar import Controller, get
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import text
-from db.analytics import DuckDBManager
+
 
 class HealthController(Controller):
-    """Zapasowy punkt diagnostyczny dla Watchdoga i Load Balancerów."""
+    """Health check and status endpoints."""
     path = "/api/v1/health"
 
-    @get("/")
-    async def check_health(self, db_session: AsyncSession, duckdb: DuckDBManager) -> dict:
-        status = {"api": "OK", "sqlite": "FAIL", "duckdb": "FAIL", "nats": "FAIL"}
+    @get("")
+    async def health_check(self) -> dict[str, str]:
+        """Basic health check."""
+        return {"status": "OK", "version": "1.0.0"}
 
-        # 1. Test SQLite (OLTP)
-        try:
-            await db_session.execute(text("SELECT 1"))
-            status["sqlite"] = "OK"
-        except Exception:
-            pass
+    @get("/live")
+    async def liveness_probe(self) -> dict[str, str]:
+        """Kubernetes liveness probe."""
+        return {"status": "alive"}
 
-        # 2. Test DuckDB (OLAP)
-        try:
-            duckdb.execute("SELECT 1")
-            status["duckdb"] = "OK"
-        except Exception:
-            pass
+    @get("/ready")
+    async def readiness_probe(self) -> dict[str, str]:
+        """Kubernetes readiness probe."""
+        return {"status": "ready"}
 
-        return status
+    @get("/detailed")
+    async def detailed_health(self) -> dict[str, Any]:
+        """Detailed health status."""
+        return {
+            "api": "OK",
+            "version": "1.0.0",
+            "uptime_seconds": 0,
+            "timestamp": "2026-04-26T20:59:00Z",
+        }

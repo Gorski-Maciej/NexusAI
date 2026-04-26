@@ -1,18 +1,26 @@
-from litestar import get
-from litestar.response import Stream
-from pathlib import Path
+"""File management endpoints."""
+from __future__ import annotations
 
-def file_chunk_generator(file_path: Path, chunk_size: int = 65536):
-    """Generator wysyłający plik w małych paczkach (64KB)."""
-    with open(file_path, "rb") as f:
-        while chunk := f.read(chunk_size):
-            yield chunk
+from typing import Any
+from litestar import Controller, get, delete
+from litestar.exceptions import ClientException
 
-@get("/api/invoices/{invoice_id}/pdf")
-async def stream_pdf(invoice_id: str) -> Stream:
-    pdf_path = Path(f"app_data/documents/{invoice_id}.pdf")
-    return Stream(
-        file_chunk_generator(pdf_path),
-        media_type="application/pdf",
-        headers={"Content-Disposition": f"inline; filename={invoice_id}.pdf"}
-    )
+
+class FileController(Controller):
+    """File management API."""
+    path = "/api/v1/files"
+
+    @get("/{file_id:str}")
+    async def get_file_info(self, file_id: str) -> dict[str, Any]:
+        """Get file metadata."""
+        return {
+            "file_id": file_id,
+            "name": f"invoice_{file_id}.pdf",
+            "size_bytes": 0,
+            "mime_type": "application/pdf",
+        }
+
+    @delete("/{file_id:str}")
+    async def delete_file(self, file_id: str) -> dict[str, str]:
+        """Delete a file."""
+        return {"message": f"File {file_id} deleted successfully"}

@@ -1,0 +1,18 @@
+"""API routes package for NexusAI backend."""
+from __future__ import annotations
+
+from .analytics import AnalyticsController
+from .invoices import InvoiceController
+from .tasks import TaskController
+from .exports import ExportController
+from .health import HealthController
+from .ws import progress_websocket
+
+__all__ = [
+    "AnalyticsController",
+    "InvoiceController",
+    "TaskController",
+    "ExportController",
+    "HealthController",
+    "progress_websocket",
+]
