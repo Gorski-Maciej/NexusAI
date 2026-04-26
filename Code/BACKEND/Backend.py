@@ -1,7 +1,8 @@
 import json
 from db.models import Invoice, OutboxEvent
+from sqlalchemy.ext.asyncio import AsyncSession
 
-async def create_invoice_with_outbox(session, invoice_data: dict):
+async def create_invoice_with_outbox(session: AsyncSession, invoice_data: dict):
     """Zapisuje fakturę i zdarzenie outbox w jednej transakcji."""
     async with session.begin():
         # 1. Tworzymy fakturę
