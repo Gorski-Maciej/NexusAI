@@ -27,6 +27,9 @@ from pipeline.ocr import DocumentProcessor, ReviewStatus
 from core.logger import get_logger
 from core.backup import BackupManager
 from Roboton_Reflekton.vision_agent import VisionAgent
+from services.fixed_assets import FixedAssetsService
+from Roboton_Reflekton.ledger_client import TigerBeetleClient
+from db.analytics import DuckDBManager
 
 logger = get_logger()
 
@@ -267,3 +270,13 @@ async def invoice_reconciliation_loop():
 
         await session.commit()
         await nc.close()
+
+
+@broker.task(task_name="execute_monthly_depreciation", schedule=[{"cron": "0 0 1 * *"}])
+async def execute_monthly_depreciation_task() -> dict[str, int]:
+    """Posts due depreciation entries to TigerBeetle on the 1st day of each month."""
+    duckdb = DuckDBManager(Path("app_data/nexus_olap.duckdb"))
+    service = FixedAssetsService(duckdb=duckdb, tigerbeetle=TigerBeetleClient())
+    posted = await service.execute_monthly_depreciation()
+    logger.info("[FixedAssets] Posted %s depreciation entries", posted)
+    return {"posted": posted}
