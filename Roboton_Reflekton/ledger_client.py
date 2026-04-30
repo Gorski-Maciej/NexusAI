@@ -34,6 +34,7 @@ class TigerBeetleClient:
         self.cluster_id = cluster_id or int(os.getenv("TB_CLUSTER_ID", "0"))
         self.replica_addresses = replica_addresses or os.getenv("TB_REPLICA_ADDRESSES", "3000").split(",")
         self._pending_transfers: dict[int, TwoPhaseTransfer] = {}
+        self._account_credits_posted: dict[int, int] = {}
 
     async def create_accounts(self, account_ids: list[int]) -> dict[str, int]:
         created = len(set(account_ids))
@@ -59,4 +60,13 @@ class TigerBeetleClient:
         return transfer
 
     async def post_pending_transfer(self, pending_id: int) -> bool:
-        return self._pending_transfers.pop(pending_id, None) is not None
+        transfer = self._pending_transfers.pop(pending_id, None)
+        if transfer is None:
+            return False
+        self._account_credits_posted[transfer.credit_account] = (
+            self._account_credits_posted.get(transfer.credit_account, 0) + transfer.amount_minor
+        )
+        return True
+
+    async def get_account_credits_posted(self, account_id: int) -> int:
+        return self._account_credits_posted.get(account_id, 0)

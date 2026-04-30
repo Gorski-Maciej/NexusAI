@@ -28,6 +28,7 @@ class SimpleRuleBasedAgent:
             "kup_ratio": kup_ratio,
             "reasoning": "rule-based fallback for CrewAI",
             "source_document_id": payload.get("source_document_id"),
+            "contractor_nip": payload.get("contractor_nip", ""),
         }
 
 
@@ -55,6 +56,8 @@ class RobotonWorker:
             amount_minor=int(classification["amount_minor"]),
             source_document_id=source_document_id,
         )
+
+        classification.setdefault("contractor_nip", event.get("contractor_nip", ""))
 
         transfer = LedgerTransfer(
             company_id=company_id,

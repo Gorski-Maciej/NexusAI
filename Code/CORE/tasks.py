@@ -26,6 +26,7 @@ from models.outbox import OutboxEvent, OutboxStatus
 from pipeline.ocr import DocumentProcessor, ReviewStatus
 from core.logger import get_logger
 from core.backup import BackupManager
+from Roboton_Reflekton.vision_agent import VisionAgent
 
 logger = get_logger()
 
@@ -51,6 +52,7 @@ class InvoiceProcessingMachine(StateMachine):
     approve = processing.to(approved)
     request_review = processing.to(manual_review)
     fail = processing.to(failed)
+
 
 def pin_worker_cpu_affinity(reserve_core0: bool = True) -> None:
     """Pin worker process to non-UI CPU cores to protect Flet responsiveness."""
@@ -115,6 +117,7 @@ async def process_invoice_task() -> dict[str, str]:
     engine = create_oltp_engine(config)
     session_factory = create_session_factory(engine)
     processor = DocumentProcessor()
+    vision_agent = VisionAgent()
 
     async with session_factory() as session:
         event = await _pick_pending_outbox(session)
@@ -129,7 +132,18 @@ async def process_invoice_task() -> dict[str, str]:
 
         try:
             processed = await asyncio.to_thread(processor.process, Path(payload.image_path))
-            vector = _simple_features(processed.primary.raw_text)
+            vision = await vision_agent.analyze(Path(payload.image_path), processed.primary.raw_text)
+            vision_payload = {
+                "vendor_nip": vision.vendor_nip,
+                "total_gross": vision.total_gross,
+                "vat_rate": vision.vat_rate,
+                "payment_status": vision.payment_status,
+                "visual_anomalies_detected": vision.visual_anomalies_detected,
+                "handwritten_notes_summary": vision.handwritten_notes_summary,
+                "source": vision.source,
+            }
+            enriched_text = f"{processed.primary.raw_text}\n[vision]{json.dumps(vision_payload, ensure_ascii=False)}"
+            vector = _simple_features(enriched_text)
             table = _get_lancedb_table()
             table.add([{
                 "id": str(uuid.uuid4()),
@@ -140,6 +154,12 @@ async def process_invoice_task() -> dict[str, str]:
                 "created_at": datetime.now(timezone.utc),
                 "is_preferred": False,
             }])
+            logger.info(
+                "VisionAgent(%s) processed invoice_id=%s anomalies=%s",
+                vision.source,
+                payload.invoice_id,
+                vision.visual_anomalies_detected,
+            )
 
             if processed.status == ReviewStatus.MANUAL_REVIEW:
                 machine.request_review()

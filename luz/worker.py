@@ -23,6 +23,7 @@ from taskiq import TaskiqEvents
 from Code.CORE.broker import broker
 from Code.CORE.config import AppConfig
 import Code.CORE.tasks  # noqa: F401  # required to register @broker.task handlers
+from Roboton_Reflekton.vision_agent import VisionAgent
 
 
 if getattr(sys, "frozen", False):
@@ -80,10 +81,15 @@ async def on_worker_startup(state) -> None:
     logger.info(">>> Worker startup: loading config and OCR resources...")
     state.config = AppConfig()
     state.guard = WorkerGuard(ram_limit_gb=8.0)
+    state.vision_agent = VisionAgent()
     state.heartbeat_task = asyncio.create_task(state.guard.heartbeat())
 
     gpu = bool(torch is not None and torch.cuda.is_available())
-    logger.info(">>> Worker ready. OS=%s, device=%s", platform.system(), "CUDA/GPU" if gpu else "CPU"
+    logger.info(
+        ">>> Worker ready. OS=%s, device=%s, vision_agent=%s",
+        platform.system(),
+        "CUDA/GPU" if gpu else "CPU",
+        "qwen2.5-vl-2b-4bit" if getattr(state.vision_agent, "_enabled", False) else "ocr-fallback",
     )
 
 
