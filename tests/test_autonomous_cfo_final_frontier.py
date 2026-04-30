@@ -1,0 +1,112 @@
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
+
+
+
+import asyncio
+import uuid
+from datetime import date, datetime, timezone
+from types import SimpleNamespace
+
+from Roboton_Reflekton.ledger_client import TigerBeetleClient
+from Roboton_Reflekton.models import FinancialPeriodStatus
+from Roboton_Reflekton.reconciliation_engine import BankReconciliationConfig, BankReconciliationEngine, OpenInvoice
+from Roboton_Reflekton.roboton_worker import RobotonWorker, SimpleRuleBasedAgent
+
+
+class FakeSession:
+    def __init__(self, period_status: FinancialPeriodStatus, open_period_id: str = "2026-04"):
+        self.period_status = period_status
+        self.open_period_id = open_period_id
+
+    async def scalar(self, query):
+        text = str(query)
+        if "FROM financial_periods" in text and "period_id =" in text:
+            return SimpleNamespace(period_id="2026-03", status=self.period_status)
+        if "FROM financial_periods" in text and "status =" in text:
+            return SimpleNamespace(period_id=self.open_period_id, status=FinancialPeriodStatus.OPEN)
+        return SimpleNamespace(
+            id=uuid.uuid4(),
+            company_policy={},
+            tigerbeetle_ledger_map={"401-01": 40101, "202": 20200},
+        )
+
+    def add(self, _item):
+        return None
+
+    async def commit(self):
+        return None
+
+    async def refresh(self, _item):
+        return None
+
+
+def test_reconcile_bulk_payment_covers_three_invoices_and_posts_sub_10gr_rounding() -> None:
+    async def run() -> None:
+        tb = TigerBeetleClient()
+        engine = BankReconciliationEngine(
+            tb_client=tb,
+            config=BankReconciliationConfig(
+                account_bank_main=131,
+                account_receivable=201,
+                account_rounding_differences=760,
+            ),
+        )
+        result = await engine.reconcile_bulk_payment(
+            vendor_id="V-1",
+            payment_amount_minor=12007,
+            received_date=datetime.now(timezone.utc),
+            open_invoices=[
+                OpenInvoice(invoice_id="FV/1", amount_due_minor=5000, due_date=datetime(2026, 3, 1, tzinfo=timezone.utc)),
+                OpenInvoice(invoice_id="FV/2", amount_due_minor=5000, due_date=datetime(2026, 3, 2, tzinfo=timezone.utc)),
+                OpenInvoice(invoice_id="FV/3", amount_due_minor=2000, due_date=datetime(2026, 3, 3, tzinfo=timezone.utc)),
+            ],
+        )
+        assert len(result["allocations"]) == 3
+        assert result["rounding_adjustment_posted"] is True
+        assert result["remaining_unallocated_minor"] == 0
+        assert [line["invoice_id"] for line in result["allocations"]] == ["FV/1", "FV/2", "FV/3"]
+        assert await tb.get_account_credits_posted(760) == 7
+
+    asyncio.run(run())
+
+
+def test_period_lock_mutates_posting_and_tax_point_for_hard_closed_period() -> None:
+    async def run() -> None:
+        worker = RobotonWorker(session=FakeSession(FinancialPeriodStatus.HARD_CLOSED), tb_client=TigerBeetleClient(), agent=SimpleRuleBasedAgent())
+        event = {
+            "company_id": str(uuid.uuid4()),
+            "date_of_issue": "2026-03-17",
+            "tax_point_date": "2026-03-17",
+            "amount_minor": 1000,
+            "source_document_id": str(uuid.uuid4()),
+        }
+        mutated = await worker._apply_financial_period_lock(uuid.UUID(event["company_id"]), event)
+        assert mutated["posting_date"] == "2026-04-01"
+        assert mutated["tax_point_date"] == "2026-04-01"
+        assert mutated["metadata"]["late_submission_shifted"] is True
+
+    asyncio.run(run())
+
+
+def test_period_lock_keeps_dates_for_open_period() -> None:
+    async def run() -> None:
+        worker = RobotonWorker(session=FakeSession(FinancialPeriodStatus.OPEN), tb_client=TigerBeetleClient(), agent=SimpleRuleBasedAgent())
+        event = {
+            "company_id": str(uuid.uuid4()),
+            "date_of_issue": "2026-03-17",
+            "tax_point_date": "2026-03-17",
+            "amount_minor": 1000,
+            "source_document_id": str(uuid.uuid4()),
+        }
+        mutated = await worker._apply_financial_period_lock(uuid.UUID(event["company_id"]), event)
+        assert mutated["posting_date"] == "2026-03-17"
+        assert mutated["tax_point_date"] == "2026-03-17"
+        assert "metadata" not in mutated or "late_submission_shifted" not in mutated.get("metadata", {})
+
+    asyncio.run(run())
