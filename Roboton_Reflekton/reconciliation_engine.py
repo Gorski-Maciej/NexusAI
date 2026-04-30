@@ -145,3 +145,75 @@ class ReconciliationEngine:
                 )
                 await self.alert_hub.publish(alert.to_sse_event())
             return False
+
+
+@dataclass(frozen=True, slots=True)
+class ClearingAccountsConfig:
+    account_bank_main: int
+    account_expense_fees: int
+    account_receivable: int
+    provider_clearing_accounts: dict[str, int]
+
+
+class ClearingAccountsEngine:
+    """Implements provider fee extraction and bank payout reconciliation with idempotency."""
+
+    def __init__(self, tb_client: TigerBeetleClient, config: ClearingAccountsConfig) -> None:
+        self.tb_client = tb_client
+        self.config = config
+        self._processed_operations: set[str] = set()
+
+    def _provider_account(self, provider_id: str) -> int:
+        key = provider_id.strip().lower()
+        account = self.config.provider_clearing_accounts.get(key)
+        if account is None:
+            raise ValueError(f"Unknown provider_id={provider_id!r}")
+        return account
+
+    async def process_provider_fees(self, *, provider_id: str, fee_amount: int, operation_id: str) -> dict[str, Any]:
+        """Step 2: Debit fees expense / Credit provider clearing account."""
+        if fee_amount <= 0:
+            raise ValueError("fee_amount must be > 0")
+        if operation_id in self._processed_operations:
+            return {"status": "idempotent-replay", "operation_id": operation_id}
+
+        provider_account = self._provider_account(provider_id)
+        pending = await self.tb_client.create_two_phase_transfer(
+            debit_account=self.config.account_expense_fees,
+            credit_account=provider_account,
+            amount_minor=fee_amount,
+            source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"fees:{provider_id}:{operation_id}"),
+        )
+        posted = await self.tb_client.post_pending_transfer(pending.pending_id)
+        if posted:
+            self._processed_operations.add(operation_id)
+        return {
+            "status": "posted" if posted else "failed",
+            "operation_id": operation_id,
+            "pending_id": pending.pending_id,
+        }
+
+    async def reconcile_bank_payout(self, *, provider_id: str, payout_amount: int, operation_id: str) -> dict[str, Any]:
+        """Step 3: Debit main bank / Credit provider clearing account."""
+        if payout_amount <= 0:
+            raise ValueError("payout_amount must be > 0")
+        if operation_id in self._processed_operations:
+            return {"status": "idempotent-replay", "operation_id": operation_id}
+
+        provider_account = self._provider_account(provider_id)
+        pending = await self.tb_client.create_two_phase_transfer(
+            debit_account=self.config.account_bank_main,
+            credit_account=provider_account,
+            amount_minor=payout_amount,
+            source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"payout:{provider_id}:{operation_id}"),
+        )
+        posted = await self.tb_client.post_pending_transfer(pending.pending_id)
+        if posted:
+            self._processed_operations.add(operation_id)
+        clearing_balance = await self.tb_client.get_account_credits_posted(provider_account)
+        return {
+            "status": "posted" if posted else "failed",
+            "operation_id": operation_id,
+            "pending_id": pending.pending_id,
+            "clearing_credits_posted": clearing_balance,
+        }

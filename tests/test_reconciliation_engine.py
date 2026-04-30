@@ -11,7 +11,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from Roboton_Reflekton.ledger_client import TigerBeetleClient
 from Roboton_Reflekton.models import TransferStatus
-from Roboton_Reflekton.reconciliation_engine import AlertHub, ReconciliationEngine
+from Roboton_Reflekton.reconciliation_engine import AlertHub, ClearingAccountsConfig, ClearingAccountsEngine, ReconciliationEngine
 
 
 class FakeResult:
@@ -143,5 +143,52 @@ def test_old_unmatched_transaction_emits_missing_invoice_alert() -> None:
         assert matched is False
         assert event["type"] == "MissingInvoiceAlert"
         assert event["transaction_id"] == "tx-404"
+
+    asyncio.run(run())
+
+
+def test_clearing_engine_processes_fees_with_idempotency() -> None:
+    async def run() -> None:
+        tb_client = TigerBeetleClient()
+        engine = ClearingAccountsEngine(
+            tb_client=tb_client,
+            config=ClearingAccountsConfig(
+                account_bank_main=100,
+                account_expense_fees=402,
+                account_receivable=201,
+                provider_clearing_accounts={"stripe": 139001},
+            ),
+        )
+
+        first = await engine.process_provider_fees(provider_id="stripe", fee_amount=200, operation_id="fee-1")
+        second = await engine.process_provider_fees(provider_id="stripe", fee_amount=200, operation_id="fee-1")
+
+        assert first["status"] == "posted"
+        assert second["status"] == "idempotent-replay"
+        assert await tb_client.get_account_credits_posted(139001) == 200
+
+    asyncio.run(run())
+
+
+def test_clearing_engine_reconciles_payout_with_idempotency() -> None:
+    async def run() -> None:
+        tb_client = TigerBeetleClient()
+        engine = ClearingAccountsEngine(
+            tb_client=tb_client,
+            config=ClearingAccountsConfig(
+                account_bank_main=131,
+                account_expense_fees=402,
+                account_receivable=201,
+                provider_clearing_accounts={"terminal": 139002},
+            ),
+        )
+
+        first = await engine.reconcile_bank_payout(provider_id="terminal", payout_amount=9800, operation_id="pay-1")
+        second = await engine.reconcile_bank_payout(provider_id="terminal", payout_amount=9800, operation_id="pay-1")
+
+        assert first["status"] == "posted"
+        assert first["clearing_credits_posted"] == 9800
+        assert second["status"] == "idempotent-replay"
+        assert await tb_client.get_account_credits_posted(139002) == 9800
 
     asyncio.run(run())
