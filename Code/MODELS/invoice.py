@@ -26,6 +26,8 @@ class Invoice(Base):
     file_path: Mapped[str] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    created_by: Mapped[str] = mapped_column(String, default="worker:taskiq")
+    updated_by: Mapped[str] = mapped_column(String, default="worker:taskiq")
 
     # Relacje
     contractor: Mapped["Contractor"] = relationship("Contractor", back_populates="invoices")

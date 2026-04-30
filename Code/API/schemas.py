@@ -64,3 +64,23 @@ class DashboardSummaryResponse(BaseModel):
     total_net: float
     total_gross: float
     total_documents: int
+
+
+class TriageItem(BaseModel):
+    invoice_id: str
+    image_path: str
+    extracted_data: dict[str, object]
+    bounding_boxes: dict[str, object]
+    confidence_score: float
+    reason_for_triage: str
+
+
+class TriageResolutionRequest(BaseModel):
+    corrected_data: dict[str, object]
+    action: str
+
+
+class TriageResolutionResponse(BaseModel):
+    invoice_id: str
+    status: str
+    message: str

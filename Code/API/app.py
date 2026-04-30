@@ -13,6 +13,7 @@ from api.routes.exports import ExportController
 from api.routes.health import HealthController
 from api.routes.invoices import InvoiceController
 from api.routes.tasks import TaskController
+from api.routes.triage import TriageController
 from api.routes.ws import progress_websocket
 from api.static import get_static_config
 
@@ -33,6 +34,7 @@ def create_app() -> Litestar:
             InvoiceController,
             AnalyticsController,
             TaskController,
+            TriageController,
             ExportController,
             progress_websocket,
         ],

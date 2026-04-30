@@ -1,4 +1,8 @@
 from db.analytics import DuckDBManager
+from services.telemetry import ensure_telemetry_schema
+from db.zpk_schema import ensure_zpk_schema
+from services.document_fingerprint import ensure_fingerprint_schema
+
 
 class AnalyticsSchemaManager:
     """Zarządza wersjonowaniem schematu DuckDB (odpowiednik migracji)."""
@@ -17,3 +21,12 @@ class AnalyticsSchemaManager:
         # Tworzenie indeksów dla przyspieszenia raportów OLAP
         duck_mgr.execute("CREATE INDEX IF NOT EXISTS idx_invoices_date ON invoices_replica (issue_date)")
         duck_mgr.execute("CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices_replica (status)")
+
+        # Telemetry schema for performance & system health dashboards
+        ensure_telemetry_schema(duck_mgr)
+
+        # ZPK engine schema bootstrap
+        ensure_zpk_schema(duck_mgr)
+
+        # Document fingerprint / Merkle audit schema
+        ensure_fingerprint_schema(duck_mgr)

@@ -34,3 +34,13 @@ class OutboxEvent(Base):
     status = Column(String, default="PENDING")
     processed = Column(Boolean, default=False)
     created_at = Column(DateTime, default=func.now())
+
+
+class SecurityAlert(Base):
+    __tablename__ = "security_alerts"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    actor = Column(String, nullable=False)
+    operation = Column(String, nullable=False)
+    details = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=func.now())
