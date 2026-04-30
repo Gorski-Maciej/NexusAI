@@ -217,3 +217,75 @@ class ClearingAccountsEngine:
             "pending_id": pending.pending_id,
             "clearing_credits_posted": clearing_balance,
         }
+
+
+@dataclass(frozen=True, slots=True)
+class OpenInvoice:
+    invoice_id: str
+    amount_due_minor: int
+    due_date: datetime
+
+
+@dataclass(frozen=True, slots=True)
+class BankReconciliationConfig:
+    account_bank_main: int
+    account_receivable: int
+    account_rounding_differences: int
+    rounding_threshold_minor: int = 10
+
+
+class BankReconciliationEngine:
+    def __init__(self, tb_client: TigerBeetleClient, config: BankReconciliationConfig) -> None:
+        self.tb_client = tb_client
+        self.config = config
+
+    async def reconcile_bulk_payment(
+        self,
+        *,
+        vendor_id: str,
+        payment_amount_minor: int,
+        received_date: datetime,
+        open_invoices: list[OpenInvoice],
+    ) -> dict[str, Any]:
+        if payment_amount_minor <= 0:
+            raise ValueError("payment_amount_minor must be > 0")
+
+        remaining = payment_amount_minor
+        allocations: list[dict[str, Any]] = []
+        sorted_invoices = sorted(open_invoices, key=lambda item: item.due_date)
+
+        for invoice in sorted_invoices:
+            if remaining <= 0:
+                break
+            allocated = min(invoice.amount_due_minor, remaining)
+            if allocated <= 0:
+                continue
+            pending = await self.tb_client.create_two_phase_transfer(
+                debit_account=self.config.account_bank_main,
+                credit_account=self.config.account_receivable,
+                amount_minor=allocated,
+                source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"bulk:{vendor_id}:{invoice.invoice_id}:{received_date.isoformat()}"),
+            )
+            posted = await self.tb_client.post_pending_transfer(pending.pending_id)
+            allocations.append({"invoice_id": invoice.invoice_id, "amount_minor": allocated, "posted": posted})
+            remaining -= allocated
+
+        rounding_adjustment_posted = False
+        if 0 < remaining < self.config.rounding_threshold_minor:
+            rounding_pending = await self.tb_client.create_two_phase_transfer(
+                debit_account=self.config.account_bank_main,
+                credit_account=self.config.account_rounding_differences,
+                amount_minor=remaining,
+                source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"rounding:{vendor_id}:{received_date.isoformat()}:{remaining}"),
+            )
+            rounding_adjustment_posted = await self.tb_client.post_pending_transfer(rounding_pending.pending_id)
+            remaining = 0
+
+        return {
+            "vendor_id": vendor_id,
+            "received_date": received_date.isoformat(),
+            "payment_amount_minor": payment_amount_minor,
+            "allocations": allocations,
+            "rounding_adjustment_posted": rounding_adjustment_posted,
+            "remaining_unallocated_minor": remaining,
+        }

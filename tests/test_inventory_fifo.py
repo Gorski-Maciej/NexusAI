@@ -19,6 +19,9 @@ fifo = _load_module(Path(__file__).resolve().parents[1] / "Code" / "SERVICES" / 
 InventoryBatch = fifo.InventoryBatch
 calculate_fifo_cogs = fifo.calculate_fifo_cogs
 apply_fifo_consumption = fifo.apply_fifo_consumption
+InsufficientStockError = fifo.InsufficientStockError
+calculate_and_post_cogs = fifo.calculate_and_post_cogs
+DualWriteConsistencyError = fifo.DualWriteConsistencyError
 
 
 def test_calculate_fifo_cogs_consumes_oldest_batches_first() -> None:
@@ -54,8 +57,8 @@ def test_calculate_fifo_cogs_raises_on_insufficient_stock() -> None:
 
     try:
         calculate_fifo_cogs("SKU-1", Decimal("2.0000"), batches)
-        raise AssertionError("Expected ValueError")
-    except ValueError as exc:
+        raise AssertionError("Expected InsufficientStockError")
+    except InsufficientStockError as exc:
         assert "Insufficient inventory" in str(exc)
 
 
@@ -95,3 +98,54 @@ def test_inventory_schema_creates_batches_table() -> None:
     sql = "\n".join(mgr.queries)
     assert "CREATE TABLE IF NOT EXISTS inventory_batches" in sql
     assert "CREATE TABLE IF NOT EXISTS inventory_consumption_lines" in sql
+
+
+def test_calculate_and_post_cogs_rolls_back_duckdb_on_write_error() -> None:
+    class FakeTB:
+        async def create_two_phase_transfer(self, **_kwargs):
+            class Pending:
+                pending_id = 1
+            return Pending()
+
+        async def post_pending_transfer(self, _pending_id):
+            return True
+
+    class FailingDuckDBWriter:
+        def __init__(self):
+            self.events = []
+
+        def begin(self):
+            self.events.append("begin")
+
+        def record_cogs_consumption(self, _consumption):
+            raise RuntimeError("duckdb write failed")
+
+        def commit(self):
+            self.events.append("commit")
+
+        def rollback(self):
+            self.events.append("rollback")
+
+    async def run() -> None:
+        batches = [InventoryBatch("b1", "SKU-1", date(2026, 1, 1), Decimal("1.0000"), Decimal("10.00"))]
+        writer = FailingDuckDBWriter()
+        try:
+            await calculate_and_post_cogs(
+                product_id="SKU-1",
+                qty_sold=Decimal("1.0000"),
+                open_batches=batches,
+                tb_client=FakeTB(),
+                debit_account_731_cogs=731,
+                credit_account_330_inventory=330,
+                source_document_id="doc-1",
+                duckdb_writer=writer,
+            )
+            raise AssertionError("Expected DualWriteConsistencyError")
+        except DualWriteConsistencyError:
+            pass
+
+        assert writer.events == ["begin", "rollback"]
+
+    import asyncio
+
+    asyncio.run(run())

@@ -39,6 +39,12 @@ class TransferStatus(StrEnum):
     REJECTED = "rejected"
 
 
+class FinancialPeriodStatus(StrEnum):
+    OPEN = "open"
+    SOFT_CLOSED = "soft_closed"
+    HARD_CLOSED = "hard_closed"
+
+
 class CompanyProfile(Base):
     __tablename__ = "company_profiles"
 
@@ -98,3 +104,17 @@ class LedgerTransfer(Base):
     status: Mapped[TransferStatus] = mapped_column(Enum(TransferStatus, name="transfer_status_enum"), default=TransferStatus.PENDING, nullable=False)
     meta: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+
+
+class FinancialPeriod(Base):
+    __tablename__ = "financial_periods"
+
+    period_id: Mapped[str] = mapped_column(String(7), primary_key=True)
+    company_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("company_profiles.id", ondelete="CASCADE"), primary_key=True)
+    status: Mapped[FinancialPeriodStatus] = mapped_column(
+        Enum(FinancialPeriodStatus, name="financial_period_status_enum"),
+        default=FinancialPeriodStatus.OPEN,
+        nullable=False,
+    )
+    closed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    vat_declaration_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
