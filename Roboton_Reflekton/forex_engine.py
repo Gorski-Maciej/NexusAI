@@ -61,7 +61,7 @@ class ForexEngine:
             try:
                 with request.urlopen(url, timeout=10) as response:
                     payload = json.loads(response.read().decode("utf-8"))
-            except error.HTTPError:
+            except (error.HTTPError, error.URLError, TimeoutError):
                 payload = None
 
             if payload is not None:
