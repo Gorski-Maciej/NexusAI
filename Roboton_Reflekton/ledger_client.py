@@ -13,6 +13,7 @@ class TwoPhaseTransfer:
     credit_account: int
     amount_minor: int
     source_document_id: uuid.UUID
+    user_data_128: int = 0
 
 
 class TigerBeetleMapper:
@@ -47,6 +48,7 @@ class TigerBeetleClient:
         credit_account: int,
         amount_minor: int,
         source_document_id: uuid.UUID,
+        user_data_128: int = 0,
     ) -> TwoPhaseTransfer:
         pending_id = uuid.uuid4().int >> 64
         transfer = TwoPhaseTransfer(
@@ -55,6 +57,7 @@ class TigerBeetleClient:
             credit_account=credit_account,
             amount_minor=amount_minor,
             source_document_id=source_document_id,
+            user_data_128=user_data_128,
         )
         self._pending_transfers[pending_id] = transfer
         return transfer

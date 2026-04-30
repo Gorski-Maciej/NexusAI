@@ -77,15 +77,39 @@ def ensure_fixed_assets_schema(duck_mgr: DuckDBManager):
     duck_mgr.execute("""
     CREATE TABLE IF NOT EXISTS fixed_assets (
         id UUID PRIMARY KEY,
+        invoice_id UUID,
         asset_name VARCHAR NOT NULL,
         initial_value DECIMAL(18, 2) NOT NULL,
+        salvage_value DECIMAL(18, 2) NOT NULL DEFAULT 0,
+        residual_value DECIMAL(18, 2) NOT NULL DEFAULT 0,
+        depreciation_method VARCHAR NOT NULL DEFAULT 'LINEAR',
+        annual_rate DOUBLE,
         depreciation_rate DOUBLE NOT NULL,
+        start_date DATE,
         purchase_date DATE NOT NULL,
+        last_depreciation_date DATE,
         status VARCHAR NOT NULL DEFAULT 'ACTIVE',
         account_id_debit UBIGINT NOT NULL,
         account_id_credit UBIGINT NOT NULL
     )
     """)
+
+    existing_cols = duck_mgr.execute("PRAGMA table_info('fixed_assets')")
+    col_names = {col[1] for col in existing_cols}
+    if "residual_value" not in col_names:
+        duck_mgr.execute("ALTER TABLE fixed_assets ADD COLUMN residual_value DECIMAL(18, 2) NOT NULL DEFAULT 0")
+    if "salvage_value" not in col_names:
+        duck_mgr.execute("ALTER TABLE fixed_assets ADD COLUMN salvage_value DECIMAL(18, 2) NOT NULL DEFAULT 0")
+    if "depreciation_method" not in col_names:
+        duck_mgr.execute("ALTER TABLE fixed_assets ADD COLUMN depreciation_method VARCHAR NOT NULL DEFAULT 'LINEAR'")
+    if "annual_rate" not in col_names:
+        duck_mgr.execute("ALTER TABLE fixed_assets ADD COLUMN annual_rate DOUBLE")
+    if "start_date" not in col_names:
+        duck_mgr.execute("ALTER TABLE fixed_assets ADD COLUMN start_date DATE")
+    if "invoice_id" not in col_names:
+        duck_mgr.execute("ALTER TABLE fixed_assets ADD COLUMN invoice_id UUID")
+    if "last_depreciation_date" not in col_names:
+        duck_mgr.execute("ALTER TABLE fixed_assets ADD COLUMN last_depreciation_date DATE")
 
     duck_mgr.execute("""
     CREATE TABLE IF NOT EXISTS depreciation_schedule (
@@ -93,12 +117,17 @@ def ensure_fixed_assets_schema(duck_mgr: DuckDBManager):
         planned_date DATE NOT NULL,
         amount DECIMAL(18, 2) NOT NULL,
         is_posted BOOLEAN NOT NULL DEFAULT FALSE,
+        status VARCHAR NOT NULL DEFAULT 'PENDING',
         ledger_id INTEGER NOT NULL DEFAULT 2,
         transfer_code INTEGER NOT NULL DEFAULT 1001,
         posted_at TIMESTAMP,
         PRIMARY KEY(asset_id, planned_date)
     )
     """)
+    schedule_cols = duck_mgr.execute("PRAGMA table_info('depreciation_schedule')")
+    schedule_col_names = {col[1] for col in schedule_cols}
+    if "status" not in schedule_col_names:
+        duck_mgr.execute("ALTER TABLE depreciation_schedule ADD COLUMN status VARCHAR NOT NULL DEFAULT 'PENDING'")
 
 
 def ensure_rmk_schema(duck_mgr: DuckDBManager):
