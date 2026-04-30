@@ -40,6 +40,9 @@ class AnalyticsSchemaManager:
         # RMK / deferred expenses schema bootstrap
         ensure_rmk_schema(duck_mgr)
 
+        # FIFO inventory / COGS schema bootstrap
+        ensure_inventory_schema(duck_mgr)
+
 
 def ensure_vendor_intelligence_schema(duck_mgr: DuckDBManager):
     duck_mgr.execute("""
@@ -125,5 +128,51 @@ def ensure_rmk_schema(duck_mgr: DuckDBManager):
         transfer_code INTEGER NOT NULL DEFAULT 2001,
         rmk_asset_account_id VARCHAR NOT NULL DEFAULT '640',
         user_data_128 UUID NOT NULL
+    )
+    """)
+
+
+def ensure_inventory_schema(duck_mgr: DuckDBManager):
+    duck_mgr.execute("""
+    CREATE TABLE IF NOT EXISTS inventory_batches (
+        id UUID PRIMARY KEY,
+        batch_id VARCHAR NOT NULL,
+        product_id VARCHAR NOT NULL,
+        warehouse_id VARCHAR,
+        received_date DATE NOT NULL,
+        source_document_id UUID,
+        initial_qty DECIMAL(18, 4) NOT NULL,
+        remaining_qty DECIMAL(18, 4) NOT NULL,
+        unit_cost_net DECIMAL(18, 4) NOT NULL,
+        currency VARCHAR NOT NULL DEFAULT 'PLN',
+        created_at TIMESTAMP NOT NULL DEFAULT now(),
+        CHECK (initial_qty >= 0),
+        CHECK (remaining_qty >= 0),
+        CHECK (remaining_qty <= initial_qty)
+    )
+    """)
+
+    duck_mgr.execute("""
+    CREATE TABLE IF NOT EXISTS inventory_consumption_events (
+        id UUID PRIMARY KEY,
+        product_id VARCHAR NOT NULL,
+        issue_document_id UUID NOT NULL,
+        issue_date DATE NOT NULL,
+        issued_qty DECIMAL(18, 4) NOT NULL,
+        total_cogs_net DECIMAL(18, 2) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT now()
+    )
+    """)
+
+    duck_mgr.execute("""
+    CREATE TABLE IF NOT EXISTS inventory_consumption_lines (
+        id UUID PRIMARY KEY,
+        consumption_event_id UUID NOT NULL,
+        batch_id VARCHAR NOT NULL,
+        product_id VARCHAR NOT NULL,
+        qty_taken DECIMAL(18, 4) NOT NULL,
+        unit_cost_net DECIMAL(18, 4) NOT NULL,
+        line_cogs_net DECIMAL(18, 2) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT now()
     )
     """)

@@ -1,0 +1,115 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import date
+from decimal import Decimal, ROUND_HALF_UP
+from typing import Any
+
+MONEY_QUANT = Decimal("0.01")
+QTY_QUANT = Decimal("0.0001")
+
+
+def _to_decimal(value: Any, quant: Decimal) -> Decimal:
+    return Decimal(str(value)).quantize(quant, rounding=ROUND_HALF_UP)
+
+
+@dataclass(slots=True)
+class InventoryBatch:
+    batch_id: str
+    product_id: str
+    received_date: date
+    remaining_qty: Decimal
+    unit_cost_net: Decimal
+    source_document_id: str | None = None
+
+
+@dataclass(slots=True)
+class FIFOConsumptionLine:
+    batch_id: str
+    product_id: str
+    qty_taken: Decimal
+    unit_cost_net: Decimal
+    line_cogs_net: Decimal
+
+
+@dataclass(slots=True)
+class FIFOConsumptionResult:
+    product_id: str
+    requested_qty: Decimal
+    fulfilled_qty: Decimal
+    total_cogs_net: Decimal
+    lines: list[FIFOConsumptionLine]
+
+
+def calculate_fifo_cogs(product_id: str, issue_qty: Decimal | float | int, open_batches: list[InventoryBatch]) -> FIFOConsumptionResult:
+    """Consume inventory batches in FIFO order and return COGS breakdown.
+
+    Raises ValueError when stock is insufficient.
+    """
+
+    qty_needed = _to_decimal(issue_qty, QTY_QUANT)
+    if qty_needed <= Decimal("0"):
+        raise ValueError("issue_qty must be greater than 0")
+
+    fifo_batches = sorted(
+        [b for b in open_batches if b.product_id == product_id and b.remaining_qty > Decimal("0")],
+        key=lambda b: (b.received_date, b.batch_id),
+    )
+
+    remaining = qty_needed
+    lines: list[FIFOConsumptionLine] = []
+    total_cogs = Decimal("0.00")
+
+    for batch in fifo_batches:
+        if remaining <= Decimal("0"):
+            break
+        take_qty = min(batch.remaining_qty, remaining).quantize(QTY_QUANT, rounding=ROUND_HALF_UP)
+        if take_qty <= Decimal("0"):
+            continue
+
+        line_cogs = (take_qty * batch.unit_cost_net).quantize(MONEY_QUANT, rounding=ROUND_HALF_UP)
+        lines.append(
+            FIFOConsumptionLine(
+                batch_id=batch.batch_id,
+                product_id=product_id,
+                qty_taken=take_qty,
+                unit_cost_net=batch.unit_cost_net,
+                line_cogs_net=line_cogs,
+            )
+        )
+        total_cogs += line_cogs
+        remaining -= take_qty
+
+    if remaining > Decimal("0"):
+        raise ValueError(f"Insufficient inventory for product_id={product_id}; missing_qty={remaining}")
+
+    return FIFOConsumptionResult(
+        product_id=product_id,
+        requested_qty=qty_needed,
+        fulfilled_qty=qty_needed,
+        total_cogs_net=total_cogs.quantize(MONEY_QUANT, rounding=ROUND_HALF_UP),
+        lines=lines,
+    )
+
+
+def apply_fifo_consumption(open_batches: list[InventoryBatch], consumption: FIFOConsumptionResult) -> list[InventoryBatch]:
+    """Return updated copies of batches after applying FIFO consumption lines."""
+
+    updates = {line.batch_id: line.qty_taken for line in consumption.lines}
+    out: list[InventoryBatch] = []
+    for batch in open_batches:
+        delta = updates.get(batch.batch_id, Decimal("0"))
+        new_qty = (batch.remaining_qty - delta).quantize(QTY_QUANT, rounding=ROUND_HALF_UP)
+        if new_qty < Decimal("0"):
+            raise ValueError(f"Batch {batch.batch_id} would go negative")
+        out.append(
+            InventoryBatch(
+                batch_id=batch.batch_id,
+                product_id=batch.product_id,
+                received_date=batch.received_date,
+                remaining_qty=new_qty,
+                unit_cost_net=batch.unit_cost_net,
+                source_document_id=batch.source_document_id,
+            )
+        )
+    return out
