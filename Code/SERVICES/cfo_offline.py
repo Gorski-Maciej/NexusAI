@@ -11,7 +11,7 @@ z kolejką asynchroniczną, cache i magazynem relacji.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Protocol
 
 
@@ -145,6 +145,159 @@ class CashflowForecastService:
 
         return {"series": series, "min_balance": min_balance, "alerts": alerts}
 
+    def get_daily_forecast(self, days: int = 90, opening_balance: float = 0.0) -> list[tuple[date, float, float]]:
+        """Zwraca dzienną projekcję salda: (data, saldo, confidence_level)."""
+
+        today = date.today()
+        end_date = today + timedelta(days=days)
+
+        rows = self.duckdb.execute(
+            """
+            SELECT projected_date, flow_direction, amount, source_type
+            FROM v_cashflow_projection
+            WHERE projected_date BETWEEN ? AND ?
+            ORDER BY projected_date ASC
+            """,
+            (today, end_date),
+        ).fetchall()
+
+        daily_delta: dict[date, float] = {}
+        daily_confidence: dict[date, list[float]] = {}
+
+        for projected_date, flow_direction, amount, source_type in rows:
+            amount_value = float(amount)
+            sign = 1.0 if str(flow_direction).upper() == "INFLOW" else -1.0
+            day = projected_date if isinstance(projected_date, date) else date.fromisoformat(str(projected_date))
+            daily_delta[day] = daily_delta.get(day, 0.0) + (sign * amount_value)
+
+            confidence = 0.95
+            if source_type == "INVOICE_INFLOW":
+                confidence = 0.75
+            elif source_type in {"VAT_RESERVE", "INCOME_TAX_RESERVE", "INVOICE_OUTFLOW"}:
+                confidence = 0.98
+            elif source_type == "MANUAL_ITEM":
+                confidence = 0.60
+            daily_confidence.setdefault(day, []).append(confidence)
+
+        running = float(opening_balance)
+        forecast: list[tuple[date, float, float]] = []
+        cursor = today
+        while cursor <= end_date:
+            running += daily_delta.get(cursor, 0.0)
+            confidences = daily_confidence.get(cursor)
+            confidence_level = sum(confidences) / len(confidences) if confidences else 0.9
+            forecast.append((cursor, round(running, 2), round(confidence_level, 2)))
+            cursor += timedelta(days=1)
+
+        return forecast
+
+
+class PaymentPriorityService:
+    """Silnik priorytetyzacji płatności dla zobowiązań zakupowych."""
+
+    def __init__(self, duckdb_conn: Any) -> None:
+        self.duckdb = duckdb_conn
+
+    def calculate_priority_score(self, invoice: dict[str, Any], today: date | None = None) -> tuple[int, list[str]]:
+        """Zwraca score 0-100 oraz uzasadnienie dla pojedynczej faktury."""
+
+        ref_day = today or date.today()
+        score = 50
+        reasons: list[str] = []
+
+        skonto_deadline = invoice.get("skonto_deadline")
+        if skonto_deadline:
+            skonto_date = skonto_deadline if isinstance(skonto_deadline, date) else date.fromisoformat(str(skonto_deadline))
+            hours_to_deadline = (datetime.combine(skonto_date, datetime.min.time()) - datetime.combine(ref_day, datetime.min.time())).total_seconds() / 3600
+            if 0 <= hours_to_deadline <= 48:
+                score += 40
+                reasons.append("Skonto deadline within 48h")
+
+        due_raw = invoice.get("due_date")
+        if due_raw:
+            due_date = due_raw if isinstance(due_raw, date) else date.fromisoformat(str(due_raw))
+            if due_date < ref_day:
+                days_late = (ref_day - due_date).days
+                overdue_bonus = min(days_late * 2, 30)
+                score += overdue_bonus
+                reasons.append(f"Overdue by {days_late} day(s)")
+
+        vendor_priority = str(invoice.get("vendor_priority", "")).strip().lower()
+        if vendor_priority in {"1", "critical"}:
+            score += 20
+            reasons.append("Critical vendor")
+        elif vendor_priority in {"4", "flexible"}:
+            score -= 15
+            reasons.append("Flexible vendor")
+
+        penalty_rate = invoice.get("penalty_rate")
+        if penalty_rate is not None:
+            try:
+                penalty_value = float(penalty_rate)
+                if penalty_value > 0.0:
+                    reasons.append(f"Penalty rate {penalty_value:.2f}%")
+            except (TypeError, ValueError):
+                pass
+
+        return max(0, min(100, int(round(score)))), reasons
+
+    def suggest_payment_batch(self, available_cash: float, today: date | None = None) -> dict[str, Any]:
+        """Sugeruje paczkę płatności mieszczącą się w limicie 90% dostępnej gotówki."""
+
+        rows = self.duckdb.execute(
+            """
+            SELECT id, due_date, skonto_deadline, skonto_percent, vendor_priority, penalty_rate, amount_gross
+            FROM invoices_replica
+            WHERE status = 'UNPAID' AND COALESCE(amount_gross, 0) > 0
+            """
+        ).fetchall()
+
+        scored: list[dict[str, Any]] = []
+        for invoice_id, due_date, skonto_deadline, skonto_percent, vendor_priority, penalty_rate, amount_gross in rows:
+            invoice_data = {
+                "id": str(invoice_id),
+                "due_date": due_date,
+                "skonto_deadline": skonto_deadline,
+                "skonto_percent": skonto_percent,
+                "vendor_priority": vendor_priority,
+                "penalty_rate": penalty_rate,
+                "amount_gross": float(amount_gross),
+            }
+            score, reasons = self.calculate_priority_score(invoice_data, today=today)
+
+            if skonto_percent:
+                reasons.append(f"Skonto {float(skonto_percent):.2f}% savings")
+
+            scored.append({"invoice": invoice_data, "score": score, "reasons": reasons})
+
+        scored.sort(key=lambda item: item["score"], reverse=True)
+
+        safe_limit = max(0.0, float(available_cash) * 0.9)
+        selected: list[dict[str, Any]] = []
+        waiting: list[dict[str, Any]] = []
+        used_cash = 0.0
+
+        for item in scored:
+            amount = float(item["invoice"]["amount_gross"])
+            payload = {
+                "invoice_id": item["invoice"]["id"],
+                "amount": round(amount, 2),
+                "priority_score": item["score"],
+                "reason": "; ".join(item["reasons"]) if item["reasons"] else "Standard priority",
+            }
+            if used_cash + amount <= safe_limit:
+                selected.append(payload)
+                used_cash += amount
+            else:
+                waiting.append(payload)
+
+        return {
+            "safe_limit": round(safe_limit, 2),
+            "used_cash": round(used_cash, 2),
+            "recommended_today": selected,
+            "wait": waiting,
+        }
+
 
 class AutoDecreeService:
     """Klasyfikacja pozycji faktury do kont księgowych."""
@@ -201,7 +354,7 @@ class CFOOrchestrator:
             "invoice_id": invoice.invoice_id,
             "score": score,
             "reason": reason,
-            "created_at": datetime.now(UTC).isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
         }
 
         if is_anomaly:
@@ -225,7 +378,7 @@ class CFOOrchestrator:
                     "event": "cashflow.alert",
                     "invoice_id": invoice.invoice_id,
                     "alerts": cashflow["alerts"],
-                    "created_at": datetime.now(UTC).isoformat(),
+                    "created_at": datetime.now(timezone.utc).isoformat(),
                 },
             )
 
