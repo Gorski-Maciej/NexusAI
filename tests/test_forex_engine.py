@@ -68,6 +68,28 @@ def test_fetch_nbp_rate_uses_lookback_and_cache(monkeypatch):
     assert calls["n"] >= 2
 
 
+
+
+def test_fetch_nbp_rate_retries_on_url_error(monkeypatch):
+    db = FakeDuckDB()
+    tb = TigerBeetleClient()
+    engine = ForexEngine(db, tb, 201, 750, 751)
+
+    from urllib.error import URLError
+
+    calls = {"n": 0}
+
+    def fake_urlopen(url, timeout):
+        calls["n"] += 1
+        if "2026-04-27" in url:
+            raise URLError("temporary dns failure")
+        return FakeResponse({"rates": [{"mid": 4.111, "no": "061/A/NBP/2026"}]})
+
+    monkeypatch.setattr("Roboton_Reflekton.forex_engine.request.urlopen", fake_urlopen)
+    rate = engine.fetch_nbp_rate(date(2026, 4, 27), "EUR")
+    assert float(rate) == 4.111
+    assert calls["n"] >= 2
+
 def test_process_fx_settlement_creates_gain_transfer() -> None:
     async def run() -> None:
         db = FakeDuckDB()
