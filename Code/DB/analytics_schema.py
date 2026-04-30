@@ -2,13 +2,38 @@ from db.analytics import DuckDBManager
 from services.telemetry import ensure_telemetry_schema
 from db.zpk_schema import ensure_zpk_schema
 from services.document_fingerprint import ensure_fingerprint_schema
-from services.shadow_resource_correlation import ensure_shadow_resource_schema
-from services.audit_logger import ensure_forensic_audit_schema
-from services.rules_engine import ensure_accounting_template_schema
-from services.compliance_analytics import ensure_compliance_analytics_schema
-from services.fx_revaluation import ensure_fx_schema
-from services.smart_approvals import ensure_smart_approval_schema
-from services.liquidity_oracle import ensure_liquidity_schema
+from importlib import import_module
+from importlib.util import find_spec
+from typing import Callable
+
+
+SchemaHook = Callable[[DuckDBManager], None]
+OptionalHook = tuple[str, str]
+
+
+def _run_optional_schema_hook(module_name: str, function_name: str, duck_mgr: DuckDBManager) -> None:
+    """Run optional schema initializer only when module is available in runtime."""
+    if find_spec(module_name) is None:
+        return
+
+    hook = getattr(import_module(module_name), function_name, None)
+    if callable(hook):
+        hook(duck_mgr)
+
+
+def _ensure_column(
+    duck_mgr: DuckDBManager,
+    table_name: str,
+    known_columns: set[str],
+    column_name: str,
+    ddl_suffix: str,
+) -> None:
+    """Add missing column and update the local column registry."""
+    if column_name in known_columns:
+        return
+
+    duck_mgr.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {ddl_suffix}")
+    known_columns.add(column_name)
 
 
 class AnalyticsSchemaManager:
@@ -29,47 +54,29 @@ class AnalyticsSchemaManager:
         duck_mgr.execute("CREATE INDEX IF NOT EXISTS idx_invoices_date ON invoices_replica (issue_date)")
         duck_mgr.execute("CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices_replica (status)")
 
-        # Telemetry schema for performance & system health dashboards
-        ensure_telemetry_schema(duck_mgr)
+        core_schema_hooks: tuple[SchemaHook, ...] = (
+            ensure_telemetry_schema,
+            ensure_zpk_schema,
+            ensure_fingerprint_schema,
+            ensure_vendor_intelligence_schema,
+            ensure_fixed_assets_schema,
+            ensure_rmk_schema,
+            ensure_inventory_schema,
+        )
+        for hook in core_schema_hooks:
+            hook(duck_mgr)
 
-        # ZPK engine schema bootstrap
-        ensure_zpk_schema(duck_mgr)
-
-        # Document fingerprint / Merkle audit schema
-        ensure_fingerprint_schema(duck_mgr)
-
-        # Vendor intelligence schema bootstrap
-        ensure_vendor_intelligence_schema(duck_mgr)
-
-        # Fixed Assets automation schema bootstrap
-        ensure_fixed_assets_schema(duck_mgr)
-
-        # RMK / deferred expenses schema bootstrap
-        ensure_rmk_schema(duck_mgr)
-
-        # FIFO inventory / COGS schema bootstrap
-        ensure_inventory_schema(duck_mgr)
-
-        # Shadow resource correlation schema bootstrap
-        ensure_shadow_resource_schema(duck_mgr)
-
-        # Cryptographic forensic audit chain schema bootstrap
-        ensure_forensic_audit_schema(duck_mgr)
-
-        # Deterministic accounting templates schema bootstrap
-        ensure_accounting_template_schema(duck_mgr)
-
-        # Compliance chart-of-accounts + rulebook + balances view bootstrap
-        ensure_compliance_analytics_schema(duck_mgr)
-
-        # Continuous FX revaluation schema bootstrap
-        ensure_fx_schema(duck_mgr)
-
-        # AI-governed maker-checker schema bootstrap
-        ensure_smart_approval_schema(duck_mgr)
-
-        # Predictive liquidity oracle schema + view bootstrap
-        ensure_liquidity_schema(duck_mgr)
+        optional_schema_hooks: tuple[OptionalHook, ...] = (
+            ("services.shadow_resource_correlation", "ensure_shadow_resource_schema"),
+            ("services.audit_logger", "ensure_forensic_audit_schema"),
+            ("services.rules_engine", "ensure_accounting_template_schema"),
+            ("services.compliance_analytics", "ensure_compliance_analytics_schema"),
+            ("services.fx_revaluation", "ensure_fx_schema"),
+            ("services.smart_approvals", "ensure_smart_approval_schema"),
+            ("services.liquidity_oracle", "ensure_liquidity_schema"),
+        )
+        for module_name, function_name in optional_schema_hooks:
+            _run_optional_schema_hook(module_name, function_name, duck_mgr)
 
 
 def ensure_vendor_intelligence_schema(duck_mgr: DuckDBManager):
@@ -124,20 +131,13 @@ def ensure_fixed_assets_schema(duck_mgr: DuckDBManager):
 
     existing_cols = duck_mgr.execute("PRAGMA table_info('fixed_assets')")
     col_names = {col[1] for col in existing_cols}
-    if "residual_value" not in col_names:
-        duck_mgr.execute("ALTER TABLE fixed_assets ADD COLUMN residual_value DECIMAL(18, 2) NOT NULL DEFAULT 0")
-    if "salvage_value" not in col_names:
-        duck_mgr.execute("ALTER TABLE fixed_assets ADD COLUMN salvage_value DECIMAL(18, 2) NOT NULL DEFAULT 0")
-    if "depreciation_method" not in col_names:
-        duck_mgr.execute("ALTER TABLE fixed_assets ADD COLUMN depreciation_method VARCHAR NOT NULL DEFAULT 'LINEAR'")
-    if "annual_rate" not in col_names:
-        duck_mgr.execute("ALTER TABLE fixed_assets ADD COLUMN annual_rate DOUBLE")
-    if "start_date" not in col_names:
-        duck_mgr.execute("ALTER TABLE fixed_assets ADD COLUMN start_date DATE")
-    if "invoice_id" not in col_names:
-        duck_mgr.execute("ALTER TABLE fixed_assets ADD COLUMN invoice_id UUID")
-    if "last_depreciation_date" not in col_names:
-        duck_mgr.execute("ALTER TABLE fixed_assets ADD COLUMN last_depreciation_date DATE")
+    _ensure_column(duck_mgr, "fixed_assets", col_names, "residual_value", "DECIMAL(18, 2) NOT NULL DEFAULT 0")
+    _ensure_column(duck_mgr, "fixed_assets", col_names, "salvage_value", "DECIMAL(18, 2) NOT NULL DEFAULT 0")
+    _ensure_column(duck_mgr, "fixed_assets", col_names, "depreciation_method", "VARCHAR NOT NULL DEFAULT 'LINEAR'")
+    _ensure_column(duck_mgr, "fixed_assets", col_names, "annual_rate", "DOUBLE")
+    _ensure_column(duck_mgr, "fixed_assets", col_names, "start_date", "DATE")
+    _ensure_column(duck_mgr, "fixed_assets", col_names, "invoice_id", "UUID")
+    _ensure_column(duck_mgr, "fixed_assets", col_names, "last_depreciation_date", "DATE")
 
     duck_mgr.execute("""
     CREATE TABLE IF NOT EXISTS depreciation_schedule (
@@ -154,8 +154,7 @@ def ensure_fixed_assets_schema(duck_mgr: DuckDBManager):
     """)
     schedule_cols = duck_mgr.execute("PRAGMA table_info('depreciation_schedule')")
     schedule_col_names = {col[1] for col in schedule_cols}
-    if "status" not in schedule_col_names:
-        duck_mgr.execute("ALTER TABLE depreciation_schedule ADD COLUMN status VARCHAR NOT NULL DEFAULT 'PENDING'")
+    _ensure_column(duck_mgr, "depreciation_schedule", schedule_col_names, "status", "VARCHAR NOT NULL DEFAULT 'PENDING'")
 
 
 def ensure_rmk_schema(duck_mgr: DuckDBManager):
