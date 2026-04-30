@@ -223,6 +223,19 @@ async def scheduled_backup_task():
     path = manager.create_encrypted_zip(config.encryption_key)
     logger.info(f"Backup wykonany pomyślnie: {path}")
 
+
+@broker.task(schedule=[{"cron": "55 23 28-31 * *"}], task_name="cron_post_depreciation")
+async def cron_post_depreciation() -> dict[str, int | str]:
+    """Monthly fixed-assets depreciation posting. Runs on month-end window 23:55 UTC."""
+    today = datetime.now(timezone.utc).date()
+    if (today + timedelta(days=1)).month == today.month:
+        return {"result": "SKIPPED_NOT_MONTH_END", "posted": 0}
+    duckdb = DuckDBManager(Path("app_data/nexus_olap.duckdb"))
+    tigerbeetle = TigerBeetleClient()
+    service = FixedAssetsService(duckdb=duckdb, tigerbeetle=tigerbeetle)
+    posted = await service.execute_monthly_depreciation(as_of=today)
+    return {"result": "OK", "posted": posted}
+
 @broker.task(schedule=[{"cron": "*/5 * * * *"}])
 async def invoice_reconciliation_loop():
     """Wyszukuje porzucone faktury i podejmuje akcje naprawcze."""
