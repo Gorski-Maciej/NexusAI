@@ -1,0 +1,50 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/FRONTEND/ui/data_table.py</file>
+  <line>54</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/FRONTEND/ui/data_table.py" />
+  <problem_class id="PyShadowingNamesInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Shadowing names from outer scopes</problem_class>
+  <description>Shadows name 'e' from outer scope</description>
+  <highlighted_element>e</highlighted_element>
+  <language>Python</language>
+  <offset>44</offset>
+  <length>1</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/luz/worker.py</file>
+  <line>95</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/luz/worker.py" />
+  <problem_class id="PyShadowingNamesInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Shadowing names from outer scopes</problem_class>
+  <description>Shadows name 'sig' from outer scope</description>
+  <highlighted_element>sig</highlighted_element>
+  <language>Python</language>
+  <offset>20</offset>
+  <length>3</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/luz/worker.py</file>
+  <line>364</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/luz/worker.py" />
+  <problem_class id="PyShadowingNamesInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Shadowing names from outer scopes</problem_class>
+  <description>Shadows name 'sig' from outer scope</description>
+  <highlighted_element>sig</highlighted_element>
+  <language>Python</language>
+  <offset>19</offset>
+  <length>3</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/luz/worker.py</file>
+  <line>482</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/luz/worker.py" />
+  <problem_class id="PyShadowingNamesInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Shadowing names from outer scopes</problem_class>
+  <description>Shadows name 'msg' from outer scope</description>
+  <highlighted_element>msg</highlighted_element>
+  <language>Python</language>
+  <offset>26</offset>
+  <length>3</length>
+</problem>
+</problems>

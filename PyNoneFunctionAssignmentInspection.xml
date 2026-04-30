@@ -1,0 +1,14 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/PIPELINE/ocr.py</file>
+  <line>126</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/PIPELINE/ocr.py" />
+  <problem_class id="PyNoneFunctionAssignmentInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Assigning function calls that don't return anything</problem_class>
+  <description>Function '_build_paddle' doesn't return anything</description>
+  <highlighted_element>self._paddle = self._build_paddle()</highlighted_element>
+  <language>Python</language>
+  <offset>8</offset>
+  <length>35</length>
+</problem>
+</problems>

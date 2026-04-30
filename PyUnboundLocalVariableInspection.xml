@@ -1,0 +1,62 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/SKRIPTS/Braki.py</file>
+  <line>23</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/SKRIPTS/Braki.py" />
+  <problem_class id="PyUnboundLocalVariableInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound local variables</problem_class>
+  <description>Name 'cite' can be undefined</description>
+  <highlighted_element>cite</highlighted_element>
+  <language>Python</language>
+  <offset>39</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/luz/main.py</file>
+  <line>370</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/luz/main.py" />
+  <problem_class id="PyUnboundLocalVariableInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound local variables</problem_class>
+  <description>Name 'cite' can be undefined</description>
+  <highlighted_element>cite</highlighted_element>
+  <language>Python</language>
+  <offset>39</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/luz/worker.py</file>
+  <line>53</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/luz/worker.py" />
+  <problem_class id="PyUnboundLocalVariableInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound local variables</problem_class>
+  <description>Name 'e' can be undefined</description>
+  <highlighted_element>e</highlighted_element>
+  <language>Python</language>
+  <offset>45</offset>
+  <length>1</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/luz/worker.py</file>
+  <line>100</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/luz/worker.py" />
+  <problem_class id="PyUnboundLocalVariableInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound local variables</problem_class>
+  <description>Name 'sig' can be undefined</description>
+  <highlighted_element>sig</highlighted_element>
+  <language>Python</language>
+  <offset>44</offset>
+  <length>3</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/luz/worker.py</file>
+  <line>137</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/luz/worker.py" />
+  <problem_class id="PyUnboundLocalVariableInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound local variables</problem_class>
+  <description>Name 'e' can be undefined</description>
+  <highlighted_element>e</highlighted_element>
+  <language>Python</language>
+  <offset>55</offset>
+  <length>1</length>
+</problem>
+</problems>

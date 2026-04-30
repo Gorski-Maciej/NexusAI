@@ -1,0 +1,26 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/MODELS/Braki.py</file>
+  <line>10</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/MODELS/Braki.py" />
+  <problem_class id="PyMethodParametersInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Improper first parameter</problem_class>
+  <description>Usually first parameter of a method is named 'self'</description>
+  <highlighted_element>cls</highlighted_element>
+  <language>Python</language>
+  <offset>19</offset>
+  <length>3</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/MODELS/Braki.py</file>
+  <line>14</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/MODELS/Braki.py" />
+  <problem_class id="PyMethodParametersInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Improper first parameter</problem_class>
+  <description>Usually first parameter of a method is named 'self'</description>
+  <highlighted_element>cls</highlighted_element>
+  <language>Python</language>
+  <offset>19</offset>
+  <length>3</length>
+</problem>
+</problems>

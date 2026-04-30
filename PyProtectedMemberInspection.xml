@@ -1,0 +1,98 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/API/controllers/invoices.py</file>
+  <line>5</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/API/controllers/invoices.py" />
+  <problem_class id="PyProtectedMemberInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Accessing a protected member of a class or a module</problem_class>
+  <description>'Body' is not declared in __all__</description>
+  <highlighted_element>Body</highlighted_element>
+  <language>Python</language>
+  <offset>44</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/API/routes/invoices.py</file>
+  <line>3</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/API/routes/invoices.py" />
+  <problem_class id="PyProtectedMemberInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Accessing a protected member of a class or a module</problem_class>
+  <description>'Parameter' is not declared in __all__</description>
+  <highlighted_element>Parameter</highlighted_element>
+  <language>Python</language>
+  <offset>49</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/SKRIPTS/Braki.py</file>
+  <line>20</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/SKRIPTS/Braki.py" />
+  <problem_class id="PyProtectedMemberInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Accessing a protected member of a class or a module</problem_class>
+  <description>Access to a protected member _MEIPASS of a module</description>
+  <highlighted_element>sys._MEIPASS</highlighted_element>
+  <language>Python</language>
+  <offset>21</offset>
+  <length>12</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/luz/main.py</file>
+  <line>13</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/luz/main.py" />
+  <problem_class id="PyProtectedMemberInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Accessing a protected member of a class or a module</problem_class>
+  <description>Access to a protected member _MEIPASS of a module</description>
+  <highlighted_element>sys._MEIPASS</highlighted_element>
+  <language>Python</language>
+  <offset>21</offset>
+  <length>12</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/luz/main.py</file>
+  <line>367</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/luz/main.py" />
+  <problem_class id="PyProtectedMemberInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Accessing a protected member of a class or a module</problem_class>
+  <description>Access to a protected member _MEIPASS of a module</description>
+  <highlighted_element>sys._MEIPASS</highlighted_element>
+  <language>Python</language>
+  <offset>21</offset>
+  <length>12</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/luz/worker.py</file>
+  <line>11</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/luz/worker.py" />
+  <problem_class id="PyProtectedMemberInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Accessing a protected member of a class or a module</problem_class>
+  <description>Access to a protected member _MEIPASS of a module</description>
+  <highlighted_element>sys._MEIPASS</highlighted_element>
+  <language>Python</language>
+  <offset>17</offset>
+  <length>12</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/luz/worker.py</file>
+  <line>75</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/luz/worker.py" />
+  <problem_class id="PyProtectedMemberInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Accessing a protected member of a class or a module</problem_class>
+  <description>Access to a protected member _MEIPASS of a module</description>
+  <highlighted_element>sys._MEIPASS</highlighted_element>
+  <language>Python</language>
+  <offset>17</offset>
+  <length>12</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/luz/worker.py</file>
+  <line>261</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/luz/worker.py" />
+  <problem_class id="PyProtectedMemberInspection" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Accessing a protected member of a class or a module</problem_class>
+  <description>Access to a protected member _MEIPASS of a module</description>
+  <highlighted_element>sys._MEIPASS</highlighted_element>
+  <language>Python</language>
+  <offset>21</offset>
+  <length>12</length>
+</problem>
+</problems>

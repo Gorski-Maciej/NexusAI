@@ -1,0 +1,86 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/CORE/tasks.py</file>
+  <line>128</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/CORE/tasks.py" />
+  <problem_class id="PyDeprecationInspection" severity="WARNING" attribute_key="DEPRECATED_ATTRIBUTES">Deprecated function, class, or module</problem_class>
+  <description>Property `current_state` is deprecated in favor of `configuration`.</description>
+  <highlighted_element>current_state</highlighted_element>
+  <language>Python</language>
+  <offset>74</offset>
+  <length>13</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/CORE/tasks.py</file>
+  <line>148</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/CORE/tasks.py" />
+  <problem_class id="PyDeprecationInspection" severity="WARNING" attribute_key="DEPRECATED_ATTRIBUTES">Deprecated function, class, or module</problem_class>
+  <description>Property `current_state` is deprecated in favor of `configuration`.</description>
+  <highlighted_element>current_state</highlighted_element>
+  <language>Python</language>
+  <offset>78</offset>
+  <length>13</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/CORE/tasks.py</file>
+  <line>154</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/CORE/tasks.py" />
+  <problem_class id="PyDeprecationInspection" severity="WARNING" attribute_key="DEPRECATED_ATTRIBUTES">Deprecated function, class, or module</problem_class>
+  <description>Property `current_state` is deprecated in favor of `configuration`.</description>
+  <highlighted_element>current_state</highlighted_element>
+  <language>Python</language>
+  <offset>78</offset>
+  <length>13</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/CORE/tasks.py</file>
+  <line>206</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/CORE/tasks.py" />
+  <problem_class id="PyDeprecationInspection" severity="WARNING" attribute_key="DEPRECATED_ATTRIBUTES">Deprecated function, class, or module</problem_class>
+  <description>datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).</description>
+  <highlighted_element>utcnow</highlighted_element>
+  <language>Python</language>
+  <offset>33</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/CORE/tasks.py</file>
+  <line>228</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/CORE/tasks.py" />
+  <problem_class id="PyDeprecationInspection" severity="WARNING" attribute_key="DEPRECATED_ATTRIBUTES">Deprecated function, class, or module</problem_class>
+  <description>datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).</description>
+  <highlighted_element>utcnow</highlighted_element>
+  <language>Python</language>
+  <offset>46</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/CORE/tasks.py</file>
+  <line>241</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/CORE/tasks.py" />
+  <problem_class id="PyDeprecationInspection" severity="WARNING" attribute_key="DEPRECATED_ATTRIBUTES">Deprecated function, class, or module</problem_class>
+  <description>datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).</description>
+  <highlighted_element>utcnow</highlighted_element>
+  <language>Python</language>
+  <offset>46</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/DB/models.py</file>
+  <line>25</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/DB/models.py" />
+  <problem_class id="PyDeprecationInspection" severity="WARNING" attribute_key="DEPRECATED_ATTRIBUTES">Deprecated function, class, or module</problem_class>
+  <description>datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).</description>
+  <highlighted_element>utcnow</highlighted_element>
+  <language>Python</language>
+  <offset>50</offset>
+  <length>6</length>
+</problem>
+</problems>

@@ -1,0 +1,62 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/API/tasks.py</file>
+  <line>11</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/API/tasks.py" />
+  <problem_class id="PyArgumentListInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect call arguments</problem_class>
+  <description>Parameter 'servers' unfilled</description>
+  <highlighted_element>)</highlighted_element>
+  <language>Python</language>
+  <offset>34</offset>
+  <length>1</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/DB/vector_store.py</file>
+  <line>24</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/DB/vector_store.py" />
+  <problem_class id="PyArgumentListInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect call arguments</problem_class>
+  <description>Parameter 'mapping' unfilled</description>
+  <highlighted_element>)</highlighted_element>
+  <language>Python</language>
+  <offset>67</offset>
+  <length>1</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/FRONTEND/views/invoice_detail_view.py</file>
+  <line>18</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/FRONTEND/views/invoice_detail_view.py" />
+  <problem_class id="PyArgumentListInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect call arguments</problem_class>
+  <description>Unexpected argument</description>
+  <highlighted_element>&quot;PLN&quot;</highlighted_element>
+  <language>Python</language>
+  <offset>40</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/FRONTEND/views/invoice_detail_view.py</file>
+  <line>18</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/FRONTEND/views/invoice_detail_view.py" />
+  <problem_class id="PyArgumentListInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect call arguments</problem_class>
+  <description>Unexpected argument</description>
+  <highlighted_element>&quot;EUR&quot;</highlighted_element>
+  <language>Python</language>
+  <offset>67</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/FRONTEND/views/invoice_detail_view.py</file>
+  <line>18</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/FRONTEND/views/invoice_detail_view.py" />
+  <problem_class id="PyArgumentListInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect call arguments</problem_class>
+  <description>Unexpected argument</description>
+  <highlighted_element>&quot;USD&quot;</highlighted_element>
+  <language>Python</language>
+  <offset>94</offset>
+  <length>5</length>
+</problem>
+</problems>

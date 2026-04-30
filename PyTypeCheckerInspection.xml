@@ -1,0 +1,158 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/API/app.py</file>
+  <line>53</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/API/app.py" />
+  <problem_class id="PyTypeCheckerInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect type</problem_class>
+  <description>Expected type 'CompressionConfig | None', got 'dict[str, int | str]' instead</description>
+  <highlighted_element>compression_config={&quot;backend&quot;: &quot;gzip&quot;, &quot;minimum_size&quot;: 1024}</highlighted_element>
+  <language>Python</language>
+  <offset>8</offset>
+  <length>60</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/API/routes/invoices.py</file>
+  <line>24</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/API/routes/invoices.py" />
+  <problem_class id="PyTypeCheckerInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect type</problem_class>
+  <description>Expected to return 'Any | None', got no return</description>
+  <highlighted_element>TaskResponse</highlighted_element>
+  <language>Python</language>
+  <offset>9</offset>
+  <length>12</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/API/server.py</file>
+  <line>52</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/API/server.py" />
+  <problem_class id="PyTypeCheckerInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect type</problem_class>
+  <description>Expected type 'State | None', got 'dict[str, str | Any]' instead</description>
+  <highlighted_element>state={ &quot;olap_manager&quot;: olap_manager, &quot;bootstrap_token&quot;: state.bootstrap_tok...</highlighted_element>
+  <language>Python</language>
+  <offset>8</offset>
+  <length>112</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/CORE/tasks.py</file>
+  <line>92</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/CORE/tasks.py" />
+  <problem_class id="PyTypeCheckerInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect type</problem_class>
+  <description>Expected type 'ColumnElement[bool] | _HasClauseElement[bool] | SQLCoreOperations[bool] | ExpressionElementRole[bool] | TypedColumnsClauseRole[bool] | () -&gt; ColumnElement[bool] | LambdaElement', got 'bool' instead</description>
+  <highlighted_element>OutboxEvent.status == OutboxStatus.PENDING</highlighted_element>
+  <language>Python</language>
+  <offset>15</offset>
+  <length>42</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/DB/pagination.py</file>
+  <line>34</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/DB/pagination.py" />
+  <problem_class id="PyTypeCheckerInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect type</problem_class>
+  <description>Expected type 'tuple[list[T], str | None]', got 'tuple[Sequence[Row | RowMapping | Any], Any | None]' instead</description>
+  <highlighted_element>items, next_id</highlighted_element>
+  <language>Python</language>
+  <offset>15</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/DB/replication.py</file>
+  <line>20</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/DB/replication.py" />
+  <problem_class id="PyTypeCheckerInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect type</problem_class>
+  <description>Expected type 'ColumnElement[bool] | _HasClauseElement[bool] | SQLCoreOperations[bool] | ExpressionElementRole[bool] | TypedColumnsClauseRole[bool] | () -&gt; ColumnElement[bool] | LambdaElement', got 'bool' instead</description>
+  <highlighted_element>Invoice.updated_at &gt; last_sync</highlighted_element>
+  <language>Python</language>
+  <offset>28</offset>
+  <length>30</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/MODELS/invoice.py</file>
+  <line>15</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/MODELS/invoice.py" />
+  <problem_class id="PyTypeCheckerInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect type</problem_class>
+  <description>Expected type 'Context | None', got 'int' instead</description>
+  <highlighted_element>2</highlighted_element>
+  <language>Python</language>
+  <offset>60</offset>
+  <length>1</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/MODELS/invoice.py</file>
+  <line>16</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/MODELS/invoice.py" />
+  <problem_class id="PyTypeCheckerInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect type</problem_class>
+  <description>Expected type 'Context | None', got 'int' instead</description>
+  <highlighted_element>2</highlighted_element>
+  <language>Python</language>
+  <offset>62</offset>
+  <length>1</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/PIPELINE/llm_extractor.py</file>
+  <line>44</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/PIPELINE/llm_extractor.py" />
+  <problem_class id="PyTypeCheckerInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect type</problem_class>
+  <description>Expected type 'ExtractedInvoice', got 'None' instead</description>
+  <highlighted_element>None</highlighted_element>
+  <language>Python</language>
+  <offset>15</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/PIPELINE/ocr.py</file>
+  <line>190</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/PIPELINE/ocr.py" />
+  <problem_class id="PyTypeCheckerInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect type</problem_class>
+  <description>Expected type 'ndarray | Iterable | int | float', got 'Image' instead</description>
+  <highlighted_element>tile</highlighted_element>
+  <language>Python</language>
+  <offset>29</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/PIPELINE/ocr.py</file>
+  <line>202</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/PIPELINE/ocr.py" />
+  <problem_class id="PyTypeCheckerInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect type</problem_class>
+  <description>Expected type 'ndarray | Iterable | int | float', got 'Image' instead</description>
+  <highlighted_element>resized</highlighted_element>
+  <language>Python</language>
+  <offset>26</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/Code/SERVICES/export_service.py</file>
+  <line>14</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Code/SERVICES/export_service.py" />
+  <problem_class id="PyTypeCheckerInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect type</problem_class>
+  <description>Expected to return 'str', got no return</description>
+  <highlighted_element>str</highlighted_element>
+  <language>Python</language>
+  <offset>9</offset>
+  <length>3</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/luz/worker.py</file>
+  <line>146</line>
+  <module>NexusAI</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/luz/worker.py" />
+  <problem_class id="PyTypeCheckerInspection" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Incorrect type</problem_class>
+  <description>Unexpected type(s): (None) Possible type(s): (Awaitable) (Awaitable)</description>
+  <highlighted_element>main()</highlighted_element>
+  <language>Python</language>
+  <offset>12</offset>
+  <length>6</length>
+</problem>
+</problems>
