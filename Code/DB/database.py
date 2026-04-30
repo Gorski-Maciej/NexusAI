@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import logging
+from pathlib import Path
 from collections.abc import AsyncGenerator
 
 from sqlalchemy import event, text, create_engine
@@ -18,18 +19,24 @@ class Base(DeclarativeBase):
     """Declarative base for OLTP SQLAlchemy models."""
     pass
 
-def _sqlite_url(config: AppConfig) -> str:
+def _sqlite_url(config: AppConfig, sqlite_path: Path | None = None) -> str:
     """Build async SQLite URL from configuration."""
-    return f"sqlite+aiosqlite:///{config.sqlite_path.as_posix()}"
+    path = sqlite_path or config.sqlite_path
+    return f"sqlite+aiosqlite:///{path.as_posix()}"
 
-def create_oltp_engine(config: AppConfig, *, sqlcipher_key: str | None = None) -> AsyncEngine:
+def create_oltp_engine(
+    config: AppConfig,
+    *,
+    sqlcipher_key: str | None = None,
+    sqlite_path: Path | None = None,
+) -> AsyncEngine:
     """
     Create an async SQLAlchemy engine with mandatory PRAGMA settings.
     The same hook can bootstrap SQLCipher key when provided either directly
     or via `NEXUS_SQLCIPHER_KEY` environment variable.
     """
     engine = create_async_engine(
-        _sqlite_url(config),
+        _sqlite_url(config, sqlite_path),
         echo=False
     )
     return engine
