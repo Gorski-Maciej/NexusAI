@@ -3,17 +3,22 @@ from __future__ import annotations
 import uuid
 from dataclasses import dataclass
 
-from litestar import Litestar, post
+from litestar import Litestar, get, post
 from litestar.di import Provide
+from litestar.response import ServerSentEvent
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from .decision_trees import CompanyDecisionTree
 from .ledger_client import TigerBeetleClient
 from .ledger_initializer import LedgerInitializer
 from .models import CompanyProfile, LegalForm, TaxForm, TaxPolicy
+from .reconciliation_engine import AlertHub, ReconciliationEngine
 
 engine = create_async_engine("postgresql+asyncpg://postgres:postgres@localhost:5432/nexus", echo=False)
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
+tb_client = TigerBeetleClient()
+alert_hub = AlertHub()
+reconciliation_engine = ReconciliationEngine(session_factory=SessionLocal, tb_client=tb_client, alert_hub=alert_hub)
 
 
 async def provide_session() -> AsyncSession:
@@ -49,7 +54,7 @@ async def create_company(data: CompanyCreateRequest, session: AsyncSession) -> d
     )
     decision_tree, policy = tree.validate_and_build()
 
-    ledger = await LedgerInitializer(tb_client=TigerBeetleClient()).configure_ledger(
+    ledger = await LedgerInitializer(tb_client=tb_client).configure_ledger(
         legal_form=data.legal_form,
         tax_form=data.tax_form,
     )
@@ -81,11 +86,30 @@ async def create_company(data: CompanyCreateRequest, session: AsyncSession) -> d
 
 @post("/ledger/approve-transfer")
 async def approve_transfer(data: ApproveTransferRequest) -> dict:
-    approved = await TigerBeetleClient().post_pending_transfer(data.pending_id)
+    approved = await tb_client.post_pending_transfer(data.pending_id)
     return {"pending_id": data.pending_id, "approved": approved}
 
 
+@get("/alerts/missing-invoice/stream")
+async def missing_invoice_alert_stream() -> ServerSentEvent:
+    async def stream() -> object:
+        async for event in alert_hub.subscribe():
+            yield event
+
+    return ServerSentEvent(stream())
+
+
+async def _on_startup() -> None:
+    await reconciliation_engine.start()
+
+
+async def _on_shutdown() -> None:
+    await reconciliation_engine.stop()
+
+
 app = Litestar(
-    route_handlers=[create_company, approve_transfer],
+    route_handlers=[create_company, approve_transfer, missing_invoice_alert_stream],
     dependencies={"session": Provide(provide_session)},
+    on_startup=[_on_startup],
+    on_shutdown=[_on_shutdown],
 )

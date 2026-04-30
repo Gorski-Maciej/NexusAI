@@ -11,6 +11,7 @@ Nowa aplikacja backendowa dla architektury `Company_creator` + `Roboton_reflekto
 - `ledger_initializer.py` — generator planu kont i inicjalizacja księgi.
 - `roboton_worker.py` — worker wykonawczy dla zdarzeń `invoice.extracted` i zapisów Pending.
 - `api.py` — endpointy Litestar: `/company/create` i `/ledger/approve-transfer`.
+- `shadow_ledger.py` — silnik symulacji podatkowej "Shadow Ledger" (DuckDB + Polars) dla porównań strategii.
 
 ## Założenia
 

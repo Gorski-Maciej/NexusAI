@@ -3,7 +3,11 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 from decimal import Decimal
-from enum import StrEnum
+from enum import Enum
+
+
+class StrEnum(str, Enum):
+    pass
 
 from sqlalchemy import JSON, Boolean, DateTime, Enum, ForeignKey, Numeric, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB, UUID
