@@ -2,6 +2,13 @@ from db.analytics import DuckDBManager
 from services.telemetry import ensure_telemetry_schema
 from db.zpk_schema import ensure_zpk_schema
 from services.document_fingerprint import ensure_fingerprint_schema
+from services.shadow_resource_correlation import ensure_shadow_resource_schema
+from services.audit_logger import ensure_forensic_audit_schema
+from services.rules_engine import ensure_accounting_template_schema
+from services.compliance_analytics import ensure_compliance_analytics_schema
+from services.fx_revaluation import ensure_fx_schema
+from services.smart_approvals import ensure_smart_approval_schema
+from services.liquidity_oracle import ensure_liquidity_schema
 
 
 class AnalyticsSchemaManager:
@@ -42,6 +49,27 @@ class AnalyticsSchemaManager:
 
         # FIFO inventory / COGS schema bootstrap
         ensure_inventory_schema(duck_mgr)
+
+        # Shadow resource correlation schema bootstrap
+        ensure_shadow_resource_schema(duck_mgr)
+
+        # Cryptographic forensic audit chain schema bootstrap
+        ensure_forensic_audit_schema(duck_mgr)
+
+        # Deterministic accounting templates schema bootstrap
+        ensure_accounting_template_schema(duck_mgr)
+
+        # Compliance chart-of-accounts + rulebook + balances view bootstrap
+        ensure_compliance_analytics_schema(duck_mgr)
+
+        # Continuous FX revaluation schema bootstrap
+        ensure_fx_schema(duck_mgr)
+
+        # AI-governed maker-checker schema bootstrap
+        ensure_smart_approval_schema(duck_mgr)
+
+        # Predictive liquidity oracle schema + view bootstrap
+        ensure_liquidity_schema(duck_mgr)
 
 
 def ensure_vendor_intelligence_schema(duck_mgr: DuckDBManager):
