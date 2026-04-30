@@ -30,6 +30,7 @@ from Roboton_Reflekton.vision_agent import VisionAgent
 from services.fixed_assets import FixedAssetsService
 from Roboton_Reflekton.ledger_client import TigerBeetleClient
 from db.analytics import DuckDBManager
+from Roboton_Reflekton.dunning_engine import DunningEngine
 
 logger = get_logger()
 
@@ -270,6 +271,37 @@ async def invoice_reconciliation_loop():
 
         await session.commit()
         await nc.close()
+
+
+class _DefaultDunningAIAgent:
+    def generate_dunning_text(self, invoice_data: dict[str, Any], vendor_score: float, level: int) -> str:
+        tone = "uprzejmy" if vendor_score >= 0.8 else "stanowczy"
+        return (
+            f"To automatyczne przypomnienie ({tone}, poziom {level}) dla faktury {invoice_data['invoice_number']} "
+            f"na kwotę {invoice_data['balance_due']:.2f} PLN. "
+            f"Zaległość: {invoice_data['days_overdue']} dni."
+        )
+
+
+class _DefaultEmailProvider:
+    def send(self, *, to_email: str, subject: str, body: str) -> bool:
+        if not to_email:
+            return False
+        logger.info("[Dunning] Wysyłka email to=%s subject=%s", to_email, subject)
+        return True
+
+
+@broker.task(task_name="run_daily_dunning_check", schedule=[{"cron": "0 9 * * *"}])
+async def run_daily_dunning_check() -> dict[str, int]:
+    """Codzienna kontrola należności i wysyłka przypomnień (09:00)."""
+    config = AppConfig(base_dir=Path.cwd())
+    duckdb = DuckDBManager(config.duckdb_path)
+    engine = DunningEngine(
+        duckdb_manager=duckdb,
+        ai_agent=_DefaultDunningAIAgent(),
+        email_provider=_DefaultEmailProvider(),
+    )
+    return await engine.run_daily_dunning_check()
 
 
 @broker.task(task_name="execute_monthly_depreciation", schedule=[{"cron": "0 0 1 * *"}])
