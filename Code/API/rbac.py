@@ -41,3 +41,9 @@ def owner_only_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
 def worker_only_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
     if get_current_role(connection).role != NexusRole.WORKER:
         raise NotAuthorizedException("Only WORKER can execute this operation.")
+
+
+def owner_or_worker_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
+    role = get_current_role(connection).role
+    if role not in {NexusRole.OWNER, NexusRole.WORKER}:
+        raise NotAuthorizedException("Only OWNER or WORKER can execute this operation.")

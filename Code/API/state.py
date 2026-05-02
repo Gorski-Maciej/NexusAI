@@ -6,6 +6,7 @@ from db.database import create_oltp_engine, consolidate_database, create_session
 from worker.broker import broker
 from api.auth_service import hash_password
 from api.shared_image_buffer import SharedImageBuffer
+from db.analytics import DuckDBManager
 
 logger = logging.getLogger("nexus.api.state")
 
@@ -52,6 +53,15 @@ async def on_startup(app: Litestar) -> None:
                 """
             )
         )
+        try:
+            await conn.execute(text("ALTER TABLE invoices ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT 0"))
+        except Exception:
+            pass
+        try:
+            await conn.execute(text("ALTER TABLE invoices ADD COLUMN deleted_at TIMESTAMP NULL"))
+        except Exception:
+            pass
+
         await conn.execute(
             text(
                 """
@@ -73,6 +83,14 @@ async def on_startup(app: Litestar) -> None:
     # Połączenie z brokerem Taskiq (NATS)
     if not broker.is_worker_process:
         await broker.startup()
+
+    # Warm-up analytics materialization to reduce cold-start dashboard latency.
+    try:
+        duckdb_manager = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
+        duckdb_manager.refresh_materialized_cashflow()
+        duckdb_manager.close()
+    except Exception as exc:
+        logger.warning("DuckDB warm-up refresh failed: %s", exc)
 
     logger.info(">>> Nexus API: Wszystkie systemy gotowe.")
 

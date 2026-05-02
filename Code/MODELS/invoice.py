@@ -2,10 +2,11 @@ from sqlalchemy import String, Decimal, DateTime, ForeignKey, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, timezone, date
 from db.database import Base
+from db.mixins import SoftDeleteMixin
 from decimal import Decimal
 import uuid
 
-class Invoice(Base):
+class Invoice(SoftDeleteMixin, Base):
     __tablename__ = "invoices"
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))

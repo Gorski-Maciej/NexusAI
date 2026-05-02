@@ -37,7 +37,12 @@ async def provide_db_session(request: Request) -> AsyncGenerator[AsyncSession, N
 
 
 async def provide_duckdb() -> DuckDBManager:
-    return DuckDBManager(db_path=_tenant_manager.duckdb_path(), limits=_duckdb_limits)
+    return DuckDBManager(
+        db_path=_tenant_manager.duckdb_path(),
+        limits=_duckdb_limits,
+        read_only=True,
+        sqlite_path=_tenant_manager.sqlite_path(),
+    )
 
 
 def provide_shared_image_buffer(request) -> SharedImageBuffer:
