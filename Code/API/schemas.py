@@ -1,6 +1,5 @@
 from __future__ import annotations
 import msgspec
-from pydantic import BaseModel, ConfigDict
 from decimal import Decimal
 from datetime import datetime
 from uuid import UUID
@@ -41,15 +40,14 @@ class VatSummary(msgspec.Struct):
     currency: str
 
 
-# -- Pydantic Models --
+# -- API response/request structs --
 
-class TaskResponse(BaseModel):
+class TaskResponse(msgspec.Struct):
     task_id: str
     status: str
     message: str
 
-class InvoiceResponsePydantic(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+class InvoiceResponsePydantic(msgspec.Struct):
     id: str
     number: str | None
     contractor_nip: str | None
@@ -60,13 +58,13 @@ class InvoiceResponsePydantic(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-class DashboardSummaryResponse(BaseModel):
+class DashboardSummaryResponse(msgspec.Struct):
     total_net: float
     total_gross: float
     total_documents: int
 
 
-class TriageItem(BaseModel):
+class TriageItem(msgspec.Struct):
     invoice_id: str
     image_path: str
     extracted_data: dict[str, object]
@@ -75,12 +73,12 @@ class TriageItem(BaseModel):
     reason_for_triage: str
 
 
-class TriageResolutionRequest(BaseModel):
+class TriageResolutionRequest(msgspec.Struct):
     corrected_data: dict[str, object]
     action: str
 
 
-class TriageResolutionResponse(BaseModel):
+class TriageResolutionResponse(msgspec.Struct):
     invoice_id: str
     status: str
     message: str

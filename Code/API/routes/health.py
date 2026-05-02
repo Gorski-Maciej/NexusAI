@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import Any
 from litestar import Controller, get
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class HealthController(Controller):
@@ -25,11 +27,29 @@ class HealthController(Controller):
         return {"status": "ready"}
 
     @get("/detailed")
-    async def detailed_health(self) -> dict[str, Any]:
+    async def detailed_health(self, db_session: AsyncSession) -> dict[str, Any]:
         """Detailed health status."""
+        db_ok = True
+        pending_outbox = 0
+        failed_outbox = 0
+        users_count = 0
+
+        try:
+            users_count = int((await db_session.execute(text("SELECT COUNT(*) FROM users"))).scalar_one())
+            pending_outbox = int(
+                (await db_session.execute(text("SELECT COUNT(*) FROM outbox_events WHERE status = 'PENDING'"))).scalar_one()
+            )
+            failed_outbox = int(
+                (await db_session.execute(text("SELECT COUNT(*) FROM outbox_events WHERE status = 'FAILED'"))).scalar_one()
+            )
+        except Exception:
+            db_ok = False
+
         return {
-            "api": "OK",
+            "api": "OK" if db_ok else "DEGRADED",
             "version": "1.0.0",
-            "uptime_seconds": 0,
-            "timestamp": "2026-04-26T20:59:00Z",
+            "database": "OK" if db_ok else "ERROR",
+            "users_count": users_count,
+            "pending_outbox_events": pending_outbox,
+            "failed_outbox_events": failed_outbox,
         }

@@ -53,3 +53,20 @@ class HardwareProbe:
             "model_format": "gguf", # llama-cpp-python
             "n_gpu_layers": 0
         }
+
+    @staticmethod
+    def hot_swap_model(current_model: str, gpu_temp_c: float | None = None, free_vram_gb: float | None = None) -> str:
+        """Dynamically downgrade model when hardware pressure is detected."""
+        temp = gpu_temp_c if gpu_temp_c is not None else 0.0
+        vram = free_vram_gb if free_vram_gb is not None else 999.0
+
+        if temp >= 84.0 or vram < 2.5:
+            logger.warning(
+                "Hot-swap activated: model=%s temp=%.1fC free_vram=%.2fGB -> Phi-3-mini",
+                current_model,
+                temp,
+                vram,
+            )
+            return "Phi-3-mini"
+
+        return current_model

@@ -44,3 +44,15 @@ class SecurityAlert(Base):
     operation = Column(String, nullable=False)
     details = Column(Text, nullable=False)
     created_at = Column(DateTime, default=func.now())
+
+
+class UserAccount(Base):
+    __tablename__ = "users"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    username = Column(String, unique=True, nullable=False, index=True)
+    password_hash = Column(String, nullable=False)
+    role = Column(String, nullable=False, default="worker")
+    tenant_id = Column(String, nullable=False, default="default")
+    is_active = Column(Boolean, nullable=False, default=True)
+    created_at = Column(DateTime, default=func.now())
