@@ -53,6 +53,18 @@ def ensure_telemetry_schema(duckdb: DuckDBManager) -> None:
     )
     duckdb.execute("CREATE INDEX IF NOT EXISTS idx_telemetry_timestamp ON telemetry(timestamp)")
     duckdb.execute("CREATE INDEX IF NOT EXISTS idx_telemetry_stage ON telemetry(stage_name)")
+    duckdb.execute(
+        """
+        CREATE TABLE IF NOT EXISTS finops_cost_snapshots (
+            timestamp TIMESTAMP,
+            invoices_count BIGINT,
+            estimated_cpu_cost DOUBLE,
+            estimated_memory_cost DOUBLE,
+            estimated_total_cost DOUBLE,
+            cost_per_invoice DOUBLE
+        )
+        """
+    )
 
 
 def track_performance(stage_name: str, *, duckdb_provider: Callable[[], DuckDBManager]) -> Callable[[F], F]:
@@ -82,3 +94,41 @@ def track_performance(stage_name: str, *, duckdb_provider: Callable[[], DuckDBMa
         return wrapper  # type: ignore[return-value]
 
     return decorator
+
+
+def store_finops_snapshot(
+    duckdb: DuckDBManager,
+    *,
+    invoices_count: int,
+    cpu_hours: float,
+    ram_gb_hours: float,
+    cpu_hour_rate: float = 0.12,
+    ram_gb_hour_rate: float = 0.015,
+) -> dict[str, float]:
+    """Store estimated self-hosting infrastructure cost metrics."""
+    ensure_telemetry_schema(duckdb)
+    estimated_cpu_cost = cpu_hours * cpu_hour_rate
+    estimated_memory_cost = ram_gb_hours * ram_gb_hour_rate
+    estimated_total = estimated_cpu_cost + estimated_memory_cost
+    cost_per_invoice = estimated_total / invoices_count if invoices_count > 0 else 0.0
+    duckdb.execute(
+        """
+        INSERT INTO finops_cost_snapshots
+        (timestamp, invoices_count, estimated_cpu_cost, estimated_memory_cost, estimated_total_cost, cost_per_invoice)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (
+            datetime.now(timezone.utc),
+            int(invoices_count),
+            float(estimated_cpu_cost),
+            float(estimated_memory_cost),
+            float(estimated_total),
+            float(cost_per_invoice),
+        ),
+    )
+    return {
+        "estimated_cpu_cost": estimated_cpu_cost,
+        "estimated_memory_cost": estimated_memory_cost,
+        "estimated_total_cost": estimated_total,
+        "cost_per_invoice": cost_per_invoice,
+    }

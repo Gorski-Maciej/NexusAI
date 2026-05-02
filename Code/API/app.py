@@ -22,6 +22,7 @@ from api.static import get_static_config
 from api.security import jwt_auth
 from api.state import on_shutdown, on_startup
 
+SUPPORTED_HEALTH_ENDPOINTS = ("/api/v1/health", "/api/v2/health")
 
 
 def create_app() -> Litestar:
@@ -59,7 +60,10 @@ def create_app() -> Litestar:
         openapi_config=OpenAPIConfig(
             title="Nexus AI API",
             version="2.0.0",
-            description="API lifecycle: /api/v1 (deprecated) and /api/v2 (current)",
+            description=(
+                "API lifecycle: /api/v1 (deprecated) and /api/v2 (current). "
+                f"Health endpoints: {SUPPORTED_HEALTH_ENDPOINTS[0]}, {SUPPORTED_HEALTH_ENDPOINTS[1]}"
+            ),
             render_plugins=[SwaggerRenderPlugin()],
         ),
         static_files_config=get_static_config(config),

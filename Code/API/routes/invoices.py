@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import uuid
 import json
+import hashlib
 from datetime import datetime, timezone
+from pathlib import Path
 
 from litestar import Controller, post
 from litestar.datastructures import UploadFile
@@ -19,6 +21,23 @@ from db.analytics import DuckDBManager
 from services.audit_logger import AuditLogger
 from api.rbac import owner_or_worker_guard
 from api.cache import clear_cache_async
+from api.i18n import resolve_language, t
+
+MAX_INVOICE_UPLOAD_BYTES = 50 * 1024 * 1024
+MAX_ATTACHMENT_UPLOAD_BYTES = 500 * 1024 * 1024
+UPLOAD_CHUNK_SIZE = 1024 * 1024
+
+
+def _validate_content_length(headers: dict[str, str], max_bytes: int) -> None:
+    value = headers.get("content-length")
+    if not value:
+        return
+    try:
+        size = int(value)
+    except ValueError:
+        return
+    if size > max_bytes:
+        raise ClientException(detail=f"Request body too large ({size} > {max_bytes})", status_code=413)
 
 
 class InvoiceController(Controller):
@@ -36,24 +55,51 @@ class InvoiceController(Controller):
         db_session: AsyncSession,
     ) -> TaskResponse:
         file_obj = data.get("file")
+        language = resolve_language(request.headers.get("accept-language"))
+        _validate_content_length(request.headers, MAX_INVOICE_UPLOAD_BYTES)
         if not file_obj:
-            raise ClientException(detail="Brak pola 'file'", status_code=400)
+            raise ClientException(detail=t("upload.missing_file", language=language), status_code=400)
 
-        payload = await file_obj.read()
-        if not payload:
-            raise ClientException(detail="Pusty plik", status_code=400)
+        hasher = hashlib.sha256()
+        total_size = 0
+        storage = ContentAddressableStorage(config.storage_dir)
+        temp_path = storage.create_temp_upload_file()
+        try:
+            with Path(temp_path).open("ab") as temp_file:
+                while True:
+                    chunk = await file_obj.read(UPLOAD_CHUNK_SIZE)
+                    if not chunk:
+                        break
+                    total_size += len(chunk)
+                    if total_size > MAX_INVOICE_UPLOAD_BYTES:
+                        raise ClientException(
+                            detail=t(
+                                "upload.file_too_large",
+                                language=language,
+                                limit_mb=MAX_INVOICE_UPLOAD_BYTES // (1024 * 1024),
+                            ),
+                            status_code=413,
+                        )
+                    hasher.update(chunk)
+                    temp_file.write(chunk)
+        except Exception:
+            Path(temp_path).unlink(missing_ok=True)
+            raise
+
+        if total_size == 0:
+            Path(temp_path).unlink(missing_ok=True)
+            raise ClientException(detail=t("upload.empty_file", language=language), status_code=400)
+        payload_hash = hasher.hexdigest()
 
         idempotency_key = request.headers.get("idempotency-key")
         idempotency_store = IdempotencyStore(config.idempotency_db_path)
-        payload_hash = idempotency_store.hash_payload(payload)
 
         if idempotency_key:
             cached = idempotency_store.get(idempotency_key, payload_hash)
             if cached:
                 return TaskResponse(**cached)
 
-        storage = ContentAddressableStorage(config.storage_dir)
-        saved = storage.put(payload=payload, suffix=".pdf")
+        saved = storage.finalize_temp_upload(temp_path=temp_path, digest=payload_hash, size_bytes=total_size, suffix=".pdf")
 
         task_id = str(uuid.uuid4())
         invoice_id = str(uuid.uuid4())
@@ -117,6 +163,95 @@ class InvoiceController(Controller):
                 "message": response.message,
             })
 
+        return response
+
+    @post("/upload-large", media_type=RequestEncodingType.MULTI_PART)
+    async def upload_large_attachment(
+        self,
+        data: dict[str, UploadFile],
+        request: Request,
+        config: AppConfig,
+        db_session: AsyncSession,
+    ) -> TaskResponse:
+        """Dedicated path for large attachments to avoid blocking the default OCR queue."""
+        file_obj = data.get("file")
+        language = resolve_language(request.headers.get("accept-language"))
+        _validate_content_length(request.headers, MAX_ATTACHMENT_UPLOAD_BYTES)
+        if not file_obj:
+            raise ClientException(detail=t("upload.missing_file", language=language), status_code=400)
+        idempotency_key = request.headers.get("idempotency-key")
+        idempotency_store = IdempotencyStore(config.idempotency_db_path)
+
+        hasher = hashlib.sha256()
+        total_size = 0
+        storage = ContentAddressableStorage(config.storage_dir)
+        temp_path = storage.create_temp_upload_file()
+        try:
+            with Path(temp_path).open("ab") as temp_file:
+                while True:
+                    chunk = await file_obj.read(UPLOAD_CHUNK_SIZE)
+                    if not chunk:
+                        break
+                    total_size += len(chunk)
+                    if total_size > MAX_ATTACHMENT_UPLOAD_BYTES:
+                        raise ClientException(
+                            detail=t(
+                                "upload.file_too_large",
+                                language=language,
+                                limit_mb=MAX_ATTACHMENT_UPLOAD_BYTES // (1024 * 1024),
+                            ),
+                            status_code=413,
+                        )
+                    hasher.update(chunk)
+                    temp_file.write(chunk)
+        except Exception:
+            Path(temp_path).unlink(missing_ok=True)
+            raise
+
+        if total_size == 0:
+            Path(temp_path).unlink(missing_ok=True)
+            raise ClientException(detail=t("upload.empty_file", language=language), status_code=400)
+
+        payload_hash = hasher.hexdigest()
+        if idempotency_key:
+            cached = idempotency_store.get(idempotency_key, payload_hash)
+            if cached:
+                return TaskResponse(**cached)
+        saved = storage.finalize_temp_upload(temp_path=temp_path, digest=payload_hash, size_bytes=total_size, suffix=".bin")
+        task_id = str(uuid.uuid4())
+        attachment_id = str(uuid.uuid4())
+        event_payload = {
+            "attachment_id": attachment_id,
+            "task_id": task_id,
+            "file_hash": saved.file_hash,
+            "file_path": str(saved.file_path),
+            "size_bytes": saved.size_bytes,
+            "received_at": datetime.now(timezone.utc).isoformat(),
+        }
+        await db_session.execute(
+            text(
+                """
+                INSERT INTO outbox_events (id, event_type, aggregate_id, payload, status, processed)
+                VALUES (:id, :event_type, :aggregate_id, :payload, :status, :processed)
+                """
+            ),
+            {
+                "id": str(uuid.uuid4()),
+                "event_type": "ATTACHMENT_LARGE_UPLOADED",
+                "aggregate_id": attachment_id,
+                "payload": json.dumps(event_payload),
+                "status": "PENDING",
+                "processed": False,
+            },
+        )
+        await db_session.commit()
+        response = TaskResponse(task_id=task_id, status="QUEUED", message="Large attachment accepted for dedicated processing queue")
+        if idempotency_key:
+            idempotency_store.save(
+                idempotency_key,
+                payload_hash,
+                {"task_id": response.task_id, "status": response.status, "message": response.message},
+            )
         return response
 
 

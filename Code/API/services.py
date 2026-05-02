@@ -3,7 +3,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
+import tempfile
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -39,6 +42,21 @@ class ContentAddressableStorage:
 
         return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=len(payload))
 
+    def create_temp_upload_file(self) -> str:
+        fd, temp_path = tempfile.mkstemp(prefix="upload_", suffix=".tmp", dir=str(self.root))
+        os.close(fd)
+        return temp_path
+
+    def finalize_temp_upload(self, temp_path: str, digest: str, size_bytes: int, suffix: str = ".pdf") -> StoredUpload:
+        dir_path = self.root / digest[:2] / digest[2:4]
+        dir_path.mkdir(parents=True, exist_ok=True)
+        file_path = dir_path / f"{digest}{suffix}"
+        if file_path.exists():
+            Path(temp_path).unlink(missing_ok=True)
+            return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=size_bytes)
+        Path(temp_path).replace(file_path)
+        return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=size_bytes)
+
 
 class IdempotencyStore:
     """SQLite-backed idempotency registry with payload hash and TTL."""
@@ -67,6 +85,14 @@ class IdempotencyStore:
     @staticmethod
     def hash_payload(payload: bytes) -> str:
         return hashlib.sha256(payload).hexdigest()
+
+    @staticmethod
+    def hash_chunks(chunks: Iterable[bytes]) -> str:
+        hasher = hashlib.sha256()
+        for chunk in chunks:
+            if chunk:
+                hasher.update(chunk)
+        return hasher.hexdigest()
 
     def purge_expired(self) -> None:
         threshold = datetime.now(timezone.utc) - timedelta(minutes=self.ttl_minutes)
