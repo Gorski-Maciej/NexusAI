@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from typing import Any
+import os
 from litestar import Controller, get
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -32,6 +33,7 @@ class HealthController(Controller):
         db_ok = True
         pending_outbox = 0
         failed_outbox = 0
+        dead_letter_outbox = 0
         users_count = 0
 
         try:
@@ -41,6 +43,9 @@ class HealthController(Controller):
             )
             failed_outbox = int(
                 (await db_session.execute(text("SELECT COUNT(*) FROM outbox_events WHERE status = 'FAILED'"))).scalar_one()
+            )
+            dead_letter_outbox = int(
+                (await db_session.execute(text("SELECT COUNT(*) FROM outbox_events WHERE status = 'DEAD_LETTER'"))).scalar_one()
             )
         except Exception:
             db_ok = False
@@ -52,4 +57,46 @@ class HealthController(Controller):
             "users_count": users_count,
             "pending_outbox_events": pending_outbox,
             "failed_outbox_events": failed_outbox,
+            "dead_letter_outbox_events": dead_letter_outbox,
+            "gpu_available": self._gpu_available(),
+            "vram_free_mb": self._vram_free_mb(),
+            "sqlite_wal_size": self._sqlite_wal_size(),
+            "pending_tasks": await self._pending_tasks(),
         }
+
+    async def _pending_tasks(self) -> int | None:
+        try:
+            from api.tasks import broker
+
+            queue_size = getattr(broker, "queue_size", None)
+            if queue_size is None:
+                return None
+            result = queue_size()
+            if hasattr(result, "__await__"):
+                result = await result
+            return int(result)
+        except Exception:
+            return None
+
+    def _gpu_available(self) -> bool:
+        try:
+            import torch
+
+            return bool(torch.cuda.is_available())
+        except Exception:
+            return False
+
+    def _vram_free_mb(self) -> float:
+        try:
+            import torch
+
+            if not torch.cuda.is_available():
+                return 0.0
+            free_bytes, _ = torch.cuda.mem_get_info()
+            return round(float(free_bytes) / (1024**2), 2)
+        except Exception:
+            return 0.0
+
+    def _sqlite_wal_size(self) -> int:
+        wal_path = "nexus_oltp.db-wal"
+        return os.path.getsize(wal_path) if os.path.exists(wal_path) else 0

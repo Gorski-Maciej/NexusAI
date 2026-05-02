@@ -13,7 +13,10 @@ class OutboxEvent(Base):
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     event_type: Mapped[str] = mapped_column(String) # np. "invoice_created", "ocr_completed"
+    aggregate_id: Mapped[str] = mapped_column(String, default="")
     payload: Mapped[str] = mapped_column(Text) # Dane zdarzenia w formacie JSON
+    status: Mapped[str] = mapped_column(String, default="PENDING")
+    retry_count: Mapped[int] = mapped_column(default=0)
     processed: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     processed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)

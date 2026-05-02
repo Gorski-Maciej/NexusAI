@@ -55,7 +55,7 @@ def create_app() -> Litestar:
         },
         exception_handlers={Exception: global_exception_handler},
         middleware=[CorrelationAndDeprecationMiddleware],
-        cors_config=CORSConfig(allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]),
+        cors_config=CORSConfig(allow_origins=config.cors_origins, allow_methods=["*"], allow_headers=["*"]),
         openapi_config=OpenAPIConfig(
             title="Nexus AI API",
             version="2.0.0",

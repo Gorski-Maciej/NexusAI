@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import json
 from taskiq_nats import PullBasedJetStreamBroker
 from sqlalchemy import text
 
@@ -10,6 +11,36 @@ from db.database import create_oltp_engine, create_session_factory
 
 broker = PullBasedJetStreamBroker()
 logger = logging.getLogger("nexus.api.tasks")
+MAX_OUTBOX_RETRIES = 3
+
+
+async def _dispatch_outbox_event(row: dict) -> None:
+    event_type = str(row.get("event_type", "")).strip().lower()
+    payload_raw = row.get("payload") or "{}"
+
+    try:
+        payload = json.loads(payload_raw)
+    except Exception:
+        payload = {}
+
+    if event_type == "process_invoice_ocr":
+        invoice_id = payload.get("invoice_id") or row.get("aggregate_id")
+        if not invoice_id:
+            raise ValueError("Missing invoice_id in outbox payload")
+        await broker.kick("process_invoice_ocr", invoice_id=str(invoice_id), payload=payload)
+        return
+
+    raise ValueError(f"Unsupported outbox event_type: {event_type}")
+
+
+@broker.task(task_name="process_invoice_ocr")
+async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> None:
+    """Dedicated OCR pipeline entrypoint triggered by outbox relay."""
+    logger.info("[OCR] processing invoice_id=%s", invoice_id)
+
+    # Placeholder for OCR worker orchestration; after successful OCR write,
+    # trigger near-real-time OLAP delta sync for dashboard freshness.
+    await broker.kick("sync_single_invoice_to_olap", invoice_id=invoice_id)
 
 
 @broker.task(schedule=[{"cron": "*/5 * * * *"}])
@@ -51,11 +82,14 @@ async def relay_outbox_events() -> None:
                     """
                     SELECT id, event_type, aggregate_id, payload
                     FROM outbox_events
-                    WHERE status = 'PENDING' AND processed = 0
+                    WHERE status IN ('PENDING', 'FAILED')
+                      AND processed = 0
+                      AND COALESCE(retry_count, 0) < :max_retries
                     ORDER BY created_at ASC
                     LIMIT 100
                     """
-                )
+                ),
+                {"max_retries": MAX_OUTBOX_RETRIES},
             )
         ).mappings().all()
 
@@ -65,16 +99,26 @@ async def relay_outbox_events() -> None:
                 {"id": row["id"]},
             )
             try:
-                await broker.kick("sync_single_invoice_to_olap", invoice_id=row["aggregate_id"])
+                await _dispatch_outbox_event(row)
                 await session.execute(
-                    text("UPDATE outbox_events SET status = 'SENT', processed = 1 WHERE id = :id"),
+                    text("UPDATE outbox_events SET status = 'SENT', processed = 1, processed_at = CURRENT_TIMESTAMP WHERE id = :id"),
                     {"id": row["id"]},
                 )
             except Exception as exc:
                 logger.exception("[OUTBOX] Failed to relay event id=%s: %s", row["id"], exc)
                 await session.execute(
-                    text("UPDATE outbox_events SET status = 'FAILED' WHERE id = :id"),
-                    {"id": row["id"]},
+                    text(
+                        """
+                        UPDATE outbox_events
+                        SET retry_count = retry_count + 1,
+                            status = CASE
+                                WHEN retry_count + 1 >= :max_retries THEN 'DEAD_LETTER'
+                                ELSE 'FAILED'
+                            END
+                        WHERE id = :id
+                        """
+                    ),
+                    {"id": row["id"], "max_retries": MAX_OUTBOX_RETRIES},
                 )
 
         await session.commit()
