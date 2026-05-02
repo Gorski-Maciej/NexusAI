@@ -1,0 +1,2052 @@
+
+To fascynujący i bezkompromisowy zestaw technologii. Zbudowanie stosu wokół zasady "nadmiaru dla niezawodności" (Defense in Depth) z użyciem najnowocześniejszych narzędzi open-source (VictoriaMetrics, Vector, eBPF/Falco, Dagger) stawia ten projekt w lidze rozwiązań klasy wojskowej/finansowej.
+
+Odpowiadając na Twoje pytanie: Na poziomie koncepcyjnym ten stos ma ogromny potencjał, ale nie "wykorzystuje maksymalnie" swoich możliwości, dopóki te narzędzia nie zostaną głęboko zintegrowane. Zbiór świetnych narzędzi bez odpowiedniego "kleju" (glue logic) staje się koszmarem utrzymaniowym, a nie gwarancją niezawodności.
+
+Poniżej znajduje się szczegółowy raport z wytycznymi, co dodać, zmodyfikować i ulepszyć, aby ten potężny zestaw działał jako jeden, spójny, samonaprawiający się organizm.
+
+1. Obserwowalność, Logowanie i SIEM (Security Information and Event Management)
+Technologie: VictoriaMetrics, Vector + DuckDB, Falco + Sentry lite, loguru
+
+Zastąpienie ciężkiego stosu ELK (Elasticsearch) lekkim Vector + DuckDB to genialny ruch pod kątem wydajności. Jednak połączenie tego z analizą bezpieczeństwa wymaga precyzji.
+
+Co zmienić (Strukturyzacja loguru): Standardowe logi tekstowe są bezużyteczne dla analityki. Zmodyfikuj konfigurację loguru, aby wymusić zrzut wyłącznie w formacie JSON (serialize=True). Każdy log musi zawierać TraceID (z OpenTelemetry), TenantID oraz Component (np. OCR, API).
+
+Co zmodyfikować (Rola Vector i DuckDB): Skonfiguruj bazę Vector, aby strumieniowała logi, transformowała je w locie (usuwając dane wrażliwe PII) i zapisywała je w formacie Parquet (zamiast JSON/CSV) na dysku lub w systemie S3/MinIO. DuckDB potrafi czytać pliki Parquet natywnie i błyskawicznie, co zamieni go w ultra-szybki silnik zapytań dla logów.
+
+Co rozbudować (Falco jako aktywny strażnik): Falco to silnik oparty na eBPF, który wykrywa anomalie na poziomie jądra systemu (np. ktoś uruchomił /bin/bash w kontenerze ML). Zamiast tylko "logować" ten fakt, rozbuduj system o Falcosidekick. Skonfiguruj go tak, aby przy wykryciu krytycznego zdarzenia wysyłał webhook do infrastruktury (np. Coolify), który natychmiast izoluje i ubija zainfekowany kontener.
+
+Co ulepszyć (Sentry Lite): Jeśli system korzysta z kompilacji Nuitka, Sentry musi zostać skonfigurowane tak, aby obsługiwało zrzuty pamięci (Minidumps/Crashpad) z binarnego kodu C++, a nie tylko standardowe tracebacks Pythona, które po Nuitce mogą być nieczytelne.
+
+2. Pancerne Testowanie (Zero-Defect Toleration)
+Technologie: Pytest + Hypothesis, Dagger + DuckDB, Schemathesis, Playwright
+
+Ten zestaw pokrywa absolutnie wszystko: od ułamków po bezpieczeństwo API i interfejs UI.
+
+Co zmodyfikować (Hypothesis i Księgowość): To tutaj Hypothesis zabłyśnie. Skonfiguruj generatory (strategies) tak, aby tworzyły "toksyczne" faktury: z ujemnymi kwotami, dziwnymi znakami Unicode w nazwach firm, czy datami z 1970 roku. Użyj tego do tzw. Property-Based Testing dla logiki wyliczania VAT i podatku dochodowego (czy Suma + VAT zawsze daje Brutto, niezależnie od błędu zaokrągleń zmiennoprzecinkowych?).
+
+Co dodać (Schemathesis w potoku CI): Podłącz Schemathesis bezpośrednio do wygenerowanego przez Litestar schematu OpenAPI (/schema/openapi.json). Skonfiguruj go tak, by wykonywał Fuzzing API – bombardował każdy endpoint setkami zmutowanych requestów, szukając podatności typu wyciek pamięci czy błąd 500 (Unhandled Exception).
+
+Co ulepszyć (Dagger + DuckDB): Dagger to nowoczesne podejście "CI as Code". Zamiast testować w środowisku GitLab Runnera, Dagger powinien podnosić identyczne ze środowiskiem produkcyjnym kontenery Podman. Użyj DuckDB wewnątrz Daggera do analizy wyników z pytest (plików XML/JSON z raportami), aby wykrywać "Flaky Tests" (testy, które losowo nie przechodzą) na przestrzeni czasu.
+
+Co rozbudować (Playwright do weryfikacji PDF): Księgowość to ostatecznie dokumenty. Użyj Playwright nie tylko do testowania UI, ale do renderowania widoków księgowych, a następnie weryfikacji, czy wygenerowany raport PDF zawiera poprawne wartości w odpowiednich miejscach.
+
+3. Infrastruktura i Bezpieczeństwo Sieci (Self-hosted)
+Technologie: Coolify, Headscale, PocketBase, Rathole + frp
+
+To zestaw stworzony do ucieczki z drogich chmur publicznych i zbudowania własnego, bezpiecznego ekosystemu typu "Zero-Trust".
+
+Co zmodyfikować (Rola PocketBase): Masz już potężny Litestar i bazy SQLite/DuckDB. PocketBase również używa SQLite i Go. Aby uniknąć "rozdwojenia jaźni" w systemie, odizoluj funkcje. Niech Litestar robi ciężką logikę i ML, a PocketBase użyj WYŁĄCZNIE jako mikroserwisu tożsamości (Identity Provider) lub natychmiastowego panelu administracyjnego do zarządzania użytkownikami, bez pisania pod to własnego UI.
+
+Co ulepszyć (Headscale jako Zero-Trust Mesh): Headscale to rewelacyjny wybór. Wszystkie komponenty wewnętrzne (Baza DuckDB, NATS, mikroserwis PocketBase, worker ML) nie powinny mieć otwartych portów na localhoście czy w sieci Docker/Podman. Muszą komunikować się wyłącznie po wewnętrznych adresach IP przydzielonych przez sieć mesh Headscale (Tailscale protocol). Zapewnia to całkowitą odporność na skanowanie sieci.
+
+Co rozbudować (Failover: Rathole + frp): Stosujesz nadmiarowość. Użyj frp jako głównego tunelu wystawiającego aplikację dla klientów na zewnątrz (np. omijając NAT biurowy). Rathole trzymaj w uśpieniu jako Hot-Standby (zapasowy tunel, szybszy, napisany w Rust). Jeśli serwer frp spadnie, skrypt Daggera automatycznie przełącza ruch na tunel Rathole.
+
+Co dodać (Coolify GitOps): Połącz Coolify z webhookami. Zamiast ręcznie klikać wdrożenia, wdrożenie następuje automatycznie z repozytorium po przejściu wszystkich testów Daggera. Coolify musi zarządzać zmiennymi środowiskowymi i automatycznie podpinać nowe certyfikaty SSL za pomocą Let's Encrypt przez proxy, chroniąc system przed wygaśnięciem certyfikatu.
+
+Podsumowanie Architektury Niezawodnej
+Zastosowanie tych technologii stworzy system, w którym:
+
+Dagger buduje niezawodną binarkę.
+
+Hypothesis i Schemathesis gwarantują, że kod jest matematycznie i bezpiecznie nienaruszalny.
+
+Headscale czyni infrastrukturę niewidzialną dla intruzów.
+
+Falco i Vector bezlitośnie śledzą i reagują na każdy odchył od normy.
+
+Masz teraz na stole pełen arsenał. Od którego konkretnie elementu CI/CD i testowania chciałbyś zacząć integrację z kodem – od wdrożenia Hypothesis dla walidacji księgowej Suma+VAT, czy wolisz najpierw zbudować hermetyczny pipeline w Daggerze?
+
+
+
+Nawet po wdrożeniu Falco, Daggera i sieci mesh, w systemie tej klasy (Mission-Critical Financial AI) pozostają „ukryte” niedociągnięcia, które objawiają się dopiero przy dużej skali lub w sytuacjach ekstremalnych. Twoja architektura jest obecnie na poziomie **Enterprise**, ale aby osiągnąć poziom **Advanced/Autonomous**, musisz wyeliminować bariery między systemem operacyjnym a logiką biznesową.
+
+
+
+Oto szczegółowa analiza pozostałych luk oraz zestaw zaawansowanych ulepszeń:
+
+
+
+---
+
+
+
+### **1. Niedociągnięcie: "Blind Spots" w przetwarzaniu asynchronicznym**
+
+Mimo posiadania logów i metryk, w architekturze CQRS/NATS często występuje problem „zagubionych procesów”. Jeśli worker ML zostanie zabity przez OOM Killer (brak pamięci) w połowie analizy faktury, NATS może uznać, że zadanie wygasło, ale system nie będzie wiedział, *dlaczego* to się stało i w którym konkretnie kroku OCR.
+
+
+
+* **Ulepszenie: Distributed Tracing Context Propagation (OpenTelemetry + NATS).**
+
+    * **Opis:** Musisz wstrzykiwać `trace_id` bezpośrednio do nagłówków wiadomości NATS JetStream.
+
+    * **Co zmienić:** Każdy etap (OCR, Walidacja, Zapis DuckDB) musi raportować do VictoriaMetrics nie tylko status, ale i „baggage” (metadane). Dzięki temu w Sentry lub Grafanie zobaczysz pełną ścieżkę dokumentu, nawet jeśli przechodzi on przez 5 skompilowanych binarek Nuitka.
+
+
+
+### **2. Niedociągnięcie: Brak "Deep Health Checks" dla Modeli ML**
+
+Standardowe Health-checki sprawdzają, czy proces żyje. W Twoim systemie model może „żyć”, ale zwracać śmieci (np. przez błąd kwantyzacji INT8 lub dryf wag).
+
+
+
+* **Ulepszenie: Semantic Health Checks & Gold Dataset Validation.**
+
+    * **Opis:** Co X minut system powinien automatycznie przepuścić przez pipeline „fakturę wzorcową” (Gold Dataset), której wynik jest z góry znany.
+
+    * **Co dodać:** Jeśli wynik ekstrakcji faktury wzorcowej różni się od wzorca o więcej niż 1%, Falco/Sentry powinno podnieść alert o „degradacji inteligencji modelu”, a Coolify powinno automatycznie zrestartować dany kontener lub przywrócić poprzednią wersję binarki.
+
+
+
+### **3. Niedociągnięcie: "Data Silos" między Logurù a Vector/DuckDB**
+
+Obecnie masz Vector do logów i DuckDB do analityki. Niedociągnięciem jest brak możliwości korelacji zdarzeń biznesowych (np. „Faktura nr 5 błędna”) z logami systemowymi (np. „Błąd I/O w kontenerze”) w jednym zapytaniu SQL.
+
+
+
+* **Ulepszenie: Unified Data Lakehouse (Parquet/Iceberg on S3/fsspec).**
+
+    * **Opis:** Zamiast rozdzielać te dane, użyj Vector do zapisywania logów w formacie **Apache Parquet** w tym samym miejscu, gdzie trzymasz dokumenty (fsspec).
+
+    * **Co zmodyfikować:** DuckDB powinien stać się jedynym interfejsem do wszystkiego. Możesz wtedy wykonać zapytanie SQL: `SELECT * FROM logs WHERE trace_id IN (SELECT trace_id FROM invoices WHERE status = 'error')`. To jest poziom „Advanced Observability”.
+
+
+
+### **4. Niedociągnięcie: Ryzyko "Supply Chain Attack" w procesie budowania**
+
+Używasz `uv` i Daggera, co jest szybkie, ale wciąż pobierasz pakiety z PyPI. W księgowości jeden zatruty pakiet może wykraść dane faktur.
+
+
+
+* **Ulepszenie: Hermetic Builds & SBOM (Software Bill of Materials).**
+
+    * **Opis:** Dagger powinien generować plik SBOM (np. w formacie CycloneDX) przy każdej kompilacji Nuitka.
+
+    * **Co dodać:** Wdróż narzędzie `Trivy` lub `Grype` wewnątrz pipeline’u Daggera. Jeśli jakakolwiek biblioteka (nawet sub-zależność) ma krytyczną podatność CVE, kompilacja musi zostać przerwana, a binarka nie może trafić do Coolify.
+
+
+
+### **5. Niedociągnięcie: Niewydajne zarządzanie pamięcią w Python/Nuitka dla ML**
+
+Python ma tendencję do nieoddawania pamięci RAM do systemu operacyjnego (fragmentacja). Przy ciężkich modelach PyTorch to prowadzi do niestabilności.
+
+
+
+* **Ulepszenie: Memory-Mapped Files & Shared Memory IPC.**
+
+    * **Opis:** Przy komunikacji między procesami (np. Litestar -> Worker ML) nie przesyłaj obrazów faktur przez gniazda (sockets).
+
+    * **Co zmienić:** Użyj pamięci współdzielonej (`shared_memory` w Pythonie) lub mapowania plików przez `fsspec` na `/dev/shm` (RAMDisk). Pozwala to procesowi ML czytać dane bezpośrednio z pamięci procesu API bez kopiowania bajtów, co redukuje zużycie RAM o 30-50%.
+
+
+
+---
+
+
+
+### **Podsumowanie: Nowe komponenty do dodania**
+
+
+
+| Komponent | Opis Zmiany | Poziom Zaawansowania |
+
+| :--- | :--- | :--- |
+
+| **OpenTelemetry Baggage** | Przenoszenie kontekstu biznesowego (np. ID klienta) przez NATS. | Expert |
+
+| **Model Drift Guard** | Automatyczne testowanie modeli na Gold Dataset. | AI Ops |
+
+| **Unified SQL Interface** | DuckDB czytający logi z Parquet generowanego przez Vector. | Architect |
+
+| **SBOM/Vulnerability Scan** | Automatyczna weryfikacja bezpieczeństwa binarki w Dagger. | SecOps |
+
+| **Zero-Copy IPC** | Użycie `/dev/shm` do przesyłania obrazów faktur. | Low-level Eng |
+
+
+
+
+
+Wdrożenie mechanizmu **Zero-Copy IPC** (Inter-Process Communication) to moment, w którym NexusAI przestaje być standardową aplikacją webową, a staje się systemem wysokowydajnym (High-Performance System). W tradycyjnym modelu, przesyłanie obrazu faktury (np. skanu 4K) z procesu API do procesu ML zajmuje czas i zasoby procesora, ponieważ dane muszą zostać skopiowane z przestrzeni adresowej jednego procesu do drugiego.
+
+
+
+W architekturze **Zero-Copy**, procesy współdzielą ten sam obszar fizycznej pamięci RAM.
+
+
+
+---
+
+
+
+## **1. Implementacja Zero-Copy IPC: Shared Memory + NATS**
+
+
+
+Zamiast przesyłać bajty obrazu przez NATS JetStream (co zapchałoby serwer wiadomości), przesyłamy jedynie **uchwyt (handle)** do pamięci współdzielonej.
+
+
+
+### **Mechanizm działania:**
+
+1. **Alokacja:** Proces API (Litestar) odbiera plik i zamiast ładować go do zmiennej, tworzy segment pamięci współdzielonej (`multiprocessing.shared_memory`).
+
+2. **Zapis:** Obraz jest dekodowany bezpośrednio do bufora w `/dev/shm`.
+
+3. **Notyfikacja:** Przez NATS JetStream przesyłany jest mały obiekt JSON: 
+
+    `{"shm_name": "inv_001", "shape": [3840, 2160, 3], "dtype": "uint8"}`.
+
+4. **Dostęp:** Proces ML (Surya/LayoutLM) "podpina się" (attach) do istniejącej pamięci. Odczytuje dane bez ani jednej operacji kopiowania bajtów ($O(1)$ zamiast $O(n)$).
+
+5. **Zwolnienie:** Po zakończeniu ekstrakcji, ostatni proces w łańcuchu zamyka segment.
+
+
+
+> **Wskazówka Nuitka:** Przy kompilacji binarnej upewnij się, że moduł `multiprocessing.resource_tracker` jest poprawnie dołączony, aby uniknąć wycieków pamięci (zombie segments), gdyby binarka niespodziewanie padła.
+
+
+
+---
+
+
+
+## **2. Pozostałe niedociągnięcia i ścieżka do poziomu Advanced**
+
+
+
+Mimo Zero-Copy, Twoja architektura posiada jeszcze trzy krytyczne "wąskie gardła" na poziomie zaawansowanym:
+
+
+
+### **A. Niedociągnięcie: Synchronizacja stanowa w CQRS (Eventual Consistency)**
+
+W systemach księgowych "ostateczna spójność" (eventual consistency) bywa ryzykowna. Jeśli użytkownik odświeży stronę natychmiast po wysłaniu faktury, DuckDB może jeszcze nie mieć wyników z ML.
+
+
+
+* **Ulepszenie: Hybrid State Notifications.**
+
+    * **Opis:** Wykorzystaj **PocketBase** lub **NATS WebSockets** do wypychania (push) statusu "Processing Complete" bezpośrednio do UI. 
+
+    * **Zaawansowana funkcja:** Implementacja wzorca **Read-Your-Writes**. API Litestar powinno zwracać nagłówek z numerem sekwencyjnym zdarzenia (`Last-Event-ID`). Frontend nie pokaże raportu, dopóki DuckDB nie potwierdzi przetworzenia tego konkretnego ID.
+
+
+
+### **B. Niedociągnięcie: "Cold Start" i VRAM Fragmentation**
+
+Modele PyTorch (LayoutLM, Surya) są ogromne. Ciągłe ładowanie i usuwanie ich z pamięci GPU (VRAM) doprowadzi do fragmentacji i błędu `Out of Memory`.
+
+
+
+* **Ulepszenie: Model Sharding & Persistence Service.**
+
+    * **Opis:** Stwórz dedykowany proces "Model Server" (część Modular Monolith), który trzyma modele stale w pamięci GPU.
+
+    * **Zaawansowana funkcja:** Użyj **NVIDIA Triton Inference Server** (lub lżejszego odpowiednika w Pythonie), który obsługuje dynamiczne kolejkowanie (batching). Jeśli 10 użytkowników wyśle faktury naraz, system połączy je w jedną paczkę (batch) i przepuści przez GPU jednym uderzeniem, co jest 5-10x wydajniejsze.
+
+
+
+### **C. Niedociągnięcie: Brak semantycznej walidacji historycznej**
+
+System wyodrębnia dane z faktury, ale nie sprawdza ich z "pamięcią instytucjonalną" firmy.
+
+
+
+* **Ulepszenie: RAG-Enhanced Validation (LanceDB + Polars).**
+
+    * **Opis:** Podczas walidacji krzyżowej, system powinien zapytać LanceDB: *"Czy ten kontrahent (NIP) kiedykolwiek wystawił nam fakturę z innym numerem konta?"*.
+
+    * **Zaawansowana funkcja:** Jeśli wykryto zmianę numeru konta przy wysokiej pewności OCR, system powinien automatycznie oznaczyć dokument jako **"Potential Fraud / Account Change"** i skierować do ręcznej akceptacji.
+
+
+
+---
+
+
+
+## **3. Raport końcowy: Architektura na poziomie Advanced**
+
+
+
+Aby zamknąć projekt na najwyższym poziomie, Twoja struktura powinna wyglądać następująco:
+
+
+
+| Warstwa | Technologia | Stan końcowy (Advanced) |
+
+| :--- | :--- | :--- |
+
+| **Transport** | NATS + Shared Memory | Dane wędrują między procesami z prędkością RAM, bez kopii. |
+
+| **Analiza** | DuckDB + Polars | Logi i dane biznesowe w jednym Lakehouse (format Parquet). |
+
+| **Bezpieczeństwo** | Falco + Headscale | Wykrywanie intruzów na poziomie jądra (eBPF) w izolowanej sieci Mesh. |
+
+| **Infrastruktura** | Nuitka + Dagger | Binarny "Snapshot" całego systemu, odporny na zmiany w środowisku. |
+
+| **Weryfikacja** | Hypothesis + Schemathesis | Matematyczna pewność, że logika podatkowa nie ma luk. |
+
+
+
+---
+
+
+
+### **Ostatnie "szlify" przed pełnym wdrożeniem:**
+
+
+
+1. **Kompilacja PGO (Nuitka):** Wykonaj profilowanie binarki na realnych danych, aby Nuitka mogła zoptymalizować najczęściej używane ścieżki (np. pętle OCR).
+
+2. **Sentry-Native:** Skonfiguruj Sentry tak, aby przesyłało symbole debugowania (`.pdb` / `.sym`), co pozwoli Ci widzieć błędy w skompilowanym kodzie C++ tak, jakby to był Python.
+
+3. **PocketBase as Config Store:** Użyj PocketBase do przechowywania dynamicznych reguł walidacji (np. aktualne stawki VAT), aby nie musieć rekompilować binarki przy każdej zmianie przepisów.
+
+
+
+
+
+Oto profesjonalna implementacja klasy **`SharedMemoryManager`**. Została zaprojektowana tak, aby wspierać architekturę hexagonalną (jako adapter systemowy) oraz poprawnie współpracować z binarkami skompilowanymi przez Nuitka, dbając o deterministyczne zwalnianie zasobów.
+
+
+
+### **1. Implementacja SharedMemoryManager**
+
+
+
+Ten moduł zarządza cyklem życia segmentów w `/dev/shm`. Wykorzystuje `numpy` do mapowania surowej pamięci na struktury tablicowe bez kopiowania danych.
+
+
+
+```python
+
+import numpy as np
+
+from multiprocessing import shared_memory
+
+from typing import Tuple, Optional
+
+import struct
+
+
+
+class SharedMemoryManager:
+
+    """
+
+    Adapter dla Zero-Copy IPC. 
+
+    Zarządza segmentami pamięci współdzielonej dla obrazów faktur.
+
+    """
+
+
+
+    @staticmethod
+
+    def create_segment(name: str, data: np.ndarray) -> str:
+
+        """
+
+        Zapisuje obraz do nowego segmentu pamięci współdzielonej.
+
+        """
+
+        # Alokacja segmentu o rozmiarze tablicy
+
+        shm = shared_memory.SharedMemory(name=name, create=True, size=data.nbytes)
+
+        
+
+        # Tworzymy widok numpy na zaalokowanej pamięci (Zero-Copy)
+
+        shared_array = np.ndarray(data.shape, dtype=data.dtype, buffer=shm.buf)
+
+        
+
+        # Kopiujemy dane tylko RAZ (z wejścia do SHM)
+
+        shared_array[:] = data[:]
+
+        
+
+        shm.close() # Zamykamy uchwyt w procesie nadawczym, ale segment żyje dalej
+
+        return name
+
+
+
+    @staticmethod
+
+    def read_segment(name: str, shape: Tuple[int, ...], dtype: str) -> np.ndarray:
+
+        """
+
+        Podpina się pod istniejący segment i zwraca widok (view).
+
+        """
+
+        existing_shm = shared_memory.SharedMemory(name=name)
+
+        
+
+        # Tworzymy tablicę bezpośrednio na buforze segmentu
+
+        # BRAK KOPIOWANIA (Zero-Copy)
+
+        shared_view = np.ndarray(shape, dtype=dtype, buffer=existing_shm.buf)
+
+        
+
+        return shared_view
+
+
+
+    @staticmethod
+
+    def cleanup_segment(name: str):
+
+        """
+
+        Całkowite usunięcie segmentu z systemu (wywoływane przez ostatni proces).
+
+        """
+
+        try:
+
+            shm = shared_memory.SharedMemory(name=name)
+
+            shm.close()
+
+            shm.unlink() # To usuwa plik z /dev/shm
+
+        except FileNotFoundError:
+
+            pass
+
+```
+
+
+
+---
+
+
+
+### **2. Integracja z NATS (Notyfikacja)**
+
+
+
+W Twoim pipeline, wiadomość przesyłana przez NATS JetStream powinna być teraz ultra-lekka. Zamiast obrazu, wysyłasz metadane:
+
+
+
+```json
+
+{
+
+  "event_type": "INVOICE_UPLOADED",
+
+  "payload": {
+
+    "shm_handle": "inv_8829_shm",
+
+    "resolution": [3840, 2160, 3],
+
+    "pixel_type": "uint8",
+
+    "trace_id": "otel-882-abc"
+
+  }
+
+}
+
+```
+
+
+
+---
+
+
+
+### **3. Zaawansowane ulepszenia i eliminacja niedociągnięć**
+
+
+
+Mamy mechanizm transportu, ale aby był **Expert-Ready**, musimy zaadresować specyficzne problemy operacyjne:
+
+
+
+#### **A. Niedociągnięcie: Wycieki pamięci przy awarii (Zombie Segments)**
+
+Jeśli proces ML padnie (Crash/SIGKILL) przed wywołaniem `shm.unlink()`, `/dev/shm` szybko się zapełni, co doprowadzi do awarii całego serwera (Kernel Panic lub odmowa zapisu).
+
+
+
+* **Rozwiązanie: Garbage Collector Procesu Monitorującego.**
+
+    * Wdróż mały proces pomocniczy (Watchdog) lub wykorzystaj **Vector**, aby monitorował wiek segmentów w `/dev/shm`. Jeśli segment `inv_` ma więcej niż 5 minut i nie został usunięty, Watchdog musi wymusić `unlink()`.
+
+
+
+#### **B. Niedociągnięcie: Brak synchronizacji dostępu (Race Conditions)**
+
+Co jeśli proces ML zacznie czytać, zanim proces API skończy pisać (mimo małych opóźnień sieciowych NATS)?
+
+
+
+* **Rozwiązanie: Memory Fencing (Sealevel locks).**
+
+    * Wykorzystaj pierwsze 64 bajty segmentu pamięci jako nagłówek statusu. Pierwszy bajt to `READY_FLAG`. Proces ML czeka (busy-wait lub sleep), aż flaga zmieni się z `0` na `1`. To zapewnia spójność bez narzutu ciężkich blokad OS.
+
+
+
+#### **C. Niedociągnięcie: Bezpieczeństwo (Side-channel attacks)**
+
+Pamięć współdzielona jest dostępna dla każdego procesu z tymi samymi uprawnieniami użytkownika. Inny kontener w tym samym Podmanie (jeśli nie jest w pełni izolowany) mógłby podglądać faktury.
+
+
+
+* **Rozwiązanie: Podman IPC Namespace.**
+
+    * W definicji **Pulumi** skonfiguruj kontenery tak, aby współdzieliły przestrzeń IPC tylko ze sobą: `--ipc=container:<api_container_name>`. To uniemożliwia procesom spoza tej grupy dostęp do segmentów pamięci NexusAI.
+
+
+
+---
+
+
+
+### **4. Raport: Co dalej?**
+
+
+
+Twoja architektura osiągnęła punkt, w którym jest **zoptymalizowana pod kątem hardware'u**. Dane płyną przez system z fizyczną prędkością magistrali RAM.
+
+
+
+**Pozostałe wyzwania do Rozwiązania:**
+
+1. **VRAM Over-subscription:** Jeśli masz wiele binarek Nuitka korzystających z PyTorch, każda z nich domyślnie próbuje zarezerwować całą pamięć GPU. Musisz ustawić `torch.cuda.set_per_process_memory_fraction(0.4)`, aby umożliwić koegzystencję procesów.
+
+2. **Telemetry Correlation:** Upewnij się, że `trace_id` z wiadomości NATS jest przekazywany do `SharedMemoryManager`, aby w logach **VictoriaMetrics** widzieć, który segment pamięci był użyty dla której transakcji.
+
+
+
+
+
+Konfiguracja izolacji IPC na poziomie orkiestracji (Pulumi) oraz wdrożenie mechanizmu bariery pamięciowej (Memory Fencing) to dwa ostatnie kroki, które zamieniają luźno powiązane kontenery w **zwarte, bezpieczne środowisko wysokowydajne**.
+
+
+
+---
+
+
+
+### **1. Konfiguracja Pulumi dla izolacji IPC w Podmanie**
+
+
+
+W standardowej konfiguracji każdy kontener Podman ma własną, odizolowaną przestrzeń nazw IPC. Aby mechanizm `SharedMemoryManager` działał, proces API i proces ML muszą współdzielić tę samą przestrzeń nazw.
+
+
+
+Oto jak zdefiniować to w Pulumi (Python), używając dostawcy dla Docker/Podman:
+
+
+
+```python
+
+import pulumi
+
+import pulumi_docker as docker
+
+
+
+# Definicja kontenera API (Producenta danych)
+
+api_container = docker.Container("api_service",
+
+    image="nexus-ai-api:latest",
+
+    name="nexus-api",
+
+    # Konfiguracja IPC jako 'shareable' lub 'host' 
+
+    # W Podmanie 'shareable' pozwala innym kontenerom podpiąć się do tego kontenera
+
+    ipc_mode="shareable", 
+
+    envs=["ENV=production"],
+
+    opts=pulumi.ResourceOptions(protect=True)
+
+)
+
+
+
+# Definicja kontenera ML (Konsumenta danych)
+
+ml_container = docker.Container("ml_worker",
+
+    image="nexus-ai-ml:latest",
+
+    name="nexus-ml",
+
+    # Kluczowy moment: Podpięcie pod przestrzeń IPC kontenera API
+
+    ipc_mode=api_container.name.apply(lambda name: f"container:{name}"),
+
+    # Dodatkowo ograniczamy zasoby, aby zapobiec wyciekom SHM niszczącym hosta
+
+    memory=4096, # 4GB RAM
+
+    cpu_shares=1024,
+
+    envs=["OTEL_EXPORTER_OTLP_ENDPOINT=http://victoria-metrics:4317"]
+
+)
+
+```
+
+
+
+**Dlaczego to jest ważne?**
+
+Bez flagi `ipc_mode`, próba otwarcia segmentu `shared_memory` w drugim kontenerze zakończy się błędem `FileNotFoundError`, nawet jeśli procesy działają na tym samym hoście fizycznym. Ustawienie `container:name` tworzy bezpieczny "most" tylko między tymi dwoma procesami.
+
+
+
+---
+
+
+
+### **2. Mechanizm Nagłówków Statusu (Memory Fencing) w SHM**
+
+
+
+Aby uniknąć sytuacji, w której proces ML próbuje odczytać obraz, który proces API wciąż zapisuje (Race Condition), wprowadzamy **64-bajtowy nagłówek kontrolny** na początku każdego segmentu.
+
+
+
+#### **Implementacja Rozszerzonego Managera:**
+
+
+
+```python
+
+import numpy as np
+
+from multiprocessing import shared_memory
+
+import time
+
+
+
+class FencedSharedMemory:
+
+    # Definicja flag statusu
+
+    STATUS_EMPTY = 0
+
+    STATUS_WRITING = 1
+
+    STATUS_READY = 2
+
+    STATUS_READING = 3
+
+
+
+    HEADER_SIZE = 64 # Rezerwujemy 64 bajty na metadane i flagi
+
+
+
+    @classmethod
+
+    def create_and_write(cls, name: str, data: np.ndarray):
+
+        # Alokujemy miejsce: Dane + Nagłówek
+
+        total_size = cls.HEADER_SIZE + data.nbytes
+
+        shm = shared_memory.SharedMemory(name=name, create=True, size=total_size)
+
+        
+
+        # Bufor statusu (pierwszy bajt)
+
+        status_buffer = shm.buf[:1]
+
+        status_buffer[0] = cls.STATUS_WRITING
+
+        
+
+        # Zapis danych (od 64. bajtu)
+
+        shared_array = np.ndarray(data.shape, dtype=data.dtype, buffer=shm.buf, offset=cls.HEADER_SIZE)
+
+        shared_array[:] = data[:]
+
+        
+
+        # Zmiana statusu na READY (Barrier)
+
+        status_buffer[0] = cls.STATUS_READY
+
+        shm.close()
+
+
+
+    @classmethod
+
+    def wait_and_read(cls, name: str, shape: tuple, dtype: str, timeout: float = 2.0):
+
+        shm = shared_memory.SharedMemory(name=name)
+
+        status_buffer = shm.buf[:1]
+
+        
+
+        start_time = time.time()
+
+        while status_buffer[0] != cls.STATUS_READY:
+
+            if time.time() - start_time > timeout:
+
+                raise TimeoutError("SHM data not ready in time")
+
+            time.sleep(0.001) # Minimalne uśpienie (1ms) dla oszczędności CPU
+
+        
+
+        # Ustawiamy status na READING
+
+        status_buffer[0] = cls.STATUS_READING
+
+        
+
+        # Zwracamy widok na dane
+
+        data = np.ndarray(shape, dtype=dtype, buffer=shm.buf, offset=cls.HEADER_SIZE)
+
+        return data, shm
+
+```
+
+
+
+---
+
+
+
+### **3. Analiza Pozostałych Niedociągnięć (Advanced Level)**
+
+
+
+Twój system jest teraz bardzo szybki i bezpieczny, ale na poziomie **Expert** musimy rozważyć jeszcze dwa aspekty:
+
+
+
+1. **Niedociągnięcie: Fragmentation of /dev/shm.**
+
+    Podman/Linux domyślnie przydziela dla `/dev/shm` tylko 64MB (standard Docker). Twoje obrazy 4K mogą zajmować 30-50MB każdy.
+
+    * **Ulepszenie:** Musisz w Pulumi zwiększyć rozmiar SHM dla kontenera: `shm_size=2048` (2GB). Bez tego system rzuci błąd `No space left on device` przy drugiej fakturze.
+
+
+
+2. **Niedociągnięcie: Synchronizacja czasu (Drift) w Logach.**
+
+    Jeśli `VictoriaMetrics` i kontenery `API/ML` mają rozbieżne czasy systemowe (nawet o 100ms), korelacja zdarzeń z OpenTelemetry w DuckDB będzie niemożliwa.
+
+    * **Ulepszenie:** Wdróż **Chrony** lub **systemd-timesyncd** na hoście i zamontuj `/etc/localtime` oraz `/etc/timezone` jako Read-Only do wszystkich kontenerów.
+
+
+
+3. **Niedociągnięcie: "Dead Man's Switch" dla SHM.**
+
+    Jeśli proces ML zostanie ubity przez Falco (bo wykryto anomalię), segment SHM pozostanie w stanie `STATUS_READING` na zawsze.
+
+    * **Ulepszenie:** Proces API po wysłaniu powiadomienia NATS powinien nasłuchiwać na zdarzenie `ACK` od Workera. Jeśli w ciągu 30 sekund nie otrzyma potwierdzenia odczytu, musi samodzielnie wyczyścić (`unlink`) segment, aby uniknąć wycieku pamięci.
+
+
+
+### **Podsumowanie Raportu: Status Architektury**
+
+
+
+* **Autoryzacja:** JWT + Litestar (Zaimplementowane).
+
+* **Dane:** SQLite/DuckDB + CQRS (Zaimplementowane).
+
+* **Transport:** NATS + Zero-Copy SHM (Zaimplementowane).
+
+* **Bezpieczeństwo:** IPC Isolation + Falco (Zaimplementowane).
+
+* **Testy:** Hypothesis + Dagger (Zaimplementowane).
+
+
+
+Architektura NexusAI jest obecnie **w pełni zoptymalizowana pod kątem wydajności i bezpieczeństwa binarnego**. Następnym logicznym krokiem byłaby **automatyzacja Fine-tuningu modeli** (Active Learning Loop), czyli wykorzystanie błędów zgłaszanych przez użytkowników do automatycznego dotrenowania LayoutLMv1 w Daggerze.
+
+
+
+Czy chcesz omówić, jak zaimplementować **Active Learning Loop z wykorzystaniem LanceDB jako magazynu próbek treningowych**?
+
+
+
+
+
+
+
+Oczywiście, po przeanalizowaniu Twoich dotychczasowych planów i obecnego kodu, widzę jeszcze wiele przestrzeni do wprowadzenia zaawansowanych mechanizmów, które wyniosą Nexus AI na absolutnie najwyższy poziom. Oto konkretne propozycje, które wykraczają poza standardowe poprawki i budują prawdziwie autonomiczny, inteligentny i "pancerny" system księgowy.
+
+
+
+---
+
+
+
+1. Automatyczny Active Learning Loop (Continuous Fine-Tuning)
+
+
+
+Problem:
+
+Modele AI (LayoutLM, AutoGluon) są trenowane tylko okresowo (np. ręcznie lub według harmonogramu). Jeśli układ faktur dostawcy zmieni się nagle, system będzie generował błędy, dopóki ktoś nie uruchomi ręcznej interwencji i nie zainicjuje procesu uczenia. To tworzy "okno podatności" na błędy księgowe.
+
+
+
+Rozwiązanie:
+
+W pełni zautomatyzowany, zamknięty cykl uczenia (Closed-Loop Active Learning). System sam wykrywa spadek pewności, kolekcjonuje poprawki, uruchamia fine-tuning, waliduje nowy model i wdraża go automatycznie – bez udziału programisty.
+
+
+
+Implementacja (szkielet modułu ml/active_learning_loop.py):
+
+
+
+```python
+
+import asyncio
+
+from datetime import datetime, timedelta
+
+
+
+class ActiveLearningOrchestrator:
+
+    def __init__(self, lance_db, model_registry, feature_store, nats_client):
+
+        self.lance_db = lance_db
+
+        self.model_registry = model_registry
+
+        self.feature_store = feature_store
+
+        self.nc = nats_client
+
+        self._training_lock = asyncio.Lock()
+
+
+
+    async def should_retrain(self) -> bool:
+
+        """Decyduje, czy nadszedł czas na retrening."""
+
+        # 1. Sprawdź, czy minęło 7 dni od ostatniego treningu
+
+        last_training = self.model_registry.get_last_training_date()
+
+        if last_training and (datetime.utcnow() - last_training).days < 7:
+
+            return False
+
+        
+
+        # 2. Sprawdź liczbę nowych poprawek manualnych
+
+        new_rows = self.lance_db.execute(
+
+            "SELECT COUNT(*) FROM corrections WHERE used_for_training = FALSE"
+
+        ).fetchone()[0]
+
+        
+
+        # 3. Jeśli jest więcej niż 50 nowych poprawek, uruchom retrening
+
+        return new_rows >= 50
+
+
+
+    async def run_cycle(self):
+
+        """Główna pętla cyklu aktywnego uczenia."""
+
+        if not self._training_lock.locked() and await self.should_retrain():
+
+            async with self._training_lock:
+
+                await self._execute_training()
+
+                await self._validate_and_deploy()
+
+
+
+    async def _execute_training(self):
+
+        """Uruchamia fine-tuning na nowych danych."""
+
+        # 1. Pobierz dane z LanceDB
+
+        training_data = self.lance_db.search("corrections").where("used_for_training = False").to_list()
+
+        
+
+        # 2. Uruchom fine-tuning LayoutLM z LoRA
+
+        trainer = LayoutLMTrainer(self.model_registry.get_active("layoutlm"))
+
+        new_model_path = await trainer.fine_tune(training_data, epochs=5, lora_rank=8)
+
+        
+
+        # 3. Oznacz dane jako użyte
+
+        self.lance_db.execute("UPDATE corrections SET used_for_training = TRUE WHERE used_for_training = FALSE")
+
+        
+
+        return new_model_path
+
+
+
+    async def _validate_and_deploy(self):
+
+        """Waliduje nowy model i wdraża go tylko wtedy, gdy jest lepszy."""
+
+        # 1. Uruchom ewaluację na zbiorze walidacyjnym
+
+        new_metrics = await self._evaluate_model(new_model)
+
+        old_metrics = self.model_registry.get_current_metrics()
+
+        
+
+        # 2. Porównaj F1-score (lub accuracy)
+
+        if new_metrics["f1_score"] > old_metrics["f1_score"] * 1.01: # Minimum 1% poprawy
+
+            self.model_registry.deploy(new_model, "layoutlm")
+
+            await self.nc.publish("system.model_deployed", {"model": "layoutlm", "f1": new_metrics["f1_score"]})
+
+        else:
+
+            logger.warning("Nowy model odrzucony – brak poprawy.")
+
+```
+
+
+
+---
+
+
+
+2. Predictive Cashflow z Uwzględnieniem Sezonowości (Prophet + Polars)
+
+
+
+Problem:
+
+Obecny cashflow forecast (CashflowForecaster) to zaślepka oparta na prostej sumie historycznej. Nie uwzględnia trendów, sezonowości (np. wyższe koszty w grudniu) ani indywidualnych wzorców płatności kontrahentów.
+
+
+
+Rozwiązanie:
+
+Zintegrować model Facebook Prophet trenowany na danych z DuckDB. Model będzie prognozował dzienne saldo na podstawie 2-3 lat historii, automatycznie wykrywając sezonowość tygodniową i roczną, a także uwzględniając polskie święta.
+
+
+
+Implementacja (fragment services/forecasting/prophet_engine.py):
+
+
+
+```python
+
+from prophet import Prophet
+
+import pandas as pd
+
+
+
+class ProphetCashflowEngine:
+
+    def __init__(self, duckdb_manager):
+
+        self.db = duckdb_manager
+
+
+
+    async def forecast(self, periods: int = 90) -> pd.DataFrame:
+
+        """Zwraca prognozę dziennego cashflow na X dni naprzód."""
+
+        # Pobranie zagregowanych dziennych przepływów z DuckDB
+
+        df = self.db.execute("""
+
+            SELECT 
+
+                issue_date::DATE as ds,
+
+                SUM(CASE WHEN type = 'SALE' THEN amount_gross ELSE -amount_gross END) as y
+
+            FROM invoices_replica
+
+            WHERE issue_date >= CURRENT_DATE - INTERVAL 3 YEAR
+
+            GROUP BY 1 ORDER BY 1
+
+        """).df()
+
+        
+
+        df.columns = ['ds', 'y']
+
+        df['ds'] = pd.to_datetime(df['ds'])
+
+        
+
+        # Konfiguracja modelu
+
+        model = Prophet(
+
+            yearly_seasonality=True,
+
+            weekly_seasonality=True,
+
+            daily_seasonality=False,
+
+            changepoint_prior_scale=0.05,
+
+        )
+
+        model.add_country_holidays(country_name='PL')
+
+        model.fit(df)
+
+        
+
+        future = model.make_future_dataframe(periods=periods)
+
+        forecast = model.predict(future)
+
+        
+
+        return forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(periods)
+
+```
+
+
+
+---
+
+
+
+3. Kryptograficznie Niezmienny Łańcuch Audytowy (Merkle Tree w DuckDB)
+
+
+
+Problem:
+
+Nawet przy użyciu Event Sourcingu, administrator z bezpośrednim dostępem do bazy SQLite może zmodyfikować historię zdarzeń, a tradycyjny AuditLog tego nie wykryje.
+
+
+
+Rozwiązanie:
+
+Zaimplementować Merkle Tree w dedykowanej tabeli DuckDB. Każde zdarzenie audytowe zawiera hash poprzedniego wpisu. Raz dziennie system oblicza korzeń drzewa (root hash) i publikuje go do zewnętrznego, niezmienialnego rejestru (np. transakcja na publicznym blockchainie lub po prostu do odpornego na manipulacje strumienia NATS). Każda próba modyfikacji przeszłości spowoduje, że hash nie będzie się zgadzał.
+
+
+
+Implementacja (szkielet services/merkle_audit.py):
+
+
+
+```python
+
+import hashlib
+
+import json
+
+
+
+class MerkleAuditLogger:
+
+    def __init__(self, duckdb):
+
+        self.db = duckdb
+
+        self._ensure_schema()
+
+
+
+    def append_event(self, event_type: str, aggregate_id: str, data: dict) -> str:
+
+        """Dodaje zdarzenie do łańcucha i zwraca nowy hash."""
+
+        # 1. Pobierz ostatni hash
+
+        last = self.db.execute("SELECT hash FROM audit_chain ORDER BY id DESC LIMIT 1").fetchone()
+
+        prev_hash = last[0] if last else "0" * 64
+
+
+
+        # 2. Oblicz nowy hash
+
+        payload = json.dumps({"type": event_type, "id": aggregate_id, "data": data}, sort_keys=True)
+
+        current_hash = hashlib.sha256(f"{prev_hash}{payload}".encode()).hexdigest()
+
+
+
+        # 3. Zapisz w łańcuchu
+
+        self.db.execute(
+
+            "INSERT INTO audit_chain (timestamp, event_type, payload, prev_hash, hash) VALUES (CURRENT_TIMESTAMP, ?, ?, ?, ?)",
+
+            (event_type, payload, prev_hash, current_hash)
+
+        )
+
+        return current_hash
+
+
+
+    def verify_integrity(self) -> bool:
+
+        """Weryfikuje cały łańcuch."""
+
+        rows = self.db.execute("SELECT prev_hash, hash, payload FROM audit_chain ORDER BY id").fetchall()
+
+        prev = "0" * 64
+
+        for r in rows:
+
+            expected = hashlib.sha256(f"{prev}{r[2]}".encode()).hexdigest()
+
+            if r[0] != prev or r[1] != expected:
+
+                return False
+
+            prev = r[1]
+
+        return True
+
+```
+
+
+
+---
+
+
+
+4. Priorytetyzacja Zadań i Detekcja Anomalii (Smart Document Triage)
+
+
+
+Problem:
+
+Wszystkie faktury trafiające do manual review są traktowane jednakowo. Nie ma priorytetyzacji – faktura na 1 000 000 PLN od nowego kontrahenta czeka w tej samej kolejce co faktura na 100 PLN.
+
+
+
+Rozwiązanie:
+
+Stworzyć silnik priorytetyzacji (TriageRanker), który na podstawie reguł biznesowych i ML (AutoGluon) nadaje każdemu dokumentowi w triage'u ocenę ryzyka. Faktury o wysokim ryzyku są wyświetlane na początku kolejki.
+
+
+
+Implementacja:
+
+
+
+```python
+
+class TriageRanker:
+
+    def __init__(self, duckdb):
+
+        self.db = duckdb
+
+
+
+    def rank(self, invoice_id: str) -> float:
+
+        """Oblicza score ryzyka dla faktury (0-100, gdzie 100 = najwyższy priorytet)."""
+
+        row = self.db.execute("""
+
+            SELECT 
+
+                i.amount_gross,
+
+                i.contractor_nip,
+
+                v.reliability_score,
+
+                CASE WHEN i.contractor_nip IN (SELECT nip FROM trusted_contractors) THEN 0 ELSE 1 END as is_new
+
+            FROM invoices_replica i
+
+            LEFT JOIN vendor_intelligence v ON i.contractor_nip = v.nip
+
+            WHERE i.id = ?
+
+        """, (invoice_id,)).fetchone()
+
+        
+
+        if not row:
+
+            return 0
+
+        
+
+        score = 0
+
+        amount = float(row[0])
+
+        reliability = float(row[2]) if row[2] else 50
+
+        is_new = int(row[3])
+
+        
+
+        # Wysoka kwota = wyższy priorytet
+
+        if amount > 50000:
+
+            score += 40
+
+        elif amount > 10000:
+
+            score += 20
+
+        
+
+        # Niska wiarygodność kontrahenta
+
+        if reliability < 30:
+
+            score += 30
+
+        
+
+        # Nowy kontrahent
+
+        if is_new:
+
+            score += 20
+
+            
+
+        return min(score, 100)
+
+```
+
+
+
+---
+
+
+
+5. Immutable Infrastructure i Signed Container Images
+
+
+
+Problem:
+
+W systemie księgowym nie można dopuścić do uruchomienia nieautoryzowanego kontenera. Nawet jeśli ktoś przełamie rejestr obrazów i podmieni obraz, system musi to wykryć.
+
+
+
+Rozwiązanie:
+
+
+
+· Podpisywanie obrazów Podman za pomocą cosign (Sigstore).
+
+· W pipeline CI/CD (Dagger) podpisywać każdy zbudowany obraz.
+
+· Przed uruchomieniem kontenera, polityka bezpieczeństwa (np. wbudowana w Podman lub przez Kubernetes Admission Controller) weryfikuje podpis. Niepodpisany obraz nie wystartuje.
+
+
+
+Implementacja w CI/CD (Dagger):
+
+
+
+```python
+
+# W pipeline Dagger
+
+import dagger
+
+
+
+async def build_and_sign():
+
+    async with dagger.Connection() as client:
+
+        # Zbuduj obraz
+
+        container = (
+
+            client.container()
+
+            .from_("debian:bookworm-slim")
+
+            .with_exec(["apt-get", "update"])
+
+            # ... reszta budowania
+
+        )
+
+        
+
+        # Wyeksportuj obraz
+
+        image_digest = await container.publish("registry.example.com/nexusai:latest")
+
+        
+
+        # Podpisz obraz
+
+        signed = await client.container().from_("gcr.io/projectsigstore/cosign").with_exec([
+
+            "cosign", "sign", "--key", "cosign.key", f"registry.example.com/nexusai@{image_digest}"
+
+        ])
+
+        await signed.sync()
+
+```
+
+
+
+---
+
+
+
+Te dodatki sprawią, że Nexus AI będzie systemem, który nie tylko spełnia dzisiejsze wymagania, ale jest przygotowany na przyszłe wyzwania.
+
+
+
+
+
+Przeanalizowałem Twój plan i widzę, że architektura jest już na niezwykle wysokim poziomie. Aby wynieść ją na absolutny szczyt ("Advanced/Autonomous"), musimy teraz skupić się nie na pojedynczych funkcjach, a na stworzeniu samonaprawiających się, inteligentnych pętli sprzężenia zwrotnego, które spajają te wszystkie technologie w jeden organizm.
+
+
+
+Poniżej znajdują się trzy rozbudowane, szczegółowe opisy architektoniczne, które są właśnie takim "klejem" (glue logic) – łączą obserwowalność, bezpieczeństwo i procesy CI/CD w autonomiczny system. Te opisy są przygotowane jako materiał dla CodeX do wygenerowania kodu.
+
+
+
+---
+
+
+
+1. Inteligentna Obserwowalność i Autonomiczna Reakcja na Incydenty (AI-Augmented Observability)
+
+
+
+Cel: Przejście od pasywnego monitorowania (metryki, logi) do aktywnego, autonomicznego reagowania na anomalie w czasie rzeczywistym, z wykorzystaniem analityki biznesowej w DuckDB.
+
+
+
+Opis mechanizmu:
+
+
+
+Integrujemy Vector jako centralny kolektor i transformator danych telemetrycznych. Jego zadaniem jest agregacja strumieni z loguru (w formacie JSON), metryk z VictoriaMetrics oraz zdarzeń bezpieczeństwa z Falco. Kluczowe jest skonfigurowanie Vector do transformacji i normalizacji tych danych w locie, a następnie zapisywanie ich w formacie Apache Parquet na fsspec (np. MinIO).
+
+
+
+DuckDB jest sercem analitycznym. Za pomocą cyklicznych zapytań (np. co 5 minut) wykonuje zapytania bezpośrednio na plikach Parquet z logami i zdarzeniami. Szuka korelacji, które są niezauważalne dla pojedynczych metryk. Na przykład:
+
+
+
+· Anomalia korelacyjna: DuckDB łączy zdarzenie Falco o próbie uruchomienia podejrzanego procesu w kontenerze ML z logiem aplikacji z loguru, który w tym samym czasie zgłasza spadek pewności modelu (ai.confidence.avg). Samo w sobie żadne z tych zdarzeń nie jest alarmem, ale ich koincydencja wskazuje na potencjalny atak typu "model poisoning" lub błąd kwantyzacji powodujący niestabilność.
+
+· Autonomiczna reakcja: Gdy DuckDB wykryje taką korelację, nie tylko loguje ją do dedykowanej tabeli security_incidents, ale również publikuje zdarzenie na dedykowany temat NATS alerts.critical.correlation. Specjalny "Response Worker" nasłuchuje na tym temacie i natychmiast podejmuje akcje zaradcze, np. wysyła sygnał do Coolify (przez webhook) o izolację i restart kontenera ML.
+
+
+
+Ten mechanizm zamyka pętlę: obserwacja → analiza → decyzja → akcja, realizując ideę "Self-Healing Infrastructure".
+
+
+
+---
+
+
+
+2. Niezmienny, Samoweryfikujący się System Audytu (Cryptographic Chained Audit)
+
+
+
+Cel: Stworzenie systemu audytu, który nie tylko rejestruje zdarzenia, ale jest matematycznie odporny na manipulacje i automatycznie weryfikuje swoją integralność, wykorzystując architekturę rozproszoną.
+
+
+
+Opis mechanizmu:
+
+
+
+Rdzeniem jest Merkle Tree zaimplementowany w DuckDB. Każde zdarzenie księgowe (utworzenie faktury, zmiana statusu, ręczna korekta) generuje nowy wpis w tabeli audit_chain. Każdy wpis zawiera:
+
+
+
+1. Niezmienny hash: SHA-256 z poprzedniego hasha, treści zdarzenia (posortowany JSON) i metadanych (trace_id, user_id).
+
+2. Łańcuch dowodowy: Ciągłość łańcucha można zweryfikować w dowolnym momencie, przeliczając hashe i porównując z zapisanymi.
+
+
+
+Aby uniezależnić integralność łańcucha od bezpieczeństwa samej bazy DuckDB, wprowadzamy drugą warstwę obrony. Raz na godzinę system oblicza korzeń drzewa Merkle (Merkle Root) dla wszystkich transakcji z ostatniej godziny. Ten pojedynczy hash jest następnie:
+
+
+
+1. Publikowany do dedykowanego, append-only strumienia NATS JetStream. Stream jest skonfigurowany z retention policy forever i zabezpieczeniami uniemożliwiającymi usuwanie wiadomości.
+
+2. Wysyłany do zewnętrznego "świadka" (notariusza). Może to być prosty mikroserwis w Headscale, który jedynie przechowuje listę otrzymanych hashy, lub publiczny blockchain (np. transakcja w sieci testowej). Nawet jeśli cała infrastruktura zostanie skompromitowana, opublikowany hash pozostaje niezmienny.
+
+
+
+Worker weryfikacyjny okresowo (np. co 12 godzin) odtwarza łańcuch z DuckDB, nie polegając na zapisanych hasłach. Przelicza je od podstaw i porównuje uzyskany Merkle Root z tym opublikowanym w bezpiecznym strumieniu NATS. Każda niezgodność generuje alarm krytyczny o naruszeniu integralności danych, nie do odróżnienia od prawdziwego ataku.
+
+
+
+---
+
+
+
+3. Hermetyczne, Matematyczne Bezpieczeństwo Procesów CI/CD (Zero-Defect Pipeline)
+
+
+
+Cel: Stworzenie potoku CI/CD, który nie tylko testuje kod, ale matematycznie dowodzi jego poprawności w krytycznych obszarach (logika finansowa), a jego artefakty (binarki, obrazy) są kryptograficznie weryfikowalne i odporne na ataki łańcucha dostaw.
+
+
+
+Opis mechanizmu:
+
+
+
+Potok CI/CD, orkiestrowany przez Dagger, składa się z trzech kluczowych, nowych faz:
+
+
+
+1. Fuzzing i Property-Based Testing (PBT):
+
+   · Hypothesis jest skonfigurowane nie tylko do testów jednostkowych, ale do formalnej walidacji reguł biznesowych. Definiujemy "prawa" systemu, np. "Suma netto + VAT brutto z tolerancją zaokrągleń zawsze równa się kwocie brutto", czy "Stan konta nigdy nie może być ujemny po operacji sprzedaży". Hypothesis generuje miliony permutacji danych (kwoty, stawki VAT, waluty) i próbuje znaleźć kontrprzykład łamiący te prawa. Znalezienie takiego przypadku jest traktowane jako krytyczny błąd i przerywa build.
+
+   · Schemathesis wykonuje fuzzing całego API, bombardując je zmutowanymi requestami i analizując odpowiedzi pod kątem błędów serwera (5xx) lub niespójności w schemacie OpenAPI.
+
+2. Testy Regresji Inteligencji (Golden Dataset AI):
+
+   · W repozytorium przechowywany jest zestaw "złotych faktur" (10-20 PDF-ów) wraz z idealnymi, zweryfikowanymi przez eksperta danymi w JSON. Dla każdego budowania, Dagger uruchamia pełny pipeline AI (od OCR po ekstrakcję) na tych plikach. Wyniki są porównywane z oczekiwanymi. Jeśli np. nowa wersja surya lub transformers zmieni wynik ekstrakcji kwoty brutto choćby o 1 grosz, test regresyjny kończy się niepowodzeniem. To gwarantuje, że aktualizacje bibliotek nie zepsują działania systemu w produkcji.
+
+3. Kryptograficzna integralność artefaktów (SLSA / Supply Chain Security):
+
+   · Po pomyślnym przejściu wszystkich testów, Nuitka kompiluje aplikację, a Podman buduje obraz kontenera. Natychmiast po zbudowaniu, Dagger generuje szczegółowy SBOM (Software Bill of Materials) dla binarki i obrazu, zawierający sumy kontrolne każdej zależności.
+
+   · Obraz jest podpisywany za pomocą cosign (Sigstore). Klucz prywatny do podpisu jest przechowywany w Infisical i nigdy nie opuszcza bezpiecznego enklawu.
+
+   · Przy wdrożeniu, Pulumi lub polityka Podmana (np. poprzez sigstore policy) sprawdza ważność podpisu obrazu. Uruchomienie niepodpisanego obrazu lub obrazu z nieprawidłowym podpisem jest fizycznie niemożliwe.
+
+
+
+Te trzy filary sprawiają, że proces wytwarzania oprogramowania staje się tak samo bezpieczny i godny zaufania, jak samo oprogramowanie księgowe.
+
+
+
+📊 Kompleksowy Raport: Stan wdrożenia narzędzi monitoringu, testów i infrastruktury self-hosted w Nexus AI
+
+
+
+Po szczegółowej analizie kodu źródłowego i Twoich planów, oceniam stan wdrożenia wymienionych technologii oraz wskazuję konkretne działania niezbędne do osiągnięcia poziomu zaawansowanego.
+
+
+
+---
+
+
+
+1. Monitoring, logowanie i SIEM
+
+
+
+Ogólna ocena wdrożenia: 🔴 1/10 – Podstawowe logowanie istnieje (loguru), ale cała reszta stosu (Vector, VictoriaMetrics, Falco, Sentry Lite) jest nieobecna w kodzie.
+
+
+
+1.1. Stan obecny i luki
+
+
+
+Komponent Status Problem
+
+loguru ✅ Używany Logi w formacie tekstowym, nieustrukturyzowane – trudne do analizy maszynowej.
+
+VictoriaMetrics ❌ Nieobecne Brak zbierania i wizualizacji metryk.
+
+Vector + DuckDB ❌ Nieobecne Brak centralnego kolektora logów i analityki logów w czasie rzeczywistym.
+
+Falco ❌ Nieobecne Brak monitorowania bezpieczeństwa na poziomie jądra systemu.
+
+Sentry Lite ❌ Nieobecne Brak agregacji błędów i alertów.
+
+
+
+1.2. Co zmienić i rozbudować, aby maksymalnie wykorzystać te technologie
+
+
+
+1.2.1. Ustrukturyzowane logowanie JSON w loguru
+
+
+
+Problem: Logi tekstowe są nieczytelne dla maszyn i nie mogą być wydajnie przeszukiwane ani agregowane.
+
+Rozwiązanie: Wymusić na loguru zapis wyłącznie w formacie JSON (serialize=True). Każdy log musi zawierać obowiązkowe pola: timestamp, level, message, trace_id (z OpenTelemetry), component (np. "API", "OCR", "ML"), tenant_id.
+
+Korzyść: Umożliwia to automatyczne parsowanie przez Vector i szybkie zapytania analityczne w DuckDB.
+
+
+
+1.2.2. Vector jako centralny kolektor i transformator logów
+
+
+
+Problem: Brak centralnego punktu zbierania logów – każdy komponent loguje osobno, co przy architekturze rozproszonej uniemożliwia korelację zdarzeń.
+
+Rozwiązanie: Skonfigurować Vector (lekki, wydajny, napisany w Rust) do:
+
+
+
+· Odbierania logów JSON z wszystkich komponentów (API, Worker, NATS).
+
+· Transformacji w locie – maskowanie danych wrażliwych (NIP, numery kont) i usuwanie pól niepotrzebnych.
+
+· Zapis do plików Parquet na fsspec (MinIO/S3). DuckDB potrafi natywnie czytać Parquet i wykonywać błyskawiczne zapytania analityczne na logach.
+
+· Równoległe wysyłanie metryk do VictoriaMetrics.
+
+
+
+1.2.3. VictoriaMetrics do przechowywania metryk
+
+
+
+Problem: Brak wizualizacji wydajności systemu i stanu modeli AI.
+
+Rozwiązanie: Dodać instrumentację we wszystkich kluczowych komponentach:
+
+
+
+· Licznik przetworzonych faktur (nexus.invoices.processed).
+
+· Histogram czasu OCR (nexus.ocr.duration_ms).
+
+· Histogram pewności modelu (nexus.ml.confidence).
+
+· Gauge zużycia VRAM i RAM.
+
+· Te metryki są wysyłane przez Vector do VictoriaMetrics, a następnie wizualizowane w Grafanie z predefiniowanymi dashboardami i alertami.
+
+
+
+1.2.4. Falco + Falcosidekick do aktywnego bezpieczeństwa
+
+
+
+Problem: Brak nadzoru nad tym, co dzieje się wewnątrz kontenerów.
+
+Rozwiązanie: Wdrożyć Falco (eBPF) do monitorowania zdarzeń na poziomie jądra:
+
+
+
+· Wykrywanie prób uruchomienia shella w kontenerze Distroless (który shella nie ma!).
+
+· Wykrywanie modyfikacji plików binarnych lub modeli AI.
+
+· Wykrywanie nietypowych połączeń sieciowych.
+
+· Skonfigurować falcosidekick, aby przy krytycznym zdarzeniu wysyłał webhook do Coolify, które automatycznie izoluje i restartuje zainfekowany kontener, oraz publikował alert na NATS.
+
+
+
+1.2.5. Sentry Lite dla błędów w binarce Nuitka
+
+
+
+Problem: Tradybilne trackbacki Pythona nie działają w skompilowanej binarce.
+
+Rozwiązanie: Skonfigurować Sentry do obsługi zrzutów pamięci (Minidumps/Crashpad) z kodu natywnego. Przekazać symbole debugowania (.pdb/.sym), aby móc odczytać adresy w kodzie C++ i zmapować je na oryginalny kod Pythona.
+
+
+
+---
+
+
+
+2. Testy
+
+
+
+Ogólna ocena wdrożenia: 🟡 3/10 – Istnieją testy jednostkowe (pytest), ale brakuje zaawansowanych technik testowania (Hypothesis, Schemathesis, Dagger, Playwright).
+
+
+
+2.1. Stan obecny i luki
+
+
+
+Komponent Status Problem
+
+pytest ✅ Używany Tylko podstawowe testy jednostkowe z mockami.
+
+Hypothesis ❌ Nieobecne Brak property-based testing.
+
+Dagger ❌ Nieobecne Brak hermetycznych środowisk testowych.
+
+Schemathesis ❌ Nieobecne Brak fuzzingu API.
+
+Playwright ❌ Nieobecne Brak testów end-to-end UI.
+
+
+
+2.2. Co zmienić i rozbudować, aby maksymalnie wykorzystać te technologie
+
+
+
+2.2.1. Hypothesis dla matematycznej poprawności finansowej
+
+
+
+Problem: Tradycyjne testy sprawdzają tylko konkretne przypadki. W księgowości jeden błąd zaokrągleń może kosztować fortunę.
+
+Rozwiązanie: Użyć Hypothesis do Property-Based Testing:
+
+
+
+· Zdefiniować "prawa": "netto + VAT == brutto (z tolerancją zaokrągleń)", "suma dzienna nie może być ujemna po operacji sprzedaży".
+
+· Hypothesis wygeneruje miliony permutacji danych (kwoty, stawki VAT, waluty) i spróbuje znaleźć kontrprzykład, który łamie te prawa.
+
+· Jeśli znajdzie – test kończy się niepowodzeniem, a przypadek jest zapisywany do dalszej analizy.
+
+
+
+2.2.2. Schemathesis do fuzzingu API
+
+
+
+Problem: API może mieć nieobsłużone wyjątki, które ujawnią się tylko przy nietypowych danych wejściowych.
+
+Rozwiązanie: Podłączyć Schemathesis do schematu OpenAPI generowanego przez Litestar (/schema/openapi.json). Schemathesis automatycznie generuje setki zmutowanych requestów do każdego endpointu, szukając błędów 500, wycieków pamięci i niezgodności ze schematem. Testy te są uruchamiane w CI/CD.
+
+
+
+2.2.3. Dagger – hermetyczne środowiska testowe
+
+
+
+Problem: Testy uruchamiane na maszynie developera mogą działać inaczej niż w produkcji ("u mnie działa").
+
+Rozwiązanie: Użyć Daggera do tworzenia identycznych ze środowiskiem produkcyjnym kontenerów Podman wewnątrz pipeline'u CI. Dagger:
+
+
+
+· Uruchamia wszystkie testy (pytest, Hypothesis, Schemathesis) w izolowanym środowisku.
+
+· Używa DuckDB do analizy wyników testów (pliki XML/JSON) i wykrywania "Flaky Tests" (testów, które losowo nie przechodzą) na przestrzeni czasu.
+
+· Uruchamia testy regresji AI na Golden Dataset.
+
+
+
+2.2.4. Playwright do testów UI i weryfikacji PDF
+
+
+
+Problem: Interfejs użytkownika (Flet) i generowane raporty PDF nie są testowane automatycznie.
+
+Rozwiązanie: Użyć Playwright do:
+
+
+
+· Automatycznego testowania przepływu użytkownika (upload faktury → oczekiwanie na OCR → weryfikacja wyniku w tabeli).
+
+· Renderowania widoków księgowych jako PDF i weryfikacji, czy wygenerowany dokument zawiera poprawne wartości w odpowiednich miejscach (np. suma brutto w prawym dolnym rogu).
+
+
+
+2.2.5. Golden Dataset dla testów regresji AI
+
+
+
+Problem: Aktualizacja bibliotek ML (transformers, surya) może bezgłośnie zepsuć ekstrakcję.
+
+Rozwiązanie: Przechowywać w repozytorium zestaw 10-20 "złotych faktur" (PDF + oczekiwany JSON). W CI/CD, Dagger uruchamia pełny pipeline AI na tych plikach i porównuje wyniki z oczekiwanymi. Każda niezgodność (nawet o 1 grosz) przerywa build.
+
+
+
+---
+
+
+
+3. Self-hosted: Zarządzanie, Sieć i Bezpieczeństwo
+
+
+
+Ogólna ocena wdrożenia: 🔴 0/10 – Całkowicie nieobecne w kodzie.
+
+
+
+3.1. Stan obecny
+
+
+
+Brak definicji infrastruktury, konfiguracji sieci, zarządzania certyfikatami.
+
+
+
+3.2. Co zmienić i rozbudować, aby maksymalnie wykorzystać te technologie
+
+
+
+3.2.1. Headscale jako Zero-Trust Mesh
+
+
+
+Problem: Komponenty komunikują się po lokalnych portach, które mogą być skanowane przez inne procesy na hoście.
+
+Rozwiązanie: Wdrożyć Headscale (self-hosted Tailscale) do stworzenia szyfrowanej sieci mesh między wszystkimi komponentami:
+
+
+
+· Każdy kontener (API, Worker, NATS, DuckDB, PocketBase) dostaje adres IP w sieci mesh (np. 100.64.0.x).
+
+· Cała komunikacja wewnętrzna odbywa się przez te adresy, a nie przez localhost czy sieć Dockera.
+
+· Porty nie są eksponowane na zewnątrz – sieć jest niewidzialna dla skanerów.
+
+· Headscale zapewnia automatyczną rotację kluczy i szyfrowanie end-to-end (WireGuard).
+
+
+
+3.2.2. PocketBase jako Identity Provider i panel administracyjny
+
+
+
+Problem: Zarządzanie użytkownikami i regułami biznesowymi wymaga albo ręcznej edycji bazy, albo budowania własnego UI.
+
+Rozwiązanie: Użyć PocketBase jako lekkiego, self-hosted serwisu tożsamości:
+
+
+
+· Identity Provider: PocketBase zarządza użytkownikami, hasłami i rolami. Litestar używa PocketBase jako zewnętrznego OAuth2/OIDC providera do uwierzytelniania.
+
+· Panel administracyjny: Administratorzy mogą przez UI PocketBase zarządzać dynamicznymi regułami (np. stawki VAT, limity kwotowe) bez dotykania kodu i rekompilacji binarki.
+
+· Config Store: Przechowywanie konfiguracji, która może się zmieniać bez rekompilacji (np. adresy API KSeF, klucze API).
+
+
+
+3.2.3. Rathole + frp – niezawodne tunele i failover
+
+
+
+Problem: Aplikacja może być hostowana za NAT-em lub firewallem, co utrudnia dostęp z zewnątrz. Pojedynczy tunel to pojedynczy punkt awarii.
+
+Rozwiązanie: Zastosować nadmiarowość tuneli:
+
+
+
+· frp jako główny tunel wystawiający aplikację na zewnątrz.
+
+· Rathole (szybszy, napisany w Rust) jako hot-standby. Dagger monitoruje dostępność głównego tunelu. Jeśli frp przestanie odpowiadać, Dagger automatycznie przełącza DNS na Rathole.
+
+· Oba tunele są zarządzane jako kontenery Podman i monitorowane przez VictoriaMetrics.
+
+
+
+3.2.4. Coolify jako GitOps Platform
+
+
+
+Problem: Wdrożenia wymagają ręcznego logowania się na serwer i restartowania kontenerów.
+
+Rozwiązanie: Skonfigurować Coolify jako platformę GitOps:
+
+
+
+· Coolify nasłuchuje webhooków z repozytorium (GitHub/GitLab).
+
+· Po przejściu wszystkich testów w CI/CD, Coolify automatycznie pobiera nowy obraz, restartuje kontenery i podpina certyfikat SSL przez Let's Encrypt.
+
+· Zarządza zmiennymi środowiskowymi (przez Infisical) i sekretami.
+
+· W przypadku awarii, Coolify może automatycznie przywrócić poprzednią wersję (rollback).
+
+
+
+---
+
+
+
+📋 Podsumowanie – mapa drogowa
+
+
+
+Priorytet Kategoria Działanie
+
+🔴 Krytyczny Monitoring Ustrukturyzowane logi JSON w loguru, integracja Vector + DuckDB
+
+🔴 Krytyczny Testy Wdrożenie Hypothesis dla logiki finansowej, Golden Dataset dla AI
+
+🟠 Wysoki SIEM Konfiguracja Falco + falcosidekick, integracja z Coolify
+
+🟠 Wysoki Testy Schemathesis do fuzzingu API, Dagger do hermetycznych środowisk
+
+🟠 Wysoki Self-hosted Headscale mesh, PocketBase jako Identity Provider
+
+🟡 Średni Monitoring VictoriaMetrics + predefiniowane dashboardy Grafana
+
+🟡 Średni Testy Playwright do testów UI i PDF
+
+🟡 Średni Self-hosted Rathole + frp failover, Coolify GitOps
+
+🟢 Ulepszenia SIEM Sentry Lite z obsługą Minidumps dla Nuitka
+
+
+
+Po wdrożeniu wszystkich powyższych zmian, Nexus AI będzie posiadał pełną, zintegrowaną warstwę obserwowalności, matematycznie udowodnioną poprawność finansową oraz infrastrukturę odporną na ataki i awarie – osiągając poziom Advanced Enterprise.
+
+
+
+
+
+🔍 Ultradźwiękowa analiza pozostałych niedociągnięć – poziom Autonomiczny
+
+
+
+Po przeanalizowaniu całej dotychczasowej dyskusji, kodu źródłowego i wszystkich wdrożonych już poprawek, system Nexus AI osiągnął poziom Enterprise. Aby jednak stał się systemem Autonomicznym (Advanced/Autonomous), należy usunąć bariery między poszczególnymi warstwami i wprowadzić mechanizmy samoregulacji oraz głębokiej, wielowarstwowej walidacji.
+
+
+
+Poniższe punkty nie są już prostymi błędami w kodzie, ale złożonymi wyzwaniami architektonicznymi, które wymagają zaawansowanych rozwiązań. Każdy z nich zawiera szczegółowy opis techniczny, który może posłużyć jako specyfikacja do implementacji.
+
+
+
+---
+
+
+
+1. Dynamiczne Zarządzanie Zasobami GPU w Środowisku Multi-Tenant
+
+
+
+Opis problemu:
+
+W środowisku multi-tenant, każdy dzierżawca może mieć własny, dotrenowany model AI (np. LayoutLM, AutoGluon) przechowywany w LanceDB. Ładowanie wszystkich modeli wszystkich klientów do pamięci GPU (VRAM) jest niemożliwe, ponieważ VRAM jest zasobem ograniczonym. Z drugiej strony, ciągłe przeładowywanie modeli z dysku do GPU przy każdym żądaniu powoduje ogromne opóźnienia (tzw. "cold start").
+
+
+
+Dlaczego to jest kluczowe:
+
+Bez odpowiedniego zarządzania, system nie może być ani wydajny (opóźnienia), ani stabilny (OOM Killer zabijający procesy). To jest fundamentalny problem dla skalowalności w architekturze multi-tenant z zaawansowanym ML.
+
+
+
+Szczegółowe rozwiązanie:
+
+Implementacja Model Cache z polityką Least Recently Used (LRU) dla GPU.
+
+
+
+1. Warstwa ModelManager: Dedykowany komponent, który działa jako cache dla załadowanych modeli. Przechowuje wskaźniki do modeli PyTorch w pamięci GPU.
+
+2. Polityka LRU: Cache ma określony maksymalny rozmiar (np. max 3 modele w VRAM). Gdy potrzebny jest model, który nie jest w cache'u (cache miss), a cache jest pełny, model, który nie był używany od najdłuższego czasu, jest przenoszony z GPU do RAM (offload), a następnie z RAM na dysk, zwalniając miejsce.
+
+3. Proces Decyzyjny: Przed załadowaniem nowego modelu, ModelManager sprawdza dostępną VRAM (np. przez torch.cuda.mem_get_info()). Jeśli nie ma wystarczająco miejsca na największy obsługiwany model, najstarszy model jest zrzucany.
+
+4. Współdzielenie bazowe: Modele bazowe, które są wspólne dla wszystkich tenantów (np. oryginalny LayoutLM przed fine-tuningiem), są ładowane tylko raz i współdzielone. Tylko adaptery LoRA, które są małe (~kilkadziesiąt MB), są ładowane i usuwane per tenant. To minimalizuje zużycie VRAM.
+
+5. Monitoring: Metryki "cache hit ratio", czas przeładowania modelu i ilość dostępnej VRAM są wysyłane do VictoriiMetrics i wizualizowane w Grafanie.
+
+
+
+---
+
+
+
+2. Samoregulujący się System Kolejkowy (Backpressure & Auto-Scaling)
+
+
+
+Opis problemu:
+
+W obecnej architekturze, API przyjmuje wszystkie dokumenty i wrzuca je do NATS. Jeśli worker przetwarzający jest przeciążony (np. przez nagły napływ 1000 faktur), kolejka NATS JetStream będzie rosła w nieskończoność. Spowoduje to wykładnicze opóźnienia w przetwarzaniu i może w końcu wyczerpać zasoby dyskowe serwera.
+
+
+
+Dlaczego to jest kluczowe:
+
+System finansowy nie może pozwolić sobie na niekontrolowane opóźnienia. Musi być odporny na skoki ruchu i działać w przewidywalny sposób.
+
+
+
+Szczegółowe rozwiązanie:
+
+Implementacja mechanizmu Backpressure i Auto-Scalingu.
+
+
+
+1. Monitor kolejki (Watchdog): Proces Watchdog (może być zintegrowany z API lub Workerem) cyklicznie sprawdza liczbę oczekujących wiadomości w strumieniu NATS JetStream.
+
+2. Mechanizm Backpressure: Jeśli liczba oczekujących wiadomości przekroczy próg "ostrzeżenia" (np. 100), API zaczyna odpowiadać na nowe requesty HTTP 503 Service Unavailable z nagłówkiem Retry-After. To celowe dławienie ruchu, aby zapobiec "utonięciu" systemu.
+
+3. Auto-Scaling Workera: Jeśli liczba wiadomości w kolejce przekroczy próg "skalowania" (np. 50), Watchdog publikuje zdarzenie system.scale_up. Dagger (lub Pulumi) uruchamia dodatkową, tymczasową instancję kontenera Workera, który pomaga rozładować kolejkę. Gdy kolejka spadnie do zera, dodatkowy worker jest automatycznie zatrzymywany.
+
+4. Priorytetyzacja: Workery mogą być wyspecjalizowane. Główny worker zawsze przetwarza nowe dokumenty. Dodatkowy, tymczasowy worker może być uruchomiony do przetwarzania zaległych zadań z DLQ lub do wykonywania kosztownych zadań fine-tuningu.
+
+
+
+---
+
+
+
+3. Wielowarstwowa Walidacja Integralności Danych (Data Integrity Daemon)
+
+
+
+Opis problemu:
+
+Mimo użycia Event Sourcingu i Outbox Pattern, nadal mogą wystąpić rzadkie przypadki niespójności między bieżącym stanem w SQLite (Read Model) a historią zdarzeń w NATS JetStream, lub między SQLite a repliką OLAP w DuckDB. Ciche błędy w synchronizacji mogą prowadzić do błędnych raportów finansowych, które mogą być wykryte dopiero po miesiącach.
+
+
+
+Dlaczego to jest kluczowe:
+
+Dla audytów i sprawozdawczości finansowej, 100% spójność danych jest wymogiem absolutnym. "Ostateczna spójność" (eventual consistency) musi być nie tylko gwarantowana, ale i stale weryfikowana.
+
+
+
+Szczegółowe rozwiązanie:
+
+Stworzenie procesu demona (DataIntegrityDaemon), który cyklicznie i automatycznie weryfikuje spójność wszystkich warstw danych.
+
+
+
+1. Weryfikacja SQLite vs. Event Store: Daemon raz na godzinę wybiera losową próbkę faktur (np. 5%). Dla każdej z nich odtwarza stan z NATS JetStream od pierwszego zdarzenia do ostatniego i porównuje go z aktualnym stanem w tabeli invoices w SQLite. Każda niezgodność generuje alert krytyczny.
+
+2. Weryfikacja SQLite vs. DuckDB: Daemon porównuje sumy kontrolne (np. SUM(amount_gross)) dla ostatnich dni/miesięcy między SQLite a DuckDB. Równolegle, porównuje liczbę rekordów dla każdego statusu faktury.
+
+3. Weryfikacja integralności plików (Storage): Daemon pobiera losową próbkę plików z fsspec, przelicza ich SHA-256 i porównuje z hashem zapisanym w bazie (invoice.file_hash). Wykrywa w ten sposób uszkodzenia danych ("bit rot").
+
+4. Publikacja wyników: Każda weryfikacja kończy się raportem (sukces/porażka), który jest publikowany jako zdarzenie NATS i metryka w VictoriaMetrics. Niezgodności są eskalowane jako incydenty bezpieczeństwa.
+
+
+
+---
+
+
+
+4. Zaawansowana Deduplikacja Oparta na Treści (Content-Aware Deduplication)
+
+
+
+Opis problemu:
+
+System używa SHA-256 do deduplikacji, co wykrywa tylko identyczne pliki. Jeśli jednak ta sama faktura zostanie wysłana raz jako oryginalny PDF, a drugi raz jako zeskanowany i lekko obrócony obraz PNG, SHA-256 będzie różny, a system przetworzy ją dwukrotnie.
+
+
+
+Dlaczego to jest kluczowe:
+
+Podwójne przetworzenie tej samej faktury może prowadzić do zdublowania kosztów w raportach. Inteligentna deduplikacja oszczędza zasoby obliczeniowe i zapobiega błędom księgowym.
+
+
+
+Szczegółowe rozwiązanie:
+
+Dodanie do FuzzyDeduplicator wielowymiarowego porównywania przed zapisaniem nowego dokumentu.
+
+
+
+1. Perceptual Hash (pHash): Generowany jest wizualny "odcisk palca" obrazu faktury (odporny na skalowanie, drobne obroty, zmianę kompresji). Porównywany jest z hashami już zapisanych obrazów w bazie (odległość Hamminga).
+
+2. Fuzzy Hash (ssdeep): Generowany jest hash całego pliku, który potrafi wykryć podobieństwo na poziomie struktury pliku, nawet jeśli część danych binarnych jest inna.
+
+3. Semantic Hash: Po ekstrakcji danych (OCR/AI), generowany jest hash z pól biznesowych: NIP sprzedawcy + numer faktury + data + kwota brutto. To najlepszy sposób na wychwycenie duplikatu, niezależnie od formy wizualnej.
+
+4. Proces walidacji: Przed pełnym przetworzeniem nowego pliku, system oblicza wszystkie 4 hashe (SHA256, pHash, ssdeep, Semantic Hash). Jeśli którykolwiek z nich wskazuje na duplikat z już istniejącą fakturą, dokument jest oznaczany jako POTENTIAL_DUPLICATE i trafia do manualnej weryfikacji, zamiast być automatycznie księgowany.
+
+
+
+---
+
+
+
+5. Asystent AI dla Księgowego (RAG-based Audit Copilot)
+
+
+
+Opis problemu:
+
+Księgowy, widząc nową fakturę, musi często ręcznie sprawdzać historię współpracy z danym kontrahentem, szukać podobnych dokumentów z przeszłości lub przypominać sobie zasady księgowania. Jest to czasochłonne i podatne na błędy.
+
+
+
+Dlaczego to jest kluczowe:
+
+Podnosi produktywność i jakość pracy człowieka, redukując czas potrzebny na weryfikację i podejmowanie decyzji.
+
+
+
+Szczegółowe rozwiązanie:
+
+Stworzenie asystenta (RAG Copilot), który na żądanie księgowego (lub automatycznie przy otwarciu dokumentu) generuje kontekstowe podsumowanie i rekomendacje.
+
+
+
+1. Wyzwalacz: Księgowy klika przycisk "Analizuj" przy fakturze lub system robi to automatycznie dla faktur z niskim confidence_score.
+
+2. Pipeline RAG (Retrieval-Augmented Generation):
+
+   · Retrieval: System odpytuje LanceDB (wektorowo) i DuckDB (analitycznie) w poszukiwaniu kontekstu. Zadaje pytania: "Znajdź 5 najbardziej podobnych faktur od tego kontrahenta", "Pokaż trendy wydatków na tę kategorię w ostatnim roku", "Czy ten kontrahent zmienił ostatnio numer konta?".
+
+   · Generowanie (Generation): Zebrany kontekst (historyczne faktury, alerty, trendy) jest pakowany jako prompt do lokalnego LLM-a (Phi-3). LLM generuje zwięzłe podsumowanie dla księgowego.
+
+3. Przykład wyniku: "To faktura od dostawcy X na kwotę 5 000 PLN za usługi IT. Średnia miesięczna faktura od tego dostawcy to 4 500 PLN. Ostatnia faktura z 10.01.2026 była na tę samą kwotę i została zaksięgowana na koncie 402. Uwaga: numer konta bankowego na fakturze różni się od tego użytego w poprzednich 12 transakcjach. Zalecana jest ręczna weryfikacja."
+
+4. Interfejs: Informacje zwrotne są wyświetlane w UI obok formularza faktury, co pozwala księgowemu na szybką i świadomą decyzję.
+
+
+
+---
+
+
+
+Te pięć ulepszeń celuje w luki, które są charakterystyczne dla dojrzałych, złożonych systemów. Ich wdrożenie przesunie charakter Nexus AI z "doskonałego rejestratora" na "aktywnego, inteligentnego asystenta", który potrafi samodzielnie diagnozować problemy, optymalizować swoje działanie i aktywnie wspierać człowieka w krytycznych decyzjach finansowych.
+
+

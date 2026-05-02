@@ -1,0 +1,1840 @@
+
+
+Brak rejestracji w aplikacji głównej: Mechanizm jwt_auth stworzony w plikach auth.py oraz security.py w ogóle nie jest podłączony do obiektu aplikacji Litestar w pliku app.py.
+
+
+Ominięcie JWT przy weryfikacji ról (Ogromna luka): W pliku rbac.py funkcja get_current_role pobiera rolę użytkownika bezpośrednio z surowego nagłówka connection.headers.get("X-Nexus-Role"). To oznacza, że każdy może wysłać dowolny nagłówek i podszyć się pod administratora, całkowicie omijając kryptograficzną weryfikację tokenu.
+
+
+Wszędobylskie Mocki: Funkcja retrieve_user_handler (zarówno w auth.py jak i security.py) nie sprawdza faktycznego użytkownika w bazie danych, lecz zawsze zwraca hardcodowany obiekt, np. User(id=token.sub, username="admin", role="ADMIN") lub User(id="admin", role="admin").
+
+
+Antywzorzec statycznego tokenu: W security.py funkcja token_guard ignoruje JWT na rzecz sprawdzania, czy token jest dokładnie równy zmiennej środowiskowej EXPECTED_TOKEN (pobranej z NEXUS_TOKEN). To de facto mechanizm "Static Bearer Token", który stoi w sprzeczności z ideą dynamicznych tokenów JWT.
+
+
+Brak logowania: W kodzie nie ma endpointu generującego token JWT (np. /login), który autoryzowałby użytkownika i wstrzykiwał token w nagłówki odpowiedzi za pomocą mechanizmów Litestar.
+
+Rozdwojenie logiki: Istnieją dwa oddzielne pliki robiące (lub próbujące robić) to samo: auth.py i security.py.
+
+
+🛠️ 2. Szczegółowy plan naprawczy (Co i jak zmienić)
+Aby w pełni i bezpiecznie wykorzystać Litestar Security + JWT, musisz zrealizować poniższe kroki modyfikacyjne:
+
+Krok 1: Unifikacja i usunięcie duplikacji (Modyfikacja auth.py / security.py)
+Co usunąć: Pozbądź się token_guard z pliku security.py. Sprawdzanie statycznego nagłówka jest złą praktyką dla REST API opartego na JWT. Zdecyduj się na jeden plik (np. security.py) do trzymania logiki autoryzacyjnej i usuń drugi, by uniknąć konfuzji.
+
+
+Co zmienić: Musisz podłączyć prawdziwą bazę danych do retrieve_user_handler. Zamiast zwracać "admina", powinieneś wstrzyknąć sesję bazy danych i wyszukać użytkownika po token.sub.
+
+
+Jak ulepszyć:
+
+Python
+
+
+async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> User | None:
+    # Użycie sesji SQLAlchemy (lub DuckDB), dostarczonej w połączeniu
+    db_session = connection.app.state.db_engine # lub z dependencies
+    # Wykonaj realne zapytanie: SELECT * FROM users WHERE id = token.sub
+    # Jeśli użytkownik nie istnieje, zwróć None (Litestar sam odrzuci żądanie 401)
+Krok 2: Prawdziwe wykorzystanie RBAC bazującego na tożsamości (Przebudowa rbac.py)
+Co zmienić: Z funkcji get_current_role musisz bezwzględnie usunąć czytanie z nagłówka HTTP (X-Nexus-Role).
+
+
+Co dodać/zmodyfikować:
+
+Skorzystaj z tego, że mechanizm JWT Litestar automatycznie dołącza zweryfikowanego użytkownika do obiektu connection. Rola powinna być weryfikowana na podstawie zaufanych danych:
+
+Python
+
+
+def get_current_role(connection: ASGIConnection) -> RoleContext:
+    user = connection.user  # Obiekt dostarczony bezpiecznie przez JWTAuth
+    if not user:
+        raise NotAuthorizedException()
+    
+    role = NexusRole(user.role.lower())
+    return RoleContext(role=role, actor=user.username)
+Tylko wtedy guardy owner_only_guard i worker_only_guard będą kryptograficznie bezpieczne.
+
+
+Krok 3: Rejestracja middleware'u w aplikacji (Zmiana w app.py)
+Co dodać: Obecnie w app.py system autoryzacji "wisi w próżni". Musisz zaaplikować mechanizm bezpieczeństwa bezpośrednio na poziomie instancji Litestar.
+
+
+Szczegóły:
+
+Wewnątrz funkcji create_app() dodaj parametr on_app_init.
+
+Python
+
+
+from api.security import jwt_auth
+
+def create_app() -> Litestar:
+    return Litestar(
+        route_handlers=[...],
+        on_app_init=[jwt_auth.on_app_init], # KLUCZOWE: Wpięcie Litestar Security
+        dependencies=...,
+        # ... reszta konfiguracji
+    )
+Krok 4: Wdrożenie cyklu życia JWT (Dodanie endpointu /login)
+Co dodać:
+
+Brakuje mechanizmu wystawiającego tokeny. Nawet w modelu "offline-first" potrzebujesz metody uwierzytelniającej aplikację kliencką / pracownika.
+
+Stwórz endpoint np. w controllers/auth.py, który zweryfikuje hasło (lub inny mechanizm wejścia) i zwróci poprawny token. Litestar robi to doskonale za pomocą metody jwt_auth.login().
+
+Krok 5: Wykorzystanie JWT do przekazywania kontekstu (Ulepszenie Architektury)
+Co ulepszyć: W pliku middleware.py identyfikator najemcy (tenant_id) pobierany jest z nagłówka x-tenant-id. Jeśli system jest multi-tenant, tenant_id nie powinien być ufnie brany z podatnego na manipulację nagłówka. Najlepiej wykorzystać pole extras w payloadzie JWT. W momencie generowania tokenu (podczas logowania) zaszyj tam tenant_id. Potem w middleware (lub retrieve_user_handler) odkoduj token i bezpiecznie ustaw tenant_id w kontekście aplikacji. Dzięki temu maksymalnie wykorzystasz potencjał JWT jako "stateless identity providera".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+
+
+## 1. Analiza krytycznych niedociągnięć (Co może zawieść?)
+
+
+
+Mimo zaawansowania, w kodzie znajdują się pułapki wydajnościowe i logiczne:
+
+
+
+### A. Błąd w zarządzaniu silnikiem bazy danych (`dependencies.py`)
+
+W funkcji `provide_db_session` wywołujesz `await engine.dispose()` w bloku `finally`.
+
+* **Problem:** To niszczy pulę połączeń przy każdym pojedynczym żądaniu HTTP. Zamiast przyspieszać aplikację, zmuszasz system do nawiązywania nowego połączenia z SQLite przy każdym kliknięciu użytkownika.
+
+* **Rozwiązanie:** Silnik (`engine`) powinien żyć tak długo, jak aplikacja (być w `app.state`), a zamykany tylko przy `on_shutdown`.
+
+
+
+### B. "Pseudo" Outbox Pattern (`invoices.py`)
+
+W `InvoiceController.create_invoice` wywołujesz `await broker.kick(...)`.
+
+* **Problem:** To nie jest prawdziwy Outbox Pattern. Jeśli baza danych zapisze fakturę, ale sieć NATS w tej milisekundzie padnie, zadanie OCR nigdy nie zostanie wysłane, a dane w bazie będą wisieć jako "NEW".
+
+* **Rozwiązanie:** `create_invoice` powinien zapisywać rekord do tabeli `outbox_events` w tej samej transakcji co fakturę. Dopiero osobny proces (Relay) powinien wysyłać to do NATS.
+
+
+
+### C. Mieszanie standardów DTO (`schemas.py`)
+
+Używasz jednocześnie `msgspec.Struct` i `pydantic.BaseModel`.
+
+* **Problem:** Choć Litestar wspiera oba, prowadzi to do chaosu w walidacji. `msgspec` jest znacznie szybszy, ale `Pydantic` ma lepszą integrację z niektórymi pluginami Litestar.
+
+* **Rozwiązanie:** Zdecyduj się na jeden standard dla warstwy API (zalecam `msgspec` dla wydajności przy masowym przetwarzaniu faktur).
+
+
+
+### D. Brak atomowości w synchronizacji DuckDB (`tasks.py`)
+
+W `process_invoice_task` robisz `await session.commit()`, a potem `olap_manager.upsert_invoice`.
+
+* **Problem:** Jeśli `upsert_invoice` zawiedzie (np. brak miejsca na dysku), SQLite ma dane, a DuckDB (analityka) ich nie ma. Raporty finansowe będą błędne.
+
+
+
+---
+
+
+
+## 2. Proponowane ulepszenia (New Features)
+
+
+
+Aby Nexus AI stał się systemem klasy Enterprise, sugeruję dodanie następujących modułów:
+
+
+
+### I. Silnik Konsensusu OCR (Cross-Validation)
+
+Zamiast ufać tylko Surya OCR, wprowadź algorytm głosowania.
+
+* **Mechanizm:** Jeśli Surya i PaddleOCR zwracają różne kwoty brutto, faktura automatycznie trafia do `TriageController` z flagą `CONFIDENCE_CONFLICT`.
+
+
+
+### II. System "Hot-Swap" Modeli AI (`hardware.py`)
+
+Rozbuduj `HardwareProbe` o dynamiczne przełączanie.
+
+* **Funkcja:** Jeśli system wykryje nagły wzrost temperatury GPU lub brak VRAM, automatycznie przełącza zadania na mniejszy model (np. z `Llama-3` na `Phi-3`) bez przerywania pracy użytkownika.
+
+
+
+### III. Moduł "Zero-Copy" dla podglądu faktur
+
+W `static.py` serwujesz pliki bezpośrednio z dysku.
+
+* **Ulepszenie:** Zastosuj streaming bezpośrednio z pamiędzi współdzielonej (`SharedImageBuffer`) dla aktualnie procesowanych dokumentów, aby UI (Flet) wyświetlało postęp OCR w czasie rzeczywistym bez ciągłego czytania z wolnego dysku.
+
+
+
+---
+
+
+
+## 3. Optymalizacja kodu – Gotowe fragmenty
+
+
+
+### Poprawka Dependency Injection (Wydajność)
+
+Zamiast tworzyć silnik co chwila, pobieraj go ze stanu aplikacji:
+
+
+
+```python
+
+async def provide_db_session(request: Request) -> AsyncGenerator[AsyncSession, None]:
+
+    # Pobieramy fabrykę sesji zainicjalizowaną raz przy starcie (w state.py)
+
+    session_factory = request.app.state.db_session_factory
+
+    async with session_factory() as session:
+
+        try:
+
+            yield session
+
+        except Exception:
+
+            await session.rollback()
+
+            raise
+
+```
+
+
+
+### Usprawnienie Analityki (Real-time DuckDB)
+
+Zamiast czekać 5 minut na Crona, dodaj "Trigger" w zadaniu:
+
+
+
+```python
+
+# W tasks.py
+
+@broker.task
+
+async def process_invoice_task(invoice_id: str):
+
+    # ... procesowanie ...
+
+    await session.commit()
+
+    
+
+    # Natychmiastowa replikacja tylko tego jednego rekordu do DuckDB
+
+    # Dzięki temu dashboard odświeża się od razu po OCR
+
+    await broker.kick("sync_single_invoice_to_olap", invoice_id=invoice_id)
+
+```
+
+
+
+### Dodanie zaawansowanego Healthchecka
+
+W `routes/health.py` dodaj sprawdzanie zasobów AI:
+
+
+
+```python
+
+@get("/detailed")
+
+async def detailed_health(self) -> dict[str, Any]:
+
+    return {
+
+        "api": "OK",
+
+        "gpu_available": torch.cuda.is_available(),
+
+        "vram_free": f"{torch.cuda.mem_get_info()[0] / 1024**2:.2f} MB" if torch.cuda.is_available() else 0,
+
+        "pending_tasks": await broker.queue_size(), # Jeśli broker to wspiera
+
+        "sqlite_wal_size": os.path.getsize("nexus_oltp.db-wal") if os.path.exists("nexus_oltp.db-wal") else 0
+
+    }
+
+```
+
+
+
+---
+
+
+
+## Podsumowanie zmian
+
+| Obszar | Stan obecny | Po ulepszeniach | Zysk |
+
+| :--- | :--- | :--- | :--- |
+
+| **Baza Danych** | Rekoneksja przy każdym żądaniu | Pula połączeń w `app.state` | -80% opóźnienia API |
+
+| **Integracja AI** | Jeden model (Surya) | Konsensus (Surya + Paddle) | Wyższa dokładność finansowa |
+
+| **Analityka** | Synchronizacja co 5 min | Delta-sync (natychmiastowy) | Dane w czasie rzeczywistym |
+
+| **Security** | `allow_origins=["*"]` | Dynamiczna biała lista | Ochrona przed CSRF |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Oto kompletna implementacja wzorca Outbox dla systemu Nexus AI.
+
+
+
+---
+
+
+
+### Krok 1: Model tabeli Outbox
+
+W pliku `models.py` musimy dodać tabelę, która będzie służyć jako tymczasowy bufor dla zdarzeń[cite: 2].
+
+
+
+```python
+
+import uuid
+
+from datetime import datetime
+
+from sqlalchemy import JSON, String, DateTime
+
+from sqlalchemy.orm import Mapped, mapped_column
+
+from .base import Base # Zakładając istnienie klasy bazowej[cite: 2]
+
+
+
+class OutboxEvent(Base):
+
+    __tablename__ = "outbox_events"
+
+
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)[cite: 2]
+
+    topic: Mapped[str] = mapped_column(String(255), nullable=False)[cite: 2]
+
+    payload: Mapped[dict] = mapped_column(JSON, nullable=False)[cite: 2]
+
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)[cite: 2]
+
+    processed: Mapped[bool] = mapped_column(default=False)[cite: 2]
+
+```
+
+
+
+---
+
+
+
+### Krok 2: Zmiana w Controllerze (Atomowość)
+
+W pliku `invoices.py` modyfikujemy metodę `create_invoice`. Kluczowe jest to, że zapis faktury i zdarzenia outbox dzieje się w jednej transakcji bazy danych[cite: 2].
+
+
+
+```python
+
+# invoices.py
+
+class InvoiceController(Controller):
+
+    @post("/")
+
+    async def create_invoice(self, data: InvoiceCreate, db_session: AsyncSession) -> InvoiceDTO:
+
+        # 1. Tworzymy obiekt faktury[cite: 2]
+
+        new_invoice = Invoice(
+
+            **data.dict(), 
+
+            status="NEW"
+
+        )
+
+        db_session.add(new_invoice)[cite: 2]
+
+
+
+        # 2. Zamiast wysyłać do NATS, zapisujemy zamiar wysyłki w Outbox[cite: 2]
+
+        event = OutboxEvent(
+
+            topic="invoice.created",
+
+            payload={"invoice_id": str(new_invoice.id), "timestamp": datetime.utcnow().isoformat()}
+
+        )
+
+        db_session.add(event)[cite: 2]
+
+
+
+        # 3. Commit zatwierdza OBA rekordy naraz. Jeśli baza padnie, nie ma nic.
+
+        # Jeśli przejdzie, mamy pewność, że faktura i zdarzenie są bezpieczne[cite: 2].
+
+        await db_session.commit() 
+
+        return InvoiceDTO.from_orm(new_invoice)[cite: 2]
+
+```
+
+
+
+---
+
+
+
+### Krok 3: Implementacja Relay Service
+
+To serce wzorca. Proces, który „przepycha” zdarzenia z bazy do brokera[cite: 2]. Możemy to zrealizować jako zadanie w `tasks.py` lub osobny worker[cite: 2].
+
+
+
+```python
+
+# tasks.py
+
+import asyncio
+
+from sqlalchemy import select
+
+
+
+async def outbox_relay_worker(app_state):
+
+    """
+
+    Działa w pętli, szukając nieprzetworzonych zdarzeń w Outbox[cite: 2].
+
+    """
+
+    broker = app_state.broker
+
+    session_factory = app_state.db_session_factory[cite: 2]
+
+
+
+    while True:
+
+        async with session_factory() as session:
+
+            # Pobierz nieprzetworzone zdarzenia[cite: 2]
+
+            stmt = select(OutboxEvent).where(OutboxEvent.processed == False).limit(50)[cite: 2]
+
+            result = await session.execute(stmt)
+
+            events = result.scalars().all()[cite: 2]
+
+
+
+            for event in events:
+
+                try:
+
+                    # Próba wysyłki do NATS[cite: 2]
+
+                    await broker.publish(event.topic, event.payload)[cite: 2]
+
+                    
+
+                    # Oznacz jako przetworzone[cite: 2]
+
+                    event.processed = True
+
+                    await session.commit()[cite: 2]
+
+                except Exception as e:
+
+                    print(f"Błąd Relay: {e}")
+
+                    await session.rollback()[cite: 2]
+
+                    break # Przerwij pętlę przy błędzie brokera, spróbuj później[cite: 2]
+
+
+
+        await asyncio.sleep(1) # Czekaj sekundę przed kolejną rundą[cite: 2]
+
+```
+
+
+
+---
+
+
+
+### Zalety tego rozwiązania:
+
+* **Gwarancja dostarczenia (At-least-once):** Nawet jeśli broker NATS zostanie zrestartowany, zdarzenia czekają w bazie danych SQLite i zostaną wysłane natychmiast po powrocie łączności[cite: 2].
+
+* **Spójność danych:** Nigdy nie dojdzie do sytuacji, w której faktura istnieje w systemie, ale moduł OCR o niej „nie wie”[cite: 2].
+
+* **Odciążenie API:** Endpoint faktury kończy pracę szybciej, bo nie musi czekać na odpowiedź z sieci od brokera[cite: 2].
+
+
+
+
+
+
+
+
+
+⚠️ Uzupełnienia / poprawki
+
+
+
+Ad Krok 1 (Model Outbox) – ujednolicenie z istniejącym kodem
+
+
+
+Twoja propozycja tabeli OutboxEvent jest dobra, ale już istnieje podobny model w Code/MODELS/outbox.py oraz Code/DB/models.py. W kodzie są dwa warianty – jeden z Base z db.database, drugi jako samodzielna tabela. Aby uniknąć kolejnego duplikatu:
+
+
+
+```python
+
+# models/outbox.py (już istnieje, ale wymaga ujednolicenia)
+
+class OutboxEvent(Base):
+
+    __tablename__ = "outbox_events"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+
+    event_type: Mapped[str] # Twoje "topic"
+
+    aggregate_id: Mapped[str] # np. invoice_id
+
+    payload: Mapped[str] = mapped_column(Text) # JSON jako string
+
+    status: Mapped[str] = mapped_column(String, default="PENDING")
+
+    # ...
+
+```
+
+
+
+Uwaga: W istniejącym kodzie payload jest Text (JSON string), a Ty proponujesz natywny JSON. Wybierz jedno – JSON jest wygodniejszy, ale Text daje większą kontrolę. Najważniejsze: pozostań przy jednej definicji i usuń drugą (Code/DB/models.py zawiera tę samą tabelę jako OutboxEvent, co prowadzi do niejednoznaczności).
+
+
+
+Ad Krok 2 (Controller) – zabezpieczenie przed wyścigiem
+
+
+
+Twoja implementacja create_invoice jest poprawna, ale brakuje jawnego flush() przed utworzeniem OutboxEvent, jeśli potrzebujesz invoice.id (generowane przez Python uuid4(), więc nie ma problemu – id jest znane od razu). Jeśli jednak kiedyś przejdziesz na auto-inkrementację bazy danych, pamiętaj o await db_session.flush() przed pobraniem new_invoice.id.
+
+
+
+Ponadto: istniejący kod już implementuje taką logikę w Code/BACKEND/Backend.py (fragment na stronie ~24-25). Tam właśnie następuje dodanie Invoice i OutboxEvent w jednej transakcji. Twoja propozycja jest więc odtworzeniem istniejącego, niepodłączonego rozwiązania – należy je po prostu podłączyć do właściwego controllera.
+
+
+
+Ad Krok 3 (Relay) – pułapka z NATS i sesjami
+
+
+
+outbox_relay_worker jest poprawny koncepcyjnie. Jednak masz już podobny kod w:
+
+
+
+· Code/CORE/outbox_relay.py (nawet z komentarzem „Outbox Relay (At-least-once delivery)”).
+
+· Code/DB/outbox.py zawiera pseudo-komentarz z logiką workera.
+
+
+
+Konieczne kroki:
+
+
+
+1. Wybierz jedną implementację i usuń pozostałe. Proponuję rozwinąć Code/CORE/outbox_relay.py.
+
+2. Dodaj mechanizm „ACK/NACK” – w Twoim kodzie po udanej wysyłce ustawiasz processed = True i commitujesz. Jeśli NATS zwróci błąd, robisz rollback. To jest OK, ale brakuje zabezpieczenia przed wielokrotnym wysłaniem tego samego zdarzenia (jeśli commit się uda, ale NATS nie dostanie ACK od konsumenta). W NATS JetStream rozwiązuje to msg.ack() / msg.nak(); w zwykłym NATS Core nie ma gwarancji. Dla bezpieczeństwa proponuję dodać kolumnę retry_count i mechanizm dead-letter (masz to już zaimplementowane w Code/SKRIPTS/Braki.py przy obsłudze DLQ).
+
+3. Integracja z Taskiqiem – pamiętaj, że broker w Code/CORE/broker.py to NatsBroker z Taskiqa. W swoim relayu używasz broker.publish bezpośrednio, ale to może pomijać kolejki Taskiqa. Rozważ użycie broker.kick() z Taskiqa, aby wrzucić zadanie do właściwej kolejki przetwarzania.
+
+
+
+Ad Propozycje ulepszeń (sekcja 2) – komentarz
+
+
+
+· Konsensus OCR – świetny pomysł, kod w pipeline/ocr.py ma już struktury OCRResult i ProcessedDocument, a metoda _cross_validate porównuje NIP i checksumy. Wystarczy rozbudować logikę o kwoty brutto.
+
+· Hot-Swap modeli AI – ryzykowny w produkcji; wymaga obsługi torch.cuda.empty_cache() i przeładowania modeli. Raczej na późniejszy etap.
+
+· Zero-Copy – istnieje już SharedImageBuffer w Code/CORE/shm_manager.py, gotowy do integracji.
+
+
+
+---
+
+
+
+🧩 Jak powinna wyglądać kolejność wdrożenia
+
+
+
+Priorytet Zadanie
+
+🔴 Krytyczny 1. Ujednolicenie i podpięcie JWT (kroki 1–5 z Twojego planu security). 2. Naprawa provide_db_session (cykl życia silnika).
+
+🟠 Wysoki 3. Prawdziwy Outbox: ujednolicenie OutboxEvent i podpięcie Backend.py do controllera. 4. Uruchomienie Outbox Relay (zintegrować outbox_relay.py z procesem startowym).
+
+🟡 Średni 5. Delta-sync DuckDB zamiast cronowej replikacji. 6. Wybór jednego standardu DTO (msgspec vs Pydantic).
+
+🟢 Niski 7. Rozszerzenie konsensusu OCR.
+
+
+
+
+
+
+
+
+
+
+
+
+
+1. Ogólna ocena: ⚠️ NIEZDOSTATECZNY (2/10)
+
+
+
+Wniosek: Mechanizm Litestar Security + JWT nie jest w pełni wdrożony, a jego potencjał nie jest maksymalnie wykorzystany. Kod zawiera fragmenty poprawnej konfiguracji JWT, ale są one niepodłączone, zdublowane lub aktywnie omijane przez niebezpieczne workaroundy (statyczny token, rola z nagłówka). System w obecnym stanie nie zapewnia kryptograficznej weryfikacji tożsamości, co przy aplikacji księgowej stanowi krytyczne ryzyko.
+
+
+
+---
+
+
+
+2. Szczegółowa analiza komponent po komponencie
+
+
+
+2.1. Plik api/security.py – Główny plik bezpieczeństwa
+
+
+
+Stan obecny: Plik zawiera dwie sprzeczne ścieżki autoryzacji:
+
+
+
+· Ścieżka A (poprawna): Konfiguracja JWTAuth z retrieve_user_handler i SECRET_KEY – to właściwy fundament.
+
+· Ścieżka B (błędna): Funkcja token_guard sprawdzająca statyczny token EXPECTED_TOKEN z nagłówka Authorization: Bearer <token>.
+
+
+
+Co jest źle:
+
+
+
+· token_guard całkowicie ignoruje JWT. Zamiast weryfikować podpis kryptograficzny, porównuje nagłówek ze zmienną środowiskową. To nie jest JWT – to statyczny klucz API, znacznie mniej bezpieczny.
+
+· retrieve_user_handler zwraca hardcodowany obiekt User(id="admin", role="admin") – nie ma weryfikacji w bazie danych.
+
+· SECRET_KEY jest generowany losowo przy starcie, co uniemożliwia walidację tokenów między restartami.
+
+
+
+Rekomendowane zmiany:
+
+
+
+Zmiana 1.1: Usunięcie token_guard i konsolidacja wokół JWTAuth
+
+
+
+```python
+
+# USUŃ CAŁĄ FUNKCJĘ token_guard oraz zmienne EXPECTED_TOKEN
+
+# Zamiast tego użyj wyłącznie jwt_auth z Litestar Security
+
+```
+
+
+
+Zmiana 1.2: Prawdziwa weryfikacja użytkownika w retrieve_user_handler
+
+
+
+```python
+
+async def retrieve_user_handler(
+
+    token: Token, 
+
+    connection: ASGIConnection
+
+) -> User | None:
+
+    """Weryfikuje użytkownika na podstawie token.sub w bazie danych."""
+
+    # Pobierz fabrykę sesji ze stanu aplikacji
+
+    session_factory = connection.app.state.db_session_factory
+
+    
+
+    async with session_factory() as session:
+
+        # Wykonaj realne zapytanie SQLAlchemy
+
+        from sqlalchemy import select
+
+        from models.user import User as UserModel
+
+        
+
+        result = await session.execute(
+
+            select(UserModel).where(UserModel.id == token.sub)
+
+        )
+
+        user = result.scalar_one_or_none()
+
+        
+
+        if user is None:
+
+            return None # Litestar automatycznie zwróci 401
+
+        
+
+        return User(
+
+            id=user.id,
+
+            role=user.role,
+
+            tenant_id=token.extras.get("tenant_id", "default")
+
+        )
+
+```
+
+
+
+Zmiana 1.3: Trwały sekret JWT
+
+
+
+```python
+
+def _resolve_jwt_secret() -> str:
+
+    """Pobiera klucz JWT z bezpiecznego magazynu."""
+
+    # Kolejność priorytetów:
+
+    # 1. Zmienna środowiskowa (dla dev/prod parity)
+
+    env_secret = os.getenv("NEXUS_JWT_SECRET", "").strip()
+
+    if env_secret:
+
+        return env_secret
+
+    
+
+    # 2. Systemowy keyring (dla produkcji)
+
+    from core.secrets import SecretsManager
+
+    stored = SecretsManager.get_secret("nexus/jwt_signing_key")
+
+    if stored:
+
+        return stored
+
+    
+
+    # 3. Generuj i zapisz (tylko przy pierwszym uruchomieniu)
+
+    generated = secrets.token_urlsafe(48)
+
+    SecretsManager.save_secret("nexus/jwt_signing_key", generated)
+
+    logger.warning("Wygenerowano nowy klucz JWT – zapisano w keyringu.")
+
+    return generated
+
+```
+
+
+
+---
+
+
+
+2.2. Plik api/rbac.py – Kontrola dostępu oparta na rolach
+
+
+
+Stan obecny: Funkcja get_current_role pobiera rolę z surowego nagłówka HTTP X-Nexus-Role. To skrajnie niebezpieczne – każdy klient może wysłać X-Nexus-Role: owner i uzyskać pełny dostęp administracyjny.
+
+
+
+Co jest źle:
+
+
+
+· Brak weryfikacji kryptograficznej źródła informacji o roli.
+
+· Całkowite pominięcie mechanizmu JWT, który został skonfigurowany w security.py.
+
+· Guardy owner_only_guard i worker_only_guard są przez to całkowicie nieskuteczne.
+
+
+
+Rekomendowane zmiany:
+
+
+
+Zmiana 2.1: Przebudowa get_current_role na podstawie JWT
+
+
+
+```python
+
+from litestar.connection import ASGIConnection
+
+from litestar.exceptions import NotAuthorizedException
+
+from models.user import User # Model z bazy danych
+
+
+
+class NexusRole(StrEnum):
+
+    OWNER = "owner"
+
+    WORKER = "worker"
+
+
+
+@dataclass(slots=True)
+
+class RoleContext:
+
+    role: NexusRole
+
+    actor: str
+
+    tenant_id: str
+
+
+
+def get_current_role(connection: ASGIConnection) -> RoleContext:
+
+    """
+
+    Pobiera rolę BEZPIECZNIE z obiektu connection.user,
+
+    który został zweryfikowany przez JWTAuth.
+
+    """
+
+    user: User | None = getattr(connection, 'user', None)
+
+    
+
+    if user is None:
+
+        raise NotAuthorizedException("Brak uwierzytelnienia")
+
+    
+
+    role_str = getattr(user, 'role', '').lower()
+
+    if role_str not in {'owner', 'worker'}:
+
+        raise NotAuthorizedException(f"Nieznana rola: {role_str}")
+
+    
+
+    return RoleContext(
+
+        role=NexusRole(role_str),
+
+        actor=getattr(user, 'username', user.id),
+
+        tenant_id=getattr(user, 'tenant_id', 'default')
+
+    )
+
+```
+
+
+
+Zmiana 2.2: Dodanie dekoratora wymagającego konkretnej roli
+
+
+
+```python
+
+from functools import wraps
+
+from typing import Callable
+
+
+
+def require_role(required_role: NexusRole):
+
+    """Dekorator do stosowania na poziomie handlera jako alternatywa dla guardów."""
+
+    def decorator(handler: Callable) -> Callable:
+
+        @wraps(handler)
+
+        async def wrapper(self, request: Request, *args, **kwargs):
+
+            role_ctx = get_current_role(request)
+
+            if role_ctx.role != required_role:
+
+                raise NotAuthorizedException(
+
+                    f"Wymagana rola: {required_role}, aktualna: {role_ctx.role}"
+
+                )
+
+            return await handler(self, request, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+```
+
+
+
+---
+
+
+
+2.3. Plik api/middleware.py – Middleware korelacyjno-deprecacyjne
+
+
+
+Stan obecny: Middleware pobiera tenant_id z nagłówka x-tenant-id. To podatne na manipulację, zwłaszcza w systemie multi-tenant.
+
+
+
+Co ulepszyć:
+
+
+
+· Wykorzystać JWT jako źródło tenant_id.
+
+· Dodać weryfikację, czy użytkownik ma dostęp do żądanego tenant-a.
+
+
+
+Rekomendowane zmiany:
+
+
+
+Zmiana 3.1: Bezpieczne pobieranie tenant_id z JWT
+
+
+
+```python
+
+async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+
+    if scope["type"] != "http":
+
+        await self.app(scope, receive, send)
+
+        return
+
+
+
+    # Rozszyfruj JWT z nagłówka Authorization
+
+    auth_header = dict(scope.get("headers", [])).get(b"authorization", b"").decode()
+
+    tenant_id = DEFAULT_TENANT_ID
+
+    
+
+    if auth_header.startswith("Bearer "):
+
+        token_str = auth_header.split(" ", 1)[1]
+
+        try:
+
+            # Zweryfikuj token bez pełnej inicjalizacji JWTAuth
+
+            import jwt
+
+            payload = jwt.decode(
+
+                token_str, 
+
+                SECRET_KEY, 
+
+                algorithms=["HS256"],
+
+                options={"verify_exp": True}
+
+            )
+
+            tenant_id = payload.get("tenant_id", DEFAULT_TENANT_ID)
+
+        except Exception:
+
+            pass # Zostaw DEFAULT_TENANT_ID, autoryzacja odrzuci później
+
+    
+
+    tenant_token = set_current_tenant_id(tenant_id)
+
+    # ... reszta middleware
+
+```
+
+
+
+---
+
+
+
+2.4. Plik api/app.py – Główna konfiguracja aplikacji
+
+
+
+Stan obecny: Funkcja create_app() nie rejestruje jwt_auth ani żadnych guardów. System JWT jest skonfigurowany w security.py, ale niepodłączony do aplikacji.
+
+
+
+Co jest źle:
+
+
+
+· Brak on_app_init z jwt_auth.on_app_init.
+
+· Brak globalnych lub per-handler guardów autoryzacji.
+
+· Health endpoint /api/v2/health jest publiczny, ale reszta API również nie ma ochrony.
+
+· CORS skonfigurowany jako allow_origins=["*"] – zbyt liberalny dla produkcji.
+
+
+
+Rekomendowane zmiany:
+
+
+
+Zmiana 4.1: Rejestracja JWT w aplikacji
+
+
+
+```python
+
+from api.security import jwt_auth
+
+
+
+def create_app() -> Litestar:
+
+    config = provide_config()
+
+    
+
+    return Litestar(
+
+        route_handlers=[
+
+            HealthController,
+
+            health_v2,
+
+            InvoiceController,
+
+            AnalyticsController,
+
+            TaskController,
+
+            TriageController,
+
+            ExportController,
+
+            progress_websocket,
+
+        ],
+
+        on_app_init=[jwt_auth.on_app_init], # ← KLUCZOWA LINIA
+
+        dependencies={
+
+            "config": provide_config,
+
+            "db_session": provide_db_session,
+
+            "duckdb": provide_duckdb,
+
+        },
+
+        # Domyślna ochrona wszystkich endpointów
+
+        guards=[owner_only_guard], # Wymaga OWNER jako domyślnej roli
+
+        exception_handlers={Exception: global_exception_handler},
+
+        middleware=[CorrelationAndDeprecationMiddleware],
+
+        cors_config=CORSConfig(
+
+            allow_origins=config.allowed_origins, # Z konfiguracji, nie "*"
+
+            allow_methods=["GET", "POST", "PUT", "DELETE"],
+
+            allow_headers=["Authorization", "Content-Type", "X-Correlation-ID"],
+
+            allow_credentials=True,
+
+        ),
+
+        # ... reszta konfiguracji
+
+    )
+
+```
+
+
+
+Zmiana 4.2: Jawne oznaczanie publicznych endpointów
+
+
+
+```python
+
+from litestar.handlers import get
+
+
+
+@get("/api/v2/health", guards=[]) # Pusta lista guardów = endpoint publiczny
+
+async def health_v2() -> dict[str, str]:
+
+    return {"api": "OK", "version": "v2"}
+
+```
+
+
+
+---
+
+
+
+2.5. Brakujący endpoint /auth/login
+
+
+
+Stan obecny: Nie istnieje. System nie ma możliwości legalnego uzyskania tokenu JWT.
+
+
+
+Rekomendowana implementacja:
+
+
+
+Zmiana 5.1: Nowy kontroler AuthController
+
+
+
+```python
+
+# api/controllers/auth.py
+
+from litestar import Controller, post
+
+from litestar.exceptions import NotAuthorizedException
+
+from litestar.security.jwt import Token
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from sqlalchemy import select
+
+from models.user import User
+
+from api.security import jwt_auth
+
+from datetime import datetime, timezone
+
+
+
+class AuthController(Controller):
+
+    path = "/auth"
+
+    
+
+    @post("/login")
+
+    async def login(
+
+        self,
+
+        data: LoginRequest,
+
+        db_session: AsyncSession,
+
+    ) -> TokenResponse:
+
+        """Uwierzytelnia użytkownika i zwraca token JWT."""
+
+        # 1. Wyszukaj użytkownika w bazie
+
+        result = await db_session.execute(
+
+            select(User).where(User.username == data.username)
+
+        )
+
+        user = result.scalar_one_or_none()
+
+        
+
+        if user is None:
+
+            raise NotAuthorizedException("Nieprawidłowe dane logowania")
+
+        
+
+        # 2. Zweryfikuj hasło (z użyciem bezpiecznego hashowania)
+
+        import hashlib
+
+        password_hash = hashlib.sha256(
+
+            (data.password + user.salt).encode()
+
+        ).hexdigest()
+
+        
+
+        if not compare_digest(password_hash, user.password_hash):
+
+            raise NotAuthorizedException("Nieprawidłowe dane logowania")
+
+        
+
+        # 3. Generuj token JWT z osadzonymi danymi
+
+        token = jwt_auth.create_token(
+
+            identifier=str(user.id),
+
+            token_extras={
+
+                "role": user.role,
+
+                "tenant_id": user.tenant_id,
+
+                "iat": int(datetime.now(timezone.utc).timestamp()),
+
+            },
+
+            token_expiration=timedelta(hours=8),
+
+        )
+
+        
+
+        return {
+
+            "access_token": token,
+
+            "token_type": "bearer",
+
+            "expires_in": 28800,
+
+            "user": {
+
+                "id": user.id,
+
+                "username": user.username,
+
+                "role": user.role,
+
+                "tenant_id": user.tenant_id,
+
+            }
+
+        }
+
+```
+
+
+
+---
+
+
+
+2.6. Obsługa tokenów w UI (Flet)
+
+
+
+Stan obecny: UI otrzymuje api_token przez page.session z launchera, co jest podstawowym mechanizmem bootstrapu. Jednak nie ma mechanizmu odświeżania tokenu ani wylogowania.
+
+
+
+Rekomendowane zmiany:
+
+
+
+Zmiana 6.1: Dodanie refresh tokenu i wylogowania
+
+
+
+```python
+
+# frontend/api_client.py
+
+class NexusApiClient:
+
+    def __init__(self, base_url: str):
+
+        self.base_url = base_url
+
+        self.access_token: str | None = None
+
+        self.refresh_token: str | None = None
+
+        self._client = httpx.AsyncClient(timeout=30.0)
+
+    
+
+    async def login(self, username: str, password: str) -> bool:
+
+        """Loguje użytkownika i zapisuje tokeny."""
+
+        response = await self._client.post(
+
+            f"{self.base_url}/auth/login",
+
+            json={"username": username, "password": password}
+
+        )
+
+        if response.status_code == 200:
+
+            data = response.json()
+
+            self.access_token = data["access_token"]
+
+            self.refresh_token = data.get("refresh_token")
+
+            self._update_headers()
+
+            return True
+
+        return False
+
+    
+
+    def _update_headers(self):
+
+        if self.access_token:
+
+            self._client.headers["Authorization"] = f"Bearer {self.access_token}"
+
+    
+
+    async def logout(self):
+
+        """Wylogowuje użytkownika."""
+
+        self.access_token = None
+
+        self.refresh_token = None
+
+        self._client.headers.pop("Authorization", None)
+
+```
+
+
+
+---
+
+
+
+3. Macierz dojrzałości wdrożenia
+
+
+
+Komponent Stan Ocena Kluczowe braki
+
+JWTAuth Skonfigurowany, niepodłączony 🔴 Brak on_app_init w create_app()
+
+retrieve_user_handler Hardcodowany mock 🔴 Brak zapytania do bazy danych
+
+token_guard Aktywnie omija JWT 🔴 Do natychmiastowego usunięcia
+
+RBAC (get_current_role) Czyta z nagłówka HTTP 🔴 Ignoruje JWT, luka bezpieczeństwa
+
+Endpoint /login Nie istnieje 🔴 Brak możliwości legalnego uzyskania tokenu
+
+Middleware tenant_id Z nagłówka HTTP 🟡 Podatne na manipulację
+
+CORS allow_origins=["*"] 🟡 Zbyt liberalny
+
+Sekret JWT Efemeryczny (generowany przy starcie) 🟡 Brak trwałości między restartami
+
+Model User Nie istnieje w bazie 🔴 Fundacja całego systemu auth
+
+
+
+---
+
+
+
+4. Priorytetyzacja wdrożenia
+
+
+
+🔴 Blok krytyczny (musi być przed produkcją)
+
+
+
+1. Stworzenie modelu User w bazie danych
+
+2. Podpięcie jwt_auth do aplikacji (on_app_init)
+
+3. Przebudowa retrieve_user_handler na realne zapytanie SQL
+
+4. Przebudowa rbac.py na connec
+
+tion.user
+
+5. Usunięcie token_guard
+
+6. Dodanie endpointu /auth/login
+
+
+
+🟡 Wysoki priorytet
+
+
+
+1. Osadzenie tenant_id w JWT zamiast nagłówka
+
+2. Trwały sekret JWT (przez SecretsManager)
+
+3. Refresh tokeny i wylogowanie w UI
+
+4. Ograniczenie CORS do konkretnych originów
+
+
+
+🟢 Ulepszenia długoterminowe
+
+
+
+1. Implementacja OAuth2PasswordBearer dla kompatybilności z Auto-generated docs
+
+2. Dodanie rotacji kluczy JWT (JWKS)
+
+3. Obsługa MFA (Multi-Factor Authentication)
+
+
+
+
+
+---
+
+
+
+🔍 Pozostałe niedociągnięcia i nowe ulepszenia
+
+
+
+1. Bezpieczeństwo (poza JWT i RBAC)
+
+
+
+1.1. Przechowywanie sekretów – klucz szyfrujący w kodzie
+
+
+
+W pliku Code/DB/types.py (strona ~68) znajduje się class EncryptedString.
+
+Problem: Próbuje ona pobrać klucz szyfrujący bezpośrednio z AppConfig.encryption_key, a jeśli go nie ma – ustawia self.key = b"". To oznacza, że w razie braku konfiguracji dane nie są szyfrowane, a system nie zgłasza błędu. Ponadto sam klucz ładowany jest ze zmiennej środowiskowej, co jest podatne na wyciek (np. przez core dump lub logi).
+
+Rozwiązanie:
+
+
+
+· Wymuś jawne skonfigurowanie encryption_key w środowiskach produkcyjnych (walidacja w AppConfig.__post_init__).
+
+· Rozważ użycie sprzętowego modułu bezpieczeństwa (HSM) lub przynajmniej systemowego keyringu (już istnieje SecretsManager).
+
+
+
+1.2. Podatność na ataki czasowe przy tokenie
+
+
+
+W api/security.py funkcja token_guard porównuje token przez if token != EXPECTED_TOKEN.
+
+Problem: Standardowe porównanie stringów w Pythonie jest podatne na timing attack. Przy JWT ten problem znika, ale jeśli pozostawisz gdziekolwiek statyczne tokeny, użyj hmac.compare_digest.
+
+Rozwiązanie: Obowiązkowa migracja na JWT usuwa ten problem – kolejny argument za priorytetem.
+
+
+
+1.3. CORS allow_origins=["*"] w produkcji
+
+
+
+Problem: W app.py ustawiono zezwolenie dla dowolnego originu. Przy wdrożeniu (nawet lokalnym, gdzie frontend działa na innym porcie) to zaproszenie do ataków CSRF.
+
+Rozwiązanie: Ogranicz do konkretnych domen (np. http://localhost:port). Pobrać listę dozwolonych originów z konfiguracji.
+
+
+
+1.4. Brak nagłówków bezpieczeństwa (HSTS, CSP, X-Content-Type-Options)
+
+
+
+Problem: Middleware nie dodaje żadnych nagłówków zabezpieczających.
+
+Rozwiązanie: Rozszerzyć CorrelationAndDeprecationMiddleware lub dodać osobny middleware, który dla odpowiedzi ustawia:
+
+
+
+· Strict-Transport-Security (jeśli HTTPS)
+
+· X-Content-Type-Options: nosniff
+
+· Content-Security-Policy (ostrożnie, by nie zepsuć Flet)
+
+
+
+---
+
+
+
+2. Wydajność i zarządzanie zasobami
+
+
+
+2.1. Brak limitu równoczesnych zadań OCR
+
+
+
+Problem: Worker process_invoice_task (strona ~19) nie ma mechanizmu zapobiegającego przeciążeniu. Użytkownik może wrzucić 100 faktur naraz, a system spróbuje przetworzyć je wszystkie jednocześnie, konsumując całą pamięć GPU.
+
+Rozwiązanie:
+
+
+
+· Ograniczenie współbieżności na poziomie brokera (Taskiq ma max_parallelism).
+
+· W WorkerGuard dodać semafor ograniczający liczbę jednoczesnych inferencji.
+
+
+
+2.2. Wyciek pamięci w AdaptiveBatcher (strona ~28)
+
+
+
+Problem: _batch_worker działa w nieskończonej pętli, ale jeśli proces funkcji wsadowej rzuci wyjątek, pętla przechodzi do kolejnej iteracji, jednak nie czyści nigdy nieużywanych future obiektów. Może to prowadzić do wycieku pamięci przy długim działaniu.
+
+Rozwiązanie: Dodać finally z czyszczeniem futures i ewentualnie restartem workera w przypadku nieoczekiwanych błędów.
+
+
+
+2.3. Brak timeoutów dla zadań
+
+
+
+Problem: Zadania w NATS nie mają globalnego timeoutu. Jeśli model AI się zawiesi, worker będzie blokowany w nieskończoność.
+
+Rozwiązanie: Użyć asyncio.wait_for przy wywołaniach blokujących (run_in_executor) i ustawić rozsądny limit czasu (np. 5 minut na fakturę). Po przekroczeniu – zwrócić błąd i przenieść fakturę do kolejki dead-letter.
+
+
+
+---
+
+
+
+3. Integralność danych i transakcyjność
+
+
+
+3.1. Brak migracji bazy danych (Alembic)
+
+
+
+Problem: Schemat SQLite ewoluuje tylko przez CREATE TABLE IF NOT EXISTS lub ręczne ALTER TABLE (np. w scripts/migrate_v1_to_v2.py). Nie ma automatycznego wersjonowania.
+
+Rozwiązanie: Integracja Alembic z SQLAlchemy, co da pełną kontrolę nad zmianami schematu i możliwość wycofywania migracji.
+
+
+
+3.2. Analityczny DuckDB nie ma wersjonowania schematu
+
+
+
+Problem: Kolumny w tabelach analitycznych są dodawane przez ALTER TABLE w hookach, ale nie ma gwarancji, że stan bazy odpowiada oczekiwanemu.
+
+Rozwiązanie: AnalyticsSchemaManager.ensure_latest_schema jest dobrym początkiem, ale powinien przechowywać numer wersji schematu w metadanych DuckDB i wykonywać tylko brakujące migracje.
+
+
+
+3.3. Potencjalna utrata danych przy replikacji SQLite → DuckDB
+
+
+
+Problem: W process_invoice_task (strona ~19) najpierw commit do SQLite, potem olap_manager.upsert_invoice. Jeśli DuckDB zawiedzie, dane pozostaną tylko w SQLite, a dashboard pokaże nieaktualne liczby.
+
+Rozwiązanie: Wprowadzić mechanizm Outbox for analytics – zapisywać zdarzenia do osobnej tabeli, a osobny proces (podobny do outbox relay) będzie je przenosił do DuckDB. Alternatywnie, przed każdym odczytem analitycznym sprawdzać spójność i synchronizować brakujące rekordy.
+
+
+
+3.4. Brak blokady optymistycznej / pesymistycznej przy edycji faktur
+
+
+
+Problem: Chociaż model Contractor ma version_id, to Invoice go nie ma. Dwóch użytkowników może nadpisać zmiany.
+
+Rozwiązanie: Dodać kolumnę version_id do Invoice i wykorzystać ją w API (Litestar obsługuje ETag).
+
+
+
+---
+
+
+
+4. Architektura i czystość kodu
+
+
+
+4.1. Duplikaty definicji modeli
+
+
+
+· Code/DB/models.py definiuje OutboxEvent, AuditLog, SecurityAlert.
+
+· Code/MODELS/outbox.py definiuje OutboxEvent (z inną strukturą).
+
+· Code/MODELS/invoice.py definiuje Invoice i ActiveLearningPattern.
+
+· Code/BACKEND/Backend.py (strona ~24) również wspomina OutboxEvent.
+
+  Rozwiązanie: Wybrać jedną lokalizację dla ORM (zwykle models/), a pozostałe usunąć.
+
+
+
+4.2. Martwy kod i puste implementacje
+
+
+
+· pipeline/llm_engine.py – HybridLLMEngine._load_model nie dokańcza ładowania modelu PyTorch.
+
+· pipeline/optimized_ocr.py – _infer_onnx zwraca placeholder.
+
+· services/ksef_service.py – __init_session ma zakomentowaną logikę.
+
+  Rozwiązanie: Albo usunąć, albo opatrzyć komentarzem # TODO i zarejestrować w planie rozwoju.
+
+
+
+4.3. Niespójność nazewnictwa i ścieżek
+
+
+
+· Kontrolery używają /api/v1/ i /api/v2/ jednocześnie.
+
+· Niektóre endpointy są w routes/, a inne (jak health_v2) bezpośrednio w app.py.
+
+  Rozwiązanie: Ujednolicić routing – wszystkie endpointy w kontrolerach, a w app.py tylko montowanie.
+
+
+
+---
+
+
+
+5. Operacyjność i utrzymanie
+
+
+
+5.1. Brak scentralizowanego monitoringu
+
+
+
+Problem: Logi są rozproszone (print, loguru, logging). Brak integracji z Sentry Lite (wymieniony w technologiach).
+
+Rozwiązanie: Skonfigurować Sentry do przechwytywania wyjątków, dodać metryki do VictoriaMetrics (jak wspomniano w blueprint architektury).
+
+
+
+5.2. Backup tylko na żądanie
+
+
+
+Problem: scheduled_backup_task (strona ~51) jest obecny, ale polega na zewnętrznym cronie. W worker.py brak regularnych backupów.
+
+Rozwiązanie: Upewnić się, że worker uruchamia backup zgodnie z harmonogramem, a także weryfikować jego integralność (testowe odtworzenie).
+
+
+
+5.3. Brak healthchecka dla NATS i DuckDB w API
+
+
+
+Problem: Endpointy zdrowia sprawdzają tylko status "OK".
+
+Rozwiązanie: Dodać sprawdzenie połączenia z NATS (ping) i DuckDB (zapytanie testowe). Dzięki temu load balancer będzie mógł automatycznie odciąć niezdrową instancję.
+
+
+
+---
+
+
+
+6. Nowe ulepszenia (funkcjonalne i techniczne)
+
+
+
+6.1. Automatyczne skalowanie workerów na podstawie długości kolejki
+
+
+
+Opis: Monitorować liczbę zaległych zadań w NATS JetStream i dynamicznie uruchamiać/zatrzymywać procesy workerów (lub wątki).
+
+Korzyść: Lepsze wykorzystanie zasobów przy zmiennym obciążeniu.
+
+
+
+6.2. Tryb "tylko API" dla zdalnych skanerów
+
+
+
+Opis: Udostępnić osobny endpoint do przyjmowania zeskanowanych obrazów z urządzeń mobilnych, z lekkim tokenem (JWT) i natychmiastowym kolejkowaniem.
+
+Korzyść: Rozszerza architekturę bez konieczności przenoszenia całego UI na mobile.
+
+
+
+6.3. Szacowanie kosztów operacji OCR (dla użytkownika)
+
+
+
+Opis: Na podstawie liczby stron i złożoności dokumentu podawać szacowany czas przetwarzania przed rozpoczęciem.
+
+Korzyść: Lepsze UX i możliwość planowania.
+
+
+
+6.4. Integracja z zewnętrznymi źródłami kursów walut (NBP API) z cache'owaniem
+
+
+
+Opis: Obecnie ForexEngine próbuje pobierać kursy z NBP, ale jest to szczątkowe. Można dodać regularny cron aktualizujący tabelę exchange_rates dla wszystkich walut.
+
+Korzyść: Automatyczne przeliczanie faktur walutowych w tle.
+
+
+
+6.5. Moduł "audyt danych osobowych" (RODO)
+
+
+
+Opis: Dodać mechanizm automatycznego usuwania danych osobowych z faktur po upływie obowiązkowego okresu przechowywania (6 lat?), z logowaniem w AuditLog.
+
+Korzyść: Zapewnienie zgodności z przepisami.
+
+
+
+---
+
+
+
+📋 Tabela priorytetów pozostałych niedociągnięć
+
+
+
+Priorytet Kategoria Problem
+
+🔴 Krytyczny Bezpieczeństwo Klucz szyfrujący może być pusty bez ostrzeżenia
+
+🔴 Krytyczny Integralność danych Brak migracji schematu SQLite (ryzyko ręcznych błędów)
+
+🟠 Wysoki Wydajność Brak limitu równoczesnych zadań OCR → ryzyko OOM
+
+🟠 Wysoki Integralność danych Brak atomowości replikacji SQLite→DuckDB w niektórych ścieżkach
+
+🟠 Wysoki Architektura Duplikaty modeli ORM
+
+🟡 Średni Administracja Brak zaawansowanego healthchecka (NATS, DuckDB)
+
+🟡 Średni Bezpiec
+
+zeństwo CORS * w konfiguracji produkcyjnej
+
+🟡 Średni Jakość kodu Puste implementacje i martwy kod
+
+🟢 Niski Funkcjonalność Szacowanie czasu OCR, dynamiczne skalowanien
+
+
+

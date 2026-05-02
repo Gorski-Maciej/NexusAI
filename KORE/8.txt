@@ -1,0 +1,1716 @@
+
+Ten zestaw technologii CI/CD i DevSecOps to absolutna czołówka (tzw. "Bleeding Edge"). Skonstruowanie stosu w oparciu o narzędzia takie jak uv, Trivy, Pulumi i Infisical świadczy o głębokim zrozumieniu nowoczesnego cyklu życia oprogramowania.
+
+Odpowiadając na Twoje pytanie: Zestawienie tych narzędzi ma ogromny potencjał, ale w obecnym kształcie generuje ryzyko „Split Brain” (rozdwojenia jaźni) i nakładania się kompetencji. Nadmiar technologii jest świetny dla niezawodności, o ile istnieje ścisła hierarchia i podział ról. W przeciwnym razie redundantne systemy zaczną ze sobą walczyć (np. SOPS i Infisical będą próbowały zarządzać tymi samymi kluczami).
+
+Poniżej znajduje się szczegółowy raport ekspercki, jak to uporządkować, rozbudować i zmaksymalizować użycie darmowych wersji tych narzędzi.
+
+1. Architektura CI/CD (Eliminacja Chaosu i Redundancja)
+Narzędzia: GitHub Actions, Woodpecker CI, GitLab Runner, uv.
+
+Posiadanie trzech systemów CI na raz to ekstremalna nadmiarowość. Aby to działało na korzyść niezawodności, musisz wdrożyć architekturę Control Plane vs. Data Plane.
+
+Co zmodyfikować (Podział ról CI):
+
+GitHub Actions (Control Plane): Używaj go wyłącznie do lekkich zadań, które nie dotykają kodu źródłowego ani sekretów: lintowanie (Ruff), szybkie testy jednostkowe (pytest), zarządzanie Pull Requestami oraz wyzwalanie (triggerowanie) innych systemów CI.
+
+Woodpecker CI / GitLab Runner (Data Plane / Self-Hosted): Te systemy (uruchomione na Twoich serwerach) powinny przejąć "ciężką pracę": kompilację Nuitka, dostęp do bazy LanceDB/DuckDB w środowisku testowym oraz wdrażanie za pomocą Pulumi. Dzięki temu kod źródłowy i sekrety produkcyjne nigdy nie opuszczają Twojej infrastruktury.
+
+Co ulepszyć (Ekstremalna optymalizacja z uv): uv jest potężne, ale w CI często nie wykorzystuje się w pełni jego cache'u. Zmodyfikuj pipeline'y tak, aby używały zmiennej UV_CACHE_DIR zmontowanej do trwałego wolumenu (lub cache'u GitHub Actions). Dodatkowo, w CI zawsze używaj komendy uv sync --locked (zamiast pip install), aby zagwarantować bitową zgodność środowiska.
+
+2. DevSecOps & Security Linting (Darmowe, ale klasy Enterprise)
+Narzędzia: pip-audit, Trivy, Ruff, Bandit, Checkov.
+
+Obecnie masz świetne narzędzia punktowe (scannery), ale brakuje Ci "mózgu", który to wszystko agreguje. Przeglądanie 5 różnych raportów JSON/SARIF w konsoli jest nieefektywne.
+
+Co dodać (Zarządzanie Podatnościami - DefectDojo): Wdróż OWASP DefectDojo (jest darmowe i open-source). Skonfiguruj pipeline tak, aby wyniki z Trivy, Bandita, pip-audit i Checkova były automatycznie wysyłane do DefectDojo. Narzędzie to zdeduplikuje błędy i pokaże trendy w czasie (np. ile dni zajmuje załatanie luki krytycznej).
+
+Co rozbudować (Trivy jako kompleksowy skaner): Trivy to nie tylko skaner obrazów kontenerów. Skonfiguruj go tak, aby w procesie CI skanował:
+
+Obrazy Podman (Container Security).
+
+System plików w poszukiwaniu błędnych konfiguracji (FS Scan).
+
+Pliki uv.lock pod kątem SBOM (Software Bill of Materials).
+
+Co ulepszyć (Checkov + Custom Policies): Checkov ma wbudowane reguły, ale nie zna Twojej architektury. Napisz własne reguły w Pythonie (Checkov Custom Policies) dla Pulumi, które np. wymuszą błąd kompilacji, jeśli ktoś spróbuje wdrożyć kontener Podman bez flagi izolacji IPC (ipc_mode="container:..."), o której mówiliśmy wcześniej.
+
+3. Zarządzanie Sekretami (Rozwiązanie konfliktu)
+Narzędzia: SOPS + Age, Infisical.
+
+Oba narzędzia służą do sekretów, co rodzi konflikt. Należy je brutalnie rozdzielić na dwie różne domeny.
+
+Co zmienić (Ścisły podział kompetencji):
+
+SOPS + Age (GitOps Secrets): Używaj wyłącznie do szyfrowania statycznych plików konfiguracyjnych, które muszą leżeć w repozytorium Git (np. konfiguracja dla Pulumi, zmienne środowiskowe dla CI/CD). SOPS używa asymetrycznego klucza Age, co pozwala deweloperom szyfrować pliki bez dostępu do klucza deszyfrującego (który ma tylko serwer CI).
+
+Infisical (Runtime Secrets): Używaj darmowej (self-hosted) wersji wyłącznie do dostarczania sekretów do uruchomionej aplikacji (API Litestar, bazy danych). Infisical posiada wbudowane agentów (Infisical Agent), które wstrzykują sekrety jako zmienne środowiskowe lub pliki w pamięci /dev/shm tuż przed startem procesu Nuitki, zapobiegając ich wyciekowi na dysk twardy.
+
+Co zmodyfikować (Zwalczanie wycieków): Dodaj Trivy Secret Scanning lub Gitleaks jako pre-commit hook (wyzwalany przez Invoke). System nie pozwoli wykonać git commit, jeśli w kodzie znajdzie ciąg znaków przypominający klucz JWT lub token do bazy.
+
+4. Automatyzacja operacyjna i wykonawcza
+Narzędzia: Fabric, Invoke.
+
+Fabric służył historycznie do łączenia się po SSH i odpalania komend, a Invoke do zarządzania zadaniami. W erze kontenerów i Pulumi użycie Fabric jest nieco anachroniczne, chyba że zarządzasz serwerami Bare Metal (co pasuje do Twojego podejścia Self-Hosted).
+
+Co zmodyfikować (Konsolidacja wokół Invoke): Odrzuć skrypty bashowe (.sh). Zbuduj potężny plik tasks.py obsługiwany przez Invoke, który stanie się jedynym punktem wejścia (Entrypoint) dla dewelopera.
+
+invoke dev.up -> odpala bazę, Litestar i Daggera lokalnie.
+
+invoke sec.scan -> odpala Ruff, Bandita i Trivy.
+
+invoke infra.deploy -> kompiluje zmienne z SOPS i uruchamia Pulumi.
+
+Co zmienić (Rola Fabric): Jeśli zarządzasz fizycznymi serwerami (lub maszynami VM pod Woodpeckera/GitLab Runnera), używaj Fabric z poziomu Pulumi lub Invoke wyłącznie do "Bootstrappingu" (początkowej konfiguracji maszyn, instalacji Podmana, uv i Headscale), zanim pałeczkę przejmie CI/CD.
+
+5. Nowe ulepszenie: Weryfikacja łańcucha dostaw (Supply Chain Security)
+W darmowym ekosystemie DevSecOps brakuje Ci jednego kluczowego elementu klasy Enterprise: Gwarancji autentyczności.
+
+Co dodać (Cosign / Sigstore): Złośliwy aktor lub uszkodzony pipeline CI może skompilować podmienioną binarkę Nuitka. Skonfiguruj proces w Woodpecker CI tak, aby natychmiast po zbudowaniu obrazu Podman i binarki, podpisywał je kryptograficznie za pomocą narzędzia Cosign. Twój serwer produkcyjny (Coolify) musi być skonfigurowany tak, aby odmówił uruchomienia kontenera, który nie posiada ważnego podpisu z Twojego CI.
+
+Podsumowanie Architektury Operacyjnej
+Faza	Technologie	Wdrożona Zmiana / Ulepszenie
+Local Dev	uv, Invoke, SOPS	Ujednolicony interfejs wejściowy dewelopera, szyfrowanie lokalnych konfigów.
+Pre-Build (Code)	GitHub Actions, Ruff, Bandit	Lekki CI jako brama (Gatekeeper) w chmurze (odrzuca zły kod).
+Build & Scan	Woodpecker, Trivy, pip-audit	Ciężki CI (Self-Hosted), pełne skanowanie obrazów i budowa binarnej Nuitki.
+Security Aggregation	DefectDojo (Nowe)	Centralny hub na wyniki z Trivy, Bandita i Checkova (brak rozpraszania się).
+Deploy & Runtime	Pulumi, Infisical, Cosign	Wdrożenie IaC weryfikujące podpisy binarne, wstrzykiwanie sekretów w locie.
+Ten podział usuwa nadmiarowość w miejscach, gdzie powoduje ona konflikty (jak podwójne zarządzanie sekretami), a wzmacnia tam, gdzie zapewnia niezawodność (redundancja runnerów CI). System jest teraz gotowy na obsługę danych księgowych na najwyższym możliwym poziomie bezpieczeństwa.
+
+
+
+Twoja architektura jest już na poziomie **99. percentyla zaawansowania** projektów Pythonowych. Przeszliśmy przez izolację IPC, Zero-Copy, autoryzację asymetryczną i pancerny pipeline CI/CD. Jednak na poziomie **"God Mode"** (Advanced/Mission-Critical), gdzie system musi przetrwać nie tylko błędy kodu, ale i audyty skarbowe, ataki stanowe oraz awarie całych centrów danych, wciąż widać kilka "szczelin".
+
+
+
+Oto analiza ostatnich niedociągnięć oraz zestaw ulepszeń, które zamkną Twoją architekturę w kompletną, niezniszczalną całość.
+
+
+
+---
+
+
+
+## **1. Warstwa Zgodności i Prawa: KSeF & Audit Trail**
+
+
+
+### **Niedociągnięcie: Izolacja od Systemów Państwowych (KSeF)**
+
+W Polsce systemy księgowe w 2026 roku nie mogą istnieć bez pełnej, dwukierunkowej integracji z **Krajowym Systemem e-Faktur**. Samo OCR-owanie PDF-ów to za mało – system musi weryfikować, czy to, co odczytał ML, zgadza się z cyfrowym oryginałem w repozytorium rządowym.
+
+
+
+### **Zaawansowane Ulepszenia:**
+
+* **KSeF Connector (Adapter w architekturze hexagonalnej):** Dodaj dedykowany moduł, który dla każdej faktury pobiera jej numer KSeF i sumy kontrolne. 
+
+* **Weryfikacja Trójdrożna (Three-way Match):** Porównaj: 1. Dane z OCR (Surya), 2. Dane z warstwy tekstowej PDF, 3. Dane z API KSeF. Jeśli występuje rozbieżność – system automatycznie blokuje księgowanie i tworzy incydent w Sentry.
+
+* **Niezaprzeczalność (Non-repudiation):** Każdy wpis w SQLite (Event Store) powinien być cyfrowo podpisany kluczem lokalnym urządzenia (Hardware Security Module lub TPM), aby nikt (nawet admin) nie mógł podmienić kwoty w bazie bez zerwania podpisu.
+
+
+
+---
+
+
+
+## **2. Warstwa Danych: Od SQLite do Rozproszonego Stanu**
+
+
+
+### **Niedociągnięcie: Single Point of Failure (SPOF) na dysku**
+
+Twoje bazy (SQLite, DuckDB, LanceDB) są plikowe. Jeśli fizyczny dysk na serwerze Coolify padnie lub plik ulegnie uszkodzeniu podczas zapisu (np. twardy restart), tracisz wszystko. Replikacja plików przez `fsspec` to nie jest prawdziwe High Availability (HA).
+
+
+
+### **Zaawansowane Ulepszenia:**
+
+* **LiteFS (Distributed SQLite):** Zamiast czystego SQLite, użyj LiteFS. To system plików FUSE, który replikuje transakcje SQLite w czasie rzeczywistym między wieloma węzłami (np. dwoma serwerami w różnych lokalizacjach). 
+
+* **VFS Snapshotting w DuckDB:** DuckDB nie wspiera HA natywnie. Użyj mechanizmu **S3-Express One Zone** (przez `fsspec`), aby DuckDB operował na zrzutach (snapshots) w pamięci, które są asynchronicznie flushowane do trwałego storage'u.
+
+* **Idempotency Keys w NATS:** Wdróż rygorystyczne sprawdzanie `Deduplication ID` na poziomie JetStream. Nawet jeśli sieć "mignie" i NATS dostarczy wiadomość dwa razy, Twoja baza odrzuci drugą próbę zapisu na poziomie silnika SQL.
+
+
+
+---
+
+
+
+## **3. Warstwa ML: Performance & Safety (The Last Mile)**
+
+
+
+### **Niedociągnięcie: "Black Box" Decyzji ML**
+
+Na poziomie zaawansowanym nie akceptujemy odpowiedzi: "Model tak powiedział". W razie kontroli musisz udowodnić, *dlaczego* system uznał, że dana pozycja to koszt uzyskania przychodu.
+
+
+
+### **Zaawansowane Ulepszenia:**
+
+* **Explainable AI (XAI) - Saliency Maps:** Podczas pracy Surya/LayoutLM generuj mapy ciepła (gdzie model patrzył). Zapisuj te mapy jako metadane do dokumentu w LanceDB. W UI księgowy zobaczy podświetlone pola, które wpłynęły na decyzję AI.
+
+* **Circuit Breaker dla Inteligencji:** Jeśli pewność (Confidence Score) modelu drastycznie spadnie dla serii dokumentów (np. 10 faktur pod rząd ma < 0.7), system powinien automatycznie odłączyć moduł ML i przełączyć się w tryb "Tylko OCR tekstowy" lub "Manual Entry", aby nie zatruwać bazy błędnymi danymi.
+
+* **Quantization-Aware Training (QAT):** Przejdź z prostej kwantyzacji INT8 na QAT. Trenuj model z myślą o tym, że będzie pracował na 8 bitach – to eliminuje błędy zaokrągleń, które w księgowości (gdzie liczą się grosze) są niedopuszczalne.
+
+
+
+---
+
+
+
+## **4. Warstwa Infrastruktury: eBPF & Observability**
+
+
+
+### **Niedociągnięcie: Widoczność "wnętrza" binarnej Nuitki**
+
+Skompilowana binarka jest szybka, ale dla systemu operacyjnego jest nieprzejrzysta. Jeśli proces zacznie "wyciekać" lub robić dziwne wywołania systemowe, standardowe logi Ci tego nie powiedzą.
+
+
+
+### **Zaawansowane Ulepszenia:**
+
+* **Deep Observability (eBPF Exporter):** Wdróż eBPF Exporter, który przesyła metryki prosto z jądra Linuxa do VictoriaMetrics. Będziesz widzieć: czas oczekiwania na I/O dysku dla DuckDB, liczbę context-switchy w workerach ML oraz próby nieautoryzowanego dostępu do plików.
+
+* **Statyczna Analiza Binarna w Runtime:** Użyj narzędzi takich jak **Auditd** zintegrowanego z Vectorem, aby monitorować, czy binarka Nuitka nie próbuje połączyć się z nieznanymi adresami IP (co mogłoby sugerować "zatrutą" bibliotekę w `uv.lock`).
+
+
+
+---
+
+
+
+## **5. Zarządzanie Tajemnicą: SOPS + Infisical + OIDC**
+
+
+
+### **Niedociągnięcie: Brak rotacji kluczy w locie**
+
+Twoje sekrety są bezpieczne w Infisical, ale prawdopodobnie są statyczne. Jeśli klucz do KSeF wycieknie, musisz ręcznie go zmieniać.
+
+
+
+### **Zaawansowane Ulepszenia:**
+
+* **Dynamic Secrets:** Skonfiguruj Infisical tak, aby generował krótkotrwałe (np. 1h) poświadczenia dla baz danych i API. 
+
+* **Workload Identity (OIDC):** Zamiast trzymać tokeny GitHub/GitLab w zmiennych, użyj OIDC (OpenID Connect). Twój Runner Woodpecker powinien uwierzytelniać się do Pulumi/Coolify na podstawie tożsamości tymczasowej, a nie długotrwałego klucza API.
+
+
+
+---
+
+
+
+### **Podsumowanie: Pozostałe Niedociągnięcia do naprawy**
+
+
+
+| Obszar | Niedociągnięcie | Rozwiązanie "Advanced" |
+
+| :--- | :--- | :--- |
+
+| **Prawne** | Brak integracji z KSeF | **KSeF Hexagonal Adapter** (Weryfikacja trójdrożna). |
+
+| **Dane** | Ryzyko korupcji plików SQLite | **LiteFS** dla replikacji stanu w czasie rzeczywistym. |
+
+| **ML** | Brak wyjaśnialności (Explainability) | **Saliency Maps** zapisywane w LanceDB jako dowód audytowy. |
+
+| **Infrastruktura** | Brak wglądu w system-calls | **eBPF Monitoring** dla procesów Nuitka. |
+
+| **Bezpieczeństwo** | Statyczne klucze API | **Dynamic Secrets + OIDC** (Tożsamość zamiast haseł). |
+
+
+
+Wdrożenie **LiteFS** to ostateczny krok w eliminacji Single Point of Failure (SPOF) dla Twoich baz danych SQLite. LiteFS działa jako warstwa systemu plików (FUSE), która przechwytuje zapisy do bazy danych i replikuje je na poziomie transakcyjnym (Landoff) do innych węzłów w sieci mesh (Headscale).
+
+
+
+Oto szczegółowy raport z wdrożenia, konfiguracji oraz analizy pozostałych kroków do poziomu "Advanced".
+
+
+
+---
+
+
+
+## **1. Architektura LiteFS w ekosystemie NexusAI**
+
+
+
+W tradycyjnym SQLite zapis blokuje plik. LiteFS zmienia to, wprowadzając pojęcie **Primary** (węzeł zapisujący) i **Replica** (węzły odczytujące).
+
+
+
+
+
+
+
+### **Kluczowe komponenty konfiguracji:**
+
+* **FUSE Overlay:** LiteFS montuje się w katalogu (np. `/var/lib/litefs`), a Twoja aplikacja Litestar widzi tam standardowy plik `.db`.
+
+* **Consensus (Static or Consul):** LiteFS musi wiedzieć, kto jest liderem. W Twoim przypadku (Self-hosted) użyjemy **Lease Strategy** opartej na statycznej konfiguracji lub prostym systemie plików, aby uniknąć zależności od zewnętrznego ETCD.
+
+* **Shipping:** Replikacja odbywa się przez HTTP/gRPC wewnątrz tunelu Headscale.
+
+
+
+---
+
+
+
+## **2. Konfiguracja Pulumi (Infrastruktura)**
+
+
+
+Musisz zmodyfikować definicję kontenerów w Pulumi, aby dodać uprawnienia dla FUSE oraz zamontować wolumeny LiteFS.
+
+
+
+```python
+
+import pulumi_docker as docker
+
+
+
+# Kontener musi mieć flagę privileged lub kapabilność SYS_ADMIN dla FUSE
+
+litefs_api = docker.Container("api_with_litefs",
+
+    image="nexus-ai-api:latest",
+
+    name="nexus-api-node-1",
+
+    capabilities=[docker.ContainerCapabilityArgs(
+
+        add=["SYS_ADMIN"] # Wymagane dla FUSE
+
+    )],
+
+    devices=[docker.ContainerDeviceArgs(
+
+        host_path="/dev/fuse",
+
+        container_path="/dev/fuse"
+
+    )],
+
+    volumes=[docker.ContainerVolumeArgs(
+
+        host_path="/opt/nexus/data",
+
+        container_path="/var/lib/litefs"
+
+    )],
+
+    # Ustawienie IPC dla Zero-Copy SHM (jak ustaliliśmy wcześniej)
+
+    ipc_mode="shareable"
+
+)
+
+```
+
+
+
+---
+
+
+
+## **3. Plik konfiguracyjny `litefs.yml`**
+
+
+
+Plik ten musi zostać wstrzyknięty przez **Infisical** lub zaszyfrowany przez **SOPS**.
+
+
+
+```yaml
+
+# /etc/litefs.yml
+
+fuse:
+
+  dir: "/data/db" # Tutaj aplikacja szuka sqlite.db
+
+
+
+data:
+
+  dir: "/var/lib/litefs" # Gdzie LiteFS trzyma fizyczne dane i logi transakcji
+
+
+
+lease:
+
+  type: "static"
+
+  candidate: ${IS_PRIMARY} # Flaga ze zmiennej środowiskowej
+
+  advertise-url: "http://${NODE_IP}:20202"
+
+
+
+proxy:
+
+  addr: ":8080"
+
+  target: "localhost:8000" # Przekierowanie ruchu HTTP do Litestar
+
+```
+
+
+
+---
+
+
+
+## **4. Mechanizm "LiteFS Proxy" i niedociągnięcia**
+
+
+
+LiteFS posiada wbudowany serwer proxy. Jeśli zapytanie HTTP (np. `POST /invoice`) trafi do repliki, a wymaga zapisu, proxy automatycznie przekieruje je do węzła Primary.
+
+
+
+### **Niedociągnięcia tego rozwiązania:**
+
+1. **Write Latency:** Jeśli Twoje węzły są rozproszone geograficznie, zapis przez LiteFS Proxy może być wolniejszy (oczekiwanie na potwierdzenie transakcji z Primary).
+
+    * **Ulepszenie:** Wykorzystaj **NATS JetStream** jako bufor. Zamiast pisać bezpośrednio do SQLite przez API, wrzuć zdarzenie do NATS. Tylko węzeł Primary będzie konsumował te zdarzenia i pisał do bazy, eliminując problemy z przekierowaniami HTTP.
+
+2. **Split-Brain:** W przypadku awarii sieci mesh (Headscale), dwa węzły mogą uznać się za Primary.
+
+    * **Ulepszenie:** Wdróż **Keepalived** lub wykorzystaj mechanizm **Health-checks** w Coolify, który automatycznie zabije węzeł, który stracił kworum.
+
+
+
+---
+
+
+
+## **5. Analiza końcowa i kolejne kroki (Level: Advanced)**
+
+
+
+Mamy teraz replikowaną bazę danych, która jest odporna na awarię sprzętową pojedynczego serwera.
+
+
+
+### **Co jeszcze dodać, aby zmaksymalizować niezawodność?**
+
+
+
+* **Backupy S3 w czasie rzeczywistym:** Skonfiguruj LiteFS tak, aby automatycznie wysyłał snapshoty do Twojego storage'u (fsspec/S3) co każdą transakcję. To daje Ci **RPO (Recovery Point Objective) bliskie zero**.
+
+* **Dual-Write do DuckDB:** W architekturze hexagonalnej, adapter bazy danych powinien po udanym zapisie w LiteFS (Primary) wysłać sygnał do **Polars**, aby odświeżył cache w DuckDB (OLAP).
+
+* **Vulnerability Scanning w Runtime:** Skoro dajesz kontenerom uprawnienia `SYS_ADMIN` (dla LiteFS), ryzyko eskalacji uprawnień rośnie.
+
+    * **Ulepszenie:** Musisz rozbudować reguły **Falco**, aby monitorowały nietypowe wywołania systemowe związane z systemem plików FUSE.
+
+
+
+Jesteśmy teraz na etapie, gdzie Twoja architektura przypomina cyfrowy bunkier — jest szybka, bezpieczna i wysoce redundantna. Jednak dążymy do poziomu **„God Mode”**, czyli systemów, które są nie tylko technicznie doskonałe, ale również **operacyjnie niezniszczalne** i **prawnie kuloodporne** (szczególnie w specyficznym kontekście księgowym 2026 roku).
+
+
+
+Po wdrożeniu LiteFS i Zero-Copy, system jest "maszyną". Teraz musimy nadać mu "sumienie" (audytowalność) i "zgodność" (KSeF).
+
+
+
+---
+
+
+
+### **1. Analiza pozostałych niedociągnięć (Ostatnia prosta)**
+
+
+
+Mimo Twojego imponującego stosu, na poziomie zaawansowanym widzę jeszcze trzy luki:
+
+
+
+* **Niedociągnięcie: Brak "Niezaprzeczalności" (Non-repudiation).** W księgowości nie wystarczy zapisać danych. Musisz udowodnić, że nikt — nawet Ty jako administrator — nie zmienił kwoty faktury w bazie SQLite po jej zatwierdzeniu. Sam Event Sourcing to tylko historia, którą można nadpisać na dysku.
+
+* **Niedociągnięcie: "Dryf Prawny" (KSeF Integration).** W 2026 roku w Polsce faktura PDF jest tylko wizualizacją. Prawdziwym dokumentem jest XML w rządowym systemie KSeF. Jeśli Twój system bazuje głównie na OCR, ignorując bezpośrednią synchronizację z KSeF, jest "ślepy" na oficjalną prawdę skarbową.
+
+* **Niedociągnięcie: Bezpieczeństwo wykonawcze (Rootless & Distroless).** Używasz Podmana i Nuitki, co jest świetne, ale jeśli proces w kontenerze działa jako `root`, to w przypadku błędu w skompilowanym kodzie C++, haker może uciec do systemu hosta.
+
+
+
+---
+
+
+
+### **2. Nowe ulepszenia: Poziom Advanced Expert**
+
+
+
+#### **A. Walidacja Trójdrożna (KSeF + OCR + Metadata)**
+
+To najważniejsze ulepszenie dla polskiego systemu księgowego.
+
+* **Opis:** Każda faktura musi przejść proces uzgadniania trzech źródeł:
+
+    1. **Dane z KSeF (XML):** Prawda urzędowa.
+
+    2. **Dane z OCR (Surya/LayoutLM):** Prawda wizualna.
+
+    3. **Metadane PDF:** Prawda techniczna.
+
+* **Implementacja:** Jeśli suma z OCR różni się choćby o grosz od sumy w XML z KSeF, system nie ma prawa jej zaksięgować automatycznie. Musi podnieść flagę `INTEGRITY_ALARM` w VictoriaMetrics.
+
+
+
+#### **B. Kryptograficzny Łańcuch Zdarzeń (Blockchain-like Audit Trail)**
+
+* **Opis:** Każde zdarzenie w Twoim Event Store (SQLite) powinno zawierać hash poprzedniego zdarzenia.
+
+* **Zastosowanie:** Stwórz adapter, który przy każdym zapisie do SQLite oblicza `SHA-256(current_event + previous_hash)`. Jeśli ktoś spróbuje ręcznie edytować rekord w bazie, cały "łańcuch" pęknie, co natychmiast wykryje Twój proces monitorujący (Falco/Vector).
+
+
+
+#### **C. Obrazy Distroless dla Nuitki**
+
+* **Opis:** Skoro Nuitka kompiluje Twój kod do jednej, samowystarczalnej binarki, nie potrzebujesz w kontenerze Pythona, powłoki (shell), ani nawet menedżera pakietów.
+
+* **Zmiana w Pulumi:** Użyj obrazów bazowych `gcr.io/distroless/cc-debian12`.
+
+* **Zaleta:** Atakujący, nawet jeśli znajdzie lukę, nie ma do dyspozycji poleceń takich jak `ls`, `cd`, `curl` czy `sh`. Kontener zawiera tylko Twoją binarkę i niezbędne biblioteki C.
+
+
+
+#### **D. Wyjaśnialna Inteligencja (Explainable AI - XAI)**
+
+* **Opis:** Księgowy musi wiedzieć, dlaczego AI zaklasyfikowało wydatek jako "Koszty Reprezentacji", a nie "Reklamę".
+
+* **Ulepszenie:** Wykorzystaj mechanizm **Attention Maps** z LayoutLMv1. Podczas procesowania faktury, zapisuj w LanceDB mapę współrzędnych, na które model "patrzył" najintensywniej. W UI Playwright/Litestar wyświetl te miejsca jako podświetlone pola (Bounding Boxes), dając użytkownikowi pewność co do decyzji modelu.
+
+
+
+---
+
+
+
+### **3. Szczegółowy raport zmian (Action Plan)**
+
+
+
+| Komponent | Co zmienić/dodać? | Dlaczego? |
+
+| :--- | :--- | :--- |
+
+| **KSeF Adapter** | Integracja z API Ministerstwa Finansów przez Litestar. | Zgodność prawna i 100% pewności danych finansowych. |
+
+| **Event Hashing** | Wdrożenie pola `merkle_hash` w tabeli zdarzeń SQLite. | Gwarancja nienaruszalności danych przed audytem. |
+
+| **Distroless** | Migracja z `python:3.12-slim` na `distroless/cc` w Podmanie. | Drastyczne zmniejszenie powierzchni ataku (Security Hardening). |
+
+| **Circuit Breaker** | Mechanizm zatrzymujący AI, gdy `confidence_score` spada poniżej 0.8. | Zapobieganie "halucynacjom" księgowym przy złej jakości skanach. |
+
+| **mTLS** | Wymuszenie Mutual TLS wewnątrz sieci Headscale. | Szyfrowanie i autoryzacja komunikacji między każdym mikroumieszczeniem. |
+
+
+
+---
+
+
+
+### **4. Czy to już koniec niedociągnięć?**
+
+
+
+Na poziomie **architektury technicznej** — tak. Po tych zmianach masz system, który jest:
+
+1. **Odporny na awarie hardware** (LiteFS).
+
+2. **Ekstremalnie szybki** (Nuitka + Zero-Copy).
+
+3. **Bezpieczny prawnie** (KSeF + Hashed Audit).
+
+4. **Niewidzialny dla hakerów** (Distroless + Headscale).
+
+
+
+Ostatnim, niemal filozoficznym niedociągnięciem, może być **"Disaster Recovery" poza chmurę**. Jeśli cały Twój dom/biuro (gdzie masz self-hosted serwer) spłonie, co z danymi?
+
+* **Rozwiązanie:** Skonfiguruj `fsspec` tak, aby wysyłał **zaszyfrowane (SOPS/Age)** snapshoty bazy SQLite i obrazów faktur do zimnego storage'u (np. AWS Glacier lub Backblaze B2) w innej lokalizacji geograficznej.
+
+
+
+**
+
+
+
+Twoja architektura jest obecnie na etapie, który można określić jako **"Hardened Enterprise"**. Aby jednak przesunąć ją na poziom **"Advanced Autonomous"**, musimy wyeliminować ostatnie punkty styku, w których system polega na "szczęściu" lub niepełnych danych.
+
+
+
+Oto szczegółowa analiza pozostałych niedociągnięć, potencjalnych błędów oraz propozycji ulepszeń, które domkną system w nienaruszalną całość.
+
+
+
+---
+
+
+
+### **1. Integralność i Niezaprzeczalność Danych (Audit & Trust)**
+
+
+
+Nawet przy Event Sourcingu, administrator z dostępem do bazy danych może teoretycznie zmodyfikować historię zdarzeń (np. zmienić kwotę faktury w tabeli SQLite).
+
+
+
+* **Błąd/Niedociągnięcie:** Brak mechanizmu *Non-repudiation* (niezaprzeczalności). W księgowości dowód audytowy musi być matematycznie nienaruszalny.
+
+* **Poprawka/Ulepszenie: Kryptograficzny Hash-Chain (Merkle Tree).**
+
+    * **Opis:** Każde nowe zdarzenie w Event Store powinno zawierać hash poprzedniego zdarzenia. Stworzy to łańcuch podobny do blockchaina. Jeśli jakikolwiek rekord w bazie zostanie zmieniony wstecznie, suma kontrolna całego łańcucha przestanie się zgadzać, co natychmiast wykryje system monitoringu.
+
+* **Ulepszenie: Cyfrowe Podpisywanie Zdarzeń.**
+
+    * **Opis:** Każdy moduł (np. OCR, Walidator) powinien podpisywać swoje wyniki kluczem prywatnym (użycie biblioteki `cryptography` lub integracja z TPM/HSM). Dzięki temu masz pewność, że dane w DuckDB pochodzą z Twojego skompilowanego modułu, a nie z zewnętrznego wstrzyknięcia.
+
+
+
+---
+
+
+
+### **2. Zgodność Prawna i Biznesowa (Regulatory Excellence)**
+
+
+
+W 2026 roku system księgowy w Polsce bez pełnej integracji z KSeF jest technologicznym "ślepcem".
+
+
+
+* **Błąd/Niedociągnięcie:** Bazowanie wyłącznie na OCR (prawda wizualna) przy pominięciu XML-a z KSeF (prawda urzędowa).
+
+* **Poprawka/Ulepszenie: Weryfikacja Trójdrożna (Triple-way Match).**
+
+    * **Opis:** Wprowadź adapter, który dla każdej faktury pobiera oficjalny dokument XML z KSeF. System musi porównać:
+
+        1. Dane wyekstrahowane przez **Surya OCR/LayoutLM**.
+
+        2. Dane z warstwy tekstowej PDF.
+
+        3. Dane z oficjalnego XML KSeF.
+
+    * W przypadku rozbieżności (nawet o 1 grosz), system automatycznie blokuje proces i wysyła alert "Integrity Mismatch".
+
+
+
+---
+
+
+
+### **3. Zaawansowane Bezpieczeństwo Wykonawcze (Runtime Hardening)**
+
+
+
+Twoja binarka Nuitka działa wewnątrz kontenera, ale prawdopodobnie wciąż posiada dostęp do narzędzi systemowych, których nie potrzebuje.
+
+
+
+* **Błąd/Niedociągnięcie:** Używanie obrazów bazowych "Slim" lub "Alpine", które zawierają powłoki (shell), biblioteki sieciowe i menedżery pakietów.
+
+* **Poprawka/Ulepszenie: Migracja na Obrazy Distroless.**
+
+    * **Opis:** Skonfiguruj Pulumi tak, aby budowało obrazy oparte na `gcr.io/distroless/cc`. Ponieważ Nuitka kompiluje kod do natywnego C++, nie potrzebujesz w kontenerze Pythona ani shella. Atakujący, który teoretycznie przejąłby proces, nie będzie miał do dyspozycji poleceń takich jak `ls`, `cd`, `curl` czy `sh`.
+
+* **Ulepszenie: eBPF Runtime Security (Falco Deep Integration).**
+
+    * **Opis:** Rozbuduj reguły Falco o specyficzne sygnatury dla Twojej binarki. Jeśli skompilowany proces nagle zacznie otwierać gniazda sieciowe w kierunku innym niż NATS lub VictoriaMetrics, Falco powinno natychmiast ubić kontener (Active Response).
+
+
+
+---
+
+
+
+### **4. Optymalizacja ML i "Self-Healing" (AI Resilience)**
+
+
+
+Modele ML mogą "halucynować" lub tracić precyzję pod wpływem nietypowych dokumentów.
+
+
+
+* **Błąd/Niedociągnięcie:** Brak mechanizmu *Circuit Breaker* dla inteligencji modelu.
+
+* **Poprawka/Ulepszenie: Uncertainty Quantile Monitoring.**
+
+    * **Opis:** Użyj *Confidence Scores* z LayoutLMv1. Jeśli średnia pewność dla ostatnich 10 dokumentów spadnie poniżej progu (np. 0.85), system powinien automatycznie przełączyć się w tryb "Safe Mode" (wymuszona weryfikacja ręczna) i wysłać próbki do fine-tuningu w Daggerze.
+
+* **Ulepszenie: Explainable AI (XAI) for Accounting.**
+
+    * **Opis:** Zaimplementuj mapy atencji (Saliency Maps). Przy każdej ekstrakcji system powinien generować obraz faktury z zaznaczonymi obszarami, na które model "patrzył", podejmując decyzję. Jest to kluczowe przy audytach, aby udowodnić, skąd wzięły się dane w DuckDB.
+
+
+
+---
+
+
+
+### **5. Zarządzanie Sekretami i Tożsamością (Advanced Auth)**
+
+
+
+* **Błąd/Niedociągnięcie:** Statyczne klucze API w Infisical, które wymagają ręcznej rotacji.
+
+* **Poprawka/Ulepszenie: Workload Identity (OIDC) & Dynamic Secrets.**
+
+    * **Opis:** Skonfiguruj Infisical tak, aby generował tymczasowe (np. 15-minutowe) poświadczenia dla bazy danych i NATS.
+
+    * **Integracja OIDC:** Twój Runner Woodpecker powinien uwierzytelniać się do Pulumi/Coolify nie za pomocą tokena, ale tożsamości OIDC, co eliminuje ryzyko kradzieży długotrwałych kluczy dostępu.
+
+
+
+---
+
+
+
+### **Podsumowanie: Lista kontrolna do statusu "Advanced Expert"**
+
+
+
+1. **[ ] Merkle Hashing:** Implementacja w SQLite (nienaruszalny log).
+
+2. **[ ] KSeF Triple-Match:** Adapter do weryfikacji XML (zgodność prawna).
+
+3. **[ ] Distroless Containerization:** Usunięcie wszystkiego poza binarką Nuitka.
+
+4. **[ ] Active Learning Loop:** Automatyczny feedback z Playwright do LanceDB.
+
+5. **[ ] mTLS (Mutual TLS):** Wymuszenie w Headscale, aby każdy komponent (NATS, API, ML) legitymował się własnym certyfikatem.
+
+
+
+Skupienie się na **Hashed Audit Trail** jest priorytetem, ponieważ dotyka on samej wiarygodności danych finansowych. Implementacja ta zamienia zwykłą tabelę bazy danych w strukturę typu "append-only ledger", gdzie każda próba manipulacji wstecznej staje się natychmiast widoczna.
+
+
+
+Poniżej przedstawiam listę ulepszeń, błędów do uniknięcia oraz konkretną strategię implementacji dla obu obszarów.
+
+
+
+---
+
+
+
+## **1. Hashed Audit Trail (Kryptograficzny Rejestr Zdarzeń)**
+
+
+
+Tradycyjny Event Store w SQLite jest podatny na edycję rekordów przez użytkownika z uprawnieniami `root`. Hashed Audit Trail rozwiązuje to poprzez powiązanie każdego zdarzenia z hashem poprzedniego.
+
+
+
+### **Lista ulepszeń i poprawek:**
+
+* **Implementacja Merkle Hash:** Każdy rekord w tabeli `events` musi posiadać kolumnę `event_hash` oraz `chain_hash`.
+
+* **Błąd do uniknięcia: Przechowywanie klucza solącego (Salt) w tej samej bazie.** Jeśli napastnik pozna algorytm i sól, może przeliczyć cały łańcuch od nowa po zmianie danych.
+
+* **Poprawka: External Secret Signing.** Użyj **Infisical** do wstrzyknięcia klucza HMAC (Hash-based Message Authentication Code). Binarka Nuitka podpisuje zdarzenie tym kluczem przed zapisem.
+
+
+
+
+
+
+
+### **Szczegółowy opis zmian w schemacie:**
+
+1. **Tabela `event_store`**:
+
+    * `sequence_id`: Klucz główny (autoincrement).
+
+    * `payload`: Dane faktury (JSON).
+
+    * `previous_hash`: Hash rekordu o `sequence_id - 1`.
+
+    * `current_hash`: $SHA256(payload + previous\_hash + secret\_salt)$.
+
+2. **Walidator ciągłości**: Proces działający w tle (lub przy starcie aplikacji), który przelicza łańcuch i porównuje hashe. Jeśli $H_n \neq SHA256(P_n + H_{n-1})$, system wchodzi w tryb **ReadOnly** i podnosi alarm w Sentry.
+
+
+
+---
+
+
+
+## **2. Konfiguracja "Distroless" dla Nuitki**
+
+
+
+Użycie standardowego obrazu `python:slim` w połączeniu ze skompilowaną binarką to marnotrawstwo zasobów i niepotrzebne ryzyko bezpieczeństwa.
+
+
+
+### **Lista ulepszeń i poprawek:**
+
+* **Niedociągnięcie: Obecność interpretera Pythona.** Po kompilacji Nuitką do C++, interpreter nie jest już potrzebny do uruchomienia aplikacji.
+
+* **Poprawka: Multi-stage Build.** Użyj `uv` i Nuitki w pierwszym etapie (build), a w drugim (run) skopiuj tylko wynikową binarkę i niezbędne biblioteki współdzielone (.so).
+
+* **Ulepszenie: Obraz `static` lub `cc`.** Najwyższy poziom bezpieczeństwa zapewnia obraz `gcr.io/distroless/static-debian12` (brak bibliotek C) lub `gcr.io/distroless/cc-debian12` (jeśli Nuitka wymaga glibc).
+
+
+
+
+
+
+
+### **Szczegółowy opis konfiguracji (Pulumi/Docker):**
+
+* **Etap Budowy**: Instalacja zależności przez `uv`, kompilacja `nuitka --standalone --onefile`.
+
+* **Etap Uruchomienia**:
+
+    * Brak `/bin/sh`, `/bin/bash`, `/usr/bin/apt`.
+
+    * Brak użytkownika `root` (użyj `USER 1000:1000`).
+
+    * Montowanie bazy SQLite przez LiteFS do dedykowanego wolumenu z flagą `noexec` na poziomie systemu plików.
+
+
+
+---
+
+
+
+## **3. Pozostałe niedociągnięcia i ulepszenia "Advanced"**
+
+
+
+Nawet po wdrożeniu powyższych, na poziomie eksperckim należy rozważyć:
+
+
+
+* **Błąd: Brak limitów zasobów (Resource Quotas).** Skompilowana binarka C++ może alokować pamięć agresywniej niż Python. 
+
+    * **Ulepszenie:** W Pulumi ustaw rygorystyczne `memory_limit` i `cpu_period` dla kontenerów, aby uniknąć ataku typu ReDoS (Regular Expression Denial of Service) na poziomie OCR.
+
+* **Niedociągnięcie: Logi VictoriaMetrics w czystym tekście.** 
+
+    * **Poprawka:** Wdróż **Log Signing**. Każda linia logu wysyłana przez `loguru` powinna być podpisana, aby w razie audytu śledczego nikt nie zarzucił manipulacji logami SIEM.
+
+* **Ulepszenie: Pre-signed S3 URLs.** Jeśli przechowujesz skany faktur w MinIO/S3 (przez `fsspec`), aplikacja nie powinna serwować plików bezpośrednio. Generuj krótkotrwałe (np. 30 sek.) adresy URL, aby zminimalizować ryzyko wycieku linków do dokumentów finansowych.
+
+
+
+---
+
+
+
+### **Werdykt: Co wybrać?**
+
+
+
+Jeśli Twoim priorytetem jest **bezpieczeństwo danych i audytowalność**, zacznij od **Hashed Audit Trail**. To "serce" zaufania w systemie księgowym. 
+
+
+
+Jeśli priorytetem jest **odporność na ataki infrastrukturalne i optymalizacja RAM**, wybierz **Distroless**. 
+
+
+
+Który z tych konkretnych kroków implementacyjnych chcesz teraz rozwinąć do poziomu gotowego kodu?
+
+
+
+
+
+Oceniam, że ten punkt (CI/CD, DevSecOps i zarządzanie sekretami) jest obecnie w kodzie źródłowym na poziomie 0/10 – nie ma żadnych śladów pipeline'ów, IaC czy skanów bezpieczeństwa. Jednak Twój plan wdrożenia jest zaawansowany i całkowicie adekwatny do ambicji systemu. Poniższy raport pokazuje, jak w pełni wykorzystać każdą z tych technologii, uniknąć konfliktów i zbudować spójny, pancerny potok dostawczy.
+
+
+
+---
+
+
+
+Ogólna ocena: 0/10 (nieobecne) → Plan oceniam jako Advanced (95/100) po pełnym wdrożeniu.
+
+
+
+---
+
+
+
+1. CI / CD – Orkiestracja i hermetyzacja
+
+
+
+Stan obecny
+
+
+
+Brak jakichkolwiek definicji CI/CD. Kod uruchamiany jest ręcznie przez uvicorn.
+
+
+
+Co i jak dodać / zmodyfikować
+
+
+
+1.1. Wielopoziomowe pipeline'y z wyraźnym podziałem odpowiedzialności
+
+
+
+Cel: Uniknąć redundancji i chaosu przy trzech systemach CI.
+
+
+
+Zmiana:
+
+
+
+· GitHub Actions jako „brama” (Control Plane) – tylko lekkie zadania: linting (Ruff), testy jednostkowe (pytest), wyzwalanie webhooków do Woodpecker/GitLab.
+
+· Woodpecker CI + GitLab Runner (self-hosted, Data Plane) – ciężkie zadania: kompilacja Nuitka, pełne testy integracyjne, skanowanie Trivy, budowa obrazu Podman i wdrożenie przez Pulumi.
+
+
+
+Konfiguracja przykładowa (GitHub Actions → trigger Woodpecker):
+
+
+
+```yaml
+
+# .github/workflows/gate.yml
+
+name: Gatekeeper
+
+on: [push, pull_request]
+
+jobs:
+
+  lint-and-trigger:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+
+      - run: uv sync --frozen
+
+      - run: uv run ruff check .
+
+      - run: uv run pytest tests/ -q
+
+      - name: Trigger Woodpecker
+
+        run: |
+
+          curl -X POST http://woodpecker.example.com/api/repos/nexus/ai/trigger \
+
+            -H "Authorization: Bearer ${{ secrets.WP_TOKEN }}"
+
+```
+
+
+
+Ulepszenie: Użyj uv sync --locked i cache'uj $UV_CACHE_DIR na wolumenie, aby gwarantować bitową reprodukowalność środowiska.
+
+
+
+1.2. Invoke jako pojedynczy interfejs dewelopera
+
+
+
+Co dodać: tasks.py oparty na invoke, zastępujący wszystkie skrypty .sh i Makefile.
+
+
+
+Przykład:
+
+
+
+```python
+
+# tasks.py
+
+from invoke import task
+
+
+
+@task
+
+def dev(ctx):
+
+    ctx.run("podman compose -f dev-compose.yml up -d")
+
+
+
+@task
+
+def security(ctx):
+
+    ctx.run("uv run ruff check .")
+
+    ctx.run("uv run bandit -r .")
+
+
+
+@task
+
+def infra_deploy(ctx, env="staging"):
+
+    ctx.run(f"pulumi up --stack {env} -y")
+
+```
+
+
+
+Dlaczego: Jeden, ustandaryzowany sposób wywoływania wszystkich operacji (lokalnie i w CI).
+
+
+
+1.3. Hermetyczne budowanie z Nuitka
+
+
+
+Co zmodyfikować: W pipeline Woodpecker użyć wieloetapowego Containerfile z uv i Nuitka, wynikową binarkę umieścić w obrazie Distroless (patrz poprzednie analizy).
+
+Ulepszenie: Wykorzystać --enable-ccache z Nuitka i montować trwały wolumen z cache, aby przyspieszyć kompilacje.
+
+
+
+---
+
+
+
+2. DevSecOps – Wbudowane bezpieczeństwo
+
+
+
+2.1. SAST (Ruff + Bandit)
+
+
+
+Stan: Ruff jest obecny w pyproject.toml, Bandit nie jest podłączony.
+
+
+
+Co dodać / zmodyfikować:
+
+
+
+· W CI (Gatekeeper) użyć ruff check . jako obowiązkowy krok.
+
+· Dodać konfigurację bandit.yaml z wyłączeniem reguł nieistotnych (np. B101 dla kodu testowego).
+
+· W pre-commit hook'ach (lokalnie) wywoływać oba narzędzia.
+
+
+
+2.2. SCA (pip-audit + Trivy)
+
+
+
+Co dodać:
+
+
+
+· pip-audit uruchamiać w CI na etapie lintowania, np. uv run pip-audit -r requirements.txt.
+
+· Trivy – rozbudować jego użycie:
+
+  · Skanowanie plików systemu (trivy fs --format cyclonedx --output sbom.json .).
+
+  · Skanowanie obrazu Podman (trivy image nexus-ai:latest).
+
+  · Skanowanie uv.lock (Trivy obsługuje pliki uv.lock).
+
+  · Skanowanie sekretów (trivy config .).
+
+
+
+2.3. Agregacja podatności (DefectDojo)
+
+
+
+Co dodać: Wdrożyć OWASP DefectDojo (self-hosted, darmowe) jako centralny hub. Pipeline po skanach wysyła wyniki (SARIF, CycloneDX) do DefectDojo API.
+
+
+
+Przykład integracji:
+
+
+
+```yaml
+
+# w Woodpecker CI
+
+- trivy fs --format sarif --output trivy.sarif .
+
+- curl -X POST https://defectdojo.example.com/api/v2/import-scan/ \
+
+    -H "Authorization: Token $DD_TOKEN" \
+
+    -F "file=@trivy.sarif" \
+
+    -F "scan_type=SARIF" \
+
+    -F "engagement=1"
+
+```
+
+
+
+Korzyść: Historia podatności, deduplikacja, priorytetyzacja.
+
+
+
+2.4. Container Security
+
+
+
+Co ulepszyć: Trivy w CI ma obowiązkowo skanować zbudowany obraz Podmana. Ponadto wdrożyć distroless/cc jako obraz bazowy (omówione wcześniej).
+
+
+
+---
+
+
+
+3. Secrets Management – Uniknięcie konfliktu SOPS vs Infisical
+
+
+
+3.1. Ścisły podział ról
+
+
+
+Co zmienić: Wyraźnie rozgraniczyć odpowiedzialności:
+
+
+
+Narzędzie Zastosowanie
+
+SOPS + Age Szyfrowanie plików konfiguracyjnych w repozytorium Git (np. config.staging.yaml, Pulumi config)
+
+Infisical Zarządzanie sekretami w runtime (API, NATS, KSeF)
+
+
+
+Implementacja SOPS:
+
+
+
+· Deweloperzy używają klucza publicznego Age do szyfrowania, CI ma klucz prywatny do deszyfrowania.
+
+· Pliki .enc.yaml są commitowane bezpiecznie.
+
+
+
+Implementacja Infisical:
+
+
+
+· Self-hosted Infisical Community Edition.
+
+· W kontenerach Podman użyć Infisical Agent jako init container lub sidecar, który wstrzykuje sekrety do /dev/shm/secrets.env.
+
+· Proces Nuitki czyta zmienne z tego pliku.
+
+
+
+3.2. Dynamiczne sekrety (OIDC)
+
+
+
+Co dodać: Skonfigurować GitLab Runner/Woodpecker do uwierzytelniania się w Pulumi i Infisical przez OpenID Connect (OIDC) zamiast statycznych tokenów. Eliminuje to konieczność przechowywania długotrwałych kluczy w CI.
+
+
+
+3.3. Pre-commit Secret Scanning
+
+
+
+Co zmodyfikować: Dodać hook gitleaks do pre-commit, aby nie można było wypuścić kodu zawierającego klucze.
+
+
+
+---
+
+
+
+4. IaC Security (Checkov)
+
+
+
+4.1. Walidacja Pulumi
+
+
+
+Co dodać: Checkov potrafi skanować kod Pulumi (Python). W pipeline:
+
+
+
+```bash
+
+checkov -d infra/ --framework pulumi
+
+```
+
+
+
+Ulepszenie: Napisać własne polityki Checkov w Pythonie, np. wymuszające, że kontenery mają wyłączoną flagę privileged: true lub ustawione limity pamięci.
+
+
+
+4.2. Automatyczna korekta dryfu
+
+
+
+Co rozbudować: Skonfigurować zadanie cron (Invoke lub Woodpecker) wywołujące pulumi refresh i pulumi up w trybie --yes tylko dla środowisk nieprodukcyjnych, aby stale pilnować zgodności infrastruktury z kodem.
+
+
+
+---
+
+
+
+5. Automatyzacja operacyjna (Fabric + Invoke)
+
+
+
+5.1. Rola Fabric
+
+
+
+Co zmienić: Używać Fabric wyłącznie do bootstrappingu nowych maszyn (instalacja Podmana, uv, Headscale, agentów CI). Po wstępnej konfiguracji obowiązki przejmuje Pulumi i CI/CD.
+
+
+
+5.2. Invoke jako Task Runner
+
+
+
+Co dodać: Wszystkie zadania cykliczne (backup, replikacja, czyszczenie) zdefiniować jako funkcje Invoke, wyzwalane przez Cron na hoście lub przez zdarzenia NATS.
+
+
+
+---
+
+
+
+6. Podsumowanie – Mapa drogowa do pełnego wdrożenia
+
+
+
+Priorytet Narzędzie/obszar Działanie
+
+🔴 Krytyczny CI/CD Skonfigurować Woodpecker/GitLab Runner i połączyć z GitHub Actions
+
+🔴 Krytyczny SOPS + Infisical Rozdzielić role i wdrożyć Infisical jako runtime secrets
+
+🟠 Wysoki Trivy (wszystkie tryby) Pełne skanowanie FS, obrazów, uv.lock i konfiguracji
+
+🟠 Wysoki Checkov Skanować Pulumi i dodać własne polityki
+
+🟡 Średni DefectDojo Wdrożyć jako hub agregacji podatności
+
+🟡 Średni Invoke + Fabric Stworzyć tasks.py i ograniczyć Fabric do bootstrappingu
+
+🟢 Ulepszenia OIDC, Distroless, Cosign Dalsze hartowanie bezpieczeństwa
+
+
+
+Wniosek: Plan doskonale wykorzystuje zestaw narzędzi, a Twoja propozycja dodania DefectDojo, rozdzielenia CI i sekretów oraz wprowadzenia Cosign i OIDC pokazuje głęboką dojrzałość architektoniczną. Po zrealizowaniu wszystkich powyższych punktów, stos CI/CD/DevSecOps osiągnie poziom Enterprise+, w pełni wykorzystując potencjał każdego z komponentów, a redundancja będzie służyć wyłącznie niezawodności, a nie chaosowi.
+
+Nawet po wdrożeniu wszystkich dotychczasowych poprawek – JWT, Zero-ETL, fsspec, LayoutLM, Outbox, LiteFS, Distroless, Merkle Audit, KSeF, CI/CD z podziałem ról, Infisical i SOPS – system będzie na poziomie Enterprise Hardened. To znakomity wynik. Jednak droga do poziomu Advanced/Autonomous wymaga wyeliminowania ostatnich, subtelnych “szczelin”, które dzielą system odporny na awarie od systemu, który sam się leczy, adaptuje i udowadnia swoją poprawność przed audytorem bez udziału człowieka.
+
+
+
+Poniżej znajduje się lista pozostałych niedociągnięć podzielona na kategorie oraz konkretne ulepszenia, które należy wdrożyć.
+
+
+
+---
+
+
+
+1. Integralność danych i ochrona przed zaawansowanymi atakami
+
+
+
+1.1. Brak ciągłej weryfikacji integralności plików (Data Integrity Daemon)
+
+
+
+Problem: System sprawdza integralność łańcucha Merkle w audycie, ale nie weryfikuje w sposób ciągły, czy pliki faktur na dysku nie uległy uszkodzeniu (bit rot) lub celowej modyfikacji poza bazą. Atakujący z fizycznym dostępem mógłby podmienić plik PDF bez modyfikacji rekordu w SQLite.
+
+
+
+Rozwiązanie: Wdrożyć dedykowany proces Data Integrity Daemon, który co godzinę:
+
+
+
+· Pobiera losową próbkę plików z fsspec,
+
+· Przelicza ich SHA-256 i porównuje z hashem zapisanym w tabeli document_fingerprints (DuckDB/SQLite),
+
+· Weryfikuje sumy kontrolne wewnątrz bazy SQLite (np. PRAGMA integrity_check),
+
+· W przypadku niezgodności publikuje incydent na NATS alerts.integrity.critical i wyzwala procedurę izolacji (np. odłączenie węzła od sieci Headscale).
+
+
+
+Korzyść: Ciągła gwarancja, że żaden plik ani rekord nie został zmieniony w sposób niewykrywalny.
+
+
+
+1.2. Ryzyko ataku przez podmianę modelu AI (Model Poisoning)
+
+
+
+Problem: Mimo podpisywania binarek i obrazów (Cosign), same wagi modeli ML (pliki .safetensors, .onnx) mogą zostać podmienione na dysku lub w trakcie pobierania. Skompromitowany model może celowo błędnie klasyfikować faktury (np. zaniżać VAT).
+
+
+
+Rozwiązanie: Rozszerzyć pipeline CI/CD o:
+
+
+
+· Obliczanie skrótu SHA-256 wszystkich plików wag podczas budowania obrazu nexusai-models.
+
+· Zapisanie tych skrótów w podpisanym pliku models.sig (Cosign).
+
+· Przy starcie kontenera worker AI weryfikuje każdy plik modelu z podpisaną listą przed załadowaniem do PyTorch/ONNX Runtime.
+
+· Wdrożenie Adversarial Robustness – okresowe testowanie modeli na zestawie faktur z celowymi modyfikacjami wizualnymi, aby sprawdzić odporność na ataki omijające OCR.
+
+
+
+Korzyść: Pełna ochrona łańcucha dostaw AI – od wag po binarkę.
+
+
+
+---
+
+
+
+2. Odporność na awarie sieciowe i partycje (Split-Brain)
+
+
+
+2.1. LiteFS jako jedyny mechanizm quorum – ryzyko „rozdwojenia mózgu”
+
+
+
+Problem: Przy replikacji SQLite przez LiteFS i sieci mesh Headscale, w przypadku długotrwałego rozszczelnienia sieci dwa węzły mogą uznać się za Primary i zacząć przyjmować zapisy. Doprowadzi to do nieodwracalnego rozwidlenia danych (split-brain).
+
+
+
+Rozwiązanie: Dodać warstwę kworum rozproszonego opartą o NATS JetStream (już obecny w stacku). Konfiguracja:
+
+
+
+· Tylko jeden węzeł w danym momencie może publikować na strumień ledger.primary.heartbeat.
+
+· Workerzy przed zapisem do LiteFS weryfikują, czy aktualny węzeł jest właścicielem locka w JetStream.
+
+· W przypadku utraty połączenia, replika automatycznie przechodzi w tryb read-only i czeka na przywrócenie kworum.
+
+· Alternatywnie: użyć etcd (jeśli pozwalają zasoby) lub uproszczonego protokołu Raft wbudowanego w aplikację.
+
+
+
+Korzyść: Gwarancja, że w sieci mesh istnieje dokładnie jeden źródło prawdy dla transakcji.
+
+
+
+---
+
+
+
+3. Operacyjna dojrzałość i „samoleczenie”
+
+
+
+3.1. Brak mechanizmu „Chaos Engineering” wbudowanego w system
+
+
+
+Problem: Testy jednostkowe i integracyjne nie symulują rzeczywistych awarii infrastruktury (np. nagłe wyłączenie kontenera API, przeciążenie NATS, zapełnienie dysku). Bez tego nie można mieć pewności, że procedury awaryjne (Circuit Breaker, auto-failover) działają.
+
+
+
+Rozwiązanie: Zbudować moduł Chaos Monkey uruchamiany jako osobny kontener (np. raz dziennie w środowisku staging):
+
+
+
+· Losowo restartuje kontenery (API, Worker, NATS),
+
+· Blokuje ruch sieciowy do wybranych węzłów Headscale,
+
+· Zapełnia /dev/shm lub dysk na 95%,
+
+· Następnie monitoruje czas przywracania sprawności (MTTR) przez VictorięMetrics i raportuje do dashboardu.
+
+
+
+Korzyść: Empiryczne potwierdzenie odporności systemu i automatyzacja testów DR.
+
+
+
+3.2. Auto-scaling workerów na podstawie długości kolejki NATS
+
+
+
+Problem: Przy nagłym wzroście liczby faktur (np. koniec miesiąca), stała liczba workerów ML może spowodować wielogodzinne opóźnienia. Brakuje mechanizmu dynamicznego skalowania.
+
+
+
+Rozwiązanie: Wdrożyć KEDA (Kubernetes Event-driven Autoscaling) dla workerów lub – w trybie self-hosted bez K8s – użyć skryptu monitorującego stan strumienia JetStream. Gdy liczba oczekujących wiadomości przekroczy próg, Invoke/Pulumi automatycznie uruchamia dodatkowe instancje kontenera workera na dostępnych maszynach (w sieci mesh). Po rozładowaniu kolejki – nadmiarowe workery są zatrzymywane.
+
+
+
+Korzyść: Elastyczność operacyjna i stały, przewidywalny czas przetwarzania przy zmiennym obciążeniu.
+
+
+
+---
+
+
+
+4. Bezpieczeństwo fizyczne i sprzętowe (Self-hosted Hardening)
+
+
+
+4.1. Brak szyfrowania danych w spoczynku na poziomie dysku
+
+
+
+Problem: Dane (bazy SQLite/DuckDB, pliki faktur) leżą na dysku serwera. Fizyczna kradzież lub nieautoryzowany dostęp (np. przez bootowanie z Live CD) ujawni wszystkie dane, nawet jeśli pliki w fsspec są szyfrowane aplikacyjnie. Klucz szyfrujący może być odzyskany z RAM lub plików wymiany.
+
+
+
+Rozwiązanie:
+
+
+
+· Zastosować LUKS2 (Linux Unified Key Setup) do pełnego szyfrowania partycji zawierających dane.
+
+· Klucz odbezpieczający przechowywać w TPM 2.0 (moduł zaufanej platformy) serwera, co uniemożliwia odczyt danych po przeniesieniu dysku do innego komputera.
+
+· W Pulumi dodać konfigurację bind-mount odszyfrowanego wolumenu.
+
+· Aplikacja może dodatkowo używać klucza z Infisical do podwójnego szyfrowania szczególnie wrażliwych kolumn (np. numery kont) za pomocą EncryptedString.
+
+
+
+Korzyść: Ochrona przed wyciekiem danych w przypadku kradzieży fizycznego nośnika.
+
+
+
+4.2. Ryzyko ataku przez interfejsy debugowania (JTAG, UART)
+
+
+
+Problem: Serwer fizyczny może posiadać niechronione porty debugowania, umożliwiające odczyt pamięci RAM (a w niej kluczy sesyjnych i sekretów Infisical).
+
+
+
+Rozwiązanie: W ramach bootstrappingu (Fabric) wyłączyć w BIOS/UEFI wszystkie nieużywane porty i interfejsy debugowania, a także ustawić hasło na bootloaderze (GRUB). Użyć dmidecode do inwentaryzacji i raportowania stanu. To nie jest zadanie aplikacji, ale procedury operacyjnej.
+
+
+
+Korzyść: Kompleksowe podejście do bezpieczeństwa fizycznego.
+
+
+
+---
+
+
+
+5. Zaawansowana obserwowalność i audytowalność
+
+
+
+5.1. Brak Business Activity Monitoring (BAM)
+
+
+
+Problem: Metryki techniczne (CPU, RAM, liczba przetworzonych faktur) nie wystarczą, aby stwierdzić, że system „działa prawidłowo” z biznesowego punktu widzenia. Przykład: spadek średniej wartości faktur o 90% może wskazywać na błąd modelu, który ucina kwoty.
+
+
+
+Rozwiązanie: W DuckDB zdefiniować metryki biznesowe (np. avg_invoice_amount_24h, daily_vat_collected, ratio_high_confidence_ai) i co 15 minut wysyłać je do VictoriiMetrics. Skonfigurować alerty, gdy wskaźniki te odbiegają od sezonowej normy (wykrytej przez Prophet). Alert powinien zawierać kontekst w języku biznesowym, np. „Średnia kwota faktur kosztowych spadła o 60% w porównaniu do zeszłego tygodnia – potencjalny błąd ekstrakcji AI”.
+
+
+
+Korzyść: Proaktywne wykrywanie błędów wpływających na finanse, a nie tylko na IT.
+
+
+
+5.2. Niezaprzeczalność logów operacyjnych
+
+
+
+Problem: Logi z loguru przesyłane do VictoriiMetrics nie są kryptograficznie podpisane. Zaawansowany atakujący mógłby usunąć ślady włamania z logów, a audytor nie mógłby udowodnić ich integralności.
+
+
+
+Rozwiązanie: W loguru dodać niestandardowy handler, który dla każdej linii logu o poziomie WARNING i wyższym generuje podpis HMAC (z kluczem z Infisical) i dołącza go jako pole w JSON. Vector przed zapisem do Parquet weryfikuje podpis i odrzuca nieprawidłowe wpisy. Dodatkowo logi są streamowane do append-only strumienia NATS JetStream jako niezmienialny dowód.
+
+
+
+Korzyść: Logi stają się materiałem dowodowym o niepodważalnej integralności.
+
+
+
+---
+
+
+
+Podsumowanie: Lista kontrolna do poziomu Advanced/Autonomous
+
+
+
+Obszar Niedociągnięcie Ulepszenie
+
+Integralność danych Brak ciągłego skanowania plików Data Integrity Daemon z alertami NATS
+
+Bezpieczeństwo AI Możliwość podmiany wag modeli Podpisywanie modeli (Cosign) i weryfikacja przy starcie
+
+Odporność sieciowa Ryzyko split-brain w LiteFS Kworum oparte o NATS JetStream
+
+Operacyjność Brak testów chaosu Chaos Monkey wbudowany w system
+
+Skalowalność Stała liczba workerów Auto-scaling na podstawie długości kolejki NATS
+
+Bezpieczeństwo fizyczne Brak szyfrowania dysku LUKS2 + TPM; wyłączenie portów debugowania
+
+Obserwowalność biznesowa Brak metryk finansowych Business Activity Monitoring z Prophet
+
+Audytowalność logów Logi niemodyfikowalne Podpisywanie logów HMAC + append-only stream NATS
+
+
+
+Po wdrożeniu tych ulepszeń architektura Nexus AI osiągnie poziom Advanced/Autonomous, stając się systemem, który nie tylko bezbłędnie przetwarza dane, ale także sam diagnozuje swoje słabości, aktywnie broni się przed atakami na wielu płaszczyznach i posiada niepodważalny, ciągły łańcuch dowodowy dla każdej transakcji – od momentu jej wprowadzenia do logu, przez ekstrakcję AI, aż po długoterminowe przechowywanie.
+
+
+
+Oto szczegółowa lista zaawansowanych, ale prawdopodobnych niedociągnięć, które mogą ujawnić się po wdrożeniu wszystkich poprawek. Każdy punkt zawiera dogłębną analizę i precyzyjne wytyczne dla CodeX.
+
+
+
+---
+
+
+
+1. Wycieki pamięci w IPC (SharedMemoryManager) – Zombie Segments
+
+
+
+Opis zaawansowanego problemu:
+
+W architekturze Zero-Copy proces API tworzy segment pamięci współdzielonej (/dev/shm), przekazuje jego nazwę przez NATS do workera ML, a ten po odczycie zwalnia segment. Mechanizm FencedSharedMemory z STATUS_READY i STATUS_READING jest poprawny przy normalnej pracy. Problem pojawia się, gdy worker ML zostanie brutalnie zabity przez system (np. SIGKILL od OOM Killera) po ustawieniu statusu STATUS_READING, ale przed wywołaniem shm.unlink().
+
+W efekcie segment pozostaje w /dev/shm na zawsze jako "zombie". Ponieważ obrazy faktur 4K mogą mieć ~30-50 MB, przy kilkudziesięciu takich awariach przestrzeń /dev/shm (domyślnie często 64 MB lub połowa RAM) ulegnie wyczerpaniu. Spowoduje to błąd No space left on device dla wszystkich nowych operacji IPC, w tym dla poprawnych procesów, co w konsekwencji sparaliżuje cały pipeline OCR.
+
+
+
+Dlaczego jest to kluczowe:
+
+Jest to cichy zabójca systemu. Nie ma logu błędu w aplikacji – proces został zabity. Objawia się nagłym, globalnym blokowaniem uploadu faktur, co jest katastrofalne dla systemu księgowego.
+
+
+
+Szczegółowa instrukcja dla CodeX:
+
+Stwórz dedykowany komponent SharedMemoryGarbageCollector uruchamiany jako osobny wątek/asynchroniczne zadanie w procesie API lub w osobnym kontenerze. Jego logika powinna wyglądać następująco:
+
+
+
+1. Co 30 sekund skanuje katalog /dev/shm w poszukiwaniu segmentów o prefiksie używanym przez aplikację (np. nexus_shm_).
+
+2. Dla każdego segmentu odczytuje pierwszy bajt – flagę statusu.
+
+3. Jeśli status to STATUS_READING, sprawdza czas ostatniej modyfikacji segmentu (os.fstat).
+
+4. Jeśli czas ten jest dłuższy niż zadany timeout (np. 60 sekund), uznaje segment za osierocony.
+
+5. GC próbuje bezpiecznie zamknąć (close) i odlinkować (unlink) segment, logując zdarzenie z pełną informacją (nazwa, rozmiar) jako WARNING do systemu monitoringu (Sentry/VictoriaMetrics). Należy również opublikować zdarzenie na dedykowany temat NATS (system.shm.zombie_detected), aby proces API mógł zrestartować zadanie OCR dla faktury, której dotyczył utracony segment.
+
+
+
+---
+
+
+
+2. Cicha niespójność typów w NATS JetStream (Serializacja)
+
+
+
+Opis zaawansowanego problemu:
+
+Do NATS wysyłane są obiekty JSON. Proces API serializuje InvoiceCreate (np. z amount_gross jako str w formacie "1,000.00"), a worker ML oczekuje go jako float. Jeśli walidacja po stronie workera opiera się wyłącznie na próbie konwersji float(value), może ona rzucić wyjątek ValueError dla łańcucha "1,000.00". Jeśli ten wyjątek zostanie złapany ogólnie, a wiadomość wróci do kolejki (NACK), JetStream po przekroczeniu liczby prób przeniesie ją do DLQ. Nikt jednak nie zostanie o tym powiadomiony w trybie pilnym, a faktura "utknie" w DLQ, być może na zawsze. Problem nie leży w awarii, ale w subtelnej niezgodności schematu między producentem a konsumentem, która nie zostaje wyłapana na etapie kompilacji ani testów jednostkowych, bo obie strony są poprawne we własnym kontekście.
+
+
+
+Dlaczego jest to kluczowe:
+
+W księgowości prowadzi to do cichej utraty dokumentu. Faktura nie jest przetwarzana, ale nie ma też czerwonego alertu w UI – jest jedynie wpis w logu. Po miesiącu okazuje się, że w deklaracji VAT brakuje faktury na 100 000 PLN.
+
+
+
+Szczegółowa instrukcja dla CodeX:
+
+Należy zaimplementować rygorystyczną warstwę kontraktów danych.
+
+
+
+1. Stwórz bibliotekę współdzielonych schematów Pydantic (lub msgspec) jako osobny pakiet (np. nexus_contracts), importowaną zarówno przez API, jak i workera.
+
+2. Wszystkie wiadomości NATS (msg.data) przed przetworzeniem muszą być walidowane przez odpowiedni model Pydantic, np. validated_data = InvoiceCreatedPayload.model_validate_json(msg.data).
+
+3. Jeśli walidacja się nie powiedzie, wiadomość nie może być zwrócona do kolejki z opóźnieniem. Należy natychmiast:
+
+   · Odesłać msg.term() (przenieść do DLQ bez ponawiania).
+
+   · Opublikować krytyczny alert system.schema_violation z pełnym payloadem i błędem walidacji.
+
+   · Zdarzenie musi być wysłane do Sentry i VictoraMetrics jako incydent P0.
+
+
+
+---
+
+
+
+3. Dryf kryptograficzny (Crypto Agility) – Sztywny algorytm HMAC
+
+
+
+Opis zaawansowanego problemu:
+
+System używa HMAC-SHA256 do podpisywania łańcucha audytowego i wewnętrznej komunikacji. Jest to na dziś bezpieczne. Jednak system księgowy ma przechowywać dane przez 5-10 lat. W tym horyzoncie czasowym standardy kryptograficzne mogą ulec zmianie (np. rozwój komputerów kwantowych może osłabić SHA-256). Jeśli algorytm podpisu jest na stałe „wkompilowany” w binarkę i schemat bazy danych, migracja na algorytm post-kwantowy (np. CRYSTALS-Dilithium) będzie wymagała kosztownej i ryzykownej operacji migracji całej bazy danych i ponownego podpisywania wszystkich historycznych zdarzeń.
+
+
+
+Dlaczego jest to kluczowe:
+
+Długoterminowa wiarygodność audytowa. Jeśli za 5 lat algorytm zostanie uznany za słaby, cała historia księgowa straci swoją moc dowodową.
+
+
+
+Szczegółowa instrukcja dla CodeX:
+
+Przygotuj architekturę na "Crypto Agility":
+
+
+
+1. W tabeli audit_chain dodaj kolumnę algorithm (VARCHAR, np. 'HMAC-SHA256').
+
+2. Zmodyfikuj MerkleAuditLogger tak, aby wybierał algorytm na podstawie konfiguracji, a nie stałej w kodzie.
+
+3. Algorytm dla nowych wpisów powinien być pobierany z centralnej konfiguracji (Infisical).
+
+4. Funkcja verify_chain() musi być zdolna do walidacji łańcucha zawierającego różne algorytmy. Iterując po rekordach, odczytuje pole algorithm, wybiera odpowiednią funkcję haszującą i dopiero wtedy weryfikuje poprawność danego ogniwa. Pozwoli to na stopniową, niedestrukcyjną zmianę algorytmu dla nowych transakcji bez utraty ważności starych.
+
+
+
+---
+
+
+
+4. Niedeterminizm GPU w obliczeniach AI (Reproducibility Gap)
+
+
+
+Opis zaawansowanego problemu:
+
+Modele PyTorch na GPU, nawet w trybie torch.inference_mode(), mogą dawać nieznacznie różne wyniki dla tego samego obrazu w różnych uruchomieniach. Wynika to z niedeterminizmu niektórych operacji CUDA (np. torch.nn.functional.conv2d), szczególnie przy użyciu INT8 lub operacji na akumulatorach mieszanej precyzji. Dla systemu księgowego problemem jest nie tyle sam błąd, co brak powtarzalności. Jeśli audytor dwukrotnie przeprocesuje tę samą fakturę i otrzyma różniący się o grosz wynik OCR, podważy to wiarygodność całego systemu AI.
+
+
+
+Dlaczego jest to kluczowe:
+
+Utrata zaufania do automatycznej ekstrakcji. Podważa to sens wielomodelowego konsensusu, jeśli każdy z modeli jest sam w sobie niedeterministyczny.
+
+
+
+Szczegółowa instrukcja dla CodeX:
+
+
+
+1. Wymuś determinizm PyTorch na poziomie konfiguracji workera:
+
+   ```python
+
+   import torch
+
+   torch.use_deterministic_algorithms(True, warn_only=True)
+
+   # Ustawienia środowiskowe dla CUDA:
+
+   os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8" # lub ":16:8"
+
+   ```
+
+2. Dla każdej faktury przetworzonej przez pipeline AI zapisuj w metadanych wynikowych nie tylko confidence_score, ale także cryptographic hash wyniku (np. SHA-256 z JSON-a pól biznesowych).
+
+3. Stwórz endpoint /api/v2/internal/reproduce/{invoice_id}, który ponownie uruchamia pipeline AI na żądanie (np. dla audytora) i porównuje hash wyniku z oryginalnym. Jeśli są identyczne, system jest zdeterminowany. Jeśli nie – zwracany jest raport rozbieżności. To narzędzie służy do udowadniania, że determinizm jest zachowany w ramach danej wersji modelu.
+
+
+
+---
+
+
+
+5. Konflikt strategii backupu (LiteFS WAL vs Snapshot)
+
+
+
+Opis zaawansowanego problemu:
+
+System ma dwie ścieżki odtwarzania danych: ciągłą replikację transakcji przez LiteFS do MinIO oraz okresowe, pełne snapshoty (np. robione przez BackupManager). Mogą one być niespójne. Jeśli baza ulegnie awarii i zostanie odtworzona ze snapshota, a następnie zostanie podłączona do strumienia WAL, który zakłada wcześniejszy stan, może dojść do uszkodzenia bazy danych SQLite. Najgorszy scenariusz: odtworzony snapshot jest z godziny 02:00, ale strumień WAL zawiera transakcje od 01:00. Podłączenie WAL spowoduje, że silnik SQLite wykryje próbę powtórzenia już istniejących transakcji i odmówi otwarcia bazy.
+
+
+
+Dlaczego jest to kluczowe:
+
+Uniemożliwia to skuteczne Disaster Recovery. Zamiast przywrócić system w 5 minut, administrator spędzi godziny na ręcznym odzyskiwaniu spójności bazy.
+
+
+
+Szczegółowa instrukcja dla CodeX:
+
+
+
+1. Zmień BackupManager, aby przed wykonaniem pełnego snapshotu (VACUUM INTO lub sqlite3.backup) pobierał i logował aktualny numer transakcji WAL z LiteFS (litefs info lub równoważne API).
+
+2. W metadanych pliku backupu (np. nazwa snapshot_LSN_123456_2026-05-02.db) jawne zapisz numer LSN (Log Sequence Number) lub timestamp ostatniej zatwierdzonej transakcji.
+
+3. Procedura odtwarzania (skrypt Invoke) musi być świadoma tej zależności. Przed przywróceniem snapshota, powinna wyczyścić stare pliki WAL w katalogu LiteFS, a po przywróceniu, nakazać LiteFS odrzucenie wszystkich transakcji starszych niż zapisany LSN. Zapobiega to próbie ponownego zastosowania transakcji, które już są w snapshocie.
+
+
+
+---
+
+
+
+Podsumowanie dla CodeX
+
+
+
+Powyższe problemy reprezentują najwyższą klasę trudności, gdzie błędy nie są oczywiste, a ich skutki mogą być katastrofalne w dłuższej perspektywie. Wszystkie opisy zawierają precyzyjne przyczyny, skutki biznesowe oraz instrukcje implementacji.
+
+

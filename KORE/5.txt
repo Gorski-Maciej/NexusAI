@@ -1,0 +1,2296 @@
+
+1. Autoryzacja i Tożsamość: Litestar Security + JWT
+Obecny stan: Moduły auth.py oraz security.py korzystają z JWTAuth z biblioteki Litestar, a w systemie istnieje autoryzacja oparta na rolach (Owner, Worker). Używane są również tokeny do zabezpieczenia komunikacji. Mechanizm ten nie w pełni jednak wykorzystuje potencjał produkcyjny.
+
+
+Co dodać i zmodyfikować:
+
+Obecna funkcja retrieve_user_handler weryfikuje token, ale ostatecznie zwraca zhardkodowany profil użytkownika ("admin") bez zapytania do bazy danych. Należy zaimplementować pełne połączenie z bazą SQLite (OLTP) za pomocą SQLAlchemy, aby pobierać rzeczywiste dane i weryfikować status konta.
+
+
+System generuje "ephemeral dev-only JWT secret" za pomocą secrets.token_urlsafe, jeśli klucz środowiskowy jest niedostępny. Na produkcji spowoduje to unieważnienie wszystkich tokenów po każdym restarcie kontenera. Należy wymusić błąd uruchomienia aplikacji (Fail-Fast), jeśli brakuje sekretu w środowisku prod.
+
+
+Należy połączyć wbudowaną w Litestar obsługę CORS i Rate Limiting z logiką sprawdzania uprawnień w oparciu o wyciągnięte z JWT claimy (np. ograniczenie zapytań tylko dla konkretnego Tenant ID).
+
+
+2. Bazy danych: SQLite (OLTP) i DuckDB (OLAP)
+Obecny stan: Infrastruktura jest przygotowana: istnieje DuckDBManager, podział zapytań oraz zadanie w tle (sync_sqlite_to_duckdb via Taskiq), które replikuje dane z bazy operacyjnej do analitycznej. DuckDB jest już wykorzystywane do błyskawicznych raportów finansowych.
+
+
+Co dodać i zmodyfikować:
+
+Replikacja realizowana przez zadanie cron w Taskiq działa asynchronicznie, ale grozi to niespójnością danych (Eventual Consistency) w przypadku awarii workera. Zamiast lub obok tego mechanizmu, powinieneś wdrożyć wymieniony w architekturze Litestream do ciągłej replikacji plików WAL SQLite.
+
+
+Logika zamykania aplikacji wywołuje consolidate_database. Należy upewnić się, że proces ten poprawnie zamyka otwarte transakcje DuckDB i wymusza checkpointing w bazie SQLite.
+
+
+Warto dodać mechanizm automatycznego partycjonowania danych w DuckDB (np. po miesiącach) w miarę wzrostu danych analitycznych.
+
+3. Storage Dokumentów: System Plików + fsspec
+Obecny stan: Aplikacja wykorzystuje deduplikację za pomocą skrótów SHA-256 w systemie ContentAddressableStorage. Zapis odbywa się jednak przy użyciu natywnych bibliotek systemowych pathlib oraz shutil.
+
+
+Co dodać i zmodyfikować:
+
+Biblioteka fsspec znajduje się w wymaganiach architektonicznych, ale nie ma jej w obecnej implementacji StorageProvider. Należy całkowicie przepisać logikę w LocalStorageProvider z użyciem interfejsów fsspec.
+
+
+Użycie fsspec pozwoli na bezstratne, elastyczne podpinanie innych systemów plików w przyszłości (np. MinIO, S3), co jest zgodne z Twoim założeniem o niezawodności bez zmiany kodu biznesowego.
+
+4. Uczenie Maszynowe (ML): LayoutLMv1, HerBERT, INT8, LanceDB
+Obecny stan: Baza LanceDB współpracuje z silnikiem Sentence-Transformers (model all-MiniLM-L6-v2) na potrzeby aktywnego uczenia (ActiveLearningEngine). W kodzie zaimplementowano procesowanie OCR przy użyciu modeli Surya oraz ekstrakcję za pomocą lokalnego LLM (Phi-3). Moduł HardwareProbe weryfikuje zasoby CUDA.
+
+
+Co dodać i zmodyfikować:
+
+Obecny kod używa kwantyzacji w formacie GGUF (Q4_K_M) dla modelu językowego, a nie zaplanowanej kwantyzacji INT8 natywnej dla PyTorch. Należy zintegrować mechanizmy bitsandbytes bezpośrednio w PyTorch, aby w pełni obsługiwać wektory w INT8 podczas procesu inferencji w Processor.
+
+
+Brak kodu dla architektury LayoutLMv1 + HerBERT + LiLT zdefiniowanej w blueprint. Moduł LocalLLMExtractor przetwarza czysty tekst (OCR text). Należy zbudować nowy rurociąg, który przed wywołaniem LLM połączy dane tekstowe z ich przestrzennym ułożeniem na dokumencie (bounding boxes) za pomocą LayoutLMv1.
+
+
+Biblioteki AutoGluon-Light oraz scikit-learn figurują na liście architektonicznej jako narzędzia do wyboru cech, ale nie występują nigdzie w logice operacyjnej (np. w klasyfikatorze wydatków). Należy zaimplementować je w module kategoryzacji (categorizer.py), zastępując proste heurystyki.
+
+
+5. Kontenery i Orkiestracja: Nuitka, Podman, uv, Pulumi, CI/CD
+Obecny stan: Stos znajduje się w definicjach REQUIRED_TECHNOLOGIES. Środowisko używa uvicorn do uruchamiania backendu.
+
+
+Co dodać i zmodyfikować:
+
+Ten punkt nie jest wdrożony w dostarczonym kodzie. W plikach brakuje infrastruktury jako kodu (IaC) i definicji CI/CD.
+
+Należy stworzyć pliki Containerfile dla narzędzia Podman. Aby w pełni wykorzystać wskazane technologie, warto użyć wieloetapowego budowania: pierwsza warstwa z uv do szybkiego instalowania zależności, kolejna wykorzystująca Nuitka do kompilacji kodu Python na natywny kod maszynowy (co ochroni własność intelektualną i zmniejszy zużycie RAM), a końcowa warstwa dystrybuująca to rozwiązanie.
+
+Dodać skrypty Pulumi w Pythonie zarządzające self-hostowanymi środowiskami testowymi (np. w oparciu o GitLab Runner/Woodpecker CI).
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+
+
+## **1. Tożsamość i Bezpieczeństwo (Litestar + JWT)**
+
+Obecna implementacja w `auth.py` i `security.py` opiera się na podstawowej walidacji tokenów, ale brakuje w niej mechanizmów odpornych na awarie i ataki.
+
+
+
+* **Co zmienić:** W `retrieve_user_handler` należy usunąć zhardkodowany profil "admin". Zamiast tego wprowadź **pamięć podręczną (Cache) dla uprawnień** w Redis lub wewnątrzprocesowo, aby weryfikacja JWT nie obciążała bazy przy każdym żądaniu.
+
+* **Co dodać:** Wdrożyć **Refresh Tokens** przechowywane w `HttpOnly Cookies`. Obecnie utrata tokena dostępowego wymaga ponownego logowania, co obniża niezawodność UX.
+
+* **Ulepszenie:** Dodaj mechanizm **Fail-Safe Secret Management**. Jeśli klucz `JWT_SECRET` nie zostanie dostarczony przez zmienne środowiskowe, aplikacja powinna odmówić startu (Fail-Fast), zamiast generować tymczasowy klucz, który po restarcie unieważni sesje wszystkich użytkowników.
+
+
+
+---
+
+
+
+## **2. Bazy Danych i Hybrydowe Przechowywanie (SQLite + DuckDB)**
+
+Architektura zakłada podział na OLTP (transakcje) i OLAP (analityka), co jest świetnym krokiem ku niezawodności, ale synchronizacja między nimi wymaga wzmocnienia.
+
+
+
+* **Co zmodyfikować:** Zadanie synchronizacji w `tasks.py` (`sync_sqlite_to_duckdb`) działa na zasadzie cyklicznej kopii. Dla maksymalnej niezawodności zmień to na **Change Data Capture (CDC)**. Wykorzystaj triggery w SQLite, które zapisują zmiany do tabeli logów, skąd DuckDB będzie je pobierać.
+
+* **Co ulepszyć:** Wdrożyć **Litestream**. Jest on wymieniony w blueprintach, ale brak go w kodzie. Litestream będzie w czasie rzeczywistym replikował plik wal (Write-Ahead Log) bazy SQLite do zewnętrznego storage’u, co gwarantuje zerową utratę danych przy awarii serwera.
+
+* **Co dodać:** Mechanizm **Circuit Breaker** dla DuckDB. Jeśli zapytanie analityczne przekroczy limit RAM, powinno zostać przerwane, zanim doprowadzi do "OOM Killer" całego kontenera.
+
+
+
+---
+
+
+
+## **3. Przetwarzanie Dokumentów i ML (LayoutLM, HerBERT, LanceDB)**
+
+To najbardziej złożony element. Obecnie `LocalLLMExtractor` używa prostego OCR-a tekstowego i modelu Phi-3.
+
+
+
+* **Co rozbudować:** Zaimplementuj pełny **Multimodalny Pipeline**. Zamiast wysyłać do LLM tylko tekst z OCR, użyj **LayoutLMv1** do zakodowania pozycji tekstu na stronie (bounding boxes). Dzięki temu system zrozumie, że kwota w prawym dolnym rogu to „Suma”, a nie np. NIP dostawcy.
+
+* **Co zmienić:** W `categorizer.py` zastąp proste reguły modelem **HerBERT** dotrenowanym na polskiej klasyfikacji PKD/GUS. Zapewni to znacznie wyższą celność w kategoryzowaniu kosztów.
+
+* **Co ulepszyć:** Wykorzystaj **Kwantyzację INT8**. Obecnie używasz GGUF, co jest dobre dla CPU, ale dla niezawodności na GPU zintegruj `bitsandbytes`, aby modele ładowały się szybciej i zużywały o 50% mniej pamięci VRAM.
+
+* **Baza Wektorowa:** Rozszerz użycie **LanceDB**. Obecnie służy do aktywnego uczenia, ale powinna stać się głównym silnikiem wyszukiwania podobnych faktur (RAG) w celu automatycznego poprawiania błędów OCR na podstawie historycznych dokumentów tego samego kontrahenta.
+
+
+
+---
+
+
+
+## **4. Infrastruktura i Niezawodność Operacyjna (Nuitka, Podman, Pulumi)**
+
+Ten punkt jest najmniej widoczny w kodzie źródłowym, a ma kluczowe znaczenie dla "nadmiaru dla niezawodności".
+
+
+
+* **Co dodać:** **Kompilacja Nuitka**. Skrypt budujący powinien kompilować całą aplikację NexusAI do natywnego pliku wykonywalnego. Zwiększa to wydajność i eliminuje problemy z brakującymi zależnościami `.pyc` w kontenerze.
+
+* **Co zmienić:** Zamiast standardowego Dockera, użyj **Podman z obsługą systemd units**. Pozwala to na automatyczne restartowanie kontenerów przez system operacyjny bez potrzeby posiadania ciężkiego demona Dockera.
+
+* **Ulepszenie:** Wdrożenie **Health Checks w Litestar**. Dodaj endpoint `/health`, który sprawdza nie tylko czy serwer żyje, ale czy ma połączenie z SQLite, czy DuckDB jest responsywne i czy modele ML są załadowane do pamięci.
+
+
+
+---
+
+
+
+## **5. Storage i fsspec**
+
+Obecny `StorageProvider` używa standardowych funkcji Pythona do zapisu plików.
+
+
+
+* **Co zmodyfikować:** Przepisz `LocalStorageProvider` na bazę **fsspec**. Dzięki temu zmiana lokalizacji przechowywania faktur z lokalnego dysku na np. MinIO lub S3 będzie wymagała jedynie zmiany ciągu połączenia (URL), bez dotykania logiki biznesowej.
+
+* **Co dodać:** **Weryfikację Integralności (Content Addressable Storage)**. Podczas odczytu dokumentu system powinien każdorazowo przeliczać hash SHA-256 i porównywać go z tym w bazie danych, aby wykryć uszkodzenia plików (tzw. bit rot).
+
+
+
+### **Podsumowanie Techniczne**
+
+
+
+| Technologia | Stan obecny | Rekomendowany krok |
+
+| :--- | :--- | :--- |
+
+| **Auth** | Podstawowe JWT | Cache'owanie uprawnień + Refresh Tokens |
+
+| **Baza OLTP** | SQLite (lokalna) | Replikacja Litestream (S3/MinIO) |
+
+| **ML/Extraction** | Phi-3 (Tekst) | LayoutLMv1 (Tekst + Pozycja + Obraz) |
+
+| **Analityka** | DuckDB (Kopia) | DuckDB (CDC / Live View) |
+
+| **Deployment** | Python Source | Kompilacja Nuitka + Kontener Podman |
+
+
+
+
+
+
+
+
+
+
+
+
+
+.
+
+
+
+---
+
+
+
+## **Etap 1: Architektura Hexagonalna (Ports & Adapters)**
+
+
+
+W obecnym kodzie logika biznesowa (np. księgowanie) jest przemieszana z technologią (SQLAlchemy, DuckDB). W architekturze hexagonalnej dzielimy system na trzy warstwy: **Domain** (Logika), **Ports** (Interfejsy) i **Adapters** (Implementacje).
+
+
+
+
+
+
+
+### **Opis zmian:**
+
+1. **Warstwa Domain:** Tutaj lądują czyste klasy Pythona (Dataclasses), np. `Invoice`, `TaxRecord`, `Account`. Ta warstwa nie może importować *niczego* z bibliotek zewnętrznych (nawet SQLAlchemy).
+
+2. **Ports (Interfejsy):** Definiujemy abstrakcyjne klasy bazowe (`ABC`), które określają, co system musi robić, a nie jak. 
+
+    * Przykład: `InvoiceRepository(ABC)` z metodą `save(invoice)`.
+
+3. **Adapters (Implementacje):** Tutaj tworzymy konkretne klasy dla Twoich technologii:
+
+    * **Adapter OLTP:** Implementacja `InvoiceRepository` przy użyciu SQLAlchemy i SQLite.
+
+    * **Adapter OLAP:** Implementacja raportów przy użyciu DuckDB.
+
+    * **Adapter Storage:** Implementacja zapisu plików przez `fsspec`.
+
+
+
+**Dlaczego to zwiększa niezawodność?**
+
+Jeśli jutro zdecydujesz się zamienić SQLite na PostgreSQL lub DuckDB na ClickHouse, zmieniasz tylko **Adapter**. Cała logika księgowa, testy i procesy ML pozostają nietknięte i bezpieczne.
+
+
+
+---
+
+
+
+## **Etap 2: Kompilacja Nuitka i Konteneryzacja Podman**
+
+
+
+Zamiast wysyłać na serwer tysiące plików `.py`, stworzymy jeden, zoptymalizowany binarny "pocisk".
+
+
+
+### **Skrypt Kompilacji (Nuitka):**
+
+Użyjemy Nuitki do stworzenia obrazu typu *standalone*. Skrypt powinien:
+
+* Włączyć optymalizację pod konkretną architekturę CPU (np. `--lto=yes`).
+
+* Osadzić wszystkie zależności (Litestar, PyTorch, DuckDB) wewnątrz binarki.
+
+* Usunąć kod źródłowy z obrazu produkcyjnego, co utrudnia inżynierię wsteczną.
+
+
+
+### **Definicja Kontenera (Podman):**
+
+W przeciwieństwie do Dockera, Podman nie wymaga demona działającego z uprawnieniami roota, co drastycznie zwiększa bezpieczeństwo systemu finansowego.
+
+
+
+**Struktura Containerfile:**
+
+1. **Stage 1 (Builder):** Użycie `uv` do błyskawicznego pobrania zależności i kompilacja projektu Nuitką.
+
+2. **Stage 2 (Runner):** Obraz typu "Distroless" lub minimalna Fedora. Kopiujemy tylko skompilowaną binarkę i biblioteki CUDA dla modeli ML.
+
+3. **Mounting:** Mapujemy wolumeny dla baz SQLite, DuckDB i LanceDB, aby dane przetrwały restarty kontenera.
+
+
+
+---
+
+
+
+## **Etap 3: Implementacja Outbox Pattern**
+
+
+
+Obecna synchronizacja między SQLite (OLTP) a DuckDB (OLAP) przez Taskiq jest "luźna". Jeśli worker Taskiq padnie, dane w DuckDB nie będą się zgadzać z fakturami w SQLite. **Outbox Pattern** rozwiązuje to poprzez gwarancję *At-Least-Once Delivery*.
+
+
+
+
+
+
+
+### **Mechanizm działania w NexusAI:**
+
+1. **Tabela Outbox w SQLite:** Dodajemy tabelę `outbox_events` w tej samej bazie, co faktury.
+
+2. **Atomowa Transakcja:** Gdy zapisujesz fakturę, w *tej samej transakcji SQL* dopisujesz zdarzenie `INVOICE_CREATED` do tabeli `outbox_events`. Jeśli zapis faktury się uda, zdarzenie *musi* tam być. Jeśli się nie uda – nie ma też zdarzenia.
+
+3. **Relay (Taskiq):** Proces tła (worker) stale monitoruje tabelę `outbox_events`.
+
+    * Pobiera nowe zdarzenie.
+
+    * Aktualizuje DuckDB i LanceDB.
+
+    * Dopiero po sukcesie oznacza zdarzenie w tabeli jako "przetworzone".
+
+
+
+**Zaleta:** Nawet jeśli serwer zostanie wyłączony z prądu w trakcie synchronizacji, po restarcie worker zobaczy nieprzetworzone zdarzenia w tabeli Outbox i dokończy synchronizację. **To jest poziom niezawodności bankowej.**
+
+
+
+---
+
+
+
+## **Podsumowanie Techniczne Zmian**
+
+
+
+| Funkcja | Przed (Obecnie) | Po (Zaawansowana Architektura) |
+
+| :--- | :--- | :--- |
+
+| **Struktura Kodu** | Monolityczna / Ściśle powiązana | **Hexagonalna** (Logika oddzielona od baz danych) |
+
+| **Dystrybucja** | Pliki źródłowe `.py` | **Skompilowana binarka Nuitka** (Szybkość + Bezpieczeństwo) |
+
+| **Bezpieczeństwo** | Docker (Root Daemon) | **Podman Rootless** (Izolacja procesów) |
+
+| **Spójność Danych** | Cykliczna synchronizacja | **Transactional Outbox** (Gwarancja spójności OLTP/OLAP) |
+
+| **ML/OCR** | Prosty tekst (Phi-3) | **Multimodalny LayoutLM** (Zrozumienie układu faktury) |
+
+
+
+
+
+
+
+
+
+
+
+🧩 Drobne uzupełnienia do Twoich zmian
+
+
+
+1. JWT – Fail-Fast vs Dev Fallback
+
+
+
+Masz rację – efemeryczny klucz jwt_secret w produkcji jest niedopuszczalny. Zmodyfikuj _resolve_jwt_secret() tak:
+
+
+
+```python
+
+def _resolve_jwt_secret() -> str:
+
+    env_secret = os.getenv("NEXUS_JWT_SECRET", "").strip()
+
+    if env_secret:
+
+        return env_secret
+
+    
+
+    # Jeśli brak klucza, generuj tylko jeśli DEBUG = True
+
+    if os.getenv("NEXUS_DEBUG", "0") == "1":
+
+        logger.warning("DEV MODE: Using ephemeral JWT secret")
+
+        return secrets.token_urlsafe(48)
+
+    
+
+    # PROD: odmów startu
+
+    raise RuntimeError("NEXUS_JWT_SECRET is required in production!")
+
+```
+
+
+
+2. Rate Limiting per Tenant
+
+
+
+Twój pomysł ograniczenia do konkretnych tenant_id z claimów JWT – użyj do tego middleware w Litestar, który odczytuje tenant_id z connection.user (po walidacji JWT) i sprawdza w Redis lub w lokalnym słowniku licznik dla tego konkretnego dzierżawcy.
+
+
+
+3. LayoutLMv1 – przygotowanie danych
+
+
+
+Twoja implementacja LayoutLMv1 musi pobierać z pipeline/ocr.py nie tylko raw_text, ale i listę krotek (słowo, x0, y0, x1, y1). Surya OCR to zwraca – trzeba to tylko przekazać dalej do LayoutAwareExtractor.
+
+
+
+4. Outbox + Heksagonalna – uwaga na transakcje
+
+
+
+W architekturze heksagonalnej, zapis do tabeli outbox_events musi być częścią tej samej transakcji SQL, co zapis faktury. Nie można tego zrobić w dwóch osobnych adapterach – dlatego Adapter OLTP (SQLAlchemy) powinien wewnętrznie ogarniać oba zapisy w jednym commit().
+
+
+
+---
+
+
+
+📋 Czego jeszcze brakuje, by osiągnąć poziom Enterprise?
+
+
+
+1. Wersjonowanie schematu w DuckDB
+
+
+
+Twój AnalyticsSchemaManager z db/analytics_schema.py jest bardzo zaawansowany, ale brakuje mu wersjonowania całego schematu. Proponuję dodać tabelę schema_version:
+
+
+
+```sql
+
+CREATE TABLE IF NOT EXISTS schema_version (
+
+    version INTEGER PRIMARY KEY,
+
+    applied_at TIMESTAMP DEFAULT now(),
+
+    description VARCHAR
+
+);
+
+```
+
+
+
+Przy każdej zmianie schematu, ensure_latest_schema powinno sprawdzać wersję i stosować tylko brakujące migracje.
+
+
+
+2. Rozproszone śledzenie (OpenTelemetry)
+
+
+
+W systemie z NATS-em, workerami i API, jeden correlation_id to za mało. Dodałbym:
+
+
+
+· Eksport trace'ów do Jaeger lub Grafana Tempo.
+
+· Instrumentację dla wszystkich operacji OCR, ekstrakcji LLM i zapytań DuckDB.
+
+
+
+3. Golden Dataset do testów regresyjnych AI
+
+
+
+Twoje testy jednostkowe są dobre, ale nie sprawdzają, czy nowa wersja transformers lub surya nie zepsuła wyników ekstrakcji. Proponuję:
+
+
+
+· Stworzyć 10-20 "złotych faktur" (PDF + oczekiwany JSON).
+
+· W CI/CD odpalać test porównujący wyniki LayoutAwareExtractor z oczekiwanymi.
+
+
+
+4. Obsługa wielu kluczy JWT (Key Rotation)
+
+
+
+Dla wysokiego bezpieczeństwa, endpoint /.well-known/jwks.json powinien zwracać aktualny klucz publiczny + poprzedni (na wypadek, gdyby niektóre tokeny nie wygasły). Rotacja kluczy co 30 dni.
+
+
+
+5. Circuit Breaker dla zewnętrznych API
+
+
+
+Masz CircuitBreaker w db/replication.py dla DuckDB. Rozszerz go na wszystkie zewnętrzne wywołania: TaxApiService, KsefClient, ForexEngine.fetch_nbp_rate. To kluczowe, by jedna niedostępna usługa MF nie pociągnęła całego systemu.
+
+
+
+---
+
+
+
+🧮 Tabela priorytetów uzupełnień
+
+
+
+Priorytet Obszar Co dodać
+
+🔴 DevOps Kompilacja Nuitka + Podman
+
+🔴 Dane Outbox Pattern w architekturze heksagonalnej
+
+🟠 ML LayoutLMv1 + INT8 (Twoja propozycja)
+
+🟠 Storage fsspec (Twoja propozycja)
+
+🟡 JWT Key Rotation (JWKS)
+
+🟡 Monitoring OpenTelemetry
+
+🟢 Jakość Golden Dataset do testów regresyjnych AI
+
+
+
+-
+
+
+
+
+
+
+
+
+
+---
+
+
+
+🔐 Filar I: Autoryzacja i tożsamość – Litestar Security + JWT
+
+
+
+Ogólna ocena: 🔴 2/10 – Mechanizm jest skonfigurowany, ale niepodłączony do aplikacji i obchodzony przez niebezpieczne uproszczenia.
+
+
+
+1.1. Stan obecny i luki
+
+
+
+Komponent Status Problem
+
+jwt_auth w security.py ⚠️ Skonfigurowany Niepodłączony – brak on_app_init w create_app()
+
+token_guard 🔴 Aktywny Weryfikuje statyczny token z env zamiast JWT
+
+get_current_role 🔴 Niebezpieczny Pobiera rolę z nagłówka HTTP X-Nexus-Role
+
+retrieve_user_handler 🔴 Atrapa Zwraca User(id="admin", role="admin") bez dostępu do DB
+
+/auth/login ❌ Nie istnieje Brak możliwości legalnego uzyskania tokenu JWT
+
+tenant_id w middleware ⚠️ Z nagłówka Podatne na manipulację
+
+
+
+1.2. Co zmienić / zmodyfikować – Wymagane minimum
+
+
+
+1. Podpięcie jwt_auth do aplikacji – on_app_init=[jwt_auth.on_app_init] w create_app().
+
+2. Usunięcie token_guard – pełne przejście na JWT.
+
+3. Przebudowa rbac.py – rola z connection.user (po walidacji JWT), nie z nagłówka.
+
+4. Prawdziwy retrieve_user_handler – zapytanie do bazy danych przez wstrzykniętą sesję.
+
+5. Dodanie /login – endpoint wystawiający token.
+
+6. tenant_id w payloadzie JWT – zamiast z nagłówka.
+
+
+
+1.3. Co dodać, aby maksymalnie wykorzystać mechanizmy
+
+
+
+· Refresh tokeny i blacklista JWT – tabela jwt_denylist w SQLite do unieważniania tokenów przy wylogowaniu.
+
+· Drobnoziarniste RBAC – dekorator @requires_permission("invoice:delete").
+
+· Rotacja kluczy (JWKS) – endpoint /.well-known/jwks.json publikujący klucze publiczne.
+
+· Fail-Fast – przy braku NEXUS_JWT_SECRET w produkcji odmowa startu, zamiast generowania tymczasowego klucza.
+
+
+
+---
+
+
+
+🗄️ Filar II: Bazy danych – SQLite (OLTP) + DuckDB (OLAP)
+
+
+
+Ogólna ocena: 🟠 5/10 – Obie bazy działają, ale integracja jest ręczna i podatna na awarie.
+
+
+
+2.1. Stan obecny i luki
+
+
+
+Komponent Status Problem
+
+Replikacja SQLite→DuckDB 🔴 Ręczna Cron co 5 min + synchroniczny upsert
+
+Cykl życia silnika DB 🔴 Wadliwy engine.dispose() przy każdym żądaniu
+
+provide_duckdb() ⚠️ Brak read_only API może zapisywać do DuckDB
+
+Zapytania analityczne ⚠️ Podstawowe Tylko SUM, GROUP BY
+
+Brak Litestream 🔴 Nieobecny Kluczowa technologia z blueprintu
+
+
+
+2.2. Co zmienić / zmodyfikować – Wymagane minimum
+
+
+
+1. Zero-ETL przez ATTACH – DuckDB natywnie czyta SQLite: ATTACH 'oltp.db' AS oltp (TYPE SQLITE).
+
+2. Usunięcie ręcznej replikacji – run_data_replication i upsert_invoice do usunięcia.
+
+3. Poprawa provide_db_session – silnik tworzony raz w on_startup, przechowywany w app.state.
+
+4. read_only=True dla API – provide_duckdb() z trybem tylko do odczytu.
+
+
+
+2.3. Co dodać, aby maksymalnie wykorzystać mechanizmy
+
+
+
+· Litestream – ciągła replikacja plików WAL SQLite do S3/MinIO dla disaster recovery.
+
+· Outbox Pattern – zamiast cronowej replikacji, zdarzenia zapisywane atomowo w SQLite i wysyłane przez NATS do DuckDB.
+
+· Wersjonowanie schematu – tabela schema_version i migracje przyrostowe.
+
+· Circuit Breaker dla zapytań DuckDB – aby nie zabiły procesu OOM.
+
+· Materializowane widoki – m_daily_cashflow odświeżane przyrostowo.
+
+
+
+---
+
+
+
+📂 Filar III: Storage dokumentów – fsspec
+
+
+
+Ogólna ocena: 🔴 2/10 – fsspec jest w blueprintie, ale nie jest używane w kodzie.
+
+
+
+3.1. Stan obecny i luki
+
+
+
+Komponent Status Problem
+
+LocalStorageProvider 🔴 Synchroniczny open(file_path, "wb") blokuje event loop
+
+ContentAddressableStorage ⚠️ Dobry koncept Używa pathlib.write_bytes() – tylko lokalny dysk
+
+Upload w API 🔴 Niebezpieczny await file_obj.read() – ryzyko OOM
+
+Backupy 🔴 W RAM io.BytesIO() – przy dużej bazie OOM
+
+
+
+3.2. Co zmienić / zmodyfikować – Wymagane minimum
+
+
+
+1. Przepisanie StorageProvider na fsspec – jeden interfejs dla lokalnego dysku, MinIO, S3, R2.
+
+2. Asynchroniczny interfejs – async with fs.open(...) zamiast blokującego open().
+
+3. Strumieniowanie uploadu – read(CHUNK_SIZE) + fsspec.open() – bez ładowania całego pliku do RAM.
+
+
+
+3.3. Co dodać, aby maksymalnie wykorzystać mechanizmy
+
+
+
+· Chrooted FileSystem per tenant – izolacja ścieżek dla każdego dzierżawcy.
+
+· Szyfrowanie plików – Fernet przed zapisem, klucz z SecretsManager.
+
+· Caching – simplecache::s3://bucket dla przyspieszenia OCR.
+
+· Metadane plików w DuckDB – tabela storage_files do śledzenia i GC.
+
+· Weryfikacja integralności – każdorazowe porównywanie SHA-256 przy odczycie.
+
+
+
+---
+
+
+
+🤖 Filar IV: Uczenie maszynowe – Pipeline Inteligencji Dokumentowej
+
+
+
+Ogólna ocena: 🟠 4/10 – OCR działa, ale brakuje kluczowych technologii: LayoutLM, INT8, AutoGluon, fine-tuningu.
+
+
+
+4.1. Stan obecny i luki
+
+
+
+Technologia Status Problem
+
+PyTorch 2.x ✅ Używany Surya OCR – ale brak torch.compile()
+
+Hugging Face ⚠️ Częściowo Modele pobierane, ale brak LayoutLM i fine-tuningu
+
+scikit-learn ⚠️ Minimalnie Tylko cosine i LinearRegression
+
+AutoGluon-Light ❌ Nieobecny Kategoryzacja oparta na sztywnych regułach
+
+Sentence-Transformers ✅ Używany all-MiniLM-L6-v2 – brak polskiego modelu
+
+LanceDB ⚠️ Podstawowo Tylko .search(vector) – brak Hybrid Search
+
+INT8 Quantization ❌ Nieobecny bitsandbytes nieużyty; tylko GGUF dla Phi-3
+
+LiLT + HerBERT ❌ Nieobecny llm_extractor.py używa tylko surowego tekstu
+
+Fine-tuning ❌ Nieobecny Active Learning zbiera poprawki, ale ich nie wykorzystuje
+
+
+
+4.2. Co zmienić / zmodyfikować – Wymagane minimum
+
+
+
+1. Layout-Aware Document AI – LayoutAwareExtractor łączący tekst z OCR z bounding boxami (LiLT + LayoutLMv1).
+
+2. INT8 Quantization – BitsAndBytesConfig(load_in_8bit=True) przy ładowaniu wszystkich modeli PyTorch.
+
+3. AutoGluon-Light – zastąpienie OfflineCategorizer modelem TabularPredictor trenowanym na danych z DuckDB.
+
+4. LanceDB Hybrid Search – łączenie wektorów, BM25 i filtrów metadanych.
+
+
+
+4.3. Co dodać, aby maksymalnie wykorzystać mechanizmy
+
+
+
+· Fine-tuning (LoRA/QLoRA) – okresowe dostrajanie LayoutLM i HerBERT na zweryfikowanych fakturach.
+
+· Polskie Sentence-Transformers – zamiana all-MiniLM-L6-v2 na sdadas/st-polish-paraphrase-distilled.
+
+· Model Registry – wersjonowanie modeli, śledzenie metryk, porównywanie skuteczności.
+
+· Konsensus wielomodelowy – Surya + LayoutLM + Phi-3 jako tie-breaker.
+
+· Human-in-the-Loop – poprawki z triage'u zasilają Active Learning i fine-tuning.
+
+· Golden Dataset – zestaw testowych faktur do testów regresyjnych przed deploymentem.
+
+· torch.compile() – przyspieszenie inferencji o ~20% na GPU.
+
+
+
+---
+
+
+
+🐳 Filar V: Kontenery i orkiestracja – Nuitka, Podman, uv, Pulumi, CI/CD
+
+
+
+Ogólna ocena: 🔴 0/10 – Całkowicie nieobecne w kodzie. Jest tylko uvicorn jako entrypoint.
+
+
+
+5.1. Stan obecny
+
+
+
+Brak jakichkolwiek definicji kontenerów, skryptów IaC, pipeline'ów CI/CD.
+
+
+
+5.2. Co dodać – Wymagane minimum
+
+
+
+1. Containerfile z wieloetapowym budowaniem:
+
+   · Etap 1 (Builder): uv do szybkiego instalowania zależności.
+
+   · Etap 2 (Kompilator): Nuitka do kompilacji Python → natywny kod maszynowy.
+
+   · Etap 3 (Runner): Minimalny obraz (distroless/alpine) z binarką i modelami AI.
+
+2. Pliki docker-compose / quadlet – uruchamianie z Podman (rootless).
+
+3. Skrypty Pulumi w Pythonie – definicja kontenerów, wolumenów, sieci.
+
+4. Pipeline CI/CD (.woodpecker.yml / .gitlab-ci.yml):
+
+   · Lintowanie (Ruff, Bandit).
+
+   · Testy jednostkowe + integracyjne (Golden Dataset AI).
+
+   · Kompilacja Nuitka i budowanie obrazu Podman.
+
+   · Skanowanie bezpieczeństwa (Trivy, Checkov).
+
+   · Deployment na środowisko testowe.
+
+
+
+5.3. Co dodać, aby maksymalnie wykorzystać mechanizmy
+
+
+
+· Self-hosted Runnery – Woodpecker CI + GitLab Runner na własnej infrastrukturze.
+
+· Reprodukowalne buildy – uv.lock + sumy kontrolne artefaktów.
+
+· Skanowanie SBOM – generowanie Software Bill of Materials przez Trivy.
+
+· Infisical / SOPS – bezpieczne przechowywanie sekretów w CI/CD.
+
+· Health Checks w Litestar – endpoint /health sprawdzający SQLite, DuckDB, NATS, GPU.
+
+
+
+---
+
+
+
+📋 Mapa drogowa wdrożenia
+
+
+
+Faza Filar Główne zadania Priorytet
+
+1 Autoryzacja Podpięcie JWT, usunięcie token_guard, RBAC z JWT, /login 🔴
+
+2 Bazy danych Zero-ETL (ATTACH), Outbox, read_only API 🔴
+
+3 Storage Przepisanie na fsspec, streaming upload 🔴
+
+4 ML/AI LayoutLM + INT8 + AutoGluon + Hybrid LanceDB 🔴
+
+5 Kontenery Containerfile (Nuitka + uv), CI/CD 🔴
+
+6 Autoryzacja Refresh tokeny, Blacklista, JWKS, Fail-Fast
+
+ 🟠
+
+7 Bazy danych Litestream, wersjonowanie schematu, materializowane widoki 🟠
+
+8 Storage Szyfrowanie, Chrooted FS, metadane plików 🟠
+
+9 ML/AI Fine-tuning, polskie ST, Model Registry, konsensus 🟠
+
+10 Kontenery Pulumi IaC, SBOM, Infisical, Health Checks 🟡
+
+
+
+--.
+
+🐳 Filar V: Kontenery i orkiestracja – Pełna architektura i mechanizmy
+
+
+
+1. Stan obecny (diagnoza)
+
+
+
+Kod źródłowy nie zawiera żadnych elementów konteneryzacji, orkiestracji ani pipeline'ów CI/CD. Aplikacja jest uruchamiana bezpośrednio przez uvicorn w api/server.py:
+
+
+
+```python
+
+uvicorn.run(app, host=host, port=port, loop="async", ...)
+
+```
+
+
+
+W plikach launcherów (luz/main.py) widać ręczne zarządzanie procesami (NATS, Worker) przez subprocess.Popen. To oznacza, że wdrożenie na serwerze:
+
+
+
+· wymaga ręcznego skonfigurowania środowiska Python,
+
+· nie ma izolacji procesów,
+
+· nie ma automatycznego restartu po awarii,
+
+· nie ma skalowalności,
+
+· nie ma bezpieczeństwa kontenerowego.
+
+
+
+Brakuje wszystkiego, co Filar V ma dostarczać.
+
+
+
+---
+
+
+
+2. Architektura docelowa
+
+
+
+2.1. Diagram komponentów
+
+
+
+```
+
+┌──────────────────────────────────────────────────────────┐
+
+│ CI/CD Pipeline │
+
+│ ┌──────────┐ ┌───────────┐ ┌────────────────────┐ │
+
+│ │ Woodpecker│──▶│ Nuitka │──▶│ Podman Image Build │ │
+
+│ │ CI │ │ Compile │ │ (multi-stage) │ │
+
+│ └──────────┘ └───────────┘ └────────┬───────────┘ │
+
+│ │ │
+
+└──────────────────────────────────────────┼───────────────┘
+
+                                           ▼
+
+┌──────────────────────────────────────────────────────────┐
+
+│ Container Registry │
+
+│ ┌─────────────────────────────────────────────────┐ │
+
+│ │ nexusai:latest (distroless binary) │ │
+
+│ │ nexusai:models (modele AI, osobny obraz) │ │
+
+│ └─────────────────────────────────────────────────┘ │
+
+└──────────────────────────────────────────────────────────┘
+
+                                           │
+
+                                           ▼
+
+┌──────────────────────────────────────────────────────────┐
+
+│ Pulumi (Infrastructure as Code) │
+
+│ • Tworzy maszyny wirtualne / kontenery │
+
+│ • Konfiguruje wolumeny, sieci, sekrety │
+
+│ • Uruchamia usługi (API, Worker, NATS) │
+
+└──────────────────────────────────────────────────────────┘
+
+                                           │
+
+                                           ▼
+
+┌──────────────────────────────────────────────────────────┐
+
+│ Podman (runtime) │
+
+│ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ │
+
+│ │ API │ │ Worker │ │ NATS │ │ MinIO │ │
+
+│ │ (rootless│ │ (rootless│ │ (rootless│ │ (rootless│ │
+
+│ │ pod) │ │ pod) │ │ pod) │ │ pod) │ │
+
+│ └──────────┘ └──────────┘ └──────────┘ └──────────┘ │
+
+│ │
+
+│ Wolumeny: │
+
+│ /data/sqlite → SQLite OLTP │
+
+│ /data/duckdb → DuckDB OLAP │
+
+│ /data/lancedb → LanceDB wektory │
+
+│ /data/storage → Pliki PDF (przez fsspec) │
+
+│ /data/models → Modele AI (z obrazu nexusai:models) │
+
+└──────────────────────────────────────────────────────────┘
+
+```
+
+
+
+2.2. Kluczowe decyzje projektowe
+
+
+
+Decyzja Uzasadnienie
+
+Wieloetapowe budowanie Oddzielenie kompilacji od runtime – mniejszy obraz, większe bezpieczeństwo
+
+Osobny obraz dla modeli AI Modele ważą kilka GB – nie chcemy przebudowywać ich przy każdej zmianie kodu
+
+Podman rootless Zgodność z blueprintem, bezpieczeństwo (bez roota), izolacja użytkowników
+
+Nuitka zamiast PyInstaller Lepsza wydajność, natywna kompilacja, mniejsze zużycie RAM w runtime
+
+uv do zarządzania zależnościami Szybsze niż pip (nawet 10x), lockfile (uv.lock), zgodne z pyproject.toml
+
+Pulumi w Pythonie Spójność – cały projekt w Pythonie, łącznie z infrastrukturą
+
+
+
+---
+
+
+
+3. Containerfile – wieloetapowe budowanie
+
+
+
+Poniższy Containerfile jest przeznaczony dla Podman (lub Docker, kompatybilny). Buduje trzy etapy:
+
+
+
+1. deps – pobranie zależności Python przez uv
+
+2. builder – kompilacja kodu przez Nuitka do natywnego pliku binarnego
+
+3. runtime – minimalny obraz z gotową binarką
+
+
+
+```dockerfile
+
+# Containerfile
+
+# Stage 1: Pobranie zależności
+
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm AS deps
+
+WORKDIR /app
+
+COPY pyproject.toml uv.lock ./
+
+RUN uv sync --frozen --no-dev --compile-bytecode
+
+
+
+# Stage 2: Kompilacja Nuitka
+
+FROM python:3.12-slim-bookworm AS builder
+
+WORKDIR /app
+
+# Instalacja kompilatora i zależności
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+
+    gcc g++ patchelf ccache && \
+
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=deps /app/.venv /app/.venv
+
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Kopiowanie kodu źródłowego
+
+COPY . .
+
+# Kompilacja Nuitka
+
+RUN python -m nuitka \
+
+    --standalone \
+
+    --onefile \
+
+    --enable-plugin=litestar \
+
+    --enable-plugin=pydantic \
+
+    --enable-plugin=torch \
+
+    --include-package=api \
+
+    --include-package=core \
+
+    --include-package=db \
+
+    --include-package=models \
+
+    --include-package=pipeline \
+
+    --include-package=services \
+
+    --include-package=Roboton_Reflekton \
+
+    --include-data-dir=models=models \
+
+    --output-dir=dist \
+
+    --output-filename=nexusai \
+
+    --lto=yes \
+
+    --show-progress \
+
+    api/server.py
+
+
+
+# Stage 3: Obraz runtime
+
+FROM debian:bookworm-slim AS runtime
+
+LABEL org.opencontainers.image.title="Nexus AI"
+
+LABEL org.opencontainers.image.description="Perfect Accounting Platform"
+
+
+
+# Instalacja tylko niezbędnych bibliotek
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+
+    ca-certificates \
+
+    libgomp1 \
+
+    libopenblas0 \
+
+    && rm -rf /var/lib/apt/lists/*
+
+
+
+# Utworzenie użytkownika bez roota
+
+RUN useradd --create-home --shell /bin/bash nexus && \
+
+    mkdir -p /data/sqlite /data/duckdb /data/lancedb /data/storage /data/logs && \
+
+    chown -R nexus:nexus /data
+
+
+
+COPY --from=builder /app/dist/nexusai.bin /usr/local/bin/nexusai
+
+# Modele AI są montowane jako osobny wolumen / obraz
+
+# COPY --from=models /models /data/models
+
+
+
+USER nexus
+
+WORKDIR /data
+
+EXPOSE 8000
+
+
+
+# Healthcheck
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+
+    CMD curl -f http://localhost:8000/api/v2/health || exit 1
+
+
+
+ENTRYPOINT ["/usr/local/bin/nexusai"]
+
+```
+
+
+
+3.1. Osobny obraz dla modeli AI
+
+
+
+Modele AI (Surya, LayoutLM, Phi-3, Sentence-Transformers) ważą kilka GB. Nie chcemy przebudowywać ich za każdym razem. Tworzymy osobny obraz nexusai-models:
+
+
+
+```dockerfile
+
+# Containerfile.models
+
+FROM python:3.12-slim-bookworm AS models-builder
+
+WORKDIR /app
+
+COPY scripts/download_models.py .
+
+RUN pip install huggingface_hub && python download_models.py
+
+
+
+FROM debian:bookworm-slim
+
+COPY --from=models-builder /app/models /models
+
+VOLUME /models
+
+```
+
+
+
+---
+
+
+
+4. Kompilacja Nuitka – szczegóły techniczne
+
+
+
+Nuitka kompiluje kod Python do C, a następnie do natywnego kodu maszynowego. Dla aplikacji Nexus AI kluczowe są:
+
+
+
+4.1. Uwzględnienie wszystkich zależności
+
+
+
+```bash
+
+python -m nuitka \
+
+    --standalone \ # Niezależna aplikacja z własnym środowiskiem
+
+    --onefile \ # Jeden plik binarny (opcjonalnie, dla prostoty)
+
+    --enable-plugin=litestar \ # Plugin dla Litestar
+
+    --enable-plugin=pydantic \ # Plugin dla Pydantic v2
+
+    --enable-plugin=torch \ # Plugin dla PyTorch (dołącza DLL-i CUDA)
+
+    --enable-plugin=sqlalchemy \ # Plugin dla SQLAlchemy
+
+    --include-package=api \ # Wszystkie nasze pakiety
+
+    --include-package=core \
+
+    --include-package=db \
+
+    --include-package=models \
+
+    --include-package=pipeline \
+
+    --include-package=services \
+
+    --include-package=Roboton_Reflekton \
+
+    --include-data-dir=models=models \ # Osadzenie wag modeli AI (jeśli nie montujemy osobno)
+
+    --output-dir=dist \
+
+    --output-filename=nexusai \
+
+    --lto=yes \ # Link-Time Optimization (szybszy kod)
+
+    --show-progress \
+
+    api/server.py
+
+```
+
+
+
+4.2. Optymalizacje dla ML
+
+
+
+Nuitka może mieć problem z dużymi bibliotekami ML. Rozwiązania:
+
+
+
+· --include-package=torch – dołącza PyTorch.
+
+· --include-package=transformers – dołącza HuggingFace.
+
+· --include-package=bitsandbytes – dla INT8.
+
+· --nofollow-import-to=notebook – wykluczamy niepotrzebne moduły.
+
+· --include-package-data=tokenizers – dane dla tokenizerów HuggingFace.
+
+· Dla duckdb i lancedb: --include-package=duckdb --include-package=lancedb.
+
+
+
+Można też dodać opcję --include-package=surya dla OCR.
+
+
+
+4.3. Budowanie w CI/CD – cache'owanie
+
+
+
+Kompilacja Nuitka jest czasochłonna (nawet 30 min). Aby przyspieszyć buildy w CI/CD:
+
+
+
+· Używamy ccache (kompilator cache).
+
+· Montujemy katalog cache jako wolumen.
+
+
+
+```yaml
+
+# W pipeline CI
+
+- name: Build with Nuitka
+
+  image: nexusai-builder
+
+  commands:
+
+    - ccache -z # zerowanie statystyk
+
+    - python -m nuitka ... (z --enable-ccache)
+
+    - ccache -s # statystyki na koniec
+
+  volumes:
+
+    - ccache_volume:/root/.ccache
+
+```
+
+
+
+---
+
+
+
+5. Podman – konfiguracja i uruchamianie
+
+
+
+5.1. Podman rootless
+
+
+
+Podman działa bez uprawnień roota. Tworzymy użytkownika nexus na hoście:
+
+
+
+```bash
+
+useradd -m nexus
+
+sudo loginctl enable-linger nexus # pozwala na działanie usług w tle
+
+sudo -u nexus podman pod create nexus-pod -p 8000:8000 -p 4222:4222
+
+```
+
+
+
+5.2. Uruchomienie usług
+
+
+
+```bash
+
+# NATS (współdzielony)
+
+sudo -u nexus podman run -d --pod nexus-pod \
+
+    --name nats \
+
+    nats:latest -js
+
+
+
+# MinIO (dla storage i backupów)
+
+sudo -u nexus podman run -d --pod nexus-pod \
+
+    --name minio \
+
+    -v /data/minio:/data \
+
+    minio/minio server /data
+
+
+
+# Worker AI (osobny kontener z tą samą binarką, inna komenda)
+
+sudo -u nexus podman run -d --pod nexus-pod \
+
+    --name nexus-worker \
+
+    -v /data/sqlite:/data/sqlite \
+
+    -v /data/models:/data/models:ro \
+
+    nexusai:latest \
+
+    /usr/local/bin/nexusai --worker
+
+
+
+# API
+
+sudo -u nexus podman run -d --pod nexus-pod \
+
+    --name nexus-api \
+
+    -v /data/sqlite:/data/sqlite \
+
+    -v /data/duckdb:/data/duckdb \
+
+    -v /data/lancedb:/data/lancedb \
+
+    -v /data/storage:/data/storage \
+
+    -v /data/models:/data/models:ro \
+
+    -e NEXUS_ENV=prod \
+
+    -e NEXUS_JWT_SECRET_FILE=/run/secrets/jwt_secret \
+
+    --secret jwt_secret \
+
+    nexusai:latest
+
+```
+
+
+
+5.3. Automatyczny restart (systemd)
+
+
+
+Dla niezawodności używamy systemd units zamiast --restart=always:
+
+
+
+```ini
+
+# /etc/systemd/system/nexus-api.service
+
+[Unit]
+
+Description=Nexus AI API
+
+After=network-online.target
+
+
+
+[Service]
+
+User=nexus
+
+Group=nexus
+
+ExecStart=/usr/bin/podman run --rm --pod nexus-pod ... nexusai:latest
+
+ExecStop=/usr/bin/podman stop nexus-api
+
+Restart=on-failure
+
+RestartSec=5
+
+
+
+[Install]
+
+WantedBy=multi-user.target
+
+```
+
+
+
+---
+
+
+
+6. CI/CD – Pipeline'y
+
+
+
+6.1. Woodpecker CI (self-hosted)
+
+
+
+Plik .woodpecker.yml:
+
+
+
+```yaml
+
+# .woodpecker.yml
+
+pipeline:
+
+  lint:
+
+    image: python:3.12
+
+    commands:
+
+      - pip install ruff bandit
+
+      - ruff check .
+
+      - bandit -r .
+
+
+
+  test:
+
+    image: python:3.12
+
+    depends_on: [lint]
+
+    environment:
+
+      NEXUS_ENV: test
+
+    commands:
+
+      - pip install -e ".[test]"
+
+      - pytest tests/ -v --cov
+
+      # Golden dataset AI test (opcjonalny, wymaga modeli)
+
+      - |
+
+        if [ -d tests/golden ]; then
+
+          pytest tests/test_golden_dataset.py -v
+
+        fi
+
+
+
+  security-scan:
+
+    image: aquasec/trivy
+
+    depends_on: [test]
+
+    commands:
+
+      - trivy fs --format cyclonedx --output sbom.json .
+
+      - trivy sbom sbom.json --severity CRITICAL,HIGH
+
+
+
+  build:
+
+    image: nexusai-builder:latest
+
+    depends_on: [security-scan]
+
+    commands:
+
+      - ccache -z
+
+      - python -m nuitka --standalone ... --enable-ccache
+
+      - podman build -t registry.example.com/nexusai:${CI_COMMIT_SHA} -f Containerfile .
+
+      - podman push registry.example.com/nexusai:${CI_COMMIT_SHA}
+
+    volumes:
+
+      - ccache_volume:/root/.ccache
+
+
+
+  deploy-staging:
+
+    image: registry.example.com/pulumi-python:latest
+
+    depends_on: [build]
+
+    environment:
+
+      PULUMI_ACCESS_TOKEN:
+
+        from_secret: pulumi_token
+
+    commands:
+
+      - pulumi login
+
+      - pulumi stack select staging
+
+      - pulumi config set nexusai:image_tag ${CI_COMMIT_SHA}
+
+      - pulumi up --yes
+
+
+
+  integration-test:
+
+    image: curlimages/curl
+
+    depends_on: [deploy-staging]
+
+    commands:
+
+      - curl -f https://staging.nexus.example.com/api/v2/health
+
+```
+
+
+
+6.2. GitLab CI (self-hosted)
+
+
+
+```yaml
+
+# .gitlab-ci.yml
+
+stages:
+
+  - test
+
+  - build
+
+  - deploy
+
+
+
+variables:
+
+  UV_CACHE_DIR: /cache/.uv
+
+
+
+cache:
+
+  paths:
+
+    - /cache/.uv
+
+    - /cache/ccache
+
+
+
+test:
+
+  stage: test
+
+  image: python:3.12
+
+  script:
+
+    - pip install ruff bandit pytest pytest-cov
+
+    - ruff check .
+
+    - bandit -r .
+
+    - pytest tests/ -v --cov
+
+
+
+build:
+
+  stage: build
+
+  image: nexusai-builder:latest
+
+  script:
+
+    - ccache -z
+
+    - python -m nuitka ... --enable-ccache
+
+    - podman build -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} -f Containerfile .
+
+    - podman push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
+
+  only:
+
+    - main
+
+    - tags
+
+
+
+deploy-staging:
+
+  stage: deploy
+
+  image: registry.example.com/pulumi-python:latest
+
+  script:
+
+    - pulumi stack select staging
+
+    - pulumi config set nexusai:image_tag ${CI_COMMIT_SHA}
+
+    - pulumi up --yes
+
+  only:
+
+    - main
+
+```
+
+
+
+---
+
+
+
+7. Pulumi – Infrastructure as Code w Pythonie
+
+
+
+Struktura katalogu infra/:
+
+
+
+```
+
+infra/
+
+├── __main__.py
+
+├── Pulumi.yaml
+
+├── Pulumi.staging.yaml
+
+└── components/
+
+    ├── network.py
+
+    ├── container.py
+
+    └── secrets.py
+
+```
+
+
+
+7.1. infra/__main__.py
+
+
+
+```python
+
+import pulumi
+
+from components.network import create_network
+
+from components.container import create_containers
+
+from components.secrets import create_secrets
+
+
+
+config = pulumi.Config()
+
+environment = pulumi.get_stack()
+
+image_tag = config.require("image_tag")
+
+
+
+secrets = create_secrets()
+
+network = create_network(environment)
+
+containers = create_containers(
+
+    image_tag=image_tag,
+
+    network=network,
+
+    secrets=secrets,
+
+    environment=environment
+
+)
+
+
+
+pulumi.export("api_url", containers["api_url"])
+
+```
+
+
+
+7.2. Komponent kontenerów
+
+
+
+```python
+
+# infra/components/container.py
+
+from pulumi import Output
+
+from pulumi_docker import Container, ContainerPortArgs, ContainerVolumeArgs
+
+
+
+def create_containers(image_tag, network, secrets, environment):
+
+    # Wolumeny dla trwałych danych
+
+    volumes = {
+
+        "sqlite": ContainerVolumeArgs(host_path="/data/sqlite", container_path="/data/sqlite"),
+
+        "duckdb": ContainerVolumeArgs(host_path="/data/duckdb", container_path="/data/duckdb"),
+
+        "lancedb": ContainerVolumeArgs(host_path="/data/lancedb", container_path="/data/lancedb"),
+
+        "storage": ContainerVolumeArgs(host_path="/data/storage", container_path="/data/storage"),
+
+        "models": ContainerVolumeArgs(host_path="/data/models", container_path="/data/models", read_only=True),
+
+    }
+
+
+
+    api = Container(
+
+        "nexus-api",
+
+        image=f"registry.example.com/nexusai:{image_tag}",
+
+        ports=[ContainerPortArgs(internal=8000, external=8000)],
+
+        volumes=list(volumes.values()),
+
+        envs=[
+
+            f"NEXUS_ENV={environment}",
+
+            f"NEXUS_JWT_SECRET={secrets['jwt_secret']}",
+
+        ],
+
+        restart="on-failure",
+
+        network_mode=network.name,
+
+    )
+
+
+
+    return {"api_url": Output.concat("http://", api.ip_address, ":8000")}
+
+```
+
+
+
+---
+
+
+
+8. Bezpieczeństwo i monitoring
+
+
+
+8.1. Skanowanie obrazów
+
+
+
+W pipeline CI/CD:
+
+
+
+```bash
+
+trivy image registry.example.com/nexusai:${CI_COMMIT_SHA} --severity HIGH,CRITICAL
+
+```
+
+
+
+Jeśli trivy znajdzie krytyczne podatności, pipeline powinien być zatrzymany (exit 1).
+
+
+
+8.2. SBOM (Software Bill of Materials)
+
+
+
+```bash
+
+trivy image --format cyclonedx --output nexus-sbom.json registry.example.com/nexusai:latest
+
+```
+
+
+
+Plik SBOM jest archiwizowany jako artefakt build'u i może być użyty do audytu.
+
+
+
+8.3. Sekrety (Infisical / SOPS)
+
+
+
+· Infisical: centralne zarządzanie sekretami, integracja z CI/CD.
+
+· Alternatywnie: SOPS + Age – pliki .env szyfrowane przed commitem.
+
+
+
+```bash
+
+# Przykład z SOPS
+
+sops --encrypt --age $(cat ~/.age.pub) .env > .env.enc
+
+```
+
+
+
+8.4. Health Check w Litestar
+
+
+
+Rozszerzony endpoint /health:
+
+
+
+```python
+
+@get("/health")
+
+async def health_check() -> dict:
+
+    status = {
+
+        "api": "OK",
+
+        "sqlite": await check_sqlite(),
+
+        "duckdb": await check_duckdb(),
+
+        "nats": await check_nats(),
+
+        "gpu": check_gpu(),
+
+        "models_loaded": check_models(),
+
+    }
+
+    return status
+
+```
+
+
+
+---
+
+
+
+9. Plan wdrożenia Filaru V
+
+
+
+Krok Zadanie Czas szacunkowy
+
+1. Utworzenie Containerfile z 3 etapami 2 dni
+
+2. Konfiguracja Nuitka dla wszystkich zależności 2-3 dni
+
+3. Testy kompilacji i obrazu runtime 1 dzień
+
+4. Utworzenie pipeline'u CI/CD (Woodpecker lub GitLab) 2 dni
+
+5. Konfiguracja Podman rootless + systemd units 1 dzień
+
+6. Stworzenie skryptów Pulumi (IaC) 2 dni
+
+7. Skanowanie Trivy + SBOM 0.5 dnia
+
+8. Konfiguracja sekretów (Infisical / SOPS) 1 dzień
+
+9. Testy integracyjne po deploymencie 1 dzień
+
+
+
+---
+
+
+
+10. Podsumowanie
+
+
+
+Po wdrożeniu Filaru V:
+
+
+
+· Aplikacja jest skompilowana do natywnego kodu (szybsza, bezpieczniejsza).
+
+· Wszystkie komponenty działają w izolowanych kontenerach rootless.
+
+· Deployment jest w pełni zautomatyzowany przez CI/CD i zarządzany kodem (IaC).
+
+· Bezpieczeństwo jest zapewnione przez skanowanie obrazów, SBOM i szyfrowane sekrety.
+
+· System jest gotowy na skalowanie i ciągłą integrację w środowisku produkcyjnym.
+
+
+
+
+
+
+
+🔍 Pozostałe niedociągnięcia i nowe ulepszenia
+
+
+
+1. Niezawodność i odporność na awarie
+
+
+
+1.1. Brak limitu równoczesnych inferencji OCR/LLM
+
+
+
+Problem: Worker process_invoice_task nie ma ograniczenia liczby jednocześnie przetwarzanych dokumentów. Wrzucenie 50 faktur naraz spowoduje próbę załadowania wszystkich do GPU, co skończy się OOM i zabiciem procesu.
+
+
+
+Rozwiązanie: Dodać asyncio.Semaphore z limitem (np. 3) w process_invoice_task lub skonfigurować max_parallelism w brokerze Taskiq.
+
+
+
+1.2. Brak timeoutów dla zadań AI
+
+
+
+Problem: Jeśli model OCR/LLM się zawiesi, worker zostanie zablokowany na zawsze. Nie ma mechanizmu zwalniającego.
+
+
+
+Rozwiązanie: Owinąć await loop.run_in_executor(...) w asyncio.wait_for z timeoutem (np. 5 minut). Po przekroczeniu – przenieść zadanie do kolejki dead-letter.
+
+
+
+1.3. Wyciek pamięci w AdaptiveBatcher
+
+
+
+Problem: W _batch_worker przy wyjątku pętla nie czyści list batch i futures. Po tygodniach pracy worker może wyciec pamięć.
+
+
+
+Rozwiązanie: Dodać finally z czyszczeniem futures i restartem pętli przy krytycznym błędzie.
+
+
+
+---
+
+
+
+2. Spójność danych w systemie rozproszonym
+
+
+
+2.1. Brak mechanizmu "Saga" dla procesów wieloetapowych
+
+
+
+Problem: Po wdrożeniu Outbox Pattern i osobnych workerów system stanie się rozproszony. Jeśli worker OCR zaktualizuje fakturę, ale worker DuckDB nie zaktualizuje analityki, dane będą niespójne.
+
+
+
+Rozwiązanie: Wdrożyć Saga Pattern z choreografią przez NATS – każdy krok publikuje zdarzenie, a w przypadku awarii wysyłane jest zdarzenie kompensujące (np. przywrócenie statusu PENDING_MANUAL).
+
+
+
+2.2. Brak gwarancji kolejności zdarzeń dla tego samego ID
+
+
+
+Problem: Zdarzenie invoice.updated może dotrzeć do DuckDB przed invoice.created.
+
+
+
+Rozwiązanie: Użyć NATS JetStream z kluczem strumienia invoice_id (Key-based ordering). W DuckDB stosować upsert z warunkiem WHERE updated_at <= new.updated_at.
+
+
+
+---
+
+
+
+3. Bezpieczeństwo danych
+
+
+
+3.1. Brak szyfrowania plików PDF na dysku
+
+
+
+Problem: Pliki faktur leżą niezaszyfrowane. Kradzież dysku = wyciek wszystkich dokumentów.
+
+
+
+Rozwiązanie: Zintegrować fsspec z cryptography.fernet.Fernet – szyfrować przed zapisem, deszyfrować przy odczycie. Klucz z SecretsManager.
+
+
+
+3.2. Brak maskowania danych wrażliwych w logach
+
+
+
+Problem: Logi mogą zawierać numery NIP, konta bankowe, kwoty.
+
+
+
+Rozwiązanie: Dodać filtr w loguru, który maskuje NIP (tylko 3 pierwsze cyfry), numery kont (tylko 4 ostatnie) i kwoty (tylko rząd wielkości).
+
+
+
+---
+
+
+
+4. Obserwowalność i monitoring
+
+
+
+4.1. Brak metryk biznesowych i monitorowania dryfu modeli AI
+
+
+
+Problem: Nie wiadomo, czy system działa dobrze. Nie można wykryć, że model AI stopniowo traci skuteczność.
+
+
+
+Rozwiązanie: Dodać moduł monitoring/ z metrykami (ai.confidence.avg, ai.triage.rate, invoice.processed.total) wysyłanymi do VictoriaMetrics. Ustawić alerty przy spadku skuteczności.
+
+
+
+4.2. Brak rozproszonego śledzenia (OpenTelemetry)
+
+
+
+Problem: W systemie rozproszonym (API + Worker + NATS) nie da się prześledzić ścieżki jednej faktury.
+
+
+
+Rozwiązanie: Dodać instrumentację OpenTelemetry – każdy request dostaje trace_id widoczny w Jaeger/Grafana Tempo.
+
+
+
+---
+
+
+
+5. Zarządzanie danymi i zgodność z przepisami
+
+
+
+5.1. Brak strategii retencji danych (RODO)
+
+
+
+Problem: SecurityService.cleanup_old_scans jest pusty. Brak automatycznego usuwania starych dokumentów.
+
+
+
+Rozwiązanie: Zaimplementować usuwanie PDF-ów starszych niż 5 lat (z zachowaniem metadanych) i pełne usuwanie faktur starszych niż 10 lat.
+
+
+
+5.2. Brak backupu LanceDB i modeli AI
+
+
+
+Problem: BackupManager pomija LanceDB i folder models/.
+
+
+
+Rozwiązanie: Dodać te ścieżki do backupu lub użyć eksportu LanceDB do Parquet.
+
+
+
+---
+
+
+
+6. Testy i jakość
+
+
+
+6.1. Brak testów integracyjnych AI (Golden Dataset)
+
+
+
+Problem: Testy jednostkowe używają mocków. Zmiana wersji transformers może bezgłośnie zepsuć ekstrakcję.
+
+
+
+Rozwiązanie: Stworzyć zestaw 10-20 "złotych faktur" (PDF + oczekiwany JSON) i test integracyjny w CI/CD.
+
+
+
+6.2. Brak testów chaos engineering
+
+
+
+Problem: Nie wiadomo, jak system zachowa się przy awarii NATS, DuckDB, GPU.
+
+
+
+Rozwiązanie: Dodać testy chaosowe symulujące awarie sieci i restart kontenerów.
+
+
+
+---
+
+
+
+📋 Tabela priorytetów
+
+
+
+Priorytet Kategoria Problem / Ulepszenie
+
+🔴 Krytyczny Niezawodność Limit równoczesnych inferencji OCR
+
+🔴 Krytyczny Integralność Saga Pattern dla procesów wieloetapowych
+
+🟠 Wysoki Bezpieczeństwo Szyfrowanie plików PDF
+
+🟠 Wysoki Operacyjność Metryki AI i wykrywanie dryfu modeli
+
+🟡 Średni Wydajność Timeouty dla zadań AI
+
+🟡 Średni Zgodność Strategia retencji danych (RODO)
+
+🟡 Średni Operacyjność Backup LanceDB i
+
+ modeli AI
+
+🟢 Niski Jakość Golden Dataset + testy integracyjne AI
+
+🟢 Ulepszenie Obserwowalność OpenTelemetry
+
+
+
+---
+
+
+
+
