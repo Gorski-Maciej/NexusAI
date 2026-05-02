@@ -3,7 +3,6 @@ import shutil
 import json
 from pathlib import Path
 from litestar import Controller, get, post, Body
-from litestar.di import Provide
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.enums import RequestEncodingType
 from litestar.datastructures import UploadFile
@@ -12,8 +11,6 @@ from sqlalchemy import select
 from api.schemas import InvoiceCreate, InvoiceResponse
 from models.invoice import Invoice
 from models.outbox import OutboxEvent
-from tasks import broker # Twój Taskiq + NATS broker
-from core.tasks import process_invoice_task
 
 class InvoiceController(Controller):
     path = "/invoices"
@@ -33,7 +30,7 @@ class InvoiceController(Controller):
 
     @post(status_code=HTTP_201_CREATED)
     async def create_invoice(self, data: InvoiceCreate, db_session: AsyncSession) -> InvoiceResponse:
-        """Dodaje nową fakturę i wrzuca zdarzenie OCR do Outboxa."""
+        """Dodaje nową fakturę i zapisuje event OCR w Outbox w tej samej transakcji."""
         invoice_id = str(uuid.uuid4())
         new_invoice = Invoice(
             id=invoice_id,
@@ -45,14 +42,22 @@ class InvoiceController(Controller):
             status="NEW"
         )
         db_session.add(new_invoice)
-        await db_session.commit()
-
-        # Wypchnięcie zadania do NATS (Outbox Pattern)
-        await broker.kick(
-            "process_invoice_ocr",
-            invoice_id=invoice_id,
-            image_path=f"storage/scans/{invoice_id}.pdf"
+        db_session.add(
+            OutboxEvent(
+                event_type="process_invoice_ocr",
+                aggregate_id=invoice_id,
+                payload=json.dumps(
+                    {
+                        "invoice_id": invoice_id,
+                        "image_path": f"storage/scans/{invoice_id}.pdf",
+                    },
+                    ensure_ascii=False,
+                ),
+                status="PENDING",
+                processed=False,
+            )
         )
+        await db_session.commit()
 
         return InvoiceResponse(
             id=new_invoice.id, number=new_invoice.number,

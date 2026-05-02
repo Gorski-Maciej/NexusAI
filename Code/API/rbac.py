@@ -24,7 +24,10 @@ def get_current_role(connection: ASGIConnection) -> RoleContext:
     if not user:
         raise NotAuthorizedException("Missing authenticated user context")
 
-    role = NexusRole(str(user.role).strip().lower())
+    try:
+        role = NexusRole(str(user.role).strip().lower())
+    except ValueError as exc:
+        raise NotAuthorizedException("Unsupported role in authenticated context") from exc
     actor = str(getattr(user, "username", user.id)).strip().lower()
     prefix = "owner:" if role == NexusRole.OWNER else "worker:"
     return RoleContext(role=role, actor=f"{prefix}{actor}")

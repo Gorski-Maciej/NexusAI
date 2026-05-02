@@ -28,6 +28,7 @@ class AppConfig:
 
     duckdb_memory_limit: str = os.getenv("NEXUS_DUCKDB_MEMORY_LIMIT", "2GB")
     duckdb_threads: int = int(os.getenv("NEXUS_DUCKDB_THREADS", "2"))
+    cors_origins_raw: str = os.getenv("NEXUS_CORS_ORIGINS", "*")
 
     def __post_init__(self) -> None:
         self.environment = self.environment.lower().strip()
@@ -47,6 +48,8 @@ class AppConfig:
         if self.environment in {"stage", "prod"}:
             if self.debug:
                 raise ConfigValidationError("NEXUS_DEBUG cannot be enabled in stage/prod")
+            if self.cors_origins == ["*"]:
+                raise ConfigValidationError("NEXUS_CORS_ORIGINS cannot be '*' in stage/prod")
             missing = [k for k, v in required_in_stage_prod.items() if not v]
             if missing:
                 raise ConfigValidationError(
@@ -68,3 +71,12 @@ class AppConfig:
     @property
     def idempotency_db_path(self) -> Path:
         return self.base_dir / self.idempotency_db_name
+
+    @property
+    def cors_origins(self) -> list[str]:
+        raw = self.cors_origins_raw.strip()
+        if not raw:
+            return ["*"]
+        if raw == "*":
+            return ["*"]
+        return [origin.strip() for origin in raw.split(",") if origin.strip()]
