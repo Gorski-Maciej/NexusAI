@@ -29,6 +29,15 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> Use
     if not token.sub:
         return None
 
+    extras = getattr(token, "extras", None) or {}
+    if extras.get("username") and extras.get("role"):
+        return User(
+            id=str(token.sub),
+            username=str(extras["username"]),
+            role=str(extras["role"]),
+            tenant_id=str(extras.get("tenant_id")) if extras.get("tenant_id") is not None else None,
+        )
+
     db_engine = getattr(connection.app.state, "db_engine", None)
     if db_engine is not None:
         async with db_engine.connect() as conn:
