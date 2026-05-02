@@ -6,12 +6,17 @@ from taskiq_nats import PullBasedJetStreamBroker
 from sqlalchemy import text
 
 from core.config import AppConfig
-from db.replication import sync_single_invoice_to_duckdb, sync_sqlite_to_duckdb
+from db.analytics import DuckDBManager
 from db.database import create_oltp_engine, create_session_factory
+from core.circuit_breaker import CircuitBreaker
+from core.resilience import async_retry
+from api.cache import clear_cache_async
 
 broker = PullBasedJetStreamBroker()
 logger = logging.getLogger("nexus.api.tasks")
 MAX_OUTBOX_RETRIES = 3
+NATS_CIRCUIT_BREAKER = CircuitBreaker(failure_threshold=5, recovery_timeout=60)
+OLAP_CIRCUIT_BREAKER = CircuitBreaker(failure_threshold=3, recovery_timeout=120)
 
 
 async def _dispatch_outbox_event(row: dict) -> None:
@@ -27,7 +32,7 @@ async def _dispatch_outbox_event(row: dict) -> None:
         invoice_id = payload.get("invoice_id") or row.get("aggregate_id")
         if not invoice_id:
             raise ValueError("Missing invoice_id in outbox payload")
-        await broker.kick("process_invoice_ocr", invoice_id=str(invoice_id), payload=payload)
+        await NATS_CIRCUIT_BREAKER.call(broker.kick, "process_invoice_ocr", invoice_id=str(invoice_id), payload=payload)
         return
 
     raise ValueError(f"Unsupported outbox event_type: {event_type}")
@@ -38,34 +43,40 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
     """Dedicated OCR pipeline entrypoint triggered by outbox relay."""
     logger.info("[OCR] processing invoice_id=%s", invoice_id)
 
-    # Placeholder for OCR worker orchestration; after successful OCR write,
-    # trigger near-real-time OLAP delta sync for dashboard freshness.
-    await broker.kick("sync_single_invoice_to_olap", invoice_id=invoice_id)
+    # Zero-ETL: no row replication; trigger lightweight OLAP materialization refresh.
+    await OLAP_CIRCUIT_BREAKER.call(_refresh_cashflow_for_event)
+    return
 
 
-@broker.task(schedule=[{"cron": "*/5 * * * *"}])
-async def run_data_replication() -> None:
-    """Periodic full sync OLTP -> OLAP."""
+
+
+@broker.task(schedule=[{"cron": "0 * * * *"}], task_name="refresh_materialized_cashflow")
+@async_retry(max_retries=3, base_delay=1.0, max_delay=8.0)
+async def refresh_materialized_cashflow() -> None:
     config = AppConfig()
-    engine = create_oltp_engine(config)
-    session_factory = create_session_factory(engine)
-    async with session_factory() as session:
-        result = await sync_sqlite_to_duckdb(session, config)
-        logger.info("[REPLICATION] Status=%s rows=%s", result.get("status"), result.get("synced_rows", 0))
-    await engine.dispose()
+    manager = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
+    try:
+        await OLAP_CIRCUIT_BREAKER.call(_refresh_cashflow_materialized, manager)
+    finally:
+        manager.close()
+    await clear_cache_async(prefix="api.routes.analytics")
+    logger.info("[OLAP] refreshed m_daily_cashflow")
 
 
-@broker.task(task_name="sync_single_invoice_to_olap")
-async def sync_single_invoice_to_olap(invoice_id: str) -> None:
-    """Near-real-time single-invoice sync after OCR/processing commit."""
-    logger.info("[REPLICATION] queued single-invoice sync for invoice_id=%s", invoice_id)
+
+
+async def _refresh_cashflow_materialized(manager: DuckDBManager) -> None:
+    manager.refresh_materialized_cashflow()
+
+
+async def _refresh_cashflow_for_event() -> None:
     config = AppConfig()
-    engine = create_oltp_engine(config)
-    session_factory = create_session_factory(engine)
-    async with session_factory() as session:
-        result = await sync_single_invoice_to_duckdb(session, config, invoice_id)
-        logger.info("[REPLICATION] single invoice sync status=%s invoice_id=%s", result.get("status"), invoice_id)
-    await engine.dispose()
+    manager = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
+    try:
+        manager.refresh_materialized_cashflow()
+    finally:
+        manager.close()
+    await clear_cache_async(prefix="api.routes.analytics")
 
 
 @broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="relay_outbox_events")

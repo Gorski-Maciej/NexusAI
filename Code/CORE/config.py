@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import os
+import base64
+import binascii
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -56,6 +58,9 @@ class AppConfig:
                     f"Missing required secrets for {self.environment}: {', '.join(missing)}"
                 )
 
+        if self.encryption_key:
+            self._validate_encryption_key(self.encryption_key)
+
     @property
     def sqlite_path(self) -> Path:
         return self.base_dir / self.sqlite_file_name
@@ -80,3 +85,12 @@ class AppConfig:
         if raw == "*":
             return ["*"]
         return [origin.strip() for origin in raw.split(",") if origin.strip()]
+
+    @staticmethod
+    def _validate_encryption_key(key: str) -> None:
+        try:
+            raw = base64.urlsafe_b64decode(key.encode("utf-8"))
+        except (ValueError, binascii.Error) as exc:
+            raise ConfigValidationError("NEXUS_ENCRYPTION_KEY must be valid base64-url") from exc
+        if len(raw) != 32:
+            raise ConfigValidationError("NEXUS_ENCRYPTION_KEY must decode to exactly 32 bytes")

@@ -40,6 +40,11 @@ class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
 
                 process_time_ms = (time.perf_counter() - started) * 1000.0
                 headers.append((b"x-process-time", f"{process_time_ms:.2f}ms".encode()))
+                headers.append((b"x-content-type-options", b"nosniff"))
+                headers.append((b"x-frame-options", b"DENY"))
+                headers.append((b"referrer-policy", b"no-referrer"))
+                headers.append((b"permissions-policy", b"geolocation=(), microphone=(), camera=()"))
+                headers.append((b"content-security-policy", b"default-src 'self'; frame-ancestors 'none'; base-uri 'self'"))
 
                 path = scope.get("path", "")
                 if path.startswith("/api/v1"):

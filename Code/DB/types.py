@@ -30,3 +30,6 @@ class EncryptedString(TypeDecorator):
             self.key = config.encryption_key.encode()
         else:
             self.key = b""
+
+        if not self.key:
+            raise ValueError("Missing encryption key for EncryptedString")

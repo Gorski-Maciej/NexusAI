@@ -50,10 +50,17 @@ class HealthController(Controller):
         except Exception:
             db_ok = False
 
+        duckdb_ok = await self._duckdb_check()
+        nats_ok = await self._nats_check()
+        audit_chain_ok = await self._audit_chain_check()
+
         return {
-            "api": "OK" if db_ok else "DEGRADED",
+            "api": "OK" if (db_ok and duckdb_ok) else "DEGRADED",
             "version": "1.0.0",
             "database": "OK" if db_ok else "ERROR",
+            "duckdb": "OK" if duckdb_ok else "ERROR",
+            "nats": "OK" if nats_ok else "ERROR",
+            "audit_chain": "OK" if audit_chain_ok else "ERROR",
             "users_count": users_count,
             "pending_outbox_events": pending_outbox,
             "failed_outbox_events": failed_outbox,
@@ -100,3 +107,26 @@ class HealthController(Controller):
     def _sqlite_wal_size(self) -> int:
         wal_path = "nexus_oltp.db-wal"
         return os.path.getsize(wal_path) if os.path.exists(wal_path) else 0
+
+
+    async def _audit_chain_check(self) -> bool:
+        try:
+            from core.config import AppConfig
+            from db.analytics import DuckDBManager
+            from services.audit_logger import AuditLogger
+
+            cfg = AppConfig()
+            manager = DuckDBManager(db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True)
+            try:
+                valid, _ = AuditLogger(manager).verify_chain()
+                return bool(valid)
+            finally:
+                manager.close()
+        except Exception:
+            return False
+
+
+class HealthControllerV2(HealthController):
+    """Health endpoints in v2 namespace."""
+
+    path = "/api/v2/health"

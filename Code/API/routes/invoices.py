@@ -15,12 +15,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.config import AppConfig
 from api.schemas import TaskResponse
 from api.services import ContentAddressableStorage, IdempotencyStore
+from db.analytics import DuckDBManager
+from services.audit_logger import AuditLogger
+from api.rbac import owner_or_worker_guard
+from api.cache import clear_cache_async
 
 
 class InvoiceController(Controller):
     """Invoice APIs (v1)."""
 
     path = "/api/v1/invoices"
+    guards = [owner_or_worker_guard]
 
     @post("/upload", media_type=RequestEncodingType.MULTI_PART)
     async def upload_invoice(
@@ -56,7 +61,7 @@ class InvoiceController(Controller):
             "invoice_id": invoice_id,
             "task_id": task_id,
             "file_hash": saved.file_hash,
-            "file_path": str(saved.path),
+            "file_path": str(saved.file_path),
             "received_at": datetime.now(timezone.utc).isoformat(),
         }
 
@@ -77,6 +82,24 @@ class InvoiceController(Controller):
             },
         )
         await db_session.commit()
+        await clear_cache_async(prefix="api.routes.analytics")
+
+        # Immutable audit trail (hash-chained) for compliance-grade evidencing.
+        audit_manager = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path, read_only=False)
+        try:
+            AuditLogger(audit_manager).append_event(
+                "invoice.uploaded",
+                {
+                    "invoice_id": invoice_id,
+                    "task_id": task_id,
+                    "file_hash": saved.file_hash,
+                    "file_path": saved.file_path,
+                    "size_bytes": saved.size_bytes,
+                    "received_at": event_payload["received_at"],
+                },
+            )
+        finally:
+            audit_manager.close()
 
         response = TaskResponse(
             task_id=task_id,
@@ -95,3 +118,9 @@ class InvoiceController(Controller):
             })
 
         return response
+
+
+class InvoiceControllerV2(InvoiceController):
+    """Invoice APIs (v2)."""
+
+    path = "/api/v2/invoices"

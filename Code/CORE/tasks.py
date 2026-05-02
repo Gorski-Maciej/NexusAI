@@ -33,6 +33,8 @@ from db.analytics import DuckDBManager
 from Roboton_Reflekton.dunning_engine import DunningEngine
 
 logger = get_logger()
+OCR_INFERENCE_SEMAPHORE = asyncio.Semaphore(int(os.getenv("NEXUS_MAX_PARALLEL_OCR", "2")))
+OCR_TASK_TIMEOUT_SEC = int(os.getenv("NEXUS_OCR_TIMEOUT_SEC", "300"))
 
 NATS_URL = os.getenv("NEXUS_NATS_URL", "nats://127.0.0.1:4222")
 broker = PullBasedJetStreamBroker(servers=NATS_URL, queue="nexus-ai-workers")
@@ -135,8 +137,15 @@ async def process_invoice_task() -> dict[str, str]:
         await _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
 
         try:
-            processed = await asyncio.to_thread(processor.process, Path(payload.image_path))
-            vision = await vision_agent.analyze(Path(payload.image_path), processed.primary.raw_text)
+            async with OCR_INFERENCE_SEMAPHORE:
+                processed = await asyncio.wait_for(
+                    asyncio.to_thread(processor.process, Path(payload.image_path)),
+                    timeout=OCR_TASK_TIMEOUT_SEC,
+                )
+                vision = await asyncio.wait_for(
+                    vision_agent.analyze(Path(payload.image_path), processed.primary.raw_text),
+                    timeout=OCR_TASK_TIMEOUT_SEC,
+                )
             vision_payload = {
                 "vendor_nip": vision.vendor_nip,
                 "total_gross": vision.total_gross,
@@ -169,6 +178,12 @@ async def process_invoice_task() -> dict[str, str]:
                 machine.request_review()
             else:
                 machine.approve()
+            await _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
+
+        except TimeoutError as exc:
+            machine.fail()
+            event.status = OutboxStatus.FAILED
+            event.payload = json.dumps({"error": f"OCR_TIMEOUT:{exc}", "original_payload": event.payload})
             await _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
 
         except Exception as exc:
