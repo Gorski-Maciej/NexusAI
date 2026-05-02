@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from collections.abc import AsyncGenerator
+from litestar.connection import Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import AppConfig
 from core.tenant import TenantManager
 from db.analytics import DuckDBLimits, DuckDBManager
 from db.database import create_oltp_engine, create_session_factory
+from api.shared_image_buffer import SharedImageBuffer
 
 _config = AppConfig()
 _tenant_manager = TenantManager(_config)
@@ -21,9 +23,8 @@ def provide_tenant_manager() -> TenantManager:
     return _tenant_manager
 
 
-async def provide_db_session() -> AsyncGenerator[AsyncSession, None]:
-    engine = create_oltp_engine(_config, sqlite_path=_tenant_manager.sqlite_path())
-    session_factory = create_session_factory(engine)
+async def provide_db_session(request: Request) -> AsyncGenerator[AsyncSession, None]:
+    session_factory = request.app.state.db_session_factory
 
     async with session_factory() as session:
         try:
@@ -32,8 +33,12 @@ async def provide_db_session() -> AsyncGenerator[AsyncSession, None]:
             await session.rollback()
             raise
         finally:
-            await engine.dispose()
+            pass
 
 
 async def provide_duckdb() -> DuckDBManager:
     return DuckDBManager(db_path=_tenant_manager.duckdb_path(), limits=_duckdb_limits)
+
+
+def provide_shared_image_buffer(request) -> SharedImageBuffer:
+    return request.app.state.shared_image_buffer

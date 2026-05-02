@@ -1,63 +1,82 @@
-import os
-import asyncio
+from __future__ import annotations
+
 import logging
-from datetime import datetime
-from decimal import Decimal
 from taskiq_nats import PullBasedJetStreamBroker
-from sqlalchemy.ext.asyncio import AsyncSession
-from db.replication import sync_sqlite_to_duckdb
-from db.database import get_session
+from sqlalchemy import text
+
 from core.config import AppConfig
+from db.replication import sync_single_invoice_to_duckdb, sync_sqlite_to_duckdb
+from db.database import create_oltp_engine, create_session_factory
 
 broker = PullBasedJetStreamBroker()
 logger = logging.getLogger("nexus.api.tasks")
 
+
 @broker.task(schedule=[{"cron": "*/5 * * * *"}])
-async def run_data_replication():
-    """Zadanie w tle synchronizujące główną bazę danych z bazą analityczną."""
+async def run_data_replication() -> None:
+    """Periodic full sync OLTP -> OLAP."""
     config = AppConfig()
-    # Tworzymy osobną sesję dla workera
-    async for db_session in get_session():
-        result = await sync_sqlite_to_duckdb(db_session, config)
-        logger.info(
-            "[REPLICATION] Status: %s. Rows: %s",
-            result["status"],
-            result.get("synced_rows", 0),
-        )
-
-@broker.task(task_name="process_invoice_ocr")
-async def process_invoice_task(invoice_id: str, image_path: str):
+    engine = create_oltp_engine(config)
+    session_factory = create_session_factory(engine)
     async with session_factory() as session:
-        loop = asyncio.get_running_loop()
+        result = await sync_sqlite_to_duckdb(session, config)
+        logger.info("[REPLICATION] Status=%s rows=%s", result.get("status"), result.get("synced_rows", 0))
+    await engine.dispose()
 
-        # 3. Surya to kod synchroniczny (blokujący), w osobnym wątku
-        ai_result = await loop.run_in_executor(
-            None,
-            ocr_engine.process_image,
-            image_path
-        )
 
-        # 4. Analiza wyników i aktualizacja bazy
-        if ai_result.nip:
-            invoice.contractor_nip = ai_result.nip
+@broker.task(task_name="sync_single_invoice_to_olap")
+async def sync_single_invoice_to_olap(invoice_id: str) -> None:
+    """Near-real-time single-invoice sync after OCR/processing commit."""
+    logger.info("[REPLICATION] queued single-invoice sync for invoice_id=%s", invoice_id)
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    session_factory = create_session_factory(engine)
+    async with session_factory() as session:
+        result = await sync_single_invoice_to_duckdb(session, config, invoice_id)
+        logger.info("[REPLICATION] single invoice sync status=%s invoice_id=%s", result.get("status"), invoice_id)
+    await engine.dispose()
 
-        if ai_result.amount_gross:
-            invoice.amount_gross = Decimal(str(ai_result.amount_gross))
-            invoice.amount_net = Decimal(str(ai_result.amount_gross / 1.23))
 
-        await session.commit() # Zapis do SQLite
-        await session.refresh(invoice)
+@broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="relay_outbox_events")
+async def relay_outbox_events() -> None:
+    """Relay pending outbox events in a separate worker loop."""
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    session_factory = create_session_factory(engine)
 
-        data = {
-            "id": invoice.id,
-            "number": invoice.number,
-            "contractor_nip": invoice.contractor_nip,
-            "amount_net": invoice.amount_net,
-            "amount_gross": invoice.amount_gross,
-            "currency": invoice.currency,
-            "status": invoice.status,
-            "updated_at": datetime.now()
-        }
+    async with session_factory() as session:
+        rows = (
+            await session.execute(
+                text(
+                    """
+                    SELECT id, event_type, aggregate_id, payload
+                    FROM outbox_events
+                    WHERE status = 'PENDING' AND processed = 0
+                    ORDER BY created_at ASC
+                    LIMIT 100
+                    """
+                )
+            )
+        ).mappings().all()
 
-        # SYNCHRONIZACJA: Po pomyślnym commicie w SQLite, aktualizujemy DuckDB
-        await loop.run_in_executor(None, olap_manager.upsert_invoice, data)
+        for row in rows:
+            await session.execute(
+                text("UPDATE outbox_events SET status = 'PROCESSING' WHERE id = :id AND status = 'PENDING'"),
+                {"id": row["id"]},
+            )
+            try:
+                await broker.kick("sync_single_invoice_to_olap", invoice_id=row["aggregate_id"])
+                await session.execute(
+                    text("UPDATE outbox_events SET status = 'SENT', processed = 1 WHERE id = :id"),
+                    {"id": row["id"]},
+                )
+            except Exception as exc:
+                logger.exception("[OUTBOX] Failed to relay event id=%s: %s", row["id"], exc)
+                await session.execute(
+                    text("UPDATE outbox_events SET status = 'FAILED' WHERE id = :id"),
+                    {"id": row["id"]},
+                )
+
+        await session.commit()
+
+    await engine.dispose()

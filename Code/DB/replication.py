@@ -45,6 +45,30 @@ async def sync_sqlite_to_duckdb(db_session: AsyncSession, config: AppConfig):
     return {"status": "success", "count": len(invoices)}
 
 
+async def sync_single_invoice_to_duckdb(db_session: AsyncSession, config: AppConfig, invoice_id: str) -> dict[str, object]:
+    """Synchronizuje pojedynczą fakturę do DuckDB (near-real-time)."""
+    duck_mgr = DuckDBManager(config)
+    result = await db_session.execute(select(Invoice).where(Invoice.id == invoice_id))
+    invoice = result.scalar_one_or_none()
+    if not invoice:
+        return {"status": "not-found", "invoice_id": invoice_id}
+
+    df = pd.DataFrame([
+        {
+            "id": str(invoice.id),
+            "number": invoice.number,
+            "contractor_nip": invoice.contractor_nip,
+            "amount_net": float(invoice.amount_net),
+            "amount_gross": float(invoice.amount_gross),
+            "currency": invoice.currency,
+            "status": invoice.status,
+            "updated_at": invoice.updated_at,
+        }
+    ])
+    duck_mgr.conn.execute("INSERT INTO invoices_replica SELECT * FROM df ON CONFLICT (id) DO UPDATE SET ALL")
+    return {"status": "success", "invoice_id": invoice_id}
+
+
 class ReplicationBridge:
     def __init__(self, duckdb_conn):
         self.duck = duckdb_conn

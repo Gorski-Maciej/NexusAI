@@ -20,15 +20,13 @@ class RoleContext:
 
 
 def get_current_role(connection: ASGIConnection) -> RoleContext:
-    raw_role = (connection.headers.get("X-Nexus-Role") or "owner").strip().lower()
-    raw_actor = (connection.headers.get("X-Nexus-Actor") or "admin").strip().lower()
+    user = getattr(connection, "user", None)
+    if not user:
+        raise NotAuthorizedException("Missing authenticated user context")
 
-    if raw_role not in {NexusRole.OWNER, NexusRole.WORKER}:
-        raise NotAuthorizedException("Unsupported role. Use X-Nexus-Role: owner|worker")
-
-    role = NexusRole(raw_role)
+    role = NexusRole(str(user.role).strip().lower())
+    actor = str(getattr(user, "username", user.id)).strip().lower()
     prefix = "owner:" if role == NexusRole.OWNER else "worker:"
-    actor = raw_actor if raw_actor else ("admin" if role == NexusRole.OWNER else "taskiq")
     return RoleContext(role=role, actor=f"{prefix}{actor}")
 
 

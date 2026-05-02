@@ -22,7 +22,14 @@ class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
         started = time.perf_counter()
         request_headers = {k.decode().lower(): v.decode() for k, v in scope.get("headers", [])}
         correlation_id = request_headers.get("x-correlation-id", str(uuid.uuid4()))
-        tenant_id = request_headers.get("x-tenant-id", DEFAULT_TENANT_ID)
+        scope_user = scope.get("user") or {}
+        tenant_from_user = None
+        if isinstance(scope_user, dict):
+            tenant_from_user = scope_user.get("tenant_id")
+        else:
+            tenant_from_user = getattr(scope_user, "tenant_id", None)
+
+        tenant_id = tenant_from_user or DEFAULT_TENANT_ID
         tenant_token = set_current_tenant_id(tenant_id)
 
         async def send_wrapper(message):
