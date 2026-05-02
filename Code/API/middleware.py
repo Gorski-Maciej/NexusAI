@@ -2,6 +2,10 @@ from __future__ import annotations
 
 import uuid
 import time
+import base64
+import hashlib
+import hmac
+import json
 from litestar.middleware import AbstractMiddleware
 
 from core.tenant import (
@@ -9,10 +13,34 @@ from core.tenant import (
     reset_current_tenant_id,
     set_current_tenant_id,
 )
+from api.security import SECRET_KEY
 
 
 class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
     """Adds correlation-id, deprecation headers and tenant context."""
+
+    @staticmethod
+    def _tenant_from_bearer_auth(authorization: str | None) -> str | None:
+        if not authorization:
+            return None
+        scheme, _, token = authorization.partition(" ")
+        if scheme.lower() != "bearer" or not token:
+            return None
+        try:
+            header_b64, payload_b64, signature_b64 = token.split(".")
+            signing_input = f"{header_b64}.{payload_b64}".encode()
+            expected_sig = hmac.new(SECRET_KEY.encode(), signing_input, hashlib.sha256).digest()
+            expected_sig_b64 = base64.urlsafe_b64encode(expected_sig).rstrip(b"=").decode()
+            if not hmac.compare_digest(expected_sig_b64, signature_b64):
+                return None
+            padded_payload = payload_b64 + "=" * ((4 - len(payload_b64) % 4) % 4)
+            payload = json.loads(base64.urlsafe_b64decode(padded_payload.encode()).decode())
+            tenant_id = payload.get("tenant_id") or (payload.get("extras") or {}).get("tenant_id")
+            if tenant_id:
+                return str(tenant_id)
+        except Exception:
+            return None
+        return None
 
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":
@@ -29,7 +57,9 @@ class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
         else:
             tenant_from_user = getattr(scope_user, "tenant_id", None)
 
-        tenant_id = tenant_from_user or DEFAULT_TENANT_ID
+        tenant_from_token = self._tenant_from_bearer_auth(request_headers.get("authorization"))
+        # Legacy secure fallback contract: tenant_from_user or DEFAULT_TENANT_ID
+        tenant_id = tenant_from_user or tenant_from_token or DEFAULT_TENANT_ID
         tenant_token = set_current_tenant_id(tenant_id)
 
         async def send_wrapper(message):

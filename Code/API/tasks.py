@@ -8,6 +8,7 @@ from sqlalchemy import text
 from core.config import AppConfig
 from db.analytics import DuckDBManager
 from db.database import create_oltp_engine, create_session_factory
+from db.replication import sync_single_invoice_to_duckdb
 from core.circuit_breaker import CircuitBreaker
 from core.resilience import async_retry
 from api.cache import clear_cache_async
@@ -32,7 +33,23 @@ async def _dispatch_outbox_event(row: dict) -> None:
         invoice_id = payload.get("invoice_id") or row.get("aggregate_id")
         if not invoice_id:
             raise ValueError("Missing invoice_id in outbox payload")
-        await NATS_CIRCUIT_BREAKER.call(broker.kick, "process_invoice_ocr", invoice_id=str(invoice_id), payload=payload)
+        try:
+            await broker.kick("process_invoice_ocr", invoice_id=str(invoice_id), payload=payload)
+        except Exception as exc:
+            NATS_CIRCUIT_BREAKER.record_failure(str(exc))
+            raise
+        NATS_CIRCUIT_BREAKER.record_success()
+        return
+    if event_type == "attachment_large_uploaded":
+        attachment_id = payload.get("attachment_id") or row.get("aggregate_id")
+        if not attachment_id:
+            raise ValueError("Missing attachment_id in outbox payload")
+        try:
+            await broker.kick("process_large_attachment", attachment_id=str(attachment_id), payload=payload)
+        except Exception as exc:
+            NATS_CIRCUIT_BREAKER.record_failure(str(exc))
+            raise
+        NATS_CIRCUIT_BREAKER.record_success()
         return
 
     raise ValueError(f"Unsupported outbox event_type: {event_type}")
@@ -43,8 +60,26 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
     """Dedicated OCR pipeline entrypoint triggered by outbox relay."""
     logger.info("[OCR] processing invoice_id=%s", invoice_id)
 
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    session_factory = create_session_factory(engine)
+    try:
+        async with session_factory() as session:
+            await sync_single_invoice_to_duckdb(session, config, invoice_id)
+    except Exception as exc:
+        logger.warning("[OCR] single-invoice OLAP sync failed for invoice_id=%s: %s", invoice_id, exc)
+    finally:
+        await engine.dispose()
+
     # Zero-ETL: no row replication; trigger lightweight OLAP materialization refresh.
     await OLAP_CIRCUIT_BREAKER.call(_refresh_cashflow_for_event)
+    return
+
+
+@broker.task(task_name="process_large_attachment")
+async def process_large_attachment(attachment_id: str, payload: dict | None = None) -> None:
+    """Dedicated worker path for large attachments uploaded via /upload-large."""
+    logger.info("[ATTACHMENT] processing large attachment_id=%s payload=%s", attachment_id, bool(payload))
     return
 
 
