@@ -10,6 +10,7 @@ from api.auth_service import hash_password
 from api.shared_image_buffer import SharedImageBuffer
 from db.analytics import DuckDBManager
 from services.migration_sanity import run_migration_sanity_checks, verify_migration_integrity, verify_migration_checksums
+from core.secrets import LocalSecretsCache, OfflineFirstSecretResolver
 
 logger = logging.getLogger("nexus.api.state")
 
@@ -42,6 +43,20 @@ def _configure_ml_cache_directories(base_dir: Path) -> dict[str, str]:
         os.environ.setdefault(key, value)
     return env_map
 
+
+
+def _resolve_startup_secret(config, key_name: str, env_var: str, default_value: str) -> str:
+    """Resolve startup secret via offline-first cache (env provider -> encrypted local cache)."""
+    cache = LocalSecretsCache(cache_path=config.base_dir / "app_data" / "secrets_cache.json", ttl_hours=24)
+    resolver = OfflineFirstSecretResolver(cache=cache)
+
+    def provider() -> str | None:
+        value = os.getenv(env_var, "").strip()
+        return value or None
+
+    resolved = resolver.resolve(key_name, provider)
+    return resolved or default_value
+
 async def on_startup(app: Litestar) -> None:
     """Inicjalizacja ciężkich zasobów przy starcie API."""
     config = app.dependencies["config"]()
@@ -53,7 +68,7 @@ async def on_startup(app: Litestar) -> None:
     app.state.db_session_factory = create_session_factory(engine)
     app.state.shared_image_buffer = SharedImageBuffer(max_items=128)
     admin_username = os.getenv("NEXUS_ADMIN_USERNAME", "admin")
-    admin_password = os.getenv("NEXUS_ADMIN_PASSWORD", "admin")
+    admin_password = _resolve_startup_secret(config, key_name="admin_password", env_var="NEXUS_ADMIN_PASSWORD", default_value="admin")
     admin_password_hash = hash_password(admin_password)
     async with engine.begin() as conn:
         await conn.execute(
@@ -86,6 +101,21 @@ async def on_startup(app: Litestar) -> None:
                 """
             )
         )
+        await conn.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS fx_rates (
+                    id TEXT PRIMARY KEY,
+                    currency TEXT NOT NULL,
+                    rate_to_pln REAL NOT NULL,
+                    effective_at TIMESTAMP NOT NULL,
+                    source TEXT NOT NULL DEFAULT 'manual',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+        )
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_fx_rates_currency_effective ON fx_rates(currency, effective_at)"))
         try:
             await conn.execute(text("ALTER TABLE invoices ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT 0"))
         except Exception:

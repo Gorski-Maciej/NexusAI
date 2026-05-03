@@ -15,6 +15,7 @@ Pliki:
 - `Code/API/routes/auth.py`
 
 ## 2) Outbox, Zero-ETL, analityka i governance
+- Zastąpiono legacy replikację wiersz-po-wierszu mostem Zero-ETL (`ReplicationBridge`), który odświeża projekcje zamiast duplikować rekordy faktur.
 - Wdrożony wzorzec outbox i relay + replayer DLQ.
 - Wdrożone kontrakty i runtime dla integracji analitycznej oraz ograniczeń zasobów.
 - Wdrożone testy pokrywające rozszerzenia enterprise z KORE.
@@ -58,3 +59,32 @@ Najważniejsze testy kontraktowe KORE:
 - `tests/test_kore_enterprise_extensions.py`
 
 Status: zielony (10/10).
+
+## 6) Audyt domknięcia wdrożenia (1-11)
+- Endpoint operacyjny `/api/v1/system/kore/audit` (owner-only) udostępnia raport audytu zgodności KORE 1-11 w runtime.
+- Dodany skrypt audytowy, który waliduje obecność kluczowych komponentów wdrożenia KORE 1-11.
+- Dodany test kontraktowy wymuszający brak luk w mapowaniu komponentów.
+
+Pliki:
+- `Code/SKRIPTS/kore_delivery_audit.py`
+- `tests/test_kore_delivery_audit_contract.py`
+
+- Startup API korzysta z offline-first cache sekretów (TTL 24h, lokalny cache) dla krytycznych sekretów startowych, z fallbackiem przy braku sieci/providera.
+
+- Endpoint owner-only `/api/v1/system/integrity/migration` umożliwia on-demand walidację sanity + integralności migracji (rowcount/checksum).
+
+- Endpoint owner-only `/api/v1/system/privacy/pii-scan` uruchamia proaktywny skan wycieków PII w logach i może notyfikować DPO.
+
+- Endpoint owner-only `/api/v1/system/finops/cost-per-invoice` raportuje koszt infrastruktury na fakturę (FinOps).
+
+- Endpointy owner-only `/api/v1/system/models/retention-status` i `/api/v1/system/models/retention-prune` realizują politykę retencji modeli AI.
+
+- Endpoint owner-only `/api/v1/system/security/summary` udostępnia runtime podsumowanie DAST/SAST na bazie raportów skanera bezpieczeństwa.
+
+- Endpointy owner-only `/api/v1/system/telemetry/fallback-status` i `/api/v1/system/telemetry/fallback-replay` obsługują bufor awaryjny OpenTelemetry.
+
+- Endpoint owner-only `/api/v1/system/performance/k6-summary` udostępnia metryki p95/fail-rate z raportów testów wydajności k6.
+
+- Endpointy owner-only `/api/v1/system/outbox/stats` i `/api/v1/system/outbox/replay-dead-letter` zapewniają operacyjne zarządzanie DLQ outboxa.
+
+- Endpoint owner-only `/api/v1/system/i18n/status` raportuje gotowość internacjonalizacji (lokalizacje API i promptów).

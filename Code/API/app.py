@@ -12,11 +12,22 @@ from api.rate_limit import SimpleRateLimitMiddleware
 from api.routes.auth import AuthController
 from api.routes.analytics import AnalyticsController
 from api.routes.exports import ExportController
+from api.routes.files import FileController
+from api.routes.finops import FinOpsController
 from api.routes.health import HealthController, HealthControllerV2
+from api.routes.i18n_ops import I18nOpsController
+from api.routes.kore_audit import KoreAuditController
 from api.routes.invoices import InvoiceController, InvoiceControllerV2
 from api.routes.live_preview import LivePreviewController
+from api.routes.model_registry import ModelRegistryController
+from api.routes.outbox_ops import OutboxOpsController
+from api.routes.privacy import PrivacyController
+from api.routes.performance_ops import PerformanceOpsController
 from api.routes.tasks import TaskController
+from api.routes.security_posture import SecurityPostureController
+from api.routes.system_integrity import SystemIntegrityController
 from api.routes.triage import TriageController
+from api.routes.telemetry_ops import TelemetryOpsController
 from api.routes.ws import progress_websocket
 from api.static import get_static_config
 from api.security import jwt_auth
@@ -35,6 +46,16 @@ def create_app() -> Litestar:
         route_handlers=[
             HealthController,
             HealthControllerV2,
+            KoreAuditController,
+            SystemIntegrityController,
+            PrivacyController,
+            FinOpsController,
+            ModelRegistryController,
+            OutboxOpsController,
+            I18nOpsController,
+            SecurityPostureController,
+            PerformanceOpsController,
+            TelemetryOpsController,
             InvoiceController,
             InvoiceControllerV2,
             LivePreviewController,
@@ -42,6 +63,7 @@ def create_app() -> Litestar:
             TaskController,
             TriageController,
             ExportController,
+            FileController,
             AuthController,
             progress_websocket,
         ],
