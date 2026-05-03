@@ -92,3 +92,17 @@ class TriageResolutionResponse(msgspec.Struct):
     invoice_id: str
     status: str
     message: str
+
+
+class SagaTransitionRequest(msgspec.Struct):
+    new_state: str
+    expected_current_state: str | None = None
+    payload: dict[str, object] = msgspec.field(default_factory=dict)
+
+
+class SagaStateResponse(msgspec.Struct):
+    status: str
+    saga_id: str
+    current_state: str
+    updated_at: str
+    payload: dict[str, object]

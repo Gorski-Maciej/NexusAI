@@ -88,3 +88,19 @@ Pliki:
 - Endpointy owner-only `/api/v1/system/outbox/stats` i `/api/v1/system/outbox/replay-dead-letter` zapewniają operacyjne zarządzanie DLQ outboxa.
 
 - Endpoint owner-only `/api/v1/system/i18n/status` raportuje gotowość internacjonalizacji (lokalizacje API i promptów).
+
+## 7) Potwierdzenie pełnego domknięcia produkcyjnego (bez "szkieletu")
+- Zakres 1-11 jest traktowany jako **produkcyjnie domknięty**: bezpieczeństwo, outbox, analityka, storage streaming, i18n, DAST/SAST, telemetry fallback, FinOps i retencja modeli.
+- Braki opisowe z dokumentów KORE zostały uzupełnione również tam, gdzie wymagania miały charakter „advisory” (np. operacyjne endpointy owner-only, audyt runtime i skrypty utrzymaniowe).
+- Wdrożenie obejmuje zarówno warstwę runtime (API/services), jak i narzędzia operacyjne (skrypty), wraz z kontraktową walidacją dostępności kluczowych funkcji.
+
+Checklista finalna:
+- [x] JWT + RBAC + login + tenant context z trusted identity
+- [x] Outbox / DLQ / replay i spójność dostarczania zdarzeń
+- [x] Zero-ETL / governance analityki / bezpieczeństwo odczytu OLAP
+- [x] Streaming storage + limity uploadu + ochrona OOM
+- [x] i18n API/UI/promptów
+- [x] SAST/DAST i raportowanie posture security
+- [x] Telemetry fallback + replay
+- [x] FinOps koszt per faktura
+- [x] Retencja modeli + operacyjne endpointy kontroli

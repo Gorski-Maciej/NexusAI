@@ -1,31 +1,205 @@
-# core/reconciliation.py
-from datetime import datetime, timedelta
-from sqlalchemy import select
-from models.invoice import Invoice
-# from core.broker import nats # import szyny komunikatów
+from __future__ import annotations
 
-async def reconciliation_loop(session_factory, ksef_service):
-    """Pętla naprawcza sprawdzająca 'zawieszone' procesy."""
-    while True:
-        async with session_factory() as session:
-            # Szukaj faktur wysłanych do KSeF ponad 2 godziny temu, które nie mają UPO
-            stuck_invoices = await session.execute(
-                select(Invoice).where(
-                    Invoice.status == 'SENT_TO_KSEF',
-                    Invoice.updated_at < datetime.now() - timedelta(hours=2)
+import json
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import Any
+
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncEngine
+
+
+@dataclass(slots=True)
+class SagaState:
+    saga_id: str
+    state: str
+    payload: dict[str, Any]
+    updated_at: datetime
+
+
+class PersistedSagaStore:
+    """Durable saga state store persisted in SQLite with transition history."""
+
+    def __init__(self, engine: AsyncEngine) -> None:
+        self._engine = engine
+
+    @staticmethod
+    def _normalize_payload(payload: dict[str, Any] | str | None) -> tuple[dict[str, Any], str]:
+        if payload is None:
+            return {}, "{}"
+        if isinstance(payload, dict):
+            return payload, json.dumps(payload, ensure_ascii=False)
+        if isinstance(payload, str):
+            try:
+                parsed = json.loads(payload)
+                if isinstance(parsed, dict):
+                    return parsed, json.dumps(parsed, ensure_ascii=False)
+            except Exception:
+                pass
+            return {"raw": payload}, json.dumps({"raw": payload}, ensure_ascii=False)
+        return {"raw": str(payload)}, json.dumps({"raw": str(payload)}, ensure_ascii=False)
+
+    async def ensure_schema(self) -> None:
+        async with self._engine.begin() as conn:
+            await conn.execute(
+                text(
+                    """
+                    CREATE TABLE IF NOT EXISTS workflow_saga_state (
+                        saga_id TEXT PRIMARY KEY,
+                        current_state TEXT NOT NULL,
+                        payload_json TEXT NOT NULL DEFAULT '{}',
+                        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    )
+                    """
                 )
             )
+            await conn.execute(
+                text(
+                    """
+                    CREATE TABLE IF NOT EXISTS workflow_saga_history (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        saga_id TEXT NOT NULL,
+                        previous_state TEXT,
+                        new_state TEXT NOT NULL,
+                        payload_json TEXT NOT NULL DEFAULT '{}',
+                        transitioned_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    )
+                    """
+                )
+            )
+            await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_workflow_saga_history_saga_id ON workflow_saga_history(saga_id, transitioned_at DESC)"))
 
-            for inv in stuck_invoices.scalars():
-                # Sprawdź status bezpośrednio w API (może UPO już jest, tylko NATS nie dotarł)
-                status = await ksef_service.check_status(inv.external_id)
-                if status == "COMPLETED":
-                    inv.status = "SUCCESS"
-                else:
-                    # Ponów próbę lub powiadom operatora
-                    pass
-                    # await nats.publish("alerts.stuck", payload)
+    async def transition(self, saga_id: str, new_state: str, payload: dict[str, Any] | str | None = None, expected_current_state: str | None = None) -> SagaState:
+        if not saga_id.strip():
+            raise ValueError("saga_id cannot be empty")
+        if not new_state.strip():
+            raise ValueError("new_state cannot be empty")
 
-            await session.commit()
+        payload_dict, payload_json = self._normalize_payload(payload)
+        now = datetime.now(timezone.utc)
 
-        await asyncio.sleep(600) # Sprawdza co 10 minut
+        async with self._engine.begin() as conn:
+            current = (
+                await conn.execute(
+                    text("SELECT current_state FROM workflow_saga_state WHERE saga_id = :saga_id"),
+                    {"saga_id": saga_id},
+                )
+            ).scalar_one_or_none()
+            previous_state = str(current) if current is not None else None
+            if expected_current_state is not None and previous_state != expected_current_state:
+                raise ValueError(f"state_conflict: expected={expected_current_state} actual={previous_state}")
+
+            await conn.execute(
+                text(
+                    """
+                    INSERT INTO workflow_saga_state (saga_id, current_state, payload_json, updated_at)
+                    VALUES (:saga_id, :current_state, :payload_json, :updated_at)
+                    ON CONFLICT(saga_id) DO UPDATE SET
+                        current_state = excluded.current_state,
+                        payload_json = excluded.payload_json,
+                        updated_at = excluded.updated_at
+                    """
+                ),
+                {
+                    "saga_id": saga_id,
+                    "current_state": new_state,
+                    "payload_json": payload_json,
+                    "updated_at": now,
+                },
+            )
+
+            await conn.execute(
+                text(
+                    """
+                    INSERT INTO workflow_saga_history (saga_id, previous_state, new_state, payload_json, transitioned_at)
+                    VALUES (:saga_id, :previous_state, :new_state, :payload_json, :transitioned_at)
+                    """
+                ),
+                {
+                    "saga_id": saga_id,
+                    "previous_state": previous_state,
+                    "new_state": new_state,
+                    "payload_json": payload_json,
+                    "transitioned_at": now,
+                },
+            )
+
+        return SagaState(saga_id=saga_id, state=new_state, payload=payload_dict, updated_at=now)
+
+    async def get(self, saga_id: str) -> SagaState | None:
+        async with self._engine.begin() as conn:
+            row = (
+                await conn.execute(
+                    text(
+                        """
+                        SELECT saga_id, current_state, payload_json, updated_at
+                        FROM workflow_saga_state
+                        WHERE saga_id = :saga_id
+                        """
+                    ),
+                    {"saga_id": saga_id},
+                )
+            ).mappings().first()
+        if not row:
+            return None
+        payload, _ = self._normalize_payload(row["payload_json"])
+        return SagaState(
+            saga_id=str(row["saga_id"]),
+            state=str(row["current_state"]),
+            payload=payload,
+            updated_at=row["updated_at"],
+        )
+
+    async def list_stuck(self, older_than_minutes: int = 120) -> list[SagaState]:
+        threshold = max(1, int(older_than_minutes))
+        async with self._engine.begin() as conn:
+            rows = (
+                await conn.execute(
+                    text(
+                        """
+                        SELECT saga_id, current_state, payload_json, updated_at
+                        FROM workflow_saga_state
+                        WHERE updated_at < datetime('now', :older_than)
+                        ORDER BY updated_at ASC
+                        """
+                    ),
+                    {"older_than": f"-{threshold} minutes"},
+                )
+            ).mappings().all()
+        return [
+            SagaState(
+                saga_id=str(r["saga_id"]),
+                state=str(r["current_state"]),
+                payload=self._normalize_payload(r["payload_json"])[0],
+                updated_at=r["updated_at"],
+            )
+            for r in rows
+        ]
+
+    async def get_history(self, saga_id: str, limit: int = 50) -> list[dict[str, Any]]:
+        safe_limit = min(max(1, int(limit)), 500)
+        async with self._engine.begin() as conn:
+            rows = (
+                await conn.execute(
+                    text(
+                        """
+                        SELECT id, previous_state, new_state, payload_json, transitioned_at
+                        FROM workflow_saga_history
+                        WHERE saga_id = :saga_id
+                        ORDER BY id DESC
+                        LIMIT :limit
+                        """
+                    ),
+                    {"saga_id": saga_id, "limit": safe_limit},
+                )
+            ).mappings().all()
+        return [
+            {
+                "id": int(r["id"]),
+                "previous_state": r["previous_state"],
+                "new_state": r["new_state"],
+                "payload": self._normalize_payload(r["payload_json"])[0],
+                "transitioned_at": str(r["transitioned_at"]),
+            }
+            for r in rows
+        ]

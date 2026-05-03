@@ -11,6 +11,7 @@ from api.shared_image_buffer import SharedImageBuffer
 from db.analytics import DuckDBManager
 from services.migration_sanity import run_migration_sanity_checks, verify_migration_integrity, verify_migration_checksums
 from core.secrets import LocalSecretsCache, OfflineFirstSecretResolver
+from core.saga import PersistedSagaStore
 
 logger = logging.getLogger("nexus.api.state")
 
@@ -67,6 +68,8 @@ async def on_startup(app: Litestar) -> None:
     app.state.db_engine = engine
     app.state.db_session_factory = create_session_factory(engine)
     app.state.shared_image_buffer = SharedImageBuffer(max_items=128)
+    app.state.saga_store = PersistedSagaStore(engine)
+    await app.state.saga_store.ensure_schema()
     admin_username = os.getenv("NEXUS_ADMIN_USERNAME", "admin")
     admin_password = _resolve_startup_secret(config, key_name="admin_password", env_var="NEXUS_ADMIN_PASSWORD", default_value="admin")
     admin_password_hash = hash_password(admin_password)
@@ -116,6 +119,20 @@ async def on_startup(app: Litestar) -> None:
             )
         )
         await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_fx_rates_currency_effective ON fx_rates(currency, effective_at)"))
+        await conn.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS ui_drafts (
+                    tenant_id TEXT NOT NULL,
+                    actor_id TEXT NOT NULL,
+                    draft_key TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (tenant_id, actor_id, draft_key)
+                )
+                """
+            )
+        )
         try:
             await conn.execute(text("ALTER TABLE invoices ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT 0"))
         except Exception:
