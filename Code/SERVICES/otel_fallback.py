@@ -18,8 +18,9 @@ class BufferedSpan:
 
 
 class FileSpanBuffer:
-    def __init__(self, file_path: Path | str = "app_data/otel_spans_buffer.jsonl") -> None:
+    def __init__(self, file_path: Path | str = "app_data/otel_spans_buffer.jsonl", max_records: int = 50_000) -> None:
         self.file_path = Path(file_path)
+        self.max_records = max_records
         self.file_path.parent.mkdir(parents=True, exist_ok=True)
 
     def append(self, trace_id: str, name: str, *, start_ts: datetime, end_ts: datetime, attributes: dict[str, Any] | None = None) -> None:
@@ -32,6 +33,7 @@ class FileSpanBuffer:
         )
         with self.file_path.open("a", encoding="utf-8") as fp:
             fp.write(json.dumps(asdict(span), ensure_ascii=False) + "\n")
+        self._enforce_retention()
 
     def read_all(self) -> list[dict[str, Any]]:
         if not self.file_path.exists():
@@ -47,6 +49,17 @@ class FileSpanBuffer:
 
     def clear(self) -> None:
         self.file_path.unlink(missing_ok=True)
+
+    def _enforce_retention(self) -> None:
+        if not self.file_path.exists():
+            return
+        records = self.read_all()
+        if len(records) <= self.max_records:
+            return
+        trimmed = records[-self.max_records :]
+        with self.file_path.open("w", encoding="utf-8") as fp:
+            for rec in trimmed:
+                fp.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
     def replay(self, sender) -> int:
         """Replay buffered spans using sender(record)->bool. Returns sent count."""

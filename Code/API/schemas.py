@@ -17,6 +17,15 @@ class InvoiceCreate(msgspec.Struct):
     currency: str = "PLN"
     issue_date: str = ""
 
+
+def validate_invoice_create(payload: InvoiceCreate) -> None:
+    if payload.amount_net < 0:
+        raise ValueError("amount_net cannot be negative")
+    if payload.amount_gross < 0:
+        raise ValueError("amount_gross cannot be negative")
+    if not payload.currency or len(payload.currency.strip()) != 3:
+        raise ValueError("currency must be a 3-letter code")
+
 class InvoiceResponse(msgspec.Struct):
     """Struktura zwracana do frontendu."""
     id: str

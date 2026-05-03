@@ -1,14 +1,15 @@
 import uuid
-import shutil
 import json
 from pathlib import Path
+from anyio import to_thread
 from litestar import Controller, get, post, Body
+from litestar.exceptions import ClientException
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.enums import RequestEncodingType
 from litestar.datastructures import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from api.schemas import InvoiceCreate, InvoiceResponse
+from api.schemas import InvoiceCreate, InvoiceResponse, validate_invoice_create
 from models.invoice import Invoice
 from models.outbox import OutboxEvent
 
@@ -31,6 +32,10 @@ class InvoiceController(Controller):
     @post(status_code=HTTP_201_CREATED)
     async def create_invoice(self, data: InvoiceCreate, db_session: AsyncSession) -> InvoiceResponse:
         """Dodaje nową fakturę i zapisuje event OCR w Outbox w tej samej transakcji."""
+        try:
+            validate_invoice_create(data)
+        except ValueError as exc:
+            raise ClientException(status_code=400, detail=str(exc)) from exc
         invoice_id = str(uuid.uuid4())
         new_invoice = Invoice(
             id=invoice_id,
@@ -71,15 +76,19 @@ class InvoiceController(Controller):
         self,
         data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)
     ) -> dict:
-        # 1. Definiujemy ścieżkę zapisu
+        # Strumieniowy zapis uploadu bez blokowania event loop.
         upload_dir = Path("data/uploads")
         upload_dir.mkdir(parents=True, exist_ok=True)
         file_path = upload_dir / data.filename
 
-        # 2. Zapisujemy plik fizycznie na dysku
+        chunk_size = 1024 * 1024
+        total_size = 0
         with open(file_path, "wb") as f:
-            shutil.copyfileobj(data.file, f)
+            while True:
+                chunk = await data.read(chunk_size)
+                if not chunk:
+                    break
+                total_size += len(chunk)
+                await to_thread.run_sync(f.write, chunk)
 
-        # 3. Zapisujemy rekord w bazie danych (SQLAlchemy)
-        # Przykład logicznego dodania
-        return {"filename": data.filename, "status": "uploaded"}
+        return {"filename": data.filename, "status": "uploaded", "size_bytes": total_size}

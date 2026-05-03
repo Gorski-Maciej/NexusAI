@@ -1,0 +1,13 @@
+name: Performance k6
+
+on:
+  workflow_dispatch:
+
+jobs:
+  k6-load-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: grafana/setup-k6-action@v1
+      - name: Run k6 invoice upload scenario
+        run: k6 run tests/performance/k6_invoice_upload.js
