@@ -2,22 +2,29 @@ from __future__ import annotations
 
 import logging
 import json
+import os
+import resource
 from taskiq_nats import PullBasedJetStreamBroker
 from sqlalchemy import text
 
 from core.config import AppConfig
 from db.analytics import DuckDBManager
 from db.database import create_oltp_engine, create_session_factory
-from db.replication import sync_single_invoice_to_duckdb
 from core.circuit_breaker import CircuitBreaker
 from core.resilience import async_retry
 from api.cache import clear_cache_async
+from services.log_pii_monitor import scan_logs_for_pii, notify_dpo
+from services.finops_meter import estimate_runtime_cost
+from core.model_retention import prune_model_versions
+from services.outbox_replay import replay_dead_letter_events
 
 broker = PullBasedJetStreamBroker()
 logger = logging.getLogger("nexus.api.tasks")
 MAX_OUTBOX_RETRIES = 3
 NATS_CIRCUIT_BREAKER = CircuitBreaker(failure_threshold=5, recovery_timeout=60)
 OLAP_CIRCUIT_BREAKER = CircuitBreaker(failure_threshold=3, recovery_timeout=120)
+INVOICE_OCR_EVENT_TYPES = {"process_invoice_ocr", "invoice_uploaded"}
+LARGE_ATTACHMENT_EVENT_TYPES = {"attachment_large_uploaded"}
 
 
 async def _dispatch_outbox_event(row: dict) -> None:
@@ -29,7 +36,7 @@ async def _dispatch_outbox_event(row: dict) -> None:
     except Exception:
         payload = {}
 
-    if event_type == "process_invoice_ocr":
+    if event_type in INVOICE_OCR_EVENT_TYPES:
         invoice_id = payload.get("invoice_id") or row.get("aggregate_id")
         if not invoice_id:
             raise ValueError("Missing invoice_id in outbox payload")
@@ -40,7 +47,7 @@ async def _dispatch_outbox_event(row: dict) -> None:
             raise
         NATS_CIRCUIT_BREAKER.record_success()
         return
-    if event_type == "attachment_large_uploaded":
+    if event_type in LARGE_ATTACHMENT_EVENT_TYPES:
         attachment_id = payload.get("attachment_id") or row.get("aggregate_id")
         if not attachment_id:
             raise ValueError("Missing attachment_id in outbox payload")
@@ -59,19 +66,8 @@ async def _dispatch_outbox_event(row: dict) -> None:
 async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> None:
     """Dedicated OCR pipeline entrypoint triggered by outbox relay."""
     logger.info("[OCR] processing invoice_id=%s", invoice_id)
-
-    config = AppConfig()
-    engine = create_oltp_engine(config)
-    session_factory = create_session_factory(engine)
-    try:
-        async with session_factory() as session:
-            await sync_single_invoice_to_duckdb(session, config, invoice_id)
-    except Exception as exc:
-        logger.warning("[OCR] single-invoice OLAP sync failed for invoice_id=%s: %s", invoice_id, exc)
-    finally:
-        await engine.dispose()
-
-    # Zero-ETL: no row replication; trigger lightweight OLAP materialization refresh.
+    # Zero-ETL path: no OLTP->OLAP row replication in worker.
+    # Invoice OCR lifecycle is event-driven; analytics layer reads SQLite via DuckDB ATTACH.
     await OLAP_CIRCUIT_BREAKER.call(_refresh_cashflow_for_event)
     return
 
@@ -170,3 +166,51 @@ async def relay_outbox_events() -> None:
         await session.commit()
 
     await engine.dispose()
+
+
+@broker.task(schedule=[{"cron": "10 2 * * *"}], task_name="scan_logs_for_pii")
+async def scan_logs_for_pii_task() -> None:
+    """Daily proactive scan for accidental PII in log files."""
+    config = AppConfig()
+    findings = scan_logs_for_pii(config.base_dir / "app_data" / "logs")
+    total = sum(findings.values())
+    if total > 0:
+        logger.warning("[PII-SCAN] potential sensitive data matches detected: %s", findings)
+        notified = notify_dpo(config.dpo_alert_webhook, findings)
+        logger.info("[PII-SCAN] DPO notification sent=%s", notified)
+    else:
+        logger.info("[PII-SCAN] no sensitive data patterns detected")
+
+
+@broker.task(schedule=[{"cron": "0 * * * *"}], task_name="finops_hourly_estimate")
+async def finops_hourly_estimate_task() -> None:
+    """Hourly rough infrastructure cost estimate for FinOps observability."""
+    cpu_cores = float(os.cpu_count() or 1)
+    # ru_maxrss: KB on Linux, bytes on macOS; assume Linux deployment for this project.
+    ram_gb = max((resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024 / 1024), 0.1)
+    hourly_cost = estimate_runtime_cost(cpu_cores=cpu_cores, ram_gb=ram_gb, runtime_hours=1.0)
+    logger.info("[FINOPS] estimated hourly runtime cost usd=%s cpu_cores=%s ram_gb=%.3f", hourly_cost, cpu_cores, ram_gb)
+
+
+@broker.task(schedule=[{"cron": "30 2 * * *"}], task_name="model_retention_prune")
+async def model_retention_prune_task() -> None:
+    """Keep last N model versions and prune old ones."""
+    config = AppConfig()
+    models_root = config.base_dir / "models"
+    result = prune_model_versions(models_root, keep_last=3)
+    logger.info("[MODEL-RETENTION] prune summary: %s", result)
+
+
+@broker.task(schedule=[{"cron": "45 * * * *"}], task_name="replay_dead_letter_outbox")
+async def replay_dead_letter_outbox_task() -> None:
+    """Hourly replay of dead-letter outbox events back to FAILED for retry."""
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    session_factory = create_session_factory(engine)
+    try:
+        async with session_factory() as session:
+            moved = await replay_dead_letter_events(session, limit=config.outbox_replay_limit)
+            if moved:
+                logger.info("[OUTBOX-REPLAY] moved dead-letter events for retry: %s", moved)
+    finally:
+        await engine.dispose()

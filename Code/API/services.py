@@ -6,11 +6,13 @@ import json
 import os
 import sqlite3
 import tempfile
+from contextlib import suppress
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+import fsspec
 
 
 @dataclass(slots=True)
@@ -25,7 +27,8 @@ class ContentAddressableStorage:
 
     def __init__(self, root: Path) -> None:
         self.root = root
-        self.root.mkdir(parents=True, exist_ok=True)
+        self.fs = fsspec.filesystem("file")
+        self.fs.makedirs(str(self.root), exist_ok=True)
 
     @staticmethod
     def _sha256(payload: bytes) -> str:
@@ -34,27 +37,28 @@ class ContentAddressableStorage:
     def put(self, payload: bytes, suffix: str = ".pdf") -> StoredUpload:
         digest = self._sha256(payload)
         dir_path = self.root / digest[:2] / digest[2:4]
-        dir_path.mkdir(parents=True, exist_ok=True)
+        self.fs.makedirs(str(dir_path), exist_ok=True)
         file_path = dir_path / f"{digest}{suffix}"
 
-        if not file_path.exists():
-            file_path.write_bytes(payload)
+        if not self.fs.exists(str(file_path)):
+            with self.fs.open(str(file_path), "wb") as f:
+                f.write(payload)
 
         return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=len(payload))
 
     def create_temp_upload_file(self) -> str:
-        fd, temp_path = tempfile.mkstemp(prefix="upload_", suffix=".tmp", dir=str(self.root))
-        os.close(fd)
-        return temp_path
+        with tempfile.NamedTemporaryFile(prefix="upload_", suffix=".tmp", dir=str(self.root), delete=False) as tmp:
+            return tmp.name
 
     def finalize_temp_upload(self, temp_path: str, digest: str, size_bytes: int, suffix: str = ".pdf") -> StoredUpload:
         dir_path = self.root / digest[:2] / digest[2:4]
-        dir_path.mkdir(parents=True, exist_ok=True)
+        self.fs.makedirs(str(dir_path), exist_ok=True)
         file_path = dir_path / f"{digest}{suffix}"
-        if file_path.exists():
-            Path(temp_path).unlink(missing_ok=True)
+        if self.fs.exists(str(file_path)):
+            with suppress(FileNotFoundError):
+                os.unlink(temp_path)
             return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=size_bytes)
-        Path(temp_path).replace(file_path)
+        self.fs.mv(temp_path, str(file_path))
         return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=size_bytes)
 
 

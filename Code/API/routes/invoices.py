@@ -3,8 +3,10 @@ from __future__ import annotations
 import uuid
 import json
 import hashlib
+import os
 from datetime import datetime, timezone
 from pathlib import Path
+from anyio import to_thread
 
 from litestar import Controller, post
 from litestar.datastructures import UploadFile
@@ -23,9 +25,9 @@ from api.rbac import owner_or_worker_guard
 from api.cache import clear_cache_async
 from api.i18n import resolve_language, t
 
-MAX_INVOICE_UPLOAD_BYTES = 50 * 1024 * 1024
-MAX_ATTACHMENT_UPLOAD_BYTES = 500 * 1024 * 1024
 UPLOAD_CHUNK_SIZE = 1024 * 1024
+EVENT_INVOICE_UPLOADED = "invoice_uploaded"
+EVENT_ATTACHMENT_LARGE_UPLOADED = "attachment_large_uploaded"
 
 
 def _validate_content_length(headers: dict[str, str], max_bytes: int) -> None:
@@ -38,6 +40,10 @@ def _validate_content_length(headers: dict[str, str], max_bytes: int) -> None:
         return
     if size > max_bytes:
         raise ClientException(detail=f"Request body too large ({size} > {max_bytes})", status_code=413)
+
+
+async def _write_chunk(temp_file, chunk: bytes) -> None:
+    await to_thread.run_sync(temp_file.write, chunk)
 
 
 class InvoiceController(Controller):
@@ -56,7 +62,7 @@ class InvoiceController(Controller):
     ) -> TaskResponse:
         file_obj = data.get("file")
         language = resolve_language(request.headers.get("accept-language"))
-        _validate_content_length(request.headers, MAX_INVOICE_UPLOAD_BYTES)
+        _validate_content_length(request.headers, config.max_invoice_upload_bytes)
         if not file_obj:
             raise ClientException(detail=t("upload.missing_file", language=language), status_code=400)
 
@@ -71,23 +77,29 @@ class InvoiceController(Controller):
                     if not chunk:
                         break
                     total_size += len(chunk)
-                    if total_size > MAX_INVOICE_UPLOAD_BYTES:
+                    if total_size > config.max_invoice_upload_bytes:
                         raise ClientException(
                             detail=t(
                                 "upload.file_too_large",
                                 language=language,
-                                limit_mb=MAX_INVOICE_UPLOAD_BYTES // (1024 * 1024),
+                                limit_mb=config.max_invoice_upload_mb,
                             ),
                             status_code=413,
                         )
                     hasher.update(chunk)
-                    temp_file.write(chunk)
+                    await _write_chunk(temp_file, chunk)
         except Exception:
-            Path(temp_path).unlink(missing_ok=True)
+            try:
+                os.unlink(temp_path)
+            except FileNotFoundError:
+                pass
             raise
 
         if total_size == 0:
-            Path(temp_path).unlink(missing_ok=True)
+            try:
+                os.unlink(temp_path)
+            except FileNotFoundError:
+                pass
             raise ClientException(detail=t("upload.empty_file", language=language), status_code=400)
         payload_hash = hasher.hexdigest()
 
@@ -120,7 +132,7 @@ class InvoiceController(Controller):
             ),
             {
                 "id": str(uuid.uuid4()),
-                "event_type": "INVOICE_UPLOADED",
+                "event_type": EVENT_INVOICE_UPLOADED,
                 "aggregate_id": invoice_id,
                 "payload": json.dumps(event_payload),
                 "status": "PENDING",
@@ -176,7 +188,7 @@ class InvoiceController(Controller):
         """Dedicated path for large attachments to avoid blocking the default OCR queue."""
         file_obj = data.get("file")
         language = resolve_language(request.headers.get("accept-language"))
-        _validate_content_length(request.headers, MAX_ATTACHMENT_UPLOAD_BYTES)
+        _validate_content_length(request.headers, config.max_attachment_upload_bytes)
         if not file_obj:
             raise ClientException(detail=t("upload.missing_file", language=language), status_code=400)
         idempotency_key = request.headers.get("idempotency-key")
@@ -193,23 +205,29 @@ class InvoiceController(Controller):
                     if not chunk:
                         break
                     total_size += len(chunk)
-                    if total_size > MAX_ATTACHMENT_UPLOAD_BYTES:
+                    if total_size > config.max_attachment_upload_bytes:
                         raise ClientException(
                             detail=t(
                                 "upload.file_too_large",
                                 language=language,
-                                limit_mb=MAX_ATTACHMENT_UPLOAD_BYTES // (1024 * 1024),
+                                limit_mb=config.max_attachment_upload_mb,
                             ),
                             status_code=413,
                         )
                     hasher.update(chunk)
-                    temp_file.write(chunk)
+                    await _write_chunk(temp_file, chunk)
         except Exception:
-            Path(temp_path).unlink(missing_ok=True)
+            try:
+                os.unlink(temp_path)
+            except FileNotFoundError:
+                pass
             raise
 
         if total_size == 0:
-            Path(temp_path).unlink(missing_ok=True)
+            try:
+                os.unlink(temp_path)
+            except FileNotFoundError:
+                pass
             raise ClientException(detail=t("upload.empty_file", language=language), status_code=400)
 
         payload_hash = hasher.hexdigest()
@@ -237,7 +255,7 @@ class InvoiceController(Controller):
             ),
             {
                 "id": str(uuid.uuid4()),
-                "event_type": "ATTACHMENT_LARGE_UPLOADED",
+                "event_type": EVENT_ATTACHMENT_LARGE_UPLOADED,
                 "aggregate_id": attachment_id,
                 "payload": json.dumps(event_payload),
                 "status": "PENDING",

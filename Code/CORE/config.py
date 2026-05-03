@@ -31,6 +31,10 @@ class AppConfig:
     duckdb_memory_limit: str = os.getenv("NEXUS_DUCKDB_MEMORY_LIMIT", "2GB")
     duckdb_threads: int = int(os.getenv("NEXUS_DUCKDB_THREADS", "2"))
     cors_origins_raw: str = os.getenv("NEXUS_CORS_ORIGINS", "*")
+    max_invoice_upload_mb: int = int(os.getenv("NEXUS_MAX_INVOICE_UPLOAD_MB", "50"))
+    max_attachment_upload_mb: int = int(os.getenv("NEXUS_MAX_ATTACHMENT_UPLOAD_MB", "500"))
+    dpo_alert_webhook: str = os.getenv("NEXUS_DPO_ALERT_WEBHOOK", "").strip()
+    outbox_replay_limit: int = int(os.getenv("NEXUS_OUTBOX_REPLAY_LIMIT", "100"))
 
     def __post_init__(self) -> None:
         self.environment = self.environment.lower().strip()
@@ -60,6 +64,14 @@ class AppConfig:
 
         if self.encryption_key:
             self._validate_encryption_key(self.encryption_key)
+        if self.max_invoice_upload_mb <= 0:
+            raise ConfigValidationError("NEXUS_MAX_INVOICE_UPLOAD_MB must be > 0")
+        if self.max_attachment_upload_mb <= 0:
+            raise ConfigValidationError("NEXUS_MAX_ATTACHMENT_UPLOAD_MB must be > 0")
+        if self.max_attachment_upload_mb < self.max_invoice_upload_mb:
+            raise ConfigValidationError("NEXUS_MAX_ATTACHMENT_UPLOAD_MB must be >= NEXUS_MAX_INVOICE_UPLOAD_MB")
+        if self.outbox_replay_limit <= 0:
+            raise ConfigValidationError("NEXUS_OUTBOX_REPLAY_LIMIT must be > 0")
 
     @property
     def sqlite_path(self) -> Path:
@@ -76,6 +88,14 @@ class AppConfig:
     @property
     def idempotency_db_path(self) -> Path:
         return self.base_dir / self.idempotency_db_name
+
+    @property
+    def max_invoice_upload_bytes(self) -> int:
+        return self.max_invoice_upload_mb * 1024 * 1024
+
+    @property
+    def max_attachment_upload_bytes(self) -> int:
+        return self.max_attachment_upload_mb * 1024 * 1024
 
     @property
     def cors_origins(self) -> list[str]:

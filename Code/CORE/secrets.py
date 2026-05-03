@@ -50,6 +50,12 @@ class LocalSecretsCache:
         self.cache_path = Path(cache_path)
         self.ttl_hours = ttl_hours
         self.cache_path.parent.mkdir(parents=True, exist_ok=True)
+        if not self.cache_path.exists():
+            self.cache_path.write_text("{}", encoding="utf-8")
+        try:
+            self.cache_path.chmod(0o600)
+        except Exception:
+            pass
 
     def save(self, key: str, value: str) -> None:
         payload = self._read_all()
@@ -58,6 +64,10 @@ class LocalSecretsCache:
             "updated_at": datetime.now(timezone.utc).isoformat(),
         }
         self.cache_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+        try:
+            self.cache_path.chmod(0o600)
+        except Exception:
+            pass
 
     def get(self, key: str) -> str | None:
         payload = self._read_all()
@@ -79,3 +89,23 @@ class LocalSecretsCache:
             return json.loads(self.cache_path.read_text(encoding="utf-8"))
         except Exception:
             return {}
+
+
+class OfflineFirstSecretResolver:
+    """
+    Prefer live secret provider, fallback to encrypted/system cache for offline-first startup.
+    Provider must be a callable returning secret value or None.
+    """
+
+    def __init__(self, cache: LocalSecretsCache) -> None:
+        self.cache = cache
+
+    def resolve(self, key: str, provider) -> str | None:
+        try:
+            live = provider()
+        except Exception:
+            live = None
+        if live:
+            self.cache.save(key, live)
+            return live
+        return self.cache.get(key)

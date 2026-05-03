@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import json
+from functools import lru_cache
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass(frozen=True)
@@ -8,22 +11,19 @@ class LocaleCatalog:
     messages: dict[str, str]
 
 
-CATALOGS: dict[str, LocaleCatalog] = {
-    "pl": LocaleCatalog(
-        messages={
-            "upload.missing_file": "Brak pola 'file'",
-            "upload.empty_file": "Pusty plik",
-            "upload.file_too_large": "Plik jest za duży (limit {limit_mb} MB)",
-        }
-    ),
-    "en": LocaleCatalog(
-        messages={
-            "upload.missing_file": "Missing 'file' field",
-            "upload.empty_file": "Empty file",
-            "upload.file_too_large": "File is too large (limit {limit_mb} MB)",
-        }
-    ),
-}
+LOCALES_DIR = Path(__file__).resolve().parent / "locales"
+
+
+@lru_cache(maxsize=8)
+def _load_catalog(language: str) -> LocaleCatalog:
+    file_path = LOCALES_DIR / f"{language}.json"
+    if not file_path.exists():
+        file_path = LOCALES_DIR / "pl.json"
+    try:
+        data = json.loads(file_path.read_text(encoding="utf-8"))
+    except Exception:
+        data = {}
+    return LocaleCatalog(messages={k: str(v) for k, v in data.items()})
 
 
 def resolve_language(accept_language: str | None) -> str:
@@ -36,6 +36,7 @@ def resolve_language(accept_language: str | None) -> str:
 
 
 def t(key: str, *, language: str = "pl", **kwargs: object) -> str:
-    catalog = CATALOGS.get(language, CATALOGS["pl"])
-    template = catalog.messages.get(key) or CATALOGS["pl"].messages.get(key) or key
+    catalog = _load_catalog(language)
+    fallback = _load_catalog("pl")
+    template = catalog.messages.get(key) or fallback.messages.get(key) or key
     return template.format(**kwargs)
