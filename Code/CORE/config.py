@@ -57,6 +57,7 @@ class AppConfig:
     dpo_alert_webhook: str = os.getenv("NEXUS_DPO_ALERT_WEBHOOK", "").strip()
     outbox_replay_limit: int = int(os.getenv("NEXUS_OUTBOX_REPLAY_LIMIT", "100"))
     migration_baseline_name: str = os.getenv("NEXUS_MIGRATION_BASELINE_FILE", "migration_rowcount_baseline.json")
+    migration_checksum_baseline_name: str = os.getenv("NEXUS_MIGRATION_CHECKSUM_BASELINE_FILE", "migration_checksum_baseline.json")
 
     def __post_init__(self) -> None:
         self.environment = self.environment.lower().strip()
@@ -132,6 +133,10 @@ class AppConfig:
     @property
     def migration_baseline_path(self) -> Path:
         return self.base_dir / "app_data" / self.migration_baseline_name
+
+    @property
+    def migration_checksum_baseline_path(self) -> Path:
+        return self.base_dir / "app_data" / self.migration_checksum_baseline_name
 
     @property
     def cors_origins(self) -> list[str]:

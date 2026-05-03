@@ -98,3 +98,40 @@ async def verify_migration_integrity(engine: AsyncEngine, baseline_path: Path) -
 
     status = "ok" if not issues else "integrity_warning"
     return {"status": status, "issues": issues, "tables": len(current)}
+
+
+async def capture_table_checksums(engine: AsyncEngine, tables: list[str] | None = None) -> dict[str, str]:
+    checksums: dict[str, str] = {}
+    async with engine.connect() as conn:
+        if tables is None:
+            table_rows = (await conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))).fetchall()
+            tables = [str(t[0]) for t in table_rows if not str(t[0]).startswith("sqlite_")]
+        for table in tables:
+            table_quoted = _quote_ident(table)
+            rows = (await conn.execute(text(f"SELECT * FROM {table_quoted}"))).fetchall()
+            digest = __import__("hashlib").sha256()
+            for row in rows:
+                digest.update(repr(tuple(row)).encode("utf-8"))
+            checksums[table] = digest.hexdigest()
+    return checksums
+
+
+async def verify_migration_checksums(engine: AsyncEngine, baseline_path: Path, tables: list[str] | None = None) -> dict[str, object]:
+    current = await capture_table_checksums(engine, tables=tables)
+    baseline_path.parent.mkdir(parents=True, exist_ok=True)
+    if not baseline_path.exists():
+        baseline_path.write_text(json.dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
+        return {"status": "baseline_created", "issues": [], "tables": len(current)}
+
+    baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+    issues: list[str] = []
+    for table, expected in baseline.items():
+        actual = current.get(table)
+        if actual is None:
+            issues.append(f"missing table: {table}")
+            continue
+        if actual != expected:
+            issues.append(f"checksum_drift: {table}")
+
+    status = "ok" if not issues else "integrity_warning"
+    return {"status": status, "issues": issues, "tables": len(current)}
