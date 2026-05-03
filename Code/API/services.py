@@ -6,13 +6,23 @@ import json
 import os
 import sqlite3
 import tempfile
+import importlib.util
 from contextlib import suppress
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
-import fsspec
+
+
+def _load_fsspec_module():
+    if importlib.util.find_spec("fsspec") is None:
+        return None
+    import fsspec
+    return fsspec
+
+
+fsspec = _load_fsspec_module()
 
 
 @dataclass(slots=True)
@@ -27,8 +37,12 @@ class ContentAddressableStorage:
 
     def __init__(self, root: Path) -> None:
         self.root = root
-        self.fs = fsspec.filesystem("file")
-        self.fs.makedirs(str(self.root), exist_ok=True)
+        if fsspec is not None:
+            self.fs = fsspec.filesystem("file")
+            self.fs.makedirs(str(self.root), exist_ok=True)
+        else:
+            self.fs = None
+            self.root.mkdir(parents=True, exist_ok=True)
 
     @staticmethod
     def _sha256(payload: bytes) -> str:
@@ -37,12 +51,17 @@ class ContentAddressableStorage:
     def put(self, payload: bytes, suffix: str = ".pdf") -> StoredUpload:
         digest = self._sha256(payload)
         dir_path = self.root / digest[:2] / digest[2:4]
-        self.fs.makedirs(str(dir_path), exist_ok=True)
+        (self.fs.makedirs(str(dir_path), exist_ok=True) if self.fs is not None else dir_path.mkdir(parents=True, exist_ok=True))
         file_path = dir_path / f"{digest}{suffix}"
 
-        if not self.fs.exists(str(file_path)):
-            with self.fs.open(str(file_path), "wb") as f:
-                f.write(payload)
+        if self.fs is not None:
+            if not self.fs.exists(str(file_path)):
+                with self.fs.open(str(file_path), "wb") as f:
+                    f.write(payload)
+        else:
+            if not file_path.exists():
+                file_path.parent.mkdir(parents=True, exist_ok=True)
+                file_path.write_bytes(payload)
 
         return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=len(payload))
 
@@ -52,13 +71,16 @@ class ContentAddressableStorage:
 
     def finalize_temp_upload(self, temp_path: str, digest: str, size_bytes: int, suffix: str = ".pdf") -> StoredUpload:
         dir_path = self.root / digest[:2] / digest[2:4]
-        self.fs.makedirs(str(dir_path), exist_ok=True)
+        (self.fs.makedirs(str(dir_path), exist_ok=True) if self.fs is not None else dir_path.mkdir(parents=True, exist_ok=True))
         file_path = dir_path / f"{digest}{suffix}"
-        if self.fs.exists(str(file_path)):
+        if (self.fs.exists(str(file_path)) if self.fs is not None else file_path.exists()):
             with suppress(FileNotFoundError):
                 os.unlink(temp_path)
             return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=size_bytes)
-        self.fs.mv(temp_path, str(file_path))
+        if self.fs is not None:
+            self.fs.mv(temp_path, str(file_path))
+        else:
+            Path(temp_path).replace(file_path)
         return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=size_bytes)
 
 

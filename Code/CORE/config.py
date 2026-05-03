@@ -7,6 +7,27 @@ import binascii
 from dataclasses import dataclass
 from pathlib import Path
 
+import importlib.util
+
+
+def _load_secrets_symbols():
+    try:
+        spec = importlib.util.find_spec("core.secrets")
+    except ModuleNotFoundError:
+        spec = None
+    if spec is not None:
+        from core.secrets import LocalSecretsCache, OfflineFirstSecretResolver
+        return LocalSecretsCache, OfflineFirstSecretResolver
+    module_path = Path(__file__).with_name("secrets.py")
+    local_spec = importlib.util.spec_from_file_location("core_secrets_local", module_path)
+    module = importlib.util.module_from_spec(local_spec)
+    assert local_spec and local_spec.loader
+    local_spec.loader.exec_module(module)
+    return module.LocalSecretsCache, module.OfflineFirstSecretResolver
+
+
+LocalSecretsCache, OfflineFirstSecretResolver = _load_secrets_symbols()
+
 
 class ConfigValidationError(RuntimeError):
     """Raised when startup settings are incomplete or inconsistent."""
@@ -44,6 +65,11 @@ class AppConfig:
             )
 
         self.base_dir = self.base_dir.resolve()
+        # Offline-first secret resolution: prefer live env, fallback to encrypted/local cache.
+        cache = LocalSecretsCache(self.base_dir / "app_data" / "secrets_cache.json", ttl_hours=24)
+        resolver = OfflineFirstSecretResolver(cache)
+        self.jwt_secret = resolver.resolve("jwt_secret", lambda: os.getenv("NEXUS_INFISCAL_JWT_SECRET", "").strip() or self.jwt_secret) or ""
+        self.encryption_key = resolver.resolve("encryption_key", lambda: os.getenv("NEXUS_INFISCAL_ENCRYPTION_KEY", "").strip() or self.encryption_key) or ""
         self.base_dir.mkdir(parents=True, exist_ok=True)
         self.storage_dir.mkdir(parents=True, exist_ok=True)
 
@@ -63,7 +89,12 @@ class AppConfig:
                 )
 
         if self.encryption_key:
-            self._validate_encryption_key(self.encryption_key)
+            try:
+                self._validate_encryption_key(self.encryption_key)
+            except ConfigValidationError:
+                if self.environment in {"stage", "prod"}:
+                    raise
+                self.encryption_key = ""
         if self.max_invoice_upload_mb <= 0:
             raise ConfigValidationError("NEXUS_MAX_INVOICE_UPLOAD_MB must be > 0")
         if self.max_attachment_upload_mb <= 0:

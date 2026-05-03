@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 import os
+from pathlib import Path
 from litestar import Controller, get
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -53,6 +54,8 @@ class HealthController(Controller):
         duckdb_ok = await self._duckdb_check()
         nats_ok = await self._nats_check()
         audit_chain_ok = await self._audit_chain_check()
+        dq_invalid_count = await self._dq_invalid_count()
+        schema_drift = await self._schema_drift_status()
 
         return {
             "api": "OK" if (db_ok and duckdb_ok) else "DEGRADED",
@@ -65,10 +68,15 @@ class HealthController(Controller):
             "pending_outbox_events": pending_outbox,
             "failed_outbox_events": failed_outbox,
             "dead_letter_outbox_events": dead_letter_outbox,
+            "dq_invalid_invoices": dq_invalid_count,
+            "schema_drift_status": schema_drift.get("status", "unknown"),
+            "schema_drift_issues": schema_drift.get("issues", []),
             "gpu_available": self._gpu_available(),
             "vram_free_mb": self._vram_free_mb(),
             "sqlite_wal_size": self._sqlite_wal_size(),
             "pending_tasks": await self._pending_tasks(),
+            "perf_gate_summary_present": self._report_file_exists("reports/performance/perf_gate_summary.json"),
+            "security_scan_summary_present": self._report_file_exists("reports/security_scan_summary.json"),
         }
 
     async def _pending_tasks(self) -> int | None:
@@ -108,6 +116,9 @@ class HealthController(Controller):
         wal_path = "nexus_oltp.db-wal"
         return os.path.getsize(wal_path) if os.path.exists(wal_path) else 0
 
+    def _report_file_exists(self, path: str) -> bool:
+        return Path(path).exists()
+
 
     async def _audit_chain_check(self) -> bool:
         try:
@@ -124,6 +135,37 @@ class HealthController(Controller):
                 manager.close()
         except Exception:
             return False
+
+    async def _schema_drift_status(self) -> dict[str, Any]:
+        try:
+            from core.config import AppConfig
+            from db.database import create_oltp_engine
+            from services.migration_sanity import verify_schema_drift
+
+            cfg = AppConfig()
+            engine = create_oltp_engine(cfg)
+            try:
+                return await verify_schema_drift(engine, cfg.base_dir / "app_data" / "schema_baseline.json")
+            finally:
+                await engine.dispose()
+        except Exception:
+            return {"status": "error", "issues": ["schema drift check failed"]}
+
+    async def _dq_invalid_count(self) -> int:
+        try:
+            from core.config import AppConfig
+            from db.analytics import DuckDBManager
+
+            cfg = AppConfig()
+            manager = DuckDBManager(db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True)
+            try:
+                result = manager.execute("SELECT COUNT(*) FROM dq_invalid_invoices")
+                return int(result[0][0]) if result else 0
+            finally:
+                manager.close()
+        except Exception:
+            return -1
+
 
 
 class HealthControllerV2(HealthController):

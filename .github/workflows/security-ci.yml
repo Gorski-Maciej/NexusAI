@@ -5,28 +5,36 @@ on:
   workflow_dispatch:
     inputs:
       target_url:
-        description: "Public staging URL to scan with ZAP baseline"
+        description: "Public staging URL to scan with ZAP"
         required: true
-        default: "https://example.com/api/v2/health"
+        default: "https://example.com"
 
 jobs:
   sast-semgrep:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
       - uses: returntocorp/semgrep-action@v1
         with:
           config: >-
             p/security-audit
             p/secrets
 
-  dast-zap-baseline:
+  dast-zap:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == "workflow_dispatch"
     steps:
       - uses: actions/checkout@v4
-      - name: Run ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.14.0
+      - uses: actions/setup-python@v5
         with:
-          target: ${{ github.event.inputs.target_url }}
-          fail_action: false
+          python-version: "3.11"
+      - name: Run OWASP ZAP baseline + active mode helper
+        run: |
+          python Code/SKRIPTS/security_scan.py \
+            --target "${{ github.event.inputs.target_url }}" \
+            --mode full \
+            --skip-semgrep
+

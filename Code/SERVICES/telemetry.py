@@ -1,17 +1,25 @@
 from __future__ import annotations
 
 import time
+import importlib.util
 from contextvars import ContextVar
 from datetime import datetime, timezone
 from functools import wraps
 from typing import Any, Awaitable, Callable, TypeVar
 
 from db.analytics import DuckDBManager
+from services.otel_fallback import FileSpanBuffer
 
-try:
+
+
+def _load_gputil_module():
+    if importlib.util.find_spec("GPUtil") is None:
+        return None
     import GPUtil
-except Exception:  # pragma: no cover - optional dependency
-    GPUtil = None
+    return GPUtil
+
+
+GPUtil = _load_gputil_module()
 
 F = TypeVar("F", bound=Callable[..., Awaitable[Any]])
 
@@ -78,18 +86,37 @@ def track_performance(stage_name: str, *, duckdb_provider: Callable[[], DuckDBMa
                 return await func(*args, **kwargs)
             finally:
                 duration_ms = (time.perf_counter() - started) * 1000.0
-                duckdb = duckdb_provider()
-                ensure_telemetry_schema(duckdb)
-                duckdb.execute(
-                    "INSERT INTO telemetry (timestamp, trace_id, stage_name, duration_ms, vram_usage_mb) VALUES (?, ?, ?, ?, ?)",
-                    (
-                        datetime.now(timezone.utc),
-                        get_trace_id(),
-                        stage_name,
-                        duration_ms,
-                        _vram_usage_mb(),
-                    ),
-                )
+                span_payload = {
+                    "trace_id": get_trace_id(),
+                    "name": stage_name,
+                    "start_ts": datetime.now(timezone.utc),
+                    "end_ts": datetime.now(timezone.utc),
+                    "attributes": {
+                        "duration_ms": duration_ms,
+                        "vram_usage_mb": _vram_usage_mb(),
+                    },
+                }
+                try:
+                    duckdb = duckdb_provider()
+                    ensure_telemetry_schema(duckdb)
+                    duckdb.execute(
+                        "INSERT INTO telemetry (timestamp, trace_id, stage_name, duration_ms, vram_usage_mb) VALUES (?, ?, ?, ?, ?)",
+                        (
+                            datetime.now(timezone.utc),
+                            span_payload["trace_id"],
+                            span_payload["name"],
+                            duration_ms,
+                            span_payload["attributes"]["vram_usage_mb"],
+                        ),
+                    )
+                except Exception:
+                    FileSpanBuffer().append(
+                        trace_id=span_payload["trace_id"],
+                        name=span_payload["name"],
+                        start_ts=span_payload["start_ts"],
+                        end_ts=span_payload["end_ts"],
+                        attributes=span_payload["attributes"],
+                    )
 
         return wrapper  # type: ignore[return-value]
 

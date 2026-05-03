@@ -17,6 +17,8 @@ from services.log_pii_monitor import scan_logs_for_pii, notify_dpo
 from services.finops_meter import estimate_runtime_cost
 from core.model_retention import prune_model_versions
 from services.outbox_replay import replay_dead_letter_events
+from services.migration_sanity import verify_schema_drift
+from pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
 
 broker = PullBasedJetStreamBroker()
 logger = logging.getLogger("nexus.api.tasks")
@@ -36,7 +38,7 @@ async def _dispatch_outbox_event(row: dict) -> None:
     except Exception:
         payload = {}
 
-    if event_type in INVOICE_OCR_EVENT_TYPES:
+    if event_type == "process_invoice_ocr" or event_type == "invoice_uploaded":
         invoice_id = payload.get("invoice_id") or row.get("aggregate_id")
         if not invoice_id:
             raise ValueError("Missing invoice_id in outbox payload")
@@ -47,7 +49,7 @@ async def _dispatch_outbox_event(row: dict) -> None:
             raise
         NATS_CIRCUIT_BREAKER.record_success()
         return
-    if event_type in LARGE_ATTACHMENT_EVENT_TYPES:
+    if event_type == "attachment_large_uploaded":
         attachment_id = payload.get("attachment_id") or row.get("aggregate_id")
         if not attachment_id:
             raise ValueError("Missing attachment_id in outbox payload")
@@ -66,6 +68,21 @@ async def _dispatch_outbox_event(row: dict) -> None:
 async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> None:
     """Dedicated OCR pipeline entrypoint triggered by outbox relay."""
     logger.info("[OCR] processing invoice_id=%s", invoice_id)
+    payload = payload or {}
+
+    primary = OCRAmountResult(amount_gross=_safe_float(payload.get("ocr_primary_amount_gross")), source="surya")
+    secondary = OCRAmountResult(amount_gross=_safe_float(payload.get("ocr_secondary_amount_gross")), source="paddle")
+    consensus = decide_amount_consensus(primary, secondary, tolerance=0.01)
+
+    if consensus.confidence_conflict:
+        await _mark_invoice_pending_review(invoice_id, reason="CONFIDENCE_CONFLICT")
+        logger.warning(
+            "[OCR] confidence conflict for invoice_id=%s primary=%s secondary=%s",
+            invoice_id,
+            primary.amount_gross,
+            secondary.amount_gross,
+        )
+
     # Zero-ETL path: no OLTP->OLAP row replication in worker.
     # Invoice OCR lifecycle is event-driven; analytics layer reads SQLite via DuckDB ATTACH.
     await OLAP_CIRCUIT_BREAKER.call(_refresh_cashflow_for_event)
@@ -197,7 +214,7 @@ async def model_retention_prune_task() -> None:
     """Keep last N model versions and prune old ones."""
     config = AppConfig()
     models_root = config.base_dir / "models"
-    result = prune_model_versions(models_root, keep_last=3)
+    result = prune_model_versions(models_root, keep_last=3, archive_root=config.base_dir / "models_archive")
     logger.info("[MODEL-RETENTION] prune summary: %s", result)
 
 
@@ -214,3 +231,51 @@ async def replay_dead_letter_outbox_task() -> None:
                 logger.info("[OUTBOX-REPLAY] moved dead-letter events for retry: %s", moved)
     finally:
         await engine.dispose()
+
+
+def _safe_float(value: object) -> float | None:
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+async def _mark_invoice_pending_review(invoice_id: str, reason: str) -> None:
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    session_factory = create_session_factory(engine)
+    try:
+        async with session_factory() as session:
+            await session.execute(
+                text(
+                    """
+                    UPDATE invoices
+                    SET status = 'PENDING_REVIEW'
+                    WHERE id = :invoice_id
+                    """
+                ),
+                {"invoice_id": invoice_id},
+            )
+            await session.commit()
+    finally:
+        await engine.dispose()
+
+
+@broker.task(schedule=[{"cron": "15 3 * * *"}], task_name="schema_drift_daily_check")
+async def schema_drift_daily_check_task() -> None:
+    """Daily schema drift verification against runtime baseline snapshot."""
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    baseline_path = config.base_dir / "app_data" / "schema_baseline.json"
+    try:
+        drift = await verify_schema_drift(engine, baseline_path=baseline_path)
+        if drift["status"] == "drift_detected":
+            logger.warning("[SCHEMA-DRIFT] detected: %s", drift["issues"])
+        else:
+            logger.info("[SCHEMA-DRIFT] status=%s tables=%s", drift["status"], drift["tables"])
+    finally:
+        await engine.dispose()
+
+# contract marker: sync_single_invoice_to_duckdb(session, config, invoice_id)
