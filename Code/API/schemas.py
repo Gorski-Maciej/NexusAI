@@ -40,6 +40,7 @@ class AnalyticsQuery(msgspec.Struct):
     start_date: str
     end_date: str
     dimension: str = "monthly"
+    report_currency: str = "PLN"
 
 class VatSummary(msgspec.Struct):
     """Zagregowane dane analityczne z DuckDB."""

@@ -1,27 +1,31 @@
+from __future__ import annotations
+
 from db.analytics import DuckDBManager
 from models.invoice import Invoice
 
 
 class ReplicationBridge:
+    """Zero-ETL bridge.
+
+    Legacy row-by-row OLTP->OLAP replication is intentionally disabled.
+    DuckDB reads SQLite directly through ATTACH (TYPE SQLITE).
+    """
+
     def __init__(self, duckdb_manager: DuckDBManager):
         self.olap = duckdb_manager
 
-    def sync_invoice(self, invoice: Invoice):
-        """Replikuje fakturę z SQLite do analitycznego DuckDB."""
-        query = """
-        INSERT OR REPLACE INTO invoices_replica (
-            id, number, contractor_nip, amount_net,
-            amount_gross, currency, status, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    def sync_invoice(self, invoice: Invoice) -> None:
+        """Compatibility no-op for deprecated API.
+
+        Keeping the method avoids breaking callers while preventing duplicate,
+        non-transactional replication writes.
         """
-        params = (
-            str(invoice.id),
-            invoice.number or "BRAK",
-            invoice.contractor_nip,
-            float(invoice.amount_net),
-            float(invoice.amount_gross),
-            invoice.currency,
-            invoice.status,
-            invoice.updated_at or invoice.created_at
-        )
-        self.olap.execute(query, params)
+        _ = invoice
+        # Ensure Zero-ETL attachment is active and refresh aggregate projections.
+        self.olap.setup_zero_etl()
+        self.olap.refresh_materialized_cashflow()
+
+    def refresh_projections(self) -> None:
+        """Explicit projection refresh entrypoint for schedulers/workers."""
+        self.olap.setup_zero_etl()
+        self.olap.refresh_materialized_cashflow()
