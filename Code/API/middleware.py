@@ -139,7 +139,7 @@ def _tenant_from_bearer_auth(authorization_header: str | None) -> str | None:
     exp = payload.get("exp")
     if exp is not None:
         try:
-            if int(exp) < now:
+            if int(exp) < int(time.time()):
                 return None
         except (TypeError, ValueError):
             return None

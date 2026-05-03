@@ -9,7 +9,7 @@ from worker.broker import broker
 from api.auth_service import hash_password
 from api.shared_image_buffer import SharedImageBuffer
 from db.analytics import DuckDBManager
-from services.migration_sanity import run_migration_sanity_checks, verify_migration_integrity
+from services.migration_sanity import run_migration_sanity_checks, verify_migration_integrity, verify_migration_checksums
 
 logger = logging.getLogger("nexus.api.state")
 
@@ -94,6 +94,10 @@ async def on_startup(app: Litestar) -> None:
             await conn.execute(text("ALTER TABLE invoices ADD COLUMN deleted_at TIMESTAMP NULL"))
         except Exception:
             pass
+        try:
+            await conn.execute(text("ALTER TABLE invoices ADD COLUMN tenant_id TEXT NOT NULL DEFAULT 'default'"))
+        except Exception:
+            pass
 
         await conn.execute(
             text(
@@ -115,10 +119,12 @@ async def on_startup(app: Litestar) -> None:
     try:
         sanity = await run_migration_sanity_checks(engine)
         integrity = await verify_migration_integrity(engine, config.migration_baseline_path)
+        checksums = await verify_migration_checksums(engine, config.migration_checksum_baseline_path)
         logger.info("Migration sanity checks: %s", sanity)
         logger.info("Migration integrity checks: %s", integrity)
-        if integrity.get("status") == "integrity_warning" and config.environment in {"stage", "prod"}:
-            raise RuntimeError(f"Migration integrity warning in {config.environment}: {integrity.get('issues', [])}")
+        logger.info("Migration checksum checks: %s", checksums)
+        if (integrity.get("status") == "integrity_warning" or checksums.get("status") == "integrity_warning") and config.environment in {"stage", "prod"}:
+            raise RuntimeError(f"Migration integrity warning in {config.environment}: rowcount={integrity.get('issues', [])}, checksum={checksums.get('issues', [])}")
     except Exception as exc:
         logger.warning("Migration sanity checks failed: %s", exc)
         if config.environment in {"stage", "prod"}:

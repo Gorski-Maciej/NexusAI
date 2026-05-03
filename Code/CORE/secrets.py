@@ -10,11 +10,20 @@ def _load_keyring_module():
     return keyring
 
 
+def _load_fernet_symbols():
+    if importlib.util.find_spec("cryptography") is None:
+        return None, None
+    from cryptography.fernet import Fernet, InvalidToken
+    return Fernet, InvalidToken
+
+
 keyring = _load_keyring_module()
+Fernet, InvalidToken = _load_fernet_symbols()
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import logging
+import os
 
 logger = logging.getLogger("nexus.core.secrets")
 
@@ -53,7 +62,7 @@ class SecretsManager:
 
 
 class LocalSecretsCache:
-    """Offline-first cache for secrets with TTL."""
+    """Offline-first cache for secrets with TTL and optional at-rest encryption."""
 
     def __init__(self, cache_path: Path | str = "app_data/secrets_cache.json", ttl_hours: int = 24) -> None:
         self.cache_path = Path(cache_path)
@@ -65,11 +74,43 @@ class LocalSecretsCache:
             self.cache_path.chmod(0o600)
         except Exception:
             pass
+        self._fernet = self._build_fernet()
+
+    @staticmethod
+    def _build_fernet():
+        if Fernet is None:
+            return None
+        key = os.getenv("NEXUS_SECRETS_CACHE_KEY", "").strip().encode("utf-8")
+        if not key:
+            return None
+        try:
+            return Fernet(key)
+        except Exception:
+            logger.warning("Invalid NEXUS_SECRETS_CACHE_KEY; falling back to plaintext cache")
+            return None
+
+    def _encrypt(self, value: str) -> tuple[str, bool]:
+        if not self._fernet:
+            return value, False
+        token = self._fernet.encrypt(value.encode("utf-8")).decode("utf-8")
+        return token, True
+
+    def _decrypt(self, value: str, encrypted: bool) -> str | None:
+        if not encrypted:
+            return value
+        if not self._fernet:
+            return None
+        try:
+            return self._fernet.decrypt(value.encode("utf-8")).decode("utf-8")
+        except (InvalidToken, Exception):
+            return None
 
     def save(self, key: str, value: str) -> None:
         payload = self._read_all()
+        stored_value, encrypted = self._encrypt(value)
         payload[key] = {
-            "value": value,
+            "value": stored_value,
+            "encrypted": encrypted,
             "updated_at": datetime.now(timezone.utc).isoformat(),
         }
         self.cache_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
@@ -89,7 +130,8 @@ class LocalSecretsCache:
             return None
         if datetime.now(timezone.utc) - updated > timedelta(hours=self.ttl_hours):
             return None
-        return str(item.get("value", ""))
+        raw = str(item.get("value", ""))
+        return self._decrypt(raw, bool(item.get("encrypted", False)))
 
     def _read_all(self) -> dict[str, dict[str, str]]:
         if not self.cache_path.exists():

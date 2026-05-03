@@ -14,8 +14,9 @@ class TriageController(Controller):
     path = "/api/triage"
 
     @get("/pending")
-    async def get_pending(self, db_session: AsyncSession) -> list[TriageItem]:
-        pending = await list_pending_triage_items(db_session)
+    async def get_pending(self, db_session: AsyncSession, request: Request) -> list[TriageItem]:
+        tenant_id = str(getattr(request.user, "tenant_id", "default") or "default")
+        pending = await list_pending_triage_items(db_session, tenant_id=tenant_id)
         return [
             TriageItem(
                 invoice_id=item.id,
@@ -49,6 +50,7 @@ class TriageController(Controller):
                 corrected_data=data.corrected_data,
                 action=data.action,
                 updated_by=role_ctx.actor,
+                tenant_id=str(getattr(request.user, "tenant_id", "default") or "default"),
             )
         except ValueError as exc:
             raise ClientException(status_code=400, detail=str(exc)) from exc

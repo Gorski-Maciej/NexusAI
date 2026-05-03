@@ -36,5 +36,10 @@ jobs:
           python Code/SKRIPTS/security_scan.py \
             --target "${{ github.event.inputs.target_url }}" \
             --mode full \
+            --strict-tools \
+            --run-codeql \
+            --policy strict \
+            --max-zap-high 0 \
+            --max-zap-medium 0 \
             --skip-semgrep
 
