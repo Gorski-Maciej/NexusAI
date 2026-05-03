@@ -46,15 +46,31 @@ class DuckDBManager:
         return connection.execute(query).fetchall()
 
     def refresh_materialized_cashflow(self) -> None:
+        # Data-quality gate: reject malformed/unsafe rows from OLAP aggregates.
+        self.execute(
+            """
+            CREATE OR REPLACE TABLE dq_invalid_invoices AS
+            SELECT id, issue_date, currency, amount_gross, status
+            FROM oltp.invoices
+            WHERE amount_gross < 0
+               OR currency IS NULL
+               OR length(trim(currency)) <> 3
+               OR issue_date IS NULL
+            """
+        )
         query = """
         CREATE OR REPLACE TABLE m_daily_cashflow AS
         SELECT
             date_trunc('day', issue_date) as day,
-            currency,
+            upper(trim(currency)) as currency,
             SUM(amount_gross) AS daily_income,
             COUNT(id) AS invoice_count
         FROM oltp.invoices
         WHERE status IN ('PAID', 'APPROVED')
+          AND amount_gross >= 0
+          AND currency IS NOT NULL
+          AND length(trim(currency)) = 3
+          AND issue_date IS NOT NULL
         GROUP BY 1, 2
         """
         self.execute(query)

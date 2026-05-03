@@ -1,13 +1,22 @@
 from __future__ import annotations
 
-try:
+import importlib.util
+
+
+def _load_keyring_module():
+    if importlib.util.find_spec("keyring") is None:
+        return None
     import keyring
-except Exception:  # pragma: no cover - optional dependency
-    keyring = None
+    return keyring
+
+
+keyring = _load_keyring_module()
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from core.logger import logger
+import logging
+
+logger = logging.getLogger("nexus.core.secrets")
 
 class SecretsManager:
     """Ochrona kluczy API i haseł przy użyciu natywnego magazynu systemu operacyjnego."""

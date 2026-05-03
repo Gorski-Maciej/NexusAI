@@ -19,3 +19,15 @@ k6 run tests/performance/k6_invoice_upload.js \
 ## Notes
 - This test intentionally targets `/api/v2/invoices/upload` because it exercises streamed upload, idempotency, outbox write, and audit trail.
 - For CI, run against staging after deploy and archive result artifacts (`--summary-export`).
+
+## CI gate with thresholds
+
+```bash
+python Code/SKRIPTS/performance_engineering.py \
+  --base-url http://localhost:8000 \
+  --token <jwt> \
+  --vus 50 \
+  --duration 5m
+```
+
+The runner exports `reports/performance/k6_summary.json` and fails when p95 or error-rate thresholds are breached.

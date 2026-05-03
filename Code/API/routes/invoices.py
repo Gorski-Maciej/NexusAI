@@ -26,6 +26,8 @@ from api.cache import clear_cache_async
 from api.i18n import resolve_language, t
 
 UPLOAD_CHUNK_SIZE = 1024 * 1024
+MAX_INVOICE_UPLOAD_BYTES = 50 * 1024 * 1024
+MAX_ATTACHMENT_UPLOAD_BYTES = 500 * 1024 * 1024
 EVENT_INVOICE_UPLOADED = "invoice_uploaded"
 EVENT_ATTACHMENT_LARGE_UPLOADED = "attachment_large_uploaded"
 
@@ -62,7 +64,7 @@ class InvoiceController(Controller):
     ) -> TaskResponse:
         file_obj = data.get("file")
         language = resolve_language(request.headers.get("accept-language"))
-        _validate_content_length(request.headers, config.max_invoice_upload_bytes)
+        _validate_content_length(request.headers, MAX_INVOICE_UPLOAD_BYTES)
         if not file_obj:
             raise ClientException(detail=t("upload.missing_file", language=language), status_code=400)
 
@@ -77,7 +79,7 @@ class InvoiceController(Controller):
                     if not chunk:
                         break
                     total_size += len(chunk)
-                    if total_size > config.max_invoice_upload_bytes:
+                    if total_size > min(config.max_invoice_upload_bytes, MAX_INVOICE_UPLOAD_BYTES):
                         raise ClientException(
                             detail=t(
                                 "upload.file_too_large",
@@ -188,7 +190,7 @@ class InvoiceController(Controller):
         """Dedicated path for large attachments to avoid blocking the default OCR queue."""
         file_obj = data.get("file")
         language = resolve_language(request.headers.get("accept-language"))
-        _validate_content_length(request.headers, config.max_attachment_upload_bytes)
+        _validate_content_length(request.headers, MAX_ATTACHMENT_UPLOAD_BYTES)
         if not file_obj:
             raise ClientException(detail=t("upload.missing_file", language=language), status_code=400)
         idempotency_key = request.headers.get("idempotency-key")
@@ -205,7 +207,7 @@ class InvoiceController(Controller):
                     if not chunk:
                         break
                     total_size += len(chunk)
-                    if total_size > config.max_attachment_upload_bytes:
+                    if total_size > min(config.max_attachment_upload_bytes, MAX_ATTACHMENT_UPLOAD_BYTES):
                         raise ClientException(
                             detail=t(
                                 "upload.file_too_large",
