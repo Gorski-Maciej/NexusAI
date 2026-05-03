@@ -56,6 +56,7 @@ class AppConfig:
     max_attachment_upload_mb: int = int(os.getenv("NEXUS_MAX_ATTACHMENT_UPLOAD_MB", "500"))
     dpo_alert_webhook: str = os.getenv("NEXUS_DPO_ALERT_WEBHOOK", "").strip()
     outbox_replay_limit: int = int(os.getenv("NEXUS_OUTBOX_REPLAY_LIMIT", "100"))
+    migration_baseline_name: str = os.getenv("NEXUS_MIGRATION_BASELINE_FILE", "migration_rowcount_baseline.json")
 
     def __post_init__(self) -> None:
         self.environment = self.environment.lower().strip()
@@ -127,6 +128,10 @@ class AppConfig:
     @property
     def max_attachment_upload_bytes(self) -> int:
         return self.max_attachment_upload_mb * 1024 * 1024
+
+    @property
+    def migration_baseline_path(self) -> Path:
+        return self.base_dir / "app_data" / self.migration_baseline_name
 
     @property
     def cors_origins(self) -> list[str]:
