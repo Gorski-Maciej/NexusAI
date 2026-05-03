@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import time
+import os
+import asyncio
 import importlib.util
 from contextvars import ContextVar
 from datetime import datetime, timezone
@@ -22,6 +24,16 @@ def _load_gputil_module():
 GPUtil = _load_gputil_module()
 
 F = TypeVar("F", bound=Callable[..., Awaitable[Any]])
+
+
+def _resolve_otel_buffer_max_records() -> int:
+    raw = os.getenv("NEXUS_OTEL_BUFFER_MAX_RECORDS", "50000").strip()
+    try:
+        value = int(raw)
+    except ValueError:
+        return 50000
+    return max(value, 1000)
+
 
 _trace_id_ctx: ContextVar[str] = ContextVar("telemetry_trace_id", default="unknown")
 
@@ -159,3 +171,43 @@ def store_finops_snapshot(
         "estimated_total_cost": estimated_total,
         "cost_per_invoice": cost_per_invoice,
     }
+
+
+async def flush_fallback_spans(duckdb_provider: Callable[[], DuckDBManager], *, retries: int = 3, base_delay: float = 0.5) -> dict[str, int]:
+    """Replay file-buffered telemetry spans into DuckDB with retry/backoff."""
+    buffer = FileSpanBuffer(max_records=_resolve_otel_buffer_max_records())
+    queue_before = len(buffer.read_all())
+
+    db = duckdb_provider()
+    ensure_telemetry_schema(db)
+
+    def _sender(record: dict[str, Any]) -> bool:
+        db.execute(
+            "INSERT INTO telemetry (timestamp, trace_id, stage_name, duration_ms, vram_usage_mb) VALUES (?, ?, ?, ?, ?)",
+            (
+                datetime.now(timezone.utc),
+                str(record.get("trace_id", "unknown")),
+                str(record.get("name", "unknown")),
+                float((record.get("attributes") or {}).get("duration_ms", 0.0)),
+                (record.get("attributes") or {}).get("vram_usage_mb"),
+            ),
+        )
+        return True
+
+    try:
+        for attempt in range(retries):
+            try:
+                sent = buffer.replay(_sender)
+                remaining = len(buffer.read_all())
+                return {"sent": int(sent), "remaining": int(remaining), "queue_before": int(queue_before), "attempts": int(attempt + 1)}
+            except Exception:
+                if attempt >= retries - 1:
+                    break
+                await asyncio.sleep(base_delay * (2 ** attempt))
+
+        return {"sent": 0, "remaining": len(buffer.read_all()), "queue_before": int(queue_before), "attempts": int(retries)}
+    finally:
+        try:
+            db.close()
+        except Exception:
+            pass

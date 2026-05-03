@@ -25,6 +25,22 @@ def _resolve_jwt_secret() -> str:
 
 SECRET_KEY = _resolve_jwt_secret()
 
+def _resolve_jwt_expiration_seconds() -> int:
+    raw = os.getenv("NEXUS_JWT_EXPIRATION_SECONDS", "3600").strip()
+    try:
+        value = int(raw)
+    except ValueError:
+        logger.warning("Invalid NEXUS_JWT_EXPIRATION_SECONDS=%s, fallback to 3600", raw)
+        return 3600
+    if value <= 0:
+        logger.warning("Non-positive NEXUS_JWT_EXPIRATION_SECONDS=%s, fallback to 3600", raw)
+        return 3600
+    return value
+
+JWT_ISSUER = os.getenv("NEXUS_JWT_ISSUER", "nexus-ai")
+JWT_AUDIENCE = os.getenv("NEXUS_JWT_AUDIENCE", "nexus-api")
+JWT_EXPIRATION_SECONDS = _resolve_jwt_expiration_seconds()
+
 async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> User | None:
     if not token.sub:
         return None
@@ -70,5 +86,8 @@ class User:
 jwt_auth = JWTAuth[User](
     retrieve_user_handler=retrieve_user_handler,
     token_secret=SECRET_KEY,
+    token_issuer=JWT_ISSUER,
+    token_audience=JWT_AUDIENCE,
+    token_expiration=JWT_EXPIRATION_SECONDS,
     exclude=["/api/auth/login", "/api/v1/health", "/api/v2/health"],
 )

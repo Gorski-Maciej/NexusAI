@@ -1,51 +1,51 @@
 from litestar import Controller, post, get
 from typing import Any
 from api.schemas import AnalyticsQuery
-from db.analytics import DuckDBManager # Twój manager DuckDB z poprzednich plików
+from db.analytics import DuckDBManager
+from api.cache import ttl_cache
 
 class AnalyticsController(Controller):
     path = "/api/analytics"
 
     @post("/cashflow")
+    @ttl_cache(seconds=60)
     async def get_cashflow_report(self, data: AnalyticsQuery) -> dict:
         """Pobiera błyskawiczne raporty finansowe z DuckDB."""
         # DuckDB limits and threads are already configured in DuckDBManager
-        manager = DuckDBManager(db_path="nexus_olap.duckdb")
+        manager = DuckDBManager(db_path="nexus_olap.duckdb", sqlite_path="app_data/nexus_oltp.db", read_only=True)
 
         query = f"""
         SELECT date_trunc('{data.dimension}', issue_date) as period,
                SUM(amount_gross) as total_gross
-        FROM invoices_replica
+        FROM oltp.invoices
         WHERE issue_date BETWEEN ? AND ?
         GROUP BY period ORDER BY period;
         """
-        results = manager.execute(query, (data.start_date, data.end_date))
-        manager.close()
-
         try:
+            results = manager.execute(query, (data.start_date, data.end_date))
             if not results:
-                return {"total_gross": 0.0, "count": 0, "avg_net": 0.0}
-            row = results[0]
-            return {
-                "total_gross": row[0] or 0.0,
-                "count": row[1] or 0,
-                "avg_net": row[2] or 0.0
-            }
+                return {"rows": [], "total_gross": 0.0}
+            rows = [{"period": str(r[0]), "total_gross": float(r[1] or 0.0)} for r in results]
+            return {"rows": rows, "total_gross": sum(x["total_gross"] for x in rows)}
         except Exception as e:
             # W logach systemowych warto by to zapisać
-            return {"error": str(e), "total_gross": 0.0, "count": 0, "avg_net": 0.0}
+            return {"error": str(e), "rows": [], "total_gross": 0.0}
+        finally:
+            manager.close()
 
     @get("/monthly-trend")
+    @ttl_cache(seconds=60)
     async def get_monthly_trend(self, state: Any) -> list[dict[str, Any]]:
         """Opcjonalny endpoint pod wykresy (np. trend wydatków)."""
         manager: DuckDBManager = state.olap_manager
         query = """
         SELECT
-            strftime(updated_at, '%Y-%m') as month,
+            strftime(issue_date, '%Y-%m') as month,
             SUM(amount_gross) as total
-        FROM invoices_replica
+        FROM oltp.invoices
+        WHERE issue_date IS NOT NULL
         GROUP BY 1
         ORDER BY 1 DESC
         """
         results = manager.execute(query)
-        return [{"month": row[0], "total": row[1]} for row in results]
+        return [{"month": str(row[0]), "total": float(row[1] or 0.0)} for row in results]

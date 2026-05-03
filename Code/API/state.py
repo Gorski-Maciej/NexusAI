@@ -9,7 +9,7 @@ from worker.broker import broker
 from api.auth_service import hash_password
 from api.shared_image_buffer import SharedImageBuffer
 from db.analytics import DuckDBManager
-from services.migration_sanity import run_migration_sanity_checks
+from services.migration_sanity import run_migration_sanity_checks, verify_migration_integrity
 
 logger = logging.getLogger("nexus.api.state")
 
@@ -114,9 +114,15 @@ async def on_startup(app: Litestar) -> None:
         )
     try:
         sanity = await run_migration_sanity_checks(engine)
+        integrity = await verify_migration_integrity(engine, config.migration_baseline_path)
         logger.info("Migration sanity checks: %s", sanity)
+        logger.info("Migration integrity checks: %s", integrity)
+        if integrity.get("status") == "integrity_warning" and config.environment in {"stage", "prod"}:
+            raise RuntimeError(f"Migration integrity warning in {config.environment}: {integrity.get('issues', [])}")
     except Exception as exc:
         logger.warning("Migration sanity checks failed: %s", exc)
+        if config.environment in {"stage", "prod"}:
+            raise
 
     # Połączenie z brokerem Taskiq (NATS)
     if not broker.is_worker_process:

@@ -1,5 +1,7 @@
 import uuid
 import json
+import hashlib
+import os
 from pathlib import Path
 from anyio import to_thread
 from litestar import Controller, get, post, Body
@@ -10,6 +12,8 @@ from litestar.datastructures import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from api.schemas import InvoiceCreate, InvoiceResponse, validate_invoice_create
+from api.services import ContentAddressableStorage
+from core.config import AppConfig
 from models.invoice import Invoice
 from models.outbox import OutboxEvent
 
@@ -76,19 +80,101 @@ class InvoiceController(Controller):
         self,
         data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)
     ) -> dict:
-        # Strumieniowy zapis uploadu bez blokowania event loop.
-        upload_dir = Path("data/uploads")
-        upload_dir.mkdir(parents=True, exist_ok=True)
-        file_path = upload_dir / data.filename
+        # Strumieniowy zapis uploadu + CAS hash (SHA-256) bez blokowania event loop.
+        config = AppConfig()
+        max_bytes = config.max_invoice_upload_bytes
+        content_length = getattr(data, "headers", {}).get("content-length") if getattr(data, "headers", None) else None
+        if content_length:
+            try:
+                if int(content_length) > max_bytes:
+                    raise ClientException(status_code=413, detail="Request body too large")
+            except ValueError:
+                pass
 
+        storage = ContentAddressableStorage(config.storage_dir)
+        temp_path = storage.create_temp_upload_file()
+        hasher = hashlib.sha256()
         chunk_size = 1024 * 1024
         total_size = 0
-        with open(file_path, "wb") as f:
-            while True:
-                chunk = await data.read(chunk_size)
-                if not chunk:
-                    break
-                total_size += len(chunk)
-                await to_thread.run_sync(f.write, chunk)
 
-        return {"filename": data.filename, "status": "uploaded", "size_bytes": total_size}
+        try:
+            with Path(temp_path).open("ab") as temp_file:
+                while True:
+                    chunk = await data.read(chunk_size)
+                    if not chunk:
+                        break
+                    total_size += len(chunk)
+                    if total_size > max_bytes:
+                        raise ClientException(status_code=413, detail="Request body too large")
+                    hasher.update(chunk)
+                    await to_thread.run_sync(temp_file.write, chunk)
+
+            if total_size == 0:
+                raise ClientException(status_code=400, detail="Empty file")
+
+            digest = hasher.hexdigest()
+            saved = storage.finalize_temp_upload(temp_path=temp_path, digest=digest, size_bytes=total_size, suffix=".pdf")
+            return {
+                "filename": Path(saved.file_path).name,
+                "status": "uploaded",
+                "size_bytes": saved.size_bytes,
+                "file_hash": saved.file_hash,
+                "file_path": saved.file_path,
+            }
+        except Exception:
+            try:
+                os.unlink(temp_path)
+            except FileNotFoundError:
+                pass
+            raise
+
+
+    @post("/upload-large")
+    async def upload_large_attachment(
+        self,
+        data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)
+    ) -> dict:
+        """Dedicated path for very large attachments isolated from regular invoice uploads."""
+        config = AppConfig()
+        max_bytes = config.max_attachment_upload_bytes
+        storage = ContentAddressableStorage(config.storage_dir)
+        temp_path = storage.create_temp_upload_file()
+        hasher = hashlib.sha256()
+        chunk_size = 1024 * 1024
+        total_size = 0
+
+        try:
+            with Path(temp_path).open("ab") as temp_file:
+                while True:
+                    chunk = await data.read(chunk_size)
+                    if not chunk:
+                        break
+                    total_size += len(chunk)
+                    if total_size > max_bytes:
+                        raise ClientException(status_code=413, detail="Request body too large")
+                    hasher.update(chunk)
+                    await to_thread.run_sync(temp_file.write, chunk)
+
+            if total_size == 0:
+                raise ClientException(status_code=400, detail="Empty file")
+
+            saved = storage.finalize_temp_upload(
+                temp_path=temp_path,
+                digest=hasher.hexdigest(),
+                size_bytes=total_size,
+                suffix=".bin",
+            )
+            return {
+                "filename": Path(saved.file_path).name,
+                "status": "uploaded",
+                "kind": "large_attachment",
+                "size_bytes": saved.size_bytes,
+                "file_hash": saved.file_hash,
+                "file_path": saved.file_path,
+            }
+        except Exception:
+            try:
+                os.unlink(temp_path)
+            except FileNotFoundError:
+                pass
+            raise

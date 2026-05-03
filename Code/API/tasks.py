@@ -14,10 +14,11 @@ from core.circuit_breaker import CircuitBreaker
 from core.resilience import async_retry
 from api.cache import clear_cache_async
 from services.log_pii_monitor import scan_logs_for_pii, notify_dpo
+from services.telemetry import flush_fallback_spans
 from services.finops_meter import estimate_runtime_cost
 from core.model_retention import prune_model_versions
 from services.outbox_replay import replay_dead_letter_events
-from services.migration_sanity import verify_schema_drift
+from services.migration_sanity import verify_schema_drift, verify_migration_integrity
 from pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
 
 broker = PullBasedJetStreamBroker()
@@ -279,3 +280,37 @@ async def schema_drift_daily_check_task() -> None:
         await engine.dispose()
 
 # contract marker: sync_single_invoice_to_duckdb(session, config, invoice_id)
+
+
+@broker.task(schedule=[{"cron": "*/10 * * * *"}], task_name="flush_otel_fallback_buffer")
+async def flush_otel_fallback_buffer_task() -> None:
+    """Replay file-buffered telemetry spans when OLAP becomes available again."""
+    config = AppConfig()
+    stats = await flush_fallback_spans(
+        lambda: DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path, read_only=False),
+        retries=3,
+        base_delay=0.5,
+    )
+    if stats.get("remaining", 0) > 0:
+        logger.warning("[OTEL-FALLBACK] replay incomplete stats=%s", stats)
+    else:
+        logger.info("[OTEL-FALLBACK] replay stats=%s", stats)
+
+
+@broker.task(schedule=[{"cron": "20 3 * * *"}], task_name="migration_integrity_daily_check")
+async def migration_integrity_daily_check_task() -> None:
+    """Daily data-integrity check against persisted row-count baseline."""
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    baseline_path = config.migration_baseline_path
+    try:
+        result = await verify_migration_integrity(engine, baseline_path=baseline_path)
+        status = str(result.get("status"))
+        if status == "ok":
+            logger.info("[MIGRATION-INTEGRITY] status=ok tables=%s", result.get("tables"))
+        elif status == "baseline_created":
+            logger.info("[MIGRATION-INTEGRITY] baseline created tables=%s", result.get("tables"))
+        else:
+            logger.warning("[MIGRATION-INTEGRITY] status=%s issues=%s", status, result.get("issues"))
+    finally:
+        await engine.dispose()

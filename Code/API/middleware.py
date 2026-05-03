@@ -19,6 +19,10 @@ from litestar.status_codes import HTTP_413_REQUEST_ENTITY_TOO_LARGE
 from core.config import AppConfig
 
 
+class RequestBodyTooLargeError(RuntimeError):
+    pass
+
+
 class UploadSizeGuardMiddleware(AbstractMiddleware):
     """Hard request-body guard for upload endpoints, including chunked transfer."""
 
@@ -51,33 +55,21 @@ class UploadSizeGuardMiddleware(AbstractMiddleware):
                 pass
 
         total = 0
-        blocked = False
 
         async def guarded_receive():
-            nonlocal total, blocked
-            if blocked:
-                return {"type": "http.request", "body": b"", "more_body": False}
+            nonlocal total
             message = await receive()
             if message.get("type") == "http.request":
                 body = message.get("body", b"")
                 total += len(body)
                 if total > limit:
-                    blocked = True
-                    return {"type": "http.request", "body": b"", "more_body": False}
+                    raise RequestBodyTooLargeError("request body too large")
             return message
 
-        if blocked:
+        try:
+            await self.app(scope, guarded_receive, send)
+        except RequestBodyTooLargeError:
             await self._send_413(send)
-            return
-
-        async def guarded_send(message):
-            if blocked and message.get("type") == "http.response.start":
-                await self._send_413(send)
-                return
-            if not blocked:
-                await send(message)
-
-        await self.app(scope, guarded_receive, guarded_send)
 
     @staticmethod
     def _resolve_config(scope) -> AppConfig:

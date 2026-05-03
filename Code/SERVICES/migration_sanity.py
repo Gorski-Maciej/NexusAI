@@ -7,6 +7,9 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 
+def _quote_ident(identifier: str) -> str:
+    return "\"" + identifier.replace("\"", "\"\"") + "\""
+
 async def run_migration_sanity_checks(engine: AsyncEngine) -> dict[str, int]:
     """
     Lightweight post-migration sanity checks.
@@ -30,7 +33,8 @@ async def capture_runtime_schema(engine: AsyncEngine) -> dict[str, list[str]]:
         for (table_name,) in tables:
             if str(table_name).startswith("sqlite_"):
                 continue
-            cols = (await conn.execute(text(f"PRAGMA table_info({table_name})"))).fetchall()
+            table_quoted = _quote_ident(str(table_name))
+            cols = (await conn.execute(text(f"PRAGMA table_info({table_quoted})"))).fetchall()
             schema[str(table_name)] = sorted(str(c[1]) for c in cols)
     return schema
 
@@ -58,3 +62,39 @@ async def verify_schema_drift(engine: AsyncEngine, baseline_path: Path) -> dict[
 
     status = "ok" if not issues else "drift_detected"
     return {"status": status, "tables": len(current), "issues": issues}
+
+
+async def capture_table_row_counts(engine: AsyncEngine) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    async with engine.connect() as conn:
+        tables = (await conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))).fetchall()
+        for (table_name,) in tables:
+            table = str(table_name)
+            if table.startswith("sqlite_"):
+                continue
+            table_quoted = _quote_ident(table)
+            value = (await conn.execute(text(f"SELECT COUNT(*) FROM {table_quoted}"))).scalar_one()
+            counts[table] = int(value)
+    return counts
+
+
+async def verify_migration_integrity(engine: AsyncEngine, baseline_path: Path) -> dict[str, object]:
+    """Verify post-migration row-count integrity against a persisted baseline snapshot."""
+    current = await capture_table_row_counts(engine)
+    baseline_path.parent.mkdir(parents=True, exist_ok=True)
+    if not baseline_path.exists():
+        baseline_path.write_text(json.dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
+        return {"status": "baseline_created", "issues": [], "tables": len(current)}
+
+    baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+    issues: list[str] = []
+    for table, expected in baseline.items():
+        actual = current.get(table)
+        if actual is None:
+            issues.append(f"missing table: {table}")
+            continue
+        if int(actual) < int(expected):
+            issues.append(f"row_count_drop: {table} expected>={expected} actual={actual}")
+
+    status = "ok" if not issues else "integrity_warning"
+    return {"status": status, "issues": issues, "tables": len(current)}
