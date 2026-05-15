@@ -20,7 +20,7 @@ class BufferedSpan:
 
 
 class FileSpanBuffer:
-    def __init__(self, file_path: Path | str = "app_data/otel_spans_buffer.jsonl", max_records: int = 50_000, max_bytes: int = 64 * 1024 * 1024) -> None:
+    def __init__(self, file_path: Path | str = "app_data/otel_spans_buffer.jsonl", max_records: int = 10_000, max_bytes: int = 10 * 1024 * 1024) -> None:
         self.file_path = Path(file_path)
         self.max_records = max_records
         self.max_bytes = max_bytes

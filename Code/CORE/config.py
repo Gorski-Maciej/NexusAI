@@ -49,7 +49,7 @@ class AppConfig:
     jwt_secret: str = os.getenv("NEXUS_JWT_SECRET", "")
     encryption_key: str = os.getenv("NEXUS_ENCRYPTION_KEY", "")
 
-    duckdb_memory_limit: str = os.getenv("NEXUS_DUCKDB_MEMORY_LIMIT", "2GB")
+    duckdb_memory_limit: str = os.getenv("NEXUS_DUCKDB_MEMORY_LIMIT", "512MB")
     duckdb_threads: int = int(os.getenv("NEXUS_DUCKDB_THREADS", "2"))
     cors_origins_raw: str = os.getenv("NEXUS_CORS_ORIGINS", "*")
     max_invoice_upload_mb: int = int(os.getenv("NEXUS_MAX_INVOICE_UPLOAD_MB", "50"))

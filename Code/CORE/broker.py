@@ -18,9 +18,8 @@ broker = NatsBroker(
 async def startup(state):
     """Logika uruchamiana przy starcie workera."""
     print("[Worker] Łączenie z systemami...")
-    from pipeline.ocr import DocumentProcessor
-    state.ocr_processor = DocumentProcessor()
-    print("[Worker] Gotowy do przetwarzania faktur.")
+    state.ocr_processor = None
+    print("[Worker] Gotowy do przetwarzania faktur (lazy loading modeli).")
 
 @broker.on_event(TaskiqEvents.WORKER_SHUTDOWN)
 async def shutdown(state):

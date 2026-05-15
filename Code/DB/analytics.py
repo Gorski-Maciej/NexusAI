@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 @dataclass(slots=True)
 class DuckDBLimits:
-    memory_limit: str = "2GB"
+    memory_limit: str = "512MB"
     threads: int = 2
 
 
@@ -28,7 +28,9 @@ class DuckDBManager:
                 self._connection = duckdb.connect(str(self._db_path), read_only=self._read_only)
                 self._connection.execute(f"SET memory_limit='{self._limits.memory_limit}'")
                 self._connection.execute(f"SET threads={self._limits.threads}")
-                self._connection.execute(f"SET temp_directory='{self._db_path}.tmp'")
+                temp_dir = (self._db_path.parent / 'duckdb_tmp')
+                temp_dir.mkdir(parents=True, exist_ok=True)
+                self._connection.execute(f"SET temp_directory='{temp_dir.as_posix()}'")
                 self.setup_zero_etl(self._connection)
             return self._connection
 

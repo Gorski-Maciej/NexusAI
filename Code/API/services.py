@@ -7,6 +7,7 @@ import os
 import sqlite3
 import tempfile
 import importlib.util
+from io import BytesIO
 from contextlib import suppress
 from collections.abc import Iterable
 from dataclasses import dataclass
@@ -81,7 +82,27 @@ class ContentAddressableStorage:
             self.fs.mv(temp_path, str(file_path))
         else:
             Path(temp_path).replace(file_path)
+        self._save_archive_variant(file_path=file_path, suffix=suffix)
         return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=size_bytes)
+
+
+    def _save_archive_variant(self, file_path: Path, suffix: str) -> None:
+        """Best-effort archival compression for image uploads (non-destructive sidecar)."""
+        ext = suffix.lower()
+        if ext not in {".png", ".tif", ".tiff", ".bmp"}:
+            return
+        if file_path.with_suffix(".jpg").exists():
+            return
+        try:
+            from PIL import Image
+        except Exception:
+            return
+        try:
+            with Image.open(file_path) as img:
+                rgb = img.convert("RGB")
+                rgb.save(file_path.with_suffix(".jpg"), format="JPEG", quality=80, optimize=True)
+        except Exception:
+            return
 
 
 class IdempotencyStore:

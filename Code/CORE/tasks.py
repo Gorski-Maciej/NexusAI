@@ -31,13 +31,24 @@ from services.fixed_assets import FixedAssetsService
 from Roboton_Reflekton.ledger_client import TigerBeetleClient
 from db.analytics import DuckDBManager
 from Roboton_Reflekton.dunning_engine import DunningEngine
+from core.memory_manager import TimedModelCache
 
 logger = get_logger()
-OCR_INFERENCE_SEMAPHORE = asyncio.Semaphore(int(os.getenv("NEXUS_MAX_PARALLEL_OCR", "2")))
+OCR_INFERENCE_SEMAPHORE = asyncio.Semaphore(int(os.getenv("NEXUS_MAX_PARALLEL_OCR", "1")))
 OCR_TASK_TIMEOUT_SEC = int(os.getenv("NEXUS_OCR_TIMEOUT_SEC", "300"))
 
 NATS_URL = os.getenv("NEXUS_NATS_URL", "nats://127.0.0.1:4222")
 broker = PullBasedJetStreamBroker(servers=NATS_URL, queue="nexus-ai-workers")
+
+_MODEL_CACHE = TimedModelCache(ttl_seconds=int(os.getenv("NEXUS_MODEL_CACHE_TTL_SEC", "600")))
+
+
+async def _load_document_processor() -> DocumentProcessor:
+    return await asyncio.to_thread(DocumentProcessor)
+
+
+async def _load_vision_agent() -> VisionAgent:
+    return await asyncio.to_thread(VisionAgent)
 
 @dataclass(slots=True)
 class InvoiceEventPayload:
@@ -72,7 +83,7 @@ def pin_worker_cpu_affinity(reserve_core0: bool = True) -> None:
 
 def _get_lancedb_table() -> Any:
     """Open or create vector table in LanceDB backed by Arrow schema."""
-    db = lancedb.connect("nexus_lancedb")
+    db = lancedb.connect("nexus_lancedb", mode="file")
     schema = pa.schema([
         pa.field("id", pa.string()),
         pa.field("invoice_id", pa.string()),
@@ -83,7 +94,7 @@ def _get_lancedb_table() -> Any:
         pa.field("is_preferred", pa.bool_()),
     ])
     if "invoice_vectors" in db.table_names():
-        return db.open_table("invoice_vectors")
+        return db.open_table("invoice_vectors", index_cache_size=100 * 1024 * 1024)
     return db.create_table("invoice_vectors", schema=schema)
 
 def _simple_features(raw_text: str) -> list[float]:
@@ -122,8 +133,6 @@ async def process_invoice_task() -> dict[str, str]:
     config = AppConfig(base_dir=Path.cwd())
     engine = create_oltp_engine(config)
     session_factory = create_session_factory(engine)
-    processor = DocumentProcessor()
-    vision_agent = VisionAgent()
 
     async with session_factory() as session:
         event = await _pick_pending_outbox(session)
@@ -138,6 +147,8 @@ async def process_invoice_task() -> dict[str, str]:
 
         try:
             async with OCR_INFERENCE_SEMAPHORE:
+                processor = await _MODEL_CACHE.get("document_processor", _load_document_processor)
+                vision_agent = await _MODEL_CACHE.get("vision_agent", _load_vision_agent)
                 processed = await asyncio.wait_for(
                     asyncio.to_thread(processor.process, Path(payload.image_path)),
                     timeout=OCR_TASK_TIMEOUT_SEC,
@@ -340,3 +351,10 @@ async def execute_monthly_depreciation_task() -> dict[str, int]:
     posted = await service.execute_monthly_depreciation()
     logger.info("[FixedAssets] Posted %s depreciation entries", posted)
     return {"posted": posted}
+
+
+@broker.on_event(TaskiqEvents.WORKER_SHUTDOWN)
+async def _shutdown(_state: Any) -> None:
+    _MODEL_CACHE.evict_expired()
+    _MODEL_CACHE.release("document_processor")
+    _MODEL_CACHE.release("vision_agent")
