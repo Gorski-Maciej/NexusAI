@@ -2,7 +2,7 @@
 import zipfile
 import io
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from Cryptodome.Cipher import AES
 from Cryptodome.Random import get_random_bytes
 from pathlib import Path
@@ -37,4 +37,20 @@ class BackupManager:
         with open(final_path, "wb") as f:
             f.write(zip_buffer.getvalue())
 
+        self.prune_old_backups(keep_days=30)
         return str(final_path)
+
+
+    def prune_old_backups(self, keep_days: int = 30) -> int:
+        """Remove backups older than keep_days and return deleted count."""
+        cutoff = datetime.now() - timedelta(days=keep_days)
+        deleted = 0
+        for backup in self.backup_dir.glob("backup_*.zip"):
+            try:
+                modified = datetime.fromtimestamp(backup.stat().st_mtime)
+            except FileNotFoundError:
+                continue
+            if modified < cutoff:
+                backup.unlink(missing_ok=True)
+                deleted += 1
+        return deleted

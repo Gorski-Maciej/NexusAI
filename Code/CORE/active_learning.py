@@ -16,7 +16,7 @@ class ActiveLearningEngine:
 
     def _init_db(self):
         """Inicjalizuje bazę i tabelę, jeśli nie istnieją."""
-        self.db = lancedb.connect(self.db_path)
+        self.db = lancedb.connect(self.db_path, mode="file")
         if self.table_name not in self.db.table_names():
             schema = pa.schema([
                 pa.field("vector", pa.list_(pa.float32(), 384)), # Zależne od modelu (dla all-MiniLM-L6-v2 to 384)
@@ -25,7 +25,7 @@ class ActiveLearningEngine:
                 pa.field("context_hash", pa.string())
             ])
             self.db.create_table(self.table_name, schema=schema)
-        self.table = self.db.open_table(self.table_name)
+        self.table = self.db.open_table(self.table_name, index_cache_size=100 * 1024 * 1024)
 
     def _generate_embedding(self, raw_text: str) -> list[float]:
         """Zamienia surowy tekst faktury na wektor."""

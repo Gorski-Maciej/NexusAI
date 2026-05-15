@@ -21,8 +21,8 @@ def setup_logger(app_name: str = "NexusAI"):
 
     logger.add(
         log_dir / f"{app_name.lower()}_{{time}}.log",
-        rotation="100 MB",
-        retention="30 days",
+        rotation="50 MB",
+        retention="7 days",
         compression="zip",
         enqueue=True,
         level="INFO"

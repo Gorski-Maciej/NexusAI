@@ -4,6 +4,8 @@ import logging
 import json
 import os
 import resource
+from pathlib import Path
+from datetime import datetime, timedelta
 from taskiq_nats import PullBasedJetStreamBroker
 from sqlalchemy import text
 
@@ -314,3 +316,103 @@ async def migration_integrity_daily_check_task() -> None:
             logger.warning("[MIGRATION-INTEGRITY] status=%s issues=%s", status, result.get("issues"))
     finally:
         await engine.dispose()
+
+
+@broker.task(schedule=[{"cron": "0 3 * * 0"}], task_name="cleanup_old_logs")
+async def cleanup_old_logs_task() -> None:
+    log_dir = Path("app_data/logs")
+    cutoff = datetime.now() - timedelta(days=7)
+    if not log_dir.exists():
+        return
+    removed = 0
+    for f in log_dir.glob("*.log*"):
+        try:
+            if datetime.fromtimestamp(f.stat().st_mtime) < cutoff:
+                f.unlink(missing_ok=True)
+                removed += 1
+        except FileNotFoundError:
+            continue
+    logger.info("[CLEANUP] old logs removed=%s", removed)
+
+
+@broker.task(schedule=[{"cron": "*/15 * * * *"}], task_name="cleanup_temp_upload_files")
+async def cleanup_temp_upload_files_task() -> None:
+    uploads_dir = Path("app_data/uploads")
+    if not uploads_dir.exists():
+        return
+    removed = 0
+    for f in uploads_dir.glob("upload_*.tmp"):
+        try:
+            f.unlink(missing_ok=True)
+            removed += 1
+        except FileNotFoundError:
+            continue
+    logger.info("[CLEANUP] temp upload files removed=%s", removed)
+
+
+@broker.task(schedule=[{"cron": "0 5 * * 0"}], task_name="cleanup_old_reports")
+async def cleanup_old_reports_task() -> None:
+    cutoff = datetime.now() - timedelta(days=30)
+    report_dirs = [Path("reports/performance"), Path("reports/security"), Path("reports/pii")]
+    removed = 0
+    for d in report_dirs:
+        if not d.exists():
+            continue
+        for pattern in ("*.json", "*.html", "*.txt"):
+            for f in d.glob(pattern):
+                try:
+                    if datetime.fromtimestamp(f.stat().st_mtime) < cutoff:
+                        f.unlink(missing_ok=True)
+                        removed += 1
+                except FileNotFoundError:
+                    continue
+    logger.info("[CLEANUP] old reports removed=%s", removed)
+
+
+@broker.task(schedule=[{"cron": "0 4 * * 0"}], task_name="compact_lancedb")
+async def compact_lancedb_task() -> None:
+    try:
+        import lancedb
+    except Exception:
+        logger.warning("[LANCEDB] lancedb unavailable, skip compaction")
+        return
+
+    db = lancedb.connect("nexus_lancedb", mode="file")
+    compacted = 0
+    for table_name in db.table_names():
+        table = db.open_table(table_name, index_cache_size=100 * 1024 * 1024)
+        if hasattr(table, "compact_files"):
+            table.compact_files()
+            compacted += 1
+        if hasattr(table, "cleanup_old_versions"):
+            table.cleanup_old_versions()
+    logger.info("[LANCEDB] compacted tables=%s", compacted)
+
+
+@broker.task(schedule=[{"cron": "30 4 * * 0"}], task_name="sqlite_weekly_vacuum")
+async def sqlite_weekly_vacuum_task() -> None:
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("VACUUM;"))
+        logger.info("[SQLITE] weekly VACUUM completed")
+    finally:
+        await engine.dispose()
+
+
+@broker.task(schedule=[{"cron": "15 4 * * 0"}], task_name="cleanup_duckdb_temp")
+async def cleanup_duckdb_temp_task() -> None:
+    config = AppConfig()
+    temp_dir = config.duckdb_path.parent / "duckdb_tmp"
+    if not temp_dir.exists():
+        return
+    removed = 0
+    for item in temp_dir.glob("*"):
+        try:
+            if item.is_file():
+                item.unlink(missing_ok=True)
+                removed += 1
+        except FileNotFoundError:
+            continue
+    logger.info("[DUCKDB] temp files removed=%s", removed)

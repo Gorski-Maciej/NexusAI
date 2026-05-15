@@ -39,6 +39,14 @@ def create_oltp_engine(
         _sqlite_url(config, sqlite_path),
         echo=False
     )
+
+    @event.listens_for(engine.sync_engine, "connect")
+    def _set_sqlite_pragmas(dbapi_connection, _connection_record):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA cache_size = -20000;")
+        cursor.execute("PRAGMA temp_store = 2;")
+        cursor.execute("PRAGMA auto_vacuum = FULL;")
+        cursor.close()
     return engine
 
 def create_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
@@ -62,6 +70,7 @@ async def consolidate_database(engine: AsyncEngine) -> None:
         async with engine.connect() as conn:
             # PRAGMA wal_checkpoint(TRUNCATE) czyści logi i resetuje plik WAL do zera
             await conn.execute(text("PRAGMA wal_checkpoint(TRUNCATE);"))
+            await conn.execute(text("VACUUM;"))
     except Exception as e:
         logger.error(f"Failed to consolidate database: {e}")
 
