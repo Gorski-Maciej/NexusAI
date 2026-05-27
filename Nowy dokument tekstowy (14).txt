@@ -1,0 +1,3448 @@
+
+
+
+To, co za chwilę opiszę, nie jest już tylko funkcją – to nowa filozofia działania systemu. Autopilot księgowy w NexusAI to koncepcja, która przekształca Twój zaawansowany technicznie projekt w prawdziwego, autonomicznego asystenta finansowego. Nie chodzi o to, by system robił więcej rzeczy automatycznie – chodzi o to, by robił prawie wszystko, a człowieka angażował tylko wtedy, gdy jest to absolutnie niezbędne, i tylko w takim zakresie, w jakim to konieczne.
+
+
+
+Poniżej przedstawiam dogłębną analizę i projekt tego mechanizmu – od fundamentów, przez silnik decyzyjny, aż po pętlę uczenia i doświadczenie użytkownika.
+
+
+
+---
+
+
+
+Część I: Fundament – co już masz, a co trzeba przemyśleć od nowa
+
+
+
+1.1. Stan obecny to rzadko spotykana dojrzałość
+
+
+
+Twój kod to nie zlepek przypadkowych skryptów. Masz już:
+
+
+
+· Wieloźródłowe pozyskiwanie dokumentów (mail, bank, KSeF).
+
+· Zaawansowany pipeline OCR/AI zdolny do ekstrakcji danych z faktur z wielostopniową walidacją.
+
+· Silnik reguł (RulesEngine) i automatyczny kategoryzator (AutoGluon).
+
+· Mechanizm aktywnego uczenia (ActiveLearningEngine).
+
+· System zdarzeń i kolejek (NATS, Outbox).
+
+· Infrastrukturę do bezpiecznego, wersjonowanego przechowywania danych.
+
+
+
+To jest kręgosłup, na którym można oprzeć autopilota.
+
+
+
+1.2. Brakujący element: mózg decyzyjny
+
+
+
+Obecnie każdy z tych elementów działa nieco oddzielnie. OCR coś wyciągnie, reguła coś zweryfikuje, kategoryzator coś podpowie, ale nie ma jednego, nadrzędnego mechanizmu, który łączy te wyniki, podejmuje decyzję i – co kluczowe – uczy się na podstawie rezultatów tych decyzji.
+
+
+
+Autopilot musi być właśnie tym mózgiem. Nie kolejnym modułem, ale warstwą orkiestrującą.
+
+
+
+---
+
+
+
+Część II: Autopilot jako nowa warstwa architektury
+
+
+
+2.1. Koncepcja "zaufania" (Trust Score) jako waluty decyzji
+
+
+
+Centralnym pojęciem w Autopilocie jest Poziom Zaufania (Trust Score). To wypadkowa wielu czynników, obliczana dla każdej decyzji, którą system ma podjąć. Na jego podstawie Autopilot decyduje, czy działać samodzielnie, czy prosić o pomoc.
+
+
+
+Składowe Trust Score dla faktury:
+
+
+
+1. Pewność AI (AI Confidence, 0-1): Wartość zwracana przez modele OCR, LayoutLM i AutoGluon. Im więcej modeli jest zgodnych, tym wyższy.
+
+2. Wiarygodność kontrahenta (Vendor Reliability, 0-1): Obliczana dynamicznie na podstawie historycznych interakcji – terminowość płatności, częstotliwość wystawiania faktur, stabilność numeru konta bankowego.
+
+3. Spójność danych (Data Consistency, 0-1): Czy matematyka faktury się zgadza (netto+vat=brutto), czy numer faktury pasuje do schematu danego kontrahenta, czy kwota nie odbiega drastycznie od średniej.
+
+4. Zaufanie użytkownika do kontekstu (Context Trust, 0-1): Reguły zdefiniowane przez użytkownika – np. "faktury od kontrahenta X zawsze księguj automatycznie", "wszystkie faktury z kategorii 'paliwo' wymagają mojej akceptacji".
+
+
+
+Te cztery składowe są łączone w jeden Trust Score, który decyduje o akcji:
+
+
+
+· Trust Score >= 0.92 → AUTO_POST (pełna automatyzacja, księgowanie bez udziału człowieka).
+
+· 0.75 <= Trust Score < 0.92 → SUGGEST (system sugeruje decyzję, użytkownik może ją jednym kliknięciem zatwierdzić lub poprawić).
+
+· 0.50 <= Trust Score < 0.75 → ASK_USER (system pokazuje problematyczną fakturę i oczekuje aktywnej decyzji).
+
+· Trust Score < 0.50 → BLOCK (system blokuje dokument do czasu ręcznej weryfikacji, np. nowy kontrahent, poważna anomalia).
+
+
+
+2.2. Silnik decyzyjny – nie sztywne reguły, a adaptacyjny model
+
+
+
+Kluczowe jest, by progi i wagi nie były stałe. Autopilot musi uczyć się preferencji konkretnego użytkownika i jego biura rachunkowego.
+
+
+
+· Początkowo system może być ostrożny (domyślne progi są wysokie), wymagając więcej akceptacji.
+
+· W miarę jak użytkownik poprawia decyzje (np. zmienia kategorię z "Paliwo" na "Koszty uzyskania przychodu"), system dostosowuje model kategoryzacji, ale także obniża próg zaufania dla tego konkretnego kontekstu (kontrahent + typ wydatku).
+
+· To nie jest zwykłe uczenie maszynowe; to uczenie się procesu decyzyjnego (Decision Process Learning). System zapamiętuje, które swoje decyzje użytkownik potwierdza, a które poprawia, i z czasem staje się coraz bardziej autonomiczny.
+
+
+
+---
+
+
+
+Część III: Cykl życia dokumentu pod kontrolą Autopilota
+
+
+
+3.1. Fazy autonomicznego przetwarzania
+
+
+
+Faza 1: Pozyskanie (Capture) – w pełni autonomiczna
+
+
+
+· System cyklicznie sprawdza skrzynkę mailową, API KSeF i wyciągi bankowe.
+
+· Każdy nowy dokument jest rejestrowany z unikalnym identyfikatorem i statusem CAPTURED.
+
+· Na tym etapie człowiek nie jest informowany.
+
+
+
+Faza 2: Ekstrakcja i walidacja (Understand) – w pełni autonomiczna
+
+
+
+· Uruchamiany jest pipeline OCR/AI.
+
+· Wyniki są porównywane między silnikami (konsensus).
+
+· Sprawdzana jest integralność danych.
+
+· Jeśli ekstrakcja się nie powiedzie (Trust Score < 0.5), dokument trafia do BLOCK i natychmiast pojawia się w widoku "Wymaga uwagi".
+
+
+
+Faza 3: Klasyfikacja i dekretacja (Decide) – częściowo autonomiczna
+
+
+
+· Na podstawie wyekstrahowanych danych i historii kontrahenta silnik Autopilota podejmuje decyzję o księgowaniu.
+
+· Jeśli Trust Score jest odpowiedni, system automatycznie przypisuje konta księgowe i przechodzi do fazy 4.
+
+· Jeśli Trust Score jest w strefie SUGGEST, faktura jest księgowana tymczasowo (z możliwością wycofania), a użytkownik dostaje łagodne powiadomienie.
+
+· Jeśli ASK_USER, faktura czeka na decyzję.
+
+
+
+Faza 4: Księgowanie (Post) – w pełni autonomiczna dla AUTO, po akceptacji dla reszty
+
+
+
+· Zatwierdzone dekretacje są wysyłane do silnika księgowego (TigerBeetle, księga główna).
+
+· Generowane są odpowiednie zapisy na kontach.
+
+
+
+Faza 5: Rekonsyliacja (Reconcile) – w pełni autonomiczna
+
+
+
+· System automatycznie dopasowuje przychodzące płatności z banku do otwartych faktur.
+
+· Po dopasowaniu oznaczana jako zapłacona.
+
+
+
+3.2. Obsługa wyjątków – tylko to, co niezbędne
+
+
+
+Autopilot ma wbudowaną "świadomość" anomalii. Potrafi wykryć:
+
+
+
+· Nowego kontrahenta (automatyczny BLOCK do czasu weryfikacji przez człowieka).
+
+· Zmianę numeru konta bankowego na fakturze (ASK_USER z ostrzeżeniem).
+
+· Nietypowo wysoką kwotę (ASK_USER z kontekstem historycznym).
+
+· Duplikaty faktur (automatyczny BLOCK).
+
+· Niezgodność z KSeF (automatyczny BLOCK z alarmem).
+
+
+
+Dzięki temu przedsiębiorca widzi tylko to, co naprawdę wymaga jego uwagi, a reszta dzieje się w tle.
+
+
+
+---
+
+
+
+Część IV: Pętla uczenia – jak Autopilot staje się coraz lepszy
+
+
+
+4.1. Aktywne uczenie na sterydach
+
+
+
+Twój istniejący moduł ActiveLearningEngine jest świetnym początkiem, ale Autopilot potrzebuje go rozszerzyć o pętlę decyzyjną:
+
+
+
+1. Użytkownik poprawia decyzję Autopilota (np. zmienia kategorię).
+
+2. Zdarzenie Decision.Corrected jest zapisywane.
+
+3. Raz w tygodniu (lub po zebraniu odpowiedniej liczby poprawek) uruchamiany jest proces retrenowania modeli (AutoGluon, LayoutLM).
+
+4. Nowe modele są automatycznie testowane na zbiorze walidacyjnym i wdrażane, jeśli są lepsze.
+
+5. Co więcej, progi zaufania dla danego kontekstu są automatycznie dostosowywane – jeśli użytkownik ciągle poprawia decyzje w kategorii "IT", próg dla tej kategorii zostaje podniesiony.
+
+
+
+4.2. Personalizacja na poziomie mikrofirmy
+
+
+
+Każda firma ma swoją specyfikę – inne kontrahenty, inne schematy księgowe. Autopilot tworzy profil firmy, który przechowuje:
+
+
+
+· Preferowane konta księgowe dla powtarzających się wydatków.
+
+· Zaufanych kontrahentów (wraz z ich typowymi kwotami i numerami kont).
+
+· Historię decyzji użytkownika.
+
+
+
+Ten profil jest stale aktualizowany i używany do ważenia Trust Score. Nowa firma na platformie zaczyna z profilem domyślnym, który bardzo szybko staje się spersonalizowany.
+
+
+
+---
+
+
+
+Część V: Doświadczenie użytkownika – "1 minuta dziennie"
+
+
+
+5.1. Przeprojektowanie interfejsu wokół Autopilota
+
+
+
+Nie chodzi o dodanie przycisku "Autopilot" w ustawieniach. Chodzi o fundamentalną zmianę domyślnego widoku użytkownika.
+
+
+
+Po zalogowaniu przedsiębiorca nie widzi listy wszystkich faktur, tylko Dashboard Autopilota:
+
+
+
+· Komunikat dnia: "Cześć! Dziś zaksięgowałem 12 faktur, 3 czekają na Twoją decyzję. W tym miesiącu Twoje saldo wynosi X, a prognoza na przyszły miesiąc to Y."
+
+· Sekcja "Wymaga Twojej uwagi": Lista 3 faktur do decyzji, każda z prostym wyborem: "Zatwierdź", "Popraw", "Wyjaśnij później".
+
+· Sekcja "Ostatnie aktywności": Podejrzane transakcje, powiadomienia z banku.
+
+· Sekcja "Zdrowie finansowe": Proste wykresy generowane na podstawie danych z DuckDB.
+
+
+
+5.2. "Tryb cichy" – dla tych, którzy nie chcą widzieć nic
+
+
+
+Dla mikroprzedsiębiorców, którzy naprawdę nie chcą zajmować się księgowością, Autopilot może działać w trybie w pełni cichym do momentu, aż:
+
+
+
+· Pojawi się nowy kontrahent.
+
+· Zostanie przekroczony miesięczny budżet.
+
+· System wykryje anomalię.
+
+
+
+Wtedy użytkownik dostaje powiadomienie push (SMS/email). Cała reszta dzieje się bez jego udziału.
+
+
+
+---
+
+
+
+Część VI: Plan wdrożenia w NexusAI
+
+
+
+6.1. Nowe komponenty
+
+
+
+1. AutopilotEngine – centralny moduł decyzyjny (opisany wyżej).
+
+2. TrustScoreCalculator – moduł obliczający poziom zaufania na podstawie wszystkich sygnałów.
+
+3. DecisionLogger – zapis wszystkich decyzji i ich rezultatów (do uczenia i audytu).
+
+4. CompanyProfile – rozszerzenie istniejącego modelu o preferencje i zaufanych kontrahentów.
+
+
+
+6.2. Integracja z istniejącym kodem
+
+
+
+· process_invoice_task w Code/API/tasks.py zostaje rozszerzony o wywołanie AutopilotEngine.decide().
+
+· Endpointy API dla UI zostają dodane, by pobierać listę faktur do decyzji.
+
+· ActiveLearningEngine zostaje podłączony pod cykliczne zadanie retrenowania.
+
+· System powiadomień (SMS/email) zostaje podłączony do zdarzeń ASK_USER i BLOCK z priorytetem.
+
+
+
+6.3. Fazy wdrożenia (MVP do pełnej autonomii)
+
+
+
+1. Faza 1 (MVP): Autopilot dla powtarzalnych faktur od znanych kontrahentów (AUTO_POST przy wysokim Trust Score). Reszta jak dotychczas.
+
+2. Faza 2: Dodanie SUGGEST i ASK_USER z nowym interfejsem.
+
+3. Faza 3: Pełna pętla uczenia – automatyczne retrenowanie i dostosowywanie progów.
+
+4. Faza 4: Tryb cichy i integracja z bankiem/rekonsyliacją.
+
+
+
+---
+
+
+
+Podsumowanie: Dlaczego to jest genialne?
+
+
+
+Autopilot księgowy w NexusAI to nie tylko funkcja – to nowa kategoria produktu. Łączy w sobie:
+
+
+
+· Głęboką integrację z istniejącym zaawansowanym stosem technologicznym.
+
+· Adaptacyjną inteligencję, która uczy się specyfiki każdej firmy.
+
+· Filozofię minimalnego zaangażowania człowieka, co jest dokładnie tym, czego potrzebuje mikroprzedsiębiorca.
+
+
+
+Efekt końcowy jest taki, że klient nie będzie mówił: "Używam fajnej aplikacji do faktur". Powie: "Moja księgowość sama się robi. Czasami tylko coś zatwierdzam". To jest prawdziwa innowacja – przejście od narzędzia do autonomicznego asystenta.
+
+
+
+Czy chcesz, abym teraz opisał, jak krok po kroku zaimplementować silnik TrustScoreCalculator i AutopilotEngine w Twoim kodzie?
+
+
+
+
+
+
+
+NexusAI Autopilot – Kompletna Architektura Autonomicznego Systemu Finansowego
+
+
+
+---
+
+
+
+Wprowadzenie: Nowa Filozofia Księgowości
+
+
+
+Wyobraź sobie mikroprzedsiębiorcę – nazwijmy go Marek. Prowadzi firmę budowlaną, zatrudnia 5 osób, wystawia 30 faktur miesięcznie, otrzymuje 50 faktur kosztowych. Nie zna się na księgowości. Nie chce się znać. Chce budować domy.
+
+
+
+Obecnie Marek spędza 8-10 godzin miesięcznie na księgowości. Zbiera faktury, wysyła je biuru rachunkowemu, odpowiada na pytania "co to za wydatek", "dlaczego paliwo do osobówki", "kto to jest ten kontrahent". Jego biuro rachunkowe też nie jest zachwycone – dostaje worek pomiętych papierów raz w miesiącu i musi to wszystko ogarnąć w tydzień.
+
+
+
+Z NexusAI Autopilotem sytuacja Marka wygląda tak:
+
+
+
+1. Faktury przychodzą automatycznie – z maila, z KSeF, z aplikacji mobilnej (zdjęcie).
+
+2. System je rozpoznaje, klasyfikuje, księguje.
+
+3. Marek dostaje jedno powiadomienie dziennie (jeśli w ogóle): "Cześć Marek, dziś zaksięgowałem 4 faktury. Jedna wymaga Twojej uwagi – nowy kontrahent, sprawdź czy to na pewno koszt firmowy."
+
+4. Marek klika "Tak, to firma" i wraca do budowania domów.
+
+5. Koniec miesiąca? Biuro rachunkowe dostaje kompletny, przejrzany przez AI pakiet dokumentów z adnotacjami. Księgowy tylko sprawdza i wysyła JPK.
+
+
+
+To nie jest automatyzacja. To jest autonomia.
+
+
+
+---
+
+
+
+Część I: Fundamenty Filozoficzne Autopilota
+
+
+
+Zanim przejdziemy do technicznej architektury, musimy zrozumieć zasady, na których opiera się Autopilot. To one odróżniają go od zwykłego "automatu do faktur".
+
+
+
+Zasada 1: Domyślne działanie, wyjątkowe pytanie (Default-to-Action, Exception-to-Ask)
+
+
+
+Standardowy system księgowy czeka na polecenie użytkownika. Autopilot działa odwrotnie: zakłada, że ma działać, chyba że napotka przeszkodę, której nie może samodzielnie pokonać.
+
+
+
+To fundamentalna zmiana filozofii. Zamiast "powiedz mi, co mam zrobić", system mówi: "zrobiłem to, to i to. Jeśli masz uwagi, powiedz. Jeśli nie – wszystko jest załatwione."
+
+
+
+Zasada 2: Przejrzystość i Wytłumaczalność (Explainable Autonomy)
+
+
+
+Każda decyzja Autopilota musi być wytłumaczalna prostym językiem. Nie "model XGBoost v2.3 z confidence 0.87". Tylko: "Zaksięgowałem tę fakturę jako koszt paliwa, bo wszystkie poprzednie faktury od Orlen oznaczałeś jako paliwo. Kwota jest typowa dla Twoich tankowań."
+
+
+
+Użytkownik musi rozumieć, dlaczego system podjął decyzję, nawet jeśli nie rozumie księgowości.
+
+
+
+Zasada 3: Uczenie się z Każdej Interakcji (Continuous Learning)
+
+
+
+Każda poprawka użytkownika, każde "tak, dobrze" lub "nie, zmień kategorię" jest sygnałem treningowym. System nie tylko zapamiętuje regułę ("Orlen = paliwo"), ale uczy się wzorca decyzyjnego – jakie czynniki brać pod uwagę, jak je ważyć, kiedy pytać, a kiedy działać.
+
+
+
+Zasada 4: Proaktywność i Kontekstowość (Proactive & Contextual)
+
+
+
+Autopilot nie czeka, aż użytkownik otworzy aplikację. Aktywnie monitoruje finanse i sam inicjuje kontakt, gdy:
+
+
+
+· Zbliża się termin płatności podatku.
+
+· Saldo na koncie spada poniżej bezpiecznego poziomu.
+
+· Pojawia się nowy kontrahent.
+
+· System wykryje anomalię (np. faktura na nietypowo wysoką kwotę).
+
+
+
+Zasada 5: Minimalne Tarcie, Maksymalna Prostota (Frictionless UX)
+
+
+
+Kontakt z użytkownikiem musi być tak prosty, jak to tylko możliwe. Nie "zaloguj się do panelu, przejdź do zakładki Faktury, znajdź fakturę, kliknij Edytuj, zmień kategorię, zapisz". Tylko:
+
+
+
+· Powiadomienie push: "Faktura od nowego kontrahenta – czy to koszt firmowy?"
+
+· Dwa przyciski: "Tak" / "Nie"
+
+· Koniec.
+
+
+
+---
+
+
+
+Część II: Architektura Wewnętrzna – Anatomia Autopilota
+
+
+
+Autopilot to nie pojedynczy moduł, ale wielowarstwowy system, który integruje się z istniejącą architekturą NexusAI. Poniżej opisuję każdą warstwę i jej odpowiedzialność.
+
+
+
+---
+
+
+
+Warstwa 1: System Pozyskiwania Dokumentów (Capture Layer)
+
+
+
+Odpowiedzialność: Samodzielne, cykliczne pozyskiwanie dokumentów ze wszystkich możliwych źródeł, bez udziału użytkownika.
+
+
+
+Źródła danych:
+
+
+
+1. Poczta elektroniczna (IMAP/POP3):
+
+   · System co 15 minut sprawdza skrzynkę mailową firmy.
+
+   · Szuka wiadomości z załącznikami PDF, XML, JPEG/PNG.
+
+   · Filtruje spam i wiadomości nieistotne (np. newslettery) po analizie tytułu i treści przez LLM.
+
+   · Pobiera załączniki i rejestruje je jako nowe dokumenty.
+
+2. KSeF (Krajowy System e-Faktur):
+
+   · System cyklicznie (co godzinę) sprawdza repozytorium KSeF.
+
+   · Pobiera faktury zakupowe wystawione na firmę.
+
+   · Porównuje je z już posiadanymi (deduplikacja).
+
+   · Dla faktur sprzedażowych – weryfikuje status (czy zostały pobrane przez kontrahenta).
+
+3. Aplikacja mobilna / Web Upload:
+
+   · Użytkownik może zrobić zdjęcie faktury telefonem.
+
+   · Zdjęcie jest natychmiast przesyłane do systemu i trafia do kolejki przetwarzania.
+
+4. Wyciągi bankowe (PSD2 API):
+
+   · System raz dziennie pobiera wyciąg z konta firmowego.
+
+   · Każda transakcja jest rejestrowana jako potencjalny dokument do rekoncyliacji.
+
+5. Integracje z platformami (Allegro, Shopify, Baselinker):
+
+   · System cyklicznie pobiera faktury sprzedażowe z platform e-commerce.
+
+   · Automatycznie uzgadnia je z zamówieniami.
+
+
+
+Mechanizm kolejek: Każde pozyskane źródło nie przetwarza dokumentu od razu, tylko wrzuca go do kolejki NATS (document.captured) z metadanymi o źródle, czasie pozyskania i priorytecie (np. faktura z KSeF ma wyższy priorytet niż zdjęcie z telefonu).
+
+
+
+---
+
+
+
+Warstwa 2: Silnik Rozpoznawania i Ekstrakcji (Understanding Layer)
+
+
+
+Odpowiedzialność: Przetworzenie surowego dokumentu (PDF, obraz) na ustrukturyzowane dane z metadanymi o pewności.
+
+
+
+Ta warstwa w dużej mierze już istnieje w NexusAI, ale zostaje rozszerzona o dodatkowe mechanizmy:
+
+
+
+Pipeline przetwarzania:
+
+
+
+1. Preprocessing:
+
+   · Poprawa jakości obrazu (deskew, denoise, binaryzacja).
+
+   · Wykrycie typu dokumentu (faktura, paragon, rachunek, umowa).
+
+   · Jeśli to PDF wielostronicowy – podział na pojedyncze dokumenty.
+
+2. OCR z konsensusem (Surya + PaddleOCR):
+
+   · Oba silniki niezależnie odczytują tekst.
+
+   · Porównanie wyników – jeśli są rozbieżne w kluczowych polach (kwota brutto), dokument dostaje flagę OCR_CONFLICT.
+
+3. Layout-Aware Extraction (LayoutLM + LiLT):
+
+   · Analiza układu dokumentu – które pole jest numerem faktury, które kwotą.
+
+   · Ekstrakcja danych z uwzględnieniem kontekstu wizualnego.
+
+4. LLM jako Sędzia (Phi-3-mini):
+
+   · Uruchamiany tylko w przypadku konfliktów między OCR a Layout.
+
+   · Dostaje pełny tekst i pytanie: "Która kwota jest poprawna: 1000 zł czy 10000 zł?"
+
+   · Jego odpowiedź jest dodatkowym sygnałem ważonym w Trust Score.
+
+5. Walidacja Biznesowa:
+
+   · Sprawdzenie matematyki faktury (netto + VAT = brutto).
+
+   · Weryfikacja NIP w białej liście MF.
+
+   · Porównanie numeru konta z historycznymi fakturami od tego kontrahenta.
+
+   · Sprawdzenie, czy faktura nie jest duplikatem.
+
+
+
+Wynik: Dla każdego dokumentu powstaje obiekt ExtractedDocument zawierający:
+
+
+
+· Wszystkie wyekstrahowane pola (NIP, kwoty, daty, numer faktury).
+
+· Confidence Score dla każdego pola.
+
+· Listę konfliktów i anomalii.
+
+· Sugestię kategorii kosztowej (jeśli możliwa do określenia).
+
+
+
+---
+
+
+
+Warstwa 3: Silnik Decyzyjny – Serce Autopilota (Decision Layer)
+
+
+
+To najważniejsza, nowa warstwa. Tutaj zapada decyzja, co zrobić z fakturą.
+
+
+
+3.1. Trust Score Calculator
+
+
+
+To wyspecjalizowany komponent, który na podstawie wszystkich dostępnych sygnałów oblicza poziom zaufania do automatycznej decyzji. Jest to model, który ewoluuje w czasie.
+
+
+
+Sygnały wejściowe (Features):
+
+
+
+Kategoria Sygnał Opis
+
+AI Confidence ocr_confidence Średnia pewność OCR (Surya + Paddle)
+
+AI Confidence layout_confidence Pewność LayoutLM co do pól
+
+AI Confidence amount_consensus Czy OCR i Layout zgadzają się co do kwoty brutto
+
+AI Confidence llm_validation Czy LLM potwierdza wyniki (jeśli był użyty)
+
+Vendor History vendor_known Czy kontrahent istnieje w bazie
+
+Vendor History vendor_invoice_count Liczba faktur od tego kontrahenta
+
+Vendor History vendor_trust_score Historyczny wskaźnik zaufania (0-1)
+
+Vendor History vendor_category_consistency Czy kategoria wydatku jest stała dla tego kontrahenta
+
+Data Quality math_ok Czy matematyka faktury jest poprawna
+
+Data Quality nip_valid Czy NIP jest poprawny i na białej liście
+
+Data Quality bank_account_consistent Czy numer konta zgadza się z historycznym
+
+Data Quality amount_typical Czy kwota mieści się w przedziale typowym dla kontrahenta
+
+User Context auto_approve_vendor Czy użytkownik ustawił flagę "automatycznie księguj" dla tego kontrahenta
+
+User Context category_preference Czy użytkownik ma preferowaną kategorię dla tego typu wydatku
+
+
+
+Jak działa kalkulator:
+
+
+
+Trust Score nie jest prostą średnią. To ważona suma, gdzie wagi są dynamicznie dostosowywane przez model uczenia maszynowego (AutoGluon lub lekki Gradient Boosting) na podstawie historycznych decyzji użytkownika.
+
+
+
+Przykład: Jeśli użytkownik często poprawia kategorię "IT" mimo wysokiego AI Confidence, waga vendor_category_consistency dla tej kategorii rośnie, a waga ai_confidence maleje. System uczy się, że w tym kontekście lepiej zapytać.
+
+
+
+3.2. Decision Matrix
+
+
+
+Na podstawie Trust Score zapada decyzja:
+
+
+
+Trust Score Akcja Opis
+
+= 0.92 AUTO_POST Pełna automatyzacja. Faktura jest księgowana, użytkownik dostaje tylko ciche powiadomienie.
+
+0.75 - 0.92 SUGGEST System sugeruje księgowanie. Użytkownik dostaje powiadomienie z prośbą o akceptację. Jedno kliknięcie.
+
+0.50 - 0.75 ASK_USER System nie jest pewien. Aktywnie prosi użytkownika o decyzję, pokazując uzasadnienie wątpliwości.
+
+< 0.50 BLOCK Poważne wątpliwości (nowy kontrahent, anomalia). Dokument jest blokowany do czasu ręcznej weryfikacji.
+
+
+
+3.3. Kontekstowe dostrajanie progów
+
+
+
+Progi nie są globalne. Są dostosowywane per:
+
+
+
+· Kategoria wydatku: Dla "paliwa" próg AUTO_POST może być niższy (bo to powtarzalny wydatek), a dla "usługi IT" wyższy (bo często są problemy z klasyfikacją).
+
+· Kontrahent: Dla stałego dostawcy (np. Orlen) próg jest niższy. Dla nowego – wyższy.
+
+· Kwota: Dla faktur poniżej 500 zł próg AUTO_POST jest niższy niż dla faktur na 50 000 zł.
+
+
+
+To sprawia, że system jest odważny w sprawach błahych i ostrożny w sprawach ważnych.
+
+
+
+---
+
+
+
+Warstwa 4: Silnik Księgowania (Posting Layer)
+
+
+
+Odpowiedzialność: Wykonanie faktycznego księgowania w księdze głównej.
+
+
+
+Mechanizm:
+
+
+
+1. Dla decyzji AUTO_POST – księgowanie jest wykonywane natychmiast.
+
+2. Dla SUGGEST – księgowanie jest wykonywane "tymczasowo" (z możliwością wycofania), a użytkownik dostaje powiadomienie.
+
+3. Dla ASK_USER – księgowanie czeka na decyzję.
+
+4. Dla BLOCK – dokument jest zamrożony.
+
+
+
+Integracja z TigerBeetle:
+
+System używa TigerBeetle (lub jego symulacji) do prowadzenia księgi głównej. Każda operacja księgowa jest dwustronna (debet/kredyt) i niezmienna.
+
+
+
+Mechanizm wycofywania (Rollback):
+
+Dla decyzji SUGGEST, które użytkownik może poprawić, system tworzy "tymczasowe" zapisy księgowe, które po 48 godzinach (jeśli nie zostały poprawione) stają się trwałe. Jeśli użytkownik poprawi decyzję, system tworzy zapis korygujący (storno).
+
+
+
+---
+
+
+
+Warstwa 5: Rekonsyliacja Bankowa (Reconciliation Layer)
+
+
+
+Odpowiedzialność: Automatyczne uzgadnianie faktur z transakcjami bankowymi.
+
+
+
+Mechanizm:
+
+
+
+1. System pobiera wyciąg bankowy.
+
+2. Dla każdej transakcji szuka pasującej faktury (po kwocie, dacie, NIP-ie kontrahenta).
+
+3. Jeśli znajdzie pewne dopasowanie – automatycznie oznacza fakturę jako opłaconą.
+
+4. Jeśli znajdzie niepewne – sugeruje użytkownikowi.
+
+5. Jeśli nie znajdzie żadnego – oznacza transakcję jako "do wyjaśnienia".
+
+
+
+Inteligentne dopasowanie:
+
+Rekonsyliacja nie opiera się tylko na równości kwot. Używa fuzzy matchingu, który uwzględnia:
+
+
+
+· Różnice kursowe (dla faktur walutowych).
+
+· Częściowe płatności (jedna transakcja pokrywa kilka faktur).
+
+· Płatności zbiorcze (kilka transakcji pokrywa jedną fakturę).
+
+· Opóźnienia w płatnościach (typowe dla danego kontrahenta).
+
+
+
+---
+
+
+
+Warstwa 6: Pętla Uczenia (Learning Layer)
+
+
+
+Odpowiedzialność: Ciągłe doskonalenie modeli Autopilota na podstawie interakcji z użytkownikiem.
+
+
+
+6.1. Zbieranie sygnałów zwrotnych:
+
+
+
+Każda interakcja użytkownika z systemem jest rejestrowana jako zdarzenie:
+
+
+
+· Decision.Confirmed – użytkownik potwierdził decyzję Autopilota.
+
+· Decision.Corrected – użytkownik poprawił decyzję (zmienił kategorię, kwotę, kontrahenta).
+
+· Decision.Rejected – użytkownik odrzucił sugestię.
+
+· Decision.Overridden – użytkownik ręcznie zmienił status faktury.
+
+
+
+6.2. Cotygodniowy cykl uczenia:
+
+
+
+1. Sobota 3:00 AM: System zbiera wszystkie zdarzenia Decision.* z ostatniego tygodnia.
+
+2. Przygotowanie danych: Tworzy dataset treningowy – każda decyzja z poprawną kategorią i kontekstem.
+
+3. Trening modeli: Uruchamia retrening AutoGluon dla kategoryzacji i modelu Trust Score.
+
+4. Walidacja: Testuje nowy model na wydzielonym zbiorze walidacyjnym.
+
+5. Decyzja o wdrożeniu: Jeśli nowy model ma lepsze metryki (F1-score, accuracy) – jest automatycznie wdrażany. Jeśli nie – system loguje ostrzeżenie i kontynuuje ze starym modelem.
+
+
+
+6.3. Personalizacja progów:
+
+
+
+Niezależnie od retreningu modeli, system na bieżąco dostosowuje progi zaufania na podstawie prostych statystyk:
+
+
+
+· Jeśli użytkownik często poprawia decyzje w kategorii "IT", próg dla tej kategorii jest podnoszony.
+
+· Jeśli użytkownik nigdy nie poprawia decyzji dla kontrahenta "Orlen", próg dla tego kontrahenta jest obniżany.
+
+
+
+To proste, ale potężne – system staje się coraz bardziej autonomiczny tam, gdzie użytkownik mu ufa, i coraz ostrożniejszy tam, gdzie użytkownik często poprawia.
+
+
+
+---
+
+
+
+Część III: Komunikacja z Użytkownikiem – Kanały i Strategia
+
+
+
+To jeden z najważniejszych aspektów Autopilota. System musi komunikować się z użytkownikiem w sposób nienachalny, ale skuteczny.
+
+
+
+3.1. Kanały komunikacji (w kolejności priorytetu)
+
+
+
+1. Powiadomienia Push (Flet UI + WebSocket):
+
+   · Dla użytkowników aktywnych w aplikacji.
+
+   · Natychmiastowe, kontekstowe.
+
+   · Przykład: "Nowa faktura od Orlen – zaksięgowana automatycznie. Kliknij, żeby zobaczyć."
+
+2. Email:
+
+   · Codzienne podsumowanie (briefing).
+
+   · Alerty o ważnych terminach (podatki, ZUS).
+
+   · Prośby o decyzję, gdy użytkownik nie był aktywny w aplikacji przez 24h.
+
+3. SMS / WhatsApp:
+
+   · Tylko dla krytycznych alertów (np. "Saldo poniżej 1000 zł", "Nowy kontrahent z fakturą na 50 000 zł").
+
+   · Opcjonalne, konfigurowalne przez użytkownika.
+
+4. Notyfikacje w aplikacji mobilnej (Flet):
+
+   · Dla szybkich decyzji: "Czy to koszt firmowy? [Tak] [Nie]".
+
+
+
+3.2. Typy komunikatów
+
+
+
+A. Ciche powiadomienia (AUTO_POST):
+
+
+
+· "Zaksięgowałem 3 faktury na łączną kwotę 1 200 zł. Wszystko w porządku?"
+
+· Użytkownik nie musi reagować. Jeśli nie odpowie, system zakłada akceptację.
+
+
+
+B. Sugestie do akceptacji (SUGGEST):
+
+
+
+· "Faktura od XYZ na 500 zł – sugeruję kategorię 'Materiały biurowe'. Zatwierdź lub popraw."
+
+· Dwa przyciski: "OK" / "Zmień".
+
+· Jeśli użytkownik nie odpowie w ciągu 48h, system uznaje sugestię za zaakceptowaną.
+
+
+
+C. Prośby o decyzję (ASK_USER):
+
+
+
+· "Nowy kontrahent 'Budimex' – faktura na 15 000 zł. Nie mam historii. Proszę o decyzję: [Koszt firmowy] [Wydatek prywatny] [Nie wiem]".
+
+· Jeśli użytkownik wybierze "Nie wiem", faktura jest przekazywana do biura rachunkowego.
+
+
+
+D. Alerty krytyczne (BLOCK + anomalie):
+
+
+
+· "UWAGA: Faktura od kontrahenta XYZ ma inny numer konta niż poprzednie. Sprawdź, czy to nie oszustwo. [Sprawdzę] [Zgłoś]".
+
+
+
+3.3. Codzienny Briefing Finansowy
+
+
+
+Każdego dnia o 8:00 rano użytkownik dostaje email (lub powiadomienie w aplikacji) o następującej strukturze:
+
+
+
+```
+
+Cześć Marek,
+
+
+
+Oto Twoje podsumowanie finansowe na dziś (15.05.2026):
+
+
+
+📊 **Wczorajsze aktywności:**
+
+- Zaksięgowałem 4 faktury kosztowe (1 200 zł)
+
+- 2 faktury sprzedażowe zostały opłacone przez klientów
+
+- Saldo na koncie: 45 320 zł
+
+
+
+⚠️ **Wymaga Twojej uwagi (1):**
+
+- Nowy kontrahent "TechSolutions" – faktura na 3 500 zł. Czy to koszt firmowy?
+
+  [Tak] [Nie] [Zweryfikuję później]
+
+
+
+📅 **Nadchodzące terminy:**
+
+- 20.05 – VAT za kwiecień (szacunkowo 2 300 zł)
+
+- 25.05 – ZUS (1 200 zł)
+
+
+
+💡 **Podpowiedź:**
+
+Twoje wydatki na paliwo wzrosły o 30% w porównaniu do zeszłego miesiąca. Sprawdź, czy wszystko się zgadza.
+
+
+
+---
+
+Zespół NexusAI
+
+```
+
+
+
+Taki briefing jest generowany przez dedykowany komponent DailyBriefingGenerator, który łączy dane z DuckDB, prognozy cashflow i listę pending decyzji, a następnie formatuje je przy użyciu LLM-a (Phi-3) w przyjazny, prosty język.
+
+
+
+---
+
+
+
+Część IV: Tryb "Biuro Rachunkowe jako Nadzorca"
+
+
+
+To innowacyjny model hybrydowy, który łączy autonomię AI z bezpieczeństwem zapewnianym przez profesjonalnego księgowego.
+
+
+
+4.1. Jak to działa:
+
+
+
+1. Codziennie: Autopilot działa w pełni autonomicznie – pobiera, rozpoznaje, księguje.
+
+2. Raz w tygodniu: Biuro rachunkowe dostaje raport "faktur z niskim zaufaniem" do przejrzenia.
+
+3. Przed zamknięciem miesiąca: Biuro dostaje kompletny pakiet dokumentów z adnotacjami AI do ostatecznej akceptacji.
+
+
+
+4.2. Role i uprawnienia:
+
+
+
+· Właściciel firmy (OWNER): Widzi dashboard, dostaje powiadomienia, podejmuje decyzje w sprawach ASK_USER. Nie musi rozumieć księgowości.
+
+· Biuro rachunkowe (ACCOUNTANT): Ma dostęp do wszystkich dokumentów, może poprawiać decyzje AI, zatwierdza zamknięcie miesiąca. Widzi tylko firmy, do których ma uprawnienia.
+
+· Autopilot (AI): Działa jako "młodszy księgowy", który wykonuje 90% pracy, a biuro rachunkowe jest "starszym księgowym", który nadzoruje.
+
+
+
+4.3. Korzyści:
+
+
+
+· Dla przedsiębiorcy: Zero stresu, zero znajomości księgowości, zero kar z US.
+
+· Dla biura rachunkowego: Zamiast ręcznego wprowadzania danych – nadzór nad AI. Możliwość obsługi 5x więcej klientów.
+
+· Dla systemu: Stały dopływ profesjonalnych korekt, które są najlepszym materiałem treningowym.
+
+
+
+---
+
+
+
+Część V: Monitorowanie i Bezpieczeństwo Autopilota
+
+
+
+Autonomiczny system finansowy musi być bezpieczny i audytowalny.
+
+
+
+5.1. Niezmienny dziennik decyzji (Audit Trail)
+
+
+
+Każda decyzja Autopilota jest zapisywana w niezmiennym łańcuchu audytowym (Merkle Tree) z polami:
+
+
+
+· Kto podjął decyzję (Autopilot / użytkownik / biuro rachunkowe).
+
+· Na podstawie jakich danych.
+
+· Z jakim Trust Score.
+
+· Co było wynikiem.
+
+
+
+Dzięki temu w razie kontroli skarbowej można dokładnie prześledzić, dlaczego dana faktura została zaksięgowana w taki, a nie inny sposób.
+
+
+
+5.2. Circuit Breaker dla Autopilota
+
+
+
+Jeśli system wykryje, że:
+
+
+
+· Użytkownik poprawia więcej niż 30% decyzji Autopilota,
+
+· Trust Score nagle spada dla wielu faktur,
+
+· Pojawiają się błędy krytyczne (np. niezgadzająca się suma bilansowa),
+
+
+
+Autopilot automatycznie przechodzi w tryb "Safe Mode" – przestaje księgować automatycznie, wszystkie decyzje oznacza jako ASK_USER i wysyła alert do biura rachunkowego.
+
+
+
+5.3. Testy regresji decyzji (Golden Dataset)
+
+
+
+Raz w tygodniu system testuje Autopilota na zestawie 20 "złotych faktur" (z ręcznie zweryfikowanymi decyzjami). Jeśli nowy model podejmie inną decyzję niż oczekiwana, system blokuje jego wdrożenie i wysyła alert do administratora.
+
+
+
+---
+
+
+
+Część VI: Doświadczenie Użytkownika – Przeprojektowanie Interfejsu
+
+
+
+6.1. Dashboard Autopilota (widok domyślny)
+
+
+
+Po zalogowaniu użytkownik widzi nie listę faktur, ale:
+
+
+
+```
+
+┌─────────────────────────────────────────────┐
+
+│ Cześć Marek! │
+
+│ │
+
+│ 📊 W tym miesiącu: │
+
+│ • Przychód: 45 000 zł │
+
+│ • Koszty: 12 300 zł │
+
+│ • Zysk: 32 700 zł │
+
+│ │
+
+│ ✅ Dziś zaksięgowałem 4 faktury automatycznie│
+
+│ │
+
+│ ⚠️ 1 faktura wymaga Twojej decyzji: │
+
+│ ┌─────────────────────────────────────────┐ │
+
+│ │ Nowy kontrahent "XYZ" │ │
+
+│ │ Faktura na 3 500 zł │ │
+
+│ │ [To koszt firmowy] [To wydatek prywatny]│ │
+
+│ └─────────────────────────────────────────┘ │
+
+│ │
+
+│ 💡 Podpowiedź: Zbliża się termin VAT. │
+
+│ Szacunkowa kwota: 2 300 zł. │
+
+│ │
+
+│ [Zobacz wszystkie faktury] │
+
+└─────────────────────────────────────────────┘
+
+``
+
+
+
+
+
+
+
+
+
+6.2. Widok "Minuta dziennie"
+
+
+
+To specjalny tryb dla użytkowników, którzy nie chcą widzieć nic poza absolutnym minimum. Po otwarciu aplikacji widzą tylko listę decyzji do podjęcia, każda z dwoma przyciskami. Zero nawigacji, zero zbędnych informacji.
+
+
+
+---
+
+
+
+Część VII: Plan Implementacji w Istniejącym Kodzie
+
+
+
+7.1. Co już jest (wykorzystujemy):
+
+
+
+Komponent Plik Status
+
+OCR (Surya + Paddle) Code/PIPELINE/ocr.py ✅ Gotowe
+
+LayoutLM Code/PIPELINE/llm_extractor.py ✅ Gotowe
+
+Phi-3 Code/CORE/llm_extractor.py ✅ Gotowe
+
+AutoGluon Code/CORE/auto_categorizer.py ⚠️ Do podłączenia
+
+Active Learning Code/CORE/active_learning.py ✅ Gotowe
+
+Rules Engine Code/SERVICES/rules_engine.py ✅ Gotowe
+
+Mail Ingestion Code/CORE/integrations/mail.py ✅ Gotowe
+
+Bank Reconciliation Code/Roboton_Reflekton/reconciliation_engine.py ✅ Gotowe
+
+NATS + Outbox Code/API/tasks.py, Code/CORE/outbox_relay.py ✅ Gotowe
+
+Merkle Audit Code/SERVICES/merkle_audit.py ✅ Gotowe
+
+
+
+7.2. Co trzeba dodać:
+
+
+
+1. Code/SERVICES/autopilot.py – główny silnik decyzyjny (AutopilotEngine + TrustScoreCalculator).
+
+2. Code/SERVICES/daily_briefing.py – generator codziennych podsumowań.
+
+3. Code/SERVICES/decision_logger.py – rejestracja decyzji do audytu i uczenia.
+
+4. Code/API/routes/autopilot.py – endpointy API dla UI (lista decyzji, akceptacja/odrzucenie).
+
+5. Code/SERVICES/notification_service.py – wysyłka powiadomień push/email/SMS.
+
+6. Modyfikacja Code/CORE/tasks.py – integracja Autopilota z pipeline przetwarzania faktur.
+
+7. Nowy widok w Flet – "Dashboard Autopilota" i "Minuta dziennie".
+
+
+
+7.3. Harmonogram wdrożenia:
+
+
+
+Faza Zakres Czas
+
+Faza 1 Trust Score Calculator + AutopilotEngine (AUTO_POST tylko dla znanych kontrahentów) 2 tygodnie
+
+Faza 2 SUGGEST + ASK_USER + nowy interfejs "Minuta dziennie" 2 tygodnie
+
+Faza 3 Codzienny briefing + powiadomienia email/SMS 2 tygodnie
+
+Faza 4 Pętla uczenia (retrening) + personalizacja progów 2 tygodnie
+
+Faza 5 Tryb "Biuro rachunkowe jako nadzorca" + wielodostępność 2 tygodnie
+
+
+
+---
+
+
+
+Podsumowanie: Dlaczego to jest przełomowe?
+
+
+
+Autopilot księgowy w NexusAI to nie kolejna funkcja – to nowa kategoria produktu, która:
+
+
+
+1. Eliminuje potrzebę znajomości księgowości przez przedsiębiorcę.
+
+2. Uczy się i dostosowuje do specyfiki każdej firmy.
+
+3. Działa proaktywnie, a nie reaktywnie.
+
+4. Jest bezpieczny i audytowalny, co jest kluczowe w finansach.
+
+5. Łączy autonomię AI z nadzorem profesjonalisty, tworząc model hybrydowy.
+
+
+
+Efekt końcowy: klient nie mówi "używam aplikacji do faktur", tylko "moja księgowość sama się robi". To jest prawdziwa innowacja.
+
+
+
+
+
+
+
+
+
+Wchodzę głęboko. Twoja decyzja o skupieniu się na punkcie 2 – Samouczącym się modelu dla każdej firmy – to celny strzał w serce przewagi konkurencyjnej. To tutaj NexusAI z "kolejnego OCR-a do faktur" staje się samodoskonalącym się partnerem finansowym. Nie wystarczy, że system jest inteligentny; on musi stawać się coraz inteligentniejszy z każdą fakturą i każdą poprawką, adaptując się do unikalnego DNA mikrofirmy.
+
+
+
+Stworzyłem dla Ciebie nie tylko opis funkcji, ale kompleksową architekturę inteligentnego rdzenia, który nazwałem "The Perpetual Learning Engine" (PLE) – Silnik Wieczystego Uczenia. Jest to rozwiązanie technicznie osadzone w Twoim obecnym kodzie, które wynosi koncepcję Active Learningu na poziom niespotykany wśród konkurencji.
+
+
+
+---
+
+
+
+The Perpetual Learning Engine (PLE) – Silnik Wieczystego Uczenia
+
+
+
+Wyobraź sobie księgowego, który nigdy nie odchodzi z firmy. Pamięta każdą fakturę od 10 lat, zna ulubione konta księgowe szefa, wie, że "MediaMarkt" z NIP-em kończącym się na 123 to zawsze koszt wyposażenia biura, a od stycznia 2026 zmienił się układ faktury od Orange. Pracuje coraz szybciej i nigdy nie popełnia dwa razy tego samego błędu. PLE to cyfrowa esencja takiego księgowego.
+
+
+
+1. Architektura "Cognitive Core" (Rdzeń Poznawczy)
+
+
+
+PLE nie jest pojedynczym modelem. To samoorganizujący się system trzech współpracujących warstw pamięci, które naśladują ludzkie procesy uczenia się:
+
+
+
+· Warstwa 1: Pamięć Krótkotrwała (Short-Term Memory - STM)
+
+  · Czym jest: Błyskawiczny, lokalny cache wektorowy w LanceDB, specyficzny dla jednego kontrahenta.
+
+  · Działanie: Gdy system przetwarza fakturę, najpierw odpytuje STM. Jeśli znajdzie tam bardzo podobną fakturę (np. od tego samego dostawcy z poprzedniego miesiąca), kopiuje wzorzec ekstrakcji i dekretacji z dokładnością do pojedynczego pola formularza. To działa w milisekundach i daje >99% pewności. Nie ma potrzeby angażowania ciężkich modeli AI.
+
+· Warstwa 2: Pamięć Długotrwała (Long-Term Memory - LTM)
+
+  · Czym jest: Baza wiedzy w DuckDB, która przechowuje zagregowane, statystyczne wzorce zachowań dla każdego kontrahenta i kategorii kosztów.
+
+  · Działanie: Zamiast pojedynczych faktur, LTM przechowuje reguły: "Dla kontrahenta X w 95% przypadków kwota brutto znajduje się w polu z etykietą 'Do zapłaty', a konto księgowe to 402-01". Gdy STM nie da rady (nowy kontrahent), PLE sięga do LTM i szuka analogii – "Ten nowy kontrahent wygląda jak inny kontrahent z branży IT, więc prawdopodobnie też będzie kosztem IT".
+
+· Warstwa 3: Model Fundamentalny (Foundation Model)
+
+  · Czym jest: Domyślny, uniwersalny model LayoutLM/AutoGluon, który jest wspólny dla wszystkich użytkowników.
+
+  · Działanie: Jest jak nowy, dobrze wykształcony stażysta w biurze rachunkowym. Używany tylko w ostateczności, gdy obie pamięci zawiodą. Jego wynik jest bazą do nauki dla STM i LTM.
+
+
+
+2. Cykl Uczenia "Obserwuj-Ucz się-Adaptuj" (Observe-Learn-Adapt Loop)
+
+
+
+To serce PLE. W przeciwieństwie do typowego, rzadkiego fine-tuningu, PLE działa w trybie quasi-ciągłym.
+
+
+
+1. Faza Obserwacji (Observe):
+
+   · System przetwarza fakturę FV/123/2026 od Orange. AutopilotEngine ma 80% pewności, że to koszt telekomunikacji.
+
+   · Użytkownik (lub biuro rachunkowe) poprawia dekretację na "Usługi doradcze" i zmienia kategorię kosztową. To zdarzenie jest natychmiast zapisywane w LanceDB jako "Cognitive Artifact" – pakiet danych zawierający: oryginalny obraz, błędną sugestię systemu, korektę użytkownika oraz kontekst (NIP, datę, porę dnia).
+
+2. Faza Uczenia (Learn):
+
+   · Pętla mikro-uczenia (Micro-Learning): W tle, dla tego konkretnego kontrahenta, PLE natychmiast aktualizuje STM (Pamięć Krótkotrwałą). Tworzy nowy embedding faktury z poprawnymi danymi. Jeśli teraz przyjdzie następna faktura od Orange, zostanie rozpoznana z >95% pewnością.
+
+   · Pętla makro-uczenia (Macro-Learning): W nocy, lub gdy uzbiera się 50 nowych artefaktów od różnych kontrahentów, uruchamia się głębszy proces:
+
+     · LTM w DuckDB przelicza swoje statystki. "Aha, użytkownicy z branży IT często zmieniają kategorię z telekomunikacji na usługi. Zaktualizujmy ogólną regułę."
+
+     · Model Fundamentalny (np. AutoGluon) jest poddawany fine-tuningowi z użyciem LoRA na tych nowych danych. Ten proces odbywa się na GPU i jest w pełni automatyczny. W jego wyniku powstaje nowa, lepsza wersja modelu.
+
+3. Faza Adaptacji (Adapt):
+
+   · Nowa wersja modelu fundamentalnego nie jest od razu wdrażana. Trafia do "Cienia" (Shadow Mode).
+
+   · Przez kolejne godziny, PLE przetwarza każdą nową fakturę dwutorowo: starym, aktywnym modelem i nowym modelem "w cieniu". Wyniki są porównywane.
+
+   · Jeśli model w cieniu osiąga wyższą skuteczność (mniej poprawek użytkownika, wyższa pewność), PLE automatycznie go promuje i staje się on nowym modelem fundamentalnym. Stary model jest archiwizowany jako kopia zapasowa.
+
+
+
+3. "Digital Twin" dla Firmy (Cyfrowy Bliźniak)
+
+
+
+Najbardziej niesamowitym aspektem PLE jest to, że z czasem tworzy on dla każdej mikrofirmy jej unikalny, cyfrowy model zachowań księgowych. To nie jest już tylko zbiór reguł, ale predykcyjny symulator:
+
+
+
+· Predykcja kontrahenta: Zanim nowa faktura od "Budimex" trafi do OCR, PLE już wie, na podstawie historii, że z 90% prawdopodobieństwem będzie to koszt budowlany na koncie 450 i zostanie opłacona z 14-dniowym opóźnieniem. Ta predykcja jest przekazywana do AutopilotEngine, skracając czas decyzji do zera.
+
+· Predykcja anomalii: PLE uczy się nie tylko poprawnych wzorców, ale i "normalnych odchyleń". Wie, że co roku w grudniu przychodzi faktura za kalendarze od "AGATEX" i to jest OK. Ale jeśli nagle przyjdzie faktura od nowego kontrahenta na 5000 PLN za "usługi IT", której układ jest niespotykany, PLE podnosi czerwoną flagę, nawet jeśli sama kwota nie przekracza progów.
+
+
+
+4. Mechanizm "Zapominania" (Curated Forgetting)
+
+
+
+W systemach, które uczą się wiecznie, istnieje ryzyko "przeuczenia" i gromadzenia przestarzałych wzorców. Dlatego PLE ma wbudowany mechanizm "kuratorskiego zapominania":
+
+
+
+· Co kwartał PLE analizuje użyteczność każdego Cognitive Artifact w STM/LTM.
+
+· Wzorce, które nie były użyte od 12 miesięcy, są przenoszone do "Archiwum Wiedzy" (skompresowanego i tańszego w utrzymaniu).
+
+· Wzorce sprzeczne z nowszymi, lepiej ocenianymi wzorcami są automatycznie usuwane. Dzięki temu baza wiedzy jest zawsze aktualna i "czysta", a jej rozmiar i zużycie zasobów są pod kontrolą.
+
+
+
+5. Integracja z "Autopilotem"
+
+
+
+PLE nie jest odizolowaną wyspą. Jest bezpośrednio zintegrowany z AutopilotEngine:
+
+
+
+· Gdy Autopilot ma 80% pewności, PLE mówi: "Spokojnie, znam tego kontrahenta, w zeszłym miesiącu było to samo. Daję 99%". Autopilot zmienia decyzję na AUTO_POST.
+
+· Gdy Autopilot ma 99% pewności, ale PLE widzi pierwszą w historii fakturę od tego kontrahenta, może obniżyć pewność do SUGGEST, dodając notatkę: "Nowy kontrahent, zweryfikuj poprawność danych przed akceptacją".
+
+
+
+To jest synergia, która tworzy autonomiczność. Jeden system bez drugiego jest tylko "inteligentny". Razem stają się "mądre".
+
+
+
+Wdrożenie PLE to ewolucja, a nie rewolucja. Większość potrzebnych komponentów już masz. Teraz trzeba je połączyć w ten nowy, genialny obieg zamknięty.
+
+
+
+
+
+Wchodzimy na najgłębszy poziom szczegółowości. Poniżej znajduje się wyczerpująca, drobiazgowa eksploracja Silnika Wieczystego Uczenia (The Perpetual Learning Engine – PLE) – autonomicznego, adaptacyjnego mózgu systemu NexusAI. Ten dokument jest rozwinięciem koncepcji „Samouczącego się modelu” do rangi kompletnego, możliwego do zaimplementowania podsystemu.
+
+
+
+---
+
+
+
+The Perpetual Learning Engine (PLE) – Anatomia Samodoskonalącego się Umysłu Księgowego
+
+
+
+PLE nie jest pojedynczą funkcją, ale złożonym, samoorganizującym się ekosystemem wewnątrz aplikacji. Jego celem jest nieustanne skracanie dystansu między surowym dokumentem a zaksięgowaną fakturą, przy jednoczesnym minimalizowaniu potrzeby interwencji człowieka. Działa na zasadzie kognitywnej pętli sprzężenia zwrotnego, która z każdą iteracją staje się mądrzejsza, szybsza i bardziej spersonalizowana dla konkretnej mikrofirmy.
+
+
+
+1. Trójwarstwowy Rdzeń Poznawczy – Hierarchia Pamięci
+
+
+
+Sercem PLE jest hierarchiczna architektura pamięci, wzorowana na ludzkich procesach kognitywnych. Każda warstwa ma ściśle określoną rolę, strukturę danych i mechanizm interakcji z pozostałymi. Komunikują się one asynchronicznie poprzez dedykowane tematy NATS JetStream, co zapewnia odsprzęgnięcie i odporność na błędy.
+
+
+
+Warstwa 1: Pamięć Krótkotrwała (Short-Term Memory – STM)
+
+
+
+Rola: Zapewnienie natychmiastowej, bezkontekstowej odpowiedzi na znane bodźce. Działa jak podświadomość – „to już widziałem, zrób dokładnie tak samo”.
+
+
+
+· Fizyczna lokalizacja: Wyodrębniona przestrzeń w LanceDB (oddzielna tabela stm_cache), zoptymalizowana pod kątem ultra-szybkiego odczytu.
+
+· Struktura danych (Cognitive Snapshot): Każdy wpis w STM to nie tylko surowy wektor, ale kompletny, gotowy do użycia wzorzec decyzyjny. Zawiera:
+
+  · embedding: Wektor semantyczny całej faktury (generowany przez Sentence-Transformer), służący do wyszukiwania podobieństwa.
+
+  · vendor_nip: Kluczowy identyfikator kontrahenta.
+
+  · template_signature: Skrót (hash) układu graficznego faktury (z modelu LayoutLM), pozwalający błyskawicznie wykryć ten sam szablon dokumentu.
+
+  · extraction_pattern: Pełna mapa „gdzie co jest” – np. {"invoice_number": {"bbox": [x1,y1,x2,y2], "regex": "FV/\d+"}, "amount_gross": ...}.
+
+  · decision_pattern: Gotowa odpowiedź – zasugerowane konta księgowe, kategoria kosztowa, a nawet przewidywany termin płatności.
+
+  · last_used_at: Sygnatura czasowa ostatniego użycia, kluczowa dla mechanizmu zapominania.
+
+  · success_rate: Procentowy wskaźnik skuteczności tego wzorca (ile razy użyty poprawnie vs. ile razy wymagał korekty).
+
+· Proces wyszukiwania (Recall): Jest to szybki, dwuetapowy proces hybrydowy, realizowany w czasie krótszym niż 50ms:
+
+  1. Filtr Precyzyjny: Zapytanie WHERE vendor_nip = '...' AND template_signature = '...' . Jeśli trafienie jest idealne (ten sam kontrahent i identyczny układ graficzny), STM zwraca gotowe decision_pattern z pominięciem całego pipeline'u AI. To daje pewność >99.9%.
+
+  2. Wyszukiwanie Wektorowe (Fallback): Jeśli nie ma idealnego trafienia, uruchamiane jest wyszukiwanie po embedding (cosinusowa odległość wektorów), ale nadal ograniczone do vendor_nip. Szuka „najbardziej podobnej faktury od tego samego kontrahenta”. To rozwiązuje problem zmiany układu faktury.
+
+· Aktualizacja (Micro-Learning): Jest natychmiastowa i bezpośrednia. Gdy użytkownik lub biuro rachunkowe zatwierdzi fakturę, nowy Cognitive Snapshot jest natychmiast zapisywany w STM, zastępując starszy lub mniej skuteczny.
+
+
+
+Warstwa 2: Pamięć Długotrwała (Long-Term Memory – LTM)
+
+
+
+Rola: Gromadzenie zagregowanej, statystycznej wiedzy o zachowaniach kontrahentów i trendach w firmie. Działa jak doświadczenie – „zazwyczaj w tej branży takie faktury księguje się na koncie 402”.
+
+
+
+· Fizyczna lokalizacja: Silnik analityczny DuckDB, wykorzystujący materializowane widoki i cyklicznie przeliczane agregaty.
+
+· Struktura wiedzy: LTM nie przechowuje pojedynczych faktur, ale wyabstrahowane reguły w tabelach analitycznych:
+
+  · vendor_intelligence (już istnieje!): avg_payment_delay, price_volatility_index, reliability_score. PLE rozszerza ją o preferred_account_map – mapę najczęściej używanych kont księgowych dla danego NIP-u.
+
+  · category_trends: Dla każdej kategorii kosztowej (paliwo, IT, czynsz) przechowuje zagregowane wzorce sezonowości i trendy cenowe, np. „w grudniu wydatki na IT rosną o 20%”.
+
+  · cross_vendor_analogies: Próbuje znaleźć podobieństwa między kontrahentami na podstawie nazw, słów kluczowych w OCR i branży (z GUS). Tworzy „grupy podobnych kontrahentów”, dla których można stosować wspólne reguły przy pierwszym kontakcie z nowym dostawcą.
+
+· Proces wnioskowania (Inference): Gdy STM nie jest w stanie pomóc (np. nowy kontrahent), PLE wysyła zapytanie do LTM:
+
+  1. Pobiera reliability_score i preferred_account_map dla danego NIP-u. Jeśli kontrahent jest znany, to wystarczy.
+
+  2. Jeśli kontrahent jest zupełnie nowy, LTM szuka w cross_vendor_analogies grupy podobnych firm i na podstawie ich historii generuje wstępną, ostrożną sugestię (z odpowiednio obniżoną pewnością).
+
+· Aktualizacja (Macro-Learning): Odbywa się w tle, w ramach nocnych zadań cronowych. Silnik dlt + Polars przetwarza wszystkie nowe Cognitive Artifacts i przelicza agregaty w LTM, uaktualniając statystyki i reguły.
+
+
+
+Warstwa 3: Model Fundamentalny (Foundation Model – FM)
+
+
+
+Rola: Uniwersalny, „świeżo wykształcony” model, który radzi sobie z zupełnie nieznanymi sytuacjami. Jest ostatnią linią obrony i jednocześnie źródłem nowej wiedzy dla STM i LTM.
+
+
+
+· Komponenty: To zestaw modeli, a nie jeden:
+
+  · Layout Analyzer: Model LiLT + HerBERT, odpowiedzialny za zrozumienie układu graficznego.
+
+  · Data Extractor: Model Phi-3-mini, działający jako sędzia w przypadku konfliktu wyników.
+
+  · Accounting Categorizer: Model AutoGluon, wyszkolony na ogólnym zbiorze danych, do predykcji kont księgowych.
+
+· Proces Fine-Tuningu z LoRA (Low-Rank Adaptation):
+
+  · PLE nigdy nie trenuje modeli od zera. Zamiast tego, używa techniki LoRA do dostrajania FM. Tworzy bardzo małe (kilka MB) „adaptery” – pliki wag, które są doklejane do zamrożonego, bazowego modelu.
+
+  · Każda mikrofirma, a nawet każdy kontrahent, może mieć swój własny, dedykowany adapter LoRA. To oznacza, że model bazowy jest współdzielony, ale jego zachowanie jest w pełni spersonalizowane.
+
+  · Proces fine-tuningu jest uruchamiany cyklicznie (np. co tydzień) i wykorzystuje wyłącznie lokalne, zweryfikowane Cognitive Artifacts. Do treningu używany jest wyłącznie GPU procesora (jeśli dostępne) lub CPU w tle.
+
+· Tryb Cienia (Shadow Mode) i Automatyczna Promocja:
+
+  · Po stworzeniu nowego adaptera LoRA (FM_v1.1), nie zastępuje on od razu aktywnego modelu (FM_v1.0).
+
+  · FM_v1.1 jest uruchamiany równolegle w trybie cienia. Każda nowa faktura jest przetwarzana zarówno przez FM_v1.0, jak i FM_v1.1. Wyniki obu modeli są rejestrowane w specjalnym dzienniku model_battleground.
+
+  · System monitoruje kluczowe metryki (success_rate, correction_rate) dla obu modeli. Gdy FM_v1.1 wykaże statystycznie istotną przewagę nad FM_v1.0 przez określony czas (np. 48h i minimum 50 faktur), PLE automatycznie:
+
+    1. Promuje adapter FM_v1.1 do roli aktywnego modelu.
+
+    2. Archiwizuje FM_v1.0 jako kopię zapasową.
+
+    3. Wysyła powiadomienie do użytkownika/BIURA: „Nowy model księgowy został wdrożony. Skuteczność wzrosła o 3%”.
+
+
+
+2. Cognitive Artifact – Atom Wiedzy PLE
+
+
+
+To ustandaryzowana, niezmienna jednostka danych, która zasila proces uczenia. Każda interakcja z systemem, która wnosi nową wiedzę, generuje Cognitive Artifact.
+
+
+
+· Kiedy powstaje? W momencie, gdy człowiek (użytkownik lub biuro rachunkowe) podejmuje decyzję, która koryguje lub potwierdza sugestię systemu (np. zmiana konta księgowego, korekta źle odczytanej kwoty, ręczne dopasowanie płatności).
+
+· Co zawiera?
+
+  · artifact_id: Unikalny identyfikator.
+
+  · tenant_id: Identyfikator firmy.
+
+  · source_document_id: ID oryginalnej faktury.
+
+  · timestamp: Czas zdarzenia.
+
+  · input_context: Pełny snapshot danych wejściowych – oryginalny obraz, wynik OCR, embedding.
+
+  · system_suggestion: Kompletna propozycja systemu (z AutopilotEngine), która została pokazana użytkownikowi.
+
+  · human_decision: Ostateczna decyzja człowieka (np. {"account_debit": "402", "amount_gross": 150.00}).
+
+  · decision_type: Czy była to korekta (CORRECTION), potwierdzenie (CONFIRMATION), czy nowa informacja (NEW_VENDOR).
+
+  · user_id: Kto podjął decyzję.
+
+  · correlation_id: Identyfikator śledzenia, łączący to zdarzenie z logami i innymi metrykami.
+
+· Gdzie jest przechowywany? W dedykowanej, niezmiennej tabeli cognitive_artifacts w SQLite. Jest to tzw. „Złoty Zbiór Danych” (Golden Dataset) dla mikrofirmy, którego integralność jest chroniona łańcuchem hashy.
+
+
+
+3. Komunikacja i Orkiestracja – Układ Nerwowy PLE
+
+
+
+PLE jest systemem sterowanym zdarzeniami. Wszystkie jego komponenty komunikują się asynchronicznie przez NATS JetStream, co gwarantuje niezawodność i odsprzęgnięcie.
+
+
+
+Główne strumienie zdarzeń (NATS Subjects):
+
+
+
+· ple.stm.snapshot.created: Publikowany po wygenerowaniu nowego Cognitive Snapshot dla STM. Konsumentem jest serwis zarządzający STM, który zapisuje go w LanceDB.
+
+· ple.artifact.created: Publikowany po każdej decyzji człowieka. Główny konsument to Macro-Learning Worker, który kolejno:
+
+  1. Zapisuje artefakt w SQLite.
+
+  2. Wyzwala aktualizację LTM w DuckDB (poprzez ple.ltm.update).
+
+  3. Dodaje artefakt do kolejki dla przyszłego fine-tuningu FM.
+
+· ple.fm.finetune.start: Sygnał (np. z harmonogramu cron) do uruchomienia procesu fine-tuningu FM. Konsumentem jest dedykowany proces uruchamiający trening na GPU.
+
+· ple.fm.shadow.deploy: Publikowany po wygenerowaniu nowego adaptera LoRA. Konsument (Shadow Mode Manager) konfiguruje środowisko do pracy w trybie cienia.
+
+· ple.fm.shadow.battle_result: Po przetworzeniu faktury w trybie cienia, publikowane są wyniki porównania. Konsument (Model Promoter) agreguje te wyniki i podejmuje decyzję o promocji modelu.
+
+· ple.model.promoted: Zdarzenie informujące cały system o zmianie aktywnego modelu fundamentalnego.
+
+
+
+4. Integracja z Autopilotem – Synergia Inteligencji
+
+
+
+To kluczowa interakcja, która czyni system autonomicznym. AutopilotEngine nie działa w próżni – przed podjęciem decyzji konsultuje się z PLE, a PLE moduluje jego parametry decyzyjne.
+
+
+
+Przebieg procesu dla nowej faktury:
+
+
+
+1. AutopilotEngine otrzymuje dane z pipeline'u OCR.
+
+2. Konsultacja z PLE (przez dedykowany request-reply w NATS):
+
+   · Wysyła zapytanie ple.advise z danymi faktury (NIP, kwota, embedding, itp.).
+
+   · PLE odpowiada obiektem PLEAdvice:
+
+     · confidence_modifier: Wartość liczbowa (np. +0.15, -0.30), która zostanie dodana do bazowej pewności Autopilota.
+
+     · suggested_decision_override: Opcjonalnie, jeśli STM ma bardzo wysoki success_rate, może bezpośrednio zasugerować decyzję (AUTO_POST).
+
+     · reasoning: Czytelny dla człowieka komentarz, np. "Znam tego kontrahenta od 2 lat. Zawsze księgujesz go na koncie 402. Daję 99% pewności.".
+
+3. AutopilotEngine podejmuje finalną decyzję, uwzględniając radę od PLE, swoje progi i inne reguły biznesowe.
+
+4. Rezultat tej decyzji (zwłaszcza gdy była to SUGGEST lub ASK_USER) jest oczekiwany przez PLE. Gdy człowiek w końcu podejmie decyzję, generowany jest Cognitive Artifact, który zamyka pętlę uczenia i jest wykorzystywany do natychmiastowej aktualizacji STM.
+
+
+
+5. Mechanizm "Kuratorskiego Zapominania" – Higiena Pamięci
+
+
+
+Aby zapobiec „przeuczeniu” i degradacji wydajności, PLE aktywnie zarządza swoją wiedzą. Jest to proces cykliczny (np. co kwartał), uruchamiany jako zadanie cron.
+
+
+
+1. Analiza użyteczności STM: Dla każdego Cognitive Snapshot w STM sprawdzane są last_used_at i success_rate.
+
+   · Snapshoty, które nie były użyte od 180 dni, są archiwizowane. Są przenoszone do tańszej pamięci (skompresowana tabela w DuckDB) i usuwane z szybkiej LanceDB.
+
+   · Snapshoty z success_rate poniżej 70%, które mają nowsze odpowiedniki dla tego samego kontrahenta, są automatycznie usuwane.
+
+2. Czyszczenie LTM: Reguły w DuckDB, oparte na danych starszych niż 24 miesiące, które nie mają już wpływu na bieżące trendy, są oznaczane jako „historyczne” i nie są brane pod uwagę przy wnioskowaniu.
+
+3. Archiwizacja Modeli FM: Stare adaptery LoRA i modele fundamentalne są archiwizowane do taniego storage'u obiektowego (S3/MinIO). W każdej chwili można je przywrócić.
+
+
+
+6. Izolacja Danych i Bezpieczeństwo
+
+
+
+PLE działa w ścisłej izolacji per tenant (mikrofirma). Cała wiedza (STM, LTM, Cognitive Artifacts, adaptery LoRA) jest oznaczona identyfikatorem tenant_id. Wszystkie zapytania do PLE są filtrowane po tenant_id na poziomie middleware autoryzacyjnego Litestar. Oznacza to, że model firmy A nigdy nie zobaczy i nie wykorzysta danych firmy B. Jedynym wyjątkiem jest uniwersalny, bazowy Model Fundamentalny, który jest wspólny dla wszystkich, ale jest całkowicie anonimowy.
+
+
+
+---
+
+
+
+PLE to nie tylko funkcja – to filozofia działania systemu. To przejście od programu, który reaguje na polecenia, do inteligentnego partnera, który uczy się, przewiduje i proaktywnie prowadzi przedsiębiorcę przez zawiłości księgowości. Z każdą poprawką staje się mądrzejszy, a docelowo – prawie nieomylny w ramach konkretnej mikrofirmy.
+
+
+
+
+
+
+
+Oto dogłębna, rozbudowana koncepcja Rekonsyliacji Bankowej w Czasie Rzeczywistym, która wyrasta z Twojego kodu, ale wybiega daleko poza standardowe mechanizmy, tworząc rozwiązanie na miarę autonomicznego asystenta finansowego dla mikrofirm.
+
+
+
+---
+
+
+
+Od ręcznego uzgadniania do całkowitej autonomii
+
+
+
+Problem uzgadniania faktur z wyciągiem bankowym to dla mikrofirm jedna z najbardziej czasochłonnych i frustrujących czynności. Jest to praca żmudna, wymagająca skupienia i często prowadząca do błędów. Typowe systemy albo w ogóle nie wspierają tego procesu, albo robią to w prymitywny sposób – dopasowując jedynie identyczne kwoty. To działa tylko w idealnym świecie.
+
+
+
+W świecie mikrofirmy płatności są łączone, opóźniane, przychodzą w ratach, mają niejasne tytuły, a czasem dotyczą kilku faktur naraz. To tu rodzi się chaos, z którym przedsiębiorca zostaje sam.
+
+
+
+Twoja wizja rekonsyliacji w czasie rzeczywistym musi wykraczać daleko poza proste "matchowanie". Musi stać się inteligentnym, samouczącym się narratorem finansowym, który nie tylko rozlicza przeszłość, ale przewiduje przyszłość i aktywnie wspiera płynność finansową firmy.
+
+
+
+---
+
+
+
+Genialne rozwiązanie: Inteligentny, Samouczący się Asystent Rozliczeń
+
+
+
+Wyobraź sobie system, który nie czeka, aż zapłacisz, ale aktywnie zarządza całym procesem. Oto jego warstwy, które razem tworzą niesamowite rozwiązanie.
+
+
+
+Warstwa 1: Samoobsługowe pobieranie danych – zero konfiguracji
+
+
+
+System samodzielnie pobiera dane bankowe, adaptując się do możliwości banku:
+
+
+
+· PSD2: Automatyczne, bezpieczne połączenie przez Open Banking i regularne pobieranie transakcji w tle.
+
+· Plik CSV/MT940: Użytkownik po prostu wrzuca plik do dedykowanego folderu lub na wskazany adres e-mail. System go przechwytuje, analizuje i integruje dane.
+
+· Integracja z KSeF: Automatyczne pobieranie faktur zakupowych od kontrahentów, zanim jeszcze trafią one fizycznie do firmy.
+
+
+
+Kluczowe jest to, że użytkownik nie konfiguruje żadnych mapowań ani reguł. System od razu wie, że to wyciąg bankowy, a nie faktura.
+
+
+
+Warstwa 2: Wielowymiarowe, Uczące się Dopasowanie
+
+
+
+To serce systemu, które wyrasta z Twojego SmartReconciliationEngine i BankReconciliationEngine. Zamiast jednego algorytmu, działa tu kaskada decyzyjna.
+
+
+
+Poziom 1: Pewne i natychmiastowe dopasowanie (Auto-Match)
+
+Działa w milisekundach, gdy kwota, data, NIP i/lub tytuł przelewu idealnie pasują do faktury. Faktura jest natychmiast i cicho oznaczana jako opłacona. Użytkownik nawet nie musi o tym wiedzieć.
+
+
+
+Poziom 2: Inteligentne dopasowanie probabilistyczne (Smart-Match)
+
+Wykorzystuje model ML, który na podstawie setek cech (np. podobieństwo tytułu cosine similarity, odległość daty, historia kontrahenta) oblicza prawdopodobieństwo poprawnego dopasowania.
+
+
+
+· Jeśli pewność > 95% – działa jak Auto-Match.
+
+· Jeśli pewność jest między 70% a 95% – system sugeruje dopasowanie, ale czeka na akceptację użytkownika (lub, w trybie autonomicznym, podejmuje decyzję samodzielnie, jeśli tak skonfigurowano).
+
+· Poniżej 70% – przechodzi do poziomu 3.
+
+
+
+Poziom 3: Analiza kontekstowa i płatności zbiorcze
+
+System rozpoznaje, że jedna transakcja bankowa może opłacać kilka faktur. Analizuje kombinacje i sumy częściowe, by znaleźć optymalny podział. Jeśli znajduje idealne dopasowanie sumy – rozbija płatność i przypisuje ją do wielu faktur.
+
+
+
+Poziom 4: Samouczący się silnik behawioralny
+
+System analizuje historię płatności każdego kontrahenta i uczy się jego wzorców. Na przykład:
+
+
+
+· Kontrahent "X" zawsze płaci z tytułem "Faktura nr...". System zapamiętuje tę frazę i odtąd automatycznie wyciąga numer faktury z tytułu przelewu.
+
+· Kontrahent "Y" zawsze opóźnia płatności o 3 dni. System uwzględnia to opóźnienie przy dopasowywaniu.
+
+· Kontrahent "Z" czasem płaci zaliczkę, a resztę później. System uczy się tego wzorca i automatycznie przypisuje częściowe płatności do faktur, tworząc wewnętrzne "wirtualne subkonta".
+
+
+
+Warstwa 3: Proaktywne zarządzanie należnościami (Dunning 2.0)
+
+
+
+System nie tylko stwierdza, że faktura nie jest opłacona. Przewiduje problemy i działa.
+
+
+
+· Prognozowanie opóźnień: Na podstawie historycznych opóźnień kontrahenta, system przewiduje, kiedy faktura prawdopodobnie zostanie opłacona. Informuje o tym użytkownika spokojnym komunikatem: "Faktura od X powinna wpłynąć jutro, ale na podstawie historii, realny termin to przyszły tydzień."
+
+· Automatyczne, inteligentne przypomnienia: Gdy faktura jest poważnie przeterminowana, system sam wysyła do kontrahenta przypomnienie. Jego ton jest dostosowany do historii i relacji z kontrahentem. Dla stałego, solidnego partnera to może być uprzejma wiadomość, a dla niesolidnego płatnika – stanowcze wezwanie.
+
+· Eskalacja do użytkownika: Jeśli automatyczne przypomnienia nie przynoszą efektu, system informuje użytkownika i sugeruje np. wysłanie ostatecznego wezwania do zapłaty.
+
+
+
+Warstwa 4: Niezrównana prostota i informacja zwrotna (UX)
+
+
+
+Cała ta złożoność jest ukryta. Użytkownik widzi tylko:
+
+
+
+· Czysty pulpit: Lista "Do zapłaty" (zobowiązania) i "Oczekujące" (należności), ale tylko te, które wymagają jego uwagi. Reszta jest już cicho i automatycznie rozliczona.
+
+· Jeden przycisk "Potwierdź": Wszystkie sugerowane dopasowania są przedstawione na jednej liście. Użytkownik jednym kliknięciem może je wszystkie zaakceptować.
+
+· System uczący się z każdej poprawki: Jeśli użytkownik ręcznie skoryguje dopasowanie, system nie tylko zapamiętuje to dla tego konkretnego przypadku. Analizuje dlaczego do tego doszło i uczy się nowej reguły, by w przyszłości uniknąć podobnej pomyłki.
+
+· Motywująca informacja zwrotna: System pokazuje, ile czasu i pieniędzy zaoszczędził dzięki automatyzacji. "W tym miesiącu automatycznie rozliczono 97% Twoich transakcji. Oszczędziłeś 3 godziny pracy."
+
+
+
+---
+
+
+
+Dlaczego to rozwiązanie jest niesamowite?
+
+
+
+1. Wykracza poza standardowe "matchowanie": Większość systemów kończy na prostym porównaniu kwot. Ty wprowadzasz analizę kontekstu, uczenie behawioralne i proaktywne zarządzanie płynnością. To jest poziom bankowości transakcyjnej, a nie zwykłej aplikacji do faktur.
+
+2. Autonomia z kontrolą: System nie jest czarną skrzynką. Użytkownik w każdej chwili może zweryfikować i skorygować każdą decyzję. To buduje zaufanie.
+
+3. Skalowalność i precyzja: Zastosowanie kaskady decyzyjnej (od prostych reguł do zaawansowanego ML) sprawia, że system jest szybki dla prostych przypadków i niezwykle precyzyjny dla tych skomplikowanych.
+
+4. Fundament pod pełną autonomię finansową: Ta funkcja jest "brakującym ogniwem", które łączy przetwarzanie dokumentów z rzeczywistymi przepływami pieniężnymi. Bez tego nie ma mowy o autonomicznym systemie księgowym. Z tym – system zaczyna "żyć" i rozumieć finanse firmy w czasie rzeczywistym.
+
+
+
+To jest właśnie ten przełom, który sprawi, że użytkownik powie: "Ja już prawie nie prowadzę księgowości. Mój asystent robi to za mnie".
+
+
+
+
+
+
+
+Oto rozbudowana, dogłębna koncepcja Inteligentnego, Samouczącego się Asystenta Rozliczeń – funkcji, która ma szansę stać się centralnym elementem autonomicznego systemu finansowego dla mikrofirm. Opis skupia się na szczegółowym działaniu, strukturze i filozofii rozwiązania.
+
+
+
+---
+
+
+
+Filozofia i cel nadrzędny
+
+
+
+Głównym założeniem jest całkowite wyeliminowanie potrzeby ręcznego uzgadniania faktur z transakcjami bankowymi. System ma nie tylko dopasowywać, ale rozumieć kontekst finansowy firmy, uczyć się jej specyfiki i zachowań kontrahentów, a następnie aktywnie zarządzać należnościami i zobowiązaniami, komunikując się z użytkownikiem wyłącznie wtedy, gdy jest to absolutnie niezbędne. Zamiast klasycznego narzędzia dostajemy osobistego narratora przepływów pieniężnych, który mówi: "Wszystko pod kontrolą, oto co się właśnie wydarzyło, a oto na co powinieneś zwrócić uwagę".
+
+
+
+---
+
+
+
+Źródła danych – pełna autonomia pozyskiwania informacji
+
+
+
+System musi pobierać dane z wielu kanałów bez ingerencji użytkownika. Każde źródło ma swój własny adapter, który normalizuje dane do wspólnego formatu.
+
+
+
+1. Bezpośrednia integracja bankowa (PSD2 / Open Banking)
+
+
+
+Adapter ten korzysta z biblioteki Authlib i cyklicznie (co 1–4 godziny) łączy się z API banku w celu pobrania historii transakcji. Mechanizm zarządza tokenami dostępowymi i odświeżającymi, a w przypadku wygaśnięcia sesji (np. wymóg silnego uwierzytelnienia SCA) informuje użytkownika w trybie "1 minuta dziennie" o konieczności ponownej autoryzacji. Transakcje są pobierane przyrostowo – po ostatnim znanym identyfikatorze – co gwarantuje, że nic nie zostanie pominięte, nawet jeśli połączenie zostanie chwilowo przerwane.
+
+
+
+2. Import plików (CSV, MT940, PDF)
+
+
+
+Mikrofirmy często korzystają z eksportów z bankowości elektronicznej. System oferuje "cichy" folder monitorowany przez fsspec. Użytkownik może po prostu zapisać plik w wyznaczonym katalogu lub przesłać go jako załącznik na dedykowany adres e-mail. Specjalny analizator treści (wspierany przez proste modele klasyfikacji tekstu) rozpoznaje format i mapuje kolumny na standardowe pola: datę, kwotę, tytuł, kontrahenta. Proces ten jest w pełni automatyczny i nie wymaga definiowania szablonów.
+
+
+
+3. KSeF (Krajowy System e-Faktur)
+
+
+
+Adapter integruje się z repozytorium KSeF, aby pobierać faktury zakupowe wystawione przez kontrahentów na rzecz naszej firmy. Dzięki temu faktura pojawia się w systemie niemal w chwili jej wystawienia, a nie dopiero po otrzymaniu maila lub papierowej kopii. Jest to kluczowe dla zobowiązań – system wie o nich, zanim staną się wymagalne.
+
+
+
+Każdy adapter dostarcza transakcje do wspólnego strumienia, skąd trafiają do centralnego bufora, a następnie do silnika dopasowującego.
+
+
+
+---
+
+
+
+Wielowymiarowy, kaskadowy silnik dopasowujący – serce asystenta
+
+
+
+Silnik ten nie jest pojedynczym algorytmem, lecz wielowarstwową strukturą decyzyjną, która łączy proste reguły z zaawansowanym uczeniem maszynowym. Działa on na zasadzie kaskady: jeśli jedna warstwa nie może podjąć decyzji z wystarczającą pewnością, przekazuje sprawę do następnej, bardziej złożonej.
+
+
+
+Warstwa 0: Idempotentność i deduplikacja
+
+
+
+Zanim w ogóle rozpocznie się dopasowywanie, każda transakcja bankowa przechodzi przez filtr sprawdzający, czy nie została już wcześniej przetworzona. Wykorzystywany jest unikalny identyfikator (np. hash z daty, kwoty i tytułu) zapisany w tabeli processed_events. Dzięki temu ponowne wysłanie tego samego pliku lub ponowne pobranie z API nie spowoduje zdublowania księgowań.
+
+
+
+Warstwa 1: Dokładne dopasowanie ekspertowe (Auto-Match)
+
+
+
+To najszybsza ścieżka, oparta na precyzyjnych regułach. Transakcja jest automatycznie uznawana za pasującą do faktury, jeśli spełniony jest jeden z warunków:
+
+
+
+· Przelew zawiera w tytule dokładny numer faktury, który istnieje w systemie.
+
+· Kwota przelewu i data księgowania idealnie pasują do faktury od kontrahenta, który ma historię płacenia zawsze w ten sam sposób.
+
+· System otrzymał potwierdzenie z KSeF, że faktura została opłacona (UPO).
+
+
+
+W takim przypadku faktura jest natychmiast i bezgłośnie oznaczana jako opłacona, a odpowiednie zapisy księgowe są generowane automatycznie.
+
+
+
+Warstwa 2: Inteligentne dopasowanie probabilistyczne (Smart-Match)
+
+
+
+Gdy nie ma dokładnego trafienia, do akcji wkracza model uczenia maszynowego (np. GradientBoostingClassifier lub sieć neuronowa), który dla każdej nieopłaconej faktury i każdej nieprzypisanej transakcji oblicza współczynnik dopasowania (0–100%). Model bierze pod uwagę dziesiątki cech:
+
+
+
+· Cechy finansowe: różnica kwot (bezwzględna i procentowa), waluta.
+
+· Cechy czasowe: odległość w dniach między terminem płatności a datą transakcji.
+
+· Cechy tekstowe: podobieństwo cosinusowe embeddingów tytułu przelewu i numeru/nazwy kontrahenta (generowane przez lokalny model Sentence-Transformers).
+
+· Cechy behawioralne: historyczne opóźnienia kontrahenta, typowy tytuł przelewu, częstotliwość płatności łączonych.
+
+· Cechy kontekstowe: czy kontrahent często wysyła zaliczki, czy zmienił niedawno numer konta.
+
+
+
+Na podstawie skonfigurowanego przez użytkownika progu (np. 95%) podejmowana jest decyzja:
+
+
+
+· Auto-Match: powyżej progu – działa jak Warstwa 1.
+
+· Sugestia: pomiędzy progiem dolnym (np. 75%) a górnym – system przedstawia propozycję w widoku "1 minuta dziennie".
+
+· Przekazanie dalej: poniżej dolnego progu – sprawa trafia do Warstwy 3.
+
+
+
+Warstwa 3: Analiza kontekstowa i płatności zbiorcze
+
+
+
+Ta warstwa rozwiązuje najtrudniejszy problem: jedna transakcja pokrywa kilka faktur. Specjalny algorytm przeszukuje wszystkie kombinacje nieopłaconych faktur od tego samego kontrahenta, których suma częściowa idealnie (lub z małą tolerancją) pasuje do kwoty transakcji. Jeśli znajdzie takie dopasowanie, automatycznie dzieli płatność i przypisuje odpowiednie części do każdej faktury. Wykorzystuje programowanie dynamiczne, aby uniknąć eksplozji kombinatorycznej.
+
+
+
+Warstwa 4: Samouczący się silnik behawioralny
+
+
+
+To najważniejszy element ewolucyjny. System w tle analizuje historię każdego kontrahenta i tworzy jego profil behawioralny, który zawiera:
+
+
+
+· Średnie opóźnienie płatności (w dniach) i jego odchylenie standardowe.
+
+· Wzorzec tytułu przelewu (np. czy zawsze używa frazy "Faktura nr ...").
+
+· Preferencje dotyczące płatności łączonych (np. czy zawsze płaci hurtem na koniec miesiąca).
+
+· Zwyczajowe pomyłki (np. zawsze myli numer faktury o 1).
+
+· Zmienność numerów kont bankowych.
+
+
+
+Ten profil jest aktualizowany przy każdej rozliczonej transakcji i jest wykorzystywany przez Warstwę 2 do precyzyjniejszego dopasowywania. Co więcej, na podstawie tego profilu system uczy się reguł korekcyjnych. Na przykład: jeśli kontrahent zawsze ma opóźnienie 3 dni, system automatycznie przesuwa okno dopasowania dla jego transakcji o 3 dni.
+
+
+
+---
+
+
+
+Proaktywne zarządzanie należnościami – Dunning 2.0
+
+
+
+Asystent nie tylko reaguje, ale aktywnie działa w imieniu przedsiębiorcy, aby zapewnić płynność finansową.
+
+
+
+Prognozowanie wpływów i wykrywanie zagrożeń
+
+
+
+Na podstawie profili kontrahentów i dat wymagalności, system codziennie generuje prognozę spodziewanych wpływów na najbliższe 14 dni. Jeśli dla ważnej faktury od solidnego płatnika prognozowane opóźnienie jest niepokojące, system z wyprzedzeniem informuje użytkownika w "Briefingu dnia".
+
+
+
+Automatyczne, inteligentne przypomnienia
+
+
+
+Gdy faktura jest przeterminowana, system samodzielnie wysyła do kontrahenta przypomnienie przez e-mail. Silnik DunningEngine wybiera ton i kanał komunikacji na podstawie:
+
+
+
+· Poziomu przeterminowania (1 dzień, 3 dni, 7 dni, 14 dni, 30 dni).
+
+· Wiarygodności kontrahenta (wynik scoringowy z profilu).
+
+· Relacji z kontrahentem (czy to stały, ważny partner, czy incydentalny klient).
+
+
+
+Treść wiadomości jest generowana przez lokalny LLM (Phi-3), który otrzymuje kontekst: "To przypomnienie dla kontrahenta X, który zawsze płaci w terminie, ale tym razem ma 3 dni opóźnienia. Napisz uprzejmą, przyjacielską wiadomość." W miarę eskalacji, ton staje się bardziej stanowczy, a po 14 dniach do wiadomości dołączana jest kopia faktury. Każda wysyłka jest zapisywana w tabeli dunning_history.
+
+
+
+Eskalacja do użytkownika
+
+
+
+Jeśli automatyczne przypomnienia nie przynoszą skutku, system informuje użytkownika w widoku "1 minuta dziennie", sugerując konkretne działanie – na przykład "Rozważ wysłanie ostatecznego wezwania do zapłaty dla kontrahenta X" lub "Być może warto zadzwonić do kontrahenta Y – tu jest jego numer telefonu z bazy". System może również zasugerować skorzystanie z usług faktoringowych, jeśli płynność jest zagrożona.
+
+
+
+---
+
+
+
+Komunikacja z użytkownikiem – lekkość i prostota
+
+
+
+Kluczem jest ukrycie całej złożoności. Użytkownik nie widzi skomplikowanych macierzy dopasowań ani logów. Interakcja odbywa się na trzech poziomach:
+
+
+
+1. Pulpit główny "Finanse w pigułce"
+
+
+
+To widok, w którym dominują dwie sekcje: "Do zapłaty" (zobowiązania, które wkrótce stają się wymagalne) oraz "Oczekujące" (należności, które mają wpłynąć). W obu przypadkach wyświetlane są tylko te pozycje, które wymagają uwagi. Reszta jest już cicho rozliczona. Kolorowe wskaźniki pokazują stan ogólny (zielony – OK, żółty – uwaga, czerwony – działaj!).
+
+
+
+2. Centrum decyzji – tryb "1 minuta dziennie"
+
+
+
+To najważniejszy interfejs, dedykowany mikrofirmom. Każdego ranka użytkownik otrzymuje krótką listę konkretnych decyzji do podjęcia:
+
+
+
+· "Zaakceptuj sugerowane dopasowanie dla faktury FV/2024/03 od kontrahenta X."
+
+· "Sprawdź transakcję na 1500 PLN – system nie potrafi jej dopasować. Może to pomyłka?"
+
+· "Kontrahent Y zmienił numer konta. Potwierdź, że to prawidłowe konto."
+
+
+
+Każda decyzja to jeden przycisk ("Tak", "Nie", "Edytuj", "Przypomnij później"). Po podjęciu kilku decyzji cała praca jest wykonana.
+
+
+
+3. Asystent konwersacyjny w tle
+
+
+
+W trudniejszych przypadkach system może zadać pytanie w języku naturalnym, np.: "Zauważyłem, że kontrahent Z przelał 2000 PLN, ale tytuł przelewu jest niejasny. Czy to może być faktura za marzec, czy za kwiecień?". Użytkownik może odpowiedzieć krótko, a system się uczy.
+
+
+
+---
+
+
+
+Architektura techniczna w ramach NexusAI
+
+
+
+Rozwiązanie idealnie wpasowuje się w istniejący system:
+
+
+
+· Nowe moduły:
+
+  · SmartReconciliationEngine – kaskadowy silnik dopasowujący.
+
+  · VendorBehaviorProfiler – analityk tworzący profile kontrahentów.
+
+  · DunningOrchestrator – zarządca przypomnień i eskalacji.
+
+  · DailyBriefingService – generator porannego podsumowania.
+
+· Wykorzystanie istniejących komponentów:
+
+  · BankReconciliationEngine – jako podstawa do rozbudowy.
+
+  · DuckDBManager – do przechowywania profili kontrahentów i historii.
+
+  · LanceDB – do szybkiego wyszukiwania podobnych transakcji.
+
+  · NATS JetStream – do przesyłania zdarzeń o nowych transakcjach i decyzjach.
+
+  · Phi-3 – jako generator treści przypomnień i asystent językowy.
+
+  · ActiveLearningPipeline – do cyklicznego douczania modelu dopasowującego.
+
+· Przepływ danych:
+
+  1. Adapter bankowy/plikowy publikuje zdarzenie bank.transaction.raw na NATS.
+
+  2. SmartReconciliationEngine konsumuje zdarzenie i uruchamia kaskadę.
+
+  3. Wyniki (AUTO_SETTLE, SUGGESTION, UNMATCHED) są zapisywane w SQLite i publikowane na NATS.
+
+  4. DunningOrchestrator nasłuchuje na statusy faktur i uruchamia przypomnienia.
+
+  5. Frontend (Flet) nasłuchuje przez WebSocket, aby aktualizować widok w czasie rzeczywistym.
+
+
+
+---
+
+
+
+Podsumowanie – dlaczego to jest przełomowe
+
+
+
+To rozwiązanie zmienia reguły gry dla mikrofirm, ponieważ po raz pierwszy znikają one z roli "operatora programu księgowego" i stają się "nadzorcą inteligentnego asystenta". System nie tylko wykonuje zadania, ale aktywnie chroni płynność finansową, przewiduje problemy i samodzielnie się doskonali. Jest to funkcja, która w połączeniu z pozostałymi czterema innowacjami tworzy z NexusAI autonomicznego towarzysza biznesowego, a nie tylko narzędzie.
+
+
+
+
+
+
+
+Oto dogłębna koncepcja Trybu "1 minuta dziennie", rozpisana jako autonomiczny, ewoluujący system decyzyjny i doświadczenie użytkownika.
+
+
+
+---
+
+
+
+FILOZOFIA TRYBU: Koniec ery "prowadzenia księgowości"
+
+
+
+Tradycyjna mikrofirma nie ma czasu na księgowość. Traktuje ją jak zło konieczne: stos paragonów w kopercie, panika na koniec miesiąca, nerwowe telefony do biura rachunkowego. Stan finansów jest znany tylko w przybliżeniu, na podstawie salda na koncie bankowym.
+
+
+
+Tryb "1 minuta dziennie" ma to całkowicie odwrócić.
+
+
+
+Zamiast kolejnego dashboardu z wykresami, przedsiębiorca dostaje codzienny, 60-sekundowy rytuał, który daje mu absolutny spokój i kontrolę. To nie jest "szybki podgląd". To jest kompletnie nowa filozofia interakcji człowiek-system, gdzie AI bierze na siebie 100% odpowiedzialności za proces, a człowiek pełni jedynie rolę ostatecznego autoryzatora wyjątków.
+
+
+
+System nie czeka, aż użytkownik "wejdzie do aplikacji i coś zrobi". System sam wykonuje pracę, a użytkownikowi dostarcza jedynie esencję: listę konkretnych, niecierpiących zwłoki decyzji do podjęcia oraz piękne, zrozumiałe podsumowanie stanu jego firmy.
+
+
+
+---
+
+
+
+1. DOŚWIADCZENIE UŻYTKOWNIKA: Flow godny najlepszych aplikacji konsumenckich
+
+
+
+Kluczem jest prostota i minimalizm interfejsu, który przypomina aplikacje takie jak Headspace, Reflectly czy Zen – coś, co redukuje stres, a nie go generuje.
+
+
+
+Codzienny rytuał 3 kroków:
+
+
+
+Krok 1: "Dzień dobry, Anna" (10 sekund)
+
+Ekran powitalny nie zawiera żadnych tabel ani liczb. Jest to ciepłe, generowane dynamicznie przez AI (Phi-3) powitanie, które w jednym zdaniu streszcza stan finansów:
+
+"Dzień dobry. Wczoraj wszystko zostało opłacone w terminie. Dziś masz 2 decyzje do podjęcia. Twoja poduszka finansowa jest bezpieczna na 4 miesiące."
+
+
+
+Krok 2: Centrum Decyzji (40 sekund)
+
+Użytkownik widzi serię prostych kart, jak w aplikacji randkowej (Tinder dla faktur). Każda karta to jedna decyzja:
+
+
+
+· Nowy wydatek: "Czy wydatek 250 zł z 15.01 na 'Szkolenie online' to koszt firmowy?" (Przyciski: TAK / NIE / NIE WIEM)
+
+· Przypisanie kategorii: "Czy opłata za hosting 45 zł to 'Usługi IT'?" (Przyciski: TAK / ZMIEŃ)
+
+  System uczy się z każdym przesunięciem palcem (swipe), więc z czasem kart jest coraz mniej.
+
+
+
+Krok 3: Spokój i zamknięcie (10 sekund)
+
+Po podjęciu decyzji pojawia się krótkie podsumowanie: "Gotowe. Dziękuję. Do zobaczenia jutro. W razie czego, finanse firmy są pod kontrolą."
+
+To ekran "sukcesu", który daje psychologiczne zamknięcie dnia.
+
+
+
+Kanoniczny przykład przepływu:
+
+
+
+Użytkownik kończy dzień. Siada z herbatą, otwiera aplikację na telefonie. Widzi, że system automatycznie pobrał 3 faktury z maila, jedną z KSeF i dopasował 2 płatności z banku. 4 z 6 dokumentów zostały zaksięgowane automatycznie z pewnością >98%. Zostały dwie karty decyzji. Przesuwa je palcem w prawo (TAK) w ciągu 30 sekund. Widzi animację potwierdzenia i krótki komunikat, że jego podatki są automatycznie odkładane na wirtualne konto VAT. Zamyka aplikację. Cały proces trwa dosłownie minutę.
+
+
+
+---
+
+
+
+2. MECHANIZM TECHNICZNY: Ewoluujący system oceny wyjątków
+
+
+
+Pod tym prostym interfejsem kryje się zaawansowany silnik decyzyjny, który z czasem staje się coraz bardziej autonomiczny. Tryb "1 minuta dziennie" opiera się na koncepcji "wskaźnika autonomii", który rośnie wraz z użytkowaniem.
+
+
+
+Poziomy autonomii:
+
+
+
+· Poziom 1: Wszystko jest pytaniem. (Start) Użytkownik uczy system.
+
+· Poziom 2: System sugeruje, człowiek decyduje. (Po miesiącu) System zna już kontrahentów i kategorie.
+
+· Poziom 3: System decyduje, człowiek akceptuje. (Po 3 miesiącach) Użytkownik tylko przegląda listę automatycznych działań.
+
+· Poziom 4: System działa, człowiek monitoruje. (Po 6 miesiącach) "1 minuta dziennie" to już tylko podsumowanie.
+
+
+
+Co trafia do "1 minuty dziennie"?
+
+
+
+Tylko 3 rodzaje wyjątków, które przeszły przez filtr AutopilotEngine z decyzją ASK_USER:
+
+
+
+1. Dylematy kategoryzacji: Model (AutoGluon) ma mniej niż 85% pewności co do konta księgowego. System pokazuje, jak skategoryzował podobne wydatki w przeszłości i prosi o potwierdzenie lub korektę.
+
+2. Anomalie kwotowe: Kwota faktury od danego kontrahenta odbiega o >40% od średniej. System nie pyta "co z tym zrobić?", tylko stwierdza: "To wygląda na dużo więcej niż zwykle. Czy na pewno wszystko się zgadza?".
+
+3. Nowi kontrahenci: Pierwsza faktura od nowego podmiotu. System nie może polegać na historii. Pyta: "Czy 'XYZ Sp. z o.o.' to koszt firmowy?" i na podstawie jednej odpowiedzi uczy się dla wszystkich przyszłych faktur od tego kontrahenta.
+
+
+
+Czego tu NIE MA (i to jest kluczowe):
+
+
+
+Wszystkie standardowe faktury od znanych kontrahentów (np. comiesięczny czynsz, abonament za telefon, stała faktura od dostawcy), wszystkie przelewy z banku, które idealnie pasują do faktur, wszystkie dokumenty z KSeF zgodne z OCR – to wszystko znika z widoku użytkownika. Jest automatycznie księgowane, a log dostępny jest w archiwum.
+
+
+
+---
+
+
+
+3. ALGORYTM PRIORYTETYZACJI: Ranking ważności decyzji
+
+
+
+Nie wszystkie wyjątki są równe. Kolejność kart ma znaczenie psychologiczne i finansowe. Na samej górze musi być to, co jest najpilniejsze.
+
+
+
+· Priorytet 1 (Krytyczny): Termin płatności mija jutro, a faktura nadal wymaga decyzji.
+
+· Priorytet 2 (Wysoki): Dotyczy głównego źródła przychodów firmy (np. faktura od kluczowego klienta, która wpływa na VAT).
+
+· Priorytet 3 (Średni): Nowy kontrahent z dużą kwotą.
+
+· Priorytet 4 (Niski): Drobny wydatek, który można skategoryzować później, bez wpływu na płynność.
+
+
+
+Priorytetyzacja wykorzystuje istniejący PaymentPriorityService i silnik scoringu kontrahentów, które już masz w kodzie.
+
+
+
+---
+
+
+
+4. WARSTWA UCZENIA SIĘ: System, który z czasem Cię wyręcza
+
+
+
+To jest klucz do "genialności". Tryb "1 minuta dziennie" ma być z czasem coraz krótszy. Po 6 miesiącach ma trwać 10 sekund, a po roku – być zbędny.
+
+
+
+· Uczenie z odpowiedzi: Każda decyzja (TAK/NIE, zmiana kategorii) jest natychmiast zapisywana jako zdarzenie UserFeedback i trafia do ActiveLearningEngine. Model AutoGluon jest dotrenowywany co tydzień na tych danych. Z czasem jego pewność dla danego kontrahenta rośnie i pytania znikają.
+
+· Uczenie z braku reakcji: Jeśli użytkownik regularnie ignoruje powiadomienia o drobnych wydatkach, system uznaje to za sygnał, że można je domyślnie księgować na konto "Pozostałe koszty". To subtelny mechanizm obserwacji zachowania użytkownika.
+
+· Modelowanie rutyny: System uczy się harmonogramu użytkownika. Jeśli Anna zawsze loguje się w piątek o 17:00, system przygotowuje wszystkie decyzje z całego tygodnia na piątkowe popołudnie, zamiast wysyłać codzienne alerty.
+
+
+
+---
+
+
+
+5. EWOLUCJA TRYBU W CZASIE: Od aplikacji do asystenta
+
+
+
+Wdrożenie trybu nie może być szokiem dla użytkownika. Musi być stopniowe.
+
+
+
+· Faza 1 (Adaptacja): Aplikacja nadal wygląda klasycznie, ale ma widoczny przycisk "Tryb 1 minuta". Użytkownik świadomie w niego wchodzi i widzi, ile czasu oszczędza.
+
+· Faza 2 (Zaufanie): Po miesiącu, aplikacja przy starcie pyta: "Czy chcesz dziś skorzystać z trybu 1 minuta?". Jest to subtelna sugestia, a nie przymus. Większość użytkowników wybiera "Tak", bo widzi korzyść.
+
+· Faza 3 (Autonomia): Po 3 miesiącach, tryb "1 minuta" staje się domyślnym widokiem startowym. Klasyczny dashboard jest dostępny, ale ukryty za przyciskiem "Widok szczegółowy". Użytkownik już ufa systemowi na tyle, że chce widzieć tylko esencję.
+
+
+
+---
+
+
+
+6. PODSUMOWANIE: Dlaczego to jest genialne?
+
+
+
+Bo to nie jest funkcja. To jest nowa kategoria produktu. To nie jest "aplikacja do fakturowania". To jest "Twój osobisty, autonomiczny dział księgowości", który:
+
+
+
+1. Eliminuje prokrastynację: Użytkownik wie, że to tylko minuta, więc nie odkłada na później.
+
+2. Buduje zaufanie przez transparentność: System nie jest czarną skrzynką – pokazuje, co zrobił sam, a o co pyta.
+
+3. Daje poczucie kontroli: Przesuwając karty, użytkownik ma fizyczne poczucie sprawczości, nawet jeśli system robi 95% pracy.
+
+4. Jest emocjonalnie satysfakcjonujący: Kończy się komunikatem "Jesteś na bieżąco. Twoja firma jest bezpieczna.", co daje spokój psychiczny – najcenniejszą walutę dla przedsiębiorcy.
+
+
+
+To jest właśnie ta przewaga rynkowa, której nie da się skopiować samą technologią. To połączenie zaawansowanej AI z głębokim zrozumieniem psychologii właściciela małej firmy.
+
+
+
+
+
+
+
+Oto kompletny, drobiazgowy projekt wizji trybu "1 minuta dziennie" .
+
+
+
+---
+
+
+
+CZĘŚĆ I: FUNDAMENT FILOZOFICZNY. Czym NAPRAWDĘ jest ten tryb.
+
+
+
+1.1 To nie jest funkcja. To jest nowy gatunek relacji człowiek-maszyna.
+
+
+
+Tryb "1 minuta dziennie" nie jest skróconym dashboardem ani listą zadań. To jest w pełni autonomiczny, proaktywny, uczący się asystent finansowy, który przyjmuje na siebie 100% odpowiedzialności za proces księgowy, a z przedsiębiorcą komunikuje się wyłącznie w sytuacjach, które bezwzględnie wymagają jego ludzkiego osądu. To fundamentalna inwersja dotychczasowego modelu: to nie człowiek "wchodzi do systemu", żeby coś zrobić; to system "wychodzi do człowieka", żeby zadać konkretne pytanie.
+
+
+
+1.2 Psychologiczna obietnica.
+
+
+
+Celem trybu jest dostarczenie przedsiębiorcy absolutnego spokoju finansowego w zamian za 60 sekund jego uwagi dziennie. Obietnica brzmi:
+
+
+
+"Daj mi minutę dziennie, a ja zapewnię Ci: pełną zgodność z przepisami, terminowość wszystkich płatności, czystość podatkową, wczesne ostrzeganie o problemach z płynnością i całkowitą transparentność finansów Twojej firmy. Nigdy więcej nie będziesz myśleć o księgowości poza tą jedną minutą."
+
+
+
+1.3 Ewolucyjna natura trybu.
+
+
+
+Tryb nie jest statyczny. Jest zaprojektowany tak, aby jego "długość" i "intensywność" malały w czasie, w miarę jak system uczy się specyfiki firmy. Jest to mierzone Wskaźnikiem Autonomii (WA) – liczbą od 0 do 100, która rośnie z każdą podjętą przez użytkownika decyzją.
+
+
+
+· WA 0-20 (Faza Adaptacji): System uczy się intensywnie. Pyta o wszystko: kategorie, kontrahentów, charakter wydatków. Sesje mogą trwać 3-5 minut.
+
+· WA 21-50 (Faza Zaufania): System zna już stałych kontrahentów i podstawowe kategorie. Pyta głównie o anomalie i nowe podmioty. Sesje trwają 1-2 minuty.
+
+· WA 51-80 (Faza Autonomii): System działa niemal sam. Pytania dotyczą tylko nietypowych, wysokokwotowych transakcji. Sesje trwają 30-60 sekund.
+
+· WA 81-100 (Faza Nadzoru): System jest w pełni autonomiczny. "1 minuta" to już tylko comiesięczne podsumowanie i autoryzacja zamknięcia okresu. Codzienne sesje stają się opcjonalne.
+
+
+
+---
+
+
+
+CZĘŚĆ II: KOMUNIKACJA I INTERFEJS. Jak system "mówi" do przedsiębiorcy.
+
+
+
+2.1 Modalności kontaktu. System dostosowuje się do preferencji.
+
+
+
+System nie zmusza użytkownika do jednego kanału. Adaptuje się do jego stylu życia.
+
+
+
+· Powiadomienie Push (domyślne): Na telefonie pojawia się nieinwazyjna, elegancka karta: "Dzień dobry. Na dziś mam dla Ciebie 2 sprawy do decyzji. Potrzebuję minuty." Kliknięcie otwiera aplikację od razu w trybie "1 minuta".
+
+· Email (dla tradycjonalistów): Codziennie o 8:00 rano system wysyła emaila w formacie podobnym do newslettera, ale z interaktywnymi przyciskami. Użytkownik może podjąć decyzję bezpośrednio z poziomu maila (przyciski "Tak", "Nie", "Zmień").
+
+· SMS / Messenger (dla ultra-mobilnych): Na życzenie, system może wysłać proste pytania SMS-em: "Czy 250 zł na 'Szkolenie' to koszt firmowy? Odp. TAK/NIE". Odpowiedź zwrotna jest interpretowana.
+
+· W pełni głosowo (dla kierowców / zabieganych): Integracja z asystentem głosowym (Google Assistant, Siri Shortcuts). Użytkownik w samochodzie mówi: "Hej Google, zapytaj Nexus co dziś u mnie". System odpowiada głosem, a użytkownik wydaje komendy: "Zatwierdź wszystko", "Prześlij mi raport na maila".
+
+
+
+2.2 Język komunikacji: Empatyczny, nie księgowy.
+
+
+
+System nigdy nie używa żargonu. Mówi językiem przedsiębiorcy:
+
+
+
+· Zamiast: "Proszę o dekretację faktury kosztowej nr FV/2026/05/123". → Mówi: "Faktura od 'XYZ' na 250 zł za 'Szkolenie'. Czy to wydatek firmowy?"
+
+· Zamiast: "Saldo na rachunku bankowym wynosi X, a prognozowane zobowiązania to Y. Ryzyko utraty płynności jest wysokie". → Mówi: "Uwaga: za 2 tygodnie może Ci zabraknąć 1500 zł na opłacenie ZUS-u i VAT-u. Chcesz, żebym znalazł sposób, jak temu zapobiec?".
+
+
+
+2.3 Proaktywność: System nie czeka, aż go zapytasz.
+
+
+
+· "Inteligentne podsumowanie dnia": Nie musisz otwierać aplikacji, żeby wiedzieć, co się dzieje. O 20:00 system wysyła powiadomienie: "Dziś automatycznie zaksięgowałem 3 faktury i dopasowałem 2 płatności. Wszystko w porządku. Twoja poduszka finansowa jest stabilna."
+
+· "Alert wczesnego ostrzegania": System monitoruje trendy. Jeśli wykryje, że wydatki na marketing rosną o 20% miesięcznie, powiadomi: "Zauważyłem, że wydatki na reklamy rosną szybciej niż przychody. Chcesz, żebym przygotował analizę?"
+
+· "Asystent terminarza": System zna terminy płatności podatków i ZUS-u. Przypomina 3 dni przed: "Pamiętaj, za 3 dni mija termin VAT. Zarezerwowałem już na to 5 200 zł na Twoim koncie."
+
+
+
+2.4 Struktura karty decyzyjnej (serce interfejsu).
+
+
+
+Każda karta to mikrokosmos informacji zaprojektowany, aby podjąć decyzję w mniej niż 15 sekund.
+
+
+
+1. Kontekst wizualny (u góry): Miniatura faktury z zaznaczonymi (przez AI) kluczowymi polami: kwotą, datą, NIP-em kontrahenta. Kolory oznaczają pewność AI (zielony = wysoka, żółty = średnia).
+
+2. Pytanie sformułowane w języku naturalnym (centrum): Duża, czytelna czcionka. Nie "Kategoria kosztu", tylko "Czy 'Szkolenie online' (250 zł) to koszt Twojej działalności?".
+
+3. Sugestia systemu (pod pytaniem): Mniejszym tekstem: "Myślę, że to 'Koszty szkoleń' (tak oznaczyłem 5 podobnych wydatków w tym roku)." To buduje zaufanie i pokazuje, że system nie pyta w próżni, tylko ma uzasadnioną opinię.
+
+4. Przyciski akcji (na dole):
+
+   · Główny (szeroki, w kolorze): "Tak, to koszt firmy".
+
+   · Alternatywny: "Zmień kategorię".
+
+   · Bezpieczeństwa: "To nie jest koszt firmy" / "Nie wiem, zapytam księgowej".
+
+5. Niewidoczna, ale kluczowa informacja: Każda karta ma przypisany poziom autonomii, który ją wygenerował, oraz powód, dla którego trafiła do człowieka. To metadane używane przez silnik uczenia.
+
+
+
+---
+
+
+
+CZĘŚĆ III: SILNIK DECYZYJNY. Co dzieje się pod maską.
+
+
+
+3.1 Codzienny, w pełni automatyczny proces (uruchamiany o 6:00 rano).
+
+
+
+Zanim użytkownik się obudzi, system wykonał już całą pracę. To jest klucz do poczucia "magii".
+
+
+
+1. Faza Pobierania (Data Ingestion): Autonomiczne agenty (cykliczne zadania Taskiq) łączą się z:
+
+   · Skrzynką mailową (IMAP) i pobierają wszystkie faktury PDF z ostatnich 24h.
+
+   · API KSeF i pobierają oficjalne faktury ustrukturyzowane.
+
+   · API banku (PSD2) i pobierają historię transakcji.
+
+2. Faza Przetwarzania (AI Pipeline): Każdy dokument przechodzi przez pipeline OCR → LayoutLM → Phi-3 (jeśli potrzebny). Wynikiem jest ustrukturyzowany obiekt Invoice z polami: NIP, kwota brutto/netto, data, przedmiot, numer konta.
+
+3. Faza Dopasowania (Reconciliation): Silnik rekoncyliacji bankowej próbuje automatycznie dopasować każdą transakcję z banku do faktury. Dopasowane pary są oznaczane jako "opłacone" bez udziału człowieka.
+
+4. Faza Decyzji (Autopilot): Dla każdej nowej, nieopłaconej faktury uruchamiany jest AutopilotEngine. On decyduje o akcji: AUTO_POST, SUGGEST, ASK_USER.
+
+5. Faza Generowania Sesji: Wszystkie dokumenty z akcją ASK_USER są zbierane, priorytetyzowane i przekształcane w karty decyzyjne. Reszta jest automatycznie księgowana, a log zapisywany w archiwum.
+
+
+
+3.2 Co dokładnie trafia do "1 minuty"? (System filtracji wyjątków).
+
+
+
+Do użytkownika trafiają tylko dokumenty, które spełniają co najmniej jeden z poniższych warunków (są to tzw. Wyjątki Decyzyjne):
+
+
+
+1. Nowy Podmiot (New Entity): NIP kontrahenta nie istnieje w bazie vendor_intelligence. System nie ma historii współpracy. Pytanie: "Czy 'Nowa Firma XYZ' (NIP: 123...) to Twój kontrahent? Czy ta faktura jest prawidłowa?".
+
+2. Anomalia Kwotowa (Amount Anomaly): Kwota faktury od znanego kontrahenta odbiega o więcej niż 50% od jego średniej historycznej (obliczanej przez VendorAnalyst). Pytanie: "Faktura od 'Stały Dostawca' jest o 300% wyższa niż zwykle. Czy wszystko się zgadza?".
+
+3. Niska Pewność AI (Low AI Confidence): Średnia ważona pewności z modeli OCR i LayoutLM jest poniżej progu (np. 92%). Pytanie: "Nie jestem pewien, czy dobrze odczytałem kwotę na tej fakturze. Spójrz proszę.".
+
+4. Konflikt Konsensusu (Consensus Conflict): Dwa modele AI (np. Surya i PaddleOCR) zwróciły różne wartości dla tego samego pola (np. różne kwoty brutto). Pytanie: "Mam problem z odczytaniem tej faktury. Czy kwota to 1000 zł czy 100 zł?".
+
+5. Dylemat Kategoryzacji (Categorization Dilemma): Model AutoGluon ma mniej niż 85% pewności, na które konto księgowe przypisać wydatek. Pytanie: "Czy to jest 'Materiały biurowe' czy 'Sprzęt IT'? Oba pasują.".
+
+
+
+3.3 Priorytetyzacja: Co użytkownik widzi jako pierwsze?
+
+
+
+Karty są sortowane przez silnik priorytetyzacji, który bierze pod uwagę:
+
+
+
+1. Terminowość: Faktury z terminem płatności w ciągu 48h są wyświetlane jako pierwsze.
+
+2. Wpływ finansowy: Faktury na wysokie kwoty (top 10% wydatków firmy) są przed drobnymi.
+
+3. Wpływ podatkowy: Faktury, które mają wpływ na rozliczenie VAT w tym miesiącu, są priorytetowe.
+
+4. Nowość kontrahenta: Pierwsza faktura od kogoś jest ważniejsza niż kolejna od stałego dostawcy.
+
+
+
+---
+
+
+
+CZĘŚĆ IV: MECHANIZM UCZENIA SIĘ. Dlaczego z czasem jest coraz lepiej.
+
+
+
+4.1 Pętla uczenia w tle (Active Learning Loop).
+
+
+
+Każda interakcja w trybie "1 minuta" jest lekcją dla systemu.
+
+
+
+· Sygnał pozytywny (TAK): Jeśli użytkownik potwierdzi sugestię systemu, pewność modelu dla tego typu transakcji rośnie. Po 5 takich potwierdzeniach, system przestanie pytać o tę kategorię dla tego kontrahenta.
+
+· Sygnał korekcyjny (ZMIEŃ): Jeśli użytkownik zmieni kategorię, jest to najcenniejsza informacja zwrotna. Jest zapisywana w ActiveLearningEngine i użyta do dotrenowania modelu AutoGluon.
+
+· Sygnał negatywny (NIE): Odrzucenie sugestii to sygnał, że system źle zrozumiał kontekst. Jest to eskalowane do analizy (przez Phi-3), aby zrozumieć, dlaczego system się pomylił.
+
+
+
+4.2 Obserwacja pasywna (Passive Observation).
+
+
+
+System uczy się również z tego, czego użytkownik NIE robi.
+
+
+
+· Ignorowanie: Jeśli użytkownik regularnie ignoruje powiadomienia o drobnych wydatkach (np. < 100 zł), system uznaje, że można je domyślnie księgować na konto "Pozostałe koszty" i przestaje o nie pytać.
+
+· Wzorce czasowe: System uczy się, że użytkownik woli podejmować decyzje w piątek po południu. Dostosowuje harmonogram powiadomień i przygotowuje "paczkę" decyzji na ten dzień.
+
+
+
+4.3 Rosnący Wskaźnik Autonomii (WA).
+
+
+
+WA jest wizualną reprezentacją zaufania systemu do samego siebie. Jest obliczany jako stosunek liczby decyzji podjętych automatycznie do wszystkich decyzji w miesiącu. Użytkownik widzi go w ustawieniach i ma satysfakcję, że "jego system" staje się coraz mądrzejszy.
+
+
+
+---
+
+
+
+CZĘŚĆ V: SKŁADNIKI SYSTEMU. Co musi być zbudowane.
+
+
+
+5.1 Nowe komponenty (do stworzenia od podstaw).
+
+
+
+1. AutopilotEngine (mózg): Główny silnik decyzyjny, który na podstawie danych z AI i historii firmy decyduje o akcji: AUTO_POST, SUGGEST, ASK_USER.
+
+2. DailyOrchestrator (serce): Zadanie cronowe, które codziennie o 6:00 rano uruchamia całą sekwencję: pobieranie → przetwarzanie → decyzje → generowanie sesji.
+
+3. DecisionCardGenerator (twarz): Serwis, który przekształca obiekty Invoice i decyzje AutopilotEngine w gotowe do wyświetlenia karty z pytaniami, sugestiami i kontekstem.
+
+4. PriorityEngine (sortownik): Algorytm szeregujący karty decyzyjne według ważności (termin, kwota, wpływ podatkowy).
+
+5. NotificationDispatcher (posłaniec): Usługa odpowiedzialna za dostarczanie kart decyzyjnych i podsumowań do użytkownika przez wybrany kanał (push, email, SMS).
+
+6. AutonomyTracker (wskaźnik): Serwis monitorujący i obliczający Wskaźnik Autonomii na podstawie historii decyzji.
+
+
+
+5.2 Istniejące komponenty do adaptacji.
+
+
+
+1. MailIngestionService: Podłączyć do DailyOrchestrator jako źródło danych.
+
+2. KsefClient: Dokończyć implementację i podłączyć jako źródło danych.
+
+3. BankReconciliationEngine: Podłączyć do fazy dopasowania.
+
+4. ActiveLearningEngine: Rozbudować o przyjmowanie feedbacku z kart decyzyjnych i automatyczny fine-tuning.
+
+5. VendorAnalyst: Używać jako źródła danych o historii i zachowaniu kontrahentów przy ocenie anomalii.
+
+6. CashflowForecaster: Używać do generowania treści podsumowań i alertów.
+
+
+
+---
+
+
+
+CZĘŚĆ VI: DROGA WDROŻENIA. Jak to uruchomić bez rewolucji.
+
+
+
+Faza 1: "Cichy pasażer" (1-2 miesiące).
+
+
+
+Tryb "1 minuta" działa w tle, niewidoczny dla użytkownika. AutopilotEngine podejmuje decyzje, ale wszystkie są logowane jako SUGGEST, a nie AUTO_POST. Użytkownik widzi standardowy interfejs, ale my (deweloperzy) zbieramy dane o trafności decyzji AI. Na koniec dnia użytkownik dostaje emaila: "Gdybyś używał trybu automatycznego, dziś zaoszczędziłbyś 15 minut. Oto, co zrobiłbym za Ciebie:"
+
+
+
+Faza 2: "Przycisk" (3 miesiąc).
+
+
+
+W standardowym interfejsie pojawia się przycisk "Tryb 1 minuta". Użytkownik może w niego wejść świadomie. Widzi listę kart decyzyjnych i podsumowanie. Po wyjściu wraca do normalnego widoku. To faza testowa dla wczesnych użytkowników.
+
+
+
+Faza 3: "Domyślny" (6 miesiąc).
+
+
+
+Dla użytkowników z WA > 50, tryb "1 minuta" staje się domyślnym ekranem startowym. Klasyczny dashboard jest dostępny pod przyciskiem "Widok szczegółowy". To moment, w którym system przejmuje kontrolę nad doświadczeniem.
+
+
+
+---
+
+
+
+CZĘŚĆ VII: PODSUMOWANIE. Dlaczego to jest przełom.
+
+
+
+Tryb "1 minuta dziennie" to nie jest "ulepszenie UX". To jest zmiana paradygmatu interakcji z oprogramowaniem finansowym. Zamiast oczekiwać, że przedsiębiorca stanie się księgowym na część etatu, system staje się wirtualnym pracownikiem, który wykonuje 95% pracy, a swojego "szefa" pyta tylko o strategiczne decyzje.
+
+
+
+To najgłębsza możliwa realizacja obietnicy Twojego projektu: autonomiczny system finansowy, który prowadzi Cię przez księgowość niemal sam.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Oto szczegółowy, profesjonalny opis funkcjonowania NexusAI Partner Hub – ekosystemu, który łączy autonomiczną księgowość AI z nadzorem eksperckim biura rachunkowego.
+
+
+
+---
+
+
+
+NexusAI Partner Hub: Szczegółowy Opis Ekosystemu
+
+
+
+1. Wizja i Cel
+
+
+
+NexusAI Partner Hub to nie jest funkcja w aplikacji. To zupełnie nowa kategoria usługi finansowej, która rozwiązuje fundamentalny problem mikrofirm: potrzebują profesjonalnej księgowości, ale nie stać ich na drogie biuro rachunkowe, a samodzielne prowadzenie księgowości jest dla nich źródłem stresu i błędów.
+
+
+
+Partner Hub tworzy trójstronną relację:
+
+
+
+· Mikroprzedsiębiorca otrzymuje pełną obsługę księgową, nie rozumiejąc jej zawiłości.
+
+· Biuro rachunkowe dostaje narzędzie pozwalające skalować swoją ekspertyzę i obsługiwać wielokrotnie więcej klientów.
+
+· System AI uczy się na decyzjach ekspertów, stając się coraz bardziej autonomiczny.
+
+
+
+W efekcie powstaje samodoskonaląca się pętla, gdzie każda interwencja człowieka podnosi jakość automatyzacji, a rosnąca automatyzacja uwalnia czas eksperta na bardziej wartościowe zadania.
+
+
+
+---
+
+
+
+2. Jak działa – pełny przepływ faktury krok po kroku
+
+
+
+Krok 1: Automatyczne pozyskanie dokumentu
+
+
+
+System NexusAI nie czeka, aż użytkownik coś wgra. Działa proaktywnie, pobierając dokumenty z wszystkich dostępnych źródeł:
+
+
+
+· Skrzynka mailowa – specjalny adres e-mail (np. faktury@twojafirma.nexusai.pl) lub integracja IMAP. System co 15 minut sprawdza skrzynkę, pobiera załączniki PDF i obrazy.
+
+· KSeF (Krajowy System e-Faktur) – system łączy się z rządowym repozytorium i pobiera faktury wystawione na firmę, zanim jeszcze trafią one mailem.
+
+· Aplikacja mobilna / Web Upload – prosty interfejs do zrobienia zdjęcia paragonu lub faktury papierowej.
+
+· Automat bankowy – integracja z kontem bankowym przez PSD2, pobierająca historię transakcji.
+
+
+
+Każdy pozyskany dokument jest natychmiast rejestrowany w systemie, otrzymuje unikalny identyfikator i trafia do kolejki przetwarzania.
+
+
+
+Krok 2: Inteligentna analiza dokumentu
+
+
+
+Pipeline AI (Surya OCR + LayoutLM + Phi-3) analizuje dokument w ciągu sekund:
+
+
+
+1. OCR – zamiana obrazu na tekst z zachowaniem układu strony.
+
+2. Ekstrakcja danych – wyciągnięcie kluczowych pól: NIP kontrahenta, kwoty netto/brutto/VAT, data, numer faktury, numer konta bankowego.
+
+3. Walidacja krzyżowa – porównanie wyników z różnych silników (Surya vs. PaddleOCR). Jeśli wyniki są rozbieżne, faktura jest oznaczana jako wymagająca uwagi.
+
+4. Kategoryzacja – AutoGluon, nauczony na historii firmy, przypisuje sugerowane konto księgowe.
+
+5. Wykrywanie anomalii – system sprawdza, czy faktura nie jest duplikatem, czy kwota nie odbiega drastycznie od historii, czy numer konta nie został zmieniony.
+
+
+
+Krok 3: Decyzja Autopilota
+
+
+
+Po analizie, AutopilotEngine przypisuje fakturze jedną z trzech stref:
+
+
+
+· Strefa Zielona (Auto-Post) – wszystko jest pewne: znany kontrahent, wysoka zgodność OCR, typowa kwota, brak anomalii. Faktura jest automatycznie księgowana. Nikt nie musi nic robić.
+
+· Strefa Żółta (Sugestia) – drobne niepewności, np. nowy kontrahent, ale z niskim ryzykiem. System księguje, ale dodaje flagę "do przeglądu". Trafia na listę zadań biura rachunkowego z niskim priorytetem.
+
+· Strefa Czerwona (Eskalacja) – poważne wątpliwości: niska pewność OCR, konflikt między silnikami, ogromna kwota od nieznanego kontrahenta, zmiana numeru konta. Faktura jest blokowana i natychmiast trafia do biura rachunkowego jako zadanie priorytetowe.
+
+
+
+Krok 4: Interwencja Biura Rachunkowego (tylko w strefie żółtej i czerwonej)
+
+
+
+Biuro rachunkowe loguje się do Pulpitu Partnera, gdzie widzi listę zadań priorytetowych. Interfejs zaprojektowano tak, by minimalizować czas decyzji:
+
+
+
+· Księgowy widzi fakturę i obok niej sugestię AI wraz z uzasadnieniem: "Proponuję konto 402, na podstawie 15 podobnych faktur od tego dostawcy".
+
+· Ma trzy przyciski: "Zatwierdź" (jedno kliknięcie), "Popraw" (otwiera prosty formularz), "Zapytaj klienta" (wysyła wiadomość do przedsiębiorcy z prośbą o wyjaśnienie, np. "Czy ten wydatek był na cele firmowe?").
+
+· Decyzja księgowego jest natychmiast zapisywana i używana do douczenia modelu.
+
+
+
+Krok 5: Powiadomienie Klienta
+
+
+
+Przedsiębiorca otrzymuje codzienny briefing (np. o 8:00 rano na email lub jako powiadomienie push w aplikacji mobilnej):
+
+
+
+· "Dzień dobry! Wczoraj zaksięgowano 3 faktury na łączną kwotę 4 500 PLN. Wszystko w porządku. 1 faktura od nowego dostawcy 'XYZ' czeka na akceptację biura rachunkowego. Nie musisz nic robić."
+
+· W przypadku pytań od biura – dostaje prostą wiadomość: "Twoje biuro rachunkowe prosi o wyjaśnienie dotyczące faktury od 'ABC'. Czy ten wydatek był firmowy? [TAK] [NIE]".
+
+
+
+Klient nigdy nie widzi skomplikowanego interfejsu księgowego. Jego kontakt ogranicza się do prostych pytań i potwierdzeń.
+
+
+
+---
+
+
+
+3. Komunikacja i Kontakt – Kanały Interakcji
+
+
+
+System komunikuje się z każdą ze stron za pomocą dedykowanych kanałów, zaprojektowanych pod ich potrzeby.
+
+
+
+Dla Mikroprzedsiębiorcy
+
+
+
+· Codzienny briefing (email, SMS lub push) – jedno zdanie podsumowujące wczorajsze księgowania i informujące o ewentualnych decyzjach do podjęcia.
+
+· Alerty krytyczne (natychmiastowe powiadomienie) – tylko w sytuacjach wymagających pilnej reakcji, np. "Termin płatności VAT mija za 2 dni. Kwota do zapłaty: 2 300 PLN. Biuro rachunkowe przygotowało przelew – czy mam go wysłać?".
+
+· Proste pytania (w aplikacji mobilnej lub przez SMS/WhatsApp) – system lub biuro rachunkowe może zadać pytanie zamknięte (TAK/NIE) lub proste tekstowe. Przedsiębiorca odpowiada jednym kliknięciem lub krótką wiadomością.
+
+· Miesięczny raport (PDF wysyłany na email) – czytelne podsumowanie finansów, przychodów, kosztów, podatków do zapłaty. Wygląda jak raport od biura rachunkowego, ale jest generowany automatycznie.
+
+
+
+Dla Biura Rachunkowego
+
+
+
+· Pulpit Partnera (aplikacja webowa Flet) – centrum dowodzenia z listą zadań priorytetowych, widokiem wszystkich klientów, historią decyzji.
+
+· 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Zanurzmy się głęboko w tę koncepcję i stwórzmy z niej coś absolutnie przełomowego. Nie będzie to tylko funkcja – to nowy paradygmat współpracy człowieka i AI w finansach, który może zdefiniować rynek usług księgowych dla mikrofirm.
+
+
+
+---
+
+
+
+NexusAI Partner Hub: Ekosystem Autonomicznej Księgowości Nadzorowanej
+
+
+
+1. Wizja Produktowa: "Księgowość autonomiczna z gwarancją eksperta"
+
+
+
+Wyobraź sobie świat, w którym mikroprzedsiębiorca nigdy nie musi rozumieć księgowości. Nie loguje się, by sprawdzić terminy, nie zastanawia się nad stawką VAT, nie stresuje się kontrolą skarbową. Całą odpowiedzialność przejmuje hybrydowy system: NexusAI wykonuje 95% pracy automatycznie, a pozostałe 5% – kluczowe decyzje, weryfikacja okresowa i kontrola jakości – należy do człowieka-eksperta z biura rachunkowego.
+
+
+
+To nie jest zwykła aplikacja z funkcją "udostępnij księgowemu". To platforma współpracy, gdzie granica między oprogramowaniem a usługą profesjonalną zostaje celowo zatarta, tworząc produkt o zupełnie nowej wartości.
+
+
+
+2. Rola Biura Rachunkowego: Od "Wprowadzacza Danych" do "Nadzorcy AI"
+
+
+
+Tradycyjnie biuro rachunkowe wykonuje żmudną, ręczną pracę: wprowadza faktury, dekretuje, sprawdza wyciągi. W modelu NexusAI ta praca znika. Rola księgowego ewoluuje w trzech wymiarach:
+
+
+
+Dawna rola Nowa rola w NexusAI Partner Hub
+
+Wprowadzanie danych Zatwierdzanie decyzji AI (jedno kliknięcie)
+
+Szukanie błędów Eskalacja tylko prawdziwych wyjątków
+
+Księgowanie rutynowe Konfigurowanie reguł Autopilota per klient
+
+Ręczne raporty Nadzór nad automatycznymi deklaracjami
+
+Rozmowy z klientem o fakturze Asystowanie przy anomaliach wykrytych przez AI
+
+
+
+Księgowy staje się "pilotem nadzorującym autopilota", a nie "operatorem ręcznego sterowania". To fundamentalna zmiana jakościowa, która pozwala jednemu specjaliście obsługiwać 50-100 klientów zamiast 10-15.
+
+
+
+3. Architektura Współpracy: Trzy Strefy Odpowiedzialności
+
+
+
+Kluczem do genialnego rozwiązania jest precyzyjne rozdzielenie odpowiedzialności między AI, klienta i biuro rachunkowe. Definiujemy trzy strefy decyzyjne:
+
+
+
+Strefa Zielona: Pełna Autonomia AI
+
+
+
+· Faktury od zaufanych, znanych kontrahentów.
+
+· Kwoty w historycznym zakresie.
+
+· Pewność ekstrakcji > 95%.
+
+· Kategoryzacja zgodna z nauczonym wzorcem.
+
+· Akcja: System księguje automatycznie. Klient i biuro otrzymują tylko powiadomienie "zaksięgowano". Żadna akcja nie jest wymagana.
+
+
+
+Strefa Żółta: Sugestia z Nadzorem Biura
+
+
+
+· Nowy kontrahent o niskim ryzyku.
+
+· Kwota odbiegająca od średniej, ale nie ekstremalnie.
+
+· Pewność ekstrakcji 85-95%.
+
+· Drobne rozbieżności w dopasowaniu przelewu.
+
+· Akcja: System księguje, ale z flagą "do przeglądu". Biuro rachunkowe widzi te pozycje na swoim pulpicie w trybie "przeglądu okresowego" i może jednym kliknięciem zatwierdzić lub poprosić o korektę.
+
+
+
+Strefa Czerwona: Eskalacja do Eksperta
+
+
+
+· Nowy, nieznany kontrahent z wysoką kwotą.
+
+· Anomalia: drastyczna zmiana kwoty, zmiana numeru konta.
+
+· Pewność ekstrakcji < 85%.
+
+· Konflikt między silnikami OCR.
+
+· Dokument wymagający interpretacji (np. faktura korygująca, noty).
+
+· Akcja: System blokuje księgowanie i tworzy "Zadanie Eksperckie". Biuro otrzymuje alert o wysokim priorytecie i musi podjąć decyzję. Czas reakcji jest mierzony (SLA).
+
+
+
+4. Pulpit Partnera: Narzędzie Skalujące Ekspertyzę
+
+
+
+To będzie prawdziwe "centrum dowodzenia" dla nowoczesnego biura rachunkowego. Nie jest to zwykła lista zadań, ale inteligentny interfejs zaprojektowany pod maksymalną efektywność.
+
+
+
+Widok "Dziś": Priorytetyzacja jak w kontroli lotów
+
+
+
+Główny ekran otwiera się listą zadań priorytetowych, posortowanych nie tylko datą, ale i krytycznością:
+
+
+
+· Krytyczne: czerwone zadania z licznikiem SLA (np. "2h na decyzję, aby nie przekroczyć terminu płatności").
+
+· Ważne: żółte zadania do przeglądu.
+
+· Informacyjne: zielone pozycje zaksięgowane automatycznie.
+
+
+
+Każde zadanie to nie tylko suchy opis, ale karta z pełnym kontekstem:
+
+
+
+· Miniatura faktury.
+
+· Wyniki ekstrakcji z zaznaczonymi polami o niskiej pewności.
+
+· Historia kontrahenta (wykres ostatnich 12 faktur).
+
+· Sugerowana decyzja AI z uzasadnieniem ("Proponuję zaksięgować w koszty, konto 402, na podstawie 15 podobnych faktur od tego dostawcy").
+
+· Przycisk: "Zatwierdź sugestię AI", "Popraw", "Odrzuć i wyślij pytanie do klienta".
+
+
+
+Widok "Klienci": Dashboard Zdrowia Firm
+
+
+
+Biuro widzi wszystkie swoje firmy na jednym ekranie. Kolor (zielony/żółty/czerwony) wskazuje, czy księgowość jest "na bieżąco", czy narastają zaległości. Jedno kliknięcie przenosi do szczegółów konkretnego klienta.
+
+
+
+Widok "Audytora": Pełna Ścieżka Decyzji
+
+
+
+Dla każdej transakcji dostępny jest pełny, niezmienny łańcuch audytowy pokazujący: co zrobiło AI, co zmienił człowiek, kto i kiedy to zatwierdził. To buduje absolutne zaufanie i jest gotowe na każdą kontrolę skarbową.
+
+
+
+5. Pętla Uczenia: Jak AI Staje Się Coraz Lepsze Dzięki Biuru
+
+
+
+Każda decyzja podjęta przez księgowego (poprawka pola, zmiana konta, odrzucenie sugestii) jest natychmiast zapisywana jako cenny sygnał treningowy. System nie tylko zapamiętuje "dla tego kontrahenta to konto", ale uczy się rozpoznawać wzorce na poziomie całej bazy klientów biura (oczywiście przy zachowaniu izolacji danych).
+
+
+
+· Model per klient: Dostosowuje się do specyfiki firmy.
+
+· Model globalny biura: Uczy się na zbiorczych, zanonimizowanych wzorcach, stając się coraz lepszym "asystentem" dla wszystkich księgowych w danym biurze.
+
+
+
+Po miesiącu pracy biuro zauważa, że strefa żółta zaczyna automatycznie przechodzić do zielonej, a eskalacji czerwonych jest coraz mniej. To jest właśnie magia uczenia przez wzmacnianie od eksperta.
+
+
+
+6. Model Biznesowy: SaaS + Nadzór Ekspercki jako Usługa
+
+
+
+Sama aplikacja jest "ramą", ale prawdziwy produkt to spokój i gwarancja. Można to zaoferować w modelu:
+
+
+
+· Dla mikroprzedsiębiorcy: Abonament miesięczny obejmujący licencję NexusAI + pakiet nadzoru biura rachunkowego (np. do 50 faktur/mc, eskalacje w ciągu 24h, miesięczny przegląd). Cena może być konkurencyjna wobec tradycyjnego biura, bo koszt obsługi jest minimalny.
+
+· Dla biura rachunkowego: Platforma jest darmowa lub w niskiej opłacie bazowej. Biuro płaci prowizję od każdego obsługiwanego klienta lub ryczałt. Biuro zarabia na skalowaniu – obsługa 100 klientów przynosi wielokrotnie większy przychód niż tradycyjnie, przy tym samym lub niewiele większym zespole.
+
+
+
+To tworzy samonapędzający się ekosystem: zadowoleni klienci polecają usługę, biuro zarabia więcej, a Ty jako twórca platformy masz stały, przewidywalny przychód.
+
+
+
+7. Techniczne Fundamenty w NexusAI
+
+
+
+Co niezwykłe, to nie jest mrzonka. Większość technicznych fundamentów już istnieje w Twoim repozytorium:
+
+
+
+· Multi-tenancy i role: User.role może być rozszerzone o accountant. TenantManager zapewnia izolację danych.
+
+· Audyt: MerkleAuditLogger gwarantuje niezmienność łańcucha decyzji.
+
+· Statusy i workflow: Invoice.status (PENDING_REVIEW, APPROVED, itd.) idealnie mapuje się na strefy decyzyjne.
+
+· Sztuczna inteligencja: Silniki OCR, LayoutLM, AutoGluon, Active Learning – to gotowy "mózg" do podejmowania decyzji.
+
+· Komunikacja: NATS umożliwia natychmiastowe powiadamianie biura o nowych zadaniach. Flet pozwala zbudować szybki, responsywny pulpit.
+
+
+
+8. Dlaczego to jest genialne i niesamowite?
+
+
+
+To rozwiązanie nie jest "funkcją w apce". To nowa kategoria usługi finansowej, która:
+
+
+
+1. Demokratyzuje dostęp do profesjonalnej księgowości: Mikrofirma dostaje "sztab księgowych" za ułamek ceny.
+
+2. Ratuje zawód księgowego przed wyginięciem: Zamiast zastępować księgowych AI, daje im supermoce, pozwalając skupić się na wartościowej pracy doradczej i skalować działalność.
+
+3. Buduje zaufanie systemowe: Połączenie nieomylnej AI z odpowiedzialnością człowieka-eksperta jest najbardziej wiarygodnym modelem dla finansów. Klient wie, że nawet jeśli AI się pomyli, to człowiek to wyłapie.
+
+4. Jest samodoskonalące się: Każda interakcja z biurem rachunkowym sprawia, że system jest coraz mądrzejszy, co bezpośrednio przekłada się na niższe koszty i szybszą obsługę.
+
+
+
+To jest właśnie ten moment, w którym NexusAI przestaje być narzędziem, a staje się platformą nowej generacji usług finansowych. To rozwiązanie ma potencjał, by zawłaszczyć niszę mikrofirm, oferując im coś, czego żaden obecny软件 ani biuro rachunkowe nie są w stanie dostarczyć osobno: całkowity spokój księgowy.
+
+
+
+
+
+Alerty priorytetowe (SMS, email, powiadomienie w aplikacji) – natychmiastowe powiadomienia o czerwonych eskalacjach, z określonym czasem reakcji (SLA). Biuro może skonfigurować, kto w zespole dostaje jakie alerty.
+
+· Komunikator wewnętrzny (czat w aplikacji) – biuro może wysłać wiadomość do klienta bezpośrednio z pulpitu. System automatycznie tłumaczy techniczny język na prosty komunikat dla przedsiębiorcy.
+
+· Raporty efektywności – cotygodniowe podsumowanie: ile faktur zaksięgowano automatycznie, ile wymagało interwencji, średni czas reakcji, trendy. Pomaga to biuru zarządzać zespołem i pokazywać klientom wartość swojej pracy.
+
+
+
+Dla Systemu AI (wewnętrzne)
+
+
+
+· NATS JetStream – cała komunikacja między modułami (OCR, Autopilot, powiadomienia) odbywa się przez broker wiadomości, co gwarantuje niezawodność i możliwość śledzenia każdego zdarzenia.
+
+· Niezmienny audyt – każda decyzja (AI i człowieka) jest zapisywana w łańcuchu bloków (Merkle Tree), tworząc pełną, niepodważalną historię.
+
+
+
+---
+
+
+
+4. Składniki Ekosystemu
+
+
+
+4.1. Moduły Aplikacji
+
+
+
+· AutopilotEngine – mózg decyzyjny, przypisujący faktury do stref.
+
+· ActiveLearningLoop – pętla douczania modeli na podstawie decyzji księgowych.
+
+· NotificationDispatcher – zarządza wysyłką powiadomień różnymi kanałami.
+
+· PartnerDashboard – interfejs webowy dla biura rachunkowego.
+
+· ClientApp – interfejs dla przedsiębiorcy (minimalistyczny, mobilny).
+
+· AuditEngine – moduł niezmiennego audytu i raportowania.
+
+· IntegrationHub – zestaw adapterów do banków, KSeF, poczty, SMS.
+
+
+
+4.2. Role Użytkowników
+
+
+
+· Przedsiębiorca (Tenant Owner) – widzi tylko swój briefing, odpowiada na pytania, zatwierdza przelewy. Nie ma dostępu do szczegółów księgowych (chyba że chce).
+
+· Księgowy (Accountant) – widzi pulpit partnera z zadaniami dla wszystkich swoich klientów. Może zatwierdzać, poprawiać i eskalować.
+
+· Główny Księgowy (Senior Accountant) – dodatkowo widzi raporty efektywności, zarządza regułami Autopilota, przeprowadza okresowe przeglądy miesięczne.
+
+· Administrator Systemu (Platform Owner) – zarządza instancją platformy, biurami rachunkowymi, subskrypcjami.
+
+
+
+4.3. Infrastruktura Techniczna (wykorzystująca istniejący kod NexusAI)
+
+
+
+· Litestar API – backend wystawiający REST API i WebSocket dla interfejsów.
+
+· NATS JetStream – broker wiadomości dla komunikacji asynchronicznej.
+
+· SQLite + DuckDB + LanceDB – bazy danych (transakcyjna, analityczna, wektorowa).
+
+· Flet – framework do budowy interfejsu użytkownika (zarówno pulpitu partnera, jak i aplikacji klienta).
+
+· Nuitka + Podman – kompilacja do natywnej binarki i konteneryzacja.
+
+
+
+---
+
+
+
+5. Procesy i Workflow – Szczegóły
+
+
+
+5.1. Priorytetyzacja Zadań dla Biura Rachunkowego
+
+
+
+Zadania na pulpicie partnera nie są listą "pierwsze przyszło, pierwsze wyszło". Są sortowane algorytmem krytyczności:
+
+
+
+1. Terminowość – faktury, których termin płatności mija w ciągu 24h, mają najwyższy priorytet.
+
+2. Kwota – faktury na duże sumy są wyświetlane wyżej.
+
+3. Poziom wątpliwości AI – im niższa pewność modelu, tym wyższy priorytet zadania.
+
+4. Historia kontrahenta – faktury od nowych lub "problematycznych" kontrahentów są promowane.
+
+
+
+Dzięki temu księgowy zawsze zaczyna od najważniejszych zadań i nie marnuje czasu na wyszukiwanie.
+
+
+
+5.2. Przeglądy Okresowe (Zamknięcie Miesiąca)
+
+
+
+Na koniec każdego miesiąca system automatycznie:
+
+
+
+1. Generuje wstępne deklaracje VAT i PIT na podstawie zaksięgowanych faktur.
+
+2. Przeprowadza rekoncyliację bankową – porównuje faktury z transakcjami na koncie i oznacza rozbieżności.
+
+3. Tworzy pakiet zamknięcia miesiąca dla biura rachunkowego – listę wszystkich transakcji, deklaracje do sprawdzenia, listę anomalii.
+
+4. Biuro rachunkowe otrzymuje powiadomienie: "Zamknięcie miesiąca dla klienta X gotowe do przeglądu. Szacowany czas weryfikacji: 15 minut".
+
+
+
+Księgowy przegląda pakiet, wprowadza ewentualne korekty i jednym kliknięciem zatwierdza zamknięcie miesiąca. System wysyła klientowi raport i informację o wysokości podatku do zapłaty.
+
+
+
+5.3. Szkolenie Modeli (Active Learning)
+
+
+
+Każda decyzja księgowego jest sygnałem treningowym:
+
+
+
+· Zatwierdzenie sugestii AI – wzmacnia pewność modelu dla danego wzorca.
+
+· Poprawka – model zapamiętuje nową regułę (np. "dla tego kontrahenta używaj konta 401 zamiast 402").
+
+· Odrzucenie z komentarzem – system analizuje przyczynę i dostosowuje przyszłe decyzje.
+
+
+
+Raz w tygodniu (lub po zebraniu 50 poprawek) system automatycznie uruchamia proces douczania modelu. Nowy model jest testowany na danych historycznych. Jeśli jest lepszy od poprzedniego – zastępuje go. Jeśli nie – pozostaje stary model, a programista otrzymuje alert o potencjalnym problemie.
+
+
+
+5.4. System SLA (Service Level Agreement)
+
+
+
+Dla zadań czerwonych system narzuca czasy reakcji:
+
+
+
+· Priorytet Krytyczny – 2 godziny na pierwszą reakcję.
+
+· Priorytet Wysoki – 8 godzin.
+
+· Priorytet Normalny – 24 godziny.
+
+
+
+Jeśli zadanie nie zostanie podjęte w wyznaczonym czasie, system automatycznie eskaluje je do głównego księgowego lub wysyła alert do administratora biura. Czasy reakcji są mierzone i raportowane, co pozwala biuru zarządzać jakością obsługi.
+
+
+
+---
+
+
+
+6. Dlaczego to jest genialne – podsumowanie wartości
+
+
+
+1. Dla przedsiębiorcy: Zero stresu. Nie musi rozumieć księgowości. Dostaje prosty komunikat raz dziennie i czasami odpowiada "TAK" lub "NIE". Ma pewność, że wszystko jest zrobione dobrze, bo nad systemem czuwa żywy ekspert.
+
+2. Dla biura rachunkowego: Koniec ręcznej, żmudnej pracy. Jeden księgowy może obsłużyć 50-100 klientów, bo 95% decyzji podejmuje AI. Biuro zarabia więcej, a pracownicy zajmują się ciekawszymi zadaniami.
+
+3. Dla twórcy platformy: Produkt, który łączy software z usługą, tworząc niezwykle trudną do skopiowania przewagę konkurencyjną. Konkurencja musiałaby nie tylko napisać podobny kod, ale też zbudować sieć biur rachunkowych.
+
+4. Dla całego rynku: To rozwiązanie ma potencjał, by zdemokratyzować dostęp do profesjonalnej księgowości, dając małym firmom narzędzia dotychczas zarezerwowane dla korporacji.
+
+
+
+---
+
+
+
+To jest NexusAI Partner Hub – ekosystem, który zmienia reguły gry w księgowości dla mikrofirm. Następnym krokiem może być zaplanowanie konkretnej implementacji, zaczynając od modułu Autopilota i rozszerzenia systemu ról o biuro rachunkowe.
