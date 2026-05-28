@@ -59,6 +59,47 @@ class AppConfig:
     migration_baseline_name: str = os.getenv("NEXUS_MIGRATION_BASELINE_FILE", "migration_rowcount_baseline.json")
     migration_checksum_baseline_name: str = os.getenv("NEXUS_MIGRATION_CHECKSUM_BASELINE_FILE", "migration_checksum_baseline.json")
 
+    # --- Council Agents (Autopilot) ---
+    council_alpha_model_path: str = os.getenv("NEXUS_COUNCIL_ALPHA_MODEL", "models/LFM2.5-1.2B-Q4_K_M.gguf")
+    council_beta_model_path: str = os.getenv("NEXUS_COUNCIL_BETA_MODEL", "models/Qwen3-0.6B-Q4_K_M.gguf")
+    council_gamma_model_path: str = os.getenv("NEXUS_COUNCIL_GAMMA_MODEL", "models/LittleLamb-0.3B-Q4_K_M.gguf")
+
+    # --- Decision thresholds (defaults, adapted per-context at runtime) ---
+    autopilot_auto_post_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_AUTO_POST", "0.92"))
+    autopilot_suggest_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_SUGGEST", "0.75"))
+    autopilot_ask_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_ASK", "0.50"))
+
+    # --- Adaptation ---
+    autopilot_adaptation_enabled: bool = os.getenv("NEXUS_AUTOPILOT_ADAPTATION", "1") == "1"
+    autopilot_adaptation_learning_rate: float = float(os.getenv("NEXUS_AUTOPILOT_LEARNING_RATE", "0.05"))
+    autopilot_low_amount_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_LOW_AMOUNT", "500.0"))
+
+    # --- Rules Agent (Granite 4.0) ---
+    rules_model_path: str = os.getenv("NEXUS_RULES_MODEL", "models/granite-4.0-1b-nano-Q4_K_M.gguf")
+    rules_max_invoice_amount: float = float(os.getenv("NEXUS_RULES_MAX_AMOUNT", "100000.0"))
+    rules_require_nip_validation: bool = os.getenv("NEXUS_RULES_REQUIRE_NIP", "1") == "1"
+
+    # --- Analytics Agent (Qwen2.5-1.5B + Fin-RWKV) ---
+    analytics_model_path: str = os.getenv("NEXUS_ANALYTICS_MODEL", "models/qwen2.5-1.5b-instruct-Q4_K_M.gguf")
+    fin_detective_model_path: str = os.getenv("NEXUS_FIN_DETECTIVE_MODEL", "models/fin-rwkv-169m.pth")
+    analytics_anomaly_threshold: float = float(os.getenv("NEXUS_ANALYTICS_ANOMALY_THRESHOLD", "2.0"))
+
+    # --- NATS ---
+    nats_url: str = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
+
+    # --- Decision Agent (Jamba 3B + Granite) ---
+    decision_jamba_model_path: str = os.getenv("NEXUS_DECISION_JAMBA_MODEL", "models/Jamba-Reasoning-3B-Q4_K_M.gguf")
+    decision_granite_model_path: str = os.getenv("NEXUS_DECISION_GRANITE_MODEL", "models/granite-4.0-1b-nano-Q4_K_M.gguf")
+    decision_timeout_seconds: int = int(os.getenv("NEXUS_DECISION_TIMEOUT", "60"))
+
+    # --- Memory & timeout ---
+    autopilot_model_ttl_seconds: int = int(os.getenv("NEXUS_AUTOPILOT_MODEL_TTL", "600"))
+    autopilot_agent_timeout_seconds: int = int(os.getenv("NEXUS_AUTOPILOT_AGENT_TIMEOUT", "30"))
+
+    @property
+    def autopilot_vendor_alpha_proximity_min(self) -> int:
+        return int(os.getenv("NEXUS_AUTOPILOT_VENDOR_ALPHA_MIN", "3"))
+
     def __post_init__(self) -> None:
         self.environment = self.environment.lower().strip()
         if self.environment not in {"dev", "stage", "prod"}:

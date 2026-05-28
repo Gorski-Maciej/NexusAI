@@ -1,0 +1,8 @@
+#!/bin/bash
+echo "🚀 Uruchamiam Freebuff..."
+freebuff
+
+echo "📤 Wypycham zmiany na GitHub..."
+git push origin main
+echo "✅ Zmiany zostały wysłane."
+
