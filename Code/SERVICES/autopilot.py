@@ -1,6 +1,7 @@
 """
 Autopilot — the heart of the decision-making system.
-Contains TrustScoreCalculator and CouncilOrchestrator.
+Contains TrustScoreCalculator, CouncilOrchestrator (z CouncilSession),
+oraz integrację z PLE (Perpetual Learning Engine).
 """
 
 from __future__ import annotations
@@ -23,7 +24,9 @@ from services.council_agents import (
     GammaAgent,
     ModelManager,
 )
+from services.council_session import CouncilSession, CouncilVerdict, DecisionLevel
 from services.decision_logger import DecisionLogger
+from services.ple_engine import PLEEngine
 
 logger = get_logger(__name__)
 
@@ -43,6 +46,8 @@ class FinalDecision:
     gamma_verdict: DecisionVerdict
     context: dict[str, Any] = field(default_factory=dict)
     deliberation: str = ""
+    council_verdict: CouncilVerdict | None = None  # Nowość: wynik sesji Rady
+    ple_decision_pattern: dict[str, Any] | None = None  # Nowość: wzorzec z PLE
 
 
 # ---------------------------------------------------------------------------
@@ -179,13 +184,15 @@ class TrustScoreCalculator:
             },
         }
 
-    def get_adapted_thresholds(
+    async def get_adapted_thresholds(
         self,
         invoice_data: dict[str, Any],
         vendor_profile: dict[str, Any] | None = None,
+        ple_engine: PLEEngine | None = None,
     ) -> dict[str, float]:
         """
         Adapt decision thresholds to context.
+        Uses PLE for additional adaptation if available.
         Returns dict with auto_post, suggest, ask_user thresholds.
         """
         if not self._config.autopilot_adaptation_enabled:
@@ -197,7 +204,6 @@ class TrustScoreCalculator:
 
         # --- Per-category adjustment ---
         category = str(invoice_data.get("category", "")).lower()
-        # Recurring categories → lower threshold (more aggressive)
         recurring_categories = {"paliwo", "czynsz", "media", "telekomunikacja", "leasing"}
         problematic_categories = {"usługi it", "doradztwo", "marketing", "szkolenia"}
 
@@ -226,12 +232,25 @@ class TrustScoreCalculator:
         if amount_gross <= low_amount:
             base["auto_post"] -= adjustment * 0.5
             base["suggest"] -= adjustment * 0.3
-        elif amount_gross >= low_amount * 20:  # 10k+ PLN
+        elif amount_gross >= low_amount * 20:
             base["auto_post"] += adjustment * 2.0
             base["suggest"] += adjustment * 1.0
-        elif amount_gross >= low_amount * 4:  # 2k+ PLN
+        elif amount_gross >= low_amount * 4:
             base["auto_post"] += adjustment * 0.5
             base["suggest"] += adjustment * 0.3
+
+        # --- PLE-based adaptation (jeśli dostępny) ---
+        if ple_engine:
+            try:
+                contractor_nip = invoice_data.get("contractor_nip", "")
+                if contractor_nip:
+                    ple_adapted = await ple_engine.get_adapted_thresholds(
+                        base, contractor_nip, category
+                    )
+                    if ple_adapted:
+                        base = ple_adapted
+            except Exception as exc:
+                logger.debug("[TrustScore] PLE threshold adaptation failed: %s", exc)
 
         # Clamp values to [0.0, 1.0]
         for key in base:
@@ -245,16 +264,12 @@ class TrustScoreCalculator:
     ) -> None:
         """
         Dynamically adjust component weights based on user correction history.
-        If users frequently correct decisions in a specific category,
-        the weight of that component is adjusted.
         """
         lr = self._config.autopilot_adaptation_learning_rate
         for component in ("ai_confidence", "vendor_reliability", "data_consistency", "context_trust"):
             correction_rate = float(correction_stats.get(f"{component}_correction_rate", 0.0))
-            # High correction rate → reduce weight (the component is unreliable)
             if correction_rate > 0.2:
                 self._weights[component] = max(self._weights[component] - lr, 0.05)
-            # Low correction rate → increase weight
             elif correction_rate < 0.05:
                 self._weights[component] = min(self._weights[component] + lr * 0.5, 0.95)
 
@@ -271,7 +286,7 @@ class TrustScoreCalculator:
         vat = float(data.get("vat", 0) or 0)
         gross = float(data.get("amount_gross", 0) or 0)
         if gross == 0:
-            return True  # no data to check
+            return True
         return abs((net + vat) - gross) <= 0.01
 
     @staticmethod
@@ -294,10 +309,8 @@ class TrustScoreCalculator:
 class CouncilOrchestrator:
     """
     Orchestrates the Council of Agents deliberation.
-    Follows the decision matrix:
-      - Full consensus → AUTO_POST or SUGGEST
-      - Majority consensus → SUGGEST / ASK_USER
-      - No consensus / Beta veto → BLOCK
+    Uses CouncilSession (matryca 8 kombinacji) do podejmowania decyzji.
+    Integruje PLE do zapamiętywania wzorców decyzyjnych.
     """
 
     def __init__(
@@ -308,6 +321,7 @@ class CouncilOrchestrator:
         gamma: GammaAgent,
         trust_calculator: TrustScoreCalculator | None = None,
         decision_logger: DecisionLogger | None = None,
+        ple_engine: PLEEngine | None = None,
         config: AppConfig | None = None,
     ) -> None:
         self._model_manager = model_manager
@@ -316,6 +330,7 @@ class CouncilOrchestrator:
         self._gamma = gamma
         self._calculator = trust_calculator or TrustScoreCalculator(config=config)
         self._logger = decision_logger
+        self._ple = ple_engine
         self._config = config or AppConfig()
         self._timeout = self._config.autopilot_agent_timeout_seconds
 
@@ -326,16 +341,55 @@ class CouncilOrchestrator:
     ) -> FinalDecision:
         """
         Full evaluation flow:
-        1. Run Alpha (first pass)
-        2. If Alpha confident + APPROVE → fast-path accept
-        3. Else run Beta + Gamma in parallel
-        4. Deliberate (decision matrix)
-        5. Calculate Trust Score
-        6. Adapt thresholds to context
-        7. Final decision
-        8. Log
+        1. Check PLE for known decision pattern (fast-path)
+        2. Run Alpha (first pass)
+        3. If Alpha confident + APPROVE → fast-path accept
+        4. Else run Beta + Gamma in parallel
+        5. CouncilSession deliberation (matryca 8 kombinacji)
+        6. Calculate Trust Score
+        7. Adapt thresholds (z PLE)
+        8. Final decision with PLE pattern
+        9. Log to PLE and DecisionLogger
         """
         logger.info("[Council] evaluating invoice_id=%s", invoice_id)
+
+        contractor_nip = invoice_data.get("contractor_nip", "")
+        category = invoice_data.get("category", "")
+
+        # --- Step 0: Check PLE for known pattern (fastest path) ---
+        ple_pattern: dict[str, Any] | None = None
+        if self._ple and contractor_nip and category:
+            try:
+                ple_pattern = await self._ple.get_decision_pattern(contractor_nip, category)
+                if ple_pattern and ple_pattern.get("source") == "fm" and ple_pattern.get("confidence", 0) >= 0.90:
+                    logger.info(
+                        "[Council] PLE fast-path: known pattern=%s for nip=%s cat=%s",
+                        ple_pattern["typical_decision"], contractor_nip, category,
+                    )
+                    # Konstruuj szybki werdykt na podstawie wzorca PLE
+                    alpha_v = DecisionVerdict(
+                        decision="APPROVE" if ple_pattern["typical_decision"] == "AUTO_POST" else "REJECT",
+                        confidence=ple_pattern["confidence"],
+                        reasoning=f"PLE pattern match: {ple_pattern['typical_decision']} (freq={ple_pattern.get('frequency', 0)})",
+                    )
+                    beta_v = DecisionVerdict(
+                        decision="APPROVE", confidence=0.9, reasoning="PLE fast-path (skipped)"
+                    )
+                    gamma_v = DecisionVerdict(
+                        decision="APPROVE", confidence=0.9, reasoning="PLE fast-path (skipped)"
+                    )
+                    return await self._finalize(
+                        invoice_id=invoice_id,
+                        invoice_data=invoice_data,
+                        alpha_verdict=alpha_v,
+                        beta_verdict=beta_v,
+                        gamma_verdict=gamma_v,
+                        deliberation=f"PLE fast-path: pattern={ple_pattern['typical_decision']}",
+                        council_verdict=None,
+                        ple_pattern=ple_pattern,
+                    )
+            except Exception as exc:
+                logger.debug("[Council] PLE pattern check failed: %s", exc)
 
         # --- Step 1: Alpha (fast leader) ---
         alpha_verdict = await self._run_with_timeout(self._alpha.evaluate(invoice_data))
@@ -356,6 +410,7 @@ class CouncilOrchestrator:
                 beta_verdict=beta_verdict,
                 gamma_verdict=gamma_verdict,
                 deliberation="Alpha fast-path (green zone)",
+                ple_pattern=ple_pattern,
             )
 
         # --- Step 3: Beta + Gamma in parallel ---
@@ -363,10 +418,12 @@ class CouncilOrchestrator:
         gamma_task = self._run_with_timeout(self._gamma.evaluate(invoice_data))
         beta_verdict, gamma_verdict = await asyncio.gather(beta_task, gamma_task)
 
-        # --- Step 4: Deliberate ---
-        deliberation = self._deliberate(alpha_verdict, beta_verdict, gamma_verdict)
+        # --- Step 4: CouncilSession deliberation (matryca 8 kombinacji) ---
+        session = CouncilSession(invoice_data, alpha_verdict, beta_verdict, gamma_verdict)
+        council_verdict = session.deliberate()
+        deliberation = f"{council_verdict.pattern}: {council_verdict.deliberation}"
 
-        # --- Step 5-8: Finalize ---
+        # --- Step 5-9: Finalize ---
         return await self._finalize(
             invoice_id=invoice_id,
             invoice_data=invoice_data,
@@ -374,45 +431,9 @@ class CouncilOrchestrator:
             beta_verdict=beta_verdict,
             gamma_verdict=gamma_verdict,
             deliberation=deliberation,
+            council_verdict=council_verdict,
+            ple_pattern=ple_pattern,
         )
-
-    def _deliberate(
-        self,
-        alpha: DecisionVerdict,
-        beta: DecisionVerdict,
-        gamma: DecisionVerdict,
-    ) -> str:
-        """
-        Decision matrix logic.
-        Returns a deliberation explanation string.
-        """
-        decisions = {"ALPHA": alpha.decision, "BETA": beta.decision, "GAMMA": gamma.decision}
-        approves = sum(1 for d in decisions.values() if d == "APPROVE")
-        rejects = sum(1 for d in decisions.values() if d == "REJECT")
-
-        # --- Beta veto ---
-        if beta.decision == "REJECT" and "error" in beta.reasoning.lower():
-            return f"BETA_VETO: {beta.reasoning}"
-
-        # --- Full consensus ---
-        if approves == 3:
-            return "FULL_CONSENSUS: all agents approve"
-        if rejects == 3:
-            return "FULL_CONSENSUS: all agents reject"
-
-        # --- Majority ---
-        if approves >= 2:
-            return "MAJORITY_APPROVE"
-        if rejects >= 2:
-            if beta.decision == "REJECT":
-                return "MAJORITY_REJECT_WITH_BETA"
-            return "MAJORITY_REJECT"
-
-        # --- No consensus ---
-        if approves == 1 and rejects == 1:
-            return "SPLIT: one approve, one reject, one unknown"
-
-        return f"NO_CONSENSUS: alpha={alpha.decision}, beta={beta.decision}, gamma={gamma.decision}"
 
     async def _finalize(
         self,
@@ -422,8 +443,10 @@ class CouncilOrchestrator:
         beta_verdict: DecisionVerdict,
         gamma_verdict: DecisionVerdict,
         deliberation: str,
+        council_verdict: CouncilVerdict | None = None,
+        ple_pattern: dict[str, Any] | None = None,
     ) -> FinalDecision:
-        """Calculate trust score, adapt thresholds, decide, and log."""
+        """Calculate trust score, adapt thresholds, decide, and log to PLE."""
 
         # --- Step 5: Trust Score ---
         trust_result = self._calculator.calculate(
@@ -434,11 +457,12 @@ class CouncilOrchestrator:
         )
         trust_score = trust_result["trust_score"]
 
-        # --- Step 6: Adapted thresholds ---
+        # --- Step 6: Adapted thresholds (z PLE) ---
         vendor_profile = invoice_data.get("vendor_profile", None)
-        thresholds = self._calculator.get_adapted_thresholds(
+        thresholds = await self._calculator.get_adapted_thresholds(
             invoice_data=invoice_data,
             vendor_profile=vendor_profile,
+            ple_engine=self._ple,
         )
 
         # --- Step 7: Final decision ---
@@ -446,9 +470,10 @@ class CouncilOrchestrator:
             trust_score=trust_score,
             thresholds=thresholds,
             deliberation=deliberation,
+            council_verdict=council_verdict,
         )
 
-        # --- Step 8: Context for logging ---
+        # --- Context ---
         context = {
             "invoice_id": invoice_id,
             "category": invoice_data.get("category", ""),
@@ -467,11 +492,19 @@ class CouncilOrchestrator:
             gamma_verdict=gamma_verdict,
             context=context,
             deliberation=deliberation,
+            council_verdict=council_verdict,
+            ple_decision_pattern=ple_pattern,
         )
 
-        # --- Log decision ---
+        # --- Log to DecisionLogger ---
         if self._logger:
             try:
+                ple_stm = None
+                ple_ltm = None
+                if self._ple:
+                    ple_data = await self._ple.get_briefing_data()
+                    ple_stm = ple_data.get("stm")
+                    ple_ltm = ple_data.get("ltm")
                 await self._logger.log_decision(
                     invoice_id=invoice_id,
                     alpha_verdict=alpha_verdict.to_dict(),
@@ -481,16 +514,37 @@ class CouncilOrchestrator:
                     trust_score=trust_score,
                     trust_components=trust_result["components"],
                     context=context,
+                    decision_level=council_verdict.level.value if council_verdict else "",
+                    council_pattern=council_verdict.pattern if council_verdict else "",
+                    ple_stm_snapshot=ple_stm,
+                    ple_ltm_profile=ple_ltm,
                 )
             except Exception as exc:
                 logger.error("[Council] failed to log decision: %s", exc)
 
+        # --- Log to PLE ---
+        if self._ple:
+            try:
+                await self._ple.record_decision(
+                    invoice_id=invoice_id,
+                    decision=final_decision,
+                    trust_score=trust_score,
+                    trust_components=trust_result["components"],
+                    contractor_nip=context.get("contractor_nip", "unknown"),
+                    category=context.get("category", "unknown"),
+                    amount_gross=context.get("amount_gross", 0.0),
+                    metadata={
+                        "council_pattern": council_verdict.pattern if council_verdict else "",
+                        "decision_level": council_verdict.level.value if council_verdict else "",
+                        "deliberation": deliberation,
+                    },
+                )
+            except Exception as exc:
+                logger.error("[Council] failed to record to PLE: %s", exc)
+
         logger.info(
             "[Council] invoice_id=%s decision=%s trust=%.4f deliberation=%s",
-            invoice_id,
-            final_decision,
-            trust_score,
-            deliberation,
+            invoice_id, final_decision, trust_score, deliberation,
         )
         return decision
 
@@ -499,30 +553,44 @@ class CouncilOrchestrator:
         trust_score: float,
         thresholds: dict[str, float],
         deliberation: str,
+        council_verdict: CouncilVerdict | None = None,
     ) -> str:
-        """Map trust score + deliberation to a final decision."""
+        """Map trust score + council verdict to a final decision.
 
-        # Beta veto always triggers at least ASK_USER
-        if deliberation.startswith("BETA_VETO"):
-            return "ASK_USER"
+        Priorytet:
+          1. CouncilVerdict.recommended_action (jeśli poziom >= LEVEL_3)
+          2. Trust score thresholds
+        """
+        # Jeśli CouncilSession dał jednoznaczny werdykt na poziomie 3 lub 4
+        if council_verdict:
+            if council_verdict.level in (DecisionLevel.LEVEL_3_ESCALATE, DecisionLevel.LEVEL_4_BLOCK):
+                return council_verdict.recommended_action
 
-        # Full reject consensus → BLOCK
-        if deliberation == "FULL_CONSENSUS: all agents reject":
-            return "BLOCK"
+            # Level 2: SUGGEST — sprawdź czy trust score pozwala na auto_post
+            if council_verdict.level == DecisionLevel.LEVEL_2_REVIEW:
+                if trust_score >= council_verdict.min_trust_for_auto:
+                    return "AUTO_POST"
+                return "SUGGEST"
 
-        # Trust score based decision
-        if trust_score >= thresholds["auto_post"]:
+            # Level 1: AUTO — sprawdź minimalny trust score
+            if council_verdict.level == DecisionLevel.LEVEL_1_AUTO:
+                if trust_score >= council_verdict.min_trust_for_auto:
+                    return "AUTO_POST"
+                return "SUGGEST"
+
+        # Fallback: trust score based (stary mechanizm)
+        if trust_score >= thresholds.get("auto_post", 0.92):
             return "AUTO_POST"
-        if trust_score >= thresholds["suggest"]:
+        if trust_score >= thresholds.get("suggest", 0.75):
             return "SUGGEST"
-        if trust_score >= thresholds["ask_user"]:
+        if trust_score >= thresholds.get("ask_user", 0.50):
             return "ASK_USER"
 
         return "BLOCK"
 
     async def _run_with_timeout(
         self,
-        coro: 'asyncio.Future[DecisionVerdict] | asyncio.Task[DecisionVerdict] | DecisionVerdict',
+        coro: asyncio.Future[DecisionVerdict] | asyncio.Task[DecisionVerdict] | DecisionVerdict,
     ) -> DecisionVerdict:
         """Run an agent evaluation with a timeout."""
         try:

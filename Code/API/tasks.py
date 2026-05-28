@@ -29,6 +29,7 @@ from services.decision_logger import DecisionLogger
 from services.rules_agent import RulesAgent
 from services.analytics_agent import AnalyticsAgent, FinDetective
 from services.decision_agent import DecisionOrchestrator, JambaStrategist, GraniteExecutor
+from services.orchestrator_agent import OrchestratorAgent
 
 broker = PullBasedJetStreamBroker()
 logger = logging.getLogger("nexus.api.tasks")
@@ -51,6 +52,9 @@ _RULES_AGENT: RulesAgent | None = None
 # Singleton for Analytics Agent
 _ANALYTICS_AGENT: AnalyticsAgent | None = None
 _FIN_DETECTIVE: FinDetective | None = None
+
+# Singleton for Orchestrator Agent
+_ORCHESTRATOR_AGENT: OrchestratorAgent | None = None
 
 # Singleton for Decision Agent
 _DECISION_ORCHESTRATOR: DecisionOrchestrator | None = None
@@ -136,6 +140,21 @@ def _ensure_fin_detective(config: AppConfig) -> FinDetective:
             config=config,
         )
     return _FIN_DETECTIVE
+
+
+def _ensure_orchestrator_agent(config: AppConfig, manager: ModelManager) -> OrchestratorAgent:
+    """Lazy-init OrchestratorAgent as module-level singleton.
+    Shares ModelManager with Council agents for RAM mutual exclusion.
+    """
+    global _ORCHESTRATOR_AGENT
+    if _ORCHESTRATOR_AGENT is None:
+        _ORCHESTRATOR_AGENT = OrchestratorAgent(
+            model_name="orchestrator",
+            model_path=config.orchestrator_model_path,
+            model_manager=manager,
+            config=config,
+        )
+    return _ORCHESTRATOR_AGENT
 
 
 def _ensure_decision_agent(config: AppConfig, manager: ModelManager) -> DecisionOrchestrator:
@@ -608,12 +627,21 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
         )
         await nc.close()
 
-        # Kick all downstream tasks directly
-        await broker.kick("council_decide", invoice_id=invoice_id, extracted_data=extracted_data)
-        await broker.kick("rules_check", invoice_id=invoice_id, extracted_data=extracted_data)
-        await broker.kick("analytics_run", invoice_id=invoice_id, extracted_data=extracted_data)
-        await broker.kick("decision_evaluate", invoice_id=invoice_id, extracted_data=extracted_data)
-        logger.info("[OCR] triggered council + rules + analytics + decision for invoice_id=%s", invoice_id)
+        # Dynamic workflow orchestration — decide which agents to run
+        manager, _, _ = _ensure_council_components(config)
+        orchestrator = _ensure_orchestrator_agent(config, manager)
+        workflow = await orchestrator.decide_workflow(
+            invoice_data=extracted_data,
+            vendor_profile=extracted_data.get("vendor_profile", {}),
+        )
+        for task_name in workflow["agents"]:
+            await broker.kick(task_name, invoice_id=invoice_id, extracted_data=extracted_data)
+        logger.info(
+            "[OCR] orchestrated agents=%s for invoice_id=%s (reasoning=%s)",
+            workflow["agents"],
+            invoice_id,
+            workflow.get("reasoning", ""),
+        )
     except Exception as trigger_err:
         logger.warning("[OCR] failed to trigger checks: %s", trigger_err)
 

@@ -1,4 +1,3 @@
-cat > freebuff-auto << 'ENDOFSCRIPT'
 #!/bin/bash
 set -euo pipefail
 
@@ -54,4 +53,3 @@ freebuff
 # Normalne zakończenie
 commit_local_changes
 sync_with_github
-ENDOFSCRIPT

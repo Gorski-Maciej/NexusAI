@@ -196,10 +196,13 @@ class NexusAPIClientUI:
             headers["Authorization"] = f"Bearer {self.token}"
         return headers
 
-    async def get(self, endpoint: str, params: dict = None) -> dict | list:
+    async def get(self, endpoint: str, params: dict = None, api_version: str = "v1") -> dict | list:
         try:
+            base = self.base_url
+            if api_version != "v1":
+                base = base.replace("/api/v1", f"/api/{api_version}")
             response = await self._client.get(
-                f"{self.base_url}{endpoint}",
+                f"{base}{endpoint}",
                 headers=self._get_headers(),
                 params=params
             )

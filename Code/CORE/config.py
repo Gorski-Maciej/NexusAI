@@ -92,6 +92,9 @@ class AppConfig:
     decision_granite_model_path: str = os.getenv("NEXUS_DECISION_GRANITE_MODEL", "models/granite-4.0-1b-nano-Q4_K_M.gguf")
     decision_timeout_seconds: int = int(os.getenv("NEXUS_DECISION_TIMEOUT", "60"))
 
+    # --- Orchestrator Agent (LittleLamb 0.3B) ---
+    orchestrator_model_path: str = os.getenv("NEXUS_ORCHESTRATOR_MODEL", "models/LittleLamb-0.3B-Q4_K_M.gguf")
+
     # --- Memory & timeout ---
     autopilot_model_ttl_seconds: int = int(os.getenv("NEXUS_AUTOPILOT_MODEL_TTL", "600"))
     autopilot_agent_timeout_seconds: int = int(os.getenv("NEXUS_AUTOPILOT_AGENT_TIMEOUT", "30"))

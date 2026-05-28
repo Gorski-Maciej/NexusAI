@@ -11,6 +11,8 @@ from api.middleware import CorrelationAndDeprecationMiddleware, UploadSizeGuardM
 from api.rate_limit import SimpleRateLimitMiddleware
 from api.routes.auth import AuthController
 from api.routes.analytics import AnalyticsController
+from api.routes.dashboard import DashboardController
+from api.routes.partner import PartnerController
 from api.routes.exports import ExportController
 from api.routes.files import FileController
 from api.routes.finops import FinOpsController
@@ -63,6 +65,8 @@ def create_app() -> Litestar:
             InvoiceControllerV2,
             LivePreviewController,
             AnalyticsController,
+            DashboardController,
+            PartnerController,
             TaskController,
             TriageController,
             ExportController,
