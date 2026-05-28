@@ -33,6 +33,7 @@ from api.routes.triage import TriageController
 from api.routes.telemetry_ops import TelemetryOpsController
 from api.routes.ws import progress_websocket
 from api.routes.ui_state import UIStateController
+from api.routes.autopilot import AutopilotController
 from api.static import get_static_config
 from api.security import jwt_auth
 from api.state import on_shutdown, on_startup
@@ -73,6 +74,7 @@ def create_app() -> Litestar:
             FileController,
             AuthController,
             UIStateController,
+            AutopilotController,
             progress_websocket,
         ],
         on_app_init=[jwt_auth.on_app_init],

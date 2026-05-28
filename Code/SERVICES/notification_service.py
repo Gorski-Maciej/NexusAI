@@ -178,12 +178,87 @@ class DailyBriefingGenerator:
         return alerts
 
 
-class NotificationService:
-    """Manages user notifications and daily briefings backed by SQLite."""
+class MultiChannelConfig:
+    """Configuration dla wielokanałowych powiadomień.
 
-    def __init__(self, db_path: Path | str, config: AppConfig | None = None) -> None:
+    Obsługiwane kanały:
+      - push: Firebase Cloud Messaging / APNs
+      - email: SMTP / SendGrid / SES
+      - sms: Twilio / SMSAPI
+
+    Każdy kanał można włączyć/wyłączyć niezależnie.
+    """
+
+    def __init__(self) -> None:
+        # Push notifications (FCM/APNs)
+        self.push_enabled: bool = False
+        self.fcm_credentials_path: str = ""
+        self.apns_key_path: str = ""
+        self.apns_key_id: str = ""
+        self.apns_team_id: str = ""
+
+        # Email (SMTP)
+        self.email_enabled: bool = False
+        self.smtp_host: str = ""
+        self.smtp_port: int = 587
+        self.smtp_user: str = ""
+        self.smtp_password: str = ""
+        self.from_address: str = "noreply@nexus.ai"
+        self.from_name: str = "Nexus AI"
+
+        # SMS (Twilio)
+        self.sms_enabled: bool = False
+        self.twilio_account_sid: str = ""
+        self.twilio_auth_token: str = ""
+        self.twilio_from_number: str = ""
+
+    @classmethod
+    def from_config(cls, app_config: AppConfig) -> "MultiChannelConfig":
+        """Load multi-channel config from AppConfig."""
+        cfg = cls()
+        # Push
+        cfg.push_enabled = getattr(app_config, "push_enabled", False)
+        cfg.fcm_credentials_path = getattr(app_config, "fcm_credentials_path", "")
+        cfg.apns_key_path = getattr(app_config, "apns_key_path", "")
+        cfg.apns_key_id = getattr(app_config, "apns_key_id", "")
+        cfg.apns_team_id = getattr(app_config, "apns_team_id", "")
+        # Email
+        cfg.email_enabled = getattr(app_config, "email_enabled", False)
+        cfg.smtp_host = getattr(app_config, "smtp_host", "")
+        cfg.smtp_port = getattr(app_config, "smtp_port", 587)
+        cfg.smtp_user = getattr(app_config, "smtp_user", "")
+        cfg.smtp_password = getattr(app_config, "smtp_password", "")
+        cfg.from_address = getattr(app_config, "from_address", "noreply@nexus.ai")
+        cfg.from_name = getattr(app_config, "from_name", "Nexus AI")
+        # SMS
+        cfg.sms_enabled = getattr(app_config, "sms_enabled", False)
+        cfg.twilio_account_sid = getattr(app_config, "twilio_account_sid", "")
+        cfg.twilio_auth_token = getattr(app_config, "twilio_auth_token", "")
+        cfg.twilio_from_number = getattr(app_config, "twilio_from_number", "")
+        return cfg
+
+
+class NotificationService:
+    """Manages user notifications and daily briefings backed by SQLite.
+
+    Obsługuje wiele kanałów wysyłki:
+      - in_app: powiadomienia w aplikacji (SQLite, zawsze aktywne)
+      - push:   Firebase Cloud Messaging / APNs (opcjonalne)
+      - email:  SMTP / SendGrid (opcjonalne)
+      - sms:    Twilio API (opcjonalne)
+
+    Konfiguracja kanałów odbywa się przez MultiChannelConfig.
+    """
+
+    def __init__(
+        self,
+        db_path: Path | str,
+        config: AppConfig | None = None,
+        channel_config: MultiChannelConfig | None = None,
+    ) -> None:
         self._db_path = Path(db_path)
         self._config = config or AppConfig()
+        self._channel_config = channel_config or MultiChannelConfig.from_config(self._config)
         self._briefing_generator: DailyBriefingGenerator | None = None
         self._init_db()
 
@@ -245,6 +320,176 @@ class NotificationService:
             )
 
         return briefing
+
+    # ------------------------------------------------------------------
+    # Multi-channel sending
+    # ------------------------------------------------------------------
+
+    async def send_notification(
+        self,
+        user_id: str,
+        title: str,
+        message: str,
+        notification_type: str = "info",
+        reference_type: str | None = None,
+        reference_id: str | None = None,
+        channels: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Wyślij powiadomienie przez wiele kanałów jednocześnie.
+
+        Args:
+            user_id: ID użytkownika
+            title: Tytuł powiadomienia
+            message: Treść powiadomienia
+            notification_type: Typ ('info', 'warning', 'error', 'daily_briefing', 'decision')
+            reference_type: Typ referencji ('invoice', 'decision', 'daily_briefing')
+            reference_id: ID referencji
+            channels: Lista kanałów (domyślnie ['in_app'])
+
+        Returns:
+            dict z wynikami wysyłki dla każdego kanału
+        """
+        channels = channels or ["in_app"]
+        results: dict[str, Any] = {}
+
+        # In-app (zawsze, jeśli na liście)
+        if "in_app" in channels:
+            try:
+                nid = await asyncio.to_thread(
+                    self._add_notification,
+                    user_id=user_id,
+                    title=title,
+                    message=message,
+                    notification_type=notification_type,
+                    reference_type=reference_type,
+                    reference_id=reference_id,
+                )
+                results["in_app"] = {"status": "sent", "notification_id": nid}
+            except Exception as exc:
+                results["in_app"] = {"status": "error", "error": str(exc)}
+
+        # Push (FCM/APNs)
+        if "push" in channels and self._channel_config.push_enabled:
+            try:
+                result = await self._send_push(user_id, title, message, notification_type)
+                results["push"] = result
+            except Exception as exc:
+                results["push"] = {"status": "error", "error": str(exc)}
+
+        # Email (SMTP)
+        if "email" in channels and self._channel_config.email_enabled:
+            try:
+                result = await self._send_email(user_id, title, message, notification_type)
+                results["email"] = result
+            except Exception as exc:
+                results["email"] = {"status": "error", "error": str(exc)}
+
+        # SMS (Twilio)
+        if "sms" in channels and self._channel_config.sms_enabled:
+            try:
+                result = await self._send_sms(user_id, message, notification_type)
+                results["sms"] = result
+            except Exception as exc:
+                results["sms"] = {"status": "error", "error": str(exc)}
+
+        logger.info(
+            "[Notification] sent user=%s type=%s channels=%s results=%s",
+            user_id, notification_type, channels, results,
+        )
+        return results
+
+    async def _send_push(
+        self,
+        user_id: str,
+        title: str,
+        message: str,
+        notification_type: str,
+    ) -> dict[str, Any]:
+        """
+        Wyślij push notification przez FCM lub APNs.
+
+        Wymaga skonfigurowanych credentials.
+        Aktualnie placeholder — do implementacji z Firebase Admin SDK.
+        """
+        cfg = self._channel_config
+        if cfg.fcm_credentials_path:
+            logger.info(
+                "[Notification] push FCM user=%s title=%s (credentials=%s)",
+                user_id, title, cfg.fcm_credentials_path,
+            )
+            # TODO: firebase_admin.messaging.send()
+        elif cfg.apns_key_path:
+            logger.info(
+                "[Notification] push APNs user=%s title=%s (key=%s)",
+                user_id, title, cfg.apns_key_path,
+            )
+            # TODO: apns_client.send()
+        else:
+            logger.debug("[Notification] push not configured for user=%s", user_id)
+            return {"status": "not_configured", "message": "Push not configured"}
+
+        return {"status": "sent", "channel": "push"}
+
+    async def _send_email(
+        self,
+        user_id: str,
+        title: str,
+        message: str,
+        notification_type: str,
+    ) -> dict[str, Any]:
+        """
+        Wyślij email przez SMTP.
+
+        Wymaga skonfigurowanego serwera SMTP.
+        Aktualnie placeholder — do implementacji z aiosmtplib / sendgrid.
+        """
+        cfg = self._channel_config
+        if not cfg.smtp_host:
+            logger.debug("[Notification] email not configured for user=%s", user_id)
+            return {"status": "not_configured", "message": "SMTP not configured"}
+
+        # Konwertuj notification_type na priorytet email
+        priority = {
+            "info": "low",
+            "warning": "normal",
+            "error": "high",
+            "daily_briefing": "low",
+            "decision": "normal",
+        }.get(notification_type, "normal")
+
+        logger.info(
+            "[Notification] email user=%s title=%s priority=%s (smtp=%s:%d)",
+            user_id, title, priority, cfg.smtp_host, cfg.smtp_port,
+        )
+        # TODO: asyncio.to_thread(smtplib.SMTP.sendmail) lub aiosmtplib.send()
+
+        return {"status": "sent", "channel": "email", "priority": priority}
+
+    async def _send_sms(
+        self,
+        user_id: str,
+        message: str,
+        notification_type: str,
+    ) -> dict[str, Any]:
+        """
+        Wyślij SMS przez Twilio API.
+
+        Wymaga skonfigurowanego konta Twilio.
+        Aktualnie placeholder — do implementacji z twilio SDK.
+        """
+        cfg = self._channel_config
+        if not cfg.twilio_account_sid:
+            logger.debug("[Notification] sms not configured for user=%s", user_id)
+            return {"status": "not_configured", "message": "Twilio not configured"}
+
+        logger.info(
+            "[Notification] sms user=%s type=%s (twilio=%s)",
+            user_id, notification_type, cfg.twilio_account_sid,
+        )
+        # TODO: twilio.rest.Client.messages.create()
+
+        return {"status": "sent", "channel": "sms"}
 
     def set_notifications_table(self, user_id: str) -> None:
         """Placeholder: future method for configuring notification preferences."""

@@ -909,6 +909,71 @@ async def cleanup_temp_upload_files_task() -> None:
     logger.info("[CLEANUP] temp upload files removed=%s", removed)
 
 
+@broker.task(schedule=[{"cron": "30 6 * * *"}], task_name="daily_briefing_send")
+async def daily_briefing_send(user_id: str | None = None) -> dict:
+    """
+    Generuj i wyślij codzienne podsumowanie finansowe (Daily Briefing).
+
+    Domyślnie uruchamiany codziennie o 6:30 rano (cron).
+    Może być też wywołany ręcznie z określonym user_id.
+
+    Wysyła briefing przez kanał in_app (SQLite).
+    Jeśli skonfigurowano, również przez push/email/SMS.
+    """
+    config = AppConfig()
+    logger.info("[DAILY-BRIEFING] starting generation for user_id=%s", user_id or "all")
+
+    try:
+        # Lazy init komponentów
+        from services.notification_service import NotificationService
+        from services.daily_briefing import DailyBriefingService
+        from services.ple_engine import PLEEngine
+        from services.decision_logger import DecisionLogger
+        from db.analytics import DuckDBManager
+
+        db_path = config.base_dir / "app_data" / "notifications.db"
+        notification = NotificationService(db_path=db_path, config=config)
+        duckdb: DuckDBManager | None = None
+        try:
+            duckdb = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
+            decision_logger = DecisionLogger(duckdb)
+            ple = PLEEngine(config=config)
+
+            briefing_service = DailyBriefingService(
+                config=config,
+                notification_service=notification,
+                ple_engine=ple,
+                decision_logger=decision_logger,
+                duckdb_manager=duckdb,
+            )
+
+            # Jeśli podano user_id, generuj tylko dla niego
+            if user_id:
+                result = await briefing_service.generate_and_send(user_id, channels=["in_app"])
+                logger.info("[DAILY-BRIEFING] sent for user_id=%s status=%s", user_id, result["status"])
+                return {"result": "OK", "user_id": user_id, **result}
+
+            # W przeciwnym razie dla wszystkich aktywnych użytkowników
+            default_users = ["default", "admin"]
+            results: list[dict[str, Any]] = []
+            for uid in default_users:
+                try:
+                    result = await briefing_service.generate_and_send(uid, channels=["in_app"])
+                    results.append({"user_id": uid, "status": result["status"]})
+                except Exception as exc:
+                    logger.error("[DAILY-BRIEFING] failed for user=%s: %s", uid, exc)
+                    results.append({"user_id": uid, "status": "error", "error": str(exc)})
+
+            return {"result": "OK", "users": results}
+        finally:
+            if duckdb is not None:
+                duckdb.close()
+
+    except Exception as exc:
+        logger.exception("[DAILY-BRIEFING] generation failed: %s", exc)
+        return {"result": "ERROR", "error": str(exc)}
+
+
 @broker.task(schedule=[{"cron": "0 5 * * 0"}], task_name="cleanup_old_reports")
 async def cleanup_old_reports_task() -> None:
     cutoff = datetime.now() - timedelta(days=30)
