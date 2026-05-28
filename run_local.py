@@ -13,6 +13,13 @@ import os
 import subprocess
 import sys
 from argparse import ArgumentParser, Namespace
+from pathlib import Path
+
+# ── Dodaj katalog Code/ do sys.path, aby importy pokroju `api.server` działały ──
+_PROJECT_ROOT = Path(__file__).resolve().parent
+_CODE_DIR = str(_PROJECT_ROOT / "Code")
+if _CODE_DIR not in sys.path:
+    sys.path.insert(0, _CODE_DIR)
 
 REQUIRED_PACKAGES = ("uvicorn", "litestar", "sqlalchemy", "pydantic")
 PACKAGE_TO_PIP_NAME = {

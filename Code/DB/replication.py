@@ -9,10 +9,12 @@ from core.resilience.circuit_breaker import CircuitBreaker
 
 async def sync_sqlite_to_duckdb(db_session: AsyncSession, config: AppConfig):
     """Most replikacyjny z mechanizmem Watermark."""
-    duck_mgr = DuckDBManager(config)
+    duck_mgr = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
+    duck_mgr.connect()
 
     # 1. Pobierz czas ostatniej synchronizacji z DuckDB
-    last_sync = duck_mgr.conn.execute("SELECT MAX(updated_at) FROM invoices_replica").fetchone()[0]
+    result = duck_mgr.execute("SELECT MAX(updated_at) FROM invoices_replica")
+    last_sync = result[0][0] if result and result[0] and result[0][0] else None
 
     # 2. Wybierz tylko rekordy zmienione po tej dacie
     query = select(Invoice)
@@ -40,14 +42,15 @@ async def sync_sqlite_to_duckdb(db_session: AsyncSession, config: AppConfig):
     df = pd.DataFrame(data)
 
     # Atomowe wstawienie do DuckDB
-    duck_mgr.conn.execute("INSERT INTO invoices_replica SELECT * FROM df ON CONFLICT (id) DO UPDATE SET ALL")
+    duck_mgr.execute("INSERT INTO invoices_replica SELECT * FROM df ON CONFLICT (id) DO UPDATE SET ALL")
 
     return {"status": "success", "count": len(invoices)}
 
 
 async def sync_single_invoice_to_duckdb(db_session: AsyncSession, config: AppConfig, invoice_id: str) -> dict[str, object]:
     """Synchronizuje pojedynczą fakturę do DuckDB (near-real-time)."""
-    duck_mgr = DuckDBManager(config)
+    duck_mgr = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
+    duck_mgr.connect()
     result = await db_session.execute(select(Invoice).where(Invoice.id == invoice_id))
     invoice = result.scalar_one_or_none()
     if not invoice:
@@ -65,7 +68,7 @@ async def sync_single_invoice_to_duckdb(db_session: AsyncSession, config: AppCon
             "updated_at": invoice.updated_at,
         }
     ])
-    duck_mgr.conn.execute("INSERT INTO invoices_replica SELECT * FROM df ON CONFLICT (id) DO UPDATE SET ALL")
+    duck_mgr.execute("INSERT INTO invoices_replica SELECT * FROM df ON CONFLICT (id) DO UPDATE SET ALL")
     return {"status": "success", "invoice_id": invoice_id}
 
 

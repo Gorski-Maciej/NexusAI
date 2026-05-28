@@ -5,7 +5,7 @@ from pathlib import Path
 from litestar import Litestar
 from sqlalchemy import text
 from db.database import create_oltp_engine, consolidate_database, create_session_factory
-from worker.broker import broker
+from core.broker import broker
 from api.auth_service import hash_password
 from api.shared_image_buffer import SharedImageBuffer
 from db.analytics import DuckDBManager

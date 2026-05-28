@@ -79,7 +79,11 @@ def get_encrypted_engine():
     config = AppConfig()
     db_path = config.base_dir / "app_data" / "nexus_oltp.db"
 
+    db_password = os.getenv(config.sqlcipher_key_env, "")
+    if not db_password:
+        raise RuntimeError(f"{config.sqlcipher_key_env} environment variable is not set")
+
     # URL połączenia wykorzystuje dialekt sqlite+pysqlcipher i przekazuje hasło
-    db_url = f"sqlite+pysqlcipher://:{config.db_password}@/{db_path.as_posix()}"
+    db_url = f"sqlite+pysqlcipher://:{db_password}@/{db_path.as_posix()}"
     engine = create_engine(db_url)
     return engine
