@@ -1,0 +1,3068 @@
+
+1 Oto szczegółowy plan wdrożenia Council of Agents w Twoim systemie NexusAI. Skupiłem się na konkretnych krokach implementacyjnych, kluczowych mechanizmach oraz potencjalnych pułapkach, na które musisz uważać.
+
+
+
+---
+
+
+
+Plan wdrożenia Rady Agentów (Council of Agents)
+
+
+
+1. Wymagania wstępne i przygotowanie środowiska
+
+
+
+Zanim zaczniesz implementację, upewnij się, że masz przygotowane następujące elementy:
+
+
+
+Środowisko Python:
+
+
+
+· Python 3.11+ (zalecane 3.12)
+
+· Zainstalowane biblioteki: transformers, torch, llama-cpp-python (dla GGUF), sentencepiece, accelerate, bitsandbytes
+
+
+
+Modele AI (pobierz i umieść w katalogu models/):
+
+
+
+· LFM2.5 1.2B – pobierz wersję 4-bitową GGUF z HuggingFace (np. LFM2.5-1.2B-Q4_K_M.gguf)
+
+· Qwen3 0.6B – pobierz wersję 4-bitową GGUF (np. Qwen3-0.6B-Q4_K_M.gguf)
+
+· LittleLamb 0.3B – pobierz wersję 4-bitową GGUF (np. LittleLamb-0.3B-Q4_K_M.gguf)
+
+
+
+Broker NATS:
+
+
+
+· Upewnij się, że NATS JetStream jest uruchomiony (masz to w luz/main.py)
+
+
+
+---
+
+
+
+2. Nowe pliki i struktura kodu
+
+
+
+Poniższe pliki musisz utworzyć lub zmodyfikować:
+
+
+
+Plik Akcja
+
+Code/SERVICES/council_agents.py Nowy – definicje trzech agentów
+
+Code/SERVICES/autopilot.py Nowy – orkiestrator, logika głosowania, Trust Score
+
+Code/SERVICES/decision_logger.py Nowy – zapis decyzji do DuckDB
+
+Code/API/tasks.py Modyfikacja – dodanie nowego zadania process_invoice_decision
+
+Code/CORE/config.py Modyfikacja – dodanie nowych parametrów konfiguracyjnych
+
+
+
+---
+
+
+
+3. Implementacja council_agents.py – Agenci AI
+
+
+
+To kluczowy plik. Każdy agent będzie klasą z trzema metodami:
+
+
+
+```python
+
+class BaseAgent:
+
+    def load_model(self): ...
+
+    def unload_model(self): ...
+
+    def evaluate(self, invoice_data: dict) -> DecisionVerdict: ...
+
+
+
+class AlphaAgent(BaseAgent): # LFM2.5 1.2B
+
+class BetaAgent(BaseAgent): # Qwen3 0.6B
+
+class GammaAgent(BaseAgent): # LittleLamb 0.3B
+
+```
+
+
+
+Kluczowe mechanizmy:
+
+
+
+· Lazy loading: Model ładuje się dopiero przy pierwszym wywołaniu evaluate(), a nie przy starcie aplikacji.
+
+· Czas życia (TTL): Po 10 minutach bezczynności model jest automatycznie wyładowywany z pamięci (unload_model()).
+
+· Blokada współbieżności: Użyj asyncio.Lock, aby zapobiec jednoczesnemu ładowaniu lub wyładowywaniu modelu przez wiele zadań.
+
+· Kwantyzacja: Wszystkie modele ładuj z n_gpu_layers=0 (tylko CPU) i kontekstem 2048 tokenów.
+
+· Promptowanie: Każdy agent otrzymuje ten sam prompt z danymi faktury i oczekuje odpowiedzi w ustrukturyzowanym JSON.
+
+
+
+Przykładowa struktura odpowiedzi agenta (JSON):
+
+
+
+```json
+
+{
+
+    "decision": "APPROVE",
+
+    "confidence": 0.94,
+
+    "reasoning": "Kwota zgodna z historią, NIP poprawny, brak duplikatów",
+
+    "suggested_account": "402"
+
+}
+
+```
+
+
+
+---
+
+
+
+4. Implementacja autopilot.py – Orkiestrator i logika głosowania
+
+
+
+To centralny mózg Rady. Zawiera klasę CouncilOrchestrator, która:
+
+
+
+1. Odbiera zadanie z NATS.
+
+2. Wysyła je do Agenta Alpha.
+
+3. Na podstawie wyniku decyduje, czy potrzebna jest konsultacja Beta i Gamma.
+
+4. Przeprowadza głosowanie według matrycy.
+
+5. Podejmuje ostateczną decyzję i zapisuje ją w DecisionLogger.
+
+6. Publikuje wynik do dalszego przetwarzania (np. księgowania).
+
+
+
+Kluczowe mechanizmy:
+
+
+
+· Równoległe zapytania: Konsultacje Beta i Gamma wysyłane są jednocześnie przez asyncio.gather(), co skraca czas oczekiwania.
+
+· Timeouty: Każdy agent ma 5 sekund na odpowiedź. Jeśli nie odpowie, jego głos jest pomijany.
+
+· Matryca decyzyjna: Zdefiniowana jako słownik/słownik reguł, który na podstawie głosów trzech agentów zwraca ostateczną akcję.
+
+· Trust Score: Implementacja zgodnie z dokumentem „Nowy dokument tekstowy (14).txt” – wypadkowa pewności AI, historii kontrahenta, spójności danych i reguł użytkownika.
+
+
+
+---
+
+
+
+5. Implementacja decision_logger.py – Audyt i uczenie
+
+
+
+Każda decyzja Rady musi być zapisana. Użyj DuckDB (już masz) do stworzenia nowej tabeli council_decisions:
+
+
+
+```sql
+
+CREATE TABLE IF NOT EXISTS council_decisions (
+
+    id UUID PRIMARY KEY,
+
+    invoice_id VARCHAR,
+
+    alpha_vote VARCHAR,
+
+    beta_vote VARCHAR,
+
+    gamma_vote VARCHAR,
+
+    final_decision VARCHAR,
+
+    confidence FLOAT,
+
+    reasoning TEXT,
+
+    timestamp TIMESTAMP
+
+)
+
+```
+
+
+
+Dane te będą później wykorzystane do:
+
+
+
+· Audytu: Pełna historia, kto i jak głosował.
+
+· Uczenia: Analiza, które modele się myliły, dostrajanie wag w przyszłości.
+
+
+
+---
+
+
+
+6. Modyfikacja Code/API/tasks.py – Integracja z pipeline
+
+
+
+W istniejącym zadaniu process_invoice_ocr po zakończeniu ekstrakcji dodaj wywołanie nowego zadania:
+
+
+
+```python
+
+# Po zakończeniu OCR i ekstrakcji
+
+await broker.kick("council_decide", invoice_id=invoice_id, extracted_data=extracted_data)
+
+```
+
+
+
+Nowe zadanie council_decide:
+
+
+
+```python
+
+@broker.task(task_name="council_decide")
+
+async def council_decide(invoice_id: str, extracted_data: dict):
+
+    orchestrator = CouncilOrchestrator(config)
+
+    decision = await orchestrator.evaluate(invoice_id, extracted_data)
+
+    
+
+    if decision.action == "AUTO_POST":
+
+        # Zaksięguj automatycznie
+
+        await post_invoice(invoice_id, decision.suggested_account)
+
+    elif decision.action == "SUGGEST":
+
+        # Zapisz z flagą do przeglądu
+
+        await mark_for_review(invoice_id, decision)
+
+    elif decision.action in ("ASK_USER", "BLOCK"):
+
+        # Eskaluj do człowieka
+
+        await escalate_to_human(invoice_id, decision)
+
+```
+
+
+
+---
+
+
+
+7. Komunikacja przez NATS – Definicje tematów
+
+
+
+Ustal następujące tematy NATS dla komunikacji wewnętrznej Rady:
+
+
+
+Temat Kierunek Opis
+
+council.task.request Orkiestrator → Agenci Zadanie dla Rady
+
+council.task.response.<id> Agenci → Orkiestrator Odpowiedź agenta
+
+council.decision.final Orkiestrator → System Ostateczna decyzja
+
+
+
+---
+
+
+
+8. Zarządzanie pamięcią RAM – kluczowy aspekt
+
+
+
+Biorąc pod uwagę limit ~2 GB RAM, musisz wdrożyć rygorystyczne zarządzanie pamięcią:
+
+
+
+· Nigdy nie ładuj wszystkich trzech modeli jednocześnie. Agent Alpha jest zawsze aktywny. Beta i Gamma ładują się tylko na czas konsultacji i natychmiast po użyciu są wyładowywane.
+
+· Użyj asyncio.Semaphore, aby ograniczyć liczbę jednoczesnych zapytań do agentów (np. max 2).
+
+· Monitoruj zużycie RAM w WorkerGuard i jeśli przekroczy 1,8 GB, wymuś wyładowanie nieużywanych modeli.
+
+· Rozważ użycie mmap do współdzielenia modeli między procesami, jeśli uruchamiasz workerów w osobnych procesach.
+
+
+
+---
+
+
+
+9. Pułapki i na co uważać
+
+
+
+Pułapka Objaw Rozwiązanie
+
+Zbyt długi prompt Model nie odpowiada, timeout Ogranicz kontekst faktury do maks. 2048 tokenów
+
+Różne formaty odpowiedzi Parsowanie JSON się nie udaje Dodaj walidację Pydantic i fallback (ponów zapytanie)
+
+Wyścigi (race conditions) Dwa zadania próbują załadować ten sam model Użyj asyncio.Lock per agent
+
+Wyciek pamięci RAM rośnie mimo wyładowań Regularnie wywołuj gc.collect() i torch.cuda.empty_cache()
+
+Niska jakość odpowiedzi małych modeli Agent Gamma zwraca bezsensowne decyzje Ustaw minimalny próg pewności (np. 0.7) – poniżej tego jego głos jest ignorowany
+
+Deadlock NATS Zadania wiszą w kolejce Ustaw timeout na odpowiedź i monitoruj stan kolejek
+
+
+
+---
+
+
+
+10. Harmonogram wdrożenia (fazy)
+
+
+
+Faza Zakres Czas
+
+Faza 1: MVP Agent Alpha (LFM2.5) jako jedyny decydent. Integracja z tasks.py. Bez Rady. 1-2 dni
+
+Faza 2: Rada Dodanie Agenta Beta (Qwen) i Agenta Gamma (LittleLamb). Implementacja głosowania i konsensusu. 3-4 dni
+
+Faza 3: Zarządzanie pamięcią Lazy loading, TTL, monitoring RAM, limity współbieżności. 1-2 dni
+
+Faza 4: Audyt i uczenie DecisionLogger, dashboard decyzji, automatyczne douczanie modeli. 2-3 dni
+
+
+
+---
+
+
+
+11. Testy
+
+
+
+Przygotuj zestaw testów integracyjnych:
+
+
+
+· Test konsensusu: Przygotuj 10 faktur o znanych cechach i sprawdź, czy Rada podejmuje spójne decyzje.
+
+· Test timeoutu: Symuluj niedostępność jednego agenta i sprawdź, czy system działa dalej.
+
+· Test pamięci: Uruchom 100 zapytań pod rząd i monitoruj RAM – nie może przekroczyć 2 GB.
+
+
+
+---
+
+
+
+12. Podsumowanie
+
+
+
+Wdrożenie Council of Agents to kluczowy krok w stronę prawdziwie autonomicznego systemu księgowego. Zacznij od Fazy 1 (MVP z jednym agentem), aby zweryfikować integrację, a dopiero potem dodawaj kolejnych agentów i mechanizmy konsensusu. Pamiętaj o rygorystycznym zarządzaniu pamięcią – to największe ryzyko przy tak ograniczonych zasobach.
+
+
+
+Jeśli chcesz, mogę przygotować konkretny kod dla któregokolwiek z tych modułów. Który chciałbyś zobaczyć jako pierwszy?
+
+
+
+2 Oto szczegółowy, profesjonalny opis architektury „Rady Agentów” (Council of Agents) – wieloagentowego systemu decyzyjnego, który ma szansę stać się centralnym „mózgiem” autonomicznej platformy księgowej NexusAI.
+
+
+
+---
+
+
+
+Council of Agents: Wieloagentowy System Decyzyjny dla Autonomicznej Księgowości
+
+
+
+1. Wizja i cel
+
+
+
+Council of Agents to zaawansowany, wieloagentowy system sztucznej inteligencji, zaprojektowany do podejmowania autonomicznych decyzji księgowych z niezawodnością przewyższającą pojedynczy, nawet najlepszy model językowy. Jego działanie opiera się na zasadzie dywersyfikacji kognitywnej – zamiast polegać na jednym „czarnym pudełku”, system angażuje trzy niezależne, wyspecjalizowane modele AI, które współpracują ze sobą na zasadzie konsensusu, wzajemnej walidacji i podziału odpowiedzialności.
+
+
+
+Celem Rady jest maksymalizacja precyzji decyzji (eliminacja błędów księgowych) przy jednoczesnym zachowaniu wysokiej wydajności i niskiego zużycia zasobów (limit ~2 GB RAM). System został zaprojektowany tak, aby działać w pełni lokalnie (offline-first), bez zależności od zewnętrznych API, co jest kluczowe dla bezpieczeństwa danych finansowych.
+
+
+
+2. Architektura i skład Rady
+
+
+
+Rada składa się z trzech wyspecjalizowanych Agentów AI oraz warstwy orkiestracyjnej, która zarządza ich pracą. Każdy z agentów posiada unikalny profil poznawczy, wynikający z odmiennej architektury, danych treningowych i rozmiaru modelu.
+
+
+
+2.1. Agent Alpha – Szybki Decydent (LFM2.5 1.2B)
+
+
+
+· Rola: Lider Rady, pierwszy punkt kontaktu dla wszystkich zadań.
+
+· Model AI: LFM2.5 1.2B (Liquid AI) – hybrydowa architektura łącząca konwolucje i mechanizmy uwagi.
+
+· Profil poznawczy: Niezwykle szybki, intuicyjny, doskonały w ocenie ogólnego kontekstu. Działa jak doświadczony dyrektor finansowy, który na pierwszy rzut oka potrafi ocenić, czy faktura jest „typowa” czy „podejrzana”.
+
+· Główne zadania:
+
+  · Przyjmowanie zadań od Orkiestratora.
+
+  · Wstępna ocena dokumentu (klasyfikacja do strefy decyzyjnej).
+
+  · Delegowanie zadań szczegółowych do Agenta Beta i Gamma.
+
+  · Podejmowanie ostatecznej decyzji na podstawie wyników głosowania Rady.
+
+· Zużycie zasobów: ~0,7–1,0 GB RAM, ~1,3 GB dysku, szybkość ~239 tok./s na CPU.
+
+
+
+2.2. Agent Beta – Precyzyjny Walidator (Qwen3 0.6B)
+
+
+
+· Rola: Specjalista od precyzyjnej weryfikacji danych.
+
+· Model AI: Qwen3 0.6B – zoptymalizowany pod kątem wysokiej precyzji w zadaniach wymagających dokładności.
+
+· Profil poznawczy: Skrupulatny, analityczny, doskonały w wykrywaniu subtelnych niezgodności. Działa jak kontroler finansowy, który sprawdza każdy szczegół co do grosza.
+
+· Główne zadania:
+
+  · Weryfikacja pól krytycznych (NIP, kwoty, data).
+
+  · Sprawdzanie spójności matematycznej (netto + VAT = brutto).
+
+  · Walidacja zgodności ze schematem faktury.
+
+  · Potwierdzanie lub odrzucanie decyzji Agenta Alpha.
+
+· Zużycie zasobów: ~0,5–0,9 GB RAM, ~0,7 GB dysku, szybkość ~18–25 tok./s na CPU.
+
+
+
+2.3. Agent Gamma – Wyspecjalizowany Detektor (LittleLamb 0.3B)
+
+
+
+· Rola: Ekspert od jednego, konkretnego zadania – wykrywania duplikatów i anomalii historycznych.
+
+· Model AI: LittleLamb 0.3B Tool-Calling – silnie skompresowany model pochodny od Qwen3-0.6B, zoptymalizowany pod kątem wywoływania funkcji.
+
+· Profil poznawczy: Ultra-wydajny, zero-jedynkowy. Nie analizuje kontekstu, tylko wykonuje swoje wyspecjalizowane zadanie z ekstremalną szybkością.
+
+· Główne zadania:
+
+  · Porównywanie nowego dokumentu z bazą historyczną (przez API DuckDB i LanceDB).
+
+  · Wykrywanie duplikatów na podstawie sum kontrolnych i podobieństwa wektorowego.
+
+  · Wykrywanie anomalii w kontekście historii kontrahenta (np. nagła zmiana numeru konta, drastyczna zmiana kwoty).
+
+· Zużycie zasobów: ~0,5 GB RAM, ~0,6 GB dysku, szybkość ~15–20 tok./s na CPU.
+
+
+
+2.4. Orkiestrator (Warstwa nadrzędna)
+
+
+
+· Rola: Zarządza przepływem zadań, kolejkuje zapytania, rozdziela pracę między agentów i zbiera wyniki.
+
+· Implementacja: Nie jest to osobny model AI, lecz lekka warstwa logiczna napisana w Pythonie, działająca w ramach istniejącego Code/API/tasks.py i komunikująca się przez NATS.
+
+· Główne zadania:
+
+  · Przyjmowanie zadań z kolejki NATS.
+
+  · Wysyłanie zadań do Agenta Alpha.
+
+  · W razie potrzeby zlecanie dodatkowych weryfikacji Agentom Beta i Gamma.
+
+  · Podejmowanie ostatecznej decyzji na podstawie protokołu głosowania.
+
+  · Zapis decyzji w DecisionLogger (audyt i uczenie).
+
+
+
+3. Szczegółowy Mechanizm Działania – Protokół „Konsensusu Nadzorowanego”
+
+
+
+Przetwarzanie każdej faktury odbywa się według ściśle określonego protokołu, który gwarantuje, że żadna decyzja nie jest podejmowana pochopnie, a każda wątpliwość jest eskalowana.
+
+
+
+Krok 1: Przyjęcie zadania
+
+
+
+Orkiestrator odbiera z kolejki NATS zadanie process_invoice_decision zawierające invoice_id oraz dane wyekstrahowane przez pipeline OCR/AI.
+
+
+
+Krok 2: Wstępna ocena (Agent Alpha)
+
+
+
+Orkiestrator wysyła zadanie do Agenta Alpha. Agent Alpha analizuje dokument i dokonuje wstępnej klasyfikacji:
+
+
+
+· Strefa Zielona (Trust Score >= 0.92): Dokument wygląda na typowy i bezpieczny.
+
+· Strefa Żółta (0.75 <= Trust Score < 0.92): Drobne niepewności.
+
+· Strefa Czerwona (Trust Score < 0.75): Poważne wątpliwości – natychmiastowa eskalacja do człowieka.
+
+
+
+Jeśli Agent Alpha z wysoką pewnością zaklasyfikuje dokument do Strefy Zielonej, Orkiestrator może (w zależności od konfiguracji) od razu podjąć decyzję AUTO_POST bez angażowania pozostałych agentów. To zapewnia maksymalną szybkość dla rutynowych spraw.
+
+
+
+Krok 3: Konsultacja (Agent Beta i Agent Gamma)
+
+
+
+Jeśli ocena Agenta Alpha nie jest jednoznacznie zielona (Strefa Żółta) lub Orkiestrator jest skonfigurowany w trybie „podwójnej weryfikacji”, zadanie jest wysyłane równolegle do:
+
+
+
+· Agenta Beta – w celu precyzyjnej walidacji danych.
+
+· Agenta Gamma – w celu sprawdzenia duplikatów i anomalii historycznych.
+
+
+
+Każdy z agentów zwraca swój niezależny werdykt wraz z poziomem pewności i uzasadnieniem.
+
+
+
+Krok 4: Sesja Rady (Głosowanie i Konsensus)
+
+
+
+Orkiestrator zbiera odpowiedzi od wszystkich trzech agentów i przeprowadza sesję Rady. Decyzja jest podejmowana na podstawie następującej matrycy:
+
+
+
+Agent Alpha Agent Beta Agent Gamma Decyzja Rady Akcja
+
+ZGODA ZGODA ZGODA Pełny konsensus AUTO_POST
+
+ZGODA ZGODA NIEZGODA Konsensus większościowy SUGGEST (z flagą ostrzegawczą)
+
+ZGODA NIEZGODA ZGODA Konsensus większościowy SUGGEST (z flagą ostrzegawczą)
+
+ZGODA NIEZGODA NIEZGODA Brak konsensusu ASK_USER lub BLOCK
+
+NIEZGODA ZGODA ZGODA Veto lidera SUGGEST (wymagane potwierdzenie)
+
+NIEZGODA ZGODA NIEZGODA Brak konsensusu ASK_USER
+
+NIEZGODA NIEZGODA ZGODA Brak konsensusu ASK_USER
+
+NIEZGODA NIEZGODA NIEZGODA Pełna niezgodność BLOCK (natychmiastowa eskalacja)
+
+
+
+Krok 5: Eskalacja i uczenie
+
+
+
+· Jeśli decyzją Rady jest ASK_USER lub BLOCK, Orkiestrator tworzy zadanie eksperckie dla biura rachunkowego (zgodnie z koncepcją NexusAI Partner Hub) lub wysyła proste pytanie do przedsiębiorcy.
+
+· Każda decyzja (zarówno automatyczna, jak i podjęta przez człowieka) jest zapisywana w DecisionLogger, który stanowi podstawę do ciągłego douczania modeli (Active Learning).
+
+
+
+4. Komunikacja Wewnętrzna
+
+
+
+Komunikacja między Orkiestratorem a poszczególnymi Agentami odbywa się za pośrednictwem NATS JetStream, co gwarantuje niezawodność i asynchroniczność.
+
+
+
+· Orkiestrator → Agent Alpha: Publikacja na temat council.alpha.request z pełnym kontekstem zadania.
+
+· Agent Alpha → Orkiestrator: Odpowiedź na dedykowany temat council.response.<task_id>.
+
+· Orkiestrator → Agent Beta / Gamma: Równoległa publikacja na tematy council.beta.request i council.gamma.request (tylko gdy wymagana jest konsultacja).
+
+· Format wiadomości: Wszystkie komunikaty są w formacie JSON i zawierają pola: task_id, invoice_id, instruction, data_payload, response_type (APPROVE/REJECT/ESCALATE), confidence, reasoning.
+
+
+
+5. Integracja z Istniejącą Architekturą NexusAI
+
+
+
+Rada Agentów nie zastępuje istniejących modułów, lecz stanowi nową, nadrzędną warstwę decyzyjną.
+
+
+
+· Code/API/tasks.py: Tutaj wpięty zostanie Orkiestrator. Zadanie process_invoice_ocr po zakończeniu ekstrakcji będzie wywoływać nowe zadanie process_invoice_decision, które uruchomi Radę.
+
+· Code/SERVICES/autopilot.py (nowy moduł): Będzie zawierał implementację Orkiestratora, matrycę decyzyjną oraz logikę obliczania Trust Score (zgodnie z dokumentem „Nowy dokument tekstowy (14).txt”).
+
+· Agenci (Alpha, Beta, Gamma): Każdy z nich będzie osobną klasą w nowym module Code/SERVICES/council_agents.py. Każda klasa będzie odpowiedzialna za załadowanie swojego modelu (z opcjonalnym lazy loadingiem) i wystawienie metody evaluate(invoice_data) -> DecisionVerdict.
+
+· DecisionLogger: Nowa tabela w DuckDB (lub osobny plik Parquet) do przechowywania wszystkich decyzji Rady.
+
+
+
+6. Zalety i Wyzwania
+
+
+
+Zalety Wyzwania
+
+Wyższa niezawodność: Konsensus 2-3 różnych modeli eliminuje błędy pojedynczego. Złożoność orkiestracji: Wymaga precyzyjnego zarządzania stanem i kolejkami.
+
+Pewniejsze decyzje: Zgodność trzech „umysłów” daje bardzo wysoki poziom zaufania. Opóźnienie: Przy pełnej konsultacji (Beta + Gamma) czas decyzji jest sumą czasów odpowiedzi.
+
+Optymalne wykorzystanie zasobów: Dzięki lazy loadingowi i wyłączaniu agentów po okresie bezczynności, łączne zużycie RAM może być utrzymane w ryzach. Sumaryczne zużycie RAM: Przy jednoczesnym załadowaniu wszystkich trzech modeli może przekroczyć 2 GB (szacunkowo 1,7–2,4 GB). Wymaga to starannego zarządzania pamięcią.
+
+
+
+7. Rozwój i Skalowanie
+
+
+
+Rada Agentów została zaprojektowana jako system otwarty na przyszłą rozbudowę. W miarę pojawiania się nowych, lepszych modeli (np. w architekturze Mamba lub hybrydowych), można je dodawać jako nowych agentów (np. Agent Delta – Specjalista od Przepisów Podatkowych) bez zmiany całej architektury. System głosowania może być również rozszerzony o wagi oparte na historycznej skuteczności poszczególnych modeli, co uczyni go jeszcze bardziej adaptacyjnym.
+
+
+
+---
+
+
+
+To jest właśnie Council of Agents – nie tylko funkcja, ale nowa filozofia działania AI w systemach klasy enterprise, gdzie odpowiedzialność i niezawodność są ważniejsze niż szybkość działania pojedynczego modelu.
+
+
+
+
+
+11 Oto szczegółowa instrukcja wdrożenia nowego, ultra-lekkiego Agenta Ekstrakcji Danych, która wyjaśnia architekturę, kolejne kroki, kluczowe mechanizmy i potencjalne pułapki.
+
+
+
+1. Stan pożądany
+
+
+
+Dążysz do sytuacji, w której agent ekstrakcji działa w ultra-lekkim trybie. Oznacza to:
+
+
+
+· Jeden model zamiast czterech: Cała odpowiedzialność za OCR, rozumienie układu strony i ekstrakcję pól spoczywa na jednym modelu LightOnOCR-1B. Modele Surya, LayoutLM i Qwen zostaną z agenta usunięte.
+
+· LLM tylko jako rezerwa: Model Phi-3-mini jest utrzymywany w architekturze wyłącznie jako "sędzia" na wypadek, gdyby wynik z LightOnOCR był niejasny lub niepełny. Nie jest używany domyślnie.
+
+· Radykalna oszczędność zasobów: Zużycie RAM przez agenta spada z >6 GB do około 1,5 GB, a szybkość przetwarzania pojedynczego dokumentu rośnie nawet pięciokrotnie.
+
+
+
+2. Przygotowanie środowiska
+
+
+
+Przed rozpoczęciem implementacji wykonaj następujące czynności:
+
+
+
+1. Python: Potwierdź, że używasz Pythona 3.12 (jest to wymaganie dla LightOnOCR).
+
+2. Biblioteki: Upewnij się, że masz zainstalowaną bibliotekę llama-cpp-python w wersji, która obsługuje przesyłanie obrazów jako image_url. Będziesz też potrzebować Pillow do konwersji obrazów.
+
+3. Model: Pobierz plik GGUF modelu LightOnOCR-1B w kwantyzacji Q4_K_M. To optymalny wybór, który przy rozmiarze ~800 MB zapewnia dobrą dokładność i minimalne zużycie pamięci.
+
+
+
+3. Nowa architektura i mechanizm działania agenta
+
+
+
+Sposób działania nowego agenta jest znacząco uproszczony w stosunku do obecnego pipeline'u.
+
+
+
+1. Przyjęcie zadania: Tak jak dotychczas, zadanie z obrazem faktury trafia do agenta przez brokera NATS.
+
+2. Przetwarzanie (nowy silnik): Agent ładuje obraz, konwertuje go do formatu Base64, a następnie wysyła go wraz ze specjalnie spreparowanym promptem do modelu LightOnOCR-1B. Prompt ten instruuje model, by przeanalizował obraz i zwrócił dane wyłącznie w formacie JSON.
+
+3. Zwrot wyniku: W zdecydowanej większości przypadków model bezpośrednio zwraca gotowy obiekt JSON z kluczami takimi jak nip, amount_gross czy invoice_number. To fundamentalna zmiana – nie ma już etapu konwersji "obraz -> tekst -> JSON", tylko "obraz -> JSON".
+
+4. Obsługa fallbacku: Tylko jeśli LightOnOCR-1B zwróci błąd (np. nie uda się sparsować JSON-a), system uruchomi stary, ciężki pipeline (Surya + Phi-3) jako ostateczność. W normalnych warunkach stary pipeline jest całkowicie wyłączony.
+
+
+
+4. Plan modyfikacji kodu
+
+
+
+Prace implementacyjne należy przeprowadzić w następującej kolejności:
+
+
+
+1. Utwórz nowy moduł Code/PIPELINE/ocr_lightweight.py: To będzie serce nowego agenta. Umieścisz w nim klasę LightweightExtractionAgent z metodami do leniwego ładowania modelu, konwersji obrazu do Base64 i główną metodą extract(), która przyjmuje ścieżkę do pliku i zwraca słownik z danymi.
+
+2. Zmodyfikuj główne zadanie w Code/CORE/tasks.py: W funkcji process_invoice_task zmień logikę tak, aby w pierwszej kolejności próbowała użyć LightweightExtractionAgent. Jeśli ta operacja się powiedzie (wynik nie zawiera klucza "error"), dane są zapisywane, a stary pipeline jest pomijany. Stary kod DocumentProcessor jest uruchamiany tylko w bloku except, jako mechanizm awaryjny.
+
+3. Usuń zbędny kod z agenta: Po pomyślnych testach możesz usunąć z głównego przepływu agenta integracje z modelami, które stały się zbędne. Konkretnie chodzi o:
+
+   · Usunięcie wywołań PaddleOCR jako drugiego silnika walidującego.
+
+   · Usunięcie VisionAgenta (Qwen), jeśli był używany do analizy wizualnej.
+
+   · Usunięcie LayoutAwareExtractor (LayoutLM) z głównego flow.
+
+     Ważne: Nie usuwaj tych plików z projektu – zostaw je jako zależności fallbacku w tasks.py.
+
+
+
+5. Kluczowe mechanizmy oszczędzające RAM
+
+
+
+Aby utrzymać aplikację w ryzach pamięciowych, musisz zaimplementować trzy mechanizmy:
+
+
+
+1. Lazy Loading (leniwe ładowanie): Model LightOnOCR-1B nie może być ładowany przy starcie aplikacji. Musi być wczytywany do pamięci RAM dopiero w momencie, gdy agent otrzyma pierwsze zadanie do przetworzenia.
+
+2. Aktywne zwalnianie pamięci: Agent musi posiadać mechanizm unload(), który po zakończeniu zadania (lub po okresie bezczynności) ręcznie usuwa model z pamięci RAM, wywołując del model i gc.collect().
+
+3. Synchronizacja dostępu: Ponieważ wiele zadań może próbować jednocześnie załadować model, konieczne jest użycie blokady (asyncio.Lock). Drugi wątek musi czekać, aż pierwszy zakończy pracę i ewentualnie zwolni zasoby.
+
+
+
+6. Pułapki i ostrzeżenia
+
+
+
+Podczas implementacji zwróć szczególną uwagę na następujące kwestie:
+
+
+
+· Obsługa obrazów w llama-cpp-python: Upewnij się, że twoja wersja biblioteki obsługuje multimodalność. W przeciwnym razie wysłanie obrazu w polu image_url zakończy się błędem.
+
+· Parsowanie JSON-a: Model może czasami dodać przed lub za JSON-em dodatkowy tekst. Twoja metoda extract() musi być odporna na takie sytuacje i sprawnie wyciągać obiekt JSON za pomocą wyrażeń regularnych.
+
+· Ryzyko "halucynacji": Ustaw parametr temperature modelu na bardzo niską wartość (np. 0.1), aby wymusić maksymalną powtarzalność i zapobiec wymyślaniu danych.
+
+· Timeout: Ustal maksymalny czas oczekiwania na odpowiedź z modelu, aby uniknąć zablokowania kolejki.
+
+
+
+7. Podsumowanie i plan testów
+
+
+
+Po wdrożeniu nowego Agenta Ekstrakcji Danych przeprowadź testy na zestawie co najmniej 20-30 różnych faktur. Porównaj wyniki ekstrakcji (NIP, kwoty, data) z wynikami starego systemu. Nowy, oparty na LightOnOCR pipeline powinien być co najmniej 3-krotnie szybszy i działać przy zużyciu pamięci nieprzekraczającym 1,5 GB.
+
+
+
+Kiedy będziesz gotowy, mogę wygenerować dla Ciebie kompletny kod nowego modułu. Czy chciałbyś, żebym zaczął od pliku ocr_lightweight.py?
+
+
+
+
+
+
+
+22 Oto szczegółowy, profesjonalny opis Agenta Ekstrakcji Danych nowej generacji – ultralekkiego, samodzielnego komponentu odpowiedzialnego za przetwarzanie dokumentów w Twojej autonomicznej platformie księgowej.
+
+
+
+---
+
+
+
+Agent Ekstrakcji Danych (Lightweight Extraction Agent): Rewolucja w Przetwarzaniu Dokumentów
+
+
+
+1. Wizja i cel
+
+
+
+Nowy Agent Ekstrakcji Danych reprezentuje fundamentalną zmianę filozofii przetwarzania dokumentów w NexusAI. Zamiast skomplikowanego, wieloetapowego pipeline'u złożonego z kilku wyspecjalizowanych modeli (Surya OCR, PaddleOCR, LayoutLM, Phi-3, Qwen), wdrażamy pojedynczy, wysoce wydajny model wizyjno-językowy (VLM – Vision Language Model), który wykonuje całą pracę samodzielnie.
+
+
+
+Celem tej transformacji jest osiągnięcie trzech kluczowych metryk:
+
+
+
+· Zużycie pamięci RAM poniżej 2 GB (w porównaniu z poprzednimi >6 GB),
+
+· Szybkość przetwarzania co najmniej trzykrotnie wyższa niż w starym pipeline,
+
+· Dokładność ekstrakcji na poziomie minimum 95%, mierzona na zestawie 20-30 testowych faktur.
+
+
+
+Agent ma działać w pełni lokalnie (offline-first), bez żadnych zależności od zewnętrznych API, co jest absolutnie kluczowe dla bezpieczeństwa danych finansowych.
+
+
+
+---
+
+
+
+2. Architektura i skład Agenta
+
+
+
+Agent Ekstrakcji Danych został zaprojektowany jako samodzielny, modularny komponent, który można łatwo zintegrować z istniejącą infrastrukturą NexusAI opartą na NATS JetStream.
+
+
+
+2.1. Serce agenta: Model LightOnOCR-1B
+
+
+
+· Rola: Główny silnik ekstrakcyjny. Odpowiada za wszystko – od analizy wizualnej obrazu, przez rozpoznanie układu strony, aż po bezpośrednie wygenerowanie ustrukturyzowanego JSON-a z polami faktury.
+
+· Model AI: LightOnOCR-1B (1 miliard parametrów) – nowoczesny model VLM (Vision Language Model), który łączy w sobie możliwości OCR, rozumienia układu dokumentu (Document Layout Understanding) i ekstrakcji danych.
+
+· Format: Plik GGUF w kwantyzacji 4-bitowej (Q4_K_M). Kwantyzacja jest kluczowa – redukuje rozmiar modelu na dysku do około 800 MB i zużycie RAM do około 1,2 GB, przy zachowaniu bardzo wysokiej dokładności.
+
+· Profil poznawczy: Model "widzi" obraz faktury jako całość – tak jak człowiek. Rozumie, że liczba w prawym dolnym rogu to prawdopodobnie suma brutto, a ciąg 10 cyfr w nagłówku to NIP. Nie potrzebuje osobnego etapu OCR, ponieważ analiza wizyjna i rozumienie kontekstu są zintegrowane w jednym procesie wnioskowania.
+
+
+
+2.2. Sędzia rezerwowy: Phi-3-mini
+
+
+
+· Rola: Mechanizm bezpieczeństwa. Uruchamiany tylko w sytuacjach wyjątkowych, gdy LightOnOCR-1B nie jest w stanie zwrócić poprawnego wyniku.
+
+· Model AI: Phi-3-mini (3,8 miliarda parametrów) w kwantyzacji 4-bitowej GGUF. Jest to ten sam model, który już masz w swoim systemie – pozostaje w nim, ale jego rola zmienia się z głównego ekstraktora na sędziego ostatniej instancji.
+
+· Kiedy jest używany: Model Phi-3 jest uruchamiany wyłącznie w dwóch przypadkach:
+
+  · Gdy LightOnOCR-1B zwróci odpowiedź, która nie jest poprawnym JSON-em (błąd parsowania).
+
+  · Gdy poziom pewności wyniku LightOnOCR-1B jest bardzo niski (poniżej progu konfigurowalnego, np. 0.7).
+
+
+
+---
+
+
+
+3. Szczegółowy mechanizm działania
+
+
+
+Przetwarzanie pojedynczej faktury przez nowego Agenta przebiega w następujących krokach:
+
+
+
+Krok 1: Przyjęcie zadania
+
+
+
+Agent otrzymuje zadanie z brokera NATS JetStream w postaci wiadomości na temat invoice.extract. Wiadomość zawiera:
+
+
+
+· invoice_id – unikalny identyfikator faktury,
+
+· image_path – ścieżkę do pliku obrazu (PDF, PNG, JPEG) w lokalnym systemie plików.
+
+
+
+Agent jest subskrybentem tego tematu i natychmiast rozpoczyna przetwarzanie po otrzymaniu wiadomości.
+
+
+
+Krok 2: Przygotowanie obrazu
+
+
+
+Agent ładuje obraz z dysku za pomocą biblioteki Pillow. Następnie:
+
+
+
+· Konwertuje obraz do formatu PNG (bezstratnego), aby uniknąć artefaktów kompresji, które mogłyby pogorszyć dokładność OCR.
+
+· Koduje obraz do formatu Base64 – jest to wymagane, ponieważ model LightOnOCR-1B przyjmuje obrazy jako ciągi znaków w formacie Data URL (data:image/png;base64,...).
+
+
+
+Krok 3: Budowa prompta
+
+
+
+Agent konstruuje specjalnie zaprojektowany prompt w języku polskim (lub angielskim, w zależności od konfiguracji), który instruuje model, jakie dane ma wyodrębnić z obrazu. Prompt zawiera:
+
+
+
+· Listę wymaganych pól: invoice_number, nip, issue_date, amount_net, amount_gross, currency, iban (opcjonalnie).
+
+· Format wyjściowy: Model ma zwrócić wyłącznie poprawny obiekt JSON, bez żadnych dodatkowych komentarzy czy tekstu.
+
+· Specyfikację formatów: Data w formacie YYYY-MM-DD, NIP jako 10 cyfr, kwoty jako liczby zmiennoprzecinkowe z kropką.
+
+
+
+Prompt jest zwięzły i precyzyjny, aby zminimalizować ryzyko halucynacji i wymusić powtarzalność wyników.
+
+
+
+Krok 4: Wnioskowanie
+
+
+
+Agent wysyła obraz (jako Data URL) wraz z promptem do modelu LightOnOCR-1B za pośrednictwem biblioteki llama-cpp-python. Proces wnioskowania jest zoptymalizowany:
+
+
+
+· Niska temperatura: Parametr temperature jest ustawiony na bardzo niską wartość (np. 0.1), co sprawia, że model jest maksymalnie deterministyczny i nie "wymyśla" danych.
+
+· Limit tokenów: Maksymalna długość odpowiedzi jest ograniczona do 512 tokenów, co jest więcej niż wystarczające dla obiektu JSON.
+
+· Token stop: Jako token stop użyty jest znacznik \`\`\` (potrójny backtick), który sygnalizuje koniec bloku JSON.
+
+
+
+Krok 5: Parsowanie wyniku
+
+
+
+Po otrzymaniu odpowiedzi tekstowej od modelu, Agent podejmuje próbę wyodrębnienia z niej obiektu JSON:
+
+
+
+1. Ekstrakcja JSON: Używane jest wyrażenie regularne, które znajduje pierwszy blok tekstu otoczony nawiasami klamrowymi {...}. To zabezpiecza przed sytuacją, gdy model doda przed lub za JSON-em dodatkowy komentarz.
+
+2. Parsowanie: Wyodrębniony ciąg znaków jest parsowany przez json.loads().
+
+3. Walidacja (opcjonalna): Sprawdzane jest, czy wynik zawiera co najmniej kluczowe pola (nip, amount_gross) i czy ich wartości są w oczekiwanym formacie.
+
+
+
+Krok 6: Obsługa błędów i fallback
+
+
+
+· Jeśli parsowanie JSON się powiedzie, wynik jest uznawany za sukces. Agent publikuje go na temat NATS invoice.extracted i kończy pracę.
+
+· Jeśli parsowanie się nie powiedzie (błąd JSONDecodeError lub brak wymaganych pól), Agent nie przerywa pracy. Zamiast tego uruchamia mechanizm fallbacku:
+
+  1. Wyładowuje model LightOnOCR-1B z pamięci (zwalnia RAM).
+
+  2. Ładuje model Phi-3-mini (sędzia rezerwowy).
+
+  3. Przesyła do niego surowy tekst OCR (uzyskany wcześniej z lekkiego ekstraktora) i prosi o ekstrakcję JSON.
+
+  4. Wynik z Phi-3 jest parsowany i publikowany.
+
+  5. Phi-3 jest wyładowywany z pamięci.
+
+
+
+---
+
+
+
+4. Komunikacja wewnętrzna Agenta
+
+
+
+Agent komunikuje się z resztą systemu wyłącznie przez brokera NATS JetStream, co gwarantuje niezawodność i asynchroniczność.
+
+
+
+Temat NATS Kierunek Opis
+
+invoice.extract System → Agent Zlecenie ekstrakcji danych z faktury
+
+invoice.extracted Agent → System Wynik ekstrakcji (sukces)
+
+invoice.extraction_failed Agent → System Niepowodzenie ekstrakcji (po wyczerpaniu wszystkich fallbacków)
+
+
+
+Format wiadomości wynikowej (invoice.extracted):
+
+
+
+```json
+
+{
+
+    "invoice_id": "uuid",
+
+    "extracted_data": {
+
+        "invoice_number": "FV/2024/001",
+
+        "nip": "1234567890",
+
+        "issue_date": "2024-01-15",
+
+        "amount_net": 1000.00,
+
+        "amount_gross": 1230.00,
+
+        "currency": "PLN",
+
+        "iban": "PL12345678901234567890123456"
+
+    },
+
+    "confidence": 0.96,
+
+    "engine": "lightweight"
+
+}
+
+```
+
+
+
+---
+
+
+
+5. Zarządzanie pamięcią RAM
+
+
+
+Kluczowym wymaganiem jest utrzymanie zużycia pamięci poniżej 2 GB. Osiąga się to dzięki trzem mechanizmom:
+
+
+
+5.1. Lazy Loading (leniwe ładowanie)
+
+
+
+Model LightOnOCR-1B nie jest ładowany do pamięci przy starcie aplikacji ani przy inicjalizacji Agenta. Zamiast tego, jest ładowany dopiero w momencie, gdy Agent otrzyma pierwsze zadanie do przetworzenia. Do tego czasu zużycie RAM przez Agenta jest bliskie zeru.
+
+
+
+5.2. Explicit Unloading (jawne zwalnianie)
+
+
+
+Po zakończeniu zadania (sukces lub fallback) Agent natychmiast wyładowuje model z pamięci. Oznacza to:
+
+
+
+· Usunięcie obiektu modelu (del self.llm),
+
+· Jawne uruchomienie garbage collectora Pythona (gc.collect()).
+
+
+
+Dodatkowo, Agent może być skonfigurowany z TTL (Time To Live) – jeśli przez określony czas (np. 5 minut) nie otrzyma żadnego zadania, model jest automatycznie wyładowywany.
+
+
+
+5.3. Mutual Exclusion (wzajemne wykluczanie)
+
+
+
+Agent używa semafora (asyncio.Semaphore(1)), aby zagwarantować, że w danym momencie tylko jeden model jest załadowany do pamięci. Gdy LightOnOCR-1B jest aktywny, Phi-3-mini jest wyładowany i vice versa. To eliminuje ryzyko przekroczenia limitu 2 GB.
+
+
+
+---
+
+
+
+6. Integracja z istniejącą architekturą
+
+
+
+Nowy Agent nie wymaga przepisywania całego systemu. Jest on "wpinany" w istniejący pipeline jako nowy, priorytetowy krok przetwarzania.
+
+
+
+· Code/PIPELINE/ocr_lightweight.py: Nowy plik zawierający klasę LightweightExtractionAgent z całą opisaną logiką.
+
+· Code/CORE/tasks.py: Istniejące zadanie process_invoice_task zostaje zmodyfikowane tak, aby przed uruchomieniem starego pipeline'u (DocumentProcessor) próbowało najpierw użyć LightweightExtractionAgent. Stary pipeline pozostaje w kodzie jako mechanizm fallbacku, ale w normalnych warunkach nie jest używany.
+
+
+
+---
+
+
+
+7. Monitorowanie i testowanie
+
+
+
+Po wdrożeniu Agenta należy przeprowadzić następujące testy:
+
+
+
+· Test dokładności: Porównanie wyników ekstrakcji (NIP, kwoty, data) z zestawem 20-30 faktur testowych. LightOnOCR-1B powinien osiągnąć dokładność co najmniej 95%.
+
+· Test szybkości: Nowy pipeline powinien być co najmniej 3 razy szybszy niż stary (Surya + LayoutLM + Phi-3).
+
+· Test pamięci: Uruchomienie 50 zapytań z rzędu i monitorowanie RAM – nie może przekroczyć 2 GB.
+
+· Test fallbacku: Symulacja błędu parsowania JSON z LightOnOCR i sprawdzenie, czy system poprawnie przełącza się na Phi-3-mini.
+
+
+
+---
+
+
+
+8. Podsumowanie
+
+
+
+Nowy Agent Ekstrakcji Danych to przełom w architekturze NexusAI. Zastąpienie zestawu ciężkich, specjalistycznych modeli jednym lekkim VLM-em przynosi radykalną poprawę wydajności, szybkości i oszczędności zasobów, przy zachowaniu bardzo wysokiej dokładności. Agent jest w pełni autonomiczny, działa lokalnie i komunikuje się z systemem przez NATS JetStream, co czyni go idealnym komponentem dla ultra-lekkiej, autonomicznej platformy księgowej dla mikrofirm.
+
+
+
+Czy chcesz, abym teraz wygenerował dla Ciebie kompletny kod tego Agenta?
+
+
+
+
+
+
+
+111 Oto szczegółowa instrukcja wdrożenia rozwiązania dla Agenta Analitycznego, opartego na trzech wybranych modelach: Qwen2.5-1.5B-Instruct, Fin-RWKV-169M i Hrida-T2SQL-128k. Skupiłem się na architekturze, kolejnych krokach, kluczowych mechanizmach i potencjalnych pułapkach.
+
+
+
+---
+
+
+
+Plan wdrożenia Agenta Analitycznego
+
+
+
+1. Stan pożądany
+
+
+
+Dążysz do sytuacji, w której Agent Analityczny potrafi:
+
+
+
+· Przyjmować pytania w języku naturalnym (np. "jacy kontrahenci przekroczyli średnią wartość faktur w tym miesiącu?"),
+
+· Samodzielnie generować poprawne zapytania SQL do DuckDB,
+
+· Analizować wyniki liczbowe i wyciągać wnioski,
+
+· Wykrywać anomalie finansowe w tle,
+
+· Prezentować wyniki w języku naturalnym, zrozumiałym dla użytkownika.
+
+
+
+Wszystko to przy zachowaniu limitu ~2 GB RAM i pracy w pełni offline.
+
+
+
+---
+
+
+
+2. Nowa architektura i skład Agenta
+
+
+
+Agent Analityczny będzie się składał z czterech komponentów:
+
+
+
+Komponent Implementacja Rola
+
+Orkiestrator Klasa AnalyticsOrchestrator w Code/SERVICES/analytics_agent.py Zarządza przepływem, decyduje który model załadować
+
+Specjalista SQL Model Hrida-T2SQL-128k Tłumaczy język naturalny na SQL
+
+Główny Analityk Model Qwen2.5-1.5B-Instruct Interpretuje wyniki, generuje odpowiedzi
+
+Detektyw Finansowy Model Fin-RWKV-169M Wykrywa anomalie w danych
+
+
+
+---
+
+
+
+3. Sekwencyjny przepływ pracy
+
+
+
+Kluczowe założenie: tylko jeden model jest załadowany do RAM w danym momencie. Oto jak wygląda przepływ:
+
+
+
+1. Orkiestrator otrzymuje zadanie z NATS (temat analytics.query).
+
+2. Ładuje Hrida-T2SQL-128k → wysyła pytanie → odbiera zapytanie SQL → natychmiast wyładowuje model.
+
+3. Wykonuje zapytanie SQL na DuckDB (to nie wymaga modelu AI, tylko silnika bazy).
+
+4. Ładuje Qwen2.5-1.5B-Instruct → przekazuje surowe wyniki → odbiera interpretację w języku naturalnym → wyładowuje model.
+
+5. (Opcjonalnie) Ładuje Fin-RWKV-169M → przekazuje dane → odbiera listę anomalii → wyładowuje model.
+
+6. Publikuje wynik na NATS (temat analytics.result).
+
+
+
+---
+
+
+
+4. Szczegółowe instrukcje wdrożenia
+
+
+
+Krok 1: Pobranie modeli
+
+
+
+Musisz pobrać trzy pliki GGUF i umieścić je w katalogu models/:
+
+
+
+Model Plik GGUF Rozmiar
+
+Qwen2.5-1.5B-Instruct qwen2.5-1.5b-instruct-q4_k_m.gguf ~986 MB
+
+Hrida-T2SQL-128k hrida-t2sql-128k-iq3_m.gguf ~1,86 GB
+
+Fin-RWKV-169M fin-rwkv-169m-f32.gguf lub fin-rwkv-169m-f16.gguf ~340 MB
+
+
+
+Krok 2: Utworzenie nowego modułu
+
+
+
+Utwórz plik Code/SERVICES/analytics_agent.py, który będzie zawierał:
+
+
+
+· Klasę AnalyticsOrchestrator z metodami do zarządzania modelami,
+
+· Klasę pomocniczą ModelManager do leniwego ładowania i zwalniania modeli,
+
+· Funkcje do parsowania odpowiedzi modeli.
+
+
+
+Krok 3: Implementacja ModelManagera
+
+
+
+ModelManager musi realizować trzy kluczowe mechanizmy:
+
+
+
+1. Lazy Loading: Każdy model jest ładowany dopiero przy pierwszym wywołaniu metody load(nazwa_modelu).
+
+2. Explicit Unloading: Metoda unload(nazwa_modelu) natychmiast usuwa model z RAM i wywołuje gc.collect().
+
+3. Mutual Exclusion: Blokada asyncio.Lock gwarantuje, że tylko jeden model może być załadowany w danym momencie.
+
+
+
+Krok 4: Projektowanie promptów
+
+
+
+Każdy z trzech modeli wymaga innego prompta:
+
+
+
+· Hrida-T2SQL: Prompt musi zawierać pełny schemat bazy (nazwy tabel, kolumny, typy) oraz pytanie użytkownika. Model zwraca samo zapytanie SQL, bez dodatkowego tekstu.
+
+· Qwen2.5-1.5B: Prompt zawiera surowe wyniki z DuckDB i prośbę o interpretację w języku naturalnym.
+
+· Fin-RWKV-169M: Prompt zawiera dane liczbowe z prośbą o wskazanie anomalii (wartości odstające, niepokojące trendy).
+
+
+
+Krok 5: Integracja z NATS
+
+
+
+Zdefiniuj tematy w brokerze NATS:
+
+
+
+Temat Kierunek Opis
+
+analytics.query System → Agent Zapytanie analityczne
+
+analytics.result Agent → System Wynik analizy
+
+analytics.anomaly Agent → System Wykryta anomalia (alert)
+
+
+
+Krok 6: Modyfikacja Code/CORE/tasks.py
+
+
+
+Dodaj nowe zadanie analytics_query_task, które będzie subskrybować temat analytics.query i wywoływać AnalyticsOrchestrator.
+
+
+
+---
+
+
+
+5. Kluczowe mechanizmy oszczędzające RAM
+
+
+
+Mechanizm Jak działa Dlaczego jest kluczowy
+
+Lazy Loading Model ładowany tylko na żądanie Bez tego wszystkie trzy modele zajęłyby ~3,5 GB RAM
+
+Explicit Unloading del model + gc.collect() po każdym użyciu Zapobiega kumulacji modeli w pamięci
+
+Sekwencyjność W danym momencie tylko jeden model w RAM Gwarantuje, że nie przekroczymy limitu 2 GB
+
+TTL Model wyładowywany po 5 minutach bezczynności Zwalnia RAM, gdy agent nie jest używany
+
+
+
+---
+
+
+
+6. Obsługa błędów i fallback
+
+
+
+Agent musi być odporny na awarie poszczególnych modeli:
+
+
+
+1. Niepowodzenie Hrida-T2SQL: Jeśli model nie może wygenerować poprawnego SQL-a, Orkiestrator używa Qwen2.5-1.5B jako fallbacku do generowania zapytań (choć z niższą precyzją).
+
+2. Niepowodzenie Qwen2.5-1.5B: Wyniki są zwracane w formie surowej tabeli, bez interpretacji językowej.
+
+3. Niepowodzenie Fin-RWKV: Analiza anomalii jest pomijana – nie jest to krytyczne dla podstawowej funkcjonalności.
+
+
+
+---
+
+
+
+7. Pułapki i ostrzeżenia
+
+
+
+Pułapka Objaw Rozwiązanie
+
+Hrida-T2SQL generuje błędny SQL Błąd wykonania w DuckDB Zawsze waliduj SQL przed wykonaniem (EXPLAIN). Jeśli błąd – poproś model ponownie lub użyj fallbacku.
+
+Qwen2.5 "halucynuje" w interpretacji Zmyślone wnioski, niepoparte danymi Wymagaj, aby każda interpretacja cytowała konkretne liczby z wyników.
+
+Fin-RWKV nie jest kompatybilny z llama.cpp Błąd ładowania modelu Fin-RWKV używa architektury RWKV – może wymagać osobnej biblioteki, nie llama-cpp-python. Sprawdź to przed wdrożeniem.
+
+Przekroczenie limitu RAM Aplikacja się zawiesza Monitoruj zużycie RAM i wymuszaj unloading, gdy zbliżasz się do 2 GB.
+
+Zbyt długi prompt dla Hrida-T2SQL Model nie odpowiada lub odpowiada nieprecyzyjnie Trzymaj schemat bazy w osobnym pliku i wczytuj go dynamicznie, zamiast wysyłać cały za każdym razem.
+
+
+
+---
+
+
+
+8. Harmonogram wdrożenia
+
+
+
+Faza Zakres Czas
+
+Faza 1: MVP Pobranie modeli, przetestowanie każdego osobno w izolowanym skrypcie. Sprawdzenie kompatybilności Fin-RWKV. 1-2 dni
+
+Faza 2: Orkiestrator Utworzenie analytics_agent.py z ModelManagerem i podstawową logiką przepływu. 2-3 dni
+
+Faza 3: Integracja z NATS Dodanie zadań w tasks.py, zdefiniowanie tematów, podłączenie do reszty systemu. 1 dzień
+
+Faza 4: Prompt engineering Dopracowanie promptów dla każdego modelu na zestawie testowym 20-30 zapytań. 1-2 dni
+
+Faza 5: Testy i optymalizacja Testy integracyjne, monitoring RAM, testy fallbacku. 1-2 dni
+
+
+
+---
+
+
+
+9. Kluczowe testy do przeprowadzenia
+
+
+
+· Test poprawności SQL: Przygotuj 20 pytań w języku naturalnym i oczekiwane zapytania SQL. Sprawdź, czy Hrida-T2SQL generuje poprawne zapytania w co najmniej 90% przypadków.
+
+· Test interpretacji: Sprawdź, czy Qwen2.5-1.5B poprawnie interpretuje wyniki liczbowe i nie dodaje zmyślonych informacji.
+
+· Test pamięci: Uruchom 50 zapytań z rzędu i monitoruj RAM – nie może przekroczyć 2 GB.
+
+· Test fallbacku: Symuluj awarię Hrida-T2SQL i sprawdź, czy system przełącza się na Qwen2.5.
+
+
+
+---
+
+
+
+10. Podsumowanie
+
+
+
+Wdrożenie trzech modeli dla Agenta Analitycznego wymaga starannego zarządzania pamięcią i sekwencyjnego przepływu pracy, ale daje Ci w zamian niezwykle wydajny i precyzyjny system analityczny, który mieści się w Twoim limicie ~2 GB RAM. Każdy model ma jasno określoną rolę: Hrida-T2SQL tłumaczy pytania na SQL, Qwen2.5 interpretuje wyniki, a Fin-RWKV wykrywa anomalie. Razem tworzą kompletny, autonomiczny system analizy finansowej dla mikrofirm.
+
+
+
+Kiedy będziesz gotowy, mogę wygenerować dla Ciebie kompletny kod modułu analytics_agent.py.
+
+
+
+
+
+
+
+222 Oto szczegółowy, profesjonalny opis Agenta Analitycznego nowej generacji – wyspecjalizowanego, trzykomponentowego systemu AI, który działa jak miniaturowy, ale kompletny dział analityczny dla autonomicznej platformy księgowej NexusAI.
+
+
+
+---
+
+
+
+Agent Analityczny (Analytics Agent): Miniaturowy Sztab Analityczny
+
+
+
+1. Wizja i cel
+
+
+
+Agent Analityczny jest drugim filarem autonomicznego systemu finansowego, obok Agenta Ekstrakcji Danych i Rady Agentów. Jego misją jest przekształcanie surowych danych przechowywanych w bazie OLAP (DuckDB) w czytelną, użyteczną wiedzę i proaktywne alerty. Nie jest on pasywnym narzędziem do generowania raportów na żądanie, ale aktywnym, ciągle pracującym analitykiem, który samodzielnie monitoruje kondycję finansową firmy i w przystępny sposób komunikuje swoje wnioski.
+
+
+
+Celem jest stworzenie komponentu, który:
+
+
+
+· Rozumie pytania w języku naturalnym i samodzielnie przekłada je na precyzyjne zapytania SQL.
+
+· Interpretuje surowe dane liczbowe, wyciąga wnioski i prezentuje je w zrozumiałej formie.
+
+· Działa w trybie ciągłym, stale monitorując dane w poszukiwaniu anomalii, trendów i potencjalnych problemów.
+
+· Mieści się w limicie ~2 GB RAM, dzięki rygorystycznemu zarządzaniu pamięcią i sekwencyjnemu ładowaniu modeli.
+
+
+
+---
+
+
+
+2. Architektura i skład Agenta
+
+
+
+Sercem Agenta Analitycznego jest architektura "Miniaturowego Sztabu Analitycznego" – trzy wysoce wyspecjalizowane modele AI, z których każdy jest mistrzem w swojej wąskiej dziedzinie. Ich pracą zarządza lekka warstwa orkiestracyjna, która działa jak dyrektor departamentu, rozdzielający zadania.
+
+
+
+2.1. Hrida-T2SQL-128k – Ekspert ds. Zapytań SQL
+
+
+
+· Rola w sztabie: Tłumacz i łącznik z bazą danych. Jest odpowiednikiem analityka danych, który biegle włada językiem SQL i potrafi wydobyć każdą informację z bazy.
+
+· Model AI: Hrida-T2SQL-128k, oparty na architekturze Microsoft Phi-3, ale w całości dostrojony pod kątem zadania Text-to-SQL.
+
+· Profil poznawczy: Model ten nie jest kreatywny ani elokwentny. Jest za to niezwykle precyzyjny i zdyscyplinowany. Jego jedynym celem jest przyjęcie pytania w języku naturalnym oraz pełnego schematu bazy danych i zwrócenie wyłącznie poprawnego składniowo zapytania SQL.
+
+· Supermoce: Jego 128-tysięczne okno kontekstowe to absolutny przełom. Oznacza to, że Agent może "zobaczyć" i "zapamiętać" cały schemat bazy danych DuckDB – definicje wszystkich tabel, kolumn, typów danych i relacji między nimi – w ramach jednego zapytania do modelu. Dzięki temu generuje zapytania o nieporównywalnie wyższej jakości niż modele z krótszym kontekstem, które "gubią" strukturę bazy.
+
+
+
+2.2. Qwen2.5-1.5B-Instruct – Główny Analityk i Narrator
+
+
+
+· Rola w sztabie: Lider zespołu, który interpretuje surowe dane i komunikuje się ze światem zewnętrznym. Jest odpowiednikiem dyrektora finansowego, który patrzy na arkusze kalkulacyjne i na ich podstawie opowiada spójną historię o kondycji firmy.
+
+· Model AI: Qwen2.5-1.5B-Instruct, rozwijany przez Alibaba. Jest absolutnym liderem w swojej kategorii wagowej pod względem zdolności rozumowania, zwłaszcza matematycznego.
+
+· Profil poznawczy: To erudyta, który czuje się swobodnie zarówno w świecie liczb, jak i słów. Potrafi otrzymać tabelę z wynikami zapytania SQL i przekształcić ją w zwięzłe, celne podsumowanie, wychwytując kluczowe trendy i zależności.
+
+· Kluczowa cecha: Jego wyjątkowa zdolność do rozumowania matematycznego sprawia, że nie tylko opisuje dane, ale też potrafi je analizować – np. zauważyć, że "średnia wartość faktur od tego kontrahenta spadła o 15% w porównaniu do poprzedniego kwartału".
+
+
+
+2.3. Fin-RWKV-169M – Detektyw Finansowy
+
+
+
+· Rola w sztabie: Cichy, ultra-szybki agent ds. bezpieczeństwa finansowego. Pracuje w tle, nieustannie przeszukując dane w poszukiwaniu nieprawidłowości. Jest odpowiednikiem audytora wewnętrznego, który ma szósty zmysł do wyłapywania podejrzanych transakcji.
+
+· Model AI: Fin-RWKV-169M, model stworzony od podstaw do analizy finansowej. Jego architektura RWKV jest fundamentalnie inna niż Transformerów – jest pozbawiona mechanizmu uwagi (attention-free), co czyni go ekstremalnie szybkim i oszczędnym.
+
+· Profil poznawczy: Model nie potrafi prowadzić rozmowy ani generować rozbudowanych tekstów. Jego myślenie jest zero-jedynkowe: dana wartość jest "normalna" lub "anomalna". Jego siłą jest błyskawiczna, ciągła analiza strumieni danych w poszukiwaniu odstępstw od normy, trendów i potencjalnych oszustw.
+
+· Zastosowanie: Jego głównym zadaniem jest automatyczne tło. Agent raz na godzinę (lub w innym zdefiniowanym interwale) uruchamia go na najnowszych danych, aby ten oznaczył transakcje wymagające uwagi, zanim jeszcze człowiek zada pytanie.
+
+
+
+---
+
+
+
+3. Szczegółowy mechanizm działania – Przepływ Analityczny
+
+
+
+Przetwarzanie zapytania przez Agenta Analitycznego odbywa się w ściśle określonej, sekwencyjnej procedurze, która gwarantuje minimalne zużycie pamięci RAM.
+
+
+
+Krok 1: Przyjęcie Zlecenia
+
+
+
+Orkiestrator (AnalyticsOrchestrator) otrzymuje zlecenie z brokera NATS na temat analytics.query. Zlecenie zawiera identyfikator zadania (task_id) oraz pytanie użytkownika w języku naturalnym.
+
+
+
+Krok 2: Faza SQL – Praca Eksperta (Hrida-T2SQL-128k)
+
+
+
+1. Orkiestrator wysyła do ModelManagera żądanie załadowania modelu Hrida-T2SQL-128k.
+
+2. ModelManager sprawdza, czy jakiś inny model jest obecnie w pamięci. Jeśli tak, czeka na jego wyładowanie.
+
+3. Model Hrida-T2SQL-128k zostaje załadowany do RAM.
+
+4. Orkiestrator konstruuje prompt zawierający pytanie użytkownika oraz pełny schemat bazy danych DuckDB.
+
+5. Prompt jest wysyłany do modelu, a model zwraca surowe zapytanie SQL.
+
+6. Orkiestrator natychmiast wysyła polecenie do ModelManagera: "Wyładuj Hrida-T2SQL". Model jest usuwany z RAM.
+
+
+
+Krok 3: Faza Danych – Praca z DuckDB
+
+
+
+Orkiestrator wykonuje wygenerowane zapytanie SQL na bazie danych DuckDB. Baza zwraca surowe dane w formie tabelarycznej (np. jako lista słowników).
+
+
+
+Krok 4: Faza Interpretacji – Praca Głównego Analityka (Qwen2.5-1.5B)
+
+
+
+1. Orkiestrator żąda od ModelManagera załadowania modelu Qwen2.5-1.5B-Instruct.
+
+2. Model zostaje załadowany do RAM (w miejscu, które właśnie zwolnił Hrida-T2SQL).
+
+3. Orkiestrator konstruuje nowy prompt, tym razem zawierający surowe wyniki z DuckDB oraz prośbę o ich analizę i interpretację.
+
+4. Prompt jest wysyłany, a model zwraca gotową odpowiedź w języku naturalnym.
+
+
+
+Krok 5: Faza Detekcji (Praca w Tle) – Praca Detektywa (Fin-RWKV-169M)
+
+
+
+1. Po zakończeniu głównego zadania, ale przed wysłaniem odpowiedzi do użytkownika, Orkiestrator może (jeśli taka jest konfiguracja) zlecić dodatkową kontrolę.
+
+2. Żąda od ModelManagera wyładowania Qwen2.5 i załadowania Fin-RWKV-169M.
+
+3. Wysyła do niego te same surowe dane z DuckDB z prośbą o wskazanie anomalii.
+
+4. Model zwraca listę potencjalnych problemów (np. "kwota X jest o 300% wyższa od średniej").
+
+5. Model Fin-RWKV-169M jest natychmiast wyładowywany.
+
+
+
+Krok 6: Publikacja Wyniku
+
+
+
+Orkiestrator łączy interpretację od Qwen2.5 z alertami od Fin-RWKV i publikuje kompletny wynik na temat NATS analytics.result.
+
+
+
+---
+
+
+
+4. Komunikacja Wewnętrzna
+
+
+
+Agent Analityczny jest integralną częścią ekosystemu NexusAI i komunikuje się z resztą systemu wyłącznie za pośrednictwem brokera NATS JetStream. Zapewnia to luźne powiązanie (loose coupling), niezawodność i asynchroniczność.
+
+
+
+Temat NATS Kierunek Opis
+
+analytics.query System → Agent Zlecenie analizy. Zawiera pytanie w języku naturalnym.
+
+analytics.result Agent → System Wynik analizy. Zawiera interpretację tekstową i ewentualnie surowe dane.
+
+analytics.anomaly Agent → System Alert o wykrytej anomalii (generowany asynchronicznie).
+
+
+
+Komunikacja z bazą danych DuckDB odbywa się bezpośrednio przez dedykowane API (DuckDBManager), a nie przez NATS, aby zminimalizować opóźnienia w dostępie do danych.
+
+
+
+---
+
+
+
+5. Zarządzanie Pamięcią RAM – Klucz do Sukcesu
+
+
+
+Spełnienie limitu ~2 GB RAM jest możliwe tylko dzięki rygorystycznemu, trójstopniowemu systemowi zarządzania pamięcią.
+
+
+
+1. Lazy Loading (Ładowanie na Żądanie): Absolutnie żaden z trzech modeli nie jest ładowany przy starcie aplikacji. Każdy z nich jest wczytywany do pamięci RAM dopiero w momencie, gdy Orkiestrator po raz pierwszy zleci jego użycie.
+
+2. Sekwencyjne Przetwarzanie (Mutual Exclusion): To najważniejsza zasada. ModelManager dba o to, by w danym momencie w pamięci RAM znajdował się tylko jeden model. Przed załadowaniem nowego modelu, poprzedni jest zawsze bezwarunkowo wyładowywany. Eliminuje to ryzyko skumulowania się zużycia RAM.
+
+3. Natychmiastowe Zwalnianie (Explicit Unloading): Gdy tylko praca danego modelu (np. wygenerowanie SQL) zostanie zakończona, Orkiestrator natychmiast wywołuje metodę unload(), która nie tylko usuwa obiekt modelu z Pythona (del model), ale też wymusza uruchomienie garbage collectora (gc.collect()), aby odzyskać każdy megabajt pamięci.
+
+
+
+Dodatkowo, aby uniknąć sytuacji, w której nieużywany model "okupuje" pamięć, wdrożony jest mechanizm TTL (Time To Live). Jeśli Agent nie otrzyma żadnego zadania przez 5 minut, wszystkie załadowane modele są automatycznie wyładowywane, a pamięć wraca do stanu spoczynkowego.
+
+
+
+---
+
+
+
+6. Integracja z Istniejącą Architekturą NexusAI
+
+
+
+Agent Analityczny jest nowym, samodzielnym komponentem, który płynnie integruje się z resztą systemu.
+
+
+
+· Code/SERVICES/analytics_agent.py: Nowy plik, w którym znajduje się cała logika Agenta – klasy AnalyticsOrchestrator i ModelManager.
+
+· Code/DB/analytics.py: Istniejący DuckDBManager jest wykorzystywany przez Agenta do wykonywania zapytań. Agent nie potrzebuje własnego połączenia z bazą – korzysta z tego samego, co reszta systemu.
+
+· Code/CORE/tasks.py: Tutaj dodane zostanie nowe zadanie analytics_query_task, które jest subskrybentem tematu analytics.query i pełni rolę mostu między NATS a AnalyticsOrchestrator.
+
+· Code/CORE/config.py: Wszystkie nowe parametry konfiguracyjne (ścieżki do modeli, progi TTL, timeouty) powinny być zarządzane centralnie w AppConfig.
+
+
+
+---
+
+
+
+7. Monitorowanie i Testowanie
+
+
+
+Po wdrożeniu Agenta należy zweryfikować jego działanie na trzech płaszczyznach:
+
+
+
+· Dokładność: Zestaw 20-30 pytań testowych powinien zostać poprawnie przetłumaczony na SQL w >90% przypadków, a interpretacja wyników musi być merytorycznie poprawna i wolna od "halucynacji".
+
+· Wydajność: Całkowity czas przetwarzania pojedynczego zapytania (od pytania do gotowej odpowiedzi) nie powinien przekraczać 3-5 sekund.
+
+· Zużycie pamięci: Podczas testów obciążeniowych (ciągłe zapytania przez 10 minut) zużycie RAM musi bezwzględnie pozostawać poniżej zakładanego limitu 2 GB.
+
+
+
+---
+
+
+
+8. Podsumowanie
+
+
+
+Agent Analityczny, zbudowany na trio modeli Hrida-T2SQL-128k, Qwen2.5-1.5B-Instruct i Fin-RWKV-169M, jest modelowym przykładem architektury "ensemble", gdzie specjalizacja i współpraca dają efekt synergii. Każdy z modeli jest mistrzem w swojej dziedzinie, a rygorystyczne zarządzanie ich cyklem życia w pamięci RAM pozwala na zbudowanie niezwykle wydajnego i inteligentnego systemu, który mieści się w rygorach ultra-lekkiej aplikacji. To nie jest już tylko generator raportów – to proaktywny, cyfrowy analityk finansowy, który nie śpi i zawsze jest na posterunku.
+
+
+
+Czy chcesz, abym teraz wygenerował dla Ciebie kompletny kod tego Agenta?
+
+
+
+
+
+
+
+
+
+1111 Oto szczegółowa instrukcja wdrożenia Twojego zespołu agentów – Compliance & Rules SWAT Team – składającego się z czterech wyspecjalizowanych modeli AI, które razem tworzą potężny, wielowarstwowy system walidacji i zgodności dla autonomicznej platformy księgowej NexusAI.
+
+
+
+---
+
+
+
+Plan Wdrożenia Zespołu Agentów Reguł i Zgodności
+
+
+
+1. Stan pożądany
+
+
+
+Dążysz do sytuacji, w której Twój Agent Reguł i Zgodności:
+
+
+
+· Przyjmuje zadania walidacyjne (np. "sprawdź tę fakturę pod kątem zgodności z przepisami").
+
+· Samodzielnie rozdziela pracę między cztery wyspecjalizowane modele.
+
+· Przeprowadza wieloetapową weryfikację: od prostych walidacji formatu, przez zaawansowane reguły biznesowe, po wykrywanie anomalii finansowych.
+
+· Podejmuje ostateczną decyzję w oparciu o konsensus ekspertów.
+
+· Działa w pełni lokalnie, bez zależności od zewnętrznych API.
+
+
+
+---
+
+
+
+2. Architektura i skład zespołu
+
+
+
+Zespół działa w hierarchicznym modelu Dowódca – Specjaliści. Kluczowa zasada: w danym momencie tylko jeden model jest załadowany do pamięci RAM.
+
+
+
+Model Rola RAM (szac.) Główne zadanie
+
+LFM2.5-1.2B-Thinking Dowódca ~900 MB Orkiestracja, rozumowanie, ostateczne decyzje
+
+Granite 4.0 1B Nano Główny Specjalista ~800 MB Precyzyjne reguły, function calling, zgodność z politykami
+
+LittleLamb 0.3B TC Asystent Operacyjny ~500 MB Proste walidacje formatu, sprawdzanie NIP, kompletność pól
+
+Fin-RWKV-169M Detektyw Finansowy ~150 MB Wykrywanie anomalii finansowych w tle
+
+
+
+---
+
+
+
+3. Przygotowanie środowiska
+
+
+
+Przed rozpoczęciem implementacji wykonaj następujące czynności:
+
+
+
+1. Python: Upewnij się, że używasz Pythona 3.12.
+
+2. Biblioteki: Zainstaluj llama-cpp-python (dla modeli GGUF) oraz torch (dla modeli PyTorch).
+
+3. UWAGA: Model Fin-RWKV-169M używa architektury RWKV, która nie jest kompatybilna z llama-cpp-python. Będziesz potrzebował osobnej biblioteki, np. rwkv-pip lub torch z odpowiednim wrapperem. To potencjalnie największe wyzwanie techniczne tego wdrożenia.
+
+4. Pobierz modele i umieść je w katalogu models/:
+
+
+
+Model Plik Rozmiar
+
+LFM2.5-1.2B-Thinking LFM2.5-1.2B-Thinking-Q4_K_M.gguf ~800 MB
+
+Granite 4.0 1B Nano granite-4.0-1b-nano-Q4_K_M.gguf ~500 MB
+
+LittleLamb 0.3B TC LittleLamb-0.3B-TC-Q4_K_M.gguf ~600 MB
+
+Fin-RWKV-169M fin-rwkv-169m.pth ~340 MB
+
+
+
+---
+
+
+
+4. Nowe pliki i struktura kodu
+
+
+
+Plik Akcja
+
+Code/SERVICES/rules_agent.py Nowy – główny plik agenta z klasami Dowódcy, Specjalistów i ModelManagera
+
+Code/CORE/tasks.py Modyfikacja – dodanie zadania rules_validate_task subskrybującego NATS
+
+Code/CORE/config.py Modyfikacja – dodanie ścieżek do modeli i progów decyzyjnych
+
+
+
+---
+
+
+
+5. Kluczowe mechanizmy
+
+
+
+5.1. Hierarchiczny przepływ pracy (sekwencyjny)
+
+
+
+Przetwarzanie zadania odbywa się w ściśle określonej kolejności:
+
+
+
+1. Dowódca (LFM2.5-Thinking) otrzymuje zadanie.
+
+2. Dowódca analizuje zadanie i decyduje, których Specjalistów zaangażować.
+
+3. Asystent Operacyjny (LittleLamb) jest uruchamiany jako pierwszy – wykonuje szybkie, proste walidacje (format NIP, suma kontrolna, kompletność pól). Wynik trafia do Dowódcy. Model jest natychmiast wyładowywany.
+
+4. Główny Specjalista (Granite) jest uruchamiany – przeprowadza zaawansowaną walidację reguł, function calling do DuckDB, sprawdza zgodność z politykami. Wynik trafia do Dowódcy. Model jest natychmiast wyładowywany.
+
+5. Dowódca analizuje wyniki obu Specjalistów i podejmuje ostateczną decyzję.
+
+6. Detektyw Finansowy (Fin-RWKV) nie uczestniczy w głównym przepływie. Jest uruchamiany okresowo (np. co godzinę) jako zadanie w tle, skanuje dane i wysyła alerty do Dowódcy.
+
+
+
+5.2. ModelManager – Zarządzanie pamięcią RAM
+
+
+
+Musisz zaimplementować klasę ModelManager, która będzie odpowiedzialna za:
+
+
+
+· Lazy Loading: Model jest ładowany do RAM dopiero przy pierwszym wywołaniu load(nazwa_modelu).
+
+· Mutual Exclusion: W danym momencie tylko jeden model może być załadowany. Przed załadowaniem nowego, poprzedni jest zawsze wyładowywany.
+
+· Explicit Unloading: Metoda unload(nazwa_modelu) usuwa obiekt modelu z pamięci i wywołuje gc.collect().
+
+· TTL: Jeśli model nie jest używany przez 5 minut, jest automatycznie wyładowywany.
+
+
+
+5.3. Komunikacja przez NATS
+
+
+
+Zdefiniuj następujące tematy:
+
+
+
+Temat NATS Kierunek Opis
+
+rules.validate System → Agent Zlecenie walidacji faktury
+
+rules.result Agent → System Wynik walidacji
+
+rules.anomaly Agent → System Alert o wykrytej anomalii (z Fin-RWKV)
+
+
+
+5.4. Prompt Engineering dla każdego modelu
+
+
+
+Każdy model wymaga innego prompta, dostosowanego do jego roli:
+
+
+
+· LFM2.5-Thinking (Dowódca): Prompt zawiera zadanie, wyniki od Specjalistów oraz prośbę o ostateczną decyzję z uzasadnieniem. Tryb "thinking" aktywowany dla złożonych przypadków.
+
+· Granite 4.0 Nano (Specjalista): Prompt zawiera szczegółowe dane faktury, konkretne pytanie o zgodność oraz definicje dostępnych funkcji (function calling).
+
+· LittleLamb TC (Asystent): Prompt zawiera proste, jednoznaczne instrukcje (np. "zweryfikuj poprawność sumy kontrolnej NIP: [NIP]") i oczekuje odpowiedzi TAK/NIE.
+
+· Fin-RWKV (Detektyw): Prompt zawiera surowe dane liczbowe z prośbą o wskazanie wartości odstających.
+
+
+
+---
+
+
+
+6. Pułapki i ostrzeżenia
+
+
+
+Pułapka Objaw Rozwiązanie
+
+Fin-RWKV niekompatybilny z llama.cpp Błąd ładowania modelu Użyj osobnej biblioteki rwkv-pip lub zaimplementuj własny wrapper PyTorch. To największe ryzyko techniczne.
+
+Różne formaty odpowiedzi Parsowanie JSON się nie udaje Każdy model musi mieć własny parser odpowiedzi. Dodaj fallback – jeśli JSON niepoprawny, poproś model ponownie.
+
+Dowódca "halucynuje" decyzje Błędna decyzja mimo poprawnych danych od Specjalistów Zawsze wymagaj, aby Dowódca cytował konkretne dane od Specjalistów w swoim uzasadnieniu.
+
+Granite niepoprawnie wywołuje funkcje Błąd function callingu Zweryfikuj, czy schemat funkcji w prompcie jest zgodny z oczekiwaniami modelu. Granite wymaga specyficznego formatu.
+
+Konflikt w ładowaniu modeli Dwa wątki próbują załadować modele jednocześnie Użyj asyncio.Lock w ModelManagerze.
+
+Przekroczenie limitu RAM Aplikacja się zawiesza Nawet jeśli "nie zwracasz uwagi na RAM", monitoruj go. Przy 4 modelach po ~800 MB każdy, jednoczesne załadowanie to ~3.2 GB.
+
+
+
+---
+
+
+
+7. Harmonogram wdrożenia
+
+
+
+Faza Zakres Czas
+
+Faza 1: MVP Pobranie modeli, przetestowanie każdego z osobna w izolowanym skrypcie. Priorytet: sprawdzenie kompatybilności Fin-RWKV. 1-2 dni
+
+Faza 2: ModelManager Implementacja klasy zarządzającej ładowaniem i wyładowywaniem modeli z mechanizmem TTL. 1 dzień
+
+Faza 3: Agenci Implementacja klas dla Dowódcy i trzech Specjalistów z dedykowanymi promptami. 2-3 dni
+
+Faza 4: Orkiestracja Implementacja hierarchicznego przepływu pracy i logiki decyzyjnej Dowódcy. 2 dni
+
+Faza 5: Integracja z NATS Dodanie zadania w tasks.py, definicja tematów, podłączenie do reszty systemu. 1 dzień
+
+Faza 6: Testy Testy integracyjne na zestawie 20-30 faktur, testy fallbacku, monitoring RAM. 2 dni
+
+
+
+---
+
+
+
+8. Testy do przeprowadzenia
+
+
+
+· Test dokładności: Porównaj decyzje zespołu agentów z decyzjami eksperta-księgowego na zestawie 20-30 faktur. Cel: >95% zgodności.
+
+· Test szybkości: Całkowity czas walidacji pojedynczej faktury nie powinien przekraczać 5 sekund.
+
+· Test pamięci: Uruchom 50 walidacji z rzędu i monitoruj RAM – musi pozostawać w ryzach.
+
+· Test fallbacku: Symuluj awarię Granite i sprawdź, czy Dowódca poprawnie przełącza się na LittleLamb jako zastępstwo.
+
+· Test detektywa: Uruchom Fin-RWKV na danych z 100 faktur i sprawdź, czy wykrywa znane anomalie.
+
+
+
+---
+
+
+
+9. Podsumowanie
+
+
+
+Wdrożenie zespołu Compliance & Rules SWAT Team to zaawansowane, ale w pełni wykonalne zadanie. Kluczowe ryzyko to kompatybilność Fin-RWKV – poświęć mu najwięcej uwagi w Fazie 1. Reszta modeli działa przez llama-cpp-python, co jest sprawdzoną i stabilną ścieżką.
+
+
+
+Główna siła tego rozwiązania tkwi w synergii: Dowódca z zaawansowanym rozumowaniem, Specjalista z precyzyjnym function callingiem, Asystent z błyskawicznymi prostymi walidacjami i Detektyw z ciągłym monitorowaniem anomalii – razem tworzą system, który jest znacznie potężniejszy niż suma jego części.
+
+
+
+Czy chcesz, abym teraz wygenerował dla Ciebie kompletny kod tego zespołu agentów?
+
+
+
+
+
+
+
+
+
+2222 Oto szczegółowy, profesjonalny opis Agenta Reguł i Zgodności – wieloagentowego systemu walidacji, który działa jak elitarny, czteroosobowy zespół audytorów finansowych, zapewniający absolutną zgodność każdej faktury z przepisami, politykami i najlepszymi praktykami.
+
+
+
+---
+
+
+
+Compliance & Rules SWAT Team: Elitarna Jednostka ds. Zgodności Finansowej
+
+
+
+1. Wizja i cel
+
+
+
+Agent Reguł i Zgodności jest trzecim filarem autonomicznego systemu finansowego NexusAI, obok Agenta Ekstrakcji Danych i Agenta Analitycznego. Jego misją jest bycie absolutnym strażnikiem poprawności – ostatnią linią obrony przed błędami, nieprawidłowościami i potencjalnymi oszustwami.
+
+
+
+W tradycyjnej księgowości tę rolę pełni zespół ludzi: młodszy księgowy sprawdza podstawowe dane, starszy księgowy weryfikuje zgodność z przepisami, a audytor wewnętrzny wyłapuje anomalie. W NexusAI wszystkie te role przejmuje czteroosobowy zespół wyspecjalizowanych modeli AI, z których każdy jest mistrzem w swojej wąskiej dziedzinie. Ich pracą zarządza Dowódca – model o zaawansowanym rozumowaniu, który koordynuje działania, analizuje raporty swoich specjalistów i podejmuje ostateczne, audytowalne decyzje.
+
+
+
+Celem jest stworzenie systemu, który:
+
+
+
+· Nigdy nie przepuści błędnej faktury – wieloetapowa walidacja z konsensusem ekspertów,
+
+· Działa w pełni transparentnie – każda decyzja jest szczegółowo uzasadniona i zapisana w niezmiennym audycie,
+
+· Jest odporny na błędy pojedynczego modelu – redundancja i specjalizacja eliminują ryzyko "halucynacji",
+
+· Łączy reguły (deterministyczne) z AI (probabilistyczną) – idealne połączenie niezawodności i elastyczności.
+
+
+
+---
+
+
+
+2. Architektura i skład zespołu
+
+
+
+Zespół działa w modelu hierarchicznym Dowódca – Specjaliści, inspirowanym strukturą profesjonalnych zespołów audytorskich. Każdy członek ma jasno określoną rolę, zakres odpowiedzialności i unikalny profil poznawczy.
+
+
+
+2.1. Dowódca (Commander): LFM2.5-1.2B-Thinking
+
+
+
+· Rola w zespole: Główny decydent i koordynator. Odpowiednik partnera w firmie audytorskiej, który nadzoruje pracę zespołu, analizuje raporty swoich specjalistów i podejmuje ostateczne, wiążące decyzje.
+
+· Model AI: LFM2.5-1.2B-Thinking (Liquid AI) – model o architekturze hybrydowej, który jako jeden z nielicznych w tej klasie wielkości aktywnie "myśli" przed udzieleniem odpowiedzi.
+
+· Profil poznawczy: To strateg i analityk. Nie wykonuje samodzielnie żmudnych walidacji – od tego ma swoich specjalistów. Zamiast tego otrzymuje raporty od Granite, LittleLamb i Fin-RWKV, analizuje je, porównuje, wychwytuje sprzeczności i na tej podstawie podejmuje ostateczną decyzję. Jego zdolność do "myślenia" (chain-of-thought) pozwala mu na wieloetapowe rozumowanie w skomplikowanych przypadkach.
+
+· Kluczowa cecha: Tryb "thinking" aktywowany jest tylko dla złożonych spraw – przy prostych, jednoznacznych walidacjach działa w trybie szybkim. Dzięki temu nie marnuje zasobów na trywialne decyzje.
+
+
+
+2.2. Główny Specjalista ds. Reguł: Granite 4.0 1B Nano
+
+
+
+· Rola w zespole: Ekspert od przepisów i procedur. Odpowiednik starszego księgowego, który zna na pamięć wszystkie regulacje i potrafi błyskawicznie zweryfikować zgodność dokumentu z politykami.
+
+· Model AI: Granite 4.0 1B Nano (IBM) – model stworzony specjalnie do zadań agentowych i function-callingu, z hybrydową architekturą Mamba-2/Transformer.
+
+· Profil poznawczy: To precyzyjny, zdyscyplinowany egzekutor reguł. Nie improwizuje, nie domyśla się – działa ściśle według wytycznych. Jego głównym zadaniem jest wykonywanie function calli: sprawdzenie kontrahenta w bazie, weryfikacja stawek VAT, porównanie z limitami, sprawdzenie zgodności z polityką firmy. Każdą swoją decyzję potrafi szczegółowo uzasadnić, wskazując konkretną regułę, którą zastosował.
+
+· Supermoce: 128K okno kontekstu pozwala mu analizować nawet bardzo długie i złożone polityki zgodności. Jego wyniki w testach function-callingu (BFCLv3: 54.8%) przewyższają modele o podobnej wielkości.
+
+
+
+2.3. Asystent Operacyjny: LittleLamb 0.3B Tool-Calling
+
+
+
+· Rola w zespole: Szybki, niezawodny pracownik pierwszej linii. Odpowiednik młodszego księgowego, który wykonuje podstawowe, rutynowe sprawdzenia.
+
+· Model AI: LittleLamb 0.3B Tool-Calling – skompresowany model pochodny od Qwen3-0.6B, zoptymalizowany pod kątem wywoływania funkcji.
+
+· Profil poznawczy: To "mrówka" – mały, ale niezwykle pracowity i szybki agent. Jego zadania są proste i jednoznaczne: sprawdź sumę kontrolną NIP, zweryfikuj format numeru konta (IBAN), oceń kompletność pól faktury, sprawdź czy data jest w poprawnym formacie. Nie podejmuje decyzji – tylko raportuje fakty Dowódcy.
+
+· Supermoce: Mimo zaledwie 300M parametrów, osiąga 51.55% na BFCL v4 (thinking) – wynik niemal identyczny jak jego dwukrotnie większy rodzic, Qwen3-0.6B (51.95%). Jest idealny do zadań, które nie wymagają rozumowania, tylko szybkiego i sprawnego wykonania.
+
+
+
+2.4. Detektyw Finansowy: Fin-RWKV-169M
+
+
+
+· Rola w zespole: Cichy obserwator i system wczesnego ostrzegania. Odpowiednik audytora wewnętrznego, który nie uczestniczy w codziennych operacjach, ale stale monitoruje dane w poszukiwaniu nieprawidłowości.
+
+· Model AI: Fin-RWKV-169M – model stworzony od podstaw do analizy finansowej, oparty na architekturze RWKV (bezattentionowej).
+
+· Profil poznawczy: To "sowa" – czuwa, gdy inni pracują. Jego myślenie jest zero-jedynkowe: anomalia albo jej brak. Nie potrzebuje rozumieć kontekstu biznesowego – jego zadaniem jest wykrywanie wartości odstających, podejrzanych wzorców i potencjalnych oszustw na podstawie samych danych liczbowych. Pracuje asynchronicznie, w tle – okresowo skanuje nowe transakcje i wysyła alerty do Dowódcy.
+
+· Supermoce: Architektura RWKV czyni go ekstremalnie szybkim i oszczędnym (~150 MB RAM). Jego specjalizacja w finansach sprawia, że jest nieporównywalnie lepszy w wykrywaniu anomalii księgowych niż jakikolwiek model ogólnego przeznaczenia.
+
+
+
+---
+
+
+
+3. Szczegółowy mechanizm działania
+
+
+
+Przetwarzanie zadania walidacyjnego odbywa się w ściśle określonej, sekwencyjnej procedurze, która gwarantuje, że żaden błąd nie przejdzie niezauważony.
+
+
+
+Krok 1: Przyjęcie zlecenia
+
+
+
+Orkiestrator (RulesOrchestrator) otrzymuje zlecenie z brokera NATS na temat rules.validate. Zlecenie zawiera identyfikator zadania (task_id), identyfikator faktury (invoice_id) oraz dane wyekstrahowane przez Agenta Ekstrakcji Danych (extracted_data).
+
+
+
+Krok 2: Odprawa (Briefing)
+
+
+
+Orkiestrator ładuje Dowódcę (LFM2.5-Thinking) i przekazuje mu zadanie wraz z danymi faktury. Dowódca analizuje sprawę i decyduje, których specjalistów zaangażować. Dla standardowej faktury zleca pracę Asystentowi i Głównemu Specjaliście. Dla faktur od nowych kontrahentów lub na duże kwoty – również Detektywowi.
+
+
+
+Krok 3: Praca Asystenta Operacyjnego
+
+
+
+1. Dowódca jest wyładowywany z pamięci.
+
+2. Ładowany jest LittleLamb TC.
+
+3. Otrzymuje zestaw prostych zadań walidacyjnych: sprawdzenie NIP, IBAN, kompletności pól, formatu daty.
+
+4. Dla każdego zadania zwraca wynik TAK/NIE wraz z ewentualnymi uwagami.
+
+5. LittleLamb jest natychmiast wyładowywany z pamięci.
+
+
+
+Krok 4: Praca Głównego Specjalisty
+
+
+
+1. Ładowany jest Granite 4.0 Nano.
+
+2. Otrzymuje zadania zaawansowane: weryfikacja stawek VAT, sprawdzenie kontrahenta w bazie (przez function calling), ocena zgodności z polityką firmy, sprawdzenie progów kwotowych.
+
+3. Dla każdego zadania wykonuje odpowiednią funkcję (np. check_vat_rate(), query_vendor_history()) i zwraca szczegółowy raport.
+
+4. Granite jest natychmiast wyładowywany z pamięci.
+
+
+
+Krok 5: Narada i Decyzja (Deliberation)
+
+
+
+1. Ponownie ładowany jest Dowódca (LFM2.5-Thinking).
+
+2. Otrzymuje raporty od Asystenta i Głównego Specjalisty.
+
+3. Analizuje wyniki. Jeśli obaj są zgodni – decyzja jest prosta.
+
+4. Jeśli występuje rozbieżność – Dowódca aktywuje tryb "thinking" i przeprowadza głębszą analizę: dlaczego opinie są różne? Który specjalista ma rację w tym konkretnym przypadku? Czy potrzebna jest dodatkowa weryfikacja?
+
+5. Podejmuje ostateczną decyzję: APPROVED, REJECTED lub ESCALATE.
+
+
+
+Krok 6: Praca Detektywa (w tle)
+
+
+
+Niezależnie od głównego przepływu, Fin-RWKV jest uruchamiany okresowo (np. co godzinę) jako osobne zadanie cronowe. Skanuje nowe transakcje w DuckDB, analizuje je pod kątem anomalii i w przypadku ich wykrycia wysyła alert do Dowódcy, który może ponownie otworzyć sprawę.
+
+
+
+Krok 7: Publikacja wyniku
+
+
+
+Dowódca jest wyładowywany z pamięci. Orkiestrator publikuje ostateczną decyzję na temat NATS rules.result.
+
+
+
+---
+
+
+
+4. Komunikacja wewnętrzna i zewnętrzna
+
+
+
+Agent Reguł i Zgodności komunikuje się z resztą systemu wyłącznie za pośrednictwem brokera NATS JetStream.
+
+
+
+Temat NATS Kierunek Opis
+
+rules.validate System → Agent Zlecenie walidacji. Zawiera task_id, invoice_id i extracted_data.
+
+rules.result Agent → System Wynik walidacji. Zawiera decyzję, uzasadnienie i szczegółowe raporty od specjalistów.
+
+rules.anomaly Agent → System Alert o wykrytej anomalii (generowany asynchronicznie przez Detektywa).
+
+
+
+Wewnętrzna komunikacja między Dowódcą a Specjalistami odbywa się bezpośrednio w kodzie Agenta – nie przez NATS, aby zminimalizować opóźnienia. Orkiestrator przekazuje dane między modelami, zarządzając ich cyklem życia w pamięci.
+
+
+
+---
+
+
+
+5. Zarządzanie pamięcią RAM
+
+
+
+Choć tym razem nie stawiasz twardego limitu 2 GB, efektywne zarządzanie pamięcią pozostaje kluczowe dla wydajności. System działa w oparciu o cztery mechanizmy:
+
+
+
+1. Lazy Loading: Żaden model nie jest ładowany przy starcie – tylko na żądanie.
+
+2. Mutual Exclusion: W danym momencie tylko jeden model jest załadowany do RAM.
+
+3. Explicit Unloading: Po zakończeniu zadania każdy model jest natychmiast wyładowywany (del model + gc.collect()).
+
+4. TTL (Time To Live): Jeśli Agent nie otrzymuje zadań przez 5 minut, wszystkie modele są wyładowywane, a pamięć wraca do stanu spoczynkowego.
+
+
+
+---
+
+
+
+6. Integracja z architekturą NexusAI
+
+
+
+Agent Reguł i Zgodności jest samodzielnym komponentem, który płynnie integruje się z resztą systemu:
+
+
+
+· Code/SERVICES/rules_agent.py: Nowy plik zawierający klasy RulesOrchestrator, CommanderAgent, GraniteSpecialist, LittleLambAssistant, FinDetective oraz ModelManager.
+
+· Code/API/tasks.py: Nowe zadanie rules_validate_task, które subskrybuje temat rules.validate i uruchamia RulesOrchestrator.
+
+· Code/CORE/config.py: Ścieżki do czterech modeli, progi decyzyjne, parametry TTL.
+
+
+
+---
+
+
+
+7. Matryca decyzyjna
+
+
+
+Ostateczna decyzja Dowódcy opiera się na analizie raportów od Specjalistów:
+
+
+
+Asystent (LittleLamb) Specjalista (Granite) Detektyw (Fin-RWKV) Decyzja Dowódcy
+
+WSZYSTKO OK WSZYSTKO OK BEZ ALERTU APPROVED
+
+WSZYSTKO OK WSZYSTKO OK ALERT APPROVED z flagą ostrzegawczą
+
+PROBLEM WSZYSTKO OK - REJECTED (błąd podstawowy)
+
+WSZYSTKO OK PROBLEM - ESCALATE (konflikt wymaga ludzkiej oceny)
+
+PROBLEM PROBLEM ALERT REJECTED (wielokrotne błędy)
+
+
+
+---
+
+
+
+8. Podsumowanie
+
+
+
+Compliance & Rules SWAT Team to kwintesencja architektury wieloagentowej w finansach. Cztery modele – Dowódca z rozumowaniem, Specjalista od reguł, Asystent od szybkich walidacji i Detektyw od anomalii – tworzą system, który jest nie tylko niezwykle dokładny, ale też w pełni transparentny i audytowalny. Każda decyzja jest szczegółowo uzasadniona, każdy błąd jest wyłapywany, a każda anomalia jest sygnalizowana, zanim stanie się problemem.
+
+
+
+To nie jest już tylko "sprawdzanie faktur". To kompleksowy system zapewniania zgodności finansowej, który działa jak miniaturowy, ale kompletny dział audytu wewnętrznego – dostępny dla każdej mikrofirmy.
+
+
+
+Czy chcesz, abym teraz wygenerował dla Ciebie kompletny kod tego agenta?
+
+
+
+
+
+511 Oto szczegółowa instrukcja wdrożenia Agenta Decyzyjnego nowej generacji, który będzie pracował jako zespół dwóch wyspecjalizowanych modeli: Jamba Reasoning 3B (Strateg) i Granite 4.0 1B Nano (Executor). Oba modele objęte są licencją Apache 2.0, co gwarantuje Ci pełną swobodę komercyjnego wykorzystania aplikacji. Całość została zaprojektowana tak, aby zmieścić się w Twoim limicie 3 GB RAM.
+
+
+
+---
+
+
+
+Plan wdrożenia Agenta Decyzyjnego (Jamba + Granite)
+
+
+
+1. Stan pożądany
+
+
+
+Dążysz do sytuacji, w której Agent Decyzyjny potrafi:
+
+
+
+· Przyjąć kompletny obraz sytuacji: dane z faktury (od Agenta Ekstrakcji), analizę finansową (od Agenta Analitycznego) i raport zgodności (od Agenta Reguł).
+
+· Samodzielnie zebrać dodatkowe dane z bazy (DuckDB), jeśli są potrzebne do podjęcia decyzji.
+
+· Przeprowadzić wieloetapowe rozumowanie (reasoning) nad zebranym materiałem.
+
+· Podać ostateczną, w pełni uzasadnioną decyzję: AUTO_POST, SUGGEST lub ESCALATE.
+
+· Działać w pełni lokalnie, bez zależności od zewnętrznych API, przy zużyciu RAM nieprzekraczającym 3 GB.
+
+
+
+---
+
+
+
+2. Architektura i skład Agenta
+
+
+
+Agent Decyzyjny będzie się składał z trzech klas w nowym pliku Code/SERVICES/decision_agent.py:
+
+
+
+Komponent Implementacja Rola
+
+DecisionOrchestrator Klasa DecisionOrchestrator Zarządza przepływem zadań i komunikacją z NATS
+
+ModelManager Klasa ModelManager Zarządza ładowaniem i wyładowywaniem modeli do/z RAM
+
+JambaStrategist Klasa JambaStrategist Główny decydent – podejmuje ostateczne decyzje
+
+GraniteExecutor Klasa GraniteExecutor Pomocnik operacyjny – wykonuje function calling i proste walidacje
+
+
+
+---
+
+
+
+3. Specyfikacja modeli
+
+
+
+3.1. Jamba Reasoning 3B – Strateg
+
+
+
+· Rola w zespole: Główny decydent. Odpowiednik partnera w firmie audytorskiej, który analizuje raporty swoich specjalistów i podejmuje ostateczne, wiążące decyzje.
+
+· Model AI: AI21-Jamba-Reasoning-3B – hybrydowy model SSM-Transformer opracowany przez AI21 Labs. Łączy 26 warstw Mamba (state-space model) z 2 warstwami Transformer Attention, co czyni go 2–5× wydajniejszym od konkurencji.
+
+· Profil poznawczy: Strateg i analityk. Nie wykonuje samodzielnie żmudnych walidacji – od tego ma Granite. Zamiast tego otrzymuje kompletny obraz sytuacji i przeprowadza wieloetapowe rozumowanie (chain-of-thought), aby podjąć optymalną decyzję.
+
+· Kluczowe parametry:
+
+  · 256K tokenów kontekstu – najdłuższy w tej klasie
+
+  · ~40 tokenów/sekundę na M3 MacBook Pro
+
+  · Kwantyzacja Q4_K_M: plik ~1,93 GB, RAM ~2,2 GB
+
+  · Licencja: Apache 2.0
+
+
+
+3.2. Granite 4.0 1B Nano – Executor
+
+
+
+· Rola w zespole: Pomocnik operacyjny. Odpowiednik analityka, który na polecenie Stratega szybko pobiera dane, wykonuje function calling i przeprowadza proste walidacje.
+
+· Model AI: Granite-4.0-1B (IBM) – lekki model instruct z hybrydową architekturą Mamba-2/Transformer, zoptymalizowany do zadań agentowych i function-callingu.
+
+· Profil poznawczy: Precyzyjny, zdyscyplinowany wykonawca. Nie improwizuje – działa ściśle według wytycznych. Jego głównym zadaniem jest wykonywanie function calli: get_vendor_history(), check_vat_rate(), query_financial_summary().
+
+· Kluczowe parametry:
+
+  · 128K tokenów kontekstu
+
+  · Lider function-callingu w swojej klasie: 54,8 BFCLv3, przewyższa Qwen3-1.7B (73,1 vs 78,5 IFEval)
+
+  · Kwantyzacja Q4_K_M: plik ~0,5 GB, RAM ~0,8–1,0 GB
+
+  · Licencja: Apache 2.0
+
+
+
+---
+
+
+
+4. Przygotowanie środowiska
+
+
+
+Przed rozpoczęciem implementacji wykonaj następujące czynności:
+
+
+
+1. Python: Upewnij się, że używasz Pythona 3.12.
+
+2. Biblioteki: Zainstaluj llama-cpp-python w wersji obsługującej architekturę Jamby (hybryda SSM-Transformer). Model jest w pełni kompatybilny z llama.cpp, LM Studio i Ollama. W razie problemów technicznych możesz użyć oficjalnego SDK HuggingFace.
+
+3. Pobierz modele i umieść je w katalogu models/:
+
+
+
+Model Repozytorium HuggingFace Zalecany plik GGUF Rozmiar
+
+Jamba Reasoning 3B ai21labs/AI21-Jamba-Reasoning-3B-GGUF jamba-reasoning-3b-Q4_K_M.gguf ~1,93 GB
+
+Granite 4.0 1B Nano ibm-granite/granite-4.0-1b granite-4.0-1b-nano-Q4_K_M.gguf ~0,5 GB
+
+
+
+---
+
+
+
+5. Sekwencyjny przepływ pracy (Standard Operating Procedure)
+
+
+
+Przetwarzanie zadania przez Agenta Decyzyjnego będzie przebiegać w następującej sekwencji. Kluczowa zasada: w danym momencie tylko jeden model jest załadowany do pamięci RAM.
+
+
+
+1. Orkiestrator otrzymuje zadanie z NATS na temat decision.evaluate. Zadanie zawiera:
+
+   · task_id – identyfikator zadania
+
+   · invoice_id – identyfikator faktury
+
+   · extracted_data – dane od Agenta Ekstrakcji
+
+   · analytics_report – raport od Agenta Analitycznego
+
+   · rules_report – raport od Agenta Reguł i Zgodności
+
+2. Faza przygotowawcza (opcjonalna): Jeśli Strateg uzna, że potrzebne są dodatkowe dane z bazy (historia kontrahenta, trendy finansowe), Orkiestrator ładuje Granite Executora. Granite wykonuje function calling do DuckDB i zwraca surowe dane. Model jest natychmiast wyładowywany.
+
+3. Faza główna (decyzyjna): Orkiestrator ładuje Jamba Stratega. Jamba otrzymuje pełen pakiet informacji:
+
+   · Dane z faktury
+
+   · Raport od Agenta Analitycznego
+
+   · Raport od Agenta Reguł
+
+   · Dodatkowe dane z DuckDB (jeśli pobrane)
+
+   · Listę dostępnych akcji: AUTO_POST, SUGGEST, ESCALATE
+
+4. Jamba przeprowadza wieloetapowe rozumowanie (chain-of-thought), analizuje wszystkie aspekty sprawy i podejmuje ostateczną decyzję. Model jest wyładowywany.
+
+5. Publikacja: Orkiestrator publikuje decyzję na temat NATS decision.result.
+
+
+
+---
+
+
+
+6. Komunikacja przez NATS
+
+
+
+Agent komunikuje się z resztą systemu przez brokera NATS JetStream.
+
+
+
+Temat NATS Kierunek Opis
+
+decision.evaluate System → Agent Zlecenie podjęcia decyzji. Zawiera wszystkie dostępne dane o fakturze.
+
+decision.result Agent → System Wynik decyzji. Zawiera akcję, uzasadnienie, sugerowane księgowanie i Trust Score.
+
+
+
+Format wiadomości wynikowej (decision.result):
+
+
+
+```json
+
+{
+
+  "task_id": "uuid",
+
+  "invoice_id": "uuid",
+
+  "decision": "AUTO_POST",
+
+  "confidence": 0.94,
+
+  "reasoning": "Wszystkie trzy filary (ekstrakcja, analityka, zgodność) są spójne...",
+
+  "suggested_accounts": {"debit": "402", "credit": "202"},
+
+  "trust_score": 0.96,
+
+  "model": "Jamba-Reasoning-3B"
+
+}
+
+```
+
+
+
+---
+
+
+
+7. Kluczowe mechanizmy
+
+
+
+· Sekwencyjne ładowanie (Mutual Exclusion): To najważniejsza zasada. ModelManager dba o to, by w danym momencie w RAM znajdował się tylko jeden model. Przed załadowaniem nowego, poprzedni jest zawsze wyładowywany. Eliminuje to ryzyko przekroczenia limitu 3 GB.
+
+· Lazy Loading: Żaden model nie jest ładowany przy starcie aplikacji – tylko na żądanie, gdy Agent otrzyma pierwsze zadanie.
+
+· Explicit Unloading: Po zakończeniu zadania każdy model jest natychmiast wyładowywany (del model + gc.collect()).
+
+· TTL (Time To Live): Jeśli Agent nie otrzymuje zadań przez 5 minut, wszystkie modele są automatycznie wyładowywane, a pamięć wraca do stanu spoczynkowego.
+
+· Prompt Engineering:
+
+  · Dla Jamby: Prompt musi zawierać format wymuszający rozumowanie w bloku <think>...</think>, a następnie odpowiedź w ustrukturyzowanym JSON. Format prompta jest zgodny ze schematem llama.cpp: <|im_start|>system ... <|im_end|> <|im_start|>user ... <|im_end|> <|im_start|>assistant <think>.
+
+  · Dla Granite: Prompt musi zawierać precyzyjne instrukcje i schematy funkcji do wywołania (function calling). Model najlepiej pracuje z temperaturą ustawioną na 0.
+
+
+
+---
+
+
+
+8. Modyfikacje istniejącego kodu
+
+
+
+Plik Akcja
+
+Code/SERVICES/decision_agent.py Nowy – klasy DecisionOrchestrator, ModelManager, JambaStrategist, GraniteExecutor
+
+Code/API/tasks.py Modyfikacja – dodanie zadania decision_evaluate_task subskrybującego decision.evaluate
+
+Code/CORE/config.py Modyfikacja – dodanie ścieżek do modeli, progów decyzyjnych, timeoutów
+
+
+
+---
+
+
+
+9. Harmonogram wdrożenia
+
+
+
+Faza Zakres Czas
+
+Faza 1: MVP Pobranie modeli, przetestowanie Jamby i Granite osobno w izolowanych skryptach. Weryfikacja poprawności promptów i formatów odpowiedzi. 1–2 dni
+
+Faza 2: ModelManager Implementacja klasy zarządzającej ładowaniem i wyładowywaniem modeli z mechanizmem TTL i mutual exclusion. 1 dzień
+
+Faza 3: Agenci Implementacja klas JambaStrategist i GraniteExecutor z dedykowanymi promptami i parserami odpowiedzi. 2–3 dni
+
+Faza 4: Orkiestracja Implementacja DecisionOrchestrator z sekwencyjnym przepływem pracy i logiką decyzyjną. 2 dni
+
+Faza 5: Integracja z NATS Dodanie zadania w tasks.py, definicja tematów, podłączenie do reszty systemu. 1 dzień
+
+Faza 6: Testy Testy integracyjne na zestawie 20–30 faktur, testy fallbacku, monitoring RAM. 2 dni
+
+
+
+---
+
+
+
+10. Na co trzeba uważać – ostrzeżenia
+
+
+
+Pułapka Objaw Rozwiązanie
+
+Kompatybilność Jamby z llama.cpp Błąd ładowania modelu Jamba jest w pełni wspierana przez llama.cpp, LM Studio i Ollama. Użyj wersji Q4_K_M z oficjalnego repozytorium AI21 Labs.
+
+Limit 3 GB RAM Aplikacja się zawiesza Jamba w Q4_K_M zajmuje ~2,2 GB, Granite ~0,9 GB. Nigdy nie ładuj obu jednocześnie. Mutual exclusion jest absolutnie krytyczne.
+
+Timeouty Zablokowanie kolejki Jamba może "myśleć" dłużej przy skomplikowanych sprawach. Ustaw timeout na 60 sekund dla fazy decyzyjnej.
+
+Jamba ignoruje format JSON Odpowiedź nie jest parsowalna Użyj temperatury 0.1 i wymuś format odpowiedzi przez prompt. W razie niepowodzenia parsowania – poproś model ponownie (max. 1 retry).
+
+Granite niepoprawnie wywołuje funkcje Błąd function callingu Zweryfikuj, czy schemat funkcji w prompcie jest zgodny z oczekiwaniami modelu. Granite wymaga specyficznego formatu dla function-callingu.
+
+Brak polskiego języka Modele nie rozumieją polskich faktur Ani Jamba (angielski + 8 języków), ani Granite (angielski + 11 języków, brak polskiego) nie wspierają natywnie polskiego. Wysyłaj prompty po angielsku, a wyniki tłumacz na polski za pomocą prostego słownika mapującego.
+
+
+
+---
+
+
+
+11. Podsumowanie
+
+
+
+Wdrożenie duetu Jamba Reasoning 3B + Granite 4.0 1B Nano daje Ci Agenta Decyzyjnego, który jest jednocześnie wybitnie inteligentny i zadziwiająco oszczędny. Jamba, ze swoim 256K kontekstem i hybrydową architekturą SSM-Transformer, podejmuje strategiczne decyzje na podstawie pełnego obrazu sytuacji. Granite, jako lider function-callingu w swojej klasie, szybko dostarcza niezbędnych danych. Dzięki rygorystycznemu zarządzaniu pamięcią oba modele mieszczą się w limicie 3 GB RAM, a ich licencje Apache 2.0 otwierają Ci drogę do komercyjnego sukcesu.
+
+
+
+Główna siła tego rozwiązania tkwi w synergii: Jamba wnosi głębokie rozumowanie i strategiczne myślenie, a Granite precyzję i efektywność operacyjną. Razem tworzą system, który jest znacznie potężniejszy niż suma jego części – prawdziwy „mózg" autonomicznej platformy księgowej.
+
+
+
+Czy chcesz, abym teraz wygenerował dla Ciebie kompletny kod tego Agenta Decyzyjnego?
+
+
+
+
+
+
+
+
+
+
+
+522 Oto szczegółowy, profesjonalny opis Agenta Decyzyjnego – końcowego, najważniejszego komponentu autonomicznego systemu księgowego NexusAI, który jako ostatni wydaje wiążący werdykt w sprawie każdej faktury.
+
+
+
+---
+
+
+
+Agent Decyzyjny (Decision Agent): Główny Sędzia i Architekt Decyzji
+
+
+
+1. Wizja i cel
+
+
+
+Agent Decyzyjny jest zwieńczeniem i ukoronowaniem całej architektury NexusAI. Podczas gdy Agent Ekstrakcji dostarcza surowe dane z dokumentów, Agent Analityczny bada trendy i liczby, a Agent Reguł sprawdza zgodność z przepisami, to właśnie Agent Decyzyjny jest tym, który wydaje ostateczny, wiążący werdykt. To on, jako ostatni w łańcuchu, podejmuje decyzję, czy faktura ma zostać automatycznie zaksięgowana, czy też wymaga uwagi człowieka.
+
+
+
+Jego roli nie można sprowadzić do prostego „sprawdzania" – to zaawansowany proces podejmowania decyzji w warunkach niepewności, który wymaga:
+
+
+
+· Zrozumienia kontekstu – co mówią liczby, ale też co kryje się za nimi,
+
+· Ważenia dowodów – raport od Agenta Analitycznego może wskazywać na anomalię, podczas gdy Agent Reguł może nie widzieć naruszenia przepisów. Który głos jest ważniejszy?
+
+· Podejmowania decyzji z pełnym uzasadnieniem – każdy werdykt musi być audytowalny i możliwy do prześledzenia przez człowieka.
+
+
+
+W tradycyjnej księgowości tę rolę pełni główny księgowy lub partner w biurze rachunkowym – ktoś, kto ma wieloletnie doświadczenie, potrafi spojrzeć na sprawę z lotu ptaka i podjąć decyzję, biorąc na siebie pełną odpowiedzialność. W NexusAI tę rolę przejmuje zespół dwóch modeli AI: Jamba Reasoning 3B (Strateg) i Granite 4.0 1B Nano (Executor). Razem tworzą system, który jest nie tylko niezwykle dokładny, ale też w pełni transparentny i audytowalny.
+
+
+
+---
+
+
+
+2. Architektura i skład zespołu
+
+
+
+Agent Decyzyjny działa w modelu Strateg – Executor, inspirowanym strukturą dowodzenia w profesjonalnych firmach konsultingowych. Jeden model podejmuje decyzje strategiczne, drugi dostarcza mu niezbędnych danych operacyjnych.
+
+
+
+2.1. Jamba Reasoning 3B – Strateg i Główny Decydent
+
+
+
+· Rola w zespole: Główny decydent. Odpowiednik partnera w firmie audytorskiej, który analizuje raporty swoich specjalistów i podejmuje ostateczne, wiążące decyzje.
+
+· Model AI: AI21-Jamba-Reasoning-3B – hybrydowy model SSM-Transformer opracowany przez AI21 Labs. Łączy 26 warstw Mamba (state-space model) z 2 warstwami Transformer Attention, co czyni go 2–5× wydajniejszym od konkurencji.
+
+· Profil poznawczy: Strateg i myśliciel. Nie wykonuje samodzielnie żmudnych walidacji – od tego ma Granite. Zamiast tego otrzymuje kompletny obraz sytuacji: dane z faktury, raport od Agenta Analitycznego, raport od Agenta Reguł i ewentualne dane dodatkowe z DuckDB. Jego zadaniem jest spojrzenie na to wszystko z lotu ptaka i podjęcie decyzji. Potrafi ważyć sprzeczne dowody – jeśli Agent Analityczny wykryje anomalię, ale Agent Reguł nie widzi naruszenia przepisów, Jamba musi zdecydować, który głos jest ważniejszy w tym konkretnym przypadku.
+
+· Kluczowe parametry techniczne:
+
+  · 256K tokenów kontekstu – najdłuższy w tej klasie, pozwala na analizę wielomiesięcznych historii transakcji
+
+  · ~40 tokenów/sekundę na M3 MacBook Pro
+
+  · Kwantyzacja Q4_K_M: plik ~1,93 GB, RAM ~2,2 GB
+
+  · Licencja: Apache 2.0
+
+  · Architektura: hybrydowa SSM-Transformer (Mamba + Attention)
+
+  · Pamięć podręczna KV jest 8 razy mniejsza niż w tradycyjnym Transformerze
+
+
+
+2.2. Granite 4.0 1B Nano – Executor i Analityk Operacyjny
+
+
+
+· Rola w zespole: Pomocnik operacyjny. Odpowiednik analityka, który na polecenie Stratega szybko pobiera dane, wykonuje function calling i przeprowadza proste walidacje.
+
+· Model AI: Granite-4.0-1B-Nano (IBM) – lekki model instruct z hybrydową architekturą Mamba-2/Transformer, zoptymalizowany do zadań agentowych i function-callingu.
+
+· Profil poznawczy: Precyzyjny, zdyscyplinowany wykonawca. Nie improwizuje, nie domyśla się – działa ściśle według wytycznych. Jego głównym zadaniem jest wykonywanie function calli: get_vendor_history(nip), check_vat_rate(), query_financial_summary(). Każdą swoją odpowiedź zwraca w ustrukturyzowanym formacie, gotową do przekazania Jambie.
+
+· Kluczowe parametry techniczne:
+
+  · 128K tokenów kontekstu
+
+  · Lider function-callingu w swojej klasie: 54,8 BFCLv3, przewyższa Qwen3-1.7B
+
+  · Kwantyzacja Q4_K_M: plik ~0,5 GB, RAM ~0,8–1,0 GB
+
+  · Licencja: Apache 2.0
+
+  · Architektura: hybrydowa Mamba-2/Transformer
+
+
+
+---
+
+
+
+3. Szczegółowy mechanizm działania – Proces Decyzyjny
+
+
+
+Przetwarzanie zadania przez Agenta Decyzyjnego odbywa się w ściśle określonej, sekwencyjnej procedurze, która gwarantuje minimalne zużycie pamięci RAM i maksymalną transparentność decyzji.
+
+
+
+Krok 1: Przyjęcie zlecenia
+
+
+
+Orkiestrator (DecisionOrchestrator) otrzymuje zlecenie z brokera NATS na temat decision.evaluate. W odróżnieniu od innych agentów, zlecenie to zawiera nie tylko dane z faktury, ale kompletny pakiet informacji zebranych przez cały system:
+
+
+
+· task_id – identyfikator zadania
+
+· invoice_id – identyfikator faktury
+
+· extracted_data – dane od Agenta Ekstrakcji (NIP, kwoty, data, numer faktury)
+
+· analytics_report – raport od Agenta Analitycznego (trendy, anomalie, historia kontrahenta)
+
+· rules_report – raport od Agenta Reguł i Zgodności (wyniki walidacji, zgodność z przepisami)
+
+· trust_score – wstępny Trust Score obliczony przez Radę Agentów
+
+
+
+Krok 2: Faza przygotowawcza (opcjonalna)
+
+
+
+Orkiestrator analizuje otrzymane dane i decyduje, czy potrzebne są dodatkowe informacje z bazy. Jeśli tak – na przykład historia kontrahenta nie została jeszcze pobrana – uruchamia Fazę Przygotowawczą:
+
+
+
+1. Orkiestrator wysyła żądanie do ModelManagera: „Załaduj Granite".
+
+2. ModelManager sprawdza, czy jakiś inny model jest obecnie w pamięci. Jeśli tak – czeka na jego wyładowanie.
+
+3. Granite 4.0 1B Nano zostaje załadowany do RAM (zajmuje ~0,9 GB).
+
+4. Orkiestrator przekazuje mu zadania typu: „pobierz historię transakcji dla NIP X", „sprawdź, czy ta faktura nie jest duplikatem", „zweryfikuj kurs waluty dla daty Y".
+
+5. Granite wykonuje function calling do DuckDB i zwraca surowe dane w ustrukturyzowanym formacie.
+
+6. Orkiestrator wysyła żądanie: „Wyładuj Granite". Model jest usuwany z RAM. Pamięć zostaje zwolniona.
+
+
+
+Krok 3: Faza decyzyjna
+
+
+
+To najważniejszy moment. Orkiestrator przygotowuje kompletny pakiet informacji i przekazuje go Jambie:
+
+
+
+1. Orkiestrator wysyła żądanie do ModelManagera: „Załaduj Jambę".
+
+2. Jamba Reasoning 3B zostaje załadowana do RAM (zajmuje ~2,2 GB).
+
+3. Orkiestrator konstruuje prompt, który zawiera:
+
+   · Kontekst: Kim jest model („Jesteś głównym ekspertem księgowym...")
+
+   · Dane faktury: Wszystkie pola od Agenta Ekstrakcji
+
+   · Raport Analityczny: Trendy, anomalie, historia
+
+   · Raport Zgodności: Wyniki walidacji, naruszenia reguł
+
+   · Dodatkowe dane: Z DuckDB, jeśli były pobierane
+
+   · Dostępne akcje: AUTO_POST, SUGGEST, ESCALATE
+
+   · Wymagany format odpowiedzi: Ustrukturyzowany JSON z polami decision, confidence, reasoning, suggested_accounts
+
+4. Jamba przeprowadza wieloetapowe rozumowanie (chain-of-thought). Analizuje wszystkie aspekty sprawy, waży sprzeczne dowody i podejmuje ostateczną decyzję.
+
+5. Model jest wyładowywany z RAM. Pamięć zostaje zwolniona.
+
+
+
+Krok 4: Publikacja wyniku
+
+
+
+Orkiestrator publikuje decyzję na temat NATS decision.result. Wynik zawiera:
+
+
+
+· task_id – identyfikator zadania
+
+· invoice_id – identyfikator faktury
+
+· decision – AUTO_POST, SUGGEST lub ESCALATE
+
+· confidence – poziom pewności decyzji (0.0–1.0)
+
+· reasoning – szczegółowe uzasadnienie decyzji
+
+· suggested_accounts – sugerowane konta księgowe (jeśli AUTO_POST)
+
+· trust_score – ostateczny Trust Score
+
+· model – identyfikator modelu, który podjął decyzję („Jamba-Reasoning-3B")
+
+
+
+---
+
+
+
+4. Komunikacja wewnętrzna i zewnętrzna
+
+
+
+Agent Decyzyjny jest integralną częścią ekosystemu NexusAI i komunikuje się z resztą systemu wyłącznie za pośrednictwem brokera NATS JetStream. Zapewnia to luźne powiązanie (loose coupling), niezawodność i asynchroniczność.
+
+
+
+Temat NATS Kierunek Opis
+
+decision.evaluate System → Agent Zlecenie podjęcia decyzji. Zawiera kompletny pakiet danych zebranych przez wszystkie agenty.
+
+decision.result Agent → System Wynik decyzji. Zawiera akcję, uzasadnienie, sugerowane księgowanie i Trust Score.
+
+
+
+Wewnętrzna komunikacja między Strategiem (Jambą) a Executorem (Granite) odbywa się bezpośrednio w kodzie Agenta – nie przez NATS, aby zminimalizować opóźnienia. Orkiestrator przekazuje dane między modelami, zarządzając ich cyklem życia w pamięci.
+
+
+
+---
+
+
+
+5. Zarządzanie pamięcią RAM
+
+
+
+Agent Decyzyjny operuje w ramach limitu 3 GB RAM. Zarządzanie pamięcią opiera się na czterech filarach:
+
+
+
+· Mutual Exclusion (Wzajemne Wykluczanie): To najważniejsza zasada. W danym momencie tylko jeden model jest załadowany do pamięci RAM. Przed załadowaniem nowego, poprzedni jest zawsze wyładowywany. Eliminuje to ryzyko przekroczenia limitu 3 GB.
+
+· Lazy Loading (Ładowanie na Żądanie): Żaden model nie jest ładowany przy starcie aplikacji. Każdy jest wczytywany do RAM dopiero w momencie, gdy Orkiestrator po raz pierwszy zleci jego użycie.
+
+· Explicit Unloading (Jawne Zwalnianie): Po zakończeniu zadania każdy model jest natychmiast wyładowywany (del model + gc.collect()).
+
+· TTL (Time To Live): Jeśli Agent nie otrzymuje zadań przez 5 minut, wszystkie modele są automatycznie wyładowywane, a pamięć wraca do stanu spoczynkowego.
+
+
+
+---
+
+
+
+6. Integracja z architekturą NexusAI
+
+
+
+Agent Decyzyjny jest ostatnim ogniwem w łańcuchu przetwarzania faktury. Jego integracja z resztą systemu jest realizowana przez:
+
+
+
+· Code/SERVICES/decision_agent.py: Nowy plik zawierający klasy DecisionOrchestrator, ModelManager, JambaStrategist i GraniteExecutor.
+
+· Code/API/tasks.py: Modyfikacja istniejącego pliku – dodanie zadania decision_evaluate_task, które subskrybuje temat decision.evaluate i uruchamia Agenta Decyzyjnego.
+
+· Code/CORE/config.py: Modyfikacja – dodanie ścieżek do nowych modeli, progów decyzyjnych i timeoutów.
+
+
+
+---
+
+
+
+7. Matryca decyzyjna
+
+
+
+Ostateczna decyzja Jamby opiera się na analizie wszystkich dostępnych danych i jest klasyfikowana do jednej z trzech akcji:
+
+
+
+Wszystkie agenty zgodne Anomalia finansowa Naruszenie reguł Decyzja
+
+TAK NIE NIE AUTO_POST
+
+TAK TAK (mała) NIE SUGGEST (z flagą ostrzegawczą)
+
+TAK TAK (duża) NIE ESCALATE
+
+NIE (konflikt) NIE NIE SUGGEST (konflikt wymaga uwagi)
+
+NIE (konflikt) TAK NIE ESCALATE
+
+NIE (konflikt) TAK TAK ESCALATE
+
+NIE (konflikt) NIE TAK ESCALATE
+
+
+
+---
+
+
+
+8. Podsumowanie
+
+
+
+Agent Decyzyjny, zbudowany na duecie Jamba Reasoning 3B + Granite 4.0 1B Nano, jest prawdziwym „mózgiem" autonomicznej platformy księgowej NexusAI. Jamba wnosi do zespołu wybitne zdolności rozumowania i strategicznego myślenia, podczas gdy Granite dostarcza precyzji i efektywności operacyjnej. Dzięki rygorystycznemu zarządzaniu pamięcią oba modele mieszczą się w limicie 3 GB RAM, a ich licencje Apache 2.0 otwierają drogę do komercyjnego sukcesu.
+
+
+
+To nie jest już tylko program do sprawdzania faktur – to kompletny, autonomiczny system podejmowania decyzji finansowych, który działa jak główny księgowy dostępny dla każdej mikrofirmy, 24 godziny na dobę, 7 dni w tygodniu, bez zmęczenia i bez błędów.
+
+
+
+
+
+
+
+
+
+
