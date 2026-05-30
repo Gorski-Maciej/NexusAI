@@ -43,12 +43,20 @@ async def resolve_triage_item(
     action: str,
     updated_by: str,
     tenant_id: str,
+    expected_version: int | None = None,  # Optimistic locking (Rozwiązanie 23)
 ) -> Invoice:
     invoice = await session.get(Invoice, invoice_id)
     if invoice is None:
         raise ValueError(f"Invoice {invoice_id} not found")
     if str(invoice.tenant_id) != str(tenant_id):
         raise ValueError("Cross-tenant access denied")
+
+    # Sprawdź zgodność wersji (optimistic locking)
+    if expected_version is not None and invoice.version_id != expected_version:
+        raise ValueError(
+            f"Conflict: invoice {invoice_id} version mismatch. "
+            f"Expected {expected_version}, current {invoice.version_id}"
+        )
 
     if number := corrected_data.get("number"):
         invoice.number = str(number)

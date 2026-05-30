@@ -21,17 +21,59 @@ class InvoiceController(Controller):
     path = "/invoices"
 
     @get()
-    async def list_invoices(self, db_session: AsyncSession) -> list[InvoiceResponse]:
-        """Pobiera listę wszystkich faktur z SQLite."""
-        result = await db_session.execute(select(Invoice).order_by(Invoice.created_at.desc()))
+    async def list_invoices(
+        self,
+        db_session: AsyncSession,
+        limit: int = 50,
+        cursor: str | None = None,
+    ) -> dict:
+        """Pobiera listę faktur z paginacją kursorem (Rozwiązanie 32).
+
+        Query params:
+          - limit (int, default 50, max 200): max liczba faktur na stronę.
+          - cursor (str, optional): token paginacji z poprzedniej odpowiedzi (next_cursor).
+
+        Returns dict z items, next_cursor, has_more.
+        """
+        from api.services import CursorPagination
+
+        safe_limit = max(1, min(int(limit), 200))
+        query = select(Invoice).order_by(Invoice.created_at.desc(), Invoice.id.desc()).limit(safe_limit + 1)
+
+        if cursor:
+            decoded = CursorPagination.decode_cursor(cursor)
+            if decoded:
+                cursor_date, cursor_id = decoded
+                query = query.where(
+                    (Invoice.created_at < cursor_date) |
+                    ((Invoice.created_at == cursor_date) & (Invoice.id < cursor_id))
+                )
+
+        result = await db_session.execute(query)
         invoices = result.scalars().all()
-        return [
+
+        has_more = len(invoices) > safe_limit
+        if has_more:
+            invoices = invoices[:safe_limit]
+
+        items = [
             InvoiceResponse(
                 id=inv.id, number=inv.number, amount_net=inv.amount_net,
                 amount_gross=inv.amount_gross, currency=inv.currency,
                 status=inv.status, created_at=inv.created_at
             ) for inv in invoices
         ]
+
+        next_cursor = None
+        if has_more:
+            next_cursor = CursorPagination.build_next_cursor(items)
+
+        return {
+            "items": items,
+            "next_cursor": next_cursor,
+            "has_more": has_more,
+            "limit": safe_limit,
+        }
 
     @post(status_code=HTTP_201_CREATED)
     async def create_invoice(self, data: InvoiceCreate, db_session: AsyncSession) -> InvoiceResponse:

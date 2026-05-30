@@ -27,19 +27,28 @@ class AutopilotController(Controller):
     async def list_decisions(
         self,
         config: AppConfig,
+        request: Request,
         limit: int = 50,
-    ) -> list[dict[str, Any]]:
-        """Return the most recent Autopilot decisions.
+        cursor: str | None = None,
+    ) -> dict:
+        """Return the most recent Autopilot decisions with cursor pagination (Rozwiązanie 32).
 
         Query params:
-          - limit (int, default 50): max number of decisions to return.
+          - limit (int, default 50, max 200): max number of decisions to return.
+          - cursor (str, optional): token paginacji z poprzedniej odpowiedzi.
 
-        Returns a list of decision summaries, newest first.
-        Each entry: invoice_id, decision, trust_score, level, pattern, timestamp.
+        Returns dict with items, next_cursor, has_more.
+        Each item: invoice_id, decision, trust_score, level, pattern, timestamp.
+
+        Uses DecisionLogger.get_decision_summary() which queries DuckDB (not SQLite)
+        and supports keyset cursor pagination on (timestamp, invoice_id).
         """
         try:
             from db.analytics import DuckDBManager
+            from services.decision_logger import DecisionLogger
+            from api.services import CursorPagination
 
+            safe_limit = max(1, min(int(limit), 200))
             mgr = DuckDBManager(
                 db_path=config.duckdb_path,
                 sqlite_path=config.sqlite_path,
@@ -47,11 +56,28 @@ class AutopilotController(Controller):
             )
             try:
                 logger = DecisionLogger(mgr)
-                return logger.get_decision_summary(limit=limit)
+                # get_decision_summary queries DuckDB with cursor pagination
+                items = await logger.get_decision_summary(
+                    limit=safe_limit + 1,  # +1 dla detection has_more
+                    cursor=cursor,
+                )
+
+                if not items:
+                    return {"items": [], "next_cursor": None, "has_more": False}
+
+                has_more = len(items) > safe_limit
+                if has_more:
+                    items = items[:safe_limit]
+
+                next_cursor = CursorPagination.build_next_cursor(
+                    items, date_key="timestamp", id_key="invoice_id"
+                )
+
+                return {"items": items, "next_cursor": next_cursor, "has_more": has_more}
             finally:
                 mgr.close()
         except Exception:
-            return []
+            return {"items": [], "next_cursor": None, "has_more": False}
 
     @get("/decisions/{invoice_id:str}")
     async def get_decision_detail(
@@ -75,7 +101,7 @@ class AutopilotController(Controller):
             )
             try:
                 logger = DecisionLogger(mgr)
-                decisions = logger.get_decisions_for_invoice(invoice_id)
+                decisions = await logger.get_decisions_for_invoice(invoice_id)
                 if decisions:
                     return decisions[0]
                 return {"error": "not_found", "invoice_id": invoice_id}
@@ -111,17 +137,35 @@ class AutopilotController(Controller):
             finally:
                 mgr.close()
 
-            # 2. Update invoice status to APPROVED
+            # 2. Update invoice status to APPROVED with optimistic locking
             engine = create_oltp_engine(config)
             session_factory = create_session_factory(engine)
             try:
                 async with session_factory() as session:
-                    await session.execute(
-                        text(
-                            "UPDATE invoices SET status = 'APPROVED', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
-                        ),
-                        {"id": invoice_id},
+                    # Najpierw pobierz aktualną wersję
+                    from sqlalchemy import select as sa_select
+                    from models.invoice import Invoice
+                    result = await session.execute(
+                        sa_select(Invoice.version_id).where(Invoice.id == invoice_id)
                     )
+                    row = result.scalar_one_or_none()
+                    if row is None:
+                        return {"result": "ERROR", "invoice_id": invoice_id, "error": "Invoice not found"}
+
+                    # Aktualizuj z weryfikacją wersji (optimistic locking)
+                    result = await session.execute(
+                        text(
+                            "UPDATE invoices SET status = 'APPROVED', updated_at = CURRENT_TIMESTAMP, "
+                            "version_id = version_id + 1 WHERE id = :id AND version_id = :version"
+                        ),
+                        {"id": invoice_id, "version": row},
+                    )
+                    if result.rowcount == 0:
+                        return {
+                            "result": "CONFLICT",
+                            "invoice_id": invoice_id,
+                            "error": "Conflict: invoice was modified by another user"
+                        }
                     await session.commit()
             finally:
                 await engine.dispose()
@@ -171,17 +215,35 @@ class AutopilotController(Controller):
             finally:
                 mgr.close()
 
-            # 2. Update invoice status
+            # 2. Update invoice status with optimistic locking
             engine = create_oltp_engine(config)
             session_factory = create_session_factory(engine)
             try:
                 async with session_factory() as session:
-                    await session.execute(
-                        text(
-                            "UPDATE invoices SET status = 'REJECTED', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
-                        ),
-                        {"id": invoice_id},
+                    # Najpierw pobierz aktualną wersję
+                    from sqlalchemy import select as sa_select
+                    from models.invoice import Invoice
+                    result = await session.execute(
+                        sa_select(Invoice.version_id).where(Invoice.id == invoice_id)
                     )
+                    row = result.scalar_one_or_none()
+                    if row is None:
+                        return {"result": "ERROR", "invoice_id": invoice_id, "error": "Invoice not found"}
+
+                    # Aktualizuj z weryfikacją wersji (optimistic locking)
+                    result = await session.execute(
+                        text(
+                            "UPDATE invoices SET status = 'REJECTED', updated_at = CURRENT_TIMESTAMP, "
+                            "version_id = version_id + 1 WHERE id = :id AND version_id = :version"
+                        ),
+                        {"id": invoice_id, "version": row},
+                    )
+                    if result.rowcount == 0:
+                        return {
+                            "result": "CONFLICT",
+                            "invoice_id": invoice_id,
+                            "error": "Conflict: invoice was modified by another user"
+                        }
                     await session.commit()
             finally:
                 await engine.dispose()
@@ -229,7 +291,7 @@ class AutopilotController(Controller):
             )
             try:
                 logger = DecisionLogger(mgr)
-                return logger.get_trust_score_trend(
+                return await logger.get_trust_score_trend(
                     contractor_nip=contractor_nip,
                     days=days,
                 )
@@ -264,7 +326,7 @@ class AutopilotController(Controller):
             )
             try:
                 logger = DecisionLogger(mgr)
-                return logger.get_user_correction_stats()
+                return await logger.get_user_correction_stats()
             finally:
                 mgr.close()
         except Exception:

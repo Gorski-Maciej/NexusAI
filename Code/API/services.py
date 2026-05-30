@@ -1,6 +1,7 @@
 """Application services for idempotency and file storage."""
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import os
@@ -31,6 +32,92 @@ class StoredUpload:
     file_hash: str
     file_path: str
     size_bytes: int
+
+
+class FileValidator:
+    """Validator plików na podstawie sygnatur MIME i magic bytes (Rozwiązanie 31)."""
+
+    ALLOWED_MIME_TYPES = {
+        "application/pdf": [".pdf"],
+        "image/jpeg": [".jpg", ".jpeg"],
+        "image/png": [".png"],
+        "image/tiff": [".tif", ".tiff"],
+    }
+
+    @classmethod
+    def validate_file(cls, content: bytes, filename: str = "") -> tuple[bytes, str]:
+        """Validate file by magic bytes and return (normalized_content, mime_type).
+        Raises ValueError on invalid type.
+        """
+        if not content:
+            raise ValueError("Empty file content")
+
+        # 1. Detect MIME by filetype library
+        mime_type = cls._detect_mime(content)
+        if mime_type not in cls.ALLOWED_MIME_TYPES:
+            raise ValueError(f"Unsupported file type: {mime_type}. Allowed: {', '.join(cls.ALLOWED_MIME_TYPES)}")
+
+        # 2. PDF-specific validation: check %PDF header and %%EOF trailer
+        if mime_type == "application/pdf":
+            cls._validate_pdf(content)
+
+        # 3. Image-specific: open with Pillow, normalize to JPEG
+        if mime_type.startswith("image/"):
+            content = cls._normalize_image(content)
+
+        return content, mime_type
+
+    @staticmethod
+    def _detect_mime(content: bytes) -> str:
+        try:
+            import filetype
+            kind = filetype.guess(content)
+            if kind is not None:
+                return kind.mime
+        except Exception:
+            pass
+        # Fallback: manual magic bytes
+        if content[:5] == b"%PDF-":
+            return "application/pdf"
+        if content[:2] == b"\xff\xd8":
+            return "image/jpeg"
+        if content[:8] == b"\x89PNG\r\n\x1a\n":
+            return "image/png"
+        if content[:4] in (b"II*\x00", b"MM\x00*"):
+            return "image/tiff"
+        raise ValueError(f"Cannot detect file type from magic bytes: {content[:8].hex()}")
+
+    @staticmethod
+    def _validate_pdf(content: bytes) -> None:
+        """Validate PDF structure: header and trailer."""
+        if not content.startswith(b"%PDF-"):
+            raise ValueError("Invalid PDF: missing %PDF header")
+        # Check %%EOF trailer in last 1024 bytes
+        tail = content[-1024:].decode("latin-1", errors="replace")
+        if "%%EOF" not in tail:
+            raise ValueError("Invalid PDF: missing %%EOF trailer")
+        # Optional: verify with pypdf
+        try:
+            from pypdf import PdfReader
+            from io import BytesIO
+            PdfReader(BytesIO(content))
+        except Exception as e:
+            if "%PDF" not in str(e) and "trailer" not in str(e):
+                raise ValueError(f"Invalid PDF structure: {e}")
+
+    @staticmethod
+    def _normalize_image(content: bytes) -> bytes:
+        """Open image with Pillow and convert to JPEG for normalization."""
+        try:
+            from PIL import Image
+            from io import BytesIO
+            img = Image.open(BytesIO(content))
+            rgb = img.convert("RGB")
+            buf = BytesIO()
+            rgb.save(buf, format="JPEG", quality=85, optimize=True)
+            return buf.getvalue()
+        except Exception as e:
+            raise ValueError(f"Invalid image file: {e}")
 
 
 class ContentAddressableStorage:
@@ -103,6 +190,38 @@ class ContentAddressableStorage:
                 rgb.save(file_path.with_suffix(".jpg"), format="JPEG", quality=80, optimize=True)
         except Exception:
             return
+
+
+class CursorPagination:
+    """Keyset (cursor) pagination helper dla list API (Rozwiązanie 32)."""
+
+    @staticmethod
+    def encode_cursor(created_at: str, row_id: int) -> str:
+        """Encode cursor as base64: created_at|id"""
+        raw = f"{created_at}|{row_id}"
+        return base64.urlsafe_b64encode(raw.encode()).decode()
+
+    @staticmethod
+    def decode_cursor(cursor: str) -> tuple[str, int] | None:
+        """Decode cursor to (created_at, id). Returns None if invalid."""
+        try:
+            raw = base64.urlsafe_b64decode(cursor.encode()).decode()
+            parts = raw.split("|", 1)
+            if len(parts) != 2:
+                return None
+            return parts[0], int(parts[1])
+        except Exception:
+            return None
+
+    @staticmethod
+    def build_next_cursor(items: list[Any], date_key: str = "created_at", id_key: str = "id") -> str | None:
+        """Build next cursor from last item in current page."""
+        if not items:
+            return None
+        last = items[-1]
+        last_date = str(getattr(last, date_key, last.get(date_key, "")) if isinstance(last, dict) else getattr(last, date_key, ""))
+        last_id = int(getattr(last, id_key, last.get(id_key, 0)) if isinstance(last, dict) else getattr(last, id_key, 0))
+        return CursorPagination.encode_cursor(last_date, last_id)
 
 
 class IdempotencyStore:

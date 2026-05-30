@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+from collections import OrderedDict
 from dataclasses import dataclass
 import uuid
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime as dt_datetime
 from decimal import Decimal, ROUND_HALF_UP
 import json
 from urllib import request, error
 from typing import Any
 
+from core.circuit_breaker import CircuitBreaker
 from .ledger_client import TigerBeetleClient
 
 
@@ -23,7 +25,39 @@ class FXResult:
     direction: str
 
 
+class _LRUCache:
+    """Prosty LRU cache z maxsize dla kursów walut."""
+
+    def __init__(self, maxsize: int = 1000):
+        self._maxsize = maxsize
+        self._cache: OrderedDict[tuple[str, str], Decimal | None] = OrderedDict()
+
+    def get(self, key: tuple[str, str]) -> Decimal | None:
+        if key in self._cache:
+            self._cache.move_to_end(key)
+            return self._cache[key]
+        return None
+
+    def put(self, key: tuple[str, str], value: Decimal | None) -> None:
+        self._cache[key] = value
+        self._cache.move_to_end(key)
+        if len(self._cache) > self._maxsize:
+            self._cache.popitem(last=False)
+
+    def __len__(self) -> int:
+        return len(self._cache)
+
+
 class ForexEngine:
+    # Circuit Breaker dla API NBP (Rozwiązanie 21)
+    _nbp_cb = CircuitBreaker(failure_threshold=3, recovery_timeout=60, name="nbp_api")
+
+    # LRU cache w RAM (Rozwiązanie 28) - ostatnie 1000 zapytań
+    _rate_cache = _LRUCache(maxsize=1000)
+
+    # Cache brakujących dat (weekendy/święta) - nie próbuj ponownie przez 30 dni
+    _missing_cache: dict[tuple[str, str], date] = {}
+
     def __init__(self, duckdb_manager: Any, tb_client: TigerBeetleClient, account_receivable: int, account_fx_gain: int, account_fx_loss: int) -> None:
         self.duckdb = duckdb_manager
         self.tb_client = tb_client
@@ -39,24 +73,171 @@ class ForexEngine:
                 rate_date DATE,
                 avg_rate DOUBLE,
                 table_no VARCHAR,
+                is_missing BOOLEAN DEFAULT FALSE,
                 PRIMARY KEY (currency_code, rate_date)
             )
             """
+        )
+
+    @staticmethod
+    def _is_business_day(d: date) -> bool:
+        """Sprawdź czy data jest dniem roboczym (pon-pt)."""
+        return d.weekday() < 5
+
+    @staticmethod
+    def _previous_business_day(d: date) -> date:
+        """Znajdź poprzedni dzień roboczy."""
+        d = d - timedelta(days=1)
+        while d.weekday() >= 5:  # sobota=5, niedziela=6
+            d = d - timedelta(days=1)
+        return d
+
+    def _known_in_cache(self, currency_code: str, rate_date: date) -> Decimal | None:
+        """Sprawdź RAM cache przed DuckDB."""
+        key = (currency_code, rate_date.isoformat())
+        cached = self._rate_cache.get(key)
+        if cached is not None:
+            return cached
+
+        # Sprawdź DuckDB
+        rows = self.duckdb.execute(
+            "SELECT avg_rate FROM exchange_rates WHERE currency_code = ? AND rate_date = ? AND is_missing = FALSE",
+            (currency_code, rate_date),
+        )
+        if rows:
+            rate = Decimal(str(rows[0][0]))
+            self._rate_cache.put(key, rate)
+            return rate
+
+        return None
+
+    def _is_date_missing(self, currency_code: str, rate_date: date) -> bool:
+        """Sprawdź czy data jest oznaczona jako brak kursu (np. weekend)."""
+        cache_key = (currency_code, rate_date.isoformat())
+
+        # Sprawdź w pamięci cache brakujących dat
+        if cache_key in self._missing_cache:
+            stored_date = self._missing_cache[cache_key]
+            if (dt_datetime.now().date() - stored_date).days < 30:
+                return True
+            else:
+                # TTL 30 dni wygasł - spróbuj ponownie
+                del self._missing_cache[cache_key]
+
+        # Sprawdź w DuckDB
+        rows = self.duckdb.execute(
+            "SELECT 1 FROM exchange_rates WHERE currency_code = ? AND rate_date = ? AND is_missing = TRUE",
+            (currency_code, rate_date),
+        )
+        if rows:
+            self._missing_cache[cache_key] = dt_datetime.now().date()
+            return True
+
+        return False
+
+    def _mark_as_missing(self, currency_code: str, rate_date: date) -> None:
+        """Oznacz datę jako brak kursu (weekend/święto)."""
+        cache_key = (currency_code, rate_date.isoformat())
+        self._missing_cache[cache_key] = dt_datetime.now().date()
+        self.duckdb.execute(
+            """
+            INSERT OR REPLACE INTO exchange_rates(currency_code, rate_date, avg_rate, is_missing)
+            VALUES (?, ?, 0.0, TRUE)
+            """,
+            (currency_code, rate_date),
         )
 
     def fetch_nbp_rate(self, target_date: date, currency: str, max_lookback_days: int = 5) -> Decimal:
         self.ensure_exchange_rate_schema()
         currency_code = currency.upper()
 
+        # 1. Sprawdź RAM cache + DuckDB (Rozwiązanie 28)
         for offset in range(max_lookback_days + 1):
             rate_day = target_date - timedelta(days=offset)
-            cached = self.duckdb.execute(
-                "SELECT avg_rate FROM exchange_rates WHERE currency_code = ? AND rate_date = ?",
-                (currency_code, rate_day),
-            )
-            if cached:
-                return Decimal(str(cached[0][0]))
+            cached = self._known_in_cache(currency_code, rate_day)
+            if cached is not None:
+                return cached
 
+        # 2. Sprawdź czy data jest dniem roboczym - jeśli nie, cofnij się (Rozwiązanie 28)
+        business_day = target_date
+        if not self._is_business_day(business_day):
+            business_day = self._previous_business_day(business_day)
+            cached = self._known_in_cache(currency_code, business_day)
+            if cached is not None:
+                return cached
+
+        # 3. Sprawdź czy data nie jest oznaczona jako missing (Rozwiązanie 28)
+        #    Jeśli data jest weekendem/świętem, nie próbuj HTTP
+        if self._is_date_missing(currency_code, business_day):
+            # Cofnij się do poprzedniego dnia roboczego z danymi
+            for offset in range(1, max_lookback_days + 1):
+                prev_day = business_day - timedelta(days=offset)
+                if not self._is_business_day(prev_day):
+                    continue
+                cached = self._known_in_cache(currency_code, prev_day)
+                if cached is not None:
+                    return cached
+            # Ostateczny fallback
+            last_known = self.duckdb.execute(
+                "SELECT avg_rate FROM exchange_rates WHERE currency_code = ? AND is_missing = FALSE ORDER BY rate_date DESC LIMIT 1",
+                (currency_code,),
+            )
+            if last_known:
+                return Decimal(str(last_known[0][0]))
+            return Decimal("1.0")
+
+        # 4. Jeśli breaker jest otwarty, zwróć ostatni znany kurs
+        if not self._nbp_cb.allow_request():
+            last_known = self.duckdb.execute(
+                "SELECT avg_rate FROM exchange_rates WHERE currency_code = ? AND is_missing = FALSE ORDER BY rate_date DESC LIMIT 1",
+                (currency_code,),
+            )
+            if last_known:
+                return Decimal(str(last_known[0][0]))
+            return Decimal("1.0")
+
+        # 5. Wykonaj żądanie HTTP przez Circuit Breaker (sync)
+        try:
+            result = self._nbp_cb.call_sync(self._do_fetch_nbp, target_date, currency_code, max_lookback_days)
+            # Zapisz w RAM cache
+            self._rate_cache.put((currency_code, target_date.isoformat()), result)
+            return result
+        except ValueError:
+            # NBP nie ma kursu dla tej daty (weekend/święto) - oznacz jako missing
+            self._mark_as_missing(currency_code, target_date)
+            # Cofnij się
+            for offset in range(1, max_lookback_days + 1):
+                prev_day = target_date - timedelta(days=offset)
+                cached = self._known_in_cache(currency_code, prev_day)
+                if cached is not None:
+                    return cached
+            last_known = self.duckdb.execute(
+                "SELECT avg_rate FROM exchange_rates WHERE currency_code = ? AND is_missing = FALSE ORDER BY rate_date DESC LIMIT 1",
+                (currency_code,),
+            )
+            if last_known:
+                return Decimal(str(last_known[0][0]))
+            return Decimal("1.0")
+        except Exception:
+            # Fallback przy otwartym breakerze
+            last_known = self.duckdb.execute(
+                "SELECT avg_rate FROM exchange_rates WHERE currency_code = ? AND is_missing = FALSE ORDER BY rate_date DESC LIMIT 1",
+                (currency_code,),
+            )
+            if last_known:
+                return Decimal(str(last_known[0][0]))
+            return Decimal("1.0")
+
+    def _do_fetch_nbp(self, target_date: date, currency_code: str, max_lookback_days: int) -> Decimal:
+        """Wewnętrzna metoda wykonująca rzeczywiste żądanie HTTP do NBP."""
+        for offset in range(max_lookback_days + 1):
+            rate_day = target_date - timedelta(days=offset)
+            # Pomiń weekendy
+            if not self._is_business_day(rate_day):
+                continue
+            # Pomiń daty oznaczone jako missing
+            if self._is_date_missing(currency_code, rate_day):
+                continue
             url = f"https://api.nbp.pl/api/exchangerates/rates/A/{currency_code}/{rate_day.isoformat()}/?format=json"
             try:
                 with request.urlopen(url, timeout=10) as response:
@@ -69,14 +250,61 @@ class ForexEngine:
                 table_no = str(payload["rates"][0]["no"])
                 self.duckdb.execute(
                     """
-                    INSERT OR REPLACE INTO exchange_rates(currency_code, rate_date, avg_rate, table_no)
-                    VALUES (?, ?, ?, ?)
+                    INSERT OR REPLACE INTO exchange_rates(currency_code, rate_date, avg_rate, table_no, is_missing)
+                    VALUES (?, ?, ?, ?, FALSE)
                     """,
                     (currency_code, rate_day, float(avg_rate), table_no),
                 )
+                # Zapisz w RAM cache
+                self._rate_cache.put((currency_code, rate_day.isoformat()), avg_rate)
                 return avg_rate
+            else:
+                # Oznacz jako missing
+                self._mark_as_missing(currency_code, rate_day)
 
         raise ValueError(f"NBP rate not found for {currency_code} within {max_lookback_days} days before {target_date}")
+
+    def upload_rates_csv(self, csv_content: str) -> dict[str, Any]:
+        """Ręczne wczytanie kursów NBP z pliku CSV (Rozwiązanie 28).
+
+        Format CSV:
+        currency_code,rate_date,avg_rate,table_no
+        EUR,2025-01-15,4.2500,001/A/NBP/2025
+        """
+        import csv
+        import io
+
+        self.ensure_exchange_rate_schema()
+        reader = csv.DictReader(io.StringIO(csv_content))
+        imported = 0
+        errors = 0
+
+        for row in reader:
+            try:
+                currency_code = row.get("currency_code", "").strip().upper()
+                rate_date_str = row.get("rate_date", "").strip()
+                avg_rate = float(row.get("avg_rate", "0.0").strip())
+                table_no = row.get("table_no", "").strip()
+
+                if not currency_code or not rate_date_str:
+                    errors += 1
+                    continue
+
+                rate_date = dt_datetime.strptime(rate_date_str, "%Y-%m-%d").date()
+                self.duckdb.execute(
+                    """
+                    INSERT OR REPLACE INTO exchange_rates(currency_code, rate_date, avg_rate, table_no, is_missing)
+                    VALUES (?, ?, ?, ?, FALSE)
+                    """,
+                    (currency_code, rate_date, avg_rate, table_no),
+                )
+                # Zapisz w RAM cache
+                self._rate_cache.put((currency_code, rate_date.isoformat()), Decimal(str(avg_rate)))
+                imported += 1
+            except Exception:
+                errors += 1
+
+        return {"imported": imported, "errors": errors}
 
     async def process_fx_settlement(self, invoice_uuid: str, payment_uuid: str) -> FXResult:
         inv_rows = self.duckdb.execute(

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import atexit
 import hashlib
 import logging
@@ -8,7 +9,8 @@ import os
 import resource
 import time
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from typing import Any
 from taskiq_nats import PullBasedJetStreamBroker
 from sqlalchemy import text
 import httpx
@@ -205,6 +207,7 @@ async def analytics_run(invoice_id: str, extracted_data: dict) -> dict:
     Publishes result to invoice.analytics_result topic.
     Timeout: 90 seconds dla prostych zadań analitycznych.
     Rozwiązanie 17: Publikuje postęp zadania przez WebSocket.
+    Rozwiązanie 29: Limit współbieżności przez semafor (max 2).
     """
     config = AppConfig()
     manager, _, _ = _ensure_council_components(config)
@@ -225,18 +228,20 @@ async def analytics_run(invoice_id: str, extracted_data: dict) -> dict:
         # Extract vendor history from extracted_data if available
         vendor_history = extracted_data.get("vendor_profile", {})
 
-        # Run both analyses concurrently
-        # Timeout dla zadań analitycznych (90s)
-        analysis_task = agent.analyze(
-            invoice_data=extracted_data,
-            vendor_history=vendor_history,
-        )
-        detection_task = detective.detect_anomalies(extracted_data)
+        # Rozwiązanie 29: Semafory na ciężkie operacje LLM (max 2 równolegle)
+        async with _ANALYTICS_SEMAPHORE:
+            # Run both analyses concurrently
+            # Timeout dla zadań analitycznych (90s)
+            analysis_task = agent.analyze(
+                invoice_data=extracted_data,
+                vendor_history=vendor_history,
+            )
+            detection_task = detective.detect_anomalies(extracted_data)
 
-        analysis_result, ml_anomalies = await asyncio.wait_for(
-            asyncio.gather(analysis_task, detection_task),
-            timeout=90.0,
-        )
+            analysis_result, ml_anomalies = await asyncio.wait_for(
+                asyncio.gather(analysis_task, detection_task),
+                timeout=90.0,
+            )
 
         # Merge ML anomalies into analysis result
         all_anomalies = analysis_result.get("anomalies", []) + ml_anomalies
@@ -382,6 +387,7 @@ async def rules_check(invoice_id: str, extracted_data: dict) -> dict:
     Publishes result to invoice.rules_result topic.
     Shares ModelManager with Council agents for RAM mutual exclusion.
     Timeout: 30 seconds.
+    Rozwiązanie 29: Limit współbieżności przez semafor (max 2).
     """
     config = AppConfig()
     manager, _, _ = _ensure_council_components(config)
@@ -390,10 +396,12 @@ async def rules_check(invoice_id: str, extracted_data: dict) -> dict:
     logger.info("[RULES] checking invoice_id=%s", invoice_id)
 
     try:
-        result = await asyncio.wait_for(
-            agent.evaluate(extracted_data),
-            timeout=30.0,
-        )
+        # Rozwiązanie 29: Semafory na ciężkie operacje LLM (max 2 równolegle)
+        async with _RULES_SEMAPHORE:
+            result = await asyncio.wait_for(
+                agent.evaluate(extracted_data),
+                timeout=30.0,
+            )
 
         logger.info(
             "[RULES] invoice_id=%s passed=%s confidence=%.4f violations=%d",
@@ -436,20 +444,24 @@ async def rules_check(invoice_id: str, extracted_data: dict) -> dict:
 @broker.task(task_name="council_decide")
 async def council_decide(invoice_id: str, extracted_data: dict) -> dict:
     """Council of Agents decision task triggered after OCR extraction.
-    Timeout: 120 seconds for complex LLM deliberation."""
+    Timeout: 120 seconds for complex LLM deliberation.
+    Rozwiązanie 29: Limit współbieżności przez semafor (max 1).
+    """
     config = AppConfig()
     _, orchestrator, decision_logger = _ensure_council_components(config)
 
     logger.info("[COUNCIL] starting deliberation for invoice_id=%s", invoice_id)
 
     try:
-        decision = await asyncio.wait_for(
-            orchestrator.evaluate(
-                invoice_id=invoice_id,
-                invoice_data=extracted_data,
-            ),
-            timeout=120.0,
-        )
+        # Rozwiązanie 29: Semafory na ciężkie operacje LLM (max 1 równolegle)
+        async with _COUNCIL_SEMAPHORE:
+            decision = await asyncio.wait_for(
+                orchestrator.evaluate(
+                    invoice_id=invoice_id,
+                    invoice_data=extracted_data,
+                ),
+                timeout=120.0,
+            )
 
         logger.info(
             "[COUNCIL] invoice_id=%s final=%s trust=%.4f",
@@ -595,80 +607,128 @@ async def _dispatch_outbox_event(row: dict) -> None:
 
 @broker.task(task_name="process_invoice_ocr")
 async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> None:
-    """Dedicated OCR pipeline entrypoint triggered by outbox relay."""
+    """Dedicated OCR pipeline entrypoint triggered by outbox relay.
+    Rozwiązanie 29: Limit współbieżności przez semafor (max 3).
+    Rozwiązanie 33: Koordynacja przez Saga Store.
+    """
     logger.info("[OCR] processing invoice_id=%s", invoice_id)
     payload = payload or {}
 
-    primary = OCRAmountResult(amount_gross=_safe_float(payload.get("ocr_primary_amount_gross")), source="surya")
-    secondary = OCRAmountResult(amount_gross=_safe_float(payload.get("ocr_secondary_amount_gross")), source="paddle")
-    consensus = decide_amount_consensus(primary, secondary, tolerance=0.01)
-
-    if consensus.confidence_conflict:
-        await _mark_invoice_pending_review(invoice_id, reason="CONFIDENCE_CONFLICT")
-        logger.warning(
-            "[OCR] confidence conflict for invoice_id=%s primary=%s secondary=%s",
-            invoice_id,
-            primary.amount_gross,
-            secondary.amount_gross,
-        )
-
-    # --- Walidacja NIP i IBAN (asynchroniczna, nie blokuje głównego przepływu) ---
+    # Rozwiązanie 33: Rozpocznij sagę dla procesu OCR
+    saga_id = f"ocr_{invoice_id}"
+    saga_store = None
+    saga_engine = None
     try:
-        accounting = AccountingService()
-        contractor_nip = payload.get("contractor_nip", "")
-        bank_account = payload.get("bank_account", "")
+        from db.database import create_oltp_engine
+        from core.saga import PersistedSagaStore
+        config = AppConfig()
+        saga_engine = create_oltp_engine(config)
+        saga_store = PersistedSagaStore(saga_engine)
+        await saga_store.ensure_schema()
 
-        nip_verification = await accounting.verify_nip(contractor_nip) if contractor_nip else None
-        nip_valid = nip_verification is not None
-        iban_valid = accounting.validate_iban(bank_account) if bank_account else True  # IBAN nie jest wymagany
+        await saga_store.transition(
+            saga_id=saga_id,
+            new_state="START",
+            payload={"invoice_id": invoice_id, "started_at": datetime.now(timezone.utc).isoformat()},
+        )
+    except Exception as saga_err:
+        logger.warning("[SAGA] Failed to start saga for %s: %s", invoice_id, saga_err)
+        saga_store = None
 
-        if nip_verification:
-            logger.info("[OCR] NIP verified invoice_id=%s name=%s", invoice_id, nip_verification.get("name", "unknown"))
-        else:
-            logger.warning("[OCR] NIP verification failed for invoice_id=%s nip=%s", invoice_id, contractor_nip)
+    # Rozwiązanie 29: Semafory na ciężkie operacje OCR (max 3 równolegle)
+    async with _OCR_SEMAPHORE:
+        try:
+            # Rozwiązanie 33: Przejście do stanu OCR_EXTRACT
+            if saga_store:
+                await saga_store.transition(
+                    saga_id=saga_id,
+                    new_state="OCR_EXTRACT",
+                    expected_current_state="START",
+                )
+        except Exception:
+            pass
 
-        if not iban_valid and bank_account:
-            logger.warning("[OCR] IBAN validation failed for invoice_id=%s iban=%s", invoice_id, bank_account)
+        primary = OCRAmountResult(amount_gross=_safe_float(payload.get("ocr_primary_amount_gross")), source="surya")
+        secondary = OCRAmountResult(amount_gross=_safe_float(payload.get("ocr_secondary_amount_gross")), source="paddle")
+        consensus = decide_amount_consensus(primary, secondary, tolerance=0.01)
 
-        # Dodaj flagi walidacji do payloadu
-        payload["nip_valid"] = nip_valid
-        payload["iban_valid"] = iban_valid
-    except Exception as ve:
-        logger.warning("[OCR] NIP/IBAN validation error for invoice_id=%s: %s", invoice_id, ve)
-        nip_valid = False
-        iban_valid = False
-        payload["nip_valid"] = False
-        payload["iban_valid"] = False
+        if consensus.confidence_conflict:
+            await _mark_invoice_pending_review(invoice_id, reason="CONFIDENCE_CONFLICT")
+            logger.warning(
+                "[OCR] confidence conflict for invoice_id=%s primary=%s secondary=%s",
+                invoice_id,
+                primary.amount_gross,
+                secondary.amount_gross,
+            )
 
-    # --- Build extracted data for council decision ---
-    extracted_data = {
-        "invoice_id": invoice_id,
-        "contractor_nip": payload.get("contractor_nip", ""),
-        "amount_net": _safe_float(payload.get("amount_net")),
-        "amount_gross": consensus.amount_gross or _safe_float(payload.get("amount_gross")),
-        "vat": _safe_float(payload.get("vat")),
-        "number": payload.get("number", ""),
-        "issue_date": payload.get("issue_date", ""),
-        "category": payload.get("category", ""),
-        "ocr_confidence": _safe_float(payload.get("ocr_confidence")) or (1.0 - float(consensus.confidence_conflict) * 0.5),
-        "layout_confidence": _safe_float(payload.get("layout_confidence")) or 0.5,
-        "amount_consensus": not consensus.confidence_conflict,
-        "llm_validation": _safe_float(payload.get("llm_validation")) or 0.5,
-        "vendor_profile": {
-            "known": bool(payload.get("vendor_known", False)),
-            "invoice_count": int(payload.get("vendor_invoice_count", 0)),
-            "trust_score": float(payload.get("vendor_trust_score", 0.5)),
-            "category_consistent": bool(payload.get("vendor_category_consistent", True)),
-            "auto_approve": bool(payload.get("vendor_auto_approve", False)),
-            "category_preference_match": bool(payload.get("vendor_category_preference_match", True)),
-        },
-        "bank_account_consistent": bool(payload.get("bank_account_consistent", True)),
-        "amount_typical": bool(payload.get("amount_typical", True)),
-        "historical_average": _safe_float(payload.get("historical_average")),
-        "vendor_invoice_count": int(payload.get("vendor_invoice_count", 0)),
-    }
+        # --- Walidacja NIP i IBAN (asynchroniczna, nie blokuje głównego przepływu) ---
+        try:
+            accounting = AccountingService()
+            contractor_nip = payload.get("contractor_nip", "")
+            bank_account = payload.get("bank_account", "")
 
-    # Trigger council decision & rules check via NATS
+            nip_verification = await accounting.verify_nip(contractor_nip) if contractor_nip else None
+            nip_valid = nip_verification is not None
+            iban_valid = accounting.validate_iban(bank_account) if bank_account else True  # IBAN nie jest wymagany
+
+            if nip_verification:
+                logger.info("[OCR] NIP verified invoice_id=%s name=%s", invoice_id, nip_verification.get("name", "unknown"))
+            else:
+                logger.warning("[OCR] NIP verification failed for invoice_id=%s nip=%s", invoice_id, contractor_nip)
+
+            if not iban_valid and bank_account:
+                logger.warning("[OCR] IBAN validation failed for invoice_id=%s iban=%s", invoice_id, bank_account)
+
+            # Dodaj flagi walidacji do payloadu
+            payload["nip_valid"] = nip_valid
+            payload["iban_valid"] = iban_valid
+        except Exception as ve:
+            logger.warning("[OCR] NIP/IBAN validation error for invoice_id=%s: %s", invoice_id, ve)
+            nip_valid = False
+            iban_valid = False
+            payload["nip_valid"] = False
+            payload["iban_valid"] = False
+
+        # --- Build extracted data for council decision ---
+        extracted_data = {
+            "invoice_id": invoice_id,
+            "contractor_nip": payload.get("contractor_nip", ""),
+            "amount_net": _safe_float(payload.get("amount_net")),
+            "amount_gross": consensus.amount_gross or _safe_float(payload.get("amount_gross")),
+            "vat": _safe_float(payload.get("vat")),
+            "number": payload.get("number", ""),
+            "issue_date": payload.get("issue_date", ""),
+            "category": payload.get("category", ""),
+            "ocr_confidence": _safe_float(payload.get("ocr_confidence")) or (1.0 - float(consensus.confidence_conflict) * 0.5),
+            "layout_confidence": _safe_float(payload.get("layout_confidence")) or 0.5,
+            "amount_consensus": not consensus.confidence_conflict,
+            "llm_validation": _safe_float(payload.get("llm_validation")) or 0.5,
+            "vendor_profile": {
+                "known": bool(payload.get("vendor_known", False)),
+                "invoice_count": int(payload.get("vendor_invoice_count", 0)),
+                "trust_score": float(payload.get("vendor_trust_score", 0.5)),
+                "category_consistent": bool(payload.get("vendor_category_consistent", True)),
+                "auto_approve": bool(payload.get("vendor_auto_approve", False)),
+                "category_preference_match": bool(payload.get("vendor_category_preference_match", True)),
+            },
+            "bank_account_consistent": bool(payload.get("bank_account_consistent", True)),
+            "amount_typical": bool(payload.get("amount_typical", True)),
+            "historical_average": _safe_float(payload.get("historical_average")),
+            "vendor_invoice_count": int(payload.get("vendor_invoice_count", 0)),
+        }
+
+    # Rozwiązanie 33: Przejście do AI_CLASSIFY
+        try:
+            if saga_store:
+                await saga_store.transition(
+                    saga_id=saga_id,
+                    new_state="AI_CLASSIFY",
+                    expected_current_state="OCR_EXTRACT",
+                )
+        except Exception:
+            pass
+
+    # Trigger council decision & rules check via NATS (poza semaforem - lekkie operacje NATS)
     config = AppConfig()
     try:
         import nats
@@ -695,8 +755,36 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
             invoice_id,
             workflow.get("reasoning", ""),
         )
+
+        # Rozwiązanie 33: SEND_EVENT - sukces
+        try:
+            if saga_store:
+                await saga_store.transition(
+                    saga_id=saga_id,
+                    new_state="SEND_EVENT",
+                    payload={"agents": workflow["agents"]},
+                )
+        except Exception:
+            pass
     except Exception as trigger_err:
         logger.warning("[OCR] failed to trigger checks: %s", trigger_err)
+        # Rozwiązanie 33: W przypadku błędu, oznacz sagę jako COMPENSATING
+        try:
+            if saga_store:
+                await saga_store.compensate(saga_id=saga_id, payload={"error": str(trigger_err)})
+        except Exception:
+            pass
+
+    # Rozwiązanie 33: COMPLETED
+    try:
+        if saga_store:
+            await saga_store.transition(
+                saga_id=saga_id,
+                new_state="COMPLETED",
+                payload={"completed_at": datetime.now(timezone.utc).isoformat()},
+            )
+    except Exception:
+        pass
 
     # Zero-ETL path: no OLTP->OLAP row replication in worker.
     # Invoice OCR lifecycle is event-driven; analytics layer reads SQLite via DuckDB ATTACH.
@@ -711,6 +799,13 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
         logger.info("[OCR] processing complete for invoice_id=%s, buffer can be cleared", invoice_id)
     except Exception:
         pass
+
+    finally:
+        if saga_engine is not None:
+            try:
+                await saga_engine.dispose()
+            except Exception:
+                pass
 
     return
 
@@ -860,6 +955,124 @@ async def dead_letter_processor_task() -> None:
         logger.warning("[DLQ] Dead letter processor error: %s", dlq_err)
     finally:
         await engine.dispose()
+
+
+@broker.task(schedule=[{"cron": "0 5 * * *"}], task_name="cleanup_hard_deleted_invoices")
+async def cleanup_hard_deleted_invoices_task() -> None:
+    """
+    Miesięczne zadanie fizycznego usuwania faktur po okresie retencji (Rozwiązanie 27: RODO).
+    Usuwa soft-deleted invoices po upływie retention_period_years od deleted_at.
+    """
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    session_factory = create_session_factory(engine)
+    try:
+        async with session_factory() as session:
+            from services.security_service import SecurityService
+            result = await SecurityService.cleanup_old_scans(session, years=5)
+            logger.info(
+                "[RETENTION] Hard-deleted invoices cleanup: %s", result,
+            )
+    finally:
+        await engine.dispose()
+
+
+@broker.task(schedule=[{"cron": "0 6 * * 0"}], task_name="cleanup_archived_invoices")
+async def cleanup_archived_invoices_task() -> None:
+    """
+    Tygodniowe zadanie archiwizacji REJECTED/FAILED invoices starszych niż 1 rok (Rozwiązanie 27).
+    Przenosi do tabeli archived_invoices i usuwa z głównej tabeli.
+    """
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    session_factory = create_session_factory(engine)
+    try:
+        async with session_factory() as session:
+            from services.security_service import SecurityService
+            result = await SecurityService.archive_old_invoices(session, archive_table="archived_invoices")
+            logger.info(
+                "[RETENTION] Archived old invoices: %s", result,
+            )
+    finally:
+        await engine.dispose()
+
+
+@broker.task(schedule=[{"cron": "0 4 * * *"}], task_name="cleanup_outbox_events")
+async def cleanup_outbox_events_task() -> None:
+    """
+    Codzienne zadanie czyszczenia starych zdarzeń outbox (Rozwiązanie 27).
+    Usuwa zdarzenia SENT i DEAD_LETTER starsze niż 30 dni.
+    """
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    session_factory = create_session_factory(engine)
+    try:
+        async with session_factory() as session:
+            result = await session.execute(
+                text(
+                    """
+                    DELETE FROM outbox_events
+                    WHERE status IN ('SENT', 'DEAD_LETTER')
+                      AND created_at < datetime('now', '-30 days')
+                    """
+                )
+            )
+            deleted = result.rowcount
+            await session.commit()
+            logger.info("[RETENTION] Cleaned old outbox events: deleted=%d", deleted)
+    finally:
+        await engine.dispose()
+
+
+@broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="stuck_saga_recovery")
+async def stuck_saga_recovery_task() -> None:
+    """
+    Co minutę sprawdza zawieszone sagi (Rozwiązanie 33).
+    Sagi w stanie pośrednim (OCR_EXTRACT, AI_CLASSIFY, BOOK_ENTRY) dłużej niż 10 minut
+    są automatycznie kompensowane.
+    """
+    config = AppConfig()
+    try:
+        from db.database import create_oltp_engine
+        from core.saga import PersistedSagaStore
+
+        engine = create_oltp_engine(config)
+        store = PersistedSagaStore(engine)
+        await store.ensure_schema()
+
+        # Znajdź sagi w pośrednich stanach
+        stuck = await store.list_stuck(older_than_minutes=10)
+        intermediate_states = {"START", "OCR_EXTRACT", "AI_CLASSIFY", "BOOK_ENTRY", "SEND_EVENT"}
+        compensated = 0
+        for saga in stuck:
+            if saga.state in intermediate_states:
+                try:
+                    await store.compensate(saga.saga_id, payload={
+                        "reason": "stuck_timeout",
+                        "stuck_state": saga.state,
+                        "stuck_duration": (datetime.now(timezone.utc) - saga.updated_at).total_seconds(),
+                    })
+                    compensated += 1
+                    logger.info(
+                        "[SAGA] Auto-compensated stuck saga=%s state=%s stuck_minutes=%.1f",
+                        saga.saga_id, saga.state,
+                        (datetime.now(timezone.utc) - saga.updated_at).total_seconds() / 60,
+                    )
+                except Exception as comp_err:
+                    logger.warning("[SAGA] Failed to compensate stuck saga=%s: %s", saga.saga_id, comp_err)
+
+        if compensated > 0:
+            logger.info("[SAGA] Recovered %d stuck sagas", compensated)
+        await engine.dispose()
+    except Exception as exc:
+        logger.warning("[SAGA] Stuck saga recovery error: %s", exc)
+
+
+# Semafory dla limitów współbieżności (Rozwiązanie 29)
+_COUNCIL_SEMAPHORE = asyncio.Semaphore(1)      # council_decide: max 1 równolegle
+_RULES_SEMAPHORE = asyncio.Semaphore(2)         # rules_check: max 2 równolegle
+_ANALYTICS_SEMAPHORE = asyncio.Semaphore(2)     # analytics_run: max 2 równolegle
+_OCR_SEMAPHORE = asyncio.Semaphore(3)           # process_invoice_ocr: max 3 równolegle
 
 
 @broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="relay_outbox_events")
@@ -1333,6 +1546,12 @@ async def cleanup_old_reports_task() -> None:
 
 @broker.task(schedule=[{"cron": "0 4 * * 0"}], task_name="compact_lancedb")
 async def compact_lancedb_task() -> None:
+    """
+    Tygodniowa kompakcja LanceDB z czyszczeniem starych wektorów (Rozwiązanie 24).
+    - Usuwa wektory starsze niż 90 dni (TTL)
+    - Jeśli rozmiar bazy > 1 GB, archiwizuje najstarsze wektory do Parquet
+    - Uruchamia kompakcję plików i cleanup_old_versions
+    """
     try:
         import lancedb
     except Exception:
@@ -1341,14 +1560,70 @@ async def compact_lancedb_task() -> None:
 
     db = lancedb.connect("nexus_lancedb", mode="file")
     compacted = 0
+    removed_ttl = 0
+    db_path = Path("nexus_lancedb")
+
+    # Sprawdź rozmiar bazy wektorowej (Rozwiązanie 24: limit 1 GB)
+    size_bytes = sum(f.stat().st_size for f in db_path.rglob("*") if f.is_file()) if db_path.exists() else 0
+    size_gb = size_bytes / (1024 ** 3)
+    logger.info("[LANCEDB] db_size=%.2f GB, tables=%s", size_gb, db.table_names())
+
+    cutoff_ttl = datetime.now(timezone.utc) - timedelta(days=90)  # TTL 90 dni
+    archive_threshold = 1.0  # 1 GB
+    archived_count = 0
+
     for table_name in db.table_names():
         table = db.open_table(table_name, index_cache_size=100 * 1024 * 1024)
+
+        # TTL cleanup: usuń wektory starsze niż 90 dni (Rozwiązanie 24)
+        try:
+            if hasattr(table, "delete") and hasattr(table, "to_pandas"):
+                df = table.to_pandas()
+                if "created_at" in df.columns:
+                    cutoff_ts = cutoff_ttl.isoformat()
+                    old_count = len(df[df["created_at"] < cutoff_ts])
+                    if old_count > 0:
+                        table.delete(f"created_at < '{cutoff_ts}'")
+                        removed_ttl += old_count
+                        logger.info(
+                            "[LANCEDB] TTL cleanup for table=%s: removed %d old vectors",
+                            table_name, old_count,
+                        )
+        except Exception as ttl_err:
+            logger.warning("[LANCEDB] TTL cleanup failed for %s: %s", table_name, ttl_err)
+
+        # Jeśli rozmiar > 1 GB, archiwizuj najstarsze wektory (Rozwiązanie 24)
+        if size_gb > archive_threshold:
+            try:
+                archive_dir = Path("app_data/lancedb_archive")
+                archive_dir.mkdir(parents=True, exist_ok=True)
+                archive_path = archive_dir / f"{table_name}_{datetime.now().strftime('%Y%m%d')}.parquet"
+                if hasattr(table, "to_pandas"):
+                    df = table.to_pandas()
+                    if len(df) > 1000:
+                        # Zachowaj tylko 1000 najnowszych rekordów, resztę zarchiwizuj
+                        oldest_to_archive = df.sort_values("created_at", ascending=True).iloc[:-1000]
+                        if len(oldest_to_archive) > 0:
+                            oldest_to_archive.to_parquet(archive_path, index=False)
+                            logger.info(
+                                "[LANCEDB] Archived %d old vectors from %s to %s",
+                                len(oldest_to_archive), table_name, archive_path,
+                            )
+                            archived_count += len(oldest_to_archive)
+            except Exception as arch_err:
+                logger.warning("[LANCEDB] Archive failed for %s: %s", table_name, arch_err)
+
+        # Kompakcja plików
         if hasattr(table, "compact_files"):
             table.compact_files()
             compacted += 1
         if hasattr(table, "cleanup_old_versions"):
             table.cleanup_old_versions()
-    logger.info("[LANCEDB] compacted tables=%s", compacted)
+
+    logger.info(
+        "[LANCEDB] compacted tables=%s, ttl_removed=%d, archived=%d, size=%.2f GB",
+        compacted, removed_ttl, archived_count, size_gb,
+    )
 
 
 @broker.task(schedule=[{"cron": "0 * * * *"}], task_name="check_hanging_transactions")
@@ -1471,6 +1746,81 @@ async def cleanup_duckdb_temp_task() -> None:
         except FileNotFoundError:
             continue
     logger.info("[DUCKDB] temp files removed=%s", removed)
+
+
+@broker.task(schedule=[{"cron": "15 12 * * *"}], task_name="daily_nbp_rate_fill")
+async def daily_nbp_rate_fill_task() -> None:
+    """
+    Codzienne zadanie (12:15) uzupełniające brakujące kursy NBP dla ostatnich 30 dni.
+    Rozwiązanie 28: Po publikacji tabeli A przez NBP (~11:45), uzupełniamy cache.
+    """
+    config = AppConfig()
+    try:
+        from Roboton_Reflekton.forex_engine import ForexEngine
+        from Roboton_Reflekton.ledger_client import TigerBeetleClient
+
+        # Inicjalizuj ForexEngine z minimalnym zestawem parametrów
+        engine = ForexEngine(
+            duckdb_manager=DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path),
+            tb_client=None,  # TigerBeetle nie jest potrzebny tylko do kursów
+            account_receivable=0,
+            account_fx_gain=0,
+            account_fx_loss=0,
+        )
+
+        today = datetime.now().date()
+        currencies = ["EUR", "USD", "CHF", "GBP", "CZK", "DKK", "NOK", "SEK", "HUF"]
+        filled = 0
+        errors = 0
+
+        for currency in currencies:
+            for day_offset in range(30):
+                rate_date = today - timedelta(days=day_offset)
+                try:
+                    rate = engine.fetch_nbp_rate(rate_date, currency, max_lookback_days=5)
+                    if rate:
+                        filled += 1
+                except Exception:
+                    errors += 1
+
+        logger.info(
+            "[NBP-FILL] daily fill complete: currencies=%d, days=%d, filled=%d, errors=%d",
+            len(currencies), 30, filled, errors,
+        )
+    except Exception as exc:
+        logger.error("[NBP-FILL] failed: %s", exc)
+
+
+@broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="log_circuit_breaker_states")
+async def log_circuit_breaker_states_task() -> None:
+    """
+    Co minutę loguj stany Circuit Breakerów, aby wykryć długotrwałe problemy z zewnętrznymi API.
+    Rozwiązanie 21: Monitorowanie stanu breakerów.
+    """
+    try:
+        from core.circuit_breaker import get_breaker_registry
+        registry = get_breaker_registry()
+        if not registry:
+            logger.debug("[CIRCUIT-BREAKER] No breakers registered")
+            return
+        open_breakers = []
+        for name, breaker in registry.items():
+            if breaker.state.name == "OPEN":
+                open_breakers.append(name)
+        if open_breakers:
+            logger.warning(
+                "[CIRCUIT-BREAKER] Open breakers: %s (total=%d, open=%d)",
+                ", ".join(open_breakers),
+                len(registry),
+                len(open_breakers),
+            )
+        else:
+            logger.debug(
+                "[CIRCUIT-BREAKER] All breakers closed (total=%d)",
+                len(registry),
+            )
+    except Exception as exc:
+        logger.warning("[CIRCUIT-BREAKER] Failed to log breaker states: %s", exc)
 
 
 @broker.task(schedule=[{"cron": "0 5 * * *"}], task_name="cleanup_expired_refresh_tokens")

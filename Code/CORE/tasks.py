@@ -88,6 +88,7 @@ def _get_lancedb_table() -> Any:
         pa.field("id", pa.string()),
         pa.field("invoice_id", pa.string()),
         pa.field("contractor_id", pa.string()),
+        pa.field("tenant_id", pa.string()),  # Rozwiązanie 24: izolacja tenantów
         pa.field("vector", pa.list_(pa.float32(), 4)),
         pa.field("checksum", pa.string()),
         pa.field("created_at", pa.timestamp("us", tz="UTC")),
@@ -175,6 +176,7 @@ async def process_invoice_task() -> dict[str, str]:
                 "contractor_id": payload.contractor_id,
                 "vector": vector,
                 "checksum": processed.primary.checksum,
+                "tenant_id": payload.get("tenant_id", "default"),  # Rozwiązanie 24
                 "created_at": datetime.now(timezone.utc),
                 "is_preferred": False,
             }])
@@ -232,6 +234,7 @@ async def store_active_learning_feedback(contractor_id: str, corrected_payload: 
         "id": pattern_id,
         "invoice_id": "",
         "contractor_id": contractor_id,
+        "tenant_id": "default",  # Rozwiązanie 24
         "vector": vector,
         "checksum": "",
         "created_at": datetime.now(timezone.utc),

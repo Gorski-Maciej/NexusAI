@@ -18,7 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import AppConfig
 from api.schemas import TaskResponse
-from api.services import ContentAddressableStorage, IdempotencyStore
+from api.services import ContentAddressableStorage, IdempotencyStore, FileValidator
 from db.analytics import DuckDBManager
 from services.audit_logger import AuditLogger
 from api.rbac import owner_or_worker_guard
@@ -72,12 +72,15 @@ class InvoiceController(Controller):
         total_size = 0
         storage = ContentAddressableStorage(config.storage_dir)
         temp_path = storage.create_temp_upload_file()
+        first_chunk = b""
         try:
             with Path(temp_path).open("ab") as temp_file:
                 while True:
                     chunk = await file_obj.read(UPLOAD_CHUNK_SIZE)
                     if not chunk:
                         break
+                    if not first_chunk:
+                        first_chunk = chunk[:512]  # Zachowaj pierwsze 512 bajtów do walidacji MIME
                     total_size += len(chunk)
                     if total_size > min(config.max_invoice_upload_bytes, MAX_INVOICE_UPLOAD_BYTES):
                         raise ClientException(
@@ -103,6 +106,19 @@ class InvoiceController(Controller):
             except FileNotFoundError:
                 pass
             raise ClientException(detail=t("upload.empty_file", language=language), status_code=400)
+
+        # Rozwiązanie 31: Walidacja MIME i sygnatur plików (tylko pierwsze 512 bajtów)
+        # Nie nadpisujemy pliku — normalize_image jest wywoływana tylko dla walidacji,
+        # a pełna normalizacja nastąpi w dalszym potoku przetwarzania.
+        try:
+            _, detected_mime = FileValidator.validate_file(first_chunk, file_obj.filename or "")
+        except ValueError as ve:
+            try:
+                os.unlink(temp_path)
+            except FileNotFoundError:
+                pass
+            raise ClientException(detail=str(ve), status_code=415) from ve
+
         payload_hash = hasher.hexdigest()
 
         idempotency_key = request.headers.get("idempotency-key")
@@ -200,12 +216,15 @@ class InvoiceController(Controller):
         total_size = 0
         storage = ContentAddressableStorage(config.storage_dir)
         temp_path = storage.create_temp_upload_file()
+        first_chunk = b""
         try:
             with Path(temp_path).open("ab") as temp_file:
                 while True:
                     chunk = await file_obj.read(UPLOAD_CHUNK_SIZE)
                     if not chunk:
                         break
+                    if not first_chunk:
+                        first_chunk = chunk[:512]
                     total_size += len(chunk)
                     if total_size > min(config.max_attachment_upload_bytes, MAX_ATTACHMENT_UPLOAD_BYTES):
                         raise ClientException(
@@ -231,6 +250,19 @@ class InvoiceController(Controller):
             except FileNotFoundError:
                 pass
             raise ClientException(detail=t("upload.empty_file", language=language), status_code=400)
+
+        # Rozwiązanie 31: Walidacja MIME i sygnatur plików
+        try:
+            normalized_content, detected_mime = FileValidator.validate_file(first_chunk, file_obj.filename or "")
+            if normalized_content != first_chunk:
+                with Path(temp_path).open("wb") as f:
+                    f.write(normalized_content)
+        except ValueError as ve:
+            try:
+                os.unlink(temp_path)
+            except FileNotFoundError:
+                pass
+            raise ClientException(detail=str(ve), status_code=415) from ve
 
         payload_hash = hasher.hexdigest()
         if idempotency_key:

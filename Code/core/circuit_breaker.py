@@ -6,6 +6,15 @@ from loguru import logger
 
 __all__ = ["CircuitBreaker", "CircuitState"]
 
+# Global registry of all circuit breakers for monitoring (Rozwiązanie 21)
+_registry: dict[str, "CircuitBreaker"] = {}
+
+
+def get_breaker_registry() -> dict[str, "CircuitBreaker"]:
+    """Return registered circuit breakers for monitoring."""
+    return dict(_registry)
+
+
 class CircuitState(Enum):
     CLOSED = "Działa"  # Wszystko OK
     OPEN = "Rozłączony"  # Błędy - nie wysyłaj zapytań
@@ -15,12 +24,15 @@ class CircuitState(Enum):
 class CircuitBreaker:
     """Implementacja wzorca Circuit Breaker chroniąca przed awariami kaskadowymi."""
 
-    def __init__(self, failure_threshold: int = 5, recovery_timeout: int = 60) -> None:
+    def __init__(self, failure_threshold: int = 5, recovery_timeout: int = 60, name: str = "unnamed") -> None:
         self.state = CircuitState.CLOSED
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
         self.failures = 0
         self.last_failure_time = 0.0
+        self.name = name
+        # Auto-register for monitoring
+        _registry[name] = self
 
     def allow_request(self) -> bool:
         """Zwraca True jeśli obwód pozwala na wykonanie zapytania."""
@@ -54,6 +66,19 @@ class CircuitBreaker:
 
         try:
             result = await func(*args, **kwargs)
+            self.record_success()
+            return result
+        except Exception as e:
+            self.record_failure(str(e))
+            raise
+
+    def call_sync(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+        """Wywołuje funkcję synchroniczną z ochroną Circuit Breaker."""
+        if not self.allow_request():
+            raise Exception("Usługa niedostępna (Circuit Breaker OPEN)")
+
+        try:
+            result = func(*args, **kwargs)
             self.record_success()
             return result
         except Exception as e:

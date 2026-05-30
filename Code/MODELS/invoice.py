@@ -1,4 +1,4 @@
-from sqlalchemy import String, Decimal, DateTime, ForeignKey, Date
+from sqlalchemy import String, Decimal, DateTime, ForeignKey, Date, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, timezone, date
 from db.database import Base
@@ -30,6 +30,14 @@ class Invoice(SoftDeleteMixin, Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     created_by: Mapped[str] = mapped_column(String, default="worker:taskiq")
     updated_by: Mapped[str] = mapped_column(String, default="worker:taskiq")
+
+    # Retencja danych (Rozwiązanie 27: RODO)
+    deletion_date: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, doc="Data fizycznego usunięcia (po retencji)")
+    retention_period_years: Mapped[int] = mapped_column(Integer, default=5, nullable=False, doc="Okres retencji w latach (domyślnie 5)")
+
+    # Optimistic locking against concurrent edits (Rozwiązanie 23).
+    version_id: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    __mapper_args__ = {"version_id_col": version_id}
 
     # Relacje
     contractor: Mapped["Contractor"] = relationship("Contractor", back_populates="invoices")

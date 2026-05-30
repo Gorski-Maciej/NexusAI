@@ -356,6 +356,15 @@ class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
                     headers.append((b"deprecation", b"true"))
                     headers.append((b"sunset", b"Wed, 31 Dec 2026 23:59:59 GMT"))
                     headers.append((b"link", b'</api/v2>; rel="successor-version"'))
+                # Rozwiązanie 22: deprecation headers dla nie-wersjonowanych ścieżek
+                elif path.startswith("/api/triage"):
+                    headers.append((b"deprecation", b"true"))
+                    headers.append((b"sunset", b"Wed, 31 Dec 2026 23:59:59 GMT"))
+                    headers.append((b"link", b'</api/v2/triage>; rel="successor-version"'))
+                elif path.startswith("/api/analytics"):
+                    headers.append((b"deprecation", b"true"))
+                    headers.append((b"sunset", b"Wed, 31 Dec 2026 23:59:59 GMT"))
+                    headers.append((b"link", b'</api/v2/analytics>; rel="successor-version"'))
 
             await send(message)
 

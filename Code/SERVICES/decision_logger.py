@@ -156,9 +156,8 @@ class DecisionLogger:
                 ),
             )
 
-            # Równolegle zapisz do trust_score_cache
-            await asyncio.to_thread(
-                self._cache_trust_score,
+            # Równolegle zapisz do trust_score_cache (async, Rozwiązanie 30)
+            await self._cache_trust_score(
                 contractor_nip=str(context.get("contractor_nip", "unknown")),
                 category=str(context.get("category", "unknown")),
                 trust_score=trust_score,
@@ -173,7 +172,7 @@ class DecisionLogger:
         except Exception as exc:
             logger.error("[DecisionLogger] failed to log invoice_id=%s: %s", invoice_id, exc)
 
-    def _cache_trust_score(
+    async def _cache_trust_score(
         self,
         contractor_nip: str,
         category: str,
@@ -181,9 +180,10 @@ class DecisionLogger:
         trust_components: dict[str, float],
         final_decision: str,
     ) -> None:
-        """Zapisz trust score do cache (synchronicznie, wołane z executa)."""
+        """Zapisz trust score do cache (async, przez to_thread aby nie blokować event loop)."""
         cache_id = str(uuid.uuid4())
-        self._duckdb.execute(
+        await asyncio.to_thread(
+            self._duckdb.execute,
             """
             INSERT INTO trust_score_cache
             (id, contractor_nip, category, trust_score,
@@ -244,14 +244,15 @@ class DecisionLogger:
         except Exception as exc:
             logger.error("[DecisionLogger] failed to record correction for invoice_id=%s: %s", invoice_id, exc)
 
-    def get_trust_score_trend(
+    async def get_trust_score_trend(
         self,
         contractor_nip: str,
         days: int = 30,
     ) -> dict[str, Any]:
-        """Analiza trendu trust score dla danego kontrahenta."""
+        """Analiza trendu trust score dla danego kontrahenta (async)."""
         try:
-            rows = self._duckdb.execute(
+            rows = await asyncio.to_thread(
+                self._duckdb.execute,
                 """
                 SELECT trust_score, ai_confidence, vendor_reliability,
                        data_consistency, context_trust, final_decision, timestamp
@@ -289,22 +290,25 @@ class DecisionLogger:
             logger.error("[DecisionLogger] failed to get trust score trend: %s", exc)
             return {"known": False, "records": 0, "avg_trust": 0.0}
 
-    def get_user_correction_stats(
+    async def get_user_correction_stats(
         self,
         invoice_id: str | None = None,
     ) -> dict[str, Any]:
-        """Aggregate correction statistics for adaptive weight tuning."""
+        """Aggregate correction statistics for adaptive weight tuning (async)."""
         try:
-            total = self._duckdb.execute(
+            total = (await asyncio.to_thread(
+                self._duckdb.execute,
                 "SELECT COUNT(*) FROM council_decisions"
-            )[0][0]
+            ))[0][0]
 
-            corrected = self._duckdb.execute(
+            corrected = (await asyncio.to_thread(
+                self._duckdb.execute,
                 "SELECT COUNT(*) FROM council_decisions WHERE user_correction IS NOT NULL"
-            )[0][0]
+            ))[0][0]
 
             # Decisions by type
-            decision_breakdown = self._duckdb.execute(
+            decision_breakdown = await asyncio.to_thread(
+                self._duckdb.execute,
                 """
                 SELECT final_decision, COUNT(*) as cnt
                 FROM council_decisions
@@ -313,7 +317,8 @@ class DecisionLogger:
             )
 
             # Corrections by prior decision type
-            correction_breakdown = self._duckdb.execute(
+            correction_breakdown = await asyncio.to_thread(
+                self._duckdb.execute,
                 """
                 SELECT final_decision, user_correction, COUNT(*) as cnt
                 FROM council_decisions
@@ -323,7 +328,8 @@ class DecisionLogger:
             )
 
             # Statystyki według poziomów decyzyjnych
-            level_breakdown = self._duckdb.execute(
+            level_breakdown = await asyncio.to_thread(
+                self._duckdb.execute,
                 """
                 SELECT decision_level, COUNT(*) as cnt
                 FROM council_decisions
@@ -332,7 +338,7 @@ class DecisionLogger:
                 """
             )
 
-            component_stats = self._compute_component_correction_rates()
+            component_stats = await self._compute_component_correction_rates()
 
             return {
                 "total_decisions": int(total),
@@ -357,13 +363,14 @@ class DecisionLogger:
                 "decision_breakdown": {}, "level_breakdown": {}, "correction_breakdown": [],
             }
 
-    def get_decisions_for_invoice(
+    async def get_decisions_for_invoice(
         self,
         invoice_id: str,
     ) -> list[dict[str, Any]]:
-        """Retrieve all council decisions for a specific invoice."""
+        """Retrieve all council decisions for a specific invoice (async)."""
         try:
-            rows = self._duckdb.execute(
+            rows = await asyncio.to_thread(
+                self._duckdb.execute,
                 """
                 SELECT id, invoice_id, alpha_vote, beta_vote, gamma_vote,
                        final_decision, trust_score, trust_components, context,
@@ -399,18 +406,62 @@ class DecisionLogger:
             )
             return []
 
-    def get_decision_summary(
+    async def get_decision_summary(
         self,
         limit: int = 100,
+        cursor: str | None = None,
     ) -> list[dict[str, Any]]:
-        """Pobierz podsumowanie ostatnich decyzji."""
+        """Pobierz podsumowanie ostatnich decyzji z paginacją kursorem (Rozwiązanie 32).
+
+        Args:
+            limit: Maksymalna liczba wyników.
+            cursor: Token paginacji w formacie base64 (timestamp|invoice_id).
+
+        Returns:
+            Lista decyzji z invoice_id, decision, trust_score, level, pattern, timestamp.
+        """
         try:
-            rows = self._duckdb.execute(
+            if cursor:
+                # Dekoduj cursor: timestamp|invoice_id
+                import base64
+                try:
+                    decoded = base64.urlsafe_b64decode(cursor.encode()).decode()
+                    parts = decoded.split("|", 1)
+                    if len(parts) == 2:
+                        cursor_ts, cursor_inv = parts
+                        rows = await asyncio.to_thread(
+                            self._duckdb.execute,
+                            """
+                            SELECT invoice_id, final_decision, trust_score,
+                                   decision_level, council_pattern, timestamp
+                            FROM council_decisions
+                            WHERE (timestamp < ? OR (timestamp = ? AND invoice_id < ?))
+                            ORDER BY timestamp DESC, invoice_id DESC
+                            LIMIT ?
+                            """,
+                            (cursor_ts, cursor_ts, cursor_inv, limit),
+                        )
+                        return [
+                            {
+                                "invoice_id": str(r[0]),
+                                "decision": str(r[1]),
+                                "trust_score": float(r[2]) if r[2] else 0.0,
+                                "level": str(r[3]) if r[3] else "",
+                                "pattern": str(r[4]) if r[4] else "",
+                                "timestamp": str(r[5]) if r[5] else "",
+                            }
+                            for r in rows
+                        ]
+                except Exception:
+                    pass  # Nieprawidłowy cursor - wykonaj normalne zapytanie
+
+            rows = await asyncio.to_thread(
+                self._duckdb.execute,
                 """
                 SELECT invoice_id, final_decision, trust_score,
                        decision_level, council_pattern, timestamp
                 FROM council_decisions
-                ORDER BY timestamp DESC
+                ORDER BY timestamp DESC, invoice_id DESC
                 LIMIT ?
                 """,
                 (limit,),
@@ -430,10 +481,11 @@ class DecisionLogger:
             logger.error("[DecisionLogger] failed to get decision summary: %s", exc)
             return []
 
-    def _compute_component_correction_rates(self) -> dict[str, float]:
-        """Estimate per-component correction rates."""
+    async def _compute_component_correction_rates(self) -> dict[str, float]:
+        """Estimate per-component correction rates (async)."""
         try:
-            rows = self._duckdb.execute(
+            rows = await asyncio.to_thread(
+                self._duckdb.execute,
                 """
                 SELECT trust_components, user_correction
                 FROM council_decisions

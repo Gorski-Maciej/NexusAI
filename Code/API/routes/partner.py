@@ -14,8 +14,13 @@ class PartnerController(Controller):
     path = "/api/v2/partner"
 
     @get("/clients")
-    async def get_clients(self, config: AppConfig) -> list[dict[str, Any]]:
-        """Return list of clients (tenants) for the accounting office.
+    async def get_clients(
+        self,
+        config: AppConfig,
+        limit: int = 50,
+        cursor: str | None = None,
+    ) -> dict:
+        """Return list of clients (tenants) for the accounting office (Rozwiązanie 32: paginacja kursorem).
 
         Each client includes:
           - id, name, nip
@@ -24,6 +29,12 @@ class PartnerController(Controller):
           - last_activity: ISO datetime
 
         Sorting: clients requiring attention first.
+
+        Query params:
+          - limit (int, default 50, max 200)
+          - cursor (str, optional): token paginacji
+
+        Returns dict with items, next_cursor, has_more.
         """
         try:
             from db.analytics import DuckDBManager
@@ -34,17 +45,20 @@ class PartnerController(Controller):
                 read_only=True,
             )
             try:
-                return self._fetch_clients(mgr)
+                return self._fetch_clients(mgr, limit=limit, cursor=cursor)
             finally:
                 mgr.close()
         except Exception:
-            return []
+            return {"items": [], "next_cursor": None, "has_more": False}
 
-    def _fetch_clients(self, mgr: Any) -> list[dict[str, Any]]:
-        """Fetch client list from DuckDB with per-tenant invoice stats."""
+    def _fetch_clients(self, mgr: Any, limit: int = 50, cursor: str | None = None) -> dict:
+        """Fetch client list from DuckDB with pagination (Rozwiązanie 32).
+        Używa parameterized queries aby zapobiec SQL injection.
+        """
+        from api.services import CursorPagination
+        safe_limit = max(1, min(int(limit), 200)) + 1  # +1 dla detection has_more
         try:
-            rows = mgr.execute(
-                """
+            base_query = """
                 SELECT
                     t.id AS tenant_id,
                     t.name AS tenant_name,
@@ -62,13 +76,31 @@ class PartnerController(Controller):
                     MAX(i.updated_at) AS last_activity
                 FROM oltp.invoices i
                 JOIN oltp.tenants t ON i.tenant_id = t.id
+            """
+            where_clause = ""
+            params: list[Any] = []
+            if cursor:
+                decoded = CursorPagination.decode_cursor(cursor)
+                if decoded:
+                    cursor_date, cursor_id = decoded
+                    where_clause = "WHERE (last_activity < ? OR (last_activity = ? AND t.id < ?))"
+                    params = [cursor_date, cursor_date, str(cursor_id)]
+
+            group_order = """
                 GROUP BY t.id, t.name, t.nip
                 ORDER BY pending_count DESC, error_count DESC, last_activity DESC
-                LIMIT 50
-                """
-            )
+                LIMIT ?
+            """
+            params.append(safe_limit)
+            full_query = base_query + where_clause + group_order
+
+            rows = mgr.execute(full_query, params)
             if not rows:
-                return []
+                return {"items": [], "next_cursor": None, "has_more": False}
+
+            has_more = len(rows) > safe_limit - 1
+            if has_more:
+                rows = rows[:safe_limit - 1]
 
             clients = []
             for r in rows:
@@ -90,9 +122,11 @@ class PartnerController(Controller):
                     "status": status,
                     "last_activity": str(r[7]) if r[7] else "",
                 })
-            return clients
+
+            next_cursor = CursorPagination.build_next_cursor(clients, date_key="last_activity", id_key="id")
+            return {"items": clients, "next_cursor": next_cursor, "has_more": has_more}
         except Exception:
-            return []
+            return {"items": [], "next_cursor": None, "has_more": False}
 
     @get("/clients/{client_id:str}/invoices")
     async def get_client_invoices(

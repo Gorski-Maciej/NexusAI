@@ -3,6 +3,7 @@ import lancedb
 import pyarrow as pa
 import pandas as pd
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, Dict, Any
 from sentence_transformers import SentenceTransformer
@@ -22,7 +23,9 @@ class ActiveLearningEngine:
                 pa.field("vector", pa.list_(pa.float32(), 384)), # Zależne od modelu (dla all-MiniLM-L6-v2 to 384)
                 pa.field("contractor_nip", pa.string()),
                 pa.field("correction_payload", pa.string()),
-                pa.field("context_hash", pa.string())
+                pa.field("context_hash", pa.string()),
+                pa.field("tenant_id", pa.string()),  # Rozwiązanie 24: izolacja tenantów
+                pa.field("created_at", pa.timestamp("us", tz="UTC")),  # Rozwiązanie 24: TTL
             ])
             self.db.create_table(self.table_name, schema=schema)
         self.table = self.db.open_table(self.table_name, index_cache_size=100 * 1024 * 1024)
@@ -31,23 +34,32 @@ class ActiveLearningEngine:
         """Zamienia surowy tekst faktury na wektor."""
         return self.model.encode(raw_text).tolist()
 
-    async def save_correction(self, raw_text: str, nip: str, corrections: Dict[str, Any]):
+    async def save_correction(self, raw_text: str, nip: str, corrections: Dict[str, Any], tenant_id: str = "default"):
         """Zapisuje poprawkę użytkownika do bazy wektorowej."""
         vector = self._generate_embedding(raw_text)
         data = [{
             "vector": vector,
             "contractor_nip": nip,
             "correction_payload": json.dumps(corrections),
-            "context_hash": str(hash(raw_text)) # Proste hashowanie
+            "context_hash": str(hash(raw_text)),
+            "tenant_id": tenant_id,  # Rozwiązanie 24: izolacja tenantów
+            "created_at": datetime.now(timezone.utc).isoformat(),  # Rozwiązanie 24: TTL
         }]
         self.table.add(data)
 
-    async def get_suggestion(self, raw_text: str, nip: str) -> Optional[dict[str, Any]]:
-        """Szuka w bazie wektorowej podobnego układu dla danego NIP-u."""
+    @staticmethod
+    def _sanitize_lancedb(value: str) -> str:
+        """Sanitize string for LanceDB where clause (Rozwiązanie 24)."""
+        return value.replace("'", "''").replace(";", "")
+
+    async def get_suggestion(self, raw_text: str, nip: str, tenant_id: str = "default") -> Optional[dict[str, Any]]:
+        """Szuka w bazie wektorowej podobnego układu dla danego NIP-u i tenanta."""
         query_vector = self._generate_embedding(raw_text)
+        safe_nip = self._sanitize_lancedb(nip)
+        safe_tenant = self._sanitize_lancedb(tenant_id)
         results = (
             self.table.search(query_vector)
-            .where(f"contractor_nip = '{nip}'")
+            .where(f"contractor_nip = '{safe_nip}' AND tenant_id = '{safe_tenant}'")
             .limit(1)
             .to_list()
         )

@@ -13,6 +13,45 @@ from services.migration_sanity import run_migration_sanity_checks, verify_migrat
 from core.secrets import LocalSecretsCache, OfflineFirstSecretResolver
 from core.saga import PersistedSagaStore
 
+# Rozwiązanie 34: OpenTelemetry / Prometheus
+_OTEL_INITIALIZED = False
+
+def _init_otel_metrics() -> None:
+    """Initialize OpenTelemetry meter provider with Prometheus exporter (Rozwiązanie 34)."""
+    global _OTEL_INITIALIZED
+    if _OTEL_INITIALIZED:
+        return
+    try:
+        from opentelemetry import metrics
+        from opentelemetry.exporter.prometheus import PrometheusMetricsExporter
+        from opentelemetry.sdk.metrics import MeterProvider
+        from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+        from prometheus_client import start_http_server
+
+        # Uruchom serwer Prometheus na porcie 9464
+        try:
+            start_http_server(9464)
+        except Exception:
+            pass  # Port może być zajęty
+
+        exporter = PrometheusMetricsExporter()
+        reader = PeriodicExportingMetricReader(exporter, export_interval_millis=15000)
+        provider = MeterProvider(metric_readers=[reader])
+        metrics.set_meter_provider(provider)
+
+        # Utwórz metryki
+        meter = metrics.get_meter("nexus_api")
+        # Rejestruj w globalnym słowniku dla dostępu z innych modułów
+        import api.telemetry_metrics as tm
+        tm._meter = meter
+        tm._init_counters(meter)
+
+        _OTEL_INITIALIZED = True
+        logger.info("[OTEL] Prometheus metrics initialized on port 9464")
+    except Exception as exc:
+        logger.warning("[OTEL] Failed to initialize Prometheus metrics: %s", exc)
+
+
 logger = logging.getLogger("nexus.api.state")
 
 
@@ -62,6 +101,9 @@ async def on_startup(app: Litestar) -> None:
     """Inicjalizacja ciężkich zasobów przy starcie API."""
     config = app.dependencies["config"]()
     app.state.ml_cache_env = _configure_ml_cache_directories(config.base_dir)
+
+    # Rozwiązanie 34: Inicjalizacja OpenTelemetry / Prometheus
+    _init_otel_metrics()
 
     # Inicjalizacja silnika bazy danych w stanie aplikacji
     engine = create_oltp_engine(config)

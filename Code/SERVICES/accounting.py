@@ -2,9 +2,13 @@ from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 
 import httpx
+from core.circuit_breaker import CircuitBreaker
 
 
 class AccountingService:
+    # Circuit Breaker dla Białej Listy MF (Rozwiązanie 21)
+    _nip_cb = CircuitBreaker(failure_threshold=3, recovery_timeout=60, name="white_list_api")
+
     def __init__(self):
         self.base_url = "https://wl-api.mf.gov.pl/api/search/nip/"
 
@@ -83,25 +87,29 @@ class AccountingService:
 
         return remainder == 1
 
+    async def _do_verify_nip(self, nip: str) -> dict | None:
+        """Wewnętrzna metoda wykonująca rzeczywiste żądanie HTTP do Białej Listy."""
+        clean_nip = "".join(filter(str.isdigit, nip))
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            today = date.today().isoformat()
+            response = await client.get(f"{self.base_url}{clean_nip}?date={today}")
+
+            if response.status_code == 200:
+                data = response.json()
+                return data.get("result", {}).get("subject")
+            return None
+
     async def verify_nip(self, nip: str) -> dict | None:
-        """Sprawdza NIP w bazie Ministerstwa Finansów (Biała Lista)."""
+        """Sprawdza NIP w bazie Ministerstwa Finansów (Biała Lista).
+        Używa Circuit Breaker, aby chronić przed kaskadowymi awariami (Rozwiązanie 21).
+        """
         # Oczyszczanie NIPu ze zbędnych znaków (np. myślników)
         clean_nip = "".join(filter(str.isdigit, nip))
         if not clean_nip or len(clean_nip) != 10:
             return None
 
         try:
-            async with httpx.AsyncClient(timeout=5.0) as client:
-                today = date.today().isoformat()
-                response = await client.get(f"{self.base_url}{clean_nip}?date={today}")
-
-                if response.status_code == 200:
-                    data = response.json()
-                    return data.get("result", {}).get("subject")
-                return None
-        except httpx.RequestError as e:
-            print(f"[AccountingService] Błąd połączenia z Białą Listą: {e}")
-            return None
+            return await self._nip_cb.call(self._do_verify_nip, clean_nip)
         except Exception as e:
-            print(f"[AccountingService] Nieznany błąd weryfikacji NIP: {e}")
+            print(f"[AccountingService] Circuit Breaker OPEN lub błąd weryfikacji NIP: {e}")
             return None

@@ -50,16 +50,56 @@ shutdown_flag = asyncio.Event()
 
 
 class WorkerGuard:
-    """Simple watchdog for worker process health and memory usage."""
+    """Watchdog dla procesu workera z dynamicznym limitowaniem współbieżności (Rozwiązanie 29)."""
 
     def __init__(self, ram_limit_gb: float = 6.0) -> None:
         self.process = psutil.Process(os.getpid())
         self.ram_limit = int(ram_limit_gb * 1024 * 1024 * 1024)
         self.start_time = datetime.now(timezone.utc)
+        # Licznik aktywnych zadań (Rozwiązanie 29)
+        self.active_tasks: int = 0
+        self.max_concurrent: int = 5  # Domyślny limit (zgodny z max_ack_pending)
+        self.cpu_percent_history: list[float] = []
+
+    def adjust_concurrency_limit(self) -> int:
+        """Dynamicznie dostosuj limit współbieżności na podstawie obciążenia (Rozwiązanie 29).
+        Jeśli CPU > 80% lub RAM > 80%, zmniejsz limit.
+        """
+        cpu_percent = self.process.cpu_percent(interval=0.1)
+        self.cpu_percent_history.append(cpu_percent)
+        if len(self.cpu_percent_history) > 10:
+            self.cpu_percent_history.pop(0)
+
+        avg_cpu = sum(self.cpu_percent_history) / max(len(self.cpu_percent_history), 1)
+        current_ram = self.process.memory_info().rss
+        ram_usage_pct = (current_ram / self.ram_limit) * 100
+
+        if avg_cpu > 80 or ram_usage_pct > 80:
+            self.max_concurrent = max(1, self.max_concurrent - 1)
+        elif avg_cpu < 50 and ram_usage_pct < 50:
+            self.max_concurrent = min(5, self.max_concurrent + 1)
+
+        return self.max_concurrent
+
+    def get_status(self) -> dict:
+        """Zwróć aktualny status workera (Rozwiązanie 29)."""
+        current_mem = self.process.memory_info().rss
+        uptime = datetime.now(timezone.utc) - self.start_time
+
+        return {
+            "uptime_seconds": int(uptime.total_seconds()),
+            "ram_mb": round(current_mem / 1024**2, 1),
+            "ram_limit_gb": round(self.ram_limit / (1024**3), 1),
+            "ram_usage_pct": round((current_mem / self.ram_limit) * 100, 1),
+            "active_tasks": self.active_tasks,
+            "max_concurrent": self.max_concurrent,
+            "cpu_percent": round(self.process.cpu_percent(interval=0.0), 1),
+        }
 
     def check_resources(self) -> bool:
         current_mem = self.process.memory_info().rss
         if current_mem <= self.ram_limit:
+            self.adjust_concurrency_limit()
             return False
 
         logger.warning("RAM alert: %.1f MB. Triggering cleanup...", current_mem / 1024**2)
@@ -72,7 +112,11 @@ class WorkerGuard:
         while True:
             uptime = datetime.now(timezone.utc) - self.start_time
             ram_mb = self.process.memory_info().rss / 1024**2
-            logger.debug("Heartbeat uptime=%s RAM=%.1fMB", uptime, ram_mb)
+            cpu_pct = self.adjust_concurrency_limit()
+            logger.debug(
+                "Heartbeat uptime=%s RAM=%.1fMB max_concurrent=%d tasks=%d",
+                uptime, ram_mb, self.max_concurrent, self.active_tasks,
+            )
             await asyncio.sleep(60)
 
 

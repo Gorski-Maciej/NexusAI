@@ -244,8 +244,9 @@ class TestUserCorrection:
 class TestTrustScoreTrend:
     """Testy analizy trendu trust score."""
 
-    def test_get_trend_for_known_vendor(self, logger: DecisionLogger) -> None:
-        trend = logger.get_trust_score_trend("1234567890", days=30)
+    @pytest.mark.asyncio
+    async def test_get_trend_for_known_vendor(self, logger: DecisionLogger) -> None:
+        trend = await logger.get_trust_score_trend("1234567890", days=30)
         assert trend["known"] is True
         assert trend["records"] == 3
         assert trend["avg_trust"] > 0
@@ -253,9 +254,10 @@ class TestTrustScoreTrend:
         assert "component_averages" in trend
         assert "ai_confidence" in trend["component_averages"]
 
-    def test_get_trend_for_unknown_vendor(self, logger: DecisionLogger) -> None:
+    @pytest.mark.asyncio
+    async def test_get_trend_for_unknown_vendor(self, logger: DecisionLogger) -> None:
         """Nieznany kontrahent → puste wyniki."""
-        trend = logger.get_trust_score_trend("0000000000", days=30)
+        trend = await logger.get_trust_score_trend("0000000000", days=30)
         assert trend["known"] is False
         assert trend["records"] == 0
 
@@ -267,20 +269,22 @@ class TestTrustScoreTrend:
 class TestCorrectionStats:
     """Testy statystyk korekt użytkownika."""
 
-    def test_get_stats_no_corrections(self, logger: DecisionLogger) -> None:
-        stats = logger.get_user_correction_stats()
+    @pytest.mark.asyncio
+    async def test_get_stats_no_corrections(self, logger: DecisionLogger) -> None:
+        stats = await logger.get_user_correction_stats()
         assert stats["total_decisions"] == 0
         assert stats["total_corrected"] == 0
         assert stats["correction_rate"] == 0.0
 
-    def test_decision_breakdown(self, logger: DecisionLogger, fake_duckdb: FakeDuckDB) -> None:
+    @pytest.mark.asyncio
+    async def test_decision_breakdown(self, logger: DecisionLogger, fake_duckdb: FakeDuckDB) -> None:
         """Po dodaniu decyzji, breakdown powinien je uwzględniać."""
         # Symuluj dodanie decyzji
         fake_duckdb.tables["council_decisions"] = [
             (None, "inv-1", None, None, None, "AUTO_POST", None, None, None, None, None, None, None, None, None),
             (None, "inv-2", None, None, None, "BLOCK", None, None, None, None, None, None, None, None, None),
         ]
-        stats = logger.get_user_correction_stats()
+        stats = await logger.get_user_correction_stats()
         assert stats["total_decisions"] == 2
         assert "AUTO_POST" in stats["decision_breakdown"]
 
@@ -292,12 +296,14 @@ class TestCorrectionStats:
 class TestDecisionQueries:
     """Testy wyszukiwania decyzji."""
 
-    def test_get_decisions_for_invoice_empty(self, logger: DecisionLogger) -> None:
-        decisions = logger.get_decisions_for_invoice("inv-nonexistent")
+    @pytest.mark.asyncio
+    async def test_get_decisions_for_invoice_empty(self, logger: DecisionLogger) -> None:
+        decisions = await logger.get_decisions_for_invoice("inv-nonexistent")
         assert decisions == []
 
-    def test_get_decision_summary_empty(self, logger: DecisionLogger) -> None:
-        summary = logger.get_decision_summary(limit=10)
+    @pytest.mark.asyncio
+    async def test_get_decision_summary_empty(self, logger: DecisionLogger) -> None:
+        summary = await logger.get_decision_summary(limit=10)
         assert summary == []
 
 

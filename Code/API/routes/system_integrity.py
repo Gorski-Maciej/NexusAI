@@ -112,6 +112,36 @@ class SystemIntegrityController(Controller):
         }
 
 
+    @post("/saga/{saga_id:str}/compensate")
+    async def force_compensate_saga(self, request: Request, saga_id: str) -> dict:
+        """
+        Wymuszenie kompensacji sagi (Rozwiązanie 33).
+        Używane do ręcznego odblokowania zawieszonego procesu.
+        """
+        store = request.app.state.saga_store
+        try:
+            result = await store.compensate(saga_id)
+            return {
+                "status": "ok",
+                "saga_id": result.saga_id,
+                "current_state": result.state,
+                "updated_at": str(result.updated_at),
+            }
+        except ValueError as exc:
+            raise ClientException(status_code=404, detail=str(exc)) from exc
+
+    @get("/metrics")
+    async def prometheus_metrics(self) -> str:
+        """
+        Endpoint metryk Prometheus (Rozwiązanie 34).
+        Zwraca metryki w formacie Prometheus exposition.
+        """
+        try:
+            from prometheus_client import generate_latest, REGISTRY
+            return generate_latest(REGISTRY).decode("utf-8")
+        except Exception:
+            return "# Metrics not available - prometheus_client not configured"
+
     @post("/ui-drafts/cleanup")
     async def cleanup_ui_drafts(self, request: Request, older_than_hours: int = 168) -> dict:
         return await cleanup_stale_ui_drafts(request.app.state.db_engine, older_than_hours)

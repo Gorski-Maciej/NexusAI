@@ -13,6 +13,11 @@ from services.triage_service import list_pending_triage_items, resolve_triage_it
 class TriageController(Controller):
     path = "/api/triage"
 
+
+class TriageControllerV2(Controller):
+    """Triage controller for /api/v2/triage (Rozwiązanie 22: wersjonowanie API)."""
+    path = "/api/v2/triage"
+
     @get("/pending")
     async def get_pending(self, db_session: AsyncSession, request: Request) -> list[TriageItem]:
         tenant_id = str(getattr(request.user, "tenant_id", "default") or "default")
@@ -51,9 +56,12 @@ class TriageController(Controller):
                 action=data.action,
                 updated_by=role_ctx.actor,
                 tenant_id=str(getattr(request.user, "tenant_id", "default") or "default"),
+                expected_version=data.expected_version,
             )
         except ValueError as exc:
-            raise ClientException(status_code=400, detail=str(exc)) from exc
+            detail = str(exc)
+            status_code = 409 if "version mismatch" in detail else 400
+            raise ClientException(status_code=status_code, detail=detail) from exc
 
         if data.action == "confirm_post":
             message = "Corrected invoice approved; pending ledger entry can be posted"
