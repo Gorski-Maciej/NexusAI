@@ -10,6 +10,7 @@ from api.exceptions import global_exception_handler
 from api.middleware import CorrelationAndDeprecationMiddleware, UploadSizeGuardMiddleware, CSRFProtectionMiddleware, _generate_csrf_token
 from api.rate_limit import SimpleRateLimitMiddleware
 from api.routes.auth import AuthController
+from api.routes.admin import AdminController
 from api.routes.analytics import AnalyticsController
 from api.routes.dashboard import DashboardController
 from api.routes.partner import PartnerController
@@ -78,6 +79,7 @@ def create_app() -> Litestar:
             ExportController,
             FileController,
             AuthController,
+            AdminController,
             UIStateController,
             AutopilotController,
             CircuitBreakerController,

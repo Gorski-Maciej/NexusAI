@@ -10,12 +10,10 @@ DEAD_LETTER_SUBJECT = "nats.deadletter"
 # ack_wait=60 - 60 sekund na potwierdzenie przetworzenia
 broker = NatsBroker(
     servers=["nats://127.0.0.1:4222"],
-    queue_name="nexus_tasks",
+    queue="nexus_tasks",
     subject="nexus.tasks",
-    stream_name="nexus_stream",
-    # Konfiguracja konsumenta dla wszystkich zadań
-    # (każde zadanie może też mieć własną konfigurację)
-    # max_deliver i ack_wait są ustawiane na poziomie konsumenta
+    max_reconnect_attempts=0,
+    connect_timeout=2,
 )
 
 @broker.on_event(TaskiqEvents.WORKER_STARTUP)

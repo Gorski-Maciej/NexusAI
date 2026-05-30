@@ -1,0 +1,2065 @@
+2026-05-30 21:18:45 | ERROR | system | [FIXTURES] Could not import seed_data module: No module named 'cryptography'. Make sure Code/ is on sys.path.
+2026-05-30 21:18:45 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 21:19:53 | ERROR | system | [FIXTURES] Could not import seed_data module: No module named 'cryptography'. Make sure Code/ is on sys.path.
+2026-05-30 21:19:53 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 21:20:34 | ERROR | system | [FIXTURES] Could not import seed_data module: No module named 'cryptography'. Make sure Code/ is on sys.path.
+2026-05-30 21:20:34 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 21:47:52 | ERROR | system | [FIXTURES] Could not import seed_data module: No module named 'cryptography'. Make sure Code/ is on sys.path.
+2026-05-30 21:47:52 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 21:52:41 | ERROR | system | [FIXTURES] Could not import seed_data module: No module named 'pydantic'. Make sure Code/ is on sys.path.
+2026-05-30 21:52:41 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 20:02:53 | ERROR | system | Błąd ładowania pluginów: No module named 'models'
+2026-05-30 20:03:22 | ERROR | system | Błąd ładowania pluginów: No module named 'models'
+2026-05-30 20:03:58 | ERROR | system | Błąd ładowania pluginów: No module named 'models'
+2026-05-30 20:04:23 | ERROR | system | Błąd ładowania pluginów: No module named 'models'
+2026-05-30 20:04:23 | ERROR | system | [FIXTURES] Could not import seed_data module: No module named 'duckdb'. Make sure Code/ is on sys.path.
+2026-05-30 20:04:23 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 20:05:39 | ERROR | system | Błąd ładowania pluginów: No module named 'models'
+2026-05-30 20:05:41 | ERROR | system | [FIXTURES] Could not import seed_data module: cannot import name 'get_session' from 'db.database' (/data/data/com.termux/files/home/NexusAI/Code/db/database.py). Make sure Code/ is on sys.path.
+2026-05-30 20:05:41 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 20:06:09 | ERROR | system | Błąd ładowania pluginów: No module named 'models'
+2026-05-30 20:07:58 | ERROR | system | Błąd ładowania pluginów: No module named 'models'
+2026-05-30 20:07:59 | ERROR | system | Seed data loading failed: No module named 'uvicorn'
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x70da55c360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x70da55c2c0>
+                │       └ <function run at 0x70db2756c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x70da584940>
+           │      └ <function Runner.run at 0x70da4bfce0>
+           └ <asyncio.runners.Runner object at 0x70da559be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:367> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x70da4bd8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x70da559be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x70da4bd800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x70da4bf600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x70da622700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x70db2ef820>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x70db2ef820>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x70db2ef820>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x70db2ef820>()>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x70cba50400>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x70caa9b770>
+    │                        └ <function seed_users at 0x70cba50a40>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 5, in <module>
+    import uvicorn
+
+ModuleNotFoundError: No module named 'uvicorn'
+2026-05-30 20:07:59 | ERROR | system | [FIXTURES] Could not import seed_data module: No module named 'uvicorn'. Make sure Code/ is on sys.path.
+2026-05-30 20:08:00 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 20:09:37 | ERROR | system | Błąd ładowania pluginów: No module named 'models.invoice'
+2026-05-30 20:09:40 | ERROR | system | Seed data loading failed: No module named 'models.invoice'
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x7b61a2c360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x7b61a2c2c0>
+                │       └ <function run at 0x7b627456c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x7b61a54940>
+           │      └ <function Runner.run at 0x7b6198fce0>
+           └ <asyncio.runners.Runner object at 0x7b61a29be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:367> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7b6198d8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7b61a29be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7b6198d800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7b6198f600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7b61af2700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7b626ffdc0>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7b626ffdc0>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7b626ffdc0>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7b626ffdc0>()>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x7b5af34360>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x7b59f77770>
+    │                        └ <function seed_users at 0x7b5af349a0>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 7, in <module>
+    from api.app import create_app
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 12, in <module>
+    from api.routes.auth import AuthController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/__init__.py", line 5, in <module>
+    from .dashboard import DashboardController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/dashboard.py", line 9, in <module>
+    from services.notification_service import NotificationService
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/services/__init__.py", line 1, in <module>
+    from .replication import ReplicationBridge
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/services/replication.py", line 4, in <module>
+    from models.invoice import Invoice
+
+ModuleNotFoundError: No module named 'models.invoice'
+2026-05-30 20:09:40 | ERROR | system | [FIXTURES] Could not import seed_data module: No module named 'models.invoice'. Make sure Code/ is on sys.path.
+2026-05-30 20:09:40 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 20:11:07 | ERROR | system | Błąd ładowania pluginów: cannot import name 'Decimal' from 'sqlalchemy' (/usr/local/lib/python3.13/dist-packages/sqlalchemy/__init__.py)
+2026-05-30 20:11:09 | ERROR | system | Seed data loading failed: cannot import name 'Decimal' from 'sqlalchemy' (/usr/local/lib/python3.13/dist-packages/sqlalchemy/__init__.py)
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x7f144dc360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x7f144dc2c0>
+                │       └ <function run at 0x7f151f56c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x7f14504940>
+           │      └ <function Runner.run at 0x7f1443fce0>
+           └ <asyncio.runners.Runner object at 0x7f144d9be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:367> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7f1443d8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7f144d9be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7f1443d800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7f1443f600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7f145a2700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f15188580>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f15188580>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f15188580>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f15188580>()>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x7f10a88e00>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x7f10a4ba10>
+    │                        └ <function seed_users at 0x7f10a89300>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 7, in <module>
+    from api.app import create_app
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 12, in <module>
+    from api.routes.auth import AuthController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/__init__.py", line 5, in <module>
+    from .dashboard import DashboardController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/dashboard.py", line 9, in <module>
+    from services.notification_service import NotificationService
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/services/__init__.py", line 1, in <module>
+    from .replication import ReplicationBridge
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/services/replication.py", line 4, in <module>
+    from models.invoice import Invoice
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/models/__init__.py", line 2, in <module>
+    from .invoice import Invoice, ActiveLearningPattern
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/models/invoice.py", line 1, in <module>
+    from sqlalchemy import String, Decimal, DateTime, ForeignKey, Date, Integer
+                           └ <class 'sqlalchemy.sql.sqltypes.String'>
+
+ImportError: cannot import name 'Decimal' from 'sqlalchemy' (/usr/local/lib/python3.13/dist-packages/sqlalchemy/__init__.py)
+2026-05-30 20:11:09 | ERROR | system | [FIXTURES] Could not import seed_data module: cannot import name 'Decimal' from 'sqlalchemy' (/usr/local/lib/python3.13/dist-packages/sqlalchemy/__init__.py). Make sure Code/ is on sys.path.
+2026-05-30 20:11:09 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 20:12:24 | ERROR | system | Błąd ładowania pluginów: optional argument must be a context
+2026-05-30 20:12:26 | ERROR | system | Seed data loading failed: optional argument must be a context
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x73f2e7c360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x73f2e7c2c0>
+                │       └ <function run at 0x73f3b956c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x73f2ea4940>
+           │      └ <function Runner.run at 0x73f2ddfce0>
+           └ <asyncio.runners.Runner object at 0x73f2e79be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:367> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x73f2ddd8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x73f2e79be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x73f2ddd800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x73f2ddf600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x73f2f42700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x73f3b28580>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x73f3b28580>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x73f3b28580>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x73f3b28580>()>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x73f038be20>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x73e334b8c0>
+    │                        └ <function seed_users at 0x73e3326160>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 7, in <module>
+    from api.app import create_app
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 12, in <module>
+    from api.routes.auth import AuthController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/__init__.py", line 5, in <module>
+    from .dashboard import DashboardController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/dashboard.py", line 9, in <module>
+    from services.notification_service import NotificationService
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/services/__init__.py", line 1, in <module>
+    from .replication import ReplicationBridge
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/services/replication.py", line 4, in <module>
+    from models.invoice import Invoice
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/models/__init__.py", line 2, in <module>
+    from .invoice import Invoice, ActiveLearningPattern
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/models/invoice.py", line 10, in <module>
+    class Invoice(SoftDeleteMixin, Base):
+                  │                └ <class 'db.database.Base'>
+                  └ <class 'db.mixins.SoftDeleteMixin'>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/models/invoice.py", line 17, in Invoice
+    amount_net: Mapped[Decimal] = mapped_column(Decimal(12, 2), default=Decimal("0.0"))
+                │      │          │             │                       └ <class 'decimal.Decimal'>
+                │      │          │             └ <class 'decimal.Decimal'>
+                │      │          └ <function mapped_column at 0x73e3563920>
+                │      └ <class 'decimal.Decimal'>
+                └ <class 'sqlalchemy.orm.base.Mapped'>
+
+TypeError: optional argument must be a context
+2026-05-30 20:12:26 | ERROR | system | [FIXTURES] Seed data loading failed: optional argument must be a context
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x73f2e7c360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x73f2e7c2c0>
+                │       └ <function run at 0x73f3b956c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x73f2ea4940>
+           │      └ <function Runner.run at 0x73f2ddfce0>
+           └ <asyncio.runners.Runner object at 0x73f2e79be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:382> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x73f2ddd8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x73f2e79be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x73f2ddd800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x73f2ddf600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x73f2f42700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x73f3b28580>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x73f3b28580>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x73f3b28580>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x73f3b28580>()>
+
+> File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x73f038be20>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x73e334b8c0>
+    │                        └ <function seed_users at 0x73e3326160>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 7, in <module>
+    from api.app import create_app
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 12, in <module>
+    from api.routes.auth import AuthController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/__init__.py", line 5, in <module>
+    from .dashboard import DashboardController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/dashboard.py", line 9, in <module>
+    from services.notification_service import NotificationService
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/services/__init__.py", line 1, in <module>
+    from .replication import ReplicationBridge
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/services/replication.py", line 4, in <module>
+    from models.invoice import Invoice
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/models/__init__.py", line 2, in <module>
+    from .invoice import Invoice, ActiveLearningPattern
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/models/invoice.py", line 10, in <module>
+    class Invoice(SoftDeleteMixin, Base):
+                  │                └ <class 'db.database.Base'>
+                  └ <class 'db.mixins.SoftDeleteMixin'>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/models/invoice.py", line 17, in Invoice
+    amount_net: Mapped[Decimal] = mapped_column(Decimal(12, 2), default=Decimal("0.0"))
+                │      │          │             │                       └ <class 'decimal.Decimal'>
+                │      │          │             └ <class 'decimal.Decimal'>
+                │      │          └ <function mapped_column at 0x73e3563920>
+                │      └ <class 'decimal.Decimal'>
+                └ <class 'sqlalchemy.orm.base.Mapped'>
+
+TypeError: optional argument must be a context
+2026-05-30 20:12:26 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 20:13:24 | ERROR | system | Błąd ładowania pluginów: No module named 'core.exporters.optima_exporter'
+2026-05-30 20:13:27 | ERROR | system | Seed data loading failed: No module named 'fsspec'
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x72f873c360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x72f873c2c0>
+                │       └ <function run at 0x72f94556c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x72f8764940>
+           │      └ <function Runner.run at 0x72f869fce0>
+           └ <asyncio.runners.Runner object at 0x72f8739be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:367> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x72f869d8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x72f8739be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x72f869d800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x72f869f600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x72f8802700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x72f93e8580>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x72f93e8580>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x72f93e8580>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x72f93e8580>()>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x72f4b4df80>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x72f4364830>
+    │                        └ <function seed_users at 0x72f4b4e480>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 7, in <module>
+    from api.app import create_app
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 12, in <module>
+    from api.routes.auth import AuthController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/__init__.py", line 5, in <module>
+    from .dashboard import DashboardController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/dashboard.py", line 9, in <module>
+    from services.notification_service import NotificationService
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/services/__init__.py", line 3, in <module>
+    from .storage import StorageService
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/services/storage.py", line 8, in <module>
+    import fsspec
+
+ModuleNotFoundError: No module named 'fsspec'
+2026-05-30 20:13:27 | ERROR | system | [FIXTURES] Could not import seed_data module: No module named 'fsspec'. Make sure Code/ is on sys.path.
+2026-05-30 20:13:27 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 20:14:25 | ERROR | system | Błąd ładowania pluginów: No module named 'core.exporters.optima_exporter'
+2026-05-30 20:14:28 | ERROR | system | Seed data loading failed: No module named 'jwt'
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x7267dbc360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x7267dbc2c0>
+                │       └ <function run at 0x7268ad56c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x7267de4940>
+           │      └ <function Runner.run at 0x7267d1fce0>
+           └ <asyncio.runners.Runner object at 0x7267db9be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:367> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7267d1d8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7267db9be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7267d1d800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7267d1f600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7267e82700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x72688095d0>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x72688095d0>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x72688095d0>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x72688095d0>()>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x7254aedf80>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x7250cf4830>
+    │                        └ <function seed_users at 0x7254aee480>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 7, in <module>
+    from api.app import create_app
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 12, in <module>
+    from api.routes.auth import AuthController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/auth.py", line 16, in <module>
+    from api.security import jwt_auth, REFRESH_TOKEN_EXPIRATION_DAYS
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/security.py", line 10, in <module>
+    from litestar.security.jwt import JWTAuth, Token
+
+  File "/usr/local/lib/python3.13/dist-packages/litestar/security/jwt/__init__.py", line 1, in <module>
+    from litestar.security.jwt.auth import (
+  File "/usr/local/lib/python3.13/dist-packages/litestar/security/jwt/auth.py", line 14, in <module>
+    from litestar.security.jwt.middleware import JWTAuthenticationMiddleware, JWTCookieAuthenticationMiddleware
+  File "/usr/local/lib/python3.13/dist-packages/litestar/security/jwt/middleware.py", line 10, in <module>
+    from litestar.security.jwt.token import Token
+  File "/usr/local/lib/python3.13/dist-packages/litestar/security/jwt/token.py", line 8, in <module>
+    import jwt
+
+ModuleNotFoundError: No module named 'jwt'
+2026-05-30 20:14:28 | ERROR | system | [FIXTURES] Could not import seed_data module: No module named 'jwt'. Make sure Code/ is on sys.path.
+2026-05-30 20:14:28 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 20:15:36 | ERROR | system | Błąd ładowania pluginów: No module named 'core.exporters.optima_exporter'
+2026-05-30 20:15:39 | ERROR | system | Seed data loading failed: JWTAuth.__init__() got an unexpected keyword argument 'token_issuer'
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x7f0119c360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x7f0119c2c0>
+                │       └ <function run at 0x7f01eb56c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x7f011c4940>
+           │      └ <function Runner.run at 0x7f010ffce0>
+           └ <asyncio.runners.Runner object at 0x7f01199be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:367> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7f010fd8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7f01199be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7f010fd800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7f010ff600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7f01262700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f01d83ee0>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f01d83ee0>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f01d83ee0>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f01d83ee0>()>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x7ef813df80>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x7ef00e4830>
+    │                        └ <function seed_users at 0x7ef813e480>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 7, in <module>
+    from api.app import create_app
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 12, in <module>
+    from api.routes.auth import AuthController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/auth.py", line 16, in <module>
+    from api.security import jwt_auth, REFRESH_TOKEN_EXPIRATION_DAYS
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/security.py", line 99, in <module>
+    jwt_auth = JWTAuth[User](
+               │       └ <class 'api.security.User'>
+               └ <class 'litestar.security.jwt.auth.JWTAuth'>
+
+  File "/usr/lib/python3.13/typing.py", line 1317, in __call__
+    result = self.__origin__(*args, **kwargs)
+             │    │           │       └ {'retrieve_user_handler': <function retrieve_user_handler at 0x7ee840dd00>, 'token_secret': 'PrS8ZgzHwQ8JZlINeglPqtAkTq7PTMt8...
+             │    │           └ ()
+             │    └ <class 'litestar.security.jwt.auth.JWTAuth'>
+             └ litestar.security.jwt.auth.JWTAuth[api.security.User, litestar.security.jwt.token.Token]
+
+TypeError: JWTAuth.__init__() got an unexpected keyword argument 'token_issuer'
+2026-05-30 20:15:39 | ERROR | system | [FIXTURES] Seed data loading failed: JWTAuth.__init__() got an unexpected keyword argument 'token_issuer'
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x7f0119c360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x7f0119c2c0>
+                │       └ <function run at 0x7f01eb56c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x7f011c4940>
+           │      └ <function Runner.run at 0x7f010ffce0>
+           └ <asyncio.runners.Runner object at 0x7f01199be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:382> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7f010fd8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7f01199be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7f010fd800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7f010ff600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7f01262700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f01d83ee0>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f01d83ee0>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f01d83ee0>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f01d83ee0>()>
+
+> File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x7ef813df80>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x7ef00e4830>
+    │                        └ <function seed_users at 0x7ef813e480>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 7, in <module>
+    from api.app import create_app
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 12, in <module>
+    from api.routes.auth import AuthController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/auth.py", line 16, in <module>
+    from api.security import jwt_auth, REFRESH_TOKEN_EXPIRATION_DAYS
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/security.py", line 99, in <module>
+    jwt_auth = JWTAuth[User](
+               │       └ <class 'api.security.User'>
+               └ <class 'litestar.security.jwt.auth.JWTAuth'>
+
+  File "/usr/lib/python3.13/typing.py", line 1317, in __call__
+    result = self.__origin__(*args, **kwargs)
+             │    │           │       └ {'retrieve_user_handler': <function retrieve_user_handler at 0x7ee840dd00>, 'token_secret': 'PrS8ZgzHwQ8JZlINeglPqtAkTq7PTMt8...
+             │    │           └ ()
+             │    └ <class 'litestar.security.jwt.auth.JWTAuth'>
+             └ litestar.security.jwt.auth.JWTAuth[api.security.User, litestar.security.jwt.token.Token]
+
+TypeError: JWTAuth.__init__() got an unexpected keyword argument 'token_issuer'
+2026-05-30 20:15:39 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 20:17:15 | ERROR | system | Błąd ładowania pluginów: No module named 'core.exporters.optima_exporter'
+2026-05-30 20:17:23 | ERROR | system | Seed data loading failed: get_logger() takes 0 positional arguments but 1 was given
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x7db241c360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x7db241c2c0>
+                │       └ <function run at 0x7db31356c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x7db2444940>
+           │      └ <function Runner.run at 0x7db237fce0>
+           └ <asyncio.runners.Runner object at 0x7db2419be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:367> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7db237d8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7db2419be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7db237d800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7db237f600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7db24e2700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7db3003ee0>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7db3003ee0>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7db3003ee0>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7db3003ee0>()>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x7d9b6edf80>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x7d9a564830>
+    │                        └ <function seed_users at 0x7d9b6ee480>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 7, in <module>
+    from api.app import create_app
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 36, in <module>
+    from api.routes.autopilot import AutopilotController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/autopilot.py", line 10, in <module>
+    from services.decision_logger import DecisionLogger
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/services/decision_logger.py", line 23, in <module>
+    logger = get_logger(__name__)
+             │          └ 'services.decision_logger'
+             └ <function get_logger at 0x7db1cd3e20>
+
+TypeError: get_logger() takes 0 positional arguments but 1 was given
+2026-05-30 20:17:23 | ERROR | system | [FIXTURES] Seed data loading failed: get_logger() takes 0 positional arguments but 1 was given
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x7db241c360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x7db241c2c0>
+                │       └ <function run at 0x7db31356c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x7db2444940>
+           │      └ <function Runner.run at 0x7db237fce0>
+           └ <asyncio.runners.Runner object at 0x7db2419be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:382> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7db237d8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7db2419be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7db237d800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7db237f600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7db24e2700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7db3003ee0>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7db3003ee0>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7db3003ee0>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7db3003ee0>()>
+
+> File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x7d9b6edf80>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x7d9a564830>
+    │                        └ <function seed_users at 0x7d9b6ee480>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 7, in <module>
+    from api.app import create_app
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 36, in <module>
+    from api.routes.autopilot import AutopilotController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/autopilot.py", line 10, in <module>
+    from services.decision_logger import DecisionLogger
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/services/decision_logger.py", line 23, in <module>
+    logger = get_logger(__name__)
+             │          └ 'services.decision_logger'
+             └ <function get_logger at 0x7db1cd3e20>
+
+TypeError: get_logger() takes 0 positional arguments but 1 was given
+2026-05-30 20:17:23 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 20:18:47 | ERROR | system | Błąd ładowania pluginów: No module named 'core.exporters.optima_exporter'
+2026-05-30 20:18:53 | ERROR | system | Seed data loading failed: get_logger() takes 0 positional arguments but 1 was given
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x7b73efc360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x7b73efc2c0>
+                │       └ <function run at 0x7b74c156c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x7b73f24940>
+           │      └ <function Runner.run at 0x7b73e5fce0>
+           └ <asyncio.runners.Runner object at 0x7b73ef9be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:367> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7b73e5d8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7b73ef9be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7b73e5d800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7b73e5f600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7b73fc2700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7b74072c20>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7b74072c20>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7b74072c20>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7b74072c20>()>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x7b7010df80>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x7b60a94830>
+    │                        └ <function seed_users at 0x7b7010e480>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 7, in <module>
+    from api.app import create_app
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 36, in <module>
+    from api.routes.autopilot import AutopilotController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/autopilot.py", line 10, in <module>
+    from services.decision_logger import DecisionLogger
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/services/decision_logger.py", line 23, in <module>
+    logger = get_logger(__name__)
+             │          └ 'services.decision_logger'
+             └ <function get_logger at 0x7b737b3e20>
+
+TypeError: get_logger() takes 0 positional arguments but 1 was given
+2026-05-30 20:18:53 | ERROR | system | [FIXTURES] Seed data loading failed: get_logger() takes 0 positional arguments but 1 was given
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x7b73efc360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x7b73efc2c0>
+                │       └ <function run at 0x7b74c156c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x7b73f24940>
+           │      └ <function Runner.run at 0x7b73e5fce0>
+           └ <asyncio.runners.Runner object at 0x7b73ef9be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:382> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7b73e5d8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7b73ef9be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7b73e5d800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7b73e5f600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7b73fc2700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7b74072c20>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7b74072c20>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7b74072c20>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7b74072c20>()>
+
+> File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x7b7010df80>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x7b60a94830>
+    │                        └ <function seed_users at 0x7b7010e480>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 7, in <module>
+    from api.app import create_app
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 36, in <module>
+    from api.routes.autopilot import AutopilotController
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/routes/autopilot.py", line 10, in <module>
+    from services.decision_logger import DecisionLogger
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/services/decision_logger.py", line 23, in <module>
+    logger = get_logger(__name__)
+             │          └ 'services.decision_logger'
+             └ <function get_logger at 0x7b737b3e20>
+
+TypeError: get_logger() takes 0 positional arguments but 1 was given
+2026-05-30 20:18:53 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 20:19:55 | ERROR | system | Błąd ładowania pluginów: No module named 'core.exporters.optima_exporter'
+2026-05-30 20:20:02 | ERROR | system | Seed data loading failed: 500: 'request' does not have a type annotation. If it should receive any value, use 'Any'.
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.13/dist-packages/litestar/typing.py", line 617, in from_parameter
+    annotation = fn_type_hints[parameter.name]
+                 │             │         └ <property object at 0x707d4b2110>
+                 │             └ <Parameter "request">
+                 └ {'return': <class 'api.shared_image_buffer.SharedImageBuffer'>}
+
+KeyError: 'request'
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x707d41c360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x707d41c2c0>
+                │       └ <function run at 0x707e1356c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x707d444940>
+           │      └ <function Runner.run at 0x707d37fce0>
+           └ <asyncio.runners.Runner object at 0x707d419be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:367> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x707d37d8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x707d419be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x707d37d800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x707d37f600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x707d4e2700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x707d592c20>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x707d592c20>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x707d592c20>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x707d592c20>()>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x707433df80>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x7074044830>
+    │                        └ <function seed_users at 0x707433e480>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+                        └ <module 'api.app' from '/data/data/com.termux/files/home/NexusAI/Code/api/app.py'>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 10, in <module>
+    app = create_app()
+          └ <function create_app at 0x706c0d3c40>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 54, in create_app
+    return Litestar(
+           └ <class 'litestar.app.Litestar'>
+
+  File "/usr/local/lib/python3.13/dist-packages/litestar/app.py", line 499, in __init__
+    self.register(route_handler)
+    │    │        └ <class 'api.routes.health.HealthController'>
+    │    └ <function Litestar.register at 0x7064be1ee0>
+    └ <litestar.app.Litestar object at 0x705fdfc440>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/app.py", line 705, in register
+    route_handler.on_registration(self)
+    │             │               └ <litestar.app.Litestar object at 0x705fdfc440>
+    │             └ <function HTTPRouteHandler.on_registration at 0x7064d42340>
+    └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x24631c0>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/http_handlers/base.py", line 587, in on_registration
+    super().on_registration(app)
+                            └ <litestar.app.Litestar object at 0x705fdfc440>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 539, in on_registration
+    self.resolve_dependencies()
+    │    └ <function BaseRouteHandler.resolve_dependencies at 0x7064d40180>
+    └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x24631c0>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 357, in resolve_dependencies
+    self._resolved_dependencies[key] = self._resolve_dependency(
+    │    │                      │      │    └ <function BaseRouteHandler._resolve_dependency at 0x7064d40220>
+    │    │                      │      └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x24631c0>
+    │    │                      └ 'buffer'
+    │    └ <member '_resolved_dependencies' of 'BaseRouteHandler' objects>
+    └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x24631c0>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 384, in _resolve_dependency
+    provider.parsed_fn_signature = ParsedSignature.from_fn(dependency, self.resolve_signature_namespace())
+    │        │                     │               │       │           │    └ <function BaseRouteHandler.resolve_signature_namespace at 0x7064d404a0>
+    │        │                     │               │       │           └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x24631c0>
+    │        │                     │               │       └ <function provide_shared_image_buffer at 0x7064c10b80>
+    │        │                     │               └ <classmethod(<function ParsedSignature.from_fn at 0x7064cb0d60>)>
+    │        │                     └ <class 'litestar.utils.signature.ParsedSignature'>
+    │        └ <member 'parsed_fn_signature' of 'Provide' objects>
+    └ <litestar.di.Provide object at 0x7064664200>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 222, in from_fn
+    return cls.from_signature(signature, expanded_type_hints)
+           │   │              │          └ {'return': <class 'api.shared_image_buffer.SharedImageBuffer'>}
+           │   │              └ <Signature (request) -> 'SharedImageBuffer'>
+           │   └ <classmethod(<function ParsedSignature.from_signature at 0x7064cb0e00>)>
+           └ <class 'litestar.utils.signature.ParsedSignature'>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 236, in from_signature
+    parameters = tuple(
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 237, in <genexpr>
+    FieldDefinition.from_parameter(parameter=parameter, fn_type_hints=fn_type_hints)
+    │               │                        │                        └ {'return': <class 'api.shared_image_buffer.SharedImageBuffer'>}
+    │               │                        └ <Parameter "request">
+    │               └ <classmethod(<function FieldDefinition.from_parameter at 0x7064fdd8a0>)>
+    └ <class 'litestar.typing.FieldDefinition'>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/typing.py", line 619, in from_parameter
+    raise ImproperlyConfiguredException(
+          └ <class 'litestar.exceptions.http_exceptions.ImproperlyConfiguredException'>
+
+litestar.exceptions.http_exceptions.ImproperlyConfiguredException: 500: 'request' does not have a type annotation. If it should receive any value, use 'Any'.
+2026-05-30 20:20:02 | ERROR | system | [FIXTURES] Seed data loading failed: 500: 'request' does not have a type annotation. If it should receive any value, use 'Any'.
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.13/dist-packages/litestar/typing.py", line 617, in from_parameter
+    annotation = fn_type_hints[parameter.name]
+                 │             │         └ <property object at 0x707d4b2110>
+                 │             └ <Parameter "request">
+                 └ {'return': <class 'api.shared_image_buffer.SharedImageBuffer'>}
+
+KeyError: 'request'
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 456, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x707d41c360>
+
+  File "/data/data/com.termux/files/home/NexusAI/main.py", line 415, in main
+    exit_code = asyncio.run(_run_load_fixtures())
+                │       │   └ <function _run_load_fixtures at 0x707d41c2c0>
+                │       └ <function run at 0x707e1356c0>
+                └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object _run_load_fixtures at 0x707d444940>
+           │      └ <function Runner.run at 0x707d37fce0>
+           └ <asyncio.runners.Runner object at 0x707d419be0>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<_run_load_fixtures() running at /data/data/com.termux/files/home/NexusAI/main.py:382> cb=[_...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x707d37d8a0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x707d419be0>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x707d37d800>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x707d37f600>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x707d4e2700>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x707d592c20>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x707d592c20>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x707d592c20>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x707d592c20>()>
+
+> File "/data/data/com.termux/files/home/NexusAI/main.py", line 367, in _run_load_fixtures
+    result = await seed_all(config)
+                   │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                   └ <function seed_all at 0x707433df80>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 826, in seed_all
+    results["users"] = await seed_users(session, cfg)
+    │                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+    │                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x7074044830>
+    │                        └ <function seed_users at 0x707433e480>
+    └ {}
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 399, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+                        └ <module 'api.app' from '/data/data/com.termux/files/home/NexusAI/Code/api/app.py'>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 10, in <module>
+    app = create_app()
+          └ <function create_app at 0x706c0d3c40>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 54, in create_app
+    return Litestar(
+           └ <class 'litestar.app.Litestar'>
+
+  File "/usr/local/lib/python3.13/dist-packages/litestar/app.py", line 499, in __init__
+    self.register(route_handler)
+    │    │        └ <class 'api.routes.health.HealthController'>
+    │    └ <function Litestar.register at 0x7064be1ee0>
+    └ <litestar.app.Litestar object at 0x705fdfc440>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/app.py", line 705, in register
+    route_handler.on_registration(self)
+    │             │               └ <litestar.app.Litestar object at 0x705fdfc440>
+    │             └ <function HTTPRouteHandler.on_registration at 0x7064d42340>
+    └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x24631c0>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/http_handlers/base.py", line 587, in on_registration
+    super().on_registration(app)
+                            └ <litestar.app.Litestar object at 0x705fdfc440>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 539, in on_registration
+    self.resolve_dependencies()
+    │    └ <function BaseRouteHandler.resolve_dependencies at 0x7064d40180>
+    └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x24631c0>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 357, in resolve_dependencies
+    self._resolved_dependencies[key] = self._resolve_dependency(
+    │    │                      │      │    └ <function BaseRouteHandler._resolve_dependency at 0x7064d40220>
+    │    │                      │      └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x24631c0>
+    │    │                      └ 'buffer'
+    │    └ <member '_resolved_dependencies' of 'BaseRouteHandler' objects>
+    └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x24631c0>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 384, in _resolve_dependency
+    provider.parsed_fn_signature = ParsedSignature.from_fn(dependency, self.resolve_signature_namespace())
+    │        │                     │               │       │           │    └ <function BaseRouteHandler.resolve_signature_namespace at 0x7064d404a0>
+    │        │                     │               │       │           └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x24631c0>
+    │        │                     │               │       └ <function provide_shared_image_buffer at 0x7064c10b80>
+    │        │                     │               └ <classmethod(<function ParsedSignature.from_fn at 0x7064cb0d60>)>
+    │        │                     └ <class 'litestar.utils.signature.ParsedSignature'>
+    │        └ <member 'parsed_fn_signature' of 'Provide' objects>
+    └ <litestar.di.Provide object at 0x7064664200>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 222, in from_fn
+    return cls.from_signature(signature, expanded_type_hints)
+           │   │              │          └ {'return': <class 'api.shared_image_buffer.SharedImageBuffer'>}
+           │   │              └ <Signature (request) -> 'SharedImageBuffer'>
+           │   └ <classmethod(<function ParsedSignature.from_signature at 0x7064cb0e00>)>
+           └ <class 'litestar.utils.signature.ParsedSignature'>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 236, in from_signature
+    parameters = tuple(
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 237, in <genexpr>
+    FieldDefinition.from_parameter(parameter=parameter, fn_type_hints=fn_type_hints)
+    │               │                        │                        └ {'return': <class 'api.shared_image_buffer.SharedImageBuffer'>}
+    │               │                        └ <Parameter "request">
+    │               └ <classmethod(<function FieldDefinition.from_parameter at 0x7064fdd8a0>)>
+    └ <class 'litestar.typing.FieldDefinition'>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/typing.py", line 619, in from_parameter
+    raise ImproperlyConfiguredException(
+          └ <class 'litestar.exceptions.http_exceptions.ImproperlyConfiguredException'>
+
+litestar.exceptions.http_exceptions.ImproperlyConfiguredException: 500: 'request' does not have a type annotation. If it should receive any value, use 'Any'.
+2026-05-30 20:20:02 | ERROR | system | >>> Seed data loading failed.
+2026-05-30 20:20:45 | ERROR | system | Błąd ładowania pluginów: cannot import name 'Base' from partially initialized module 'db.database' (most likely due to a circular import) (/data/data/com.termux/files/home/NexusAI/Code/db/database.py)
+2026-05-30 20:37:34 | ERROR | system | Błąd ładowania pluginów: cannot import name 'Base' from partially initialized module 'db.database' (most likely due to a circular import) (/data/data/com.termux/files/home/NexusAI/Code/db/database.py)
+2026-05-30 20:38:36 | ERROR | system | Błąd ładowania pluginów: cannot import name 'Base' from partially initialized module 'db.database' (most likely due to a circular import) (/data/data/com.termux/files/home/NexusAI/Code/db/database.py)
+2026-05-30 20:41:58 | ERROR | system | Błąd ładowania pluginów: cannot import name 'Base' from partially initialized module 'db.database' (most likely due to a circular import) (/data/data/com.termux/files/home/NexusAI/Code/db/database.py)
+2026-05-30 20:43:14 | ERROR | system | Błąd ładowania pluginów: cannot import name 'Base' from partially initialized module 'db.database' (most likely due to a circular import) (/data/data/com.termux/files/home/NexusAI/Code/db/database.py)
+2026-05-30 20:48:16 | ERROR | system | Błąd ładowania pluginów: cannot import name 'Base' from partially initialized module 'db.database' (most likely due to a circular import) (/data/data/com.termux/files/home/NexusAI/Code/db/database.py)
+2026-05-30 20:49:26 | ERROR | system | Błąd ładowania pluginów: No module named 'core.exporters.optima_exporter'
+2026-05-30 20:58:00 | ERROR | system | Błąd ładowania pluginów: No module named 'core.exporters.optima_exporter'
+2026-05-30 21:02:53 | ERROR | system | Błąd ładowania pluginów: No module named 'core.exporters.optima_exporter'
+2026-05-30 21:02:53 | ERROR | system | Failed to count unresolved DLQ items: (sqlite3.OperationalError) no such table: failed_tasks
+[SQL: SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-30 21:02:53 | ERROR | system | [DLQ_NOTIFIER] Could not query DLQ (database error)
+2026-05-30 21:03:16 | ERROR | system | Błąd ładowania pluginów: No module named 'core.exporters.optima_exporter'
+2026-05-30 21:03:17 | ERROR | system | Failed to count unresolved DLQ items: (sqlite3.OperationalError) no such table: failed_tasks
+[SQL: SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-30 21:03:17 | ERROR | system | [DLQ_NOTIFIER] Could not query DLQ (database error)
+2026-05-30 21:08:52 | ERROR | system | Failed to count unresolved DLQ items: (sqlite3.OperationalError) no such table: failed_tasks
+[SQL: SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-30 21:08:52 | ERROR | system | [DLQ_NOTIFIER] Could not query DLQ (database error)
+2026-05-30 21:09:54 | ERROR | system | Seed data loading failed: 'AsyncSessionTransaction' object has no attribute 'execute'
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/run_local.py", line 115, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x76a754f4c0>
+
+  File "/data/data/com.termux/files/home/NexusAI/run_local.py", line 100, in main
+    result = asyncio.run(seed_all())
+             │       │   └ <function seed_all at 0x76a49f5b20>
+             │       └ <function run at 0x76a7595440>
+             └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object seed_all at 0x76a5104d30>
+           │      └ <function Runner.run at 0x76a688f380>
+           └ <asyncio.runners.Runner object at 0x76a4f80c20>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<seed_all() running at /data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py:10...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x76a688cf40>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x76a4f80c20>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x76a688cea0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x76a688eca0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x76a69e9ee0>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x76a50b0550>()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x76a50b0550>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x76a50b0550>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x76a50b0550>()>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 1053, in seed_all
+    dict_counts = await seed_dictionaries(session)
+                        │                 └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x76a0657380>
+                        └ <function seed_dictionaries at 0x76a49f5760>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 703, in seed_dictionaries
+    await conn.execute(text(
+          │            └ <function text at 0x76a5035440>
+          └ <sqlalchemy.ext.asyncio.session.AsyncSessionTransaction object at 0x76a04e7430>
+
+AttributeError: 'AsyncSessionTransaction' object has no attribute 'execute'
+2026-05-30 21:11:50 | ERROR | system | Seed data loading failed: 500: 'request' does not have a type annotation. If it should receive any value, use 'Any'.
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.13/dist-packages/litestar/typing.py", line 617, in from_parameter
+    annotation = fn_type_hints[parameter.name]
+                 │             │         └ <property object at 0x779f7603b0>
+                 │             └ <Parameter "request">
+                 └ {'return': <class 'api.shared_image_buffer.SharedImageBuffer'>}
+
+KeyError: 'request'
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/run_local.py", line 115, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x77a02cf4c0>
+
+  File "/data/data/com.termux/files/home/NexusAI/run_local.py", line 100, in main
+    result = asyncio.run(seed_all())
+             │       │   └ <function seed_all at 0x779d775c60>
+             │       └ <function run at 0x77a0315440>
+             └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object seed_all at 0x779de84d30>
+           │      └ <function Runner.run at 0x779f60f380>
+           └ <asyncio.runners.Runner object at 0x779dd00c20>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<seed_all() running at /data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py:10...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x779f60cf40>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x779dd00c20>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x779f60cea0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x779f60eca0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x779f769ee0>
+    └ <Handle Task.task_wakeup()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 1058, in seed_all
+    user_result = await seed_users(session, cfg)
+                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x7794437380>
+                        └ <function seed_users at 0x779d7756c0>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 444, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+                        └ <module 'api.app' from '/data/data/com.termux/files/home/NexusAI/Code/api/app.py'>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 10, in <module>
+    app = create_app()
+          └ <function create_app at 0x7794304220>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 55, in create_app
+    return Litestar(
+           └ <class 'litestar.app.Litestar'>
+
+  File "/usr/local/lib/python3.13/dist-packages/litestar/app.py", line 499, in __init__
+    self.register(route_handler)
+    │    │        └ <class 'api.routes.health.HealthController'>
+    │    └ <function Litestar.register at 0x779ea231a0>
+    └ <litestar.app.Litestar object at 0x77858d9e40>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/app.py", line 705, in register
+    route_handler.on_registration(self)
+    │             │               └ <litestar.app.Litestar object at 0x77858d9e40>
+    │             └ <function HTTPRouteHandler.on_registration at 0x779e97a7a0>
+    └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x244ba00>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/http_handlers/base.py", line 587, in on_registration
+    super().on_registration(app)
+                            └ <litestar.app.Litestar object at 0x77858d9e40>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 539, in on_registration
+    self.resolve_dependencies()
+    │    └ <function BaseRouteHandler.resolve_dependencies at 0x779e9785e0>
+    └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x244ba00>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 357, in resolve_dependencies
+    self._resolved_dependencies[key] = self._resolve_dependency(
+    │    │                      │      │    └ <function BaseRouteHandler._resolve_dependency at 0x779e978680>
+    │    │                      │      └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x244ba00>
+    │    │                      └ 'buffer'
+    │    └ <member '_resolved_dependencies' of 'BaseRouteHandler' objects>
+    └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x244ba00>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 384, in _resolve_dependency
+    provider.parsed_fn_signature = ParsedSignature.from_fn(dependency, self.resolve_signature_namespace())
+    │        │                     │               │       │           │    └ <function BaseRouteHandler.resolve_signature_namespace at 0x779e978900>
+    │        │                     │               │       │           └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x244ba00>
+    │        │                     │               │       └ <function provide_shared_image_buffer at 0x7794306340>
+    │        │                     │               └ <classmethod(<function ParsedSignature.from_fn at 0x779eb051c0>)>
+    │        │                     └ <class 'litestar.utils.signature.ParsedSignature'>
+    │        └ <member 'parsed_fn_signature' of 'Provide' objects>
+    └ <litestar.di.Provide object at 0x77856ca650>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 222, in from_fn
+    return cls.from_signature(signature, expanded_type_hints)
+           │   │              │          └ {'return': <class 'api.shared_image_buffer.SharedImageBuffer'>}
+           │   │              └ <Signature (request) -> 'SharedImageBuffer'>
+           │   └ <classmethod(<function ParsedSignature.from_signature at 0x779eb05260>)>
+           └ <class 'litestar.utils.signature.ParsedSignature'>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 236, in from_signature
+    parameters = tuple(
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 237, in <genexpr>
+    FieldDefinition.from_parameter(parameter=parameter, fn_type_hints=fn_type_hints)
+    │               │                        │                        └ {'return': <class 'api.shared_image_buffer.SharedImageBuffer'>}
+    │               │                        └ <Parameter "request">
+    │               └ <classmethod(<function FieldDefinition.from_parameter at 0x779ebc4fe0>)>
+    └ <class 'litestar.typing.FieldDefinition'>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/typing.py", line 619, in from_parameter
+    raise ImproperlyConfiguredException(
+          └ <class 'litestar.exceptions.http_exceptions.ImproperlyConfiguredException'>
+
+litestar.exceptions.http_exceptions.ImproperlyConfiguredException: 500: 'request' does not have a type annotation. If it should receive any value, use 'Any'.
+2026-05-30 21:12:28 | ERROR | system | Seed data loading failed: 500: 'request' does not have a type annotation. If it should receive any value, use 'Any'.
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.13/dist-packages/litestar/typing.py", line 617, in from_parameter
+    annotation = fn_type_hints[parameter.name]
+                 │             │         └ <property object at 0x7cfa4b0360>
+                 │             └ <Parameter "request">
+                 └ {'return': <class 'api.shared_image_buffer.SharedImageBuffer'>}
+
+KeyError: 'request'
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/run_local.py", line 115, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x7cfb01f4c0>
+
+  File "/data/data/com.termux/files/home/NexusAI/run_local.py", line 100, in main
+    result = asyncio.run(seed_all())
+             │       │   └ <function seed_all at 0x7cf84c5c60>
+             │       └ <function run at 0x7cfb065440>
+             └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object seed_all at 0x7cf8bd4d30>
+           │      └ <function Runner.run at 0x7cfa35f380>
+           └ <asyncio.runners.Runner object at 0x7cf8a50c20>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<seed_all() running at /data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py:10...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7cfa35cf40>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7cf8a50c20>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7cfa35cea0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7cfa35eca0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7cfa4b9ee0>
+    └ <Handle Task.task_wakeup()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 1058, in seed_all
+    user_result = await seed_users(session, cfg)
+                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x7cf415f380>
+                        └ <function seed_users at 0x7cf84c56c0>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 444, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+                        └ <module 'api.app' from '/data/data/com.termux/files/home/NexusAI/Code/api/app.py'>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 10, in <module>
+    app = create_app()
+          └ <function create_app at 0x7ce2aa8220>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 55, in create_app
+    return Litestar(
+           └ <class 'litestar.app.Litestar'>
+
+  File "/usr/local/lib/python3.13/dist-packages/litestar/app.py", line 499, in __init__
+    self.register(route_handler)
+    │    │        └ <class 'api.routes.health.HealthController'>
+    │    └ <function Litestar.register at 0x7cf95971a0>
+    └ <litestar.app.Litestar object at 0x7ce05d1e40>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/app.py", line 705, in register
+    route_handler.on_registration(self)
+    │             │               └ <litestar.app.Litestar object at 0x7ce05d1e40>
+    │             └ <function HTTPRouteHandler.on_registration at 0x7cf96ca7a0>
+    └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x244bc20>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/http_handlers/base.py", line 587, in on_registration
+    super().on_registration(app)
+                            └ <litestar.app.Litestar object at 0x7ce05d1e40>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 539, in on_registration
+    self.resolve_dependencies()
+    │    └ <function BaseRouteHandler.resolve_dependencies at 0x7cf96c85e0>
+    └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x244bc20>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 357, in resolve_dependencies
+    self._resolved_dependencies[key] = self._resolve_dependency(
+    │    │                      │      │    └ <function BaseRouteHandler._resolve_dependency at 0x7cf96c8680>
+    │    │                      │      └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x244bc20>
+    │    │                      └ 'buffer'
+    │    └ <member '_resolved_dependencies' of 'BaseRouteHandler' objects>
+    └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x244bc20>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 384, in _resolve_dependency
+    provider.parsed_fn_signature = ParsedSignature.from_fn(dependency, self.resolve_signature_namespace())
+    │        │                     │               │       │           │    └ <function BaseRouteHandler.resolve_signature_namespace at 0x7cf96c8900>
+    │        │                     │               │       │           └ <litestar.handlers.http_handlers.base.HTTPRouteHandler object at 0x244bc20>
+    │        │                     │               │       └ <function provide_shared_image_buffer at 0x7ce2aaa340>
+    │        │                     │               └ <classmethod(<function ParsedSignature.from_fn at 0x7cf98551c0>)>
+    │        │                     └ <class 'litestar.utils.signature.ParsedSignature'>
+    │        └ <member 'parsed_fn_signature' of 'Provide' objects>
+    └ <litestar.di.Provide object at 0x7ce03c2650>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 222, in from_fn
+    return cls.from_signature(signature, expanded_type_hints)
+           │   │              │          └ {'return': <class 'api.shared_image_buffer.SharedImageBuffer'>}
+           │   │              └ <Signature (request) -> 'SharedImageBuffer'>
+           │   └ <classmethod(<function ParsedSignature.from_signature at 0x7cf9855260>)>
+           └ <class 'litestar.utils.signature.ParsedSignature'>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 236, in from_signature
+    parameters = tuple(
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 237, in <genexpr>
+    FieldDefinition.from_parameter(parameter=parameter, fn_type_hints=fn_type_hints)
+    │               │                        │                        └ {'return': <class 'api.shared_image_buffer.SharedImageBuffer'>}
+    │               │                        └ <Parameter "request">
+    │               └ <classmethod(<function FieldDefinition.from_parameter at 0x7cf9914fe0>)>
+    └ <class 'litestar.typing.FieldDefinition'>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/typing.py", line 619, in from_parameter
+    raise ImproperlyConfiguredException(
+          └ <class 'litestar.exceptions.http_exceptions.ImproperlyConfiguredException'>
+
+litestar.exceptions.http_exceptions.ImproperlyConfiguredException: 500: 'request' does not have a type annotation. If it should receive any value, use 'Any'.
+2026-05-30 21:13:58 | ERROR | system | Seed data loading failed: 500: A status code 204, 304 or in the range below 200 does not support a response body. If api.routes.files.FileController.delete_file should return a value, change the route handler status code to an appropriate value.
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/run_local.py", line 115, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x71894ef4c0>
+
+  File "/data/data/com.termux/files/home/NexusAI/run_local.py", line 100, in main
+    result = asyncio.run(seed_all())
+             │       │   └ <function seed_all at 0x7186999c60>
+             │       └ <function run at 0x7189535440>
+             └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object seed_all at 0x71870a4d30>
+           │      └ <function Runner.run at 0x718882f380>
+           └ <asyncio.runners.Runner object at 0x7186f20c20>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<seed_all() running at /data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py:10...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x718882cf40>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7186f20c20>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x718882cea0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x718882eca0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7188989ee0>
+    └ <Handle Task.task_wakeup()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 1058, in seed_all
+    user_result = await seed_users(session, cfg)
+                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x71840ef380>
+                        └ <function seed_users at 0x71869996c0>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 444, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+                        └ <module 'api.app' from '/data/data/com.termux/files/home/NexusAI/Code/api/app.py'>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 10, in <module>
+    app = create_app()
+          └ <function create_app at 0x7174ae8220>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 55, in create_app
+    return Litestar(
+           └ <class 'litestar.app.Litestar'>
+
+  File "/usr/local/lib/python3.13/dist-packages/litestar/app.py", line 499, in __init__
+    self.register(route_handler)
+    │    │        └ <class 'api.routes.files.FileController'>
+    │    └ <function Litestar.register at 0x7187a671a0>
+    └ <litestar.app.Litestar object at 0x7156aede40>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/app.py", line 705, in register
+    route_handler.on_registration(self)
+    │             │               └ <litestar.app.Litestar object at 0x7156aede40>
+    │             └ <function HTTPRouteHandler.on_registration at 0x7187b9a7a0>
+    └ <litestar.handlers.http_handlers.decorators.delete object at 0x24f52e0>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/http_handlers/base.py", line 587, in on_registration
+    super().on_registration(app)
+                            └ <litestar.app.Litestar object at 0x7156aede40>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 538, in on_registration
+    self._validate_handler_function()
+    │    └ <function HTTPRouteHandler._validate_handler_function at 0x7187b9a840>
+    └ <litestar.handlers.http_handlers.decorators.delete object at 0x24f52e0>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/http_handlers/base.py", line 611, in _validate_handler_function
+    raise ImproperlyConfiguredException(
+          └ <class 'litestar.exceptions.http_exceptions.ImproperlyConfiguredException'>
+
+litestar.exceptions.http_exceptions.ImproperlyConfiguredException: 500: A status code 204, 304 or in the range below 200 does not support a response body. If api.routes.files.FileController.delete_file should return a value, change the route handler status code to an appropriate value.
+2026-05-30 21:15:15 | ERROR | system | Seed data loading failed: 500: A status code 204, 304 or in the range below 200 does not support a response body. If api.routes.admin.AdminController.delete_failed_task should return a value, change the route handler status code to an appropriate value.
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/run_local.py", line 115, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x719e74f4c0>
+
+  File "/data/data/com.termux/files/home/NexusAI/run_local.py", line 100, in main
+    result = asyncio.run(seed_all())
+             │       │   └ <function seed_all at 0x719bbf9c60>
+             │       └ <function run at 0x719e795440>
+             └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object seed_all at 0x719c304d30>
+           │      └ <function Runner.run at 0x719da8f380>
+           └ <asyncio.runners.Runner object at 0x719c180c20>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<seed_all() running at /data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py:10...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x719da8cf40>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x719c180c20>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x719da8cea0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x719da8eca0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x719dbe9ee0>
+    └ <Handle Task.task_wakeup()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 1058, in seed_all
+    user_result = await seed_users(session, cfg)
+                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x719955b380>
+                        └ <function seed_users at 0x719bbf96c0>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 444, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+                        └ <module 'api.app' from '/data/data/com.termux/files/home/NexusAI/Code/api/app.py'>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 10, in <module>
+    app = create_app()
+          └ <function create_app at 0x719874c220>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 55, in create_app
+    return Litestar(
+           └ <class 'litestar.app.Litestar'>
+
+  File "/usr/local/lib/python3.13/dist-packages/litestar/app.py", line 499, in __init__
+    self.register(route_handler)
+    │    │        └ <class 'api.routes.admin.AdminController'>
+    │    └ <function Litestar.register at 0x719cea31a0>
+    └ <litestar.app.Litestar object at 0x717fd75e40>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/app.py", line 705, in register
+    route_handler.on_registration(self)
+    │             │               └ <litestar.app.Litestar object at 0x717fd75e40>
+    │             └ <function HTTPRouteHandler.on_registration at 0x719cdf67a0>
+    └ <litestar.handlers.http_handlers.decorators.delete object at 0x251aed0>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/http_handlers/base.py", line 587, in on_registration
+    super().on_registration(app)
+                            └ <litestar.app.Litestar object at 0x717fd75e40>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 538, in on_registration
+    self._validate_handler_function()
+    │    └ <function HTTPRouteHandler._validate_handler_function at 0x719cdf6840>
+    └ <litestar.handlers.http_handlers.decorators.delete object at 0x251aed0>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/http_handlers/base.py", line 611, in _validate_handler_function
+    raise ImproperlyConfiguredException(
+          └ <class 'litestar.exceptions.http_exceptions.ImproperlyConfiguredException'>
+
+litestar.exceptions.http_exceptions.ImproperlyConfiguredException: 500: A status code 204, 304 or in the range below 200 does not support a response body. If api.routes.admin.AdminController.delete_failed_task should return a value, change the route handler status code to an appropriate value.
+2026-05-30 21:16:38 | ERROR | system | Seed data loading failed: 500: 'socket' does not have a type annotation. If it should receive any value, use 'Any'.
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.13/dist-packages/litestar/typing.py", line 617, in from_parameter
+    annotation = fn_type_hints[parameter.name]
+                 │             │         └ <property object at 0x7b459a0360>
+                 │             └ <Parameter "socket">
+                 └ {'return': <class 'NoneType'>}
+
+KeyError: 'socket'
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "/data/data/com.termux/files/home/NexusAI/run_local.py", line 115, in <module>
+    raise SystemExit(main())
+                     └ <function main at 0x7b4650f4c0>
+
+  File "/data/data/com.termux/files/home/NexusAI/run_local.py", line 100, in main
+    result = asyncio.run(seed_all())
+             │       │   └ <function seed_all at 0x7b439b9c60>
+             │       └ <function run at 0x7b46555440>
+             └ <module 'asyncio' from '/usr/lib/python3.13/asyncio/__init__.py'>
+
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object seed_all at 0x7b440c4d30>
+           │      └ <function Runner.run at 0x7b4584f380>
+           └ <asyncio.runners.Runner object at 0x7b43f40c20>
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<seed_all() running at /data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py:10...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7b4584cf40>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7b43f40c20>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7b4584cea0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7b4584eca0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7b459a9ee0>
+    └ <Handle Task.task_wakeup()>
+  File "/usr/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+
+> File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 1058, in seed_all
+    user_result = await seed_users(session, cfg)
+                        │          │        └ AppConfig(environment='dev', base_dir=PosixPath('/data/data/com.termux/files/home/NexusAI'), sqlite_file_name='nexus_oltp.db'...
+                        │          └ <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x7b4131b380>
+                        └ <function seed_users at 0x7b439b96c0>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/SKRIPTS/seed_data.py", line 444, in seed_users
+    from api.auth_service import hash_password
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/__init__.py", line 5, in <module>
+    from .server import app, run_backend
+                        └ <module 'api.app' from '/data/data/com.termux/files/home/NexusAI/Code/api/app.py'>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/server.py", line 10, in <module>
+    app = create_app()
+          └ <function create_app at 0x7b40550220>
+
+  File "/data/data/com.termux/files/home/NexusAI/Code/api/app.py", line 55, in create_app
+    return Litestar(
+           └ <class 'litestar.app.Litestar'>
+
+  File "/usr/local/lib/python3.13/dist-packages/litestar/app.py", line 499, in __init__
+    self.register(route_handler)
+    │    │        └ <litestar.handlers.websocket_handlers.route_handler.WebsocketRouteHandler object at 0x7b2c2a4c40>
+    │    └ <function Litestar.register at 0x7b44c631a0>
+    └ <litestar.app.Litestar object at 0x7b0fad5e40>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/app.py", line 705, in register
+    route_handler.on_registration(self)
+    │             │               └ <litestar.app.Litestar object at 0x7b0fad5e40>
+    │             └ <function BaseRouteHandler.on_registration at 0x7b44bb8c20>
+    └ <litestar.handlers.websocket_handlers.route_handler.WebsocketRouteHandler object at 0x7b0f886f40>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 538, in on_registration
+    self._validate_handler_function()
+    │    └ <function WebsocketRouteHandler._validate_handler_function at 0x7b44bf00e0>
+    └ <litestar.handlers.websocket_handlers.route_handler.WebsocketRouteHandler object at 0x7b0f886f40>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/websocket_handlers/route_handler.py", line 85, in _validate_handler_function
+    super()._validate_handler_function()
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 549, in _validate_handler_function
+    self.parsed_data_field is not None
+    │    └ <property object at 0x7b44bac4f0>
+    └ <litestar.handlers.websocket_handlers.route_handler.WebsocketRouteHandler object at 0x7b0f886f40>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 241, in parsed_data_field
+    self._parsed_data_field = self.parsed_fn_signature.parameters.get("data")
+    │    │                    │    └ <property object at 0x7b44bac400>
+    │    │                    └ <litestar.handlers.websocket_handlers.route_handler.WebsocketRouteHandler object at 0x7b0f886f40>
+    │    └ <member '_parsed_data_field' of 'BaseRouteHandler' objects>
+    └ <litestar.handlers.websocket_handlers.route_handler.WebsocketRouteHandler object at 0x7b0f886f40>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/handlers/base.py", line 226, in parsed_fn_signature
+    self._parsed_fn_signature = ParsedSignature.from_fn(
+    │    │                      │               └ <classmethod(<function ParsedSignature.from_fn at 0x7b44d451c0>)>
+    │    │                      └ <class 'litestar.utils.signature.ParsedSignature'>
+    │    └ <member '_parsed_fn_signature' of 'BaseRouteHandler' objects>
+    └ <litestar.handlers.websocket_handlers.route_handler.WebsocketRouteHandler object at 0x7b0f886f40>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 222, in from_fn
+    return cls.from_signature(signature, expanded_type_hints)
+           │   │              │          └ {'return': <class 'NoneType'>}
+           │   │              └ <Signature (socket) -> 'None'>
+           │   └ <classmethod(<function ParsedSignature.from_signature at 0x7b44d45260>)>
+           └ <class 'litestar.utils.signature.ParsedSignature'>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 236, in from_signature
+    parameters = tuple(
+  File "/usr/local/lib/python3.13/dist-packages/litestar/utils/signature.py", line 237, in <genexpr>
+    FieldDefinition.from_parameter(parameter=parameter, fn_type_hints=fn_type_hints)
+    │               │                        │                        └ {'return': <class 'NoneType'>}
+    │               │                        └ <Parameter "socket">
+    │               └ <classmethod(<function FieldDefinition.from_parameter at 0x7b44e04fe0>)>
+    └ <class 'litestar.typing.FieldDefinition'>
+  File "/usr/local/lib/python3.13/dist-packages/litestar/typing.py", line 619, in from_parameter
+    raise ImproperlyConfiguredException(
+          └ <class 'litestar.exceptions.http_exceptions.ImproperlyConfiguredException'>
+
+litestar.exceptions.http_exceptions.ImproperlyConfiguredException: 500: 'socket' does not have a type annotation. If it should receive any value, use 'Any'.
+2026-05-30 21:43:24 | ERROR | system | Failed to count unresolved DLQ items: (sqlite3.OperationalError) no such table: failed_tasks
+[SQL: SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-30 21:43:24 | ERROR | system | [DLQ_NOTIFIER] Could not query DLQ (database error)
+2026-05-30 21:46:38 | ERROR | system | Failed to count unresolved DLQ items: (sqlite3.OperationalError) no such table: failed_tasks
+[SQL: SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-30 21:46:38 | ERROR | system | [DLQ_NOTIFIER] Could not query DLQ (database error)
+2026-05-30 22:03:09 | ERROR | system | Failed to count unresolved DLQ items: (sqlite3.OperationalError) no such table: failed_tasks
+[SQL: SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-30 22:03:09 | ERROR | system | [DLQ_NOTIFIER] Could not query DLQ (database error)

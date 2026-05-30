@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import os
 import secrets
+from datetime import timedelta
 from dataclasses import dataclass
 from sqlalchemy import text
 
@@ -59,6 +60,51 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> Use
         return None
 
     extras = getattr(token, "extras", None) or {}
+    token_jwt_version = extras.get("jwt_version")
+
+    # Fast path: check jwt_version from token extras against database
+    db_engine = getattr(connection.app.state, "db_engine", None)
+    if db_engine is not None:
+        async with db_engine.connect() as conn:
+            row = (
+                await conn.execute(
+                    text(
+                        "SELECT id, username, role, tenant_id, is_active, jwt_version "
+                        "FROM users WHERE id = :id OR username = :id LIMIT 1"
+                    ),
+                    {"id": str(token.sub)},
+                )
+            ).mappings().first()
+
+            if not row:
+                return None
+
+            # Check if user is active
+            if not row.get("is_active"):
+                return None
+
+            # jwt_version check: if token has a jwt_version, verify it matches the database
+            if token_jwt_version is not None:
+                db_jwt_version = row.get("jwt_version", 1)
+                try:
+                    if int(token_jwt_version) < int(db_jwt_version):
+                        # Token was issued before a logout/password change
+                        logger.warning(
+                            "Rejected stale JWT for user %s: token_v=%s, db_v=%s",
+                            row["username"], token_jwt_version, db_jwt_version,
+                        )
+                        return None
+                except (ValueError, TypeError):
+                    pass
+
+            return User(
+                id=str(row["id"]),
+                username=str(row["username"]),
+                role=str(row["role"]),
+                tenant_id=str(row["tenant_id"]),
+            )
+
+    # Fallback: if no DB engine, rely on token extras
     if extras.get("username") and extras.get("role"):
         return User(
             id=str(token.sub),
@@ -66,25 +112,6 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> Use
             role=str(extras["role"]),
             tenant_id=str(extras.get("tenant_id")) if extras.get("tenant_id") is not None else None,
         )
-
-    db_engine = getattr(connection.app.state, "db_engine", None)
-    if db_engine is not None:
-        async with db_engine.connect() as conn:
-            row = (
-                await conn.execute(
-                    text(
-                        "SELECT id, username, role, tenant_id, is_active FROM users WHERE id = :id OR username = :id LIMIT 1"
-                    ),
-                    {"id": str(token.sub)},
-                )
-            ).mappings().first()
-            if row and row.get("is_active"):
-                return User(
-                    id=str(row["id"]),
-                    username=str(row["username"]),
-                    role=str(row["role"]),
-                    tenant_id=str(row["tenant_id"]),
-                )
 
     return None
 
@@ -99,8 +126,20 @@ class User:
 jwt_auth = JWTAuth[User](
     retrieve_user_handler=retrieve_user_handler,
     token_secret=SECRET_KEY,
-    token_issuer=JWT_ISSUER,
-    token_audience=JWT_AUDIENCE,
-    token_expiration=JWT_EXPIRATION_SECONDS,
-    exclude=["/api/auth/login", "/api/v1/health", "/api/v2/health"],
+    accepted_issuers=[JWT_ISSUER],
+    accepted_audiences=[JWT_AUDIENCE],
+    default_token_expiration=timedelta(seconds=JWT_EXPIRATION_SECONDS),
+    exclude=[
+        "/api/auth/login",
+        "/api/auth/register",
+        "/api/auth/refresh",
+        "/api/auth/csrf-token",
+        "/api/auth/reset-password",
+        "/api/auth/reset-password/confirm",
+        "/api/auth/confirm",  # Prefix match for /api/auth/confirm/{token}
+        "/api/v1/health",
+        "/api/v2/health",
+        "/schema/openapi.yml",
+        "/schema/swagger",
+    ],
 )

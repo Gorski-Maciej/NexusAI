@@ -72,7 +72,7 @@ def is_cancelled(task_id: str) -> bool:
 
 
 @websocket(path="/api/v1/ws/progress")
-async def progress_websocket(socket) -> None:
+async def progress_websocket(socket: Any) -> None:
     """
     WebSocket do subskrypcji postępu zadań długotrwałych.
     Rozwiązanie 17: Klient wysyła task_id, a serwer przekazuje zdarzenia postępu.

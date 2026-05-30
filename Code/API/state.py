@@ -1,6 +1,9 @@
+import asyncio
 import logging
 import os
 import shutil
+import uuid
+from datetime import datetime, timezone
 from pathlib import Path
 from litestar import Litestar
 from sqlalchemy import text
@@ -122,14 +125,67 @@ async def on_startup(app: Litestar) -> None:
                 CREATE TABLE IF NOT EXISTS users (
                     id TEXT PRIMARY KEY,
                     username TEXT UNIQUE NOT NULL,
+                    email TEXT,
+                    full_name TEXT,
                     password_hash TEXT NOT NULL,
                     role TEXT NOT NULL DEFAULT 'worker',
                     tenant_id TEXT NOT NULL DEFAULT 'default',
                     is_active BOOLEAN NOT NULL DEFAULT 1,
+                    is_verified BOOLEAN NOT NULL DEFAULT 0,
+                    must_change_password BOOLEAN NOT NULL DEFAULT 0,
+                    jwt_version INTEGER NOT NULL DEFAULT 1,
+                    last_login TIMESTAMP,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+        )
+        # Create audit_logs table for auth events
+        await conn.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS audit_logs (
+                    id TEXT PRIMARY KEY,
+                    user_id TEXT,
+                    invoice_id TEXT,
+                    action TEXT NOT NULL,
+                    old_value TEXT,
+                    new_value TEXT,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
                 """
             )
+        )
+        await conn.execute(
+            text("CREATE INDEX IF NOT EXISTS idx_audit_logs_user ON audit_logs(user_id)")
+        )
+        await conn.execute(
+            text("CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON audit_logs(action)")
+        )
+
+        # Create email_tokens table for email verification and password reset
+        await conn.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS email_tokens (
+                    id TEXT PRIMARY KEY,
+                    user_id TEXT NOT NULL,
+                    token TEXT UNIQUE NOT NULL,
+                    purpose TEXT NOT NULL DEFAULT 'confirm',
+                    expires_at TIMESTAMP NOT NULL,
+                    used BOOLEAN NOT NULL DEFAULT 0,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+        )
+        await conn.execute(
+            text("CREATE INDEX IF NOT EXISTS idx_email_tokens_token ON email_tokens(token)")
+        )
+        await conn.execute(
+            text("CREATE INDEX IF NOT EXISTS idx_email_tokens_user ON email_tokens(user_id)")
         )
         await conn.execute(
             text(
@@ -141,6 +197,7 @@ async def on_startup(app: Litestar) -> None:
                     payload TEXT NOT NULL,
                     status TEXT NOT NULL DEFAULT 'PENDING',
                     processed BOOLEAN NOT NULL DEFAULT 0,
+                    retry_count INTEGER NOT NULL DEFAULT 0,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
                 """
@@ -200,7 +257,7 @@ async def on_startup(app: Litestar) -> None:
                 "id": "admin",
                 "username": admin_username,
                 "password_hash": admin_password_hash,
-                "role": "owner",
+                "role": "admin",
                 "tenant_id": "default",
                 "is_active": True,
             },
@@ -305,6 +362,225 @@ async def on_startup(app: Litestar) -> None:
             )
         )
 
+        # --- Tabela failed_tasks dla Dead Letter Queue ---
+        await conn.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS failed_tasks (
+                    id TEXT PRIMARY KEY,
+                    task_name TEXT NOT NULL,
+                    task_id TEXT,
+                    payload TEXT NOT NULL DEFAULT '{}',
+                    error_type TEXT NOT NULL,
+                    error_message TEXT NOT NULL,
+                    stack_trace TEXT,
+                    retry_count INTEGER NOT NULL DEFAULT 0,
+                    max_retries INTEGER NOT NULL DEFAULT 3,
+                    resolved BOOLEAN NOT NULL DEFAULT 0,
+                    resolved_at TIMESTAMP,
+                    resolved_by TEXT,
+                    resolution_note TEXT,
+                    failed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+        )
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_failed_tasks_resolved ON failed_tasks(resolved)"))
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_failed_tasks_task_name ON failed_tasks(task_name)"))
+
+            # Assign admin to admin role in user_roles
+        _admin_role_row = await conn.execute(
+            text("SELECT id FROM roles WHERE name = 'admin' LIMIT 1")
+        )
+        _admin_role_data = _admin_role_row.mappings().first()
+        if _admin_role_data:
+            _existing_ur = await conn.execute(
+                text("SELECT id FROM user_roles WHERE user_id = :uid AND role_id = :rid LIMIT 1"),
+                {"uid": "admin", "rid": _admin_role_data["id"]},
+            )
+            if not _existing_ur.scalar():
+                await conn.execute(
+                    text(
+                        "INSERT INTO user_roles (id, user_id, role_id) "
+                        "VALUES (:id, :uid, :rid) ON CONFLICT DO NOTHING"
+                    ),
+                    {"id": str(uuid.uuid4()), "uid": "admin", "rid": _admin_role_data["id"]},
+                )
+
+        # --- Tabela roles ---
+        await conn.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS roles (
+                    id TEXT PRIMARY KEY,
+                    name TEXT UNIQUE NOT NULL,
+                    description TEXT,
+                    is_system BOOLEAN NOT NULL DEFAULT 0,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+        )
+
+        # --- Tabela permissions ---
+        await conn.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS permissions (
+                    id TEXT PRIMARY KEY,
+                    codename TEXT UNIQUE NOT NULL,
+                    description TEXT,
+                    resource TEXT NOT NULL,
+                    action TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+        )
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_permissions_codename ON permissions(codename)"))
+
+        # --- Tabela user_roles (many-to-many) ---
+        await conn.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS user_roles (
+                    id TEXT PRIMARY KEY,
+                    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                    role_id TEXT NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+        )
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_user_roles_user ON user_roles(user_id)"))
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_user_roles_role ON user_roles(role_id)"))
+
+        # --- Tabela role_permissions (many-to-many) ---
+        await conn.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS role_permissions (
+                    id TEXT PRIMARY KEY,
+                    role_id TEXT NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+                    permission_id TEXT NOT NULL REFERENCES permissions(id) ON DELETE CASCADE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(role_id, permission_id)
+                )
+                """
+            )
+        )
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_role_permissions_role ON role_permissions(role_id)"))
+
+        # --- Seed default roles ---
+        role_ids = {}
+        for _role_name, _role_desc in [
+            ("admin", "System administrator — full access"),
+            ("accountant", "Accountant — financial operations"),
+            ("auditor", "Auditor — read-only audit access"),
+            ("viewer", "Viewer — read-only basic access"),
+        ]:
+            rid = str(uuid.uuid4())
+            await conn.execute(
+                text(
+                    "INSERT INTO roles (id, name, description, is_system) "
+                    "VALUES (:id, :name, :desc, 1) ON CONFLICT(name) DO NOTHING"
+                ),
+                {"id": rid, "name": _role_name, "desc": _role_desc},
+            )
+            # Fetch actual id (in case of conflict)
+            row = await conn.execute(
+                text("SELECT id FROM roles WHERE name = :name"),
+                {"name": _role_name},
+            )
+            row_data = row.mappings().first()
+            if row_data:
+                role_ids[_role_name] = row_data["id"]
+
+        # --- Seed permissions from PERMISSION_REGISTRY ---
+        # Note: Mirrored from models.role.PERMISSION_REGISTRY — keep in sync
+        perm_ids: dict[str, str] = {}
+        permission_registry = {
+            "invoice:create": {"resource": "invoice", "action": "create", "description": "Create invoices"},
+            "invoice:view": {"resource": "invoice", "action": "view", "description": "View invoices"},
+            "invoice:edit": {"resource": "invoice", "action": "edit", "description": "Edit invoices"},
+            "invoice:delete": {"resource": "invoice", "action": "delete", "description": "Delete invoices"},
+            "invoice:approve": {"resource": "invoice", "action": "approve", "description": "Approve invoices"},
+            "invoice:submit-ksef": {"resource": "invoice", "action": "submit-ksef", "description": "Submit invoices to KSeF"},
+            "company:view": {"resource": "company", "action": "view", "description": "View company profiles"},
+            "company:edit": {"resource": "company", "action": "edit", "description": "Edit company profiles"},
+            "company:delete": {"resource": "company", "action": "delete", "description": "Delete companies"},
+            "audit:view": {"resource": "audit", "action": "view", "description": "View audit logs"},
+            "audit:export": {"resource": "audit", "action": "export", "description": "Export audit logs"},
+            "user:view": {"resource": "user", "action": "view", "description": "View users"},
+            "user:create": {"resource": "user", "action": "create", "description": "Create users"},
+            "user:edit": {"resource": "user", "action": "edit", "description": "Edit users"},
+            "user:delete": {"resource": "user", "action": "delete", "description": "Delete users"},
+            "admin:access": {"resource": "admin", "action": "access", "description": "Access admin panel"},
+            "admin:settings": {"resource": "admin", "action": "settings", "description": "Modify system settings"},
+            "admin:failed-tasks": {"resource": "admin", "action": "failed-tasks", "description": "Manage failed tasks / DLQ"},
+            "finance:view": {"resource": "finance", "action": "view", "description": "View financial data"},
+            "finance:reconcile": {"resource": "finance", "action": "reconcile", "description": "Reconcile accounts"},
+            "finance:export": {"resource": "finance", "action": "export", "description": "Export financial reports"},
+            "contractor:view": {"resource": "contractor", "action": "view", "description": "View contractors"},
+            "contractor:edit": {"resource": "contractor", "action": "edit", "description": "Edit contractors"},
+        }
+        for codename, info in permission_registry.items():
+            pid = str(uuid.uuid4())
+            await conn.execute(
+                text(
+                    "INSERT INTO permissions (id, codename, resource, action, description) "
+                    "VALUES (:id, :codename, :resource, :action, :desc) ON CONFLICT(codename) DO NOTHING"
+                ),
+                {
+                    "id": pid, "codename": codename,
+                    "resource": info["resource"], "action": info["action"],
+                    "desc": info["description"],
+                },
+            )
+            row = await conn.execute(
+                text("SELECT id FROM permissions WHERE codename = :codename"),
+                {"codename": codename},
+            )
+            row_data = row.mappings().first()
+            if row_data:
+                perm_ids[codename] = row_data["id"]
+
+        # --- Seed role-permission mappings ---
+        role_perms_map = {
+            "admin": list(permission_registry.keys()),
+            "accountant": [
+                "invoice:create", "invoice:view", "invoice:edit", "invoice:approve", "invoice:submit-ksef",
+                "company:view", "company:edit",
+                "audit:view",
+                "finance:view", "finance:reconcile", "finance:export",
+                "contractor:view", "contractor:edit",
+            ],
+            "auditor": [
+                "invoice:view", "company:view", "audit:view", "audit:export",
+                "finance:view", "contractor:view",
+            ],
+            "viewer": [
+                "invoice:view", "company:view", "audit:view",
+                "finance:view", "contractor:view",
+            ],
+        }
+        for role_name, codenames in role_perms_map.items():
+            role_id = role_ids.get(role_name)
+            if not role_id:
+                continue
+            for codename in codenames:
+                perm_id = perm_ids.get(codename)
+                if not perm_id:
+                    continue
+                await conn.execute(
+                    text(
+                        "INSERT INTO role_permissions (id, role_id, permission_id) "
+                        "VALUES (:id, :rid, :pid) ON CONFLICT DO NOTHING"
+                    ),
+                    {"id": str(uuid.uuid4()), "rid": role_id, "pid": perm_id},
+                )
+
         # ANALYZE dla optymalizacji zapytań (Rozwiązanie 14)
         await conn.execute(text("ANALYZE;"))
     try:
@@ -321,9 +597,12 @@ async def on_startup(app: Litestar) -> None:
         if config.environment in {"stage", "prod"}:
             raise
 
-    # Połączenie z brokerem Taskiq (NATS)
+    # Połączenie z brokerem Taskiq (NATS) — timeout 5s jeśli NATS nie jest dostępny
     if not broker.is_worker_process:
-        await broker.startup()
+        try:
+            await asyncio.wait_for(broker.startup(), timeout=5.0)
+        except Exception as exc:
+            logger.warning("NATS broker unavailable — task queue disabled: %s", exc)
 
     # Warm-up analytics materialization to reduce cold-start dashboard latency.
     try:
@@ -333,6 +612,21 @@ async def on_startup(app: Litestar) -> None:
     except Exception as exc:
         logger.warning("DuckDB warm-up refresh failed: %s", exc)
 
+    # ── Seeded marker: auto-seed przy pierwszym uruchomieniu ──
+    seeded_file = config.base_dir / ".seeded"
+    if not seeded_file.exists():
+        logger.info("No .seeded marker found — running seed_all...")
+        try:
+            from SKRIPTS.seed_data import seed_all
+            seed_result = await seed_all(config)
+            if seed_result:
+                seeded_file.write_text(datetime.now(timezone.utc).isoformat())
+                logger.info("Seed data loaded: %d entities. .seeded marker written.", sum(seed_result.values()))
+        except Exception as exc:
+            logger.warning("Auto-seed failed (non-blocking): %s", exc)
+    else:
+        logger.info(".seeded marker found — skipping auto-seed.")
+
     logger.info(">>> Nexus API: Wszystkie systemy gotowe.")
 
 async def on_shutdown(app: Litestar) -> None:
@@ -341,9 +635,12 @@ async def on_shutdown(app: Litestar) -> None:
 
     engine = app.state.db_engine
 
-    # 1. Najpierw zamykamy broker
+    # 1. Najpierw zamykamy broker (jeśli był uruchomiony)
     if not broker.is_worker_process:
-        await broker.shutdown()
+        try:
+            await broker.shutdown()
+        except Exception:
+            pass
 
     # 2. Zamykamy wszystkie aktywne sesje i zwalniamy połączenia
     # Session factory zostanie zamknięta przez dispose() engine'u.

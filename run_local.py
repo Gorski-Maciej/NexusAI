@@ -3,6 +3,7 @@
 Examples:
     python run_local.py
     python run_local.py --bootstrap
+    python run_local.py --seed              # Load seed data (dictionaries, demo company, invoices)
     python run_local.py --host 0.0.0.0 --port 8080
 """
 
@@ -53,6 +54,12 @@ def _build_parser() -> ArgumentParser:
         action="store_true",
         help="Automatycznie doinstaluj brakujące zależności z requirements.txt.",
     )
+    parser.add_argument(
+        "--seed", "--load-fixtures",
+        action="store_true",
+        dest="seed",
+        help="Załaduj dane początkowe (słowniki, demo firma, faktury) przed uruchomieniem API.",
+    )
     parser.add_argument("--host", default="127.0.0.1", help="Host backendu (domyślnie: 127.0.0.1).")
     parser.add_argument("--port", default="8000", help="Port backendu (domyślnie: 8000).")
     return parser
@@ -82,6 +89,20 @@ def main(argv: list[str] | None = None) -> int:
         missing = _check_dependencies()
         if missing:
             print("Po instalacji nadal brakuje pakietów:", ", ".join(missing))
+            return 1
+
+    # Seed data if requested (before starting the API)
+    if args.seed:
+        print("Ładowanie danych początkowych (seed)...")
+        try:
+            import asyncio
+            from SKRIPTS.seed_data import seed_all
+            result = asyncio.run(seed_all())
+            total = sum(result.values())
+            print(f"Seedowanie zakończone: {total} encji załadowanych.")
+            print("Hasło administratora zostało wyświetlone w logach powyżej.")
+        except Exception as exc:
+            print(f"Błąd seedowania: {exc}")
             return 1
 
     from api.server import run_backend

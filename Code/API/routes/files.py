@@ -28,7 +28,7 @@ class FileController(Controller):
             },
         )
 
-    @delete("/{file_id:str}")
+    @delete("/{file_id:str}", status_code=200)
     async def delete_file(self, file_id: str) -> dict[str, str]:
         """Delete a file."""
         return {"message": f"File {file_id} deleted successfully"}

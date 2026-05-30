@@ -11,10 +11,44 @@ def _load_keyring_module():
 
 
 def _load_fernet_symbols():
-    if importlib.util.find_spec("cryptography") is None:
+    """Load Fernet cryptography symbols, gracefully falling back if unavailable.
+
+    The cryptography package may be installed but its native Rust extension
+    (_rust.abi3.so) can fail to load in some environments (e.g., Termux
+    without libgcc_s.so.1). We install a meta-path blocker first to
+    prevent the native extension from even being attempted, then
+    catch ImportError as a safety net.
+    """
+    # ── Block cryptography imports at the sys.meta_path level ──────
+    # This prevents Python from even trying to load the problematic
+    # _rust.abi3.so native extension, which would otherwise fail with
+    # "dlopen failed: library libgcc_s.so.1 not found" on Termux.
+    _BLOCKED = {"cryptography", "cryptography.fernet", "cryptography.hazmat",
+                 "cryptography.exceptions", "cryptography.hazmat.bindings",
+                 "cryptography.hazmat.bindings._rust"}
+
+    class _CryptographyBlocker:
+        def find_spec(self, fullname, path, target=None):
+            if fullname in _BLOCKED or fullname.startswith("cryptography."):
+                raise ImportError(
+                    f"cryptography native extension blocked (missing libgcc_s.so.1)"
+                )
+            return None
+
+    import sys
+    blocker = _CryptographyBlocker()
+    sys.meta_path.insert(0, blocker)
+
+    # ── Safety net: try importing anyway (should be blocked above) ──
+    try:
+        from cryptography.fernet import Fernet, InvalidToken
+        return Fernet, InvalidToken
+    except ImportError:
         return None, None
-    from cryptography.fernet import Fernet, InvalidToken
-    return Fernet, InvalidToken
+    finally:
+        # Remove the blocker so it doesn't interfere with other imports
+        if blocker in sys.meta_path:
+            sys.meta_path.remove(blocker)
 
 
 keyring = _load_keyring_module()

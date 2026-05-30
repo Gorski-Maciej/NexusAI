@@ -1,31 +1,41 @@
 from __future__ import annotations
 
-import importlib.util
+import json
+import logging
+import os
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+logger = logging.getLogger("nexus.core.secrets")
 
 
 def _load_keyring_module():
-    if importlib.util.find_spec("keyring") is None:
+    """Try to load keyring; return None if unavailable."""
+    try:
+        import keyring as _kr
+        return _kr
+    except ImportError:
         return None
-    import keyring
-    return keyring
 
 
 def _load_fernet_symbols():
-    if importlib.util.find_spec("cryptography") is None:
+    """Load Fernet cryptography symbols, gracefully falling back if unavailable.
+
+    The cryptography package may be installed but its native Rust extension
+    (_rust.abi3.so) can fail to load in some environments (e.g., Termux
+    without libgcc_s.so.1). We catch ImportError to keep the rest of
+    the application working even without encryption support.
+    """
+    try:
+        from cryptography.fernet import Fernet, InvalidToken
+        return Fernet, InvalidToken
+    except ImportError:
         return None, None
-    from cryptography.fernet import Fernet, InvalidToken
-    return Fernet, InvalidToken
 
 
 keyring = _load_keyring_module()
 Fernet, InvalidToken = _load_fernet_symbols()
-import json
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
-import logging
-import os
 
-logger = logging.getLogger("nexus.core.secrets")
 
 class SecretsManager:
     """Ochrona kluczy API i haseł przy użyciu natywnego magazynu systemu operacyjnego."""
@@ -102,7 +112,7 @@ class LocalSecretsCache:
             return None
         try:
             return self._fernet.decrypt(value.encode("utf-8")).decode("utf-8")
-        except Exception:
+        except (InvalidToken, Exception):
             return None
 
     def save(self, key: str, value: str) -> None:

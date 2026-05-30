@@ -20,22 +20,34 @@ class CorrelationIdFilter:
         return True
 
 
-def _serialize_record(record):
-    """Serializuje rekord logu do formatu JSON dla łatwiejszego parsowania."""
-    return json.dumps(
-        {
-            "timestamp": record["time"].isoformat(),
-            "level": record["level"].name,
-            "module": record["name"],
-            "function": record["function"],
-            "line": record["line"],
-            "message": record["message"],
-            "correlation_id": record["extra"].get("correlation_id", "system"),
-            "tenant_id": record["extra"].get("tenant_id", "default"),
-            "service": record["extra"].get("service", "nexus"),
-            "exception": record["exception"].format_exception() if record.get("exception") else None,
-        }
-    )
+def _make_json_sink(log_path: Path):
+    """Zwraca funkcję sink (przyjmującą Message), która zapisuje JSON do pliku.
+
+    Loguru wywołuje tę funkcję z obiektem Message, który ma atrybuty:
+    - message.text   (sformatowany tekst)
+    - message.record (oryginalny rekord Loguru)
+    """
+    def _json_sink(message):
+        record = message.record
+        line = json.dumps(
+            {
+                "timestamp": record["time"].isoformat(),
+                "level": record["level"].name,
+                "module": record["name"],
+                "function": record["function"],
+                "line": record["line"],
+                "message": record["message"],
+                "correlation_id": record["extra"].get("correlation_id", "system"),
+                "tenant_id": record["extra"].get("tenant_id", "default"),
+                "service": record["extra"].get("service", "nexus"),
+                "exception": record["exception"] if record.get("exception") else None,
+            },
+            ensure_ascii=False,
+            default=str,
+        )
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(line + "\n")
+    return _json_sink
 
 
 def setup_logger(app_name: str = "NexusAI"):
@@ -58,16 +70,14 @@ def setup_logger(app_name: str = "NexusAI"):
     log_dir.mkdir(parents=True, exist_ok=True)
 
     # Plik JSON (strukturyzowany, łatwy do parsowania przez narzędzia SIEM)
+    # Uwaga: używamy sink funkcji zamiast format callable — Loguru traktuje
+    # zwracany string z format callable jako template format i crashuje na
+    # {\"timestamp\"...} (KeyError). Sink dostaje gotowy Message z recordem.
+    json_log_path = log_dir / f"{app_name.lower()}_json.log"
     logger.add(
-        log_dir / f"{app_name.lower()}_json.log",
-        rotation="100 MB",
-        retention="14 days",
-        compression="gz",
-        enqueue=True,
+        _make_json_sink(json_log_path),
         filter=correlation_filter,
-        format=_serialize_record,
         level="INFO",
-        serialize=True,
     )
 
     # Osobny handler dla ERRORów (można przekierować do Sentry/webhook)
@@ -154,7 +164,13 @@ def _redirect_standard_logging() -> None:
         logging.getLogger(lib).setLevel(logging.WARNING)
 
 
-def get_logger():
+def get_logger(name: str | None = None):
+    """Return the pre-configured Loguru logger.
+
+    The optional *name* argument is accepted for compatibility with
+    the standard ``logging.getLogger(name)`` idiom but is not used
+    — Loguru captures the caller's module automatically.
+    """
     return logger
 
 

@@ -110,6 +110,15 @@ async def consolidate_database(engine: AsyncEngine) -> None:
     except Exception as e:
         logger.error("Failed to consolidate database: %s", e)
 
+async def get_session(session_factory: async_sessionmaker[AsyncSession]) -> AsyncGenerator[AsyncSession, None]:
+    """Context-manager yielding an AsyncSession from the given factory."""
+    async with session_factory() as session:
+        try:
+            yield session
+        finally:
+            await session.close()
+
+
 def get_encrypted_engine():
     """Przykład synchronicznego silnika SQLCipher (jeśli potrzebne)."""
     config = AppConfig()

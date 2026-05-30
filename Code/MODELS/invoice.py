@@ -1,4 +1,5 @@
-from sqlalchemy import String, Decimal, DateTime, ForeignKey, Date, Integer
+from sqlalchemy import String, DateTime, ForeignKey, Date, Integer
+from sqlalchemy.types import DECIMAL
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, timezone, date
 from db.database import Base
@@ -13,8 +14,8 @@ class Invoice(SoftDeleteMixin, Base):
     number: Mapped[str | None] = mapped_column(String, index=True)
 
     # Finanse
-    amount_net: Mapped[Decimal] = mapped_column(Decimal(12, 2), default=Decimal("0.0"))
-    amount_gross: Mapped[Decimal] = mapped_column(Decimal(12, 2), default=Decimal("0.0"))
+    amount_net: Mapped[Decimal] = mapped_column(DECIMAL(12, 2), default=Decimal("0.0"))
+    amount_gross: Mapped[Decimal] = mapped_column(DECIMAL(12, 2), default=Decimal("0.0"))
     currency: Mapped[str] = mapped_column(String(3), default="PLN")
     issue_date: Mapped[date | None] = mapped_column(Date, nullable=True)
 

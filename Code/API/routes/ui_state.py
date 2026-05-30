@@ -91,7 +91,7 @@ class UIStateController(Controller):
         return {"status": "ok", "draft_key": draft_key, "updated_at": str(row["updated_at"]), "payload": payload}
 
 
-    @delete("/drafts/{draft_key:str}")
+    @delete("/drafts/{draft_key:str}", status_code=200)
     async def delete_draft(self, request: Request, draft_key: str) -> dict:
         draft_key = validate_draft_key(draft_key)
         user = getattr(request, "user", None)
