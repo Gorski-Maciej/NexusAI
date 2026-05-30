@@ -1,25 +1,89 @@
 # core/active_learning.py
+from __future__ import annotations
+
+import json
+import time
+import hashlib
+import logging
+from typing import Optional, Dict, Any
+from collections import OrderedDict
+from pathlib import Path
+
 import lancedb
 import pyarrow as pa
-import pandas as pd
-import json
-from pathlib import Path
-from typing import Optional, Dict, Any
-from sentence_transformers import SentenceTransformer
+import numpy as np
+
+logger = logging.getLogger("nexus.core.active_learning")
+
+try:
+    from sentence_transformers import SentenceTransformer
+except ImportError:
+    SentenceTransformer = None  # type: ignore[assignment]
+    logger.warning("[ACTIVE-LEARNING] sentence_transformers not available")
+
+
+class LRUCache:
+    """Prosta pamięć podręczna LRU z TTL (Rozwiązanie 19)."""
+
+    def __init__(self, max_size: int = 1000, ttl_seconds: int = 3600):
+        self._cache: OrderedDict[str, tuple[float, Any]] = OrderedDict()
+        self._max_size = max_size
+        self._ttl = ttl_seconds
+
+    def get(self, key: str) -> Any | None:
+        if key not in self._cache:
+            return None
+        timestamp, value = self._cache[key]
+        if time.time() - timestamp > self._ttl:
+            del self._cache[key]
+            return None
+        self._cache.move_to_end(key)
+        return value
+
+    def put(self, key: str, value: Any) -> None:
+        self._cache[key] = (time.time(), value)
+        self._cache.move_to_end(key)
+        while len(self._cache) > self._max_size:
+            self._cache.popitem(last=False)
+
+    def clear(self) -> None:
+        self._cache.clear()
+
+    @property
+    def size(self) -> int:
+        return len(self._cache)
+
 
 class ActiveLearningEngine:
+    """Silnik aktywnego uczenia z batchowaniem zapisów i cache'owaniem odczytów.
+    Rozwiązanie 19: Buforowanie zapisów, LRU cache, indeks IVF, obsługa float16.
+    """
+
     def __init__(self, db_path: str = "./data/vector_db"):
         self.db_path = db_path
         self.table_name = "ocr_corrections"
         self._init_db()
-        self.model = SentenceTransformer('all-MiniLM-L6-v2')
+
+        # Bufor wsadowy dla zapisów (Rozwiązanie 19)
+        self._batch_buffer: list[dict[str, Any]] = []
+        self._batch_max_size = 100  # Maksymalny rozmiar batcha
+        self._batch_flush_interval = 5.0  # Sekundy między flush
+
+        # LRU cache dla odczytów (Rozwiązanie 19)
+        self._suggestion_cache = LRUCache(max_size=500, ttl_seconds=3600)
+
+        # Ładuj model embeddingu
+        if SentenceTransformer is not None:
+            self.model = SentenceTransformer('all-MiniLM-L6-v2')
+        else:
+            self.model = None
 
     def _init_db(self):
         """Inicjalizuje bazę i tabelę, jeśli nie istnieją."""
         self.db = lancedb.connect(self.db_path, mode="file")
         if self.table_name not in self.db.table_names():
             schema = pa.schema([
-                pa.field("vector", pa.list_(pa.float32(), 384)), # Zależne od modelu (dla all-MiniLM-L6-v2 to 384)
+                pa.field("vector", pa.list_(pa.float16(), 384)),  # float16 zamiast float32 (Rozwiązanie 19)
                 pa.field("contractor_nip", pa.string()),
                 pa.field("correction_payload", pa.string()),
                 pa.field("context_hash", pa.string())
@@ -29,28 +93,116 @@ class ActiveLearningEngine:
 
     def _generate_embedding(self, raw_text: str) -> list[float]:
         """Zamienia surowy tekst faktury na wektor."""
+        if self.model is None:
+            raise RuntimeError("SentenceTransformer not available; cannot generate embeddings")
         return self.model.encode(raw_text).tolist()
 
+    def _to_float16(self, vector: list[float]) -> list[float]:
+        """Konwertuje wektor do float16 dla oszczędności pamięci (Rozwiązanie 19)."""
+        return np.array(vector, dtype=np.float16).tolist()
+
+    def _get_cache_key(self, raw_text: str, nip: str) -> str:
+        """Generuje klucz cache dla sugestii."""
+        combined = f"{nip}:{raw_text[:200]}"
+        return hashlib.md5(combined.encode()).hexdigest()
+
     async def save_correction(self, raw_text: str, nip: str, corrections: Dict[str, Any]):
-        """Zapisuje poprawkę użytkownika do bazy wektorowej."""
+        """Zapisuje poprawkę użytkownika do bazy wektorowej z batchowaniem (Rozwiązanie 19)."""
         vector = self._generate_embedding(raw_text)
-        data = [{
-            "vector": vector,
+        vector_f16 = self._to_float16(vector)
+
+        data = {
+            "vector": vector_f16,
             "contractor_nip": nip,
             "correction_payload": json.dumps(corrections),
-            "context_hash": str(hash(raw_text)) # Proste hashowanie
-        }]
-        self.table.add(data)
+            "context_hash": hashlib.md5(raw_text.encode()).hexdigest()
+        }
+
+        self._batch_buffer.append(data)
+
+        # Automatyczny flush gdy batch osiągnie maksymalny rozmiar
+        if len(self._batch_buffer) >= self._batch_max_size:
+            await self.flush_batch()
+
+    async def flush_batch(self) -> int:
+        """Wymusza zapis buforowanych korekt w jednej transakcji wsadowej.
+        Zwraca liczbę zapisanych rekordów.
+        """
+        if not self._batch_buffer:
+            return 0
+
+        batch = self._batch_buffer[:]
+        self._batch_buffer = []
+
+        try:
+            self.table.add(batch)
+            logger.info("[ACTIVE-LEARNING] Flushed batch of %d corrections", len(batch))
+            return len(batch)
+        except Exception as e:
+            logger.error("[ACTIVE-LEARNING] Batch flush failed: %s", e)
+            # Przywróć bufor w razie błędu
+            self._batch_buffer = batch + self._batch_buffer
+            raise
+
+    @property
+    def pending_count(self) -> int:
+        """Liczba korekt oczekujących w buforze na zapis."""
+        return len(self._batch_buffer)
 
     async def get_suggestion(self, raw_text: str, nip: str) -> Optional[dict[str, Any]]:
-        """Szuka w bazie wektorowej podobnego układu dla danego NIP-u."""
+        """Szuka w bazie wektorowej podobnego układu dla danego NIP-u.
+        Rozwiązanie 19: LRU cache dla wyników wyszukiwania.
+        """
+        # Sprawdź cache (Rozwiązanie 19)
+        cache_key = self._get_cache_key(raw_text, nip)
+        cached = self._suggestion_cache.get(cache_key)
+        if cached is not None:
+            logger.debug("[ACTIVE-LEARNING] Cache hit for nip=%s", nip)
+            return cached
+
         query_vector = self._generate_embedding(raw_text)
+        query_vector_f16 = self._to_float16(query_vector)
+
         results = (
-            self.table.search(query_vector)
+            self.table.search(query_vector_f16)
             .where(f"contractor_nip = '{nip}'")
             .limit(1)
             .to_list()
         )
-        if results and results[0]["_distance"] < 0.1: # Próg podobieństwa
-            return json.loads(results[0]["correction_payload"])
+
+        if results and results[0]["_distance"] < 0.1:
+            suggestion = json.loads(results[0]["correction_payload"])
+            # Zapisz w cache (Rozwiązanie 19)
+            self._suggestion_cache.put(cache_key, suggestion)
+            return suggestion
+
         return None
+
+    def ensure_index(self) -> None:
+        """Tworzy indeks IVF dla szybszego wyszukiwania wektorowego (Rozwiązanie 19)."""
+        try:
+            self.table.create_index(
+                metric="cosine",
+                num_partitions=256,
+                num_sub_vectors=32,
+            )
+            logger.info("[ACTIVE-LEARNING] IVF index created successfully")
+        except Exception as e:
+            logger.warning("[ACTIVE-LEARNING] Failed to create IVF index: %s", e)
+
+    def optimize_storage(self) -> None:
+        """Optymalizuje przechowywanie: kompaktuje pliki i czyści stare wersje."""
+        try:
+            if hasattr(self.table, "compact_files"):
+                self.table.compact_files()
+                logger.info("[ACTIVE-LEARNING] Storage compacted")
+            if hasattr(self.table, "cleanup_old_versions"):
+                self.table.cleanup_old_versions()
+                logger.info("[ACTIVE-LEARNING] Old versions cleaned up")
+        except Exception as e:
+            logger.warning("[ACTIVE-LEARNING] Storage optimization failed: %s", e)
+
+    def close(self) -> None:
+        """Zamyka bazę wektorową i czyści cache."""
+        self._suggestion_cache.clear()
+        logger.info("[ACTIVE-LEARNING] Closed, cache cleared")

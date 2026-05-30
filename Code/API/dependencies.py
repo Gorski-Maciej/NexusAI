@@ -27,13 +27,10 @@ async def provide_db_session(request: Request) -> AsyncGenerator[AsyncSession, N
     session_factory = request.app.state.db_session_factory
 
     async with session_factory() as session:
-        try:
+        # Transakcja jest automatycznie zatwierdzana po wyjściu z bloku begin(),
+        # a przy wyjątku automatycznie wycofywana (rollback).
+        async with session.begin():
             yield session
-        except Exception:
-            await session.rollback()
-            raise
-        finally:
-            pass
 
 
 async def provide_duckdb() -> DuckDBManager:

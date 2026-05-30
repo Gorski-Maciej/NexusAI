@@ -7,7 +7,7 @@ from litestar.openapi.plugins import SwaggerRenderPlugin
 
 from api.dependencies import provide_config, provide_db_session, provide_duckdb, provide_shared_image_buffer
 from api.exceptions import global_exception_handler
-from api.middleware import CorrelationAndDeprecationMiddleware, UploadSizeGuardMiddleware
+from api.middleware import CorrelationAndDeprecationMiddleware, UploadSizeGuardMiddleware, CSRFProtectionMiddleware, _generate_csrf_token
 from api.rate_limit import SimpleRateLimitMiddleware
 from api.routes.auth import AuthController
 from api.routes.analytics import AnalyticsController
@@ -87,7 +87,7 @@ def create_app() -> Litestar:
             "buffer": provide_shared_image_buffer,
         },
         exception_handlers={Exception: global_exception_handler},
-        middleware=[UploadSizeGuardMiddleware, SimpleRateLimitMiddleware, CorrelationAndDeprecationMiddleware],
+        middleware=[UploadSizeGuardMiddleware, SimpleRateLimitMiddleware, CSRFProtectionMiddleware, CorrelationAndDeprecationMiddleware],
         cors_config=CORSConfig(allow_origins=config.cors_origins, allow_methods=["*"], allow_headers=["*"], allow_credentials=cors_allow_credentials),
         openapi_config=OpenAPIConfig(
             title="Nexus AI API",

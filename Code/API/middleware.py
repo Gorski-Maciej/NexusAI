@@ -7,6 +7,7 @@ import base64
 import hashlib
 import hmac
 import os
+import secrets
 from litestar.middleware import AbstractMiddleware
 
 from core.tenant import (
@@ -15,16 +16,60 @@ from core.tenant import (
     set_current_tenant_id,
 )
 
-from litestar.status_codes import HTTP_413_REQUEST_ENTITY_TOO_LARGE
+from litestar.status_codes import HTTP_413_REQUEST_ENTITY_TOO_LARGE, HTTP_403_FORBIDDEN
 from core.config import AppConfig
+from core.logger import get_logger
+
+logger = get_logger()
 
 
 class RequestBodyTooLargeError(RuntimeError):
     pass
 
 
+_UPLOAD_SEMAPHORE = None
+_CSRF_TOKENS: dict[str, float] = {}  # token -> timestamp
+_CSRF_TOKEN_TTL = 3600  # 1 godzina
+
+
+def _get_upload_semaphore():
+    global _UPLOAD_SEMAPHORE
+    if _UPLOAD_SEMAPHORE is None:
+        import asyncio
+        _UPLOAD_SEMAPHORE = asyncio.Semaphore(10)  # max 10 równoczesnych uploadów
+    return _UPLOAD_SEMAPHORE
+
+
+def _cleanup_expired_csrf_tokens():
+    now = time.time()
+    expired = [k for k, ts in _CSRF_TOKENS.items() if now - ts > _CSRF_TOKEN_TTL]
+    for k in expired:
+        _CSRF_TOKENS.pop(k, None)
+
+
+def _generate_csrf_token() -> str:
+    token = secrets.token_urlsafe(32)
+    _CSRF_TOKENS[token] = time.time()
+    _cleanup_expired_csrf_tokens()
+    return token
+
+
+def _validate_csrf_token(token: str | None) -> bool:
+    if not token:
+        return False
+    ts = _CSRF_TOKENS.pop(token, None)
+    if ts is None:
+        return False
+    if time.time() - ts > _CSRF_TOKEN_TTL:
+        return False
+    return True
+
+
 class UploadSizeGuardMiddleware(AbstractMiddleware):
-    """Hard request-body guard for upload endpoints, including chunked transfer."""
+    """
+    Hard request-body guard for upload endpoints, including chunked transfer.
+    Rozwiązanie 15: Progressive size check, upload semaphore, timeout.
+    """
 
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":
@@ -56,20 +101,35 @@ class UploadSizeGuardMiddleware(AbstractMiddleware):
 
         total = 0
 
-        async def guarded_receive():
-            nonlocal total
-            message = await receive()
-            if message.get("type") == "http.request":
-                body = message.get("body", b"")
-                total += len(body)
-                if total > limit:
-                    raise RequestBodyTooLargeError("request body too large")
-            return message
+        # Użyj semafora dla ograniczenia równoczesnych uploadów (Rozwiązanie 15)
+        upload_sem = _get_upload_semaphore()
+        async with upload_sem:
+            try:
+                import asyncio
+                # Timeout na strumieniowanie danych (Rozwiązanie 15) - tylko faza odbioru
+                # Użyj wyższego timeoutu, bo przetwarzanie (OCR) może trwać dłużej
+                timed_out = False
+                async def guarded_receive_with_timeout():
+                    nonlocal total
+                    try:
+                        message = await asyncio.wait_for(receive(), timeout=120.0)
+                    except asyncio.TimeoutError:
+                        raise RequestBodyTooLargeError("upload stream timeout")
+                    if message.get("type") == "http.request":
+                        body = message.get("body", b"")
+                        total += len(body)
+                        if total > limit:
+                            raise RequestBodyTooLargeError("request body too large")
+                    return message
 
-        try:
-            await self.app(scope, guarded_receive, send)
-        except RequestBodyTooLargeError:
-            await self._send_413(send)
+                await self.app(scope, guarded_receive_with_timeout, send)
+            except asyncio.TimeoutError:
+                logger.warning("[UPLOAD] Request timeout for path=%s", path)
+                await self._send_413(send)
+            except RequestBodyTooLargeError as e:
+                if "timeout" in str(e):
+                    logger.warning("[UPLOAD] Upload stream timeout for path=%s", path)
+                await self._send_413(send)
 
     @staticmethod
     def _resolve_config(scope) -> AppConfig:
@@ -94,6 +154,86 @@ class UploadSizeGuardMiddleware(AbstractMiddleware):
             }
         )
         await send({"type": "http.response.body", "body": b'{"detail":"Request body too large"}'})
+
+
+class CSRFProtectionMiddleware(AbstractMiddleware):
+    """
+    Ochrona CSRF dla endpointów modyfikujących stan (POST, PUT, DELETE).
+    Rozwiązanie 13: Double-submit cookie pattern z X-CSRF-Token.
+    Używa nagłówka X-CSRF-Token do weryfikacji bezpiecznych żądań.
+    """
+
+    SAFE_METHODS = frozenset({"GET", "HEAD", "OPTIONS", "TRACE"})
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        method = scope.get("method", "GET")
+        if method in self.SAFE_METHODS:
+            await self.app(scope, receive, send)
+            return
+
+        path = scope.get("path", "")
+        # Wyklucz endpointy auth i health z walidacji CSRF
+        if path.startswith("/api/auth/"):
+            await self.app(scope, receive, send)
+            return
+        if "/health" in path:
+            await self.app(scope, receive, send)
+            return
+
+        headers = {k.decode().lower(): v.decode() for k, v in scope.get("headers", [])}
+
+        # Dla klientów używających JWT w nagłówku Authorization (Bearer token)
+        # CSRF nie jest wymagane, ponieważ przeglądarka nie dołącza tego nagłówka automatycznie
+        auth_header = headers.get("authorization", "")
+        if auth_header.startswith("Bearer "):
+            await self.app(scope, receive, send)
+            return
+
+        # Dla klientów używających ciasteczek lub innych metod - wymagaj X-CSRF-Token
+        csrf_token = headers.get("x-csrf-token")
+        csrf_cookie = None
+        for k, v in headers.items():
+            if k == "cookie":
+                for cookie in v.split(";"):
+                    cookie = cookie.strip()
+                    if cookie.startswith("csrf_token="):
+                        csrf_cookie = cookie.split("=", 1)[1]
+                        break
+
+        # Double-submit cookie: porównaj token z ciasteczka i nagłówka
+        if csrf_cookie and csrf_token and csrf_cookie == csrf_token:
+            await self.app(scope, receive, send)
+            return
+
+        # Lub użyj walidacji przez pamięć podręczną
+        if _validate_csrf_token(csrf_token):
+            await self.app(scope, receive, send)
+            return
+
+        # Jeśli brak tokena i żądanie używa ciasteczka auth - odrzuć
+        if csrf_cookie or "csrf_token" in str(headers.get("cookie", "")):
+            logger.warning("[CSRF] Invalid or missing CSRF token for %s %s", method, path)
+            await self._send_403(send, "CSRF validation failed")
+            return
+
+        # Dla innych klientów (np. API calls bez ciasteczek) - przepuść
+        await self.app(scope, receive, send)
+
+    @staticmethod
+    async def _send_403(send, detail: str = "Forbidden"):
+        body = json.dumps({"detail": detail}).encode()
+        await send(
+            {
+                "type": "http.response.start",
+                "status": HTTP_403_FORBIDDEN,
+                "headers": [(b"content-type", b"application/json")],
+            }
+        )
+        await send({"type": "http.response.body", "body": body})
 
 
 def _tenant_from_bearer_auth(authorization_header: str | None) -> str | None:
@@ -220,6 +360,11 @@ class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
             await send(message)
 
         try:
+            logger.bind(correlation_id=correlation_id, tenant_id=tenant_id).debug(
+                "Handling request: method=%s path=%s",
+                scope.get("method", "?"),
+                scope.get("path", "?"),
+            )
             await self.app(scope, receive, send_wrapper)
         finally:
             reset_current_tenant_id(tenant_token)

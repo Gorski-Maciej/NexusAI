@@ -44,30 +44,33 @@ async def resolve_triage_item(
     updated_by: str,
     tenant_id: str,
 ) -> Invoice:
-    invoice = await session.get(Invoice, invoice_id)
-    if invoice is None:
-        raise ValueError(f"Invoice {invoice_id} not found")
-    if str(invoice.tenant_id) != str(tenant_id):
-        raise ValueError("Cross-tenant access denied")
+    # Jawna transakcja zapewniająca atomowość operacji:
+    # pobranie -> walidacja -> modyfikacja -> zapis
+    async with session.begin():
+        invoice = await session.get(Invoice, invoice_id)
+        if invoice is None:
+            raise ValueError(f"Invoice {invoice_id} not found")
+        if str(invoice.tenant_id) != str(tenant_id):
+            raise ValueError("Cross-tenant access denied")
 
-    if number := corrected_data.get("number"):
-        invoice.number = str(number)
-    if contractor_nip := corrected_data.get("contractor_nip"):
-        invoice.contractor_nip = str(contractor_nip)
-    if amount_net := corrected_data.get("amount_net"):
-        invoice.amount_net = Decimal(str(amount_net))
-    if amount_gross := corrected_data.get("amount_gross"):
-        invoice.amount_gross = Decimal(str(amount_gross))
+        if number := corrected_data.get("number"):
+            invoice.number = str(number)
+        if contractor_nip := corrected_data.get("contractor_nip"):
+            invoice.contractor_nip = str(contractor_nip)
+        if amount_net := corrected_data.get("amount_net"):
+            invoice.amount_net = Decimal(str(amount_net))
+        if amount_gross := corrected_data.get("amount_gross"):
+            invoice.amount_gross = Decimal(str(amount_gross))
 
-    if action == "confirm_post":
-        invoice.status = "APPROVED"
-    elif action == "void_reject":
-        invoice.status = "REJECTED"
-    else:
-        raise ValueError("Unsupported triage action")
+        if action == "confirm_post":
+            invoice.status = "APPROVED"
+        elif action == "void_reject":
+            invoice.status = "REJECTED"
+        else:
+            raise ValueError("Unsupported triage action")
 
-    invoice.updated_by = updated_by
+        invoice.updated_by = updated_by
 
-    await session.commit()
+    # Po wyjściu z bloku begin() transakcja jest commitowana (lub rollback przy wyjątku)
     await session.refresh(invoice)
     return invoice

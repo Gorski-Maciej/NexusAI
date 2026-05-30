@@ -18,6 +18,21 @@ class InvoiceCreate(msgspec.Struct):
     issue_date: str = ""
 
 
+def _validate_nip(nip: str) -> str:
+    """Walidacja NIP: 10 cyfr + suma kontrolna.
+    Zwraca znormalizowany NIP (tylko cyfry) lub rzuca ValueError."""
+    normalized = "".join(ch for ch in str(nip) if ch.isdigit())
+    if len(normalized) != 10:
+        raise ValueError("NIP musi składać się z 10 cyfr.")
+
+    weights = (6, 5, 7, 2, 3, 4, 5, 6, 7)
+    checksum = sum(int(d) * w for d, w in zip(normalized[:9], weights)) % 11
+    if checksum == 10 or checksum != int(normalized[9]):
+        raise ValueError("Nieprawidłowy NIP (błąd sumy kontrolnej).")
+
+    return normalized
+
+
 def validate_invoice_create(payload: InvoiceCreate) -> None:
     if payload.amount_net < 0:
         raise ValueError("amount_net cannot be negative")
@@ -25,6 +40,12 @@ def validate_invoice_create(payload: InvoiceCreate) -> None:
         raise ValueError("amount_gross cannot be negative")
     if not payload.currency or len(payload.currency.strip()) != 3:
         raise ValueError("currency must be a 3-letter code")
+    # Walidacja NIP przy tworzeniu faktury
+    if payload.contractor_nip:
+        try:
+            _validate_nip(payload.contractor_nip)
+        except ValueError as e:
+            raise ValueError(f"contractor_nip validation failed: {e}")
 
 class InvoiceResponse(msgspec.Struct):
     """Struktura zwracana do frontendu."""

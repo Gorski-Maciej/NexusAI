@@ -163,6 +163,108 @@ async def on_startup(app: Litestar) -> None:
                 "is_active": True,
             },
         )
+
+        # --- Indeksy SQLite dla wydajności (Rozwiązanie 14) ---
+        await conn.execute(
+            text(
+                "CREATE INDEX IF NOT EXISTS idx_outbox_pending ON outbox_events(status, processed, retry_count, created_at)"
+            )
+        )
+        await conn.execute(
+            text(
+                "CREATE INDEX IF NOT EXISTS idx_invoices_tenant_status ON invoices(tenant_id, status)"
+            )
+        )
+        await conn.execute(
+            text(
+                "CREATE INDEX IF NOT EXISTS idx_invoices_updated_at ON invoices(updated_at)"
+            )
+        )
+
+        # --- Tabela idempotentności processed_events dla outbox (Rozwiązanie 11) ---
+        await conn.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS processed_events (
+                    id TEXT NOT NULL,
+                    event_type TEXT NOT NULL,
+                    aggregate_id TEXT NOT NULL,
+                    payload_hash TEXT NOT NULL,
+                    processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(event_type, aggregate_id)
+                )
+                """
+            )
+        )
+        await conn.execute(
+            text(
+                "CREATE UNIQUE INDEX IF NOT EXISTS idx_processed_events_business_key ON processed_events(event_type, aggregate_id)"
+            )
+        )
+
+        # Dodaj kolumnę processing_started_at jeśli nie istnieje
+        try:
+            await conn.execute(text("ALTER TABLE outbox_events ADD COLUMN processing_started_at TIMESTAMP NULL"))
+        except Exception:
+            pass
+
+        # --- Tabela task_status dla monitorowania postępu zadań (Rozwiązanie 17) ---
+        await conn.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS task_status (
+                    task_id TEXT PRIMARY KEY,
+                    task_name TEXT NOT NULL,
+                    user_id TEXT,
+                    status TEXT NOT NULL DEFAULT 'QUEUED',
+                    progress REAL DEFAULT 0.0,
+                    result TEXT,
+                    error_message TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+        )
+        await conn.execute(
+            text(
+                "CREATE INDEX IF NOT EXISTS idx_task_status_user ON task_status(user_id)"
+            )
+        )
+        await conn.execute(
+            text(
+                "CREATE INDEX IF NOT EXISTS idx_task_status_status ON task_status(status)"
+            )
+        )
+
+        # --- Tabela refresh_tokens dla mechanizmu odświeżania JWT (Rozwiązanie 16) ---
+        await conn.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS refresh_tokens (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id TEXT NOT NULL,
+                    token_hash TEXT UNIQUE NOT NULL,
+                    expires_at TIMESTAMP NOT NULL,
+                    is_revoked BOOLEAN NOT NULL DEFAULT 0,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+        )
+        await conn.execute(
+            text(
+                "CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id)"
+            )
+        )
+        await conn.execute(
+            text(
+                "CREATE INDEX IF NOT EXISTS idx_refresh_tokens_expires ON refresh_tokens(expires_at)"
+            )
+        )
+
+        # ANALYZE dla optymalizacji zapytań (Rozwiązanie 14)
+        await conn.execute(text("ANALYZE;"))
     try:
         sanity = await run_migration_sanity_checks(engine)
         integrity = await verify_migration_integrity(engine, config.migration_baseline_path)
@@ -195,13 +297,27 @@ async def on_shutdown(app: Litestar) -> None:
     """Bezpieczne zamykanie i konsolidacja danych."""
     logger.info(">>> Nexus API: Rozpoczynanie procedury zamykania...")
 
-    # Konsolidacja WAL dla SQLite (z Twojego modułu DB)
-    await consolidate_database(app.state.db_engine)
+    engine = app.state.db_engine
+
+    # 1. Najpierw zamykamy broker
     if not broker.is_worker_process:
         await broker.shutdown()
+
+    # 2. Zamykamy wszystkie aktywne sesje i zwalniamy połączenia
+    # Session factory zostanie zamknięta przez dispose() engine'u.
+    # Wszystkie sesje pozyskane przez provide_db_session są zarządzane
+    # przez async with session.begin() i powinny być już zamknięte.
+    # Dodatkowo wywołujemy dispose(), by zamknąć pulę połączeń.
+
+    # 3. Dopiero po zamknięciu połączeń wykonujemy konsolidację WAL
+    await consolidate_database(engine)
+
+    # 4. Zwolnienie zasobów engine'u
+    await engine.dispose()
+
+    # 5. Czyszczenie cache ML
     for cache_dir in (app.state.ml_cache_env or {}).values():
         try:
             shutil.rmtree(cache_dir, ignore_errors=True)
         except Exception:
             pass
-    await app.state.db_engine.dispose()

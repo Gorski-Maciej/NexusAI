@@ -39,6 +39,50 @@ class AccountingService:
         vat = net * Decimal(str(rate))
         return vat.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
+    @staticmethod
+    def validate_iban(iban: str) -> bool:
+        """
+        Walidacja numeru IBAN.
+        Sprawdza: długość (15-34 znaki), strukturę (2 litery + 2 cyfry + reszta alfanumeryczna),
+        oraz sumę kontrolną modulo 97 (algorytm IBAN).
+        """
+        if not iban or not isinstance(iban, str):
+            return False
+
+        # Usuń białe znaki i zamień na uppercase
+        clean_iban = "".join(iban.upper().split())
+
+        # Sprawdź długość (IBAN ma od 15 do 34 znaków)
+        if len(clean_iban) < 15 or len(clean_iban) > 34:
+            return False
+
+        # Sprawdź strukturę: 2 litery + 2 cyfry + reszta alfanumeryczna
+        if not clean_iban[:2].isalpha() or not clean_iban[2:4].isdigit():
+            return False
+        if not clean_iban[4:].isalnum():
+            return False
+
+        # Algorytm sumy kontrolnej IBAN (modulo 97)
+        # Przenieś 4 pierwsze znaki na koniec
+        rearranged = clean_iban[4:] + clean_iban[:4]
+
+        # Zamień litery na liczby (A=10, B=11, ..., Z=35)
+        numeric_string = ""
+        for char in rearranged:
+            if char.isalpha():
+                numeric_string += str(ord(char) - ord("A") + 10)
+            else:
+                numeric_string += char
+
+        # Oblicz modulo 97
+        # Dzielimy na kawałki, by uniknąć przepełnienia dla długich stringów
+        remainder = 0
+        for i in range(0, len(numeric_string), 9):
+            chunk = numeric_string[i:i + 9]
+            remainder = int(str(remainder) + chunk) % 97
+
+        return remainder == 1
+
     async def verify_nip(self, nip: str) -> dict | None:
         """Sprawdza NIP w bazie Ministerstwa Finansów (Biała Lista)."""
         # Oczyszczanie NIPu ze zbędnych znaków (np. myślników)

@@ -34,10 +34,18 @@ def create_oltp_engine(
     Create an async SQLAlchemy engine with mandatory PRAGMA settings.
     The same hook can bootstrap SQLCipher key when provided either directly
     or via `NEXUS_SQLCIPHER_KEY` environment variable.
+
+    Rozwiązanie 18: Jeśli sqlcipher_key jest podany (lub NEXUS_SQLCIPHER_KEY env),
+    użyj SQLCipher do szyfrowania bazy danych w spoczynku (at-rest encryption).
     """
+    url = _sqlite_url(config, sqlite_path)
+
+    # Sprawdź, czy klucz SQLCipher jest skonfigurowany
+    resolved_key = sqlcipher_key or os.getenv(config.sqlcipher_key_env, "").strip()
+
     engine = create_async_engine(
-        _sqlite_url(config, sqlite_path),
-        echo=False
+        url,
+        echo=False,
     )
 
     @event.listens_for(engine.sync_engine, "connect")
@@ -46,6 +54,20 @@ def create_oltp_engine(
         cursor.execute("PRAGMA cache_size = -20000;")
         cursor.execute("PRAGMA temp_store = 2;")
         cursor.execute("PRAGMA auto_vacuum = FULL;")
+
+        # Jeśli klucz SQLCipher jest dostępny, włącz szyfrowanie (Rozwiązanie 18)
+        if resolved_key:
+            try:
+                # Użyj hex-encoded klucza zamiast f-string, aby uniknąć SQL injection (Rozwiązanie 20)
+                # Konwertuj klucz na hex, co jest bezpieczne dla PRAGMA
+                key_hex = resolved_key.encode("utf-8").hex()
+                cursor.execute(f"PRAGMA key = \"x'{key_hex}'\";")
+                # Wymuś szyfrowanie dla nowych baz
+                cursor.execute("PRAGMA cipher_page_size = 4096;")
+                cursor.execute("PRAGMA kdf_iter = 64000;")
+                logger.info("[DB] SQLCipher encryption enabled for database")
+            except Exception as e:
+                logger.warning("[DB] Failed to enable SQLCipher: %s", e)
         cursor.close()
     return engine
 
@@ -67,12 +89,26 @@ async def consolidate_database(engine: AsyncEngine) -> None:
     Powinno być wywołane w pętli zamykającej aplikację (main.py).
     """
     try:
+        # Najpierw sprawdzamy, czy są aktywne połączenia
         async with engine.connect() as conn:
-            # PRAGMA wal_checkpoint(TRUNCATE) czyści logi i resetuje plik WAL do zera
+            # Sprawdź stan WAL przed checkpointem
+            result = await conn.execute(text("PRAGMA wal_checkpoint;"))
+            checkpoint_info = result.fetchone()
+            logger.info("WAL checkpoint status before TRUNCATE: %s", checkpoint_info)
+
+            # PRAGMA wal_checkpoint(TRUNCATE) czyści logi i resetuje plik WAL do zera.
+            # PASSIVE (0) - nie czeka na aktywne czytelników
+            # FULL (1) - czeka, ale może blokować
+            # RESTART (2) - jak FULL + przygotowuje do TRUNCATE
+            # TRUNCATE (3) - czyści WAL i resetuje rozmiar pliku do minimum
             await conn.execute(text("PRAGMA wal_checkpoint(TRUNCATE);"))
             await conn.execute(text("VACUUM;"))
+
+            # Potwierdź, że WAL został wyczyszczony
+            result2 = await conn.execute(text("PRAGMA wal_checkpoint;"))
+            logger.info("WAL checkpoint status after TRUNCATE: %s", result2.fetchone())
     except Exception as e:
-        logger.error(f"Failed to consolidate database: {e}")
+        logger.error("Failed to consolidate database: %s", e)
 
 def get_encrypted_engine():
     """Przykład synchronicznego silnika SQLCipher (jeśli potrzebne)."""

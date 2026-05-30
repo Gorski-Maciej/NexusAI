@@ -41,6 +41,19 @@ JWT_ISSUER = os.getenv("NEXUS_JWT_ISSUER", "nexus-ai")
 JWT_AUDIENCE = os.getenv("NEXUS_JWT_AUDIENCE", "nexus-api")
 JWT_EXPIRATION_SECONDS = _resolve_jwt_expiration_seconds()
 
+# --- Konfiguracja Refresh Token (Rozwiązanie 16) ---
+REFRESH_TOKEN_EXPIRATION_DAYS = int(os.getenv("NEXUS_REFRESH_TOKEN_DAYS", "30"))
+
+# Skrócony czas życia access tokena (15 minut zamiast 3600s)
+# Wymusza częstsze odświeżanie, co zwiększa bezpieczeństwo
+if JWT_EXPIRATION_SECONDS > 900:
+    logger.info(
+        "Reducing JWT expiration from %ss to 900s for refresh-token flow (Rozwiązanie 16). "
+        "Set NEXUS_JWT_EXPIRATION_SECONDS=900 to silence this message.",
+        JWT_EXPIRATION_SECONDS,
+    )
+    JWT_EXPIRATION_SECONDS = 900
+
 async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> User | None:
     if not token.sub:
         return None

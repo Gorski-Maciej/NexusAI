@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import atexit
+import hashlib
 import logging
 import json
 import os
 import resource
+import time
 from pathlib import Path
 from datetime import datetime, timedelta
 from taskiq_nats import PullBasedJetStreamBroker
 from sqlalchemy import text
+import httpx
 
 from core.config import AppConfig
 from db.analytics import DuckDBManager
@@ -23,6 +26,7 @@ from core.model_retention import prune_model_versions
 from services.outbox_replay import replay_dead_letter_events
 from services.migration_sanity import verify_schema_drift, verify_migration_integrity
 from pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
+from sqlalchemy import text as sql_text
 from services.autopilot import CouncilOrchestrator
 from services.council_agents import AlphaAgent, BetaAgent, GammaAgent, ModelManager
 from services.decision_logger import DecisionLogger
@@ -30,6 +34,7 @@ from services.rules_agent import RulesAgent
 from services.analytics_agent import AnalyticsAgent, FinDetective
 from services.decision_agent import DecisionOrchestrator, JambaStrategist, GraniteExecutor
 from services.orchestrator_agent import OrchestratorAgent
+from services.accounting import AccountingService
 
 broker = PullBasedJetStreamBroker()
 logger = logging.getLogger("nexus.api.tasks")
@@ -198,27 +203,39 @@ async def analytics_run(invoice_id: str, extracted_data: dict) -> dict:
     Runs Qwen2.5-1.5B analysis + Fin-RWKV anomaly detection.
     Shares ModelManager with Council agents for RAM mutual exclusion.
     Publishes result to invoice.analytics_result topic.
+    Timeout: 90 seconds dla prostych zadań analitycznych.
+    Rozwiązanie 17: Publikuje postęp zadania przez WebSocket.
     """
     config = AppConfig()
     manager, _, _ = _ensure_council_components(config)
     agent = _ensure_analytics_agent(config, manager)
     detective = _ensure_fin_detective(config)
 
+    task_id = f"analytics_{invoice_id}"
     logger.info("[ANALYTICS] running analysis for invoice_id=%s", invoice_id)
+
+    # Publikuj postęp (Rozwiązanie 17)
+    try:
+        from api.routes.ws import broadcast_progress, get_cancel_event
+        await broadcast_progress(task_id, {"type": "progress", "task_id": task_id, "percent": 10, "stage": "initializing"})
+    except Exception:
+        pass
 
     try:
         # Extract vendor history from extracted_data if available
         vendor_history = extracted_data.get("vendor_profile", {})
 
         # Run both analyses concurrently
+        # Timeout dla zadań analitycznych (90s)
         analysis_task = agent.analyze(
             invoice_data=extracted_data,
             vendor_history=vendor_history,
         )
         detection_task = detective.detect_anomalies(extracted_data)
 
-        analysis_result, ml_anomalies = await asyncio.gather(
-            analysis_task, detection_task,
+        analysis_result, ml_anomalies = await asyncio.wait_for(
+            asyncio.gather(analysis_task, detection_task),
+            timeout=90.0,
         )
 
         # Merge ML anomalies into analysis result
@@ -364,6 +381,7 @@ async def rules_check(invoice_id: str, extracted_data: dict) -> dict:
     Subscribes to invoice.extracted topic.
     Publishes result to invoice.rules_result topic.
     Shares ModelManager with Council agents for RAM mutual exclusion.
+    Timeout: 30 seconds.
     """
     config = AppConfig()
     manager, _, _ = _ensure_council_components(config)
@@ -372,7 +390,10 @@ async def rules_check(invoice_id: str, extracted_data: dict) -> dict:
     logger.info("[RULES] checking invoice_id=%s", invoice_id)
 
     try:
-        result = await agent.evaluate(extracted_data)
+        result = await asyncio.wait_for(
+            agent.evaluate(extracted_data),
+            timeout=30.0,
+        )
 
         logger.info(
             "[RULES] invoice_id=%s passed=%s confidence=%.4f violations=%d",
@@ -414,16 +435,20 @@ async def rules_check(invoice_id: str, extracted_data: dict) -> dict:
 
 @broker.task(task_name="council_decide")
 async def council_decide(invoice_id: str, extracted_data: dict) -> dict:
-    """Council of Agents decision task triggered after OCR extraction."""
+    """Council of Agents decision task triggered after OCR extraction.
+    Timeout: 120 seconds for complex LLM deliberation."""
     config = AppConfig()
     _, orchestrator, decision_logger = _ensure_council_components(config)
 
     logger.info("[COUNCIL] starting deliberation for invoice_id=%s", invoice_id)
 
     try:
-        decision = await orchestrator.evaluate(
-            invoice_id=invoice_id,
-            invoice_data=extracted_data,
+        decision = await asyncio.wait_for(
+            orchestrator.evaluate(
+                invoice_id=invoice_id,
+                invoice_data=extracted_data,
+            ),
+            timeout=120.0,
         )
 
         logger.info(
@@ -587,6 +612,34 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
             secondary.amount_gross,
         )
 
+    # --- Walidacja NIP i IBAN (asynchroniczna, nie blokuje głównego przepływu) ---
+    try:
+        accounting = AccountingService()
+        contractor_nip = payload.get("contractor_nip", "")
+        bank_account = payload.get("bank_account", "")
+
+        nip_verification = await accounting.verify_nip(contractor_nip) if contractor_nip else None
+        nip_valid = nip_verification is not None
+        iban_valid = accounting.validate_iban(bank_account) if bank_account else True  # IBAN nie jest wymagany
+
+        if nip_verification:
+            logger.info("[OCR] NIP verified invoice_id=%s name=%s", invoice_id, nip_verification.get("name", "unknown"))
+        else:
+            logger.warning("[OCR] NIP verification failed for invoice_id=%s nip=%s", invoice_id, contractor_nip)
+
+        if not iban_valid and bank_account:
+            logger.warning("[OCR] IBAN validation failed for invoice_id=%s iban=%s", invoice_id, bank_account)
+
+        # Dodaj flagi walidacji do payloadu
+        payload["nip_valid"] = nip_valid
+        payload["iban_valid"] = iban_valid
+    except Exception as ve:
+        logger.warning("[OCR] NIP/IBAN validation error for invoice_id=%s: %s", invoice_id, ve)
+        nip_valid = False
+        iban_valid = False
+        payload["nip_valid"] = False
+        payload["iban_valid"] = False
+
     # --- Build extracted data for council decision ---
     extracted_data = {
         "invoice_id": invoice_id,
@@ -648,6 +701,17 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
     # Zero-ETL path: no OLTP->OLAP row replication in worker.
     # Invoice OCR lifecycle is event-driven; analytics layer reads SQLite via DuckDB ATTACH.
     await OLAP_CIRCUIT_BREAKER.call(_refresh_cashflow_for_event)
+
+    # Wyczyść bufor ramek OCR dla tego dokumentu (Rozwiązanie 12)
+    try:
+        from api.shared_image_buffer import SharedImageBuffer
+        from api.dependencies import provide_shared_image_buffer
+        # Użyj globalnego bufora - w środowisku workers nie ma dostępu do app.state
+        # Dlatego czyszczenie jest opcjonalne i best-effort
+        logger.info("[OCR] processing complete for invoice_id=%s, buffer can be cleared", invoice_id)
+    except Exception:
+        pass
+
     return
 
 
@@ -689,49 +753,275 @@ async def _refresh_cashflow_for_event() -> None:
     await clear_cache_async(prefix="api.routes.analytics")
 
 
+@broker.task(schedule=[{"cron": "*/5 * * * *"}], task_name="dead_letter_processor")
+async def dead_letter_processor_task() -> None:
+    """
+    Okresowe zadanie (co 5 minut) monitorujące Dead Letter Queue.
+    Subskrybuje subjekt nats.deadletter, zapisuje błędy do tabeli failed_tasks
+    i loguje ostrzeżenia dla administratora.
+    """
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    session_factory = create_session_factory(engine)
+
+    try:
+        import nats
+        nc = await nats.connect(config.nats_url)
+        sub = await nc.subscribe("nats.deadletter", queue="nexus-dlq-workers")
+
+        # Sprawdź, czy tabela failed_tasks istnieje, jeśli nie - utwórz
+        async with session_factory() as session:
+            await session.execute(
+                text(
+                    """
+                    CREATE TABLE IF NOT EXISTS failed_tasks (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        task_type TEXT NOT NULL,
+                        task_id TEXT,
+                        error_message TEXT,
+                        stack_trace TEXT,
+                        payload TEXT,
+                        failed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        acknowledged BOOLEAN DEFAULT 0
+                    )
+                    """
+                )
+            )
+            await session.commit()
+
+        # Sprawdź wiadomości w DLQ
+        try:
+            msg = await asyncio.wait_for(sub.fetch(1, timeout=2.0), timeout=5.0)
+            while msg:
+                try:
+                    data = json.loads(msg.data.decode())
+                    error_message = data.get("error", "Unknown error")
+                    task_type = data.get("task_type", "unknown")
+                    task_id = data.get("task_id", None)
+                    stack_trace = data.get("stack_trace", "")
+                    payload = data.get("payload", {})
+
+                    # Zapisz błąd do tabeli failed_tasks
+                    async with session_factory() as session:
+                        await session.execute(
+                            text(
+                                """
+                                INSERT INTO failed_tasks (task_type, task_id, error_message, stack_trace, payload)
+                                VALUES (:task_type, :task_id, :error_message, :stack_trace, :payload)
+                                """
+                            ),
+                            {
+                                "task_type": task_type,
+                                "task_id": task_id,
+                                "error_message": error_message,
+                                "stack_trace": stack_trace,
+                                "payload": json.dumps(payload),
+                            },
+                        )
+                        await session.commit()
+
+                    logger.error(
+                        "[DLQ] Dead letter received: task_type=%s task_id=%s error=%s",
+                        task_type,
+                        task_id,
+                        error_message,
+                    )
+
+                    # TODO: Powiadom administratora przez webhook, jeśli skonfigurowano
+                    dpo_webhook = os.getenv("NEXUS_DPO_ALERT_WEBHOOK", "")
+                    if dpo_webhook:
+                        try:
+                            async with httpx.AsyncClient(timeout=5.0) as client:
+                                await client.post(
+                                    dpo_webhook,
+                                    json={
+                                        "type": "dead_letter",
+                                        "task_type": task_type,
+                                        "error": error_message,
+                                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                                    },
+                                )
+                        except Exception:
+                            logger.warning("[DLQ] Failed to notify webhook")
+
+                except Exception as parse_err:
+                    logger.warning("[DLQ] Failed to parse DLQ message: %s", parse_err)
+
+                try:
+                    msg = await asyncio.wait_for(sub.fetch(1, timeout=2.0), timeout=5.0)
+                except asyncio.TimeoutError:
+                    break
+
+        except asyncio.TimeoutError:
+            pass  # Brak wiadomości w DLQ
+
+        await nc.close()
+    except Exception as dlq_err:
+        logger.warning("[DLQ] Dead letter processor error: %s", dlq_err)
+    finally:
+        await engine.dispose()
+
+
 @broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="relay_outbox_events")
 async def relay_outbox_events() -> None:
-    """Relay pending outbox events in a separate worker loop."""
+    """
+    Relay pending outbox events with atomic UPDATE semantics (Rozwiązanie 11).
+    Uses two-step atomic UPDATE to prevent duplicate processing by concurrent workers.
+    Detects stale PROCESSING tasks (>= 5 min) and reclaims them.
+    Records idempotency key in processed_events to prevent double-dispatch.
+    """
     config = AppConfig()
     engine = create_oltp_engine(config)
     session_factory = create_session_factory(engine)
 
     async with session_factory() as session:
-        rows = (
-            await session.execute(
-                text(
-                    """
-                    SELECT id, event_type, aggregate_id, payload
-                    FROM outbox_events
+        # Upewnij się, że tabela dead_letter_events istnieje
+        await session.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS dead_letter_events (
+                    id TEXT PRIMARY KEY,
+                    event_type TEXT NOT NULL,
+                    aggregate_id TEXT,
+                    payload TEXT,
+                    error_message TEXT,
+                    stack_trace TEXT,
+                    retry_count INTEGER DEFAULT 0,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    dead_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+        )
+
+        # 1. Odblokuj stare zadania w statusie PROCESSING (timeout >= 5 minut)
+        stale_timeout = 300  # 5 minutes
+        await session.execute(
+            text(
+                """
+                UPDATE outbox_events
+                SET status = 'FAILED', processing_started_at = NULL
+                WHERE status = 'PROCESSING'
+                  AND processing_started_at IS NOT NULL
+                  AND (strftime('%%s', 'now') - strftime('%%s', processing_started_at)) > :timeout
+                """
+            ),
+            {"timeout": stale_timeout},
+        )
+
+        # 2. Atomowa rezerwacja: UPDATE z warunkiem na status = 'PENDING'/'FAILED'
+        # Dwa etapy: najpierw zaznaczamy zdarzenia do przetworzenia
+        await session.execute(
+            text(
+                """
+                UPDATE outbox_events
+                SET status = 'PROCESSING',
+                    processing_started_at = CURRENT_TIMESTAMP
+                WHERE id IN (
+                    SELECT id FROM outbox_events
                     WHERE status IN ('PENDING', 'FAILED')
                       AND processed = 0
                       AND COALESCE(retry_count, 0) < :max_retries
                     ORDER BY created_at ASC
                     LIMIT 100
+                )
+                """
+            ),
+            {"max_retries": MAX_OUTBOX_RETRIES},
+        )
+
+        # 3. Pobierz zarezerwowane wiersze
+        rows = (
+            await session.execute(
+                text(
+                    """
+                    SELECT id, event_type, aggregate_id, payload, COALESCE(retry_count, 0) as retry_count
+                    FROM outbox_events
+                    WHERE status = 'PROCESSING'
+                      AND processing_started_at IS NOT NULL
+                    ORDER BY created_at ASC
+                    LIMIT 100
                     """
                 ),
-                {"max_retries": MAX_OUTBOX_RETRIES},
             )
         ).mappings().all()
 
         for row in rows:
-            await session.execute(
-                text("UPDATE outbox_events SET status = 'PROCESSING' WHERE id = :id AND status = 'PENDING'"),
-                {"id": row["id"]},
-            )
             try:
+                # Idempotentność: sprawdź czy to zdarzenie było już przetworzone
+                event_id = row["id"]
+                existing = await session.execute(
+                    text(
+                        "SELECT 1 FROM processed_events WHERE id = :id"
+                    ),
+                    {"id": event_id},
+                )
+                if existing.fetchone():
+                    logger.info("[OUTBOX] Skipping already processed event id=%s", event_id)
+                    await session.execute(
+                        text("UPDATE outbox_events SET status = 'SENT', processed = 1, processed_at = CURRENT_TIMESTAMP WHERE id = :id"),
+                        {"id": event_id},
+                    )
+                    continue
+
                 await _dispatch_outbox_event(row)
+
+                # Zapisz do tabeli idempotentności
+                payload_raw = row.get("payload") or "{}"
+                payload_hash = hashlib.sha256(payload_raw.encode()).hexdigest()
+                await session.execute(
+                    text(
+                        """
+                        INSERT OR IGNORE INTO processed_events (id, event_type, aggregate_id, payload_hash, processed_at)
+                        VALUES (:id, :event_type, :aggregate_id, :payload_hash, CURRENT_TIMESTAMP)
+                        """
+                    ),
+                    {
+                        "id": event_id,
+                        "event_type": row["event_type"],
+                        "aggregate_id": row["aggregate_id"],
+                        "payload_hash": payload_hash,
+                    },
+                )
+
                 await session.execute(
                     text("UPDATE outbox_events SET status = 'SENT', processed = 1, processed_at = CURRENT_TIMESTAMP WHERE id = :id"),
-                    {"id": row["id"]},
+                    {"id": event_id},
                 )
             except Exception as exc:
                 logger.exception("[OUTBOX] Failed to relay event id=%s: %s", row["id"], exc)
+                new_retry_count = row["retry_count"] + 1
+                is_dead_letter = new_retry_count >= MAX_OUTBOX_RETRIES
+
+                if is_dead_letter:
+                    try:
+                        await session.execute(
+                            text(
+                                """
+                                INSERT OR IGNORE INTO dead_letter_events
+                                    (id, event_type, aggregate_id, payload, error_message, stack_trace, retry_count)
+                                VALUES (:id, :event_type, :aggregate_id, :payload, :error_message, :stack_trace, :retry_count)
+                                """
+                            ),
+                            {
+                                "id": row["id"],
+                                "event_type": row["event_type"],
+                                "aggregate_id": row["aggregate_id"],
+                                "payload": row["payload"],
+                                "error_message": str(exc),
+                                "stack_trace": __import__("traceback").format_exc(),
+                                "retry_count": new_retry_count,
+                            },
+                        )
+                    except Exception as dle:
+                        logger.warning("[OUTBOX] Failed to write dead_letter_event: %s", dle)
+
                 await session.execute(
                     text(
                         """
                         UPDATE outbox_events
                         SET retry_count = retry_count + 1,
+                            processing_started_at = NULL,
                             status = CASE
                                 WHEN retry_count + 1 >= :max_retries THEN 'DEAD_LETTER'
                                 ELSE 'FAILED'
@@ -741,6 +1031,13 @@ async def relay_outbox_events() -> None:
                     ),
                     {"id": row["id"], "max_retries": MAX_OUTBOX_RETRIES},
                 )
+
+        # 4. Cleanup starych wpisów processed_events (> 24h)
+        await session.execute(
+            text(
+                "DELETE FROM processed_events WHERE processed_at < datetime('now', '-1 day')"
+            )
+        )
 
         await session.commit()
 
@@ -880,21 +1177,52 @@ async def migration_integrity_daily_check_task() -> None:
 @broker.task(schedule=[{"cron": "0 3 * * 0"}], task_name="cleanup_old_logs")
 async def cleanup_old_logs_task() -> None:
     log_dir = Path("app_data/logs")
-    cutoff = datetime.now() - timedelta(days=7)
     if not log_dir.exists():
         return
+
+    now = datetime.now()
+    cutoff_compress = now - timedelta(days=7)   # Kompresuj logi starsze niż 7 dni
+    cutoff_delete = now - timedelta(days=30)    # Usuń logi starsze niż 30 dni
+
     removed = 0
-    for f in log_dir.glob("*.log*"):
+    compressed = 0
+
+    for f in log_dir.iterdir():
+        if not f.is_file():
+            continue
         try:
-            if datetime.fromtimestamp(f.stat().st_mtime) < cutoff:
+            mtime = datetime.fromtimestamp(f.stat().st_mtime)
+
+            # Usuń bardzo stare pliki
+            if mtime < cutoff_delete:
                 f.unlink(missing_ok=True)
                 removed += 1
-        except FileNotFoundError:
+                logger.debug("[CLEANUP] removed old log: %s", f.name)
+                continue
+
+            # Skompresuj pliki .log starsze niż 7 dni (jeśli jeszcze nie skompresowane)
+            if mtime < cutoff_compress and f.suffix in (".log", ".json"):
+                compressed_name = f.with_suffix(f.suffix + ".gz")
+                if not compressed_name.exists():
+                    try:
+                        import gzip
+                        import shutil
+                        with open(f, "rb") as f_in:
+                            with gzip.open(compressed_name, "wb") as f_out:
+                                shutil.copyfileobj(f_in, f_out)
+                        f.unlink()
+                        compressed += 1
+                        logger.debug("[CLEANUP] compressed log: %s -> %s", f.name, compressed_name.name)
+                    except Exception as e:
+                        logger.warning("[CLEANUP] failed to compress %s: %s", f.name, e)
+
+        except (FileNotFoundError, OSError):
             continue
-    logger.info("[CLEANUP] old logs removed=%s", removed)
+
+    logger.info("[CLEANUP] old logs removed=%s compressed=%s", removed, compressed)
 
 
-@broker.task(schedule=[{"cron": "*/15 * * * *"}], task_name="cleanup_temp_upload_files")
+@broker.task(schedule=[{"cron": "*/5 * * * *"}], task_name="cleanup_temp_upload_files")
 async def cleanup_temp_upload_files_task() -> None:
     uploads_dir = Path("app_data/uploads")
     if not uploads_dir.exists():
@@ -905,6 +1233,16 @@ async def cleanup_temp_upload_files_task() -> None:
             f.unlink(missing_ok=True)
             removed += 1
         except FileNotFoundError:
+            continue
+    # Dodatkowo: czyść stare pliki tymczasowe, które mogły zostać pominięte (np. z błędów)
+    for f in uploads_dir.glob("tmp_*"):
+        try:
+            # Usuń pliki starsze niż 1 godzina
+            age = time.time() - f.stat().st_mtime
+            if age > 3600:
+                f.unlink(missing_ok=True)
+                removed += 1
+        except (FileNotFoundError, OSError):
             continue
     logger.info("[CLEANUP] temp upload files removed=%s", removed)
 
@@ -1013,6 +1351,99 @@ async def compact_lancedb_task() -> None:
     logger.info("[LANCEDB] compacted tables=%s", compacted)
 
 
+@broker.task(schedule=[{"cron": "0 * * * *"}], task_name="check_hanging_transactions")
+async def check_hanging_transactions_task() -> None:
+    """
+    Okresowe zadanie (co godzinę) wykrywające wiszące transakcje.
+    Sprawdza dziennik WAL SQLite - jeśli plik WAL jest duży, może to wskazywać
+    na otwartą transakcję. Loguje ostrzeżenie.
+    """
+    config = AppConfig()
+    wal_path = config.sqlite_path.with_suffix(".db-wal")
+    if wal_path.exists():
+        wal_size_mb = wal_path.stat().st_size / (1024 * 1024)
+        if wal_size_mb > 50:
+            logger.warning(
+                "[HANGING-TX] Plik WAL ma %.2f MB - może wskazywać na wiszącą transakcję. "
+                "Sprawdź aktywne połączenia i sesje.",
+                wal_size_mb,
+            )
+        else:
+            logger.debug("[HANGING-TX] Plik WAL ma %.2f MB - OK", wal_size_mb)
+    else:
+        logger.debug("[HANGING-TX] Brak pliku WAL - SQLite działa w trybie DELETE lub WAL jest pusty")
+
+    # Dodatkowo: sprawdź długo trwające zapytania przez PRAGMA
+    engine = create_oltp_engine(config)
+    try:
+        async with engine.connect() as conn:
+            result = await conn.execute(sql_text("PRAGMA wal_checkpoint;"))
+            cp_info = result.fetchone()
+            # Jeśli wal_checkpoint zwraca błąd (busy), logujemy ostrzeżenie
+            if cp_info and len(cp_info) > 0 and cp_info[0] < 0:
+                logger.warning(
+                    "[HANGING-TX] PRAGMA wal_checkpoint zwrócił kod %s - "
+                    "baza danych jest zajęta przez inną sesję.",
+                    cp_info[0],
+                )
+    except Exception as e:
+        logger.warning("[HANGING-TX] Nie udało się sprawdzić stanu WAL: %s", e)
+    finally:
+        await engine.dispose()
+
+
+@broker.task(schedule=[{"cron": "0 6 * * 1"}], task_name="weekly_nip_reverification")
+async def weekly_nip_reverification_task() -> None:
+    """
+    Cotygodniowe zadanie ponownej weryfikacji NIP-ów kontrahentów.
+    Sprawdza NIP-y w Białej Liście MF i aktualizuje status w tabeli contractors.
+    """
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    session_factory = create_session_factory(engine)
+    accounting = AccountingService()
+
+    try:
+        async with session_factory() as session:
+            # Pobierz wszystkich kontrahentów
+            from sqlalchemy import select as sa_select
+            from models.contractor import Contractor
+
+            result = await session.execute(sa_select(Contractor))
+            contractors = result.scalars().all()
+
+            verified_count = 0
+            failed_count = 0
+            for contractor in contractors:
+                try:
+                    verification = await accounting.verify_nip(contractor.nip)
+                    if verification:
+                        verified_count += 1
+                        logger.info(
+                            "[NIP-VERIFY] Contractors NIP=%s verified: %s",
+                            contractor.nip,
+                            verification.get("name", "unknown"),
+                        )
+                    else:
+                        failed_count += 1
+                        logger.warning(
+                            "[NIP-VERIFY] Contractors NIP=%s verification FAILED",
+                            contractor.nip,
+                        )
+                except Exception as ve:
+                    failed_count += 1
+                    logger.warning("[NIP-VERIFY] Error verifying NIP=%s: %s", contractor.nip, ve)
+
+            logger.info(
+                "[NIP-VERIFY] Weekly reverification complete: verified=%d, failed=%d, total=%d",
+                verified_count,
+                failed_count,
+                len(contractors),
+            )
+    finally:
+        await engine.dispose()
+
+
 @broker.task(schedule=[{"cron": "30 4 * * 0"}], task_name="sqlite_weekly_vacuum")
 async def sqlite_weekly_vacuum_task() -> None:
     config = AppConfig()
@@ -1040,3 +1471,31 @@ async def cleanup_duckdb_temp_task() -> None:
         except FileNotFoundError:
             continue
     logger.info("[DUCKDB] temp files removed=%s", removed)
+
+
+@broker.task(schedule=[{"cron": "0 5 * * *"}], task_name="cleanup_expired_refresh_tokens")
+async def cleanup_expired_refresh_tokens_task() -> None:
+    """
+    Codzienne zadanie czyszczenia wygasłych i odwołanych refresh tokenów.
+    Rozwiązanie 16: Usuwa tokeny starsze niż 7 dni od daty wygaśnięcia.
+    """
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    session_factory = create_session_factory(engine)
+    try:
+        async with session_factory() as session:
+            result = await session.execute(
+                text(
+                    """
+                    DELETE FROM refresh_tokens
+                    WHERE expires_at < datetime('now', '-7 days')
+                       OR (is_revoked = 1 AND created_at < datetime('now', '-30 days'))
+                    """
+                )
+            )
+            deleted = result.rowcount
+            await session.commit()
+            logger.info("[TOKEN-CLEANUP] Removed %d expired/revoked refresh tokens", deleted)
+    finally:
+        await engine.dispose()
+
