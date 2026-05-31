@@ -4,6 +4,13 @@ from datetime import datetime, timezone
 from db.database import Base
 import uuid
 
+class OutboxStatus:
+    """Outbox event status constants (mirrors OutboxEvent.status field)."""
+    PENDING = "PENDING"
+    PROCESSED = "PROCESSED"
+    FAILED = "FAILED"
+
+
 class OutboxEvent(Base):
     """
     Zdarzenia do wysłania przez NATS.
@@ -15,7 +22,7 @@ class OutboxEvent(Base):
     event_type: Mapped[str] = mapped_column(String) # np. "invoice_created", "ocr_completed"
     aggregate_id: Mapped[str] = mapped_column(String, default="")
     payload: Mapped[str] = mapped_column(Text) # Dane zdarzenia w formacie JSON
-    status: Mapped[str] = mapped_column(String, default="PENDING")
+    status: Mapped[str] = mapped_column(String, default=OutboxStatus.PENDING)
     retry_count: Mapped[int] = mapped_column(default=0)
     processed: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))

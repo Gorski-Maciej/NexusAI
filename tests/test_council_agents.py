@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-from Code.SERVICES.council_agents import (
+from SERVICES.council_agents import (
     DecisionVerdict,
     AlphaAgent,
     BetaAgent,
@@ -168,7 +168,7 @@ class TestAgentPrompts:
 
     def test_alpha_prompt_contains_required_fields(self, sample_invoice: dict) -> None:
         """Prompt Alpha zawiera wszystkie wymagane pola faktury."""
-        from Code.SERVICES.council_agents import ModelManager
+        from SERVICES.council_agents import ModelManager
 
         mm = ModelManager()
         agent = AlphaAgent("alpha-test", "/fake/path", mm)
@@ -184,7 +184,7 @@ class TestAgentPrompts:
 
     def test_beta_prompt_contains_validation_fields(self, sample_invoice: dict) -> None:
         """Prompt Beta zawiera dane do walidacji."""
-        from Code.SERVICES.council_agents import ModelManager
+        from SERVICES.council_agents import ModelManager
 
         mm = ModelManager()
         agent = BetaAgent("beta-test", "/fake/path", mm)
@@ -199,7 +199,7 @@ class TestAgentPrompts:
 
     def test_gamma_prompt_contains_anomaly_fields(self, sample_invoice: dict) -> None:
         """Prompt Gamma zawiera dane do analizy anomalii."""
-        from Code.SERVICES.council_agents import ModelManager
+        from SERVICES.council_agents import ModelManager
 
         mm = ModelManager()
         agent = GammaAgent("gamma-test", "/fake/path", mm)
@@ -213,7 +213,7 @@ class TestAgentPrompts:
 
     def test_alpha_prompt_with_unknown_contractor(self) -> None:
         """Alpha prompt z nieznanym kontrahentem."""
-        from Code.SERVICES.council_agents import ModelManager
+        from SERVICES.council_agents import ModelManager
 
         mm = ModelManager()
         agent = AlphaAgent("alpha-test", "/fake/path", mm)
@@ -241,7 +241,7 @@ class TestModelManager:
     """Testy dla ModelManager — lifecycle, TTL, locking."""
 
     def test_initial_state(self) -> None:
-        from Code.SERVICES.council_agents import ModelManager
+        from SERVICES.council_agents import ModelManager
 
         mm = ModelManager()
         assert mm.current_model_name is None
@@ -251,7 +251,7 @@ class TestModelManager:
         """ModelManager.acquire/release z mockowanym Llama."""
         import asyncio
         from unittest.mock import patch, AsyncMock
-        from Code.SERVICES.council_agents import ModelManager
+        from SERVICES.council_agents import ModelManager
 
         mm = ModelManager()
 
@@ -279,7 +279,7 @@ class TestModelManager:
         """Model powinien być reuse'owany w ramach TTL."""
         import asyncio
         from unittest.mock import patch
-        from Code.SERVICES.council_agents import ModelManager
+        from SERVICES.council_agents import ModelManager
 
         mm = ModelManager()
 
@@ -309,7 +309,7 @@ class TestModelManager:
         """Inny model_name powinien wymusić przeładowanie."""
         import asyncio
         from unittest.mock import patch
-        from Code.SERVICES.council_agents import ModelManager
+        from SERVICES.council_agents import ModelManager
 
         mm = ModelManager()
 

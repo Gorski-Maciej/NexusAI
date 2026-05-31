@@ -37,6 +37,8 @@ class _MockModule(types.ModuleType):
     """Mock module that allows any attribute access."""
 
     def __getattr__(self, name: str) -> Any:
+        if name == "__path__":
+            return []  # make mock look like a package for sub-imports
         if name.startswith("__") and name.endswith("__"):
             raise AttributeError(name)
         m = MagicMock()
@@ -73,6 +75,9 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     "llama_cpp",
     "nats",
     "sqlalchemy", "sqlalchemy.ext", "sqlalchemy.ext.asyncio", "sqlalchemy.orm",
+    "sqlalchemy.dialects", "sqlalchemy.dialects.postgresql",
+    "sqlalchemy.sql", "sqlalchemy.types",
+    "sqlalchemy.engine", "sqlalchemy.engine.url",
     "starlette", "fastapi",
     "api", "api.routes", "api.server",
     "fsspec", "fsspec.implementations", "fsspec.implementations.local",

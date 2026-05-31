@@ -1,27 +1,49 @@
 # pipeline/manager.py
-from statemachine import StateMachine, State
 from core.logger import logger
 from core.events import NexusEvent
 
-class DocumentPipeline(StateMachine):
-    """Zarządza cyklem życia analizy dokumentu."""
 
-    # Definicja stanów
-    pending = State("Oczekiwanie", initial=True)
-    processing_ocr = State("Analiza Wizualna (OCR)")
-    extracting_data = State("Ekstrakcja LLM")
-    validating = State("Weryfikacja Logiczna")
-    completed = State("Zakończono")
-    failed = State("Błąd")
+class DocumentPipeline:
+    """Zarządza cyklem życia analizy dokumentu (no statemachine dependency)."""
 
-    # Definicja przejść
-    start = pending.to(processing_ocr)
-    ocr_done = processing_ocr.to(extracting_data)
-    extraction_done = extracting_data.to(validating)
-    validate_success = validating.to(completed)
-    error_occured = (pending | processing_ocr | extracting_data | validating).to(failed)
+    STATES = {
+        "pending": "Oczekiwanie",
+        "processing_ocr": "Analiza Wizualna (OCR)",
+        "extracting_data": "Ekstrakcja LLM",
+        "validating": "Weryfikacja Logiczna",
+        "completed": "Zakończono",
+        "failed": "Błąd",
+    }
 
     def __init__(self, doc_id: str, bus_client):
         self.doc_id = doc_id
-        self.bus = bus_client # NATS/Websocket client do powiadomień UI
-        super().__init__()
+        self.bus = bus_client  # NATS/Websocket client do powiadomień UI
+        self._state = "pending"
+
+    @property
+    def current_state(self):
+        return self._state
+
+    @property
+    def current_state_label(self):
+        return self.STATES.get(self._state, self._state)
+
+    def start(self):
+        if self._state == "pending":
+            self._state = "processing_ocr"
+
+    def ocr_done(self):
+        if self._state == "processing_ocr":
+            self._state = "extracting_data"
+
+    def extraction_done(self):
+        if self._state == "extracting_data":
+            self._state = "validating"
+
+    def validate_success(self):
+        if self._state == "validating":
+            self._state = "completed"
+
+    def error_occurred(self):
+        if self._state in ("pending", "processing_ocr", "extracting_data", "validating"):
+            self._state = "failed"

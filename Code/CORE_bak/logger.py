@@ -12,7 +12,7 @@ def setup_logger(app_name: str = "NexusAI"):
         sys.stderr,
         enqueue=True, # Zapobiega blokowaniu wątku głównego
         colorize=True,
-        format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <message>{message}</message>"
+        format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | {message}"
     )
 
     # Plik z rotacją i kompresją

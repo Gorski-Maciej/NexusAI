@@ -8,16 +8,12 @@ from dataclasses import dataclass
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any
-import lancedb
 import msgspec
 import psutil
-import pyarrow as pa
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from statemachine import State, StateMachine
 from taskiq import TaskiqEvents
 from taskiq_nats import PullBasedJetStreamBroker
-import nats
 
 from core.config import AppConfig
 from db.database import create_oltp_engine, create_session_factory, SessionLocal
@@ -57,18 +53,46 @@ class InvoiceEventPayload:
     image_path: str
     contractor_id: str
 
-class InvoiceProcessingMachine(StateMachine):
-    """Invoice lifecycle state machine."""
-    new = State("NEW", initial=True)
-    processing = State("PROCESSING")
-    approved = State("APPROVED")
-    manual_review = State("MANUAL_REVIEW")
-    failed = State("FAILED")
+class InvoiceProcessingMachine:
+    """Invoice lifecycle state machine (no statemachine dependency)."""
+    STATES = {
+        "new": "NEW",
+        "processing": "PROCESSING",
+        "approved": "APPROVED",
+        "manual_review": "MANUAL_REVIEW",
+        "failed": "FAILED",
+    }
 
-    start = new.to(processing)
-    approve = processing.to(approved)
-    request_review = processing.to(manual_review)
-    fail = processing.to(failed)
+    def __init__(self):
+        self._state = "new"
+
+    def start(self):
+        self._state = "processing"
+
+    def approve(self):
+        if self._state == "processing":
+            self._state = "approved"
+
+    def request_review(self):
+        if self._state == "processing":
+            self._state = "manual_review"
+
+    def fail(self):
+        if self._state == "processing":
+            self._state = "failed"
+
+    @property
+    def current_state(self):
+        return _StateProxy(self.STATES[self._state])
+
+
+class _StateProxy:
+    """Lightweight proxy to mimic statemachine.State.id interface."""
+    def __init__(self, state_id: str):
+        self.id = state_id
+
+    def __repr__(self):
+        return f"State(id='{self.id}')"
 
 
 def pin_worker_cpu_affinity(reserve_core0: bool = True) -> None:
@@ -83,6 +107,8 @@ def pin_worker_cpu_affinity(reserve_core0: bool = True) -> None:
 
 def _get_lancedb_table() -> Any:
     """Open or create vector table in LanceDB backed by Arrow schema."""
+    import lancedb
+    import pyarrow as pa
     db = lancedb.connect("nexus_lancedb", mode="file")
     schema = pa.schema([
         pa.field("id", pa.string()),
@@ -280,6 +306,7 @@ async def invoice_reconciliation_loop():
             logger.debug("[Watchdog] System w pełni spójny. Brak porzuconych zadań.")
             return
 
+        import nats
         nc = await nats.connect("nats://localhost:4222")
         for invoice in stuck_invoices:
             if invoice.retry_count < 3:

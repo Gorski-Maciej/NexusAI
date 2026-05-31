@@ -85,6 +85,50 @@
 
 ---
 
+## Installation
+
+### Quick Install (pip)
+
+NexusAI can be installed directly via pip as a Python package:
+
+```bash
+# Install the core package
+pip install nexus-ai
+
+# Install with desktop UI support
+pip install "nexus-ai[ui]"
+
+# Install with AI model support (GPU/CPU inference)
+pip install "nexus-ai[ai]"
+
+# Install with development tools
+pip install "nexus-ai[dev]"
+
+# Install everything
+pip install "nexus-ai[ui,ai,dev]"
+```
+
+### Development Install (from source)
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-org/NexusAI.git
+cd NexusAI
+
+# 2. Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# 3. Install in editable mode with all extras
+pip install -e ".[ui,ai,dev]"
+
+# 4. Copy and configure environment
+cp .env.example .env
+# Edit .env with your settings (minimal defaults work for local dev)
+```
+
+---
+
 ## Prerequisites
 
 - **Python** 3.11 or higher
@@ -97,6 +141,7 @@
 
 - **GGUF Model Files** — Download models for agent council (see [Downloading Models](#downloading-models))
 - **Tesseract OCR** — For document text extraction
+- **CUDA drivers** (NVIDIA GPU) or **llama-cpp-python** — For local LLM inference
 
 ---
 
@@ -111,21 +156,40 @@ cd NexusAI
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# 3. Install dependencies
-pip install -r requirements.txt
+# 3. Install in editable mode
+pip install -e .
 
 # 4. Copy and configure environment
 cp .env.example .env
 # Edit .env with your settings (minimal defaults work for local dev)
 
-# 5. Start NATS server (in a separate terminal)
+# 5. Run system diagnostics (recommended)
+python main.py --mode doctor
+
+# 6. Start NATS server (in a separate terminal)
 nats-server -p 4222 -js
 
-# 6. Run the application
+# 7. Run the application
 python main.py
 ```
 
 The API will be available at **http://127.0.0.1:8000** with Swagger UI at **http://127.0.0.1:8000/schema/swagger**.
+
+After `pip install -e .`, you can also use the installed CLI commands directly:
+
+```bash
+# Start the API server
+nexus-api
+
+# Start the Taskiq worker
+nexus-worker
+
+# Start the desktop UI (requires flet)
+nexus-desktop
+
+# Run diagnostics
+nexus --mode doctor
+```
 
 ---
 
@@ -205,7 +269,11 @@ This starts:
 ### Option C: Desktop UI (Flet)
 
 ```bash
-python luz/main.py
+# Using installed CLI (after pip install -e .)
+nexus-desktop
+
+# Or directly via Python
+python -m Code.luz.main
 ```
 
 This starts a full desktop application with:
@@ -297,14 +365,16 @@ python -m pytest tests/performance/ -v
 
 ```
 NexusAI/
-├── main.py                    # Central application entry point (NEW)
-├── requirements.txt           # Python dependencies
+├── main.py                    # Central application entry point
+├── pyproject.toml              # Package configuration (NEW)
+├── requirements.txt           # Python dependencies (legacy)
+├── .gitignore                 # Git ignore rules (NEW)
+├── .env.example               # Environment template
+├── Dockerfile                 # Container build
+├── docker-compose.yml         # Multi-service orchestration
 ├── run_local.py               # Legacy local launcher
-├── .env.example               # Environment template (NEW)
-├── Dockerfile                 # Container build (NEW)
-├── docker-compose.yml         # Multi-service orchestration (NEW)
 │
-├── Code/
+├── Code/                      # Main package directory
 │   ├── API/                   # Litestar API application
 │   │   ├── app.py             # API app factory (create_app)
 │   │   ├── server.py          # Uvicorn server entrypoint
@@ -333,7 +403,7 @@ NexusAI/
 │   │   ├── inventory_fifo.py
 │   │   ├── dunning_engine.py
 │   │   ├── liquidity_oracle.py
-│   │   └── ...                # 40+ service modules
+│   │   └── ...                # 45+ service modules
 │   │
 │   ├── DB/                    # Database layer
 │   │   ├── database.py        # SQLAlchemy engine + session factory
@@ -350,26 +420,26 @@ NexusAI/
 │   │   ├── splitter.py        # Document splitting
 │   │   └── ...                # Pipeline stages
 │   │
+│   ├── Roboton_Reflekton/     # Accounting engine module
+│   │   ├── ledger_client.py   # TigerBeetle client (stub)
+│   │   ├── ledger_initializer.py
+│   │   ├── reconciliation_engine.py
+│   │   ├── dunning_engine.py
+│   │   ├── shadow_ledger.py   # Tax simulation
+│   │   ├── vat_reconciliation.py
+│   │   ├── forex_engine.py
+│   │   └── models.py          # Domain models
+│   │
+│   ├── luz/                   # Desktop application (Flet)
+│   │   ├── main.py            # Flet UI orchestrator
+│   │   └── worker.py          # Taskiq worker entrypoint
+│   │
 │   ├── FRONTEND/              # Flet UI components
 │   ├── MODELS/                # SQLAlchemy ORM models
 │   ├── ARCHITECTURE/          # Architecture documentation
 │   └── SKRIPTS/               # Utility scripts
-│
-├── Roboton_Reflekton/         # Accounting engine module
-│   ├── api.py                 # Roboton-specific Litestar API
-│   ├── roboton_worker.py      # Invoice processing worker
-│   ├── ledger_client.py       # TigerBeetle client (stub)
-│   ├── ledger_initializer.py  # Chart of accounts setup
-│   ├── reconciliation_engine.py
-│   ├── dunning_engine.py
-│   ├── shadow_ledger.py       # Shadow ledger for tax simulation
-│   ├── vat_reconciliation.py  # VAT reconciliation
-│   ├── forex_engine.py        # FX revaluation
-│   └── models.py              # Roboton domain models
-│
-├── luz/                       # Desktop application (Flet)
-│   ├── main.py                # Flet UI orchestrator
-│   └── worker.py              # Taskiq worker entrypoint
+│       ├── download_models.py # Model downloader (SHA-256 verified)
+│       └── doctor.py          # System diagnostics
 │
 ├── tests/                     # Test suite
 │   ├── conftest.py            # Shared test fixtures
@@ -405,7 +475,7 @@ Document processing pipeline with stages:
 5. **Refiner** — Post-processing and correction
 6. **QA Engine** — Quality assurance checks
 
-### 🔒 Ledger System (`Roboton_Reflekton/`)
+### 🔒 Ledger System (`Code/Roboton_Reflekton/`)
 
 Double-entry accounting with:
 - Polish chart of accounts (symbole kont)
@@ -483,23 +553,68 @@ Event-driven architecture:
 
 ---
 
-## Downloading AI Models
+## AI Models Setup
 
-For the AI agent council features, download GGUF model files:
+NexusAI uses a Council of LLMs for intelligent invoice processing. Setting up the AI environment involves:
+
+### 1. Hardware Requirements
+
+- **GPU (recommended):** NVIDIA GPU with CUDA support (6 GB+ VRAM)
+- **CPU (minimum):** 8 GB RAM, 4+ cores
+- **Disk:** ~10 GB free for model files
+
+### 2. Install AI Dependencies
 
 ```bash
-# Run the model download script
+# For GPU (CUDA) — install PyTorch with CUDA first:
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+
+# Then install AI extras:
+pip install "nexus-ai[ai]"  # or: pip install -e ".[ai]"
+
+# For CPU-only:
+pip install "nexus-ai[ai]"
+```
+
+### 3. Download AI Models
+
+```bash
+# Download all required GGUF models with SHA-256 integrity verification
 python Code/SKRIPTS/download_models.py
 
-# Or manually download models to the models/ directory:
-# - LFM2.5-1.2B-Q4_K_M.gguf  (Alpha Agent)
-# - Qwen3-0.6B-Q4_K_M.gguf    (Beta Agent)
-# - LittleLamb-0.3B-Q4_K_M.gguf (Gamma/Orchestrator)
-# - granite-4.0-1b-nano-Q4_K_M.gguf (Rules/Decision)
-# - qwen2.5-1.5b-instruct-Q4_K_M.gguf (Analytics)
-# - Jamba-Reasoning-3B-Q4_K_M.gguf (Decision)
-# - fin-rwkv-169m.pth          (Financial Detective)
+# Only verify existing models without re-downloading
+python Code/SKRIPTS/download_models.py --verify-only
+
+# Download a specific model
+python Code/SKRIPTS/download_models.py --model alpha
 ```
+
+The script downloads the following models:
+
+| Model | Size | Purpose |
+|---|---|---|
+| `LFM2.5-1.2B-Q4_K_M.gguf` | ~800 MB | Alpha Agent — Primary classification |
+| `Qwen3-0.6B-Q4_K_M.gguf` | ~450 MB | Beta Agent — Secondary validation |
+| `LittleLamb-0.3B-Q4_K_M.gguf` | ~200 MB | Gamma / Orchestrator Agent |
+| `granite-4.0-1b-nano-Q4_K_M.gguf` | ~600 MB | Rules / Decision Agent |
+| `qwen2.5-1.5b-instruct-Q4_K_M.gguf` | ~1 GB | Analytics Agent — Anomaly detection |
+| `Jamba-Reasoning-3B-Q4_K_M.gguf` | ~2 GB | Decision Agent — Complex reasoning |
+
+### 4. Run Diagnostics
+
+After downloading models, verify the setup:
+
+```bash
+python main.py --mode doctor
+```
+
+This checks:
+- ✅ Python version (3.11+)
+- ✅ CUDA/GPU availability
+- ✅ All required GGUF models present and integrity-verified
+- ✅ NATS server connectivity
+- ✅ Environment configuration (.env)
+- ✅ System resources (RAM, disk)
 
 ---
 

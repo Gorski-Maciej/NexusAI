@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-from Code.SERVICES.ple_engine import (
+from SERVICES.ple_engine import (
     DecisionRecord,
     CognitiveArtifact,
     ShortTermMemory,
@@ -28,7 +28,7 @@ from Code.SERVICES.ple_engine import (
     FusionMemory,
     PLEEngine,
 )
-from Code.CORE.config import AppConfig
+from CORE.config import AppConfig
 
 
 # ---------------------------------------------------------------------------

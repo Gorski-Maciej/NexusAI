@@ -28,5 +28,5 @@ async def run_full_pipeline(invoice_id: str, file_path: str, bus, llm_engine):
         return structured_data
 
     except Exception as e:
-        await pipe.error_occured()
+        await pipe.error_occurred()
         raise e

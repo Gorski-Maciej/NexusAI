@@ -1,13 +1,14 @@
 # core/broker.py
 from taskiq_nats import NatsBroker
 from taskiq import TaskiqEvents
+from core.config import AppConfig
+
+config = AppConfig()
 
 # NATS Dead Letter Queue subject
 DEAD_LETTER_SUBJECT = "nats.deadletter"
 
-# Inicjalizujemy broker NATS z konfiguracją konsumenta JetStream:
-# max_deliver=3 - maksymalnie 3 próby dostarczenia zadania
-# ack_wait=60 - 60 sekund na potwierdzenie przetworzenia
+# Inicjalizujemy broker NATS z limitem współbieżności (Rozwiązanie 29).
 broker = NatsBroker(
     servers=["nats://127.0.0.1:4222"],
     queue="nexus_tasks",

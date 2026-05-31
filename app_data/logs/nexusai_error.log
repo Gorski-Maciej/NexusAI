@@ -2063,3 +2063,19 @@ litestar.exceptions.http_exceptions.ImproperlyConfiguredException: 500: 'socket'
 [SQL: SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0]
 (Background on this error at: https://sqlalche.me/e/20/e3q8)
 2026-05-30 22:03:09 | ERROR | system | [DLQ_NOTIFIER] Could not query DLQ (database error)
+2026-05-31 13:13:24 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 13:13:24 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 13:18:41 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 13:18:41 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 13:18:41 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 13:18:41 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 13:24:39 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 13:24:39 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 13:35:38 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 13:35:38 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 13:46:37 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 13:46:37 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 13:57:18 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 13:57:18 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 14:02:44 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 14:02:44 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range

@@ -1,0 +1,89 @@
+# =============================================================================
+# NexusAI — .gitignore
+# =============================================================================
+
+# ── Python bytecode & cache ─────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+
+# ── Virtual environments ────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+.env/
+
+# ── Environment files ───────────────────────────────────────────────────────
+.env
+*.env.local
+
+# ── IDE / Editor ────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ── Runtime databases ───────────────────────────────────────────────────────
+*.db
+*.duckdb
+*.sqlite
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+nexus_oltp.db
+nexus_olap.duckdb
+
+# ── Application runtime data ────────────────────────────────────────────────
+app_data/
+logs/
+*.log
+
+# ── AI Models (large binary files, downloaded separately) ───────────────────
+models/
+*.gguf
+*.pth
+*.bin
+*.safetensors
+
+# ── Build artifacts ─────────────────────────────────────────────────────────
+dist/
+build/
+*.egg-info/
+*.spec
+*.exe
+*.msi
+
+# ── Temporary & OS files ────────────────────────────────────────────────────
+*.tmp
+*.temp
+*.bak
+freebuff-auto/
+Nowy dokument tekstowy*.txt
+repozytorium_pelny_kod.txt
+nats-server.exe
+
+# ── Node / JS artifacts (if any) ────────────────────────────────────────────
+node_modules/
+package-lock.json
+
+# ── Test / CI artifacts ─────────────────────────────────────────────────────
+htmlcov/
+.coverage
+coverage.xml
+junit.xml
+
+# ── Docker ──────────────────────────────────────────────────────────────────
+.docker/
+
+# ── Misc large / generated files ────────────────────────────────────────────
+*.tar.gz
+*.zip
+data/

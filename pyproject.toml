@@ -1,0 +1,169 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nexus-ai"
+version = "0.1.0"
+description = "AI-Powered Accounting & Invoice Processing System"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+authors = [
+    { name = "NexusAI Team" },
+]
+
+keywords = ["accounting", "ai", "ocr", "invoice", "fintech"]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial :: Accounting",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    # ASGI / API
+    "litestar>=2.8.0",
+    "uvicorn>=0.30.0",
+
+    # Database
+    "sqlalchemy>=2.0.0",
+    "aiosqlite>=0.20.0",
+    "alembic>=1.13.0",
+
+    # Data validation & serialization
+    "pydantic>=2.7.0",
+    "msgspec>=0.18.0",
+
+    # Task queue / messaging
+    "taskiq>=0.11.0",
+    "taskiq-nats>=0.5.0",
+    "nats-py>=2.6.0",
+
+    # HTTP / networking
+    "httpx>=0.27.0",
+    "anyio>=4.4.0",
+
+    # File system
+    "fsspec>=2024.3.0",
+
+    # Cryptography
+    "cryptography>=42.0.0",
+
+    # XML / document processing
+    "lxml>=5.1.0",
+    "xsdata>=24.0",
+
+    # OCR
+    "pillow>=10.0.0",
+
+    # Logging
+    "loguru>=0.7.0",
+
+    # Utilities
+    "psutil>=5.9.0",
+    "pyyaml>=6.0",
+
+    # Date parsing
+    "dateparser>=1.2.0",
+
+    # Analytics / OLAP
+    "duckdb>=1.0.0",
+    "pyarrow>=15.0.0",
+
+    # Vector / ANN search
+    "lancedb>=0.8.0",
+
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.3.0",
+    "mypy>=1.8.0",
+    "pre-commit>=3.6.0",
+]
+ui = [
+    "flet>=0.28.0",
+]
+ai = [
+    "transformers>=4.40.0",
+    "torch>=2.2.0",
+    "llama-cpp-python>=0.2.0",
+    "opencv-python>=4.9.0",
+    "sentence-transformers>=2.5.0",
+    "huggingface-hub>=0.23.0",
+    "PyMuPDF>=1.24.0",
+    "surya-ocr>=0.4.0,<0.8.0",
+    "onnxruntime>=1.17.0",
+    "paddleocr>=2.7.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/your-org/NexusAI"
+Documentation = "https://github.com/your-org/NexusAI"
+Repository = "https://github.com/your-org/NexusAI"
+
+[project.scripts]
+nexus-api = "api.server:run_backend"
+nexus-worker = "luz.worker:main"
+nexus-desktop = "luz.main:main"
+nexus = "main:main"
+
+[tool.setuptools.packages.find]
+where = ["Code"]
+include = [
+    "api", "api.*",
+    "core", "core.*",
+    "db", "db.*",
+    "services", "services.*",
+    "pipeline", "pipeline.*",
+    "models", "models.*",
+    "frontend", "frontend.*",
+    "luz", "luz.*",
+    "Roboton_Reflekton", "Roboton_Reflekton.*",
+    "luz", "luz.*",
+    "FRONTEND", "FRONTEND.*",
+    "SKRIPTS", "SKRIPTS.*",
+    "CORE", "CORE.*",
+    "SERVICES", "SERVICES.*",
+    "DB", "DB.*",
+    "PIPELINE", "PIPELINE.*",
+    "API", "API.*",
+    "BACKEND", "BACKEND.*",
+    "ARCHITECTURE", "ARCHITECTURE.*",
+]
+exclude = ["tests*", "app_data*"]
+
+[tool.setuptools.package-data]
+"*" = ["py.typed", "*.pyi"]
+
+# ── Tool configuration ───────────────────────────────────────────────────────
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "N", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+ignore_missing_imports = true
+warn_unused_ignores = false

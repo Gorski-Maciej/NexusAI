@@ -19,13 +19,13 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-from Code.SERVICES.council_session import (
+from SERVICES.council_session import (
     CouncilSession,
     CouncilVerdict,
     DecisionLevel,
     DECISION_MATRIX,
 )
-from Code.SERVICES.council_agents import DecisionVerdict
+from SERVICES.council_agents import DecisionVerdict
 
 
 # ---------------------------------------------------------------------------

@@ -20,9 +20,9 @@ except Exception:  # pragma: no cover - torch may be optional in some envs
 
 from taskiq import TaskiqEvents
 
-from Code.CORE.broker import broker
-from Code.CORE.config import AppConfig
-import Code.CORE.tasks  # noqa: F401  # required to register @broker.task handlers
+from core.broker import broker
+from core.config import AppConfig
+import core.tasks  # noqa: F401  # required to register @broker.task handlers
 from Roboton_Reflekton.vision_agent import VisionAgent
 
 
@@ -137,10 +137,24 @@ async def on_worker_startup(state) -> None:
     )
 
 
-@broker.on_event(TaskiqEvents.TASK_POST_EXECUTION)
-async def on_task_post_execution(state, task_result) -> None:
-    state.guard.check_resources()
-    logger.debug("Task finished: %s", task_result.task_id)
+# TASK_POST_EXECUTION was renamed/removed in taskiq >=0.12.
+# We use TASK_POST_EXECUTE if available, otherwise run guard via existing hooks.
+_TASKIQ_TASK_POST_EVENT = getattr(TaskiqEvents, "TASK_POST_EXECUTION", None)
+
+if _TASKIQ_TASK_POST_EVENT is not None:
+    @broker.on_event(_TASKIQ_TASK_POST_EVENT)
+    async def on_task_post_execution(state, task_result) -> None:
+        state.guard.check_resources()
+        logger.debug("Task finished: %s", task_result.task_id)
+
+
+# Also handle post-execute if it exists in newer taskiq versions
+_TASKIQ_TASK_POST_EXECUTE = getattr(TaskiqEvents, "TASK_POST_EXECUTE", None)
+if _TASKIQ_TASK_POST_EXECUTE is not None and _TASKIQ_TASK_POST_EXECUTE != _TASKIQ_TASK_POST_EVENT:
+    @broker.on_event(_TASKIQ_TASK_POST_EXECUTE)
+    async def on_task_post_execute(state, task_result) -> None:
+        state.guard.check_resources()
+        logger.debug("Task finished (post-execute): %s", task_result.task_id)
 
 
 @broker.on_event(TaskiqEvents.WORKER_SHUTDOWN)

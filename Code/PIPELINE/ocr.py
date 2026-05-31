@@ -1,12 +1,9 @@
 # pipeline/ocr.py
+from __future__ import annotations
+
 import re
-import torch
-from PIL import Image
 from dataclasses import dataclass
-# Importy biblioteki Surya OCR
-from surya.ocr import run_ocr
-from surya.model.detection.model import load_model as load_det_model, load_processor as load_det_processor
-from surya.model.recognition.model import load_model as load_rec_model, load_processor as load_rec_processor
+from typing import Any
 
 @dataclass
 class ExtractedInvoiceData:
@@ -25,7 +22,15 @@ class DocumentProcessor:
         return cls._instance
 
     def _initialize_models(self):
-        """Ładowanie wag modeli do pamięci zoptymalizowane pod offline-first."""
+        """Ładowanie wag modeli do pamięci zoptymalizowane pod offline-first.
+        Surya/torch importowane leniwie — wymagane tylko przy faktycznym OCR.
+        """
+        import torch
+        from PIL import Image
+        from surya.ocr import run_ocr
+        from surya.model.detection.model import load_model as load_det_model, load_processor as load_det_processor
+        from surya.model.recognition.model import load_model as load_rec_model, load_processor as load_rec_processor
+
         print("[AI] Ładowanie modeli Surya OCR...")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -38,9 +43,12 @@ class DocumentProcessor:
         self.rec_model.to(self.device)
         print(f"[AI] Modele załadowane na urządzenie: {self.device}")
 
-    @torch.inference_mode() # Zgodnie z wytycznymi z PDF - wyłącza autograd, oszczędza RAM
-    def process_image(self, image_path: str) -> ExtractedInvoiceData:
+    def process_image(self, image_path: str) -> "ExtractedInvoiceData":
         """Przetwarza skan faktury i wyciąga czysty tekst oraz kluczowe dane."""
+        import torch
+        from PIL import Image
+        from surya.ocr import run_ocr
+
         image = Image.open(image_path).convert("RGB")
         # Surya obsługuje listy obrazów, podajemy jeden
         predictions = run_ocr(
@@ -57,7 +65,7 @@ class DocumentProcessor:
         # Ekstrakcja biznesowa (heurystyki / regex)
         return self._extract_business_fields(full_text)
 
-    def _extract_business_fields(self, text: str) -> ExtractedInvoiceData:
+    def _extract_business_fields(self, text: str) -> "ExtractedInvoiceData":
         """Prymitywny parser Regex do wyciągania NIP-u i Kwot.
         W docelowej wersji można to przepuścić przez lokalny model LLM."""
         # Szukamy NIPu (10 cyfr, ewentualnie z myślnikami)
@@ -96,6 +104,11 @@ try:
 except Exception:
     PaddleOCR = None
 
+try:
+    from PIL import Image
+except Exception:
+    Image = None
+
 class ReviewStatus:
     """Pipeline result statuses."""
     APPROVED = "APPROVED"
@@ -126,6 +139,9 @@ class DocumentProcessorDual:
 
     def process(self, image_path: Path) -> ProcessedDocument:
         """Process document with tiling + dual OCR and compare extraction consistency."""
+        import torch
+        from PIL import Image
+
         image = Image.open(image_path).convert("RGB")
         tiles = self._tile_image(image)
 
@@ -248,9 +264,9 @@ class DocumentProcessorDual:
 
 
 # Wywołanie nowej warstwy ekstrakcji
-from pipeline.parser import InvoiceParser
-
 async def process_image_with_parser(self, image_path: str):
+    from pipeline.parser import InvoiceParser
+
     # 1. OCR
     # results = run_ocr(image, [langs], self.det_model, ...)
     raw_text = self._assemble_text(results) # Funkcja łącząca bloki tekstu w str

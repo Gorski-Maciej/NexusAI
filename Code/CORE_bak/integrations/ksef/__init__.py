@@ -1,0 +1,1 @@
+# KSeF integration subpackage

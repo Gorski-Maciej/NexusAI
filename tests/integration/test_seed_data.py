@@ -21,7 +21,7 @@ class TestSeedDataDirect:
 
     async def test_seed_users_structure(self, db_session) -> None:
         """Test that the SEED_USERS data structure is valid."""
-        from Code.SKRIPTS.seed_data import SEED_USERS
+        from SKRIPTS.seed_data import SEED_USERS
 
         assert len(SEED_USERS) == 2
         usernames = [u["username"] for u in SEED_USERS]
@@ -34,14 +34,14 @@ class TestSeedDataDirect:
 
     async def test_seed_nips_are_valid(self) -> None:
         """Test that SEED_NIPS have valid checksums."""
-        from Code.SKRIPTS.seed_data import SEED_NIPS, _verify_nip_checksum
+        from SKRIPTS.seed_data import SEED_NIPS, _verify_nip_checksum
 
         for nip in SEED_NIPS:
             assert _verify_nip_checksum(nip), f"NIP {nip} has invalid checksum"
 
     async def test_seed_contractors_structure(self) -> None:
         """Test SEED_CONTRACTORS data structure."""
-        from Code.SKRIPTS.seed_data import SEED_CONTRACTORS
+        from SKRIPTS.seed_data import SEED_CONTRACTORS
 
         assert len(SEED_CONTRACTORS) == 5
         for contractor in SEED_CONTRACTORS:
@@ -53,7 +53,7 @@ class TestSeedDataDirect:
 
     async def test_seed_invoices_structure(self) -> None:
         """Test SEED_INVOICES data structure and financial consistency."""
-        from Code.SKRIPTS.seed_data import SEED_INVOICES
+        from SKRIPTS.seed_data import SEED_INVOICES
 
         assert len(SEED_INVOICES) == 15
 
@@ -74,7 +74,7 @@ class TestSeedDataDirect:
 
     async def test_seed_companies_structure(self) -> None:
         """Test SEED_COMPANIES data structure."""
-        from Code.SKRIPTS.seed_data import SEED_COMPANIES
+        from SKRIPTS.seed_data import SEED_COMPANIES
 
         assert len(SEED_COMPANIES) == 3
         legal_forms = {c["legal_form"] for c in SEED_COMPANIES}
@@ -84,7 +84,7 @@ class TestSeedDataDirect:
 
     async def test_seed_fx_rates_structure(self) -> None:
         """Test SEED_FX_RATES data structure."""
-        from Code.SKRIPTS.seed_data import SEED_FX_RATES
+        from SKRIPTS.seed_data import SEED_FX_RATES
 
         assert len(SEED_FX_RATES) == 5
         currencies = {r["currency"] for r in SEED_FX_RATES}
@@ -94,7 +94,7 @@ class TestSeedDataDirect:
 
     async def test_seed_financial_periods_structure(self) -> None:
         """Test SEED_FINANCIAL_PERIODS data structure."""
-        from Code.SKRIPTS.seed_data import SEED_FINANCIAL_PERIODS
+        from SKRIPTS.seed_data import SEED_FINANCIAL_PERIODS
 
         assert len(SEED_FINANCIAL_PERIODS) == 5
         assert any(p["status"] == "open" for p in SEED_FINANCIAL_PERIODS)

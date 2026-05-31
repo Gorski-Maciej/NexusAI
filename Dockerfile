@@ -27,17 +27,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # ── Python dependencies ──────────────────────────────────────────────────────
-COPY requirements.txt ./
+COPY pyproject.toml requirements.txt ./
 COPY Code/CORE/Requirements.txt ./Code/CORE/
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# ── Application code ─────────────────────────────────────────────────────────
+# ── Application code + editable install ───────────────────────────────────────
 COPY Code/ ./Code/
-COPY Roboton_Reflekton/ ./Roboton_Reflekton/
-COPY luz/ ./luz/
 COPY run_local.py ./
+COPY main.py ./
 COPY .env.example ./
+RUN pip install --no-cache-dir -e .
 
 # ── Runtime data directories ─────────────────────────────────────────────────
 RUN mkdir -p /app/app_data/uploads /app/app_data/logs /app/app_data/scans /app/app_data/exports /app/models
@@ -54,14 +54,14 @@ FROM base AS api
 
 EXPOSE 8000
 
-CMD ["python", "-m", "uvicorn", "api.server:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["nexus-api"]
 
 # =============================================================================
 # Worker image
 # =============================================================================
 FROM base AS worker
 
-CMD ["python", "-m", "luz.worker"]
+CMD ["nexus-worker"]
 
 # =============================================================================
 # Default: main entrypoint
@@ -72,5 +72,5 @@ COPY main.py ./
 
 EXPOSE 8000
 
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["nexus"]
 CMD ["--mode", "api"]

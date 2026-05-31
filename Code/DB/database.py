@@ -119,6 +119,26 @@ async def get_session(session_factory: async_sessionmaker[AsyncSession]) -> Asyn
             await session.close()
 
 
+# ── Default session factory (lazy, initialized on first use) ──────────────
+
+# ── Lazy default session factory ──────────────────────────────────────────
+
+_SessionLocal: async_sessionmaker[AsyncSession] | None = None
+
+
+def __getattr__(name: str):
+    """Lazy import of SessionLocal to avoid circular imports."""
+    if name == "SessionLocal":
+        global _SessionLocal
+        if _SessionLocal is None:
+            from core.config import AppConfig
+            config = AppConfig()
+            engine = create_oltp_engine(config)
+            _SessionLocal = create_session_factory(engine)
+        return _SessionLocal
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
 def get_encrypted_engine():
     """Przykład synchronicznego silnika SQLCipher (jeśli potrzebne)."""
     config = AppConfig()
