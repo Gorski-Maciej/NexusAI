@@ -118,47 +118,63 @@ def check_gpu() -> str:
 
 
 def check_models() -> str:
-    """Check model files presence and integrity."""
+    """Check model files presence and integrity using download_models module."""
     if not _MODELS_DIR.exists():
         return _fail(f"Models directory not found at {_MODELS_DIR}")
 
-    required_gguf = [
-        "LFM2.5-1.2B-Q4_K_M.gguf",
-        "Qwen3-0.6B-Q4_K_M.gguf",
-        "LittleLamb-0.3B-Q4_K_M.gguf",
-        "granite-4.0-1b-nano-Q4_K_M.gguf",
-        "qwen2.5-1.5b-instruct-Q4_K_M.gguf",
-        "Jamba-Reasoning-3B-Q4_K_M.gguf",
-    ]
+    try:
+        from SKRIPTS.download_models import MODEL_MANIFEST, get_missing_models
+    except ImportError:
+        try:
+            from Code.SKRIPTS.download_models import MODEL_MANIFEST, get_missing_models
+        except ImportError:
+            return _warn("Could not import download_models module — using fallback check")
 
     lines: list[str] = []
-    all_found = True
-    found_count = 0
 
-    for model_name in required_gguf:
-        # Search in HF cache structure
-        model_files = list(_MODELS_DIR.rglob(model_name))
-        if model_files:
-            size_mb = model_files[0].stat().st_size / (1024 * 1024)
-            lines.append(f"  {_ok(model_name):50s} {size_mb:.0f} MB")
-            found_count += 1
+    # Use the shared function from download_models for consistent results
+    missing = get_missing_models(_MODELS_DIR)
+    missing_keys = {m["key"] for m in missing}
+
+    # Iterate over MODEL_MANIFEST keys (always in sync)
+    gguf_found = 0
+    gguf_total = 0
+    for model_key, info in MODEL_MANIFEST.items():
+        if model_key.endswith(".gguf"):
+            gguf_total += 1
+            model_files = list(_MODELS_DIR.rglob(model_key))
+            if model_files:
+                size_mb = model_files[0].stat().st_size / (1024 * 1024)
+                lines.append(f"  {_ok(model_key):50s} {size_mb:.0f} MB")
+                gguf_found += 1
+            elif model_key in missing_keys:
+                lines.append(f"  {_fail(model_key + ' (MISSING)'):50s}")
+            else:
+                lines.append(f"  {_warn(model_key + ' (NOT FOUND)'):50s}")
         else:
-            lines.append(f"  {_fail(model_name + ' (MISSING)'):50s}")
-            all_found = False
+            # Non-GGUF (sentence-transformers, surya, etc.)
+            cache_name = f"models--{info['repo'].replace('/', '--')}"
+            cache_path = _MODELS_DIR / cache_name
+            if cache_path.exists():
+                size_mb = sum(f.stat().st_size for f in cache_path.rglob("*") if f.is_file()) / (1024 * 1024)
+                lines.append(f"  {_ok(model_key):50s} {size_mb:.0f} MB (directory)")
+            elif model_key in missing_keys:
+                lines.append(f"  {_fail(model_key + ' (MISSING)'):50s}")
+            else:
+                lines.append(f"  {_warn(model_key + ' (not found, optional)'):50s}")
 
-    # Check Surya OCR models
-    surya_repos = ["surya_det3", "surya_rec3", "surya_layout3", "surya_order3"]
-    surya_found = sum(1 for r in surya_repos if list(_MODELS_DIR.rglob(f"*{r}*")))
-    if surya_found > 0:
-        lines.append(f"  {_ok(f'Surya OCR: {surya_found}/{len(surya_repos)} repos found')}")
-    else:
-        lines.append(f"  {_warn('Surya OCR models not found (optional for enhanced OCR)')}")
-
-    summary = f"{found_count}/{len(required_gguf)} GGUF models"
+    # Summary line: consistent with get_missing_models
+    all_found = len(missing) == 0
+    summary = f"{len(MODEL_MANIFEST) - len(missing)}/{len(MODEL_MANIFEST)} models present"
     if all_found:
         lines.insert(0, f"  {_ok(summary)}")
     else:
         lines.insert(0, f"  {_fail(summary)} — run: python Code/SKRIPTS/download_models.py")
+
+    # Show integrity issues if any
+    integrity_issues = [m for m in missing if m["status"] == "checksum_mismatch"]
+    for issue in integrity_issues:
+        lines.append(f"  {_fail(f'{issue["key"]}: CHECKSUM MISMATCH')}")
 
     return "\n".join(lines)
 
@@ -282,8 +298,6 @@ def run_diagnostics() -> dict[str, Any]:
 
     # ── Summary ──────────────────────────────────────────────────────────
     print(f"  {_bold('── Summary')}")
-    if all(p.startswith(_GREEN) or p.startswith(_YELLOW) for p in [r.split(chr(10))[0] if chr(10) in r else r for r in checks.values()]):
-        pass  # intentionally blank
 
     # Count passes/warnings/fails
     pass_count = 0

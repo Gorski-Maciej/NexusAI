@@ -53,6 +53,9 @@ dependencies = [
     # Cryptography
     "cryptography>=42.0.0",
 
+    # Litestar (with JWT support for security module)
+    "litestar[jwt]>=2.8.0",
+
     # XML / document processing
     "lxml>=5.1.0",
     "xsdata>=24.0",
@@ -62,6 +65,9 @@ dependencies = [
 
     # Logging
     "loguru>=0.7.0",
+
+    # Metrics / Monitoring
+    "prometheus_client>=0.20.0",
 
     # Utilities
     "psutil>=5.9.0",
@@ -113,28 +119,29 @@ Repository = "https://github.com/your-org/NexusAI"
 nexus-api = "api.server:run_backend"
 nexus-worker = "luz.worker:main"
 nexus-desktop = "luz.main:main"
-nexus = "main:main"
+nexus = "SKRIPTS.nexus_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["Code"]
 include = [
+    "Code",
     "api", "api.*",
+    "API", "API.*",
     "core", "core.*",
+    "CORE", "CORE.*",
     "db", "db.*",
+    "DB", "DB.*",
     "services", "services.*",
+    "SERVICES", "SERVICES.*",
     "pipeline", "pipeline.*",
+    "PIPELINE", "PIPELINE.*",
     "models", "models.*",
+    "MODELS", "MODELS.*",
     "frontend", "frontend.*",
+    "FRONTEND", "FRONTEND.*",
     "luz", "luz.*",
     "Roboton_Reflekton", "Roboton_Reflekton.*",
-    "luz", "luz.*",
-    "FRONTEND", "FRONTEND.*",
     "SKRIPTS", "SKRIPTS.*",
-    "CORE", "CORE.*",
-    "SERVICES", "SERVICES.*",
-    "DB", "DB.*",
-    "PIPELINE", "PIPELINE.*",
-    "API", "API.*",
     "BACKEND", "BACKEND.*",
     "ARCHITECTURE", "ARCHITECTURE.*",
 ]

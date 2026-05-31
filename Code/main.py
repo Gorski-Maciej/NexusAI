@@ -7,9 +7,7 @@ Usage:
     python main.py --mode worker      # Start only the Taskiq worker
     python main.py --mode all         # Start API + Worker (in-process)
     python main.py --mode bootstrap   # Initialize database and exit
-    python main.py --help             # Show all options
-
-Examples:
+    python main.py --help             # Show all options    Examples:
     # Start API server with custom host/port
     python main.py --mode api --host 0.0.0.0 --port 8080
 
@@ -18,13 +16,15 @@ Examples:
 
     # Run diagnostics and exit
     python main.py --mode doctor
+
+    # Compute SHA-256 checksums for downloaded models
+    python main.py --compute-checksums
 """
 
 from __future__ import annotations
 
 import argparse
 import asyncio
-import logging
 import os
 import signal
 import subprocess
@@ -37,13 +37,10 @@ _CODE_DIR = str(_PROJECT_ROOT / "Code")
 if _CODE_DIR not in sys.path:
     sys.path.insert(0, _CODE_DIR)
 
-# ── Logging setup ────────────────────────────────────────────────────────────
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
-logger = logging.getLogger("nexus.main")
+# ── Logging setup (deferred — use core.logger not logging.basicConfig) ──────
+from core.logger import setup_logger, get_logger
+setup_logger(app_name="NexusAI")
+logger = get_logger("nexus.main")
 
 # ── Global shutdown event ────────────────────────────────────────────────────
 _shutdown_event = asyncio.Event()
@@ -90,6 +87,11 @@ Examples:
         "--fetch-models",
         action="store_true",
         help="Download AI models (GGUF) with integrity verification and exit",
+    )
+    parser.add_argument(
+        "--compute-checksums",
+        action="store_true",
+        help="Compute SHA-256 checksums for downloaded models and print ready-to-use MODEL_MANIFEST entries",
     )
     parser.add_argument(
         "--host",
@@ -181,12 +183,13 @@ async def _start_api_server(host: str, port: int) -> None:
     logger.info(">>> Starting API server on %s:%s", host, port)
 
     app = create_app()
+    log_level = os.getenv("NEXUS_LOG_LEVEL", "info").lower()
     config = uvicorn.Config(
         app,
         host=host,
         port=port,
         loop="asyncio",
-        log_level=os.getenv("NEXUS_LOG_LEVEL", "info"),
+        log_level=log_level,
         access_log=True,
     )
     server = uvicorn.Server(config)
@@ -375,6 +378,21 @@ def _run_fetch_models() -> None:
     logger.info(">>> Models: %d ok, %d failed.", ok, failed)
 
 
+def _run_compute_checksums() -> None:
+    """Compute SHA-256 checksums for downloaded models and print ready-to-use entries."""
+    try:
+        from SKRIPTS.download_models import _compute_checksums
+    except ImportError:
+        try:
+            from Code.SKRIPTS.download_models import _compute_checksums
+        except ImportError:
+            logger.error("download_models script not found at Code/SKRIPTS/download_models.py")
+            return
+
+    logger.info(">>> Computing SHA-256 checksums for downloaded models...")
+    _compute_checksums()
+
+
 async def _run_load_fixtures() -> int:
     """
     Load seed/demo data into the database.
@@ -441,6 +459,11 @@ def main(argv: list[str] | None = None) -> int:
         else:
             logger.error(">>> Seed data loading failed.")
         return exit_code
+
+    if args.compute_checksums:
+        logger.info(">>> Computing model checksums...")
+        _run_compute_checksums()
+        return 0
 
     if args.fetch_models:
         logger.info(">>> Fetching AI models...")

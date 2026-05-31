@@ -1,70 +1,231 @@
-"""OpenTelemetry metrics for Prometheus exposition (Rozwiązanie 34)."""
+# api/telemetry_metrics.py
+"""
+Prometheus metrics definitions for NexusAI.
+
+Uses the ``prometheus_client`` library directly for reliability
+(OpenTelemetry with Prometheus exporter is optional and may not be installed).
+
+All metrics are lazy-initialized (no import-time side effects).
+"""
 from __future__ import annotations
 
 from typing import Any
-
-# Global meter set by state.py on startup
-_meter: Any = None
-
-# Counters
-_invoices_processed_total: Any = None
-_invoices_failed_total: Any = None
-_ai_inference_duration_seconds: Any = None
-_ocr_duration_seconds: Any = None
-_http_request_duration_seconds: Any = None
+from prometheus_client import Counter, Histogram, Gauge, REGISTRY
 
 
-def _init_counters(meter: Any) -> None:
-    """Initialize all counters with the given meter."""
-    global _invoices_processed_total, _invoices_failed_total
-    global _ai_inference_duration_seconds, _ocr_duration_seconds
-    global _http_request_duration_seconds
+# ── Lazy init flag ───────────────────────────────────────────────────────────
+_INITIALIZED = False
 
-    _invoices_processed_total = meter.create_counter(
-        name="invoices_processed_total",
-        description="Total number of processed invoices",
-        unit="1",
+
+# ── HTTP request metrics ─────────────────────────────────────────────────────
+
+http_requests_total: Counter | None = None
+"""Counter: Total HTTP requests (labels: method, endpoint, status)."""
+
+http_request_duration_seconds: Histogram | None = None
+"""Histogram: HTTP request duration in seconds."""
+
+http_requests_in_flight: Gauge | None = None
+"""Gauge: Current number of in-flight HTTP requests."""
+
+
+# ── Business metrics ─────────────────────────────────────────────────────────
+
+invoices_processed_total: Counter | None = None
+"""Counter: Total processed invoices (label: status)."""
+
+ai_inference_duration_seconds: Histogram | None = None
+"""Histogram: AI inference duration (label: model_name)."""
+
+ocr_duration_seconds: Histogram | None = None
+"""Histogram: OCR processing duration."""
+
+
+# ── Infrastructure metrics ───────────────────────────────────────────────────
+
+nats_events_processed_total: Counter | None = None
+"""Counter: NATS events processed (labels: event_type, status)."""
+
+nats_events_queued_total: Counter | None = None
+"""Counter: NATS events queued."""
+
+db_connection_pool_size: Gauge | None = None
+"""Gauge: Current database connection pool size."""
+
+queue_depth: Gauge | None = None
+"""Gauge: Current queue depth (NATS pending messages)."""
+
+worker_up: Gauge | None = None
+"""Gauge: Is the Taskiq worker alive (1=up, 0=down)."""
+
+nats_up: Gauge | None = None
+"""Gauge: Is the NATS server reachable (1=up, 0=down)."""
+
+model_inference_duration_seconds: Histogram | None = None
+"""Alias for ai_inference_duration_seconds, with more specific labels."""
+
+memory_usage_mb: Gauge | None = None
+"""Gauge: Current process memory usage in MB."""
+
+
+def init_metrics() -> None:
+    """Initialize all Prometheus metrics.
+
+    Safe to call multiple times — second call is a no-op.
+    """
+    global _INITIALIZED
+    global http_requests_total, http_request_duration_seconds, http_requests_in_flight
+    global invoices_processed_total, ai_inference_duration_seconds, ocr_duration_seconds
+    global nats_events_processed_total, nats_events_queued_total
+    global db_connection_pool_size, queue_depth
+    global worker_up, nats_up, model_inference_duration_seconds, memory_usage_mb
+
+    if _INITIALIZED:
+        return
+
+    # ── HTTP ────────────────────────────────────────────────────────────
+    http_requests_total = Counter(
+        name="http_requests_total",
+        documentation="Total number of HTTP requests",
+        labelnames=("method", "endpoint", "status"),
+        registry=REGISTRY,
     )
-    _invoices_failed_total = meter.create_counter(
-        name="invoices_failed_total",
-        description="Total number of failed invoice processing attempts",
-        unit="1",
-    )
-    _ai_inference_duration_seconds = meter.create_histogram(
-        name="ai_inference_duration_seconds",
-        description="Duration of AI inference calls",
-        unit="s",
-    )
-    _ocr_duration_seconds = meter.create_histogram(
-        name="ocr_duration_seconds",
-        description="Duration of OCR processing",
-        unit="s",
-    )
-    _http_request_duration_seconds = meter.create_histogram(
+    http_request_duration_seconds = Histogram(
         name="http_request_duration_seconds",
-        description="HTTP request duration",
-        unit="s",
+        documentation="HTTP request duration in seconds",
+        labelnames=("method", "endpoint"),
+        buckets=(0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0, 60.0),
+        registry=REGISTRY,
     )
+    http_requests_in_flight = Gauge(
+        name="http_requests_in_flight",
+        documentation="Current number of in-flight HTTP requests",
+        registry=REGISTRY,
+    )
+
+    # ── Business ────────────────────────────────────────────────────────
+    invoices_processed_total = Counter(
+        name="invoices_processed_total",
+        documentation="Total number of processed invoices",
+        labelnames=("status",),
+        registry=REGISTRY,
+    )
+    ai_inference_duration_seconds = Histogram(
+        name="ai_inference_duration_seconds",
+        documentation="Duration of AI model inference calls in seconds",
+        labelnames=("model_name",),
+        buckets=(0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 30.0, 60.0, 120.0),
+        registry=REGISTRY,
+    )
+    model_inference_duration_seconds = ai_inference_duration_seconds
+
+    ocr_duration_seconds = Histogram(
+        name="ocr_duration_seconds",
+        documentation="Duration of OCR processing in seconds",
+        buckets=(0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0, 60.0, 120.0, 300.0),
+        registry=REGISTRY,
+    )
+
+    # ── Infrastructure ──────────────────────────────────────────────────
+    nats_events_processed_total = Counter(
+        name="nats_events_processed_total",
+        documentation="Total number of NATS events processed",
+        labelnames=("event_type", "status"),
+        registry=REGISTRY,
+    )
+    nats_events_queued_total = Counter(
+        name="nats_events_queued_total",
+        documentation="Total number of NATS events queued",
+        registry=REGISTRY,
+    )
+    db_connection_pool_size = Gauge(
+        name="db_connection_pool_size",
+        documentation="Current database connection pool size",
+        registry=REGISTRY,
+    )
+    queue_depth = Gauge(
+        name="queue_depth",
+        documentation="Current NATS pending message count",
+        registry=REGISTRY,
+    )
+    worker_up = Gauge(
+        name="worker_up",
+        documentation="Taskiq worker availability (1=up, 0=down)",
+        registry=REGISTRY,
+    )
+    nats_up = Gauge(
+        name="nats_up",
+        documentation="NATS server reachability (1=up, 0=down)",
+        registry=REGISTRY,
+    )
+    memory_usage_mb = Gauge(
+        name="memory_usage_mb",
+        documentation="Current process memory usage in MB",
+        registry=REGISTRY,
+    )
+
+    _INITIALIZED = True
+
+
+# ── Convenience recorders (safe to call before init_metrics) ──────────────────
+
+def record_http_request(method: str, endpoint: str, status: int, duration: float) -> None:
+    """Record a completed HTTP request."""
+    if http_requests_total is not None:
+        http_requests_total.labels(method=method, endpoint=endpoint, status=str(status)).inc()
+    if http_request_duration_seconds is not None:
+        http_request_duration_seconds.labels(method=method, endpoint=endpoint).observe(duration)
 
 
 def record_invoice_processed(status: str = "success") -> None:
     """Record an invoice processing result."""
-    global _invoices_processed_total, _invoices_failed_total
-    if _invoices_processed_total is not None and status == "success":
-        _invoices_processed_total.add(1, {"status": "success"})
-    if _invoices_failed_total is not None and status == "failed":
-        _invoices_failed_total.add(1, {"status": "failed"})
+    if invoices_processed_total is not None:
+        invoices_processed_total.labels(status=status).inc()
 
 
-def record_ai_inference_duration(duration_seconds: float, model: str = "unknown") -> None:
-    """Record AI inference duration."""
-    global _ai_inference_duration_seconds
-    if _ai_inference_duration_seconds is not None:
-        _ai_inference_duration_seconds.record(duration_seconds, {"model": model})
+def record_ai_inference(duration_seconds: float, model: str = "unknown") -> None:
+    """Record AI inference duration for a specific model."""
+    if ai_inference_duration_seconds is not None:
+        ai_inference_duration_seconds.labels(model_name=model).observe(duration_seconds)
 
 
 def record_ocr_duration(duration_seconds: float) -> None:
     """Record OCR processing duration."""
-    global _ocr_duration_seconds
-    if _ocr_duration_seconds is not None:
-        _ocr_duration_seconds.record(duration_seconds)
+    if ocr_duration_seconds is not None:
+        ocr_duration_seconds.observe(duration_seconds)
+
+
+def record_nats_event(event_type: str, status: str = "processed") -> None:
+    """Record a NATS event processing result."""
+    if nats_events_processed_total is not None:
+        nats_events_processed_total.labels(event_type=event_type, status=status).inc()
+
+
+def set_db_pool_size(size: int) -> None:
+    """Set the current database connection pool size."""
+    if db_connection_pool_size is not None:
+        db_connection_pool_size.set(size)
+
+
+def set_queue_depth(depth: int) -> None:
+    """Set the current NATS queue depth."""
+    if queue_depth is not None:
+        queue_depth.set(depth)
+
+
+def set_worker_up(up: bool) -> None:
+    """Set worker availability gauge."""
+    if worker_up is not None:
+        worker_up.set(1 if up else 0)
+
+
+def set_nats_up(up: bool) -> None:
+    """Set NATS availability gauge."""
+    if nats_up is not None:
+        nats_up.set(1 if up else 0)
+
+
+def set_memory_usage(mb: float) -> None:
+    """Set current process memory usage."""
+    if memory_usage_mb is not None:
+        memory_usage_mb.set(mb)

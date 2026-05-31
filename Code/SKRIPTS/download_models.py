@@ -17,12 +17,6 @@ import os
 import sys
 from pathlib import Path
 
-try:
-    from huggingface_hub import snapshot_download
-except ImportError:
-    print("[!] huggingface-hub not installed. Run: pip install huggingface-hub")
-    sys.exit(1)
-
 # ── Known model files with SHA-256 checksums ──────────────────────────────
 # These are reference checksums for the model files used by the Council of LLMs.
 # Actual checksums should be updated when models are known to be correct.
@@ -148,6 +142,38 @@ def find_gguf_files(models_dir: Path, repo_id: str) -> list[Path]:
 # ── Main logic ───────────────────────────────────────────────────────────────
 
 
+def _check_disk_space(models_dir: Path, required_bytes: int = 10 * 1024**3) -> bool:
+    """Check if there is enough free disk space for model downloads.
+
+    Args:
+        models_dir: Target directory for downloads.
+        required_bytes: Minimum required free space (default: 10 GB).
+
+    Returns:
+        True if enough space is available, False otherwise.
+    """
+    try:
+        import shutil
+
+        total, used, free = shutil.disk_usage(models_dir.parent if models_dir.exists() else models_dir)
+        free_gb = free / 1024**3
+        required_gb = required_bytes / 1024**3
+
+        if free < required_bytes:
+            print(f"  [WARN] Low disk space: {free_gb:.1f} GB free, but {required_gb:.1f} GB recommended.")
+            print(f"         Model downloads may fail. Please free up space and try again.")
+            return False
+
+        print(f"  [OK] Disk space: {free_gb:.1f} GB free (recommended: {required_gb:.1f} GB)")
+        return True
+    except ImportError:
+        print("  [WARN] shutil not available — skipping disk space check")
+        return True
+    except Exception as exc:
+        print(f"  [WARN] Could not check disk space: {exc}")
+        return True
+
+
 def download_all_models(models_dir: Path | None = None, verify_only: bool = False, model_filter: str | None = None) -> dict[str, str]:
     """Download (or verify) AI models required by NexusAI.
 
@@ -160,12 +186,16 @@ def download_all_models(models_dir: Path | None = None, verify_only: bool = Fals
         Dict mapping model keys to status strings ("ok", "missing", "mismatch", "skipped").
     """
     if models_dir is None:
-        project_root = Path(__file__).resolve().parent.parent
+        project_root = Path(__file__).resolve().parent.parent.parent
         models_dir = project_root / "models"
 
     models_dir.mkdir(parents=True, exist_ok=True)
 
     os.environ.setdefault("HF_HOME", str(models_dir))
+
+    # Check disk space before downloading
+    if not verify_only:
+        _check_disk_space(models_dir)
 
     statuses: dict[str, str] = {}
 
@@ -209,16 +239,16 @@ def download_all_models(models_dir: Path | None = None, verify_only: bool = Fals
             if exists and model_key.endswith(".gguf"):
                 integrity_ok = verify_model(local_path, expected_hash) if expected_hash else True
                 if integrity_ok:
-                    print(f"  ✓ {model_key:40s} — {description}")
+                    print(f"  {model_key:40s} — {description}")
                     statuses[model_key] = "ok"
                 else:
-                    print(f"  ✗ {model_key:40s} — CHECKSUM MISMATCH")
+                    print(f"  X {model_key:40s} — CHECKSUM MISMATCH")
                     statuses[model_key] = "mismatch"
             elif exists:
-                print(f"  ✓ {model_key:40s} — {description} (directory present)")
+                print(f"  {model_key:40s} — {description} (directory present)")
                 statuses[model_key] = "ok"
             else:
-                print(f"  ✗ {model_key:40s} — NOT FOUND")
+                print(f"  X {model_key:40s} — NOT FOUND")
                 statuses[model_key] = "missing"
             continue
 
@@ -228,25 +258,32 @@ def download_all_models(models_dir: Path | None = None, verify_only: bool = Fals
         print(f"    Description: {description}")
 
         try:
+            from huggingface_hub import snapshot_download
+        except ImportError:
+            print(f"  [ERROR] huggingface-hub not installed. Run: pip install huggingface-hub")
+            statuses[model_key] = "error"
+            continue
+
+        try:
             snapshot_download(
                 repo_id=repo_id,
                 cache_dir=models_dir,
                 local_files_only=False,
             )
             statuses[model_key] = "downloaded"
-            print(f"    ✓ {model_key} downloaded successfully.")
+            print(f"    {model_key} downloaded successfully.")
 
             # Verify integrity if checksum is available
             if model_key.endswith(".gguf") and expected_hash:
                 gguf_files = find_gguf_files(models_dir, repo_id)
                 if gguf_files:
                     if verify_model(gguf_files[0], expected_hash):
-                        print(f"    ✓ Integrity check PASSED.")
+                        print(f"    Integrity check PASSED.")
                     else:
-                        print(f"    ✗ Integrity check FAILED for {model_key}!")
+                        print(f"    X Integrity check FAILED for {model_key}!")
                         statuses[model_key] = "mismatch"
         except Exception as exc:
-            print(f"    ✗ Error downloading {model_key}: {exc}")
+            print(f"    X Error downloading {model_key}: {exc}")
             statuses[model_key] = "error"
 
     # ── Summary ───────────────────────────────────────────────────────────
@@ -255,8 +292,14 @@ def download_all_models(models_dir: Path | None = None, verify_only: bool = Fals
     print("=" * 60)
     ok_count = sum(1 for s in statuses.values() if s in ("ok", "downloaded"))
     fail_count = sum(1 for s in statuses.values() if s in ("error", "mismatch", "missing"))
-    print(f"  ✓ Ok: {ok_count}  |  ✗ Failed/missing: {fail_count}")
+    print(f"  Ok: {ok_count}  |  X Failed/missing: {fail_count}")
     print()
+
+    # ── Auto-compute SHA-256 checksums after successful download ──────────
+    # If any models were actually downloaded (not verify-only), compute and
+    # display their checksums so the user can copy them into MODEL_MANIFEST.
+    if not verify_only and ok_count > 0:
+        _compute_checksums(models_dir)
 
     return statuses
 
@@ -268,7 +311,7 @@ def get_missing_models(models_dir: Path | None = None) -> list[dict[str, str]]:
     Useful for the --doctor diagnostic command.
     """
     if models_dir is None:
-        project_root = Path(__file__).resolve().parent.parent
+        project_root = Path(__file__).resolve().parent.parent.parent
         models_dir = project_root / "models"
 
     missing: list[dict[str, str]] = []
@@ -303,6 +346,109 @@ def get_missing_models(models_dir: Path | None = None) -> list[dict[str, str]]:
     return missing
 
 
+def _compute_checksums(models_dir: Path | None = None) -> None:
+    """
+    Compute SHA-256 checksums for downloaded model files.
+
+    Scans the models directory (or HF cache) for each model in MODEL_MANIFEST,
+    computes its SHA-256 checksum, and prints the results in a format suitable
+    for copying into the MODEL_MANIFEST dict in this file.
+
+    Only computes checksums for files that already exist on disk.
+    """
+    if models_dir is None:
+        project_root = Path(__file__).resolve().parent.parent.parent
+        models_dir = project_root / "models"
+
+    if not models_dir.exists():
+        print(f"[!] Models directory not found: {models_dir}")
+        print("    Download models first with: python download_models.py")
+        return
+
+    print("=" * 70)
+    print("  SHA-256 CHECKSUM COMPUTATION")
+    print("=" * 70)
+    print()
+    print("  Computing checksums for downloaded model files...")
+    print(f"  Scanning: {models_dir}")
+    print()
+
+    found_any = False
+    checksum_output: list[str] = []
+    missing_count = 0
+
+    for model_key, info in MODEL_MANIFEST.items():
+        repo_id = info["repo"]
+        description = info["description"]
+
+        # Locate the actual file on disk
+        if model_key.endswith(".gguf"):
+            gguf_files = find_gguf_files(models_dir, repo_id)
+            if gguf_files:
+                local_path = gguf_files[0]
+            else:
+                # Fallback: look for the filename directly
+                direct_match = list(models_dir.rglob(model_key))
+                local_path = direct_match[0] if direct_match else models_dir / model_key
+        else:
+            cache_name = f"models--{repo_id.replace('/', '--')}"
+            local_path = models_dir / cache_name
+
+        if not local_path.exists():
+            print(f"  - {model_key:45s} — NOT FOUND (download first)")
+            missing_count += 1
+            continue
+
+        found_any = True
+        size_mb = local_path.stat().st_size / (1024 * 1024)
+
+        if local_path.is_dir():
+            # For directory-based models (sentence-transformers, surya)
+            print(f"  - {model_key:45s} — directory, {size_mb:.0f} MB (skipping SHA-256 for directories)")
+            checksum_output.append(
+                '    "' + model_key + '": {'
+                '\n        "repo": "' + repo_id + '",'
+                '\n        "sha256": "",  # Directory'
+                '\n        "description": "' + description + '",'
+                '\n    },'
+            )
+        else:
+            # Compute SHA-256 for single files (GGUF)
+            print(f"  Computing SHA-256 for {model_key} ({size_mb:.0f} MB)...", end=" ", flush=True)
+            sha256 = _compute_sha256(local_path)
+            print(f"OK {sha256[:16]}...{sha256[-16:]}")
+
+            checksum_output.append(
+                '    "' + model_key + '": {'
+                '\n        "repo": "' + repo_id + '",'
+                '\n        "sha256": "' + sha256 + '",'
+                '\n        "description": "' + description + '",'
+                '\n    },'
+            )
+
+    print()
+    print("=" * 70)
+
+    if not found_any:
+        print("  No model files found on disk.")
+        print("  Download models first with: python download_models.py")
+        return
+
+    # Print output ready for MODEL_MANIFEST
+    print()
+    print("  Copy-paste the following into MODEL_MANIFEST in this file:")
+    print()
+    print('MODEL_MANIFEST: dict[str, dict[str, str]] = {')
+    for line in checksum_output:
+        print(line)
+    print('}')
+    print()
+
+    if missing_count > 0:
+        print(f"  Note: {missing_count} model(s) not found — download them first.")
+    print()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Download AI models for NexusAI with integrity verification.",
@@ -324,9 +470,28 @@ def main() -> None:
         default=None,
         help="Custom directory for model storage.",
     )
+    parser.add_argument(
+        "--compute-checksums",
+        action="store_true",
+        help="Compute SHA-256 checksums for downloaded models and print them for inclusion in MODEL_MANIFEST.",
+    )
     args = parser.parse_args()
 
     models_dir = Path(args.models_dir) if args.models_dir else None
+
+    # --compute-checksums and --verify-only don't need huggingface_hub
+    if args.compute_checksums:
+        _compute_checksums(models_dir)
+        return
+
+    # Verify huggingface-hub is available for actual downloads
+    try:
+        import huggingface_hub  # noqa: F401
+    except ImportError:
+        print("[!] huggingface-hub not installed. Run: pip install huggingface-hub")
+        print("    Or install all AI dependencies with: pip install nexus-ai[ai]")
+        sys.exit(1)
+
     statuses = download_all_models(
         models_dir=models_dir,
         verify_only=args.verify_only,

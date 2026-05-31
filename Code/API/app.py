@@ -8,6 +8,7 @@ from litestar.openapi.plugins import SwaggerRenderPlugin
 from api.dependencies import provide_config, provide_db_session, provide_duckdb, provide_shared_image_buffer
 from api.exceptions import global_exception_handler
 from api.middleware import CorrelationAndDeprecationMiddleware, UploadSizeGuardMiddleware, CSRFProtectionMiddleware, _generate_csrf_token
+from api.metrics_middleware import MetricsMiddleware
 from api.rate_limit import SimpleRateLimitMiddleware
 from api.routes.auth import AuthController
 from api.routes.admin import AdminController
@@ -36,6 +37,7 @@ from api.routes.ws import progress_websocket
 from api.routes.ui_state import UIStateController
 from api.routes.autopilot import AutopilotController
 from api.routes.circuit_breakers import CircuitBreakerController
+from api.routes.metrics import MetricsController
 from api.routes.version import VersionController
 from api.routes.fx import FXController
 from api.routes.workers import WorkerStatusController
@@ -82,6 +84,7 @@ def create_app() -> Litestar:
             AdminController,
             UIStateController,
             AutopilotController,
+            MetricsController,
             CircuitBreakerController,
             VersionController,
             FXController,
@@ -98,7 +101,7 @@ def create_app() -> Litestar:
             "buffer": provide_shared_image_buffer,
         },
         exception_handlers={Exception: global_exception_handler},
-        middleware=[UploadSizeGuardMiddleware, SimpleRateLimitMiddleware, CSRFProtectionMiddleware, CorrelationAndDeprecationMiddleware],
+        middleware=[UploadSizeGuardMiddleware, SimpleRateLimitMiddleware, CSRFProtectionMiddleware, CorrelationAndDeprecationMiddleware, MetricsMiddleware],
         cors_config=CORSConfig(allow_origins=config.cors_origins, allow_methods=["*"], allow_headers=["*"], allow_credentials=cors_allow_credentials),
         openapi_config=OpenAPIConfig(
             title="Nexus AI API",

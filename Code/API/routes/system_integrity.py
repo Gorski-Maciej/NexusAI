@@ -130,18 +130,6 @@ class SystemIntegrityController(Controller):
         except ValueError as exc:
             raise ClientException(status_code=404, detail=str(exc)) from exc
 
-    @get("/metrics")
-    async def prometheus_metrics(self) -> str:
-        """
-        Endpoint metryk Prometheus (Rozwiązanie 34).
-        Zwraca metryki w formacie Prometheus exposition.
-        """
-        try:
-            from prometheus_client import generate_latest, REGISTRY
-            return generate_latest(REGISTRY).decode("utf-8")
-        except Exception:
-            return "# Metrics not available - prometheus_client not configured"
-
     @post("/ui-drafts/cleanup")
     async def cleanup_ui_drafts(self, request: Request, older_than_hours: int = 168) -> dict:
         return await cleanup_stale_ui_drafts(request.app.state.db_engine, older_than_hours)

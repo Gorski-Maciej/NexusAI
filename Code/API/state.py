@@ -16,43 +16,46 @@ from services.migration_sanity import run_migration_sanity_checks, verify_migrat
 from core.secrets import LocalSecretsCache, OfflineFirstSecretResolver
 from core.saga import PersistedSagaStore
 
-# Rozwiązanie 34: OpenTelemetry / Prometheus
-_OTEL_INITIALIZED = False
+# ── Prometheus metrics initialization ──────────────────────────────────────
+_METRICS_INITIALIZED = False
 
-def _init_otel_metrics() -> None:
-    """Initialize OpenTelemetry meter provider with Prometheus exporter (Rozwiązanie 34)."""
-    global _OTEL_INITIALIZED
-    if _OTEL_INITIALIZED:
+
+def _init_prometheus_metrics() -> None:
+    """Initialize Prometheus metrics via prometheus_client library (Obszar 1)."""
+    global _METRICS_INITIALIZED
+    if _METRICS_INITIALIZED:
         return
+
+    # Inicjalizacja metryk zdefiniowanych w api.telemetry_metrics
+    from api.telemetry_metrics import init_metrics
+    init_metrics()
+
+    # Rejestruj podstawowe metryki systemowe (Python process metrics)
     try:
-        from opentelemetry import metrics
-        from opentelemetry.exporter.prometheus import PrometheusMetricsExporter
-        from opentelemetry.sdk.metrics import MeterProvider
-        from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
-        from prometheus_client import start_http_server
+        import psutil
 
-        # Uruchom serwer Prometheus na porcie 9464
-        try:
-            start_http_server(9464)
-        except Exception:
-            pass  # Port może być zajęty
+        _proc = psutil.Process()
 
-        exporter = PrometheusMetricsExporter()
-        reader = PeriodicExportingMetricReader(exporter, export_interval_millis=15000)
-        provider = MeterProvider(metric_readers=[reader])
-        metrics.set_meter_provider(provider)
+        async def _update_system_metrics() -> None:
+            """Periodically update system-level gauges."""
+            from api.telemetry_metrics import set_memory_usage
+            while True:
+                try:
+                    mem = _proc.memory_info().rss / (1024 * 1024)
+                    set_memory_usage(mem)
+                except Exception:
+                    pass
+                await asyncio.sleep(30)
 
-        # Utwórz metryki
-        meter = metrics.get_meter("nexus_api")
-        # Rejestruj w globalnym słowniku dla dostępu z innych modułów
-        import api.telemetry_metrics as tm
-        tm._meter = meter
-        tm._init_counters(meter)
-
-        _OTEL_INITIALIZED = True
-        logger.info("[OTEL] Prometheus metrics initialized on port 9464")
+        asyncio.ensure_future(_update_system_metrics())
+        logger.info("[METRICS] System metrics updater started (30s interval)")
+    except ImportError:
+        logger.debug("[METRICS] psutil not available — system metrics disabled")
     except Exception as exc:
-        logger.warning("[OTEL] Failed to initialize Prometheus metrics: %s", exc)
+        logger.debug("[METRICS] System metrics updater failed: %s", exc)
+
+    _METRICS_INITIALIZED = True
+    logger.info("[METRICS] Prometheus metrics initialized (see /metrics endpoint)")
 
 
 logger = logging.getLogger("nexus.api.state")
@@ -105,8 +108,8 @@ async def on_startup(app: Litestar) -> None:
     config = app.dependencies["config"]()
     app.state.ml_cache_env = _configure_ml_cache_directories(config.base_dir)
 
-    # Rozwiązanie 34: Inicjalizacja OpenTelemetry / Prometheus
-    _init_otel_metrics()
+    # Obszar 1: Inicjalizacja metryk Prometheus
+    _init_prometheus_metrics()
 
     # Inicjalizacja silnika bazy danych w stanie aplikacji
     engine = create_oltp_engine(config)

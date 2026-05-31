@@ -2079,3 +2079,5 @@ litestar.exceptions.http_exceptions.ImproperlyConfiguredException: 500: 'socket'
 2026-05-31 13:57:18 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
 2026-05-31 14:02:44 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
 2026-05-31 14:02:44 | ERROR | system | [DecisionLogger] failed to get correction stats: tuple index out of range
+2026-05-31 16:20:11 | ERROR | system | Błąd ładowania pluginów: No module named 'fsspec'
+2026-05-31 16:24:19 | ERROR | system | Błąd ładowania pluginów: No module named 'fsspec'

@@ -65,10 +65,19 @@ build/
 *.tmp
 *.temp
 *.bak
+freebuff-auto
 freebuff-auto/
 Nowy dokument tekstowy*.txt
 repozytorium_pelny_kod.txt
 nats-server.exe
+.seeded
+NEXUS.SPEC/
+nexus.spec
+nexus.spec.py
+
+# ── Egg info ─────────────────────────────────────────────────────────────────
+*.egg-info/
+*.egg-info
 
 # ── Node / JS artifacts (if any) ────────────────────────────────────────────
 node_modules/
