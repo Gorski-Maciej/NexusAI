@@ -41,6 +41,7 @@ from api.routes.metrics import MetricsController
 from api.routes.version import VersionController
 from api.routes.fx import FXController
 from api.routes.workers import WorkerStatusController
+from api.routes.dlq import DLQController
 from api.static import get_static_config
 from api.security import jwt_auth
 from api.state import on_shutdown, on_startup
@@ -88,6 +89,7 @@ def create_app() -> Litestar:
             CircuitBreakerController,
             VersionController,
             FXController,
+            DLQController,
             WorkerStatusController,
             progress_websocket,
         ],

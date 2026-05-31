@@ -72,7 +72,10 @@ services:
 
   # ── TigerBeetle Ledger ─────────────────────────────────────────────────────
   tigerbeetle:
-    image: ghcr.io/tigerbeetle/tigerbeetle:latest
+    build:
+      context: .
+      dockerfile: docker/tigerbeetle.Dockerfile
+    image: nexusai-tigerbeetle:latest
     ports:
       - "3000:3000"
     volumes:
@@ -80,11 +83,13 @@ services:
     command: >
       start --addresses=0.0.0.0:3000 --cluster=0 /data/nexus_ledger.tb
     healthcheck:
-      test: ["CMD", "tigerbeetle", "check", "/data/nexus_ledger.tb"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+      # TCP port check — verifies the server is accepting connections
+      # (busybox nc is injected via docker/tigerbeetle.Dockerfile)
+      test: ["CMD", "/busybox", "nc", "-z", "localhost", "3000"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     networks:
       - nexus_net
 
@@ -104,7 +109,7 @@ services:
       nats:
         condition: service_healthy
       tigerbeetle:
-        condition: service_started
+        condition: service_healthy
     networks:
       - nexus_net
     restart: unless-stopped
@@ -121,6 +126,8 @@ services:
       - ./models:/app/models:ro
     depends_on:
       nats:
+        condition: service_healthy
+      tigerbeetle:
         condition: service_healthy
     networks:
       - nexus_net

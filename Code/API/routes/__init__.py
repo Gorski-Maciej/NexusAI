@@ -9,6 +9,7 @@ from .tasks import TaskController
 from .exports import ExportController
 from .health import HealthController
 from .triage import TriageController
+from .dlq import DLQController
 from .ws import progress_websocket
 
 __all__ = [
@@ -20,5 +21,6 @@ __all__ = [
     "ExportController",
     "HealthController",
     "TriageController",
+    "DLQController",
     "progress_websocket",
 ]

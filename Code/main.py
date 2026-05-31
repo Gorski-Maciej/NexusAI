@@ -74,6 +74,26 @@ Examples:
         help="Startup mode (default: api)",
     )
     parser.add_argument(
+        "--bootstrap",
+        action="store_true",
+        help="Run bootstrap initialization before starting services",
+    )
+    parser.add_argument(
+        "--skip-seed",
+        action="store_true",
+        help="Skip seed data loading during bootstrap",
+    )
+    parser.add_argument(
+        "--skip-models",
+        action="store_true",
+        help="Skip AI model checks during bootstrap",
+    )
+    parser.add_argument(
+        "--force-bootstrap",
+        action="store_true",
+        help="Force re-run bootstrap even if already initialized",
+    )
+    parser.add_argument(
         "--migrate",
         action="store_true",
         help="Run Alembic database migrations and exit",
@@ -106,11 +126,6 @@ Examples:
         help="API server port (default: 8000)",
     )
     parser.add_argument(
-        "--bootstrap",
-        action="store_true",
-        help="Run database initialization before starting services",
-    )
-    parser.add_argument(
         "--workers",
         type=int,
         default=1,
@@ -125,38 +140,32 @@ def _set_env_from_args(args: argparse.Namespace) -> None:
     os.environ.setdefault("NEXUS_PORT", str(args.port))
 
 
-async def _run_bootstrap() -> None:
-    """Initialize database schema and create required directories."""
-    from core.config import AppConfig
-    from db.database import create_oltp_engine, init_schema
+async def _run_bootstrap(args: argparse.Namespace | None = None) -> None:
+    """Run comprehensive multi-step bootstrap."""
+    from SKRIPTS.bootstrap import run_bootstrap
 
-    logger.info(">>> Bootstrap: Initializing environment...")
+    logger.info(">>> Bootstrap: Running comprehensive initialization...")
 
-    config = AppConfig()
+    steps = None
+    if args:
+        step_list = []
+        if getattr(args, "skip_seed", False):
+            step_list = ["validate_config", "check_dependencies", "check_ai_models",
+                        "create_directories", "run_migrations", "initialize_olap",
+                        "verify_nats", "verify_tigerbeetle"]
+        if getattr(args, "skip_models", False):
+            step_list = ["validate_config", "check_dependencies",
+                        "create_directories", "run_migrations", "initialize_olap",
+                        "seed_data", "verify_nats", "verify_tigerbeetle"]
+        if step_list:
+            steps = step_list
 
-    # Create required directories
-    dirs = [
-        config.base_dir / "app_data" / "scans",
-        config.base_dir / "app_data" / "exports",
-        config.base_dir / "app_data" / "logs",
-        config.base_dir / "models",
-    ]
-    for d in dirs:
-        d.mkdir(parents=True, exist_ok=True)
-        logger.info("  Created directory: %s", d)
+    report = await run_bootstrap(steps=steps)
 
-    # Initialize database schema
-    logger.info(">>> Bootstrap: Creating database schema...")
-    engine = create_oltp_engine(config)
-    try:
-        await init_schema(engine)
-        logger.info("  Database schema initialized successfully.")
-    except Exception as exc:
-        logger.warning("  Schema initialization warning (tables may already exist): %s", exc)
-    finally:
-        await engine.dispose()
-
-    logger.info(">>> Bootstrap complete.")
+    if report.overall_status == "error":
+        logger.error("Bootstrap completed with ERRORS. Check logs above.")
+    else:
+        logger.info(">>> Bootstrap complete. System is ready.")
 
 
 async def _run_doctor() -> None:
@@ -270,7 +279,7 @@ async def _start_all(args: argparse.Namespace) -> None:
     logger.info(">>> Starting NexusAI in 'all' mode...")
 
     if args.bootstrap:
-        await _run_bootstrap()
+        await _run_bootstrap(args)
 
     # Set up signal handling
     if sys.platform != "win32":
@@ -303,7 +312,7 @@ async def _start_all(args: argparse.Namespace) -> None:
 async def _start_api(args: argparse.Namespace) -> None:
     """Start only the API server."""
     if args.bootstrap:
-        await _run_bootstrap()
+        await _run_bootstrap(args)
 
     # Set up signal handling
     if sys.platform != "win32":
@@ -316,7 +325,7 @@ async def _start_api(args: argparse.Namespace) -> None:
 async def _start_worker_only(args: argparse.Namespace) -> None:
     """Start only the Taskiq worker."""
     if args.bootstrap:
-        await _run_bootstrap()
+        await _run_bootstrap(args)
 
     # Set up signal handling
     if sys.platform != "win32":
@@ -481,7 +490,7 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         if args.mode == "bootstrap":
-            asyncio.run(_run_bootstrap())
+            asyncio.run(_run_bootstrap(args))
         elif args.mode == "doctor":
             asyncio.run(_run_doctor())
         elif args.mode == "api":

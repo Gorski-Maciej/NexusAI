@@ -10,6 +10,51 @@ from pathlib import Path
 import importlib.util
 
 
+ENV_CONFIG_DIR: Path = Path(__file__).resolve().parent.parent.parent / "config"
+"""Directory containing environment-specific .env profiles."""
+
+
+def _load_env_profile(environment: str) -> None:
+    """
+    Load environment-specific config file from config/{env}.env.
+
+    Only sets variables that are NOT already set in os.environ,
+    so explicit env vars take precedence over profile defaults.
+
+    Args:
+        environment: One of 'dev', 'stage', 'prod'.
+    """
+    profile_path = ENV_CONFIG_DIR / f"{environment}.env"
+    if not profile_path.exists():
+        return  # No profile file for this environment; use defaults
+
+    loaded = 0
+    with open(profile_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            key = key.strip()
+            value = value.strip()
+            if not key:
+                continue
+            # Only set if not already in environment (explicit overrides profile)
+            if key not in os.environ:
+                os.environ[key] = value
+                loaded += 1
+
+    if loaded > 0:
+        print(f"[Config] Loaded {loaded} settings from {profile_path.name}")
+
+
+# ── Load environment profile at import time ────────────────────────────────
+_env = os.getenv("NEXUS_ENV", "dev").lower().strip()
+_load_env_profile(_env)
+
+
 def _load_secrets_symbols():
     try:
         spec = importlib.util.find_spec("core.secrets")
@@ -39,6 +84,26 @@ class AppConfig:
 
     environment: str = os.getenv("NEXUS_ENV", "dev")
     base_dir: Path = Path(os.getenv("NEXUS_BASE_DIR", Path.cwd().as_posix()))
+
+    # JWT configuration
+    jwt_expiration_seconds: int = int(os.getenv("NEXUS_JWT_EXPIRATION_SECONDS", "900"))
+    refresh_token_days: int = int(os.getenv("NEXUS_REFRESH_TOKEN_DAYS", "30"))
+    jwt_issuer: str = os.getenv("NEXUS_JWT_ISSUER", "nexus-ai")
+    jwt_audience: str = os.getenv("NEXUS_JWT_AUDIENCE", "nexus-api")
+
+    # CSRF
+    csrf_enabled: bool = os.getenv("NEXUS_CSRF_ENABLED", "1") == "1"
+
+    # Connection pool limits
+    db_pool_size: int = int(os.getenv("NEXUS_DB_POOL_SIZE", "5"))
+    db_pool_overflow: int = int(os.getenv("NEXUS_DB_POOL_OVERFLOW", "10"))
+    nats_max_reconnect: int = int(os.getenv("NEXUS_NATS_MAX_RECONNECT", "10"))
+    nats_reconnect_delay_seconds: int = int(os.getenv("NEXUS_NATS_RECONNECT_DELAY", "2"))
+
+    # Retry policy defaults
+    max_task_retries: int = int(os.getenv("NEXUS_MAX_TASK_RETRIES", "3"))
+    retry_backoff_base_seconds: float = float(os.getenv("NEXUS_RETRY_BACKOFF_BASE", "1.0"))
+    retry_backoff_max_seconds: float = float(os.getenv("NEXUS_RETRY_BACKOFF_MAX", "60.0"))
     sqlite_file_name: str = os.getenv("NEXUS_SQLITE_FILE", "nexus_oltp.db")
     duckdb_file_name: str = os.getenv("NEXUS_DUCKDB_FILE", "nexus_olap.duckdb")
     storage_dir_name: str = os.getenv("NEXUS_STORAGE_DIR", "app_data/uploads")

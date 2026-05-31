@@ -83,6 +83,9 @@ nexus.spec.py
 node_modules/
 package-lock.json
 
+# ── Old lowercase skripts dir (removed, now at SKRIPTS) ────────────────────
+Code/skripts/
+
 # ── Test / CI artifacts ─────────────────────────────────────────────────────
 htmlcov/
 .coverage
