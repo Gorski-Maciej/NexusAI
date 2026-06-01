@@ -114,6 +114,16 @@ Examples:
         help="Compute SHA-256 checksums for downloaded models and print ready-to-use MODEL_MANIFEST entries",
     )
     parser.add_argument(
+        "--check-models",
+        action="store_true",
+        help="Check AI model presence and open download UI if missing (first-run setup)",
+    )
+    parser.add_argument(
+        "--check-updates",
+        action="store_true",
+        help="Check for available updates and display update dialog if found",
+    )
+    parser.add_argument(
         "--host",
         type=str,
         default="127.0.0.1",
@@ -433,6 +443,59 @@ async def _run_load_fixtures() -> int:
         return 1
 
 
+def _run_check_models() -> None:
+    """Check AI models and open first-run download UI if needed."""
+    try:
+        from installer.download_progress_ui import check_and_download_if_needed
+
+        logger.info(">>> Checking AI model presence...")
+        ready = check_and_download_if_needed()
+        if ready:
+            logger.info(">>> All AI models are ready.")
+        else:
+            logger.warning(">>> Some models could not be downloaded. The app may have limited functionality.")
+    except ImportError:
+        logger.warning("installer module not available — skipping model check")
+
+
+def _run_check_updates() -> None:
+    """Check for application updates and display result."""
+    import asyncio
+
+    async def _check():
+        try:
+            from installer.updater import check_for_updates, CURRENT_VERSION
+
+            logger.info(">>> Checking for updates (current: %s)...", CURRENT_VERSION)
+            result = await check_for_updates()
+
+            if result.error:
+                logger.warning(">>> Update check failed: %s", result.error)
+                print(f"Update check failed: {result.error}")
+                return
+
+            if result.update_available:
+                info = result.info
+                print(f">>> Update available: v{result.latest_version}")
+                print(f"    Current version: v{result.current_version}")
+                print(f"    Release date: {info.release_date if info else 'N/A'}")
+                print(f"    Download size: {info.download_size_mb if info else '?'} MB")
+                if info and info.critical:
+                    print(f"    ⚠ CRITICAL UPDATE — Recommended to install immediately")
+                print(f"    Download URL: {info.download_url if info else 'N/A'}")
+                if info and info.release_notes:
+                    print(f"\n    Release notes:")
+                    for line in info.release_notes.split('\n'):
+                        print(f"      {line}")
+            else:
+                print(f">>> No updates available. Running latest version (v{result.latest_version}).")
+        except ImportError:
+            logger.warning("updater module not available — skipping update check")
+        except Exception as exc:
+            logger.warning("Update check failed: %s", exc)
+
+    asyncio.run(_check())
+
 def main(argv: list[str] | None = None) -> int:
     """
     NexusAI central entry point.
@@ -472,6 +535,17 @@ def main(argv: list[str] | None = None) -> int:
     if args.compute_checksums:
         logger.info(">>> Computing model checksums...")
         _run_compute_checksums()
+        return 0
+
+    if args.check_models:
+        logger.info(">>> Checking AI models for first-run...")
+        # Non-GUI check: just log what's missing and exit
+        _run_check_models()
+        return 0
+
+    if args.check_updates:
+        logger.info(">>> Checking for updates...")
+        _run_check_updates()
         return 0
 
     if args.fetch_models:

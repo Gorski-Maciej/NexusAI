@@ -28,6 +28,35 @@ def get_free_port() -> int:
 def launch_app():
     print("[Launcher] Inicjalizacja Nexus Accounting...")
 
+    # ── First-run: check system dependencies (NATS, TigerBeetle) ────────
+    try:
+        from installer.dependency_ui import run_dependency_ui
+        print("[Launcher] Checking system dependencies...")
+        deps_ready = run_dependency_ui()
+        if deps_ready:
+            print("[Launcher] System dependencies are ready.")
+        else:
+            print("[Launcher] Some dependencies could not be installed.")
+    except ImportError:
+        print("[Launcher] Dependency module not available, continuing...")
+    except Exception as exc:
+        print(f"[Launcher] Dependency check failed (non-fatal): {exc}")
+
+    # ── First-run: check models ─────────────────────────────────────────
+    try:
+        from installer.download_progress_ui import check_and_download_if_needed
+        models_dir = Path("models")
+        if getattr(sys, 'frozen', False):
+            import os as _os
+            app_data = Path(_os.environ.get('APPDATA', Path.home() / 'AppData' / 'Roaming'))
+            models_dir = app_data / "NexusAI" / "models"
+        print("[Launcher] Checking AI models...")
+        check_and_download_if_needed(models_dir)
+    except ImportError:
+        print("[Launcher] Model download module not available, continuing...")
+    except Exception as exc:
+        print(f"[Launcher] Model check failed (non-fatal): {exc}")
+
     # 1. Generowanie jednorazowego tokena bezpieczeństwa (Handshake)
     bootstrap_token = secrets.token_urlsafe(32)
 
@@ -517,6 +546,9 @@ async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
     page.update()
     await asyncio.sleep(1.5)
 
+    # ── Check for updates (background, shows dialog if update found) ──
+    asyncio.create_task(_check_updates_on_startup(page))
+
     # Przełączenie na właściwy interfejs
     page.clean()
     page.window_always_on_top = False
@@ -534,10 +566,127 @@ async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
     page.update()
 
 # --- 7. GŁÓWNY START SYSTEMU ---
+async def _check_system_dependencies() -> bool:
+    """Check and download system dependencies (NATS Server, TigerBeetle).
+    Shows dependency install UI if needed.
+    Returns True if all dependencies are available."""
+    try:
+        from installer.dependency_ui import run_dependency_ui
+
+        logger.info("[Setup] Checking system dependencies...")
+        ready = run_dependency_ui()
+        if ready:
+            logger.info("[Setup] All system dependencies are ready.")
+        else:
+            logger.warning("[Setup] Some dependencies could not be installed.")
+        return ready
+    except ImportError as exc:
+        logger.warning("[Setup] dependency module not available: %s", exc)
+        return True
+    except Exception as exc:
+        logger.warning("[Setup] Dependency check failed: %s", exc)
+        return True
+
+
+async def _check_models_on_startup() -> bool:
+    """Check if AI models are present and show download UI if needed.
+    Returns True if models are ready or user skipped."""
+    try:
+        from installer.download_progress_ui import check_and_download_if_needed
+
+        logger.info("[First-Run] Checking AI model presence...")
+        # Determine models directory
+        if getattr(sys, 'frozen', False):
+            app_data = Path(os.environ.get('APPDATA', Path.home() / 'AppData' / 'Roaming'))
+            models_dir = app_data / "NexusAI" / "models"
+        else:
+            models_dir = Path("models")
+
+        ready = check_and_download_if_needed(models_dir)
+        if ready:
+            logger.info("[First-Run] All AI models are ready.")
+        else:
+            logger.warning("[First-Run] Some models could not be downloaded. Limited functionality.")
+        return ready
+    except ImportError as exc:
+        logger.warning("[First-Run] installer module not available: %s", exc)
+        return True  # Continue anyway
+    except Exception as exc:
+        logger.warning("[First-Run] Model check failed: %s", exc)
+        return True  # Continue anyway
+
+
+async def _check_updates_on_startup(page: ft.Page | None = None):
+    """Check for updates on startup. Shows Flet dialog if update available."""
+    try:
+        from installer.updater import check_for_updates, CURRENT_VERSION, build_update_dialog
+        from installer.notification_win import show_update_available
+
+        logger.info("[Updater] Checking for updates (current: %s)...", CURRENT_VERSION)
+        result = await check_for_updates()
+
+        if result.update_available and result.info:
+            logger.info("[Updater] Update available: v%s", result.latest_version)
+
+            # Show native Windows notification
+            show_update_available(result.latest_version, result.info.release_notes)
+
+            # Show Flet dialog if page is available
+            if page is not None:
+                _update_handled = [False]
+
+                def on_update():
+                    if _update_handled[0]:
+                        return
+                    _update_handled[0] = True
+                    page.close(page.dialog)
+                    page.launch_url(result.info.download_url)
+
+                def on_skip():
+                    _update_handled[0] = True
+                    page.close(page.dialog)
+
+                def on_remind_later():
+                    _update_handled[0] = True
+                    page.close(page.dialog)
+
+                dialog = build_update_dialog(
+                    page, result.info,
+                    on_update=on_update,
+                    on_skip=on_skip,
+                    on_remind_later=on_remind_later,
+                )
+
+                # Schedule dialog display after splash screen finishes
+                async def _show():
+                    await asyncio.sleep(2)
+                    page.dialog = dialog
+                    dialog.open = True
+                    page.update()
+
+                asyncio.create_task(_show())
+
+        elif result.error:
+            logger.debug("[Updater] Check failed: %s", result.error)
+        else:
+            logger.info("[Updater] No updates available (v%s)", CURRENT_VERSION)
+
+    except ImportError:
+        logger.debug("[Updater] Module not available")
+    except Exception as exc:
+        logger.debug("[Updater] Check failed: %s", exc)
+
+
 async def start_app():
     if is_already_running():
         print("Nexus AI już działa.")
         sys.exit(1)
+
+    # ── First-run: check system dependencies ───────────────────────────
+    await _check_system_dependencies()
+
+    # ── First-run: check AI models ──────────────────────────────────────
+    await _check_models_on_startup()
 
     orchestrator = NexusOrchestrator()
     backend_port = get_free_port()

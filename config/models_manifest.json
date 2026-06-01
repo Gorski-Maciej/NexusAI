@@ -1,0 +1,57 @@
+{
+  "__comment__": "NexusAI Model Manifest — SHA-256 checksums for integrity verification",
+  "__info__": "Run 'python Code/main.py --compute-checksums' to update checksums after downloading",
+  "models": {
+    "LFM2.5-1.2B-Q4_K_M.gguf": {
+      "repo_id": "lmstudio-community/LFM-2.5-1.2B-GGUF",
+      "filename": "LFM-2.5-1.2B-Q4_K_M.gguf",
+      "sha256": "",
+      "description": "Alpha Agent — Primary invoice classification (1.2B params)",
+      "size_mb": 780,
+      "required": true
+    },
+    "Qwen3-0.6B-Q4_K_M.gguf": {
+      "repo_id": "lmstudio-community/Qwen3-0.6B-GGUF",
+      "filename": "Qwen3-0.6B-Q4_K_M.gguf",
+      "sha256": "",
+      "description": "Beta Agent — Secondary validation (0.6B params)",
+      "size_mb": 430,
+      "required": true
+    },
+    "LittleLamb-0.3B-Q4_K_M.gguf": {
+      "repo_id": "lmstudio-community/LittleLamb-0.3B-GGUF",
+      "filename": "LittleLamb-0.3B-Q4_K_M.gguf",
+      "sha256": "",
+      "description": "Gamma / Orchestrator Agent — Tiebreaker + reasoning (0.3B params)",
+      "size_mb": 250,
+      "required": true
+    },
+    "granite-4.0-1b-nano-Q4_K_M.gguf": {
+      "repo_id": "lmstudio-community/granite-4.0-1b-nano-GGUF",
+      "filename": "granite-4.0-1b-nano-Q4_K_M.gguf",
+      "sha256": "",
+      "description": "Rules / Decision Agent — Business rule enforcement (1B params)",
+      "size_mb": 680,
+      "required": true
+    },
+    "qwen2.5-1.5b-instruct-Q4_K_M.gguf": {
+      "repo_id": "lmstudio-community/Qwen2.5-1.5B-Instruct-GGUF",
+      "filename": "Qwen2.5-1.5B-Instruct-Q4_K_M.gguf",
+      "sha256": "",
+      "description": "Analytics Agent — Anomaly detection (1.5B params)",
+      "size_mb": 980,
+      "required": true
+    },
+    "Jamba-Reasoning-3B-Q4_K_M.gguf": {
+      "repo_id": "lmstudio-community/Jamba-Reasoning-3B-GGUF",
+      "filename": "Jamba-Reasoning-3B-Q4_K_M.gguf",
+      "sha256": "",
+      "description": "Decision Agent (Jamba) — Complex reasoning (3B params)",
+      "size_mb": 1800,
+      "required": false
+    }
+  },
+  "total_size_mb": 4920,
+  "required_size_mb": 3120,
+  "models_dir": "models"
+}

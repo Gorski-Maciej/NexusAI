@@ -1,0 +1,11 @@
+{
+  "__comment__": "NexusAI Version Manifest — deployed to https://nexusai.app/version.json (or GitHub Pages)",
+  "__info__": "This file is checked by the auto-updater on startup. Update version and download_url for each release.",
+  "version": "1.0.0",
+  "release_notes": "Initial release of NexusAI — AI-powered accounting system.\n\nFeatures:\n- Automated invoice OCR processing\n- AI-powered classification and validation\n- Polish tax law compliance (KSeF, VAT, CIT)\n- Local-first architecture with offline AI models",
+  "download_url": "https://github.com/your-org/NexusAI/releases/download/v1.0.0/NexusAI_Setup_v1.0.0.exe",
+  "download_size_mb": 250,
+  "release_date": "2026-06-01",
+  "minimum_version": "1.0.0",
+  "critical": false
+}

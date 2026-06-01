@@ -15,9 +15,18 @@ _active_connections: dict[str, list[Any]] = {}
 # Rejestr flag anulowania: task_id -> asyncio.Event
 _cancel_flags: dict[str, asyncio.Event] = {}
 
+# Rejestr połączeń wildcard (subskrybuje wszystkie zadania)
+_wildcard_connections: list[Any] = []
+
 
 def register_connection(task_id: str, socket: Any) -> None:
-    """Rejestruje połączenie WebSocket dla danego task_id."""
+    """Rejestruje połączenie WebSocket dla danego task_id.
+    Gdy task_id=="*", rejestruje jako wildcard — otrzymuje postęp WSZYSTKICH zadań.
+    """
+    if task_id == "*":
+        if socket not in _wildcard_connections:
+            _wildcard_connections.append(socket)
+        return
     if task_id not in _active_connections:
         _active_connections[task_id] = []
     _active_connections[task_id].append(socket)
@@ -25,6 +34,9 @@ def register_connection(task_id: str, socket: Any) -> None:
 
 def unregister_connection(task_id: str, socket: Any) -> None:
     """Wyrejestrowuje połączenie WebSocket."""
+    if task_id == "*":
+        _wildcard_connections[:] = [s for s in _wildcard_connections if s is not socket]
+        return
     if task_id in _active_connections:
         _active_connections[task_id] = [s for s in _active_connections[task_id] if s is not socket]
         if not _active_connections[task_id]:
@@ -32,17 +44,30 @@ def unregister_connection(task_id: str, socket: Any) -> None:
 
 
 async def broadcast_progress(task_id: str, progress: dict) -> None:
-    """Wysyła postęp do wszystkich podłączonych klientów dla danego taska."""
-    if task_id not in _active_connections:
-        return
-    dead_sockets = []
-    for socket in _active_connections[task_id]:
-        try:
-            await socket.send_json(progress)
-        except Exception:
-            dead_sockets.append(socket)
-    for socket in dead_sockets:
-        unregister_connection(task_id, socket)
+    """Wysyła postęp do wszystkich podłączonych klientów dla danego taska.
+    Wysyła również do klientów wildcard (subskrybujących wszystkie zadania).
+    """
+    # Wyślij do subskrybentów konkretnego task_id
+    if task_id in _active_connections:
+        dead_sockets = []
+        for socket in _active_connections[task_id]:
+            try:
+                await socket.send_json(progress)
+            except Exception:
+                dead_sockets.append(socket)
+        for socket in dead_sockets:
+            unregister_connection(task_id, socket)
+
+    # Wyślij do wildcard subskrybentów ("*" — wszystkie zadania)
+    if _wildcard_connections:
+        dead_wildcards = []
+        for socket in _wildcard_connections:
+            try:
+                await socket.send_json(progress)
+            except Exception:
+                dead_wildcards.append(socket)
+        for socket in dead_wildcards:
+            unregister_connection("*", socket)
 
 
 def get_cancel_event(task_id: str) -> asyncio.Event:
@@ -109,10 +134,11 @@ async def progress_websocket(socket: Any) -> None:
                 if task_id:
                     registered_task_id = task_id
                     register_connection(task_id, socket)
+                    label = "all tasks" if task_id == "*" else f"task {task_id}"
                     await socket.send_json({
                         "type": "subscribed",
                         "task_id": task_id,
-                        "message": f"Subscribed to progress for task {task_id}",
+                        "message": f"Subscribed to progress for {label}",
                     })
             elif msg_type == "unsubscribe":
                 if registered_task_id:
