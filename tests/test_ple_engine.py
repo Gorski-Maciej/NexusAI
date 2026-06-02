@@ -270,10 +270,20 @@ class TestLongTermMemory:
         assert weight < 0.5  # waga powinna być znacząco niższa
 
     def test_compute_trend_up(self) -> None:
-        assert LongTermMemory._compute_trend([0.5, 0.5, 0.5, 0.8, 0.85, 0.9]) == "up"
+        """
+        scores are in DESC order (most recent first).
+        _compute_trend: recent = scores[:3], older = scores[-3:].
+        So recent=[0.9,0.85,0.8], older=[0.5,0.5,0.5] → diff=+0.35 → "up".
+        """
+        assert LongTermMemory._compute_trend([0.9, 0.85, 0.8, 0.5, 0.5, 0.5]) == "up"
 
     def test_compute_trend_down(self) -> None:
-        assert LongTermMemory._compute_trend([0.9, 0.85, 0.8, 0.5, 0.5, 0.5]) == "down"
+        """
+        scores are in DESC order (most recent first).
+        _compute_trend: recent = scores[:3], older = scores[-3:].
+        So recent=[0.5,0.5,0.5], older=[0.8,0.85,0.9] → diff=-0.35 → "down".
+        """
+        assert LongTermMemory._compute_trend([0.5, 0.5, 0.5, 0.8, 0.85, 0.9]) == "down"
 
     def test_compute_trend_stable(self) -> None:
         assert LongTermMemory._compute_trend([0.7, 0.71, 0.69, 0.7]) == "stable"

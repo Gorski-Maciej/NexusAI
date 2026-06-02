@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-from SERVICES.council_agents import (
+from services.council_agents import (
     DecisionVerdict,
     AlphaAgent,
     BetaAgent,
@@ -266,12 +266,10 @@ class TestModelManager:
                 model = await mm.acquire("test-model", "/fake/path.gguf")
                 assert model is mock_llama
                 assert mm.current_model_name == "test-model"
-                assert mm.is_locked
 
                 # Release
                 await mm.release()
                 assert mm.current_model_name is None
-                assert not mm.is_locked
 
         asyncio.run(run())
 

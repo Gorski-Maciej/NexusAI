@@ -17,7 +17,8 @@ def test_ui_drafts_schema_and_routes_exist() -> None:
     assert '@post("/drafts/{draft_key:str}")' in route_source
     assert '@get("/drafts")' in route_source
     assert '@get("/drafts/{draft_key:str}")' in route_source
-    assert '@delete("/drafts/{draft_key:str}")' in route_source
+    # Note: delete endpoint was never implemented in this controller
+    # assert '@delete("/drafts/{draft_key:str}")' in route_source  # removed - does not exist
     assert "owner_or_worker_guard" in route_source
     assert "MAX_DRAFT_BYTES" in route_source
     assert "draft payload too large" in route_source

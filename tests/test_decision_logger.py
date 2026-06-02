@@ -315,14 +315,24 @@ class TestUtility:
     """Testy metod pomocniczych."""
 
     def test_compute_trend_up(self) -> None:
-        """Trend wzrostowy — ostatnie 3 > starsze 3."""
-        scores = [0.5, 0.5, 0.5, 0.8, 0.85, 0.9]
+        """Trend wzrostowy — ostatnie 3 > starsze 3.
+
+        scores[0] = most recent (DESC order from DB).
+        _compute_trend: recent = scores[:3], older = scores[-3:].
+        So recent=[0.9,0.85,0.8], older=[0.5,0.5,0.5] → diff=+0.35 → "up".
+        """
+        scores = [0.9, 0.85, 0.8, 0.5, 0.5, 0.5]
         trend = DecisionLogger._compute_trend(scores)
         assert trend == "up"
 
     def test_compute_trend_down(self) -> None:
-        """Trend spadkowy."""
-        scores = [0.9, 0.85, 0.8, 0.5, 0.5, 0.5]
+        """Trend spadkowy.
+
+        scores[0] = most recent (DESC order from DB).
+        _compute_trend: recent = scores[:3], older = scores[-3:].
+        So recent=[0.5,0.5,0.5], older=[0.8,0.85,0.9] → diff=-0.35 → "down".
+        """
+        scores = [0.5, 0.5, 0.5, 0.8, 0.85, 0.9]
         trend = DecisionLogger._compute_trend(scores)
         assert trend == "down"
 

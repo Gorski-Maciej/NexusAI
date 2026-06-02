@@ -5,7 +5,9 @@ from datetime import date
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from Roboton_Reflekton.forex_engine import ForexEngine
+from unittest.mock import MagicMock
+
+from Roboton_Reflekton.forex_engine import ForexEngine, _LRUCache
 from Roboton_Reflekton.ledger_client import TigerBeetleClient
 
 
@@ -33,18 +35,25 @@ class FakeDuckDB:
     def execute(self, query, params=None):
         q = " ".join(query.split())
         if "SELECT avg_rate FROM exchange_rates" in q:
-            return [(self.rate_cache[(params[0], params[1])],)] if (params[0], params[1]) in self.rate_cache else []
+            return [(self.rate_cache[(params[0], params[1])],)] if params and len(params) >= 2 and (params[0], params[1]) in self.rate_cache else []
         if "INSERT OR REPLACE INTO exchange_rates" in q:
-            self.rate_cache[(params[0], params[1])] = params[2]
+            self.rate_cache[(params[0], params[1])] = params[2] if len(params) >= 3 else 0.0
             return []
         if "FROM invoices_fx" in q:
-            return self.invoice_rows.get(params[0], [])
+            return self.invoice_rows.get(params[0], []) if params else []
         if "FROM bank_transactions_fx" in q:
-            return self.payment_rows.get(params[0], [])
+            return self.payment_rows.get(params[0], []) if params else []
         return []
 
 
+def _reset_forex_caches() -> None:
+    """Clear class-level caches that leak between tests."""
+    ForexEngine._missing_cache.clear()
+    ForexEngine._rate_cache = _LRUCache(maxsize=1000)
+
+
 def test_fetch_nbp_rate_uses_lookback_and_cache(monkeypatch):
+    _reset_forex_caches()
     db = FakeDuckDB()
     tb = TigerBeetleClient()
     engine = ForexEngine(db, tb, 201, 750, 751)
@@ -71,6 +80,7 @@ def test_fetch_nbp_rate_uses_lookback_and_cache(monkeypatch):
 
 
 def test_fetch_nbp_rate_retries_on_url_error(monkeypatch):
+    _reset_forex_caches()
     db = FakeDuckDB()
     tb = TigerBeetleClient()
     engine = ForexEngine(db, tb, 201, 750, 751)

@@ -13,22 +13,56 @@ import uuid
 from datetime import date, datetime, timezone
 from types import SimpleNamespace
 
+from unittest.mock import MagicMock
+
 from Roboton_Reflekton.ledger_client import TigerBeetleClient
 from Roboton_Reflekton.models import FinancialPeriodStatus
 from Roboton_Reflekton.reconciliation_engine import BankReconciliationConfig, BankReconciliationEngine, OpenInvoice
+import Roboton_Reflekton.roboton_worker as _roboton_worker
 from Roboton_Reflekton.roboton_worker import RobotonWorker, SimpleRuleBasedAgent
 
 
+# ---------------------------------------------------------------------------
+# Monkey-patch: FinancialPeriod used inside _apply_financial_period_lock
+# ---------------------------------------------------------------------------
+# The conftest.py mocks the entire sqlalchemy package as a _MockModule,
+# which causes the real FinancialPeriod model class to inherit from a
+# MagicMock (DeclarativeBase).  As a result, class-level attributes like
+# company_id end up as spec='str' mocks that raise AttributeError when
+# compared in expressions like FinancialPeriod.company_id == company_id.
+#
+# We replace FinancialPeriod in roboton_worker's module scope with a
+# lightweight class whose attributes are plain MagicMock instances that
+# support __eq__ / comparison chaining.
+# ---------------------------------------------------------------------------
+_PatchedFinancialPeriod = type("FinancialPeriod", (), {})
+_PatchedFinancialPeriod.company_id = MagicMock()
+_PatchedFinancialPeriod.period_id = MagicMock()
+_PatchedFinancialPeriod.status = MagicMock()
+_roboton_worker.FinancialPeriod = _PatchedFinancialPeriod
+
+
 class FakeSession:
+    """Fake AsyncSession for testing _apply_financial_period_lock.
+
+    Since conftest.py mocks the entire sqlalchemy package as _MockModule,
+    real SQLAlchemy queries are never constructed — select() returns a
+    MagicMock whose str() does NOT contain SQL strings. Therefore we
+    cannot parse query strings; we use a simple call counter instead.
+    """
+
     def __init__(self, period_status: FinancialPeriodStatus, open_period_id: str = "2026-04"):
         self.period_status = period_status
         self.open_period_id = open_period_id
+        self._call_count = 0
 
     async def scalar(self, query):
-        text = str(query)
-        if "FROM financial_periods" in text and "period_id =" in text:
+        self._call_count += 1
+        if self._call_count == 1:
+            # First call: look up the period by period_id
             return SimpleNamespace(period_id="2026-03", status=self.period_status)
-        if "FROM financial_periods" in text and "status =" in text:
+        if self._call_count == 2:
+            # Second call: find an OPEN period to shift into
             return SimpleNamespace(period_id=self.open_period_id, status=FinancialPeriodStatus.OPEN)
         return SimpleNamespace(
             id=uuid.uuid4(),
