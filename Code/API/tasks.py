@@ -523,6 +523,23 @@ async def _council_post_invoice(invoice_id: str, extracted_data: dict, decision:
             )
             await session.commit()
             logger.info("[COUNCIL] auto-posted invoice_id=%s (trust=%.4f)", invoice_id, decision.trust_score)
+
+        # Active Learning: store approved invoice in LanceDB for future anomaly detection
+        try:
+            from services.semantic_guard import SemanticGuard
+            sg = SemanticGuard()
+            full_text = extracted_data.get("ocr_full_text", "") or str(extracted_data.get("vendor_company_name", ""))
+            if full_text:
+                sg.store_invoice(
+                    vendor_nip=extracted_data.get("contractor_nip", ""),
+                    invoice_text=full_text,
+                    category_code=extracted_data.get("category", ""),
+                    amount_net=float(extracted_data.get("amount_net", 0) or 0),
+                    transaction_id=invoice_id,
+                )
+        except Exception as al_err:
+            logger.warning("[ACTIVE-LEARNING] Failed to store in LanceDB: %s", al_err)
+
     finally:
         await engine.dispose()
 
@@ -600,6 +617,56 @@ async def _dispatch_outbox_event(row: dict) -> None:
             NATS_CIRCUIT_BREAKER.record_failure(str(exc))
             raise
         NATS_CIRCUIT_BREAKER.record_success()
+        return
+
+    # ── TAX_CALCULATED: async TigerBeetle posting ────────────────────────
+    if event_type == "tax_calculated":
+        import duckdb
+        from tax.pipeline import TaxPipeline
+        from tax.audit import ensure_schema as ensure_tax_schema
+
+        transaction_id = payload.get("transaction_id", "")
+        if not transaction_id:
+            raise ValueError("Missing transaction_id in TAX_CALCULATED payload")
+
+        net_grosze = int(payload.get("net_grosze", 0))
+        vat_grosze = int(payload.get("vat_grosze", 0))
+        brutto_grosze = int(payload.get("brutto_grosze", 0))
+
+        config = AppConfig()
+        conn = duckdb.connect(str(config.duckdb_path))
+        ensure_tax_schema(conn)
+
+        from Roboton_Reflekton.ledger_client import TigerBeetleClient
+        tb = TigerBeetleClient()
+
+        pipeline = TaxPipeline(
+            conn=conn,
+            tigerbeetle=tb,
+        )
+
+        try:
+            tb_result = await pipeline.post_to_tigerbeetle(
+                net_grosze=net_grosze,
+                vat_grosze=vat_grosze,
+                brutto_grosze=brutto_grosze,
+                source_document_id=transaction_id,
+            )
+            logger.info(
+                "[OUTBOX] TAX_CALCULATED posted tid=%s status=%s",
+                transaction_id,
+                tb_result.get("status"),
+            )
+        except Exception as exc:
+            logger.exception(
+                "[OUTBOX] TAX_CALCULATED TB posting failed tid=%s: %s",
+                transaction_id,
+                exc,
+            )
+            raise  # Let outbox relay retry
+        finally:
+            conn.close()
+
         return
 
     raise ValueError(f"Unsupported outbox event_type: {event_type}")
@@ -689,6 +756,49 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
             payload["nip_valid"] = False
             payload["iban_valid"] = False
 
+        # --- Context Enrichment (Part IV): Biała Lista + cache kontrahentów ---
+        try:
+            import duckdb
+            conn = duckdb.connect(str(AppConfig().duckdb_path))
+            from services.context_enricher import ContextEnricher, ensure_cache_schema
+            ensure_cache_schema(conn)
+            enricher = ContextEnricher(conn)
+            enriched = await enricher.enrich(payload)
+            conn.close()
+        except Exception as enrich_err:
+            logger.warning("[OCR] ContextEnrichment failed for %s: %s", invoice_id, enrich_err)
+            enriched = {
+                "vendor_vat_status": "unknown",
+                "vendor_pkd": "",
+                "vendor_account_on_whitelist": False,
+                "vendor_trust": "unknown",
+                "vendor_company_name": "",
+            }
+
+        # --- Semantic Anomaly Detection (Part VI): LanceDB + HerBERT ---
+        try:
+            from services.semantic_guard import SemanticGuard
+            semantic_guard = SemanticGuard()
+            full_text = payload.get("ocr_full_text", "")
+            amount_net_val = _safe_float(payload.get("amount_net")) or 0.0
+            anomaly = semantic_guard.evaluate(
+                invoice_text=full_text,
+                vendor_nip=payload.get("contractor_nip", ""),
+                amount_net=amount_net_val,
+            )
+            if anomaly.get("action") == "BLOCK_DECREE":
+                logger.warning(
+                    "[OCR] Semantic anomaly BLOCK invoice_id=%s score=%.4f alert=%s",
+                    invoice_id,
+                    anomaly.get("anomaly_score", 0),
+                    anomaly.get("alert"),
+                )
+                await _mark_invoice_blocked(invoice_id, anomaly.get("alert", "Semantic anomaly detected"))
+                return
+        except Exception as sem_err:
+            logger.warning("[OCR] SemanticGuard failed for %s: %s", invoice_id, sem_err)
+            anomaly = {"action": "ALLOW", "anomaly_score": 0.0, "alert": None}
+
         # --- Build extracted data for council decision ---
         extracted_data = {
             "invoice_id": invoice_id,
@@ -703,6 +813,18 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
             "layout_confidence": _safe_float(payload.get("layout_confidence")) or 0.5,
             "amount_consensus": not consensus.confidence_conflict,
             "llm_validation": _safe_float(payload.get("llm_validation")) or 0.5,
+            # Full OCR text for Active Learning & SemanticGuard
+            "ocr_full_text": payload.get("ocr_full_text", ""),
+            # Enriched vendor data (Part IV)
+            "vendor_vat_status": enriched.get("vendor_vat_status", "unknown"),
+            "vendor_pkd": enriched.get("vendor_pkd", ""),
+            "vendor_account_on_whitelist": enriched.get("vendor_account_on_whitelist", False),
+            "vendor_trust": enriched.get("vendor_trust", "unknown"),
+            "vendor_company_name": enriched.get("vendor_company_name", ""),
+            # Semantic anomaly (Part VI)
+            "semantic_anomaly_score": anomaly.get("anomaly_score", 0.0),
+            "semantic_anomaly_alert": anomaly.get("alert"),
+            "semantic_action": anomaly.get("action", "ALLOW"),
             "vendor_profile": {
                 "known": bool(payload.get("vendor_known", False)),
                 "invoice_count": int(payload.get("vendor_invoice_count", 0)),
@@ -716,6 +838,56 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
             "historical_average": _safe_float(payload.get("historical_average")),
             "vendor_invoice_count": int(payload.get("vendor_invoice_count", 0)),
         }
+
+        # --- Risk Guard (Part V): dynamiczne progi ufności ---
+        try:
+            import duckdb
+            rg_conn = duckdb.connect(str(AppConfig().duckdb_path))
+            from services.risk_guard import RiskGuard, seed_default_thresholds
+            seed_default_thresholds(rg_conn)
+            risk_guard = RiskGuard(rg_conn)
+            company_tax_form = payload.get("company_tax_form", "")
+            expense_type = payload.get("category", "")
+            vendor_trust = enriched.get("vendor_trust", "unknown")
+            threshold = risk_guard.get_threshold(
+                tax_form=company_tax_form,
+                expense_type=expense_type,
+                vendor_trust=vendor_trust,
+            )
+            extracted_data["risk_threshold"] = {
+                "required_ml_confidence": threshold.required_ml_confidence,
+                "action_if_below": threshold.action_if_below,
+            }
+            # Check if OCR confidence meets the threshold
+            ocr_conf = extracted_data.get("ocr_confidence", 0.0) or 0.0
+            if ocr_conf < threshold.required_ml_confidence:
+                logger.warning(
+                    "[OCR] RiskGuard LOW CONFIDENCE invoice_id=%s ocr_conf=%.4f required=%.4f action=%s",
+                    invoice_id,
+                    ocr_conf,
+                    threshold.required_ml_confidence,
+                    threshold.action_if_below,
+                )
+                # Take action based on threshold.action_if_below
+                if threshold.action_if_below == "BLOCK_AND_ALERT":
+                    await _mark_invoice_blocked(
+                        invoice_id,
+                        f"Low ML confidence: ocr_conf={ocr_conf:.4f} < required={threshold.required_ml_confidence:.4f}",
+                    )
+                    rg_conn.close()
+                    return
+                elif threshold.action_if_below == "TRIAGE_QUEUE":
+                    await _mark_invoice_pending_review(
+                        invoice_id,
+                        reason=f"LOW_ML_CONFIDENCE: ocr_conf={ocr_conf:.4f} < {threshold.required_ml_confidence:.4f}",
+                    )
+            rg_conn.close()
+        except Exception as risk_err:
+            logger.warning("[OCR] RiskGuard failed for %s: %s", invoice_id, risk_err)
+            extracted_data["risk_threshold"] = {
+                "required_ml_confidence": 0.85,
+                "action_if_below": "BLOCK_AND_ALERT",
+            }
 
     # Rozwiązanie 33: Przejście do AI_CLASSIFY
         try:
@@ -1312,6 +1484,29 @@ def _safe_float(value: object) -> float | None:
         return float(value)
     except (TypeError, ValueError):
         return None
+
+
+async def _mark_invoice_blocked(invoice_id: str, reason: str) -> None:
+    """Mark invoice as BLOCKED_FRAUD_SUSPICION due to semantic anomaly or white-list violation."""
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    session_factory = create_session_factory(engine)
+    try:
+        async with session_factory() as session:
+            await session.execute(
+                text(
+                    """
+                    UPDATE invoices
+                    SET status = 'BLOCKED_FRAUD_SUSPICION', updated_at = CURRENT_TIMESTAMP
+                    WHERE id = :invoice_id
+                    """
+                ),
+                {"invoice_id": invoice_id},
+            )
+            await session.commit()
+            logger.warning("[FRAUD] Invoice %s blocked: %s", invoice_id, reason)
+    finally:
+        await engine.dispose()
 
 
 async def _mark_invoice_pending_review(invoice_id: str, reason: str) -> None:

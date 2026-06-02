@@ -168,10 +168,11 @@ if _init_path.exists():
 # ===== KROK 4: Załaduj serwisy przez importlib.util =====
 
 SERVICES_DIR = CODE_DIR / "SERVICES"
+SERVICES_DIR_LOWER = CODE_DIR / "services"
 
-# Stwórz pakiet services
+# Stwórz pakiet services (obejmuje oba katalogi: SERVICES i services)
 _services_ns = types.ModuleType("services")
-_services_ns.__path__ = [str(SERVICES_DIR)]
+_services_ns.__path__ = [str(SERVICES_DIR), str(SERVICES_DIR_LOWER)]
 _services_ns.__package__ = "services"
 sys.modules["services"] = _services_ns
 
