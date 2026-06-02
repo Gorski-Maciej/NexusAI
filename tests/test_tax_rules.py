@@ -330,6 +330,225 @@ class TestRuleLifecycle:
             engine.decide(ctx_after)
 
 
+# ── Field Confidence Rules — Zen-Engine zamiast RiskGuard ─────────────────
+
+
+class TestFieldConfidenceRules:
+    """Test Zen-Engine rules for per-field confidence thresholds.
+
+    Zastępują Pythonowy RiskGuard. Reguły mają priorytet 8 i zwracają
+    ``_routing`` w werdykcie, gdy confidence danego pola jest poniżej progu.
+    Jeśli wszystkie pola mają wystarczającą pewność, żadna reguła
+    field-confidence nie matchuje i pipeline kontynuuje normalnie.
+    """
+
+    def _build_ctx(
+        self,
+        *,
+        category_code: str = "FUEL",
+        tax_form: str = "CIT_STANDARD",
+        vendor_country: str = "PL",
+        fc_values: dict[str, str] | None = None,
+    ) -> dict[str, str]:
+        """Build a context dict with field_confidence values."""
+        ctx = {
+            "category_code": category_code,
+            "transaction_date": "2025-06-01",
+            "company_tax_form": tax_form,
+            "vendor_country": vendor_country,
+            "vendor_vat_status": "unknown",
+            "vendor_pkd": "",
+            "amount_net": "1000.00",
+        }
+        if fc_values:
+            ctx.update(fc_values)
+        return ctx
+
+    # ── CIT_STANDARD ────────────────────────────────────────────────────
+
+    def test_cit_standard_low_vat_rate_confidence(self, engine: RuleEngine) -> None:
+        """CIT_STANDARD + fc_vat_rate=0.70 < 0.98 → BLOCK_AND_ALERT."""
+        ctx = self._build_ctx(fc_values={
+            "fc_vat_rate": "0.70",
+            "fc_minimum": "0.70",
+        })
+        verdict = engine.decide(ctx)
+        assert verdict["_routing"] == "BLOCK_AND_ALERT"
+        assert "VAT rate confidence" in verdict["_routing_reason"]
+        assert verdict["_priority"] == 8
+
+    def test_cit_standard_low_net_confidence(self, engine: RuleEngine) -> None:
+        """CIT_STANDARD + fc_total_net=0.80 < 0.95 → BLOCK_AND_ALERT."""
+        ctx = self._build_ctx(fc_values={
+            "fc_total_net": "0.80",
+            "fc_vat_rate": "0.99",
+            "fc_minimum": "0.80",
+        })
+        verdict = engine.decide(ctx)
+        assert verdict["_routing"] == "BLOCK_AND_ALERT"
+        assert "net amount" in verdict["_routing_reason"]
+
+    def test_cit_standard_default_fallback_low_minimum(self, engine: RuleEngine) -> None:
+        """CIT_STANDARD + fc_minimum=0.80 < 0.85 → BLOCK_AND_ALERT (fallback rule)."""
+        ctx = self._build_ctx(fc_values={
+            "fc_vat_rate": "0.99",
+            "fc_total_net": "0.99",
+            "fc_vendor_nip": "0.80",
+            "fc_minimum": "0.80",
+        })
+        verdict = engine.decide(ctx)
+        assert verdict["_routing"] == "BLOCK_AND_ALERT"
+        assert "minimum" in verdict["_routing_reason"]
+
+    # ── LUMP_SUM ────────────────────────────────────────────────────────
+
+    def test_lump_sum_low_vat_rate_confidence(self, engine: RuleEngine) -> None:
+        """LUMP_SUM + fc_vat_rate=0.80 < 0.95 → TRIAGE_QUEUE."""
+        ctx = self._build_ctx(tax_form="LUMP_SUM", fc_values={
+            "fc_vat_rate": "0.80",
+        })
+        verdict = engine.decide(ctx)
+        assert verdict["_routing"] == "TRIAGE_QUEUE"
+        assert verdict["_priority"] == 8
+
+    def test_lump_sum_very_low_net_confidence(self, engine: RuleEngine) -> None:
+        """LUMP_SUM + fc_total_net=0.50 < 0.60 → TRIAGE_QUEUE."""
+        ctx = self._build_ctx(tax_form="LUMP_SUM", fc_values={
+            "fc_total_net": "0.50",
+        })
+        verdict = engine.decide(ctx)
+        assert verdict["_routing"] == "TRIAGE_QUEUE"
+        assert "net amount" in verdict["_routing_reason"]
+
+    # ── LINEAR ──────────────────────────────────────────────────────────
+
+    def test_linear_low_confidence(self, engine: RuleEngine) -> None:
+        """LINEAR + fc_minimum=0.70 < 0.85 → TRIAGE_QUEUE."""
+        ctx = self._build_ctx(tax_form="LINEAR", fc_values={
+            "fc_vat_rate": "0.70",
+            "fc_minimum": "0.70",
+        })
+        verdict = engine.decide(ctx)
+        assert verdict["_routing"] == "TRIAGE_QUEUE"
+
+    # ── CIT_ESTONIAN ────────────────────────────────────────────────────
+
+    def test_cit_estonian_low_vat_rate_confidence(self, engine: RuleEngine) -> None:
+        """CIT_ESTONIAN + fc_vat_rate=0.90 < 0.95 → BLOCK_AND_ALERT."""
+        ctx = self._build_ctx(tax_form="CIT_ESTONIAN", fc_values={
+            "fc_vat_rate": "0.90",
+        })
+        verdict = engine.decide(ctx)
+        assert verdict["_routing"] == "BLOCK_AND_ALERT"
+
+    # ── MIXED_AUTO ──────────────────────────────────────────────────────
+
+    def test_mixed_auto_low_confidence(self, engine: RuleEngine) -> None:
+        """MIXED_AUTO + fc_minimum=0.80 < 0.90 → BLOCK_AND_ALERT."""
+        ctx = self._build_ctx(category_code="MIXED_AUTO", fc_values={
+            "fc_vat_rate": "0.80",
+            "fc_minimum": "0.80",
+        })
+        verdict = engine.decide(ctx)
+        assert verdict["_routing"] == "BLOCK_AND_ALERT"
+
+    # ── REPRESENTATION ──────────────────────────────────────────────────
+
+    def test_representation_low_confidence(self, engine: RuleEngine) -> None:
+        """REPRESENTATION + fc_minimum=0.90 < 0.95 → BLOCK_AND_ALERT."""
+        ctx = self._build_ctx(category_code="REPRESENTATION", fc_values={
+            "fc_vat_rate": "0.90",
+            "fc_minimum": "0.90",
+        })
+        verdict = engine.decide(ctx)
+        assert verdict["_routing"] == "BLOCK_AND_ALERT"
+
+    # ── NIP ─────────────────────────────────────────────────────────────
+
+    def test_low_nip_confidence(self, engine: RuleEngine) -> None:
+        """fc_vendor_nip=0.50 < 0.80 → BLOCK_AND_ALERT."""
+        ctx = self._build_ctx(fc_values={
+            "fc_vat_rate": "0.99",
+            "fc_vendor_nip": "0.50",
+            "fc_minimum": "0.50",
+        })
+        verdict = engine.decide(ctx)
+        assert verdict["_routing"] == "BLOCK_AND_ALERT"
+        assert "NIP" in verdict["_routing_reason"]
+
+    # ── Category confidence ─────────────────────────────────────────────
+
+    def test_low_category_confidence(self, engine: RuleEngine) -> None:
+        """fc_category_code=0.50 < 0.80 → TRIAGE_QUEUE (category rule before min fallback)."""
+        ctx = self._build_ctx(fc_values={
+            "fc_vat_rate": "0.99",
+            "fc_category_code": "0.50",
+            "fc_minimum": "0.50",
+        })
+        verdict = engine.decide(ctx)
+        # fc_vendor_nip is empty — NIP rule guarded by > ''
+        # fc_category_code=0.50 matches category rule (TRIAGE_QUEUE)
+        assert verdict["_routing"] == "TRIAGE_QUEUE"
+        assert "category" in verdict["_routing_reason"].lower()
+
+    # ── Very low minimum ────────────────────────────────────────────────
+
+    def test_very_low_minimum_confidence(self, engine: RuleEngine) -> None:
+        """fc_minimum=0.50 < 0.70 → TRIAGE_QUEUE (catch-all rule)."""
+        ctx = self._build_ctx(fc_values={
+            "fc_vat_rate": "0.50",
+            "fc_minimum": "0.50",
+        })
+        verdict = engine.decide(ctx)
+        # CIT_STANDARD + fc_vat_rate rule matches first (more specific)
+        assert verdict["_routing"] == "BLOCK_AND_ALERT"
+
+    # ── High confidence — falls through to regular rules ────────────────
+
+    def test_high_confidence_falls_to_regular_rule(self, engine: RuleEngine) -> None:
+        """All fc_* values high → no field confidence rule matches → regular rule."""
+        ctx = self._build_ctx(fc_values={
+            "fc_vat_rate": "0.99",
+            "fc_total_net": "0.99",
+            "fc_vendor_nip": "0.99",
+            "fc_minimum": "0.99",
+        })
+        verdict = engine.decide(ctx)
+        # Should match FUEL rule (priority 10) — no _routing
+        assert "_routing" not in verdict
+        assert verdict["vat_rate"] == "0.23"
+        assert verdict["gtu_code"] == "GTU_04"
+        assert verdict["_priority"] == 10
+
+    def test_high_confidence_falls_to_default_pl(self, engine: RuleEngine) -> None:
+        """Unknown category + high confidence → fallback default PL (no _routing)."""
+        ctx = self._build_ctx(category_code="UNKNOWN", fc_values={
+            "fc_vat_rate": "0.99",
+            "fc_minimum": "0.99",
+        })
+        verdict = engine.decide(ctx)
+        assert "_routing" not in verdict
+        assert verdict["vat_rate"] == "0.23"
+        assert verdict["_priority"] == 100
+
+    def test_no_field_confidence_in_context(self, engine: RuleEngine) -> None:
+        """Brak fc_* w kontekście → zachowanie niezmienione (bezpieczne)."""
+        ctx = self._build_ctx()  # No fc_values!
+        verdict = engine.decide(ctx)
+        assert "_routing" not in verdict
+        assert verdict["vat_rate"] == "0.23"
+        assert verdict["gtu_code"] == "GTU_04"
+
+    def test_some_fc_fields_missing(self, engine: RuleEngine) -> None:
+        """Tylko niektóre fc_* dostępne → działa tylko dla dostępnych."""
+        ctx = self._build_ctx(fc_values={
+            "fc_total_net": "0.50",  # Only total_net available
+        })
+        verdict = engine.decide(ctx)
+        # CIT_STANDARD + fc_total_net < 0.95 should match
+        assert verdict["_routing"] == "BLOCK_AND_ALERT"
+
+
 # ── DEFAULT_TAX_RULES validation ─────────────────────────────────────────────
 
 

@@ -9,7 +9,7 @@ import os
 import resource
 import time
 from pathlib import Path
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Any
 from taskiq_nats import PullBasedJetStreamBroker
 from sqlalchemy import text
@@ -37,6 +37,7 @@ from services.analytics_agent import AnalyticsAgent, FinDetective
 from services.decision_agent import DecisionOrchestrator, JambaStrategist, GraniteExecutor
 from services.orchestrator_agent import OrchestratorAgent
 from services.accounting import AccountingService
+from tax.exceptions import NoMatchingRuleError
 
 broker = PullBasedJetStreamBroker()
 logger = logging.getLogger("nexus.api.tasks")
@@ -800,6 +801,11 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
             anomaly = {"action": "ALLOW", "anomaly_score": 0.0, "alert": None}
 
         # --- Build extracted data for council decision ---
+
+        # --- Field Confidence: per-field OCR confidence metadata ---
+        # Struktura: {"total_gross": {"value": 1230.00, "confidence": 0.88}, ...}
+        field_confidence = _build_field_confidence(payload, consensus)
+
         extracted_data = {
             "invoice_id": invoice_id,
             "contractor_nip": payload.get("contractor_nip", ""),
@@ -815,6 +821,8 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
             "llm_validation": _safe_float(payload.get("llm_validation")) or 0.5,
             # Full OCR text for Active Learning & SemanticGuard
             "ocr_full_text": payload.get("ocr_full_text", ""),
+            # Field Confidence (per-field metadata — nowość)
+            "field_confidence": field_confidence,
             # Enriched vendor data (Part IV)
             "vendor_vat_status": enriched.get("vendor_vat_status", "unknown"),
             "vendor_pkd": enriched.get("vendor_pkd", ""),
@@ -839,55 +847,67 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
             "vendor_invoice_count": int(payload.get("vendor_invoice_count", 0)),
         }
 
-        # --- Risk Guard (Part V): dynamiczne progi ufności ---
+        # --- Field Confidence: Zen-Engine Rules (zamiast Python RiskGuard) ---
+        # Używa RuleEngine (Zen-Engine) do ewaluacji progów ufności per-field.
+        # Reguły są zdefiniowane w DEFAULT_TAX_RULES (priorytet 8) i zawierają
+        # pole _routing: BLOCK_AND_ALERT | TRIAGE_QUEUE.
+        # Jeśli żadna reguła nie matchuje = wszystkie pola mają wystarczającą pewność.
         try:
             import duckdb
-            rg_conn = duckdb.connect(str(AppConfig().duckdb_path))
-            from services.risk_guard import RiskGuard, seed_default_thresholds
-            seed_default_thresholds(rg_conn)
-            risk_guard = RiskGuard(rg_conn)
-            company_tax_form = payload.get("company_tax_form", "")
-            expense_type = payload.get("category", "")
-            vendor_trust = enriched.get("vendor_trust", "unknown")
-            threshold = risk_guard.get_threshold(
-                tax_form=company_tax_form,
-                expense_type=expense_type,
-                vendor_trust=vendor_trust,
-            )
-            extracted_data["risk_threshold"] = {
-                "required_ml_confidence": threshold.required_ml_confidence,
-                "action_if_below": threshold.action_if_below,
+            ze_conn = duckdb.connect(str(AppConfig().duckdb_path))
+            from tax.rules import RuleEngine, ensure_tax_schemas, seed_default_rules
+            from core.context_interpreter import ContextInterpreter as CtxInterpreter
+            ensure_tax_schemas(ze_conn)
+            seed_default_rules(ze_conn)
+
+            # Zbuduj kontekst dla RuleEngine z danych payloadu + field_confidence
+            ctx_data: dict[str, Any] = {
+                "category_code": (payload.get("category") or "").upper(),
+                "transaction_date": payload.get("issue_date", "") or payload.get("transaction_date", date.today().isoformat()),
+                "company_tax_form": payload.get("company_tax_form", "CIT_STANDARD"),
+                "vendor_country": payload.get("vendor_country", "PL"),
+                "vendor_nip": payload.get("contractor_nip", ""),
+                "amount_net": _safe_float(payload.get("amount_net")) or 0,
+                "vendor_vat_status": payload.get("vendor_vat_status", "unknown"),
+                "field_confidence": field_confidence,
             }
-            # Check if OCR confidence meets the threshold
-            ocr_conf = extracted_data.get("ocr_confidence", 0.0) or 0.0
-            if ocr_conf < threshold.required_ml_confidence:
-                logger.warning(
-                    "[OCR] RiskGuard LOW CONFIDENCE invoice_id=%s ocr_conf=%.4f required=%.4f action=%s",
-                    invoice_id,
-                    ocr_conf,
-                    threshold.required_ml_confidence,
-                    threshold.action_if_below,
-                )
-                # Take action based on threshold.action_if_below
-                if threshold.action_if_below == "BLOCK_AND_ALERT":
-                    await _mark_invoice_blocked(
+            context = CtxInterpreter.interpret(ctx_data)
+
+            rule_engine = RuleEngine(ze_conn)
+            try:
+                verdict = rule_engine.decide(context)
+                routing = verdict.get("_routing", "")
+                routing_reason = verdict.get("_routing_reason", "")
+
+                if routing:
+                    logger.warning(
+                        "[OCR] Zen-Engine field confidence invoice_id=%s routing=%s reason=%s",
                         invoice_id,
-                        f"Low ML confidence: ocr_conf={ocr_conf:.4f} < required={threshold.required_ml_confidence:.4f}",
+                        routing,
+                        routing_reason,
                     )
-                    rg_conn.close()
-                    return
-                elif threshold.action_if_below == "TRIAGE_QUEUE":
-                    await _mark_invoice_pending_review(
-                        invoice_id,
-                        reason=f"LOW_ML_CONFIDENCE: ocr_conf={ocr_conf:.4f} < {threshold.required_ml_confidence:.4f}",
-                    )
-            rg_conn.close()
+                    extracted_data["field_confidence_routing"] = routing
+                    extracted_data["field_confidence_reason"] = routing_reason
+
+                    if routing == "BLOCK_AND_ALERT":
+                        await _mark_invoice_blocked(invoice_id, routing_reason)
+                        ze_conn.close()
+                        return
+                    elif routing == "TRIAGE_QUEUE":
+                        await _mark_invoice_pending_review(
+                            invoice_id, reason=f"FIELD_CONFIDENCE: {routing_reason}"
+                        )
+                    # else: inne wartości routing (np. HUMAN_VERIFICATION) — kontynuuj
+            except NoMatchingRuleError:
+                # Brak matchującej reguły = wszystkie pola mają wystarczającą pewność
+                # To jest normalny przypadek dla faktur z wysokim confidence.
+                extracted_data["field_confidence_status"] = "ALL_CONFIDENCE_OK"
+                pass
+
+            ze_conn.close()
         except Exception as risk_err:
-            logger.warning("[OCR] RiskGuard failed for %s: %s", invoice_id, risk_err)
-            extracted_data["risk_threshold"] = {
-                "required_ml_confidence": 0.85,
-                "action_if_below": "BLOCK_AND_ALERT",
-            }
+            logger.warning("[OCR] Zen-Engine field confidence check failed for %s: %s", invoice_id, risk_err)
+            extracted_data["field_confidence_status"] = "CHECK_FAILED"
 
     # Rozwiązanie 33: Przejście do AI_CLASSIFY
         try:
@@ -1484,6 +1504,107 @@ def _safe_float(value: object) -> float | None:
         return float(value)
     except (TypeError, ValueError):
         return None
+
+
+def _build_field_confidence(
+    payload: dict[str, Any],
+    consensus: Any,
+) -> dict[str, dict[str, Any]]:
+    """Zbuduj strukturę field_confidence z payloadu OCR i konsensusu.
+
+    Tworzy per-field confidence metadata zgodnie ze strukturą:
+    ``{"total_gross": {"value": 1230.00, "confidence": 0.88, "source": "..."}, ...}``
+
+    Args:
+        payload: Surowe dane z OCR pipeline.
+        consensus: Wynik ``decide_amount_consensus``.
+
+    Returns:
+        Słownik field_confidence z per-field pewnością odczytu.
+    """
+    fc: dict[str, dict[str, Any]] = {}
+
+    # Kwota brutto (z konsensusu lub payloadu)
+    gross_str = payload.get("amount_gross")
+    gross_val = consensus.amount_gross if consensus and consensus.amount_gross is not None else _safe_float(gross_str)
+    if gross_val is not None:
+        base_conf = _safe_float(payload.get("ocr_confidence")) or 0.5
+        # Jeśli konflikt konsensusu — obniż confidence dla gross
+        if consensus and consensus.confidence_conflict:
+            gross_conf = base_conf * 0.7  # kara za konflikt
+        else:
+            gross_conf = base_conf
+        fc["total_gross"] = {
+            "value": gross_val,
+            "confidence": round(min(gross_conf, 1.0), 4),
+            "source": "ocr_consensus",
+        }
+
+    # Kwota netto
+    net_val = _safe_float(payload.get("amount_net"))
+    if net_val is not None:
+        fc["total_net"] = {
+            "value": net_val,
+            "confidence": round(min(float(payload.get("ocr_confidence", 0.5)) * 0.95, 1.0), 4),
+            "source": "ocr",
+        }
+
+    # Stawka VAT (z LLM — nie z OCR; opcjonalna, bo określana później przez Zen-Engine)
+    vat_rate_val = payload.get("vat_rate") or payload.get("vat_rate_from_llm")
+    if vat_rate_val is not None:
+        vat_conf = _safe_float(payload.get("llm_validation")) or 0.5
+        fc["vat_rate"] = {
+            "value": vat_rate_val,
+            "confidence": round(min(vat_conf, 1.0), 4),
+            "source": "llm",
+        }
+
+    # Kwota VAT
+    vat_val = _safe_float(payload.get("vat"))
+    if vat_val is not None:
+        fc["vat_amount"] = {
+            "value": vat_val,
+            "confidence": round(min(float(payload.get("ocr_confidence", 0.5)) * 0.9, 1.0), 4),
+            "source": "ocr",
+        }
+
+    # NIP kontrahenta
+    nip_val = payload.get("contractor_nip", "")
+    if nip_val:
+        fc["vendor_nip"] = {
+            "value": nip_val,
+            "confidence": 0.95 if payload.get("nip_valid", False) else 0.7,
+            "source": "ocr",
+        }
+
+    # Numer faktury
+    inv_num = payload.get("number", "")
+    if inv_num:
+        fc["invoice_number"] = {
+            "value": inv_num,
+            "confidence": 0.85,
+            "source": "ocr",
+        }
+
+    # Data wystawienia
+    issue_date = payload.get("issue_date", "")
+    if issue_date:
+        fc["issue_date"] = {
+            "value": issue_date,
+            "confidence": 0.85,
+            "source": "ocr",
+        }
+
+    # Kategoria wydatku
+    category = payload.get("category", "")
+    if category:
+        fc["category_code"] = {
+            "value": category,
+            "confidence": 0.80,  # kategoria często wymaga ręcznej weryfikacji
+            "source": "llm",
+        }
+
+    return fc
 
 
 async def _mark_invoice_blocked(invoice_id: str, reason: str) -> None:

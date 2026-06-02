@@ -139,6 +139,205 @@ DEFAULT_TAX_RULES: list[dict[str, Any]] = [
         "priority": 50,
         "created_by": "system",
     },
+    # ◈ ◈ ◈ FIELD CONFIDENCE RULES (Priority 8) ◈ ◈ ◈
+    # Zastępują Pythonowy RiskGuard — reguły Zen-Engine dla progów ufności per-field.
+    # Każda reguła zawiera domyślną vat_rate=0.23 oraz _routing/_routing_reason.
+    # Jeśli żadna reguła nie matchuje (wysoka pewność), pipeline kontynuuje normalnie.
+    # Kolejność: od najbardziej restrykcyjnych (CIT_STANDARD) do ogólnych.
+
+    # ── CIT_STANDARD + niska pewność stawki VAT → BLOCK_AND_ALERT
+    {
+        "condition_sql": "company_tax_form = 'CIT_STANDARD' AND fc_vat_rate < '0.98' AND fc_vat_rate > ''",
+        "action_json": {
+            "vat_rate": "0.23",
+            "rounding_level": "position",
+            "income_tax_qualification": "deductible_full",
+            "gtu_code": None,
+            "_routing": "BLOCK_AND_ALERT",
+            "_routing_reason": "CIT_STANDARD: VAT rate confidence {fc_vat_rate} < 0.98",
+        },
+        "valid_from": "2024-01-01",
+        "valid_to": None,
+        "priority": 8,
+        "description_template": "BLOKADA: CIT_STANDARD – niska pewność stawki VAT ({fc_vat_rate}).",
+        "created_by": "system",
+    },
+    # ── CIT_STANDARD + niska pewność kwoty netto → BLOCK_AND_ALERT
+    {
+        "condition_sql": "company_tax_form = 'CIT_STANDARD' AND fc_total_net < '0.95' AND fc_total_net > ''",
+        "action_json": {
+            "vat_rate": "0.23",
+            "rounding_level": "position",
+            "income_tax_qualification": "deductible_full",
+            "gtu_code": None,
+            "_routing": "BLOCK_AND_ALERT",
+            "_routing_reason": "CIT_STANDARD: net amount confidence {fc_total_net} < 0.95",
+        },
+        "valid_from": "2024-01-01",
+        "valid_to": None,
+        "priority": 8,
+        "created_by": "system",
+    },
+    # ── CIT_ESTONIAN + niska pewność stawki VAT → BLOCK_AND_ALERT
+    {
+        "condition_sql": "company_tax_form = 'CIT_ESTONIAN' AND fc_vat_rate < '0.95' AND fc_vat_rate > ''",
+        "action_json": {
+            "vat_rate": "0.23",
+            "rounding_level": "position",
+            "income_tax_qualification": "deductible_full",
+            "gtu_code": None,
+            "_routing": "BLOCK_AND_ALERT",
+            "_routing_reason": "CIT_ESTONIAN: VAT rate confidence {fc_vat_rate} < 0.95",
+        },
+        "valid_from": "2024-01-01",
+        "valid_to": None,
+        "priority": 8,
+        "created_by": "system",
+    },
+    # ── LINEAR (ryczałt) + każde pole → TRIAGE_QUEUE (niższy próg)
+    {
+        "condition_sql": "company_tax_form = 'LINEAR' AND fc_minimum < '0.85' AND fc_minimum > ''",
+        "action_json": {
+            "vat_rate": "0.23",
+            "rounding_level": "position",
+            "income_tax_qualification": "deductible_full",
+            "gtu_code": None,
+            "_routing": "TRIAGE_QUEUE",
+            "_routing_reason": "LINEAR: minimum confidence {fc_minimum} < 0.85 across fields",
+        },
+        "valid_from": "2024-01-01",
+        "valid_to": None,
+        "priority": 8,
+        "created_by": "system",
+    },
+    # ── LUMP_SUM + niska pewność stawki VAT → TRIAGE_QUEUE
+    {
+        "condition_sql": "company_tax_form = 'LUMP_SUM' AND fc_vat_rate < '0.95' AND fc_vat_rate > ''",
+        "action_json": {
+            "vat_rate": "0.23",
+            "rounding_level": "position",
+            "income_tax_qualification": "deductible_full",
+            "gtu_code": None,
+            "_routing": "TRIAGE_QUEUE",
+            "_routing_reason": "LUMP_SUM: VAT rate confidence {fc_vat_rate} < 0.95",
+        },
+        "valid_from": "2024-01-01",
+        "valid_to": None,
+        "priority": 8,
+        "created_by": "system",
+    },
+    # ── LUMP_SUM + niska pewność kwoty netto → TRIAGE_QUEUE (błąd nie wpływa na podatek)
+    {
+        "condition_sql": "company_tax_form = 'LUMP_SUM' AND fc_total_net < '0.60' AND fc_total_net > ''",
+        "action_json": {
+            "vat_rate": "0.23",
+            "rounding_level": "position",
+            "income_tax_qualification": "deductible_full",
+            "gtu_code": None,
+            "_routing": "TRIAGE_QUEUE",
+            "_routing_reason": "LUMP_SUM: net amount confidence {fc_total_net} < 0.60",
+        },
+        "valid_from": "2024-01-01",
+        "valid_to": None,
+        "priority": 8,
+        "created_by": "system",
+    },
+    # ── Wydatki mieszane auto (MIXED_AUTO) → BLOCK_AND_ALERT
+    {
+        "condition_sql": "category_code = 'MIXED_AUTO' AND fc_minimum < '0.90' AND fc_minimum > ''",
+        "action_json": {
+            "vat_rate": "0.23",
+            "rounding_level": "position",
+            "income_tax_qualification": "deductible_full",
+            "gtu_code": None,
+            "_routing": "BLOCK_AND_ALERT",
+            "_routing_reason": "MIXED_AUTO: minimum confidence {fc_minimum} < 0.90",
+        },
+        "valid_from": "2024-01-01",
+        "valid_to": None,
+        "priority": 8,
+        "created_by": "system",
+    },
+    # ── Wydatki reprezentacyjne (REPRESENTATION) → BLOCK_AND_ALERT
+    {
+        "condition_sql": "category_code = 'REPRESENTATION' AND fc_minimum < '0.95' AND fc_minimum > ''",
+        "action_json": {
+            "vat_rate": "0.23",
+            "rounding_level": "position",
+            "income_tax_qualification": "deductible_full",
+            "gtu_code": None,
+            "_routing": "BLOCK_AND_ALERT",
+            "_routing_reason": "REPRESENTATION: minimum confidence {fc_minimum} < 0.95",
+        },
+        "valid_from": "2024-01-01",
+        "valid_to": None,
+        "priority": 8,
+        "created_by": "system",
+    },
+    # ── Niska pewność NIP (dowolna forma) → BLOCK_AND_ALERT
+    {
+        "condition_sql": "fc_vendor_nip < '0.80' AND fc_vendor_nip > ''",
+        "action_json": {
+            "vat_rate": "0.23",
+            "rounding_level": "position",
+            "income_tax_qualification": "deductible_full",
+            "gtu_code": None,
+            "_routing": "BLOCK_AND_ALERT",
+            "_routing_reason": "Unreliable NIP: fc_vendor_nip={fc_vendor_nip}",
+        },
+        "valid_from": "2024-01-01",
+        "valid_to": None,
+        "priority": 8,
+        "created_by": "system",
+    },
+    # ── Niska pewność kategorii → TRIAGE_QUEUE (kategoria wymaga weryfikacji)
+    {
+        "condition_sql": "fc_category_code < '0.80' AND fc_category_code > ''",
+        "action_json": {
+            "vat_rate": "0.23",
+            "rounding_level": "position",
+            "income_tax_qualification": "deductible_full",
+            "gtu_code": None,
+            "_routing": "TRIAGE_QUEUE",
+            "_routing_reason": "Low category confidence: fc_category_code={fc_category_code}",
+        },
+        "valid_from": "2024-01-01",
+        "valid_to": None,
+        "priority": 8,
+        "created_by": "system",
+    },
+    # ── Bardzo niska pewność ogólna (fc_minimum) → TRIAGE_QUEUE
+    {
+        "condition_sql": "fc_minimum < '0.70' AND fc_minimum > ''",
+        "action_json": {
+            "vat_rate": "0.23",
+            "rounding_level": "position",
+            "income_tax_qualification": "deductible_full",
+            "gtu_code": None,
+            "_routing": "TRIAGE_QUEUE",
+            "_routing_reason": "Multiple low-confidence fields detected (minimum={fc_minimum})",
+        },
+        "valid_from": "2024-01-01",
+        "valid_to": None,
+        "priority": 8,
+        "created_by": "system",
+    },
+    # ── Domyślny próg ufności dla CIT_STANDARD (fallback dla pozostałych pól) → BLOCK
+    {
+        "condition_sql": "company_tax_form = 'CIT_STANDARD' AND fc_minimum < '0.85' AND fc_minimum > ''",
+        "action_json": {
+            "vat_rate": "0.23",
+            "rounding_level": "position",
+            "income_tax_qualification": "deductible_full",
+            "gtu_code": None,
+            "_routing": "BLOCK_AND_ALERT",
+            "_routing_reason": "CIT_STANDARD: minimum confidence {fc_minimum} < 0.85 across fields",
+        },
+        "valid_from": "2024-01-01",
+        "valid_to": None,
+        "priority": 8,
+        "created_by": "system",
+    },
     # ◈ Fallback — domestic
     {
         "condition_sql": "vendor_country = 'PL'",

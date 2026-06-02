@@ -176,9 +176,27 @@ class TestContextInterpreter:
         assert "secret_field" not in ctx
 
     def test_interpret_all_allowed_keys_present(self) -> None:
-        """All ALLOWED_KEYS are present after interpret (with defaults)."""
+        """All ALLOWED_KEYS are present after interpret (with defaults).
+
+        Includes ``field_confidence`` data to populate ``fc_*`` keys
+        which are conditionally added only when confidence metadata
+        is provided.
+        """
         ctx = ContextInterpreter.interpret({
             "transaction_date": "2024-01-01",
+            # Provide field_confidence so all fc_* keys get populated
+            "field_confidence": {
+                "total_gross": {"value": 1000.00, "confidence": 0.95},
+                "total_net": {"value": 813.00, "confidence": 0.95},
+                "vat_rate": {"value": 0.23, "confidence": 0.99},
+                "vat_amount": {"value": 187.00, "confidence": 0.90},
+                "vendor_nip": {"value": "1234567890", "confidence": 0.95},
+                "vendor_name": {"value": "ACME Sp. z o.o.", "confidence": 0.88},
+                "invoice_number": {"value": "FV/2024/001", "confidence": 0.90},
+                "issue_date": {"value": "2024-01-15", "confidence": 0.92},
+                "iban": {"value": "PL60102010260000042270201111", "confidence": 0.85},
+                "category_code": {"value": "IT_OFFICE", "confidence": 0.80},
+            },
         })
         for key in ALLOWED_KEYS:
             assert key in ctx, f"Missing key: {key}"

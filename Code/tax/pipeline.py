@@ -56,6 +56,9 @@ class PipelineResult:
         brutto_grosze: Calculated gross in grosze.
         tigerbeetle_result: Result from TigerBeetle posting (None if not configured).
         error: Error message if success is False.
+        routing: Routing action from verdict (e.g. BLOCK_AND_ALERT, TRIAGE_QUEUE).
+            None if no routing was requested (normal processing).
+        routing_reason: Human-readable reason for the routing action.
     """
 
     success: bool
@@ -66,6 +69,8 @@ class PipelineResult:
     brutto_grosze: int = 0
     tigerbeetle_result: dict[str, Any] | None = None
     error: str | None = None
+    routing: str | None = None
+    routing_reason: str | None = None
 
 
 class TaxPipeline:
@@ -157,6 +162,16 @@ class TaxPipeline:
         # Extract verdict fields and remove internal metadata
         rule_id = verdict.pop("_rule_id", None)
         evaluated_rules = verdict.pop("_evaluated_rules", [])
+
+        # ── Step 2b: _routing check (field confidence / RiskGuard rules) ──
+        routing = verdict.pop("_routing", None)
+        routing_reason = verdict.pop("_routing_reason", None)
+        if routing:
+            logger.warning(
+                "[TAX-PIPELINE] Verdict has _routing=%s reason=%s tx_id=%s",
+                routing, routing_reason, tx_id,
+            )
+
         vat_rate = TaxMathEngine.parse_rate(verdict.get("vat_rate", "0.23"))
         rounding_level = verdict.get("rounding_level", "position")
 
@@ -253,7 +268,21 @@ class TaxPipeline:
         # ── Step 6: TigerBeetle (via outbox or direct) ─────────────────
         tb_result = None
 
-        if not validation.is_valid or not pre_ledger_ok:
+        # Jeśli werdykt zawiera _routing, nie wysyłaj do TigerBeetle
+        # BLOCK_AND_ALERT → blokada, TRIAGE_QUEUE → weryfikacja
+        if routing:
+            tb_ok = False
+            if routing == "BLOCK_AND_ALERT":
+                logger.warning(
+                    "[TAX-PIPELINE] BLOCKED by routing=%s tid=%s reason=%s",
+                    routing, tx_id, routing_reason,
+                )
+            else:
+                logger.info(
+                    "[TAX-PIPELINE] Routing=%s tid=%s reason=%s",
+                    routing, tx_id, routing_reason,
+                )
+        elif not validation.is_valid or not pre_ledger_ok:
             # Skip TigerBeetle — invariant failure or pre-ledger check
             tb_ok = False
         elif self._write_outbox is not None and callable(self._write_outbox):
@@ -325,6 +354,33 @@ class TaxPipeline:
         )
 
         # ── Step 8: Result ───────────────────────────────────────────────
+        # Jeśli werdykt ma _routing, zwróć informację o routingu zamiast
+        # normalnego wyniku. BLOCK_AND_ALERT → błąd, TRIAGE_QUEUE → success z flagą.
+        if routing:
+            if routing == "BLOCK_AND_ALERT":
+                return PipelineResult(
+                    success=False,
+                    transaction_id=tx_id,
+                    trace_id=trace_id,
+                    verdict=verdict,
+                    vat_grosze=total_vat_grosze,
+                    brutto_grosze=total_brutto_grosze,
+                    error=f"ROUTING_BLOCKED: {routing_reason}",
+                    routing=routing,
+                    routing_reason=routing_reason,
+                )
+            # TRIAGE_QUEUE, HUMAN_VERIFICATION itp. — obliczono, ale nie postowano
+            return PipelineResult(
+                success=True,
+                transaction_id=tx_id,
+                trace_id=trace_id,
+                verdict=verdict,
+                vat_grosze=total_vat_grosze,
+                brutto_grosze=total_brutto_grosze,
+                routing=routing,
+                routing_reason=routing_reason,
+            )
+
         if not validation.is_valid:
             return PipelineResult(
                 success=False,
@@ -359,6 +415,8 @@ class TaxPipeline:
                 brutto_grosze=total_brutto_grosze,
                 tigerbeetle_result=tb_result,
                 error=f"TIGERBEELE_FAILURE: transfer posting failed — {tb_result}",
+                routing=routing,
+                routing_reason=routing_reason,
             )
 
         return PipelineResult(
@@ -369,6 +427,8 @@ class TaxPipeline:
             vat_grosze=total_vat_grosze,
             brutto_grosze=total_brutto_grosze,
             tigerbeetle_result=tb_result,
+            routing=routing,
+            routing_reason=routing_reason,
         )
 
     # ── Active Learning: record corrections from manual verification ───

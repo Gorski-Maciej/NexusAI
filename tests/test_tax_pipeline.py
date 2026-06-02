@@ -19,7 +19,8 @@ import duckdb
 import pytest
 
 from Code.tax.pipeline import TaxPipeline, PipelineResult
-from Code.tax.rules import ensure_tax_schemas, seed_default_rules
+from Code.tax.rules import ensure_tax_schemas, seed_default_rules, RuleEngine
+from core.context_interpreter import ContextInterpreter as CtxInterpreter
 
 
 @pytest.fixture
@@ -209,6 +210,147 @@ class TestPipelineErrors:
         assert "TIGERBEELE_FAILURE" in (result.error or "")
         # Trace was still saved for audit purposes
         assert result.trace_id is not None
+
+
+# ─── Routing tests (field confidence / _routing from Zen-Engine) ────────────
+
+
+class TestPipelineRouting:
+    """When the verdict has _routing, TaxPipeline should skip TB and return routing info."""
+
+    async def test_block_and_alert_does_not_post(
+        self, conn: duckdb.DuckDBPyConnection, tb_mock: MagicMock
+    ) -> None:
+        """BLOCK_AND_ALERT routing → pipeline returns error, TB not called."""
+        pipeline = TaxPipeline(conn, tigerbeetle=tb_mock)
+        # Build context with low VAT rate confidence to trigger field confidence rule
+        ctx = CtxInterpreter.interpret({
+            "category_code": "FUEL",
+            "transaction_date": "2025-06-01",
+            "company_tax_form": "CIT_STANDARD",
+            "vendor_country": "PL",
+            "amount_net": 1000.00,
+            "field_confidence": {
+                "total_gross": {"value": 1230.00, "confidence": 0.70},
+                "total_net": {"value": 1000.00, "confidence": 0.99},
+                "vat_rate": {"value": 0.23, "confidence": 0.70},
+            },
+        })
+        # Inject fc_* fields into invoice_data for the pipeline
+        invoice = {
+            "category_code": "FUEL",
+            "transaction_date": "2025-06-01",
+            "company_tax_form": "CIT_STANDARD",
+            "vendor_country": "PL",
+            "amount_net": 1000.00,
+            "field_confidence": {
+                "total_gross": {"value": 1230.00, "confidence": 0.70},
+                "total_net": {"value": 1000.00, "confidence": 0.99},
+                "vat_rate": {"value": 0.23, "confidence": 0.70},
+            },
+        }
+        result = await pipeline.process_invoice(invoice)
+        assert not result.success
+        assert result.routing == "BLOCK_AND_ALERT"
+        assert "ROUTING_BLOCKED" in (result.error or "")
+        assert result.routing_reason is not None
+        # TigerBeetle should NOT have been called
+        tb_mock.create_two_phase_transfer.assert_not_called()
+        tb_mock.post_pending_transfer.assert_not_called()
+        # But trace was still saved
+        assert result.trace_id is not None
+
+    async def test_triage_queue_returns_with_routing(
+        self, conn: duckdb.DuckDBPyConnection, tb_mock: MagicMock
+    ) -> None:
+        """TRIAGE_QUEUE routing → pipeline returns success with routing info, TB not called."""
+        pipeline = TaxPipeline(conn, tigerbeetle=tb_mock)
+        # FUEL + LUMP_SUM + low net confidence → LUMP_SUM + fc_total_net rule (TRIAGE_QUEUE)
+        invoice = {
+            "category_code": "FUEL",
+            "transaction_date": "2025-06-01",
+            "company_tax_form": "LUMP_SUM",
+            "vendor_country": "PL",
+            "amount_net": 1000.00,
+            "field_confidence": {
+                "total_gross": {"value": 1230.00, "confidence": 0.99},
+                "total_net": {"value": 1000.00, "confidence": 0.50},
+                "vat_rate": {"value": 0.23, "confidence": 0.99},
+            },
+        }
+        result = await pipeline.process_invoice(invoice)
+        # success=True because TRIAGE_QUEUE is not a hard block
+        assert result.success
+        assert result.routing == "TRIAGE_QUEUE"
+        assert result.routing_reason is not None
+        # Math was still computed
+        assert result.vat_grosze > 0
+        # TB NOT called
+        tb_mock.create_two_phase_transfer.assert_not_called()
+        tb_mock.post_pending_transfer.assert_not_called()
+
+    async def test_high_confidence_no_routing(
+        self, conn: duckdb.DuckDBPyConnection, tb_mock: MagicMock
+    ) -> None:
+        """Wysokie confidence we wszystkich polach → brak _routing, normalne przetwarzanie."""
+        pipeline = TaxPipeline(conn, tigerbeetle=tb_mock)
+        invoice = {
+            "category_code": "FUEL",
+            "transaction_date": "2025-06-01",
+            "company_tax_form": "CIT_STANDARD",
+            "vendor_country": "PL",
+            "amount_net": 1000.00,
+            "field_confidence": {
+                "total_gross": {"value": 1230.00, "confidence": 0.99},
+                "total_net": {"value": 1000.00, "confidence": 0.99},
+                "vat_rate": {"value": 0.23, "confidence": 0.99},
+            },
+        }
+        result = await pipeline.process_invoice(invoice)
+        assert result.success
+        assert result.routing is None  # No routing needed
+        assert result.tigerbeetle_result is not None  # TB was called
+
+    async def test_no_field_confidence_data_continues_normally(
+        self, conn: duckdb.DuckDBPyConnection, tb_mock: MagicMock
+    ) -> None:
+        """Brak field_confidence → brak fc_* w kontekście → normalne przetwarzanie."""
+        pipeline = TaxPipeline(conn, tigerbeetle=tb_mock)
+        invoice = {
+            "category_code": "FUEL",
+            "transaction_date": "2025-06-01",
+            "company_tax_form": "CIT_STANDARD",
+            "vendor_country": "PL",
+            "amount_net": 1000.00,
+        }
+        result = await pipeline.process_invoice(invoice)
+        assert result.success
+        assert result.routing is None
+        assert result.tigerbeetle_result is not None
+
+    async def test_nip_block_stops_pipeline(
+        self, conn: duckdb.DuckDBPyConnection, tb_mock: MagicMock
+    ) -> None:
+        """Niska pewność NIP → BLOCK_AND_ALERT → pipeline nie postuje."""
+        pipeline = TaxPipeline(conn, tigerbeetle=tb_mock)
+        invoice = {
+            "category_code": "FUEL",
+            "transaction_date": "2025-06-01",
+            "company_tax_form": "CIT_STANDARD",
+            "vendor_country": "PL",
+            "amount_net": 1000.00,
+            "field_confidence": {
+                "total_gross": {"value": 1230.00, "confidence": 0.99},
+                "total_net": {"value": 1000.00, "confidence": 0.99},
+                "vat_rate": {"value": 0.23, "confidence": 0.99},
+                "vendor_nip": {"value": "1234567890", "confidence": 0.50},
+            },
+        }
+        result = await pipeline.process_invoice(invoice)
+        assert not result.success
+        assert result.routing == "BLOCK_AND_ALERT"
+        assert "NIP" in (result.routing_reason or "")
+        tb_mock.create_two_phase_transfer.assert_not_called()
 
 
 # ─── Multi-position edge cases ────────────────────────────────────────────────

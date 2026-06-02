@@ -48,6 +48,29 @@ ALLOWED_KEYS: frozenset[str] = frozenset({
     "vendor_account_on_whitelist",
     "expense_type",
     "confidence_vat_rate",
+    # Field Confidence (per-field metadata)
+    "fc_total_gross",
+    "fc_total_net",
+    "fc_vat_rate",
+    "fc_vat_amount",
+    "fc_vendor_nip",
+    "fc_vendor_name",
+    "fc_invoice_number",
+    "fc_issue_date",
+    "fc_iban",
+    "fc_category_code",
+    "fc_minimum",
+    # Field Confidence values (serialized dla kontekstu)
+    "fc_total_gross_value",
+    "fc_total_net_value",
+    "fc_vat_rate_value",
+    "fc_vat_amount_value",
+    "fc_vendor_nip_value",
+    "fc_vendor_name_value",
+    "fc_invoice_number_value",
+    "fc_issue_date_value",
+    "fc_iban_value",
+    "fc_category_code_value",
 })
 
 REQUIRED_KEYS: frozenset[str] = frozenset({
@@ -105,6 +128,9 @@ class ContextInterpreter:
                 - vendor_account_on_whitelist: bool
                 - expense_type: str
                 - confidence_vat_rate: float
+                - field_confidence: dict[str, dict] — per-field confidence metadata
+                  (np. {"total_gross": {"value": 1230.00, "confidence": 0.88},
+                        "vat_rate": {"value": 0.23, "confidence": 0.99}})
 
         Returns:
             Słownik kontekstu z wartościami jako stringi.
@@ -219,6 +245,31 @@ class ContextInterpreter:
             ctx["confidence_vat_rate"] = str(float(raw_conf))
         else:
             ctx["confidence_vat_rate"] = ""
+
+        # ── field_confidence (per-field metadata) ──────────────────
+        # Oczekiwana struktura: {"total_gross": {"value": ..., "confidence": 0.88}, ...}
+        raw_fc = invoice_data.get("field_confidence") or invoice_data.get("fc")
+        if isinstance(raw_fc, dict) and raw_fc:
+            # Mapujemy pola field_confidence na klucze fc_* dla kontekstu
+            for field_key in ("total_gross", "total_net", "vat_rate", "vat_amount",
+                              "vendor_nip", "vendor_name", "invoice_number",
+                              "issue_date", "iban", "category_code"):
+                fc_key = f"fc_{field_key}"
+                entry = raw_fc.get(field_key)
+                if isinstance(entry, dict) and "confidence" in entry:
+                    ctx[fc_key] = str(float(entry["confidence"]))
+                    # Wartość też może być przydatna w kontekście
+                    ctx[f"{fc_key}_value"] = str(entry.get("value", ""))
+                else:
+                    ctx[fc_key] = ""
+
+            # Minimum confidence ze wszystkich pól (dla szybkiej oceny)
+            confidences = [
+                float(entry["confidence"])
+                for entry in raw_fc.values()
+                if isinstance(entry, dict) and "confidence" in entry
+            ]
+            ctx["fc_minimum"] = str(min(confidences)) if confidences else ""
 
         # ── ALLOWED_KEYS guard ────────────────────────────────────
         # Zwróć tylko dozwolone klucze (na wszelki wypadek)
