@@ -29,6 +29,8 @@ from .math_engine import (
     InvoicePositions,
     InvoiceSummary,
     TaxMathEngine,
+    money_to_grosze,
+    to_money,
     validate_invariants,
 )
 from .rules import RuleEngine
@@ -197,27 +199,38 @@ class TaxPipeline:
         )
 
         # ── Step 3: Tax Math Engine ──────────────────────────────────────
+        # Determine currency for this invoice (default PLN)
+        currency = str(invoice_data.get("currency", "PLN")).upper()
+
         raw_positions = invoice_data.get("positions", [])
         if raw_positions:
-            positions_net = [
-                TaxMathEngine.to_grosze(p.get("net_amount", Decimal("0")))
+            # Use Money-aware API — extract net_amount and convert to Money
+            positions_net_money = [
+                to_money(
+                    TaxMathEngine.to_grosze(p.get("net_amount", Decimal("0"))),
+                    p.get("currency", currency),
+                )
                 for p in raw_positions
             ]
         else:
-            # Single-line invoice: use amount_net directly
-            positions_net = [
-                TaxMathEngine.to_grosze(
-                    invoice_data.get("amount_net", Decimal("0"))
-                )
-            ]
+            # Single-line invoice: use amount_net directly as Money
+            single_net = TaxMathEngine.to_grosze(
+                invoice_data.get("amount_net", Decimal("0"))
+            )
+            positions_net_money = [to_money(single_net, currency)]
 
-        total_vat_grosze, inv_positions = TaxMathEngine.calculate_positions_vat(
-            positions_net, vat_rate, rounding_level
+        # Calculate VAT using Money-aware API
+        total_vat_money, inv_positions = TaxMathEngine.calculate_positions_vat_money(
+            positions_net_money, vat_rate, rounding_level
         )
-        total_net_grosze = sum(positions_net)
-        total_brutto_grosze = TaxMathEngine.add_tax(
-            total_net_grosze, total_vat_grosze
-        )
+        total_net_money = TaxMathEngine.sum_positions_net_money(positions_net_money)
+        total_brutto_money = TaxMathEngine.add_tax_money(total_net_money, total_vat_money)
+
+        # Extract grosze for downstream (TigerBeetle, invariants)
+        total_net_grosze = money_to_grosze(total_net_money)
+        total_vat_grosze = money_to_grosze(total_vat_money)
+        total_brutto_grosze = money_to_grosze(total_brutto_money)
+        positions_net = [money_to_grosze(m) for m in positions_net_money]
 
         # ── Step 4: Invariant Guard ──────────────────────────────────────
         summary = InvoiceSummary(
@@ -241,13 +254,13 @@ class TaxPipeline:
                 TransferSpec(
                     debit_account_id=self._account_expense_id,
                     credit_account_id=self._account_payables_id,
-                    amount_grosze=total_net_grosze,
+                    amount_money=total_net_money,
                     transfer_type="expense",
                 ),
                 TransferSpec(
                     debit_account_id=self._account_vat_input_id,
                     credit_account_id=self._account_payables_id,
-                    amount_grosze=total_vat_grosze,
+                    amount_money=total_vat_money,
                     transfer_type="vat_input",
                 ),
             ]

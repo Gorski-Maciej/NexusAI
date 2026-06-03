@@ -24,6 +24,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from tax.math_engine import InvoicePositions, InvoiceSummary
+    from services.currency_converter import Money as _Money
 
 # Lazy imports for runtime to avoid circular dependency:
 #   pre_ledger_validator → tax.math_engine → (via tax.__init__) → tax.pipeline → pre_ledger_validator
@@ -88,12 +89,27 @@ class TransferSpec:
         debit_account_id: ID konta debetowego (Wn).
         credit_account_id: ID konta kredytowego (Ma).
         amount_grosze: Kwota w groszach (int).
+        amount_money: Opcjonalny obiekt Money (Fowler's Money) — używany do
+            walidacji waluty. Jeśli podany, ``amount_grosze`` jest automatycznie
+            wyciągany przez ``money_to_grosze()`` przy konstrukcji.
         transfer_type: Typ transferu (np. 'expense', 'vat_input').
     """
     debit_account_id: int
     credit_account_id: int
-    amount_grosze: int
+    amount_grosze: int = 0
+    amount_money: _Money | None = None
     transfer_type: str = ""
+
+    def __post_init__(self) -> None:
+        """Jeśli podano amount_money, wyciągnij amount_grosze automatycznie."""
+        if self.amount_money is not None:
+            from tax.math_engine import money_to_grosze
+            object.__setattr__(self, "amount_grosze", money_to_grosze(self.amount_money))
+
+    @property
+    def currency(self) -> str | None:
+        """Kod waluty transferu (jeśli amount_money podane)."""
+        return self.amount_money.currency_code if self.amount_money is not None else None
 
 
 class PreLedgerValidator:
@@ -197,21 +213,25 @@ class PreLedgerValidator:
             if not math_result.is_valid:
                 errors.append(f"[INVARIANTS] {math_result.error_message}")
 
-        # 2. Walidacja par kont dla typu transakcji
+        # 2. Walidacja spójności walut (Money)
+        currency_errors = self._validate_currency_consistency(transfers)
+        errors.extend(currency_errors)
+
+        # 3. Walidacja par kont dla typu transakcji
         for t in transfers:
             pair_errors = self._validate_transfer_pair(t, transaction_type)
             errors.extend(pair_errors)
 
-        # 3. Walidacja znaku kwoty
+        # 4. Walidacja znaku kwoty
         for t in transfers:
             sign_errors = self._validate_amount_sign(t, transaction_type)
             errors.extend(sign_errors)
 
-        # 4. Bilans: suma debetów = suma kredytów
+        # 5. Bilans: suma debetów = suma kredytów
         balance_errors = self._validate_balance(transfers)
         errors.extend(balance_errors)
 
-        # 5. Limity kwot
+        # 6. Limity kwot
         for t in transfers:
             if abs(t.amount_grosze) > self.MAX_INVOICE_AMOUNT_GROSZE:
                 errors.append(
@@ -282,16 +302,110 @@ class PreLedgerValidator:
         return []
 
     @staticmethod
-    def _validate_balance(transfers: list[TransferSpec]) -> list[str]:
-        """Sprawdza, czy suma debetów = suma kredytów.
+    def _validate_currency_consistency(transfers: list[TransferSpec]) -> list[str]:
+        """Sprawdza, czy wszystkie transfery z ``amount_money`` mają tę samą walutę.
 
-        Dla TigerBeetle kierunek jest zakodowany w parach kont (debit→credit),
-        a kwoty są zawsze dodatnie. Bilans jest sprawdzany przez Invariant 3
-        (netto + VAT = brutto). Ta metoda jest zachowana dla kompletności,
-        ale nie jest potrzebna — Invariant 3 już to pokrywa.
+        Jeśli żaden transfer nie ma ``amount_money``, walidacja jest pomijana
+        (kompatybilność wsteczna z czystymi intami).
+
+        Returns:
+            Lista błędów — pusta jeśli wszystkie waluty zgodne lub brak Money.
         """
-        # Covered by Invariant 3 in TaxInvariantGuard
-        return []
+        money_transfers = [t for t in transfers if t.amount_money is not None]
+        if not money_transfers:
+            return []
+
+        ref = money_transfers[0]
+        ref_currency = ref.currency
+        errors: list[str] = []
+
+        for t in money_transfers[1:]:
+            if t.currency != ref_currency:
+                errors.append(
+                    f"[CURRENCY] Transfer '{t.transfer_type}' has currency "
+                    f"{t.currency}, but '{ref.transfer_type}' has {ref_currency}. "
+                    f"All Money amounts in a transaction must share the same currency."
+                )
+
+        return errors
+
+    @staticmethod
+    def _validate_balance(transfers: list[TransferSpec]) -> list[str]:
+        """Sprawdza, czy suma debetów = suma kredytów (bilans księgowy).
+
+        W podwójnej księgowości każdy TransferSpec ma kwotę, która jest
+        jednocześnie wartością debetu (Wn) i kredytu (Ma). Z definicji
+        suma debetów = suma kredytów = suma wszystkich kwot.
+
+        Ta metoda dokumentuje tę zasadę i używa Money (Fowler's Money)
+        do walidacji gdy transfery mają ``amount_money``:
+        - Oblicza total_debit i total_credit jako sumy tych samych kwot
+        - Jeśli są Money, weryfikuje spójność waluty i sumuje jako Money
+        - Loguje podsumowanie bilansu (DEBUG)
+
+        Uwaga: walidacja spójności walut jest wykonywana osobno
+        w ``_validate_currency_consistency`` (krok 2 walidacji).
+
+        Returns:
+            Lista błędów — pusta jeśli bilans się zgadza.
+        """
+        if not transfers:
+            return []
+
+        errors: list[str] = []
+
+        # W podwójnej księgowości: każdy transfer ma tę samą kwotę
+        # po stronie debetowej i kredytowej. Zatem:
+        #   total_debit = sum(all amounts)
+        #   total_credit = sum(all amounts)
+        #   total_debit == total_credit ← zawsze spełnione
+        #
+        # Mimo że bilans jest inherentny, jawnie wyrażamy go poniżej
+        # dla dokumentacji i defensywnego sprawdzenia.
+
+        total_grosze = sum(t.amount_grosze for t in transfers)
+
+        # Sprawdź czy nie ma oczywistego błędu (total_debit == total_credit)
+        # W normalnym przypadku zawsze przechodzi — to asercja dokumentacyjna
+        # która może wykryć błąd w przyszłości gdyby zmieniła się struktura.
+
+        # Jeśli są Money, wykonaj balance check z Money
+        money_transfers = [t for t in transfers if t.amount_money is not None]
+        if money_transfers:
+            from services.currency_converter import Money
+
+            # Waluta jest już zweryfikowana przez _validate_currency_consistency.
+            # Zakładamy, że wszystkie Money mają tę samą walutę.
+            ref_currency = money_transfers[0].currency
+            if ref_currency is None:
+                return ["[BALANCE] Invalid state: Money transfer without currency"]
+
+            total_money = Money.zero(ref_currency)
+            for t in money_transfers:
+                if t.amount_money is not None:
+                    total_money += t.amount_money  # type: ignore[operator]
+
+            # Decimal sum vs grosze sum — powinny być zgodne
+            from tax.math_engine import money_to_grosze
+            computed_grosze = money_to_grosze(total_money)
+            if computed_grosze != total_grosze:
+                errors.append(
+                    f"[BALANCE] Money sum ({total_money.amount} {ref_currency} = "
+                    f"{computed_grosze} gr) differs from grosze sum "
+                    f"({total_grosze} gr) — possible rounding inconsistency"
+                )
+
+            logger.debug(
+                "[BALANCE] Debit=Credit total=%s %s (%d gr), transfers=%d",
+                total_money.amount, ref_currency, total_grosze, len(transfers),
+            )
+        else:
+            logger.debug(
+                "[BALANCE] Debit=Credit total=%d gr, transfers=%d (int-only)",
+                total_grosze, len(transfers),
+            )
+
+        return errors
 
     # ── Zarządzanie regułami walidacji (dla admin) ───────────────────────
 

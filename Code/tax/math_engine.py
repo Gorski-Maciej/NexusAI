@@ -1,5 +1,5 @@
 """
-Tax Math Engine — Infallible integer-only arithmetic.
+Tax Math Engine — Infallible integer-only arithmetic + Fowler's Money.
 
 Część II matematycznego stosu nieomylności.
 
@@ -8,18 +8,30 @@ Zasady:
   - Globalnie ROUND_HALF_UP, precyzja 28 miejsc.
   - Każde zaokrąglenie jawne — nigdy ukryte.
   - Trzy niezmienniki przed zapisem do księgi.
+  - Money (py-moneyed) dla bezpieczeństwa walutowego.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal, ROUND_HALF_UP
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from services.currency_converter import Money as _Money
 
 # ── Global rounding context ─────────────────────────────────────────────────
 # Nigdy nie zmieniaj lokalnie — zawsze ROUND_HALF_UP, 2 miejsca po przecinku
 
 _GROSZ = Decimal("0.01")
+
+# ── Lazy import helpers ─────────────────────────────────────────────────────
+
+
+def _get_money_class():
+    """Lazy import of Money to avoid circular dependencies at module load."""
+    from services.currency_converter import Money
+    return Money
 
 
 # ── Exceptions ──────────────────────────────────────────────────────────────
@@ -49,7 +61,7 @@ class InvoicePositions:
 
     Attributes:
         net_grosze: Net amount in grosze (integer).
-        vat_rate: VAT rate as Decimal (e.g. Decimal(\"0.23\")).
+        vat_rate: VAT rate as Decimal (e.g. Decimal("0.23")).
     """
 
     net_grosze: int
@@ -59,6 +71,34 @@ class InvoicePositions:
     def vat_grosze(self) -> int:
         """VAT for this line, rounded to full grosze."""
         return multiply_net_by_vat(self.net_grosze, self.vat_rate)
+
+    # ── Money-aware constructors and properties ──────────────────────────
+
+    @classmethod
+    def from_money(cls, net: "_Money", vat_rate: Decimal) -> "InvoicePositions":
+        """Create an InvoicePositions from a Money amount.
+
+        Args:
+            net: Net amount as Money (e.g. Money("100.00", "PLN")).
+            vat_rate: VAT rate as Decimal.
+
+        Returns:
+            InvoicePositions with net_grosze extracted from Money.
+        """
+        from services.currency_converter import Money
+        if not isinstance(net, Money):
+            raise TypeError(f"Expected Money, got {type(net).__name__}")
+        return cls(net_grosze=money_to_grosze(net), vat_rate=vat_rate)
+
+    def to_net_money(self, currency: str = "PLN") -> "_Money":
+        """Return the net amount as Money."""
+        Money = _get_money_class()
+        return to_money(self.net_grosze, currency)
+
+    def to_vat_money(self, currency: str = "PLN") -> "_Money":
+        """Return the VAT amount as Money."""
+        Money = _get_money_class()
+        return to_money(self.vat_grosze, currency)
 
 
 @dataclass(frozen=True)
@@ -71,6 +111,51 @@ class InvoiceSummary:
     netto_grosze: int
     vat_grosze: int
     brutto_grosze: int
+
+    # ── Money-aware constructors and properties ──────────────────────────
+
+    @classmethod
+    def from_money(
+        cls,
+        netto: "_Money",
+        vat: "_Money",
+        brutto: "_Money",
+    ) -> "InvoiceSummary":
+        """Create an InvoiceSummary from Money amounts.
+
+        Args:
+            netto: Net amount as Money.
+            vat: VAT amount as Money.
+            brutto: Gross amount as Money.
+
+        Returns:
+            InvoiceSummary with all amounts converted to grosze.
+
+        Raises:
+            ValueError: If currencies differ between amounts.
+        """
+        from services.currency_converter import Money
+        if not all(isinstance(x, Money) for x in (netto, vat, brutto)):
+            raise TypeError("All amounts must be Money instances")
+        _require_same_currency(netto, vat, "InvoiceSummary")
+        _require_same_currency(netto, brutto, "InvoiceSummary")
+        return cls(
+            netto_grosze=money_to_grosze(netto),
+            vat_grosze=money_to_grosze(vat),
+            brutto_grosze=money_to_grosze(brutto),
+        )
+
+    def to_netto_money(self, currency: str = "PLN") -> "_Money":
+        """Return the netto as Money."""
+        return to_money(self.netto_grosze, currency)
+
+    def to_vat_money(self, currency: str = "PLN") -> "_Money":
+        """Return the VAT as Money."""
+        return to_money(self.vat_grosze, currency)
+
+    def to_brutto_money(self, currency: str = "PLN") -> "_Money":
+        """Return the brutto as Money."""
+        return to_money(self.brutto_grosze, currency)
 
 
 @dataclass(frozen=True)
@@ -121,7 +206,7 @@ def parse_rate(rate_str: str) -> Decimal:
         raise InvalidRateError(rate_str) from exc
 
 
-# ── Core math functions ──────────────────────────────────────────────────────
+# ── Core math functions (grosze-based, int in/out) ─────────────────────────
 
 
 def to_grosze(amount: Decimal | str | float | int) -> int:
@@ -176,7 +261,7 @@ def multiply_net_by_vat(net_grosze: int, vat_rate: Decimal) -> int:
 
     Args:
         net_grosze: Net amount in grosze.
-        vat_rate: VAT rate (e.g. Decimal(\"0.23\")).
+        vat_rate: VAT rate (e.g. Decimal("0.23")).
 
     Returns:
         VAT amount in grosze, rounded to nearest integer.
@@ -199,6 +284,123 @@ def add_tax(net_grosze: int, vat_grosze: int) -> int:
     return net_grosze + vat_grosze
 
 
+# ── Money-aware functions (Fowler's Money wrappers) ────────────────────────
+
+
+def money_to_grosze(money: "_Money") -> int:
+    """Convert a Money amount to grosze (int).
+
+    Extracts the Decimal amount from Money, converts to grosze
+    with ROUND_HALF_UP rounding.
+
+    Args:
+        money: Money amount (any currency).
+
+    Returns:
+        Amount in grosze as integer.
+
+    Raises:
+        TypeError: If argument is not a Money instance.
+
+    Example:
+        >>> money_to_grosze(Money("123.45", "PLN"))
+        12345
+    """
+    Money = _get_money_class()
+    if not isinstance(money, Money):
+        raise TypeError(
+            f"Expected Money, got {type(money).__name__}. "
+            f"Use to_grosze() for plain Decimal/str/float."
+        )
+    return to_grosze(money.amount)
+
+
+def to_money(grosze: int, currency: str = "PLN") -> "_Money":
+    """Convert grosze (int) to a Money amount.
+
+    Args:
+        grosze: Amount in grosze.
+        currency: Target currency code (default "PLN").
+
+    Returns:
+        Money object representing the amount.
+
+    Example:
+        >>> to_money(12345)
+        Money('123.45', 'PLN')
+    """
+    Money = _get_money_class()
+    return Money(str(to_zlotowki(grosze)), currency)
+
+
+def _require_same_currency(a: "_Money", b: "_Money", operation: str = "operate") -> None:
+    """Validate that two Money objects have the same currency."""
+    if a.currency_code != b.currency_code:
+        from services.currency_converter import CurrencyMismatchError
+        raise CurrencyMismatchError(a.currency_code, b.currency_code, operation)
+
+
+def multiply_net_by_vat_money(net: "_Money", vat_rate: Decimal) -> "_Money":
+    """Multiply net Money amount by VAT rate, return VAT as Money.
+
+    Args:
+        net: Net amount as Money (e.g. Money("100.00", "PLN")).
+        vat_rate: VAT rate (e.g. Decimal("0.23")).
+
+    Returns:
+        VAT amount as Money in the same currency as net.
+    """
+    Money = _get_money_class()
+    if not isinstance(net, Money):
+        raise TypeError(f"Expected Money, got {type(net).__name__}")
+    vat_grosze = multiply_net_by_vat(money_to_grosze(net), vat_rate)
+    return to_money(vat_grosze, net.currency_code)
+
+
+def add_tax_money(net: "_Money", vat: "_Money") -> "_Money":
+    """Sum net and VAT Money amounts, return gross as Money.
+
+    Args:
+        net: Net amount as Money.
+        vat: VAT amount as Money (must be same currency as net).
+
+    Returns:
+        Gross amount as Money in the same currency.
+
+    Raises:
+        CurrencyMismatchError: If currencies differ.
+    """
+    Money = _get_money_class()
+    if not isinstance(net, Money) or not isinstance(vat, Money):
+        raise TypeError("Both arguments must be Money instances")
+    _require_same_currency(net, vat, "add_tax_money")
+    gross_grosze = add_tax(money_to_grosze(net), money_to_grosze(vat))
+    return to_money(gross_grosze, net.currency_code)
+
+
+def calculate_vat_by_policy_money(
+    positions: list[InvoicePositions],
+    vat_rate: Decimal,
+    rounding_level: str,
+    currency: str = "PLN",
+) -> "_Money":
+    """Calculate total VAT as Money according to the chosen rounding strategy.
+
+    Same logic as :func:`calculate_vat_by_policy` but returns a Money object.
+
+    Args:
+        positions: List of invoice line items.
+        vat_rate: VAT rate to apply.
+        rounding_level: ``"position"`` or ``"total"``.
+        currency: Currency for the result (default "PLN").
+
+    Returns:
+        Total VAT amount as Money.
+    """
+    total_vat_grosze = calculate_vat_by_policy(positions, vat_rate, rounding_level)
+    return to_money(total_vat_grosze, currency)
+
+
 # ── Rounding Policy ──────────────────────────────────────────────────────────
 
 
@@ -215,7 +417,7 @@ def calculate_vat_by_policy(
     Args:
         positions: List of invoice line items (net in grosze).
         vat_rate: VAT rate to apply.
-        rounding_level: Must be ``\"position\"`` or ``\"total\"``.
+        rounding_level: Must be ``"position"`` or ``"total"``.
 
     Returns:
         Total VAT amount in grosze.
@@ -250,6 +452,19 @@ class RoundingPolicy:
     ) -> int:
         """Delegate to :func:`calculate_vat_by_policy`."""
         return calculate_vat_by_policy(positions, vat_rate, rounding_level)
+
+    @staticmethod
+    def calculate_money(
+        positions: list[InvoicePositions],
+        vat_rate: Decimal,
+        rounding_level: str,
+        currency: str = "PLN",
+    ) -> "_Money":
+        """Calculate total VAT as Money.
+
+        Same as :meth:`calculate` but returns a ``Money`` object.
+        """
+        return calculate_vat_by_policy_money(positions, vat_rate, rounding_level, currency)
 
 
 # ── Invariant Guard ──────────────────────────────────────────────────────────
@@ -320,6 +535,8 @@ class TaxMathEngine:
     All methods are static. Use as a namespace for clarity.
     """
 
+    # ── Grosze-based API (legacy, fully backward-compatible) ─────────────
+
     to_grosze = staticmethod(to_grosze)
     to_zlotowki = staticmethod(to_zlotowki)
     multiply_net_by_vat = staticmethod(multiply_net_by_vat)
@@ -338,7 +555,7 @@ class TaxMathEngine:
         Args:
             positions_net: List of net amounts in grosze.
             vat_rate: VAT rate as Decimal.
-            rounding_level: ``\"position\"`` or ``\"total\"``.
+            rounding_level: ``"position"`` or ``"total"``.
 
         Returns:
             Tuple of ``(total_vat_grosze, list[InvoicePositions])``.
@@ -349,3 +566,85 @@ class TaxMathEngine:
         ]
         total_vat = calculate_vat_by_policy(inv_positions, vat_rate, rounding_level)
         return total_vat, inv_positions
+
+    # ── Money-aware API ──────────────────────────────────────────────────
+
+    money_to_grosze = staticmethod(money_to_grosze)
+    to_money = staticmethod(to_money)
+    multiply_net_by_vat_money = staticmethod(multiply_net_by_vat_money)
+    add_tax_money = staticmethod(add_tax_money)
+
+    @staticmethod
+    def calculate_positions_vat_money(
+        positions_net: list["_Money"],
+        vat_rate: Decimal,
+        rounding_level: str,
+    ) -> tuple["_Money", list[InvoicePositions]]:
+        """Calculate total VAT from Money net amounts, return as Money.
+
+        Args:
+            positions_net: List of net amounts as Money (must all be same currency).
+            vat_rate: VAT rate as Decimal.
+            rounding_level: ``"position"`` or ``"total"``.
+
+        Returns:
+            Tuple of ``(total_vat_money, list[InvoicePositions])``.
+
+        Raises:
+            TypeError: If any amount is not Money.
+            CurrencyMismatchError: If currencies differ.
+        """
+        Money = _get_money_class()
+
+        if not positions_net:
+            zero = Money.zero()
+            return zero, []
+
+        # Validate all are Money and same currency
+        for i, amt in enumerate(positions_net):
+            if not isinstance(amt, Money):
+                raise TypeError(
+                    f"positions_net[{i}]: expected Money, got {type(amt).__name__}"
+                )
+        for amt in positions_net[1:]:
+            _require_same_currency(positions_net[0], amt, "calculate_positions_vat_money")
+
+        currency = positions_net[0].currency_code
+        grosze_list = [money_to_grosze(m) for m in positions_net]
+        total_vat_grosze, inv_positions = TaxMathEngine.calculate_positions_vat(
+            grosze_list, vat_rate, rounding_level
+        )
+        total_vat_money = to_money(total_vat_grosze, currency)
+        return total_vat_money, inv_positions
+
+    @staticmethod
+    def sum_positions_net_money(
+        positions_net: list["_Money"],
+    ) -> "_Money":
+        """Sum a list of Money amounts (same currency).
+
+        Args:
+            positions_net: List of Money amounts (same currency).
+
+        Returns:
+            Total as Money.
+
+        Raises:
+            CurrencyMismatchError: If currencies differ.
+        """
+        Money = _get_money_class()
+
+        if not positions_net:
+            return Money.zero()
+
+        for i, amt in enumerate(positions_net):
+            if not isinstance(amt, Money):
+                raise TypeError(
+                    f"positions_net[{i}]: expected Money, got {type(amt).__name__}"
+                )
+        for amt in positions_net[1:]:
+            _require_same_currency(positions_net[0], amt, "sum_positions_net_money")
+
+        currency = positions_net[0].currency_code
+        total_grosze = sum(money_to_grosze(m) for m in positions_net)
+        return to_money(total_grosze, currency)

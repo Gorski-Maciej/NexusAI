@@ -33,6 +33,7 @@ from api.routes.security_posture import SecurityPostureController
 from api.routes.system_integrity import SystemIntegrityController
 from api.routes.triage import TriageController, TriageControllerV2
 from api.routes.telemetry_ops import TelemetryOpsController
+from api.routes.risk import RiskController
 from api.routes.ws import progress_websocket
 from api.routes.ui_state import UIStateController
 from api.routes.autopilot import AutopilotController
@@ -43,6 +44,7 @@ from api.routes.fx import FXController
 from api.routes.workers import WorkerStatusController
 from api.routes.dlq import DLQController
 from api.routes.tax_policy import TaxPolicyController
+from api.routes.tax_math import TaxMathController
 from api.static import get_static_config
 from api.security import jwt_auth
 from api.state import on_shutdown, on_startup
@@ -92,8 +94,10 @@ def create_app() -> Litestar:
             VersionController,
             FXController,
             DLQController,
+            RiskController,
             WorkerStatusController,
             TaxPolicyController,
+            TaxMathController,
             progress_websocket,
         ],
         on_app_init=[jwt_auth.on_app_init],
