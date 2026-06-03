@@ -36,6 +36,7 @@ dependencies = [
 
     # Data validation & serialization
     "pydantic>=2.7.0",
+    "pydantic-settings>=2.14.0",
     "msgspec>=0.18.0",
 
     # Task queue / messaging
@@ -46,6 +47,10 @@ dependencies = [
     # HTTP / networking
     "httpx>=0.27.0",
     "anyio>=4.4.0",
+
+    # Resilience / retry
+    "tenacity>=9.0.0",
+    "pybreaker>=1.4.0",
 
     # File system
     "fsspec>=2024.3.0",
@@ -68,6 +73,9 @@ dependencies = [
 
     # Metrics / Monitoring
     "prometheus_client>=0.20.0",
+
+    # Caching
+    "cachetools>=7.0.0",
 
     # Utilities
     "psutil>=5.9.0",

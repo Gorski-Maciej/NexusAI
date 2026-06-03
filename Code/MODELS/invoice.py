@@ -1,11 +1,13 @@
 from sqlalchemy import String, DateTime, ForeignKey, Date, Integer
-from sqlalchemy.types import DECIMAL
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import datetime, timezone, date
 from db.database import Base
 from db.mixins import SoftDeleteMixin
 from decimal import Decimal
+from services.currency_converter import Money, MoneyType
 import uuid
+
 
 class Invoice(SoftDeleteMixin, Base):
     __tablename__ = "invoices"
@@ -13,9 +15,10 @@ class Invoice(SoftDeleteMixin, Base):
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     number: Mapped[str | None] = mapped_column(String, index=True)
 
-    # Finanse
-    amount_net: Mapped[Decimal] = mapped_column(DECIMAL(12, 2), default=Decimal("0.0"))
-    amount_gross: Mapped[Decimal] = mapped_column(DECIMAL(12, 2), default=Decimal("0.0"))
+    # Finanse — kolumny DECIMAL w DB (nazwy: "amount_net", "amount_gross")
+    # Python widzi kwoty jako Money przez @hybrid_property poniżej
+    _amount_net_raw: Mapped[Decimal] = mapped_column("amount_net", MoneyType(12, 2), default=Decimal("0.0"))
+    _amount_gross_raw: Mapped[Decimal] = mapped_column("amount_gross", MoneyType(12, 2), default=Decimal("0.0"))
     currency: Mapped[str] = mapped_column(String(3), default="PLN")
     issue_date: Mapped[date | None] = mapped_column(Date, nullable=True)
 
@@ -43,8 +46,51 @@ class Invoice(SoftDeleteMixin, Base):
     # Relacje
     contractor: Mapped["Contractor"] = relationship("Contractor", back_populates="invoices")
 
+    # ── Money hybrid properties ─────────────────────────────────────────
+    # amount_net / amount_gross zwracają Money (Fowler's Money z py-moneyed)
+    # DB przechowuje DECIMAL w kolumnach "amount_net" / "amount_gross"
+    # Użycie @hybrid_property pozwala na użycie w zapytaniach SQLAlchemy
+    # (np. select(Invoice).where(Invoice.amount_net == Money("100", "PLN")))
+
+    @hybrid_property
+    def amount_net(self) -> Money:
+        """Net amount jako Money (py-moneyed)."""
+        return Money(str(self._amount_net_raw), self.currency)
+
+    @amount_net.setter
+    def amount_net(self, value: Money | Decimal | str | float) -> None:
+        if isinstance(value, Money):
+            self._amount_net_raw = Decimal(str(value.amount))
+            self.currency = value.currency_code
+        else:
+            self._amount_net_raw = Decimal(str(value))
+
+    @amount_net.expression
+    def amount_net(cls) -> MoneyType:
+        """SQL expression: zwraca kolumnę amount_net dla zapytań."""
+        return cls._amount_net_raw
+
+    @hybrid_property
+    def amount_gross(self) -> Money:
+        """Gross amount jako Money (py-moneyed)."""
+        return Money(str(self._amount_gross_raw), self.currency)
+
+    @amount_gross.setter
+    def amount_gross(self, value: Money | Decimal | str | float) -> None:
+        if isinstance(value, Money):
+            self._amount_gross_raw = Decimal(str(value.amount))
+            self.currency = value.currency_code
+        else:
+            self._amount_gross_raw = Decimal(str(value))
+
+    @amount_gross.expression
+    def amount_gross(cls) -> MoneyType:
+        """SQL expression: zwraca kolumnę amount_gross dla zapytań."""
+        return cls._amount_gross_raw
+
     def __repr__(self) -> str:
         return f"<Invoice(number={self.number}, status={self.status})>"
+
 
 class ActiveLearningPattern(Base):
     """Przechowuje wzorce poprawek użytkownika dla konkretnych NIP-ów."""

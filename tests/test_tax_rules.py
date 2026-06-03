@@ -370,7 +370,7 @@ class TestFieldConfidenceRules:
         """CIT_STANDARD + fc_vat_rate=0.70 < 0.98 → BLOCK_AND_ALERT."""
         ctx = self._build_ctx(fc_values={
             "fc_vat_rate": "0.70",
-            "fc_minimum": "0.70",
+            "fc_minimum": "0.90",  # above 0.85 — only vat_rate rule matches
         })
         verdict = engine.decide(ctx)
         assert verdict["_routing"] == "BLOCK_AND_ALERT"
@@ -382,7 +382,7 @@ class TestFieldConfidenceRules:
         ctx = self._build_ctx(fc_values={
             "fc_total_net": "0.80",
             "fc_vat_rate": "0.99",
-            "fc_minimum": "0.80",
+            "fc_minimum": "0.90",  # above fc_minimum < 0.85 threshold — tylko fc_total_net matchuje
         })
         verdict = engine.decide(ctx)
         assert verdict["_routing"] == "BLOCK_AND_ALERT"
@@ -470,7 +470,7 @@ class TestFieldConfidenceRules:
         ctx = self._build_ctx(fc_values={
             "fc_vat_rate": "0.99",
             "fc_vendor_nip": "0.50",
-            "fc_minimum": "0.50",
+            "fc_minimum": "0.90",  # above all thresholds — only NIP rule matches
         })
         verdict = engine.decide(ctx)
         assert verdict["_routing"] == "BLOCK_AND_ALERT"
@@ -479,28 +479,25 @@ class TestFieldConfidenceRules:
     # ── Category confidence ─────────────────────────────────────────────
 
     def test_low_category_confidence(self, engine: RuleEngine) -> None:
-        """fc_category_code=0.50 < 0.80 → TRIAGE_QUEUE (category rule before min fallback)."""
+        """fc_category_code=0.50 < 0.80 → TRIAGE_QUEUE."""
         ctx = self._build_ctx(fc_values={
             "fc_vat_rate": "0.99",
             "fc_category_code": "0.50",
-            "fc_minimum": "0.50",
+            "fc_minimum": "0.90",  # above all thresholds — only category rule matches
         })
         verdict = engine.decide(ctx)
-        # fc_vendor_nip is empty — NIP rule guarded by > ''
-        # fc_category_code=0.50 matches category rule (TRIAGE_QUEUE)
         assert verdict["_routing"] == "TRIAGE_QUEUE"
         assert "category" in verdict["_routing_reason"].lower()
 
     # ── Very low minimum ────────────────────────────────────────────────
 
     def test_very_low_minimum_confidence(self, engine: RuleEngine) -> None:
-        """fc_minimum=0.50 < 0.70 → TRIAGE_QUEUE (catch-all rule)."""
+        """fc_vat_rate=0.50 < 0.98 → BLOCK_AND_ALERT (CIT_STANDARD vat_rate rule)."""
         ctx = self._build_ctx(fc_values={
             "fc_vat_rate": "0.50",
-            "fc_minimum": "0.50",
+            "fc_minimum": "0.99",  # above all thresholds — tylko fc_vat_rate matchuje
         })
         verdict = engine.decide(ctx)
-        # CIT_STANDARD + fc_vat_rate rule matches first (more specific)
         assert verdict["_routing"] == "BLOCK_AND_ALERT"
 
     # ── High confidence — falls through to regular rules ────────────────

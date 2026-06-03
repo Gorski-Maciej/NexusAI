@@ -22,8 +22,8 @@ def register_db_hooks(config: AppConfig):
             "id": str(target.id),
             "number": target.number,
             "contractor_nip": target.contractor_nip,
-            "amount_net": float(target.amount_net) if target.amount_net else 0.0,
-            "amount_gross": float(target.amount_gross) if target.amount_gross else 0.0,
+            "amount_net": float(target.amount_net.amount if hasattr(target.amount_net, 'amount') else target.amount_net) if target.amount_net else 0.0,
+            "amount_gross": float(target.amount_gross.amount if hasattr(target.amount_gross, 'amount') else target.amount_gross) if target.amount_gross else 0.0,
             "currency": target.currency,
             "status": target.status,
         }

@@ -1,16 +1,17 @@
 # pipeline/llm_extractor.py
 import msgspec
 from typing import Optional
-from decimal import Decimal
-from core.logger import logger
+
+from services.currency_converter import Money
+
 
 class ExtractedInvoice(msgspec.Struct):
     """Docelowy schemat danych, który musi zwrócić model LLM."""
     number: Optional[str]
     contractor_nip: Optional[str]
     contractor_name: Optional[str]
-    amount_net: Decimal
-    amount_gross: Decimal
+    amount_net: Money = Money.zero("PLN")
+    amount_gross: Money = Money.zero("PLN")
     currency: str = "PLN"
     issue_date: Optional[str]
     iban: Optional[str]

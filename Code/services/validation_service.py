@@ -4,6 +4,8 @@ from models.invoice import Invoice
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from services.currency_converter import Money
+
 
 class ValidationService:
     """Zaawansowana walidacja biznesowa zapobiegająca duplikatom i błędom."""
@@ -13,7 +15,7 @@ class ValidationService:
             session: AsyncSession,
             nip: str,
             number: str,
-            amount_gross: Decimal
+            amount_gross: Money
     ) -> bool:
         """Sprawdza, czy w bazie istnieje już taka faktura dla tego dostawcy."""
         query = select(Invoice).where(

@@ -2,93 +2,125 @@
 """
 Resilience and retry utilities for NexusAI.
 
+Replaced custom implementation with ``tenacity`` (well-known battle-tested library).
+
 Provides:
-- ``async_retry`` — decorator for exponential backoff retry on async functions
-- ``compute_backoff_delay`` — pure function for exponential backoff with jitter
-- ``RetryHandler`` — configurable retry state machine for inline use
-- ``submit_with_retry`` — retry a callable directly with backoff
+- ``async_retry`` — backward-compatible decorator (same API as before)
+
+Deprecated (kept for backward compatibility, will raise on use):
+- ``compute_backoff_delay`` — use ``tenacity.wait_exponential`` directly
+- ``RetryHandler`` — use ``tenacity`` retry state machine
+- ``submit_with_retry`` — use ``tenacity.retry`` directly
 """
 
 from __future__ import annotations
 
-import asyncio
 import logging
-import random
-from dataclasses import dataclass, field
-from typing import Callable, Any, TypeVar
-from functools import wraps
+import warnings
+from typing import Callable, Any
+
+from tenacity import (
+    retry as tenacity_retry,
+    stop_after_attempt,
+    wait_exponential,
+    retry_if_exception_type,
+    before_sleep_log,
+)
 
 logger = logging.getLogger("nexus.core.resilience")
 
-T = TypeVar("T")
 
-
-def compute_backoff_delay(
-    attempt: int,
-    base_delay: float = 1.0,
-    max_delay: float = 60.0,
-    jitter: bool = True,
-) -> float:
+class async_retry:
     """
-    Compute exponential backoff delay with optional jitter.
+    Decorator that retries an async function with exponential backoff.
+    Backward-compatible wrapper around tenacity.
 
     Args:
-        attempt: Current attempt number (0-indexed).
-        base_delay: Base delay in seconds (default 1.0).
+        max_retries: Maximum retry attempts (default 3).
+        base_delay: Initial delay in seconds (default 1.0).
         max_delay: Maximum delay cap (default 60.0).
-        jitter: Add random jitter ±25% to spread retries.
+        exceptions: Tuple of exception types to catch (default Exception).
 
-    Returns:
-        Delay in seconds before the next retry.
-
-    Examples:
-        >>> compute_backoff_delay(0)  # ~1s
-        >>> compute_backoff_delay(1)  # ~2s
-        >>> compute_backoff_delay(2)  # ~4s
-        >>> compute_backoff_delay(3)  # ~8s
+    Usage::
+        @async_retry(max_retries=5, base_delay=0.5, max_delay=30.0)
+        async def fetch_data(url: str) -> dict:
+            ...
     """
+
+    def __init__(
+        self,
+        max_retries: int = 3,
+        base_delay: float = 1.0,
+        max_delay: float = 60.0,
+        exceptions: tuple[type[Exception], ...] = (Exception,),
+    ):
+        self.max_retries = max_retries
+        self.base_delay = base_delay
+        self.max_delay = max_delay
+        self.exceptions = exceptions
+
+    def __call__(self, func: Callable[..., Any]) -> Callable[..., Any]:
+        # tenacity counts total attempts (initial + retries)
+        # Our old API: max_retries = number of retries after initial attempt
+        max_attempts = self.max_retries + 1
+
+        decorator = tenacity_retry(
+            stop=stop_after_attempt(max_attempts),
+            wait=wait_exponential(
+                multiplier=self.base_delay,
+                min=self.base_delay,
+                max=self.max_delay,
+            ),
+            retry=retry_if_exception_type(self.exceptions),
+            reraise=True,
+            before_sleep=before_sleep_log(logger, logging.WARNING),
+        )
+        return decorator(func)
+
+
+# ── Deprecated exports (backward compatibility) ─────────────────────────────
+
+
+def compute_backoff_delay(*args: Any, **kwargs: Any) -> float:
+    """Deprecated: use ``tenacity.wait_exponential`` directly."""
+    warnings.warn(
+        "compute_backoff_delay is deprecated, use tenacity.wait_exponential directly",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    # Fall back to the old calculation to not break callers
+    from math import pow as math_pow
+    attempt = kwargs.get("attempt", args[0] if args else 0)
+    base_delay = kwargs.get("base_delay", args[1] if len(args) > 1 else 1.0)
+    max_delay = kwargs.get("max_delay", args[2] if len(args) > 2 else 60.0)
+    jitter = kwargs.get("jitter", True)
+    import random
     delay = min(base_delay * (2 ** attempt), max_delay)
     if jitter:
-        # Add ±25% jitter
         jitter_range = delay * 0.25
         delay += random.uniform(-jitter_range, jitter_range)
-        delay = max(0.1, delay)  # Ensure minimum delay
+        delay = max(0.1, delay)
     return round(delay, 3)
 
 
-@dataclass
 class RetryHandler:
-    """
-    Configurable retry state machine for inline use.
+    """Deprecated: use ``tenacity`` retry state machine directly."""
 
-    Tracks retry count and computes backoff delays automatically.
-    Useful when you want to control retries inline without a decorator.
-
-    Usage::
-        retry = RetryHandler(max_retries=3, base_delay=1.0)
-        while retry.should_retry():
-            try:
-                result = await some_operation()
-                retry.record_success()
-                break
-            except Exception as e:
-                delay = retry.record_failure()
-                if retry.exhausted:
-                    raise  # Max retries reached
-                await asyncio.sleep(delay)
-    """
-
-    max_retries: int = 3
-    base_delay: float = 1.0
-    max_delay: float = 60.0
-    jitter: bool = True
-
-    _attempts: int = field(default=0, init=False)
-    _success: bool = field(default=False, init=False)
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        warnings.warn(
+            "RetryHandler is deprecated, use tenacity.retry directly",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.max_retries = kwargs.get("max_retries", args[0] if args else 3)
+        self.base_delay = kwargs.get("base_delay", args[1] if len(args) > 1 else 1.0)
+        self.max_delay = kwargs.get("max_delay", args[2] if len(args) > 2 else 60.0)
+        self.jitter = kwargs.get("jitter", True)
+        self._attempts = 0
+        self._success = False
 
     @property
     def exhausted(self) -> bool:
-        """True if max retries have been exhausted without success."""
         return self._attempts > self.max_retries and not self._success
 
     @property
@@ -96,22 +128,14 @@ class RetryHandler:
         return self._attempts
 
     def should_retry(self) -> bool:
-        """Check if another retry attempt is allowed."""
         if self._success:
             return False
         return self._attempts <= self.max_retries
 
     def record_success(self) -> None:
-        """Mark the operation as successfully completed."""
         self._success = True
 
     def record_failure(self) -> float:
-        """
-        Record a failure and return the delay before the next retry.
-
-        Returns:
-            Delay in seconds (0.0 if max retries exhausted).
-        """
         self._attempts += 1
         if self._attempts > self.max_retries:
             return 0.0
@@ -133,8 +157,7 @@ async def submit_with_retry(
     on_retry: Callable[[int, float, Exception], None] | None = None,
     **kwargs: Any,
 ) -> Any:
-    """
-    Execute an async callable with exponential backoff retry.
+    """Deprecated: use ``tenacity.retry`` directly.
 
     Args:
         func: Async callable to invoke.
@@ -152,6 +175,11 @@ async def submit_with_retry(
     Raises:
         The last exception caught after exhausting retries.
     """
+    warnings.warn(
+        "submit_with_retry is deprecated, use tenacity.retry directly",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     handler = RetryHandler(
         max_retries=max_retries,
         base_delay=base_delay,
@@ -183,50 +211,7 @@ async def submit_with_retry(
             )
             if on_retry:
                 on_retry(handler.attempt_count, delay, e)
+            import asyncio
             await asyncio.sleep(delay)
 
-    # Should not reach here, but defensive
     raise RuntimeError("Unexpected state in submit_with_retry")
-
-
-class async_retry:
-    """
-    Decorator that retries an async function with exponential backoff.
-
-    Args:
-        max_retries: Maximum retry attempts (default 3).
-        base_delay: Initial delay in seconds (default 1.0).
-        max_delay: Maximum delay cap (default 60.0).
-        exceptions: Tuple of exception types to catch (default Exception).
-
-    Usage::
-        @async_retry(max_retries=5, base_delay=0.5, max_delay=30.0)
-        async def fetch_data(url: str) -> dict:
-            ...
-    """
-
-    def __init__(
-        self,
-        max_retries: int = 3,
-        base_delay: float = 1.0,
-        max_delay: float = 60.0,
-        exceptions: tuple[type[Exception], ...] = (Exception,),
-    ):
-        self.max_retries = max_retries
-        self.base_delay = base_delay
-        self.max_delay = max_delay
-        self.exceptions = exceptions
-
-    def __call__(self, func: Callable[..., Any]) -> Callable[..., Any]:
-        @wraps(func)
-        async def wrapper(*args: Any, **kwargs: Any) -> Any:
-            return await submit_with_retry(
-                func,
-                *args,
-                max_retries=self.max_retries,
-                base_delay=self.base_delay,
-                max_delay=self.max_delay,
-                exceptions=self.exceptions,
-                **kwargs,
-            )
-        return wrapper

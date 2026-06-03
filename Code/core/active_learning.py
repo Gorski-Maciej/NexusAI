@@ -2,13 +2,12 @@
 from __future__ import annotations
 
 import json
-import time
 import hashlib
 import logging
 from typing import Optional, Dict, Any
-from collections import OrderedDict
 from pathlib import Path
 
+from cachetools import TTLCache
 import lancedb
 import pyarrow as pa
 import numpy as np
@@ -22,36 +21,7 @@ except ImportError:
     logger.warning("[ACTIVE-LEARNING] sentence_transformers not available")
 
 
-class LRUCache:
-    """Prosta pamięć podręczna LRU z TTL (Rozwiązanie 19)."""
-
-    def __init__(self, max_size: int = 1000, ttl_seconds: int = 3600):
-        self._cache: OrderedDict[str, tuple[float, Any]] = OrderedDict()
-        self._max_size = max_size
-        self._ttl = ttl_seconds
-
-    def get(self, key: str) -> Any | None:
-        if key not in self._cache:
-            return None
-        timestamp, value = self._cache[key]
-        if time.time() - timestamp > self._ttl:
-            del self._cache[key]
-            return None
-        self._cache.move_to_end(key)
-        return value
-
-    def put(self, key: str, value: Any) -> None:
-        self._cache[key] = (time.time(), value)
-        self._cache.move_to_end(key)
-        while len(self._cache) > self._max_size:
-            self._cache.popitem(last=False)
-
-    def clear(self) -> None:
-        self._cache.clear()
-
-    @property
-    def size(self) -> int:
-        return len(self._cache)
+# LRUCache replaced by cachetools.TTLCache (well-known library)
 
 
 class ActiveLearningEngine:
@@ -70,7 +40,7 @@ class ActiveLearningEngine:
         self._batch_flush_interval = 5.0  # Sekundy między flush
 
         # LRU cache dla odczytów (Rozwiązanie 19)
-        self._suggestion_cache = LRUCache(max_size=500, ttl_seconds=3600)
+        self._suggestion_cache: TTLCache = TTLCache(maxsize=500, ttl=3600)
 
         # Ładuj model embeddingu
         if SentenceTransformer is not None:
@@ -173,7 +143,7 @@ class ActiveLearningEngine:
         if results and results[0]["_distance"] < 0.1:
             suggestion = json.loads(results[0]["correction_payload"])
             # Zapisz w cache (Rozwiązanie 19)
-            self._suggestion_cache.put(cache_key, suggestion)
+            self._suggestion_cache[cache_key] = suggestion
             return suggestion
 
         return None
@@ -205,4 +175,4 @@ class ActiveLearningEngine:
     def close(self) -> None:
         """Zamyka bazę wektorową i czyści cache."""
         self._suggestion_cache.clear()
-        logger.info("[ACTIVE-LEARNING] Closed, cache cleared")
+        logger.info("[ACTIVE-LEARNING] Closed, cache cleared (%d items)", len(self._suggestion_cache))

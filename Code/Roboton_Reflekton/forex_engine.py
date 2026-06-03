@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections import OrderedDict
 from dataclasses import dataclass
 import uuid
 from datetime import date, timedelta, datetime as dt_datetime
@@ -8,6 +7,8 @@ from decimal import Decimal, ROUND_HALF_UP
 import json
 from urllib import request, error
 from typing import Any
+
+from cachetools import LRUCache
 
 from core.circuit_breaker import CircuitBreaker
 from .ledger_client import TigerBeetleClient
@@ -25,35 +26,12 @@ class FXResult:
     direction: str
 
 
-class _LRUCache:
-    """Prosty LRU cache z maxsize dla kursów walut."""
-
-    def __init__(self, maxsize: int = 1000):
-        self._maxsize = maxsize
-        self._cache: OrderedDict[tuple[str, str], Decimal | None] = OrderedDict()
-
-    def get(self, key: tuple[str, str]) -> Decimal | None:
-        if key in self._cache:
-            self._cache.move_to_end(key)
-            return self._cache[key]
-        return None
-
-    def put(self, key: tuple[str, str], value: Decimal | None) -> None:
-        self._cache[key] = value
-        self._cache.move_to_end(key)
-        if len(self._cache) > self._maxsize:
-            self._cache.popitem(last=False)
-
-    def __len__(self) -> int:
-        return len(self._cache)
-
-
 class ForexEngine:
     # Circuit Breaker dla API NBP (Rozwiązanie 21)
     _nbp_cb = CircuitBreaker(failure_threshold=3, recovery_timeout=60, name="nbp_api")
 
     # LRU cache w RAM (Rozwiązanie 28) - ostatnie 1000 zapytań
-    _rate_cache = _LRUCache(maxsize=1000)
+    _rate_cache = LRUCache(maxsize=1000)
 
     # Cache brakujących dat (weekendy/święta) - nie próbuj ponownie przez 30 dni
     _missing_cache: dict[tuple[str, str], date] = {}
@@ -106,7 +84,7 @@ class ForexEngine:
         )
         if rows:
             rate = Decimal(str(rows[0][0]))
-            self._rate_cache.put(key, rate)
+            self._rate_cache[key] = rate
             return rate
 
         return None
@@ -200,7 +178,7 @@ class ForexEngine:
         try:
             result = self._nbp_cb.call_sync(self._do_fetch_nbp, target_date, currency_code, max_lookback_days)
             # Zapisz w RAM cache
-            self._rate_cache.put((currency_code, target_date.isoformat()), result)
+            self._rate_cache[(currency_code, target_date.isoformat())] = result
             return result
         except ValueError:
             # NBP nie ma kursu dla tej daty (weekend/święto) - oznacz jako missing
@@ -256,7 +234,7 @@ class ForexEngine:
                     (currency_code, rate_day, float(avg_rate), table_no),
                 )
                 # Zapisz w RAM cache
-                self._rate_cache.put((currency_code, rate_day.isoformat()), avg_rate)
+                self._rate_cache[(currency_code, rate_day.isoformat())] = avg_rate
                 return avg_rate
             else:
                 # Oznacz jako missing
@@ -299,7 +277,7 @@ class ForexEngine:
                     (currency_code, rate_date, avg_rate, table_no),
                 )
                 # Zapisz w RAM cache
-                self._rate_cache.put((currency_code, rate_date.isoformat()), Decimal(str(avg_rate)))
+                self._rate_cache[(currency_code, rate_date.isoformat())] = Decimal(str(avg_rate))
                 imported += 1
             except Exception:
                 errors += 1

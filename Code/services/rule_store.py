@@ -39,13 +39,14 @@ CREATE TABLE IF NOT EXISTS tax_rules (
     valid_to             DATE,
     priority             INTEGER NOT NULL DEFAULT 100,
     description_template VARCHAR,
+    rule_set_id          VARCHAR NOT NULL DEFAULT '',
     created_at           TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by           VARCHAR NOT NULL DEFAULT 'system'
 );
 
 -- Composite index for temporal queries (most common access pattern)
 CREATE INDEX IF NOT EXISTS idx_tax_rules_temporal
-    ON tax_rules(valid_from, valid_to, priority);
+    ON tax_rules(valid_from, valid_to, priority, rule_set_id);
 
 -- Individual indexes for partial queries
 CREATE INDEX IF NOT EXISTS idx_tax_rules_valid_from
@@ -56,6 +57,9 @@ CREATE INDEX IF NOT EXISTS idx_tax_rules_valid_to
 
 CREATE INDEX IF NOT EXISTS idx_tax_rules_priority
     ON tax_rules(priority);
+
+CREATE INDEX IF NOT EXISTS idx_tax_rules_set
+    ON tax_rules(rule_set_id);
 
 CREATE INDEX IF NOT EXISTS idx_tax_rules_created
     ON tax_rules(created_at DESC);
@@ -107,12 +111,13 @@ class RuleStore:
         self._conn.execute(TAX_RULES_SCHEMA)
         self._conn.execute(RULE_CHANGE_LOG_SCHEMA)
         # Backward-compatible migration for new columns
-        try:
-            self._conn.execute(
-                "ALTER TABLE tax_rules ADD COLUMN IF NOT EXISTS description_template VARCHAR"
-            )
-        except Exception:
-            pass
+        for col, col_type in [("description_template", "VARCHAR"), ("rule_set_id", "VARCHAR NOT NULL DEFAULT ''")]:
+            try:
+                self._conn.execute(
+                    f"ALTER TABLE tax_rules ADD COLUMN IF NOT EXISTS {col} {col_type}"
+                )
+            except Exception:
+                pass
 
     # ── CRUD: append-only lifecycle ─────────────────────────────────
 
@@ -124,6 +129,7 @@ class RuleStore:
         valid_to: str | date | None = None,
         priority: int = 100,
         description_template: str | None = None,
+        rule_set_id: str = "",
         created_by: str = "system",
     ) -> str:
         """Dodaj nową regułę (append-only — nigdy nie aktualizuje istniejących).
@@ -135,6 +141,8 @@ class RuleStore:
             valid_to: Data zakończenia (None = bezterminowo).
             priority: Niższa = wyższy priorytet (0 = najwyższy).
             description_template: Opcjonalny szablon opisu.
+            rule_set_id: Identyfikator zestawu reguł (np. "CIT_STANDARD", "LUMP_SUM").
+                Pusty string oznacza domyślny zestaw reguł.
             created_by: Identyfikator twórcy reguły.
 
         Returns:
@@ -148,8 +156,8 @@ class RuleStore:
         self._conn.execute(
             """INSERT INTO tax_rules
                (rule_id, condition_sql, action_json, valid_from, valid_to,
-                priority, description_template, created_at, created_by)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                priority, description_template, rule_set_id, created_at, created_by)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 rule_id,
                 condition_sql,
@@ -158,6 +166,7 @@ class RuleStore:
                 vt,
                 priority,
                 description_template,
+                rule_set_id,
                 now,
                 created_by,
             ),
@@ -224,13 +233,19 @@ class RuleStore:
 
     # ── Query methods ──────────────────────────────────────────────
 
-    def get_active_rules(self, transaction_date: str | date) -> list[dict[str, Any]]:
+    def get_active_rules(
+        self,
+        transaction_date: str | date,
+        rule_set_id: str | None = None,
+    ) -> list[dict[str, Any]]:
         """Pobierz reguły aktywne w danej dacie.
 
         Filtruje po valid_from / valid_to i sortuje po priority ASC.
+        Opcjonalnie filtruje po rule_set_id.
 
         Args:
             transaction_date: Data transakcji (ISO string lub date).
+            rule_set_id: Opcjonalny filtr zestawu reguł (None = wszystkie).
 
         Returns:
             Lista słowników reguł, posortowana według priorytetu.
@@ -240,15 +255,29 @@ class RuleStore:
         else:
             date_str = transaction_date
 
-        rows = self._conn.execute(
-            """SELECT rule_id, condition_sql, action_json, priority,
-                      valid_from, valid_to, description_template, created_at, created_by
-               FROM tax_rules
-               WHERE valid_from <= CAST(? AS DATE)
-                 AND (valid_to IS NULL OR valid_to >= CAST(? AS DATE))
-               ORDER BY priority ASC, valid_from DESC, rule_id ASC""",
-            (date_str, date_str),
-        ).fetchall()
+        if rule_set_id is not None:
+            rows = self._conn.execute(
+                """SELECT rule_id, condition_sql, action_json, priority,
+                          valid_from, valid_to, description_template,
+                          rule_set_id, created_at, created_by
+                   FROM tax_rules
+                   WHERE rule_set_id = ?
+                     AND valid_from <= CAST(? AS DATE)
+                     AND (valid_to IS NULL OR valid_to >= CAST(? AS DATE))
+                   ORDER BY priority ASC, valid_from DESC, rule_id ASC""",
+                (rule_set_id, date_str, date_str),
+            ).fetchall()
+        else:
+            rows = self._conn.execute(
+                """SELECT rule_id, condition_sql, action_json, priority,
+                          valid_from, valid_to, description_template,
+                          rule_set_id, created_at, created_by
+                   FROM tax_rules
+                   WHERE valid_from <= CAST(? AS DATE)
+                     AND (valid_to IS NULL OR valid_to >= CAST(? AS DATE))
+                   ORDER BY priority ASC, valid_from DESC, rule_id ASC""",
+                (date_str, date_str),
+            ).fetchall()
 
         return [
             {
@@ -259,11 +288,30 @@ class RuleStore:
                 "valid_from": str(r[4]),
                 "valid_to": str(r[5]) if r[5] else None,
                 "description_template": str(r[6]) if r[6] else None,
-                "created_at": str(r[7]) if r[7] else None,
-                "created_by": str(r[8]) if r[8] else None,
+                "rule_set_id": str(r[7]) if r[7] else "",
+                "created_at": str(r[8]) if r[8] else None,
+                "created_by": str(r[9]) if r[9] else None,
             }
             for r in rows
         ]
+
+    def get_rule_sets(self) -> list[str]:
+        """Zwróć listę wszystkich unikalnych rule_set_id."""
+        rows = self._conn.execute(
+            "SELECT DISTINCT rule_set_id FROM tax_rules WHERE rule_set_id != '' ORDER BY rule_set_id"
+        ).fetchall()
+        return [str(r[0]) for r in rows]
+
+    def delete_rule_set(self, rule_set_id: str) -> int:
+        """Usuń wszystkie reguły o podanym rule_set_id (dla resetowania zestawów symulacyjnych)."""
+        # Najpierw policz ile zostanie usuniętych
+        count_row = self._conn.execute(
+            "SELECT COUNT(*) FROM tax_rules WHERE rule_set_id = ?", (rule_set_id,)
+        ).fetchone()
+        count = int(count_row[0]) if count_row else 0
+        # Wykonaj DELETE
+        self._conn.execute("DELETE FROM tax_rules WHERE rule_set_id = ?", (rule_set_id,))
+        return count
 
     def get_rule(self, rule_id: str) -> dict[str, Any] | None:
         """Pobierz pojedynczą regułę po ID.
@@ -276,7 +324,8 @@ class RuleStore:
         """
         row = self._conn.execute(
             """SELECT rule_id, condition_sql, action_json, priority,
-                      valid_from, valid_to, description_template, created_at, created_by
+                      valid_from, valid_to, description_template, rule_set_id,
+                      created_at, created_by
                FROM tax_rules WHERE rule_id = ?""",
             (rule_id,),
         ).fetchone()
@@ -290,8 +339,9 @@ class RuleStore:
             "valid_from": str(row[4]),
             "valid_to": str(row[5]) if row[5] else None,
             "description_template": str(row[6]) if row[6] else None,
-            "created_at": str(row[7]) if row[7] else None,
-            "created_by": str(row[8]) if row[8] else None,
+            "rule_set_id": str(row[7]) if row[7] else "",
+            "created_at": str(row[8]) if row[8] else None,
+            "created_by": str(row[9]) if row[9] else None,
         }
 
     def list_rules(
@@ -325,7 +375,8 @@ class RuleStore:
 
         rows = self._conn.execute(
             f"""SELECT rule_id, condition_sql, action_json, priority,
-                       valid_from, valid_to, description_template, created_at, created_by
+                       valid_from, valid_to, description_template,
+                       rule_set_id, created_at, created_by
                 FROM tax_rules
                 WHERE {where_clause}
                 ORDER BY priority ASC, valid_from DESC
@@ -342,8 +393,9 @@ class RuleStore:
                 "valid_from": str(r[4]),
                 "valid_to": str(r[5]) if r[5] else None,
                 "description_template": str(r[6]) if r[6] else None,
-                "created_at": str(r[7]) if r[7] else None,
-                "created_by": str(r[8]) if r[8] else None,
+                "rule_set_id": str(r[7]) if r[7] else "",
+                "created_at": str(r[8]) if r[8] else None,
+                "created_by": str(r[9]) if r[9] else None,
             }
             for r in rows
         ]

@@ -42,9 +42,11 @@ from api.routes.version import VersionController
 from api.routes.fx import FXController
 from api.routes.workers import WorkerStatusController
 from api.routes.dlq import DLQController
+from api.routes.tax_policy import TaxPolicyController
 from api.static import get_static_config
 from api.security import jwt_auth
 from api.state import on_shutdown, on_startup
+from services.currency_converter import Money, msgspec_money_enc_hook
 
 SUPPORTED_HEALTH_ENDPOINTS = ("/api/v1/health", "/api/v2/health")
 
@@ -91,6 +93,7 @@ def create_app() -> Litestar:
             FXController,
             DLQController,
             WorkerStatusController,
+            TaxPolicyController,
             progress_websocket,
         ],
         on_app_init=[jwt_auth.on_app_init],
@@ -116,4 +119,5 @@ def create_app() -> Litestar:
         ),
         static_files_config=get_static_config(config),
         debug=config.debug,
+        type_encoders={Money: msgspec_money_enc_hook},
     )

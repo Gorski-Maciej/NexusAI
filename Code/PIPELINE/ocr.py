@@ -5,11 +5,14 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
+from services.currency_converter import Money
+
+
 @dataclass
 class ExtractedInvoiceData:
     raw_text: str
     nip: str | None
-    amount_gross: float | None
+    amount_gross: Money | None
 
 class DocumentProcessor:
     """Singleton ładujący modele ML tylko raz, aby oszczędzić pamięć."""
@@ -80,7 +83,7 @@ class DocumentProcessor:
             try:
                 # Zamiana formatu "1 000,50" na "1000.50"
                 clean_num = gross_match.group(1).replace(" ", "").replace(",", ".")
-                amount_gross = float(clean_num)
+                amount_gross = Money(str(clean_num), "PLN")
             except ValueError:
                 pass
 

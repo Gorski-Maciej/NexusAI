@@ -26,18 +26,21 @@ from .exceptions import NoMatchingRuleError
 
 TAX_RULES_SCHEMA = """
 CREATE TABLE IF NOT EXISTS tax_rules (
-    rule_id          VARCHAR PRIMARY KEY,
-    condition_sql         VARCHAR NOT NULL,
-    action_json           VARCHAR NOT NULL,
-    valid_from            DATE NOT NULL,
-    valid_to              DATE,
-    priority              INTEGER NOT NULL DEFAULT 100,
-    description_template  VARCHAR,
-    created_at            TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_by            VARCHAR NOT NULL DEFAULT 'system'
+    rule_id              VARCHAR PRIMARY KEY,
+    condition_sql        VARCHAR NOT NULL,
+    action_json          VARCHAR NOT NULL,
+    valid_from           DATE NOT NULL,
+    valid_to             DATE,
+    priority             INTEGER NOT NULL DEFAULT 100,
+    description_template VARCHAR,
+    rule_set_id          VARCHAR NOT NULL DEFAULT '',
+    created_at           TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR NOT NULL DEFAULT 'system'
 );
 CREATE INDEX IF NOT EXISTS idx_tax_rules_valid
     ON tax_rules(valid_from, valid_to, priority);
+CREATE INDEX IF NOT EXISTS idx_tax_rules_set
+    ON tax_rules(rule_set_id);
 """
 
 # ── Default example rules ────────────────────────────────────────────────────
@@ -389,6 +392,255 @@ def seed_default_rules(conn: duckdb.DuckDBPyConnection) -> None:
                 rule["created_by"],
             ),
         )
+
+
+# ── Simulation Rule Sets ───────────────────────────────────────────────────
+# Osobne zestawy reguł dla każdej formy opodatkowania.
+# Używane przez TaxSimulator do porównania „co by bylo, gdyby".
+
+DEFAULT_SIMULATION_RULES: list[dict[str, Any]] = [
+    # ── CIT_STANDARD ───────────────────────────────────────────────────
+    {
+        "condition_sql": "category_code = 'FUEL' AND vendor_country = 'PL'",
+        "action_json": {"vat_rate": "0.23", "rounding_level": "position",
+                         "income_tax_qualification": "deductible_full",
+                         "gtu_code": "GTU_04",
+                         "simulated_income_tax_rate": "0.09"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 10,
+        "rule_set_id": "CIT_STANDARD", "created_by": "simulation",
+    },
+    {
+        "condition_sql": "category_code = 'IT_OFFICE' AND vendor_country = 'PL'",
+        "action_json": {"vat_rate": "0.23", "rounding_level": "position",
+                         "income_tax_qualification": "deductible_full",
+                         "gtu_code": "GTU_01",
+                         "simulated_income_tax_rate": "0.09"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 10,
+        "rule_set_id": "CIT_STANDARD", "created_by": "simulation",
+    },
+    {
+        "condition_sql": "category_code = 'FOOD' AND vendor_country = 'PL'",
+        "action_json": {"vat_rate": "0.08", "rounding_level": "position",
+                         "income_tax_qualification": "deductible_full",
+                         "gtu_code": "GTU_07",
+                         "simulated_income_tax_rate": "0.09"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 10,
+        "rule_set_id": "CIT_STANDARD", "created_by": "simulation",
+    },
+    {
+        "condition_sql": "category_code IN ('EDUCATION', 'HEALTHCARE') AND vendor_country = 'PL'",
+        "action_json": {"vat_rate": "0.00", "rounding_level": "total",
+                         "income_tax_qualification": "deductible_limit",
+                         "gtu_code": None,
+                         "simulated_income_tax_rate": "0.09"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 10,
+        "rule_set_id": "CIT_STANDARD", "created_by": "simulation",
+    },
+    {
+        "condition_sql": "vendor_country = 'PL'",
+        "action_json": {"vat_rate": "0.23", "rounding_level": "position",
+                         "income_tax_qualification": "deductible_full",
+                         "gtu_code": None,
+                         "simulated_income_tax_rate": "0.09"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 100,
+        "rule_set_id": "CIT_STANDARD", "created_by": "simulation",
+    },
+    # ── CIT_ESTONIAN ──────────────────────────────────────────────────
+    {
+        "condition_sql": "category_code = 'FUEL' AND vendor_country = 'PL'",
+        "action_json": {"vat_rate": "0.23", "rounding_level": "position",
+                         "income_tax_qualification": "deductible_full",
+                         "gtu_code": "GTU_04",
+                         "simulated_income_tax_rate": "0.10"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 10,
+        "rule_set_id": "CIT_ESTONIAN", "created_by": "simulation",
+    },
+    {
+        "condition_sql": "category_code = 'IT_OFFICE' AND vendor_country = 'PL'",
+        "action_json": {"vat_rate": "0.23", "rounding_level": "position",
+                         "income_tax_qualification": "deductible_full",
+                         "gtu_code": "GTU_01",
+                         "simulated_income_tax_rate": "0.10"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 10,
+        "rule_set_id": "CIT_ESTONIAN", "created_by": "simulation",
+    },
+    {
+        "condition_sql": "vendor_country = 'PL'",
+        "action_json": {"vat_rate": "0.23", "rounding_level": "position",
+                         "income_tax_qualification": "deductible_full",
+                         "gtu_code": None,
+                         "simulated_income_tax_rate": "0.10"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 100,
+        "rule_set_id": "CIT_ESTONIAN", "created_by": "simulation",
+    },
+    # ── LINEAR (podatek liniowy 19%) ──────────────────────────────────
+    {
+        "condition_sql": "category_code = 'FUEL' AND vendor_country = 'PL'",
+        "action_json": {"vat_rate": "0.23", "rounding_level": "position",
+                         "income_tax_qualification": "deductible_full",
+                         "gtu_code": "GTU_04",
+                         "simulated_income_tax_rate": "0.19"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 10,
+        "rule_set_id": "LINEAR", "created_by": "simulation",
+    },
+    {
+        "condition_sql": "category_code = 'IT_OFFICE' AND vendor_country = 'PL'",
+        "action_json": {"vat_rate": "0.23", "rounding_level": "position",
+                         "income_tax_qualification": "deductible_full",
+                         "gtu_code": "GTU_01",
+                         "simulated_income_tax_rate": "0.19"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 10,
+        "rule_set_id": "LINEAR", "created_by": "simulation",
+    },
+    {
+        "condition_sql": "vendor_country = 'PL'",
+        "action_json": {"vat_rate": "0.23", "rounding_level": "position",
+                         "income_tax_qualification": "deductible_full",
+                         "gtu_code": None,
+                         "simulated_income_tax_rate": "0.19"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 100,
+        "rule_set_id": "LINEAR", "created_by": "simulation",
+    },
+    # ── LUMP_SUM (rycza³t 12%) ────────────────────────────────────────
+    {
+        "condition_sql": "category_code = 'FUEL' AND vendor_country = 'PL'",
+        "action_json": {"vat_rate": "0.23", "rounding_level": "position",
+                         "income_tax_qualification": "non_deductible",
+                         "gtu_code": "GTU_04",
+                         "simulated_income_tax_rate": "0.12",
+                         "simulated_lump_sum_revenue_basis": True},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 10,
+        "rule_set_id": "LUMP_SUM", "created_by": "simulation",
+    },
+    {
+        "condition_sql": "category_code = 'IT_OFFICE' AND vendor_country = 'PL'",
+        "action_json": {"vat_rate": "0.23", "rounding_level": "position",
+                         "income_tax_qualification": "non_deductible",
+                         "gtu_code": "GTU_01",
+                         "simulated_income_tax_rate": "0.12",
+                         "simulated_lump_sum_revenue_basis": True},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 10,
+        "rule_set_id": "LUMP_SUM", "created_by": "simulation",
+    },
+    {
+        "condition_sql": "vendor_country = 'PL'",
+        "action_json": {"vat_rate": "0.23", "rounding_level": "position",
+                         "income_tax_qualification": "non_deductible",
+                         "gtu_code": None,
+                         "simulated_income_tax_rate": "0.12",
+                         "simulated_lump_sum_revenue_basis": True},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 100,
+        "rule_set_id": "LUMP_SUM", "created_by": "simulation",
+    },
+    # ── Cross-border dla wszystkich zestawów ────────────────────────────
+    {
+        "condition_sql": "vendor_country = 'EU' AND vendor_vat_status = 'active'",
+        "action_json": {"vat_rate": "0.00", "rounding_level": "total",
+                         "income_tax_qualification": "deductible_full",
+                         "gtu_code": "GTU_12", "procedure": "VAT_REVERSE_CHARGE"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 50,
+        "rule_set_id": "CIT_STANDARD", "created_by": "simulation",
+    },
+    {
+        "condition_sql": "vendor_country = 'EU' AND vendor_vat_status = 'active'",
+        "action_json": {"vat_rate": "0.00", "rounding_level": "total",
+                         "income_tax_qualification": "deductible_full",
+                         "gtu_code": "GTU_12", "procedure": "VAT_REVERSE_CHARGE"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 50,
+        "rule_set_id": "CIT_ESTONIAN", "created_by": "simulation",
+    },
+    {
+        "condition_sql": "vendor_country = 'EU' AND vendor_vat_status = 'active'",
+        "action_json": {"vat_rate": "0.00", "rounding_level": "total",
+                         "income_tax_qualification": "deductible_full",
+                         "gtu_code": "GTU_12", "procedure": "VAT_REVERSE_CHARGE"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 50,
+        "rule_set_id": "LINEAR", "created_by": "simulation",
+    },
+    {
+        "condition_sql": "vendor_country = 'EU' AND vendor_vat_status = 'active'",
+        "action_json": {"vat_rate": "0.00", "rounding_level": "total",
+                         "income_tax_qualification": "non_deductible",
+                         "gtu_code": "GTU_12", "procedure": "VAT_REVERSE_CHARGE"},
+        "valid_from": "2024-01-01", "valid_to": None, "priority": 50,
+        "rule_set_id": "LUMP_SUM", "created_by": "simulation",
+    },
+]
+
+
+def seed_simulation_rules(conn: duckdb.DuckDBPyConnection) -> None:
+    """Wstaw zestawy regu³ symulacyjnych (idempotentne — usuwa TYLKO swoje zestawy)."""
+    from services.rule_store import RuleStore
+    store = RuleStore(conn)
+    store.ensure_schema()
+
+    # Usuñ TYLKO regu³y nale¿¹ce do zestawów, które zamierzamy reseedowaæ
+    known_sets = set(r["rule_set_id"] for r in DEFAULT_SIMULATION_RULES)
+    for rsid in known_sets:
+        store.delete_rule_set(rsid)
+
+    for rule in DEFAULT_SIMULATION_RULES:
+        store.add_rule(
+            condition_sql=rule["condition_sql"],
+            action=rule["action_json"],
+            valid_from=rule["valid_from"],
+            valid_to=rule.get("valid_to"),
+            priority=rule["priority"],
+            rule_set_id=rule["rule_set_id"],
+            created_by=rule["created_by"],
+        )
+
+
+def seed_single_rule_set(conn: duckdb.DuckDBPyConnection, target_rule_set_id: str) -> int:
+    """Wstaw reguły tylko dla JEDNEGO docelowego zestawu symulacyjnego.
+
+    Zamiast seedować wszystkie 4 zestawy (CIT_STANDARD, CIT_ESTONIAN, LINEAR, LUMP_SUM)
+    i potem usuwać niepotrzebne, seeduje TYLKO target_rule_set_id.
+    To redukuje liczbę INSERTów z ~40 do ~10 na jedną symulację.
+
+    Args:
+        conn: Połączenie DuckDB.
+        target_rule_set_id: Docelowy zestaw (np. "CIT_ESTONIAN").
+
+    Returns:
+        Liczba wstawionych reguł.
+
+    Raises:
+        ValueError: Jeśli target_rule_set_id nie istnieje w DEFAULT_SIMULATION_RULES.
+    """
+    from services.rule_store import RuleStore
+    store = RuleStore(conn)
+    store.ensure_schema()
+
+    # Najpierw usuń istniejące reguły tego zestawu (idempotentność)
+    store.delete_rule_set(target_rule_set_id)
+
+    # Filtruj tylko reguły dla docelowego zestawu
+    target_rules = [r for r in DEFAULT_SIMULATION_RULES if r.get("rule_set_id") == target_rule_set_id]
+
+    if not target_rules:
+        raise ValueError(f"Unknown simulation rule set: {target_rule_set_id}")
+
+    for rule in target_rules:
+        store.add_rule(
+            condition_sql=rule["condition_sql"],
+            action=rule["action_json"],
+            valid_from=rule["valid_from"],
+            valid_to=rule.get("valid_to"),
+            priority=rule["priority"],
+            rule_set_id=rule["rule_set_id"],
+            created_by=rule["created_by"],
+        )
+
+    return len(target_rules)
+
+
+def get_simulation_rule_sets() -> list[str]:
+    """Zwró listê dostêpnych zestawów regu³ symulacyjnych."""
+    return sorted(set(
+        r["rule_set_id"] for r in DEFAULT_SIMULATION_RULES
+        if r.get("rule_set_id")
+    ))
 
 
 # ── Context Interpreter ──────────────────────────────────────────────────────

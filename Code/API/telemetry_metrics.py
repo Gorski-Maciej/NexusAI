@@ -68,6 +68,21 @@ memory_usage_mb: Gauge | None = None
 """Gauge: Current process memory usage in MB."""
 
 
+# ── Hot-Reload metrics ───────────────────────────────────────────────────────
+
+hot_reload_events_total: Counter | None = None
+"""Counter: Hot-reload events processed (label: subject)."""
+
+hot_reload_last_event_seconds: Gauge | None = None
+"""Gauge: Unix timestamp of last hot-reload event (label: subject)."""
+
+
+# ── Outbox relay metrics ─────────────────────────────────────────────────────
+
+outbox_relay_events_total: Counter | None = None
+"""Counter: Outbox relay events processed (total across all triggers)."""
+
+
 def init_metrics() -> None:
     """Initialize all Prometheus metrics.
 
@@ -79,6 +94,8 @@ def init_metrics() -> None:
     global nats_events_processed_total, nats_events_queued_total
     global db_connection_pool_size, queue_depth
     global worker_up, nats_up, model_inference_duration_seconds, memory_usage_mb
+    global hot_reload_events_total, hot_reload_last_event_seconds
+    global outbox_relay_events_total
 
     if _INITIALIZED:
         return
@@ -164,6 +181,27 @@ def init_metrics() -> None:
         registry=REGISTRY,
     )
 
+    # ── Hot-Reload ──────────────────────────────────────────────────────
+    hot_reload_events_total = Counter(
+        name="hot_reload_events_total",
+        documentation="Total number of hot-reload events processed",
+        labelnames=("subject",),
+        registry=REGISTRY,
+    )
+    hot_reload_last_event_seconds = Gauge(
+        name="hot_reload_last_event_seconds",
+        documentation="Unix timestamp of the last hot-reload event",
+        labelnames=("subject",),
+        registry=REGISTRY,
+    )
+
+    # ── Outbox Relay ────────────────────────────────────────────────────
+    outbox_relay_events_total = Counter(
+        name="outbox_relay_events_total",
+        documentation="Total number of outbox relay events processed",
+        registry=REGISTRY,
+    )
+
     _INITIALIZED = True
 
 
@@ -229,3 +267,28 @@ def set_memory_usage(mb: float) -> None:
     """Set current process memory usage."""
     if memory_usage_mb is not None:
         memory_usage_mb.set(mb)
+
+
+def record_outbox_relay_triggered(events_count: int) -> None:
+    """Record an outbox relay processing trigger.
+
+    Increments the outbox relay counter by the number of events processed.
+    Safe to call before init_metrics — checks for None.
+    """
+    if outbox_relay_events_total is not None:
+        outbox_relay_events_total.inc(events_count)
+
+
+def record_hot_reload_event(subject: str) -> None:
+    """Record a hot-reload event for the given subject.
+
+    Increments the per-subject counter and updates the
+    last-event-timestamp gauge to the current Unix time.
+
+    Safe to call before init_metrics — checks for None.
+    """
+    if hot_reload_events_total is not None:
+        hot_reload_events_total.labels(subject=subject).inc()
+    if hot_reload_last_event_seconds is not None:
+        import time as _time
+        hot_reload_last_event_seconds.labels(subject=subject).set(_time.time())

@@ -27,6 +27,7 @@ from services.council_agents import (
 from services.council_session import CouncilSession, CouncilVerdict, DecisionLevel
 from services.decision_logger import DecisionLogger
 from services.ple_engine import PLEEngine
+from services.risk_guard import RiskGuard
 
 logger = get_logger(__name__)
 
@@ -48,6 +49,7 @@ class FinalDecision:
     deliberation: str = ""
     council_verdict: CouncilVerdict | None = None  # Nowość: wynik sesji Rady
     ple_decision_pattern: dict[str, Any] | None = None  # Nowość: wzorzec z PLE
+    risk_verdict: dict[str, Any] | None = None  # Wynik RiskGuard
 
 
 # ---------------------------------------------------------------------------
@@ -55,10 +57,11 @@ class FinalDecision:
 # ---------------------------------------------------------------------------
 
 DEFAULT_WEIGHTS = {
-    "ai_confidence": 0.35,
-    "vendor_reliability": 0.30,
-    "data_consistency": 0.25,
+    "ai_confidence": 0.30,
+    "vendor_reliability": 0.25,
+    "data_consistency": 0.20,
     "context_trust": 0.10,
+    "risk_guard": 0.15,
 }
 
 DEFAULT_THRESHOLDS = {
@@ -79,10 +82,26 @@ class TrustScoreCalculator:
         self,
         config: AppConfig | None = None,
         duckdb: DuckDBManager | None = None,
+        risk_guard: RiskGuard | None = None,
     ) -> None:
         self._config = config or AppConfig()
         self._duckdb = duckdb
+        self._risk_guard = risk_guard
         self._weights = dict(DEFAULT_WEIGHTS)
+
+    def _get_risk_guard(self) -> RiskGuard | None:
+        """Lazy-init RiskGuard from DuckDB connection if not provided."""
+        if self._risk_guard is not None:
+            return self._risk_guard
+        if self._duckdb is not None:
+            try:
+                conn = self._duckdb.get_connection_for_query()
+                from services.risk_guard import seed_default_thresholds
+                self._risk_guard = RiskGuard(conn)
+                seed_default_thresholds(conn)
+            except Exception:
+                pass
+        return self._risk_guard
 
     def calculate(
         self,
@@ -142,12 +161,63 @@ class TrustScoreCalculator:
             + category_pref * 0.40
         )
 
-        # --- Composite ---
+        # --- 5. RiskGuard — per-field confidence thresholds (weight 0.15) ---
+        risk_score = 1.0  # domyślnie brak ryzyka
+        risk_verdict: dict[str, Any] | None = None
+
+        rg = self._get_risk_guard()
+        if rg is not None:
+            tax_form = str(extracted_data.get("company_tax_form", "") or "")
+            expense_type = str(extracted_data.get("expense_type", "") or extracted_data.get("category", ""))
+
+            # Wyodrębnij per-field confidences z field_confidence
+            raw_fc = extracted_data.get("field_confidence", {}) or {}
+            fields_with_confidence: dict[str, float] = {}
+            if isinstance(raw_fc, dict):
+                for field_name, entry in raw_fc.items():
+                    if isinstance(entry, dict) and "confidence" in entry:
+                        fields_with_confidence[field_name] = float(entry["confidence"])
+
+            # Fallback: użyj ogólnego ocr_confidence jeśli brak per-field danych
+            if not fields_with_confidence:
+                fields_with_confidence["overall_ocr"] = ocr_confidence
+
+            # Dodaj llm_validation jako osobną metrykę
+            fields_with_confidence["llm_validation"] = llm_validation
+
+            try:
+                verdict = rg.evaluate(
+                    fields_with_confidence=fields_with_confidence,
+                    tax_form=tax_form,
+                    expense_type=expense_type,
+                )
+                risk_verdict = {
+                    "is_safe": verdict.is_safe,
+                    "action": verdict.action,
+                    "reason": verdict.reason,
+                    "required_for_field": verdict.required_for_field,
+                }
+
+                if verdict.action == "BLOCK_AND_ALERT":
+                    risk_score = 0.0  # całkowita blokada
+                elif verdict.action == "TRIAGE_QUEUE":
+                    risk_score = 0.4  # znaczące ryzyko
+                elif not verdict.is_safe:
+                    risk_score = 0.7  # umiarkowane ryzyko
+                # else: is_safe → risk_score = 1.0
+            except Exception as exc:
+                logger.debug("[TrustScore] RiskGuard evaluation failed: %s", exc)
+                risk_verdict = {"is_safe": True, "action": "AUTO_POST",
+                                "reason": f"RiskGuard unavailable: {exc}",
+                                "required_for_field": {}}
+
+        # --- Composite (z 5 komponentami) ---
         trust_score = (
             ai_score * self._weights["ai_confidence"]
             + vendor_score * self._weights["vendor_reliability"]
             + data_score * self._weights["data_consistency"]
             + context_score * self._weights["context_trust"]
+            + risk_score * self._weights["risk_guard"]
         )
 
         return {
@@ -157,6 +227,7 @@ class TrustScoreCalculator:
                 "vendor_reliability": round(vendor_score, 4),
                 "data_consistency": round(data_score, 4),
                 "context_trust": round(context_score, 4),
+                "risk_guard": round(risk_score, 4),
             },
             "raw": {
                 "ai_confidence": {
@@ -181,7 +252,9 @@ class TrustScoreCalculator:
                     "auto_approve": auto_approve,
                     "category_preference": category_pref,
                 },
+                "risk_guard": risk_verdict,
             },
+            "risk_verdict": risk_verdict,
         }
 
     async def get_adapted_thresholds(
@@ -466,11 +539,13 @@ class CouncilOrchestrator:
         )
 
         # --- Step 7: Final decision ---
+        risk_v = trust_result.get("risk_verdict")
         final_decision = self._resolve_decision(
             trust_score=trust_score,
             thresholds=thresholds,
             deliberation=deliberation,
             council_verdict=council_verdict,
+            risk_verdict=risk_v,
         )
 
         # --- Context ---
@@ -494,6 +569,7 @@ class CouncilOrchestrator:
             deliberation=deliberation,
             council_verdict=council_verdict,
             ple_decision_pattern=ple_pattern,
+            risk_verdict=trust_result.get("risk_verdict"),
         )
 
         # --- Log to DecisionLogger ---
@@ -540,11 +616,19 @@ class CouncilOrchestrator:
                     },
                 )
             except Exception as exc:
-                logger.error("[Council] failed to record to PLE: %s", exc)
+                logger.error("[Council] failed to record to PLE: %s", exc            )
+
+        # --- Rozszerz kontekst o risk_verdict dla audytu ---
+        risk_v = trust_result.get("risk_verdict")
+        if risk_v:
+            context["risk_guard_action"] = risk_v.get("action", "")
+            context["risk_guard_reason"] = risk_v.get("reason", "")
 
         logger.info(
-            "[Council] invoice_id=%s decision=%s trust=%.4f deliberation=%s",
-            invoice_id, final_decision, trust_score, deliberation,
+            "[Council] invoice_id=%s decision=%s trust=%.4f risk=%s deliberation=%s",
+            invoice_id, final_decision, trust_score,
+            risk_v.get("action", "N/A") if risk_v else "N/A",
+            deliberation,
         )
         return decision
 
@@ -554,13 +638,24 @@ class CouncilOrchestrator:
         thresholds: dict[str, float],
         deliberation: str,
         council_verdict: CouncilVerdict | None = None,
+        risk_verdict: dict[str, Any] | None = None,
     ) -> str:
         """Map trust score + council verdict to a final decision.
 
         Priorytet:
+          0. **RiskGuard** — jeśli ``risk_verdict.action == BLOCK_AND_ALERT``
+             → natychmiast BLOCK (nawet jeśli inne składowe wskazują AUTO_POST)
           1. CouncilVerdict.recommended_action (jeśli poziom >= LEVEL_3)
           2. Trust score thresholds
         """
+        # [Priorytet 0] RiskGuard — natychmiastowa blokada
+        if risk_verdict and risk_verdict.get("action") == "BLOCK_AND_ALERT":
+            logger.warning(
+                "[Council] RiskGuard BLOCK: %s",
+                risk_verdict.get("reason", "no reason"),
+            )
+            return "BLOCK"
+
         # Jeśli CouncilSession dał jednoznaczny werdykt na poziomie 3 lub 4
         if council_verdict:
             if council_verdict.level in (DecisionLevel.LEVEL_3_ESCALATE, DecisionLevel.LEVEL_4_BLOCK):
@@ -578,7 +673,7 @@ class CouncilOrchestrator:
                     return "AUTO_POST"
                 return "SUGGEST"
 
-        # Fallback: trust score based (stary mechanizm)
+        # Fallback: trust score based
         if trust_score >= thresholds.get("auto_post", 0.92):
             return "AUTO_POST"
         if trust_score >= thresholds.get("suggest", 0.75):

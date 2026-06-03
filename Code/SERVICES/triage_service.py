@@ -8,6 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.invoice import Invoice
+from services.currency_converter import Money
 
 TRIAGE_CONFIDENCE_THRESHOLD = 0.85
 
@@ -18,12 +19,17 @@ class TriageDecision:
     reason: str | None = None
 
 
-def should_triage_document(*, confidence_score: float, amount_net: Decimal, amount_vat: Decimal, amount_gross: Decimal) -> TriageDecision:
+def should_triage_document(*, confidence_score: float, amount_net: Money, amount_vat: Money, amount_gross: Money) -> TriageDecision:
     """Core triage rule used by workers before posting accounting effects."""
     if confidence_score < TRIAGE_CONFIDENCE_THRESHOLD:
         return TriageDecision(send_to_review=True, reason="LOW_CONFIDENCE")
 
-    if (amount_net + amount_vat).quantize(Decimal("0.01")) != amount_gross.quantize(Decimal("0.01")):
+    # Extract Decimal amounts from Money objects (or handle direct Decimal values)
+    net = amount_net.amount if hasattr(amount_net, 'amount') else Decimal(str(amount_net))
+    vat = amount_vat.amount if hasattr(amount_vat, 'amount') else Decimal(str(amount_vat))
+    gross = amount_gross.amount if hasattr(amount_gross, 'amount') else Decimal(str(amount_gross))
+
+    if (net + vat).quantize(Decimal("0.01")) != gross.quantize(Decimal("0.01")):
         return TriageDecision(send_to_review=True, reason="MATH_MISMATCH")
 
     return TriageDecision(send_to_review=False)
@@ -62,10 +68,16 @@ async def resolve_triage_item(
         invoice.number = str(number)
     if contractor_nip := corrected_data.get("contractor_nip"):
         invoice.contractor_nip = str(contractor_nip)
-    if amount_net := corrected_data.get("amount_net"):
-        invoice.amount_net = Decimal(str(amount_net))
-    if amount_gross := corrected_data.get("amount_gross"):
-        invoice.amount_gross = Decimal(str(amount_gross))
+    if amount_net_val := corrected_data.get("amount_net"):
+        if isinstance(amount_net_val, Money):
+            invoice.amount_net = amount_net_val
+        else:
+            invoice.amount_net = Money(str(amount_net_val), "PLN")
+    if amount_gross_val := corrected_data.get("amount_gross"):
+        if isinstance(amount_gross_val, Money):
+            invoice.amount_gross = amount_gross_val
+        else:
+            invoice.amount_gross = Money(str(amount_gross_val), "PLN")
 
     if action == "confirm_post":
         invoice.status = "APPROVED"

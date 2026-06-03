@@ -530,6 +530,19 @@ class AdminController(Controller):
             if not ok:
                 raise NotFoundException(detail=f"Billing rule not found: {rule_id}")
             logger.info("[ADMIN] Billing rule deprecated id=%s", rule_id)
+
+            # NATS hot-reload event
+            try:
+                import nats
+                nc = await nats.connect(AppConfig().nats_url)
+                await nc.publish(
+                    "billing.rules.updated",
+                    json.dumps({"rule_id": rule_id, "action": "deprecated"}).encode(),
+                )
+                await nc.close()
+            except Exception as pub_err:
+                logger.warning("[ADMIN] Failed to publish NATS event: %s", pub_err)
+
             return {"status": "ok", "rule_id": rule_id, "action": "deprecated"}
         finally:
             conn.close()
@@ -679,6 +692,19 @@ class AdminController(Controller):
                 created_by=username,
             )
             logger.info("[ADMIN] Tax rule created id=%s by=%s", rule_id, username)
+
+            # NATS hot-reload event
+            try:
+                import nats
+                nc = await nats.connect(AppConfig().nats_url)
+                await nc.publish(
+                    "tax.rules.updated",
+                    json.dumps({"rule_id": rule_id, "action": "created"}).encode(),
+                )
+                await nc.close()
+            except Exception as pub_err:
+                logger.warning("[ADMIN] Failed to publish NATS event: %s", pub_err)
+
             return {"status": "ok", "rule_id": rule_id}
         finally:
             conn.close()
@@ -702,6 +728,19 @@ class AdminController(Controller):
             if not ok:
                 raise NotFoundException(detail=f"Rule not found or already closed: {rule_id}")
             logger.info("[ADMIN] Tax rule closed id=%s by=%s", rule_id, username)
+
+            # NATS hot-reload event
+            try:
+                import nats
+                nc = await nats.connect(AppConfig().nats_url)
+                await nc.publish(
+                    "tax.rules.updated",
+                    json.dumps({"rule_id": rule_id, "action": "closed"}).encode(),
+                )
+                await nc.close()
+            except Exception as pub_err:
+                logger.warning("[ADMIN] Failed to publish NATS event: %s", pub_err)
+
             return {"status": "ok", "rule_id": rule_id, "action": "closed"}
         finally:
             conn.close()
@@ -796,6 +835,19 @@ class AdminController(Controller):
             )
             logger.info("[ADMIN] Ledger rule created id=%s type=%s by=%s",
                         rule_id, transaction_type, username)
+
+            # NATS hot-reload event
+            try:
+                import nats
+                nc = await nats.connect(AppConfig().nats_url)
+                await nc.publish(
+                    "ledger.rules.updated",
+                    json.dumps({"rule_id": rule_id, "action": "created"}).encode(),
+                )
+                await nc.close()
+            except Exception as pub_err:
+                logger.warning("[ADMIN] Failed to publish NATS event: %s", pub_err)
+
             return {"status": "ok", "rule_id": rule_id}
         finally:
             conn.close()
@@ -811,6 +863,19 @@ class AdminController(Controller):
         try:
             validator = PreLedgerValidator(conn)
             ok = validator.delete_rule(rule_id)
+
+            # NATS hot-reload event
+            try:
+                import nats
+                nc = await nats.connect(AppConfig().nats_url)
+                await nc.publish(
+                    "ledger.rules.updated",
+                    json.dumps({"rule_id": rule_id, "action": "deprecated"}).encode(),
+                )
+                await nc.close()
+            except Exception as pub_err:
+                logger.warning("[ADMIN] Failed to publish NATS event: %s", pub_err)
+
             return {"status": "ok", "rule_id": rule_id, "action": "deprecated"}
         finally:
             conn.close()
@@ -947,6 +1012,40 @@ class AdminController(Controller):
             return {"status": "ok", "event_id": event_id, "action": "ignored"}
         finally:
             conn.close()
+
+    # ── Hot-Reload Health endpoint ───────────────────────────────────────
+
+    @get("/hot-reload/health", guards=[requires_permission("admin:hot-reload")])
+    async def hot_reload_health(self, request: Request) -> dict:
+        """Show NATS hot-reload listener status and per-subject event counts.
+
+        Returns:
+            status: "connected" | "disconnected"
+            nats_url: Configured NATS URL
+            subscriptions: List of subscribed rule topics
+            events_total: Total events received since startup
+            events_per_subject: Per-subject event counts
+            last_event_at: Per-subject last event timestamp (ISO)
+            uptime_seconds: Seconds since listener started
+
+        The listener is created during API startup (on_startup).
+        If NATS was unavailable at startup, status will be "disconnected".
+        """
+        listener = getattr(request.app.state, "hot_reload_listener", None)
+        if listener is None:
+            return {
+                "status": "not_initialized",
+                "nats_url": "",
+                "subscriptions": [],
+                "events_total": 0,
+                "events_per_subject": {},
+                "last_event_at": None,
+                "uptime_seconds": 0.0,
+                "message": "HotReloadListener was not initialized during API startup",
+            }
+
+        health = listener.health()
+        return health
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────

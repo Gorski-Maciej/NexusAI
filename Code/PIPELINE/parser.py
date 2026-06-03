@@ -4,12 +4,15 @@ from decimal import Decimal, InvalidOperation
 from dataclasses import dataclass
 from typing import Optional
 
+from services.currency_converter import Money
+
+
 @dataclass
 class ParsedInvoice:
     number: Optional[str] = None
     nip: Optional[str] = None
-    amount_net: Decimal = Decimal("0.00")
-    amount_gross: Decimal = Decimal("0.00")
+    amount_net: Money = Money.zero("PLN")
+    amount_gross: Money = Money.zero("PLN")
     iban: Optional[str] = None
     currency: str = "PLN"
 
@@ -44,8 +47,10 @@ class InvoiceParser:
             result.currency = curr_match.group(0).upper().replace("ZŁ", "PLN")
 
         # 4. Kwoty (Heurystyka)
-        result.amount_gross = self._find_amount_near_keywords(lines, self.gross_keywords)
-        result.amount_net = self._find_amount_near_keywords(lines, self.net_keywords)
+        gross_decimal = self._find_amount_near_keywords(lines, self.gross_keywords)
+        net_decimal = self._find_amount_near_keywords(lines, self.net_keywords)
+        result.amount_gross = Money(str(gross_decimal), result.currency)
+        result.amount_net = Money(str(net_decimal), result.currency)
 
         return result
 
@@ -88,14 +93,22 @@ async def check_for_anomalies(nip: str, current_amount: float, active_learning_e
         return None # Za mało danych do analizy
 
     # 2. Obliczamy średnią i sprawdzamy odchylenie
-    amounts = [doc['amount_net'] for doc in historical_data]
+    amounts = []
+    for doc in historical_data:
+        amt = doc['amount_net']
+        # Nowa wersja: amount_net to Money, użyj .amount
+        if hasattr(amt, 'amount'):
+            amounts.append(float(amt.amount))
+        else:
+            amounts.append(float(amt))
     avg_amount = sum(amounts) / len(amounts)
 
     # 3. Reguła biznesowa: Jeśli kwota jest o 40% wyższa/niższa niż średnia
     threshold = 0.40
-    if current_amount > avg_amount * (1 + threshold):
+    current_float = current_amount.amount if hasattr(current_amount, 'amount') else float(current_amount)
+    if current_float > avg_amount * (1 + threshold):
         return {
             "is_anomaly": True,
-            "message": f"Uwaga: Kwota ({current_amount} zł) jest drastycznie wyższa niż zazwyczaj od tego dostawcy (średnia: {avg_amount:.2f} zł)."
+            "message": f"Uwaga: Kwota ({current_float} zł) jest drastycznie wyższa niż zazwyczaj od tego dostawcy (średnia: {avg_amount:.2f} zł)."
         }
     return None

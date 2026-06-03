@@ -10,6 +10,7 @@ from .preprocessor import ImageOptimizer
 from .qa_engine import QualityAssuranceEngine
 from .audit import PipelineAudit
 from .coordinator import ParallelPipelineCoordinator
+from .active_learning import ActiveLearningEngine
 
 __all__ = [
     "DocumentPipeline",
@@ -22,5 +23,6 @@ __all__ = [
     "ImageOptimizer",
     "QualityAssuranceEngine",
     "PipelineAudit",
-    "ParallelPipelineCoordinator"
+    "ParallelPipelineCoordinator",
+    "ActiveLearningEngine",
 ]

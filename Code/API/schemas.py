@@ -5,10 +5,18 @@ from datetime import datetime
 from uuid import UUID
 from typing import Optional
 
+from services.currency_converter import Money
+
+
 # -- msgspec Structs --
 
 class InvoiceCreate(msgspec.Struct):
-    """Dane wymagane przy ręcznym tworzeniu lub uploadzie faktury."""
+    """Dane wymagane przy ręcznym tworzeniu lub uploadzie faktury.
+    
+    Uwaga: ``amount_net`` i ``amount_gross`` to ``Decimal`` (typ natywny msgspec),
+    a nie ``Money`` — ponieważ to schema requestowa (dekodowana z JSON).
+    Konwersja ``Decimal → Money`` następuje w kontrolerze.
+    """
     number: str
     contractor_nip: str
     file_path: str = ""
@@ -48,11 +56,11 @@ def validate_invoice_create(payload: InvoiceCreate) -> None:
             raise ValueError(f"contractor_nip validation failed: {e}")
 
 class InvoiceResponse(msgspec.Struct):
-    """Struktura zwracana do frontendu."""
+    """Struktura zwracana do frontendu (response — ``Money`` serializowane przez enc_hook)."""
     id: str
     number: str | None
-    amount_net: Decimal
-    amount_gross: Decimal
+    amount_net: Money
+    amount_gross: Money
     currency: str
     status: str # NEW, PROCESSING, APPROVED
     created_at: datetime
@@ -65,10 +73,10 @@ class AnalyticsQuery(msgspec.Struct):
     report_currency: str = "PLN"
 
 class VatSummary(msgspec.Struct):
-    """Zagregowane dane analityczne z DuckDB."""
+    """Zagregowane dane analityczne z DuckDB (response — ``Money`` serializowane przez enc_hook)."""
     month: str
-    total_net: Decimal
-    total_gross: Decimal
+    total_net: Money
+    total_gross: Money
     currency: str
 
 

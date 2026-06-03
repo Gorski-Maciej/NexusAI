@@ -2,10 +2,21 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
+from decimal import Decimal
 from typing import Any
+
+import duckdb
 
 from .models import LegalForm, TaxForm
 from .strategies import StrategyContext, StrategyRegistry
+from services.rule_store import RuleStore
+from tax.exceptions import NoMatchingRuleError
+from tax.rules import (
+    ContextInterpreter,
+    RuleEngine,
+    seed_default_rules,
+    seed_single_rule_set,
+)
 
 
 @dataclass(slots=True)
@@ -85,6 +96,159 @@ class TaxSimulator:
             )
             return relation.pl()
 
+    # ── Piaskownica symulacyjna (DuckDB + Zen-Engine) ────────────────────
+
+    async def run_simulation(
+        self,
+        invoices: list[dict[str, Any]],
+        target_rule_set_id: str,
+    ) -> dict[str, Any]:
+        """Przetworz faktury JEDEN raz, zwracajac wyniki biezace (current) i symulowane.
+
+        Dla kazdej faktury:
+          1. Tworzy tymczasowe DuckDB z regulami domyslnymi + symulacyjnymi
+          2. Uruchamia Zen-Engine (RuleEngine) DWA razy: z oryginalna forma i docelowa
+          3. Oblicza VAT i podatek dochodowy dla obu wariantow
+          4. Agreguje wyniki miesiecznie
+
+        Args:
+            invoices: Lista slownikow faktur.
+            target_rule_set_id: Docelowy zestaw regul (np. "CIT_ESTONIAN").
+
+        Returns:
+            Slownik z polami:
+                - current_vat_total, current_income_tax (float)
+                - simulated_vat_total, simulated_income_tax (float)
+                - current_monthly_breakdown, simulated_monthly_breakdown (list[dict])
+                - invoice_count (int)
+        """
+        conn = duckdb.connect(":memory:")
+        try:
+            store = RuleStore(conn)
+            store.ensure_schema()
+
+            # ── FAZA 1: Current — tylko domyślne reguły (bez rule_set_id) ──
+            # Najpierw seedujemy TYLKO domyślne reguły, żeby current pass
+            # nie widział reguł symulacyjnych (które mają te same warunki
+            # company_tax_form i mogłyby matchować jako pierwsze).
+            seed_default_rules(conn)
+            engine = RuleEngine(conn)
+
+            total_current_vat = Decimal("0")
+            total_current_income_tax = Decimal("0")
+            current_monthly: dict[str, dict[str, Decimal]] = {}
+
+            for inv in invoices:
+                ctx = ContextInterpreter.build(inv)
+                txn_date = str(inv.get("transaction_date", ""))
+                month_key = txn_date[:7] if len(txn_date) >= 7 else "unknown"
+                net = Decimal(str(inv.get("amount_net", "0")))
+
+                current_ctx = dict(ctx)
+                try:
+                    current_verdict = engine.decide(current_ctx)
+                except NoMatchingRuleError:
+                    current_ctx["vendor_country"] = "PL"
+                    current_verdict = engine.decide(current_ctx)
+                except Exception:
+                    current_verdict = {"vat_rate": "0.23"}
+
+                vat_rate_cur = Decimal(current_verdict.get("vat_rate", "0.23"))
+                current_vat = (net * vat_rate_cur).quantize(Decimal("0.01"))
+                total_current_vat += current_vat
+
+                income_rate_str = current_verdict.get("simulated_income_tax_rate", "0")
+                income_rate = Decimal(income_rate_str) if income_rate_str else Decimal("0")
+                current_income_tax = (net * income_rate).quantize(Decimal("0.01")) if income_rate > 0 else Decimal("0")
+                total_current_income_tax += current_income_tax
+
+                if month_key not in current_monthly:
+                    current_monthly[month_key] = {"vat": Decimal("0"), "income_tax": Decimal("0"), "count": 0}
+                current_monthly[month_key]["vat"] += current_vat
+                current_monthly[month_key]["income_tax"] += current_income_tax
+                current_monthly[month_key]["count"] += 1
+
+            # ── FAZA 2: Simulated — reguły domyślne + TYLKO docelowy zestaw ──
+            # Zamiast seedować wszystkie 4 zestawy i usuwać niepotrzebne,
+            # seedujemy TYLKO target_rule_set_id. To redukuje INSERTy z ~40 do ~10.
+            seed_single_rule_set(conn, target_rule_set_id)
+
+            total_sim_vat = Decimal("0")
+            total_sim_income_tax = Decimal("0")
+            sim_monthly: dict[str, dict[str, Decimal]] = {}
+
+            for inv in invoices:
+                ctx = ContextInterpreter.build(inv)
+                txn_date = str(inv.get("transaction_date", ""))
+                month_key = txn_date[:7] if len(txn_date) >= 7 else "unknown"
+                net = Decimal(str(inv.get("amount_net", "0")))
+
+                sim_ctx = dict(ctx)
+                sim_ctx["company_tax_form"] = target_rule_set_id
+
+                try:
+                    sim_verdict = engine.decide(sim_ctx)
+                except NoMatchingRuleError:
+                    sim_ctx["vendor_country"] = "PL"
+                    sim_verdict = engine.decide(sim_ctx)
+                except Exception:
+                    sim_verdict = {"vat_rate": "0.23"}
+
+                vat_rate_sim = Decimal(sim_verdict.get("vat_rate", "0.23"))
+                sim_vat = (net * vat_rate_sim).quantize(Decimal("0.01"))
+                total_sim_vat += sim_vat
+
+                income_rate_sim_str = sim_verdict.get("simulated_income_tax_rate", "0")
+                is_lump_sum = sim_verdict.get("simulated_lump_sum_revenue_basis", False)
+                income_rate_sim = Decimal(income_rate_sim_str) if income_rate_sim_str else Decimal("0")
+
+                if is_lump_sum:
+                    sim_income_tax = (net * income_rate_sim).quantize(Decimal("0.01"))
+                elif income_rate_sim > 0:
+                    sim_income_tax = (net * income_rate_sim).quantize(Decimal("0.01"))
+                else:
+                    sim_income_tax = Decimal("0")
+                total_sim_income_tax += sim_income_tax
+
+                if month_key not in sim_monthly:
+                    sim_monthly[month_key] = {"vat": Decimal("0"), "income_tax": Decimal("0"), "net_total": Decimal("0"), "count": 0}
+                sim_monthly[month_key]["vat"] += sim_vat
+                sim_monthly[month_key]["income_tax"] += sim_income_tax
+                sim_monthly[month_key]["net_total"] += net
+                sim_monthly[month_key]["count"] += 1
+
+            current_breakdown = [
+                {
+                    "month": m,
+                    "vat": round(float(d["vat"]), 2),
+                    "income_tax": round(float(d["income_tax"]), 2),
+                    "invoice_count": d["count"],
+                }
+                for m, d in sorted(current_monthly.items())
+            ]
+            sim_breakdown = [
+                {
+                    "month": month,
+                    "vat": round(float(d["vat"]), 2),
+                    "income_tax": round(float(d["income_tax"]), 2),
+                    "net_total": round(float(d["net_total"]), 2),
+                    "invoice_count": d["count"],
+                }
+                for month, d in sorted(sim_monthly.items())
+            ]
+
+            return {
+                "current_vat_total": round(float(total_current_vat), 2),
+                "current_income_tax": round(float(total_current_income_tax), 2),
+                "simulated_vat_total": round(float(total_sim_vat), 2),
+                "simulated_income_tax": round(float(total_sim_income_tax), 2),
+                "invoice_count": len(invoices),
+                "current_monthly_breakdown": current_breakdown,
+                "simulated_monthly_breakdown": sim_breakdown,
+            }
+        finally:
+            conn.close()
+
     @staticmethod
     def _aggregate_month_metrics(frame: Any, pl: Any) -> dict[str, float]:
         aggregated = frame.select(
@@ -153,7 +317,7 @@ class TaxSimulator:
     def _require_polars() -> Any:
         try:
             import polars as pl
-        except Exception as exc:  # pragma: no cover - optional dependency in CI image
+        except Exception as exc:
             raise RuntimeError("Polars is required for PredictiveTaxEngine. Install `polars`.") from exc
         return pl
 
@@ -161,6 +325,6 @@ class TaxSimulator:
     def _require_duckdb() -> Any:
         try:
             import duckdb
-        except Exception as exc:  # pragma: no cover - optional dependency in CI image
+        except Exception as exc:
             raise RuntimeError("DuckDB is required for PredictiveTaxEngine. Install `duckdb`.") from exc
         return duckdb

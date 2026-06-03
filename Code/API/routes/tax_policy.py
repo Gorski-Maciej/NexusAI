@@ -1,30 +1,34 @@
-""""
-Tax Policy simulation API (Część VIII).
+"""
+Tax Policy simulation API (Część VIII — rozszerzona).
 
 POST /api/v2/tax-policy/simulate — symulacja zmiany formy opodatkowania
 na podstawie rzeczywistych, historycznych faktur z DuckDB/SQLite.
 
-Przepływ:
-  1. Pobranie faktur z DuckDB (ATTACH SQLite) dla wskazanego okresu
-  2. Dla każdej faktury: RuleEngine z domyślnym zestawem reguł → "current" VAT
-  3. Dla każdej faktury: RuleEngine z target_tax_form → "simulated" VAT
-  4. Agregacja miesięczna i porównanie
+Nowość:
+  - Obsługa wielu zestawów reguł (rule_set_id): CIT_STANDARD, CIT_ESTONIAN,
+    LINEAR, LUMP_SUM
+  - Symulacja VAT + podatek dochodowy
+  - Miesięczny breakdown dla wykresu (chart_data)
+  - Używa TaxSimulator.run_simulation() z Zen-Engine
 """
 
 from __future__ import annotations
 
-import json
 import logging
-from datetime import date, datetime
 from decimal import Decimal
 from typing import Any
 
 import duckdb
-from litestar import Controller, post
+from litestar import Controller, get, post
 from litestar.response import Response
 import msgspec
 
-from tax.rules import ContextInterpreter, RuleEngine, ensure_tax_schemas, seed_default_rules
+from tax.rules import (
+    ensure_tax_schemas,
+    seed_default_rules,
+    seed_simulation_rules,
+    get_simulation_rule_sets,
+)
 
 logger = logging.getLogger("nexus.api.tax_policy")
 
@@ -46,11 +50,12 @@ class TaxPolicyController(Controller):
         Args:
             data.period_start: Początek okresu (YYYY-MM-DD).
             data.period_end: Koniec okresu (YYYY-MM-DD).
-            data.target_tax_form: Docelowa forma opodatkowania.
+            data.target_tax_form: Docelowa forma opodatkowania
+                (CIT_STANDARD, CIT_ESTONIAN, LINEAR, LUMP_SUM).
             data.sqlite_path: Ścieżka do SQLite (opcjonalnie, do testów).
 
         Returns:
-            JSON z porównaniem obecnego i symulowanego podatku.
+            JSON z porównaniem obecnego i symulowanego podatku + dane wykresu.
         """
         conn = duckdb.connect(":memory:")
 
@@ -58,7 +63,20 @@ class TaxPolicyController(Controller):
             # ── 1. Załaduj reguły podatkowe ──────────────────────────────
             ensure_tax_schemas(conn)
             seed_default_rules(conn)
-            rule_engine = RuleEngine(conn)
+            seed_simulation_rules(conn)
+
+            # Walidacja target_tax_form
+            available_sets = get_simulation_rule_sets()
+            target = data.target_tax_form.upper()
+            if target not in available_sets:
+                return Response({
+                    "status": "error",
+                    "message": (
+                        f"Nieznana forma opodatkowania: {target}. "
+                        f"Dostępne: {', '.join(available_sets)}"
+                    ),
+                    "available_rule_sets": available_sets,
+                }, status_code=400)
 
             # ── 2. Pobierz faktury z bazy ────────────────────────────────
             invoices = self._load_invoices(data, conn)
@@ -68,28 +86,80 @@ class TaxPolicyController(Controller):
                     "status": "warning",
                     "message": "Brak faktur w podanym okresie. Symulacja używa przykładowych danych.",
                     "current_vat_total": 0.0,
+                    "current_income_tax": 0.0,
                     "simulated_vat_total": 0.0,
-                    "difference": 0.0,
+                    "simulated_income_tax": 0.0,
+                    "difference_vat": 0.0,
+                    "difference_income_tax": 0.0,
                     "invoices_simulated": 0,
+                    "chart_data": {"labels": [], "current": [], "simulated": []},
+                    "target_tax_form": target,
+                    "period": {"start": data.period_start, "end": data.period_end},
+                    "available_rule_sets": available_sets,
                 })
 
-            # ── 3. Wykonaj symulację ─────────────────────────────────────
-            result = self._run_simulation(invoices, data.target_tax_form, rule_engine)
+            # ── 3. Wykonaj symulację (jeden przebieg — current + sim) ──────
+            from Roboton_Reflekton.shadow_ledger import TaxSimulator
+            simulator = TaxSimulator()
+
+            result = await simulator.run_simulation(
+                invoices=invoices,
+                target_rule_set_id=target,
+            )
+
+            # ── 4. Zbuduj odpowiedź ──────────────────────────────────────
+            diff_vat = result["simulated_vat_total"] - result["current_vat_total"]
+            diff_income_tax = result["simulated_income_tax"] - result["current_income_tax"]
+
+            # Miesięczne dane wykresu z obu breakdownów
+            monthly_map: dict[str, dict[str, float]] = {}
+            for m in result["current_monthly_breakdown"]:
+                monthly_map.setdefault(m["month"], {"current_vat": 0.0, "current_income_tax": 0.0,
+                                                      "simulated_vat": 0.0, "simulated_income_tax": 0.0})
+                monthly_map[m["month"]]["current_vat"] += m["vat"]
+                monthly_map[m["month"]]["current_income_tax"] += m["income_tax"]
+
+            for m in result["simulated_monthly_breakdown"]:
+                monthly_map.setdefault(m["month"], {"current_vat": 0.0, "current_income_tax": 0.0,
+                                                      "simulated_vat": 0.0, "simulated_income_tax": 0.0})
+                monthly_map[m["month"]]["simulated_vat"] += m["vat"]
+                monthly_map[m["month"]]["simulated_income_tax"] += m["income_tax"]
+
+            all_months = sorted(monthly_map.keys())
+            chart_data = {
+                "labels": all_months,
+                "current_vat": [round(monthly_map[m]["current_vat"], 2) for m in all_months],
+                "simulated_vat": [round(monthly_map[m]["simulated_vat"], 2) for m in all_months],
+                "current_income_tax": [round(monthly_map[m]["current_income_tax"], 2) for m in all_months],
+                "simulated_income_tax": [round(monthly_map[m]["simulated_income_tax"], 2) for m in all_months],
+            }
 
             return Response({
                 "status": "ok",
-                "current_vat_total": round(float(result["current_total"]), 2),
-                "simulated_vat_total": round(float(result["simulated_total"]), 2),
-                "difference": round(float(result["difference"]), 2),
-                "difference_percent": round(float(result["difference_percent"]), 1),
-                "target_tax_form": data.target_tax_form,
+                "current_vat_total": round(result["current_vat_total"], 2),
+                "current_income_tax": round(result["current_income_tax"], 2),
+                "simulated_vat_total": round(result["simulated_vat_total"], 2),
+                "simulated_income_tax": round(result["simulated_income_tax"], 2),
+                "difference_vat": round(diff_vat, 2),
+                "difference_income_tax": round(diff_income_tax, 2),
+                "target_tax_form": target,
                 "period": {"start": data.period_start, "end": data.period_end},
-                "invoices_simulated": result["invoice_count"],
-                "chart_data": result["chart_data"],
+                "invoices_simulated": len(invoices),
+                "current_monthly_breakdown": result["current_monthly_breakdown"],
+                "simulated_monthly_breakdown": result["simulated_monthly_breakdown"],
+                "chart_data": chart_data,
+                "available_rule_sets": available_sets,
             })
 
         finally:
             conn.close()
+
+    @get("/rule-sets")
+    async def list_rule_sets(self) -> Response[dict]:
+        """Zwróć listę dostępnych zestawów reguł symulacyjnych."""
+        return Response({
+            "rule_sets": get_simulation_rule_sets(),
+        })
 
     # ── Private helpers ──────────────────────────────────────────────────────
 
@@ -150,79 +220,20 @@ class TaxPolicyController(Controller):
 
         # Fallback: sample data for demo/testing
         logger.info("[TAX-SIM] Using sample invoice data (no DB connection)")
-        return self._sample_invoices(data.target_tax_form)
-
-    def _run_simulation(
-        self,
-        invoices: list[dict[str, Any]],
-        target_tax_form: str,
-        rule_engine: RuleEngine,
-    ) -> dict[str, Any]:
-        """Run simulation for a list of invoices.
-
-        Returns dict with current_total, simulated_total, difference, chart_data.
-        """
-        total_current = Decimal("0")
-        total_simulated = Decimal("0")
-        monthly_current: dict[str, Decimal] = {}
-        monthly_simulated: dict[str, Decimal] = {}
-
-        for inv in invoices:
-            # Current: use the invoice's own company_tax_form
-            ctx_current = ContextInterpreter.build(inv)
-            verdict_current = rule_engine.decide(ctx_current)
-            vat_rate_current = Decimal(verdict_current.get("vat_rate", "0.23"))
-            net = inv["amount_net"]
-            vat_current = (net * vat_rate_current).quantize(Decimal("0.01"))
-            total_current += vat_current
-
-            # Simulated: override company_tax_form
-            inv_sim = dict(inv)
-            inv_sim["company_tax_form"] = target_tax_form
-            ctx_sim = ContextInterpreter.build(inv_sim)
-            verdict_sim = rule_engine.decide(ctx_sim)
-            vat_rate_sim = Decimal(verdict_sim.get("vat_rate", "0.23"))
-            vat_sim = (net * vat_rate_sim).quantize(Decimal("0.01"))
-            total_simulated += vat_sim
-
-            # Monthly aggregation
-            tx_date = str(inv.get("transaction_date", ""))
-            month_key = tx_date[:7] if len(tx_date) >= 7 else "unknown"
-            monthly_current[month_key] = monthly_current.get(month_key, Decimal("0")) + vat_current
-            monthly_simulated[month_key] = monthly_simulated.get(month_key, Decimal("0")) + vat_sim
-
-        difference = total_simulated - total_current
-        diff_percent = float(difference / total_current * 100) if total_current else 0.0
-
-        # Build chart data (monthly comparison)
-        all_months = sorted(set(list(monthly_current.keys()) + list(monthly_simulated.keys())))
-        chart_data = {
-            "labels": all_months,
-            "current": [round(float(monthly_current.get(m, Decimal("0"))), 2) for m in all_months],
-            "simulated": [round(float(monthly_simulated.get(m, Decimal("0"))), 2) for m in all_months],
-        }
-
-        return {
-            "current_total": total_current,
-            "simulated_total": total_simulated,
-            "difference": difference,
-            "difference_percent": diff_percent,
-            "invoice_count": len(invoices),
-            "chart_data": chart_data,
-        }
+        return self._sample_invoices()
 
     @staticmethod
-    def _sample_invoices(target_tax_form: str) -> list[dict[str, Any]]:
-        """Sample invoices for demo/testing purposes.
+    def _sample_invoices() -> list[dict[str, Any]]:
+        """Przykładowe faktury do demo/testów.
 
-        Uses 'CIT_STANDARD' as the current tax form so that
-        switching to target_tax_form shows a meaningful difference.
+        Używa 'CIT_STANDARD' jako bieżącej formy, by przejście
+        na target_tax_form pokazało sensowną różnicę.
         """
         return [
             {
                 "category_code": "IT_OFFICE",
                 "transaction_date": "2024-06-15",
-                "company_tax_form": "CIT_STANDARD",  # current form
+                "company_tax_form": "CIT_STANDARD",
                 "vendor_country": "PL",
                 "amount_net": Decimal("10000.00"),
             },

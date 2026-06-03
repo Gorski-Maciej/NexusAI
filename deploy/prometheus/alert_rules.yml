@@ -80,6 +80,21 @@ groups:
           summary: "NATS server is down"
           description: "NATS server is unreachable. Task processing is disabled."
 
+      # ── Hot-reload inactivity ───────────────────────────────────────────
+      - alert: NoHotReloadEvents
+        expr: rate(hot_reload_events_total[24h]) == 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "No hot-reload events in 24h — possible NATS issue"
+          description: |
+            The hot_reload_events_total counter has not increased in the
+            last 24 hours. This means no billing, risk, tax, or ledger
+            rules were updated via the admin API — or the NATS connection
+            is down and events are not being received.
+            Check NATS subscription health at /api/admin/hot-reload/health
+
       # ── Worker down ────────────────────────────────────────────────────
       - alert: WorkerDown
         expr: worker_up == 0

@@ -716,8 +716,16 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
         except Exception:
             pass
 
-        primary = OCRAmountResult(amount_gross=_safe_float(payload.get("ocr_primary_amount_gross")), source="surya")
-        secondary = OCRAmountResult(amount_gross=_safe_float(payload.get("ocr_secondary_amount_gross")), source="paddle")
+        primary_amount = _safe_float(payload.get("ocr_primary_amount_gross"))
+        secondary_amount = _safe_float(payload.get("ocr_secondary_amount_gross"))
+        primary = OCRAmountResult(
+            amount_gross=Money(str(primary_amount), "PLN") if primary_amount is not None else None,
+            source="surya",
+        )
+        secondary = OCRAmountResult(
+            amount_gross=Money(str(secondary_amount), "PLN") if secondary_amount is not None else None,
+            source="paddle",
+        )
         consensus = decide_amount_consensus(primary, secondary, tolerance=0.01)
 
         if consensus.confidence_conflict:
@@ -1447,6 +1455,57 @@ async def relay_outbox_events() -> None:
         await session.commit()
 
     await engine.dispose()
+
+
+@broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="outbox_relay_process_pending")
+async def outbox_relay_process_pending_task() -> None:
+    """
+    Co minutę przetwarzaj oczekujące zdarzenia outbox przez OutboxRelay.
+
+    Używa ``OutboxRelay.process_pending()`` zamiast starego inline relay:
+      - Asynchroniczny odczyt outbox_events z bazy SQLite
+      - Wysyłka TAX_CALCULATED do TigerBeetle (dwa transfery)
+      - Wykładnicze opóźnienie między retry
+      - Dead Letter Queue po wyczerpaniu prób
+      - Idempotentność przez tabelę processed_events
+    """
+    config = AppConfig()
+    engine = create_oltp_engine(config)
+    session_factory = create_session_factory(engine)
+
+    try:
+        # Wczesne wyjście: jeśli nie ma oczekujących zdarzeń, nie twórz relay
+        async with session_factory() as session:
+            pending_count = int(
+                (await session.execute(
+                    text("SELECT COUNT(*) FROM outbox_events WHERE status IN ('PENDING', 'FAILED')")
+                )).scalar() or 0
+            )
+        if pending_count == 0:
+            return
+
+        from services.outbox_relay import OutboxRelay
+
+        relay = OutboxRelay(
+            session_factory=session_factory,
+            tigerbeetle=None,  # W workerze TigerBeetle jest opcjonalne
+            max_retries=3,
+            base_delay_seconds=1.0,
+        )
+
+        stats = await relay.process_pending()
+
+        logger.info(
+            "[OUTBOX-RELAY] Cron processed=%d failed=%d dead_letter=%d "
+            "skipped=%d total=%d (%.0fms)",
+            stats.processed, stats.failed, stats.dead_letter,
+            stats.skipped_idempotent, stats.total,
+            stats.processing_time_ms,
+        )
+    except Exception as exc:
+        logger.exception("[OUTBOX-RELAY] Cron processing failed: %s", exc)
+    finally:
+        await engine.dispose()
 
 
 @broker.task(schedule=[{"cron": "10 2 * * *"}], task_name="scan_logs_for_pii")

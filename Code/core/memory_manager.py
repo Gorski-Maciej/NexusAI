@@ -31,34 +31,49 @@ class MemoryManager:
                     proc.model.to("cuda")
 
 
-class TimedModelCache:
-    """Cache modeli z TTL i automatycznym zwalnianiem zasobów."""
+from cachetools import TTLCache
 
-    def __init__(self, ttl_seconds: int = 600) -> None:
-        self.cache: dict[str, object] = {}
+
+class TimedModelCache:
+    """Cache modeli z TTL i automatycznym zwalnianiem zasobów.
+
+    Wrapper wokół ``cachetools.TTLCache`` — wewnętrznie używa LRU + TTL.
+    Dodaje specjalne czyszczenie dla modeli PyTorch (``model.to("cpu")``).
+    """
+
+    def __init__(self, ttl_seconds: int = 600, maxsize: int = 64) -> None:
+        self.cache: TTLCache[str, object] = TTLCache(maxsize=maxsize, ttl=ttl_seconds)
         self.last_used: dict[str, float] = {}
         self.ttl = ttl_seconds
 
     async def get(self, key: str, loader):
         now = time.monotonic()
-        if key in self.cache and (now - self.last_used[key]) < self.ttl:
+        try:
+            model = self.cache[key]
             self.last_used[key] = now
-            return self.cache[key]
+            return model
+        except KeyError:
+            pass
 
-        self.evict_expired(now=now)
         model = await loader()
         self.cache[key] = model
         self.last_used[key] = now
         return model
 
     def evict_expired(self, now: float | None = None) -> None:
-        now = now or time.monotonic()
-        for key in list(self.cache.keys()):
-            if now - self.last_used.get(key, now) > self.ttl:
-                self.release(key)
+        """Force cleanup of expired entries. TTLCache handles this automatically,
+        but calling with explicit now triggers immediate expiration."""
+        if now is not None:
+            # Trigger TTLCache cleanup by accessing the internal timer
+            self.cache.expire(time=now)
+        else:
+            self.cache.expire()
 
     def release(self, key: str) -> None:
-        model = self.cache.pop(key, None)
+        try:
+            model = self.cache.pop(key, None)
+        except KeyError:
+            model = None
         self.last_used.pop(key, None)
         if model is None:
             return

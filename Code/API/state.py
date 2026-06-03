@@ -13,6 +13,8 @@ from api.auth_service import hash_password
 from api.shared_image_buffer import SharedImageBuffer
 from db.analytics import DuckDBManager
 from services.migration_sanity import run_migration_sanity_checks, verify_migration_integrity, verify_migration_checksums
+from services.hot_reload import HotReloadListener
+from services.outbox_relay import OutboxRelay
 from core.secrets import LocalSecretsCache, OfflineFirstSecretResolver
 from core.saga import PersistedSagaStore
 
@@ -522,6 +524,7 @@ async def on_startup(app: Litestar) -> None:
             "admin:access": {"resource": "admin", "action": "access", "description": "Access admin panel"},
             "admin:settings": {"resource": "admin", "action": "settings", "description": "Modify system settings"},
             "admin:failed-tasks": {"resource": "admin", "action": "failed-tasks", "description": "Manage failed tasks / DLQ"},
+            "admin:hot-reload": {"resource": "admin", "action": "hot-reload", "description": "View hot-reload health status"},
             "finance:view": {"resource": "finance", "action": "view", "description": "View financial data"},
             "finance:reconcile": {"resource": "finance", "action": "reconcile", "description": "Reconcile accounts"},
             "finance:export": {"resource": "finance", "action": "export", "description": "Export financial reports"},
@@ -630,6 +633,30 @@ async def on_startup(app: Litestar) -> None:
     else:
         logger.info(".seeded marker found — skipping auto-seed.")
 
+    # ── OutboxRelay: Transactional Outbox dla gwarantowanej dostawy zdarzeń ──
+    try:
+        relay = OutboxRelay(
+            session_factory=app.state.db_session_factory,
+            tigerbeetle=None,  # TigerBeetle injectowany przez API gdy dostępny
+            max_retries=3,
+            base_delay_seconds=1.0,
+        )
+        app.state.outbox_relay = relay
+        logger.info("[OUTBOX-RELAY] Relay initialized")
+    except Exception as exc:
+        logger.warning("[OUTBOX-RELAY] Failed to initialize: %s", exc)
+        app.state.outbox_relay = None
+
+    # ── Hot-Reload Listener: NATS subskrypcja dla billing.rules.updated / risk.thresholds.updated ──
+    try:
+        listener = HotReloadListener(nats_url=config.nats_url)
+        await listener.start()
+        app.state.hot_reload_listener = listener
+        logger.info("[HOT-RELOAD] Listener started (nats_url=%s)", config.nats_url)
+    except Exception as exc:
+        logger.warning("[HOT-RELOAD] Failed to start listener: %s", exc)
+        app.state.hot_reload_listener = None
+
     logger.info(">>> Nexus API: Wszystkie systemy gotowe.")
 
 async def on_shutdown(app: Litestar) -> None:
@@ -645,7 +672,16 @@ async def on_shutdown(app: Litestar) -> None:
         except Exception:
             pass
 
-    # 2. Zamykamy wszystkie aktywne sesje i zwalniamy połączenia
+    # 2. Zamknij Hot-Reload Listener
+    try:
+        listener = getattr(app.state, "hot_reload_listener", None)
+        if listener is not None:
+            await listener.stop()
+            logger.info("[HOT-RELOAD] Listener stopped")
+    except Exception as exc:
+        logger.warning("[HOT-RELOAD] Error stopping listener: %s", exc)
+
+    # 3. Zamykamy wszystkie aktywne sesje i zwalniamy połączenia
     # Session factory zostanie zamknięta przez dispose() engine'u.
     # Wszystkie sesje pozyskane przez provide_db_session są zarządzane
     # przez async with session.begin() i powinny być już zamknięte.

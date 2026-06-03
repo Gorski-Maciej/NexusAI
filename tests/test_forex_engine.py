@@ -7,7 +7,8 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from unittest.mock import MagicMock
 
-from Roboton_Reflekton.forex_engine import ForexEngine, _LRUCache
+from cachetools import LRUCache
+from Roboton_Reflekton.forex_engine import ForexEngine
 from Roboton_Reflekton.ledger_client import TigerBeetleClient
 
 
@@ -49,7 +50,7 @@ class FakeDuckDB:
 def _reset_forex_caches() -> None:
     """Clear class-level caches that leak between tests."""
     ForexEngine._missing_cache.clear()
-    ForexEngine._rate_cache = _LRUCache(maxsize=1000)
+    ForexEngine._rate_cache = LRUCache(maxsize=1000)
 
 
 def test_fetch_nbp_rate_uses_lookback_and_cache(monkeypatch):

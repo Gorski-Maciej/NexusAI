@@ -1,5 +1,5 @@
 """
-Tests for Fowler's Money pattern and Currency Converter.
+Tests for Fowler's Money pattern (py-moneyed) and Currency Converter.
 
 Covers:
   - Money arithmetic (add, sub, mul, div)
@@ -29,75 +29,92 @@ from services.currency_converter import (
 
 class TestMoneyArithmetic:
     def test_add_same_currency(self) -> None:
-        a = Money(Decimal("100.00"), "PLN")
-        b = Money(Decimal("50.00"), "PLN")
+        a = Money("100.00", "PLN")
+        b = Money("50.00", "PLN")
         result = a + b
         assert result.amount == Decimal("150.00")
-        assert result.currency == "PLN"
+        assert result.currency_code == "PLN"
 
     def test_add_different_currency_raises(self) -> None:
-        a = Money(Decimal("100.00"), "PLN")
-        b = Money(Decimal("50.00"), "EUR")
-        with pytest.raises(CurrencyMismatchError, match="Currency mismatch"):
+        a = Money("100.00", "PLN")
+        b = Money("50.00", "EUR")
+        with pytest.raises(TypeError, match="different currenc"):
             _ = a + b
 
     def test_sub_same_currency(self) -> None:
-        a = Money(Decimal("100.00"), "PLN")
-        b = Money(Decimal("30.00"), "PLN")
+        a = Money("100.00", "PLN")
+        b = Money("30.00", "PLN")
         result = a - b
         assert result.amount == Decimal("70.00")
 
     def test_sub_different_currency_raises(self) -> None:
-        a = Money(Decimal("100.00"), "PLN")
-        b = Money(Decimal("30.00"), "USD")
-        with pytest.raises(CurrencyMismatchError):
+        a = Money("100.00", "PLN")
+        b = Money("30.00", "USD")
+        with pytest.raises(TypeError, match="different currenc"):
             _ = a - b
 
     def test_mul_by_decimal(self) -> None:
-        net = Money(Decimal("100.00"), "PLN")
+        net = Money("100.00", "PLN")
         vat = net * Decimal("0.23")
         assert vat.amount == Decimal("23.00")
-        assert vat.currency == "PLN"
+        assert vat.currency_code == "PLN"
 
     def test_mul_by_int(self) -> None:
-        m = Money(Decimal("10.00"), "PLN")
+        m = Money("10.00", "PLN")
         result = m * 3
         assert result.amount == Decimal("30.00")
 
     def test_rmul(self) -> None:
-        m = Decimal("0.23") * Money(Decimal("100.00"), "PLN")
+        m = Decimal("0.23") * Money("100.00", "PLN")
         assert m.amount == Decimal("23.00")
 
     def test_truediv(self) -> None:
-        m = Money(Decimal("100.00"), "PLN") / Decimal("4")
+        m = Money("100.00", "PLN") / Decimal("4")
         assert m.amount == Decimal("25.00")
-        assert m.currency == "PLN"
+        assert m.currency_code == "PLN"
 
     def test_neg(self) -> None:
-        m = -Money(Decimal("50.00"), "PLN")
+        m = -Money("50.00", "PLN")
         assert m.amount == Decimal("-50.00")
 
     def test_eq(self) -> None:
-        assert Money(Decimal("10.00"), "PLN") == Money(Decimal("10.00"), "PLN")
-        assert Money(Decimal("10.00"), "PLN") != Money(Decimal("10.00"), "EUR")
-        assert Money(Decimal("10.00"), "PLN") != Money(Decimal("20.00"), "PLN")
+        assert Money("10.00", "PLN") == Money("10.00", "PLN")
+        assert Money("10.00", "PLN") != Money("10.00", "EUR")
+        assert Money("10.00", "PLN") != Money("20.00", "PLN")
 
     def test_zero(self) -> None:
         z = Money.zero("PLN")
         assert z.amount == Decimal("0.00")
-        assert z.currency == "PLN"
-        assert z + Money(Decimal("5.00"), "PLN") == Money(Decimal("5.00"), "PLN")
+        assert z.currency_code == "PLN"
+        assert z + Money("5.00", "PLN") == Money("5.00", "PLN")
 
     def test_to_dict(self) -> None:
-        m = Money(Decimal("123.45"), "EUR")
+        m = Money("123.45", "EUR")
         d = m.to_dict()
         assert d["amount"] == "123.45"
         assert d["currency"] == "EUR"
 
+    def test_currency_code_property(self) -> None:
+        """currency_code returns the currency as a string."""
+        m = Money("10.00", "PLN")
+        assert m.currency_code == "PLN"
+        assert isinstance(m.currency_code, str)
+
     def test_repr(self) -> None:
-        m = Money(Decimal("10.00"), "PLN")
+        m = Money("10.00", "PLN")
         assert "PLN" in repr(m)
         assert "10.00" in repr(m)
+
+    def test_from_decimal(self) -> None:
+        """Backward compatibility: creating Money from Decimal."""
+        m = Money(Decimal("99.99"), "USD")
+        assert m.amount == Decimal("99.99")
+        assert m.currency_code == "USD"
+
+    def test_from_float(self) -> None:
+        """Backward compatibility: creating Money from float/str."""
+        m = Money("99.99", "EUR")
+        assert m.amount == Decimal("99.99")
 
 
 # ── Currency Converter ──────────────────────────────────────────────────────
@@ -118,10 +135,8 @@ def converter(conn: duckdb.DuckDBPyConnection) -> CurrencyConverter:
 class TestCurrencyConverter:
     def test_convert_same_currency_noop(self, converter: CurrencyConverter) -> None:
         """Converting PLN to PLN returns same amount."""
-        result = converter.convert(Money(Decimal("100.00"), "PLN"), "PLN")
-        assert result == Money(Decimal("100.00"), "PLN")
-
-
+        result = converter.convert(Money("100.00", "PLN"), "PLN")
+        assert result == Money("100.00", "PLN")
 
     def test_convert_uses_cache(self, conn: duckdb.DuckDBPyConnection, converter: CurrencyConverter) -> None:
         """After fetching, rate is cached in DuckDB."""
@@ -134,21 +149,22 @@ class TestCurrencyConverter:
         )
 
         result = converter.convert(
-            Money(Decimal("100.00"), "EUR"),
+            Money("100.00", "EUR"),
             "PLN",
             rate_date=date(2025, 6, 1),
         )
         assert result.amount == Decimal("450.00")
-        assert result.currency == "PLN"
+        assert result.currency_code == "PLN"
 
     def test_convert_unknown_currency_raises(self, converter: CurrencyConverter) -> None:
         """Unknown currency raises CurrencyRateNotFoundError."""
         from datetime import date
         from services.currency_converter import CurrencyRateNotFoundError
 
+        # AED exists in py-moneyed but is NOT in KNOWN_CURRENCIES set
         with pytest.raises(CurrencyRateNotFoundError):
             converter.convert(
-                Money(Decimal("100.00"), "XYZ"),
+                Money("100.00", "AED"),
                 "PLN",
                 rate_date=date(2025, 1, 1),
             )
@@ -156,17 +172,17 @@ class TestCurrencyConverter:
     def test_validate_invoice_currencies_same(self) -> None:
         """All same currency passes."""
         items = [
-            Money(Decimal("100.00"), "PLN"),
-            Money(Decimal("50.00"), "PLN"),
-            Money(Decimal("25.00"), "PLN"),
+            Money("100.00", "PLN"),
+            Money("50.00", "PLN"),
+            Money("25.00", "PLN"),
         ]
         CurrencyConverter.validate_invoice_currencies(items)  # should not raise
 
     def test_validate_invoice_currencies_mixed(self) -> None:
         """Mixed currencies raise."""
         items = [
-            Money(Decimal("100.00"), "PLN"),
-            Money(Decimal("50.00"), "EUR"),
+            Money("100.00", "PLN"),
+            Money("50.00", "EUR"),
         ]
         with pytest.raises(CurrencyMismatchError, match="Currency mismatch"):
             CurrencyConverter.validate_invoice_currencies(items)
@@ -179,8 +195,8 @@ class TestCurrencyConverter:
         """Conversion trail has all required fields."""
         from datetime import date
 
-        original = Money(Decimal("100.00"), "EUR")
-        converted = Money(Decimal("450.00"), "PLN")
+        original = Money("100.00", "EUR")
+        converted = Money("450.00", "PLN")
         trail = converter.build_conversion_trail(
             original, converted, Decimal("4.50"), date(2025, 6, 1),
         )
