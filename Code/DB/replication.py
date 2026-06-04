@@ -1,4 +1,4 @@
-import pandas as pd
+import polars as pl
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from loguru import logger
@@ -27,7 +27,7 @@ async def sync_sqlite_to_duckdb(db_session: AsyncSession, config: AppConfig):
     if not invoices:
         return {"status": "up-to-date", "count": 0}
 
-    # 3. Masowy Upsert do DuckDB (przez DataFrame)
+    # 3. Masowy Upsert do DuckDB (przez Polars DataFrame)
     data = [{
         "id": str(inv.id),
         "number": inv.number,
@@ -39,7 +39,7 @@ async def sync_sqlite_to_duckdb(db_session: AsyncSession, config: AppConfig):
         "updated_at": inv.updated_at
     } for inv in invoices]
 
-    df = pd.DataFrame(data)
+    df = pl.from_dicts(data)
 
     # Atomowe wstawienie do DuckDB
     duck_mgr.execute("INSERT INTO invoices_replica SELECT * FROM df ON CONFLICT (id) DO UPDATE SET ALL")
@@ -56,7 +56,7 @@ async def sync_single_invoice_to_duckdb(db_session: AsyncSession, config: AppCon
     if not invoice:
         return {"status": "not-found", "invoice_id": invoice_id}
 
-    df = pd.DataFrame([
+    df = pl.from_dicts([
         {
             "id": str(invoice.id),
             "number": invoice.number,

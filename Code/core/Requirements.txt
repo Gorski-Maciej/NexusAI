@@ -1,3 +1,11 @@
+# ── Core module requirements ────────────────────────────────────────────────
+# Instalacja: uv pip install -r Code/CORE/Requirements.txt   (zalecane — ~10x szybciej)
+# lub:        pip install -r Code/CORE/Requirements.txt
+
+# ── Core module requirements ────────────────────────────────────────────────
+# Instalacja: uv pip install -r Code/core/Requirements.txt   (zalecane — ~10x szybciej)
+# lub:        pip install -r Code/core/Requirements.txt
+
 cryptography>=42.0.0
 httpx>=0.27.0
 lxml>=5.1.0

@@ -42,9 +42,9 @@ except ImportError:
     lancedb = None  # type: ignore[assignment]
 
 try:
-    import pyarrow as pa
+    import polars as pl
 except ImportError:
-    pa = None  # type: ignore[assignment]
+    pl = None  # type: ignore[assignment]
 
 try:
     from sentence_transformers import SentenceTransformer
@@ -291,20 +291,22 @@ class ActiveLearningEngine:
 
     def _ensure_corrections_table(self) -> None:
         """Create ocr_corrections table if not exists."""
-        if pa is None:
-            raise RuntimeError("pyarrow is not installed. Run: pip install pyarrow")
+        if pl is None:
+            raise RuntimeError("polars is not installed. Run: pip install polars")
 
         db = self._init_lancedb()
         if CORRECTIONS_TABLE not in db.table_names():
-            schema = pa.schema([
-                pa.field("vector", pa.list_(pa.float16(), self._embedding_dim)),
-                pa.field("contractor_nip", pa.string()),
-                pa.field("correction_payload", pa.string()),
-                pa.field("context_hash", pa.string()),
-                pa.field("tenant_id", pa.string()),
-                pa.field("created_at", pa.timestamp("us", tz="UTC")),
-            ])
-            db.create_table(CORRECTIONS_TABLE, schema=schema)
+            _dtypes = {
+                "vector": pl.List(pl.Float32),
+                "contractor_nip": pl.Utf8,
+                "correction_payload": pl.Utf8,
+                "context_hash": pl.Utf8,
+                "tenant_id": pl.Utf8,
+                "created_at": pl.Datetime(time_unit="us", time_zone="UTC"),
+            }
+            _empty = pl.DataFrame({}, schema=_dtypes)
+            _arrow_schema = _empty.to_arrow().schema
+            db.create_table(CORRECTIONS_TABLE, schema=_arrow_schema)
             logger.info(
                 "[ACTIVE-LEARNING] Created %s table (dim=%d)",
                 CORRECTIONS_TABLE, self._embedding_dim,
@@ -312,21 +314,23 @@ class ActiveLearningEngine:
 
     def _ensure_invoices_table(self) -> None:
         """Create vendor_invoices table if not exists (for anomaly detection)."""
-        if pa is None:
-            raise RuntimeError("pyarrow is not installed")
+        if pl is None:
+            raise RuntimeError("polars is not installed")
 
         db = self._init_lancedb()
         if INVOICES_TABLE not in db.table_names():
-            schema = pa.schema([
-                pa.field("vendor_nip", pa.string()),
-                pa.field("embedding", pa.list_(pa.float32(), self._embedding_dim)),
-                pa.field("category_code", pa.string()),
-                pa.field("amount_net", pa.float64()),
-                pa.field("invoice_text", pa.string()),
-                pa.field("transaction_id", pa.string()),
-                pa.field("timestamp", pa.timestamp("us", tz="UTC")),
-            ])
-            db.create_table(INVOICES_TABLE, schema=schema)
+            _dtypes = {
+                "vendor_nip": pl.Utf8,
+                "embedding": pl.List(pl.Float32),
+                "category_code": pl.Utf8,
+                "amount_net": pl.Float64,
+                "invoice_text": pl.Utf8,
+                "transaction_id": pl.Utf8,
+                "timestamp": pl.Datetime(time_unit="us", time_zone="UTC"),
+            }
+            _empty = pl.DataFrame({}, schema=_dtypes)
+            _arrow_schema = _empty.to_arrow().schema
+            db.create_table(INVOICES_TABLE, schema=_arrow_schema)
             logger.info(
                 "[ACTIVE-LEARNING] Created %s table (dim=%d)",
                 INVOICES_TABLE, self._embedding_dim,

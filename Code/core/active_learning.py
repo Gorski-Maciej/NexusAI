@@ -9,7 +9,7 @@ from pathlib import Path
 
 from cachetools import TTLCache
 import lancedb
-import pyarrow as pa
+import polars as pl
 import numpy as np
 
 logger = logging.getLogger("nexus.core.active_learning")
@@ -20,8 +20,13 @@ except ImportError:
     SentenceTransformer = None  # type: ignore[assignment]
     logger.warning("[ACTIVE-LEARNING] sentence_transformers not available")
 
-
-# LRUCache replaced by cachetools.TTLCache (well-known library)
+# Stałe schematu LanceDB zdefiniowane przez Polars
+_CORRECTIONS_DTYPES = {
+    "vector": pl.List(pl.Float32),
+    "contractor_nip": pl.Utf8,
+    "correction_payload": pl.Utf8,
+    "context_hash": pl.Utf8,
+}
 
 
 class ActiveLearningEngine:
@@ -52,13 +57,10 @@ class ActiveLearningEngine:
         """Inicjalizuje bazę i tabelę, jeśli nie istnieją."""
         self.db = lancedb.connect(self.db_path, mode="file")
         if self.table_name not in self.db.table_names():
-            schema = pa.schema([
-                pa.field("vector", pa.list_(pa.float16(), 384)),  # float16 zamiast float32 (Rozwiązanie 19)
-                pa.field("contractor_nip", pa.string()),
-                pa.field("correction_payload", pa.string()),
-                pa.field("context_hash", pa.string())
-            ])
-            self.db.create_table(self.table_name, schema=schema)
+            # Definiujemy schemat przez Polars → konwersja do Arrow dla LanceDB
+            _empty = pl.DataFrame({}, schema=_CORRECTIONS_DTYPES)
+            _arrow_schema = _empty.to_arrow().schema
+            self.db.create_table(self.table_name, schema=_arrow_schema)
         self.table = self.db.open_table(self.table_name, index_cache_size=100 * 1024 * 1024)
 
     def _generate_embedding(self, raw_text: str) -> list[float]:

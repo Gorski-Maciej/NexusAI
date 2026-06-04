@@ -77,23 +77,39 @@ if defined CLEAN_BUILD (
     echo.
 )
 
-REM ── Step 1: Install dependencies ──────────────────────────────────────────
+REM ── Step 1: Install dependencies (prefer uv, fallback to pip) ──────────
 if not defined SKIP_INSTALL (
     echo [1/5] Installing Python dependencies...
     cd /d "%PROJECT_ROOT%"
 
-    python -m pip install --upgrade pip >nul 2>&1
-    python -m pip install pyinstaller >nul 2>&1
-    if errorlevel 1 (
-        echo   [WARN] pip install failed, trying --user...
-        python -m pip install --user pyinstaller
-    )
-
-    python -m pip install -e ".[ai,ui]" >nul 2>&1
-    if errorlevel 1 (
-        echo   [WARN] Some optional deps failed (torch/transformers may be large)
-        echo   Installing core deps only...
-        python -m pip install -e "." >nul 2>&1
+    where /q uv 2>nul
+    if not errorlevel 1 (
+        echo   Using uv (Astral) — 10-100x faster than pip...
+        uv pip install --system pyinstaller
+        if errorlevel 1 (
+            echo   [WARN] uv pip install failed, trying uv tool install...
+            uv tool install pyinstaller
+        )
+        uv pip install --system -e ".[ai,ui]"
+        if errorlevel 1 (
+            echo   [WARN] Some optional deps failed, installing core only...
+            uv pip install --system -e "."
+        )
+    ) else (
+        echo   uv not found, falling back to pip...
+        echo   ★ Install uv for faster builds: curl -LsSf https://astral.sh/uv/install.sh ^| sh
+        python -m pip install --upgrade pip >nul 2>&1
+        python -m pip install pyinstaller >nul 2>&1
+        if errorlevel 1 (
+            echo   [WARN] pip install failed, trying --user...
+            python -m pip install --user pyinstaller
+        )
+        python -m pip install -e ".[ai,ui]" >nul 2>&1
+        if errorlevel 1 (
+            echo   [WARN] Some optional deps failed (torch/transformers may be large)
+            echo   Installing core deps only...
+            python -m pip install -e "." >nul 2>&1
+        )
     )
 
     echo   Done.

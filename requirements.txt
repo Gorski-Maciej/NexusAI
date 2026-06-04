@@ -1,6 +1,13 @@
 # ── Self-contained requirements file ───────────────────────────────────────
-# Preferred installation method: pip install -e .  (uses pyproject.toml)
+# Preferred installation method: uv sync  OR  uv pip install -e .  (uses pyproject.toml)
+# uv (Astral) is the recommended package manager — ~10-100x faster than pip.
+# Install uv: curl -LsSf https://astral.sh/uv/install.sh | sh
 # This file lists all runtime dependencies for manual / CI installs.
+#
+# Quick start:
+#   uv sync              # Install all deps + create .venv
+#   uv pip install -e .  # Editable install (classic style)
+#   uv run python ...    # Run in .venv
 
 # ── ASGI / API ──────────────────────────────────────────────────────────────
 litestar>=2.8.0
@@ -11,8 +18,9 @@ sqlalchemy>=2.0.0
 aiosqlite>=0.20.0
 alembic>=1.13.0
 duckdb>=1.0.0
-pyarrow>=15.0.0
+pyarrow>=15.0.0  # Zależność DuckDB/LanceDB (nie bezpośrednie użycie)
 lancedb>=0.8.0
+polars>=1.0.0              # DataFrame — zastępuje pandas i bezpośrednie PyArrow
 
 # ── Data validation & serialization ──────────────────────────────────────────
 pydantic>=2.7.0

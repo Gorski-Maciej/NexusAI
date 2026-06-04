@@ -2,6 +2,25 @@
 requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+# ── uv (Astral) — ultra-fast Python package manager ──────────────────────────
+# Install:  pip install uv   or   curl -LsSf https://astral.sh/uv/install.sh | sh
+# Usage:
+#   uv sync              # Install deps + create .venv (uv.lock auto-generated)
+#   uv pip install ...   # Drop-in pip replacement
+#   uv run <script>      # Run in venv
+#   uv build             # Build package
+#   uv tool install ...  # pipx replacement
+#
+# uv is ~10-100x faster than pip and reduces disk/RAM usage significantly.
+[tool.uv]
+# Use the same Python version constraint as the project
+required-version = ">=0.5.0"
+
+# Package index configuration
+[[tool.uv.index]]
+url = "https://pypi.org/simple/"
+default = true
+
 [project]
 name = "nexus-ai"
 version = "0.1.0"
@@ -86,10 +105,13 @@ dependencies = [
 
     # Analytics / OLAP
     "duckdb>=1.0.0",
-    "pyarrow>=15.0.0",
+    "pyarrow>=15.0.0",  # Zależność DuckDB/LanceDB (nie bezpośrednie użycie)
 
     # Vector / ANN search
     "lancedb>=0.8.0",
+
+    # DataFrame (zastępuje pandas i bezpośrednie PyArrow)
+    "polars>=1.0.0",
 
     # Money / currency
     "py-moneyed>=3.0",

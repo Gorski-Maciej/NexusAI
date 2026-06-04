@@ -41,9 +41,33 @@ def _check_dependencies() -> list[str]:
     return missing
 
 
+def _find_uv() -> str | None:
+    """Return path to uv if available, else None."""
+    for candidate in ("uv", "uv.exe"):
+        try:
+            result = subprocess.run(
+                [candidate, "--version"],
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+            if result.returncode == 0:
+                return candidate
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            continue
+    return None
+
+
 def _install_dependencies(requirements_file: str = "requirements.txt") -> int:
+    uv_path = _find_uv()
+    if uv_path:
+        command = [uv_path, "pip", "install", "-r", requirements_file]
+        print("Instalowanie zależności (uv — 10-100x szybciej niż pip):", " ".join(command))
+        return subprocess.call(command)
+    # Fallback to pip if uv not available
     command = [sys.executable, "-m", "pip", "install", "-r", requirements_file]
-    print("Instalowanie zależności:", " ".join(command))
+    print("Instalowanie zależności (pip):", " ".join(command))
+    print("  ★ Zalecenie: zainstaluj uv (curl -LsSf https://astral.sh/uv/install.sh | sh) dla ~10x szybszej instalacji.")
     return subprocess.call(command)
 
 
@@ -76,8 +100,9 @@ def main(argv: list[str] | None = None) -> int:
         if not args.bootstrap:
             package_list = " ".join(PACKAGE_TO_PIP_NAME[pkg] for pkg in missing if pkg in PACKAGE_TO_PIP_NAME)
             print("Uruchom jedną z komend:")
-            print("  1) pip install -r requirements.txt")
-            print(f"  2) pip install {package_list}")
+            print("  1) uv pip install -r requirements.txt   (zalecane — ~10x szybciej)")
+            print("  2) pip install -r requirements.txt")
+            print(f"  3) pip install {package_list}")
             print("Albo użyj: python run_local.py --bootstrap")
             return 1
 

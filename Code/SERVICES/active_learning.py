@@ -64,21 +64,23 @@ class ActiveLearningService:
             return
         if INVOICE_TEMPLATES_TABLE not in self._db.table_names():
             try:
-                import pyarrow as pa
-                schema = pa.schema([
-                    pa.field("vector", pa.list_(pa.float32(), self._embedding_dim)),
-                    pa.field("contractor_nip", pa.string()),
-                    pa.field("layout_features", pa.string()),
-                    pa.field("template_id", pa.string()),
-                    pa.field("created_at", pa.timestamp("us", tz="UTC")),
-                ])
-                self._db.create_table(INVOICE_TEMPLATES_TABLE, schema=schema)
+                import polars as pl
+                _dtypes = {
+                    "vector": pl.List(pl.Float32),
+                    "contractor_nip": pl.Utf8,
+                    "layout_features": pl.Utf8,
+                    "template_id": pl.Utf8,
+                    "created_at": pl.Datetime(time_unit="us", time_zone="UTC"),
+                }
+                _empty = pl.DataFrame({}, schema=_dtypes)
+                _arrow_schema = _empty.to_arrow().schema
+                self._db.create_table(INVOICE_TEMPLATES_TABLE, schema=_arrow_schema)
                 logger.info(
                     "[ACTIVE-LEARNING] Created %s table (dim=%d)",
                     INVOICE_TEMPLATES_TABLE, self._embedding_dim,
                 )
             except ImportError:
-                logger.warning("[ACTIVE-LEARNING] pyarrow not installed — cannot create table schema")
+                logger.warning("[ACTIVE-LEARNING] polars not installed — cannot create table schema")
 
     def get_embedding(self, text: str) -> list[float]:
         """Generate embedding vector from OCR text using sentence-transformers.

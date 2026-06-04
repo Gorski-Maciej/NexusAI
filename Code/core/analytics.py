@@ -1,8 +1,8 @@
 # core/analytics.py
 import duckdb
-import pandas as pd
+import polars as pl
 
-def get_cashflow_forecast(db_path: str = "data/nexus_analytics.duckdb") -> pd.DataFrame:
+def get_cashflow_forecast(db_path: str = "data/nexus_analytics.duckdb") -> pl.DataFrame:
     conn = duckdb.connect(db_path)
     # Zapytanie: sumujemy przychody i koszty po dacie płatności (due_date) i obliczamy skumulowane saldo (CASHFLOW)
     query = """
@@ -24,6 +24,6 @@ def get_cashflow_forecast(db_path: str = "data/nexus_analytics.duckdb") -> pd.Da
     FROM DailyFlows
     ORDER BY due_date;
     """
-    df = conn.execute(query).df()
+    df = conn.execute(query).pl()  # DuckDB natywnie zwraca Polars DataFrame
     conn.close()
     return df

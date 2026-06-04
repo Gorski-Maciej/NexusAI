@@ -106,22 +106,25 @@ def pin_worker_cpu_affinity(reserve_core0: bool = True) -> None:
     process.cpu_affinity(target)
 
 def _get_lancedb_table() -> Any:
-    """Open or create vector table in LanceDB backed by Arrow schema."""
+    """Open or create vector table in LanceDB backed by Polars schema."""
     import lancedb
-    import pyarrow as pa
+    import polars as pl
     db = lancedb.connect("nexus_lancedb", mode="file")
-    schema = pa.schema([
-        pa.field("id", pa.string()),
-        pa.field("invoice_id", pa.string()),
-        pa.field("contractor_id", pa.string()),
-        pa.field("vector", pa.list_(pa.float32(), 4)),
-        pa.field("checksum", pa.string()),
-        pa.field("created_at", pa.timestamp("us", tz="UTC")),
-        pa.field("is_preferred", pa.bool_()),
-    ])
+    _dtypes = {
+        "id": pl.Utf8,
+        "invoice_id": pl.Utf8,
+        "contractor_id": pl.Utf8,
+        "vector": pl.List(pl.Float32),
+        "checksum": pl.Utf8,
+        "created_at": pl.Datetime(time_unit="us", time_zone="UTC"),
+        "is_preferred": pl.Boolean,
+    }
+    # Generate Arrow schema from Polars for LanceDB
+    _empty = pl.DataFrame({}, schema=_dtypes)
+    _arrow_schema = _empty.to_arrow().schema
     if "invoice_vectors" in db.table_names():
         return db.open_table("invoice_vectors", index_cache_size=100 * 1024 * 1024)
-    return db.create_table("invoice_vectors", schema=schema)
+    return db.create_table("invoice_vectors", schema=_arrow_schema)
 
 def _simple_features(raw_text: str) -> list[float]:
     """Small dense vector placeholder; replace with embedding model output."""

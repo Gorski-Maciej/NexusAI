@@ -5,6 +5,35 @@
 
 ---
 
+## ▶️ Szybki start z uv
+
+```bash
+# Instalacja uv (jeśli nie jest zainstalowane)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Instalacja wszystkich zależności
+uv sync
+
+# Uruchomienie API
+uv run nexus-api
+
+# Uruchomienie workera
+uv run nexus-worker
+
+# Uruchomienie desktop UI
+uv run nexus-desktop
+
+# Dodanie nowej zależności
+uv add requests
+
+# Uruchomienie testów
+uv run pytest tests/
+```
+
+---
+
+---
+
 ## Spis treści
 
 1. [Diagram zależności (Mermaid)](#-diagram-zależności-mermaid)
@@ -401,7 +430,8 @@ flowchart TB
 | Technologia | Wersja | Lokalizacja | Opis |
 |---|---|---|---|
 | **Python** | ≥3.11 | `pyproject.toml` — `requires-python` | Język programowania całego projektu |
-| **setuptools** | ≥68.0 | `pyproject.toml` — `build-system.requires` | System budowania pakietu (`pip install -e .`) |
+| **uv (Astral)** | ≥0.5 | `pyproject.toml` — `[tool.uv]`, `Dockerfile` | **Ultra-szybki menedżer pakietów** (Rust) — zastępuje pip/venv/pipx. ~10-100x szybszy od pip, jeden statyczny binary (~20MB), inteligentny cache. |
+| **setuptools** | ≥68.0 | `pyproject.toml` — `build-system.requires` | System budowania pakietu (współpracuje z uv) |
 
 ---
 
@@ -421,7 +451,8 @@ flowchart TB
 | **SQLAlchemy** | `requirements.txt`, `pyproject.toml` | `Code/DB/database.py`, `Code/DB/models.py` | ORM — warstwa dostępu do bazy SQLite (OLTP). Modele dla faktur, użytkowników, outboxa |
 | **aiosqlite** | `requirements.txt`, `pyproject.toml` | `Code/DB/database.py` | Async driver SQLite — asynchroniczne połączenia z SQLite dla SQLAlchemy |
 | **DuckDB** | `requirements.txt`, `pyproject.toml` | `Code/DB/analytics.py`, `Code/tax/rules.py`, `Code/services/rule_store.py` | OLAP database — analityka, reguły podatkowe (Zen-Engine), widoki materializowane |
-| **PyArrow** | `requirements.txt`, `pyproject.toml` | (importowany przez DuckDB/LanceDB) | Kolumnowy format danych — używany przez DuckDB i LanceDB do wydajnych operacji |
+| **Polars** | `requirements.txt`, `pyproject.toml` | `Code/DB/vector_store.py`, `Code/core/analytics.py`, `Code/DB/replication.py` | **Ultra-szybka biblioteka DataFrame (Rust)** — zastępuje pandas i bezpośrednie użycie PyArrow. 3-15x szybsza, Lazy API, kolumnowa, mniej RAMu. |
+| **PyArrow** | `requirements.txt`, `pyproject.toml` | (zależność DuckDB/LanceDB) | Kolumnowy format danych — używany przez DuckDB i LanceDB wewnętrznie (nie bezpośrednio w kodzie) |
 | **LanceDB** | `requirements.txt`, `pyproject.toml` | `Code/DB/vector_store.py` | Vector database — przechowywanie embeddingów i wektorowe wyszukiwanie podobieństw |
 | **SQLCipher** | (via `cryptography`) | `Code/CORE/crypto.py`, env `NEXUS_SQLCIPHER_KEY` | Szyfrowanie bazy SQLite — transparentne szyfrowanie pliku `.db` na dysku |
 | **Alembic** | `requirements.txt`, `pyproject.toml` | `migrations/versions/0001_initial_schema.py`, `alembic.ini` | Migracje schematu bazy danych — zarządzanie wersjami schematu SQLAlchemy |
@@ -667,6 +698,7 @@ flowchart TB
 | **Dependency Downloader** | `Code/installer/dependency_downloader.py` | Python — pobieranie zależności dla instalatora |
 | **Nexus CLI** | `pyproject.toml` — `[project.scripts]` | 4 komendy CLI: `nexus-api`, `nexus-worker`, `nexus-desktop`, `nexus` |
 | **main.py** | `main.py` (root) | Centralny entrypoint — uruchamianie API/worker/doctor/all |
+| **uv (Astral)** | `pyproject.toml` — `[tool.uv]` | Ultra-szybki menedżer pakietów (Rust) — ~10-100x szybszy od pip, używany w Dockerfile i CI/CD |
 
 ---
 
@@ -702,9 +734,9 @@ flowchart TB
 
 | Kategoria | Liczba technologii |
 |---|---|
-| Język i Środowisko | 2 |
+| Język i Środowisko | 3 |
 | API / Serwer ASGI | 2 |
-| Bazy Danych | 7 |
+| Bazy Danych | 8 |
 | Walidacja / Serializacja | 3 |
 | Kolejki / Komunikacja | 4 |
 | HTTP / Sieć | 2 |
@@ -724,10 +756,10 @@ flowchart TB
 | Agenty AI | 8 |
 | Silnik reguł podatkowych | 10 |
 | System księgowy | 7 |
-| Inne narzędzia | 7 |
+| Inne narzędzia | 8 |
 | Jakość kodu | 3 |
 | Pliki konfiguracyjne | 11 |
-| **Razem** | **~120+** |
+| **Razem** | **~121+** |
 
 ---
 

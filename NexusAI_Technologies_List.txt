@@ -1,0 +1,283 @@
+================================================================================
+                    NEXUSAI — PE£NA LISTA TECHNOLOGII
+                            czerwiec 2026
+================================================================================
+
+SPIS TRECI:
+  1. Jezyk i Srodowisko
+  2. API / Serwer ASGI
+  3. Bazy Danych
+  4. Walidacja Danych i Serializacja
+  5. Kolejki Zadan i Komunikacja
+  6. HTTP / Siec
+  7. Odpornosc na Bledy
+  8. Kryptografia i Bezpieczenstwo
+  9. Finanse / Waluty
+ 10. Przetwarzanie Dokumentow (XML/OCR)
+ 11. Logowanie
+ 12. Metryki i Monitoring
+ 13. Cache
+ 14. Narzedzia
+ 15. Testowanie
+ 16. Interfejs Desktopowy
+ 17. AI / Machine Learning
+     - Modele GGUF (6 sztuk)
+ 18. Infrastruktura / DevOps
+ 19. Serwisy Zewnetrzne (API)
+ 20. Agenty AI (Council of LLMs)
+ 21. Silnik Regul Podatkowych (Tax Engine)
+ 22. System Ksiegowy (Roboton_Reflekton)
+ 23. Narzedzia i Skrypty
+ 24. Jakosc Kodu
+ 25. Pliki Konfiguracyjne
+
+================================================================================
+1. JEZYK I SRODOWISKO
+================================================================================
+- Python >=3.11              - jezyk programowania
+- uv (Astral) >=0.5          - ultra-szybki menedzer pakietow (Rust)
+- setuptools >=68.0          - system budowania pakietu
+
+================================================================================
+2. API / SERWER ASGI
+================================================================================
+- Litestar >=2.8.0           - framework ASGI (routing, middleware, DI, OpenAPI)
+- Uvicorn >=0.30.0           - serwer ASGI
+- anyio >=4.4.0              - async I/O backend
+
+================================================================================
+3. BAZY DANYCH
+================================================================================
+- SQLAlchemy >=2.0           - ORM dla SQLite
+- aiosqlite >=0.20           - async driver SQLite
+- SQLite                     - baza OLTP (faktury, uzytkownicy, outbox)
+- DuckDB >=1.0               - baza OLAP (analityka, reguly podatkowe)
+- PyArrow >=15.0             - kolumnowy format (zal. DuckDB/LanceDB)
+- LanceDB >=0.8              - vector database (embeddingi)
+- Polars >=1.0               - DataFrame (Rust, zastepuje pandas)
+- Alembic >=1.13             - migracje schematu bazy
+- SQLCipher                  - szyfrowanie SQLite (via cryptography)
+
+================================================================================
+4. WALIDACJA DANYCH I SERIALIZACJA
+================================================================================
+- Pydantic >=2.7             - walidacja danych API
+- pydantic-settings >=2.14   - ladowanie konfiguracji z .env
+- msgspec >=0.18             - szybka serializacja binarna
+
+================================================================================
+5. KOLEJKI ZADAN I KOMUNIKACJA
+================================================================================
+- NATS (nats-py) >=2.6       - message broker
+- NATS JetStream             - durable streaming, outbox pattern
+- Taskiq >=0.11              - async task queue
+- taskiq-nats >=0.5          - broker Taskiq dla NATS
+
+================================================================================
+6. HTTP / SIEC
+================================================================================
+- httpx >=0.27               - async HTTP client
+- fsspec >=2024.3            - abstrakcja systemu plikow
+
+================================================================================
+7. ODPORNOSC NA BLEDY
+================================================================================
+- Tenacity >=9.0             - retry logic
+- PyBreaker >=1.4            - circuit breaker
+
+================================================================================
+8. KRYPTOGRAFIA I BEZPIECZENSTWO
+================================================================================
+- cryptography >=42.0        - Fernet AES-128-CBC+HMAC, PBKDF2
+- JWT (Litestar JWT)         - tokeny autoryzacyjne
+- CSRF                       - ochrona przed atakami cross-site
+- Rate Limiting              - limitowanie zadan
+- CORS                       - Cross-Origin Resource Sharing
+
+================================================================================
+9. FINANSE / WALUTY
+================================================================================
+- py-moneyed >=3.0           - Fowler's Money pattern
+- TigerBeetle                - ledger double-entry
+
+================================================================================
+10. PRZETWARZANIE DOKUMENTOW (XML/OCR)
+================================================================================
+- lxml >=5.1                 - parser XML (KSeF)
+- xsdata >=24.0              - XML data binding z XSD
+- Tesseract OCR              - OCR (systemowy, jezyk polski)
+- Pillow >=10.0              - image processing
+- PyMuPDF (fitz)             - PDF processing (opcjonalne AI)
+- OpenCV                     - computer vision (opcjonalne AI)
+- Surya OCR                  - OCR deep learning (opcjonalne AI)
+- PaddleOCR                  - OCR deep learning (opcjonalne AI)
+- ONNX Runtime               - ML inference (opcjonalne AI)
+
+================================================================================
+11. LOGOWANIE
+================================================================================
+- Loguru >=0.7               - zaawansowane logowanie
+- OpenTelemetry              - distributed tracing
+
+================================================================================
+12. METRYKI I MONITORING
+================================================================================
+- Prometheus Client >=0.20   - metryki API
+- Sentry                     - error tracking (opcjonalne)
+
+================================================================================
+13. CACHE
+================================================================================
+- cachetools >=7.0           - in-memory caching (TTLCache)
+
+================================================================================
+14. NARZEDZIA
+================================================================================
+- psutil >=5.9               - monitorowanie CPU, RAM, dysku
+- PyYAML >=6.0               - parser YAML
+- dateparser >=1.2           - parsowanie dat
+- numpy                      - obliczenia numeryczne
+
+================================================================================
+15. TESTOWANIE
+================================================================================
+- pytest >=8.0               - framework testowy
+- pytest-asyncio             - async test support
+- pytest-cov >=5.0           - code coverage (opcjonalne dev)
+- Hypothesis >=6.100         - property-based testing (opcjonalne dev)
+- k6                         - performance testing
+
+================================================================================
+16. INTERFEJS DESKTOPOWY
+================================================================================
+- Flet >=0.28                - desktop UI (Python -> Flutter)
+- Flet Router                - routing UI
+
+================================================================================
+17. AI / MACHINE LEARNING
+================================================================================
+- llama-cpp-python >=0.2     - LLM inference CPU/GPU (GGUF)
+- Transformers (HuggingFace) - NLP pipeline (opcjonalne AI)
+- sentence-transformers >=2.5 - embeddingi zdan (opcjonalne AI)
+- huggingface-hub >=0.23     - pobieranie modeli (opcjonalne AI)
+- Torch (PyTorch) >=2.2      - deep learning framework (opcjonalne AI)
+
+--- Modele GGUF (6 sztuk, ~4.9 GB lacznie) ---
+- LFM 1.2B       (~780 MB)  - Alpha Agent: klasyfikacja faktur
+- Qwen3 0.6B     (~430 MB)  - Beta Agent: walidacja wtorna
+- LittleLamb 0.3B(~250 MB)  - Gamma/Orchestrator: tiebreaker
+- Granite 1B     (~680 MB)  - Rules Agent: reguly biznesowe
+- Qwen2.5 1.5B   (~980 MB)  - Analytics Agent: det. anomalii
+- Jamba 3B       (~1.8 GB)  - Decision Agent: zlozone decyzje
+
+================================================================================
+18. INFRASTRUKTURA / DEVOPS
+================================================================================
+- Docker                         - konteneryzacja
+- Docker Compose                 - orkiestracja serwisow
+- NATS Server (nats:2.10-alpine) - message broker
+- TigerBeetle Server             - ledger server
+- Inno Setup                     - Windows installer
+- NSIS                           - alternatywny Windows installer
+- Prometheus + Alert Rules       - monitoring
+
+================================================================================
+19. SERWISY ZEWNETRZNE (API)
+================================================================================
+- GUS BIR (SOAP API)             - dane firm
+- Biala Lista MF (REST API)      - weryfikacja rachunkow VAT
+- NBP API (REST)                 - kursy walut
+- KSeF (Krajowy System e-Faktur) - wysylka faktur elektronicznych
+
+================================================================================
+20. AGENTY AI (COUNCIL OF LLMS)
+================================================================================
+- Alpha Agent (LFM 1.2B)         - klasyfikacja faktur
+- Beta Agent (Qwen3 0.6B)        - walidacja wtorna
+- Gamma Agent (LittleLamb 0.3B)  - tiebreaker
+- Rules Agent (Granite 1B)       - reguly biznesowe
+- Analytics Agent (Qwen2.5 1.5B) - detekcja anomalii
+- Decision Agent (Jamba 3B)      - zlozone decyzje
+- Orchestrator Agent (0.3B)      - koordynacja
+- Autopilot                      - automatyczne ksiegowanie
+
+================================================================================
+21. SILNIK REGUL PODATKOWYCH (TAX ENGINE)
+================================================================================
+- RuleEngine            - DuckDB + first-match-wins SQL
+- TaxMathEngine         - arytmetyka podatkowa w groszach (int)
+- TaxPipeline           - orkiestracja
+- TraceGenerator        - sciezka decyzyjna
+- Proof Chain (Audit)   - SHA-256 lancuch audytowy
+- IntegrityVerifier     - weryfikacja lancucha SHA-256
+- ContextInterpreter    - mapowanie faktury na kontekst regul
+- PriorityEngine        - first-match-wins z priorytetami
+- TemporalManager       - filtrowanie regul wedlug daty
+- RuleStore             - magazyn regul w DuckDB
+
+================================================================================
+22. SYSTEM KSIGOWY (ROBOTON_REFLEKTON)
+================================================================================
+- LedgerClient          - klient TigerBeetle
+- ShadowLedger          - symulacje "co by bylo, gdyby"
+- ReconciliationEngine  - uzgadnianie kont
+- VATReconciliation     - uzgadnianie VAT
+- ForexEngine           - przewalutowanie
+- DunningEngine         - windykacja naleznosci
+- BudgetaryControl      - kontrola budzetowa
+- Forecaster            - prognozowanie przeplywow
+- LiquidityOracle       - oracle plynnosci finansowej
+- FraudGraphScanner     - wykrywanie fraudow (graf powiazan)
+- FixedAssets           - amortyzacja srodkow trwalych
+- InventoryFIFO         - FIFO wycena zapasow
+
+================================================================================
+23. NARZEDZIA I SKRYPTY
+================================================================================
+- Nexus CLI             - 4 komendy: nexus-api, nexus-worker, nexus-desktop, nexus
+- main.py               - centralny entrypoint
+- run_local.py          - lokalny launcher
+- BackupManager         - szyfrowany backup ZIP
+- Model Downloader      - pobieranie modeli GGUF z SHA-256
+- Dependency Downloader - pobieranie zaleznosci instalatora
+- Generate Assets       - generowanie assetow
+
+================================================================================
+24. JAKOSC KODU
+================================================================================
+- Ruff >=0.3            - linter + formatter (opcjonalne dev)
+- Mypy >=1.8            - type checker (opcjonalne dev)
+- pre-commit >=3.6      - git hooks (opcjonalne dev)
+
+================================================================================
+25. PLIKI KONFIGURACYJNE
+================================================================================
+- pyproject.toml            - konfiguracja pakietu
+- requirements.txt          - lista zaleznosci
+- Dockerfile                - budowa obrazu Docker
+- docker-compose.yml        - orkiestracja serwisow
+- alembic.ini               - konfiguracja migracji
+- config/prod.env           - profil produkcyjny
+- config/dev.env            - profil deweloperski
+- config/models_manifest.json - manifest modeli AI
+- config/version.json       - manifest wersji
+- .dockerignore             - ignorowanie plikow przy buildzie
+- .gitignore                - ignorowanie plikow w Git
+
+================================================================================
+                         PODSUMOWANIE
+================================================================================
+Glowny jezyk:           Python >=3.11
+Framework API:          Litestar
+Bazy danych:            SQLite + DuckDB + LanceDB
+Kolejki:                NATS JetStream + Taskiq
+AI:                     GGUF modele (llama-cpp-python)
+OCR:                    Surya + PaddleOCR + Tesseract
+Desktop UI:             Flet (Flutter)
+Containerization:       Docker + Docker Compose
+Ledger:                 TigerBeetle
+Liczba technologii:     ~120+
+
+Razem z agentami AI, serwisami, narzedziami i plikami
+konfiguracyjnymi projekt liczy ponad 120 roznych technologii.
+================================================================================

@@ -117,19 +117,21 @@ class SemanticGuard:
         """Create vendor_invoices table if not exists.
         Uses self._embedding_dim for the vector dimension.
         """
-        import pyarrow as pa
+        import polars as pl
         table_name = "vendor_invoices"
         if table_name not in self._db.table_names():
-            schema = pa.schema([
-                pa.field("vendor_nip", pa.string()),
-                pa.field("embedding", pa.list_(pa.float32(), self._embedding_dim)),
-                pa.field("category_code", pa.string()),
-                pa.field("amount_net", pa.float64()),
-                pa.field("invoice_text", pa.string()),
-                pa.field("transaction_id", pa.string()),
-                pa.field("timestamp", pa.timestamp("us", tz="UTC")),
-            ])
-            self._db.create_table(table_name, schema=schema)
+            _dtypes = {
+                "vendor_nip": pl.Utf8,
+                "embedding": pl.List(pl.Float32),
+                "category_code": pl.Utf8,
+                "amount_net": pl.Float64,
+                "invoice_text": pl.Utf8,
+                "transaction_id": pl.Utf8,
+                "timestamp": pl.Datetime(time_unit="us", time_zone="UTC"),
+            }
+            _empty = pl.DataFrame({}, schema=_dtypes)
+            _arrow_schema = _empty.to_arrow().schema
+            self._db.create_table(table_name, schema=_arrow_schema)
             logger.info(
                 "[SemanticGuard] Created vendor_invoices table (dim=%d)",
                 self._embedding_dim,

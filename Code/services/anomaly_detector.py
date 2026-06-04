@@ -1,4 +1,4 @@
-import pandas as pd
+import polars as pl
 from db.analytics import DuckDBManager
 
 
@@ -21,7 +21,7 @@ class SmartAnomalyDetector:
             # Zbyt mało danych - wracamy do bezpiecznego Z-Score (średnia + 3 odchylenia)
             return False
 
-        df = pd.DataFrame(history)
+        df = pl.DataFrame(history)
         # Isolation Forest:
         # Tutaj w prawdziwym kodzie będzie logika dopasowania modelu (np. model.fit(df))
         return False

@@ -1,10 +1,19 @@
 # pipeline/memory.py
 import json
 import lancedb
-import pyarrow as pa
+import polars as pl
 from datetime import datetime, timezone
 from core.config import AppConfig
 from core.logger import logger
+
+# Stałe schematu Polars dla tabeli wzorców
+_PATTERN_DTYPES = {
+    "vector": pl.List(pl.Float32),
+    "vendor_nip": pl.Utf8,
+    "pattern_payload": pl.Utf8,
+    "tenant_id": pl.Utf8,
+    "created_at": pl.Datetime(time_unit="us", time_zone="UTC"),
+}
 
 
 class PipelineMemory:
@@ -18,14 +27,9 @@ class PipelineMemory:
     def _init_table(self):
         """Initialize table with tenant_id schema (Rozwiązanie 24)."""
         if self.table_name not in self.db.table_names():
-            schema = pa.schema([
-                pa.field("vector", pa.list_(pa.float32(), 384)),
-                pa.field("vendor_nip", pa.string()),
-                pa.field("pattern_payload", pa.string()),
-                pa.field("tenant_id", pa.string()),
-                pa.field("created_at", pa.timestamp("us", tz="UTC")),
-            ])
-            self.db.create_table(self.table_name, schema=schema)
+            _empty = pl.DataFrame({}, schema=_PATTERN_DTYPES)
+            _arrow_schema = _empty.to_arrow().schema
+            self.db.create_table(self.table_name, schema=_arrow_schema)
 
     @staticmethod
     def _sanitize_lancedb(value: str) -> str:
