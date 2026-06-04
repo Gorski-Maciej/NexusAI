@@ -174,29 +174,37 @@ class TaxPipeline:
                 routing, routing_reason, tx_id,
             )
 
+        # ── Step 2c: decision_trace (zgodność z dokumentacją) ─────────────
+        # Jeśli RuleEngine wygenerował decision_trace (include_decision_trace=True),
+        # użyj go bezpośrednio. W przeciwnym razie wygeneruj przez TraceGenerator.
+        decision_trace_from_verdict = verdict.pop("decision_trace", None)
+
         vat_rate = TaxMathEngine.parse_rate(verdict.get("vat_rate", "0.23"))
         rounding_level = verdict.get("rounding_level", "position")
 
-        # Generate human-readable decision trace
-        rule_info = None
-        if rule_id:
-            rule_rows = self._conn.execute(
-                "SELECT rule_id, condition_sql, action_json, description_template "
-                "FROM tax_rules WHERE rule_id = ?",
-                (rule_id,),
-            ).fetchall()
-            if rule_rows:
-                r = rule_rows[0]
-                rule_info = {
-                    "rule_id": str(r[0]),
-                    "condition_sql": str(r[1]),
-                    "description_template": str(r[3]) if r[3] else None,
-                }
-        decision_trace_text = TraceGenerator.generate(
-            rule=rule_info,
-            context=context,
-            verdict=verdict,
-        )
+        if decision_trace_from_verdict:
+            decision_trace_text = decision_trace_from_verdict
+        else:
+            # Generate human-readable decision trace
+            rule_info = None
+            if rule_id:
+                rule_rows = self._conn.execute(
+                    "SELECT rule_id, condition_sql, action_json, description_template "
+                    "FROM tax_rules WHERE rule_id = ?",
+                    (rule_id,),
+                ).fetchall()
+                if rule_rows:
+                    r = rule_rows[0]
+                    rule_info = {
+                        "rule_id": str(r[0]),
+                        "condition_sql": str(r[1]),
+                        "description_template": str(r[3]) if r[3] else None,
+                    }
+            decision_trace_text = TraceGenerator.generate(
+                rule=rule_info,
+                context=context,
+                verdict=verdict,
+            )
 
         # ── Step 3: Tax Math Engine ──────────────────────────────────────
         # Determine currency for this invoice (default PLN)

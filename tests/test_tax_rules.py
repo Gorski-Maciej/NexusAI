@@ -195,6 +195,89 @@ class TestRuleEngineMatching:
         assert verdict["vat_rate"] == "0.23"
         assert verdict["_priority"] == 100
 
+    # ── decision_trace (include_decision_trace) ───────────────────────────
+
+    def test_decision_trace_included_when_requested(self, engine: RuleEngine) -> None:
+        """include_decision_trace=True adds human-readable decision_trace to verdict."""
+        ctx = {
+            "category_code": "FUEL",
+            "transaction_date": "2025-06-01",
+            "company_tax_form": "CIT_STANDARD",
+            "vendor_country": "PL",
+            "vendor_vat_status": "unknown",
+            "vendor_pkd": "",
+            "amount_net": "1000.00",
+        }
+        verdict = engine.decide(ctx, include_decision_trace=True)
+        assert "decision_trace" in verdict, "decision_trace should be in verdict when include_decision_trace=True"
+        assert isinstance(verdict["decision_trace"], str)
+        assert len(verdict["decision_trace"]) > 0, "decision_trace should be non-empty"
+        # Should contain key decision information
+        assert "FUEL" in verdict["decision_trace"]
+        assert "23" in verdict["decision_trace"]  # vat_rate percent
+        assert "Reguła" in verdict["decision_trace"]
+        assert verdict["vat_rate"] == "0.23"  # Other verdict fields preserved
+        assert verdict["gtu_code"] == "GTU_04"
+
+    def test_decision_trace_not_included_by_default(self, engine: RuleEngine) -> None:
+        """Default include_decision_trace=False does NOT include decision_trace."""
+        ctx = {
+            "category_code": "FOOD",
+            "transaction_date": "2025-06-01",
+            "company_tax_form": "LUMP_SUM",
+            "vendor_country": "PL",
+            "vendor_vat_status": "unknown",
+            "vendor_pkd": "",
+            "amount_net": "500.00",
+        }
+        verdict = engine.decide(ctx)  # defaults to include_decision_trace=False
+        assert "decision_trace" not in verdict, "decision_trace should NOT be in verdict by default"
+        assert verdict["vat_rate"] == "0.08"  # Regular verdict fields intact
+
+    def test_decision_trace_with_description_template(self, engine: RuleEngine) -> None:
+        """When rule has description_template, decision_trace uses it."""
+        ctx = {
+            "category_code": "FUEL",
+            "transaction_date": "2025-06-01",
+            "company_tax_form": "CIT_STANDARD",
+            "vendor_country": "PL",
+            "vendor_vat_status": "unknown",
+            "vendor_pkd": "",
+            "amount_net": "1000.00",
+        }
+        verdict = engine.decide(ctx, include_decision_trace=True)
+        # The FUEL rule has description_template with placeholders
+        trace = verdict["decision_trace"]
+        # Should contain elements from the template
+        assert "paliwo" in trace or "FUEL" in trace  # Template says (paliwo) or uses category_code
+        assert "VAT" in trace or "23%" in trace
+        # Verify no raw placeholders remain
+        assert "{rule_id}" not in trace
+        assert "{vat_rate_percent}" not in trace
+
+    def test_decision_trace_with_routing_rule(self, engine: RuleEngine) -> None:
+        """decision_trace also works for field-confidence (routing) rules."""
+        ctx = {
+            "category_code": "FUEL",
+            "transaction_date": "2025-06-01",
+            "company_tax_form": "CIT_STANDARD",
+            "vendor_country": "PL",
+            "vendor_vat_status": "unknown",
+            "vendor_pkd": "",
+            "amount_net": "1000.00",
+            "fc_vat_rate": "0.70",
+        }
+        verdict = engine.decide(ctx, include_decision_trace=True)
+        assert "decision_trace" in verdict
+        assert verdict["_routing"] == "BLOCK_AND_ALERT"  # Routing field preserved
+        trace = verdict["decision_trace"]
+        assert len(trace) > 0
+        # Should contain routing intent keywords and no raw placeholders
+        assert "pewność" in trace.lower() or "confidence" in trace.lower()
+        assert "{_routing}" not in trace
+        assert "{_routing_reason}" not in trace
+        assert "{" not in trace or "?{" not in trace  # No unresolved placeholders
+
 
 # ── RuleEngine — priority and temporal ───────────────────────────────────────
 
@@ -272,6 +355,17 @@ class TestRuleEnginePriorityAndTemporal:
         })
         with pytest.raises(NoMatchingRuleError, match="No active tax rules"):
             engine.decide(ctx)
+
+    def test_no_matching_rule_with_decision_trace(self, conn: duckdb.DuckDBPyConnection) -> None:
+        """NoMatchingRuleError is still raised when include_decision_trace=True."""
+        conn.execute("DELETE FROM tax_rules")
+        engine = RuleEngine(conn)
+        ctx = ContextInterpreter.build({
+            "category_code": "UNKNOWN",
+            "transaction_date": "2025-06-01",
+        })
+        with pytest.raises(NoMatchingRuleError, match="No active tax rules"):
+            engine.decide(ctx, include_decision_trace=True)
 
 
 # ── RuleEngine — rule lifecycle ──────────────────────────────────────────────

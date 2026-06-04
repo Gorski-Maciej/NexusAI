@@ -138,6 +138,15 @@ class TraceGenerator:
         # Condition SQL (dla szczegółowego śladu)
         replacements["condition_sql"] = str(rule.get("condition_sql", ""))
 
+        # Wszystkie pozostałe klucze z kontekstu i werdyktu jako fallback
+        # (np. fc_vat_rate, fc_total_net dla reguł field-confidence)
+        for k, v in context.items():
+            if k not in replacements:
+                replacements[k] = str(v)
+        for k, v in verdict.items():
+            if k not in replacements:
+                replacements[k] = str(v)
+
         # Podstaw wszystkie {key} z replacements
         def _replacer(m: re.Match) -> str:
             key = m.group(1)

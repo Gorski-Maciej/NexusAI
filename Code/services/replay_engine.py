@@ -16,17 +16,16 @@ Zastosowania:
 
 from __future__ import annotations
 
-import json
 import logging
 from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from datetime import date
 from typing import Any
 
 import duckdb
 
 from tax.audit import DecisionTraceLogger
 from tax.exceptions import NoMatchingRuleError
-from tax.rules import ContextInterpreter, RuleEngine, ensure_tax_schemas, seed_default_rules
+from tax.rules import RuleEngine, ensure_tax_schemas
 
 logger = logging.getLogger("nexus.replay")
 
@@ -88,6 +87,10 @@ class ReplayEngine:
     def replay(self, transaction_id: str) -> ReplayResult:
         """Odtwórz decyzję dla pojedynczej faktury.
 
+        Używa prawdziwego ``RuleEngine.decide()`` zamiast bezpośredniego SQL,
+        co oznacza, że testuje rzeczywistą logikę silnika reguł (TemporalManager,
+        PriorityEngine, ewaluacja warunków SQL).
+
         Args:
             transaction_id: UUID faktury do odtworzenia.
 
@@ -117,65 +120,27 @@ class ReplayEngine:
                 error=f"Empty context in decision trace for {transaction_id}",
             )
 
-        # 2. Wyodrębnij datę transakcji
-        txn_date = original_context.get("transaction_date", "")
+        # 2. Użyj RuleEngine.decide() do odtworzenia decyzji
+        #    To testuje rzeczywistą ścieżkę: TemporalManager → PriorityEngine → ewaluacja SQL
+        engine = RuleEngine(self._conn)
         try:
-            txn_date_obj = date.fromisoformat(txn_date) if txn_date else date.today()
-        except (ValueError, TypeError):
-            txn_date_obj = date.today()
-
-        # 3. Pobierz reguły aktywne na datę transakcji (historyczne)
-        rules = self._conn.execute(
-            """SELECT rule_id, condition_sql, action_json, priority
-               FROM tax_rules
-               WHERE valid_from <= ?
-                 AND (valid_to IS NULL OR valid_to >= ?)
-               ORDER BY priority ASC, valid_from DESC""",
-            (txn_date_obj.isoformat(), txn_date_obj.isoformat()),
-        ).fetchall()
-
-        if not rules:
+            replayed_verdict = engine.decide(original_context)
+        except NoMatchingRuleError as exc:
             return ReplayResult(
                 transaction_id=transaction_id,
                 match=False,
                 original_verdict=original_verdict,
-                error=f"No rules active on {txn_date_obj.isoformat()}",
+                error=str(exc),
             )
-
-        # 4. Przygotuj kontekst i uruchom silnik reguł (read-only)
-        try:
-            engine = RuleEngine(self._conn)
-            # Prepare context table without mutating the original
-            engine._prepare_context_table(original_context)
-
-            replayed_verdict = None
-            replayed_rule_id = None
-            for rule_id, condition_sql, action_json_raw, priority in rules:
-                result = self._conn.execute(
-                    f"SELECT COUNT(1) FROM _tax_ctx WHERE {condition_sql}"
-                ).fetchone()
-                if result and result[0] > 0:
-                    replayed_verdict = json.loads(action_json_raw)
-                    replayed_rule_id = rule_id
-                    replayed_verdict["_rule_id"] = rule_id
-                    replayed_verdict["_priority"] = priority
-                    break
-
-            if replayed_verdict is None:
-                return ReplayResult(
-                    transaction_id=transaction_id,
-                    match=False,
-                    original_verdict=original_verdict,
-                    error=f"No matching rule for context on {txn_date}",
-                )
-
         finally:
-            # Clean up temp table
+            # Posprzątaj temp table (jeśli decide() nie została dokończona)
             self._conn.execute("DROP TABLE IF EXISTS _tax_ctx")
 
-        # 5. Porównaj werdykty
+        # 3. Porównaj werdykty
         differences = _compare_verdicts(original_verdict, replayed_verdict)
         match = len(differences) == 0
+
+        replayed_rule_id = replayed_verdict.get("_rule_id", "?")
 
         logger.info(
             "Replay %s: %s (replayed_rule=%s, diff=%d)",

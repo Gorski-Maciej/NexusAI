@@ -727,7 +727,12 @@ class RuleEngine:
         # call seed_default_rules() explicitly to avoid interfering
         # with test scenarios that intentionally delete all rules.
 
-    def decide(self, context: dict[str, Any]) -> dict[str, Any]:
+    def decide(
+        self,
+        context: dict[str, Any],
+        *,
+        include_decision_trace: bool = False,
+    ) -> dict[str, Any]:
         """Evaluate context against rules and return the first matching verdict.
 
         Uses TemporalManager for temporal filtering and PriorityEngine
@@ -739,9 +744,14 @@ class RuleEngine:
           - ``_evaluated_rules``: List of all evaluated rules with
             ``rule_id``, ``condition_sql``, ``result`` (bool), and
             ``selected`` (True for the winning rule).
+          - ``decision_trace``: (optional) Human-readable decision trace,
+            only included when ``include_decision_trace=True``.
 
         Args:
             context: Flat dict from ContextInterpreter.build().
+            include_decision_trace: If True, generates a human-readable
+                ``decision_trace`` string in the verdict (via TraceGenerator).
+                Default ``False`` to avoid overhead when only raw data is needed.
 
         Returns:
             The action_json of the first matching rule, enriched with
@@ -803,6 +813,30 @@ class RuleEngine:
 
         # Attach evaluated rules to verdict for downstream consumers (pipeline)
         match.verdict["_evaluated_rules"] = evaluated_rules
+
+        # Optionally generate human-readable decision_trace (zgodnie z dokumentacją)
+        if include_decision_trace:
+            rule_id = match.verdict.get("_rule_id", "")
+            if rule_id:
+                rule_rows = self._conn.execute(
+                    "SELECT rule_id, condition_sql, action_json, description_template "
+                    "FROM tax_rules WHERE rule_id = ?",
+                    (rule_id,),
+                ).fetchall()
+                if rule_rows:
+                    r = rule_rows[0]
+                    rule_info = {
+                        "rule_id": str(r[0]),
+                        "condition_sql": str(r[1]),
+                        "description_template": str(r[3]) if r[3] else None,
+                    }
+                    from services.trace_generator import TraceGenerator
+                    match.verdict["decision_trace"] = TraceGenerator.generate(
+                        rule=rule_info,
+                        context=context,
+                        verdict=match.verdict,
+                    )
+
         return match.verdict
 
     def _prepare_context_table(self, context: dict[str, Any]) -> None:
