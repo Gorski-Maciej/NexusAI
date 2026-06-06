@@ -14,20 +14,22 @@ from __future__ import annotations
 from decimal import Decimal
 
 import pytest
-
 from Code.tax.math_engine import (
-    TaxMathEngine,
     InvoicePositions,
     InvoiceSummary,
-    ValidationResult,
-    to_grosze,
-    to_zlotowki,
-    multiply_net_by_vat,
+    RoundingPolicy,
+    TaxMathEngine,
     add_tax,
+    add_tax_money,
     calculate_vat_by_policy,
+    money_to_grosze,
+    multiply_net_by_vat,
+    multiply_net_by_vat_money,
+    to_grosze,
+    to_money,
+    to_zlotowki,
     validate_invariants,
 )
-
 
 # ── to_grosze / to_zlotowki round-trip ────────────────────────────────────────
 
@@ -189,8 +191,8 @@ class TestTaxInvariantGuard:
         vat1 = multiply_net_by_vat(10000, Decimal("0.23"))  # 2300
         vat2 = multiply_net_by_vat(5000, Decimal("0.08"))  # 400
         total_net = 15000
-        total_vat = 2300 + 400  # 2700
-        total_brutto = 15000 + 2700  # 17700
+        total_vat = vat1 + vat2  # 2700
+        total_brutto = total_net + total_vat  # 17700
 
         summary = InvoiceSummary(
             netto_grosze=total_net,
@@ -303,28 +305,28 @@ class TestMoneyIntegration:
     def test_money_to_grosze_basic(self) -> None:
         """Convert Money to grosze."""
         from services.currency_converter import Money
-        result = money_to_grosze(Money("123.45", "PLN"))
+        result = money_to_grosze(Money.from_string("123.45", "PLN"))
         assert result == 12345
         assert isinstance(result, int)
 
     def test_money_to_grosze_zero(self) -> None:
         """Zero Money converts to 0 grosze."""
         from services.currency_converter import Money
-        assert money_to_grosze(Money("0.00", "PLN")) == 0
+        assert money_to_grosze(Money.from_string("0.00", "PLN")) == 0
 
     def test_money_to_grosze_eur(self) -> None:
         """Money in any currency converts to grosze (EUR test)."""
         from services.currency_converter import Money
-        result = money_to_grosze(Money("50.00", "EUR"))
+        result = money_to_grosze(Money.from_string("50.00", "EUR"))
         assert result == 5000
 
     def test_money_to_grosze_rounding(self) -> None:
         """HALF_UP rounding for Money amounts."""
         from services.currency_converter import Money
         # 1.235 PLN → 124 gr (HALF_UP)
-        assert money_to_grosze(Money("1.235", "PLN")) == 124
+        assert money_to_grosze(Money.from_string("1.235", "PLN")) == 124
         # 1.234 PLN → 123 gr
-        assert money_to_grosze(Money("1.234", "PLN")) == 123
+        assert money_to_grosze(Money.from_string("1.234", "PLN")) == 123
 
     def test_to_money_basic(self) -> None:
         """Convert grosze to Money."""
@@ -336,13 +338,11 @@ class TestMoneyIntegration:
 
     def test_to_money_default_currency(self) -> None:
         """Default currency is PLN."""
-        from services.currency_converter import Money
         result = to_money(100)
         assert result.currency_code == "PLN"
 
     def test_money_round_trip(self) -> None:
         """money_to_grosze(to_money(x)) == x."""
-        from services.currency_converter import Money
         for grosze in [0, 1, 100, 12345, 999999, 100000000]:
             money = to_money(grosze, "PLN")
             back = money_to_grosze(money)
@@ -351,7 +351,7 @@ class TestMoneyIntegration:
     def test_multiply_net_by_vat_money(self) -> None:
         """Mulitply Money net by VAT rate."""
         from services.currency_converter import Money
-        net = Money("100.00", "PLN")
+        net = Money.from_string("100.00", "PLN")
         vat = multiply_net_by_vat_money(net, Decimal("0.23"))
         assert isinstance(vat, Money)
         assert str(vat.amount) == "23.00"
@@ -360,7 +360,7 @@ class TestMoneyIntegration:
     def test_multiply_net_by_vat_money_zero_rate(self) -> None:
         """Zero VAT rate returns zero Money."""
         from services.currency_converter import Money
-        net = Money("100.00", "PLN")
+        net = Money.from_string("100.00", "PLN")
         vat = multiply_net_by_vat_money(net, Decimal("0.00"))
         assert str(vat.amount) == "0.00"
         assert vat.currency_code == "PLN"
@@ -368,8 +368,8 @@ class TestMoneyIntegration:
     def test_add_tax_money(self) -> None:
         """Add net and VAT as Money."""
         from services.currency_converter import Money
-        net = Money("100.00", "PLN")
-        vat = Money("23.00", "PLN")
+        net = Money.from_string("100.00", "PLN")
+        vat = Money.from_string("23.00", "PLN")
         gross = add_tax_money(net, vat)
         assert isinstance(gross, Money)
         assert str(gross.amount) == "123.00"
@@ -378,24 +378,24 @@ class TestMoneyIntegration:
     def test_add_tax_money_same_currency(self) -> None:
         """Same currency works."""
         from services.currency_converter import Money
-        net = Money("50.00", "EUR")
-        vat = Money("11.50", "EUR")
+        net = Money.from_string("50.00", "EUR")
+        vat = Money.from_string("11.50", "EUR")
         gross = add_tax_money(net, vat)
         assert str(gross.amount) == "61.50"
         assert gross.currency_code == "EUR"
 
     def test_add_tax_money_different_currency_raises(self) -> None:
         """Adding different currencies raises CurrencyMismatchError."""
-        from services.currency_converter import Money, CurrencyMismatchError
-        net = Money("100.00", "PLN")
-        vat = Money("23.00", "EUR")
+        from services.currency_converter import CurrencyMismatchError, Money
+        net = Money.from_string("100.00", "PLN")
+        vat = Money.from_string("23.00", "EUR")
         with pytest.raises(CurrencyMismatchError, match="Currency mismatch"):
             add_tax_money(net, vat)
 
     def test_invoice_positions_from_money(self) -> None:
         """Create InvoicePositions from Money."""
         from services.currency_converter import Money
-        net = Money("250.00", "PLN")
+        net = Money.from_string("250.00", "PLN")
         pos = InvoicePositions.from_money(net, Decimal("0.23"))
         assert pos.net_grosze == 25000
         assert pos.vat_rate == Decimal("0.23")
@@ -417,7 +417,6 @@ class TestMoneyIntegration:
 
     def test_invoice_positions_to_vat_money(self) -> None:
         """Get VAT as Money from InvoicePositions."""
-        from services.currency_converter import Money
         pos = InvoicePositions(net_grosze=10000, vat_rate=Decimal("0.23"))
         vat_money = pos.to_vat_money("PLN")
         assert str(vat_money.amount) == "23.00"
@@ -426,9 +425,9 @@ class TestMoneyIntegration:
         """Create InvoiceSummary from Money amounts."""
         from services.currency_converter import Money
         summary = InvoiceSummary.from_money(
-            netto=Money("100.00", "PLN"),
-            vat=Money("23.00", "PLN"),
-            brutto=Money("123.00", "PLN"),
+            netto=Money.from_string("100.00", "PLN"),
+            vat=Money.from_string("23.00", "PLN"),
+            brutto=Money.from_string("123.00", "PLN"),
         )
         assert summary.netto_grosze == 10000
         assert summary.vat_grosze == 2300
@@ -436,44 +435,44 @@ class TestMoneyIntegration:
 
     def test_invoice_summary_from_money_different_currency_raises(self) -> None:
         """Mismatched currencies raise CurrencyMismatchError."""
-        from services.currency_converter import Money, CurrencyMismatchError
+        from services.currency_converter import CurrencyMismatchError, Money
         with pytest.raises(CurrencyMismatchError):
             InvoiceSummary.from_money(
-                netto=Money("100.00", "PLN"),
-                vat=Money("23.00", "EUR"),
-                brutto=Money("123.00", "PLN"),
+                netto=Money.from_string("100.00", "PLN"),
+                vat=Money.from_string("23.00", "EUR"),
+                brutto=Money.from_string("123.00", "PLN"),
             )
 
     def test_invoice_summary_to_money(self) -> None:
         """Convert InvoiceSummary fields back to Money."""
         from services.currency_converter import Money
         summary = InvoiceSummary(netto_grosze=10000, vat_grosze=2300, brutto_grosze=12300)
-        assert summary.to_netto_money("PLN") == Money("100.00", "PLN")
-        assert summary.to_vat_money("PLN") == Money("23.00", "PLN")
-        assert summary.to_brutto_money("PLN") == Money("123.00", "PLN")
+        assert summary.to_netto_money("PLN") == Money.from_string("100.00", "PLN")
+        assert summary.to_vat_money("PLN") == Money.from_string("23.00", "PLN")
+        assert summary.to_brutto_money("PLN") == Money.from_string("123.00", "PLN")
 
     def test_calculate_positions_vat_money(self) -> None:
         """Calculate VAT from Money positions, return Money."""
         from services.currency_converter import Money
         positions_net = [
-            Money("100.00", "PLN"),
-            Money("200.00", "PLN"),
-            Money("150.00", "PLN"),
+            Money.from_string("100.00", "PLN"),
+            Money.from_string("200.00", "PLN"),
+            Money.from_string("150.00", "PLN"),
         ]
         total_vat_money, inv_positions = TaxMathEngine.calculate_positions_vat_money(
             positions_net, Decimal("0.23"), "position"
         )
-        # 100*0.23=23, 200*0.23=46, 150*0.23=34.5→35 → 104 gr
-        assert str(total_vat_money.amount) == "1.04"
+        # 100.00*0.23=23.00, 200.00*0.23=46.00, 150.00*0.23=34.50 → 103.50
+        assert str(total_vat_money.amount) == "103.50"
         assert total_vat_money.currency_code == "PLN"
         assert len(inv_positions) == 3
 
     def test_calculate_positions_vat_money_different_currency_raises(self) -> None:
         """Mismatched currencies raise."""
-        from services.currency_converter import Money, CurrencyMismatchError
+        from services.currency_converter import CurrencyMismatchError, Money
         positions_net = [
-            Money("100.00", "PLN"),
-            Money("50.00", "EUR"),
+            Money.from_string("100.00", "PLN"),
+            Money.from_string("50.00", "EUR"),
         ]
         with pytest.raises(CurrencyMismatchError):
             TaxMathEngine.calculate_positions_vat_money(
@@ -482,7 +481,6 @@ class TestMoneyIntegration:
 
     def test_calculate_positions_vat_money_empty(self) -> None:
         """Empty position list returns zero Money."""
-        from services.currency_converter import Money
         total_vat_money, inv_positions = TaxMathEngine.calculate_positions_vat_money(
             [], Decimal("0.23"), "position"
         )
@@ -493,24 +491,23 @@ class TestMoneyIntegration:
     def test_sum_positions_net_money(self) -> None:
         """Sum of multiple Money amounts."""
         from services.currency_converter import Money
-        nets = [Money("100.00", "PLN"), Money("50.00", "PLN"), Money("25.50", "PLN")]
+        nets = [Money.from_string("100.00", "PLN"), Money.from_string("50.00", "PLN"), Money.from_string("25.50", "PLN")]
         total = TaxMathEngine.sum_positions_net_money(nets)
         assert str(total.amount) == "175.50"
         assert total.currency_code == "PLN"
 
     def test_sum_positions_net_money_empty(self) -> None:
         """Empty list returns zero."""
-        from services.currency_converter import Money
         total = TaxMathEngine.sum_positions_net_money([])
         assert str(total.amount) == "0.00"
 
     def test_sum_positions_net_money_different_currency_raises(self) -> None:
         """Different currencies raise."""
-        from services.currency_converter import Money, CurrencyMismatchError
+        from services.currency_converter import CurrencyMismatchError, Money
         with pytest.raises(CurrencyMismatchError):
             TaxMathEngine.sum_positions_net_money([
-                Money("100.00", "PLN"),
-                Money("50.00", "EUR"),
+                Money.from_string("100.00", "PLN"),
+                Money.from_string("50.00", "EUR"),
             ])
 
     def test_tax_math_engine_money_methods(self) -> None:
