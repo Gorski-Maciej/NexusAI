@@ -67,17 +67,34 @@ class TestSemanticGuard:
         # No history → score = 0 → no rule triggers
         assert result["action"] == "ALLOW"
 
-    def test_store_and_retrieve(self) -> None:
-        """Store invoice → no error."""
-        guard = SemanticGuard(db_path=":memory:")
+    def test_store_and_retrieve(self, tmp_path) -> None:
+        """Store invoice and verify the persisted row can be retrieved."""
+        db_path = tmp_path / "semantic_guard.db"
+        guard = SemanticGuard(db_path=str(db_path))
         guard.store_invoice(
             vendor_nip="1234567890",
             invoice_text="Faktura za catering",
             category_code="FOOD",
             amount_net=500.0,
+            transaction_id="tx-123",
         )
-        # Should not raise
-        assert True
+
+        conn = guard._init_store()._get_conn()
+        row = conn.execute(
+            """SELECT vendor_nip, invoice_text, category_code, amount_net, transaction_id
+               FROM vendor_invoices
+               WHERE transaction_id = ?""",
+            ("tx-123",),
+        ).fetchone()
+
+        assert row is not None
+        assert dict(row) == {
+            "vendor_nip": "1234567890",
+            "invoice_text": "Faktura za catering",
+            "category_code": "FOOD",
+            "amount_net": 500.0,
+            "transaction_id": "tx-123",
+        }
 
     def test_anomaly_rules_loaded(self, conn: duckdb.DuckDBPyConnection) -> None:
         """Default anomaly rules are present."""
