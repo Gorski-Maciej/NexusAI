@@ -232,7 +232,7 @@ class CurrencyConverter:
 
         rate = self._get_rate(amount.currency, rate_date)
         converted_cents = int(
-            (Decimal(amount.amount_cents) * rate / Decimal("100")).to_integral_value(
+            (Decimal(amount.amount_cents) * rate).to_integral_value(
                 rounding=ROUND_HALF_UP
             )
         )

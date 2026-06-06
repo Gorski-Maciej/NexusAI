@@ -53,8 +53,8 @@ def validator(conn):
 
 def _expense_transfers(net: int = 10000, vat: int = 2300) -> list[TransferSpec]:
     return [
-        TransferSpec(40100, 20200, net, "expense"),
-        TransferSpec(22100, 20200, vat, "vat_input"),
+        TransferSpec(40100, 20200, net, transfer_type="expense"),
+        TransferSpec(22100, 20200, vat, transfer_type="vat_input"),
     ]
 
 
@@ -82,7 +82,7 @@ class TestValidTransaction:
     def test_revenue_transaction(self, validator):
         """Revenue: 20200 → 70000."""
         transfers = [
-            TransferSpec(20200, 70000, 50000, "revenue"),
+            TransferSpec(20200, 70000, 50000, transfer_type="revenue"),
         ]
         result = validator.validate(transfers, "REVENUE")
         assert result.is_valid
@@ -95,7 +95,7 @@ class TestInvalidAccountPairs:
     def test_wrong_debit_account(self, validator):
         """Using a revenue account as debit in EXPENSE should fail."""
         transfers = [
-            TransferSpec(70000, 20200, 10000, "expense"),  # 70000 is revenue!
+            TransferSpec(70000, 20200, 10000, transfer_type="expense"),  # 70000 is revenue!
         ]
         result = validator.validate(transfers, "EXPENSE")
         assert not result.is_valid
@@ -104,7 +104,7 @@ class TestInvalidAccountPairs:
     def test_wrong_credit_account(self, validator):
         """Using an expense account as credit in EXPENSE should fail."""
         transfers = [
-            TransferSpec(40100, 70000, 10000, "expense"),  # 70000 is revenue as credit!
+            TransferSpec(40100, 70000, 10000, transfer_type="expense"),  # 70000 is revenue as credit!
         ]
         result = validator.validate(transfers, "EXPENSE")
         assert not result.is_valid
@@ -113,7 +113,7 @@ class TestInvalidAccountPairs:
     def test_unknown_transaction_type(self, validator):
         """No rules for an unknown transaction type."""
         transfers = [
-            TransferSpec(100, 200, 1000, "unknown"),
+            TransferSpec(100, 200, 1000, transfer_type="unknown"),
         ]
         result = validator.validate(transfers, "UNKNOWN_TYPE")
         assert not result.is_valid
@@ -126,7 +126,7 @@ class TestAmountSign:
     def test_negative_amount_on_expense_fails(self, validator):
         """EXPENSE expects POSITIVE, negative amount should fail."""
         transfers = [
-            TransferSpec(40100, 20200, -10000, "expense"),  # negative!
+            TransferSpec(40100, 20200, -10000, transfer_type="expense"),  # negative!
         ]
         result = validator.validate(transfers, "EXPENSE")
         assert not result.is_valid
@@ -135,7 +135,7 @@ class TestAmountSign:
     def test_negative_amount_on_correction_passes(self, validator):
         """CORRECTION allows ANY sign."""
         transfers = [
-            TransferSpec(20200, 40100, -5000, "correction"),
+            TransferSpec(20200, 40100, -5000, transfer_type="correction"),
         ]
         result = validator.validate(transfers, "CORRECTION")
         assert result.is_valid, f"Expected valid, got: {result.error_message}"
@@ -143,7 +143,7 @@ class TestAmountSign:
     def test_zero_amount_passes(self, validator):
         """Zero amount is POSITIVE (non-negative)."""
         transfers = [
-            TransferSpec(40100, 20200, 0, "expense"),
+            TransferSpec(40100, 20200, 0, transfer_type="expense"),
         ]
         result = validator.validate(transfers, "EXPENSE")
         assert result.is_valid
@@ -195,7 +195,7 @@ class TestRuleManagement:
     def test_custom_rule_works(self, validator):
         """Custom rule should allow the specified pair."""
         validator.add_rule("EXPENSE", 100, 200, amount_sign="ANY")
-        transfers = [TransferSpec(100, 200, -500, "custom")]
+        transfers = [TransferSpec(100, 200, -500, transfer_type="custom")]
         result = validator.validate(transfers, "EXPENSE")
         assert result.is_valid
 
@@ -232,11 +232,11 @@ class TestInvariantDelegation:
 
 
 class TestMoneyIntegration:
-    """Testy integracji Money (Fowler's Money) z TransferSpec i PreLedgerValidator."""
+    """Testy integracji Nexus-Money z TransferSpec i PreLedgerValidator."""
 
     def test_transfer_spec_auto_extracts_grosze_from_money(self) -> None:
         """TransferSpec z amount_money automatycznie wyciąga amount_grosze."""
-        net = Money("100.00", "PLN")
+        net = Money.from_string("100.00", "PLN")
         t = TransferSpec(
             debit_account_id=40100,
             credit_account_id=20200,
@@ -248,7 +248,7 @@ class TestMoneyIntegration:
 
     def test_transfer_spec_explicit_grosze_still_works(self) -> None:
         """TransferSpec bez amount_money — kompatybilność wsteczna."""
-        t = TransferSpec(40100, 20200, 10000, "expense")
+        t = TransferSpec(40100, 20200, 10000, transfer_type="expense")
         assert t.amount_grosze == 10000
         assert t.amount_money is None
         assert t.currency is None
@@ -259,7 +259,7 @@ class TestMoneyIntegration:
             debit_account_id=40100,
             credit_account_id=20200,
             amount_grosze=9999,  # zostanie nadpisane przez __post_init__
-            amount_money=Money("50.00", "PLN"),
+            amount_money=Money.from_string("50.00", "PLN"),
             transfer_type="expense",
         )
         assert t.amount_grosze == 5000  # 50 PLN = 5000 gr, nie 9999
@@ -271,13 +271,13 @@ class TestMoneyIntegration:
             TransferSpec(
                 debit_account_id=40100,
                 credit_account_id=20200,
-                amount_money=Money("100.00", "PLN"),
+                amount_money=Money.from_string("100.00", "PLN"),
                 transfer_type="expense",
             ),
             TransferSpec(
                 debit_account_id=22100,
                 credit_account_id=20200,
-                amount_money=Money("23.00", "PLN"),
+                amount_money=Money.from_string("23.00", "PLN"),
                 transfer_type="vat_input",
             ),
         ]
@@ -290,13 +290,13 @@ class TestMoneyIntegration:
             TransferSpec(
                 debit_account_id=40100,
                 credit_account_id=20200,
-                amount_money=Money("100.00", "PLN"),
+                amount_money=Money.from_string("100.00", "PLN"),
                 transfer_type="expense",
             ),
             TransferSpec(
                 debit_account_id=22100,
                 credit_account_id=20200,
-                amount_money=Money("23.00", "EUR"),  # EUR != PLN!
+                amount_money=Money.from_string("23.00", "EUR"),  # EUR != PLN!
                 transfer_type="vat_input",
             ),
         ]
@@ -312,7 +312,7 @@ class TestMoneyIntegration:
             TransferSpec(
                 debit_account_id=40100,
                 credit_account_id=20200,
-                amount_money=Money("100.00", "PLN"),
+                amount_money=Money.from_string("100.00", "PLN"),
                 transfer_type="expense",
             ),
             TransferSpec(
@@ -328,8 +328,8 @@ class TestMoneyIntegration:
     def test_all_int_transfers_skip_currency_check(self, validator: PreLedgerValidator) -> None:
         """Same int-y — walidacja waluty pomijana (kompatybilność wsteczna)."""
         transfers = [
-            TransferSpec(40100, 20200, 10000, "expense"),
-            TransferSpec(22100, 20200, 2300, "vat_input"),
+            TransferSpec(40100, 20200, 10000, transfer_type="expense"),
+            TransferSpec(22100, 20200, 2300, transfer_type="vat_input"),
         ]
         result = validator.validate(transfers, "EXPENSE")
         assert result.is_valid
@@ -337,8 +337,8 @@ class TestMoneyIntegration:
     def test_all_int_balance_valid(self, validator: PreLedgerValidator) -> None:
         """Int-only transfers — balance validation passes."""
         transfers = [
-            TransferSpec(40100, 20200, 10000, "expense"),
-            TransferSpec(22100, 20200, 2000, "vat_input"),
+            TransferSpec(40100, 20200, 10000, transfer_type="expense"),
+            TransferSpec(22100, 20200, 2000, transfer_type="vat_input"),
         ]
         result = validator.validate(transfers, "EXPENSE")
         assert result.is_valid
@@ -349,13 +349,13 @@ class TestMoneyIntegration:
             TransferSpec(
                 debit_account_id=40100,
                 credit_account_id=20200,
-                amount_money=Money("150.00", "PLN"),
+                amount_money=Money.from_string("150.00", "PLN"),
                 transfer_type="expense",
             ),
             TransferSpec(
                 debit_account_id=22100,
                 credit_account_id=20200,
-                amount_money=Money("34.50", "PLN"),
+                amount_money=Money.from_string("34.50", "PLN"),
                 transfer_type="vat_input",
             ),
         ]
@@ -365,8 +365,8 @@ class TestMoneyIntegration:
     def test_money_balance_multiple_same_currency(self, validator: PreLedgerValidator) -> None:
         """Multiple Money transfers same currency — balance valid."""
         transfers = [
-            TransferSpec(40100, 20200, amount_money=Money("100.00", "USD"), transfer_type="expense"),
-            TransferSpec(22100, 20200, amount_money=Money("23.00", "USD"), transfer_type="vat_input"),
+            TransferSpec(40100, 20200, amount_money=Money.from_string("100.00", "USD"), transfer_type="expense"),
+            TransferSpec(22100, 20200, amount_money=Money.from_string("23.00", "USD"), transfer_type="vat_input"),
         ]
         result = validator.validate(transfers, "EXPENSE")
         assert result.is_valid
@@ -374,8 +374,8 @@ class TestMoneyIntegration:
     def test_money_balance_currency_mismatch_error(self, validator: PreLedgerValidator) -> None:
         """Money transfers with mixed currencies — BALANCE error."""
         transfers = [
-            TransferSpec(40100, 20200, amount_money=Money("100.00", "PLN"), transfer_type="expense"),
-            TransferSpec(22100, 20200, amount_money=Money("23.00", "EUR"), transfer_type="vat_input"),
+            TransferSpec(40100, 20200, amount_money=Money.from_string("100.00", "PLN"), transfer_type="expense"),
+            TransferSpec(22100, 20200, amount_money=Money.from_string("23.00", "EUR"), transfer_type="vat_input"),
         ]
         result = validator.validate(transfers, "EXPENSE")
         # Should fail — currency mismatch (both in _validate_currency_consistency AND _validate_balance)
@@ -385,7 +385,7 @@ class TestMoneyIntegration:
     def test_balance_single_transfer(self, validator: PreLedgerValidator) -> None:
         """Single Money transfer — balance always holds."""
         transfers = [
-            TransferSpec(20200, 70000, amount_money=Money("500.00", "PLN"), transfer_type="revenue"),
+            TransferSpec(20200, 70000, amount_money=Money.from_string("500.00", "PLN"), transfer_type="revenue"),
         ]
         result = validator.validate(transfers, "REVENUE")
         assert result.is_valid
@@ -396,13 +396,13 @@ class TestMoneyIntegration:
             TransferSpec(
                 debit_account_id=40100,
                 credit_account_id=20200,
-                amount_money=Money("100.00", "PLN"),
+                amount_money=Money.from_string("100.00", "PLN"),
                 transfer_type="expense",
             ),
             TransferSpec(
                 debit_account_id=22100,
                 credit_account_id=20200,
-                amount_money=Money("23.00", "PLN"),
+                amount_money=Money.from_string("23.00", "PLN"),
                 transfer_type="vat_input",
             ),
         ]
@@ -423,6 +423,6 @@ class TestMoneyIntegration:
         t_money = TransferSpec(
             debit_account_id=40100,
             credit_account_id=20200,
-            amount_money=Money("50.00", "EUR"),
+            amount_money=Money.from_string("50.00", "EUR"),
         )
         assert t_money.currency == "EUR"

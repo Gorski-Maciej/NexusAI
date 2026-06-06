@@ -434,7 +434,7 @@ class TaxPipeline:
                 vat_grosze=total_vat_grosze,
                 brutto_grosze=total_brutto_grosze,
                 tigerbeetle_result=tb_result,
-                error=f"TIGERBEELE_FAILURE: transfer posting failed — {tb_result}",
+                error=f"TIGERBEETLE_FAILURE: transfer posting failed — {tb_result}",
                 routing=routing,
                 routing_reason=routing_reason,
             )

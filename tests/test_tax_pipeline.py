@@ -207,7 +207,7 @@ class TestPipelineErrors:
         result = await pipeline.process_invoice(invoice)
         # Pipeline returns error on TB failure (critical — goes to exception queue)
         assert not result.success
-        assert "TIGERBEELE_FAILURE" in (result.error or "")
+        assert "TIGERBEETLE_FAILURE" in (result.error or "")
         # Trace was still saved for audit purposes
         assert result.trace_id is not None
 
