@@ -1,4 +1,3 @@
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Tests for TraceGenerator (Element 1 — Generator Ścieżki Decyzyjnej).
 
@@ -10,6 +9,8 @@ Covers:
 """
 
 from __future__ import annotations
+
+from core.msgspec_utils import msgspec_loads
 
 from services.trace_generator import TraceGenerator
 

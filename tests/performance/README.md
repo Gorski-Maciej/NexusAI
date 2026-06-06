@@ -23,7 +23,7 @@ k6 run tests/performance/k6_invoice_upload.js \
 ## CI gate with thresholds
 
 ```bash
-python Code/SKRIPTS/performance_engineering.py \
+python Code/scripts/performance_engineering.py \
   --base-url http://localhost:8000 \
   --token <jwt> \
   --vus 50 \

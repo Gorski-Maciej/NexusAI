@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 def test_model_retention_archive_support_contract() -> None:
-    source = Path('Code/CORE/model_retention.py').read_text(encoding='utf-8')
+    source = Path('Code/core/model_retention.py').read_text(encoding='utf-8')
     assert 'archive_root: Path | None = None' in source
     assert 'shutil.move(str(version.path), str(archive_target))' in source
     assert '"archived_versions"' in source

@@ -22,7 +22,7 @@ jobs:
       - uses: grafana/setup-k6-action@v1
       - name: Run performance engineering gate
         run: |
-          python Code/SKRIPTS/performance_engineering.py \
+          python Code/scripts/performance_engineering.py \
             --base-url "${{ github.event.inputs.base_url }}" \
             --token "${{ github.event.inputs.token }}" \
             --vus 50 \

@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def test_hardware_has_hot_swap() -> None:
-    source = Path("Code/CORE/hardware.py").read_text(encoding="utf-8")
+    source = Path("Code/core/hardware.py").read_text(encoding="utf-8")
     assert "def hot_swap_model" in source
     assert "Phi-3-mini" in source
 

@@ -12,7 +12,7 @@ def test_saga_store_initialized_on_startup() -> None:
 
 
 def test_saga_store_has_history_and_normalization() -> None:
-    source = Path("Code/CORE/saga.py").read_text(encoding="utf-8")
+    source = Path("Code/core/saga.py").read_text(encoding="utf-8")
     assert "workflow_saga_history" in source
     assert "def _normalize_payload" in source
     assert "def get_history" in source

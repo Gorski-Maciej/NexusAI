@@ -1726,8 +1726,6 @@ async def schema_drift_daily_check_task() -> None:
     finally:
         await engine.dispose()
 
-# contract marker: sync_single_invoice_to_duckdb(session, config, invoice_id)
-
 
 @broker.task(schedule=[{"cron": "*/10 * * * *"}], task_name="flush_otel_fallback_buffer")
 async def flush_otel_fallback_buffer_task() -> None:

@@ -1,4 +1,3 @@
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Unit tests for RiskController — zarządzanie progami ryzyka (Strażnik Ryzyka).
 
@@ -19,6 +18,8 @@ Strategia mockowania:
 """
 
 from __future__ import annotations
+
+from core.msgspec_utils import msgspec_dumps
 
 import json
 import sys

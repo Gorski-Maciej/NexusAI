@@ -1,4 +1,3 @@
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Tests for TemporalManager (Element 2).
 
@@ -12,6 +11,8 @@ Covers:
 """
 
 from __future__ import annotations
+
+from core.msgspec_utils import msgspec_dumps
 
 import json
 import uuid

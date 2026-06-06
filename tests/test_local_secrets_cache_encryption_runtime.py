@@ -1,17 +1,17 @@
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 from __future__ import annotations
 
 import importlib.util
-import json
 import os
 import sys
 from pathlib import Path
 
 from nexus_crypto import derive_key
 
+from core.msgspec_utils import msgspec_loads
+
 
 def _load_mod():
-    path = Path('Code/CORE/secrets.py').resolve()
+    path = Path('Code/core/secrets.py').resolve()
     spec = importlib.util.spec_from_file_location('secrets_mod', path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)

@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 import sys
 import time
 from pathlib import Path
 
 
 def _load_module():
-    path = Path('Code/CORE/model_retention.py').resolve()
+    path = Path('Code/core/model_retention.py').resolve()
     spec = importlib.util.spec_from_file_location('model_retention_mod', path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)
@@ -26,6 +27,8 @@ def test_prune_model_versions_keeps_latest_three(tmp_path: Path) -> None:
         ts = time.time() + idx
         p.touch()
         (p / 'weights.bin').touch()
+        os.utime(p, (ts, ts))
+        os.utime(p / 'weights.bin', (ts, ts))
 
     result = mod.prune_model_versions(model_root, keep_last=3)
     remaining = sorted([p.name for p in (model_root / 'ocr-model').iterdir() if p.is_dir()])

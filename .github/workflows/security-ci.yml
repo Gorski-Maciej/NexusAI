@@ -33,7 +33,7 @@ jobs:
           python-version: "3.11"
       - name: Run OWASP ZAP baseline + active mode helper
         run: |
-          python Code/SKRIPTS/security_scan.py \
+          python Code/scripts/security_scan.py \
             --target "${{ github.event.inputs.target_url }}" \
             --mode full \
             --strict-tools \
