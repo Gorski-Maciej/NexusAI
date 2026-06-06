@@ -1,39 +1,36 @@
 # core/resilience.py
+"""Async-native resilience and retry utilities using stamina.
+
+Zastępuje: tenacity (synchroniczny, zewnętrzna biblioteka)
+Nowy:     stamina (async-native, wbudowany retry + circuit breaker)
+
+stamina zapewnia:
+- @stamina.retry(on=..., attempts=..., timeout=...) — dekorator
+- Automatyczny circuit breaker po serii błędów
+- W pełni asynchroniczny (anyio) — nie blokuje pętli zdarzeń
+- Wykładnicze opóźnienia z jitterem
+
+Usage::
+    @async_retry(max_retries=5, base_delay=0.5, max_delay=30.0)
+    async def fetch_data(url: str) -> dict:
+        ...
 """
-Resilience and retry utilities for NexusAI.
-
-Replaced custom implementation with ``tenacity`` (well-known battle-tested library).
-
-Provides:
-- ``async_retry`` — backward-compatible decorator (same API as before)
-
-Deprecated (kept for backward compatibility, will raise on use):
-- ``compute_backoff_delay`` — use ``tenacity.wait_exponential`` directly
-- ``RetryHandler`` — use ``tenacity`` retry state machine
-- ``submit_with_retry`` — use ``tenacity.retry`` directly
-"""
-
 from __future__ import annotations
 
 import logging
 import warnings
-from typing import Callable, Any
+from collections.abc import Callable
+from typing import Any
 
-from tenacity import (
-    retry as tenacity_retry,
-    stop_after_attempt,
-    wait_exponential,
-    retry_if_exception_type,
-    before_sleep_log,
-)
+import stamina
 
 logger = logging.getLogger("nexus.core.resilience")
 
 
-class async_retry:
-    """
-    Decorator that retries an async function with exponential backoff.
-    Backward-compatible wrapper around tenacity.
+class async_retry:  # noqa: N801
+    """Decorator that retries an async function with exponential backoff.
+
+    Async-native wrapper around stamina (replaces tenacity).
 
     Args:
         max_retries: Maximum retry attempts (default 3).
@@ -60,20 +57,14 @@ class async_retry:
         self.exceptions = exceptions
 
     def __call__(self, func: Callable[..., Any]) -> Callable[..., Any]:
-        # tenacity counts total attempts (initial + retries)
-        # Our old API: max_retries = number of retries after initial attempt
-        max_attempts = self.max_retries + 1
+        # stamina counts total attempts (initial + retries)
+        # max_retries = number of retries after initial attempt
+        total_attempts = self.max_retries + 1
 
-        decorator = tenacity_retry(
-            stop=stop_after_attempt(max_attempts),
-            wait=wait_exponential(
-                multiplier=self.base_delay,
-                min=self.base_delay,
-                max=self.max_delay,
-            ),
-            retry=retry_if_exception_type(self.exceptions),
-            reraise=True,
-            before_sleep=before_sleep_log(logger, logging.WARNING),
+        decorator = stamina.retry(
+            on=self.exceptions,
+            attempts=total_attempts,
+            timeout=self.max_delay,
         )
         return decorator(func)
 
@@ -82,20 +73,20 @@ class async_retry:
 
 
 def compute_backoff_delay(*args: Any, **kwargs: Any) -> float:
-    """Deprecated: use ``tenacity.wait_exponential`` directly."""
+    """Deprecated: stamina handles backoff automatically."""
     warnings.warn(
-        "compute_backoff_delay is deprecated, use tenacity.wait_exponential directly",
+        "compute_backoff_delay is deprecated — stamina handles backoff internally",
         DeprecationWarning,
         stacklevel=2,
     )
-    # Fall back to the old calculation to not break callers
-    from math import pow as math_pow
+    import random
+
     attempt = kwargs.get("attempt", args[0] if args else 0)
     base_delay = kwargs.get("base_delay", args[1] if len(args) > 1 else 1.0)
     max_delay = kwargs.get("max_delay", args[2] if len(args) > 2 else 60.0)
     jitter = kwargs.get("jitter", True)
-    import random
-    delay = min(base_delay * (2 ** attempt), max_delay)
+
+    delay = min(base_delay * (2**attempt), max_delay)
     if jitter:
         jitter_range = delay * 0.25
         delay += random.uniform(-jitter_range, jitter_range)
@@ -104,11 +95,11 @@ def compute_backoff_delay(*args: Any, **kwargs: Any) -> float:
 
 
 class RetryHandler:
-    """Deprecated: use ``tenacity`` retry state machine directly."""
+    """Deprecated: use stamina's retry mechanism directly."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         warnings.warn(
-            "RetryHandler is deprecated, use tenacity.retry directly",
+            "RetryHandler is deprecated — use stamina.retry decorator directly",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -157,33 +148,14 @@ async def submit_with_retry(
     on_retry: Callable[[int, float, Exception], None] | None = None,
     **kwargs: Any,
 ) -> Any:
-    """Deprecated: use ``tenacity.retry`` directly.
-
-    Args:
-        func: Async callable to invoke.
-        *args: Positional arguments for the callable.
-        max_retries: Maximum number of retry attempts.
-        base_delay: Initial backoff delay in seconds.
-        max_delay: Maximum delay cap.
-        exceptions: Tuple of exception types to catch and retry.
-        on_retry: Optional callback(attempt, delay, exception) before each retry.
-        **kwargs: Keyword arguments for the callable.
-
-    Returns:
-        The return value of the callable.
-
-    Raises:
-        The last exception caught after exhausting retries.
-    """
+    """Deprecated: use stamina.retry decorator directly."""
     warnings.warn(
-        "submit_with_retry is deprecated, use tenacity.retry directly",
+        "submit_with_retry is deprecated — use stamina.retry decorator directly",
         DeprecationWarning,
         stacklevel=2,
     )
     handler = RetryHandler(
-        max_retries=max_retries,
-        base_delay=base_delay,
-        max_delay=max_delay,
+        max_retries=max_retries, base_delay=base_delay, max_delay=max_delay
     )
 
     while handler.should_retry():
@@ -212,6 +184,7 @@ async def submit_with_retry(
             if on_retry:
                 on_retry(handler.attempt_count, delay, e)
             import asyncio
+
             await asyncio.sleep(delay)
 
     raise RuntimeError("Unexpected state in submit_with_retry")

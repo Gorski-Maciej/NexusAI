@@ -9,5 +9,5 @@ def test_model_retention_archive_support_contract() -> None:
 
 
 def test_model_retention_task_uses_archive_root_contract() -> None:
-    source = Path('Code/API/tasks.py').read_text(encoding='utf-8')
+    source = Path('Code/api/tasks.py').read_text(encoding='utf-8')
     assert 'archive_root=config.base_dir / "models_archive"' in source

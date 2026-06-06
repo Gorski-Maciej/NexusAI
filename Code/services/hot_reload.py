@@ -17,8 +17,10 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
+
+from core.msgspec_utils import msgspec_loads
 
 logger = logging.getLogger("nexus.hot_reload")
 
@@ -62,7 +64,7 @@ class HotReloadListener:
               - last_event_at: per-subject last event timestamp (ISO)
               - uptime_seconds: seconds since listener started (or 0)
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         started = self._started_at
         uptime = (now - started).total_seconds() if started else 0.0
 
@@ -92,7 +94,7 @@ class HotReloadListener:
             logger.info("[HOT-RELOAD] Subscribed to %s (queue=nexus-hot-reload)", subject)
 
         self._task = asyncio.create_task(self._run())
-        self._started_at = datetime.now(timezone.utc)
+        self._started_at = datetime.now(UTC)
         logger.info("[HOT-RELOAD] Listener started")
 
     async def stop(self) -> None:
@@ -132,7 +134,7 @@ class HotReloadListener:
                     return
                 try:
                     msg = await asyncio.wait_for(sub.fetch(1, timeout=1.0), timeout=2.0)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     continue
                 except Exception as exc:
                     logger.warning("[HOT-RELOAD] Fetch error: %s", exc)
@@ -144,7 +146,7 @@ class HotReloadListener:
         """Handle a single NATS message."""
         subject = msg.subject
         try:
-            payload = json.loads(msg.data.decode())
+            payload = msgspec_loads(msg.data)
         except (json.JSONDecodeError, UnicodeDecodeError) as exc:
             logger.warning("[HOT-RELOAD] Invalid message on %s: %s", subject, exc)
             return
@@ -158,7 +160,7 @@ class HotReloadListener:
 
         # Update health counters
         self._event_counts[subject] = self._event_counts.get(subject, 0) + 1
-        self._last_event_at[subject] = datetime.now(timezone.utc).isoformat()
+        self._last_event_at[subject] = datetime.now(UTC).isoformat()
 
         # Record Prometheus metrics
         try:

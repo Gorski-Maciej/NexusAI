@@ -20,6 +20,7 @@ from typing import Any
 
 from core.config import AppConfig
 from core.logger import get_logger
+from core.msgspec_utils import msgspec_dumps, msgspec_loads
 from services.council_agents import ModelManager
 
 logger = get_logger(__name__)
@@ -276,7 +277,7 @@ class RulesSWATTeam:
             )
             raw = response.get("choices", [{}])[0].get("message", {}).get("content", "")
             return self._parse_level_1(raw)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error("[RulesSWAT L1] timeout")
             return {"decision": "FLAG", "confidence": 0.0, "reasoning": "Timeout", "flags": []}
         except Exception as exc:
@@ -302,7 +303,7 @@ class RulesSWATTeam:
             )
             raw = response.get("choices", [{}])[0].get("message", {}).get("content", "")
             return self._parse_level_2(raw)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error("[RulesSWAT L2] timeout")
             return {"passed": False, "confidence": 0.0, "violations": [], "reasoning": "Timeout"}
         except Exception as exc:
@@ -333,7 +334,7 @@ class RulesSWATTeam:
             )
             raw = response.get("choices", [{}])[0].get("message", {}).get("content", "")
             return self._parse_level_3(raw)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error("[RulesSWAT L3] timeout")
             return {"classification": "FLAG", "confidence": 0.0, "risk_factors": [], "reasoning": "Timeout"}
         except Exception as exc:
@@ -365,7 +366,7 @@ class RulesSWATTeam:
             )
             raw = response.get("choices", [{}])[0].get("message", {}).get("content", "")
             return self._parse_level_4(raw)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error("[RulesSWAT L4] timeout")
             return {
                 "risk_level": "HIGH", "confidence": 0.0, "anomaly_score": 0.5,
@@ -432,8 +433,8 @@ Dane faktury:
 - Kwota brutto: {invoice_data.get('amount_gross', '?')} PLN
 - Kategoria: {invoice_data.get('category', 'brak')}
 
-Wynik Level 1 (LFM2.5): {json.dumps(level1, ensure_ascii=False)}
-Wynik Level 2 (Granite): {json.dumps(level2, ensure_ascii=False)}
+Wynik Level 1 (LFM2.5): {msgspec_dumps(level1, ensure_ascii=False)}
+Wynik Level 2 (Granite): {msgspec_dumps(level2, ensure_ascii=False)}
 
 Sklasyfikuj fakturę na podstawie powyższych wyników."""
 
@@ -451,9 +452,9 @@ Dane faktury:
 - Kwota brutto: {invoice_data.get('amount_gross', '?')} PLN
 - Kategoria: {invoice_data.get('category', 'brak')}
 
-Level 1 (LFM): {json.dumps(level1, ensure_ascii=False)}
-Level 2 (Granite): {json.dumps(level2, ensure_ascii=False)}
-Level 3 (LittleLamb): {json.dumps(level3, ensure_ascii=False)}
+Level 1 (LFM): {msgspec_dumps(level1, ensure_ascii=False)}
+Level 2 (Granite): {msgspec_dumps(level2, ensure_ascii=False)}
+Level 3 (LittleLamb): {msgspec_dumps(level3, ensure_ascii=False)}
 
 Dokonaj końcowej weryfikacji i oceń ryzyko."""
 
@@ -464,12 +465,12 @@ Dokonaj końcowej weryfikacji i oceń ryzyko."""
     @staticmethod
     def _parse_level_1(raw: str) -> dict[str, Any]:
         try:
-            parsed = json.loads(raw)
+            parsed = msgspec_loads(raw)
         except json.JSONDecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
-                    parsed = json.loads(match.group(0))
+                    parsed = msgspec_loads(match.group(0))
                 except json.JSONDecodeError:
                     return {"decision": "FLAG", "confidence": 0.0, "reasoning": "Parse error", "flags": []}
             else:
@@ -485,12 +486,12 @@ Dokonaj końcowej weryfikacji i oceń ryzyko."""
     @staticmethod
     def _parse_level_2(raw: str) -> dict[str, Any]:
         try:
-            parsed = json.loads(raw)
+            parsed = msgspec_loads(raw)
         except json.JSONDecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
-                    parsed = json.loads(match.group(0))
+                    parsed = msgspec_loads(match.group(0))
                 except json.JSONDecodeError:
                     return {"passed": False, "confidence": 0.0, "violations": [], "reasoning": "Parse error"}
             else:
@@ -509,12 +510,12 @@ Dokonaj końcowej weryfikacji i oceń ryzyko."""
     @staticmethod
     def _parse_level_3(raw: str) -> dict[str, Any]:
         try:
-            parsed = json.loads(raw)
+            parsed = msgspec_loads(raw)
         except json.JSONDecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
-                    parsed = json.loads(match.group(0))
+                    parsed = msgspec_loads(match.group(0))
                 except json.JSONDecodeError:
                     return {"classification": "FLAG", "confidence": 0.0, "risk_factors": [], "reasoning": "Parse error"}
             else:
@@ -533,12 +534,12 @@ Dokonaj końcowej weryfikacji i oceń ryzyko."""
     @staticmethod
     def _parse_level_4(raw: str) -> dict[str, Any]:
         try:
-            parsed = json.loads(raw)
+            parsed = msgspec_loads(raw)
         except json.JSONDecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
-                    parsed = json.loads(match.group(0))
+                    parsed = msgspec_loads(match.group(0))
                 except json.JSONDecodeError:
                     return {
                         "risk_level": "HIGH", "confidence": 0.0, "anomaly_score": 0.5,
@@ -568,11 +569,11 @@ Dokonaj końcowej weryfikacji i oceń ryzyko."""
 class RulesAgent:
     """
     Legacy wrapper dla RulesSWATTeam zachowujący kompatybilność z tasks.py.
-    
+
     Stary interfejs:
       RulesAgent(model_name, model_path, model_manager, config)
       await agent.evaluate(invoice_data) -> dict
-    
+
     Nowy interfejs (wrapped):
       RulesSWATTeam(lfm_model_name, lfm_model_path, granite_model_name, granite_model_path,
                     littlelamb_model_name, littlelamb_model_path, fin_rwkv_model_path,

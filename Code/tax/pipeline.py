@@ -13,20 +13,26 @@ Tax Pipeline — orchestrates the complete tax processing flow.
 
 from __future__ import annotations
 
-import json
 import logging
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Any
 
 import duckdb
 
+from core.context_interpreter import ContextInterpreter
+from core.msgspec_utils import msgspec_dumps
+from services.pre_ledger_validator import (
+    PreLedgerValidator,
+    TransferSpec,
+)
+from services.trace_generator import TraceGenerator
+
 from .audit import DecisionTraceLogger
 from .exceptions import NoMatchingRuleError
 from .math_engine import (
-    InvoicePositions,
     InvoiceSummary,
     TaxMathEngine,
     money_to_grosze,
@@ -34,13 +40,6 @@ from .math_engine import (
     validate_invariants,
 )
 from .rules import RuleEngine
-from CORE.context_interpreter import ContextInterpreter
-from services.trace_generator import TraceGenerator
-from services.pre_ledger_validator import (
-    PreLedgerValidator,
-    TransferSpec,
-    LedgerValidationError,
-)
 
 logger = logging.getLogger("nexus.tax.pipeline")
 
@@ -153,7 +152,7 @@ class TaxPipeline:
             self._logger.log(
                 transaction_id=tx_id,
                 context=context,
-                invariants_result=json.dumps({"error": str(exc)}),
+                invariants_result=msgspec_dumps({"error": str(exc)}),
             )
             return PipelineResult(
                 success=False,
@@ -248,7 +247,7 @@ class TaxPipeline:
         )
 
         validation = validate_invariants(inv_positions, summary)
-        invariants_json = json.dumps({
+        invariants_json = msgspec_dumps({
             "is_valid": validation.is_valid,
             "error_message": validation.error_message,
         })
@@ -344,12 +343,12 @@ class TaxPipeline:
                 tb_ok = False
 
         # ── Step 7: Decision Trace Logger ────────────────────────────────
-        calc_input = json.dumps({
+        calc_input = msgspec_dumps({
             "positions_net_grosze": positions_net,
             "vat_rate": str(vat_rate),
             "rounding_level": rounding_level,
         })
-        calc_output = json.dumps({
+        calc_output = msgspec_dumps({
             "netto_grosze": total_net_grosze,
             "vat_grosze": total_vat_grosze,
             "brutto_grosze": total_brutto_grosze,
@@ -469,12 +468,10 @@ class TaxPipeline:
             corrected_data: Dane poprawione przez księgowego.
             verified_by: Login księgowego.
         """
-        import json
         import uuid
-        from datetime import datetime, timezone
 
         example_id = str(uuid.uuid4())
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
 
         # Ensure schema exists
         self._conn.execute(
@@ -498,8 +495,8 @@ class TaxPipeline:
             (
                 example_id,
                 transaction_id,
-                json.dumps(original_data, ensure_ascii=False, default=str),
-                json.dumps(corrected_data, ensure_ascii=False, default=str),
+                msgspec_dumps(original_data, ensure_ascii=False, default=str),
+                msgspec_dumps(corrected_data, ensure_ascii=False, default=str),
                 verified_by,
                 now,
             ),

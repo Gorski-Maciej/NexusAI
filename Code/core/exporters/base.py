@@ -1,7 +1,13 @@
 # core/exporters/base.py
-from abc import ABC, abstractmethod
-from models.invoice import Invoice
+from __future__ import annotations
+
 import xml.etree.ElementTree as ET
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from models.invoice import Invoice
+
 
 class BaseExporter(ABC):
     @abstractmethod
@@ -12,7 +18,7 @@ class BaseExporter(ABC):
 class OptimaExporter(BaseExporter):
     """Eksport do formatu Comarch Optima (XML)."""
     def export(self, invoices: list[Invoice]) -> str:
-        root = ET.Element("ROOT", xmlns="[http://www.comarch.pl/optima/dokumenty](http://www.comarch.pl/optima/dokumenty)")
+        root = ET.Element("ROOT", xmlns="http://www.comarch.pl/optima/dokumenty")
         rejestry = ET.SubElement(root, "REJESTRY_ZAKUPU")
 
         for inv in invoices:

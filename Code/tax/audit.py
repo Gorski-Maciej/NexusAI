@@ -11,14 +11,13 @@ cały proces decyzyjny nawet po latach.
 from __future__ import annotations
 
 import hashlib
-import json
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import duckdb
 
-from .exceptions import DecisionTraceIntegrityError
+from core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 # ── Schema ───────────────────────────────────────────────────────────────────
 
@@ -162,16 +161,16 @@ class DecisionTraceLogger:
             The ``trace_id`` (UUID) of the newly created entry.
         """
         trace_id = str(uuid.uuid4())
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         timestamp_iso = now.isoformat()
 
         # Canonical JSON: sort_keys=True ensures deterministic serialization
         context_json = (
-            json.dumps(context, ensure_ascii=False, default=str, sort_keys=True)
+            msgspec_dumps(context, ensure_ascii=False, default=str, sort_keys=True)
             if context else "{}"
         )
         verdict_json = (
-            json.dumps(verdict, ensure_ascii=False, default=str, sort_keys=True)
+            msgspec_dumps(verdict, ensure_ascii=False, default=str, sort_keys=True)
             if verdict else "{}"
         )
 
@@ -248,14 +247,14 @@ class DecisionTraceLogger:
                 "trace_id": str(r[0]),
                 "transaction_id": str(r[1]),
                 "rule_id": str(r[2]) if r[2] else None,
-                "context": json.loads(r[3]) if r[3] else None,
-                "verdict": json.loads(r[4]) if r[4] else None,
+                "context": msgspec_loads(r[3]) if r[3] else None,
+                "verdict": msgspec_loads(r[4]) if r[4] else None,
                 "calculation_input": r[5],
                 "calculation_output": r[6],
                 "invariants_result": r[7],
-                "risk_verdict": json.loads(r[8]) if r[8] else None,
+                "risk_verdict": msgspec_loads(r[8]) if r[8] else None,
                 "decision_trace": str(r[9]) if r[9] else None,
-                "trace_json": json.loads(r[10]) if r[10] else None,
+                "trace_json": msgspec_loads(r[10]) if r[10] else None,
                 "previous_hash": str(r[11]),
                 "current_hash": str(r[12]),
                 "timestamp": str(r[13]),

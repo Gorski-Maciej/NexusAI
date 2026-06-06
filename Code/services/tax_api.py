@@ -1,6 +1,7 @@
 from datetime import date
 
 import httpx
+
 from core.config import AppConfig
 
 

@@ -13,14 +13,14 @@ wybór najbardziej restrykcyjnego progu spośród wszystkich pól.
 
 from __future__ import annotations
 
-import json
 import uuid
 from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from datetime import date
 from typing import Any
 
 import duckdb
 
+from core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 # ── Schema ───────────────────────────────────────────────────────────────────
 
@@ -152,8 +152,8 @@ def seed_default_thresholds(conn: duckdb.DuckDBPyConnection) -> None:
                VALUES (?, ?, ?, ?, ?, ?, ?)""",
             (
                 str(uuid.uuid4()),
-                json.dumps(rule["condition_json"], ensure_ascii=False, sort_keys=True),
-                json.dumps(rule["output_json"], ensure_ascii=False, sort_keys=True),
+                msgspec_dumps(rule["condition_json"], ensure_ascii=False, sort_keys=True),
+                msgspec_dumps(rule["output_json"], ensure_ascii=False, sort_keys=True),
                 rule["valid_from"],
                 rule.get("valid_to"),
                 rule["priority"],
@@ -206,8 +206,8 @@ class RiskGuard:
         ).fetchall()
 
         for cond_json_raw, output_json_raw, priority in rows:
-            condition = json.loads(cond_json_raw) if isinstance(cond_json_raw, str) else cond_json_raw
-            output = json.loads(output_json_raw) if isinstance(output_json_raw, str) else output_json_raw
+            condition = msgspec_loads(cond_json_raw) if isinstance(cond_json_raw, str) else cond_json_raw
+            output = msgspec_loads(output_json_raw) if isinstance(output_json_raw, str) else output_json_raw
 
             rule_tax_form = condition.get("tax_form", "")
             rule_expense = condition.get("expense_type", "")
@@ -318,8 +318,8 @@ class RiskGuard:
                VALUES (?, ?, ?, ?, ?, ?, ?)""",
             (
                 rule_id,
-                json.dumps(condition, ensure_ascii=False, sort_keys=True),
-                json.dumps(output, ensure_ascii=False, sort_keys=True),
+                msgspec_dumps(condition, ensure_ascii=False, sort_keys=True),
+                msgspec_dumps(output, ensure_ascii=False, sort_keys=True),
                 vf,
                 vt,
                 priority,
@@ -352,8 +352,8 @@ class RiskGuard:
         return [
             {
                 "rule_id": str(r[0]),
-                "condition": json.loads(r[1]) if r[1] else {},
-                "output": json.loads(r[2]) if r[2] else {},
+                "condition": msgspec_loads(r[1]) if r[1] else {},
+                "output": msgspec_loads(r[2]) if r[2] else {},
                 "valid_from": str(r[3]),
                 "valid_to": str(r[4]) if r[4] else None,
                 "priority": int(r[5]),

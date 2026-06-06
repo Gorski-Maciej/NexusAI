@@ -175,7 +175,7 @@ class ReplayEngine:
             Lista ReplayResult dla każdej faktury.
         """
         # Find all transactions in the period
-        trace_logger = DecisionTraceLogger(self._conn)
+        DecisionTraceLogger(self._conn)
         try:
             rows = self._conn.execute(
                 """SELECT DISTINCT transaction_id
@@ -220,9 +220,9 @@ def _compare_verdicts(
     """
     differences: list[dict[str, Any]] = []
 
-    for field in _COMPARISON_FIELDS:
-        orig_val = original.get(field)
-        replay_val = replayed.get(field)
+    for comp_field in _COMPARISON_FIELDS:
+        orig_val = original.get(comp_field)
+        replay_val = replayed.get(comp_field)
 
         # Normalize None vs null
         if orig_val is None and replay_val is None:

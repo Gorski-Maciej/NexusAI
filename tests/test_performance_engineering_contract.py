@@ -1,3 +1,4 @@
+from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 from __future__ import annotations
 
 import importlib.util
@@ -6,7 +7,7 @@ from pathlib import Path
 
 
 def _load_perf_module():
-    module_path = Path('Code/SKRIPTS/performance_engineering.py')
+    module_path = Path('Code/scripts/performance_engineering.py')
     spec = importlib.util.spec_from_file_location('perf_module', module_path)
     module = importlib.util.module_from_spec(spec)
     assert spec and spec.loader
@@ -17,7 +18,7 @@ def _load_perf_module():
 def test_enforce_thresholds_passes_for_good_summary(tmp_path: Path) -> None:
     mod = _load_perf_module()
     summary = tmp_path / 'summary.json'
-    summary.write_text(json.dumps({
+    summary.write_text(msgspec_dumps({
         'metrics': {
             'http_req_duration': {'values': {'p(95)': 100.0}},
             'checks': {'values': {'rate': 0.99}},
@@ -29,7 +30,7 @@ def test_enforce_thresholds_passes_for_good_summary(tmp_path: Path) -> None:
 def test_enforce_thresholds_fails_for_bad_summary(tmp_path: Path) -> None:
     mod = _load_perf_module()
     summary = tmp_path / 'summary_bad.json'
-    summary.write_text(json.dumps({
+    summary.write_text(msgspec_dumps({
         'metrics': {
             'http_req_duration': {'values': {'p(95)': 2200.0}},
             'checks': {'values': {'rate': 0.90}},

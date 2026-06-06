@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-import json
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.rbac import NexusRole, RoleContext
+from core.msgspec_utils import msgspec_dumps
 from db.models import SecurityAlert
-from Roboton_Reflekton.ledger_client import TigerBeetleClient
+from roboton_reflekton.ledger_client import TigerBeetleClient
 
 
-class TigerBeetleSecurityException(PermissionError):
+class TigerBeetleSecurityException(PermissionError):  # noqa: N818
     pass
 
 
@@ -52,7 +51,7 @@ class SecureTigerBeetleClient:
             SecurityAlert(
                 actor=actor,
                 operation=operation,
-                details=json.dumps(details, default=str),
+                details=msgspec_dumps(details, default=str),
             )
         )
         await session.commit()

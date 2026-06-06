@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 import sys
 import time
 from pathlib import Path
@@ -47,6 +48,6 @@ def test_manifest_written_with_events(tmp_path: Path) -> None:
         (p / 'w.bin').touch()
 
     mod.prune_model_versions(root, keep_last=1, archive_root=arc, manifest_path=man)
-    payload = json.loads(man.read_text(encoding='utf-8'))
+    payload = msgspec_loads(man.read_bytes())
     assert payload['archived_versions'] == 2
     assert len(payload['events']) == 2

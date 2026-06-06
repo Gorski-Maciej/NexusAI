@@ -19,6 +19,7 @@ from typing import Any
 
 from core.config import AppConfig
 from core.logger import get_logger
+from core.msgspec_utils import msgspec_dumps, msgspec_loads
 from services.council_agents import ModelManager
 
 logger = get_logger(__name__)
@@ -191,7 +192,7 @@ class AnalyticsPipeline:
             )
             raw = response.get("choices", [{}])[0].get("message", {}).get("content", "")
             return self._parse_stage_1(raw)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error("[Analytics S1] timeout")
             return {"queries": [], "reasoning": "Timeout"}
         except Exception as exc:
@@ -222,7 +223,7 @@ class AnalyticsPipeline:
             )
             raw = response.get("choices", [{}])[0].get("message", {}).get("content", "")
             return self._parse_stage_2(raw)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error("[Analytics S2] timeout")
             return {
                 "trends": [], "anomalies": [], "summary": "Timeout",
@@ -259,7 +260,7 @@ class AnalyticsPipeline:
             )
             raw = response.get("choices", [{}])[0].get("message", {}).get("content", "")
             return self._parse_stage_3(raw)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error("[Analytics S3] timeout")
             return {
                 "final_confidence": 0.0, "risk_score": 0.5,
@@ -347,8 +348,8 @@ Dane faktury:
 - Kwota brutto: {invoice_data.get('amount_gross', '?')} PLN
 - Kategoria: {invoice_data.get('category', 'brak')}
 
-Stage 1 (Hrida SQL): {json.dumps(stage1, ensure_ascii=False)}
-Stage 2 (Qwen Analysis): {json.dumps(stage2, ensure_ascii=False)}
+Stage 1 (Hrida SQL): {msgspec_dumps(stage1, ensure_ascii=False)}
+Stage 2 (Qwen Analysis): {msgspec_dumps(stage2, ensure_ascii=False)}
 
 Dokonaj końcowej recenzji analizy. Skoryguj ewentualne błędy."""
 
@@ -359,12 +360,12 @@ Dokonaj końcowej recenzji analizy. Skoryguj ewentualne błędy."""
     @staticmethod
     def _parse_stage_1(raw: str) -> dict[str, Any]:
         try:
-            parsed = json.loads(raw)
+            parsed = msgspec_loads(raw)
         except json.JSONDecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
-                    parsed = json.loads(match.group(0))
+                    parsed = msgspec_loads(match.group(0))
                 except json.JSONDecodeError:
                     return {"queries": [], "reasoning": "Parse error"}
             else:
@@ -381,12 +382,12 @@ Dokonaj końcowej recenzji analizy. Skoryguj ewentualne błędy."""
     @staticmethod
     def _parse_stage_2(raw: str) -> dict[str, Any]:
         try:
-            parsed = json.loads(raw)
+            parsed = msgspec_loads(raw)
         except json.JSONDecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
-                    parsed = json.loads(match.group(0))
+                    parsed = msgspec_loads(match.group(0))
                 except json.JSONDecodeError:
                     return {"trends": [], "anomalies": [], "summary": "Parse error", "confidence": 0.0, "needs_further_analysis": True}
             else:
@@ -409,12 +410,12 @@ Dokonaj końcowej recenzji analizy. Skoryguj ewentualne błędy."""
     @staticmethod
     def _parse_stage_3(raw: str) -> dict[str, Any]:
         try:
-            parsed = json.loads(raw)
+            parsed = msgspec_loads(raw)
         except json.JSONDecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
-                    parsed = json.loads(match.group(0))
+                    parsed = msgspec_loads(match.group(0))
                 except json.JSONDecodeError:
                     return {
                         "final_confidence": 0.0, "risk_score": 0.5,

@@ -108,7 +108,7 @@ def compute_monthly_merkle_root(binary_hashes: list[str]) -> str:
             level.append(level[-1])
         nxt: list[str] = []
         for i in range(0, len(level), 2):
-            nxt.append(hashlib.sha256(f"{level[i]}{level[i+1]}".encode("utf-8")).hexdigest())
+            nxt.append(hashlib.sha256(f"{level[i]}{level[i+1]}".encode()).hexdigest())
         level = nxt
     return level[0]
 

@@ -1,3 +1,4 @@
+from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Tests for TraceGenerator (Element 1 — Generator Ścieżki Decyzyjnej).
 
@@ -96,7 +97,7 @@ class TestTraceGenerator:
             final_verdict=verdict,
             context=context,
         )
-        trace = json.loads(trace_json_str)
+        trace = msgspec_loads(trace_json_str)
         assert "evaluated_rules" in trace
         assert "final_verdict" in trace
         assert "context_snapshot" in trace
@@ -108,7 +109,7 @@ class TestTraceGenerator:
         """Empty inputs produce minimal JSON."""
         import json
         trace_json_str = TraceGenerator.generate_trace_json()
-        trace = json.loads(trace_json_str)
+        trace = msgspec_loads(trace_json_str)
         assert trace == {}
 
     def test_default_template_uses_rule_id(self) -> None:

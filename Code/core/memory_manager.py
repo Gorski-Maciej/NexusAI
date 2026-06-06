@@ -1,88 +1,98 @@
 # core/memory_manager.py
-import torch
+"""Memory management for AI models.
+
+Zgodnie z aa3fvcx.txt: PyTorch → GGUF (llama-cpp-python).
+MemoryManager obsługuje teraz modele GGUF zamiast PyTorch.
+cachetools.TTLCache zastąpiony prostym dict + time.
+"""
+
+from __future__ import annotations
+
 import gc
 import time
-from core.logger import logger
+from typing import Any
+
 
 class MemoryManager:
-    """Zarządza zrzucaniem modeli z VRAM do RAM."""
+    """Zarządza zwalnianiem pamięci po modelach GGUF.
+
+    Modele GGUF (llama-cpp-python) nie wymagają specjalnej hibernacji
+    do VRAM — działają w RAM. Wystarczy usunąć referencje i wywołać GC.
+    """
 
     @staticmethod
-    def hibernate_models(processors: list):
-        """Przenosi modele na CPU i czyści VRAM."""
-        logger.info("Aplikacja zminimalizowana - hibernacja modeli AI...")
-        for proc in processors:
-            if hasattr(proc, 'model') and proc.model is not None:
-                # Przeniesienie modelu PyTorch na CPU (zwalnia VRAM, zostaje w RAM)
-                proc.model.to("cpu")
+    def hibernate_models(processors: list) -> None:
+        """Zwalnia referencje do modeli — GC zwolni pamięć.
 
-        # Wymuszenie czyszczenia
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
+        Args:
+            processors: Lista obiektów z atrybutem ``model`` (do zwolnienia).
+        """
+        for proc in processors:
+            if hasattr(proc, "model") and proc.model is not None:
+                proc.model = None
+
         gc.collect()
 
     @staticmethod
-    def wakeup_models(processors: list):
-        """Przywraca modele do GPU dla maksymalnej wydajności."""
-        if torch.cuda.is_available():
-            logger.info("Aplikacja aktywna - przywracanie modeli do GPU...")
-            for proc in processors:
-                if hasattr(proc, 'model') and proc.model is not None:
-                    proc.model.to("cuda")
+    def wakeup_models(processors: list) -> None:
+        """Modele GGUF nie wymagają przywracania do GPU — nic nie robi.
 
-
-from cachetools import TTLCache
+        Args:
+            processors: Lista obiektów (ignorowana).
+        """
+        pass
 
 
 class TimedModelCache:
     """Cache modeli z TTL i automatycznym zwalnianiem zasobów.
 
-    Wrapper wokół ``cachetools.TTLCache`` — wewnętrznie używa LRU + TTL.
-    Dodaje specjalne czyszczenie dla modeli PyTorch (``model.to("cpu")``).
+    Używa prostego dict + timestamp zamiast cachetools.TTLCache.
     """
 
     def __init__(self, ttl_seconds: int = 600, maxsize: int = 64) -> None:
-        self.cache: TTLCache[str, object] = TTLCache(maxsize=maxsize, ttl=ttl_seconds)
-        self.last_used: dict[str, float] = {}
-        self.ttl = ttl_seconds
+        self._cache: dict[str, object] = {}
+        self._timestamps: dict[str, float] = {}
+        self._ttl = ttl_seconds
+        self._maxsize = maxsize
 
-    async def get(self, key: str, loader):
+    async def get(self, key: str, loader) -> Any:
         now = time.monotonic()
         try:
-            model = self.cache[key]
-            self.last_used[key] = now
-            return model
+            model = self._cache[key]
+            ts = self._timestamps.get(key, 0.0)
+            if now - ts < self._ttl:
+                self._timestamps[key] = now
+                return model
+            # Expired — remove and reload
+            del self._cache[key]
+            del self._timestamps[key]
         except KeyError:
             pass
 
         model = await loader()
-        self.cache[key] = model
-        self.last_used[key] = now
+        self._cache[key] = model
+        self._timestamps[key] = now
+
+        # Evict oldest if over maxsize
+        if len(self._cache) > self._maxsize:
+            oldest = min(self._timestamps, key=lambda k: self._timestamps[k])
+            del self._cache[oldest]
+            del self._timestamps[oldest]
+
         return model
 
     def evict_expired(self, now: float | None = None) -> None:
-        """Force cleanup of expired entries. TTLCache handles this automatically,
-        but calling with explicit now triggers immediate expiration."""
-        if now is not None:
-            # Trigger TTLCache cleanup by accessing the internal timer
-            self.cache.expire(time=now)
-        else:
-            self.cache.expire()
+        """Force cleanup of expired entries."""
+        if now is None:
+            now = time.monotonic()
+        expired = [k for k, ts in self._timestamps.items() if now - ts >= self._ttl]
+        for k in expired:
+            self._cache.pop(k, None)
+            self._timestamps.pop(k, None)
 
     def release(self, key: str) -> None:
-        try:
-            model = self.cache.pop(key, None)
-        except KeyError:
-            model = None
-        self.last_used.pop(key, None)
-        if model is None:
-            return
-        if hasattr(model, "to"):
-            try:
-                model.to("cpu")
-            except Exception:
-                pass
-        del model
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
+        """Remove a single key from cache."""
+        self._cache.pop(key, None)
+        self._timestamps.pop(key, None)
+        del key  # Help GC
         gc.collect()

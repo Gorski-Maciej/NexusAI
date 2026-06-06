@@ -1,4 +1,0 @@
-cryptography>=42.0.0
-httpx>=0.27.0
-lxml>=5.1.0
-xsdata>=24.0 # Do walidacji XML z polską schemą FA_VAT

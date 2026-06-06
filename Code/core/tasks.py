@@ -1,13 +1,14 @@
 """Asynchronous workflow tasks powered by Taskiq + NATS JetStream."""
 from __future__ import annotations
+
 import asyncio
-import json
 import os
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
+
 import msgspec
 import psutil
 from sqlalchemy import select
@@ -15,19 +16,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from taskiq import TaskiqEvents
 from taskiq_nats import PullBasedJetStreamBroker
 
+from core.backup import BackupManager
 from core.config import AppConfig
-from db.database import create_oltp_engine, create_session_factory, SessionLocal
+from core.logger import get_logger
+from core.memory_manager import TimedModelCache
+from core.msgspec_utils import msgspec_dumps
+from db.analytics import DuckDBManager
+from db.database import SessionLocal, create_oltp_engine, create_session_factory
 from models.invoice import ActiveLearningPattern, Invoice
 from models.outbox import OutboxEvent, OutboxStatus
 from pipeline.ocr import DocumentProcessor, ReviewStatus
-from core.logger import get_logger
-from core.backup import BackupManager
-from Roboton_Reflekton.vision_agent import VisionAgent
+from roboton_reflekton.dunning_engine import DunningEngine
+from roboton_reflekton.ledger_client import TigerBeetleClient
+from roboton_reflekton.vision_agent import VisionAgent
 from services.fixed_assets import FixedAssetsService
-from Roboton_Reflekton.ledger_client import TigerBeetleClient
-from db.analytics import DuckDBManager
-from Roboton_Reflekton.dunning_engine import DunningEngine
-from core.memory_manager import TimedModelCache
 
 logger = get_logger()
 OCR_INFERENCE_SEMAPHORE = asyncio.Semaphore(int(os.getenv("NEXUS_MAX_PARALLEL_OCR", "1")))
@@ -105,26 +107,28 @@ def pin_worker_cpu_affinity(reserve_core0: bool = True) -> None:
         target = available
     process.cpu_affinity(target)
 
-def _get_lancedb_table() -> Any:
-    """Open or create vector table in LanceDB backed by Polars schema."""
-    import lancedb
-    import polars as pl
-    db = lancedb.connect("nexus_lancedb", mode="file")
-    _dtypes = {
-        "id": pl.Utf8,
-        "invoice_id": pl.Utf8,
-        "contractor_id": pl.Utf8,
-        "vector": pl.List(pl.Float32),
-        "checksum": pl.Utf8,
-        "created_at": pl.Datetime(time_unit="us", time_zone="UTC"),
-        "is_preferred": pl.Boolean,
-    }
-    # Generate Arrow schema from Polars for LanceDB
-    _empty = pl.DataFrame({}, schema=_dtypes)
-    _arrow_schema = _empty.to_arrow().schema
-    if "invoice_vectors" in db.table_names():
-        return db.open_table("invoice_vectors", index_cache_size=100 * 1024 * 1024)
-    return db.create_table("invoice_vectors", schema=_arrow_schema)
+def _get_vector_store() -> Any:
+    """Get or create vector store (sqlite-vec).
+
+    Zastępuje: LanceDB + Polars → sqlite-vec VectorStore.
+    """
+    from db.vector_store import VectorStore
+    store = VectorStore("app_data/vectors.db")
+    # Ensure invoice_vectors-like table exists
+    conn = store._get_conn()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS invoice_vectors (
+            id              TEXT PRIMARY KEY,
+            invoice_id      TEXT NOT NULL,
+            contractor_id   TEXT NOT NULL,
+            vector          BLOB NOT NULL,
+            checksum        TEXT DEFAULT '',
+            created_at      TEXT NOT NULL DEFAULT (datetime('now')),
+            is_preferred    INTEGER DEFAULT 0
+        )
+    """)
+    conn.commit()
+    return store
 
 def _simple_features(raw_text: str) -> list[float]:
     """Small dense vector placeholder; replace with embedding model output."""
@@ -149,7 +153,7 @@ async def _update_invoice_status(session: AsyncSession, invoice_id: str, status:
     if invoice is None:
         return
     invoice.processing_status = status
-    invoice.updated_at = datetime.now(timezone.utc)
+    invoice.updated_at = datetime.now(UTC)
     await session.flush()
 
 @broker.on_event(TaskiqEvents.WORKER_STARTUP)
@@ -195,18 +199,25 @@ async def process_invoice_task() -> dict[str, str]:
                 "handwritten_notes_summary": vision.handwritten_notes_summary,
                 "source": vision.source,
             }
-            enriched_text = f"{processed.primary.raw_text}\n[vision]{json.dumps(vision_payload, ensure_ascii=False)}"
+            enriched_text = f"{processed.primary.raw_text}\n[vision]{msgspec_dumps(vision_payload, ensure_ascii=False)}"
             vector = _simple_features(enriched_text)
-            table = _get_lancedb_table()
-            table.add([{
-                "id": str(uuid.uuid4()),
-                "invoice_id": payload.invoice_id,
-                "contractor_id": payload.contractor_id,
-                "vector": vector,
-                "checksum": processed.primary.checksum,
-                "created_at": datetime.now(timezone.utc),
-                "is_preferred": False,
-            }])
+            store = _get_vector_store()
+            conn = store._get_conn()
+            conn.execute(
+                """INSERT INTO invoice_vectors
+                   (id, invoice_id, contractor_id, vector, checksum, created_at, is_preferred)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                (
+                    str(uuid.uuid4()),
+                    payload.invoice_id,
+                    payload.contractor_id,
+                    store._vector_to_blob(vector),
+                    processed.primary.checksum,
+                    datetime.now(UTC).isoformat(),
+                    0,
+                ),
+            )
+            conn.commit()
             logger.info(
                 "VisionAgent(%s) processed invoice_id=%s anomalies=%s",
                 vision.source,
@@ -223,13 +234,13 @@ async def process_invoice_task() -> dict[str, str]:
         except TimeoutError as exc:
             machine.fail()
             event.status = OutboxStatus.FAILED
-            event.payload = json.dumps({"error": f"OCR_TIMEOUT:{exc}", "original_payload": event.payload})
+            event.payload = msgspec_dumps({"error": f"OCR_TIMEOUT:{exc}", "original_payload": event.payload})
             await _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
 
         except Exception as exc:
             machine.fail()
             event.status = OutboxStatus.FAILED
-            event.payload = json.dumps({"error": str(exc), "original_payload": event.payload})
+            event.payload = msgspec_dumps({"error": str(exc), "original_payload": event.payload})
             await _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
 
         await session.commit()
@@ -242,8 +253,7 @@ async def store_active_learning_feedback(contractor_id: str, corrected_payload: 
     config = AppConfig(base_dir=Path.cwd())
     engine = create_oltp_engine(config)
     session_factory = create_session_factory(engine)
-    table = _get_lancedb_table()
-    serialized = json.dumps(corrected_payload, ensure_ascii=False)
+    serialized = msgspec_dumps(corrected_payload, ensure_ascii=False)
     vector = _simple_features(serialized)
     pattern_id = str(uuid.uuid4())
 
@@ -257,15 +267,23 @@ async def store_active_learning_feedback(contractor_id: str, corrected_payload: 
         )
         await session.commit()
 
-    table.add([{
-        "id": pattern_id,
-        "invoice_id": "",
-        "contractor_id": contractor_id,
-        "vector": vector,
-        "checksum": "",
-        "created_at": datetime.now(timezone.utc),
-        "is_preferred": True,
-    }])
+    store = _get_vector_store()
+    conn = store._get_conn()
+    conn.execute(
+        """INSERT INTO invoice_vectors
+           (id, invoice_id, contractor_id, vector, checksum, created_at, is_preferred)
+           VALUES (?, ?, ?, ?, ?, ?, ?)""",
+        (
+            pattern_id,
+            "",
+            contractor_id,
+            store._vector_to_blob(vector),
+            "",
+            datetime.now(UTC).isoformat(),
+            1,
+        ),
+    )
+    conn.commit()
 
     await engine.dispose()
     return {"result": "LEARNING_SAVED"}
@@ -282,7 +300,7 @@ async def scheduled_backup_task():
 @broker.task(schedule=[{"cron": "55 23 28-31 * *"}], task_name="cron_post_depreciation")
 async def cron_post_depreciation() -> dict[str, int | str]:
     """Monthly fixed-assets depreciation posting. Runs on month-end window 23:55 UTC."""
-    today = datetime.now(timezone.utc).date()
+    today = datetime.now(UTC).date()
     if (today + timedelta(days=1)).month == today.month:
         return {"result": "SKIPPED_NOT_MONTH_END", "posted": 0}
     duckdb = DuckDBManager(Path("app_data/nexus_olap.duckdb"))
@@ -319,7 +337,7 @@ async def invoice_reconciliation_loop():
                 )
                 invoice.retry_count += 1
                 invoice.updated_at = datetime.utcnow()
-                payload = json.dumps({
+                payload = msgspec_dumps({
                     "invoice_id": invoice.id,
                     "file_path": invoice.file_path,
                     "is_retry": True
@@ -332,7 +350,7 @@ async def invoice_reconciliation_loop():
                 )
                 invoice.status = "ERROR: TIMEOUT"
                 invoice.updated_at = datetime.utcnow()
-                error_payload = json.dumps({
+                error_payload = msgspec_dumps({
                     "status": "FAILED",
                     "message": "Przekroczono limit czasu (Krytyczny błąd przetwarzania)."
                 })

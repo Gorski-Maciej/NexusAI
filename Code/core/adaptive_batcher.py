@@ -1,7 +1,9 @@
 # core/adaptive_batcher.py
 import asyncio
-from typing import Any, List
+from typing import Any
+
 from core.logger import logger
+
 
 class AdaptiveBatcher:
     """Grupowanie zadań AI dla optymalnego wykorzystania przepustowości GPU."""
@@ -41,7 +43,7 @@ class AdaptiveBatcher:
                         item, future = await asyncio.wait_for(self._queue.get(), timeout=time_left)
                         batch.append(item)
                         futures.append(future)
-                    except asyncio.TimeoutError:
+                    except TimeoutError:
                         break
 
                 if batch:

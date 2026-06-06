@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine
+
+from core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 
 @dataclass(slots=True)
@@ -28,16 +29,16 @@ class PersistedSagaStore:
         if payload is None:
             return {}, "{}"
         if isinstance(payload, dict):
-            return payload, json.dumps(payload, ensure_ascii=False)
+            return payload, msgspec_dumps(payload, ensure_ascii=False)
         if isinstance(payload, str):
             try:
-                parsed = json.loads(payload)
+                parsed = msgspec_loads(payload)
                 if isinstance(parsed, dict):
-                    return parsed, json.dumps(parsed, ensure_ascii=False)
+                    return parsed, msgspec_dumps(parsed, ensure_ascii=False)
             except Exception:
                 pass
-            return {"raw": payload}, json.dumps({"raw": payload}, ensure_ascii=False)
-        return {"raw": str(payload)}, json.dumps({"raw": str(payload)}, ensure_ascii=False)
+            return {"raw": payload}, msgspec_dumps({"raw": payload}, ensure_ascii=False)
+        return {"raw": str(payload)}, msgspec_dumps({"raw": str(payload)}, ensure_ascii=False)
 
     @staticmethod
     def _parse_timestamp(value: Any) -> datetime:
@@ -51,7 +52,7 @@ class PersistedSagaStore:
                 pass
             for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S.%f"):
                 try:
-                    return datetime.strptime(value, fmt).replace(tzinfo=timezone.utc)
+                    return datetime.strptime(value, fmt).replace(tzinfo=UTC)
                 except ValueError:
                     continue
         raise ValueError(f"Cannot parse timestamp: {value!r}")
@@ -93,7 +94,7 @@ class PersistedSagaStore:
             raise ValueError("new_state cannot be empty")
 
         payload_dict, payload_json = self._normalize_payload(payload)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         # Format zgodny z SQLite CURRENT_TIMESTAMP, żeby string comparison w list_stuck działał poprawnie
         now_str = now.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -171,7 +172,7 @@ class PersistedSagaStore:
 
     async def list_stuck(self, older_than_minutes: int = 120) -> list[SagaState]:
         threshold = max(1, int(older_than_minutes))
-        cutoff = datetime.now(timezone.utc) - timedelta(minutes=threshold)
+        cutoff = datetime.now(UTC) - timedelta(minutes=threshold)
         # Używamy formatu zgodnego z SQLite CURRENT_TIMESTAMP, aby string comparison działał
         cutoff_str = cutoff.strftime("%Y-%m-%d %H:%M:%S")
         async with self._engine.begin() as conn:

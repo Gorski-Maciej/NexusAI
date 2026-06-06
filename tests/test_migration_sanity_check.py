@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def _load_module():
-    path = Path('Code/SKRIPTS/migration_sanity_check.py').resolve()
+    path = Path('Code/scripts/migration_sanity_check.py').resolve()
     spec = importlib.util.spec_from_file_location('migration_sanity_mod', path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)
@@ -25,6 +25,6 @@ def test_compare_stats_detects_regression() -> None:
 
 
 def test_checksum_option_contract_present() -> None:
-    source = Path('Code/SKRIPTS/migration_sanity_check.py').read_text(encoding='utf-8')
+    source = Path('Code/scripts/migration_sanity_check.py').read_text(encoding='utf-8')
     assert '--checksum' in source
     assert 'table_checksum' in source

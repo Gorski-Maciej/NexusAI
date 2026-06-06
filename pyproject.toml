@@ -1,121 +1,139 @@
 [build-system]
-requires = ["setuptools>=68.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.21", "maturin>=1.5"]
+build-backend = "hatchling.build"
 
-# ── uv (Astral) — ultra-fast Python package manager ──────────────────────────
-# Install:  pip install uv   or   curl -LsSf https://astral.sh/uv/install.sh | sh
-# Usage:
-#   uv sync              # Install deps + create .venv (uv.lock auto-generated)
-#   uv pip install ...   # Drop-in pip replacement
-#   uv run <script>      # Run in venv
-#   uv build             # Build package
-#   uv tool install ...  # pipx replacement
+# ── pixi (prefix.dev) — all-in-one environment manager ──────────────────────
+# pixi replaces Docker, conda, and manual system-dependency scripts.
+# One pixi.toml defines: Python version (3.13t), PyPI packages, AND system deps.
+# Install: curl -fsSL https://pixi.sh/install.sh | sh
 #
-# uv is ~10-100x faster than pip and reduces disk/RAM usage significantly.
-[tool.uv]
-# Use the same Python version constraint as the project
-required-version = ">=0.5.0"
+# Quick start:
+#   pixi install       # Create environment (Python 3.13t + all deps)
+#   pixi run python    # Run in the isolated environment
+#   pixi run pytest    # Run tests
+#   pixi shell         # Activate shell inside the environment
 
-# Package index configuration
-[[tool.uv.index]]
-url = "https://pypi.org/simple/"
-default = true
+# ── uv (Astral) — fastest PyPI package manager (built into pixi) ───────────
+# uv is included inside pixi, but can also be used standalone:
+#   uv pip install -r requirements.txt   # 10-100× faster than pip
+#   uv venv                             # Create virtual env in milliseconds
 
 [project]
 name = "nexus-ai"
-version = "0.1.0"
-description = "AI-Powered Accounting & Invoice Processing System"
+version = "2.0.0"
+description = "NexusAI — Ultralekki, autonomiczny system księgowy z AI"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 license = { text = "Proprietary" }
 authors = [
     { name = "NexusAI Team" },
 ]
 
-keywords = ["accounting", "ai", "ocr", "invoice", "fintech"]
+keywords = ["accounting", "ai", "ocr", "invoice", "fintech", "poland"]
 
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Financial and Insurance Industry",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Rust",
     "Topic :: Office/Business :: Financial :: Accounting",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
 dependencies = [
-    # ASGI / API
+    # ═══════════════════════════════════════════════════════════════════════
+    # API / ASGI — Litestar + Granian (Rust ASGI server, zastępuje Uvicorn)
+    # ═══════════════════════════════════════════════════════════════════════
     "litestar>=2.8.0",
-    "uvicorn>=0.30.0",
+    "granian>=1.0.0",
 
-    # Database
-    "sqlalchemy>=2.0.0",
+    # ═══════════════════════════════════════════════════════════════════════
+    # Database — SQLModel (SQLAlchemy + Pydantic w jednym), sqlite-vec
+    # ═══════════════════════════════════════════════════════════════════════
+    "sqlmodel>=0.0.16",
     "aiosqlite>=0.20.0",
+    "sqlite-vec>=0.1.0",
     "alembic>=1.13.0",
 
-    # Data validation & serialization
-    "pydantic>=2.7.0",
-    "pydantic-settings>=2.14.0",
+    # ═══════════════════════════════════════════════════════════════════════
+    # Validation & Serialization — msgspec (ultraszybki, zastępuje json+orjson)
+    # ═══════════════════════════════════════════════════════════════════════
     "msgspec>=0.18.0",
 
-    # Task queue / messaging
+    # ═══════════════════════════════════════════════════════════════════════
+    # Async I/O — anyio (jednolita warstwa dla asyncio/trio)
+    # ═══════════════════════════════════════════════════════════════════════
+    "anyio>=4.4.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Task Queue / Messaging — Taskiq + NATS JetStream
+    # ═══════════════════════════════════════════════════════════════════════
     "taskiq>=0.11.0",
     "taskiq-nats>=0.5.0",
     "nats-py>=2.6.0",
 
-    # HTTP / networking
+    # ═══════════════════════════════════════════════════════════════════════
+    # HTTP / Networking — httpx + hishel (inteligentny cache HTTP)
+    # ═══════════════════════════════════════════════════════════════════════
     "httpx>=0.27.0",
-    "anyio>=4.4.0",
-
-    # Resilience / retry
-    "tenacity>=9.0.0",
-    "pybreaker>=1.4.0",
-
-    # File system
+    "hishel>=0.1.0",
     "fsspec>=2024.3.0",
 
-    # Cryptography
-    "cryptography>=42.0.0",
+    # ═══════════════════════════════════════════════════════════════════════
+    # Resilience — stamina (async-native retry + circuit breaker)
+    # Zastępuje: tenacity + pybreaker
+    # ═══════════════════════════════════════════════════════════════════════
+    "stamina>=0.1.0",
 
-    # Litestar (with JWT support for security module)
+    # ═══════════════════════════════════════════════════════════════════════
+    # Cryptography — nexus-crypto (Rust + PyO3, własny moduł)
+    # Zastępuje: cryptography (całość — Fernet, PBKDF2, SHA-256)
+    # ═══════════════════════════════════════════════════════════════════════
+    "nexus-crypto>=0.1.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Litestar JWT (wbudowane — zero dodatkowych zależności)
+    # ═══════════════════════════════════════════════════════════════════════
     "litestar[jwt]>=2.8.0",
 
-    # XML / document processing
+    # ═══════════════════════════════════════════════════════════════════════
+    # Document / XML processing
+    # ═══════════════════════════════════════════════════════════════════════
     "lxml>=5.1.0",
-    "xsdata>=24.0",
-
-    # OCR
     "pillow>=10.0.0",
 
-    # Logging
-    "loguru>=0.7.0",
-
-    # Metrics / Monitoring
-    "prometheus_client>=0.20.0",
-
-    # Caching
-    "cachetools>=7.0.0",
-
-    # Utilities
-    "psutil>=5.9.0",
-    "pyyaml>=6.0",
-
-    # Date parsing
-    "dateparser>=1.2.0",
-
-    # Analytics / OLAP
+    # ═══════════════════════════════════════════════════════════════════════
+    # Analytics / OLAP — DuckDB + Polars (zastępuje pandas)
+    # ═══════════════════════════════════════════════════════════════════════
     "duckdb>=1.0.0",
-    "pyarrow>=15.0.0",  # Zależność DuckDB/LanceDB (nie bezpośrednie użycie)
-
-    # Vector / ANN search
-    "lancedb>=0.8.0",
-
-    # DataFrame (zastępuje pandas i bezpośrednie PyArrow)
+    "pyarrow>=15.0.0",
     "polars>=1.0.0",
 
-    # Money / currency
-    "py-moneyed>=3.0",
+    # ═══════════════════════════════════════════════════════════════════════
+    # LLM Inference — llama-cpp-python (GGUF, CPU/GPU)
+    # ═══════════════════════════════════════════════════════════════════════
+    "llama-cpp-python>=0.2.0",
 
+    # ═══════════════════════════════════════════════════════════════════════
+    # Model Hub
+    # ═══════════════════════════════════════════════════════════════════════
+    "huggingface-hub>=0.23.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Logging — Loguru
+    # ═══════════════════════════════════════════════════════════════════════
+    "loguru>=0.7.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Metrics / Monitoring — Prometheus Client
+    # ═══════════════════════════════════════════════════════════════════════
+    "prometheus_client>=0.20.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Utilities
+    # ═══════════════════════════════════════════════════════════════════════
+    "psutil>=5.9.0",
+    "py-moneyed>=3.0",
 ]
 
 [project.optional-dependencies]
@@ -131,61 +149,40 @@ dev = [
 ui = [
     "flet>=0.28.0",
 ]
-ai = [
-    "transformers>=4.40.0",
-    "torch>=2.2.0",
-    "llama-cpp-python>=0.2.0",
-    "opencv-python>=4.9.0",
-    "sentence-transformers>=2.5.0",
-    "huggingface-hub>=0.23.0",
-    "PyMuPDF>=1.24.0",
-    "surya-ocr>=0.4.0,<0.8.0",
-    "onnxruntime>=1.17.0",
-    "paddleocr>=2.7.0",
-]
 
 [project.urls]
-Homepage = "https://github.com/your-org/NexusAI"
-Documentation = "https://github.com/your-org/NexusAI"
-Repository = "https://github.com/your-org/NexusAI"
+Homepage = "https://github.com/Gorski-Maciej/NexusAI"
+Documentation = "https://github.com/Gorski-Maciej/NexusAI/wiki"
+Repository = "https://github.com/Gorski-Maciej/NexusAI"
 
 [project.scripts]
 nexus-api = "api.server:run_backend"
 nexus-worker = "luz.worker:main"
 nexus-desktop = "luz.main:main"
-nexus = "SKRIPTS.nexus_cli:main"
+nexus = "scripts.nexus_cli:main"
 
-[tool.setuptools.packages.find]
-where = ["Code"]
-include = [
-    "Code",
-    "api", "api.*",
-    "API", "API.*",
-    "core", "core.*",
-    "CORE", "CORE.*",
-    "db", "db.*",
-    "DB", "DB.*",
-    "services", "services.*",
-    "SERVICES", "SERVICES.*",
-    "pipeline", "pipeline.*",
-    "PIPELINE", "PIPELINE.*",
-    "models", "models.*",
-    "MODELS", "MODELS.*",
-    "frontend", "frontend.*",
-    "FRONTEND", "FRONTEND.*",
-    "luz", "luz.*",
-    "Roboton_Reflekton", "Roboton_Reflekton.*",
-    "SKRIPTS", "SKRIPTS.*",
-    "BACKEND", "BACKEND.*",
-    "ARCHITECTURE", "ARCHITECTURE.*",
+[tool.hatch.build.targets.wheel]
+packages = [
+    "Code/",
+    "nexus_crypto/",
 ]
-exclude = ["tests*", "app_data*"]
 
-[tool.setuptools.package-data]
-"*" = ["py.typed", "*.pyi"]
+# ── Maturin — Rust/PyO3 native extensions ────────────────────────────────────
+[tool.maturin]
+module-name = "nexus_crypto._core"
+manifest-path = "nexus_crypto/Cargo.toml"
+features = ["pyo3/extension-module"]
 
-# ── Tool configuration ───────────────────────────────────────────────────────
+# ── mypyc — compile typed Python to C (2-5× speedup) ─────────────────────────
+[tool.mypyc]
+packages = [
+    "Code/tax",
+    "Code/core",
+]
+# mypyc compiles modules with strict type annotations to native C extensions.
+# This gives 2-5× speedup for domain models, tax calculations, and audit logic.
 
+# ── Pytest ───────────────────────────────────────────────────────────────────
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
@@ -195,16 +192,26 @@ filterwarnings = [
     "ignore::PendingDeprecationWarning",
 ]
 
+# ── Ruff (linter + formatter) ────────────────────────────────────────────────
 [tool.ruff]
-target-version = "py311"
+target-version = "py313"
 line-length = 100
+src = ["Code/"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "N", "UP"]
-ignore = ["E501"]
+ignore = [
+    "E501",   # Long lines — intentional for readability
+    "N999",   # Invalid module name — project uses UPPERCASE dirs (API, DB, FRONTEND) deliberately
+]
 
+# ── Mypy (type checker) ─────────────────────────────────────────────────────
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.13"
 strict = false
 ignore_missing_imports = true
 warn_unused_ignores = false
+
+# ── pytest-asyncio ──────────────────────────────────────────────────────────
+[tool.pytest_asyncio]
+mode = "auto"

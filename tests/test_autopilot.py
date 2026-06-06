@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-from SERVICES.autopilot import (
+from services.autopilot import (
     TrustScoreCalculator,
     CouncilOrchestrator,
     FinalDecision,
@@ -320,7 +320,7 @@ class TestResolveDecision:
 
     def _make_orchestrator(self) -> CouncilOrchestrator:
         """Utwórz minimalny orchestrator z mockowanymi zależnościami."""
-        from SERVICES.council_agents import ModelManager
+        from services.council_agents import ModelManager
 
         mm = ModelManager()
         alpha = None  # type: ignore

@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 def _load_module():
-    path = Path('Code/SERVICES/otel_fallback.py').resolve()
+    path = Path('Code/services/otel_fallback.py').resolve()
     spec = importlib.util.spec_from_file_location('otel_fallback_mod_v2', path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)

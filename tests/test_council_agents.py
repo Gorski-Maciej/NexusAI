@@ -1,3 +1,4 @@
+from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Testy dla Council Agents — ModelManager, DecisionVerdict, BaseCouncilAgent.
 
@@ -79,7 +80,7 @@ class TestDecisionVerdict:
         assert d["suggested_action"] == "auto_post"
 
     def test_from_json_valid(self) -> None:
-        raw = json.dumps({
+        raw = msgspec_dumps({
             "decision": "APPROVE",
             "confidence": 0.88,
             "reasoning": "Standard invoice",
@@ -93,7 +94,7 @@ class TestDecisionVerdict:
 
     def test_from_json_with_extra_fields(self) -> None:
         """Extra fields w JSON nie powinny powodować błędów."""
-        raw = json.dumps({
+        raw = msgspec_dumps({
             "decision": "REJECT",
             "confidence": 0.3,
             "reasoning": "VAT mismatch",
@@ -105,7 +106,7 @@ class TestDecisionVerdict:
 
     def test_from_json_missing_fields(self) -> None:
         """Brakujące pola powinny mieć bezpieczne domyślne wartości."""
-        raw = json.dumps({"decision": "APPROVE"})
+        raw = msgspec_dumps({"decision": "APPROVE"})
         v = DecisionVerdict.from_json(raw)
         assert v.decision == "APPROVE"
         assert v.confidence == 0.0
@@ -168,7 +169,7 @@ class TestAgentPrompts:
 
     def test_alpha_prompt_contains_required_fields(self, sample_invoice: dict) -> None:
         """Prompt Alpha zawiera wszystkie wymagane pola faktury."""
-        from SERVICES.council_agents import ModelManager
+        from services.council_agents import ModelManager
 
         mm = ModelManager()
         agent = AlphaAgent("alpha-test", "/fake/path", mm)
@@ -184,7 +185,7 @@ class TestAgentPrompts:
 
     def test_beta_prompt_contains_validation_fields(self, sample_invoice: dict) -> None:
         """Prompt Beta zawiera dane do walidacji."""
-        from SERVICES.council_agents import ModelManager
+        from services.council_agents import ModelManager
 
         mm = ModelManager()
         agent = BetaAgent("beta-test", "/fake/path", mm)
@@ -199,7 +200,7 @@ class TestAgentPrompts:
 
     def test_gamma_prompt_contains_anomaly_fields(self, sample_invoice: dict) -> None:
         """Prompt Gamma zawiera dane do analizy anomalii."""
-        from SERVICES.council_agents import ModelManager
+        from services.council_agents import ModelManager
 
         mm = ModelManager()
         agent = GammaAgent("gamma-test", "/fake/path", mm)
@@ -213,7 +214,7 @@ class TestAgentPrompts:
 
     def test_alpha_prompt_with_unknown_contractor(self) -> None:
         """Alpha prompt z nieznanym kontrahentem."""
-        from SERVICES.council_agents import ModelManager
+        from services.council_agents import ModelManager
 
         mm = ModelManager()
         agent = AlphaAgent("alpha-test", "/fake/path", mm)
@@ -241,7 +242,7 @@ class TestModelManager:
     """Testy dla ModelManager — lifecycle, TTL, locking."""
 
     def test_initial_state(self) -> None:
-        from SERVICES.council_agents import ModelManager
+        from services.council_agents import ModelManager
 
         mm = ModelManager()
         assert mm.current_model_name is None
@@ -251,7 +252,7 @@ class TestModelManager:
         """ModelManager.acquire/release z mockowanym Llama."""
         import asyncio
         from unittest.mock import patch, AsyncMock
-        from SERVICES.council_agents import ModelManager
+        from services.council_agents import ModelManager
 
         mm = ModelManager()
 
@@ -277,7 +278,7 @@ class TestModelManager:
         """Model powinien być reuse'owany w ramach TTL."""
         import asyncio
         from unittest.mock import patch
-        from SERVICES.council_agents import ModelManager
+        from services.council_agents import ModelManager
 
         mm = ModelManager()
 
@@ -307,7 +308,7 @@ class TestModelManager:
         """Inny model_name powinien wymusić przeładowanie."""
         import asyncio
         from unittest.mock import patch
-        from SERVICES.council_agents import ModelManager
+        from services.council_agents import ModelManager
 
         mm = ModelManager()
 

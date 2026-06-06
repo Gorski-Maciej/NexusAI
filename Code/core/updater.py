@@ -1,7 +1,8 @@
 # core/updater.py
+import os
+
 import httpx
 from packaging import version
-import os
 
 CURRENT_VERSION = "1.0.0"
 REPO_URL = "[https://api.github.com/repos/TwojLogin/NexusAccounting/releases/latest](https://api.github.com/repos/TwojLogin/NexusAccounting/releases/latest)"

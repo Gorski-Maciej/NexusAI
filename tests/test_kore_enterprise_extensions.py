@@ -10,6 +10,6 @@ def test_hardware_has_hot_swap() -> None:
 
 
 def test_ocr_consensus_exists() -> None:
-    source = Path("Code/PIPELINE/ocr_consensus.py").read_text(encoding="utf-8")
+    source = Path("Code/pipeline/ocr_consensus.py").read_text(encoding="utf-8")
     assert "def decide_amount_consensus" in source
     assert "confidence_conflict" in source

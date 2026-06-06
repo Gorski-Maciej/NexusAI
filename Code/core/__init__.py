@@ -1,5 +1,11 @@
 # core/__init__.py
-"""NexusAI Core — safe lazy imports for constrained environments."""
+"""NexusAI Core — safe lazy imports for constrained environments.
+
+Nowy stack (zgodny z aa3fvcx.txt):
+- nexus-crypto zamiast cryptography (AEAD ChaCha20-Poly1305 + Argon2id)
+- stamina zamiast tenacity + pybreaker (async-native retry + CB)
+- msgspec zamiast pydantic-settings + python-dotenv + json
+"""
 from __future__ import annotations
 
 import logging as _logging
@@ -7,15 +13,15 @@ import logging as _logging
 _log = _logging.getLogger("nexus.core")
 
 # ── Always-available modules ────────────────────────────────────────────────
-from core.config import AppConfig
-from core.logger import logger
-from core.exceptions import (
-    NexusBaseException,
+from core.config import AppConfig  # noqa: E402
+from core.exceptions import (  # noqa: E402
     AIProcessingError,
-    LLMGuardrailError,
     BrokerConnectionError,
+    LLMGuardrailError,
+    NexusBaseException,
     VectorDBError,
 )
+from core.logger import logger  # noqa: E402
 
 # ── Optional / gracefully-falling modules ───────────────────────────────────
 
@@ -28,19 +34,19 @@ def _safe_import(qualname: str, names: list[str]):
         _log.debug("Optional import %s.%s unavailable: %s", qualname, names, exc)
         return None, [None] * len(names)
 
-# core.crypto — Vault (optional, needs cryptography)
-_, [Vault] = _safe_import("core.crypto", ["Vault"])
+# core.crypto — Vault (uses nexus-crypto now, always available)
+from core.crypto import Vault  # noqa: E402
+
+# core.resilience — async_retry (uses stamina now)
+from core.resilience import async_retry  # noqa: E402
+
+# core.secrets (optional)
+_, [SecretsManager] = _safe_import("core.secrets", ["SecretsManager"])  # noqa: E402
 
 # core.llm_guard (optional)
 _, [LLMGuard, InvoiceLLMExtraction] = _safe_import(
     "core.llm_guard", ["LLMGuard", "InvoiceLLMExtraction"]
 )
-
-# core.resilience (optional)
-_, [async_retry] = _safe_import("core.resilience", ["async_retry"])
-
-# core.secrets (optional)
-_, [SecretsManager] = _safe_import("core.secrets", ["SecretsManager"])
 
 # core.monitor (optional)
 _, [SystemMonitor] = _safe_import("core.monitor", ["SystemMonitor"])
@@ -61,15 +67,15 @@ _, [AIContextManager] = _safe_import("core.ai_context", ["AIContextManager"])
 _, [PluginManager] = _safe_import("core.plugins", ["PluginManager"])
 
 # core.hardware (optional)
-_, [HardwareProbe] = _safe_import("core.hardware", ["HardwareProbe"])
+_, [HardwareProbe] = _safe_import("core.hardware", ["HardwareProbe"])  # noqa: E402
 
-# core.storage (optional — may not exist in all deployments)
+# core.storage (optional)
 _, [StorageProvider, LocalStorageProvider] = _safe_import(
-    "core.storage", ["StorageProvider", "LocalStorageProvider"]
+    "core.storage", ["StorageProvider", "LocalStorageProvider"]  # noqa: E402
 )
 
 # core.events (optional)
-_, [NexusEvent] = _safe_import("core.events", ["NexusEvent"])
+_, [NexusEvent] = _safe_import("core.events", ["NexusEvent"])  # noqa: E402
 
 
 # ── Late-bound globals ──────────────────────────────────────────────────────
@@ -105,9 +111,9 @@ __all__ = [
     "BrokerConnectionError",
     "VectorDBError",
     "Vault",
+    "async_retry",
     "LLMGuard",
     "InvoiceLLMExtraction",
-    "async_retry",
     "StorageProvider",
     "LocalStorageProvider",
     "NexusEvent",

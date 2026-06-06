@@ -3,11 +3,14 @@ from __future__ import annotations
 
 import json
 import os
+from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
+
+from core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 
 @dataclass(slots=True)
@@ -55,16 +58,16 @@ class FileSpanBuffer:
                 if not line:
                     continue
                 try:
-                    records.append(json.loads(line))
+                    records.append(msgspec_loads(line))
                 except json.JSONDecodeError:
                     continue
         return records
 
     def append(self, trace_id: str, name: str, *, start_ts: datetime, end_ts: datetime, attributes: dict[str, Any] | None = None) -> None:
-        span = BufferedSpan(trace_id=trace_id, name=name, start_ts=start_ts.astimezone(timezone.utc).isoformat(), end_ts=end_ts.astimezone(timezone.utc).isoformat(), attributes=attributes or {})
+        span = BufferedSpan(trace_id=trace_id, name=name, start_ts=start_ts.astimezone(UTC).isoformat(), end_ts=end_ts.astimezone(UTC).isoformat(), attributes=attributes or {})
         with self._file_lock():
             with self.file_path.open("a", encoding="utf-8") as fp:
-                fp.write(json.dumps(asdict(span), ensure_ascii=False) + "\n")
+                fp.write(msgspec_dumps(asdict(span), ensure_ascii=False) + "\n")
             self._enforce_retention_locked()
 
     def read_all(self) -> list[dict[str, Any]]:
@@ -88,12 +91,12 @@ class FileSpanBuffer:
         tmp = self.file_path.with_suffix(self.file_path.suffix + ".tmp")
         with tmp.open("w", encoding="utf-8") as fp:
             for rec in records:
-                fp.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                fp.write(msgspec_dumps(rec, ensure_ascii=False) + "\n")
         tmp.replace(self.file_path)
 
     @staticmethod
     def _estimate_bytes(records: list[dict[str, Any]]) -> int:
-        return sum(len(json.dumps(rec, ensure_ascii=False)) + 1 for rec in records)
+        return sum(len(msgspec_dumps(rec, ensure_ascii=False)) + 1 for rec in records)
 
     def replay(self, sender) -> int:
         """Replay buffered spans using sender(record)->bool. Returns sent count."""
@@ -116,7 +119,7 @@ class FileSpanBuffer:
                 tmp = self.file_path.with_suffix(self.file_path.suffix + ".tmp")
                 with tmp.open("w", encoding="utf-8") as fp:
                     for rec in remaining:
-                        fp.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                        fp.write(msgspec_dumps(rec, ensure_ascii=False) + "\n")
                 tmp.replace(self.file_path)
             else:
                 self.file_path.unlink(missing_ok=True)

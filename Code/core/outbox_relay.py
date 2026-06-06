@@ -1,9 +1,11 @@
 # core/outbox_relay.py
 import asyncio
-import json
-from sqlalchemy import select, delete
-from db.models import OutboxEvent
+
+from sqlalchemy import select
+
 from core.logger import logger
+from db.models import OutboxEvent
+
 
 async def run_outbox_relay(session_factory, nats_client):
     """
@@ -15,7 +17,7 @@ async def run_outbox_relay(session_factory, nats_client):
         try:
             async with session_factory() as session:
                 # 1. Pobierz nieprzetworzone zdarzenia
-                stmt = select(OutboxEvent).where(OutboxEvent.processed == False).limit(50)
+                stmt = select(OutboxEvent).where(not OutboxEvent.processed).limit(50)
                 result = await session.execute(stmt)
                 events = result.scalars().all()
 

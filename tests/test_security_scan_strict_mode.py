@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 def _load_security_scan_module():
-    module_path = Path('Code/SKRIPTS/security_scan.py')
+    module_path = Path('Code/scripts/security_scan.py')
     spec = importlib.util.spec_from_file_location('security_scan_module', module_path)
     module = importlib.util.module_from_spec(spec)
     assert spec and spec.loader

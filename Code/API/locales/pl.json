@@ -1,5 +1,0 @@
-{
-  "upload.missing_file": "Brak pola 'file'",
-  "upload.empty_file": "Pusty plik",
-  "upload.file_too_large": "Plik jest za duży (limit {limit_mb} MB)"
-}

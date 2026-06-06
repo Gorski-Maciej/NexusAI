@@ -1,6 +1,7 @@
 # core/broker.py
-from taskiq_nats import NatsBroker
 from taskiq import TaskiqEvents
+from taskiq_nats import NatsBroker
+
 from core.config import AppConfig
 
 config = AppConfig()

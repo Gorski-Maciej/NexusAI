@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import io
 import uuid
+from collections.abc import Iterable
 from pathlib import Path
-from typing import BinaryIO, Iterable
+from typing import BinaryIO
 
 import fsspec
 

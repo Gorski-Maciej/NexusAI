@@ -1,7 +1,10 @@
 # core/model_manager.py
 from pathlib import Path
+
 from huggingface_hub import snapshot_download
+
 from core.logger import logger
+
 
 class LazyModelManager:
     """Pobiera ciężkie wagi modeli AI tylko w momencie ich pierwszego użycia."""
@@ -10,18 +13,7 @@ class LazyModelManager:
         self.base_models_dir = Path(base_models_dir)
         self.base_models_dir.mkdir(parents=True, exist_ok=True)
 
-        self._models = {
-            "sentence_transformers": {
-                "repo_id": "sentence-transformers/all-MiniLM-L6-v2",
-                "local_dir": self.base_models_dir / "all-MiniLM-L6-v2",
-                "loaded_instance": None
-            },
-            "surya_ocr": {
-                "repo_id": "vikp/surya_det2",
-                "local_dir": self.base_models_dir / "surya_det2",
-                "loaded_instance": None
-            }
-        }
+        self._models: dict[str, dict] = {}
 
     def get_model_path(self, model_key: str) -> str:
         """Sprawdza czy model istnieje, pobiera w tle jeśli nie..."""

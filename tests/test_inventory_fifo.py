@@ -15,7 +15,7 @@ def _load_module(path: Path, module_name: str):
     return module
 
 
-fifo = _load_module(Path(__file__).resolve().parents[1] / "Code" / "SERVICES" / "inventory_fifo.py", "fifo_module")
+fifo = _load_module(Path(__file__).resolve().parents[1] / "Code" / "services" / "inventory_fifo.py", "fifo_module")
 InventoryBatch = fifo.InventoryBatch
 calculate_fifo_cogs = fifo.calculate_fifo_cogs
 apply_fifo_consumption = fifo.apply_fifo_consumption

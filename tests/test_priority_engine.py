@@ -1,3 +1,4 @@
+from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Tests for PriorityEngine (Element 1).
 
@@ -23,9 +24,9 @@ class TestPriorityEngine:
     def test_resolve_first_match_wins(self) -> None:
         """First matching rule in priority order is returned."""
         rules = [
-            PrioritizedRule("rule-c", "1=0", json.dumps({"rate": "0.10"}), 10),
-            PrioritizedRule("rule-b", "1=1", json.dumps({"rate": "0.20"}), 20),
-            PrioritizedRule("rule-a", "1=1", json.dumps({"rate": "0.30"}), 30),
+            PrioritizedRule("rule-c", "1=0", msgspec_dumps({"rate": "0.10"}), 10),
+            PrioritizedRule("rule-b", "1=1", msgspec_dumps({"rate": "0.20"}), 20),
+            PrioritizedRule("rule-a", "1=1", msgspec_dumps({"rate": "0.30"}), 30),
         ]
         def _eval(sql: str) -> bool:
             # Simple SQL expression evaluator for tests
@@ -42,8 +43,8 @@ class TestPriorityEngine:
     def test_resolve_higher_priority_wins(self) -> None:
         """Higher priority (lower number) wins over lower priority."""
         rules = [
-            PrioritizedRule("high", "1=1", json.dumps({"rate": "0.50"}), 5),
-            PrioritizedRule("low", "1=1", json.dumps({"rate": "0.10"}), 100),
+            PrioritizedRule("high", "1=1", msgspec_dumps({"rate": "0.50"}), 5),
+            PrioritizedRule("low", "1=1", msgspec_dumps({"rate": "0.10"}), 100),
         ]
         result = PriorityEngine.resolve(rules, lambda sql: True)
         assert result.matched
@@ -53,8 +54,8 @@ class TestPriorityEngine:
     def test_resolve_no_match(self) -> None:
         """No matching rule → matched=False."""
         rules = [
-            PrioritizedRule("r1", "1=0", json.dumps({"rate": "0.10"}), 10),
-            PrioritizedRule("r2", "1=0", json.dumps({"rate": "0.20"}), 20),
+            PrioritizedRule("r1", "1=0", msgspec_dumps({"rate": "0.10"}), 10),
+            PrioritizedRule("r2", "1=0", msgspec_dumps({"rate": "0.20"}), 20),
         ]
         result = PriorityEngine.resolve(rules, lambda sql: False)
         assert not result.matched
@@ -68,8 +69,8 @@ class TestPriorityEngine:
     def test_resolve_skips_malformed_conditions(self) -> None:
         """Malformed conditions are skipped gracefully."""
         rules = [
-            PrioritizedRule("bad", "THIS IS NOT SQL", json.dumps({"rate": "0.10"}), 10),
-            PrioritizedRule("good", "1=1", json.dumps({"rate": "0.20"}), 20),
+            PrioritizedRule("bad", "THIS IS NOT SQL", msgspec_dumps({"rate": "0.10"}), 10),
+            PrioritizedRule("good", "1=1", msgspec_dumps({"rate": "0.20"}), 20),
         ]
         def _eval(sql: str) -> bool:
             if sql == "THIS IS NOT SQL":
@@ -130,7 +131,7 @@ class TestPriorityEngine:
     def test_verdict_contains_metadata(self) -> None:
         """Verdict includes _rule_id and _priority."""
         rules = [
-            PrioritizedRule("my-rule", "1=1", json.dumps({"rate": "0.23"}), 42),
+            PrioritizedRule("my-rule", "1=1", msgspec_dumps({"rate": "0.23"}), 42),
         ]
         result = PriorityEngine.resolve(rules, lambda sql: True)
         assert result.verdict["_rule_id"] == "my-rule"
@@ -139,9 +140,9 @@ class TestPriorityEngine:
     def test_resolve_with_tracker_records_evaluated(self) -> None:
         """_tracker collects evaluated rules with results."""
         rules = [
-            PrioritizedRule("r1", "1=0", json.dumps({"rate": "0.10"}), 10),
-            PrioritizedRule("r2", "1=1", json.dumps({"rate": "0.20"}), 20),
-            PrioritizedRule("r3", "1=1", json.dumps({"rate": "0.30"}), 30),
+            PrioritizedRule("r1", "1=0", msgspec_dumps({"rate": "0.10"}), 10),
+            PrioritizedRule("r2", "1=1", msgspec_dumps({"rate": "0.20"}), 20),
+            PrioritizedRule("r3", "1=1", msgspec_dumps({"rate": "0.30"}), 30),
         ]
         def _eval(sql: str) -> bool:
             if sql == "1=1":
@@ -169,8 +170,8 @@ class TestPriorityEngine:
     def test_resolve_with_tracker_malformed(self) -> None:
         """Tracker records malformed conditions with error field."""
         rules = [
-            PrioritizedRule("bad", "INVALID SQL", json.dumps({"rate": "0.10"}), 10),
-            PrioritizedRule("good", "1=1", json.dumps({"rate": "0.20"}), 20),
+            PrioritizedRule("bad", "INVALID SQL", msgspec_dumps({"rate": "0.10"}), 10),
+            PrioritizedRule("good", "1=1", msgspec_dumps({"rate": "0.20"}), 20),
         ]
         def _eval(sql: str) -> bool:
             if sql == "INVALID SQL":

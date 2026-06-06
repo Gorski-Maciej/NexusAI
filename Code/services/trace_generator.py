@@ -16,9 +16,10 @@ Usage:
 
 from __future__ import annotations
 
-import json
 import re
 from typing import Any
+
+from core.msgspec_utils import msgspec_dumps
 
 # ── Human-readable labels for verdict fields ─────────────────────────────
 
@@ -192,7 +193,7 @@ class TraceGenerator:
                 if k in context
             }
 
-        return json.dumps(trace, ensure_ascii=False, default=str, sort_keys=True)
+        return msgspec_dumps(trace, ensure_ascii=False, default=str, sort_keys=True)
 
 
 # ── Helpers ─────────────────────────────────────────────────────────────

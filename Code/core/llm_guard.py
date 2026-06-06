@@ -1,41 +1,45 @@
 # core/llm_guard.py
+from __future__ import annotations
+
 import json
 import re
-from pydantic import BaseModel, ValidationError
-from typing import Optional
+from typing import Any
+
+import msgspec
+
 from core.exceptions import LLMGuardrailError
 from core.logger import logger
-from services.currency_converter import Money
+from core.msgspec_utils import msgspec_loads
 
-class InvoiceLLMExtraction(BaseModel):
+
+class InvoiceLLMExtraction(msgspec.Struct):
     """Oczekiwana struktura danych od lokalnego modelu Llama/Phi-3."""
-    numer_faktury: Optional[str] = None
-    data_sprzedazy: Optional[str] = None
-    kwota_netto: Optional[Money] = None
-    kwota_vat: Optional[Money] = None
-    kwota_brutto: Optional[Money] = None
+
+    numer_faktury: str | None = None
+    data_sprzedazy: str | None = None
+    kwota_netto: float | None = None
+    kwota_vat: float | None = None
+    kwota_brutto: float | None = None
     waluta: str = "PLN"
-    nip_sprzedawcy: Optional[str] = None
+    nip_sprzedawcy: str | None = None
+
 
 class LLMGuard:
     """Naprawia i weryfikuje 'brudne' wyjścia z lokalnych modeli LLM."""
 
     @staticmethod
-    def parse_and_validate(raw_llm_output: str) -> dict:
-        """Ekstrahuje JSON z markdownu LLM, naprawia błędy i waliduje przez Pydantic."""
+    def parse_and_validate(raw_llm_output: str) -> dict[str, Any]:
+        """Ekstrahuje JSON z markdownu LLM, naprawia błędy i waliduje przez msgspec."""
         try:
             # Próba znalezienia bloku JSON w tekście
             json_match = re.search(r'```json\s*(.*?)\s*```', raw_llm_output, re.DOTALL)
             json_str = json_match.group(1) if json_match else raw_llm_output
 
-            data = json.loads(json_str)
-            validated = InvoiceLLMExtraction(**data)
-            # Convert Money objects to dicts for serializable output
-            result = validated.dict()
-            for key in ("kwota_netto", "kwota_vat", "kwota_brutto"):
-                if result.get(key) is not None:
-                    result[key] = float(str(result[key].amount)) if hasattr(result[key], 'amount') else float(result[key])
+            data = msgspec_loads(json_str)
+            validated = msgspec.convert(data, InvoiceLLMExtraction)
+            # Convert to dict for serializable output
+            result = msgspec.to_builtins(validated)
             return result
-        except (json.JSONDecodeError, ValidationError) as e:
+        except (json.JSONDecodeError, msgspec.ValidationError) as e:
             logger.error(f"Błąd LLMGuard: {e}")
             raise LLMGuardrailError(f"Niepoprawny wynik LLM: {str(e)}")

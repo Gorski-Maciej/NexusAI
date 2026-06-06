@@ -1,5 +1,7 @@
-import polars as pl
 from datetime import datetime, timedelta
+
+import polars as pl
+
 from db.analytics import DuckDBManager
 
 

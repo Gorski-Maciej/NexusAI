@@ -1,9 +1,8 @@
-from decimal import Decimal
 
-from models.invoice import Invoice
-from sqlalchemy import select, and_
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from models.invoice import Invoice
 from services.currency_converter import Money
 
 

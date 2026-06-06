@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-import time
-import os
 import asyncio
 import importlib.util
+import os
+import time
+from collections.abc import Awaitable, Callable
 from contextvars import ContextVar
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from functools import wraps
-from typing import Any, Awaitable, Callable, TypeVar
+from typing import Any, TypeVar
 
 from db.analytics import DuckDBManager
 from services.otel_fallback import FileSpanBuffer
-
 
 
 def _load_gputil_module():
@@ -101,8 +101,8 @@ def track_performance(stage_name: str, *, duckdb_provider: Callable[[], DuckDBMa
                 span_payload = {
                     "trace_id": get_trace_id(),
                     "name": stage_name,
-                    "start_ts": datetime.now(timezone.utc),
-                    "end_ts": datetime.now(timezone.utc),
+                    "start_ts": datetime.now(UTC),
+                    "end_ts": datetime.now(UTC),
                     "attributes": {
                         "duration_ms": duration_ms,
                         "vram_usage_mb": _vram_usage_mb(),
@@ -114,7 +114,7 @@ def track_performance(stage_name: str, *, duckdb_provider: Callable[[], DuckDBMa
                     duckdb.execute(
                         "INSERT INTO telemetry (timestamp, trace_id, stage_name, duration_ms, vram_usage_mb) VALUES (?, ?, ?, ?, ?)",
                         (
-                            datetime.now(timezone.utc),
+                            datetime.now(UTC),
                             span_payload["trace_id"],
                             span_payload["name"],
                             duration_ms,
@@ -157,7 +157,7 @@ def store_finops_snapshot(
         VALUES (?, ?, ?, ?, ?, ?)
         """,
         (
-            datetime.now(timezone.utc),
+            datetime.now(UTC),
             int(invoices_count),
             float(estimated_cpu_cost),
             float(estimated_memory_cost),
@@ -185,7 +185,7 @@ async def flush_fallback_spans(duckdb_provider: Callable[[], DuckDBManager], *, 
         db.execute(
             "INSERT INTO telemetry (timestamp, trace_id, stage_name, duration_ms, vram_usage_mb) VALUES (?, ?, ?, ?, ?)",
             (
-                datetime.now(timezone.utc),
+                datetime.now(UTC),
                 str(record.get("trace_id", "unknown")),
                 str(record.get("name", "unknown")),
                 float((record.get("attributes") or {}).get("duration_ms", 0.0)),

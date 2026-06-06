@@ -32,11 +32,14 @@ import json
 import logging
 import time
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from core.msgspec_utils import msgspec_loads
 
 logger = logging.getLogger("nexus.services.outbox_relay")
 
@@ -338,7 +341,7 @@ class OutboxRelay:
             return
 
         try:
-            payload = json.loads(payload_raw)
+            payload = msgspec_loads(payload_raw)
         except (json.JSONDecodeError, TypeError) as exc:
             raise ValueError(f"Invalid TAX_CALCULATED payload JSON: {exc}") from exc
 

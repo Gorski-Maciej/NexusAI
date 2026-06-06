@@ -2,15 +2,16 @@
 import importlib
 import inspect
 import pkgutil
-from typing import Dict, Type, Any
+
 from core.logger import logger
+
 
 class PluginManager:
     """Dynamicznie ładuje klasy eksporterów z katalogu core/exporters/."""
 
     def __init__(self, package_path: str = "core.exporters"):
         self.package_path = package_path
-        self.exporters: Dict[str, Type] = {}
+        self.exporters: dict[str, type] = {}
 
     def discover_exporters(self):
         """Skanuje folder i rejestruje wszystkie klasy eksporterów."""

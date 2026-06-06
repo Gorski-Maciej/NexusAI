@@ -94,7 +94,7 @@ class GusBirClient:
         self._sid: str = ""
         self._client: httpx.AsyncClient | None = None
 
-    async def __aenter__(self) -> "GusBirClient":
+    async def __aenter__(self) -> GusBirClient:
         self._client = httpx.AsyncClient(timeout=self._timeout)
         return self
 

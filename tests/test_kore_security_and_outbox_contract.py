@@ -38,16 +38,16 @@ def test_config_parses_cors_comma_list() -> None:
 
 
 def test_outbox_dispatch_routes_to_ocr_task() -> None:
-    source = Path("Code/API/tasks.py").read_text(encoding="utf-8")
+    source = Path("Code/api/tasks.py").read_text(encoding="utf-8")
     assert "if event_type == \"process_invoice_ocr\"" in source
     assert "await broker.kick(\"process_invoice_ocr\"" in source
     assert "@broker.task(task_name=\"process_invoice_ocr\")" in source
 
 
 def test_invoice_controller_uses_schema_registered_outbox_model() -> None:
-    controller_source = Path("Code/API/controllers/invoices.py").read_text(encoding="utf-8")
-    db_source = Path("Code/DB/database.py").read_text(encoding="utf-8")
-    model_source = Path("Code/MODELS/outbox.py").read_text(encoding="utf-8")
+    controller_source = Path("Code/api/controllers/invoices.py").read_text(encoding="utf-8")
+    db_source = Path("Code/db/database.py").read_text(encoding="utf-8")
+    model_source = Path("Code/models/outbox.py").read_text(encoding="utf-8")
 
     assert "from models.outbox import OutboxEvent" in controller_source
     assert "from models.outbox import OutboxEvent" in db_source
@@ -57,12 +57,12 @@ def test_invoice_controller_uses_schema_registered_outbox_model() -> None:
 
 
 def test_rbac_rejects_unknown_roles_from_authenticated_user_context() -> None:
-    source = Path("Code/API/rbac.py").read_text(encoding="utf-8")
+    source = Path("Code/api/rbac.py").read_text(encoding="utf-8")
     assert "Unsupported role in authenticated context" in source
     assert "except ValueError as exc" in source
 
 
 def test_outbox_relay_tracks_processed_timestamp_and_retries() -> None:
-    source = Path("Code/API/tasks.py").read_text(encoding="utf-8")
+    source = Path("Code/api/tasks.py").read_text(encoding="utf-8")
     assert "processed_at = CURRENT_TIMESTAMP" in source
     assert "retry_count = retry_count + 1" in source

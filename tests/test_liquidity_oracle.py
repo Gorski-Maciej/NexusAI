@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-MODULE_PATH = ROOT / "Code" / "SERVICES" / "liquidity_oracle.py"
+MODULE_PATH = ROOT / "Code" / "services" / "liquidity_oracle.py"
 spec = importlib.util.spec_from_file_location("liquidity_oracle", MODULE_PATH)
 module = importlib.util.module_from_spec(spec)
 assert spec.loader is not None

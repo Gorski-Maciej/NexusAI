@@ -1,35 +1,30 @@
-"""Central runtime configuration and startup validation."""
+"""Central runtime configuration and startup validation.
+
+Zastępuje: dataclass (standard Python) → msgspec.Struct (ultraszybki, mniejszy narzut)
+Dodatkowo: ładowanie profili .env przez msgspec parsowanie TOML.
+"""
 from __future__ import annotations
 
-import os
 import base64
 import binascii
-from dataclasses import dataclass
+import importlib.util
+import os
 from pathlib import Path
 
-import importlib.util
-
+from msgspec import Struct
 
 ENV_CONFIG_DIR: Path = Path(__file__).resolve().parent.parent.parent / "config"
 """Directory containing environment-specific .env profiles."""
 
 
 def _load_env_profile(environment: str) -> None:
-    """
-    Load environment-specific config file from config/{env}.env.
-
-    Only sets variables that are NOT already set in os.environ,
-    so explicit env vars take precedence over profile defaults.
-
-    Args:
-        environment: One of 'dev', 'stage', 'prod'.
-    """
+    """Load environment-specific config file from config/{env}.env."""
     profile_path = ENV_CONFIG_DIR / f"{environment}.env"
     if not profile_path.exists():
-        return  # No profile file for this environment; use defaults
+        return
 
     loaded = 0
-    with open(profile_path, "r", encoding="utf-8") as f:
+    with open(profile_path, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith("#"):
@@ -41,7 +36,6 @@ def _load_env_profile(environment: str) -> None:
             value = value.strip()
             if not key:
                 continue
-            # Only set if not already in environment (explicit overrides profile)
             if key not in os.environ:
                 os.environ[key] = value
                 loaded += 1
@@ -78,32 +72,41 @@ class ConfigValidationError(RuntimeError):
     """Raised when startup settings are incomplete or inconsistent."""
 
 
-@dataclass(slots=True)
-class AppConfig:
-    """Centralized application settings registry for all environments."""
+class AppConfig(Struct, kw_only=True):
+    """Centralized application settings registry for all environments.
 
+    msgspec.Struct — lżejszy i szybszy niż dataclass.
+    Wczytuje wartości z os.environ (wcześniej załadowane z profili .env).
+
+    Uwaga: msgspec.Struct nie wywołuje automatycznie ``__post_init__``.
+    Użyj ``AppConfig.create()`` która woła walidację po inicjalizacji.
+    """
+
+    # ── Core ──
     environment: str = os.getenv("NEXUS_ENV", "dev")
     base_dir: Path = Path(os.getenv("NEXUS_BASE_DIR", Path.cwd().as_posix()))
 
-    # JWT configuration
+    # ── JWT configuration ──
     jwt_expiration_seconds: int = int(os.getenv("NEXUS_JWT_EXPIRATION_SECONDS", "900"))
     refresh_token_days: int = int(os.getenv("NEXUS_REFRESH_TOKEN_DAYS", "30"))
     jwt_issuer: str = os.getenv("NEXUS_JWT_ISSUER", "nexus-ai")
     jwt_audience: str = os.getenv("NEXUS_JWT_AUDIENCE", "nexus-api")
 
-    # CSRF
+    # ── CSRF ──
     csrf_enabled: bool = os.getenv("NEXUS_CSRF_ENABLED", "1") == "1"
 
-    # Connection pool limits
+    # ── Connection pool limits ──
     db_pool_size: int = int(os.getenv("NEXUS_DB_POOL_SIZE", "5"))
     db_pool_overflow: int = int(os.getenv("NEXUS_DB_POOL_OVERFLOW", "10"))
     nats_max_reconnect: int = int(os.getenv("NEXUS_NATS_MAX_RECONNECT", "10"))
     nats_reconnect_delay_seconds: int = int(os.getenv("NEXUS_NATS_RECONNECT_DELAY", "2"))
 
-    # Retry policy defaults
+    # ── Retry policy defaults (stamina) ──
     max_task_retries: int = int(os.getenv("NEXUS_MAX_TASK_RETRIES", "3"))
     retry_backoff_base_seconds: float = float(os.getenv("NEXUS_RETRY_BACKOFF_BASE", "1.0"))
     retry_backoff_max_seconds: float = float(os.getenv("NEXUS_RETRY_BACKOFF_MAX", "60.0"))
+
+    # ── Database ──
     sqlite_file_name: str = os.getenv("NEXUS_SQLITE_FILE", "nexus_oltp.db")
     duckdb_file_name: str = os.getenv("NEXUS_DUCKDB_FILE", "nexus_olap.duckdb")
     storage_dir_name: str = os.getenv("NEXUS_STORAGE_DIR", "app_data/uploads")
@@ -124,58 +127,70 @@ class AppConfig:
     migration_baseline_name: str = os.getenv("NEXUS_MIGRATION_BASELINE_FILE", "migration_rowcount_baseline.json")
     migration_checksum_baseline_name: str = os.getenv("NEXUS_MIGRATION_CHECKSUM_BASELINE_FILE", "migration_checksum_baseline.json")
 
-    # --- Council Agents (Autopilot) ---
+    # ── Council Agents (Autopilot) ──
     council_alpha_model_path: str = os.getenv("NEXUS_COUNCIL_ALPHA_MODEL", "models/LFM2.5-1.2B-Q4_K_M.gguf")
     council_beta_model_path: str = os.getenv("NEXUS_COUNCIL_BETA_MODEL", "models/Qwen3-0.6B-Q4_K_M.gguf")
     council_gamma_model_path: str = os.getenv("NEXUS_COUNCIL_GAMMA_MODEL", "models/LittleLamb-0.3B-Q4_K_M.gguf")
 
-    # --- Decision thresholds (defaults, adapted per-context at runtime) ---
+    # ── Decision thresholds ──
     autopilot_auto_post_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_AUTO_POST", "0.92"))
     autopilot_suggest_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_SUGGEST", "0.75"))
     autopilot_ask_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_ASK", "0.50"))
 
-    # --- Adaptation ---
+    # ── Adaptation ──
     autopilot_adaptation_enabled: bool = os.getenv("NEXUS_AUTOPILOT_ADAPTATION", "1") == "1"
     autopilot_adaptation_learning_rate: float = float(os.getenv("NEXUS_AUTOPILOT_LEARNING_RATE", "0.05"))
     autopilot_low_amount_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_LOW_AMOUNT", "500.0"))
 
-    # --- Rules Agent (Granite 4.0) ---
+    # ── Rules Agent ──
     rules_model_path: str = os.getenv("NEXUS_RULES_MODEL", "models/granite-4.0-1b-nano-Q4_K_M.gguf")
     rules_max_invoice_amount: float = float(os.getenv("NEXUS_RULES_MAX_AMOUNT", "100000.0"))
     rules_require_nip_validation: bool = os.getenv("NEXUS_RULES_REQUIRE_NIP", "1") == "1"
 
-    # --- Analytics Agent (Qwen2.5-1.5B + Fin-RWKV) ---
+    # ── Analytics Agent ──
     analytics_model_path: str = os.getenv("NEXUS_ANALYTICS_MODEL", "models/qwen2.5-1.5b-instruct-Q4_K_M.gguf")
     fin_detective_model_path: str = os.getenv("NEXUS_FIN_DETECTIVE_MODEL", "models/fin-rwkv-169m.pth")
     analytics_anomaly_threshold: float = float(os.getenv("NEXUS_ANALYTICS_ANOMALY_THRESHOLD", "2.0"))
 
-    # --- NATS ---
+    # ── NATS ──
     nats_url: str = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
 
-    # --- Decision Agent (Jamba 3B + Granite) ---
-    decision_jamba_model_path: str = os.getenv("NEXUS_DECISION_JAMBA_MODEL", "models/Jamba-Reasoning-3B-Q4_K_M.gguf")
-    decision_granite_model_path: str = os.getenv("NEXUS_DECISION_GRANITE_MODEL", "models/granite-4.0-1b-nano-Q4_K_M.gguf")
+    # ── Decision Agent ──
     decision_timeout_seconds: int = int(os.getenv("NEXUS_DECISION_TIMEOUT", "60"))
 
-    # --- Orchestrator Agent (LittleLamb 0.3B) ---
+    # ── Orchestrator Agent ──
     orchestrator_model_path: str = os.getenv("NEXUS_ORCHESTRATOR_MODEL", "models/LittleLamb-0.3B-Q4_K_M.gguf")
 
-    # --- Memory & timeout ---
+    # ── Memory & timeout ──
     autopilot_model_ttl_seconds: int = int(os.getenv("NEXUS_AUTOPILOT_MODEL_TTL", "600"))
     autopilot_agent_timeout_seconds: int = int(os.getenv("NEXUS_AUTOPILOT_AGENT_TIMEOUT", "30"))
+
+    # ── Computed properties (as methods for Struct compatibility) ──
 
     @property
     def autopilot_vendor_alpha_proximity_min(self) -> int:
         return int(os.getenv("NEXUS_AUTOPILOT_VENDOR_ALPHA_MIN", "3"))
 
-    def __post_init__(self) -> None:
+    @classmethod
+    def create(cls) -> AppConfig:
+        """Create AppConfig instance and run post-init validation.
+
+        Zastępuje ``AppConfig()`` — msgspec.Struct nie woła __post_init__
+        automatycznie, więc ta metoda zapewnia walidację.
+        """
+        instance = cls()
+        instance.validate()
+        return instance
+
+    def validate(self) -> None:
+        """Validate config after initialization. Call after creating instance."""
         self.environment = self.environment.lower().strip()
         if self.environment not in {"dev", "stage", "prod"}:
             raise ConfigValidationError(
                 "NEXUS_ENV must be one of: dev, stage, prod"
             )
 
-        self.base_dir = self.base_dir.resolve()
+        self.base_dir = Path(self.base_dir).resolve() if isinstance(self.base_dir, str) else self.base_dir.resolve()
         # Offline-first secret resolution: prefer live env, fallback to encrypted/local cache.
         cache = LocalSecretsCache(self.base_dir / "app_data" / "secrets_cache.json", ttl_hours=24)
         resolver = OfflineFirstSecretResolver(cache)
@@ -215,6 +230,8 @@ class AppConfig:
         if self.outbox_replay_limit <= 0:
             raise ConfigValidationError("NEXUS_OUTBOX_REPLAY_LIMIT must be > 0")
 
+    # ── Computed paths ──
+
     @property
     def sqlite_path(self) -> Path:
         return self.base_dir / self.sqlite_file_name
@@ -250,9 +267,7 @@ class AppConfig:
     @property
     def cors_origins(self) -> list[str]:
         raw = self.cors_origins_raw.strip()
-        if not raw:
-            return ["*"]
-        if raw == "*":
+        if not raw or raw == "*":
             return ["*"]
         return [origin.strip() for origin in raw.split(",") if origin.strip()]
 

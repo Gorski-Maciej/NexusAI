@@ -1,6 +1,6 @@
 # core/exceptions.py
 
-class NexusBaseException(Exception):
+class NexusBaseException(Exception):  # noqa: N818
     """Główna klasa wyjątków dla całego systemu Nexus AI."""
     def __init__(self, message: str, code: str = "INTERNAL_ERROR"):
         self.message = message

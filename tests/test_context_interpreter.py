@@ -21,7 +21,7 @@ from decimal import Decimal
 
 import pytest
 
-from CORE.context_interpreter import (
+from core.context_interpreter import (
     ContextInterpreter,
     ContextInterpreterError,
     ALLOWED_KEYS,

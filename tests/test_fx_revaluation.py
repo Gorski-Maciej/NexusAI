@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-MODULE_PATH = ROOT / "Code" / "SERVICES" / "fx_revaluation.py"
+MODULE_PATH = ROOT / "Code" / "services" / "fx_revaluation.py"
 spec = importlib.util.spec_from_file_location("fx_revaluation", MODULE_PATH)
 module = importlib.util.module_from_spec(spec)
 assert spec.loader is not None

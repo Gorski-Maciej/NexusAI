@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 def test_security_scan_has_strict_tools_flag() -> None:
-    source = Path('Code/SKRIPTS/security_scan.py').read_text(encoding='utf-8')
+    source = Path('Code/scripts/security_scan.py').read_text(encoding='utf-8')
     assert '--strict-tools' in source
     assert 'strict_tools: bool = False' in source
 

@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-from SERVICES.decision_logger import DecisionLogger
+from services.decision_logger import DecisionLogger
 
 
 # ---------------------------------------------------------------------------

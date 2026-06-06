@@ -1,8 +1,9 @@
 # core/tracing.py
+import sys
 import uuid
 from contextvars import ContextVar
+
 from loguru import logger
-import sys
 
 # Zmienna kontekstowa unikalna dla każdego "requestu"
 correlation_id_ctx: ContextVar[str] = ContextVar("correlation_id", default="system")

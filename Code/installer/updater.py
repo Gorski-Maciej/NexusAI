@@ -18,13 +18,12 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import os
 import platform
-import sys
 import tempfile
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Protocol
+from typing import Protocol
 
 import httpx
 
@@ -129,7 +128,7 @@ async def check_for_updates(
     # Try local version.json first (for testing/development)
     if LOCAL_VERSION_FILE and Path(LOCAL_VERSION_FILE).exists():
         try:
-            with open(LOCAL_VERSION_FILE, "r") as f:
+            with open(LOCAL_VERSION_FILE) as f:
                 data = json.load(f)
             latest = data.get("version", CURRENT_VERSION)
             if _is_newer(latest, CURRENT_VERSION):
@@ -333,10 +332,10 @@ def install_update(installer_path: Path) -> None:
         temp_dir = installer_path.parent
         cleanup_script = temp_dir / "cleanup.bat"
         with open(cleanup_script, "w") as f:
-            f.write(f"@echo off\n")
-            f.write(f"timeout /t 30 /nobreak >nul\n")
+            f.write("@echo off\n")
+            f.write("timeout /t 30 /nobreak >nul\n")
             f.write(f"rmdir /s /q \"{temp_dir}\"\n")
-            f.write(f"del \"%~f0\"\n")
+            f.write("del \"%~f0\"\n")
         subprocess.Popen(
             ["cmd", "/c", str(cleanup_script)],
             shell=True,
@@ -392,7 +391,7 @@ def build_update_dialog(
         content=ft.Column(
             [
                 ft.Text(
-                    f"A new version of NexusAI is available!",
+                    "A new version of NexusAI is available!",
                     size=14,
                 ),
                 ft.Container(height=8),

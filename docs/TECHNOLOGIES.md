@@ -1,766 +1,388 @@
-# NexusAI — Pełna lista technologii
+# NexusAI — Pełna lista technologii (v2.0)
 
-> **Data:** 2026-06-04
-> **Opis:** Kompletny spis wszystkich technologii, bibliotek, narzędzi i serwisów zewnętrznych używanych w projekcie NexusAI wraz z lokalizacją w strukturze projektu i opisem funkcji.
+> **Data:** 2026-06-05
+> **Status:** Przebudowa zgodnie z `aa3fvcx.txt`
+> **Opis:** Nowy, ultralekki stos technologiczny — maksymalna wydajność przy minimalnym zużyciu RAM.
 
 ---
 
-## ▶️ Szybki start z uv
+## ▶️ Szybki start
 
 ```bash
-# Instalacja uv (jeśli nie jest zainstalowane)
+# Instalacja pixi (zalecane — wszystko w jednym)
+curl -fsSL https://pixi.sh/install.sh | sh
+pixi install
+pixi run api
+
+# Alternatywnie: uv (szybszy od pip)
 curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Instalacja wszystkich zależności
-uv sync
-
-# Uruchomienie API
-uv run nexus-api
-
-# Uruchomienie workera
-uv run nexus-worker
-
-# Uruchomienie desktop UI
-uv run nexus-desktop
-
-# Dodanie nowej zależności
-uv add requests
-
-# Uruchomienie testów
-uv run pytest tests/
+uv pip install -r requirements.txt
+python -m api.server
 ```
-
----
 
 ---
 
 ## Spis treści
 
-1. [Diagram zależności (Mermaid)](#-diagram-zależności-mermaid)
-2. [Język i Środowisko](#1-język-i-środowisko)
-3. [API / Serwer ASGI](#2-api--serwer-asgi)
-4. [Bazy Danych i Przechowywanie](#3-bazy-danych-i-przechowywanie)
-5. [Walidacja Danych i Serializacja](#4-walidacja-danych-i-serializacja)
-6. [Kolejki Zadań i Komunikacja](#5-kolejki-zadań-i-komunikacja)
-7. [HTTP / Sieć](#6-http--sieć)
-8. [Odporność na Błędy (Resilience)](#7-odporność-na-błędy-resilience)
-9. [Kryptografia i Bezpieczeństwo](#8-kryptografia-i-bezpieczeństwo)
-10. [Finanse / Waluty](#9-finanse--waluty)
-11. [Przetwarzanie Dokumentów (XML/OCR)](#10-przetwarzanie-dokumentów-xmlocr)
-12. [Logowanie](#11-logowanie)
-13. [Metryki i Monitoring](#12-metryki-i-monitoring)
-14. [Cache](#13-cache)
-15. [Narzędzia (Utilities)](#14-narzędzia-utilities)
-16. [Testowanie](#15-testowanie)
-17. [Interfejs Desktopowy](#16-interfejs-desktopowy)
-18. [AI / Machine Learning](#17-ai--machine-learning)
-19. [Infrastruktura / DevOps](#18-infrastruktura--devops)
-20. [Główne Serwisy Zewnętrzne (API)](#19-główne-serwisy-zewnętrzne-api)
-21. [Agenty AI (Council of LLMs)](#20-agenty-ai-council-of-llms)
-22. [Silnik Reguł Podatkowych (Tax Engine)](#21-silnik-reguł-podatkowych-tax-engine)
-23. [System Księgowy (Roboton_Reflekton)](#22-system-księgowy-roboton_reflekton)
-24. [Inne Narzędzia i Skrypty](#23-inne-narzędzia-i-skrypty)
-25. [Formatowanie i Jakość Kodu](#24-formatowanie-i-jakość-kodu)
-26. [Pliki Konfiguracyjne i Build](#25-pliki-konfiguracyjne-i-build)
+1. [Runtime i Narzędzia](#1-runtime-i-narzędzia)
+2. [Kompilacja i Build](#2-kompilacja-i-build)
+3. [API / Serwer ASGI](#3-api--serwer-asgi)
+4. [Bazy Danych i Przechowywanie](#4-bazy-danych-i-przechowywanie)
+5. [Walidacja Danych i Serializacja](#5-walidacja-danych-i-serializacja)
+6. [Kolejki Zadań i Komunikacja](#6-kolejki-zadań-i-komunikacja)
+7. [HTTP / Sieć](#7-http--sieć)
+8. [Odporność na Błędy (Resilience)](#8-odporność-na-błędy-resilience)
+9. [Kryptografia i Bezpieczeństwo](#9-kryptografia-i-bezpieczeństwo)
+10. [Finanse / Waluty](#10-finanse--waluty)
+11. [AI / Machine Learning](#11-ai--machine-learning)
+12. [Modele AI (GGUF)](#12-modele-ai-gguf)
+13. [Logowanie i Monitoring](#13-logowanie-i-monitoring)
+14. [Narzędzia (Utilities)](#14-narzędzia-utilities)
+15. [Testowanie](#15-testowanie)
+16. [Interfejs Desktopowy](#16-interfejs-desktopowy)
+17. [Infrastruktura / DevOps](#17-infrastruktura--devops)
+18. [Główne Serwisy Zewnętrzne (API)](#18-główne-serwisy-zewnętrzne-api)
+19. [Agenty AI (Council of LLMs + Extraction + Analytics)](#19-agenty-ai-council-of-llms--extraction--analytics)
+20. [Pliki Konfiguracyjne i Build](#20-pliki-konfiguracyjne-i-build)
 
 ---
 
-## 🗺 Diagram zależności (Mermaid)
-
-```mermaid
-flowchart TB
-    %% =========================================================================
-    %% STYLING
-    %% =========================================================================
-    classDef infra fill:#1a1a2e,stroke:#e94560,stroke-width:2px,color:#fff
-    classDef runtime fill:#16213e,stroke:#0f3460,stroke-width:2px,color:#fff
-    classDef api fill:#0f3460,stroke:#533483,stroke-width:2px,color:#fff
-    classDef db fill:#1b4332,stroke:#2d6a4f,stroke-width:2px,color:#fff
-    classDef msg fill:#3d1e6d,stroke:#7b2d8e,stroke-width:2px,color:#fff
-    classDef ml fill:#4a1942,stroke:#893168,stroke-width:2px,color:#fff
-    classDef pipeline fill:#1a3c34,stroke:#2d7a6e,stroke-width:2px,color:#fff
-    classDef biz fill:#2c1810,stroke:#8b4513,stroke-width:2px,color:#fff
-    classDef ui fill:#2d1b2e,stroke:#9b59b6,stroke-width:2px,color:#fff
-    classDef ext fill:#1a1a2e,stroke:#4a90d9,stroke-width:2px,color:#fff
-    classDef mon fill:#2d1b00,stroke:#cc7a00,stroke-width:2px,color:#fff
-    classDef test fill:#1a2e1a,stroke:#2ecc71,stroke-width:2px,color:#fff
-    classDef build fill:#2e1a1a,stroke:#e74c3c,stroke-width:2px,color:#fff
-    classDef dev fill:#1e2a3e,stroke:#5b7db5,stroke-width:2px,color:#fff
-
-    %% =========================================================================
-    %% WARSTWA 0: INFRASTRUKTURA / DEVOPS
-    %% =========================================================================
-    subgraph infra_layer ["☁️ INFRASTRUKTURA / DEVOPS"]
-        Docker["Docker<br/>(Python 3.11-slim + Tesseract)"]
-        DC["Docker Compose"]
-        NATS_Server["NATS Server<br/>(nats:2.10-alpine)"]
-        TB_Server["TigerBeetle Server"]
-        Prometheus["Prometheus<br/>+ Alert Rules"]
-    end
-
-    %% =========================================================================
-    %% WARSTWA 1: RUNTIME
-    %% =========================================================================
-    subgraph runtime_layer ["🐍 RUNTIME"]
-        Python["Python ≥3.11"]
-        setuptools["setuptools ≥68.0"]
-        msgspec["msgspec<br/>(Binary Serialization)"]
-        anyio["anyio<br/>(Async I/O)"]
-    end
-
-    %% =========================================================================
-    %% WARSTWA 2: API
-    %% =========================================================================
-    subgraph api_layer ["🌐 API / ASGI"]
-        Litestar["Litestar ≥2.8.0<br/>Routing · Middleware · DI · OpenAPI"]
-        Uvicorn["Uvicorn ≥0.30.0<br/>ASGI Server"]
-        JWT["JWT Auth<br/>(Litestar JWT)"]
-        CORS["CORS Middleware"]
-        RateLimit["Rate Limiting"]
-        CSRF["CSRF Protection"]
-    end
-
-    %% =========================================================================
-    %% WARSTWA 3: DANE / PRZECHOWYWANIE
-    %% =========================================================================
-    subgraph data_layer ["💾 BAZY DANYCH"]
-        SQLAlchemy["SQLAlchemy ≥2.0<br/>ORM · Modele"]
-        aiosqlite["aiosqlite<br/>Async SQLite Driver"]
-        SQLite["SQLite (OLTP)<br/>Faktury · Użytkownicy · Outbox"]
-        DuckDB["DuckDB ≥1.0<br/>(OLAP)"]
-        PyArrow["PyArrow ≥15.0<br/>Columnar Format"]
-        LanceDB["LanceDB ≥0.8<br/>Vector DB"]
-        TigerBeetle["TigerBeetle<br/>Double-Entry Ledger"]
-        SQLCipher["SQLCipher<br/>(via cryptography)<br/>Szyfrowanie DB"]
-        Alembic["Alembic ≥1.13<br/>Migracje schematu"]
-    end
-
-    %% =========================================================================
-    %% WARSTWA 4: KOLEJKI / WIADOMOŚCI
-    %% =========================================================================
-    subgraph messaging_layer ["✉️ KOLEJKI ZADAŃ"]
-        NATS["nats-py ≥2.6<br/>Message Broker"]
-        JetStream["NATS JetStream<br/>Durable Streaming"]
-        Taskiq["Taskiq ≥0.11<br/>Async Task Queue"]
-        taskiq_nats["taskiq-nats ≥0.5<br/>Taskiq Broker for NATS"]
-    end
-
-    %% =========================================================================
-    %% WARSTWA 5: AI / ML
-    %% =========================================================================
-    subgraph ai_layer ["🧠 AI / AGENT COUNCIL"]
-        llama_cpp["llama-cpp-python<br/>GGUF Inference"]
-        Transformers["Transformers<br/>(HuggingFace)"]
-        sentence_tf["sentence-transformers<br/>Embeddings"]
-        HF_Hub["huggingface-hub<br/>Model Download"]
-
-        subgraph models ["Modele GGUF"]
-            Alpha["Alpha Agent<br/>LFM 1.2B"]
-            Beta["Beta Agent<br/>Qwen3 0.6B"]
-            Gamma["Gamma Agent<br/>LittleLamb 0.3B"]
-            Rules["Rules Agent<br/>Granite 1B"]
-            Analytics["Analytics Agent<br/>Qwen2.5 1.5B"]
-            Decision["Decision Agent<br/>Jamba 3B"]
-            Orchestrator["Orchestrator<br/>LittleLamb 0.3B"]
-        end
-    end
-
-    %% =========================================================================
-    %% WARSTWA 6: PIPELINE OCR
-    %% =========================================================================
-    subgraph ocr_layer ["📄 PIPELINE OCR"]
-        Tesseract["Tesseract OCR<br/>(system)"]
-        Pillow["Pillow ≥10.0<br/>Image Processing"]
-        PyMuPDF["PyMuPDF<br/>PDF Processing"]
-        OpenCV["OpenCV<br/>Computer Vision"]
-        Surya["Surya OCR<br/>Layout Detection"]
-        Paddle["PaddleOCR<br/>Deep Learning OCR"]
-        ONNX["ONNX Runtime<br/>ML Inference"]
-    end
-
-    %% =========================================================================
-    %% WARSTWA 7: BIZNES / KSIĘGOWOŚĆ
-    %% =========================================================================
-    subgraph business_layer ["📊 SYSTEM KSIĘGOWY"]
-        subgraph tax ["Tax Engine"]
-            RuleEngine["RuleEngine<br/>(Zen-Engine / DuckDB)"]
-            TaxMath["TaxMathEngine<br/>(int · grosze)"]
-            TaxPipeline["TaxPipeline<br/>Orkiestracja"]
-            TraceGen["TraceGenerator<br/>Ścieżka decyzyjna"]
-            ProofChain["Proof Chain<br/>(SHA-256 Audit)"]
-            IntegrityVerifier["Integrity Verifier<br/>Weryfikacja łańcucha"]
-        end
-
-        subgraph roboton ["Roboton_Reflekton"]
-            LedgerClient["LedgerClient<br/>TigerBeetle"]
-            ShadowLedger["ShadowLedger<br/>Symulacje"]
-            Reconciliation["ReconciliationEngine"]
-            Forex["ForexEngine"]
-            Dunning["DunningEngine"]
-            Budget["BudgetaryControl"]
-            VATRec["VATReconciliation"]
-        end
-
-        subgraph services ["Serwisy Biznesowe"]
-            GUS["GUS BIR Client<br/>(SOAP)"]
-            WhiteList["Biała Lista MF<br/>(API)"]
-            NBP["NBP API<br/>Kursy walut"]
-            KSeF["KSeF Client<br/>(XML + Podpis)"]
-            Currency["CurrencyConverter<br/>(py-moneyed)"]
-            RiskGuard["RiskGuard<br/>Wykrywanie anomalii"]
-            Autopilot["Autopilot<br/>Automatyczne księgowanie"]
-        end
-
-        subgraph core_services ["Serwisy Core"]
-            Tenacity["Tenacity ≥9.0<br/>Retry Logic"]
-            PyBreaker["PyBreaker ≥1.4<br/>Circuit Breaker"]
-            cryptography["cryptography ≥42.0<br/>Fernet · PBKDF2"]
-            cachetools["cachetools ≥7.0<br/>In-Memory Cache"]
-            Loguru["Loguru ≥0.7<br/>Logging"]
-            OTel["OpenTelemetry<br/>Distributed Tracing"]
-            psutil["psutil ≥5.9<br/>System Monitor"]
-            dateparser["dateparser ≥1.2<br/>Parsowanie dat"]
-            fsspec["fsspec ≥2024.3<br/>Filesystem Abstraction"]
-        end
-    end
-
-    %% =========================================================================
-    %% WARSTWA 8: UI
-    %% =========================================================================
-    subgraph ui_layer ["🖥️ INTERFEJS"]
-        Flet["Flet ≥0.28<br/>Desktop UI (Python → Flutter)"]
-        FletRouter["Flet Router<br/>Nawigacja"]
-    end
-
-    %% =========================================================================
-    %% WARSTWA 9: TESTY
-    %% =========================================================================
-    subgraph test_layer ["🧪 TESTY"]
-        pytest["pytest ≥8.0"]
-        pytest_async["pytest-asyncio"]
-        Hypothesis["Hypothesis<br/>Property-Based"]
-        k6["k6<br/>Performance Tests"]
-    end
-
-    %% =========================================================================
-    %% WARSTWA 10: MONITORING
-    %% =========================================================================
-    subgraph monitoring_layer ["📈 MONITORING"]
-        PromClient["Prometheus Client<br/>Metryki API"]
-        Sentry["Sentry<br/>Error Tracking"]
-        Healtchecks["Health Checks<br/>(/api/v2/health)"]
-    end
-
-    %% =========================================================================
-    %% WARSTWA 11: BUILD / DEPLOY
-    %% =========================================================================
-    subgraph build_layer ["🔧 BUILD"]
-        NexusCLI["Nexus CLI<br/>nexus-api · nexus-worker<br/>nexus-desktop · nexus"]
-        main_py["main.py<br/>Central Entrypoint"]
-        InnoSetup["Inno Setup<br/>Windows Installer"]
-        NSIS["NSIS<br/>Windows Installer"]
-        Ruff["Ruff<br/>Linter + Formatter"]
-        Mypy["Mypy<br/>Type Checker"]
-        precommit["pre-commit<br/>Git Hooks"]
-    end
-
-    %% =========================================================================
-    %% WARSTWA 12: ZEWNĘTRZNE
-    %% =========================================================================
-    subgraph external_layer ["🔌 ZEWNĘTRZNE API / SERWISY"]
-        GUS_BIR["GUS BIR<br/>(REGON · NIP)"]
-        Biala_Lista["Biała Lista MF<br/>(Rachunki VAT)"]
-        NBP_API["NBP API<br/>(Kursy walut)"]
-        KSeF_API["KSeF<br/>(System e-Faktur)"]
-        HF_API["HuggingFace Hub<br/>(Modele AI)"]
-    end
-
-    %% ======================================================================
-    %% POŁĄCZENIA
-    %% ======================================================================
-
-    %% INFRA → RUNTIME
-    Docker --> Python
-    Docker --> Tesseract
-    DC --> Docker
-    DC --> NATS_Server
-    DC --> TB_Server
-
-    %% RUNTIME → API
-    Python --> Litestar
-    Python --> Uvicorn
-    anyio --> Litestar
-    msgspec --> Taskiq
-
-    %% API → COMPONENTS
-    Litestar --> JWT
-    Litestar --> CORS
-    Litestar --> RateLimit
-    Litestar --> CSRF
-    Uvicorn --> Litestar
-
-    %% API → DATA
-    Litestar --> SQLAlchemy
-    Litestar --> DuckDB
-    SQLAlchemy --> aiosqlite
-    aiosqlite --> SQLite
-    SQLAlchemy --> Alembic
-    SQLite --> SQLCipher
-    DuckDB --> PyArrow
-    DuckDB --> LanceDB
-
-    %% API → MESSAGING
-    Litestar --> NATS
-    NATS --> JetStream
-    Taskiq --> taskiq_nats
-    taskiq_nats --> NATS
-
-    %% BUSINESS → DATA
-    RuleEngine --> DuckDB
-    RuleEngine --> TaxPipeline
-    TaxPipeline --> TaxMath
-    TaxPipeline --> TraceGen
-    TaxPipeline --> ProofChain
-    ProofChain --> IntegrityVerifier
-    LedgerClient --> TigerBeetle
-    ShadowLedger --> TigerBeetle
-
-    %% BUSINESS → EXTERNAL
-    GUS --> GUS_BIR
-    WhiteList --> Biala_Lista
-    NBP --> NBP_API
-    KSeF --> KSeF_API
-    Currency --> NBP_API
-    Currency --> py_moneyed["py-moneyed ≥3.0<br/>(Fowler's Money)"]
-
-    %% RESILIENCE
-    Tenacity --> GUS
-    Tenacity --> NBP
-    PyBreaker --> NATS
-    PyBreaker --> TigerBeetle
-
-    %% MESSAGING → AI/PIPELINE
-    Taskiq --> llama_cpp
-    Taskiq --> Tesseract
-    NATS --> JetStream
-
-    %% AI LAYER
-    llama_cpp --> Alpha
-    llama_cpp --> Beta
-    llama_cpp --> Gamma
-    llama_cpp --> Rules
-    llama_cpp --> Analytics
-    llama_cpp --> Decision
-    llama_cpp --> Orchestrator
-    HF_Hub --> Alpha
-    HF_Hub --> Beta
-    HF_Hub --> Gamma
-    HF_Hub --> Rules
-    HF_Hub --> Analytics
-    HF_Hub --> Decision
-    HF_API --> HF_Hub
-    Transformers --> sentence_tf
-
-    %% OCR PIPELINE
-    Pillow --> Tesseract
-    PyMuPDF --> Tesseract
-    OpenCV --> Tesseract
-    Surya --> Tesseract
-    Paddle --> Tesseract
-    ONNX --> Paddle
-    ONNX --> Surya
-
-    %% AI → BUSINESS
-    Alpha --> Autopilot
-    Beta --> Autopilot
-    Gamma --> Autopilot
-    Rules --> RuleEngine
-    Analytics --> RiskGuard
-    Orchestrator --> Autopilot
-    Autopilot --> LedgerClient
-
-    %% UI → API
-    Flet --> Litestar
-    FletRouter --> Flet
-
-    %% MONITORING
-    PromClient --> Prometheus
-    Litestar --> PromClient
-    Litestar --> Sentry
-    Litestar --> Healtchecks
-    OTel --> Litestar
-
-    %% CORE SERVICES
-    cryptography --> SQLCipher
-    cachetools --> Litestar
-    Loguru --> Litestar
-    psutil --> PromClient
-    dateparser --> GUS
-    fsspec --> Tesseract
-
-    %% TESTING
-    pytest --> Hypothesis
-    pytest --> pytest_async
-    k6 --> Litestar
-
-    %% BUILD
-    main_py --> Litestar
-    main_py --> Taskiq
-    main_py --> Flet
-    NexusCLI --> main_py
-    Ruff --> Python
-    Mypy --> Python
-    precommit --> Ruff
-    precommit --> Mypy
-    InnoSetup --> NexusCLI
-    NSIS --> NexusCLI
-
-    %% EXTERNAL
-    GUS_BIR -.->|"SOAP XML"| GUS
-    Biala_Lista -.->|"REST API"| WhiteList
-    NBP_API -.->|"REST API"| NBP
-    KSeF_API -.->|"XML + Podpis"| KSeF
-    HF_API -.->|"HTTPS"| HF_Hub
-```
-
----
-
-## 1. Język i Środowisko
+## 1. Runtime i Narzędzia
 
 | Technologia | Wersja | Lokalizacja | Opis |
 |---|---|---|---|
-| **Python** | ≥3.11 | `pyproject.toml` — `requires-python` | Język programowania całego projektu |
-| **uv (Astral)** | ≥0.5 | `pyproject.toml` — `[tool.uv]`, `Dockerfile` | **Ultra-szybki menedżer pakietów** (Rust) — zastępuje pip/venv/pipx. ~10-100x szybszy od pip, jeden statyczny binary (~20MB), inteligentny cache. |
-| **setuptools** | ≥68.0 | `pyproject.toml` — `build-system.requires` | System budowania pakietu (współpracuje z uv) |
+| **Python (free-threaded)** | ≥3.13t | `pixi.toml`, `pyproject.toml` | CPython 3.13 bez GIL — prawdziwa wielowątkowość, współdzielona pamięć, -30-40% RAM |
+| **pixi** | latest | `pixi.toml` | **Menedżer środowiska "wszystko w jednym"** (Rust) — Python, PyPI, zależności systemowe, bez Dockera |
+| **uv (Astral)** | ≥0.5 | `pyproject.toml` | Najszybszy menedżer pakietów PyPI (Rust) — wbudowany w pixi |
+| **mise** | (opcjonalnie) | — | Globalny przełącznik wersji Pythona dla developera |
+
+### Python 3.13t — dlaczego to rewolucja
+- Wszystkie zadania równoległe (AI, OCR, DB, UI) jako zwykłe wątki w jednym procesie
+- RAM zużywany raz — modele, cache, dane współdzielone między wątkami
+- Spadek pamięci o 30-40% vs architektura procesowa
+- Kod pozostaje prosty — standardowy `threading`, bez `multiprocessing`
 
 ---
 
-## 2. API / Serwer ASGI
+## 2. Kompilacja i Build
 
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **Litestar** | `requirements.txt`, `pyproject.toml` | `Code/API/app.py`, `Code/API/routes/*.py` | Framework ASGI — główny serwer API. Obsługuje routing, middleware, DI, OpenAPI/Swagger |
-| **Uvicorn** | `requirements.txt`, `pyproject.toml` | `Code/API/server.py` | Serwer ASGI — uruchamia Litestar na HTTP |
-
----
-
-## 3. Bazy Danych i Przechowywanie
-
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **SQLAlchemy** | `requirements.txt`, `pyproject.toml` | `Code/DB/database.py`, `Code/DB/models.py` | ORM — warstwa dostępu do bazy SQLite (OLTP). Modele dla faktur, użytkowników, outboxa |
-| **aiosqlite** | `requirements.txt`, `pyproject.toml` | `Code/DB/database.py` | Async driver SQLite — asynchroniczne połączenia z SQLite dla SQLAlchemy |
-| **DuckDB** | `requirements.txt`, `pyproject.toml` | `Code/DB/analytics.py`, `Code/tax/rules.py`, `Code/services/rule_store.py` | OLAP database — analityka, reguły podatkowe (Zen-Engine), widoki materializowane |
-| **Polars** | `requirements.txt`, `pyproject.toml` | `Code/DB/vector_store.py`, `Code/core/analytics.py`, `Code/DB/replication.py` | **Ultra-szybka biblioteka DataFrame (Rust)** — zastępuje pandas i bezpośrednie użycie PyArrow. 3-15x szybsza, Lazy API, kolumnowa, mniej RAMu. |
-| **PyArrow** | `requirements.txt`, `pyproject.toml` | (zależność DuckDB/LanceDB) | Kolumnowy format danych — używany przez DuckDB i LanceDB wewnętrznie (nie bezpośrednio w kodzie) |
-| **LanceDB** | `requirements.txt`, `pyproject.toml` | `Code/DB/vector_store.py` | Vector database — przechowywanie embeddingów i wektorowe wyszukiwanie podobieństw |
-| **SQLCipher** | (via `cryptography`) | `Code/CORE/crypto.py`, env `NEXUS_SQLCIPHER_KEY` | Szyfrowanie bazy SQLite — transparentne szyfrowanie pliku `.db` na dysku |
-| **Alembic** | `requirements.txt`, `pyproject.toml` | `migrations/versions/0001_initial_schema.py`, `alembic.ini` | Migracje schematu bazy danych — zarządzanie wersjami schematu SQLAlchemy |
+| Technologia | Zastępuje | Opis |
+|---|---|---|
+| **hatchling** | setuptools | Nowoczesny backend budowania (PEP 621) — konfiguracja w czystym `pyproject.toml` |
+| **mypyc** | — | Kompilacja typowanego Pythona do C — 2-5× przyspieszenie modeli domenowych |
+| **PyO3 + Maturin** | — | Rozszerzenia w Rust dla Pythona — szybki XML, tax engine, crypto |
+| **Rust** | C/C++ | Ekstremalna wydajność w krytycznych modułach (przez PyO3) |
+| **mimalloc** | glibc malloc | Alokator Microsoftu — 5-15% mniej RAM, statycznie wkompilowany w Nuitkę |
+| **Nuitka** | — | Kompilacja całej aplikacji do samodzielnego .exe — start w ułamku sekundy |
 
 ---
 
-## 4. Walidacja Danych i Serializacja
+## 3. API / Serwer ASGI
 
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **Pydantic** | `requirements.txt`, `pyproject.toml` | `Code/API/schemas.py`, `Code/CORE/config.py` | Walidacja danych — modele request/response API, konfiguracja z env vars |
-| **pydantic-settings** | `requirements.txt`, `pyproject.toml` | `Code/CORE/config.py` | Ładowanie konfiguracji z `.env` do klas Pydantic |
-| **msgspec** | `requirements.txt`, `pyproject.toml` | `Code/CORE/tasks.py`, testy `test_msgspec_task_response_flow.py` | Szybka serializacja binarna — wydajniejsza alternatywa dla JSON w task queue |
+| Technologia | Zastępuje | Opis |
+|---|---|---|
+| **Litestar** ≥2.8.0 | FastAPI | Framework ASGI nowej generacji — routing, middleware, DI, OpenAPI (wyłączone w prod) |
+| **Granian** ≥1.0.0 | **Uvicorn** | **Serwer ASGI w Rust** — 25-40% mniej RAM niż Uvicorn, obsługa gniazd UNIX |
+| **anyio** ≥4.4.0 | — | Lekka warstwa async I/O — preferowany backend dla Litestar i Granian |
 
----
-
-## 5. Kolejki Zadań i Komunikacja
-
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **NATS (nats-py)** | `requirements.txt`, `pyproject.toml` | `Code/CORE/broker.py`, `docker-compose.yml` | Message broker — komunikacja między serwisami, event-driven architecture |
-| **NATS JetStream** | (wbudowane w NATS) | `docker-compose.yml` — `nats -js` | Durable message streaming — trwałe przechowywanie wiadomości, outbox pattern |
-| **Taskiq** | `requirements.txt`, `pyproject.toml` | `Code/CORE/tasks.py`, `Code/luz/worker.py` | Async task queue — kolejka zadań w tle (OCR, AI) z schedulerem |
-| **taskiq-nats** | `requirements.txt`, `pyproject.toml` | `Code/CORE/broker.py` | Broker Taskiq dla NATS — łączy Taskiq z NATS JetStream |
+### Kluczowe optymalizacje
+- **OpenAPI/Swagger wyłączone** w produkcji — zbędne dla desktopu, oszczędza RAM i czas startu
+- **Gniazda UNIX** zamiast TCP/IP — komunikacja lokalna bez narzutu sieciowego
+- Tylko niezbędny middleware (CORS, JWT, CSRF, rate limiting)
 
 ---
 
-## 6. HTTP / Sieć
+## 4. Bazy Danych i Przechowywanie
 
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **httpx** | `requirements.txt`, `pyproject.toml` | `Code/SERVICES/gus_bir_client.py`, `Code/SERVICES/currency_converter.py` | Async HTTP client — zapytania do zewnętrznych API (GUS BIR, NBP, Biała Lista MF) |
-| **anyio** | `requirements.txt`, `pyproject.toml` | (zależność pośrednia) | Async I/O backend — używany przez Litestar i httpx |
+| Technologia | Zastępuje | Opis |
+|---|---|---|
+| **SQLite + SQLCipher** | — | Zaszyfrowana (AES-256) baza transakcyjna — jeden plik, zero serwera, pełne ACID |
+| **SQLModel** | SQLAlchemy + Pydantic | **ORM 2 w 1** — jedna definicja dla bazy i API, zero duplikacji kodu |
+| **aiosqlite** ≥0.20 | — | Cienka, asynchroniczna warstwa dla SQLite |
+| **sqlite-vec** | **LanceDB** | **Rozszerzenie wektorowe dla SQLite** — embeddingi w tej samej bazie, czysty SQL |
+| **DuckDB** ≥1.0 | — | Lokalna hurtownia danych OLAP — first-match-wins SQL dla reguł podatkowych |
+| **PyArrow** ≥15.0 | — | Kolumnowy format danych — most między DuckDB a Polars |
+| **Polars** ≥1.0 | pandas | DataFrame w Rust — 5-10× szybszy od pandas, Lazy API, mniej RAM |
+| **Alembic** ≥1.13 | — | Migracje schematu — automatyczne generowanie skryptów z SQLModel |
 
----
-
-## 7. Odporność na Błędy (Resilience)
-
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **Tenacity** | `requirements.txt`, `pyproject.toml` | `Code/CORE/resilience.py` | Retry logic — automatyczne ponawianie operacji przy błędach sieciowych/bazodanowych |
-| **PyBreaker** | `requirements.txt`, `pyproject.toml` | `Code/CORE/circuit_breaker.py` | Circuit Breaker — wyłącznik awaryjny dla NATS i zewnętrznych API |
-
----
-
-## 8. Kryptografia i Bezpieczeństwo
-
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **cryptography** | `requirements.txt`, `pyproject.toml` | `Code/CORE/crypto.py`, `Code/CORE/secrets.py` | Szyfrowanie — Fernet (AES-128-CBC + HMAC), PBKDF2, haszowanie haseł |
-| **JWT (Litestar JWT)** | (via `litestar[jwt]`) | `Code/API/auth.py`, `Code/API/security.py` | Tokeny JWT — autoryzacja API, refresh tokeny |
-| **CSRF** | (wbudowane w Litestar) | `Code/API/middleware.py`, env `NEXUS_CSRF_ENABLED` | Ochrona CSRF — zapobiega atakom cross-site request forgery |
-| **Rate Limiting** | (wbudowane w Litestar) | `Code/API/rate_limit.py` | Limitowanie żądań — ochrona przed DoS i nadużyciami API |
-| **CORS** | (wbudowane w Litestar) | `Code/API/middleware.py`, env `NEXUS_CORS_ORIGINS` | Cross-Origin Resource Sharing — kontrola dostępu z różnych domen |
+### Dlaczego sqlite-vec zamiast LanceDB
+- Faktury, kontrahenci i embeddingi AI w **jednym pliku**
+- Jedna transakcja dla danych i wektorów — atomowość gwarantowana
+- Wyszukiwanie semantyczne przez czysty SQL: `SELECT * FROM invoices ORDER BY vec_distance_cosine(embedding, ?) LIMIT 5`
 
 ---
 
-## 9. Finanse / Waluty
+## 5. Walidacja Danych i Serializacja
 
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **py-moneyed** | `requirements.txt`, `pyproject.toml` | `Code/SERVICES/currency_converter.py` | Fowler's Money pattern — reprezentacja kwot z walutą, zaokrąglanie HALF_UP |
-| **TigerBeetle** | (osobny serwer) | `Code/Roboton_Reflekton/ledger_client.py`, `docker-compose.yml`, `docker/tigerbeetle.Dockerfile` | Ledger double-entry — dwustronne księgowanie z two-phase commit |
+| Technologia | Zastępuje | Opis |
+|---|---|---|
+| **msgspec** ≥0.18 | json, orjson, python-dotenv, pydantic-settings | **Ultraszybka serializacja** — 2-3× szybsza od Pydantic v2, wbudowany parser TOML |
+| **Pydantic** | (tylko jako zależność SQLModel) | Używany **wyłącznie** jako fundament SQLModel — nie w API |
 
----
-
-## 10. Przetwarzanie Dokumentów (XML/OCR)
-
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **lxml** | `requirements.txt`, `pyproject.toml` | `Code/CORE/integrations/ksef/*.py` | XML parser — przetwarzanie dokumentów KSeF (Krajowy System e-Faktur) |
-| **xsdata** | `requirements.txt`, `pyproject.toml` | `Code/CORE/integrations/ksef/crypto.py` | XML data binding — generowanie klas Python z schematów XSD dla KSeF |
-| **Pillow (PIL)** | `requirements.txt`, `pyproject.toml` | `Code/PIPELINE/preprocessor.py` | Image processing — przetwarzanie obrazów dokumentów (deskew, binaryzacja) |
-| **Tesseract OCR** | (systemowy pakiet) | `Code/PIPELINE/ocr_engine.py`, `Dockerfile` | OCR engine — ekstrakcja tekstu ze skanów faktur (z polskim językiem) |
-| **PyMuPDF (fitz)** | (opcjonalne AI) `pyproject.toml` | (w `[ai]` extras) | PDF processing — ekstrakcja tekstu i obrazów z plików PDF |
-| **OpenCV** | (opcjonalne AI) `pyproject.toml` | (w `[ai]` extras) | Computer vision — zaawansowane przetwarzanie obrazów dokumentów |
-| **PaddleOCR** | (opcjonalne AI) `pyproject.toml` | (w `[ai]` extras) | OCR deep learning — alternatywny silnik OCR oparty na deep learning |
-| **Surya OCR** | (opcjonalne AI) `pyproject.toml` | (w `[ai]` extras) | OCR deep learning — detekcja layoutu i OCR dokumentów |
-| **ONNX Runtime** | (opcjonalne AI) `pyproject.toml` | (w `[ai]` extras) | ML inference engine — uruchamianie modeli ONNX dla OCR i analizy |
+### Nowa architektura walidacji
+- **msgspec.Struct** dla wszystkich: endpointów API, konfiguracji (TOML), wewnętrznych DTO
+- **SQLModel** (oparty na Pydantic) tylko dla modeli bazy danych
+- Konfiguracja z `config.toml` przez msgspec — zero dodatkowych bibliotek
 
 ---
 
-## 11. Logowanie
+## 6. Kolejki Zadań i Komunikacja
 
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **Loguru** | `requirements.txt`, `pyproject.toml` | `Code/CORE/logger.py` | Logging — zaawansowane logowanie z formatowaniem, rotacją plików, kolorami |
-| **OpenTelemetry** | (wbudowane w kod) | `Code/CORE/tracing.py`, testy `test_otel_*.py` | Distributed tracing — śledzenie żądań przez system, buffer/replay |
+| Technologia | Opis |
+|---|---|
+| **NATS Server** ~10 MB | **Samodzielny plik binarny** (nie Docker!) — broker wiadomości uruchamiany jako podproces |
+| **nats-py** ≥2.6 | Oficjalny, asynchroniczny klient NATS |
+| **NATS JetStream** | Trwałe strumienie, at-least-once delivery, dead letter queue, retry z backoffem |
+| **Taskiq** ≥0.11 | Nowoczesna, async-native kolejka zadań (dekoratory, type hints, harmonogram cron) |
+| **taskiq-nats** ≥0.5 | Spoiwo łączące Taskiq z NATS JetStream |
+
+### Kluczowe cechy
+- Komunikacja przez **gniazdo UNIX** (nie TCP/IP) — zero narzutu sieciowego
+- W spoczynku NATS zużywa **15-25 MB RAM**
+- Dead Letter Queue — żadna faktura nie przepada bez śladu
 
 ---
 
-## 12. Metryki i Monitoring
+## 7. HTTP / Sieć
 
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **Prometheus Client** | `requirements.txt`, `pyproject.toml` | `Code/API/telemetry_metrics.py`, `deploy/prometheus/alert_rules.yml` | Metryki — eksport metryk do Prometheus (czas odpowiedzi, liczba żądań, błędy) |
-| **Sentry** | (opcjonalne) env `NEXUS_SENTRY_DSN` | `config/prod.env` | Error tracking — zbieranie wyjątków i błędów w produkcji |
+| Technologia | Opis |
+|---|---|
+| **httpx** ≥0.27 | Nowoczesny, asynchroniczny klient HTTP (HTTP/1.1 + HTTP/2) |
+| **hishel** ≥0.1 | **Inteligentny cache HTTP** — automatyczne cache'owanie odpowiedzi API z szacunkiem nagłówków Cache-Control |
+| **fsspec** ≥2024.3 | Jednolita abstrakcja systemów plików (lokalny, S3, SFTP, ZIP) |
+
+### hishel — nowość w stacku
+- Automatyczne przyspieszenie bez kodowania — rozumie nagłówki HTTP
+- Działanie **offline** — cache'owane dane jako fallback przy braku sieci
+- Przechowywanie w SQLite (już masz!) — zero dodatkowej infrastruktury
 
 ---
 
-## 13. Cache
+## 8. Odporność na Błędy (Resilience)
 
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
+| Technologia | Zastępuje | Opis |
+|---|---|---|
+| **stamina** ≥0.1 | tenacity + pybreaker | **Async-native** retry + circuit breaker w jednym — zbudowany na anyio |
+
+### Dlaczego stamina
+- Prawdziwie asynchroniczny — nie blokuje pętli zdarzeń
+- Wbudowany Circuit Breaker — po serii błędów odcina dostęp na określony czas
+- Wykładnicze opóźnienia z jitterem
+- Jedna lekka biblioteka (kilkadziesiąt KB) zamiast dwóch ciężkich
+
+---
+
+## 9. Kryptografia i Bezpieczeństwo
+
+| Technologia | Zastępuje | Opis |
+|---|---|---|
+| **Nexus-Crypto** (Rust + PyO3) | **cryptography** (całość) | **Własny moduł** — tylko 3 funkcje: AEAD (AES-256-GCM), Argon2id, SHA-256 |
+| **Litestar JWT** | pyjwt | Wbudowane w Litestar — zero dodatkowych zależności |
+| **Litestar CSRF** | — | Ochrona przed atakami cross-site (wbudowana) |
+| **Litestar CORS** | — | Kontrola dostępu między źródłami (wbudowana) |
+| **Litestar Rate Limiting** | — | Limitowanie żądań (wbudowane) |
+
+### Nexus-Crypto — dlaczego własny moduł
+- Zaledwie kilkadziesiąt KB vs megabajty biblioteki `cryptography`
+- Minimalna powierzchnia ataku — tylko to, co niezbędne
+- Natywna prędkość Rusta (RustCrypto + ring)
+- Nowoczesne algorytmy: AEAD (AES-256-GCM/ChaCha20-Poly1305), Argon2id (zamiast PBKDF2)
+
+---
+
+## 10. Finanse / Waluty
+
+| Technologia | Opis |
+|---|---|
+| **py-moneyed** ≥3.0 | Fowler's Money pattern — reprezentacja kwot z walutą, zaokrąglanie HALF_UP |
+| **TigerBeetle** | Rozproszony silnik księgowy w Zig — podwójny zapis na poziomie protokołu |
+
+---
+
+## 11. AI / Machine Learning
+
+| Technologia | Zastępuje | Opis |
+|---|---|---|
+| **llama-cpp-python** ≥0.2 | — | LLM inference CPU/GPU — uruchamianie modeli GGUF lokalnie |
+| **huggingface-hub** ≥0.23 | — | Pobieranie modeli z weryfikacją SHA-256 |
+| ~~transformers~~ | — | **Usunięte** — zastąpione przez LightOnOCR-1B + llama-cpp-python |
+| ~~torch~~ | — | **Usunięte** — niepotrzebne przy modelach GGUF |
+| ~~sentence-transformers~~ | — | **Usunięte** — embeddingi przez sqlite-vec |
+| ~~surya-ocr~~ | — | **Usunięte** — zastąpione przez LightOnOCR-1B |
+| ~~paddleocr~~ | — | **Usunięte** — zastąpione przez LightOnOCR-1B |
+| ~~onnxruntime~~ | — | **Usunięte** — niepotrzebne |
+| ~~opencv-python~~ | — | **Usunięte** — LightOnOCR-1B robi wszystko |
+| ~~PyMuPDF~~ | — | **Usunięte** — LightOnOCR-1B rozumie obrazy bezpośrednio |
+
+---
+
+## 12. Modele AI (GGUF)
+
+System wykorzystuje **8 modeli AI** zgrupowanych w **3 agentach**:
+
+### Council of Agents (Rada Agentów)
+| Model | Rozmiar | Agent | Funkcja |
 |---|---|---|---|
-| **cachetools** | `requirements.txt`, `pyproject.toml` | `Code/CORE/memory_manager.py`, `Code/API/cache.py` | In-memory caching — cache dla modeli AI, kursów walut, wyników API |
+| **LFM2.5 1.2B** | ~780 MB | Alpha Agent | Szybki decydent — wstępna klasyfikacja faktur |
+| **Qwen3 0.6B** | ~430 MB | Beta Agent | Precyzyjny walidator — weryfikacja NIP, kwot, dat |
+| **LittleLamb 0.3B (TC)** | ~250 MB | Gamma Agent | Detektor duplikatów i anomalii przez sqlite-vec |
+
+### Extraction Agent (nowy — zastępuje cały pipeline OCR)
+| Model | Rozmiar | Funkcja |
+|---|---|---|
+| **LightOnOCR-1B** | ~800 MB | **Główny silnik** — VLM (Vision Language Model) ekstrahujący dane z obrazów faktur |
+| **Phi-3-mini 3.8B** | ~2.2 GB | **Sędzia rezerwowy** — fallback gdy LightOnOCR-1B nie zwróci poprawnego JSON |
+
+### Analytics Agent (Miniaturowy Sztab Analityczny)
+| Model | Rozmiar | Funkcja |
+|---|---|---|
+| **Hrida-T2SQL-128k** | ~1.5 GB | Ekspert SQL — tłumaczy pytania na zapytania SQL (128k okno kontekstowe) |
+| **Qwen2.5-1.5B-Instruct** | ~980 MB | Główny analityk — interpretuje wyniki SQL w języku naturalnym |
+| **Fin-RWKV-169M** | ~170 MB | Detektyw finansowy — wykrywa anomalie (architektura RWKV, attention-free) |
+
+**Łącznie: ~6.9 GB modeli, max ~2 GB RAM w jednym momencie** (dzięki lazy loading + explicit unloading)
+
+---
+
+## 13. Logowanie i Monitoring
+
+| Technologia | Opis |
+|---|---|
+| **Loguru** ≥0.7 | Zaawansowane logowanie z rotacją plików i kolorami |
+| **OpenTelemetry** | Distributed tracing — śledzenie żądań przez system |
+| **Prometheus Client** ≥0.20 | Metryki API (czas odpowiedzi, liczba żądań, błędy) |
 
 ---
 
 ## 14. Narzędzia (Utilities)
 
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **psutil** | `requirements.txt`, `pyproject.toml` | `Code/CORE/hardware.py`, `Code/CORE/monitor.py` | System resources — monitorowanie CPU, RAM, dysku |
-| **PyYAML** | `requirements.txt`, `pyproject.toml` | `Code/CORE/config.py` | YAML parser — konfiguracja w formatach YAML |
-| **dateparser** | `requirements.txt`, `pyproject.toml` | `Code/SERVICES/gus_bir_client.py` | Parsowanie dat — obsługa różnych formatów dat z faktur |
-| **fsspec** | `requirements.txt`, `pyproject.toml` | (system plików) | Filesystem abstraction — jednolity interfejs dla lokalnych i zdalnych systemów plików |
+| Technologia | Opis |
+|---|---|
+| **psutil** ≥5.9 | Monitorowanie CPU, RAM, dysku |
+| **python-dateutil** | Parsowanie dat w różnych formatach |
 
 ---
 
 ## 15. Testowanie
 
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **pytest** | `requirements.txt`, `pyproject.toml` | `tests/*.py`, `pyproject.toml` `[tool.pytest.ini_options]` | Framework testowy — uruchamianie i organizacja testów |
-| **pytest-asyncio** | `requirements.txt`, `pyproject.toml` | `pyproject.toml` — `asyncio_mode = "auto"` | Async test support — testowanie funkcji asynchronicznych |
-| **pytest-cov** | (opcjonalne dev) `pyproject.toml` | (w `[dev]` extras) | Code coverage — pomiar pokrycia kodu testami |
-| **Hypothesis** | (opcjonalne dev) `pyproject.toml` | `tests/test_property_based.py`, `tests/test_simulation_property_based.py` | Property-based testing — generowanie przypadków testowych z właściwości |
-| **k6** | (osobne narzędzie) | `tests/performance/k6_invoice_upload.js` | Performance testing — testy wydajnościowe API (Load Impact) |
+| Technologia | Opis |
+|---|---|
+| **pytest** ≥8.0 | Framework testowy |
+| **pytest-asyncio** | Testowanie funkcji asynchronicznych |
+| **pytest-cov** | Pomiar pokrycia kodu testami |
+| **Hypothesis** ≥6.100 | Property-based testing |
+| **k6** | Testy wydajnościowe API |
 
 ---
 
 ## 16. Interfejs Desktopowy
 
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **Flet** | `requirements.txt` (opcjonalne `[ui]`) | `Code/FRONTEND/main.py`, `Code/luz/main.py`, `Code/FRONTEND/ui/*.py` | Desktop UI framework — aplikacja desktopowa (Python → Flutter) |
-| **Flet Router** | (wbudowane w Flet) | `Code/FRONTEND/router.py` | Routing UI — nawigacja między widokami aplikacji desktopowej |
+| Technologia | Opis |
+|---|---|
+| **Flet** ≥0.28 | Desktop UI (Python → Flutter) |
+| **Flet Router** | Nawigacja między widokami |
 
 ---
 
-## 17. AI / Machine Learning
+## 17. Infrastruktura / DevOps
 
-| Technologia | Plik wymagań | Lokalizacja w projekcie | Funkcja |
-|---|---|---|---|
-| **llama-cpp-python** | (opcjonalne AI) `pyproject.toml` | `Code/CORE/llm_guard.py`, `Code/CORE/llm_extractor.py` | LLM inference CPU/GPU — uruchamianie modeli GGUF lokalnie |
-| **Transformers (HuggingFace)** | (opcjonalne AI) `pyproject.toml` | (w `[ai]` extras) | NLP pipeline — tokenizacja, embedding, inference modeli HuggingFace |
-| **sentence-transformers** | (opcjonalne AI) `pyproject.toml` | (w `[ai]` extras) | Embedding — generowanie embeddingów zdań do wyszukiwania semantycznego |
-| **huggingface-hub** | (opcjonalne AI) `pyproject.toml` | `Code/SKRIPTS/download_models.py`, `config/models_manifest.json` | Model hub — pobieranie modeli GGUF z weryfikacją SHA-256 |
-| **Torch (PyTorch)** | (opcjonalne AI) `pyproject.toml` | (w `[ai]` extras) | Deep learning framework — używany przez Transformers i inne modele |
-
-### Modele GGUF
-
-| Model | Rozmiar | Agent | Funkcja |
-|---|---|---|---|
-| LFM 1.2B | ~800 MB | Alpha Agent | Klasyfikacja faktur |
-| Qwen3 0.6B | ~450 MB | Beta Agent | Walidacja wtórna |
-| LittleLamb 0.3B | ~200 MB | Gamma / Orchestrator | Tiebreaker + koordynacja |
-| Granite 1B | ~680 MB | Rules Agent | Reguły biznesowe |
-| Qwen2.5 1.5B | ~1 GB | Analytics Agent | Detekcja anomalii |
-| Jamba 3B | ~1.8 GB | Decision Agent | Złożone decyzje |
+| Technologia | Status | Opis |
+|---|---|---|
+| **pixi** | **Nowy standard** | Zastępuje Dockera dla środowiska deweloperskiego |
+| Docker | Opcjonalnie | Tylko dla TigerBeetle w produkcji (albo pixi + TB binary) |
+| Docker Compose | Opcjonalnie | Tylko jeśli potrzebne kontenery |
+| **NATS Server** (binarny ~10 MB) | **Nowy standard** | Pakowany z aplikacją przez Nuitka — nie jako osobny kontener |
+| Inno Setup | Build | Windows installer dla finalnego .exe (Nuitka) |
+| Prometheus | Monitoring | Alert rules dla metryk API |
 
 ---
 
-## 18. Infrastruktura / DevOps
+## 18. Główne Serwisy Zewnętrzne (API)
 
 | Technologia | Lokalizacja | Funkcja |
 |---|---|---|
-| **Docker** | `Dockerfile` | Konteneryzacja — build obrazu z Python 3.11-slim + Tesseract OCR |
-| **Docker Compose** | `docker-compose.yml` | Orkiestracja — uruchamianie api + worker + nats + tigerbeetle |
-| **NATS Server** | `docker-compose.yml` (image: `nats:2.10-alpine`) | Message broker — osobny serwer NATS w kontenerze |
-| **TigerBeetle Server** | `docker/tigerbeetle.Dockerfile`, `docker-compose.yml` | Ledger server — osobny serwer TigerBeetle w kontenerze |
-| **Inno Setup** | `build_scripts/setup.iss` | Windows installer — tworzenie instalatora .exe dla Windows |
-| **NSIS** | `build_scripts/setup.nsi` | Windows installer — alternatywny instalator NSIS |
-| **Prometheus + Alert Rules** | `deploy/prometheus/alert_rules.yml` | Monitoring — reguły alertów dla Prometheus |
+| **GUS BIR** (SOAP API) | `Code/services/gus_bir_client.py` | Dane firm (REGON, NIP, status VAT) |
+| **Biała Lista MF** (API) | `Code/services/white_list_service.py` | Weryfikacja rachunków VAT |
+| **NBP API** | `Code/services/currency_converter.py` | Kursy walut |
+| **KSeF** (Krajowy System e-Faktur) | `Code/core/integrations/ksef/` | Wysyłka faktur elektronicznych |
+
+Komunikacja z zewnętrznymi API zabezpieczona przez **stamina** (retry + circuit breaker) + **hishel** (cache).
 
 ---
 
-## 19. Główne Serwisy Zewnętrzne (API)
+## 19. Agenty AI (Council of LLMs + Extraction + Analytics)
 
-| Technologia | Lokalizacja | Funkcja |
+### Council of Agents (Rada)
+| Agent | Model | Funkcja |
 |---|---|---|
-| **GUS BIR** (SOAP API) | `Code/SERVICES/gus_bir_client.py` | Pobieranie danych firm z GUS (REGON, NIP, status VAT) |
-| **Biała Lista MF** (API) | `Code/SERVICES/white_list_service.py` | Weryfikacja rachunków VAT na Białej Liście Podatników VAT |
-| **NBP API** | `Code/SERVICES/currency_converter.py` | Kursy walut z Narodowego Banku Polskiego |
-| **KSeF** (Krajowy System e-Faktur) | `Code/CORE/integrations/ksef/*.py` | Wysyłka faktur do KSeF (API + podpis kwalifikowany) |
+| **Alpha Agent** | LFM2.5 1.2B | Klasyfikacja faktur — wstępna decyzja |
+| **Beta Agent** | Qwen3 0.6B | Walidacja wtórna — potwierdza/odrzuca decyzję Alpha |
+| **Gamma Agent** | LittleLamb 0.3B | Tiebreaker + detekcja duplikatów przez sqlite-vec |
 
----
-
-## 20. Agenty AI (Council of LLMs)
-
-| Agent | Model | Lokalizacja | Funkcja |
-|---|---|---|---|
-| **Alpha Agent** | LFM 1.2B | `Code/SERVICES/council_agents.py` | Klasyfikacja faktur — główna decyzja |
-| **Beta Agent** | Qwen3 0.6B | `Code/SERVICES/council_agents.py` | Walidacja wtórna — potwierdza decyzję Alpha |
-| **Gamma Agent** | LittleLamb 0.3B | `Code/SERVICES/council_agents.py` | Tiebreaker — rozstrzyga spory między Alpha i Beta |
-| **Rules Agent** | Granite 1B | `Code/SERVICES/rules_agent.py` | Reguły biznesowe — weryfikacja zgodności z przepisami |
-| **Analytics Agent** | Qwen2.5 1.5B | `Code/SERVICES/analytics_agent.py` | Detekcja anomalii — wykrywanie nietypowych faktur |
-| **Decision Agent** | Jamba 3B / Granite | `Code/SERVICES/decision_agent.py` | Złożone decyzje — obsługa wyjątków |
-| **Orchestrator Agent** | LittleLamb 0.3B | `Code/SERVICES/orchestrator_agent.py` | Koordynator — zarządza sesją Rady Agentów |
-| **Autopilot** | (logika decyzyjna) | `Code/SERVICES/autopilot.py` | Automatyczne księgowanie na podstawie progów ufności |
-
----
-
-## 21. Silnik Reguł Podatkowych (Tax Engine)
-
-| Komponent | Lokalizacja | Technologia / Funkcja |
+### Extraction Agent
+| Komponent | Model | Funkcja |
 |---|---|---|
-| **RuleEngine (Zen-Engine)** | `Code/tax/rules.py` | DuckDB + first-match-wins SQL — ewaluacja reguł podatkowych |
-| **TaxMathEngine** | `Code/tax/math_engine.py` | Python int (grosze) — arytmetyka podatkowa bez float |
-| **TaxPipeline** | `Code/tax/pipeline.py` | Python — orkiestracja: context → rules → math → audit |
-| **TraceGenerator** | `Code/services/trace_generator.py` | Python — czytelna ścieżka decyzyjna dla człowieka |
-| **Proof Chain (Audit)** | `Code/tax/audit.py` | SHA-256 — kryptograficzny łańcuch audytowy |
-| **Integrity Verifier** | `Code/services/integrity_verifier.py` | Weryfikacja integralności łańcucha SHA-256 |
-| **ContextInterpreter** | `Code/CORE/context_interpreter.py` | Mapowanie danych faktury na płaski kontekst |
-| **PriorityEngine** | `Code/services/priority_engine.py` | First-match-wins z sortowaniem priorytetów |
-| **TemporalManager** | `Code/services/temporal_manager.py` | Filtrowanie reguł według daty transakcji |
-| **RuleStore** | `Code/services/rule_store.py` | Magazyn reguł w DuckDB (append-only, temporalne) |
+| **Główny silnik** | LightOnOCR-1B | Ekstrakcja danych z obrazów faktur (VLM — Vision Language Model) |
+| **Fallback** | Phi-3-mini 3.8B | Uruchamiany gdy LightOnOCR-1B zwróci niepoprawny JSON |
+
+### Analytics Agent
+| Komponent | Model | Funkcja |
+|---|---|---|
+| **Hrida-T2SQL-128k** | Text-to-SQL | Tłumaczy pytania na zapytania SQL (128k okno kontekstowe) |
+| **Qwen2.5-1.5B-Instruct** | Analityk | Interpretuje wyniki SQL w języku naturalnym |
+| **Fin-RWKV-169M** | Detektyw | Wykrywa anomalie finansowe (attention-free, ekstremalnie szybki) |
+
+### Zarządzanie pamięcią (wspólne dla wszystkich agentów)
+1. **Lazy loading** — modele ładowane dopiero przy pierwszym zadaniu
+2. **Explicit unloading** — `del model` + `gc.collect()` po każdym zadaniu
+3. **Mutual exclusion** — w danym momencie tylko jeden model w RAM
+4. **TTL** — 5 minut bezczynności = automatyczne wyładowanie
 
 ---
 
-## 22. System Księgowy (Roboton_Reflekton)
+## 20. Pliki Konfiguracyjne i Build
 
-| Komponent | Lokalizacja | Funkcja |
-|---|---|---|
-| **LedgerClient** | `Code/Roboton_Reflekton/ledger_client.py` | Klient TigerBeetle — dwustronne księgowanie (double-entry) |
-| **ShadowLedger** | `Code/Roboton_Reflekton/shadow_ledger.py` | Symulacje podatkowe "co by było, gdyby" |
-| **ReconciliationEngine** | `Code/Roboton_Reflekton/reconciliation_engine.py` | Uzgadnianie kont |
-| **VATReconciliation** | `Code/Roboton_Reflekton/vat_reconciliation.py` | Uzgadnianie VAT |
-| **ForexEngine** | `Code/Roboton_Reflekton/forex_engine.py` | Przewalutowanie |
-| **DunningEngine** | `Code/Roboton_Reflekton/dunning_engine.py` | Windykacja należności |
-| **BudgetaryControl** | `Code/Roboton_Reflekton/budgetary_control.py` | Kontrola budżetowa |
-
----
-
-## 23. Inne Narzędzia i Skrypty
-
-| Technologia | Lokalizacja | Funkcja |
-|---|---|---|
-| **Build EXE (Windows)** | `build_scripts/build_exe.bat` | Batch script — budowanie .exe na Windows |
-| **Generate Assets** | `tools/generate_assets.py` | Python — generowanie assetów (ikony, zasoby) |
-| **Model Downloader** | `Code/SKRIPTS/download_models.py` | Python + HuggingFace Hub — pobieranie modeli GGUF z SHA-256 |
-| **System Doctor** | `Code/SKRIPTS/doctor.py` | Python — diagnostyka systemu (Python, CUDA, modele, NATS) |
-| **Dependency Downloader** | `Code/installer/dependency_downloader.py` | Python — pobieranie zależności dla instalatora |
-| **Nexus CLI** | `pyproject.toml` — `[project.scripts]` | 4 komendy CLI: `nexus-api`, `nexus-worker`, `nexus-desktop`, `nexus` |
-| **main.py** | `main.py` (root) | Centralny entrypoint — uruchamianie API/worker/doctor/all |
-| **uv (Astral)** | `pyproject.toml` — `[tool.uv]` | Ultra-szybki menedżer pakietów (Rust) — ~10-100x szybszy od pip, używany w Dockerfile i CI/CD |
-
----
-
-## 24. Formatowanie i Jakość Kodu
-
-| Technologia | Lokalizacja | Funkcja |
-|---|---|---|
-| **Ruff** | `pyproject.toml` — `[tool.ruff]` (opcjonalne dev) | Linter + formatter — sprawdzanie stylu kodu (E, F, I, W, N, UP) |
-| **Mypy** | `pyproject.toml` — `[tool.mypy]` (opcjonalne dev) | Type checker — statyczna weryfikacja typów |
-| **pre-commit** | `pyproject.toml` (opcjonalne dev) | Git hooks — automatyczne formatowanie przed commitem |
-
----
-
-## 25. Pliki Konfiguracyjne i Build
-
-| Technologia | Lokalizacja | Funkcja |
-|---|---|---|
-| **pyproject.toml** | root projektu | Konfiguracja pakietu, zależności, narzędzi (pytest, ruff, mypy) |
-| **requirements.txt** | root projektu | Lista zależności (legacy, dla CI/manual install) |
-| **Dockerfile** | root projektu | Budowa obrazu Docker z wieloma targetami (api, worker, default) |
-| **docker-compose.yml** | root projektu | Orkiestracja 4 serwisów: api + worker + nats + tigerbeetle |
-| **alembic.ini** | root projektu | Konfiguracja migracji bazy danych |
-| **.env.example** | root projektu | Szablon zmiennych środowiskowych |
-| **config/prod.env** | `config/prod.env` | Profil produkcyjny (hardened security) |
-| **config/dev.env** | `config/dev.env` | Profil deweloperski |
-| **config/models_manifest.json** | `config/models_manifest.json` | Manifest modeli AI z SHA-256 |
-| **.dockerignore** | root projektu | Ignorowanie plików przy buildzie Docker |
-| **.gitignore** | root projektu | Ignorowanie plików w Git |
+| Plik | Funkcja |
+|---|---|
+| `pixi.toml` | Menedżer środowiska — Python, PyPI, zależności systemowe |
+| `pyproject.toml` | Konfiguracja pakietu, build, narzędzia |
+| `requirements.txt` | Lista zależności (legacy/CI) |
+| `config/dev.env` | Profil deweloperski |
+| `config/prod.env` | Profil produkcyjny |
+| `config/models_manifest.json` | Manifest modeli AI z SHA-256 |
+| `alembic.ini` | Migracje bazy danych |
+| `Dockerfile` | Obraz Docker (opcjonalnie, dla TB w produkcji) |
+| `docker-compose.yml` | Orkiestracja (opcjonalnie) |
+| `build_scripts/setup.iss` | Instalator Windows (Inno Setup) |
 
 ---
 
 ## 📊 Statystyki
 
-| Kategoria | Liczba technologii |
-|---|---|
-| Język i Środowisko | 3 |
-| API / Serwer ASGI | 2 |
-| Bazy Danych | 8 |
-| Walidacja / Serializacja | 3 |
-| Kolejki / Komunikacja | 4 |
-| HTTP / Sieć | 2 |
-| Resilience | 2 |
-| Kryptografia / Bezpieczeństwo | 5 |
-| Finanse / Waluty | 2 |
-| Przetwarzanie Dokumentów | 9 |
-| Logowanie | 2 |
-| Metryki / Monitoring | 2 |
-| Cache | 1 |
-| Narzędzia | 4 |
-| Testowanie | 5 |
-| Interfejs Desktopowy | 2 |
-| AI / ML | 5 + 6 modeli GGUF |
-| Infrastruktura / DevOps | 7 |
-| Serwisy zewnętrzne | 4 |
-| Agenty AI | 8 |
-| Silnik reguł podatkowych | 10 |
-| System księgowy | 7 |
-| Inne narzędzia | 8 |
-| Jakość kodu | 3 |
-| Pliki konfiguracyjne | 11 |
-| **Razem** | **~121+** |
+| Kategoria | Liczba technologii | Zmiana |
+|---|---|---|
+| Runtime i Narzędzia | 4 | +pixi, +mise, Python 3.13t |
+| Kompilacja i Build | 6 | **Nowa kategoria** — hatchling, mypyc, PyO3, Rust, mimalloc, Nuitka |
+| API / Serwer ASGI | 3 | Granian zamiast Uvicorn |
+| Bazy Danych | 8 | sqlite-vec zamiast LanceDB, SQLModel zamiast SQLAlchemy+Pydantic |
+| Walidacja / Serializacja | 2 | msgspec jako główny, Pydantic tylko jako zależność |
+| Kolejki / Komunikacja | 5 | NATS Server jako binarka (nie kontener) |
+| HTTP / Sieć | 3 | **+hishel** (nowość) |
+| Resilience | 1 | **stamina** zamiast tenacity+pybreaker (-1) |
+| Kryptografia / Bezpieczeństwo | 5 | **Nexus-Crypto** zamiast cryptography (-1) |
+| Finanse / Waluty | 2 | — |
+| AI / ML | 2 | **-5** (usunięto: transformers, torch, sentence-transformers, onnxruntime, opencv) |
+| Modele AI | 8 | **+2** (LightOnOCR-1B, Phi-3-mini, Hrida-T2SQL, Fin-RWKV; usunięto: Granite, Jamba) |
+| Logowanie / Monitoring | 3 | — |
+| Narzędzia | 2 | **-2** (usunięto: PyYAML, cachetools, dateparser jako osobne) |
+| Testowanie | 5 | — |
+| Interfejs Desktopowy | 2 | — |
+| Infrastruktura / DevOps | 5 | **Lżejsze** — pixi zamiast Dockera dla dev |
+| Serwisy zewnętrzne | 4 | — |
+| Agenty AI | 3 | **Przebudowane** — nowe modele i architektura |
+| Pliki konfiguracyjne | 10 | +pixi.toml, -env.example |
+| **Razem** | **~80** | **Zmniejszenie z ~120 do ~80** — mniej, ale wydajniej |
 
 ---
 
-> Dokument wygenerowany automatycznie — 2026-06-04
+> Dokument zaktualizowany — 2026-06-05 (przebudowa v2.0 wg `aa3fvcx.txt`)

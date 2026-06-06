@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
 import hashlib
-import json
 import shutil
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
 from pathlib import Path
+
+from core.msgspec_utils import msgspec_dumps
 
 
 @dataclass(frozen=True)
@@ -82,7 +83,7 @@ def prune_model_versions(
         stale = ordered[max(keep_last, 0) :]
         for version in stale:
             bytes_size, digest = _dir_sha256(version.path)
-            now_iso = datetime.now(timezone.utc).isoformat()
+            now_iso = datetime.now(UTC).isoformat()
             if archive_root is not None:
                 archive_root.mkdir(parents=True, exist_ok=True)
                 archive_target = archive_root / version.name / version.version
@@ -112,13 +113,13 @@ def prune_model_versions(
     if manifest_path is not None:
         manifest_path.parent.mkdir(parents=True, exist_ok=True)
         payload = {
-            'generated_at': datetime.now(timezone.utc).isoformat(),
+            'generated_at': datetime.now(UTC).isoformat(),
             'dry_run': dry_run,
             'removed_versions': removed,
             'archived_versions': archived,
             'models_scanned': len(grouped),
             'events': [asdict(e) for e in events],
         }
-        manifest_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
+        manifest_path.write_text(msgspec_dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
 
     return {"removed_versions": removed, "archived_versions": archived, "models_scanned": len(grouped)}

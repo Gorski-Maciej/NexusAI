@@ -15,12 +15,10 @@ Usage:
 """
 from __future__ import annotations
 
-import os
 import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-
 
 # ── Alert rule definitions ────────────────────────────────────────────────────
 
@@ -133,10 +131,10 @@ def generate_alert_rules_yaml() -> str:
         lines.append(f"      - alert: {d['alert']}")
         lines.append(f"        expr: {d['expr']}")
         lines.append(f"        for: {d['duration']}")
-        lines.append(f"        labels:")
+        lines.append("        labels:")
         for k, v in d["labels"].items():
             lines.append(f"          {k}: {v}")
-        lines.append(f"        annotations:")
+        lines.append("        annotations:")
         for k, v in d["annotations"].items():
             lines.append(f"          {k}: {v}")
     return "\n".join(lines)

@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def _load_module():
-    path = Path('Code/SKRIPTS/log_pii_scanner.py').resolve()
+    path = Path('Code/scripts/log_pii_scanner.py').resolve()
     spec = importlib.util.spec_from_file_location('log_pii_scanner_mod', path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)
@@ -23,6 +23,6 @@ def test_scan_text_detects_pii_patterns() -> None:
 
 
 def test_redact_flag_contract_present() -> None:
-    source = Path('Code/SKRIPTS/log_pii_scanner.py').read_text(encoding='utf-8')
+    source = Path('Code/scripts/log_pii_scanner.py').read_text(encoding='utf-8')
     assert '--redact-output' in source
     assert '[REDACTED]' in source

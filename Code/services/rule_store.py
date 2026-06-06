@@ -21,12 +21,13 @@ Usage:
 
 from __future__ import annotations
 
-import json
 import uuid
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 from typing import Any
 
 import duckdb
+
+from core.msgspec_utils import msgspec_dumps
 
 # ── Full schema with all indexes ───────────────────────────────────────
 
@@ -161,7 +162,7 @@ class RuleStore:
             (
                 rule_id,
                 condition_sql,
-                json.dumps(action, ensure_ascii=False),
+                msgspec_dumps(action, ensure_ascii=False),
                 vf,
                 vt,
                 priority,
@@ -177,7 +178,7 @@ class RuleStore:
             """INSERT INTO rule_change_log
                (change_id, rule_id, change_type, new_value, changed_by, changed_at)
                VALUES (?, ?, 'created', ?, ?, ?)""",
-            (str(uuid.uuid4()), rule_id, json.dumps(action, ensure_ascii=False), created_by, now),
+            (str(uuid.uuid4()), rule_id, msgspec_dumps(action, ensure_ascii=False), created_by, now),
         )
 
         return rule_id

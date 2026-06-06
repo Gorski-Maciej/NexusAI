@@ -15,6 +15,7 @@ from typing import Any
 
 from core.config import AppConfig
 from core.logger import get_logger
+from core.msgspec_utils import msgspec_loads
 
 logger = get_logger(__name__)
 
@@ -128,19 +129,19 @@ class DecisionVerdict:
         }
 
     @classmethod
-    def error(cls, reason: str = "") -> "DecisionVerdict":
+    def error(cls, reason: str = "") -> DecisionVerdict:
         return cls(decision="ERROR", confidence=0.0, reasoning=reason or "Agent error")
 
     @classmethod
-    def from_json(cls, raw: str) -> "DecisionVerdict":
+    def from_json(cls, raw: str) -> DecisionVerdict:
         """Parse JSON response from LLM, with regex fallback."""
         try:
-            parsed = json.loads(raw)
+            parsed = msgspec_loads(raw)
         except json.JSONDecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
-                    parsed = json.loads(match.group(0))
+                    parsed = msgspec_loads(match.group(0))
                 except json.JSONDecodeError:
                     return cls.error("Unparseable JSON")
             else:

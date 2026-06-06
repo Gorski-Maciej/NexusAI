@@ -3,8 +3,8 @@ from __future__ import annotations
 import calendar
 import uuid
 from dataclasses import dataclass
-from datetime import date, timedelta
-from decimal import Decimal, ROUND_HALF_UP
+from datetime import date
+from decimal import ROUND_HALF_UP, Decimal
 
 from db.analytics import DuckDBManager
 

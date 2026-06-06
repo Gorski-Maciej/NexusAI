@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Protocol
 
 from db.analytics import DuckDBManager
-from Roboton_Reflekton.ledger_client import TigerBeetleClient
+from roboton_reflekton.ledger_client import TigerBeetleClient
 
 
 class DuplicateTransferError(RuntimeError):

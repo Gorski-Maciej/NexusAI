@@ -12,19 +12,16 @@ Sprawdza:
 
 from __future__ import annotations
 
-import json
 import logging
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import duckdb
 
-from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
-    from tax.math_engine import InvoicePositions, InvoiceSummary
     from services.currency_converter import Money as _Money
+    from tax.math_engine import InvoicePositions, InvoiceSummary, ValidationResult
 
 # Lazy imports for runtime to avoid circular dependency:
 #   pre_ledger_validator → tax.math_engine → (via tax.__init__) → tax.pipeline → pre_ledger_validator
@@ -70,9 +67,11 @@ class LedgerValidationError(ValueError):
 def _get_math_engine():
     """Lazy import to avoid circular dependency."""
     from tax.math_engine import (
-        ValidationResult,
-        InvoiceSummary,
         InvoicePositions,
+        InvoiceSummary,
+        ValidationResult,
+    )
+    from tax.math_engine import (
         validate_invariants as validate_math_invariants,
     )
     return ValidationResult, InvoiceSummary, InvoicePositions, validate_math_invariants
@@ -203,7 +202,7 @@ class PreLedgerValidator:
         Returns:
             ValidationResult — is_valid=True iff wszystkie testy przejdą.
         """
-        ValidationResult, _, _, validate_math_invariants = _get_math_engine()
+        ValidationResult, _, _, validate_math_invariants = _get_math_engine()  # noqa: N806
 
         errors: list[str] = []
 

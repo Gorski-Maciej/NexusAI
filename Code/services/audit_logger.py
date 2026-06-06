@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
+from core.msgspec_utils import msgspec_dumps, msgspec_loads
 from db.analytics import DuckDBManager
 
 
@@ -37,18 +37,18 @@ class AuditLogger:
 
     @staticmethod
     def _canonical_payload(data_payload: dict[str, Any]) -> str:
-        return json.dumps(data_payload, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+        return msgspec_dumps(data_payload, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
 
     @classmethod
     def _compute_hash(cls, previous_hash: str, payload_json: str) -> str:
-        base = f"{previous_hash}{payload_json}".encode("utf-8")
+        base = f"{previous_hash}{payload_json}".encode()
         return hashlib.sha256(base).hexdigest()
 
     def append_event(self, event_type: str, data_payload: dict[str, Any]) -> str:
         """Appends new audit event with chained hash; returns current hash."""
         connection = self.duckdb.connect()
         payload_json = self._canonical_payload(data_payload)
-        timestamp = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+        timestamp = datetime.now(UTC).replace(microsecond=0).isoformat()
 
         connection.execute("BEGIN TRANSACTION")
         try:
@@ -86,7 +86,7 @@ class AuditLogger:
             if previous_hash != expected_previous:
                 return False, str(event_id)
 
-            payload_json = self._canonical_payload(payload if isinstance(payload, dict) else json.loads(payload))
+            payload_json = self._canonical_payload(payload if isinstance(payload, dict) else msgspec_loads(payload))
             expected_current = self._compute_hash(previous_hash, payload_json)
             if current_hash != expected_current:
                 return False, str(event_id)

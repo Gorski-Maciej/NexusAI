@@ -15,7 +15,7 @@ class KsefService:
         """
         # API KSeF wymaga tu złożonej kryptografii (szyfrowanie kluczem publicznym MF).
         try:
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient():
                 pass
                 # payload = {...}
                 # response = await client.post(f"{self.base_url}/online/Session/InitToken", json=payload)

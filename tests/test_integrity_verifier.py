@@ -1,3 +1,4 @@
+from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Tests for IntegrityVerifier (Element 2 — Weryfikator Integralności).
 
@@ -80,7 +81,7 @@ class TestIntegrityVerifier:
         # Tamper: modify the verdict_json for the first entry
         conn.execute(
             "UPDATE decision_traces SET verdict_json = ? WHERE transaction_id = ?",
-            (json.dumps({"vat_rate": "0.08", "rounding_level": "position"}), tid),
+            (msgspec_dumps({"vat_rate": "0.08", "rounding_level": "position"}), tid),
         )
 
         report = verifier.verify_all()

@@ -22,12 +22,13 @@ _CODE_DIR = str(_PROJECT_ROOT / "Code")
 if _CODE_DIR not in sys.path:
     sys.path.insert(0, _CODE_DIR)
 
-REQUIRED_PACKAGES = ("uvicorn", "litestar", "sqlalchemy", "pydantic")
+# Nowy stack — zależności zgodne z aa3fvcx.txt
+REQUIRED_PACKAGES = ("granian", "litestar", "sqlmodel", "msgspec")
 PACKAGE_TO_PIP_NAME = {
-    "uvicorn": "uvicorn",
+    "granian": "granian",
     "litestar": "litestar",
-    "sqlalchemy": "sqlalchemy",
-    "pydantic": "pydantic",
+    "sqlmodel": "sqlmodel",
+    "msgspec": "msgspec",
 }
 
 
@@ -42,7 +43,6 @@ def _check_dependencies() -> list[str]:
 
 
 def _find_uv() -> str | None:
-    """Return path to uv if available, else None."""
     for candidate in ("uv", "uv.exe"):
         try:
             result = subprocess.run(
@@ -64,7 +64,6 @@ def _install_dependencies(requirements_file: str = "requirements.txt") -> int:
         command = [uv_path, "pip", "install", "-r", requirements_file]
         print("Instalowanie zależności (uv — 10-100x szybciej niż pip):", " ".join(command))
         return subprocess.call(command)
-    # Fallback to pip if uv not available
     command = [sys.executable, "-m", "pip", "install", "-r", requirements_file]
     print("Instalowanie zależności (pip):", " ".join(command))
     print("  ★ Zalecenie: zainstaluj uv (curl -LsSf https://astral.sh/uv/install.sh | sh) dla ~10x szybszej instalacji.")
@@ -121,7 +120,7 @@ def main(argv: list[str] | None = None) -> int:
         print("Ładowanie danych początkowych (seed)...")
         try:
             import asyncio
-            from SKRIPTS.seed_data import seed_all
+            from scripts.seed_data import seed_all
             result = asyncio.run(seed_all())
             total = sum(result.values())
             print(f"Seedowanie zakończone: {total} encji załadowanych.")

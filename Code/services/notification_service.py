@@ -2,14 +2,14 @@
 from __future__ import annotations
 
 import asyncio
-import json
-import sqlite3
 import logging
-from datetime import datetime, timezone, date
+import sqlite3
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
 from core.config import AppConfig
+from core.msgspec_utils import msgspec_dumps
 
 logger = logging.getLogger("nexus.services.notification")
 
@@ -213,7 +213,7 @@ class MultiChannelConfig:
         self.twilio_from_number: str = ""
 
     @classmethod
-    def from_config(cls, app_config: AppConfig) -> "MultiChannelConfig":
+    def from_config(cls, app_config: AppConfig) -> MultiChannelConfig:
         """Load multi-channel config from AppConfig."""
         cfg = cls()
         # Push
@@ -281,7 +281,7 @@ class NotificationService:
 
     async def send_daily_briefing(self, user_id: str) -> dict[str, Any]:
         """Generate and persist a daily briefing summary."""
-        today = datetime.now(timezone.utc).date().isoformat()
+        today = datetime.now(UTC).date().isoformat()
 
         if self._briefing_generator:
             briefing = await self._briefing_generator.generate(user_id)
@@ -293,7 +293,7 @@ class NotificationService:
                     self._add_notification,
                     user_id=user_id,
                     title=f"Codzienne podsumowanie — {len(decisions)} decyzji",
-                    message=json.dumps(briefing, ensure_ascii=False),
+                    message=msgspec_dumps(briefing, ensure_ascii=False),
                     notification_type="daily_briefing",
                 )
             return briefing
@@ -315,7 +315,7 @@ class NotificationService:
                 self._add_notification,
                 user_id=user_id,
                 title=f"Codzienne podsumowanie — {len(decisions)} decyzji",
-                message=json.dumps(briefing, ensure_ascii=False),
+                message=msgspec_dumps(briefing, ensure_ascii=False),
                 notification_type="daily_briefing",
             )
 
@@ -521,7 +521,7 @@ class NotificationService:
 
     def _fetch_pending_decisions(self, user_id: str) -> list[dict[str, Any]]:
         """Fetch decisions awaiting user action.
-        
+
         Queries invoices that are in MANUAL_REVIEW or PENDING_REVIEW status
         and belong to the user's tenant.
         """
@@ -613,7 +613,7 @@ class NotificationService:
                     notification_type,
                     reference_type,
                     reference_id,
-                    datetime.now(timezone.utc).isoformat(),
+                    datetime.now(UTC).isoformat(),
                 ),
             )
             conn.commit()

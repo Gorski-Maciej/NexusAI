@@ -47,7 +47,7 @@ def conn() -> duckdb.DuckDBPyConnection:
 class TestSemanticGuard:
     def test_evaluate_no_history(self) -> None:
         """New vendor → anomaly_score = 0 (ALLOW)."""
-        guard = SemanticGuard(lancedb_path=":memory:")
+        guard = SemanticGuard(db_path=":memory:")
         result = guard.evaluate(
             invoice_text="Faktura VAT za usługi IT",
             vendor_nip="1234567890",
@@ -58,7 +58,7 @@ class TestSemanticGuard:
 
     def test_evaluate_with_rules(self, conn: duckdb.DuckDBPyConnection) -> None:
         """With anomaly_rules, a new vendor gets ALLOW (score = 0)."""
-        guard = SemanticGuard(lancedb_path=":memory:", conn=conn)
+        guard = SemanticGuard(db_path=":memory:", conn=conn)
         result = guard.evaluate(
             invoice_text="Faktura VAT za usługi IT",
             vendor_nip="1234567890",
@@ -69,7 +69,7 @@ class TestSemanticGuard:
 
     def test_store_and_retrieve(self) -> None:
         """Store invoice → no error."""
-        guard = SemanticGuard(lancedb_path=":memory:")
+        guard = SemanticGuard(db_path=":memory:")
         guard.store_invoice(
             vendor_nip="1234567890",
             invoice_text="Faktura za catering",

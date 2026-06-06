@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
 MONEY_QUANT = Decimal("0.01")
 QTY_QUANT = Decimal("0.0001")
 
 
-class InventoryMismatch(Exception):
+class InventoryMismatch(Exception):  # noqa: N818
     pass
 
 

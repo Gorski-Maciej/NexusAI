@@ -23,7 +23,7 @@ from typing import Any
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from Code.Roboton_Reflekton.shadow_ledger import TaxSimulator
+from Code.roboton_reflekton.shadow_ledger import TaxSimulator
 
 
 # ── Hypothesis strategies ────────────────────────────────────────────────────

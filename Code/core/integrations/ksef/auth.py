@@ -1,7 +1,7 @@
 # core/integrations/ksef/auth.py
-import httpx
 import logging
-from .crypto import KsefCrypto
+
+import httpx
 
 logger = logging.getLogger("nexus.ksef")
 

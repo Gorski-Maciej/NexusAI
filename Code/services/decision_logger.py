@@ -13,11 +13,11 @@ from __future__ import annotations
 import asyncio
 import json
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
-from collections import defaultdict
 
 from core.logger import get_logger
+from core.msgspec_utils import msgspec_dumps, msgspec_loads
 from db.analytics import DuckDBManager
 
 logger = get_logger(__name__)
@@ -140,19 +140,19 @@ class DecisionLogger:
                 (
                     decision_id,
                     invoice_id,
-                    json.dumps(alpha_verdict, ensure_ascii=False),
-                    json.dumps(beta_verdict, ensure_ascii=False),
-                    json.dumps(gamma_verdict, ensure_ascii=False),
+                    msgspec_dumps(alpha_verdict, ensure_ascii=False),
+                    msgspec_dumps(beta_verdict, ensure_ascii=False),
+                    msgspec_dumps(gamma_verdict, ensure_ascii=False),
                     final_decision,
                     float(trust_score),
-                    json.dumps(trust_components, ensure_ascii=False),
-                    json.dumps(context, ensure_ascii=False),
-                    datetime.now(timezone.utc),
+                    msgspec_dumps(trust_components, ensure_ascii=False),
+                    msgspec_dumps(context, ensure_ascii=False),
+                    datetime.now(UTC),
                     None,  # user_correction — populated later
                     decision_level,
                     council_pattern,
-                    json.dumps(ple_stm_snapshot, ensure_ascii=False) if ple_stm_snapshot else None,
-                    json.dumps(ple_ltm_profile, ensure_ascii=False) if ple_ltm_profile else None,
+                    msgspec_dumps(ple_stm_snapshot, ensure_ascii=False) if ple_stm_snapshot else None,
+                    msgspec_dumps(ple_ltm_profile, ensure_ascii=False) if ple_ltm_profile else None,
                 ),
             )
 
@@ -202,7 +202,7 @@ class DecisionLogger:
                 float(trust_components.get("context_trust", 0.0)),
                 final_decision,
                 None,  # user_correction
-                datetime.now(timezone.utc),
+                datetime.now(UTC),
             ),
         )
 
@@ -378,13 +378,13 @@ class DecisionLogger:
                 {
                     "id": r[0],
                     "invoice_id": r[1],
-                    "alpha_vote": json.loads(r[2]) if isinstance(r[2], str) else r[2],
-                    "beta_vote": json.loads(r[3]) if isinstance(r[3], str) else r[3],
-                    "gamma_vote": json.loads(r[4]) if isinstance(r[4], str) else r[4],
+                    "alpha_vote": msgspec_loads(r[2]) if isinstance(r[2], str) else r[2],
+                    "beta_vote": msgspec_loads(r[3]) if isinstance(r[3], str) else r[3],
+                    "gamma_vote": msgspec_loads(r[4]) if isinstance(r[4], str) else r[4],
                     "final_decision": r[5],
                     "trust_score": r[6],
-                    "trust_components": json.loads(r[7]) if isinstance(r[7], str) else r[7],
-                    "context": json.loads(r[8]) if isinstance(r[8], str) else r[8],
+                    "trust_components": msgspec_loads(r[7]) if isinstance(r[7], str) else r[7],
+                    "context": msgspec_loads(r[8]) if isinstance(r[8], str) else r[8],
                     "timestamp": r[9],
                     "user_correction": r[10],
                     "decision_level": r[11],
@@ -455,7 +455,7 @@ class DecisionLogger:
                 components_raw = row[0]
                 if isinstance(components_raw, str):
                     try:
-                        components = json.loads(components_raw)
+                        components = msgspec_loads(components_raw)
                     except (json.JSONDecodeError, TypeError):
                         continue
                 elif isinstance(components_raw, dict):

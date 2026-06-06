@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-MODULE_PATH = Path(__file__).resolve().parents[1] / "Code" / "SERVICES" / "rules_engine.py"
+MODULE_PATH = Path(__file__).resolve().parents[1] / "Code" / "services" / "rules_engine.py"
 spec = importlib.util.spec_from_file_location("rules_engine", MODULE_PATH)
 module = importlib.util.module_from_spec(spec)
 assert spec.loader is not None
@@ -19,7 +19,7 @@ sys.modules[spec.name] = module
 spec.loader.exec_module(module)
 RulesEngine = module.RulesEngine
 
-from Roboton_Reflekton.ledger_client import TigerBeetleClient
+from roboton_reflekton.ledger_client import TigerBeetleClient
 
 
 class FakeDuckDBManager:

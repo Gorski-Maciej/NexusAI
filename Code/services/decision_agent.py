@@ -15,6 +15,7 @@ from typing import Any
 
 from core.config import AppConfig
 from core.logger import get_logger
+from core.msgspec_utils import msgspec_loads
 from services.council_agents import ModelManager
 
 logger = get_logger(__name__)
@@ -131,7 +132,7 @@ class JambaStrategist:
 
             return self._parse_response(raw)
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error("[JambaStrategist] inference timed out after %ds", self._timeout)
             return {
                 "decision": "ESCALATE",
@@ -214,12 +215,12 @@ i podaj zapytania w additional_queries."""
     def _parse_response(self, raw: str) -> dict[str, Any]:
         """Parse JSON response from model with regex fallback."""
         try:
-            parsed = json.loads(raw)
+            parsed = msgspec_loads(raw)
         except json.JSONDecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
-                    parsed = json.loads(match.group(0))
+                    parsed = msgspec_loads(match.group(0))
                 except json.JSONDecodeError:
                     return self._default_result("Unparseable JSON response")
             else:
@@ -328,7 +329,7 @@ class GraniteExecutor:
 
             return self._parse_response(raw)
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error("[GraniteExecutor] inference timed out after %ds", self._timeout)
             return {
                 "query_results": [{"query": q, "result": "TIMEOUT"} for q in queries],
@@ -367,12 +368,12 @@ dostępnych danych kontekstowych i historcznych."""
     def _parse_response(self, raw: str) -> dict[str, Any]:
         """Parse JSON response from model with regex fallback."""
         try:
-            parsed = json.loads(raw)
+            parsed = msgspec_loads(raw)
         except json.JSONDecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
-                    parsed = json.loads(match.group(0))
+                    parsed = msgspec_loads(match.group(0))
                 except json.JSONDecodeError:
                     return self._default_result("Unparseable JSON response")
             else:

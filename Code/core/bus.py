@@ -1,12 +1,14 @@
 # core/bus.py
 import asyncio
-from typing import Callable, Any, Dict, List
+from collections.abc import Callable
+from typing import Any
+
 
 class EventBus:
     """Lokalna szyna zdarzeń dla komunikacji między modułami."""
 
     def __init__(self):
-        self._subscribers: Dict[str, List[Callable]] = {}
+        self._subscribers: dict[str, list[Callable]] = {}
 
     def subscribe(self, event_type: str, callback: Callable):
         if event_type not in self._subscribers:

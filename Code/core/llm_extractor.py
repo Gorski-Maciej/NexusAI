@@ -1,7 +1,8 @@
 # core/llm_extractor.py
 from llama_cpp import Llama
-import json
-import torch
+
+from core.msgspec_utils import msgspec_loads
+
 
 class LocalLLMExtractor:
     def __init__(self, model_path="models/phi-3-mini-4k-instruct.Q4_K_S.gguf"):
@@ -19,7 +20,5 @@ Tekst faktury:
 """
         # Generujemy odpowiedź (stop na ``` kończącym JSON)
         output = self.llm(prompt, max_tokens=512, stop=["```"], echo=False)
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
         json_str = output['choices'][0]['text']
-        return json.loads(json_str)
+        return msgspec_loads(json_str)

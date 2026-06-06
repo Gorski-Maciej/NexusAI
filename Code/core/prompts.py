@@ -1,13 +1,14 @@
 # core/prompts.py
 from __future__ import annotations
 
-import json
-from enum import Enum
+from enum import StrEnum
 from functools import lru_cache
 from pathlib import Path
 
+from core.msgspec_utils import msgspec_loads
 
-class PromptTemplate(str, Enum):
+
+class PromptTemplate(StrEnum):
     """Zbiór systemowych instrukcji dla modeli lokalnych (Phi/Llama)."""
 
     INVOICE_EXTRACTOR = "invoice_extractor"
@@ -45,7 +46,7 @@ def _load_prompt_pack(lang: str) -> dict[PromptTemplate, str]:
     if not pack_path.exists():
         return _DEFAULT_PROMPTS.get(lang, _DEFAULT_PROMPTS.get("pl", {}))
     try:
-        payload = json.loads(pack_path.read_text(encoding="utf-8"))
+        payload = msgspec_loads(pack_path.read_bytes())
     except Exception:
         return _DEFAULT_PROMPTS.get(lang, _DEFAULT_PROMPTS.get("pl", {}))
 

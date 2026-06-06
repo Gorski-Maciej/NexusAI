@@ -15,6 +15,7 @@ from typing import Any
 
 from core.config import AppConfig
 from core.logger import get_logger
+from core.msgspec_utils import msgspec_loads
 from services.council_agents import ModelManager
 
 logger = get_logger(__name__)
@@ -112,7 +113,7 @@ class OrchestratorAgent:
 
             return self._parse_response(raw)
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error(
                 "[OrchestratorAgent] inference timed out after %ds, falling back to full workflow",
                 self._timeout,
@@ -170,12 +171,12 @@ W przeciwnym razie faktura jest ZŁOŻONA (→ pełny zestaw agentów)."""
     def _parse_response(self, raw: str) -> dict[str, Any]:
         """Parse JSON response from model with regex fallback."""
         try:
-            parsed = json.loads(raw)
+            parsed = msgspec_loads(raw)
         except json.JSONDecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
-                    parsed = json.loads(match.group(0))
+                    parsed = msgspec_loads(match.group(0))
                 except json.JSONDecodeError:
                     return self._full_workflow(reason="Unparseable JSON response")
             else:

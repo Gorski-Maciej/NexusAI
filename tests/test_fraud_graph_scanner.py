@@ -3,7 +3,7 @@ from pathlib import Path
 import importlib.util
 import sys
 
-MODULE_PATH = Path(__file__).resolve().parents[1] / "Code" / "SERVICES" / "fraud_graph_scanner.py"
+MODULE_PATH = Path(__file__).resolve().parents[1] / "Code" / "services" / "fraud_graph_scanner.py"
 spec = importlib.util.spec_from_file_location("fraud_graph_scanner", MODULE_PATH)
 module = importlib.util.module_from_spec(spec)
 assert spec.loader is not None

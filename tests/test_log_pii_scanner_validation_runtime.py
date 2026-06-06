@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def _load_module():
-    path = Path('Code/SKRIPTS/log_pii_scanner.py').resolve()
+    path = Path('Code/scripts/log_pii_scanner.py').resolve()
     spec = importlib.util.spec_from_file_location('log_pii_scanner_mod_v2', path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)

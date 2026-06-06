@@ -15,7 +15,6 @@ from pathlib import Path
 import flet as ft
 
 from installer.dependency_downloader import (
-    BinaryManager,
     check_dependencies,
     download_all_dependencies,
 )

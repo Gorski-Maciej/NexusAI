@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-MODULE_PATH = ROOT / "Code" / "SERVICES" / "smart_approvals.py"
+MODULE_PATH = ROOT / "Code" / "services" / "smart_approvals.py"
 spec = importlib.util.spec_from_file_location("smart_approvals", MODULE_PATH)
 module = importlib.util.module_from_spec(spec)
 assert spec.loader is not None

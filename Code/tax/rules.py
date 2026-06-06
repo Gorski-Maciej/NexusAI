@@ -12,13 +12,14 @@ Komponenty:
 
 from __future__ import annotations
 
-import json
 import uuid
-from datetime import date, datetime, timezone
+from datetime import date
 from decimal import Decimal
 from typing import Any
 
 import duckdb
+
+from core.msgspec_utils import msgspec_dumps
 
 from .exceptions import NoMatchingRuleError
 
@@ -384,7 +385,7 @@ def seed_default_rules(conn: duckdb.DuckDBPyConnection) -> None:
             (
                 str(uuid.uuid4()),
                 rule["condition_sql"],
-                json.dumps(rule["action_json"], ensure_ascii=False),
+                msgspec_dumps(rule["action_json"], ensure_ascii=False),
                 rule["valid_from"],
                 rule["valid_to"],
                 rule["priority"],
@@ -775,7 +776,7 @@ class RuleEngine:
             )
 
         # 3. Convert to PrioritizedRule and use PriorityEngine
-        from services.priority_engine import PriorityEngine, PrioritizedRule
+        from services.priority_engine import PrioritizedRule, PriorityEngine
         prioritized = [
             PrioritizedRule(
                 rule_id=r.rule_id,
@@ -790,7 +791,6 @@ class RuleEngine:
 
         # Collect all evaluated rules for audit trail
         evaluated_rules: list[dict[str, Any]] = []
-        selected_rule_id: str | None = None
 
         def _eval(condition_sql: str) -> bool:
             result = self._conn.execute(
@@ -808,7 +808,7 @@ class RuleEngine:
         if not match.matched:
             raise NoMatchingRuleError(
                 f"No matching rule for context: "
-                f"{json.dumps(context, ensure_ascii=False)}"
+                f"{msgspec_dumps(context, ensure_ascii=False)}"
             )
 
         # Attach evaluated rules to verdict for downstream consumers (pipeline)
@@ -907,7 +907,7 @@ class RuleEngine:
             (
                 rule_id,
                 condition_sql,
-                json.dumps(action, ensure_ascii=False),
+                msgspec_dumps(action, ensure_ascii=False),
                 vf,
                 vt,
                 priority,

@@ -12,7 +12,7 @@ class TaxEngineError(Exception):
 
 class NoMatchingRuleError(TaxEngineError):
     """Raised when no rule matches the given context.
-    
+
     This blocks the transaction — the invoice enters an exception queue.
     """
     pass
@@ -20,7 +20,7 @@ class NoMatchingRuleError(TaxEngineError):
 
 class DecisionTraceIntegrityError(TaxEngineError):
     """Raised when the decision trace chain integrity check fails.
-    
+
     Indicates possible data tampering or corruption.
     """
     pass

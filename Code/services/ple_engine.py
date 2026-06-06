@@ -15,15 +15,11 @@ Każda warstwa ma automatyczny Data Decay:
 from __future__ import annotations
 
 import asyncio
-import json
-import time
 import logging
-import math
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone, timedelta
-from typing import Any, Callable
+import time
 from collections import defaultdict
-from pathlib import Path
+from dataclasses import asdict, dataclass, field
+from typing import Any
 
 from core.config import AppConfig
 
@@ -57,7 +53,7 @@ class DecisionRecord:
         return asdict(self)
 
     @staticmethod
-    def from_dict(data: dict[str, Any]) -> "DecisionRecord":
+    def from_dict(data: dict[str, Any]) -> DecisionRecord:
         return DecisionRecord(**data)
 
 
@@ -77,7 +73,7 @@ class CognitiveArtifact:
         return asdict(self)
 
     @staticmethod
-    def from_dict(data: dict[str, Any]) -> "CognitiveArtifact":
+    def from_dict(data: dict[str, Any]) -> CognitiveArtifact:
         return CognitiveArtifact(**data)
 
 

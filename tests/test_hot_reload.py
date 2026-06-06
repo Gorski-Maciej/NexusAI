@@ -14,6 +14,7 @@ Tests:
 from __future__ import annotations
 
 import json
+from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 import sys
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -115,7 +116,7 @@ class TestOnMessageValidJson:
         """billing.rules.updated → clear api.routes.billing cache."""
         msg = _make_msg(
             "billing.rules.updated",
-            json.dumps({"rule_id": "abc-123", "action": "created"}).encode(),
+            msgspec_dumps_bytes({"rule_id": "abc-123", "action": "created"}),
         )
 
         with patch(
@@ -132,7 +133,7 @@ class TestOnMessageValidJson:
         """risk.thresholds.updated → clear api.routes.admin cache."""
         msg = _make_msg(
             "risk.thresholds.updated",
-            json.dumps({"rule_id": "xyz-789", "action": "deprecated"}).encode(),
+            msgspec_dumps_bytes({"rule_id": "xyz-789", "action": "deprecated"}),
         )
 
         with patch(
@@ -147,7 +148,7 @@ class TestOnMessageValidJson:
         """tax.rules.updated → clear api.routes.tax cache."""
         msg = _make_msg(
             "tax.rules.updated",
-            json.dumps({"rule_id": "tax-456", "action": "closed"}).encode(),
+            msgspec_dumps_bytes({"rule_id": "tax-456", "action": "closed"}),
         )
 
         with patch(
@@ -162,7 +163,7 @@ class TestOnMessageValidJson:
         """ledger.rules.updated → clear api.routes.ledger cache."""
         msg = _make_msg(
             "ledger.rules.updated",
-            json.dumps({"rule_id": "ledger-789", "action": "created"}).encode(),
+            msgspec_dumps_bytes({"rule_id": "ledger-789", "action": "created"}),
         )
 
         with patch(
@@ -232,7 +233,7 @@ class TestOnMessageMissingFields:
         """Empty JSON object {} → use defaults, cache clear still happens."""
         msg = _make_msg(
             "billing.rules.updated",
-            json.dumps({}).encode(),
+            msgspec_dumps_bytes({}),
         )
 
         with patch(
@@ -250,7 +251,7 @@ class TestOnMessageMissingFields:
         """Only rule_id, no action → default 'unknown' for action, cache cleared."""
         msg = _make_msg(
             "tax.rules.updated",
-            json.dumps({"rule_id": "tax-001"}).encode(),
+            msgspec_dumps_bytes({"rule_id": "tax-001"}),
         )
 
         with patch(
@@ -270,7 +271,7 @@ class TestOnMessageCacheFailure:
         """If clear_cache_async raises, _on_message should not crash."""
         msg = _make_msg(
             "risk.thresholds.updated",
-            json.dumps({"rule_id": "risk-001", "action": "created"}).encode(),
+            msgspec_dumps_bytes({"rule_id": "risk-001", "action": "created"}),
         )
 
         with patch(
@@ -288,7 +289,7 @@ class TestOnMessageCacheFailure:
         """If api.cache module can't be imported, _on_message should not crash."""
         msg = _make_msg(
             "tax.rules.updated",
-            json.dumps({"rule_id": "tax-001"}).encode(),
+            msgspec_dumps_bytes({"rule_id": "tax-001"}),
         )
 
         # Remove api.cache from sys.modules to trigger import error

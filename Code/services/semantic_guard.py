@@ -1,28 +1,23 @@
 """
 SemanticGuard — semantyczny wykrywacz anomalii faktur.
 
-Część VI drugiej połowy szkieletu.
-
-Wykorzystuje LanceDB do przechowywania embeddingów faktur
-i HerBERT (via sentence-transformers) do wektoryzacji tekstu.
-
-Wykrywa:
-  - „Puste faktury” (treść nie odpowiada kwocie)
-  - Drastyczne zmiany profilu usług kontrahenta
+Zgodnie z aa3fvcx.txt: LanceDB → sqlite-vec.
+Wektory przechowywane w SQLite z extension sqlite-vec.
+sentence-transformers pozostaje opcjonalny (lazy import).
 """
 
 from __future__ import annotations
 
 import json
 import logging
-import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
-logger = logging.getLogger("nexus.services.semantic_guard")
+from core.msgspec_utils import msgspec_dumps, msgspec_loads
+from db.vector_store import VectorStore
 
-# LanceDB & sentence-transformers są importowane leniwie (lazy).
-# Testy używają mock/fake zamiast prawdziwych zależności.
+logger = logging.getLogger("nexus.services.semantic_guard")
 
 # ── Anomaly rules schema ────────────────────────────────────────────────────
 
@@ -42,8 +37,8 @@ CREATE INDEX IF NOT EXISTS idx_anomaly_rules_valid
 
 DEFAULT_ANOMALY_RULES: list[dict[str, Any]] = [
     {
-        "condition_json": json.dumps({"min_anomaly_score": 0.80, "min_amount_net": 10000}),
-        "action_json": json.dumps({
+        "condition_json": msgspec_dumps({"min_anomaly_score": 0.80, "min_amount_net": 10000}),
+        "action_json": msgspec_dumps({
             "action": "BLOCK_DECREE",
             "alert": "Drastyczna zmiana profilu usług. Wymagany dowód wykonania usługi i ręczna weryfikacja.",
             "routing": "HUMAN_VERIFICATION",
@@ -52,8 +47,8 @@ DEFAULT_ANOMALY_RULES: list[dict[str, Any]] = [
         "priority": 10,
     },
     {
-        "condition_json": json.dumps({"min_anomaly_score": 0.60, "min_amount_net": 10000}),
-        "action_json": json.dumps({
+        "condition_json": msgspec_dumps({"min_anomaly_score": 0.60, "min_amount_net": 10000}),
+        "action_json": msgspec_dumps({
             "action": "WARN",
             "alert": "Znacząca zmiana profilu usług. Zalecana weryfikacja.",
         }),
@@ -61,8 +56,8 @@ DEFAULT_ANOMALY_RULES: list[dict[str, Any]] = [
         "priority": 20,
     },
     {
-        "condition_json": json.dumps({"min_anomaly_score": 0.40, "min_amount_net": 50000}),
-        "action_json": json.dumps({
+        "condition_json": msgspec_dumps({"min_anomaly_score": 0.40, "min_amount_net": 50000}),
+        "action_json": msgspec_dumps({
             "action": "WARN",
             "alert": "Nietypowa wartość faktury względem historii. Wymagany nadzór.",
         }),
@@ -70,8 +65,8 @@ DEFAULT_ANOMALY_RULES: list[dict[str, Any]] = [
         "priority": 30,
     },
     {
-        "condition_json": json.dumps({"min_anomaly_score": 0.0, "min_amount_net": 0}),
-        "action_json": json.dumps({
+        "condition_json": msgspec_dumps({"min_anomaly_score": 0.0, "min_amount_net": 0}),
+        "action_json": msgspec_dumps({
             "action": "ALLOW",
             "alert": None,
         }),
@@ -87,68 +82,48 @@ DEFAULT_ANOMALY_RULES: list[dict[str, Any]] = [
 class SemanticGuard:
     """Detektor anomalii semantycznych oparty o embeddingi faktur.
 
-    Args:
-        lancedb_path: Ścieżka do lokalnej bazy LanceDB.
-        conn: DuckDB connection dla anomaly_rules.
+    Używa sqlite-vec zamiast LanceDB.
+    sentence-transformers jest opcjonalny (lazy import).
     """
 
     EMBEDDING_DIM = 768  # Default for HerBERT; detected dynamically at model load
 
     def __init__(
         self,
-        lancedb_path: str = "nexus_lancedb",
+        db_path: str = "app_data/semantic_guard.db",
         conn: Any = None,
     ) -> None:
-        self._lancedb_path = lancedb_path
+        self._db_path = db_path
         self._conn = conn
-        self._db = None
-        self._model = None
+        self._store: VectorStore | None = None
+        self._model: Any = None
         self._embedding_dim: int = self.EMBEDDING_DIM
 
-    def _init_lancedb(self) -> Any:
-        """Lazy init LanceDB."""
-        if self._db is None:
-            import lancedb
-            self._db = lancedb.connect(self._lancedb_path, mode="file")
-            self._ensure_vendor_table()
-        return self._db
+    def _init_store(self) -> VectorStore:
+        """Lazy init sqlite-vec VectorStore."""
+        if self._store is not None:
+            return self._store
+        Path(self._db_path).parent.mkdir(parents=True, exist_ok=True)
+        self._store = VectorStore(self._db_path)
+        self._ensure_vendor_table()
+        return self._store
 
     def _ensure_vendor_table(self) -> None:
-        """Create vendor_invoices table if not exists.
-        Uses self._embedding_dim for the vector dimension.
-        """
-        import polars as pl
-        table_name = "vendor_invoices"
-        if table_name not in self._db.table_names():
-            _dtypes = {
-                "vendor_nip": pl.Utf8,
-                "embedding": pl.List(pl.Float32),
-                "category_code": pl.Utf8,
-                "amount_net": pl.Float64,
-                "invoice_text": pl.Utf8,
-                "transaction_id": pl.Utf8,
-                "timestamp": pl.Datetime(time_unit="us", time_zone="UTC"),
-            }
-            _empty = pl.DataFrame({}, schema=_dtypes)
-            _arrow_schema = _empty.to_arrow().schema
-            self._db.create_table(table_name, schema=_arrow_schema)
-            logger.info(
-                "[SemanticGuard] Created vendor_invoices table (dim=%d)",
-                self._embedding_dim,
+        """Create vendor_invoices table if not exists."""
+        conn = self._init_store()._get_conn()
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS vendor_invoices (
+                id               TEXT PRIMARY KEY,
+                vendor_nip       TEXT NOT NULL,
+                embedding        BLOB NOT NULL,
+                category_code    TEXT DEFAULT '',
+                amount_net       REAL DEFAULT 0.0,
+                invoice_text     TEXT DEFAULT '',
+                transaction_id   TEXT DEFAULT '',
+                timestamp        TEXT NOT NULL DEFAULT (datetime('now'))
             )
-        else:
-            # Log warning if existing table dimension doesn't match current model
-            existing_schema = self._db.open_table(table_name).schema
-            try:
-                existing_dim = existing_schema.field("embedding").type.value_type.size or 0
-                if existing_dim != self._embedding_dim:
-                    logger.warning(
-                        "[SemanticGuard] Table dim mismatch: existing=%d, model=%d",
-                        existing_dim,
-                        self._embedding_dim,
-                    )
-            except Exception:
-                pass
+        """)
+        conn.commit()
 
     def _get_embedding(self, text: str) -> list[float]:
         """Generate embedding vector from text using sentence-transformers."""
@@ -166,13 +141,10 @@ class SemanticGuard:
                     self._embedding_dim = 384
             except Exception as exc:
                 logger.warning("[SemanticGuard] sentence-transformers unavailable: %s", exc)
-                # Fallback: deterministic pseudo-embedding (use detected dimension)
                 return [0.0] * self._embedding_dim
 
-        # Preferowany model: sdadas/herbert-base-embedding (768-dim, polski)
-        # Fallback: all-MiniLM-L6-v2 (384-dim)
         try:
-            return self._model.encode(text[:10000]).tolist()  # Truncate long texts
+            return self._model.encode(text[:10000]).tolist()
         except Exception as exc:
             logger.warning("[SemanticGuard] Embedding failed: %s — fallback to zero vector", exc)
             return [0.0] * 768
@@ -196,41 +168,37 @@ class SemanticGuard:
                 - anomaly_score: float (0.0 = normal, 1.0 = highly anomalous)
                 - alert: str | None
         """
-        # 1. Generate embedding
         embedding = self._get_embedding(invoice_text)
+        store = self._init_store()
+        conn = store._get_conn()
+        query_blob = store._vector_to_blob(embedding)
 
-        # 2. Query historical vendor invoices
-        db = self._init_lancedb()
-        table_name = "vendor_invoices"
-
-        if table_name not in db.table_names():
-            return {"action": "ALLOW", "anomaly_score": 0.0, "alert": None}
-
-        table = db.open_table(table_name)
+        # Query historical vendor invoices using sqlite-vec cosine distance
         try:
-            results = (
-                table.search(embedding)
-                .where(f"vendor_nip = '{vendor_nip}'")
-                .limit(5)
-                .to_list()
-            )
+            rows = conn.execute(
+                """SELECT *, vec_distance_cosine(embedding, ?) AS _distance
+                   FROM vendor_invoices
+                   WHERE vendor_nip = ?
+                   ORDER BY _distance ASC
+                   LIMIT 5""",
+                (query_blob, vendor_nip),
+            ).fetchall()
         except Exception:
-            results = []
+            rows = []
 
-        # 3. Calculate anomaly score
-        if not results:
-            anomaly_score = 0.0  # New vendor — no history
-        else:
-            distances = [r.get("_distance", 1.0) for r in results]
+        # Calculate anomaly score
+        if rows:
+            distances = [float(r["_distance"]) for r in rows]
             anomaly_score = sum(distances) / len(distances)
+        else:
+            anomaly_score = 0.0  # New vendor — no history
 
-        # 4. Check against anomaly rules
+        # Check against anomaly rules
         action = "ALLOW"
         alert = None
 
         if self._conn is not None:
-            import duckdb
-            rows = self._conn.execute(
+            db_rows = self._conn.execute(
                 """SELECT condition_json, action_json, priority
                    FROM anomaly_rules
                    WHERE valid_from <= CURRENT_DATE
@@ -238,10 +206,10 @@ class SemanticGuard:
                    ORDER BY priority ASC""",
             ).fetchall()
 
-            for cond_json, act_json, priority in rows:
+            for cond_json, act_json, priority in db_rows:
                 try:
-                    cond = json.loads(cond_json) if isinstance(cond_json, str) else cond_json
-                    act = json.loads(act_json) if isinstance(act_json, str) else act_json
+                    cond = msgspec_loads(cond_json) if isinstance(cond_json, str) else cond_json
+                    act = msgspec_loads(act_json) if isinstance(act_json, str) else act_json
 
                     min_score = float(cond.get("min_anomaly_score", 1.0))
                     min_amount = float(cond.get("min_amount_net", 0))
@@ -267,7 +235,7 @@ class SemanticGuard:
         amount_net: float = 0.0,
         transaction_id: str = "",
     ) -> None:
-        """Store verified invoice in LanceDB for future anomaly detection (Active Learning).
+        """Store verified invoice in sqlite-vec for future anomaly detection.
 
         Args:
             vendor_nip: NIP kontrahenta.
@@ -276,19 +244,28 @@ class SemanticGuard:
             amount_net: Kwota netto w złotych.
             transaction_id: UUID faktury (do powiązania z bazą SQL).
         """
+        import uuid
         embedding = self._get_embedding(invoice_text)
-        db = self._init_lancedb()
-        table = db.open_table("vendor_invoices")
+        store = self._init_store()
+        conn = store._get_conn()
 
-        record = {
-            "vendor_nip": vendor_nip,
-            "embedding": embedding,
-            "category_code": category_code,
-            "amount_net": float(amount_net),
-            "invoice_text": invoice_text[:5000],  # Store summary
-            "transaction_id": transaction_id,
-            "timestamp": datetime.now(timezone.utc),
-        }
-        table.add([record])
-        logger.info("[SemanticGuard] Stored invoice %s for vendor %s (cat=%s, net=%.2f)",
-                     transaction_id, vendor_nip, category_code, float(amount_net))
+        conn.execute(
+            """INSERT INTO vendor_invoices
+               (id, vendor_nip, embedding, category_code, amount_net, invoice_text, transaction_id, timestamp)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                str(uuid.uuid4()),
+                vendor_nip,
+                store._vector_to_blob(embedding),
+                category_code,
+                float(amount_net),
+                invoice_text[:5000],
+                transaction_id,
+                datetime.now(UTC).isoformat(),
+            ),
+        )
+        conn.commit()
+        logger.info(
+            "[SemanticGuard] Stored invoice %s for vendor %s (cat=%s, net=%.2f)",
+            transaction_id, vendor_nip, category_code, float(amount_net),
+        )

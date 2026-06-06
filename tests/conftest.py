@@ -82,6 +82,7 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     "api", "api.routes", "api.server",
     "fsspec", "fsspec.implementations", "fsspec.implementations.local",
     "PIL", "PIL.Image",
+    "fitz",  # PyMuPDF — mockowane dla testów
 ]
 
 for mod_name in EXTERNAL_MOCK_MODULES:
@@ -91,8 +92,10 @@ sys.modules["db.analytics"].DuckDBManager = FakeDuckDBManager
 
 for m in ["aiohttp", "yarl", "multidict", "aiosignal", "frozenlist",
            "orjson", "pyarrow", "pillow", "boto3", "botocore",
-           "kubernetes", "prometheus_client", "opentelemetry",
-           "PIL._imaging", "PIL.ImageFilter", "PIL.ImageEnhance"]:
+           "kubernetes", "prometheus_client", "opentelemetry",            "PIL._imaging", "PIL.ImageFilter", "PIL.ImageEnhance",
+           "dateparser",
+           "numpy",
+           "huggingface_hub", "huggingface_hub._snapshot_download"]:
     if m not in sys.modules:
         sys.modules[m] = _MockModule(m)
 
@@ -167,12 +170,11 @@ if _init_path.exists():
 
 # ===== KROK 4: Załaduj serwisy przez importlib.util =====
 
-SERVICES_DIR = CODE_DIR / "SERVICES"
-SERVICES_DIR_LOWER = CODE_DIR / "services"
+SERVICES_DIR = CODE_DIR / "services"
 
-# Stwórz pakiet services (obejmuje oba katalogi: SERVICES i services)
+# Stwórz pakiet services
 _services_ns = types.ModuleType("services")
-_services_ns.__path__ = [str(SERVICES_DIR), str(SERVICES_DIR_LOWER)]
+_services_ns.__path__ = [str(SERVICES_DIR)]
 _services_ns.__package__ = "services"
 sys.modules["services"] = _services_ns
 

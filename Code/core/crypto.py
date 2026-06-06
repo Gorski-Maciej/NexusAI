@@ -1,68 +1,83 @@
 # core/crypto.py
-"""Encryption vault — optional cryptography dependency."""
+"""Encryption vault — uses nexus-crypto (Rust+PyO3) with AEAD + Argon2id fallback.
+
+Zastępuje: cryptography.fernet (Fernet AES-128-CBC+HMAC, PBKDF2)
+Nowy:     ChaCha20-Poly1305 AEAD + Argon2id KDF (nexus-crypto)
+"""
 from __future__ import annotations
 
-import base64
 import logging
 import os
+
+from nexus_crypto import decrypt as _decrypt
+from nexus_crypto import derive_key
+from nexus_crypto import encrypt as _encrypt
 
 from core.config import AppConfig
 
 logger = logging.getLogger("nexus.core.crypto")
 
 
-def _load_fernet():
-    """Lazy-load Fernet; return None if cryptography is unavailable."""
-    try:
-        from cryptography.fernet import Fernet
-        from cryptography.hazmat.primitives import hashes
-        from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-        return Fernet, hashes, PBKDF2HMAC
-    except ImportError:
-        logger.warning(
-            "cryptography library not available — Vault will operate in plaintext mode"
-        )
-        return None, None, None
-
-
-_FERNET, _HASHES, _PBKDF2 = _load_fernet()
-
-
 class Vault:
     """Moduł do bezpiecznego szyfrowania danych aplikacyjnych w locie.
 
-    Falls back to plaintext (no-op) when the ``cryptography`` package
-    is not available.  This lets the rest of NexusAI start up for
-    non-crypto tasks (seed data, diagnostics, etc.).
+    Uses ChaCha20-Poly1305 AEAD with Argon2id key derivation.
+    Falls back to plaintext when required keys are not configured.
     """
 
     def __init__(self, config: AppConfig):
-        if _FERNET is None:
-            self._fernet = None
-            return
+        self._key: bytes | None = None
 
         configured_key = config.encryption_key.strip()
         if configured_key:
-            master_key = configured_key.encode()
-        else:
-            env_key = os.getenv(config.sqlcipher_key_env, "").strip()
-            master_key = env_key.encode() if env_key else os.urandom(32)
+            # Direct 32-byte key (base64-url encoded)
+            try:
+                import base64
+                raw = base64.urlsafe_b64decode(configured_key.encode("utf-8"))
+                if len(raw) == 32:
+                    self._key = raw
+            except Exception:
+                logger.warning("Invalid encryption_key format; trying as raw password")
 
-        # Deriwacja klucza (KDF) dla zwiększonego bezpieczeństwa
-        kdf = _PBKDF2(
-            algorithm=_HASHES.SHA256(),
-            length=32,
-            salt=b"nexus-offline-ai-salt-v1",
-            iterations=480000,
-        )
-        self._fernet = _FERNET(base64.urlsafe_b64encode(kdf.derive(master_key)))
+        if self._key is None:
+            # Fallback to password-based key derivation
+            password = configured_key or os.getenv(config.sqlcipher_key_env, "")
+            if password:
+                self._key, _ = derive_key(password)
+
+        if self._key is None:
+            env_key = os.getenv("NEXUS_ENCRYPTION_KEY", "").strip()
+            if env_key:
+                try:
+                    import base64
+                    raw = base64.urlsafe_b64decode(env_key.encode("utf-8"))
+                    if len(raw) == 32:
+                        self._key = raw
+                except Exception:
+                    pass
+
+        if self._key is None:
+            logger.warning(
+                "No encryption key configured — Vault will operate in plaintext mode. "
+                "Set NEXUS_ENCRYPTION_KEY or NEXUS_SQLCIPHER_KEY to enable encryption."
+            )
 
     def encrypt(self, plain_text: str) -> str:
-        if not plain_text or self._fernet is None:
+        """Encrypt string with AEAD (ChaCha20-Poly1305)."""
+        if not plain_text or self._key is None:
             return plain_text
-        return self._fernet.encrypt(plain_text.encode()).decode()
+        encrypted = _encrypt(self._key, plain_text.encode("utf-8"))
+        import base64
+        return base64.urlsafe_b64encode(encrypted).decode("utf-8")
 
     def decrypt(self, encrypted_text: str) -> str:
-        if not encrypted_text or self._fernet is None:
+        """Decrypt string encrypted with `encrypt`."""
+        if not encrypted_text or self._key is None:
             return encrypted_text
-        return self._fernet.decrypt(encrypted_text.encode()).decode()
+        import base64
+        try:
+            data = base64.urlsafe_b64decode(encrypted_text.encode("utf-8"))
+            return _decrypt(self._key, data).decode("utf-8")
+        except Exception as exc:
+            logger.error("Decryption failed: %s", exc)
+            return encrypted_text

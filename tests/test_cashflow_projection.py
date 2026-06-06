@@ -22,7 +22,7 @@ sys.modules["views_module"] = views_module
 views_spec.loader.exec_module(views_module)
 AnalyticsViewsSetup = views_module.AnalyticsViewsSetup
 
-cfo_spec = importlib.util.spec_from_file_location("cfo_module", Path(__file__).resolve().parents[1] / "Code" / "SERVICES" / "cfo_offline.py")
+cfo_spec = importlib.util.spec_from_file_location("cfo_module", Path(__file__).resolve().parents[1] / "Code" / "services" / "cfo_offline.py")
 cfo_module = importlib.util.module_from_spec(cfo_spec)
 assert cfo_spec and cfo_spec.loader
 sys.modules["cfo_module"] = cfo_module

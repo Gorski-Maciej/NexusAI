@@ -1,9 +1,10 @@
 # core/integrations/mail.py
-import imaplib
 import email
+import imaplib
 from pathlib import Path
-from core.broker import broker
+
 from core.logger import logger
+
 # from core.tasks import process_invoice_task # Importowane z zadań
 
 class MailIngestionService:
@@ -25,7 +26,7 @@ class MailIngestionService:
 
             for num in messages[0].split():
                 _, data = mail.fetch(num, '(RFC822)')
-                msg = email.message_from_bytes(data[0][1])
+                email.message_from_bytes(data[0][1])
                 # Tu logika zapisywania załączników PDF
 
             mail.logout()

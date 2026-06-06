@@ -1,3 +1,4 @@
+from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Tests for TemporalManager (Element 2).
 
@@ -51,7 +52,7 @@ class TestTemporalManager:
         conn.execute(
             """INSERT INTO tax_rules (rule_id, condition_sql, action_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",
-            (future_id, "1=1", json.dumps({"vat_rate": "0.99"}), "2099-01-01", None, 1),
+            (future_id, "1=1", msgspec_dumps({"vat_rate": "0.99"}), "2099-01-01", None, 1),
         )
         rules = manager.get_active_rules(date(2025, 6, 1))
         rule_ids = [r.rule_id for r in rules]
@@ -63,7 +64,7 @@ class TestTemporalManager:
         conn.execute(
             """INSERT INTO tax_rules (rule_id, condition_sql, action_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",
-            (rule_id, "1=1", json.dumps({"vat_rate": "0.10"}), "2024-01-01", "2024-06-30", 10),
+            (rule_id, "1=1", msgspec_dumps({"vat_rate": "0.10"}), "2024-01-01", "2024-06-30", 10),
         )
         rules = manager.get_active_rules(date(2025, 6, 1))
         rule_ids = [r.rule_id for r in rules]
@@ -75,7 +76,7 @@ class TestTemporalManager:
         conn.execute(
             """INSERT INTO tax_rules (rule_id, condition_sql, action_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",
-            (rule_id, "1=1", json.dumps({"vat_rate": "0.10"}), "2024-01-01", "2024-12-31", 10),
+            (rule_id, "1=1", msgspec_dumps({"vat_rate": "0.10"}), "2024-01-01", "2024-12-31", 10),
         )
         # Date INSIDE the window
         rules = manager.get_active_rules(date(2024, 6, 15))
@@ -88,7 +89,7 @@ class TestTemporalManager:
         conn.execute(
             """INSERT INTO tax_rules (rule_id, condition_sql, action_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",
-            (rule_id, "1=1", json.dumps({"vat_rate": "0.10"}), "2024-01-01", "2024-12-31", 10),
+            (rule_id, "1=1", msgspec_dumps({"vat_rate": "0.10"}), "2024-01-01", "2024-12-31", 10),
         )
         assert manager.is_rule_active_on(rule_id, date(2024, 6, 15))
         assert not manager.is_rule_active_on(rule_id, date(2025, 6, 15))
@@ -99,7 +100,7 @@ class TestTemporalManager:
         conn.execute(
             """INSERT INTO tax_rules (rule_id, condition_sql, action_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",
-            (rule_id, "1=1", json.dumps({"vat_rate": "0.10"}), "2024-01-01", "2024-12-31", 10),
+            (rule_id, "1=1", msgspec_dumps({"vat_rate": "0.10"}), "2024-01-01", "2024-12-31", 10),
         )
         window = manager.get_validity_window(rule_id)
         assert window is not None

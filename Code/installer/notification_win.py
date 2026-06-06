@@ -22,7 +22,6 @@ def _show_toast_fallback(title: str, message: str, app_name: str = "NexusAI") ->
     """Fallback using ctypes to show a simple Windows balloon notification."""
     try:
         import ctypes
-        from ctypes import wintypes
 
         # Use Win32 API to show a notification
         ctypes.windll.user32.MessageBoxW(
@@ -38,12 +37,12 @@ def _show_toast_fallback(title: str, message: str, app_name: str = "NexusAI") ->
 def _show_toast_winrt(title: str, message: str, app_name: str = "NexusAI") -> bool:
     """Show native Windows toast notification using winrt."""
     try:
+        from winrt.windows.data.xml.dom import XmlDocument
         from winrt.windows.ui.notifications import (
-            ToastNotificationManager,
             ToastNotification,
+            ToastNotificationManager,
             ToastTemplateType,
         )
-        from winrt.windows.data.xml.dom import XmlDocument
 
         # Create a toast template
         template = ToastNotificationManager.get_template_content(

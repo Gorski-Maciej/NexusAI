@@ -15,19 +15,19 @@ Funkcjonalności:
 
 from __future__ import annotations
 
-import json
 import logging
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import duckdb
 
+from core.msgspec_utils import msgspec_dumps, msgspec_loads
 from tax.audit import (
-    _compute_current_hash,
-    _GENESIS_HASH,
     ensure_schema as ensure_audit_schema,
+)
+from tax.audit import (
     verify_chain_integrity,
 )
 
@@ -113,7 +113,7 @@ class IntegrityVerifier:
         Returns:
             IntegrityReport z listą naruszeń.
         """
-        verified_at = datetime.now(timezone.utc).isoformat()
+        verified_at = datetime.now(UTC).isoformat()
 
         # Użyj istniejącej funkcji verify_chain_integrity z audit.py
         issues = verify_chain_integrity(self._conn)
@@ -152,7 +152,7 @@ class IntegrityVerifier:
         Returns:
             IntegrityReport z listą naruszeń w nowych wpisach.
         """
-        verified_at = datetime.now(timezone.utc).isoformat()
+        verified_at = datetime.now(UTC).isoformat()
 
         # Pobierz ostatni checkpoint
         last_cp = self._conn.execute(
@@ -166,7 +166,7 @@ class IntegrityVerifier:
             self._save_checkpoint(report)
             return report
 
-        last_trace_id = str(last_cp[0])
+        str(last_cp[0])
         last_timestamp = str(last_cp[1])
         total_before = int(last_cp[2])
 
@@ -206,7 +206,7 @@ class IntegrityVerifier:
 
         first_violation = report.violations[0]
         violation_id = str(uuid.uuid4())
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
 
         details = {
             "violations_count": len(report.violations),
@@ -227,7 +227,7 @@ class IntegrityVerifier:
                 report.first_inconsistent_trace,
                 str(details["expected_hash"]),
                 str(details["actual_hash"]),
-                json.dumps(details, ensure_ascii=False, default=str, sort_keys=True),
+                msgspec_dumps(details, ensure_ascii=False, default=str, sort_keys=True),
                 now,
             ),
         )
@@ -305,7 +305,7 @@ class IntegrityVerifier:
                 "first_inconsistent_trace": str(r[1]),
                 "expected_hash": str(r[2]),
                 "actual_hash": str(r[3]),
-                "details": json.loads(r[4]) if r[4] else None,
+                "details": msgspec_loads(r[4]) if r[4] else None,
                 "detected_at": str(r[5]),
                 "resolved_at": str(r[6]) if r[6] else None,
                 "resolved_by": str(r[7]) if r[7] else None,
@@ -327,7 +327,7 @@ class IntegrityVerifier:
         Returns:
             True jeśli znaleziono i zaktualizowano.
         """
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         self._conn.execute(
             """UPDATE integrity_violations
                SET resolved_at = ?, resolved_by = ?
@@ -356,7 +356,7 @@ class IntegrityVerifier:
             return
 
         cp_id = str(uuid.uuid4())
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         self._conn.execute(
             """INSERT INTO integrity_checkpoints
                (checkpoint_id, last_trace_id, last_timestamp, verified_at,

@@ -1,28 +1,25 @@
 # core/backup.py
-import zipfile
+"""Backup manager using nexus-crypto AEAD instead of cryptography.hazmat AES-CBC.
+
+Zastępuje: AES-256-CBC + PKCS7 + PBKDF2 (cryptography.hazmat)
+Nowy:     ChaCha20-Poly1305 AEAD + Argon2id KDF (nexus-crypto, Rust+PyO3)
+"""
 import io
-import os
-import base64
-import hashlib
 import logging
+import os
+import zipfile
 from datetime import datetime, timedelta
 from pathlib import Path
 
-logger = logging.getLogger("nexus.core.backup")
+import nexus_crypto
 
-# Próbuj zaimportować cryptography (opcjonalne)
-try:
-    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-    from cryptography.hazmat.primitives import padding
-    HAS_CRYPTOGRAPHY = True
-except ImportError:
-    HAS_CRYPTOGRAPHY = False
-    logger.warning("[BACKUP] cryptography not available; using plain ZIP (no encryption)")
+logger = logging.getLogger("nexus.core.backup")
 
 
 class BackupManager:
     """Zarządza pakowaniem i szyfrowaniem bazy danych.
-    Rozwiązanie 18: Szyfrowanie AES-256 backupów przy użyciu klucza z konfiguracji.
+
+    Szyfrowanie AEAD (ChaCha20-Poly1305) backupów przy użyciu klucza z konfiguracji.
     """
 
     def __init__(self, config):
@@ -30,37 +27,8 @@ class BackupManager:
         self.backup_dir = Path(config.base_dir) / "backups"
         self.backup_dir.mkdir(exist_ok=True)
 
-    def _derive_encryption_key(self, password: str, salt: bytes | None = None) -> tuple[bytes, bytes]:
-        """Derivuje 32-bajtowy klucz AES z hasła przy użyciu PBKDF2 z losową solą (Rozwiązanie 18).
-        Zwraca (klucz, sól). Sól jest przechowywana razem z danymi.
-        """
-        if salt is None:
-            salt = os.urandom(16)
-        key = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, 600_000, dklen=32)
-        return key, salt
-
-    def _encrypt_aes_cbc(self, data: bytes, key: bytes) -> bytes:
-        """Szyfruje dane AES-256-CBC z losowym IV. Zwraca sól (16B) + IV (16B) + ciphertext."""
-        iv = os.urandom(16)
-        padder = padding.PKCS7(128).padder()
-        padded_data = padder.update(data) + padder.finalize()
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
-        encryptor = cipher.encryptor()
-        ciphertext = encryptor.update(padded_data) + encryptor.finalize()
-        return iv + ciphertext
-
-    def _decrypt_aes_cbc(self, data: bytes, key: bytes) -> bytes:
-        """Odszyfrowuje dane AES-256-CBC. Oczekuje IV (16B) + ciphertext."""
-        iv = data[:16]
-        ciphertext = data[16:]
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
-        decryptor = cipher.decryptor()
-        padded_data = decryptor.update(ciphertext) + decryptor.finalize()
-        unpadder = padding.PKCS7(128).unpadder()
-        return unpadder.update(padded_data) + unpadder.finalize()
-
     def create_encrypted_zip(self, password: str = "") -> str:
-        """Tworzy zaszyfrowany (AES-256-CBC) lub zwykły ZIP z bazami danych.
+        """Tworzy zaszyfrowany (AEAD) lub zwykły ZIP z bazami danych.
 
         Args:
             password: Hasło do szyfrowania. Jeśli puste, używa klucza z config.encryption_key.
@@ -77,10 +45,7 @@ class BackupManager:
             self.config.duckdb_path,
         ]
 
-        # Dodaj ścieżkę do LanceDB (vector store) jeśli istnieje
-        lancedb_path = Path(self.config.base_dir) / "nexus_lancedb"
-        if lancedb_path.exists():
-            files_to_backup.append(lancedb_path)
+        # Vector store (sqlite-vec) jest włączony do sqlite_path
 
         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
             for file_path in files_to_backup:
@@ -90,20 +55,24 @@ class BackupManager:
 
         zip_data = zip_buffer.getvalue()
 
-        # Szyfruj AES-256-CBC jeśli dostępne jest cryptography i hasło
-        if HAS_CRYPTOGRAPHY and password:
-            # Deriwacja z losową solą (Rozwiązanie 18 - bezpieczeństwo)
-            key, salt = self._derive_encryption_key(password, salt=None)
-            encrypted_data = self._encrypt_aes_cbc(zip_data, key)
-            # Format: nagłówek (9B) + sól (16B) + IV (16B) + ciphertext
-            final_data = b"NEXUSENC1" + salt + encrypted_data
+        # Szyfruj AEAD jeśli dostępne jest hasło
+        if password and zip_data:
+            # Derive 32-byte key using Argon2id (nexus-crypto)
+            # Format: nagłówek (9B) + sól (16B) + nonce (12B) + ciphertext
+            key, salt = nexus_crypto.derive_key(password)
+            encrypted = nexus_crypto.encrypt(key, zip_data)
+            # Header: magic (9B) + salt (16B) + encrypted (nonce+ciphertext)
+            final_data = b"NEXUSAENC" + salt + encrypted
             ext = ".enc"
-            logger.info("[BACKUP] Encrypted backup with AES-256-CBC (size: %d -> %d bytes)", len(zip_data), len(final_data))
+            logger.info(
+                "[BACKUP] Encrypted backup with ChaCha20-Poly1305 (size: %d -> %d bytes)",
+                len(zip_data), len(final_data),
+            )
         else:
             final_data = zip_data
             ext = ".zip"
-            if not HAS_CRYPTOGRAPHY:
-                logger.warning("[BACKUP] cryptography not installed; backup is NOT encrypted")
+            if not password:
+                logger.warning("[BACKUP] No password provided; backup is NOT encrypted")
 
         final_path = self.backup_dir / f"backup_{timestamp}{ext}"
         with open(final_path, "wb") as f:
@@ -114,20 +83,50 @@ class BackupManager:
         return str(final_path)
 
     def decrypt_backup(self, backup_path: Path | str, password: str) -> bytes:
-        """Odszyfrowuje backup AES-256-CBC."""
+        """Odszyfrowuje backup AEAD (ChaCha20-Poly1305).
+
+        Obsługuje zarówno nowy format ``NEXUSAENC`` (ChaCha20-Poly1305 + Argon2id)
+        jak i legacy ``NEXUSENC1`` (AES-256-CBC + PBKDF2) dla kompatybilności wstecznej.
+        """
         backup_path = Path(backup_path)
         data = backup_path.read_bytes()
 
-        if data.startswith(b"NEXUSENC1"):
-            if not HAS_CRYPTOGRAPHY:
-                raise RuntimeError("Cannot decrypt: cryptography library not available")
+        if data.startswith(b"NEXUSAENC"):
+            # Nowy format: ChaCha20-Poly1305 + Argon2id
             if not password:
                 raise ValueError("Password required to decrypt backup")
-            # Format: nagłówek (9B) + sól (16B) + IV (16B) + ciphertext
-            salt = data[9:25]  # 16 bajtów soli
-            encrypted = data[25:]  # IV + ciphertext
-            key, _ = self._derive_encryption_key(password, salt=salt)
-            return self._decrypt_aes_cbc(encrypted, key)
+            salt = data[9:25]
+            encrypted = data[25:]
+            key, _ = nexus_crypto.derive_key(password, salt=salt)
+            return nexus_crypto.decrypt(key, encrypted)
+
+        elif data.startswith(b"NEXUSENC1"):
+            # Legacy format (AES-256-CBC + PBKDF2) — wsteczna kompatybilność
+            if not password:
+                raise ValueError("Password required to decrypt legacy backup")
+            try:
+                from cryptography.hazmat.primitives import padding
+                from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+            except ModuleNotFoundError:
+                raise ModuleNotFoundError(
+                    "Legacy backup (NEXUSENC1) requires the `cryptography` package. "
+                    "Install it with: pip install cryptography\n"
+                    "Or decrypt this backup on a system that still has cryptography installed, "
+                    "then re-encrypt with: python -m nexus.backup"
+                ) from None
+            salt = data[9:25]
+            encrypted = data[25:]
+            import hashlib
+            key = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, 600_000, dklen=32)
+            # AES-256-CBC decrypt
+            iv = encrypted[:16]
+            ciphertext = encrypted[16:]
+            cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
+            decryptor = cipher.decryptor()
+            padded_data = decryptor.update(ciphertext) + decryptor.finalize()
+            unpadder = padding.PKCS7(128).unpadder()
+            return unpadder.update(padded_data) + unpadder.finalize()
+
         else:
             # Niezaszyfrowany ZIP
             return data

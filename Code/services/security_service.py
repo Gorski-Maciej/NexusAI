@@ -10,7 +10,7 @@ class SecurityService:
     @staticmethod
     async def cleanup_old_scans(session: AsyncSession, years: int = 5):
         """Usuwa fizyczne pliki i wpisy z bazy dla dokumentów starszych niż X lat (RODO/Podatki)."""
-        limit_date = datetime.now() - timedelta(days=years * 365)
+        datetime.now() - timedelta(days=years * 365)
         # 1. Znajdź stare faktury
         # (Tutaj logika select i usuwania plików z dysku przed usunięciem z DB)
         pass

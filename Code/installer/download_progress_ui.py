@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -23,7 +24,6 @@ import flet as ft
 from installer.models_downloader import (
     check_models_present,
     download_all_models,
-    load_manifest,
 )
 from installer.notification_win import show_download_complete
 

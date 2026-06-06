@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def _load_module():
-    path = Path('Code/SERVICES/finops_meter.py').resolve()
+    path = Path('Code/services/finops_meter.py').resolve()
     spec = importlib.util.spec_from_file_location('finops_meter_mod', path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)

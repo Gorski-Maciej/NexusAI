@@ -14,8 +14,8 @@ Zasady:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from decimal import Decimal, ROUND_HALF_UP
-from typing import TYPE_CHECKING, Any
+from decimal import ROUND_HALF_UP, Decimal
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from services.currency_converter import Money as _Money
@@ -75,7 +75,7 @@ class InvoicePositions:
     # ── Money-aware constructors and properties ──────────────────────────
 
     @classmethod
-    def from_money(cls, net: "_Money", vat_rate: Decimal) -> "InvoicePositions":
+    def from_money(cls, net: _Money, vat_rate: Decimal) -> InvoicePositions:
         """Create an InvoicePositions from a Money amount.
 
         Args:
@@ -90,14 +90,14 @@ class InvoicePositions:
             raise TypeError(f"Expected Money, got {type(net).__name__}")
         return cls(net_grosze=money_to_grosze(net), vat_rate=vat_rate)
 
-    def to_net_money(self, currency: str = "PLN") -> "_Money":
+    def to_net_money(self, currency: str = "PLN") -> _Money:
         """Return the net amount as Money."""
-        Money = _get_money_class()
+        _get_money_class()
         return to_money(self.net_grosze, currency)
 
-    def to_vat_money(self, currency: str = "PLN") -> "_Money":
+    def to_vat_money(self, currency: str = "PLN") -> _Money:
         """Return the VAT amount as Money."""
-        Money = _get_money_class()
+        _get_money_class()
         return to_money(self.vat_grosze, currency)
 
 
@@ -117,10 +117,10 @@ class InvoiceSummary:
     @classmethod
     def from_money(
         cls,
-        netto: "_Money",
-        vat: "_Money",
-        brutto: "_Money",
-    ) -> "InvoiceSummary":
+        netto: _Money,
+        vat: _Money,
+        brutto: _Money,
+    ) -> InvoiceSummary:
         """Create an InvoiceSummary from Money amounts.
 
         Args:
@@ -145,15 +145,15 @@ class InvoiceSummary:
             brutto_grosze=money_to_grosze(brutto),
         )
 
-    def to_netto_money(self, currency: str = "PLN") -> "_Money":
+    def to_netto_money(self, currency: str = "PLN") -> _Money:
         """Return the netto as Money."""
         return to_money(self.netto_grosze, currency)
 
-    def to_vat_money(self, currency: str = "PLN") -> "_Money":
+    def to_vat_money(self, currency: str = "PLN") -> _Money:
         """Return the VAT as Money."""
         return to_money(self.vat_grosze, currency)
 
-    def to_brutto_money(self, currency: str = "PLN") -> "_Money":
+    def to_brutto_money(self, currency: str = "PLN") -> _Money:
         """Return the brutto as Money."""
         return to_money(self.brutto_grosze, currency)
 
@@ -287,7 +287,7 @@ def add_tax(net_grosze: int, vat_grosze: int) -> int:
 # ── Money-aware functions (Fowler's Money wrappers) ────────────────────────
 
 
-def money_to_grosze(money: "_Money") -> int:
+def money_to_grosze(money: _Money) -> int:
     """Convert a Money amount to grosze (int).
 
     Extracts the Decimal amount from Money, converts to grosze
@@ -306,7 +306,7 @@ def money_to_grosze(money: "_Money") -> int:
         >>> money_to_grosze(Money("123.45", "PLN"))
         12345
     """
-    Money = _get_money_class()
+    Money = _get_money_class()  # noqa: N806
     if not isinstance(money, Money):
         raise TypeError(
             f"Expected Money, got {type(money).__name__}. "
@@ -315,7 +315,7 @@ def money_to_grosze(money: "_Money") -> int:
     return to_grosze(money.amount)
 
 
-def to_money(grosze: int, currency: str = "PLN") -> "_Money":
+def to_money(grosze: int, currency: str = "PLN") -> _Money:
     """Convert grosze (int) to a Money amount.
 
     Args:
@@ -329,18 +329,18 @@ def to_money(grosze: int, currency: str = "PLN") -> "_Money":
         >>> to_money(12345)
         Money('123.45', 'PLN')
     """
-    Money = _get_money_class()
+    Money = _get_money_class()  # noqa: N806
     return Money(str(to_zlotowki(grosze)), currency)
 
 
-def _require_same_currency(a: "_Money", b: "_Money", operation: str = "operate") -> None:
+def _require_same_currency(a: _Money, b: _Money, operation: str = "operate") -> None:
     """Validate that two Money objects have the same currency."""
     if a.currency_code != b.currency_code:
         from services.currency_converter import CurrencyMismatchError
         raise CurrencyMismatchError(a.currency_code, b.currency_code, operation)
 
 
-def multiply_net_by_vat_money(net: "_Money", vat_rate: Decimal) -> "_Money":
+def multiply_net_by_vat_money(net: _Money, vat_rate: Decimal) -> _Money:
     """Multiply net Money amount by VAT rate, return VAT as Money.
 
     Args:
@@ -350,27 +350,15 @@ def multiply_net_by_vat_money(net: "_Money", vat_rate: Decimal) -> "_Money":
     Returns:
         VAT amount as Money in the same currency as net.
     """
-    Money = _get_money_class()
+    Money = _get_money_class()  # noqa: N806
     if not isinstance(net, Money):
         raise TypeError(f"Expected Money, got {type(net).__name__}")
     vat_grosze = multiply_net_by_vat(money_to_grosze(net), vat_rate)
     return to_money(vat_grosze, net.currency_code)
 
 
-def add_tax_money(net: "_Money", vat: "_Money") -> "_Money":
-    """Sum net and VAT Money amounts, return gross as Money.
-
-    Args:
-        net: Net amount as Money.
-        vat: VAT amount as Money (must be same currency as net).
-
-    Returns:
-        Gross amount as Money in the same currency.
-
-    Raises:
-        CurrencyMismatchError: If currencies differ.
-    """
-    Money = _get_money_class()
+def add_tax_money(net: _Money, vat: _Money) -> _Money:
+    Money = _get_money_class()  # noqa: N806
     if not isinstance(net, Money) or not isinstance(vat, Money):
         raise TypeError("Both arguments must be Money instances")
     _require_same_currency(net, vat, "add_tax_money")
@@ -383,7 +371,7 @@ def calculate_vat_by_policy_money(
     vat_rate: Decimal,
     rounding_level: str,
     currency: str = "PLN",
-) -> "_Money":
+) -> _Money:
     """Calculate total VAT as Money according to the chosen rounding strategy.
 
     Same logic as :func:`calculate_vat_by_policy` but returns a Money object.
@@ -459,7 +447,7 @@ class RoundingPolicy:
         vat_rate: Decimal,
         rounding_level: str,
         currency: str = "PLN",
-    ) -> "_Money":
+    ) -> _Money:
         """Calculate total VAT as Money.
 
         Same as :meth:`calculate` but returns a ``Money`` object.
@@ -576,10 +564,10 @@ class TaxMathEngine:
 
     @staticmethod
     def calculate_positions_vat_money(
-        positions_net: list["_Money"],
+        positions_net: list[_Money],
         vat_rate: Decimal,
         rounding_level: str,
-    ) -> tuple["_Money", list[InvoicePositions]]:
+    ) -> tuple[_Money, list[InvoicePositions]]:
         """Calculate total VAT from Money net amounts, return as Money.
 
         Args:
@@ -594,7 +582,7 @@ class TaxMathEngine:
             TypeError: If any amount is not Money.
             CurrencyMismatchError: If currencies differ.
         """
-        Money = _get_money_class()
+        Money = _get_money_class()  # noqa: N806
 
         if not positions_net:
             zero = Money.zero()
@@ -619,8 +607,8 @@ class TaxMathEngine:
 
     @staticmethod
     def sum_positions_net_money(
-        positions_net: list["_Money"],
-    ) -> "_Money":
+        positions_net: list[_Money],
+    ) -> _Money:
         """Sum a list of Money amounts (same currency).
 
         Args:
@@ -632,7 +620,7 @@ class TaxMathEngine:
         Raises:
             CurrencyMismatchError: If currencies differ.
         """
-        Money = _get_money_class()
+        Money = _get_money_class()  # noqa: N806
 
         if not positions_net:
             return Money.zero()

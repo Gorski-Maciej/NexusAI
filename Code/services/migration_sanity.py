@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine
+
+from core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 
 def _quote_ident(identifier: str) -> str:
@@ -43,10 +44,10 @@ async def verify_schema_drift(engine: AsyncEngine, baseline_path: Path) -> dict[
     current = await capture_runtime_schema(engine)
     baseline_path.parent.mkdir(parents=True, exist_ok=True)
     if not baseline_path.exists():
-        baseline_path.write_text(json.dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
+        baseline_path.write_text(msgspec_dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
         return {"status": "baseline_created", "tables": len(current), "issues": []}
 
-    baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+    baseline = msgspec_loads(baseline_path.read_bytes())
     issues: list[str] = []
     for table, expected_cols in baseline.items():
         actual_cols = current.get(table)
@@ -83,10 +84,10 @@ async def verify_migration_integrity(engine: AsyncEngine, baseline_path: Path) -
     current = await capture_table_row_counts(engine)
     baseline_path.parent.mkdir(parents=True, exist_ok=True)
     if not baseline_path.exists():
-        baseline_path.write_text(json.dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
+        baseline_path.write_text(msgspec_dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
         return {"status": "baseline_created", "issues": [], "tables": len(current)}
 
-    baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+    baseline = msgspec_loads(baseline_path.read_bytes())
     issues: list[str] = []
     for table, expected in baseline.items():
         actual = current.get(table)
@@ -120,10 +121,10 @@ async def verify_migration_checksums(engine: AsyncEngine, baseline_path: Path, t
     current = await capture_table_checksums(engine, tables=tables)
     baseline_path.parent.mkdir(parents=True, exist_ok=True)
     if not baseline_path.exists():
-        baseline_path.write_text(json.dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
+        baseline_path.write_text(msgspec_dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
         return {"status": "baseline_created", "issues": [], "tables": len(current)}
 
-    baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+    baseline = msgspec_loads(baseline_path.read_bytes())
     issues: list[str] = []
     for table, expected in baseline.items():
         actual = current.get(table)

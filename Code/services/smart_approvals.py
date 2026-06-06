@@ -15,12 +15,12 @@ class ApprovalDecision:
     reasons: list[str]
 
 
-def ensure_smart_approval_schema(duckdb: "DuckDBManager") -> None:
+def ensure_smart_approval_schema(duckdb: DuckDBManager) -> None:
     duckdb.execute("ALTER TABLE invoices_replica ADD COLUMN IF NOT EXISTS ai_confidence_score INTEGER")
     duckdb.execute("ALTER TABLE invoices_replica ADD COLUMN IF NOT EXISTS approval_status VARCHAR")
 
 
-def evaluate_approval_routing(duckdb: "DuckDBManager", invoice_id: str) -> ApprovalDecision:
+def evaluate_approval_routing(duckdb: DuckDBManager, invoice_id: str) -> ApprovalDecision:
     rows = duckdb.execute(
         """
         SELECT id, contractor_nip, amount_gross
@@ -76,7 +76,7 @@ def evaluate_approval_routing(duckdb: "DuckDBManager", invoice_id: str) -> Appro
     return ApprovalDecision(invoice_id=invoice_id, score=score, approval_status=status, reasons=reasons)
 
 
-def assert_auto_approved_or_block(duckdb: "DuckDBManager", invoice_id: str) -> None:
+def assert_auto_approved_or_block(duckdb: DuckDBManager, invoice_id: str) -> None:
     decision = evaluate_approval_routing(duckdb, invoice_id)
     if decision.approval_status != "AUTO_APPROVED":
         raise PermissionError(

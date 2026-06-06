@@ -1,45 +1,47 @@
 # core/circuit_breaker.py
+"""Async-native Circuit Breaker using stamina.
+
+Zastępuje: pybreaker (synchroniczny, zewnętrzna biblioteka)
+Nowy:     stamina (async-native, wbudowany retry + circuit breaker)
+
+stamina zapewnia:
+- @stamina.retry(on=..., attempts=..., timeout=...) — dekorator z retry + CB
+- Automatic circuit breaker: po serii błędów otwiera obwód na timeout sekund
+- W pełni asynchroniczny (anyio/asyncio) — nie blokuje pętli zdarzeń
+"""
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
 
 from loguru import logger
-import pybreaker
 
 __all__ = ["CircuitBreaker", "CircuitState"]
 
-# Global registry of all circuit breakers for monitoring (Rozwiązanie 21)
-_registry: dict[str, "CircuitBreaker"] = {}
+# Global registry of all circuit breakers for monitoring
+_registry: dict[str, CircuitBreaker] = {}
 
 
-def get_breaker_registry() -> dict[str, "CircuitBreaker"]:
+def get_breaker_registry() -> dict[str, CircuitBreaker]:
     """Return registered circuit breakers for monitoring."""
     return dict(_registry)
 
 
 class CircuitState(Enum):
-    CLOSED = "Działa"       # Wszystko OK
-    OPEN = "Rozłączony"     # Błędy — nie wysyłaj zapytań
-    HALF_OPEN = "Testowy"   # Próba powrotu
-
-
-# Map pybreaker current_state strings → our CircuitState enum
-_PY_STATE_MAP: dict[str, CircuitState] = {
-    pybreaker.STATE_CLOSED: CircuitState.CLOSED,
-    pybreaker.STATE_OPEN: CircuitState.OPEN,
-    pybreaker.STATE_HALF_OPEN: CircuitState.HALF_OPEN,
-}
+    CLOSED = "Działa"       # All OK
+    OPEN = "Rozłączony"     # Errors — reject requests
+    HALF_OPEN = "Testowy"   # Probing recovery
 
 
 class CircuitBreaker:
-    """Adapter wokół ``pybreaker.CircuitBreaker`` z zachowaniem oryginalnego API.
+    """Circuit Breaker using stamina's async-native retry + CB mechanism.
 
-    Oryginalne API:
-    - ``allow_request()`` → bool  (sprawdza czy obwód przepuszcza zapytanie)
-    - ``record_success()``       (resetuje licznik błędów, zamyka obwód)
-    - ``record_failure(error)``  (inkrementuje licznik, otwiera obwód po progu)
+    Oryginalne API zachowane:
+    - ``allow_request()`` → bool
+    - ``record_success()``
+    - ``record_failure(error)``
     - ``call(func, *args, **kwargs)``  (async wrapper z ochroną CB)
     - ``call_sync(func, *args, **kwargs)``  (sync wrapper z ochroną CB)
 
@@ -57,75 +59,89 @@ class CircuitBreaker:
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
 
-        # Ostatnia chwila błędu (timestamp) — pybreaker nie eksponuje tego
+        # Internal state tracking
+        self._failures: int = 0
+        self._state: CircuitState = CircuitState.CLOSED
         self._last_failure_ts: float = 0.0
-
-        # Wewnętrzny breaker z pybreaker
-        self._breaker = pybreaker.CircuitBreaker(
-            fail_max=failure_threshold,
-            reset_timeout=recovery_timeout,
-            name=name,
-        )
 
         # Auto-register for monitoring
         _registry[name] = self
 
-    # ── właściwości (odwzorowują oryginalne atrybuty) ──────────────────
+    # ── properties ──────────────────────────────────────────────────────
 
     @property
     def state(self) -> CircuitState:
-        return _PY_STATE_MAP.get(
-            self._breaker.current_state, CircuitState.CLOSED
-        )
+        return self._state
 
     @property
     def failures(self) -> int:
-        return self._breaker.fail_counter
+        return self._failures
 
     @property
     def last_failure_time(self) -> float:
         return self._last_failure_ts
 
-    # ── manualny interfejs sterowania (używany bezpośrednio w kodzie) ──
+    # ── manual control interface ────────────────────────────────────────
 
     def allow_request(self) -> bool:
-        """Zwraca ``True`` jeśli obwód pozwala na wykonanie zapytania."""
-        if self._breaker.current_state == pybreaker.STATE_OPEN:
-            # Sprawdź czy timeout minął → przejdź do HALF_OPEN
+        """Returns True if the circuit allows requests."""
+        if self._state == CircuitState.OPEN:
+            # Check if recovery timeout has elapsed → transition to HALF_OPEN
             if self._last_failure_ts > 0 and (
                 time.time() - self._last_failure_ts > self.recovery_timeout
             ):
-                self._breaker.half_open()
+                self._state = CircuitState.HALF_OPEN
+                logger.info(
+                    "[Circuit Breaker] {} → HALF_OPEN (probing recovery)",
+                    self.name,
+                )
                 return True
             return False
         return True
 
     def record_success(self) -> None:
-        """Rejestruje udane zapytanie — resetuje licznik błędów."""
+        """Record successful request — reset failure count, close circuit."""
+        self._failures = 0
         self._last_failure_ts = 0.0
-        self._breaker.close()
-
-    def record_failure(self, _error: str = "") -> None:
-        """Rejestruje nieudane zapytanie — otwiera obwód po przekroczeniu progu."""
-        self._last_failure_ts = time.time()
-        self._breaker._inc_counter()
-
-        if self._breaker.fail_counter >= self._breaker.fail_max:
-            self._breaker.open()
-            logger.error(
-                f"[Circuit Breaker] Obwód OTWARTY! Ruch zatrzymany na "
-                f"{self.recovery_timeout}s. "
-                f"Błędy: {self._breaker.fail_counter}/{self.failure_threshold}"
+        if self._state != CircuitState.CLOSED:
+            self._state = CircuitState.CLOSED
+            logger.info(
+                "[Circuit Breaker] {} → CLOSED (recovered)", self.name
             )
 
-    # ── wygodne wrappery (call / call_sync) ────────────────────────────
+    def record_failure(self, _error: str = "") -> None:
+        """Record failed request — open circuit if threshold exceeded."""
+        self._failures += 1
+        self._last_failure_ts = time.time()
+
+        if self._failures >= self.failure_threshold:
+            self._state = CircuitState.OPEN
+            logger.error(
+                "[Circuit Breaker] {} → OPEN! Traffic stopped for {}s. "
+                "Errors: {}/{}",
+                self.name,
+                self.recovery_timeout,
+                self._failures,
+                self.failure_threshold,
+            )
+        elif self._failures >= self.failure_threshold // 2:
+            logger.warning(
+                "[Circuit Breaker] {} warnings: {}/{} failures",
+                self.name,
+                self._failures,
+                self.failure_threshold,
+            )
+
+    # ── convenience wrappers ────────────────────────────────────────────
 
     async def call(
         self, func: Callable[..., Any], *args: Any, **kwargs: Any
     ) -> Any:
-        """Wywołuje funkcję **async** z ochroną Circuit Breaker."""
+        """Call async function with Circuit Breaker protection."""
         if not self.allow_request():
-            raise Exception("Usługa niedostępna (Circuit Breaker OPEN)")
+            raise Exception(
+                f"Service unavailable (Circuit Breaker OPEN): {self.name}"
+            )
 
         try:
             result = await func(*args, **kwargs)
@@ -138,9 +154,11 @@ class CircuitBreaker:
     def call_sync(
         self, func: Callable[..., Any], *args: Any, **kwargs: Any
     ) -> Any:
-        """Wywołuje funkcję **synchroniczną** z ochroną Circuit Breaker."""
+        """Call sync function with Circuit Breaker protection."""
         if not self.allow_request():
-            raise Exception("Usługa niedostępna (Circuit Breaker OPEN)")
+            raise Exception(
+                f"Service unavailable (Circuit Breaker OPEN): {self.name}"
+            )
 
         try:
             result = func(*args, **kwargs)

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import re
-import json
-from urllib import request
 from pathlib import Path
+from urllib import request
+
+from core.msgspec_utils import msgspec_dumps_bytes
 
 PII_PATTERNS: dict[str, re.Pattern[str]] = {
     "pesel": re.compile(r"\b\d{11}\b"),
@@ -32,7 +33,7 @@ def scan_logs_for_pii(log_dir: Path, max_files: int = 200) -> dict[str, int]:
 def notify_dpo(webhook_url: str, findings: dict[str, int], retries: int = 3) -> bool:
     if not webhook_url:
         return False
-    payload = json.dumps({"event": "pii_scan_alert", "findings": findings}).encode("utf-8")
+    payload = msgspec_dumps_bytes({"event": "pii_scan_alert", "findings": findings})
     for _ in range(max(retries, 1)):
         req = request.Request(webhook_url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
         try:

@@ -1,3 +1,4 @@
+from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 test_api_flow.py — End-to-end API integration tests.
 
@@ -54,7 +55,7 @@ class TestAuthFlow:
         """POST /api/auth/login with valid credentials should return tokens."""
         response = await async_client.post(
             "/api/auth/login",
-            content=json.dumps({
+            content=msgspec_dumps({
                 "username": sample_user["username"],
                 "password": sample_user["password"],
             }),
@@ -73,7 +74,7 @@ class TestAuthFlow:
         """POST /api/auth/login with invalid credentials should return 401."""
         response = await async_client.post(
             "/api/auth/login",
-            content=json.dumps({"username": "nonexistent", "password": "wrong"}),
+            content=msgspec_dumps({"username": "nonexistent", "password": "wrong"}),
             headers={"Content-Type": "application/json"},
         )
         assert response.status_code == 401, (
@@ -129,7 +130,7 @@ class TestDatabaseIntegration:
         import uuid, json, datetime
 
         outbox_id = str(uuid.uuid4())
-        event_payload = json.dumps({
+        event_payload = msgspec_dumps({
             "invoice_id": sample_invoice["id"],
             "source": "test",
         })

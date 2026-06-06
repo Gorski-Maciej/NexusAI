@@ -11,7 +11,7 @@ z kolejką asynchroniczną, cache i magazynem relacji.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from typing import Any, Protocol
 
 
@@ -354,7 +354,7 @@ class CFOOrchestrator:
             "invoice_id": invoice.invoice_id,
             "score": score,
             "reason": reason,
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": datetime.now(UTC).isoformat(),
         }
 
         if is_anomaly:
@@ -378,7 +378,7 @@ class CFOOrchestrator:
                     "event": "cashflow.alert",
                     "invoice_id": invoice.invoice_id,
                     "alerts": cashflow["alerts"],
-                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "created_at": datetime.now(UTC).isoformat(),
                 },
             )
 

@@ -14,12 +14,14 @@ Usage:
 """
 from __future__ import annotations
 
+import logging
 import os
 import sys
-import json
-import logging
 from pathlib import Path
+
 from loguru import logger
+
+from core.msgspec_utils import msgspec_dumps
 
 # ── Auto-init guard ───────────────────────────────────────────────────────────
 _INITIALIZED = False
@@ -40,7 +42,7 @@ def _json_format(record) -> str:
     """Format a log record as a JSON string for file sink."""
     extra = record["extra"]
     exception = record["exception"]
-    return json.dumps(
+    return msgspec_dumps(
         {
             "timestamp": record["time"].isoformat(),
             "level": record["level"].name,

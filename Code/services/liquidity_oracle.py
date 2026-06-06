@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from Roboton_Reflekton.ledger_client import TigerBeetleClient
+from roboton_reflekton.ledger_client import TigerBeetleClient
 
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
@@ -19,7 +19,7 @@ class LiquidityPoint:
     pessimistic_balance: str
 
 
-def ensure_liquidity_schema(duckdb: "DuckDBManager") -> None:
+def ensure_liquidity_schema(duckdb: DuckDBManager) -> None:
     duckdb.execute(
         """
         CREATE TABLE IF NOT EXISTS recurring_commitments (
@@ -71,7 +71,7 @@ def ensure_liquidity_schema(duckdb: "DuckDBManager") -> None:
     )
 
 
-def _vat_buffer_today(duckdb: "DuckDBManager") -> Decimal:
+def _vat_buffer_today(duckdb: DuckDBManager) -> Decimal:
     rows = duckdb.execute(
         """
         SELECT
@@ -85,7 +85,7 @@ def _vat_buffer_today(duckdb: "DuckDBManager") -> Decimal:
 
 
 def calculate_liquidity_timeline(
-    duckdb: "DuckDBManager",
+    duckdb: DuckDBManager,
     tigerbeetle: TigerBeetleClient,
     *,
     account_bank_id: int,

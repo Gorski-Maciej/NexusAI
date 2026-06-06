@@ -16,11 +16,10 @@ import asyncio
 import hashlib
 import json
 import logging
-import os
 import sys
-from pathlib import Path
-from typing import Callable, Protocol
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Protocol
 
 logger = logging.getLogger("nexus.installer.models_downloader")
 
@@ -91,7 +90,7 @@ def load_manifest(manifest_path: str | Path | None = None) -> list[ModelEntry]:
         logger.warning("Model manifest not found at any expected location")
         return []
 
-    with open(manifest_path, "r", encoding="utf-8") as f:
+    with open(manifest_path, encoding="utf-8") as f:
         data = json.load(f)
 
     models_data = data.get("models", {})

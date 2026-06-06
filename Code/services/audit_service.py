@@ -1,7 +1,7 @@
-import json
-
-from models.audit import AuditLog
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from core.msgspec_utils import msgspec_dumps
+from models.audit import AuditLog
 
 
 class AuditService:
@@ -30,6 +30,6 @@ class AuditService:
                 user_id=user_id,
                 action=action,
                 target_id=target_id,
-                changes=json.dumps(changes)
+                changes=msgspec_dumps(changes)
             )
             session.add(entry)

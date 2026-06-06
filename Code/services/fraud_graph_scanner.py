@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, timedelta
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 try:
     import networkx as nx
@@ -46,7 +46,7 @@ class FraudAlert:
 
 
 class FraudGraphScanner:
-    def __init__(self, duckdb: "DuckDBManager"):
+    def __init__(self, duckdb: DuckDBManager):
         self.duckdb = duckdb
 
     def _fetch_entities(self, months_back: int = 12) -> list[tuple[Any, ...]]:

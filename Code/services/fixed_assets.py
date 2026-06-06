@@ -4,11 +4,10 @@ import calendar
 import uuid
 from dataclasses import dataclass
 from datetime import date
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal
 
 from db.analytics import DuckDBManager
-from Roboton_Reflekton.ledger_client import TigerBeetleClient
-
+from roboton_reflekton.ledger_client import TigerBeetleClient
 
 DEFAULT_ASSET_ACCOUNT = 10
 DEFAULT_DEPRECIATION_ACCOUNT = 400

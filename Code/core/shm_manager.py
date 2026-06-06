@@ -1,13 +1,14 @@
 # core/ipc/shm_manager.py
-import numpy as np
 from multiprocessing import shared_memory
-from typing import Tuple, Dict
+
+import numpy as np
+
 
 class SharedImageBuffer:
     """Klasa do obsługi Zero-Copy IPC dla dużych obrazów."""
 
     @staticmethod
-    def create(image: np.ndarray) -> Dict:
+    def create(image: np.ndarray) -> dict:
         """Tworzy blok w pamięci RAM i kopiuje do niego obraz."""
         # Alokacja pamięci o konkretnym rozmiarze
         shm = shared_memory.SharedMemory(create=True, size=image.nbytes)
@@ -26,7 +27,7 @@ class SharedImageBuffer:
         }
 
     @staticmethod
-    def attach(metadata: Dict) -> np.ndarray:
+    def attach(metadata: dict) -> np.ndarray:
         """Podłącza się do istniejącego bloku pamięci."""
         shm = shared_memory.SharedMemory(name=metadata["shm_name"])
         return np.ndarray(metadata["shape"], dtype=np.dtype(metadata["dtype"]), buffer=shm.buf)

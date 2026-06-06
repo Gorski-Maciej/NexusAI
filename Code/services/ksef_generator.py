@@ -18,9 +18,11 @@ from __future__ import annotations
 import json
 import logging
 import uuid
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from typing import Any
 from xml.etree import ElementTree as ET
+
+from core.msgspec_utils import msgspec_loads
 
 logger = logging.getLogger("nexus.ksef")
 
@@ -62,7 +64,7 @@ def _resolve_ksef_fields(verdict: dict[str, Any]) -> dict[str, Any]:
     ksef = verdict.get("ksef_fields", {}) or {}
     if isinstance(ksef, str):
         try:
-            ksef = json.loads(ksef)
+            ksef = msgspec_loads(ksef)
         except (json.JSONDecodeError, TypeError):
             ksef = {}
 
@@ -143,7 +145,7 @@ def generate_ksef_xml(
     ET.SubElement(naglowek, "WariantFormularza").text = "4"
     ET.SubElement(naglowek, "SystemInfo").text = "NexusAI v1.0"
     ET.SubElement(naglowek, "CelZlozenia").text = "1"  # 1 = fakturowanie
-    ET.SubElement(naglowek, "DataWytworzenia").text = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+    ET.SubElement(naglowek, "DataWytworzenia").text = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S")
 
     # Podmiot sprzedawcy (wystawca faktury)
     podmiot = ET.SubElement(root, "Podmiot1")  # Sprzedawca

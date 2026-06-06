@@ -1,7 +1,9 @@
 # core/ipc_vision.py
-import numpy as np
-from multiprocessing import shared_memory
 import uuid
+from multiprocessing import shared_memory
+
+import numpy as np
+
 
 class ImageMemoryManager:
     """Zarządza pamięcią współdzieloną dla bezstratnego przesyłania obrazów."""

@@ -7,10 +7,7 @@ oraz integrację z PLE (Perpetual Learning Engine).
 from __future__ import annotations
 
 import asyncio
-import json
-import time
 from dataclasses import dataclass, field
-from decimal import Decimal
 from typing import Any
 
 from core.config import AppConfig
@@ -18,7 +15,6 @@ from core.logger import get_logger
 from db.analytics import DuckDBManager
 from services.council_agents import (
     AlphaAgent,
-    BaseCouncilAgent,
     BetaAgent,
     DecisionVerdict,
     GammaAgent,
@@ -690,6 +686,6 @@ class CouncilOrchestrator:
         """Run an agent evaluation with a timeout."""
         try:
             return await asyncio.wait_for(coro, timeout=self._timeout)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.warning("[Council] agent timed out after %ds", self._timeout)
             return DecisionVerdict.error(f"Timeout after {self._timeout}s")

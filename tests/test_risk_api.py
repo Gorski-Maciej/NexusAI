@@ -1,3 +1,4 @@
+from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Unit tests for RiskController — zarządzanie progami ryzyka (Strażnik Ryzyka).
 
@@ -441,7 +442,7 @@ class TestEvaluateBatch:
         controller: RiskController,
     ) -> None:
         """Poprawne fields_json → zwraca RiskVerdict."""
-        fields = json.dumps({"vat_rate": 0.70, "total_net": 0.95})
+        fields = msgspec_dumps({"vat_rate": 0.70, "total_net": 0.95})
         result = await controller.evaluate_batch(
             tax_form="CIT_STANDARD",
             expense_type="",
@@ -461,7 +462,7 @@ class TestEvaluateBatch:
         controller: RiskController,
     ) -> None:
         """Brak expense_type → domyślnie pusty, ewaluacja po formie podatkowej."""
-        fields = json.dumps({"vat_rate": 0.99})
+        fields = msgspec_dumps({"vat_rate": 0.99})
         result = await controller.evaluate_batch(
             tax_form="LINEAR",
             fields_json=fields,
@@ -509,7 +510,7 @@ class TestEvaluateBatch:
         with pytest.raises(HTTPException) as exc_info:
             await controller.evaluate_batch(
                 tax_form="CIT_STANDARD",
-                fields_json=json.dumps([1, 2, 3]),
+                fields_json=msgspec_dumps([1, 2, 3]),
             )
 
         assert exc_info.value.status_code == 422
@@ -524,7 +525,7 @@ class TestEvaluateBatch:
         """Guard.evaluate rzuca wyjątkiem → HTTPException 500."""
         mock_guard.evaluate.side_effect = RuntimeError("DB error")
 
-        fields = json.dumps({"vat_rate": 0.90})
+        fields = msgspec_dumps({"vat_rate": 0.90})
         with pytest.raises(HTTPException) as exc_info:
             await controller.evaluate_batch(
                 tax_form="CIT_STANDARD",
@@ -541,7 +542,7 @@ class TestEvaluateBatch:
         mock_guard: MagicMock,
     ) -> None:
         """Sprawdza, że guard.evaluate otrzymuje poprawnie sparsowane fields."""
-        fields = json.dumps({"vat_rate": 0.70, "total_net": 0.95})
+        fields = msgspec_dumps({"vat_rate": 0.70, "total_net": 0.95})
         await controller.evaluate_batch(
             tax_form="CIT_STANDARD",
             expense_type="representation",
@@ -597,7 +598,7 @@ class TestEdgeCases:
     ) -> None:
         """Duża liczba pól → poprawna deserializacja JSON."""
         many_fields = {f"field_{i}": 0.5 + (i * 0.01) for i in range(100)}
-        fields = json.dumps(many_fields)
+        fields = msgspec_dumps(many_fields)
 
         result = await controller.evaluate_batch(
             tax_form="CIT_STANDARD",

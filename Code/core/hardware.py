@@ -1,57 +1,76 @@
 # core/hardware.py
+"""Hardware probing for AI model optimization.
+
+Zgodnie z aa3fvcx.txt: PyTorch → GGUF (llama-cpp-python).
+GPU detekcja przez nvidia-smi zamiast torch.cuda.
+"""
+
+from __future__ import annotations
+
 import subprocess
-import torch
+
 import psutil
-import platform
+
 from core.logger import logger
+
+
+def _cuda_available() -> bool:
+    """Check CUDA GPU availability via nvidia-smi."""
+    try:
+        res = subprocess.check_output(["nvidia-smi", "-L"], timeout=10).decode()
+        return "GPU" in res
+    except Exception:
+        return False
+
 
 class HardwareProbe:
     """Sprawdza zasoby sprzętowe w celu optymalizacji modeli AI."""
 
     @staticmethod
     def get_gpu_config() -> dict:
-        """Zwraca optymalne parametry n_gpu_layers dla modelu Llama."""
-        try:
-            # Próba detekcji CUDA przez nvidia-smi
-            res = subprocess.check_output(["nvidia-smi", "-L"]).decode()
-            if "GPU" in res:
-                logger.info("Wykryto akcelerację NVIDIA CUDA. Aktywacja warstw GPU.")
-                return {
-                    "n_gpu_layers": -1, # Wszystkie warstwy na GPU
-                    "use_mmap": True,
-                    "device": "cuda"
-                }
-        except Exception:
-            pass
+        """Zwraca optymalne parametry n_gpu_layers dla modelu Llama.
+
+        Używa nvidia-smi zamiast torch.cuda.
+        """
+        if _cuda_available():
+            logger.info("Wykryto akcelerację NVIDIA CUDA. Aktywacja warstw GPU.")
+            return {
+                "n_gpu_layers": -1,  # Wszystkie warstwy na GPU
+                "use_mmap": True,
+                "device": "cuda",
+            }
 
         logger.warning("Nie wykryto GPU. Przełączanie w tryb CPU (Wolniejszy).")
         return {
             "n_gpu_layers": 0,
             "use_mmap": True,
-            "device": "cpu"
+            "device": "cpu",
         }
 
     @staticmethod
     def get_strategy() -> dict:
-        """Decyduje, czy użyć natywnego PyTorcha (GPU) czy GGUF (CPU)."""
-        has_gpu = torch.cuda.is_available()
-        total_ram = psutil.virtual_memory().total / (1024**3) # w GB
-        cpu_info = platform.processor()
+        """Decyduje o strategii: GPU dla modeli GGUF lub CPU.
 
-        if has_gpu and torch.cuda.get_device_properties(0).total_memory > 4 * 1024**3:
+        W nowej architekturze wszystkie modele to GGUF (llama-cpp-python),
+        więc GPU jest opcjonalne — zależy od wersji llama-cpp-python z CUDA.
+        """
+        has_gpu = _cuda_available()
+        _total_ram_gb = psutil.virtual_memory().total / (1024**3)
+
+        if has_gpu:
             return {
                 "mode": "GPU",
                 "device": "cuda",
-                "model_format": "native", # PyTorch / Surya
-                "n_gpu_layers": 35 # Wszystkie warstwy na GPU
+                "model_format": "gguf",
+                "n_gpu_layers": -1,
             }
 
-        logger.warning("Nie wykryto GPU lub za mało VRAM. Przejście w tryb CPU (GGUF).")
+        logger.warning("Nie wykryto GPU. Przejście w tryb CPU.")
         return {
             "mode": "CPU",
             "device": "cpu",
-            "model_format": "gguf", # llama-cpp-python
-            "n_gpu_layers": 0
+            "model_format": "gguf",
+            "n_gpu_layers": 0,
         }
 
     @staticmethod

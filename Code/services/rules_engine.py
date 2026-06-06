@@ -1,18 +1,17 @@
 from __future__ import annotations
 
 import ast
-import json
 from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from typing import TYPE_CHECKING
+from core.msgspec_utils import msgspec_loads
 
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
-from Roboton_Reflekton.ledger_client import TigerBeetleClient
+from roboton_reflekton.ledger_client import TigerBeetleClient
 
 
-def ensure_accounting_template_schema(duckdb: "DuckDBManager") -> None:
+def ensure_accounting_template_schema(duckdb: DuckDBManager) -> None:
     duckdb.execute(
         """
         CREATE TABLE IF NOT EXISTS accounting_templates (
@@ -31,13 +30,13 @@ def ensure_accounting_template_schema(duckdb: "DuckDBManager") -> None:
 class RulesEngine:
     """Deterministic gatekeeper for AI-proposed postings before TigerBeetle."""
 
-    def __init__(self, duckdb: "DuckDBManager", tigerbeetle: TigerBeetleClient):
+    def __init__(self, duckdb: DuckDBManager, tigerbeetle: TigerBeetleClient):
         self.duckdb = duckdb
         self.tigerbeetle = tigerbeetle
         ensure_accounting_template_schema(self.duckdb)
 
     @staticmethod
-    def _assert_auto_approved_or_block(duckdb: "DuckDBManager", invoice_id: str) -> None:
+    def _assert_auto_approved_or_block(duckdb: DuckDBManager, invoice_id: str) -> None:
         try:
             from services.smart_approvals import assert_auto_approved_or_block  # type: ignore
         except Exception:  # pragma: no cover
@@ -80,8 +79,8 @@ class RulesEngine:
             raise ValueError(f"Template '{template_name}' not found")
 
         required_debits, required_credits, validation_script = rows[0]
-        debit_accounts = required_debits if isinstance(required_debits, list) else json.loads(required_debits)
-        credit_accounts = required_credits if isinstance(required_credits, list) else json.loads(required_credits)
+        debit_accounts = required_debits if isinstance(required_debits, list) else msgspec_loads(required_debits)
+        credit_accounts = required_credits if isinstance(required_credits, list) else msgspec_loads(required_credits)
         return debit_accounts, credit_accounts, validation_script
 
     async def validate_and_post(self, proposal_json: dict[str, Any]) -> dict[str, Any]:

@@ -17,13 +17,13 @@ Współpracuje z:
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone, date
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, date, datetime
 from typing import Any
 
 from core.config import AppConfig
+from core.msgspec_utils import msgspec_dumps
 
 logger = logging.getLogger("nexus.services.daily_briefing")
 
@@ -55,10 +55,10 @@ class DailyBriefing:
         return asdict(self)
 
     def to_json(self) -> str:
-        return json.dumps(self.to_dict(), ensure_ascii=False, default=str)
+        return msgspec_dumps(self.to_dict(), ensure_ascii=False, default=str)
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "DailyBriefing":
+    def from_dict(cls, data: dict[str, Any]) -> DailyBriefing:
         return cls(**data)
 
 
@@ -162,7 +162,7 @@ class DailyBriefingService:
         Wykorzystuje DailyBriefingGenerator (jeśli dostępny) lub
         generuje podstawowe podsumowanie z samego NotificationService.
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         today = date.today().isoformat()
 
         # Użyj DailyBriefingGenerator jeśli dostępny
@@ -290,7 +290,7 @@ class DailyBriefingService:
         else:
             title = f"✅ Codzienne podsumowanie — {auto_count} zaksięgowanych"
 
-        message = json.dumps(briefing.to_dict(), ensure_ascii=False, default=str)
+        message = msgspec_dumps(briefing.to_dict(), ensure_ascii=False, default=str)
 
         try:
             notification_id = await asyncio.to_thread(

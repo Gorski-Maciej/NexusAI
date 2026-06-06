@@ -14,7 +14,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any
 
-from Code.Roboton_Reflekton.shadow_ledger import TaxSimulator
+from Code.roboton_reflekton.shadow_ledger import TaxSimulator
 
 
 # ── Oczekiwana struktura odpowiedzi ──────────────────────────────────────────

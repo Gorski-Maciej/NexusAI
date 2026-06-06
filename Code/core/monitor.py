@@ -1,7 +1,10 @@
 # core/monitor.py
-import psutil
 import os
+
+import psutil
+
 from core.logger import logger
+
 
 class SystemMonitor:
     """Monitoruje zużycie zasobów przez Nexus AI."""

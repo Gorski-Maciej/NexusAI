@@ -8,7 +8,7 @@ import types
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from Roboton_Reflekton.ledger_client import TigerBeetleClient
+from roboton_reflekton.ledger_client import TigerBeetleClient
 
 db_module = types.ModuleType("db")
 analytics_module = types.ModuleType("db.analytics")
@@ -18,7 +18,7 @@ sys.modules["db.analytics"] = analytics_module
 
 fixed_assets_spec = importlib.util.spec_from_file_location(
     "fixed_assets_module",
-    Path(__file__).resolve().parents[1] / "Code" / "SERVICES" / "fixed_assets.py",
+    Path(__file__).resolve().parents[1] / "Code" / "services" / "fixed_assets.py",
 )
 fixed_assets_module = importlib.util.module_from_spec(fixed_assets_spec)
 assert fixed_assets_spec and fixed_assets_spec.loader

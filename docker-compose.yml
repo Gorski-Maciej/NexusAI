@@ -1,18 +1,16 @@
 # =============================================================================
-# NexusAI - Docker Compose
+# NexusAI - Docker Compose (nowy stack zgodny z aa3fvcx.txt)
 # =============================================================================
+# Python 3.13t, Granian (Rust ASGI), SQLModel, msgspec, stamina, nexus-crypto
+#
 # Start all services:
 #   docker-compose up -d
 #
 # View logs:
 #   docker-compose logs -f
 #
-# Stop all services:
+# Stop:
 #   docker-compose down
-#
-# Access API: http://localhost:8000
-# Swagger UI: http://localhost:8000/schema/swagger
-# NATS port:  localhost:4222 (for external clients)
 # =============================================================================
 
 version: "3.9"
@@ -49,10 +47,10 @@ services:
   nats:
     image: nats:2.10-alpine
     ports:
-      - "4222:4222"   # Client connections
-      - "8222:8222"   # HTTP monitoring
+      - "4222:4222"
+      - "8222:8222"
     command:
-      - "-js"         # Enable JetStream
+      - "-js"
       - "-p"
       - "4222"
       - "-m"
@@ -83,8 +81,6 @@ services:
     command: >
       start --addresses=0.0.0.0:3000 --cluster=0 /data/nexus_ledger.tb
     healthcheck:
-      # TCP port check — verifies the server is accepting connections
-      # (busybox nc is injected via docker/tigerbeetle.Dockerfile)
       test: ["CMD", "/busybox", "nc", "-z", "localhost", "3000"]
       interval: 15s
       timeout: 5s
@@ -93,7 +89,7 @@ services:
     networks:
       - nexus_net
 
-  # ── API Server (Litestar / Uvicorn) ────────────────────────────────────────
+  # ── API Server (Litestar + Granian) ────────────────────────────────────────
   api:
     build:
       context: .
@@ -132,8 +128,6 @@ services:
     networks:
       - nexus_net
     restart: unless-stopped
-    # Scale workers for parallel processing:
-    # docker-compose up -d --scale worker=3
     deploy:
       replicas: 1
       resources:

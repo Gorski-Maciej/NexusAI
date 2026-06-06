@@ -4,8 +4,8 @@ import asyncio
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from Roboton_Reflekton.ledger_client import TigerBeetleClient
-from Roboton_Reflekton.vat_reconciliation import VATReconciliationEngine
+from roboton_reflekton.ledger_client import TigerBeetleClient
+from roboton_reflekton.vat_reconciliation import VATReconciliationEngine
 
 
 class FakeDuckDBManager:

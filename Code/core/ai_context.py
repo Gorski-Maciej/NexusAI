@@ -1,7 +1,6 @@
 # core/ai_context.py
-import re
-from typing import List
 from core.logger import logger
+
 
 class AIContextManager:
     """Zarządza oknem kontekstowym dla lokalnych modeli LLM."""

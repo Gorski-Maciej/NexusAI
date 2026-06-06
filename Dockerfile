@@ -1,6 +1,8 @@
 # =============================================================================
-# NexusAI - Dockerfile
+# NexusAI - Dockerfile (nowy stack zgodny z aa3fvcx.txt)
 # =============================================================================
+# Python ≥3.13 free-threaded, Granian (Rust ASGI server), SQLModel, msgspec
+#
 # Build:
 #   docker build -t nexusai-api:latest .
 #
@@ -14,12 +16,11 @@
 #   docker-compose up -d
 # =============================================================================
 
-FROM python:3.11-slim AS base
+FROM python:3.13-slim AS base
 
 # ── Install uv (Astral) — ultra-fast pip replacement ─────────────────────────
 # uv is ~10-100x faster, uses less RAM/disk.
-# Pin uv version for reproducible builds — update as needed.
-COPY --from=ghcr.io/astral-sh/uv:0.5.31 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.6.0 /uv /uvx /bin/
 
 # ── System dependencies ──────────────────────────────────────────────────────
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -33,15 +34,19 @@ WORKDIR /app
 
 # ── Python dependencies (via uv — 10-100x faster than pip) ───────────────────
 COPY pyproject.toml requirements.txt ./
-COPY Code/CORE/Requirements.txt ./Code/CORE/
+COPY nexus_crypto/ ./nexus_crypto/
 RUN uv pip install --system --no-cache -r requirements.txt
 
 # ── Application code + editable install (via uv) ─────────────────────────────
 COPY Code/ ./Code/
 COPY run_local.py ./
 COPY main.py ./
-COPY .env.example ./
 RUN uv pip install --system --no-cache -e .
+
+# ── Build native nexus-crypto extension ──────────────────────────────────────
+RUN uv pip install --system --no-cache maturin && \
+    cd nexus_crypto && maturin develop --release && \
+    uv pip uninstall --system maturin
 
 # ── Runtime data directories ─────────────────────────────────────────────────
 RUN mkdir -p /app/app_data/uploads /app/app_data/logs /app/app_data/scans /app/app_data/exports /app/models

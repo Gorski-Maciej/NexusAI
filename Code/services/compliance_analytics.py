@@ -1,18 +1,15 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from decimal import Decimal
-from enum import Enum
-from typing import Any, Literal
-
-from typing import TYPE_CHECKING
+from enum import StrEnum
+from typing import TYPE_CHECKING, Any, Literal
 
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
 
 
-class AccountNature(str, Enum):
+class AccountNature(StrEnum):
     DEBIT = "DEBIT"
     CREDIT = "CREDIT"
 
@@ -31,7 +28,7 @@ class LedgerEntryPacket:
     metadata_tags: dict[str, Any]
 
 
-def ensure_compliance_analytics_schema(duckdb: "DuckDBManager") -> None:
+def ensure_compliance_analytics_schema(duckdb: DuckDBManager) -> None:
     duckdb.execute(
         """
         CREATE TABLE IF NOT EXISTS gl_accounts (
@@ -143,7 +140,7 @@ def ensure_compliance_analytics_schema(duckdb: "DuckDBManager") -> None:
     )
 
 
-def infer_ledger_entries(duckdb: "DuckDBManager", transaction_data: dict[str, Any]) -> LedgerEntryPacket:
+def infer_ledger_entries(duckdb: DuckDBManager, transaction_data: dict[str, Any]) -> LedgerEntryPacket:
     transaction_type = str(transaction_data["transaction_type"])
     amount = Decimal(str(transaction_data["amount"]))
     currency = str(transaction_data.get("currency", "PLN"))
@@ -176,7 +173,7 @@ def infer_ledger_entries(duckdb: "DuckDBManager", transaction_data: dict[str, An
 
 
 def query_account_balances_by_tag(
-    duckdb: "DuckDBManager",
+    duckdb: DuckDBManager,
     *,
     tag_key: str,
     tag_value: str,

@@ -16,9 +16,11 @@ Stateless: nie wymaga DuckDB, może być używany w każdym silniku reguł.
 
 from __future__ import annotations
 
-import json
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
+
+from core.msgspec_utils import msgspec_loads
 
 
 @dataclass(frozen=True)
@@ -100,7 +102,7 @@ class PriorityEngine:
                     })
 
                 if result:
-                    verdict = json.loads(rule.action_json)
+                    verdict = msgspec_loads(rule.action_json)
                     verdict["_rule_id"] = rule.rule_id
                     verdict["_priority"] = rule.priority
 

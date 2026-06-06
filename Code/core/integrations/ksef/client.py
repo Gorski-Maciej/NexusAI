@@ -1,6 +1,7 @@
 # core/integrations/ksef/client.py
 import httpx
 
+
 class KsefClient:
     def __init__(self, session_token: str, base_url: str):
         self.headers = {"SessionToken": session_token, "Accept": "application/json"}

@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 def _load_replayer_mod():
-    path = Path('Code/SKRIPTS/otel_buffer_replayer.py').resolve()
+    path = Path('Code/scripts/otel_buffer_replayer.py').resolve()
     spec = importlib.util.spec_from_file_location('otel_replayer_mod', path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)
@@ -17,7 +17,7 @@ def _load_replayer_mod():
 
 
 def _load_buffer_mod():
-    path = Path('Code/SERVICES/otel_fallback.py').resolve()
+    path = Path('Code/services/otel_fallback.py').resolve()
     spec = importlib.util.spec_from_file_location('otel_buffer_mod', path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)

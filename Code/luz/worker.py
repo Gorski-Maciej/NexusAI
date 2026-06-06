@@ -8,23 +8,16 @@ import os
 import platform
 import signal
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import psutil
-
-try:
-    import torch
-except Exception:  # pragma: no cover - torch may be optional in some envs
-    torch = None
-
 from taskiq import TaskiqEvents
 
+import core.tasks  # noqa: F401  # required to register @broker.task handlers
 from core.broker import broker
 from core.config import AppConfig
-import core.tasks  # noqa: F401  # required to register @broker.task handlers
-from Roboton_Reflekton.vision_agent import VisionAgent
-
+from roboton_reflekton.vision_agent import VisionAgent
 
 if getattr(sys, "frozen", False):
     BASE_PATH = Path(sys._MEIPASS)
@@ -55,7 +48,7 @@ class WorkerGuard:
     def __init__(self, ram_limit_gb: float = 6.0) -> None:
         self.process = psutil.Process(os.getpid())
         self.ram_limit = int(ram_limit_gb * 1024 * 1024 * 1024)
-        self.start_time = datetime.now(timezone.utc)
+        self.start_time = datetime.now(UTC)
         # Licznik aktywnych zadań (Rozwiązanie 29)
         self.active_tasks: int = 0
         self.max_concurrent: int = 5  # Domyślny limit (zgodny z max_ack_pending)
@@ -84,7 +77,7 @@ class WorkerGuard:
     def get_status(self) -> dict:
         """Zwróć aktualny status workera (Rozwiązanie 29)."""
         current_mem = self.process.memory_info().rss
-        uptime = datetime.now(timezone.utc) - self.start_time
+        uptime = datetime.now(UTC) - self.start_time
 
         return {
             "uptime_seconds": int(uptime.total_seconds()),
@@ -103,16 +96,14 @@ class WorkerGuard:
             return False
 
         logger.warning("RAM alert: %.1f MB. Triggering cleanup...", current_mem / 1024**2)
-        if torch is not None and torch.cuda.is_available():
-            torch.cuda.empty_cache()
         gc.collect()
         return True
 
     async def heartbeat(self) -> None:
         while True:
-            uptime = datetime.now(timezone.utc) - self.start_time
+            uptime = datetime.now(UTC) - self.start_time
             ram_mb = self.process.memory_info().rss / 1024**2
-            cpu_pct = self.adjust_concurrency_limit()
+            self.adjust_concurrency_limit()
             logger.debug(
                 "Heartbeat uptime=%s RAM=%.1fMB max_concurrent=%d tasks=%d",
                 uptime, ram_mb, self.max_concurrent, self.active_tasks,
@@ -128,12 +119,10 @@ async def on_worker_startup(state) -> None:
     state.vision_agent = VisionAgent()
     state.heartbeat_task = asyncio.create_task(state.guard.heartbeat())
 
-    gpu = bool(torch is not None and torch.cuda.is_available())
     logger.info(
-        ">>> Worker ready. OS=%s, device=%s, vision_agent=%s",
+        ">>> Worker ready. OS=%s, vision_agent=%s",
         platform.system(),
-        "CUDA/GPU" if gpu else "CPU",
-        "qwen2.5-vl-2b-4bit" if getattr(state.vision_agent, "_enabled", False) else "ocr-fallback",
+        "ocr-fallback",
     )
 
 
@@ -162,8 +151,6 @@ async def on_worker_shutdown(state) -> None:
     logger.info(">>> Worker shutdown: releasing resources...")
     if hasattr(state, "heartbeat_task"):
         state.heartbeat_task.cancel()
-    if torch is not None and torch.cuda.is_available():
-        torch.cuda.empty_cache()
     gc.collect()
 
 

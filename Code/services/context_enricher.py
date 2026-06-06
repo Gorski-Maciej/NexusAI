@@ -13,9 +13,8 @@ Komponenty:
 
 from __future__ import annotations
 
-import json
 import logging
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import duckdb
@@ -254,7 +253,6 @@ class ContextEnricher:
                 - accounts_json: str — JSON lista wszystkich kont
             Lub bool dla wstecznej kompatybilności.
         """
-        import warnings
         try:
             if bank_account:
                 result = await self._white_list.verify_bank_account(nip, bank_account)
@@ -335,7 +333,7 @@ class ContextEnricher:
         else:
             return False
 
-        now = datetime.now(timezone.utc).replace(tzinfo=None)
+        now = datetime.now(UTC).replace(tzinfo=None)
         if fetched.tzinfo is not None:
             fetched = fetched.replace(tzinfo=None)
 

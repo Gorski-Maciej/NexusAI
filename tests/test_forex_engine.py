@@ -1,15 +1,15 @@
-from pathlib import Path
-import sys
 import asyncio
+import sys
 from datetime import date
+from pathlib import Path
+
+from core.msgspec_utils import msgspec_dumps_bytes
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from unittest.mock import MagicMock
 
-from cachetools import LRUCache
-from Roboton_Reflekton.forex_engine import ForexEngine
-from Roboton_Reflekton.ledger_client import TigerBeetleClient
+from roboton_reflekton.forex_engine import ForexEngine
+from roboton_reflekton.ledger_client import TigerBeetleClient
 
 
 class FakeResponse:
@@ -23,8 +23,7 @@ class FakeResponse:
         return False
 
     def read(self):
-        import json
-        return json.dumps(self._payload).encode("utf-8")
+        return msgspec_dumps_bytes(self._payload)
 
 
 class FakeDuckDB:
@@ -50,7 +49,7 @@ class FakeDuckDB:
 def _reset_forex_caches() -> None:
     """Clear class-level caches that leak between tests."""
     ForexEngine._missing_cache.clear()
-    ForexEngine._rate_cache = LRUCache(maxsize=1000)
+    ForexEngine._rate_cache.clear()
 
 
 def test_fetch_nbp_rate_uses_lookback_and_cache(monkeypatch):
@@ -69,7 +68,7 @@ def test_fetch_nbp_rate_uses_lookback_and_cache(monkeypatch):
             raise HTTPError(url, 404, "not found", hdrs=None, fp=None)
         return FakeResponse({"rates": [{"mid": 4.321, "no": "060/A/NBP/2026"}]})
 
-    monkeypatch.setattr("Roboton_Reflekton.forex_engine.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("roboton_reflekton.forex_engine.request.urlopen", fake_urlopen)
     rate = engine.fetch_nbp_rate(date(2026, 4, 27), "EUR")
     assert float(rate) == 4.321
 
@@ -96,7 +95,7 @@ def test_fetch_nbp_rate_retries_on_url_error(monkeypatch):
             raise URLError("temporary dns failure")
         return FakeResponse({"rates": [{"mid": 4.111, "no": "061/A/NBP/2026"}]})
 
-    monkeypatch.setattr("Roboton_Reflekton.forex_engine.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("roboton_reflekton.forex_engine.request.urlopen", fake_urlopen)
     rate = engine.fetch_nbp_rate(date(2026, 4, 27), "EUR")
     assert float(rate) == 4.111
     assert calls["n"] >= 2

@@ -1,1 +1,0 @@
-# CORE integrations package

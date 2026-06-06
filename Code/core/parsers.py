@@ -1,7 +1,8 @@
 # core/parsers.py
+import re
 from decimal import Decimal, InvalidOperation
 from typing import Any
-import re
+
 
 class DataParser:
     """Narzędzia do czyszczenia danych wyjściowych z AI."""

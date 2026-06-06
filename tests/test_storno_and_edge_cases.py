@@ -10,8 +10,8 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from Roboton_Reflekton.audit_storno import LedgerTransferRecord, decimal_to_minor_units, reverse_transaction
-from Roboton_Reflekton.ledger_client import TigerBeetleClient
+from roboton_reflekton.audit_storno import LedgerTransferRecord, decimal_to_minor_units, reverse_transaction
+from roboton_reflekton.ledger_client import TigerBeetleClient
 
 
 def _load_module(path: Path, module_name: str):
@@ -23,7 +23,7 @@ def _load_module(path: Path, module_name: str):
     return module
 
 
-fifo = _load_module(Path(__file__).resolve().parents[1] / "Code" / "SERVICES" / "inventory_fifo.py", "fifo_storno_module")
+fifo = _load_module(Path(__file__).resolve().parents[1] / "Code" / "services" / "inventory_fifo.py", "fifo_storno_module")
 InventoryBatch = fifo.InventoryBatch
 InsufficientStockError = fifo.InsufficientStockError
 calculate_fifo_cogs = fifo.calculate_fifo_cogs

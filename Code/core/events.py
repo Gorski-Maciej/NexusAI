@@ -1,7 +1,8 @@
 # core/events.py
-from enum import Enum
+from enum import StrEnum
 
-class NexusEvent(str, Enum):
+
+class NexusEvent(StrEnum):
     """Centralny rejestr wszystkich zdarzeń przesyłanych przez NATS / Taskiq."""
 
     # Zdarzenia wejściowe (Kolejka zadań)

@@ -1,40 +1,28 @@
 from __future__ import annotations
 
-import json
 import logging
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
+
+from core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 logger = logging.getLogger("nexus.core.secrets")
 
+try:
+    import nexus_crypto
+    HAS_NEXUS_CRYPTO = True
+except ImportError:
+    HAS_NEXUS_CRYPTO = False
+    nexus_crypto = None  # type: ignore[assignment]
+    logger.warning("nexus-crypto (Rust module) not available — secrets cache will use plaintext storage")
 
-def _load_keyring_module():
-    """Try to load keyring; return None if unavailable."""
-    try:
-        import keyring as _kr
-        return _kr
-    except ImportError:
-        return None
-
-
-def _load_fernet_symbols():
-    """Load Fernet cryptography symbols, gracefully falling back if unavailable.
-
-    The cryptography package may be installed but its native Rust extension
-    (_rust.abi3.so) can fail to load in some environments (e.g., Termux
-    without libgcc_s.so.1). We catch ImportError to keep the rest of
-    the application working even without encryption support.
-    """
-    try:
-        from cryptography.fernet import Fernet, InvalidToken
-        return Fernet, InvalidToken
-    except ImportError:
-        return None, None
-
-
-keyring = _load_keyring_module()
-Fernet, InvalidToken = _load_fernet_symbols()
+# keyring is optional (system keychain)
+try:
+    import keyring as _kr
+    HAS_KEYRING = True
+except ImportError:
+    HAS_KEYRING = False
 
 
 class SecretsManager:
@@ -43,36 +31,39 @@ class SecretsManager:
 
     @staticmethod
     def save_secret(key_name: str, secret_value: str) -> None:
-        if keyring is None:
+        if not HAS_KEYRING:
             raise RuntimeError("keyring dependency is unavailable")
         try:
-            keyring.set_password(SecretsManager.SERVICE_NAME, key_name, secret_value)
+            _kr.set_password(SecretsManager.SERVICE_NAME, key_name, secret_value)
         except Exception as e:
             logger.error(f"Nie udało się zapisać sekretu '{key_name}' w systemie: {e}")
             raise
 
     @staticmethod
     def get_secret(key_name: str) -> str | None:
-        if keyring is None:
+        if not HAS_KEYRING:
             return None
         try:
-            return keyring.get_password(SecretsManager.SERVICE_NAME, key_name)
+            return _kr.get_password(SecretsManager.SERVICE_NAME, key_name)
         except Exception as e:
             logger.error(f"Nie udało się odczytać sekretu '{key_name}': {e}")
             return None
 
     @staticmethod
     def delete_secret(key_name: str) -> None:
-        if keyring is None:
+        if not HAS_KEYRING:
             return
         try:
-            keyring.delete_password(SecretsManager.SERVICE_NAME, key_name)
+            _kr.delete_password(SecretsManager.SERVICE_NAME, key_name)
         except Exception as e:
             logger.error(f"Nie udało się usunąć sekretu '{key_name}': {e}")
 
 
 class LocalSecretsCache:
-    """Offline-first cache for secrets with TTL and optional at-rest encryption."""
+    """Offline-first cache for secrets with TTL and AEAD at-rest encryption (nexus-crypto).
+
+    Zastępuje: Fernet (cryptography) → ChaCha20-Poly1305 (nexus-crypto)
+    """
 
     def __init__(self, cache_path: Path | str = "app_data/secrets_cache.json", ttl_hours: int = 24) -> None:
         self.cache_path = Path(cache_path)
@@ -84,35 +75,45 @@ class LocalSecretsCache:
             self.cache_path.chmod(0o600)
         except Exception:
             pass
-        self._fernet = self._build_fernet()
+        self._key = self._load_encryption_key()
 
     @staticmethod
-    def _build_fernet():
-        if Fernet is None:
-            return None
-        key = os.getenv("NEXUS_SECRETS_CACHE_KEY", "").strip().encode("utf-8")
-        if not key:
+    def _load_encryption_key() -> bytes | None:
+        key_str = os.getenv("NEXUS_SECRETS_CACHE_KEY", "").strip()
+        if not key_str:
             return None
         try:
-            return Fernet(key)
+            import base64
+            raw = base64.urlsafe_b64decode(key_str.encode("utf-8"))
+            if len(raw) == 32:
+                return raw
+            # If not 32 bytes, derive from password (requires nexus-crypto)
+            if HAS_NEXUS_CRYPTO:
+                key, _ = nexus_crypto.derive_key(key_str)
+                return key
+            logger.warning("nexus-crypto not available, cannot derive key from password; falling back to plaintext cache")
+            return None
         except Exception:
             logger.warning("Invalid NEXUS_SECRETS_CACHE_KEY; falling back to plaintext cache")
             return None
 
     def _encrypt(self, value: str) -> tuple[str, bool]:
-        if not self._fernet:
+        if not self._key or not HAS_NEXUS_CRYPTO:
             return value, False
-        token = self._fernet.encrypt(value.encode("utf-8")).decode("utf-8")
-        return token, True
+        encrypted = nexus_crypto.encrypt(self._key, value.encode("utf-8"))
+        import base64
+        return base64.urlsafe_b64encode(encrypted).decode("utf-8"), True
 
     def _decrypt(self, value: str, encrypted: bool) -> str | None:
         if not encrypted:
             return value
-        if not self._fernet:
+        if not self._key or not HAS_NEXUS_CRYPTO:
             return None
         try:
-            return self._fernet.decrypt(value.encode("utf-8")).decode("utf-8")
-        except (InvalidToken, Exception):
+            import base64
+            data = base64.urlsafe_b64decode(value.encode("utf-8"))
+            return nexus_crypto.decrypt(self._key, data).decode("utf-8")
+        except Exception:
             return None
 
     def save(self, key: str, value: str) -> None:
@@ -121,9 +122,9 @@ class LocalSecretsCache:
         payload[key] = {
             "value": stored_value,
             "encrypted": encrypted,
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(UTC).isoformat(),
         }
-        self.cache_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+        self.cache_path.write_text(msgspec_dumps(payload, ensure_ascii=False), encoding="utf-8")
         try:
             self.cache_path.chmod(0o600)
         except Exception:
@@ -138,7 +139,7 @@ class LocalSecretsCache:
             updated = datetime.fromisoformat(item["updated_at"])
         except Exception:
             return None
-        if datetime.now(timezone.utc) - updated > timedelta(hours=self.ttl_hours):
+        if datetime.now(UTC) - updated > timedelta(hours=self.ttl_hours):
             return None
         raw = str(item.get("value", ""))
         return self._decrypt(raw, bool(item.get("encrypted", False)))
@@ -147,16 +148,13 @@ class LocalSecretsCache:
         if not self.cache_path.exists():
             return {}
         try:
-            return json.loads(self.cache_path.read_text(encoding="utf-8"))
+            return msgspec_loads(self.cache_path.read_bytes())
         except Exception:
             return {}
 
 
 class OfflineFirstSecretResolver:
-    """
-    Prefer live secret provider, fallback to encrypted/system cache for offline-first startup.
-    Provider must be a callable returning secret value or None.
-    """
+    """Prefer live secret provider, fallback to encrypted/system cache for offline-first startup."""
 
     def __init__(self, cache: LocalSecretsCache) -> None:
         self.cache = cache

@@ -13,14 +13,15 @@ Zadania:
 
 from __future__ import annotations
 
-import json
 import logging
 import uuid
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import Any
 
 import duckdb
+
+from core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 logger = logging.getLogger("nexus.fallback")
 
@@ -113,9 +114,9 @@ class FallbackHandler:
             event_id utworzonego zdarzenia.
         """
         event_id = str(uuid.uuid4())
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
 
-        context_json = json.dumps(context, ensure_ascii=False, sort_keys=True, default=str)
+        context_json = msgspec_dumps(context, ensure_ascii=False, sort_keys=True, default=str)
 
         if not error_details:
             # Build a meaningful error detail from context
@@ -164,7 +165,7 @@ class FallbackHandler:
         if not row or str(row[0]) != "PENDING":
             return False
 
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         self._conn.execute(
             """UPDATE fallback_events
                SET status = 'RESOLVED', resolved_at = ?, resolution_note = ?, assigned_to = ?
@@ -183,7 +184,7 @@ class FallbackHandler:
         if not row or str(row[0]) != "PENDING":
             return False
 
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         self._conn.execute(
             """UPDATE fallback_events
                SET status = 'IGNORED', resolved_at = ?, assigned_to = ?
@@ -232,7 +233,7 @@ class FallbackHandler:
             {
                 "event_id": str(r[0]),
                 "transaction_id": str(r[1]),
-                "context": json.loads(r[2]) if r[2] else {},
+                "context": msgspec_loads(r[2]) if r[2] else {},
                 "error_type": str(r[3]),
                 "error_details": str(r[4]),
                 "status": str(r[5]),

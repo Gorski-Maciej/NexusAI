@@ -9,7 +9,6 @@ First-match-wins według typu dokumentu i formy opodatkowania.
 
 from __future__ import annotations
 
-import json
 import uuid
 from dataclasses import dataclass
 from datetime import date
@@ -17,6 +16,7 @@ from typing import Any
 
 import duckdb
 
+from core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 # ── Schema ───────────────────────────────────────────────────────────────────
 
@@ -105,8 +105,8 @@ def seed_default_billing_rules(conn: duckdb.DuckDBPyConnection) -> None:
                VALUES (?, ?, ?, ?, ?, ?)""",
             (
                 str(uuid.uuid4()),
-                json.dumps(rule["condition_json"], ensure_ascii=False),
-                json.dumps(rule["price_json"], ensure_ascii=False),
+                msgspec_dumps(rule["condition_json"], ensure_ascii=False),
+                msgspec_dumps(rule["price_json"], ensure_ascii=False),
                 rule["valid_from"],
                 rule.get("valid_to"),
                 rule["priority"],
@@ -153,8 +153,8 @@ class BillingEstimator:
         used_rules: set[int] = set()
 
         for idx, (cond_json, price_json, priority) in enumerate(rules):
-            condition = json.loads(cond_json) if isinstance(cond_json, str) else cond_json
-            price = json.loads(price_json) if isinstance(price_json, str) else price_json
+            condition = msgspec_loads(cond_json) if isinstance(cond_json, str) else cond_json
+            price = msgspec_loads(price_json) if isinstance(price_json, str) else price_json
 
             if self._matches(condition, document_type, tax_form, additional_services):
                 matched.append({
@@ -191,8 +191,8 @@ class BillingEstimator:
                VALUES (?, ?, ?, ?, ?, ?)""",
             (
                 rule_id,
-                json.dumps(condition, ensure_ascii=False, sort_keys=True),
-                json.dumps(price, ensure_ascii=False, sort_keys=True),
+                msgspec_dumps(condition, ensure_ascii=False, sort_keys=True),
+                msgspec_dumps(price, ensure_ascii=False, sort_keys=True),
                 valid_from,
                 valid_to,
                 priority,
@@ -228,8 +228,8 @@ class BillingEstimator:
         return [
             {
                 "rule_id": str(r[0]),
-                "condition": json.loads(r[1]) if r[1] else {},
-                "price": json.loads(r[2]) if r[2] else {},
+                "condition": msgspec_loads(r[1]) if r[1] else {},
+                "price": msgspec_loads(r[2]) if r[2] else {},
                 "valid_from": str(r[3]),
                 "valid_to": str(r[4]) if r[4] else None,
                 "priority": int(r[5]),

@@ -1,574 +1,261 @@
-NEXUSAI - PEŁNA LISTA TECHNOLOGII
-=================================
+NEXUSAI - PE£NA LISTA TECHNOLOGII (v2.0)
+=========================================
 
-Data: 2026-06-04
-Opis: Kompletny spis wszystkich technologii, bibliotek, narzędzi i serwisów zewnętrznych używanych w projekcie NexusAI wraz z lokalizacją w strukturze projektu i opisem funkcji.
+Data: 2026-06-05
+Status: Przebudowa zgodnie z aa3fvcx.txt
+Opis: Nowy, ultralekki stos technologiczny.
 
-SPIS TREŚCI
------------
+SPIS TRESCI:
+  1. Runtime i Narzedzia
+  2. Kompilacja i Build
+  3. API / Serwer ASGI
+  4. Bazy Danych i Przechowywanie
+  5. Walidacja Danych i Serializacja
+  6. Kolejki Zadan i Komunikacja
+  7. HTTP / Siec
+  8. Odpornosc na Bledy (Resilience)
+  9. Kryptografia i Bezpieczenstwo
+ 10. Finanse / Waluty
+ 11. AI / Machine Learning
+ 12. Modele AI (GGUF)
+ 13. Logowanie i Monitoring
+ 14. Narzedzia
+ 15. Testowanie
+ 16. Interfejs Desktopowy
+ 17. Infrastruktura / DevOps
+ 18. Serwisy Zewnetrzne (API)
+ 19. Agenty AI (Council + Extraction + Analytics)
+ 20. Pliki Konfiguracyjne
 
-1. Diagram zależności (Mermaid)
-2. Język i Środowisko
-3. API / Serwer ASGI
-4. Bazy Danych i Przechowywanie
-5. Walidacja Danych i Serializacja
-6. Kolejki Zadań i Komunikacja
-7. HTTP / Sieć
-8. Odporność na Błędy (Resilience)
-9. Kryptografia i Bezpieczeństwo
-10. Finanse / Waluty
-11. Przetwarzanie Dokumentów (XML/OCR)
-12. Logowanie
-13. Metryki i Monitoring
-14. Cache
-15. Narzędzia (Utilities)
-16. Testowanie
-17. Interfejs Desktopowy
-18. AI / Machine Learning
-19. Infrastruktura / DevOps
-20. Główne Serwisy Zewnętrzne (API)
-21. Agenty AI (Council of LLMs)
-22. Silnik Reguł Podatkowych (Tax Engine)
-23. System Księgowy (Roboton_Reflekton)
-24. Inne Narzędzia i Skrypty
-25. Formatowanie i Jakość Kodu
-26. Pliki Konfiguracyjne i Build
+1. RUNTIME I NARZEDZIA
+-----------------------
 
-🗺 DIAGRAM ZALEŻNOŚCI (MERMAID)
-------------------------------
+Technologia           | Wersja     | Opis
+--------------------- | ---------- | ------------------------------------------
+Python (free-threaded)| >=3.13t    | CPython bez GIL -30-40% RAM, prawdziwa wielowatkowosc
+pixi                  | latest     | Manager srodowiska wszystko-w-jednym (Rust)
+uv (Astral)           | >=0.5      | Najszybszy manager pakietow PyPI (Rust)
+mise                  | (opcjonalny)| Globalny przelacznik wersji Pythona
 
-DIAGRAM ZALEŻNOŚCI - OPIS TEKSTOWY
+2. KOMPILACJA I BUILD
+----------------------
 
-Warstwy i komponenty:
-- ☁️ INFRASTRUKTURA / DEVOPS:
-  * Docker - (Python 3.11-slim + Tesseract)
-  * Docker Compose
-  * NATS Server - (nats:2.10-alpine)
-  * TigerBeetle Server
-  * Prometheus - + Alert Rules
-- 🐍 RUNTIME:
-  * Python ≥3.11
-  * setuptools ≥68.0
-  * msgspec - (Binary Serialization)
-  * anyio - (Async I/O)
-- 🌐 API / ASGI:
-  * Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI
-  * Uvicorn ≥0.30.0 - ASGI Server
-  * JWT Auth - (Litestar JWT)
-  * CORS Middleware
-  * Rate Limiting
-  * CSRF Protection
-- 💾 BAZY DANYCH:
-  * SQLAlchemy ≥2.0 - ORM · Modele
-  * aiosqlite - Async SQLite Driver
-  * SQLite (OLTP) - Faktury · Użytkownicy · Outbox
-  * DuckDB ≥1.0 - (OLAP)
-  * PyArrow ≥15.0 - Columnar Format
-  * LanceDB ≥0.8 - Vector DB
-  * TigerBeetle - Double-Entry Ledger
-  * SQLCipher - (via cryptography) - Szyfrowanie DB
-  * Alembic ≥1.13 - Migracje schematu
-- ✉️ KOLEJKI ZADAŃ:
-  * nats-py ≥2.6 - Message Broker
-  * NATS JetStream - Durable Streaming
-  * Taskiq ≥0.11 - Async Task Queue
-  * taskiq-nats ≥0.5 - Taskiq Broker for NATS
-- 🧠 AI / AGENT COUNCIL:
-  * llama-cpp-python - GGUF Inference
-  * Transformers - (HuggingFace)
-  * sentence-transformers - Embeddings
-  * huggingface-hub - Model Download
-- Modele GGUF:
-  * Alpha Agent - LFM 1.2B
-  * Beta Agent - Qwen3 0.6B
-  * Gamma Agent - LittleLamb 0.3B
-  * Rules Agent - Granite 1B
-  * Analytics Agent - Qwen2.5 1.5B
-  * Decision Agent - Jamba 3B
-  * Orchestrator - LittleLamb 0.3B
-- 📄 PIPELINE OCR:
-  * Tesseract OCR - (system)
-  * Pillow ≥10.0 - Image Processing
-  * PyMuPDF - PDF Processing
-  * OpenCV - Computer Vision
-  * Surya OCR - Layout Detection
-  * PaddleOCR - Deep Learning OCR
-  * ONNX Runtime - ML Inference
-- Tax Engine:
-  * RuleEngine - (Zen-Engine / DuckDB)
-  * TaxMathEngine - (int · grosze)
-  * TaxPipeline - Orkiestracja
-  * TraceGenerator - Ścieżka decyzyjna
-  * Proof Chain - (SHA-256 Audit)
-  * Integrity Verifier - Weryfikacja łańcucha
-- Roboton_Reflekton:
-  * LedgerClient - TigerBeetle
-  * ShadowLedger - Symulacje
-  * ReconciliationEngine
-  * ForexEngine
-  * DunningEngine
-  * BudgetaryControl
-  * VATReconciliation
-- Serwisy Biznesowe:
-  * GUS BIR Client - (SOAP)
-  * Biała Lista MF - (API)
-  * NBP API - Kursy walut
-  * KSeF Client - (XML + Podpis)
-  * CurrencyConverter - (py-moneyed)
-  * RiskGuard - Wykrywanie anomalii
-  * Autopilot - Automatyczne księgowanie
-- Serwisy Core:
-  * Tenacity ≥9.0 - Retry Logic
-  * PyBreaker ≥1.4 - Circuit Breaker
-  * cryptography ≥42.0 - Fernet · PBKDF2
-  * cachetools ≥7.0 - In-Memory Cache
-  * Loguru ≥0.7 - Logging
-  * OpenTelemetry - Distributed Tracing
-  * psutil ≥5.9 - System Monitor
-  * dateparser ≥1.2 - Parsowanie dat
-  * fsspec ≥2024.3 - Filesystem Abstraction
-- 🖥️ INTERFEJS:
-  * Flet ≥0.28 - Desktop UI (Python → Flutter)
-  * Flet Router - Nawigacja
-- 🧪 TESTY:
-  * pytest ≥8.0
-  * pytest-asyncio
-  * Hypothesis - Property-Based
-  * k6 - Performance Tests
-- 📈 MONITORING:
-  * Prometheus Client - Metryki API
-  * Sentry - Error Tracking
-  * Health Checks - (/api/v2/health)
-- 🔧 BUILD:
-  * Nexus CLI - nexus-api · nexus-worker - nexus-desktop · nexus
-  * main.py - Central Entrypoint
-  * Inno Setup - Windows Installer
-  * NSIS - Windows Installer
-  * Ruff - Linter + Formatter
-  * Mypy - Type Checker
-  * pre-commit - Git Hooks
-- 🔌 ZEWNĘTRZNE API / SERWISY:
-  * GUS BIR - (REGON · NIP)
-  * Biała Lista MF - (Rachunki VAT)
-  * NBP API - (Kursy walut)
-  * KSeF - (System e-Faktur)
-  * HuggingFace Hub - (Modele AI)
+Technologia | Zastepuje  | Opis
+----------- | ---------- | ------------------------------------------------
+hatchling   | setuptools | Backend budowania PEP 621
+mypyc       | -          | Kompilacja typowanego Pythona do C (2-5x szybciej)
+PyO3+Maturin| -          | Rozszerzenia w Rust dla Pythona
+Rust        | C/C++      | Jezyk dla krytycznych modulow (przez PyO3)
+mimalloc    | glibc malloc| Alokator Microsoftu -5-15% mniej RAM
+Nuitka      | -          | Kompilacja do samodzielnego .exe
 
-Najważniejsze połączenia:
-- Docker - (Python 3.11-slim + Tesseract) -> Python ≥3.11
-- Docker - (Python 3.11-slim + Tesseract) -> Tesseract OCR - (system)
-- Docker Compose -> Docker - (Python 3.11-slim + Tesseract)
-- Docker Compose -> NATS Server - (nats:2.10-alpine)
-- Docker Compose -> TigerBeetle Server
-- Python ≥3.11 -> Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI
-- Python ≥3.11 -> Uvicorn ≥0.30.0 - ASGI Server
-- anyio - (Async I/O) -> Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI
-- msgspec - (Binary Serialization) -> Taskiq ≥0.11 - Async Task Queue
-- Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI -> JWT Auth - (Litestar JWT)
-- Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI -> CORS Middleware
-- Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI -> Rate Limiting
-- Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI -> CSRF Protection
-- Uvicorn ≥0.30.0 - ASGI Server -> Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI
-- Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI -> SQLAlchemy ≥2.0 - ORM · Modele
-- Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI -> DuckDB ≥1.0 - (OLAP)
-- SQLAlchemy ≥2.0 - ORM · Modele -> aiosqlite - Async SQLite Driver
-- aiosqlite - Async SQLite Driver -> SQLite (OLTP) - Faktury · Użytkownicy · Outbox
-- SQLAlchemy ≥2.0 - ORM · Modele -> Alembic ≥1.13 - Migracje schematu
-- SQLite (OLTP) - Faktury · Użytkownicy · Outbox -> SQLCipher - (via cryptography) - Szyfrowanie DB
-- DuckDB ≥1.0 - (OLAP) -> PyArrow ≥15.0 - Columnar Format
-- DuckDB ≥1.0 - (OLAP) -> LanceDB ≥0.8 - Vector DB
-- Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI -> nats-py ≥2.6 - Message Broker
-- nats-py ≥2.6 - Message Broker -> NATS JetStream - Durable Streaming
-- Taskiq ≥0.11 - Async Task Queue -> taskiq-nats ≥0.5 - Taskiq Broker for NATS
-- taskiq-nats ≥0.5 - Taskiq Broker for NATS -> nats-py ≥2.6 - Message Broker
-- RuleEngine - (Zen-Engine / DuckDB) -> DuckDB ≥1.0 - (OLAP)
-- RuleEngine - (Zen-Engine / DuckDB) -> TaxPipeline - Orkiestracja
-- TaxPipeline - Orkiestracja -> TaxMathEngine - (int · grosze)
-- TaxPipeline - Orkiestracja -> TraceGenerator - Ścieżka decyzyjna
-- TaxPipeline - Orkiestracja -> Proof Chain - (SHA-256 Audit)
-- Proof Chain - (SHA-256 Audit) -> Integrity Verifier - Weryfikacja łańcucha
-- LedgerClient - TigerBeetle -> TigerBeetle - Double-Entry Ledger
-- ShadowLedger - Symulacje -> TigerBeetle - Double-Entry Ledger
-- GUS BIR Client - (SOAP) -> GUS BIR - (REGON · NIP)
-- Biała Lista MF - (API) -> Biała Lista MF - (Rachunki VAT)
-- NBP API - Kursy walut -> NBP API - (Kursy walut)
-- KSeF Client - (XML + Podpis) -> KSeF - (System e-Faktur)
-- CurrencyConverter - (py-moneyed) -> NBP API - (Kursy walut)
-- CurrencyConverter - (py-moneyed) -> py-moneyed ≥3.0 - (Fowler's Money)
-- Tenacity ≥9.0 - Retry Logic -> GUS BIR Client - (SOAP)
-- Tenacity ≥9.0 - Retry Logic -> NBP API - Kursy walut
-- PyBreaker ≥1.4 - Circuit Breaker -> nats-py ≥2.6 - Message Broker
-- PyBreaker ≥1.4 - Circuit Breaker -> TigerBeetle - Double-Entry Ledger
-- Taskiq ≥0.11 - Async Task Queue -> llama-cpp-python - GGUF Inference
-- Taskiq ≥0.11 - Async Task Queue -> Tesseract OCR - (system)
-- llama-cpp-python - GGUF Inference -> Alpha Agent - LFM 1.2B
-- llama-cpp-python - GGUF Inference -> Beta Agent - Qwen3 0.6B
-- llama-cpp-python - GGUF Inference -> Gamma Agent - LittleLamb 0.3B
-- llama-cpp-python - GGUF Inference -> Rules Agent - Granite 1B
-- llama-cpp-python - GGUF Inference -> Analytics Agent - Qwen2.5 1.5B
-- llama-cpp-python - GGUF Inference -> Decision Agent - Jamba 3B
-- llama-cpp-python - GGUF Inference -> Orchestrator - LittleLamb 0.3B
-- huggingface-hub - Model Download -> Alpha Agent - LFM 1.2B
-- huggingface-hub - Model Download -> Beta Agent - Qwen3 0.6B
-- huggingface-hub - Model Download -> Gamma Agent - LittleLamb 0.3B
-- huggingface-hub - Model Download -> Rules Agent - Granite 1B
-- huggingface-hub - Model Download -> Analytics Agent - Qwen2.5 1.5B
-- huggingface-hub - Model Download -> Decision Agent - Jamba 3B
-- HuggingFace Hub - (Modele AI) -> huggingface-hub - Model Download
-- Transformers - (HuggingFace) -> sentence-transformers - Embeddings
-- Pillow ≥10.0 - Image Processing -> Tesseract OCR - (system)
-- PyMuPDF - PDF Processing -> Tesseract OCR - (system)
-- OpenCV - Computer Vision -> Tesseract OCR - (system)
-- Surya OCR - Layout Detection -> Tesseract OCR - (system)
-- PaddleOCR - Deep Learning OCR -> Tesseract OCR - (system)
-- ONNX Runtime - ML Inference -> PaddleOCR - Deep Learning OCR
-- ONNX Runtime - ML Inference -> Surya OCR - Layout Detection
-- Alpha Agent - LFM 1.2B -> Autopilot - Automatyczne księgowanie
-- Beta Agent - Qwen3 0.6B -> Autopilot - Automatyczne księgowanie
-- Gamma Agent - LittleLamb 0.3B -> Autopilot - Automatyczne księgowanie
-- Rules Agent - Granite 1B -> RuleEngine - (Zen-Engine / DuckDB)
-- Analytics Agent - Qwen2.5 1.5B -> RiskGuard - Wykrywanie anomalii
-- Orchestrator - LittleLamb 0.3B -> Autopilot - Automatyczne księgowanie
-- Autopilot - Automatyczne księgowanie -> LedgerClient - TigerBeetle
-- Flet ≥0.28 - Desktop UI (Python → Flutter) -> Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI
-- Flet Router - Nawigacja -> Flet ≥0.28 - Desktop UI (Python → Flutter)
-- Prometheus Client - Metryki API -> Prometheus - + Alert Rules
-- Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI -> Prometheus Client - Metryki API
-- Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI -> Sentry - Error Tracking
-- Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI -> Health Checks - (/api/v2/health)
-- OpenTelemetry - Distributed Tracing -> Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI
-- cryptography ≥42.0 - Fernet · PBKDF2 -> SQLCipher - (via cryptography) - Szyfrowanie DB
-- cachetools ≥7.0 - In-Memory Cache -> Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI
-- Loguru ≥0.7 - Logging -> Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI
-- psutil ≥5.9 - System Monitor -> Prometheus Client - Metryki API
-- dateparser ≥1.2 - Parsowanie dat -> GUS BIR Client - (SOAP)
-- fsspec ≥2024.3 - Filesystem Abstraction -> Tesseract OCR - (system)
-- pytest ≥8.0 -> Hypothesis - Property-Based
-- pytest ≥8.0 -> pytest-asyncio
-- k6 - Performance Tests -> Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI
-- main.py - Central Entrypoint -> Litestar ≥2.8.0 - Routing · Middleware · DI · OpenAPI
-- main.py - Central Entrypoint -> Taskiq ≥0.11 - Async Task Queue
-- main.py - Central Entrypoint -> Flet ≥0.28 - Desktop UI (Python → Flutter)
-- Nexus CLI - nexus-api · nexus-worker - nexus-desktop · nexus -> main.py - Central Entrypoint
-- Ruff - Linter + Formatter -> Python ≥3.11
-- Mypy - Type Checker -> Python ≥3.11
-- pre-commit - Git Hooks -> Ruff - Linter + Formatter
-- pre-commit - Git Hooks -> Mypy - Type Checker
-- Inno Setup - Windows Installer -> Nexus CLI - nexus-api · nexus-worker - nexus-desktop · nexus
-- NSIS - Windows Installer -> Nexus CLI - nexus-api · nexus-worker - nexus-desktop · nexus
-- GUS BIR - (REGON · NIP) -> GUS BIR Client - (SOAP)
-- Biała Lista MF - (Rachunki VAT) -> Biała Lista MF - (API)
-- NBP API - (Kursy walut) -> NBP API - Kursy walut
-- KSeF - (System e-Faktur) -> KSeF Client - (XML + Podpis)
-
-1. JĘZYK I ŚRODOWISKO
+3. API / SERWER ASGI
 ---------------------
 
-  Technologia  |  Wersja  |  Lokalizacja                             |  Opis
-  -----------  |  ------  |  --------------------------------------  |  -------------------------------------------
-  Python       |  ≥3.11   |  pyproject.toml - requires-python        |  Język programowania całego projektu
-  setuptools   |  ≥68.0   |  pyproject.toml - build-system.requires  |  System budowania pakietu (pip install -e .)
+Technologia | Zastepuje  | Opis
+----------- | ---------- | ------------------------------------------------
+Litestar    | FastAPI    | Framework ASGI nowej generacji
+Granian     | Uvicorn    | Serwer ASGI w Rust -25-40% mniej RAM
+anyio       | -          | Lekka warstwa async I/O
 
-2. API / SERWER ASGI
---------------------
-
-  Technologia  |  Plik wymagań                      |  Lokalizacja w projekcie                |  Funkcja
-  -----------  |  --------------------------------  |  -------------------------------------  |  --------------------------------------------------------------------------------------
-  Litestar     |  requirements.txt, pyproject.toml  |  Code/API/app.py, Code/API/routes/*.py  |  Framework ASGI - główny serwer API. Obsługuje routing, middleware, DI, OpenAPI/Swagger
-  Uvicorn      |  requirements.txt, pyproject.toml  |  Code/API/server.py                     |  Serwer ASGI - uruchamia Litestar na HTTP
-
-3. BAZY DANYCH I PRZECHOWYWANIE
--------------------------------
-
-  Technologia  |  Plik wymagań                      |  Lokalizacja w projekcie                                               |  Funkcja
-  -----------  |  --------------------------------  |  --------------------------------------------------------------------  |  -------------------------------------------------------------------------------------
-  SQLAlchemy   |  requirements.txt, pyproject.toml  |  Code/DB/database.py, Code/DB/models.py                                |  ORM - warstwa dostępu do bazy SQLite (OLTP). Modele dla faktur, użytkowników, outboxa
-  aiosqlite    |  requirements.txt, pyproject.toml  |  Code/DB/database.py                                                   |  Async driver SQLite - asynchroniczne połączenia z SQLite dla SQLAlchemy
-  DuckDB       |  requirements.txt, pyproject.toml  |  Code/DB/analytics.py, Code/tax/rules.py, Code/services/rule_store.py  |  OLAP database - analityka, reguły podatkowe (Zen-Engine), widoki materializowane
-  PyArrow      |  requirements.txt, pyproject.toml  |  (importowany przez DuckDB/LanceDB)                                    |  Kolumnowy format danych - używany przez DuckDB i LanceDB do wydajnych operacji
-  LanceDB      |  requirements.txt, pyproject.toml  |  Code/DB/vector_store.py                                               |  Vector database - przechowywanie embeddingów i wektorowe wyszukiwanie podobieństw
-  SQLCipher    |  (via cryptography)                |  Code/CORE/crypto.py, env NEXUS_SQLCIPHER_KEY                          |  Szyfrowanie bazy SQLite - transparentne szyfrowanie pliku .db na dysku
-  Alembic      |  requirements.txt, pyproject.toml  |  migrations/versions/0001_initial_schema.py, alembic.ini               |  Migracje schematu bazy danych - zarządzanie wersjami schematu SQLAlchemy
-
-4. WALIDACJA DANYCH I SERIALIZACJA
-----------------------------------
-
-  Technologia        |  Plik wymagań                      |  Lokalizacja w projekcie                                       |  Funkcja
-  -----------------  |  --------------------------------  |  ------------------------------------------------------------  |  ----------------------------------------------------------------------------
-  Pydantic           |  requirements.txt, pyproject.toml  |  Code/API/schemas.py, Code/CORE/config.py                      |  Walidacja danych - modele request/response API, konfiguracja z env vars
-  pydantic-settings  |  requirements.txt, pyproject.toml  |  Code/CORE/config.py                                           |  Ładowanie konfiguracji z .env do klas Pydantic
-  msgspec            |  requirements.txt, pyproject.toml  |  Code/CORE/tasks.py, testy test_msgspec_task_response_flow.py  |  Szybka serializacja binarna - wydajniejsza alternatywa dla JSON w task queue
-
-5. KOLEJKI ZADAŃ I KOMUNIKACJA
-------------------------------
-
-  Technologia     |  Plik wymagań                      |  Lokalizacja w projekcie                  |  Funkcja
-  --------------  |  --------------------------------  |  ---------------------------------------  |  ----------------------------------------------------------------------------
-  NATS (nats-py)  |  requirements.txt, pyproject.toml  |  Code/CORE/broker.py, docker-compose.yml  |  Message broker - komunikacja między serwisami, event-driven architecture
-  NATS JetStream  |  (wbudowane w NATS)                |  docker-compose.yml - nats -js            |  Durable message streaming - trwałe przechowywanie wiadomości, outbox pattern
-  Taskiq          |  requirements.txt, pyproject.toml  |  Code/CORE/tasks.py, Code/luz/worker.py   |  Async task queue - kolejka zadań w tle (OCR, AI) z schedulerem
-  taskiq-nats     |  requirements.txt, pyproject.toml  |  Code/CORE/broker.py                      |  Broker Taskiq dla NATS - łączy Taskiq z NATS JetStream
-
-6. HTTP / SIEĆ
---------------
-
-  Technologia  |  Plik wymagań                      |  Lokalizacja w projekcie                                               |  Funkcja
-  -----------  |  --------------------------------  |  --------------------------------------------------------------------  |  --------------------------------------------------------------------------------
-  httpx        |  requirements.txt, pyproject.toml  |  Code/SERVICES/gus_bir_client.py, Code/SERVICES/currency_converter.py  |  Async HTTP client - zapytania do zewnętrznych API (GUS BIR, NBP, Biała Lista MF)
-  anyio        |  requirements.txt, pyproject.toml  |  (zależność pośrednia)                                                 |  Async I/O backend - używany przez Litestar i httpx
-
-7. ODPORNOŚĆ NA BŁĘDY (RESILIENCE)
-----------------------------------
-
-  Technologia  |  Plik wymagań                      |  Lokalizacja w projekcie       |  Funkcja
-  -----------  |  --------------------------------  |  ----------------------------  |  -----------------------------------------------------------------------------------
-  Tenacity     |  requirements.txt, pyproject.toml  |  Code/CORE/resilience.py       |  Retry logic - automatyczne ponawianie operacji przy błędach sieciowych/bazodanowych
-  PyBreaker    |  requirements.txt, pyproject.toml  |  Code/CORE/circuit_breaker.py  |  Circuit Breaker - wyłącznik awaryjny dla NATS i zewnętrznych API
-
-8. KRYPTOGRAFIA I BEZPIECZEŃSTWO
+4. BAZY DANYCH I PRZECHOWYWANIE
 --------------------------------
 
-  Technologia         |  Plik wymagań                      |  Lokalizacja w projekcie                         |  Funkcja
-  ------------------  |  --------------------------------  |  ----------------------------------------------  |  -------------------------------------------------------------------
-  cryptography        |  requirements.txt, pyproject.toml  |  Code/CORE/crypto.py, Code/CORE/secrets.py       |  Szyfrowanie - Fernet (AES-128-CBC + HMAC), PBKDF2, haszowanie haseł
-  JWT (Litestar JWT)  |  (via litestar[jwt])               |  Code/API/auth.py, Code/API/security.py          |  Tokeny JWT - autoryzacja API, refresh tokeny
-  CSRF                |  (wbudowane w Litestar)            |  Code/API/middleware.py, env NEXUS_CSRF_ENABLED  |  Ochrona CSRF - zapobiega atakom cross-site request forgery
-  Rate Limiting       |  (wbudowane w Litestar)            |  Code/API/rate_limit.py                          |  Limitowanie żądań - ochrona przed DoS i nadużyciami API
-  CORS                |  (wbudowane w Litestar)            |  Code/API/middleware.py, env NEXUS_CORS_ORIGINS  |  Cross-Origin Resource Sharing - kontrola dostępu z różnych domen
+Technologia | Zastepuje  | Opis
+----------- | ---------- | ------------------------------------------------
+SQLite+SQLCipher| -      | Zaszyfrowana baza (AES-256), jeden plik, zero serwera
+SQLModel    | SQLAlchemy+Pydantic| ORM 2w1 - jedna definicja dla bazy i API
+aiosqlite   | -          | Asynchroniczna warstwa dla SQLite
+sqlite-vec  | LanceDB    | Wektory w SQLite - embeddingi w tej samej bazie
+DuckDB      | -          | Lokalna hurtownia OLAP
+PyArrow     | -          | Kolumnowy format danych
+Polars      | pandas     | DataFrame w Rust -5-10x szybszy
+Alembic     | -          | Migracje schematu
 
-9. FINANSE / WALUTY
--------------------
+5. WALIDACJA DANYCH I SERIALIZACJA
+-----------------------------------
 
-  Technologia  |  Plik wymagań                      |  Lokalizacja w projekcie                                                                     |  Funkcja
-  -----------  |  --------------------------------  |  ------------------------------------------------------------------------------------------  |  --------------------------------------------------------------------------
-  py-moneyed   |  requirements.txt, pyproject.toml  |  Code/SERVICES/currency_converter.py                                                         |  Fowler's Money pattern - reprezentacja kwot z walutą, zaokrąglanie HALF_UP
-  TigerBeetle  |  (osobny serwer)                   |  Code/Roboton_Reflekton/ledger_client.py, docker-compose.yml, docker/tigerbeetle.Dockerfile  |  Ledger double-entry - dwustronne księgowanie z two-phase commit
+Technologia | Zastepuje              | Opis
+----------- | ---------------------- | ---------------------------------
+msgspec     | json, orjson,          | Ultraszybka serializacja -2-3x
+            | python-dotenv,         | szybsza od Pydantic v2,
+            | pydantic-settings      | wbudowany parser TOML
+Pydantic    | (tylko jako zal. SQLModel)| Tylko dla modeli bazy danych
 
-10. PRZETWARZANIE DOKUMENTÓW (XML/OCR)
---------------------------------------
+6. KOLEJKI ZADAN I KOMUNIKACJA
+-------------------------------
 
-  Technologia     |  Plik wymagań                      |  Lokalizacja w projekcie                  |  Funkcja
-  --------------  |  --------------------------------  |  ---------------------------------------  |  -------------------------------------------------------------------------
-  lxml            |  requirements.txt, pyproject.toml  |  Code/CORE/integrations/ksef/*.py         |  XML parser - przetwarzanie dokumentów KSeF (Krajowy System e-Faktur)
-  xsdata          |  requirements.txt, pyproject.toml  |  Code/CORE/integrations/ksef/crypto.py    |  XML data binding - generowanie klas Python z schematów XSD dla KSeF
-  Pillow (PIL)    |  requirements.txt, pyproject.toml  |  Code/PIPELINE/preprocessor.py            |  Image processing - przetwarzanie obrazów dokumentów (deskew, binaryzacja)
-  Tesseract OCR   |  (systemowy pakiet)                |  Code/PIPELINE/ocr_engine.py, Dockerfile  |  OCR engine - ekstrakcja tekstu ze skanów faktur (z polskim językiem)
-  PyMuPDF (fitz)  |  (opcjonalne AI) pyproject.toml    |  (w [ai] extras)                          |  PDF processing - ekstrakcja tekstu i obrazów z plików PDF
-  OpenCV          |  (opcjonalne AI) pyproject.toml    |  (w [ai] extras)                          |  Computer vision - zaawansowane przetwarzanie obrazów dokumentów
-  PaddleOCR       |  (opcjonalne AI) pyproject.toml    |  (w [ai] extras)                          |  OCR deep learning - alternatywny silnik OCR oparty na deep learning
-  Surya OCR       |  (opcjonalne AI) pyproject.toml    |  (w [ai] extras)                          |  OCR deep learning - detekcja layoutu i OCR dokumentów
-  ONNX Runtime    |  (opcjonalne AI) pyproject.toml    |  (w [ai] extras)                          |  ML inference engine - uruchamianie modeli ONNX dla OCR i analizy
+Technologia       | Opis
+----------------- | ------------------------------------------------
+NATS Server ~10 MB| Samodzielny plik binarny (nie Docker!)
+nats-py           | Asynchroniczny klient NATS
+NATS JetStream    | Trwale strumienie, at-least-once, DLQ
+Taskiq            | Async-native kolejka zadan (dekoratory, cron)
+taskiq-nats       | Spoiwo Taskiq + NATS JetStream
 
-11. LOGOWANIE
--------------
+7. HTTP / SIEC
+--------------
 
-  Technologia    |  Plik wymagań                      |  Lokalizacja w projekcie                     |  Funkcja
-  -------------  |  --------------------------------  |  ------------------------------------------  |  --------------------------------------------------------------------------
-  Loguru         |  requirements.txt, pyproject.toml  |  Code/CORE/logger.py                         |  Logging - zaawansowane logowanie z formatowaniem, rotacją plików, kolorami
-  OpenTelemetry  |  (wbudowane w kod)                 |  Code/CORE/tracing.py, testy test_otel_*.py  |  Distributed tracing - śledzenie żądań przez system, buffer/replay
+Technologia | Opis
+----------- | ------------------------------------------------
+httpx       | Asynchroniczny klient HTTP (HTTP/1.1 + HTTP/2)
+hishel      | Inteligentny cache HTTP (nowosc!)
+fsspec      | Abstrakcja systemow plikow (lokalny, S3, SFTP)
 
-12. METRYKI I MONITORING
-------------------------
+8. ODPORNOSC NA BLEDY (RESILIENCE)
+-----------------------------------
 
-  Technologia        |  Plik wymagań                       |  Lokalizacja w projekcie                                           |  Funkcja
-  -----------------  |  ---------------------------------  |  ----------------------------------------------------------------  |  -----------------------------------------------------------------------------
-  Prometheus Client  |  requirements.txt, pyproject.toml   |  Code/API/telemetry_metrics.py, deploy/prometheus/alert_rules.yml  |  Metryki - eksport metryk do Prometheus (czas odpowiedzi, liczba żądań, błędy)
-  Sentry             |  (opcjonalne) env NEXUS_SENTRY_DSN  |  config/prod.env                                                   |  Error tracking - zbieranie wyjątków i błędów w produkcji
+Technologia | Zastepuje       | Opis
+----------- | --------------- | ---------------------------------
+stamina     | tenacity+pybreaker| Async-native retry+circuit breaker
 
-13. CACHE
----------
+9. KRYPTOGRAFIA I BEZPIECZENSTWO
+--------------------------------
 
-  Technologia  |  Plik wymagań                      |  Lokalizacja w projekcie                         |  Funkcja
-  -----------  |  --------------------------------  |  ----------------------------------------------  |  ------------------------------------------------------------------
-  cachetools   |  requirements.txt, pyproject.toml  |  Code/CORE/memory_manager.py, Code/API/cache.py  |  In-memory caching - cache dla modeli AI, kursów walut, wyników API
+Technologia       | Zastepuje     | Opis
+----------------- | ------------- | ---------------------------------
+Nexus-Crypto (Rust)| cryptography | Wlasny modul -AEAD, Argon2id, SHA-256
+Litestar JWT      | pyjwt         | Wbudowane w Litestar
+Litestar CSRF     | -             | Ochrona cross-site (wbudowana)
+Litestar CORS     | -             | Kontrola dostepu (wbudowana)
+Litestar RateLimit| -             | Limitowanie zadan (wbudowane)
 
-14. NARZĘDZIA (UTILITIES)
+10. FINANSE / WALUTY
+--------------------
+
+Technologia  | Opis
+------------ | ------------------------------------------------
+py-moneyed   | Fowler's Money pattern (kwoty z waluta)
+TigerBeetle  | Silnik ksiegowy w Zig - podwojny zapis
+
+11. AI / MACHINE LEARNING
 -------------------------
 
-  Technologia  |  Plik wymagań                      |  Lokalizacja w projekcie                      |  Funkcja
-  -----------  |  --------------------------------  |  -------------------------------------------  |  -------------------------------------------------------------------------------------
-  psutil       |  requirements.txt, pyproject.toml  |  Code/CORE/hardware.py, Code/CORE/monitor.py  |  System resources - monitorowanie CPU, RAM, dysku
-  PyYAML       |  requirements.txt, pyproject.toml  |  Code/CORE/config.py                          |  YAML parser - konfiguracja w formatach YAML
-  dateparser   |  requirements.txt, pyproject.toml  |  Code/SERVICES/gus_bir_client.py              |  Parsowanie dat - obsługa różnych formatów dat z faktur
-  fsspec       |  requirements.txt, pyproject.toml  |  (system plików)                              |  Filesystem abstraction - jednolity interfejs dla lokalnych i zdalnych systemów plików
+Technologia         | Opis
+------------------- | ------------------------------------------------
+llama-cpp-python    | LLM inference CPU/GPU (GGUF)
+huggingface-hub     | Pobieranie modeli z SHA-256
+USUNIETE:           | transformers, torch, sentence-transformers,
+                    | surya-ocr, paddleocr, onnxruntime, opencv-python
+
+12. MODELE AI (GGUF) - 8 modeli, ~6.9 GB lacznie
+-------------------------------------------------
+
+Council of Agents:
+- LFM2.5 1.2B (~780 MB) - Alpha Agent: szybki decydent
+- Qwen3 0.6B (~430 MB) - Beta Agent: precyzyjny walidator
+- LittleLamb 0.3B (~250 MB) - Gamma Agent: detektor duplikatow
+
+Extraction Agent:
+- LightOnOCR-1B (~800 MB) - glowny silnik VLM
+- Phi-3-mini 3.8B (~2.2 GB) - fallback
+
+Analytics Agent:
+- Hrida-T2SQL-128k (~1.5 GB) - ekspert SQL
+- Qwen2.5-1.5B-Instruct (~980 MB) - glowny analityk
+- Fin-RWKV-169M (~170 MB) - detektyw finansowy
+
+13. LOGOWANIE I MONITORING
+--------------------------
+
+Technologia       | Opis
+----------------- | ------------------------------------------------
+Loguru            | Zaawansowane logowanie z rotacja
+OpenTelemetry     | Distributed tracing
+Prometheus Client | Metryki API
+
+14. NARZEDZIA
+-------------
+
+Technologia | Opis
+----------- | ------------------------------------------------
+psutil      | Monitorowanie CPU, RAM, dysku
+python-dateutil| Parsowanie dat
 
 15. TESTOWANIE
 --------------
 
-  Technologia     |  Plik wymagań                      |  Lokalizacja w projekcie                                                |  Funkcja
-  --------------  |  --------------------------------  |  ---------------------------------------------------------------------  |  -----------------------------------------------------------------------
-  pytest          |  requirements.txt, pyproject.toml  |  tests/*.py, pyproject.toml [tool.pytest.ini_options]                   |  Framework testowy - uruchamianie i organizacja testów
-  pytest-asyncio  |  requirements.txt, pyproject.toml  |  pyproject.toml - asyncio_mode = "auto"                                 |  Async test support - testowanie funkcji asynchronicznych
-  pytest-cov      |  (opcjonalne dev) pyproject.toml   |  (w [dev] extras)                                                       |  Code coverage - pomiar pokrycia kodu testami
-  Hypothesis      |  (opcjonalne dev) pyproject.toml   |  tests/test_property_based.py, tests/test_simulation_property_based.py  |  Property-based testing - generowanie przypadków testowych z właściwości
-  k6              |  (osobne narzędzie)                |  tests/performance/k6_invoice_upload.js                                 |  Performance testing - testy wydajnościowe API (Load Impact)
+Technologia     | Opis
+--------------- | ------------------------------------------------
+pytest          | Framework testowy
+pytest-asyncio  | Async test support
+pytest-cov      | Code coverage
+Hypothesis      | Property-based testing
+k6              | Performance testing
 
 16. INTERFEJS DESKTOPOWY
 ------------------------
 
-  Technologia  |  Plik wymagań                        |  Lokalizacja w projekcie                                         |  Funkcja
-  -----------  |  ----------------------------------  |  --------------------------------------------------------------  |  --------------------------------------------------------------
-  Flet         |  requirements.txt (opcjonalne [ui])  |  Code/FRONTEND/main.py, Code/luz/main.py, Code/FRONTEND/ui/*.py  |  Desktop UI framework - aplikacja desktopowa (Python → Flutter)
-  Flet Router  |  (wbudowane w Flet)                  |  Code/FRONTEND/router.py                                         |  Routing UI - nawigacja między widokami aplikacji desktopowej
+Technologia | Opis
+----------- | ------------------------------------------------
+Flet        | Desktop UI (Python -> Flutter)
+Flet Router | Routing UI
 
-17. AI / MACHINE LEARNING
--------------------------
-
-  Technologia                 |  Plik wymagań                    |  Lokalizacja w projekcie                                       |  Funkcja
-  --------------------------  |  ------------------------------  |  ------------------------------------------------------------  |  ----------------------------------------------------------------------
-  llama-cpp-python            |  (opcjonalne AI) pyproject.toml  |  Code/CORE/llm_guard.py, Code/CORE/llm_extractor.py            |  LLM inference CPU/GPU - uruchamianie modeli GGUF lokalnie
-  Transformers (HuggingFace)  |  (opcjonalne AI) pyproject.toml  |  (w [ai] extras)                                               |  NLP pipeline - tokenizacja, embedding, inference modeli HuggingFace
-  sentence-transformers       |  (opcjonalne AI) pyproject.toml  |  (w [ai] extras)                                               |  Embedding - generowanie embeddingów zdań do wyszukiwania semantycznego
-  huggingface-hub             |  (opcjonalne AI) pyproject.toml  |  Code/SKRIPTS/download_models.py, config/models_manifest.json  |  Model hub - pobieranie modeli GGUF z weryfikacją SHA-256
-  Torch (PyTorch)             |  (opcjonalne AI) pyproject.toml  |  (w [ai] extras)                                               |  Deep learning framework - używany przez Transformers i inne modele
-
-Modele GGUF
-~~~~~~~~~~~
-
-  Model            |  Rozmiar  |  Agent                 |  Funkcja
-  ---------------  |  -------  |  --------------------  |  ------------------------
-  LFM 1.2B         |  ~800 MB  |  Alpha Agent           |  Klasyfikacja faktur
-  Qwen3 0.6B       |  ~450 MB  |  Beta Agent            |  Walidacja wtórna
-  LittleLamb 0.3B  |  ~200 MB  |  Gamma / Orchestrator  |  Tiebreaker + koordynacja
-  Granite 1B       |  ~680 MB  |  Rules Agent           |  Reguły biznesowe
-  Qwen2.5 1.5B     |  ~1 GB    |  Analytics Agent       |  Detekcja anomalii
-  Jamba 3B         |  ~1.8 GB  |  Decision Agent        |  Złożone decyzje
-
-18. INFRASTRUKTURA / DEVOPS
+17. INFRASTRUKTURA / DEVOPS
 ---------------------------
 
-  Technologia               |  Lokalizacja                                        |  Funkcja
-  ------------------------  |  -------------------------------------------------  |  ----------------------------------------------------------------
-  Docker                    |  Dockerfile                                         |  Konteneryzacja - build obrazu z Python 3.11-slim + Tesseract OCR
-  Docker Compose            |  docker-compose.yml                                 |  Orkiestracja - uruchamianie api + worker + nats + tigerbeetle
-  NATS Server               |  docker-compose.yml (image: nats:2.10-alpine)       |  Message broker - osobny serwer NATS w kontenerze
-  TigerBeetle Server        |  docker/tigerbeetle.Dockerfile, docker-compose.yml  |  Ledger server - osobny serwer TigerBeetle w kontenerze
-  Inno Setup                |  build_scripts/setup.iss                            |  Windows installer - tworzenie instalatora .exe dla Windows
-  NSIS                      |  build_scripts/setup.nsi                            |  Windows installer - alternatywny instalator NSIS
-  Prometheus + Alert Rules  |  deploy/prometheus/alert_rules.yml                  |  Monitoring - reguły alertów dla Prometheus
+Technologia       | Status     | Opis
+----------------- | ---------- | ---------------------------------
+pixi              | Nowy standard| Zastepuje Dockera dla dev
+Docker            | Opcjonalnie| Tylko dla TB w produkcji
+NATS Server (bin) | Nowy standard| Pakowany z aplikacja
+Inno Setup        | Build      | Windows installer
+Prometheus        | Monitoring | Alert rules
 
-19. GŁÓWNE SERWISY ZEWNĘTRZNE (API)
------------------------------------
-
-  Technologia                     |  Lokalizacja                          |  Funkcja
-  ------------------------------  |  -----------------------------------  |  ---------------------------------------------------------
-  GUS BIR (SOAP API)              |  Code/SERVICES/gus_bir_client.py      |  Pobieranie danych firm z GUS (REGON, NIP, status VAT)
-  Biała Lista MF (API)            |  Code/SERVICES/white_list_service.py  |  Weryfikacja rachunków VAT na Białej Liście Podatników VAT
-  NBP API                         |  Code/SERVICES/currency_converter.py  |  Kursy walut z Narodowego Banku Polskiego
-  KSeF (Krajowy System e-Faktur)  |  Code/CORE/integrations/ksef/*.py     |  Wysyłka faktur do KSeF (API + podpis kwalifikowany)
-
-20. AGENTY AI (COUNCIL OF LLMS)
--------------------------------
-
-  Agent               |  Model               |  Lokalizacja                          |  Funkcja
-  ------------------  |  ------------------  |  -----------------------------------  |  -----------------------------------------------------
-  Alpha Agent         |  LFM 1.2B            |  Code/SERVICES/council_agents.py      |  Klasyfikacja faktur - główna decyzja
-  Beta Agent          |  Qwen3 0.6B          |  Code/SERVICES/council_agents.py      |  Walidacja wtórna - potwierdza decyzję Alpha
-  Gamma Agent         |  LittleLamb 0.3B     |  Code/SERVICES/council_agents.py      |  Tiebreaker - rozstrzyga spory między Alpha i Beta
-  Rules Agent         |  Granite 1B          |  Code/SERVICES/rules_agent.py         |  Reguły biznesowe - weryfikacja zgodności z przepisami
-  Analytics Agent     |  Qwen2.5 1.5B        |  Code/SERVICES/analytics_agent.py     |  Detekcja anomalii - wykrywanie nietypowych faktur
-  Decision Agent      |  Jamba 3B / Granite  |  Code/SERVICES/decision_agent.py      |  Złożone decyzje - obsługa wyjątków
-  Orchestrator Agent  |  LittleLamb 0.3B     |  Code/SERVICES/orchestrator_agent.py  |  Koordynator - zarządza sesją Rady Agentów
-  Autopilot           |  (logika decyzyjna)  |  Code/SERVICES/autopilot.py           |  Automatyczne księgowanie na podstawie progów ufności
-
-21. SILNIK REGUŁ PODATKOWYCH (TAX ENGINE)
------------------------------------------
-
-  Komponent                |  Lokalizacja                          |  Technologia / Funkcja
-  -----------------------  |  -----------------------------------  |  -----------------------------------------------------------
-  RuleEngine (Zen-Engine)  |  Code/tax/rules.py                    |  DuckDB + first-match-wins SQL - ewaluacja reguł podatkowych
-  TaxMathEngine            |  Code/tax/math_engine.py              |  Python int (grosze) - arytmetyka podatkowa bez float
-  TaxPipeline              |  Code/tax/pipeline.py                 |  Python - orkiestracja: context → rules → math → audit
-  TraceGenerator           |  Code/services/trace_generator.py     |  Python - czytelna ścieżka decyzyjna dla człowieka
-  Proof Chain (Audit)      |  Code/tax/audit.py                    |  SHA-256 - kryptograficzny łańcuch audytowy
-  Integrity Verifier       |  Code/services/integrity_verifier.py  |  Weryfikacja integralności łańcucha SHA-256
-  ContextInterpreter       |  Code/CORE/context_interpreter.py     |  Mapowanie danych faktury na płaski kontekst
-  PriorityEngine           |  Code/services/priority_engine.py     |  First-match-wins z sortowaniem priorytetów
-  TemporalManager          |  Code/services/temporal_manager.py    |  Filtrowanie reguł według daty transakcji
-  RuleStore                |  Code/services/rule_store.py          |  Magazyn reguł w DuckDB (append-only, temporalne)
-
-22. SYSTEM KSIĘGOWY (ROBOTON_REFLEKTON)
----------------------------------------
-
-  Komponent             |  Lokalizacja                                      |  Funkcja
-  --------------------  |  -----------------------------------------------  |  ----------------------------------------------------------
-  LedgerClient          |  Code/Roboton_Reflekton/ledger_client.py          |  Klient TigerBeetle - dwustronne księgowanie (double-entry)
-  ShadowLedger          |  Code/Roboton_Reflekton/shadow_ledger.py          |  Symulacje podatkowe "co by było, gdyby"
-  ReconciliationEngine  |  Code/Roboton_Reflekton/reconciliation_engine.py  |  Uzgadnianie kont
-  VATReconciliation     |  Code/Roboton_Reflekton/vat_reconciliation.py     |  Uzgadnianie VAT
-  ForexEngine           |  Code/Roboton_Reflekton/forex_engine.py           |  Przewalutowanie
-  DunningEngine         |  Code/Roboton_Reflekton/dunning_engine.py         |  Windykacja należności
-  BudgetaryControl      |  Code/Roboton_Reflekton/budgetary_control.py      |  Kontrola budżetowa
-
-23. INNE NARZĘDZIA I SKRYPTY
+18. SERWISY ZEWNETRZNE (API)
 ----------------------------
 
-  Technologia            |  Lokalizacja                              |  Funkcja
-  ---------------------  |  ---------------------------------------  |  ------------------------------------------------------------
-  Build EXE (Windows)    |  build_scripts/build_exe.bat              |  Batch script - budowanie .exe na Windows
-  Generate Assets        |  tools/generate_assets.py                 |  Python - generowanie assetów (ikony, zasoby)
-  Model Downloader       |  Code/SKRIPTS/download_models.py          |  Python + HuggingFace Hub - pobieranie modeli GGUF z SHA-256
-  System Doctor          |  Code/SKRIPTS/doctor.py                   |  Python - diagnostyka systemu (Python, CUDA, modele, NATS)
-  Dependency Downloader  |  Code/installer/dependency_downloader.py  |  Python - pobieranie zależności dla instalatora
-  Nexus CLI              |  pyproject.toml - [project.scripts]       |  4 komendy CLI: nexus-api, nexus-worker, nexus-desktop, nexus
-  main.py                |  main.py (root)                           |  Centralny entrypoint - uruchamianie API/worker/doctor/all
+Technologia             | Funkcja
+----------------------- | ------------------------------------------------
+GUS BIR (SOAP API)      | Dane firm (REGON, NIP)
+Biala Lista MF (API)    | Weryfikacja rachunkow VAT
+NBP API                 | Kursy walut
+KSeF                    | Wysylka faktur elektronicznych
 
-24. FORMATOWANIE I JAKOŚĆ KODU
-------------------------------
+19. AGENTY AI (COUNCIL + EXTRACTION + ANALYTICS)
+------------------------------------------------
 
-  Technologia  |  Lokalizacja                                    |  Funkcja
-  -----------  |  ---------------------------------------------  |  ---------------------------------------------------------------
-  Ruff         |  pyproject.toml - [tool.ruff] (opcjonalne dev)  |  Linter + formatter - sprawdzanie stylu kodu (E, F, I, W, N, UP)
-  Mypy         |  pyproject.toml - [tool.mypy] (opcjonalne dev)  |  Type checker - statyczna weryfikacja typów
-  pre-commit   |  pyproject.toml (opcjonalne dev)                |  Git hooks - automatyczne formatowanie przed commitem
+Council of Agents:
+- Alpha Agent (LFM2.5 1.2B) - klasyfikacja faktur
+- Beta Agent (Qwen3 0.6B) - walidacja wtorna
+- Gamma Agent (LittleLamb 0.3B) - tiebreaker/duplikaty
 
-25. PLIKI KONFIGURACYJNE I BUILD
---------------------------------
+Extraction Agent:
+- LightOnOCR-1B - glowny silnik (VLM)
+- Phi-3-mini 3.8B - fallback/rezerva
 
-  Technologia                  |  Lokalizacja                  |  Funkcja
-  ---------------------------  |  ---------------------------  |  ---------------------------------------------------------------
-  pyproject.toml               |  root projektu                |  Konfiguracja pakietu, zależności, narzędzi (pytest, ruff, mypy)
-  requirements.txt             |  root projektu                |  Lista zależności (legacy, dla CI/manual install)
-  Dockerfile                   |  root projektu                |  Budowa obrazu Docker z wieloma targetami (api, worker, default)
-  docker-compose.yml           |  root projektu                |  Orkiestracja 4 serwisów: api + worker + nats + tigerbeetle
-  alembic.ini                  |  root projektu                |  Konfiguracja migracji bazy danych
-  .env.example                 |  root projektu                |  Szablon zmiennych środowiskowych
-  config/prod.env              |  config/prod.env              |  Profil produkcyjny (hardened security)
-  config/dev.env               |  config/dev.env               |  Profil deweloperski
-  config/models_manifest.json  |  config/models_manifest.json  |  Manifest modeli AI z SHA-256
-  .dockerignore                |  root projektu                |  Ignorowanie plików przy buildzie Docker
-  .gitignore                   |  root projektu                |  Ignorowanie plików w Git
+Analytics Agent:
+- Hrida-T2SQL-128k - ekspert SQL
+- Qwen2.5-1.5B-Instruct - glowny analityk
+- Fin-RWKV-169M - detektyw finansowy
 
-📊 STATYSTYKI
-------------
+20. PLIKI KONFIGURACYJNE
+------------------------
 
-  Kategoria                      |  Liczba technologii
-  -----------------------------  |  ------------------
-  Język i Środowisko             |  2
-  API / Serwer ASGI              |  2
-  Bazy Danych                    |  7
-  Walidacja / Serializacja       |  3
-  Kolejki / Komunikacja          |  4
-  HTTP / Sieć                    |  2
-  Resilience                     |  2
-  Kryptografia / Bezpieczeństwo  |  5
-  Finanse / Waluty               |  2
-  Przetwarzanie Dokumentów       |  9
-  Logowanie                      |  2
-  Metryki / Monitoring           |  2
-  Cache                          |  1
-  Narzędzia                      |  4
-  Testowanie                     |  5
-  Interfejs Desktopowy           |  2
-  AI / ML                        |  5 + 6 modeli GGUF
-  Infrastruktura / DevOps        |  7
-  Serwisy zewnętrzne             |  4
-  Agenty AI                      |  8
-  Silnik reguł podatkowych       |  10
-  System księgowy                |  7
-  Inne narzędzia                 |  7
-  Jakość kodu                    |  3
-  Pliki konfiguracyjne           |  11
-  Razem                          |  ~120+
+Plik                    | Funkcja
+----------------------- | ------------------------------------------------
+pixi.toml               | Manager srodowiska
+pyproject.toml          | Konfiguracja pakietu
+requirements.txt        | Lista zaleznosci (legacy)
+config/dev.env          | Profil deweloperski
+config/prod.env         | Profil produkcyjny
+alembic.ini             | Migracje bazy danych
+Dockerfile              | Obraz Docker (opcjonalnie)
+docker-compose.yml      | Orkiestracja (opcjonalnie)
+build_scripts/setup.iss | Instalator Windows
 
-Dokument wygenerowany automatycznie - 2026-06-04
+PODSUMOWANIE
+============
+
+Glowny jezyk:     Python >=3.13t (free-threaded)
+Framework API:    Litestar + Granian (Rust)
+Bazy danych:      SQLite+SQLCipher + sqlite-vec + DuckDB
+Kolejki:          NATS JetStream + Taskiq
+AI:               8 modeli GGUF (llama-cpp-python)
+Crypto:           Nexus-Crypto (wlasny Rust PyO3)
+Resilience:       stamina
+Build:            hatchling + mypyc + PyO3 + Nuitka
+Desktop UI:       Flet (Flutter)
+Liczba technologii: ~80 (zmniejszenie z ~120)
+
+Dokument zaktualizowany - 2026-06-05 (przebudowa v2.0)
