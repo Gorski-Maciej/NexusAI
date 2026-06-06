@@ -223,7 +223,7 @@ def main() -> int:
 
     try:
         # Ensure Code/ is on sys.path so lazy imports like `from core.config` work
-        _script_dir = Path(__file__).resolve().parent  # Code/SKRIPTS
+        _script_dir = Path(__file__).resolve().parent  # Code/scripts
         _code_dir = str(_script_dir.parent)  # Code/
         if _code_dir not in sys.path:
             sys.path.insert(0, _code_dir)

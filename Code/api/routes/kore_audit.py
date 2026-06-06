@@ -18,7 +18,7 @@ class KoreAuditController(Controller):
     @get("/audit")
     async def get_kore_audit(self) -> dict:
         root = Path(__file__).resolve().parents[2]
-        script_path = root / "SKRIPTS" / "kore_delivery_audit.py"
+        script_path = root / "scripts" / "kore_delivery_audit.py"
         spec = importlib.util.spec_from_file_location("kore_delivery_audit", script_path)
         if not spec or not spec.loader:
             raise InternalServerException("Unable to load KORE audit script")

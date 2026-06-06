@@ -16,7 +16,7 @@ class I18nOpsController(Controller):
     @get("/status")
     async def status(self) -> dict:
         api_locales = Path("Code/api/locales")
-        core_prompts = Path("Code/CORE/prompts")
+        core_prompts = Path("Code/core/prompts")
         api_languages = sorted([p.stem for p in api_locales.glob("*.json")]) if api_locales.exists() else []
         prompt_languages = sorted([p.stem for p in core_prompts.glob("*.json")]) if core_prompts.exists() else []
         return {

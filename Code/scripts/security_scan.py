@@ -1,7 +1,7 @@
 """DAST/SAST orchestration helper for staging security checks.
 
 Usage:
-    python Code/SKRIPTS/security_scan.py --target http://localhost:8000 --mode baseline
+    python Code/scripts/security_scan.py --target http://localhost:8000 --mode baseline
 """
 from __future__ import annotations
 

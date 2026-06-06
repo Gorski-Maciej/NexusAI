@@ -384,7 +384,7 @@ NexusAI/
 │   │   ├── dependencies.py    # DI providers
 │   │   └── routes/            # API route controllers
 │   │
-│   ├── CORE/                  # Core shared modules
+│   ├── core/                  # Core shared modules
 │   │   ├── config.py          # AppConfig dataclass (env vars)
 │   │   ├── broker.py          # NATS Taskiq broker setup
 │   │   ├── tasks.py           # Background task definitions
@@ -395,7 +395,7 @@ NexusAI/
 │   │   ├── outbox_relay.py    # Outbox → NATS relay
 │   │   └── saga.py            # Persisted saga store
 │   │
-│   ├── SERVICES/              # Business logic services
+│   ├── services/              # Business logic services
 │   │   ├── rules_engine.py    # Invoice validation rules
 │   │   ├── analytics_service.py
 │   │   ├── fraud_graph_scanner.py
@@ -437,7 +437,7 @@ NexusAI/
 │   ├── FRONTEND/              # Flet UI components
 │   ├── MODELS/                # SQLAlchemy ORM models
 │   ├── ARCHITECTURE/          # Architecture documentation
-│   └── SKRIPTS/               # Utility scripts
+│   └── scripts/               # Utility scripts
 │       ├── download_models.py # Model downloader (SHA-256 verified)
 │       └── doctor.py          # System diagnostics
 │
@@ -456,7 +456,7 @@ NexusAI/
 
 ## Key Modules
 
-### 🤖 AI Agent Council (`Code/SERVICES/council_agents.py`)
+### 🤖 AI Agent Council (`Code/services/council_agents.py`)
 
 Multi-LLM agent system that evaluates invoices through specialized agents:
 - **Alpha Agent** (LFM 1.2B) — Primary classification
@@ -484,7 +484,7 @@ Double-entry accounting with:
 - Shadow ledger for "what-if" tax simulations
 - VAT reconciliation engine
 
-### 🔄 Event System (`Code/CORE/`)
+### 🔄 Event System (`Code/core/`)
 
 Event-driven architecture:
 - **NATS JetStream** — Durable message streaming
@@ -580,13 +580,13 @@ pip install "nexus-ai[ai]"
 
 ```bash
 # Download all required GGUF models with SHA-256 integrity verification
-python Code/SKRIPTS/download_models.py
+python Code/scripts/download_models.py
 
 # Only verify existing models without re-downloading
-python Code/SKRIPTS/download_models.py --verify-only
+python Code/scripts/download_models.py --verify-only
 
 # Download a specific model
-python Code/SKRIPTS/download_models.py --model alpha
+python Code/scripts/download_models.py --model alpha
 ```
 
 The script downloads the following models:

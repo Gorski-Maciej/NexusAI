@@ -1,6 +1,6 @@
 # ── Core module requirements ────────────────────────────────────────────────
-# Instalacja: uv pip install -r Code/CORE/Requirements.txt   (zalecane — ~10x szybciej)
-# lub:        pip install -r Code/CORE/Requirements.txt
+# Instalacja: uv pip install -r Code/core/Requirements.txt   (zalecane — ~10x szybciej)
+# lub:        pip install -r Code/core/Requirements.txt
 
 # ── Core module requirements ────────────────────────────────────────────────
 # Instalacja: uv pip install -r Code/core/Requirements.txt   (zalecane — ~10x szybciej)

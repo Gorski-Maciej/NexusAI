@@ -15,10 +15,10 @@ def test_single_create_app_factory_exists() -> None:
 
 
 def test_server_uses_unified_create_app() -> None:
-    module = _parse("Code/api/server.py")
     source = Path("Code/api/server.py").read_text(encoding="utf-8")
     assert "from api.app import create_app" in source
-    assert "uvicorn.run(" in source
+    assert "import granian" in source
+    assert "granian.Granian(" in source
 
 
 def test_v1_and_v2_paths_defined() -> None:

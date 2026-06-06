@@ -7,14 +7,18 @@ from pathlib import Path
 
 import pytest
 
-pytest.skip("Saga store runtime test requires real async SQLAlchemy (aiosqlite/sqlite), not available with mocked sqlalchemy", allow_module_level=True)
+try:
+    from sqlalchemy.ext.asyncio import create_async_engine
+except ImportError:
+    pytest.skip("Saga store runtime test requires SQLAlchemy async support", allow_module_level=True)
 
-from sqlalchemy.ext.asyncio import create_async_engine
+if create_async_engine.__class__.__module__.startswith("unittest.mock"):
+    pytest.skip("Saga store runtime test requires real SQLAlchemy, not a mock", allow_module_level=True)
 
 
 def _load_store_class():
     root = Path(__file__).resolve().parents[1]
-    module_path = root / "Code" / "CORE" / "saga.py"
+    module_path = root / "Code" / "core" / "saga.py"
     spec = importlib.util.spec_from_file_location("core_saga", module_path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
@@ -24,13 +28,13 @@ def _load_store_class():
 
 
 def test_persisted_saga_store_runtime(tmp_path: Path) -> None:
-    PersistedSagaStore = _load_store_class()
+    persisted_saga_store = _load_store_class()
 
     async def scenario() -> None:
         db_path = tmp_path / "saga_runtime.db"
         engine = create_async_engine(f"sqlite+aiosqlite:///{db_path}")
         try:
-            store = PersistedSagaStore(engine)
+            store = persisted_saga_store(engine)
             await store.ensure_schema()
 
             created = await store.transition("inv-1", "uploaded", {"tenant_id": "t1"})
