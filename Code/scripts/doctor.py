@@ -163,7 +163,7 @@ def check_models() -> str:
     if all_found:
         lines.insert(0, f"  {_ok(summary)}")
     else:
-        lines.insert(0, f"  {_fail(summary)} — run: python Code/SKRIPTS/download_models.py")
+        lines.insert(0, f"  {_fail(summary)} — run: python Code/scripts/download_models.py")
 
     # Show integrity issues if any
     integrity_issues = [m for m in missing if m["status"] == "checksum_mismatch"]
@@ -311,7 +311,7 @@ def run_diagnostics() -> dict[str, Any]:
     else:
         print(f"  {_fail(f'{pass_count} passed, {warn_count} warnings, {fail_count} FAILED')}")
 
-    print(f"  {_info('Tip: Run python Code/SKRIPTS/download_models.py to download missing models')}")
+    print(f"  {_info('Tip: Run python Code/scripts/download_models.py to download missing models')}")
     print(f"  {_info('Tip: Run nats-server -p 4222 -js to start NATS')}")
     print()
 

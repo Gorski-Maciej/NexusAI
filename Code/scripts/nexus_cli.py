@@ -25,7 +25,7 @@ from pathlib import Path
 def main(argv: list[str] | None = None) -> int:
     """Import and delegate to the real main() in Code/main.py."""
     # Ensure project root is on sys.path so Code/main.py and subpackages can be found
-    # __file__ = Code/SKRIPTS/nexus_cli.py -> parent = Code/SKRIPTS/ -> parent = Code/ -> parent = project root
+    # __file__ = Code/scripts/nexus_cli.py -> parent = Code/scripts/ -> parent = Code/ -> parent = project root
     _project_root = Path(__file__).resolve().parent.parent.parent
     _root_dir = str(_project_root)
     if _root_dir not in sys.path:

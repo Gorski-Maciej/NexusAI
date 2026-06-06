@@ -28,7 +28,7 @@ REQUIREMENTS: dict[str, tuple[Check, ...]] = {
         {"file": "Code/api/routes/invoices.py", "contains": ("upload-large", "max_bytes")},
     ),
     "10_offline_secrets": (
-        {"file": "Code/CORE/secrets.py", "contains": ("ttl_hours", "cache", "offline")},
+        {"file": "Code/core/secrets.py", "contains": ("ttl_hours", "cache", "offline")},
     ),
     "10_ui_state_hydration": (
         {"file": "Code/api/routes/ui_state.py", "contains": ("/api/v1/ui", "ui_drafts", "save_draft", "get_draft")},
@@ -39,8 +39,8 @@ REQUIREMENTS: dict[str, tuple[Check, ...]] = {
         {"file": "Code/scripts/migration_sanity_check.py"},
         {"file": "Code/scripts/log_pii_scanner.py"},
         {"file": "Code/scripts/model_retention_runner.py"},
-        {"file": "Code/SERVICES/otel_fallback.py"},
-        {"file": "Code/SERVICES/finops_meter.py"},
+        {"file": "Code/services/otel_fallback.py"},
+        {"file": "Code/services/finops_meter.py"},
     ),
     "1_jwt_rbac_login": (
         {"file": "Code/api/app.py", "contains": ("on_app_init=[jwt_auth.on_app_init]",)},
@@ -54,10 +54,10 @@ REQUIREMENTS: dict[str, tuple[Check, ...]] = {
         {"file": "Code/api/routes/system_integrity.py", "contains": ("/ui-drafts/cleanup", "cleanup_stale_ui_drafts")},
         {"file": "Code/api/controllers/analytics.py", "contains": ("read_only=True", "SUM(total_gross) OVER", "cumulative_gross", "ASOF LEFT JOIN", "report_currency")},
         {"file": "Code/api/state.py", "contains": ("CREATE TABLE IF NOT EXISTS fx_rates", "idx_fx_rates_currency_effective")},
-        {"file": "Code/SERVICES/replication.py", "contains": ("setup_zero_etl",), "not_contains": ("INSERT OR REPLACE INTO invoices_replica",)},
+        {"file": "Code/services/replication.py", "contains": ("setup_zero_etl",), "not_contains": ("INSERT OR REPLACE INTO invoices_replica",)},
     ),
     "3_storage_streaming": (
-        {"file": "Code/SERVICES/storage.py", "contains": ("stream",)},
+        {"file": "Code/services/storage.py", "contains": ("stream",)},
         {"file": "Code/api/middleware.py", "contains": ("UploadSizeGuardMiddleware", "/invoices/upload-large")},
         {"file": "Code/api/shared_image_buffer.py", "contains": ("SharedImageBuffer",)},
     ),
@@ -68,7 +68,7 @@ REQUIREMENTS: dict[str, tuple[Check, ...]] = {
         {"file": "Code/scripts/migration_sanity_check.py"},
         {"file": "Code/scripts/otel_buffer_replayer.py"},
         {"file": "Code/scripts/model_retention_runner.py"},
-        {"file": "Code/SERVICES/finops_meter.py"},
+        {"file": "Code/services/finops_meter.py"},
         {"file": "Code/api/i18n.py"},
     ),
 }

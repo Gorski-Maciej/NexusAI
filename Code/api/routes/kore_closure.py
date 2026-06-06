@@ -36,7 +36,7 @@ class KoreClosureController(Controller):
             except Exception as exc:
                 return {"status": "error", "detail": str(exc)}
 
-        kore_audit = _run_script("kore_delivery_audit", "SKRIPTS/kore_delivery_audit.py")
+        kore_audit = _run_script("kore_delivery_audit", "scripts/kore_delivery_audit.py")
         summary_path = root / "reports" / "security_scan_summary.json"
         if summary_path.exists():
             security_summary = msgspec_loads(summary_path.read_bytes())
