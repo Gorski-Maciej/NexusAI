@@ -1,0 +1,12 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nexus-crypto"
+version = "0.1.0"
+description = "NexusAI custom crypto module — pure Python fallback (Rust+PyO3 when available)"
+requires-python = ">=3.13"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]

@@ -1,0 +1,145 @@
+from __future__ import annotations
+
+import logging
+import os
+import secrets
+from dataclasses import dataclass
+from datetime import timedelta
+
+from litestar.connection import ASGIConnection
+from litestar.security.jwt import JWTAuth, Token
+from sqlalchemy import text
+
+logger = logging.getLogger("nexus.api.security")
+
+def _resolve_jwt_secret() -> str:
+    """Pobiera klucz JWT z env; brak twardo zakodowanego klucza w repozytorium."""
+    env_secret = os.getenv("NEXUS_JWT_SECRET", "").strip()
+    if env_secret:
+        return env_secret
+
+    # Fallback wyłącznie dla środowisk lokalnych/deweloperskich.
+    # Nie zapisujemy stałego sekretu w kodzie.
+    generated = secrets.token_urlsafe(48)
+    logger.warning("NEXUS_JWT_SECRET is missing; using ephemeral dev-only JWT secret.")
+    return generated
+
+SECRET_KEY = _resolve_jwt_secret()
+
+def _resolve_jwt_expiration_seconds() -> int:
+    raw = os.getenv("NEXUS_JWT_EXPIRATION_SECONDS", "3600").strip()
+    try:
+        value = int(raw)
+    except ValueError:
+        logger.warning("Invalid NEXUS_JWT_EXPIRATION_SECONDS=%s, fallback to 3600", raw)
+        return 3600
+    if value <= 0:
+        logger.warning("Non-positive NEXUS_JWT_EXPIRATION_SECONDS=%s, fallback to 3600", raw)
+        return 3600
+    return value
+
+JWT_ISSUER = os.getenv("NEXUS_JWT_ISSUER", "nexus-ai")
+JWT_AUDIENCE = os.getenv("NEXUS_JWT_AUDIENCE", "nexus-api")
+JWT_EXPIRATION_SECONDS = _resolve_jwt_expiration_seconds()
+
+# --- Konfiguracja Refresh Token (Rozwiązanie 16) ---
+REFRESH_TOKEN_EXPIRATION_DAYS = int(os.getenv("NEXUS_REFRESH_TOKEN_DAYS", "30"))
+
+# Skrócony czas życia access tokena (15 minut zamiast 3600s)
+# Wymusza częstsze odświeżanie, co zwiększa bezpieczeństwo
+if JWT_EXPIRATION_SECONDS > 900:
+    logger.info(
+        "Reducing JWT expiration from %ss to 900s for refresh-token flow (Rozwiązanie 16). "
+        "Set NEXUS_JWT_EXPIRATION_SECONDS=900 to silence this message.",
+        JWT_EXPIRATION_SECONDS,
+    )
+    JWT_EXPIRATION_SECONDS = 900
+
+async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> User | None:
+    if not token.sub:
+        return None
+
+    extras = getattr(token, "extras", None) or {}
+    token_jwt_version = extras.get("jwt_version")
+
+    # Fast path: check jwt_version from token extras against database
+    db_engine = getattr(connection.app.state, "db_engine", None)
+    if db_engine is not None:
+        async with db_engine.connect() as conn:
+            row = (
+                await conn.execute(
+                    text(
+                        "SELECT id, username, role, tenant_id, is_active, jwt_version "
+                        "FROM users WHERE id = :id OR username = :id LIMIT 1"
+                    ),
+                    {"id": str(token.sub)},
+                )
+            ).mappings().first()
+
+            if not row:
+                return None
+
+            # Check if user is active
+            if not row.get("is_active"):
+                return None
+
+            # jwt_version check: if token has a jwt_version, verify it matches the database
+            if token_jwt_version is not None:
+                db_jwt_version = row.get("jwt_version", 1)
+                try:
+                    if int(token_jwt_version) < int(db_jwt_version):
+                        # Token was issued before a logout/password change
+                        logger.warning(
+                            "Rejected stale JWT for user %s: token_v=%s, db_v=%s",
+                            row["username"], token_jwt_version, db_jwt_version,
+                        )
+                        return None
+                except (ValueError, TypeError):
+                    pass
+
+            return User(
+                id=str(row["id"]),
+                username=str(row["username"]),
+                role=str(row["role"]),
+                tenant_id=str(row["tenant_id"]),
+            )
+
+    # Fallback: if no DB engine, rely on token extras
+    if extras.get("username") and extras.get("role"):
+        return User(
+            id=str(token.sub),
+            username=str(extras["username"]),
+            role=str(extras["role"]),
+            tenant_id=str(extras.get("tenant_id")) if extras.get("tenant_id") is not None else None,
+        )
+
+    return None
+
+
+@dataclass(slots=True)
+class User:
+    id: str
+    username: str
+    role: str
+    tenant_id: str | None = None
+
+jwt_auth = JWTAuth[User](
+    retrieve_user_handler=retrieve_user_handler,
+    token_secret=SECRET_KEY,
+    accepted_issuers=[JWT_ISSUER],
+    accepted_audiences=[JWT_AUDIENCE],
+    default_token_expiration=timedelta(seconds=JWT_EXPIRATION_SECONDS),
+    exclude=[
+        "/api/auth/login",
+        "/api/auth/register",
+        "/api/auth/refresh",
+        "/api/auth/csrf-token",
+        "/api/auth/reset-password",
+        "/api/auth/reset-password/confirm",
+        "/api/auth/confirm",  # Prefix match for /api/auth/confirm/{token}
+        "/api/v1/health",
+        "/api/v2/health",
+        "/schema/openapi.yml",
+        "/schema/swagger",
+    ],
+)

@@ -1,0 +1,5 @@
+{
+  "upload.missing_file": "Missing 'file' field",
+  "upload.empty_file": "Empty file",
+  "upload.file_too_large": "File is too large (limit {limit_mb} MB)"
+}

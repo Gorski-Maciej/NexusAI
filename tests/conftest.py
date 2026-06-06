@@ -61,7 +61,7 @@ class FakeDuckDBManager:
     def close(self) -> None:
         pass
 
-    def __enter__(self) -> "FakeDuckDBManager":
+    def __enter__(self) -> FakeDuckDBManager:
         return self
 
     def __exit__(self, *args: Any) -> None:
@@ -102,7 +102,7 @@ for m in ["aiohttp", "yarl", "multidict", "aiosignal", "frozenlist",
 
 # ===== KROK 2: Pre-load wszystkich core.* submodułów =====
 
-CORE_DIR = CODE_DIR / "CORE"
+CORE_DIR = CODE_DIR / "core"
 
 # Najpierw stwórz namespace core
 _core_ns = types.ModuleType("core")
@@ -110,15 +110,15 @@ _core_ns.__path__ = [str(CORE_DIR)]
 _core_ns.__package__ = "core"
 sys.modules["core"] = _core_ns
 
-# Lista wszystkich .py plików w CORE (oprócz __init__.py)
+# Lista wszystkich .py plików w core/ (oprócz __init__.py)
 CORE_MODULES: list[str] = [
     "active_learning", "adaptive_batcher", "ai_context", "analytics",
-    "backup", "base", "broker", "bus", "categorizer", "circuit_breaker",
+    "backup", "base", "broker", "bus", "circuit_breaker",
     "config", "crypto", "events", "exceptions", "forecaster",
     "hardware", "ipc_vision", "llm_extractor", "llm_guard", "logger",
     "memory_manager", "model_manager", "model_retention", "monitor",
-    "outbox_relay", "parsers", "plugins", "prompts", "resilience",
-    "saga", "secrets", "shm_manager", "storage", "tasks", "tenant",
+    "msgspec_utils", "outbox_relay", "parsers", "plugins", "prompts",
+    "resilience", "saga", "secrets", "shm_manager", "tasks", "tenant",
     "tracing", "updater",
 ]
 
