@@ -1,11 +1,12 @@
 """
 Currency Converter — bezpieczna konwersja walut z kursem NBP.
 
-Wzorzec Fowler's Money (oficjalna implementacja py-moneyed):
-każda operacja walutowa jawna, audytowalna,
-zgodna z polskimi przepisami (kurs średni NBP z ostatniego dnia roboczego).
+Zastępuje: py-moneyed (Money, Fowler's Money pattern) → Nexus-Money (msgspec.Struct)
+Zgodnie z aa3fvcx.txt: Nexus-Money to minimalistyczna reprezentacja pieniędzy
+oparta na msgspec.Struct, z amount_cents: int i currency: str.
 
-Używa: py-moneyed (Money, PLN, EUR, USD...)
+Każda operacja walutowa jawna, audytowalna,
+zgodna z polskimi przepisami (kurs średni NBP z ostatniego dnia roboczego).
 """
 
 from __future__ import annotations
@@ -16,7 +17,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
 import duckdb
-from moneyed import Money as BaseMoney
+import msgspec
 from sqlalchemy import DECIMAL as SADECIMAL
 from sqlalchemy import TypeDecorator
 
@@ -63,89 +64,124 @@ class CurrencyRateNotFoundError(ValueError):
         )
 
 
-# ── Money — oficjalny Fowler's Money (py-moneyed) z dodatkowymi metodami ─────
+# ── Nexus-Money — minimalistyczna reprezentacja pieniędzy (msgspec.Struct) ───
+# Zgodnie z aa3fvcx.txt, Punkt 9: Nexus-Money zastępuje py-moneyed.
+# amount_cents: int — kwota w najmniejszej jednostce (grosze)
+# currency: str — kod waluty (np. "PLN", "EUR")
 
 
-class Money(BaseMoney):
-    """Fowler's Money — oficjalna implementacja py-moneyed z dodatkami.
+class Money(msgspec.Struct, frozen=True):
+    """Nexus-Money — minimalistyczna reprezentacja pieniędzy.
 
-    Wszystkie operacje arytmetyczne dziedziczone z ``moneyed.Money``:
-    - dodawanie/odejmowanie: tylko tej samej waluty (inaczej CurrencyMismatchError)
-    - mnożenie/dzielenie: przez skalar (int, Decimal)
-    - porównanie: ``==`` działa między Money, ``!=`` między walutami
+    Zastępuje: py-moneyed.Money
+    Nowy:     msgspec.Struct z amount_cents i currency
 
-    Dodatkowe metody (zgodność z istniejącym kodem NexusAI):
-    - ``to_dict()`` — serializacja do słownika
-    - ``zero(currency)`` — kwota zerowa w danej walucie
-    - ``.currency_code`` — szybki dostęp do kodu waluty (str)
-    - ``__getstate__``/``__setstate__`` — wsparcie pickle / msgspec
-    - ``__get_validators__`` — wsparcie Pydantic v1
+    Wszystkie operacje arytmetyczne na poziomie groszy (int),
+    co eliminuje błędy zaokrągleń zmiennoprzecinkowych.
 
-    Example:
-        >>> net = Money("100.00", "PLN")
-        >>> vat = Money("23.00", "PLN")
-        >>> total = net + vat
-        >>> total.amount == Decimal("123.00")
-        True
-        >>> total.currency_code
-        'PLN'
+    Attributes:
+        amount_cents: Kwota w groszach (int). Np. 12345 = 123.45 PLN.
+        currency: Kod waluty (str). Np. "PLN", "EUR", "USD".
+
+    Uwaga: Główny konstruktor to ``Money(amount_cents=..., currency=...)``.
+    Dla kompatybilności wstecznej z py-moneyed, użyj ``Money.from_string()``.
     """
+
+    amount_cents: int
+    currency: str = "PLN"
+
+    @property
+    def amount(self) -> Decimal:
+        """Kwota w jednostkach waluty (Decimal z 2 miejscami)."""
+        return Decimal(self.amount_cents) / Decimal("100")
 
     @property
     def currency_code(self) -> str:
         """Kod waluty jako string (np. 'PLN', 'EUR')."""
-        return self.currency.code
+        return self.currency
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize to dict for JSON storage."""
-        return {"amount": str(self.amount), "currency": self.currency_code}
+        return {"amount_cents": self.amount_cents, "currency": self.currency}
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Money:
         """Deserialize from dict (reverse of ``to_dict``)."""
-        return cls(str(data["amount"]), str(data["currency"]))
+        return cls(amount_cents=int(data["amount_cents"]), currency=str(data.get("currency", "PLN")))
 
-    @staticmethod
-    def zero(currency: str = "PLN") -> Money:
+    @classmethod
+    def from_decimal(cls, amount: Decimal | str | float, currency: str = "PLN") -> Money:
+        """Create Money from a decimal amount (e.g. "123.45" → amount_cents=12345)."""
+        if isinstance(amount, float):
+            amount = str(amount)
+        if isinstance(amount, str):
+            amount = Decimal(amount)
+        cents = int((amount * Decimal("100")).to_integral_value(rounding=ROUND_HALF_UP))
+        return cls(amount_cents=cents, currency=currency)
+
+    @classmethod
+    def from_string(cls, amount: str, currency: str = "PLN") -> Money:
+        """Create Money from a decimal string (kompatybilność z py-moneyed API).
+
+        Zastępuje: ``Money("123.45", "PLN")`` (py-moneyed)
+        Nowy:     ``Money.from_string("123.45", "PLN")``
+
+        Args:
+            amount: Kwota jako string (np. "123.45").
+            currency: Kod waluty (default "PLN").
+
+        Returns:
+            Money z amount_cents obliczonym z stringa.
+        """
+        return cls.from_decimal(amount, currency)
+
+    @classmethod
+    def zero(cls, currency: str = "PLN") -> Money:
         """Convenience: zero amount in a given currency."""
-        return Money("0.00", currency)
+        return cls(amount_cents=0, currency=currency)
 
-    # ── pickle / msgspec support ────────────────────────────────────────
+    def __add__(self, other: Money) -> Money:
+        """Add two Money objects (same currency required)."""
+        if self.currency != other.currency:
+            raise CurrencyMismatchError(self.currency, other.currency, "add")
+        return Money(self.amount_cents + other.amount_cents, self.currency)
 
-    def __getstate__(self) -> tuple[str, str]:
-        """Return (amount_str, currency_code) for serialization."""
-        return (str(self.amount), self.currency_code)
+    def __sub__(self, other: Money) -> Money:
+        """Subtract two Money objects (same currency required)."""
+        if self.currency != other.currency:
+            raise CurrencyMismatchError(self.currency, other.currency, "subtract")
+        return Money(self.amount_cents - other.amount_cents, self.currency)
 
-    def __setstate__(self, state: tuple[str, str]) -> None:
-        """Restore from (amount_str, currency_code)."""
-        amount_str, currency_code = state
-        self.__init__(amount_str, currency_code)
+    def __mul__(self, scalar: int | Decimal) -> Money:
+        """Multiply by scalar (int or Decimal)."""
+        if isinstance(scalar, Decimal):
+            cents = int((Decimal(self.amount_cents) * scalar).to_integral_value(rounding=ROUND_HALF_UP))
+        else:
+            cents = self.amount_cents * scalar
+        return Money(cents, self.currency)
 
-    # ── Pydantic support (v1) ───────────────────────────────────────────
+    def __rmul__(self, scalar: int | Decimal) -> Money:
+        return self.__mul__(scalar)
 
-    @classmethod
-    def __get_validators__(cls) -> Any:
-        """Pydantic v1 validators — accepts str, Decimal, float, int, dict or Money."""
-        yield cls._pydantic_validate
+    def __neg__(self) -> Money:
+        return Money(-self.amount_cents, self.currency)
 
-    @classmethod
-    def _pydantic_validate(cls, value: Any) -> Money:
-        """Validate and coerce various types to Money."""
-        if isinstance(value, cls):
-            return value
-        if isinstance(value, dict):
-            return cls.from_dict(value)
-        if isinstance(value, str):
-            return Money(value, "PLN")
-        if isinstance(value, (Decimal, float, int)):
-            return Money(str(value), "PLN")
-        raise TypeError(f"Cannot convert {type(value).__name__} to Money")
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Money):
+            return NotImplemented
+        return self.amount_cents == other.amount_cents and self.currency == other.currency
+
+    def __str__(self) -> str:
+        return f"{self.amount:.2f} {self.currency}"
+
+    def __repr__(self) -> str:
+        return f"Money(amount_cents={self.amount_cents}, currency={self.currency!r})"
 
 
 def _check_currencies(a: Money, b: Money, operation: str = "operate") -> None:
     """Validate that two Money objects have the same currency."""
-    if a.currency_code != b.currency_code:
-        raise CurrencyMismatchError(a.currency_code, b.currency_code, operation)
+    if a.currency != b.currency:
+        raise CurrencyMismatchError(a.currency, b.currency, operation)
 
 
 # ── Currency Converter ──────────────────────────────────────────────────────
@@ -156,8 +192,8 @@ class CurrencyConverter:
 
     Usage:
         converter = CurrencyConverter(duckdb_conn)
-        result = converter.convert(Money("100", "EUR"), "PLN", date(2025, 6, 1))
-        # → Money(Decimal('450.00'), 'PLN')  # example rate 4.50
+        result = converter.convert(Money.from_decimal("100", "EUR"), "PLN")
+        # → Money(amount_cents=45000, currency='PLN')  # example rate 4.50
     """
 
     NBP_API_URL = "http://api.nbp.pl/api/exchangerates/rates/A/{currency}/{date}/"
@@ -188,22 +224,24 @@ class CurrencyConverter:
         Raises:
             CurrencyRateNotFoundError: If rate not available.
         """
-        if amount.currency_code == target_currency:
+        if amount.currency == target_currency:
             return amount  # no conversion needed
 
         if rate_date is None:
             rate_date = date.today()
 
-        rate = self._get_rate(amount.currency_code, rate_date)
-        converted_amount = (amount.amount * rate).quantize(
-            Decimal("0.01"), rounding=ROUND_HALF_UP
+        rate = self._get_rate(amount.currency, rate_date)
+        converted_cents = int(
+            (Decimal(amount.amount_cents) * rate / Decimal("100")).to_integral_value(
+                rounding=ROUND_HALF_UP
+            )
         )
         logger.info(
             "Converted %s %s → %s at rate %s (date=%s)",
-            amount.amount, amount.currency_code, target_currency,
+            amount.amount, amount.currency, target_currency,
             rate, rate_date.isoformat(),
         )
-        return Money(converted_amount, target_currency)
+        return Money(converted_cents, target_currency)
 
     def _get_rate(self, currency: str, rate_date: date) -> Decimal:
         """Get exchange rate from cache or NBP API.
@@ -286,10 +324,10 @@ class CurrencyConverter:
     ) -> dict[str, Any]:
         """Build an auditable conversion record for decision_traces."""
         return {
-            "original_amount": str(original.amount),
-            "original_currency": original.currency_code,
-            "converted_amount": str(converted.amount),
-            "target_currency": converted.currency_code,
+            "original_amount_cents": original.amount_cents,
+            "original_currency": original.currency,
+            "converted_amount_cents": converted.amount_cents,
+            "target_currency": converted.currency,
             "rate": str(rate),
             "rate_date": rate_date.isoformat(),
             "rate_source": "NBP",
@@ -304,23 +342,19 @@ class CurrencyConverter:
         """
         if not items:
             return
-        ref_currency = items[0].currency_code
+        ref_currency = items[0].currency
         for item in items[1:]:
-            if item.currency_code != ref_currency:
-                raise CurrencyMismatchError(ref_currency, item.currency_code, "invoice")
+            if item.currency != ref_currency:
+                raise CurrencyMismatchError(ref_currency, item.currency, "invoice")
 
 
 # ── SQLAlchemy Money Type ────────────────────────────────────────────────────
-# Przechowuje kwotę Money jako DECIMAL (amount), waluta w osobnej kolumnie.
-# Użyj w ORM: amount_net = Column(MoneyType(12, 2), default=Money.zero)
 
 
 class MoneyType(TypeDecorator):
-    """SQLAlchemy type that stores ``Money.amount`` as DECIMAL.
+    """SQLAlchemy type that stores ``Money.amount_cents`` as DECIMAL.
 
     Waluta jest przechowywana w osobnej kolumnie (``currency: str``).
-    Przy odczycie ``MoneyType`` zwraca tylko kwotę (``Decimal``).
-    Aby uzyskać pełny obiekt ``Money``, użyj property na modelu ORM.
 
     Usage:
 
@@ -329,10 +363,7 @@ class MoneyType(TypeDecorator):
             from sqlalchemy import Column
             from services.currency_converter import MoneyType
 
-            amount_net = Column(MoneyType(12, 2), default=Decimal("0.0"))
-
-    **Uwaga:** ``MoneyType`` nie przechowuje waluty — zwraca ``Decimal``.
-    Pełny obiekt ``Money`` konstruowany jest przez property na modelu.
+            amount_net = Column(MoneyType(12, 2), default=0)
     """
 
     impl = SADECIMAL
@@ -348,12 +379,14 @@ class MoneyType(TypeDecorator):
         if value is None:
             return None
         if isinstance(value, Money):
-            return Decimal(str(value.amount))
+            return Decimal(value.amount_cents) / Decimal("100")
+        if isinstance(value, int):
+            return Decimal(value)
         if isinstance(value, Decimal):
             return value
-        if isinstance(value, (int, float)):
+        if isinstance(value, (float,)):
             return Decimal(str(value))
-        raise TypeError(f"Expected Money or Decimal, got {type(value).__name__}")
+        raise TypeError(f"Expected Money, int, or Decimal, got {type(value).__name__}")
 
     def process_result_value(self, value: Any, dialect: Any) -> Decimal | None:
         """Convert DB DECIMAL → Python Decimal."""
@@ -373,9 +406,7 @@ class MoneyType(TypeDecorator):
 def msgspec_money_enc_hook(obj: Any) -> Any:
     """msgspec encoder hook: serializes ``Money`` to ``float`` (amount).
 
-    Waluta jest dostępna w osobnym polu ``currency`` struktury response.
-    Dzięki temu API pozostaje kompatybilne wstecz — klienci nadal otrzymują
-    ``{"amount_net": 100.00}`` zamiast ``{"amount_net": {"amount": "100.00", "currency": "PLN"}}``.
+    Zgodny wstecz: klienci nadal otrzymują ``{"amount_net": 100.00}``.
 
     Usage:
 

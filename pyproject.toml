@@ -87,7 +87,7 @@ dependencies = [
 
     # ═══════════════════════════════════════════════════════════════════════
     # Cryptography — nexus-crypto (Rust + PyO3, własny moduł)
-    # Zastępuje: cryptography (całość — Fernet, PBKDF2, SHA-256)
+    # Zastępuje: cryptography (Fernet, PBKDF2, SHA-256)
     # ═══════════════════════════════════════════════════════════════════════
     "nexus-crypto>=0.1.0",
 
@@ -120,31 +120,38 @@ dependencies = [
     "huggingface-hub>=0.23.0",
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Logging — Loguru
+    # Logging — Loguru + structlog (ustrukturyzowane logowanie z kontekstem)
     # ═══════════════════════════════════════════════════════════════════════
     "loguru>=0.7.0",
+    "structlog>=24.0.0",
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Metrics / Monitoring — Prometheus Client
+    # Metrics / Monitoring — OpenTelemetry (zastępuje prometheus_client)
     # ═══════════════════════════════════════════════════════════════════════
-    "prometheus_client>=0.20.0",
+    "opentelemetry-api>=1.25.0",
+    "opentelemetry-sdk>=1.25.0",
+    "opentelemetry-prometheus-exporter>=0.46b0",
 
     # ═══════════════════════════════════════════════════════════════════════
     # Utilities
     # ═══════════════════════════════════════════════════════════════════════
     "psutil>=5.9.0",
-    "py-moneyed>=3.0",
+    "pendulum>=3.0.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0.0",
-    "pytest-asyncio>=0.23.0",
+    "pytest-anyio>=0.1.0",
     "pytest-cov>=5.0.0",
-    "hypothesis>=6.100.0",
+    "hypothesis>=6.100.0",  # Zachowany dla złożonych property-based tests
+    "crosshair>=0.1.0",
     "ruff>=0.3.0",
     "mypy>=1.8.0",
     "pre-commit>=3.6.0",
+    "schemathesis>=3.30.0",
+    "locust>=2.29.0",
+    "py-spy>=0.3.14",
 ]
 ui = [
     "flet>=0.28.0",
@@ -186,11 +193,13 @@ packages = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-asyncio_mode = "auto"
 filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore::PendingDeprecationWarning",
 ]
+# pytest-anyio: natywna asynchroniczność (anyio backend)
+# Zastępuje pytest-asyncio — testy działają na anyio, tej samej warstwie co kod produkcyjny
+# Uwaga: async test functions wymagają @pytest.mark.anyio lub pytestmark na poziomie modułu
 
 # ── Ruff (linter + formatter) ────────────────────────────────────────────────
 [tool.ruff]
@@ -212,6 +221,9 @@ strict = false
 ignore_missing_imports = true
 warn_unused_ignores = false
 
-# ── pytest-asyncio ──────────────────────────────────────────────────────────
-[tool.pytest_asyncio]
-mode = "auto"
+# ── crosshair (property-based testing) ───────────────────────────────────────
+# Zastępuje: hypothesis
+# crosshair uses SMT-based static analysis to mathematically prove correctness
+# instead of random fuzzing. It's faster, more deterministic, and lighter.
+[tool.crosshair]
+max_examples = 200

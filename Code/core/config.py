@@ -1,7 +1,9 @@
 """Central runtime configuration and startup validation.
 
-Zastępuje: dataclass (standard Python) → msgspec.Struct (ultraszybki, mniejszy narzut)
-Dodatkowo: ładowanie profili .env przez msgspec parsowanie TOML.
+Zastępuje: .env + python-dotenv → msgspec TOML (ultraszybki, mniejszy narzut)
+Zgodnie z aa3fvcx.txt:
+- msgspec ma wbudowany parser TOML — nie potrzebuje python-dotenv
+- Konfiguracja w czystym TOML zamiast .env
 """
 from __future__ import annotations
 
@@ -10,21 +12,63 @@ import binascii
 import importlib.util
 import os
 from pathlib import Path
+from typing import Any
 
-from msgspec import Struct
+from msgspec import Struct, toml
+
 
 ENV_CONFIG_DIR: Path = Path(__file__).resolve().parent.parent.parent / "config"
-"""Directory containing environment-specific .env profiles."""
+"""Directory containing environment-specific TOML config files."""
 
 
-def _load_env_profile(environment: str) -> None:
-    """Load environment-specific config file from config/{env}.env."""
-    profile_path = ENV_CONFIG_DIR / f"{environment}.env"
+def _load_toml_profile(environment: str) -> None:
+    """Load environment-specific config from config/{env}.toml.
+
+    Zastępuje: _load_env_profile (ładowanie .env)
+    Nowy:     msgspec.toml.decode — szybki parser TOML
+
+    Ustawia zmienne w os.environ (kompatybilność wsteczna z kodem używającym os.getenv).
+    Mapowanie: TOML {"core": {"debug": true}} → NEXUS_DEBUG=1
+    (pierwszy poziom struktury TOML jest pomijany przy tworzeniu ENV key)
+    """
+    profile_path = ENV_CONFIG_DIR / f"{environment}.toml"
     if not profile_path.exists():
+        # Fallback: spróbuj .env (kompatybilność wsteczna)
+        legacy_path = ENV_CONFIG_DIR / f"{environment}.env"
+        if legacy_path.exists():
+            _load_legacy_env(legacy_path)
         return
 
+    try:
+        with open(profile_path, "rb") as f:
+            data: dict[str, Any] = toml.decode(f.read())
+
+        loaded = 0
+        # Flatten nested structure, skipping top-level section keys
+        # e.g. {"core": {"debug": true}} → {"debug": true} → NEXUS_DEBUG=1
+        for _section, section_data in data.items():
+            if isinstance(section_data, dict):
+                for key, value in section_data.items():
+                    env_key = key.upper()
+                    if not env_key.startswith("NEXUS_"):
+                        env_key = f"NEXUS_{env_key}"
+                    if env_key not in os.environ:
+                        if isinstance(value, bool):
+                            os.environ[env_key] = "1" if value else "0"
+                        else:
+                            os.environ[env_key] = str(value)
+                        loaded += 1
+
+        if loaded > 0:
+            print(f"[Config] Loaded {loaded} settings from {profile_path.name}")
+    except Exception as exc:
+        print(f"[Config] Warning: Failed to load {profile_path.name}: {exc}")
+
+
+def _load_legacy_env(env_path: Path) -> None:
+    """Legacy .env loader for backward compatibility."""
     loaded = 0
-    with open(profile_path, encoding="utf-8") as f:
+    with open(env_path, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith("#"):
@@ -39,14 +83,13 @@ def _load_env_profile(environment: str) -> None:
             if key not in os.environ:
                 os.environ[key] = value
                 loaded += 1
-
     if loaded > 0:
-        print(f"[Config] Loaded {loaded} settings from {profile_path.name}")
+        print(f"[Config] Loaded {loaded} settings from {env_path.name} (legacy .env format)")
 
 
 # ── Load environment profile at import time ────────────────────────────────
 _env = os.getenv("NEXUS_ENV", "dev").lower().strip()
-_load_env_profile(_env)
+_load_toml_profile(_env)
 
 
 def _load_secrets_symbols():
@@ -76,7 +119,7 @@ class AppConfig(Struct, kw_only=True):
     """Centralized application settings registry for all environments.
 
     msgspec.Struct — lżejszy i szybszy niż dataclass.
-    Wczytuje wartości z os.environ (wcześniej załadowane z profili .env).
+    Wczytuje wartości z os.environ (wcześniej załadowane z TOML lub legacy .env).
 
     Uwaga: msgspec.Struct nie wywołuje automatycznie ``__post_init__``.
     Użyj ``AppConfig.create()`` która woła walidację po inicjalizacji.

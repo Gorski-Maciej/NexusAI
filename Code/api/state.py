@@ -24,12 +24,14 @@ from services.migration_sanity import (
 )
 from services.outbox_relay import OutboxRelay
 
-# ── Prometheus metrics initialization ──────────────────────────────────────
+# ── OpenTelemetry metrics initialization ───────────────────────────────────
+# Zastępuje: prometheus_client (bezpośrednia zależność)
+# Nowy:     OpenTelemetry Metrics API + SDK z Prometheus Exporter
 _METRICS_INITIALIZED = False
 
 
-def _init_prometheus_metrics() -> None:
-    """Initialize Prometheus metrics via prometheus_client library (Obszar 1)."""
+def _init_otel_metrics() -> None:
+    """Initialize OpenTelemetry metrics (zastępuje prometheus_client)."""
     global _METRICS_INITIALIZED
     if _METRICS_INITIALIZED:
         return
@@ -63,7 +65,7 @@ def _init_prometheus_metrics() -> None:
         logger.debug("[METRICS] System metrics updater failed: %s", exc)
 
     _METRICS_INITIALIZED = True
-    logger.info("[METRICS] Prometheus metrics initialized (see /metrics endpoint)")
+    logger.info("[METRICS] OpenTelemetry metrics initialized (see /metrics endpoint)")
 
 
 logger = logging.getLogger("nexus.api.state")
@@ -116,8 +118,8 @@ async def on_startup(app: Litestar) -> None:
     config = app.dependencies["config"]()
     app.state.ml_cache_env = _configure_ml_cache_directories(config.base_dir)
 
-    # Obszar 1: Inicjalizacja metryk Prometheus
-    _init_prometheus_metrics()
+    # Obszar 1: Inicjalizacja metryk OpenTelemetry (zastępuje prometheus_client)
+    _init_otel_metrics()
 
     # Inicjalizacja silnika bazy danych w stanie aplikacji
     engine = create_oltp_engine(config)

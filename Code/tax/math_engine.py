@@ -290,8 +290,8 @@ def add_tax(net_grosze: int, vat_grosze: int) -> int:
 def money_to_grosze(money: _Money) -> int:
     """Convert a Money amount to grosze (int).
 
-    Extracts the Decimal amount from Money, converts to grosze
-    with ROUND_HALF_UP rounding.
+    Nowy Nexus-Money (msgspec.Struct): przechowuje kwotę bezpośrednio
+    jako ``amount_cents: int`` — nie ma potrzeby konwersji.
 
     Args:
         money: Money amount (any currency).
@@ -303,7 +303,7 @@ def money_to_grosze(money: _Money) -> int:
         TypeError: If argument is not a Money instance.
 
     Example:
-        >>> money_to_grosze(Money("123.45", "PLN"))
+        >>> money_to_grosze(Money(amount_cents=12345, currency="PLN"))
         12345
     """
     Money = _get_money_class()  # noqa: N806
@@ -312,11 +312,15 @@ def money_to_grosze(money: _Money) -> int:
             f"Expected Money, got {type(money).__name__}. "
             f"Use to_grosze() for plain Decimal/str/float."
         )
-    return to_grosze(money.amount)
+    # Nexus-Money: bezpośredni dostęp do amount_cents (int)
+    return money.amount_cents
 
 
 def to_money(grosze: int, currency: str = "PLN") -> _Money:
     """Convert grosze (int) to a Money amount.
+
+    Nowy Nexus-Money (msgspec.Struct): konstruktor przyjmuje
+    ``amount_cents: int`` zamiast ``(str_amount: str, currency: str)``.
 
     Args:
         grosze: Amount in grosze.
@@ -327,10 +331,10 @@ def to_money(grosze: int, currency: str = "PLN") -> _Money:
 
     Example:
         >>> to_money(12345)
-        Money('123.45', 'PLN')
+        Money(amount_cents=12345, currency='PLN')
     """
     Money = _get_money_class()  # noqa: N806
-    return Money(str(to_zlotowki(grosze)), currency)
+    return Money(amount_cents=grosze, currency=currency)
 
 
 def _require_same_currency(a: _Money, b: _Money, operation: str = "operate") -> None:

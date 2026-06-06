@@ -11,7 +11,7 @@ Checks:
   - Required model files (GGUF) present and integrity-verified
   - NATS server connectivity
   - Database files
-  - .env configuration completeness
+  - TOML configuration completeness
   - System resources (RAM, disk)
 """
 
@@ -215,12 +215,13 @@ def check_env() -> str:
     else:
         lines.append(f"  {_ok(f'Environment: {env} (security vars optional)')}")
 
-    # Check AI model paths
-    env_file = _PROJECT_ROOT / ".env"
-    if env_file.exists():
-        lines.append(f"  {_ok('.env file found')}")
+    # Check TOML config profile
+    config_dir = _PROJECT_ROOT / "config"
+    config_file = config_dir / f"{env}.toml"
+    if config_file.exists():
+        lines.append(f"  {_ok(f'TOML config found: config/{env}.toml')}")
     else:
-        lines.append(f"  {_warn('.env file not found — copy .env.example to .env')}")
+        lines.append(f"  {_warn(f'TOML config not found: config/{env}.toml — using defaults')}")
 
     # Check AI model paths from env (if set)
     ai_paths_ok = 0

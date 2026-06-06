@@ -10,15 +10,13 @@ Sets up:
 
 from __future__ import annotations
 
-import asyncio
 import os
 import shutil
 import tempfile
 from pathlib import Path
-from typing import AsyncGenerator, Generator
+from typing import AsyncGenerator
 
 import pytest
-import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
@@ -40,12 +38,6 @@ TEST_DB_FILE = str(Path(TEST_DB_DIR) / "test_integration.db")
 
 
 @pytest.fixture(scope="session")
-def event_loop_policy():
-    """Use a session-scoped event loop for all async fixtures."""
-    return asyncio.get_event_loop_policy()
-
-
-@pytest_asyncio.fixture(scope="session")
 async def db_engine() -> AsyncGenerator[AsyncEngine, None]:
     """Create a test database engine with all tables."""
     from db.database import Base
@@ -93,7 +85,7 @@ _RUNTIME_TABLES = [
 ]
 
 
-@pytest_asyncio.fixture(scope="session")
+@pytest.fixture(scope="session")
 async def db_session_factory(
     db_engine: AsyncEngine,
 ) -> async_sessionmaker[AsyncSession]:
@@ -101,7 +93,7 @@ async def db_session_factory(
     return async_sessionmaker(bind=db_engine, class_=AsyncSession, expire_on_commit=False)
 
 
-@pytest_asyncio.fixture(autouse=True)
+@pytest.fixture(autouse=True)
 async def clean_tables(db_session_factory: async_sessionmaker[AsyncSession]) -> AsyncGenerator[None, None]:
     """Clean all tables between tests (run before each test)."""
     yield
@@ -128,7 +120,7 @@ async def clean_tables(db_session_factory: async_sessionmaker[AsyncSession]) -> 
         await session.commit()
 
 
-@pytest_asyncio.fixture(scope="session")
+@pytest.fixture(scope="session")
 async def test_app(db_engine: AsyncEngine) -> AsyncGenerator:
     """
     Create a test Litestar app with a mock database engine.
@@ -177,7 +169,7 @@ async def test_app(db_engine: AsyncEngine) -> AsyncGenerator:
     yield app
 
 
-@pytest_asyncio.fixture(scope="session")
+@pytest.fixture(scope="session")
 async def async_client(test_app) -> AsyncGenerator[AsyncClient, None]:
     """Provide an HTTP client for integration testing via ASGI."""
     transport = ASGITransport(app=test_app)
@@ -185,7 +177,7 @@ async def async_client(test_app) -> AsyncGenerator[AsyncClient, None]:
         yield client
 
 
-@pytest_asyncio.fixture
+@pytest.fixture
 async def db_session(
     db_session_factory: async_sessionmaker[AsyncSession],
 ) -> AsyncGenerator[AsyncSession, None]:
@@ -197,7 +189,7 @@ async def db_session(
 # ── Test data fixtures ───────────────────────────────────────────────────────
 
 
-@pytest_asyncio.fixture
+@pytest.fixture
 async def sample_user(db_session: AsyncSession) -> dict:
     """Create a sample user and return its data."""
     from api.auth_service import hash_password
@@ -229,7 +221,7 @@ async def sample_user(db_session: AsyncSession) -> dict:
     return {"id": user_id, "username": username, "password": password, "role": "accountant"}
 
 
-@pytest_asyncio.fixture
+@pytest.fixture
 async def sample_contractor(db_session: AsyncSession) -> dict:
     """Create a sample contractor and return its data."""
     from sqlalchemy import text
@@ -261,7 +253,7 @@ async def sample_contractor(db_session: AsyncSession) -> dict:
     return {"id": contractor_id, "nip": "5213456789"}
 
 
-@pytest_asyncio.fixture
+@pytest.fixture
 async def sample_invoice(db_session: AsyncSession, sample_contractor: dict) -> dict:
     """Create a sample invoice linked to a contractor."""
     from sqlalchemy import text

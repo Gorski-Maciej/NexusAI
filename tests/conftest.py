@@ -78,7 +78,8 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     "sqlalchemy.dialects", "sqlalchemy.dialects.postgresql",
     "sqlalchemy.sql", "sqlalchemy.types",
     "sqlalchemy.engine", "sqlalchemy.engine.url",
-    "starlette", "fastapi",
+    # starlette/fastapi już zastąpione przez litestar
+    "litestar", "litestar.plugins",
     "api", "api.routes", "api.server",
     "fsspec", "fsspec.implementations", "fsspec.implementations.local",
     "PIL", "PIL.Image",
@@ -91,9 +92,11 @@ for mod_name in EXTERNAL_MOCK_MODULES:
 sys.modules["db.analytics"].DuckDBManager = FakeDuckDBManager
 
 for m in ["aiohttp", "yarl", "multidict", "aiosignal", "frozenlist",
-           "orjson", "pyarrow", "pillow", "boto3", "botocore",
-           "kubernetes", "prometheus_client", "opentelemetry",            "PIL._imaging", "PIL.ImageFilter", "PIL.ImageEnhance",
-           "dateparser",
+           "pyarrow", "pillow", "boto3", "botocore",
+           "kubernetes", "opentelemetry",
+           "PIL._imaging", "PIL.ImageFilter", "PIL.ImageEnhance",
+           "opentelemetry-api", "opentelemetry-sdk",
+           "opentelemetry-prometheus-exporter",
            "numpy",
            "huggingface_hub", "huggingface_hub._snapshot_download"]:
     if m not in sys.modules:

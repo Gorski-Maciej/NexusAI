@@ -37,7 +37,7 @@ def _default_enc_hook(obj: Any) -> Any:
     - Decimal → str (zachowuje precyzję)
     - datetime / date → isoformat
     - UUID → str
-    - Money (py-moneyed) → float (kwota)
+    - Money (Nexus-Money, services.currency_converter) → float (kwota)
     """
     if isinstance(obj, Decimal):
         return str(obj)
@@ -45,8 +45,8 @@ def _default_enc_hook(obj: Any) -> Any:
         return obj.isoformat()
     if isinstance(obj, UUID):
         return str(obj)
-    # Money z py-moneyed (ma .amount i .currency_code)
-    if hasattr(obj, "currency_code") and hasattr(obj, "amount"):
+    # Money z Nexus-Money (services.currency_converter) — ma .amount i .currency
+    if hasattr(obj, "currency") and hasattr(obj, "amount_cents"):
         return float(obj.amount)
     raise TypeError(f"Object of type {type(obj)} is not serializable by msgspec")
 

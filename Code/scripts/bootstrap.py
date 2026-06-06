@@ -6,7 +6,7 @@ A centralized, idempotent process that prepares the environment for first run.
 Can be invoked multiple times without duplicating data.
 
 Steps:
-  1. Validate configuration (.env file, environment variables)
+  1. Validate configuration (TOML config file, environment variables)
   2. Check and download AI models if missing
   3. Create required data directories
   4. Initialize database schemas (SQLite/OLTP, DuckDB/OLAP)
@@ -116,11 +116,11 @@ async def step_validate_config(config: Any) -> StepResult:
     if env in ("stage", "prod") and not encryption_key:
         errors.append("NEXUS_ENCRYPTION_KEY is REQUIRED in stage/prod environment")
 
-    # Verify config profile file exists
+    # Verify TOML config profile file exists
     config_dir = Path(__file__).resolve().parent.parent.parent / "config"
-    profile_file = config_dir / f"{env}.env"
+    profile_file = config_dir / f"{env}.toml"
     if not profile_file.exists():
-        errors.append(f"Config profile not found: {profile_file}")
+        errors.append(f"TOML config profile not found: {profile_file}")
 
     if errors:
         return StepResult(

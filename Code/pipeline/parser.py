@@ -48,8 +48,8 @@ class InvoiceParser:
         # 4. Kwoty (Heurystyka)
         gross_decimal = self._find_amount_near_keywords(lines, self.gross_keywords)
         net_decimal = self._find_amount_near_keywords(lines, self.net_keywords)
-        result.amount_gross = Money(str(gross_decimal), result.currency)
-        result.amount_net = Money(str(net_decimal), result.currency)
+        result.amount_gross = Money.from_string(str(gross_decimal), result.currency)
+        result.amount_net = Money.from_string(str(net_decimal), result.currency)
 
         return result
 

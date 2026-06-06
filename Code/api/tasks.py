@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Any
 
 import httpx
-from moneyed import Money
 from sqlalchemy import text
 from sqlalchemy import text as sql_text
 from taskiq_nats import PullBasedJetStreamBroker
@@ -30,6 +29,7 @@ from services.accounting import AccountingService
 from services.analytics_agent import AnalyticsAgent, FinDetective
 from services.autopilot import CouncilOrchestrator
 from services.council_agents import AlphaAgent, BetaAgent, GammaAgent, ModelManager
+from services.currency_converter import Money  # Nexus-Money (msgspec.Struct, zastępuje py-moneyed)
 from services.decision_agent import DecisionOrchestrator, GraniteExecutor, JambaStrategist
 from services.decision_logger import DecisionLogger
 from services.finops_meter import estimate_runtime_cost
@@ -722,11 +722,11 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
         primary_amount = _safe_float(payload.get("ocr_primary_amount_gross"))
         secondary_amount = _safe_float(payload.get("ocr_secondary_amount_gross"))
         primary = OCRAmountResult(
-            amount_gross=Money(str(primary_amount), "PLN") if primary_amount is not None else None,
+            amount_gross=Money.from_string(str(primary_amount), "PLN") if primary_amount is not None else None,
             source="surya",
         )
         secondary = OCRAmountResult(
-            amount_gross=Money(str(secondary_amount), "PLN") if secondary_amount is not None else None,
+            amount_gross=Money.from_string(str(secondary_amount), "PLN") if secondary_amount is not None else None,
             source="paddle",
         )
         consensus = decide_amount_consensus(primary, secondary, tolerance=0.01)

@@ -1,4 +1,3 @@
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 test_api_flow.py — End-to-end API integration tests.
 
@@ -14,8 +13,13 @@ Tests the complete flow:
 from __future__ import annotations
 
 import json
+
 import pytest
+from core.msgspec_utils import msgspec_dumps
 from httpx import AsyncClient
+
+# pytest-anyio: znacznik modułowy dla async test functions
+pytestmark = pytest.mark.anyio
 
 
 @pytest.mark.integration
