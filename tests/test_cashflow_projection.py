@@ -1,7 +1,8 @@
-from datetime import date
-from pathlib import Path
+import importlib.util
 import sys
 import types
+from datetime import date
+from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1] / "Code"))
 
@@ -13,16 +14,20 @@ db_module.analytics = analytics_module
 sys.modules.setdefault("db", db_module)
 sys.modules.setdefault("db.analytics", analytics_module)
 
-import importlib.util
-
-views_spec = importlib.util.spec_from_file_location("views_module", Path(__file__).resolve().parents[1] / "Code" / "DB" / "views.py")
+views_spec = importlib.util.spec_from_file_location(
+    "views_module",
+    Path(__file__).resolve().parents[1] / "Code" / "db" / "views.py",
+)
 views_module = importlib.util.module_from_spec(views_spec)
 assert views_spec and views_spec.loader
 sys.modules["views_module"] = views_module
 views_spec.loader.exec_module(views_module)
 AnalyticsViewsSetup = views_module.AnalyticsViewsSetup
 
-cfo_spec = importlib.util.spec_from_file_location("cfo_module", Path(__file__).resolve().parents[1] / "Code" / "services" / "cfo_offline.py")
+cfo_spec = importlib.util.spec_from_file_location(
+    "cfo_module",
+    Path(__file__).resolve().parents[1] / "Code" / "services" / "cfo_offline.py",
+)
 cfo_module = importlib.util.module_from_spec(cfo_spec)
 assert cfo_spec and cfo_spec.loader
 sys.modules["cfo_module"] = cfo_module

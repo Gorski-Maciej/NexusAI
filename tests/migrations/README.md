@@ -3,8 +3,8 @@
 Use both scripts after applying migrations on staging snapshots:
 
 ```bash
-python Code/SKRIPTS/migration_sanity_check.py --before before.db --after after.db
-python Code/SKRIPTS/schema_drift_check.py --expected before.db --actual after.db
+python Code/scripts/migration_sanity_check.py --before before.db --after after.db
+python Code/scripts/schema_drift_check.py --expected before.db --actual after.db
 ```
 
 - `migration_sanity_check.py` verifies row-count regressions.
@@ -13,5 +13,5 @@ python Code/SKRIPTS/schema_drift_check.py --expected before.db --actual after.db
 ## Model retention maintenance
 
 ```bash
-python Code/SKRIPTS/model_retention_runner.py --root app_data/models --keep-last 3
+python Code/scripts/model_retention_runner.py --root app_data/models --keep-last 3
 ```

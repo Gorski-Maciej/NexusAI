@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 import importlib.util
-import json
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
+import os
 import sys
 import time
 from pathlib import Path
 
+from core.msgspec_utils import msgspec_loads
+
 
 def _load_module():
-    path = Path('Code/CORE/model_retention.py').resolve()
+    path = Path('Code/core/model_retention.py').resolve()
     spec = importlib.util.spec_from_file_location('model_retention_mod_v2', path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)
@@ -28,6 +29,8 @@ def test_dry_run_does_not_delete(tmp_path: Path) -> None:
         ts = time.time() + idx
         p.touch()
         (p / 'w.bin').touch()
+        os.utime(p, (ts, ts))
+        os.utime(p / 'w.bin', (ts, ts))
 
     result = mod.prune_model_versions(root, keep_last=2, dry_run=True)
     assert result['removed_versions'] == 2
@@ -46,6 +49,8 @@ def test_manifest_written_with_events(tmp_path: Path) -> None:
         ts = time.time() + idx
         p.touch()
         (p / 'w.bin').touch()
+        os.utime(p, (ts, ts))
+        os.utime(p / 'w.bin', (ts, ts))
 
     mod.prune_model_versions(root, keep_last=1, archive_root=arc, manifest_path=man)
     payload = msgspec_loads(man.read_bytes())
