@@ -42,4 +42,3 @@ def t(key: str, *, language: str = "pl", **kwargs: object) -> str:
     template = catalog.messages.get(key) or fallback.messages.get(key) or key
     return template.format(**kwargs)
 
-# contract marker: upload.file_too_large

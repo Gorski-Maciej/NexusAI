@@ -94,10 +94,10 @@ class TestCacheBehaviour:
 
         with patch("httpx.get") as mock_get:
             result = converter.convert(
-                Money("100.00", "EUR"), "PLN", rate_date=date(2025, 6, 1),
+                Money.from_string("100.00", "EUR"), "PLN", rate_date=date(2025, 6, 1),
             )
 
-        assert result == Money("450.00", "PLN")
+        assert result == Money.from_string("450.00", "PLN")
         mock_get.assert_not_called()  # httpx.get nie powinien być wołany
 
     def test_cache_miss_triggers_api_call_and_stores(
@@ -106,10 +106,10 @@ class TestCacheBehaviour:
         """Brak w cache → httpx.get wołane, wynik zapisany w DB."""
         with patch("httpx.get", return_value=_nbp_response(4.50)) as mock_get:
             result = converter.convert(
-                Money("100.00", "EUR"), "PLN", rate_date=date(2025, 6, 1),
+                Money.from_string("100.00", "EUR"), "PLN", rate_date=date(2025, 6, 1),
             )
 
-        assert result == Money("450.00", "PLN")
+        assert result == Money.from_string("450.00", "PLN")
         mock_get.assert_called_once()
 
         # Sprawdź, że wynik jest w cache DB
@@ -130,10 +130,10 @@ class TestCacheBehaviour:
 
         with patch("httpx.get") as mock_get:
             result = converter.convert(
-                Money("100.00", "EUR"), "PLN", rate_date=date(2025, 6, 1),
+                Money.from_string("100.00", "EUR"), "PLN", rate_date=date(2025, 6, 1),
             )
 
-        assert result == Money("445.00", "PLN")
+        assert result == Money.from_string("445.00", "PLN")
         mock_get.assert_not_called()  # httpx nie wołane — użyliśmy starszego kursu
 
 
@@ -163,10 +163,10 @@ class TestWeekendHandling:
 
         with patch("httpx.get", side_effect=_side_effect):
             result = converter.convert(
-                Money("100.00", "EUR"), "PLN", rate_date=saturday,
+                Money.from_string("100.00", "EUR"), "PLN", rate_date=saturday,
             )
 
-        assert result == Money("450.00", "PLN")
+        assert result == Money.from_string("450.00", "PLN")
 
     def test_sunday_falls_back_to_friday(
         self, converter: CurrencyConverter
@@ -182,10 +182,10 @@ class TestWeekendHandling:
 
         with patch("httpx.get", side_effect=_side_effect):
             result = converter.convert(
-                Money("100.00", "EUR"), "PLN", rate_date=sunday,
+                Money.from_string("100.00", "EUR"), "PLN", rate_date=sunday,
             )
 
-        assert result == Money("450.00", "PLN")
+        assert result == Money.from_string("450.00", "PLN")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -213,10 +213,10 @@ class TestApiErrorFallback:
 
         with patch("httpx.get", side_effect=_side_effect):
             result = converter.convert(
-                Money("100.00", "EUR"), "PLN", rate_date=monday,
+                Money.from_string("100.00", "EUR"), "PLN", rate_date=monday,
             )
 
-        assert result == Money("450.00", "PLN")
+        assert result == Money.from_string("450.00", "PLN")
 
     def test_all_days_404_raises_error(
         self, converter: CurrencyConverter
@@ -227,7 +227,7 @@ class TestApiErrorFallback:
         with patch("httpx.get", return_value=_nbp_404()):
             with pytest.raises(CurrencyRateNotFoundError):
                 converter.convert(
-                    Money("100.00", "EUR"), "PLN", rate_date=monday,
+                    Money.from_string("100.00", "EUR"), "PLN", rate_date=monday,
                 )
 
     def test_timeout_retries_next_day(
@@ -254,10 +254,10 @@ class TestApiErrorFallback:
 
         with patch("httpx.get", side_effect=_side_effect):
             result = converter.convert(
-                Money("100.00", "EUR"), "PLN", rate_date=thursday,
+                Money.from_string("100.00", "EUR"), "PLN", rate_date=thursday,
             )
 
-        assert result == Money("450.00", "PLN")
+        assert result == Money.from_string("450.00", "PLN")
         assert call_count >= 2
 
     def test_connection_error_retries_next_day(
@@ -277,10 +277,10 @@ class TestApiErrorFallback:
 
         with patch("httpx.get", side_effect=_side_effect):
             result = converter.convert(
-                Money("100.00", "EUR"), "PLN", rate_date=tuesday,
+                Money.from_string("100.00", "EUR"), "PLN", rate_date=tuesday,
             )
 
-        assert result == Money("450.00", "PLN")
+        assert result == Money.from_string("450.00", "PLN")
 
     def test_500_error_continues_to_next_day(
         self, converter: CurrencyConverter
@@ -299,10 +299,10 @@ class TestApiErrorFallback:
 
         with patch("httpx.get", side_effect=_side_effect):
             result = converter.convert(
-                Money("100.00", "EUR"), "PLN", rate_date=monday,
+                Money.from_string("100.00", "EUR"), "PLN", rate_date=monday,
             )
 
-        assert result == Money("450.00", "PLN")
+        assert result == Money.from_string("450.00", "PLN")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -319,17 +319,17 @@ class TestCachePersistence:
         """Po pierwszym fetchu, kurs jest w DB — drugi raz nie woła API."""
         with patch("httpx.get", return_value=_nbp_response(4.50)) as mock_get:
             result1 = converter.convert(
-                Money("100.00", "EUR"), "PLN", rate_date=date(2025, 6, 2),
+                Money.from_string("100.00", "EUR"), "PLN", rate_date=date(2025, 6, 2),
             )
-        assert result1 == Money("450.00", "PLN")
+        assert result1 == Money.from_string("450.00", "PLN")
         assert mock_get.call_count == 1
 
         # Drugie wołanie — powinno użyć cache, nie httpx
         with patch("httpx.get") as mock_get2:
             result2 = converter.convert(
-                Money("200.00", "EUR"), "PLN", rate_date=date(2025, 6, 2),
+                Money.from_string("200.00", "EUR"), "PLN", rate_date=date(2025, 6, 2),
             )
-        assert result2 == Money("900.00", "PLN")
+        assert result2 == Money.from_string("900.00", "PLN")
         mock_get2.assert_not_called()
 
     def test_fetched_rate_persists_after_fallback(
@@ -342,9 +342,9 @@ class TestCachePersistence:
             _nbp_response(4.50) if "2025-06-06" in url else _nbp_404()
         )):
             result = converter.convert(
-                Money("100.00", "EUR"), "PLN", rate_date=saturday,
+                Money.from_string("100.00", "EUR"), "PLN", rate_date=saturday,
             )
-        assert result == Money("450.00", "PLN")
+        assert result == Money.from_string("450.00", "PLN")
 
         # Kurs zapisany pod ORYGINALNĄ datą (sobota), nie pod fallback (piątek).
         # _get_rate() przechowuje rate z rate_date przekazanym przez użytkownika.
@@ -370,7 +370,7 @@ class TestEdgeCases:
         with patch("httpx.get") as mock_get:
             with pytest.raises(CurrencyRateNotFoundError):
                 converter.convert(
-                    Money("100.00", "AED"), "PLN", rate_date=date(2025, 6, 2),
+                    Money.from_string("100.00", "AED"), "PLN", rate_date=date(2025, 6, 2),
                 )
         mock_get.assert_not_called()
 
@@ -380,7 +380,7 @@ class TestEdgeCases:
         """PLN→PLN → no-op, httpx nie wołane."""
         with patch("httpx.get") as mock_get:
             result = converter.convert(
-                Money("100.00", "PLN"), "PLN", rate_date=date(2025, 6, 2),
+                Money.from_string("100.00", "PLN"), "PLN", rate_date=date(2025, 6, 2),
             )
-        assert result == Money("100.00", "PLN")
+        assert result == Money.from_string("100.00", "PLN")
         mock_get.assert_not_called()

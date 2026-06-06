@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 def _load_cleanup_helper():
     root = Path(__file__).resolve().parents[1]
-    module_path = root / "Code" / "API" / "routes" / "system_integrity.py"
+    module_path = root / "Code" / "api" / "routes" / "system_integrity.py"
     spec = importlib.util.spec_from_file_location("api_system_integrity", module_path)
     assert spec and spec.loader
 

@@ -10,7 +10,7 @@ import pytest
 
 def _load_ui_state_module():
     root = Path(__file__).resolve().parents[1]
-    module_path = root / "Code" / "API" / "routes" / "ui_state.py"
+    module_path = root / "Code" / "api" / "routes" / "ui_state.py"
     spec = importlib.util.spec_from_file_location("api_ui_state", module_path)
     assert spec and spec.loader
 
