@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from core.msgspec_utils import msgspec_dumps
-
 import importlib.util
 import json
 from pathlib import Path
@@ -13,13 +11,19 @@ def _load_perf_module():
     module = importlib.util.module_from_spec(spec)
     assert spec and spec.loader
     spec.loader.exec_module(module)
+    # The global test conftest may replace core.msgspec_utils with a MagicMock
+    # when msgspec is unavailable. These contract tests verify threshold logic,
+    # not msgspec integration, so use stdlib JSON for deterministic fixtures.
+    module.msgspec_loads = lambda data: json.loads(
+        data.decode('utf-8') if isinstance(data, bytes | bytearray) else data
+    )
     return module
 
 
 def test_enforce_thresholds_passes_for_good_summary(tmp_path: Path) -> None:
     mod = _load_perf_module()
     summary = tmp_path / 'summary.json'
-    summary.write_text(msgspec_dumps({
+    summary.write_text(json.dumps({
         'metrics': {
             'http_req_duration': {'values': {'p(95)': 100.0}},
             'checks': {'values': {'rate': 0.99}},
@@ -31,7 +35,7 @@ def test_enforce_thresholds_passes_for_good_summary(tmp_path: Path) -> None:
 def test_enforce_thresholds_fails_for_bad_summary(tmp_path: Path) -> None:
     mod = _load_perf_module()
     summary = tmp_path / 'summary_bad.json'
-    summary.write_text(msgspec_dumps({
+    summary.write_text(json.dumps({
         'metrics': {
             'http_req_duration': {'values': {'p(95)': 2200.0}},
             'checks': {'values': {'rate': 0.90}},

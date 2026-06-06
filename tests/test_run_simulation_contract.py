@@ -11,11 +11,11 @@ te testy powinny jako pierwsze wskazać niezgodność.
 
 from __future__ import annotations
 
+import asyncio
 from decimal import Decimal
 from typing import Any
 
 from Code.roboton_reflekton.shadow_ledger import TaxSimulator
-
 
 # ── Oczekiwana struktura odpowiedzi ──────────────────────────────────────────
 
@@ -45,12 +45,14 @@ REQUIRED_MONTHLY_SIM_KEYS: dict[str, type] = {
 
 # ── Helper ──────────────────────────────────────────────────────────────────
 
-async def _run(
+def _run(
     invoices: list[dict[str, Any]],
     target: str = "CIT_ESTONIAN",
 ) -> dict[str, Any]:
-    return await TaxSimulator().run_simulation(
-        invoices=invoices, target_rule_set_id=target,
+    return asyncio.run(
+        TaxSimulator().run_simulation(
+            invoices=invoices, target_rule_set_id=target,
+        )
     )
 
 
@@ -71,32 +73,32 @@ _SAMPLE_INVOICE = {
 class TestRunSimulationContract:
     """Weryfikuje kontrakt API: lista kluczy i typy."""
 
-    async def test_empty_invoices_returns_all_keys(self) -> None:
+    def test_empty_invoices_returns_all_keys(self) -> None:
         """Pusta lista → wszystkie klucze obecne."""
-        result = await _run([])
+        result = _run([])
         self._assert_top_level_keys(result)
 
-    async def test_empty_invoices_returns_empty_breakdowns(self) -> None:
+    def test_empty_invoices_returns_empty_breakdowns(self) -> None:
         """Pusta lista → breakdowns to puste listy."""
-        result = await _run([])
+        result = _run([])
         assert result["current_monthly_breakdown"] == []
         assert result["simulated_monthly_breakdown"] == []
 
-    async def test_single_invoice_returns_all_keys(self) -> None:
+    def test_single_invoice_returns_all_keys(self) -> None:
         """Jedna faktura → wszystkie klucze obecne, 1 wpis w breakdown."""
-        result = await _run([_SAMPLE_INVOICE])
+        result = _run([_SAMPLE_INVOICE])
         self._assert_top_level_keys(result)
         assert len(result["current_monthly_breakdown"]) == 1
         assert len(result["simulated_monthly_breakdown"]) == 1
         self._assert_monthly_keys(result["current_monthly_breakdown"], sim=False)
         self._assert_monthly_keys(result["simulated_monthly_breakdown"], sim=True)
 
-    async def test_single_invoice_count(self) -> None:
+    def test_single_invoice_count(self) -> None:
         """Jedna faktura → invoice_count == 1."""
-        result = await _run([_SAMPLE_INVOICE])
+        result = _run([_SAMPLE_INVOICE])
         assert result["invoice_count"] == 1
 
-    async def test_multiple_invoices_returns_all_keys(self) -> None:
+    def test_multiple_invoices_returns_all_keys(self) -> None:
         """Wiele faktur → wszystkie klucze, wszystkie miesiące."""
         invoices = [
             {"category_code": "FUEL", "transaction_date": "2024-06-01",
@@ -109,7 +111,7 @@ class TestRunSimulationContract:
              "company_tax_form": "CIT_STANDARD", "vendor_country": "PL",
              "amount_net": Decimal("300.00")},
         ]
-        result = await _run(invoices)
+        result = _run(invoices)
         self._assert_top_level_keys(result)
         self._assert_monthly_keys(result["current_monthly_breakdown"], sim=False)
         self._assert_monthly_keys(result["simulated_monthly_breakdown"], sim=True)
@@ -117,10 +119,10 @@ class TestRunSimulationContract:
         # Oba breakdowny mają tę samą liczbę miesięcy (te same faktury)
         assert len(result["current_monthly_breakdown"]) == len(result["simulated_monthly_breakdown"])
 
-    async def test_all_targets_return_correct_structure_and_types(self) -> None:
+    def test_all_targets_return_correct_structure_and_types(self) -> None:
         """Wszystkie 4 target_rule_set_id → struktura + typy w jednej pętli."""
         for target in ("CIT_STANDARD", "CIT_ESTONIAN", "LINEAR", "LUMP_SUM"):
-            result = await _run([_SAMPLE_INVOICE], target)
+            result = _run([_SAMPLE_INVOICE], target)
             self._assert_top_level_keys(result)
             self._assert_monthly_keys(result["current_monthly_breakdown"], sim=False)
             self._assert_monthly_keys(result["simulated_monthly_breakdown"], sim=True)
@@ -131,17 +133,17 @@ class TestRunSimulationContract:
                     f"expected {expected_type.__name__}"
                 )
 
-    async def test_current_breakdown_has_no_net_total(self) -> None:
+    def test_current_breakdown_has_no_net_total(self) -> None:
         """current_monthly_breakdown NIE ma pola net_total."""
-        result = await _run([_SAMPLE_INVOICE])
+        result = _run([_SAMPLE_INVOICE])
         for entry in result["current_monthly_breakdown"]:
             assert "net_total" not in entry, (
                 "current_monthly_breakdown should not have net_total"
             )
 
-    async def test_simulated_breakdown_has_net_total(self) -> None:
+    def test_simulated_breakdown_has_net_total(self) -> None:
         """simulated_monthly_breakdown MA pole net_total."""
-        result = await _run([_SAMPLE_INVOICE])
+        result = _run([_SAMPLE_INVOICE])
         for entry in result["simulated_monthly_breakdown"]:
             assert "net_total" in entry, (
                 "simulated_monthly_breakdown should have net_total"
