@@ -1,35 +1,182 @@
+# api/cache.py
+"""
+Async multi-level cache using cashews.
+
+Zgodnie z aa3fvcx.txt (Punkt 13): inteligentny, dwupoziomowy cache
+(RAM L1 + dysk L2), natywnie asynchroniczny (anyio).
+
+Użycie:
+    from nexus_ai.api.cache import nexus_cache
+
+    await nexus_cache.set("kurs:eur", money_data, ttl=3600)
+    cached = await nexus_cache.get("kurs:eur")
+"""
+
 from __future__ import annotations
 
-import asyncio
-import time
+import warnings
 from collections.abc import Callable
 from functools import wraps
+from pathlib import Path
 from typing import Any
+from structlog import get_logger
 
-_CACHE: dict[str, tuple[float, Any]] = {}
-_CACHE_LOCK = asyncio.Lock()
-_MAX_CACHE_ITEMS = 5000
+logger = get_logger("nexus.api.cache")
+
+
+class NexusCache:
+    """Async multi-level cache (RAM L1 + Diskcache L2) using cashews.
+
+    Zgodnie z aa3fvcx.txt:
+    - L1 (RAM): Błyskawiczny, ulotny cache dla najczęściej używanych danych
+    - L2 (Diskcache): Trwały, pojemny cache na dysku — dane przetrwają restart
+    """
+
+    def __init__(self, db_path: Path | None = None):
+        self._cache = None
+        self._db_path = db_path or Path("app_data/cache/nexus_cache.sqlite")
+        self._initialized = False
+        self._init_cache()
+
+    def _init_cache(self) -> None:
+        try:
+            from cashews import Cache
+            # cashews z backendem dyskowym (diskcache)
+            self._cache = Cache("disk", path=str(self._db_path))
+            self._initialized = True
+            logger.info("[Cache] cashews initialized: %s", self._db_path)
+        except ImportError:
+            logger.warning(
+                "[Cache] cashews not installed. "
+                "Install: pip install cashews[diskcache]. "
+                "Falling back to in-memory cache."
+            )
+            self._cache = _MemoryFallback()
+            self._initialized = True
+        except Exception as exc:
+            logger.error("[Cache] cashews init failed: %s", exc)
+            self._cache = _MemoryFallback()
+            self._initialized = True
+
+    async def get(self, key: str) -> Any | None:
+        """Get value from cache."""
+        if not self._initialized:
+            return None
+        try:
+            return await self._cache.get(key)
+        except Exception as exc:
+            logger.warning("[Cache] get failed for %s: %s", key, exc)
+            return None
+
+    async def set(self, key: str, value: Any, ttl: int = 300) -> None:
+        """Set value in cache with TTL (seconds)."""
+        if not self._initialized:
+            return
+        try:
+            await self._cache.set(key, value, expire=ttl)
+        except Exception as exc:
+            logger.warning("[Cache] set failed for %s: %s", key, exc)
+
+    async def delete(self, key: str) -> None:
+        """Delete a key from cache."""
+        if not self._initialized:
+            return
+        try:
+            await self._cache.delete(key)
+        except Exception as exc:
+            logger.warning("[Cache] delete failed for %s: %s", key, exc)
+
+    async def clear(self, prefix: str | None = None) -> None:
+        """Clear cache entries, optionally filtered by prefix."""
+        if not self._initialized:
+            return
+        try:
+            if prefix is None:
+                await self._cache.clear()
+            else:
+                await self._cache.clear(pattern=f"{prefix}*")
+        except Exception as exc:
+            logger.warning("[Cache] clear failed: %s", exc)
+
+    async def close(self) -> None:
+        """Close the cache connection."""
+        if self._initialized and hasattr(self._cache, "close"):
+            try:
+                await self._cache.close()
+            except Exception as exc:
+                logger.warning("[Cache] close failed: %s", exc)
+
+
+# ── Fallback in-memory cache (gdy dyscache nie jest dostępny) ─────────────
+
+
+class _MemoryFallback:
+    """Simple in-memory cache fallback when dyscache is not available."""
+
+    def __init__(self):
+        import time
+        self._cache: dict[str, tuple[float, Any]] = {}
+        self._max_items = 5000
+
+    async def get(self, key: str) -> Any | None:
+        import time
+        now = time.time()
+        hit = self._cache.get(key)
+        if hit and now <= hit[0]:  # hit[0] = expiry timestamp
+            return hit[1]
+        if hit:
+            del self._cache[key]
+        return None
+
+    async def set(self, key: str, value: Any, ttl: int = 300) -> None:
+        import time
+        if len(self._cache) >= self._max_items:
+            now = time.time()
+            stale = [k for k, (exp, _) in self._cache.items() if now > exp]
+            for k in stale[:100]:
+                del self._cache[k]
+        self._cache[key] = (time.time() + ttl, value)
+
+    async def delete(self, key: str) -> None:
+        self._cache.pop(key, None)
+
+    async def clear(self) -> None:
+        self._cache.clear()
+
+    async def keys(self, prefix: str = "") -> list[str]:
+        return [k for k in self._cache if k.startswith(prefix.rstrip("*"))]
+
+    async def delete_many(self, *keys: str) -> None:
+        for key in keys:
+            self._cache.pop(key, None)
+
+
+# ── Global singleton ──────────────────────────────────────────────────────
+
+nexus_cache = NexusCache()
+
+
+# ── Decorator ─────────────────────────────────────────────────────────────
 
 
 def ttl_cache(seconds: int = 60):
+    """Decorator that caches async function results using dyscache.
+
+    Używa nexus_cache (dyscache) zamiast poprzedniej implementacji
+    opartej na słowniku w pamięci.
+    """
     def decorator(func: Callable):
         @wraps(func)
-        async def wrapper(*args, **kwargs):
-            key = f"{func.__module__}.{func.__qualname__}:{args[1:]}:{sorted(kwargs.items())}"
-            now = time.time()
-            async with _CACHE_LOCK:
-                hit = _CACHE.get(key)
-                if hit and now - hit[0] <= seconds:
-                    return hit[1]
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
+            key = f"ttlcache:{func.__module__}.{func.__qualname__}:{args[1:]}:{sorted(kwargs.items())}"
+            cached = await nexus_cache.get(key)
+            if cached is not None:
+                return cached
 
             result = await func(*args, **kwargs)
 
-            async with _CACHE_LOCK:
-                if len(_CACHE) >= _MAX_CACHE_ITEMS:
-                    stale_keys = [k for k, (ts, _) in _CACHE.items() if now - ts > seconds]
-                    for stale_key in stale_keys[: max(1, len(_CACHE) - _MAX_CACHE_ITEMS + 1)]:
-                        _CACHE.pop(stale_key, None)
-                _CACHE[key] = (now, result)
+            if result is not None:
+                await nexus_cache.set(key, result, ttl=seconds)
             return result
 
         return wrapper
@@ -37,21 +184,15 @@ def ttl_cache(seconds: int = 60):
     return decorator
 
 
+# ── Backward compatibility ───────────────────────────────────────────────
+
+
 async def clear_cache_async(prefix: str | None = None) -> None:
-    async with _CACHE_LOCK:
-        if prefix is None:
-            _CACHE.clear()
-            return
-        keys = [k for k in _CACHE if k.startswith(prefix)]
-        for key in keys:
-            _CACHE.pop(key, None)
+    """Backward-compatible cache clear function."""
+    await nexus_cache.clear(prefix)
 
 
 def clear_cache(prefix: str | None = None) -> None:
-    # Compatibility helper for sync call-sites.
-    if prefix is None:
-        _CACHE.clear()
-        return
-    keys = [k for k in _CACHE if k.startswith(prefix)]
-    for key in keys:
-        _CACHE.pop(key, None)
+    """Backward-compatible sync cache clear function."""
+    import anyio
+    anyio.run(nexus_cache.clear, prefix)

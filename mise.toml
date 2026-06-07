@@ -1,0 +1,52 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# mise.toml — NexusAI Version & Task Manager
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Zgodnie z aa3fvcx.txt: mise (dawniej rtx) to ultra-lekki, napisany w Rust
+# menedżer wersji i task runner. Zastępuje: pyenv, asdf, make, just.
+#
+# Instalacja:
+#   curl https://mise.jdx.dev/install.sh | sh
+#   mise install      # Pobiera wszystkie zdefiniowane narzędzia
+#
+# Użycie:
+#   mise run dev      # Uruchom środowisko deweloperskie
+#   mise x -- python  # Uruchom Python w środowisku mise
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[tools]
+# ── Runtime ─────────────────────────────────────────────────────────────────
+python = "3.13"                    # Python ≥3.13 (free-threaded)
+rust = "latest"                    # Rust toolchain dla PyO3/Maturin
+
+# ── Binarki systemowe ───────────────────────────────────────────────────────
+"nats-server" = "2.10"             # NATS JetStream broker (~10 MB)
+"tigerbeetle" = "0.16"            # TigerBeetle ledger (Zig)
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Tasks — definicje procesów
+# ══════════════════════════════════════════════════════════════════════════════
+
+[tasks]
+
+# ── Uruchamianie serwisów ──────────────────────────────────────────────────
+start-nats = "nats-server -p 4222 -js"
+start-tigerbeetle = "tigerbeetle start --addresses=3000 --cluster=0 data/tigerbeetle.bin"
+
+# ── Środowisko deweloperskie ────────────────────────────────────────────────
+dev = """
+  mise run start-nats &
+  mise run start-tigerbeetle &
+  sleep 2
+  python main.py --mode all
+"""
+
+# ── Build ────────────────────────────────────────────────────────────────────
+build-rust = "cd nexus_crypto && maturin develop --release"
+build-nuitka = "python -m nuitka --project-name=nexus-ai main.py"
+build-all = "mise run build-rust && mise run build-nuitka"
+
+# ── Testowanie ───────────────────────────────────────────────────────────────
+test = "pytest -x -v --timeout=30"
+test-all = "pytest -v --timeout=30"
+test-coverage = "pytest --cov=nexus_ai --cov-report=term-missing"

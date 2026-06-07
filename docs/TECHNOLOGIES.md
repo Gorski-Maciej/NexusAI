@@ -215,11 +215,10 @@ python -m api.server
 | ~~transformers~~ | — | **Usunięte** — zastąpione przez LightOnOCR-1B + llama-cpp-python |
 | ~~torch~~ | — | **Usunięte** — niepotrzebne przy modelach GGUF |
 | ~~sentence-transformers~~ | — | **Usunięte** — embeddingi przez sqlite-vec |
-| ~~surya-ocr~~ | — | **Usunięte** — zastąpione przez LightOnOCR-1B |
-| ~~paddleocr~~ | — | **Usunięte** — zastąpione przez LightOnOCR-1B |
-| ~~onnxruntime~~ | — | **Usunięte** — niepotrzebne |
-| ~~opencv-python~~ | — | **Usunięte** — LightOnOCR-1B robi wszystko |
-| ~~PyMuPDF~~ | — | **Usunięte** — LightOnOCR-1B rozumie obrazy bezpośrednio |
+| **PaddleOCR** ≥2.8 | — | Drugi silnik OCR — deep learning, obsługa nietypowych czcionek (aa3fvcx.txt) |
+| **Surya OCR** ≥0.4 | — | Trzeci silnik OCR — layout-aware (aa3fvcx.txt) |
+| **PyMuPDF (fitz)** ≥1.24 | — | Konwersja PDF → obrazy dla OCR (aa3fvcx.txt) |
+| **xsdata** ≥24.0 | — | Automatyczne generowanie klas Pythona z XSD (KSeF) |
 
 ---
 
@@ -260,7 +259,7 @@ System wykorzystuje **8 modeli AI** zgrupowanych w **3 agentach**:
 | **OpenTelemetry** (API + SDK) | **prometheus_client** | **Jeden standard dla całej telemetrii** — metryki, ślady, logi; Prometheus Exporter dla /metrics endpointu |
 | **DuckDB + Parquet** | — | Lokalna hurtownia telemetrii — logi jako baza danych do przeszukiwania SQL |
 
-> **Uwaga:** Sentry SDK został usunięty z nowego stacku (aa3fvcx.txt). Monitoring błędów odbywa się przez Loguru + structlog + OpenTelemetry.
+> **Uwaga:** Sentry SDK jest opcjonalnym dodatkiem (aa3fvcx.txt Punkt 12). Włączany przez `NEXUS_SENTRY_DSN`. Monitoring błędów + Loguru + structlog + OpenTelemetry.
 
 ### Dlaczego OpenTelemetry zamiast prometheus_client
 - **Zero nowych zależności** — jeden standard dla metryk, śladów i logów
@@ -276,6 +275,8 @@ System wykorzystuje **8 modeli AI** zgrupowanych w **3 agentach**:
 | **psutil** ≥5.9 | — | Monitorowanie CPU, RAM, dysku |
 | **pendulum** ≥3.0 | **python-dateutil, pytz, dateparser** | **Nowoczesne zarządzanie czasem** — async-safe, jawne parsowanie, strefy czasowe, intuicyjne Duration API |
 | **TOML + msgspec** | **PyYAML, python-dotenv** | Konfiguracja w czystym TOML — szybsze parsowanie, bezpieczeństwo typów, zero nowych zależności |
+| **dyscache** ≥0.2 | — | Async multi-level cache (RAM L1 + SQLite L2) — anyio-native |
+| **sentry-sdk** ≥2.0 | — | Opcjonalne śledzenie błędów produkcyjnych |
 
 ### Dlaczego pendulum zamiast dateparser
 - Aplikacja księgowa nie może zgadywać formatu daty — pendulum używa jawnego parsowania
