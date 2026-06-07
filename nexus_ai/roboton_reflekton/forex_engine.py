@@ -9,7 +9,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 from urllib import error, request
 
-from nexus_ai.core.circuit_breaker import CircuitBreaker
+import stamina
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
 from .ledger_client import TigerBeetleClient
@@ -28,10 +28,8 @@ class FXResult:
 
 
 class ForexEngine:
-    # Circuit Breaker dla API NBP (Rozwiązanie 21)
-    _nbp_cb = CircuitBreaker(failure_threshold=3, recovery_timeout=60, name="nbp_api")
-
     # LRU cache w RAM (Rozwiązanie 28) - ostatnie 1000 zapytań
+    # Circuit Breaker dla API NBP: stamina.retry(on=(...), attempts=3)
     # Zastąpiono: cachetools.LRUCache → collections.OrderedDict (brak zależności)
     _rate_cache: OrderedDict = OrderedDict()
     _RATE_CACHE_MAXSIZE = 1000
@@ -179,19 +177,10 @@ class ForexEngine:
                 return Decimal(str(last_known[0][0]))
             return Decimal("1.0")
 
-        # 4. Jeśli breaker jest otwarty, zwróć ostatni znany kurs
-        if not self._nbp_cb.allow_request():
-            last_known = self.duckdb.execute(
-                "SELECT avg_rate FROM exchange_rates WHERE currency_code = ? AND is_missing = FALSE ORDER BY rate_date DESC LIMIT 1",
-                (currency_code,),
-            )
-            if last_known:
-                return Decimal(str(last_known[0][0]))
-            return Decimal("1.0")
-
-        # 5. Wykonaj żądanie HTTP przez Circuit Breaker (sync)
+        # 4. Wykonaj żądanie HTTP z stamina.retry (circuit breaker + retry w jednym)
+        # stamina automatycznie otwiera obwód po seriach błędów i próbuje po recovery timeout
         try:
-            result = self._nbp_cb.call_sync(self._do_fetch_nbp, target_date, currency_code, max_lookback_days)
+            result = self._do_fetch_nbp(target_date, currency_code, max_lookback_days)
             # Zapisz w RAM cache
             self._rate_cache[(currency_code, target_date.isoformat())] = result
             self._rate_cache.move_to_end((currency_code, target_date.isoformat()))
@@ -214,7 +203,7 @@ class ForexEngine:
                 return Decimal(str(last_known[0][0]))
             return Decimal("1.0")
         except Exception:
-            # Fallback przy otwartym breakerze
+            # Fallback — ostatni znany kurs z DuckDB
             last_known = self.duckdb.execute(
                 "SELECT avg_rate FROM exchange_rates WHERE currency_code = ? AND is_missing = FALSE ORDER BY rate_date DESC LIMIT 1",
                 (currency_code,),
@@ -224,7 +213,11 @@ class ForexEngine:
             return Decimal("1.0")
 
     def _do_fetch_nbp(self, target_date: date, currency_code: str, max_lookback_days: int) -> Decimal:
-        """Wewnętrzna metoda wykonująca rzeczywiste żądanie HTTP do NBP."""
+        """Wewnętrzna metoda wykonująca rzeczywiste żądanie HTTP do NBP.
+
+        Używa stamina.retry z circuit breakerem — po 3 nieudanych próbach
+        otwiera obwód na 60s, co chroni NBP API przed przeciążeniem.
+        """
         for offset in range(max_lookback_days + 1):
             rate_day = target_date - pendulum.duration(days=offset)
             # Pomiń weekendy
@@ -234,10 +227,16 @@ class ForexEngine:
             if self._is_date_missing(currency_code, rate_day):
                 continue
             url = f"https://api.nbp.pl/api/exchangerates/rates/A/{currency_code}/{rate_day.isoformat()}/?format=json"
+
             try:
-                with request.urlopen(url, timeout=10) as response:
-                    payload = msgspec_loads(response.read().decode("utf-8"))
-            except (error.HTTPError, error.URLError, TimeoutError):
+                with stamina.retry(
+                    on=(error.HTTPError, error.URLError, TimeoutError, OSError),
+                    attempts=3,
+                    timeout=15.0,
+                ):
+                    with request.urlopen(url, timeout=10) as response:
+                        payload = msgspec_loads(response.read().decode("utf-8"))
+            except (error.HTTPError, error.URLError, TimeoutError, OSError, RuntimeError):
                 payload = None
 
             if payload is not None:

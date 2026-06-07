@@ -4,13 +4,13 @@ from pathlib import Path
 
 
 def test_ui_state_controller_registered() -> None:
-    app_source = Path("Code/api/app.py").read_text(encoding="utf-8")
+    app_source = Path("nexus_ai/api/app.py").read_text(encoding="utf-8")
     assert "UIStateController" in app_source
 
 
 def test_ui_drafts_schema_and_routes_exist() -> None:
-    state_source = Path("Code/api/state.py").read_text(encoding="utf-8")
-    route_source = Path("Code/api/routes/ui_state.py").read_text(encoding="utf-8")
+    state_source = Path("nexus_ai/api/state.py").read_text(encoding="utf-8")
+    route_source = Path("nexus_ai/api/routes/ui_state.py").read_text(encoding="utf-8")
 
     assert "CREATE TABLE IF NOT EXISTS ui_drafts" in state_source
     assert 'path = "/api/v1/ui"' in route_source

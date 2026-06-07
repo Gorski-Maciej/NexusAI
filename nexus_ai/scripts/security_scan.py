@@ -1,7 +1,7 @@
 """DAST/SAST orchestration helper for staging security checks.
 
 Usage:
-    python Code/SKRIPTS/security_scan.py --target http://localhost:8000 --mode baseline
+    python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --mode baseline
 """
 from __future__ import annotations
 
@@ -47,7 +47,7 @@ def run_semgrep(*, strict_tools: bool = False) -> int:
     if semgrep is None:
         print("[security-scan] semgrep not found in PATH", file=sys.stderr)
         return 1 if strict_tools else 2
-    return _run([semgrep, "scan", "--config", "auto", "Code/"])
+    return _run([semgrep, "scan", "--config", "auto", "nexus_ai/"])
 
 
 def run_codeql(*, strict_tools: bool = False) -> int:

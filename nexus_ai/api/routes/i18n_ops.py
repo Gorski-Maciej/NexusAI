@@ -15,8 +15,9 @@ class I18nOpsController(Controller):
 
     @get("/status")
     async def status(self) -> dict:
-        api_locales = Path("Code/api/locales")
-        core_prompts = Path("Code/CORE/prompts")
+        _api_dir = Path(__file__).resolve().parent.parent  # nexus_ai/api/
+        api_locales = _api_dir / "locales"                   # nexus_ai/api/locales
+        core_prompts = _api_dir.parent / "core" / "prompts"  # nexus_ai/core/prompts
         api_languages = sorted([p.stem for p in api_locales.glob("*.json")]) if api_locales.exists() else []
         prompt_languages = sorted([p.stem for p in core_prompts.glob("*.json")]) if core_prompts.exists() else []
         return {

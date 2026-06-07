@@ -1,0 +1,230 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# pixi.toml — NexusAI All-in-One Environment Manager
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Zgodnie z aa3fvcx.txt: pixi zastępuje Dockera, conda i ręczne skrypty
+# apt-get. Jeden plik definiuje wszystko:
+#   - Python ≥3.13 — interpreter
+#   - Pakiety PyPI (Litestar, Taskiq, DuckDB, itd.)
+#   - Zależności systemowe (Tesseract, OpenCV, libxml, SQLCipher)
+#
+# Instalacja pixi:
+#   curl -fsSL https://pixi.sh/install.sh | sh
+#
+# Szybki start:
+#   pixi install           # Stwórz środowisko (tylko runtime)
+#   pixi run api           # Uruchom serwer API
+#   pixi shell             # Aktywuj shell w środowisku
+#
+# Środowisko deweloperskie (z testami/linterem/buildem):
+#   pixi install --environment dev
+#   pixi run --environment dev test
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[workspace]
+name = "nexus-ai"
+version = "2.0.0"
+description = "NexusAI — Ultralekki, autonomiczny system księgowy z AI"
+channels = ["conda-forge"]
+platforms = ["linux-64", "linux-aarch64"]   # Dodaj więcej platform po weryfikacji
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Zależności systemowe (conda-forge) — tylko runtime
+# ══════════════════════════════════════════════════════════════════════════════
+
+[dependencies]
+python = "3.13.*"                        # CPython 3.13 — conda-forge
+
+# ── OCR i przetwarzanie obrazów ─────────────────────────────────────────────
+tesseract = ">=5.3.0"                    # OCR — ekstrakcja tekstu z faktur
+leptonica = ">=1.84.0"                   # Przetwarzanie obrazów dla Tesseract
+libopencv = ">=4.9.0"                    # OpenCV — preprocessing obrazów
+
+# ── XML / Document processing ───────────────────────────────────────────────
+libxml2 = ">=2.12.0"                     # XML parser (dla lxml)
+libxslt = ">=1.1.39"                     # XSLT (dla lxml)
+
+# ── Database ─────────────────────────────────────────────────────────────────
+pkg-config = ">=0.29.2"                  # Wykrywanie bibliotek systemowych
+
+# ── Rust toolchain (dla Maturin / PyO3 / nexus-crypto) ──────────────────────
+rust = ">=1.78.0"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Zależności PyPI — tylko runtime
+# ══════════════════════════════════════════════════════════════════════════════
+
+[pypi-dependencies]
+
+# ── API / ASGI ──────────────────────────────────────────────────────────────
+litestar = { version = ">=2.8.0", extras = ["jwt"] }
+granian = ">=1.0.0"
+
+# ── Database ────────────────────────────────────────────────────────────────
+sqlmodel = ">=0.0.16"
+aiosqlite = ">=0.20.0"
+sqlite-vec = ">=0.1.0"
+alembic = ">=1.13.0"
+
+# ── Serialization & Async ───────────────────────────────────────────────────
+msgspec = ">=0.18.0"
+anyio = ">=4.4.0"
+
+# ── Task Queue / Messaging ──────────────────────────────────────────────────
+taskiq = ">=0.11.0"
+taskiq-nats = ">=0.5.0"
+nats-py = ">=2.6.0"
+
+# ── HTTP / Networking ───────────────────────────────────────────────────────
+httpx = ">=0.27.0"
+hishel = ">=0.1.0"
+fsspec = ">=2024.3.0"
+
+# ── Resilience ──────────────────────────────────────────────────────────────
+stamina = ">=0.1.0"
+
+# ── Cryptography (lokalny moduł Rust) ───────────────────────────────────────
+nexus-crypto = { path = "./nexus_crypto", editable = true }
+
+# ── Document / Image processing ─────────────────────────────────────────────
+lxml = ">=5.1.0"
+pillow = ">=10.0.0"
+
+# ── Analytics / OLAP ────────────────────────────────────────────────────────
+duckdb = ">=1.0.0"
+pyarrow = ">=15.0.0"
+polars = ">=1.0.0"
+
+# ── Model Hub ───────────────────────────────────────────────────────────────
+huggingface-hub = ">=0.23.0"
+
+# ── Logging ─────────────────────────────────────────────────────────────────
+loguru = ">=0.7.0"
+structlog = ">=24.0.0"
+
+# ── Monitoring ──────────────────────────────────────────────────────────────
+opentelemetry-api = ">=1.25.0"
+opentelemetry-sdk = ">=1.25.0"
+opentelemetry-exporter-prometheus = ">=0.46b0"
+
+# ── Utilities ───────────────────────────────────────────────────────────────
+psutil = ">=5.9.0"
+pendulum = ">=3.0.0"
+numpy = ">=2.0.0"
+
+# Instaluj ręcznie gdy potrzebne (nie ma w conda-forge / PyPI dla aarch64):
+# pytest-anyio: pip install pytest-anyio
+# pre-commit: pip install pre-commit
+# schemathesis: pip install schemathesis
+# locust: pip install locust
+# py-spy: pip install py-spy
+# crosshair: pip install crosshair
+# flet: pip install flet
+# llama-cpp-python: pip install llama-cpp-python
+
+# ══════════════════════════════════════════════════════════════════════════════
+# System requirements
+# ══════════════════════════════════════════════════════════════════════════════
+
+[system-requirements]
+linux = "2.27"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Tasks — komendy runtime (dostępne w każdym środowisku)
+# ══════════════════════════════════════════════════════════════════════════════
+
+[tasks]
+
+# ── Serwer API ──────────────────────────────────────────────────────────────
+api = { cmd = "python -m nexus_ai.api.server", description = "Uruchom serwer API (Granian + Litestar)" }
+api-dev = { cmd = "granian --reload --host 127.0.0.1 --port 8000 nexus_ai.api.app:create_app", description = "Uruchom serwer API z hot-reload (Granian)" }
+
+# ── Worker (przetwarzanie zadań w tle) ──────────────────────────────────────
+worker = { cmd = "python -m nexus_ai.luz.worker", description = "Uruchom worker Taskiq + NATS" }
+
+# ── Desktop (interfejs Flet) ────────────────────────────────────────────────
+desktop = { cmd = "python -m nexus_ai.luz.main", description = "Uruchom interfejs desktopowy (Flet)" }
+
+# ── CLI ─────────────────────────────────────────────────────────────────────
+nexus = { cmd = "python -m nexus_ai.scripts.nexus_cli", description = "NexusAI CLI — zarządzanie systemem" }
+doctor = { cmd = "python -m nexus_ai.scripts.doctor", description = "Diagnostyka systemu" }
+bootstrap = { cmd = "python -m nexus_ai.scripts.bootstrap", description = "Inicjalizacja środowiska (pierwsze uruchomienie)" }
+
+# ── Migracje bazy danych ───────────────────────────────────────────────────
+migrate = { cmd = "alembic upgrade head", description = "Wykonaj migracje bazy danych (Alembic)" }
+migrate-new = { cmd = "alembic revision --autogenerate -m", description = "Wygeneruj nową migrację (podaj opis: pixi run migrate-new 'dodaj_pole')" }
+migrate-check = { cmd = "alembic check", description = "Sprawdź czy są niezatwierdzone migracje" }
+
+# ── Modele AI ──────────────────────────────────────────────────────────────
+download-models = { cmd = "python -m nexus_ai.scripts.download_models", description = "Pobierz wszystkie modele AI (GGUF)" }
+
+# ── Pobranie binariów systemowych ──────────────────────────────────────────
+download-binaries = { cmd = "python -m nexus_ai.scripts.setup_env", description = "Pobierz NATS Server i TigerBeetle" }
+
+# ── Czyszczenie ──────────────────────────────────────────────────────────────
+clean = { cmd = "rm -rf build/ dist/ *.egg-info/ .pytest_cache/ .mypy_cache/ __pycache__/", description = "Wyczyść artefakty builda" }
+clean-all = { cmd = "rm -rf build/ dist/ *.egg-info/ .pytest_cache/ .mypy_cache/ __pycache__/ app_data/", description = "Wyczyść wszystko (łącznie z danymi)" }
+
+# ── Shell ────────────────────────────────────────────────────────────────────
+shell = { cmd = "$SHELL || cmd || pwsh", description = "Aktywuj shell w środowisku pixi" }
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Feature: dev — narzędzia programistyczne (testy, lint, build, cmake)
+# ══════════════════════════════════════════════════════════════════════════════
+# Używaj:   pixi install --environment dev   # instaluj runtime + dev
+#           pixi run --environment dev test  # uruchom testy
+#           pixi run --environment dev lint  # sprawdź kod
+#           pixi run --environment dev build-nuitka  # skompiluj .exe
+# ══════════════════════════════════════════════════════════════════════════════
+
+[feature.dev.dependencies]
+# Dev-specific conda packages
+cmake = ">=3.28.0"         # Potrzebne do kompilacji llama-cpp-python z CUDA
+
+[feature.dev.pypi-dependencies]
+# ── Testowanie ──────────────────────────────────────────────────────────────
+pytest = ">=8.0.0"
+pytest-cov = ">=5.0.0"
+hypothesis = ">=6.100.0"
+
+# ── Linter / Formatter / Type checker ───────────────────────────────────────
+ruff = ">=0.3.0"
+mypy = ">=1.8.0"
+
+# ── Build tool — Nuitka (kompilacja Python → C → .exe) ────────────────────
+nuitka = ">=1.8"
+
+[feature.dev.tasks]
+# ── Testowanie ──────────────────────────────────────────────────────────────
+test = { cmd = "pytest -x -v --timeout=30", description = "Uruchom wszystkie testy (zatrzymaj przy pierwszym błędzie)" }
+test-all = { cmd = "pytest -v --timeout=30", description = "Uruchom wszystkie testy" }
+test-coverage = { cmd = "pytest --cov=nexus_ai --cov-report=term-missing", description = "Testy z raportem pokrycia" }
+test-parallel = { cmd = "pytest -x -v -n auto --timeout=30", description = "Testy równoległe (wszystkie rdzenie)" }
+
+# ── Lintowanie i formatowanie ───────────────────────────────────────────────
+lint = { cmd = "ruff check nexus_ai/", description = "Sprawdź kod linterem Ruff" }
+format = { cmd = "ruff format nexus_ai/", description = "Auto-formatuj kod przez Ruff" }
+typecheck = { cmd = "mypy nexus_ai/", description = "Sprawdź typy przez mypy" }
+
+# ── Build — kompilacja do .exe (Nuitka) ────────────────────────────────────
+build-nuitka = { cmd = "python -m nuitka --project-name=nexus-ai main.py", description = "Skompiluj aplikację do .exe (Nuitka)" }
+build-nuitka-fast = { cmd = "python -m nuitka --project-name=nexus-ai --mode=standalone --low-memory main.py", description = "Szybki build (standalone folder, niska pamięć)" }
+build-nuitka-win = { cmd = "python -m nuitka --project-name=nexus-ai main.py && iscc build_scripts/setup.iss", description = "Skompiluj .exe + stwórz instalator Windows" }
+
+# ── Build — moduł Rust (nexus-crypto) ──────────────────────────────────────
+build-rust = { cmd = "cd nexus_crypto && maturin develop --release", description = "Skompiluj nexus-crypto (Rust + PyO3)" }
+build-rust-release = { cmd = "cd nexus_crypto && maturin build --release", description = "Skompiluj nexus-crypto (koło binarne .whl)" }
+
+# ── Narzędzia ───────────────────────────────────────────────────────────────
+gen-requirements = "uv pip compile pyproject.toml -o requirements.txt"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Environments
+# ══════════════════════════════════════════════════════════════════════════════
+# pixi install              = środowisko prod (tylko runtime)
+# pixi run --environment dev test  = środowisko dev (runtime + testy + lint)
+
+[environments]
+dev = { features = ["dev"], solve-group = "default" }
+prod = { solve-group = "default" }

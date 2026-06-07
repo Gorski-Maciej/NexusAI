@@ -1,1 +1,1 @@
-# SKRIPTS package
+# scripts/__init__.py

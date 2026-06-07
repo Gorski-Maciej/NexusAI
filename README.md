@@ -1,11 +1,13 @@
 # NexusAI — AI-Powered Accounting & Invoice Processing System
 
-[![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](https://python.org)
+[![Python](https://img.shields.io/badge/Python-3.13t-blue)](https://python.org)
 [![Litestar](https://img.shields.io/badge/Litestar-2.8%2B-blueviolet)](https://litestar.dev)
 [![NATS](https://img.shields.io/badge/NATS-JetStream-27ae60)](https://nats.io)
 [![License](https://img.shields.io/badge/License-Proprietary-red)](LICENSE)
 
 **NexusAI** is a next-generation, AI-driven accounting platform designed for Polish businesses. It combines OCR-based invoice processing, multi-agent AI decision-making (council of LLMs), double-entry ledger integration via TigerBeetle, and real-time event streaming via NATS JetStream — all wrapped in a modern Litestar API and a Flet-based desktop UI.
+
+Built as a **single-file executable** (Nuitka onefile) — no Docker, no complex setup.
 
 ---
 
@@ -17,16 +19,16 @@
 - [Quick Start](#quick-start)
 - [Environment Configuration](#environment-configuration)
 - [Running the Application](#running-the-application)
-  - [Option A: Local Development (Recommended)](#option-a-local-development-recommended)
-  - [Option B: Docker Compose](#option-b-docker-compose)
+  - [Option A: Development (pip / pixi)](#option-a-development-pip--pixi)
+  - [Option B: Production Build (Nuitka onefile)](#option-b-production-build-nuitka-onefile)
   - [Option C: Desktop UI (Flet)](#option-c-desktop-ui-flet)
+- [Building a Single Executable](#building-a-single-executable)
 - [API Documentation](#api-documentation)
 - [Running Tests](#running-tests)
 - [Project Structure](#project-structure)
 - [Key Modules](#key-modules)
 - [Environment Variables Reference](#environment-variables-reference)
 - [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
 
 ---
 
@@ -39,7 +41,7 @@
 - **📨 Event-Driven Architecture** — NATS JetStream message broker with task queues, outbox pattern, and dead-letter replay.
 - **🔐 Security** — JWT authentication, SQLCipher at-rest encryption, rate limiting, CSRF protection, and offline-first secrets management.
 - **🌐 i18n** — Multi-language support with Polish as primary language.
-- **📦 Containerized** — Full Docker Compose environment for easy deployment.
+- **📦 Single-File Executable** — Nuitka onefile build bundles everything into a single `.exe` / Linux binary.
 
 ---
 
@@ -52,7 +54,7 @@
 └──────────────┬──────────────────────────────────────────┘
                │ HTTP / WebSocket
 ┌──────────────▼──────────────────────────────────────────┐
-│              Litestar API (ASGI / Uvicorn)               │
+│              Litestar API (ASGI / Granian)               │
 │         /api/v1/* (legacy)  /api/v2/* (current)         │
 │    JWT Auth | Rate Limit | CORS | OpenAPI / Swagger     │
 └──────┬──────────────┬──────────────┬────────────────────┘
@@ -89,8 +91,6 @@
 
 ### Quick Install (pip)
 
-NexusAI can be installed directly via pip as a Python package:
-
 ```bash
 # Install the core package
 pip install nexus-ai
@@ -108,40 +108,39 @@ pip install "nexus-ai[dev]"
 pip install "nexus-ai[ui,ai,dev]"
 ```
 
-### Development Install (from source)
+### Development Install (from source with pixi)
 
 ```bash
 # 1. Clone the repository
 git clone https://github.com/your-org/NexusAI.git
 cd NexusAI
 
-# 2. Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+# 2. Install pixi (if not already installed)
+curl -fsSL https://pixi.sh/install.sh | bash
 
-# 3. Install in editable mode with all extras
-pip install -e ".[ui,ai,dev]"
+# 3. Create environment with pixi (Python 3.13t + all deps)
+pixi install
 
-# 4. Copy and configure environment
+# 4. Activate environment
+pixi shell
+
+# 5. Configure environment (optional, defaults work for dev)
 cp .env.example .env
-# Edit .env with your settings (minimal defaults work for local dev)
 ```
 
 ---
 
 ## Prerequisites
 
-- **Python** 3.11 or higher
-- **pip** (Python package manager)
-- **NATS Server** (with JetStream support) — [Download](https://nats.io/download/)
-- **TigerBeetle** (optional, local stub included) — [Download](https://tigerbeetle.com/)
-- **Git** (for cloning the repository)
+- **Python** 3.13 or higher (free-threaded 3.13t recommended)
+- **NATS Server** (with JetStream support) — `pixi run nats` or [manual download](https://nats.io/download/)
+- **TigerBeetle** (optional, local stub included)
 
 ### Optional (for AI features)
 
 - **GGUF Model Files** — Download models for agent council (see [Downloading Models](#downloading-models))
 - **Tesseract OCR** — For document text extraction
-- **CUDA drivers** (NVIDIA GPU) or **llama-cpp-python** — For local LLM inference
+- **CUDA drivers** (NVIDIA GPU) — For local LLM inference
 
 ---
 
@@ -152,43 +151,39 @@ cp .env.example .env
 git clone https://github.com/your-org/NexusAI.git
 cd NexusAI
 
-# 2. Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+# 2. Install with pixi (recommended) or pip
+pixi install
+# OR: pip install -e ".[ui,ai,dev]"
 
-# 3. Install in editable mode
-pip install -e .
+# 3. Run system diagnostics
+python -m nexus_ai.scripts.doctor
 
-# 4. Copy and configure environment
-cp .env.example .env
-# Edit .env with your settings (minimal defaults work for local dev)
-
-# 5. Run system diagnostics (recommended)
-python main.py --mode doctor
-
-# 6. Start NATS server (in a separate terminal)
+# 4. Start NATS server (in a separate terminal)
 nats-server -p 4222 -js
 
-# 7. Run the application
+# 5. Run the application
 python main.py
 ```
 
 The API will be available at **http://127.0.0.1:8000** with Swagger UI at **http://127.0.0.1:8000/schema/swagger**.
 
-After `pip install -e .`, you can also use the installed CLI commands directly:
+### Using pixi tasks
 
 ```bash
-# Start the API server
-nexus-api
+# Start all services (API + worker + NATS)
+pixi run dev
 
-# Start the Taskiq worker
-nexus-worker
+# Start the API server only
+pixi run api
 
-# Start the desktop UI (requires flet)
-nexus-desktop
+# Start the Taskiq worker only
+pixi run worker
+
+# Start the desktop UI
+pixi run flet
 
 # Run diagnostics
-nexus --mode doctor
+pixi run doctor
 ```
 
 ---
@@ -226,7 +221,7 @@ print(base64.urlsafe_b64encode(os.urandom(32)).decode())
 
 ## Running the Application
 
-### Option A: Local Development (Recommended)
+### Option A: Development (pip / pixi)
 
 **Prerequisites:** Start NATS server first.
 
@@ -247,33 +242,35 @@ Or run everything together:
 python main.py --mode all
 ```
 
-### Option B: Docker Compose
+Or with pixi:
 
 ```bash
-# Start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop all services
-docker-compose down
+# Start all services with a single command
+pixi run dev
 ```
 
-This starts:
-- **api** — Litestar API server (port 8000)
-- **worker** — Taskiq worker for background OCR/AI tasks
-- **nats** — NATS JetStream message broker (port 4222)
-- **tigerbeetle** — TigerBeetle ledger (port 3000)
+### Option B: Production Build (Nuitka onefile)
+
+Build a single-file executable that bundles everything:
+
+```bash
+# Build the onefile executable
+pixi run build
+
+# Run the built executable
+./dist/nexus-ai --mode api
+```
+
+See [Building a Single Executable](#building-a-single-executable) for details.
 
 ### Option C: Desktop UI (Flet)
 
 ```bash
-# Using installed CLI (after pip install -e .)
+# Using installed CLI
 nexus-desktop
 
 # Or directly via Python
-python -m Code.luz.main
+python -m nexus_ai.luz.main
 ```
 
 This starts a full desktop application with:
@@ -282,6 +279,62 @@ This starts a full desktop application with:
 - Background worker
 - API server (auto-assigned port)
 - Flet-based graphical interface
+
+---
+
+## Building a Single Executable
+
+NexusAI can be built as a **single portable executable** using Nuitka's `--onefile` mode. This bundles Python interpreter, all dependencies, and the application code into one file.
+
+### Prerequisites
+
+```bash
+pip install nuitka ordered-set  # or pixi run install-build-deps
+```
+
+### Build Commands
+
+```bash
+# Basic onefile build (Linux/macOS)
+python -m nuitka --onefile --standalone --include-package=nexus_ai main.py
+
+# Windows onefile build with icon
+python -m nuitka --onefile --standalone --include-package=nexus_ai --windows-icon-from-ico=icon.ico main.py
+
+# With pixi (recommended)
+pixi run build
+```
+
+### Build Scripts
+
+Pre-configured build scripts are in `build_scripts/`:
+
+| Script | Platform | Description |
+|---|---|---|
+| `build_exe.sh` | Linux/macOS | Nuitka onefile build |
+| `build_exe.bat` | Windows | Nuitka onefile build |
+| `setup.iss` | Windows | Inno Setup installer (wraps the .exe) |
+| `setup.nsi` | Windows | NSIS installer (wraps the .exe) |
+
+### Onefile Build Configuration (`pyproject.toml`)
+
+```toml
+[tool.nuitka]
+onefile = true
+standalone = true
+enable-plugins = ["pydantic"]
+include-package = ["nexus_ai", "granian", "litestar"]
+```
+
+### What's Included
+
+The single executable contains:
+- ✅ Python 3.13t interpreter (Nuitka-compiled)
+- ✅ All Python dependencies (Litestar, Granian, SQLModel, etc.)
+- ✅ All `nexus_ai` modules (API, services, DB, pipelines)
+- ✅ Rust extensions (nexus-crypto via PyO3)
+- ❌ AI model files (GGUF) — downloaded separately on first run
+- ❌ NATS server — auto-started or embedded
 
 ---
 
@@ -327,16 +380,22 @@ curl -X POST http://127.0.0.1:8000/api/v2/invoices/upload \
 
 ```bash
 # Run all tests
-python -m pytest tests/
+pytest tests/
 
 # Run specific test file
-python -m pytest tests/test_inventory_fifo.py -v
+pytest tests/test_inventory_fifo.py -v
 
 # Run with coverage
-python -m pytest tests/ --cov=Code --cov-report=term-missing
+pytest tests/ --cov=nexus_ai --cov-report=term-missing
+
+# Run with pixi
+pixi run test
 
 # Run performance benchmarks
-python -m pytest tests/performance/ -v
+pytest tests/performance/ -v
+
+# Property-based tests
+pixi run test-property
 ```
 
 ### Test structure
@@ -356,7 +415,6 @@ python -m pytest tests/performance/ -v
 | `tests/test_vision_agent.py` | Vision-based invoice analysis |
 | `tests/test_audit_storno.py` | Audit and storno corrections |
 | `tests/test_budgetary_control.py` | Budget control enforcement |
-| `tests/test_bank_import.py` | Bank statement import |
 | ...and many more | |
 
 ---
@@ -365,98 +423,123 @@ python -m pytest tests/performance/ -v
 
 ```
 NexusAI/
-├── main.py                    # Central application entry point
-├── pyproject.toml              # Package configuration (NEW)
-├── requirements.txt           # Python dependencies (legacy)
-├── .gitignore                 # Git ignore rules (NEW)
-├── .env.example               # Environment template
-├── Dockerfile                 # Container build
-├── docker-compose.yml         # Multi-service orchestration
-├── run_local.py               # Legacy local launcher
+├── main.py                        # Central application entry point
+├── pyproject.toml                  # Package configuration
+├── pixi.toml                      # Pixi environment manager config
+├── .gitignore
+├── README.md
 │
-├── Code/                      # Main package directory
-│   ├── API/                   # Litestar API application
-│   │   ├── app.py             # API app factory (create_app)
-│   │   ├── server.py          # Uvicorn server entrypoint
-│   │   ├── state.py           # Startup/shutdown lifecycle
-│   │   ├── security.py        # JWT authentication
-│   │   ├── middleware.py       # HTTP middleware
-│   │   ├── dependencies.py    # DI providers
-│   │   └── routes/            # API route controllers
+├── nexus_ai/                      # Main package directory
+│   ├── __init__.py
+│   ├── main.py                    # Application entry logic
 │   │
-│   ├── CORE/                  # Core shared modules
-│   │   ├── config.py          # AppConfig dataclass (env vars)
-│   │   ├── broker.py          # NATS Taskiq broker setup
-│   │   ├── tasks.py           # Background task definitions
-│   │   ├── secrets.py         # Offline-first secrets manager
-│   │   ├── crypto.py          # Encryption (Fernet + PBKDF2)
-│   │   ├── logger.py          # Loguru logging setup
-│   │   ├── bus.py             # In-process event bus
-│   │   ├── outbox_relay.py    # Outbox → NATS relay
-│   │   └── saga.py            # Persisted saga store
+│   ├── api/                       # Litestar API application
+│   │   ├── app.py                 # API app factory (create_app)
+│   │   ├── server.py              # Granian server entrypoint
+│   │   ├── state.py               # Startup/shutdown lifecycle
+│   │   ├── security.py            # JWT authentication
+│   │   ├── middleware.py           # HTTP middleware
+│   │   ├── dependencies.py        # DI providers
+│   │   ├── locales/               # i18n translation files
+│   │   │   ├── pl.json
+│   │   │   └── en.json
+│   │   └── routes/                # API route controllers
 │   │
-│   ├── SERVICES/              # Business logic services
-│   │   ├── rules_engine.py    # Invoice validation rules
+│   ├── core/                      # Core shared modules
+│   │   ├── config.py              # AppConfig (TOML via msgspec)
+│   │   ├── broker.py              # NATS Taskiq broker setup
+│   │   ├── tasks.py               # Background task definitions
+│   │   ├── secrets.py             # Offline-first secrets manager
+│   │   ├── crypto.py              # Encryption (nexus-crypto)
+│   │   ├── logger.py              # Loguru + structlog
+│   │   ├── bus.py                 # In-process event bus
+│   │   ├── saga.py                # Persisted saga store
+│   │   ├── prompts/               # AI prompt templates
+│   │   │   ├── pl.json
+│   │   │   └── en.json
+│   │   └── msgspec_utils.py       # msgspec serialization helpers
+│   │
+│   ├── services/                  # Business logic services
+│   │   ├── rules_engine.py        # Invoice validation rules
 │   │   ├── analytics_service.py
 │   │   ├── fraud_graph_scanner.py
 │   │   ├── fixed_assets.py
 │   │   ├── inventory_fifo.py
 │   │   ├── dunning_engine.py
 │   │   ├── liquidity_oracle.py
-│   │   └── ...                # 45+ service modules
+│   │   └── ...                    # 45+ service modules
 │   │
-│   ├── DB/                    # Database layer
-│   │   ├── database.py        # SQLAlchemy engine + session factory
-│   │   ├── analytics.py       # DuckDB manager
-│   │   ├── outbox.py          # Outbox pattern models
-│   │   ├── views.py           # Analytics materialized views
-│   │   └── vector_store.py    # Vector storage (LanceDB)
+│   ├── db/                        # Database layer
+│   │   ├── database.py            # SQLModel engine + session factory
+│   │   ├── models.py              # SQLModel ORM models
+│   │   ├── analytics.py           # DuckDB manager
+│   │   ├── outbox.py              # Outbox pattern models
+│   │   ├── views.py               # Analytics materialized views
+│   │   ├── hooks.py               # SQLModel event hooks
+│   │   └── vector_store.py        # Vector storage (sqlite-vec)
 │   │
-│   ├── PIPELINE/              # Document processing pipeline
-│   │   ├── ocr.py             # OCR engine
-│   │   ├── ocr_engine.py      # Tesseract wrapper
-│   │   ├── vision_agent.py    # Visual AI analysis
-│   │   ├── preprocessor.py    # Document preprocessing
-│   │   ├── splitter.py        # Document splitting
-│   │   └── ...                # Pipeline stages
+│   ├── pipeline/                  # Document processing pipeline
+│   │   ├── ocr_consensus.py       # OCR consensus engine
+│   │   └── parser.py              # Document parser
 │   │
-│   ├── Roboton_Reflekton/     # Accounting engine module
-│   │   ├── ledger_client.py   # TigerBeetle client (stub)
+│   ├── roboton_reflekton/         # Accounting engine module
+│   │   ├── ledger_client.py       # TigerBeetle client (stub)
 │   │   ├── ledger_initializer.py
 │   │   ├── reconciliation_engine.py
 │   │   ├── dunning_engine.py
-│   │   ├── shadow_ledger.py   # Tax simulation
+│   │   ├── shadow_ledger.py       # Tax simulation
 │   │   ├── vat_reconciliation.py
 │   │   ├── forex_engine.py
-│   │   └── models.py          # Domain models
+│   │   └── models.py              # Domain models
 │   │
-│   ├── luz/                   # Desktop application (Flet)
-│   │   ├── main.py            # Flet UI orchestrator
-│   │   └── worker.py          # Taskiq worker entrypoint
+│   ├── luz/                       # Desktop application (Flet)
+│   │   ├── main.py                # Flet UI orchestrator
+│   │   └── worker.py              # Taskiq worker entrypoint
 │   │
-│   ├── FRONTEND/              # Flet UI components
-│   ├── MODELS/                # SQLAlchemy ORM models
-│   ├── ARCHITECTURE/          # Architecture documentation
-│   └── SKRIPTS/               # Utility scripts
-│       ├── download_models.py # Model downloader (SHA-256 verified)
-│       └── doctor.py          # System diagnostics
+│   ├── frontend/                  # Flet UI components
+│   │   ├── ui.py
+│   │   └── Braki.py
+│   │
+│   ├── architecture/              # Architecture documentation
+│   │   └── perfect_accounting_architecture.py
+│   │
+│   └── scripts/                   # Utility scripts
+│       ├── download_models.py     # Model downloader (SHA-256 verified)
+│       ├── doctor.py              # System diagnostics
+│       ├── bootstrap.py           # Environment bootstrap
+│       ├── dlq_notifier.py        # Dead Letter Queue notifier
+│       └── ...                    # 15+ scripts
 │
-├── tests/                     # Test suite
-│   ├── conftest.py            # Shared test fixtures
-│   ├── test_reconciliation_engine.py
-│   ├── test_fraud_graph_scanner.py
-│   └── ...                    # 80+ test files
+├── tests/                         # Test suite
+│   ├── conftest.py
+│   └── test_*.py                  # 80+ test files
 │
-└── app_data/                  # Runtime data directory
-    ├── secrets_cache.json     # Local secrets cache
-    └── uploads/               # File uploads
+├── config/                        # TOML configuration profiles
+│   ├── dev.toml
+│   └── prod.toml
+│
+├── build_scripts/                 # Build scripts for onefile executable
+│   ├── build_exe.bat
+│   ├── build_exe.sh
+│   ├── setup.iss
+│   └── setup.nsi
+│
+├── nexus_crypto/                  # Rust + PyO3 native crypto
+│   ├── Cargo.toml
+│   ├── pyproject.toml
+│   └── src/lib.rs
+│
+├── migrations/                    # Alembic database migrations
+│   └── versions/
+│
+└── models/                        # AI model files (GGUF) — downloaded separately
 ```
 
 ---
 
 ## Key Modules
 
-### 🤖 AI Agent Council (`Code/SERVICES/council_agents.py`)
+### 🤖 AI Agent Council (`nexus_ai/services/council_agents.py`)
 
 Multi-LLM agent system that evaluates invoices through specialized agents:
 - **Alpha Agent** (LFM 1.2B) — Primary classification
@@ -465,7 +548,7 @@ Multi-LLM agent system that evaluates invoices through specialized agents:
 - **Rules Agent** (Granite 1B) — Business rule enforcement
 - **Analytics Agent** (Qwen2.5 1.5B) — Anomaly detection
 
-### 📄 OCR Pipeline (`Code/PIPELINE/`)
+### 📄 OCR Pipeline (`nexus_ai/pipeline/`)
 
 Document processing pipeline with stages:
 1. **Preprocessor** — Image enhancement, deskew, binarization
@@ -474,8 +557,9 @@ Document processing pipeline with stages:
 4. **Vision Agent** — Qwen2.5-VL visual analysis
 5. **Refiner** — Post-processing and correction
 6. **QA Engine** — Quality assurance checks
+7. **Consensus** — Multi-engine OCR consensus voting
 
-### 🔒 Ledger System (`Code/Roboton_Reflekton/`)
+### 🔒 Ledger System (`nexus_ai/roboton_reflekton/`)
 
 Double-entry accounting with:
 - Polish chart of accounts (symbole kont)
@@ -484,13 +568,13 @@ Double-entry accounting with:
 - Shadow ledger for "what-if" tax simulations
 - VAT reconciliation engine
 
-### 🔄 Event System (`Code/CORE/`)
+### 🔄 Event System
 
 Event-driven architecture:
 - **NATS JetStream** — Durable message streaming
 - **Outbox Pattern** — Reliable event publishing
 - **Taskiq** — Async task queue with scheduling
-- **Circuit Breaker** — Fault tolerance for NATS operations
+- **stamina** — Async-native retry + circuit breaker
 - **Saga Pattern** — Distributed transaction orchestration
 
 ---
@@ -508,7 +592,7 @@ Event-driven architecture:
 | `NEXUS_LOG_LEVEL` | `info` | Logging level |
 | **Security** | | |
 | `NEXUS_JWT_SECRET` | *(auto-generated)* | JWT signing secret **(required in prod)** |
-| `NEXUS_JWT_EXPIRATION_SECONDS` | `900` | JWT token expiry (overridden to 900s) |
+| `NEXUS_JWT_EXPIRATION_SECONDS` | `900` | JWT token expiry |
 | `NEXUS_JWT_ISSUER` | `nexus-ai` | JWT issuer claim |
 | `NEXUS_JWT_AUDIENCE` | `nexus-api` | JWT audience claim |
 | `NEXUS_REFRESH_TOKEN_DAYS` | `30` | Refresh token validity days |
@@ -516,18 +600,15 @@ Event-driven architecture:
 | `NEXUS_ADMIN_PASSWORD` | `admin` | Default admin password |
 | `NEXUS_ENCRYPTION_KEY` | *(empty)* | 32-byte base64-url key **(required in prod)** |
 | `NEXUS_SQLCIPHER_KEY` | *(empty)* | SQLCipher database encryption key |
-| `NEXUS_SQLCIPHER_KEY_ENV` | `NEXUS_SQLCIPHER_KEY` | Env var name for SQLCipher key |
 | **Database** | | |
 | `NEXUS_SQLITE_FILE` | `nexus_oltp.db` | SQLite OLTP database filename |
 | `NEXUS_DUCKDB_FILE` | `nexus_olap.duckdb` | DuckDB OLAP database filename |
 | `NEXUS_DUCKDB_MEMORY_LIMIT` | `512MB` | DuckDB memory limit |
 | `NEXUS_DUCKDB_THREADS` | `2` | DuckDB thread count |
-| `NEXUS_IDEMPOTENCY_DB` | `idempotency.sqlite` | Idempotency store filename |
 | **NATS** | | |
 | `NEXUS_NATS_URL` | `nats://localhost:4222` | NATS server URL |
 | `NEXUS_MAX_PARALLEL_OCR` | `1` | Max concurrent OCR tasks |
 | `NEXUS_OCR_TIMEOUT_SEC` | `300` | OCR task timeout in seconds |
-| `NEXUS_MODEL_CACHE_TTL_SEC` | `600` | ML model cache TTL |
 | `NEXUS_OUTBOX_REPLAY_LIMIT` | `100` | Max outbox replay per cycle |
 | **Storage & Uploads** | | |
 | `NEXUS_STORAGE_DIR` | `app_data/uploads` | File upload storage directory |
@@ -544,9 +625,6 @@ Event-driven architecture:
 | `NEXUS_DECISION_JAMBA_MODEL` | `models/Jamba-Reasoning-3B-Q4_K_M.gguf` | Decision agent (Jamba) path |
 | `NEXUS_DECISION_GRANITE_MODEL` | `models/granite-4.0-1b-nano-Q4_K_M.gguf` | Decision agent (Granite) path |
 | `NEXUS_ORCHESTRATOR_MODEL` | `models/LittleLamb-0.3B-Q4_K_M.gguf` | Orchestrator agent path |
-| **Infiscal (Secrets Management)** | | |
-| `NEXUS_INFISCAL_JWT_SECRET` | *(empty)* | Infiscal fallback for JWT secret |
-| `NEXUS_INFISCAL_ENCRYPTION_KEY` | *(empty)* | Infiscal fallback for encryption key |
 | **TigerBeetle** | | |
 | `TB_CLUSTER_ID` | `0` | TigerBeetle cluster ID |
 | `TB_REPLICA_ADDRESSES` | `3000` | TigerBeetle replica addresses |
@@ -566,11 +644,8 @@ NexusAI uses a Council of LLMs for intelligent invoice processing. Setting up th
 ### 2. Install AI Dependencies
 
 ```bash
-# For GPU (CUDA) — install PyTorch with CUDA first:
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
-
-# Then install AI extras:
-pip install "nexus-ai[ai]"  # or: pip install -e ".[ai]"
+# For GPU (CUDA):
+pip install "nexus-ai[ai]"
 
 # For CPU-only:
 pip install "nexus-ai[ai]"
@@ -580,13 +655,13 @@ pip install "nexus-ai[ai]"
 
 ```bash
 # Download all required GGUF models with SHA-256 integrity verification
-python Code/SKRIPTS/download_models.py
+python -m nexus_ai.scripts.download_models
 
 # Only verify existing models without re-downloading
-python Code/SKRIPTS/download_models.py --verify-only
+python -m nexus_ai.scripts.download_models --verify-only
 
 # Download a specific model
-python Code/SKRIPTS/download_models.py --model alpha
+python -m nexus_ai.scripts.download_models --model alpha
 ```
 
 The script downloads the following models:
@@ -605,15 +680,15 @@ The script downloads the following models:
 After downloading models, verify the setup:
 
 ```bash
-python main.py --mode doctor
+python -m nexus_ai.scripts.doctor
 ```
 
 This checks:
-- ✅ Python version (3.11+)
+- ✅ Python version (3.13+)
 - ✅ CUDA/GPU availability
 - ✅ All required GGUF models present and integrity-verified
 - ✅ NATS server connectivity
-- ✅ Environment configuration (.env)
+- ✅ Environment configuration
 - ✅ System resources (RAM, disk)
 
 ---
@@ -638,50 +713,19 @@ python -c "import nats; import asyncio; print(asyncio.run(nats.connect('nats://l
 The application auto-creates tables on startup. If you need to reset:
 
 ```bash
-rm -f nexus_oltp.db nexus_olap.duckdb app_data/idempotency.sqlite
-python -c "from core.config import AppConfig; from db.database import create_oltp_engine, init_schema; import asyncio; asyncio.run(init_schema(create_oltp_engine(AppConfig())))"
+rm -f nexus_oltp.db nexus_olap.duckdb
+python -c "from nexus_ai.core.config import AppConfig; from nexus_ai.db.database import create_oltp_engine, init_schema; import asyncio; asyncio.run(init_schema(create_oltp_engine(AppConfig())))"
 ```
 
 ### Common Issues
 
 | Issue | Solution |
 |---|---|
-| `ModuleNotFoundError: No module named 'api'` | Run from project root, not from `Code/` |
+| `ModuleNotFoundError: No module named 'api'` | Run from project root, not from `nexus_ai/` |
 | `NATS connection refused` | Start NATS server first: `nats-server -p 4222 -js` |
 | `NEXUS_JWT_SECRET not set` | Set it in `.env` or one will be auto-generated for dev |
-| `SQLCipher encryption error` | Ensure `cryptography` package is installed |
+| `SQLCipher encryption error` | Ensure nexus-crypto package is installed |
 
----
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Coding Standards
-
-- Type hints required for all Python code
-- Async-first design (use `asyncio`, avoid blocking calls)
-- Follow existing patterns (SQLAlchemy async sessions, DI via Litestar)
-- Tests required for new features
-- Documentation in Polish and English
-
----
-
-## License
+### License
 
 Proprietary. All rights reserved.
-
----
-
-## Additional Resources
-
-- [Codebuff CLI](https://codebuff.com) — AI coding assistant used in development
-- [Litestar Documentation](https://litestar.dev)
-- [NATS Documentation](https://docs.nats.io)
-- [TigerBeetle Documentation](https://docs.tigerbeetle.com)
-- [Taskiq Documentation](https://taskiq.apachebook.com)
-- [Flet Documentation](https://flet.dev)

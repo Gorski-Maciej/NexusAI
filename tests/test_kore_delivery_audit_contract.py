@@ -6,7 +6,7 @@ from pathlib import Path
 
 def _load_module():
     root = Path(__file__).resolve().parents[1]
-    mod_path = root / "Code" / "SKRIPTS" / "kore_delivery_audit.py"
+    mod_path = root / "nexus_ai" / "scripts" / "kore_delivery_audit.py"
     spec = importlib.util.spec_from_file_location("kore_delivery_audit", mod_path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)

@@ -3,7 +3,7 @@ doctor.py — Comprehensive system diagnostics for NexusAI.
 
 Run via:
     python main.py --mode doctor
-    python -m Code.SKRIPTS.doctor
+    python -m nexus_ai.scripts.doctor
 
 Checks:
   - Python version and environment
@@ -64,7 +64,7 @@ def _bold(text: str) -> str:
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 _MODELS_DIR = _PROJECT_ROOT / "models"
-_CODE_DIR = _PROJECT_ROOT / "Code"
+_CODE_DIR = _PROJECT_ROOT / "nexus_ai"
 
 
 # ── Checks ───────────────────────────────────────────────────────────────────
@@ -117,10 +117,10 @@ def check_models() -> str:
         return _fail(f"Models directory not found at {_MODELS_DIR}")
 
     try:
-        from scripts.download_models import MODEL_MANIFEST, get_missing_models
+        from nexus_ai.scripts.download_models import MODEL_MANIFEST, get_missing_models
     except ImportError:
         try:
-            from nexus_ai.SKRIPTS.download_models import MODEL_MANIFEST, get_missing_models
+            from nexus_ai.scripts.download_models import MODEL_MANIFEST, get_missing_models
         except ImportError:
             return _warn("Could not import download_models module — using fallback check")
 
@@ -163,7 +163,7 @@ def check_models() -> str:
     if all_found:
         lines.insert(0, f"  {_ok(summary)}")
     else:
-        lines.insert(0, f"  {_fail(summary)} — run: python Code/SKRIPTS/download_models.py")
+        lines.insert(0, f"  {_fail(summary)} — run: python -m nexus_ai.scripts.download_models")
 
     # Show integrity issues if any
     integrity_issues = [m for m in missing if m["status"] == "checksum_mismatch"]
@@ -311,7 +311,7 @@ def run_diagnostics() -> dict[str, Any]:
     else:
         print(f"  {_fail(f'{pass_count} passed, {warn_count} warnings, {fail_count} FAILED')}")
 
-    print(f"  {_info('Tip: Run python Code/SKRIPTS/download_models.py to download missing models')}")
+    print(f"  {_info('Tip: Run python -m nexus_ai.scripts.download_models to download missing models')}")
     print(f"  {_info('Tip: Run nats-server -p 4222 -js to start NATS')}")
     print()
 

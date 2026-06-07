@@ -216,8 +216,8 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
     _setup_structlog()
 
     # ── Integracje zewnętrzne ─────────────────────────────────────────────────
-    # Integracja z Sentry (jeśli DSN jest skonfigurowany)
-    _try_setup_sentry(app_name)
+    # Zgodnie z aa3fvcx.txt: Sentry został usunięty z nowego stacku.
+    # Monitoring błędów odbywa się przez Loguru + structlog + OpenTelemetry.
 
     # Przekieruj warnings z bibliotek zewnętrznych do Loguru
     logging.captureWarnings(True)
@@ -225,29 +225,6 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
     _redirect_standard_logging()
 
     _INITIALIZED = True
-
-
-def _try_setup_sentry(app_name: str) -> None:
-    """Próbuje skonfigurować Sentry, jeśli DSN jest dostępny w środowisku."""
-    sentry_dsn = os.environ.get("NEXUS_SENTRY_DSN")
-    if not sentry_dsn:
-        return
-
-    try:
-        import sentry_sdk
-        from sentry_sdk.integrations.loguru import LoguruIntegration
-
-        sentry_sdk.init(
-            dsn=sentry_dsn,
-            integrations=[LoguruIntegration(level=logging.ERROR)],
-            traces_sample_rate=0.1,
-            environment=os.environ.get("NEXUS_ENVIRONMENT", "development"),
-        )
-        logger.info("Sentry SDK initialized for error tracking")
-    except ImportError:
-        logger.debug("sentry_sdk not available, skipping Sentry integration")
-    except Exception as exc:
-        logger.debug("Failed to initialize Sentry: %s", exc)
 
 
 def _redirect_standard_logging() -> None:

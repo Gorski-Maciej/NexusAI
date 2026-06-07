@@ -130,7 +130,7 @@ dependencies = [
     # ═══════════════════════════════════════════════════════════════════════
     "opentelemetry-api>=1.25.0",
     "opentelemetry-sdk>=1.25.0",
-    "opentelemetry-prometheus-exporter>=0.46b0",
+    "opentelemetry-exporter-prometheus>=0.46b0",
 
     # ═══════════════════════════════════════════════════════════════════════
     # Utilities
@@ -318,7 +318,7 @@ exclude-module = [
 
 # ── Windows-specific ─────────────────────────────────────────────────────
 # windows-console-mode = "disable"  # Odkomentuj dla GUI bez konsoli
-windows-icon-from-exe = "assets/nexus.ico"
+windows-icon-from-ico = "assets/nexus.ico"
 
 # ── Advanced ─────────────────────────────────────────────────────────────
 # Report pomaga debugować, co zostało włączone do builda
@@ -330,8 +330,8 @@ clang = false           # Użyj GCC (domyślnie na Linux)
 assume-yes-for-downloads = true  # Automatyczne pobieranie zależności
 
 # ── Build-time module configuration ──────────────────────────────────────
-# Wymusza kompilację do C zamiast pozostawiania w Python bytecode
-# Zapewnia maksymalną wydajność i minimalny rozmiar
+# nofollow-imports=false: Nuitka normalnie podąża za importami (domyślnie)
+# prefer-source-code=false: Używa skompilowanych .so/.pyd zamiast źródła
 nofollow-imports = false
 prefer-source-code = false
 

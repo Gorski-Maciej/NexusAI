@@ -20,11 +20,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-# ── Ensure nexus_ai/ package is importable ──
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent
-_CODE_DIR = str(_PROJECT_ROOT / "nexus_ai")
-if _CODE_DIR not in sys.path:
-    sys.path.insert(0, _CODE_DIR)
+# ── Project root (directory containing nexus_ai/) ──
+_PROJECT_ROOT = Path(__file__).resolve().parent
 
 # ── Logging setup ──
 from nexus_ai.core.logger import get_logger, setup_logger  # noqa: E402
@@ -81,7 +78,7 @@ def _set_env_from_args(args: argparse.Namespace) -> None:
 
 
 async def _run_bootstrap(args: argparse.Namespace | None = None) -> None:
-    from scripts.bootstrap import run_bootstrap
+    from nexus_ai.scripts.bootstrap import run_bootstrap
     logger.info(">>> Bootstrap: Running comprehensive initialization...")
     steps = None
     if args:
@@ -116,13 +113,13 @@ def _start_api_server_sync(host: str, port: int) -> None:
     if host == "unix":
         socket_path = os.getenv("NEXUS_UNIX_SOCKET", "/tmp/nexus-api.sock")
         server = granian.Granian(
-            "api.app:create_app",
+            "nexus_ai.api.app:create_app",
             unix_socket=socket_path,
             log_level=log_level,
         )
     else:
         server = granian.Granian(
-            "api.app:create_app",
+            "nexus_ai.api.app:create_app",
             host=host,
             port=port,
             log_level=log_level,
@@ -152,11 +149,11 @@ async def _start_api_server(host: str, port: int) -> None:
 
 
 async def _start_worker() -> None:
-    from core.config import AppConfig
+    from nexus_ai.core.config import AppConfig
     AppConfig()
     logger.info(">>> Starting Taskiq worker...")
 
-    cmd = [sys.executable, "-m", "luz.worker"]
+    cmd = [sys.executable, "-m", "nexus_ai.luz.worker"]
     worker_proc = await asyncio.create_subprocess_exec(
         *cmd, cwd=_PROJECT_ROOT,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -253,7 +250,7 @@ def _run_alembic_migrations() -> int:
 
 def _run_fetch_models() -> None:
     try:
-        from scripts.download_models import download_all_models
+        from nexus_ai.scripts.download_models import download_all_models
     except ImportError:
         logger.error("download_models script not found")
         return
@@ -265,20 +262,17 @@ def _run_fetch_models() -> None:
 
 def _run_compute_checksums() -> None:
     try:
-        from scripts.download_models import _compute_checksums
+        from nexus_ai.scripts.download_models import _compute_checksums
     except ImportError:
-        try:
-            from nexus_ai.SKRIPTS.download_models import _compute_checksums
-        except ImportError:
-            logger.error("download_models script not found")
-            return
+        logger.error("download_models script not found")
+        return
     _compute_checksums()
 
 
 async def _run_load_fixtures() -> int:
     try:
-        from core.config import AppConfig
-        from scripts.seed_data import seed_all
+        from nexus_ai.core.config import AppConfig
+        from nexus_ai.scripts.seed_data import seed_all
         config = AppConfig()
         result = await seed_all(config)
         total = sum(result.values())
@@ -337,13 +331,10 @@ def main(argv: list[str] | None = None) -> int:
 
 async def _run_doctor() -> None:
     try:
-        from scripts.doctor import run_diagnostics
+        from nexus_ai.scripts.doctor import run_diagnostics
     except ImportError:
-        try:
-            from nexus_ai.SKRIPTS.doctor import run_diagnostics
-        except ImportError:
-            logger.error("Doctor script not found")
-            return
+        logger.error("Doctor script not found")
+        return
     run_diagnostics()
 
 

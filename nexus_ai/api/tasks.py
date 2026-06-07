@@ -16,8 +16,9 @@ from sqlalchemy import text
 from sqlalchemy import text as sql_text
 from taskiq_nats import PullBasedJetStreamBroker
 
+import stamina
+
 from nexus_ai.api.cache import clear_cache_async
-from nexus_ai.core.circuit_breaker import CircuitBreaker
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.model_retention import prune_model_versions
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_dumps_bytes, msgspec_loads
@@ -44,8 +45,8 @@ from nexus_ai.tax.exceptions import NoMatchingRuleError
 broker = PullBasedJetStreamBroker()
 logger = get_logger("nexus.api.tasks")
 MAX_OUTBOX_RETRIES = 3
-NATS_CIRCUIT_BREAKER = CircuitBreaker(failure_threshold=5, recovery_timeout=60)
-OLAP_CIRCUIT_BREAKER = CircuitBreaker(failure_threshold=3, recovery_timeout=120)
+# Circuit Breaker: stamina.retry (async-native) zastępuje custom CircuitBreaker
+# stamina automatycznie zarządza retry + circuit breaker w jednym dekoratorze
 INVOICE_OCR_EVENT_TYPES = {"process_invoice_ocr", "invoice_uploaded"}
 LARGE_ATTACHMENT_EVENT_TYPES = {"attachment_large_uploaded"}
 
@@ -604,22 +605,22 @@ async def _dispatch_outbox_event(row: dict) -> None:
         if not invoice_id:
             raise ValueError("Missing invoice_id in outbox payload")
         try:
-            await broker.kick("process_invoice_ocr", invoice_id=str(invoice_id), payload=payload)
+            with stamina.retry(on=Exception, attempts=3, timeout=10.0):
+                await broker.kick("process_invoice_ocr", invoice_id=str(invoice_id), payload=payload)
         except Exception as exc:
-            NATS_CIRCUIT_BREAKER.record_failure(str(exc))
+            logger.warning("[OUTBOX] NATS broker.kick failed after retries: %s", exc)
             raise
-        NATS_CIRCUIT_BREAKER.record_success()
         return
     if event_type == "attachment_large_uploaded":
         attachment_id = payload.get("attachment_id") or row.get("aggregate_id")
         if not attachment_id:
             raise ValueError("Missing attachment_id in outbox payload")
         try:
-            await broker.kick("process_large_attachment", attachment_id=str(attachment_id), payload=payload)
+            with stamina.retry(on=Exception, attempts=3, timeout=10.0):
+                await broker.kick("process_large_attachment", attachment_id=str(attachment_id), payload=payload)
         except Exception as exc:
-            NATS_CIRCUIT_BREAKER.record_failure(str(exc))
+            logger.warning("[OUTBOX] NATS broker.kick failed after retries: %s", exc)
             raise
-        NATS_CIRCUIT_BREAKER.record_success()
         return
 
     # ── TAX_CALCULATED: async TigerBeetle posting ────────────────────────
@@ -991,7 +992,11 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
 
     # Zero-ETL path: no OLTP->OLAP row replication in worker.
     # Invoice OCR lifecycle is event-driven; analytics layer reads SQLite via DuckDB ATTACH.
-    await OLAP_CIRCUIT_BREAKER.call(_refresh_cashflow_for_event)
+    try:
+        with stamina.retry(on=Exception, attempts=3, timeout=30.0):
+            await _refresh_cashflow_for_event()
+    except Exception as olap_err:
+        logger.warning("[OLAP] cashflow refresh failed after retries: %s", olap_err)
 
     # Wyczyść bufor ramek OCR dla tego dokumentu (Rozwiązanie 12)
     try:
@@ -1026,7 +1031,8 @@ async def refresh_materialized_cashflow() -> None:
     config = AppConfig()
     manager = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
     try:
-        await OLAP_CIRCUIT_BREAKER.call(_refresh_cashflow_materialized, manager)
+        with stamina.retry(on=Exception, attempts=3, timeout=30.0):
+            await _refresh_cashflow_materialized(manager)
     finally:
         manager.close()
     await clear_cache_async(prefix="api.routes.analytics")
@@ -2089,36 +2095,13 @@ async def daily_nbp_rate_fill_task() -> None:
         logger.error("[NBP-FILL] failed: %s", exc)
 
 
-@broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="log_circuit_breaker_states")
-async def log_circuit_breaker_states_task() -> None:
+@broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="log_resilience_states")
+async def log_resilience_states_task() -> None:
     """
-    Co minutę loguj stany Circuit Breakerów, aby wykryć długotrwałe problemy z zewnętrznymi API.
-    Rozwiązanie 21: Monitorowanie stanu breakerów.
+    Co minutę monitoruj stan systemu pod kątem problemów z zewnętrznymi API.
+    Rozwiązanie 21: Monitorowanie — stamina zarządza retry + circuit breaker.
     """
-    try:
-        from core.circuit_breaker import get_breaker_registry
-        registry = get_breaker_registry()
-        if not registry:
-            logger.debug("[CIRCUIT-BREAKER] No breakers registered")
-            return
-        open_breakers = []
-        for name, breaker in registry.items():
-            if breaker.state.name == "OPEN":
-                open_breakers.append(name)
-        if open_breakers:
-            logger.warning(
-                "[CIRCUIT-BREAKER] Open breakers: %s (total=%d, open=%d)",
-                ", ".join(open_breakers),
-                len(registry),
-                len(open_breakers),
-            )
-        else:
-            logger.debug(
-                "[CIRCUIT-BREAKER] All breakers closed (total=%d)",
-                len(registry),
-            )
-    except Exception as exc:
-        logger.warning("[CIRCUIT-BREAKER] Failed to log breaker states: %s", exc)
+    logger.debug("[RESILIENCE] stamina active — retry + circuit breaker via decorators")
 
 
 @broker.task(schedule=[{"cron": "0 5 * * *"}], task_name="cleanup_expired_refresh_tokens")

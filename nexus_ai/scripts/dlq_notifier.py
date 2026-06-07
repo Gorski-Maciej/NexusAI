@@ -5,12 +5,12 @@ Scans the failed_tasks table for unresolved items and sends notifications
 via the configured notification service (email, in-app, etc.).
 
 Usage:
-    python -m Code.SKRIPTS.dlq_notifier             # single check
-    python -m Code.SKRIPTS.dlq_notifier --watch      # continuous mode (every 60 min)
-    python -m Code.SKRIPTS.dlq_notifier --interval 30  # continuous mode (every 30 min)
+    python -m nexus_ai.scripts.dlq_notifier              # single check
+    python -m nexus_ai.scripts.dlq_notifier --watch       # continuous mode (every 60 min)
+    python -m nexus_ai.scripts.dlq_notifier --interval 30 # continuous mode (every 30 min)
 
 Integration:
-    Can be invoked from run_local.py --dlq-watcher or run as a cron job.
+    Can be invoked from main.py or run as a scheduled task.
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ from typing import Any
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 
-logger = get_logger("nexus.skripts.dlq_notifier")
+logger = get_logger("nexus.scripts.dlq_notifier")
 
 # ── Thresholds ───────────────────────────────────────────────────────────────
 # Minimum count of unresolved DLQ items to trigger a notification
@@ -109,8 +109,8 @@ async def send_dlq_alert(
 
     # Attempt to send via NotificationService (non-blocking on failure)
     try:
-        from core.config import AppConfig
-        from services.notification_service import NotificationService
+        from nexus_ai.core.config import AppConfig
+        from nexus_ai.services.notification_service import NotificationService
 
         cfg = config or AppConfig()
         ns = NotificationService(
@@ -213,7 +213,7 @@ def build_parser() -> ArgumentParser:
 
 
 def main() -> int:
-    """CLI entry point: python -m Code.SKRIPTS.dlq_notifier [options]"""
+    """CLI entry point: python -m nexus_ai.scripts.dlq_notifier [options]"""
     args: Namespace = build_parser().parse_args()
 
     logging.basicConfig(
@@ -223,15 +223,9 @@ def main() -> int:
     )
 
     try:
-        # Ensure Code/ is on sys.path so lazy imports like `from core.config` work
-        _script_dir = Path(__file__).resolve().parent  # Code/SKRIPTS
-        _code_dir = str(_script_dir.parent)  # Code/
-        if _code_dir not in sys.path:
-            sys.path.insert(0, _code_dir)
-
         # Lazy import to avoid circular deps at module level
-        from core.config import AppConfig
-        from db.database import create_oltp_engine
+        from nexus_ai.core.config import AppConfig
+        from nexus_ai.db.database import create_oltp_engine
 
         config = AppConfig()
         engine = create_oltp_engine(config)

@@ -258,8 +258,9 @@ System wykorzystuje **8 modeli AI** zgrupowanych w **3 agentach**:
 | **Loguru** ≥0.7 | — | Zaawansowane logowanie z rotacją plików i kolorami |
 | **structlog** ≥24.0 | — | **Ustrukturyzowane logowanie z kontekstem** — zdarzenia zamiast płaskiego tekstu, automatyczny kontekst (trace_id, user_id) |
 | **OpenTelemetry** (API + SDK) | **prometheus_client** | **Jeden standard dla całej telemetrii** — metryki, ślady, logi; Prometheus Exporter dla /metrics endpointu |
-| **Sentry SDK** (opcjonalnie) | — | Specjalista od błędów produkcyjnych — stack trace + zmienne lokalne + breadcrumbs |
 | **DuckDB + Parquet** | — | Lokalna hurtownia telemetrii — logi jako baza danych do przeszukiwania SQL |
+
+> **Uwaga:** Sentry SDK został usunięty z nowego stacku (aa3fvcx.txt). Monitoring błędów odbywa się przez Loguru + structlog + OpenTelemetry.
 
 ### Dlaczego OpenTelemetry zamiast prometheus_client
 - **Zero nowych zależności** — jeden standard dla metryk, śladów i logów
@@ -403,7 +404,7 @@ Komunikacja z zewnętrznymi API zabezpieczona przez **stamina** (retry + circuit
 | Finanse / Waluty | 3 | **Nexus-Money** zamiast py-moneyed (+TigerBeetle Client) |
 | AI / ML | 2 | **-5** (usunięto: transformers, torch, sentence-transformers, onnxruntime, opencv) |
 | Modele AI | 8 | **+2** (LightOnOCR-1B, Phi-3-mini, Hrida-T2SQL, Fin-RWKV; usunięto: Granite, Jamba) |
-| Logowanie / Monitoring | 5 | **+structlog, +Sentry, +DuckDB/Parquet**; prometheus_client → **OpenTelemetry** |
+| Logowanie / Monitoring | 4 | **+structlog, +DuckDB/Parquet**; prometheus_client → **OpenTelemetry**; Sentry usunięty |
 | Narzędzia | 3 | **pendulum** zamiast python-dateutil; **TOML+msgspec** zamiast PyYAML/python-dotenv |
 | Testowanie | 8 | **pytest-anyio** zamiast pytest-asyncio; +crosshair, +schemathesis, +locust, +py-spy; **locust** zamiast k6 |
 | Interfejs Desktopowy | 2 | — |

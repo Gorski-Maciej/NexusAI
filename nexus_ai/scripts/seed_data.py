@@ -2,7 +2,7 @@
 seed_data.py — Fixtures & Demo Data Loader for NexusAI.
 
 Usage:
-    python -m Code.SKRIPTS.seed_data
+    python -m nexus_ai.scripts.seed_data
     python main.py --load-fixtures
 
 Creates a set of realistic test data:
@@ -443,7 +443,7 @@ async def seed_users(db_session: Any, config: Any) -> dict:
     """
     from sqlalchemy import text
 
-    from api.auth_service import hash_password
+    from nexus_ai.api.auth_service import hash_password
 
     count = 0
     admin_password = None
@@ -1179,8 +1179,8 @@ async def seed_all(config: Any | None = None) -> dict[str, int]:
 
     Returns a dict with counts of each entity type created.
     """
-    from core.config import AppConfig
-    from db.database import create_oltp_engine, create_session_factory
+    from nexus_ai.core.config import AppConfig
+    from nexus_ai.db.database import create_oltp_engine, create_session_factory
 
     cfg = config or AppConfig()
 
@@ -1250,7 +1250,7 @@ async def seed_all(config: Any | None = None) -> dict[str, int]:
 # ── CLI entry point ──────────────────────────────────────────────────────────
 
 def main() -> int:
-    """CLI entry point: python -m Code.SKRIPTS.seed_data"""
+    """CLI entry point: python -m nexus_ai.scripts.seed_data"""
     import sys
 
     logging.basicConfig(
