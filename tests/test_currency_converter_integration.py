@@ -24,7 +24,7 @@ from unittest.mock import MagicMock, patch
 import duckdb
 import pytest
 
-from services.currency_converter import (
+from nexus_ai.services.currency_converter import (
     CurrencyConverter,
     CurrencyRateNotFoundError,
     EXCHANGE_RATES_SCHEMA,

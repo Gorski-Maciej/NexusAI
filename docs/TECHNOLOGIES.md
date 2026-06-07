@@ -1,7 +1,7 @@
 # NexusAI — Pełna lista technologii (v2.0)
 
-> **Data:** 2026-06-05
-> **Status:** Przebudowa zgodnie z `aa3fvcx.txt`
+> **Data:** 2026-06-07
+> **Status:** Przebudowa zgodnie z `aa3fvcx.txt` — wersja finalna
 > **Opis:** Nowy, ultralekki stos technologiczny — maksymalna wydajność przy minimalnym zużyciu RAM.
 
 ---
@@ -192,10 +192,17 @@ python -m api.server
 
 ## 10. Finanse / Waluty
 
-| Technologia | Opis |
-|---|---|
-| **py-moneyed** ≥3.0 | Fowler's Money pattern — reprezentacja kwot z walutą, zaokrąglanie HALF_UP |
-| **TigerBeetle** | Rozproszony silnik księgowy w Zig — podwójny zapis na poziomie protokołu |
+| Technologia | Zastępuje | Opis |
+|---|---|---|
+| **Nexus-Money** (msgspec.Struct) | **py-moneyed** | **Minimalistyczna reprezentacja pieniędzy** — `amount_cents: int` + `currency: str`, zero Decimal, bezpośrednie mapowanie 1:1 z TigerBeetle |
+| **TigerBeetle** | — | Rozproszony silnik księgowy w Zig — podwójny zapis na poziomie protokołu |
+| **TigerBeetle Client** (Python) | — | Oficjalny, asynchroniczny klient TigerBeetle — komunikacja przez gniazdo UNIX |
+
+### Nexus-Money — dlaczego zastępuje py-moneyed
+- `msgspec.Struct` z `amount_cents: int` i `currency: str` — bezpośrednie mapowanie do TigerBeetle
+- Zero konwersji, zero Decimal, zero strat precyzji
+- Automatyczna serializacja przez Litestar i msgspec
+- Obliczenia na `int` są fundamentalnie szybsze niż na `Decimal`
 
 ---
 
@@ -246,32 +253,55 @@ System wykorzystuje **8 modeli AI** zgrupowanych w **3 agentach**:
 
 ## 13. Logowanie i Monitoring
 
-| Technologia | Opis |
-|---|---|
-| **Loguru** ≥0.7 | Zaawansowane logowanie z rotacją plików i kolorami |
-| **OpenTelemetry** | Distributed tracing — śledzenie żądań przez system |
-| **Prometheus Client** ≥0.20 | Metryki API (czas odpowiedzi, liczba żądań, błędy) |
+| Technologia | Zastępuje | Opis |
+|---|---|---|
+| **Loguru** ≥0.7 | — | Zaawansowane logowanie z rotacją plików i kolorami |
+| **structlog** ≥24.0 | — | **Ustrukturyzowane logowanie z kontekstem** — zdarzenia zamiast płaskiego tekstu, automatyczny kontekst (trace_id, user_id) |
+| **OpenTelemetry** (API + SDK) | **prometheus_client** | **Jeden standard dla całej telemetrii** — metryki, ślady, logi; Prometheus Exporter dla /metrics endpointu |
+| **Sentry SDK** (opcjonalnie) | — | Specjalista od błędów produkcyjnych — stack trace + zmienne lokalne + breadcrumbs |
+| **DuckDB + Parquet** | — | Lokalna hurtownia telemetrii — logi jako baza danych do przeszukiwania SQL |
+
+### Dlaczego OpenTelemetry zamiast prometheus_client
+- **Zero nowych zależności** — jeden standard dla metryk, śladów i logów
+- **Lekki most Prometheus Exporter** — endpoint /metrics w istniejącym serwerze
+- **Skalowalność bez zmiany kodu** — zmiana eksportera (OTLP → Prometheus) to zmiana konfiguracji
 
 ---
 
 ## 14. Narzędzia (Utilities)
 
-| Technologia | Opis |
-|---|---|
-| **psutil** ≥5.9 | Monitorowanie CPU, RAM, dysku |
-| **python-dateutil** | Parsowanie dat w różnych formatach |
+| Technologia | Zastępuje | Opis |
+|---|---|---|
+| **psutil** ≥5.9 | — | Monitorowanie CPU, RAM, dysku |
+| **pendulum** ≥3.0 | **python-dateutil, pytz, dateparser** | **Nowoczesne zarządzanie czasem** — async-safe, jawne parsowanie, strefy czasowe, intuicyjne Duration API |
+| **TOML + msgspec** | **PyYAML, python-dotenv** | Konfiguracja w czystym TOML — szybsze parsowanie, bezpieczeństwo typów, zero nowych zależności |
+
+### Dlaczego pendulum zamiast dateparser
+- Aplikacja księgowa nie może zgadywać formatu daty — pendulum używa jawnego parsowania
+- Precyzja zamiast zgadywania: `01/02/2026` to jednoznacznie styczeń lub luty, bez domysłów
+- Lżejszy i szybszy od dateparser
 
 ---
 
 ## 15. Testowanie
 
-| Technologia | Opis |
-|---|---|
-| **pytest** ≥8.0 | Framework testowy |
-| **pytest-asyncio** | Testowanie funkcji asynchronicznych |
-| **pytest-cov** | Pomiar pokrycia kodu testami |
-| **Hypothesis** ≥6.100 | Property-based testing |
-| **k6** | Testy wydajnościowe API |
+| Technologia | Zastępuje | Opis |
+|---|---|---|
+| **pytest** ≥8.0 | — | Framework testowy |
+| **pytest-anyio** ≥0.1 | **pytest-asyncio** | **Natywna asynchroniczność na anyio** — testy działają na tej samej warstwie co kod produkcyjny (Litestar + Granian) |
+| **pytest-cov** ≥5.0 | — | Pomiar pokrycia kodu testami |
+| **crosshair** ≥0.1 | **Hypothesis** (głównie) | **Property-based testing z SMT solverem** — matematyczne dowody poprawności zamiast losowego fuzzingu; szybszy i deterministyczny |
+| **Hypothesis** ≥6.100 | — | Zachowany dla złożonych property-based tests (test_property_based.py) |
+| **schemathesis** ≥3.30 | — | Automatyczny fuzz testing API — generuje setki losowych zapytań ze schematu OpenAPI Litestar |
+| **locust** ≥2.29 | **k6** | **Pythonowe testy wydajności** — scenariusze w tym samym języku co aplikacja (httpx + msgspec) |
+| **py-spy** ≥0.3 | — | **Natywny profiler w Rust** — podpina się do działającego procesu bez restartu, narzut <1% |
+
+### Dlaczego te zmiany w testowaniu
+- **pytest-anyio** eliminuje mostkowanie między asyncio a anyio — testy wiernie odzwierciedlają produkcję
+- **crosshair** używa analizy statycznej zamiast losowania — błyskawiczne i deterministyczne
+- **schemathesis** znajduje błędy, o których nie pomyślisz — testuje tysiące kombinacji nieprawidłowych danych
+- **locust** zastępuje k6 — jeden język (Python) dla całego stacku
+- **py-spy** diagnostyka w locie bez restartu
 
 ---
 
@@ -346,9 +376,9 @@ Komunikacja z zewnętrznymi API zabezpieczona przez **stamina** (retry + circuit
 |---|---|
 | `pixi.toml` | Menedżer środowiska — Python, PyPI, zależności systemowe |
 | `pyproject.toml` | Konfiguracja pakietu, build, narzędzia |
-| `requirements.txt` | Lista zależności (legacy/CI) |
-| `config/dev.env` | Profil deweloperski |
-| `config/prod.env` | Profil produkcyjny |
+| `requirements.txt` | Lista zależności PyPI (dla uv/pip) |
+| `config/dev.toml` | Profil deweloperski (TOML, msgspec) |
+| `config/prod.toml` | Profil produkcyjny (TOML, msgspec) |
 | `config/models_manifest.json` | Manifest modeli AI z SHA-256 |
 | `alembic.ini` | Migracje bazy danych |
 | `Dockerfile` | Obraz Docker (opcjonalnie, dla TB w produkcji) |
@@ -370,18 +400,18 @@ Komunikacja z zewnętrznymi API zabezpieczona przez **stamina** (retry + circuit
 | HTTP / Sieć | 3 | **+hishel** (nowość) |
 | Resilience | 1 | **stamina** zamiast tenacity+pybreaker (-1) |
 | Kryptografia / Bezpieczeństwo | 5 | **Nexus-Crypto** zamiast cryptography (-1) |
-| Finanse / Waluty | 2 | — |
+| Finanse / Waluty | 3 | **Nexus-Money** zamiast py-moneyed (+TigerBeetle Client) |
 | AI / ML | 2 | **-5** (usunięto: transformers, torch, sentence-transformers, onnxruntime, opencv) |
 | Modele AI | 8 | **+2** (LightOnOCR-1B, Phi-3-mini, Hrida-T2SQL, Fin-RWKV; usunięto: Granite, Jamba) |
-| Logowanie / Monitoring | 3 | — |
-| Narzędzia | 2 | **-2** (usunięto: PyYAML, cachetools, dateparser jako osobne) |
-| Testowanie | 5 | — |
+| Logowanie / Monitoring | 5 | **+structlog, +Sentry, +DuckDB/Parquet**; prometheus_client → **OpenTelemetry** |
+| Narzędzia | 3 | **pendulum** zamiast python-dateutil; **TOML+msgspec** zamiast PyYAML/python-dotenv |
+| Testowanie | 8 | **pytest-anyio** zamiast pytest-asyncio; +crosshair, +schemathesis, +locust, +py-spy; **locust** zamiast k6 |
 | Interfejs Desktopowy | 2 | — |
 | Infrastruktura / DevOps | 5 | **Lżejsze** — pixi zamiast Dockera dla dev |
 | Serwisy zewnętrzne | 4 | — |
 | Agenty AI | 3 | **Przebudowane** — nowe modele i architektura |
-| Pliki konfiguracyjne | 10 | +pixi.toml, -env.example |
-| **Razem** | **~80** | **Zmniejszenie z ~120 do ~80** — mniej, ale wydajniej |
+| Pliki konfiguracyjne | 10 | +pixi.toml; .env → **.toml** (msgspec); +models_manifest.json |
+| **Razem** | **~82** | **Zmniejszenie z ~120 do ~82** — mniej, ale wydajniej |
 
 ---
 

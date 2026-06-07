@@ -19,8 +19,8 @@ from decimal import Decimal
 import duckdb
 import pytest
 
-from Code.tax.exceptions import NoMatchingRuleError
-from Code.tax.rules import (
+from nexus_ai.tax.exceptions import NoMatchingRuleError
+from nexus_ai.tax.rules import (
     ContextInterpreter,
     RuleEngine,
     ensure_tax_schemas,

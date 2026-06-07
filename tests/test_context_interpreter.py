@@ -21,7 +21,7 @@ from decimal import Decimal
 
 import pytest
 
-from core.context_interpreter import (
+from nexus_ai.core.context_interpreter import (
     ContextInterpreter,
     ContextInterpreterError,
     ALLOWED_KEYS,

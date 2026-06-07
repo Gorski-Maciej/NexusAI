@@ -18,9 +18,9 @@ from unittest.mock import AsyncMock, MagicMock
 import duckdb
 import pytest
 
-from Code.tax.pipeline import TaxPipeline, PipelineResult
-from Code.tax.rules import ensure_tax_schemas, seed_default_rules, RuleEngine
-from core.context_interpreter import ContextInterpreter as CtxInterpreter
+from nexus_ai.tax.pipeline import TaxPipeline, PipelineResult
+from nexus_ai.tax.rules import ensure_tax_schemas, seed_default_rules, RuleEngine
+from nexus_ai.core.context_interpreter import ContextInterpreter as CtxInterpreter
 
 
 @pytest.fixture

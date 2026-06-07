@@ -17,7 +17,7 @@ import json
 import duckdb
 import pytest
 
-from Code.tax.audit import (
+from nexus_ai.tax.audit import (
     DecisionTraceLogger,
     ensure_schema,
     verify_chain_integrity,

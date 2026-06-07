@@ -137,6 +137,7 @@ dependencies = [
     # ═══════════════════════════════════════════════════════════════════════
     "psutil>=5.9.0",
     "pendulum>=3.0.0",
+    "numpy>=2.0.0",
 ]
 
 [project.optional-dependencies]
@@ -163,14 +164,14 @@ Documentation = "https://github.com/Gorski-Maciej/NexusAI/wiki"
 Repository = "https://github.com/Gorski-Maciej/NexusAI"
 
 [project.scripts]
-nexus-api = "api.server:run_backend"
-nexus-worker = "luz.worker:main"
-nexus-desktop = "luz.main:main"
-nexus = "scripts.nexus_cli:main"
+nexus-api = "nexus_ai.api.server:run_backend"
+nexus-worker = "nexus_ai.luz.worker:main"
+nexus-desktop = "nexus_ai.luz.main:main"
+nexus = "nexus_ai.scripts.nexus_cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = [
-    "Code/",
+    "nexus_ai/",
     "nexus_crypto/",
 ]
 
@@ -183,8 +184,8 @@ features = ["pyo3/extension-module"]
 # ── mypyc — compile typed Python to C (2-5× speedup) ─────────────────────────
 [tool.mypyc]
 packages = [
-    "Code/tax",
-    "Code/core",
+    "nexus_ai/tax",
+    "nexus_ai/core",
 ]
 # mypyc compiles modules with strict type annotations to native C extensions.
 # This gives 2-5× speedup for domain models, tax calculations, and audit logic.
@@ -205,7 +206,7 @@ filterwarnings = [
 [tool.ruff]
 target-version = "py313"
 line-length = 100
-src = ["Code/"]
+src = ["nexus_ai/"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "N", "UP"]

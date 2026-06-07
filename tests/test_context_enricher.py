@@ -13,7 +13,7 @@ from __future__ import annotations
 import duckdb
 import pytest
 
-from services.context_enricher import ContextEnricher, ensure_cache_schema
+from nexus_ai.services.context_enricher import ContextEnricher, ensure_cache_schema
 
 
 @pytest.fixture

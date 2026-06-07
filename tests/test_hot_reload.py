@@ -14,7 +14,7 @@ Tests:
 from __future__ import annotations
 
 import json
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 import sys
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -31,7 +31,7 @@ from conftest import _MockModule
 if "api.cache" not in sys.modules:
     sys.modules["api.cache"] = _MockModule("api.cache")
 
-from services.hot_reload import HotReloadListener, SUBJECTS
+from nexus_ai.services.hot_reload import HotReloadListener, SUBJECTS
 
 
 # ---------------------------------------------------------------------------
@@ -79,7 +79,7 @@ class TestSubjects:
 class TestLifecycle:
     """start() / stop() lifecycle."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_stop_without_start(self, listener: HotReloadListener) -> None:
         """Calling stop() on a non-started listener should be a noop."""
         await listener.stop()
@@ -87,7 +87,7 @@ class TestLifecycle:
         assert listener._task is None
         assert listener._subs == []
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_start_nats_unavailable(self, listener: HotReloadListener) -> None:
         """When NATS is unavailable, start() should log a warning and not crash."""
         with patch(
@@ -109,7 +109,7 @@ class TestLifecycle:
 class TestOnMessageValidJson:
     """_on_message should clear correct cache prefix for each subject."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_billing_rules_updated(
         self, listener: HotReloadListener
     ) -> None:
@@ -126,7 +126,7 @@ class TestOnMessageValidJson:
 
         mock_clear.assert_awaited_once_with(prefix="api.routes.billing")
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_risk_thresholds_updated(
         self, listener: HotReloadListener
     ) -> None:
@@ -143,7 +143,7 @@ class TestOnMessageValidJson:
 
         mock_clear.assert_awaited_once_with(prefix="api.routes.admin")
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_tax_rules_updated(self, listener: HotReloadListener) -> None:
         """tax.rules.updated → clear api.routes.tax cache."""
         msg = _make_msg(
@@ -158,7 +158,7 @@ class TestOnMessageValidJson:
 
         mock_clear.assert_awaited_once_with(prefix="api.routes.tax")
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_ledger_rules_updated(self, listener: HotReloadListener) -> None:
         """ledger.rules.updated → clear api.routes.ledger cache."""
         msg = _make_msg(
@@ -182,7 +182,7 @@ class TestOnMessageValidJson:
 class TestOnMessageMalformedJson:
     """_on_message should handle malformed JSON without crashing."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_invalid_json(self, listener: HotReloadListener) -> None:
         """Broken JSON → log warning, don't clear cache."""
         msg = _make_msg(
@@ -197,7 +197,7 @@ class TestOnMessageMalformedJson:
 
         mock_clear.assert_not_awaited()
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_empty_bytes(self, listener: HotReloadListener) -> None:
         """Empty message body → log warning."""
         msg = _make_msg("risk.thresholds.updated", b"")
@@ -209,7 +209,7 @@ class TestOnMessageMalformedJson:
 
         mock_clear.assert_not_awaited()
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_partial_json(self, listener: HotReloadListener) -> None:
         """Truncated JSON → log warning."""
         msg = _make_msg(
@@ -228,7 +228,7 @@ class TestOnMessageMalformedJson:
 class TestOnMessageMissingFields:
     """_on_message should use defaults for missing fields."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_empty_object(self, listener: HotReloadListener) -> None:
         """Empty JSON object {} → use defaults, cache clear still happens."""
         msg = _make_msg(
@@ -246,7 +246,7 @@ class TestOnMessageMissingFields:
         assert mock_clear.await_args is not None
         assert mock_clear.await_args.kwargs.get("prefix") == "api.routes.billing"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_only_rule_id(self, listener: HotReloadListener) -> None:
         """Only rule_id, no action → default 'unknown' for action, cache cleared."""
         msg = _make_msg(
@@ -266,7 +266,7 @@ class TestOnMessageMissingFields:
 class TestOnMessageCacheFailure:
     """_on_message should handle cache clearing failures gracefully."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_cache_clear_raises(self, listener: HotReloadListener) -> None:
         """If clear_cache_async raises, _on_message should not crash."""
         msg = _make_msg(
@@ -282,7 +282,7 @@ class TestOnMessageCacheFailure:
 
         # Should not raise — the exception is caught inside _on_message
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_cache_clear_import_error(
         self, listener: HotReloadListener
     ) -> None:

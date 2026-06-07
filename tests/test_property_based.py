@@ -25,7 +25,7 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 # ── Import badanego kodu ─────────────────────────────────────────────────────
-from Code.tax.math_engine import (
+from nexus_ai.tax.math_engine import (
     InvoicePositions,
     InvoiceSummary,
     TaxMathEngine,
@@ -40,7 +40,7 @@ from Code.tax.math_engine import (
     to_zlotowki,
     validate_invariants,
 )
-from services.currency_converter import Money, CurrencyMismatchError
+from nexus_ai.services.currency_converter import Money, CurrencyMismatchError
 
 
 # ── Hypothesis strategies ────────────────────────────────────────────────────

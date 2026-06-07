@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 import sys
 import time
 from pathlib import Path

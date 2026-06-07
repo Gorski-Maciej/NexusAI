@@ -20,15 +20,15 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-from services.autopilot import (
+from nexus_ai.services.autopilot import (
     TrustScoreCalculator,
     CouncilOrchestrator,
     FinalDecision,
     DEFAULT_WEIGHTS,
     DEFAULT_THRESHOLDS,
 )
-from services.council_agents import DecisionVerdict
-from services.council_session import CouncilVerdict, DecisionLevel
+from nexus_ai.services.council_agents import DecisionVerdict
+from nexus_ai.services.council_session import CouncilVerdict, DecisionLevel
 
 
 # ---------------------------------------------------------------------------
@@ -232,14 +232,14 @@ class TestValidation:
 class TestAdaptedThresholds:
     """Testy adaptacji progów decyzyjnych."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_default_thresholds(self, calculator: TrustScoreCalculator) -> None:
         thresholds = await calculator.get_adapted_thresholds({})
         assert thresholds["auto_post"] >= 0.0
         assert thresholds["suggest"] >= 0.0
         assert thresholds["ask_user"] >= 0.0
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_recurring_category_lowers_threshold(self, calculator: TrustScoreCalculator) -> None:
         """Kategorie cykliczne (czynsz) → niższy próg auto_post.
 
@@ -254,7 +254,7 @@ class TestAdaptedThresholds:
         })
         assert thresholds["auto_post"] <= DEFAULT_THRESHOLDS["auto_post"]
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_problematic_category_raises_threshold(self, calculator: TrustScoreCalculator) -> None:
         """Kategorie problematyczne (doradztwo) → wyższy próg auto_post."""
         thresholds = await calculator.get_adapted_thresholds({
@@ -264,7 +264,7 @@ class TestAdaptedThresholds:
         })
         assert thresholds["auto_post"] >= DEFAULT_THRESHOLDS["auto_post"]
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_known_vendor_lowers_threshold(self, calculator: TrustScoreCalculator) -> None:
         """Znany kontrahent z historią → niższy próg."""
         thresholds = await calculator.get_adapted_thresholds(
@@ -272,7 +272,7 @@ class TestAdaptedThresholds:
         )
         assert thresholds["auto_post"] <= DEFAULT_THRESHOLDS["auto_post"]
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_new_vendor_raises_threshold(self, calculator: TrustScoreCalculator) -> None:
         """Nowy kontrahent → wyższy próg."""
         thresholds = await calculator.get_adapted_thresholds(
@@ -280,7 +280,7 @@ class TestAdaptedThresholds:
         )
         assert thresholds["auto_post"] >= DEFAULT_THRESHOLDS["auto_post"]
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_low_amount_lowers_threshold(self, calculator: TrustScoreCalculator) -> None:
         """Niska kwota (≤ próg) → niższy próg."""
         thresholds = await calculator.get_adapted_thresholds(
@@ -288,7 +288,7 @@ class TestAdaptedThresholds:
         )
         assert thresholds["auto_post"] <= DEFAULT_THRESHOLDS["auto_post"]
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_high_amount_raises_threshold(self, calculator: TrustScoreCalculator) -> None:
         """Bardzo wysoka kwota (≥ 20× próg) → wyższy próg."""
         thresholds = await calculator.get_adapted_thresholds(

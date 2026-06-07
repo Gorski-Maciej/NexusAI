@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 import duckdb
 import pytest
 
-from services.semantic_guard import (
+from nexus_ai.services.semantic_guard import (
     SemanticGuard,
     ANOMALY_RULES_SCHEMA,
     DEFAULT_ANOMALY_RULES,

@@ -15,8 +15,8 @@ from __future__ import annotations
 import duckdb
 import pytest
 
-from services.fallback_handler import FallbackHandler, ensure_schema, FALLBACK_EVENTS_SCHEMA
-from tax.exceptions import NoMatchingRuleError
+from nexus_ai.services.fallback_handler import FallbackHandler, ensure_schema, FALLBACK_EVENTS_SCHEMA
+from nexus_ai.tax.exceptions import NoMatchingRuleError
 
 
 @pytest.fixture

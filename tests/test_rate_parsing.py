@@ -15,7 +15,7 @@ from decimal import Decimal
 
 import pytest
 
-from tax.math_engine import parse_rate, InvalidRateError, TaxMathEngine
+from nexus_ai.tax.math_engine import parse_rate, InvalidRateError, TaxMathEngine
 from tax import InvalidRateError as InvalidRateErrorExported
 
 

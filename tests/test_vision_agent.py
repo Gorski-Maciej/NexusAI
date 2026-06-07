@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from roboton_reflekton.vision_agent import VisionAgent
+from nexus_ai.roboton_reflekton.vision_agent import VisionAgent
 
 
 def test_vision_agent_prompt_has_required_json_schema() -> None:

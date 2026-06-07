@@ -1,4 +1,4 @@
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Tests for IntegrityVerifier (Element 2 — Weryfikator Integralności).
 
@@ -20,8 +20,8 @@ from datetime import datetime, timezone
 import duckdb
 import pytest
 
-from services.integrity_verifier import IntegrityVerifier
-from tax.audit import DecisionTraceLogger, ensure_schema as ensure_audit_schema
+from nexus_ai.services.integrity_verifier import IntegrityVerifier
+from nexus_ai.tax.audit import DecisionTraceLogger, ensure_schema as ensure_audit_schema
 
 
 @pytest.fixture

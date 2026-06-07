@@ -5,8 +5,8 @@ from datetime import date
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from roboton_reflekton.budgetary_control import BudgetaryControlEngine
-from roboton_reflekton.ledger_client import TigerBeetleClient
+from nexus_ai.roboton_reflekton.budgetary_control import BudgetaryControlEngine
+from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
 
 
 class FakeDuckDBManager:

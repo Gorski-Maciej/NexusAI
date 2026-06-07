@@ -20,7 +20,7 @@ from datetime import date
 import duckdb
 import pytest
 
-from services.rule_store import RuleStore
+from nexus_ai.services.rule_store import RuleStore
 
 
 @pytest.fixture

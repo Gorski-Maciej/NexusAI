@@ -10,7 +10,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from services.gus_bir_client import (
+from nexus_ai.services.gus_bir_client import (
     GusBirClient,
     GusBirResult,
     _extract_tag,
@@ -114,7 +114,7 @@ class TestGusBirResult:
 class TestGusBirClientLogin:
     """Testy logowania."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_login_success(self, client: GusBirClient) -> None:
         """Login udany — _soap_call zwraca sid."""
         with patch.object(client, "_soap_call", new=AsyncMock(return_value=SAMPLE_LOGIN_RESULT)):
@@ -123,14 +123,14 @@ class TestGusBirClientLogin:
             assert client._sid == "abc123session456def"
             client._soap_call.assert_awaited_once()  # type: ignore
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_login_no_api_key(self) -> None:
         """Login bez klucza API -> ValueError."""
         c = GusBirClient(api_key="")
         with pytest.raises(ValueError, match="API key not configured"):
             await c.login()
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_login_http_error(self, client: GusBirClient) -> None:
         """Blad HTTP -> ConnectionError."""
         with patch.object(client, "_soap_call", new=AsyncMock(side_effect=ConnectionError("HTTP 500"))):
@@ -141,7 +141,7 @@ class TestGusBirClientLogin:
 class TestGusBirClientSearch:
     """Testy wyszukiwania."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_search_by_nip_success(self, client: GusBirClient) -> None:
         """Wyszukiwanie po NIP zwraca wyniki."""
         client._sid = "test_sid"
@@ -156,19 +156,19 @@ class TestGusBirClientSearch:
             assert r.street == "Marszalkowska"
             assert r.status == "active"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_search_by_nip_not_authenticated(self, client: GusBirClient) -> None:
         """Brak autoryzacji -> PermissionError."""
         with pytest.raises(PermissionError, match="not authenticated"):
             await client.search_by_nip("1234567890")
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_search_by_nip_invalid(self, client: GusBirClient) -> None:
         """Nieprawidlowy NIP -> ValueError."""
         with pytest.raises(ValueError, match="Invalid NIP"):
             await client.search_by_nip("123")
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_search_by_nip_no_results(self, client: GusBirClient) -> None:
         """Brak wynikow -> pusta lista."""
         client._sid = "test_sid"
@@ -176,7 +176,7 @@ class TestGusBirClientSearch:
             results = await client.search_by_nip("1234567890")
             assert results == []
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_search_by_nip_api_error(self, client: GusBirClient) -> None:
         """Blad API -> pusta lista (graceful)."""
         client._sid = "test_sid"
@@ -188,7 +188,7 @@ class TestGusBirClientSearch:
 class TestGusBirClientFullReport:
     """Testy pelnego raportu."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_get_full_report_success(self, client: GusBirClient) -> None:
         """Pelny raport zwraca dane firmy."""
         client._sid = "test_sid"
@@ -203,19 +203,19 @@ class TestGusBirClientFullReport:
             assert len(result.pkd_codes) == 2
             assert result.pkd_codes[0]["code"] == "62.01.Z"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_get_full_report_invalid_regon(self, client: GusBirClient) -> None:
         """Nieprawidlowy REGON -> None."""
         result = await client.get_full_report("123")
         assert result is None
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_get_full_report_not_authenticated(self, client: GusBirClient) -> None:
         """Brak autoryzacji -> PermissionError."""
         with pytest.raises(PermissionError, match="not authenticated"):
             await client.get_full_report("123456789")
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_get_full_report_api_error(self, client: GusBirClient) -> None:
         """Blad API -> None (graceful)."""
         client._sid = "test_sid"
@@ -227,7 +227,7 @@ class TestGusBirClientFullReport:
 class TestGusBirClientLogout:
     """Testy wylogowania."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_logout_success(self, client: GusBirClient) -> None:
         """Logout usuwa sid."""
         client._sid = "test_sid"
@@ -235,13 +235,13 @@ class TestGusBirClientLogout:
             await client.logout()
             assert client._sid == ""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_logout_no_session(self, client: GusBirClient) -> None:
         """Logout bez sesji nic nie robi."""
         await client.logout()
         assert client._sid == ""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_logout_api_error_still_clears_sid(self, client: GusBirClient) -> None:
         """Blad API przy logoutie nadal usuwa sid."""
         client._sid = "test_sid"
@@ -253,7 +253,7 @@ class TestGusBirClientLogout:
 class TestGusBirClientEnrich:
     """Testy enrich_from_nip."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_enrich_from_nip_success(self, client: GusBirClient) -> None:
         """enrich_from_nip zwraca kompletny slownik."""
         # _soap_call bedzie wywolany 3 razy: login, search, report
@@ -281,7 +281,7 @@ class TestGusBirClientEnrich:
             assert result["street"] == "Marszalkowska 100"
             assert result["legal_form"] == "Spolka z ograniczona odpowiedzialnoscia"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_enrich_from_nip_login_fails(self, client: GusBirClient) -> None:
         """Jesli login fail, enrich zwraca domyslne wartosci."""
         # _soap_call rzuca blad przy loginie
@@ -290,7 +290,7 @@ class TestGusBirClientEnrich:
             assert result["company_name"] == ""
             assert result["vat_status"] == "unknown"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_enrich_from_nip_no_results(self, client: GusBirClient) -> None:
         """Jesli search zwroci 0 wynikow, zwraca podstawowe dane."""
         async def mock_soap_call(method: str, body: str) -> str:

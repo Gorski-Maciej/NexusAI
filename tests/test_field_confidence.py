@@ -16,7 +16,7 @@ from typing import Any
 
 import pytest
 
-from core.field_confidence import (
+from nexus_ai.core.field_confidence import (
     FieldConfidence,
     FieldConfidenceDict,
     field_confidence_from_dict,
@@ -24,7 +24,7 @@ from core.field_confidence import (
     minimum_confidence,
     fields_below_threshold,
 )
-from core.context_interpreter import ContextInterpreter
+from nexus_ai.core.context_interpreter import ContextInterpreter
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

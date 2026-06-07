@@ -3,13 +3,13 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from core.msgspec_utils import msgspec_dumps_bytes
+from nexus_ai.core.msgspec_utils import msgspec_dumps_bytes
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 
-from roboton_reflekton.forex_engine import ForexEngine
-from roboton_reflekton.ledger_client import TigerBeetleClient
+from nexus_ai.roboton_reflekton.forex_engine import ForexEngine
+from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
 
 
 class FakeResponse:

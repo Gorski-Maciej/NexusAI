@@ -1,4 +1,4 @@
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Testy dla Council Agents — ModelManager, DecisionVerdict, BaseCouncilAgent.
 
@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-from services.council_agents import (
+from nexus_ai.services.council_agents import (
     DecisionVerdict,
     AlphaAgent,
     BetaAgent,

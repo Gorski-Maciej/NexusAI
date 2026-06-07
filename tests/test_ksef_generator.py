@@ -10,7 +10,7 @@ Covers:
 
 from __future__ import annotations
 
-from services.ksef_generator import generate_ksef_xml
+from nexus_ai.services.ksef_generator import generate_ksef_xml
 
 
 class TestKsefGenerator:

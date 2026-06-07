@@ -15,11 +15,11 @@ from types import SimpleNamespace
 
 from unittest.mock import MagicMock
 
-from roboton_reflekton.ledger_client import TigerBeetleClient
-from roboton_reflekton.models import FinancialPeriodStatus
-from roboton_reflekton.reconciliation_engine import BankReconciliationConfig, BankReconciliationEngine, OpenInvoice
-import roboton_reflekton.roboton_worker as _roboton_worker
-from roboton_reflekton.roboton_worker import RobotonWorker, SimpleRuleBasedAgent
+from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
+from nexus_ai.roboton_reflekton.models import FinancialPeriodStatus
+from nexus_ai.roboton_reflekton.reconciliation_engine import BankReconciliationConfig, BankReconciliationEngine, OpenInvoice
+import nexus_ai.roboton_reflekton.roboton_worker as _roboton_worker
+from nexus_ai.roboton_reflekton.roboton_worker import RobotonWorker, SimpleRuleBasedAgent
 
 
 # ---------------------------------------------------------------------------

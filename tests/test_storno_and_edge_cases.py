@@ -10,8 +10,8 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from roboton_reflekton.audit_storno import LedgerTransferRecord, decimal_to_minor_units, reverse_transaction
-from roboton_reflekton.ledger_client import TigerBeetleClient
+from nexus_ai.roboton_reflekton.audit_storno import LedgerTransferRecord, decimal_to_minor_units, reverse_transaction
+from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
 
 
 def _load_module(path: Path, module_name: str):

@@ -16,7 +16,7 @@ from decimal import Decimal
 import duckdb
 import pytest
 
-from services.currency_converter import (
+from nexus_ai.services.currency_converter import (
     CurrencyConverter,
     CurrencyMismatchError,
     EXCHANGE_RATES_SCHEMA,

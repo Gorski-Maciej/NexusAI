@@ -1,4 +1,4 @@
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Tests for PriorityEngine (Element 1).
 
@@ -17,7 +17,7 @@ import uuid
 
 import pytest
 
-from services.priority_engine import PriorityEngine, PrioritizedRule, MatchResult
+from nexus_ai.services.priority_engine import PriorityEngine, PrioritizedRule, MatchResult
 
 
 class TestPriorityEngine:

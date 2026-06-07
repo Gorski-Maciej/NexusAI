@@ -15,7 +15,7 @@ from __future__ import annotations
 import json
 
 import pytest
-from core.msgspec_utils import msgspec_dumps
+from nexus_ai.core.msgspec_utils import msgspec_dumps
 from httpx import AsyncClient
 
 # pytest-anyio: znacznik modułowy dla async test functions

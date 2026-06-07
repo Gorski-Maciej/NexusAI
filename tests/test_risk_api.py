@@ -1,4 +1,4 @@
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Unit tests for RiskController — zarządzanie progami ryzyka (Strażnik Ryzyka).
 
@@ -38,8 +38,8 @@ sys.modules["config"] = _config_mock
 from litestar.exceptions import HTTPException
 from litestar.response import Response
 
-from Code.api.routes.risk import RiskController
-from services.risk_guard import RiskThreshold, RiskVerdict
+from nexus_ai.api.routes.risk import RiskController
+from nexus_ai.services.risk_guard import RiskThreshold, RiskVerdict
 
 
 # ==============================================================================
@@ -131,7 +131,7 @@ def _patch_guard(mock_guard: MagicMock) -> None:
 class TestListThresholds:
     """GET /api/v2/admin/risk-thresholds — lista reguł."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_list_returns_all_rules(
         self,
         controller: RiskController,
@@ -148,7 +148,7 @@ class TestListThresholds:
         assert first["rule_id"] == "abc-111"
         assert first["condition"]["tax_form"] == "CIT_STANDARD"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_list_contains_expected_fields(
         self,
         controller: RiskController,
@@ -165,7 +165,7 @@ class TestListThresholds:
             assert "priority" in rule
             assert "created_at" in rule
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_list_wraps_exception_in_500(
         self,
         controller: RiskController,
@@ -189,7 +189,7 @@ class TestListThresholds:
 class TestCreateThreshold:
     """POST /api/v2/admin/risk-thresholds — dodawanie reguły."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_create_with_valid_data(
         self,
         controller: RiskController,
@@ -213,7 +213,7 @@ class TestCreateThreshold:
         assert result.content["rule_id"] == "new-uuid-789"
         assert result.content["message"] == "Risk threshold rule created"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_create_with_defaults(
         self,
         controller: RiskController,
@@ -229,7 +229,7 @@ class TestCreateThreshold:
         assert result.status_code == 200
         assert result.content["rule_id"] == "new-uuid-789"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_create_missing_condition_returns_422(
         self,
         controller: RiskController,
@@ -243,7 +243,7 @@ class TestCreateThreshold:
         assert exc_info.value.status_code == 422
         assert "condition" in str(exc_info.value.detail).lower()
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_create_missing_output_returns_422(
         self,
         controller: RiskController,
@@ -257,7 +257,7 @@ class TestCreateThreshold:
         assert exc_info.value.status_code == 422
         assert "output" in str(exc_info.value.detail).lower()
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_create_non_dict_condition_returns_422(
         self,
         controller: RiskController,
@@ -270,7 +270,7 @@ class TestCreateThreshold:
 
         assert exc_info.value.status_code == 422
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_create_non_dict_output_returns_422(
         self,
         controller: RiskController,
@@ -286,7 +286,7 @@ class TestCreateThreshold:
 
         assert exc_info.value.status_code == 422
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_create_wraps_exception_in_500(
         self,
         controller: RiskController,
@@ -315,7 +315,7 @@ class TestCreateThreshold:
 class TestDeprecateThreshold:
     """DELETE /api/v2/admin/risk-thresholds/{rule_id} — dezaktywacja reguły."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_deprecate_existing_rule(
         self,
         controller: RiskController,
@@ -328,7 +328,7 @@ class TestDeprecateThreshold:
         assert result.content["rule_id"] == "abc-111"
         assert "deprecated" in result.content["message"].lower()
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_deprecate_nonexistent_rule_returns_404(
         self,
         controller: RiskController,
@@ -344,7 +344,7 @@ class TestDeprecateThreshold:
         assert "not found" in str(exc_info.value.detail).lower()
         assert "nonexistent-id" in str(exc_info.value.detail)
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_deprecate_wraps_exception_in_500(
         self,
         controller: RiskController,
@@ -368,7 +368,7 @@ class TestDeprecateThreshold:
 class TestEvaluateThreshold:
     """GET /api/v2/admin/risk-thresholds/evaluate — ewaluacja pojedynczego pola."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_evaluate_with_all_params(
         self,
         controller: RiskController,
@@ -388,7 +388,7 @@ class TestEvaluateThreshold:
         assert result.content["params"]["expense_type"] == "mixed_auto"
         assert result.content["params"]["field"] == "vat_rate"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_evaluate_with_defaults(
         self,
         controller: RiskController,
@@ -401,7 +401,7 @@ class TestEvaluateThreshold:
         assert result.content["params"]["expense_type"] == "any"
         assert result.content["params"]["field"] == "any"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_evaluate_empty_strings_treated_as_any(
         self,
         controller: RiskController,
@@ -412,7 +412,7 @@ class TestEvaluateThreshold:
         assert result.content["params"]["tax_form"] == "any"
         assert result.content["params"]["field"] == "any"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_evaluate_wraps_exception_in_500(
         self,
         controller: RiskController,
@@ -436,7 +436,7 @@ class TestEvaluateThreshold:
 class TestEvaluateBatch:
     """GET /api/v2/admin/risk-thresholds/evaluate-batch — ewaluacja wielu pól."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_evaluate_batch_valid_fields(
         self,
         controller: RiskController,
@@ -456,7 +456,7 @@ class TestEvaluateBatch:
         assert result.content["reason"] is not None
         assert result.content["required_for_field"]["vat_rate"] == 0.98
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_evaluate_batch_without_expense_type(
         self,
         controller: RiskController,
@@ -471,7 +471,7 @@ class TestEvaluateBatch:
         assert result.status_code == 200
         assert "is_safe" in result.content
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_evaluate_batch_missing_fields_json_returns_422(
         self,
         controller: RiskController,
@@ -486,7 +486,7 @@ class TestEvaluateBatch:
         assert exc_info.value.status_code == 422
         assert "Missing required" in str(exc_info.value.detail)
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_evaluate_batch_invalid_json_returns_422(
         self,
         controller: RiskController,
@@ -501,7 +501,7 @@ class TestEvaluateBatch:
         assert exc_info.value.status_code == 422
         assert "Invalid" in str(exc_info.value.detail)
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_evaluate_batch_non_dict_json_returns_422(
         self,
         controller: RiskController,
@@ -516,7 +516,7 @@ class TestEvaluateBatch:
         assert exc_info.value.status_code == 422
         assert "must be a JSON object" in str(exc_info.value.detail).lower()
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_evaluate_batch_wraps_exception_in_500(
         self,
         controller: RiskController,
@@ -535,7 +535,7 @@ class TestEvaluateBatch:
         assert exc_info.value.status_code == 500
         assert "Failed to evaluate batch risk" in str(exc_info.value.detail)
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_evaluate_batch_passes_fields_to_guard(
         self,
         controller: RiskController,
@@ -564,7 +564,7 @@ class TestEvaluateBatch:
 class TestEdgeCases:
     """Scenariusze brzegowe dla wszystkich endpointów."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_list_empty_returns_empty_list(
         self,
         controller: RiskController,
@@ -577,7 +577,7 @@ class TestEdgeCases:
         assert result.status_code == 200
         assert result.content == []
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_deprecate_already_inactive_returns_false(
         self,
         controller: RiskController,
@@ -591,7 +591,7 @@ class TestEdgeCases:
 
         assert exc_info.value.status_code == 404
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_evaluate_batch_very_large_fields_json(
         self,
         controller: RiskController,

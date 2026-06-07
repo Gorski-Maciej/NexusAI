@@ -1,4 +1,4 @@
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Tests for TemporalManager (Element 2).
 
@@ -20,8 +20,8 @@ from datetime import date
 import duckdb
 import pytest
 
-from services.temporal_manager import TemporalManager, TemporalRule
-from tax.rules import ensure_tax_schemas, seed_default_rules
+from nexus_ai.services.temporal_manager import TemporalManager, TemporalRule
+from nexus_ai.tax.rules import ensure_tax_schemas, seed_default_rules
 
 
 @pytest.fixture

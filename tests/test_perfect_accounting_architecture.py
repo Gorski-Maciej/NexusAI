@@ -5,7 +5,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from architecture.perfect_accounting_architecture import (
+from nexus_ai.architecture.perfect_accounting_architecture import (
     REQUIRED_TECHNOLOGIES,
     build_blueprint,
     validate_blueprint_coverage,

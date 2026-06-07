@@ -1,0 +1,299 @@
+"""Application services for idempotency and file storage."""
+from __future__ import annotations
+
+import base64
+import hashlib
+import importlib.util
+import os
+import sqlite3
+import tempfile
+from collections.abc import Iterable
+from contextlib import suppress
+from dataclasses import dataclass
+import pendulum
+from pathlib import Path
+from typing import Any
+
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+
+
+def _load_fsspec_module():
+    if importlib.util.find_spec("fsspec") is None:
+        return None
+    import fsspec
+    return fsspec
+
+
+fsspec = _load_fsspec_module()
+
+
+@dataclass(slots=True)
+class StoredUpload:
+    file_hash: str
+    file_path: str
+    size_bytes: int
+
+
+class FileValidator:
+    """Validator plików na podstawie sygnatur MIME i magic bytes (Rozwiązanie 31)."""
+
+    ALLOWED_MIME_TYPES = {
+        "application/pdf": [".pdf"],
+        "image/jpeg": [".jpg", ".jpeg"],
+        "image/png": [".png"],
+        "image/tiff": [".tif", ".tiff"],
+    }
+
+    @classmethod
+    def validate_file(cls, content: bytes, filename: str = "") -> tuple[bytes, str]:
+        """Validate file by magic bytes and return (normalized_content, mime_type).
+        Raises ValueError on invalid type.
+        """
+        if not content:
+            raise ValueError("Empty file content")
+
+        # 1. Detect MIME by filetype library
+        mime_type = cls._detect_mime(content)
+        if mime_type not in cls.ALLOWED_MIME_TYPES:
+            raise ValueError(f"Unsupported file type: {mime_type}. Allowed: {', '.join(cls.ALLOWED_MIME_TYPES)}")
+
+        # 2. PDF-specific validation: check %PDF header and %%EOF trailer
+        if mime_type == "application/pdf":
+            cls._validate_pdf(content)
+
+        # 3. Image-specific: open with Pillow, normalize to JPEG
+        if mime_type.startswith("image/"):
+            content = cls._normalize_image(content)
+
+        return content, mime_type
+
+    @staticmethod
+    def _detect_mime(content: bytes) -> str:
+        try:
+            import filetype
+            kind = filetype.guess(content)
+            if kind is not None:
+                return kind.mime
+        except Exception:
+            pass
+        # Fallback: manual magic bytes
+        if content[:5] == b"%PDF-":
+            return "application/pdf"
+        if content[:2] == b"\xff\xd8":
+            return "image/jpeg"
+        if content[:8] == b"\x89PNG\r\n\x1a\n":
+            return "image/png"
+        if content[:4] in (b"II*\x00", b"MM\x00*"):
+            return "image/tiff"
+        raise ValueError(f"Cannot detect file type from magic bytes: {content[:8].hex()}")
+
+    @staticmethod
+    def _validate_pdf(content: bytes) -> None:
+        """Validate PDF structure: header and trailer."""
+        if not content.startswith(b"%PDF-"):
+            raise ValueError("Invalid PDF: missing %PDF header")
+        # Check %%EOF trailer in last 1024 bytes
+        tail = content[-1024:].decode("latin-1", errors="replace")
+        if "%%EOF" not in tail:
+            raise ValueError("Invalid PDF: missing %%EOF trailer")
+        # Optional: verify with pypdf
+        try:
+            from io import BytesIO
+
+            from pypdf import PdfReader
+            PdfReader(BytesIO(content))
+        except Exception as e:
+            if "%PDF" not in str(e) and "trailer" not in str(e):
+                raise ValueError(f"Invalid PDF structure: {e}")
+
+    @staticmethod
+    def _normalize_image(content: bytes) -> bytes:
+        """Open image with Pillow and convert to JPEG for normalization."""
+        try:
+            from io import BytesIO
+
+            from PIL import Image
+            img = Image.open(BytesIO(content))
+            rgb = img.convert("RGB")
+            buf = BytesIO()
+            rgb.save(buf, format="JPEG", quality=85, optimize=True)
+            return buf.getvalue()
+        except Exception as e:
+            raise ValueError(f"Invalid image file: {e}")
+
+
+class ContentAddressableStorage:
+    """File storage using SHA-256 as canonical key (dedupe-friendly)."""
+
+    def __init__(self, root: Path) -> None:
+        self.root = root
+        if fsspec is not None:
+            self.fs = fsspec.filesystem("file")
+            self.fs.makedirs(str(self.root), exist_ok=True)
+        else:
+            self.fs = None
+            self.root.mkdir(parents=True, exist_ok=True)
+
+    @staticmethod
+    def _sha256(payload: bytes) -> str:
+        return hashlib.sha256(payload).hexdigest()
+
+    def put(self, payload: bytes, suffix: str = ".pdf") -> StoredUpload:
+        digest = self._sha256(payload)
+        dir_path = self.root / digest[:2] / digest[2:4]
+        (self.fs.makedirs(str(dir_path), exist_ok=True) if self.fs is not None else dir_path.mkdir(parents=True, exist_ok=True))
+        file_path = dir_path / f"{digest}{suffix}"
+
+        if self.fs is not None:
+            if not self.fs.exists(str(file_path)):
+                with self.fs.open(str(file_path), "wb") as f:
+                    f.write(payload)
+        else:
+            if not file_path.exists():
+                file_path.parent.mkdir(parents=True, exist_ok=True)
+                file_path.write_bytes(payload)
+
+        return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=len(payload))
+
+    def create_temp_upload_file(self) -> str:
+        with tempfile.NamedTemporaryFile(prefix="upload_", suffix=".tmp", dir=str(self.root), delete=False) as tmp:
+            return tmp.name
+
+    def finalize_temp_upload(self, temp_path: str, digest: str, size_bytes: int, suffix: str = ".pdf") -> StoredUpload:
+        dir_path = self.root / digest[:2] / digest[2:4]
+        (self.fs.makedirs(str(dir_path), exist_ok=True) if self.fs is not None else dir_path.mkdir(parents=True, exist_ok=True))
+        file_path = dir_path / f"{digest}{suffix}"
+        if (self.fs.exists(str(file_path)) if self.fs is not None else file_path.exists()):
+            with suppress(FileNotFoundError):
+                os.unlink(temp_path)
+            return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=size_bytes)
+        if self.fs is not None:
+            self.fs.mv(temp_path, str(file_path))
+        else:
+            Path(temp_path).replace(file_path)
+        self._save_archive_variant(file_path=file_path, suffix=suffix)
+        return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=size_bytes)
+
+
+    def _save_archive_variant(self, file_path: Path, suffix: str) -> None:
+        """Best-effort archival compression for image uploads (non-destructive sidecar)."""
+        ext = suffix.lower()
+        if ext not in {".png", ".tif", ".tiff", ".bmp"}:
+            return
+        if file_path.with_suffix(".jpg").exists():
+            return
+        try:
+            from PIL import Image
+        except Exception:
+            return
+        try:
+            with Image.open(file_path) as img:
+                rgb = img.convert("RGB")
+                rgb.save(file_path.with_suffix(".jpg"), format="JPEG", quality=80, optimize=True)
+        except Exception:
+            return
+
+
+class CursorPagination:
+    """Keyset (cursor) pagination helper dla list API (Rozwiązanie 32)."""
+
+    @staticmethod
+    def encode_cursor(created_at: str, row_id: int) -> str:
+        """Encode cursor as base64: created_at|id"""
+        raw = f"{created_at}|{row_id}"
+        return base64.urlsafe_b64encode(raw.encode()).decode()
+
+    @staticmethod
+    def decode_cursor(cursor: str) -> tuple[str, int] | None:
+        """Decode cursor to (created_at, id). Returns None if invalid."""
+        try:
+            raw = base64.urlsafe_b64decode(cursor.encode()).decode()
+            parts = raw.split("|", 1)
+            if len(parts) != 2:
+                return None
+            return parts[0], int(parts[1])
+        except Exception:
+            return None
+
+    @staticmethod
+    def build_next_cursor(items: list[Any], date_key: str = "created_at", id_key: str = "id") -> str | None:
+        """Build next cursor from last item in current page."""
+        if not items:
+            return None
+        last = items[-1]
+        last_date = str(getattr(last, date_key, last.get(date_key, "")) if isinstance(last, dict) else getattr(last, date_key, ""))
+        last_id = int(getattr(last, id_key, last.get(id_key, 0)) if isinstance(last, dict) else getattr(last, id_key, 0))
+        return CursorPagination.encode_cursor(last_date, last_id)
+
+
+class IdempotencyStore:
+    """SQLite-backed idempotency registry with payload hash and TTL."""
+
+    def __init__(self, db_path: Path, ttl_minutes: int = 60) -> None:
+        self.db_path = db_path
+        self.ttl_minutes = ttl_minutes
+        self._init_db()
+
+    def _connect(self) -> sqlite3.Connection:
+        return sqlite3.connect(self.db_path)
+
+    def _init_db(self) -> None:
+        with self._connect() as connection:
+            connection.execute(
+                """
+                CREATE TABLE IF NOT EXISTS idempotency_requests (
+                    idempotency_key TEXT PRIMARY KEY,
+                    payload_hash TEXT NOT NULL,
+                    response_json TEXT NOT NULL,
+                    created_at TEXT NOT NULL
+                )
+                """
+            )
+
+    @staticmethod
+    def hash_payload(payload: bytes) -> str:
+        return hashlib.sha256(payload).hexdigest()
+
+    @staticmethod
+    def hash_chunks(chunks: Iterable[bytes]) -> str:
+        hasher = hashlib.sha256()
+        for chunk in chunks:
+            if chunk:
+                hasher.update(chunk)
+        return hasher.hexdigest()
+
+    def purge_expired(self) -> None:
+        threshold = pendulum.now("UTC") - pendulum.duration(minutes=self.ttl_minutes)
+        with self._connect() as connection:
+            connection.execute(
+                "DELETE FROM idempotency_requests WHERE created_at < ?",
+                (threshold.isoformat(),),
+            )
+
+    def get(self, key: str, payload_hash: str) -> dict[str, Any] | None:
+        self.purge_expired()
+        with self._connect() as connection:
+            row = connection.execute(
+                "SELECT payload_hash, response_json FROM idempotency_requests WHERE idempotency_key = ?",
+                (key,),
+            ).fetchone()
+
+        if not row:
+            return None
+
+        persisted_hash, response_json = row
+        if persisted_hash != payload_hash:
+            raise ValueError("Idempotency-Key reused with different payload")
+
+        return msgspec_loads(response_json)
+
+    def save(self, key: str, payload_hash: str, response: dict[str, Any]) -> None:
+        with self._connect() as connection:
+            connection.execute(
+                """
+                INSERT OR REPLACE INTO idempotency_requests
+                (idempotency_key, payload_hash, response_json, created_at)
+                VALUES (?, ?, ?, ?)
+                """,
+                (key, payload_hash, msgspec_dumps(response), pendulum.now("UTC").isoformat()),
+            )

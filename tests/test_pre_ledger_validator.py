@@ -19,13 +19,13 @@ from decimal import Decimal
 import duckdb
 import pytest
 
-from services.pre_ledger_validator import (
+from nexus_ai.services.pre_ledger_validator import (
     PreLedgerValidator,
     TransferSpec,
     LedgerValidationError,
 )
-from tax.math_engine import ValidationResult, InvoicePositions, InvoiceSummary, money_to_grosze, to_money
-from services.currency_converter import Money
+from nexus_ai.tax.math_engine import ValidationResult, InvoicePositions, InvoiceSummary, money_to_grosze, to_money
+from nexus_ai.services.currency_converter import Money
 
 
 @pytest.fixture

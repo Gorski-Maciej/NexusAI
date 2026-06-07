@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-from services.decision_logger import DecisionLogger
+from nexus_ai.services.decision_logger import DecisionLogger
 
 
 # ---------------------------------------------------------------------------
@@ -170,7 +170,7 @@ class TestLogDecision:
         "amount_gross": 1230.0,
     }
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_log_decision_inserts_record(
         self, logger: DecisionLogger, fake_duckdb: FakeDuckDB
     ) -> None:
@@ -195,7 +195,7 @@ class TestLogDecision:
         ]
         assert len(inserts) == 1
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_log_decision_with_minimal_data(
         self, logger: DecisionLogger, fake_duckdb: FakeDuckDB
     ) -> None:
@@ -224,7 +224,7 @@ class TestLogDecision:
 class TestUserCorrection:
     """Testy rejestrowania korekt użytkownika."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_record_correction(self, logger: DecisionLogger, fake_duckdb: FakeDuckDB) -> None:
         await logger.record_user_correction(
             invoice_id="inv-001",
@@ -244,7 +244,7 @@ class TestUserCorrection:
 class TestTrustScoreTrend:
     """Testy analizy trendu trust score."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_get_trend_for_known_vendor(self, logger: DecisionLogger) -> None:
         trend = await logger.get_trust_score_trend("1234567890", days=30)
         assert trend["known"] is True
@@ -254,7 +254,7 @@ class TestTrustScoreTrend:
         assert "component_averages" in trend
         assert "ai_confidence" in trend["component_averages"]
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_get_trend_for_unknown_vendor(self, logger: DecisionLogger) -> None:
         """Nieznany kontrahent → puste wyniki."""
         trend = await logger.get_trust_score_trend("0000000000", days=30)
@@ -269,14 +269,14 @@ class TestTrustScoreTrend:
 class TestCorrectionStats:
     """Testy statystyk korekt użytkownika."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_get_stats_no_corrections(self, logger: DecisionLogger) -> None:
         stats = await logger.get_user_correction_stats()
         assert stats["total_decisions"] == 0
         assert stats["total_corrected"] == 0
         assert stats["correction_rate"] == 0.0
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_decision_breakdown(self, logger: DecisionLogger, fake_duckdb: FakeDuckDB) -> None:
         """Po dodaniu decyzji, breakdown powinien je uwzględniać."""
         # Symuluj dodanie decyzji
@@ -296,12 +296,12 @@ class TestCorrectionStats:
 class TestDecisionQueries:
     """Testy wyszukiwania decyzji."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_get_decisions_for_invoice_empty(self, logger: DecisionLogger) -> None:
         decisions = await logger.get_decisions_for_invoice("inv-nonexistent")
         assert decisions == []
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_get_decision_summary_empty(self, logger: DecisionLogger) -> None:
         summary = await logger.get_decision_summary(limit=10)
         assert summary == []

@@ -14,7 +14,7 @@ from __future__ import annotations
 import duckdb
 import pytest
 
-from services.billing_estimator import (
+from nexus_ai.services.billing_estimator import (
     BillingEstimator,
     ensure_schema,
     seed_default_billing_rules,

@@ -1,4 +1,4 @@
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Tests for TraceGenerator (Element 1 — Generator Ścieżki Decyzyjnej).
 
@@ -11,7 +11,7 @@ Covers:
 
 from __future__ import annotations
 
-from services.trace_generator import TraceGenerator
+from nexus_ai.services.trace_generator import TraceGenerator
 
 
 class TestTraceGenerator:

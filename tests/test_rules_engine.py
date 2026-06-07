@@ -19,7 +19,7 @@ sys.modules[spec.name] = module
 spec.loader.exec_module(module)
 RulesEngine = module.RulesEngine
 
-from roboton_reflekton.ledger_client import TigerBeetleClient
+from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
 
 
 class FakeDuckDBManager:

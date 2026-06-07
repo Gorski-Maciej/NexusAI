@@ -25,7 +25,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from installer.dependency_downloader import (
+from nexus_ai.installer.dependency_downloader import (
     BINARY_MANIFEST,
     BinaryDefinition,
     BinaryManager,

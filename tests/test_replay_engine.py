@@ -1,4 +1,4 @@
-from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Tests for Replay Engine (Element 1).
 
@@ -18,9 +18,9 @@ from datetime import date
 import duckdb
 import pytest
 
-from services.replay_engine import ReplayEngine, _compare_verdicts
-from tax.audit import DecisionTraceLogger, ensure_schema as ensure_audit_schema
-from tax.rules import ensure_tax_schemas, seed_default_rules
+from nexus_ai.services.replay_engine import ReplayEngine, _compare_verdicts
+from nexus_ai.tax.audit import DecisionTraceLogger, ensure_schema as ensure_audit_schema
+from nexus_ai.tax.rules import ensure_tax_schemas, seed_default_rules
 
 
 @pytest.fixture

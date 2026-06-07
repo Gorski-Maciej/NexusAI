@@ -13,7 +13,7 @@ from __future__ import annotations
 import duckdb
 import pytest
 
-from services.risk_guard import (
+from nexus_ai.services.risk_guard import (
     RiskGuard,
     ensure_schema,
     seed_default_thresholds,
