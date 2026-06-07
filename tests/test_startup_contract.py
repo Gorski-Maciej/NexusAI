@@ -9,19 +9,28 @@ def _parse(path: str) -> ast.Module:
 
 
 def test_single_create_app_factory_exists() -> None:
-    module = _parse("Code/api/app.py")
+    module = _parse("nexus_ai/api/app.py")
     create_app_defs = [n for n in module.body if isinstance(n, ast.FunctionDef) and n.name == "create_app"]
     assert len(create_app_defs) == 1
 
 
 def test_server_uses_unified_create_app() -> None:
-    module = _parse("Code/api/server.py")
-    source = Path("Code/api/server.py").read_text(encoding="utf-8")
-    assert "from api.app import create_app" in source
-    assert "uvicorn.run(" in source
+    source = Path("nexus_ai/api/server.py").read_text(encoding="utf-8")
+    assert "from nexus_ai.api.app import create_app" in source
+    # Granian (Rust ASGI server, zastępuje Uvicorn)
+    assert "uvicorn.run(" not in source
+    assert "granian.Granian" in source
 
 
 def test_v1_and_v2_paths_defined() -> None:
-    source = Path("Code/api/app.py").read_text(encoding="utf-8")
+    source = Path("nexus_ai/api/app.py").read_text(encoding="utf-8")
     assert "/api/v2/health" in source
     assert "InvoiceController" in source
+
+
+def test_no_old_tech_imports() -> None:
+    """Verify no old technology imports remain in source code."""
+    api_source = Path("nexus_ai/api/app.py").read_text(encoding="utf-8")
+    assert "fastapi" not in api_source.lower()
+    assert "starlette" not in api_source.lower()
+    assert "uvicorn" not in api_source.lower()

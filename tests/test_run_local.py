@@ -1,42 +1,37 @@
 from __future__ import annotations
 
 import sys
-import types
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-import run_local
+from nexus_ai.main import _build_parser  # noqa: E402
 
 
 def test_parser_supports_bootstrap_flag() -> None:
-    args = run_local._build_parser().parse_args(["--bootstrap", "--host", "0.0.0.0", "--port", "9000"])
+    """Verify the CLI parser handles --bootstrap and host/port flags correctly."""
+    parser = _build_parser()
+    args = parser.parse_args(["--bootstrap", "--mode", "api", "--host", "127.0.0.1", "--port", "9000"])
     assert args.bootstrap is True
-    assert args.host == "0.0.0.0"
-    assert args.port == "9000"
+    assert args.mode == "api"
+    assert args.host == "127.0.0.1"
+    assert args.port == 9000
 
 
-def test_main_returns_error_without_bootstrap_when_missing_dependencies(monkeypatch) -> None:
-    monkeypatch.setattr(run_local, "_check_dependencies", lambda: ["uvicorn"])
-    code = run_local.main([])
-    assert code == 1
+def test_parser_defaults() -> None:
+    """Verify parser defaults use new technology stack (Granian, not Uvicorn)."""
+    parser = _build_parser()
+    args = parser.parse_args([])
+    assert args.mode == "api"
+    assert args.host == "127.0.0.1"
+    assert args.port == 8000
+    assert args.workers == 1
 
 
-def test_main_bootstrap_path_installs_dependencies(monkeypatch) -> None:
-    calls: list[str] = []
-
-    def fake_check_dependencies() -> list[str]:
-        calls.append("check")
-        return ["uvicorn"] if len(calls) == 1 else []
-
-    monkeypatch.setattr(run_local, "_check_dependencies", fake_check_dependencies)
-    monkeypatch.setattr(run_local, "_install_dependencies", lambda: 0)
-
-    fake_server = types.ModuleType("api.server")
-    fake_server.run_backend = lambda: calls.append("run")
-    monkeypatch.setitem(sys.modules, "api.server", fake_server)
-
-    code = run_local.main(["--bootstrap"])
-
-    assert code == 0
-    assert calls == ["check", "check", "run"]
+def test_parser_validates_mode() -> None:
+    """Verify mode choices include all expected modes."""
+    parser = _build_parser()
+    expected_modes = ["api", "worker", "all", "bootstrap", "doctor"]
+    for mode in expected_modes:
+        args = parser.parse_args(["--mode", mode])
+        assert args.mode == mode

@@ -13,13 +13,12 @@ Stage 3 otrzymuje wyniki Stage 1 i 2.
 from __future__ import annotations
 
 import asyncio
-import json
 import re
 from typing import Any
 
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
 from nexus_ai.services.council_agents import ModelManager
 
 logger = get_logger(__name__)
@@ -361,12 +360,12 @@ Dokonaj końcowej recenzji analizy. Skoryguj ewentualne błędy."""
     def _parse_stage_1(raw: str) -> dict[str, Any]:
         try:
             parsed = msgspec_loads(raw)
-        except json.JSONDecodeError:
+        except DecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
                     parsed = msgspec_loads(match.group(0))
-                except json.JSONDecodeError:
+                except DecodeError:
                     return {"queries": [], "reasoning": "Parse error"}
             else:
                 return {"queries": [], "reasoning": "No JSON"}
@@ -383,12 +382,12 @@ Dokonaj końcowej recenzji analizy. Skoryguj ewentualne błędy."""
     def _parse_stage_2(raw: str) -> dict[str, Any]:
         try:
             parsed = msgspec_loads(raw)
-        except json.JSONDecodeError:
+        except DecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
                     parsed = msgspec_loads(match.group(0))
-                except json.JSONDecodeError:
+                except DecodeError:
                     return {"trends": [], "anomalies": [], "summary": "Parse error", "confidence": 0.0, "needs_further_analysis": True}
             else:
                 return {"trends": [], "anomalies": [], "summary": "No JSON", "confidence": 0.0, "needs_further_analysis": True}
@@ -411,12 +410,12 @@ Dokonaj końcowej recenzji analizy. Skoryguj ewentualne błędy."""
     def _parse_stage_3(raw: str) -> dict[str, Any]:
         try:
             parsed = msgspec_loads(raw)
-        except json.JSONDecodeError:
+        except DecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
                     parsed = msgspec_loads(match.group(0))
-                except json.JSONDecodeError:
+                except DecodeError:
                     return {
                         "final_confidence": 0.0, "risk_score": 0.5,
                         "corrected_anomalies": [], "final_summary": "Parse error",

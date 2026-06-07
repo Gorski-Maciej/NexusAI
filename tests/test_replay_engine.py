@@ -1,4 +1,3 @@
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Tests for Replay Engine (Element 1).
 
@@ -12,8 +11,9 @@ Covers:
 
 from __future__ import annotations
 
-import json
 from datetime import date
+
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 
 import duckdb
 import pytest
@@ -119,7 +119,7 @@ class TestReplayEngine:
         # uses rules active on 2025-06-15, and the new rule was valid from 2025-01-01,
         # the replay WILL pick up the new rule. This simulates a rule change that
         # retroactively affects past decisions.
-        import uuid, json
+        import uuid
         conn.execute(
             """INSERT INTO tax_rules (rule_id, condition_sql, action_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",

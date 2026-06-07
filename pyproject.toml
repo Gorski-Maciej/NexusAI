@@ -228,3 +228,116 @@ warn_unused_ignores = false
 # instead of random fuzzing. It's faster, more deterministic, and lighter.
 [tool.crosshair]
 max_examples = 200
+
+# ── Nuitka — compile Python to standalone .exe (single file) ─────────────────
+# Zgodnie z aa3fvcx.txt: Nuitka kompiluje całą aplikację z wszystkimi
+# zależnościami do pojedynczego pliku .exe z wkompilowanym mimalloc.
+#
+# Build command:
+#   nuitka --project-name=nexus-ai main.py
+#   # OR equivalently from pyproject.toml config:
+#   python -m nuitka --project-name=nexus-ai main.py
+#
+# For Windows installer build:
+#   python -m nuitka --project-name=nexus-ai main.py
+#   iscc build_scripts/setup.iss
+#
+[tool.nuitka]
+# ── Core build options ───────────────────────────────────────────────────
+onefile = true                  # Pojedynczy plik .exe (nie folder)
+standalone = true               # Samodzielny, bez zależności systemowych
+
+# ── Plugins ──────────────────────────────────────────────────────────────
+enable-plugin = [
+    "pydantic",                  # Obsługa Pydantic/SQLModel
+    "numpy",                     # Obsługa NumPy
+    "anti-bloat",                # Usuwa zbędny kod z bibliotek
+    "mimalloc",                  # Microsoft mimalloc — 5-15% mniej RAM
+    "multiprocessing",           # Obsługa procesów potomnych
+    "trio",                      # Obsługa anyio/trio
+]
+
+# ── Data inclusion (wszystkie potrzebne pliki) ───────────────────────────
+include-package = [
+    "nexus_ai",                  # Cały pakiet aplikacji
+    "nexus_crypto",              # Natywny moduł Rust+PyO3
+    "granian",                   # ASGI server Rust
+    "litestar",                  # API framework
+    "sqlmodel",                  # ORM
+    "duckdb",                    # OLAP
+    "polars",                    # DataFrame
+    "pyarrow",                   # Arrow interop dla DuckDB
+    "llama_cpp",                 # LLM inference
+    "huggingface_hub",           # Model download
+    "msgspec",                   # Serializacja
+    "stamina",                   # Resilience
+    "httpx",                     # HTTP client
+    "hishel",                    # HTTP cache
+    "nats",                      # NATS client (import nats)
+    "taskiq",                    # Task queue
+    "taskiq_nats",               # Taskiq NATS broker
+    "loguru",                    # Logging
+    "structlog",                 # Structured logging
+    "pendulum",                  # DateTime
+    "opentelemetry",             # OpenTelemetry (API + SDK w jednym)
+    "fsspec",                    # Filesystem abstraction
+    "aiosqlite",                 # Async SQLite
+    "sqlite_vec",                # Vector extension dla SQLite
+    "alembic",                   # Migracje baz danych
+    "anyio",                     # Async runtime
+    "lxml",                      # XML processing
+    "PIL",                       # Image processing (Pillow)
+]
+
+# ── Data directories (dołączane do .exe) ─────────────────────────────────
+include-data-dir = [
+    # Tylko katalogi z danymi NIE-Pythonowymi — kod źródłowy jest kompilowany przez Nuitka
+    "config/=config/",                   # Pliki konfiguracyjne (TOML, JSON)
+    "app_data/=app_data/",               # Runtime data (puste na start)
+    "assets/=assets/",                   # Ikony i loga
+    "migrations/=migrations/",           # Alembic migracje (SQL templates)
+]
+
+# ── Include specific files ───────────────────────────────────────────────
+include-data-files = [
+    "alembic.ini=alembic.ini",
+    "pyproject.toml=pyproject.toml",
+    "README.md=README.md",
+]
+
+# ── Exclude unnecessary modules ──────────────────────────────────────────
+exclude-module = [
+    "tkinter",
+    "unittest",
+    "distutils",
+    "setuptools",
+    "pip",
+    "pdb",
+    "test",
+]
+
+# ── Windows-specific ─────────────────────────────────────────────────────
+# windows-console-mode = "disable"  # Odkomentuj dla GUI bez konsoli
+windows-icon-from-exe = "assets/nexus.ico"
+
+# ── Advanced ─────────────────────────────────────────────────────────────
+# Report pomaga debugować, co zostało włączone do builda
+# report = "build/report.xml"  # Odkomentuj do debugowania
+
+# ── Inne opcje ───────────────────────────────────────────────────────────
+jobs = 0                # Wszystkie rdzenie CPU do kompilacji
+clang = false           # Użyj GCC (domyślnie na Linux)
+assume-yes-for-downloads = true  # Automatyczne pobieranie zależności
+
+# ── Build-time module configuration ──────────────────────────────────────
+# Wymusza kompilację do C zamiast pozostawiania w Python bytecode
+# Zapewnia maksymalną wydajność i minimalny rozmiar
+nofollow-imports = false
+prefer-source-code = false
+
+# ── macOS ════════════════════════════════════════════════════════════════
+# macos-create-app-bundle = false
+# macos-signed-app-name = "com.nexusai.app"
+
+# ── Linux ════════════════════════════════════════════════════════════════
+# linux-onefile-icon = "assets/nexus.png"

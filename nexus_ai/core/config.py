@@ -150,10 +150,10 @@ class AppConfig(Struct, kw_only=True):
     retry_backoff_max_seconds: float = float(os.getenv("NEXUS_RETRY_BACKOFF_MAX", "60.0"))
 
     # ── Database ──
-    sqlite_file_name: str = os.getenv("NEXUS_SQLITE_FILE", "nexus_oltp.db")
-    duckdb_file_name: str = os.getenv("NEXUS_DUCKDB_FILE", "nexus_olap.duckdb")
+    sqlite_file_name: str = os.getenv("NEXUS_SQLITE_FILE", "app_data/databases/nexus_oltp.db")
+    duckdb_file_name: str = os.getenv("NEXUS_DUCKDB_FILE", "app_data/databases/nexus_olap.duckdb")
     storage_dir_name: str = os.getenv("NEXUS_STORAGE_DIR", "app_data/uploads")
-    idempotency_db_name: str = os.getenv("NEXUS_IDEMPOTENCY_DB", "idempotency.sqlite")
+    idempotency_db_name: str = os.getenv("NEXUS_IDEMPOTENCY_DB", "app_data/databases/idempotency.sqlite")
     debug: bool = os.getenv("NEXUS_DEBUG", "0") == "1"
     sqlcipher_key_env: str = os.getenv("NEXUS_SQLCIPHER_KEY_ENV", "NEXUS_SQLCIPHER_KEY")
 

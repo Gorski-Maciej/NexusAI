@@ -1,7 +1,6 @@
 # core/llm_guard.py
 from __future__ import annotations
 
-import json
 import re
 from typing import Any
 
@@ -9,7 +8,7 @@ import msgspec
 
 from nexus_ai.core.exceptions import LLMGuardrailError
 from nexus_ai.core.logger import logger
-from nexus_ai.core.msgspec_utils import msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 
 
 class InvoiceLLMExtraction(msgspec.Struct):
@@ -40,6 +39,6 @@ class LLMGuard:
             # Convert to dict for serializable output
             result = msgspec.to_builtins(validated)
             return result
-        except (json.JSONDecodeError, msgspec.ValidationError) as e:
+        except (DecodeError, msgspec.ValidationError) as e:
             logger.error(f"Błąd LLMGuard: {e}")
             raise LLMGuardrailError(f"Niepoprawny wynik LLM: {str(e)}")

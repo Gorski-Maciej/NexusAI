@@ -20,9 +20,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-# ── Ensure Code/ is on sys.path ──
+# ── Ensure nexus_ai/ package is importable ──
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
-_CODE_DIR = str(_PROJECT_ROOT / "Code")
+_CODE_DIR = str(_PROJECT_ROOT / "nexus_ai")
 if _CODE_DIR not in sys.path:
     sys.path.insert(0, _CODE_DIR)
 
@@ -157,9 +157,8 @@ async def _start_worker() -> None:
     logger.info(">>> Starting Taskiq worker...")
 
     cmd = [sys.executable, "-m", "luz.worker"]
-    _CODE_DIR_PATH = _PROJECT_ROOT  # noqa: N806 / "Code"
     worker_proc = await asyncio.create_subprocess_exec(
-        *cmd, cwd=_CODE_DIR_PATH,
+        *cmd, cwd=_PROJECT_ROOT,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
     )
     logger.info("Worker started (PID: %s)", worker_proc.pid)

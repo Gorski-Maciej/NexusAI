@@ -9,13 +9,12 @@ invoices as simple (→ OCR + Decyzja only) or complex (→ full pipeline).
 from __future__ import annotations
 
 import asyncio
-import json
 import re
 from typing import Any
 
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
-from nexus_ai.core.msgspec_utils import msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 from nexus_ai.services.council_agents import ModelManager
 
 logger = get_logger(__name__)
@@ -172,12 +171,12 @@ W przeciwnym razie faktura jest ZŁOŻONA (→ pełny zestaw agentów)."""
         """Parse JSON response from model with regex fallback."""
         try:
             parsed = msgspec_loads(raw)
-        except json.JSONDecodeError:
+        except DecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
                     parsed = msgspec_loads(match.group(0))
-                except json.JSONDecodeError:
+                except DecodeError:
                     return self._full_workflow(reason="Unparseable JSON response")
             else:
                 return self._full_workflow(reason="No JSON found in response")

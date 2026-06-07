@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import asyncio
-import json
 from structlog import get_logger
 from typing import Any
 
 from litestar import websocket
 
-from nexus_ai.core.msgspec_utils import msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 
 logger = get_logger("nexus.api.ws")
 
@@ -126,7 +125,7 @@ async def progress_websocket(socket: Any) -> None:
 
             try:
                 msg = msgspec_loads(raw)
-            except json.JSONDecodeError:
+            except DecodeError:
                 continue
 
             msg_type = msg.get("type", "")

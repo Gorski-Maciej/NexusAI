@@ -12,8 +12,6 @@ Tests the complete flow:
 
 from __future__ import annotations
 
-import json
-
 import pytest
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from httpx import AsyncClient
@@ -131,7 +129,7 @@ class TestDatabaseIntegration:
         from sqlalchemy import text
 
         # Add an outbox event manually — simulating what the API does
-        import uuid, json, datetime
+        import uuid, datetime
 
         outbox_id = str(uuid.uuid4())
         event_payload = msgspec_dumps({

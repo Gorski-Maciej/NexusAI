@@ -1,4 +1,3 @@
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Tests for TemporalManager (Element 2).
 
@@ -13,9 +12,10 @@ Covers:
 
 from __future__ import annotations
 
-import json
 import uuid
 from datetime import date
+
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 
 import duckdb
 import pytest

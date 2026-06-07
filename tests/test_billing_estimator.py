@@ -73,7 +73,7 @@ class TestBillingEstimator:
         """Unknown document type → fallback rule."""
         conn.execute("DELETE FROM billing_rules")
         # Only re-insert fallback
-        import json, uuid
+        import uuid
         conn.execute(
             """INSERT INTO billing_rules (rule_id, condition_json, price_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",

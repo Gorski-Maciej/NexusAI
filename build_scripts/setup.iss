@@ -2,16 +2,17 @@
 ;  NexusAI_Setup.iss — Inno Setup Script for NexusAI
 ; =============================================================================
 ;  This script creates a Windows installer that:
-;    1. Installs the PyInstaller-bundled NexusAI .exe to %ProgramFiles%\NexusAI
+;    1. Installs the Nuitka-compiled NexusAI single-file .exe to %ProgramFiles%\NexusAI
 ;    2. Creates Desktop and Start Menu shortcuts
 ;    3. Adds uninstaller entry in "Programs and Features"
 ;    4. Stores runtime data (models, databases) in %APPDATA%\NexusAI
 ;
+;  Nuitka output (onefile mode): dist\NexusAI.exe — pojedynczy plik ze wszystkim
 ;  Inno Setup: https://jrsoftware.org/isdl.php
 ; =============================================================================
 
 #define MyAppName "NexusAI"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "2.0.0"
 #define MyAppPublisher "NexusAI Team"
 #define MyAppURL "https://nexusai.app"
 #define MyAppExeName "NexusAI.exe"
@@ -66,20 +67,17 @@ Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription
 Name: "startup"; Description: "Launch NexusAI when Windows starts (recommended for background updates)"; GroupDescription: "Startup options:"; Flags: unchecked
 
 [Files]
-; Main application bundle (PyInstaller output)
-Source: "..\dist\NexusAI\NexusAI.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dist\NexusAI\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Main application — Nuitka onefile .exe (wszystkie zależności w jednym pliku)
+Source: "..\dist\NexusAI.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Configuration files
-Source: "..\config\*.env"; DestDir: "{app}\config"; Flags: ignoreversion
+Source: "..\config\*.toml"; DestDir: "{app}\config"; Flags: ignoreversion
 Source: "..\config\models_manifest.json"; DestDir: "{app}\config"; Flags: ignoreversion
+Source: "..\config\version.json"; DestDir: "{app}\config"; Flags: ignoreversion
 
-; Alembic migrations
+; Alembic migrations (dołączone do .exe przez Nuitka, ale też jako kopie dla updatera)
 Source: "..\alembic.ini"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\migrations\*"; DestDir: "{app}\migrations"; Flags: ignoreversion recursesubdirs
-
-; Placeholder models directory
-Source: "..\models\.gitkeep"; DestDir: "{app}\models"; Flags: ignoreversion skipifsourcedoesntexist
 
 ; README
 Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion isreadme
@@ -96,7 +94,7 @@ Name: "{userappdata}\NexusAI\logs"; Permissions: users-modify
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
-Name: "{group}\{#MyAppName} (CLI)"; Filename: "{app}\NexusAI_CLI.exe"; WorkingDir: "{app}"
+Name: "{group}\{#MyAppName} (CLI)"; Filename: "{app}\{#MyAppExeName}"; Parameters: "--cli"; WorkingDir: "{app}"
 Name: "{group}\Uninstall {#MyAppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
 
@@ -105,8 +103,8 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDi
 Filename: "{app}\{#MyAppExeName}"; Description: "Launch NexusAI"; Flags: postinstall nowait skipifsilent shellexec; WorkingDir: "{app}"
 
 [UninstallRun]
-; Clean up runtime data (optional)
-Filename: "{cmd}"; Parameters: "/c rmdir /s /q ""{userappdata}\NexusAI"""; Flags: runhidden
+; Clean up runtime data — ask user first (modele AI ~7 GB do ponownego pobrania)
+; Ręczne usuwanie: %APPDATA%\NexusAI
 
 [Code]
 { Custom page to show disk space requirements with model files }

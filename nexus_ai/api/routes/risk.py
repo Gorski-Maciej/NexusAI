@@ -15,7 +15,6 @@ Wszystkie endpointy wymagają uprawnienia ``admin:risk``.
 
 from __future__ import annotations
 
-import json
 from structlog import get_logger
 import pendulum
 from typing import Any
@@ -27,7 +26,7 @@ from litestar.exceptions import HTTPException
 from litestar.response import Response
 
 from nexus_ai.api.rbac import requires_permission
-from nexus_ai.core.msgspec_utils import msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 from nexus_ai.services.risk_guard import (
     RiskGuard,
     ensure_schema,
@@ -251,7 +250,7 @@ class RiskController(Controller):
 
         try:
             fields_with_confidence = msgspec_loads(fields_json)
-        except (json.JSONDecodeError, TypeError) as exc:
+        except (DecodeError, TypeError) as exc:
             raise HTTPException(
                 status_code=422,
                 detail=f"Invalid 'fields_json': {exc}",

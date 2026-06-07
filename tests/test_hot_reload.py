@@ -13,7 +13,6 @@ Tests:
 
 from __future__ import annotations
 
-import json
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 import sys
 from pathlib import Path

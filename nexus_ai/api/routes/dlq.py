@@ -20,7 +20,6 @@ Usage:
 
 from __future__ import annotations
 
-import json
 from structlog import get_logger
 import uuid
 import pendulum
@@ -32,7 +31,7 @@ from litestar.response import Response
 from sqlalchemy import text
 
 from nexus_ai.api.rbac import admin_only_guard, requires_permission
-from nexus_ai.core.msgspec_utils import msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 
 logger = get_logger("nexus.api.dlq")
 
@@ -202,7 +201,7 @@ class DLQController(Controller):
         payload_raw = result.get("payload", "{}")
         try:
             result["payload"] = msgspec_loads(payload_raw)
-        except (json.JSONDecodeError, TypeError):
+        except (DecodeError, TypeError):
             pass  # Keep as string
 
         # Serialize datetime objects

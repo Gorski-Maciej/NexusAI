@@ -91,7 +91,6 @@ class TestTraceGenerator:
         verdict = {"vat_rate": "0.23"}
         context = {"category_code": "FUEL", "transaction_date": "2024-06-15"}
 
-        import json
         trace_json_str = TraceGenerator.generate_trace_json(
             evaluated_rules=evaluated,
             final_verdict=verdict,
@@ -107,7 +106,6 @@ class TestTraceGenerator:
 
     def test_generate_trace_json_empty(self) -> None:
         """Empty inputs produce minimal JSON."""
-        import json
         trace_json_str = TraceGenerator.generate_trace_json()
         trace = msgspec_loads(trace_json_str)
         assert trace == {}

@@ -1,4 +1,3 @@
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Testy dla Council Agents — ModelManager, DecisionVerdict, BaseCouncilAgent.
 
@@ -10,9 +9,10 @@ Sprawdza:
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
+
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 
 import pytest
 

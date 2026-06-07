@@ -15,14 +15,13 @@ Obsługuje:
 
 from __future__ import annotations
 
-import json
 from structlog import get_logger
 import uuid
 import pendulum
 from typing import Any
 from xml.etree import ElementTree as ET
 
-from nexus_ai.core.msgspec_utils import msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 
 logger = get_logger("nexus.ksef")
 
@@ -65,7 +64,7 @@ def _resolve_ksef_fields(verdict: dict[str, Any]) -> dict[str, Any]:
     if isinstance(ksef, str):
         try:
             ksef = msgspec_loads(ksef)
-        except (json.JSONDecodeError, TypeError):
+        except (DecodeError, TypeError):
             ksef = {}
 
     # Already have explicit fields? Use them.

@@ -8,14 +8,13 @@ produce the ultimate decision: AUTO_POST / SUGGEST / ESCALATE.
 from __future__ import annotations
 
 import asyncio
-import json
 import re
 from dataclasses import dataclass, field
 from typing import Any
 
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
-from nexus_ai.core.msgspec_utils import msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 from nexus_ai.services.council_agents import ModelManager
 
 logger = get_logger(__name__)
@@ -216,12 +215,12 @@ i podaj zapytania w additional_queries."""
         """Parse JSON response from model with regex fallback."""
         try:
             parsed = msgspec_loads(raw)
-        except json.JSONDecodeError:
+        except DecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
                     parsed = msgspec_loads(match.group(0))
-                except json.JSONDecodeError:
+                except DecodeError:
                     return self._default_result("Unparseable JSON response")
             else:
                 return self._default_result("No JSON found in response")
@@ -369,12 +368,12 @@ dostępnych danych kontekstowych i historcznych."""
         """Parse JSON response from model with regex fallback."""
         try:
             parsed = msgspec_loads(raw)
-        except json.JSONDecodeError:
+        except DecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
                     parsed = msgspec_loads(match.group(0))
-                except json.JSONDecodeError:
+                except DecodeError:
                     return self._default_result("Unparseable JSON response")
             else:
                 return self._default_result("No JSON found in response")

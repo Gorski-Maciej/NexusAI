@@ -11,13 +11,12 @@ Nowe funkcjonalności:
 from __future__ import annotations
 
 import asyncio
-import json
 import uuid
 import pendulum
 from typing import Any
 
 from nexus_ai.core.logger import get_logger
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
 from nexus_ai.db.analytics import DuckDBManager
 
 logger = get_logger(__name__)
@@ -456,7 +455,7 @@ class DecisionLogger:
                 if isinstance(components_raw, str):
                     try:
                         components = msgspec_loads(components_raw)
-                    except (json.JSONDecodeError, TypeError):
+                    except (DecodeError, TypeError):
                         continue
                 elif isinstance(components_raw, dict):
                     components = components_raw

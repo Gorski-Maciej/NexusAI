@@ -28,7 +28,6 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
-import json
 from structlog import get_logger
 import time
 import uuid
@@ -39,7 +38,7 @@ from typing import Any
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from nexus_ai.core.msgspec_utils import msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 
 logger = get_logger("nexus.services.outbox_relay")
 
@@ -342,7 +341,7 @@ class OutboxRelay:
 
         try:
             payload = msgspec_loads(payload_raw)
-        except (json.JSONDecodeError, TypeError) as exc:
+        except (DecodeError, TypeError) as exc:
             raise ValueError(f"Invalid TAX_CALCULATED payload JSON: {exc}") from exc
 
         transaction_id = payload.get("transaction_id", "")

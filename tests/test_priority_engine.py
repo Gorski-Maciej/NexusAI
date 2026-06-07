@@ -1,4 +1,3 @@
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Tests for PriorityEngine (Element 1).
 
@@ -12,8 +11,9 @@ Covers:
 
 from __future__ import annotations
 
-import json
 import uuid
+
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 
 import pytest
 

@@ -1,4 +1,3 @@
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 """
 Unit tests for RiskController — zarządzanie progami ryzyka (Strażnik Ryzyka).
 
@@ -20,8 +19,11 @@ Strategia mockowania:
 
 from __future__ import annotations
 
-import json
 import sys
+from unittest.mock import MagicMock, PropertyMock, patch
+
+# Move msgspec import after docstring
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest

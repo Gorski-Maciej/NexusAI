@@ -1,7 +1,6 @@
 """File-based fallback buffer for telemetry export failures."""
 from __future__ import annotations
 
-import json
 import os
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -11,7 +10,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
 
 
 @dataclass(slots=True)
@@ -60,7 +59,7 @@ class FileSpanBuffer:
                     continue
                 try:
                     records.append(msgspec_loads(line))
-                except json.JSONDecodeError:
+                except DecodeError:
                     continue
         return records
 

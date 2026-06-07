@@ -16,7 +16,7 @@ Steps:
   8. Print summary and readiness confirmation
 
 Usage:
-    python -m Code.SKRIPTS.bootstrap
+    python -m nexus_ai.scripts.bootstrap
     nexus bootstrap
     python main.py --bootstrap
 """
@@ -146,13 +146,15 @@ async def step_check_dependencies(config: Any) -> StepResult:
     start = time.perf_counter()
     name = "Check Python dependencies"
 
+    # Technologie zgodne z aa3fvcx.txt — nowy, ultralekki stack
     REQUIRED_CORE = [  # noqa: N806
-        ("litestar", "litestar"),
-        ("sqlalchemy", "sqlalchemy"),
-        ("alembic", "alembic"),
-        ("uvicorn", "uvicorn"),
-        ("taskiq", "taskiq"),
-        ("duckdb", "duckdb"),
+        ("litestar", "litestar"),      # API framework (zastępuje FastAPI)
+        ("granian", "granian"),        # ASGI server w Rust (zastępuje Uvicorn)
+        ("sqlmodel", "sqlmodel"),       # ORM 2w1 (SQLAlchemy + Pydantic)
+        ("alembic", "alembic"),         # Migracje schematu
+        ("taskiq", "taskiq"),           # Async-native kolejka zadań
+        ("duckdb", "duckdb"),           # Lokalna hurtownia OLAP
+        ("msgspec", "msgspec"),          # Ultraszybka serializacja
     ]
 
     missing: list[str] = []
@@ -602,7 +604,7 @@ async def run_bootstrap(
 # ── CLI entry point ──────────────────────────────────────────────────────────
 
 def main(argv: list[str] | None = None) -> int:
-    """CLI entry point: python -m Code.SKRIPTS.bootstrap"""
+    """CLI entry point: python -m nexus_ai.scripts.bootstrap"""
     import argparse
 
     parser = argparse.ArgumentParser(

@@ -12,7 +12,6 @@ Endpointy:
 
 from __future__ import annotations
 
-import json
 from structlog import get_logger
 import pendulum
 from typing import Any
@@ -22,7 +21,7 @@ from litestar.exceptions import NotFoundException
 from litestar.response import Response
 
 from nexus_ai.api.rbac import requires_permission
-from nexus_ai.core.msgspec_utils import msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 
 logger = get_logger("nexus.api.audit")
 
@@ -97,17 +96,17 @@ class AuditController(Controller):
             if calc_input:
                 try:
                     calc_in = msgspec_loads(calc_input) if isinstance(calc_input, str) else calc_input
-                except (json.JSONDecodeError, TypeError):
+                except (DecodeError, TypeError):
                     calc_in = {"raw": str(calc_input)}
             if calc_output:
                 try:
                     calc_out = msgspec_loads(calc_output) if isinstance(calc_output, str) else calc_output
-                except (json.JSONDecodeError, TypeError):
+                except (DecodeError, TypeError):
                     calc_out = {"raw": str(calc_output)}
             if invariants:
                 try:
                     inv_result = msgspec_loads(invariants) if isinstance(invariants, str) else invariants
-                except (json.JSONDecodeError, TypeError):
+                except (DecodeError, TypeError):
                     inv_result = {"raw": str(invariants)}
 
             # Extract amounts from calc_in / calc_out using canonical field names
@@ -131,7 +130,7 @@ class AuditController(Controller):
                     tj = msgspec_loads(trace_json_raw) if isinstance(trace_json_raw, str) else trace_json_raw
                     evaluated_rules = tj.get("evaluated_rules")
                     trace_json_snapshot = tj.get("context_snapshot")
-                except (json.JSONDecodeError, TypeError):
+                except (DecodeError, TypeError):
                     pass
 
             # ── Build the full report dict ──────────────────────────────

@@ -61,6 +61,14 @@ build/
 *.exe
 *.msi
 
+# ── Nuitka compiler artifacts ───────────────────────────────────────────────
+# Nuitka kompiluje Python → C → pojedynczy .exe
+*.build                    # Katalogi tymczasowe Nuitka (jeden na kompilację)
+*.dist                     # Katalogi tymczasowe Nuitka (standalone mode)
+*.onefile-build/           # Tymczasowe pliki onefile
+__compiled__/              # Skompilowane moduły Nuitka cache
+nuitka-report.xml          # Raport Nuitka (opcjonalny)
+
 # ── Temporary & OS files ────────────────────────────────────────────────────
 *.tmp
 *.temp
@@ -83,8 +91,13 @@ nexus.spec.py
 node_modules/
 package-lock.json
 
-# ── Old lowercase skripts dir (removed, now at SKRIPTS) ────────────────────
+# ── Old structure paths (removed in restrukturyzacji) ──────────────────────
 Code/skripts/
+Code/
+NEXUS.SPEC/
+nexus.spec
+nexus.spec.py
+nexus.spec.pyz
 
 # ── Test / CI artifacts ─────────────────────────────────────────────────────
 htmlcov/

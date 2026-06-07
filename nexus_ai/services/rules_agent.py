@@ -14,13 +14,12 @@ Jeśli poziom 1 (LFM) zwróci COMPLIANT z confidence ≥ 0.90 → fast-path: dal
 from __future__ import annotations
 
 import asyncio
-import json
 import re
 from typing import Any
 
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
 from nexus_ai.services.council_agents import ModelManager
 
 logger = get_logger(__name__)
@@ -466,12 +465,12 @@ Dokonaj końcowej weryfikacji i oceń ryzyko."""
     def _parse_level_1(raw: str) -> dict[str, Any]:
         try:
             parsed = msgspec_loads(raw)
-        except json.JSONDecodeError:
+        except DecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
                     parsed = msgspec_loads(match.group(0))
-                except json.JSONDecodeError:
+                except DecodeError:
                     return {"decision": "FLAG", "confidence": 0.0, "reasoning": "Parse error", "flags": []}
             else:
                 return {"decision": "FLAG", "confidence": 0.0, "reasoning": "No JSON", "flags": []}
@@ -487,12 +486,12 @@ Dokonaj końcowej weryfikacji i oceń ryzyko."""
     def _parse_level_2(raw: str) -> dict[str, Any]:
         try:
             parsed = msgspec_loads(raw)
-        except json.JSONDecodeError:
+        except DecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
                     parsed = msgspec_loads(match.group(0))
-                except json.JSONDecodeError:
+                except DecodeError:
                     return {"passed": False, "confidence": 0.0, "violations": [], "reasoning": "Parse error"}
             else:
                 return {"passed": False, "confidence": 0.0, "violations": [], "reasoning": "No JSON"}
@@ -511,12 +510,12 @@ Dokonaj końcowej weryfikacji i oceń ryzyko."""
     def _parse_level_3(raw: str) -> dict[str, Any]:
         try:
             parsed = msgspec_loads(raw)
-        except json.JSONDecodeError:
+        except DecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
                     parsed = msgspec_loads(match.group(0))
-                except json.JSONDecodeError:
+                except DecodeError:
                     return {"classification": "FLAG", "confidence": 0.0, "risk_factors": [], "reasoning": "Parse error"}
             else:
                 return {"classification": "FLAG", "confidence": 0.0, "risk_factors": [], "reasoning": "No JSON"}
@@ -535,12 +534,12 @@ Dokonaj końcowej weryfikacji i oceń ryzyko."""
     def _parse_level_4(raw: str) -> dict[str, Any]:
         try:
             parsed = msgspec_loads(raw)
-        except json.JSONDecodeError:
+        except DecodeError:
             match = re.search(r"\{.*\}", raw, re.DOTALL)
             if match:
                 try:
                     parsed = msgspec_loads(match.group(0))
-                except json.JSONDecodeError:
+                except DecodeError:
                     return {
                         "risk_level": "HIGH", "confidence": 0.0, "anomaly_score": 0.5,
                         "final_verdict": "FLAG", "reasoning": "Parse error",

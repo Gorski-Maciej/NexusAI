@@ -5,7 +5,9 @@ Zgodnie z aa3fvcx.txt: msgspec zastępuje json, orjson, python-dotenv.
 msgspec.json.encode/decode jest 10-100x szybsze od json.dumps/loads.
 
 Użycie:
-    from core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
+    from nexus_ai.core.msgspec_utils import (
+        msgspec_dumps, msgspec_loads, msgspec_dumps_bytes, DecodeError,
+    )
 
     # Zamiast json.dumps(data)
     s = msgspec_dumps(data)
@@ -16,8 +18,11 @@ Użycie:
     # Zamiast json.loads(string)
     d = msgspec_loads(string)
 
-    # Zamiast msgspec_loads(path.read_bytes())
-    d = msgspec_loads(path.read_bytes())
+    # Zamiast json.JSONDecodeError (zastępuje cały import json)
+    try:
+        d = msgspec_loads(data)
+    except DecodeError:
+        ...
 """
 
 from __future__ import annotations
@@ -29,6 +34,23 @@ from typing import Any
 from uuid import UUID
 
 import msgspec
+
+# ── DecodeError — zastępuje json.JSONDecodeError ────────────────────────────
+class DecodeError(ValueError):
+    """Zastępuje json.JSONDecodeError.
+
+    Podnoszony przez msgspec_loads gdy dane nie są poprawnym JSON-em.
+    Użycie:
+        try:
+            data = msgspec_loads(raw)
+        except DecodeError:
+            ...
+    """
+
+
+# ── EncodeError — zastępuje błędy serializacji (jeśli potrzebne) ─────────────
+class EncodeError(TypeError):
+    """Zastępuje TypeError przy serializacji (gdy obiekt nie jest serializowalny)."""
 
 
 def _default_enc_hook(obj: Any) -> Any:
@@ -49,7 +71,7 @@ def _default_enc_hook(obj: Any) -> Any:
     # Money z Nexus-Money (services.currency_converter) — ma .amount i .currency
     if hasattr(obj, "currency") and hasattr(obj, "amount_cents"):
         return float(obj.amount)
-    raise TypeError(f"Object of type {type(obj)} is not serializable by msgspec")
+    raise EncodeError(f"Object of type {type(obj)} is not serializable by msgspec")
 
 
 _ENCODER = msgspec.json.Encoder(enc_hook=_default_enc_hook)
@@ -70,13 +92,19 @@ def msgspec_dumps(obj: Any, **kwargs: Any) -> str:
         obj: Obiekt do serializacji.
         **kwargs: ensure_ascii, default, sort_keys, indent (kompatybilność).
 
+    Raises:
+        EncodeError: Gdy obiekt nie jest serializowalny.
+
     Returns:
         String JSON.
     """
-    if kwargs.get("indent"):
-        return _ENCODER.format(obj, indent=kwargs["indent"]).decode()
-    result = _ENCODER.encode(obj)
-    return result.decode("utf-8")
+    try:
+        if kwargs.get("indent"):
+            return _ENCODER.format(obj, indent=kwargs["indent"]).decode()
+        result = _ENCODER.encode(obj)
+        return result.decode("utf-8")
+    except (msgspec.EncodeError, TypeError) as exc:
+        raise EncodeError(str(exc)) from exc
 
 
 def msgspec_dumps_bytes(obj: Any) -> bytes:
@@ -85,10 +113,16 @@ def msgspec_dumps_bytes(obj: Any) -> bytes:
     Args:
         obj: Obiekt do serializacji.
 
+    Raises:
+        EncodeError: Gdy obiekt nie jest serializowalny.
+
     Returns:
         Bajty JSON.
     """
-    return _ENCODER.encode(obj)
+    try:
+        return _ENCODER.encode(obj)
+    except (msgspec.EncodeError, TypeError) as exc:
+        raise EncodeError(str(exc)) from exc
 
 
 def msgspec_loads(data: str | bytes | bytearray) -> Any:
@@ -100,9 +134,15 @@ def msgspec_loads(data: str | bytes | bytearray) -> Any:
     Args:
         data: String lub bajty JSON.
 
+    Raises:
+        DecodeError: Gdy dane nie są poprawnym JSON-em.
+
     Returns:
         Python object (dict, list, str, int, float, bool, None).
     """
-    if isinstance(data, str):
-        data = data.encode("utf-8")
-    return msgspec.json.decode(data)
+    try:
+        if isinstance(data, str):
+            data = data.encode("utf-8")
+        return msgspec.json.decode(data)
+    except msgspec.ValidationError as exc:
+        raise DecodeError(str(exc)) from exc

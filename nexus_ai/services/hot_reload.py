@@ -15,13 +15,12 @@ Usage:
 from __future__ import annotations
 
 import asyncio
-import json
 from structlog import get_logger
 import pendulum
 from datetime import datetime
 from typing import Any
 
-from nexus_ai.core.msgspec_utils import msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 
 logger = get_logger("nexus.hot_reload")
 
@@ -148,7 +147,7 @@ class HotReloadListener:
         subject = msg.subject
         try:
             payload = msgspec_loads(msg.data)
-        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        except (DecodeError, UnicodeDecodeError) as exc:
             logger.warning("[HOT-RELOAD] Invalid message on %s: %s", subject, exc)
             return
 

@@ -1,21 +1,27 @@
 @echo off
 REM ============================================================================
-REM  build_exe.bat — Build NexusAI Windows Installer
+REM  build_exe.bat — Build NexusAI Windows Installer (Nuitka)
 REM ============================================================================
-REM  This script automates the complete build pipeline:
+REM  This script automates the complete build pipeline using Nuitka:
 REM    1. Install Python dependencies
-REM    2. Run PyInstaller to create a single .exe bundle
-REM    3. Run NSIS to create the final NexusAI_Setup.exe
+REM    2. Run Nuitka to create a single .exe file (z mimalloc)
+REM    3. Run Inno Setup to create the final NexusAI_Setup.exe
+REM
+REM  Zgodnie z aa3fvcx.txt:
+REM    - Nuitka kompiluje Python → C → pojedynczy .exe
+REM    - mimalloc statycznie wkompilowany (5-15% mniej RAM)
+REM    - Wszystkie zależności w jednym pliku
 REM
 REM  Prerequisites:
-REM    - Python 3.11+ installed and on PATH
-REM    - NSIS 3+ installed at default location, OR set NSIS_PATH
-REM    - Optional: UPX compressor (for smaller executables)
+REM    - Python 3.13+ installed and on PATH
+REM    - Nuitka (pip install nuitka)
+REM    - Inno Setup 6+ (for installer, optional)
+REM    - Visual Studio Build Tools (Windows) lub GCC (Linux/Mac)
 REM
 REM  Usage:
 REM    build_exe.bat                    # Full build
 REM    build_exe.bat --skip-install     # Skip dependency installation
-REM    build_exe.bat --pyinstaller-only # Only create the .exe, skip NSIS
+REM    build_exe.bat --nuitka-only      # Only create the .exe, skip Inno Setup
 REM    build_exe.bat --clean           # Clean build artifacts first
 REM    build_exe.bat --help            # Show help
 REM ============================================================================
@@ -28,18 +34,18 @@ set "BUILD_DIR=%PROJECT_ROOT%\build"
 set "DIST_DIR=%PROJECT_ROOT%\dist"
 set "EXE_NAME=NexusAI"
 set "SETUP_NAME=NexusAI_Setup"
-set "NSIS_PATH=C:\Program Files (x86)\NSIS\makensis.exe"
+set "INNO_PATH=C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
 
 REM ── Parse arguments ────────────────────────────────────────────────────────
 set "SKIP_INSTALL="
-set "PYINSTALLER_ONLY="
+set "NUITKA_ONLY="
 set "CLEAN_BUILD="
 set "SHOW_HELP="
 
 :parse_args
 if "%~1"=="" goto :done_parse
 if /I "%~1"=="--skip-install" set "SKIP_INSTALL=1"
-if /I "%~1"=="--pyinstaller-only" set "PYINSTALLER_ONLY=1"
+if /I "%~1"=="--nuitka-only" set "NUITKA_ONLY=1"
 if /I "%~1"=="--clean" set "CLEAN_BUILD=1"
 if /I "%~1"=="--help" set "SHOW_HELP=1"
 shift
@@ -51,7 +57,7 @@ if defined SHOW_HELP (
     echo.
     echo Options:
     echo   --skip-install     Skip pip install of dependencies
-    echo   --pyinstaller-only Create only the .exe bundle, skip NSIS
+    echo   --nuitka-only      Create only the .exe, skip Inno Setup
     echo   --clean            Clean build artifacts first
     echo   --help             Show this help
     exit /b 0
@@ -59,7 +65,7 @@ if defined SHOW_HELP (
 
 echo.
 echo ===========================================================================
-echo         NexusAI -- Windows Build Script
+echo         NexusAI -- Windows Nuitka Build Script
 echo ===========================================================================
 echo.
 echo Project root: %PROJECT_ROOT%
@@ -69,10 +75,10 @@ REM ── Step 0: Clean build artifacts ─────────────
 if defined CLEAN_BUILD (
     echo [0/5] Cleaning build artifacts...
     if exist "%BUILD_DIR%" rmdir /s /q "%BUILD_DIR%"
-    if exist "%DIST_DIR%\NexusAI" rmdir /s /q "%DIST_DIR%\NexusAI"
-    if exist "%DIST_DIR%\%EXE_NAME%.exe" del "%DIST_DIR%\%EXE_NAME%.exe"
-    if exist "%DIST_DIR%\%EXE_NAME%_CLI.exe" del "%DIST_DIR%\%EXE_NAME%_CLI.exe"
     if exist "%DIST_DIR%\*.exe" del "%DIST_DIR%\*.exe"
+    if exist "%DIST_DIR%\*.build" rmdir /s /q "%DIST_DIR%\*.build"
+    if exist "%DIST_DIR%\*.dist" rmdir /s /q "%DIST_DIR%\*.dist"
+    if exist "%PROJECT_ROOT%\*.build" rmdir /s /q "%PROJECT_ROOT%\*.build"
     echo   Done.
     echo.
 )
@@ -85,31 +91,21 @@ if not defined SKIP_INSTALL (
     where /q uv 2>nul
     if not errorlevel 1 (
         echo   Using uv (Astral) — 10-100x faster than pip...
-        uv pip install --system pyinstaller
+        uv pip install --system nuitka
         if errorlevel 1 (
-            echo   [WARN] uv pip install failed, trying uv tool install...
-            uv tool install pyinstaller
+            echo   [WARN] uv pip install failed, trying pip...
+            python -m pip install nuitka
         )
-        uv pip install --system -e ".[ai,ui]"
+        uv pip install --system -e ".[ui]"
         if errorlevel 1 (
             echo   [WARN] Some optional deps failed, installing core only...
             uv pip install --system -e "."
         )
     ) else (
         echo   uv not found, falling back to pip...
-        echo   ★ Install uv for faster builds: curl -LsSf https://astral.sh/uv/install.sh ^| sh
         python -m pip install --upgrade pip >nul 2>&1
-        python -m pip install pyinstaller >nul 2>&1
-        if errorlevel 1 (
-            echo   [WARN] pip install failed, trying --user...
-            python -m pip install --user pyinstaller
-        )
-        python -m pip install -e ".[ai,ui]" >nul 2>&1
-        if errorlevel 1 (
-            echo   [WARN] Some optional deps failed (torch/transformers may be large)
-            echo   Installing core deps only...
-            python -m pip install -e "." >nul 2>&1
-        )
+        python -m pip install nuitka >nul 2>&1
+        python -m pip install -e "." >nul 2>&1
     )
 
     echo   Done.
@@ -119,74 +115,78 @@ if not defined SKIP_INSTALL (
     echo.
 )
 
-REM ── Step 2: Generate assets (icons, logos) ────────────────────────────────
-echo [2/5] Generating application assets...
-if not exist "%PROJECT_ROOT%\assets" mkdir "%PROJECT_ROOT%\assets"
-
-cd /d "%PROJECT_ROOT%"
-python tools\generate_assets.py 2>&1
-if errorlevel 1 (
-    echo   [WARN] Asset generation had issues, continuing with any existing assets...
-)
-if exist "%PROJECT_ROOT%\assets\nexus.ico" (
-    echo   ✓ Application icons ready (nexus.ico)
-) else (
-    echo   [WARN] nexus.ico not found — PyInstaller will use default icon
-)
-echo   Done.
-echo.
-
-REM ── Step 3: Ensure directories ────────────────────────────────────────────
-echo [3/5] Ensuring directories...
+REM ── Step 2: Ensure directories ────────────────────────────────────────────
+echo [2/5] Ensuring directories...
 if not exist "%PROJECT_ROOT%\models" mkdir "%PROJECT_ROOT%\models"
+if not exist "%PROJECT_ROOT%\app_data\databases" mkdir "%PROJECT_ROOT%\app_data\databases"
 echo   Done.
 echo.
 
-REM ── Step 4: Run PyInstaller ───────────────────────────────────────────────
-echo [4/5] Running PyInstaller (this may take several minutes)...
-echo   Bundling application into single .exe...
+REM ── Step 3: Build Rust module (nexus-crypto) ──────────────────────────────
+echo [3/5] Building Rust native module (nexus-crypto)...
+cd /d "%PROJECT_ROOT%\nexus_crypto"
+python -m maturin develop --release 2>&1
+if errorlevel 1 (
+    echo   [WARN] Rust build failed — check if Rust is installed
+    echo   Continuing with Python fallback...
+)
+cd /d "%PROJECT_ROOT%"
+echo   Done.
+echo.
+
+REM ── Step 4: Run Nuitka ────────────────────────────────────────────────────
+echo [4/5] Running Nuitka (this may take 10-30 minutes)...
+echo   Compiling Python → C → single .exe with mimalloc...
+
+echo.
+echo   Using pyproject.toml Nuitka configuration for onefile build.
+echo   To see full config, check [tool.nuitka] section in pyproject.toml.
+echo.
 
 cd /d "%PROJECT_ROOT%"
-pyinstaller --clean build_scripts\nexusai.spec 2>&1
+python -m nuitka ^
+    --project-name=nexus-ai ^
+    --output-dir="%DIST_DIR%" ^
+    --output-name="%EXE_NAME%" ^
+    main.py
+
 if errorlevel 1 (
-    echo   [ERROR] PyInstaller build failed!
+    echo   [ERROR] Nuitka build failed!
     echo   Check the output above for details.
+    echo.
+    echo   Common issues:
+    echo   - Visual Studio Build Tools not installed (Windows)
+    echo   - Missing C compiler (install MSVC or MinGW)
+    echo   - Out of memory during compilation
     exit /b 1
 )
-echo   Done. Output: %DIST_DIR%\%EXE_NAME%\
+echo.
+echo   Done. Executable: %DIST_DIR%\%EXE_NAME%.exe
 echo.
 
-REM ── Step 4b: Create runtime directories in dist ───────────────────────────
-echo [4b/5] Creating runtime directory structure...
-if not exist "%DIST_DIR%\%EXE_NAME%\app_data" mkdir "%DIST_DIR%\%EXE_NAME%\app_data"
-if not exist "%DIST_DIR%\%EXE_NAME%\app_data\uploads" mkdir "%DIST_DIR%\%EXE_NAME%\app_data\uploads"
-if not exist "%DIST_DIR%\%EXE_NAME%\logs" mkdir "%DIST_DIR%\%EXE_NAME%\logs"
-echo   Done.
-echo.
+REM ── Step 5: Run Inno Setup ────────────────────────────────────────────────
+if not defined NUITKA_ONLY (
+    echo [5/5] Creating Windows Installer with Inno Setup...
 
-REM ── Step 5: Run NSIS ──────────────────────────────────────────────────────
-if not defined PYINSTALLER_ONLY (
-    echo [5/5] Creating Windows Installer with NSIS...
-
-    if exist "%NSIS_PATH%" (
-        "%NSIS_PATH%" build_scripts\setup.nsi
+    if exist "%INNO_PATH%" (
+        "%INNO_PATH%" build_scripts\setup.iss
         if errorlevel 1 (
-            echo   [ERROR] NSIS compilation failed.
-            echo   Check build_scripts\setup.nsi for errors.
+            echo   [ERROR] Inno Setup compilation failed.
+            echo   Check build_scripts\setup.iss for errors.
             exit /b 1
         )
         echo   Done. Installer: %DIST_DIR%\%SETUP_NAME%.exe
     ) else (
-        echo   [WARN] NSIS not found at: %NSIS_PATH%
+        echo   [WARN] Inno Setup not found at: %INNO_PATH%
         echo.
         echo   To create the installer manually:
-        echo   1. Install NSIS from: https://nsis.sourceforge.io/Download
-        echo   2. Right-click build_scripts\setup.nsi -> "Compile NSIS Script"
+        echo   1. Install Inno Setup from: https://jrsoftware.org/isdl.php
+        echo   2. Right-click build_scripts\setup.iss -> "Compile"
         echo.
-        echo   The .exe bundle is still available at: %DIST_DIR%\%EXE_NAME%\
+        echo   The .exe is still available at: %DIST_DIR%\%EXE_NAME%.exe
     )
 ) else (
-    echo [5/5] Skipping NSIS (--pyinstaller-only).
+    echo [5/5] Skipping Inno Setup (--nuitka-only).
 )
 echo.
 
@@ -195,13 +195,20 @@ echo                         Build Complete!
 echo ===========================================================================
 echo.
 echo Output:
-if not defined PYINSTALLER_ONLY (
-    if exist "%DIST_DIR%\%SETUP_NAME%*.exe" (
-        dir /b "%DIST_DIR%\%SETUP_NAME%*.exe" 2>nul
+echo   Executable: %DIST_DIR%\%EXE_NAME%.exe
+if not defined NUITKA_ONLY (
+    if exist "%DIST_DIR%\%SETUP_NAME%.exe" (
+        echo   Installer : %DIST_DIR%\%SETUP_NAME%.exe
     )
 )
-echo   Bundle    : %DIST_DIR%\%EXE_NAME%\
-echo   Executable: %DIST_DIR%\%EXE_NAME%\%EXE_NAME%.exe
+echo.
+echo Size:
+if exist "%DIST_DIR%\%EXE_NAME%.exe" (
+    for %%I in ("%DIST_DIR%\%EXE_NAME%.exe") do echo   %%I: %%~zI bytes
+)
+echo.
+
+echo   Pamiętaj: Modele AI (~6.9 GB) są pobierane przy pierwszym uruchomieniu.
 echo.
 
 endlocal

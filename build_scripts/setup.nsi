@@ -25,7 +25,7 @@
 
 ; ── Application metadata ─────────────────────────────────────────────────────
 !define PRODUCT_NAME "NexusAI"
-!define PRODUCT_VERSION "1.0.0"
+!define PRODUCT_VERSION "2.0.0"
 !define PRODUCT_PUBLISHER "NexusAI Team"
 !define PRODUCT_WEB_SITE "https://nexusai.app"
 !define PRODUCT_DIR "$PROGRAMFILES\${PRODUCT_NAME}"
@@ -90,9 +90,9 @@ Section "NexusAI (required)" SecCore
     SectionIn RO
     SetOutPath "$INSTDIR"
 
-    ; ── Copy main application files ──────────────────────────────────────
-    ; PyInstaller bundle output from dist\NexusAI\
-    File /r "..\dist\NexusAI\*"
+    ; ── Copy main application — Nuitka onefile .exe ──────────────────────
+    ; Nuitka kompiluje całość do pojedynczego pliku dist\NexusAI.exe
+    File "..\dist\NexusAI.exe"
 
     ; ── Copy config files ────────────────────────────────────────────────
     SetOutPath "$INSTDIR\config"

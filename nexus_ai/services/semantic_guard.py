@@ -8,13 +8,12 @@ sentence-transformers pozostaje opcjonalny (lazy import).
 
 from __future__ import annotations
 
-import json
 from structlog import get_logger
 import pendulum
 from pathlib import Path
 from typing import Any
 
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
 from nexus_ai.db.vector_store import VectorStore
 
 logger = get_logger("nexus.services.semantic_guard")
@@ -218,7 +217,7 @@ class SemanticGuard:
                         action = act.get("action", "ALLOW")
                         alert = act.get("alert")
                         break
-                except (json.JSONDecodeError, ValueError, TypeError):
+                except (DecodeError, ValueError, TypeError):
                     continue
 
         return {
