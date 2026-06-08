@@ -12,7 +12,7 @@ import msgspec
 import pendulum
 import psutil
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from taskiq import TaskiqEvents
 from taskiq_nats import PullBasedJetStreamBroker
 
@@ -137,23 +137,23 @@ def _simple_features(raw_text: str) -> list[float]:
     lines = float(max(raw_text.count("\n"), 1))
     return [length, digits, letters, lines]
 
-async def _pick_pending_outbox(session: AsyncSession) -> OutboxEvent | None:
+def _pick_pending_outbox(session: Session) -> OutboxEvent | None:
     query = (
         select(OutboxEvent)
         .where(OutboxEvent.status == OutboxStatus.PENDING)
         .order_by(OutboxEvent.created_at.asc())
         .limit(1)
     )
-    result = await session.execute(query)
+    result = session.execute(query)
     return result.scalar_one_or_none()
 
-async def _update_invoice_status(session: AsyncSession, invoice_id: str, status: str) -> None:
-    invoice = await session.get(Invoice, invoice_id)
+def _update_invoice_status(session: Session, invoice_id: str, status: str) -> None:
+    invoice = session.get(Invoice, invoice_id)
     if invoice is None:
         return
     invoice.processing_status = status
     invoice.updated_at = pendulum.now("UTC")
-    await session.flush()
+    session.flush()
 
 @broker.on_event(TaskiqEvents.WORKER_STARTUP)
 async def _startup(_state: Any) -> None:
@@ -166,8 +166,8 @@ async def process_invoice_task() -> dict[str, str]:
     engine = create_oltp_engine(config)
     session_factory = create_session_factory(engine)
 
-    async with session_factory() as session:
-        event = await _pick_pending_outbox(session)
+    with session_factory() as session:
+        event = _pick_pending_outbox(session)
         if event is None:
             return {"result": "NO_EVENTS"}
 
@@ -175,7 +175,7 @@ async def process_invoice_task() -> dict[str, str]:
         machine.start()
         event.status = OutboxStatus.PROCESSED
         payload = msgspec.json.decode(event.payload.encode("utf-8"), type=InvoiceEventPayload)
-        await _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
+        _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
 
         try:
             async with OCR_INFERENCE_SEMAPHORE:
@@ -228,22 +228,22 @@ async def process_invoice_task() -> dict[str, str]:
                 machine.request_review()
             else:
                 machine.approve()
-            await _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
+            _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
 
         except TimeoutError as exc:
             machine.fail()
             event.status = OutboxStatus.FAILED
             event.payload = msgspec_dumps({"error": f"OCR_TIMEOUT:{exc}", "original_payload": event.payload})
-            await _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
+            _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
 
         except Exception as exc:
             machine.fail()
             event.status = OutboxStatus.FAILED
             event.payload = msgspec_dumps({"error": str(exc), "original_payload": event.payload})
-            await _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
+            _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
 
-        await session.commit()
-        await engine.dispose()
+        session.commit()
+        engine.dispose()
         return {"result": "OK"}
 
 @broker.task(task_name="store_active_learning_feedback")
@@ -256,7 +256,7 @@ async def store_active_learning_feedback(contractor_id: str, corrected_payload: 
     vector = _simple_features(serialized)
     pattern_id = str(uuid.uuid4())
 
-    async with session_factory() as session:
+    with session_factory() as session:
         session.add(
             ActiveLearningPattern(
                 id=pattern_id,
@@ -264,7 +264,7 @@ async def store_active_learning_feedback(contractor_id: str, corrected_payload: 
                 correction_payload=serialized,
             )
         )
-        await session.commit()
+        session.commit()
 
     store = _get_vector_store()
     conn = store._get_conn()
@@ -284,7 +284,7 @@ async def store_active_learning_feedback(contractor_id: str, corrected_payload: 
     )
     conn.commit()
 
-    await engine.dispose()
+    engine.dispose()
     return {"result": "LEARNING_SAVED"}
 
 @broker.task(schedule=[{"cron": "0 16 * * *"}])
@@ -314,12 +314,12 @@ async def invoice_reconciliation_loop():
     logger.info("[Watchdog] Uruchamianie skanowania spójności...")
     timeout_threshold = pendulum.now("UTC") - pendulum.duration(minutes=10)
 
-    async with SessionLocal() as session:
+    with SessionLocal() as session:
         stmt = select(Invoice).where(
             Invoice.status == "PROCESSING",
             Invoice.updated_at <= timeout_threshold
         )
-        result = await session.execute(stmt)
+        result = session.execute(stmt)
         stuck_invoices = result.scalars().all()
 
         if not stuck_invoices:
@@ -355,7 +355,7 @@ async def invoice_reconciliation_loop():
                 })
                 await nc.publish(f"invoices.status.{invoice.id}", error_payload.encode())
 
-        await session.commit()
+        session.commit()
         await nc.close()
 
 

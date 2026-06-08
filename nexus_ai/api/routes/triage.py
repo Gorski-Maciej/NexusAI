@@ -3,7 +3,7 @@ from __future__ import annotations
 from litestar import Controller, get, post
 from litestar.connection import Request
 from litestar.exceptions import ClientException
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from nexus_ai.api.rbac import get_current_role, owner_only_guard
 from nexus_ai.api.schemas import TriageItem, TriageResolutionRequest, TriageResolutionResponse
@@ -19,9 +19,9 @@ class TriageControllerV2(Controller):
     path = "/api/v2/triage"
 
     @get("/pending")
-    async def get_pending(self, db_session: AsyncSession, request: Request) -> list[TriageItem]:
+    def get_pending(self, db_session: Session, request: Request) -> list[TriageItem]:
         tenant_id = str(getattr(request.user, "tenant_id", "default") or "default")
-        pending = await list_pending_triage_items(db_session, tenant_id=tenant_id)
+        pending = list_pending_triage_items(db_session, tenant_id=tenant_id)
         return [
             TriageItem(
                 invoice_id=item.id,
@@ -40,16 +40,16 @@ class TriageControllerV2(Controller):
         ]
 
     @post("/resolve/{invoice_id:str}", guards=[owner_only_guard])
-    async def resolve(
+    def resolve(
         self,
         invoice_id: str,
         data: TriageResolutionRequest,
-        db_session: AsyncSession,
+        db_session: Session,
         request: Request,
     ) -> TriageResolutionResponse:
         try:
             role_ctx = get_current_role(request)
-            invoice = await resolve_triage_item(
+            invoice = resolve_triage_item(
                 db_session,
                 invoice_id=invoice_id,
                 corrected_data=data.corrected_data,

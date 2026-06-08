@@ -1,14 +1,14 @@
 from pathlib import Path
 
 import pendulum
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 class SecurityService:
     """Zarządza retencją danych i bezpiecznym usuwaniem dokumentów."""
 
     @staticmethod
-    async def cleanup_old_scans(session: AsyncSession, years: int = 5):
+    def cleanup_old_scans(session: Session, years: int = 5):
         """Usuwa fizyczne pliki i wpisy z bazy dla dokumentów starszych niż X lat (RODO/Podatki)."""
         pendulum.now() - pendulum.duration(days=years * 365)
         # 1. Znajdź stare faktury

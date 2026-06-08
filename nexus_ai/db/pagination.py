@@ -1,7 +1,7 @@
 from typing import TypeVar
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from nexus_ai.db.database import Base
 
@@ -11,8 +11,8 @@ class CursorPagination:
     """Wydajna paginacja (Keyset/Cursor Pagination) dla milionów rekordów."""
 
     @staticmethod
-    async def get_page(
-        session: AsyncSession,
+    def get_page(
+        session: Session,
         model: type[T],
         last_id: str | None = None,
         limit: int = 50,
@@ -29,7 +29,7 @@ class CursorPagination:
         if last_id:
             query = query.where(model.id > last_id)
 
-        result = await session.execute(query)
+        result = session.execute(query)
         items = result.scalars().all()
 
         next_id = items[-1].id if items else None

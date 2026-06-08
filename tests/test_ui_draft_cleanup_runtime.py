@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import asyncio
 import importlib.util
 import sys
 import types
 from pathlib import Path
 
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy import create_engine
 
 
 def _load_cleanup_helper():
@@ -47,20 +46,20 @@ def _load_cleanup_helper():
 def test_cleanup_stale_ui_drafts_runtime(tmp_path: Path) -> None:
     cleanup_stale_ui_drafts = _load_cleanup_helper()
 
-    async def scenario() -> None:
+    def scenario() -> None:
         db_path = tmp_path / "cleanup.db"
-        engine = create_async_engine(f"sqlite+aiosqlite:///{db_path}")
+        engine = create_engine(f"sqlite:///{db_path}")
         try:
-            async with engine.begin() as conn:
-                await conn.execute(text("CREATE TABLE ui_drafts (tenant_id TEXT, actor_id TEXT, draft_key TEXT, payload_json TEXT, updated_at TIMESTAMP)"))
-                await conn.execute(text("INSERT INTO ui_drafts VALUES ('t','u','old','{}', datetime('now', '-10 days'))"))
-                await conn.execute(text("INSERT INTO ui_drafts VALUES ('t','u','new','{}', datetime('now'))"))
+            with engine.begin() as conn:
+                conn.execute(text("CREATE TABLE ui_drafts (tenant_id TEXT, actor_id TEXT, draft_key TEXT, payload_json TEXT, updated_at TIMESTAMP)"))
+                conn.execute(text("INSERT INTO ui_drafts VALUES ('t','u','old','{}', datetime('now', '-10 days'))"))
+                conn.execute(text("INSERT INTO ui_drafts VALUES ('t','u','new','{}', datetime('now'))"))
 
-            result = await cleanup_stale_ui_drafts(engine, older_than_hours=24)
+            result = cleanup_stale_ui_drafts(engine, older_than_hours=24)
             assert result["status"] == "ok"
             assert result["deleted"] >= 1
             assert result["remaining"] >= 1
         finally:
-            await engine.dispose()
+            engine.dispose()
 
-    asyncio.run(scenario())
+    scenario()

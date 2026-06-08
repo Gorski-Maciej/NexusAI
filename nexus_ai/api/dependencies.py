@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator
+from collections.abc import Generator
 
 from litestar.connection import Request
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from nexus_ai.api.shared_image_buffer import SharedImageBuffer
 from nexus_ai.core.config import AppConfig
@@ -23,17 +23,15 @@ def provide_tenant_manager() -> TenantManager:
     return _tenant_manager
 
 
-async def provide_db_session(request: Request) -> AsyncGenerator[AsyncSession]:
+def provide_db_session(request: Request) -> Generator[Session, None, None]:
     session_factory = request.app.state.db_session_factory
 
-    async with session_factory() as session:
-        # Transakcja jest automatycznie zatwierdzana po wyjściu z bloku begin(),
-        # a przy wyjątku automatycznie wycofywana (rollback).
-        async with session.begin():
+    with session_factory() as session:
+        with session.begin():
             yield session
 
 
-async def provide_duckdb() -> DuckDBManager:
+def provide_duckdb() -> DuckDBManager:
     return DuckDBManager(
         db_path=_tenant_manager.duckdb_path(),
         limits=_duckdb_limits,

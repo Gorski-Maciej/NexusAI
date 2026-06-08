@@ -102,7 +102,6 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | **NATS JetStream** — trwałe strumienie | Redis Streams | ✅ | `nexus_ai/core/tasks.py` |
 | **Taskiq** — kolejka zadań (async-native) | Celery | ✅ | `nexus_ai/core/broker.py` |
 | **taskiq-nats** — spoiwo Taskiq ↔ NATS | — | ✅ | `nexus_ai/core/broker.py` |
-| **SQLite3 (natywny)** — bezpośrednie API sqlite3 w Python 3.13t | aiosqlite | ✅ | Bezpośrednie wywołania `sqlite3` z threading (brak GIL)
 
 ### Punkt 6 — Warstwa HTTP i sieć
 
@@ -135,6 +134,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 |---|---|---|---|
 | **TigerBeetle** — silnik księgowy (double-entry) | — | ✅ | `mise.toml`, `nexus_ai/roboton_reflekton/ledger_client.py` |
 | **Nexus-Money** (msgspec.Struct) | py-moneyed | ✅ | `nexus_ai/services/currency_converter.py` → `class Money` |
+| **Nexus-Forex** (Rust + PyO3) — własny moduł walutowy | ForexEngine | ✅ | `nexus_ai/roboton_reflekton/nexus_forex/` → `Cargo.toml`, `src/lib.rs` |
 | **TigerBeetle Client (Python)** | — | ✅ | `nexus_ai/roboton_reflekton/ledger_client.py` |
 
 ### Punkt 10 — Przetwarzanie dokumentów (OCR)
@@ -260,11 +260,17 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
                               └──────┬───────┘
                                      │
                                      ▼
-                              ┌──────────────┐
-                              │  TigerBeetle  │
-                              │  Ledger       │
-                              │  (2PC)        │
-                              └──────────────┘
+                              ┌──────────────┐  ┌──────────────────┐
+                              │  TigerBeetle  │  │   Nexus-Forex    │
+                              │  Ledger       │  │   Forex Engine   │
+                              │  (2PC)        │  │   (Rust + PyO3)  │
+                              └──────────────┘  └────────┬─────────┘
+                                                         │
+                                                         ▼
+                                                  ┌──────────────┐
+                                                  │   NBP API    │
+                                                  │   (kursy)    │
+                                                  └──────────────┘
 ```
 
 ---
@@ -812,6 +818,17 @@ Event-driven architecture:
 | **TigerBeetle** | | |
 | `TB_CLUSTER_ID` | `0` | TigerBeetle cluster ID |
 | `TB_REPLICA_ADDRESSES` | `3000` | TigerBeetle replica addresses |
+| **Nexus-Forex** | | |
+| `NEXUS_FOREX_ENABLED` | `true` | Enable/disable Nexus-Forex module (Rust + PyO3) |
+| `NEXUS_FOREX_NBP_API_URL` | `https://api.nbp.pl/api/exchangerates/rates/A/{currency}/{date}/?format=json` | Base URL dla API kursów NBP (z placeholderami `{currency}` i `{date}`) |
+| `NEXUS_FOREX_MAX_LOOKBACK_DAYS` | `5` | Maksymalna liczba dni wstecz do poszukiwania kursu (weekendy/święta) |
+| `NEXUS_FOREX_HTTP_TIMEOUT_SEC` | `10` | Timeout żądania HTTP do API NBP (sekundy) |
+| `NEXUS_FOREX_RATE_CACHE_MAXSIZE` | `1000` | Maksymalna liczba kursów w pamięci RAM (LRU cache) |
+| `NEXUS_FOREX_REFRESH_INTERVAL_HOURS` | `24` | Interwał odświeżania kursów walut (godziny) *(planned)* |
+| `NEXUS_FOREX_DEFAULT_CURRENCIES` | `EUR,USD,GBP,CHF,CZK,SEK,NOK,HUF` | Domyślne waluty do śledzenia (oddzielone przecinkami) *(planned)* |
+| `NEXUS_FOREX_STAMINA_RETRY_ATTEMPTS` | `3` | Liczba prób pobrania kursu przed circuit breakerem (Python fallback `forex_engine.py`) |
+| `NEXUS_FOREX_STAMINA_RETRY_TIMEOUT` | `15` | Timeout na cały cykl retry w sekundach (Python fallback `forex_engine.py` — stamina) |
+| `NEXUS_FOREX_MISSING_DATE_TTL_DAYS` | `30` | Jak długo pamiętać brak kursu dla daty (TTL w dniach) |
 
 ---
 

@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlalchemy import Engine, text
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
@@ -11,15 +10,15 @@ from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 def _quote_ident(identifier: str) -> str:
     return "\"" + identifier.replace("\"", "\"\"") + "\""
 
-async def run_migration_sanity_checks(engine: AsyncEngine) -> dict[str, int]:
+def run_migration_sanity_checks(engine: Engine) -> dict[str, int]:
     """
     Lightweight post-migration sanity checks.
     Returns key counters useful for alerting / observability.
     """
-    async with engine.connect() as conn:
-        invoices_count = int((await conn.execute(text("SELECT COUNT(*) FROM invoices"))).scalar_one())
-        outbox_count = int((await conn.execute(text("SELECT COUNT(*) FROM outbox_events"))).scalar_one())
-        users_count = int((await conn.execute(text("SELECT COUNT(*) FROM users"))).scalar_one())
+    with engine.connect() as conn:
+        invoices_count = int(conn.execute(text("SELECT COUNT(*) FROM invoices")).scalar_one())
+        outbox_count = int(conn.execute(text("SELECT COUNT(*) FROM outbox_events")).scalar_one())
+        users_count = int(conn.execute(text("SELECT COUNT(*) FROM users")).scalar_one())
     return {
         "invoices_count": invoices_count,
         "outbox_count": outbox_count,
@@ -27,21 +26,21 @@ async def run_migration_sanity_checks(engine: AsyncEngine) -> dict[str, int]:
     }
 
 
-async def capture_runtime_schema(engine: AsyncEngine) -> dict[str, list[str]]:
+def capture_runtime_schema(engine: Engine) -> dict[str, list[str]]:
     schema: dict[str, list[str]] = {}
-    async with engine.connect() as conn:
-        tables = (await conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))).fetchall()
+    with engine.connect() as conn:
+        tables = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).fetchall()
         for (table_name,) in tables:
             if str(table_name).startswith("sqlite_"):
                 continue
             table_quoted = _quote_ident(str(table_name))
-            cols = (await conn.execute(text(f"PRAGMA table_info({table_quoted})"))).fetchall()
+            cols = conn.execute(text(f"PRAGMA table_info({table_quoted})")).fetchall()
             schema[str(table_name)] = sorted(str(c[1]) for c in cols)
     return schema
 
 
-async def verify_schema_drift(engine: AsyncEngine, baseline_path: Path) -> dict[str, object]:
-    current = await capture_runtime_schema(engine)
+def verify_schema_drift(engine: Engine, baseline_path: Path) -> dict[str, object]:
+    current = capture_runtime_schema(engine)
     baseline_path.parent.mkdir(parents=True, exist_ok=True)
     if not baseline_path.exists():
         baseline_path.write_text(msgspec_dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -65,23 +64,23 @@ async def verify_schema_drift(engine: AsyncEngine, baseline_path: Path) -> dict[
     return {"status": status, "tables": len(current), "issues": issues}
 
 
-async def capture_table_row_counts(engine: AsyncEngine) -> dict[str, int]:
+def capture_table_row_counts(engine: Engine) -> dict[str, int]:
     counts: dict[str, int] = {}
-    async with engine.connect() as conn:
-        tables = (await conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))).fetchall()
+    with engine.connect() as conn:
+        tables = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).fetchall()
         for (table_name,) in tables:
             table = str(table_name)
             if table.startswith("sqlite_"):
                 continue
             table_quoted = _quote_ident(table)
-            value = (await conn.execute(text(f"SELECT COUNT(*) FROM {table_quoted}"))).scalar_one()
+            value = conn.execute(text(f"SELECT COUNT(*) FROM {table_quoted}")).scalar_one()
             counts[table] = int(value)
     return counts
 
 
-async def verify_migration_integrity(engine: AsyncEngine, baseline_path: Path) -> dict[str, object]:
+def verify_migration_integrity(engine: Engine, baseline_path: Path) -> dict[str, object]:
     """Verify post-migration row-count integrity against a persisted baseline snapshot."""
-    current = await capture_table_row_counts(engine)
+    current = capture_table_row_counts(engine)
     baseline_path.parent.mkdir(parents=True, exist_ok=True)
     if not baseline_path.exists():
         baseline_path.write_text(msgspec_dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -101,15 +100,15 @@ async def verify_migration_integrity(engine: AsyncEngine, baseline_path: Path) -
     return {"status": status, "issues": issues, "tables": len(current)}
 
 
-async def capture_table_checksums(engine: AsyncEngine, tables: list[str] | None = None) -> dict[str, str]:
+def capture_table_checksums(engine: Engine, tables: list[str] | None = None) -> dict[str, str]:
     checksums: dict[str, str] = {}
-    async with engine.connect() as conn:
+    with engine.connect() as conn:
         if tables is None:
-            table_rows = (await conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))).fetchall()
+            table_rows = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).fetchall()
             tables = [str(t[0]) for t in table_rows if not str(t[0]).startswith("sqlite_")]
         for table in tables:
             table_quoted = _quote_ident(table)
-            rows = (await conn.execute(text(f"SELECT * FROM {table_quoted}"))).fetchall()
+            rows = conn.execute(text(f"SELECT * FROM {table_quoted}")).fetchall()
             digest = __import__("hashlib").sha256()
             for row in rows:
                 digest.update(repr(tuple(row)).encode("utf-8"))
@@ -117,8 +116,8 @@ async def capture_table_checksums(engine: AsyncEngine, tables: list[str] | None 
     return checksums
 
 
-async def verify_migration_checksums(engine: AsyncEngine, baseline_path: Path, tables: list[str] | None = None) -> dict[str, object]:
-    current = await capture_table_checksums(engine, tables=tables)
+def verify_migration_checksums(engine: Engine, baseline_path: Path, tables: list[str] | None = None) -> dict[str, object]:
+    current = capture_table_checksums(engine, tables=tables)
     baseline_path.parent.mkdir(parents=True, exist_ok=True)
     if not baseline_path.exists():
         baseline_path.write_text(msgspec_dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")

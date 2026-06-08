@@ -1,13 +1,15 @@
 """
-NexusAI — Alembic migration environment.
+NexusAI — Alembic migration environment (sync).
 
 Handles both offline (SQL script) and online (live DB) migrations.
 Uses NexusAI's AppConfig to resolve the database URL at runtime.
+
+Zgodnie z aa3fvcx.txt (Punkt 5): Python 3.13t (free-threaded) — brak GIL —
+używamy synchronicznego API sqlite3 (create_engine zamiast create_async_engine).
 """
 
 from __future__ import annotations
 
-import asyncio
 import logging
 import os
 import sys
@@ -15,9 +17,7 @@ from logging.config import fileConfig
 from pathlib import Path
 
 from alembic import context
-from sqlalchemy import pool
-from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy import engine_from_config, pool
 
 # ── Ensure project root is on sys.path so modules can be imported ──
 # migrations/env.py is now at nexus_ai/db/migrations/env.py
@@ -59,7 +59,7 @@ def get_database_url() -> str:
     try:
         from nexus_ai.core.config import AppConfig
         config_obj = AppConfig()
-        url = f"sqlite+aiosqlite:///{config_obj.sqlite_path.as_posix()}"
+        url = f"sqlite:///{config_obj.sqlite_path.as_posix()}"
         # Check for a user-provided override
         env_url = os.getenv("NEXUS_DATABASE_URL", "")
         if env_url:
@@ -84,42 +84,28 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-def do_run_migrations(connection: Connection) -> None:
-    """Run migrations on a given connection."""
-    context.configure(
-        connection=connection,
-        target_metadata=target_metadata,
-        render_as_batch=True,  # Required for SQLite
-    )
-    with context.begin_transaction():
-        context.run_migrations()
-
-
-async def run_async_migrations() -> None:
-    """Run migrations in 'online' mode using async engine."""
+def run_migrations_online() -> None:
+    """Run migrations in 'online' mode using sync engine."""
     url = get_database_url()
     config_section = config.get_section(config.config_ini_section, {})
     config_section["sqlalchemy.url"] = url
 
-    connectable = async_engine_from_config(
+    connectable = engine_from_config(
         config_section,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
-    async with connectable.connect() as connection:
-        await connection.run_sync(do_run_migrations)
+    with connectable.connect() as connection:
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            render_as_batch=True,
+        )
+        with context.begin_transaction():
+            context.run_migrations()
 
-    await connectable.dispose()
-
-
-def run_migrations_online() -> None:
-    """Run migrations in 'online' mode."""
-    try:
-        asyncio.run(run_async_migrations())
-    except Exception as exc:
-        logger.error("Migration failed: %s", exc)
-        raise
+    connectable.dispose()
 
 
 if context.is_offline_mode():

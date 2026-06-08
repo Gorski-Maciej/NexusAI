@@ -13,7 +13,7 @@ from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import ClientException
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from nexus_ai.api.cache import clear_cache_async
 from nexus_ai.api.i18n import resolve_language, t
@@ -60,7 +60,7 @@ class InvoiceController(Controller):
         data: dict[str, UploadFile],
         request: Request,
         config: AppConfig,
-        db_session: AsyncSession,
+        db_session: Session,
     ) -> TaskResponse:
         file_obj = data.get("file")
         language = resolve_language(request.headers.get("accept-language"))
@@ -141,7 +141,7 @@ class InvoiceController(Controller):
             "received_at": pendulum.now("UTC").to_iso8601_string(),
         }
 
-        await db_session.execute(
+        db_session.execute(
             text(
                 """
                 INSERT INTO outbox_events (id, event_type, aggregate_id, payload, status, processed)
@@ -157,7 +157,7 @@ class InvoiceController(Controller):
                 "processed": False,
             },
         )
-        await db_session.commit()
+        db_session.commit()
         await clear_cache_async(prefix="api.routes.analytics")
 
         # Immutable audit trail (hash-chained) for compliance-grade evidencing.
@@ -201,7 +201,7 @@ class InvoiceController(Controller):
         data: dict[str, UploadFile],
         request: Request,
         config: AppConfig,
-        db_session: AsyncSession,
+        db_session: Session,
     ) -> TaskResponse:
         """Dedicated path for large attachments to avoid blocking the default OCR queue."""
         file_obj = data.get("file")
@@ -280,7 +280,7 @@ class InvoiceController(Controller):
             "size_bytes": saved.size_bytes,
             "received_at": pendulum.now("UTC").to_iso8601_string(),
         }
-        await db_session.execute(
+        db_session.execute(
             text(
                 """
                 INSERT INTO outbox_events (id, event_type, aggregate_id, payload, status, processed)
@@ -296,7 +296,7 @@ class InvoiceController(Controller):
                 "processed": False,
             },
         )
-        await db_session.commit()
+        db_session.commit()
         response = TaskResponse(task_id=task_id, status="QUEUED", message="Large attachment accepted for dedicated processing queue")
         if idempotency_key:
             idempotency_store.save(

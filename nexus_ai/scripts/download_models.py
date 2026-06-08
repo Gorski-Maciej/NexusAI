@@ -53,6 +53,24 @@ MODEL_MANIFEST: dict[str, dict[str, str]] = {
         "sha256": "5c8edf36ec3ad9792a639db8d6865e479038226cf8fc71ef47331c611854f6c8",
         "description": "Decision Agent (Jamba) — Complex reasoning (3B, optional)",
     },
+    # ── Micro-models: AI Agents (ParagonDetect, FinBERT-ESG, GraphSAGE) ────────
+    # TODO: These repos need to be created on HuggingFace Hub before downloading works.
+    # Placeholder entries for micro-models defined in the architecture (Punkty 17+20).
+    "ParagonDetect-0.1B-Q4_K_M.gguf": {
+        "repo": "nexus-ai/ParagonDetect-0.1B-GGUF",
+        "sha256": "",  # To be filled after first download
+        "description": "Agent Ekstrakcji Danych — wykrywanie i ekstrakcja paragonów (0.1B)",
+    },
+    "FinBERT-ESG-0.1B-Q4_K_M.gguf": {
+        "repo": "nexus-ai/FinBERT-ESG-0.1B-GGUF",
+        "sha256": "",  # To be filled after first download
+        "description": "Agent Walidator Jakości — weryfikacja zgodności ESG (0.1B)",
+    },
+    "GraphSAGE-Encoder-0.1B-Q4_K_M.gguf": {
+        "repo": "nexus-ai/GraphSAGE-Encoder-0.1B-GGUF",
+        "sha256": "",  # To be filled after first download
+        "description": "Agent Walidator Jakości — grafowa analiza relacji (0.1B)",
+    },
     # ── Surya OCR models ──────────────────────────────────────────────────────
     "surya_det3": {
         "repo": "vikp/surya_det3",

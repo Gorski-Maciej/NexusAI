@@ -1,4 +1,4 @@
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.models import AuditLog
@@ -6,8 +6,8 @@ from nexus_ai.db.models import AuditLog
 
 class AuditService:
     @staticmethod
-    async def log_change(
-            session: AsyncSession,
+    def log_change(
+            session: Session,
             user_id: str,
             action: str,
             target_id: str,
@@ -19,7 +19,6 @@ class AuditService:
         for key, new_val in new_data.items():
             old_val = old_data.get(key)
             if old_val != new_val:
-                # Konwersja Decimal/Datetime do stringa dla JSON
                 changes[key] = {
                     "from": str(old_val) if old_val is not None else None,
                     "to": str(new_val)

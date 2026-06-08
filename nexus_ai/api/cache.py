@@ -5,7 +5,7 @@ Async multi-level cache (RAM in-memory + SQLite persistence).
 Zgodnie z aa3fvcx.txt (Punkt 13): inteligentny, dwupoziomowy cache
 (RAM L1 + SQLite L2), natywnie asynchroniczny (anyio).
 Zastępuje: dyscache (nieopublikowany pakiet) → wbudowana implementacja
-oparta na anyio + aiosqlite + słowniku w pamięci.
+oparta na anyio + słowniku w pamięci (SQLite L2 w przyszłości).
 
 Użycie:
     from nexus_ai.api.cache import nexus_cache

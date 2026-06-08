@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from litestar import Litestar, get, post
 from litestar.di import Provide
 from litestar.response import ServerSentEvent
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy import create_engine
 
 from nexus_ai.core.config import AppConfig
 
@@ -16,19 +16,19 @@ from .ledger_initializer import LedgerInitializer
 from .models import CompanyProfile, LegalForm, TaxForm, TaxPolicy
 from .reconciliation_engine import AlertHub, ReconciliationEngine
 
-# Zgodnie z aa3fvcx.txt: SQLite + aiosqlite zamiast PostgreSQL
-# Używamy tej samej bazy co reszta aplikacji (przez AppConfig)
+# Zgodnie z aa3fvcx.txt: SQLite (sync) zamiast PostgreSQL / aiosqlite
+# Python 3.13t (free-threaded): brak GIL — sync engine działa bezpiecznie z wielu wątków
 _config = AppConfig()
 _db_path = _config.sqlite_path.as_posix()
-engine = create_async_engine(f"sqlite+aiosqlite:///{_db_path}", echo=False)
-SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
+engine = create_engine(f"sqlite:///{_db_path}", echo=False)
+SessionLocal = sessionmaker(engine, expire_on_commit=False)
 tb_client = TigerBeetleClient()
 alert_hub = AlertHub()
 reconciliation_engine = ReconciliationEngine(session_factory=SessionLocal, tb_client=tb_client, alert_hub=alert_hub)
 
 
-async def provide_session() -> AsyncSession:
-    async with SessionLocal() as session:
+def provide_session() -> Session:
+    with SessionLocal() as session:
         yield session
 
 

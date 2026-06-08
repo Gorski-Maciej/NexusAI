@@ -98,7 +98,6 @@ python -m api.server
 |---|---|---|
 | **SQLite + SQLCipher** | — | Zaszyfrowana (AES-256) baza transakcyjna — jeden plik, zero serwera, pełne ACID |
 | **SQLModel** | SQLAlchemy + Pydantic | **ORM 2 w 1** — jedna definicja dla bazy i API, zero duplikacji kodu |
-| **aiosqlite** ≥0.20 | — | Cienka, asynchroniczna warstwa dla SQLite |
 | **sqlite-vec** | **LanceDB** | **Rozszerzenie wektorowe dla SQLite** — embeddingi w tej samej bazie, czysty SQL |
 | **DuckDB** ≥1.0 | — | Lokalna hurtownia danych OLAP — first-match-wins SQL dla reguł podatkowych |
 | **PyArrow** ≥15.0 | — | Kolumnowy format danych — most między DuckDB a Polars |

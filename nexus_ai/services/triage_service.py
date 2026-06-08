@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import Any
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from nexus_ai.db.models import Invoice
 
@@ -29,14 +29,14 @@ def should_triage_document(*, confidence_score: float, amount_net: Decimal, amou
     return TriageDecision(send_to_review=False)
 
 
-async def list_pending_triage_items(session: AsyncSession, *, tenant_id: str) -> list[Invoice]:
+def list_pending_triage_items(session: Session, *, tenant_id: str) -> list[Invoice]:
     stmt = select(Invoice).where(Invoice.status == "PENDING_REVIEW", Invoice.tenant_id == tenant_id).order_by(Invoice.created_at.desc())
-    result = await session.execute(stmt)
+    result = session.execute(stmt)
     return list(result.scalars().all())
 
 
-async def resolve_triage_item(
-    session: AsyncSession,
+def resolve_triage_item(
+    session: Session,
     *,
     invoice_id: str,
     corrected_data: dict[str, Any],
@@ -44,10 +44,8 @@ async def resolve_triage_item(
     updated_by: str,
     tenant_id: str,
 ) -> Invoice:
-    # Jawna transakcja zapewniająca atomowość operacji:
-    # pobranie -> walidacja -> modyfikacja -> zapis
-    async with session.begin():
-        invoice = await session.get(Invoice, invoice_id)
+    with session.begin():
+        invoice = session.get(Invoice, invoice_id)
         if invoice is None:
             raise ValueError(f"Invoice {invoice_id} not found")
         if str(invoice.tenant_id) != str(tenant_id):
@@ -71,6 +69,5 @@ async def resolve_triage_item(
 
         invoice.updated_by = updated_by
 
-    # Po wyjściu z bloku begin() transakcja jest commitowana (lub rollback przy wyjątku)
-    await session.refresh(invoice)
+    session.refresh(invoice)
     return invoice

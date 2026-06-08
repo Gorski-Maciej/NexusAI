@@ -65,7 +65,6 @@ Technologia | Zastepuje  | Opis
 ----------- | ---------- | ------------------------------------------------
 SQLite+SQLCipher| -      | Zaszyfrowana baza (AES-256), jeden plik, zero serwera
 SQLModel    | SQLAlchemy+Pydantic| ORM 2w1 - jedna definicja dla bazy i API
-aiosqlite   | -          | Asynchroniczna warstwa dla SQLite
 sqlite-vec  | LanceDB    | Wektory w SQLite - embeddingi w tej samej bazie
 DuckDB      | -          | Lokalna hurtownia OLAP
 PyArrow     | -          | Kolumnowy format danych

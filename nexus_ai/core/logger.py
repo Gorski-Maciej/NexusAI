@@ -252,7 +252,7 @@ def _redirect_standard_logging() -> None:
     root_logger.addHandler(_InterceptHandler())
     root_logger.setLevel(logging.WARNING)
 
-    for lib in ("sqlalchemy", "httpx", "urllib3", "aiosqlite", "nats"):
+    for lib in ("sqlalchemy", "httpx", "urllib3", "nats"):
         logging.getLogger(lib).setLevel(logging.WARNING)
 
 

@@ -19,7 +19,8 @@ from typing import AsyncGenerator
 import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 # Ensure Code/ is on sys.path
 import sys
@@ -38,26 +39,26 @@ TEST_DB_FILE = str(Path(TEST_DB_DIR) / "test_integration.db")
 
 
 @pytest.fixture(scope="session")
-async def db_engine() -> AsyncGenerator[AsyncEngine, None]:
+def db_engine():
     """Create a test database engine with all tables."""
     from db.database import Base
 
     # Use a unique temporary file database for the session
     db_path = Path(TEST_DB_FILE)
-    db_url = f"sqlite+aiosqlite:///{db_path.as_posix()}"
+    db_url = f"sqlite:///{db_path.as_posix()}"
 
-    engine = create_async_engine(db_url, echo=False)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    engine = create_engine(db_url, echo=False)
+    Base.metadata.create_all(engine)
 
-        # Also create runtime tables used by on_startup
+    # Also create runtime tables used by on_startup
+    with engine.begin() as conn:
         for ddl in _RUNTIME_TABLES:
-            await conn.execute(text(ddl))
+            conn.execute(text(ddl))
 
     yield engine
 
     # Cleanup: close engine and remove test DB + temp directory
-    await engine.dispose()
+    engine.dispose()
     db_path.unlink(missing_ok=True)
     shutil.rmtree(TEST_DB_DIR, ignore_errors=True)
 
@@ -86,20 +87,18 @@ _RUNTIME_TABLES = [
 
 
 @pytest.fixture(scope="session")
-async def db_session_factory(
-    db_engine: AsyncEngine,
-) -> async_sessionmaker[AsyncSession]:
+def db_session_factory(db_engine):
     """Provide session factory bound to the test engine."""
-    return async_sessionmaker(bind=db_engine, class_=AsyncSession, expire_on_commit=False)
+    return sessionmaker(bind=db_engine, class_=Session, expire_on_commit=False)
 
 
 @pytest.fixture(autouse=True)
-async def clean_tables(db_session_factory: async_sessionmaker[AsyncSession]) -> AsyncGenerator[None, None]:
+def clean_tables(db_session_factory):
     """Clean all tables between tests (run before each test)."""
     yield
 
     # Clean up after the test
-    async with db_session_factory() as session:
+    with db_session_factory() as session:
         for table_name in [
             "outbox_events",
             "audit_logs",
@@ -114,14 +113,14 @@ async def clean_tables(db_session_factory: async_sessionmaker[AsyncSession]) -> 
             "ui_drafts",
         ]:
             try:
-                await session.execute(text(f"DELETE FROM {table_name}"))
+                session.execute(text(f"DELETE FROM {table_name}"))
             except Exception:
                 pass  # Table might not exist in test schema
-        await session.commit()
+        session.commit()
 
 
 @pytest.fixture(scope="session")
-async def test_app(db_engine: AsyncEngine) -> AsyncGenerator:
+def test_app(db_engine):
     """
     Create a test Litestar app with a mock database engine.
     The actual `create_app()` may require NATS, DuckDB etc.
@@ -139,13 +138,6 @@ async def test_app(db_engine: AsyncEngine) -> AsyncGenerator:
     from api.routes.version import VersionController
     from api.dependencies import provide_config
 
-    # Mock the db_engine on app state
-    async def on_startup(app: Litestar) -> None:
-        app.state.db_engine = db_engine
-
-    async def on_shutdown(app: Litestar) -> None:
-        pass
-
     app = Litestar(
         route_handlers=[
             HealthController,
@@ -153,8 +145,8 @@ async def test_app(db_engine: AsyncEngine) -> AsyncGenerator:
             AuthController,
             VersionController,
         ],
-        on_startup=[on_startup],
-        on_shutdown=[on_shutdown],
+        on_startup=[],
+        on_shutdown=[],
         dependencies={
             "config": provide_config,
         },
@@ -178,11 +170,9 @@ async def async_client(test_app) -> AsyncGenerator[AsyncClient, None]:
 
 
 @pytest.fixture
-async def db_session(
-    db_session_factory: async_sessionmaker[AsyncSession],
-) -> AsyncGenerator[AsyncSession, None]:
+def db_session(db_session_factory):
     """Provide a fresh session for each test."""
-    async with db_session_factory() as session:
+    with db_session_factory() as session:
         yield session
 
 
@@ -190,7 +180,7 @@ async def db_session(
 
 
 @pytest.fixture
-async def sample_user(db_session: AsyncSession) -> dict:
+def sample_user(db_session: Session) -> dict:
     """Create a sample user and return its data."""
     from api.auth_service import hash_password
     from sqlalchemy import text
@@ -200,7 +190,7 @@ async def sample_user(db_session: AsyncSession) -> dict:
     password = "testpass123"
     pwd_hash = hash_password(password)
 
-    await db_session.execute(
+    db_session.execute(
         text(
             """\
             INSERT INTO users (id, username, password_hash, role, tenant_id, is_active)
@@ -216,13 +206,13 @@ async def sample_user(db_session: AsyncSession) -> dict:
             "is_active": True,
         },
     )
-    await db_session.commit()
+    db_session.commit()
 
     return {"id": user_id, "username": username, "password": password, "role": "accountant"}
 
 
 @pytest.fixture
-async def sample_contractor(db_session: AsyncSession) -> dict:
+def sample_contractor(db_session: Session) -> dict:
     """Create a sample contractor and return its data."""
     from sqlalchemy import text
     from datetime import datetime, timezone
@@ -231,7 +221,7 @@ async def sample_contractor(db_session: AsyncSession) -> dict:
     contractor_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc).isoformat()
 
-    await db_session.execute(
+    db_session.execute(
         text(
             """\
             INSERT INTO contractors (id, name, nip, address, bank_account, created_at, updated_at)
@@ -248,13 +238,13 @@ async def sample_contractor(db_session: AsyncSession) -> dict:
             "updated_at": now,
         },
     )
-    await db_session.commit()
+    db_session.commit()
 
     return {"id": contractor_id, "nip": "5213456789"}
 
 
 @pytest.fixture
-async def sample_invoice(db_session: AsyncSession, sample_contractor: dict) -> dict:
+def sample_invoice(db_session: Session, sample_contractor: dict) -> dict:
     """Create a sample invoice linked to a contractor."""
     from sqlalchemy import text
     from datetime import datetime, timezone
@@ -263,7 +253,7 @@ async def sample_invoice(db_session: AsyncSession, sample_contractor: dict) -> d
     inv_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc).isoformat()
 
-    await db_session.execute(
+    db_session.execute(
         text(
             """\
             INSERT INTO invoices (
@@ -293,6 +283,6 @@ async def sample_invoice(db_session: AsyncSession, sample_contractor: dict) -> d
             "now": now,
         },
     )
-    await db_session.commit()
+    db_session.commit()
 
     return {"id": inv_id, "number": "FV/TEST/001"}

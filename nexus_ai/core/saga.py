@@ -5,8 +5,7 @@ from datetime import datetime
 from typing import Any
 
 import pendulum
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlalchemy import Engine, text
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
@@ -22,7 +21,7 @@ class SagaState:
 class PersistedSagaStore:
     """Durable saga state store persisted in SQLite with transition history."""
 
-    def __init__(self, engine: AsyncEngine) -> None:
+    def __init__(self, engine: Engine) -> None:
         self._engine = engine
 
     @staticmethod
@@ -58,9 +57,9 @@ class PersistedSagaStore:
                     continue
         raise ValueError(f"Cannot parse timestamp: {value!r}")
 
-    async def ensure_schema(self) -> None:
-        async with self._engine.begin() as conn:
-            await conn.execute(
+    def ensure_schema(self) -> None:
+        with self._engine.begin() as conn:
+            conn.execute(
                 text(
                     """
                     CREATE TABLE IF NOT EXISTS workflow_saga_state (
@@ -72,7 +71,7 @@ class PersistedSagaStore:
                     """
                 )
             )
-            await conn.execute(
+            conn.execute(
                 text(
                     """
                     CREATE TABLE IF NOT EXISTS workflow_saga_history (
@@ -86,9 +85,9 @@ class PersistedSagaStore:
                     """
                 )
             )
-            await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_workflow_saga_history_saga_id ON workflow_saga_history(saga_id, transitioned_at DESC)"))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS idx_workflow_saga_history_saga_id ON workflow_saga_history(saga_id, transitioned_at DESC)"))
 
-    async def transition(self, saga_id: str, new_state: str, payload: dict[str, Any] | str | None = None, expected_current_state: str | None = None) -> SagaState:
+    def transition(self, saga_id: str, new_state: str, payload: dict[str, Any] | str | None = None, expected_current_state: str | None = None) -> SagaState:
         if not saga_id.strip():
             raise ValueError("saga_id cannot be empty")
         if not new_state.strip():
@@ -96,12 +95,11 @@ class PersistedSagaStore:
 
         payload_dict, payload_json = self._normalize_payload(payload)
         now = pendulum.now("UTC")
-        # Format zgodny z SQLite CURRENT_TIMESTAMP, żeby string comparison w list_stuck działał poprawnie
         now_str = now.format("YYYY-MM-DD HH:mm:ss")
 
-        async with self._engine.begin() as conn:
+        with self._engine.begin() as conn:
             current = (
-                await conn.execute(
+                conn.execute(
                     text("SELECT current_state FROM workflow_saga_state WHERE saga_id = :saga_id"),
                     {"saga_id": saga_id},
                 )
@@ -110,7 +108,7 @@ class PersistedSagaStore:
             if expected_current_state is not None and previous_state != expected_current_state:
                 raise ValueError(f"state_conflict: expected={expected_current_state} actual={previous_state}")
 
-            await conn.execute(
+            conn.execute(
                 text(
                     """
                     INSERT INTO workflow_saga_state (saga_id, current_state, payload_json, updated_at)
@@ -129,7 +127,7 @@ class PersistedSagaStore:
                 },
             )
 
-            await conn.execute(
+            conn.execute(
                 text(
                     """
                     INSERT INTO workflow_saga_history (saga_id, previous_state, new_state, payload_json, transitioned_at)
@@ -147,10 +145,10 @@ class PersistedSagaStore:
 
         return SagaState(saga_id=saga_id, state=new_state, payload=payload_dict, updated_at=now)
 
-    async def get(self, saga_id: str) -> SagaState | None:
-        async with self._engine.begin() as conn:
+    def get(self, saga_id: str) -> SagaState | None:
+        with self._engine.begin() as conn:
             row = (
-                await conn.execute(
+                conn.execute(
                     text(
                         """
                         SELECT saga_id, current_state, payload_json, updated_at
@@ -171,14 +169,13 @@ class PersistedSagaStore:
             updated_at=self._parse_timestamp(row["updated_at"]),
         )
 
-    async def list_stuck(self, older_than_minutes: int = 120) -> list[SagaState]:
+    def list_stuck(self, older_than_minutes: int = 120) -> list[SagaState]:
         threshold = max(1, int(older_than_minutes))
         cutoff = pendulum.now("UTC").subtract(minutes=threshold)
-        # Używamy formatu zgodnego z SQLite CURRENT_TIMESTAMP, aby string comparison działał
         cutoff_str = cutoff.format("YYYY-MM-DD HH:mm:ss")
-        async with self._engine.begin() as conn:
+        with self._engine.begin() as conn:
             rows = (
-                await conn.execute(
+                conn.execute(
                     text(
                         """
                         SELECT saga_id, current_state, payload_json, updated_at
@@ -200,11 +197,11 @@ class PersistedSagaStore:
             for r in rows
         ]
 
-    async def get_history(self, saga_id: str, limit: int = 50) -> list[dict[str, Any]]:
+    def get_history(self, saga_id: str, limit: int = 50) -> list[dict[str, Any]]:
         safe_limit = min(max(1, int(limit)), 500)
-        async with self._engine.begin() as conn:
+        with self._engine.begin() as conn:
             rows = (
-                await conn.execute(
+                conn.execute(
                     text(
                         """
                         SELECT id, previous_state, new_state, payload_json, transitioned_at

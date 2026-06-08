@@ -1,6 +1,6 @@
 
 from sqlalchemy import and_, select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from nexus_ai.db.models import Invoice
 from nexus_ai.services.currency_converter import Money
@@ -10,8 +10,8 @@ class ValidationService:
     """Zaawansowana walidacja biznesowa zapobiegająca duplikatom i błędom."""
 
     @staticmethod
-    async def is_duplicate(
-            session: AsyncSession,
+    def is_duplicate(
+            session: Session,
             nip: str,
             number: str,
             amount_gross: Money
@@ -24,7 +24,7 @@ class ValidationService:
                 Invoice.amount_gross == amount_gross
             )
         )
-        result = await session.execute(query)
+        result = session.execute(query)
         return result.scalar_one_or_none() is not None
 
     @staticmethod

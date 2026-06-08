@@ -10,7 +10,7 @@ from litestar.enums import RequestEncodingType
 from litestar.exceptions import ClientException
 from litestar.status_codes import HTTP_201_CREATED
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from nexus_ai.api.schemas import InvoiceCreate, InvoiceResponse, validate_invoice_create
 from nexus_ai.api.services import ContentAddressableStorage
@@ -23,9 +23,9 @@ class InvoiceController(Controller):
     path = "/invoices"
 
     @get()
-    async def list_invoices(
+    def list_invoices(
         self,
-        db_session: AsyncSession,
+        db_session: Session,
         limit: int = 50,
         cursor: str | None = None,
     ) -> dict:
@@ -51,7 +51,7 @@ class InvoiceController(Controller):
                     ((Invoice.created_at == cursor_date) & (Invoice.id < cursor_id))
                 )
 
-        result = await db_session.execute(query)
+        result = db_session.execute(query)
         invoices = result.scalars().all()
 
         has_more = len(invoices) > safe_limit
@@ -78,7 +78,7 @@ class InvoiceController(Controller):
         }
 
     @post(status_code=HTTP_201_CREATED)
-    async def create_invoice(self, data: InvoiceCreate, db_session: AsyncSession) -> InvoiceResponse:
+    def create_invoice(self, data: InvoiceCreate, db_session: Session) -> InvoiceResponse:
         """Dodaje nową fakturę i zapisuje event OCR w Outbox w tej samej transakcji."""
         try:
             validate_invoice_create(data)
@@ -110,7 +110,7 @@ class InvoiceController(Controller):
                 processed=False,
             )
         )
-        await db_session.commit()
+        db_session.commit()
 
         return InvoiceResponse(
             id=new_invoice.id, number=new_invoice.number,

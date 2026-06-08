@@ -9,7 +9,7 @@ from typing import Any
 import pendulum
 from litestar import Controller, get
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 
 class HealthController(Controller):
@@ -32,7 +32,7 @@ class HealthController(Controller):
         return {"status": "ready"}
 
     @get("/detailed")
-    async def detailed_health(self, db_session: AsyncSession) -> dict[str, Any]:
+    async def detailed_health(self, db_session: Session) -> dict[str, Any]:
         """Detailed health status with all component checks."""
         db_ok = True
         pending_outbox = 0
@@ -41,15 +41,15 @@ class HealthController(Controller):
         users_count = 0
 
         try:
-            users_count = int((await db_session.execute(text("SELECT COUNT(*) FROM users"))).scalar_one())
+            users_count = int(db_session.execute(text("SELECT COUNT(*) FROM users")).scalar_one())
             pending_outbox = int(
-                (await db_session.execute(text("SELECT COUNT(*) FROM outbox_events WHERE status = 'PENDING'"))).scalar_one()
+                db_session.execute(text("SELECT COUNT(*) FROM outbox_events WHERE status = 'PENDING'")).scalar_one()
             )
             failed_outbox = int(
-                (await db_session.execute(text("SELECT COUNT(*) FROM outbox_events WHERE status = 'FAILED'"))).scalar_one()
+                db_session.execute(text("SELECT COUNT(*) FROM outbox_events WHERE status = 'FAILED'")).scalar_one()
             )
             dead_letter_outbox = int(
-                (await db_session.execute(text("SELECT COUNT(*) FROM outbox_events WHERE status = 'DEAD_LETTER'"))).scalar_one()
+                db_session.execute(text("SELECT COUNT(*) FROM outbox_events WHERE status = 'DEAD_LETTER'")).scalar_one()
             )
         except Exception:
             db_ok = False
@@ -231,13 +231,13 @@ class HealthController(Controller):
             cfg = AppConfig()
             engine = create_oltp_engine(cfg)
             try:
-                async with engine.connect() as conn:
-                    result = await conn.execute(
+                with engine.connect() as conn:
+                    result = conn.execute(
                         text("SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0")
                     )
                     return int(result.scalar() or 0)
             finally:
-                await engine.dispose()
+                engine.dispose()
         except Exception:
             return -1
 
@@ -266,9 +266,9 @@ class HealthController(Controller):
             cfg = AppConfig()
             engine = create_oltp_engine(cfg)
             try:
-                return await verify_schema_drift(engine, cfg.base_dir / "app_data" / "schema_baseline.json")
+                return verify_schema_drift(engine, cfg.base_dir / "app_data" / "schema_baseline.json")
             finally:
-                await engine.dispose()
+                engine.dispose()
         except Exception:
             return {"status": "error", "issues": ["schema drift check failed"]}
 

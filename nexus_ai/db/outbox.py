@@ -1,9 +1,9 @@
-import asyncio
+import time
 from typing import Any
 
 import pendulum
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.models import OutboxEvent
@@ -13,8 +13,8 @@ class OutboxManager:
     """Zarządza wzorcem Transactional Outbox dla gwarantowanej dostawy zdarzeń."""
 
     @staticmethod
-    async def publish_event(
-        session: AsyncSession,
+    def publish_event(
+        session: Session,
         event_type: str,
         payload: dict[str, Any],
         aggregate_id: str
@@ -33,22 +33,19 @@ class OutboxManager:
         session.add(event)
 
 # Pseudo-kod workera wyciągający dane do NATS
-async def _outbox_processor(session_factory, nats_client):
+def _outbox_processor(session_factory, nats_client):
     while True:
-        async with session_factory() as session:
-            # Pobierz nieprzetworzone zdarzenia
-            # Uwaga: not OutboxEvent.processed nie działa z SQLAlchemy
+        with session_factory() as session:
             stmt = select(OutboxEvent).where(OutboxEvent.processed == False)  # noqa: E712
-            events = await session.execute(stmt)
+            events = session.execute(stmt)
 
             for event in events.scalars():
                 try:
-                    # Używamy event_type jako tematu NATS (event.topic nie istnieje)
                     subject = f"outbox.{event.event_type}"
-                    await nats_client.publish(subject, event.payload.encode())
+                    nats_client.publish(subject, event.payload.encode())
                     event.processed = True
-                    await session.commit()
+                    session.commit()
                 except Exception:
-                    await session.rollback()
+                    session.rollback()
 
-        await asyncio.sleep(1)  # Oddech dla bazy
+        time.sleep(1)  # Oddech dla bazy

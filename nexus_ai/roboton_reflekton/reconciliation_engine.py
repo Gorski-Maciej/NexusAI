@@ -10,7 +10,7 @@ from typing import Any
 import nats
 import pendulum
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
@@ -60,7 +60,7 @@ class AlertHub:
 class ReconciliationEngine:
     def __init__(
         self,
-        session_factory: async_sessionmaker[AsyncSession],
+        session_factory: sessionmaker[Session],
         tb_client: TigerBeetleClient,
         alert_hub: AlertHub,
         nats_url: str = "nats://127.0.0.1:4222",
@@ -84,28 +84,26 @@ class ReconciliationEngine:
 
     async def _on_nats_message(self, msg: Any) -> None:
         payload = msgspec_loads(msg.data)
-        await self.process_bank_transaction(payload)
+        self.process_bank_transaction(payload)
 
-    async def process_bank_transaction(self, payload: dict[str, Any]) -> bool:
+    def process_bank_transaction(self, payload: dict[str, Any]) -> bool:
         company_id = uuid.UUID(payload["company_id"])
         amount_minor = int(payload["amount_minor"])
         contractor_nip = str(payload["contractor_nip"])
         posted_at = pendulum.parse(payload["posted_at"])
         transaction_id = str(payload.get("transaction_id", ""))
 
-        async with self.session_factory() as session:
-            company = await session.scalar(select(CompanyProfile).where(CompanyProfile.id == company_id))
+        with self.session_factory() as session:
+            company = session.scalar(select(CompanyProfile).where(CompanyProfile.id == company_id))
             if company is None:
                 return False
 
             pending_transfers = (
-                (
-                    await session.execute(
-                        select(LedgerTransfer).where(
-                            LedgerTransfer.company_id == company_id,
-                            LedgerTransfer.status == TransferStatus.PENDING,
-                            LedgerTransfer.amount_minor == amount_minor,
-                        )
+                session.execute(
+                    select(LedgerTransfer).where(
+                        LedgerTransfer.company_id == company_id,
+                        LedgerTransfer.status == TransferStatus.PENDING,
+                        LedgerTransfer.amount_minor == amount_minor,
                     )
                 )
                 .scalars()
@@ -116,14 +114,14 @@ class ReconciliationEngine:
             for transfer in pending_transfers:
                 transfer_nip = str(transfer.meta.get("classification", {}).get("contractor_nip", ""))
                 if transfer_nip == contractor_nip:
-                    credits_posted = await self.tb_client.get_account_credits_posted(transfer.target_account)
+                    credits_posted = self.tb_client.get_account_credits_posted(transfer.target_account)
                     if credits_posted >= amount_minor:
                         matched_transfer = transfer
                         break
 
             if matched_transfer is not None:
                 pending_id = int(matched_transfer.meta.get("tb_pending_id"))
-                approved = await self.tb_client.post_pending_transfer(pending_id)
+                approved = self.tb_client.post_pending_transfer(pending_id)
                 if approved:
                     matched_transfer.status = TransferStatus.POSTED
                     matched_transfer.meta = {
@@ -134,7 +132,7 @@ class ReconciliationEngine:
                             "matched_at": pendulum.now("UTC").isoformat(),
                         },
                     }
-                    await session.commit()
+                    session.commit()
                 return approved
 
             if posted_at <= datetime.now(posted_at.tzinfo or UTC) - pendulum.duration(days=15):
@@ -145,7 +143,7 @@ class ReconciliationEngine:
                     transaction_id=transaction_id,
                     bank_posted_at=posted_at,
                 )
-                await self.alert_hub.publish(alert.to_sse_event())
+                self.alert_hub.publish(alert.to_sse_event())
             return False
 
 
@@ -172,7 +170,7 @@ class ClearingAccountsEngine:
             raise ValueError(f"Unknown provider_id={provider_id!r}")
         return account
 
-    async def process_provider_fees(self, *, provider_id: str, fee_amount: int, operation_id: str) -> dict[str, Any]:
+    def process_provider_fees(self, *, provider_id: str, fee_amount: int, operation_id: str) -> dict[str, Any]:
         """Step 2: Debit fees expense / Credit provider clearing account."""
         if fee_amount <= 0:
             raise ValueError("fee_amount must be > 0")
@@ -180,13 +178,13 @@ class ClearingAccountsEngine:
             return {"status": "idempotent-replay", "operation_id": operation_id}
 
         provider_account = self._provider_account(provider_id)
-        pending = await self.tb_client.create_two_phase_transfer(
+        pending = self.tb_client.create_two_phase_transfer(
             debit_account=self.config.account_expense_fees,
             credit_account=provider_account,
             amount_minor=fee_amount,
             source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"fees:{provider_id}:{operation_id}"),
         )
-        posted = await self.tb_client.post_pending_transfer(pending.pending_id)
+        posted = self.tb_client.post_pending_transfer(pending.pending_id)
         if posted:
             self._processed_operations.add(operation_id)
         return {
@@ -195,7 +193,7 @@ class ClearingAccountsEngine:
             "pending_id": pending.pending_id,
         }
 
-    async def reconcile_bank_payout(self, *, provider_id: str, payout_amount: int, operation_id: str) -> dict[str, Any]:
+    def reconcile_bank_payout(self, *, provider_id: str, payout_amount: int, operation_id: str) -> dict[str, Any]:
         """Step 3: Debit main bank / Credit provider clearing account."""
         if payout_amount <= 0:
             raise ValueError("payout_amount must be > 0")
@@ -203,16 +201,16 @@ class ClearingAccountsEngine:
             return {"status": "idempotent-replay", "operation_id": operation_id}
 
         provider_account = self._provider_account(provider_id)
-        pending = await self.tb_client.create_two_phase_transfer(
+        pending = self.tb_client.create_two_phase_transfer(
             debit_account=self.config.account_bank_main,
             credit_account=provider_account,
             amount_minor=payout_amount,
             source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"payout:{provider_id}:{operation_id}"),
         )
-        posted = await self.tb_client.post_pending_transfer(pending.pending_id)
+        posted = self.tb_client.post_pending_transfer(pending.pending_id)
         if posted:
             self._processed_operations.add(operation_id)
-        clearing_balance = await self.tb_client.get_account_credits_posted(provider_account)
+        clearing_balance = self.tb_client.get_account_credits_posted(provider_account)
         return {
             "status": "posted" if posted else "failed",
             "operation_id": operation_id,
@@ -241,7 +239,7 @@ class BankReconciliationEngine:
         self.tb_client = tb_client
         self.config = config
 
-    async def reconcile_bulk_payment(
+    def reconcile_bulk_payment(
         self,
         *,
         vendor_id: str,
@@ -262,25 +260,25 @@ class BankReconciliationEngine:
             allocated = min(invoice.amount_due_minor, remaining)
             if allocated <= 0:
                 continue
-            pending = await self.tb_client.create_two_phase_transfer(
+            pending = self.tb_client.create_two_phase_transfer(
                 debit_account=self.config.account_bank_main,
                 credit_account=self.config.account_receivable,
                 amount_minor=allocated,
                 source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"bulk:{vendor_id}:{invoice.invoice_id}:{received_date.isoformat()}"),
             )
-            posted = await self.tb_client.post_pending_transfer(pending.pending_id)
+            posted = self.tb_client.post_pending_transfer(pending.pending_id)
             allocations.append({"invoice_id": invoice.invoice_id, "amount_minor": allocated, "posted": posted})
             remaining -= allocated
 
         rounding_adjustment_posted = False
         if 0 < remaining < self.config.rounding_threshold_minor:
-            rounding_pending = await self.tb_client.create_two_phase_transfer(
+            rounding_pending = self.tb_client.create_two_phase_transfer(
                 debit_account=self.config.account_bank_main,
                 credit_account=self.config.account_rounding_differences,
                 amount_minor=remaining,
                 source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"rounding:{vendor_id}:{received_date.isoformat()}:{remaining}"),
             )
-            rounding_adjustment_posted = await self.tb_client.post_pending_transfer(rounding_pending.pending_id)
+            rounding_adjustment_posted = self.tb_client.post_pending_transfer(rounding_pending.pending_id)
             remaining = 0
 
         return {
