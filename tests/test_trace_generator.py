@@ -1,4 +1,5 @@
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
+from __future__ import annotations
+
 """
 Tests for TraceGenerator (Element 1 — Generator Ścieżki Decyzyjnej).
 
@@ -9,8 +10,7 @@ Covers:
   - Edge cases: missing fields, None values, empty context
 """
 
-from __future__ import annotations
-
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 from nexus_ai.services.trace_generator import TraceGenerator
 
 

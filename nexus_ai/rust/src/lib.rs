@@ -118,10 +118,9 @@ mod digest {
 /// Returns:
 ///     Ciphertext bytes: nonce (12B) || encrypted data.
 #[pyfunction]
-fn encrypt(key: &[u8], plaintext: &[u8]) -> PyResult<pyo3::types::PyBytes> {
-    let ciphertext = aead::encrypt(key, plaintext)
-        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e))?;
-    Ok(pyo3::types::PyBytes::new_bound(pyo3::Python::with_gil(|py| py), &ciphertext))
+fn encrypt(key: &[u8], plaintext: &[u8]) -> PyResult<Vec<u8>> {
+    aead::encrypt(key, plaintext)
+        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e))
 }
 
 /// Decrypt data encrypted with `encrypt`.
@@ -133,10 +132,9 @@ fn encrypt(key: &[u8], plaintext: &[u8]) -> PyResult<pyo3::types::PyBytes> {
 /// Returns:
 ///     Decrypted plaintext (bytes).
 #[pyfunction]
-fn decrypt(key: &[u8], data: &[u8]) -> PyResult<pyo3::types::PyBytes> {
-    let plaintext = aead::decrypt(key, data)
-        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e))?;
-    Ok(pyo3::types::PyBytes::new_bound(pyo3::Python::with_gil(|py| py), &plaintext))
+fn decrypt(key: &[u8], data: &[u8]) -> PyResult<Vec<u8>> {
+    aead::decrypt(key, data)
+        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e))
 }
 
 /// Hash a password using Argon2id.

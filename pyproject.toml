@@ -143,8 +143,8 @@ dependencies = [
     "psutil>=5.9.0",
     "pendulum>=3.0.0",
     "numpy>=2.0.0",
-    "dyscache>=0.1.0",
 ]
+
 
 [project.optional-dependencies]
 dev = [

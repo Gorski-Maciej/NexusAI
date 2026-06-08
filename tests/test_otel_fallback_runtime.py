@@ -1,24 +1,13 @@
 from __future__ import annotations
 
-import importlib.util
-import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-
-def _load_module():
-    path = Path('Code/services/otel_fallback.py').resolve()
-    spec = importlib.util.spec_from_file_location('otel_fallback_mod', path)
-    assert spec and spec.loader
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = mod
-    spec.loader.exec_module(mod)
-    return mod
+from nexus_ai.services.otel_fallback import FileSpanBuffer
 
 
 def test_file_span_buffer_append_read_clear(tmp_path: Path) -> None:
-    mod = _load_module()
-    buffer = mod.FileSpanBuffer(tmp_path / 'buffer.jsonl')
+    buffer = FileSpanBuffer(tmp_path / 'buffer.jsonl')
     now = datetime.now(timezone.utc)
     buffer.append('trace-1', 'invoice.processed', start_ts=now, end_ts=now, attributes={'ok': True})
     records = buffer.read_all()

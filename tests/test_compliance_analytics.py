@@ -1,22 +1,9 @@
 from __future__ import annotations
 
-import importlib.util
-import sys
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.append(str(ROOT))
-
-MODULE_PATH = ROOT / "Code" / "services" / "compliance_analytics.py"
-spec = importlib.util.spec_from_file_location("compliance_analytics", MODULE_PATH)
-module = importlib.util.module_from_spec(spec)
-assert spec.loader is not None
-sys.modules[spec.name] = module
-spec.loader.exec_module(module)
-
-infer_ledger_entries = module.infer_ledger_entries
-ensure_compliance_analytics_schema = module.ensure_compliance_analytics_schema
+from nexus_ai.services.compliance_analytics import (
+    ensure_compliance_analytics_schema,
+    infer_ledger_entries,
+)
 
 
 class FakeDuckDBManager:

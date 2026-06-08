@@ -16,7 +16,7 @@ from decimal import Decimal
 import pytest
 
 from nexus_ai.tax.math_engine import parse_rate, InvalidRateError, TaxMathEngine
-from tax import InvalidRateError as InvalidRateErrorExported
+from nexus_ai.tax import InvalidRateError as InvalidRateErrorExported
 
 
 class TestParseRate:
@@ -68,7 +68,7 @@ class TestParseRate:
 
     def test_default_rules_all_use_strings(self) -> None:
         """All DEFAULT_TAX_RULES use string vat_rate values (not float)."""
-        from tax.rules import DEFAULT_TAX_RULES
+        from nexus_ai.tax.rules import DEFAULT_TAX_RULES
         for rule in DEFAULT_TAX_RULES:
             vat_rate = rule["action_json"]["vat_rate"]
             assert isinstance(vat_rate, str), (

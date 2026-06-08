@@ -4,7 +4,7 @@ EmbeddingService — centralized text embedding engine using llama-cpp-python.
 Zgodnie z aa3fvcx.txt:
 - Zastępuje: sentence-transformers (biblioteka spoza stacku)
 - Nowy:     llama-cpp-python z embedding=True (technologia z stacku)
-- Integracja z dyscache i msgspec (Punkty 4 i 13)
+- Integracja z nexus_cache (wbudowany cache) i msgspec (Punkty 4 i 13)
 
 llama-cpp-python jest już w projekcie jako zależność (używana przez Council of Agents).
 Używa tego samego silnika GGUF do generowania embeddingów, co eliminuje

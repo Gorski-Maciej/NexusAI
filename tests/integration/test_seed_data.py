@@ -1,4 +1,5 @@
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
+from __future__ import annotations
+
 """
 test_seed_data.py — Tests for the seed data loading module.
 
@@ -11,7 +12,7 @@ Verifies that seed_data.py correctly loads demo data into the database:
     - Duplicate data is handled gracefully (idempotency)
 """
 
-from __future__ import annotations
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 
 import pytest
 from sqlalchemy import text

@@ -26,11 +26,6 @@ _PROJECT_ROOT = Path(__file__).resolve().parents[3]
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
-# Also add nexus_ai/ to sys.path so imports like 'from db.models' work
-_NEXUS_AI_DIR = Path(__file__).resolve().parents[2]  # migrations -> db -> nexus_ai
-if str(_NEXUS_AI_DIR) not in sys.path:
-    sys.path.insert(0, str(_NEXUS_AI_DIR))
-
 # Alembic Config object
 config = context.config
 
@@ -42,12 +37,12 @@ logger = logging.getLogger("alembic.env")
 
 # ── Target metadata: collect all Base.metadata used in the project ──
 # Wszystkie modele zdefiniowane w nexus_ai.db.models (SQLModel)
-from db.models import (
+from nexus_ai.db.models import (
     Base as DbModelsBase,  # Invoice, AuditLog, OutboxEvent, SecurityAlert, UserAccount, Contractor, ActiveLearningPattern
 )
 
 # Roboton_Reflekton models (SQLite-compatible, zgodnie z aa3fvcx.txt)
-from roboton_reflekton.models import Base as RobotonBase
+from nexus_ai.roboton_reflekton.models import Base as RobotonBase
 
 # Target metadata: SQLModel > DeclarativeBase, bo wszystkie modele są w SQLModel.
 # SQLModel automatycznie rejestruje tabele w swojej metadata.
@@ -62,7 +57,7 @@ for table_name, table in RobotonBase.metadata.tables.items():
 def get_database_url() -> str:
     """Resolve the database URL from NexusAI config or environment."""
     try:
-        from core.config import AppConfig
+        from nexus_ai.core.config import AppConfig
         config_obj = AppConfig()
         url = f"sqlite+aiosqlite:///{config_obj.sqlite_path.as_posix()}"
         # Check for a user-provided override
