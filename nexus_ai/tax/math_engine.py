@@ -3,12 +3,12 @@ Tax Math Engine — Infallible integer-only arithmetic + Fowler's Money.
 
 Część II matematycznego stosu nieomylności.
 
-Zasady:
-  - Całkowity zakaz float — wszystkie kwoty w groszach (int).
+Zasady:    - Całkowity zakaz float — wszystkie kwoty w groszach (int).
   - Globalnie ROUND_HALF_UP, precyzja 28 miejsc.
   - Każde zaokrąglenie jawne — nigdy ukryte.
   - Trzy niezmienniki przed zapisem do księgi.
-  - Money (py-moneyed) dla bezpieczeństwa walutowego.
+  - Nexus-Money (msgspec.Struct: amount_cents: int + currency: str) dla bezpieczeństwa walutowego.
+    Zgodnie z aa3fvcx.txt (Punkt 9): Nexus-Money zastępuje py-moneyed.
 """
 
 from __future__ import annotations

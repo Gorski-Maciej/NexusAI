@@ -144,22 +144,22 @@ dependencies = [
     "pendulum>=3.0.0",
     "numpy>=2.0.0",
     "cashews>=6.0.0",
-    "sentry-sdk>=2.0.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0.0",
-    "pytest-anyio>=0.1.0",
+    "pytest-anyio>=0.1.0",  # Natywna asynchroniczność na anyio (zamiast pytest-asyncio)
     "pytest-cov>=5.0.0",
-    "crosshair>=0.1.0",
+    "crosshair>=0.1.0",      # Property-based testing z SMT solverem (zamiast hypothesis głównie)
     "hypothesis>=6.100.0",  # Zachowany dla złożonych property-based tests (test_property_based.py)
     "ruff>=0.3.0",
     "mypy>=1.8.0",
     "pre-commit>=3.6.0",
-    "schemathesis>=3.30.0",
-    "locust>=2.29.0",
-    "py-spy>=0.3.14",
+    "schemathesis>=3.30.0",  # Automatyczny fuzz testing API ze schematu OpenAPI
+    "locust>=2.29.0",        # Pythonowe testy wydajności (zamiast k6)
+    "py-spy>=0.3.14",        # Natywny profiler w Rust, narzut <1%
+    "sentry-sdk>=2.0.0",
 ]
 ui = [
     "flet>=0.28.0",

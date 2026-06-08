@@ -200,7 +200,7 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
         format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {extra[correlation_id]:.12} | {message}",
     )
 
-    # Osobny handler dla ERRORów (można przekierować do Sentry/webhook)
+    # Osobny handler dla ERRORów (można przekierować do webhook)
     logger.add(
         log_dir / f"{app_name.lower()}_error.log",
         rotation="50 MB",
@@ -216,7 +216,7 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
     _setup_structlog()
 
     # ── Integracje zewnętrzne ─────────────────────────────────────────────────
-    # Zgodnie z aa3fvcx.txt: Sentry został usunięty z nowego stacku.
+    # Zgodnie z aa3fvcx.txt: Sentry jest opcjonalny (sentry-sdk w [dev]).
     # Monitoring błędów odbywa się przez Loguru + structlog + OpenTelemetry.
 
     # Przekieruj warnings z bibliotek zewnętrznych do Loguru

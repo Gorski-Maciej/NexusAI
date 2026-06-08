@@ -1,8 +1,9 @@
 # core/backup.py
-"""Backup manager using nexus-crypto AEAD instead of cryptography.hazmat AES-CBC.
+"""Backup manager using nexus-crypto AEAD (ChaCha20-Poly1305).
 
-Zastępuje: AES-256-CBC + PKCS7 + PBKDF2 (cryptography.hazmat)
-Nowy:     ChaCha20-Poly1305 AEAD + Argon2id KDF (nexus-crypto, Rust+PyO3)
+Zgodnie z aa3fvcx.txt:
+- ChaCha20-Poly1305 AEAD + Argon2id KDF (nexus-crypto, Rust+PyO3)
+- Legacy NEXUSENC1 (AES-256-CBC + PBKDF2) wspierany dla kompatybilności wstecznej
 """
 import io
 import os

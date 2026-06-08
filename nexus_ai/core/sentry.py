@@ -2,9 +2,8 @@
 """
 Sentry SDK integration for production error tracking.
 
-Zgodnie z aa3fvcx.txt (Punkt 12): Sentry SDK dostarcza maksymalnie
-bogaty kontekst dla błędów produkcyjnych — stack trace, wartości
-zmiennych lokalnych, breadcrumbs.
+Zgodnie z aa3fvcx.txt: Sentry SDK jest opcjonalny (sentry-sdk w zależnościach [dev]).
+Dostarcza maksymalnie bogaty kontekst dla błędów produkcyjnych.
 
 Użycie:
     from nexus_ai.core.sentry import init_sentry, capture_exception
