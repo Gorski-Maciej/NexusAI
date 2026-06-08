@@ -51,7 +51,6 @@ dependencies = [
     # Database — SQLModel (SQLAlchemy + Pydantic w jednym), sqlite-vec
     # ═══════════════════════════════════════════════════════════════════════
     "sqlmodel>=0.0.16",
-    "aiosqlite>=0.20.0",
     "sqlite-vec>=0.1.0",
     "alembic>=1.13.0",
 
@@ -288,7 +287,6 @@ include-package = [
     "pendulum",                  # DateTime
     "opentelemetry",             # OpenTelemetry (API + SDK w jednym)
     "fsspec",                    # Filesystem abstraction
-    "aiosqlite",                 # Async SQLite
     "sqlite_vec",                # Vector extension dla SQLite
     "alembic",                   # Migracje baz danych
     "anyio",                     # Async runtime

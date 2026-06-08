@@ -70,7 +70,6 @@ Quick build (Windows):
 # nuitka-project: --include-package=pendulum
 # nuitka-project: --include-package=opentelemetry
 # nuitka-project: --include-package=fsspec
-# nuitka-project: --include-package=aiosqlite
 # nuitka-project: --include-package=sqlite_vec
 # nuitka-project: --include-package=alembic
 # nuitka-project: --include-package=anyio

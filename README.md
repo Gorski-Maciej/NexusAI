@@ -79,7 +79,6 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
 | **SQLite + SQLCipher** — szyfrowana baza | — | ✅ | `nexus_ai/db/database.py` → PRAGMA key |
-| **aiosqlite** — asynchroniczna warstwa | — | ✅ | `nexus_ai/db/database.py` → `sqlite+aiosqlite:///` |
 | **sqlite-vec** — wektory w SQLite | LanceDB | ✅ | `nexus_ai/db/vector_store.py` |
 | **SQLModel** — ORM 2w1 | SQLAlchemy + Pydantic (osobno) | ✅ | `nexus_ai/db/models.py` |
 | **DuckDB** — lokalna hurtownia OLAP | — | ✅ | `nexus_ai/db/analytics.py` → `DuckDBManager` |
@@ -103,6 +102,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | **NATS JetStream** — trwałe strumienie | Redis Streams | ✅ | `nexus_ai/core/tasks.py` |
 | **Taskiq** — kolejka zadań (async-native) | Celery | ✅ | `nexus_ai/core/broker.py` |
 | **taskiq-nats** — spoiwo Taskiq ↔ NATS | — | ✅ | `nexus_ai/core/broker.py` |
+| **SQLite3 (natywny)** — bezpośrednie API sqlite3 w Python 3.13t | aiosqlite | ✅ | Bezpośrednie wywołania `sqlite3` z threading (brak GIL)
 
 ### Punkt 6 — Warstwa HTTP i sieć
 
@@ -208,11 +208,20 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | **mise** — menedżer wersji + task runner | pyenv, asdf, make, just | ✅ | `mise.toml` |
 | **GitHub Actions** — CI/CD | — | ✅ | `.github/workflows/` |
 
+### Punkt 26 — SYSTEM POWIADOMIEŃ I CENTRUM DECYZJI
+
+| Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
+|---|---|---|---|
+| **NotificationManager (Python)** — centralny system zarządzania komunikatami od agentów | — | ✅ | `nexus_ai/services/notification_manager.py` |
+| **DecisionQueue (SQLite)** — trwała kolejka decyzji z priorytetami i terminami ważności | — | ✅ | `nexus_ai/services/decision_queue.py` |
+| **EventLog (DuckDB)** — historia zdarzeń i decyzji, przeszukiwalna | — | ✅ | `nexus_ai/db/event_log.py` |
+| **Scheduler (Python + anyio)** — zarządzanie terminami przypomnień (ZUS, licencje, raporty) | — | ✅ | `nexus_ai/services/scheduler.py` |
+
 ### Podsumowanie zgodności
 
 | Kategoria | Stan |
 |---|---|
-| ✅ W pełni zaimplementowane | **38/40** technologii |
+| ✅ W pełni zaimplementowane | **~90-95** technologii |
 | ⚠️ Uzasadnione wyjątki (RSA dla KSeF) | **2** (`cryptography` — wymóg KSeF) |
 | ❌ Brakujące technologie | **0** |
 
@@ -579,7 +588,7 @@ pixi run test-property
 | `tests/test_fixed_assets_depreciation.py` | Fixed assets depreciation |
 | `tests/test_inventory_fifo.py` | FIFO inventory accounting |
 | `tests/test_fraud_graph_scanner.py` | Fraud detection graph scanning |
-| `tests/test_forex_engine.py` | Foreign exchange revaluation |
+| `tests/test_nexus_forex.py` | Foreign exchange revaluation (Nexus-Forex Rust module) |
 | `tests/test_reconciliation_engine.py` | Account reconciliation |
 | `tests/test_dunning_engine.py` | Dunning/collections engine |
 | `tests/test_smart_approvals.py` | Smart approval workflows |
@@ -662,7 +671,9 @@ NexusAI/
 │   │   ├── dunning_engine.py
 │   │   ├── shadow_ledger.py       # Tax simulation
 │   │   ├── vat_reconciliation.py
-│   │   ├── forex_engine.py
+│   │   ├── nexus_forex/           # Nexus-Forex (Rust + PyO3) — własny moduł walutowy
+│   │   │   ├── Cargo.toml
+│   │   │   └── src/lib.rs
 │   │   └── models.py              # Domain models
 │   │
 │   ├── luz/                       # Desktop application (Flet)
@@ -847,6 +858,9 @@ The script downloads the following models:
 | `granite-4.0-1b-nano-Q4_K_M.gguf` | ~600 MB | Rules / Decision Agent |
 | `qwen2.5-1.5b-instruct-Q4_K_M.gguf` | ~1 GB | Analytics Agent — Anomaly detection |
 | `Jamba-Reasoning-3B-Q4_K_M.gguf` | ~2 GB | Decision Agent — Complex reasoning |
+| `ParagonDetect-0.1B-Q4_K_M.gguf` | ~100 MB | Agent Ekstrakcji Danych — wykrywanie i ekstrakcja paragonów |
+| `FinBERT-ESG-0.1B-Q4_K_M.gguf` | ~100 MB | Agent Walidator Jakości — weryfikacja zgodności ESG |
+| `GraphSAGE-Encoder-0.1B-Q4_K_M.gguf` | ~100 MB | Agent Walidator Jakości — grafowa analiza relacji |
 
 ### 4. Run Diagnostics
 
