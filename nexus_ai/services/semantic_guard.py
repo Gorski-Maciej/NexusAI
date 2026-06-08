@@ -1,9 +1,10 @@
 """
 SemanticGuard — semantyczny wykrywacz anomalii faktur.
 
-Zgodnie z aa3fvcx.txt: LanceDB → sqlite-vec.
-Wektory przechowywane w SQLite z extension sqlite-vec.
-sentence-transformers pozostaje opcjonalny (lazy import).
+Zgodnie z aa3fvcx.txt:
+- LanceDB → sqlite-vec (wektory w SQLite)
+- sentence-transformers → llama-cpp-python embedding (technologia ze stacku)
+- EmbeddingService używa istniejących modeli GGUF (np. Qwen3-0.6B)
 """
 
 from __future__ import annotations
@@ -14,6 +15,7 @@ from typing import Any
 import pendulum
 from structlog import get_logger
 
+from nexus_ai.core.embeddings import get_embedding_service
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
 from nexus_ai.db.vector_store import VectorStore
 
@@ -82,11 +84,11 @@ DEFAULT_ANOMALY_RULES: list[dict[str, Any]] = [
 class SemanticGuard:
     """Detektor anomalii semantycznych oparty o embeddingi faktur.
 
-    Używa sqlite-vec zamiast LanceDB.
-    sentence-transformers jest opcjonalny (lazy import).
+    Używa sqlite-vec (zamiast LanceDB) i llama-cpp-python embedding
+    (zamiast sentence-transformers) zgodnie z aa3fvcx.txt.
     """
 
-    EMBEDDING_DIM = 768  # Default for HerBERT; detected dynamically at model load
+    EMBEDDING_DIM = 768  # Domyślny wymiar; wykrywany dynamicznie z modelu
 
     def __init__(
         self,
@@ -96,7 +98,7 @@ class SemanticGuard:
         self._db_path = db_path
         self._conn = conn
         self._store: VectorStore | None = None
-        self._model: Any = None
+        self._embedding_service = get_embedding_service()
         self._embedding_dim: int = self.EMBEDDING_DIM
 
     def _init_store(self) -> VectorStore:
@@ -126,28 +128,15 @@ class SemanticGuard:
         conn.commit()
 
     def _get_embedding(self, text: str) -> list[float]:
-        """Generate embedding vector from text using sentence-transformers."""
-        if self._model is None:
-            try:
-                from sentence_transformers import SentenceTransformer
-                try:
-                    # Preferowany model: HerBERT (polski, 768-dim)
-                    self._model = SentenceTransformer("sdadas/herbert-base-embedding")
-                    self._embedding_dim = 768
-                except Exception:
-                    # Fallback: all-MiniLM-L6-v2 (angielski, 384-dim — gorszy dla PL)
-                    logger.warning("[SemanticGuard] HerBERT unavailable, falling back to all-MiniLM-L6-v2")
-                    self._model = SentenceTransformer("all-MiniLM-L6-v2")
-                    self._embedding_dim = 384
-            except Exception as exc:
-                logger.warning("[SemanticGuard] sentence-transformers unavailable: %s", exc)
-                return [0.0] * self._embedding_dim
+        """Generate embedding vector from text using llama-cpp-python.
 
-        try:
-            return self._model.encode(text[:10000]).tolist()
-        except Exception as exc:
-            logger.warning("[SemanticGuard] Embedding failed: %s — fallback to zero vector", exc)
-            return [0.0] * 768
+        Zgodnie z aa3fvcx.txt: sentence-transformers → llama-cpp-python embedding.
+        Używa istniejącego modelu GGUF (Qwen3-0.6B) z flagą embedding=True.
+        """
+        vec = self._embedding_service.embed(text)
+        # Dynamicznie dopasuj wymiar
+        self._embedding_dim = len(vec)
+        return vec
 
     def evaluate(
         self,

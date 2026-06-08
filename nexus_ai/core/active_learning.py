@@ -1,9 +1,10 @@
 # core/active_learning.py
-"""Active Learning Engine — uses sqlite-vec instead of LanceDB.
+"""Active Learning Engine — uses sqlite-vec + llama-cpp-python embedding.
 
-Zgodnie z aa3fvcx.txt: LanceDB → sqlite-vec.
-Wektory przechowywane w SQLite z extension sqlite-vec.
-sentence-transformers pozostaje opcjonalny (lazy import).
+Zgodnie z aa3fvcx.txt:
+- LanceDB → sqlite-vec (wektory w SQLite)
+- sentence-transformers → llama-cpp-python embedding (technologia ze stacku)
+- EmbeddingService używa istniejących modeli GGUF
 """
 from __future__ import annotations
 
@@ -15,36 +16,29 @@ from typing import Any
 import pendulum
 from structlog import get_logger
 
+from nexus_ai.core.embeddings import get_embedding_service
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 from nexus_ai.db.vector_store import VectorStore
 
 logger = get_logger("nexus.core.active_learning")
 
-# sentence-transformers is optional (lazy import)
-try:
-    from sentence_transformers import SentenceTransformer
-except ImportError:
-    SentenceTransformer = None  # type: ignore[assignment]
-    logger.warning("[ACTIVE-LEARNING] sentence_transformers not available — using dummy embeddings")
-
 
 class ActiveLearningEngine:
-    """Silnik aktywnego uczenia z sqlite-vec (zamiast LanceDB).
+    """Silnik aktywnego uczenia z sqlite-vec + llama-cpp-python embedding.
 
+    Zgodnie z aa3fvcx.txt:
+    - LanceDB → sqlite-vec (wektory w SQLite)
+    - sentence-transformers → llama-cpp-python embedding
     Zapisuje embeddingi poprawek OCR w SQLite z extension sqlite-vec.
     """
 
-    def __init__(self, db_path: str = "./data/active_learning.db"):
+    def __init__(
+        self,
+        db_path: str = "./data/active_learning.db",
+    ):
         self.db_path = db_path
         self._store: VectorStore | None = None
-        self._model: Any = None
-
-        # Ładuj model embeddingu (opcjonalny)
-        if SentenceTransformer is not None:
-            try:
-                self._model = SentenceTransformer('all-MiniLM-L6-v2')
-            except Exception:
-                logger.warning("[ACTIVE-LEARNING] Failed to load SentenceTransformer; using dummy embeddings")
+        self._embedding_service = get_embedding_service()
 
     def _get_store(self) -> VectorStore:
         """Lazy-init VectorStore (sqlite-vec)."""
@@ -71,14 +65,12 @@ class ActiveLearningEngine:
         conn.commit()
 
     def _generate_embedding(self, raw_text: str) -> list[float]:
-        """Zamienia surowy tekst faktury na wektor."""
-        if self._model is not None:
-            try:
-                return self._model.encode(raw_text[:10000]).tolist()
-            except Exception:
-                pass
-        # Fallback: prosty wektor oparty na długości
-        return [float(len(raw_text)) % 1000 / 1000.0] * 384
+        """Zamienia surowy tekst faktury na wektor przez llama-cpp-python.
+
+        Zgodnie z aa3fvcx.txt: sentence-transformers → llama-cpp-python embedding.
+        Używa istniejącego modelu GGUF (Qwen3-0.6B) z flagą embedding=True.
+        """
+        return self._embedding_service.embed(raw_text)
 
     async def save_correction(
         self,

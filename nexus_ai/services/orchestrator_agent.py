@@ -1,12 +1,22 @@
 """
-Orchestrator Agent — lightweight decision layer that determines
-which downstream agents to invoke based on invoice complexity.
+[DEPRECATED] Orchestrator Agent — legacy workflow orchestration.
 
-Uses LittleLamb-0.3B-Q4_K_M.gguf (via ModelManager) to classify
-invoices as simple (→ OCR + Decyzja only) or complex (→ full pipeline).
+UWAGA: Ten plik jest przestarzały. Użyj zamiast tego:
+- WorkflowPlanner z agent_orchestrator.py
+- AgentOrchestrator z agent_orchestrator.py
+
+Zachowany dla kompatybilności wstecznej.
 """
 
 from __future__ import annotations
+
+import warnings
+warnings.warn(
+    "services/orchestrator_agent.py jest przestarzały. "
+    "Użyj WorkflowPlanner z agent_orchestrator.py.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 import asyncio
 import re

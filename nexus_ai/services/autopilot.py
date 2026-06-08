@@ -1,10 +1,22 @@
 """
-Autopilot — the heart of the decision-making system.
-Contains TrustScoreCalculator, CouncilOrchestrator (z CouncilSession),
-oraz integrację z PLE (Perpetual Learning Engine).
+[DEPRECATED] Autopilot — legacy decision-making system.
+
+UWAGA: Ten plik jest przestarzały. Użyj zamiast tego:
+- AgentOrchestrator (services/agent_orchestrator.py) zamiast CouncilOrchestrator
+- QualityValidatorAgent (services/quality_validator_agent.py) zamiast TrustScoreCalculator
+
+Zachowany dla kompatybilności wstecznej — nowy kod nie powinien importować
+z tego modułu.
 """
 
 from __future__ import annotations
+
+import warnings
+warnings.warn(
+    "services/autopilot.py jest przestarzały. Użyj AgentOrchestrator z agent_orchestrator.py.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 import asyncio
 from dataclasses import dataclass, field

@@ -14,12 +14,12 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
-import json
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 
+import msgspec
 from structlog import get_logger
 
 logger = get_logger("nexus.installer.models_downloader")
@@ -91,8 +91,8 @@ def load_manifest(manifest_path: str | Path | None = None) -> list[ModelEntry]:
         logger.warning("Model manifest not found at any expected location")
         return []
 
-    with open(manifest_path, encoding="utf-8") as f:
-        data = json.load(f)
+    with open(manifest_path, "rb") as f:
+        data: dict[str, Any] = msgspec.json.decode(f.read())
 
     models_data = data.get("models", {})
     entries: list[ModelEntry] = []

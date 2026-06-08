@@ -1,24 +1,22 @@
 """
-Council Session — pełna sesja Rady Agentów z matrycą głosowania 8 kombinacji.
+[DEPRECATED] Council Session — pelna sesja Rady Agentow z matryca glosowania 8 kombinacji.
 
-Matryca decyzyjna (8 kombinacji):
-  1. APP + APP + APP → AUTO_POST (full consensus, trust ≥ 0.85)
-  2. APP + REJ + APP → SUGGEST  (Alpha + Gamma approve, Beta ma wątpliwości)
-  3. APP + APP + REJ → SUGGEST  (Alpha + Beta approve, Gamma anomaly)
-  4. APP + REJ + REJ → ASK_USER (tylko Alpha approve)
-  5. REJ + APP + APP → ASK_USER (tylko Beta + Gamma approve)
-  6. REJ + REJ + APP → ASK_USER (tylko Gamma approve)
-  7. REJ + APP + REJ → BLOCK    (tylko Beta approve — precision veto)
-  8. REJ + REJ + REJ → BLOCK    (full reject)
+UWAGA: Ten plik jest przestarzaly. Uzyj zamiast tego:
+- QualityValidatorAgent (services/quality_validator_agent.py)
 
-Każda kombinacja ma przypisany:
-  - Poziom decyzyjny (Level 1-4)
-  - Rekomendowaną akcję
-  - Minimalny trust score dla auto-approve
-  - Strategię eskalacji
+Zachowany dla kompatybilnosci wstecznej (DECISION_MATRIX jest importowany przez
+quality_validator_agent.py).
 """
 
 from __future__ import annotations
+
+import warnings
+warnings.warn(
+    "services/council_session.py jest przestarzaly. "
+    "Uzyj QualityValidatorAgent z quality_validator_agent.py.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 from dataclasses import dataclass
 from enum import Enum
@@ -35,7 +33,7 @@ logger = get_logger(__name__)
 # ---------------------------------------------------------------------------
 
 class DecisionLevel(Enum):
-    """Poziomy decyzyjne — im wyższy, tym więcej uwagi wymaga."""
+    """Poziomy decyzyjne — im wyzszy, tym wiecej uwagi wymaga."""
 
     LEVEL_1_AUTO = "LEVEL_1_AUTO"       # Full consensus → auto
     LEVEL_2_REVIEW = "LEVEL_2_REVIEW"   # Minor disagreement → suggest
@@ -45,7 +43,7 @@ class DecisionLevel(Enum):
 
 @dataclass(slots=True)
 class CouncilVerdict:
-    """Wynik głosowania Rady z pełnym kontekstem."""
+    """Wynik glosowania Rady z pelnym kontekstem."""
 
     pattern: str  # nazwa kombinacji (np. "FULL_APPROVE", "ALPHA_ONLY")
     level: DecisionLevel
@@ -77,9 +75,9 @@ DECISION_MATRIX: dict[tuple[str, str, str], CouncilVerdict] = {
         level=DecisionLevel.LEVEL_1_AUTO,
         recommended_action="AUTO_POST",
         min_trust_for_auto=0.85,
-        consensus_summary="Pełny konsensus — wszyscy agenci zatwierdzają fakturę",
+        consensus_summary="Pelny konsensus — wszyscy agenci zatwierdzaja fakture",
         deliberation="Alpha (kontekst), Beta (walidacja), Gamma (anomalie) — wszystkie APPROVE. "
-                     "Pełna zgodność, niskie ryzyko.",
+                     "Pelna zgodnosc, niskie ryzyko.",
     ),
     # 2. Alpha + Gamma approve, Beta rejects (precision concern)
     ("APPROVE", "REJECT", "APPROVE"): CouncilVerdict(
@@ -87,9 +85,9 @@ DECISION_MATRIX: dict[tuple[str, str, str], CouncilVerdict] = {
         level=DecisionLevel.LEVEL_2_REVIEW,
         recommended_action="SUGGEST",
         min_trust_for_auto=0.92,
-        consensus_summary="Alpha i Gamma zatwierdzają, Beta ma zastrzeżenia — sugeruj",
+        consensus_summary="Alpha i Gamma zatwierdzaja, Beta ma zastrzezenia — sugeruj",
         deliberation="Alpha (kontekst) i Gamma (anomalie) approve. Beta (walidacja) reject. "
-                     "Potencjalny problem z precyzją danych. Sugeruj recenzję.",
+                     "Potencjalny problem z precyzja danych. Sugeruj recenzje.",
     ),
     # 3. Alpha + Beta approve, Gamma rejects (anomaly detected)
     ("APPROVE", "APPROVE", "REJECT"): CouncilVerdict(
@@ -97,9 +95,9 @@ DECISION_MATRIX: dict[tuple[str, str, str], CouncilVerdict] = {
         level=DecisionLevel.LEVEL_2_REVIEW,
         recommended_action="SUGGEST",
         min_trust_for_auto=0.90,
-        consensus_summary="Alpha i Beta zatwierdzają, Gamma wykrywa anomalię — sugeruj",
+        consensus_summary="Alpha i Beta zatwierdzaja, Gamma wykrywa anomalie — sugeruj",
         deliberation="Alpha (kontekst) i Beta (walidacja) approve. Gamma (anomalie) reject. "
-                     "Potencjalna anomalia kwotowa. Sugeruj recenzję.",
+                     "Potencjalna anomalia kwotowa. Sugeruj recenzje.",
     ),
     # 4. Only Alpha approves (alpha alone)
     ("APPROVE", "REJECT", "REJECT"): CouncilVerdict(
@@ -107,9 +105,9 @@ DECISION_MATRIX: dict[tuple[str, str, str], CouncilVerdict] = {
         level=DecisionLevel.LEVEL_3_ESCALATE,
         recommended_action="ASK_USER",
         min_trust_for_auto=0.0,  # never auto
-        consensus_summary="Tylko Alpha zatwierdza — wymaga decyzji użytkownika",
+        consensus_summary="Tylko Alpha zatwierdza — wymaga decyzji uzytkownika",
         deliberation="Tylko Alpha (kontekst) APPROVE. Beta (walidacja) i Gamma (anomalie) REJECT. "
-                     "Znaczące rozbieżności. Eskalacja do użytkownika.",
+                     "Znaczace rozbieznosci. Eskalacja do uzytkownika.",
     ),
     # 5. Beta + Gamma approve, Alpha rejects
     ("REJECT", "APPROVE", "APPROVE"): CouncilVerdict(
@@ -117,9 +115,9 @@ DECISION_MATRIX: dict[tuple[str, str, str], CouncilVerdict] = {
         level=DecisionLevel.LEVEL_3_ESCALATE,
         recommended_action="ASK_USER",
         min_trust_for_auto=0.0,
-        consensus_summary="Beta i Gamma zatwierdzają, Alpha odrzuca — wymaga decyzji użytkownika",
+        consensus_summary="Beta i Gamma zatwierdzaja, Alpha odrzuca — wymaga decyzji uzytkownika",
         deliberation="Beta (walidacja) i Gamma (anomalie) APPROVE. Alpha (kontekst) REJECT. "
-                     "Perspektywa kontekstowa jest negatywna. Eskalacja do użytkownika.",
+                     "Perspektywa kontekstowa jest negatywna. Eskalacja do uzytkownika.",
     ),
     # 6. Only Gamma approves
     ("REJECT", "REJECT", "APPROVE"): CouncilVerdict(
@@ -127,9 +125,9 @@ DECISION_MATRIX: dict[tuple[str, str, str], CouncilVerdict] = {
         level=DecisionLevel.LEVEL_3_ESCALATE,
         recommended_action="ASK_USER",
         min_trust_for_auto=0.0,
-        consensus_summary="Tylko Gamma zatwierdza — wymaga decyzji użytkownika",
+        consensus_summary="Tylko Gamma zatwierdza — wymaga decyzji uzytkownika",
         deliberation="Tylko Gamma (anomalie) APPROVE. Alpha (kontekst) i Beta (walidacja) REJECT. "
-                     "Znaczące rozbieżności. Eskalacja do użytkownika.",
+                     "Znaczace rozbieznosci. Eskalacja do uzytkownika.",
     ),
     # 7. Only Beta approves (precision veto scenario)
     ("REJECT", "APPROVE", "REJECT"): CouncilVerdict(
@@ -139,7 +137,7 @@ DECISION_MATRIX: dict[tuple[str, str, str], CouncilVerdict] = {
         min_trust_for_auto=0.0,
         consensus_summary="Tylko Beta zatwierdza — blokada (precision veto)",
         deliberation="Tylko Beta (walidacja) APPROVE. Alpha (kontekst) i Gamma (anomalie) REJECT. "
-                     "Precision veto — walidacja precyzji nie jest wystarczająca do approval. BLOKADA.",
+                     "Precision veto — walidacja precyzji nie jest wystarczajaca do approval. BLOKADA.",
     ),
     # 8. Full reject
     ("REJECT", "REJECT", "REJECT"): CouncilVerdict(
@@ -147,9 +145,9 @@ DECISION_MATRIX: dict[tuple[str, str, str], CouncilVerdict] = {
         level=DecisionLevel.LEVEL_4_BLOCK,
         recommended_action="BLOCK",
         min_trust_for_auto=0.0,
-        consensus_summary="Wszyscy agenci odrzucają fakturę — blokada",
+        consensus_summary="Wszyscy agenci odrzucaja fakture — blokada",
         deliberation="Alpha (kontekst), Beta (walidacja), Gamma (anomalie) — wszystkie REJECT. "
-                     "Pełna zgodność co do odrzucenia. BLOKADA.",
+                     "Pelna zgodnosc co do odrzucenia. BLOKADA.",
     ),
 }
 
@@ -159,10 +157,10 @@ DECISION_MATRIX: dict[tuple[str, str, str], CouncilVerdict] = {
 # ---------------------------------------------------------------------------
 
 class CouncilSession:
-    """Pełna sesja Rady Agentów z matrycą głosowania 8 kombinacji.
+    """Pelna sesja Rady Agentow z matryca glosowania 8 kombinacji.
 
-    Każda sesja przetwarza jedną fakturę, agreguje głosy Alpha, Beta, Gamma
-    i zwraca CouncilVerdict z rekomendowaną akcją i poziomem decyzyjnym.
+    Kazda sesja przetwarza jedna fakture, agreguje glosy Alpha, Beta, Gamma
+    i zwraca CouncilVerdict z rekomendowana akcja i poziomem decyzyjnym.
     """
 
     def __init__(
@@ -178,21 +176,10 @@ class CouncilSession:
         self._gamma = gamma_verdict
 
     def deliberate(self) -> CouncilVerdict:
-        """Przeprowadź deliberację Rady — znajdź kombinację w macierzy 8x1.
-
-        Zwraca CouncilVerdict z:
-          - pattern (nazwa kombinacji)
-          - level (LEVEL_1_AUTO ... LEVEL_4_BLOCK)
-          - recommended_action (AUTO_POST | SUGGEST | ASK_USER | BLOCK)
-          - min_trust_for_auto (minimalny trust score dla auto-approve)
-          - consensus_summary (podsumowanie)
-          - deliberation (szczegółowe uzasadnienie)
-        """
+        """Przeprowadz deliberacje Rady — znajdz kombinacje w macierzy 8x1."""
         key = (self._alpha.decision, self._beta.decision, self._gamma.decision)
-
         verdict = DECISION_MATRIX.get(key)
         if verdict is None:
-            # Fallback dla nieznanych kombinacji (np. z ERROR)
             logger.warning(
                 "[CouncilSession] unknown verdict pattern: %s — falling back to ASK_USER",
                 key,
@@ -202,11 +189,10 @@ class CouncilSession:
                 level=DecisionLevel.LEVEL_3_ESCALATE,
                 recommended_action="ASK_USER",
                 min_trust_for_auto=0.0,
-                consensus_summary=f"Nieznana kombinacja głosów: Alpha={self._alpha.decision}, "
+                consensus_summary=f"Nieznana kombinacja glowos: Alpha={self._alpha.decision}, "
                                   f"Beta={self._beta.decision}, Gamma={self._gamma.decision}",
-                deliberation="Nieznany wzorzec głosowania. Bezpieczna eskalacja do użytkownika.",
+                deliberation="Nieznany wzorzec glosowania. Bezpieczna eskalacja do uzytkownika.",
             )
-
         logger.info(
             "[CouncilSession] pattern=%s level=%s action=%s",
             verdict.pattern,
@@ -216,11 +202,10 @@ class CouncilSession:
         return verdict
 
     def get_consensus_type(self) -> str:
-        """Zwróć typ konsensusu: full, majority, split, none."""
+        """Zwroc typ konsensusu: full, majority, split, none."""
         key = (self._alpha.decision, self._beta.decision, self._gamma.decision)
         approves = sum(1 for d in key if d == "APPROVE")
         rejects = sum(1 for d in key if d == "REJECT")
-
         if approves == 3:
             return "full_approve"
         if rejects == 3:
@@ -233,7 +218,7 @@ class CouncilSession:
 
     @staticmethod
     def get_all_patterns() -> list[dict[str, Any]]:
-        """Zwróć listę wszystkich 8 kombinacji (do debugowania / dokumentacji)."""
+        """Zwroc liste wszystkich 8 kombinacji (do debugowania / dokumentacji)."""
         return [
             {
                 "key": f"({a}, {b}, {c})",

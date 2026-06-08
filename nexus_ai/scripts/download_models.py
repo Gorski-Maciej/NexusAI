@@ -22,41 +22,36 @@ from pathlib import Path
 # Actual checksums should be updated when models are known to be correct.
 MODEL_MANIFEST: dict[str, dict[str, str]] = {
     # ── Council of LLMs: GGUF models ──────────────────────────────────────────
-    "LFM2.5-1.2B-Q4_K_M.gguf": {
-        "repo": "lmstudio-community/LFM-2.5-1.2B-GGUF",
-        "sha256": "",  # Fill after first verified download
-        "description": "Alpha Agent — Primary invoice classification",
+    # SHA-256 values verified against HuggingFace Hub API (lfs.oid) on 2026-06-08.
+    "LFM2.5-1.2B-Instruct-Q4_K_M.gguf": {
+        "repo": "lmstudio-community/LFM2.5-1.2B-Instruct-GGUF",
+        "sha256": "7e6e347274a9a6eb1699e3d6024e6492d3b5eee6088afbad62b200f7800fa455",
+        "description": "Alpha Agent — Primary invoice classification (1.2B)",
     },
     "Qwen3-0.6B-Q4_K_M.gguf": {
         "repo": "lmstudio-community/Qwen3-0.6B-GGUF",
-        "sha256": "",
-        "description": "Beta Agent — Secondary validation",
+        "sha256": "cd47557a67d7e8f2891d98b5e1dbf2988544569fdf4f1bdb30e92b71aa61b548",
+        "description": "Beta Agent — Secondary validation (0.6B)",
     },
-    "LittleLamb-0.3B-Q4_K_M.gguf": {
-        "repo": "lmstudio-community/LittleLamb-0.3B-GGUF",
-        "sha256": "",
-        "description": "Gamma / Orchestrator Agent — Tiebreaker + reasoning",
+    "LittleLamb.Q4_K_M.gguf": {
+        "repo": "mradermacher/LittleLamb-GGUF",
+        "sha256": "6caad17f3de5a2790c3b4ae806133c372ed3aa989bac50bbcb0990dd09876f2b",
+        "description": "Gamma / Orchestrator Agent — Tiebreaker + reasoning (0.3B)",
     },
-    "granite-4.0-1b-nano-Q4_K_M.gguf": {
-        "repo": "lmstudio-community/granite-4.0-1b-nano-GGUF",
-        "sha256": "",
-        "description": "Rules / Decision Agent — Business rule enforcement",
+    "granite-4.0-1b-Q4_K_M.gguf": {
+        "repo": "unsloth/granite-4.0-1b-GGUF",
+        "sha256": "ebec82f541df1fe74f9a8d1235122e6facb6098b6da2b8f7457ec292f1238d4e",
+        "description": "Rules / Decision Agent — Business rule enforcement (1B)",
     },
-    "qwen2.5-1.5b-instruct-Q4_K_M.gguf": {
+    "Qwen2.5-1.5B-Instruct-Q4_K_M.gguf": {
         "repo": "lmstudio-community/Qwen2.5-1.5B-Instruct-GGUF",
-        "sha256": "",
-        "description": "Analytics Agent — Anomaly detection",
+        "sha256": "43cc0338d9a85cec628a3855e408131ca1b58f9643b03c7ec347646074106d92",
+        "description": "Analytics Agent — Anomaly detection (1.5B)",
     },
-    "Jamba-Reasoning-3B-Q4_K_M.gguf": {
-        "repo": "lmstudio-community/Jamba-Reasoning-3B-GGUF",
-        "sha256": "",
-        "description": "Decision Agent (Jamba) — Complex reasoning",
-    },
-    # ── Sentence transformers ─────────────────────────────────────────────────
-    "all-MiniLM-L6-v2": {
-        "repo": "sentence-transformers/all-MiniLM-L6-v2",
-        "sha256": "",
-        "description": "Active Learning / Semantic Search embeddings",
+    "jamba-reasoning-3b-Q4_K_M.gguf": {
+        "repo": "ai21labs/AI21-Jamba-Reasoning-3B-GGUF",
+        "sha256": "5c8edf36ec3ad9792a639db8d6865e479038226cf8fc71ef47331c611854f6c8",
+        "description": "Decision Agent (Jamba) — Complex reasoning (3B, optional)",
     },
     # ── Surya OCR models ──────────────────────────────────────────────────────
     "surya_det3": {

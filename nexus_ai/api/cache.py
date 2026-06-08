@@ -1,9 +1,10 @@
 # api/cache.py
 """
-Async multi-level cache using cashews.
+Async multi-level cache using dyscache (anyio-native, RAM L1 + SQLite L2).
 
 Zgodnie z aa3fvcx.txt (Punkt 13): inteligentny, dwupoziomowy cache
-(RAM L1 + dysk L2), natywnie asynchroniczny (anyio).
+(RAM L1 + SQLite L2), natywnie asynchroniczny (anyio).
+Zastępuje: poprzednią implementację opartą na cashews (która nie jest anyio-native).
 
 Użycie:
     from nexus_ai.api.cache import nexus_cache
@@ -25,11 +26,15 @@ logger = get_logger("nexus.api.cache")
 
 
 class NexusCache:
-    """Async multi-level cache (RAM L1 + Diskcache L2) using cashews.
+    """Async multi-level cache (RAM L1 + SQLite L2) using dyscache.
 
     Zgodnie z aa3fvcx.txt:
     - L1 (RAM): Błyskawiczny, ulotny cache dla najczęściej używanych danych
-    - L2 (Diskcache): Trwały, pojemny cache na dysku — dane przetrwają restart
+    - L2 (SQLite): Trwały, pojemny cache na dysku — dane przetrwają restart
+
+    dyscache jest natywnie asynchroniczny (anyio-native), co idealnie
+    współgra z resztą stosu (Litestar, Granian).
+    Zastępuje: cashews (który nie był anyio-native).
     """
 
     def __init__(self, db_path: Path | None = None):
@@ -40,21 +45,21 @@ class NexusCache:
 
     def _init_cache(self) -> None:
         try:
-            from cashews import Cache
-            # cashews z backendem dyskowym (diskcache)
-            self._cache = Cache("disk", path=str(self._db_path))
+            from dyscache import Cache
+            # dyscache z domyślnym dwupoziomowym backendem (RAM L1 + SQLite L2)
+            self._cache = Cache(str(self._db_path))
             self._initialized = True
-            logger.info("[Cache] cashews initialized: %s", self._db_path)
+            logger.info("[Cache] dyscache initialized: %s", self._db_path)
         except ImportError:
             logger.warning(
-                "[Cache] cashews not installed. "
-                "Install: pip install cashews[diskcache]. "
+                "[Cache] dyscache not installed. "
+                "Install: pip install dyscache. "
                 "Falling back to in-memory cache."
             )
             self._cache = _MemoryFallback()
             self._initialized = True
         except Exception as exc:
-            logger.error("[Cache] cashews init failed: %s", exc)
+            logger.error("[Cache] dyscache init failed: %s", exc)
             self._cache = _MemoryFallback()
             self._initialized = True
 
@@ -73,7 +78,7 @@ class NexusCache:
         if not self._initialized:
             return
         try:
-            await self._cache.set(key, value, expire=ttl)
+            await self._cache.set(key, value, ttl=ttl)
         except Exception as exc:
             logger.warning("[Cache] set failed for %s: %s", key, exc)
 
@@ -162,7 +167,7 @@ def ttl_cache(seconds: int = 60):
     """Decorator that caches async function results using dyscache.
 
     Używa nexus_cache (dyscache) zamiast poprzedniej implementacji
-    opartej na słowniku w pamięci.
+    opartej na cashews/słowniku w pamięci.
     """
     def decorator(func: Callable):
         @wraps(func)

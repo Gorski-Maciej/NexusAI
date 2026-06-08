@@ -16,15 +16,15 @@ Flow:
 from __future__ import annotations
 
 import asyncio
-import json
 import platform
 import tempfile
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 
 import httpx
+import msgspec
 from structlog import get_logger
 
 logger = get_logger("nexus.installer.updater")
@@ -128,8 +128,8 @@ async def check_for_updates(
     # Try local version.json first (for testing/development)
     if LOCAL_VERSION_FILE and Path(LOCAL_VERSION_FILE).exists():
         try:
-            with open(LOCAL_VERSION_FILE) as f:
-                data = json.load(f)
+            with open(LOCAL_VERSION_FILE, "rb") as f:
+                data: dict[str, Any] = msgspec.json.decode(f.read())
             latest = data.get("version", CURRENT_VERSION)
             if _is_newer(latest, CURRENT_VERSION):
                 return UpdateCheckResult(
@@ -161,8 +161,9 @@ async def check_for_updates(
                 if response.status_code != 200:
                     logger.debug("Update check %s returned %d", url, response.status_code)
                     continue
+                content = await response.aread()
+                data: dict[str, Any] = msgspec.json.decode(content)
 
-                data = response.json()
                 latest = data.get("version", CURRENT_VERSION)
 
                 if not _is_newer(latest, CURRENT_VERSION):
@@ -189,7 +190,7 @@ async def check_for_updates(
                 logger.debug("Update check timed out for %s", url)
             except httpx.NetworkError as e:
                 logger.debug("Network error for %s: %s", url, e)
-            except json.JSONDecodeError as e:
+            except msgspec.ValidationError as e:
                 logger.debug("Invalid JSON from %s: %s", url, e)
             except Exception as e:
                 logger.debug("Update check failed for %s: %s", url, e)

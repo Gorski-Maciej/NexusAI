@@ -1,11 +1,21 @@
 """
-Decision Agent — final decision layer in the pipeline.
-Aggregates reports from Council, Rules, and Analytics agents,
-then uses Jamba 3B reasoning + Granite function calling to
-produce the ultimate decision: AUTO_POST / SUGGEST / ESCALATE.
+[DEPRECATED] Decision Agent — legacy final decision layer.
+
+UWAGA: Ten plik jest przestarzały. Użyj zamiast tego:
+- AgentOrchestrator (services/agent_orchestrator.py) który zawiera
+  JambaStrategist, TrustScoreCalculator i WorkflowPlanner
+
+Zachowany dla kompatybilności wstecznej.
 """
 
 from __future__ import annotations
+
+import warnings
+warnings.warn(
+    "services/decision_agent.py jest przestarzały. Użyj AgentOrchestrator z agent_orchestrator.py.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 import asyncio
 import re

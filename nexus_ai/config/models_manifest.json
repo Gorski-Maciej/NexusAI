@@ -1,57 +1,57 @@
 {
   "__comment__": "NexusAI Model Manifest — SHA-256 checksums for integrity verification",
-  "__info__": "Run 'python Code/main.py --compute-checksums' to update checksums after downloading",
+  "__info__": "SHA-256 values verified against HuggingFace Hub API (lfs.oid). Run 'pixi run download-models' to download.",
   "models": {
     "LFM2.5-1.2B-Q4_K_M.gguf": {
-      "repo_id": "lmstudio-community/LFM-2.5-1.2B-GGUF",
-      "filename": "LFM-2.5-1.2B-Q4_K_M.gguf",
-      "sha256": "",
+      "repo_id": "lmstudio-community/LFM2.5-1.2B-Instruct-GGUF",
+      "filename": "LFM2.5-1.2B-Instruct-Q4_K_M.gguf",
+      "sha256": "7e6e347274a9a6eb1699e3d6024e6492d3b5eee6088afbad62b200f7800fa455",
       "description": "Alpha Agent — Primary invoice classification (1.2B params)",
-      "size_mb": 780,
+      "size_mb": 697,
       "required": true
     },
     "Qwen3-0.6B-Q4_K_M.gguf": {
       "repo_id": "lmstudio-community/Qwen3-0.6B-GGUF",
       "filename": "Qwen3-0.6B-Q4_K_M.gguf",
-      "sha256": "",
+      "sha256": "cd47557a67d7e8f2891d98b5e1dbf2988544569fdf4f1bdb30e92b71aa61b548",
       "description": "Beta Agent — Secondary validation (0.6B params)",
       "size_mb": 430,
       "required": true
     },
     "LittleLamb-0.3B-Q4_K_M.gguf": {
-      "repo_id": "lmstudio-community/LittleLamb-0.3B-GGUF",
-      "filename": "LittleLamb-0.3B-Q4_K_M.gguf",
-      "sha256": "",
+      "repo_id": "mradermacher/LittleLamb-GGUF",
+      "filename": "LittleLamb.Q4_K_M.gguf",
+      "sha256": "6caad17f3de5a2790c3b4ae806133c372ed3aa989bac50bbcb0990dd09876f2b",
       "description": "Gamma / Orchestrator Agent — Tiebreaker + reasoning (0.3B params)",
-      "size_mb": 250,
+      "size_mb": 227,
       "required": true
     },
     "granite-4.0-1b-nano-Q4_K_M.gguf": {
-      "repo_id": "lmstudio-community/granite-4.0-1b-nano-GGUF",
-      "filename": "granite-4.0-1b-nano-Q4_K_M.gguf",
-      "sha256": "",
+      "repo_id": "unsloth/granite-4.0-1b-GGUF",
+      "filename": "granite-4.0-1b-Q4_K_M.gguf",
+      "sha256": "ebec82f541df1fe74f9a8d1235122e6facb6098b6da2b8f7457ec292f1238d4e",
       "description": "Rules / Decision Agent — Business rule enforcement (1B params)",
-      "size_mb": 680,
+      "size_mb": 976,
       "required": true
     },
     "qwen2.5-1.5b-instruct-Q4_K_M.gguf": {
       "repo_id": "lmstudio-community/Qwen2.5-1.5B-Instruct-GGUF",
       "filename": "Qwen2.5-1.5B-Instruct-Q4_K_M.gguf",
-      "sha256": "",
+      "sha256": "43cc0338d9a85cec628a3855e408131ca1b58f9643b03c7ec347646074106d92",
       "description": "Analytics Agent — Anomaly detection (1.5B params)",
       "size_mb": 980,
       "required": true
     },
     "Jamba-Reasoning-3B-Q4_K_M.gguf": {
-      "repo_id": "lmstudio-community/Jamba-Reasoning-3B-GGUF",
-      "filename": "Jamba-Reasoning-3B-Q4_K_M.gguf",
-      "sha256": "",
+      "repo_id": "ai21labs/AI21-Jamba-Reasoning-3B-GGUF",
+      "filename": "jamba-reasoning-3b-Q4_K_M.gguf",
+      "sha256": "5c8edf36ec3ad9792a639db8d6865e479038226cf8fc71ef47331c611854f6c8",
       "description": "Decision Agent (Jamba) — Complex reasoning (3B params)",
       "size_mb": 1800,
       "required": false
     }
   },
-  "total_size_mb": 4920,
-  "required_size_mb": 3120,
+  "total_size_mb": 5110,
+  "required_size_mb": 3310,
   "models_dir": "models"
 }

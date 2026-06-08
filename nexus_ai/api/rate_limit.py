@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import base64
-import json as json_module
 import os
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass
 from typing import Any
 
+import msgspec
 from litestar.middleware import AbstractMiddleware
 from litestar.response import Response
 
@@ -85,7 +85,7 @@ class SimpleRateLimitMiddleware(AbstractMiddleware):
                 parts = token.split(".")
                 if len(parts) == 3:
                     padded = parts[1] + "=" * (-len(parts[1]) % 4)
-                    payload = json_module.loads(base64.urlsafe_b64decode(padded.encode()))
+                    payload = msgspec.json.decode(base64.urlsafe_b64decode(padded.encode()))
                     role = payload.get("extras", {}).get("role", payload.get("role", "anonymous"))
                     return str(role)
             except Exception:
