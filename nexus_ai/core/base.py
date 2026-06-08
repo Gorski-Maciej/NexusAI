@@ -2,7 +2,7 @@
 import xml.etree.ElementTree as ET
 from abc import ABC, abstractmethod
 
-from models.invoice import Invoice
+from nexus_ai.db.models import Invoice
 
 
 class BaseExporter(ABC):

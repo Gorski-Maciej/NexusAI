@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
-import pendulum
 from typing import Any, Protocol
+
+import pendulum
 
 
 class DunningAIAgent(Protocol):

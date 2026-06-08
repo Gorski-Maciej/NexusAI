@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
 
 import pendulum
+
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
 

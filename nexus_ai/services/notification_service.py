@@ -2,11 +2,12 @@
 from __future__ import annotations
 
 import asyncio
-from structlog import get_logger
 import sqlite3
-import pendulum
 from pathlib import Path
 from typing import Any
+
+import pendulum
+from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps

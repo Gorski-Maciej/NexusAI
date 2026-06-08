@@ -12,8 +12,9 @@ from __future__ import annotations
 
 import asyncio
 import uuid
-import pendulum
 from typing import Any
+
+import pendulum
 
 from nexus_ai.core.logger import get_logger
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads

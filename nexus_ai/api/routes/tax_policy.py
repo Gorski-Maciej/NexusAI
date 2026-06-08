@@ -14,7 +14,6 @@ Nowość:
 
 from __future__ import annotations
 
-from structlog import get_logger
 from decimal import Decimal
 from typing import Any
 
@@ -22,6 +21,7 @@ import duckdb
 import msgspec
 from litestar import Controller, get, post
 from litestar.response import Response
+from structlog import get_logger
 
 from nexus_ai.tax.rules import (
     ensure_tax_schemas,

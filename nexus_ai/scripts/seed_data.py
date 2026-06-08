@@ -17,12 +17,13 @@ Creates a set of realistic test data:
 from __future__ import annotations
 
 import asyncio
-from structlog import get_logger
 import logging
 import os
 import uuid
-import pendulum
 from typing import Any
+
+import pendulum
+from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 

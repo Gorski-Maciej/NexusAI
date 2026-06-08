@@ -1,7 +1,7 @@
-from structlog import get_logger
 from typing import Any
 
 from litestar import Controller, get, post
+from structlog import get_logger
 
 from nexus_ai.api.cache import ttl_cache
 from nexus_ai.api.schemas import AnalyticsQuery

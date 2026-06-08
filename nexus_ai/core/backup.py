@@ -5,7 +5,6 @@ Zastępuje: AES-256-CBC + PKCS7 + PBKDF2 (cryptography.hazmat)
 Nowy:     ChaCha20-Poly1305 AEAD + Argon2id KDF (nexus-crypto, Rust+PyO3)
 """
 import io
-from structlog import get_logger
 import os
 import zipfile
 from pathlib import Path

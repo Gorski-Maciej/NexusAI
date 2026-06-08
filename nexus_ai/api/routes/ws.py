@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import asyncio
-from structlog import get_logger
 from typing import Any
 
 from litestar import websocket
+from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 

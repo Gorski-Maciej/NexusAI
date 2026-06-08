@@ -16,8 +16,7 @@ from nexus_ai.api.schemas import InvoiceCreate, InvoiceResponse, validate_invoic
 from nexus_ai.api.services import ContentAddressableStorage
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps
-from models.invoice import Invoice
-from models.outbox import OutboxEvent
+from nexus_ai.db.models import Invoice, OutboxEvent
 
 
 class InvoiceController(Controller):

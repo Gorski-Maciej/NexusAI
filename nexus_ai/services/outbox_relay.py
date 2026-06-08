@@ -28,7 +28,6 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
-from structlog import get_logger
 import time
 import uuid
 from collections.abc import Callable
@@ -37,6 +36,7 @@ from typing import Any
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
+from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 

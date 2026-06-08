@@ -15,13 +15,13 @@ Funkcjonalności:
 
 from __future__ import annotations
 
-from structlog import get_logger
 import uuid
 from dataclasses import dataclass, field
-import pendulum
 from typing import Any
 
 import duckdb
+import pendulum
+from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 from nexus_ai.tax.audit import (

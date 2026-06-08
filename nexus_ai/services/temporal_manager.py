@@ -16,11 +16,12 @@ Dzięki temporalności:
 
 from __future__ import annotations
 
+from datetime import date
 from dataclasses import dataclass
-import pendulum
 from typing import Any
 
 import duckdb
+import pendulum
 
 
 @dataclass(frozen=True)

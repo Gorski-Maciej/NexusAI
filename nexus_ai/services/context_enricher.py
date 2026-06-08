@@ -13,11 +13,11 @@ Komponenty:
 
 from __future__ import annotations
 
-from structlog import get_logger
-import pendulum
 from typing import Any
 
 import duckdb
+import pendulum
+from structlog import get_logger
 
 logger = get_logger("nexus.services.context_enricher")
 

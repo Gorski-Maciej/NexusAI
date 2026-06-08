@@ -10,9 +10,10 @@ import tempfile
 from collections.abc import Iterable
 from contextlib import suppress
 from dataclasses import dataclass
-import pendulum
 from pathlib import Path
 from typing import Any
+
+import pendulum
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 

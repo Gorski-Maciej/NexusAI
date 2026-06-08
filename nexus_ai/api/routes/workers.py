@@ -1,9 +1,9 @@
 """Worker status monitoring endpoint (Rozwiązanie 29)."""
 from __future__ import annotations
 
-import pendulum
 from typing import Any
 
+import pendulum
 from litestar import Controller, get
 
 

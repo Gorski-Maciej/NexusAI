@@ -47,10 +47,10 @@ def test_outbox_dispatch_routes_to_ocr_task() -> None:
 def test_invoice_controller_uses_schema_registered_outbox_model() -> None:
     controller_source = Path("nexus_ai/api/controllers/invoices.py").read_text(encoding="utf-8")
     db_source = Path("nexus_ai/db/database.py").read_text(encoding="utf-8")
-    model_source = Path("nexus_ai/models/outbox.py").read_text(encoding="utf-8")
+    model_source = Path("nexus_ai/db/models.py").read_text(encoding="utf-8")
 
-    assert "from models.outbox import OutboxEvent" in controller_source
-    assert "from models.outbox import OutboxEvent" in db_source
+    assert "from nexus_ai.db.models import Invoice, OutboxEvent" in controller_source
+    assert "from nexus_ai.db.models import Invoice, ActiveLearningPattern, OutboxEvent  # noqa: F401" in db_source
     assert "aggregate_id" in model_source
     assert "status" in model_source
     assert "retry_count" in model_source

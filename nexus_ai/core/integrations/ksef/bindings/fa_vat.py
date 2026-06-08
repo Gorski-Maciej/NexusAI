@@ -1,8 +1,11 @@
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from decimal import Decimal
 from enum import Enum
-from xsdata.models.datatype import XmlDate, XmlDateTime
+
+from xsdata.models.datatype import XmlDateTime
+
 from nexus_ai.core.integrations.ksef.bindings.elementarne_typy_danych_v10_0_e import (
     Twybor1,
     Twybor12,

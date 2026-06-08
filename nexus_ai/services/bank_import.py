@@ -4,10 +4,11 @@ import csv
 import hashlib
 import uuid
 from dataclasses import dataclass
-import pendulum
 from decimal import Decimal
 from pathlib import Path
 from typing import Protocol
+
+import pendulum
 
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient

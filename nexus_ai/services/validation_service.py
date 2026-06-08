@@ -2,7 +2,7 @@
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.invoice import Invoice
+from nexus_ai.db.models import Invoice
 from nexus_ai.services.currency_converter import Money
 
 

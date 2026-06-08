@@ -13,8 +13,6 @@ All metrics are lazy-initialized (no import-time side effects).
 """
 from __future__ import annotations
 
-from typing import Any
-
 from opentelemetry import metrics
 from opentelemetry.metrics import Counter, Gauge, Histogram, Meter
 

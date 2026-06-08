@@ -14,18 +14,18 @@ Provides:
 from __future__ import annotations
 
 import hashlib
-from structlog import get_logger
 import re
 import secrets
 import uuid
-import pendulum
 
 import msgspec
+import pendulum
 from litestar import Controller, get, post
 from litestar.connection import Request
 from litestar.exceptions import NotAuthorizedException, ValidationException
 from litestar.response import Response
 from sqlalchemy import text
+from structlog import get_logger
 
 from nexus_ai.api.auth_service import hash_password, verify_password
 from nexus_ai.api.exceptions import DuplicateResourceError

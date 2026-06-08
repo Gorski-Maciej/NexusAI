@@ -25,15 +25,16 @@ from __future__ import annotations
 
 import asyncio
 import importlib
-from structlog import get_logger
 import logging
 import os
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
-import pendulum
 from pathlib import Path
 from typing import Any
+
+import pendulum
+from structlog import get_logger
 
 logger = get_logger("nexus.bootstrap")
 

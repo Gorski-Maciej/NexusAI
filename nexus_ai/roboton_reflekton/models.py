@@ -1,26 +1,20 @@
 """
 SQLModel definitions for Roboton/Reflekton — autonomiczny podsystem księgowy.
 
-Zastępuje: SQLAlchemy DeclarativeBase + Mapped/mapped_column (stary styl)
-Nowy:     SQLModel Field-based — jedna definicja dla bazy i API
-
 Zgodnie z aa3fvcx.txt:
 - SQLModel łączy SQLAlchemy + Pydantic w jednej klasie
-- Idealna integracja z Litestar i msgspec
+- SQLite+SQLCipher zamiast PostgreSQL
+- UUID jako TEXT, JSON jako TEXT (zgodne z SQLite)
 """
 from __future__ import annotations
 
 import uuid
-import pendulum
 from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum as BaseStrEnum
 
-from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, Integer, Numeric, String, UniqueConstraint
-from sqlalchemy import Enum as SAEnum
-from sqlalchemy.dialects.postgresql import JSONB, UUID
-
-from sqlmodel import Field, Relationship, SQLModel
+import pendulum
+from sqlmodel import Field, SQLModel
 
 
 class StrEnum(BaseStrEnum):
@@ -60,93 +54,73 @@ Base = SQLModel
 
 
 class CompanyProfile(SQLModel, table=True):
-    """Profil firmy — dane rejestrowe, polityka KSeF, mapowanie księgowe."""
+    """Profil firmy — dane rejestrowe, polityka KSeF, mapowanie księgowe.
+
+    Zgodnie z aa3fvcx.txt: SQLite+SQLCipher, więc UUID i JSON jako TEXT.
+    """
     __tablename__ = "company_profiles"  # type: ignore[assignment]
 
-    id: uuid.UUID = Field(sa_column=Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4))
-    name: str = Field(sa_type=String(255), nullable=False)
-    nip: str = Field(sa_type=String(10), unique=True, nullable=False)
-    legal_form: LegalForm = Field(sa_type=SAEnum(LegalForm, name="legal_form_enum"), nullable=False)
-    ksef_active: bool = Field(sa_type=Boolean, default=True, nullable=False)
-    ksef_token: str | None = Field(sa_type=String(512), default=None)
-    vat_active: bool = Field(sa_type=Boolean, default=True, nullable=False)
-    vat_proportion: Decimal = Field(sa_type=Numeric(5, 4), default=Decimal("1.0"), nullable=False)
-    tigerbeetle_ledger_map: dict[str, int] = Field(sa_type=JSONB, default_factory=dict, nullable=False)
-    company_policy: dict = Field(sa_type=JSON, default_factory=dict, nullable=False)
-    created_at: datetime = Field(sa_type=DateTime(timezone=True), default_factory=lambda: pendulum.now("UTC"), nullable=False)
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    name: str = Field(nullable=False, max_length=255)
+    nip: str = Field(unique=True, nullable=False, max_length=10)
+    legal_form: str = Field(nullable=False, max_length=32)  # LegalForm as str
+    ksef_active: bool = Field(default=True, nullable=False)
+    ksef_token: str | None = Field(default=None, max_length=512)
+    vat_active: bool = Field(default=True, nullable=False)
+    vat_proportion: Decimal | None = Field(default=None, max_digits=5, decimal_places=4)
+    tigerbeetle_ledger_map: str = Field(default="{}")  # JSON as TEXT
+    company_policy: str = Field(default="{}")  # JSON as TEXT
+    created_at: datetime = Field(default_factory=lambda: pendulum.now("UTC"), nullable=False)
 
-    # NOTE: Relationship fields without type annotations.
-    # sqlmodel 0.0.38 doesn't resolve string annotations via get_type_hints(),
-    # so forward references (CompanyPartner, TaxPolicy) would cause
-    # TypeError: issubclass() arg 1 must be a class in get_sqlalchemy_type.
-    # We use model_config.ignored_types to tell Pydantic to skip these.
-    partners: list[CompanyPartner] = Relationship(back_populates="company")
-    tax_policy: TaxPolicy | None = Relationship(back_populates="company")
+    # Relationship fields (SQLModel) — bez type annotations
 
 
 class CompanyPartner(SQLModel, table=True):
     """Wspólnicy spółki — dla JDG lista może być pusta."""
     __tablename__ = "company_partners"  # type: ignore[assignment]
 
-    id: uuid.UUID = Field(sa_column=Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4))
-    company_id: uuid.UUID = Field(
-        sa_column=Column(UUID(as_uuid=True), ForeignKey("company_profiles.id", ondelete="CASCADE"), nullable=False)
-    )
-    full_name: str = Field(sa_type=String(255), nullable=False)
-    tax_id: str = Field(sa_type=String(10), nullable=False)
-    share_ratio: Decimal = Field(sa_type=Numeric(5, 4), nullable=False)
-
-    company: CompanyProfile = Relationship(back_populates="partners")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    company_id: str = Field(foreign_key="company_profiles.id", nullable=False)
+    full_name: str = Field(nullable=False, max_length=255)
+    tax_id: str = Field(nullable=False, max_length=10)
+    share_ratio: Decimal | None = Field(default=None, max_digits=5, decimal_places=4)
 
 
 class TaxPolicy(SQLModel, table=True):
     """Polityka podatkowa firmy — forma opodatkowania, cykl VAT."""
     __tablename__ = "tax_policies"  # type: ignore[assignment]
-    __table_args__ = (UniqueConstraint("company_id", name="uq_tax_policy_company"),)
 
-    id: uuid.UUID = Field(sa_column=Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4))
-    company_id: uuid.UUID = Field(
-        sa_column=Column(UUID(as_uuid=True), ForeignKey("company_profiles.id", ondelete="CASCADE"), nullable=False)
-    )
-    tax_form: TaxForm = Field(sa_type=SAEnum(TaxForm, name="tax_form_enum"), nullable=False)
-    pit_costs_enabled: bool = Field(sa_type=Boolean, default=True, nullable=False)
-    requires_full_ledger: bool = Field(sa_type=Boolean, default=False, nullable=False)
-    vat_settlement_cycle: str = Field(sa_type=String(32), default="monthly", nullable=False)
-    effective_from: datetime = Field(sa_type=DateTime(timezone=True), default_factory=lambda: pendulum.now("UTC"), nullable=False)
-
-    company: CompanyProfile = Relationship(back_populates="tax_policy")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    company_id: str = Field(foreign_key="company_profiles.id", nullable=False, unique=True)
+    tax_form: str = Field(nullable=False, max_length=32)  # TaxForm as str
+    pit_costs_enabled: bool = Field(default=True, nullable=False)
+    requires_full_ledger: bool = Field(default=False, nullable=False)
+    vat_settlement_cycle: str = Field(default="monthly", nullable=False, max_length=32)
+    effective_from: datetime = Field(default_factory=lambda: pendulum.now("UTC"), nullable=False)
 
 
 class LedgerTransfer(SQLModel, table=True):
     """Transakcja księgowa w TigerBeetle — podwójny zapis."""
     __tablename__ = "ledger_transfers"  # type: ignore[assignment]
 
-    id: uuid.UUID = Field(sa_column=Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4))
-    company_id: uuid.UUID = Field(
-        sa_column=Column(UUID(as_uuid=True), ForeignKey("company_profiles.id", ondelete="CASCADE"), nullable=False)
-    )
-    source_account: int = Field(sa_type=Integer, nullable=False)
-    target_account: int = Field(sa_type=Integer, nullable=False)
-    amount_minor: int = Field(sa_type=Integer, nullable=False)
-    currency: str = Field(sa_type=String(3), default="PLN", nullable=False)
-    source_document_id: uuid.UUID = Field(sa_type=UUID(as_uuid=True), nullable=False)
-    status: TransferStatus = Field(sa_type=SAEnum(TransferStatus, name="transfer_status_enum"), default=TransferStatus.PENDING, nullable=False)
-    meta: dict = Field(sa_type=JSON, default_factory=dict, nullable=False)
-    created_at: datetime = Field(sa_type=DateTime(timezone=True), default_factory=lambda: pendulum.now("UTC"), nullable=False)
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    company_id: str = Field(foreign_key="company_profiles.id", nullable=False)
+    source_account: int = Field(nullable=False)
+    target_account: int = Field(nullable=False)
+    amount_minor: int = Field(nullable=False)
+    currency: str = Field(default="PLN", nullable=False, max_length=3)
+    source_document_id: str = Field(nullable=False, max_length=128)
+    status: str = Field(default=TransferStatus.PENDING, nullable=False, max_length=32)
+    meta: str = Field(default="{}")  # JSON as TEXT
+    created_at: datetime = Field(default_factory=lambda: pendulum.now("UTC"), nullable=False)
 
 
 class FinancialPeriod(SQLModel, table=True):
     """Okres finansowy — otwarty, miękko zamknięty, twardo zamknięty."""
     __tablename__ = "financial_periods"  # type: ignore[assignment]
 
-    period_id: str = Field(sa_type=String(7), primary_key=True)
-    company_id: uuid.UUID = Field(
-        sa_column=Column(UUID(as_uuid=True), ForeignKey("company_profiles.id", ondelete="CASCADE"), primary_key=True, nullable=False)
-    )
-    status: FinancialPeriodStatus = Field(
-        sa_type=SAEnum(FinancialPeriodStatus, name="financial_period_status_enum"),
-        default=FinancialPeriodStatus.OPEN,
-        nullable=False,
-    )
-    closed_at: datetime | None = Field(sa_type=DateTime(timezone=True), default=None)
-    vat_declaration_id: str | None = Field(sa_type=String(128), default=None)
+    period_id: str = Field(primary_key=True, max_length=7)
+    company_id: str = Field(foreign_key="company_profiles.id", primary_key=True, nullable=False)
+    status: str = Field(default=FinancialPeriodStatus.OPEN, nullable=False, max_length=32)
+    closed_at: datetime | None = Field(default=None)
+    vat_declaration_id: str | None = Field(default=None, max_length=128)

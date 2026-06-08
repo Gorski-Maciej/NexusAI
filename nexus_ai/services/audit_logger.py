@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import uuid
-import pendulum
 from typing import Any
+
+import pendulum
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 from nexus_ai.db.analytics import DuckDBManager

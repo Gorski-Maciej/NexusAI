@@ -1,7 +1,6 @@
 # ui/storage.py
-from structlog import get_logger
-
 import flet as ft
+from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 

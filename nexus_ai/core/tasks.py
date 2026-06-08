@@ -5,11 +5,11 @@ import asyncio
 import os
 import uuid
 from dataclasses import dataclass
-import pendulum
 from pathlib import Path
 from typing import Any
 
 import msgspec
+import pendulum
 import psutil
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,8 +23,7 @@ from nexus_ai.core.memory_manager import TimedModelCache
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import SessionLocal, create_oltp_engine, create_session_factory
-from models.invoice import ActiveLearningPattern, Invoice
-from models.outbox import OutboxEvent, OutboxStatus
+from nexus_ai.db.models import ActiveLearningPattern, Invoice, OutboxEvent, OutboxStatus
 from nexus_ai.pipeline.ocr import DocumentProcessor, ReviewStatus
 from nexus_ai.roboton_reflekton.dunning_engine import DunningEngine
 from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient

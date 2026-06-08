@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from dataclasses import dataclass, field
+
 from nexus_ai.core.integrations.ksef.bindings.kody_krajow_v10_0_e import TkodKraju
 
 __NAMESPACE__ = "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/"

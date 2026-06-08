@@ -4,11 +4,11 @@ import asyncio
 import uuid
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-import pendulum
 from datetime import datetime
 from typing import Any
 
 import nats
+import pendulum
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 

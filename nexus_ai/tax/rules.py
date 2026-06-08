@@ -13,11 +13,12 @@ Komponenty:
 from __future__ import annotations
 
 import uuid
-import pendulum
+from datetime import date
 from decimal import Decimal
 from typing import Any
 
 import duckdb
+import pendulum
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 

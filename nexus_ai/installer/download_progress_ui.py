@@ -13,13 +13,13 @@ Opens as a standalone Flet window (not web-based).
 from __future__ import annotations
 
 import asyncio
-from structlog import get_logger
 import os
 import sys
 from pathlib import Path
 from typing import Any
 
 import flet as ft
+from structlog import get_logger
 
 from nexus_ai.installer.models_downloader import (
     check_models_present,

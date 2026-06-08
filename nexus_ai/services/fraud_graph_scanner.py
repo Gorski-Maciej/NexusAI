@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import pendulum
 from typing import TYPE_CHECKING, Any
+
+import pendulum
 
 try:
     import networkx as nx

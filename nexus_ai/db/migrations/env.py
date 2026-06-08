@@ -19,13 +19,17 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-# ── Ensure Code/ is on sys.path so models can be imported ──
-_PROJECT_ROOT = Path(__file__).resolve().parents[1]
-_CODE_DIR = str(_PROJECT_ROOT / "Code")
-if _CODE_DIR not in sys.path:
-    sys.path.insert(0, _CODE_DIR)
+# ── Ensure project root is on sys.path so modules can be imported ──
+# migrations/env.py is now at nexus_ai/db/migrations/env.py
+# Project root is parent's parent's parent (db -> nexus_ai -> project_root)
+_PROJECT_ROOT = Path(__file__).resolve().parents[3]
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
+
+# Also add nexus_ai/ to sys.path so imports like 'from db.models' work
+_NEXUS_AI_DIR = Path(__file__).resolve().parents[2]  # migrations -> db -> nexus_ai
+if str(_NEXUS_AI_DIR) not in sys.path:
+    sys.path.insert(0, str(_NEXUS_AI_DIR))
 
 # Alembic Config object
 config = context.config
@@ -37,29 +41,22 @@ if config.config_file_name is not None:
 logger = logging.getLogger("alembic.env")
 
 # ── Target metadata: collect all Base.metadata used in the project ──
-# Core DB models
-from db.database import Base as DbBase
+# Wszystkie modele zdefiniowane w nexus_ai.db.models (SQLModel)
+from db.models import (
+    Base as DbModelsBase,  # Invoice, AuditLog, OutboxEvent, SecurityAlert, UserAccount, Contractor, ActiveLearningPattern
+)
 
-# Domain models (each registers its tables with its own Base)
-from db.models import Base as DbModelsBase  # AuditLog, OutboxEvent, SecurityAlert, UserAccount
-from models.outbox import Base as OutboxBase
-from models.invoice import Base as InvoiceBase
-from models.audit import Base as AuditBase
-from models.contractor import Base as ContractorBase
+# Roboton_Reflekton models (SQLite-compatible, zgodnie z aa3fvcx.txt)
+from roboton_reflekton.models import Base as RobotonBase
 
-# Roboton_Reflekton models (PostgreSQL-compatible)
-from Roboton_Reflekton.models import Base as RobotonBase
+# Target metadata: SQLModel > DeclarativeBase, bo wszystkie modele są w SQLModel.
+# SQLModel automatycznie rejestruje tabele w swojej metadata.
+target_metadata = DbModelsBase.metadata
 
-# Combine all metadata for autogenerate support
-# Alembic uses the first target_metadata for autogenerate diffing.
-# We merge all metadata into one by iterating all tables.
-target_metadata = DbBase.metadata
-
-# Merge tables from other bases
-for base in [DbModelsBase, OutboxBase, InvoiceBase, AuditBase, ContractorBase, RobotonBase]:
-    for table_name, table in base.metadata.tables.items():
-        if table_name not in target_metadata.tables:
-            target_metadata.tables[table_name] = table
+# Merge tables from Roboton_Reflekton models
+for table_name, table in RobotonBase.metadata.tables.items():
+    if table_name not in target_metadata.tables:
+        target_metadata.tables[table_name] = table
 
 
 def get_database_url() -> str:

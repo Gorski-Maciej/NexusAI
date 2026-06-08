@@ -3,20 +3,19 @@ from __future__ import annotations
 import asyncio
 import atexit
 import hashlib
-from structlog import get_logger
 import os
 import resource
 import time
-import pendulum
 from pathlib import Path
 from typing import Any
 
 import httpx
+import pendulum
+import stamina
 from sqlalchemy import text
 from sqlalchemy import text as sql_text
+from structlog import get_logger
 from taskiq_nats import PullBasedJetStreamBroker
-
-import stamina
 
 from nexus_ai.api.cache import clear_cache_async
 from nexus_ai.core.config import AppConfig
@@ -30,7 +29,9 @@ from nexus_ai.services.accounting import AccountingService
 from nexus_ai.services.analytics_agent import AnalyticsAgent, FinDetective
 from nexus_ai.services.autopilot import CouncilOrchestrator
 from nexus_ai.services.council_agents import AlphaAgent, BetaAgent, GammaAgent, ModelManager
-from nexus_ai.services.currency_converter import Money  # Nexus-Money (msgspec.Struct, zastępuje py-moneyed)
+from nexus_ai.services.currency_converter import (
+    Money,  # Nexus-Money (msgspec.Struct, zastępuje py-moneyed)
+)
 from nexus_ai.services.decision_agent import DecisionOrchestrator, GraniteExecutor, JambaStrategist
 from nexus_ai.services.decision_logger import DecisionLogger
 from nexus_ai.services.finops_meter import estimate_runtime_cost
@@ -1987,7 +1988,7 @@ async def weekly_nip_reverification_task() -> None:
             # Pobierz wszystkich kontrahentów
             from sqlalchemy import select as sa_select
 
-            from models.contractor import Contractor
+            from nexus_ai.db.models import Contractor
 
             result = await session.execute(sa_select(Contractor))
             contractors = result.scalars().all()

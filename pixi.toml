@@ -85,7 +85,7 @@ fsspec = ">=2024.3.0"
 stamina = ">=0.1.0"
 
 # ── Cryptography (lokalny moduł Rust) ───────────────────────────────────────
-nexus-crypto = { path = "./nexus_crypto", editable = true }
+nexus-crypto = { path = "./nexus_ai/rust", editable = true }
 
 # ── Document / Image processing ─────────────────────────────────────────────
 lxml = ">=5.1.0"
@@ -216,11 +216,11 @@ typecheck = { cmd = "mypy nexus_ai/", description = "Sprawdź typy przez mypy" }
 # ── Build — kompilacja do .exe (Nuitka) ────────────────────────────────────
 build-nuitka = { cmd = "python -m nuitka --project-name=nexus-ai main.py", description = "Skompiluj aplikację do .exe (Nuitka)" }
 build-nuitka-fast = { cmd = "python -m nuitka --project-name=nexus-ai --mode=standalone --low-memory main.py", description = "Szybki build (standalone folder, niska pamięć)" }
-build-nuitka-win = { cmd = "python -m nuitka --project-name=nexus-ai main.py && iscc build_scripts/setup.iss", description = "Skompiluj .exe + stwórz instalator Windows" }
+build-nuitka-win = { cmd = "python -m nuitka --project-name=nexus-ai main.py && iscc nexus_ai/installer/build_scripts/setup.iss", description = "Skompiluj .exe + stwórz instalator Windows" }
 
 # ── Build — moduł Rust (nexus-crypto) ──────────────────────────────────────
-build-rust = { cmd = "cd nexus_crypto && maturin develop --release", description = "Skompiluj nexus-crypto (Rust + PyO3)" }
-build-rust-release = { cmd = "cd nexus_crypto && maturin build --release", description = "Skompiluj nexus-crypto (koło binarne .whl)" }
+build-rust = { cmd = "cd nexus_ai/rust && maturin develop --release", description = "Skompiluj nexus-crypto (Rust + PyO3)" }
+build-rust-release = { cmd = "cd nexus_ai/rust && maturin build --release", description = "Skompiluj nexus-crypto (koło binarne .whl)" }
 
 # ── Narzędzia ───────────────────────────────────────────────────────────────
 gen-requirements = "uv pip compile pyproject.toml -o requirements.txt"

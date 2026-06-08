@@ -12,7 +12,6 @@ Supported binaries:
 from __future__ import annotations
 
 import asyncio
-from structlog import get_logger
 import os
 import platform
 import stat
@@ -22,6 +21,7 @@ from pathlib import Path
 from typing import Protocol
 
 import httpx
+from structlog import get_logger
 
 logger = get_logger("nexus.installer.dependencies")
 

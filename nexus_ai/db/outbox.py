@@ -1,7 +1,7 @@
 import asyncio
-import pendulum
 from typing import Any
 
+import pendulum
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 

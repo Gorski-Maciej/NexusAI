@@ -6,9 +6,10 @@ import os
 import time
 from collections.abc import Awaitable, Callable
 from contextvars import ContextVar
-import pendulum
 from functools import wraps
 from typing import Any, TypeVar
+
+import pendulum
 
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.services.otel_fallback import FileSpanBuffer

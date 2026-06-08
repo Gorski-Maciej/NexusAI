@@ -1,8 +1,8 @@
 # ui/ws_client.py
 import asyncio
-from structlog import get_logger
 
 import websockets
+from structlog import get_logger
 from ui.state import app_state
 from websockets.exceptions import ConnectionClosed
 

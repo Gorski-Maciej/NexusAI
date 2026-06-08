@@ -5,7 +5,6 @@ import os
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
-import pendulum
 from datetime import datetime
 from pathlib import Path
 from typing import Any

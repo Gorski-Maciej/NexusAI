@@ -11,12 +11,12 @@ Shows real-time status of all background tasks:
 from __future__ import annotations
 
 import asyncio
-from structlog import get_logger
 import time
-import pendulum
 from typing import Any
 
 import flet as ft
+import pendulum
+from structlog import get_logger
 from ui.state import app_state
 
 logger = get_logger("nexus.frontend.task_monitor")

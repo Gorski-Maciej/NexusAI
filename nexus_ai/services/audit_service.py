@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
-from models.audit import AuditLog
+from nexus_ai.db.models import AuditLog
 
 
 class AuditService:
@@ -29,7 +29,7 @@ class AuditService:
             entry = AuditLog(
                 user_id=user_id,
                 action=action,
-                target_id=target_id,
+                invoice_id=target_id,
                 changes=msgspec_dumps(changes)
             )
             session.add(entry)

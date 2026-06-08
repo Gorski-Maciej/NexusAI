@@ -5,7 +5,10 @@ from dataclasses import dataclass
 from litestar import Litestar, get, post
 from litestar.di import Provide
 from litestar.response import ServerSentEvent
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from nexus_ai.core.config import AppConfig
 
 from .decision_trees import CompanyDecisionTree
 from .ledger_client import TigerBeetleClient
@@ -13,7 +16,11 @@ from .ledger_initializer import LedgerInitializer
 from .models import CompanyProfile, LegalForm, TaxForm, TaxPolicy
 from .reconciliation_engine import AlertHub, ReconciliationEngine
 
-engine = create_async_engine("postgresql+asyncpg://postgres:postgres@localhost:5432/nexus", echo=False)
+# Zgodnie z aa3fvcx.txt: SQLite + aiosqlite zamiast PostgreSQL
+# Używamy tej samej bazy co reszta aplikacji (przez AppConfig)
+_config = AppConfig()
+_db_path = _config.sqlite_path.as_posix()
+engine = create_async_engine(f"sqlite+aiosqlite:///{_db_path}", echo=False)
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 tb_client = TigerBeetleClient()
 alert_hub = AlertHub()

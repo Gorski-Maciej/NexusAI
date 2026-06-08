@@ -185,7 +185,7 @@ packages = [
 # ── Maturin — Rust/PyO3 native extensions ────────────────────────────────────
 [tool.maturin]
 module-name = "nexus_crypto._core"
-manifest-path = "nexus_crypto/Cargo.toml"
+manifest-path = "nexus_ai/rust/Cargo.toml"
 features = ["pyo3/extension-module"]
 
 # ── mypyc — compile typed Python to C (2-5× speedup) ─────────────────────────
@@ -267,7 +267,7 @@ enable-plugin = [
 # ── Data inclusion (wszystkie potrzebne pliki) ───────────────────────────
 include-package = [
     "nexus_ai",                  # Cały pakiet aplikacji
-    "nexus_crypto",              # Natywny moduł Rust+PyO3
+    "nexus_crypto",              # Natywny moduł Rust+PyO3 (budowany przez maturin z nexus_ai/rust/)
     "granian",                   # ASGI server Rust
     "litestar",                  # API framework
     "sqlmodel",                  # ORM
@@ -299,10 +299,10 @@ include-package = [
 # ── Data directories (dołączane do .exe) ─────────────────────────────────
 include-data-dir = [
     # Tylko katalogi z danymi NIE-Pythonowymi — kod źródłowy jest kompilowany przez Nuitka
-    "config/=config/",                   # Pliki konfiguracyjne (TOML, JSON)
+    "nexus_ai/config/=nexus_ai/config/",  # Pliki konfiguracyjne (TOML, JSON)
     "app_data/=app_data/",               # Runtime data (puste na start)
     "assets/=assets/",                   # Ikony i loga
-    "migrations/=migrations/",           # Alembic migracje (SQL templates)
+    "nexus_ai/db/migrations/=nexus_ai/db/migrations/",  # Alembic migracje (SQL templates)
 ]
 
 # ── Include specific files ───────────────────────────────────────────────

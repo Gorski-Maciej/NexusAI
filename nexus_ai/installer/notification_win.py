@@ -7,9 +7,10 @@ toast notifications. Falls back to ctypes if winrt is not available.
 
 from __future__ import annotations
 
-from structlog import get_logger
 import platform
 import sys
+
+from structlog import get_logger
 
 logger = get_logger("nexus.installer.notification")
 

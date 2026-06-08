@@ -27,13 +27,13 @@ Użycie:
 
 from __future__ import annotations
 
-import pendulum
+from datetime import date, datetime
 from decimal import Decimal
-from datetime import datetime, date
 from typing import Any
 from uuid import UUID
 
 import msgspec
+
 
 # ── DecodeError — zastępuje json.JSONDecodeError ────────────────────────────
 class DecodeError(ValueError):

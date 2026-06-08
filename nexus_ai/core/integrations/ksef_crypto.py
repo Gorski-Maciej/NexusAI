@@ -9,6 +9,7 @@ The `cryptography` package is used here as an optional dependency.
 from __future__ import annotations
 
 import base64
+
 import pendulum
 
 

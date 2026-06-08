@@ -20,15 +20,15 @@ Usage:
 
 from __future__ import annotations
 
-from structlog import get_logger
 import uuid
-import pendulum
 
+import pendulum
 from litestar import Controller, delete, get, post
 from litestar.connection import Request
 from litestar.exceptions import NotFoundException
 from litestar.response import Response
 from sqlalchemy import text
+from structlog import get_logger
 
 from nexus_ai.api.rbac import admin_only_guard, requires_permission
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads

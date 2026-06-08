@@ -7,7 +7,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.invoice import Invoice
+from nexus_ai.db.models import Invoice
 
 TRIAGE_CONFIDENCE_THRESHOLD = 0.85
 

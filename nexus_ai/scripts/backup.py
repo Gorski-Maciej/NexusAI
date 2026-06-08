@@ -1,8 +1,9 @@
 # scripts/backup.py
 import os
 import zipfile
-import pendulum
 from pathlib import Path
+
+import pendulum
 
 from nexus_ai.core.config import AppConfig
 

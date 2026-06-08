@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import calendar
 import uuid
+from datetime import date
 from dataclasses import dataclass
-import pendulum
 from decimal import ROUND_HALF_UP, Decimal
 
 from nexus_ai.db.analytics import DuckDBManager

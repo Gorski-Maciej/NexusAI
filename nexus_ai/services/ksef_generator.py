@@ -15,11 +15,12 @@ Obsługuje:
 
 from __future__ import annotations
 
-from structlog import get_logger
 import uuid
-import pendulum
 from typing import Any
 from xml.etree import ElementTree as ET
+
+import pendulum
+from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 

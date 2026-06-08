@@ -1,6 +1,6 @@
-import pendulum
 from pathlib import Path
 
+import pendulum
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

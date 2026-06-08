@@ -23,8 +23,8 @@ Użycie:
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
+
 from structlog import get_logger
 
 logger = get_logger("nexus.ksef.xsd")

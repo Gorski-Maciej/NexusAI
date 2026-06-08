@@ -14,11 +14,11 @@ Użycie:
 
 from __future__ import annotations
 
-import warnings
 from collections.abc import Callable
 from functools import wraps
 from pathlib import Path
 from typing import Any
+
 from structlog import get_logger
 
 logger = get_logger("nexus.api.cache")
@@ -114,7 +114,6 @@ class _MemoryFallback:
     """Simple in-memory cache fallback when dyscache is not available."""
 
     def __init__(self):
-        import time
         self._cache: dict[str, tuple[float, Any]] = {}
         self._max_items = 5000
 

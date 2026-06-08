@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import pendulum
 from typing import Any
+
+import pendulum
 
 from .ledger_client import TigerBeetleClient
 

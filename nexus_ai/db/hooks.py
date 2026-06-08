@@ -1,10 +1,9 @@
-from structlog import get_logger
-
 from sqlalchemy import event
+from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
 from nexus_ai.db.analytics import DuckDBManager
-from models.invoice import Invoice
+from nexus_ai.db.models import Invoice
 
 logger = get_logger("nexus.db.hooks")
 

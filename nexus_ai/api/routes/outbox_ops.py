@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from structlog import get_logger
-
 from litestar import Controller, get, post
 from litestar.connection import Request
 from litestar.exceptions import HTTPException
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_503_SERVICE_UNAVAILABLE
+from structlog import get_logger
 
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.api.telemetry_metrics import record_outbox_relay_triggered

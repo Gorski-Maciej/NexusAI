@@ -8,16 +8,16 @@ Endpoints:
 """
 from __future__ import annotations
 
-from structlog import get_logger
 import uuid
-import pendulum
 
 import msgspec
+import pendulum
 from litestar import Controller, delete, get, post, put
 from litestar.connection import Request
 from litestar.exceptions import NotFoundException, ValidationException
 from litestar.response import Response
 from sqlalchemy import text
+from structlog import get_logger
 
 from nexus_ai.api.rbac import admin_only_guard, requires_permission
 from nexus_ai.core.config import AppConfig

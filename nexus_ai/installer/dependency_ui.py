@@ -7,12 +7,12 @@ Shows a splash window with overall progress, per-binary status, and error handli
 from __future__ import annotations
 
 import asyncio
-from structlog import get_logger
 import os
 import sys
 from pathlib import Path
 
 import flet as ft
+from structlog import get_logger
 
 from nexus_ai.installer.dependency_downloader import (
     check_dependencies,

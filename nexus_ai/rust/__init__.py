@@ -24,13 +24,23 @@ logger = logging.getLogger("nexus.crypto")
 
 # Try to load the native Rust extension
 try:
+    from nexus_crypto._core import (
+        decrypt as _rust_decrypt,
+    )
+    from nexus_crypto._core import (
+        derive_key as _rust_derive_key,
+    )
     from nexus_crypto._core import (  # type: ignore[import-untyped]
         encrypt as _rust_encrypt,
-        decrypt as _rust_decrypt,
+    )
+    from nexus_crypto._core import (
         hash_password as _rust_hash_password,
-        verify_password as _rust_verify_password,
+    )
+    from nexus_crypto._core import (
         sha256 as _rust_sha256,
-        derive_key as _rust_derive_key,
+    )
+    from nexus_crypto._core import (
+        verify_password as _rust_verify_password,
     )
     _HAS_NATIVE = True
 except ImportError:

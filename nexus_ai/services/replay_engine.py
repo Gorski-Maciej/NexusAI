@@ -16,12 +16,12 @@ Zastosowania:
 
 from __future__ import annotations
 
-from structlog import get_logger
+from datetime import date
 from dataclasses import dataclass, field
-import pendulum
 from typing import Any
 
 import duckdb
+from structlog import get_logger
 
 from nexus_ai.tax.audit import DecisionTraceLogger
 from nexus_ai.tax.exceptions import NoMatchingRuleError
@@ -229,7 +229,7 @@ def _compare_verdicts(
             continue
         if orig_val is None or replay_val is None or str(orig_val) != str(replay_val):
             differences.append({
-                "field": field,
+                "field": comp_field,
                 "original": orig_val,
                 "replayed": replay_val,
             })

@@ -1,7 +1,6 @@
 # ui/components/data_table.py
-from structlog import get_logger
-
 import flet as ft
+from structlog import get_logger
 
 from nexus_ai.frontend.api_client import NexusAPIClientUI
 

@@ -7,7 +7,6 @@ from nexus_ai.core.integrations.ksef.bindings.fa_vat import (
     KolTyp,
     Podmiot2Gv,
     Podmiot2Jst,
-    Tadres as FaVatTadres,
     TformaPlatnosci,
     Tgtu,
     TkluczWartosc,
@@ -32,9 +31,14 @@ from nexus_ai.core.integrations.ksef.bindings.fa_vat import (
     TstawkaPodatku,
     TtypKorekty,
 )
+from nexus_ai.core.integrations.ksef.bindings.fa_vat import (
+    Tadres as FaVatTadres,
+)
 from nexus_ai.core.integrations.ksef.bindings.kody_krajow_v10_0_e import TkodKraju
 from nexus_ai.core.integrations.ksef.bindings.struktury_danych_v10_0_e import (
     Tadres as StrukturyDanychV100ETadres,
+)
+from nexus_ai.core.integrations.ksef.bindings.struktury_danych_v10_0_e import (
     Tadres1,
     TadresPolski,
     TadresPolski1,

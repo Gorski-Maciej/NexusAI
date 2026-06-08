@@ -25,13 +25,13 @@ Env vars:
 from __future__ import annotations
 
 import html
-from structlog import get_logger
 import os
 import re
 from dataclasses import dataclass, field
 from typing import Any
 
 import httpx
+from structlog import get_logger
 
 logger = get_logger("nexus.services.gus_bir")
 

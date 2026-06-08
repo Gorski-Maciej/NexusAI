@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from models.invoice import Invoice
+    from nexus_ai.db.models import Invoice
 
 
 class BaseExporter(ABC):

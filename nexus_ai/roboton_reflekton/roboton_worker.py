@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import uuid
+from datetime import date
 from dataclasses import dataclass
-import pendulum
 from typing import Protocol
 
 from sqlalchemy import select

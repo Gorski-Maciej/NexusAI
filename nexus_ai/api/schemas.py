@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import pendulum
 from datetime import datetime
 from decimal import Decimal
 

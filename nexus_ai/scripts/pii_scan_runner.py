@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 import argparse
-import pendulum
 from pathlib import Path
 
+import pendulum
 from log_pii_scanner import scan_path
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
@@ -23,7 +23,7 @@ def main() -> int:
     scan_results = scan_path(target)
     finding_count = sum(len(items) for items in scan_results.values())
 
-    ts = pendulum.now("UTC").format('YYYYMMDDTHHmmss\[Z\]')
+    ts = pendulum.now("UTC").format(r'YYYYMMDDTHHmmss\[Z\]')
     text_report = report_dir / f'pii_scan_{ts}.txt'
     json_report = report_dir / f'pii_scan_{ts}.json'
 

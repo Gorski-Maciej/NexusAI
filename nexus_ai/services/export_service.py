@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.invoice import Invoice
+from nexus_ai.db.models import Invoice
 
 
 class ExportService:

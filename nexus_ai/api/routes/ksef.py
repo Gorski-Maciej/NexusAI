@@ -9,13 +9,13 @@ Zabezpieczenie: tylko rola accountant lub owner.
 
 from __future__ import annotations
 
-from structlog import get_logger
-import pendulum
 from typing import Any
 
+import pendulum
 from litestar import Controller, get
 from litestar.exceptions import NotFoundException
 from litestar.response import Response
+from structlog import get_logger
 
 from nexus_ai.api.rbac import requires_permission
 
@@ -39,8 +39,8 @@ class KsefExportController(Controller):
         """
         try:
             import duckdb
-            from config import AppConfig
 
+            from config import AppConfig
             from services.ksef_generator import generate_ksef_xml
         except ImportError as exc:
             logger.error("Failed to import KSeF modules: %s", exc)

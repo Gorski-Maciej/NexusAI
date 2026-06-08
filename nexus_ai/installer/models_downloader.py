@@ -15,11 +15,12 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
-from structlog import get_logger
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
+
+from structlog import get_logger
 
 logger = get_logger("nexus.installer.models_downloader")
 

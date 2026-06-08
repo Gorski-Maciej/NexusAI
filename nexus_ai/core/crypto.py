@@ -6,12 +6,12 @@ Nowy:     ChaCha20-Poly1305 AEAD + Argon2id KDF (nexus-crypto)
 """
 from __future__ import annotations
 
-from structlog import get_logger
 import os
 
 from nexus_crypto import decrypt as _decrypt
 from nexus_crypto import derive_key
 from nexus_crypto import encrypt as _encrypt
+from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from enum import Enum
 
 __NAMESPACE__ = "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/"

@@ -15,11 +15,12 @@ Każda warstwa ma automatyczny Data Decay:
 from __future__ import annotations
 
 import asyncio
-from structlog import get_logger
 import time
 from collections import defaultdict
 from dataclasses import asdict, dataclass, field
 from typing import Any
+
+from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
 

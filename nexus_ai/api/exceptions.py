@@ -1,12 +1,12 @@
 """Domain error taxonomy + HTTP JSON envelope."""
 from __future__ import annotations
 
-from structlog import get_logger
 from dataclasses import dataclass
 
 from litestar.connection import Request
 from litestar.exceptions import HTTPException
 from litestar.response import Response
+from structlog import get_logger
 
 logger = get_logger("nexus.api.exceptions")
 

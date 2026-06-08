@@ -1,15 +1,15 @@
 import asyncio
-from structlog import get_logger
 import logging
 import os
 import secrets
 import socket
 import subprocess
 import sys
-import pendulum
 from pathlib import Path
 
 import flet as ft
+import pendulum
+from structlog import get_logger
 
 # --- KONFIGURACJA OFFLINE AI ---
 if getattr(sys, 'frozen', False):

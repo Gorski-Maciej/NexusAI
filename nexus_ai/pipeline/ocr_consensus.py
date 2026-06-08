@@ -195,9 +195,9 @@ class SuryaOCREngine:
 
     def _init_engine(self) -> None:
         try:
-            import surya.ocr
-            import surya.model.recognition
             import surya.model.detection
+            import surya.model.recognition
+            import surya.ocr
             self._available = True
             logger.info("[OCR] Surya OCR initialized successfully")
         except ImportError:
@@ -209,10 +209,10 @@ class SuryaOCREngine:
         if not self._available:
             return None
         try:
-            from PIL import Image
-            import surya.ocr
-            import surya.model.recognition
             import surya.model.detection
+            import surya.model.recognition
+            import surya.ocr
+            from PIL import Image
 
             image = Image.open(str(image_path))
 

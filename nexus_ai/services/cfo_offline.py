@@ -11,8 +11,9 @@ z kolejką asynchroniczną, cache i magazynem relacji.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-import pendulum
 from typing import Any, Protocol
+
+import pendulum
 
 
 class TaskQueue(Protocol):
@@ -23,7 +24,9 @@ class TaskQueue(Protocol):
 
 
 class CacheStore(Protocol):
-    """Abstrakcja cache (Redis)."""
+    """Abstrakcja cache (SQLite/local).
+    Zgodnie z aa3fvcx.txt: cache w SQLite zamiast Redis.
+    """
 
     def get(self, key: str) -> Any:
         ...

@@ -1,18 +1,18 @@
 # worker.py
 import asyncio
 import gc
-from structlog import get_logger
 import logging
 import os
 import platform
 import shutil
 import signal
 import sys
-import pendulum
 from pathlib import Path
 
 import nats
+import pendulum
 import psutil
+from structlog import get_logger
 from taskiq import TaskiqEvents
 
 from nexus_ai.core.broker import broker

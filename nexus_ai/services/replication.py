@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from nexus_ai.db.analytics import DuckDBManager
-from models.invoice import Invoice
+from nexus_ai.db.models import Invoice
 
 
 class ReplicationBridge:

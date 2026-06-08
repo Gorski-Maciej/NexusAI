@@ -12,12 +12,12 @@ Sprawdza:
 
 from __future__ import annotations
 
-from structlog import get_logger
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
 import duckdb
+from structlog import get_logger
 
 if TYPE_CHECKING:
     from services.currency_converter import Money as _Money

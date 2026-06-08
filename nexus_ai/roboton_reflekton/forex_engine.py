@@ -3,13 +3,13 @@ from __future__ import annotations
 import uuid
 from collections import OrderedDict
 from dataclasses import dataclass
-import pendulum
-import pendulum
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 from urllib import error, request
 
+import pendulum
 import stamina
+
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
 from .ledger_client import TigerBeetleClient
@@ -101,7 +101,7 @@ class ForexEngine:
         # Sprawdź w pamięci cache brakujących dat
         if cache_key in self._missing_cache:
             stored_date = self._missing_cache[cache_key]
-            if (dt_pendulum.now().date() - stored_date).days < 30:
+            if (pendulum.now().date() - stored_date).days < 30:
                 return True
             else:
                 # TTL 30 dni wygasł - spróbuj ponownie
@@ -113,7 +113,7 @@ class ForexEngine:
             (currency_code, rate_date),
         )
         if rows:
-            self._missing_cache[cache_key] = dt_pendulum.now().date()
+            self._missing_cache[cache_key] = pendulum.now().date()
             return True
 
         return False
@@ -129,7 +129,7 @@ class ForexEngine:
     def _mark_as_missing(self, currency_code: str, rate_date: date) -> None:
         """Oznacz datę jako brak kursu (weekend/święto)."""
         cache_key = (currency_code, rate_date.isoformat())
-        self._missing_cache[cache_key] = dt_pendulum.now().date()
+        self._missing_cache[cache_key] = pendulum.now().date()
         self.duckdb.execute(
             """
             INSERT OR REPLACE INTO exchange_rates(currency_code, rate_date, avg_rate, is_missing)
@@ -286,7 +286,7 @@ class ForexEngine:
                     errors += 1
                     continue
 
-                rate_date = dt_pendulum.strptime(rate_date_str, "%Y-%m-%d").date()
+                rate_date = pendulum.strptime(rate_date_str, "%Y-%m-%d").date()
                 self.duckdb.execute(
                     """
                     INSERT OR REPLACE INTO exchange_rates(currency_code, rate_date, avg_rate, table_no, is_missing)

@@ -16,8 +16,7 @@ from typing import Any
 
 from msgspec import Struct, toml
 
-
-ENV_CONFIG_DIR: Path = Path(__file__).resolve().parent.parent.parent / "config"
+ENV_CONFIG_DIR: Path = Path(__file__).resolve().parent.parent / "config"
 """Directory containing environment-specific TOML config files."""
 
 

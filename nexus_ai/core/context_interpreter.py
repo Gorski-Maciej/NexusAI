@@ -19,7 +19,6 @@ Usage:
 
 from __future__ import annotations
 
-import pendulum
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 

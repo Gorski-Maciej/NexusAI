@@ -20,13 +20,13 @@ Usage:
 
 from __future__ import annotations
 
-from structlog import get_logger
 from decimal import Decimal
 from typing import Any
 
 import msgspec
 from litestar import Controller, post
 from litestar.response import Response
+from structlog import get_logger
 
 from nexus_ai.tax.math_engine import (
     TaxMathEngine,

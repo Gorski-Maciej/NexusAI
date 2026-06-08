@@ -17,12 +17,12 @@ Usage::
 """
 from __future__ import annotations
 
-from structlog import get_logger
 import warnings
 from collections.abc import Callable
 from typing import Any
 
 import stamina
+from structlog import get_logger
 
 logger = get_logger("nexus.core.resilience")
 

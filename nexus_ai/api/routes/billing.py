@@ -10,7 +10,11 @@ import duckdb
 from litestar import Controller, get
 from litestar.response import Response
 
-from nexus_ai.services.billing_estimator import BillingEstimator, ensure_schema, seed_default_billing_rules
+from nexus_ai.services.billing_estimator import (
+    BillingEstimator,
+    ensure_schema,
+    seed_default_billing_rules,
+)
 
 
 class BillingController(Controller):

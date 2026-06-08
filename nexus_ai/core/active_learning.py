@@ -8,11 +8,12 @@ sentence-transformers pozostaje opcjonalny (lazy import).
 from __future__ import annotations
 
 import hashlib
-from structlog import get_logger
 import uuid
-import pendulum
 from pathlib import Path
 from typing import Any
+
+import pendulum
+from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 from nexus_ai.db.vector_store import VectorStore

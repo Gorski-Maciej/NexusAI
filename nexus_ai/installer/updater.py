@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-from structlog import get_logger
 import platform
 import tempfile
 from collections.abc import Callable
@@ -26,6 +25,7 @@ from pathlib import Path
 from typing import Protocol
 
 import httpx
+from structlog import get_logger
 
 logger = get_logger("nexus.installer.updater")
 

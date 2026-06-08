@@ -12,13 +12,13 @@ Endpointy:
 
 from __future__ import annotations
 
-from structlog import get_logger
-import pendulum
 from typing import Any
 
+import pendulum
 from litestar import Controller, get
 from litestar.exceptions import NotFoundException
 from litestar.response import Response
+from structlog import get_logger
 
 from nexus_ai.api.rbac import requires_permission
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
@@ -57,8 +57,8 @@ class AuditController(Controller):
         """
         try:
             import duckdb
-            from config import AppConfig
 
+            from config import AppConfig
             from tax.audit import DecisionTraceLogger, verify_chain_integrity
         except ImportError as exc:
             logger.error("Failed to import audit modules: %s", exc)

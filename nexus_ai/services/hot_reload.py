@@ -15,10 +15,11 @@ Usage:
 from __future__ import annotations
 
 import asyncio
-from structlog import get_logger
-import pendulum
 from datetime import datetime
 from typing import Any
+
+import pendulum
+from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 

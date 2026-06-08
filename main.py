@@ -49,7 +49,7 @@ Quick build (Windows):
 
 # ── Included packages (wszystkie zależności) ──────────────────────────────────
 # nuitka-project: --include-package=nexus_ai
-# nuitka-project: --include-package=nexus_crypto
+# nuitka-project: --include-package=nexus_crypto  # budowany przez maturin z nexus_ai/rust/
 # nuitka-project: --include-package=granian
 # nuitka-project: --include-package=litestar
 # nuitka-project: --include-package=sqlmodel
@@ -78,8 +78,8 @@ Quick build (Windows):
 # nuitka-project: --include-package=PIL
 
 # ── Data directories ──────────────────────────────────────────────────────────
-# nuitka-project: --include-data-dir={MAIN_DIRECTORY}/config=config
-# nuitka-project: --include-data-dir={MAIN_DIRECTORY}/migrations=migrations
+# nuitka-project: --include-data-dir={MAIN_DIRECTORY}/nexus_ai/config=nexus_ai/config
+# nuitka-project: --include-data-dir={MAIN_DIRECTORY}/nexus_ai/db/migrations=nexus_ai/db/migrations
 
 # ── Specific data files ───────────────────────────────────────────────────────
 # nuitka-project: --include-data-files={MAIN_DIRECTORY}/alembic.ini=alembic.ini

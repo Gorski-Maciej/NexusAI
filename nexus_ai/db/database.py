@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import os
 from collections.abc import AsyncGenerator
-from structlog import get_logger
 from pathlib import Path
 
 from sqlalchemy import create_engine, event, text
@@ -15,6 +14,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import DeclarativeBase
+from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
 
@@ -81,8 +81,7 @@ def create_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSessi
 
 async def init_schema(engine: AsyncEngine) -> None:
     """Create all SQLAlchemy tables for first application start."""
-    from models.invoice import ActiveLearningPattern, Invoice  # noqa: F401
-    from models.outbox import OutboxEvent  # noqa: F401
+    from nexus_ai.db.models import ActiveLearningPattern, Invoice, OutboxEvent  # noqa: F401
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

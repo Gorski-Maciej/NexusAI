@@ -3,16 +3,16 @@ from __future__ import annotations
 
 import asyncio
 import gc
-from structlog import get_logger
 import logging
 import os
 import platform
 import signal
 import sys
-import pendulum
 from pathlib import Path
 
+import pendulum
 import psutil
+from structlog import get_logger
 from taskiq import TaskiqEvents
 
 import nexus_ai.core.tasks  # noqa: F401  # required to register @broker.task handlers

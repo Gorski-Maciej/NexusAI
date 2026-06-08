@@ -26,7 +26,6 @@ from opentelemetry.exporter.prometheus import PrometheusMetricsExporter
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 
-
 # Globalny eksporter Prometheus — inicjalizowany raz
 _exporter: PrometheusMetricsExporter | None = None
 _initialized = False

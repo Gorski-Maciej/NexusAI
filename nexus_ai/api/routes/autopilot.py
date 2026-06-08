@@ -147,7 +147,7 @@ class AutopilotController(Controller):
                     # Najpierw pobierz aktualną wersję
                     from sqlalchemy import select as sa_select
 
-                    from models.invoice import Invoice
+                    from nexus_ai.db.models import Invoice
                     result = await session.execute(
                         sa_select(Invoice.version_id).where(Invoice.id == invoice_id)
                     )
@@ -227,7 +227,7 @@ class AutopilotController(Controller):
                     # Najpierw pobierz aktualną wersję
                     from sqlalchemy import select as sa_select
 
-                    from models.invoice import Invoice
+                    from nexus_ai.db.models import Invoice
                     result = await session.execute(
                         sa_select(Invoice.version_id).where(Invoice.id == invoice_id)
                     )

@@ -1,7 +1,6 @@
 # core/integrations/ksef/auth.py
-from structlog import get_logger
-
 import httpx
+from structlog import get_logger
 
 logger = get_logger("nexus.ksef")
 

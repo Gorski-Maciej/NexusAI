@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import pendulum
 from decimal import Decimal
 from typing import TYPE_CHECKING
+
+import pendulum
 
 from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
 

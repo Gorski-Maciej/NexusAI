@@ -226,7 +226,6 @@ class PartnerHubView:
         activity_text = ""
         if last_activity:
             try:
-                from datetime import datetime
                 dt = pendulum.parse(last_activity.replace("Z", "+00:00"))
                 activity_text = dt.format("DD.MM.YYYY HH:mm")
             except Exception:
