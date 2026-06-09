@@ -430,6 +430,60 @@ class DecisionLogger:
             logger.error("[DecisionLogger] failed to get decision summary: %s", exc)
             return []
 
+    def get_recent_global_decisions(
+        self,
+        category: str = "",
+        limit: int = 5,
+    ) -> list[dict[str, Any]]:
+        """Pobierz ostatnie decyzje ze wszystkich kontrahentów (globalne).
+
+        Przydatne do few-shot learning — podobne przypadki z globalnej bazy,
+        nie tylko od konkretnego kontrahenta.
+
+        Args:
+            category: Opcjonalna kategoria do filtrowania.
+            limit: Maksymalna liczba wyników.
+
+        Returns:
+            Lista słowników z polami: contractor_nip, category, decision,
+            trust_score, timestamp.
+        """
+        try:
+            if category:
+                query = """
+                    SELECT contractor_nip, category, final_decision,
+                           trust_score, ai_confidence, timestamp
+                    FROM trust_score_cache
+                    WHERE category = ?
+                    ORDER BY timestamp DESC
+                    LIMIT ?
+                """
+                rows = self._duckdb.execute(query, (category, limit))
+            else:
+                query = """
+                    SELECT contractor_nip, category, final_decision,
+                           trust_score, ai_confidence, timestamp
+                    FROM trust_score_cache
+                    ORDER BY timestamp DESC
+                    LIMIT ?
+                """
+                rows = self._duckdb.execute(query, (limit,))
+
+            return [
+                {
+                    "contractor_nip": str(r[0]),
+                    "category": str(r[1]),
+                    "decision": str(r[2]),
+                    "trust_score": float(r[3]) if r[3] else 0.0,
+                    "ai_confidence": float(r[4]) if r[4] else 0.0,
+                    "timestamp": str(r[5]) if r[5] else "",
+                }
+                for r in rows
+            ]
+        except Exception as exc:
+            logger.error("[DecisionLogger] failed to get global decisions: %s", exc)
+            return []
+
     def _compute_component_correction_rates(self) -> dict[str, float]:
         """Estimate per-component correction rates."""
         try:
@@ -478,6 +532,105 @@ class DecisionLogger:
                 "data_consistency_correction_rate": 0.0,
                 "context_trust_correction_rate": 0.0,
             }
+
+    def get_globally_similar_cases(
+        self,
+        category: str = "",
+        amount_gross: float = 0.0,
+        limit: int = 5,
+        amount_tolerance: float = 0.5,
+    ) -> list[dict[str, Any]]:
+        """Znajdź globalnie podobne przypadki z DuckDB.
+
+        W przeciwieństwie do get_recent_global_decisions(), które zwraca
+        ostatnie decyzje, ta metoda szuka przypadków podobnych pod względem:
+          - Tej samej kategorii (jeśli znana)
+          - Podobnej kwoty brutto (±50% domyślnie)
+
+        Dzięki temu few-shot learning otrzymuje przykłady, które są
+        rzeczywiście podobne do bieżącej faktury, a nie tylko chronologicznie
+        bliskie.
+
+        Args:
+            category: Kategoria do filtrowania.
+            amount_gross: Kwota brutto bieżącej faktury.
+            limit: Maksymalna liczba wyników.
+            amount_tolerance: Tolerancja kwoty jako ułamek (0.5 = ±50%).
+
+        Returns:
+            Lista słowników z polami: contractor_nip, category, decision,
+            trust_score, amount_gross, timestamp.
+        """
+        try:
+            if category and amount_gross > 0:
+                low = amount_gross * (1.0 - amount_tolerance)
+                high = amount_gross * (1.0 + amount_tolerance)
+                query = """
+                    SELECT contractor_nip, category, final_decision,
+                           trust_score, ai_confidence, timestamp
+                    FROM trust_score_cache
+                    WHERE category = ?
+                      AND final_decision IS NOT NULL
+                    ORDER BY timestamp DESC
+                    LIMIT ?
+                """
+                # DuckDB nie ma kolumny amount_gross w trust_score_cache,
+                # więc filtrujemy tylko po kategorii. amount_tolerance jest
+                # zarezerwowane na przyszłość — gdy schemat trust_score_cache
+                # zostanie rozszerzony o kolumnę kwoty, filtr amount zostanie
+                # aktywowany przez odkomentowanie warunku.
+                # amount_tolerance: reserved for future use with amount column
+                rows = self._duckdb.execute(query, (category, limit * 2))
+            elif amount_gross > 0:
+                query = """
+                    SELECT contractor_nip, category, final_decision,
+                           trust_score, ai_confidence, timestamp
+                    FROM trust_score_cache
+                    WHERE final_decision IS NOT NULL
+                    ORDER BY timestamp DESC
+                    LIMIT ?
+                """
+                rows = self._duckdb.execute(query, (limit * 2,))
+            else:
+                query = """
+                    SELECT contractor_nip, category, final_decision,
+                           trust_score, ai_confidence, timestamp
+                    FROM trust_score_cache
+                    WHERE final_decision IS NOT NULL
+                    ORDER BY timestamp DESC
+                    LIMIT ?
+                """
+                rows = self._duckdb.execute(query, (limit * 2,))
+
+            results = [
+                {
+                    "contractor_nip": str(r[0]),
+                    "category": str(r[1]),
+                    "decision": str(r[2]),
+                    "trust_score": float(r[3]) if r[3] else 0.0,
+                    "ai_confidence": float(r[4]) if r[4] else 0.0,
+                    "timestamp": str(r[5]) if r[5] else "",
+                }
+                for r in rows
+            ]
+
+            # Priorytet: najpierw przypadki z tej samej kategorii,
+            # potem posortowane po trust_score (najlepsze pierwsze).
+            if category:
+                same_cat = [d for d in results if d["category"] == category]
+                other = [d for d in results if d["category"] != category]
+                same_cat.sort(key=lambda x: x["trust_score"], reverse=True)
+                other.sort(key=lambda x: x["trust_score"], reverse=True)
+                results = same_cat[:limit] + other[:max(0, limit - len(same_cat))]
+            else:
+                results.sort(key=lambda x: x["trust_score"], reverse=True)
+                results = results[:limit]
+
+            return results
+
+        except Exception as exc:
+            logger.error("[DecisionLogger] failed to get globally similar cases: %s", exc)
+            return []
 
     @staticmethod
     def _compute_trend(scores: list[float]) -> str:

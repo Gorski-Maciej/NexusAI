@@ -1,0 +1,563 @@
+# =============================================================================
+# NexusAI — Standard Operating Procedures (SOP)
+# Centralny rejestr protokołów decyzyjnych dla wszystkich agentów
+# Wersja: 1.0
+# =============================================================================
+#
+# Ten plik definiuje sztywne protokoły postępowania dla każdego agenta w
+# systemie. Zamiast pozwalać modelom AI (Granite 3.2 3B, Jamba 3B, LFM2.5,
+# LittleLamb, Fin-RWKV) na samodzielne wymyślanie strategii, protokoły te
+# określają dokładnie co model ma robić w każdej sytuacji.
+#
+# Struktura:
+#   [metadata]       — wersja, opis, data modyfikacji
+#   [schema]         — definicje typów używanych w protokołach
+#   [protocols.*]    — właściwe protokoły pogrupowane według agenta
+#   [matrices.*]     — deterministyczne matryce decyzyjne
+#   [thresholds.*]   — progi decyzyjne i wagi
+#   [emergency.*]    — protokoły awaryjne (timeout, błąd modelu)
+#
+# =============================================================================
+
+[metadata]
+version = "1.0"
+description = "NexusAI Standard Operating Procedures — centralny rejestr protokołów decyzyjnych"
+created_at = "2026-06-09"
+schema_docs = "https://nexusai.internal/docs/sop-schema"
+
+# =============================================================================
+# SCHEMA — definicje typów używanych w protokołach
+# =============================================================================
+
+[schema.output_formats]
+workflow_plan = '''
+{
+    "agents": ["EKSTRAKCJA", "WALIDACJA"] | ["EKSTRAKCJA", "WALIDACJA", "ANALITYKA", "DECYZJA"],
+    "reasoning": "Krótkie uzasadnienie decyzji (1-2 zdania)"
+}
+'''
+
+validation_verdict = '''
+{
+    "decision": "APPROVE" | "REJECT",
+    "confidence": 0.0-1.0,
+    "reasoning": "Krótkie uzasadnienie"
+}
+'''
+
+strategic_decision = '''
+{
+    "decision": "AUTO_POST" | "SUGGEST" | "ESCALATE",
+    "confidence": 0.0-1.0,
+    "reasoning": "Szczegółowe uzasadnienie decyzji",
+    "strategy_summary": "Strategiczne podsumowanie w 2-3 zdaniach"
+}
+'''
+
+rules_level_4_output = '''
+{
+    "risk_level": "LOW" | "MEDIUM" | "HIGH",
+    "confidence": 0.0-1.0,
+    "anomaly_score": 0.0-1.0,
+    "final_verdict": "COMPLIANT" | "FLAG",
+    "reasoning": "Krótkie uzasadnienie",
+    "recommended_action": "auto_post" | "review" | "block"
+}
+'''
+
+# =============================================================================
+# PROTOKOŁY — WORKFLOW PLANNER (WorkflowPlanner)
+# =============================================================================
+# Cel: Zdecyduj które agenty uruchomić na podstawie złożoności faktury.
+# Model: LittleLamb 0.3B (mały, szybki model)
+# Zasada: Python decyduje o workflow, model tylko klasyfikuje prosty/złożony.
+
+[protocols.workflow_planner]
+description = "Planer przepływu pracy — decyduje które agenty uruchomić"
+model_role = "Inteligentny orkiestrator procesu fakturowania"
+output_format = "schema.output_formats.workflow_plan"
+
+[protocols.workflow_planner.rules]
+simple_threshold_amount = 5000  # PLN — poniżej = faktura prosta
+simple_threshold_invoice_count = 3  # min. liczba faktur dla znanego kontrahenta
+simple_threshold_ocr_confidence = 0.85  # min. OCR confidence dla fast-path
+
+[protocols.workflow_planner.instructions]
+role = """
+Jesteś inteligentnym orkiestratorem procesu fakturowania.
+Otrzymujesz dane faktury i profil kontrahenta.
+Twoim zadaniem jest zdecydować, które kontrole są potrzebne.
+"""
+available_agents = [
+    { id = "EKSTRAKCJA", description = "Weryfikacja danych faktury przez Agent Ekstrakcji Danych" },
+    { id = "WALIDACJA", description = "Walidacja jakości przez Agent Walidator Jakości" },
+    { id = "ANALITYKA", description = "Analiza trendów i wykrywanie anomalii statystycznych" },
+    { id = "DECYZJA", description = "Ostateczna decyzja na podstawie wszystkich raportów" },
+]
+
+[protocols.workflow_planner.protocols.simple_invoice]
+condition = "Kwota brutto ≤ 5000 PLN ORAZ kontrahent znany (invoice_count ≥ 3) ORAZ OCR confidence ≥ 0.85"
+action = "Uruchom TYLKO EKSTRAKCJA + WALIDACJA"
+reasoning = "Niska kwota, znany kontrahent, wysoki OCR confidence — wystarczy podstawowa weryfikacja"
+
+[protocols.workflow_planner.protocols.complex_invoice]
+condition = "Wysoka kwota LUB nowy kontrahent LUB niski OCR confidence"
+action = "Uruchom PEŁNY zestaw: EKSTRAKCJA + WALIDACJA + ANALITYKA + DECYZJA"
+reasoning = "Wysokie ryzyko — wymagana pełna ścieżka weryfikacji"
+
+# =============================================================================
+# PROTOKOŁY — WALIDACJA TRÓJWARSTWOWA (QualityValidatorAgent)
+# =============================================================================
+# Cel: Trzy warstwy walidacji z deterministyczną matrycą 8 kombinacji.
+# Modele: Alpha (LFM2.5), Beta (Qwen3-0.6B), Gamma (LittleLamb)
+
+[protocols.validation]
+description = "Trójwarstwowa Tarcza Bezpieczeństwa — walidacja jakości danych faktury"
+
+[protocols.validation.fast_path]
+condition = "Alpha (warstwa kontekstowa) APPROVE z confidence ≥ 0.92"
+action = "Pomiń warstwy Beta i Gamma — zwróć AUTO_POST"
+reasoning = "Wysoki confidence warstwy kontekstowej — fast-path"
+
+# --- Warstwa 1: Kontekstowa (Alpha Agent) ---
+
+[protocols.validation.alpha]
+description = "Warstwa kontekstowa — szybka ocena pierwszej passy"
+model_role = "Doświadczony analityk finansowy"
+output_format = "schema.output_formats.validation_verdict"
+output_fields = ["decision", "confidence", "reasoning", "suggested_action"]
+
+[protocols.validation.alpha.system_prompt]
+role = "Jesteś doświadczonym analitykiem finansowym. Oceń fakturę — czy jest typowa, czy podejrzana."
+
+[protocols.validation.alpha.protocols.typical_invoice]
+condition = "Znany kontrahent, typowa kwota, spójna kategoria"
+action = "APPROVE"
+reasoning = "Faktura typowa — brak przesłanek do odrzucenia"
+
+[protocols.validation.alpha.protocols.suspicious_invoice]
+condition = "Nowy kontrahent LUB nietypowa kwota LUB niespójna kategoria"
+action = "REJECT"
+reasoning = "Faktura nietypowa — wymaga dokładniejszej weryfikacji"
+
+# --- Warstwa 2: Precyzji (Beta Agent) ---
+
+[protocols.validation.beta]
+description = "Warstwa precyzji — walidacja matematyczno-fiskalna"
+model_role = "Skrupulatny kontroler finansowy"
+output_format = "schema.output_formats.validation_verdict"
+additional_fields = ["errors"]
+
+[protocols.validation.beta.system_prompt]
+role = "Jesteś skrupulatnym kontrolerem finansowym."
+checks = [
+    "Poprawność sumy kontrolnej NIP (10 cyfr, wagi 6,5,7,2,3,4,5,6,7)",
+    "netto + VAT = brutto (tolerancja ±0.01)",
+    "Czy kwota nie przekracza progów",
+]
+
+[protocols.validation.beta.protocols.passed]
+condition = "Wszystkie 3 kontrole OK"
+action = "APPROVE"
+reasoning = "Wszystkie kontrole matematyczno-fiskalne OK"
+
+[protocols.validation.beta.protocols.failed]
+condition = "Co najmniej jedna kontrola wykryła błąd"
+action = "REJECT"
+reasoning = "Wykryto błędy w kontroli matematyczno-fiskalnej"
+
+# --- Warstwa 3: Anomalii (Gamma Agent) ---
+
+[protocols.validation.gamma]
+description = "Warstwa anomalii — detekcja duplikatów i anomalii kwotowych"
+model_role = "Detektyw finansowy wykrywający anomalie"
+output_format = "schema.output_formats.validation_verdict"
+additional_fields = ["is_duplicate", "is_amount_anomaly"]
+
+[protocols.validation.gamma.system_prompt]
+role = "Sprawdź fakturę pod kątem potencjalnego duplikatu i anomalii kwotowej."
+checks = [
+    "Potencjalny duplikat (ten sam numer faktury, NIP, kwota)",
+    "Anomalia kwotowa (kwota znacząco odbiega od historycznej średniej)",
+]
+
+[protocols.validation.gamma.protocols.clean]
+condition = "Brak duplikatu i brak anomalii kwotowej"
+action = "APPROVE"
+reasoning = "Brak oznak duplikatu lub anomalii"
+
+[protocols.validation.gamma.protocols.anomaly_detected]
+condition = "Wykryto duplikat LUB anomalię kwotową"
+action = "REJECT"
+reasoning = "Potencjalny duplikat lub anomalia kwotowa"
+
+# =============================================================================
+# MATRYCA DECYZYJNA — 8 kombinacji głosów
+# =============================================================================
+# Deterministyczna matryca mapująca kombinację 3 głosów (Alpha, Beta, Gamma)
+# na konkretną akcję. Model nie ma prawa samodzielnie decydować — tylko głosować.
+# Python (QualityValidatorAgent) mapuje głosy na akcję.
+
+[matrices.validation_verdict]
+description = "Matryca 8 kombinacji głosów trzech warstw walidacji"
+
+[matrices.validation_verdict.combinations.FULL_APPROVE]
+alpha = "APPROVE"
+beta = "APPROVE"
+gamma = "APPROVE"
+level = "LEVEL_1_AUTO"
+action = "AUTO_POST"
+min_trust = 0.85
+summary = "Pełny konsensus — wszystkie warstwy zatwierdzają fakturę"
+deliberation = "Warstwa kontekstowa, precyzji i anomalii — wszystkie APPROVE. Pełna zgodność, niskie ryzyko."
+
+[matrices.validation_verdict.combinations.CONTEXT_ANOMALY_APPROVE]
+alpha = "APPROVE"
+beta = "REJECT"
+gamma = "APPROVE"
+level = "LEVEL_2_REVIEW"
+action = "SUGGEST"
+min_trust = 0.92
+summary = "Warstwy kontekstowa i anomalii zatwierdzają, precyzja ma zastrzeżenia"
+deliberation = "Warstwa kontekstowa i anomalii approve. Warstwa precyzji reject. Potencjalny problem z precyzją danych."
+
+[matrices.validation_verdict.combinations.CONTEXT_PRECISION_APPROVE]
+alpha = "APPROVE"
+beta = "APPROVE"
+gamma = "REJECT"
+level = "LEVEL_2_REVIEW"
+action = "SUGGEST"
+min_trust = 0.90
+summary = "Warstwy kontekstowa i precyzji zatwierdzają, anomalia wykryta"
+deliberation = "Warstwa kontekstowa i precyzji approve. Warstwa anomalii reject. Potencjalna anomalia kwotowa."
+
+[matrices.validation_verdict.combinations.CONTEXT_ONLY]
+alpha = "APPROVE"
+beta = "REJECT"
+gamma = "REJECT"
+level = "LEVEL_3_ESCALATE"
+action = "ASK_USER"
+min_trust = 0.0
+summary = "Tylko warstwa kontekstowa zatwierdza — wymaga decyzji użytkownika"
+deliberation = "Tylko warstwa kontekstowa APPROVE. Precyzja i anomalie REJECT. Znaczące rozbieżności."
+
+[matrices.validation_verdict.combinations.PRECISION_ANOMALY_APPROVE]
+alpha = "REJECT"
+beta = "APPROVE"
+gamma = "APPROVE"
+level = "LEVEL_3_ESCALATE"
+action = "ASK_USER"
+min_trust = 0.0
+summary = "Warstwy precyzji i anomalii zatwierdzają, kontekst odrzuca"
+deliberation = "Warstwy precyzji i anomalii APPROVE. Kontekst REJECT. Perspektywa kontekstowa jest negatywna."
+
+[matrices.validation_verdict.combinations.ANOMALY_ONLY]
+alpha = "REJECT"
+beta = "REJECT"
+gamma = "APPROVE"
+level = "LEVEL_3_ESCALATE"
+action = "ASK_USER"
+min_trust = 0.0
+summary = "Tylko warstwa anomalii zatwierdza — wymaga decyzji użytkownika"
+deliberation = "Tylko warstwa anomalii APPROVE. Kontekst i precyzja REJECT. Znaczące rozbieżności."
+
+[matrices.validation_verdict.combinations.PRECISION_VETO]
+alpha = "REJECT"
+beta = "APPROVE"
+gamma = "REJECT"
+level = "LEVEL_4_BLOCK"
+action = "BLOCK"
+min_trust = 0.0
+summary = "Tylko warstwa precyzji zatwierdza — blokada (precision veto)"
+deliberation = "Tylko warstwa precyzji APPROVE. Kontekst i anomalie REJECT. Precision veto — walidacja precyzji nie jest wystarczająca. BLOKADA."
+
+[matrices.validation_verdict.combinations.FULL_REJECT]
+alpha = "REJECT"
+beta = "REJECT"
+gamma = "REJECT"
+level = "LEVEL_4_BLOCK"
+action = "BLOCK"
+min_trust = 0.0
+summary = "Wszystkie warstwy odrzucają — blokada"
+deliberation = "Wszystkie warstwy REJECT. BLOKADA."
+
+# =============================================================================
+# PROTOKOŁY — RULES SWAT TEAM (4 poziomy zgodności)
+# =============================================================================
+# Cel: Hierarchiczna walidacja zgodności reguł biznesowych i podatkowych.
+# Modele: Level 1 (LFM2.5), Level 2 (Granite 4.0 1B), Level 3 (LittleLamb),
+#          Level 4 (Fin-RWKV-169M)
+# Fast-path: Level 1 → COMPLIANT z confidence ≥ 0.90 → STOP
+
+[protocols.rules]
+description = "Rules SWAT Team — hierarchiczny przepływ agentów zgodności finansowej"
+
+[protocols.rules.flow]
+level_1_fast_path_confidence = 0.90
+max_chain_depth = 4
+
+[protocols.rules.level_1]
+model = "LFM2.5-Thinking"
+description = "Szybka ocena kontekstowa — decyzja: COMPLIANT / FLAG"
+output_format = "schema.output_formats.validation_verdict"
+additional_fields = ["flags"]
+
+[protocols.rules.level_1.system_prompt]
+role = "Jesteś LFM2.5-Thinking — szybki analityk kontekstowy."
+task = "Oceń fakturę: czy jest typowa, czy wymaga dodatkowej weryfikacji."
+
+[protocols.rules.level_1.flag_areas]
+nip = { severity = "low|medium|high", description = "Problem z NIP-em kontrahenta" }
+amount = { severity = "low|medium|high", description = "Nietypowa kwota" }
+vendor = { severity = "low|medium|high", description = "Problem z kontrahentem" }
+category = { severity = "low|medium|high", description = "Niespójna kategoria" }
+
+[protocols.rules.level_1.protocols.compliant]
+condition = "Typowa faktura, znany kontrahent, standardowa kwota"
+action = "COMPLIANT"
+# Jeśli confidence ≥ 0.90 → fast-path, dalsze poziomy pominięte
+
+[protocols.rules.level_1.protocols.flagged]
+condition = "Nietypowa faktura, nowy kontrahent, niestandardowa kwota"
+action = "FLAG"
+# Przekazuje flagi do Level 2
+
+[protocols.rules.level_2]
+model = "Granite 4.0 1B Nano"
+description = "Walidacja reguł biznesowych — NIP, limity kwotowe, polityka firmy"
+output_format = "schema.output_formats.validation_verdict"
+additional_fields = ["violations"]
+
+[protocols.rules.level_2.system_prompt]
+role = "Jesteś Granite 4.0 1B Nano — agent walidacji reguł biznesowych."
+checks = [
+    "Walidacja NIP (suma kontrolna, format)",
+    "Limit kwotowy (maksymalna kwota faktury)",
+    "Zgodność z polityką firmy (kategoria wydatku)",
+]
+
+[protocols.rules.level_2.rule_ids]
+nip_validation = "Walidacja NIP"
+amount_limit = "Limit kwotowy"
+policy_compliance = "Zgodność z polityką"
+
+[protocols.rules.level_2.protocols.passed]
+condition = "Wszystkie reguły biznesowe spełnione"
+action = "passed = true"
+reasoning = "Wszystkie reguły biznesowe OK"
+
+[protocols.rules.level_2.protocols.failed]
+condition = "Co najmniej jedna reguła naruszona"
+action = "passed = false"
+reasoning = "Naruszenie reguł biznesowych — przekazanie do Level 3"
+
+[protocols.rules.level_3]
+model = "LittleLamb 0.3B TC"
+description = "Ternary Classifier — COMPLIANT / FLAG / VIOLATION"
+output_format = "schema.output_formats.validation_verdict"
+additional_fields = ["classification", "risk_factors"]
+
+[protocols.rules.level_3.system_prompt]
+role = "Jesteś LittleLamb 0.3B TC — Ternary Classifier."
+task = "Sklasyfikuj fakturę: COMPLIANT (zgodna), FLAG (oznaczona), VIOLATION (naruszenie)."
+
+[protocols.rules.level_3.protocols.compliant]
+classification = "COMPLIANT"
+action = "Zwróć pozytywny wynik z flagami jako warningi"
+reasoning = "Faktura zgodna mimo wcześniejszych flag"
+
+[protocols.rules.level_3.protocols.flagged]
+classification = "FLAG"
+action = "Zwróć wynik z risk_factors → nie uruchamiaj Level 4"
+reasoning = "Faktura oznaczona — wymaga uwagi ale nie eskalacji"
+
+[protocols.rules.level_3.protocols.violation]
+classification = "VIOLATION"
+action = "Przekaż do Level 4 (Fin-RWKV)"
+reasoning = "Naruszenie — wymaga końcowej weryfikacji"
+
+[protocols.rules.level_4]
+model = "Fin-RWKV-169M"
+description = "Końcowa weryfikacja anomalii finansowych"
+output_format = "schema.output_formats.rules_level_4_output"
+
+[protocols.rules.level_4.system_prompt]
+role = "Jesteś Fin-RWKV-169M — detektyw finansowy."
+task = "Zweryfikuj końcowo anomalię finansową. Oceń ryzyko: LOW / MEDIUM / HIGH."
+
+[protocols.rules.level_4.protocols.low_risk]
+risk_level = "LOW"
+action = "COMPLIANT — auto_post"
+reasoning = "Niskie ryzyko mimo wcześniejszych naruszeń"
+
+[protocols.rules.level_4.protocols.medium_risk]
+risk_level = "MEDIUM"
+action = "FLAG — review"
+reasoning = "Średnie ryzyko — wymaga recenzji"
+
+[protocols.rules.level_4.protocols.high_risk]
+risk_level = "HIGH"
+action = "FLAG — block"
+reasoning = "Wysokie ryzyko — blokada"
+
+# =============================================================================
+# PROTOKOŁY — STRATEGICZNA DECYZJA (JambaStrategist / Jamba 3B)
+# =============================================================================
+# Cel: Ostateczna decyzja na podstawie raportów ze wszystkich agentów.
+# Model: Jamba 3B (największy model — strategiczne wnioskowanie)
+# Zasada: Otrzymuje gotowe raporty, nie szuka danych samodzielnie.
+
+[protocols.decision]
+description = "Strategiczną decyzja końcowa na podstawie raportów agentów"
+
+[protocols.decision.jamba]
+model = "Jamba 3B"
+description = "Strateg analizujący raporty wszystkich agentów przez Jamba 3B"
+
+[protocols.decision.jamba.system_prompt]
+role = "Jesteś strategiem finansowym analizującym pełny obraz faktury."
+input_sources = [
+    "Agent Walidator Jakości — ocena jakości danych i anomalii",
+    "Agent Analityczny — trendy i anomalie statystyczne",
+    "Agent Ekstrakcji Danych — dane surowe z faktury",
+]
+
+[protocols.decision.jamba.protocols.auto_post]
+condition = "Wysoki trust score, brak zastrzeżeń, znany kontrahent"
+decision = "AUTO_POST"
+reasoning = "Wszystkie raporty pozytywne — księguj automatycznie"
+
+[protocols.decision.jamba.protocols.suggest]
+condition = "Średni trust score, drobne zastrzeżenia"
+decision = "SUGGEST"
+reasoning = "Większość raportów pozytywna — sugeruj ale czekaj na potwierdzenie"
+
+[protocols.decision.jamba.protocols.escalate]
+condition = "Niski trust score, poważne zastrzeżenia lub błędy"
+decision = "ESCALATE"
+reasoning = "Znaczące problemy — eskaluj do człowieka"
+
+[protocols.decision.jamba.protocols.timeout]
+condition = "Brak odpowiedzi modelu w ciągu decision_timeout_seconds"
+decision = "ESCALATE"
+reasoning = "Timeout — bezpieczna eskalacja do człowieka"
+
+[protocols.decision.jamba.protocols.error]
+condition = "Błąd inferencji modelu"
+decision = "ESCALATE"
+reasoning = "Błąd — bezpieczna eskalacja do człowieka"
+
+# =============================================================================
+# PROTOKOŁY — GRANITE EXECUTOR (dodatkowe zapytania do DuckDB)
+# =============================================================================
+
+[protocols.executor]
+description = "Executor zapytań do DuckDB dla dodatkowego kontekstu"
+
+[protocols.executor.granite]
+model = "Granite 4.0 1B"
+description = "Agent wykonawczy z dostępem do DuckDB"
+output_format = "schema.output_formats.validation_verdict"
+additional_fields = ["query_results"]
+
+[protocols.executor.granite.system_prompt]
+role = "Jesteś agentem wykonawczym z dostępem do DuckDB."
+task = "Wykonaj zapytania do bazy danych i zwróć wyniki."
+
+# =============================================================================
+# PROGI DECYZYJNE
+# =============================================================================
+
+[thresholds]
+description = "Domyślne progi decyzyjne i wagi trust score"
+
+[thresholds.default]
+auto_post = 0.92
+suggest = 0.75
+ask_user = 0.50
+
+[thresholds.weights]
+ai_confidence = 0.30
+vendor_reliability = 0.25
+data_consistency = 0.20
+context_trust = 0.10
+risk_guard = 0.15
+
+[thresholds.adaptation]
+enabled = true
+learning_rate = 0.05
+low_amount_threshold = 500.0  # PLN
+
+[thresholds.category_adjustments]
+recurring_categories = ["paliwo", "czynsz", "media", "telekomunikacja", "leasing"]
+recurring_auto_post_adjustment = -0.025  # niższy próg dla kategorii cyklicznych
+recurring_suggest_adjustment = -0.015
+
+problematic_categories = ["usługi it", "doradztwo", "marketing", "szkolenia"]
+problematic_auto_post_adjustment = 0.05  # wyższy próg dla kategorii problematycznych
+problematic_suggest_adjustment = 0.025
+
+[thresholds.vendor_adjustments]
+known_vendor_auto_post_adjustment = -0.05
+known_vendor_suggest_adjustment = -0.025
+new_vendor_auto_post_adjustment = 0.10
+new_vendor_suggest_adjustment = 0.05
+
+[thresholds.amount_adjustments]
+low_amount_auto_post_adjustment = -0.025
+low_amount_suggest_adjustment = -0.015
+high_amount_auto_post_adjustment = 0.10
+high_amount_suggest_adjustment = 0.05
+medium_amount_auto_post_adjustment = 0.025
+medium_amount_suggest_adjustment = 0.015
+
+# =============================================================================
+# PROTOKOŁY AWARYJNE
+# =============================================================================
+
+[emergency]
+description = "Protokoły awaryjne na wypadek błędów, timeoutów i nieoczekiwanych sytuacji"
+
+[emergency.protocols.model_timeout]
+condition = "Model nie odpowiedział w ciągu timeout_seconds"
+action = "ASYNC_FALLBACK"
+fallback_strategy = "Użyj statycznej matrycy decyzyjnej (DECISION_MATRIX) zamiast modelu"
+logging = "Zaloguj timeout i kontynuuj z fallbackiem"
+notify_user = false
+
+[emergency.protocols.model_error]
+condition = "Model zwrócił błąd lub niepoprawny JSON"
+action = "PARSE_FALLBACK"
+fallback_strategy = "Użyj regex fallback do wyciągnięcia JSON z odpowiedzi"
+max_retries = 1
+logging = "Zaloguj błąd parsowania"
+notify_user = false
+
+[emergency.protocols.model_crash]
+condition = "Model wielokrotnie nie odpowiada lub aplikacja crashuje"
+action = "SAFE_DEFAULT"
+fallback_strategy = "Użyj domyślnych wartości (ESCALATE / BLOCK) i eskaluj do człowieka"
+max_retries = 0
+logging = "Zaloguj krytyczny błąd modelu"
+notify_user = true
+
+[emergency.protocols.unknown_voting_pattern]
+condition = "Nieznana kombinacja głosów (Alpha, Beta, Gamma)"
+action = "SAFE_ESCALATE"
+fallback_strategy = "ASK_USER — bezpieczna eskalacja"
+logging = "Zaloguj nieznany wzorzec głosowania"
+notify_user = true
+
+[emergency.protocols.workflow_timeout]
+condition = "WorkflowPlanner nie odpowiedział w czasie"
+action = "FULL_WORKFLOW"
+fallback_strategy = "Uruchom pełny zestaw agentów (bezpieczna domyślna)"
+logging = "Zaloguj timeout WorkflowPlanner"
+notify_user = false
+
+[emergency.protocols.validation_layer_timeout]
+condition = "Jedna z warstw walidacji (Alpha/Beta/Gamma) nie odpowiedziała w czasie"
+action = "SKIP_LAYER"
+fallback_strategy = "Pomiń warstwę która timeoutowała i kontynuuj z ERROR jako głosem"
+logging = "Zaloguj timeout warstwy walidacji"
+notify_user = false

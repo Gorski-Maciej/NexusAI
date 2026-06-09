@@ -387,7 +387,7 @@ class RulesSWATTeam:
     # ------------------------------------------------------------------
 
     def _build_level_1_prompt(self, invoice_data: dict[str, Any]) -> str:
-        return f"""{RULES_LEVEL_1_PROMPT}
+        prompt = f"""{RULES_LEVEL_1_PROMPT}
 
 Kontekst faktury:
 - NIP: {invoice_data.get('contractor_nip', 'brak')}
@@ -401,10 +401,15 @@ Kontekst faktury:
 
 Oceń szybko czy faktura wymaga dodatkowej weryfikacji."""
 
+        # Końcowe przypomnienie formatu JSON — spójne z pozostałymi poziomami Rules SWAT
+        prompt += "\n\n=== DECYZJA ===\nOceń fakturę i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
+
+        return prompt
+
     def _build_level_2_prompt(self, invoice_data: dict[str, Any]) -> str:
         config = self._config
         max_amount = config.rules_max_invoice_amount
-        return f"""{RULES_LEVEL_2_PROMPT}
+        prompt = f"""{RULES_LEVEL_2_PROMPT}
 
 Dane faktury:
 - NIP: {invoice_data.get('contractor_nip', 'brak')}
@@ -419,13 +424,18 @@ Reguły:
 
 Zweryfikuj zgodność z regułami."""
 
+        # Końcowe przypomnienie formatu JSON — spójne z pozostałymi poziomami Rules SWAT
+        prompt += "\n\n=== DECYZJA ===\nZweryfikuj zgodność z regułami i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
+
+        return prompt
+
     def _build_level_3_prompt(
         self,
         invoice_data: dict[str, Any],
         level1: dict[str, Any],
         level2: dict[str, Any],
     ) -> str:
-        return f"""{RULES_LEVEL_3_PROMPT}
+        prompt = f"""{RULES_LEVEL_3_PROMPT}
 
 Dane faktury:
 - NIP: {invoice_data.get('contractor_nip', 'brak')}
@@ -437,6 +447,11 @@ Wynik Level 2 (Granite): {msgspec_dumps(level2, ensure_ascii=False)}
 
 Sklasyfikuj fakturę na podstawie powyższych wyników."""
 
+        # Końcowe przypomnienie formatu JSON — spójne z Level 4, JambaStrategist i WorkflowPlanner
+        prompt += "\n\n=== DECYZJA ===\nSklasyfikuj fakturę i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
+
+        return prompt
+
     def _build_level_4_prompt(
         self,
         invoice_data: dict[str, Any],
@@ -444,7 +459,7 @@ Sklasyfikuj fakturę na podstawie powyższych wyników."""
         level2: dict[str, Any],
         level3: dict[str, Any],
     ) -> str:
-        return f"""{RULES_LEVEL_4_PROMPT}
+        prompt = f"""{RULES_LEVEL_4_PROMPT}
 
 Dane faktury:
 - NIP: {invoice_data.get('contractor_nip', 'brak')}
@@ -456,6 +471,11 @@ Level 2 (Granite): {msgspec_dumps(level2, ensure_ascii=False)}
 Level 3 (LittleLamb): {msgspec_dumps(level3, ensure_ascii=False)}
 
 Dokonaj końcowej weryfikacji i oceń ryzyko."""
+
+        # Końcowe przypomnienie formatu JSON — spójne z JambaStrategist i WorkflowPlanner
+        prompt += "\n\n=== DECYZJA ===\nZweryfikuj końcowo anomalię i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
+
+        return prompt
 
     # ------------------------------------------------------------------
     # Parsers

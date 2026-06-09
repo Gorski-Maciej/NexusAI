@@ -27,12 +27,14 @@ from typing import Any
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
+from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
 from nexus_ai.services.council_agents import (
     DecisionVerdict,
     ModelManager,
 )
 from nexus_ai.services.council_session import CouncilVerdict
 from nexus_ai.services.decision_logger import DecisionLogger
+from nexus_ai.services.facts_aggregator import FactsAggregator, FactSheet
 from nexus_ai.services.ple_engine import PLEEngine
 from nexus_ai.services.risk_guard import RiskGuard
 
@@ -133,11 +135,21 @@ class WorkflowPlanner:
         self,
         invoice_data: dict[str, Any],
         vendor_profile: dict[str, Any] | None = None,
+        fact_sheet_text: str | None = None,
     ) -> dict[str, Any]:
-        """Zaplanuj przepływ pracy — które agenty uruchomić."""
+        """Zaplanuj przepływ pracy — które agenty uruchomić.
+
+        Args:
+            invoice_data: Dane faktury.
+            vendor_profile: Profil kontrahenta (opcjonalnie).
+            fact_sheet_text: Arkusz faktów z FactsAggregator (RAG) — opcjonalnie.
+
+        Returns:
+            Słownik z agentami do uruchomienia i reasoningiem.
+        """
         try:
             model = await self._model_manager.acquire(self._model_name, self._model_path)
-            prompt = self._build_prompt(invoice_data, vendor_profile)
+            prompt = self._build_prompt(invoice_data, vendor_profile, fact_sheet_text)
             response = await asyncio.wait_for(
                 asyncio.to_thread(
                     model.create_chat_completion,
@@ -165,9 +177,9 @@ class WorkflowPlanner:
         finally:
             await self._model_manager.release()
 
-    def _build_prompt(self, invoice_data: dict[str, Any], vendor_profile: dict[str, Any] | None) -> str:
+    def _build_prompt(self, invoice_data: dict[str, Any], vendor_profile: dict[str, Any] | None, fact_sheet_text: str | None = None) -> str:
         vendor = vendor_profile or invoice_data.get("vendor_profile", {}) or {}
-        return f"""{WORKFLOW_PLANNER_PROMPT}
+        prompt = f"""{WORKFLOW_PLANNER_PROMPT}
 
 === DANE FAKTURY ===
 - NIP kontrahenta: {invoice_data.get('contractor_nip', 'brak')}
@@ -185,6 +197,15 @@ Faktura jest PROSTA (→ tylko EKSTRAKCJA + WALIDACJA) gdy:
 - Kwota brutto ≤ 5000 PLN
 - Kontrahent znany (invoice_count ≥ 3)
 - OCR confidence ≥ 0.85"""
+
+        if fact_sheet_text:
+            # Dołącz arkusz faktów (RAG) dla lepszej decyzji planera
+            prompt += f"\n\n=== ARKUSZ FAKTÓW (RAG) ===\n{fact_sheet_text}"
+
+        # Końcowe przypomnienie formatu JSON — spójne z JambaStrategist
+        prompt += "\n\n=== DECYZJA ===\nNa podstawie powyższych danych podejmij decyzję.\nReturn ONLY a valid JSON object. No other text."
+
+        return prompt
 
     def _parse_response(self, raw: str) -> dict[str, Any]:
         try:
@@ -445,10 +466,15 @@ class JambaStrategist:
         quality_report: dict[str, Any] | None = None,
         analytics_report: dict[str, Any] | None = None,
         extraction_report: dict[str, Any] | None = None,
+        fact_sheet_text: str | None = None,
+        few_shot_examples: str | None = None,
     ) -> dict[str, Any]:
         try:
             model = await self._model_manager.acquire(self._model_name, self._model_path)
-            prompt = self._build_prompt(invoice_data, quality_report, analytics_report, extraction_report)
+            prompt = self._build_prompt(
+                invoice_data, quality_report, analytics_report,
+                extraction_report, fact_sheet_text, few_shot_examples,
+            )
             response = await asyncio.wait_for(
                 asyncio.to_thread(
                     model.create_chat_completion,
@@ -472,18 +498,28 @@ class JambaStrategist:
         finally:
             await self._model_manager.release()
 
-    def _build_prompt(self, invoice_data, quality_report, analytics_report, extraction_report):
+    def _build_prompt(self, invoice_data, quality_report, analytics_report, extraction_report, fact_sheet_text=None, few_shot_examples=None):
         q = quality_report or {}
         a = analytics_report or {}
         e = extraction_report or {}
+
+        # fact_sheet_text ma własny nagłówek (=== ARKUSZ FAKTÓW ===)
+        fact_sheet_section = f"\n{fact_sheet_text}" if fact_sheet_text else ""
+
+        # few_shot_examples ma własny nagłówek (=== PRZYKŁADY FEW-SHOT ===)
+        # Przykłady doklejamy w dwóch miejscach:
+        #   1. PRZED === RAPORT WALIDATORA === jako kontekst dla modelu
+        #   2. PO === RAPORT EKSTRAKCJI DANYCH === jako końcowe przypomnienie
+        #      przed generowaniem JSON — model widzi przykłady tuż przed outputem.
+        few_shot_block = f"\n\n{few_shot_examples}\n" if few_shot_examples else ""
+
         return f"""{JAMBA_SYSTEM_PROMPT}
 
 === DANE FAKTURY ===
 - ID: {invoice_data.get('invoice_id', 'brak')}
 - NIP: {invoice_data.get('contractor_nip', 'brak')}
 - Kwota brutto: {invoice_data.get('amount_gross', '?')} PLN
-- Kategoria: {invoice_data.get('category', 'brak')}
-
+- Kategoria: {invoice_data.get('category', 'brak')}{fact_sheet_section}{few_shot_block}
 === RAPORT WALIDATORA JAKOŚCI ===
 - Decyzja: {q.get('decision', 'N/A')}
 - Poziom: {q.get('level', 'N/A')}
@@ -496,7 +532,12 @@ class JambaStrategist:
 
 === RAPORT EKSTRAKCJI DANYCH ===
 - Pola: {len(e.get('extracted_fields', []))}
-- Średnie zaufanie: {e.get('avg_confidence', 0.5)}"""
+- Średnie zaufanie: {e.get('avg_confidence', 0.5)}
+{few_shot_block}
+
+=== DECYZJA ===
+Na podstawie powyższych danych i przykładów podejmij ostateczną decyzję.
+Return ONLY a valid JSON object. No other text."""
 
     def _parse_response(self, raw: str) -> dict[str, Any]:
         try:
@@ -552,18 +593,40 @@ class AgentOrchestrator:
         workflow_planner: WorkflowPlanner,
         trust_calculator: TrustScoreCalculator,
         jamba_strategist: JambaStrategist,
+        facts_aggregator: FactsAggregator | None = None,
         decision_logger: DecisionLogger | None = None,
         ple_engine: PLEEngine | None = None,
         bayesian_learner: Any | None = None,
+        tigerbeetle_client: TigerBeetleClient | None = None,
         config: AppConfig | None = None,
     ) -> None:
         self._planner = workflow_planner
         self._calculator = trust_calculator
         self._jamba = jamba_strategist
+        self._facts = facts_aggregator
         self._logger = decision_logger
         self._ple = ple_engine
         self._bayesian = bayesian_learner
         self._config = config or AppConfig()
+
+        # Zintegruj TigerBeetleClient z FactsAggregator — warstwa RAG
+        # ma dostęp do secure ledger podczas każdej decyzji.
+        # Jeśli aggregator już istnieje, ustaw mu klienta przez setter.
+        # Jeśli nie istnieje ale mamy tigerbeetle_client, utwórz aggregator.
+        self._tigerbeetle = tigerbeetle_client
+        if tigerbeetle_client is not None:
+            if self._facts is not None:
+                self._facts.set_tigerbeetle_client(tigerbeetle_client)
+                logger.info(
+                    "[AgentOrchestrator] TigerBeetleClient attached to existing FactsAggregator"
+                )
+            else:
+                # Auto-twórz FactsAggregator z tigerbeetle_client
+                # Pozostałe komponenty będą None — init nastąpi przy pierwszym build()
+                self._facts = FactsAggregator(tigerbeetle_client=tigerbeetle_client)
+                logger.info(
+                    "[AgentOrchestrator] FactsAggregator auto-created with TigerBeetleClient"
+                )
 
     async def orchestrate(
         self,
@@ -589,16 +652,44 @@ class AgentOrchestrator:
         """
         logger.info("[AgentOrchestrator] orchestrating invoice_id=%s", invoice_id)
 
-        # Krok 1: Zaplanuj przepływ pracy
-        plan = await self._planner.plan(invoice_data, vendor_profile)
+        # Krok 0: Zbuduj arkusz faktów ze wszystkich źródeł danych (RAG)
+        # FactsAggregator zbiera dane z SQLite, DuckDB i sqlite-vec
+        # i pakuje w jeden FactSheet, który jest dołączany do promptów
+        # Uwaga: nie mutujemy invoice_data — fact_sheet_text przekazujemy
+        # osobno do JambaStrategist, co zapobiega skutkom ubocznym.
+        fact_sheet: FactSheet | None = None
+        fact_sheet_text: str | None = None
+        if self._facts is not None:
+            fact_sheet = await self._facts.build(invoice_data)
+            fact_sheet_text = fact_sheet.to_prompt_section()
+            logger.info(
+                "[AgentOrchestrator] facts aggregated: sources=%s duration=%.1fms",
+                fact_sheet.sources_available,
+                fact_sheet.build_duration_ms,
+            )
+
+        # Krok 1: Zaplanuj przepływ pracy (z arkuszem faktów dla lepszych decyzji)
+        plan = await self._planner.plan(invoice_data, vendor_profile, fact_sheet_text=fact_sheet_text)
         workflow = plan.get("agents", ["EKSTRAKCJA", "WALIDACJA", "ANALITYKA", "DECYZJA"])
 
-        # Krok 2: Jamba strategiczna analiza
+        # Krok 1b: Zbuduj przykłady few-shot z FactSheet
+        few_shot_examples: str | None = None
+        if fact_sheet is not None:
+            few_shot_examples = fact_sheet.build_few_shot_examples(max_examples=3)
+            if few_shot_examples:
+                logger.info(
+                    "[AgentOrchestrator] few-shot examples built: %d chars",
+                    len(few_shot_examples),
+                )
+
+        # Krok 2: Jamba strategiczna analiza (z arkuszem faktów i few-shot)
         jamba_result = await self._jamba.analyze(
             invoice_data=invoice_data,
             quality_report=quality_report,
             analytics_report=analytics_report,
             extraction_report=extraction_report,
+            fact_sheet_text=fact_sheet_text,
+            few_shot_examples=few_shot_examples,
         )
 
         jamba_confidence = float(jamba_result.get("confidence", 0.0))
@@ -700,6 +791,16 @@ class AgentOrchestrator:
             strategy_summary=jamba_result.get("strategy_summary", ""),
             jamba_analysis=jamba_result.get("raw_response", ""),
             adapted_thresholds=bayesian_thresholds or {},
+            granite_context={
+                "fact_sheet_sources": fact_sheet.sources_available,
+                "fact_sheet_duration_ms": fact_sheet.build_duration_ms,
+                "fact_sheet_summary": {
+                    "contractor_known": fact_sheet.contractor_known,
+                    "contractor_invoice_count": fact_sheet.contractor_invoice_count,
+                    "similar_invoices_count": len(fact_sheet.similar_invoices),
+                    "active_rules_count": len(fact_sheet.active_tax_rules),
+                },
+            } if fact_sheet else {},
         )
 
     async def plan_workflow(

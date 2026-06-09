@@ -223,7 +223,7 @@ python -m api.server
 
 ## 12. Modele AI (GGUF)
 
-System wykorzystuje **8 modeli AI** zgrupowanych w **3 agentach**:
+System wykorzystuje **10 modeli AI** zgrupowanych w **6 grupach funkcyjnych**:
 
 ### Council of Agents (Rada Agentów)
 | Model | Rozmiar | Agent | Funkcja |
@@ -232,11 +232,26 @@ System wykorzystuje **8 modeli AI** zgrupowanych w **3 agentach**:
 | **Qwen3 0.6B** | ~430 MB | Beta Agent | Precyzyjny walidator — weryfikacja NIP, kwot, dat |
 | **LittleLamb 0.3B (TC)** | ~250 MB | Gamma Agent | Detektor duplikatów i anomalii przez sqlite-vec |
 
+### WorkflowPlanner (Orkiestrator przepływu)
+| Model | Rozmiar | Funkcja |
+|---|---|---|
+| **LittleLamb 0.3B (TC)** | ~250 MB | Klasyfikator simple/complex — decyduje które agenty uruchomić (współdzielony z Gamma) |
+
+> LittleLamb 0.3B jest współdzielony między Council Gamma a WorkflowPlanner — ten sam plik GGUF, dwa osobne zadania inference.
+
 ### Extraction Agent (nowy — zastępuje cały pipeline OCR)
 | Model | Rozmiar | Funkcja |
 |---|---|---|
 | **LightOnOCR-1B** | ~800 MB | **Główny silnik** — VLM (Vision Language Model) ekstrahujący dane z obrazów faktur |
 | **Phi-3-mini 3.8B** | ~2.2 GB | **Sędzia rezerwowy** — fallback gdy LightOnOCR-1B nie zwróci poprawnego JSON |
+
+### Rules SWAT Team (Kaskada reguł biznesowych)
+| Model | Rozmiar | Agent | Funkcja |
+|---|---|---|---|
+| **LFM2.5 1.2B** | ~780 MB | Level 1 | Szybka klasyfikacja COMPLIANT/FLAG (współdzielony z Alpha) |
+| **Granite 4.0 1B Nano** | ~980 MB | Level 2 | Walidacja biznesowa — NIP, limity, polityka |
+| **LittleLamb 0.3B (TC)** | ~250 MB | Level 3 | Ternary Classifier — COMPLIANT/FLAG/VIOLATION (współdzielony) |
+| **Fin-RWKV-169M** | ~170 MB | Level 4 | Końcowa weryfikacja — LOW/MEDIUM/HIGH (współdzielony z Analytics) |
 
 ### Analytics Agent (Miniaturowy Sztab Analityczny)
 | Model | Rozmiar | Funkcja |
@@ -245,7 +260,12 @@ System wykorzystuje **8 modeli AI** zgrupowanych w **3 agentach**:
 | **Qwen2.5-1.5B-Instruct** | ~980 MB | Główny analityk — interpretuje wyniki SQL w języku naturalnym |
 | **Fin-RWKV-169M** | ~170 MB | Detektyw finansowy — wykrywa anomalie (architektura RWKV, attention-free) |
 
-**Łącznie: ~6.9 GB modeli, max ~2 GB RAM w jednym momencie** (dzięki lazy loading + explicit unloading)
+### Decision Agent (JambaStrategist)
+| Model | Rozmiar | Funkcja |
+|---|---|---|
+| **Jamba 3B** | ~1.8 GB | Strategiczne wnioskowanie — ostateczna decyzja AUTO_POST/SUGGEST/ESCALATE na podstawie raportów wszystkich agentów |
+
+**Łącznie: ~10.3 GB modeli na dysku, max ~2 GB RAM w jednym momencie** (dzięki lazy loading + explicit unloading + mutual exclusion przez ModelManager)
 
 ---
 
@@ -341,7 +361,7 @@ Komunikacja z zewnętrznymi API zabezpieczona przez **stamina** (retry + circuit
 
 ---
 
-## 19. Agenty AI (Council of LLMs + Extraction + Analytics)
+## 19. Agenty AI (Council of LLMs + Rules SWAT + Extraction + Analytics + Decision)
 
 ### Council of Agents (Rada)
 | Agent | Model | Funkcja |
@@ -350,11 +370,24 @@ Komunikacja z zewnętrznymi API zabezpieczona przez **stamina** (retry + circuit
 | **Beta Agent** | Qwen3 0.6B | Walidacja wtórna — potwierdza/odrzuca decyzję Alpha |
 | **Gamma Agent** | LittleLamb 0.3B | Tiebreaker + detekcja duplikatów przez sqlite-vec |
 
+### WorkflowPlanner
+| Komponent | Model | Funkcja |
+|---|---|---|
+| **Klasyfikator** | LittleLamb 0.3B TC | Decyduje simple vs complex — współdzieli model z Gamma |
+
+### Rules SWAT Team (Kaskada reguł biznesowych)
+| Poziom | Model | Funkcja |
+|---|---|---|
+| **Level 1** | LFM2.5 1.2B | Szybka klasyfikacja COMPLIANT/FLAG — współdzieli model z Alpha |
+| **Level 2** | Granite 4.0 1B Nano | Walidacja biznesowa — NIP, limity, polityka firmy |
+| **Level 3** | LittleLamb 0.3B TC | Ternary Classifier — COMPLIANT/FLAG/VIOLATION |
+| **Level 4** | Fin-RWKV-169M | Końcowa weryfikacja — LOW/MEDIUM/HIGH |
+
 ### Extraction Agent
 | Komponent | Model | Funkcja |
 |---|---|---|
 | **Główny silnik** | LightOnOCR-1B | Ekstrakcja danych z obrazów faktur (VLM — Vision Language Model) |
-| **Fallback** | Phi-3-mini 3.8B | Uruchamiany gdy LightOnOCR-1B zwróci niepoprawny JSON |
+| **Fallback** | Phi-3-mini 3.8B | Uruchamiany gdy LightOnOCR-1B nie zwróci poprawnego JSON |
 
 ### Analytics Agent
 | Komponent | Model | Funkcja |
@@ -363,11 +396,16 @@ Komunikacja z zewnętrznymi API zabezpieczona przez **stamina** (retry + circuit
 | **Qwen2.5-1.5B-Instruct** | Analityk | Interpretuje wyniki SQL w języku naturalnym |
 | **Fin-RWKV-169M** | Detektyw | Wykrywa anomalie finansowe (attention-free, ekstremalnie szybki) |
 
+### Decision Agent (JambaStrategist)
+| Komponent | Model | Funkcja |
+|---|---|---|
+| **Strateg** | Jamba 3B | Strategic Reasoning — analizuje raporty ze wszystkich agentów i podejmuje ostateczną decyzję (AUTO_POST/SUGGEST/ESCALATE) |
+
 ### Zarządzanie pamięcią (wspólne dla wszystkich agentów)
 1. **Lazy loading** — modele ładowane dopiero przy pierwszym zadaniu
 2. **Explicit unloading** — `del model` + `gc.collect()` po każdym zadaniu
-3. **Mutual exclusion** — w danym momencie tylko jeden model w RAM
-4. **TTL** — 5 minut bezczynności = automatyczne wyładowanie
+3. **Mutual exclusion** — w danym momencie tylko jeden model w RAM (ModelManager z asyncio.Semaphore(1))
+4. **TTL** — 5 minut bezczynności = automatyczne wyładowanie (config: `autopilot_model_ttl_seconds=600`)
 
 ---
 
@@ -403,16 +441,16 @@ Komunikacja z zewnętrznymi API zabezpieczona przez **stamina** (retry + circuit
 | Kryptografia / Bezpieczeństwo | 5 | **Nexus-Crypto** zamiast cryptography (-1) |
 | Finanse / Waluty | 3 | **Nexus-Money** zamiast py-moneyed (+TigerBeetle Client) |
 | AI / ML | 2 | **-5** (usunięto: transformers, torch, sentence-transformers, onnxruntime, opencv) |
-| Modele AI | 8 | **+2** (LightOnOCR-1B, Phi-3-mini, Hrida-T2SQL, Fin-RWKV; usunięto: Granite, Jamba) |
+| Modele AI | 10 | **+4** (LightOnOCR-1B, Phi-3-mini, Hrida-T2SQL, Fin-RWKV, Granite 4.0 1B, Jamba 3B; usunięto wcześniej: —) |
 | Logowanie / Monitoring | 4 | **+structlog, +DuckDB/Parquet**; prometheus_client → **OpenTelemetry**; Sentry usunięty |
 | Narzędzia | 3 | **pendulum** zamiast python-dateutil; **TOML+msgspec** zamiast PyYAML/python-dotenv |
 | Testowanie | 8 | **pytest-anyio** zamiast pytest-asyncio; +crosshair, +schemathesis, +locust, +py-spy; **locust** zamiast k6 |
 | Interfejs Desktopowy | 2 | — |
 | Infrastruktura / DevOps | 5 | **Lżejsze** — pixi zamiast Dockera dla dev |
 | Serwisy zewnętrzne | 4 | — |
-| Agenty AI | 3 | **Przebudowane** — nowe modele i architektura |
+| Agenty AI | 5 | **Rozszerzone** — +Rules SWAT Team, +Decision Agent (JambaStrategist), +WorkflowPlanner |
 | Pliki konfiguracyjne | 10 | +pixi.toml; .env → **.toml** (msgspec); +models_manifest.json |
-| **Razem** | **~82** | **Zmniejszenie z ~120 do ~82** — mniej, ale wydajniej |
+| **Razem** | **~84** | **Zmniejszenie z ~120 do ~84** — mniej, ale wydajniej (+2 modele AI, +2 agenty AI) |
 
 ---
 
