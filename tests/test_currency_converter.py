@@ -159,7 +159,7 @@ class TestCurrencyConverter:
     def test_convert_unknown_currency_raises(self, converter: CurrencyConverter) -> None:
         """Unknown currency raises CurrencyRateNotFoundError."""
         from datetime import date
-        from services.currency_converter import CurrencyRateNotFoundError
+        from nexus_ai.services.currency_converter import CurrencyRateNotFoundError
 
         # AED exists in py-moneyed but is NOT in KNOWN_CURRENCIES set
         with pytest.raises(CurrencyRateNotFoundError):

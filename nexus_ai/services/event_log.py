@@ -9,12 +9,13 @@ Fallback: SQLite gdy DuckDB niedostępny.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
 import pendulum
 from structlog import get_logger
+
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 logger = get_logger("nexus.services.event_log")
 
@@ -127,7 +128,7 @@ class EventLog:
             ID utworzonego wpisu
         """
         now = pendulum.now("UTC").isoformat()
-        metadata_json = json.dumps(metadata or {}, ensure_ascii=False, default=str)
+        metadata_json = msgspec_dumps(metadata or {})
 
         conn = self._sqlite_conn()
         try:
@@ -254,8 +255,8 @@ class EventLog:
                 # Parsuj metadata JSON
                 if isinstance(row_dict.get("metadata"), str):
                     try:
-                        row_dict["metadata"] = json.loads(row_dict["metadata"])
-                    except (json.JSONDecodeError, TypeError):
+                        row_dict["metadata"] = msgspec_loads(row_dict["metadata"])
+                    except Exception:
                         pass
                 result.append(row_dict)
             return result
@@ -320,7 +321,7 @@ class EventLog:
                     "description": str(row[3]) if row[3] else "",
                     "user_id": str(row[4]) if row[4] else None,
                     "agent_name": str(row[5]) if row[5] else None,
-                    "metadata": json.loads(str(row[6])) if row[6] else {},
+                    "metadata": msgspec_loads(str(row[6])) if row[6] else {},
                     "severity": str(row[7]) if row[7] else "info",
                     "created_at": str(row[8]) if row[8] else "",
                 }

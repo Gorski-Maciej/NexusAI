@@ -18,7 +18,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from services.currency_converter import Money as _Money
+    from nexus_ai.services.currency_converter import Money as _Money
 
 # ── Global rounding context ─────────────────────────────────────────────────
 # Nigdy nie zmieniaj lokalnie — zawsze ROUND_HALF_UP, 2 miejsca po przecinku
@@ -30,7 +30,7 @@ _GROSZ = Decimal("0.01")
 
 def _get_money_class():
     """Lazy import of Money to avoid circular dependencies at module load."""
-    from services.currency_converter import Money
+    from nexus_ai.services.currency_converter import Money
     return Money
 
 
@@ -85,7 +85,7 @@ class InvoicePositions:
         Returns:
             InvoicePositions with net_grosze extracted from Money.
         """
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         if not isinstance(net, Money):
             raise TypeError(f"Expected Money, got {type(net).__name__}")
         return cls(net_grosze=money_to_grosze(net), vat_rate=vat_rate)
@@ -134,7 +134,7 @@ class InvoiceSummary:
         Raises:
             ValueError: If currencies differ between amounts.
         """
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         if not all(isinstance(x, Money) for x in (netto, vat, brutto)):
             raise TypeError("All amounts must be Money instances")
         _require_same_currency(netto, vat, "InvoiceSummary")
@@ -340,7 +340,7 @@ def to_money(grosze: int, currency: str = "PLN") -> _Money:
 def _require_same_currency(a: _Money, b: _Money, operation: str = "operate") -> None:
     """Validate that two Money objects have the same currency."""
     if a.currency_code != b.currency_code:
-        from services.currency_converter import CurrencyMismatchError
+        from nexus_ai.services.currency_converter import CurrencyMismatchError
         raise CurrencyMismatchError(a.currency_code, b.currency_code, operation)
 
 

@@ -53,7 +53,7 @@ from nexus_ai.api.routes.triage import TriageController, TriageControllerV2
 from nexus_ai.api.routes.ui_state import UIStateController
 from nexus_ai.api.routes.version import VersionController
 from nexus_ai.api.routes.workers import WorkerStatusController
-from nexus_ai.api.routes.ws import progress_websocket
+from nexus_ai.api.routes.ws import progress_sse
 from nexus_ai.api.security import jwt_auth
 from nexus_ai.api.state import on_shutdown, on_startup
 from nexus_ai.api.static import get_static_config
@@ -107,7 +107,7 @@ def create_app() -> Litestar:
             WorkerStatusController,
             TaxPolicyController,
             TaxMathController,
-            progress_websocket,
+            progress_sse,
         ],
         on_app_init=[jwt_auth.on_app_init],
         on_startup=[on_startup],

@@ -9,8 +9,8 @@ def build_executable():
         sys.executable, "-m", "nuitka",
         "--standalone",  # Tworzy niezależny folder z plikiem .exe
         "--onefile",  # Opcjonalnie: pakuje wszystko do jednego pliku
-        "--enable-plugin=pydantic",  # Rozwiązuje problemy z Pydantic v2
-        "--enable-plugin=torch",  # Dołącza odpowiednie DLL-ki dla AI
+        # Zgodnie z aa3fvcx.txt: pydantic → msgspec, torch → llama-cpp-python
+        # Nuitka natywnie wspiera msgspec bez osobnego pluginu
         "--enable-plugin=numpy",
         "--include-data-dir=app_data=app_data",  # Dołącza puste foldery na bazy
         "--output-dir=dist",

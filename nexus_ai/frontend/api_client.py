@@ -223,9 +223,9 @@ class NexusAPIClientUI:
         """Specjalna metoda do wysyłania plików PDF na serwer."""
         import os
 
-        import aiofiles
+        import anyio
         try:
-            async with aiofiles.open(file_path, 'rb') as f:
+            async with await anyio.open_file(file_path, 'rb') as f:
                 content = await f.read()
             files = {'file': (os.path.basename(file_path), content, 'application/pdf')}
             headers = {}

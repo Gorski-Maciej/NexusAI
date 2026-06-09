@@ -1,74 +1,89 @@
+"""
+SSE (Server-Sent Events) endpoint for progress updates.
+
+Zgodnie z aa3fvcx.txt: websockets zastąpione przez SSE + httpx.
+Klient łączy się przez HTTP GET /api/v1/events/progress?task_id=*
+i otrzymuje zdarzenia postępu w formacie SSE (data: {...}).
+
+Litestar natywnie wspiera SSE przez Stream + SSEEvent.
+"""
 from __future__ import annotations
 
 import asyncio
-from typing import Any
+from typing import Any, AsyncGenerator
 
-from litestar import websocket
+from litestar import get
+from litestar.sse import SSEEvent
 from structlog import get_logger
 
-from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
+from nexus_ai.core.msgspec_utils import msgspec_dumps
 
 logger = get_logger("nexus.api.ws")
 
-# Rejestr aktywnych połączeń WebSocket: task_id -> list[socket]
-_active_connections: dict[str, list[Any]] = {}
+# Rejestr aktywnych subskrybentów: task_id -> list[asyncio.Queue]
+# Każdy podłączony klient SSE ma własną kolejkę asyncio.
+_active_connections: dict[str, list[asyncio.Queue[str]]] = {}
+
+# Rejestr subskrybentów wildcard ("*" — wszystkie zadania)
+_wildcard_connections: list[asyncio.Queue[str]] = []
 
 # Rejestr flag anulowania: task_id -> asyncio.Event
 _cancel_flags: dict[str, asyncio.Event] = {}
 
-# Rejestr połączeń wildcard (subskrybuje wszystkie zadania)
-_wildcard_connections: list[Any] = []
 
-
-def register_connection(task_id: str, socket: Any) -> None:
-    """Rejestruje połączenie WebSocket dla danego task_id.
+def register_connection(task_id: str, queue: asyncio.Queue[str]) -> None:
+    """Rejestruje subskrybenta SSE dla danego task_id.
     Gdy task_id=="*", rejestruje jako wildcard — otrzymuje postęp WSZYSTKICH zadań.
     """
     if task_id == "*":
-        if socket not in _wildcard_connections:
-            _wildcard_connections.append(socket)
+        if queue not in _wildcard_connections:
+            _wildcard_connections.append(queue)
         return
     if task_id not in _active_connections:
         _active_connections[task_id] = []
-    _active_connections[task_id].append(socket)
+    _active_connections[task_id].append(queue)
 
 
-def unregister_connection(task_id: str, socket: Any) -> None:
-    """Wyrejestrowuje połączenie WebSocket."""
+def unregister_connection(task_id: str, queue: asyncio.Queue[str]) -> None:
+    """Wyrejestrowuje subskrybenta SSE."""
     if task_id == "*":
-        _wildcard_connections[:] = [s for s in _wildcard_connections if s is not socket]
+        _wildcard_connections[:] = [q for q in _wildcard_connections if q is not queue]
         return
     if task_id in _active_connections:
-        _active_connections[task_id] = [s for s in _active_connections[task_id] if s is not socket]
+        _active_connections[task_id] = [q for q in _active_connections[task_id] if q is not queue]
         if not _active_connections[task_id]:
             del _active_connections[task_id]
 
 
 async def broadcast_progress(task_id: str, progress: dict) -> None:
-    """Wysyła postęp do wszystkich podłączonych klientów dla danego taska.
-    Wysyła również do klientów wildcard (subskrybujących wszystkie zadania).
+    """Wysyła zdarzenie postępu do wszystkich podłączonych klientów SSE.
+
+    Wysyła do subskrybentów konkretnego task_id oraz do wildcard ("*").
+    Usuwa martwe subskrypcje (przerwane połączenia).
     """
+    payload = msgspec_dumps(progress)
+
     # Wyślij do subskrybentów konkretnego task_id
     if task_id in _active_connections:
-        dead_sockets = []
-        for socket in _active_connections[task_id]:
+        dead: list[asyncio.Queue[str]] = []
+        for queue in _active_connections[task_id]:
             try:
-                await socket.send_json(progress)
+                await queue.put(payload)
             except Exception:
-                dead_sockets.append(socket)
-        for socket in dead_sockets:
-            unregister_connection(task_id, socket)
+                dead.append(queue)
+        for queue in dead:
+            unregister_connection(task_id, queue)
 
     # Wyślij do wildcard subskrybentów ("*" — wszystkie zadania)
     if _wildcard_connections:
-        dead_wildcards = []
-        for socket in _wildcard_connections:
+        dead_wildcards: list[asyncio.Queue[str]] = []
+        for queue in _wildcard_connections:
             try:
-                await socket.send_json(progress)
+                await queue.put(payload)
             except Exception:
-                dead_wildcards.append(socket)
-        for socket in dead_wildcards:
-            unregister_connection("*", socket)
+                dead_wildcards.append(queue)
+        for queue in dead_wildcards:
+            unregister_connection("*", queue)
 
 
 def get_cancel_event(task_id: str) -> asyncio.Event:
@@ -97,59 +112,45 @@ def is_cancelled(task_id: str) -> bool:
     return event.is_set()
 
 
-@websocket(path="/api/v1/ws/progress")
-async def progress_websocket(socket: Any) -> None:
-    """
-    WebSocket do subskrypcji postępu zadań długotrwałych.
-    Rozwiązanie 17: Klient wysyła task_id, a serwer przekazuje zdarzenia postępu.
-    """
-    await socket.accept()
-    await socket.send_json({"status": "connected", "message": "Progress WebSocket ready"})
+@get(path="/api/v1/events/progress", sync_to_thread=False)
+async def progress_sse(request: Any) -> Any:
+    """SSE endpoint do subskrypcji postępu zadań długotrwałych.
 
-    registered_task_id: str | None = None
+    Klient łączy się przez HTTP GET z query param ``?task_id=*``
+    (lub konkretnym task_id) i otrzymuje zdarzenia SSE z postępem.
 
-    try:
-        while True:
-            try:
-                raw = await asyncio.wait_for(socket.receive_text(), timeout=60.0)
-            except TimeoutError:
-                # Ping keep-alive
+    Format zdarzenia:
+        data: {"type": "progress", "task_id": "...", "percent": 50, ...}
+
+    Zastępuje: websockets → SSE (Server-Sent Events)
+    """
+    from litestar.response import Stream
+
+    task_id = str(request.query_params.get("task_id", "*"))
+    queue: asyncio.Queue[str] = asyncio.Queue(maxsize=256)
+    register_connection(task_id, queue)
+
+    async def event_generator() -> AsyncGenerator[SSEEvent, None]:
+        try:
+            # Wyślij zdarzenie connected
+            yield SSEEvent(
+                data=msgspec_dumps({
+                    "type": "connected",
+                    "task_id": task_id,
+                    "message": "Progress SSE stream ready",
+                }),
+            )
+
+            while True:
                 try:
-                    await socket.send_json({"type": "ping"})
-                except Exception:
-                    break
-                continue
+                    data = await asyncio.wait_for(queue.get(), timeout=60.0)
+                    yield SSEEvent(data=data)
+                except asyncio.TimeoutError:
+                    # Ping keep-alive — pusta linia wystarczy dla SSE
+                    yield SSEEvent(data="", event="ping")
+        except asyncio.CancelledError:
+            pass
+        finally:
+            unregister_connection(task_id, queue)
 
-            if not raw:
-                continue
-
-            try:
-                msg = msgspec_loads(raw)
-            except DecodeError:
-                continue
-
-            msg_type = msg.get("type", "")
-
-            if msg_type == "subscribe":
-                task_id = msg.get("task_id", "")
-                if task_id:
-                    registered_task_id = task_id
-                    register_connection(task_id, socket)
-                    label = "all tasks" if task_id == "*" else f"task {task_id}"
-                    await socket.send_json({
-                        "type": "subscribed",
-                        "task_id": task_id,
-                        "message": f"Subscribed to progress for {label}",
-                    })
-            elif msg_type == "unsubscribe":
-                if registered_task_id:
-                    unregister_connection(registered_task_id, socket)
-                    registered_task_id = None
-                    await socket.send_json({"type": "unsubscribed"})
-            elif msg_type == "pong":
-                pass  # Keep-alive response
-    except Exception:
-        pass
-    finally:
-        if registered_task_id:
-            unregister_connection(registered_task_id, socket)
+    return Stream(content=event_generator(), media_type="text/event-stream")

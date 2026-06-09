@@ -17,6 +17,8 @@ from typing import Any, Callable
 import pendulum
 from structlog import get_logger
 
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+
 logger = get_logger("nexus.services.scheduler")
 
 
@@ -346,7 +348,7 @@ class Scheduler:
             ID utworzonego zadania
         """
         now = pendulum.now("UTC").isoformat()
-        params_json = __import__("json").dumps(params or {}, ensure_ascii=False, default=str)
+        params_json = msgspec_dumps(params or {})
 
         next_run = trigger_at
         if interval_minutes and pendulum.parse(trigger_at) < pendulum.now("UTC"):
@@ -401,7 +403,7 @@ class Scheduler:
                 callback_name = task_dict.get("callback", "")
                 if callback_name and callback_name in self._callbacks:
                     try:
-                        params = __import__("json").loads(task_dict.get("params", "{}"))
+                        params = msgspec_loads(task_dict.get("params", "{}"))
                         self._callbacks[callback_name](**params)
                         logger.info(
                             "[Scheduler] executed callback '%s' for task %d",

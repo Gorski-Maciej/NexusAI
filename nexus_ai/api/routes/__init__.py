@@ -10,7 +10,7 @@ from .invoices import InvoiceController
 from .partner import PartnerController
 from .tasks import TaskController
 from .triage import TriageController
-from .ws import progress_websocket
+from .ws import progress_sse
 
 __all__ = [
     "AnalyticsController",
@@ -22,5 +22,5 @@ __all__ = [
     "HealthController",
     "TriageController",
     "DLQController",
-    "progress_websocket",
+    "progress_sse",
 ]

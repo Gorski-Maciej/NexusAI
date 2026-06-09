@@ -96,8 +96,8 @@ Section "NexusAI (required)" SecCore
 
     ; ── Copy config files ────────────────────────────────────────────────
     SetOutPath "$INSTDIR\config"
-    File "..\config\dev.env"
-    File "..\config\prod.env"
+    File "..\config\dev.toml"
+    File "..\config\prod.toml"
     File "..\config\models_manifest.json"
     File "..\config\version.json"
 

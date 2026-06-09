@@ -124,7 +124,7 @@ echo.
 
 REM ── Step 3: Build Rust module (nexus-crypto) ──────────────────────────────
 echo [3/5] Building Rust native module (nexus-crypto)...
-cd /d "%PROJECT_ROOT%\nexus_crypto"
+cd /d "%PROJECT_ROOT%\nexus_ai\rust"
 python -m maturin develop --release 2>&1
 if errorlevel 1 (
     echo   [WARN] Rust build failed — check if Rust is installed

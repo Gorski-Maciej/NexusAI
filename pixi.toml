@@ -199,6 +199,13 @@ mypy = ">=1.8.0"
 # ── Build tool — Nuitka (kompilacja Python → C → .exe) ────────────────────
 nuitka = ">=1.8"
 
+# ── Security scanning — Semgrep SAST ───────────────────────────────────────
+semgrep = ">=1.40.0"
+
+[feature.dev.tasks]
+# ── Testowanie ──────────────────────────────────────────────────────────────
+test = { cmd = "pytest -x -v --timeout=30", description = "Uruchom wszystkie testy (zatrzymaj przy pierwszym błędzie)" }
+
 [feature.dev.tasks]
 # ── Testowanie ──────────────────────────────────────────────────────────────
 test = { cmd = "pytest -x -v --timeout=30", description = "Uruchom wszystkie testy (zatrzymaj przy pierwszym błędzie)" }
@@ -209,6 +216,7 @@ test-parallel = { cmd = "pytest -x -v -n auto --timeout=30", description = "Test
 # ── Lintowanie i formatowanie ───────────────────────────────────────────────
 lint = { cmd = "ruff check nexus_ai/", description = "Sprawdź kod linterem Ruff" }
 format = { cmd = "ruff format nexus_ai/", description = "Auto-formatuj kod przez Ruff" }
+format-check = { cmd = "ruff format --check nexus_ai/", description = "Sprawdź formatowanie kodu (CI — tylko sprawdzenie bez modyfikacji)" }
 typecheck = { cmd = "mypy nexus_ai/", description = "Sprawdź typy przez mypy" }
 
 # ── Build — kompilacja do .exe (Nuitka) ────────────────────────────────────
@@ -219,6 +227,10 @@ build-nuitka-win = { cmd = "python -m nuitka --project-name=nexus-ai main.py && 
 # ── Build — moduł Rust (nexus-crypto) ──────────────────────────────────────
 build-rust = { cmd = "cd nexus_ai/rust && maturin develop --release", description = "Skompiluj nexus-crypto (Rust + PyO3)" }
 build-rust-release = { cmd = "cd nexus_ai/rust && maturin build --release", description = "Skompiluj nexus-crypto (koło binarne .whl)" }
+
+# ── Security scanning — Semgrep SAST ────────────────────────────────────
+security-scan = { cmd = "python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy lenient", description = "Skanowanie bezpieczeństwa kodu (Semgrep SAST)" }
+security-scan-strict = { cmd = "python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy strict", description = "Skanowanie bezpieczeństwa (tryb ścisły — 0 wysokich, 0 średnich)" }
 
 # ── Narzędzia ───────────────────────────────────────────────────────────────
 gen-requirements = "uv pip compile pyproject.toml -o requirements.txt"

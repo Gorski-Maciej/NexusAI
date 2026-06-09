@@ -572,7 +572,7 @@ DEFAULT_SIMULATION_RULES: list[dict[str, Any]] = [
 
 def seed_simulation_rules(conn: duckdb.DuckDBPyConnection) -> None:
     """Wstaw zestawy regu³ symulacyjnych (idempotentne — usuwa TYLKO swoje zestawy)."""
-    from services.rule_store import RuleStore
+    from nexus_ai.services.rule_store import RuleStore
     store = RuleStore(conn)
     store.ensure_schema()
 
@@ -610,7 +610,7 @@ def seed_single_rule_set(conn: duckdb.DuckDBPyConnection, target_rule_set_id: st
     Raises:
         ValueError: Jeśli target_rule_set_id nie istnieje w DEFAULT_SIMULATION_RULES.
     """
-    from services.rule_store import RuleStore
+    from nexus_ai.services.rule_store import RuleStore
     store = RuleStore(conn)
     store.ensure_schema()
 
@@ -722,7 +722,7 @@ class RuleEngine:
     def __init__(self, conn: duckdb.DuckDBPyConnection) -> None:
         self._conn = conn
         # Use RuleStore for full schema with all indexes
-        from services.rule_store import RuleStore
+        from nexus_ai.services.rule_store import RuleStore
         store = RuleStore(conn)
         store.ensure_schema()
         # Don't seed here — external callers (fixtures, startup code)
@@ -766,7 +766,7 @@ class RuleEngine:
         self._prepare_context_table(context)
 
         # 2. Use TemporalManager to get rules active on transaction date
-        from services.temporal_manager import TemporalManager
+        from nexus_ai.services.temporal_manager import TemporalManager
         txn_date = context.get("transaction_date", pendulum.now().date().isoformat())
         temporal = TemporalManager(self._conn)
         active_rules = temporal.get_active_rules(txn_date)
@@ -777,7 +777,7 @@ class RuleEngine:
             )
 
         # 3. Convert to PrioritizedRule and use PriorityEngine
-        from services.priority_engine import PrioritizedRule, PriorityEngine
+        from nexus_ai.services.priority_engine import PrioritizedRule, PriorityEngine
         prioritized = [
             PrioritizedRule(
                 rule_id=r.rule_id,
@@ -831,7 +831,7 @@ class RuleEngine:
                         "condition_sql": str(r[1]),
                         "description_template": str(r[3]) if r[3] else None,
                     }
-                    from services.trace_generator import TraceGenerator
+                    from nexus_ai.services.trace_generator import TraceGenerator
                     match.verdict["decision_trace"] = TraceGenerator.generate(
                         rule=rule_info,
                         context=context,
@@ -863,7 +863,7 @@ class RuleEngine:
     @property
     def temporal_manager(self):
         """Access the underlying TemporalManager."""
-        from services.temporal_manager import TemporalManager
+        from nexus_ai.services.temporal_manager import TemporalManager
         return TemporalManager(self._conn)
 
     @property

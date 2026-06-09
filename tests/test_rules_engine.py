@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-MODULE_PATH = Path(__file__).resolve().parents[1] / "Code" / "services" / "rules_engine.py"
+MODULE_PATH = Path(__file__).resolve().parents[1] / "nexus_ai" / "services" / "rules_engine.py"
 spec = importlib.util.spec_from_file_location("rules_engine", MODULE_PATH)
 module = importlib.util.module_from_spec(spec)
 assert spec.loader is not None

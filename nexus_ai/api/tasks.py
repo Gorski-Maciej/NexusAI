@@ -237,7 +237,7 @@ async def analytics_run(invoice_id: str, extracted_data: dict) -> dict:
 
     # Publikuj postęp (Rozwiązanie 17)
     try:
-        from api.routes.ws import broadcast_progress
+        from nexus_ai.api.routes.ws import broadcast_progress
         await broadcast_progress(task_id, {"type": "progress", "task_id": task_id, "percent": 10, "stage": "initializing"})
     except Exception:
         pass
@@ -519,7 +519,7 @@ async def _council_post_invoice(invoice_id: str, extracted_data: dict, decision:
 
         # Active Learning: store approved invoice in sqlite-vec for future anomaly detection
         try:
-            from services.semantic_guard import SemanticGuard
+            from nexus_ai.services.semantic_guard import SemanticGuard
             sg = SemanticGuard()
             full_text = extracted_data.get("ocr_full_text", "") or str(extracted_data.get("vendor_company_name", ""))
             if full_text:
@@ -616,8 +616,8 @@ async def _dispatch_outbox_event(row: dict) -> None:
     if event_type == "tax_calculated":
         import duckdb
 
-        from tax.audit import ensure_schema as ensure_tax_schema
-        from tax.pipeline import TaxPipeline
+        from nexus_ai.tax.audit import ensure_schema as ensure_tax_schema
+        from nexus_ai.tax.pipeline import TaxPipeline
 
         transaction_id = payload.get("transaction_id", "")
         if not transaction_id:
@@ -631,7 +631,7 @@ async def _dispatch_outbox_event(row: dict) -> None:
         conn = duckdb.connect(str(config.duckdb_path))
         ensure_tax_schema(conn)
 
-        from roboton_reflekton.ledger_client import TigerBeetleClient
+        from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
         tb = TigerBeetleClient()
 
         pipeline = TaxPipeline(
@@ -680,8 +680,8 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
     saga_store = None
     saga_engine = None
     try:
-        from core.saga import PersistedSagaStore
-        from db.database import create_oltp_engine
+        from nexus_ai.core.saga import PersistedSagaStore
+        from nexus_ai.db.database import create_oltp_engine
         config = AppConfig()
         saga_engine = create_oltp_engine(config)
         saga_store = PersistedSagaStore(saga_engine)
@@ -762,7 +762,7 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
         try:
             import duckdb
             conn = duckdb.connect(str(AppConfig().duckdb_path))
-            from services.context_enricher import ContextEnricher, ensure_cache_schema
+            from nexus_ai.services.context_enricher import ContextEnricher, ensure_cache_schema
             ensure_cache_schema(conn)
             enricher = ContextEnricher(conn)
             enriched = await enricher.enrich(payload)
@@ -779,7 +779,7 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
 
         # --- Semantic Anomaly Detection (Part VI): sqlite-vec + HerBERT ---
         try:
-            from services.semantic_guard import SemanticGuard
+            from nexus_ai.services.semantic_guard import SemanticGuard
             semantic_guard = SemanticGuard()
             full_text = payload.get("ocr_full_text", "")
             amount_net_val = _safe_float(payload.get("amount_net")) or 0.0
@@ -856,8 +856,8 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
         try:
             import duckdb
             ze_conn = duckdb.connect(str(AppConfig().duckdb_path))
-            from core.context_interpreter import ContextInterpreter as CtxInterpreter
-            from tax.rules import RuleEngine, ensure_tax_schemas, seed_default_rules
+            from nexus_ai.core.context_interpreter import ContextInterpreter as CtxInterpreter
+            from nexus_ai.tax.rules import RuleEngine, ensure_tax_schemas, seed_default_rules
             ensure_tax_schemas(ze_conn)
             seed_default_rules(ze_conn)
 
@@ -1164,7 +1164,7 @@ async def cleanup_hard_deleted_invoices_task() -> None:
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
-            from services.security_service import SecurityService
+            from nexus_ai.services.security_service import SecurityService
             result = await SecurityService.cleanup_old_scans(session, years=5)
             logger.info(
                 "[RETENTION] Hard-deleted invoices cleanup: %s", result,
@@ -1184,7 +1184,7 @@ async def cleanup_archived_invoices_task() -> None:
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
-            from services.security_service import SecurityService
+            from nexus_ai.services.security_service import SecurityService
             result = await SecurityService.archive_old_invoices(session, archive_table="archived_invoices")
             logger.info(
                 "[RETENTION] Archived old invoices: %s", result,
@@ -1229,8 +1229,8 @@ async def stuck_saga_recovery_task() -> None:
     """
     config = AppConfig()
     try:
-        from core.saga import PersistedSagaStore
-        from db.database import create_oltp_engine
+        from nexus_ai.core.saga import PersistedSagaStore
+        from nexus_ai.db.database import create_oltp_engine
 
         engine = create_oltp_engine(config)
         store = PersistedSagaStore(engine)
@@ -1480,7 +1480,7 @@ async def outbox_relay_process_pending_task() -> None:
         if pending_count == 0:
             return
 
-        from services.outbox_relay import OutboxRelay
+        from nexus_ai.services.outbox_relay import OutboxRelay
 
         relay = OutboxRelay(
             session_factory=session_factory,
@@ -1847,11 +1847,11 @@ async def daily_briefing_send(user_id: str | None = None) -> dict:
 
     try:
         # Lazy init komponentów
-        from db.analytics import DuckDBManager
-        from services.daily_briefing import DailyBriefingService
-        from services.decision_logger import DecisionLogger
-        from services.notification_service import NotificationService
-        from services.ple_engine import PLEEngine
+        from nexus_ai.db.analytics import DuckDBManager
+        from nexus_ai.services.daily_briefing import DailyBriefingService
+        from nexus_ai.services.decision_logger import DecisionLogger
+        from nexus_ai.services.notification_service import NotificationService
+        from nexus_ai.services.ple_engine import PLEEngine
 
         db_path = config.base_dir / "app_data" / "notifications.db"
         notification = NotificationService(db_path=db_path, config=config)
@@ -2050,7 +2050,7 @@ async def daily_nbp_rate_fill_task() -> None:
     """
     config = AppConfig()
     try:
-        from roboton_reflekton.forex_engine import ForexEngine
+        from nexus_ai.roboton_reflekton.forex_engine import ForexEngine
 
         # Inicjalizuj ForexEngine z minimalnym zestawem parametrów
         engine = ForexEngine(

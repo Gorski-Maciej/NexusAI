@@ -132,7 +132,7 @@ echo ""
 
 # ── Step 3: Build Rust module ──────────────────────────────────────────────
 echo "[3/5] Building Rust native module (nexus-crypto)..."
-cd "$PROJECT_ROOT/nexus_crypto"
+cd "$PROJECT_ROOT/nexus_ai/rust"
 if command -v cargo &>/dev/null; then
     "$PYTHON" -m maturin develop --release 2>&1 || {
         echo "  [WARN] Rust build failed — check if Rust toolchain is installed"
