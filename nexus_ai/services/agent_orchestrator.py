@@ -36,6 +36,12 @@ from nexus_ai.services.decision_logger import DecisionLogger
 from nexus_ai.services.ple_engine import PLEEngine
 from nexus_ai.services.risk_guard import RiskGuard
 
+# Bayesian Threshold Learner (opcjonalnie, graceful fallback)
+try:
+    from nexus_ai.services.bayesian_threshold_learner import BayesianThresholdLearner
+except ImportError:
+    BayesianThresholdLearner = None  # type: ignore[misc]
+
 logger = get_logger(__name__)
 
 
@@ -528,11 +534,17 @@ class AgentOrchestrator:
     - Każda decyzja przechodzi przez Walidatora Jakości
     - Wzorzec: zero zaufania do pojedynczego modelu
 
+    Ulepszenie (2026): Bayesowski System Adaptacyjnych Progów
+    - BayesianThresholdLearner zastępuje sztywne DEFAULT_THRESHOLDS
+    - Każdy kontrahent ma własny rozkład Beta
+    - System uczy się z każdej decyzji użytkownika
+
     Przepływ:
     1. WorkflowPlanner → plan działania (które agenty uruchomić)
     2. Uruchomienie zaplanowanych agentów
     3. JambaStrategist → końcowa decyzja
-    4. Zwrócenie OrchestratorDecision
+    4. Bayesian thresholds → adaptacyjne progi zamiast sztywnych
+    5. Zwrócenie OrchestratorDecision
     """
 
     def __init__(
@@ -542,6 +554,7 @@ class AgentOrchestrator:
         jamba_strategist: JambaStrategist,
         decision_logger: DecisionLogger | None = None,
         ple_engine: PLEEngine | None = None,
+        bayesian_learner: Any | None = None,
         config: AppConfig | None = None,
     ) -> None:
         self._planner = workflow_planner
@@ -549,6 +562,7 @@ class AgentOrchestrator:
         self._jamba = jamba_strategist
         self._logger = decision_logger
         self._ple = ple_engine
+        self._bayesian = bayesian_learner
         self._config = config or AppConfig()
 
     async def orchestrate(
@@ -587,9 +601,52 @@ class AgentOrchestrator:
             extraction_report=extraction_report,
         )
 
+        jamba_confidence = float(jamba_result.get("confidence", 0.0))
         decision = jamba_result.get("decision", "ESCALATE")
         if decision not in ("AUTO_POST", "SUGGEST", "ESCALATE"):
             decision = "ESCALATE"
+
+        # Krok 2b: Bayesowskie adaptacyjne progi
+        # Jeśli BayesianThresholdLearner jest dostępny, pobierz adaptacyjne
+        # progi dla tego kontrahenta i kategorii. Progi te są niższe dla
+        # zaufanych kontrahentów i wyższe dla nowych/problemowych.
+        bayesian_thresholds: dict[str, float] | None = None
+        if self._bayesian is not None:
+            try:
+                bayesian_thresholds = self._bayesian.get_thresholds(
+                    contractor_nip=str(invoice_data.get("contractor_nip", "unknown")),
+                    category=str(invoice_data.get("category", "__global__")),
+                    amount_gross=float(invoice_data.get("amount_gross", 0) or 0),
+                )
+                logger.debug(
+                    "[AgentOrchestrator] bayesian thresholds=%s",
+                    bayesian_thresholds,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "[AgentOrchestrator] Bayesian threshold fetch failed: %s", exc
+                )
+
+        # Decyzja końcowa z adaptacyjnymi progami
+        # Jeśli Jamba zwróciło SUGGEST/ESCALATE, szanuj to
+        # Jeśli AUTO_POST, sprawdź czy confidence >= bayesowski próg
+        if decision == "AUTO_POST" and bayesian_thresholds is not None:
+            if jamba_confidence < bayesian_thresholds.get("auto_post", 0.92):
+                # Bayes mówi: za niskie confidence dla auto_post
+                if jamba_confidence >= bayesian_thresholds.get("suggest", 0.75):
+                    decision = "SUGGEST"
+                    logger.info(
+                        "[AgentOrchestrator] bayesian override: AUTO_POST→SUGGEST "
+                        "(jamba=%.4f < bayesian_auto=%.4f)",
+                        jamba_confidence, bayesian_thresholds["auto_post"],
+                    )
+                else:
+                    decision = "ASK_USER"
+                    logger.info(
+                        "[AgentOrchestrator] bayesian override: AUTO_POST→ASK_USER "
+                        "(jamba=%.4f < bayesian_suggest=%.4f)",
+                        jamba_confidence, bayesian_thresholds["suggest"],
+                    )
 
         # Krok 3: Zapisz do PLE (uczenie się na decyzjach)
         if self._ple:
@@ -597,8 +654,8 @@ class AgentOrchestrator:
                 await self._ple.record_decision(
                     invoice_id=invoice_id,
                     decision=decision,
-                    trust_score=float(jamba_result.get("confidence", 0.0)),
-                    trust_components={"jamba_confidence": jamba_result.get("confidence", 0.0)},
+                    trust_score=jamba_confidence,
+                    trust_components={"jamba_confidence": jamba_confidence},
                     contractor_nip=str(invoice_data.get("contractor_nip", "unknown")),
                     category=str(invoice_data.get("category", "unknown")),
                     amount_gross=float(invoice_data.get("amount_gross", 0) or 0),
@@ -606,23 +663,43 @@ class AgentOrchestrator:
                         "workflow": workflow,
                         "reasoning": jamba_result.get("reasoning", ""),
                         "strategy_summary": jamba_result.get("strategy_summary", ""),
+                        "bayesian_thresholds": bayesian_thresholds,
                     },
                 )
             except Exception as exc:
                 logger.warning("[AgentOrchestrator] PLE recording failed: %s", exc)
 
+        # Krok 4: Zapisz auto-decyzję do Bayesa
+        # Auto-decyzje mają mniejszą wagę niż decyzje użytkownika,
+        # ale wciąż pomagają budować profil kontrahenta.
+        if self._bayesian is not None and decision in ("AUTO_POST", "SUGGEST"):
+            try:
+                self._bayesian.record_auto_decision(
+                    contractor_nip=str(invoice_data.get("contractor_nip", "unknown")),
+                    category=str(invoice_data.get("category", "__global__")),
+                    approved=(decision == "AUTO_POST"),
+                    amount_gross=float(invoice_data.get("amount_gross", 0) or 0),
+                )
+            except Exception as exc:
+                logger.warning(
+                    "[AgentOrchestrator] Bayesian auto-record failed: %s", exc
+                )
+
         logger.info(
-            "[AgentOrchestrator] invoice_id=%s decision=%s confidence=%.4f workflow=%s",
-            invoice_id, decision, jamba_result.get("confidence", 0.0), workflow,
+            "[AgentOrchestrator] invoice_id=%s decision=%s confidence=%.4f "
+            "bayesian=%s workflow=%s",
+            invoice_id, decision, jamba_confidence,
+            bayesian_thresholds is not None, workflow,
         )
 
         return OrchestratorDecision(
             decision=decision,
-            confidence=jamba_result.get("confidence", 0.0),
+            confidence=jamba_confidence,
             reasoning=jamba_result.get("reasoning", ""),
             workflow_plan=workflow,
             strategy_summary=jamba_result.get("strategy_summary", ""),
             jamba_analysis=jamba_result.get("raw_response", ""),
+            adapted_thresholds=bayesian_thresholds or {},
         )
 
     async def plan_workflow(

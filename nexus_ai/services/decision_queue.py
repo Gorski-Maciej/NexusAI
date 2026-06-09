@@ -55,11 +55,17 @@ class DecisionQueue:
       - NotificationManager: wysyła powiadomienie + dodaje do kolejki
       - Scheduler: czyści wygasłe decyzje
       - EventLog: loguje rozstrzygnięte decyzje
+      - BayesianThresholdLearner: uczy się na decyzjach użytkownika
     """
 
-    def __init__(self, db_path: Path | str | None = None) -> None:
+    def __init__(
+        self,
+        db_path: Path | str | None = None,
+        bayesian_learner: Any | None = None,
+    ) -> None:
         self._db_path = Path(db_path) if db_path else Path("app_data/decisions.db")
         self._db_path.parent.mkdir(parents=True, exist_ok=True)
+        self._bayesian = bayesian_learner
         self._init_schema()
 
     def _init_schema(self) -> None:
@@ -196,13 +202,19 @@ class DecisionQueue:
         decision_id: int,
         resolution: str,
         status: str = DecisionStatus.APPROVED.value,
+        contractor_nip: str | None = None,
+        category: str = "__global__",
+        amount_gross: float = 0.0,
     ) -> bool:
-        """Rozstrzygnij decyzję (approve/reject).
+        """Rozstrzygnij decyzję (approve/reject) i zapisz do Bayesa.
 
         Args:
             decision_id: ID decyzji
             resolution: Odpowiedź użytkownika (tekst lub 'approved'/'rejected')
             status: Nowy status (approved, rejected)
+            contractor_nip: NIP kontrahenta (dla Bayesa)
+            category: Kategoria wydatku (dla Bayesa)
+            amount_gross: Kwota brutto (dla Bayesa)
 
         Returns:
             True jeśli znaleziono i zaktualizowano, False jeśli nie znaleziono.
@@ -240,6 +252,25 @@ class DecisionQueue:
                     )
                 except Exception as exc:
                     logger.warning("[DecisionQueue] Failed to log to EventLog: %s", exc)
+
+                # Zapisz decyzję do BayesianThresholdLearner
+                if self._bayesian is not None and contractor_nip:
+                    try:
+                        approved = status == DecisionStatus.APPROVED.value
+                        self._bayesian.record_decision(
+                            contractor_nip=contractor_nip,
+                            category=category,
+                            approved=approved,
+                            amount_gross=amount_gross,
+                        )
+                        logger.debug(
+                            "[DecisionQueue] bayesian updated nip=%s approved=%s",
+                            contractor_nip, approved,
+                        )
+                    except Exception as exc:
+                        logger.warning(
+                            "[DecisionQueue] Bayesian record failed: %s", exc
+                        )
 
             return updated
         finally:
