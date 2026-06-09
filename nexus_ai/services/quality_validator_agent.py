@@ -28,6 +28,7 @@ from typing import Any
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
+from nexus_ai.core.protocol_executor import ProtocolExecutor, get_protocol_executor
 from nexus_ai.services.council_agents import (
     AlphaAgent,
     BetaAgent,
@@ -159,12 +160,27 @@ class QualityValidatorAgent:
         beta_agent: BetaAgent,
         gamma_agent: GammaAgent,
         config: AppConfig | None = None,
+        protocol_executor: ProtocolExecutor | None = None,
     ) -> None:
         self._alpha = alpha_agent    # warstwa kontekstowa
         self._beta = beta_agent      # warstwa precyzji
         self._gamma = gamma_agent    # warstwa anomalii
         self._config = config or AppConfig()
         self._timeout = self._config.autopilot_agent_timeout_seconds
+        self._protocol_executor = protocol_executor or get_protocol_executor()
+
+        # Subskrybuj hot-reload protokołów — callback przechowywany w ProtocolLoader
+        self._protocol_executor.subscribe_on_change(self._on_protocols_changed)
+
+    def _on_protocols_changed(self, version: str | None) -> None:
+        """Callback wywoływany gdy protocols.toml zmieni się na dysku."""
+        if version:
+            logger.info(
+                "[QualityValidator] Protocols reloaded: version=%s — matrix and prompts updated",
+                version,
+            )
+        else:
+            logger.info("[QualityValidator] Protocols reloaded — matrix and prompts updated")
 
     async def validate(
         self,
@@ -214,9 +230,55 @@ class QualityValidatorAgent:
         layer2: DecisionVerdict,
         layer3: DecisionVerdict,
     ) -> ValidationVerdict:
-        """Znajdź kombinację w macierzy 8x1 i zwróć werdykt."""
+        """Znajdź kombinację w macierzy 8+6 przy użyciu ProtocolExecutor.
+
+        Używa ProtocolExecutor.validate_council_verdict() do sprawdzenia
+        kombinacji głosów względem matrycy z protocols.toml.
+        Fallback: inline DECISION_MATRIX jeśli ProtocolExecutor niedostępny.
+        """
         key = (layer1.decision, layer2.decision, layer3.decision)
 
+        # Próbuj użyć ProtocolExecutor do walidacji względem matrycy z protocols.toml
+        try:
+            verdict = self._protocol_executor.validate_council_verdict(
+                alpha=layer1.decision,
+                beta=layer2.decision,
+                gamma=layer3.decision,
+            )
+
+            if verdict.get("valid"):
+                # Mapuj poziom na ValidationLevel
+                level_map = {
+                    "LEVEL_1_AUTO": ValidationLevel.LEVEL_1_AUTO,
+                    "LEVEL_2_REVIEW": ValidationLevel.LEVEL_2_REVIEW,
+                    "LEVEL_3_ESCALATE": ValidationLevel.LEVEL_3_ESCALATE,
+                    "LEVEL_4_BLOCK": ValidationLevel.LEVEL_4_BLOCK,
+                }
+                level = level_map.get(verdict["level"], ValidationLevel.LEVEL_3_ESCALATE)
+
+                logger.info(
+                    "[QualityValidator] pattern=%s level=%s action=%s (from protocols.toml)",
+                    verdict["pattern"], verdict["level"], verdict["action"],
+                )
+
+                return ValidationVerdict(
+                    pattern=verdict["pattern"],
+                    level=level,
+                    recommended_action=verdict["action"],
+                    min_trust_for_auto=float(verdict.get("min_trust", 0.0)),
+                    consensus_summary=verdict.get("summary", ""),
+                    deliberation=verdict.get("deliberation", ""),
+                    layer1_decision=layer1.decision,
+                    layer1_confidence=layer1.confidence,
+                    layer2_decision=layer2.decision,
+                    layer2_confidence=layer2.confidence,
+                    layer3_decision=layer3.decision,
+                    layer3_confidence=layer3.confidence,
+                )
+        except Exception:
+            pass  # Fallback do inline DECISION_MATRIX
+
+        # Fallback: inline DECISION_MATRIX
         pattern_info = DECISION_MATRIX.get(key)
         if pattern_info is None:
             logger.warning("[QualityValidator] unknown pattern: %s — falling back to ASK_USER", key)
@@ -238,7 +300,7 @@ class QualityValidatorAgent:
         pattern, level, action, min_trust, summary, deliberation = pattern_info
 
         logger.info(
-            "[QualityValidator] pattern=%s level=%s action=%s",
+            "[QualityValidator] pattern=%s level=%s action=%s (inline fallback)",
             pattern, level.value, action,
         )
 

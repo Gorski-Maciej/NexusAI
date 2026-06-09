@@ -11,28 +11,248 @@ import base64
 import binascii
 import importlib.util
 import os
+import time
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
 from msgspec import Struct, toml
 
+from nexus_ai.core.logger import get_logger
+
+logger = get_logger(__name__)
+
 ENV_CONFIG_DIR: Path = Path(__file__).resolve().parent.parent / "config"
 """Directory containing environment-specific TOML config files."""
 
 
+# ── ConfigLoader — mtime-based auto-reload dla TOML config ────────────────
+
+class ConfigLoader:
+    """Automatyczny loader config TOML z mtime-based auto-reload.
+
+    Śledzi zmiany w config/{env}.toml (lub niestandardowym pliku) na podstawie
+    st_mtime. Po wykryciu zmiany:
+      1. Ponownie parsuje plik TOML
+      2. Aktualizuje os.environ (nadpisuje istniejące wartości)
+      3. Wywołuje zarejestrowane callbacki
+
+    Args:
+        path: Ścieżka do pliku TOML. Domyślnie config/{NEXUS_ENV}.toml.
+        auto_reload: Jak często sprawdzać mtime.
+                     False (domyślnie) — nigdy, tylko przy pierwszym dostępie.
+                     True — co 5 sekund.
+                     int > 0 — custom poll interval w sekundach.
+    """
+
+    def __init__(
+        self,
+        path: str | Path | None = None,
+        auto_reload: bool | int = False,
+    ) -> None:
+        if path is not None:
+            self._path = Path(path)
+        else:
+            env = os.getenv("NEXUS_ENV", "dev").lower().strip()
+            self._path = ENV_CONFIG_DIR / f"{env}.toml"
+
+        self._data: dict[str, Any] | None = None
+        self._last_mtime: float = 0.0
+        self._last_checked: float = 0.0
+        self._on_change_callbacks: list[Callable[[], None]] = []
+
+        # Wyznacz poll_interval z auto_reload
+        self._auto_reload_enabled: bool = False
+        self._poll_interval: float = 0.0
+        if auto_reload is True:
+            self._poll_interval = 5.0
+            self._auto_reload_enabled = True
+        elif isinstance(auto_reload, (int, float)) and auto_reload > 0:
+            self._poll_interval = float(auto_reload)
+            self._auto_reload_enabled = True
+
+    # ── Public API ──────────────────────────────────────────────────────
+
+    def load(self) -> dict[str, Any]:
+        """Zwraca aktualne dane konfiguracyjne (lazy load + auto-reload)."""
+        return self._load()
+
+    def get_config(self) -> dict[str, Any]:
+        """Alias dla load() — zwraca sparsowane dane TOML."""
+        data = self._load()
+        return dict(data) if data else {}
+
+    def reload(self) -> None:
+        """Wymuś przeładowanie pliku TOML."""
+        self._data = None
+        self._last_mtime = 0.0
+        self._last_checked = 0.0
+        self._load()
+
+    def on_change(self, callback: Callable[[], None]) -> Callable[[], None]:
+        """Zarejestruj callback wywoływany przy zmianie pliku.
+
+        Args:
+            callback: Funkcja bezargumentowa.
+
+        Returns:
+            Funkcja do wyrejestrowania (unsubscribe).
+        """
+        self._on_change_callbacks.append(callback)
+
+        def unsubscribe() -> None:
+            if callback in self._on_change_callbacks:
+                self._on_change_callbacks.remove(callback)
+
+        return unsubscribe
+
+    # ── Wewnętrzne ──────────────────────────────────────────────────────
+
+    def _load(self) -> dict[str, Any]:
+        now = time.time()
+
+        if not self._auto_reload_enabled:
+            if self._data is not None:
+                return self._data
+            return self._read_file()
+
+        # Rate-limiting
+        if now - self._last_checked < self._poll_interval and self._data is not None:
+            return self._data
+
+        self._last_checked = now
+
+        if not self._path.exists():
+            if self._data is not None:
+                logger.warning("[ConfigLoader] File disappeared: %s", self._path)
+                self._data = None
+                self._last_mtime = 0.0
+            return {}
+
+        try:
+            current_mtime = self._path.stat().st_mtime
+        except OSError:
+            return self._data if self._data is not None else {}
+
+        if current_mtime <= self._last_mtime and self._data is not None:
+            return self._data
+
+        logger.info("[ConfigLoader] File changed: %s — reloading config", self._path.name)
+        return self._read_file()
+
+    def _read_file(self) -> dict[str, Any]:
+        if not self._path.exists():
+            self._data = {}
+            self._last_mtime = 0.0
+            return self._data
+
+        try:
+            with open(self._path, "rb") as f:
+                raw = toml.decode(f.read())
+            self._data = raw if isinstance(raw, dict) else {}
+            self._last_mtime = self._path.stat().st_mtime
+
+            # Aktualizuj os.environ nowymi wartościami
+            self._apply_to_environ(self._data)
+
+            logger.info(
+                "[ConfigLoader] Loaded %d sections from %s (mtime=%s)",
+                len(self._data),
+                self._path.name,
+                self._last_mtime,
+            )
+
+            # Powiadom callbacki o zmianie
+            self._fire_on_change_callbacks()
+
+        except Exception as exc:
+            logger.error("[ConfigLoader] Failed to load %s: %s", self._path, exc)
+            if self._data is None:
+                self._data = {}
+            self._last_mtime = 0.0
+
+        return self._data if self._data is not None else {}
+
+    def _apply_to_environ(self, data: dict[str, Any]) -> None:
+        """Zastosuj dane TOML do os.environ.
+
+        UWAGA: Nie nadpisuje istniejących zmiennych środowiskowych — env vars
+        mają wyższy priorytet niż TOML. Pozwala to Docker/Helm/K8s na
+        wstrzykiwanie runtime overrides (np. NEXUS_JWT_SECRET).
+
+        Mapowanie: TOML {"core": {"debug": true}} → NEXUS_DEBUG=1
+        """
+        count = 0
+        for _section, section_data in data.items():
+            if isinstance(section_data, dict):
+                for key, value in section_data.items():
+                    env_key = key.upper()
+                    if not env_key.startswith("NEXUS_"):
+                        env_key = f"NEXUS_{env_key}"
+                    # Nie nadpisuj istniejących env vars — env > TOML
+                    if env_key not in os.environ:
+                        if isinstance(value, bool):
+                            os.environ[env_key] = "1" if value else "0"
+                        else:
+                            os.environ[env_key] = str(value)
+                        count += 1
+
+        if count > 0:
+            logger.debug("[ConfigLoader] Set %d env vars from %s", count, self._path.name)
+
+    def _fire_on_change_callbacks(self) -> None:
+        """Wywołaj wszystkie zarejestrowane callbacki (z izolacją błędów)."""
+        for callback in self._on_change_callbacks:
+            try:
+                callback()
+            except Exception as exc:
+                logger.error("[ConfigLoader] on_change callback failed: %s", exc)
+
+    def __getitem__(self, key: str) -> Any:
+        """Bezpośredni dostęp do kluczy konfiguracji."""
+        data = self._load()
+        return data.get(key, {})
+
+
+# ── Global singleton ──────────────────────────────────────────────────────
+
+_default_config_loader: ConfigLoader | None = None
+
+
+def get_config_loader(
+    path: str | Path | None = None,
+    auto_reload: bool | int = False,
+) -> ConfigLoader:
+    """Zwraca globalną instancję ConfigLoader (singleton).
+
+    Args:
+        path: Opcjonalna ścieżka do config TOML (pierwsze wywołanie).
+        auto_reload: Czy i jak często sprawdzać zmiany.
+
+    Returns:
+        Globalna instancja ConfigLoader.
+    """
+    global _default_config_loader
+    if _default_config_loader is None:
+        _default_config_loader = ConfigLoader(path=path, auto_reload=auto_reload)
+    return _default_config_loader
+
+
+# ── Legacyjne funkcje ładowania (kompatybilność wsteczna) ────────────────
+
 def _load_toml_profile(environment: str) -> None:
     """Load environment-specific config from config/{env}.toml.
 
-    Zastępuje: _load_env_profile (ładowanie .env)
-    Nowy:     msgspec.toml.decode — szybki parser TOML
+    .. deprecated::
+       Użyj ConfigLoader.load() lub get_config_loader().load() zamiast tej funkcji.
+       Ta funkcja jest zachowana dla kompatybilności wstecznej — ładuje config
+       tylko raz przy imporcie, bez auto-reload.
 
     Ustawia zmienne w os.environ (kompatybilność wsteczna z kodem używającym os.getenv).
     Mapowanie: TOML {"core": {"debug": true}} → NEXUS_DEBUG=1
-    (pierwszy poziom struktury TOML jest pomijany przy tworzeniu ENV key)
     """
     profile_path = ENV_CONFIG_DIR / f"{environment}.toml"
     if not profile_path.exists():
-        # Fallback: spróbuj .env (kompatybilność wsteczna)
         legacy_path = ENV_CONFIG_DIR / f"{environment}.env"
         if legacy_path.exists():
             _load_legacy_env(legacy_path)
@@ -43,8 +263,6 @@ def _load_toml_profile(environment: str) -> None:
             data: dict[str, Any] = toml.decode(f.read())
 
         loaded = 0
-        # Flatten nested structure, skipping top-level section keys
-        # e.g. {"core": {"debug": true}} → {"debug": true} → NEXUS_DEBUG=1
         for _section, section_data in data.items():
             if isinstance(section_data, dict):
                 for key, value in section_data.items():

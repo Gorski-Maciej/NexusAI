@@ -20,6 +20,7 @@ from typing import Any
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
+from nexus_ai.core.protocol_executor import ProtocolExecutor, get_protocol_executor
 from nexus_ai.services.council_agents import ModelManager
 
 logger = get_logger(__name__)
@@ -112,6 +113,7 @@ class RulesSWATTeam:
         fin_rwkv_model_path: str,
         model_manager: ModelManager,
         config: AppConfig | None = None,
+        protocol_executor: ProtocolExecutor | None = None,
     ) -> None:
         self._lfm_name = lfm_model_name
         self._lfm_path = lfm_model_path
@@ -123,9 +125,32 @@ class RulesSWATTeam:
         self._model_manager = model_manager
         self._config = config or AppConfig()
         self._timeout = self._config.autopilot_agent_timeout_seconds
+        self._protocol_executor = protocol_executor or get_protocol_executor()
 
-    async def evaluate(self, invoice_data: dict[str, Any]) -> dict[str, Any]:
+        # Subskrybuj hot-reload protokołów — callback przechowywany w ProtocolLoader
+        self._protocol_executor.subscribe_on_change(self._on_protocols_changed)
+
+    def _on_protocols_changed(self, version: str | None) -> None:
+        """Callback wywoływany gdy protocols.toml zmieni się na dysku."""
+        if version:
+            logger.info(
+                "[RulesSWAT] Protocols reloaded: version=%s — prompts will use new SOP",
+                version,
+            )
+        else:
+            logger.info("[RulesSWAT] Protocols reloaded — prompts will use new SOP")
+
+    async def evaluate(
+        self,
+        invoice_data: dict[str, Any],
+        force_level_2: bool = False,
+    ) -> dict[str, Any]:
         """Pełna hierarchiczna ewaluacja.
+
+        Args:
+            invoice_data: Dane faktury do oceny.
+            force_level_2: Jeśli True, pomiń fast-path Level 1 i zawsze uruchom Level 2 (Granite).
+                Używane gdy Council zwróci SUGGEST — wymusza głębszą weryfikację.
 
         Returns dict z:
           - passed (bool): ostateczna decyzja
@@ -146,15 +171,23 @@ class RulesSWATTeam:
         combined_reasoning.append(f"Level1 (LFM): {level1.get('reasoning', '')}")
 
         if level1.get("decision") == "COMPLIANT" and level1.get("confidence", 0) >= 0.90:
-            # Fast-path
-            logger.info("[RulesSWAT] Level 1 fast-path: COMPLIANT with confidence %.4f", level1["confidence"])
-            return self._build_result(
-                passed=True,
-                violations=[],
-                confidence=level1["confidence"],
-                reasoning=" | ".join(combined_reasoning),
-                levels_used=levels_used,
-                level_results={"level1_lfm25": level1},
+            if force_level_2:
+                # P4: Council zwrócił SUGGEST — wymuś Level 2 (Granite) mimo fast-path
+                logger.info(
+                    "[RulesSWAT] Level 1 fast-path overridden (force_level_2=True) — "
+                    "proceeding to Level 2 Granite (confidence=%.4f)",
+                    level1["confidence"],
+                )
+            else:
+                # Fast-path: Level 1 COMPLIANT z wysokim confidence — pomiń dalsze poziomy
+                logger.info("[RulesSWAT] Level 1 fast-path: COMPLIANT with confidence %.4f", level1["confidence"])
+                return self._build_result(
+                    passed=True,
+                    violations=[],
+                    confidence=level1["confidence"],
+                    reasoning=" | ".join(combined_reasoning),
+                    levels_used=levels_used,
+                    level_results={"level1_lfm25": level1},
             )
 
         # Przekaż flagi z Level 1
@@ -387,7 +420,14 @@ class RulesSWATTeam:
     # ------------------------------------------------------------------
 
     def _build_level_1_prompt(self, invoice_data: dict[str, Any]) -> str:
-        prompt = f"""{RULES_LEVEL_1_PROMPT}
+        # Użyj ProtocolExecutor do zbudowania promptu z SOP w protocols.toml
+        # Fallback: inline RULES_LEVEL_1_PROMPT jeśli protokół niedostępny
+        try:
+            base_prompt = self._protocol_executor.build_prompt("rules.level_1")
+        except Exception:
+            base_prompt = RULES_LEVEL_1_PROMPT
+
+        prompt = f"""{base_prompt}
 
 Kontekst faktury:
 - NIP: {invoice_data.get('contractor_nip', 'brak')}
@@ -401,15 +441,24 @@ Kontekst faktury:
 
 Oceń szybko czy faktura wymaga dodatkowej weryfikacji."""
 
-        # Końcowe przypomnienie formatu JSON — spójne z pozostałymi poziomami Rules SWAT
-        prompt += "\n\n=== DECYZJA ===\nOceń fakturę i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
+        # build_prompt() z ProtocolExecutor dodaje "Return ONLY a valid JSON" automatycznie
+        # Dla fallbacku (inline prompt) dodajemy ręcznie
+        # Sprawdzamy przez "Return ONLY a valid JSON" — to jest stałe zarówno w SOP jak i inline
+        if "Return ONLY a valid JSON" not in base_prompt:
+            prompt += "\n\n=== DECYZJA ===\nOceń fakturę i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
 
         return prompt
 
     def _build_level_2_prompt(self, invoice_data: dict[str, Any]) -> str:
+        # Użyj ProtocolExecutor do zbudowania promptu z SOP
+        try:
+            base_prompt = self._protocol_executor.build_prompt("rules.level_2")
+        except Exception:
+            base_prompt = RULES_LEVEL_2_PROMPT
+
         config = self._config
         max_amount = config.rules_max_invoice_amount
-        prompt = f"""{RULES_LEVEL_2_PROMPT}
+        prompt = f"""{base_prompt}
 
 Dane faktury:
 - NIP: {invoice_data.get('contractor_nip', 'brak')}
@@ -424,8 +473,8 @@ Reguły:
 
 Zweryfikuj zgodność z regułami."""
 
-        # Końcowe przypomnienie formatu JSON — spójne z pozostałymi poziomami Rules SWAT
-        prompt += "\n\n=== DECYZJA ===\nZweryfikuj zgodność z regułami i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
+        if "Return ONLY a valid JSON" not in base_prompt:
+            prompt += "\n\n=== DECYZJA ===\nZweryfikuj zgodność z regułami i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
 
         return prompt
 
@@ -435,7 +484,13 @@ Zweryfikuj zgodność z regułami."""
         level1: dict[str, Any],
         level2: dict[str, Any],
     ) -> str:
-        prompt = f"""{RULES_LEVEL_3_PROMPT}
+        # Użyj ProtocolExecutor do zbudowania promptu z SOP
+        try:
+            base_prompt = self._protocol_executor.build_prompt("rules.level_3")
+        except Exception:
+            base_prompt = RULES_LEVEL_3_PROMPT
+
+        prompt = f"""{base_prompt}
 
 Dane faktury:
 - NIP: {invoice_data.get('contractor_nip', 'brak')}
@@ -447,8 +502,8 @@ Wynik Level 2 (Granite): {msgspec_dumps(level2, ensure_ascii=False)}
 
 Sklasyfikuj fakturę na podstawie powyższych wyników."""
 
-        # Końcowe przypomnienie formatu JSON — spójne z Level 4, JambaStrategist i WorkflowPlanner
-        prompt += "\n\n=== DECYZJA ===\nSklasyfikuj fakturę i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
+        if "Return ONLY a valid JSON" not in base_prompt:
+            prompt += "\n\n=== DECYZJA ===\nSklasyfikuj fakturę i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
 
         return prompt
 
@@ -459,7 +514,13 @@ Sklasyfikuj fakturę na podstawie powyższych wyników."""
         level2: dict[str, Any],
         level3: dict[str, Any],
     ) -> str:
-        prompt = f"""{RULES_LEVEL_4_PROMPT}
+        # Użyj ProtocolExecutor do zbudowania promptu z SOP
+        try:
+            base_prompt = self._protocol_executor.build_prompt("rules.level_4")
+        except Exception:
+            base_prompt = RULES_LEVEL_4_PROMPT
+
+        prompt = f"""{base_prompt}
 
 Dane faktury:
 - NIP: {invoice_data.get('contractor_nip', 'brak')}
@@ -472,8 +533,8 @@ Level 3 (LittleLamb): {msgspec_dumps(level3, ensure_ascii=False)}
 
 Dokonaj końcowej weryfikacji i oceń ryzyko."""
 
-        # Końcowe przypomnienie formatu JSON — spójne z JambaStrategist i WorkflowPlanner
-        prompt += "\n\n=== DECYZJA ===\nZweryfikuj końcowo anomalię i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
+        if "Return ONLY a valid JSON" not in base_prompt:
+            prompt += "\n\n=== DECYZJA ===\nZweryfikuj końcowo anomalię i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
 
         return prompt
 
@@ -606,6 +667,7 @@ class RulesAgent:
         model_path: str,
         model_manager: ModelManager,
         config: AppConfig | None = None,
+        protocol_executor: ProtocolExecutor | None = None,
     ) -> None:
         self._cfg = config or AppConfig()
         self._team = RulesSWATTeam(
@@ -618,11 +680,21 @@ class RulesAgent:
             fin_rwkv_model_path=self._cfg.fin_detective_model_path,
             model_manager=model_manager,
             config=self._cfg,
+            protocol_executor=protocol_executor or get_protocol_executor(),
         )
 
-    async def evaluate(self, invoice_data: dict[str, Any]) -> dict[str, Any]:
-        """Delegate to RulesSWATTeam.evaluate()."""
-        return await self._team.evaluate(invoice_data)
+    async def evaluate(
+        self,
+        invoice_data: dict[str, Any],
+        force_level_2: bool = False,
+    ) -> dict[str, Any]:
+        """Delegate to RulesSWATTeam.evaluate() with force_level_2 support.
+
+        Args:
+            invoice_data: Dane faktury do oceny.
+            force_level_2: Jeśli True, pomiń fast-path Level 1 i zawsze uruchom Level 2.
+        """
+        return await self._team.evaluate(invoice_data, force_level_2=force_level_2)
 
 
     @staticmethod

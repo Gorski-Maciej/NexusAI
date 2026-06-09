@@ -27,6 +27,7 @@ from typing import Any
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
+from nexus_ai.core.protocol_executor import ProtocolExecutor, get_protocol_executor
 from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
 from nexus_ai.services.council_agents import (
     DecisionVerdict,
@@ -124,12 +125,14 @@ class WorkflowPlanner:
         model_path: str,
         model_manager: ModelManager,
         config: AppConfig | None = None,
+        protocol_executor: ProtocolExecutor | None = None,
     ) -> None:
         self._model_name = model_name
         self._model_path = model_path
         self._model_manager = model_manager
         self._config = config or AppConfig()
         self._timeout = self._config.autopilot_agent_timeout_seconds
+        self._protocol_executor = protocol_executor or get_protocol_executor()
 
     async def plan(
         self,
@@ -179,7 +182,15 @@ class WorkflowPlanner:
 
     def _build_prompt(self, invoice_data: dict[str, Any], vendor_profile: dict[str, Any] | None, fact_sheet_text: str | None = None) -> str:
         vendor = vendor_profile or invoice_data.get("vendor_profile", {}) or {}
-        prompt = f"""{WORKFLOW_PLANNER_PROMPT}
+
+        # Użyj ProtocolExecutor do zbudowania promptu z protocols.toml
+        # Fallback: inline WORKFLOW_PLANNER_PROMPT jeśli protokół niedostępny
+        try:
+            base_prompt = self._protocol_executor.build_prompt("workflow_planner")
+        except Exception:
+            base_prompt = WORKFLOW_PLANNER_PROMPT
+
+        prompt = f"""{base_prompt}
 
 === DANE FAKTURY ===
 - NIP kontrahenta: {invoice_data.get('contractor_nip', 'brak')}
@@ -193,16 +204,18 @@ class WorkflowPlanner:
 - Liczba faktur: {vendor.get('invoice_count', 0)}
 - Trust score: {vendor.get('trust_score', 0.5)}
 
+=== KRYTERIA ===
 Faktura jest PROSTA (→ tylko EKSTRAKCJA + WALIDACJA) gdy:
 - Kwota brutto ≤ 5000 PLN
 - Kontrahent znany (invoice_count ≥ 3)
-- OCR confidence ≥ 0.85"""
+- OCR confidence ≥ 0.85
+
+W przeciwnym razie faktura jest ZŁOŻONA (→ pełny zestaw agentów)."""
 
         if fact_sheet_text:
             # Dołącz arkusz faktów (RAG) dla lepszej decyzji planera
             prompt += f"\n\n=== ARKUSZ FAKTÓW (RAG) ===\n{fact_sheet_text}"
 
-        # Końcowe przypomnienie formatu JSON — spójne z JambaStrategist
         prompt += "\n\n=== DECYZJA ===\nNa podstawie powyższych danych podejmij decyzję.\nReturn ONLY a valid JSON object. No other text."
 
         return prompt
@@ -453,12 +466,14 @@ class JambaStrategist:
         model_path: str,
         model_manager: ModelManager,
         config: AppConfig | None = None,
+        protocol_executor: ProtocolExecutor | None = None,
     ) -> None:
         self._model_name = model_name
         self._model_path = model_path
         self._model_manager = model_manager
         self._config = config or AppConfig()
         self._timeout = self._config.decision_timeout_seconds
+        self._protocol_executor = protocol_executor or get_protocol_executor()
 
     async def analyze(
         self,
@@ -503,17 +518,53 @@ class JambaStrategist:
         a = analytics_report or {}
         e = extraction_report or {}
 
+        # Użyj ProtocolExecutor do zbudowania promptu strategicznego z protocols.toml
+        # build_orchestrator_prompt_with_flag() zwraca (prompt, sop_loaded) gdzie
+        # sop_loaded=True oznacza że SOP z protocols.toml został w pełni załadowany.
+        sop_loaded = False
+        try:
+            prompt_with_sop, sop_loaded = self._protocol_executor.build_orchestrator_prompt_with_flag(
+                invoice_data=invoice_data,
+                fact_sheet_text=fact_sheet_text,
+                few_shot_examples=few_shot_examples,
+            )
+            base_prompt = prompt_with_sop
+        except Exception:
+            # Fallback: inline JAMBA_SYSTEM_PROMPT — używany tylko gdy ProtocolLoader
+            # lub protocols.toml jest niedostępny (np. błąd importu, brak pliku)
+            base_prompt = JAMBA_SYSTEM_PROMPT
+
         # fact_sheet_text ma własny nagłówek (=== ARKUSZ FAKTÓW ===)
         fact_sheet_section = f"\n{fact_sheet_text}" if fact_sheet_text else ""
 
         # few_shot_examples ma własny nagłówek (=== PRZYKŁADY FEW-SHOT ===)
-        # Przykłady doklejamy w dwóch miejscach:
-        #   1. PRZED === RAPORT WALIDATORA === jako kontekst dla modelu
-        #   2. PO === RAPORT EKSTRAKCJI DANYCH === jako końcowe przypomnienie
-        #      przed generowaniem JSON — model widzi przykłady tuż przed outputem.
         few_shot_block = f"\n\n{few_shot_examples}\n" if few_shot_examples else ""
 
-        return f"""{JAMBA_SYSTEM_PROMPT}
+        # Jeśli SOP został w pełni załadowany (sop_loaded=True), prompt zawiera
+        # już wszystkie sekcje (SOP, arkusz faktów, few-shot, dane faktury).
+        # Wystarczy dodać raporty agentów.
+        if sop_loaded:
+            return f"""{base_prompt}
+
+=== RAPORT WALIDATORA JAKOŚCI ===
+- Decyzja: {q.get('decision', 'N/A')}
+- Poziom: {q.get('level', 'N/A')}
+- Zaufanie: {q.get('trust_score', 'N/A')}
+
+=== RAPORT ANALITYCZNY ===
+- Trendy: {len(a.get('trends', []))}
+- Anomalie: {len(a.get('anomalies', []))}
+- Podsumowanie: {a.get('summary', 'N/A')[:200]}
+
+=== RAPORT EKSTRAKCJI DANYCH ===
+- Pola: {len(e.get('extracted_fields', []))}
+- Średnie zaufanie: {e.get('avg_confidence', 0.5)}
+
+Return ONLY a valid JSON object. No other text."""
+
+        # Fallback: standardowy prompt z inline stałej
+        # Używany gdy ProtocolExecutor nie mógł załadować SOP (fallback)
+        return f"""{base_prompt}
 
 === DANE FAKTURY ===
 - ID: {invoice_data.get('invoice_id', 'brak')}
@@ -535,8 +586,6 @@ class JambaStrategist:
 - Średnie zaufanie: {e.get('avg_confidence', 0.5)}
 {few_shot_block}
 
-=== DECYZJA ===
-Na podstawie powyższych danych i przykładów podejmij ostateczną decyzję.
 Return ONLY a valid JSON object. No other text."""
 
     def _parse_response(self, raw: str) -> dict[str, Any]:
@@ -682,15 +731,46 @@ class AgentOrchestrator:
                     len(few_shot_examples),
                 )
 
-        # Krok 2: Jamba strategiczna analiza (z arkuszem faktów i few-shot)
-        jamba_result = await self._jamba.analyze(
-            invoice_data=invoice_data,
-            quality_report=quality_report,
-            analytics_report=analytics_report,
-            extraction_report=extraction_report,
-            fact_sheet_text=fact_sheet_text,
-            few_shot_examples=few_shot_examples,
+        # Krok 2: Fast-path Jamba — pomiń gdy plan SIMPLE i Rada FULL_APPROVE
+        # Oszczędność: ~5s (inferencja Jamba 3B) dla każdej prostej faktury
+        plan_is_simple = (
+            len(workflow) <= 2
+            and "EKSTRAKCJA" in workflow
+            and "WALIDACJA" in workflow
         )
+        council_full_approve = (
+            quality_report is not None
+            and quality_report.get("action") == "AUTO_POST"
+            and quality_report.get("level") == "LEVEL_1_AUTO"
+        )
+
+        if plan_is_simple and council_full_approve:
+            # Fast-path: Rada już podjęła decyzję AUTO_POST z LEVEL_1_AUTO
+            # JambaStrategist tylko potwierdzi — pomijamy go oszczędzając ~5s
+            logger.info(
+                "[AgentOrchestrator] FAST-PATH: simple plan + council full approve — "
+                "skipping JambaStrategist (saves ~5s) for invoice_id=%s",
+                invoice_id,
+            )
+            jamba_confidence = float(quality_report.get("trust_score", 0.92))
+            decision = "AUTO_POST"
+            jamba_result = {
+                "decision": decision,
+                "confidence": jamba_confidence,
+                "reasoning": quality_report.get("deliberation", "Pełny konsensus Rady Agentów — fast-path"),
+                "strategy_summary": "Fast-path: SIMPLE plan + FULL_APPROVE — brak potrzeby strategicznej analizy",
+                "raw_response": "",
+            }
+        else:
+            # Standardowa ścieżka: uruchom JambaStrategist
+            jamba_result = await self._jamba.analyze(
+                invoice_data=invoice_data,
+                quality_report=quality_report,
+                analytics_report=analytics_report,
+                extraction_report=extraction_report,
+                fact_sheet_text=fact_sheet_text,
+                few_shot_examples=few_shot_examples,
+            )
 
         jamba_confidence = float(jamba_result.get("confidence", 0.0))
         decision = jamba_result.get("decision", "ESCALATE")

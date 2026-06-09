@@ -332,6 +332,51 @@ async def decision_evaluate(invoice_id: str, extracted_data: dict) -> dict:
         )
 
         # Execute action based on final decision
+        # P4: Gdy Council zwróci SUGGEST — wymuś Rules SWAT Level 2 (Granite)
+        # Nawet jeśli Level 1 (LFM) był COMPLIANT, wymuszamy głębszą weryfikację
+        forced_rules: dict[str, Any] | None = None
+        if decision.decision == "SUGGEST":
+            logger.info(
+                "[DECISION] P4: SUGGEST for invoice_id=%s — forcing Rules SWAT Level 2 (Granite)",
+                invoice_id,
+            )
+            try:
+                manager, _, _ = _ensure_orchestrator(config)
+                rules_agent = _ensure_rules_agent(config, manager)
+                forced_rules = await asyncio.wait_for(
+                    rules_agent.evaluate(extracted_data, force_level_2=True),
+                    timeout=30.0,
+                )
+                if not forced_rules.get("passed", True):
+                    logger.warning(
+                        "[DECISION] P4: Rules SWAT Level 2 found violations for invoice_id=%s "
+                        "— upgrading SUGGEST→ESCALATE (violations=%d)",
+                        invoice_id,
+                        len(forced_rules.get("violations", [])),
+                    )
+                    decision.decision = "ESCALATE"
+                    decision.confidence = min(decision.confidence, forced_rules.get("confidence", 0.0))
+                    decision.reasoning += (
+                        f" | P4 forced Level 2: {forced_rules.get('reasoning', '')}"
+                    )
+                else:
+                    logger.info(
+                        "[DECISION] P4: Rules SWAT Level 2 passed for invoice_id=%s "
+                        "— keeping SUGGEST",
+                        invoice_id,
+                    )
+            except TimeoutError:
+                logger.warning(
+                    "[DECISION] P4: Rules SWAT Level 2 timeout for invoice_id=%s — keeping SUGGEST",
+                    invoice_id,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "[DECISION] P4: Rules SWAT Level 2 error for invoice_id=%s: %s — keeping SUGGEST",
+                    invoice_id, exc,
+                )
+
+        # Execute action based on (potentially upgraded) decision
         if decision.decision == "AUTO_POST":
             await _council_post_invoice(invoice_id, extracted_data, decision)
         elif decision.decision == "SUGGEST":

@@ -19,6 +19,7 @@ from typing import Any
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
+from nexus_ai.core.protocol_executor import ProtocolExecutor, get_protocol_executor
 from nexus_ai.services.council_agents import ModelManager
 
 logger = get_logger(__name__)
@@ -98,6 +99,7 @@ class AnalyticsPipeline:
         fin_rwkv_model_path: str,
         model_manager: ModelManager,
         config: AppConfig | None = None,
+        protocol_executor: ProtocolExecutor | None = None,
     ) -> None:
         self._hrida_name = hrida_model_name
         self._hrida_path = hrida_model_path
@@ -107,6 +109,10 @@ class AnalyticsPipeline:
         self._model_manager = model_manager
         self._config = config or AppConfig()
         self._timeout = self._config.autopilot_agent_timeout_seconds
+        self._protocol_executor = protocol_executor or get_protocol_executor()
+
+        # Subskrybuj hot-reload protokołów
+        self._protocol_executor.subscribe_on_change(self._on_protocols_changed)
 
     async def analyze(
         self,
@@ -276,13 +282,30 @@ class AnalyticsPipeline:
         finally:
             await self._model_manager.release()
 
+    def _on_protocols_changed(self, version: str | None) -> None:
+        """Callback wywoływany gdy protocols.toml zmieni się na dysku."""
+        if version:
+            logger.info(
+                "[AnalyticsPipeline] Protocols reloaded: version=%s — prompts will use new SOP",
+                version,
+            )
+        else:
+            logger.info("[AnalyticsPipeline] Protocols reloaded — prompts will use new SOP")
+
     # ------------------------------------------------------------------
     # Prompts
     # ------------------------------------------------------------------
 
     def _build_stage_1_prompt(self, invoice_data: dict[str, Any]) -> str:
+        # Użyj ProtocolExecutor do zbudowania promptu z SOP w protocols.toml
+        # Fallback: inline HRIDA_PROMPT jeśli protokół niedostępny
+        try:
+            base_prompt = self._protocol_executor.build_prompt("analytics.hrida")
+        except Exception:
+            base_prompt = HRIDA_PROMPT
+
         hist = invoice_data.get("vendor_profile", {}) or {}
-        return f"""{HRIDA_PROMPT}
+        prompt = f"""{base_prompt}
 
 Kontekst faktury:
 - NIP kontrahenta: {invoice_data.get('contractor_nip', 'brak')}
@@ -297,12 +320,23 @@ Dodatkowe dane:
 
 Wygeneruj 1-3 zapytania SQL pomocne w analizie tej faktury."""
 
+        if "Return ONLY a valid JSON" not in base_prompt:
+            prompt += "\n\n=== DECYZJA ===\nWygeneruj zapytania SQL i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
+
+        return prompt
+
     def _build_stage_2_prompt(
         self,
         invoice_data: dict[str, Any],
         vendor_history: dict[str, Any] | None,
         stage1: dict[str, Any],
     ) -> str:
+        # Użyj ProtocolExecutor do zbudowania promptu z SOP
+        try:
+            base_prompt = self._protocol_executor.build_prompt("analytics.qwen")
+        except Exception:
+            base_prompt = QWEN_PROMPT
+
         anomaly_threshold = self._config.analytics_anomaly_threshold
         hist = vendor_history or {}
         queries = stage1.get("queries", [])
@@ -311,7 +345,7 @@ Wygeneruj 1-3 zapytania SQL pomocne w analizie tej faktury."""
             for q in queries
         ) if queries else "  - (brak zapytań)"
 
-        return f"""{QWEN_PROMPT}
+        prompt = f"""{base_prompt}
 
 Dane faktury:
 - NIP: {invoice_data.get('contractor_nip', 'brak')}
@@ -334,13 +368,24 @@ Konfiguracja:
 
 Przeprowadź analizę finansową faktury. Wykryj trendy i anomalie."""
 
+        if "Return ONLY a valid JSON" not in base_prompt:
+            prompt += "\n\n=== DECYZJA ===\nPrzeprowadź analizę i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
+
+        return prompt
+
     def _build_stage_3_prompt(
         self,
         invoice_data: dict[str, Any],
         stage1: dict[str, Any],
         stage2: dict[str, Any],
     ) -> str:
-        return f"""{FIN_RWKV_REVIEW_PROMPT}
+        # Użyj ProtocolExecutor do zbudowania promptu z SOP
+        try:
+            base_prompt = self._protocol_executor.build_prompt("analytics.fin_rwkv")
+        except Exception:
+            base_prompt = FIN_RWKV_REVIEW_PROMPT
+
+        prompt = f"""{base_prompt}
 
 Dane faktury:
 - NIP: {invoice_data.get('contractor_nip', 'brak')}
@@ -351,6 +396,11 @@ Stage 1 (Hrida SQL): {msgspec_dumps(stage1, ensure_ascii=False)}
 Stage 2 (Qwen Analysis): {msgspec_dumps(stage2, ensure_ascii=False)}
 
 Dokonaj końcowej recenzji analizy. Skoryguj ewentualne błędy."""
+
+        if "Return ONLY a valid JSON" not in base_prompt:
+            prompt += "\n\n=== DECYZJA ===\nZrecenzuj analizę i zwróć wynik w formacie JSON.\nReturn ONLY a valid JSON object. No other text."
+
+        return prompt
 
     # ------------------------------------------------------------------
     # Parsers
@@ -468,6 +518,7 @@ class AnalyticsAgent:
         model_path: str,
         model_manager: ModelManager,
         config: AppConfig | None = None,
+        protocol_executor: ProtocolExecutor | None = None,
     ) -> None:
         self._pipeline = AnalyticsPipeline(
             hrida_model_name=model_name,
@@ -477,6 +528,7 @@ class AnalyticsAgent:
             fin_rwkv_model_path=config.fin_detective_model_path if config else "",
             model_manager=model_manager,
             config=config,
+            protocol_executor=protocol_executor,
         )
 
     async def analyze(

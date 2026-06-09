@@ -19,6 +19,8 @@ import duckdb
 import pendulum
 from structlog import get_logger
 
+from nexus_ai.core.protocol_executor import ProtocolExecutor, get_protocol_executor
+
 logger = get_logger("nexus.services.context_enricher")
 
 # ── Schema for vendor_cache table ────────────────────────────────────────────
@@ -65,6 +67,7 @@ class ContextEnricher:
         conn: duckdb.DuckDBPyConnection,
         white_list_service: Any = None,
         gus_bir_client: Any = None,
+        protocol_executor: ProtocolExecutor | None = None,
     ) -> None:
         self._conn = conn
         ensure_cache_schema(conn)
@@ -76,6 +79,10 @@ class ContextEnricher:
             self._white_list = WhiteListService()
 
         self._gus_bir = gus_bir_client
+        self._protocol_executor = protocol_executor or get_protocol_executor()
+
+        # Subskrybuj hot-reload protokołów
+        self._protocol_executor.subscribe_on_change(self._on_protocols_changed)
 
     async def enrich(self, invoice_data: dict[str, Any]) -> dict[str, Any]:
         """Główna metoda — wzbogaca kontekst faktury o dane z rejestrów.
@@ -310,11 +317,28 @@ class ContextEnricher:
             )
             return {}
 
+    def _on_protocols_changed(self, version: str | None) -> None:
+        """Callback wywoływany gdy protocols.toml zmieni się na dysku."""
+        if version:
+            logger.info(
+                "[ContextEnricher] Protocols reloaded: version=%s — config updated",
+                version,
+            )
+        else:
+            logger.info("[ContextEnricher] Protocols reloaded — config updated")
+
+    def _get_protocol_ttl_days(self) -> int:
+        """Pobierz TTL cache z protocols.toml, fallback do TTL_DAYS=30."""
+        try:
+            white_list = self._protocol_executor._loader.get_protocol("context_enricher.white_list")
+            return int(white_list.get("cache_ttl_days", TTL_DAYS))
+        except Exception:
+            return TTL_DAYS
+
     # ── Cache helpers ────────────────────────────────────────────────────
 
-    @staticmethod
-    def _is_cache_valid(cached: dict[str, Any]) -> bool:
-        """Sprawdź czy wpis w cache jest wciąż ważny (TTL 30 dni).
+    def _is_cache_valid(self, cached: dict[str, Any]) -> bool:
+        """Sprawdź czy wpis w cache jest wciąż ważny (TTL z protocols.toml).
 
         Args:
             cached: Słownik z cache (musi zawierać ``fetched_at``).
@@ -338,7 +362,8 @@ class ContextEnricher:
             fetched = fetched.replace(tzinfo=None)
 
         age = now - fetched
-        return age.days < TTL_DAYS
+        ttl = self._get_protocol_ttl_days()
+        return age.days < ttl
 
     def _get_from_cache(self, nip: str) -> dict[str, Any] | None:
         """Odczytaj wpis z cache dla NIP-u."""

@@ -14,6 +14,8 @@ Usage:
 
 from __future__ import annotations
 
+import time
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -26,6 +28,10 @@ logger = get_logger(__name__)
 # ── Domyślna ścieżka do pliku protokołów ──────────────────────────────────
 
 DEFAULT_PROTOCOLS_PATH = Path(__file__).resolve().parent.parent / "config" / "protocols.toml"
+
+# ── Domyślny interwał polling'u (sekundy) ────────────────────────────────
+
+DEFAULT_POLL_INTERVAL = 5.0
 
 
 class ProtocolNotFoundError(KeyError):
@@ -43,52 +49,181 @@ class ProtocolLoader:
     Args:
         path: Ścieżka do pliku protocols.toml. Domyślnie
               nexus_ai/config/protocols.toml.
-        auto_reload: Jeśli True, ładuje plik przy każdym dostępie
-                     (przydatne w dev). Domyślnie False.
+        auto_reload: Czy i jak często przeładowywać plik na podstawie
+                     mtime (st_mtime).
+                     - False (domyślnie): nigdy — standardowy cache.
+                     - True: co 5 sekund sprawdza mtime, przeładowuje
+                             jeśli plik zmieniony na dysku.
+                     - int > 0: custom poll interval w sekundach.
     """
 
     def __init__(
         self,
         path: str | Path | None = None,
-        auto_reload: bool = False,
+        auto_reload: bool | int = False,
     ) -> None:
         self._path = Path(path or DEFAULT_PROTOCOLS_PATH)
-        self._auto_reload = auto_reload
         self._data: dict[str, Any] | None = None
+        self._last_mtime: float = 0.0
+        self._last_checked: float = 0.0
+
+        # Wyznacz poll_interval z auto_reload
+        if auto_reload is True:
+            self._poll_interval: float = DEFAULT_POLL_INTERVAL
+            self._auto_reload_enabled: bool = True
+        elif isinstance(auto_reload, (int, float)) and auto_reload > 0:
+            self._poll_interval = float(auto_reload)
+            self._auto_reload_enabled = True
+        else:
+            self._poll_interval = 0.0
+            self._auto_reload_enabled = False
+
+        # Callbacki wywoływane przy każdej zmianie pliku
+        self._on_change_callbacks: list[Callable[[str | None], None]] = []
+
+    # ── Hot-reload callback ──────────────────────────────────────────────
+
+    def on_change(self, callback: Callable[[str | None], None]) -> Callable[[], None]:
+        """Zarejestruj callback wywoływany przy zmianie protocols.toml.
+
+        Callback otrzymuje nową wersję (z [metadata].version) lub None
+        jeśli wersja nie jest dostępna.
+
+        Args:
+            callback: Funkcja przyjmująca (version: str | None).
+
+        Returns:
+            Funkcja do wyrejestrowania callbacka (unsubscribe).
+
+        Example:
+            unsubscribe = loader.on_change(lambda v: logger.info("New version: %s", v))
+            # ...
+            unsubscribe()  # przestań nasłuchiwać
+        """
+        self._on_change_callbacks.append(callback)
+
+        def unsubscribe() -> None:
+            if callback in self._on_change_callbacks:
+                self._on_change_callbacks.remove(callback)
+
+        return unsubscribe
+
+    def _fire_on_change_callbacks(self) -> None:
+        """Wywołaj wszystkie zarejestrowane callbacki z aktualną wersją."""
+        version: str | None = None
+        try:
+            if self._data and "metadata" in self._data:
+                version = str(self._data["metadata"].get("version", "")) or None
+        except Exception:
+            pass
+
+        for callback in self._on_change_callbacks:
+            try:
+                callback(version)
+            except Exception as exc:
+                logger.error(
+                    "[ProtocolLoader] on_change callback failed: %s", exc
+                )
 
     # ── Ładowanie ────────────────────────────────────────────────────────
 
     def _load(self) -> dict[str, Any]:
-        """Załaduj protocols.toml (lazy)."""
-        if self._data is not None and not self._auto_reload:
+        """Załaduj protocols.toml (lazy) z opcjonalnym mtime-based auto-reload.
+
+        Gdy auto_reload jest włączone:
+          1. Sprawdź st_mtime pliku (max co poll_interval)
+          2. Jeśli mtime się zmieniło → przeładuj dane
+          3. Jeśli plik zniknął → wyczyść cache i zwróć {}
+          4. Jeśli plik wrócił → załaduj ponownie
+
+        Gdy auto_reload jest wyłączone:
+          - Użyj cache (standardowe zachowanie)
+        """
+        now = time.time()
+
+        # ── Auto-reload wyłączony → zwykły cache ────────────────────────
+        if not self._auto_reload_enabled:
+            if self._data is not None:
+                return self._data
+            # Pierwsze ładowanie
+            return self._read_file()
+
+        # ── Auto-reload włączony → mtime-based ──────────────────────────
+
+        # Rate-limiting: nie sprawdzaj pliku częściej niż poll_interval
+        if now - self._last_checked < self._poll_interval and self._data is not None:
             return self._data
 
+        self._last_checked = now
+
+        # Sprawdź czy plik istnieje
+        if not self._path.exists():
+            if self._data is not None:
+                logger.warning(
+                    "[ProtocolLoader] File disappeared: %s — clearing cache",
+                    self._path,
+                )
+                self._data = None
+                self._last_mtime = 0.0
+            return {}
+
+        try:
+            current_mtime = self._path.stat().st_mtime
+        except OSError:
+            logger.warning(
+                "[ProtocolLoader] Cannot stat %s — using cached data",
+                self._path,
+            )
+            return self._data if self._data is not None else {}
+
+        # Jeśli mtime się nie zmieniło → użyj cache
+        if current_mtime <= self._last_mtime and self._data is not None:
+            return self._data
+
+        # mtime się zmieniło → przeładuj
+        logger.info(
+            "[ProtocolLoader] File changed on disk: %s — reloading protocols",
+            self._path.name,
+        )
+        return self._read_file()
+
+    def _read_file(self) -> dict[str, Any]:
+        """Wczytaj protocols.toml z dysku i zaktualizuj mtime cache."""
         if not self._path.exists():
             logger.warning(
                 "[ProtocolLoader] File not found: %s — using empty protocols",
                 self._path,
             )
             self._data = {}
+            self._last_mtime = 0.0
             return self._data
 
         try:
             with open(self._path, "rb") as f:
                 raw = toml.decode(f.read())
             self._data = raw if isinstance(raw, dict) else {}
+            self._last_mtime = self._path.stat().st_mtime
             logger.info(
-                "[ProtocolLoader] Loaded %d top-level sections from %s",
+                "[ProtocolLoader] Loaded %d top-level sections from %s (mtime=%s)",
                 len(self._data),
                 self._path.name,
+                self._last_mtime,
             )
+            # Powiadom callbacki o zmianie pliku
+            self._fire_on_change_callbacks()
         except Exception as exc:
             logger.error("[ProtocolLoader] Failed to load %s: %s", self._path, exc)
-            self._data = {}
+            if self._data is None:
+                self._data = {}
+            self._last_mtime = 0.0
 
-        return self._data
+        return self._data if self._data is not None else {}
 
     def reload(self) -> None:
         """Wymuś przeładowanie pliku protocols.toml."""
         self._data = None
+        self._last_mtime = 0.0
+        self._last_checked = 0.0
         self._load()
 
     # ── Dostęp do protokołów ─────────────────────────────────────────────
@@ -325,17 +460,73 @@ class ProtocolLoader:
         schema = data.get("schema", {})
         return dict(schema.get("output_formats", {}))
 
+    def get_edge_case(self, edge_case: str) -> dict[str, Any]:
+        """Pobierz protokół dla scenariusza brzegowego z [edge_cases].
+
+        Args:
+            edge_case: Nazwa scenariusza (np. 'ocr_low_confidence').
+
+        Returns:
+            Słownik z protokołem lub domyślną eskalacją.
+        """
+        data = self._load()
+        edge_cases = data.get("edge_cases", {})
+        case = edge_cases.get(edge_case)
+        if case is None:
+            return {
+                "condition": "unknown",
+                "expected_behavior": "ESCALATE — nieznany scenariusz brzegowy",
+                "override": "",
+            }
+        return dict(case)
+
+    def get_rag_section(self, section_name: str = "before_decision") -> dict[str, Any]:
+        """Pobierz sekcję protokołu RAG z [protocols.rag].
+
+        Args:
+            section_name: Nazwa sekcji (np. 'before_decision', 'data_sources.sqlite').
+
+        Returns:
+            Słownik z protokołem RAG lub domyślną konfiguracją.
+        """
+        try:
+            return self.get_protocol(f"rag.{section_name}")
+        except ProtocolNotFoundError:
+            return {
+                "steps": ["FactsAggregator.build(invoice_data) — domyślny przepływ"],
+                "timeout": "5000ms",
+                "error_handling": "Izolacja błędów — każde źródło osobno",
+            }
+
+    def get_sop_section(self, sop_name: str = "orchestrator_protocols") -> dict[str, Any]:
+        """Pobierz sekcję SOP z [sop.*].
+
+        Args:
+            sop_name: Nazwa sekcji SOP (np. 'orchestrator_protocols', 'orchestration').
+
+        Returns:
+            Słownik z sekcją SOP lub pusty słownik.
+        """
+        data = self._load()
+        sop = data.get("sop", {})
+        return dict(sop.get(sop_name, {}))
+
     # ── Budowanie promptów systemowych z protokołów ──────────────────────
 
-    def build_system_prompt(self, protocol_path: str) -> str:
+    def build_system_prompt(
+        self,
+        protocol_path: str,
+        include_protocols: bool = True,
+    ) -> str:
         """Zbuduj system prompt dla modelu na podstawie protokołu.
 
-        TODO: Zintegruj z istniejącymi agentami — podmienić inline stałe
-        (WORKFLOW_PLANNER_PROMPT, ALPHA_SYSTEM_PROMPT, itd.) na wywołania
-        tej metody, aby protocols.toml stał się jedynym źródłem prawdy.
+        UWAGA: Integracja z agentami wykonana przez ProtocolExecutor
+        (nexus_ai/core/protocol_executor.py). Metoda używana przez
+        ProtocolExecutor.build_prompt() jako źródło treści promptu.
 
         Args:
             protocol_path: Ścieżka do protokołu (np. 'validation.alpha').
+            include_protocols: Czy dołączyć sekcję protokołów decyzyjnych.
 
         Returns:
             String z system promptem gotowym do wstrzyknięcia do modelu.
@@ -352,19 +543,25 @@ class ProtocolLoader:
         if checks:
             lines.append("\n".join(f"{i+1}. {c}" for i, c in enumerate(checks)))
 
-        # Dodaj protokoły decyzyjne
-        decisions = protocol.get("protocols", {})
-        if decisions:
-            lines.append("\n=== PROTOKOŁY DECYZYJNE ===")
-            for name, cfg in decisions.items():
-                cond = cfg.get("condition", "")
-                action = cfg.get("action", "")
-                lines.append(f"- {name}: Jeśli {cond} → {action}")
+        # Dodaj protokoły decyzyjne (opcjonalnie)
+        if include_protocols:
+            decisions = protocol.get("protocols", {})
+            if decisions:
+                lines.append("\n=== PROTOKOŁY DECYZYJNE ===")
+                for name, cfg in decisions.items():
+                    cond = cfg.get("condition", "")
+                    action = cfg.get("action", "")
+                    lines.append(f"- {name}: Jeśli {cond} → {action}")
 
         return "\n".join(lines)
 
     def build_strategic_prompt(self, invoice_data: dict[str, Any] | None = None) -> str:
         """Zbuduj prompt strategiczny dla Jamba 3B.
+
+        .. deprecated::
+           Użyj ProtocolExecutor.build_orchestrator_prompt() zamiast tej metody.
+           ProtocolExecutor (nexus_ai/core/protocol_executor.py) robi to samo
+           lepiej, łącząc SOP z danymi faktury, RAG i few-shot.
 
         Args:
             invoice_data: Opcjonalne dane faktury do osadzenia w prompcie.
@@ -372,6 +569,7 @@ class ProtocolLoader:
         Returns:
             String z promptem strategicznym.
         """
+
         try:
             decision_protocol = self.get_protocol("decision.jamba")
         except ProtocolNotFoundError:
@@ -408,13 +606,16 @@ _default_loader: ProtocolLoader | None = None
 
 def get_protocol_loader(
     path: str | Path | None = None,
-    auto_reload: bool = False,
+    auto_reload: bool | int = False,
 ) -> ProtocolLoader:
     """Zwraca globalną instancję ProtocolLoader (singleton).
 
     Args:
         path: Opcjonalna ścieżka do protocols.toml (pierwsze wywołanie).
-        auto_reload: Czy automatycznie przeładowywać plik.
+        auto_reload: Czy i jak często przeładowywać plik.
+                      False — nigdy (domyślnie).
+                      True — co 5 sekund na podstawie mtime.
+                      int > 0 — custom poll interval w sekundach.
 
     Returns:
         Globalna instancja ProtocolLoader.

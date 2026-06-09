@@ -17,6 +17,7 @@ from structlog import get_logger
 
 from nexus_ai.core.embeddings import get_embedding_service
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
+from nexus_ai.core.protocol_executor import ProtocolExecutor, get_protocol_executor
 from nexus_ai.db.vector_store import VectorStore
 
 logger = get_logger("nexus.services.semantic_guard")
@@ -94,12 +95,27 @@ class SemanticGuard:
         self,
         db_path: str = "app_data/semantic_guard.db",
         conn: Any = None,
+        protocol_executor: ProtocolExecutor | None = None,
     ) -> None:
         self._db_path = db_path
         self._conn = conn
         self._store: VectorStore | None = None
         self._embedding_service = get_embedding_service()
         self._embedding_dim: int = self.EMBEDDING_DIM
+        self._protocol_executor = protocol_executor or get_protocol_executor()
+
+        # Subskrybuj hot-reload protokołów
+        self._protocol_executor.subscribe_on_change(self._on_protocols_changed)
+
+    def _on_protocols_changed(self, version: str | None) -> None:
+        """Callback wywoływany gdy protocols.toml zmieni się na dysku."""
+        if version:
+            logger.info(
+                "[SemanticGuard] Protocols reloaded: version=%s — edge case protocols updated",
+                version,
+            )
+        else:
+            logger.info("[SemanticGuard] Protocols reloaded — edge case protocols updated")
 
     def _init_store(self) -> VectorStore:
         """Lazy init sqlite-vec VectorStore."""
@@ -186,6 +202,17 @@ class SemanticGuard:
         action = "ALLOW"
         alert = None
 
+        # Sprawdź protokoły brzegowe z protocols.toml dla dodatkowego kontekstu
+        edge_case_override = None
+        try:
+            # Jeśli OCR low confidence → wymuś BLOCK_DECREE
+            if anomaly_score >= 0.80:
+                dup_proto = self._protocol_executor.get_edge_case_protocol("duplicate_invoice")
+                if dup_proto:
+                    edge_case_override = dup_proto
+        except Exception:
+            pass
+
         if self._conn is not None:
             db_rows = self._conn.execute(
                 """SELECT condition_json, action_json, priority
@@ -209,6 +236,11 @@ class SemanticGuard:
                         break
                 except (DecodeError, ValueError, TypeError):
                     continue
+
+        # Jeśli protokół brzegowy wymusza blokadę, nadpisz akcję
+        if edge_case_override and action != "BLOCK_DECREE":
+            action = "BLOCK_DECREE"
+            alert = alert or edge_case_override.get("expected_behavior", "Potencjalny duplikat — zablokowano")
 
         return {
             "action": action,

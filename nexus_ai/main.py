@@ -69,12 +69,90 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--host", type=str, default="127.0.0.1", help="API bind address")
     parser.add_argument("--port", type=int, default=8000, help="API port")
     parser.add_argument("--workers", type=int, default=1, help="Number of workers")
+    parser.add_argument(
+        "--watch", action="store_true",
+        help="Watch config/protocol files for changes and log auto-reload events",
+    )
+    parser.add_argument(
+        "--watch-interval", type=int, default=None,
+        help="Poll interval in seconds for --watch (default: 5 for protocols, 5 for config)",
+    )
     return parser
 
 
 def _set_env_from_args(args: argparse.Namespace) -> None:
     os.environ.setdefault("NEXUS_HOST", args.host)
     os.environ.setdefault("NEXUS_PORT", str(args.port))
+    if getattr(args, "watch", False):
+        os.environ["NEXUS_WATCH_MODE"] = "1"
+        interval = str(args.watch_interval or 5)
+        os.environ["NEXUS_WATCH_INTERVAL"] = interval
+
+
+def setup_watch_mode(args: argparse.Namespace) -> None:
+    """Włącz auto-reload dla wszystkich loaderów i loguj zmiany.
+
+    Gdy --watch jest aktywne:
+      1. ProtocolLoader z auto_reload=True (poll co watch_interval)
+      2. ConfigLoader z auto_reload=True (poll co watch_interval)
+      3. Callbacki logujące każdą zmianę pliku
+
+    Callbacki są rejestrowane przed startem serwera, więc logują
+    również pierwsze załadowanie plików.
+
+    Args:
+        args: Sparsowane argumenty CLI (muszą zawierać watch/watch_interval).
+    """
+    if not getattr(args, "watch", False):
+        return
+
+    raw_interval = getattr(args, "watch_interval", None)
+    interval = (
+        raw_interval
+        if raw_interval is not None
+        else int(os.getenv("NEXUS_WATCH_INTERVAL", "5"))
+    )
+    # auto_reload=0 / auto_reload=False is disabled — ale --watch wymaga enabled
+    if not interval:
+        interval = 5
+
+    from nexus_ai.core.protocol_loader import get_protocol_loader
+    from nexus_ai.core.config import get_config_loader
+
+    logger.info(
+        "=" * 56
+    )
+    logger.info("WATCH MODE ENABLED (poll every %ds)", interval)
+    logger.info("Watching: protocols.toml, config/*.toml")
+    logger.info(
+        "=" * 56
+    )
+
+    # --- ProtocolLoader z auto-reload ---
+    protocol_loader = get_protocol_loader(auto_reload=interval)
+
+    def _on_protocols_changed(version: str | None) -> None:
+        if version:
+            logger.info(
+                "🔄 [WATCH] protocols.toml → version=%s (auto-reloaded)",
+                version,
+            )
+        else:
+            logger.info("🔄 [WATCH] protocols.toml → changed (auto-reloaded)")
+
+    protocol_loader.on_change(_on_protocols_changed)
+
+    # --- ConfigLoader z auto-reload ---
+    config_loader = get_config_loader(auto_reload=interval)
+
+    def _on_config_changed() -> None:
+        env = os.getenv("NEXUS_ENV", "dev")
+        logger.info(
+            "🔄 [WATCH] config/%s.toml → changed (auto-reloaded)",
+            env,
+        )
+
+    config_loader.on_change(_on_config_changed)
 
 
 async def _run_bootstrap(args: argparse.Namespace | None = None) -> None:
@@ -302,6 +380,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.fetch_models:
         _run_fetch_models()
         return 0
+
+    # Włącz watch mode jeśli --watch
+    setup_watch_mode(args)
 
     logger.info("NexusAI starting — mode=%s host=%s port=%s", args.mode, args.host, args.port)
 
