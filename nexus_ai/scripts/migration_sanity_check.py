@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
+import hashlib  # streaming SHA-256 for table checksums (nexus_crypto doesn't support streaming)
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
@@ -31,8 +31,8 @@ def table_checksum(conn: sqlite3.Connection, table: str) -> str:
     hasher = hashlib.sha256()
     cursor = conn.execute(f"SELECT * FROM {table}")
     for row in cursor:
-        hasher.update(repr(row).encode("utf-8"))
-    return hasher.hexdigest()
+        h.update(repr(row).encode("utf-8"))
+    return h.hexdigest()
 
 
 def compare_stats(before: dict[str, TableStat], after: dict[str, TableStat], *, compare_checksum: bool = False) -> list[str]:

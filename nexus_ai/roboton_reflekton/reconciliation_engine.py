@@ -4,8 +4,9 @@ import asyncio
 import uuid
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from datetime import datetime
 from typing import Any
+
+import pendulum
 
 import nats
 import pendulum
@@ -24,7 +25,7 @@ class MissingInvoiceAlert:
     contractor_nip: str
     amount_minor: int
     transaction_id: str
-    bank_posted_at: datetime
+    bank_posted_at: pendulum.DateTime
     reason: str = "No pending transfer match after 15 days"
 
     def to_sse_event(self) -> dict[str, Any]:
@@ -135,7 +136,7 @@ class ReconciliationEngine:
                     session.commit()
                 return approved
 
-            if posted_at <= datetime.now(posted_at.tzinfo or UTC) - pendulum.duration(days=15):
+            if posted_at.diff(pendulum.now()).in_days() >= 15:
                 alert = MissingInvoiceAlert(
                     company_id=company_id,
                     contractor_nip=contractor_nip,
@@ -223,7 +224,7 @@ class ClearingAccountsEngine:
 class OpenInvoice:
     invoice_id: str
     amount_due_minor: int
-    due_date: datetime
+    due_date: pendulum.DateTime
 
 
 @dataclass(frozen=True, slots=True)
@@ -244,7 +245,7 @@ class BankReconciliationEngine:
         *,
         vendor_id: str,
         payment_amount_minor: int,
-        received_date: datetime,
+        received_date: pendulum.DateTime,
         open_invoices: list[OpenInvoice],
     ) -> dict[str, Any]:
         if payment_amount_minor <= 0:

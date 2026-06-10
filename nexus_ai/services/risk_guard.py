@@ -20,7 +20,28 @@ from typing import Any
 import duckdb
 import pendulum
 
+from nexus_ai.core.cache import get_cache
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+
+# NexusCache dla progów ryzyka (event-based invalidation)
+# Zgodnie z wzorcem DecisionEngine.invalidate_rules_cache() —
+# cache unieważniany ręcznie przy każdej zmianie (add/deprecate/seed).
+# Brak TTL — gwarantuje natychmiastową świeżość reguł.
+_risk_nexus = get_cache()
+RISK_CACHE_PREFIX = "risk_threshold:"
+
+
+def invalidate_risk_cache() -> None:
+    """Unieważnij cache progów ryzyka.
+
+    Usuwa wszystkie klucze z prefixem ``risk_threshold:`` oraz ``risk_thresholds_batch:``
+    z L1 RAM. Zgodnie z wzorcem invalidate_rules_cache() — zero narzutu, bez logowania.
+    Wywoływana przy każdej zmianie progów (add_threshold, deprecate_threshold, seed).
+    Następne wywołanie get_threshold() lub _load_thresholds_for_context()
+    załaduje świeże progi z DuckDB.
+    """
+    _risk_nexus.delete_prefix_sync(RISK_CACHE_PREFIX)
+    _risk_nexus.delete_prefix_sync("risk_thresholds_batch:")
 
 # ── Schema ───────────────────────────────────────────────────────────────────
 
@@ -160,6 +181,8 @@ def seed_default_thresholds(conn: duckdb.DuckDBPyConnection) -> None:
                 "system",
             ),
         )
+    # Unieważnij cache — świeże progi w DuckDB
+    invalidate_risk_cache()
 
 
 # ── RiskGuard ────────────────────────────────────────────────────────────────
@@ -189,6 +212,12 @@ class RiskGuard:
     ) -> RiskThreshold:
         """Zwróć próg ryzyka dla danego kontekstu (first-match-wins).
 
+        Wynik cache'owany w NexusCache (event-based invalidation).
+        Zgodnie ze wzorcem DecisionEngine._get_active_rules() —
+        cache unieważniany przez invalidate_risk_cache() przy każdej
+        zmianie (add_threshold, deprecate_threshold, seed) — nigdy
+        nie wygasa sam z siebie.
+
         Args:
             tax_form: Forma opodatkowania.
             expense_type: Typ wydatku.
@@ -197,6 +226,16 @@ class RiskGuard:
         Returns:
             RiskThreshold z wymaganym poziomem ufności i akcją.
         """
+        cache_key = f"risk_threshold:{tax_form}:{expense_type}:{field}"
+
+        # Sprawdź NexusCache (L1 RAM) — szybki path
+        cached = _risk_nexus.get_sync(cache_key)
+        if cached is not None:
+            return RiskThreshold(
+                required_ml_confidence=float(cached["confidence"]),
+                action_if_below=str(cached["action"]),
+            )
+
         rows = self._conn.execute(
             """SELECT condition_json, output_json, priority
                FROM risk_thresholds
@@ -223,12 +262,94 @@ class RiskGuard:
             if rule_field and rule_field != field:
                 continue
 
-            return RiskThreshold(
+            result = RiskThreshold(
                 required_ml_confidence=float(output.get("required_ml_confidence", 0.85)),
                 action_if_below=str(output.get("action_if_below", "BLOCK_AND_ALERT")),
             )
 
+            # Zapisz w NexusCache (bez TTL — unieważniamy ręcznie przez invalidate_risk_cache)
+            _risk_nexus.set_sync(cache_key, {
+                "confidence": result.required_ml_confidence,
+                "action": result.action_if_below,
+            })
+            return result
+
+        # Fallback — zapisz default threshold w cache (bez TTL)
+        _risk_nexus.set_sync(cache_key, {
+            "confidence": self.DEFAULT_THRESHOLD.required_ml_confidence,
+            "action": self.DEFAULT_THRESHOLD.action_if_below,
+        })
         return self.DEFAULT_THRESHOLD
+
+    def _load_thresholds_for_context(
+        self,
+        tax_form: str = "",
+        expense_type: str = "",
+    ) -> dict[str, dict[str, Any]]:
+        """Batch load ALL thresholds for (tax_form, expense_type) — jeden SELECT zamiast N.
+
+        Ładuje wszystkie aktywne reguły z DuckDB w jednym zapytaniu,
+        grupuje je po polu (field) i cache'uje cały batch pod kluczem
+        ``risk_thresholds_batch:{tax_form}:{expense_type}``.
+        WARMUJE też per-field cache dla get_threshold() — następne
+        wywołania get_threshold() znajdą dane w L1 RAM.
+
+        Returns:
+            {field_name: {"confidence": float, "action": str}, ...}
+            Klucz "" (pusty string) oznacza catch-all dla contextu bez field.
+        """
+        batch_key = f"risk_thresholds_batch:{tax_form}:{expense_type}"
+
+        # Sprawdź batch cache (L1 RAM)
+        cached = _risk_nexus.get_sync(batch_key)
+        if cached is not None:
+            return cached
+
+        rows = self._conn.execute(
+            """SELECT condition_json, output_json, priority
+               FROM risk_thresholds
+               WHERE valid_from <= CURRENT_DATE
+                 AND (valid_to IS NULL OR valid_to >= CURRENT_DATE)
+               ORDER BY priority ASC, valid_from DESC""",
+        ).fetchall()
+
+        batch: dict[str, dict[str, Any]] = {}
+
+        for cond_json_raw, output_json_raw, priority in rows:
+            condition = msgspec_loads(cond_json_raw) if isinstance(cond_json_raw, str) else cond_json_raw
+            output = msgspec_loads(output_json_raw) if isinstance(output_json_raw, str) else output_json_raw
+
+            rule_tax_form = condition.get("tax_form", "")
+            rule_expense = condition.get("expense_type", "")
+            rule_field = condition.get("field", "")
+
+            # Match: if rule specifies tax_form, it must match
+            if rule_tax_form and rule_tax_form != tax_form:
+                continue
+            # Match: if rule specifies expense_type, it must match
+            if rule_expense and rule_expense != expense_type:
+                continue
+
+            threshold_data = {
+                "confidence": float(output.get("required_ml_confidence", 0.85)),
+                "action": str(output.get("action_if_below", "BLOCK_AND_ALERT")),
+            }
+
+            key = rule_field or ""  # "" = catch-all dla tego contextu
+            if key not in batch:  # first-match-wins po priorytecie
+                batch[key] = threshold_data
+
+                # Warm per-field cache dla get_threshold()
+                field_cache_key = (
+                    f"risk_threshold:{tax_form}:{expense_type}:{rule_field}"
+                    if rule_field
+                    else f"risk_threshold:{tax_form}:{expense_type}:"
+                )
+                _risk_nexus.set_sync(field_cache_key, threshold_data)
+
+        # Zapisz batch w NexusCache (bez TTL — event-based invalidation)
+        _risk_nexus.set_sync(batch_key, batch)
+        return batch
 
     def evaluate(
         self,
@@ -238,8 +359,11 @@ class RiskGuard:
     ) -> RiskVerdict:
         """Ewaluacja wszystkich pól faktury względem progów ryzyka.
 
+        Optymalizacja: ładuje WSZYSTKIE progi dla (tax_form, expense_type)
+        w jednym batch SELECT zamiast N zapytań per pole.
+
         Dla każdego pola w ``fields_with_confidence``:
-          1. Znajdź pasującą regułę (first-match-wins) wg ``tax_form``, ``expense_type``, ``field``.
+          1. Szuka w batch cache (field-specific, potem catch-all, potem DEFAULT).
           2. Jeśli confidence < required → zapamiętaj naruszenie.
           3. Wybierz najbardziej restrykcyjną akcję i najwyższy próg.
 
@@ -254,17 +378,24 @@ class RiskGuard:
         if not fields_with_confidence:
             return RiskVerdict(is_safe=True, action="AUTO_POST", reason="Brak pól do weryfikacji")
 
+        # Batch load — jeden SELECT zamiast N
+        batch = self._load_thresholds_for_context(tax_form, expense_type)
+
         max_action = "AUTO_POST"
         max_priority = 0
         worst_reason = ""
         required_map: dict[str, float] = {}
 
         for field_name, confidence in fields_with_confidence.items():
-            threshold = self.get_threshold(
-                tax_form=tax_form,
-                expense_type=expense_type,
-                field=field_name,
-            )
+            # Szukaj w batch: field-specific → catch-all → DEFAULT
+            threshold_data = batch.get(field_name) or batch.get("")
+            if threshold_data is None:
+                threshold = self.DEFAULT_THRESHOLD
+            else:
+                threshold = RiskThreshold(
+                    required_ml_confidence=float(threshold_data["confidence"]),
+                    action_if_below=str(threshold_data["action"]),
+                )
             required_confidence = threshold.required_ml_confidence
             required_map[field_name] = required_confidence
 
@@ -304,7 +435,7 @@ class RiskGuard:
         priority: int = 100,
         created_by: str = "admin",
     ) -> str:
-        """Dodaj nową regułę progu ryzyka (append-only).
+        """Dodaj nową regułę progu ryzyka (append-only) i unieważnij cache.
 
         Używa ``sort_keys=True`` dla deterministycznego JSON.
         """
@@ -326,10 +457,11 @@ class RiskGuard:
                 created_by,
             ),
         )
+        invalidate_risk_cache()
         return rule_id
 
     def deprecate_threshold(self, rule_id: str, created_by: str = "admin") -> bool:
-        """Dezaktywuj regułę przez ustawienie valid_to = dzisiaj.
+        """Dezaktywuj regułę przez ustawienie valid_to = dzisiaj i unieważnij cache.
 
         Returns:
             True jeśli reguła znaleziona i zdezaktywowana.
@@ -340,6 +472,7 @@ class RiskGuard:
             "WHERE rule_id = ? AND valid_to IS NULL",
             (today, rule_id),
         )
+        invalidate_risk_cache()
         return result.rowcount > 0
 
     def list_thresholds(self) -> list[dict[str, Any]]:

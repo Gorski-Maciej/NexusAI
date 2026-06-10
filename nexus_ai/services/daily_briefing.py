@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
 from typing import Any
 
 import pendulum
@@ -327,11 +326,7 @@ class DailyBriefingService:
             "message": "Email notifications not yet configured",
         }
 
-    def _fallback_briefing(
-        self,
-        user_id: str,
-        today: str,
-        now: datetime,
+    def _fallback_briefing(        self, user_id: str, today: str, now: pendulum.DateTime,
     ) -> DailyBriefing:
         """Generuj podstawowe podsumowanie gdy DailyBriefingGenerator nie jest dostępny."""
         pending = 0

@@ -27,12 +27,12 @@ Użycie:
 
 from __future__ import annotations
 
-from datetime import date, datetime
 from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
 import msgspec
+import pendulum
 
 
 # ── DecodeError — zastępuje json.JSONDecodeError ────────────────────────────
@@ -64,7 +64,7 @@ def _default_enc_hook(obj: Any) -> Any:
     """
     if isinstance(obj, Decimal):
         return str(obj)
-    if isinstance(obj, (datetime, date)):
+    if isinstance(obj, (pendulum.DateTime, pendulum.Date)):
         return obj.isoformat()
     if isinstance(obj, UUID):
         return str(obj)

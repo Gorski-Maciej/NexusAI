@@ -16,9 +16,10 @@ Zastosowania:
 
 from __future__ import annotations
 
-from datetime import date
 from dataclasses import dataclass, field
 from typing import Any
+
+import pendulum
 
 import duckdb
 from structlog import get_logger
@@ -160,8 +161,8 @@ class ReplayEngine:
 
     def replay_batch(
         self,
-        period_start: date,
-        period_end: date,
+        period_start: pendulum.Date,
+        period_end: pendulum.Date,
         limit: int = 1000,
     ) -> list[ReplayResult]:
         """Odtwórz decyzje dla wszystkich faktur z danego okresu.

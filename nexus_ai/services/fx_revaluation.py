@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from datetime import date
 from dataclasses import dataclass
+
+import pendulum
 from decimal import ROUND_HALF_UP, Decimal
 from typing import TYPE_CHECKING, Any
 
@@ -64,7 +65,7 @@ def post_realized_fx_difference(
     return FXPostingDecision(invoice_id, fx_delta, False, "751_FX_Expense", "DEBIT")
 
 
-def calculate_unrealized_fx_deltas(duckdb: DuckDBManager, month_end: date) -> list[tuple[Any, ...]]:
+def calculate_unrealized_fx_deltas(duckdb: DuckDBManager,    month_end: pendulum.Date) -> list[tuple[Any, ...]]:
     return duckdb.execute(
         """
         WITH open_fx AS (

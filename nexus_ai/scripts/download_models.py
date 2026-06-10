@@ -14,7 +14,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import hashlib
+import hashlib  # streaming SHA-256 for file verification (nexus_crypto doesn't support streaming)
 import os
 import sys
 from pathlib import Path
@@ -45,14 +45,14 @@ SURYA_MODELS: dict[str, dict[str, str]] = {
 
 
 def _compute_sha256(filepath: Path) -> str:
-    sha = hashlib.sha256()
+    h = hashlib.sha256()
     with open(filepath, "rb") as f:
         while True:
             chunk = f.read(65536)
             if not chunk:
                 break
-            sha.update(chunk)
-    return sha.hexdigest()
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def verify_model(filepath: Path, expected_hash: str) -> bool:

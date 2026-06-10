@@ -26,6 +26,8 @@ class _MockModule(types.ModuleType):
     def __getattr__(self, name: str) -> Any:
         if name == "__path__":
             return []
+        if name == "__version__":
+            return "0.0.0"
         if name.startswith("__") and name.endswith("__"):
             raise AttributeError(name)
         m = MagicMock()
@@ -65,6 +67,21 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     "fitz",  # PyMuPDF
     "taskiq", "taskiq_nats",
     "psutil",
+    "structlog",
+    "nexus_crypto",
+    "stamina",
+    "duckdb",
+    "pydantic_core",
+    "pydantic_core._pydantic_core",
+    "pydantic",
+    "pydantic.v1",
+    "pydantic.fields",
+    "pydantic.main",
+    "pydantic._internal",
+    "pydantic._internal._model_construction",
+    "sqlmodel",
+    "sqlmodel.sql",
+    "sqlmodel.sql.expression",
 ]
 
 for mod_name in EXTERNAL_MOCK_MODULES:

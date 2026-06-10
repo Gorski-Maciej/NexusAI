@@ -22,7 +22,6 @@ Usage:
 from __future__ import annotations
 
 import uuid
-from datetime import date
 from typing import Any
 
 import duckdb
@@ -127,8 +126,8 @@ class RuleStore:
         self,
         condition_sql: str,
         action: dict[str, Any],
-        valid_from: str | date = "2024-01-01",
-        valid_to: str | date | None = None,
+        valid_from: str | pendulum.Date = "2024-01-01",
+        valid_to: str | pendulum.Date | None = None,
         priority: int = 100,
         description_template: str | None = None,
         rule_set_id: str = "",
@@ -151,8 +150,8 @@ class RuleStore:
             UUID nowej reguły.
         """
         rule_id = str(uuid.uuid4())
-        vf = valid_from.isoformat() if isinstance(valid_from, date) else valid_from
-        vt = valid_to.isoformat() if isinstance(valid_to, date) else valid_to
+        vf = valid_from.isoformat() if isinstance(valid_from, (pendulum.Date, pendulum.DateTime)) else valid_from
+        vt = valid_to.isoformat() if isinstance(valid_to, (pendulum.Date, pendulum.DateTime)) else valid_to
         now = pendulum.now("UTC").isoformat()
 
         self._conn.execute(
@@ -187,7 +186,7 @@ class RuleStore:
     def close_rule(
         self,
         rule_id: str,
-        valid_to: str | date | None = None,
+        valid_to: str | pendulum.Date | None = None,
         closed_by: str = "system",
     ) -> bool:
         """Zamknij regułę — ustaw valid_to na podaną datę (lub dzisiaj).
@@ -206,7 +205,7 @@ class RuleStore:
         """
         if valid_to is None:
             valid_to = pendulum.now().date()
-        vt = valid_to.isoformat() if isinstance(valid_to, date) else valid_to
+        vt = valid_to.isoformat() if isinstance(valid_to, (pendulum.Date, pendulum.DateTime)) else valid_to
         now = pendulum.now("UTC").isoformat()
 
         # Sprawdź czy reguła istnieje i jest otwarta

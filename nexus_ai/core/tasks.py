@@ -17,43 +17,58 @@ from taskiq import TaskiqEvents
 from taskiq_nats import PullBasedJetStreamBroker
 
 from nexus_ai.core.backup import BackupManager
+from nexus_ai.core.cache import get_cache
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
-# TimedModelCache removed — zgodnie z aa3fvcx.txt nie używamy dedykowanego cache modeli
-# Zamiast tego: proste dict + timestamp (poniżej)
 
 
 class TimedModelCache:
-    """Prosty cache modeli z TTL (zgodnie z aa3fvcx.txt minimalizm)."""
+    """Cache instancji modeli ML z TTL, wsparty przez NexusCache.
+
+    Model objects (DocumentProcessor, VisionAgent) nie są msgspec-serializowalne,
+    więc przechowujemy je w osobnym słowniku RAM. NexusCache zarządza TTL:
+    przechowuje timestamp ostatniego odświeżenia dla każdego klucza i odpowiada
+    za politykę wygaśnięcia — gdy nexus_cache.clear() zostanie wywołany,
+    modele również zostaną unieważnione pośrednio przez brak wpisów TTL.
+
+    Gdy w przyszłości modele staną się msgspec-serializowalne, L2 (SQLite)
+    włączy się automatycznie bez zmian w tym kodzie.
+    """
     def __init__(self, ttl_seconds: int = 600):
-        self._cache: dict[str, object] = {}
-        self._timestamps: dict[str, float] = {}
+        self._nexus = get_cache(default_ttl=ttl_seconds)
+        self._models: dict[str, object] = {}
         self._ttl = ttl_seconds
 
     async def get(self, key: str, loader):
         import time
         now = time.monotonic()
-        try:
-            model = self._cache[key]
-            ts = self._timestamps.get(key, 0.0)
-            if now - ts < self._ttl:
-                self._timestamps[key] = now
-                return model
-            del self._cache[key]
-            del self._timestamps[key]
-        except KeyError:
-            pass
+        ttl_key = f"_model_cache_ttl:{key}"
+
+        # Sprawdź NexusCache — czy TTL jeszcze ważny?
+        ttl_entry = self._nexus.get_sync(ttl_key)
+        if ttl_entry is not None and key in self._models:
+            stored_at: float = ttl_entry
+            if now - stored_at < self._ttl:
+                # Odśwież timestamp w NexusCache
+                self._nexus.set_sync(ttl_key, now, ttl=self._ttl)
+                return self._models[key]
+            # Wygasło — usuń model
+            self._models.pop(key, None)
+
+        # Miss lub wygasło — załaduj świeży model
         model = await loader()
-        self._cache[key] = model
-        self._timestamps[key] = now
+        self._models[key] = model
+        self._nexus.set_sync(ttl_key, now, ttl=self._ttl)
         return model
 
     def evict_expired(self) -> None:
-        pass
+        """Usuń wszystkie modele — przy następnym get() zostaną odświeżone przez brak TTL."""
+        self._models.clear()
 
     def release(self, key: str) -> None:
-        self._cache.pop(key, None)
-        self._timestamps.pop(key, None)
+        """Usuń konkretny model i jego wpis TTL z cache'u."""
+        self._models.pop(key, None)
+        self._nexus._ram_cache.pop(f"_model_cache_ttl:{key}", None)
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import SessionLocal, create_oltp_engine, create_session_factory

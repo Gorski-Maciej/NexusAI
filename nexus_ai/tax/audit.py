@@ -10,7 +10,6 @@ cały proces decyzyjny nawet po latach.
 
 from __future__ import annotations
 
-import hashlib
 import uuid
 from typing import Any
 
@@ -18,6 +17,17 @@ import duckdb
 import pendulum
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+
+# ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
+try:
+    from nexus_crypto import sha256 as _sha256
+    HAS_NEXUS_CRYPTO = True
+except ImportError:
+    import hashlib as _hashlib
+    HAS_NEXUS_CRYPTO = False
+
+    def _sha256(data: bytes) -> str:
+        return _hashlib.sha256(data).hexdigest()
 
 # ── Schema ───────────────────────────────────────────────────────────────────
 
@@ -103,7 +113,7 @@ def _compute_current_hash(
         risk_verdict,
         timestamp_iso,
     ])
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return _sha256(payload.encode("utf-8"))
 
 
 # ── Logger ───────────────────────────────────────────────────────────────────

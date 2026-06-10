@@ -24,13 +24,11 @@ class WorkerStatusController(Controller):
         """
         try:
             import os
-            from datetime import datetime
-
             import psutil
 
             process = psutil.Process(os.getpid())
             current_mem = process.memory_info().rss
-            uptime_seconds = int((pendulum.now("UTC") - datetime.fromtimestamp(
+            uptime_seconds = int((pendulum.now("UTC") - pendulum.from_timestamp(
                 process.create_time(), tz="UTC"
             )).total_seconds())
             cpu_percent = process.cpu_percent(interval=0.1)

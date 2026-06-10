@@ -15,11 +15,11 @@ import asyncio
 import os
 import platform
 import stat
-import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
+import anyio
 import httpx
 from structlog import get_logger
 
@@ -380,7 +380,7 @@ class BinaryManager:
 
     def __init__(self, bin_dir: Path):
         self.bin_dir = bin_dir
-        self._processes: dict[str, subprocess.Popen] = {}
+        self._processes: dict[str, anyio.Process] = {}
         self._running = False
 
     def get_path(self, name: str) -> Path:
@@ -393,7 +393,7 @@ class BinaryManager:
         path = self.get_path(name)
         return path.exists() and _is_executable(path)
 
-    def start_nats(self, port: int = 4222) -> bool:
+    async def start_nats(self, port: int = 4222) -> bool:
         """Start NATS Server as a background process."""
         nats_path = self.get_path("nats-server")
         if not nats_path.exists():
@@ -401,11 +401,11 @@ class BinaryManager:
             return False
 
         try:
-            proc = subprocess.Popen(
+            proc = await anyio.Process(
                 [str(nats_path), "-p", str(port), "-js", "-m", str(port + 1000)],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
+                stdout=anyio.ProcessPipe.DEVNULL,
+                stderr=anyio.ProcessPipe.DEVNULL,
+            ).__aenter__()
             self._processes["nats-server"] = proc
             logger.info("NATS Server started (PID: %d, port: %d)", proc.pid, port)
             return True
@@ -413,7 +413,7 @@ class BinaryManager:
             logger.error("Failed to start NATS Server: %s", e)
             return False
 
-    def start_tigerbeetle(self, data_dir: Path, port: int = 3000) -> bool:
+    async def start_tigerbeetle(self, data_dir: Path, port: int = 3000) -> bool:
         """Start TigerBeetle as a background process."""
         tb_path = self.get_path("tigerbeetle")
         if not tb_path.exists():
@@ -426,13 +426,13 @@ class BinaryManager:
             data_dir.mkdir(parents=True, exist_ok=True)
             try:
                 # Initialize TigerBeetle data file
-                init_result = subprocess.run(
+                init_result = await anyio.run_process(
                     [str(tb_path), "init", "--cluster=0", str(data_file)],
-                    capture_output=True, text=True, timeout=30,
+                    timeout=30,
                 )
                 if init_result.returncode != 0:
                     logger.error(
-                        "TigerBeetle init failed: %s", init_result.stderr
+                        "TigerBeetle init failed: %s", init_result.stderr.decode() if init_result.stderr else ""
                     )
                     return False
                 logger.info("TigerBeetle data file initialized at %s", data_file)
@@ -441,11 +441,11 @@ class BinaryManager:
                 return False
 
         try:
-            proc = subprocess.Popen(
+            proc = await anyio.Process(
                 [str(tb_path), "start", "--addresses=0.0.0.0:" + str(port), str(data_file)],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
+                stdout=anyio.ProcessPipe.DEVNULL,
+                stderr=anyio.ProcessPipe.DEVNULL,
+            ).__aenter__()
             self._processes["tigerbeetle"] = proc
             logger.info("TigerBeetle started (PID: %d, port: %d)", proc.pid, port)
             return True
@@ -453,27 +453,36 @@ class BinaryManager:
             logger.error("Failed to start TigerBeetle: %s", e)
             return False
 
-    def start_all(self, data_dir: Path | None = None) -> dict[str, bool]:
+    async def start_all(self, data_dir: Path | None = None) -> dict[str, bool]:
         """Start all managed binaries."""
         results = {}
-        results["nats-server"] = self.start_nats()
+        results["nats-server"] = await self.start_nats()
         if data_dir:
-            results["tigerbeetle"] = self.start_tigerbeetle(data_dir)
+            results["tigerbeetle"] = await self.start_tigerbeetle(data_dir)
         self._running = all(results.values())
         return results
 
     def stop_all(self) -> None:
         """Stop all managed processes."""
         for name, proc in self._processes.items():
-            if proc and proc.poll() is None:
+            if proc and proc.returncode is None:
+                logger.info("Stopping %s (PID: %d)...", name, proc.pid)
+                proc.terminate()
+        self._processes.clear()
+        self._running = False
+
+    async def stop_all_async(self) -> None:
+        """Stop all managed processes with timeout and force-kill fallback."""
+        for name, proc in self._processes.items():
+            if proc and proc.returncode is None:
                 logger.info("Stopping %s (PID: %d)...", name, proc.pid)
                 proc.terminate()
                 try:
-                    proc.wait(timeout=5.0)
-                except subprocess.TimeoutExpired:
+                    await asyncio.wait_for(proc.wait(), timeout=5.0)
+                except TimeoutError:
                     logger.warning("Force killing %s (PID: %d)", name, proc.pid)
                     proc.kill()
-                    proc.wait()
+                    await proc.wait()
         self._processes.clear()
         self._running = False
 
@@ -482,7 +491,7 @@ class BinaryManager:
         if not self._processes:
             return False
         return all(
-            p.poll() is None for p in self._processes.values()
+            p.returncode is None for p in self._processes.values()
             if p is not None
         )
 

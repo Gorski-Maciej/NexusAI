@@ -2,11 +2,21 @@
 from __future__ import annotations
 
 import base64
-import hashlib
+import hashlib  # streaming SHA-256 for file hashing (nexus_crypto doesn't support streaming)
 import importlib.util
 import os
 import sqlite3
 import tempfile
+
+# ── SHA-256 (non-streaming) przez nexus-crypto (Rust+PyO3) ────────────────
+try:
+    from nexus_crypto import sha256 as _sha256
+    HAS_NEXUS_CRYPTO = True
+except ImportError:
+    HAS_NEXUS_CRYPTO = False
+
+    def _sha256(data: bytes) -> str:
+        return hashlib.sha256(data).hexdigest()
 from collections.abc import Iterable
 from contextlib import suppress
 from dataclasses import dataclass
@@ -137,7 +147,7 @@ class ContentAddressableStorage:
 
     @staticmethod
     def _sha256(payload: bytes) -> str:
-        return hashlib.sha256(payload).hexdigest()
+        return _sha256(payload)
 
     def put(self, payload: bytes, suffix: str = ".pdf") -> StoredUpload:
         digest = self._sha256(payload)
@@ -253,15 +263,15 @@ class IdempotencyStore:
 
     @staticmethod
     def hash_payload(payload: bytes) -> str:
-        return hashlib.sha256(payload).hexdigest()
+        return _sha256(payload)
 
     @staticmethod
     def hash_chunks(chunks: Iterable[bytes]) -> str:
-        hasher = hashlib.sha256()
+        h = hashlib.sha256()  # streaming — nexus_crypto nie wspiera streamingu
         for chunk in chunks:
             if chunk:
-                hasher.update(chunk)
-        return hasher.hexdigest()
+                h.update(chunk)
+        return h.hexdigest()
 
     def purge_expired(self) -> None:
         threshold = pendulum.now("UTC") - pendulum.duration(minutes=self.ttl_minutes)

@@ -16,9 +16,10 @@ Dzięki temporalności:
 
 from __future__ import annotations
 
-from datetime import date
 from dataclasses import dataclass
 from typing import Any
+
+import pendulum
 
 import duckdb
 import pendulum
@@ -40,8 +41,8 @@ class TemporalRule:
     condition_sql: str
     action_json: str
     priority: int
-    valid_from: date
-    valid_to: date | None
+    valid_from: pendulum.Date
+    valid_to: pendulum.Date | None
 
 
 class TemporalManager:
@@ -51,7 +52,7 @@ class TemporalManager:
 
     Usage:
         manager = TemporalManager(conn)
-        rules = manager.get_active_rules(date(2024, 6, 1))
+        rules = manager.get_active_rules(pendulum.Date(2024, 6, 1))
     """
 
     # SQL template for fetching rules active on a given date
@@ -67,7 +68,7 @@ class TemporalManager:
     def __init__(self, conn: duckdb.DuckDBPyConnection) -> None:
         self._conn = conn
 
-    def get_active_rules(self, transaction_date: date | str) -> list[TemporalRule]:
+    def get_active_rules(self, transaction_date: pendulum.Date | str) -> list[TemporalRule]:
         """Pobierz reguły aktywne w danej dacie transakcji.
 
         Filtruje reguły według valid_from / valid_to i sortuje
@@ -106,7 +107,7 @@ class TemporalManager:
     def is_rule_active_on(
         self,
         rule_id: str,
-        transaction_date: date | str,
+        transaction_date: pendulum.Date | str,
     ) -> bool:
         """Sprawdź, czy konkretna reguła była aktywna w podanej dacie.
 
@@ -178,7 +179,7 @@ class TemporalManager:
                 continue
             for i, a in enumerate(group):
                 for b in group[i + 1 :]:
-                    a_end = a.valid_to or pendulum.Date.max
+                    a_end = a.valid_to or pendulum.Date(9999, 12, 31)
                     b_end = b.valid_to or date.max
                     # Check overlap: a_start <= b_end and b_start <= a_end
                     if a.valid_from <= b_end and b.valid_from <= a_end:

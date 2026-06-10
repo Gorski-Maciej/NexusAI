@@ -13,10 +13,20 @@ Provides:
 """
 from __future__ import annotations
 
-import hashlib
 import re
 import secrets
 import uuid
+
+# ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
+try:
+    from nexus_crypto import sha256 as _sha256
+    HAS_NEXUS_CRYPTO = True
+except ImportError:
+    import hashlib as _hashlib
+    HAS_NEXUS_CRYPTO = False
+
+    def _sha256(data: bytes) -> str:
+        return _hashlib.sha256(data).hexdigest()
 
 import msgspec
 import pendulum
@@ -91,7 +101,7 @@ class ChangePasswordRequest(msgspec.Struct):
 
 
 def _hash_refresh_token(token: str) -> str:
-    return hashlib.sha256(token.encode()).hexdigest()
+    return _sha256(token.encode())
 
 
 def _generate_refresh_token_pair() -> tuple[str, str]:

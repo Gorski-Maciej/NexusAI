@@ -1,23 +1,23 @@
 # Diagram Architektury NexusAI
 
-> **Wersja:** 2.0
-> **Data:** 2026-06-09
-> **Format:** Mermaid.js (flowchart, sequence, C4, state, class)
+> **Wersja:** 2.2
+> **Data:** 2026-06-10
+> **Format:** Mermaid.js (flowchart, sequence, C4)
 
 ---
 
 ## Spis diagramów
 
-1. Diagram warstwowy — 4 warstwy architektury
-2. Przepływ decyzyjny AgentOrchestrator
-3. Struktura RAG / FactsAggregator
-4. Council of Agents — matryca 8 kombinacji
-5. Trójwarstwowa pamięć PLE
-6. Kaskada Rules SWAT Team
-7. Bayesowskie adaptacyjne progi
-8. Ekonomia poznawcza — koszty i wydajność
-9. Diagram klas — FactSheet i OrchestratorDecision
-10. Full system context — C4 poziom 1
+1. [Diagram warstwowy — 4 warstwy architektury](#1-diagram-warstwowy)
+2. [Przepływ decyzyjny DecisionEngine](#2-przepływ-decyzyjny-decisionengine)
+3. [Struktura RAG / FactsAggregator](#3-struktura-rag--factsaggregator)
+4. [Macierz decyzyjna — first-match-wins](#4-macierz-decyzyjna)
+5. [Diagram klas — komponenty decyzyjne](#5-diagram-klas)
+6. [Ekonomia poznawcza — koszty i wydajność](#6-ekonomia-poznawcza)
+7. [NexusCache — dwupoziomowa architektura cache](#7-nexuscache)
+8. [Full system context — C4 poziom 1](#8-full-system-context)
+9. [Cleanup lifecycle — async close()](#9-cleanup-lifecycle)
+10. [Architektura v2.0 (historyczna)](#10-architektura-v20-historyczna)
 
 ---
 
@@ -26,28 +26,23 @@
 ```mermaid
 %%{init: {"flowchart": {"defaultRenderer": "elk"}, "theme": "dark", "themeVariables": {"fontSize": "14px", "primaryColor": "#1a1a2e", "secondaryColor": "#16213e", "tertiaryColor": "#0f3460"}}}%%
 flowchart TB
-    subgraph Warstwa0["🧠 Warstwa Orkiestracyjna"]
+    subgraph Warstwa0["🧠 Warstwa Decyzyjna"]
         direction TB
-        AO["AgentOrchestrator\ncentralny mózg"]
-        WP["WorkflowPlanner\nLittleLamb 0.3B\nsimple vs complex"]
-        TC["TrustScoreCalculator\n5 komponentów\nai 0.30 + vendor 0.25 + data 0.20 + context 0.10 + risk 0.15"]
-        JS["JambaStrategist\nJamba 3B\nAUTO_POST / SUGGEST / ESCALATE"]
-        AO --> WP
-        AO --> TC
-        AO --> JS
+        DE["DecisionEngine\ncore/decision_engine.py"]
+        CI["classify_invoice()\nsimple / complex\n<1ms"]
+        TS["calculate_trust_score()\n5 składników\n<1ms"]
+        FW["_match_condition()\nfirst-match-wins\n<5ms"]
+        DE --> CI
+        DE --> TS
+        DE --> FW
     end
 
-    subgraph Warstwa1["⚡ Warstwa Agentów i RAG"]
+    subgraph Warstwa1["⚡ Warstwa Wsparcia"]
         direction TB
-        RAG["FactsAggregator\nRAG Layer"]
-        COA["Council of Agents"]
-        RST["Rules SWAT Team"]
-        PLE["PLE Engine"]
-        RAG --> COA
-        RAG --> RST
-        COA --> JS
-        RST --> JS
-        PLE --> AO
+        RAG["FactsAggregator\nRAG Layer\n4 źródła równolegle"]
+        RG["RiskGuard\nDuckDB thresholdy\nper-pole confidence"]
+        SG["SemanticGuard\nsqlite-vec\nanomalie semantyczne"]
+        DL["DecisionLogger\nDuckDB\naudyt + trend"]
     end
 
     subgraph Warstwa2["💾 Warstwa Danych"]
@@ -57,30 +52,30 @@ flowchart TB
         SVEC[("sqlite-vec\nWektory")]
         TBDB[("TigerBeetle\nSecure Ledger")]
         SOP[("ProtocolLoader\nprotocols.toml")]
+        CACHE[("NexusCache\nL1 RAM + L2 SQLite")]
     end
 
-    subgraph Warstwa3["📈 Warstwa Uczenia"]
+    subgraph Warstwa3["🤖 Warstwa AI (tylko niefinansowe)"]
         direction TB
-        BL["BayesianThresholdLearner\nBeta posterior per (NIP, kat.)"]
-        DL["DecisionLogger\ncouncil_decisions\ntrust_score_cache"]
-        SG["SemanticGuard\nanomaly_rules\nsqlite-vec"]
-        RG["RiskGuard\nrisk_thresholds"]
+        OCR["LightOnOCR-1B\nOCR główny"]
+        VA["Phi-3-mini 3.8B\nVisionAgent (fallback)"]
+        EMB["llama-cpp-python\nEmbeddingi"]
     end
 
-    %% Połączenia między warstwami
+    %% Połączenia
+    DE --> RAG
+    DE --> RG
+    DE --> SG
+    DE --> DL
     RAG --> SQL
     RAG --> DDB
     RAG --> SVEC
     RAG --> TBDB
-    AO --> SOP
-    BL --> JS
-    DL --> RAG
-    SG --> RAG
-    RG --> TC
-    PLE --> BL
-    PLE --> DL
-    PLE --> COA
-    WP --> RAG
+    RAG --> CACHE
+    DE --> SOP
+    RG --> DDB
+    SG --> SVEC
+    DL --> DDB
 
     style Warstwa0 fill:#1a1a2e,stroke:#e94560,stroke-width:2px
     style Warstwa1 fill:#16213e,stroke:#0f3460,stroke-width:2px
@@ -90,75 +85,60 @@ flowchart TB
 
 ---
 
-## 2. Przepływ decyzyjny
+## 2. Przepływ decyzyjny DecisionEngine
 
 ```mermaid
 %%{init: {"sequence": {"showSequenceNumbers": true}, "theme": "dark"}}%%
 sequenceDiagram
     actor User as Użytkownik
-    participant AO as AgentOrchestrator
+    participant DE as DecisionEngine
     participant RAG as FactsAggregator
-    participant DB as SQLite/DuckDB
-    participant WP as WorkflowPlanner
-    participant CA as Council of Agents
-    participant TC as TrustScoreCalculator
+    participant DB as DuckDB
     participant RG as RiskGuard
-    participant JS as JambaStrategist
-    participant BL as BayesianThreshold
-    participant PLE as PLE Engine
     participant DL as DecisionLogger
+    participant SRC as SQLite/sqlite-vec/TB
 
-    Note over AO,DL: Krok 0 — RAG
-    AO->>+RAG: build(invoice_data)
-    RAG->>DB: 4 źródła równolegle
-    DB-->>RAG: FactSheet
-    RAG-->>-AO: FactSheet
+    Note over DE,SRC: Krok 0 — RAG
+    DE->>+RAG: build(invoice_data)
+    RAG->>SRC: 4 źródła równolegle
+    SRC-->>RAG: FactSheet
+    RAG-->>-DE: FactSheet
 
-    Note over AO,DL: Krok 1 — Plan
-    AO->>+WP: plan(invoice_data, fact_sheet_text)
-    WP-->>-AO: plan [simple / complex]
+    Note over DE,SRC: Krok 1 — Klasyfikacja
+    DE->>DE: classify_invoice()
+    DE-->>DE: simple / complex
 
-    Note over AO,DL: Krok 1b — Few-shot
-    AO->>RAG: build_few_shot_examples()
-    RAG-->>AO: few_shot_text
+    Note over DE,SRC: Krok 2 — Trust score
+    DE->>DE: calculate_trust_score()
+    DE-->>DE: 0.0–1.0
 
-    alt Simple (fast-path)
-        Note over AO,DL: Krok 2a — Alpha fast-path
-        AO->>+CA: Alpha (LFM2.5)
-        CA-->>-AO: APPROVE ≥ 0.92 → AUTO_POST
-    else Complex
-        Note over AO,DL: Krok 2b — Pełna rada
-        AO->>+CA: Alpha + Beta + Gamma
-        CA-->>-AO: council_verdict + trust_score
-        AO->>+TC: calculate()
-        TC-->>-AO: trust_components
-        AO->>+RG: evaluate()
-        RG-->>-AO: risk_verdict
+    Note over DE,SRC: Krok 3 — Reguły
+    DE->>DB: _get_active_rules()
+    DB-->>DE: rules sorted by priority
+    loop Dla każdej reguły
+        DE->>DE: _match_condition()
+        alt Pasuje
+            DE->>DE: first-match → break
+        end
     end
 
-    Note over AO,DL: Krok 3 — Strategia
-    AO->>+JS: analyze(fact_sheet, few_shot, raporty)
-    JS-->>-AO: jamba_result
+    Note over DE,SRC: Krok 4 — Risk
+    DE->>+RG: evaluate()
+    RG->>DB: risk_thresholds
+    DB-->>RG: thresholdy
+    RG-->>-DE: risk_verdict
 
-    Note over AO,DL: Krok 4 — Bayesowski override
-    AO->>+BL: get_thresholds(contractor_nip, category)
-    BL-->>-AO: adapted_thresholds
-    Note over AO: if confidence < threshold → downgrade
+    Note over DE,SRC: Krok 5 — Logowanie
+    DE->>+DL: log_decision()
+    DL->>DB: INSERT
+    DL-->>-DE: logged
 
-    Note over AO,DL: Krok 5 — PLE
-    AO->>+PLE: record_decision()
-    PLE-->>-AO: ple_pattern
-
-    Note over AO,DL: Krok 6 — Logowanie
-    AO->>+DL: log_decision()
-    DL-->>-AO: logged
-
-    AO-->>-User: OrchestratorDecision
+    DE-->>-User: DecisionVerdict
 ```
 
 ---
 
-## 3. Struktura RAG
+## 3. Struktura RAG / FactsAggregator
 
 ```mermaid
 %%{init: {"flowchart": {"defaultRenderer": "elk"}, "theme": "dark"}}%%
@@ -197,228 +177,195 @@ flowchart LR
     T4 --> Sheet
 
     subgraph Methods["🧰 Metody FactSheet"]
-        M1["to_prompt_section()\n→ sekcja === ARKUSZ FAKTÓW ==="]
+        M1["to_prompt_section()\n→ === ARKUSZ FAKTÓW ==="]
         M2["to_dict()\n→ JSON dla audytu"]
-        M3["build_few_shot_examples(max=3)\n→ dynamiczne few-shot"]
+        M3["build_few_shot_examples(max=3)\n→ dynamiczne few-shot\n+ NexusCache"]
     end
 
     Sheet --> Methods
 
-    subgraph FewShot["🎯 Źródła few-shot (priorytet)"]
-        FS1["1. similar_invoices\n(semantycznie podobne)"]
-        FS2["2. global_recent_decisions\n(globalna baza)"]
-        FS3["3. recent_invoices\n(historia kontrahenta)"]
+    subgraph Cache["💨 NexusCache w RAG"]
+        C1["_few_shot_cache: get_sync/set_sync\nklucz: few_shot:{hash}:{max}\nTTL: 300s"]
+        C2["_enrich_cache: await get/set\nklucz: enrich:{invoice_id}\nTTL: 300s"]
     end
 
-    M3 --> FewShot
+    Methods --> Cache
 ```
 
 ---
 
-## 4. Council of Agents
-
-```mermaid
-%%{init: {"flowchart": {"defaultRenderer": "elk"}, "theme": "dark"}}%%
-flowchart TB
-    subgraph Agents["👥 Trójwarstwowa Rada Agentów"]
-        direction LR
-        A["Alpha (LFM2.5 1.2B)\nOcena kontekstowa\n~780 MB RAM"]
-        B["Beta (Qwen3 0.6B)\nPrecyzyjna walidacja\nNIP, kwoty, daty\n~430 MB RAM"]
-        G["Gamma (LittleLamb 0.3B)\nDetekcja duplikatów\nanomalii\n~250 MB RAM"]
-    end
-
-    subgraph FastPath["⚡ Fast-path"]
-        FP["Alpha ≥ 0.92 conf?\n→ pomiń Beta i Gamma\n→ AUTO_POST\noszczędność ~70% czasu"]
-    end
-
-    subgraph Matrix["📊 Matryca 8 kombinacji"]
-        direction TB
-        M1["FULL_APPROVE ✅✅✅ → AUTO_POST"]
-        M2["CONTEXT_ANOMALY ✅❌✅ → SUGGEST"]
-        M3["CONTEXT_PRECISION ✅✅❌ → SUGGEST"]
-        M4["CONTEXT_ONLY ✅❌❌ → ASK_USER"]
-        M5["PRECISION_ANOMALY ❌✅✅ → ASK_USER"]
-        M6["ANOMALY_ONLY ❌❌✅ → ASK_USER"]
-        M7["PRECISION_VETO ❌✅❌ → BLOCK"]
-        M8["FULL_REJECT ❌❌❌ → BLOCK"]
-    end
-
-    A -->|PASS| B
-    A -->|PASS| G
-    B -->|PASS| G
-    A -->|conf ≥ 0.92| FastPath
-    A --> Matrix
-    B --> Matrix
-    G --> Matrix
-
-    subgraph Emergency["🚨 Protokoły awaryjne"]
-        E1["model_timeout → ASYNC_FALLBACK"]
-        E2["model_error → PARSE_FALLBACK"]
-        E3["model_crash → SAFE_DEFAULT (ESCALATE)"]
-        E4["unknown_voting → SAFE_ESCALATE"]
-    end
-
-    Matrix -->|nieznana kombinacja| Emergency
-```
-
----
-
-## 5. Trójwarstwowa pamięć PLE
-
-```mermaid
-%%{init: {"flowchart": {"defaultRenderer": "elk"}, "theme": "dark"}}%%
-flowchart TB
-    subgraph PLE["🧠 Perpetual Learning Engine"]
-        direction TB
-        
-        subgraph STM["STM — Short-Term Memory"]
-            STM1["Ostatnie 50 decyzji"]
-            STM2["TTL: 24h"]
-            STM3["Data decay co 5 min"]
-            STM4["asyncio.Lock"]
-        end
-
-        subgraph LTM["LTM — Long-Term Memory"]
-            LTM1["∞ pojemność\n100 per bucket"]
-            LTM2["Indeks: (NIP, kategoria)"]
-            LTM3["Retention decay: 0.95^age"]
-            LTM4["Funkcje:\n· get_vendor_profile()\n· query()"]
-        end
-
-        subgraph FM["FM — Fusion Memory"]
-            FM1["200 artifactów max"]
-            FM2["Typy:\n· decision_cache\n· pattern\n· anomaly_insight"]
-            FM3["Min frequency: 2"]
-            FM4["Kompresja co 1h\n(frequency < 2 lub wiek > 7d → usuń)"]
-        end
-
-        subgraph Promotion["⬆️ Automatyczna promocja"]
-            P1["Każda decyzja → STM.push()"]
-            P2["↓\nLTM.store()"]
-            P3["↓\n3+ AUTO_POST? → FM.add_decision_cache()"]
-            P4["↓\nWszystkie AUTO_POST? → FM.add_pattern()"]
-            P5["↓\nBLOCK/ASK_USER z trust < 0.5?\n→ FM.add_anomaly_insight()"]
-        end
-
-        STM --> LTM
-        LTM --> FM
-        Promotion --> STM
-        Promotion --> LTM
-        Promotion --> FM
-    end
-
-    subgraph Decision["🔗 Wpływ na decyzje"]
-        D1["FM ma wzorzec dla (NIP, kat.)\nz confidence ≥ 0.85?"]
-        D2["Tak → auto_post -= 0.05\n(minimum 0.70)"]
-        D3["Nie → standardowe progi"]
-    end
-
-    FM --> Decision
-```
-
----
-
-## 6. Kaskada Rules SWAT Team
-
-```mermaid
-%%{init: {"flowchart": {"defaultRenderer": "elk"}, "theme": "dark"}}%%
-flowchart TB
-    subgraph SWAT["🔫 Rules SWAT Team — kaskada 4 poziomów"]
-        direction TB
-
-        L1["Level 1: LFM2.5-Thinking (1.2B)\nWalidacja wstępna\n→ COMPLIANT z conf ≥ 0.90?"]
-        L1 -->|"Tak (fast-path)"| STOP1["⏹ STOP — zgodne"]
-        L1 -->|"FLAG"| L2
-
-        L2["Level 2: Granite 4.0 1B Nano\nWalidacja biznesowa\nNIP, limity, polityka\n→ passed=true?"]
-        L2 -->|"Tak"| STOP2["⏹ STOP — zgodne"]
-        L2 -->|"Nie (violations)"| L3
-
-        L3["Level 3: LittleLamb 0.3B TC\nTernary Classifier\n→ COMPLIANT / FLAG / VIOLATION?"]
-        L3 -->|"COMPLIANT / FLAG"| STOP3["⏹ STOP — zaakceptowane"]
-        L3 -->|"VIOLATION"| L4
-
-        L4["Level 4: Fin-RWKV-169M\nKońcowa weryfikacja\n→ LOW / MEDIUM / HIGH"]
-        L4 --> LOW["✅ LOW → AUTO_POST"]
-        L4 --> MED["⚠️ MEDIUM → SUGGEST"]
-        L4 --> HIGH["🚫 HIGH → BLOCK"]
-    end
-```
-
----
-
-## 7. Bayesowskie adaptacyjne progi
+## 4. Macierz decyzyjna
 
 ```mermaid
 %%{init: {"flowchart": {"defaultRenderer": "elk"}, "theme": "dark"}}%%
 flowchart LR
-    subgraph Prior["📥 Prior"]
-        P["Beta(α=2, β=2)\nlekki sceptycyzm"]
+    subgraph Rules["📋 Reguły first-match-wins (DuckDB)"]
+        R1["Pri:10 | known + ≥10 invoices + trust≥0.85 + ≤5k + OCR≥0.92\n→ AUTO_POST (0.95)"]
+        R2["Pri:20 | known + ≥3 invoices + trust≥0.80 + ≤3k + OCR≥0.90\n→ AUTO_POST (0.90)"]
+        R3["Pri:30 | known + ≤10k + OCR≥0.85\n→ SUGGEST (0.80)"]
+        R4["Pri:40 | new + ≤5k + OCR≥0.90\n→ SUGGEST (0.75)"]
+        R5["Pri:50 | ≤50k + OCR≥0.80\n→ ASK_USER (0.60)"]
+        R6["Pri:100 | ≥50k\n→ BLOCK (0.40)"]
+        R7["Pri:999 | {} (zawsze)\n→ ASK_USER (0.50)"]
     end
 
-    subgraph Update["🔄 Aktualizacja"]
-        U1["Nowa decyzja użytkownika"]
-        U2["Waga decyzji:\n<100 PLN → 0.5\n100-1000 → 1.0\n1000-10000 → 1.5\n>10000 → 2.0"]
-        U3["Auto-decyzja: 0.3 × waga"]
-        U4["Posterior:\nBeta(α+success, β+failure)"]
+    subgraph Decision["🔀 Dopasowanie"]
+        D1["_match_condition(rule, context)\n→ operator: field / field__gte /\n  field__lte / field__in"]
+        D2["Pierwsza pasująca reguła = decyzja"]
     end
 
-    subgraph Threshold["📊 Obliczenie progu"]
-        T1["n < 6?\n→ Heurystyka:\nmean + 2×uncertainty\nminimum 0.85"]
-        T2["n ≥ 6?\n→ Logit-normal\napproximation\n(delta method)"]
-        T3["→ inverse CDF\nP(X > threshold) = percentile"]
+    subgraph Result["✅ Wynik"]
+        O1["AUTO_POST → autonomiczne księgowanie"]
+        O2["SUGGEST → sugestia dla użytkownika"]
+        O3["ASK_USER → zapytaj użytkownika"]
+        O4["BLOCK → blokada (kwota ≥50k)"]
     end
 
-    subgraph Hierarchy["🏛️ Hierarchia"]
-        H1["1. (NIP, kategoria)\nnajbardziej specyficzny"]
-        H2["2. (NIP, __global__)\nogólny dla kontrahenta"]
-        H3["3. BetaPosterior()\ndomyślny prior"]
-    end
-
-    subgraph Override["⚡ Bayesowski override"]
-        O1["Jamba → AUTO_POST\nale conf < bayesowski threshold?"]
-        O2["Tak → downgrade do\nSUGGEST lub ASK_USER"]
-        O3["Na odwrót →\nupgrade do AUTO_POST"]
-    end
-
-    Prior --> Update
-    Update --> Threshold
-    Threshold --> Hierarchy
-    Hierarchy --> Override
-
-    subgraph Storage["💾 Persistence (SQLite)"]
-        S1["bayesian_posteriors\ncontractor_nip TEXT\ncategory TEXT\nalpha REAL\nbeta REAL\ntotal_decisions INT"]
-    end
-
-    Update --> Storage
+    Rules --> Decision
+    Decision --> Result
 ```
 
 ---
 
-## 8. Ekonomia poznawcza
+## 5. Diagram klas
+
+```mermaid
+%%{init: {"theme": "dark"}}%%
+classDiagram
+    class DecisionEngine {
+        +DuckDBConnection _conn
+        +FactsAggregator _facts_agg
+        +RiskGuard _risk_guard
+        +SemanticGuard _semantic_guard
+        +DecisionLogger _decision_logger
+        +DecisionVerdict decide(invoice_data, fact_sheet, trust_score)
+        +str classify_invoice(invoice_data, vendor_profile)
+        +float calculate_trust_score(ocr, vendor, data, context, risk)
+        -list[dict] _get_active_rules(conn)
+        -bool _match_condition(conditions, context)
+        +record_decision(invoice_id, decision)
+    }
+
+    class DecisionVerdict {
+        +str decision
+        +float confidence
+        +int matched_rule_id
+        +str matched_rule_description
+        +str risk_action
+        +dict context
+    }
+
+    class FactsAggregator {
+        -SQLiteSession _sqlite
+        -DuckDBManager _duckdb
+        -VectorStore _vector_store
+        -TigerBeetleClient _tigerbeetle
+        -DecisionLogger _decision_logger
+        -NexusCache _cache
+        +FactSheet build(invoice_data)
+        -dict _fetch_contractor()
+        -dict _fetch_recent_invoices()
+        -dict _fetch_duckdb_sources()
+        -dict _fetch_similar_invoices()
+        -dict _fetch_ledger_history()
+        -dict _fetch_global_decisions()
+    }
+
+    class FactSheet {
+        +str invoice_id
+        +str contractor_nip
+        +str contractor_name
+        +float amount_net
+        +float amount_gross
+        +str category
+        +bool contractor_known
+        +float contractor_trust_score
+        +list[dict] recent_invoices
+        +list[dict] similar_invoices
+        +dict trust_score_trend
+        +list[dict] active_tax_rules
+        +bool ledger_available
+        +dict ledger_accounts
+        +float build_duration_ms
+        +str to_prompt_section()
+        +dict to_dict()
+        +str build_few_shot_examples(max_examples=3)
+    }
+
+    class RiskGuard {
+        +DuckDBConnection _conn
+        +dict evaluate(invoice_data, contractor_nip)
+        -list[dict] _get_active_thresholds(taxation_form)
+    }
+
+    class SemanticGuard {
+        +VectorStore _vector_store
+        +EmbeddingService _embeddings
+        +dict evaluate(invoice_data, contractor_nip)
+        -float _calculate_anomaly_score(embedding, contractor_invoices)
+    }
+
+    class DecisionLogger {
+        +DuckDBConnection _conn
+        +log_decision(invoice_id, decision, trust_score, risk_verdict, matched_rule)
+        +get_trust_score_trend(nip, days=30)
+        +get_decisions_for_invoice(invoice_id)
+    }
+
+    class ProtocolLoader {
+        -dict protocols
+        +get_protocol(path)
+        +get_emergency_protocol(name)
+        +reload()
+    }
+
+    class NexusCache {
+        -dict _ram_cache
+        -DysCache _dyscache
+        +get(key): Optional[Any]
+        +set(key, value, ttl)
+        +get_sync(key): Optional[Any]
+        +set_sync(key, value, ttl)
+        +get_or_compute(key, compute_func, ttl)
+        +clear()
+    }
+
+    DecisionEngine --> FactsAggregator
+    DecisionEngine --> DecisionVerdict
+    DecisionEngine --> RiskGuard
+    DecisionEngine --> SemanticGuard
+    DecisionEngine --> DecisionLogger
+    DecisionEngine --> ProtocolLoader
+    FactsAggregator --> FactSheet
+    FactsAggregator --> NexusCache
+```
+
+---
+
+## 6. Ekonomia poznawcza
 
 ```mermaid
 %%{init: {"flowchart": {"defaultRenderer": "elk"}, "theme": "dark"}}%%
 flowchart LR
-    subgraph FastPath["⚡ Szybka ścieżka ~7.7s"]
-        F1["WorkflowPlanner\n0.5s / 500 MB"]
-        F2["FactsAggregator\n0.1s / 0 MB"]
-        F3["Alpha fast-path\n2s / 1.0 GB"]
-        F4["TrustScore + RiskGuard\n0.1s / 0 MB"]
-        F5["JambaStrategist\n5s / 2.0 GB"]
-        F6["Bayesian + PLE\n0.1s / 0 MB"]
-        F1 --> F2 --> F3 --> F4 --> F5 --> F6
+    subgraph SzybkaSciezka["⚡ Ścieżka decyzyjna ~0.2s"]
+        S1["RAG (FactsAggregator)\n~100-300ms"]
+        S2["Klasyfikacja\n<1ms"]
+        S3["Trust score\n<1ms"]
+        S4["DecisionEngine\n<5ms"]
+        S5["RiskGuard\n<10ms"]
+        S6["DecisionLogger\n<5ms"]
+        S1 --> S2 --> S3 --> S4 --> S5 --> S6
     end
 
-    subgraph FullPath["🔬 Pełna ścieżka ~18.3s"]
-        L1["WorkflowPlanner\n0.5s / 500 MB"]
-        L2["FactsAggregator\n0.1s / 0 MB"]
-        L3["Alpha+Beta+Gamma\n6s / ~2.4 GB"]
-        L4["Rules SWAT L1-L4\n6.5s / ~2.5 GB"]
-        L5["TrustScore + RiskGuard\n0.1s / 0 MB"]
-        L6["JambaStrategist\n5s / 2.0 GB"]
-        L7["Bayesian + PLE\n0.1s / 0 MB"]
-        L1 --> L2 --> L3 --> L4 --> L5 --> L6 --> L7
+    subgraph Porownanie["📊 Porównanie z v2.0"]
+        V1["v2.2: ~0.2-0.4s | ~200 MB RAM"]
+        V2["v2.0: ~7.7-18.3s | ~2.2 GB RAM"]
+    end
+
+    subgraph AIOnly["🤖 Tylko zadania AI"]
+        A1["LightOnOCR-1B: ~800 MB RAM\nOCR faktur"]
+        A2["Phi-3-mini: ~2.2 GB RAM\nVisionAgent (fallback)"]
+        A3["llama-cpp-python: ~300 MB\nEmbeddingi"]
     end
 
     subgraph MemMgmt["🗑️ Zarządzanie pamięcią"]
@@ -431,131 +378,43 @@ flowchart LR
 
 ---
 
-## 9. Diagram klas
+## 7. NexusCache — dwupoziomowa architektura cache
 
 ```mermaid
-%%{init: {"theme": "dark"}}%%
-classDiagram
-    class FactSheet {
-        +str invoice_id
-        +str contractor_nip
-        +str contractor_name
-        +float amount_net
-        +float amount_gross
-        +str category
-        +str issue_date
-        +bool contractor_known
-        +int contractor_invoice_count
-        +float contractor_trust_score
-        +str contractor_vat_status
-        +list[dict] recent_invoices
-        +list[dict] user_correction_patterns
-        +dict trust_score_trend
-        +list[dict] active_tax_rules
-        +str vendor_intelligence
-        +dict correction_stats
-        +list[dict] similar_invoices
-        +list[dict] global_recent_decisions
-        +bool ledger_available
-        +dict ledger_accounts
-        +float ledger_total_turnover
-        +list[dict] ledger_recent_transfers
-        +dict sources_available
-        +float build_duration_ms
-        +str to_prompt_section()
-        +dict to_dict()
-        +str build_few_shot_examples(max_examples=3)
-    }
+%%{init: {"flowchart": {"defaultRenderer": "elk"}, "theme": "dark"}}%%
+flowchart TB
+    subgraph Cache["💨 NexusCache"]
+        direction TB
+        
+        subgraph L1["L1: RAM (dict)"]
+            L1A["get_sync(key) / set_sync(key, value, ttl)\nnajszybszy dostęp synchroniczny\nmsgspec_dumps_bytes / msgspec_loads"]
+        end
 
-    class OrchestratorDecision {
-        +str decision
-        +float confidence
-        +str reasoning
-        +list[str] workflow_plan
-        +CouncilVerdict council_verdict
-        +dict trust_components
-        +dict adapted_thresholds
-        +dict ple_pattern
-        +dict risk_verdict
-        +str strategy_summary
-        +str jamba_analysis
-        +dict granite_context
-    }
+        subgraph L2["L2: SQLite (dyscache)"]
+            L2A["await get(key) / await set(key, value, ttl)\npersystentny (przetrwa restart)\nTTL-aware"]
+        end
 
-    class AgentOrchestrator {
-        +WorkflowPlanner planner
-        +TrustScoreCalculator trust_calc
-        +JambaStrategist strategist
-        +FactsAggregator facts_agg
-        +DecisionLogger decision_logger
-        +PLEEngine ple_engine
-        +BayesianThresholdLearner bayesian
-        +OrchestratorDecision orchestrate(invoice_data)
-    }
+        subgraph Shared["Wspólne"]
+            S1["Globalny singleton: get_cache()\nmsgspec serializacja\nTTL expiry przez timestamp"]
+        end
+    end
 
-    class FactsAggregator {
-        -SQLiteSession _sqlite
-        -DuckDBManager _duckdb
-        -VectorStore _vector_store
-        -TigerBeetleClient _tigerbeetle
-        -DecisionLogger _decision_logger
-        +FactSheet build(invoice_data)
-        -dict _fetch_contractor()
-        -dict _fetch_recent_invoices()
-        -dict _fetch_duckdb_sources()
-        -dict _fetch_similar_invoices()
-        -dict _fetch_ledger_history()
-        -dict _fetch_global_decisions()
-    }
+    subgraph Users["Komponenty używające NexusCache"]
+        U1["WhiteListService\nwhitelist:{nip}:{account}\nTTL: 3600s"]
+        U2["CurrencyConverter\nfx_rate:{currency}:{date}\nTTL: 300s"]
+        U3["_load_prompt_pack()\nprompt_pack:{lang}\nTTL: 3600s"]
+        U4["FactSheet\nfew_shot:{hash}:{max}\nTTL: 300s"]
+        U5["FactsAggregator\nenrich:{invoice_id}\nTTL: 300s"]
+        U6["TimedModelCache\n_model_cache_ttl:{key}\nTTL: 600s"]
+    end
 
-    class PLEEngine {
-        -STM stm
-        -LTM ltm
-        -FM fm
-        +record_decision(decision)
-        +query_adaptive_thresholds()
-        -_promote_to_ltm()
-        -_promote_to_fm()
-        +get_vendor_profile(nip)
-    }
-
-    class BayesianThresholdLearner {
-        -BetaPrior prior
-        +get_thresholds(contractor_nip, category)
-        +record_auto_decision(contractor_nip, category, success, amount)
-        +record_user_correction(contractor_nip, category, corrected, amount)
-    }
-
-    class QualityValidatorAgent {
-        +validate(context)
-        +_vote_alpha()
-        +_vote_beta()
-        +_vote_gamma()
-        +_fast_path()
-        +_resolve()
-    }
-
-    class ProtocolLoader {
-        -dict protocols
-        +get_protocol(path)
-        +get_decision_matrix(name)
-        +get_thresholds_with_adaptations(cat, vendor, amount)
-        +get_emergency_protocol(name)
-        +build_system_prompt(name)
-        +reload()
-    }
-
-    AgentOrchestrator --> FactsAggregator
-    AgentOrchestrator --> OrchestratorDecision
-    AgentOrchestrator --> PLEEngine
-    AgentOrchestrator --> BayesianThresholdLearner
-    FactsAggregator --> FactSheet
-    QualityValidatorAgent --> ProtocolLoader
+    Users --> Cache
+    L1 --> L2
 ```
 
 ---
 
-## 10. Full System Context — C4
+## 8. Full System Context — C4 poziom 1
 
 ```mermaid
 %%{init: {"flowchart": {"defaultRenderer": "elk"}, "theme": "dark"}}%%
@@ -563,33 +422,28 @@ flowchart TB
     User(("👤 Użytkownik\n(Księgowy / CFO)"))
     External("📄 System zewnętrzny\n(OCR, API bankowe,\nKSeF, GUS BIR)")
 
-    subgraph System["NexusAI — System decyzyjny"]
+    subgraph System["NexusAI — System decyzyjny v2.2"]
         direction TB
 
         subgraph API["🔌 API / CLI"]
-            API1["FastAPI / CLI\nPunkt wejścia"]
-            API2["Background Tasks\nCelery / asyncio"]
+            API1["Litestar / CLI\nPunkt wejścia"]
+            API2["Background Tasks\nTaskiq + NATS"]
         end
 
         subgraph Core["🧠 Core"]
-            C1["AgentOrchestrator\nKoordynator"]
+            C1["DecisionEngine\nSilnik decyzyjny"]
             C2["FactsAggregator\nRAG Layer"]
             C3["ProtocolLoader\nSOP Engine"]
+            C4["NexusCache\nL1 RAM + L2 SQLite"]
         end
 
-        subgraph Agents["🤖 Agenci"]
-            A1["WorkflowPlanner\nLittleLamb 0.3B"]
-            A2["Council of Agents\nAlpha / Beta / Gamma"]
-            A3["Rules SWAT Team\nL1-L4 kaskada"]
-            A4["JambaStrategist\nJamba 3B"]
+        subgraph Guards["🛡️ Strażnicy"]
+            G1["RiskGuard\nDuckDB thresholdy"]
+            G2["SemanticGuard\nsqlite-vec"]
         end
 
-        subgraph Learning["📚 Uczenie"]
-            L1["PLE Engine\nSTM / LTM / FM"]
-            L2["BayesianThreshold\nBeta posterior"]
-            L3["DecisionLogger\nDuckDB"]
-            L4["SemanticGuard\nsqlite-vec"]
-            L5["RiskGuard\nDuckDB"]
+        subgraph Audit["📝 Audyt"]
+            A1["DecisionLogger\nDuckDB"]
         end
 
         subgraph Storage["💾 Przechowywanie"]
@@ -599,41 +453,140 @@ flowchart TB
             S4[("TigerBeetle\nSecure Ledger")]
             S5[("Config\nprotocols.toml")]
         end
+
+        subgraph AI["🤖 AI (tylko niefinansowe)"]
+            AI1["LightOnOCR-1B\nOCR"]
+            AI2["Phi-3-mini\nVisionAgent"]
+            AI3["llama-cpp-python\nEmbeddingi"]
+        end
     end
 
     User --> API1
     External --> API1
     API1 --> C1
     C1 --> C2
-    C1 --> C3
+    C1 --> G1
+    C1 --> G2
     C1 --> A1
-    C1 --> A2
-    C1 --> A3
-    C1 --> A4
-    C1 --> L1
-    C1 --> L2
-    C1 --> L3
+    C1 --> C3
     C2 --> S1
     C2 --> S2
     C2 --> S3
     C2 --> S4
-    A2 --> L4
-    A4 --> L5
-    L2 --> S1
-    L3 --> S2
-    L4 --> S3
+    C2 --> C4
+    G1 --> S2
+    G2 --> S3
+    A1 --> S2
     C3 --> S5
 
     style System fill:#1a1a2e,stroke:#e94560,stroke-width:2px
     style API fill:#16213e,stroke:#0f3460
     style Core fill:#0f3460,stroke:#533483
-    style Agents fill:#1a1a2e,stroke:#e94560
-    style Learning fill:#16213e,stroke:#0f3460
+    style Guards fill:#1a1a2e,stroke:#e94560
+    style Audit fill:#16213e,stroke:#0f3460
     style Storage fill:#0f3460,stroke:#533483
+    style AI fill:#1a1a2e,stroke:#e94560,stroke-dasharray:5,5
 ```
 
 ---
 
-> **Dokumentacja techniczna** — NexusAI v2.0
-> **Ostatnia aktualizacja:** 2026-06-09
+## 9. Cleanup lifecycle — async close()
+
+```mermaid
+%%{init: {"flowchart": {"defaultRenderer": "elk"}, "theme": "dark"}}%%
+flowchart TB
+    subgraph Services["Serwisy z zasobami"]
+        WLS["WhiteListService\n→ CachedHttpClient (httpx+hishel)"]
+        CC["CurrencyConverter\n→ DuckDBPyConnection"]
+        CE["ContextEnricher\n→ WhiteListService + DuckDB"]
+        CHC["CachedHttpClient\n→ httpx.AsyncClient"]
+    end
+
+    subgraph Close["async close() chain"]
+        C1["await white_list.close()\n→ await self._http.close()"]
+        C2["await converter.close()\n→ self._conn.close()"]
+        C3["await enricher.close()\n→ await white_list.close()\n  + self._conn.close()"]
+        C4["await http_client.close()\n→ await client.aclose()"]
+    end
+
+    WLS --> C1
+    CC --> C2
+    CE --> C3
+    CHC --> C4
+
+    subgraph Effect["Efekt"]
+        E1["httpx.AsyncClient\nconnection pool → zamknięty"]
+        E2["DuckDB\nplik DB → zamknięty"]
+        E3["Brak wycieków gniazd\nw długo działających procesach"]
+    end
+
+    C1 --> E1
+    C2 --> E2
+    C3 --> E3
+    C4 --> E1
+```
+
+| Serwis | Zasób | Metoda |
+|---|---|---|
+| `WhiteListService` | `CachedHttpClient` (httpx + hishel) | `await self._http.close()` |
+| `CurrencyConverter` | `DuckDBPyConnection` | `self._conn.close()` |
+| `ContextEnricher` | `WhiteListService` + DuckDB | `await self._white_list.close()` + `self._conn.close()` |
+| `CachedHttpClient` | `httpx.AsyncClient` (connection pool) | `await self._client.aclose()` |
+
+---
+
+## 10. Architektura v2.0 (historyczna)
+
+Poprzednia architektura wieloagentowa została uproszczona. Poniższy diagram jest zachowany jako dokumentacja stanu poprzedniego.
+
+```mermaid
+%%{init: {"flowchart": {"defaultRenderer": "elk"}, "theme": "dark", "themeVariables": {"fontSize": "12px"}}}%%
+flowchart TB
+    subgraph Old["🧠 AgentOrchestrator (v2.0 — historyczny)"]
+        direction TB
+        AO["AgentOrchestrator"]
+        WP["WorkflowPlanner\nLittleLamb 0.3B"]
+        CA["Council of Agents\nAlpha (LFM2.5) / Beta (Qwen3) /\nGamma (LittleLamb)"]
+        RST["Rules SWAT Team\nL1 (LFM2.5) / L2 (Granite) /\nL3 (LittleLamb) / L4 (Fin-RWKV)"]
+        TC["TrustScoreCalculator\n5 składników"]
+        JS["JambaStrategist\nJamba 3B"]
+        BL["BayesianThresholdLearner\nBeta posterior"]
+        PLE["PLE Engine\nSTM → LTM → FM"]
+        AO --> WP --> CA --> RST --> TC --> JS --> BL --> PLE
+    end
+
+    subgraph New["DecisionEngine (v2.2 — aktualny)"]
+        DE["DecisionEngine\ncore/decision_engine.py"]
+        CI2["classify_invoice()\n<1ms"]
+        TS2["calculate_trust_score()\n<1ms"]
+        FW2["_match_condition()\n<5ms"]
+        DE --> CI2
+        DE --> TS2
+        DE --> FW2
+    end
+
+    subgraph Legend["Legenda"]
+        L1["v2.0: ~7.7–18.3s, ~2.2 GB RAM peak"]
+        L2["v2.2: ~0.2–0.4s, ~200 MB RAM baseline"]
+        L3["39–61× szybciej, 11× mniej RAM"]
+    end
+```
+
+### Komponenty v2.0 → v2.2
+
+| Komponent v2.0 | Model | Zastąpiony przez |
+|---|---|---|
+| Council of Agents | Alpha (LFM2.5), Beta (Qwen3), Gamma (LittleLamb) | `DecisionEngine.decide()` + DuckDB `decision_rules` |
+| WorkflowPlanner | LittleLamb 0.3B | `classify_invoice()` |
+| JambaStrategist | Jamba 3B | `DecisionEngine.decide()` |
+| Rules SWAT Team | LFM2.5, Granite, LittleLamb, Fin-RWKV | Hierarchiczne reguły DuckDB |
+| TrustScoreCalculator | — | `calculate_trust_score()` |
+| PLE Engine | — | `DecisionLogger.get_trust_score_trend()` |
+| BayesianThresholdLearner | — | Statystyki w DuckDB |
+| AgentOrchestrator | — | `services/council_session.py`, `services/autopilot.py` (DEPRECATED) |
+
+---
+
+> **Dokumentacja techniczna** — NexusAI v2.2
+> **Ostatnia aktualizacja:** 2026-06-10
 > **Plik:** `docs/ARCHITECTURE_DIAGRAM.md`

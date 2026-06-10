@@ -13,7 +13,6 @@ Komponenty:
 from __future__ import annotations
 
 import uuid
-from datetime import date
 from decimal import Decimal
 from typing import Any
 
@@ -662,7 +661,7 @@ class ContextInterpreter:
         Args:
             invoice_data: Normalized dictionary from OCR pipeline with keys:
                 - category_code: str
-                - transaction_date: str (YYYY-MM-DD) or date
+                - transaction_date: str (YYYY-MM-DD) or pendulum.Date
                 - company_tax_form: str
                 - vendor_country: str (PL/EU/NON_EU)
                 - vendor_vat_status: str (active/inactive/unknown)
@@ -678,7 +677,7 @@ class ContextInterpreter:
         ctx["category_code"] = str(invoice_data.get("category_code", "UNKNOWN"))
 
         raw_date = invoice_data.get("transaction_date", "")
-        if isinstance(raw_date, date):
+        if isinstance(raw_date, (pendulum.Date, pendulum.DateTime)):
             ctx["transaction_date"] = raw_date.isoformat()
         else:
             ctx["transaction_date"] = str(raw_date)
@@ -878,8 +877,8 @@ class RuleEngine:
         self,
         condition_sql: str,
         action: dict[str, Any],
-        valid_from: str | date = "2024-01-01",
-        valid_to: str | date | None = None,
+        valid_from: str | pendulum.Date = "2024-01-01",
+        valid_to: str | pendulum.Date | None = None,
         priority: int = 100,
         created_by: str = "system",
     ) -> str:
@@ -888,7 +887,7 @@ class RuleEngine:
         Args:
             condition_sql: SQL WHERE expression (e.g. ``category_code = 'FUEL'``).
             action: Verdict dict (e.g. ``{"vat_rate": "0.23", ...}``).
-            valid_from: Start date (ISO string or date).
+            valid_from: Start date (ISO string or pendulum.Date).
             valid_to: End date (or None for indefinitely active).
             priority: Lower = higher priority.
             created_by: Actor identifier for audit.
@@ -897,8 +896,8 @@ class RuleEngine:
             The UUID of the newly created rule.
         """
         rule_id = str(uuid.uuid4())
-        vf = valid_from.isoformat() if isinstance(valid_from, date) else valid_from
-        vt = valid_to.isoformat() if isinstance(valid_to, date) else valid_to
+        vf = valid_from.isoformat() if isinstance(valid_from, (pendulum.Date, pendulum.DateTime)) else valid_from
+        vt = valid_to.isoformat() if isinstance(valid_to, (pendulum.Date, pendulum.DateTime)) else valid_to
 
         self._conn.execute(
             """INSERT INTO tax_rules
@@ -917,13 +916,13 @@ class RuleEngine:
         )
         return rule_id
 
-    def close_rule(self, rule_id: str, valid_to: str | date) -> None:
+    def close_rule(self, rule_id: str, valid_to: str | pendulum.Date) -> None:
         """Close a rule's validity window (sets valid_to).
 
         This is the only mutation allowed on existing rules,
         and only forward in time (valid_to must be > current valid_from).
         """
-        vt = valid_to.isoformat() if isinstance(valid_to, date) else valid_to
+        vt = valid_to.isoformat() if isinstance(valid_to, (pendulum.Date, pendulum.DateTime)) else valid_to
         self._conn.execute(
             "UPDATE tax_rules SET valid_to = ? WHERE rule_id = ?",
             (vt, rule_id),

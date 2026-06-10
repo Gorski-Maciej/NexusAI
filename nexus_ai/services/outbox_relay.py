@@ -26,9 +26,11 @@ Usage:
 
 from __future__ import annotations
 
-import hashlib
 import time
 import uuid
+from functools import cache
+
+import pendulum
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
@@ -38,6 +40,17 @@ from sqlalchemy.orm import Session
 from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
+
+# ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
+try:
+    from nexus_crypto import sha256 as _sha256
+    HAS_NEXUS_CRYPTO = True
+except ImportError:
+    import hashlib as _hashlib
+    HAS_NEXUS_CRYPTO = False
+
+    def _sha256(data: bytes) -> str:
+        return _hashlib.sha256(data).hexdigest()
 
 logger = get_logger("nexus.services.outbox_relay")
 
@@ -505,7 +518,7 @@ class OutboxRelay:
         payload_raw: str,
     ) -> None:
         """Zapisz wpis idempotentności."""
-        payload_hash = hashlib.sha256(payload_raw.encode()).hexdigest()
+        payload_hash = _sha256(payload_raw.encode())
         session.execute(
             text(
                 """

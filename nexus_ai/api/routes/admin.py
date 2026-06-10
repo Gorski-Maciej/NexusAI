@@ -615,10 +615,9 @@ class AdminController(Controller):
         period_end = body.get("period_end", pendulum.now("UTC").format("YYYY-MM-DD"))
         limit = body.get("limit", 1000)
 
-        from datetime import date
         try:
-            start = date.fromisoformat(period_start)
-            end = date.fromisoformat(period_end)
+            start = pendulum.Date.fromisoformat(period_start)
+            end = pendulum.Date.fromisoformat(period_end)
         except (ValueError, TypeError):
             return {"error": "Invalid date format. Use YYYY-MM-DD."}
 

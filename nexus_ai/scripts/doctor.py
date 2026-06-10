@@ -18,11 +18,13 @@ Checks:
 from __future__ import annotations
 
 import os
+import re
 import socket
-import subprocess
 import sys
 from pathlib import Path
 from typing import Any
+
+import anyio
 
 try:
     import psutil
@@ -90,22 +92,23 @@ def check_system() -> str:
     return _warn("psutil not installed — skipping system resource checks")
 
 
-def check_gpu() -> str:
+async def check_gpu() -> str:
     """Check CUDA / GPU availability via nvidia-smi.
 
     Zastępuje: torch.cuda.is_available() → nvidia-smi (nie wymaga PyTorch).
     GPU używane przez llama-cpp-python (GGUF) z CUDA backend.
     """
     try:
-        res = subprocess.check_output(["nvidia-smi", "-L"], timeout=10).decode()
+        result = await anyio.run_process(["nvidia-smi", "-L"], timeout=10)
+        res = result.stdout.decode()
         # Parse GPU count
         gpu_count = res.strip().count("GPU ")
         if gpu_count > 0:
             # Try to get GPU name
-            name_match = __import__("re").search(r"GPU \d+: ([^(]+)", res)
+            name_match = re.search(r"GPU \d+: ([^(]+)", res)
             gpu_name = name_match.group(1).strip() if name_match else "NVIDIA"
             return _ok(f"CUDA available: {gpu_count}x {gpu_name}")
-    except (subprocess.TimeoutExpired, subprocess.CalledProcessError, FileNotFoundError):
+    except (TimeoutError, FileNotFoundError):
         pass
 
     return _warn("No CUDA GPU detected — running on CPU (slower for AI models)")
@@ -219,7 +222,7 @@ def check_database() -> str:
 # ── Main runner ──────────────────────────────────────────────────────────────
 
 
-def run_diagnostics() -> dict[str, Any]:
+async def run_diagnostics() -> dict[str, Any]:
     """Run all diagnostics and print results.
 
     Returns a dict of check_name -> result string for programmatic use.
@@ -233,7 +236,7 @@ def run_diagnostics() -> dict[str, Any]:
     checks: dict[str, str] = {
         "Python": check_python_version(),
         "System": check_system(),
-        "GPU": check_gpu(),
+        "GPU": await check_gpu(),
         "Models": check_models(),
         "NATS": check_nats(),
         "Environment": check_env(),
@@ -276,4 +279,4 @@ def run_diagnostics() -> dict[str, Any]:
 
 
 if __name__ == "__main__":
-    run_diagnostics()
+    anyio.run(run_diagnostics)

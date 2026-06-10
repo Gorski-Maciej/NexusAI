@@ -13,8 +13,9 @@ są teraz w jednym pliku.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
 from decimal import Decimal
+
+import pendulum
 from enum import StrEnum as BaseStrEnum
 
 import pendulum
@@ -58,8 +59,8 @@ class Invoice(SQLModel, table=True):
     retry_count: int = Field(default=0)
     processing_status: str | None = Field(default=None)
     issue_date: str | None = Field(default=None)
-    created_at: datetime = Field(default_factory=lambda: pendulum.now("UTC"))
-    updated_at: datetime = Field(default_factory=lambda: pendulum.now("UTC"), sa_column_kwargs={"onupdate": lambda: pendulum.now("UTC")})
+    created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"))
+    updated_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"), sa_column_kwargs={"onupdate": lambda: pendulum.now("UTC")})
 
 
 class ActiveLearningPattern(SQLModel, table=True):
@@ -69,7 +70,7 @@ class ActiveLearningPattern(SQLModel, table=True):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
     contractor_id: str = Field(nullable=False, index=True)
     correction_payload: str = Field(nullable=False)  # JSON string
-    created_at: datetime = Field(default_factory=lambda: pendulum.now("UTC"))
+    created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"))
 
 
 class Contractor(SQLModel, table=True):
@@ -80,7 +81,7 @@ class Contractor(SQLModel, table=True):
     nip: str = Field(unique=True, nullable=False, index=True)
     name: str | None = Field(default=None)
     vat_status: str | None = Field(default=None)
-    created_at: datetime = Field(default_factory=lambda: pendulum.now("UTC"))
+    created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"))
 
 
 class AuditLog(SQLModel, table=True):
@@ -95,7 +96,7 @@ class AuditLog(SQLModel, table=True):
     old_value: str | None = Field(default=None)
     new_value: str | None = Field(default=None)
     changes: str | None = Field(default=None)  # JSON string (dla AuditService)
-    timestamp: datetime = Field(default_factory=lambda: pendulum.now("UTC"))
+    timestamp: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"))
 
 
 class OutboxEvent(SQLModel, table=True):
@@ -108,10 +109,10 @@ class OutboxEvent(SQLModel, table=True):
     payload: str = Field(nullable=False)  # JSON string
     status: str = Field(default="PENDING")
     processed: bool = Field(default=False)
-    processing_started_at: datetime | None = Field(default=None)
-    processed_at: datetime | None = Field(default=None)
+    processing_started_at: pendulum.DateTime | None = Field(default=None)
+    processed_at: pendulum.DateTime | None = Field(default=None)
     retry_count: int = Field(default=0)
-    created_at: datetime = Field(default_factory=lambda: pendulum.now("UTC"))
+    created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"))
 
 
 class SecurityAlert(SQLModel, table=True):
@@ -122,7 +123,7 @@ class SecurityAlert(SQLModel, table=True):
     actor: str = Field(nullable=False)
     operation: str = Field(nullable=False)
     details: str = Field(nullable=False)  # JSON string
-    created_at: datetime = Field(default_factory=lambda: pendulum.now("UTC"))
+    created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"))
 
 
 class UserAccount(SQLModel, table=True):
@@ -136,4 +137,4 @@ class UserAccount(SQLModel, table=True):
     tenant_id: str = Field(nullable=False, default="default")
     is_active: bool = Field(nullable=False, default=True)
     jwt_version: int = Field(default=1)
-    created_at: datetime = Field(default_factory=lambda: pendulum.now("UTC"))
+    created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"))

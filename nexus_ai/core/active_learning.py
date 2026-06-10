@@ -8,7 +8,7 @@ Zgodnie z aa3fvcx.txt:
 """
 from __future__ import annotations
 
-import hashlib
+import hashlib  # MD5 for quick context dedup (non-cryptographic, not available in nexus_crypto)
 import uuid
 from pathlib import Path
 from typing import Any

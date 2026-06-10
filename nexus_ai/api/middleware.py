@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import base64
-import hashlib
+import hashlib  # HMAC-SHA256 for JWT signature verification (not available in nexus_crypto)
 import hmac
 import os
 import secrets

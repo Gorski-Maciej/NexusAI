@@ -5,9 +5,10 @@ import os
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
-from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+import pendulum
 
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
 
@@ -62,8 +63,8 @@ class FileSpanBuffer:
                     continue
         return records
 
-    def append(self, trace_id: str, name: str, *, start_ts: datetime, end_ts: datetime, attributes: dict[str, Any] | None = None) -> None:
-        span = BufferedSpan(trace_id=trace_id, name=name, start_ts=start_ts.astimezone("UTC").isoformat(), end_ts=end_ts.astimezone("UTC").isoformat(), attributes=attributes or {})
+    def append(self, trace_id: str, name: str, *, start_ts: pendulum.DateTime, end_ts: pendulum.DateTime, attributes: dict[str, Any] | None = None) -> None:
+        span = BufferedSpan(trace_id=trace_id, name=name, start_ts=start_ts.in_tz("UTC").isoformat(), end_ts=end_ts.in_tz("UTC").isoformat(), attributes=attributes or {})
         with self._file_lock():
             with self.file_path.open("a", encoding="utf-8") as fp:
                 fp.write(msgspec_dumps(asdict(span), ensure_ascii=False) + "\n")

@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import calendar
 import uuid
-from datetime import date
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
+
+import pendulum
 
 from nexus_ai.db.analytics import DuckDBManager
 
@@ -18,19 +19,19 @@ class RMKInvoiceData:
     invoice_id: str
     description: str
     total_net_amount: Decimal
-    start_date: date
-    end_date: date
+    start_date: pendulum.Date
+    end_date: pendulum.Date
     cost_account_id: str
 
 
-def _month_end(year: int, month: int) -> date:
-    return date(year, month, calendar.monthrange(year, month)[1])
+def _month_end(year: int, month: int) -> pendulum.Date:
+    return pendulum.Date(year, month, calendar.monthrange(year, month)[1])
 
 
-def _first_of_next_month(input_date: date) -> date:
+def _first_of_next_month(input_date: pendulum.Date) -> pendulum.Date:
     if input_date.month == 12:
-        return date(input_date.year + 1, 1, 1)
-    return date(input_date.year, input_date.month + 1, 1)
+        return pendulum.Date(input_date.year + 1, 1, 1)
+    return pendulum.Date(input_date.year, input_date.month + 1, 1)
 
 
 class RMKEngine:

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import uuid
-from collections import OrderedDict
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
@@ -10,6 +9,7 @@ from urllib import error, request
 import pendulum
 import stamina
 
+from nexus_ai.core.cache import get_cache
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
 from .ledger_client import TigerBeetleClient
@@ -27,15 +27,33 @@ class FXResult:
     direction: str
 
 
-class ForexEngine:
-    # LRU cache w RAM (Rozwiązanie 28) - ostatnie 1000 zapytań
-    # Circuit Breaker dla API NBP: stamina.retry(on=(...), attempts=3)
-    # Zastąpiono: cachetools.LRUCache → collections.OrderedDict (brak zależności)
-    _rate_cache: OrderedDict = OrderedDict()
-    _RATE_CACHE_MAXSIZE = 1000
+FX_CACHE_PREFIXES = ["fx_rate:", "fx_missing:"]
 
-    # Cache brakujących dat (weekendy/święta) - nie próbuj ponownie przez 30 dni
-    _missing_cache: dict[tuple[str, str], date] = {}
+
+def invalidate_forex_cache() -> None:
+    """Unieważnij cache kursów walut.
+
+    Usuwa wszystkie klucze z prefixami ``fx_rate:`` i ``fx_missing:`` z L1 RAM.
+    Zgodnie z wzorcem invalidate_rules_cache() — zero narzutu, bez logowania.
+    Wywoływana przy każdej zmianie kursów (CSV upload, NBP fetch).
+    Następne wywołanie _known_in_cache() lub _is_date_missing()
+    załaduje świeże dane z DuckDB.
+    """
+    cache = get_cache()
+    cache.delete_prefix_sync("fx_rate:")
+    cache.delete_prefix_sync("fx_missing:")
+
+
+class ForexEngine:
+    # NexusCache for exchange rates (L1 RAM + L2 SQLite) — event-based invalidation
+    # Replaces: OrderedDict LRU cache (Rozwiązanie 28)
+    # Brak TTL — unieważniany ręcznie przez invalidate_forex_cache()
+    _rate_nexus = get_cache()
+
+    # NexusCache for missing date lookups (weekends/holidays) — event-based invalidation
+    # Replaces: dict[tuple[str, str], date] with manual 30-day TTL
+    # Brak TTL — unieważniany ręcznie przez invalidate_forex_cache()
+    _missing_nexus = get_cache()
 
     def __init__(self, duckdb_manager: Any, tb_client: TigerBeetleClient, account_receivable: int, account_fx_gain: int, account_fx_loss: int) -> None:
         self.duckdb = duckdb_manager
@@ -72,13 +90,11 @@ class ForexEngine:
         return d
 
     def _known_in_cache(self, currency_code: str, rate_date: date) -> Decimal | None:
-        """Sprawdź RAM cache przed DuckDB."""
-        key = (currency_code, rate_date.isoformat())
-        cached = self._rate_cache.get(key)
+        """Sprawdź NexusCache L1 RAM przed DuckDB."""
+        key = f"fx_rate:{currency_code}:{rate_date}"
+        cached = self._rate_nexus.get_sync(key)
         if cached is not None:
-            # Move to end (most recently used)
-            self._rate_cache.move_to_end(key)
-            return cached
+            return Decimal(str(cached))
 
         # Sprawdź DuckDB
         rows = self.duckdb.execute(
@@ -87,25 +103,23 @@ class ForexEngine:
         )
         if rows:
             rate = Decimal(str(rows[0][0]))
-            self._rate_cache[key] = rate
-            self._rate_cache.move_to_end(key)
-            self._evict_if_needed()
+            self._rate_nexus.set_sync(key, str(rate))
             return rate
 
         return None
 
     def _is_date_missing(self, currency_code: str, rate_date: date) -> bool:
-        """Sprawdź czy data jest oznaczona jako brak kursu (np. weekend)."""
-        cache_key = (currency_code, rate_date.isoformat())
+        """Sprawdź czy data jest oznaczona jako brak kursu (np. weekend).
 
-        # Sprawdź w pamięci cache brakujących dat
-        if cache_key in self._missing_cache:
-            stored_date = self._missing_cache[cache_key]
-            if (pendulum.now().date() - stored_date).days < 30:
-                return True
-            else:
-                # TTL 30 dni wygasł - spróbuj ponownie
-                del self._missing_cache[cache_key]
+        Wynik cache'owany w NexusCache (event-based invalidation przez
+        invalidate_forex_cache()). Brak TTL — cache unieważniany ręcznie
+        przy CSV upload lub NBP fetch.
+        """
+        cache_key = f"fx_missing:{currency_code}:{rate_date}"
+
+        # Sprawdź w NexusCache (TTL 30d obsługuje automatyczne wygaśnięcie)
+        if self._missing_nexus.get_sync(cache_key) is not None:
+            return True
 
         # Sprawdź w DuckDB
         rows = self.duckdb.execute(
@@ -113,23 +127,15 @@ class ForexEngine:
             (currency_code, rate_date),
         )
         if rows:
-            self._missing_cache[cache_key] = pendulum.now().date()
+            self._missing_nexus.set_sync(cache_key, True)
             return True
 
         return False
 
-    def _evict_if_needed(self) -> None:
-        """Evict oldest entries when cache exceeds max size.
-
-        Zastępuje: cachetools.LRUCache (automatyczne usuwanie najstarszych).
-        """
-        while len(self._rate_cache) > self._RATE_CACHE_MAXSIZE:
-            self._rate_cache.popitem(last=False)
-
     def _mark_as_missing(self, currency_code: str, rate_date: date) -> None:
         """Oznacz datę jako brak kursu (weekend/święto)."""
-        cache_key = (currency_code, rate_date.isoformat())
-        self._missing_cache[cache_key] = pendulum.now().date()
+        cache_key = f"fx_missing:{currency_code}:{rate_date}"
+        self._missing_nexus.set_sync(cache_key, True)
         self.duckdb.execute(
             """
             INSERT OR REPLACE INTO exchange_rates(currency_code, rate_date, avg_rate, is_missing)
@@ -181,10 +187,9 @@ class ForexEngine:
         # stamina automatycznie otwiera obwód po seriach błędów i próbuje po recovery timeout
         try:
             result = self._do_fetch_nbp(target_date, currency_code, max_lookback_days)
-            # Zapisz w RAM cache
-            self._rate_cache[(currency_code, target_date.isoformat())] = result
-            self._rate_cache.move_to_end((currency_code, target_date.isoformat()))
-            self._evict_if_needed()
+            # Zapisz w NexusCache
+            cache_key = f"fx_rate:{currency_code}:{target_date}"
+            self._rate_nexus.set_sync(cache_key, str(result))
             return result
         except ValueError:
             # NBP nie ma kursu dla tej daty (weekend/święto) - oznacz jako missing
@@ -249,10 +254,9 @@ class ForexEngine:
                     """,
                     (currency_code, rate_day, float(avg_rate), table_no),
                 )
-                # Zapisz w RAM cache
-                self._rate_cache[(currency_code, rate_day.isoformat())] = avg_rate
-                self._rate_cache.move_to_end((currency_code, rate_day.isoformat()))
-                self._evict_if_needed()
+                # Zapisz w NexusCache
+                cache_key = f"fx_rate:{currency_code}:{rate_day}"
+                self._rate_nexus.set_sync(cache_key, str(avg_rate))
                 return avg_rate
             else:
                 # Oznacz jako missing
@@ -271,6 +275,10 @@ class ForexEngine:
         import io
 
         self.ensure_exchange_rate_schema()
+        # Unieważnij cache PRZED importem — stare kursy usunięte,
+        # nowe zostaną zapisane przez set_sync w pętli
+        invalidate_forex_cache()
+
         reader = csv.DictReader(io.StringIO(csv_content))
         imported = 0
         errors = 0
@@ -294,11 +302,9 @@ class ForexEngine:
                     """,
                     (currency_code, rate_date, avg_rate, table_no),
                 )
-                # Zapisz w RAM cache
-                cache_key = (currency_code, rate_date.isoformat())
-                self._rate_cache[cache_key] = Decimal(str(avg_rate))
-                self._rate_cache.move_to_end(cache_key)
-                self._evict_if_needed()
+                # Zapisz w NexusCache
+                cache_key_str = f"fx_rate:{currency_code}:{rate_date}"
+                self._rate_nexus.set_sync(cache_key_str, str(avg_rate))
                 imported += 1
             except Exception:
                 errors += 1

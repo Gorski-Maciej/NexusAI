@@ -23,9 +23,28 @@ import os
 from pathlib import Path
 from typing import Any
 
+# ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
+try:
+    from nexus_crypto import sha256 as _sha256
+    HAS_NEXUS_CRYPTO = True
+except ImportError:
+    import hashlib as _hashlib
+    HAS_NEXUS_CRYPTO = False
+
+    def _sha256(data: bytes) -> str:
+        return _hashlib.sha256(data).hexdigest()
+
+from nexus_ai.core.cache import get_cache
 from structlog import get_logger
 
 logger = get_logger("nexus.core.embeddings")
+
+# NexusCache dla embeddingów (L1 RAM + L2 SQLite przez dyscache)
+# Klucz: semantic_embed:{sha256(text)} → list[float]
+# TTL: 3600s (1h) — embedding jest deterministyczny dla tego samego tekstu
+# Oszczędza ~50-200ms przy wołaniu embed() dla tej samej faktury
+# (np. evaluate() → store_invoice() w SemanticGuard)
+_embedding_cache = get_cache()
 
 # ── Default embedding dimension ─────────────────────────────────────────────
 EMBEDDING_DIM = 768  # Domyślny wymiar (wykrywany dynamicznie z modelu)
@@ -116,26 +135,42 @@ class EmbeddingService:
     def embed(self, text: str) -> list[float]:
         """Generate embedding vector from text using llama-cpp-python.
 
+        Wynik cache'owany w NexusCache (``semantic_embed:{sha256(text)}``) przez 3600s.
+        Oszczędza generowanie embeddingu gdy ten sam tekst jest embeddowany
+        wielokrotnie (np. evaluate() → store_invoice() w SemanticGuard).
+
         Args:
             text: Tekst do zamiany na wektor.
 
         Returns:
             Lista floatów — wektor embeddingu.
         """
+        # Sprawdź NexusCache (L1 RAM) — szybki path, oszczędza ~50-200ms
+        cache_key = f"semantic_embed:{_sha256(text.encode())}"
+        cached = _embedding_cache.get_sync(cache_key)
+        if cached is not None:
+            return cached
+
         self._ensure_model()
 
         if self._model is None:
-            return self._fallback_embedding(text)
+            vector = self._fallback_embedding(text)
+            _embedding_cache.set_sync(cache_key, vector, ttl=3600)
+            return vector
 
         try:
             truncated = text[:self._max_length]
             response = self._model.create_embedding(truncated)
-            return response["data"][0]["embedding"]
+            vector = response["data"][0]["embedding"]
+            _embedding_cache.set_sync(cache_key, vector, ttl=3600)
+            return vector
         except Exception as exc:
             logger.warning(
                 "[EmbeddingService] Embedding failed: %s — fallback to hash vector", exc,
             )
-            return self._fallback_embedding(text)
+            vector = self._fallback_embedding(text)
+            _embedding_cache.set_sync(cache_key, vector, ttl=3600)
+            return vector
 
     def embed_batch(self, texts: list[str]) -> list[list[float]]:
         """Generate embeddings for multiple texts in batch.
@@ -178,10 +213,9 @@ class EmbeddingService:
         Zapewnia, że system nie przestaje działać — embeddingi będą
         niskiej jakości, ale stabilne.
         """
-        import hashlib
         dim = EMBEDDING_DIM
-        # Generuj stabilny hash z tekstu
-        hash_bytes = hashlib.sha256(text.encode()).digest()
+        # Generuj stabilny hash z tekstu (SHA-256 przez nexus-crypto)
+        hash_bytes = bytes.fromhex(_sha256(text.encode()))
         # Rozciągnij 32 bajty SHA-256 na 'dim' wymiarów
         result = []
         for i in range(dim):

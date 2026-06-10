@@ -1,7 +1,7 @@
-# NexusAI — Pełna lista technologii (v2.0)
+# NexusAI — Pełna lista technologii (v2.2)
 
-> **Data:** 2026-06-07
-> **Status:** Przebudowa zgodnie z `aa3fvcx.txt` — wersja finalna
+> **Data:** 2026-06-10
+> **Status:** Aktualna — wersja 2.2 (DecisionEngine, NexusCache, async close())
 > **Opis:** Nowy, ultralekki stos technologiczny — maksymalna wydajność przy minimalnym zużyciu RAM.
 
 ---
@@ -83,12 +83,27 @@ python -m api.server
 |---|---|---|
 | **Litestar** ≥2.8.0 | FastAPI | Framework ASGI nowej generacji — routing, middleware, DI, OpenAPI (wyłączone w prod) |
 | **Granian** ≥1.0.0 | **Uvicorn** | **Serwer ASGI w Rust** — 25-40% mniej RAM niż Uvicorn, obsługa gniazd UNIX |
-| **anyio** ≥4.4.0 | — | Lekka warstwa async I/O — preferowany backend dla Litestar i Granian |
+| **anyio** ≥4.4.0 | — | Lekka warstwa async I/O — preferowany backend dla Litestar i Granian; wszystkie subprocess → anyio.run_process/anyio.Process |
 
 ### Kluczowe optymalizacje
 - **OpenAPI/Swagger wyłączone** w produkcji — zbędne dla desktopu, oszczędza RAM i czas startu
 - **Gniazda UNIX** zamiast TCP/IP — komunikacja lokalna bez narzutu sieciowego
 - Tylko niezbędny middleware (CORS, JWT, CSRF, rate limiting)
+- **subprocess → anyio** — migracja 9 plików: wszystkie `subprocess.run`, `subprocess.Popen`, `subprocess.check_output` → `anyio.run_process`, `anyio.Process.__aenter__()` |
+
+### subprocess → anyio — zakres migracji
+
+| Plik | Wzorzec zastąpiony | Nowy wzorzec |
+|---|---|---|
+| `luz/build_nexus.py` | `subprocess.run(command, check=True)` | `anyio.run_process(command)` |
+| `luz/main.py` | `subprocess.Popen()` (NATS/Worker/API) | `await anyio.Process().__aenter__()` |
+| `installer/dependency_downloader.py` | `subprocess.Popen` + `subprocess.run` | `anyio.Process.__aenter__()` + `anyio.run_process()` |
+| `installer/updater.py` | `subprocess.Popen` (fire-and-forget) | `await asyncio.create_subprocess_exec()` |
+| `pipeline/ocr_consensus.py` | `subprocess.run` w `anyio.to_thread` | `await anyio.run_process()` — bez wrappera |
+| `scripts/security_scan.py` | `subprocess.run` (DAST/SAST) | `await anyio.run_process()` — async funkcje |
+| `scripts/performance_engineering.py` | `subprocess.run` (locust) | `await anyio.run_process()` — async funkcje |
+| `scripts/doctor.py` | `subprocess.check_output` (nvidia-smi) | `await anyio.run_process()` — async callers |
+| `main.py` | `import subprocess` + `subprocess.PIPE` | `asyncio.subprocess.PIPE` |
 
 ---
 
@@ -148,12 +163,18 @@ python -m api.server
 |---|---|
 | **httpx** ≥0.27 | Nowoczesny, asynchroniczny klient HTTP (HTTP/1.1 + HTTP/2) |
 | **hishel** ≥0.1 | **Inteligentny cache HTTP** — automatyczne cache'owanie odpowiedzi API z szacunkiem nagłówków Cache-Control |
+| **CachedHttpClient** | Wrapper na hishel/httpx — prekonfigurowany klient z timeoutem, keepalive i `async close()` |
 | **fsspec** ≥2024.3 | Jednolita abstrakcja systemów plików (lokalny, S3, SFTP, ZIP) |
 
-### hishel — nowość w stacku
-- Automatyczne przyspieszenie bez kodowania — rozumie nagłówki HTTP
-- Działanie **offline** — cache'owane dane jako fallback przy braku sieci
-- Przechowywanie w SQLite (już masz!) — zero dodatkowej infrastruktury
+### CachedHttpClient + hishel
+
+`CachedHttpClient` (`core/cache/http_client.py`) to prekonfigurowany klient HTTP z:
+- **hishel** — inteligentny cache HTTP z SQLite, respektujący Cache-Control i ETag
+- **Działanie offline** — cache'owane dane jako fallback przy braku sieci
+- **async close()** — czyste zamykanie połączeń przez `await client.aclose()`
+- Używany przez: `WhiteListService` (Biała Lista MF), `CurrencyConverter` (NBP API)
+
+Wszystkie serwisy korzystające z `CachedHttpClient` implementują `async close()` do poprawnego zwalniania zasobów HTTP (httpx.AsyncClient + connection pool).
 
 ---
 
@@ -162,12 +183,23 @@ python -m api.server
 | Technologia | Zastępuje | Opis |
 |---|---|---|
 | **stamina** ≥0.1 | tenacity + pybreaker | **Async-native** retry + circuit breaker w jednym — zbudowany na anyio |
+| **async close()** | — | Wzorzec czystego zamykania: `HTTPClient.close()` → `CachedHttpClient.close()` → `httpx.AsyncClient.aclose()` |
 
-### Dlaczego stamina
-- Prawdziwie asynchroniczny — nie blokuje pętli zdarzeń
-- Wbudowany Circuit Breaker — po serii błędów odcina dostęp na określony czas
-- Wykładnicze opóźnienia z jitterem
-- Jedna lekka biblioteka (kilkadziesiąt KB) zamiast dwóch ciężkich
+### Wzorzec async close()
+
+Każdy serwis trzymający połączenia HTTP lub DB implementuje `async def close()`:
+
+```python
+class WhiteListService:
+    async def close(self) -> None:
+        await self._http.close()  # → CachedHttpClient → httpx.AsyncClient.aclose()
+
+class CurrencyConverter:
+    async def close(self) -> None:
+        self._conn.close()  # → duckdb.DuckDBPyConnection
+```
+
+Łańcuch zamykania: `Service.close()` → `CachedHttpClient.close()` → `httpx.AsyncClient.aclose()` zapobiega wyciekom połączeń w długo działających procesach (worker, serwer).
 
 ---
 
@@ -175,17 +207,38 @@ python -m api.server
 
 | Technologia | Zastępuje | Opis |
 |---|---|---|
-| **Nexus-Crypto** (Rust + PyO3) | **cryptography** (całość) | **Własny moduł** — tylko 3 funkcje: AEAD (AES-256-GCM), Argon2id, SHA-256 |
+| **Nexus-Crypto** (Rust + PyO3) | **cryptography** (częściowo) | **Własny moduł** — AEAD (ChaCha20-Poly1305), Argon2id, SHA-256 (hex) |
+| **cryptography** (opcjonalny fallback) | — | **Nadal używany** dla RSA (KSeF), X.509 (signature_validator), legacy AES-CBC (backup) |
+| **hashlib** (stdlib, opcjonalny fallback) | — | **Nadal używany** dla streaming SHA-256, HMAC-SHA256, blake2b, MD5 (non-crypto) |
 | **Litestar JWT** | pyjwt | Wbudowane w Litestar — zero dodatkowych zależności |
 | **Litestar CSRF** | — | Ochrona przed atakami cross-site (wbudowana) |
 | **Litestar CORS** | — | Kontrola dostępu między źródłami (wbudowana) |
 | **Litestar Rate Limiting** | — | Limitowanie żądań (wbudowane) |
 
-### Nexus-Crypto — dlaczego własny moduł
-- Zaledwie kilkadziesiąt KB vs megabajty biblioteki `cryptography`
-- Minimalna powierzchnia ataku — tylko to, co niezbędne
-- Natywna prędkość Rusta (RustCrypto + ring)
-- Nowoczesne algorytmy: AEAD (AES-256-GCM/ChaCha20-Poly1305), Argon2id (zamiast PBKDF2)
+### Architektura krypto — 3 poziomy
+
+| Poziom | Biblioteka | Zastosowanie | Status |
+|---|---|---|---|
+| **Podstawowy (primary)** | `nexus_crypto` (Rust+PyO3) | AEAD backup, hashowanie haseł (Argon2id), embeddingi SHA-256 | ✅ 100% nowego kodu |
+| **Opcjonalny fallback** | `cryptography` (pip) | RSA, X.509, legacy AES-CBC (NEXUSENC1) | ⚠️ Tylko starsze formaty |
+| **Opcjonalny fallback** | `hashlib` (stdlib) | Streaming SHA-256 (file digest), HMAC-SHA256 (JWT), blake2b (TigerBeetle IDs), MD5 (non-crypto dedup) | ⚠️ Tylko gdzie nexus_crypto nie wspiera streamingu/algorytmu |
+
+### Nexus-Crypto — co oferuje
+- `encrypt(key, plaintext)` / `decrypt(key, data)` — ChaCha20-Poly1305 AEAD
+- `hash_password(pw)` / `verify_password(pw, hash)` — Argon2id (PHC winner)
+- `sha256(data)` — SHA-256 hex string (tylko dla danych w pamięci, nie streaming)
+- `derive_key(password, salt)` — Argon2id KDF
+
+### Co NIE jest w Nexus-Crypto (i świadomie pozostaje w hashlib/cryptography)
+
+| Algorytm | Gdzie używany | Powód |
+|---|---|---|
+| **Streaming SHA-256** | Weryfikacja modeli GGUF, hashowanie plików | nexus_crypto nie wspiera streamingu |
+| **HMAC-SHA256** | JWT signature verification (middleware) | Wymaga obiektu digest function, nie hex stringa |
+| **BLAKE2b** | Deterministic account IDs (TigerBeetle) | Niezaimplementowane w nexus_crypto |
+| **MD5** | Context dedup (ActiveLearning) | Niezaimplementowane (non-cryptographic use) |
+| **RSA / X.509** | KSeF encryption, signature validation | Asymmetric crypto — poza zakresem nexus_crypto |
+| **AES-CBC-PKCS7** | Legacy NEXUSENC1 backup format | Tylko starsze formaty — nowe backupi używają AEAD |
 
 ---
 
@@ -294,8 +347,55 @@ System wykorzystuje **10 modeli AI** zgrupowanych w **6 grupach funkcyjnych**:
 | **psutil** ≥5.9 | — | Monitorowanie CPU, RAM, dysku |
 | **pendulum** ≥3.0 | **python-dateutil, pytz, dateparser** | **Nowoczesne zarządzanie czasem** — async-safe, jawne parsowanie, strefy czasowe, intuicyjne Duration API |
 | **TOML + msgspec** | **PyYAML, python-dotenv** | Konfiguracja w czystym TOML — szybsze parsowanie, bezpieczeństwo typów, zero nowych zależności |
-| **dyscache** ≥0.2 | — | Async multi-level cache (RAM L1 + SQLite L2) — anyio-native |
+| **NexusCache** (dyscache) | **cachetools, diskcache** | **Multi-level cache** — RAM (L1) + SQLite (L2) przez dyscache, globalny singleton `get_cache()`, `get_or_compute()`, `get_sync/set_sync` dla synchronicznych serwisów |
 | **sentry-sdk** ≥2.0 | — | Opcjonalne śledzenie błędów produkcyjnych |
+
+### NexusCache — architektura cache'owania
+
+`NexusCache` (`core/cache/dyscache.py`) to dwupoziomowy system cache:
+
+```
+┌─────────────────────────────────────┐
+│          NexusCache                 │
+├────────────────┬────────────────────┤
+│  L1: RAM (dict)│  L2: SQLite/dyscache│
+│  fastest       │  persistent        │
+│  get_sync/set  │  async get/set     │
+│  _ram_cache    │  TTL-aware         │
+└────────────────┴────────────────────┘
+```
+
+**Zastosowania:**
+
+| Komponent | Klucz cache | TTL | Typ |
+|---|---|---|---|
+| `WhiteListService` | `whitelist:{nip}:{account}` | 3600s | L1+L2 (async) |
+| `CurrencyConverter` | `fx_rate:{currency}:{date}` | 300s (default) | L1 (sync) |
+| `_load_prompt_pack` | `prompt_pack:{lang}` | 3600s | L1+L2 (sync) |
+| `TimedModelCache` | `_model_cache_ttl:{key}` | 600s | TTL metadata (sync) |
+
+**Wzorzec `get_or_compute()`:**
+
+```python
+# Asynchronicznie
+result = await cache.get_or_compute("my_key", compute_func, ttl=300)
+
+# Synchronicznie (L1 RAM only)
+cached = cache.get_sync(cache_key)
+if cached is None:
+    cached = compute()
+    cache.set_sync(cache_key, cached)
+```
+
+### async close() — cleanup pattern
+
+Każdy serwis trzymający zewnętrzne zasoby (HTTP, DB) implementuje `async def close()`:
+
+| Serwis | Zasób | cleanup chain |
+|---|---|---|
+| `WhiteListService` | `CachedHttpClient` (httpx+hishel) | `await self._http.close()` |
+| `CurrencyConverter` | `DuckDBPyConnection` | `self._conn.close()` |
+| `CachedHttpClient` | `httpx.AsyncClient` | `await self._client.aclose()` |
 
 ### Dlaczego pendulum zamiast dateparser
 - Aplikacja księgowa nie może zgadywać formatu daty — pendulum używa jawnego parsowania
@@ -350,62 +450,54 @@ System wykorzystuje **10 modeli AI** zgrupowanych w **6 grupach funkcyjnych**:
 
 ## 18. Główne Serwisy Zewnętrzne (API)
 
-| Technologia | Lokalizacja | Funkcja |
-|---|---|---|
-| **GUS BIR** (SOAP API) | `Code/services/gus_bir_client.py` | Dane firm (REGON, NIP, status VAT) |
-| **Biała Lista MF** (API) | `Code/services/white_list_service.py` | Weryfikacja rachunków VAT |
-| **NBP API** | `Code/services/currency_converter.py` | Kursy walut |
-| **KSeF** (Krajowy System e-Faktur) | `Code/core/integrations/ksef/` | Wysyłka faktur elektronicznych |
+| Technologia | Lokalizacja | Funkcja | Cache/Resilience | cleanup |
+|---|---|---|---|---|
+| **GUS BIR** (SOAP API) | `nexus_ai/services/gus_bir_client.py` | Dane firm (REGON, NIP, status VAT) | hishel + stamina | `async close()` |
+| **Biała Lista MF** (API) | `nexus_ai/services/white_list_service.py` | Weryfikacja rachunków VAT | NexusCache + hishel | `async close()` |
+| **NBP API** | `nexus_ai/services/currency_converter.py` | Kursy walut | NexusCache + DuckDB | `async close()` |
+| **KSeF** (Krajowy System e-Faktur) | `nexus_ai/core/integrations/ksef/` | Wysyłka faktur elektronicznych | RSA (cryptography) | — |
 
-Komunikacja z zewnętrznymi API zabezpieczona przez **stamina** (retry + circuit breaker) + **hishel** (cache).
+**Wzorzec komunikacji z API:**
+1. Sprawdź lokalny cache (NexusCache L1 RAM → L2 SQLite)
+2. Jeśli miss, sprawdź hishel (cache HTTP z Cache-Control/ETag)
+3. Jeśli nadal miss, wykonaj zapytanie HTTP z retry (stamina)
+4. Zapisz wynik we wszystkich warstwach cache
+
+Wszystkie serwisy API implementują `async def close()` dla poprawnego zamykania połączeń HTTP.
 
 ---
 
-## 19. Agenty AI (Council of LLMs + Rules SWAT + Extraction + Analytics + Decision)
+## 19. Modele AI (GGUF) — stan faktyczny
 
-### Council of Agents (Rada)
-| Agent | Model | Funkcja |
+> **Uwaga:** Architektura wieloagentowa v2.0 (Council of Agents, WorkflowPlanner, Rules SWAT Team, JambaStrategist, Analytics Agent) została **uproszczona** do jednego silnika decyzyjnego **`DecisionEngine`** (`core/decision_engine.py`) opartego na SQL first-match-wins. Modele AI są nadal używane, ale **wyłącznie do zadań niefinansowych**: OCR, embeddingi, analiza wizualna.
+
+### Modele w użyciu
+
+| Model | Rozmiar | Zastosowanie | Pipeline |
+|---|---|---|---|
+| **LightOnOCR-1B** | ~800 MB | OCR faktur (VLM — Vision Language Model) — główny silnik ekstrakcji | Pipeline OCR |
+| **Phi-3-mini 3.8B** | ~2.2 GB | VisionAgent — fallback OCR, analiza layoutu, wykrywanie anomalii wizualnych | Pipeline OCR (fallback) |
+| **llama-cpp-python embedding** | ~300 MB | Embeddingi dla sqlite-vec — semantic search, podobieństwo faktur | FactsAggregator / SemanticGuard |
+
+### Modele usunięte / nieużywane
+
+| Model | Status | Powód |
 |---|---|---|
-| **Alpha Agent** | LFM2.5 1.2B | Klasyfikacja faktur — wstępna decyzja |
-| **Beta Agent** | Qwen3 0.6B | Walidacja wtórna — potwierdza/odrzuca decyzję Alpha |
-| **Gamma Agent** | LittleLamb 0.3B | Tiebreaker + detekcja duplikatów przez sqlite-vec |
+| LFM2.5 1.2B | ❌ Zastąpiony przez reguły DuckDB | `DecisionEngine._match_condition()` |
+| Qwen3 0.6B | ❌ Zastąpiony | Walidacja → SQL rules |
+| LittleLamb 0.3B TC | ❌ Zastąpiony | Klasyfikacja → `classify_invoice()` |
+| Granite 4.0 1B Nano | ❌ Zastąpiony | Walidacja biznesowa → DuckDB rules |
+| Fin-RWKV-169M | ❌ Zastąpiony | Weryfikacja → SQL first-match-wins |
+| Jamba 3B | ❌ Zastąpiony | Decyzja strategiczna → `DecisionEngine.decide()` |
+| Hrida-T2SQL-128k | ❌ Nieużywany | Analityka → DuckDB direct queries |
+| Qwen2.5-1.5B-Instruct | ❌ Nieużywany | Interpretacja → natywne SQL |
 
-### WorkflowPlanner
-| Komponent | Model | Funkcja |
-|---|---|---|
-| **Klasyfikator** | LittleLamb 0.3B TC | Decyduje simple vs complex — współdzieli model z Gamma |
+### Zarządzanie pamięcią
 
-### Rules SWAT Team (Kaskada reguł biznesowych)
-| Poziom | Model | Funkcja |
-|---|---|---|
-| **Level 1** | LFM2.5 1.2B | Szybka klasyfikacja COMPLIANT/FLAG — współdzieli model z Alpha |
-| **Level 2** | Granite 4.0 1B Nano | Walidacja biznesowa — NIP, limity, polityka firmy |
-| **Level 3** | LittleLamb 0.3B TC | Ternary Classifier — COMPLIANT/FLAG/VIOLATION |
-| **Level 4** | Fin-RWKV-169M | Końcowa weryfikacja — LOW/MEDIUM/HIGH |
-
-### Extraction Agent
-| Komponent | Model | Funkcja |
-|---|---|---|
-| **Główny silnik** | LightOnOCR-1B | Ekstrakcja danych z obrazów faktur (VLM — Vision Language Model) |
-| **Fallback** | Phi-3-mini 3.8B | Uruchamiany gdy LightOnOCR-1B nie zwróci poprawnego JSON |
-
-### Analytics Agent
-| Komponent | Model | Funkcja |
-|---|---|---|
-| **Hrida-T2SQL-128k** | Text-to-SQL | Tłumaczy pytania na zapytania SQL (128k okno kontekstowe) |
-| **Qwen2.5-1.5B-Instruct** | Analityk | Interpretuje wyniki SQL w języku naturalnym |
-| **Fin-RWKV-169M** | Detektyw | Wykrywa anomalie finansowe (attention-free, ekstremalnie szybki) |
-
-### Decision Agent (JambaStrategist)
-| Komponent | Model | Funkcja |
-|---|---|---|
-| **Strateg** | Jamba 3B | Strategic Reasoning — analizuje raporty ze wszystkich agentów i podejmuje ostateczną decyzję (AUTO_POST/SUGGEST/ESCALATE) |
-
-### Zarządzanie pamięcią (wspólne dla wszystkich agentów)
 1. **Lazy loading** — modele ładowane dopiero przy pierwszym zadaniu
 2. **Explicit unloading** — `del model` + `gc.collect()` po każdym zadaniu
-3. **Mutual exclusion** — w danym momencie tylko jeden model w RAM (ModelManager z asyncio.Semaphore(1))
-4. **TTL** — 5 minut bezczynności = automatyczne wyładowanie (config: `autopilot_model_ttl_seconds=600`)
+3. **Mutual exclusion** — w danym momencie tylko jeden model w RAM (ModelManager z `asyncio.Semaphore(1)`)
+4. **TTL** — 5 minut bezczynności = automatyczne wyładowanie
 
 ---
 
@@ -438,20 +530,19 @@ Komunikacja z zewnętrznymi API zabezpieczona przez **stamina** (retry + circuit
 | Kolejki / Komunikacja | 5 | NATS Server jako binarka (nie kontener) |
 | HTTP / Sieć | 3 | **+hishel** (nowość) |
 | Resilience | 1 | **stamina** zamiast tenacity+pybreaker (-1) |
-| Kryptografia / Bezpieczeństwo | 5 | **Nexus-Crypto** zamiast cryptography (-1) |
+| Kryptografia / Bezpieczeństwo | 3 (primary) + 2 (fallback) | **Nexus-Crypto** jako primary; **cryptography** opcjonalny dla RSA/X.509; **hashlib** opcjonalny dla streaming/HMAC/blake2b/MD5 |
 | Finanse / Waluty | 3 | **Nexus-Money** zamiast py-moneyed (+TigerBeetle Client) |
 | AI / ML | 2 | **-5** (usunięto: transformers, torch, sentence-transformers, onnxruntime, opencv) |
 | Modele AI | 10 | **+4** (LightOnOCR-1B, Phi-3-mini, Hrida-T2SQL, Fin-RWKV, Granite 4.0 1B, Jamba 3B; usunięto wcześniej: —) |
 | Logowanie / Monitoring | 4 | **+structlog, +DuckDB/Parquet**; prometheus_client → **OpenTelemetry**; Sentry usunięty |
-| Narzędzia | 3 | **pendulum** zamiast python-dateutil; **TOML+msgspec** zamiast PyYAML/python-dotenv |
+| Narzędzia | 4 | **+NexusCache (dyscache)** ; **pendulum** zamiast python-dateutil; **TOML+msgspec** zamiast PyYAML/python-dotenv |
 | Testowanie | 8 | **pytest-anyio** zamiast pytest-asyncio; +crosshair, +schemathesis, +locust, +py-spy; **locust** zamiast k6 |
 | Interfejs Desktopowy | 2 | — |
 | Infrastruktura / DevOps | 5 | **Lżejsze** — pixi zamiast Dockera dla dev |
-| Serwisy zewnętrzne | 4 | — |
-| Agenty AI | 5 | **Rozszerzone** — +Rules SWAT Team, +Decision Agent (JambaStrategist), +WorkflowPlanner |
+| Serwisy zewnętrzne | 4 | **+async close()** cleanup pattern |
 | Pliki konfiguracyjne | 10 | +pixi.toml; .env → **.toml** (msgspec); +models_manifest.json |
-| **Razem** | **~84** | **Zmniejszenie z ~120 do ~84** — mniej, ale wydajniej (+2 modele AI, +2 agenty AI) |
+| **Razem** | **~85** | **Zmniejszenie z ~120 do ~85** — mniej, ale wydajniej (+NexusCache, +async close(), +CachedHttpClient; -subprocess, -częściowo cryptography/hashlib) |
 
 ---
 
-> Dokument zaktualizowany — 2026-06-05 (przebudowa v2.0 wg `aa3fvcx.txt`)
+> Dokument zaktualizowany — 2026-06-10 (wersja 2.1: migracje stdlib → własne moduły)

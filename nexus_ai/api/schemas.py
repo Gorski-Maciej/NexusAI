@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from datetime import datetime
 from decimal import Decimal
+
+import pendulum
 
 import msgspec
 
@@ -62,7 +63,7 @@ class InvoiceResponse(msgspec.Struct):
     amount_gross: Money
     currency: str
     status: str # NEW, PROCESSING, APPROVED
-    created_at: datetime
+    created_at: pendulum.DateTime
     version_id: int = 1  # Optimistic locking (Rozwiązanie 23)
 
 class AnalyticsQuery(msgspec.Struct):
@@ -94,8 +95,8 @@ class InvoiceResponsePydantic(msgspec.Struct):
     amount_gross: float | None
     currency: str | None
     status: str
-    created_at: datetime
-    updated_at: datetime
+    created_at: pendulum.DateTime
+    updated_at: pendulum.DateTime
     version_id: int = 1  # Optimistic locking (Rozwiązanie 23)
 
 class DashboardSummaryResponse(msgspec.Struct):

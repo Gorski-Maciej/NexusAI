@@ -1,9 +1,19 @@
 from __future__ import annotations
 
 import csv
-import hashlib
 import uuid
 from dataclasses import dataclass
+
+# ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
+try:
+    from nexus_crypto import sha256 as _sha256
+    HAS_NEXUS_CRYPTO = True
+except ImportError:
+    import hashlib as _hashlib
+    HAS_NEXUS_CRYPTO = False
+
+    def _sha256(data: bytes) -> str:
+        return _hashlib.sha256(data).hexdigest()
 from decimal import Decimal
 from pathlib import Path
 from typing import Protocol
@@ -69,7 +79,7 @@ class ParserFactory:
 
 def generate_idempotency_id(tx: BankTransaction) -> uuid.UUID:
     raw = f"{tx.booking_date.isoformat()}|{tx.amount}|{tx.title}|{tx.counterparty_account}|{tx.balance_after}"
-    digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+    digest = _sha256(raw.encode("utf-8"))
     return uuid.uuid5(uuid.NAMESPACE_DNS, digest)
 
 

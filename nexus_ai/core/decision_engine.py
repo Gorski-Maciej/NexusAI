@@ -24,9 +24,25 @@ from typing import Any
 from uuid import uuid4
 import pendulum
 
+from nexus_ai.core.cache import get_cache
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.models import Invoice
+
+# NexusCache dla decision_rules (event-based invalidation)
+# Brak TTL — cache unieważniany przy każdej zmianie reguł przez API
+# Klucz: decision_rules:active — lista aktywnych reguł (list[dict])
+_rules_cache = get_cache()
+CACHE_KEY = "decision_rules:active"
+
+
+def invalidate_rules_cache() -> None:
+    """Unieważnij cache reguł decyzyjnych.
+
+    Wywoływana przy każdej zmianie reguł (add_rule, deprecate_rule, _seed_defaults).
+    Następne wywołanie _get_active_rules() załaduje świeże reguły z DuckDB.
+    """
+    _rules_cache.delete_sync(CACHE_KEY)
 
 
 # =========================================================================
@@ -159,6 +175,8 @@ class DecisionEngine:
                     "system",
                 ),
             )
+        # Unieważnij cache — świeże reguły w DuckDB
+        invalidate_rules_cache()
 
     def decide(
         self,
@@ -211,7 +229,18 @@ class DecisionEngine:
         )
 
     def _get_active_rules(self) -> list[dict[str, Any]]:
-        """Get active decision rules ordered by priority."""
+        """Get active decision rules ordered by priority.
+
+        Cache'owane w NexusCache (event-based invalidation).
+        Cache unieważniany przez invalidate_rules_cache() przy każdej
+        zmianie reguł (add_rule, deprecate_rule, seed) — nigdy nie wygasa
+        sam z siebie. Gwarantuje to świeżość reguł bez opóźnienia TTL.
+        """
+        # Sprawdź NexusCache (L1 RAM) — szybki path bez DuckDB
+        cached = _rules_cache.get_sync(CACHE_KEY)
+        if cached is not None:
+            return cached
+
         if not self._duckdb:
             return DEFAULT_DECISION_RULES
         try:
@@ -223,8 +252,9 @@ class DecisionEngine:
                    ORDER BY priority ASC"""
             )
             if not rows:
+                _rules_cache.set_sync(CACHE_KEY, DEFAULT_DECISION_RULES)
                 return DEFAULT_DECISION_RULES
-            return [
+            rules = [
                 {
                     "condition": msgspec_loads(r[0]) if isinstance(r[0], str) else r[0],
                     "output": msgspec_loads(r[1]) if isinstance(r[1], str) else r[1],
@@ -233,8 +263,62 @@ class DecisionEngine:
                 }
                 for r in rows
             ]
+            # Zapisz w NexusCache (bez TTL — unieważniamy ręcznie)
+            _rules_cache.set_sync(CACHE_KEY, rules)
+            return rules
         except Exception:
             return DEFAULT_DECISION_RULES
+
+    # ── Rule CRUD (z event-based cache invalidation) ────────────────────
+
+    def add_rule(
+        self,
+        condition: dict[str, Any],
+        output: dict[str, Any],
+        priority: int = 100,
+        valid_from: str | None = None,
+        valid_to: str | None = None,
+        created_by: str = "admin",
+    ) -> str | None:
+        """Dodaj nową regułę decyzyjną i unieważnij cache."""
+        if not self._duckdb:
+            return None
+        rule_id = str(uuid4())
+        try:
+            self._duckdb.execute(
+                """INSERT INTO decision_rules
+                   (rule_id, condition_json, output_json, priority, valid_from, valid_to, created_by)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                (
+                    rule_id,
+                    msgspec_dumps(condition),
+                    msgspec_dumps(output),
+                    priority,
+                    valid_from or pendulum.now("UTC").date().isoformat(),
+                    valid_to,
+                    created_by,
+                ),
+            )
+            invalidate_rules_cache()
+            return rule_id
+        except Exception:
+            return None
+
+    def deprecate_rule(self, rule_id: str) -> bool:
+        """Dezaktywuj regułę przez ustawienie valid_to = dzisiaj i unieważnij cache."""
+        if not self._duckdb:
+            return False
+        try:
+            today = pendulum.now("UTC").date().isoformat()
+            result = self._duckdb.execute(
+                "UPDATE decision_rules SET valid_to = CAST(? AS DATE) "
+                "WHERE rule_id = ? AND valid_to IS NULL",
+                (today, rule_id),
+            )
+            invalidate_rules_cache()
+            return bool(result)
+        except Exception:
+            return False
 
     @staticmethod
     def _match_condition(condition: dict[str, Any], features: dict[str, Any]) -> bool:

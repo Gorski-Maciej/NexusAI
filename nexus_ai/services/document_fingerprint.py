@@ -1,9 +1,20 @@
 from __future__ import annotations
 
-import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+import hashlib  # SHA-1, MD5, SHA-256 streaming — bez odpowiednika w nexus_crypto
+
+# ── SHA-256 (non-streaming) przez nexus-crypto (Rust+PyO3) ────────────────
+try:
+    from nexus_crypto import sha256 as _sha256
+    HAS_NEXUS_CRYPTO = True
+except ImportError:
+    HAS_NEXUS_CRYPTO = False
+
+    def _sha256(data: bytes) -> str:
+        return hashlib.sha256(data).hexdigest()
 
 from nexus_ai.db.analytics import DuckDBManager
 
@@ -23,6 +34,7 @@ class DocumentFingerprint:
 
 
 def _sha256_file(file_path: Path) -> str:
+    """Compute SHA-256 of a file (streaming via hashlib — nexus_crypto.sha256() doesn't support streaming)."""
     h = hashlib.sha256()
     with file_path.open("rb") as handle:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
@@ -108,7 +120,7 @@ def compute_monthly_merkle_root(binary_hashes: list[str]) -> str:
             level.append(level[-1])
         nxt: list[str] = []
         for i in range(0, len(level), 2):
-            nxt.append(hashlib.sha256(f"{level[i]}{level[i+1]}".encode()).hexdigest())
+            nxt.append(_sha256(f"{level[i]}{level[i+1]}".encode()))
         level = nxt
     return level[0]
 

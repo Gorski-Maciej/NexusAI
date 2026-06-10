@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
 from decimal import Decimal
 from typing import Any
 from uuid import uuid4
@@ -21,7 +20,7 @@ class InvoiceDTO(msgspec.Struct, kw_only=True):
     amount_net: Decimal
     amount_gross: Decimal
     currency: str = "PLN"
-    created_at: datetime
+    created_at: pendulum.DateTime
     pending: bool = False
 
 @dataclass(slots=True)

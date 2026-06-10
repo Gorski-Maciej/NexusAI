@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from datetime import date
 from dataclasses import dataclass
+
+import pendulum
 from decimal import Decimal
 from typing import Any
 
@@ -25,8 +26,8 @@ class ShadowLedgerInput:
     company_id: str
     legal_form: LegalForm
     vat_proportion: float
-    month_start: date
-    month_end: date
+    month_start: pendulum.Date
+    month_end: pendulum.Date
 
 
 class TaxSimulator:

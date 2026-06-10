@@ -15,7 +15,6 @@ Usage:
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime
 from typing import Any
 
 import pendulum
@@ -48,7 +47,7 @@ class HotReloadListener:
         self._subs: list[Any] = []
         self._task: asyncio.Task[None] | None = None
         self._stop_event = asyncio.Event()
-        self._started_at: datetime | None = None
+        self._started_at: pendulum.DateTime | None = None
         self._event_counts: dict[str, int] = {s: 0 for s in SUBJECTS}
         self._last_event_at: dict[str, str] = {}
 

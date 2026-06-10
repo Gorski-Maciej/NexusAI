@@ -1,4 +1,4 @@
-import hashlib
+import hashlib  # streaming SHA-256 for file uploads (nexus_crypto doesn't support streaming)
 import os
 import uuid
 from pathlib import Path

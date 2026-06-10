@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Any
 
 import pendulum
@@ -43,8 +42,8 @@ class PersistedSagaStore:
     @staticmethod
     def _parse_timestamp(value: Any) -> pendulum.DateTime:
         """Konwertuje timestamp z SQLite (string lub datetime) na pendulum.DateTime."""
-        if isinstance(value, (datetime, pendulum.DateTime)):
-            return pendulum.instance(value) if isinstance(value, datetime) else value
+        if isinstance(value, pendulum.DateTime):
+            return value
         if isinstance(value, str):
             try:
                 return pendulum.parse(value)

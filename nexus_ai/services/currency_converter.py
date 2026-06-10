@@ -21,6 +21,8 @@ from sqlalchemy import DECIMAL as SADECIMAL
 from sqlalchemy import TypeDecorator
 from structlog import get_logger
 
+from nexus_ai.core.cache import get_cache
+
 logger = get_logger("nexus.currency")
 
 
@@ -57,7 +59,7 @@ class CurrencyMismatchError(ValueError):
 class CurrencyRateNotFoundError(ValueError):
     """Raised when exchange rate is not available for a given currency/date."""
 
-    def __init__(self, currency: str, rate_date: date) -> None:
+    def __init__(self, currency: str, rate_date: pendulum.Date) -> None:
         super().__init__(
             f"No exchange rate found for {currency} on {rate_date.isoformat()}. "
             f"Available currencies: PLN, EUR, USD, GBP, CHF, CZK, NOK, SEK, DKK, HUF"
@@ -204,14 +206,23 @@ class CurrencyConverter:
     def __init__(self, conn: duckdb.DuckDBPyConnection) -> None:
         self._conn = conn
         conn.execute(EXCHANGE_RATES_SCHEMA)
+        # NexusCache (L1 RAM) for faster rate lookups (synchroniczne get_sync/set_sync)
+        self._cache = get_cache()
+
+    async def close(self) -> None:
+        """Zamknij połączenie DuckDB — zwolnij plik/katalog bazy danych."""
+        self._conn.close()
 
     def convert(
         self,
         amount: Money,
         target_currency: str = "PLN",
-        rate_date: date | None = None,
+        rate_date: pendulum.Date | None = None,
     ) -> Money:
         """Convert amount to target currency using NBP mid-rate.
+
+        Wykorzystuje NexusCache (L1 RAM) dla szybkiego dostępu do kursów.
+        Metoda pozostaje synchroniczna — NexusCache jest używany przez get_sync().
 
         Args:
             amount: Money to convert.
@@ -243,8 +254,15 @@ class CurrencyConverter:
         )
         return Money(converted_cents, target_currency)
 
-    def _get_rate(self, currency: str, rate_date: date) -> Decimal:
-        """Get exchange rate from cache or NBP API.
+    def _get_rate(self, currency: str, rate_date: pendulum.Date) -> Decimal:
+        """Get exchange rate from NexusCache → DuckDB → NBP API.
+
+        Kolejność sprawdzania:
+          1. NexusCache (L1 RAM — najszybszy, przez get_sync)
+          2. DuckDB (exchange_rates — autorytatywny magazyn)
+          3. NBP API (synchroniczne httpx)
+
+        Metoda pozostaje synchroniczna dla kompatybilności z istniejącymi callerami.
 
         For PLN → other: use 1/rate (divide)
         For other → PLN: use rate directly (multiply)
@@ -258,7 +276,13 @@ class CurrencyConverter:
         if normalized_currency not in self.KNOWN_CURRENCIES:
             raise CurrencyRateNotFoundError(normalized_currency, rate_date)
 
-        # Check cache first (use last available rate if exact date missing)
+        # Check NexusCache first (L1 RAM → fastest)
+        cache_key = f"fx_rate:{normalized_currency}:{rate_date.isoformat()}"
+        cached_rate = self._cache.get_sync(cache_key)
+        if cached_rate is not None:
+            return Decimal(str(cached_rate))
+
+        # Check DuckDB next (authoritative persistent store)
         row = self._conn.execute(
             """SELECT rate_pln FROM exchange_rates
                WHERE currency = ? AND rate_date <= ?
@@ -267,23 +291,28 @@ class CurrencyConverter:
         ).fetchone()
 
         if row:
-            return Decimal(str(row[0]))
+            rate = Decimal(str(row[0]))
+            # Warm NexusCache for future lookups
+            self._cache.set_sync(cache_key, str(rate))
+            return rate
 
         # Fetch from NBP API
         rate = self._fetch_nbp_rate(normalized_currency, rate_date)
 
-        # Store in cache
+        # Store in both DuckDB (authoritative) and NexusCache (fast)
         self._conn.execute(
             """INSERT INTO exchange_rates (currency, rate_date, rate_pln)
                VALUES (?, ?, ?)""",
             (normalized_currency, rate_date.isoformat(), str(rate)),
         )
+        self._cache.set_sync(cache_key, str(rate))
         return rate
 
-    def _fetch_nbp_rate(self, currency: str, rate_date: date) -> Decimal:
+    def _fetch_nbp_rate(self, currency: str, rate_date: pendulum.Date) -> Decimal:
         """Fetch exchange rate from NBP API.
 
-        Uses Table A (mid rates). Tries last 3 business days if weekend/holiday.
+        Uses Table A (mid rates). Synchroniczna — NBP API jest proste.
+        Tries last 3 business days if weekend/holiday.
         """
         import httpx
 
@@ -320,7 +349,7 @@ class CurrencyConverter:
         original: Money,
         converted: Money,
         rate: Decimal,
-        rate_date: date,
+        rate_date: pendulum.Date,
     ) -> dict[str, Any]:
         """Build an auditable conversion record for decision_traces."""
         return {

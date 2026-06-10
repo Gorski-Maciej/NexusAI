@@ -27,14 +27,18 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass, field
-from datetime import date
 from typing import Any, Callable
 
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
+from nexus_ai.core.cache import get_cache
 from nexus_ai.core.embeddings import EmbeddingService, get_embedding_service
 from nexus_ai.core.logger import get_logger
+
+
+# ── Globalny cache dla FactSheet (współdzielony między build() calls) ──
+_few_shot_nexus = get_cache(default_ttl=300)  # 5 min TTL dla przykładów few-shot
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.models import ActiveLearningPattern, Contractor, Invoice
 from nexus_ai.db.vector_store import VectorStore
@@ -136,11 +140,8 @@ class FactSheet:
     # Czas budowania w ms
     build_duration_ms: float = 0.0
 
-    # Cache dla build_few_shot_examples — klucz: max_examples, wartość: gotowy string
-    # Jeśli dane źródłowe (recent_invoices, similar_invoices, trust_score_trend,
-    # user_correction_patterns) się nie zmieniły, zwracamy cache zamiast przeliczać.
-    _few_shot_cache: dict[int, str] = field(default_factory=dict)
-    _few_shot_data_hash: int = 0
+    # (Cache przeniesiony do NexusCache — _few_shot_nexus na poziomie modułu)
+    # Klucz: few_shot:{data_hash}:{max_examples}, TTL: 300s, L1 RAM + L2 SQLite
 
     def to_dict(self) -> dict[str, Any]:
         """Konwertuj FactSheet na słownik (do wstrzyknięcia w prompt)."""
@@ -319,8 +320,9 @@ class FactSheet:
             String z przykładami few-shot gotowymi do wstrzyknięcia w prompt.
             Pusty string jeśli brak danych.
         """
-        # Oblicz hash danych źródłowych — jeśli taki sam jak poprzednio i cache
-        # zawiera wpis dla tego max_examples, zwróć cache bez przeliczania.
+        # Sprawdź NexusCache (L1 RAM + L2 SQLite) — jeśli dane źródłowe
+        # się nie zmieniły, zwróć cache bez przeliczania.
+        # Klucz uwzględnia hash danych źródłowych i max_examples.
         data_hash = hash((
             str(self.recent_invoices),
             str(self.similar_invoices),
@@ -329,10 +331,10 @@ class FactSheet:
             str(self.trust_score_trend.get("decisions_breakdown", {})),
             str(self.user_correction_patterns),
         ))
-        if data_hash == self._few_shot_data_hash and max_examples in self._few_shot_cache:
-            cached = self._few_shot_cache[max_examples]
-            if cached:
-                logger.debug("[FactSheet] few-shot cache hit: %d chars", len(cached))
+        cache_key = f"few_shot:{data_hash}:{max_examples}"
+        cached = _few_shot_nexus.get_sync(cache_key)
+        if cached is not None:
+            logger.debug("[FactSheet] few-shot cache HIT: %d chars (key=%s)", len(cached), cache_key)
             return cached
 
         examples: list[str] = []
@@ -494,18 +496,16 @@ class FactSheet:
             examples.append(corrections_text.strip())
 
         if not examples:
-            self._few_shot_data_hash = data_hash
-            self._few_shot_cache[max_examples] = ""
+            _few_shot_nexus.set_sync(cache_key, "", ttl=300)
             return ""
 
         result = "=== PRZYKŁADY FEW-SHOT (historyczne decyzje) ==="
         for i, example in enumerate(examples, 1):
             result += f"\n\nPrzykład {i}:\n{example}"
 
-        # Zapisz do cache
-        self._few_shot_data_hash = data_hash
-        self._few_shot_cache[max_examples] = result
-        logger.debug("[FactSheet] few-shot cached: %d chars for max_examples=%d", len(result), max_examples)
+        # Zapisz do NexusCache (L1 RAM + L2 SQLite) z TTL 300s
+        _few_shot_nexus.set_sync(cache_key, result, ttl=300)
+        logger.debug("[FactSheet] few-shot cached: %d chars (key=%s)", len(result), cache_key)
 
         return result
 
@@ -549,10 +549,11 @@ class FactsAggregator:
         self._vendor_analyst = vendor_analyst
         self._tigerbeetle = tigerbeetle_client
 
-        # Cache dla _enrich_similar_with_decision()
-        # Klucz: invoice_id (str), wartość: słownik z polami status/number/amount
-        # Dzięki temu wielokrotne wzbogacanie tych samych ID nie odpybuje SQLite.
-        self._enrich_cache: dict[str, dict[str, Any]] = {}
+        # NexusCache dla _enrich_similar_with_decision()
+        # Klucz: enrich:{invoice_id}, wartość: dict (status/number/amount/council_decision)
+        # TTL: 300s (5 min) — wystarczy na czas budowania FactSheet, nie kumuluje starych ID.
+        # Wielopoziomowe: L1 RAM (błyskawiczny odczyt w pętli) + L2 SQLite (persistence).
+        self._cache = get_cache(default_ttl=300)
 
     # ── Główna metoda ──────────────────────────────────────────────
 
@@ -1002,10 +1003,11 @@ class FactsAggregator:
                     inv["status"] = "?"
                     continue
 
-                # Sprawdź cache — jeśli ID było już wcześniej wzbogacone,
-                # pomiń zapytania i użyj zapamiętanych danych.
-                if inv_id in self._enrich_cache:
-                    cached = self._enrich_cache[inv_id]
+                # Sprawdź NexusCache (L1 RAM + L2 SQLite) — jeśli ID było już
+                # wcześniej wzbogacone, pomiń zapytania i użyj zapamiętanych danych.
+                cache_key = f"enrich:{inv_id}"
+                cached = await self._cache.get(cache_key)
+                if cached is not None:
                     inv["status"] = cached.get("status", "?")
                     inv["number"] = cached.get("number", "")
                     inv["amount_net"] = cached.get("amount_net", 0.0)
@@ -1061,8 +1063,8 @@ class FactsAggregator:
                         )
                         enriched["council_decision"] = None
 
-                # Zapisz do cache
-                self._enrich_cache[inv_id] = enriched
+                # Zapisz do NexusCache (L1 RAM + L2 SQLite) z TTL 300s
+                await self._cache.set(cache_key, enriched, ttl=300)
 
                 # Aplikuj wzbogacone pola na oryginalny słownik
                 inv["status"] = enriched.get("status", "?")

@@ -2,10 +2,13 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from functools import lru_cache
 from pathlib import Path
 
+from nexus_ai.core.cache import get_cache
 from nexus_ai.core.msgspec_utils import msgspec_loads
+
+
+_prompt_cache = get_cache(default_ttl=3600)  # 1h TTL dla promptów
 
 
 class PromptTemplate(StrEnum):
@@ -39,16 +42,27 @@ _DEFAULT_PROMPTS = {
 }
 
 
-@lru_cache(maxsize=16)
 def _load_prompt_pack(lang: str) -> dict[PromptTemplate, str]:
     lang = (lang or "pl").lower().strip()
+    cache_key = f"prompt_pack:{lang}"
+
+    # Sprawdź NexusCache (L1 RAM + L2 SQLite)
+    cached = _prompt_cache.get_sync(cache_key)
+    if cached is not None:
+        return cached
+
     pack_path = Path(__file__).with_name("prompts") / f"{lang}.json"
     if not pack_path.exists():
-        return _DEFAULT_PROMPTS.get(lang, _DEFAULT_PROMPTS.get("pl", {}))
+        result = _DEFAULT_PROMPTS.get(lang, _DEFAULT_PROMPTS.get("pl", {}))
+        _prompt_cache.set_sync(cache_key, result, ttl=3600)
+        return result
+
     try:
         payload = msgspec_loads(pack_path.read_bytes())
     except Exception:
-        return _DEFAULT_PROMPTS.get(lang, _DEFAULT_PROMPTS.get("pl", {}))
+        result = _DEFAULT_PROMPTS.get(lang, _DEFAULT_PROMPTS.get("pl", {}))
+        _prompt_cache.set_sync(cache_key, result, ttl=3600)
+        return result
 
     prompt_map: dict[PromptTemplate, str] = {}
     for key, value in payload.items():
@@ -58,13 +72,17 @@ def _load_prompt_pack(lang: str) -> dict[PromptTemplate, str]:
         except ValueError:
             continue
     if not prompt_map:
-        return _DEFAULT_PROMPTS.get(lang, _DEFAULT_PROMPTS.get("pl", {}))
+        result = _DEFAULT_PROMPTS.get(lang, _DEFAULT_PROMPTS.get("pl", {}))
+        _prompt_cache.set_sync(cache_key, result, ttl=3600)
+        return result
 
     # Ensure all known templates exist (fallback per-template).
     for template in PromptTemplate:
         if template not in prompt_map:
             fallback = _DEFAULT_PROMPTS.get(lang, {}).get(template) or _DEFAULT_PROMPTS["pl"][template]
             prompt_map[template] = fallback
+
+    _prompt_cache.set_sync(cache_key, prompt_map, ttl=3600)
     return prompt_map
 
 

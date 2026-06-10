@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from datetime import date
 from dataclasses import dataclass
+
+import pendulum
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
@@ -29,7 +30,7 @@ def _to_decimal(value: Any, quant: Decimal) -> Decimal:
 class InventoryBatch:
     batch_id: str
     product_id: str
-    received_date: date
+    received_date: pendulum.Date
     remaining_qty: Decimal
     unit_cost_net: Decimal
     source_document_id: str | None = None

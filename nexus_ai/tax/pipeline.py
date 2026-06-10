@@ -13,7 +13,6 @@ Tax Pipeline — orchestrates the complete tax processing flow.
 
 from __future__ import annotations
 
-import datetime
 import uuid
 from dataclasses import dataclass
 from decimal import Decimal
@@ -316,7 +315,7 @@ class TaxPipeline:
                 "brutto_grosze": total_brutto_grosze,
                 "account_debit": "expenses",
                 "account_credit": "liabilities",
-                "timestamp": datetime.now(datetime.timezone.utc).isoformat(),
+                "timestamp": pendulum.now("UTC").isoformat(),
             }
             try:
                 await self._write_outbox(outbox_payload)

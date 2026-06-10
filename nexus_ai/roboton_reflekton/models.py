@@ -9,7 +9,6 @@ Zgodnie z aa3fvcx.txt:
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum as BaseStrEnum
 
@@ -70,7 +69,7 @@ class CompanyProfile(SQLModel, table=True):
     vat_proportion: Decimal | None = Field(default=None, max_digits=5, decimal_places=4)
     tigerbeetle_ledger_map: str = Field(default="{}")  # JSON as TEXT
     company_policy: str = Field(default="{}")  # JSON as TEXT
-    created_at: datetime = Field(default_factory=lambda: pendulum.now("UTC"), nullable=False)
+    created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"), nullable=False)
 
     # Relationship fields (SQLModel) — bez type annotations
 
@@ -96,7 +95,7 @@ class TaxPolicy(SQLModel, table=True):
     pit_costs_enabled: bool = Field(default=True, nullable=False)
     requires_full_ledger: bool = Field(default=False, nullable=False)
     vat_settlement_cycle: str = Field(default="monthly", nullable=False, max_length=32)
-    effective_from: datetime = Field(default_factory=lambda: pendulum.now("UTC"), nullable=False)
+    effective_from: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"), nullable=False)
 
 
 class LedgerTransfer(SQLModel, table=True):
@@ -112,7 +111,7 @@ class LedgerTransfer(SQLModel, table=True):
     source_document_id: str = Field(nullable=False, max_length=128)
     status: str = Field(default=TransferStatus.PENDING, nullable=False, max_length=32)
     meta: str = Field(default="{}")  # JSON as TEXT
-    created_at: datetime = Field(default_factory=lambda: pendulum.now("UTC"), nullable=False)
+    created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"), nullable=False)
 
 
 class FinancialPeriod(SQLModel, table=True):
@@ -122,5 +121,5 @@ class FinancialPeriod(SQLModel, table=True):
     period_id: str = Field(primary_key=True, max_length=7)
     company_id: str = Field(foreign_key="company_profiles.id", primary_key=True, nullable=False)
     status: str = Field(default=FinancialPeriodStatus.OPEN, nullable=False, max_length=32)
-    closed_at: datetime | None = Field(default=None)
+    closed_at: pendulum.DateTime | None = Field(default=None)
     vat_declaration_id: str | None = Field(default=None, max_length=128)

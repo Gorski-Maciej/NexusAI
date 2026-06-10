@@ -3,9 +3,10 @@ import logging
 import os
 import secrets
 import socket
-import subprocess
 import sys
 from pathlib import Path
+
+import anyio
 
 import flet as ft
 import pendulum
@@ -35,7 +36,6 @@ logger = get_logger("nexus.main")
 
 # --- IMPORTY WEWNĘTRZNE ---
 from nexus_ai.core.config import AppConfig  # noqa: E402
-from nexus_ai.scripts.doctor import run_diagnostics  # noqa: E402
 from nexus_ai.scripts.setup_env import bootstrap_system  # noqa: E402
 
 
@@ -73,10 +73,10 @@ class NexusOrchestrator:
         nats_path = self.config.base_dir / nats_bin
         if nats_path.exists():
             logger.info("Uruchamianie NATS JetStream...")
-            self.nats_process = subprocess.Popen(
+            self.nats_process = await anyio.Process(
                 [str(nats_path), "-p", "4222", "-js"],
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-            )
+                stdout=anyio.ProcessPipe.DEVNULL, stderr=anyio.ProcessPipe.DEVNULL
+            ).__aenter__()
             await asyncio.sleep(2)
         else:
             logger.error("Nie znaleziono binarki NATS!")
@@ -85,7 +85,7 @@ class NexusOrchestrator:
         """Uruchamia proces Taskiq worker (OCR/AI)."""
         logger.info("Uruchamianie Workera AI...")
         cmd = [sys.executable, "-m", "taskiq", "worker", "worker:broker", "--fs-startup"]
-        self.worker_process = subprocess.Popen(cmd)
+        self.worker_process = await anyio.Process(cmd).__aenter__()
 
     async def start_backend_api(self, port: int):
         """Uruchamia serwer API (Litestar + Granian) jako proces."""
@@ -96,23 +96,20 @@ class NexusOrchestrator:
 
         # Granian zamiast Uvicorn
         logger.info(f"Inicjalizacja API (Granian) na http://127.0.0.1:{port}")
-        self.api_process = subprocess.Popen(
+        self.api_process = await anyio.Process(
             [sys.executable, "-c",
              f"import granian; granian.Granian('api.app:create_app', host='127.0.0.1', port={port}).serve()"],
             env=backend_env,
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
+            stdout=anyio.ProcessPipe.PIPE, stderr=anyio.ProcessPipe.PIPE,
+        ).__aenter__()
         await asyncio.sleep(2)
 
     def cleanup(self):
         """Krytyczne sprzątanie procesów."""
         logger.info("Zamykanie komponentów Nexus AI...")
-        if self.worker_process:
-            self.worker_process.terminate()
-        if self.nats_process:
-            self.nats_process.terminate()
-        if self.api_process:
-            self.api_process.terminate()
+        for proc in [self.worker_process, self.nats_process, self.api_process]:
+            if proc is not None and proc.returncode is None:
+                proc.terminate()
         logger.info("System zamknięty pomyślnie.")
 
 
@@ -143,7 +140,7 @@ async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
     status_text.value = "Krok 1/4: Sprawdzanie bazy danych..."
     page.update()
     await bootstrap_system()
-    run_diagnostics()
+    await nexus_ai.scripts.doctor.run_diagnostics()
 
     status_text.value = "Krok 2/4: Uruchamianie magistrali danych..."
     page.update()

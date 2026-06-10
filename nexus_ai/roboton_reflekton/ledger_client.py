@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import hashlib
+import hashlib  # blake2b for deterministic account IDs (not available in nexus_crypto)
 import os
 import uuid
 from dataclasses import dataclass

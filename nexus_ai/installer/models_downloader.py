@@ -13,7 +13,7 @@ Supports:
 from __future__ import annotations
 
 import asyncio
-import hashlib
+import hashlib  # streaming SHA-256 for file verification (nexus_crypto doesn't support streaming)
 import sys
 from dataclasses import dataclass
 from pathlib import Path

@@ -1,9 +1,10 @@
 # build_nexus.py
-import subprocess
 import sys
 
+import anyio
 
-def build_executable():
+
+async def build_executable():
     """Kompiluje aplikację do natywnego pliku .exe za pomocą Nuitki."""
     command = [
         sys.executable, "-m", "nuitka",
@@ -18,11 +19,11 @@ def build_executable():
     ]
 
     print("Rozpoczynam kompilację Nuitka. To może potrwać kilkadziesiąt minut...")
-    subprocess.run(command, check=True)
+    await anyio.run_process(command, check=True)
 
 
 if __name__ == "__main__":
-    build_executable()
+    anyio.run(build_executable)
 
 # Sekwencja komend do CI/CD lub uruchamiania lokalnego
 

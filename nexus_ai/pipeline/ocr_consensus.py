@@ -133,18 +133,11 @@ class TesseractEngine:
         if not self._available:
             return None
         try:
-            import subprocess
-
-            def _run() -> str | None:
-                result = subprocess.run(
-                    ["tesseract", str(image_path), "stdout", "-l", self.lang],
-                    capture_output=True, text=True, timeout=60,
-                )
-                if result.returncode == 0:
-                    return result.stdout.strip()
-                return None
-
-            return await anyio.to_thread.run_sync(_run)
+            result = await anyio.run_process(
+                ["tesseract", str(image_path), "stdout", "-l", self.lang],
+                timeout=60,
+            )
+            return result.stdout.strip() if result.returncode == 0 else None
         except Exception as exc:
             logger.error("[OCR] Tesseract failed: %s", exc)
             return None

@@ -303,7 +303,7 @@ async def download_update(
 
 # ── Install update ──────────────────────────────────────────────────────────
 
-def install_update(installer_path: Path) -> None:
+async def install_update(installer_path: Path) -> None:
     """Launch the downloaded installer and exit the current application.
 
     On Windows, runs the installer with silent flag.
@@ -317,19 +317,19 @@ def install_update(installer_path: Path) -> None:
         logger.warning("Auto-update only supported on Windows")
         return
 
-    import subprocess
-
     logger.info("Launching installer: %s", installer_path)
 
     try:
-        # Launch the installer with silent flag
+        # Launch the installer with silent flag (fire-and-forget — must outlive the app)
         # /S = silent install (NSIS), /VERYSILENT = silent (Inno Setup)
-        subprocess.Popen(
-            [str(installer_path), "/S", "/CLOSEAPPLICATIONS"],
-            shell=True,
+        proc = await asyncio.create_subprocess_exec(
+            str(installer_path), "/S", "/CLOSEAPPLICATIONS",
+            stdout=asyncio.subprocess.DEVNULL,
+            stderr=asyncio.subprocess.DEVNULL,
         )
+        logger.info("Installer launched (PID: %s)", proc.pid)
 
-        # Schedule cleanup of temp files
+        # Schedule cleanup of temp files (fire-and-forget)
         temp_dir = installer_path.parent
         cleanup_script = temp_dir / "cleanup.bat"
         with open(cleanup_script, "w") as f:
@@ -337,10 +337,8 @@ def install_update(installer_path: Path) -> None:
             f.write("timeout /t 30 /nobreak >nul\n")
             f.write(f"rmdir /s /q \"{temp_dir}\"\n")
             f.write("del \"%~f0\"\n")
-        subprocess.Popen(
-            ["cmd", "/c", str(cleanup_script)],
-            shell=True,
-            creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, "CREATE_NO_WINDOW") else 0,
+        await asyncio.create_subprocess_exec(
+            "cmd", "/c", str(cleanup_script),
         )
 
     except Exception as e:

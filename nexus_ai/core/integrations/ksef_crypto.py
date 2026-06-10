@@ -12,6 +12,14 @@ import base64
 
 import pendulum
 
+# ── Optional: cryptography for RSA (niedostępne w nexus-crypto) ──────────────
+try:
+    from cryptography.hazmat.primitives import serialization as _serialization
+    from cryptography.hazmat.primitives.asymmetric import padding as _asym_padding
+    _HAS_CRYPTOGRAPHY = True
+except ImportError:
+    _HAS_CRYPTOGRAPHY = False
+
 
 class KsefCryptoProvider:
     """Implementacja standardu bezpieczeństwa KSeF (MF).
@@ -25,17 +33,18 @@ class KsefCryptoProvider:
 
         Args:
             public_key_path: Ścieżka do pliku .crt / .pem z kluczem publicznym MF.
+
+        Raises:
+            ImportError: Jeśli cryptography nie jest zainstalowane.
         """
-        try:
-            from cryptography.hazmat.primitives import serialization
-        except ImportError:
+        if not _HAS_CRYPTOGRAPHY:
             raise ImportError(
                 "KsefCryptoProvider requires the `cryptography` package for RSA support. "
                 "Install it with: pip install cryptography"
-            ) from None
+            )
 
         with open(public_key_path, "rb") as key_file:
-            self.public_key = serialization.load_pem_public_key(key_file.read())
+            self.public_key = _serialization.load_pem_public_key(key_file.read())
 
     def encrypt_authorization_token(self, challenge: str, auth_token: str) -> str:
         """Szyfruje token autoryzacyjny połączony z wyzwaniem (challenge).
@@ -49,19 +58,17 @@ class KsefCryptoProvider:
         Returns:
             Zaszyfrowany token w base64.
         """
-        try:
-            from cryptography.hazmat.primitives.asymmetric import padding
-        except ImportError:
+        if not _HAS_CRYPTOGRAPHY:
             raise ImportError(
                 "KsefCryptoProvider requires the `cryptography` package. "
                 "Install it with: pip install cryptography"
-            ) from None
+            )
 
         timestamp = int(pendulum.now().timestamp() * 1000)
         message = f"{challenge}|{auth_token}|{timestamp}".encode()
 
         encrypted = self.public_key.encrypt(
             message,
-            padding.PKCS1v15(),  # Obowiązkowy standard KSeF
+            _asym_padding.PKCS1v15(),  # Obowiązkowy standard KSeF
         )
         return base64.b64encode(encrypted).decode('utf-8')

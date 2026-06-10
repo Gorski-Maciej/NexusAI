@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import uuid
-from datetime import date
 from dataclasses import dataclass
+
+import pendulum
 from typing import Protocol
 
 from sqlalchemy import select
@@ -50,8 +51,8 @@ class RobotonWorker:
         self.agent = agent
 
     def _apply_financial_period_lock(self, company_id: uuid.UUID, event: dict) -> dict:
-        issue_date = date.fromisoformat(str(event["date_of_issue"]))
-        tax_point_date = date.fromisoformat(str(event.get("tax_point_date", event["date_of_issue"])))
+        issue_date = pendulum.parse(str(event["date_of_issue"])).date()
+        tax_point_date = pendulum.parse(str(event.get("tax_point_date", event["date_of_issue"]))).date()
         period_id = issue_date.format("YYYY-MM")
 
         period = self.session.scalar(
@@ -70,7 +71,7 @@ class RobotonWorker:
         if open_period is None:
             raise PeriodLockedException("No OPEN financial period available for HARD_CLOSED shift")
 
-        shifted_date = date.fromisoformat(f"{open_period.period_id}-01")
+        shifted_date = pendulum.Date.fromisoformat(f"{open_period.period_id}-01")
         event["posting_date"] = shifted_date.isoformat()
         event["tax_point_date"] = shifted_date.isoformat()
         metadata = dict(event.get("metadata", {}))

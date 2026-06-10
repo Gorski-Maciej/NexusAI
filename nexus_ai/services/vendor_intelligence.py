@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass
 
+from nexus_ai.core.cache import get_cache
 from nexus_ai.db.analytics import DuckDBManager
 
 
@@ -17,11 +18,19 @@ class VendorMetric:
 
 
 class VendorAnalyst:
-    """Background analytical engine for local-first vendor intelligence."""
+    """Background analytical engine for local-first vendor intelligence.
+
+    Zgodnie z aa3fvcx.txt:
+    - Używa NexusCache (L1 RAM + L2 SQLite) dla wyników vendor context.
+    - Cache TTL: 3600s (1h) — dane kontrahentów zmieniają się powoli.
+    """
+
+    _CACHE_TTL = 3600  # 1h — dane kontrahentów zmieniają się powoli
 
     def __init__(self, duckdb: DuckDBManager, refresh_seconds: int = 3600) -> None:
         self.duckdb = duckdb
         self.refresh_seconds = refresh_seconds
+        self._cache = get_cache()
         self._running = False
 
     async def run_forever(self) -> None:
@@ -130,6 +139,17 @@ class VendorAnalyst:
         """)
 
     def get_vendor_context(self, nip: str) -> str:
+        """Pobierz kontekst kontrahenta z cache'em (NexusCache L1 RAM).
+
+        Wynik jest cache'owany przez 1h w NexusCache RAM.
+        Metoda pozostaje synchroniczna — używa get_sync/set_sync.
+        """
+        cache_key = f"vendor_context:{nip}"
+
+        cached = self._cache.get_sync(cache_key)
+        if cached is not None:
+            return str(cached)
+
         rows = self.duckdb.execute(
             """
             SELECT nip, vendor_name, avg_payment_delay, price_volatility_index,
@@ -140,14 +160,17 @@ class VendorAnalyst:
             (nip,),
         )
         if not rows:
-            return f"No local vendor intelligence found for NIP {nip}."
+            result = f"No local vendor intelligence found for NIP {nip}."
+        else:
+            v = rows[0]
+            result = (
+                f"Vendor {v[1]} (NIP: {v[0]}). "
+                f"Average payment delay: {v[2]:.1f} days. "
+                f"Price volatility index: {v[3]:.2f}%. "
+                f"YTD volume: {v[4]:.2f}. "
+                f"Reliability score: {v[5]:.2f}/5 ({v[6]} stars). "
+                f"Smart alert: {v[7]}."
+            )
 
-        v = rows[0]
-        return (
-            f"Vendor {v[1]} (NIP: {v[0]}). "
-            f"Average payment delay: {v[2]:.1f} days. "
-            f"Price volatility index: {v[3]:.2f}%. "
-            f"YTD volume: {v[4]:.2f}. "
-            f"Reliability score: {v[5]:.2f}/5 ({v[6]} stars). "
-            f"Smart alert: {v[7]}."
-        )
+        self._cache.set_sync(cache_key, result, ttl=self._CACHE_TTL)
+        return result

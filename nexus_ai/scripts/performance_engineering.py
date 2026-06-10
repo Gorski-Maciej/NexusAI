@@ -12,19 +12,21 @@ import argparse
 import csv
 import os
 import shutil
-import subprocess
 import sys
 from pathlib import Path
+
+import anyio
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 
 
-def _run(cmd: list[str]) -> int:
+async def _run(cmd: list[str]) -> int:
     print("[perf]", " ".join(cmd))
-    return subprocess.run(cmd, check=False).returncode
+    result = await anyio.run_process(cmd)
+    return result.returncode
 
 
-def run_locust(script: Path, base_url: str, token: str, vus: int, duration: str, out: Path) -> int:
+async def run_locust(script: Path, base_url: str, token: str, vus: int, duration: str, out: Path) -> int:
     """Run locust load test and export JSON summary.
 
     Zgodnie z aa3fvcx.txt: locust zastępuje k6.
@@ -58,8 +60,9 @@ def run_locust(script: Path, base_url: str, token: str, vus: int, duration: str,
         cmd.extend(["-e", f"TOKEN={token}"])
     timeout_s = int(os.getenv("NEXUS_PERF_LOCUST_TIMEOUT_SEC", "3600"))
     try:
-        return subprocess.run(cmd, check=False, timeout=timeout_s).returncode
-    except subprocess.TimeoutExpired:
+        result = await anyio.run_process(cmd, timeout=timeout_s)
+        return result.returncode
+    except TimeoutError:
         print(f"[perf] locust command timeout after {timeout_s}s", file=sys.stderr)
         return 1
 
@@ -130,7 +133,7 @@ def _write_gate_summary(*, rc: int, summary: Path, max_p95_ms: float, max_error_
     (summary.parent / "perf_gate_summary.json").write_text(msgspec_dumps(gate, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def main() -> int:
+async def main() -> int:
     parser = argparse.ArgumentParser(description="Run load tests (locust) and enforce SLO thresholds.")
     parser.add_argument("--script", default="tests/performance/locustfile.py")
     parser.add_argument("--base-url", required=True)
@@ -145,7 +148,7 @@ def main() -> int:
     args = parser.parse_args()
 
     summary = Path(args.summary)
-    rc = run_locust(Path(args.script), args.base_url, args.token, args.vus, args.duration, summary)
+    rc = await run_locust(Path(args.script), args.base_url, args.token, args.vus, args.duration, summary)
     if rc not in (0, 2):
         _write_gate_summary(rc=rc, summary=summary, max_p95_ms=args.max_p95_ms, max_error_rate=args.max_error_rate, max_p99_ms=args.max_p99_ms, min_rps=args.min_rps)
         return rc
@@ -159,4 +162,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(anyio.run(main))

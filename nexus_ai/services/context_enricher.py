@@ -84,6 +84,16 @@ class ContextEnricher:
         # Subskrybuj hot-reload protokołów
         self._protocol_executor.subscribe_on_change(self._on_protocols_changed)
 
+    async def close(self) -> None:
+        """Zamknij zasoby — WhiteListService (CachedHttpClient) i DuckDB connection.
+
+        Zgodnie z clean-up lifecycle:
+        1. await self._white_list.close() → CachedHttpClient → httpx.AsyncClient.aclose()
+        2. self._conn.close() → DuckDBPyConnection.close()
+        """
+        await self._white_list.close()
+        self._conn.close()
+
     async def enrich(self, invoice_data: dict[str, Any]) -> dict[str, Any]:
         """Główna metoda — wzbogaca kontekst faktury o dane z rejestrów.
 

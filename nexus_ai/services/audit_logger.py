@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import uuid
 from typing import Any
 
@@ -8,6 +7,17 @@ import pendulum
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 from nexus_ai.db.analytics import DuckDBManager
+
+# ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
+try:
+    from nexus_crypto import sha256 as _sha256
+    HAS_NEXUS_CRYPTO = True
+except ImportError:
+    import hashlib as _hashlib
+    HAS_NEXUS_CRYPTO = False
+
+    def _sha256(data: bytes) -> str:
+        return _hashlib.sha256(data).hexdigest()
 
 
 def ensure_forensic_audit_schema(duckdb: DuckDBManager) -> None:
@@ -43,7 +53,7 @@ class AuditLogger:
     @classmethod
     def _compute_hash(cls, previous_hash: str, payload_json: str) -> str:
         base = f"{previous_hash}{payload_json}".encode()
-        return hashlib.sha256(base).hexdigest()
+        return _sha256(base)
 
     def append_event(self, event_type: str, data_payload: dict[str, Any]) -> str:
         """Appends new audit event with chained hash; returns current hash."""

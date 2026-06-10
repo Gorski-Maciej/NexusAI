@@ -2,10 +2,20 @@ from __future__ import annotations
 
 import asyncio
 import atexit
-import hashlib
 import os
 import resource
 import time
+
+# ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
+try:
+    from nexus_crypto import sha256 as _sha256
+    HAS_NEXUS_CRYPTO = True
+except ImportError:
+    import hashlib as _hashlib
+    HAS_NEXUS_CRYPTO = False
+
+    def _sha256(data: bytes) -> str:
+        return _hashlib.sha256(data).hexdigest()
 from pathlib import Path
 from typing import Any
 
@@ -1026,7 +1036,7 @@ async def relay_outbox_events() -> None:
 
                 # Zapisz do tabeli idempotentności
                 payload_raw = row.get("payload") or "{}"
-                payload_hash = hashlib.sha256(payload_raw.encode()).hexdigest()
+                payload_hash = _sha256(payload_raw.encode())
                 await session.execute(
                     text(
                         """

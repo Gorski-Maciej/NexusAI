@@ -8,25 +8,26 @@ from __future__ import annotations
 import argparse
 import os
 import shutil
-import subprocess
 import sys
 from pathlib import Path
+
+import anyio
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 
-def _run(cmd: list[str]) -> int:
+async def _run(cmd: list[str]) -> int:
     print("[security-scan]", " ".join(cmd))
     timeout_s = int(os.getenv("NEXUS_SECURITY_SCAN_TIMEOUT_SEC", "1800"))
     try:
-        proc = subprocess.run(cmd, check=False, timeout=timeout_s)
-        return proc.returncode
-    except subprocess.TimeoutExpired:
+        result = await anyio.run_process(cmd, timeout=timeout_s)
+        return result.returncode
+    except TimeoutError:
         print(f"[security-scan] command timeout after {timeout_s}s", file=sys.stderr)
         return 1
 
 
-def run_zap(target: str, mode: str, *, strict_tools: bool = False) -> int:
+async def run_zap(target: str, mode: str, *, strict_tools: bool = False) -> int:
     zap = shutil.which("zap-baseline.py")
     if zap is None:
         print("[security-scan] zap-baseline.py not found in PATH", file=sys.stderr)
@@ -39,18 +40,18 @@ def run_zap(target: str, mode: str, *, strict_tools: bool = False) -> int:
     cmd = [zap, "-t", target, "-r", str(html), "-J", str(js)]
     if mode == "full":
         cmd.append("-a")
-    return _run(cmd)
+    return await _run(cmd)
 
 
-def run_semgrep(*, strict_tools: bool = False) -> int:
+async def run_semgrep(*, strict_tools: bool = False) -> int:
     semgrep = shutil.which("semgrep")
     if semgrep is None:
         print("[security-scan] semgrep not found in PATH", file=sys.stderr)
         return 1 if strict_tools else 2
-    return _run([semgrep, "scan", "--config", "auto", "nexus_ai/"])
+    return await _run([semgrep, "scan", "--config", "auto", "nexus_ai/"])
 
 
-def run_codeql(*, strict_tools: bool = False) -> int:
+async def run_codeql(*, strict_tools: bool = False) -> int:
     codeql = shutil.which("codeql")
     if codeql is None:
         print("[security-scan] codeql not found in PATH", file=sys.stderr)
@@ -59,7 +60,7 @@ def run_codeql(*, strict_tools: bool = False) -> int:
     report.mkdir(parents=True, exist_ok=True)
     sarif = report / "codeql.sarif"
     query_suite = "codeql/python-queries:codeql-suites/python-security-and-quality.qls"
-    return _run([codeql, "database", "analyze", "--format=sarif-latest", f"--output={sarif}", "codeql-db", query_suite])
+    return await _run([codeql, "database", "analyze", "--format=sarif-latest", f"--output={sarif}", "codeql-db", query_suite])
 
 
 def _load_zap_summary(report_path: Path) -> dict[str, int]:
@@ -112,7 +113,7 @@ def _write_summary(*, zap_rc: int, semgrep_rc: int, codeql_rc: int, strict_tools
     (report / "security_scan_summary.json").write_text(msgspec_dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def main() -> int:
+async def main() -> int:
     parser = argparse.ArgumentParser(description="Run security checks (DAST + SAST).")
     parser.add_argument("--target", required=True, help="Staging API URL, e.g. http://localhost:8000")
     parser.add_argument("--mode", choices=["baseline", "full"], default="baseline")
@@ -132,9 +133,9 @@ def main() -> int:
         args.max_zap_high = max(args.max_zap_high, 1)
         args.max_zap_medium = max(args.max_zap_medium, 20)
 
-    zap_rc = 0 if args.skip_zap else run_zap(target=args.target, mode=args.mode, strict_tools=args.strict_tools)
-    semgrep_rc = 0 if args.skip_semgrep else run_semgrep(strict_tools=args.strict_tools)
-    codeql_rc = run_codeql(strict_tools=args.strict_tools) if args.run_codeql else 0
+    zap_rc = 0 if args.skip_zap else await run_zap(target=args.target, mode=args.mode, strict_tools=args.strict_tools)
+    semgrep_rc = 0 if args.skip_semgrep else await run_semgrep(strict_tools=args.strict_tools)
+    codeql_rc = await run_codeql(strict_tools=args.strict_tools) if args.run_codeql else 0
     severity_gate_rc = 0 if args.skip_zap else _enforce_zap_severity_gate(args.mode, args.max_zap_high, args.max_zap_medium)
 
     _write_summary(
@@ -155,4 +156,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(anyio.run(main))

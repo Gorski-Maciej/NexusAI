@@ -16,7 +16,6 @@ import argparse
 import asyncio
 import os
 import signal
-import subprocess
 import sys
 from pathlib import Path
 
@@ -229,7 +228,7 @@ async def _start_worker() -> None:
     cmd = [sys.executable, "-m", "nexus_ai.luz.worker"]
     worker_proc = await asyncio.create_subprocess_exec(
         *cmd, cwd=_PROJECT_ROOT,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
     )
     logger.info("Worker started (PID: %s)", worker_proc.pid)
 
@@ -392,7 +391,7 @@ async def _run_doctor() -> None:
     except ImportError:
         logger.error("Doctor script not found")
         return
-    run_diagnostics()
+    await run_diagnostics()
 
 
 if __name__ == "__main__":
