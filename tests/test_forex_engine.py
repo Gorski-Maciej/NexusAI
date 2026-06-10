@@ -8,8 +8,8 @@ from nexus_ai.core.msgspec_utils import msgspec_dumps_bytes
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 
-from nexus_ai.roboton_reflekton.forex_engine import ForexEngine
-from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
+from nexus_ai.services.forex_engine import ForexEngine
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
 
 class FakeResponse:
@@ -68,7 +68,7 @@ def test_fetch_nbp_rate_uses_lookback_and_cache(monkeypatch):
             raise HTTPError(url, 404, "not found", hdrs=None, fp=None)
         return FakeResponse({"rates": [{"mid": 4.321, "no": "060/A/NBP/2026"}]})
 
-    monkeypatch.setattr("roboton_reflekton.forex_engine.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("nexus_ai.services.forex_engine.request.urlopen", fake_urlopen)
     rate = engine.fetch_nbp_rate(date(2026, 4, 27), "EUR")
     assert float(rate) == 4.321
 
@@ -95,7 +95,7 @@ def test_fetch_nbp_rate_retries_on_url_error(monkeypatch):
             raise URLError("temporary dns failure")
         return FakeResponse({"rates": [{"mid": 4.111, "no": "061/A/NBP/2026"}]})
 
-    monkeypatch.setattr("roboton_reflekton.forex_engine.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("nexus_ai.services.forex_engine.request.urlopen", fake_urlopen)
     rate = engine.fetch_nbp_rate(date(2026, 4, 27), "EUR")
     assert float(rate) == 4.111
     assert calls["n"] >= 2

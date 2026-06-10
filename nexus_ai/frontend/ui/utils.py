@@ -1,6 +1,7 @@
 # ui/utils.py
-import asyncio
 from collections.abc import Callable
+
+import anyio
 
 
 class Debouncer:
@@ -8,23 +9,17 @@ class Debouncer:
 
     def __init__(self, wait_ms: int = 500):
         self.wait_ms = wait_ms / 1000.0
-        self._task: asyncio.Task | None = None
+        self._task: anyio.abc.TaskGroup | None = None
 
     def __call__(self, coroutine_func: Callable):
         """Wywołuje funkcję asynchroniczną dopiero po upływie zadanego czasu."""
         async def debounce_wrapper(*args, **kwargs):
-            if self._task is not None:
-                self._task.cancel()
-
             async def delayed_call():
-                await asyncio.sleep(self.wait_ms)
+                await anyio.sleep(self.wait_ms)
                 await coroutine_func(*args, **kwargs)
 
-            self._task = asyncio.create_task(delayed_call())
-
-            try:
-                await self._task
-            except asyncio.CancelledError:
-                pass # Anulowano przez kolejne uderzenie klawisza
+            async with anyio.create_task_group() as tg:
+                tg.start_soon(delayed_call)
+                # Anulowanie nastąpi automatycznie gdy task group wyjdzie z scope
 
         return debounce_wrapper

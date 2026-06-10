@@ -13,7 +13,7 @@ Współpracuje z:
 
 from __future__ import annotations
 
-import asyncio
+import anyio
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
@@ -187,7 +187,7 @@ class DailyBriefingService:
         # Wzbogać o pending decisions z NotificationService
         if self._notification:
             try:
-                decisions = await asyncio.to_thread(
+                decisions = await anyio.to_thread.run_sync(
                     self._notification._fetch_pending_decisions, user_id
                 )
                 briefing.decisions = decisions
@@ -198,7 +198,7 @@ class DailyBriefingService:
         # Wzbogać o correction rate z DecisionLogger
         if self._logger:
             try:
-                stats = await asyncio.to_thread(
+                stats = await anyio.to_thread.run_sync(
                     self._logger.get_user_correction_stats
                 )
                 briefing.correction_rate = stats.get("correction_rate", 0.0)
@@ -280,7 +280,7 @@ class DailyBriefingService:
         message = msgspec_dumps(briefing.to_dict(), ensure_ascii=False, default=str)
 
         try:
-            notification_id = await asyncio.to_thread(
+            notification_id = await anyio.to_thread.run_sync(
                 self._notification._add_notification,
                 user_id=briefing.user_id,
                 title=title,

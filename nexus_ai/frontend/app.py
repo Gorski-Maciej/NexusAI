@@ -1,5 +1,5 @@
 # frontend/app.py (Fragment)
-import asyncio
+import anyio
 
 import flet as ft
 
@@ -16,7 +16,7 @@ def main_ui(page: ft.Page):
         page.update()
 
         # Pobieranie (w prawdziwym UI zrób to asynchronicznie)
-        asyncio.run(download_and_apply_update(e.control.data))
+        anyio.run(download_and_apply_update(e.control.data))
 
         page.dialog = ft.AlertDialog(
             title=ft.Text("Zakończono"),

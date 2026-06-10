@@ -11,15 +11,14 @@ Supported binaries:
 
 from __future__ import annotations
 
-import asyncio
 import os
 import platform
 import stat
+
+import anyio
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
-
-import anyio
 import httpx
 from structlog import get_logger
 
@@ -231,7 +230,7 @@ async def download_binary(
     dest_dir: Path,
     *,
     progress_cb: DependencyProgressCallback | None = None,
-    cancel_event: asyncio.Event | None = None,
+    cancel_event: anyio.Event | None = None,
     http_client: httpx.AsyncClient | None = None,
 ) -> Path | None:
     """Download and extract a binary to the destination directory.
@@ -303,7 +302,8 @@ async def download_binary(
 
                 total_size = int(response.headers.get("content-length", 0))
                 downloaded = 0
-                start_time = asyncio.get_event_loop().time()
+                import time as _time4
+                start_time = _time4.monotonic()
 
                 with open(temp_zip, "wb") as f:
                     async for chunk in response.aiter_bytes(chunk_size=65536):
@@ -313,7 +313,7 @@ async def download_binary(
                         f.write(chunk)
                         downloaded += len(chunk)
                         if progress_cb:
-                            elapsed = asyncio.get_event_loop().time() - start_time
+                            elapsed = _time4.monotonic() - start_time
                             speed = downloaded / elapsed if elapsed > 0 else 0
                             progress_cb(
                                 current_binary=binary_def.display_name,
@@ -478,7 +478,8 @@ class BinaryManager:
                 logger.info("Stopping %s (PID: %d)...", name, proc.pid)
                 proc.terminate()
                 try:
-                    await asyncio.wait_for(proc.wait(), timeout=5.0)
+                    with anyio.fail_after(5.0):
+                        await proc.wait()
                 except TimeoutError:
                     logger.warning("Force killing %s (PID: %d)", name, proc.pid)
                     proc.kill()
@@ -524,7 +525,7 @@ async def download_all_dependencies(
     bin_dir: Path,
     *,
     progress_cb: DependencyProgressCallback | None = None,
-    cancel_event: asyncio.Event | None = None,
+    cancel_event: anyio.Event | None = None,
 ) -> list[tuple[str, bool]]:
     """Download all missing system dependencies.
 

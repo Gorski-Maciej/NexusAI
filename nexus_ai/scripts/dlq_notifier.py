@@ -15,11 +15,11 @@ Integration:
 
 from __future__ import annotations
 
-import asyncio
 import logging
 from argparse import ArgumentParser, Namespace
 from typing import Any
 
+import anyio
 import pendulum
 from structlog import get_logger
 
@@ -181,7 +181,7 @@ async def run_continuous_check(
             await check_dlq_and_notify(db_engine, config)
         except Exception as exc:
             logger.error("[DLQ_NOTIFIER] Check failed: %s", exc)
-        await asyncio.sleep(interval_minutes * 60)
+        await anyio.sleep(interval_minutes * 60)
 
 
 # ── CLI entry point ──────────────────────────────────────────────────────────
@@ -230,11 +230,11 @@ def main() -> int:
         engine = create_oltp_engine(config)
 
         if args.watch:
-            asyncio.run(
-                run_continuous_check(engine, interval_minutes=args.interval, config=config)
+            anyio.run(
+                run_continuous_check, engine, interval_minutes=args.interval, config=config
             )
         else:
-            result = asyncio.run(check_dlq_and_notify(engine, config=config))
+            result = anyio.run(check_dlq_and_notify, engine, config=config)
             print(f"[DLQ_NOTIFIER] Unresolved DLQ items: {result}")
             return 0 if result >= 0 else 1
     except Exception as exc:

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from typing import Any
 
+import anyio
 import duckdb
 import pendulum
 from structlog import get_logger
@@ -138,7 +139,6 @@ class ContextEnricher:
             cache_valid = self._is_cache_valid(cached)
 
         # 2. Wykonaj zapytania równoległe (tylko jeśli cache nieważny)
-        import asyncio
         api_ok = True
         on_whitelist = False
         gus_data: dict[str, Any] = {}
@@ -148,39 +148,27 @@ class ContextEnricher:
             white_list_task = self._check_white_list(nip, bank_account)
             gus_task = self._check_gus_bir(nip)
 
-            try:
-                white_list_data, gus_data = await asyncio.gather(
-                    white_list_task, gus_task, return_exceptions=True,
-                )
+            async def _safe_white_list() -> tuple[Any, bool]:
+                try:
+                    result = await self._check_white_list(nip, bank_account)
+                    return result, True
+                except Exception as e:
+                    logger.warning("[ContextEnricher] White List API failed nip=%s: %s", nip, e)
+                    return {"on_whitelist": False, "accounts_json": "[]"}, False
 
-                # Obsłuż wynik Białej Listy
-                if isinstance(white_list_data, Exception):
-                    logger.warning(
-                        "[ContextEnricher] White List API failed nip=%s: %s",
-                        nip, white_list_data,
-                    )
-                    api_ok = False
-                    on_whitelist = False
-                else:
-                    on_whitelist = (
-                        bool(white_list_data.get("on_whitelist", False))
-                        if isinstance(white_list_data, dict)
-                        else bool(white_list_data)
-                    )
+            async def _safe_gus_bir() -> tuple[dict[str, Any], bool]:
+                try:
+                    result = await self._check_gus_bir(nip)
+                    return result, True
+                except Exception as e:
+                    logger.warning("[ContextEnricher] GUS BIR failed nip=%s: %s — continuing without GUS data", nip, e)
+                    return {}, False
 
-                # Obsłuż wynik GUS BIR (niewybijający — jeśli fail, mamy tylko mniej danych)
-                if isinstance(gus_data, Exception):
-                    logger.warning(
-                        "[ContextEnricher] GUS BIR failed nip=%s: %s — continuing without GUS data",
-                        nip, gus_data,
-                    )
-                    gus_data = {}
+            white_list_result, wl_ok = await _safe_white_list()
+            gus_data, gus_ok = await _safe_gus_bir()
 
-            except Exception as exc:
-                logger.warning(
-                    "[ContextEnricher] API errors nip=%s: %s — using stale cache",
-                    nip, exc,
-                )
+            on_whitelist = bool(white_list_result.get("on_whitelist", False)) if isinstance(white_list_result, dict) else bool(white_list_result)
+            if not wl_ok:
                 api_ok = False
 
             if api_ok:

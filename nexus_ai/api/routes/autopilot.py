@@ -1,8 +1,9 @@
 """Autopilot API endpoints — decision history, trust scores, and user actions."""
 from __future__ import annotations
 
-import asyncio
 from typing import Any
+
+import anyio
 
 from litestar import Controller, get, post
 from litestar.connection import Request
@@ -176,15 +177,8 @@ class AutopilotController(Controller):
             # 3. Send notification (fire-and-forget)
             notif_db = config.base_dir / "app_data" / "notifications.sqlite"
             service = NotificationService(notif_db)
-            asyncio.create_task(
-                _send_notification_async(
-                    service=service,
-                    user_id="anonymous",
-                    invoice_id=invoice_id,
-                    title="Decyzja zaakceptowana ✅",
-                    message=f"Faktura {invoice_id[:8]}... została zaakceptowana przez użytkownika.",
-                )
-            )
+            async with anyio.create_task_group() as tg:
+                tg.start_soon(_send_notification_async, service, "anonymous", invoice_id, "Decyzja zaakceptowana ✅", f"Faktura {invoice_id[:8]}... została zaakceptowana przez użytkownika.")
 
             return {"result": "OK", "invoice_id": invoice_id, "action": "ACCEPTED"}
 
@@ -256,15 +250,8 @@ class AutopilotController(Controller):
             # 3. Send notification (fire-and-forget)
             notif_db = config.base_dir / "app_data" / "notifications.sqlite"
             service = NotificationService(notif_db)
-            asyncio.create_task(
-                _send_notification_async(
-                    service=service,
-                    user_id="anonymous",
-                    invoice_id=invoice_id,
-                    title="Decyzja odrzucona ❌",
-                    message=f"Faktura {invoice_id[:8]}... została odrzucona przez użytkownika.",
-                )
-            )
+            async with anyio.create_task_group() as tg:
+                tg.start_soon(_send_notification_async, service, "anonymous", invoice_id, "Decyzja odrzucona ❌", f"Faktura {invoice_id[:8]}... została odrzucona przez użytkownika.")
 
             return {"result": "OK", "invoice_id": invoice_id, "action": "REJECTED"}
 
@@ -404,7 +391,7 @@ async def _send_notification_async(
 ) -> None:
     """Fire-and-forget helper to send a notification via the NotificationService."""
     try:
-        await asyncio.to_thread(
+        await anyio.to_thread.run_sync(
             service._add_notification,
             user_id=user_id,
             title=title,

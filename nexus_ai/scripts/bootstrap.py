@@ -23,11 +23,12 @@ Usage:
 
 from __future__ import annotations
 
-import asyncio
 import importlib
 import logging
 import os
 import time
+
+import anyio
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -367,13 +368,12 @@ async def step_verify_nats(config: Any) -> StepResult:
     nats_url = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
 
     try:
-        import asyncio
-
         from nats.aio.client import Client as NatsClient
 
         nc = NatsClient()
         try:
-            await asyncio.wait_for(nc.connect(nats_url, connect_timeout=3), timeout=5)
+            with anyio.fail_after(5):
+                await nc.connect(nats_url, connect_timeout=3)
             await nc.close()
             return StepResult(
                 name=name,
@@ -410,7 +410,7 @@ async def step_verify_tigerbeetle(config: Any) -> StepResult:
     name = "Verify TigerBeetle connection"
 
     try:
-        from roboton_reflekton.ledger_client import TigerBeetleClient
+        from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
         client = TigerBeetleClient()
         try:
@@ -571,8 +571,7 @@ def main(argv: list[str] | None = None) -> int:
             "validate_config", "check_dependencies", "check_ai_models",
             "create_directories", "run_migrations", "initialize_olap",
             "verify_nats", "verify_tigerbeetle",
-        ]]
-    result = asyncio.run(run_bootstrap(steps=step_filter))
+        ]]        result = anyio.run(run_bootstrap, step_filter)
 
     if result.overall_status == "error":
         print("Bootstrap completed with ERRORS. Review the summary above.")

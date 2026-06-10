@@ -9,8 +9,9 @@ Litestar natywnie wspiera SSE przez Stream + SSEEvent.
 """
 from __future__ import annotations
 
-import asyncio
 from typing import Any, AsyncGenerator
+
+import anyio
 
 from litestar import get
 from litestar.sse import SSEEvent
@@ -22,35 +23,35 @@ logger = get_logger("nexus.api.ws")
 
 # Rejestr aktywnych subskrybentów: task_id -> list[asyncio.Queue]
 # Każdy podłączony klient SSE ma własną kolejkę asyncio.
-_active_connections: dict[str, list[asyncio.Queue[str]]] = {}
+_active_connections: dict[str, list[anyio.MemoryObjectSendStream[str]]] = {}
 
 # Rejestr subskrybentów wildcard ("*" — wszystkie zadania)
-_wildcard_connections: list[asyncio.Queue[str]] = []
+_wildcard_senders: list[anyio.MemoryObjectSendStream[str]] = []
 
-# Rejestr flag anulowania: task_id -> asyncio.Event
-_cancel_flags: dict[str, asyncio.Event] = {}
+# Rejestr flag anulowania: task_id -> anyio.Event
+_cancel_flags: dict[str, anyio.Event] = {}
 
 
-def register_connection(task_id: str, queue: asyncio.Queue[str]) -> None:
+def register_connection(task_id: str, sender: anyio.MemoryObjectSendStream[str]) -> None:
     """Rejestruje subskrybenta SSE dla danego task_id.
     Gdy task_id=="*", rejestruje jako wildcard — otrzymuje postęp WSZYSTKICH zadań.
     """
     if task_id == "*":
-        if queue not in _wildcard_connections:
-            _wildcard_connections.append(queue)
+        if sender not in _wildcard_senders:
+            _wildcard_senders.append(sender)
         return
     if task_id not in _active_connections:
         _active_connections[task_id] = []
-    _active_connections[task_id].append(queue)
+    _active_connections[task_id].append(sender)
 
 
-def unregister_connection(task_id: str, queue: asyncio.Queue[str]) -> None:
+def unregister_connection(task_id: str, sender: anyio.MemoryObjectSendStream[str]) -> None:
     """Wyrejestrowuje subskrybenta SSE."""
     if task_id == "*":
-        _wildcard_connections[:] = [q for q in _wildcard_connections if q is not queue]
+        _wildcard_senders[:] = [s for s in _wildcard_senders if s is not sender]
         return
     if task_id in _active_connections:
-        _active_connections[task_id] = [q for q in _active_connections[task_id] if q is not queue]
+        _active_connections[task_id] = [s for s in _active_connections[task_id] if s is not sender]
         if not _active_connections[task_id]:
             del _active_connections[task_id]
 
@@ -65,31 +66,31 @@ async def broadcast_progress(task_id: str, progress: dict) -> None:
 
     # Wyślij do subskrybentów konkretnego task_id
     if task_id in _active_connections:
-        dead: list[asyncio.Queue[str]] = []
-        for queue in _active_connections[task_id]:
+        dead: list[anyio.MemoryObjectSendStream[str]] = []
+        for sender in _active_connections[task_id]:
             try:
-                await queue.put(payload)
+                await sender.send(payload)
             except Exception:
-                dead.append(queue)
-        for queue in dead:
-            unregister_connection(task_id, queue)
+                dead.append(sender)
+        for sender in dead:
+            unregister_connection(task_id, sender)
 
     # Wyślij do wildcard subskrybentów ("*" — wszystkie zadania)
-    if _wildcard_connections:
-        dead_wildcards: list[asyncio.Queue[str]] = []
-        for queue in _wildcard_connections:
+    if _wildcard_senders:
+        dead_wildcards: list[anyio.MemoryObjectSendStream[str]] = []
+        for sender in _wildcard_senders:
             try:
-                await queue.put(payload)
+                await sender.send(payload)
             except Exception:
-                dead_wildcards.append(queue)
-        for queue in dead_wildcards:
-            unregister_connection("*", queue)
+                dead_wildcards.append(sender)
+        for sender in dead_wildcards:
+            unregister_connection("*", sender)
 
 
-def get_cancel_event(task_id: str) -> asyncio.Event:
+def get_cancel_event(task_id: str) -> anyio.Event:
     """Zwraca (lub tworzy) flagę anulowania dla danego task_id."""
     if task_id not in _cancel_flags:
-        _cancel_flags[task_id] = asyncio.Event()
+        _cancel_flags[task_id] = anyio.Event()
     return _cancel_flags[task_id]
 
 
@@ -127,8 +128,8 @@ async def progress_sse(request: Any) -> Any:
     from litestar.response import Stream
 
     task_id = str(request.query_params.get("task_id", "*"))
-    queue: asyncio.Queue[str] = asyncio.Queue(maxsize=256)
-    register_connection(task_id, queue)
+    send, receive = anyio.create_memory_object_stream[str](max_buffer_size=256)
+    register_connection(task_id, send)
 
     async def event_generator() -> AsyncGenerator[SSEEvent, None]:
         try:
@@ -141,16 +142,12 @@ async def progress_sse(request: Any) -> Any:
                 }),
             )
 
-            while True:
-                try:
-                    data = await asyncio.wait_for(queue.get(), timeout=60.0)
+            async with receive:
+                async for data in receive:
                     yield SSEEvent(data=data)
-                except asyncio.TimeoutError:
-                    # Ping keep-alive — pusta linia wystarczy dla SSE
-                    yield SSEEvent(data="", event="ping")
-        except asyncio.CancelledError:
+        except anyio.get_cancelled_exc_class():
             pass
         finally:
-            unregister_connection(task_id, queue)
+            unregister_connection(task_id, send)
 
     return Stream(content=event_generator(), media_type="text/event-stream")

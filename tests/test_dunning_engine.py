@@ -4,7 +4,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 import asyncio
 
-from nexus_ai.roboton_reflekton.dunning_engine import DunningEngine
+from nexus_ai.services.dunning_engine import DunningEngine
 
 
 class FakeAIAgent:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import asyncio
+import anyio
 from dataclasses import dataclass
 
 from nexus_ai.core.cache import get_cache
@@ -37,13 +37,13 @@ class VendorAnalyst:
         self._running = True
         while self._running:
             await self.refresh_vendor_intelligence()
-            await asyncio.sleep(self.refresh_seconds)
+            await anyio.sleep(self.refresh_seconds)
 
     def stop(self) -> None:
         self._running = False
 
     async def refresh_vendor_intelligence(self) -> None:
-        await asyncio.to_thread(self._refresh_sync)
+        await anyio.to_thread.run_sync(self._refresh_sync)
 
     def _refresh_sync(self) -> None:
         self.duckdb.execute("""

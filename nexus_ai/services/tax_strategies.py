@@ -1,10 +1,15 @@
+"""Tax strategies — strategie podatkowe dla różnych form opodatkowania.
+
+Zgodnie z aa3fvcx.txt: używane przez TaxSimulator do symulacji "co by było gdyby".
+"""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Protocol
 
-from .models import LegalForm, TaxForm
+from nexus_ai.services.tigerbeetle.models import LegalForm, TaxForm
 
 
 class InvalidTaxPolicyError(ValueError):
@@ -36,14 +41,9 @@ class JdgLumpSumStrategy(TaxStrategy):
     def policy_payload(self, context: StrategyContext) -> dict:
         if context.legal_form not in {LegalForm.JDG, LegalForm.CIVIL_PARTNERSHIP}:
             raise InvalidTaxPolicyError("Ryczałt dostępny tylko dla JDG i spółki cywilnej.")
-        return {
-            "tax_form": self.tax_form,
-            "pit_costs_enabled": False,
-            "requires_full_ledger": False,
-            "vat_proportion": context.vat_proportion,
-            "ksef_active": context.ksef_active,
-            "revenue_rates": [0.02, 0.03, 0.055, 0.085, 0.12, 0.14, 0.15, 0.17],
-        }
+        return {"tax_form": self.tax_form, "pit_costs_enabled": False, "requires_full_ledger": False,
+                "vat_proportion": context.vat_proportion, "ksef_active": context.ksef_active,
+                "revenue_rates": [0.02, 0.03, 0.055, 0.085, 0.12, 0.14, 0.15, 0.17]}
 
 
 class JdgLinearStrategy(TaxStrategy):
@@ -52,14 +52,8 @@ class JdgLinearStrategy(TaxStrategy):
     def policy_payload(self, context: StrategyContext) -> dict:
         if context.legal_form not in {LegalForm.JDG, LegalForm.CIVIL_PARTNERSHIP}:
             raise InvalidTaxPolicyError("Podatek liniowy dostępny tylko dla JDG i spółki cywilnej.")
-        return {
-            "tax_form": self.tax_form,
-            "pit_costs_enabled": True,
-            "requires_full_ledger": False,
-            "pit_rate": 0.19,
-            "vat_proportion": context.vat_proportion,
-            "ksef_active": context.ksef_active,
-        }
+        return {"tax_form": self.tax_form, "pit_costs_enabled": True, "requires_full_ledger": False,
+                "pit_rate": 0.19, "vat_proportion": context.vat_proportion, "ksef_active": context.ksef_active}
 
 
 class CorpFullLedgerStrategy(TaxStrategy):
@@ -68,13 +62,8 @@ class CorpFullLedgerStrategy(TaxStrategy):
     def policy_payload(self, context: StrategyContext) -> dict:
         if context.legal_form not in {LegalForm.SP_ZOO, LegalForm.PSA}:
             raise InvalidTaxPolicyError("CIT standardowy dostępny tylko dla spółek kapitałowych.")
-        return {
-            "tax_form": self.tax_form,
-            "pit_costs_enabled": False,
-            "requires_full_ledger": True,
-            "cit_rates": {"small": 0.09, "standard": 0.19},
-            "ksef_active": context.ksef_active,
-        }
+        return {"tax_form": self.tax_form, "pit_costs_enabled": False, "requires_full_ledger": True,
+                "cit_rates": {"small": 0.09, "standard": 0.19}, "ksef_active": context.ksef_active}
 
 
 class CitEstonianStrategy(TaxStrategy):
@@ -83,17 +72,13 @@ class CitEstonianStrategy(TaxStrategy):
     def policy_payload(self, context: StrategyContext) -> dict:
         if context.legal_form not in {LegalForm.SP_ZOO, LegalForm.PSA}:
             raise InvalidTaxPolicyError("CIT Estoński dostępny tylko dla spółek kapitałowych.")
-        return {
-            "tax_form": self.tax_form,
-            "pit_costs_enabled": False,
-            "requires_full_ledger": True,
-            "deferred_tax": True,
-            "distribution_tax_rate": 0.2,
-            "ksef_active": context.ksef_active,
-        }
+        return {"tax_form": self.tax_form, "pit_costs_enabled": False, "requires_full_ledger": True,
+                "deferred_tax": True, "distribution_tax_rate": 0.2, "ksef_active": context.ksef_active}
 
 
 class StrategyRegistry:
+    """Rejestr strategii podatkowych — używany przez TaxSimulator."""
+
     def __init__(self) -> None:
         self._strategies: dict[TaxForm, TaxStrategy] = {
             TaxForm.LUMP_SUM: JdgLumpSumStrategy(),

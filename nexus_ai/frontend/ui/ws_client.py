@@ -6,11 +6,11 @@ Zgodnie z aa3fvcx.txt:
   - Litestar natywnie wspiera SSE (EventSourceResponse / StreamingResponse)
 """
 
-import asyncio
-
 import httpx
 from structlog import get_logger
 from ui.state import app_state
+
+import anyio
 
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
@@ -29,8 +29,8 @@ class ProgressWebSocketClient:
 
     def __init__(self, base_url: str = "http://127.0.0.1:8000"):
         self._events_url = f"{base_url}/api/v1/events/progress?task_id=*"
-        self._task: asyncio.Task | None = None
-        self._stop_event = asyncio.Event()
+        self._task: anyio.abc.TaskStatus | None = None
+        self._stop_event = anyio.Event()
         self._connected = False
 
     @property
@@ -40,7 +40,8 @@ class ProgressWebSocketClient:
     def start(self):
         """Uruchamia nasłuchiwanie w tle (Task)."""
         self._stop_event.clear()
-        self._task = asyncio.create_task(self._listen())
+        async with anyio.create_task_group() as tg:
+            tg.start_soon(self._listen)
 
     async def stop(self):
         """Zatrzymuje nasłuchiwanie."""
@@ -86,12 +87,12 @@ class ProgressWebSocketClient:
             except httpx.RemoteProtocolError:
                 self._connected = False
                 logger.warning("Połączenie SSE zamknięte. Ponawianie...")
-                await asyncio.sleep(2)
+                await anyio.sleep(2)
             except httpx.ConnectError:
                 self._connected = False
                 logger.warning("Serwer niedostępny (SSE). Ponawianie...")
-                await asyncio.sleep(5)
+                await anyio.sleep(5)
             except Exception as e:
                 self._connected = False
                 logger.error(f"Błąd SSE: {e}")
-                await asyncio.sleep(5)
+                await anyio.sleep(5)

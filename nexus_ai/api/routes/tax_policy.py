@@ -98,7 +98,7 @@ class TaxPolicyController(Controller):
                 })
 
             # ── 3. Wykonaj symulację (jeden przebieg — current + sim) ──────
-            from roboton_reflekton.shadow_ledger import TaxSimulator
+            from nexus_ai.services.tax_simulator import TaxSimulator
             simulator = TaxSimulator()
 
             result = await simulator.run_simulation(

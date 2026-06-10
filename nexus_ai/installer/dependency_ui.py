@@ -6,9 +6,10 @@ Shows a splash window with overall progress, per-binary status, and error handli
 
 from __future__ import annotations
 
-import asyncio
 import os
 import sys
+
+import anyio
 from pathlib import Path
 
 import flet as ft
@@ -25,7 +26,7 @@ logger = get_logger("nexus.installer.dependency_ui")
 class DependencyInstallState:
     """Shared state for dependency installation UI."""
     def __init__(self):
-        self.cancel_event = asyncio.Event()
+        self.cancel_event = anyio.Event()
         self.is_downloading = False
         self.is_complete = False
         self.current_binary = ""

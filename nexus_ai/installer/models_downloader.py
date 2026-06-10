@@ -12,9 +12,10 @@ Supports:
 
 from __future__ import annotations
 
-import asyncio
 import hashlib  # streaming SHA-256 for file verification (nexus_crypto doesn't support streaming)
 import sys
+
+import anyio
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
@@ -142,7 +143,7 @@ async def download_file(
     dest_path: Path,
     *,
     progress_cb: ProgressCallback | None = None,
-    cancel_event: asyncio.Event | None = None,
+    cancel_event: anyio.Event | None = None,
     chunk_size: int = 8192,
 ) -> tuple[bool, str | None]:
     """Download a file with resume support via HTTP Range headers.
@@ -190,7 +191,8 @@ async def download_file(
             # Write to temp file (append if resuming)
             mode = "ab" if resume_bytes > 0 and response.status_code == 206 else "wb"
             downloaded = resume_bytes if mode == "ab" else 0
-            start_time = asyncio.get_event_loop().time()
+            import time as _time5
+            start_time = _time5.monotonic()
 
             with open(temp_path, mode) as f:
                 async for chunk in response.aiter_bytes(chunk_size):
@@ -201,7 +203,7 @@ async def download_file(
                     downloaded += len(chunk)
 
                     if progress_cb and total_size and total_size > 0:
-                        elapsed = asyncio.get_event_loop().time() - start_time
+                        elapsed = _time5.monotonic() - start_time
                         speed = downloaded / elapsed if elapsed > 0 else 0
                         progress_cb(
                             current_file=dest_path.name,
@@ -242,7 +244,7 @@ async def download_all_models(
     manifest_path: str | Path | None = None,
     *,
     progress_cb: ProgressCallback | None = None,
-    cancel_event: asyncio.Event | None = None,
+    cancel_event: anyio.Event | None = None,
     only_required: bool = True,
 ) -> list[DownloadResult]:
     """Download all required AI models.

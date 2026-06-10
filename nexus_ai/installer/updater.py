@@ -15,9 +15,10 @@ Flow:
 
 from __future__ import annotations
 
-import asyncio
 import platform
 import tempfile
+
+import anyio
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -207,7 +208,7 @@ async def download_update(
     update_info: UpdateInfo,
     *,
     progress_cb: UpdateProgressCallback | None = None,
-    cancel_event: asyncio.Event | None = None,
+    cancel_event: anyio.Event | None = None,
 ) -> Path | None:
     """Download the new installer to a temporary location.
 
@@ -269,7 +270,8 @@ async def download_update(
             # Write to file
             mode = "ab" if resume_bytes > 0 and response.status_code == 206 else "wb"
             downloaded = resume_bytes if mode == "ab" else 0
-            start_time = asyncio.get_event_loop().time()
+            import time as _time3
+            start_time = _time3.monotonic()
             chunk_size = 8192
 
             with open(temp_path, mode) as f:
@@ -282,7 +284,7 @@ async def download_update(
                     downloaded += len(chunk)
 
                     if progress_cb:
-                        elapsed = asyncio.get_event_loop().time() - start_time
+                        elapsed = _time3.monotonic() - start_time
                         speed = downloaded / elapsed if elapsed > 0 else 0
                         progress_cb(
                             downloaded_bytes=downloaded,
@@ -322,10 +324,10 @@ async def install_update(installer_path: Path) -> None:
     try:
         # Launch the installer with silent flag (fire-and-forget — must outlive the app)
         # /S = silent install (NSIS), /VERYSILENT = silent (Inno Setup)
-        proc = await asyncio.create_subprocess_exec(
-            str(installer_path), "/S", "/CLOSEAPPLICATIONS",
-            stdout=asyncio.subprocess.DEVNULL,
-            stderr=asyncio.subprocess.DEVNULL,
+        proc = await anyio.run_process(
+            [str(installer_path), "/S", "/CLOSEAPPLICATIONS"],
+            stdout=anyio.ProcessPipe.DEVNULL,
+            stderr=anyio.ProcessPipe.DEVNULL,
         )
         logger.info("Installer launched (PID: %s)", proc.pid)
 
@@ -337,9 +339,7 @@ async def install_update(installer_path: Path) -> None:
             f.write("timeout /t 30 /nobreak >nul\n")
             f.write(f"rmdir /s /q \"{temp_dir}\"\n")
             f.write("del \"%~f0\"\n")
-        await asyncio.create_subprocess_exec(
-            "cmd", "/c", str(cleanup_script),
-        )
+        await anyio.run_process(["cmd", "/c", str(cleanup_script)])
 
     except Exception as e:
         logger.error("Failed to launch installer: %s", e)

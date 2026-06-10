@@ -1,6 +1,8 @@
 # core/adaptive_batcher.py
-import asyncio
+import time
 from typing import Any
+
+import anyio
 
 from nexus_ai.core.logger import logger
 
@@ -9,54 +11,54 @@ class AdaptiveBatcher:
     """Grupowanie zadań AI dla optymalnego wykorzystania przepustowości GPU."""
 
     def __init__(self, process_func, batch_size: int = 8, timeout: float = 0.2):
-        self.process_func = process_func # Funkcja inferencyjna modelu (np. _infer_batch)
-        self.batch_size = batch_size # Maksymalny rozmiar batcha
-        self.timeout = timeout # Maksymalny czas oczekiwania (w sekundach)
-        self._queue = asyncio.Queue()
-        self._worker_task = asyncio.create_task(self._batch_worker())
+        self.process_func = process_func
+        self.batch_size = batch_size
+        self.timeout = timeout
+        self._send, self._receive = anyio.create_memory_object_stream[tuple[Any, anyio.Event]]()
+        self._worker_task = None
+
+    async def start(self) -> None:
+        self._worker_task = anyio.ensure_backend().create_task(self._batch_worker())
 
     async def add_task(self, item: Any) -> Any:
         """Dodaje zadanie do kolejki i czeka na jego przetworzenie."""
-        future = asyncio.get_event_loop().create_future()
-        await self._queue.put((item, future))
-        return await future
+        event = anyio.Event()
+        result_container: list[Any] = []
+
+        async def _resolve() -> Any:
+            await event.wait()
+            if isinstance(result_container[0], Exception):
+                raise result_container[0]
+            return result_container[0]
+
+        await self._send.send((item, event, result_container))
+        return await _resolve()
 
     async def _batch_worker(self):
         """Wątek roboczy grupujący zadania."""
-        while True:
-            batch = []
-            futures = []
-
-            try:
-                # Oczekiwanie na pierwszy element
-                item, future = await self._queue.get()
-                batch.append(item)
-                futures.append(future)
+        async with self._receive:
+            async for item, event, result_container in self._receive:
+                batch = [(item, event, result_container)]
+                futures_batch = [(event, result_container)]
 
                 # Zbieranie kolejnych do osiągnięcia batch_size lub timeoutu
-                end_time = asyncio.get_event_loop().time() + self.timeout
+                deadline = time.monotonic() + self.timeout
                 while len(batch) < self.batch_size:
-                    time_left = end_time - asyncio.get_event_loop().time()
+                    time_left = deadline - time.monotonic()
                     if time_left <= 0:
                         break
                     try:
-                        item, future = await asyncio.wait_for(self._queue.get(), timeout=time_left)
-                        batch.append(item)
-                        futures.append(future)
+                        with anyio.fail_after(time_left):
+                            item, event, result_container = await self._receive.receive()
+                            batch.append((item, event, result_container))
+                            futures_batch.append((event, result_container))
                     except TimeoutError:
                         break
 
                 if batch:
                     logger.debug(f"Wysyłanie batcha {len(batch)} elementów do GPU...")
-                    results = await self.process_func(batch)
+                    results = await self.process_func([it for it, _, _ in batch])
 
-                    # Rozdanie wyników do oczekujących wątków
-                    for fut, res in zip(futures, results):
-                        if not fut.done():
-                            fut.set_result(res)
-
-            except Exception as e:
-                logger.error(f"Błąd przetwarzania batcha: {e}")
-                for fut in futures:
-                    if not fut.done():
-                        fut.set_exception(e)
+                    for (_, ev, rc), res in zip(futures_batch, results):
+                        rc.append(res)
+                        ev.set()

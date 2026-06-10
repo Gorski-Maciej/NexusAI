@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from nexus_ai.api.rbac import NexusRole, RoleContext
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.models import SecurityAlert
-from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
 
 class TigerBeetleSecurityException(PermissionError):  # noqa: N818

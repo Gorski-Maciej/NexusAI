@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import asyncio
 import atexit
+
+import anyio
 import os
 import resource
 import time
@@ -266,7 +267,7 @@ async def _dispatch_outbox_event(row: dict) -> None:
         conn = duckdb.connect(str(config.duckdb_path))
         ensure_tax_schema(conn)
 
-        from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
+        from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
         tb = TigerBeetleClient()
 
         pipeline = TaxPipeline(
@@ -715,9 +716,8 @@ async def dead_letter_processor_task() -> None:
             )
             await session.commit()
 
-        # Sprawdź wiadomości w DLQ
-        try:
-            msg = await asyncio.wait_for(sub.fetch(1, timeout=2.0), timeout=5.0)
+        # Sprawdź wiadomości w DLQ            with anyio.fail_after(5.0):
+                msg = await sub.fetch(1, timeout=2.0)
             while msg:
                 try:
                     data = msgspec_loads(msg.data)
@@ -771,12 +771,8 @@ async def dead_letter_processor_task() -> None:
                             logger.warning("[DLQ] Failed to notify webhook")
 
                 except Exception as parse_err:
-                    logger.warning("[DLQ] Failed to parse DLQ message: %s", parse_err)
-
-                try:
-                    msg = await asyncio.wait_for(sub.fetch(1, timeout=2.0), timeout=5.0)
-                except TimeoutError:
-                    break
+                    logger.warning("[DLQ] Failed to parse DLQ message: %s", parse_err)                    with anyio.fail_after(5.0):
+                        msg = await sub.fetch(1, timeout=2.0)
 
         except TimeoutError:
             pass  # Brak wiadomości w DLQ
@@ -900,7 +896,7 @@ async def stuck_saga_recovery_task() -> None:
 
 
 # Semafory dla limitów współbieżności (Rozwiązanie 29)
-_OCR_SEMAPHORE = asyncio.Semaphore(3)           # process_invoice_ocr: max 3 równolegle
+_OCR_SEMAPHORE = anyio.Semaphore(3)           # process_invoice_ocr: max 3 równolegle
 
 
 @broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="relay_outbox_events")
@@ -1662,7 +1658,7 @@ async def daily_nbp_rate_fill_task() -> None:
     """
     config = AppConfig()
     try:
-        from nexus_ai.roboton_reflekton.forex_engine import ForexEngine
+        from nexus_ai.services.forex_engine import ForexEngine
 
         # Inicjalizuj ForexEngine z minimalnym zestawem parametrów
         engine = ForexEngine(

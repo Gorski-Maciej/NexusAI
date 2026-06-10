@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 import argparse
-import asyncio
 from typing import Final
 
+import anyio
 import flet as ft
 import httpx
 
@@ -128,9 +128,9 @@ class NexusApp:
         self.loader.visible = True
         self.page.update()
         try:
-            invoices = await asyncio.to_thread(self.api.list_invoices)
+            invoices = await anyio.to_thread.run_sync(self.api.list_invoices)
             self._update_table(invoices)
-            stats = await asyncio.to_thread(self.api.get_analytics_summary)
+            stats = await anyio.to_thread.run_sync(self.api.get_analytics_summary)
             self._update_stats(stats)
             self.feedback.value = ""
         except Exception as exc:

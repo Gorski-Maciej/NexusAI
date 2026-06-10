@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import asyncio
+import anyio
 import importlib.util
 import os
 import time
@@ -204,7 +204,7 @@ async def flush_fallback_spans(duckdb_provider: Callable[[], DuckDBManager], *, 
             except Exception:
                 if attempt >= retries - 1:
                     break
-                await asyncio.sleep(base_delay * (2 ** attempt))
+                await anyio.sleep(base_delay * (2 ** attempt))
 
         return {"sent": 0, "remaining": len(buffer.read_all()), "queue_before": int(queue_before), "attempts": int(retries)}
     finally:

@@ -1,16 +1,23 @@
+"""Ledger worker — przetwarzanie zdarzeń księgowych z blokadą okresów finansowych.
+
+Zgodnie z aa3fvcx.txt:
+- TigerBeetle dla podwójnego zapisu
+- SQLModel/SQLAlchemy dla OLTP (okresy, profile firm)
+- pendulum dla dat (zastępuje datetime)
+"""
+
 from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
-
-import pendulum
 from typing import Protocol
 
+import pendulum
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from .ledger_client import TigerBeetleClient
-from .models import (
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
+from nexus_ai.services.tigerbeetle.models import (
     CompanyProfile,
     FinancialPeriod,
     FinancialPeriodStatus,
@@ -19,7 +26,7 @@ from .models import (
 )
 
 
-class PeriodLockedException(Exception):  # noqa: N818
+class PeriodLockedException(Exception):
     pass
 
 
@@ -28,7 +35,13 @@ class TaxClassifierAgent(Protocol):
 
 
 @dataclass(slots=True)
+# Alias dla kompatybilności wstecznej
+RobotonWorker = LedgerWorker
+
+
 class SimpleRuleBasedAgent:
+    """Prosty agent klasyfikacji — fallback regexowy."""
+
     def classify(self, payload: dict, company_policy: dict) -> dict:
         amount_minor = int(payload.get("amount_minor", 0))
         mixed_vehicle = bool(payload.get("mixed_vehicle_use", False))
@@ -38,13 +51,15 @@ class SimpleRuleBasedAgent:
             "credit_symbol": payload.get("credit_symbol", "202"),
             "amount_minor": amount_minor,
             "kup_ratio": kup_ratio,
-            "reasoning": "rule-based fallback for CrewAI",
+            "reasoning": "rule-based fallback",
             "source_document_id": payload.get("source_document_id"),
             "contractor_nip": payload.get("contractor_nip", ""),
         }
 
 
-class RobotonWorker:
+class LedgerWorker:
+    """Worker przetwarzający zdarzenia księgowe z blokadą okresów finansowych."""
+
     def __init__(self, session: Session, tb_client: TigerBeetleClient, agent: TaxClassifierAgent) -> None:
         self.session = session
         self.tb_client = tb_client

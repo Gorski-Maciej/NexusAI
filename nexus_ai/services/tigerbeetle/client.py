@@ -1,6 +1,14 @@
+"""TigerBeetle client — bezpieczny klient dla lokalnego silnika księgowego.
+
+Zgodnie z aa3fvcx.txt:
+- TigerBeetle w Zig — podwójny zapis na poziomie protokołu
+- komunikacja przez gniazdo UNIX (localhost)
+- amount jako int (grosze), bez Decimal
+"""
+
 from __future__ import annotations
 
-import hashlib  # blake2b for deterministic account IDs (not available in nexus_crypto)
+import hashlib
 import os
 import uuid
 from dataclasses import dataclass
@@ -8,6 +16,8 @@ from dataclasses import dataclass
 
 @dataclass(slots=True)
 class TwoPhaseTransfer:
+    """Dwufazowy przelew TigerBeetle (pending → post)."""
+
     pending_id: int
     debit_account: int
     credit_account: int
@@ -17,7 +27,11 @@ class TwoPhaseTransfer:
 
 
 class TigerBeetleMapper:
-    """Converts Polish account symbols (e.g. 401-02) into deterministic uint128-like ints."""
+    """Konwertuje polskie symbole kont (np. 401-02) na uint128 dla TigerBeetle.
+
+    Używa blake2b (hashlib) do deterministycznego mapowania — zgodnie z aa3fvcx.txt
+    hashlib jest używany gdzie nexus_crypto nie wspiera streamingu/algorytmu.
+    """
 
     @staticmethod
     def account_to_uint128(account_symbol: str) -> int:
@@ -29,7 +43,16 @@ class TigerBeetleMapper:
 
 
 class TigerBeetleClient:
-    """Wrapper for TigerBeetle operations (interface-ready, safe stub for local dev)."""
+    """Wrapper dla TigerBeetle — interface-ready, safe stub dla lokalnego developmentu.
+
+    W produkcji: komunikacja z lokalnym procesem TigerBeetle przez gniazdo UNIX.
+    Obecnie: stub z pamięcią (dict) do testów i developmentu.
+
+    Zgodnie z aa3fvcx.txt:
+    - amount jako int (grosze) — bezpośrednie mapowanie z Nexus-Money
+    - dwufazowe transfery (pending → post)
+    - operacje asynchroniczne (anyio/async)
+    """
 
     def __init__(self, cluster_id: int | None = None, replica_addresses: list[str] | None = None) -> None:
         self.cluster_id = cluster_id or int(os.getenv("TB_CLUSTER_ID", "0"))
@@ -38,6 +61,7 @@ class TigerBeetleClient:
         self._account_credits_posted: dict[int, int] = {}
 
     async def create_accounts(self, account_ids: list[int]) -> dict[str, int]:
+        """Utwórz konta księgowe w TigerBeetle."""
         created = len(set(account_ids))
         return {"created": created, "cluster_id": self.cluster_id}
 
@@ -50,6 +74,7 @@ class TigerBeetleClient:
         source_document_id: uuid.UUID,
         user_data_128: int = 0,
     ) -> TwoPhaseTransfer:
+        """Utwórz dwufazowy przelew (pending)."""
         pending_id = uuid.uuid4().int >> 64
         transfer = TwoPhaseTransfer(
             pending_id=pending_id,
@@ -63,6 +88,7 @@ class TigerBeetleClient:
         return transfer
 
     async def post_pending_transfer(self, pending_id: int) -> bool:
+        """Zatwierdź oczekujący przelew (pending → posted)."""
         transfer = self._pending_transfers.pop(pending_id, None)
         if transfer is None:
             return False
@@ -72,4 +98,5 @@ class TigerBeetleClient:
         return True
 
     async def get_account_credits_posted(self, account_id: int) -> int:
+        """Pobierz zaksięgowane saldo konta."""
         return self._account_credits_posted.get(account_id, 0)

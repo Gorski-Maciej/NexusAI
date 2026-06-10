@@ -51,7 +51,7 @@ class FXController(Controller):
 
             # Import and run through ForexEngine
             try:
-                from roboton_reflekton.forex_engine import ForexEngine
+                from nexus_ai.services.forex_engine import ForexEngine
             except ImportError:
                 return {
                     "result": "ERROR",

@@ -801,7 +801,7 @@ class TestTigerBeetleSource:
         sample_invoice_data: dict,
     ) -> None:
         """Sprawdź, że TigerBeetleMapper jest używany do konwersji symboli."""
-        from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleMapper
+        from nexus_ai.services.tigerbeetle.client import TigerBeetleMapper
 
         mapper = TigerBeetleMapper()
         account_id = mapper.account_to_uint128("401-01")

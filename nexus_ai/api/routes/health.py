@@ -1,8 +1,9 @@
 """Health check endpoints."""
 from __future__ import annotations
 
-import asyncio
 import os
+
+import anyio
 from pathlib import Path
 from typing import Any
 
@@ -138,7 +139,7 @@ class HealthController(Controller):
     async def _tigerbeetle_check(self) -> dict[str, Any]:
         """Check TigerBeetle connection."""
         try:
-            from roboton_reflekton.ledger_client import TigerBeetleClient
+            from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
             client = TigerBeetleClient()
             try:
                 accounts = client.lookup_accounts([])
@@ -244,7 +245,8 @@ class HealthController(Controller):
             from nats.aio.client import Client as NatsClient
             nc = NatsClient()
             try:
-                await asyncio.wait_for(nc.connect(nats_url, connect_timeout=3), timeout=5)
+                with anyio.fail_after(5):
+                    await nc.connect(nats_url, connect_timeout=3)
                 await nc.close()
                 return True
             except Exception:

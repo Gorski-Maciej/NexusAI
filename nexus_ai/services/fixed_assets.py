@@ -7,7 +7,7 @@ from decimal import ROUND_HALF_UP, Decimal
 import pendulum
 
 from nexus_ai.db.analytics import DuckDBManager
-from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
 DEFAULT_ASSET_ACCOUNT = 10
 DEFAULT_DEPRECIATION_ACCOUNT = 400

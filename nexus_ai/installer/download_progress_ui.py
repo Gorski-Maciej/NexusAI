@@ -12,9 +12,10 @@ Opens as a standalone Flet window (not web-based).
 
 from __future__ import annotations
 
-import asyncio
 import os
 import sys
+
+import anyio
 from pathlib import Path
 from typing import Any
 
@@ -49,7 +50,7 @@ class Colors:
 class DownloadState:
     """Shared state between UI and download logic."""
     def __init__(self):
-        self.cancel_event = asyncio.Event()
+        self.cancel_event = anyio.Event()
         self.is_downloading = False
         self.is_complete = False
         self.current_file = ""
@@ -71,8 +72,6 @@ class DownloadProgressApp:
 
     def __init__(self, state: DownloadState):
         self.state = state
-        self._loop = asyncio.new_event_loop()
-
     def build(self, page: ft.Page) -> None:
         """Build the Flet UI layout."""
         self.page = page
@@ -322,7 +321,7 @@ class DownloadProgressApp:
         """Periodically update UI from the download state."""
         while not self.state.is_complete and not self.state.cancel_event.is_set():
             self._sync_ui()
-            await asyncio.sleep(0.2)
+            await anyio.sleep(0.2)
 
         # Final sync
         self._sync_ui()
@@ -404,7 +403,8 @@ class DownloadProgressApp:
             return
 
         # Start UI update loop
-        update_task = asyncio.create_task(self._update_ui_loop())
+        async with anyio.create_task_group() as tg:
+            tg.start_soon(self._update_ui_loop)
 
         # Start download
         self.state.is_downloading = True
@@ -422,8 +422,7 @@ class DownloadProgressApp:
         self.state.results = results
         self.state.is_downloading = False
 
-        update_task.cancel()
-
+        # Task group zakończona — kontynuuj
         # Check results
         success_count = sum(1 for r in results if r.success)
         fail_count = sum(1 for r in results if not r.success)

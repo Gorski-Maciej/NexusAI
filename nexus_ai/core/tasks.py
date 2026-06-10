@@ -1,9 +1,10 @@
 """Asynchronous workflow tasks powered by Taskiq + NATS JetStream."""
 from __future__ import annotations
 
-import asyncio
 import os
 import uuid
+
+import anyio
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -74,13 +75,13 @@ from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import SessionLocal, create_oltp_engine, create_session_factory
 from nexus_ai.db.models import ActiveLearningPattern, Invoice, OutboxEvent, OutboxStatus
 from nexus_ai.pipeline.ocr import DocumentProcessor, ReviewStatus
-from nexus_ai.roboton_reflekton.dunning_engine import DunningEngine
-from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
-from nexus_ai.roboton_reflekton.vision_agent import VisionAgent
+from nexus_ai.services.dunning_engine import DunningEngine
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
+from nexus_ai.services.vision.agent import VisionAgent
 from nexus_ai.services.fixed_assets import FixedAssetsService
 
 logger = get_logger()
-OCR_INFERENCE_SEMAPHORE = asyncio.Semaphore(int(os.getenv("NEXUS_MAX_PARALLEL_OCR", "1")))
+OCR_INFERENCE_SEMAPHORE = anyio.Semaphore(int(os.getenv("NEXUS_MAX_PARALLEL_OCR", "1")))
 OCR_TASK_TIMEOUT_SEC = int(os.getenv("NEXUS_OCR_TIMEOUT_SEC", "300"))
 
 NATS_URL = os.getenv("NEXUS_NATS_URL", "nats://127.0.0.1:4222")
@@ -90,11 +91,11 @@ _MODEL_CACHE = TimedModelCache(ttl_seconds=int(os.getenv("NEXUS_MODEL_CACHE_TTL_
 
 
 async def _load_document_processor() -> DocumentProcessor:
-    return await asyncio.to_thread(DocumentProcessor)
+    return await anyio.to_thread.run_sync(DocumentProcessor)
 
 
 async def _load_vision_agent() -> VisionAgent:
-    return await asyncio.to_thread(VisionAgent)
+    return await anyio.to_thread.run_sync(VisionAgent)
 
 @dataclass(slots=True)
 class InvoiceEventPayload:
@@ -230,14 +231,10 @@ async def process_invoice_task() -> dict[str, str]:
             async with OCR_INFERENCE_SEMAPHORE:
                 processor = await _MODEL_CACHE.get("document_processor", _load_document_processor)
                 vision_agent = await _MODEL_CACHE.get("vision_agent", _load_vision_agent)
-                processed = await asyncio.wait_for(
-                    asyncio.to_thread(processor.process, Path(payload.image_path)),
-                    timeout=OCR_TASK_TIMEOUT_SEC,
-                )
-                vision = await asyncio.wait_for(
-                    vision_agent.analyze(Path(payload.image_path), processed.primary.raw_text),
-                    timeout=OCR_TASK_TIMEOUT_SEC,
-                )
+                with anyio.fail_after(OCR_TASK_TIMEOUT_SEC):
+                    processed = await anyio.to_thread.run_sync(processor.process, Path(payload.image_path))
+                with anyio.fail_after(OCR_TASK_TIMEOUT_SEC):
+                    vision = await vision_agent.analyze(Path(payload.image_path), processed.primary.raw_text)
             vision_payload = {
                 "vendor_nip": vision.vendor_nip,
                 "total_gross": vision.total_gross,

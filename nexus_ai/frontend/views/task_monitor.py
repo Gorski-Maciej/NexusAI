@@ -10,9 +10,10 @@ Shows real-time status of all background tasks:
 
 from __future__ import annotations
 
-import asyncio
 import time
 from typing import Any
+
+import anyio
 
 import flet as ft
 import pendulum
@@ -289,7 +290,7 @@ class TaskMonitorPanel:
 
         # ── Auto-refresh + WebSocket ────────────────────────────────────
         self._auto_refresh = False
-        self._refresh_task: asyncio.Task | None = None
+        self._refresh_task: anyio.abc.TaskStatus | None = None
         self._last_ws_update = 0.0  # timestamp ostatniego zdarzenia z WebSocket
         self._fallback_interval = 30  # sekundy między fallback pollingiem przy WS
         self._poll_interval = 5  # sekundy między pollingiem bez WS
@@ -378,7 +379,7 @@ class TaskMonitorPanel:
         polling jest rzadszy (30s). Gdy WebSocket jest martwy,
         polling wraca do 5s jako fallback.
         """
-        if self._refresh_task and not self._refresh_task.done():
+        if self._refresh_task is not None:
             return
 
         async def _loop():
@@ -395,8 +396,9 @@ class TaskMonitorPanel:
                     )
 
                 await self._fetch_tasks()
-                await asyncio.sleep(interval)
-        self._refresh_task = asyncio.create_task(_loop())
+                await anyio.sleep(interval)
+        async with anyio.create_task_group() as tg:
+            tg.start_soon(_loop)
 
     def _stop_auto_refresh(self) -> None:
         """Stop auto-refresh loop."""

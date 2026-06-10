@@ -14,7 +14,7 @@ Usage:
 
 from __future__ import annotations
 
-import asyncio
+import anyio
 from typing import Any
 
 import pendulum
@@ -45,8 +45,8 @@ class HotReloadListener:
         self._nats_url = nats_url
         self._nc: Any = None
         self._subs: list[Any] = []
-        self._task: asyncio.Task[None] | None = None
-        self._stop_event = asyncio.Event()
+        self._task: anyio.abc.TaskGroup | None = None
+        self._stop_event = anyio.Event()
         self._started_at: pendulum.DateTime | None = None
         self._event_counts: dict[str, int] = {s: 0 for s in SUBJECTS}
         self._last_event_at: dict[str, str] = {}
@@ -93,7 +93,8 @@ class HotReloadListener:
             self._subs.append(sub)
             logger.info("[HOT-RELOAD] Subscribed to %s (queue=nexus-hot-reload)", subject)
 
-        self._task = asyncio.create_task(self._run())
+        # Will be started in start()
+        self._task = None
         self._started_at = pendulum.now("UTC")
         logger.info("[HOT-RELOAD] Listener started")
 
@@ -104,7 +105,7 @@ class HotReloadListener:
             self._task.cancel()
             try:
                 await self._task
-            except asyncio.CancelledError:
+            except anyio.get_cancelled_exc_class():
                 pass
             self._task = None
 
@@ -133,7 +134,8 @@ class HotReloadListener:
                 if self._stop_event.is_set():
                     return
                 try:
-                    msg = await asyncio.wait_for(sub.fetch(1, timeout=1.0), timeout=2.0)
+                    with anyio.fail_after(2.0):
+                        msg = await sub.fetch(1, timeout=1.0)
                 except TimeoutError:
                     continue
                 except Exception as exc:

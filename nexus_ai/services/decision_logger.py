@@ -10,7 +10,7 @@ Nowe funkcjonalności:
 
 from __future__ import annotations
 
-import asyncio
+import anyio
 import uuid
 from typing import Any
 
@@ -144,7 +144,7 @@ class DecisionLogger:
         """Persist a decision with full PLE context."""
         decision_id = str(uuid.uuid4())
         try:
-            await asyncio.to_thread(
+            await anyio.to_thread.run_sync(
                 self._duckdb.execute,
                 """
                 INSERT INTO decisions
@@ -174,7 +174,7 @@ class DecisionLogger:
             )
 
             # Równolegle zapisz do trust_score_cache
-            await asyncio.to_thread(
+            await anyio.to_thread.run_sync(
                 self._cache_trust_score,
                 contractor_nip=str(context.get("contractor_nip", "unknown")),
                 category=str(context.get("category", "unknown")),
@@ -230,7 +230,7 @@ class DecisionLogger:
     ) -> None:
         """Record a user correction for a previously logged decision."""
         try:
-            await asyncio.to_thread(
+            await anyio.to_thread.run_sync(
                 self._duckdb.execute,
                 """
                 UPDATE decisions
@@ -240,7 +240,7 @@ class DecisionLogger:
                 (correction, invoice_id),
             )
             # Równolegle zaktualizuj trust_score_cache
-            await asyncio.to_thread(
+            await anyio.to_thread.run_sync(
                 self._duckdb.execute,
                 """
                 UPDATE trust_score_cache

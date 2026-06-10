@@ -1,12 +1,17 @@
+"""Reconciliation engine — uzgadnianie transakcji bankowych z księgowymi.
+
+Używa TigerBeetle dla double-entry + DuckDB dla analityki.
+Zgodnie z aa3fvcx.txt: NATS JetStream dla zdarzeń bankowych, Taskiq dla zadań.
+"""
+
 from __future__ import annotations
 
-import asyncio
 import uuid
+
+import anyio
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 from typing import Any
-
-import pendulum
 
 import nats
 import pendulum
@@ -14,9 +19,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
 from nexus_ai.core.msgspec_utils import msgspec_loads
-
-from .ledger_client import TigerBeetleClient
-from .models import CompanyProfile, LedgerTransfer, TransferStatus
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
+from nexus_ai.services.tigerbeetle.models import CompanyProfile, LedgerTransfer, TransferStatus
 
 
 @dataclass(slots=True)
@@ -29,44 +33,37 @@ class MissingInvoiceAlert:
     reason: str = "No pending transfer match after 15 days"
 
     def to_sse_event(self) -> dict[str, Any]:
-        return {
-            "type": "MissingInvoiceAlert",
-            "company_id": str(self.company_id),
-            "contractor_nip": self.contractor_nip,
-            "amount_minor": self.amount_minor,
-            "transaction_id": self.transaction_id,
-            "bank_posted_at": self.bank_posted_at.isoformat(),
-            "reason": self.reason,
-        }
+        return {"type": "MissingInvoiceAlert", "company_id": str(self.company_id),
+                "contractor_nip": self.contractor_nip, "amount_minor": self.amount_minor,
+                "transaction_id": self.transaction_id,
+                "bank_posted_at": self.bank_posted_at.isoformat(), "reason": self.reason}
 
 
 @dataclass
 class AlertHub:
-    _subscribers: set[asyncio.Queue[dict[str, Any]]] = field(default_factory=set)
+    _subscribers: set[tuple[anyio.MemoryObjectSendStream, anyio.MemoryObjectReceiveStream]] = field(default_factory=set)
 
     async def publish(self, event: dict[str, Any]) -> None:
-        for queue in list(self._subscribers):
-            await queue.put(event)
+        for stream in list(self._subscribers):
+            await stream[0].send(event)
 
     async def subscribe(self) -> AsyncIterator[dict[str, Any]]:
-        queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
-        self._subscribers.add(queue)
+        send, receive = anyio.create_memory_object_stream[dict[str, Any]]()
+        self._subscribers.add((send, receive))
         try:
-            while True:
-                yield await queue.get()
+            async with receive:
+                async for item in receive:
+                    yield item
         finally:
-            self._subscribers.discard(queue)
+            self._subscribers.discard((send, receive))
 
 
 class ReconciliationEngine:
-    def __init__(
-        self,
-        session_factory: sessionmaker[Session],
-        tb_client: TigerBeetleClient,
-        alert_hub: AlertHub,
-        nats_url: str = "nats://127.0.0.1:4222",
-        subject: str = "bank.transactions.raw",
-    ) -> None:
+    """Silnik uzgadniania transakcji bankowych z księgowymi w TigerBeetle."""
+
+    def __init__(self, session_factory: sessionmaker[Session], tb_client: TigerBeetleClient,
+                 alert_hub: AlertHub, nats_url: str = "nats://127.0.0.1:4222",
+                 subject: str = "bank.transactions.raw") -> None:
         self.session_factory = session_factory
         self.tb_client = tb_client
         self.alert_hub = alert_hub
@@ -99,17 +96,13 @@ class ReconciliationEngine:
             if company is None:
                 return False
 
-            pending_transfers = (
-                session.execute(
-                    select(LedgerTransfer).where(
-                        LedgerTransfer.company_id == company_id,
-                        LedgerTransfer.status == TransferStatus.PENDING,
-                        LedgerTransfer.amount_minor == amount_minor,
-                    )
+            pending_transfers = session.execute(
+                select(LedgerTransfer).where(
+                    LedgerTransfer.company_id == company_id,
+                    LedgerTransfer.status == TransferStatus.PENDING,
+                    LedgerTransfer.amount_minor == amount_minor,
                 )
-                .scalars()
-                .all()
-            )
+            ).scalars().all()
 
             matched_transfer: LedgerTransfer | None = None
             for transfer in pending_transfers:
@@ -125,25 +118,17 @@ class ReconciliationEngine:
                 approved = self.tb_client.post_pending_transfer(pending_id)
                 if approved:
                     matched_transfer.status = TransferStatus.POSTED
-                    matched_transfer.meta = {
-                        **matched_transfer.meta,
-                        "reconciliation": {
-                            "status": "auto-confirmed",
-                            "bank_transaction_id": transaction_id,
-                            "matched_at": pendulum.now("UTC").isoformat(),
-                        },
-                    }
+                    matched_transfer.meta = {**matched_transfer.meta, "reconciliation": {
+                        "status": "auto-confirmed", "bank_transaction_id": transaction_id,
+                        "matched_at": pendulum.now("UTC").isoformat(),
+                    }}
                     session.commit()
                 return approved
 
             if posted_at.diff(pendulum.now()).in_days() >= 15:
-                alert = MissingInvoiceAlert(
-                    company_id=company_id,
-                    contractor_nip=contractor_nip,
-                    amount_minor=amount_minor,
-                    transaction_id=transaction_id,
-                    bank_posted_at=posted_at,
-                )
+                alert = MissingInvoiceAlert(company_id=company_id, contractor_nip=contractor_nip,
+                                             amount_minor=amount_minor, transaction_id=transaction_id,
+                                             bank_posted_at=posted_at)
                 self.alert_hub.publish(alert.to_sse_event())
             return False
 
@@ -157,7 +142,7 @@ class ClearingAccountsConfig:
 
 
 class ClearingAccountsEngine:
-    """Implements provider fee extraction and bank payout reconciliation with idempotency."""
+    """Implementuje ekstrakcję opłat i uzgadnianie wypłat z idempotencją."""
 
     def __init__(self, tb_client: TigerBeetleClient, config: ClearingAccountsConfig) -> None:
         self.tb_client = tb_client
@@ -172,7 +157,6 @@ class ClearingAccountsEngine:
         return account
 
     def process_provider_fees(self, *, provider_id: str, fee_amount: int, operation_id: str) -> dict[str, Any]:
-        """Step 2: Debit fees expense / Credit provider clearing account."""
         if fee_amount <= 0:
             raise ValueError("fee_amount must be > 0")
         if operation_id in self._processed_operations:
@@ -180,22 +164,16 @@ class ClearingAccountsEngine:
 
         provider_account = self._provider_account(provider_id)
         pending = self.tb_client.create_two_phase_transfer(
-            debit_account=self.config.account_expense_fees,
-            credit_account=provider_account,
+            debit_account=self.config.account_expense_fees, credit_account=provider_account,
             amount_minor=fee_amount,
             source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"fees:{provider_id}:{operation_id}"),
         )
         posted = self.tb_client.post_pending_transfer(pending.pending_id)
         if posted:
             self._processed_operations.add(operation_id)
-        return {
-            "status": "posted" if posted else "failed",
-            "operation_id": operation_id,
-            "pending_id": pending.pending_id,
-        }
+        return {"status": "posted" if posted else "failed", "operation_id": operation_id, "pending_id": pending.pending_id}
 
     def reconcile_bank_payout(self, *, provider_id: str, payout_amount: int, operation_id: str) -> dict[str, Any]:
-        """Step 3: Debit main bank / Credit provider clearing account."""
         if payout_amount <= 0:
             raise ValueError("payout_amount must be > 0")
         if operation_id in self._processed_operations:
@@ -203,8 +181,7 @@ class ClearingAccountsEngine:
 
         provider_account = self._provider_account(provider_id)
         pending = self.tb_client.create_two_phase_transfer(
-            debit_account=self.config.account_bank_main,
-            credit_account=provider_account,
+            debit_account=self.config.account_bank_main, credit_account=provider_account,
             amount_minor=payout_amount,
             source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"payout:{provider_id}:{operation_id}"),
         )
@@ -212,12 +189,8 @@ class ClearingAccountsEngine:
         if posted:
             self._processed_operations.add(operation_id)
         clearing_balance = self.tb_client.get_account_credits_posted(provider_account)
-        return {
-            "status": "posted" if posted else "failed",
-            "operation_id": operation_id,
-            "pending_id": pending.pending_id,
-            "clearing_credits_posted": clearing_balance,
-        }
+        return {"status": "posted" if posted else "failed", "operation_id": operation_id,
+                "pending_id": pending.pending_id, "clearing_credits_posted": clearing_balance}
 
 
 @dataclass(frozen=True, slots=True)
@@ -240,14 +213,9 @@ class BankReconciliationEngine:
         self.tb_client = tb_client
         self.config = config
 
-    def reconcile_bulk_payment(
-        self,
-        *,
-        vendor_id: str,
-        payment_amount_minor: int,
-        received_date: pendulum.DateTime,
-        open_invoices: list[OpenInvoice],
-    ) -> dict[str, Any]:
+    def reconcile_bulk_payment(self, *, vendor_id: str, payment_amount_minor: int,
+                                received_date: pendulum.DateTime,
+                                open_invoices: list[OpenInvoice]) -> dict[str, Any]:
         if payment_amount_minor <= 0:
             raise ValueError("payment_amount_minor must be > 0")
 
@@ -262,8 +230,7 @@ class BankReconciliationEngine:
             if allocated <= 0:
                 continue
             pending = self.tb_client.create_two_phase_transfer(
-                debit_account=self.config.account_bank_main,
-                credit_account=self.config.account_receivable,
+                debit_account=self.config.account_bank_main, credit_account=self.config.account_receivable,
                 amount_minor=allocated,
                 source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"bulk:{vendor_id}:{invoice.invoice_id}:{received_date.isoformat()}"),
             )
@@ -274,19 +241,14 @@ class BankReconciliationEngine:
         rounding_adjustment_posted = False
         if 0 < remaining < self.config.rounding_threshold_minor:
             rounding_pending = self.tb_client.create_two_phase_transfer(
-                debit_account=self.config.account_bank_main,
-                credit_account=self.config.account_rounding_differences,
+                debit_account=self.config.account_bank_main, credit_account=self.config.account_rounding_differences,
                 amount_minor=remaining,
                 source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"rounding:{vendor_id}:{received_date.isoformat()}:{remaining}"),
             )
             rounding_adjustment_posted = self.tb_client.post_pending_transfer(rounding_pending.pending_id)
             remaining = 0
 
-        return {
-            "vendor_id": vendor_id,
-            "received_date": received_date.isoformat(),
-            "payment_amount_minor": payment_amount_minor,
-            "allocations": allocations,
-            "rounding_adjustment_posted": rounding_adjustment_posted,
-            "remaining_unallocated_minor": remaining,
-        }
+        return {"vendor_id": vendor_id, "received_date": received_date.isoformat(),
+                "payment_amount_minor": payment_amount_minor, "allocations": allocations,
+                "rounding_adjustment_posted": rounding_adjustment_posted,
+                "remaining_unallocated_minor": remaining}

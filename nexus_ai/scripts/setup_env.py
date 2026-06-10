@@ -1,5 +1,5 @@
 # scripts/setup_env.py
-import asyncio
+import anyio
 
 from nexus_ai.core.config import AppConfig
 from nexus_ai.db.database import engine, init_schema
@@ -29,4 +29,4 @@ async def bootstrap_system():
         print(f" Błąd bazy danych: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(bootstrap_system())
+    anyio.run(bootstrap_system())

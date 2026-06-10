@@ -25,7 +25,7 @@ Usage:
 
 from __future__ import annotations
 
-import asyncio
+import anyio
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
@@ -42,7 +42,7 @@ _few_shot_nexus = get_cache(default_ttl=300)  # 5 min TTL dla przykładów few-s
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.models import ActiveLearningPattern, Contractor, Invoice
 from nexus_ai.db.vector_store import VectorStore
-from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient, TigerBeetleMapper
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient, TigerBeetleMapper
 from nexus_ai.services.decision_logger import DecisionLogger
 from nexus_ai.services.rule_store import RuleStore
 from nexus_ai.services.vendor_intelligence import VendorAnalyst
@@ -583,81 +583,43 @@ class FactsAggregator:
         )
 
         # Uruchom wszystkie źródła równolegle
-        tasks: dict[str, asyncio.Task] = {}
+        # Uruchom wszystkie źródła równolegle przez TaskGroup
+        async with anyio.create_task_group() as tg:
+            results: dict[str, Any] = {}
 
-        # 1. SQLite — dane kontrahenta i historia
-        if self._session_factory and sheet.contractor_nip:
-            tasks["sqlite_contractor"] = asyncio.create_task(
-                self._fetch_contractor_data(sheet.contractor_nip)
-            )
-            tasks["sqlite_recent"] = asyncio.create_task(
-                self._fetch_recent_invoices(sheet.contractor_nip, sheet.invoice_id)
-            )
-            tasks["sqlite_corrections"] = asyncio.create_task(
-                self._fetch_user_corrections(sheet.contractor_nip)
-            )
+            # 1. SQLite — dane kontrahenta i historia
+            if self._session_factory and sheet.contractor_nip:
+                tg.start_soon(self._worker_fetch, "sqlite_contractor", sheet, results)
+                tg.start_soon(self._worker_fetch, "sqlite_recent", sheet, results)
+                tg.start_soon(self._worker_fetch, "sqlite_corrections", sheet, results)
 
-        # 2. DuckDB — trust score trend i reguły podatkowe
-        if self._decision_logger and sheet.contractor_nip:
-            tasks["duckdb_trend"] = asyncio.create_task(
-                asyncio.to_thread(
-                    self._decision_logger.get_trust_score_trend,
-                    sheet.contractor_nip,
-                )
-            )
-            tasks["duckdb_correction_stats"] = asyncio.create_task(
-                asyncio.to_thread(self._decision_logger.get_user_correction_stats)
-            )
+            # 2. DuckDB — trust score trend i reguły podatkowe
+            if self._decision_logger and sheet.contractor_nip:
+                tg.start_soon(self._worker_fetch, "duckdb_trend", sheet, results)
+                tg.start_soon(self._worker_fetch, "duckdb_correction_stats", sheet, results)
 
-        if self._rule_store and sheet.issue_date:
-            tasks["duckdb_rules"] = asyncio.create_task(
-                asyncio.to_thread(
-                    self._rule_store.get_active_rules,
-                    sheet.issue_date,
-                )
-            )
+            if self._rule_store and sheet.issue_date:
+                tg.start_soon(self._worker_fetch, "duckdb_rules", sheet, results)
 
-        # 3. Vendor intelligence z DuckDB
-        if self._vendor_analyst and sheet.contractor_nip:
-            tasks["vendor_intel"] = asyncio.create_task(
-                asyncio.to_thread(
-                    self._vendor_analyst.get_vendor_context,
-                    sheet.contractor_nip,
-                )
-            )
+            # 3. Vendor intelligence z DuckDB
+            if self._vendor_analyst and sheet.contractor_nip:
+                tg.start_soon(self._worker_fetch, "vendor_intel", sheet, results)
 
-        # 4. sqlite-vec — podobne faktury semantycznie
-        if self._vector_store:
-            tasks["vector_similar"] = asyncio.create_task(
-                self._fetch_similar_invoices(invoice_data)
-            )
+            # 4. sqlite-vec — podobne faktury semantycznie
+            if self._vector_store:
+                tg.start_soon(self._worker_fetch, "vector_similar", sheet, results)
 
-        # 5. TigerBeetle — historia księgowań kontrahenta
-        if self._tigerbeetle and sheet.contractor_nip:
-            tasks["tigerbeetle"] = asyncio.create_task(
-                self._fetch_ledger_history(sheet.contractor_nip, sheet.invoice_id)
-            )
+            # 5. TigerBeetle — historia księgowań kontrahenta
+            if self._tigerbeetle and sheet.contractor_nip:
+                tg.start_soon(self._worker_fetch, "tigerbeetle", sheet, results)
 
-        # 6. Globalne decyzje — ostatnie decyzje wszystkich kontrahentów z DuckDB
-        if self._decision_logger:
-            tasks["global_decisions"] = asyncio.create_task(
-                asyncio.to_thread(
-                    self._decision_logger.get_recent_global_decisions,
-                    category=sheet.category,
-                    limit=5,
-                )
-            )
+            # 6. Globalne decyzje
+            if self._decision_logger:
+                tg.start_soon(self._worker_fetch, "global_decisions", sheet, results)
 
-        # 7. Globalnie podobne przypadki — filtrowane po kategorii i trust_score
-        if self._decision_logger:
-            tasks["global_similar"] = asyncio.create_task(
-                asyncio.to_thread(
-                    self._decision_logger.get_globally_similar_cases,
-                    category=sheet.category,
-                    amount_gross=sheet.amount_gross,
-                    limit=5,
-                )
-            )
+            # 7. Globalnie podobne przypadki
+            if self._decision_logger:
+                tg.start_soon(self._worker_fetch, "global_similar", sheet, results)
 
         # Zbierz wyniki
         source_status = {"sqlite": False, "duckdb": False, "vector_store": False}
@@ -770,14 +732,14 @@ class FactsAggregator:
             return None
 
         try:
-            contractor = await asyncio.to_thread(
+            contractor = await anyio.to_thread.run_sync(
                 session.execute,
                 select(Contractor).where(Contractor.nip == nip),
             )
             contractor_row = contractor.scalar_one_or_none()
 
             # Policz faktury dla kontrahenta
-            invoice_count = await asyncio.to_thread(
+            invoice_count = await anyio.to_thread.run_sync(
                 session.execute,
                 select(Invoice).where(Invoice.contractor_nip == nip),
             )
@@ -830,7 +792,7 @@ class FactsAggregator:
                 .order_by(Invoice.created_at.desc())
                 .limit(5)
             )
-            result = await asyncio.to_thread(session.execute, stmt)
+            result = await anyio.to_thread.run_sync(session.execute, stmt)
             invoices = result.scalars().all()
 
             return [
@@ -873,7 +835,7 @@ class FactsAggregator:
                 .order_by(ActiveLearningPattern.created_at.desc())
                 .limit(10)
             )
-            result = await asyncio.to_thread(session.execute, stmt)
+            result = await anyio.to_thread.run_sync(session.execute, stmt)
             patterns = result.scalars().all()
 
             corrections = []
@@ -929,7 +891,7 @@ class FactsAggregator:
             )
 
             # Generuj embedding
-            embedding = await asyncio.to_thread(
+            embedding = await anyio.to_thread.run_sync(
                 self._embedding_service.embed, invoice_text
             )
 
@@ -937,7 +899,7 @@ class FactsAggregator:
                 return []
 
             # Szukaj podobnych w sqlite-vec
-            similar = await asyncio.to_thread(
+            similar = await anyio.to_thread.run_sync(
                 self._vector_store.search_similar,
                 query_vector=embedding,
                 limit=5,
@@ -1019,7 +981,7 @@ class FactsAggregator:
                 # ── Krok 1: SQLite — podstawowy status ──────────────
                 if session is not None:
                     try:
-                        row = await asyncio.to_thread(
+                        row = await anyio.to_thread.run_sync(
                             session.execute,
                             select(Invoice).where(Invoice.id == inv_id),
                         )
@@ -1046,7 +1008,7 @@ class FactsAggregator:
                 # ── Krok 2: DuckDB — pełna decyzja z DecisionEngine ─
                 if has_ddb:
                     try:
-                        decisions = await asyncio.to_thread(
+                        decisions = await anyio.to_thread.run_sync(
                             self._decision_logger.get_decisions_for_invoice,
                             inv_id,
                         )

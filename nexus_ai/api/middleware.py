@@ -8,6 +8,7 @@ import secrets
 import time
 import uuid
 
+import anyio
 from litestar.middleware import AbstractMiddleware
 from litestar.status_codes import HTTP_403_FORBIDDEN, HTTP_413_REQUEST_ENTITY_TOO_LARGE
 
@@ -35,8 +36,7 @@ _CSRF_TOKEN_TTL = 3600  # 1 godzina
 def _get_upload_semaphore():
     global _UPLOAD_SEMAPHORE
     if _UPLOAD_SEMAPHORE is None:
-        import asyncio
-        _UPLOAD_SEMAPHORE = asyncio.Semaphore(10)  # max 10 równoczesnych uploadów
+        _UPLOAD_SEMAPHORE = anyio.Semaphore(10)
     return _UPLOAD_SEMAPHORE
 
 
@@ -105,13 +105,12 @@ class UploadSizeGuardMiddleware(AbstractMiddleware):
         upload_sem = _get_upload_semaphore()
         async with upload_sem:
             try:
-                import asyncio
                 # Timeout na strumieniowanie danych (Rozwiązanie 15) - tylko faza odbioru
-                # Użyj wyższego timeoutu, bo przetwarzanie (OCR) może trwać dłużej
                 async def guarded_receive_with_timeout():
                     nonlocal total
                     try:
-                        message = await asyncio.wait_for(receive(), timeout=120.0)
+                        with anyio.fail_after(120.0):
+                            message = await receive()
                     except TimeoutError:
                         raise RequestBodyTooLargeError("upload stream timeout")
                     if message.get("type") == "http.request":

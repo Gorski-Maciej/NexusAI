@@ -1,9 +1,10 @@
-import asyncio
 import logging
 import os
 import secrets
 import socket
 import sys
+
+import anyio
 from pathlib import Path
 
 import anyio
@@ -77,7 +78,7 @@ class NexusOrchestrator:
                 [str(nats_path), "-p", "4222", "-js"],
                 stdout=anyio.ProcessPipe.DEVNULL, stderr=anyio.ProcessPipe.DEVNULL
             ).__aenter__()
-            await asyncio.sleep(2)
+            await anyio.sleep(2)
         else:
             logger.error("Nie znaleziono binarki NATS!")
 
@@ -102,7 +103,7 @@ class NexusOrchestrator:
             env=backend_env,
             stdout=anyio.ProcessPipe.PIPE, stderr=anyio.ProcessPipe.PIPE,
         ).__aenter__()
-        await asyncio.sleep(2)
+        await anyio.sleep(2)
 
     def cleanup(self):
         """Krytyczne sprzątanie procesów."""
@@ -152,10 +153,10 @@ async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
     await orchestrator.start_backend_api(port)
 
     status_text.value = "Krok 4/4: Synchronizacja interfejsu..."
-    page.update()
-    await asyncio.sleep(1.5)
+    page.update()        await anyio.sleep(1.5)
 
-    asyncio.create_task(_check_updates_on_startup(page))
+    async with anyio.create_task_group() as tg:
+        tg.start_soon(_check_updates_on_startup, page)
 
     page.clean()
     page.window_always_on_top = False
@@ -221,9 +222,7 @@ async def start_app():
 
 
 if __name__ == "__main__":
-    if os.name == "nt":
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     try:
-        asyncio.run(start_app())
+        anyio.run(start_app)
     except KeyboardInterrupt:
         pass

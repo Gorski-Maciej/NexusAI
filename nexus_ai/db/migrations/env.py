@@ -41,8 +41,8 @@ from nexus_ai.db.models import (
     Base as DbModelsBase,  # Invoice, AuditLog, OutboxEvent, SecurityAlert, UserAccount, Contractor, ActiveLearningPattern
 )
 
-# Roboton_Reflekton models (SQLite-compatible, zgodnie z aa3fvcx.txt)
-from nexus_ai.roboton_reflekton.models import Base as RobotonBase
+# TigerBeetle models (SQLite-compatible, zgodnie z aa3fvcx.txt)
+from nexus_ai.services.tigerbeetle.models import Base as RobotonBase
 
 # Target metadata: SQLModel > DeclarativeBase, bo wszystkie modele są w SQLModel.
 # SQLModel automatycznie rejestruje tabele w swojej metadata.

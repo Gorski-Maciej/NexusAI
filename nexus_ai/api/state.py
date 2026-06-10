@@ -1,5 +1,6 @@
-import asyncio
 import os
+
+import anyio
 import shutil
 import uuid
 from pathlib import Path
@@ -55,9 +56,10 @@ def _init_otel_metrics() -> None:
                     set_memory_usage(mem)
                 except Exception:
                     pass
-                await asyncio.sleep(30)
+                await anyio.sleep(30)
 
-        asyncio.ensure_future(_update_system_metrics())
+        async with anyio.create_task_group() as tg:
+            tg.start_soon(_update_system_metrics)
         logger.info("[METRICS] System metrics updater started (30s interval)")
     except ImportError:
         logger.debug("[METRICS] psutil not available — system metrics disabled")
@@ -614,7 +616,8 @@ async def on_startup(app: Litestar) -> None:
     # Połączenie z brokerem Taskiq (NATS) — timeout 5s jeśli NATS nie jest dostępny
     if not broker.is_worker_process:
         try:
-            await asyncio.wait_for(broker.startup(), timeout=5.0)
+            with anyio.fail_after(5.0):
+                await broker.startup()
         except Exception as exc:
             logger.warning("NATS broker unavailable — task queue disabled: %s", exc)
 

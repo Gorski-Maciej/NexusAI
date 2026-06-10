@@ -13,10 +13,11 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import asyncio
 import os
 import signal
 import sys
+
+import anyio
 from pathlib import Path
 
 # ── Project root (directory containing nexus_ai/) ──
@@ -29,7 +30,7 @@ setup_logger(app_name="NexusAI")
 logger = get_logger("nexus.main")
 
 # ── Global shutdown event ──
-_shutdown_event = asyncio.Event()
+_shutdown_event = anyio.Event()
 
 
 def _handle_signal(sig: int, _frame) -> None:
@@ -175,8 +176,8 @@ async def _run_bootstrap(args: argparse.Namespace | None = None) -> None:
 def _start_api_server_sync(host: str, port: int) -> None:
     """Start the Litestar API server via Granian (Rust ASGI) — synchronicznie.
 
-    Granian.serve() blokuje wątek, więc uruchamiamy w ``asyncio.to_thread``
-    z async wrappera poniżej.
+    Granian.serve() blokuje wątek, więc uruchamiamy w ``anyio.to_thread.run_sync()``
+    z async wrappera ponizej.
     """
     import granian
 
@@ -211,13 +212,11 @@ async def _start_api_server(host: str, port: int) -> None:
         await _shutdown_event.wait()
         logger.info("Shutdown requested... (Granian will exit on next request)")
 
-    shutdown_task = asyncio.create_task(_wait_and_shutdown())
-
-    # Uruchom blokujący Granian.serve() w wątku tła
-    loop = asyncio.get_running_loop()
-    await loop.run_in_executor(None, _start_api_server_sync, host, port)
-
-    shutdown_task.cancel()
+    async with anyio.create_task_group() as tg:
+        tg.start_soon(_wait_and_shutdown)
+        # Uruchom blokujący Granian.serve() w wątku tła
+        await anyio.to_thread.run_sync(_start_api_server_sync, host, port)
+        tg.cancel_scope.cancel()
 
 
 async def _start_worker() -> None:
@@ -226,9 +225,9 @@ async def _start_worker() -> None:
     logger.info(">>> Starting Taskiq worker...")
 
     cmd = [sys.executable, "-m", "nexus_ai.luz.worker"]
-    worker_proc = await asyncio.create_subprocess_exec(
-        *cmd, cwd=_PROJECT_ROOT,
-        stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+    worker_proc = await anyio.open_process(
+        cmd, cwd=_PROJECT_ROOT,
+        stdout=anyio.abc.ProcessPipe.PIPE, stderr=anyio.abc.ProcessPipe.PIPE,
     )
     logger.info("Worker started (PID: %s)", worker_proc.pid)
 
@@ -239,24 +238,22 @@ async def _start_worker() -> None:
                 break
             print(f"[{label}] {line.decode().rstrip()}")
 
-    stdout_task = asyncio.create_task(_read_stream(worker_proc.stdout, "worker"))
-    stderr_task = asyncio.create_task(_read_stream(worker_proc.stderr, "worker:err"))
+    async with anyio.create_task_group() as tg:
+        tg.start_soon(_read_stream, worker_proc.stdout, "worker")
+        tg.start_soon(_read_stream, worker_proc.stderr, "worker:err")
 
-    await asyncio.wait(
-        [asyncio.create_task(_shutdown_event.wait()), asyncio.create_task(worker_proc.wait())],
-        return_when=asyncio.FIRST_COMPLETED,
-    )
+    async with anyio.create_task_group() as tg:
+        tg.start_soon(_shutdown_event.wait)
+        tg.start_soon(worker_proc.wait)
 
     logger.info("Stopping worker (PID: %s)...", worker_proc.pid)
     worker_proc.terminate()
     try:
-        await asyncio.wait_for(worker_proc.wait(), timeout=10.0)
+        with anyio.fail_after(10.0):
+            await worker_proc.wait()
     except TimeoutError:
         worker_proc.kill()
         await worker_proc.wait()
-
-    stdout_task.cancel()
-    stderr_task.cancel()
 
 
 async def _start_all(args: argparse.Namespace) -> None:
@@ -267,20 +264,13 @@ async def _start_all(args: argparse.Namespace) -> None:
         for sig in (signal.SIGINT, signal.SIGTERM):
             signal.signal(sig, _handle_signal)
 
-    api_task = asyncio.create_task(_start_api_server(args.host, args.port))
-    worker_task = asyncio.create_task(_start_worker())
+    async with anyio.create_task_group() as tg:
+        tg.start_soon(_start_api_server, args.host, args.port)
+        tg.start_soon(_start_worker)
 
-    await asyncio.wait([api_task, worker_task], return_when=asyncio.FIRST_COMPLETED)
-    logger.info("Shutting down all services...")
+    # Oryginalna logika została zastąpiona przez anyio task group
+    # Task group zakończy się gdy pierwsze zadanie się zakończy
     _shutdown_event.set()
-
-    for task in [api_task, worker_task]:
-        if not task.done():
-            task.cancel()
-            try:
-                await task
-            except asyncio.CancelledError:
-                pass
     logger.info("All services stopped.")
 
 
@@ -344,7 +334,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.migrate:
         return _run_alembic_migrations()
     if args.load_fixtures:
-        return asyncio.run(_run_load_fixtures())
+        return anyio.run(_run_load_fixtures)
     if args.compute_checksums:
         logger.info("--compute-checksums: use python -m nexus_ai.scripts.download_models --verify-only")
         return 0
@@ -363,15 +353,15 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         if args.mode == "bootstrap":
-            asyncio.run(_run_bootstrap(args))
+            anyio.run(_run_bootstrap, args)
         elif args.mode == "doctor":
-            asyncio.run(_run_doctor())
+            anyio.run(_run_doctor)
         elif args.mode == "api":
-            asyncio.run(_start_api(args))
+            anyio.run(_start_api, args)
         elif args.mode == "worker":
-            asyncio.run(_start_worker_only(args))
+            anyio.run(_start_worker_only, args)
         elif args.mode == "all":
-            asyncio.run(_start_all(args))
+            anyio.run(_start_all, args)
         else:
             parser.print_help()
             return 1

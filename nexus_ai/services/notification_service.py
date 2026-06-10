@@ -1,7 +1,7 @@
 """Notification service for daily briefings, user notifications, and DailyBriefingGenerator."""
 from __future__ import annotations
 
-import asyncio
+import anyio
 import sqlite3
 from pathlib import Path
 from typing import Any
@@ -108,7 +108,7 @@ class DailyBriefingGenerator:
         if not self._duckdb:
             return {"count": 0, "total_amount": 0.0}
         try:
-            rows = await asyncio.to_thread(
+            rows = await anyio.to_thread.run_sync(
                 self._duckdb.execute,
                 "SELECT COUNT(*), COALESCE(SUM(amount_gross), 0) FROM oltp.invoices WHERE status = ? AND DATE(created_at) = DATE(?)",
                 [status, day],
@@ -123,7 +123,7 @@ class DailyBriefingGenerator:
         if not self._duckdb:
             return 0
         try:
-            rows = await asyncio.to_thread(
+            rows = await anyio.to_thread.run_sync(
                 self._duckdb.execute,
                 "SELECT COUNT(*) FROM oltp.invoices WHERE status IN ('MANUAL_REVIEW', 'PENDING_REVIEW')",
             )
@@ -135,7 +135,7 @@ class DailyBriefingGenerator:
         if not self._duckdb:
             return []
         try:
-            rows = await asyncio.to_thread(
+            rows = await anyio.to_thread.run_sync(
                 self._duckdb.execute,
                 "SELECT contractor_nip, COUNT(*) as cnt, SUM(amount_gross) as total FROM oltp.invoices WHERE DATE(created_at) = DATE(?) GROUP BY contractor_nip ORDER BY cnt DESC LIMIT 3",
                 [day],
@@ -148,7 +148,7 @@ class DailyBriefingGenerator:
         if not self._logger:
             return {"trend": "stable"}
         try:
-            stats = await asyncio.to_thread(self._logger.get_user_correction_stats)
+            stats = await anyio.to_thread.run_sync(self._logger.get_user_correction_stats)
             cr = stats.get("correction_rate", 0.0)
             if cr < 0.05:
                 return {"trend": "up", "correction_rate": cr}
@@ -280,11 +280,11 @@ class NotificationService:
 
         if self._briefing_generator:
             briefing = await self._briefing_generator.generate(user_id)
-            decisions = await asyncio.to_thread(self._fetch_pending_decisions, user_id)
+            decisions = await anyio.to_thread.run_sync(self._fetch_pending_decisions, user_id)
             briefing["decisions"] = decisions
             briefing["pending_review"] = len(decisions)
             if decisions:
-                await asyncio.to_thread(
+                await anyio.to_thread.run_sync(
                     self._add_notification,
                     user_id=user_id,
                     title=f"Codzienne podsumowanie — {len(decisions)} decyzji",
@@ -293,8 +293,8 @@ class NotificationService:
                 )
             return briefing
 
-        decisions = await asyncio.to_thread(self._fetch_pending_decisions, user_id)
-        auto_posted = await asyncio.to_thread(self._count_today_auto_posted, user_id, today)
+        decisions = await anyio.to_thread.run_sync(self._fetch_pending_decisions, user_id)
+        auto_posted = await anyio.to_thread.run_sync(self._count_today_auto_posted, user_id, today)
 
         briefing = {
             "user_id": user_id, "date": today,
@@ -306,7 +306,7 @@ class NotificationService:
         }
 
         if decisions:
-            await asyncio.to_thread(
+            await anyio.to_thread.run_sync(
                 self._add_notification,
                 user_id=user_id,
                 title=f"Codzienne podsumowanie — {len(decisions)} decyzji",
@@ -351,7 +351,7 @@ class NotificationService:
         # In-app (zawsze, jeśli na liście)
         if "in_app" in channels:
             try:
-                nid = await asyncio.to_thread(
+                nid = await anyio.to_thread.run_sync(
                     self._add_notification,
                     user_id=user_id,
                     title=title,
@@ -457,7 +457,7 @@ class NotificationService:
             "[Notification] email user=%s title=%s priority=%s (smtp=%s:%d)",
             user_id, title, priority, cfg.smtp_host, cfg.smtp_port,
         )
-        # TODO: asyncio.to_thread(smtplib.SMTP.sendmail) lub aiosmtplib.send()
+        # TODO: anyio.to_thread.run_sync(smtplib.SMTP.sendmail) lub aiosmtplib.send()
 
         return {"status": "sent", "channel": "email", "priority": priority}
 

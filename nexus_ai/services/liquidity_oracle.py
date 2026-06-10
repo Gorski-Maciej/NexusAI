@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 import pendulum
 
-from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager

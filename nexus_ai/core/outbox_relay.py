@@ -1,5 +1,5 @@
 # core/outbox_relay.py
-import asyncio
+import anyio
 
 from sqlalchemy import select
 
@@ -30,7 +30,7 @@ async def run_outbox_relay(session_factory, nats_client):
                 events = result.scalars().all()
 
                 if not events:
-                    await asyncio.sleep(0.5)  # Czekaj 500ms jeśli brak pracy
+                    await anyio.sleep(0.5)  # Czekaj 500ms jeśli brak pracy
                     continue
 
                 for event in events:
@@ -46,4 +46,4 @@ async def run_outbox_relay(session_factory, nats_client):
                 await session.commit()
         except Exception as e:
             logger.error(f"Błąd Outbox Relay: {e}")
-            await asyncio.sleep(2)
+            await anyio.sleep(2)

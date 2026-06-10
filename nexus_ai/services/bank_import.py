@@ -21,7 +21,7 @@ from typing import Protocol
 import pendulum
 
 from nexus_ai.db.analytics import DuckDBManager
-from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
 
 class DuplicateTransferError(RuntimeError):

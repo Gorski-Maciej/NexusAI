@@ -16,12 +16,12 @@ Creates a set of realistic test data:
 
 from __future__ import annotations
 
-import asyncio
 import logging
 import os
 import uuid
 from typing import Any
 
+import anyio
 import pendulum
 from structlog import get_logger
 
@@ -1261,7 +1261,7 @@ def main() -> int:
     )
 
     try:
-        result = asyncio.run(seed_all())
+        result = anyio.run(seed_all)
         if result:
             sys.stdout.write(f"Seed data loaded: {sum(result.values())} total entities\n")
             return 0

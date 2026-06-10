@@ -11,14 +11,14 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from unittest.mock import MagicMock
 
-from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
-from nexus_ai.roboton_reflekton.models import TransferStatus
-from nexus_ai.roboton_reflekton.reconciliation_engine import AlertHub, ClearingAccountsConfig, ClearingAccountsEngine, ReconciliationEngine
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
+from nexus_ai.services.tigerbeetle.models import TransferStatus
+from nexus_ai.services.reconciliation import AlertHub, ClearingAccountsConfig, ClearingAccountsEngine, ReconciliationEngine
 
 
-# Monkey-patch SQLAlchemy model classes used by reconciliation_engine.py
+# Monkey-patch SQLAlchemy model classes used by reconciliation.py
 # to avoid AttributeError on mocked DeclarativeBase models.
-import nexus_ai.roboton_reflekton.reconciliation_engine as _recon_mod
+import nexus_ai.services.reconciliation as _recon_mod
 
 for _model_name in ("CompanyProfile", "LedgerTransfer"):
     _patched = type(_model_name, (), {})

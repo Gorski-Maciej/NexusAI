@@ -1,4 +1,4 @@
-"""Vision agent using OCR-based heuristic extraction.
+"""Vision agent — ekstrakcja wizualna z faktur.
 
 Zgodnie z aa3fvcx.txt: torch/transformers zastąpione przez LightOnOCR-1B VLM.
 W międzyczasie VisionAgent używa fallbacku regexowego z OCR textu.
@@ -35,27 +35,22 @@ def _to_float(value: Any) -> float | None:
 
 
 class VisionAgent:
-    """Visual extraction from invoice images using OCR text heuristics.
+    """Ekstrakcja wizualna z obrazów faktur przez heurystyki OCR.
 
-    W nowej architekturze (aa3fvcx.txt) ekstrakcję wizualną przejmuje
-    LightOnOCR-1B VLM. W międzyczasie używamy fallbacku regexowego,
-    który nie wymaga torch/transformers ani GPU.
+    Docelowo: LightOnOCR-1B VLM (aa3fvcx.txt Punkt 10).
+    Obecnie: fallback regexowy bez torch/transformers ani GPU.
     """
 
     def __init__(
         self,
-        model_name: str = "",  # Zachowane dla kompatybilności API
+        model_name: str = "",
         use_4bit: bool = True,
         max_new_tokens: int = 220,
     ) -> None:
-        # Wszystkie parametry ignorowane — zawsze używamy fallbacku
         del model_name, use_4bit, max_new_tokens
 
     async def analyze(self, image_path: Path, ocr_text: str) -> VisionExtraction:
         """Analyze invoice image using OCR text heuristics.
-
-        W przyszłości: zastąpić wywołaniem LightOnOCR-1B VLM.
-        Obecnie używa _fallback_from_ocr (regex, nie wymaga GPU).
 
         Args:
             image_path: Ścieżka do obrazu (ignorowana — ekstrakcja z tekstu).
@@ -68,14 +63,7 @@ class VisionAgent:
 
     @staticmethod
     def _fallback_from_ocr(raw_text: str) -> VisionExtraction:
-        """Extract invoice fields from OCR text using regex heuristics.
-
-        Args:
-            raw_text: Surowy tekst z OCR.
-
-        Returns:
-            VisionExtraction z dopasowaniami regex.
-        """
+        """Extract invoice fields from OCR text using regex heuristics."""
         normalized = raw_text.replace("\n", " ")
         nip_match = re.search(r"\b\d{10}\b", normalized)
         gross_match = re.search(

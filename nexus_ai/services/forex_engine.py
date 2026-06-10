@@ -1,3 +1,12 @@
+"""Forex engine — kursy walut NBP z cache'owaniem przez NexusCache + stamina.
+
+Zgodnie z aa3fvcx.txt:
+- httpx (docelowo) zamiast urllib.request
+- stamina dla retry + circuit breaker
+- NexusCache (L1 RAM + L2 SQLite)
+- pendulum dla dat
+"""
+
 from __future__ import annotations
 
 import uuid
@@ -11,8 +20,7 @@ import stamina
 
 from nexus_ai.core.cache import get_cache
 from nexus_ai.core.msgspec_utils import msgspec_loads
-
-from .ledger_client import TigerBeetleClient
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
 
 @dataclass(frozen=True, slots=True)
@@ -31,28 +39,22 @@ FX_CACHE_PREFIXES = ["fx_rate:", "fx_missing:"]
 
 
 def invalidate_forex_cache() -> None:
-    """Unieważnij cache kursów walut.
-
-    Usuwa wszystkie klucze z prefixami ``fx_rate:`` i ``fx_missing:`` z L1 RAM.
-    Zgodnie z wzorcem invalidate_rules_cache() — zero narzutu, bez logowania.
-    Wywoływana przy każdej zmianie kursów (CSV upload, NBP fetch).
-    Następne wywołanie _known_in_cache() lub _is_date_missing()
-    załaduje świeże dane z DuckDB.
-    """
+    """Unieważnij cache kursów walut — usuwa wszystkie klucze z prefixami fx_rate: i fx_missing: z L1 RAM."""
     cache = get_cache()
     cache.delete_prefix_sync("fx_rate:")
     cache.delete_prefix_sync("fx_missing:")
 
 
 class ForexEngine:
-    # NexusCache for exchange rates (L1 RAM + L2 SQLite) — event-based invalidation
-    # Replaces: OrderedDict LRU cache (Rozwiązanie 28)
-    # Brak TTL — unieważniany ręcznie przez invalidate_forex_cache()
-    _rate_nexus = get_cache()
+    """Silnik kursów walut — NBP API + NexusCache + DuckDB.
 
-    # NexusCache for missing date lookups (weekends/holidays) — event-based invalidation
-    # Replaces: dict[tuple[str, str], date] with manual 30-day TTL
-    # Brak TTL — unieważniany ręcznie przez invalidate_forex_cache()
+    Zgodnie z aa3fvcx.txt:
+    - stamina.retry z circuit breakerem (zastępuje tenacity + pybreaker)
+    - NexusCache (zastępuje OrderedDict LRU)
+    - pendulum (zastępuje datetime)
+    """
+
+    _rate_nexus = get_cache()
     _missing_nexus = get_cache()
 
     def __init__(self, duckdb_manager: Any, tb_client: TigerBeetleClient, account_receivable: int, account_fx_gain: int, account_fx_loss: int) -> None:
@@ -64,39 +66,29 @@ class ForexEngine:
 
     def ensure_exchange_rate_schema(self) -> None:
         self.duckdb.execute(
-            """
-            CREATE TABLE IF NOT EXISTS exchange_rates (
-                currency_code VARCHAR,
-                rate_date DATE,
-                avg_rate DOUBLE,
-                table_no VARCHAR,
-                is_missing BOOLEAN DEFAULT FALSE,
+            """CREATE TABLE IF NOT EXISTS exchange_rates (
+                currency_code VARCHAR, rate_date DATE, avg_rate DOUBLE,
+                table_no VARCHAR, is_missing BOOLEAN DEFAULT FALSE,
                 PRIMARY KEY (currency_code, rate_date)
-            )
-            """
+            )"""
         )
 
     @staticmethod
     def _is_business_day(d: date) -> bool:
-        """Sprawdź czy data jest dniem roboczym (pon-pt)."""
         return d.weekday() < 5
 
     @staticmethod
     def _previous_business_day(d: date) -> date:
-        """Znajdź poprzedni dzień roboczy."""
         d = d - pendulum.duration(days=1)
-        while d.weekday() >= 5:  # sobota=5, niedziela=6
+        while d.weekday() >= 5:
             d = d - pendulum.duration(days=1)
         return d
 
     def _known_in_cache(self, currency_code: str, rate_date: date) -> Decimal | None:
-        """Sprawdź NexusCache L1 RAM przed DuckDB."""
         key = f"fx_rate:{currency_code}:{rate_date}"
         cached = self._rate_nexus.get_sync(key)
         if cached is not None:
             return Decimal(str(cached))
-
-        # Sprawdź DuckDB
         rows = self.duckdb.execute(
             "SELECT avg_rate FROM exchange_rates WHERE currency_code = ? AND rate_date = ? AND is_missing = FALSE",
             (currency_code, rate_date),
@@ -105,23 +97,12 @@ class ForexEngine:
             rate = Decimal(str(rows[0][0]))
             self._rate_nexus.set_sync(key, str(rate))
             return rate
-
         return None
 
     def _is_date_missing(self, currency_code: str, rate_date: date) -> bool:
-        """Sprawdź czy data jest oznaczona jako brak kursu (np. weekend).
-
-        Wynik cache'owany w NexusCache (event-based invalidation przez
-        invalidate_forex_cache()). Brak TTL — cache unieważniany ręcznie
-        przy CSV upload lub NBP fetch.
-        """
         cache_key = f"fx_missing:{currency_code}:{rate_date}"
-
-        # Sprawdź w NexusCache (TTL 30d obsługuje automatyczne wygaśnięcie)
         if self._missing_nexus.get_sync(cache_key) is not None:
             return True
-
-        # Sprawdź w DuckDB
         rows = self.duckdb.execute(
             "SELECT 1 FROM exchange_rates WHERE currency_code = ? AND rate_date = ? AND is_missing = TRUE",
             (currency_code, rate_date),
@@ -129,18 +110,14 @@ class ForexEngine:
         if rows:
             self._missing_nexus.set_sync(cache_key, True)
             return True
-
         return False
 
     def _mark_as_missing(self, currency_code: str, rate_date: date) -> None:
-        """Oznacz datę jako brak kursu (weekend/święto)."""
         cache_key = f"fx_missing:{currency_code}:{rate_date}"
         self._missing_nexus.set_sync(cache_key, True)
         self.duckdb.execute(
-            """
-            INSERT OR REPLACE INTO exchange_rates(currency_code, rate_date, avg_rate, is_missing)
-            VALUES (?, ?, 0.0, TRUE)
-            """,
+            """INSERT OR REPLACE INTO exchange_rates(currency_code, rate_date, avg_rate, is_missing)
+               VALUES (?, ?, 0.0, TRUE)""",
             (currency_code, rate_date),
         )
 
@@ -148,14 +125,12 @@ class ForexEngine:
         self.ensure_exchange_rate_schema()
         currency_code = currency.upper()
 
-        # 1. Sprawdź RAM cache + DuckDB (Rozwiązanie 28)
         for offset in range(max_lookback_days + 1):
             rate_day = target_date - pendulum.duration(days=offset)
             cached = self._known_in_cache(currency_code, rate_day)
             if cached is not None:
                 return cached
 
-        # 2. Sprawdź czy data jest dniem roboczym - jeśli nie, cofnij się (Rozwiązanie 28)
         business_day = target_date
         if not self._is_business_day(business_day):
             business_day = self._previous_business_day(business_day)
@@ -163,10 +138,7 @@ class ForexEngine:
             if cached is not None:
                 return cached
 
-        # 3. Sprawdź czy data nie jest oznaczona jako missing (Rozwiązanie 28)
-        #    Jeśli data jest weekendem/świętem, nie próbuj HTTP
         if self._is_date_missing(currency_code, business_day):
-            # Cofnij się do poprzedniego dnia roboczego z danymi
             for offset in range(1, max_lookback_days + 1):
                 prev_day = business_day - pendulum.duration(days=offset)
                 if not self._is_business_day(prev_day):
@@ -174,7 +146,6 @@ class ForexEngine:
                 cached = self._known_in_cache(currency_code, prev_day)
                 if cached is not None:
                     return cached
-            # Ostateczny fallback
             last_known = self.duckdb.execute(
                 "SELECT avg_rate FROM exchange_rates WHERE currency_code = ? AND is_missing = FALSE ORDER BY rate_date DESC LIMIT 1",
                 (currency_code,),
@@ -183,18 +154,13 @@ class ForexEngine:
                 return Decimal(str(last_known[0][0]))
             return Decimal("1.0")
 
-        # 4. Wykonaj żądanie HTTP z stamina.retry (circuit breaker + retry w jednym)
-        # stamina automatycznie otwiera obwód po seriach błędów i próbuje po recovery timeout
         try:
             result = self._do_fetch_nbp(target_date, currency_code, max_lookback_days)
-            # Zapisz w NexusCache
             cache_key = f"fx_rate:{currency_code}:{target_date}"
             self._rate_nexus.set_sync(cache_key, str(result))
             return result
         except ValueError:
-            # NBP nie ma kursu dla tej daty (weekend/święto) - oznacz jako missing
             self._mark_as_missing(currency_code, target_date)
-            # Cofnij się
             for offset in range(1, max_lookback_days + 1):
                 prev_day = target_date - pendulum.duration(days=offset)
                 cached = self._known_in_cache(currency_code, prev_day)
@@ -208,7 +174,6 @@ class ForexEngine:
                 return Decimal(str(last_known[0][0]))
             return Decimal("1.0")
         except Exception:
-            # Fallback — ostatni znany kurs z DuckDB
             last_known = self.duckdb.execute(
                 "SELECT avg_rate FROM exchange_rates WHERE currency_code = ? AND is_missing = FALSE ORDER BY rate_date DESC LIMIT 1",
                 (currency_code,),
@@ -218,17 +183,10 @@ class ForexEngine:
             return Decimal("1.0")
 
     def _do_fetch_nbp(self, target_date: date, currency_code: str, max_lookback_days: int) -> Decimal:
-        """Wewnętrzna metoda wykonująca rzeczywiste żądanie HTTP do NBP.
-
-        Używa stamina.retry z circuit breakerem — po 3 nieudanych próbach
-        otwiera obwód na 60s, co chroni NBP API przed przeciążeniem.
-        """
         for offset in range(max_lookback_days + 1):
             rate_day = target_date - pendulum.duration(days=offset)
-            # Pomiń weekendy
             if not self._is_business_day(rate_day):
                 continue
-            # Pomiń daty oznaczone jako missing
             if self._is_date_missing(currency_code, rate_day):
                 continue
             url = f"https://api.nbp.pl/api/exchangerates/rates/A/{currency_code}/{rate_day.isoformat()}/?format=json"
@@ -248,35 +206,23 @@ class ForexEngine:
                 avg_rate = Decimal(str(payload["rates"][0]["mid"]))
                 table_no = str(payload["rates"][0]["no"])
                 self.duckdb.execute(
-                    """
-                    INSERT OR REPLACE INTO exchange_rates(currency_code, rate_date, avg_rate, table_no, is_missing)
-                    VALUES (?, ?, ?, ?, FALSE)
-                    """,
+                    """INSERT OR REPLACE INTO exchange_rates(currency_code, rate_date, avg_rate, table_no, is_missing)
+                       VALUES (?, ?, ?, ?, FALSE)""",
                     (currency_code, rate_day, float(avg_rate), table_no),
                 )
-                # Zapisz w NexusCache
                 cache_key = f"fx_rate:{currency_code}:{rate_day}"
                 self._rate_nexus.set_sync(cache_key, str(avg_rate))
                 return avg_rate
             else:
-                # Oznacz jako missing
                 self._mark_as_missing(currency_code, rate_day)
 
         raise ValueError(f"NBP rate not found for {currency_code} within {max_lookback_days} days before {target_date}")
 
     def upload_rates_csv(self, csv_content: str) -> dict[str, Any]:
-        """Ręczne wczytanie kursów NBP z pliku CSV (Rozwiązanie 28).
-
-        Format CSV:
-        currency_code,rate_date,avg_rate,table_no
-        EUR,2025-01-15,4.2500,001/A/NBP/2025
-        """
         import csv
         import io
 
         self.ensure_exchange_rate_schema()
-        # Unieważnij cache PRZED importem — stare kursy usunięte,
-        # nowe zostaną zapisane przez set_sync w pętli
         invalidate_forex_cache()
 
         reader = csv.DictReader(io.StringIO(csv_content))
@@ -296,15 +242,12 @@ class ForexEngine:
 
                 rate_date = pendulum.strptime(rate_date_str, "%Y-%m-%d").date()
                 self.duckdb.execute(
-                    """
-                    INSERT OR REPLACE INTO exchange_rates(currency_code, rate_date, avg_rate, table_no, is_missing)
-                    VALUES (?, ?, ?, ?, FALSE)
-                    """,
+                    """INSERT OR REPLACE INTO exchange_rates(currency_code, rate_date, avg_rate, table_no, is_missing)
+                       VALUES (?, ?, ?, ?, FALSE)""",
                     (currency_code, rate_date, avg_rate, table_no),
                 )
-                # Zapisz w NexusCache
-                cache_key_str = f"fx_rate:{currency_code}:{rate_date}"
-                self._rate_nexus.set_sync(cache_key_str, str(avg_rate))
+                cache_key = f"fx_rate:{currency_code}:{rate_date}"
+                self._rate_nexus.set_sync(cache_key, str(avg_rate))
                 imported += 1
             except Exception:
                 errors += 1
@@ -313,19 +256,11 @@ class ForexEngine:
 
     async def process_fx_settlement(self, invoice_uuid: str, payment_uuid: str) -> FXResult:
         inv_rows = self.duckdb.execute(
-            """
-            SELECT currency_code, amount_foreign, historical_rate
-            FROM invoices_fx
-            WHERE invoice_id = ?
-            """,
+            """SELECT currency_code, amount_foreign, historical_rate FROM invoices_fx WHERE invoice_id = ?""",
             (invoice_uuid,),
         )
         pay_rows = self.duckdb.execute(
-            """
-            SELECT settlement_rate
-            FROM bank_transactions_fx
-            WHERE payment_id = ?
-            """,
+            """SELECT settlement_rate FROM bank_transactions_fx WHERE payment_id = ?""",
             (payment_uuid,),
         )
         if not inv_rows or not pay_rows:

@@ -1,11 +1,11 @@
-"""
-SQLModel definitions for Roboton/Reflekton — autonomiczny podsystem księgowy.
+"""SQLModel definitions dla TigerBeetle — podsystem księgowy.
 
 Zgodnie z aa3fvcx.txt:
 - SQLModel łączy SQLAlchemy + Pydantic w jednej klasie
-- SQLite+SQLCipher zamiast PostgreSQL
-- UUID jako TEXT, JSON jako TEXT (zgodne z SQLite)
+- SQLite+SQLCipher — UUID i JSON jako TEXT
+- amount jako int (grosze)
 """
+
 from __future__ import annotations
 
 import uuid
@@ -17,7 +17,7 @@ from sqlmodel import Field, SQLModel
 
 
 class StrEnum(BaseStrEnum):
-    """String enum base class using Python 3.11+ enum.StrEnum."""
+    """String enum base class używając Python 3.11+ enum.StrEnum."""
     pass
 
 
@@ -48,34 +48,32 @@ class FinancialPeriodStatus(StrEnum):
     HARD_CLOSED = "hard_closed"
 
 
-# ── Eksport Base dla kompatybilności z ewentualnymi zewnętrznymi migracjami ──
+# ── Eksport Base dla kompatybilności z migracjami ──────────────
 Base = SQLModel
 
 
 class CompanyProfile(SQLModel, table=True):
     """Profil firmy — dane rejestrowe, polityka KSeF, mapowanie księgowe.
 
-    Zgodnie z aa3fvcx.txt: SQLite+SQLCipher, więc UUID i JSON jako TEXT.
+    Zgodnie z aa3fvcx.txt: SQLite+SQLCipher, UUID i JSON jako TEXT.
     """
     __tablename__ = "company_profiles"  # type: ignore[assignment]
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
     name: str = Field(nullable=False, max_length=255)
     nip: str = Field(unique=True, nullable=False, max_length=10)
-    legal_form: str = Field(nullable=False, max_length=32)  # LegalForm as str
+    legal_form: str = Field(nullable=False, max_length=32)
     ksef_active: bool = Field(default=True, nullable=False)
     ksef_token: str | None = Field(default=None, max_length=512)
     vat_active: bool = Field(default=True, nullable=False)
     vat_proportion: Decimal | None = Field(default=None, max_digits=5, decimal_places=4)
-    tigerbeetle_ledger_map: str = Field(default="{}")  # JSON as TEXT
-    company_policy: str = Field(default="{}")  # JSON as TEXT
+    tigerbeetle_ledger_map: str = Field(default="{}")
+    company_policy: str = Field(default="{}")
     created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"), nullable=False)
-
-    # Relationship fields (SQLModel) — bez type annotations
 
 
 class CompanyPartner(SQLModel, table=True):
-    """Wspólnicy spółki — dla JDG lista może być pusta."""
+    """Wspólnicy spółki."""
     __tablename__ = "company_partners"  # type: ignore[assignment]
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
@@ -86,12 +84,12 @@ class CompanyPartner(SQLModel, table=True):
 
 
 class TaxPolicy(SQLModel, table=True):
-    """Polityka podatkowa firmy — forma opodatkowania, cykl VAT."""
+    """Polityka podatkowa firmy."""
     __tablename__ = "tax_policies"  # type: ignore[assignment]
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
     company_id: str = Field(foreign_key="company_profiles.id", nullable=False, unique=True)
-    tax_form: str = Field(nullable=False, max_length=32)  # TaxForm as str
+    tax_form: str = Field(nullable=False, max_length=32)
     pit_costs_enabled: bool = Field(default=True, nullable=False)
     requires_full_ledger: bool = Field(default=False, nullable=False)
     vat_settlement_cycle: str = Field(default="monthly", nullable=False, max_length=32)
@@ -110,7 +108,7 @@ class LedgerTransfer(SQLModel, table=True):
     currency: str = Field(default="PLN", nullable=False, max_length=3)
     source_document_id: str = Field(nullable=False, max_length=128)
     status: str = Field(default=TransferStatus.PENDING, nullable=False, max_length=32)
-    meta: str = Field(default="{}")  # JSON as TEXT
+    meta: str = Field(default="{}")
     created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"), nullable=False)
 
 

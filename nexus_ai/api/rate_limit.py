@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import asyncio
+import anyio
 import base64
 import os
 import time
@@ -62,7 +62,7 @@ class SimpleRateLimitMiddleware(AbstractMiddleware):
             RateLimitRule(prefix="/api/v1/", max_requests=30, per_seconds=60),
         ]
         self._hits: dict[tuple[str, str, str], deque[float]] = defaultdict(deque)  # (prefix, role, ip) -> timestamps
-        self._lock = asyncio.Lock()
+        self._lock = anyio.Lock()
         self._max_keys = 20000
         self._trust_proxy = os.getenv("NEXUS_TRUST_PROXY", "0") == "1"
 

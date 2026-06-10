@@ -19,6 +19,7 @@ import pendulum
 from enum import StrEnum as BaseStrEnum
 
 import pendulum
+from pydantic import ConfigDict
 from sqlmodel import Field, SQLModel
 
 # ── Eksport Base dla kompatybilności z Alembic (migrations/env.py) ──────────
@@ -47,6 +48,7 @@ class OutboxStatus(BaseStrEnum):
 class Invoice(SQLModel, table=True):
     """Faktura — główny model biznesowy."""
     __tablename__ = "invoices"  # type: ignore[assignment]
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
     number: str | None = Field(default=None, index=True)
@@ -66,6 +68,7 @@ class Invoice(SQLModel, table=True):
 class ActiveLearningPattern(SQLModel, table=True):
     """Wzorce aktywnego uczenia — korekty użytkownika dla AI."""
     __tablename__ = "active_learning_patterns"  # type: ignore[assignment]
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
     contractor_id: str = Field(nullable=False, index=True)
@@ -76,6 +79,7 @@ class ActiveLearningPattern(SQLModel, table=True):
 class Contractor(SQLModel, table=True):
     """Kontrahenci."""
     __tablename__ = "contractors"  # type: ignore[assignment]
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
     nip: str = Field(unique=True, nullable=False, index=True)
@@ -87,6 +91,7 @@ class Contractor(SQLModel, table=True):
 class AuditLog(SQLModel, table=True):
     """Audit trail for all changes made to invoices."""
     __tablename__ = "audit_logs"  # type: ignore[assignment]
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
     invoice_id: str | None = Field(default=None, foreign_key="invoices.id", index=True)
@@ -102,6 +107,7 @@ class AuditLog(SQLModel, table=True):
 class OutboxEvent(SQLModel, table=True):
     """Transactional outbox events for guaranteed delivery."""
     __tablename__ = "outbox_events"  # type: ignore[assignment]
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
     event_type: str = Field(nullable=False)
@@ -118,6 +124,7 @@ class OutboxEvent(SQLModel, table=True):
 class SecurityAlert(SQLModel, table=True):
     """Security events (RBAC violations, suspicious access)."""
     __tablename__ = "security_alerts"  # type: ignore[assignment]
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
     actor: str = Field(nullable=False)
@@ -129,6 +136,7 @@ class SecurityAlert(SQLModel, table=True):
 class UserAccount(SQLModel, table=True):
     """User accounts for authentication and authorization."""
     __tablename__ = "users"  # type: ignore[assignment]
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
     username: str = Field(unique=True, nullable=False, index=True)

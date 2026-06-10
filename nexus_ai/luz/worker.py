@@ -1,13 +1,14 @@
 """Taskiq worker bootstrap and local connectivity smoke test."""
 from __future__ import annotations
 
-import asyncio
 import gc
 import logging
 import os
 import platform
 import signal
 import sys
+
+import anyio
 from pathlib import Path
 
 import pendulum
@@ -18,7 +19,7 @@ from taskiq import TaskiqEvents
 import nexus_ai.core.tasks  # noqa: F401  # required to register @broker.task handlers
 from nexus_ai.core.broker import broker
 from nexus_ai.core.config import AppConfig
-from nexus_ai.roboton_reflekton.vision_agent import VisionAgent
+from nexus_ai.services.vision.agent import VisionAgent
 
 if getattr(sys, "frozen", False):
     BASE_PATH = Path(sys._MEIPASS)
@@ -40,7 +41,7 @@ logging.basicConfig(
 )
 logger = get_logger("nexus.worker")
 
-shutdown_flag = asyncio.Event()
+shutdown_flag = anyio.Event()
 
 
 class WorkerGuard:
@@ -109,7 +110,7 @@ class WorkerGuard:
                 "Heartbeat uptime=%s RAM=%.1fMB max_concurrent=%d tasks=%d",
                 uptime, ram_mb, self.max_concurrent, self.active_tasks,
             )
-            await asyncio.sleep(60)
+            await anyio.sleep(60)
 
 
 @broker.on_event(TaskiqEvents.WORKER_STARTUP)
@@ -118,7 +119,7 @@ async def on_worker_startup(state) -> None:
     state.config = AppConfig()
     state.guard = WorkerGuard(ram_limit_gb=8.0)
     state.vision_agent = VisionAgent()
-    state.heartbeat_task = asyncio.create_task(state.guard.heartbeat())
+    state.heartbeat_task = anyio.ensure_backend().create_task(state.guard.heartbeat())
 
     logger.info(
         ">>> Worker ready. OS=%s, vision_agent=%s",
@@ -178,6 +179,4 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    if platform.system() == "Windows":
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    asyncio.run(main())
+    anyio.run(main)

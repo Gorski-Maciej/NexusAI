@@ -8,7 +8,7 @@ from nexus_ai.core.msgspec_utils import msgspec_loads
 
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
-from nexus_ai.roboton_reflekton.ledger_client import TigerBeetleClient
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
 
 def ensure_accounting_template_schema(duckdb: DuckDBManager) -> None:
