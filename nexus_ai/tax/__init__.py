@@ -1,12 +1,11 @@
 """
 NexusAI Tax Processing Engine.
 
-Trzy kluczowe warstwy:
-  Część I   — Silnik reguł podatkowych (Zen-Engine)
-  Część II  — Matematyczny stos nieomylności (grosze, zaokrąglenia, niezmienniki)
-  Część III — Podstawowy audyt i łańcuch dowodowy (hash chain)
-
-Połączone przez TaxPipeline w jeden przepływ danych.
+Zintegrowany z DecisionEngine (DuckDB/SQL) — trzy warstwy połączone
+przez TaxPipeline w jeden przepływ danych:
+  - Reguły podatkowe (RuleEngine + Zen-Engine w DuckDB)
+  - Matematyka groszowa (TaxMathEngine, integer-only, ROUND_HALF_UP)
+  - Audyt kryptograficzny (DecisionTraceLogger, SHA-256 hash chain)
 """
 
 from nexus_ai.core.context_interpreter import (

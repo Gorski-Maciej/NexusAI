@@ -1,6 +1,6 @@
 # Przepływ decyzyjny DecisionEngine.decide()
 
-> **Wersja:** 2.2
+> **Wersja:** 2.3
 > **Data:** 2026-06-10
 > **Plik źródłowy:** `nexus_ai/core/decision_engine.py`
 > **Format:** Mermaid.js flowchart
@@ -249,8 +249,8 @@ flowchart LR
     end
 
     subgraph LOG["DecisionLogger.log_decision()"]
-        L1["INSERT INTO council_decisions\n  (invoice_id, decision, trust_score,\n   alpha_vote, beta_vote, gamma_vote,\n   final_decision, matched_rule_id,\n   rule_confidence, risk_action)\n  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"]
-        L2["UPDATE trust_score_cache\n  SET trust_score = ?,\n      last_updated = now()\n  WHERE contractor_nip = ?"]
+        L1["INSERT INTO decisions\n  (id, invoice_id, alpha_vote, beta_vote, gamma_vote,\n   final_decision, trust_score, trust_components, context,\n   timestamp, decision_level, decision_pattern)\n  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"]
+        L2["UPDATE trust_score_cache\n  SET trust_score = ?,\n      ai_confidence = ?, vendor_reliability = ?,\n      data_consistency = ?, context_trust = ?\n  WHERE contractor_nip = ?"]
     end
 
     subgraph RETURN["Zwrot"]
@@ -373,7 +373,7 @@ flowchart TB
 
 ### Porównanie z poprzednią architekturą (v2.0)
 
-| Scenariusz | v2.0 (wieloagentowa) | v2.2 (DecisionEngine) | Zmiana |
+| Scenariusz | v2.0 (wieloagentowa) | v2.3 (DecisionEngine) | Zmiana |
 |---|---|---|---|
 | Simple + RAG | ~7.8s | **~0.2s** | **39× szybciej** |
 | Complex + RAG | ~18.3s | **~0.3s** | **61× szybciej** |
@@ -434,7 +434,7 @@ flowchart TB
 
 ### Dlaczego zastąpiony?
 
-| Czynnik | v2.0 (wieloagentowa) | v2.2 (DecisionEngine) |
+| Czynnik | v2.0 (wieloagentowa) | v2.3 (DecisionEngine) |
 |---|---|---|
 | Czas decyzji | 7.7–18.3s | 10–20ms |
 | RAM | ~2.2 GB peak | ~200 MB baseline |
@@ -458,6 +458,6 @@ flowchart TB
 
 ---
 
-> **Dokumentacja techniczna** — NexusAI v2.2
+> **Dokumentacja techniczna** — NexusAI v2.3
 > **Ostatnia aktualizacja:** 2026-06-10
 > **Plik:** `docs/DECISION_FLOW.md`

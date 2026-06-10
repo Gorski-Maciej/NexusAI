@@ -1,7 +1,8 @@
 """
-Billing estimation API endpoint (Część XI).
+Billing estimation API endpoint.
 
-GET /api/v2/billing/estimate — publiczny endpoint do estymacji kosztów.
+GET /api/v2/billing/estimate — publiczny endpoint do estymacji kosztów,
+zgodny z wzorcem DecisionEngine — reguły first-match-wins w DuckDB.
 """
 
 from __future__ import annotations

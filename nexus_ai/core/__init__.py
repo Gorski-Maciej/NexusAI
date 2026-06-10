@@ -55,9 +55,6 @@ _, [bus] = _safe_import("core.bus", ["bus"])
 # core.parsers (optional)
 _, [DataParser] = _safe_import("core.parsers", ["DataParser"])
 
-# core.ai_context (optional)
-_, [AIContextManager] = _safe_import("core.ai_context", ["AIContextManager"])
-
 # core.plugins (optional)
 _, [PluginManager] = _safe_import("core.plugins", ["PluginManager"])
 

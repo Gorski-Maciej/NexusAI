@@ -25,11 +25,11 @@ logger = get_logger(__name__)
 
 class DecisionLogger:
     """
-    Logs council decisions to DuckDB z pełnym kontekstem PLE.
+    Logs decisions to DuckDB z pełnym kontekstem.
     Automatycznie tworzy tabele:
-      - council_decisions (główna tabela decyzji)
+      - decisions (główna tabela decyzji)
       - trust_score_cache (cache trust score dla adaptacji wag)
-      - council_decisions_meta (metadane i korekty użytkownika)
+      - decisions_meta (metadane i korekty użytkownika)
     """
 
     def __init__(self, duckdb: DuckDBManager) -> None:
@@ -37,12 +37,29 @@ class DecisionLogger:
         self._ensure_schema()
 
     def _ensure_schema(self) -> None:
-        """Create all required tables and indexes."""
+        """Create all required tables and indexes.
+
+        Automatically migrates legacy 'council_decisions' tables
+        to new 'decisions' naming on first run.
+        """
+
+        # ── Migration: rename old council tables ───────────────────
+        # Jeśli stare tabele council_decisions/council_decisions_meta
+        # istnieją, zmień ich nazwy na nowe (decisions/decisions_meta).
+        # Po tej migracji wszystkie nowe zapytania używają nowych nazw.
+        for old_name, new_name in [
+            ("council_decisions", "decisions"),
+            ("council_decisions_meta", "decisions_meta"),
+        ]:
+            try:
+                self._duckdb.execute(f"ALTER TABLE {old_name} RENAME TO {new_name}")
+            except Exception:
+                pass  # stara tabela nie istnieje — nic do roboty
 
         # Główna tabela decyzji
         self._duckdb.execute(
             """
-            CREATE TABLE IF NOT EXISTS council_decisions (
+            CREATE TABLE IF NOT EXISTS decisions (
                 id VARCHAR PRIMARY KEY,
                 invoice_id VARCHAR,
                 alpha_vote JSON,
@@ -55,7 +72,7 @@ class DecisionLogger:
                 timestamp TIMESTAMP,
                 user_correction VARCHAR,
                 decision_level VARCHAR,
-                council_pattern VARCHAR,
+                decision_pattern VARCHAR,
                 ple_stm_snapshot JSON,
                 ple_ltm_profile JSON
             )
@@ -84,7 +101,7 @@ class DecisionLogger:
         # Metadane decyzji
         self._duckdb.execute(
             """
-            CREATE TABLE IF NOT EXISTS council_decisions_meta (
+            CREATE TABLE IF NOT EXISTS decisions_meta (
                 decision_id VARCHAR PRIMARY KEY,
                 invoice_id VARCHAR,
                 deliberation_duration_ms INTEGER,
@@ -97,12 +114,12 @@ class DecisionLogger:
 
         # Indeksy
         for table, col in [
-            ("council_decisions", "invoice_id"),
-            ("council_decisions", "timestamp"),
-            ("council_decisions", "final_decision"),
+            ("decisions", "invoice_id"),
+            ("decisions", "timestamp"),
+            ("decisions", "final_decision"),
             ("trust_score_cache", "contractor_nip"),
             ("trust_score_cache", "timestamp"),
-            ("council_decisions_meta", "invoice_id"),
+            ("decisions_meta", "invoice_id"),
         ]:
             idx_name = f"idx_{table}_{col}"
             self._duckdb.execute(
@@ -120,20 +137,20 @@ class DecisionLogger:
         trust_components: dict[str, float],
         context: dict[str, Any],
         decision_level: str = "",
-        council_pattern: str = "",
+        decision_pattern: str = "",
         ple_stm_snapshot: dict[str, Any] | None = None,
         ple_ltm_profile: dict[str, Any] | None = None,
     ) -> None:
-        """Persist a council decision with full PLE context."""
+        """Persist a decision with full PLE context."""
         decision_id = str(uuid.uuid4())
         try:
             await asyncio.to_thread(
                 self._duckdb.execute,
                 """
-                INSERT INTO council_decisions
+                INSERT INTO decisions
                 (id, invoice_id, alpha_vote, beta_vote, gamma_vote,
                  final_decision, trust_score, trust_components, context,
-                 timestamp, user_correction, decision_level, council_pattern,
+                 timestamp, user_correction, decision_level, decision_pattern,
                  ple_stm_snapshot, ple_ltm_profile)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
@@ -150,7 +167,7 @@ class DecisionLogger:
                     pendulum.now("UTC"),
                     None,  # user_correction — populated later
                     decision_level,
-                    council_pattern,
+                    decision_pattern,
                     msgspec_dumps(ple_stm_snapshot, ensure_ascii=False) if ple_stm_snapshot else None,
                     msgspec_dumps(ple_ltm_profile, ensure_ascii=False) if ple_ltm_profile else None,
                 ),
@@ -216,7 +233,7 @@ class DecisionLogger:
             await asyncio.to_thread(
                 self._duckdb.execute,
                 """
-                UPDATE council_decisions
+                UPDATE decisions
                 SET user_correction = ?
                 WHERE invoice_id = ? AND user_correction IS NULL
                 """,
@@ -230,7 +247,7 @@ class DecisionLogger:
                 SET user_correction = ?
                 WHERE contractor_nip = (
                     SELECT context->>'contractor_nip'
-                    FROM council_decisions
+                    FROM decisions
                     WHERE invoice_id = ?
                     LIMIT 1
                 ) AND user_correction IS NULL
@@ -296,18 +313,18 @@ class DecisionLogger:
         """Aggregate correction statistics for adaptive weight tuning."""
         try:
             total = self._duckdb.execute(
-                "SELECT COUNT(*) FROM council_decisions"
+                "SELECT COUNT(*) FROM decisions"
             )[0][0]
 
             corrected = self._duckdb.execute(
-                "SELECT COUNT(*) FROM council_decisions WHERE user_correction IS NOT NULL"
+                "SELECT COUNT(*) FROM decisions WHERE user_correction IS NOT NULL"
             )[0][0]
 
             # Decisions by type
             decision_breakdown = self._duckdb.execute(
                 """
                 SELECT final_decision, COUNT(*) as cnt
-                FROM council_decisions
+                FROM decisions
                 GROUP BY final_decision
                 """
             )
@@ -316,7 +333,7 @@ class DecisionLogger:
             correction_breakdown = self._duckdb.execute(
                 """
                 SELECT final_decision, user_correction, COUNT(*) as cnt
-                FROM council_decisions
+                FROM decisions
                 WHERE user_correction IS NOT NULL
                 GROUP BY final_decision, user_correction
                 """
@@ -326,7 +343,7 @@ class DecisionLogger:
             level_breakdown = self._duckdb.execute(
                 """
                 SELECT decision_level, COUNT(*) as cnt
-                FROM council_decisions
+                FROM decisions
                 WHERE decision_level IS NOT NULL AND decision_level != ''
                 GROUP BY decision_level
                 """
@@ -361,14 +378,14 @@ class DecisionLogger:
         self,
         invoice_id: str,
     ) -> list[dict[str, Any]]:
-        """Retrieve all council decisions for a specific invoice."""
+        """Retrieve all decisions for a specific invoice."""
         try:
             rows = self._duckdb.execute(
                 """
                 SELECT id, invoice_id, alpha_vote, beta_vote, gamma_vote,
                        final_decision, trust_score, trust_components, context,
-                       timestamp, user_correction, decision_level, council_pattern
-                FROM council_decisions
+                       timestamp, user_correction, decision_level, decision_pattern
+                FROM decisions
                 WHERE invoice_id = ?
                 ORDER BY timestamp DESC
                 """,
@@ -388,7 +405,7 @@ class DecisionLogger:
                     "timestamp": r[9],
                     "user_correction": r[10],
                     "decision_level": r[11],
-                    "council_pattern": r[12],
+                    "decision_pattern": r[12],
                 }
                 for r in rows
             ]
@@ -408,8 +425,8 @@ class DecisionLogger:
             rows = self._duckdb.execute(
                 """
                 SELECT invoice_id, final_decision, trust_score,
-                       decision_level, council_pattern, timestamp
-                FROM council_decisions
+                       decision_level, decision_pattern, timestamp
+                FROM decisions
                 ORDER BY timestamp DESC
                 LIMIT ?
                 """,
@@ -490,7 +507,7 @@ class DecisionLogger:
             rows = self._duckdb.execute(
                 """
                 SELECT trust_components, user_correction
-                FROM council_decisions
+                FROM decisions
                 WHERE user_correction IS NOT NULL
                 """
             )

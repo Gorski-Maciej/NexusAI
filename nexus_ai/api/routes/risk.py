@@ -1,7 +1,8 @@
 """
 Risk Guard API — zarządzanie dynamicznymi progami ryzyka (Strażnik Ryzyka).
 
-Część V drugiej połowy szkieletu — endpointy administracyjne dla RiskGuard.
+Endpointy administracyjne dla RiskGuard — zintegrowane z DecisionEngine
+(DuckDB/SQL) i NexusCache z event-based invalidation.
 
 Endpointy:
   GET    /api/v2/admin/risk-thresholds           — lista reguł

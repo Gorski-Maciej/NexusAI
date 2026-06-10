@@ -45,7 +45,7 @@ class DecisionQueue:
     """Trwała kolejka decyzji (SQLite) z priorytetami i terminami ważności.
 
     Obsługuje:
-      - Kolejkowanie decyzji od agentów
+      - Kolejkowanie decyzji systemowych
       - Priorytety (krytyczne → normalne)
       - Terminy ważności (auto-expire)
       - Rozwiązywanie decyzji (approve/reject)
@@ -120,7 +120,7 @@ class DecisionQueue:
             notification_id: ID powiązanego powiadomienia
             title: Tytuł decyzji
             message: Treść decyzji/pytania
-            source_agent: Nazwa agenta źródłowego
+            source_agent: Nazwa komponentu źródłowego
             reference_type: Typ referencji (invoice, contractor, itp.)
             reference_id: ID referencji
             priority: Priorytet decyzji

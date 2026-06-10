@@ -1,9 +1,9 @@
 """
 FactsAggregator — dedykowana warstwa RAG (Retrieval-Augmented Generation).
 
-Przed każdą decyzją agentów, FactsAggregator zbiera dane ze wszystkich trzech
-źródeł danych w systemie i pakuje je w jeden, ustrukturyzowany "arkusz faktów"
-(FactSheet), który jest dołączany do promptu modelu decyzyjnego.
+Przed każdą decyzją (DecisionEngine) FactsAggregator zbiera dane ze wszystkich
+trzech źródeł danych w systemie i pakuje je w jeden, ustrukturyzowany
+"arkusz faktów" (FactSheet), który jest dołączany do promptu modelu decyzyjnego.
 
 Źródła danych:
   1. SQLite (OLTP) — faktury, kontrahenci, wzorce korekt użytkownika
@@ -51,7 +51,7 @@ logger = get_logger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# FactSheet — struktura danych wyjściowych
+# FactSheet — struktura danych wyjściowych dla DecisionEngine
 # ---------------------------------------------------------------------------
 
 @dataclass(slots=True)
@@ -344,8 +344,8 @@ class FactSheet:
         #    semantycznie bliższe bieżącej fakturze — lepsze przykłady dla modelu.
         #    Dzięki _enrich_similar_with_decision() mają:
         #      - 'status' z SQLite (Invoice.status)
-        #      - 'council_decision' z DuckDB (council_decisions) z pełną decyzją Rady
-        #    Gdy council_decision jest dostępny, preferujemy final_decision z Rady
+        #      - 'decision' z DuckDB (decisions) z pełną decyzją DecisionEngine
+        #    Gdy decision jest dostępny, preferujemy final_decision z DecisionEngine
         #    nad prostym mapowaniem statusu z SQLite.
         similar_count = min(len(self.similar_invoices), max_examples)
         remaining = max_examples - similar_count
@@ -359,20 +359,20 @@ class FactSheet:
             raw_status = inv.get("status")
             status = str(raw_status).upper() if raw_status is not None else "?"
 
-            # Pełna decyzja Rady z DuckDB — jeśli dostępna, preferujemy ją
-            council = inv.get("council_decision")
-            if council and council.get("final_decision"):
-                decision = str(council["final_decision"])
-                trust = float(council.get("trust_score", 0.0))
-                level = str(council.get("decision_level", ""))
-                pattern = str(council.get("council_pattern", ""))
-                correction = str(council.get("user_correction", "")) if council.get("user_correction") else ""
+            # Pełna decyzja z DuckDB — jeśli dostępna, preferujemy ją
+            decision_data = inv.get("decision")
+            if decision_data and decision_data.get("final_decision"):
+                decision = str(decision_data["final_decision"])
+                trust = float(decision_data.get("trust_score", 0.0))
+                level = str(decision_data.get("decision_level", ""))
+                pattern = str(decision_data.get("decision_pattern", ""))
+                correction = str(decision_data.get("user_correction", "")) if decision_data.get("user_correction") else ""
 
                 entry = (
                     f"[Podobna faktura (semantycznie, odległość: {distance:.4f})]\n"
                     f"  Kwota brutto: {amount}\n"
                     f"  Kategoria: {category}\n"
-                    f"  Decyzja Rady: {decision}\n"
+                    f"  Decyzja: {decision}\n"
                     f"  Trust score: {trust:.2f}\n"
                     f"  Status w systemie: {status}"
                 )
@@ -517,8 +517,7 @@ class FactSheet:
 class FactsAggregator:
     """Agregator Faktów — warstwa RAG przed decyzją.
 
-    Przed każdą decyzją agentów (WorkflowPlanner, QualityValidator,
-    RulesSWATTeam, JambaStrategist) FactsAggregator zbiera dane z:
+    Przed każdą decyzją (DecisionEngine) FactsAggregator zbiera dane z:
 
       1. SQLite (OLTP) — przez SQLAlchemy Session
       2. DuckDB (OLAP) — przez DuckDBManager
@@ -550,7 +549,7 @@ class FactsAggregator:
         self._tigerbeetle = tigerbeetle_client
 
         # NexusCache dla _enrich_similar_with_decision()
-        # Klucz: enrich:{invoice_id}, wartość: dict (status/number/amount/council_decision)
+        # Klucz: enrich:{invoice_id}, wartość: dict (status/number/amount/decision)
         # TTL: 300s (5 min) — wystarczy na czas budowania FactSheet, nie kumuluje starych ID.
         # Wielopoziomowe: L1 RAM (błyskawiczny odczyt w pętli) + L2 SQLite (persistence).
         self._cache = get_cache(default_ttl=300)
@@ -963,17 +962,17 @@ class FactsAggregator:
     async def _enrich_similar_with_decision(
         self, similar: list[dict[str, Any]]
     ) -> list[dict[str, Any]]:
-        """Wzbogać podobne faktury o status/decyzję z SQLite i pełną decyzję Rady z DuckDB.
+        """Wzbogać podobne faktury o status/decyzję z DuckDB.
 
         Dla każdej podobnej faktury z sqlite-vec:
           1. Próbuje znaleźć odpowiadający jej rekord w SQLite (Invoice) i dołączyć status.
-          2. Jeśli dostępny jest DecisionLogger, pobiera pełną decyzję Rady Agentów
-             z DuckDB (council_decisions) — zawiera alpha_vote, beta_vote, gamma_vote,
+          2. Jeśli dostępny jest DecisionLogger, pobiera pełną decyzję z DuckDB
+             (decisions) — zawiera alpha_vote, beta_vote, gamma_vote,
              final_decision, trust_score, trust_components, decision_level,
-             council_pattern, user_correction.
+             decision_pattern, user_correction.
 
         Dzięki temu build_few_shot_examples() może pokazać nie tylko status z SQLite,
-        ale pełną decyzję Rady Agentów dla podobnych faktur.
+        ale pełną decyzję DecisionEngine dla podobnych faktur.
 
         Args:
             similar: Lista podobnych faktur z sqlite-vec.
@@ -981,7 +980,7 @@ class FactsAggregator:
         Returns:
             Ta sama lista wzbogacona o pola:
               - 'status' (z SQLite, lub '?' jeśli brak)
-              - 'council_decision' (dict z DuckDB, lub None jeśli brak)
+              - 'decision' (dict z DuckDB, lub None jeśli brak)
         """
         has_sqlite = self._session_factory is not None
         has_ddb = self._decision_logger is not None
@@ -1012,7 +1011,7 @@ class FactsAggregator:
                     inv["number"] = cached.get("number", "")
                     inv["amount_net"] = cached.get("amount_net", 0.0)
                     inv["amount_gross"] = cached.get("amount_gross", inv.get("amount_gross", 0))
-                    inv["council_decision"] = cached.get("council_decision")
+                    inv["decision"] = cached.get("decision")
                     continue
 
                 enriched: dict[str, Any] = {}
@@ -1044,24 +1043,24 @@ class FactsAggregator:
                 else:
                     enriched["status"] = inv.get("status", "?")
 
-                # ── Krok 2: DuckDB — pełna decyzja Rady Agentów ──────
+                # ── Krok 2: DuckDB — pełna decyzja z DecisionEngine ─
                 if has_ddb:
                     try:
-                        council_decisions = await asyncio.to_thread(
+                        decisions = await asyncio.to_thread(
                             self._decision_logger.get_decisions_for_invoice,
                             inv_id,
                         )
-                        if council_decisions:
+                        if decisions:
                             # Weź najnowszą decyzję (pierwsza po ORDER BY timestamp DESC)
-                            enriched["council_decision"] = council_decisions[0]
+                            enriched["decision"] = decisions[0]
                         else:
-                            enriched["council_decision"] = None
+                            enriched["decision"] = None
                     except Exception as exc:
                         logger.debug(
-                            "[FactsAggregator] failed to fetch council decision for %s: %s",
+                            "[FactsAggregator] failed to fetch decision for %s: %s",
                             inv_id, exc,
                         )
-                        enriched["council_decision"] = None
+                        enriched["decision"] = None
 
                 # Zapisz do NexusCache (L1 RAM + L2 SQLite) z TTL 300s
                 await self._cache.set(cache_key, enriched, ttl=300)
@@ -1074,7 +1073,7 @@ class FactsAggregator:
                     inv["amount_net"] = enriched["amount_net"]
                 if "amount_gross" in enriched:
                     inv["amount_gross"] = enriched["amount_gross"]
-                inv["council_decision"] = enriched.get("council_decision")
+                inv["decision"] = enriched.get("decision")
 
             return similar
 
@@ -1084,7 +1083,7 @@ class FactsAggregator:
             )
             for inv in similar:
                 inv.setdefault("status", "?")
-                inv.setdefault("council_decision", None)
+                inv.setdefault("decision", None)
             return similar
         finally:
             if session is not None:
@@ -1094,7 +1093,7 @@ class FactsAggregator:
         """Ustaw lub zaktualizuj TigerBeetleClient po inicjalizacji.
 
         Pozwala na późne wstrzyknięcie klienta TigerBeetle — np. przez
-        AgentOrchestrator, który otrzymuje tigerbeetle_client jako parametr
+        DecisionEngine, który otrzymuje tigerbeetle_client jako parametr
         i przekazuje go do FactsAggregator po utworzeniu.
 
         Args:

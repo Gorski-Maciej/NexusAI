@@ -134,43 +134,17 @@ async def decision_evaluate(invoice_id: str, extracted_data: dict) -> dict:
 
 @broker.task(task_name="council_decide")
 async def council_decide(invoice_id: str, extracted_data: dict) -> dict:
-    """Decision task using SQL-based DecisionEngine (zgodnie z aa3fvcx.txt)."""
-    config = AppConfig()
-    engine = _ensure_decision_engine(config)
+    """
+    [DEPRECATED] Decision task — use decision_evaluate instead.
 
-    logger.info("[DECIDE] starting for invoice_id=%s", invoice_id)
-
-    try:
-        async with _COUNCIL_SEMAPHORE:
-            verdict = await asyncio.to_thread(
-                engine.decide,
-                invoice_data=extracted_data,
-                vendor_profile=extracted_data.get("vendor_profile", {}),
-            )
-
-        logger.info(
-            "[DECIDE] invoice_id=%s decision=%s confidence=%.4f",
-            invoice_id,
-            verdict.decision,
-            verdict.confidence,
-        )
-
-        if verdict.decision == "AUTO_POST":
-            await _post_invoice(invoice_id, extracted_data, verdict)
-        elif verdict.decision == "SUGGEST":
-            await _mark_for_review(invoice_id, verdict)
-        elif verdict.decision in ("ASK_USER", "BLOCK", "ESCALATE"):
-            await _escalate_to_human(invoice_id, verdict, reason=f"{verdict.decision}: {verdict.reasoning[:100]}")
-
-        return {
-            "result": "OK",
-            "decision": verdict.decision,
-            "confidence": verdict.confidence,
-        }
-
-    except Exception as exc:
-        logger.exception("[DECIDE] failed for invoice_id=%s: %s", invoice_id, exc)
-        return {"result": "ERROR", "error": str(exc)}
+    Zachowany dla kompatybilności wstecznej. Deleguje do decision_evaluate.
+    Zgodnie z aa3fvcx.txt: wszystkie decyzje przez DecisionEngine (DuckDB/SQL).
+    """
+    logger.warning(
+        "[DEPRECATED] council_decide task called for invoice_id=%s — use decision_evaluate",
+        invoice_id,
+    )
+    return await decision_evaluate(invoice_id, extracted_data)
 
 
 async def _post_invoice(invoice_id: str, extracted_data: dict, verdict: DecisionVerdict) -> None:
@@ -462,7 +436,7 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
             logger.warning("[OCR] SemanticGuard failed for %s: %s", invoice_id, sem_err)
             anomaly = {"action": "ALLOW", "anomaly_score": 0.0, "alert": None}
 
-        # --- Build extracted data for council decision ---
+        # --- Build extracted data for decision engine ---
 
         # --- Field Confidence: per-field OCR confidence metadata ---
         # Struktura: {"total_gross": {"value": 1230.00, "confidence": 0.88}, ...}
@@ -582,7 +556,7 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
         except Exception:
             pass
 
-    # Trigger council decision & rules check via NATS (poza semaforem - lekkie operacje NATS)
+    # Trigger decision & rules check via NATS (poza semaforem - lekkie operacje NATS)
     config = AppConfig()
     try:
         import nats
@@ -926,7 +900,6 @@ async def stuck_saga_recovery_task() -> None:
 
 
 # Semafory dla limitów współbieżności (Rozwiązanie 29)
-_COUNCIL_SEMAPHORE = asyncio.Semaphore(1)      # council_decide: max 1 równolegle
 _OCR_SEMAPHORE = asyncio.Semaphore(3)           # process_invoice_ocr: max 3 równolegle
 
 

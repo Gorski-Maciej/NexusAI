@@ -1,7 +1,8 @@
 """
 BillingEstimator — estymator kosztów i czasu przetwarzania.
 
-Część XI drugiej połowy szkieletu.
+Zgodny z wzorcem DecisionEngine — reguły first-match-wins w tabeli
+billing_rules (DuckDB) zamiast w kodzie, temporalne (valid_from/valid_to).
 
 Logika przechowywana w tabeli billing_rules (nie w kodzie).
 First-match-wins według typu dokumentu i formy opodatkowania.

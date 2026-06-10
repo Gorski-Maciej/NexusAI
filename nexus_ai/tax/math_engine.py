@@ -1,7 +1,8 @@
 """
 Tax Math Engine — Infallible integer-only arithmetic + Fowler's Money.
 
-Część II matematycznego stosu nieomylności.
+Zintegrowany z DecisionEngine (DuckDB/SQL) — integer-only math,
+zgodny z Nexus-Money (msgspec.Struct) i aa3fvcx.txt (Punkt 9).
 
 Zasady:    - Całkowity zakaz float — wszystkie kwoty w groszach (int).
   - Globalnie ROUND_HALF_UP, precyzja 28 miejsc.

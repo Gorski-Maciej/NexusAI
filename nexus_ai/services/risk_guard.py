@@ -1,14 +1,18 @@
 """
 RiskGuard — dynamiczny strażnik ryzyka oparty o progi ufności.
 
-Część V drugiej połowy szkieletu.
+Zintegrowany z DecisionEngine (DuckDB/SQL) — reguły first-match-wins
+w tabeli risk_thresholds, cache'owane w NexusCache z event-based invalidation.
 
-Przechowuje reguły w tabeli risk_thresholds i stosuje first-match-wins
-w zależności od formy opodatkowania, typu wydatku i konkretnego pola.
+Przechowuje reguły w DuckDB i stosuje first-match-wins w zależności od
+formy opodatkowania, typu wydatku i konkretnego pola faktury.
 
-Nowość (per-field): każda reguła może dotyczyć konkretnego pola faktury
+Per-field: każda reguła może dotyczyć konkretnego pola faktury
 (np. vat_rate, total_net, vendor_nip), a wynik jest agregowany przez
 wybór najbardziej restrykcyjnego progu spośród wszystkich pól.
+
+Cache: NexusCache (L1 RAM) z ręcznym unieważnianiem przez
+invalidate_risk_cache() — zgodnie z wzorcem DecisionEngine.
 """
 
 from __future__ import annotations

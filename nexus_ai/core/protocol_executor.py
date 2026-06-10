@@ -1,8 +1,8 @@
 """
 ProtocolExecutor — warstwa wykonawcza SOP (Standard Operating Procedures).
 
-Łączy ProtocolLoader (definicje protokołów z protocols.toml) z agentami
-wykonawczymi (AgentOrchestrator, Council of Agents, Rules SWAT Team).
+Łączy ProtocolLoader (definicje protokołów z protocols.toml) z DecisionEngine
+(core/decision_engine.py) — deterministyczne reguły first-match-wins.
 
 Odpowiedzialności:
   1. Egzekwowanie protokołów decyzyjnych — weryfikacja czy decyzja modelu
@@ -62,7 +62,7 @@ class ProtocolExecutor:
         context: dict[str, Any] | None = None,
         include_protocols: bool = True,
     ) -> str:
-        """Zbuduj kompletny prompt systemowy dla agenta z protocols.toml.
+        """Zbuduj kompletny prompt systemowy z protocols.toml.
 
         Łączy:
           1. System prompt z protokołu (role + checks + task)
@@ -104,7 +104,7 @@ class ProtocolExecutor:
         fact_sheet_text: str | None = None,
         few_shot_examples: str | None = None,
     ) -> str:
-        """Zbuduj prompt dla AgentOrchestrator / Granite 3.2 3B.
+        """Zbuduj prompt dla modelu decyzyjnego.
 
         Zwraca tylko string promptu. Użyj build_orchestrator_prompt_with_flag()
         jeśli potrzebujesz informacji czy SOP został załadowany w pełni.
@@ -130,7 +130,7 @@ class ProtocolExecutor:
         fact_sheet_text: str | None = None,
         few_shot_examples: str | None = None,
     ) -> tuple[str, bool]:
-        """Zbuduj prompt dla AgentOrchestrator z flagą SOP.
+        """Zbuduj prompt decyzyjny z flagą SOP.
 
         Działa jak build_orchestrator_prompt() ale zwraca dodatkowo flagę
         `sop_loaded`, która wskazuje czy SOP z protocols.toml został
@@ -284,7 +284,7 @@ class ProtocolExecutor:
         beta: str,
         gamma: str,
     ) -> dict[str, Any]:
-        """Waliduj głosy Rady Agentów względem matrycy decyzyjnej.
+        """Waliduj głosy Alpha/Beta/Gamma względem matrycy decyzyjnej.
 
         Args:
             alpha: Głos Alpha (APPROVE/REJECT/ERROR).

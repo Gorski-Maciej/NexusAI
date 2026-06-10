@@ -1,7 +1,8 @@
 """
 Tax Rule Engine — Zen-Engine Implementation.
 
-Część I szkieletu decyzyjnego.
+Zintegrowany z DecisionEngine (DuckDB/SQL) — temporalne reguły
+podatkowe first-match-wins z parametrizzowanym SQL.
 
 Komponenty:
   - tax_rules table (DuckDB) — immutable, temporal rule store

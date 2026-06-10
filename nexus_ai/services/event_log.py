@@ -1,7 +1,7 @@
 """EventLog — historia wszystkich zdarzeń i podjętych decyzji.
 
 Zgodnie z aa3fvcx.txt (Punkt 26): historia wszystkich zdarzeń i podjętych
-decyzji, przeszukiwalna i dostępna dla Agenta Analitycznego.
+decyzji, przeszukiwalna dla systemu analitycznego (DuckDB).
 
 Storage: DuckDB dla wydajnych zapytań OLAP.
 Fallback: SQLite gdy DuckDB niedostępny.
@@ -21,17 +21,17 @@ logger = get_logger("nexus.services.event_log")
 
 
 class EventLog:
-    """Historia zdarzeń i decyzji, przeszukiwalna dla Agenta Analitycznego.
+    """Historia zdarzeń i decyzji, przeszukiwalna dla systemu analitycznego (DuckDB).
 
     Zapisuje:
       - Decyzje podjęte przez użytkownika (approve/reject)
-      - Decyzje podjęte przez agentów (auto-post, block)
+      - Decyzje podjęte przez system (auto-post, block)
       - Alerty wygenerowane przez system
       - Przypomnienia wysłane przez Scheduler
       - Błędy systemowe
       - Codzienne podsumowania
 
-    Dostępna dla Agenta Analitycznego do generowania raportów i trendów.
+    Dostępna dla systemu analitycznego (DuckDB) do generowania raportów i trendów.
     """
 
     def __init__(
@@ -120,7 +120,7 @@ class EventLog:
             source: Źródło zdarzenia (np. decision_queue, scheduler)
             description: Opis zdarzenia
             user_id: ID użytkownika (opcjonalny)
-            agent_name: Nazwa agenta (opcjonalny)
+            agent_name: Nazwa komponentu źródłowego (opcjonalny)
             metadata: Dodatkowe dane w formacie JSON
             severity: Poziom ważności (info, warning, error)
 

@@ -1,7 +1,7 @@
 """NotificationManager — centralny system powiadomień NexusAI.
 
 Zgodnie z aa3fvcx.txt (Punkt 26): centralny system zarządzania wszystkimi
-komunikatami od agentów do użytkownika: powiadomienia, alerty,
+komunikatami od komponentów systemu do użytkownika: powiadomienia, alerty,
 pytania decyzyjne, przypomnienia.
 
 Integruje się z:
@@ -44,12 +44,12 @@ class NotificationCategory(enum.Enum):
 
 
 class NotificationManager:
-    """Centralny system zarządzania powiadomieniami od agentów.
+    """Centralny system zarządzania powiadomieniami.
 
     Obsługuje:
       - Powiadomienia informacyjne (INFO)
       - Alerty krytyczne (ALERT)
-      - Pytania decyzyjne od agentów (DECISION)
+      - Pytania decyzyjne (DECISION)
       - Przypomnienia czasowe (REMINDER)
       - Błędy systemowe (ERROR)
       - Codzienne podsumowania (DAILY_BRIEFING)
@@ -115,7 +115,7 @@ class NotificationManager:
             message: Treść powiadomienia
             category: Kategoria (info, alert, decision, reminder, error)
             priority: Priorytet (0=low, 1=normal, 2=high, 3=critical)
-            source_agent: Nazwa agenta źródłowego
+            source_agent: Nazwa komponentu źródłowego
             reference_type: Typ referencji (invoice, decision, itp.)
             reference_id: ID referencji
             requires_action: Czy wymaga akcji użytkownika
@@ -165,7 +165,7 @@ class NotificationManager:
         priority: int = NotificationPriority.HIGH,
         expires_in_hours: int = 48,
     ) -> int:
-        """Wyślij pytanie decyzyjne od agenta.
+        """Wyślij pytanie decyzyjne.
 
         Przekierowuje również do DecisionQueue dla trwałego przechowania.
         """

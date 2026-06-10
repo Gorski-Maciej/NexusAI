@@ -89,7 +89,7 @@ class AutopilotController(Controller):
         """Return full decision details for a specific invoice.
 
         Includes alpha/beta/gamma verdicts, trust components,
-        council pattern, and PLE context.
+        decision pattern, and PLE context.
         Returns 404-like empty dict if not found.
         """
         try:
@@ -316,10 +316,10 @@ class AutopilotController(Controller):
           - total_decisions: total decisions made
           - decisions_by_type: breakdown by decision type
           - correction_rate: user correction rate
-          - level_breakdown: breakdown by council decision level
+          - level_breakdown: breakdown by decision level
           - total_corrected: total corrected decisions
 
-        All data comes from DecisionLogger (council_decisions table).
+        All data comes from DecisionLogger (decisions table).
         """
         try:
             from db.analytics import DuckDBManager
@@ -358,7 +358,7 @@ class AutopilotController(Controller):
             "extracted_data": { ... }
           }
 
-        Triggers the council_decide NATS task.
+        Triggers the decision_evaluate NATS task.
         """
         from litestar.exceptions import ClientException
 
@@ -378,14 +378,14 @@ class AutopilotController(Controller):
             from api.tasks import broker
 
             await broker.kick(
-                "council_decide",
+                "decision_evaluate",
                 invoice_id=invoice_id,
                 extracted_data=extracted_data,
             )
             return {
                 "result": "OK",
                 "invoice_id": invoice_id,
-                "message": "Council evaluation triggered",
+                "message": "Decision evaluation triggered",
             }
         except Exception as exc:
             return {

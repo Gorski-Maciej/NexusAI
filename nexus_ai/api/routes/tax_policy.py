@@ -1,15 +1,14 @@
 """
-Tax Policy simulation API (Część VIII — rozszerzona).
+Tax Policy simulation API — symulacja zmiany formy opodatkowania.
 
-POST /api/v2/tax-policy/simulate — symulacja zmiany formy opodatkowania
-na podstawie rzeczywistych, historycznych faktur z DuckDB/SQLite.
+POST /api/v2/tax-policy/simulate — symulacja na podstawie
+rzeczywistych, historycznych faktur z DuckDB/SQLite.
 
-Nowość:
-  - Obsługa wielu zestawów reguł (rule_set_id): CIT_STANDARD, CIT_ESTONIAN,
-    LINEAR, LUMP_SUM
+Obsługuje:
+  - Wiele zestawów reguł (rule_set_id): CIT_STANDARD, CIT_ESTONIAN, LINEAR, LUMP_SUM
   - Symulacja VAT + podatek dochodowy
   - Miesięczny breakdown dla wykresu (chart_data)
-  - Używa TaxSimulator.run_simulation() z Zen-Engine
+  - Używa TaxSimulator.run_simulation() + RuleEngine (DuckDB)
 """
 
 from __future__ import annotations

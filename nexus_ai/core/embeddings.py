@@ -6,7 +6,7 @@ Zgodnie z aa3fvcx.txt:
 - Nowy:     llama-cpp-python z embedding=True (technologia z stacku)
 - Integracja z nexus_cache (wbudowany cache) i msgspec (Punkty 4 i 13)
 
-llama-cpp-python jest już w projekcie jako zależność (używana przez Council of Agents).
+llama-cpp-python jest już w projekcie jako zależność.
 Używa tego samego silnika GGUF do generowania embeddingów, co eliminuje
 osobną zależność sentence-transformers (ok. 500 MB).
 

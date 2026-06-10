@@ -7,14 +7,14 @@ Zgodnie z aa3fvcx.txt:
 - TigerBeetle (Punkt 9): integralność finansowa
 - sqlite-vec (Punkt 3): wyszukiwanie semantyczne
 
-Zastępuje:
-- Council of Agents (Alpha/Beta/Gamma) — logika walidacji → DuckDB rules
-- WorkflowPlanner — klasyfikacja simple/complex → SQL conditions
-- JambaStrategist — decyzja strategiczna → matryca decyzyjna w DuckDB
-- Rules SWAT Team — kaskada reguł → hierarchiczne reguły w DuckDB
-- TrustScoreCalculator — 5-składnikowy trust score → SQL aggregation
-- PLE Engine — pamięć → dane historyczne w SQLite/DuckDB
-- BayesianThresholdLearner — adaptacja progów → DuckDB stats
+Zastępuje stare agenty AI deterministycznymi regułami SQL:
+- Council of Agents → DuckDB rules
+- WorkflowPlanner → classify_invoice()
+- JambaStrategist → DecisionEngine.decide()
+- Rules SWAT Team → Hierarchiczne reguły DuckDB
+- TrustScoreCalculator → calculate_trust_score()
+- PLE Engine → dane historyczne w SQLite/DuckDB
+- BayesianThresholdLearner → get_adapted_thresholds()
 """
 
 from __future__ import annotations
@@ -22,6 +22,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 from uuid import uuid4
+
 import pendulum
 
 from nexus_ai.core.cache import get_cache
@@ -31,7 +32,6 @@ from nexus_ai.db.models import Invoice
 
 # NexusCache dla decision_rules (event-based invalidation)
 # Brak TTL — cache unieważniany przy każdej zmianie reguł przez API
-# Klucz: decision_rules:active — lista aktywnych reguł (list[dict])
 _rules_cache = get_cache()
 CACHE_KEY = "decision_rules:active"
 
@@ -49,11 +49,13 @@ def invalidate_rules_cache() -> None:
 # Decision data structures
 # =========================================================================
 
+
 @dataclass(slots=True)
 class DecisionVerdict:
     """Decision result from the engine."""
-    decision: str           # AUTO_POST | SUGGEST | ASK_USER | BLOCK
-    confidence: float       # 0.0 – 1.0
+
+    decision: str  # AUTO_POST | SUGGEST | ASK_USER | BLOCK
+    confidence: float  # 0.0 – 1.0
     reasoning: str
     matched_rule: str = ""
     risk_override: bool = False
@@ -68,6 +70,88 @@ class DecisionVerdict:
             "risk_override": self.risk_override,
             "semantic_anomaly": self.semantic_anomaly,
         }
+
+
+# =========================================================================
+# Domyślne progi decyzyjne (zastępują TrustScoreCalculator z autopilot.py)
+# =========================================================================
+
+DEFAULT_THRESHOLDS: dict[str, float] = {
+    "auto_post": 0.92,
+    "suggest": 0.75,
+    "ask_user": 0.50,
+}
+
+_RECURRING_CATEGORIES = {"paliwo", "czynsz", "media", "telekomunikacja", "leasing"}
+_PROBLEMATIC_CATEGORIES = {"usługi it", "doradztwo", "marketing", "szkolenia"}
+
+
+def get_adapted_thresholds(
+    category: str = "",
+    vendor_known: bool = False,
+    vendor_invoice_count: int = 0,
+    amount_gross: float = 0.0,
+    learning_rate: float = 0.05,
+    vendor_alpha_proximity_min: int = 3,
+    low_amount_threshold: float = 500.0,
+    adaptation_enabled: bool = True,
+) -> dict[str, float]:
+    """Zwróć adaptacyjne progi decyzyjne dla kontekstu.
+
+    Zgodnie z aa3fvcx.txt: statystyczne dostrojenie progów SQL, bez LLM.
+    Zastępuje: BayesianThresholdLearner + TrustScoreCalculator.get_adapted_thresholds()
+
+    Args:
+        category: Kategoria wydatku (np. "paliwo", "czynsz").
+        vendor_known: Czy kontrahent jest znany.
+        vendor_invoice_count: Liczba faktur od kontrahenta.
+        amount_gross: Kwota brutto.
+        learning_rate: Współczynnik adaptacji (domyślnie 0.05).
+        vendor_alpha_proximity_min: Min. faktur do obniżenia progu.
+        low_amount_threshold: Próg niskiej kwoty.
+        adaptation_enabled: Czy adaptacja jest włączona.
+
+    Returns:
+        Słownik z adaptowanymi progami: auto_post, suggest, ask_user.
+    """
+    if not adaptation_enabled:
+        return dict(DEFAULT_THRESHOLDS)
+
+    base = dict(DEFAULT_THRESHOLDS)
+    adj = learning_rate
+    cat_lower = category.lower().strip()
+
+    # Dostosowanie według kategorii
+    if cat_lower in _RECURRING_CATEGORIES:
+        base["auto_post"] -= adj * 0.5
+        base["suggest"] -= adj * 0.3
+    elif cat_lower in _PROBLEMATIC_CATEGORIES:
+        base["auto_post"] += adj * 1.0
+        base["suggest"] += adj * 0.5
+
+    # Dostosowanie według znajomości kontrahenta
+    if vendor_known and vendor_invoice_count >= vendor_alpha_proximity_min:
+        base["auto_post"] -= adj * 1.0
+        base["suggest"] -= adj * 0.5
+    elif not vendor_known:
+        base["auto_post"] += adj * 2.0
+        base["suggest"] += adj * 1.0
+
+    # Dostosowanie według kwoty
+    if amount_gross <= low_amount_threshold:
+        base["auto_post"] -= adj * 0.5
+        base["suggest"] -= adj * 0.3
+    elif amount_gross >= low_amount_threshold * 20:
+        base["auto_post"] += adj * 2.0
+        base["suggest"] += adj * 1.0
+    elif amount_gross >= low_amount_threshold * 4:
+        base["auto_post"] += adj * 0.5
+        base["suggest"] += adj * 0.3
+
+    # Zaokrąglij i przytnij do [0.0, 1.0]
+    for key in base:
+        base[key] = round(min(max(base[key], 0.0), 1.0), 4)
+    return base
 
 
 # =========================================================================
@@ -175,7 +259,6 @@ class DecisionEngine:
                     "system",
                 ),
             )
-        # Unieważnij cache — świeże reguły w DuckDB
         invalidate_rules_cache()
 
     def decide(
@@ -197,7 +280,6 @@ class DecisionEngine:
         """
         vendor = vendor_profile or invoice_data.get("vendor_profile", {}) or {}
 
-        # Extract features for rule matching
         features = {
             "vendor_known": bool(vendor.get("known", False)),
             "vendor_invoice_count": int(vendor.get("invoice_count", 0)),
@@ -208,7 +290,6 @@ class DecisionEngine:
             "category": str(invoice_data.get("category", "")),
         }
 
-        # Match rules by priority (first-match-wins)
         rules = self._get_active_rules()
         for rule in rules:
             condition = rule.get("condition", {})
@@ -221,7 +302,6 @@ class DecisionEngine:
                     matched_rule=rule.get("rule_id", ""),
                 )
 
-        # Fallback
         return DecisionVerdict(
             decision="ASK_USER",
             confidence=0.5,
@@ -233,10 +313,8 @@ class DecisionEngine:
 
         Cache'owane w NexusCache (event-based invalidation).
         Cache unieważniany przez invalidate_rules_cache() przy każdej
-        zmianie reguł (add_rule, deprecate_rule, seed) — nigdy nie wygasa
-        sam z siebie. Gwarantuje to świeżość reguł bez opóźnienia TTL.
+        zmianie reguł — nigdy nie wygasa sam z siebie.
         """
-        # Sprawdź NexusCache (L1 RAM) — szybki path bez DuckDB
         cached = _rules_cache.get_sync(CACHE_KEY)
         if cached is not None:
             return cached
@@ -263,13 +341,12 @@ class DecisionEngine:
                 }
                 for r in rows
             ]
-            # Zapisz w NexusCache (bez TTL — unieważniamy ręcznie)
             _rules_cache.set_sync(CACHE_KEY, rules)
             return rules
         except Exception:
             return DEFAULT_DECISION_RULES
 
-    # ── Rule CRUD (z event-based cache invalidation) ────────────────────
+    # ── Rule CRUD ────────────────────────────────────────────────────
 
     def add_rule(
         self,
@@ -331,10 +408,9 @@ class DecisionEngine:
         - field_name__in: in list
         """
         if not condition:
-            return True  # Empty condition matches everything (fallback)
+            return True
 
         for key, expected in condition.items():
-            # Parse operator
             if "__gte" in key:
                 field = key.replace("__gte", "")
                 actual = features.get(field, 0)
@@ -361,10 +437,15 @@ class DecisionEngine:
 # InvoiceClassifier — simple vs complex (replaces WorkflowPlanner)
 # =========================================================================
 
-def classify_invoice(invoice_data: dict[str, Any], vendor_profile: dict[str, Any] | None = None) -> str:
+
+def classify_invoice(
+    invoice_data: dict[str, Any],
+    vendor_profile: dict[str, Any] | None = None,
+) -> str:
     """Classify invoice as simple or complex using SQL-like conditions.
 
     Zgodnie z aa3fvcx.txt: deterministyczne reguły, bez LLM.
+    Zastępuje: WorkflowPlanner (LittleLamb 0.3B)
 
     Returns:
         "simple" or "complex"
@@ -375,7 +456,6 @@ def classify_invoice(invoice_data: dict[str, Any], vendor_profile: dict[str, Any
     vendor_known = bool(vendor.get("known", False))
     vendor_count = int(vendor.get("invoice_count", 0))
 
-    # Simple: niska kwota, znany kontrahent, wysoki OCR
     if amount <= 5000 and vendor_known and vendor_count >= 3 and ocr_conf >= 0.85:
         return "simple"
     return "complex"
@@ -401,6 +481,7 @@ def calculate_trust_score(
     """Calculate trust score using weighted components.
 
     Zgodnie z aa3fvcx.txt: statystyczne ważenie, bez LLM.
+    Zastępuje: TrustScoreCalculator z autopilot.py
 
     Returns:
         Dict with trust_score and components.
@@ -440,4 +521,23 @@ def calculate_trust_score(
     }
 
 
+def validate_nip(nip: str) -> bool:
+    """Validate NIP checksum (Polish tax ID).
 
+    Zgodnie z aa3fvcx.txt: prosta walidacja, bez zewnętrznych API.
+    Przeniesione z TrustScoreCalculator._check_nip() z autopilot.py
+
+    Args:
+        nip: 10-cyfrowy NIP.
+
+    Returns:
+        True jeśli NIP jest poprawny wagowo.
+    """
+    nip_str = "".join(ch for ch in str(nip) if ch.isdigit())
+    if len(nip_str) != 10:
+        return False
+    weights = (6, 5, 7, 2, 3, 4, 5, 6, 7)
+    checksum = sum(int(d) * w for d, w in zip(nip_str[:9], weights)) % 11
+    if checksum == 10:
+        return False
+    return checksum == int(nip_str[9])

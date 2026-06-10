@@ -1,10 +1,9 @@
 """
 KSeF Generator — generuje XML FA_VAT zgodny ze schematem KSeF.
 
-Część IX drugiej połowy szkieletu.
-
-Na podstawie werdyktu Zen-Engine (GTU, procedury, stawki VAT)
-buduje poprawny dokument XML zgodny z XSD Ministerstwa Finansów.
+Zintegrowany z DecisionEngine — na podstawie werdyktu reguł podatkowych
+(GTU, procedury, stawki VAT) buduje poprawny dokument XML zgodny z XSD
+Ministerstwa Finansów.
 
 Obsługuje:
   - ksef_fields z werdyktu (gtu_code, procedure_code, transaction_mark, split_payment)

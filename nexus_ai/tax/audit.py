@@ -1,10 +1,9 @@
 """
 Decision Trace Logger — append-only cryptographic audit trail.
 
-Część III podstawowego audytu i łańcucha dowodowego.
-
-Każda decyzja podatkowa pozostawia niezmienny, kryptograficznie
-zabezpieczony ślad (SHA-256 hash chain), który pozwala odtworzyć
+Zgodny z aa3fvcx.txt — SHA-256 hash chain przez nexus-crypto (Rust+PyO3)
+z fallback do hashlib. Każda decyzja podatkowa pozostawia niezmienny,
+kryptograficznie zabezpieczony ślad, który pozwala odtworzyć
 cały proces decyzyjny nawet po latach.
 """
 

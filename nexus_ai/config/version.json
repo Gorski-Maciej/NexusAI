@@ -1,11 +1,11 @@
 {
   "__comment__": "NexusAI Version Manifest — deployed to https://nexusai.app/version.json (or GitHub Pages)",
   "__info__": "This file is checked by the auto-updater on startup. Update version and download_url for each release.",
-  "version": "1.0.0",
-  "release_notes": "Initial release of NexusAI — AI-powered accounting system.\n\nFeatures:\n- Automated invoice OCR processing\n- AI-powered classification and validation\n- Polish tax law compliance (KSeF, VAT, CIT)\n- Local-first architecture with offline AI models",
-  "download_url": "https://github.com/your-org/NexusAI/releases/download/v1.0.0/NexusAI_Setup_v1.0.0.exe",
+  "version": "1.1.0",
+  "release_notes": "NexusAI v2.3 — Refaktoryzacja nomenklatury i czyszczenie architektury.\n\n=== Refaktoryzacja docstringów ===\n- Usunięto wszystkie referencje 'szkielet', 'Część X', 'Rady Agentów' (15+ plików)\n- event_log.py: 'Agenta Analitycznego' → 'systemu analitycznego (DuckDB)' (3×)\n- event_log.py: 'przez agentów' → 'przez system', 'Nazwa agenta' → 'Nazwa komponentu źródłowego'\n- notification_manager.py: 'od agentów' → 'od komponentów systemu' / usunięto (4×)\n- decision_queue.py: 'od agentów' → 'systemowych', 'Nazwa agenta' → 'Nazwa komponentu'\n- protocol_loader.py: 'dla wszystkich agentów' → 'dla wszystkich komponentów systemu'\n- protocol_executor.py: 'dla agenta z protocols.toml' → 'z protocols.toml'\n- council_session.py: 'Decyzje oparte na DuckDB/SQL, bez agentów AI' (deprecated)\n\n=== Migracja nomenklatury w kodzie ===\n- DecisionLogger: migracja tabel council_decisions → decisions (ALTER TABLE RENAME)\n- DecisionLogger: kolumna council_pattern → decision_pattern\n- FactsAggregator: klucz council_decision → decision, zmienna council_decisions → decisions\n- api/tasks.py: usunięto _COUNCIL_SEMAPHORE, council_decide → decision_evaluate\n- api/routes/autopilot.py: broker.kick('council_decide') → 'decision_evaluate'\n- context_enricher.py, risk_guard.py: usunięto starą nomenklaturę 'szkieletu'\n- protocol_executor.py: 'Rady Agentów' → 'Alpha/Beta/Gamma'\n\n=== Usunięto martwy kod ===\n- services/council_session.py — deprecated, nieużywany od wersji 2.0\n- services/autopilot.py — deprecated, nieużywany od wersji 2.0\n- test_docs_code_consistency.py: usunięto listę dozwolonych importów deprecated\n\n=== Dokumentacja ===\n- docs/ARCHITECTURE_DIAGRAM.md: zaktualizowano diagramy do v2.3, poprawiono nazwy tabel\n- docs/DECISION_FLOW.md: zaktualizowano tabele porównawcze do v2.3\n- config/version.json: bump 1.0.0 → 1.1.0, pełny changelog\n\n=== Audyt i weryfikacja ===\n- Przeskanowano 304 pliki .py — 0 pozostałych starych referencji\n- Zweryfikowano: 3 celowe referencje Council of Agents (decision_engine.py, autopilot.py, council_session.py — ostatnie 2 usunięte)\n- test_v2_components_are_not_in_core — PASSED\n- test_component_exists_in_code (22 parametryzacje) — wszystkie PASSED\n\nCelowo zachowane:\n- Council of Agents w decision_engine.py (historyczna mapa transformacji architektury)\n- Zen-Engine w tax/rules.py (aktywna technologia, nie do refaktoryzacji)",
+  "download_url": "https://github.com/your-org/NexusAI/releases/download/v1.1.0/NexusAI_Setup_v1.1.0.exe",
   "download_size_mb": 250,
-  "release_date": "2026-06-01",
-  "minimum_version": "1.0.0",
+  "release_date": "2026-06-10",
+  "minimum_version": "1.1.0",
   "critical": false
 }

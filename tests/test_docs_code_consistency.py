@@ -697,7 +697,7 @@ def test_decision_rules_schema_has_documented_fields() -> None:
 
 
 # =========================================================================
-# 13.  COMPONENT MAPPING v2.0 → v2.2 — zgodność z Appendix A
+# 13.  COMPONENT MAPPING v2.0 → v2.3 — zgodność z Appendix A
 # =========================================================================
 
 # Appendix A w COGNITIVE_ARCHITECTURE.md (Section 11) podaje mapowanie:
@@ -709,7 +709,7 @@ V2_COMPONENT_MAP: dict[str, str] = {
     "TrustScoreCalculator": "calculate_trust_score()",
     "PLE Engine": "DecisionLogger.get_trust_score_trend()",
     "BayesianThresholdLearner": "Statystyki w DuckDB",
-    "AgentOrchestrator": "services/council_session.py, services/autopilot.py (DEPRECATED)",
+    "AgentOrchestrator": "USUNIĘTY — zastąpiony przez DecisionEngine (core/decision_engine.py)",
 }
 
 
@@ -718,7 +718,7 @@ def test_v2_components_are_not_in_core() -> None:
 
     Dopuszczalne są:
     - Wzmianki w docstringach opisujących historię ("Zastępuje", "v2.0")
-    - Importy z serwisów deprecated (services.autopilot, services.council_session)
+    - Historyczne referencje w docstringach ("Zastępuje", "v2.0")
     - Udokumentowane w API/komentarzach jako legacy ("historyczny", "DEPRECATED")
     - Wzmianki w kontekście budowania promptów ("prompt dla AgentOrchestrator")
     """
@@ -728,7 +728,6 @@ def test_v2_components_are_not_in_core() -> None:
 
     # Wyrażenia które wykluczają wzmiankę z alertu
     ALLOWED_CONTEXT = {"Zastępuje", "v2.0", "historyczny", "DEPRECATED",
-                      "services.autopilot", "services.council_session",
                       "prompt dla", "prompt for", "AgentOrchestrator /"}
 
     core_dir = PROJECT_ROOT / "nexus_ai" / "core"

@@ -1,6 +1,6 @@
 # Diagram Architektury NexusAI
 
-> **Wersja:** 2.2
+> **Wersja:** 2.3
 > **Data:** 2026-06-10
 > **Format:** Mermaid.js (flowchart, sequence, C4)
 
@@ -357,8 +357,7 @@ flowchart LR
         S1 --> S2 --> S3 --> S4 --> S5 --> S6
     end
 
-    subgraph Porownanie["📊 Porównanie z v2.0"]
-        V1["v2.2: ~0.2-0.4s | ~200 MB RAM"]
+    subgraph Porownanie["📊 Porównanie z v2.0"]            V1["v2.3: ~0.2-0.4s | ~200 MB RAM"]
         V2["v2.0: ~7.7-18.3s | ~2.2 GB RAM"]
     end
 
@@ -422,7 +421,7 @@ flowchart TB
     User(("👤 Użytkownik\n(Księgowy / CFO)"))
     External("📄 System zewnętrzny\n(OCR, API bankowe,\nKSeF, GUS BIR)")
 
-    subgraph System["NexusAI — System decyzyjny v2.2"]
+    subgraph System["NexusAI — System decyzyjny v2.3"]
         direction TB
 
         subgraph API["🔌 API / CLI"]
@@ -555,7 +554,7 @@ flowchart TB
         AO --> WP --> CA --> RST --> TC --> JS --> BL --> PLE
     end
 
-    subgraph New["DecisionEngine (v2.2 — aktualny)"]
+    subgraph New["DecisionEngine (v2.3 — aktualny)"]
         DE["DecisionEngine\ncore/decision_engine.py"]
         CI2["classify_invoice()\n<1ms"]
         TS2["calculate_trust_score()\n<1ms"]
@@ -567,12 +566,12 @@ flowchart TB
 
     subgraph Legend["Legenda"]
         L1["v2.0: ~7.7–18.3s, ~2.2 GB RAM peak"]
-        L2["v2.2: ~0.2–0.4s, ~200 MB RAM baseline"]
+        L2["v2.3: ~0.2–0.4s, ~200 MB RAM baseline"]
         L3["39–61× szybciej, 11× mniej RAM"]
     end
 ```
 
-### Komponenty v2.0 → v2.2
+### Komponenty v2.0 → v2.3
 
 | Komponent v2.0 | Model | Zastąpiony przez |
 |---|---|---|
@@ -587,6 +586,6 @@ flowchart TB
 
 ---
 
-> **Dokumentacja techniczna** — NexusAI v2.2
+> **Dokumentacja techniczna** — NexusAI v2.3
 > **Ostatnia aktualizacja:** 2026-06-10
 > **Plik:** `docs/ARCHITECTURE_DIAGRAM.md`

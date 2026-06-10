@@ -2,7 +2,7 @@
 ProtocolLoader — parser protocols.toml dla scentralizowanych SOP.
 
 Ładuje protokoły z nexus_ai/config/protocols.toml i udostępnia je
-w formie słowników i obiektów dla wszystkich agentów w systemie.
+w formie słowników i obiektów dla wszystkich komponentów systemu.
 
 Usage:
     loader = ProtocolLoader()
@@ -520,7 +520,7 @@ class ProtocolLoader:
     ) -> str:
         """Zbuduj system prompt dla modelu na podstawie protokołu.
 
-        UWAGA: Integracja z agentami wykonana przez ProtocolExecutor
+        UWAGA: Integracja z komponentami systemu wykonana przez ProtocolExecutor
         (nexus_ai/core/protocol_executor.py). Metoda używana przez
         ProtocolExecutor.build_prompt() jako źródło treści promptu.
 

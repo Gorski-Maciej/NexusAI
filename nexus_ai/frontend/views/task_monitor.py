@@ -39,7 +39,6 @@ TASK_ICONS = {
     "process_invoice_task": ft.icons.DOCUMENT_SCAN,
     "analytics_run": ft.icons.ANALYTICS,
     "rules_check": ft.icons.GAVEL,
-    "council_decide": ft.icons.GROUPS,
     "decision_evaluate": ft.icons.PSYCHOLOGY,
     "default": ft.icons.TASK_ALT,
 }
@@ -186,7 +185,6 @@ class TaskItem(ft.Container):
             "process_invoice_task": "Invoice Processing",
             "analytics_run": "Analytics & Anomaly Detection",
             "rules_check": "Rules & Compliance Check",
-            "council_decide": "Council of Agents Decision",
             "decision_evaluate": "Final Decision Evaluation",
             "run_daily_dunning_check": "Daily Dunning Check",
             "execute_monthly_depreciation": "Monthly Depreciation",

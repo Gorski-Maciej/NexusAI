@@ -1,14 +1,14 @@
 """
 ContextEnricher — wzbogaca fakturę o dane z rejestrów państwowych.
 
-Część IV drugiej połowy szkieletu.
+Zintegrowany z DecisionEngine (DuckDB/SQL) i ProtocolExecutor.
 
 Komponenty:
-  - White List verification (MF API)
-  - GUS BIR (SOAP/REST — stub, wymaga klucza API)
-  - vendor_cache z TTL 30 dni
-  - Reguły blokujące w Zen-Engine (vendor_account_on_whitelist)
-  - Flaga vendor_trust (high/low)
+  - White List verification (MF API) przez WhiteListService + CachedHttpClient
+  - GUS BIR (SOAP — wymaga GUS_BIR_API_KEY)
+  - vendor_cache w DuckDB z konfigurowalnym TTL (dom. 30 dni) z protocols.toml
+  - Flaga vendor_trust (high/low) ustalana na podstawie Białej Listy
+  - Hot-reload konfiguracji przez ProtocolExecutor.subscribe_on_change()
 """
 
 from __future__ import annotations
