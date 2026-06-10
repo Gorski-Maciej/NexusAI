@@ -19,33 +19,21 @@ from taskiq_nats import PullBasedJetStreamBroker
 
 from nexus_ai.api.cache import clear_cache_async
 from nexus_ai.core.config import AppConfig
-from nexus_ai.core.model_retention import prune_model_versions
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_dumps_bytes, msgspec_loads
 from nexus_ai.core.resilience import async_retry
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import create_oltp_engine, create_session_factory
 from nexus_ai.pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
 from nexus_ai.services.accounting import AccountingService
-from nexus_ai.services.analytics_agent import AnalyticsAgent, FinDetective
-from nexus_ai.services.agent_orchestrator import (
-    AgentOrchestrator,
-    JambaStrategist,
-    OrchestratorDecision,
-    TrustScoreCalculator,
-    WorkflowPlanner,
-)
-from nexus_ai.services.council_agents import AlphaAgent, BetaAgent, GammaAgent, ModelManager
+from nexus_ai.core.decision_engine import DecisionEngine, DecisionVerdict, classify_invoice, calculate_trust_score
 from nexus_ai.services.currency_converter import (
     Money,  # Nexus-Money (msgspec.Struct, zastępuje py-moneyed)
 )
-from nexus_ai.services.data_extraction_agent import DataExtractionAgent
 from nexus_ai.services.decision_logger import DecisionLogger
 from nexus_ai.services.finops_meter import estimate_runtime_cost
 from nexus_ai.services.log_pii_monitor import notify_dpo, scan_logs_for_pii
 from nexus_ai.services.migration_sanity import verify_migration_integrity, verify_schema_drift
 from nexus_ai.services.outbox_replay import replay_dead_letter_events
-from nexus_ai.services.quality_validator_agent import QualityValidatorAgent
-from nexus_ai.services.rules_agent import RulesAgent
 from nexus_ai.services.telemetry import flush_fallback_spans
 from nexus_ai.tax.exceptions import NoMatchingRuleError
 
@@ -55,360 +43,78 @@ MAX_OUTBOX_RETRIES = 3
 # Circuit Breaker: stamina.retry (async-native) zastępuje custom CircuitBreaker
 # stamina automatycznie zarządza retry + circuit breaker w jednym dekoratorze
 INVOICE_OCR_EVENT_TYPES = {"process_invoice_ocr", "invoice_uploaded"}
-LARGE_ATTACHMENT_EVENT_TYPES = {"attachment_large_uploaded"}
+LARGE_ATTACHMENT_EVENT_TYPES = {"attachment_large_uploaded"}# Singleton instances (lazy init, shared across tasks)
+_DECISION_ENGINE: DecisionEngine | None = None
+_DUCKDB: DuckDBManager | None = None
 
 
-# Singleton instances for agent orchestrator (lazy init, shared across tasks)
-_COUNCIL_MANAGER: ModelManager | None = None
-_ORCHESTRATOR: AgentOrchestrator | None = None
-_ORCHESTRATOR_DECISION_LOGGER: DecisionLogger | None = None
-_ORCHESTRATOR_DUCKDB: DuckDBManager | None = None
-_QUALITY_VALIDATOR: QualityValidatorAgent | None = None
-_DATA_EXTRACTION: DataExtractionAgent | None = None
+def _ensure_decision_engine(config: AppConfig) -> DecisionEngine:
+    """Lazy-init DecisionEngine as module-level singleton.
 
-# Singleton for Rules Agent
-_RULES_AGENT: RulesAgent | None = None
-
-# Singleton for Analytics Agent
-_ANALYTICS_AGENT: AnalyticsAgent | None = None
-_FIN_DETECTIVE: FinDetective | None = None
-
-
-def _ensure_orchestrator(config: AppConfig) -> tuple[ModelManager, AgentOrchestrator, DecisionLogger]:
-    """Lazy-init AgentOrchestrator and supporting agents as module-level singletons."""
-    global _COUNCIL_MANAGER, _ORCHESTRATOR, _ORCHESTRATOR_DECISION_LOGGER, _ORCHESTRATOR_DUCKDB
-    global _QUALITY_VALIDATOR
-
-    if _ORCHESTRATOR is not None:
-        return _COUNCIL_MANAGER, _ORCHESTRATOR, _ORCHESTRATOR_DECISION_LOGGER  # type: ignore[return-value]
-
-    _ORCHESTRATOR_DUCKDB = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
-    decision_logger = DecisionLogger(_ORCHESTRATOR_DUCKDB)
-    manager = ModelManager(config)
-
-    # --- Init Rada Agentów (Alpha/Beta/Gamma) dla QualityValidator ---
-    alpha = AlphaAgent("alpha", config.council_alpha_model_path, manager)
-    beta = BetaAgent("beta", config.council_beta_model_path, manager)
-    gamma = GammaAgent("gamma", config.council_gamma_model_path, manager)
-
-    # --- QualityValidatorAgent (trójwarstwowa tarcza) ---
-    quality = QualityValidatorAgent(
-        alpha_agent=alpha,
-        beta_agent=beta,
-        gamma_agent=gamma,
-        config=config,
-    )
-
-    # --- AgentOrchestrator (Centralny Mózg/CFO) ---
-    workflow_planner = WorkflowPlanner(
-        model_name="orchestrator",
-        model_path=config.orchestrator_model_path,
-        model_manager=manager,
-        config=config,
-    )
-    trust_calculator = TrustScoreCalculator(
-        config=config,
-        duckdb=_ORCHESTRATOR_DUCKDB,
-    )
-    jamba = JambaStrategist(
-        model_name="jamba",
-        model_path=config.decision_jamba_model_path,
-        model_manager=manager,
-        config=config,
-    )
-
-    from nexus_ai.services.ple_engine import PLEEngine
-    ple = PLEEngine(config=config, model_manager=manager)
-
-    orchestrator = AgentOrchestrator(
-        workflow_planner=workflow_planner,
-        trust_calculator=trust_calculator,
-        jamba_strategist=jamba,
-        decision_logger=decision_logger,
-        ple_engine=ple,
-        config=config,
-    )
-
-    _COUNCIL_MANAGER = manager
-    _ORCHESTRATOR = orchestrator
-    _ORCHESTRATOR_DECISION_LOGGER = decision_logger
-    _QUALITY_VALIDATOR = quality
-    return manager, orchestrator, decision_logger
-
-
-def _close_orchestrator_components() -> None:
-    """Cleanup DuckDB connection on shutdown."""
-    global _ORCHESTRATOR_DUCKDB
-    if _ORCHESTRATOR_DUCKDB is not None:
-        try:
-            _ORCHESTRATOR_DUCKDB.close()
-        except Exception:
-            pass
-        _ORCHESTRATOR_DUCKDB = None
-
-
-def _ensure_rules_agent(config: AppConfig, manager: ModelManager) -> RulesAgent:
-    """Lazy-init RulesAgent as module-level singleton.
-    Shares ModelManager with Orchestrator agents for RAM mutual exclusion.
+    Zgodnie z aa3fvcx.txt: DuckDB-based decision rules,
+    bez konkretnych modeli LLM ani agentów AI.
     """
-    global _RULES_AGENT
-    if _RULES_AGENT is None:
-        _RULES_AGENT = RulesAgent(
-            model_name="rules",
-            model_path=config.rules_model_path,
-            model_manager=manager,
-            config=config,
-        )
-    return _RULES_AGENT
-
-
-def _ensure_analytics_agent(config: AppConfig, manager: ModelManager) -> AnalyticsAgent:
-    """Lazy-init AnalyticsAgent as module-level singleton.
-    Shares ModelManager with Orchestrator agents for RAM mutual exclusion.
-    """
-    global _ANALYTICS_AGENT
-    if _ANALYTICS_AGENT is None:
-        _ANALYTICS_AGENT = AnalyticsAgent(
-            model_name="analytics",
-            model_path=config.analytics_model_path,
-            model_manager=manager,
-            config=config,
-        )
-    return _ANALYTICS_AGENT
-
-
-def _ensure_fin_detective(config: AppConfig) -> FinDetective:
-    """Lazy-init FinDetective as module-level singleton.
-    Fin-RWKV uses PyTorch (not llama-cpp), so it does NOT share ModelManager.
-    """
-    global _FIN_DETECTIVE
-    if _FIN_DETECTIVE is None:
-        _FIN_DETECTIVE = FinDetective(
-            model_path=config.fin_detective_model_path,
-            config=config,
-        )
-    return _FIN_DETECTIVE
-
-
-def _ensure_quality_validator(config: AppConfig, manager: ModelManager) -> QualityValidatorAgent:
-    """Lazy-init QualityValidatorAgent as module-level singleton.
-    Shares ModelManager with Orchestrator agents for RAM mutual exclusion.
-    """
-    global _QUALITY_VALIDATOR
-    if _QUALITY_VALIDATOR is None:
-        alpha = AlphaAgent("alpha", config.council_alpha_model_path, manager)
-        beta = BetaAgent("beta", config.council_beta_model_path, manager)
-        gamma = GammaAgent("gamma", config.council_gamma_model_path, manager)
-        _QUALITY_VALIDATOR = QualityValidatorAgent(
-            alpha_agent=alpha,
-            beta_agent=beta,
-            gamma_agent=gamma,
-            config=config,
-        )
-    return _QUALITY_VALIDATOR
+    global _DECISION_ENGINE, _DUCKDB
+    if _DECISION_ENGINE is not None:
+        return _DECISION_ENGINE
+    _DUCKDB = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
+    _DECISION_ENGINE = DecisionEngine(duckdb=_DUCKDB)
+    return _DECISION_ENGINE
 
 
 def _close_all_components() -> None:
     """Cleanup all singleton components on shutdown."""
-    _close_orchestrator_components()
+    global _DUCKDB
+    if _DUCKDB is not None:
+        try:
+            _DUCKDB.close()
+        except Exception:
+            pass
+        _DUCKDB = None
 
 
 atexit.register(_close_all_components)
 
 
-@broker.task(task_name="analytics_run")
-async def analytics_run(invoice_id: str, extracted_data: dict) -> dict:
-    """
-    Analytics & trend analysis triggered after OCR extraction.
-    Runs Qwen2.5-1.5B analysis + Fin-RWKV anomaly detection.
-    Shares ModelManager with Council agents for RAM mutual exclusion.
-    Publishes result to invoice.analytics_result topic.
-    Timeout: 90 seconds dla prostych zadań analitycznych.
-    Rozwiązanie 17: Publikuje postęp zadania przez WebSocket.
-    Rozwiązanie 29: Limit współbieżności przez semafor (max 2).
-    """
-    config = AppConfig()
-    manager, _, _ = _ensure_orchestrator(config)
-    agent = _ensure_analytics_agent(config, manager)
-    detective = _ensure_fin_detective(config)
-
-    task_id = f"analytics_{invoice_id}"
-    logger.info("[ANALYTICS] running analysis for invoice_id=%s", invoice_id)
-
-    # Publikuj postęp (Rozwiązanie 17)
-    try:
-        from nexus_ai.api.routes.ws import broadcast_progress
-        await broadcast_progress(task_id, {"type": "progress", "task_id": task_id, "percent": 10, "stage": "initializing"})
-    except Exception:
-        pass
-
-    try:
-        # Extract vendor history from extracted_data if available
-        vendor_history = extracted_data.get("vendor_profile", {})
-
-        # Rozwiązanie 29: Semafory na ciężkie operacje LLM (max 2 równolegle)
-        async with _ANALYTICS_SEMAPHORE:
-            # Run both analyses concurrently
-            # Timeout dla zadań analitycznych (90s)
-            analysis_task = agent.analyze(
-                invoice_data=extracted_data,
-                vendor_history=vendor_history,
-            )
-            detection_task = detective.detect_anomalies(extracted_data)
-
-            analysis_result, ml_anomalies = await asyncio.wait_for(
-                asyncio.gather(analysis_task, detection_task),
-                timeout=90.0,
-            )
-
-        # Merge ML anomalies into analysis result
-        all_anomalies = analysis_result.get("anomalies", []) + ml_anomalies
-        analysis_result["anomalies"] = all_anomalies
-
-        logger.info(
-            "[ANALYTICS] invoice_id=%s trends=%d anomalies=%d confidence=%.4f",
-            invoice_id,
-            len(analysis_result.get("trends", [])),
-            len(all_anomalies),
-            analysis_result.get("confidence", 0.0),
-        )
-
-        # Publish result to NATS
-        try:
-            import nats
-            nc = await nats.connect(config.nats_url)
-            await nc.publish(
-                "invoice.analytics_result",
-                msgspec_dumps({
-                    "invoice_id": invoice_id,
-                    "trends": analysis_result.get("trends", []),
-                    "anomalies": all_anomalies,
-                    "summary": analysis_result.get("summary", ""),
-                    "confidence": analysis_result.get("confidence", 0.0),
-                }).encode(),
-            )
-            await nc.close()
-        except Exception as pub_err:
-            logger.warning("[ANALYTICS] failed to publish result to NATS: %s", pub_err)
-
-        return {
-            "result": "OK",
-            "invoice_id": invoice_id,
-            "trends": analysis_result.get("trends", []),
-            "anomalies": all_anomalies,
-            "summary": analysis_result.get("summary", ""),
-        }
-
-    except Exception as exc:
-        logger.exception("[ANALYTICS] analysis failed for invoice_id=%s: %s", invoice_id, exc)
-        return {"result": "ERROR", "invoice_id": invoice_id, "error": str(exc)}
-
-
 @broker.task(task_name="decision_evaluate")
 async def decision_evaluate(invoice_id: str, extracted_data: dict) -> dict:
     """
-    Final decision evaluation — the last step in the pipeline.
-    Uses AgentOrchestrator (Jamba 3B reasoning) to produce the ultimate decision.
+    Final decision evaluation.
+    Uses DecisionEngine (DuckDB/SQL-based, zgodnie z aa3fvcx.txt).
     Publishes result to invoice.decision.final topic.
-    Shares ModelManager with all other agents for RAM mutual exclusion.
     """
     config = AppConfig()
-    _, orchestrator, _ = _ensure_orchestrator(config)
+    engine = _ensure_decision_engine(config)
 
-    logger.info("[DECISION] evaluating final decision for invoice_id=%s", invoice_id)
+    logger.info("[DECISION] evaluating for invoice_id=%s", invoice_id)
 
     try:
-        decision = await orchestrator.orchestrate(
-            invoice_id=invoice_id,
+        verdict = engine.decide(
             invoice_data=extracted_data,
             vendor_profile=extracted_data.get("vendor_profile", {}),
         )
 
         logger.info(
-            "[DECISION] invoice_id=%s final=%s confidence=%.4f",
+            "[DECISION] invoice_id=%s decision=%s confidence=%.4f",
             invoice_id,
-            decision.decision,
-            decision.confidence,
+            verdict.decision,
+            verdict.confidence,
         )
 
-        # Execute action based on final decision
-        # P4: Gdy Council zwróci SUGGEST — wymuś Rules SWAT Level 2 (Granite)
-        # Nawet jeśli Level 1 (LFM) był COMPLIANT, wymuszamy głębszą weryfikację
-        forced_rules: dict[str, Any] | None = None
-        if decision.decision == "SUGGEST":
-            logger.info(
-                "[DECISION] P4: SUGGEST for invoice_id=%s — forcing Rules SWAT Level 2 (Granite)",
-                invoice_id,
-            )
-            try:
-                manager, _, _ = _ensure_orchestrator(config)
-                rules_agent = _ensure_rules_agent(config, manager)
-                forced_rules = await asyncio.wait_for(
-                    rules_agent.evaluate(extracted_data, force_level_2=True),
-                    timeout=30.0,
-                )
-                if not forced_rules.get("passed", True):
-                    logger.warning(
-                        "[DECISION] P4: Rules SWAT Level 2 found violations for invoice_id=%s "
-                        "— upgrading SUGGEST→ESCALATE (violations=%d)",
-                        invoice_id,
-                        len(forced_rules.get("violations", [])),
-                    )
-                    decision.decision = "ESCALATE"
-                    decision.confidence = min(decision.confidence, forced_rules.get("confidence", 0.0))
-                    decision.reasoning += (
-                        f" | P4 forced Level 2: {forced_rules.get('reasoning', '')}"
-                    )
-                else:
-                    logger.info(
-                        "[DECISION] P4: Rules SWAT Level 2 passed for invoice_id=%s "
-                        "— keeping SUGGEST",
-                        invoice_id,
-                    )
-            except TimeoutError:
-                logger.warning(
-                    "[DECISION] P4: Rules SWAT Level 2 timeout for invoice_id=%s — keeping SUGGEST",
-                    invoice_id,
-                )
-            except Exception as exc:
-                logger.warning(
-                    "[DECISION] P4: Rules SWAT Level 2 error for invoice_id=%s: %s — keeping SUGGEST",
-                    invoice_id, exc,
-                )
-
-        # Execute action based on (potentially upgraded) decision
-        if decision.decision == "AUTO_POST":
-            await _council_post_invoice(invoice_id, extracted_data, decision)
-        elif decision.decision == "SUGGEST":
-            await _council_mark_for_review(invoice_id, decision)
-        elif decision.decision in ("ESCALATE", "ASK_USER", "BLOCK"):
-            await _council_escalate_to_human(invoice_id, decision, reason=f"decision: {decision.decision}")
-
-        # Publish final decision to NATS
-        try:
-            import nats
-            nc = await nats.connect(config.nats_url)
-            await nc.publish(
-                "invoice.decision.final",
-                msgspec_dumps({
-                    "invoice_id": invoice_id,
-                    "decision": decision.decision,
-                    "confidence": decision.confidence,
-                    "reasoning": decision.reasoning,
-                    "strategy_summary": decision.strategy_summary,
-                    "workflow_plan": decision.workflow_plan,
-                }).encode(),
-            )
-            await nc.close()
-        except Exception as pub_err:
-            logger.warning("[DECISION] failed to publish to NATS: %s", pub_err)
+        # Execute action based on decision
+        if verdict.decision == "AUTO_POST":
+            await _post_invoice(invoice_id, extracted_data, verdict)
+        elif verdict.decision == "SUGGEST":
+            await _mark_for_review(invoice_id, verdict)
+        elif verdict.decision in ("ASK_USER", "BLOCK", "ESCALATE"):
+            await _escalate_to_human(invoice_id, verdict, reason=f"decision: {verdict.decision}")
 
         return {
             "result": "OK",
             "invoice_id": invoice_id,
-            "decision": decision.decision,
-            "confidence": decision.confidence,
-            "reasoning": decision.reasoning,
+            "decision": verdict.decision,
+            "confidence": verdict.confidence,
+            "reasoning": verdict.reasoning,
         }
 
     except Exception as exc:
@@ -416,137 +122,48 @@ async def decision_evaluate(invoice_id: str, extracted_data: dict) -> dict:
         return {"result": "ERROR", "invoice_id": invoice_id, "error": str(exc)}
 
 
-@broker.task(task_name="rules_check")
-async def rules_check(invoice_id: str, extracted_data: dict) -> dict:
-    """
-    Rules & Compliance check triggered after OCR extraction.
-    Subscribes to invoice.extracted topic.
-    Publishes result to invoice.rules_result topic.
-    Shares ModelManager with Orchestrator agents for RAM mutual exclusion.
-    Timeout: 30 seconds.
-    Rozwiązanie 29: Limit współbieżności przez semafor (max 2).
-    """
-    config = AppConfig()
-    manager, _, _ = _ensure_orchestrator(config)
-    agent = _ensure_rules_agent(config, manager)
-
-    logger.info("[RULES] checking invoice_id=%s", invoice_id)
-
-    try:
-        # Rozwiązanie 29: Semafory na ciężkie operacje LLM (max 2 równolegle)
-        async with _RULES_SEMAPHORE:
-            result = await asyncio.wait_for(
-                agent.evaluate(extracted_data),
-                timeout=30.0,
-            )
-
-        logger.info(
-            "[RULES] invoice_id=%s passed=%s confidence=%.4f violations=%d",
-            invoice_id,
-            result.get("passed"),
-            result.get("confidence", 0.0),
-            len(result.get("violations", [])),
-        )
-
-        # Publish result to NATS
-        try:
-            import nats
-            nc = await nats.connect(config.nats_url)
-            await nc.publish(
-                "invoice.rules_result",
-                msgspec_dumps({
-                    "invoice_id": invoice_id,
-                    "passed": result.get("passed"),
-                    "violations": result.get("violations", []),
-                    "confidence": result.get("confidence", 0.0),
-                    "reasoning": result.get("reasoning", ""),
-                }).encode(),
-            )
-            await nc.close()
-        except Exception as pub_err:
-            logger.warning("[RULES] failed to publish result to NATS: %s", pub_err)
-
-        return {
-            "result": "OK",
-            "invoice_id": invoice_id,
-            "passed": result.get("passed"),
-            "violations": result.get("violations", []),
-        }
-
-    except Exception as exc:
-        logger.exception("[RULES] check failed for invoice_id=%s: %s", invoice_id, exc)
-        return {"result": "ERROR", "invoice_id": invoice_id, "error": str(exc)}
-
-
 @broker.task(task_name="council_decide")
 async def council_decide(invoice_id: str, extracted_data: dict) -> dict:
-    """Agent Orkiestrator decision task triggered after OCR extraction.
-    Uses AgentOrchestrator (Centralny Mózg/CFO) do podjęcia decyzji.
-    Timeout: 120 seconds for complex LLM deliberation.
-    Rozwiązanie 29: Limit współbieżności przez semafor (max 1).
-    """
+    """Decision task using SQL-based DecisionEngine (zgodnie z aa3fvcx.txt)."""
     config = AppConfig()
-    _, orchestrator, _ = _ensure_orchestrator(config)
+    engine = _ensure_decision_engine(config)
 
-    logger.info("[COUNCIL] starting deliberation for invoice_id=%s", invoice_id)
+    logger.info("[DECIDE] starting for invoice_id=%s", invoice_id)
 
     try:
-        # Rozwiązanie 29: Semafory na ciężkie operacje LLM (max 1 równolegle)
         async with _COUNCIL_SEMAPHORE:
-            decision = await asyncio.wait_for(
-                orchestrator.orchestrate(
-                    invoice_id=invoice_id,
-                    invoice_data=extracted_data,
-                    vendor_profile=extracted_data.get("vendor_profile", {}),
-                ),
-                timeout=120.0,
+            verdict = await asyncio.to_thread(
+                engine.decide,
+                invoice_data=extracted_data,
+                vendor_profile=extracted_data.get("vendor_profile", {}),
             )
 
         logger.info(
-            "[COUNCIL] invoice_id=%s final=%s confidence=%.4f",
+            "[DECIDE] invoice_id=%s decision=%s confidence=%.4f",
             invoice_id,
-            decision.decision,
-            decision.confidence,
+            verdict.decision,
+            verdict.confidence,
         )
 
-        # Execute action based on decision
-        if decision.decision == "AUTO_POST":
-            await _council_post_invoice(invoice_id, extracted_data, decision)
-        elif decision.decision == "SUGGEST":
-            await _council_mark_for_review(invoice_id, decision)
-        elif decision.decision in ("ASK_USER", "BLOCK", "ESCALATE"):
-            await _council_escalate_to_human(invoice_id, decision, reason=f"{decision.decision}: {decision.reasoning[:100]}")
-
-        # Publish final decision to NATS
-        try:
-            import nats
-            nc = await nats.connect(config.nats_url)
-            await nc.publish(
-                "invoice.decision.final",
-                msgspec_dumps({
-                    "invoice_id": invoice_id,
-                    "decision": decision.decision,
-                    "confidence": decision.confidence,
-                    "reasoning": decision.reasoning,
-                    "workflow_plan": decision.workflow_plan,
-                }).encode(),
-            )
-            await nc.close()
-        except Exception as pub_err:
-            logger.warning("[COUNCIL] failed to publish decision to NATS: %s", pub_err)
+        if verdict.decision == "AUTO_POST":
+            await _post_invoice(invoice_id, extracted_data, verdict)
+        elif verdict.decision == "SUGGEST":
+            await _mark_for_review(invoice_id, verdict)
+        elif verdict.decision in ("ASK_USER", "BLOCK", "ESCALATE"):
+            await _escalate_to_human(invoice_id, verdict, reason=f"{verdict.decision}: {verdict.reasoning[:100]}")
 
         return {
             "result": "OK",
-            "decision": decision.decision,
-            "confidence": decision.confidence,
+            "decision": verdict.decision,
+            "confidence": verdict.confidence,
         }
 
     except Exception as exc:
-        logger.exception("[COUNCIL] deliberation failed for invoice_id=%s: %s", invoice_id, exc)
+        logger.exception("[DECIDE] failed for invoice_id=%s: %s", invoice_id, exc)
         return {"result": "ERROR", "error": str(exc)}
 
 
-async def _council_post_invoice(invoice_id: str, extracted_data: dict, decision: Any) -> None:
+async def _post_invoice(invoice_id: str, extracted_data: dict, verdict: DecisionVerdict) -> None:
     """Auto-post the invoice: update status to APPROVED."""
     config = AppConfig()
     engine = create_oltp_engine(config)
@@ -554,19 +171,17 @@ async def _council_post_invoice(invoice_id: str, extracted_data: dict, decision:
     try:
         async with session_factory() as session:
             await session.execute(
-                text(
-                    "UPDATE invoices SET status = 'APPROVED', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
-                ),
+                text("UPDATE invoices SET status = 'APPROVED', updated_at = CURRENT_TIMESTAMP WHERE id = :id"),
                 {"id": invoice_id},
             )
             await session.commit()
-            logger.info("[COUNCIL] auto-posted invoice_id=%s (trust=%.4f)", invoice_id, decision.trust_score)
+            logger.info("[DECIDE] auto-posted invoice_id=%s (conf=%.4f)", invoice_id, verdict.confidence)
 
-        # Active Learning: store approved invoice in sqlite-vec for future anomaly detection
+        # Store in sqlite-vec for future anomaly detection
         try:
             from nexus_ai.services.semantic_guard import SemanticGuard
             sg = SemanticGuard()
-            full_text = extracted_data.get("ocr_full_text", "") or str(extracted_data.get("vendor_company_name", ""))
+            full_text = extracted_data.get("ocr_full_text", "") or ""
             if full_text:
                 sg.store_invoice(
                     vendor_nip=extracted_data.get("contractor_nip", ""),
@@ -582,7 +197,7 @@ async def _council_post_invoice(invoice_id: str, extracted_data: dict, decision:
         await engine.dispose()
 
 
-async def _council_mark_for_review(invoice_id: str, decision: Any) -> None:
+async def _mark_for_review(invoice_id: str, verdict: DecisionVerdict) -> None:
     """Mark invoice for manual review (SUGGEST)."""
     config = AppConfig()
     engine = create_oltp_engine(config)
@@ -590,37 +205,28 @@ async def _council_mark_for_review(invoice_id: str, decision: Any) -> None:
     try:
         async with session_factory() as session:
             await session.execute(
-                text(
-                    "UPDATE invoices SET status = 'PENDING_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
-                ),
+                text("UPDATE invoices SET status = 'PENDING_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"),
                 {"id": invoice_id},
             )
             await session.commit()
-            logger.info("[COUNCIL] marked for review invoice_id=%s (trust=%.4f)", invoice_id, decision.trust_score)
+            logger.info("[DECIDE] marked for review invoice_id=%s (conf=%.4f)", invoice_id, verdict.confidence)
     finally:
         await engine.dispose()
 
 
-async def _council_escalate_to_human(invoice_id: str, decision: Any, reason: str) -> None:
-    """Escalate invoice to human for review (ASK_USER or BLOCK)."""
+async def _escalate_to_human(invoice_id: str, verdict: DecisionVerdict, reason: str) -> None:
+    """Escalate invoice to human for review."""
     config = AppConfig()
     engine = create_oltp_engine(config)
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
             await session.execute(
-                text(
-                    "UPDATE invoices SET status = 'MANUAL_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
-                ),
+                text("UPDATE invoices SET status = 'MANUAL_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"),
                 {"id": invoice_id},
             )
             await session.commit()
-            logger.info(
-                "[COUNCIL] escalated to human invoice_id=%s reason=%s (trust=%.4f)",
-                invoice_id,
-                reason,
-                decision.trust_score,
-            )
+            logger.info("[DECIDE] escalated invoice_id=%s reason=%s (conf=%.4f)", invoice_id, reason, verdict.confidence)
     finally:
         await engine.dispose()
 
@@ -978,20 +584,20 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
         )
         await nc.close()
 
-        # Dynamic workflow orchestration — decide which agents to run
-        manager, orchestrator, _ = _ensure_orchestrator(config)
-        plan = await orchestrator.plan_workflow(
+        # Dynamic workflow — decide which tasks to run (zgodnie z aa3fvcx.txt)
+        workflow_type = classify_invoice(
             invoice_data=extracted_data,
             vendor_profile=extracted_data.get("vendor_profile", {}),
         )
-        workflow = {"agents": plan.get("agents", []), "reasoning": plan.get("reasoning", "")}
-        for task_name in workflow["agents"]:
+        if workflow_type == "simple":
+            tasks_to_run = ["decision_evaluate"]
+        else:
+            tasks_to_run = ["decision_evaluate"]
+        for task_name in tasks_to_run:
             await broker.kick(task_name, invoice_id=invoice_id, extracted_data=extracted_data)
         logger.info(
-            "[OCR] orchestrated agents=%s for invoice_id=%s (reasoning=%s)",
-            workflow["agents"],
-            invoice_id,
-            workflow.get("reasoning", ""),
+            "[OCR] workflow=%s tasks=%s for invoice_id=%s",
+            workflow_type, tasks_to_run, invoice_id,
         )
 
         # Rozwiązanie 33: SEND_EVENT - sukces
@@ -1311,8 +917,6 @@ async def stuck_saga_recovery_task() -> None:
 
 # Semafory dla limitów współbieżności (Rozwiązanie 29)
 _COUNCIL_SEMAPHORE = asyncio.Semaphore(1)      # council_decide: max 1 równolegle
-_RULES_SEMAPHORE = asyncio.Semaphore(2)         # rules_check: max 2 równolegle
-_ANALYTICS_SEMAPHORE = asyncio.Semaphore(2)     # analytics_run: max 2 równolegle
 _OCR_SEMAPHORE = asyncio.Semaphore(3)           # process_invoice_ocr: max 3 równolegle
 
 
@@ -1571,15 +1175,6 @@ async def finops_hourly_estimate_task() -> None:
     ram_gb = max((resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024 / 1024), 0.1)
     hourly_cost = estimate_runtime_cost(cpu_cores=cpu_cores, ram_gb=ram_gb, runtime_hours=1.0)
     logger.info("[FINOPS] estimated hourly runtime cost usd=%s cpu_cores=%s ram_gb=%.3f", hourly_cost, cpu_cores, ram_gb)
-
-
-@broker.task(schedule=[{"cron": "30 2 * * *"}], task_name="model_retention_prune")
-async def model_retention_prune_task() -> None:
-    """Keep last N model versions and prune old ones."""
-    config = AppConfig()
-    models_root = config.base_dir / "models"
-    result = prune_model_versions(models_root, keep_last=3, archive_root=config.base_dir / "models_archive")
-    logger.info("[MODEL-RETENTION] prune summary: %s", result)
 
 
 @broker.task(schedule=[{"cron": "45 * * * *"}], task_name="replay_dead_letter_outbox")
@@ -1880,23 +1475,16 @@ async def cleanup_temp_upload_files_task() -> None:
 async def daily_briefing_send(user_id: str | None = None) -> dict:
     """
     Generuj i wyślij codzienne podsumowanie finansowe (Daily Briefing).
-
-    Domyślnie uruchamiany codziennie o 6:30 rano (cron).
-    Może być też wywołany ręcznie z określonym user_id.
-
-    Wysyła briefing przez kanał in_app (SQLite).
-    Jeśli skonfigurowano, również przez push/email/SMS.
+    Zgodnie z aa3fvcx.txt: używa DuckDB + SQLite, bez PLE ani agentów.
     """
     config = AppConfig()
     logger.info("[DAILY-BRIEFING] starting generation for user_id=%s", user_id or "all")
 
     try:
-        # Lazy init komponentów
         from nexus_ai.db.analytics import DuckDBManager
         from nexus_ai.services.daily_briefing import DailyBriefingService
         from nexus_ai.services.decision_logger import DecisionLogger
         from nexus_ai.services.notification_service import NotificationService
-        from nexus_ai.services.ple_engine import PLEEngine
 
         db_path = config.base_dir / "app_data" / "notifications.db"
         notification = NotificationService(db_path=db_path, config=config)
@@ -1904,23 +1492,19 @@ async def daily_briefing_send(user_id: str | None = None) -> dict:
         try:
             duckdb = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
             decision_logger = DecisionLogger(duckdb)
-            ple = PLEEngine(config=config)
 
             briefing_service = DailyBriefingService(
                 config=config,
                 notification_service=notification,
-                ple_engine=ple,
                 decision_logger=decision_logger,
                 duckdb_manager=duckdb,
             )
 
-            # Jeśli podano user_id, generuj tylko dla niego
             if user_id:
                 result = await briefing_service.generate_and_send(user_id, channels=["in_app"])
                 logger.info("[DAILY-BRIEFING] sent for user_id=%s status=%s", user_id, result["status"])
                 return {"result": "OK", "user_id": user_id, **result}
 
-            # W przeciwnym razie dla wszystkich aktywnych użytkowników
             default_users = ["default", "admin"]
             results: list[dict[str, Any]] = []
             for uid in default_users:

@@ -27,14 +27,18 @@ name = "nexus-ai"
 version = "2.0.0"
 description = "NexusAI — Ultralekki, autonomiczny system księgowy z AI"
 channels = ["conda-forge"]
-platforms = ["linux-64", "linux-aarch64"]   # Dodaj więcej platform po weryfikacji
+platforms = ["linux-64", "linux-aarch64", "win-64"]   # win-64 dla Nuitka + Inno Setup (aa3fvcx.txt)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Zależności systemowe (conda-forge) — tylko runtime
 # ══════════════════════════════════════════════════════════════════════════════
 
 [dependencies]
-python = "3.13.*"                        # CPython 3.13 — conda-forge
+python = "3.13.*"                       # CPython 3.13 — conda-forge
+# Free-threaded (3.13t, bez GIL): użyj matchspec dla _cp313t
+#   pixi add --build "python=3.13.* *_cp313t"
+#   conda install python=3.13.2=*_cp313t
+# Free-threaded Python: -30-40% RAM, prawdziwa wielowątkowość
 
 # ── OCR i przetwarzanie obrazów ─────────────────────────────────────────────
 tesseract = ">=5.3.0"                    # OCR — ekstrakcja tekstu z faktur
@@ -201,10 +205,6 @@ nuitka = ">=1.8"
 
 # ── Security scanning — Semgrep SAST ───────────────────────────────────────
 semgrep = ">=1.40.0"
-
-[feature.dev.tasks]
-# ── Testowanie ──────────────────────────────────────────────────────────────
-test = { cmd = "pytest -x -v --timeout=30", description = "Uruchom wszystkie testy (zatrzymaj przy pierwszym błędzie)" }
 
 [feature.dev.tasks]
 # ── Testowanie ──────────────────────────────────────────────────────────────

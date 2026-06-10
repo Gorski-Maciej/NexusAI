@@ -182,80 +182,6 @@ async def step_check_dependencies(config: Any) -> StepResult:
     )
 
 
-async def step_check_ai_models(config: Any) -> StepResult:
-    """Step 3: Check and optionally download AI models."""
-    start = time.perf_counter()
-    name = "Check AI models"
-
-    models_dir = config.base_dir / "models" if hasattr(config, "base_dir") else Path("models")
-    if not models_dir.exists():
-        models_dir.mkdir(parents=True, exist_ok=True)
-
-    # Collect all configured model paths
-    model_paths: list[str] = []
-    for attr_name in dir(config):
-        if attr_name.endswith("_model_path") or attr_name.endswith("_model"):
-            val = getattr(config, attr_name, "")
-            if isinstance(val, str) and val.endswith((".gguf", ".pth")):
-                model_paths.append(val)
-
-    missing: list[str] = []
-    for model_rel_path in model_paths:
-        model_full = Path(model_rel_path)
-        if not model_full.is_absolute():
-            model_full = models_dir / model_rel_path
-        if not model_full.exists():
-            missing.append(model_rel_path)
-
-    if not missing:
-        return StepResult(
-            name=name,
-            status="ok",
-            message=f"All {len(model_paths)} model(s) present",
-            duration_ms=(time.perf_counter() - start) * 1000,
-            details={"model_count": len(model_paths)},
-        )
-
-    # Try to download missing models
-    try:
-        from scripts.download_models import download_all_models
-        logger.info("  Downloading missing models...")
-        download_all_models(models_dir=models_dir)
-
-        # Re-check after download
-        still_missing: list[str] = []
-        for model_rel_path in missing:
-            model_full = Path(model_rel_path)
-            if not model_full.is_absolute():
-                model_full = models_dir / model_rel_path
-            if not model_full.exists():
-                still_missing.append(model_rel_path)
-
-        if still_missing:
-            return StepResult(
-                name=name,
-                status="warning",
-                message=f"{len(missing)} model(s) missing, {len(still_missing)} still missing after download attempt",
-                duration_ms=(time.perf_counter() - start) * 1000,
-                details={"missing": missing, "still_missing": still_missing},
-            )
-
-        return StepResult(
-            name=name,
-            status="ok",
-            message=f"{len(missing)} model(s) downloaded successfully",
-            duration_ms=(time.perf_counter() - start) * 1000,
-        )
-    except ImportError:
-        return StepResult(
-            name=name,
-            status="warning",
-            message=f"{len(missing)} model(s) missing. Install huggingface-hub for auto-download, or download manually",
-            duration_ms=(time.perf_counter() - start) * 1000,
-            details={"missing": missing},
-        )
-
-
 async def step_create_directories(config: Any) -> StepResult:
     """Step 4: Create required data directories."""
     start = time.perf_counter()
@@ -550,7 +476,6 @@ async def run_bootstrap(
     all_steps: list[tuple[str, Callable]] = [
         ("validate_config", step_validate_config),
         ("check_dependencies", step_check_dependencies),
-        ("check_ai_models", step_check_ai_models),
         ("create_directories", step_create_directories),
         ("run_migrations", step_run_migrations),
         ("initialize_olap", step_initialize_olap),
@@ -616,18 +541,13 @@ def main(argv: list[str] | None = None) -> int:
         type=str,
         nargs="*",
         help="Specific steps to run (default: all). Options: validate_config, check_dependencies, "
-             "check_ai_models, create_directories, run_migrations, initialize_olap, seed_data, "
+             "create_directories, run_migrations, initialize_olap, seed_data, "
              "verify_nats, verify_tigerbeetle",
     )
     parser.add_argument(
         "--skip-seed",
         action="store_true",
         help="Skip seed data loading",
-    )
-    parser.add_argument(
-        "--skip-models",
-        action="store_true",
-        help="Skip AI model checks",
     )
     parser.add_argument(
         "--force",
@@ -652,13 +572,6 @@ def main(argv: list[str] | None = None) -> int:
             "create_directories", "run_migrations", "initialize_olap",
             "verify_nats", "verify_tigerbeetle",
         ]]
-    if args.skip_models and step_filter is None:
-        step_filter = [s for s in [
-            "validate_config", "check_dependencies",
-            "create_directories", "run_migrations", "initialize_olap",
-            "seed_data", "verify_nats", "verify_tigerbeetle",
-        ]]
-
     result = asyncio.run(run_bootstrap(steps=step_filter))
 
     if result.overall_status == "error":

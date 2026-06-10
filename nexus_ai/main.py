@@ -58,7 +58,6 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--bootstrap", action="store_true", help="Run bootstrap initialization")
     parser.add_argument("--skip-seed", action="store_true", help="Skip seed data during bootstrap")
-    parser.add_argument("--skip-models", action="store_true", help="Skip AI model checks")
     parser.add_argument("--force-bootstrap", action="store_true", help="Force re-run bootstrap")
     parser.add_argument("--migrate", action="store_true", help="Run Alembic migrations and exit")
     parser.add_argument("--load-fixtures", action="store_true", help="Load demo/seed data and exit")
@@ -165,10 +164,6 @@ async def _run_bootstrap(args: argparse.Namespace | None = None) -> None:
             step_list = ["validate_config", "check_dependencies", "check_ai_models",
                         "create_directories", "run_migrations", "initialize_olap",
                         "verify_nats", "verify_tigerbeetle"]
-        if getattr(args, "skip_models", False):
-            step_list = ["validate_config", "check_dependencies",
-                        "create_directories", "run_migrations", "initialize_olap",
-                        "seed_data", "verify_nats", "verify_tigerbeetle"]
         if step_list:
             steps = step_list
     report = await run_bootstrap(steps=steps)
@@ -326,25 +321,6 @@ def _run_alembic_migrations() -> int:
         return 1
 
 
-def _run_fetch_models() -> None:
-    try:
-        from nexus_ai.scripts.download_models import download_all_models
-    except ImportError:
-        logger.error("download_models script not found")
-        return
-    statuses = download_all_models()
-    ok = sum(1 for s in statuses.values() if s in ("ok", "downloaded"))
-    failed = sum(1 for s in statuses.values() if s in ("error", "mismatch"))
-    logger.info(">>> Models: %d ok, %d failed.", ok, failed)
-
-
-def _run_compute_checksums() -> None:
-    try:
-        from nexus_ai.scripts.download_models import _compute_checksums
-    except ImportError:
-        logger.error("download_models script not found")
-        return
-    _compute_checksums()
 
 
 async def _run_load_fixtures() -> int:
@@ -371,14 +347,14 @@ def main(argv: list[str] | None = None) -> int:
     if args.load_fixtures:
         return asyncio.run(_run_load_fixtures())
     if args.compute_checksums:
-        _run_compute_checksums()
+        logger.info("--compute-checksums: use python -m nexus_ai.scripts.download_models --verify-only")
         return 0
     if args.check_models:
         return 0
     if args.check_updates:
         return 0
     if args.fetch_models:
-        _run_fetch_models()
+        logger.info("--fetch-models: użyj python -m nexus_ai.scripts.download_models --surya")
         return 0
 
     # Włącz watch mode jeśli --watch

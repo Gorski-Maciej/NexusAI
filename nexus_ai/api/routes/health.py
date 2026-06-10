@@ -57,7 +57,6 @@ class HealthController(Controller):
         duckdb_ok = await self._duckdb_check()
         nats_ok = await self._nats_check()
         tigerbeetle = await self._tigerbeetle_check()
-        ai_models = await self._ai_models_status()
         audit_chain_ok = await self._audit_chain_check()
         dq_invalid_count = await self._dq_invalid_count()
         schema_drift = await self._schema_drift_status()
@@ -92,12 +91,6 @@ class HealthController(Controller):
                     "status": tigerbeetle.get("status", "UNKNOWN"),
                     "message": tigerbeetle.get("message", ""),
                 },
-                "ai_models": {
-                    "status": ai_models.get("status", "UNKNOWN"),
-                    "total": ai_models.get("total", 0),
-                    "present": ai_models.get("present", 0),
-                    "missing": ai_models.get("missing", []),
-                },
                 "audit_chain": {
                     "status": "OK" if audit_chain_ok else "ERROR",
                 },
@@ -111,8 +104,6 @@ class HealthController(Controller):
                 "issues": schema_drift.get("issues", []),
             },
             "resources": {
-                "gpu_available": self._gpu_available(),
-                "vram_free_mb": self._vram_free_mb(),
                 "sqlite_wal_size_bytes": self._sqlite_wal_size(),
             },
             "queue": {
@@ -137,28 +128,6 @@ class HealthController(Controller):
             return int(result)
         except Exception:
             return None
-
-    def _gpu_available(self) -> bool:
-        """Check CUDA GPU availability via nvidia-smi (zastępuje torch.cuda)."""
-        try:
-            import subprocess
-            res = subprocess.check_output(["nvidia-smi", "-L"], timeout=10).decode()
-            return "GPU" in res
-        except Exception:
-            return False
-
-    def _vram_free_mb(self) -> float:
-        """Check free VRAM via nvidia-smi (zastępuje torch.cuda.mem_get_info)."""
-        try:
-            import subprocess
-            res = subprocess.check_output(
-                ["nvidia-smi", "--query-gpu=memory.free", "--format=csv,noheader,nounits"],
-                timeout=10,
-            ).decode().strip()
-            return float(res) if res else 0.0
-        except Exception:
-            return 0.0
-
     def _sqlite_wal_size(self) -> int:
         wal_path = "nexus_oltp.db-wal"
         return os.path.getsize(wal_path) if os.path.exists(wal_path) else 0
@@ -188,40 +157,6 @@ class HealthController(Controller):
             return {"status": "NOT_INSTALLED", "message": "TigerBeetle client not available"}
         except Exception as exc:
             return {"status": "ERROR", "message": str(exc)}
-
-    async def _ai_models_status(self) -> dict[str, Any]:
-        """Check availability of configured AI model files."""
-        try:
-            from core.config import AppConfig
-            cfg = AppConfig()
-            model_paths: list[str] = []
-            for attr_name in dir(cfg):
-                if attr_name.endswith("_model_path") or attr_name.endswith("_model"):
-                    val = getattr(cfg, attr_name, "")
-                    if isinstance(val, str) and val.endswith((".gguf", ".pth")):
-                        model_paths.append(val)
-
-            present = 0
-            missing: list[str] = []
-            models_dir = cfg.base_dir / "models"
-            for rel_path in model_paths:
-                full = Path(rel_path)
-                if not full.is_absolute():
-                    full = models_dir / rel_path
-                if full.exists():
-                    present += 1
-                else:
-                    missing.append(rel_path)
-
-            return {
-                "status": "OK" if not missing else "MISSING_MODELS",
-                "total": len(model_paths),
-                "present": present,
-                "missing": missing,
-            }
-        except Exception as exc:
-            return {"status": "ERROR", "message": str(exc), "total": 0, "present": 0, "missing": []}
-
     async def _failed_tasks_count(self) -> int:
         """Count unresolved failed tasks in DLQ."""
         try:

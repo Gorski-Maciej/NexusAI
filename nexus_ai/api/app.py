@@ -5,6 +5,8 @@ from litestar.config.cors import CORSConfig
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.plugins import SwaggerRenderPlugin
 
+from nexus_ai.api.dependencies import provide_config as _app_config_provider
+
 from nexus_ai.api.dependencies import (
     provide_config,
     provide_db_session,
@@ -37,7 +39,6 @@ from nexus_ai.api.routes.kore_audit import KoreAuditController
 from nexus_ai.api.routes.kore_closure import KoreClosureController
 from nexus_ai.api.routes.live_preview import LivePreviewController
 from nexus_ai.api.routes.metrics import MetricsController
-from nexus_ai.api.routes.model_registry import ModelRegistryController
 from nexus_ai.api.routes.outbox_ops import OutboxOpsController
 from nexus_ai.api.routes.partner import PartnerController
 from nexus_ai.api.routes.performance_ops import PerformanceOpsController
@@ -77,7 +78,6 @@ def create_app() -> Litestar:
             SystemIntegrityController,
             PrivacyController,
             FinOpsController,
-            ModelRegistryController,
             OutboxOpsController,
             I18nOpsController,
             SecurityPostureController,
@@ -121,6 +121,9 @@ def create_app() -> Litestar:
         exception_handlers={Exception: global_exception_handler},
         middleware=[UploadSizeGuardMiddleware, SimpleRateLimitMiddleware, CSRFProtectionMiddleware, CorrelationAndDeprecationMiddleware, MetricsMiddleware],
         cors_config=CORSConfig(allow_origins=config.cors_origins, allow_methods=["*"], allow_headers=["*"], allow_credentials=cors_allow_credentials),
+        # OpenAPI/Swagger wyłączone w produkcji zgodnie z aa3fvcx.txt (Punkt 3).
+        # W trybie desktopowym (Flet) Swagger UI jest zbędny — oszczędza RAM i czas startu.
+        # Import SwaggerRenderPlugin na górze pliku jest bezpieczny (import klasy = 0 kosztu).
         openapi_config=OpenAPIConfig(
             title="Nexus AI API",
             version="2.0.0",
@@ -129,7 +132,7 @@ def create_app() -> Litestar:
                 f"Health endpoints: {SUPPORTED_HEALTH_ENDPOINTS[0]}, {SUPPORTED_HEALTH_ENDPOINTS[1]}"
             ),
             render_plugins=[SwaggerRenderPlugin()],
-        ),
+        ) if config.debug else None,
         static_files_config=get_static_config(config),
         debug=config.debug,
         type_encoders={Money: msgspec_money_enc_hook},

@@ -387,11 +387,6 @@ class AppConfig(Struct, kw_only=True):
     migration_baseline_name: str = os.getenv("NEXUS_MIGRATION_BASELINE_FILE", "migration_rowcount_baseline.json")
     migration_checksum_baseline_name: str = os.getenv("NEXUS_MIGRATION_CHECKSUM_BASELINE_FILE", "migration_checksum_baseline.json")
 
-    # ── Council Agents (Autopilot) ──
-    council_alpha_model_path: str = os.getenv("NEXUS_COUNCIL_ALPHA_MODEL", "models/LFM2.5-1.2B-Instruct-Q4_K_M.gguf")
-    council_beta_model_path: str = os.getenv("NEXUS_COUNCIL_BETA_MODEL", "models/Qwen3-0.6B-Q4_K_M.gguf")
-    council_gamma_model_path: str = os.getenv("NEXUS_COUNCIL_GAMMA_MODEL", "models/LittleLamb.Q4_K_M.gguf")
-
     # ── Decision thresholds ──
     autopilot_auto_post_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_AUTO_POST", "0.92"))
     autopilot_suggest_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_SUGGEST", "0.75"))
@@ -402,31 +397,16 @@ class AppConfig(Struct, kw_only=True):
     autopilot_adaptation_learning_rate: float = float(os.getenv("NEXUS_AUTOPILOT_LEARNING_RATE", "0.05"))
     autopilot_low_amount_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_LOW_AMOUNT", "500.0"))
 
-    # ── Rules Agent ──
-    rules_model_path: str = os.getenv("NEXUS_RULES_MODEL", "models/granite-4.0-1b-Q4_K_M.gguf")
+    # ── Rules ──
     rules_max_invoice_amount: float = float(os.getenv("NEXUS_RULES_MAX_AMOUNT", "100000.0"))
     rules_require_nip_validation: bool = os.getenv("NEXUS_RULES_REQUIRE_NIP", "1") == "1"
-
-    # ── Analytics Agent ──
-    analytics_model_path: str = os.getenv("NEXUS_ANALYTICS_MODEL", "models/Qwen2.5-1.5B-Instruct-Q4_K_M.gguf")
-    fin_detective_model_path: str = os.getenv("NEXUS_FIN_DETECTIVE_MODEL", "models/fin-rwkv-169m.pth")
     analytics_anomaly_threshold: float = float(os.getenv("NEXUS_ANALYTICS_ANOMALY_THRESHOLD", "2.0"))
 
     # ── NATS ──
     nats_url: str = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
 
-    # ── Decision Agent ──
+    # ── Timeouts ──
     decision_timeout_seconds: int = int(os.getenv("NEXUS_DECISION_TIMEOUT", "60"))
-
-    # ── Orchestrator Agent ──
-    orchestrator_model_path: str = os.getenv("NEXUS_ORCHESTRATOR_MODEL", "models/LittleLamb.Q4_K_M.gguf")
-
-    # ── Decision Agent (Jamba 3B) ──
-    decision_jamba_model_path: str = os.getenv("NEXUS_DECISION_JAMBA_MODEL", "models/jamba-reasoning-3b-Q4_K_M.gguf")
-
-    # ── Memory & timeout ──
-    autopilot_model_ttl_seconds: int = int(os.getenv("NEXUS_AUTOPILOT_MODEL_TTL", "600"))
-    autopilot_agent_timeout_seconds: int = int(os.getenv("NEXUS_AUTOPILOT_AGENT_TIMEOUT", "30"))
 
     # ── Computed properties (as methods for Struct compatibility) ──
 

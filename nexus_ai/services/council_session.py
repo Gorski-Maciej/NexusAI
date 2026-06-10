@@ -1,29 +1,17 @@
 """
-[DEPRECATED] Council Session — pelna sesja Rady Agentow z matryca glosowania 8 kombinacji.
+[DEPRECATED] Council Session — zachowany dla kompatybilnosci wstecznej.
 
-UWAGA: Ten plik jest przestarzaly. Uzyj zamiast tego:
-- QualityValidatorAgent (services/quality_validator_agent.py)
-
-Zachowany dla kompatybilnosci wstecznej (DECISION_MATRIX jest importowany przez
-quality_validator_agent.py).
+Zgodnie z aa3fvcx.txt: decyzje oparte na DuckDB/SQL, bez agentow AI.
+DECISION_MATRIX pozostaje jako dokumentacja, ale nie jest uzywany.
 """
 
 from __future__ import annotations
-
-import warnings
-warnings.warn(
-    "services/council_session.py jest przestarzaly. "
-    "Uzyj QualityValidatorAgent z quality_validator_agent.py.",
-    DeprecationWarning,
-    stacklevel=2,
-)
 
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
 from nexus_ai.core.logger import get_logger
-from nexus_ai.services.council_agents import DecisionVerdict
 
 logger = get_logger(__name__)
 
@@ -35,20 +23,20 @@ logger = get_logger(__name__)
 class DecisionLevel(Enum):
     """Poziomy decyzyjne — im wyzszy, tym wiecej uwagi wymaga."""
 
-    LEVEL_1_AUTO = "LEVEL_1_AUTO"       # Full consensus → auto
-    LEVEL_2_REVIEW = "LEVEL_2_REVIEW"   # Minor disagreement → suggest
-    LEVEL_3_ESCALATE = "LEVEL_3_ESCALATE"  # Major disagreement → ask user
-    LEVEL_4_BLOCK = "LEVEL_4_BLOCK"     # Full reject or precision veto → block
+    LEVEL_1_AUTO = "LEVEL_1_AUTO"
+    LEVEL_2_REVIEW = "LEVEL_2_REVIEW"
+    LEVEL_3_ESCALATE = "LEVEL_3_ESCALATE"
+    LEVEL_4_BLOCK = "LEVEL_4_BLOCK"
 
 
 @dataclass(slots=True)
 class CouncilVerdict:
-    """Wynik glosowania Rady z pelnym kontekstem."""
+    """Wynik glosowania Rady."""
 
-    pattern: str  # nazwa kombinacji (np. "FULL_APPROVE", "ALPHA_ONLY")
+    pattern: str
     level: DecisionLevel
-    recommended_action: str  # AUTO_POST | SUGGEST | ASK_USER | BLOCK
-    min_trust_for_auto: float  # minimalny trust score wymagany dla auto-approve
+    recommended_action: str
+    min_trust_for_auto: float
     consensus_summary: str
     deliberation: str
 
@@ -157,75 +145,23 @@ DECISION_MATRIX: dict[tuple[str, str, str], CouncilVerdict] = {
 # ---------------------------------------------------------------------------
 
 class CouncilSession:
-    """Pelna sesja Rady Agentow z matryca glosowania 8 kombinacji.
-
-    Kazda sesja przetwarza jedna fakture, agreguje glosy Alpha, Beta, Gamma
-    i zwraca CouncilVerdict z rekomendowana akcja i poziomem decyzyjnym.
+    """
+    [DEPRECATED] Zachowany dla kompatybilnosci wstecznej.
+    Zgodnie z aa3fvcx.txt: decyzje oparte na DecisionEngine (DuckDB/SQL).
     """
 
-    def __init__(
-        self,
-        invoice_data: dict[str, Any],
-        alpha_verdict: DecisionVerdict,
-        beta_verdict: DecisionVerdict,
-        gamma_verdict: DecisionVerdict,
-    ) -> None:
-        self._invoice_data = invoice_data
-        self._alpha = alpha_verdict
-        self._beta = beta_verdict
-        self._gamma = gamma_verdict
-
-    def deliberate(self) -> CouncilVerdict:
-        """Przeprowadz deliberacje Rady — znajdz kombinacje w macierzy 8x1."""
-        key = (self._alpha.decision, self._beta.decision, self._gamma.decision)
-        verdict = DECISION_MATRIX.get(key)
-        if verdict is None:
-            logger.warning(
-                "[CouncilSession] unknown verdict pattern: %s — falling back to ASK_USER",
-                key,
-            )
-            verdict = CouncilVerdict(
-                pattern="UNKNOWN",
-                level=DecisionLevel.LEVEL_3_ESCALATE,
-                recommended_action="ASK_USER",
-                min_trust_for_auto=0.0,
-                consensus_summary=f"Nieznana kombinacja glowos: Alpha={self._alpha.decision}, "
-                                  f"Beta={self._beta.decision}, Gamma={self._gamma.decision}",
-                deliberation="Nieznany wzorzec glosowania. Bezpieczna eskalacja do uzytkownika.",
-            )
-        logger.info(
-            "[CouncilSession] pattern=%s level=%s action=%s",
-            verdict.pattern,
-            verdict.level.value,
-            verdict.recommended_action,
-        )
-        return verdict
-
-    def get_consensus_type(self) -> str:
-        """Zwroc typ konsensusu: full, majority, split, none."""
-        key = (self._alpha.decision, self._beta.decision, self._gamma.decision)
-        approves = sum(1 for d in key if d == "APPROVE")
-        rejects = sum(1 for d in key if d == "REJECT")
-        if approves == 3:
-            return "full_approve"
-        if rejects == 3:
-            return "full_reject"
-        if approves >= 2:
-            return "majority_approve"
-        if rejects >= 2:
-            return "majority_reject"
-        return "split"
+    def __init__(self) -> None:
+        pass
 
     @staticmethod
     def get_all_patterns() -> list[dict[str, Any]]:
-        """Zwroc liste wszystkich 8 kombinacji (do debugowania / dokumentacji)."""
+        """Zwroc liste wszystkich 8 kombinacji (do dokumentacji)."""
         return [
             {
                 "key": f"({a}, {b}, {c})",
                 "pattern": v.pattern,
                 "level": v.level.value,
                 "action": v.recommended_action,
-                "min_trust": v.min_trust_for_auto,
             }
             for (a, b, c), v in DECISION_MATRIX.items()
         ]

@@ -2,9 +2,9 @@
 SemanticGuard — semantyczny wykrywacz anomalii faktur.
 
 Zgodnie z aa3fvcx.txt:
-- LanceDB → sqlite-vec (wektory w SQLite)
-- sentence-transformers → llama-cpp-python embedding (technologia ze stacku)
-- EmbeddingService używa istniejących modeli GGUF (np. Qwen3-0.6B)
+- Używa sqlite-vec (Punkt 3) do wyszukiwania wektorowego
+- Używa llama-cpp-python do embeddingów (technologia ze stacku)
+- Nie używa agentów AI, protokołów ani specyficznych modeli LLM
 """
 
 from __future__ import annotations
@@ -16,66 +16,21 @@ import pendulum
 from structlog import get_logger
 
 from nexus_ai.core.embeddings import get_embedding_service
-from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
-from nexus_ai.core.protocol_executor import ProtocolExecutor, get_protocol_executor
+from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.vector_store import VectorStore
 
 logger = get_logger("nexus.services.semantic_guard")
 
-# ── Anomaly rules schema ────────────────────────────────────────────────────
+# ── Anomaly rules (inline, bez DuckDB — zgodnie z aa3fvcx.txt minimalizm) ──
 
-ANOMALY_RULES_SCHEMA = """
-CREATE TABLE IF NOT EXISTS anomaly_rules (
-    rule_id       VARCHAR PRIMARY KEY,
-    condition_json VARCHAR NOT NULL,
-    action_json   VARCHAR NOT NULL,
-    valid_from    DATE NOT NULL,
-    valid_to      DATE,
-    priority      INTEGER NOT NULL DEFAULT 100,
-    created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-CREATE INDEX IF NOT EXISTS idx_anomaly_rules_valid
-    ON anomaly_rules(valid_from, valid_to, priority);
-"""
-
-DEFAULT_ANOMALY_RULES: list[dict[str, Any]] = [
-    {
-        "condition_json": msgspec_dumps({"min_anomaly_score": 0.80, "min_amount_net": 10000}),
-        "action_json": msgspec_dumps({
-            "action": "BLOCK_DECREE",
-            "alert": "Drastyczna zmiana profilu usług. Wymagany dowód wykonania usługi i ręczna weryfikacja.",
-            "routing": "HUMAN_VERIFICATION",
-        }),
-        "valid_from": "2024-01-01",
-        "priority": 10,
-    },
-    {
-        "condition_json": msgspec_dumps({"min_anomaly_score": 0.60, "min_amount_net": 10000}),
-        "action_json": msgspec_dumps({
-            "action": "WARN",
-            "alert": "Znacząca zmiana profilu usług. Zalecana weryfikacja.",
-        }),
-        "valid_from": "2024-01-01",
-        "priority": 20,
-    },
-    {
-        "condition_json": msgspec_dumps({"min_anomaly_score": 0.40, "min_amount_net": 50000}),
-        "action_json": msgspec_dumps({
-            "action": "WARN",
-            "alert": "Nietypowa wartość faktury względem historii. Wymagany nadzór.",
-        }),
-        "valid_from": "2024-01-01",
-        "priority": 30,
-    },
-    {
-        "condition_json": msgspec_dumps({"min_anomaly_score": 0.0, "min_amount_net": 0}),
-        "action_json": msgspec_dumps({
-            "action": "ALLOW",
-            "alert": None,
-        }),
-        "valid_from": "2024-01-01",
-        "priority": 999,
-    },
+ANOMALY_RULES: list[dict[str, Any]] = [
+    {"min_score": 0.80, "min_amount": 10000, "action": "BLOCK_DECREE",
+     "alert": "Drastyczna zmiana profilu usług. Wymagana ręczna weryfikacja."},
+    {"min_score": 0.60, "min_amount": 10000, "action": "WARN",
+     "alert": "Znacząca zmiana profilu usług. Zalecana weryfikacja."},
+    {"min_score": 0.40, "min_amount": 50000, "action": "WARN",
+     "alert": "Nietypowa wartość faktury względem historii."},
+    {"min_score": 0.0, "min_amount": 0, "action": "ALLOW", "alert": None},
 ]
 
 
@@ -83,39 +38,24 @@ DEFAULT_ANOMALY_RULES: list[dict[str, Any]] = [
 
 
 class SemanticGuard:
-    """Detektor anomalii semantycznych oparty o embeddingi faktur.
+    """Detektor anomalii semantycznych oparty o sqlite-vec i embeddingi.
 
-    Używa sqlite-vec (zamiast LanceDB) i llama-cpp-python embedding
-    (zamiast sentence-transformers) zgodnie z aa3fvcx.txt.
+    Zgodnie z aa3fvcx.txt:
+    - sqlite-vec do przechowywania i wyszukiwania wektorów
+    - llama-cpp-python do generowania embeddingów
+    - Bez agentów AI, bez protokołów, bez specyficznych modeli
     """
 
-    EMBEDDING_DIM = 768  # Domyślny wymiar; wykrywany dynamicznie z modelu
+    EMBEDDING_DIM = 768
 
     def __init__(
         self,
         db_path: str = "app_data/semantic_guard.db",
-        conn: Any = None,
-        protocol_executor: ProtocolExecutor | None = None,
     ) -> None:
         self._db_path = db_path
-        self._conn = conn
         self._store: VectorStore | None = None
         self._embedding_service = get_embedding_service()
         self._embedding_dim: int = self.EMBEDDING_DIM
-        self._protocol_executor = protocol_executor or get_protocol_executor()
-
-        # Subskrybuj hot-reload protokołów
-        self._protocol_executor.subscribe_on_change(self._on_protocols_changed)
-
-    def _on_protocols_changed(self, version: str | None) -> None:
-        """Callback wywoływany gdy protocols.toml zmieni się na dysku."""
-        if version:
-            logger.info(
-                "[SemanticGuard] Protocols reloaded: version=%s — edge case protocols updated",
-                version,
-            )
-        else:
-            logger.info("[SemanticGuard] Protocols reloaded — edge case protocols updated")
 
     def _init_store(self) -> VectorStore:
         """Lazy init sqlite-vec VectorStore."""
@@ -144,13 +84,8 @@ class SemanticGuard:
         conn.commit()
 
     def _get_embedding(self, text: str) -> list[float]:
-        """Generate embedding vector from text using llama-cpp-python.
-
-        Zgodnie z aa3fvcx.txt: sentence-transformers → llama-cpp-python embedding.
-        Używa istniejącego modelu GGUF (Qwen3-0.6B) z flagą embedding=True.
-        """
+        """Generate embedding vector from text using llama-cpp-python."""
         vec = self._embedding_service.embed(text)
-        # Dynamicznie dopasuj wymiar
         self._embedding_dim = len(vec)
         return vec
 
@@ -202,45 +137,12 @@ class SemanticGuard:
         action = "ALLOW"
         alert = None
 
-        # Sprawdź protokoły brzegowe z protocols.toml dla dodatkowego kontekstu
-        edge_case_override = None
-        try:
-            # Jeśli OCR low confidence → wymuś BLOCK_DECREE
-            if anomaly_score >= 0.80:
-                dup_proto = self._protocol_executor.get_edge_case_protocol("duplicate_invoice")
-                if dup_proto:
-                    edge_case_override = dup_proto
-        except Exception:
-            pass
-
-        if self._conn is not None:
-            db_rows = self._conn.execute(
-                """SELECT condition_json, action_json, priority
-                   FROM anomaly_rules
-                   WHERE valid_from <= CURRENT_DATE
-                     AND (valid_to IS NULL OR valid_to >= CURRENT_DATE)
-                   ORDER BY priority ASC""",
-            ).fetchall()
-
-            for cond_json, act_json, priority in db_rows:
-                try:
-                    cond = msgspec_loads(cond_json) if isinstance(cond_json, str) else cond_json
-                    act = msgspec_loads(act_json) if isinstance(act_json, str) else act_json
-
-                    min_score = float(cond.get("min_anomaly_score", 1.0))
-                    min_amount = float(cond.get("min_amount_net", 0))
-
-                    if anomaly_score >= min_score and amount_net >= min_amount:
-                        action = act.get("action", "ALLOW")
-                        alert = act.get("alert")
-                        break
-                except (DecodeError, ValueError, TypeError):
-                    continue
-
-        # Jeśli protokół brzegowy wymusza blokadę, nadpisz akcję
-        if edge_case_override and action != "BLOCK_DECREE":
-            action = "BLOCK_DECREE"
-            alert = alert or edge_case_override.get("expected_behavior", "Potencjalny duplikat — zablokowano")
+        # Sprawdź reguły anomalii (inline, zgodnie z aa3fvcx.txt minimalizm)
+        for rule in ANOMALY_RULES:
+            if anomaly_score >= rule["min_score"] and amount_net >= rule["min_amount"]:
+                action = rule["action"]
+                alert = rule["alert"]
+                break
 
         return {
             "action": action,
@@ -256,15 +158,7 @@ class SemanticGuard:
         amount_net: float = 0.0,
         transaction_id: str = "",
     ) -> None:
-        """Store verified invoice in sqlite-vec for future anomaly detection.
-
-        Args:
-            vendor_nip: NIP kontrahenta.
-            invoice_text: Pełny tekst faktury (po OCR).
-            category_code: Kod kategorii wydatku.
-            amount_net: Kwota netto w złotych.
-            transaction_id: UUID faktury (do powiązania z bazą SQL).
-        """
+        """Store verified invoice in sqlite-vec for future anomaly detection."""
         import uuid
         embedding = self._get_embedding(invoice_text)
         store = self._init_store()

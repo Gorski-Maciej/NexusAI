@@ -112,63 +112,36 @@ def check_gpu() -> str:
 
 
 def check_models() -> str:
-    """Check model files presence and integrity using download_models module."""
+    """Check GGUF model files presence.
+
+    Zgodnie z aa3fvcx.txt: żadne konkretne modele LLM nie są zdefiniowane.
+    Sprawdza tylko czy katalog models/ istnieje i czy są w nim jakieś pliki.
+    """
     if not _MODELS_DIR.exists():
         return _fail(f"Models directory not found at {_MODELS_DIR}")
 
-    try:
-        from nexus_ai.scripts.download_models import MODEL_MANIFEST, get_missing_models
-    except ImportError:
-        try:
-            from nexus_ai.scripts.download_models import MODEL_MANIFEST, get_missing_models
-        except ImportError:
-            return _warn("Could not import download_models module — using fallback check")
+    gguf_files = list(_MODELS_DIR.rglob("*.gguf"))
+    surya_dirs = [d for d in _MODELS_DIR.iterdir() if d.is_dir() and "surya" in d.name.lower()]
 
     lines: list[str] = []
 
-    # Use the shared function from download_models for consistent results
-    missing = get_missing_models(_MODELS_DIR)
-    missing_keys = {m["key"] for m in missing}
-
-    # Iterate over MODEL_MANIFEST keys (always in sync)
-    gguf_found = 0
-    gguf_total = 0
-    for model_key, info in MODEL_MANIFEST.items():
-        if model_key.endswith(".gguf"):
-            gguf_total += 1
-            model_files = list(_MODELS_DIR.rglob(model_key))
-            if model_files:
-                size_mb = model_files[0].stat().st_size / (1024 * 1024)
-                lines.append(f"  {_ok(model_key):50s} {size_mb:.0f} MB")
-                gguf_found += 1
-            elif model_key in missing_keys:
-                lines.append(f"  {_fail(model_key + ' (MISSING)'):50s}")
-            else:
-                lines.append(f"  {_warn(model_key + ' (NOT FOUND)'):50s}")
-        else:
-            # Non-GGUF (sentence-transformers, surya, etc.)
-            cache_name = f"models--{info['repo'].replace('/', '--')}"
-            cache_path = _MODELS_DIR / cache_name
-            if cache_path.exists():
-                size_mb = sum(f.stat().st_size for f in cache_path.rglob("*") if f.is_file()) / (1024 * 1024)
-                lines.append(f"  {_ok(model_key):50s} {size_mb:.0f} MB (directory)")
-            elif model_key in missing_keys:
-                lines.append(f"  {_fail(model_key + ' (MISSING)'):50s}")
-            else:
-                lines.append(f"  {_warn(model_key + ' (not found, optional)'):50s}")
-
-    # Summary line: consistent with get_missing_models
-    all_found = len(missing) == 0
-    summary = f"{len(MODEL_MANIFEST) - len(missing)}/{len(MODEL_MANIFEST)} models present"
-    if all_found:
-        lines.insert(0, f"  {_ok(summary)}")
+    if gguf_files:
+        total_mb = sum(f.stat().st_size for f in gguf_files) / (1024 * 1024)
+        lines.append(f"  {_ok(f'{len(gguf_files)} GGUF model(s) found ({total_mb:.0f} MB total)')}")
+        for f in gguf_files[:5]:  # pokaż max 5
+            size_mb = f.stat().st_size / (1024 * 1024)
+            lines.append(f"    {_ok(f.name):40s} {size_mb:.0f} MB")
+        if len(gguf_files) > 5:
+            lines.append(f"    ... and {len(gguf_files) - 5} more")
     else:
-        lines.insert(0, f"  {_fail(summary)} — run: python -m nexus_ai.scripts.download_models")
+        lines.append(f"  {_warn('No GGUF model files found. Place .gguf files in models/')}")
 
-    # Show integrity issues if any
-    integrity_issues = [m for m in missing if m["status"] == "checksum_mismatch"]
-    for issue in integrity_issues:
-        lines.append(f"  {_fail(f'{issue["key"]}: CHECKSUM MISMATCH')}")
+    if surya_dirs:
+        lines.append(f"  {_ok(f'Surya OCR models: {len(surya_dirs)} directory/ies')}")
+        for d in surya_dirs:
+            lines.append(f"    {_ok(d.name)}")
+    else:
+        lines.append(f"  {_info('Surya OCR models: run python -m nexus_ai.scripts.download_models --surya')}")
 
     return "\n".join(lines)
 
@@ -194,19 +167,10 @@ def check_env() -> str:
         "NEXUS_JWT_SECRET",
         "NEXUS_ENCRYPTION_KEY",
     ]
-    ai_vars = [
-        "NEXUS_COUNCIL_ALPHA_MODEL",
-        "NEXUS_COUNCIL_BETA_MODEL",
-        "NEXUS_COUNCIL_GAMMA_MODEL",
-        "NEXUS_RULES_MODEL",
-        "NEXUS_ANALYTICS_MODEL",
-    ]
-
     lines: list[str] = []
 
     env = os.environ.get("NEXUS_ENV", "dev")
     if env == "prod":
-        # In production, JWT and encryption keys are mandatory
         missing = [v for v in required_vars if not os.environ.get(v)]
         if missing:
             lines.append(f"  {_fail(f'PROD: Missing required env vars: {', '.join(missing)}')}")
@@ -223,17 +187,10 @@ def check_env() -> str:
     else:
         lines.append(f"  {_warn(f'TOML config not found: config/{env}.toml — using defaults')}")
 
-    # Check AI model paths from env (if set)
-    ai_paths_ok = 0
-    for var in ai_vars:
-        path_val = os.environ.get(var)
-        if path_val:
-            model_path = _PROJECT_ROOT / path_val
-            if model_path.exists():
-                ai_paths_ok += 1
-
-    if ai_paths_ok > 0:
-        lines.append(f"  {_ok(f'{ai_paths_ok}/{len(ai_vars)} AI model paths resolve correctly')}")
+    # Check Surya OCR models
+    for d in _MODELS_DIR.iterdir() if _MODELS_DIR.exists() else []:
+        if d.is_dir() and "surya" in d.name.lower():
+            lines.append(f"  {_ok(f'Surya OCR model: {d.name}')}")
 
     return "\n".join(lines)
 

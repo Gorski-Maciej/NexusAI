@@ -43,11 +43,6 @@ from nexus_ai.core.resilience import async_retry  # noqa: E402
 # core.secrets (optional)
 _, [SecretsManager] = _safe_import("core.secrets", ["SecretsManager"])  # noqa: E402
 
-# core.llm_guard (optional)
-_, [LLMGuard, InvoiceLLMExtraction] = _safe_import(
-    "core.llm_guard", ["LLMGuard", "InvoiceLLMExtraction"]
-)
-
 # core.monitor (optional)
 _, [SystemMonitor] = _safe_import("core.monitor", ["SystemMonitor"])
 
@@ -66,9 +61,6 @@ _, [AIContextManager] = _safe_import("core.ai_context", ["AIContextManager"])
 # core.plugins (optional)
 _, [PluginManager] = _safe_import("core.plugins", ["PluginManager"])
 
-# core.hardware (optional)
-_, [HardwareProbe] = _safe_import("core.hardware", ["HardwareProbe"])  # noqa: E402
-
 # core.storage (optional)
 _, [StorageProvider, LocalStorageProvider] = _safe_import(
     "core.storage", ["StorageProvider", "LocalStorageProvider"]  # noqa: E402
@@ -79,17 +71,9 @@ _, [NexusEvent] = _safe_import("core.events", ["NexusEvent"])  # noqa: E402
 
 
 # ── Late-bound globals ──────────────────────────────────────────────────────
-hw_config = None
 plugin_manager = None
-
 def _init_globals():
-    global hw_config, plugin_manager
-    if HardwareProbe is not None:
-        try:
-            hw_config = HardwareProbe.get_gpu_config()
-        except Exception as exc:
-            _log.debug("HardwareProbe.get_gpu_config() failed: %s", exc)
-            hw_config = {}
+    global plugin_manager
     if PluginManager is not None:
         try:
             pm = PluginManager()
@@ -112,8 +96,6 @@ __all__ = [
     "VectorDBError",
     "Vault",
     "async_retry",
-    "LLMGuard",
-    "InvoiceLLMExtraction",
     "StorageProvider",
     "LocalStorageProvider",
     "NexusEvent",
@@ -124,6 +106,4 @@ __all__ = [
     "DataParser",
     "AIContextManager",
     "plugin_manager",
-    "HardwareProbe",
-    "hw_config",
 ]

@@ -555,50 +555,6 @@ class ProtocolLoader:
 
         return "\n".join(lines)
 
-    def build_strategic_prompt(self, invoice_data: dict[str, Any] | None = None) -> str:
-        """Zbuduj prompt strategiczny dla Jamba 3B.
-
-        .. deprecated::
-           Użyj ProtocolExecutor.build_orchestrator_prompt() zamiast tej metody.
-           ProtocolExecutor (nexus_ai/core/protocol_executor.py) robi to samo
-           lepiej, łącząc SOP z danymi faktury, RAG i few-shot.
-
-        Args:
-            invoice_data: Opcjonalne dane faktury do osadzenia w prompcie.
-
-        Returns:
-            String z promptem strategicznym.
-        """
-
-        try:
-            decision_protocol = self.get_protocol("decision.jamba")
-        except ProtocolNotFoundError:
-            return ""
-
-        system = decision_protocol.get("system_prompt", {})
-        role = system.get("role", "")
-        sources = system.get("input_sources", [])
-
-        lines = [f"{role}\n"]
-        if sources:
-            lines.append("Otrzymujesz raporty od wyspecjalizowanych agentów:")
-            for i, source in enumerate(sources, 1):
-                lines.append(f"{i}. {source}")
-
-        lines.append("\nNa podstawie tych raportów podejmij ostateczną decyzję.")
-
-        # Dodaj protokoły decyzyjne
-        protocols = decision_protocol.get("protocols", {})
-        if protocols:
-            lines.append("\n=== PROTOKOŁY DECYZYJNE ===")
-            for name, cfg in protocols.items():
-                cond = cfg.get("condition", "")
-                decision = cfg.get("decision", "")
-                lines.append(f"- {name}: Jeśli {cond} → {decision}")
-
-        return "\n".join(lines)
-
-
 # ── Global singleton ──────────────────────────────────────────────────────
 
 _default_loader: ProtocolLoader | None = None

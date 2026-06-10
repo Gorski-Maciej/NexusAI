@@ -13,7 +13,7 @@ osobną zależność sentence-transformers (ok. 500 MB).
 Użycie:
     from nexus_ai.core.embeddings import EmbeddingService
 
-    service = EmbeddingService(model_path="models/Qwen3-0.6B-Q4_K_M.gguf")
+    service = EmbeddingService(model_path="models/mymodel.gguf")
     vector = await service.embed("tekst faktury")
 """
 
@@ -27,21 +27,18 @@ from structlog import get_logger
 
 logger = get_logger("nexus.core.embeddings")
 
-# ── Default embedding model path ────────────────────────────────────────────
-# Używa najmniejszego modelu GGUF z Council of Agents (0.6B) w trybie embedding.
-# Można zmienić na dedykowany model embeddingowy (np. all-MiniLM-L6-v2 GGUF).
-DEFAULT_EMBEDDING_MODEL = "models/Qwen3-0.6B-Q4_K_M.gguf"
-EMBEDDING_DIM = 768  # Domyślny wymiar (dla Qwen3-0.6B w trybie embedding)
+# ── Default embedding dimension ─────────────────────────────────────────────
+EMBEDDING_DIM = 768  # Domyślny wymiar (wykrywany dynamicznie z modelu)
 
 
 class EmbeddingService:
-    """Generuje embeddingi tekstu przez llama-cpp-python.
+    """    Generuje embeddingi tekstu przez llama-cpp-python.
 
-    Używa istniejących modeli GGUF z projektu (Council of Agents) w trybie
-    embedding, co eliminuje potrzebę osobnej instalacji sentence-transformers.
+    Zgodnie z aa3fvcx.txt: używa llama-cpp-python z embedding=True.
+    Nie definiuje konkretnego modelu — ścieżka jest parametrem.
 
     Args:
-        model_path: Ścieżka do pliku GGUF. Domyślnie Qwen3-0.6B.
+        model_path: Ścieżka do pliku GGUF. None = użyj fallback hash.
         embedding_dim: Wymiar embeddingu. Wykrywany dynamicznie z modelu.
         max_length: Maksymalna długość tekstu do embeddowania.
     """
@@ -52,7 +49,7 @@ class EmbeddingService:
         embedding_dim: int = EMBEDDING_DIM,
         max_length: int = 10000,
     ) -> None:
-        self._model_path = Path(model_path or DEFAULT_EMBEDDING_MODEL)
+        self._model_path = Path(model_path) if model_path else None
         self._embedding_dim = embedding_dim
         self._max_length = max_length
         self._model: Any = None
@@ -64,11 +61,11 @@ class EmbeddingService:
             return
 
         model_path = self._model_path
-        if not model_path.exists():
+        if not model_path or not model_path.exists():
             logger.warning(
                 "[EmbeddingService] Model %s not found at %s. "
                 "Using fallback hash-based embeddings. "
-                "Download models with: python -m nexus_ai.scripts.download_models",
+                "Place a .gguf model in models/ directory.",
                 model_path.name, model_path,
             )
             self._initialized = True

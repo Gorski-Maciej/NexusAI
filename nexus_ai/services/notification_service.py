@@ -41,12 +41,11 @@ class DailyBriefingGenerator:
         self,
         config: AppConfig | None = None,
         duckdb_manager: Any = None,
-        ple_engine: Any = None,
         decision_logger: Any = None,
     ) -> None:
         self._config = config or AppConfig()
         self._duckdb = duckdb_manager
-        self._ple = ple_engine
+        self._ple = None
         self._logger = decision_logger
 
     async def generate(self, user_id: str) -> dict[str, Any]:
@@ -82,11 +81,6 @@ class DailyBriefingGenerator:
                 pass
 
         ple_stats = {}
-        if self._ple:
-            try:
-                ple_stats = await self._ple.get_briefing_data()
-            except Exception:
-                pass
 
         alerts = self._generate_alerts(auto_posted, blocked, pending_review)
 
@@ -529,8 +523,8 @@ class NotificationService:
         # In production this would query the invoices table via SQLAlchemy.
         # For now we try a simple DuckDB or SQLite query, falling back to empty.
         try:
-            from core.config import AppConfig
-            from db.analytics import DuckDBManager
+            from nexus_ai.core.config import AppConfig
+            from nexus_ai.db.analytics import DuckDBManager
 
             cfg = AppConfig()
             mgr = DuckDBManager(db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True)
@@ -568,8 +562,8 @@ class NotificationService:
     def _count_today_auto_posted(self, user_id: str, today: str) -> int:
         """Count invoices auto-approved today."""
         try:
-            from core.config import AppConfig
-            from db.analytics import DuckDBManager
+            from nexus_ai.core.config import AppConfig
+            from nexus_ai.db.analytics import DuckDBManager
 
             cfg = AppConfig()
             mgr = DuckDBManager(db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True)

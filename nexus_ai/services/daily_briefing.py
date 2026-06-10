@@ -1,16 +1,13 @@
 """
 Daily Briefing Service — generator codziennych podsumowań finansowych.
 
-Odpowiedzialności:
-  1. Generowanie podsumowania dnia (auto_post, blocked, pending, alerts, trust trend)
-  2. Wysyłka przez NotificationService (zapisywanie do SQLite)
-  3. Integracja z PLE (statystyki STM/LTM/FM)
-  4. Integracja z DecisionLogger (trend trust score, statystyki korekt)
+Zgodnie z aa3fvcx.txt:
+- Używa DuckDB + SQLite (Punkt 3) do analizy danych
+- Nie używa PLE ani agentów AI
 
 Współpracuje z:
   - DailyBriefingGenerator (w notification_service.py) — agregacja danych
   - NotificationService — wysyłka powiadomień
-  - PLEEngine — statystyki pamięci
   - DecisionLogger — trend trust score
 """
 
@@ -85,31 +82,28 @@ class DailyBriefingService:
         self,
         config: AppConfig | None = None,
         notification_service: Any = None,
-        ple_engine: Any = None,
         decision_logger: Any = None,
         duckdb_manager: Any = None,
     ) -> None:
         self._config = config or AppConfig()
         self._notification = notification_service
-        self._ple = ple_engine
         self._logger = decision_logger
         self._duckdb = duckdb_manager
         self._generator: Any = None
 
         # Lazy init DailyBriefingGenerator
-        if self._duckdb or self._ple or self._logger:
+        if self._duckdb or self._logger:
             self._ensure_generator()
 
     def _ensure_generator(self) -> None:
         """Lazy-init DailyBriefingGenerator."""
         if self._generator is not None:
             return
-        from services.notification_service import DailyBriefingGenerator
+        from nexus_ai.services.notification_service import DailyBriefingGenerator
 
         self._generator = DailyBriefingGenerator(
             config=self._config,
             duckdb_manager=self._duckdb,
-            ple_engine=self._ple,
             decision_logger=self._logger,
         )
         # Podłącz generator do NotificationService
@@ -182,7 +176,7 @@ class DailyBriefingService:
                     top_contractors=raw.get("top_contractors", []),
                     alerts=raw.get("alerts", []),
                     trust_trend=raw.get("trust_trend", "stable"),
-                    ple_stats=raw.get("ple_stats", {}),
+                    ple_stats={},
                     generated_at=now.isoformat(),
                 )
             except Exception as exc:
@@ -209,14 +203,6 @@ class DailyBriefingService:
                     self._logger.get_user_correction_stats
                 )
                 briefing.correction_rate = stats.get("correction_rate", 0.0)
-            except Exception:
-                pass
-
-        # Wzbogać o statystyki PLE
-        if self._ple:
-            try:
-                ple_data = await self._ple.get_briefing_data()
-                briefing.ple_stats = ple_data
             except Exception:
                 pass
 
@@ -417,7 +403,6 @@ class DailyBriefingService:
         return {
             "generator_available": self._generator is not None,
             "notification_available": self._notification is not None,
-            "ple_available": self._ple is not None,
             "logger_available": self._logger is not None,
             "duckdb_available": self._duckdb is not None,
         }

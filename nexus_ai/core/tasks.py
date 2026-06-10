@@ -19,7 +19,41 @@ from taskiq_nats import PullBasedJetStreamBroker
 from nexus_ai.core.backup import BackupManager
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
-from nexus_ai.core.memory_manager import TimedModelCache
+# TimedModelCache removed — zgodnie z aa3fvcx.txt nie używamy dedykowanego cache modeli
+# Zamiast tego: proste dict + timestamp (poniżej)
+
+
+class TimedModelCache:
+    """Prosty cache modeli z TTL (zgodnie z aa3fvcx.txt minimalizm)."""
+    def __init__(self, ttl_seconds: int = 600):
+        self._cache: dict[str, object] = {}
+        self._timestamps: dict[str, float] = {}
+        self._ttl = ttl_seconds
+
+    async def get(self, key: str, loader):
+        import time
+        now = time.monotonic()
+        try:
+            model = self._cache[key]
+            ts = self._timestamps.get(key, 0.0)
+            if now - ts < self._ttl:
+                self._timestamps[key] = now
+                return model
+            del self._cache[key]
+            del self._timestamps[key]
+        except KeyError:
+            pass
+        model = await loader()
+        self._cache[key] = model
+        self._timestamps[key] = now
+        return model
+
+    def evict_expired(self) -> None:
+        pass
+
+    def release(self, key: str) -> None:
+        self._cache.pop(key, None)
+        self._timestamps.pop(key, None)
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import SessionLocal, create_oltp_engine, create_session_factory
