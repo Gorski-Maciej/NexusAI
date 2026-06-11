@@ -2083,3 +2083,6 @@ litestar.exceptions.http_exceptions.ImproperlyConfiguredException: 500: 'socket'
 2026-05-31 16:24:19 | ERROR | system | Błąd ładowania pluginów: No module named 'fsspec'
 2026-05-31 19:15:57 | ERROR | system | system | Bootstrap completed with ERRORS. Check logs above.
 2026-05-31 19:15:57 | CRITICAL | system | system | Fatal error: %s
+2026-06-11 11:27:03 | ERROR | system | system | [ConfigLoader] Failed to load %s: %s
+2026-06-11 11:27:03 | ERROR | system | system | [ConfigLoader] on_change callback failed: %s
+2026-06-11 11:27:04 | ERROR | system | system | [ConfigLoader] Failed to load %s: %s

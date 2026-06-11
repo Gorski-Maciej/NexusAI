@@ -229,26 +229,24 @@ async def step_run_migrations(config: Any) -> StepResult:
 
     try:
         from alembic import command
-        from alembic.config import Config
+        from nexus_ai.core.alembic_utils import get_alembic_config
 
-        project_root = Path(__file__).resolve().parent.parent.parent
-        ini_path = project_root / "alembic.ini"
+        alembic_cfg = get_alembic_config()
 
-        if not ini_path.exists():
+        if alembic_cfg is None:
             return StepResult(
                 name=name,
                 status="warning",
-                message=f"alembic.ini not found at {ini_path}, creating tables directly",
+                message="pyproject.toml [tool.alembic] not found, creating tables directly",
                 duration_ms=(time.perf_counter() - start) * 1000,
             )
 
-        alembic_cfg = Config(str(ini_path))
         command.upgrade(alembic_cfg, "head")
 
         return StepResult(
             name=name,
             status="ok",
-            message="All migrations applied",
+            message="All migrations applied (config from pyproject.toml [tool.alembic])",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
     except ImportError:

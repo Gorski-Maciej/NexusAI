@@ -23,7 +23,12 @@ from nexus_ai.core.logger import get_logger
 logger = get_logger(__name__)
 
 ENV_CONFIG_DIR: Path = Path(__file__).resolve().parent.parent / "config"
-"""Directory containing environment-specific TOML config files."""
+"""Directory containing environment-specific TOML config files (nexus_ai/config/).
+
+Zgodnie z aa3fvcx.txt: konfiguracja w czystym TOML, parsowana przez msgspec.
+Katalog config/ znajduje się wewnątrz pakietu nexus_ai/ (nexus_ai/config/),
+zawiera {env}.toml, protocols.toml, models_manifest.json, version.json.
+"""
 
 
 # ── ConfigLoader — mtime-based auto-reload dla TOML config ────────────────
@@ -522,3 +527,5 @@ class AppConfig(Struct, kw_only=True):
             raise ConfigValidationError("NEXUS_ENCRYPTION_KEY must be valid base64-url") from exc
         if len(raw) != 32:
             raise ConfigValidationError("NEXUS_ENCRYPTION_KEY must decode to exactly 32 bytes")
+
+

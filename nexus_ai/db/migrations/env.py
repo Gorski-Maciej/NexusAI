@@ -4,6 +4,10 @@ NexusAI — Alembic migration environment (sync).
 Handles both offline (SQL script) and online (live DB) migrations.
 Uses NexusAI's AppConfig to resolve the database URL at runtime.
 
+Zgodnie z aa3fvcx.txt (Punkt 25):
+- Konfiguracja Alembic w pyproject.toml [tool.alembic], nie w osobnym alembic.ini
+- env.py odczytuje ustawienia z pyproject.toml przez msgspec
+
 Zgodnie z aa3fvcx.txt (Punkt 5): Python 3.13t (free-threaded) — brak GIL —
 używamy synchronicznego API sqlite3 (create_engine zamiast create_async_engine).
 """
@@ -26,12 +30,41 @@ _PROJECT_ROOT = Path(__file__).resolve().parents[3]
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
-# Alembic Config object
+# ── Read Alembic config from pyproject.toml [tool.alembic] ────────────────
+# Zgodnie z aa3fvcx.txt: konfiguracja w pyproject.toml zamiast osobnego pliku.
+# msgspec (już w projekcie) parsuje TOML szybciej niż standardowy tomllib.
+from msgspec import toml
+
+_pyproject_path = _PROJECT_ROOT / "pyproject.toml"
+_tool_alembic: dict = {}
+if _pyproject_path.exists():
+    try:
+        with open(_pyproject_path, "rb") as _f:
+            _data = toml.decode(_f.read())
+        _tool_alembic = _data.get("tool", {}).get("alembic", {})
+    except Exception:
+        _tool_alembic = {}
+
+_script_location = _tool_alembic.get("script_location", "nexus_ai/db/migrations")
+_script_location_full = str(_PROJECT_ROOT / _script_location)
+
+# ── Alembic Config object ────────────────────────────────────────────────
+# Instead of reading alembic.ini, we set options programmatically from
+# pyproject.toml [tool.alembic]. This eliminates the need for a separate
+# alembic.ini file.
 config = context.config
 
-# Logging setup
+# Override script_location from pyproject.toml
+config.set_main_option("script_location", _script_location_full)
+config.set_main_option("file_template", _tool_alembic.get("file_template", "%(rev)s_%(slug)s"))
+config.set_main_option("timezone", _tool_alembic.get("timezone", "UTC"))
+
+# Logging setup — try reading from config, or use basic logging as fallback
 if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+    try:
+        fileConfig(config.config_file_name)
+    except Exception:
+        pass
 
 logger = logging.getLogger("alembic.env")
 
@@ -66,8 +99,9 @@ def get_database_url() -> str:
             url = env_url
         return url
     except Exception:
-        # Fallback: use alembic.ini setting
-        return config.get_main_option("sqlalchemy.url")
+        # Fallback: use a default path
+        _default_db = _PROJECT_ROOT / "app_data" / "databases" / "nexus_oltp.db"
+        return f"sqlite:///{_default_db.as_posix()}"
 
 
 def run_migrations_offline() -> None:

@@ -1,77 +1,138 @@
-# =============================================================================
-# NexusAI — Production Environment Profile (config/prod.toml)
-# =============================================================================
-# Auto-loaded when NEXUS_ENV=prod via msgspec TOML parser.
-# Zastępuje: config/prod.env (python-dotenv)
-# Nowy:     msgspec.toml — ultraszybki parser TOML, zero dodatkowych zależności
+# ═══════════════════════════════════════════════════════════════════════════════
+# config/prod.toml — NexusAI Production Profile
+# ═══════════════════════════════════════════════════════════════════════════════
 #
-# UWAGA: Klucze TOML dopasowane do NEXUS_* env var names.
-# Sekcje TOML (np. [database]) są pomijane przy tworzeniu ENV keys.
+# Zgodnie z aa3fvcx.txt:
+# - msgspec parsuje TOML → zero zależności od python-dotenv/pydantic-settings
+# - W produkcji: debug=false, OpenAPI/Swagger wyłączone
+# - Wymagane: NEXUS_JWT_SECRET, NEXUS_ENCRYPTION_KEY (env vars)
 #
-# IMPORTANT: The following secrets MUST be set via env vars or Infiscal:
-#   - NEXUS_JWT_SECRET
-#   - NEXUS_ENCRYPTION_KEY
-#   - NEXUS_ADMIN_PASSWORD
+# Ładowane przez: ConfigLoader (core/config.py)
+# Użycie: NEXUS_ENV=prod
+# ═══════════════════════════════════════════════════════════════════════════════
 
-[core]
-debug = 0
-env = "prod"
-log_level = "warning"
-base_dir = ""
+[app]
+# ── Core ──
+environment = "prod"
+debug = false
+base_dir = "/opt/nexusai"
 
-[security]
-jwt_expiration_seconds = 900
-refresh_token_days = 7
-jwt_issuer = "nexus-ai-prod"
-jwt_audience = "nexus-api-prod"
-# WARNING: cors_origins MUST be set to a specific domain in production!
-# Example: cors_origins = "https://app.example.com"
-cors_origins = "*"
-csrf_enabled = 1
-jwt_secret = ""
-encryption_key = ""
+# ── Database ──
+sqlite_file = "app_data/databases/nexus_oltp.db"
+duckdb_file = "app_data/databases/nexus_olap.duckdb"
+storage_dir = "app_data/uploads"
+idempotency_db = "app_data/databases/idempotency.sqlite"
 
-[database]
-sqlite_file = "nexus_oltp.db"
-duckdb_file = "nexus_olap.duckdb"
-duckdb_memory_limit = "4GB"
+# ── DuckDB ──
+duckdb_memory_limit = "2GB"
 duckdb_threads = 4
-idempotency_db = "idempotency.sqlite"
+
+# ── Server ──
+host = "127.0.0.1"
+port = 8000
+log_level = "INFO"
+
+# ── CORS (prod: konkretne originy) ──
+cors_origins = "http://localhost:8501,http://127.0.0.1:8501"
+
+# ── Upload limits ──
+max_invoice_upload_mb = 50
+max_attachment_upload_mb = 500
+
+# ── JWT (wymagane z env vars) ──
+jwt_expiration_seconds = 900
+refresh_token_days = 30
+jwt_issuer = "nexus-ai"
+jwt_audience = "nexus-api"
+
+# ── CSRF ──
+csrf_enabled = true
+
+# ── Connection pools ──
 db_pool_size = 10
 db_pool_overflow = 20
-sqlcipher_key_env = "NEXUS_SQLCIPHER_KEY"
+nats_max_reconnect = 30
+nats_reconnect_delay_seconds = 5
+
+# ── Retry (stamina) ──
+max_task_retries = 5
+retry_backoff_base_seconds = 2.0
+retry_backoff_max_seconds = 120.0
+
+# ── Decision Engine ──
+autopilot_auto_post_threshold = 0.95
+autopilot_suggest_threshold = 0.80
+autopilot_ask_threshold = 0.55
+autopilot_adaptation_enabled = true
+autopilot_adaptation_learning_rate = 0.03
+autopilot_low_amount_threshold = 500.0
+
+# ── Rules ──
+rules_max_invoice_amount = 100000.0
+rules_require_nip_validation = true
+analytics_anomaly_threshold = 1.5
+
+# ── Timeouts ──
+decision_timeout_seconds = 120
+
+# ── Outbox ──
+outbox_replay_limit = 100
+
+# ── Migration baselines ──
+migration_baseline_file = "migration_rowcount_baseline.json"
+migration_checksum_baseline_file = "migration_checksum_baseline.json"
+
+[tax]
+# ── Tax configuration ──
+default_vat_rate = 23
+cit_rate = 19
+linear_rate = 12
+lump_sum_rates = [2.0, 3.0, 5.5, 8.5, 12.0, 15.0, 17.0]
+vat_exempt_threshold = 200000.0
+vat_quarterly_threshold = 2000000.0
+
+[integrations]
+# ── External API endpoints ──
+nbp_api_url = "https://api.nbp.pl/api/exchangerates/rates/a/"
+ksef_api_url = "https://ksef.mf.gov.pl/api/"
+gus_bir_api_url = "https://wyszukiwarka.ceidg.gov.pl/CEIDG"
+white_list_api_url = "https://wl-api.mf.gov.pl/api/"
+dpo_alert_webhook = ""  # Ustaw przez env var NEXUS_DPO_ALERT_WEBHOOK
 
 [nats]
-nats_url = "nats://nats:4222"
-nats_max_reconnect = 10
-nats_reconnect_delay = 2
-outbox_replay_limit = 500
+# ── NATS JetStream ──
+url = "nats://localhost:4222"
+max_reconnect = 30
+reconnect_delay_seconds = 5
 
-[storage]
-storage_dir = "app_data/uploads"
-max_invoice_upload_mb = 100
-max_attachment_upload_mb = 1000
+[tigerbeetle]
+# ── TigerBeetle ledger ──
+cluster_id = 0
+replica_addresses = "3000"
 
-[retry]
-max_task_retries = 3
-retry_backoff_base = 1.0
-retry_backoff_max = 60.0
+[forex]
+# ── Nexus-Forex configuration ──
+enabled = true
+nbp_api_url = "https://api.nbp.pl/api/exchangerates/rates/A/{currency}/{date}/?format=json"
+max_lookback_days = 5
+http_timeout_sec = 15
+rate_cache_maxsize = 1000
+refresh_interval_hours = 24
+default_currencies = "EUR,USD,GBP,CHF,CZK,SEK,NOK,HUF"
+stamina_retry_attempts = 5
+stamina_retry_timeout = 30
+missing_date_ttl_days = 30
 
-[autopilot]
-autopilot_auto_post = 0.95
-autopilot_suggest = 0.80
-autopilot_ask = 0.55
-autopilot_adaptation = 0
-autopilot_learning_rate = 0.05
-autopilot_low_amount = 500.0
-
-[rules]
-rules_max_amount = 50000.0
-rules_require_nip = 1
-
-[analytics]
-analytics_anomaly_threshold = 2.5
-decision_timeout = 120
-
-[monitoring]
-dpo_alert_webhook = ""
+[ai]
+# ── AI Models (paths relative to base_dir/models/) ──
+council_alpha_model = "models/LFM2.5-1.2B-Q4_K_M.gguf"
+council_beta_model = "models/Qwen3-0.6B-Q4_K_M.gguf"
+council_gamma_model = "models/LittleLamb-0.3B-Q4_K_M.gguf"
+rules_model = "models/granite-4.0-1b-nano-Q4_K_M.gguf"
+analytics_model = "models/qwen2.5-1.5b-instruct-Q4_K_M.gguf"
+decision_jamba_model = "models/Jamba-Reasoning-3B-Q4_K_M.gguf"
+decision_granite_model = "models/granite-4.0-1b-nano-Q4_K_M.gguf"
+orchestrator_model = "models/LittleLamb-0.3B-Q4_K_M.gguf"
+ocr_model = "models/LightOnOCR-1B-Q4_K_M.gguf"
+vision_model = "models/Phi-3-mini-3.8B-Q4_K_M.gguf"
+embedding_model = "models/bge-small-en-v1.5-Q4_K_M.gguf"

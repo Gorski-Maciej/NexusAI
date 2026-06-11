@@ -5,7 +5,7 @@ edition = "2021"
 description = "NexusAI — custom crypto module (AEAD, Argon2id, SHA-256) in Rust + PyO3"
 
 [lib]
-name = "_core"
+name = "nexus_crypto"
 crate-type = ["cdylib"]
 
 [dependencies]

@@ -295,13 +295,12 @@ async def _start_worker_only(args: argparse.Namespace) -> None:
 def _run_alembic_migrations() -> int:
     try:
         from alembic import command
-        from alembic.config import Config
-        ini_path = _PROJECT_ROOT / "alembic.ini"
-        if not ini_path.exists():
-            logger.error("[MIGRATE] alembic.ini not found at %s.", ini_path)
+        from nexus_ai.core.alembic_utils import get_alembic_config
+        alembic_cfg = get_alembic_config()
+        if alembic_cfg is None:
+            logger.error("[MIGRATE] Cannot get Alembic config (pyproject.toml missing or [tool.alembic] not found)")
             return 1
-        logger.info("[MIGRATE] Running: alembic upgrade head")
-        alembic_cfg = Config(str(ini_path))
+        logger.info("[MIGRATE] Running: alembic upgrade head (config from pyproject.toml [tool.alembic])")
         command.upgrade(alembic_cfg, "head")
         logger.info("[MIGRATE] All migrations applied.")
         return 0

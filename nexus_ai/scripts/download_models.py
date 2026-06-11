@@ -26,8 +26,8 @@ SURYA_MODELS: dict[str, dict[str, str]] = {
         "sha256": "",
         "description": "OCR — Text line detection",
     },
-    "surya_rec3": {
-        "repo": "vikp/surya_rec3",
+    "surya_rec": {
+        "repo": "vikp/surya_rec",
         "sha256": "",
         "description": "OCR — Text recognition",
     },
@@ -36,8 +36,8 @@ SURYA_MODELS: dict[str, dict[str, str]] = {
         "sha256": "",
         "description": "OCR — Table structure detection",
     },
-    "surya_order3": {
-        "repo": "vikp/surya_order3",
+    "surya_order": {
+        "repo": "vikp/surya_order",
         "sha256": "",
         "description": "OCR — Reading order detection",
     },

@@ -1,310 +1,197 @@
-# =============================================================================
-# NexusAI — Standard Operating Procedures (SOP)
-# Centralny rejestr protokołów decyzyjnych
-# Wersja: 3.0 (aa3fvcx.txt — SQL/DuckDB DecisionEngine)
-# =============================================================================
+# ═══════════════════════════════════════════════════════════════════════════════
+# config/protocols.toml — NexusAI Standard Operating Procedures (SOP)
+# ═══════════════════════════════════════════════════════════════════════════════
 #
-# Ten plik definiuje sztywne protokoły postępowania dla DecisionEngine.
-# Zgodnie z aa3fvcx.txt: decyzje oparte na DuckDB/SQL, bez konkretnych modeli LLM.
-#
-# Zasada: DuckDB/SQL decyduje o przepływie (first-match-wins w SQL),
-# a deterministyczne reguły zastępują wnioskowanie modeli językowych.
+# Zgodnie z aa3fvcx.txt Punkt 3 (SOP):
+# - Procedury decyzyjne w TOML, nie w Pythonie
+# - Ładowane przez ProtocolLoader (core/protocol_loader.py)
+# - Separacja SOP od kodu — zmiana reguł bez restartu aplikacji
 #
 # Struktura:
-#   [metadata]              — wersja, opis
-#   [schema]                — definicje typów
-#   [decision_rules.*]      — reguły decyzyjne (first-match-wins)
-#   [matrices.*]            — deterministyczne matryce decyzyjne
-#   [thresholds.*]          — progi decyzyjne i wagi
-#   [emergency.*]           — protokoły awaryjne
-#   [rag.*]                 — RAG data sources
-#   [edge_cases]            — scenariusze brzegowe
-#
-# =============================================================================
+#   [metadata]       — wersja i opis protokołów
+#   [schema.output_formats] — definicje typów JSON
+#   [protocols.validation] — konfiguracja walidacji
+#   [protocols.decision] — konfiguracja DecisionEngine
+#   [thresholds]     — progi decyzyjne, wagi trust_score
+#   [emergency]      — protokoły awaryjne
+# ═══════════════════════════════════════════════════════════════════════════════
 
 [metadata]
-version = "3.0"
-description = "NexusAI Decision Engine — Standard Operating Procedures (wg aa3fvcx.txt)"
-created_at = "2026-06-10"
-updated_at = "2026-06-10"
+version = "2.3.0"
+description = "NexusAI Standard Operating Procedures — DecisionEngine v2.3"
+last_modified = "2026-06-10"
+author = "NexusAI Team"
 
-# =============================================================================
-# SCHEMA — definicje typów używanych w protokołach
-# =============================================================================
+# ══════════════════════════════════════════════════════════════════════════════
+# Schema — definicje formatów wyjściowych JSON
+# ══════════════════════════════════════════════════════════════════════════════
 
 [schema.output_formats]
-decision_verdict = '''
-{
-    "decision": "AUTO_POST" | "SUGGEST" | "ASK_USER" | "BLOCK",
-    "confidence": 0.0-1.0,
-    "reasoning": "Uzasadnienie decyzji na podstawie reguł DuckDB",
-    "matched_rule": "Nazwa reguły która dopasowała",
-    "risk_override": true | false,
-    "semantic_anomaly": true | false
-}
-'''
+decision = { type = "string", enum = ["AUTO_POST", "SUGGEST", "ASK_USER", "BLOCK"] }
+confidence = { type = "float", minimum = 0.0, maximum = 1.0 }
+trust_components = [
+    { name = "ocr_conf", weight = 0.30, description = "OCR confidence score" },
+    { name = "vendor_score", weight = 0.25, description = "Vendor reliability score" },
+    { name = "data_consistency", weight = 0.20, description = "Data cross-validation score" },
+    { name = "context", weight = 0.10, description = "Contextual relevance score" },
+    { name = "risk", weight = 0.15, description = "Risk assessment score" },
+]
 
-rag_fact_sheet_section = '''
-=== ARKUSZ FAKTÓW (FactsAggregator) ===
-Źródła danych: SQLite=✓/✗, DuckDB=✓/✗, sqlite-vec=✓/✗
+# ══════════════════════════════════════════════════════════════════════════════
+# Protocols — reguły walidacji
+# ══════════════════════════════════════════════════════════════════════════════
 
-Faktura #{invoice_id}
-  Kontrahent: {name} (NIP: {nip})
-  Kwota netto: {amount_net} PLN
-  Kwota brutto: {amount_gross} PLN
-  Kategoria: {category}
-  Data wystawienia: {issue_date}
+[protocols.validation]
+# ── NIP validation ──
+nip_length = 10
+nip_weight_digits = [6, 5, 7, 2, 3, 4, 5, 6, 7]
+nip_checksum_mod = 11
 
-Kontrahent: znany/nowy
-  Liczba faktur w historii: {count}
-  Trust score: {score}
-  Status VAT: {status}
-'''
+# ── REGON validation ──
+regon_9_weight = [8, 9, 2, 3, 4, 5, 6, 7]
+regon_14_weight = [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8]
 
-# =============================================================================
-# REGUŁY DECYZYJNE — first-match-wins (DuckDB)
-# =============================================================================
-# Zgodnie z aa3fvcx.txt: "First-match-wins w SQL"
-# Reguły są uporządkowane według priorytetu (10 = najwyższy, 999 = fallback).
+# ── Account number (NRB) ──
+nrb_length = 26
+nrb_checksum_mod = 97
+nrb_checksum_expected = 1
 
-[decision_rules]
-description = "Reguły decyzyjne dla DecisionEngine — first-match-wins"
-priority_ascending = true
+# ── Invoice fields ──
+required_fields = [
+    "number",
+    "issue_date",
+    "seller_nip",
+    "buyer_nip",
+    "total_net",
+    "total_gross",
+    "vat_rate",
+    "currency",
+]
 
-[decision_rules.level_1_auto_post]
+# ══════════════════════════════════════════════════════════════════════════════
+# Decision Engine — reguły first-match-wins
+# ══════════════════════════════════════════════════════════════════════════════
+
+[protocols.decision]
+# ── Trust score weights (suma = 1.0) ──
+trust_score_weights = { ocr = 0.30, vendor = 0.25, data_consistency = 0.20, context = 0.10, risk = 0.15 }
+
+# ── Klasyfikacja simple/complex ──
+classify_thresholds = { max_amount_simple = 5000, min_invoices_known = 3, min_ocr_simple = 0.85 }
+
+# ── Reguły first-match-wins (priorytet ASC) ──
+# Każda reguła: priority, conditions, decision, confidence
+# conditions → pole, operator (field / field__gte / field__lte / field__in), wartość
+# {} → pusta kondycja = zawsze pasuje (fallback)
+
+[[protocols.decision.rules]]
 priority = 10
-condition = "vendor_known=true ORAZ vendor_invoice_count>=10 ORAZ vendor_trust>=0.85 ORAZ amount_gross<=5000 ORAZ ocr_confidence>=0.92"
+description = "Znany kontrahent, ≥10 faktur, wysoki trust, niska kwota"
+conditions = { vendor_known = true, vendor_count__gte = 10, trust_score__gte = 0.85, amount__lte = 5000, ocr_conf__gte = 0.92 }
 decision = "AUTO_POST"
 confidence = 0.95
-reasoning = "Zaufany kontrahent, niska kwota, wysoki OCR"
 
-[decision_rules.level_2_auto_post]
+[[protocols.decision.rules]]
 priority = 20
-condition = "vendor_known=true ORAZ vendor_invoice_count>=3 ORAZ vendor_trust>=0.80 ORAZ amount_gross<=3000 ORAZ ocr_confidence>=0.90"
+description = "Znany kontrahent, ≥3 faktury, średni trust, niska kwota"
+conditions = { vendor_known = true, vendor_count__gte = 3, trust_score__gte = 0.80, amount__lte = 3000, ocr_conf__gte = 0.90 }
 decision = "AUTO_POST"
 confidence = 0.90
-reasoning = "Znany kontrahent, niska kwota"
 
-[decision_rules.level_3_suggest_known]
+[[protocols.decision.rules]]
 priority = 30
-condition = "vendor_known=true ORAZ amount_gross<=10000 ORAZ ocr_confidence>=0.85"
+description = "Znany kontrahent, niska kwota, dobry OCR"
+conditions = { vendor_known = true, amount__lte = 10000, ocr_conf__gte = 0.85 }
 decision = "SUGGEST"
 confidence = 0.80
-reasoning = "Znany kontrahent, średnia kwota"
 
-[decision_rules.level_4_suggest_new]
+[[protocols.decision.rules]]
 priority = 40
-condition = "vendor_known=false ORAZ amount_gross<=5000 ORAZ ocr_confidence>=0.90"
+description = "Nowy kontrahent, niska kwota, dobry OCR"
+conditions = { vendor_known = false, amount__lte = 5000, ocr_conf__gte = 0.90 }
 decision = "SUGGEST"
 confidence = 0.75
-reasoning = "Nowy kontrahent ale niska kwota i wysoki OCR"
 
-[decision_rules.level_5_ask_user]
+[[protocols.decision.rules]]
 priority = 50
-condition = "amount_gross<=50000 ORAZ ocr_confidence>=0.80"
+description = "Średnia kwota, akceptowalny OCR"
+conditions = { amount__lte = 50000, ocr_conf__gte = 0.80 }
 decision = "ASK_USER"
 confidence = 0.60
-reasoning = "Średnia kwota lub nieznany kontrahent"
 
-[decision_rules.level_6_block]
-priority = 60
-condition = "amount_gross>=50000"
+[[protocols.decision.rules]]
+priority = 100
+description = "Wysoka kwota — blokada"
+conditions = { amount__gte = 50000 }
 decision = "BLOCK"
 confidence = 0.40
-reasoning = "Wysoka kwota — wymagana ręczna weryfikacja"
 
-[decision_rules.fallback]
+[[protocols.decision.rules]]
 priority = 999
-condition = "zawsze"
+description = "Fallback — zawsze pasuje"
+conditions = {}
 decision = "ASK_USER"
 confidence = 0.50
-reasoning = "Brak pasującej reguły — eskaluj"
 
-# =============================================================================
-# PROGI DECYZYJNE
-# =============================================================================
+# ══════════════════════════════════════════════════════════════════════════════
+# Thresholds — progi decyzyjne i wagi
+# ══════════════════════════════════════════════════════════════════════════════
 
 [thresholds]
-description = "Domyślne progi decyzyjne i wagi trust score"
+# ── RiskGuard progi ufności per field per forma opodatkowania ──
+risk_vat_confidence_required = 0.98
+risk_total_net_confidence_required = 0.95
+risk_invoice_date_confidence_required = 0.90
+risk_seller_name_confidence_required = 0.85
 
-[thresholds.default]
-auto_post = 0.92
-suggest = 0.75
-ask_user = 0.50
+# ── SemanticGuard ──
+anomaly_cosine_threshold = 0.30
+anomaly_min_samples = 3
+anomaly_required_similarity = 0.60
 
-[thresholds.extended]
-high_amount_block = 50000
-ledger_unavailable_penalty = 0.05
+# ── Cache TTL ──
+cache_few_shot_ttl = 300
+cache_enrich_ttl = 300
+cache_whitelist_ttl = 3600
+cache_fx_rate_ttl = 600
+cache_prompt_pack_ttl = 3600
+cache_model_ttl = 600
 
-[thresholds.weights]
-ocr_confidence = 0.30
-vendor_reliability = 0.25
-data_consistency = 0.20
-context_trust = 0.10
-risk_guard = 0.15
+# ── Model management ──
+model_idle_ttl_minutes = 5
+model_concurrency_limit = 1
 
-[thresholds.adaptation]
-enabled = true
-learning_rate = 0.05
-low_amount_threshold = 500.0
-
-[thresholds.category_adjustments]
-recurring_categories = ["paliwo", "czynsz", "media", "telekomunikacja", "leasing"]
-recurring_auto_post_adjustment = -0.025
-recurring_suggest_adjustment = -0.015
-
-problematic_categories = ["usługi it", "doradztwo", "marketing", "szkolenia"]
-problematic_auto_post_adjustment = 0.05
-problematic_suggest_adjustment = 0.025
-
-[thresholds.vendor_adjustments]
-known_vendor_auto_post_adjustment = -0.05
-known_vendor_suggest_adjustment = -0.025
-new_vendor_auto_post_adjustment = 0.10
-new_vendor_suggest_adjustment = 0.05
-
-[thresholds.amount_adjustments]
-low_amount_auto_post_adjustment = -0.025
-low_amount_suggest_adjustment = -0.015
-high_amount_auto_post_adjustment = 0.10
-high_amount_suggest_adjustment = 0.05
-medium_amount_auto_post_adjustment = 0.025
-medium_amount_suggest_adjustment = 0.015
-
-# =============================================================================
-# CONTEXT ENRICHER — Biała Lista MF i GUS BIR
-# =============================================================================
-
-[context_enricher]
-description = "Konfiguracja ContextEnricher — Biała Lista MF i GUS BIR"
-
-[context_enricher.white_list]
-description = "White List MF — weryfikacja rachunków VAT"
-cache_ttl_days = 30
-api_timeout_seconds = 10
-
-[context_enricher.gus_bir]
-description = "GUS BIR — dane z rejestru REGON"
-cache_ttl_days = 30
-api_timeout_seconds = 15
-require_api_key = true
-
-# =============================================================================
-# PROTOKOŁY — RAG (Retrieval-Augmented Generation)
-# =============================================================================
-
-[rag]
-description = "Protokoły dla warstwy RAG (FactsAggregator)"
-data_sources = ["SQLite (OLTP)", "DuckDB (OLAP)", "sqlite-vec (wektory)", "TigerBeetle (ledger)"]
-
-[rag.before_decision]
-steps = [
-    "1. Uruchom wszystkie 4 źródła równolegle (asyncio.create_task)",
-    "2. Dla każdego źródła: izolacja błędów — awaria jednego nie psuje reszty",
-    "3. Zbuduj FactSheet z dostępnych danych",
-    "4. Wygeneruj sekcję ARKUSZ FAKTÓW dla promptu",
-]
-timeout = "5000ms"
-error_handling = "Każde źródło ma osobny try/except — awaria logowana jako warning"
-
-[rag.data_sources.sqlite]
-description = "Dane kontrahenta i historia z SQLite (OLTP)"
-fields = ["contractor (NIP, nazwa, status VAT)", "recent_invoices (ostatnie 5)", "user_correction_patterns"]
-priority = "critical"
-
-[rag.data_sources.duckdb]
-description = "Dane analityczne z DuckDB (OLAP)"
-fields = ["trust_score_trend (ostatnie 30 dni)", "active_decision_rules", "vendor_intelligence"]
-priority = "high"
-
-[rag.data_sources.sqlite_vec]
-description = "Podobne faktury semantycznie przez sqlite-vec"
-fields = ["similar_invoices (top 5 według cosine distance)", "distance_threshold: 0.85"]
-priority = "medium"
-
-[rag.data_sources.tigerbeetle]
-description = "Dane księgowe z TigerBeetle (secure ledger)"
-fields = ["ledger_accounts (salda kont)", "ledger_total_turnover", "ledger_recent_transfers"]
-priority = "medium"
-
-# =============================================================================
-# PROTKOŁY AWARYJNE
-# =============================================================================
+# ══════════════════════════════════════════════════════════════════════════════
+# Emergency — protokoły awaryjne
+# ══════════════════════════════════════════════════════════════════════════════
 
 [emergency]
-description = "Protokoły awaryjne na wypadek błędów systemowych"
+# ── Timeout ──
+[emergency.timeout]
+action = "ASK_USER"
+message = "Przekroczono czas oczekiwania na decyzję systemu. Proszę o ręczną weryfikację faktury."
+confidence = 0.30
 
-[emergency.protocols.rag_source_failure]
-condition = "Jedno ze źródeł RAG nie odpowiada"
-action = "ISOLATE_AND_CONTINUE"
-fallback_strategy = "Pomiń źródło które nie odpowiada i kontynuuj z pozostałymi danymi"
-logging = "Zaloguj awarię źródła RAG jako warning"
-notify_user = false
+# ── DB failure ──
+[emergency.db_failure]
+action = "BLOCK"
+message = "Awaria bazy danych. Wszystkie faktury wstrzymane do czasu przywrócenia połączenia."
+confidence = 0.0
 
-[emergency.protocols.data_integrity_violation]
-condition = "Dane z różnych źródeł są sprzeczne"
-action = "PREFER_SQLITE"
-fallback_strategy = "Preferuj dane z SQLite, oznacz niespójność"
-logging = "Zaloguj niespójność danych między źródłami"
-notify_user = true
+# ── NATS failure ──
+[emergency.nats_failure]
+action = "DEGRADED"
+message = "System kolejek niedostępny. Przetwarzanie w trybie awaryjnym — żądania będą opóźnione."
+confidence = 0.10
 
-[emergency.protocols.workflow_timeout]
-condition = "DecisionEngine timeout"
-action = "SAFE_DEFAULT"
-fallback_strategy = "ASK_USER — bezpieczna eskalacja"
-logging = "Zaloguj timeout DecisionEngine"
-notify_user = true
+# ── AI model failure ──
+[emergency.ai_model_failure]
+action = "FALLBACK"
+message = "Model AI niedostępny. Używam reguł offline."
+confidence = 0.40
 
-# =============================================================================
-# SCENARIUSZE BRZEGOWE
-# =============================================================================
-
-[edge_cases]
-description = "Zdefiniowane scenariusze brzegowe"
-
-[edge_cases.ocr_low_confidence]
-condition = "OCR confidence < 0.5"
-expected_behavior = "Wymuś klasyfikację complex, nie ufaj żadnemu polu"
-override = "Wszystkie pola oznaczone jako 'low_confidence'"
-
-[edge_cases.duplicate_invoice]
-condition = "Wykryto duplikat faktury"
-expected_behavior = "BLOCK — nie księguj duplikatu"
-override = "Nawet jeśli DecisionEngine zwróci AUTO_POST, blokada ma priorytet"
-
-[edge_cases.partial_data]
-condition = "Tylko 2 z 4 źródeł RAG dostępne"
-expected_behavior = "Kontynuuj z dostępnymi danymi, podnieś próg confidence o 0.03"
-override = "Nie blokuj decyzji z powodu braku danych"
-
-[edge_cases.nip_checksum_error]
-condition = "NIP nie przechodzi walidacji sumy kontrolnej"
-expected_behavior = "BLOCK — nie księguj faktury z błędnym NIP-em"
-override = "Nawet jeśli reguły zwrócą AUTO_POST, błąd NIP → BLOCK"
-
-[edge_cases.negative_amount]
-condition = "amount_gross < 0"
-expected_behavior = "BLOCK — faktura z ujemną kwotą"
-override = "Natychmiastowa blokada, nie uruchamiaj DecisionEngine"
-
-[edge_cases.currency_mismatch]
-condition = "Waluta faktury różni się od waluty kontrahenta"
-expected_behavior = "ASK_USER — zapytaj użytkownika"
-override = "Nie zgaduj — pokaż użytkownikowi obie waluty"
-
-# =============================================================================
-# SŁOWNIK POJĘĆ
-# =============================================================================
-
-[glossary]
-AUTO_POST = "Automatyczne księgowanie — wysoki trust score, brak zastrzeżeń"
-SUGGEST = "Sugestia dla użytkownika — średni trust, drobne zastrzeżenia"
-ASK_USER = "Zapytanie użytkownika — niski trust, wymagana decyzja człowieka"
-BLOCK = "Blokada — krytyczne błędy, duplikaty, bezpieczeństwo"
-
-green_zone = "Strefa zielona — AUTO_POST, wysoki trust, znany kontrahent"
-yellow_zone = "Strefa żółta — SUGGEST/ASK_USER, średni trust"
-red_zone = "Strefa czerwona — BLOCK, niski trust, bezpieczeństwo"
-
-decision_engine = "DecisionEngine — SQL/DuckDB first-match-wins silnik decyzyjny (wg aa3fvcx.txt)"
-facts_aggregator = "FactsAggregator — warstwa RAG zbierająca dane z SQLite, DuckDB, sqlite-vec, TigerBeetle"
+# ── License expired ──
+[emergency.license_expired]
+action = "CRITICAL"
+message = "Licencja wygasła. Aplikacja zostanie zatrzymana. Proszę o odnowienie licencji."
+confidence = 0.0

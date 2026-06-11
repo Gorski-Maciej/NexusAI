@@ -15,6 +15,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 use pyo3::prelude::*;
+use pyo3::types::PyBytes;
 
 // ── AEAD (ChaCha20-Poly1305) ─────────────────────────────────────────────────
 mod aead {
@@ -118,9 +119,10 @@ mod digest {
 /// Returns:
 ///     Ciphertext bytes: nonce (12B) || encrypted data.
 #[pyfunction]
-fn encrypt(key: &[u8], plaintext: &[u8]) -> PyResult<Vec<u8>> {
-    aead::encrypt(key, plaintext)
-        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e))
+fn encrypt(py: Python<'_>, key: &[u8], plaintext: &[u8]) -> PyResult<Py<PyBytes>> {
+    let ciphertext = aead::encrypt(key, plaintext)
+        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e))?;
+    Ok(PyBytes::new_bound(py, &ciphertext).into())
 }
 
 /// Decrypt data encrypted with `encrypt`.
@@ -132,9 +134,10 @@ fn encrypt(key: &[u8], plaintext: &[u8]) -> PyResult<Vec<u8>> {
 /// Returns:
 ///     Decrypted plaintext (bytes).
 #[pyfunction]
-fn decrypt(key: &[u8], data: &[u8]) -> PyResult<Vec<u8>> {
-    aead::decrypt(key, data)
-        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e))
+fn decrypt(py: Python<'_>, key: &[u8], data: &[u8]) -> PyResult<Py<PyBytes>> {
+    let plaintext = aead::decrypt(key, data)
+        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e))?;
+    Ok(PyBytes::new_bound(py, &plaintext).into())
 }
 
 /// Hash a password using Argon2id.
@@ -206,7 +209,7 @@ fn derive_key(password: &str, salt: Option<&[u8]>) -> PyResult<(Vec<u8>, Vec<u8>
 
 /// Python module definition.
 #[pymodule]
-fn _core(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn nexus_crypto(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(encrypt, m)?)?;
     m.add_function(wrap_pyfunction!(decrypt, m)?)?;
     m.add_function(wrap_pyfunction!(hash_password, m)?)?;

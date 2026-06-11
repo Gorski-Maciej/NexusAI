@@ -235,6 +235,22 @@ warn_unused_ignores = false
 [tool.crosshair]
 max_examples = 200
 
+# ── Alembic — database migrations (config in pyproject.toml, no alembic.ini) ────
+# Zgodnie z aa3fvcx.txt: konfiguracja Alembic w pyproject.toml zamiast osobnego pliku.
+# env.py odczytuje script_location i inne ustawienia z [tool.alembic].
+# Fallback: jeśli sekcja nie istnieje, env.py używa własnych domyślnych ścieżek.
+[tool.alembic]
+script_location = "nexus_ai/db/migrations"
+# sqlalchemy.url resolved at runtime by env.py via AppConfig — not hardcoded here
+file_template = "%%(rev)s_%%(slug)s"
+timezone = "UTC"
+# Post-write hooks (formatting after autogenerate)
+post_write_hooks = "ruff"
+post_write_hooks_ruff_type = "console_scripts"
+post_write_hooks_ruff_entrypoint = "ruff"
+post_write_hooks_ruff_options = "check --fix"
+
+
 # ── Nuitka — compile Python to standalone .exe (single file) ─────────────────
 # Zgodnie z aa3fvcx.txt: Nuitka kompiluje całą aplikację z wszystkimi
 # zależnościami do pojedynczego pliku .exe z wkompilowanym mimalloc.
@@ -297,7 +313,7 @@ include-package = [
 # ── Data directories (dołączane do .exe) ─────────────────────────────────
 include-data-dir = [
     # Tylko katalogi z danymi NIE-Pythonowymi — kod źródłowy jest kompilowany przez Nuitka
-    "nexus_ai/config/=nexus_ai/config/",  # Pliki konfiguracyjne (TOML, JSON)
+    "nexus_ai/config/=nexus_ai/config/",  # Pliki konfiguracyjne (TOML, JSON) wewnątrz pakietu
     "app_data/=app_data/",               # Runtime data (puste na start)
     "assets/=assets/",                   # Ikony i loga
     "nexus_ai/db/migrations/=nexus_ai/db/migrations/",  # Alembic migracje (SQL templates)
@@ -305,8 +321,8 @@ include-data-dir = [
 
 # ── Include specific files ───────────────────────────────────────────────
 include-data-files = [
-    "alembic.ini=alembic.ini",
     "pyproject.toml=pyproject.toml",
+    # alembic.ini usunięty — konfiguracja Alembic w [tool.alembic] pyproject.toml
     "README.md=README.md",
 ]
 

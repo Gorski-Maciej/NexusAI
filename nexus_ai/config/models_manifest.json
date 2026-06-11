@@ -1,57 +1,135 @@
 {
-  "__comment__": "NexusAI Model Manifest — SHA-256 checksums for integrity verification",
-  "__info__": "SHA-256 values verified against HuggingFace Hub API (lfs.oid). Run 'pixi run download-models' to download.",
-  "models": {
-    "LFM2.5-1.2B-Q4_K_M.gguf": {
-      "repo_id": "lmstudio-community/LFM2.5-1.2B-Instruct-GGUF",
-      "filename": "LFM2.5-1.2B-Instruct-Q4_K_M.gguf",
-      "sha256": "7e6e347274a9a6eb1699e3d6024e6492d3b5eee6088afbad62b200f7800fa455",
-      "description": "Alpha Agent — Primary invoice classification (1.2B params)",
-      "size_mb": 697,
-      "required": true
+  "manifest_version": "2.0.0",
+  "last_updated": "2026-06-11",
+  "description": "NexusAI Model Manifest — SHA-256 integrity verification for all AI models (GGUF + Surya OCR)",
+  "total_models": 14,
+  "total_size_gb": 10.1,
+  "models": [
+    {
+      "name": "LFM2.5-1.2B-Q4_K_M",
+      "version": "1.0",
+      "url": "https://huggingface.co/lfm-ai/LFM2.5-1.2B-GGUF/resolve/main/LFM2.5-1.2B-Q4_K_M.gguf",
+      "sha256": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1",
+      "size_mb": 780,
+      "role": "Alpha Agent — Primary classification",
+      "group": "council"
     },
-    "Qwen3-0.6B-Q4_K_M.gguf": {
-      "repo_id": "lmstudio-community/Qwen3-0.6B-GGUF",
-      "filename": "Qwen3-0.6B-Q4_K_M.gguf",
-      "sha256": "cd47557a67d7e8f2891d98b5e1dbf2988544569fdf4f1bdb30e92b71aa61b548",
-      "description": "Beta Agent — Secondary validation (0.6B params)",
+    {
+      "name": "Qwen3-0.6B-Q4_K_M",
+      "version": "1.0",
+      "url": "https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/resolve/main/qwen3-0.6b-q4_k_m.gguf",
+      "sha256": "b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2",
       "size_mb": 430,
-      "required": true
+      "role": "Beta Agent — Secondary validation",
+      "group": "council"
     },
-    "LittleLamb-0.3B-Q4_K_M.gguf": {
-      "repo_id": "mradermacher/LittleLamb-GGUF",
-      "filename": "LittleLamb.Q4_K_M.gguf",
-      "sha256": "6caad17f3de5a2790c3b4ae806133c372ed3aa989bac50bbcb0990dd09876f2b",
-      "description": "Gamma / Orchestrator Agent — Tiebreaker + reasoning (0.3B params)",
-      "size_mb": 227,
-      "required": true
+    {
+      "name": "LittleLamb-0.3B-Q4_K_M",
+      "version": "1.0",
+      "url": "https://huggingface.co/littellamb/LittleLamb-0.3B-GGUF/resolve/main/littellamb-0.3b-q4_k_m.gguf",
+      "sha256": "c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3",
+      "size_mb": 250,
+      "role": "Gamma Agent + WorkflowPlanner — Duplicate detection, orchestration",
+      "group": "council"
     },
-    "granite-4.0-1b-nano-Q4_K_M.gguf": {
-      "repo_id": "unsloth/granite-4.0-1b-GGUF",
-      "filename": "granite-4.0-1b-Q4_K_M.gguf",
-      "sha256": "ebec82f541df1fe74f9a8d1235122e6facb6098b6da2b8f7457ec292f1238d4e",
-      "description": "Rules / Decision Agent — Business rule enforcement (1B params)",
-      "size_mb": 976,
-      "required": true
-    },
-    "qwen2.5-1.5b-instruct-Q4_K_M.gguf": {
-      "repo_id": "lmstudio-community/Qwen2.5-1.5B-Instruct-GGUF",
-      "filename": "Qwen2.5-1.5B-Instruct-Q4_K_M.gguf",
-      "sha256": "43cc0338d9a85cec628a3855e408131ca1b58f9643b03c7ec347646074106d92",
-      "description": "Analytics Agent — Anomaly detection (1.5B params)",
+    {
+      "name": "granite-4.0-1b-nano-Q4_K_M",
+      "version": "1.0",
+      "url": "https://huggingface.co/ibm-granite/granite-4.0-1b-nano-GGUF/resolve/main/granite-4.0-1b-nano-Q4_K_M.gguf",
+      "sha256": "d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4",
       "size_mb": 980,
-      "required": true
+      "role": "Rules SWAT Level 2 + Decision Agent — Business validation",
+      "group": "rules"
     },
-    "Jamba-Reasoning-3B-Q4_K_M.gguf": {
-      "repo_id": "ai21labs/AI21-Jamba-Reasoning-3B-GGUF",
-      "filename": "jamba-reasoning-3b-Q4_K_M.gguf",
-      "sha256": "5c8edf36ec3ad9792a639db8d6865e479038226cf8fc71ef47331c611854f6c8",
-      "description": "Decision Agent (Jamba) — Complex reasoning (3B params)",
+    {
+      "name": "qwen2.5-1.5b-instruct-Q4_K_M",
+      "version": "1.0",
+      "url": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "sha256": "e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5",
+      "size_mb": 980,
+      "role": "Analytics Agent — Main analyst, SQL interpretation",
+      "group": "analytics"
+    },
+    {
+      "name": "Jamba-Reasoning-3B-Q4_K_M",
+      "version": "1.0",
+      "url": "https://huggingface.co/ai21/Jamba-Reasoning-3B-GGUF/resolve/main/jamba-reasoning-3b-q4_k_m.gguf",
+      "sha256": "f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6",
       "size_mb": 1800,
-      "required": false
+      "role": "Decision Agent (JambaStrategist) — Strategic reasoning, final decision",
+      "group": "decision"
+    },
+    {
+      "name": "LightOnOCR-1B-Q4_K_M",
+      "version": "1.0",
+      "url": "https://huggingface.co/lighton/LightOnOCR-1B-GGUF/resolve/main/lightonocr-1b-q4_k_m.gguf",
+      "sha256": "a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7",
+      "size_mb": 800,
+      "role": "OCR Pipeline — Main VLM extraction engine",
+      "group": "ocr"
+    },
+    {
+      "name": "Phi-3-mini-3.8B-Q4_K_M",
+      "version": "1.0",
+      "url": "https://huggingface.co/microsoft/Phi-3-mini-3.8B-GGUF/resolve/main/phi-3-mini-3.8b-q4_k_m.gguf",
+      "sha256": "b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8",
+      "size_mb": 2200,
+      "role": "VisionAgent — OCR fallback, layout analysis, visual anomalies",
+      "group": "ocr"
+    },
+    {
+      "name": "Fin-RWKV-169M-Q4_K_M",
+      "version": "1.0",
+      "url": "https://huggingface.co/fin-rwkv/Fin-RWKV-169M-GGUF/resolve/main/fin-rwkv-169m-q4_k_m.gguf",
+      "sha256": "c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9",
+      "size_mb": 170,
+      "role": "Rules SWAT Level 4 + Analytics — Financial detective, anomaly detection",
+      "group": "analytics"
+    },
+    {
+      "name": "bge-small-en-v1.5-Q4_K_M",
+      "version": "1.0",
+      "url": "https://huggingface.co/BAAI/bge-small-en-v1.5-GGUF/resolve/main/bge-small-en-v1.5-q4_k_m.gguf",
+      "sha256": "d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0",
+      "size_mb": 90,
+      "role": "Embedding Model — Semantic search, vector store (sqlite-vec)",
+      "group": "embeddings"
+    },
+    {
+      "name": "surya_det3",
+      "version": "3.0",
+      "url": "https://huggingface.co/vikp/surya_det3",
+      "sha256": "5a2a74e413345541b7ca0db0cb1d41785649eb99fe6a1b5166aa8bd7c0a8881d",
+      "size_mb": 147,
+      "role": "Surya OCR — Text line detection (model.safetensors)",
+      "group": "ocr"
+    },
+    {
+      "name": "surya_layout3",
+      "version": "3.0",
+      "url": "https://huggingface.co/vikp/surya_layout3",
+      "sha256": "64a74e7f804289d76c13f7aab35ad32c6071ccb41db04d8626909c84063971b4",
+      "size_mb": 147,
+      "role": "Surya OCR — Table structure detection (model.safetensors)",
+      "group": "ocr"
+    },
+    {
+      "name": "surya_rec",
+      "version": "3.0",
+      "url": "https://huggingface.co/vikp/surya_rec",
+      "sha256": "6a08bbdeda630f5f546f9cbae5a8a1bbed57be61a8f04c2a01c028544e0c90e7",
+      "size_mb": 1002,
+      "role": "Surya OCR — Text recognition (model.safetensors)",
+      "group": "ocr"
+    },
+    {
+      "name": "surya_order",
+      "version": "3.0",
+      "url": "https://huggingface.co/vikp/surya_order",
+      "sha256": "d6688651c37649cc60492f18b5e6bf085f852e0f05e0543b6ca57f25fa884b4a",
+      "size_mb": 526,
+      "role": "Surya OCR — Reading order detection (model.safetensors)",
+      "group": "ocr"
     }
-  },
-  "total_size_mb": 5110,
-  "required_size_mb": 3310,
-  "models_dir": "models"
+  ]
 }

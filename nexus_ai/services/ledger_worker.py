@@ -9,7 +9,6 @@ Zgodnie z aa3fvcx.txt:
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass
 from typing import Protocol
 
 import pendulum
@@ -32,11 +31,6 @@ class PeriodLockedException(Exception):
 
 class TaxClassifierAgent(Protocol):
     def classify(self, payload: dict, company_policy: dict) -> dict: ...
-
-
-@dataclass(slots=True)
-# Alias dla kompatybilności wstecznej
-RobotonWorker = LedgerWorker
 
 
 class SimpleRuleBasedAgent:
@@ -131,3 +125,7 @@ class LedgerWorker:
         self.session.commit()
         self.session.refresh(transfer)
         return transfer
+
+
+# Alias dla kompatybilności wstecznej — po zdefiniowaniu LedgerWorker
+RobotonWorker = LedgerWorker
