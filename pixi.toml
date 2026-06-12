@@ -128,44 +128,39 @@ sentry-sdk = ">=2.0.0"        # Error tracking SDK
 linux = "2.27"
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Tasks — komendy runtime (dostępne w każdym środowisku)
+# Activation — zmienne środowiskowe przy pixi run / pixi shell
+# ══════════════════════════════════════════════════════════════════════════════
+# Te zmienne są automatycznie ustawiane przy każdym `pixi run` lub `pixi shell`.
+# Dzięki temu środowisko pixi ma te same zmienne co mise.toml [env].
+# {PIXI_PROJECT_ROOT} to zmienna pixi wskazująca na katalog projektu.
+
+[activation.env]
+NEXUS_LOG_LEVEL = "info"
+NEXUS_HOST = "127.0.0.1"
+NEXUS_PORT = "8000"
+NEXUS_DB_PATH = "${PIXI_PROJECT_ROOT}/app_data/nexus.db"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Tasks — komendy ORKIESTRACJI środowiska (pixi-specific)
+# ══════════════════════════════════════════════════════════════════════════════
+#
+# UWAGA: Większość tasków dev (test, lint, build, migrate, seed, itp.) została
+# przeniesiona do mise.toml — mise jest teraz głównym task runnerem projektu.
+# pixi.toml zawiera tylko taski, które są specyficznie związane z zarządzaniem
+# środowiskiem pixi:
+#   - shell      — aktywacja shella pixi
+#   - gen-requirements — generowanie requirements.txt
+#   - build-nuitka-win — build Windows z Inno Setup (wymaga pixi environment)
+#   - build-rust-release — build .whl przez maturin (wymaga pixi environment)
+#
+# Do uruchamiania dev, testów, lintera, buildów itp. używaj:
+#   mise run dev
+#   mise run test
+#   mise run lint
+#
 # ══════════════════════════════════════════════════════════════════════════════
 
 [tasks]
-
-# ── Serwer API ──────────────────────────────────────────────────────────────
-api = { cmd = "python -m nexus_ai.api.server", description = "Uruchom serwer API (Granian + Litestar)" }
-api-dev = { cmd = "granian --reload --host 127.0.0.1 --port 8000 nexus_ai.api.app:create_app", description = "Uruchom serwer API z hot-reload (Granian)" }
-
-# ── Worker (przetwarzanie zadań w tle) ──────────────────────────────────────
-worker = { cmd = "python -m nexus_ai.luz.worker", description = "Uruchom worker Taskiq + NATS" }
-
-# ── Desktop (interfejs Flet) ────────────────────────────────────────────────
-desktop = { cmd = "python -m nexus_ai.luz.main", description = "Uruchom interfejs desktopowy (Flet)" }
-
-# ── CLI ─────────────────────────────────────────────────────────────────────
-nexus = { cmd = "python -m nexus_ai.scripts.nexus_cli", description = "NexusAI CLI — zarządzanie systemem" }
-doctor = { cmd = "python -m nexus_ai.scripts.doctor", description = "Diagnostyka systemu" }
-bootstrap = { cmd = "python -m nexus_ai.scripts.bootstrap", description = "Inicjalizacja środowiska (pierwsze uruchomienie)" }
-
-# ── Migracje bazy danych ───────────────────────────────────────────────────
-migrate = { cmd = "alembic upgrade head", description = "Wykonaj migracje bazy danych (Alembic)" }
-migrate-new = { cmd = "alembic revision --autogenerate -m", description = "Wygeneruj nową migrację (podaj opis: pixi run migrate-new 'dodaj_pole')" }
-migrate-check = { cmd = "alembic check", description = "Sprawdź czy są niezatwierdzone migracje" }
-
-# ── Modele AI ──────────────────────────────────────────────────────────────
-download-models = { cmd = "python -m nexus_ai.scripts.download_models", description = "Pobierz wszystkie modele AI (GGUF)" }
-
-# ── Pobranie binariów systemowych ──────────────────────────────────────────
-download-binaries = { cmd = "python -m nexus_ai.scripts.setup_env", description = "Pobierz NATS Server i TigerBeetle" }
-
-# ── Lint / Format (wymaga ruff, dostępne przez pixi run --environment dev) ──
-format = { cmd = "ruff format nexus_ai/", description = "Auto-formatuj kod Python przez Ruff" }
-format-check = { cmd = "ruff format --check nexus_ai/", description = "Sprawdź formatowanie bez modyfikacji" }
-
-# ── Czyszczenie ──────────────────────────────────────────────────────────────
-clean = { cmd = "rm -rf build/ dist/ *.egg-info/ .pytest_cache/ .mypy_cache/ __pycache__/", description = "Wyczyść artefakty builda" }
-clean-all = { cmd = "rm -rf build/ dist/ *.egg-info/ .pytest_cache/ .mypy_cache/ __pycache__/ app_data/", description = "Wyczyść wszystko (łącznie z danymi)" }
 
 # ── Shell ────────────────────────────────────────────────────────────────────
 shell = { cmd = "$SHELL || cmd || pwsh", description = "Aktywuj shell w środowisku pixi" }
@@ -206,32 +201,40 @@ semgrep = ">=1.40.0"
 
 [feature.dev.tasks]
 # ── Testowanie ──────────────────────────────────────────────────────────────
-test = { cmd = "pytest -x -v --timeout=30", description = "Uruchom wszystkie testy (zatrzymaj przy pierwszym błędzie)" }
-test-all = { cmd = "pytest -v --timeout=30", description = "Uruchom wszystkie testy" }
-test-coverage = { cmd = "pytest --cov=nexus_ai --cov-report=term-missing", description = "Testy z raportem pokrycia" }
-test-parallel = { cmd = "pytest -x -v -n auto --timeout=30", description = "Testy równoległe (wszystkie rdzenie)" }
+# (przeniesione do mise.toml — używaj: mise run test)
 
-# ── Lintowanie i formatowanie ───────────────────────────────────────────────
-lint = { cmd = "ruff check nexus_ai/", description = "Sprawdź kod linterem Ruff" }
-format = { cmd = "ruff format nexus_ai/", description = "Auto-formatuj kod przez Ruff" }
-format-check = { cmd = "ruff format --check nexus_ai/", description = "Sprawdź formatowanie kodu (CI — tylko sprawdzenie bez modyfikacji)" }
-typecheck = { cmd = "mypy nexus_ai/", description = "Sprawdź typy przez mypy" }
+# ── Build — kompilacja do .exe z instalatorem Windows (pixi-specific) ──────
+# build-nuitka-win — zdefiniowane jako sub-table [feature.dev.tasks.build-nuitka-win] poniżej
 
-# ── Build — kompilacja do .exe (Nuitka) ────────────────────────────────────
-build-nuitka = { cmd = "python -m nuitka --project-name=nexus-ai main.py", description = "Skompiluj aplikację do .exe (Nuitka)" }
-build-nuitka-fast = { cmd = "python -m nuitka --project-name=nexus-ai --mode=standalone --low-memory main.py", description = "Szybki build (standalone folder, niska pamięć)" }
-build-nuitka-win = { cmd = "python -m nuitka --project-name=nexus-ai main.py && iscc nexus_ai/installer/build_scripts/setup.iss", description = "Skompiluj .exe + stwórz instalator Windows" }
+# ── Build — moduł Rust (pixi-specific: koło .whl) ──────────────────────────
+# build-rust-release — zdefiniowane jako sub-table [feature.dev.tasks.build-rust-release] poniżej
 
-# ── Build — moduł Rust (nexus-crypto) ──────────────────────────────────────
-build-rust = { cmd = "cd nexus_ai/rust && maturin develop --release", description = "Skompiluj nexus-crypto (Rust + PyO3)" }
-build-rust-release = { cmd = "cd nexus_ai/rust && maturin build --release", description = "Skompiluj nexus-crypto (koło binarne .whl)" }
+# ── Narzędzia (pixi-specific) ───────────────────────────────────────────────
+gen-requirements = "uv export --format requirements-txt -o requirements.txt"
 
-# ── Security scanning — Semgrep SAST ────────────────────────────────────
-security-scan = { cmd = "python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy lenient", description = "Skanowanie bezpieczeństwa kodu (Semgrep SAST)" }
-security-scan-strict = { cmd = "python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy strict", description = "Skanowanie bezpieczeństwa (tryb ścisły — 0 wysokich, 0 średnich)" }
+# ── Platform-specific: build-nuitka-win (tylko win-64) ───────────────────
+# Task dostępny tylko na Windows — Nuitka kompiluje .exe, Inno Setup tworzy instalator.
+# Uruchom: pixi run --environment dev build-nuitka-win
+[feature.dev.tasks.build-nuitka-win]
+cmd = "python -m nuitka --project-name=nexus-ai main.py && iscc nexus_ai/installer/build_scripts/setup.iss"
+description = "Skompiluj .exe + stwórz instalator Windows"
+platforms = ["win-64"]
 
-# ── Narzędzia ───────────────────────────────────────────────────────────────
-gen-requirements = "uv pip compile pyproject.toml -o requirements.txt"
+# ── Task caching: build-rust-release ────────────────────────────────────
+# Cache unieważniany gdy zmienią się źródła Rust, Cargo.toml lub Cargo.lock.
+# Wynikowe .whl są przechowywane jako outputs — jeśli istnieją i inputs się
+# nie zmieniły, pixi pomija wykonanie taska.
+# Uruchom: pixi run --environment dev build-rust-release
+[feature.dev.tasks.build-rust-release]
+cmd = "cd nexus_ai/rust && maturin build --release"
+description = "Skompiluj nexus-crypto (koło binarne .whl)"
+inputs = [
+    "nexus_ai/rust/src/**/*.rs",
+    "nexus_ai/rust/Cargo.toml",
+    "nexus_ai/rust/Cargo.lock",
+    "nexus_ai/rust/pyproject.toml",
+]
+outputs = ["nexus_ai/rust/target/wheels/nexus_crypto-*.whl"]
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Environments

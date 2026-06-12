@@ -18,6 +18,13 @@ pixi run api
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv pip install -r requirements.txt
 python -m api.server
+
+# ── Mise — główny task runner ──────────────────────────────────────────────
+mise run dev                    # Dev: NATS + TB + API + Worker
+mise run test                   # Uruchom testy
+mise run doctor                 # Diagnostyka systemu
+MISE_ENV=prod mise run api      # Produkcja: API na 0.0.0.0:8000
+MISE_ENV=prod mise run migrate  # Migracje w produkcji
 ```
 
 ---
@@ -52,9 +59,106 @@ python -m api.server
 | Technologia | Wersja | Lokalizacja | Opis |
 |---|---|---|---|
 | **Python (free-threaded)** | ≥3.13t | `pixi.toml`, `pyproject.toml` | CPython 3.13 bez GIL — prawdziwa wielowątkowość, współdzielona pamięć, -30-40% RAM |
-| **pixi** | latest | `pixi.toml` | **Menedżer środowiska "wszystko w jednym"** (Rust) — Python, PyPI, zależności systemowe, bez Dockera |
-| **uv (Astral)** | ≥0.5 | `pyproject.toml` | Najszybszy menedżer pakietów PyPI (Rust) — wbudowany w pixi |
-| **mise** | (opcjonalnie) | — | Globalny przełącznik wersji Pythona dla developera |
+| **pixi** | latest | `pixi.toml` | **Menedżer środowiska "wszystko w jednym"** (Rust) — Python, PyPI, zależności systemowe, bez Dockera. Obsługuje: `[activation.env]` (zmienne środowiskowe), `pixi exec` (ad-hoc narzędzia), `pixi tree` (wizualizacja zależności), `pixi install --locked` (deterministyczne środowisko), task caching z inputs/outputs. |
+| **uv (Astral)** | ≥0.5 | `pyproject.toml`, `uv.lock` | **Najszybszy menedżer pakietów PyPI (Rust)** — 10-100× szybszy od pip. `uv sync` → synchronizacja środowiska, `uv lock` → deterministyczny lockfile, `uv run` → uruchom w środowisku, `uv tool` → globalne narzędzia (zamiennik pipx), `uv python` → zarządzanie wersjami Pythona. Wbudowany w pixi, działa też samodzielnie. |
+| **mise** | ≥2024.11 | `mise.toml`, `mise.local.toml`, `mise.prod.toml` | **Menedżer wersji + task runner + environment manager** (Rust). Zastępuje: pyenv, asdf, make, just, direnv, dotenv. DAG dependencies, watch mode, file tasks, hierarchia configów (`MISE_ENV={env}` → `mise.{env}.toml`). |
+
+### pixi — szybki start
+```bash
+# Instalacja
+curl -fsSL https://pixi.sh/install.sh | sh
+
+# Podstawowe użycie
+pixi install                     # Instaluj środowisko
+pixi run python                  # Uruchom w środowisku
+pixi shell                       # Aktywuj shell w środowisku
+
+# Zaawansowane funkcje
+pixi install --locked            # Deterministyczna instalacja (wymaga zgodnego lockfile'a)
+pixi info                        # Diagnostyka środowiska
+pixi tree                        # Drzewo zależności — debugowanie wersji
+pixi exec --spec ruff ruff check # Uruchom narzędzie w ad-hoc środowisku
+pixi clean                       # Wyczyść cache
+pixi run --environment dev test  # Uruchom w środowisku deweloperskim
+pixi shell-hook                  # Hook dla VS Code / IDE
+```
+
+### pixi shell-hook — integracja z VS Code
+
+`pixi shell-hook` wypisuje komendy shella potrzebne do aktywacji środowiska pixi.
+Przydaje się do integracji z IDE, które nie uruchamiają `pixi shell` bezpośrednio.
+
+**VS Code — Python interpreter:**
+
+Utwórz `.vscode/settings.json`:
+```json
+{
+    "python.defaultInterpreterPath": ".pixi/envs/default/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "files.watcherExclude": {
+        ".pixi/**": true,
+        "**/.pixi/**": true
+    },
+    "search.exclude": {
+        ".pixi/**": true
+    }
+}
+```
+
+**VS Code — wybór środowiska przez `pixi shell-hook`:**
+
+Jeśli VS Code nie znajduje automatycznie interpretera, możesz użyć:
+```bash
+# Terminal VS Code — aktywuj środowisko pixi
+source <(pixi shell-hook)
+
+# Dla fish shell:
+pixi shell-hook | source
+
+# Dla PowerShell:
+pixi shell-hook | Invoke-Expression
+```
+
+Możesz też dodać skrypt aktywacyjny do `.bashrc`/`.zshrc`:
+```bash
+# ~/.bashrc lub ~/.zshrc — automatyczna aktywacja NexusAI
+if [ -f "$HOME/NexusAI/pixi.toml" ]; then
+    alias nexus="cd $HOME/NexusAI && source <(pixi shell-hook)"
+fi
+```
+
+### uv — szybki start
+```bash
+# Synchronizacja środowiska (alternatywa dla pixi install)
+uv sync
+
+# Uruchom komendę w środowisku (auto-sync przed startem)
+uv run pytest
+uv run python -m nexus_ai.scripts.doctor
+
+# Generowanie/aktualizacja lockfile
+uv lock
+
+# Eksport do requirements.txt
+uv export --format requirements-txt -o requirements.txt
+
+# Zarządzanie narzędziami (zamiennik pipx)
+uv tool install ruff
+uvx ruff check                 # Jednorazowe uruchomienie
+
+# Zarządzanie Pythonem (zamiennik pyenv)
+uv python list
+uv python install 3.13
+```
+
+Taski uv w `mise.toml`:
+```bash
+mise run uv-sync          # Synchronizuj środowisko
+mise run uv-lock          # Generuj uv.lock
+mise run uv-export        # Eksportuj do requirements.txt
+mise run uv-cache-clean   # Wyczyść cache
+```
 
 ### Python 3.13t — dlaczego to rewolucja
 - Wszystkie zadania równoległe (AI, OCR, DB, UI) jako zwykłe wątki w jednym procesie
@@ -505,6 +609,9 @@ Wszystkie serwisy API implementują `async def close()` dla poprawnego zamykania
 
 | Plik | Funkcja |
 |---|---|
+| `mise.toml` | Bazowa konfiguracja mise — narzędzia, taski, env (commitowana) |
+| `mise.prod.toml` | Nadpisania produkcyjne mise (ładowane przez `MISE_ENV=prod`) |
+| `mise.local.toml` | Lokalne nadpisania mise (gitignorowany, najwyższy priorytet) |
 | `pixi.toml` | Menedżer środowiska — Python, PyPI, zależności systemowe |
 | `pyproject.toml` | Konfiguracja pakietu, build, narzędzia |
 | `requirements.txt` | Lista zależności PyPI (dla uv/pip) |
@@ -522,7 +629,7 @@ Wszystkie serwisy API implementują `async def close()` dla poprawnego zamykania
 
 | Kategoria | Liczba technologii | Zmiana |
 |---|---|---|
-| Runtime i Narzędzia | 4 | +pixi, +mise, Python 3.13t |
+| Runtime i Narzędzia | 4 | +pixi, +mise, Python 3.13t — **mise jako kręgosłup DX, nie opcjonalny dodatek** |
 | Kompilacja i Build | 6 | **Nowa kategoria** — hatchling, mypyc, PyO3, Rust, mimalloc, Nuitka |
 | API / Serwer ASGI | 3 | Granian zamiast Uvicorn |
 | Bazy Danych | 8 | sqlite-vec zamiast LanceDB, SQLModel zamiast SQLAlchemy+Pydantic |

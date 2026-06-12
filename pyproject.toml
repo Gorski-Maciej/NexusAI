@@ -150,7 +150,7 @@ dev = [
     "pytest>=8.0.0",
     "pytest-anyio>=0.1.0",  # Natywna asynchroniczność na anyio (zamiast pytest-asyncio)
     "pytest-cov>=5.0.0",
-    "crosshair>=0.1.0",      # Property-based testing z SMT solverem (zamiast hypothesis głównie)
+    "crosshair>=0.1.0.dev0",  # Property-based testing z SMT solverem (tylko dev version on PyPI)
     "hypothesis>=6.100.0",  # Zachowany dla złożonych property-based tests (test_property_based.py)
     "ruff>=0.3.0",
     "mypy>=1.8.0",
@@ -227,6 +227,24 @@ python_version = "3.13"
 strict = false
 ignore_missing_imports = true
 warn_unused_ignores = false
+
+# ── uv (Astral) — najszybszy menedżer pakietów PyPI ──────────────────────────
+# uv jest wbudowany w pixi, ale może być używany samodzielnie:
+#   uv sync              # Synchronizuj środowisko z uv.lock
+#   uv lock              # Generuj/aktualizuj uv.lock
+#   uv run pytest        # Uruchom testy w środowisku
+#   uv export -o req.txt # Eksportuj lockfile do requirements.txt
+#
+# UWAGA: Dev dependencies są zdefiniowane w [project.optional-dependencies].dev
+# (PEP 621) — to jest canonical source of truth. pixi używa własnej sekcji
+# [feature.dev.pypi-dependencies] w pixi.toml dla zależności systemowych.
+#
+# Przykład użycia z uv:
+#   uv sync --dev          # Instaluje dev z [project.optional-dependencies].dev
+#   uv sync --group dev    # To samo, alias
+#
+[tool.uv.sources]
+nexus-crypto = { path = "./nexus_ai/rust", editable = true }
 
 # ── crosshair (property-based testing) ───────────────────────────────────────
 # Zastępuje: hypothesis

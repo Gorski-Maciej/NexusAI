@@ -1,52 +1,402 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# mise.toml — NexusAI Version & Task Manager
+# mise.toml — NexusAI Version, Task, and Environment Manager
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# Zgodnie z aa3fvcx.txt: mise (dawniej rtx) to ultra-lekki, napisany w Rust
-# menedżer wersji i task runner. Zastępuje: pyenv, asdf, make, just.
+# mise (dawniej rtx) to ultra-lekki, napisany w Rust menedżer wersji, task
+# runner i environment manager. Zastępuje: pyenv, asdf, make, just, direnv,
+# dotenv.
 #
 # Instalacja:
-#   curl https://mise.jdx.dev/install.sh | sh
-#   mise install      # Pobiera wszystkie zdefiniowane narzędzia
+#   curl https://mise.run | sh
+#   mise install                              # Pobiera wszystkie zdefiniowane narzędzia
 #
 # Użycie:
-#   mise run dev      # Uruchom środowisko deweloperskie
-#   mise x -- python  # Uruchom Python w środowisku mise
+#   mise run dev                              # Uruchom środowisko deweloperskie
+#   mise run test -- --coverage               # Uruchom testy z parametrami
+#   mise x -- python                          # Uruchom Python w środowisku mise
+#   mise exec nats-server@2.10 -- nats-server  # Uruchom narzędzie w określonej wersji
+#
+# ── Hierarchia konfiguracji ─────────────────────────────────────────────────
+#
+# mise ładuje konfiguracje w następującej kolejności (późniejszy nadpisuje
+# wcześniejszy). Użyj zmiennej środowiskowej MISE_ENV do przełączania między
+# środowiskami:
+#
+#   MISE_ENV=prod mise run api                 # API w produkcji
+#   MISE_ENV=prod mise run migrate             # Migracje w produkcji
+#   MISE_ENV=dev  mise run dev                 # Dev (domyślnie)
+#
+#   Kolejność ładowania:
+#     1. mise.toml         (bazowa, commitowana)
+#     2. mise.{MISE_ENV}.toml  (środowiskowa, np. mise.prod.toml)
+#     3. mise.local.toml   (lokalna, gitignorowana — najwyższy priorytet)
+#
 # ═══════════════════════════════════════════════════════════════════════════════
 
-[tools]
-# ── Runtime ─────────────────────────────────────────────────────────────────
-python = "3.13"                    # Python ≥3.13 (free-threaded)
-rust = "latest"                    # Rust toolchain dla PyO3/Maturin
+# ── Ustawienia mise ───────────────────────────────────────────────────────────
+[settings]
+jobs = 4                         # Maksymalnie 4 równoległe instalacje/downloady
+trusted_config_paths = ["/"]   # Ufaj wszystkim configom (projekt lokalny)
 
-# ── Binarki systemowe ───────────────────────────────────────────────────────
-"nats-server" = "2.10"             # NATS JetStream broker (~10 MB)
-"tigerbeetle" = "0.16"            # TigerBeetle ledger (Zig)
+# ── Narzędzia (runtimes + binarki systemowe) ─────────────────────────────────
+[tools]
+python = "3.13"                  # Python ≥3.13 (free-threaded)
+rust = "latest"                  # Rust toolchain dla PyO3/Maturin
+"nats-server" = "2.10"           # NATS JetStream broker (~10 MB)
+"tigerbeetle" = "0.16"          # TigerBeetle ledger (Zig)
+
+# ── Zmienne środowiskowe ──────────────────────────────────────────────────────
+[env]
+NEXUS_LOG_LEVEL = "info"
+NEXUS_HOST = "127.0.0.1"
+NEXUS_PORT = "8000"
+NEXUS_DB_PATH = "{{config_root}}/app_data/nexus.db"
+NEXUS_UNIX_SOCKET = "/tmp/nexus-api.sock"
+NEXUS_WATCH_INTERVAL = "5"
+
+# ── Aliasy powłoki (dostępne w katalogu projektu) ────────────────────────────
+[shell_alias]
+na = "mise run start-nats"
+tb = "mise run start-tigerbeetle"
+dv = "mise run dev"
+ap = "mise run api"
+wk = "mise run worker"
+ts = "mise run test"
+ta = "mise run test-all"
+tc = "mise run test-coverage"
+bd = "mise run build-all"
+br = "mise run build-rust"
+bn = "mise run build-nuitka"
+mg = "mise run migrate"
+us = "mise run uv-sync"
+ul = "mise run uv-lock"
+ue = "mise run uv-export"
+uc = "mise run uv-cache-clean"
+uu = "mise run uv-upgrade"
+dp = "mise run deploy"
+dq = "mise run deploy-quick"
+dc = "mise run deploy-check"
+st = "mise run status"
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Tasks — definicje procesów
+# Tasks — definicje procesów (z DAG dependencies i description)
 # ══════════════════════════════════════════════════════════════════════════════
 
 [tasks]
 
 # ── Uruchamianie serwisów ──────────────────────────────────────────────────
-start-nats = "nats-server -p 4222 -js"
-start-tigerbeetle = "tigerbeetle start --addresses=3000 --cluster=0 data/tigerbeetle.bin"
+
+[tasks.start-nats]
+description = "Uruchom NATS JetStream broker na porcie 4222"
+run = "nats-server -p 4222 -js"
+
+[tasks.start-tigerbeetle]
+description = "Uruchom TigerBeetle ledger na porcie 3000"
+run = "tigerbeetle start --addresses=3000 --cluster=0 data/tigerbeetle.bin"
+
+[tasks.download-binaries]
+description = "Pobierz NATS Server i TigerBeetle (binarki systemowe)"
+run = "python -m nexus_ai.scripts.setup_env"
 
 # ── Środowisko deweloperskie ────────────────────────────────────────────────
-dev = """
-  mise run start-nats &
-  mise run start-tigerbeetle &
-  sleep 2
-  python main.py --mode all
-"""
+
+[tasks.dev]
+description = "Uruchom pełne środowisko: NATS + TigerBeetle + API + Worker"
+depends = ["start-nats", "start-tigerbeetle"]
+run = "python main.py --mode all"
+
+[tasks.api]
+description = "Uruchom tylko serwer API (Granian + Litestar)"
+run = "python main.py --mode api"
+
+[tasks.api-dev]
+description = "Uruchom serwer API z hot-reload (Granian)"
+run = "granian --reload --host 127.0.0.1 --port 8000 nexus_ai.api.app:create_app"
+
+[tasks.worker]
+description = "Uruchom tylko worker Taskiq + NATS"
+run = "python main.py --mode worker"
+
+[tasks.desktop]
+description = "Uruchom interfejs desktopowy (Flet)"
+run = "uv run python -m nexus_ai.luz.main"
+
+[tasks.nexus]
+description = "NexusAI CLI — zarządzanie systemem"
+run = "uv run python -m nexus_ai.scripts.nexus_cli"
+
+[tasks.bootstrap]
+description = "Inicjalizacja środowiska (pierwsze uruchomienie)"
+run = "python main.py --mode bootstrap"
+
+[tasks.doctor]
+description = "Diagnostyka systemu — sprawdź wszystkie komponenty"
+run = "uv run python -m nexus_ai.scripts.doctor"
 
 # ── Build ────────────────────────────────────────────────────────────────────
-build-rust = "cd nexus_crypto && maturin develop --release"
-build-nuitka = "python -m nuitka --project-name=nexus-ai main.py"
-build-all = "mise run build-rust && mise run build-nuitka"
+
+[tasks.build-rust]
+description = "Skompiluj nexus-crypto (Rust + PyO3) — tryb develop"
+run = "cd nexus_ai/rust && maturin develop --release"
+
+[tasks.build-rust-release]
+description = "Skompiluj nexus-crypto (koło binarne .whl)"
+run = "cd nexus_ai/rust && maturin build --release"
+
+[tasks.build-nuitka]
+description = "Skompiluj aplikację do samodzielnego .exe (Nuitka)"
+run = "python -m nuitka --project-name=nexus-ai main.py"
+
+[tasks.build-nuitka-fast]
+description = "Szybki build (standalone folder, niska pamięć)"
+run = "python -m nuitka --project-name=nexus-ai --mode=standalone --low-memory main.py"
+
+[tasks.build-all]
+description = "Skompiluj wszystko: Rust (PyO3) + Nuitka (standalone .exe)"
+depends = ["build-rust", "build-nuitka"]
+run = "echo '✓ All builds complete'"
 
 # ── Testowanie ───────────────────────────────────────────────────────────────
-test = "pytest -x -v --timeout=30"
-test-all = "pytest -v --timeout=30"
-test-coverage = "pytest --cov=nexus_ai --cov-report=term-missing"
+
+[tasks.test]
+description = "Uruchom testy (szybko — zatrzymaj przy pierwszym błędzie)"
+run = "uv run pytest -x -v --timeout=30"
+# Użycie z argumentami: mise run test -- --coverage  →  pytest -x -v --timeout=30 --coverage
+# Argumenty po -- są automatycznie dołączane do komendy
+
+[tasks.test-all]
+description = "Uruchom wszystkie testy (nie zatrzymuj przy błędzie)"
+run = "uv run pytest -v --timeout=30"
+# Użycie: mise run test-all -- -k 'test_facts' --coverage
+
+[tasks.test-coverage]
+description = "Testy z raportem pokrycia kodu"
+run = "uv run pytest --cov=nexus_ai --cov-report=term-missing"
+
+[tasks.test-parallel]
+description = "Testy równoległe na wszystkich rdzeniach CPU"
+run = "uv run pytest -x -v -n auto --timeout=30"
+
+[tasks.test-watch]
+description = "Auto-uruchom testy przy zmianie plików"
+watch = ["nexus_ai/**/*.py", "tests/**/*.py"]
+run = "uv run pytest -x -v --timeout=30"
+
+# ── Lint / Format / Typecheck ────────────────────────────────────────────────
+
+[tasks.lint]
+description = "Sprawdź kod linterem Ruff"
+run = "uv run ruff check nexus_ai/"
+
+[tasks.format]
+description = "Auto-formatuj kod Python przez Ruff"
+run = "uv run ruff format nexus_ai/"
+
+[tasks.format-check]
+description = "Sprawdź formatowanie bez modyfikacji"
+run = "uv run ruff format --check nexus_ai/"
+
+[tasks.typecheck]
+description = "Sprawdź typy przez mypy"
+run = "uv run mypy nexus_ai/"
+
+[tasks.security-scan]
+description = "Skanowanie bezpieczeństwa (Semgrep SAST) — tryb łagodny"
+run = "uv run python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy lenient"
+
+[tasks.security-scan-strict]
+description = "Skanowanie bezpieczeństwa (tryb ścisły — 0 high, 0 medium)"
+run = "uv run python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy strict"
+
+# ── Migracje bazy danych ────────────────────────────────────────────────────
+
+[tasks.migrate]
+description = "Wykonaj migracje bazy danych (Alembic upgrade head)"
+run = "uv run alembic upgrade head"
+
+[tasks.migrate-new]
+description = "Wygeneruj nową migrację (podaj opis: mise run migrate-new 'dodaj_pole')"
+run = "uv run alembic revision --autogenerate -m"
+
+[tasks.migrate-check]
+description = "Sprawdź czy są niezatwierdzone migracje"
+run = "uv run alembic check"
+
+# ── Modele AI ────────────────────────────────────────────────────────────────
+
+[tasks.download-models]
+description = "Pobierz wszystkie modele AI (GGUF)"
+run = "uv run python -m nexus_ai.scripts.download_models"
+
+[tasks.check-models]
+description = "Sprawdź obecność modeli AI"
+run = "uv run python -m nexus_ai.scripts.download_models --check"
+
+[tasks.compute-checksums]
+description = "Oblicz sumy SHA-256 dla modeli"
+run = "uv run python -m nexus_ai.scripts.download_models --verify-only"
+
+[tasks.check-updates]
+description = "Sprawdź dostępność aktualizacji"
+run = "uv run python -m nexus_ai.scripts.download_models --check-updates"
+
+# ── Czyszczenie ──────────────────────────────────────────────────────────────
+
+[tasks.clean]
+description = "Wyczyść artefakty builda"
+run = "rm -rf build/ dist/ *.egg-info/ .pytest_cache/ .mypy_cache/ __pycache__/"
+
+[tasks.clean-all]
+description = "Wyczyść wszystko (łącznie z danymi aplikacji)"
+run = "rm -rf build/ dist/ *.egg-info/ .pytest_cache/ .mypy_cache/ __pycache__/ app_data/"
+
+# ── Seed data ────────────────────────────────────────────────────────────────
+
+[tasks.seed]
+description = "Załaduj dane demo/seed"
+run = "python main.py --load-fixtures"
+
+[tasks.shell]
+description = "Aktywuj shell w środowisku pixi"
+run = "$SHELL"
+
+# ── pixi Environment Manager — zarządzanie środowiskiem pixi ───────────────
+
+[tasks.pixi-info]
+description = "📊 Diagnostyka środowiska pixi — cache, pakiety, platformy"
+run = "pixi info"
+
+[tasks.pixi-tree]
+description = "🌳 Drzewo zależności pixi — debugowanie wersji pakietów"
+run = "pixi tree"
+
+[tasks.pixi-clean]
+description = "🧹 Wyczyść cache pixi — force fresh install"
+run = "pixi clean"
+
+[tasks.pixi-exec]
+description = """
+⚡ Uruchom narzędzie w ad-hoc środowisku pixi (bez instalacji)
+
+Użycie:
+  mise run pixi-exec -- --spec ruff ruff check .
+  mise run pixi-exec -- --spec pytest pytest -x -v
+"""
+run = "pixi exec"
+
+# ── Single-file Scripts (PEP 723) — samowystarczalne skrypty ─────────────────
+
+[tasks.rates]
+description = "💱 Pobierz kursy walut z NBP (PEP 723 single-file script)"
+run = "uv run scripts/fetch_currency_rates.py"
+
+[tasks.rates-json]
+description = "💱 Pobierz kursy walut w formacie JSON"
+run = "uv run scripts/fetch_currency_rates.py --json"
+
+# ── uv Package Manager ────────────────────────────────────────────────────────
+
+[tasks.uv-sync]
+description = "Synchronizuj środowisko Python przez uv (alternatywa dla pixi)"
+run = "uv sync"
+
+[tasks.uv-lock]
+description = "Generuj/aktualizuj uv.lock — deterministyczny lockfile"
+run = "uv lock"
+
+[tasks.uv-export]
+description = "Eksportuj uv.lock do requirements.txt"
+run = "uv export --format requirements-txt -o requirements.txt"
+
+[tasks.uv-cache-clean]
+description = "Wyczyść globalny cache uv"
+run = "uv cache clean"
+
+[tasks.uv-upgrade]
+description = "Aktualizuj uv do najnowszej wersji"
+run = "uv self update"
+
+# ── Deploy / Release ────────────────────────────────────────────────────────
+
+[tasks.deploy]
+description = "🚀 Wdrożenie produkcyjne: testy → build → migracje → restart"
+depends = ["test", "build-all", "migrate"]
+run = """
+  echo '🚀 All steps passed — restarting services...'
+  mise run restart-api
+  mise run restart-worker
+  echo '✅ Deployment complete'
+"""
+
+[tasks.deploy-quick]
+description = "⚡ Szybkie wdrożenie (bez testów i Nuitka): build Rust → migracje → restart"
+depends = ["build-rust-release", "migrate"]
+run = """
+  echo '⚡ Quick deploy — restarting services...'
+  mise run restart-api
+  echo '✅ Quick deploy complete'
+"""
+
+[tasks.deploy-check]
+description = "🔍 Suchy przebieg wdrożenia — sprawdź co zostanie wykonane"
+run = "echo '📋 Dry run: test → build-all → migrate → restart-api + restart-worker'
+ echo '   Run: MISE_ENV=prod mise run deploy'
+ echo '   Or:  MISE_ENV=prod mise run deploy-quick'"
+
+[tasks.restart-api]
+description = "Restart serwera API (Granian)"
+run = """
+  if systemctl is-active --quiet nexus-api 2>/dev/null; then
+    sudo systemctl restart nexus-api
+    echo '✅ API restarted (systemd)'
+  elif [ -f /tmp/nexus-api.pid ]; then
+    kill "$(cat /tmp/nexus-api.pid)" 2>/dev/null || true
+    echo '✅ API process killed (PID file)'
+  else
+    echo '⚠️  No running API process found — start with: mise run api'
+  fi
+"""
+
+[tasks.restart-worker]
+description = "Restart workera Taskiq"
+run = """
+  if systemctl is-active --quiet nexus-worker 2>/dev/null; then
+    sudo systemctl restart nexus-worker
+    echo '✅ Worker restarted (systemd)'
+  elif [ -f /tmp/nexus-worker.pid ]; then
+    kill "$(cat /tmp/nexus-worker.pid)" 2>/dev/null || true
+    echo '✅ Worker process killed (PID file)'
+  else
+    echo '⚠️  No running worker process found — start with: mise run worker'
+  fi
+"""
+
+[tasks.status]
+description = "Status serwisów produkcyjnych"
+run = """
+  echo '── NexusAI Service Status ──'
+  for svc in nexus-api nexus-worker nats-server tigerbeetle; do
+    if systemctl is-active --quiet "$svc" 2>/dev/null; then
+      echo "  ✅ $svc — active (systemd)"
+    elif pgrep -x "$svc" &>/dev/null; then
+      echo "  ✅ $svc — running (PID: $(pgrep -x "$svc" | head -1))"
+    else
+      echo "  ⬜ $svc — not running"
+    fi
+  done
+"""
+
+[tasks.rollback]
+description = "⏪ Cofnij ostatnie wdrożenie (git revert HEAD) — z potwierdzeniem"
+run = """
+  echo '⚠️  Ostatnie 5 commitów:'
+  git log --oneline -5
+  echo ''
+  read -p 'Cofnąć HEAD? [y/N] ' confirm
+  if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
+    git revert HEAD --no-edit
+    echo '✅ Revert complete. Run: MISE_ENV=prod mise run deploy'
+  else
+    echo 'Rollback anulowany.'
+  fi
+"""
