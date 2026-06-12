@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import hashlib  # streaming SHA-256 for row checksums (nexus_crypto doesn't support streaming)
 from pathlib import Path
+
+from nexus_crypto import Sha256Hasher
 
 from sqlalchemy import Engine, text
 
@@ -117,7 +118,7 @@ def capture_table_checksums(engine: Engine, tables: list[str] | None = None) -> 
         for table in tables:
             table_quoted = _quote_ident(table)
             rows = conn.execute(text(f"SELECT * FROM {table_quoted}")).fetchall()
-            digest = hashlib.sha256()
+            digest = Sha256Hasher()
             for row in rows:
                 digest.update(repr(tuple(row)).encode("utf-8"))
             checksums[table] = digest.hexdigest()

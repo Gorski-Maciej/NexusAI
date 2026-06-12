@@ -12,8 +12,9 @@ Supports:
 
 from __future__ import annotations
 
-import hashlib  # streaming SHA-256 for file verification (nexus_crypto doesn't support streaming)
 import sys
+
+from nexus_crypto import Sha256Hasher
 
 import anyio
 from msgspec import Struct
@@ -120,8 +121,8 @@ def load_manifest(manifest_path: str | Path | None = None) -> list[ModelEntry]:
 
 
 def compute_sha256(filepath: Path) -> str:
-    """Compute SHA-256 checksum of a file."""
-    sha = hashlib.sha256()
+    """Compute SHA-256 checksum of a file (streaming via Sha256Hasher)."""
+    sha = Sha256Hasher()
     with open(filepath, "rb") as f:
         while True:
             chunk = f.read(65536)  # 64 KB

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import hashlib  # streaming SHA-256 for file uploads (nexus_crypto doesn't support streaming)
 import os
+
+from nexus_crypto import Sha256Hasher
 import uuid
 from pathlib import Path
 
@@ -98,7 +99,7 @@ class InvoiceController(Controller):
                 detail=t("upload.missing_file", language=language), status_code=400
             )
 
-        hasher = hashlib.sha256()
+        hasher = Sha256Hasher()
         total_size = 0
         storage = ContentAddressableStorage(config.storage_dir)
         temp_path = storage.create_temp_upload_file()
@@ -287,7 +288,7 @@ class InvoiceController(Controller):
         idempotency_key = request.headers.get("idempotency-key")
         idempotency_store = IdempotencyStore(db_session.bind)
 
-        hasher = hashlib.sha256()
+        hasher = Sha256Hasher()
         total_size = 0
         storage = ContentAddressableStorage(config.storage_dir)
         temp_path = storage.create_temp_upload_file()

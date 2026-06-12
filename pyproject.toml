@@ -1,6 +1,24 @@
 [build-system]
-requires = ["hatchling>=1.21", "maturin>=1.5"]
+requires = ["hatchling>=1.21", "hatch-vcs>=0.4", "maturin>=1.5"]
 build-backend = "hatchling.build"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Hatchling Build Pipeline — nexus-ai jako centrum build orchestracji
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Wszystkie operacje build, test, deploy są dostępne przez `hatch run`:
+#
+#   hatch build              # Zbuduj koło (wheel) z maturin hook
+#   hatch run ci             # Lint → Typecheck → Test
+#   hatch run build-all      # Rust → Nuitka (onefile)
+#   hatch run deploy         # CI → Build → Migracje → Restart
+#
+# Custom build hook dla Nuitka jest zdefiniowany w nexus_ai/build/hooks.py.
+# Gdy hatchling znajdzie plugin na PYTHONPATH, użyje go automatycznie.
+# W przeciwnym razie Nuitka jest uruchamiana przez hatch env scripts.
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
 
 # ── pixi (prefix.dev) — all-in-one environment manager ──────────────────────
 # pixi replaces Docker, conda, and manual system-dependency scripts.
@@ -20,7 +38,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "nexus-ai"
-version = "2.0.0"
+dynamic = ["version"]
 description = "NexusAI — Ultralekki, autonomiczny system księgowy z AI"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -174,6 +192,19 @@ nexus-api = "nexus_ai.api.server:run_backend"
 nexus-worker = "nexus_ai.luz.worker:main"
 nexus-desktop = "nexus_ai.luz.main:main"
 nexus = "nexus_ai.scripts.nexus_cli:main"
+nexus-build = "nexus_ai.build.hooks:main"            # Unified build CLI
+
+# ── Hatchling build hook plugin registration ────────────────────────────────
+# Rejestruje nexus_ai.build.hooks.NuitkaBuildHook jako plugin hatchling.
+# Dzięki temu `[tool.hatch.build.hooks.nuitka]` w pyproject.toml jest aktywny.
+# Uwaga: ten plugin jest aktywny tylko gdy nexus-ai jest zainstalowane
+# w środowisku hatch (pip install -e .). W CI hatch tworzy środowisko
+# virtualne, więc plugin jest dostępny.
+[project.entry-points."hatch.build.hook"]
+nuitka = "nexus_ai.build.hooks:NuitkaBuildHook"
+
+[tool.hatch.version]
+source = "vcs"
 
 [tool.hatch.build.targets.wheel]
 packages = [
@@ -181,7 +212,45 @@ packages = [
     "nexus_crypto/",
 ]
 
+[tool.hatch.build.targets.sdist]
+packages = [
+    "nexus_ai/",
+]
+exclude = [
+    "nexus_ai/rust/target/**",
+    "tests/**",
+    "*.so",
+    "*.pyd",
+]
+
 # ── Maturin — Rust/PyO3 native extensions ────────────────────────────────────
+[tool.hatch.build.hooks.maturin]
+
+[tool.hatch.build.hooks.maturin.metadata]
+# Automatyczna kompilacja Rust przy każdym wheel build
+
+# ── Nuitka — custom build hook (hatchling plugin) ────────────────────────────
+# UWAGA: Ten hook jest aktywny TYLKO gdy nexus-ai jest zainstalowane
+# (pip install -e .) — wtedy hatchling znajdzie plugin przez entry point.
+# W CI, gdzie budujemy wheel od zera, hook jest pomijany (projekt nie jest
+# jeszcze zainstalowany). Nuitka jest wtedy uruchamiana przez hatch env scripts:
+#   hatch run build:build-nuitka
+#
+# Gdy plugin jest aktywny (pip install -e .), hatchling automatycznie
+# wywołuje NuitkaBuildHook.finalize() po zbudowaniu koła, kompilując
+# aplikację do standalone .exe.
+#
+# Opcje:
+#   options.build-rust: czy budować Rust przed Nuitka (domyślnie true)
+#   options.onefile:    czy tworzyć pojedynczy plik (domyślnie true)
+#   options.target:     ścieżka wyjściowa (domyślnie dist/NexusAI)
+#
+[tool.hatch.build.hooks.nuitka]
+[tool.hatch.build.hooks.nuitka.options]
+build-rust = true
+onefile = true
+
+
 [tool.maturin]
 module-name = "nexus_crypto._core"
 manifest-path = "nexus_ai/rust/Cargo.toml"
@@ -253,6 +322,113 @@ nexus-crypto = { path = "./nexus_ai/rust", editable = true }
 [tool.crosshair]
 max_examples = 200
 
+# ── hatch environments (dev scripts) ─────────────────────────────────────────
+[tool.hatch.envs.lint]
+dependencies = ["ruff>=0.3.0"]
+scripts = { check = "ruff check nexus_ai/", fix = "ruff check --fix nexus_ai/" }
+
+[tool.hatch.envs.typecheck]
+dependencies = ["mypy>=1.8.0"]
+scripts = { check = "mypy nexus_ai/" }
+
+# ── Matrix testing: Python 3.13 (standard) + 3.13t (free-threaded, bez GIL) ──
+[tool.hatch.envs.test]
+dependencies = [
+    "pytest>=8.0.0",
+    "pytest-anyio>=0.1.0",
+    "pytest-cov>=5.0.0",
+    "crosshair>=0.1.0.dev0",     # SMT-driven property testing
+    "hypothesis>=6.100.0",       # Zachowany dla złożonych property-based tests
+]
+scripts = {
+    run = "pytest -x -v --timeout=30",
+    all = "pytest -v --timeout=30",
+    cov = "pytest --cov=nexus_ai",
+}
+
+# Matrix: test na standardowym Python 3.13 i free-threaded 3.13t
+# Uruchom: hatch run test:run        → Python 3.13 (domyślny)
+#          hatch run test.3.13t:run  → Python 3.13t (free-threaded)
+[[tool.hatch.envs.test.matrix]]
+python = ["3.13", "3.13t"]
+
+# ── Build env — Rust + Nuitka + mypyc ───────────────────────────────────────
+# Używa nexus-build (CLI z nexus_ai/build/hooks.py) jako unified build tool.
+# Wszystkie operacje build są dostępne przez jeden entry point:
+#   hatch run build:build-all      → Rust + Nuitka
+#   hatch run build:nuitka         → Tylko Nuitka
+#   hatch run build:rust           → Tylko Rust
+[tool.hatch.envs.build]
+dependencies = ["maturin>=1.5", "mypyc>=1.8.0", "nuitka>=1.8"]
+scripts = {
+    # Unified przez nexus-build CLI
+    build-all = "nexus-build build-all",
+    build-rust = "nexus-build rust",
+    build-rust-wheel = "nexus-build rust-wheel",
+    build-nuitka = "nexus-build nuitka",
+    build-nuitka-fast = "nexus-build nuitka-fast",
+    
+    # Legacy shell scripts (backward compat)
+    legacy-build-rust = "cd nexus_ai/rust && maturin build --release",
+    legacy-build-rust-dev = "cd nexus_ai/rust && maturin develop --release",
+    legacy-build-nuitka = "python -m nuitka --project-name=nexus-ai main.py",
+    legacy-build-nuitka-fast = "python -m nuitka --project-name=nexus-ai --mode=standalone --low-memory main.py",
+    
+    # Optymalizacja przez mypyc
+    optimize = "uv run mypyc nexus_ai/tax nexus_ai/core",
+}
+
+# ── Dev env — pełny stack deweloperski ───────────────────────────────────────
+[tool.hatch.envs.dev]
+scripts = {
+    api = "granian --reload --host 127.0.0.1 --port 8000 nexus_ai.api.app:create_app",
+    worker = "uv run python main.py --mode worker",
+    desktop = "uv run python -m nexus_ai.luz.main",
+    migrate = "uv run alembic upgrade head",
+    seed = "uv run python main.py --load-fixtures",
+    doctor = "uv run python -m nexus_ai.scripts.doctor",
+}
+
+# ── Default env — unified build/CI/CD pipeline (dostępne przez `hatch run`) ────
+# Wszystkie operacje są dostępne przez hatch — jeden interfejs do wszystkiego.
+# Używa nexus-build CLI (nexus_ai/build/hooks.py) jako implementacji.
+[tool.hatch.envs.default]
+scripts = {
+    # ── Dev ───────────────────────────────────────────────────────
+    # Dev (Linux/macOS only — użyj dwóch terminali na Windows)
+    dev = "hatch run dev:api & hatch run dev:worker",
+    api = "hatch run dev:api",
+    worker = "hatch run dev:worker",
+    desktop = "hatch run dev:desktop",
+    
+    # ── Test + Lint + Typecheck (CI pipeline) ────────────────────
+    ci = "nexus-build ci",
+    ci-full = "nexus-build ci-full",
+    lint = "hatch run lint:check",
+    typecheck = "hatch run typecheck:check",
+    test = "hatch run test:run",
+    test-all = "hatch run test:all",
+    test-cov = "hatch run test:cov",
+    
+    # ── Build ─────────────────────────────────────────────────────
+    build-all = "nexus-build build-all",
+    build-rust = "nexus-build rust",
+    build-nuitka = "nexus-build nuitka",
+    
+    # ── Deploy ────────────────────────────────────────────────────
+    # Full deploy: CI → Build → Migrate
+    deploy = "nexus-build deploy",
+    # Quick deploy: build Rust → migrate (bez testów i Nuitka)
+    deploy-quick = "nexus-build deploy-quick",
+    
+    # ── Database ──────────────────────────────────────────────────
+    migrate = "hatch run dev:migrate",
+    seed = "hatch run dev:seed",
+    
+    # ── Clean ─────────────────────────────────────────────────────
+    clean = "nexus-build clean",
+}
+
 # ── Alembic — database migrations (config in pyproject.toml, no alembic.ini) ────
 # Zgodnie z aa3fvcx.txt: konfiguracja Alembic w pyproject.toml zamiast osobnego pliku.
 # env.py odczytuje script_location i inne ustawienia z [tool.alembic].
@@ -267,6 +443,35 @@ post_write_hooks = "ruff"
 post_write_hooks_ruff_type = "console_scripts"
 post_write_hooks_ruff_entrypoint = "ruff"
 post_write_hooks_ruff_options = "check --fix"
+
+# ── Release env — publikacja na PyPI + GitHub Releases ───────────────────────
+# Uruchom: hatch run release:dry-run     (suchy przebieg)
+#          hatch run release:build        (build + publish do PyPI)
+#          hatch run release:github       (build + GitHub Release)
+#
+# UWAGA: `hatchling` to biblioteka Python (build backend).
+# `hatch` to CLI narzędzie instalowane przez pipx — nie ma na PyPI jako dep.
+[tool.hatch.envs.release]
+dependencies = [
+    "hatchling>=1.21",
+    "hatch-vcs>=0.4",
+    "maturin>=1.5",
+    "nuitka>=1.8",
+]
+scripts = {
+    # Suchy przebieg — pokaż co zostanie zrobione
+    dry-run = "echo '📋 Release dry-run: hatch build → hatch publish → git tag vX.Y.Z'",
+    
+    # Build + publish do PyPI
+    build = "hatch build",
+    publish = "hatch publish",
+    
+    # Full release: build + publish + git tag
+    full = "hatch build && hatch publish && git tag v$(hatch version)",
+    
+    # GitHub Release (wymaga gh CLI)
+    github = "hatch build && gh release create v$(hatch version) dist/*.whl dist/*.tar.gz --generate-notes",
+}
 
 
 # ── Nuitka — compile Python to standalone .exe (single file) ─────────────────

@@ -4,7 +4,9 @@ from msgspec import Struct
 from pathlib import Path
 from typing import Any
 
-import hashlib  # SHA-1, MD5, SHA-256 streaming — bez odpowiednika w nexus_crypto
+from nexus_crypto import Sha256Hasher
+
+import hashlib  # SHA-1, MD5 (non-cryptographic, not in nexus_crypto)
 
 # ── SHA-256 (non-streaming) przez nexus-crypto (Rust+PyO3) ────────────────
 try:
@@ -35,8 +37,8 @@ class DocumentFingerprint(Struct):
 
 
 def _sha256_file(file_path: Path) -> str:
-    """Compute SHA-256 of a file (streaming via hashlib — nexus_crypto.sha256() doesn't support streaming)."""
-    h = hashlib.sha256()
+    """Compute SHA-256 of a file (streaming via Sha256Hasher)."""
+    h = Sha256Hasher()
     with file_path.open("rb") as handle:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             h.update(chunk)

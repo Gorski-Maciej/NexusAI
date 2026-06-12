@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import base64
-import hashlib  # streaming SHA-256 for file hashing (nexus_crypto doesn't support streaming)
 import importlib.util
+
+from nexus_crypto import Sha256Hasher
 import os
 import tempfile
 
@@ -15,9 +16,10 @@ try:
     HAS_NEXUS_CRYPTO = True
 except ImportError:
     HAS_NEXUS_CRYPTO = False
+    import hashlib as _hashlib_fallback
 
     def _sha256(data: bytes) -> str:
-        return hashlib.sha256(data).hexdigest()
+        return _hashlib_fallback.sha256(data).hexdigest()
 
 
 from collections.abc import Iterable
@@ -289,7 +291,7 @@ class IdempotencyStore:
 
     @staticmethod
     def hash_chunks(chunks: Iterable[bytes]) -> str:
-        h = hashlib.sha256()  # streaming — nexus_crypto nie wspiera streamingu
+        h = Sha256Hasher()
         for chunk in chunks:
             if chunk:
                 h.update(chunk)

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import base64
-import hashlib  # HMAC-SHA256 for JWT signature verification (not available in nexus_crypto)
-import hmac
+import hmac  # constant-time comparison (hmac.compare_digest)
 import os
+
+from nexus_crypto import hmac_sha256 as _hmac_sha256
 import time
 import uuid
 
@@ -146,9 +147,7 @@ def _tenant_from_bearer_auth(authorization_header: str | None) -> str | None:
         return None
 
     signed = f"{header_b64}.{payload_b64}".encode()
-    expected_sig = hmac.new(
-        secret_key.encode(), signed, hashlib.sha256
-    ).digest()  # hmac.new(SECRET_KEY.encode()
+    expected_sig = _hmac_sha256(secret_key.encode(), signed)
     expected_b64 = base64.urlsafe_b64encode(expected_sig).rstrip(b"=").decode("utf-8")
     if not hmac.compare_digest(expected_b64, signature_b64):
         return None

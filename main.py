@@ -15,82 +15,10 @@ See ``mise run --list`` for all available tasks.
 
 Nuitka Build Configuration
 --------------------------
-This file is the Nuitka entry point. Build with:
+Nuitka configuration is in [tool.nuitka] in pyproject.toml (canonical source).
+Build command:
     python -m nuitka main.py
 """
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Nuitka Project Options (build-time only, ignored at runtime)
-# ═══════════════════════════════════════════════════════════════════════════════
-
-# ── Output mode ───────────────────────────────────────────────────────────────
-# nuitka-project: --mode=onefile
-# nuitka-project: --standalone
-
-# ── Output naming ─────────────────────────────────────────────────────────────
-# nuitka-project: --output-dir={MAIN_DIRECTORY}/dist
-# nuitka-project: --output-filename=nexus-ai
-# nuitka-project: --project-name=nexus-ai
-
-# ── Plugins ───────────────────────────────────────────────────────────────────
-# nuitka-project: --enable-plugin=pydantic
-# nuitka-project: --enable-plugin=numpy
-# nuitka-project: --enable-plugin=anti-bloat
-# nuitka-project: --enable-plugin=mimalloc
-# nuitka-project: --enable-plugin=multiprocessing
-# nuitka-project: --enable-plugin=trio
-
-# ── Included packages ─────────────────────────────────────────────────────────
-# nuitka-project: --include-package=nexus_ai
-# nuitka-project: --include-package=nexus_crypto
-# nuitka-project: --include-package=granian
-# nuitka-project: --include-package=litestar
-# nuitka-project: --include-package=sqlmodel
-# nuitka-project: --include-package=duckdb
-# nuitka-project: --include-package=polars
-# nuitka-project: --include-package=pyarrow
-# nuitka-project: --include-package=llama_cpp
-# nuitka-project: --include-package=huggingface_hub
-# nuitka-project: --include-package=msgspec
-# nuitka-project: --include-package=stamina
-# nuitka-project: --include-package=httpx
-# nuitka-project: --include-package=hishel
-# nuitka-project: --include-package=nats
-# nuitka-project: --include-package=taskiq
-# nuitka-project: --include-package=taskiq_nats
-# nuitka-project: --include-package=loguru
-# nuitka-project: --include-package=structlog
-# nuitka-project: --include-package=pendulum
-# nuitka-project: --include-package=opentelemetry
-# nuitka-project: --include-package=fsspec
-# nuitka-project: --include-package=sqlite_vec
-# nuitka-project: --include-package=alembic
-# nuitka-project: --include-package=anyio
-# nuitka-project: --include-package=lxml
-# nuitka-project: --include-package=PIL
-
-# ── Data directories ──────────────────────────────────────────────────────────
-# nuitka-project: --include-data-dir={MAIN_DIRECTORY}/nexus_ai/config=nexus_ai/config
-# nuitka-project: --include-data-dir={MAIN_DIRECTORY}/nexus_ai/db/migrations=nexus_ai/db/migrations
-
-# ── Specific data files ───────────────────────────────────────────────────────
-# nuitka-project: --include-data-files={MAIN_DIRECTORY}/pyproject.toml=pyproject.toml
-
-# ── Excluded modules ──────────────────────────────────────────────────────────
-# nuitka-project: --exclude-module=tkinter
-# nuitka-project: --exclude-module=unittest
-# nuitka-project: --exclude-module=distutils
-# nuitka-project: --exclude-module=setuptools
-# nuitka-project: --exclude-module=pip
-# nuitka-project: --exclude-module=pdb
-# nuitka-project: --exclude-module=test
-
-# ── Performance ───────────────────────────────────────────────────────────────
-# nuitka-project: --jobs=0
-# nuitka-project: --assume-yes-for-downloads
-# nuitka-project: --show-progress
-
-# ═══════════════════════════════════════════════════════════════════════════════
 
 from __future__ import annotations
 

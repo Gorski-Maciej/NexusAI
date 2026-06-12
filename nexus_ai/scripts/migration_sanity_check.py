@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import argparse
-import hashlib  # streaming SHA-256 for table checksums (nexus_crypto doesn't support streaming)
 import sqlite3
+
+from nexus_crypto import Sha256Hasher
 from msgspec import Struct
 from pathlib import Path
 
@@ -30,11 +31,11 @@ def collect_table_stats(
 
 
 def table_checksum(conn: sqlite3.Connection, table: str) -> str:
-    hasher = hashlib.sha256()
+    hasher = Sha256Hasher()
     cursor = conn.execute(f"SELECT * FROM {table}")
     for row in cursor:
-        h.update(repr(row).encode("utf-8"))
-    return h.hexdigest()
+        hasher.update(repr(row).encode("utf-8"))
+    return hasher.hexdigest()
 
 
 def compare_stats(

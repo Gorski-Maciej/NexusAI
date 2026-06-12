@@ -8,10 +8,11 @@ Zgodnie z aa3fvcx.txt:
 
 from __future__ import annotations
 
-import hashlib
 import os
 import uuid
 from msgspec import Struct
+
+from nexus_crypto import blake2b as _blake2b
 
 
 class TwoPhaseTransfer(Struct):
@@ -34,7 +35,7 @@ class TigerBeetleMapper:
 
     @staticmethod
     def account_to_uint128(account_symbol: str) -> int:
-        digest = hashlib.blake2b(account_symbol.encode("utf-8"), digest_size=16).digest()
+        digest = _blake2b(account_symbol.encode("utf-8"), digest_size=16)
         return int.from_bytes(digest, byteorder="big", signed=False)
 
     def build_map(self, accounts: list[str]) -> dict[str, int]:

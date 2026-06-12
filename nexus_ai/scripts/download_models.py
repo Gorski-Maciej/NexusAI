@@ -14,8 +14,9 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import hashlib  # streaming SHA-256 for file verification (nexus_crypto doesn't support streaming)
 import os
+
+from nexus_crypto import Sha256Hasher
 import sys
 from pathlib import Path
 
@@ -45,7 +46,7 @@ SURYA_MODELS: dict[str, dict[str, str]] = {
 
 
 def _compute_sha256(filepath: Path) -> str:
-    h = hashlib.sha256()
+    h = Sha256Hasher()
     with open(filepath, "rb") as f:
         while True:
             chunk = f.read(65536)

@@ -1,5 +1,6 @@
-import hashlib  # streaming SHA-256 for file uploads (nexus_crypto doesn't support streaming)
 import os
+
+from nexus_crypto import Sha256Hasher
 import uuid
 from pathlib import Path
 
@@ -207,7 +208,7 @@ class InvoiceController(Controller):
 
         storage = ContentAddressableStorage(config.storage_dir)
         temp_path = storage.create_temp_upload_file()
-        hasher = hashlib.sha256()
+        hasher = Sha256Hasher()
         chunk_size = 1024 * 1024
         total_size = 0
 
@@ -263,7 +264,7 @@ class InvoiceController(Controller):
         max_bytes = config.max_attachment_upload_bytes
         storage = ContentAddressableStorage(config.storage_dir)
         temp_path = storage.create_temp_upload_file()
-        hasher = hashlib.sha256()
+        hasher = Sha256Hasher()
         chunk_size = 1024 * 1024
         total_size = 0
 

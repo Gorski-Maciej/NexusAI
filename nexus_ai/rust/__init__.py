@@ -3,14 +3,18 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 #
 # Provides:
-#   encrypt(key, plaintext)       → bytes  (ChaCha20-Poly1305 AEAD)
-#   decrypt(key, data)            → bytes  (ChaCha20-Poly1305 AEAD)
-#   hash_password(password)       → str    (Argon2id PHC string)
+#   encrypt(key, plaintext)         → bytes  (ChaCha20-Poly1305 AEAD)
+#   decrypt(key, data)              → bytes  (ChaCha20-Poly1305 AEAD)
+#   hash_password(password)         → str    (Argon2id PHC string)
 #   verify_password(password, hash) → bool
-#   sha256(data)                  → str    (hex digest)
-#   derive_key(password, salt)    → (key, salt)  (Argon2id KDF → 32 bytes)
+#   sha256(data)                    → str    (hex digest)
+#   hmac_sha256(key, data)          → bytes  (HMAC-SHA256, 32-byte digest)
+#   blake2b(data, digest_size)      → bytes  (BLAKE2b, 1-64 byte output)
+#   derive_key(password, salt)      → (key, salt)  (Argon2id KDF → 32 bytes)
+#   Sha256Hasher()                  → streaming SHA-256 (update/hexdigest/digest)
+#   generate_key()                  → bytes  (32 random bytes)
 #
-# Falls back to plaintext no-op when the native Rust extension is unavailable.
+# Falls back to hashlib when the native Rust extension is unavailable.
 # ═══════════════════════════════════════════════════════════════════════════════
 
 from __future__ import annotations
@@ -23,7 +27,48 @@ from nexus_ai.core.logger import get_logger
 
 logger = get_logger("nexus.crypto")
 
-# Try to load the native Rust extension
+# ── Sha256Hasher — Python fallback (hashlib) ─────────────────────────────────
+
+
+class Sha256Hasher:
+    """Streaming SHA-256 hasher (Python fallback via hashlib).
+
+    Usage::
+        h = Sha256Hasher()
+        h.update(chunk1)
+        h.update(chunk2)
+        hex_result = h.hexdigest()
+        raw_bytes = h.digest()
+        copy = h.copy()
+    """
+
+    def __init__(self) -> None:
+        self._hasher = hashlib.sha256()
+
+    def update(self, data: bytes) -> None:
+        """Feed data into the hasher. Can be called multiple times."""
+        self._hasher.update(data)
+
+    def hexdigest(self) -> str:
+        """Return the hex digest (64-char string)."""
+        return self._hasher.hexdigest()
+
+    def digest(self) -> bytes:
+        """Return the raw 32-byte digest."""
+        return self._hasher.digest()
+
+    def copy(self) -> Sha256Hasher:
+        """Return a copy of the hasher (preserves current state)."""
+        new = Sha256Hasher.__new__(Sha256Hasher)
+        new._hasher = self._hasher.copy()
+        return new
+
+    def __repr__(self) -> str:
+        return "<Sha256Hasher>"
+
+
+# ── Try to load the native Rust extension ────────────────────────────────────
+
 try:
     from nexus_crypto._core import (
         decrypt as _rust_decrypt,
@@ -35,6 +80,9 @@ try:
         encrypt as _rust_encrypt,
     )
     from nexus_crypto._core import (
+        generate_key as _rust_generate_key,
+    )
+    from nexus_crypto._core import (
         hash_password as _rust_hash_password,
     )
     from nexus_crypto._core import (
@@ -43,13 +91,23 @@ try:
     from nexus_crypto._core import (
         verify_password as _rust_verify_password,
     )
+    from nexus_crypto._core import (
+        Sha256Hasher as _RustSha256Hasher,
+        hmac_sha256 as _rust_hmac_sha256,
+        blake2b as _rust_blake2b,
+    )
 
     _HAS_NATIVE = True
+
+    # Override Python fallback with native Rust implementation
+    Sha256Hasher = _RustSha256Hasher  # type: ignore[misc]
+    hmac_sha256 = _rust_hmac_sha256  # type: ignore[assignment]
+    blake2b = _rust_blake2b  # type: ignore[assignment]
 except ImportError:
     _HAS_NATIVE = False
     logger.warning(
         "nexus-crypto native extension not available — "
-        "using Python fallback (SHA-256 only). "
+        "using Python fallback (hashlib). "
         "Build with: cd nexus_crypto && maturin develop --release"
     )
 
@@ -153,6 +211,49 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def hmac_sha256(key: bytes, data: bytes) -> bytes:
+    """Compute HMAC-SHA256 digest.
+
+    Args:
+        key: Secret key (bytes).
+        data: Message to authenticate (bytes).
+
+    Returns:
+        32-byte HMAC-SHA256 digest.
+    """
+    if _HAS_NATIVE:
+        return _to_bytes(_rust_hmac_sha256(key, data))
+    return hmac.new(key, data, hashlib.sha256).digest()
+
+
+def blake2b(data: bytes, digest_size: int = 64) -> bytes:
+    """Compute BLAKE2b digest with configurable output size.
+
+    Args:
+        data: Data bytes to hash.
+        digest_size: Output size in bytes (1-64, default 64).
+
+    Returns:
+        BLAKE2b digest as bytes.
+    """
+    if _HAS_NATIVE:
+        return _to_bytes(_rust_blake2b(data, digest_size))
+    return hashlib.blake2b(data, digest_size=digest_size).digest()
+
+
+def generate_key() -> bytes:
+    """Generate a cryptographically secure 32-byte key.
+
+    Uses OS entropy (os.urandom) as fallback when native is unavailable.
+
+    Returns:
+        32 random bytes suitable for use as an encryption key.
+    """
+    if _HAS_NATIVE:
+        return _to_bytes(_rust_generate_key())
+    return os.urandom(32)
+
+
 def derive_key(password: str, salt: bytes | None = None) -> tuple[bytes, bytes]:
     """Derive 32-byte encryption key from password using Argon2id.
 
@@ -180,4 +281,8 @@ __all__ = [
     "verify_password",
     "sha256",
     "derive_key",
+    "generate_key",
+    "Sha256Hasher",
+    "hmac_sha256",
+    "blake2b",
 ]

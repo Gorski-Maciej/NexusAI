@@ -1,24 +1,20 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI — CI/CD Pipeline (pixi + uv)
+# NexusAI — CI/CD Pipeline
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# Dwa równoległe entry pointy:
-#   1. pixi (główny) — pełne środowisko z zależnościami systemowymi (OCR, OpenCV)
-#   2. uv (szybka alternatywa) — tylko PyPI, 10-100× szybszy dla lint/typecheck
+# Trzy równoległe entry pointy:
+#   1. hatch (główny, primary) — unified pipeline przez hatch envs + nexus-build
+#   2. pixi — środowisko z zależnościami systemowymi (OCR, OpenCV, libxml2)
+#   3. uv — szybka alternatywa dla PyPI-only (10-100× szybszy od pip)
 #
 # Zgodnie z aa3fvcx.txt:
-#   - pixi zastępuje Dockera dla środowiska deweloperskiego
-#   - uv (Astral) — najszybszy menedżer pakietów PyPI (Rust), 10-100× szybszy od pip
-#   - pytest-anyio (zamiast pytest-asyncio) dla testów asynchronicznych
-#   - Ruff jako linter (zamiast flake8/black)
-#   - Maturin do budowania rozszerzeń Rust (nexus-crypto)
-#   - Nuitka do kompilacji finalnego .exe
-#
-# Wymaga:
-#   pixi: curl -fsSL https://pixi.sh/install.sh | sh
-#         pixi install --environment dev
-#   uv:   curl -LsSf https://astral.sh/uv/install.sh | sh
-#         uv sync
+#   - hatch jest centrum build orchestracji (pyproject.toml [tool.hatch.envs])
+#   - nexus-build CLI (nexus_ai/build/hooks.py) deleguje do hatch envs
+#   - pixi zastępuje Dockera dla zależności systemowych
+#   - uv (Astral) — najszybszy menedżer pakietów PyPI
+#   - Nuitka do kompilacji finalnego .exe (przez hatch run build:build-nuitka)
+#   - Maturin do budowania rozszerzeń Rust (hatch run build:build-rust)
+#   - Matrix testing: Python 3.13 + 3.13t ([[tool.hatch.envs.test.matrix]])
 #
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -31,20 +27,84 @@ on:
   pull_request:
     branches: [main]
 
-# ── Konfiguracja cache dla pixi i uv ────────────────────────────────────────
+# ── Konfiguracja cache ────────────────────────────────────────────────────────
 env:
   PIXI_CACHE_DIR: ~/.cache/pixi
   UV_CACHE_DIR: ~/.cache/uv
-  UV_LINK_MODE: copy  # Zgodne z pixi/termux (brak hardlinków)
+  UV_LINK_MODE: copy
+  HATCH_CACHE_DIR: ~/.hatch
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Jobs
+# Jobs — hatch jest głównym orkiestratorem, pixi/uv jako wsparcie
 # ══════════════════════════════════════════════════════════════════════════════
 
 jobs:
-  # ── Environment matrix: dev + prod ──────────────────────────────────────
-  # Testuje instalację i podstawowe działanie w obu środowiskach pixi.
-  # Dla dev: pełny stack deweloperski. Dla prod: tylko runtime.
+  # ── Hatch CI — unified pipeline (lint + typecheck + test) ───────────────
+  # Główny job CI. Używa hatch envs zdefiniowanych w pyproject.toml.
+  # Deleguje do nexus-build CLI → hatch run lint:check → typecheck:check → test:run
+  hatch-ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pipx
+        run: pip install pipx && pipx ensurepath
+
+      - name: Install hatch
+        run: pipx install hatch
+
+      - name: Cache hatch environments
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.hatch/env/virtual
+            ~/.cache/pip
+          key: hatch-ci-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+
+      - name: Run CI pipeline (nexus-build ci)
+        run: hatch run ci
+
+  # ── Hatch Matrix Test: Python 3.13 ───────────────────────────────────────
+  # Używa [[tool.hatch.envs.test.matrix]] z pyproject.toml.
+  # TODO: gdy GitHub doda wsparcie dla free-threaded Python, dodaj "3.13t"
+  test-hatch-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        python-version: ["3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pipx
+        run: pip install pipx && pipx ensurepath
+
+      - name: Install hatch
+        run: pipx install hatch
+
+      - name: Install Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+
+      - name: Cache hatch environments
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.hatch/env/virtual
+            ~/.cache/pip
+          key: hatch-test-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}
+
+      - name: Run tests via hatch
+        run: hatch run test:run
+
+      - name: Run tests with coverage
+        run: hatch run test:cov
+
+  # ── Environment matrix: dev + prod (pixi) ───────────────────────────────
+  # Testuje instalację środowisk pixi. Zachowane dla system deps (OCR, OpenCV).
   test-environments:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -72,10 +132,7 @@ jobs:
         if: matrix.environment == 'dev'
         run: pixi run -e dev pytest -x --timeout=30 -q -k "smoke or quick" tests/ 2>/dev/null || echo "ℹ️ No smoke tests found"
 
-  # ── Lint (fast): pixi exec --spec ruff ───────────────────────────────────
-  # Używa pixi exec zamiast pełnej synchronizacji środowiska — tylko ruff
-  # w efemerycznym środowisku. 3× szybszy niż lint-uv (pomija instalację
-  # całego stacka deweloperskiego).
+  # ── Lint (fast): pixi exec ───────────────────────────────────────────────
   lint-fast:
     runs-on: ubuntu-latest
     timeout-minutes: 3
@@ -94,9 +151,7 @@ jobs:
       - name: Ruff formatter check (pixi exec)
         run: pixi exec --spec ruff -- ruff format --check nexus_ai/
 
-  # ── Typecheck (fast): pixi exec --spec mypy ──────────────────────────────
-  # Używa pixi exec zamiast pełnej synchronizacji — tylko mypy
-  # w efemerycznym środowisku.
+  # ── Typecheck (fast): pixi exec ──────────────────────────────────────────
   typecheck-fast:
     runs-on: ubuntu-latest
     timeout-minutes: 3
@@ -243,9 +298,8 @@ jobs:
           path: htmlcov/
           retention-days: 14
 
-  # ── Build Rust extension: nexus-crypto (PyO3 + Maturin) ─────────────────
-  # Uwaga: Tylko platformy zdefiniowane w pixi.toml → platforms = ["linux-64", "linux-aarch64"]
-  # macOS wymaga dodania platform do pixi.toml.
+  # ── Build Rust extension: nexus-crypto przez hatch ────────────────────────
+  # Używa hatch env build:build-rust (nexus-build rust)
   build-rust:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
@@ -255,18 +309,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pixi
-        uses: prefix-dev/setup-pixi@v0.8
+      - name: Install pipx
+        run: pip install pipx && pipx ensurepath
+
+      - name: Install hatch
+        run: pipx install hatch
+
+      - name: Cache hatch environments
+        uses: actions/cache@v4
         with:
-          pixi-version: latest
-          environments: dev
-          cache: true
+          path: |
+            ~/.hatch/env/virtual
+            ~/.cache/pip
+          key: hatch-build-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
 
-      - name: Verify lockfile (--locked)
-        run: pixi install --environment dev --locked
-
-      - name: Build nexus-crypto (Maturin)
-        run: pixi run --environment dev build-rust-release
+      - name: Build Rust (nexus-build rust via hatch)
+        run: hatch run build:build-rust
 
       - name: Upload wheel
         uses: actions/upload-artifact@v4
@@ -275,9 +333,9 @@ jobs:
           path: nexus_ai/rust/target/wheels/*.whl
           retention-days: 7
 
-  # ── Build standalone .exe: Nuitka ────────────────────────────────────────
+  # ── Build standalone .exe: Nuitka przez hatch ───────────────────────────────
   build-nuitka:
-    needs: [test, build-rust]
+    needs: [test-hatch-matrix, build-rust]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
@@ -287,15 +345,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pixi
-        uses: prefix-dev/setup-pixi@v0.8
-        with:
-          pixi-version: latest
-          environments: dev
-          cache: true
+      - name: Install pipx
+        run: pip install pipx && pipx ensurepath
 
-      - name: Verify lockfile (--locked)
-        run: pixi install --environment dev --locked
+      - name: Install hatch
+        run: pipx install hatch
+
+      - name: Cache hatch environments
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.hatch/env/virtual
+            ~/.cache/pip
+          key: hatch-nuitka-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
 
       - name: Download Rust wheels
         uses: actions/download-artifact@v4
@@ -303,11 +365,8 @@ jobs:
           name: nexus-crypto-${{ matrix.os }}
           path: dist/wheels/
 
-      - name: Install Rust wheel
-        run: pixi run --environment dev pip install dist/wheels/*.whl
-
-      - name: Build with Nuitka
-        run: pixi run --environment dev build-nuitka
+      - name: Build with Nuitka via hatch
+        run: hatch run build:build-nuitka
 
       - name: Upload Nuitka build
         uses: actions/upload-artifact@v4
@@ -316,7 +375,7 @@ jobs:
           path: dist/nexus-ai*
           retention-days: 30
 
-  # ── Release: GitHub Release z załącznikami ───────────────────────────────
+  # ── Release: hatch build + GitHub Release ───────────────────────────────────
   release:
     needs: [build-nuitka]
     if: startsWith(github.ref, 'refs/tags/v')
@@ -326,13 +385,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download all Nuitka builds
+      - name: Install pipx
+        run: pip install pipx && pipx ensurepath
+
+      - name: Install hatch
+        run: pipx install hatch
+
+      - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: nexus-ai-*
+          pattern: nexus-*
           merge-multiple: true
 
-      - name: Create GitHub Release
+      - name: Create GitHub Release via hatch
         uses: softprops/action-gh-release@v2
         with:
           files: |
@@ -342,17 +407,11 @@ jobs:
           body: |
             ## NexusAI ${{ github.ref_name }}
 
-            Zobacz [RELEASE_NOTES.md](./RELEASE_NOTES.md) po szczegóły.
-
             ### Pobierz
             - **Linux**: `nexus-ai-linux` (standalone .bin)
             - **Windows**: `nexus-ai-windows` (standalone .exe)
-            - **Instalator Windows**: dostępny osobno (Inno Setup)
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Status Badge (dodaj do README.md)
+# Status Badge
 # ═══════════════════════════════════════════════════════════════════════════════
-#
 # [![CI](https://github.com/Gorski-Maciej/NexusAI/actions/workflows/ci.yml/badge.svg)](https://github.com/Gorski-Maciej/NexusAI/actions/workflows/ci.yml)
-#
-# ═══════════════════════════════════════════════════════════════════════════════
