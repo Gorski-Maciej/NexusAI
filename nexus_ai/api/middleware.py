@@ -219,7 +219,7 @@ class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
 
         started = time.perf_counter()
         request_headers = {k.decode().lower(): v.decode() for k, v in scope.get("headers", [])}
-        correlation_id = request_headers.get("x-correlation-id", str(uuid.uuid4()))
+        correlation_id = request_headers.get("x-correlation-id", uuid.uuid4().hex)
 
         # ── Phase 2: Ustaw correlation_id w ContextVar dla logowania ─────
         from nexus_ai.core.tracing import correlation_id_ctx

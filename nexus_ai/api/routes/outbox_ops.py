@@ -6,6 +6,12 @@ from litestar.exceptions import HTTPException
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_503_SERVICE_UNAVAILABLE
 from structlog import get_logger
 
+from nexus_ai.api.dto import (
+    OutboxProcessResponseDTO,
+    OutboxReplayResponseDTO,
+    OutboxStatsDTO,
+    TAG_SYSTEM,
+)
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.api.telemetry_metrics import record_outbox_relay_triggered
 
@@ -26,11 +32,17 @@ class OutboxOpsController(Controller):
 
     path = "/api/v1/system/outbox"
     guards = [owner_only_guard]
-    tags = ["System"]
+    tags = [TAG_SYSTEM]
 
     # ── GET /stats — szczegółowe statystyki ─────────────────────────────
 
-    @get("/stats")
+    @get(
+        "/stats",
+        return_dto=OutboxStatsDTO,
+        summary="Get outbox stats",
+        description="Returns detailed outbox event statistics including pending, processing, failed, and dead-letter counts.",
+        operation_id="getOutboxStats",
+    )
     async def stats(self, request: Request) -> dict:
         """Zwróć szczegółowe statystyki outbox.
 
@@ -89,7 +101,13 @@ class OutboxOpsController(Controller):
 
     # ── POST /process — ręczne wyzwolenie procesowania ─────────────────
 
-    @post("/process")
+    @post(
+        "/process",
+        return_dto=OutboxProcessResponseDTO,
+        summary="Trigger outbox processing",
+        description="Manually triggers processing of pending outbox events via OutboxRelay.",
+        operation_id="triggerOutboxProcessing",
+    )
     async def process(self, request: Request) -> dict:
         """Ręcznie wyzwól przetwarzanie oczekujących zdarzeń outbox.
 
@@ -147,7 +165,13 @@ class OutboxOpsController(Controller):
 
     # ── POST /replay-dead-letter — przywrócenie DLQ do FAILED ─────────
 
-    @post("/replay-dead-letter")
+    @post(
+        "/replay-dead-letter",
+        return_dto=OutboxReplayResponseDTO,
+        summary="Replay dead-letter events",
+        description="Restores DEAD_LETTER outbox events back to FAILED status for retry.",
+        operation_id="replayDeadLetterOutbox",
+    )
     async def replay_dead_letter(self, request: Request) -> dict:
         """Przywróć zdarzenia DEAD_LETTER do statusu FAILED (do ponownej próby).
 

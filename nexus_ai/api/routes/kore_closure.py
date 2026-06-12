@@ -7,6 +7,7 @@ from litestar import Controller, get
 from litestar.connection import Request
 from sqlalchemy import text
 
+from nexus_ai.api.dto import KoreClosureDTO, TAG_AUDIT
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
@@ -16,9 +17,15 @@ class KoreClosureController(Controller):
 
     path = "/api/v1/system/kore"
     guards = [owner_only_guard]
-    tags = ["Audit"]
+    tags = [TAG_AUDIT]
 
-    @get("/closure")
+    @get(
+        "/closure",
+        return_dto=KoreClosureDTO,
+        summary="Get KORE closure summary",
+        description="Returns executable closure summary for KORE 1-11 compliance, including security summary and runtime counters.",
+        operation_id="getKoreClosure",
+    )
     async def closure_summary(self, request: Request) -> dict:
         _root_prj = Path(__file__).resolve().parents[3]  # project root
 

@@ -222,7 +222,7 @@ class SemanticGuard:
                (id, vendor_nip, embedding, category_code, amount_net, invoice_text, transaction_id, timestamp)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
             (
-                str(uuid.uuid4()),
+                uuid.uuid4().hex,
                 vendor_nip,
                 store._vector_to_blob(embedding),
                 category_code,

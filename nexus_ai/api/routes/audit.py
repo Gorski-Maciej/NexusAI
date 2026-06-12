@@ -20,6 +20,7 @@ from litestar.exceptions import NotFoundException
 from litestar.response import Response
 from structlog import get_logger
 
+from nexus_ai.api.dto import AuditDecisionReportDTO, TAG_AUDIT
 from nexus_ai.api.rbac import requires_permission
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 
@@ -30,9 +31,16 @@ class AuditController(Controller):
     """Audit explainability endpoints — cryptographic decision trail."""
 
     path = "/api/v2/audit"
-    tags = ["Audit"]
+    tags = [TAG_AUDIT]
 
-    @get("/tax-decision/{transaction_id:str}", guards=[requires_permission("audit:view")])
+    @get(
+        "/tax-decision/{transaction_id:str}",
+        guards=[requires_permission("audit:view")],
+        return_dto=AuditDecisionReportDTO,
+        summary="Explain tax decision",
+        description="Returns a detailed audit report of a tax decision for tax authorities, including cryptographic proof and evaluation trace.",
+        operation_id="explainTaxDecision",
+    )
     async def explain_tax_decision(
         self,
         transaction_id: str,

@@ -112,7 +112,7 @@ class TestSeedDatabase:
         from datetime import datetime, timezone
 
         now = datetime.now(timezone.utc).isoformat()
-        cid = str(uuid.uuid4())
+        cid = uuid.uuid4().hex
 
         await db_session.execute(
             text(
@@ -142,7 +142,7 @@ class TestSeedDatabase:
         now = datetime.now(timezone.utc).isoformat()
 
         # First create a contractor
-        cid = str(uuid.uuid4())
+        cid = uuid.uuid4().hex
         await db_session.execute(
             text(
                 """\
@@ -155,7 +155,7 @@ class TestSeedDatabase:
         await db_session.commit()
 
         # Then create an invoice linked to that contractor
-        inv_id = str(uuid.uuid4())
+        inv_id = uuid.uuid4().hex
         await db_session.execute(
             text(
                 """\
@@ -195,8 +195,8 @@ class TestSeedDatabase:
         from datetime import datetime, timezone
 
         now = datetime.now(timezone.utc).isoformat()
-        event_id = str(uuid.uuid4())
-        inv_id = str(uuid.uuid4())
+        event_id = uuid.uuid4().hex
+        inv_id = uuid.uuid4().hex
 
         payload = msgspec_dumps({"invoice_id": inv_id, "test": True})
         await db_session.execute(
@@ -234,7 +234,7 @@ class TestSeedDatabase:
         from datetime import datetime, timezone
 
         now = datetime.now(timezone.utc).isoformat()
-        cid = str(uuid.uuid4())
+        cid = uuid.uuid4().hex
 
         # First insert
         await db_session.execute(
@@ -257,7 +257,7 @@ class TestSeedDatabase:
                     VALUES (:id, 'Duplicate', '5213456789', :now, :now)
                     """
                 ),
-                {"id": str(uuid.uuid4()), "now": now},
+                {"id": uuid.uuid4().hex, "now": now},
             )
             await db_session.commit()
 
@@ -269,7 +269,7 @@ class TestSeedDatabase:
         now = datetime.now(timezone.utc).isoformat()
 
         # Create invoice
-        inv_id = str(uuid.uuid4())
+        inv_id = uuid.uuid4().hex
         await db_session.execute(
             text(
                 """\
@@ -284,7 +284,7 @@ class TestSeedDatabase:
         await db_session.commit()
 
         # Create audit entry
-        audit_id = str(uuid.uuid4())
+        audit_id = uuid.uuid4().hex
         await db_session.execute(
             text(
                 """\

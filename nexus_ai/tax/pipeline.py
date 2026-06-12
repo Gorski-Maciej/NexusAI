@@ -140,7 +140,7 @@ class TaxPipeline:
         Returns:
             :class:`PipelineResult` with success/failure and full trace.
         """
-        tx_id = transaction_id or str(uuid.uuid4())
+        tx_id = transaction_id or uuid.uuid4().hex
         context = ContextInterpreter.build(invoice_data)
 
         # ── Step 2: Rule Engine ──────────────────────────────────────────
@@ -509,7 +509,7 @@ class TaxPipeline:
         """
         import uuid
 
-        example_id = str(uuid.uuid4())
+        example_id = uuid.uuid4().hex
         now = pendulum.now("UTC").isoformat()
 
         # Ensure schema exists

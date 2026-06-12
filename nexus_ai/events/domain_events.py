@@ -32,7 +32,7 @@ class DomainEvent(msgspec.Struct, kw_only=True, frozen=True):
         version: Numer wersji agregatu (optimistic concurrency).
     """
 
-    event_id: str = msgspec.field(default_factory=lambda: str(uuid.uuid4()))
+    event_id: str = msgspec.field(default_factory=lambda: uuid.uuid4().hex)
     aggregate_type: str = ""
     event_type: str = ""
     timestamp: str = msgspec.field(

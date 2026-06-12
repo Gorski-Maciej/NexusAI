@@ -74,7 +74,7 @@ class AuditLogger:
                 INSERT INTO audit_log (id, timestamp, event_type, data_payload, previous_hash, current_hash)
                 VALUES (?, ?, ?, ?, ?, ?)
                 """,
-                (str(uuid.uuid4()), timestamp, event_type, payload_json, previous_hash, current_hash),
+                (uuid.uuid4().hex, timestamp, event_type, payload_json, previous_hash, current_hash),
             )
             connection.execute("COMMIT")
             return current_hash

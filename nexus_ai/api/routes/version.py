@@ -5,14 +5,22 @@ from typing import Any
 
 from litestar import Controller, get
 
+from nexus_ai.api.dto import TAG_SYSTEM, VersionInfoDTO
+
 
 class VersionController(Controller):
     """API version information endpoint."""
 
     path = "/api/version"
-    tags = ["System"]
+    tags = [TAG_SYSTEM]
 
-    @get("/")
+    @get(
+        "/",
+        return_dto=VersionInfoDTO,
+        summary="Get API version info",
+        description="Returns current API version, deprecated versions, and migration paths.",
+        operation_id="getApiVersion",
+    )
     async def get_version(self) -> dict[str, Any]:
         """Return current API version and deprecation info."""
         return {

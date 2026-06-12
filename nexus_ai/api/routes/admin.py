@@ -17,8 +17,15 @@ from litestar.connection import Request
 from litestar.exceptions import NotFoundException, ValidationException
 from litestar.response import Response
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncEngine
 from structlog import get_logger
 
+from nexus_ai.api.dto import (
+    ChangeRoleDTO,
+    GenericDictDTO,
+    RiskThresholdDTO,
+    TAG_ADMIN,
+)
 from nexus_ai.api.rbac import admin_only_guard, requires_permission
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_dumps_bytes
@@ -44,11 +51,17 @@ class AdminController(Controller):
     """Panel administracyjny — zarządzanie użytkownikami, regułami, DLQ."""
     path = "/api/admin"
     guards = [admin_only_guard]
-    tags = ["Admin"]
+    tags = [TAG_ADMIN]
 
-    @get("/failed-tasks", guards=[requires_permission("admin:failed-tasks")])
-    async def list_failed_tasks(self, request: Request) -> dict:
-        """List all failed tasks (paginated, with filtering)."""
+    @get(
+        "/failed-tasks",
+        guards=[requires_permission("admin:failed-tasks")],
+        return_dto=GenericDictDTO,
+        summary="List failed tasks",
+        description="List all failed tasks with pagination and filtering by resolved status and task name.",
+        operation_id="listFailedTasks",
+    )
+    async def list_failed_tasks(self, request: Request, db_engine: AsyncEngine) -> dict:
         resolved_filter = request.query_params.get("resolved")
         task_name_filter = request.query_params.get("task_name")
         limit = int(request.query_params.get("limit", "50"))
@@ -67,7 +80,7 @@ class AdminController(Controller):
 
         where_sql = " AND ".join(where_clauses)
 
-        async with request.app.state.db_engine.connect() as conn:
+        async with db_engine.connect() as conn:
             # Count total
             count_row = (
                 await conn.execute(
@@ -102,10 +115,16 @@ class AdminController(Controller):
             "offset": offset,
         }
 
-    @post("/failed-tasks/{task_id:str}/retry", guards=[requires_permission("admin:failed-tasks")])
-    async def retry_failed_task(self, task_id: str, request: Request) -> Response[dict]:
-        """Reset a failed task so it can be retried."""
-        async with request.app.state.db_engine.connect() as conn:
+    @post(
+        "/failed-tasks/{task_id:str}/retry",
+        guards=[requires_permission("admin:failed-tasks")],
+        return_dto=GenericDictDTO,
+        summary="Retry failed task",
+        description="Reset a failed task and re-queue it for retry.",
+        operation_id="retryFailedTask",
+    )
+    async def retry_failed_task(self, task_id: str, request: Request, db_engine: AsyncEngine) -> Response[dict]:
+        async with db_engine.connect() as conn:
             row = (
                 await conn.execute(
                     text(
@@ -137,7 +156,7 @@ class AdminController(Controller):
             task_name = row["task_name"]
             payload = row["payload"]
             try:
-                await _republish_task(request, task_name, payload)
+                await _republish_task(db_engine, task_name, payload)
                 logger.info("Task %s (%s) re-queued for retry by %s", task_id, task_name, username)
             except Exception as exc:
                 logger.warning("Could not republish task %s: %s", task_id, exc)
@@ -149,10 +168,17 @@ class AdminController(Controller):
             status_code=200,
         )
 
-    @delete("/failed-tasks/{task_id:str}", status_code=200, guards=[requires_permission("admin:failed-tasks")])
-    async def delete_failed_task(self, task_id: str, request: Request) -> Response[dict]:
-        """Permanently delete a failed task entry."""
-        async with request.app.state.db_engine.connect() as conn:
+    @delete(
+        "/failed-tasks/{task_id:str}",
+        status_code=200,
+        guards=[requires_permission("admin:failed-tasks")],
+        return_dto=GenericDictDTO,
+        summary="Delete failed task",
+        description="Permanently delete a failed task entry.",
+        operation_id="deleteFailedTask",
+    )
+    async def delete_failed_task(self, task_id: str, request: Request, db_engine: AsyncEngine) -> Response[dict]:
+        async with db_engine.connect() as conn:
             row = (
                 await conn.execute(
                     text("SELECT id FROM failed_tasks WHERE id = :id"),
@@ -175,10 +201,16 @@ class AdminController(Controller):
             status_code=200,
         )
 
-    @post("/failed-tasks/retry-all", guards=[requires_permission("admin:failed-tasks")])
-    async def retry_all_failed_tasks(self, request: Request) -> dict:
-        """Retry all unresolved failed tasks."""
-        async with request.app.state.db_engine.connect() as conn:
+    @post(
+        "/failed-tasks/retry-all",
+        guards=[requires_permission("admin:failed-tasks")],
+        return_dto=GenericDictDTO,
+        summary="Retry all failed tasks",
+        description="Retry all unresolved failed tasks in bulk.",
+        operation_id="retryAllFailedTasks",
+    )
+    async def retry_all_failed_tasks(self, request: Request, db_engine: AsyncEngine) -> dict:
+        async with db_engine.connect() as conn:
             rows = (
                 await conn.execute(
                     text("SELECT id, task_name, payload FROM failed_tasks WHERE resolved = 0")
@@ -206,7 +238,7 @@ class AdminController(Controller):
                 )
 
                 try:
-                    await _republish_task(request, task_name, payload)
+                    await _republish_task(db_engine, task_name, payload)
                     retried += 1
                 except Exception:
                     logger.warning("Could not republish task %s during bulk retry", task_id)
@@ -216,9 +248,16 @@ class AdminController(Controller):
         logger.info("Bulk retry: %d tasks re-queued by %s", retried, username)
         return {"status": "ok", "retried": retried}
 
-    @put("/users/{user_id:str}/role", guards=[requires_permission("user:edit")])
-    async def change_user_role(self, user_id: str, data: ChangeRoleRequest, request: Request) -> Response[dict]:
-        """Change a user's role. Only admin can change roles."""
+    @put(
+        "/users/{user_id:str}/role",
+        guards=[requires_permission("user:edit")],
+        dto=ChangeRoleDTO,
+        return_dto=GenericDictDTO,
+        summary="Change user role",
+        description="Change a user's role. Valid roles: admin, accountant, auditor, viewer.",
+        operation_id="changeUserRole",
+    )
+    async def change_user_role(self, user_id: str, data: ChangeRoleRequest, request: Request, db_engine: AsyncEngine) -> Response[dict]:
         valid_roles = {"admin", "accountant", "auditor", "viewer"}
         new_role = data.role.strip().lower()
 
@@ -230,7 +269,7 @@ class AdminController(Controller):
         actor = getattr(request, "user", None)
         actor_name = getattr(actor, "username", "system") if actor else "system"
 
-        async with request.app.state.db_engine.begin() as conn:
+        async with db_engine.begin() as conn:
             # Check user exists
             user_row = (
                 await conn.execute(
@@ -271,7 +310,7 @@ class AdminController(Controller):
                     text(
                         "INSERT INTO user_roles (id, user_id, role_id) VALUES (:id, :uid, :rid)"
                     ),
-                    {"id": str(uuid.uuid4()), "uid": user_id, "rid": role_row["id"]},
+                    {"id": uuid.uuid4().hex, "uid": user_id, "rid": role_row["id"]},
                 )
 
             # Log to audit (inside the same transaction)
@@ -281,7 +320,7 @@ class AdminController(Controller):
                        VALUES (:id, :uid, 'ROLE_CHANGE', :old_val, :new_val, :now, :now)"""
                 ),
                 {
-                    "id": str(uuid.uuid4()),
+                    "id": uuid.uuid4().hex,
                     "uid": user_id,
                     "old_val": msgspec_dumps({"role": old_role, "changed_by": actor_name}),
                     "new_val": msgspec_dumps({"role": new_role}),
@@ -310,7 +349,14 @@ class AdminController(Controller):
 
     # ── Risk Thresholds admin endpoints (Part V) ────────────────────────
 
-    @get("/risk-thresholds", guards=[requires_permission("admin:risk-thresholds")])
+    @get(
+        "/risk-thresholds",
+        guards=[requires_permission("admin:risk-thresholds")],
+        return_dto=GenericDictDTO,
+        summary="List risk thresholds",
+        description="List all active risk threshold rules.",
+        operation_id="listRiskThresholds",
+    )
     async def list_risk_thresholds(self, request: Request) -> dict:
         """List all active risk threshold rules."""
         import duckdb
@@ -326,17 +372,16 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @post("/risk-thresholds", guards=[requires_permission("admin:risk-thresholds")])
+    @post(
+        "/risk-thresholds",
+        guards=[requires_permission("admin:risk-thresholds")],
+        dto=RiskThresholdDTO,
+        return_dto=GenericDictDTO,
+        summary="Create risk threshold",
+        description="Create a new risk threshold rule (append-only, never update). Requires condition and output dicts.",
+        operation_id="createRiskThreshold",
+    )
     async def create_risk_threshold(self, data: RiskThresholdCreate, request: Request) -> dict:
-        """Create a new risk threshold rule (append-only, never update).
-
-        Body:
-            condition: dict (e.g. {"tax_form": "CIT_STANDARD"})
-            output: dict (e.g. {"required_ml_confidence": 0.98, "action_if_below": "BLOCK_AND_ALERT"})
-            valid_from: str (YYYY-MM-DD, default "2024-01-01")
-            valid_to: str | None
-            priority: int (default 100, lower = higher priority)
-        """
         import duckdb
 
         from services.risk_guard import RiskGuard
@@ -371,9 +416,14 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @get("/system/health")
-    async def system_health(self, request: Request) -> dict:
-        """Comprehensive system health check."""
+    @get(
+        "/system/health",
+        return_dto=GenericDictDTO,
+        summary="System health check",
+        description="Comprehensive system health check including database, failed tasks, and system status.",
+        operation_id="adminSystemHealth",
+    )
+    async def system_health(self, request: Request, db_engine: AsyncEngine) -> dict:
 
         health = {
             "status": "ok",
@@ -382,7 +432,7 @@ class AdminController(Controller):
 
         # Check database
         try:
-            async with request.app.state.db_engine.connect() as conn:
+            async with db_engine.connect() as conn:
                 await conn.execute(text("SELECT 1"))
             health["database"] = "connected"
         except Exception as e:
@@ -391,7 +441,7 @@ class AdminController(Controller):
 
         # Check failed tasks count
         try:
-            async with request.app.state.db_engine.connect() as conn:
+            async with db_engine.connect() as conn:
                 count = (
                     await conn.execute(
                         text("SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0")
@@ -403,9 +453,16 @@ class AdminController(Controller):
 
         return health
 
-    @put("/risk-thresholds/{rule_id:str}/deprecate", guards=[requires_permission("admin:risk-thresholds")])
+    @put(
+        "/risk-thresholds/{rule_id:str}/deprecate",
+        guards=[requires_permission("admin:risk-thresholds")],
+        return_dto=GenericDictDTO,
+        summary="Deprecate risk threshold",
+        description="Deactivate a risk threshold rule by setting valid_to = today.",
+        operation_id="deprecateRiskThreshold",
+    )
     async def deprecate_risk_threshold(self, rule_id: str, request: Request) -> dict:
-        """Deactivate a risk threshold rule by setting valid_to = today.
+        """Deactivate a risk threshold rule by setting valid_to = today."
 
         This is a soft-delete: the rule remains in the database but
         is no longer active.
@@ -442,9 +499,16 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @get("/risk-thresholds/history", guards=[requires_permission("admin:risk-thresholds")])
+    @get(
+        "/risk-thresholds/history",
+        guards=[requires_permission("admin:risk-thresholds")],
+        return_dto=GenericDictDTO,
+        summary="List risk thresholds history",
+        description="Full version history of all risk threshold rules (append-only).",
+        operation_id="listRiskThresholdsHistory",
+    )
     async def list_risk_thresholds_history(self, request: Request) -> dict:
-        """History of all risk threshold rules (append-only — full version history).
+        """History of all risk threshold rules (append-only — full version history)."
 
         Since the table is append-only, all entries represent the full
         history of changes. The response includes active and deprecated rules.
@@ -464,7 +528,14 @@ class AdminController(Controller):
 
     # ── Billing Rules admin endpoints ───────────────────────────────────
 
-    @get("/billing-rules", guards=[requires_permission("admin:billing-rules")])
+    @get(
+        "/billing-rules",
+        guards=[requires_permission("admin:billing-rules")],
+        return_dto=GenericDictDTO,
+        summary="List billing rules",
+        description="List all active billing rules.",
+        operation_id="listBillingRules",
+    )
     async def list_billing_rules(self, request: Request) -> dict:
         """List all active billing rules."""
         import duckdb
@@ -480,7 +551,14 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @post("/billing-rules", guards=[requires_permission("admin:billing-rules")])
+    @post(
+        "/billing-rules",
+        guards=[requires_permission("admin:billing-rules")],
+        return_dto=GenericDictDTO,
+        summary="Create billing rule",
+        description="Create a new billing rule (append-only, never update).",
+        operation_id="createBillingRule",
+    )
     async def create_billing_rule(self, request: Request) -> dict:
         """Create a new billing rule (append-only, never update)."""
         import duckdb
@@ -523,7 +601,14 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @post("/billing-rules/{rule_id:str}/deprecate", guards=[requires_permission("admin:billing-rules")])
+    @post(
+        "/billing-rules/{rule_id:str}/deprecate",
+        guards=[requires_permission("admin:billing-rules")],
+        return_dto=GenericDictDTO,
+        summary="Deprecate billing rule",
+        description="Deactivate a billing rule.",
+        operation_id="deprecateBillingRule",
+    )
     async def deprecate_billing_rule(self, rule_id: str, request: Request) -> dict:
         """Deactivate a billing rule."""
         import duckdb
@@ -555,7 +640,14 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @get("/billing-rules/history", guards=[requires_permission("admin:billing-rules")])
+    @get(
+        "/billing-rules/history",
+        guards=[requires_permission("admin:billing-rules")],
+        return_dto=GenericDictDTO,
+        summary="List billing rules history",
+        description="Full version history of all billing rules (append-only).",
+        operation_id="listBillingRulesHistory",
+    )
     async def list_billing_rules_history(self, request: Request) -> dict:
         """History of all billing rules (append-only, full version history)."""
         import duckdb
@@ -573,9 +665,16 @@ class AdminController(Controller):
 
     # ── Replay Engine admin endpoint ────────────────────────────────────
 
-    @post("/audit/replay/{transaction_id:str}", guards=[requires_permission("admin:audit")])
+    @post(
+        "/audit/replay/{transaction_id:str}",
+        guards=[requires_permission("admin:audit")],
+        return_dto=GenericDictDTO,
+        summary="Replay decision",
+        description="Replay a historical tax decision and compare verdicts.",
+        operation_id="replayDecision",
+    )
     async def replay_decision(self, transaction_id: str, request: Request) -> dict:
-        """Replay a historical tax decision and compare verdicts.
+        """Replay a historical tax decision and compare verdicts."
 
         Returns the original verdict, replayed verdict, and match status.
         """
@@ -599,9 +698,16 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @post("/audit/replay-batch", guards=[requires_permission("admin:audit")])
+    @post(
+        "/audit/replay-batch",
+        guards=[requires_permission("admin:audit")],
+        return_dto=GenericDictDTO,
+        summary="Replay batch decisions",
+        description="Replay all decisions in a date range.",
+        operation_id="replayBatch",
+    )
     async def replay_batch(self, request: Request) -> dict:
-        """Replay all decisions in a date range.
+        """Replay all decisions in a date range."
 
         Body:
             period_start: str (YYYY-MM-DD)
@@ -648,7 +754,14 @@ class AdminController(Controller):
 
     # ── Rules admin endpoints ───────────────────────────────────────────
 
-    @get("/rules", guards=[requires_permission("admin:rules")])
+    @get(
+        "/rules",
+        guards=[requires_permission("admin:rules")],
+        return_dto=GenericDictDTO,
+        summary="List tax rules",
+        description="List all tax rules with optional filtering.",
+        operation_id="listTaxRules",
+    )
     async def list_rules(self, request: Request) -> dict:
         """List all tax rules with optional filtering."""
         import duckdb
@@ -676,7 +789,14 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @post("/rules", guards=[requires_permission("admin:rules")])
+    @post(
+        "/rules",
+        guards=[requires_permission("admin:rules")],
+        return_dto=GenericDictDTO,
+        summary="Create tax rule",
+        description="Create a new tax rule (append-only, never update). Requires condition_sql.",
+        operation_id="createTaxRule",
+    )
     async def create_rule(self, request: Request) -> dict:
         """Create a new tax rule (append-only, never update)."""
         import duckdb
@@ -721,7 +841,14 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @post("/rules/{rule_id:str}/close", guards=[requires_permission("admin:rules")])
+    @post(
+        "/rules/{rule_id:str}/close",
+        guards=[requires_permission("admin:rules")],
+        return_dto=GenericDictDTO,
+        summary="Close tax rule",
+        description="Close a tax rule (set valid_to to today).",
+        operation_id="closeTaxRule",
+    )
     async def close_rule(self, rule_id: str, request: Request) -> dict:
         """Close a tax rule (set valid_to to today)."""
         import duckdb
@@ -758,7 +885,14 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @get("/rules/{rule_id:str}", guards=[requires_permission("admin:rules")])
+    @get(
+        "/rules/{rule_id:str}",
+        guards=[requires_permission("admin:rules")],
+        return_dto=GenericDictDTO,
+        summary="Get tax rule",
+        description="Get a single tax rule by ID.",
+        operation_id="getTaxRule",
+    )
     async def get_rule(self, rule_id: str, request: Request) -> dict:
         """Get a single tax rule by ID."""
         import duckdb
@@ -777,7 +911,14 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @get("/rules/changelog", guards=[requires_permission("admin:rules")])
+    @get(
+        "/rules/changelog",
+        guards=[requires_permission("admin:rules")],
+        return_dto=GenericDictDTO,
+        summary="List rule changes",
+        description="Get tax rule change log.",
+        operation_id="listRuleChanges",
+    )
     async def list_rule_changes(self, request: Request) -> dict:
         """Get rule change log."""
         import duckdb
@@ -799,7 +940,14 @@ class AdminController(Controller):
 
     # ── Ledger Validation Rules admin endpoints ────────────────────────
 
-    @get("/ledger-rules", guards=[requires_permission("admin:ledger")])
+    @get(
+        "/ledger-rules",
+        guards=[requires_permission("admin:ledger")],
+        return_dto=GenericDictDTO,
+        summary="List ledger rules",
+        description="List all ledger validation rules.",
+        operation_id="listLedgerRules",
+    )
     async def list_ledger_rules(self, request: Request) -> dict:
         """List all ledger validation rules."""
         import duckdb
@@ -815,7 +963,14 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @post("/ledger-rules", guards=[requires_permission("admin:ledger")])
+    @post(
+        "/ledger-rules",
+        guards=[requires_permission("admin:ledger")],
+        return_dto=GenericDictDTO,
+        summary="Create ledger rule",
+        description="Create a new ledger validation rule (append-only).",
+        operation_id="createLedgerRule",
+    )
     async def create_ledger_rule(self, request: Request) -> dict:
         """Create a new ledger validation rule (append-only).
 
@@ -869,7 +1024,14 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @delete("/ledger-rules/{rule_id:str}", guards=[requires_permission("admin:ledger")])
+    @delete(
+        "/ledger-rules/{rule_id:str}",
+        guards=[requires_permission("admin:ledger")],
+        return_dto=GenericDictDTO,
+        summary="Delete ledger rule",
+        description="Deactivate a ledger validation rule (soft-delete via valid_to).",
+        operation_id="deleteLedgerRule",
+    )
     async def delete_ledger_rule(self, rule_id: str, request: Request) -> dict:
         """Deactivate a ledger validation rule (soft-delete via valid_to)."""
         import duckdb
@@ -900,7 +1062,14 @@ class AdminController(Controller):
 
     # ── Fallback Events admin endpoints ─────────────────────────────────
 
-    @get("/fallback-events", guards=[requires_permission("admin:fallback")])
+    @get(
+        "/fallback-events",
+        guards=[requires_permission("admin:fallback")],
+        return_dto=GenericDictDTO,
+        summary="List fallback events",
+        description="List fallback events (no-matching-rule incidents).",
+        operation_id="listFallbackEvents",
+    )
     async def list_fallback_events(self, request: Request) -> dict:
         """List fallback events (no-matching-rule incidents)."""
         import duckdb
@@ -925,7 +1094,14 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @post("/fallback-events/{event_id:str}/resolve", guards=[requires_permission("admin:fallback")])
+    @post(
+        "/fallback-events/{event_id:str}/resolve",
+        guards=[requires_permission("admin:fallback")],
+        return_dto=GenericDictDTO,
+        summary="Resolve fallback event",
+        description="Resolve a fallback event.",
+        operation_id="resolveFallbackEvent",
+    )
     async def resolve_fallback_event(self, event_id: str, request: Request) -> dict:
         """Resolve a fallback event."""
         import duckdb
@@ -949,7 +1125,14 @@ class AdminController(Controller):
 
     # ── Integrity Verification admin endpoint ─────────────────────────
 
-    @post("/audit/verify-integrity", guards=[requires_permission("admin:audit")])
+    @post(
+        "/audit/verify-integrity",
+        guards=[requires_permission("admin:audit")],
+        return_dto=GenericDictDTO,
+        summary="Verify integrity",
+        description="Verify integrity of the decision trace hash chain.",
+        operation_id="verifyIntegrity",
+    )
     async def verify_integrity(self, request: Request) -> dict:
         """Verify integrity of the decision trace hash chain.
 
@@ -1017,7 +1200,14 @@ class AdminController(Controller):
         finally:
             conn.close()
 
-    @post("/fallback-events/{event_id:str}/ignore", guards=[requires_permission("admin:fallback")])
+    @post(
+        "/fallback-events/{event_id:str}/ignore",
+        guards=[requires_permission("admin:fallback")],
+        return_dto=GenericDictDTO,
+        summary="Ignore fallback event",
+        description="Ignore a fallback event without resolving.",
+        operation_id="ignoreFallbackEvent",
+    )
     async def ignore_fallback_event(self, event_id: str, request: Request) -> dict:
         """Ignore a fallback event."""
         import duckdb
@@ -1037,22 +1227,15 @@ class AdminController(Controller):
 
     # ── Hot-Reload Health endpoint ───────────────────────────────────────
 
-    @get("/hot-reload/health", guards=[requires_permission("admin:hot-reload")])
+    @get(
+        "/hot-reload/health",
+        guards=[requires_permission("admin:hot-reload")],
+        return_dto=GenericDictDTO,
+        summary="Hot-reload health",
+        description="Show NATS hot-reload listener status and per-subject event counts.",
+        operation_id="getHotReloadHealth",
+    )
     async def hot_reload_health(self, request: Request) -> dict:
-        """Show NATS hot-reload listener status and per-subject event counts.
-
-        Returns:
-            status: "connected" | "disconnected"
-            nats_url: Configured NATS URL
-            subscriptions: List of subscribed rule topics
-            events_total: Total events received since startup
-            events_per_subject: Per-subject event counts
-            last_event_at: Per-subject last event timestamp (ISO)
-            uptime_seconds: Seconds since listener started
-
-        The listener is created during API startup (on_startup).
-        If NATS was unavailable at startup, status will be "disconnected".
-        """
         listener = getattr(request.app.state, "hot_reload_listener", None)
         if listener is None:
             return {
@@ -1073,15 +1256,15 @@ class AdminController(Controller):
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 
-async def _republish_task(request: Request, task_name: str, payload: str) -> None:
+async def _republish_task(db_engine, task_name: str, payload: str) -> None:
     """Re-publish a task to the appropriate queue for retry.
 
     This is a simplified implementation. In production, this would
     send the task back to NATS/Taskiq for reprocessing.
     """
     # Store a new outbox event for the retry
-    async with request.app.state.db_engine.connect() as conn:
-        event_id = str(uuid.uuid4())
+    async with db_engine.connect() as conn:
+        event_id = uuid.uuid4().hex
         now = pendulum.now("UTC").isoformat()
         await conn.execute(
             text(
@@ -1091,7 +1274,7 @@ async def _republish_task(request: Request, task_name: str, payload: str) -> Non
             {
                 "id": event_id,
                 "event_type": f"retry:{task_name}",
-                "aggregate_id": str(uuid.uuid4()),
+                "aggregate_id": uuid.uuid4().hex,
                 "payload": payload,
                 "created_at": now,
             },

@@ -142,7 +142,7 @@ class DecisionLogger:
         ple_ltm_profile: dict[str, Any] | None = None,
     ) -> None:
         """Persist a decision with full PLE context."""
-        decision_id = str(uuid.uuid4())
+        decision_id = uuid.uuid4().hex
         try:
             await anyio.to_thread.run_sync(
                 self._duckdb.execute,
@@ -199,7 +199,7 @@ class DecisionLogger:
         final_decision: str,
     ) -> None:
         """Zapisz trust score do cache (synchronicznie, wołane z executa)."""
-        cache_id = str(uuid.uuid4())
+        cache_id = uuid.uuid4().hex
         self._duckdb.execute(
             """
             INSERT INTO trust_score_cache

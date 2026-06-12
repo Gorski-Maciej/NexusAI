@@ -19,8 +19,6 @@ from __future__ import annotations
 from msgspec import Struct
 from typing import Any
 
-import pendulum
-
 import duckdb
 import pendulum
 

@@ -388,7 +388,7 @@ class TestPipelineEdgeCases:
     async def test_explicit_transaction_id(self, conn: duckdb.DuckDBPyConnection) -> None:
         """Passing an explicit transaction_id is preserved."""
         pipeline = TaxPipeline(conn)
-        tx_id = str(uuid.uuid4())
+        tx_id = uuid.uuid4().hex
         invoice = {
             "category_code": "FUEL",
             "transaction_date": "2025-06-01",

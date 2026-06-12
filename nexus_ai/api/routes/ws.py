@@ -21,8 +21,8 @@ from nexus_ai.core.msgspec_utils import msgspec_dumps
 
 logger = get_logger("nexus.api.ws")
 
-# Rejestr aktywnych subskrybentów: task_id -> list[asyncio.Queue]
-# Każdy podłączony klient SSE ma własną kolejkę asyncio.
+# Rejestr aktywnych subskrybentów: task_id -> list[anyio.MemoryObjectSendStream]
+# Każdy podłączony klient SSE ma własną kolejkę anyio.
 _active_connections: dict[str, list[anyio.MemoryObjectSendStream[str]]] = {}
 
 # Rejestr subskrybentów wildcard ("*" — wszystkie zadania)

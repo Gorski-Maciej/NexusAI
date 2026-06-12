@@ -384,7 +384,7 @@ def seed_default_rules(conn: duckdb.DuckDBPyConnection) -> None:
                 priority, description_template, created_by)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
             (
-                str(uuid.uuid4()),
+                uuid.uuid4().hex,
                 rule["condition_sql"],
                 msgspec_dumps(rule["action_json"], ensure_ascii=False),
                 rule["valid_from"],
@@ -896,7 +896,7 @@ class RuleEngine:
         Returns:
             The UUID of the newly created rule.
         """
-        rule_id = str(uuid.uuid4())
+        rule_id = uuid.uuid4().hex
         vf = valid_from.isoformat() if isinstance(valid_from, (pendulum.Date, pendulum.DateTime)) else valid_from
         vt = valid_to.isoformat() if isinstance(valid_to, (pendulum.Date, pendulum.DateTime)) else valid_to
 

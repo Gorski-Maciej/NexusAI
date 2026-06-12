@@ -131,7 +131,7 @@ class TestDatabaseIntegration:
         # Add an outbox event manually — simulating what the API does
         import uuid, datetime
 
-        outbox_id = str(uuid.uuid4())
+        outbox_id = uuid.uuid4().hex
         event_payload = msgspec_dumps({
             "invoice_id": sample_invoice["id"],
             "source": "test",
@@ -187,7 +187,7 @@ class TestDatabaseIntegration:
         from datetime import timezone
 
         now = datetime.datetime.now(timezone.utc).isoformat()
-        audit_id = str(uuid.uuid4())
+        audit_id = uuid.uuid4().hex
 
         await db_session.execute(
             text(
@@ -227,7 +227,7 @@ class TestDatabaseIntegration:
         ]
 
         for number, net, gross, status, lang in invoices_data:
-            inv_id = str(uuid.uuid4())
+            inv_id = uuid.uuid4().hex
             await db_session.execute(
                 text(
                     """\
@@ -263,7 +263,7 @@ class TestDatabaseIntegration:
         now = datetime.datetime.now(timezone.utc).isoformat()
 
         # Create
-        fx_id = str(uuid.uuid4())
+        fx_id = uuid.uuid4().hex
         await db_session.execute(
             text(
                 """\

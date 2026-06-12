@@ -2,6 +2,7 @@ import os
 
 import anyio
 import shutil
+import threading
 import uuid
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from structlog import get_logger
 
 from nexus_ai.api.auth_service import hash_password
 from nexus_ai.api.shared_image_buffer import SharedImageBuffer
+from nexus_ai.core.background_task_manager import BackgroundTaskManager
 from nexus_ai.core.broker import broker
 from nexus_ai.core.saga import PersistedSagaStore
 from nexus_ai.core.secrets import LocalSecretsCache, OfflineFirstSecretResolver
@@ -27,22 +29,29 @@ from nexus_ai.services.migration_sanity import (
 from nexus_ai.services.outbox_relay import OutboxRelay
 
 # ── OpenTelemetry metrics initialization ───────────────────────────────────
-# Zastępuje: prometheus_client (bezpośrednia zależność)
-# Nowy:     OpenTelemetry Metrics API + SDK z Prometheus Exporter
-_METRICS_INITIALIZED = False
+# Thread-safe dla free-threaded Python — używa threading.Event zamiast bool
+_METRICS_INITIALIZED_EVENT = threading.Event()
 
 
-def _init_otel_metrics() -> None:
-    """Initialize OpenTelemetry metrics (zastępuje prometheus_client)."""
-    global _METRICS_INITIALIZED
-    if _METRICS_INITIALIZED:
+def _init_otel_metrics_sync() -> None:
+    """Initialize OpenTelemetry metrics (sync part — thread-safe)."""
+    if _METRICS_INITIALIZED_EVENT.is_set():
         return
 
-    # Inicjalizacja metryk zdefiniowanych w api.telemetry_metrics
-    from api.telemetry_metrics import init_metrics
-    init_metrics()
+    from nexus_ai.api.telemetry_metrics import init_metrics
 
-    # Rejestruj podstawowe metryki systemowe (Python process metrics)
+    init_metrics()
+    _METRICS_INITIALIZED_EVENT.set()
+    logger.info("[METRICS] OpenTelemetry metrics initialized (see /metrics endpoint)")
+
+
+async def _start_metrics_background_task(app: Litestar) -> None:
+    """Spawn background system metrics updater via BackgroundTaskManager.
+
+    Rejestruje task w ``app.state.bg_tasks`` zamiast manualnego
+    ``anyio.ensure_backend().create_task()`` — task jest automatycznie
+    anulowany przez ``cancel_all()`` podczas shutdownu.
+    """
     try:
         import psutil
 
@@ -50,7 +59,8 @@ def _init_otel_metrics() -> None:
 
         async def _update_system_metrics() -> None:
             """Periodically update system-level gauges."""
-            from api.telemetry_metrics import set_memory_usage
+            from nexus_ai.api.telemetry_metrics import set_memory_usage
+
             while True:
                 try:
                     mem = _proc.memory_info().rss / (1024 * 1024)
@@ -59,16 +69,17 @@ def _init_otel_metrics() -> None:
                     pass
                 await anyio.sleep(30)
 
-        async with anyio.create_task_group() as tg:
-            tg.start_soon(_update_system_metrics)
-        logger.info("[METRICS] System metrics updater started (30s interval)")
+        app.state.bg_tasks.start_task(
+            "metrics_updater",
+            _update_system_metrics(),
+            metadata={"description": "System metrics gauge (30s interval)"},
+        )
+        logger.info("[METRICS] System metrics updater started via BackgroundTaskManager (30s interval)")
     except ImportError:
         logger.debug("[METRICS] psutil not available — system metrics disabled")
     except Exception as exc:
         logger.debug("[METRICS] System metrics updater failed: %s", exc)
 
-    _METRICS_INITIALIZED = True
-    logger.info("[METRICS] OpenTelemetry metrics initialized (see /metrics endpoint)")
 
 
 # ── SQLCipher engine helper ────────────────────────────────────────────────
@@ -123,53 +134,23 @@ def _resolve_startup_secret(config, key_name: str, env_var: str, default_value: 
     resolved = resolver.resolve(key_name, provider)
     return resolved or default_value
 
-async def on_startup(app: Litestar) -> None:
-    """Inicjalizacja ciężkich zasobów przy starcie API.
+# ── Schema DDL helper ──────────────────────────────────────────────────────
 
-    Fazowanie startu:
-      1. Opóźnialne: metryki OTel, cache ML, silnik DB
-      2. Wymagane: sesje, saga_store, schema
-      3. Opcjonalne: broker, DuckDB, outbox, hot-reload
 
-    Każda faza jest izolowana w try/except — awaria nie powoduje
-    całkowitego failure startu (chyba że ``environment in {"stage", "prod"}``
-    i faza krytyczna zawiedzie).
+async def _ensure_schema_tables(engine, config: AppConfig) -> None:
+    """Create all required DB tables if they don't exist.
+
+    Extracted from on_startup Phase 2 for testability.
+    Docelowo te DDL powinny być w migracjach Alembic.
     """
-
-    # ── Phase 0: Config + ML cache ───────────────────────────────────
-    config = app.dependencies["config"]()
-    app.state.ml_cache_env = _configure_ml_cache_directories(config.base_dir)
-
-    # ── Phase 1: OpenTelemetry metrics ───────────────────────────────
-    try:
-        _init_otel_metrics()
-    except Exception as exc:
-        logger.warning("[STARTUP] OTel metrics init failed (non-fatal): %s", exc)
-
-    # ── Phase 2: Database engine + core services ─────────────────────
-    engine = None
-    try:
-        engine = _make_engine(config)
-        app.state.db_engine = engine
-        app.state.db_session_factory = create_session_factory(engine)
-        app.state.shared_image_buffer = SharedImageBuffer(max_items=128)
-        app.state.saga_store = PersistedSagaStore(engine)
-        await app.state.saga_store.ensure_schema()
-    except Exception as exc:
-        logger.critical("[STARTUP] Database engine init FAILED: %s", exc)
-        if config.environment in {"stage", "prod"}:
-            raise
-        app.state.db_engine = None
-        app.state.db_session_factory = None
-        if app.state.saga_store is not None:
-            try:
-                await app.state.saga_store.ensure_schema()
-            except Exception:
-                pass
     admin_username = os.getenv("NEXUS_ADMIN_USERNAME", "admin")
-    admin_password = _resolve_startup_secret(config, key_name="admin_password", env_var="NEXUS_ADMIN_PASSWORD", default_value="admin")
+    admin_password = _resolve_startup_secret(
+        config, key_name="admin_password", env_var="NEXUS_ADMIN_PASSWORD", default_value="admin"
+    )
     admin_password_hash = hash_password(admin_password)
+
     async with engine.begin() as conn:
+        # --- Core auth tables ---
         await conn.execute(
             text(
                 """
@@ -192,7 +173,6 @@ async def on_startup(app: Litestar) -> None:
                 """
             )
         )
-        # Create audit_logs table for auth events
         await conn.execute(
             text(
                 """
@@ -209,14 +189,10 @@ async def on_startup(app: Litestar) -> None:
                 """
             )
         )
-        await conn.execute(
-            text("CREATE INDEX IF NOT EXISTS idx_audit_logs_user ON audit_logs(user_id)")
-        )
-        await conn.execute(
-            text("CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON audit_logs(action)")
-        )
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_audit_logs_user ON audit_logs(user_id)"))
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON audit_logs(action)"))
 
-        # Create email_tokens table for email verification and password reset
+        # --- Email tokens ---
         await conn.execute(
             text(
                 """
@@ -232,12 +208,10 @@ async def on_startup(app: Litestar) -> None:
                 """
             )
         )
-        await conn.execute(
-            text("CREATE INDEX IF NOT EXISTS idx_email_tokens_token ON email_tokens(token)")
-        )
-        await conn.execute(
-            text("CREATE INDEX IF NOT EXISTS idx_email_tokens_user ON email_tokens(user_id)")
-        )
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_email_tokens_token ON email_tokens(token)"))
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_email_tokens_user ON email_tokens(user_id)"))
+
+        # --- Outbox + FX rates + UI drafts ---
         await conn.execute(
             text(
                 """
@@ -283,19 +257,19 @@ async def on_startup(app: Litestar) -> None:
                 """
             )
         )
-        try:
-            await conn.execute(text("ALTER TABLE invoices ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT 0"))
-        except Exception:
-            pass
-        try:
-            await conn.execute(text("ALTER TABLE invoices ADD COLUMN deleted_at TIMESTAMP NULL"))
-        except Exception:
-            pass
-        try:
-            await conn.execute(text("ALTER TABLE invoices ADD COLUMN tenant_id TEXT NOT NULL DEFAULT 'default'"))
-        except Exception:
-            pass
 
+        # --- Migrate invoices schema (idempotent ALTER TABLE) ---
+        for alter_sql in [
+            "ALTER TABLE invoices ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT 0",
+            "ALTER TABLE invoices ADD COLUMN deleted_at TIMESTAMP NULL",
+            "ALTER TABLE invoices ADD COLUMN tenant_id TEXT NOT NULL DEFAULT 'default'",
+        ]:
+            try:
+                await conn.execute(text(alter_sql))
+            except Exception:
+                pass
+
+        # --- Seed admin user ---
         await conn.execute(
             text(
                 """
@@ -314,24 +288,12 @@ async def on_startup(app: Litestar) -> None:
             },
         )
 
-        # --- Indeksy SQLite dla wydajności (Rozwiązanie 14) ---
-        await conn.execute(
-            text(
-                "CREATE INDEX IF NOT EXISTS idx_outbox_pending ON outbox_events(status, processed, retry_count, created_at)"
-            )
-        )
-        await conn.execute(
-            text(
-                "CREATE INDEX IF NOT EXISTS idx_invoices_tenant_status ON invoices(tenant_id, status)"
-            )
-        )
-        await conn.execute(
-            text(
-                "CREATE INDEX IF NOT EXISTS idx_invoices_updated_at ON invoices(updated_at)"
-            )
-        )
+        # --- Performance indexes ---
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_outbox_pending ON outbox_events(status, processed, retry_count, created_at)"))
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_invoices_tenant_status ON invoices(tenant_id, status)"))
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_invoices_updated_at ON invoices(updated_at)"))
 
-        # --- Tabela idempotentności processed_events dla outbox (Rozwiązanie 11) ---
+        # --- Processed events (idempotency) ---
         await conn.execute(
             text(
                 """
@@ -346,19 +308,14 @@ async def on_startup(app: Litestar) -> None:
                 """
             )
         )
-        await conn.execute(
-            text(
-                "CREATE UNIQUE INDEX IF NOT EXISTS idx_processed_events_business_key ON processed_events(event_type, aggregate_id)"
-            )
-        )
+        await conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS idx_processed_events_business_key ON processed_events(event_type, aggregate_id)"))
 
-        # Dodaj kolumnę processing_started_at jeśli nie istnieje
         try:
             await conn.execute(text("ALTER TABLE outbox_events ADD COLUMN processing_started_at TIMESTAMP NULL"))
         except Exception:
             pass
 
-        # --- Tabela task_status dla monitorowania postępu zadań (Rozwiązanie 17) ---
+        # --- Task status ---
         await conn.execute(
             text(
                 """
@@ -376,18 +333,10 @@ async def on_startup(app: Litestar) -> None:
                 """
             )
         )
-        await conn.execute(
-            text(
-                "CREATE INDEX IF NOT EXISTS idx_task_status_user ON task_status(user_id)"
-            )
-        )
-        await conn.execute(
-            text(
-                "CREATE INDEX IF NOT EXISTS idx_task_status_status ON task_status(status)"
-            )
-        )
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_task_status_user ON task_status(user_id)"))
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_task_status_status ON task_status(status)"))
 
-        # --- Tabela refresh_tokens dla mechanizmu odświeżania JWT (Rozwiązanie 16) ---
+        # --- Refresh tokens ---
         await conn.execute(
             text(
                 """
@@ -402,18 +351,10 @@ async def on_startup(app: Litestar) -> None:
                 """
             )
         )
-        await conn.execute(
-            text(
-                "CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id)"
-            )
-        )
-        await conn.execute(
-            text(
-                "CREATE INDEX IF NOT EXISTS idx_refresh_tokens_expires ON refresh_tokens(expires_at)"
-            )
-        )
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id)"))
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_refresh_tokens_expires ON refresh_tokens(expires_at)"))
 
-        # --- Tabela failed_tasks dla Dead Letter Queue ---
+        # --- Failed tasks (DLQ) ---
         await conn.execute(
             text(
                 """
@@ -440,26 +381,7 @@ async def on_startup(app: Litestar) -> None:
         await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_failed_tasks_resolved ON failed_tasks(resolved)"))
         await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_failed_tasks_task_name ON failed_tasks(task_name)"))
 
-            # Assign admin to admin role in user_roles
-        _admin_role_row = await conn.execute(
-            text("SELECT id FROM roles WHERE name = 'admin' LIMIT 1")
-        )
-        _admin_role_data = _admin_role_row.mappings().first()
-        if _admin_role_data:
-            _existing_ur = await conn.execute(
-                text("SELECT id FROM user_roles WHERE user_id = :uid AND role_id = :rid LIMIT 1"),
-                {"uid": "admin", "rid": _admin_role_data["id"]},
-            )
-            if not _existing_ur.scalar():
-                await conn.execute(
-                    text(
-                        "INSERT INTO user_roles (id, user_id, role_id) "
-                        "VALUES (:id, :uid, :rid) ON CONFLICT DO NOTHING"
-                    ),
-                    {"id": str(uuid.uuid4()), "uid": "admin", "rid": _admin_role_data["id"]},
-                )
-
-        # --- Tabela roles ---
+        # --- RBAC tables: roles, permissions, user_roles, role_permissions ---
         await conn.execute(
             text(
                 """
@@ -473,8 +395,6 @@ async def on_startup(app: Litestar) -> None:
                 """
             )
         )
-
-        # --- Tabela permissions ---
         await conn.execute(
             text(
                 """
@@ -490,8 +410,6 @@ async def on_startup(app: Litestar) -> None:
             )
         )
         await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_permissions_codename ON permissions(codename)"))
-
-        # --- Tabela user_roles (many-to-many) ---
         await conn.execute(
             text(
                 """
@@ -506,8 +424,6 @@ async def on_startup(app: Litestar) -> None:
         )
         await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_user_roles_user ON user_roles(user_id)"))
         await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_user_roles_role ON user_roles(role_id)"))
-
-        # --- Tabela role_permissions (many-to-many) ---
         await conn.execute(
             text(
                 """
@@ -523,33 +439,49 @@ async def on_startup(app: Litestar) -> None:
         )
         await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_role_permissions_role ON role_permissions(role_id)"))
 
+        # --- Assign admin to admin role in user_roles ---
+        admin_role_row = await conn.execute(
+            text("SELECT id FROM roles WHERE name = 'admin' LIMIT 1")
+        )
+        admin_role_data = admin_role_row.mappings().first()
+        if admin_role_data:
+            existing_ur = await conn.execute(
+                text("SELECT id FROM user_roles WHERE user_id = :uid AND role_id = :rid LIMIT 1"),
+                {"uid": "admin", "rid": admin_role_data["id"]},
+            )
+            if not existing_ur.scalar():
+                await conn.execute(
+                    text(
+                        "INSERT INTO user_roles (id, user_id, role_id) "
+                        "VALUES (:id, :uid, :rid) ON CONFLICT DO NOTHING"
+                    ),
+                    {"id": uuid.uuid4().hex, "uid": "admin", "rid": admin_role_data["id"]},
+                )
+
         # --- Seed default roles ---
-        role_ids = {}
-        for _role_name, _role_desc in [
+        role_ids: dict[str, str] = {}
+        for role_name, role_desc in [
             ("admin", "System administrator — full access"),
             ("accountant", "Accountant — financial operations"),
             ("auditor", "Auditor — read-only audit access"),
             ("viewer", "Viewer — read-only basic access"),
         ]:
-            rid = str(uuid.uuid4())
             await conn.execute(
                 text(
                     "INSERT INTO roles (id, name, description, is_system) "
                     "VALUES (:id, :name, :desc, 1) ON CONFLICT(name) DO NOTHING"
                 ),
-                {"id": rid, "name": _role_name, "desc": _role_desc},
+                {"id": uuid.uuid4().hex, "name": role_name, "desc": role_desc},
             )
-            # Fetch actual id (in case of conflict)
             row = await conn.execute(
                 text("SELECT id FROM roles WHERE name = :name"),
-                {"name": _role_name},
+                {"name": role_name},
             )
             row_data = row.mappings().first()
             if row_data:
-                role_ids[_role_name] = row_data["id"]
+                role_ids[role_name] = row_data["id"]
 
-        # --- Seed permissions from PERMISSION_REGISTRY ---
-        # Note: Mirrored from models.role.PERMISSION_REGISTRY — keep in sync
+        # --- Seed permissions ---
         perm_ids: dict[str, str] = {}
         permission_registry = {
             "invoice:create": {"resource": "invoice", "action": "create", "description": "Create invoices"},
@@ -578,14 +510,13 @@ async def on_startup(app: Litestar) -> None:
             "contractor:edit": {"resource": "contractor", "action": "edit", "description": "Edit contractors"},
         }
         for codename, info in permission_registry.items():
-            pid = str(uuid.uuid4())
             await conn.execute(
                 text(
                     "INSERT INTO permissions (id, codename, resource, action, description) "
                     "VALUES (:id, :codename, :resource, :action, :desc) ON CONFLICT(codename) DO NOTHING"
                 ),
                 {
-                    "id": pid, "codename": codename,
+                    "id": uuid.uuid4().hex, "codename": codename,
                     "resource": info["resource"], "action": info["action"],
                     "desc": info["description"],
                 },
@@ -630,26 +561,83 @@ async def on_startup(app: Litestar) -> None:
                         "INSERT INTO role_permissions (id, role_id, permission_id) "
                         "VALUES (:id, :rid, :pid) ON CONFLICT DO NOTHING"
                     ),
-                    {"id": str(uuid.uuid4()), "rid": role_id, "pid": perm_id},
+                    {"id": uuid.uuid4().hex, "rid": role_id, "pid": perm_id},
                 )
 
-        # ANALYZE dla optymalizacji zapytań (Rozwiązanie 14)
         await conn.execute(text("ANALYZE;"))
+
+
+async def on_startup(app: Litestar) -> None:
+    """Inicjalizacja ciężkich zasobów przy starcie API.
+
+    Fazowanie startu:
+      0. Config + ML cache
+      1. Metryki OTel (sync + background task)
+      2. Database engine + core services
+      3. Schema DDL + seed danych
+      4. Broker, DuckDB warm-up, auto-seed
+      5. OutboxRelay, HotReloadListener
+
+    Każda faza jest izolowana w try/except — awaria nie powoduje
+    całkowitego failure startu (chyba że ``environment in {"stage", "prod"}``
+    i faza krytyczna zawiedzie).
+    """
+
+    config = app.dependencies["config"]()
+
+    # ── Phase 0: Config + ML cache ───────────────────────────────────
+    app.state.ml_cache_env = _configure_ml_cache_directories(config.base_dir)
+
+    # ── Phase 1: OpenTelemetry metrics ───────────────────────────────
     try:
-        sanity = await run_migration_sanity_checks(engine)
-        integrity = await verify_migration_integrity(engine, config.migration_baseline_path)
-        checksums = await verify_migration_checksums(engine, config.migration_checksum_baseline_path)
-        logger.info("Migration sanity checks: %s", sanity)
-        logger.info("Migration integrity checks: %s", integrity)
-        logger.info("Migration checksum checks: %s", checksums)
-        if (integrity.get("status") == "integrity_warning" or checksums.get("status") == "integrity_warning") and config.environment in {"stage", "prod"}:
-            raise RuntimeError(f"Migration integrity warning in {config.environment}: rowcount={integrity.get('issues', [])}, checksum={checksums.get('issues', [])}")
+        _init_otel_metrics_sync()
+        await _start_metrics_background_task(app)
     except Exception as exc:
-        logger.warning("Migration sanity checks failed: %s", exc)
+        logger.warning("[STARTUP] OTel metrics init failed (non-fatal): %s", exc)
+
+    # ── Phase 2: Database engine + core services ─────────────────────
+    engine = None
+    try:
+        engine = _make_engine(config)
+        app.state.db_engine = engine
+        app.state.db_session_factory = create_session_factory(engine)
+        app.state.shared_image_buffer = SharedImageBuffer(max_items=128)
+        # BackgroundTaskManager — centralna rejestracja tasków z anulowaniem na shutdown
+        app.state.bg_tasks = BackgroundTaskManager()
+        app.state.saga_store = PersistedSagaStore(engine)
+        await app.state.saga_store.ensure_schema()
+    except Exception as exc:
+        logger.critical("[STARTUP] Database engine init FAILED: %s", exc)
         if config.environment in {"stage", "prod"}:
             raise
+        app.state.db_engine = None
+        app.state.db_session_factory = None
 
-    # Połączenie z brokerem Taskiq (NATS) — timeout 5s jeśli NATS nie jest dostępny
+    # ── Phase 3: Schema DDL + seed ───────────────────────────────────
+    if engine is not None:
+        try:
+            await _ensure_schema_tables(engine, config)
+        except Exception as exc:
+            logger.critical("[STARTUP] Schema init FAILED: %s", exc)
+            if config.environment in {"stage", "prod"}:
+                raise
+
+        # Migration sanity checks (Phase 3b)
+        try:
+            sanity = await run_migration_sanity_checks(engine)
+            integrity = await verify_migration_integrity(engine, config.migration_baseline_path)
+            checksums = await verify_migration_checksums(engine, config.migration_checksum_baseline_path)
+            logger.info("Migration sanity checks: %s", sanity)
+            logger.info("Migration integrity checks: %s", integrity)
+            logger.info("Migration checksum checks: %s", checksums)
+            if (integrity.get("status") == "integrity_warning" or checksums.get("status") == "integrity_warning") and config.environment in {"stage", "prod"}:
+                raise RuntimeError(f"Migration integrity warning in {config.environment}: rowcount={integrity.get('issues', [])}, checksum={checksums.get('issues', [])}")
+        except Exception as exc:
+            logger.warning("Migration sanity checks failed: %s", exc)
+            if config.environment in {"stage", "prod"}:
+                raise
+
+    # ── Phase 4: Broker, warm-up, auto-seed ─────────────────────────┒
     if not broker.is_worker_process:
         try:
             with anyio.fail_after(5.0):
@@ -657,7 +645,6 @@ async def on_startup(app: Litestar) -> None:
         except Exception as exc:
             logger.warning("NATS broker unavailable — task queue disabled: %s", exc)
 
-    # Warm-up analytics materialization to reduce cold-start dashboard latency.
     try:
         duckdb_manager = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
         duckdb_manager.refresh_materialized_cashflow()
@@ -665,7 +652,6 @@ async def on_startup(app: Litestar) -> None:
     except Exception as exc:
         logger.warning("DuckDB warm-up refresh failed: %s", exc)
 
-    # ── Seeded marker: auto-seed przy pierwszym uruchomieniu ──
     seeded_file = config.base_dir / ".seeded"
     if not seeded_file.exists():
         logger.info("No .seeded marker found — running seed_all...")
@@ -680,11 +666,11 @@ async def on_startup(app: Litestar) -> None:
     else:
         logger.info(".seeded marker found — skipping auto-seed.")
 
-    # ── OutboxRelay: Transactional Outbox dla gwarantowanej dostawy zdarzeń ──
+    # ── Phase 5: OutboxRelay + HotReloadListener ────────────────────
     try:
         relay = OutboxRelay(
             session_factory=app.state.db_session_factory,
-            tigerbeetle=None,  # TigerBeetle injectowany przez API gdy dostępny
+            tigerbeetle=None,
             max_retries=3,
             base_delay_seconds=1.0,
         )
@@ -694,7 +680,6 @@ async def on_startup(app: Litestar) -> None:
         logger.warning("[OUTBOX-RELAY] Failed to initialize: %s", exc)
         app.state.outbox_relay = None
 
-    # ── Hot-Reload Listener: NATS subskrypcja dla billing.rules.updated / risk.thresholds.updated ──
     try:
         listener = HotReloadListener(nats_url=config.nats_url)
         await listener.start()
@@ -710,9 +695,14 @@ async def on_shutdown(app: Litestar) -> None:
     """Bezpieczne zamykanie i konsolidacja danych."""
     logger.info(">>> Nexus API: Rozpoczynanie procedury zamykania...")
 
+    # 0. Cancel all background tasks via BackgroundTaskManager
+    bg_tasks = getattr(app.state, 'bg_tasks', None)
+    if bg_tasks is not None:
+        await bg_tasks.cancel_all()
+
     engine = app.state.db_engine
 
-    # 1. Najpierw zamykamy broker (jeśli był uruchomiony)
+    # 1. Zamknij broker (jeśli był uruchomiony)
     if not broker.is_worker_process:
         try:
             await broker.shutdown()
@@ -728,19 +718,12 @@ async def on_shutdown(app: Litestar) -> None:
     except Exception as exc:
         logger.warning("[HOT-RELOAD] Error stopping listener: %s", exc)
 
-    # 3. Zamykamy wszystkie aktywne sesje i zwalniamy połączenia
-    # Session factory zostanie zamknięta przez dispose() engine'u.
-    # Wszystkie sesje pozyskane przez provide_db_session są zarządzane
-    # przez async with session.begin() i powinny być już zamknięte.
-    # Dodatkowo wywołujemy dispose(), by zamknąć pulę połączeń.
+    # 3. Konsolidacja WAL + zwolnienie zasobów engine'u
+    if engine is not None:
+        await consolidate_database(engine)
+        await engine.dispose()
 
-    # 3. Dopiero po zamknięciu połączeń wykonujemy konsolidację WAL
-    await consolidate_database(engine)
-
-    # 4. Zwolnienie zasobów engine'u
-    await engine.dispose()
-
-    # 5. Czyszczenie cache ML
+    # 4. Czyszczenie cache ML
     for cache_dir in (app.state.ml_cache_env or {}).values():
         try:
             shutil.rmtree(cache_dir, ignore_errors=True)

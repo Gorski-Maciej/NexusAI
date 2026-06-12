@@ -11,6 +11,7 @@ import duckdb
 from litestar import Controller, get
 from litestar.response import Response
 
+from nexus_ai.api.dto import BillingEstimateResponseDTO, TAG_FINANCE
 from nexus_ai.services.billing_estimator import (
     BillingEstimator,
     ensure_schema,
@@ -21,9 +22,15 @@ from nexus_ai.services.billing_estimator import (
 class BillingController(Controller):
     """Estymacja kosztów i czasu przetwarzania dokumentów."""
     path = "/api/v2/billing"
-    tags = ["Finance"]
+    tags = [TAG_FINANCE]
 
-    @get("/estimate")
+    @get(
+        "/estimate",
+        return_dto=BillingEstimateResponseDTO,
+        summary="Estimate billing cost",
+        description="Estimates document processing cost and time based on document type, tax form, and additional services.",
+        operation_id="estimateBilling",
+    )
     async def estimate(
         self,
         document_type: str = "invoice_national",

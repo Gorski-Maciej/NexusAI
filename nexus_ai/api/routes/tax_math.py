@@ -28,6 +28,11 @@ from litestar import Controller, post
 from litestar.response import Response
 from structlog import get_logger
 
+from nexus_ai.api.dto import (
+    TAG_TAX,
+    TaxMathRequestDTO,
+    TaxMathResponseDTO,
+)
 from nexus_ai.tax.math_engine import (
     TaxMathEngine,
     add_tax_money,
@@ -75,9 +80,22 @@ class TaxMathController(Controller):
     """Kontroler kalkulacji podatkowych z obsługą Fowler's Money."""
 
     path = "/api/v2/tax"
-    tags = ["Tax"]
+    tags = [TAG_TAX]
 
-    @post("/calculate-money", sync_to_thread=False)
+    @post(
+        "/calculate-money",
+        sync_to_thread=False,
+        dto=TaxMathRequestDTO,
+        return_dto=TaxMathResponseDTO,
+        summary="Calculate VAT and gross amounts (Fowler's Money)",
+        description=(
+            "Accepts a list of net amounts as Fowler's Money objects, "
+            "applies the specified VAT rate with configurable rounding strategy, "
+            "and returns total net, VAT, and gross as Money objects. "
+            "Supports ``position`` (per-item) and ``total`` (aggregate) rounding."
+        ),
+        operation_id="calculateTaxMoney",
+    )
     def calculate_money(self, data: CalculateMoneyRequest) -> Response[dict[str, Any]]:
         """Oblicz VAT i brutto dla listy kwot netto, zwracając wyniki jako Money.
 

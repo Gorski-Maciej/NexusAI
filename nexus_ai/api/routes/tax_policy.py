@@ -22,6 +22,7 @@ from litestar import Controller, get, post
 from litestar.response import Response
 from structlog import get_logger
 
+from nexus_ai.api.dto import GenericDictDTO, TAG_TAX, TaxPolicySimulateDTO
 from nexus_ai.tax.rules import (
     ensure_tax_schemas,
     get_simulation_rule_sets,
@@ -42,9 +43,16 @@ class SimulateRequest(msgspec.Struct):
 class TaxPolicyController(Controller):
     """Symulacja polityki podatkowej i zmiany formy opodatkowania."""
     path = "/api/v2/tax-policy"
-    tags = ["Tax"]
+    tags = [TAG_TAX]
 
-    @post("/simulate")
+    @post(
+        "/simulate",
+        dto=TaxPolicySimulateDTO,
+        return_dto=GenericDictDTO,
+        summary="Simulate tax policy change",
+        description="Simulates changing the tax form based on historical invoices via RuleEngine and TaxSimulator.",
+        operation_id="simulateTaxPolicy",
+    )
     async def simulate(self, data: SimulateRequest) -> Response[dict]:
         """Symulacja zmiany formy opodatkowania na podstawie historycznych faktur.
 
@@ -155,7 +163,13 @@ class TaxPolicyController(Controller):
         finally:
             conn.close()
 
-    @get("/rule-sets")
+    @get(
+        "/rule-sets",
+        return_dto=GenericDictDTO,
+        summary="List simulation rule sets",
+        description="Returns available tax simulation rule sets (CIT_STANDARD, CIT_ESTONIAN, LINEAR, LUMP_SUM).",
+        operation_id="listTaxRuleSets",
+    )
     async def list_rule_sets(self) -> Response[dict]:
         """Zwróć listę dostępnych zestawów reguł symulacyjnych."""
         return Response({

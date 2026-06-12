@@ -26,6 +26,7 @@ from litestar.response import Response
 from structlog import get_logger
 
 from config import AppConfig
+from nexus_ai.api.dto import GenericDictDTO, TAG_RISK
 from nexus_ai.api.rbac import requires_permission
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 from nexus_ai.services.risk_guard import (
@@ -40,7 +41,7 @@ class RiskController(Controller):
     """Zarządzanie progami ryzyka dla RiskGuard."""
 
     path = "/api/v2/admin/risk-thresholds"
-    tags = ["Risk"]
+    tags = [TAG_RISK]
 
     # ── Helpers ───────────────────────────────────────────────────────────
 

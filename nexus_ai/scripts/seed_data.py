@@ -66,7 +66,7 @@ def _verify_nip_checksum(nip: str) -> bool:
 
 SEED_USERS: list[dict[str, Any]] = [
     {
-        "id": str(uuid.uuid4()),
+        "id": uuid.uuid4().hex,
         "username": "admin",
         "password_hash": "",  # Will be set at runtime
         "role": "owner",
@@ -74,7 +74,7 @@ SEED_USERS: list[dict[str, Any]] = [
         "is_active": True,
     },
     {
-        "id": str(uuid.uuid4()),
+        "id": uuid.uuid4().hex,
         "username": "ksiegowa",
         "password_hash": "",
         "role": "accountant",
@@ -85,7 +85,7 @@ SEED_USERS: list[dict[str, Any]] = [
 
 SEED_COMPANIES: list[dict[str, Any]] = [
     {
-        "id": str(uuid.uuid4()),
+        "id": uuid.uuid4().hex,
         "name": "NexusAI Sp. z o.o.",
         "nip": SEED_NIPS[0],
         "legal_form": "sp_z_o_o",
@@ -106,7 +106,7 @@ SEED_COMPANIES: list[dict[str, Any]] = [
         }),
     },
     {
-        "id": str(uuid.uuid4()),
+        "id": uuid.uuid4().hex,
         "name": "Jan Kowalski – Działalność Gospodarcza",
         "nip": SEED_NIPS[1],
         "legal_form": "jednoosobowa",
@@ -127,7 +127,7 @@ SEED_COMPANIES: list[dict[str, Any]] = [
         }),
     },
     {
-        "id": str(uuid.uuid4()),
+        "id": uuid.uuid4().hex,
         "name": "Polski Eksport S.A.",
         "nip": SEED_NIPS[2],
         "legal_form": "sa",
@@ -151,35 +151,35 @@ SEED_COMPANIES: list[dict[str, Any]] = [
 
 SEED_CONTRACTORS: list[dict[str, Any]] = [
     {
-        "id": str(uuid.uuid4()),
+        "id": uuid.uuid4().hex,
         "name": "Firma Handlowa 'Omega' Sp. z o.o.",
         "nip": SEED_NIPS[3],
         "address": "ul. Marszałkowska 100, 00-001 Warszawa",
         "bank_account": "PL10105000997603123456789123",
     },
     {
-        "id": str(uuid.uuid4()),
+        "id": uuid.uuid4().hex,
         "name": "TechSolutions Polska Sp. z o.o.",
         "nip": SEED_NIPS[4],
         "address": "ul. Długa 50, 31-147 Kraków",
         "bank_account": "PL60105000997603123456789124",
     },
     {
-        "id": str(uuid.uuid4()),
+        "id": uuid.uuid4().hex,
         "name": "Biuro Rachunkowe 'Liczydełko'",
         "nip": "1234567890",  # Placeholder — not real but passes validation
         "address": "ul. Krótka 5, 80-001 Gdańsk",
         "bank_account": "PL75105000997603123456789125",
     },
     {
-        "id": str(uuid.uuid4()),
+        "id": uuid.uuid4().hex,
         "name": "Zakład Produkcyjny 'MetalPlast'",
         "nip": "2345678901",  # Placeholder
         "address": "ul. Przemysłowa 20, 50-001 Wrocław",
         "bank_account": "PL25105000997603123456789126",
     },
     {
-        "id": str(uuid.uuid4()),
+        "id": uuid.uuid4().hex,
         "name": "Dostawca IT Systemy Sp. z o.o.",
         "nip": "3456789012",  # Placeholder
         "address": "ul. Nowa 15, 60-001 Poznań",
@@ -485,7 +485,7 @@ async def seed_users(db_session: Any, config: Any) -> dict:
             canonical_role = role  # 'accountant'
 
         pwd_hash = hash_password(raw_password)
-        user_id = str(uuid.uuid4())
+        user_id = uuid.uuid4().hex
         now = pendulum.now("UTC").isoformat()
 
         async with db_session.begin():
@@ -521,7 +521,7 @@ async def seed_users(db_session: Any, config: Any) -> dict:
                 )
             ).mappings().first()
             if role_row:
-                ur_id = str(uuid.uuid4())
+                ur_id = uuid.uuid4().hex
                 await db_session.execute(
                     text(
                         "INSERT INTO user_roles (id, user_id, role_id) VALUES (:id, :uid, :rid)"
@@ -597,7 +597,7 @@ async def seed_invoices(db_session: Any, config: Any) -> int:
                 logger.info("  Invoice %s already exists, skipping.", invoice["number"])
                 continue
 
-            inv_id = str(uuid.uuid4())
+            inv_id = uuid.uuid4().hex
             contractor_id = None
             # Find the contractor_id for the given NIP
             contractor_row = await db_session.execute(
@@ -642,7 +642,7 @@ async def seed_invoices(db_session: Any, config: Any) -> int:
             )
 
             # Create an outbox event for the invoice
-            outbox_id = str(uuid.uuid4())
+            outbox_id = uuid.uuid4().hex
             event_payload = msgspec_dumps({
                 "invoice_id": inv_id,
                 "number": invoice["number"],
@@ -666,7 +666,7 @@ async def seed_invoices(db_session: Any, config: Any) -> int:
             )
 
             # Create audit log entry
-            audit_id = str(uuid.uuid4())
+            audit_id = uuid.uuid4().hex
             await db_session.execute(
                 text(
                     """\
@@ -739,7 +739,7 @@ async def seed_dictionaries(db_session: Any) -> dict[str, int]:
                     "INSERT INTO dict_vat_rates (id, code, rate, description) "
                     "VALUES (:id, :code, :rate, :desc)"
                 ),
-                {"id": str(uuid.uuid4()), "code": vat["code"], "rate": vat["rate"], "desc": vat["description"]},
+                {"id": uuid.uuid4().hex, "code": vat["code"], "rate": vat["rate"], "desc": vat["description"]},
             )
             await db_session.commit()
             vat_count += 1
@@ -761,7 +761,7 @@ async def seed_dictionaries(db_session: Any) -> dict[str, int]:
                     "INSERT INTO dict_currencies (id, code, name, symbol) "
                     "VALUES (:id, :code, :name, :symbol)"
                 ),
-                {"id": str(uuid.uuid4()), "code": cur["code"], "name": cur["name"], "symbol": cur["symbol"]},
+                {"id": uuid.uuid4().hex, "code": cur["code"], "name": cur["name"], "symbol": cur["symbol"]},
             )
             await db_session.commit()
             cur_count += 1
@@ -783,7 +783,7 @@ async def seed_dictionaries(db_session: Any) -> dict[str, int]:
                     "INSERT INTO dict_invoice_statuses (id, code, name, description) "
                     "VALUES (:id, :code, :name, :desc)"
                 ),
-                {"id": str(uuid.uuid4()), "code": st["code"], "name": st["name"], "desc": st["description"]},
+                {"id": uuid.uuid4().hex, "code": st["code"], "name": st["name"], "desc": st["description"]},
             )
             await db_session.commit()
             st_count += 1
@@ -805,7 +805,7 @@ async def seed_dictionaries(db_session: Any) -> dict[str, int]:
                     "INSERT INTO dict_tax_forms (id, code, name) "
                     "VALUES (:id, :code, :name)"
                 ),
-                {"id": str(uuid.uuid4()), "code": tf["code"], "name": tf["name"]},
+                {"id": uuid.uuid4().hex, "code": tf["code"], "name": tf["name"]},
             )
             await db_session.commit()
             tf_count += 1
@@ -885,7 +885,7 @@ async def seed_tax_policies(db_session: Any) -> int:
                 )
                 if existing.scalar():
                     continue
-                policy_id = str(uuid.uuid4())
+                policy_id = uuid.uuid4().hex
                 now = pendulum.now("UTC").isoformat()
                 await db_session.execute(
                     text(
@@ -959,7 +959,7 @@ async def seed_fx_rates(db_session: Any) -> int:
     effective_at = pendulum.now("UTC").isoformat()
     for rate in SEED_FX_RATES:
         async with db_session.begin():
-            rate_id = str(uuid.uuid4())
+            rate_id = uuid.uuid4().hex
             await db_session.execute(
                 text(
                     """\

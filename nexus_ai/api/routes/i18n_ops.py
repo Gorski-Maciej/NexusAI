@@ -4,6 +4,7 @@ from pathlib import Path
 
 from litestar import Controller, get
 
+from nexus_ai.api.dto import GenericDictDTO, TAG_I18N
 from nexus_ai.api.rbac import owner_only_guard
 
 
@@ -12,9 +13,15 @@ class I18nOpsController(Controller):
 
     path = "/api/v1/system/i18n"
     guards = [owner_only_guard]
-    tags = ["I18N"]
+    tags = [TAG_I18N]
 
-    @get("/status")
+    @get(
+        "/status",
+        return_dto=GenericDictDTO,
+        summary="Get i18n status",
+        description="Returns available API and prompt language translations.",
+        operation_id="getI18nStatus",
+    )
     async def status(self) -> dict:
         _api_dir = Path(__file__).resolve().parent.parent  # nexus_ai/api/
         api_locales = _api_dir / "locales"                   # nexus_ai/api/locales

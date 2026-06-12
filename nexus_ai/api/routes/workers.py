@@ -6,6 +6,8 @@ from typing import Any
 import pendulum
 from litestar import Controller, get
 
+from nexus_ai.api.dto import GenericDictDTO, TAG_SYSTEM
+
 
 class WorkerStatusController(Controller):
     """Worker status monitoring — current load, concurrency, and resource usage.
@@ -15,9 +17,15 @@ class WorkerStatusController(Controller):
     """
 
     path = "/api/v1/system/workers"
-    tags = ["System"]
+    tags = [TAG_SYSTEM]
 
-    @get("/status")
+    @get(
+        "/status",
+        return_dto=GenericDictDTO,
+        summary="Get worker status",
+        description="Returns current worker load, task count, concurrency limit, and resource usage (Rozwiązanie 29).",
+        operation_id="getWorkerStatus",
+    )
     async def get_worker_status(self) -> dict[str, Any]:
         """Zwraca aktualny status workera: obciążenie, liczbę zadań, limit współbieżności.
 

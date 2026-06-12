@@ -146,6 +146,6 @@ def test_calculate_and_post_cogs_rolls_back_duckdb_on_write_error() -> None:
 
         assert writer.events == ["begin", "rollback"]
 
-    import asyncio
+    import anyio
 
-    asyncio.run(run())
+    anyio.run(run)

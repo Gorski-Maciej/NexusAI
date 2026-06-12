@@ -15,7 +15,7 @@ Covers:
 
 from __future__ import annotations
 
-import asyncio
+import anyio
 import io
 import stat
 import zipfile
@@ -71,9 +71,9 @@ def tb_def() -> BinaryDefinition:
 
 
 @pytest.fixture
-def cancel_event() -> asyncio.Event:
+def cancel_event() -> anyio.Event:
     """Fresh cancel event (not set)."""
-    return asyncio.Event()
+    return anyio.Event()
 
 
 def make_progress_cb(tracker: dict) -> DependencyProgressCallback:
@@ -479,12 +479,12 @@ class TestDownloadBinaryHttpMocking:
         self, mock_arch, mock_plat, nats_def, temp_dir,
     ):
         """Cancel event set during streaming should abort."""
-        cancel = asyncio.Event()
+        cancel = anyio.Event()
 
         # Create a response that yields slowly so cancel can take effect
         async def slow_chunks():
             for i in range(5):
-                await asyncio.sleep(0.02)
+                await anyio.sleep(0.02)
                 if cancel.is_set():
                     return
                 yield f"chunk{i}".encode()
@@ -501,14 +501,20 @@ class TestDownloadBinaryHttpMocking:
         mock_client.stream.return_value = mock_stream
 
         async def do_cancel():
-            await asyncio.sleep(0.03)
+            await anyio.sleep(0.03)
             cancel.set()
 
-        result, _ = await asyncio.gather(
-            download_binary(nats_def, temp_dir, cancel_event=cancel, http_client=mock_client),
-            do_cancel(),
-            return_exceptions=True,
-        )
+        results: list = []
+
+        async def run_download():
+            r = await download_binary(nats_def, temp_dir, cancel_event=cancel, http_client=mock_client)
+            results.append(r)
+
+        async with anyio.create_task_group() as tg:
+            tg.start_soon(run_download)
+            tg.start_soon(do_cancel)
+
+        result = results[0] if results else None
         assert result is None
 
 
@@ -662,11 +668,11 @@ class TestDownloadAllDependencies:
         self, mock_arch, mock_plat, mock_download, temp_dir,
     ):
         """Setting cancel event should skip remaining downloads."""
-        cancel = asyncio.Event()
+        cancel = anyio.Event()
 
         # Simulate a slow first download to let cancel event propagate
         async def slow_download(*args, **kwargs):
-            await asyncio.sleep(0.05)
+            await anyio.sleep(0.05)
             if cancel.is_set():
                 return None
             return temp_dir / "nats-server"
@@ -674,12 +680,20 @@ class TestDownloadAllDependencies:
         mock_download.side_effect = slow_download
 
         async def do_cancel():
-            await asyncio.sleep(0.01)
+            await anyio.sleep(0.01)
             cancel.set()
 
-        results_coro = download_all_dependencies(temp_dir, cancel_event=cancel)
-        _, results = await asyncio.gather(do_cancel(), results_coro)
+        results_container: list = []
 
+        async def run_download_all():
+            r = await download_all_dependencies(temp_dir, cancel_event=cancel)
+            results_container.append(r)
+
+        async with anyio.create_task_group() as tg:
+            tg.start_soon(run_download_all)
+            tg.start_soon(do_cancel)
+
+        results = results_container[0] if results_container else []
         # After cancel, only the first binary should have been attempted
         assert len(results) == 1
         assert mock_download.call_count == 1
@@ -691,7 +705,7 @@ class TestDownloadAllDependencies:
         self, mock_arch, mock_plat, mock_download, temp_dir,
     ):
         """Cancelled operation should not produce 'done' callbacks."""
-        cancel = asyncio.Event()
+        cancel = anyio.Event()
         tracker: dict = {"calls": []}
         cb = make_progress_cb(tracker)
 

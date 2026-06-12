@@ -7,7 +7,7 @@ Supports:
   - Resume via HTTP Range headers
   - Progress callbacks for UI integration
   - SHA-256 verification against manifest
-  - Cancellation via asyncio.Event
+  - Cancellation via anyio.Event
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 from pathlib import Path
 import sys
-import asyncio
+import anyio
 from datetime import date
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
@@ -37,7 +37,7 @@ def test_get_budget_status_warn_and_critical() -> None:
         assert critical_status.status == "CRITICAL"
         assert round(critical_status.projected_usage_percent, 1) == 105.0
 
-    asyncio.run(run())
+    anyio.run(run)
 
 
 def test_get_budget_status_ok_without_definition() -> None:
@@ -50,4 +50,4 @@ def test_get_budget_status_ok_without_definition() -> None:
         assert status.status == "OK"
         assert "No budget configured" in status.message
 
-    asyncio.run(run())
+    anyio.run(run)

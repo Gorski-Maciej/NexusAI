@@ -8,7 +8,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 
 
-import asyncio
+import anyio
 import uuid
 from datetime import date, datetime, timezone
 from types import SimpleNamespace
@@ -107,40 +107,40 @@ def test_reconcile_bulk_payment_covers_three_invoices_and_posts_sub_10gr_roundin
         assert [line["invoice_id"] for line in result["allocations"]] == ["FV/1", "FV/2", "FV/3"]
         assert await tb.get_account_credits_posted(760) == 7
 
-    asyncio.run(run())
+    anyio.run(run)
 
 
 def test_period_lock_mutates_posting_and_tax_point_for_hard_closed_period() -> None:
     async def run() -> None:
         worker = RobotonWorker(session=FakeSession(FinancialPeriodStatus.HARD_CLOSED), tb_client=TigerBeetleClient(), agent=SimpleRuleBasedAgent())
         event = {
-            "company_id": str(uuid.uuid4()),
+            "company_id": uuid.uuid4().hex,
             "date_of_issue": "2026-03-17",
             "tax_point_date": "2026-03-17",
             "amount_minor": 1000,
-            "source_document_id": str(uuid.uuid4()),
+            "source_document_id": uuid.uuid4().hex,
         }
         mutated = await worker._apply_financial_period_lock(uuid.UUID(event["company_id"]), event)
         assert mutated["posting_date"] == "2026-04-01"
         assert mutated["tax_point_date"] == "2026-04-01"
         assert mutated["metadata"]["late_submission_shifted"] is True
 
-    asyncio.run(run())
+    anyio.run(run)
 
 
 def test_period_lock_keeps_dates_for_open_period() -> None:
     async def run() -> None:
         worker = RobotonWorker(session=FakeSession(FinancialPeriodStatus.OPEN), tb_client=TigerBeetleClient(), agent=SimpleRuleBasedAgent())
         event = {
-            "company_id": str(uuid.uuid4()),
+            "company_id": uuid.uuid4().hex,
             "date_of_issue": "2026-03-17",
             "tax_point_date": "2026-03-17",
             "amount_minor": 1000,
-            "source_document_id": str(uuid.uuid4()),
+            "source_document_id": uuid.uuid4().hex,
         }
         mutated = await worker._apply_financial_period_lock(uuid.UUID(event["company_id"]), event)
         assert mutated["posting_date"] == "2026-03-17"
         assert mutated["tax_point_date"] == "2026-03-17"
         assert "metadata" not in mutated or "late_submission_shifted" not in mutated.get("metadata", {})
 
-    asyncio.run(run())
+    anyio.run(run)

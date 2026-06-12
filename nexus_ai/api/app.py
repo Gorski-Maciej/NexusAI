@@ -12,9 +12,11 @@ from nexus_ai.api.dependencies import provide_config as _app_config_provider
 
 from nexus_ai.api.dependencies import (
     provide_config,
+    provide_db_engine,
     provide_db_session,
     provide_duckdb,
     provide_shared_image_buffer,
+    provide_tenant_manager,
 )
 from nexus_ai.api.exceptions import global_exception_handler
 from nexus_ai.api.metrics_middleware import MetricsMiddleware
@@ -116,7 +118,9 @@ def create_app() -> Litestar:
         on_shutdown=[on_shutdown],
         dependencies={
             "config": provide_config,
+            "tenant_manager": provide_tenant_manager,
             "db_session": provide_db_session,
+            "db_engine": provide_db_engine,
             "duckdb": provide_duckdb,
             "buffer": provide_shared_image_buffer,
         },

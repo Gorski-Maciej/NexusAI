@@ -22,6 +22,8 @@ from __future__ import annotations
 
 from litestar import Controller, get
 from opentelemetry import metrics
+
+from nexus_ai.api.dto import TAG_METRICS
 from opentelemetry.exporter.prometheus import PrometheusMetricsExporter
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
@@ -56,7 +58,7 @@ class MetricsController(Controller):
     """Prometheus metrics exposition endpoint via OpenTelemetry (no auth required)."""
 
     path = "/metrics"
-    tags = ["Metrics"]
+    tags = [TAG_METRICS]
 
     @get()
     async def prometheus_metrics(self) -> str:

@@ -17,6 +17,7 @@ from litestar.exceptions import NotFoundException
 from litestar.response import Response
 from structlog import get_logger
 
+from nexus_ai.api.dto import TAG_INVOICES
 from nexus_ai.api.rbac import requires_permission
 
 logger = get_logger("nexus.api.ksef")
@@ -26,9 +27,15 @@ class KsefExportController(Controller):
     """KSeF XML export endpoints."""
 
     path = "/api/v2/invoice"
-    tags = ["Invoices"]
+    tags = [TAG_INVOICES]
 
-    @get("/{invoice_id:str}/ksef", guards=[requires_permission("invoice:ksef")])
+    @get(
+        "/{invoice_id:str}/ksef",
+        guards=[requires_permission("invoice:ksef")],
+        summary="Download KSeF XML",
+        description="Generates and downloads KSeF FA_VAT XML for a given invoice.",
+        operation_id="downloadKsefXml",
+    )
     async def download_ksef_xml(self, invoice_id: str) -> Response:
         """Generate and return KSeF FA_VAT XML for a given invoice.
 

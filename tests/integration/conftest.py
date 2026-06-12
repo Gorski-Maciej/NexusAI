@@ -218,7 +218,7 @@ def sample_contractor(db_session: Session) -> dict:
     from datetime import datetime, timezone
     import uuid
 
-    contractor_id = str(uuid.uuid4())
+    contractor_id = uuid.uuid4().hex
     now = datetime.now(timezone.utc).isoformat()
 
     db_session.execute(
@@ -250,7 +250,7 @@ def sample_invoice(db_session: Session, sample_contractor: dict) -> dict:
     from datetime import datetime, timezone
     import uuid
 
-    inv_id = str(uuid.uuid4())
+    inv_id = uuid.uuid4().hex
     now = datetime.now(timezone.utc).isoformat()
 
     db_session.execute(

@@ -10,7 +10,7 @@ correlation_id_ctx: ContextVar[str] = ContextVar("correlation_id", default="syst
 
 def init_trace() -> str:
     """Tworzy nowe ID dla nowego dokumentu."""
-    cid = str(uuid.uuid4())
+    cid = uuid.uuid4().hex
     correlation_id_ctx.set(cid)
     return cid
 

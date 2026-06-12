@@ -12,28 +12,54 @@ from litestar import Controller, get
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from nexus_ai.api.dto import GenericDictDTO, HealthResponseDTO, TAG_HEALTH
+
 
 class HealthController(Controller):
     """Health check and status endpoints."""
     path = "/api/v1/health"
-    tags = ["Health"]
+    tags = [TAG_HEALTH]
 
-    @get("")
+    @get(
+        "",
+        return_dto=HealthResponseDTO,
+        summary="Basic health check",
+        description="Returns API status and version.",
+        operation_id="healthCheck",
+    )
     async def health_check(self) -> dict[str, str]:
         """Basic health check."""
         return {"status": "OK", "version": "1.0.0"}
 
-    @get("/live")
+    @get(
+        "/live",
+        return_dto=HealthResponseDTO,
+        summary="Kubernetes liveness probe",
+        description="Returns alive status for Kubernetes liveness probe.",
+        operation_id="healthLiveness",
+    )
     async def liveness_probe(self) -> dict[str, str]:
         """Kubernetes liveness probe."""
         return {"status": "alive"}
 
-    @get("/ready")
+    @get(
+        "/ready",
+        return_dto=HealthResponseDTO,
+        summary="Kubernetes readiness probe",
+        description="Returns ready status for Kubernetes readiness probe.",
+        operation_id="healthReadiness",
+    )
     async def readiness_probe(self) -> dict[str, str]:
         """Kubernetes readiness probe."""
         return {"status": "ready"}
 
-    @get("/detailed")
+    @get(
+        "/detailed",
+        return_dto=GenericDictDTO,
+        summary="Detailed health check",
+        description="Returns comprehensive health status including DB, DuckDB, NATS, audit chain, and DLQ.",
+        operation_id="healthDetailed",
+    )
     async def detailed_health(self, db_session: Session) -> dict[str, Any]:
         """Detailed health status with all component checks."""
         db_ok = True
@@ -263,4 +289,4 @@ class HealthControllerV2(HealthController):
     """Health endpoints in v2 namespace."""
 
     path = "/api/v2/health"
-    tags = ["Health"]
+    tags = [TAG_HEALTH]

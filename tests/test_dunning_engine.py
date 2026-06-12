@@ -2,7 +2,7 @@ from pathlib import Path
 import sys
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-import asyncio
+import anyio
 
 from nexus_ai.services.dunning_engine import DunningEngine
 
@@ -40,7 +40,7 @@ def test_run_daily_dunning_check_creates_history_and_sends_reminder() -> None:
     email = FakeEmailProvider()
     engine = DunningEngine(db, FakeAIAgent(), email)
 
-    result = asyncio.run(engine.run_daily_dunning_check())
+    result = anyio.run(lambda: engine.run_daily_dunning_check())
 
     assert result == {"checked": 1, "sent": 1, "failed": 0}
     assert len(email.sent) == 1

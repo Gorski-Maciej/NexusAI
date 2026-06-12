@@ -4,6 +4,7 @@ from pathlib import Path
 
 from litestar import Controller, get
 
+from nexus_ai.api.dto import GenericDictDTO, TAG_SYSTEM
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
@@ -13,9 +14,15 @@ class PerformanceOpsController(Controller):
 
     path = "/api/v1/system/performance"
     guards = [owner_only_guard]
-    tags = ["System"]
+    tags = [TAG_SYSTEM]
 
-    @get("/k6-summary")
+    @get(
+        "/k6-summary",
+        return_dto=GenericDictDTO,
+        summary="Get k6 performance summary",
+        description="Returns the latest k6 load test performance summary including p95 latency and failure rate.",
+        operation_id="getK6Summary",
+    )
     async def k6_summary(self) -> dict:
         summary_path = Path("reports") / "performance" / "k6_summary.json"
         if not summary_path.exists():

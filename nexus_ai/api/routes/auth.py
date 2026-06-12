@@ -35,16 +35,20 @@ from litestar.connection import Request
 from litestar.exceptions import NotAuthorizedException, ValidationException
 from litestar.response import Response
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncEngine
 from structlog import get_logger
 
 from nexus_ai.api.auth_service import hash_password, verify_password
 from nexus_ai.api.dto import (
+    AuthResponseDTO,
     ChangePasswordDTO,
+    GenericDictDTO,
     LoginDTO,
     PasswordResetConfirmDTO,
     PasswordResetDTO,
     RefreshDTO,
     RegisterDTO,
+    TAG_AUTH,
 )
 from nexus_ai.api.exceptions import DuplicateResourceError
 from nexus_ai.api.security import REFRESH_TOKEN_EXPIRATION_DAYS, jwt_auth
@@ -147,10 +151,21 @@ async def _get_user_by_username(db_session, username: str) -> dict | None:
 class AuthController(Controller):
     """Autoryzacja i zarządzanie kontem użytkownika."""
     path = "/api/auth"
-    tags = ["Auth"]
+    tags = [TAG_AUTH]
 
-    @post("/register", dto=RegisterDTO)
-    async def register(self, data: RegisterRequest, request: Request) -> Response[dict[str, str]]:
+    @post(
+        "/register",
+        dto=RegisterDTO,
+        return_dto=GenericDictDTO,
+        summary="Register a new user",
+        description=(
+            "Creates a new user account with password strength validation. "
+            "Sends a confirmation email with a verification token. "
+            "Password must contain uppercase, lowercase, digit, and special character."
+        ),
+        operation_id="registerUser",
+    )
+    async def register(self, data: RegisterRequest, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
         """Register a new user account."""
         # Validate password strength
         pwd_error = _validate_password(data.password)
@@ -160,7 +175,7 @@ class AuthController(Controller):
         normalized_username = data.username.strip().lower()
         normalized_email = data.email.strip().lower()
 
-        async with request.app.state.db_engine.connect() as conn:
+        async with db_engine.connect() as conn:
             # Check uniqueness
             existing = (
                 await conn.execute(
@@ -171,7 +186,7 @@ class AuthController(Controller):
             if existing:
                 raise DuplicateResourceError("User", normalized_username)
 
-            user_id = str(uuid.uuid4())
+            user_id = uuid.uuid4().hex
             pwd_hash = hash_password(data.password)
             now = pendulum.now("UTC").isoformat()
             confirm_token = _generate_email_token()
@@ -203,7 +218,7 @@ class AuthController(Controller):
                 )
             ).mappings().first()
             if role_row:
-                ur_id = str(uuid.uuid4())
+                ur_id = uuid.uuid4().hex
                 await conn.execute(
                     text(
                         "INSERT INTO user_roles (id, user_id, role_id) VALUES (:id, :uid, :rid)"
@@ -231,7 +246,7 @@ class AuthController(Controller):
                     """INSERT INTO email_tokens (id, user_id, token, purpose, expires_at)
                        VALUES (:id, :uid, :token, 'confirm', :expires)"""
                 ),
-                {"id": str(uuid.uuid4()), "uid": user_id, "token": confirm_token, "expires": token_expires},
+                {"id": uuid.uuid4().hex, "uid": user_id, "token": confirm_token, "expires": token_expires},
             )
 
             await conn.commit()
@@ -253,11 +268,21 @@ class AuthController(Controller):
             status_code=201,
         )
 
-    @post("/login", dto=LoginDTO)
-    async def login(self, data: LoginRequest, request: Request) -> Response[dict[str, str]]:
+    @post(
+        "/login",
+        dto=LoginDTO,
+        return_dto=GenericDictDTO,
+        summary="Authenticate user and get tokens",
+        description=(
+            "Authenticates using username/email and password. "
+            "Returns a short-lived access token and a single-use refresh token. "
+            "Old refresh tokens are revoked on each login (rotation)."
+        ),
+        operation_id="loginUser",
+    )
+    async def login(self, data: LoginRequest, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
         """Authenticate user and return access + refresh tokens."""
-        async with request.app.state.db_session_factory() as session:
-            user = await _get_user_by_username(session, data.username)
+        user = await _get_user_by_username(db_engine, data.username)
         if not user or not user.get("is_active"):
             raise NotAuthorizedException("Invalid credentials")
 
@@ -269,7 +294,7 @@ class AuthController(Controller):
         now = pendulum.now("UTC")
 
         # Update last_login
-        async with request.app.state.db_engine.connect() as conn:
+        async with db_engine.connect() as conn:
             await conn.execute(
                 text("UPDATE users SET last_login = :now WHERE id = :id"),
                 {"now": now.isoformat(), "id": user_id},
@@ -292,7 +317,7 @@ class AuthController(Controller):
         refresh_token_str, hashed_refresh = _generate_refresh_token_pair()
         expires_at = now + pendulum.duration(days=REFRESH_TOKEN_EXPIRATION_DAYS)
 
-        async with request.app.state.db_engine.connect() as conn:
+        async with db_engine.connect() as conn:
             # Revoke old refresh tokens for this user (rotation)
             await conn.execute(
                 text(
@@ -320,18 +345,28 @@ class AuthController(Controller):
 
         # Log audit event
         try:
-            await _log_auth_event(request.app.state.db_engine, user_id, "LOGIN", {"username": user["username"]})
+            await _log_auth_event(db_engine, user_id, "LOGIN", {"username": user["username"]})
         except Exception:
             pass
 
         return Response(content=body, status_code=200)
 
-    @post("/refresh", dto=RefreshDTO)
-    async def refresh(self, data: RefreshRequest, request: Request) -> Response[dict[str, str]]:
+    @post(
+        "/refresh",
+        dto=RefreshDTO,
+        return_dto=GenericDictDTO,
+        summary="Refresh access token",
+        description=(
+            "Exchanges a single-use refresh token for a new access token. "
+            "The old refresh token is revoked and a new one is issued (rotation)."
+        ),
+        operation_id="refreshToken",
+    )
+    async def refresh(self, data: RefreshRequest, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
         """Refresh access token using a single-use refresh token (rotation)."""
         hashed_input = _hash_refresh_token(data.refresh_token)
 
-        async with request.app.state.db_engine.connect() as conn:
+        async with db_engine.connect() as conn:
             row = (
                 await conn.execute(
                     text(
@@ -356,7 +391,7 @@ class AuthController(Controller):
         user_id = str(row["user_id"])
 
         # Fetch user
-        async with request.app.state.db_engine.connect() as conn:
+        async with db_engine.connect() as conn:
             user_row = (
                 await conn.execute(
                     text(
@@ -376,7 +411,7 @@ class AuthController(Controller):
         new_refresh_token_str, new_hashed_refresh = _generate_refresh_token_pair()
         new_expires_at = pendulum.now("UTC") + pendulum.duration(days=REFRESH_TOKEN_EXPIRATION_DAYS)
 
-        async with request.app.state.db_engine.connect() as conn:
+        async with db_engine.connect() as conn:
             await conn.execute(
                 text("UPDATE refresh_tokens SET is_revoked = 1 WHERE token_hash = :hash"),
                 {"hash": hashed_input},
@@ -412,8 +447,17 @@ class AuthController(Controller):
 
         return Response(content=body, status_code=200)
 
-    @post("/logout")
-    async def logout(self, request: Request) -> Response[dict[str, str]]:
+    @post(
+        "/logout",
+        return_dto=GenericDictDTO,
+        summary="Logout and invalidate all tokens",
+        description=(
+            "Invalidates all existing tokens by incrementing the user's jwt_version. "
+            "All refresh tokens for the user are also revoked."
+        ),
+        operation_id="logoutUser",
+    )
+    async def logout(self, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
         """Invalidate all tokens by incrementing jwt_version."""
         user = getattr(request, "user", None)
         if not user:
@@ -421,7 +465,7 @@ class AuthController(Controller):
 
         user_id = user.id
 
-        async with request.app.state.db_engine.connect() as conn:
+        async with db_engine.connect() as conn:
             # Increment jwt_version to invalidate all existing JWTs
             await conn.execute(
                 text("UPDATE users SET jwt_version = jwt_version + 1 WHERE id = :id"),
@@ -435,19 +479,29 @@ class AuthController(Controller):
             await conn.commit()
 
         await _log_auth_event(
-            request.app.state.db_engine, user_id, "LOGOUT", {"username": getattr(user, "username", "")}
+            db_engine, user_id, "LOGOUT", {"username": getattr(user, "username", "")}
         )
 
         return Response(content={"status": "ok", "message": "Logged out successfully"}, status_code=200)
 
-    @get("/me")
-    async def me(self, request: Request) -> dict:
+    @get(
+        "/me",
+        return_dto=AuthResponseDTO,
+        summary="Get current user profile",
+        description=(
+            "Returns the authenticated user's profile including role, "
+            "tenant ID, and account status. Excludes sensitive fields "
+            "like password hash."
+        ),
+        operation_id="getCurrentUser",
+    )
+    async def me(self, request: Request, db_engine: AsyncEngine) -> dict:
         """Return current user profile."""
         user = getattr(request, "user", None)
         if not user:
             raise NotAuthorizedException("Not authenticated")
 
-        async with request.app.state.db_engine.connect() as conn:
+        async with db_engine.connect() as conn:
             row = (
                 await conn.execute(
                     text(
@@ -476,10 +530,19 @@ class AuthController(Controller):
             "created_at": row["created_at"],
         }
 
-    @post("/confirm/{token:str}")
-    async def confirm_email(self, token: str, request: Request) -> Response[dict[str, str]]:
+    @post(
+        "/confirm/{token:str}",
+        return_dto=GenericDictDTO,
+        summary="Confirm email address",
+        description=(
+            "Confirms the user's email address using the token "
+            "received in the verification email. Tokens expire after 24 hours."
+        ),
+        operation_id="confirmEmail",
+    )
+    async def confirm_email(self, token: str, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
         """Confirm email address using token from verification email."""
-        async with request.app.state.db_engine.connect() as conn:
+        async with db_engine.connect() as conn:
             row = (
                 await conn.execute(
                     text(
@@ -513,17 +576,27 @@ class AuthController(Controller):
             )
             await conn.commit()
 
-        await _log_auth_event(request.app.state.db_engine, user_id, "EMAIL_CONFIRMED", {})
+        await _log_auth_event(db_engine, user_id, "EMAIL_CONFIRMED", {})
         return Response(
             content={"status": "ok", "message": "Email confirmed successfully"}, status_code=200
         )
 
-    @post("/reset-password", dto=PasswordResetDTO)
-    async def reset_password(self, data: ResetPasswordRequest, request: Request) -> Response[dict[str, str]]:
+    @post(
+        "/reset-password",
+        dto=PasswordResetDTO,
+        return_dto=GenericDictDTO,
+        summary="Request password reset email",
+        description=(
+            "Sends a password reset email with a single-use token. "
+            "Always returns success to prevent email enumeration attacks."
+        ),
+        operation_id="requestPasswordReset",
+    )
+    async def reset_password(self, data: ResetPasswordRequest, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
         """Send password reset email with a reset token."""
         email = data.email.strip().lower()
 
-        async with request.app.state.db_engine.connect() as conn:
+        async with db_engine.connect() as conn:
             user = (
                 await conn.execute(
                     text("SELECT id, username FROM users WHERE email = :email LIMIT 1"),
@@ -540,7 +613,7 @@ class AuthController(Controller):
                            VALUES (:id, :uid, :token, 'reset', :expires)"""
                     ),
                     {
-                        "id": str(uuid.uuid4()),
+                        "id": uuid.uuid4().hex,
                         "uid": user["id"],
                         "token": reset_token,
                         "expires": token_expires,
@@ -564,15 +637,26 @@ class AuthController(Controller):
             status_code=200,
         )
 
-    @post("/reset-password/confirm", dto=PasswordResetConfirmDTO)
-    async def reset_password_confirm(self, data: ResetPasswordConfirmRequest, request: Request) -> Response[dict[str, str]]:
+    @post(
+        "/reset-password/confirm",
+        dto=PasswordResetConfirmDTO,
+        return_dto=GenericDictDTO,
+        summary="Reset password with token",
+        description=(
+            "Sets a new password using the reset token from the email. "
+            "Validates password strength and invalidates all existing sessions "
+            "by incrementing jwt_version."
+        ),
+        operation_id="confirmPasswordReset",
+    )
+    async def reset_password_confirm(self, data: ResetPasswordConfirmRequest, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
         """Set a new password using a reset token."""
         # Validate new password
         pwd_error = _validate_password(data.new_password)
         if pwd_error:
             raise ValidationException(detail=pwd_error)
 
-        async with request.app.state.db_engine.connect() as conn:
+        async with db_engine.connect() as conn:
             row = (
                 await conn.execute(
                     text(
@@ -612,13 +696,24 @@ class AuthController(Controller):
             )
             await conn.commit()
 
-        await _log_auth_event(request.app.state.db_engine, user_id, "PASSWORD_RESET", {})
+        await _log_auth_event(db_engine, user_id, "PASSWORD_RESET", {})
         return Response(
             content={"status": "ok", "message": "Password has been reset successfully"}, status_code=200
         )
 
-    @post("/change-password", dto=ChangePasswordDTO)
-    async def change_password(self, data: ChangePasswordRequest, request: Request) -> Response[dict[str, str]]:
+    @post(
+        "/change-password",
+        dto=ChangePasswordDTO,
+        return_dto=GenericDictDTO,
+        summary="Change current user password",
+        description=(
+            "Changes the password for the authenticated user. "
+            "Requires the current password for verification. "
+            "Invalidates all existing sessions on success."
+        ),
+        operation_id="changePassword",
+    )
+    async def change_password(self, data: ChangePasswordRequest, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
         """Change password for authenticated user (requires current password)."""
         user = getattr(request, "user", None)
         if not user:
@@ -628,7 +723,7 @@ class AuthController(Controller):
         if pwd_error:
             raise ValidationException(detail=pwd_error)
 
-        async with request.app.state.db_engine.connect() as conn:
+        async with db_engine.connect() as conn:
             row = (
                 await conn.execute(
                     text("SELECT password_hash FROM users WHERE id = :id LIMIT 1"),
@@ -649,12 +744,22 @@ class AuthController(Controller):
             )
             await conn.commit()
 
-        await _log_auth_event(request.app.state.db_engine, user.id, "PASSWORD_CHANGE", {})
+        await _log_auth_event(db_engine, user.id, "PASSWORD_CHANGE", {})
         return Response(
             content={"status": "ok", "message": "Password changed successfully"}, status_code=200
         )
 
-    @get("/csrf-token")
+    @get(
+        "/csrf-token",
+        return_dto=GenericDictDTO,
+        summary="Get CSRF token",
+        description=(
+            "Returns a CSRF token for double-submit cookie protection. "
+            "Litestar CSRFConfig automatically sets the csrf_token cookie; "
+            "this endpoint exists for backward compatibility."
+        ),
+        operation_id="getCsrfToken",
+    )
     async def get_csrf_token(self, request: Request) -> dict[str, str]:
         """Return a CSRF token for double-submit cookie protection.
 
@@ -686,7 +791,7 @@ async def _log_auth_event(db_engine, user_id: str, action: str, details: dict) -
     """Log an authentication event to the audit_logs table."""
     try:
         async with db_engine.connect() as conn:
-            log_id = str(uuid.uuid4())
+            log_id = uuid.uuid4().hex
             now = pendulum.now("UTC").isoformat()
             await conn.execute(
                 text(

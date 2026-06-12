@@ -169,7 +169,7 @@ class DecisionTraceLogger:
         Returns:
             The ``trace_id`` (UUID) of the newly created entry.
         """
-        trace_id = str(uuid.uuid4())
+        trace_id = uuid.uuid4().hex
         now = pendulum.now("UTC")
         timestamp_iso = now.isoformat()
 

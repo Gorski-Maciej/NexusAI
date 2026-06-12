@@ -15,10 +15,11 @@ Architektura:
 
 from __future__ import annotations
 
-import asyncio
-import json
+import threading
 from msgspec import Struct, field
 from typing import Any
+
+import anyio
 
 from structlog import get_logger
 
@@ -57,8 +58,9 @@ STREAM_CONFIG: dict[str, dict[str, Any]] = {
     },
 }
 
-# Cache na skonfigurowane strumienie
+# Cache na skonfigurowane strumienie (thread-safe dla free-threaded Python)
 _stream_cache: dict[str, bool] = {}
+_stream_cache_lock = threading.Lock()
 
 # ── JetStream Event Bus ───────────────────────────────────────────────────
 
@@ -117,8 +119,9 @@ class JetStreamEventBus:
         if self._js is None:
             return
         stream_name = cfg["stream_name"]
-        if stream_name in _stream_cache:
-            return
+        with _stream_cache_lock:
+            if stream_name in _stream_cache:
+                return
         try:
             from nats.js.api import StorageType
 
@@ -135,7 +138,8 @@ class JetStreamEventBus:
                 )
                 logger.info("[JETSTREAM] Created stream: %s", stream_name)
 
-            _stream_cache[stream_name] = True
+            with _stream_cache_lock:
+                _stream_cache[stream_name] = True
         except Exception as exc:
             logger.warning(
                 "[JETSTREAM] Failed to ensure stream %s: %s",
@@ -246,10 +250,10 @@ class JetStreamConsumer:
         self._event_handler = event_handler
         self._nc: Any = None
         self._js: Any = None
-        self._sub_tasks: list[asyncio.Task] = []
+        self._consumer_task: Any = None
 
     async def start(self) -> None:
-        """Połącz i uruchom konsumentów."""
+        """Połącz i uruchom konsumentów w tle (anyio background task)."""
         import nats
 
         self._nc = await nats.connect(
@@ -258,13 +262,20 @@ class JetStreamConsumer:
         )
         self._js = self._nc.jetstream()
 
-        for cfg in self._configs:
-            task = asyncio.create_task(self._consume_stream(cfg))
-            self._sub_tasks.append(task)
-            logger.info(
-                "[JETSTREAM] Consumer started: %s/%s (filter=%s)",
-                cfg.stream_name, cfg.consumer_name, cfg.filter_subject or "*",
-            )
+        async def _run_consumers() -> None:
+            """Uruchom wszystkich konsumentów w task group.
+            start_soon tworzy taski w tle które działają do odwołania.
+            """
+            async with anyio.create_task_group() as tg:
+                for cfg in self._configs:
+                    tg.start_soon(self._consume_stream, cfg)
+                    logger.info(
+                        "[JETSTREAM] Consumer started: %s/%s (filter=%s)",
+                        cfg.stream_name, cfg.consumer_name, cfg.filter_subject or "*",
+                    )
+
+        # Uruchom konsumentów jako background task (nie blokuje start())
+        self._consumer_task = anyio.ensure_backend().create_task(_run_consumers())
 
     async def _consume_stream(self, cfg: ConsumerConfig) -> None:
         """Konsumuj eventy z jednego strumienia."""
@@ -301,9 +312,9 @@ class JetStreamConsumer:
                     logger.warning(
                         "[JETSTREAM] Consumer error: %s", exc,
                     )
-                    await asyncio.sleep(1)
+                    await anyio.sleep(1)
 
-        except asyncio.CancelledError:
+        except anyio.CancelledError:
             logger.info("[JETSTREAM] Consumer cancelled: %s", cfg.consumer_name)
         except Exception as exc:
             logger.error(
@@ -312,22 +323,27 @@ class JetStreamConsumer:
             )
 
     async def stop(self) -> None:
-        """Zatrzymaj wszystkich konsumentów."""
-        for task in self._sub_tasks:
-            task.cancel()
-        if self._sub_tasks:
-            await asyncio.gather(*self._sub_tasks, return_exceptions=True)
+        """Zatrzymaj background task konsumentów i zamknij NATS."""
+        if self._consumer_task is not None:
+            self._consumer_task.cancel()
+            self._consumer_task = None
         if self._nc is not None:
-            await self._nc.drain()
+            try:
+                await self._nc.drain()
+            except Exception:
+                pass
 
-# ── Global singleton ──────────────────────────────────────────────────────
+# ── Global singleton (thread-safe dla free-threaded Python) ───────────────
 
 _default_bus: JetStreamEventBus | None = None
+_default_bus_lock = threading.Lock()
 
 def get_event_bus(
     nats_servers: list[str] | str | None = None,
 ) -> JetStreamEventBus:
     """Zwraca globalną instancję JetStreamEventBus (singleton).
+
+    Thread-safe — używa ``threading.Lock`` dla free-threaded Python.
 
     Args:
         nats_servers: Lista serwerów NATS.
@@ -337,5 +353,7 @@ def get_event_bus(
     """
     global _default_bus
     if _default_bus is None:
-        _default_bus = JetStreamEventBus(nats_servers=nats_servers)
+        with _default_bus_lock:
+            if _default_bus is None:
+                _default_bus = JetStreamEventBus(nats_servers=nats_servers)
     return _default_bus

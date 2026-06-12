@@ -16,7 +16,7 @@ Sygnały:
 from __future__ import annotations
 
 import argparse
-import asyncio
+import anyio
 import logging
 import os
 import platform
@@ -98,7 +98,7 @@ async def _run_worker(
 
     try:
         await worker.start()
-    except asyncio.CancelledError:
+    except anyio.CancelledError:
         pass
     finally:
         await worker.stop()
@@ -171,8 +171,8 @@ def main(argv: list[str] | None = None) -> int:
     start = pendulum.now("UTC")
 
     try:
-        asyncio.run(
-            _run_worker(
+        anyio.run(
+            lambda: _run_worker(
                 nats_servers=args.nats_servers,
                 enable_fallback=not args.no_fallback,
                 fallback_poll_seconds=args.fallback_interval,

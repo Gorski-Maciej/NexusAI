@@ -8,6 +8,15 @@ import anyio
 from litestar import Controller, get, post
 from litestar.connection import Request
 
+from nexus_ai.api.dto import (
+    AutopilotDecisionDTO,
+    AutopilotDecisionsDTO,
+    AutopilotStatsDTO,
+    AutopilotTriggerDTO,
+    AutopilotTrustScoreDTO,
+    GenericDictDTO,
+    TAG_SYSTEM,
+)
 from nexus_ai.core.config import AppConfig
 from nexus_ai.services.decision_logger import DecisionLogger
 from nexus_ai.services.notification_service import NotificationService
@@ -24,9 +33,15 @@ class AutopilotController(Controller):
     """
 
     path = "/api/v2/autopilot"
-    tags = ["System"]
+    tags = [TAG_SYSTEM]
 
-    @get("/decisions")
+    @get(
+        "/decisions",
+        return_dto=AutopilotDecisionsDTO,
+        summary="List autopilot decisions",
+        description="Returns recent Autopilot decisions with cursor pagination (Rozwiązanie 32). Includes decision, trust score, level, and timestamp.",
+        operation_id="listAutopilotDecisions",
+    )
     async def list_decisions(
         self,
         config: AppConfig,
@@ -82,7 +97,13 @@ class AutopilotController(Controller):
         except Exception:
             return {"items": [], "next_cursor": None, "has_more": False}
 
-    @get("/decisions/{invoice_id:str}")
+    @get(
+        "/decisions/{invoice_id:str}",
+        return_dto=AutopilotDecisionDTO,
+        summary="Get decision detail",
+        description="Returns full decision details for a specific invoice, including alpha/beta/gamma verdicts and trust components.",
+        operation_id="getAutopilotDecisionDetail",
+    )
     async def get_decision_detail(
         self,
         invoice_id: str,
@@ -113,11 +134,18 @@ class AutopilotController(Controller):
         except Exception:
             return {"error": "query_failed", "invoice_id": invoice_id}
 
-    @post("/decisions/{invoice_id:str}/accept")
+    @post(
+        "/decisions/{invoice_id:str}/accept",
+        return_dto=GenericDictDTO,
+        summary="Accept a decision",
+        description="Accepts a pending Autopilot decision, updates invoice status to APPROVED with optimistic locking.",
+        operation_id="acceptAutopilotDecision",
+    )
     async def accept_decision(
         self,
         invoice_id: str,
         config: AppConfig,
+        request: Request,
     ) -> dict[str, Any]:
         """Accept (approve) a pending Autopilot decision.
 
@@ -175,22 +203,32 @@ class AutopilotController(Controller):
             finally:
                 await engine.dispose()
 
-            # 3. Send notification (fire-and-forget)
+            # 3. Send notification (fire-and-forget via BackgroundTaskManager)
             notif_db = config.base_dir / "app_data" / "notifications.sqlite"
             service = NotificationService(notif_db)
-            async with anyio.create_task_group() as tg:
-                tg.start_soon(_send_notification_async, service, "anonymous", invoice_id, "Decyzja zaakceptowana ✅", f"Faktura {invoice_id[:8]}... została zaakceptowana przez użytkownika.")
+            request.app.state.bg_tasks.start_task(
+                f"notif_accept_{invoice_id}",
+                _send_notification_async(service, "anonymous", invoice_id, "Decyzja zaakceptowana ✅", f"Faktura {invoice_id[:8]}... została zaakceptowana przez użytkownika."),
+                metadata={"description": "Notification: accept decision"},
+            )
 
             return {"result": "OK", "invoice_id": invoice_id, "action": "ACCEPTED"}
 
         except Exception as exc:
             return {"result": "ERROR", "invoice_id": invoice_id, "error": str(exc)}
 
-    @post("/decisions/{invoice_id:str}/reject")
+    @post(
+        "/decisions/{invoice_id:str}/reject",
+        return_dto=GenericDictDTO,
+        summary="Reject a decision",
+        description="Rejects a pending Autopilot decision, updates invoice status to REJECTED with optimistic locking.",
+        operation_id="rejectAutopilotDecision",
+    )
     async def reject_decision(
         self,
         invoice_id: str,
         config: AppConfig,
+        request: Request,
     ) -> dict[str, Any]:
         """Reject (block) a pending Autopilot decision.
 
@@ -248,18 +286,27 @@ class AutopilotController(Controller):
             finally:
                 await engine.dispose()
 
-            # 3. Send notification (fire-and-forget)
+            # 3. Send notification (fire-and-forget via BackgroundTaskManager)
             notif_db = config.base_dir / "app_data" / "notifications.sqlite"
             service = NotificationService(notif_db)
-            async with anyio.create_task_group() as tg:
-                tg.start_soon(_send_notification_async, service, "anonymous", invoice_id, "Decyzja odrzucona ❌", f"Faktura {invoice_id[:8]}... została odrzucona przez użytkownika.")
+            request.app.state.bg_tasks.start_task(
+                f"notif_reject_{invoice_id}",
+                _send_notification_async(service, "anonymous", invoice_id, "Decyzja odrzucona ❌", f"Faktura {invoice_id[:8]}... została odrzucona przez użytkownika."),
+                metadata={"description": "Notification: reject decision"},
+            )
 
             return {"result": "OK", "invoice_id": invoice_id, "action": "REJECTED"}
 
         except Exception as exc:
             return {"result": "ERROR", "invoice_id": invoice_id, "error": str(exc)}
 
-    @get("/trust-score/{contractor_nip:str}")
+    @get(
+        "/trust-score/{contractor_nip:str}",
+        return_dto=AutopilotTrustScoreDTO,
+        summary="Get trust score trend",
+        description="Returns trust score trend for a specific contractor (NIP) over the specified lookback window.",
+        operation_id="getTrustScoreTrend",
+    )
     async def get_trust_score_trend(
         self,
         contractor_nip: str,
@@ -293,7 +340,13 @@ class AutopilotController(Controller):
         except Exception:
             return {"known": False, "records": 0, "avg_trust": 0.0}
 
-    @get("/stats")
+    @get(
+        "/stats",
+        return_dto=AutopilotStatsDTO,
+        summary="Get autopilot statistics",
+        description="Returns overall Autopilot statistics including decision count, correction rate, and type breakdown.",
+        operation_id="getAutopilotStats",
+    )
     async def get_autopilot_stats(
         self,
         config: AppConfig,
@@ -332,7 +385,14 @@ class AutopilotController(Controller):
                 "correction_breakdown": [],
             }
 
-    @post("/evaluate")
+    @post(
+        "/evaluate",
+        dto=AutopilotTriggerDTO,
+        return_dto=GenericDictDTO,
+        summary="Trigger evaluation",
+        description="Manually triggers Autopilot evaluation for an invoice via NATS task queue.",
+        operation_id="triggerAutopilotEvaluation",
+    )
     async def trigger_evaluation(
         self,
         config: AppConfig,

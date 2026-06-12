@@ -32,7 +32,7 @@ def conn() -> duckdb.DuckDBPyConnection:
             """INSERT INTO anomaly_rules (rule_id, condition_json, action_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",
             (
-                str(uuid.uuid4()),
+                uuid.uuid4().hex,
                 rule["condition_json"],
                 rule["action_json"],
                 rule["valid_from"],

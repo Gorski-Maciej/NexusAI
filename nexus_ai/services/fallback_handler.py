@@ -107,7 +107,7 @@ class FallbackHandler:
         Returns:
             event_id utworzonego zdarzenia.
         """
-        event_id = str(uuid.uuid4())
+        event_id = uuid.uuid4().hex
         now = pendulum.now("UTC").isoformat()
 
         context_json = msgspec_dumps(context, ensure_ascii=False, sort_keys=True, default=str)

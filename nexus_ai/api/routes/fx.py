@@ -7,6 +7,8 @@ from litestar import Controller, post
 from litestar.enums import MediaType
 from litestar.exceptions import ClientException
 
+from nexus_ai.api.dto import FXUploadRatesDTO, TAG_FX
+
 
 class FXController(Controller):
     """FX Management — upload NBP rates CSV and manage exchange rates cache.
@@ -16,9 +18,16 @@ class FXController(Controller):
     """
 
     path = "/api/v1/system/fx"
-    tags = ["FX"]
+    tags = [TAG_FX]
 
-    @post("/upload-rates", media_type=MediaType.JSON)
+    @post(
+        "/upload-rates",
+        media_type=MediaType.JSON,
+        return_dto=FXUploadRatesDTO,
+        summary="Upload FX rates CSV",
+        description="Uploads NBP exchange rates from a CSV file. Supports CSV content type or JSON with csv_content field (Rozwiązanie 28).",
+        operation_id="uploadFxRates",
+    )
     async def upload_rates(
         self,
         request: Any,

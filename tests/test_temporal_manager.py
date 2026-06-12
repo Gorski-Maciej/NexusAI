@@ -48,7 +48,7 @@ class TestTemporalManager:
 
     def test_get_active_rules_excludes_future(self, conn: duckdb.DuckDBPyConnection, manager: TemporalManager) -> None:
         """Rules starting in the future are excluded."""
-        future_id = str(uuid.uuid4())
+        future_id = uuid.uuid4().hex
         conn.execute(
             """INSERT INTO tax_rules (rule_id, condition_sql, action_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",
@@ -60,7 +60,7 @@ class TestTemporalManager:
 
     def test_get_active_rules_excludes_closed(self, conn: duckdb.DuckDBPyConnection, manager: TemporalManager) -> None:
         """Rules closed (valid_to in past) are excluded."""
-        rule_id = str(uuid.uuid4())
+        rule_id = uuid.uuid4().hex
         conn.execute(
             """INSERT INTO tax_rules (rule_id, condition_sql, action_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",
@@ -72,7 +72,7 @@ class TestTemporalManager:
 
     def test_get_active_rules_includes_past_valid(self, conn: duckdb.DuckDBPyConnection, manager: TemporalManager) -> None:
         """Rule closed in past IS included for a date within its window."""
-        rule_id = str(uuid.uuid4())
+        rule_id = uuid.uuid4().hex
         conn.execute(
             """INSERT INTO tax_rules (rule_id, condition_sql, action_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",
@@ -85,7 +85,7 @@ class TestTemporalManager:
 
     def test_is_rule_active_on(self, conn: duckdb.DuckDBPyConnection, manager: TemporalManager) -> None:
         """is_rule_active_on returns correct results."""
-        rule_id = str(uuid.uuid4())
+        rule_id = uuid.uuid4().hex
         conn.execute(
             """INSERT INTO tax_rules (rule_id, condition_sql, action_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",
@@ -96,7 +96,7 @@ class TestTemporalManager:
 
     def test_get_validity_window(self, conn: duckdb.DuckDBPyConnection, manager: TemporalManager) -> None:
         """get_validity_window returns correct dates."""
-        rule_id = str(uuid.uuid4())
+        rule_id = uuid.uuid4().hex
         conn.execute(
             """INSERT INTO tax_rules (rule_id, condition_sql, action_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",

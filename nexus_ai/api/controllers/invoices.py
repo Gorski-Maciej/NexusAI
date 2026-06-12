@@ -12,7 +12,21 @@ from litestar.status_codes import HTTP_201_CREATED
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from nexus_ai.api.schemas import InvoiceCreate, InvoiceResponse, validate_invoice_create
+from nexus_ai.api.dto import (
+    InvoiceCreateDTO,
+    InvoiceListResponseDTO,
+    InvoiceResponseDTO,
+    InvoiceUploadResponseDTO,
+    TAG_INVOICES,
+)
+from nexus_ai.api.schemas import (
+    InvoiceCreate,
+    InvoiceListResponse,
+    InvoiceResponse,
+    InvoiceUploadResponse,
+    InvoiceUploadResponseLarge,
+    validate_invoice_create,
+)
 from nexus_ai.api.services import ContentAddressableStorage
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps
@@ -20,22 +34,33 @@ from nexus_ai.db.models import Invoice, OutboxEvent
 
 
 class InvoiceController(Controller):
-    path = "/invoices"
+    """REST API dla faktur — CRUD + upload."""
 
-    @get()
+    path = "/invoices"
+    tags = [TAG_INVOICES]
+
+    @get(
+        summary="List invoices with cursor pagination",
+        description=(
+            "Returns a paginated list of invoices ordered by creation date (descending). "
+            "Use ``nextCursor`` from the response to fetch the next page. "
+            "Implements keyset pagination (Rozwiązanie 32) for O(1) page navigation "
+            "even under concurrent inserts."
+        ),
+        operation_id="listInvoices",
+        return_dto=InvoiceListResponseDTO,
+    )
     def list_invoices(
         self,
         db_session: Session,
         limit: int = 50,
         cursor: str | None = None,
-    ) -> dict:
+    ) -> InvoiceListResponse:
         """Pobiera listę faktur z paginacją kursorem (Rozwiązanie 32).
 
         Query params:
           - limit (int, default 50, max 200): max liczba faktur na stronę.
           - cursor (str, optional): token paginacji z poprzedniej odpowiedzi (next_cursor).
-
-        Returns dict z items, next_cursor, has_more.
         """
         from api.services import CursorPagination
 
@@ -60,9 +85,10 @@ class InvoiceController(Controller):
 
         items = [
             InvoiceResponse(
-                id=inv.id, number=inv.number, amount_net=inv.amount_net,
-                amount_gross=inv.amount_gross, currency=inv.currency,
-                status=inv.status, created_at=inv.created_at
+                id=inv.id, number=inv.number,
+                amount_net=inv.amount_net, amount_gross=inv.amount_gross,
+                currency=inv.currency, status=inv.status,
+                created_at=inv.created_at,
             ) for inv in invoices
         ]
 
@@ -70,21 +96,32 @@ class InvoiceController(Controller):
         if has_more:
             next_cursor = CursorPagination.build_next_cursor(items)
 
-        return {
-            "items": items,
-            "next_cursor": next_cursor,
-            "has_more": has_more,
-            "limit": safe_limit,
-        }
+        return InvoiceListResponse(
+            items=items,
+            next_cursor=next_cursor,
+            has_more=has_more,
+            limit=safe_limit,
+        )
 
-    @post(status_code=HTTP_201_CREATED)
+    @post(
+        status_code=HTTP_201_CREATED,
+        summary="Create a new invoice",
+        description=(
+            "Creates a new invoice record and enqueues an OCR processing event "
+            "via the Transactional Outbox pattern in the same DB transaction. "
+            "Validates NIP checksum and field constraints."
+        ),
+        operation_id="createInvoice",
+        dto=InvoiceCreateDTO,
+        return_dto=InvoiceResponseDTO,
+    )
     def create_invoice(self, data: InvoiceCreate, db_session: Session) -> InvoiceResponse:
         """Dodaje nową fakturę i zapisuje event OCR w Outbox w tej samej transakcji."""
         try:
             validate_invoice_create(data)
         except ValueError as exc:
             raise ClientException(status_code=400, detail=str(exc)) from exc
-        invoice_id = str(uuid.uuid4())
+        invoice_id = uuid.uuid4().hex
         new_invoice = Invoice(
             id=invoice_id,
             number=data.number,
@@ -92,7 +129,9 @@ class InvoiceController(Controller):
             file_path=data.file_path,
             amount_net=data.amount_net,
             amount_gross=data.amount_gross,
-            status="NEW"
+            currency=data.currency,
+            issue_date=data.issue_date or None,
+            status="NEW",
         )
         db_session.add(new_invoice)
         db_session.add(
@@ -113,18 +152,38 @@ class InvoiceController(Controller):
         db_session.commit()
 
         return InvoiceResponse(
-            id=new_invoice.id, number=new_invoice.number,
-            amount_net=new_invoice.amount_net, amount_gross=new_invoice.amount_gross,
-            currency=new_invoice.currency, status=new_invoice.status,
-            created_at=new_invoice.created_at
+            id=new_invoice.id,
+            number=new_invoice.number,
+            contractor_nip=new_invoice.contractor_nip,
+            file_path=new_invoice.file_path,
+            issue_date=new_invoice.issue_date,
+            amount_net=new_invoice.amount_net,
+            amount_gross=new_invoice.amount_gross,
+            currency=new_invoice.currency,
+            status=new_invoice.status,
+            retry_count=new_invoice.retry_count,
+            processing_status=new_invoice.processing_status,
+            created_at=new_invoice.created_at,
+            updated_at=new_invoice.updated_at,
         )
 
-    @post("/upload")
+    @post(
+        "/upload",
+        summary="Upload invoice file",
+        description=(
+            "Streaming upload with SHA-256 content-addressable storage. "
+            "Validates MIME type and file size. Returns task ID "
+            "for tracking OCR processing progress. "
+            "Supports idempotency via ``Idempotency-Key`` header."
+        ),
+        operation_id="uploadInvoiceFile",
+        return_dto=InvoiceUploadResponseDTO,
+    )
     async def upload_invoice(
         self,
         data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)
-    ) -> dict:
-        # Strumieniowy zapis uploadu + CAS hash (SHA-256) bez blokowania event loop.
+    ) -> InvoiceUploadResponse:
+        """Strumieniowy zapis uploadu + CAS hash (SHA-256) bez blokowania event loop."""
         config = AppConfig()
         max_bytes = config.max_invoice_upload_bytes
         content_length = getattr(data, "headers", {}).get("content-length") if getattr(data, "headers", None) else None
@@ -158,13 +217,13 @@ class InvoiceController(Controller):
 
             digest = hasher.hexdigest()
             saved = storage.finalize_temp_upload(temp_path=temp_path, digest=digest, size_bytes=total_size, suffix=".pdf")
-            return {
-                "filename": Path(saved.file_path).name,
-                "status": "uploaded",
-                "size_bytes": saved.size_bytes,
-                "file_hash": saved.file_hash,
-                "file_path": saved.file_path,
-            }
+            return InvoiceUploadResponse(
+                filename=Path(saved.file_path).name,
+                status="uploaded",
+                size_bytes=saved.size_bytes,
+                file_hash=saved.file_hash,
+                file_path=saved.file_path,
+            )
         except Exception:
             try:
                 os.unlink(temp_path)
@@ -173,11 +232,21 @@ class InvoiceController(Controller):
             raise
 
 
-    @post("/upload-large")
+    @post(
+        "/upload-large",
+        summary="Upload large attachment (dedicated path)",
+        description=(
+            "Isolated path for very large attachments (up to 500MB). "
+            "Uses a separate event queue to avoid blocking the default OCR pipeline. "
+            "Streaming SHA-256 validation with content-addressable storage."
+        ),
+        operation_id="uploadLargeAttachment",
+        return_dto=InvoiceUploadResponseDTO,
+    )
     async def upload_large_attachment(
         self,
         data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)
-    ) -> dict:
+    ) -> InvoiceUploadResponseLarge:
         """Dedicated path for very large attachments isolated from regular invoice uploads."""
         config = AppConfig()
         max_bytes = config.max_attachment_upload_bytes
@@ -208,14 +277,14 @@ class InvoiceController(Controller):
                 size_bytes=total_size,
                 suffix=".bin",
             )
-            return {
-                "filename": Path(saved.file_path).name,
-                "status": "uploaded",
-                "kind": "large_attachment",
-                "size_bytes": saved.size_bytes,
-                "file_hash": saved.file_hash,
-                "file_path": saved.file_path,
-            }
+            return InvoiceUploadResponseLarge(
+                filename=Path(saved.file_path).name,
+                status="uploaded",
+                kind="large_attachment",
+                size_bytes=saved.size_bytes,
+                file_hash=saved.file_hash,
+                file_path=saved.file_path,
+            )
         except Exception:
             try:
                 os.unlink(temp_path)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import asyncio
+import anyio
 import sys
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -122,7 +122,7 @@ def test_matching_transaction_auto_confirms_pending_transfer() -> None:
         assert transfer.meta["reconciliation"]["status"] == "auto-confirmed"
         assert session.committed is True
 
-    asyncio.run(run())
+    anyio.run(run)
 
 
 def test_old_unmatched_transaction_emits_missing_invoice_alert() -> None:
@@ -141,8 +141,8 @@ def test_old_unmatched_transaction_emits_missing_invoice_alert() -> None:
                 return event
             raise RuntimeError("stream closed")
 
-        waiter = asyncio.create_task(next_alert())
-        await asyncio.sleep(0)
+        waiter = anyio.ensure_backend().create_task(next_alert())
+        await anyio.sleep(0)
 
         matched = await engine.process_bank_transaction(
             {
@@ -154,13 +154,14 @@ def test_old_unmatched_transaction_emits_missing_invoice_alert() -> None:
             }
         )
 
-        event = await asyncio.wait_for(waiter, timeout=2)
+        async with anyio.fail_after(2):
+            event = await waiter
 
         assert matched is False
         assert event["type"] == "MissingInvoiceAlert"
         assert event["transaction_id"] == "tx-404"
 
-    asyncio.run(run())
+    anyio.run(run)
 
 
 def test_clearing_engine_processes_fees_with_idempotency() -> None:
@@ -183,7 +184,7 @@ def test_clearing_engine_processes_fees_with_idempotency() -> None:
         assert second["status"] == "idempotent-replay"
         assert await tb_client.get_account_credits_posted(139001) == 200
 
-    asyncio.run(run())
+    anyio.run(run)
 
 
 def test_clearing_engine_reconciles_payout_with_idempotency() -> None:
@@ -207,4 +208,4 @@ def test_clearing_engine_reconciles_payout_with_idempotency() -> None:
         assert second["status"] == "idempotent-replay"
         assert await tb_client.get_account_credits_posted(139002) == 9800
 
-    asyncio.run(run())
+    anyio.run(run)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import asyncio
+import anyio
 import importlib.util
 import sys
 import uuid
@@ -53,7 +53,7 @@ def test_validate_and_post_happy_path() -> None:
         assert result["total_debit"] == "100.00"
         assert len(result["pending_transfer_ids"]) == 1
 
-    asyncio.run(run())
+    anyio.run(run)
 
 
 def test_validate_and_post_rejects_unbalanced() -> None:
@@ -68,7 +68,7 @@ def test_validate_and_post_rejects_unbalanced() -> None:
         except ValueError as exc:
             assert "Unbalanced booking" in str(exc)
 
-    asyncio.run(run())
+    anyio.run(run)
 
 
 def test_validate_and_post_rejects_missing_required_account() -> None:
@@ -81,4 +81,4 @@ def test_validate_and_post_rejects_missing_required_account() -> None:
         except ValueError as exc:
             assert "Template mismatch" in str(exc)
 
-    asyncio.run(run())
+    anyio.run(run)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import asyncio
+import anyio
 import sys
 from pathlib import Path
 
@@ -42,4 +42,4 @@ def test_vision_agent_analyze_uses_fallback_when_runtime_is_unavailable() -> Non
         assert extraction.total_gross == 99.0
         assert extraction.source in {"ocr-fallback", "qwen2.5-vl-2b-4bit"}
 
-    asyncio.run(run())
+    anyio.run(run)

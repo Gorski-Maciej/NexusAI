@@ -84,7 +84,7 @@ class ActiveLearningEngine:
         context_hash = hashlib.md5(raw_text.encode()).hexdigest()
 
         store = self._get_store()
-        record_id = str(uuid.uuid4())
+        record_id = uuid.uuid4().hex
 
         # Zapisz do tabeli ocr_corrections przez raw SQL
         conn = store._get_conn()

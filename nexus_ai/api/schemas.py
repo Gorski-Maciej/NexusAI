@@ -56,14 +56,25 @@ def validate_invoice_create(payload: InvoiceCreate) -> None:
             raise ValueError(f"contractor_nip validation failed: {e}")
 
 class InvoiceResponse(msgspec.Struct):
-    """Struktura zwracana do frontendu (response — ``Money`` serializowane przez enc_hook)."""
+    """Struktura zwracana do frontendu (response — ``Money`` serializowane przez enc_hook).
+
+    Pola odpowiadają modelowi DB ``Invoice`` z ``nexus_ai/db/models.py``.
+    ``amount_net`` i ``amount_gross`` to ``Money`` — serializowane przez
+    ``AppConfig.type_encoders`` w configu aplikacji.
+    """
     id: str
     number: str | None
+    contractor_nip: str | None = None
+    file_path: str | None = None
+    issue_date: str | None = None
     amount_net: Money
     amount_gross: Money
     currency: str
-    status: str # NEW, PROCESSING, APPROVED
+    status: str  # NEW, PROCESSING, APPROVED
+    retry_count: int = 0
+    processing_status: str | None = None
     created_at: pendulum.DateTime
+    updated_at: pendulum.DateTime | None = None
     version_id: int = 1  # Optimistic locking (Rozwiązanie 23)
 
 class AnalyticsQuery(msgspec.Struct):
@@ -103,6 +114,38 @@ class DashboardSummaryResponse(msgspec.Struct):
     total_net: float
     total_gross: float
     total_documents: int
+
+
+class InvoiceUploadResponse(msgspec.Struct):
+    """Response structure for invoice file upload.
+
+    Returned after a successful file upload with content-addressable storage.
+    """
+    filename: str
+    status: str
+    size_bytes: int
+    file_hash: str
+    file_path: str
+
+
+class InvoiceUploadResponseLarge(InvoiceUploadResponse):
+    """Response structure for large attachment upload.
+
+    Extends ``InvoiceUploadResponse`` with a ``kind`` field.
+    """
+    kind: str = "large_attachment"
+
+
+class InvoiceListResponse(msgspec.Struct):
+    """Paginated list response for invoices.
+
+    ``items`` to lista ``InvoiceResponse``, ``next_cursor`` to token
+    dla następnej strony, ``has_more`` wskazuje czy istnieją kolejne strony.
+    """
+    items: list[InvoiceResponse]
+    next_cursor: str | None = None
+    has_more: bool = False
+    limit: int = 50
 
 
 class TriageItem(msgspec.Struct):

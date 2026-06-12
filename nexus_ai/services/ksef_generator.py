@@ -114,7 +114,7 @@ def generate_ksef_xml(
         String XML (UTF-8, bez BOM) zgodny z FA_VAT.
     """
     # Wyciągnij dane
-    invoice_id = str(invoice_data.get("invoice_id", str(uuid.uuid4())))
+    invoice_id = str(invoice_data.get("invoice_id", uuid.uuid4().hex))
     invoice_number = str(invoice_data.get("number", invoice_id))
     issue_date = str(invoice_data.get("transaction_date", pendulum.now().date().isoformat()))
 

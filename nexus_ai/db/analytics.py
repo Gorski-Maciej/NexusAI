@@ -1,6 +1,8 @@
+from __future__ import annotations
+
+import threading
 from msgspec import Struct
 from pathlib import Path
-from threading import Lock
 from typing import Any
 
 import duckdb
@@ -12,10 +14,16 @@ class DuckDBLimits(Struct):
 class DuckDBManager:
     """Thread-safe DuckDB manager with native SQLite Zero-ETL attach.
 
-    W środowisku asynchronicznym każde wywołanie execute() tworzy osobne połączenie
-    (krótkożyciowe), co zapobiega blokowaniu między współbieżnymi requestami.
-    Dla zadań wsadowych (refresh_materialized_cashflow) używane jest współdzielone
-    połączenie z blokadą wątku, aby uniknąć konfliktów DDL.
+    Każdy wątek w free-threaded Python 3.13t ma własne połączenie DuckDB
+    przez ``threading.local()`` — DuckDB connections nie są thread-safe,
+    więc współdzielenie ich między wątkami powoduje crashe.
+
+    Dla zapytań SELECT tworzone są osobne, krótkożyciowe połączenia
+    (przez ``get_connection_for_query()``), co zapobiega blokowaniu
+    między współbieżnymi requestami asynchronicznymi.
+
+    Dla operacji DDL/DML używane jest per-thread połączenie z blokadą
+    ``_ddl_lock``, aby uniknąć konfliktów DDL między wątkami.
     """
 
     def __init__(self, db_path: Path | str, limits: DuckDBLimits = DuckDBLimits(), read_only: bool = False, sqlite_path: Path | str = "app_data/nexus_oltp.db") -> None:
@@ -23,11 +31,30 @@ class DuckDBManager:
         self._limits = limits
         self._read_only = read_only
         self._sqlite_path = Path(sqlite_path)
-        self._lock = Lock()
-        self._connection: duckdb.DuckDBPyConnection | None = None
+        # Per-thread connections: każdy wątek dostaje własne połączenie
+        self._local = threading.local()
+        # Lock tylko dla DDL (aby uniknąć konfliktów CREATE/DROP między wątkami)
+        self._ddl_lock = threading.Lock()
+        # Rejestr WSZYSTKICH per-thread połączeń — umożliwia close() zamknięcie
+        # połączeń ze wszystkich wątków, nie tylko bieżącego.
+        # To zapobiega memory leakom w free-threaded Python 3.13t.
+        self._all_connections: set[duckdb.DuckDBPyConnection] = set()
+        self._close_lock = threading.Lock()
+        # Flaga zamknięcia — zapobiega race condition między close() a connect()
+        self._closed = False
 
     def _create_connection(self) -> duckdb.DuckDBPyConnection:
-        """Tworzy nowe, skonfigurowane połączenie DuckDB."""
+        """Tworzy nowe, skonfigurowane połączenie DuckDB i rejestruje w globalnym registry.
+
+        Rejestracja w ``_all_connections`` umożliwia ``close()`` zamknięcie
+        wszystkich per-thread połączeń, nie tylko bieżącego wątku.
+        Używa blokady ``_close_lock`` dla bezpieczeństwa w free-threaded Python 3.13t.
+
+        Uwaga: ``get_connection_for_query()`` też używa tej metody, ale te
+        krótkożyciowe połączenia są zamykane przez wywołującego i NIE powinny
+        być rejestrowane — dlatego rejestracja odbywa się w ``connect()``,
+        a nie tutaj.
+        """
         conn = duckdb.connect(str(self._db_path), read_only=self._read_only)
         conn.execute(f"SET memory_limit='{self._limits.memory_limit}'")
         conn.execute(f"SET threads={self._limits.threads}")
@@ -39,16 +66,38 @@ class DuckDBManager:
         return conn
 
     def connect(self) -> duckdb.DuckDBPyConnection:
-        with self._lock:
-            if self._connection is None:
-                self._connection = self._create_connection()
-                self.setup_zero_etl(self._connection)
-            return self._connection
+        """Zwraca per-thread połączenie DuckDB.
+
+        Każdy wątek ma własne połączenie dzięki ``threading.local()``.
+        Nowe połączenie jest tworzone przy pierwszym wywołaniu w danym wątku
+        i REJESTROWANE w ``_all_connections``, aby ``close()`` mogło
+        zamknąć połączenia ze wszystkich wątków.
+
+        Jeśli menedżer został zamknięty (``_closed == True``), nowe połączenie
+        jest natychmiast zamykane i rzucany jest ``RuntimeError`` — zapobiega
+        to race condition, gdzie ``connect()`` rejestruje połączenie, ale
+        ``close()`` już je zamyka lub czyści rejestr (leak).
+        """
+        conn: duckdb.DuckDBPyConnection | None = getattr(self._local, "connection", None)
+        if conn is None:
+            conn = self._create_connection()
+            # Rejestruj w globalnym zbiorze — umożliwia close() zamknięcie
+            # połączeń ze wszystkich wątków (nie tylko bieżącego).
+            with self._close_lock:
+                if self._closed:
+                    conn.close()
+                    raise RuntimeError(
+                        "DuckDBManager has been closed — cannot create new connections"
+                    )
+                self._all_connections.add(conn)
+            self.setup_zero_etl(conn)
+            self._local.connection = conn
+        return conn
 
     def get_connection_for_query(self) -> duckdb.DuckDBPyConnection:
         """
-        Dla prostych zapytań SELECT: tworzy nowe połączenie, które jest zamykane
-        po wykonaniu. Dla operacji DDL używa współdzielonego połączenia.
+        Tworzy nowe, krótkożyciowe połączenie dla zapytań SELECT.
+        Powinno być zamknięte przez wywołującego po użyciu.
         """
         conn = self._create_connection()
         self.setup_zero_etl(conn)
@@ -65,7 +114,7 @@ class DuckDBManager:
         """
         Wykonuje zapytanie. Dla zapytań SELECT tworzy nowe połączenie,
         co zapobiega blokowaniu między współbieżnymi zapytaniami.
-        Dla DDL/INSERT/UPDATE używa współdzielonego połączenia.
+        Dla DDL/INSERT/UPDATE używa per-thread połączenia z blokadą DDL.
         """
         is_read_only_query = query.strip().upper().startswith("SELECT")
 
@@ -81,58 +130,89 @@ class DuckDBManager:
             finally:
                 conn.close()
         else:
-            # DDL/DML przez współdzielone połączenie z blokadą
-            connection = self.connect()
-            if parameters:
-                return connection.execute(query, parameters).fetchall()
-            return connection.execute(query).fetchall()
+            # DDL/DML przez per-thread połączenie z blokadą DDL
+            with self._ddl_lock:
+                conn = self.connect()
+                if parameters:
+                    return conn.execute(query, parameters).fetchall()
+                return conn.execute(query).fetchall()
 
     def refresh_materialized_cashflow(self) -> None:
-        # Data-quality gate: reject malformed/unsafe rows from OLAP aggregates.
-        self.execute(
-            """
-            CREATE OR REPLACE TABLE dq_invalid_invoices AS
-            SELECT id, issue_date, currency, amount_gross, status
+        with self._ddl_lock:
+            self._execute_unsafe(
+                """
+                CREATE OR REPLACE TABLE dq_invalid_invoices AS
+                SELECT id, issue_date, currency, amount_gross, status
+                FROM oltp.invoices
+                WHERE amount_gross < 0
+                   OR currency IS NULL
+                   OR length(trim(currency)) <> 3
+                   OR issue_date IS NULL
+                """
+            )
+            self._execute_unsafe("DROP INDEX IF EXISTS idx_m_daily_cashflow_day;")
+            self._execute_unsafe("DROP INDEX IF EXISTS idx_m_daily_cashflow_currency;")
+
+            query = """
+            CREATE OR REPLACE TABLE m_daily_cashflow AS
+            SELECT
+                date_trunc('day', issue_date) as day,
+                upper(trim(currency)) as currency,
+                SUM(amount_gross) AS daily_income,
+                COUNT(id) AS invoice_count
             FROM oltp.invoices
-            WHERE amount_gross < 0
-               OR currency IS NULL
-               OR length(trim(currency)) <> 3
-               OR issue_date IS NULL
+            WHERE status IN ('PAID', 'APPROVED')
+              AND amount_gross >= 0
+              AND currency IS NOT NULL
+              AND length(trim(currency)) = 3
+              AND issue_date IS NOT NULL
+            GROUP BY 1, 2
             """
-        )
+            self._execute_unsafe(query)
 
-        # Usuń stare indeksy przed odświeżeniem (jeśli istnieją)
-        self.execute("DROP INDEX IF EXISTS idx_m_daily_cashflow_day;")
-        self.execute("DROP INDEX IF EXISTS idx_m_daily_cashflow_currency;")
+            self._execute_unsafe("CREATE INDEX IF NOT EXISTS idx_m_daily_cashflow_day ON m_daily_cashflow(day)")
+            self._execute_unsafe("CREATE INDEX IF NOT EXISTS idx_m_daily_cashflow_currency ON m_daily_cashflow(currency)")
+            self._execute_unsafe("CREATE INDEX IF NOT EXISTS idx_invoices_issue_date ON oltp.invoices(issue_date)")
+            self._execute_unsafe("CREATE INDEX IF NOT EXISTS idx_invoices_status ON oltp.invoices(status)")
+            self._execute_unsafe("CREATE INDEX IF NOT EXISTS idx_invoices_contractor_nip ON oltp.invoices(contractor_nip)")
 
-        query = """
-        CREATE OR REPLACE TABLE m_daily_cashflow AS
-        SELECT
-            date_trunc('day', issue_date) as day,
-            upper(trim(currency)) as currency,
-            SUM(amount_gross) AS daily_income,
-            COUNT(id) AS invoice_count
-        FROM oltp.invoices
-        WHERE status IN ('PAID', 'APPROVED')
-          AND amount_gross >= 0
-          AND currency IS NOT NULL
-          AND length(trim(currency)) = 3
-          AND issue_date IS NOT NULL
-        GROUP BY 1, 2
-        """
-        self.execute(query)
-
-        # Indeksy po odświeżeniu dla szybkich zapytań analitycznych
-        self.execute("CREATE INDEX IF NOT EXISTS idx_m_daily_cashflow_day ON m_daily_cashflow(day)")
-        self.execute("CREATE INDEX IF NOT EXISTS idx_m_daily_cashflow_currency ON m_daily_cashflow(currency)")
-
-        # Indeksy na źródłowej tabeli oltp.invoices (SQLite), które przyspieszają zapytania DuckDB
-        self.execute("CREATE INDEX IF NOT EXISTS idx_invoices_issue_date ON oltp.invoices(issue_date)")
-        self.execute("CREATE INDEX IF NOT EXISTS idx_invoices_status ON oltp.invoices(status)")
-        self.execute("CREATE INDEX IF NOT EXISTS idx_invoices_contractor_nip ON oltp.invoices(contractor_nip)")
+    def _execute_unsafe(self, query: str, parameters: tuple[Any, ...] | list[Any] | None = None) -> list[tuple[Any, ...]]:
+        """Wykonaj zapytanie DDL/DML bez locka — lock musi być już przejęty na zewnątrz."""
+        conn = self.connect()
+        if parameters:
+            return conn.execute(query, parameters).fetchall()
+        return conn.execute(query).fetchall()
 
     def close(self) -> None:
-        with self._lock:
-            if self._connection is not None:
-                self._connection.close()
-                self._connection = None
+        """Zamknij WSZYSTKIE per-thread połączenia.
+
+        Ustawia flagę ``_closed``, a następnie iteruje po rejestrze wszystkich
+        kiedykolwiek utworzonych połączeń (``self._all_connections``)
+        i zamyka każde z nich. Używa blokady ``_close_lock`` dla bezpieczeństwa
+        w free-threaded Python.
+
+        Flaga ``_closed`` zapobiega race condition: jeśli ``connect()``
+        zostanie wywołany współbieżnie, nowe połączenie zostanie natychmiast
+        zamknięte i rzucony zostanie ``RuntimeError``, zamiast leakować
+        połączenie lub używać już zamkniętego.
+
+        Bez tego rejestru, tylko bieżący wątek miałby zamknięte połączenie,
+        a pozostałe wątki by leakowały.
+
+        Po zamknięciu wszystkich połączeń:
+        - Czyści globalny rejestr ``_all_connections``
+        - Resetuje thread-local storage bieżącego wątku
+          (połączenia innych wątków są już fizycznie zamknięte;
+           ich thread-local referencje staną się stale — po shutdownie
+           menedżer i tak nie jest używany)
+        """
+        with self._close_lock:
+            self._closed = True
+            for conn in list(self._all_connections):
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+            self._all_connections.clear()
+        # Wyczyść thread-local bieżącego wątku
+        self._local.connection = None

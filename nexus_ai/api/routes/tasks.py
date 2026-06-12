@@ -6,6 +6,7 @@ from litestar.connection import Request
 from sqlalchemy import text
 from structlog import get_logger
 
+from nexus_ai.api.dto import TAG_TASKS, TaskCancelResponseDTO, TaskStatusDTO
 from nexus_ai.api.routes.ws import signal_cancel
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 
@@ -15,9 +16,15 @@ logger = get_logger("nexus.api.tasks.routes")
 class TaskController(Controller):
     """Status i zarządzanie zadaniami asynchronicznymi."""
     path = "/api/v1/tasks"
-    tags = ["Tasks"]
+    tags = [TAG_TASKS]
 
-    @get("/{task_id:str}")
+    @get(
+        "/{task_id:str}",
+        return_dto=TaskStatusDTO,
+        summary="Get task status",
+        description="Returns the status, progress, and result of an async task by its ID (Rozwiązanie 17).",
+        operation_id="getTaskStatus",
+    )
     async def get_task_status(self, task_id: str, request: Request) -> dict:
         """Zwraca status zadania z tabeli task_status (Rozwiązanie 17)."""
         engine = getattr(request.app.state, "db_engine", None)
@@ -54,7 +61,13 @@ class TaskController(Controller):
             "updated_at": row["updated_at"].isoformat() if hasattr(row["updated_at"], "isoformat") else str(row["updated_at"]),
         }
 
-    @post("/{task_id:str}/cancel")
+    @post(
+        "/{task_id:str}/cancel",
+        return_dto=TaskCancelResponseDTO,
+        summary="Cancel a task",
+        description="Sends a cancellation signal to a long-running task via WebSocket and NATS (Rozwiązanie 17).",
+        operation_id="cancelTask",
+    )
     async def cancel_task(self, task_id: str, request: Request) -> dict:
         """
         Anuluje zadanie długotrwałe.

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from litestar import Controller, get, post
 
+from nexus_ai.api.dto import GenericDictDTO, TAG_SYSTEM
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.core.config import AppConfig
 from nexus_ai.db.analytics import DuckDBManager
@@ -14,9 +15,15 @@ class TelemetryOpsController(Controller):
 
     path = "/api/v1/system/telemetry"
     guards = [owner_only_guard]
-    tags = ["System"]
+    tags = [TAG_SYSTEM]
 
-    @get("/fallback-status")
+    @get(
+        "/fallback-status",
+        return_dto=GenericDictDTO,
+        summary="Get telemetry fallback status",
+        description="Returns the status of the OpenTelemetry fallback buffer including queued span count.",
+        operation_id="getTelemetryFallbackStatus",
+    )
     async def fallback_status(self) -> dict:
         config = AppConfig()
         buffer = FileSpanBuffer(max_records=50000)
@@ -28,7 +35,13 @@ class TelemetryOpsController(Controller):
             "duckdb_path": str(config.duckdb_path),
         }
 
-    @post("/fallback-replay")
+    @post(
+        "/fallback-replay",
+        return_dto=GenericDictDTO,
+        summary="Replay telemetry fallback spans",
+        description="Flushes queued fallback spans from the local buffer to the primary telemetry backend.",
+        operation_id="replayTelemetryFallback",
+    )
     async def fallback_replay(self) -> dict:
         config = AppConfig()
         return await flush_fallback_spans(

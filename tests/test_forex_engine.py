@@ -1,4 +1,4 @@
-import asyncio
+import anyio
 import sys
 from datetime import date
 from pathlib import Path
@@ -111,4 +111,4 @@ def test_process_fx_settlement_creates_gain_transfer() -> None:
         assert float(result.fx_diff_pln) == 10.0
         assert await tb.get_account_credits_posted(750) == 1000
 
-    asyncio.run(run())
+    anyio.run(run)

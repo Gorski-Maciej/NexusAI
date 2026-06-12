@@ -96,7 +96,7 @@ class DunningEngine:
             self.duckdb.execute(
                 """INSERT INTO dunning_history (id, invoice_id, sent_at, level_reached, status, message_content)
                    VALUES (?, ?, ?, ?, ?, ?)""",
-                (str(uuid.uuid4()), str(invoice_id), pendulum.now("UTC"), level, status, content),
+                (uuid.uuid4().hex, str(invoice_id), pendulum.now("UTC"), level, status, content),
             )
 
         return {"checked": len(rows), "sent": sent, "failed": failed}

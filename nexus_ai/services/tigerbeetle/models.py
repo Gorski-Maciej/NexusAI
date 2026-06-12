@@ -59,7 +59,7 @@ class CompanyProfile(SQLModel, table=True):
     """
     __tablename__ = "company_profiles"  # type: ignore[assignment]
 
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     name: str = Field(nullable=False, max_length=255)
     nip: str = Field(unique=True, nullable=False, max_length=10)
     legal_form: str = Field(nullable=False, max_length=32)
@@ -76,7 +76,7 @@ class CompanyPartner(SQLModel, table=True):
     """Wspólnicy spółki."""
     __tablename__ = "company_partners"  # type: ignore[assignment]
 
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     company_id: str = Field(foreign_key="company_profiles.id", nullable=False)
     full_name: str = Field(nullable=False, max_length=255)
     tax_id: str = Field(nullable=False, max_length=10)
@@ -87,7 +87,7 @@ class TaxPolicy(SQLModel, table=True):
     """Polityka podatkowa firmy."""
     __tablename__ = "tax_policies"  # type: ignore[assignment]
 
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     company_id: str = Field(foreign_key="company_profiles.id", nullable=False, unique=True)
     tax_form: str = Field(nullable=False, max_length=32)
     pit_costs_enabled: bool = Field(default=True, nullable=False)
@@ -100,7 +100,7 @@ class LedgerTransfer(SQLModel, table=True):
     """Transakcja księgowa w TigerBeetle — podwójny zapis."""
     __tablename__ = "ledger_transfers"  # type: ignore[assignment]
 
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     company_id: str = Field(foreign_key="company_profiles.id", nullable=False)
     source_account: int = Field(nullable=False)
     target_account: int = Field(nullable=False)

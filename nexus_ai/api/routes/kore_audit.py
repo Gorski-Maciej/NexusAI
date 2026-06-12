@@ -6,6 +6,7 @@ from pathlib import Path
 from litestar import Controller, get
 from litestar.exceptions import InternalServerException
 
+from nexus_ai.api.dto import KoreAuditDTO, TAG_AUDIT
 from nexus_ai.api.rbac import owner_only_guard
 
 
@@ -14,9 +15,15 @@ class KoreAuditController(Controller):
 
     path = "/api/v1/system/kore"
     guards = [owner_only_guard]
-    tags = ["Audit"]
+    tags = [TAG_AUDIT]
 
-    @get("/audit")
+    @get(
+        "/audit",
+        return_dto=KoreAuditDTO,
+        summary="Get KORE audit report",
+        description="Returns the KORE 1-11 compliance audit report, dynamically loaded from the audit script.",
+        operation_id="getKoreAudit",
+    )
     async def get_kore_audit(self) -> dict:
         root = Path(__file__).resolve().parents[3]  # project root
         script_path = root / "nexus_ai" / "scripts" / "kore_delivery_audit.py"

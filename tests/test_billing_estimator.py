@@ -77,7 +77,7 @@ class TestBillingEstimator:
         conn.execute(
             """INSERT INTO billing_rules (rule_id, condition_json, price_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",
-            (str(uuid.uuid4()), "{}", '{"price_pln": 0.50, "processing_time_hours": 0.2}',
+            (uuid.uuid4().hex, "{}", '{"price_pln": 0.50, "processing_time_hours": 0.2}',
              "2024-01-01", None, 999),
         )
         estimator = BillingEstimator(conn)

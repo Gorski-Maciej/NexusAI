@@ -6,6 +6,7 @@ from typing import Any
 from litestar import Controller, get
 from litestar.connection import Request
 
+from nexus_ai.api.dto import DashboardBriefingDTO, DashboardSummaryDTO, TAG_DASHBOARD
 from nexus_ai.core.config import AppConfig
 from nexus_ai.services.notification_service import NotificationService
 
@@ -14,9 +15,15 @@ class DashboardController(Controller):
     """Dashboard endpoints for the daily briefing and summary stats."""
 
     path = "/api/v2/dashboard"
-    tags = ["Dashboard"]
+    tags = [TAG_DASHBOARD]
 
-    @get("/briefing")
+    @get(
+        "/briefing",
+        return_dto=DashboardBriefingDTO,
+        summary="Get daily briefing",
+        description="Returns today's briefing with top decisions needing user action.",
+        operation_id="getDailyBriefing",
+    )
     async def get_daily_briefing(self, request: Request, config: AppConfig) -> dict[str, Any]:
         """Return today's briefing: top 1-3 decisions needing user action.
 
@@ -57,7 +64,13 @@ class DashboardController(Controller):
         briefing["decisions"] = decisions[:3]
         return briefing
 
-    @get("/summary")
+    @get(
+        "/summary",
+        return_dto=DashboardSummaryDTO,
+        summary="Get dashboard summary",
+        description="Returns dashboard summary statistics including booked today, pending approval, and auto-approval rate.",
+        operation_id="getDashboardSummary",
+    )
     async def get_dashboard_summary(self, config: AppConfig) -> dict[str, Any]:
         """Return dashboard summary statistics.
 

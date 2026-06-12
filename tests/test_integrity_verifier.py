@@ -47,8 +47,8 @@ def _log_sample_trace(
 ) -> str:
     """Helper to log a sample decision trace."""
     return logger.log(
-        transaction_id=transaction_id or str(uuid.uuid4()),
-        rule_id=str(uuid.uuid4()),
+        transaction_id=transaction_id or uuid.uuid4().hex,
+        rule_id=uuid.uuid4().hex,
         context={"category_code": "FUEL", "transaction_date": "2024-06-15"},
         verdict={"vat_rate": vat_rate, "rounding_level": "position"},
         decision_trace="Test trace: FUEL 23%",
@@ -75,7 +75,7 @@ class TestIntegrityVerifier:
 
     def test_verify_all_tampered_verdict(self, conn: duckdb.DuckDBPyConnection, logger: DecisionTraceLogger, verifier: IntegrityVerifier) -> None:
         """Tampered verdict_json → violation detected."""
-        tid = str(uuid.uuid4())
+        tid = uuid.uuid4().hex
         _log_sample_trace(logger, transaction_id=tid, vat_rate="0.23")
 
         # Tamper: modify the verdict_json for the first entry

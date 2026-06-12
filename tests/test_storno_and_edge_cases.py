@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import asyncio
+import anyio
 import importlib.util
 import sys
 import uuid
@@ -85,4 +85,4 @@ def test_currency_invoice_correction_storno_links_original_transfer() -> None:
         assert writer.drafts == ["draft-INV-FX-1"]
         assert writer.tx_events == ["begin", "commit"]
 
-    asyncio.run(run())
+    anyio.run(run)

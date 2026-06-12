@@ -39,7 +39,7 @@ class RMKEngine:
         if invoice_data.end_date < invoice_data.start_date:
             raise ValueError("end_date must be >= start_date")
 
-        deferred_id = str(uuid.uuid4())
+        deferred_id = uuid.uuid4().hex
         total_days = (invoice_data.end_date - invoice_data.start_date).days + 1
         daily_rate = (invoice_data.total_net_amount / Decimal(total_days)).quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
 
@@ -93,7 +93,7 @@ class RMKEngine:
                 ) VALUES (?, ?, ?, ?, FALSE, ?, ?, ?, ?)
                 """,
                 (
-                    str(uuid.uuid4()),
+                    uuid.uuid4().hex,
                     deferred_id,
                     posting_date,
                     float(amount),

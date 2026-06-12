@@ -1,6 +1,6 @@
 from pathlib import Path
 import sys
-import asyncio
+import anyio
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
@@ -58,4 +58,4 @@ def test_reconcile_with_tigerbeetle_returns_alert() -> None:
         assert alert.missing_in_ledger == ["inv-a"]
         assert alert.missing_in_duckdb == ["inv-b"]
 
-    asyncio.run(run())
+    anyio.run(run)

@@ -149,7 +149,7 @@ class RuleStore:
         Returns:
             UUID nowej reguły.
         """
-        rule_id = str(uuid.uuid4())
+        rule_id = uuid.uuid4().hex
         vf = valid_from.isoformat() if isinstance(valid_from, (pendulum.Date, pendulum.DateTime)) else valid_from
         vt = valid_to.isoformat() if isinstance(valid_to, (pendulum.Date, pendulum.DateTime)) else valid_to
         now = pendulum.now("UTC").isoformat()
@@ -178,7 +178,7 @@ class RuleStore:
             """INSERT INTO rule_change_log
                (change_id, rule_id, change_type, new_value, changed_by, changed_at)
                VALUES (?, ?, 'created', ?, ?, ?)""",
-            (str(uuid.uuid4()), rule_id, msgspec_dumps(action, ensure_ascii=False), created_by, now),
+            (uuid.uuid4().hex, rule_id, msgspec_dumps(action, ensure_ascii=False), created_by, now),
         )
 
         return rule_id
@@ -227,7 +227,7 @@ class RuleStore:
             """INSERT INTO rule_change_log
                (change_id, rule_id, change_type, old_value, new_value, changed_by, changed_at)
                VALUES (?, ?, 'closed', ?, ?, ?, ?)""",
-            (str(uuid.uuid4()), rule_id, None, vt, closed_by, now),
+            (uuid.uuid4().hex, rule_id, None, vt, closed_by, now),
         )
 
         return True

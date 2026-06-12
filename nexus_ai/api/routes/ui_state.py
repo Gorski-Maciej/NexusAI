@@ -5,6 +5,14 @@ from litestar.connection import Request
 from litestar.exceptions import ClientException
 from sqlalchemy import text
 
+from nexus_ai.api.dto import (
+    GenericDictDTO,
+    TAG_UI_STATE,
+    UIDeleteDraftDTO,
+    UIGetDraftDTO,
+    UIListDraftsDTO,
+    UISaveDraftDTO,
+)
 from nexus_ai.api.rbac import owner_or_worker_guard
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
@@ -30,9 +38,16 @@ class UIStateController(Controller):
 
     path = "/api/v1/ui"
     guards = [owner_or_worker_guard]
-    tags = ["UI State"]
+    tags = [TAG_UI_STATE]
 
-    @post("/drafts/{draft_key:str}")
+    @post(
+        "/drafts/{draft_key:str}",
+        dto=UISaveDraftDTO,
+        return_dto=GenericDictDTO,
+        summary="Save UI draft",
+        description="Saves or updates a UI draft for offline-resilient persistence.",
+        operation_id="saveUiDraft",
+    )
     async def save_draft(self, request: Request, draft_key: str, data: dict) -> dict:
         draft_key = validate_draft_key(draft_key)
         user = getattr(request, "user", None)
@@ -61,7 +76,13 @@ class UIStateController(Controller):
 
         return {"status": "ok", "draft_key": draft_key}
 
-    @get("/drafts/{draft_key:str}")
+    @get(
+        "/drafts/{draft_key:str}",
+        return_dto=UIGetDraftDTO,
+        summary="Get UI draft",
+        description="Retrieves a saved UI draft by key.",
+        operation_id="getUiDraft",
+    )
     async def get_draft(self, request: Request, draft_key: str) -> dict:
         draft_key = validate_draft_key(draft_key)
         user = getattr(request, "user", None)
@@ -92,7 +113,14 @@ class UIStateController(Controller):
         return {"status": "ok", "draft_key": draft_key, "updated_at": str(row["updated_at"]), "payload": payload}
 
 
-    @delete("/drafts/{draft_key:str}", status_code=200)
+    @delete(
+        "/drafts/{draft_key:str}",
+        status_code=200,
+        return_dto=UIDeleteDraftDTO,
+        summary="Delete UI draft",
+        description="Deletes a saved UI draft by key.",
+        operation_id="deleteUiDraft",
+    )
     async def delete_draft(self, request: Request, draft_key: str) -> dict:
         draft_key = validate_draft_key(draft_key)
         user = getattr(request, "user", None)
@@ -113,7 +141,13 @@ class UIStateController(Controller):
         return {"status": "ok", "draft_key": draft_key}
 
 
-    @get("/drafts")
+    @get(
+        "/drafts",
+        return_dto=UIListDraftsDTO,
+        summary="List UI drafts",
+        description="Lists all saved UI drafts for the current user.",
+        operation_id="listUiDrafts",
+    )
     async def list_drafts(self, request: Request, limit: int = 50) -> dict:
         user = getattr(request, "user", None)
         actor = getattr(user, "id", "anonymous")

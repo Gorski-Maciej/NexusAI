@@ -5,6 +5,12 @@ from litestar.connection import Request
 from litestar.exceptions import ClientException
 from sqlalchemy.orm import Session
 
+from nexus_ai.api.dto import (
+    TAG_TRIAGE,
+    TriageItemDTO,
+    TriageResolutionDTO,
+    TriageResponseDTO,
+)
 from nexus_ai.api.rbac import get_current_role, owner_only_guard
 from nexus_ai.api.schemas import TriageItem, TriageResolutionRequest, TriageResolutionResponse
 from nexus_ai.services.triage_service import list_pending_triage_items, resolve_triage_item
@@ -13,15 +19,25 @@ from nexus_ai.services.triage_service import list_pending_triage_items, resolve_
 class TriageController(Controller):
     """Triage — przegląd i korekta faktur przed księgowaniem."""
     path = "/api/triage"
-    tags = ["Triage"]
+    tags = [TAG_TRIAGE]
 
 
 class TriageControllerV2(Controller):
     """Triage controller for /api/v2/triage (Rozwiązanie 22: wersjonowanie API)."""
     path = "/api/v2/triage"
-    tags = ["Triage"]
+    tags = [TAG_TRIAGE]
 
-    @get("/pending")
+    @get(
+        "/pending",
+        return_dto=TriageItemDTO,
+        summary="List pending triage items",
+        description=(
+            "Returns a list of invoices requiring manual review before posting. "
+            "Items are flagged by the RiskGuard or Autopilot with low confidence scores. "
+            "Includes extracted data fields and bounding boxes for UI rendering."
+        ),
+        operation_id="listPendingTriage",
+    )
     def get_pending(self, db_session: Session, request: Request) -> list[TriageItem]:
         tenant_id = str(getattr(request.user, "tenant_id", "default") or "default")
         pending = list_pending_triage_items(db_session, tenant_id=tenant_id)
@@ -42,7 +58,20 @@ class TriageControllerV2(Controller):
             for item in pending
         ]
 
-    @post("/resolve/{invoice_id:str}", guards=[owner_only_guard])
+    @post(
+        "/resolve/{invoice_id:str}",
+        guards=[owner_only_guard],
+        dto=TriageResolutionDTO,
+        return_dto=TriageResponseDTO,
+        summary="Resolve a triage item",
+        description=(
+            "Accepts a corrected invoice or rejects it. "
+            "When ``action=confirm_post``, the corrected data is saved and the invoice "
+            "is queued for posting. When ``action=void``, the invoice is rejected. "
+            "Uses optimistic locking via ``expected_version`` (Rozwiązanie 23)."
+        ),
+        operation_id="resolveTriageItem",
+    )
     def resolve(
         self,
         invoice_id: str,

@@ -202,7 +202,7 @@ class IntegrityVerifier:
             raise ValueError("No violations to handle")
 
         first_violation = report.violations[0]
-        violation_id = str(uuid.uuid4())
+        violation_id = uuid.uuid4().hex
         now = pendulum.now("UTC").isoformat()
 
         details = {
@@ -352,7 +352,7 @@ class IntegrityVerifier:
         if not last_row:
             return
 
-        cp_id = str(uuid.uuid4())
+        cp_id = uuid.uuid4().hex
         now = pendulum.now("UTC").isoformat()
         self._conn.execute(
             """INSERT INTO integrity_checkpoints

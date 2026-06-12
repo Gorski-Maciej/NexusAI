@@ -219,8 +219,11 @@ class ConfigLoader:
         return data.get(key, {})
 
 
-# ── Global singleton ──────────────────────────────────────────────────────
+# ── Global singleton (thread-safe dla free-threaded Python) ───────────────
 
+import threading as _threading
+
+default_config_loader_lock = _threading.Lock()
 _default_config_loader: ConfigLoader | None = None
 
 
@@ -229,6 +232,8 @@ def get_config_loader(
     auto_reload: bool | int = False,
 ) -> ConfigLoader:
     """Zwraca globalną instancję ConfigLoader (singleton).
+
+    Thread-safe — używa ``threading.Lock`` dla free-threaded Python 3.13t.
 
     Args:
         path: Opcjonalna ścieżka do config TOML (pierwsze wywołanie).
@@ -239,7 +244,9 @@ def get_config_loader(
     """
     global _default_config_loader
     if _default_config_loader is None:
-        _default_config_loader = ConfigLoader(path=path, auto_reload=auto_reload)
+        with default_config_loader_lock:
+            if _default_config_loader is None:
+                _default_config_loader = ConfigLoader(path=path, auto_reload=auto_reload)
     return _default_config_loader
 
 

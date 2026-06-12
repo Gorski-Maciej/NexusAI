@@ -4,6 +4,11 @@ from __future__ import annotations
 import os
 import uuid
 
+import os
+import threading
+import time as _time
+import uuid
+
 import anyio
 from msgspec import Struct
 from pathlib import Path
@@ -22,11 +27,15 @@ from nexus_ai.core.cache import get_cache
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
 
+
 class TimedModelCache:
-    """Cache instancji modeli ML z TTL, wsparty przez NexusCache.
+    """Cache instancji modeli ML z TTL, thread-safe dla free-threaded Python.
 
     Model objects (DocumentProcessor, VisionAgent) nie są msgspec-serializowalne,
-    więc przechowujemy je w osobnym słowniku RAM. NexusCache zarządza TTL:
+    więc przechowujemy je w osobnym słowniku RAM. ``threading.Lock`` zapewnia
+    bezpieczny dostęp z wielu wątków w Python 3.13t (free-threaded).
+
+    NexusCache zarządza TTL:
     przechowuje timestamp ostatniego odświeżenia dla każdego klucza i odpowiada
     za politykę wygaśnięcia — gdy nexus_cache.clear() zostanie wywołany,
     modele również zostaną unieważnione pośrednio przez brak wpisów TTL.
@@ -37,37 +46,42 @@ class TimedModelCache:
     def __init__(self, ttl_seconds: int = 600):
         self._nexus = get_cache(default_ttl=ttl_seconds)
         self._models: dict[str, object] = {}
+        self._lock = threading.Lock()
         self._ttl = ttl_seconds
 
     async def get(self, key: str, loader):
-        import time
-        now = time.monotonic()
+        now = _time.monotonic()
         ttl_key = f"_model_cache_ttl:{key}"
 
         # Sprawdź NexusCache — czy TTL jeszcze ważny?
         ttl_entry = self._nexus.get_sync(ttl_key)
-        if ttl_entry is not None and key in self._models:
-            stored_at: float = ttl_entry
-            if now - stored_at < self._ttl:
-                # Odśwież timestamp w NexusCache
-                self._nexus.set_sync(ttl_key, now, ttl=self._ttl)
-                return self._models[key]
-            # Wygasło — usuń model
-            self._models.pop(key, None)
+        if ttl_entry is not None:
+            with self._lock:
+                if key in self._models:
+                    stored_at: float = ttl_entry
+                    if now - stored_at < self._ttl:
+                        # Odśwież timestamp w NexusCache
+                        self._nexus.set_sync(ttl_key, now, ttl=self._ttl)
+                        return self._models[key]
+                    # Wygasło — usuń model
+                    self._models.pop(key, None)
 
         # Miss lub wygasło — załaduj świeży model
         model = await loader()
-        self._models[key] = model
+        with self._lock:
+            self._models[key] = model
         self._nexus.set_sync(ttl_key, now, ttl=self._ttl)
         return model
 
     def evict_expired(self) -> None:
-        """Usuń wszystkie modele — przy następnym get() zostaną odświeżone przez brak TTL."""
-        self._models.clear()
+        """Usuń wszystkie modele — thread-safe."""
+        with self._lock:
+            self._models.clear()
 
     def release(self, key: str) -> None:
-        """Usuń konkretny model i jego wpis TTL z cache'u."""
-        self._models.pop(key, None)
+        """Usuń konkretny model i jego wpis TTL z cache'u — thread-safe."""
+        with self._lock:
+            self._models.pop(key, None)
         self._nexus._ram_cache.pop(f"_model_cache_ttl:{key}", None)
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.analytics import DuckDBManager
@@ -90,7 +104,10 @@ def _make_engine(config: AppConfig | None = None) -> Any:
 
 
 logger = get_logger()
-OCR_INFERENCE_SEMAPHORE = anyio.Semaphore(int(os.getenv("NEXUS_MAX_PARALLEL_OCR", "1")))
+# Python 3.13t (free-threaded): zamiast 1 OCR na raz, wykorzystaj wszystkie wolne rdzenie.
+# Domyślnie os.cpu_count_free() jeśli dostępne, fallback do os.cpu_count(), fallback 4.
+_DEFAULT_OCR_CONCURRENCY = os.cpu_count() or 4
+OCR_INFERENCE_SEMAPHORE = anyio.Semaphore(int(os.getenv("NEXUS_MAX_PARALLEL_OCR", str(_DEFAULT_OCR_CONCURRENCY))))
 OCR_TASK_TIMEOUT_SEC = int(os.getenv("NEXUS_OCR_TIMEOUT_SEC", "300"))
 
 NATS_URL = os.getenv("NEXUS_NATS_URL", "nats://127.0.0.1:4222")
@@ -257,7 +274,7 @@ async def process_invoice_task() -> dict[str, str]:
                    (id, invoice_id, contractor_id, vector, checksum, created_at, is_preferred)
                    VALUES (?, ?, ?, ?, ?, ?, ?)""",
                 (
-                    str(uuid.uuid4()),
+                    uuid.uuid4().hex,
                     payload.invoice_id,
                     payload.contractor_id,
                     store._vector_to_blob(vector),
@@ -304,7 +321,7 @@ async def store_active_learning_feedback(contractor_id: str, corrected_payload: 
     session_factory = create_session_factory(engine)
     serialized = msgspec_dumps(corrected_payload, ensure_ascii=False)
     vector = _simple_features(serialized)
-    pattern_id = str(uuid.uuid4())
+    pattern_id = uuid.uuid4().hex
 
     with session_factory() as session:
         session.add(

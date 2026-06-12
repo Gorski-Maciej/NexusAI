@@ -18,7 +18,11 @@ from sqlalchemy.orm import Session
 from nexus_ai.api.cache import clear_cache_async
 from nexus_ai.api.i18n import resolve_language, t
 from nexus_ai.api.rbac import owner_or_worker_guard
-from nexus_ai.api.dto import TaskResponseDTO
+from nexus_ai.api.dto import (
+    InvoiceUploadResponseDTO,
+    TAG_INVOICES,
+    TaskResponseDTO,
+)
 from nexus_ai.api.schemas import TaskResponse
 from nexus_ai.api.services import ContentAddressableStorage, FileValidator, IdempotencyStore
 from nexus_ai.core.config import AppConfig
@@ -50,13 +54,29 @@ async def _write_chunk(temp_file, chunk: bytes) -> None:
 
 
 class InvoiceController(Controller):
-    """Invoice APIs (v1) — upload i zarządzanie fakturami."""
+    """Invoice APIs (v1) — upload i zarządzanie fakturami.
+
+    Endpoints:
+      - POST /api/v1/invoices/upload — upload faktury z outbox eventem i audit trail
+      - POST /api/v1/invoices/upload-large — upload dużego załącznika (do 500MB)
+    """
 
     path = "/api/v1/invoices"
     guards = [owner_or_worker_guard]
-    tags = ["Invoices"]
+    tags = [TAG_INVOICES]
 
-    @post("/upload", media_type=RequestEncodingType.MULTI_PART, return_dto=TaskResponseDTO)
+    @post(
+        "/upload",
+        media_type=RequestEncodingType.MULTI_PART,
+        return_dto=TaskResponseDTO,
+        summary="Upload invoice file (v1)",
+        description=(
+            "Uploads an invoice file with streaming SHA-256 content-addressable storage. "
+            "Validates MIME type, file size, and idempotency. "
+            "Creates an outbox event for OCR processing and logs to audit trail."
+        ),
+        operation_id="uploadInvoiceV1",
+    )
     async def upload_invoice(
         self,
         data: dict[str, UploadFile],
@@ -133,8 +153,8 @@ class InvoiceController(Controller):
 
         saved = storage.finalize_temp_upload(temp_path=temp_path, digest=payload_hash, size_bytes=total_size, suffix=".pdf")
 
-        task_id = str(uuid.uuid4())
-        invoice_id = str(uuid.uuid4())
+        task_id = uuid.uuid4().hex
+        invoice_id = uuid.uuid4().hex
         event_payload = {
             "invoice_id": invoice_id,
             "task_id": task_id,
@@ -151,7 +171,7 @@ class InvoiceController(Controller):
                 """
             ),
             {
-                "id": str(uuid.uuid4()),
+                "id": uuid.uuid4().hex,
                 "event_type": EVENT_INVOICE_UPLOADED,
                 "aggregate_id": invoice_id,
                 "payload": msgspec_dumps(event_payload),
@@ -197,7 +217,18 @@ class InvoiceController(Controller):
 
         return response
 
-    @post("/upload-large", media_type=RequestEncodingType.MULTI_PART, return_dto=TaskResponseDTO)
+    @post(
+        "/upload-large",
+        media_type=RequestEncodingType.MULTI_PART,
+        return_dto=TaskResponseDTO,
+        summary="Upload large attachment (v1)",
+        description=(
+            "Dedicated path for large attachments (up to 500MB). "
+            "Uses a separate event queue to avoid blocking the default OCR pipeline. "
+            "Streaming SHA-256 validation with idempotency support."
+        ),
+        operation_id="uploadLargeAttachmentV1",
+    )
     async def upload_large_attachment(
         self,
         data: dict[str, UploadFile],
@@ -272,8 +303,8 @@ class InvoiceController(Controller):
             if cached:
                 return TaskResponse(**cached)
         saved = storage.finalize_temp_upload(temp_path=temp_path, digest=payload_hash, size_bytes=total_size, suffix=".bin")
-        task_id = str(uuid.uuid4())
-        attachment_id = str(uuid.uuid4())
+        task_id = uuid.uuid4().hex
+        attachment_id = uuid.uuid4().hex
         event_payload = {
             "attachment_id": attachment_id,
             "task_id": task_id,
@@ -290,7 +321,7 @@ class InvoiceController(Controller):
                 """
             ),
             {
-                "id": str(uuid.uuid4()),
+                "id": uuid.uuid4().hex,
                 "event_type": EVENT_ATTACHMENT_LARGE_UPLOADED,
                 "aggregate_id": attachment_id,
                 "payload": msgspec_dumps(event_payload),
@@ -310,7 +341,12 @@ class InvoiceController(Controller):
 
 
 class InvoiceControllerV2(InvoiceController):
-    """Invoice APIs (v2) — upload i zarządzanie fakturami."""
+    """Invoice APIs (v2) — upload i zarządzanie fakturami.
+
+    Endpoints:
+      - POST /api/v2/invoices/upload — upload faktury z outbox eventem i audit trail
+      - POST /api/v2/invoices/upload-large — upload dużego załącznika (do 500MB)
+    """
 
     path = "/api/v2/invoices"
-    tags = ["Invoices"]
+    tags = [TAG_INVOICES]

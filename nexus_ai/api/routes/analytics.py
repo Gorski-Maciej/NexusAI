@@ -2,6 +2,7 @@ from litestar import Controller, get
 from litestar.exceptions import ClientException
 
 from nexus_ai.api.cache import ttl_cache
+from nexus_ai.api.dto import AnalyticsFXResponseDTO, DashboardSummaryDTO, TAG_ANALYTICS
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.api.schemas import DashboardSummaryResponse
 from nexus_ai.db.analytics import DuckDBManager
@@ -11,9 +12,15 @@ class AnalyticsController(Controller):
     """Analityka i raportowanie danych księgowych."""
     path = "/api/v2/analytics"
     guards = [owner_only_guard]
-    tags = ["Analytics"]
+    tags = [TAG_ANALYTICS]
 
-    @get("/dashboard/summary")
+    @get(
+        "/dashboard/summary",
+        return_dto=DashboardSummaryDTO,
+        summary="Get dashboard summary",
+        description="Returns aggregated financial summary including total net, gross, and document count for the last 30 days.",
+        operation_id="getAnalyticsDashboardSummary",
+    )
     @ttl_cache(seconds=60)
     async def get_dashboard_summary(self, duckdb: DuckDBManager) -> DashboardSummaryResponse:
         query = """
@@ -47,7 +54,13 @@ class AnalyticsController(Controller):
         row = result[0]
         return DashboardSummaryResponse(total_net=float(row[0]), total_gross=float(row[1]), total_documents=int(row[2]))
 
-    @get("/fx/asof")
+    @get(
+        "/fx/asof",
+        return_dto=AnalyticsFXResponseDTO,
+        summary="Get FX AS-OF join sample",
+        description="Returns historical FX valuation using AS-OF join for the specified currency.",
+        operation_id="getFxAsOfSample",
+    )
     @ttl_cache(seconds=60)
     async def get_fx_asof_sample(self, duckdb: DuckDBManager, currency: str = "EUR") -> list[dict[str, object]]:
         """AS OF JOIN sample for historical FX valuation."""

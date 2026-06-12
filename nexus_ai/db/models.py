@@ -50,7 +50,7 @@ class Invoice(SQLModel, table=True):
     __tablename__ = "invoices"  # type: ignore[assignment]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     number: str | None = Field(default=None, index=True)
     contractor_nip: str | None = Field(default=None, index=True)
     file_path: str | None = Field(default=None)
@@ -70,7 +70,7 @@ class ActiveLearningPattern(SQLModel, table=True):
     __tablename__ = "active_learning_patterns"  # type: ignore[assignment]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     contractor_id: str = Field(nullable=False, index=True)
     correction_payload: str = Field(nullable=False)  # JSON string
     created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"))
@@ -81,7 +81,7 @@ class Contractor(SQLModel, table=True):
     __tablename__ = "contractors"  # type: ignore[assignment]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     nip: str = Field(unique=True, nullable=False, index=True)
     name: str | None = Field(default=None)
     vat_status: str | None = Field(default=None)
@@ -93,7 +93,7 @@ class AuditLog(SQLModel, table=True):
     __tablename__ = "audit_logs"  # type: ignore[assignment]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     invoice_id: str | None = Field(default=None, foreign_key="invoices.id", index=True)
     action: str | None = Field(default=None)
     user_id: str = Field(default="System")
@@ -109,7 +109,7 @@ class OutboxEvent(SQLModel, table=True):
     __tablename__ = "outbox_events"  # type: ignore[assignment]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     event_type: str = Field(nullable=False)
     aggregate_id: str = Field(nullable=False)
     payload: str = Field(nullable=False)  # JSON string
@@ -126,7 +126,7 @@ class SecurityAlert(SQLModel, table=True):
     __tablename__ = "security_alerts"  # type: ignore[assignment]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     actor: str = Field(nullable=False)
     operation: str = Field(nullable=False)
     details: str = Field(nullable=False)  # JSON string
@@ -138,7 +138,7 @@ class UserAccount(SQLModel, table=True):
     __tablename__ = "users"  # type: ignore[assignment]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     username: str = Field(unique=True, nullable=False, index=True)
     password_hash: str = Field(nullable=False)
     role: str = Field(nullable=False, default="worker")

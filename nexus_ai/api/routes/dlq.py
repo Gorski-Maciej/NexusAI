@@ -30,6 +30,15 @@ from litestar.response import Response
 from sqlalchemy import text
 from structlog import get_logger
 
+from nexus_ai.api.dto import (
+    DLQBulkRetryResponseDTO,
+    DLQDeleteResponseDTO,
+    DLQItemDTO,
+    DLQListDTO,
+    DLQRetryResponseDTO,
+    DLQStatsDTO,
+    TAG_ADMIN,
+)
 from nexus_ai.api.rbac import admin_only_guard, requires_permission
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 
@@ -41,9 +50,16 @@ class DLQController(Controller):
 
     path = "/api/v1/system/dlq"
     guards = [admin_only_guard]
-    tags = ["Admin"]
+    tags = [TAG_ADMIN]
 
-    @get("/stats", guards=[requires_permission("admin:dlq")])
+    @get(
+        "/stats",
+        guards=[requires_permission("admin:dlq")],
+        return_dto=DLQStatsDTO,
+        summary="Get DLQ statistics",
+        description="Returns DLQ statistics including unresolved, resolved, breakdown by task type, and outbox dead-letter counts.",
+        operation_id="getDlqStats",
+    )
     async def dlq_stats(self, request: Request) -> dict:
         """DLQ statistics: total items, unresolved, by task type."""
         async with request.app.state.db_engine.connect() as conn:
@@ -104,7 +120,13 @@ class DLQController(Controller):
                 "failed_outbox_events": failed_outbox_count,
             }
 
-    @get(guards=[requires_permission("admin:dlq")])
+    @get(
+        guards=[requires_permission("admin:dlq")],
+        return_dto=DLQListDTO,
+        summary="List DLQ items",
+        description="Lists dead letter queue items with pagination and filtering by resolved status and task name.",
+        operation_id="listDlqItems",
+    )
     async def list_dlq(self, request: Request) -> dict:
         """List dead letter items (paginated, filterable)."""
         resolved_filter = request.query_params.get("resolved")
@@ -173,7 +195,14 @@ class DLQController(Controller):
             "offset": offset,
         }
 
-    @get("/{item_id:str}", guards=[requires_permission("admin:dlq")])
+    @get(
+        "/{item_id:str}",
+        guards=[requires_permission("admin:dlq")],
+        return_dto=DLQItemDTO,
+        summary="Get DLQ item details",
+        description="Returns full details of a specific DLQ item including payload, error info, and retry history.",
+        operation_id="getDlqItem",
+    )
     async def get_dlq_item(self, item_id: str, request: Request) -> dict:
         """View details of a specific DLQ item."""
         async with request.app.state.db_engine.connect() as conn:
@@ -215,7 +244,14 @@ class DLQController(Controller):
 
         return result
 
-    @post("/{item_id:str}/retry", guards=[requires_permission("admin:dlq")])
+    @post(
+        "/{item_id:str}/retry",
+        guards=[requires_permission("admin:dlq")],
+        return_dto=DLQRetryResponseDTO,
+        summary="Retry DLQ item",
+        description="Retries a specific DLQ item by marking it as resolved and re-queuing it for processing.",
+        operation_id="retryDlqItem",
+    )
     async def retry_dlq_item(self, item_id: str, request: Request) -> Response[dict]:
         """Retry a specific DLQ item — resets it and re-queues for processing."""
         async with request.app.state.db_engine.connect() as conn:
@@ -253,7 +289,7 @@ class DLQController(Controller):
             # Re-publish the task as a new outbox event
             task_name = row["task_name"]
             payload = row["payload"]
-            event_id = str(uuid.uuid4())
+            event_id = uuid.uuid4().hex
             await conn.execute(
                 text(
                     """
@@ -264,7 +300,7 @@ class DLQController(Controller):
                 {
                     "id": event_id,
                     "event_type": f"retry:{task_name}",
-                    "aggregate_id": str(uuid.uuid4()),
+                    "aggregate_id": uuid.uuid4().hex,
                     "payload": payload,
                     "created_at": now,
                 },
@@ -289,7 +325,14 @@ class DLQController(Controller):
             status_code=200,
         )
 
-    @post("/retry-all", guards=[requires_permission("admin:dlq")])
+    @post(
+        "/retry-all",
+        guards=[requires_permission("admin:dlq")],
+        return_dto=DLQBulkRetryResponseDTO,
+        summary="Retry all DLQ items",
+        description="Retries all unresolved DLQ items in bulk.",
+        operation_id="retryAllDlq",
+    )
     async def retry_all_dlq(self, request: Request) -> dict:
         """Retry all unresolved DLQ items."""
         async with request.app.state.db_engine.connect() as conn:
@@ -325,7 +368,7 @@ class DLQController(Controller):
                         {"id": task_id, "now": now, "by": username},
                     )
 
-                    event_id = str(uuid.uuid4())
+                    event_id = uuid.uuid4().hex
                     await conn.execute(
                         text(
                             """
@@ -336,7 +379,7 @@ class DLQController(Controller):
                         {
                             "id": event_id,
                             "event_type": f"retry:{task_name}",
-                            "aggregate_id": str(uuid.uuid4()),
+                            "aggregate_id": uuid.uuid4().hex,
                             "payload": payload,
                             "created_at": now,
                         },
@@ -364,7 +407,15 @@ class DLQController(Controller):
             "total_found": len(rows),
         }
 
-    @delete("/{item_id:str}", status_code=200, guards=[requires_permission("admin:dlq")])
+    @delete(
+        "/{item_id:str}",
+        status_code=200,
+        guards=[requires_permission("admin:dlq")],
+        return_dto=DLQDeleteResponseDTO,
+        summary="Delete DLQ item",
+        description="Resolves a DLQ item without retrying (soft-delete).",
+        operation_id="deleteDlqItem",
+    )
     async def delete_dlq_item(self, item_id: str, request: Request) -> Response[dict]:
         """Permanently delete a DLQ item (resolve without retry)."""
         async with request.app.state.db_engine.connect() as conn:

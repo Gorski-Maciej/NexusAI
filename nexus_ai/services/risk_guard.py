@@ -167,7 +167,7 @@ def seed_default_thresholds(conn: duckdb.DuckDBPyConnection) -> None:
                (rule_id, condition_json, output_json, valid_from, valid_to, priority, created_by)
                VALUES (?, ?, ?, ?, ?, ?, ?)""",
             (
-                str(uuid.uuid4()),
+                uuid.uuid4().hex,
                 msgspec_dumps(rule["condition_json"], ensure_ascii=False, sort_keys=True),
                 msgspec_dumps(rule["output_json"], ensure_ascii=False, sort_keys=True),
                 rule["valid_from"],
@@ -432,7 +432,7 @@ class RiskGuard:
 
         Używa ``sort_keys=True`` dla deterministycznego JSON.
         """
-        rule_id = str(uuid.uuid4())
+        rule_id = uuid.uuid4().hex
         vf = valid_from.isoformat() if isinstance(valid_from, date) else valid_from
         vt = valid_to.isoformat() if isinstance(valid_to, date) else valid_to
 

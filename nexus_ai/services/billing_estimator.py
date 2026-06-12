@@ -101,7 +101,7 @@ def seed_default_billing_rules(conn: duckdb.DuckDBPyConnection) -> None:
                (rule_id, condition_json, price_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",
             (
-                str(uuid.uuid4()),
+                uuid.uuid4().hex,
                 msgspec_dumps(rule["condition_json"], ensure_ascii=False),
                 msgspec_dumps(rule["price_json"], ensure_ascii=False),
                 rule["valid_from"],
@@ -180,7 +180,7 @@ class BillingEstimator:
         priority: int = 100,
     ) -> str:
         """Add a new billing rule (append-only)."""
-        rule_id = str(uuid.uuid4())
+        rule_id = uuid.uuid4().hex
         self._conn.execute(
             """INSERT INTO billing_rules
                (rule_id, condition_json, price_json, valid_from, valid_to, priority)

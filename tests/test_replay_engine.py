@@ -95,7 +95,7 @@ class TestReplayEngine:
         conn.execute(
             """INSERT INTO tax_rules (rule_id, condition_sql, action_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",
-            (str(uuid.uuid4()), "category_code = 'FOOD'",
+            (uuid.uuid4().hex, "category_code = 'FOOD'",
              msgspec_dumps({"vat_rate": "0.05", "rounding_level": "position", "income_tax_qualification": "deductible_full"}),
              "2025-01-01", None, 10),
         )
@@ -123,7 +123,7 @@ class TestReplayEngine:
         conn.execute(
             """INSERT INTO tax_rules (rule_id, condition_sql, action_json, valid_from, valid_to, priority)
                VALUES (?, ?, ?, ?, ?, ?)""",
-            (str(uuid.uuid4()), "category_code = 'FOOD' AND vendor_country = 'PL'",
+            (uuid.uuid4().hex, "category_code = 'FOOD' AND vendor_country = 'PL'",
              msgspec_dumps({"vat_rate": "0.05", "rounding_level": "position", "income_tax_qualification": "deductible_full"}),
              "2025-01-01", None, 5),  # Higher priority
         )

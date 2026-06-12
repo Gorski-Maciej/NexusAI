@@ -1,6 +1,6 @@
 from pathlib import Path
 import sys
-import asyncio
+import anyio
 from datetime import date
 from decimal import Decimal
 import importlib.util
@@ -114,4 +114,4 @@ def test_execute_monthly_depreciation_marks_asset_as_fully_depreciated():
         assert db.asset["status"] == "FULLY_DEPRECIATED"
         assert db.asset["last_depreciation_date"] == db.schedule[-1]["planned_date"]
 
-    asyncio.run(run_case())
+    anyio.run(run_case)

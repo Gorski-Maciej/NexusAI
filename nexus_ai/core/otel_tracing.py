@@ -345,7 +345,6 @@ class _NoopSpan:
 
 def asyncio_coroutine(func: Callable) -> bool:
     """Sprawdź czy funkcja jest async."""
-    import asyncio
     import inspect
 
-    return asyncio.iscoroutinefunction(func) or inspect.iscoroutinefunction(func)
+    return inspect.iscoroutinefunction(func)
