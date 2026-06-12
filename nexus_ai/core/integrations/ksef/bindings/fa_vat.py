@@ -16,26 +16,34 @@ __NAMESPACE__ = "http://crd.gov.pl/wzor/2025/06/25/13775/"
 
 
 class KolTyp(Enum):
-    DATE = 'date'
-    DATETIME = 'datetime'
-    DEC = 'dec'
-    INT = 'int'
-    TIME = 'time'
-    TXT = 'txt'
+    DATE = "date"
+    DATETIME = "datetime"
+    DEC = "dec"
+    INT = "int"
+    TIME = "time"
+    TXT = "txt"
+
+
 class Podmiot2Gv(Enum):
     """
     :cvar VALUE_1: Tak
     :cvar VALUE_2: Nie
     """
+
     VALUE_1 = 1
     VALUE_2 = 2
+
+
 class Podmiot2Jst(Enum):
     """
     :cvar VALUE_1: Tak
     :cvar VALUE_2: Nie
     """
+
     VALUE_1 = 1
     VALUE_2 = 2
+
+
 class TformaPlatnosci(Enum):
     """
     Typy form płatności.
@@ -48,6 +56,7 @@ class TformaPlatnosci(Enum):
     :cvar VALUE_6: Przelew
     :cvar VALUE_7: Mobilna
     """
+
     VALUE_1 = 1
     VALUE_2 = 2
     VALUE_3 = 3
@@ -55,6 +64,8 @@ class TformaPlatnosci(Enum):
     VALUE_5 = 5
     VALUE_6 = 6
     VALUE_7 = 7
+
+
 class Tgtu(Enum):
     """
     Oznaczenie dotyczące dostawy towarów i świadczenia usług.
@@ -112,19 +123,22 @@ class Tgtu(Enum):
         zawartych w deklaracjach podatkowych i w ewidencji w zakresie
         podatku od towarów i usług
     """
-    GTU_01 = 'GTU_01'
-    GTU_02 = 'GTU_02'
-    GTU_03 = 'GTU_03'
-    GTU_04 = 'GTU_04'
-    GTU_05 = 'GTU_05'
-    GTU_06 = 'GTU_06'
-    GTU_07 = 'GTU_07'
-    GTU_08 = 'GTU_08'
-    GTU_09 = 'GTU_09'
-    GTU_10 = 'GTU_10'
-    GTU_11 = 'GTU_11'
-    GTU_12 = 'GTU_12'
-    GTU_13 = 'GTU_13'
+
+    GTU_01 = "GTU_01"
+    GTU_02 = "GTU_02"
+    GTU_03 = "GTU_03"
+    GTU_04 = "GTU_04"
+    GTU_05 = "GTU_05"
+    GTU_06 = "GTU_06"
+    GTU_07 = "GTU_07"
+    GTU_08 = "GTU_08"
+    GTU_09 = "GTU_09"
+    GTU_10 = "GTU_10"
+    GTU_11 = "GTU_11"
+    GTU_12 = "GTU_12"
+    GTU_13 = "GTU_13"
+
+
 @dataclass(kw_only=True)
 class TkluczWartosc:
     """
@@ -136,6 +150,7 @@ class TkluczWartosc:
     :ivar klucz: Klucz
     :ivar wartosc: Wartość
     """
+
     class Meta:
         name = "TKluczWartosc"
 
@@ -148,7 +163,7 @@ class TkluczWartosc:
             "min_exclusive": 0,
             "total_digits": 14,
             "white_space": "collapse",
-        }
+        },
     )
     klucz: str = field(
         metadata={
@@ -168,11 +183,16 @@ class TkluczWartosc:
             "max_length": 256,
         }
     )
+
+
 class TkodFormularza(Enum):
     """
     Symbol wzoru formularza.
     """
-    FA = 'FA'
+
+    FA = "FA"
+
+
 class TkodWaluty(Enum):
     """
     Słownik kodów walut.
@@ -363,188 +383,191 @@ class TkodWaluty(Enum):
     :cvar ZMW: KWACHA ZAMBIJSKA
     :cvar ZWL: DOLAR ZIMBABWE
     """
-    AED = 'AED'
-    AFN = 'AFN'
-    ALL = 'ALL'
-    AMD = 'AMD'
-    ANG = 'ANG'
-    AOA = 'AOA'
-    ARS = 'ARS'
-    AUD = 'AUD'
-    AWG = 'AWG'
-    AZN = 'AZN'
-    BAM = 'BAM'
-    BBD = 'BBD'
-    BDT = 'BDT'
-    BGN = 'BGN'
-    BHD = 'BHD'
-    BIF = 'BIF'
-    BMD = 'BMD'
-    BND = 'BND'
-    BOB = 'BOB'
-    BOV = 'BOV'
-    BRL = 'BRL'
-    BSD = 'BSD'
-    BTN = 'BTN'
-    BWP = 'BWP'
-    BYN = 'BYN'
-    BZD = 'BZD'
-    CAD = 'CAD'
-    CDF = 'CDF'
-    CHE = 'CHE'
-    CHF = 'CHF'
-    CHW = 'CHW'
-    CLF = 'CLF'
-    CLP = 'CLP'
-    CNY = 'CNY'
-    COP = 'COP'
-    COU = 'COU'
-    CRC = 'CRC'
-    CUC = 'CUC'
-    CUP = 'CUP'
-    CVE = 'CVE'
-    CZK = 'CZK'
-    DJF = 'DJF'
-    DKK = 'DKK'
-    DOP = 'DOP'
-    DZD = 'DZD'
-    EGP = 'EGP'
-    ERN = 'ERN'
-    ETB = 'ETB'
-    EUR = 'EUR'
-    FJD = 'FJD'
-    FKP = 'FKP'
-    GBP = 'GBP'
-    GEL = 'GEL'
-    GGP = 'GGP'
-    GHS = 'GHS'
-    GIP = 'GIP'
-    GMD = 'GMD'
-    GNF = 'GNF'
-    GTQ = 'GTQ'
-    GYD = 'GYD'
-    HKD = 'HKD'
-    HNL = 'HNL'
-    HRK = 'HRK'
-    HTG = 'HTG'
-    HUF = 'HUF'
-    IDR = 'IDR'
-    ILS = 'ILS'
-    IMP = 'IMP'
-    INR = 'INR'
-    IQD = 'IQD'
-    IRR = 'IRR'
-    ISK = 'ISK'
-    JEP = 'JEP'
-    JMD = 'JMD'
-    JOD = 'JOD'
-    JPY = 'JPY'
-    KES = 'KES'
-    KGS = 'KGS'
-    KHR = 'KHR'
-    KMF = 'KMF'
-    KPW = 'KPW'
-    KRW = 'KRW'
-    KWD = 'KWD'
-    KYD = 'KYD'
-    KZT = 'KZT'
-    LAK = 'LAK'
-    LBP = 'LBP'
-    LKR = 'LKR'
-    LRD = 'LRD'
-    LSL = 'LSL'
-    LYD = 'LYD'
-    MAD = 'MAD'
-    MDL = 'MDL'
-    MGA = 'MGA'
-    MKD = 'MKD'
-    MMK = 'MMK'
-    MNT = 'MNT'
-    MOP = 'MOP'
-    MRU = 'MRU'
-    MUR = 'MUR'
-    MVR = 'MVR'
-    MWK = 'MWK'
-    MXN = 'MXN'
-    MXV = 'MXV'
-    MYR = 'MYR'
-    MZN = 'MZN'
-    NAD = 'NAD'
-    NGN = 'NGN'
-    NIO = 'NIO'
-    NOK = 'NOK'
-    NPR = 'NPR'
-    NZD = 'NZD'
-    OMR = 'OMR'
-    PAB = 'PAB'
-    PEN = 'PEN'
-    PGK = 'PGK'
-    PHP = 'PHP'
-    PKR = 'PKR'
-    PLN = 'PLN'
-    PYG = 'PYG'
-    QAR = 'QAR'
-    RON = 'RON'
-    RSD = 'RSD'
-    RUB = 'RUB'
-    RWF = 'RWF'
-    SAR = 'SAR'
-    SBD = 'SBD'
-    SCR = 'SCR'
-    SDG = 'SDG'
-    SEK = 'SEK'
-    SGD = 'SGD'
-    SHP = 'SHP'
-    SLL = 'SLL'
-    SOS = 'SOS'
-    SRD = 'SRD'
-    SSP = 'SSP'
-    STN = 'STN'
-    SVC = 'SVC'
-    SYP = 'SYP'
-    SZL = 'SZL'
-    THB = 'THB'
-    TJS = 'TJS'
-    TMT = 'TMT'
-    TND = 'TND'
-    TOP = 'TOP'
-    TRY = 'TRY'
-    TTD = 'TTD'
-    TWD = 'TWD'
-    TZS = 'TZS'
-    UAH = 'UAH'
-    UGX = 'UGX'
-    USD = 'USD'
-    USN = 'USN'
-    UYI = 'UYI'
-    UYU = 'UYU'
-    UYW = 'UYW'
-    UZS = 'UZS'
-    VES = 'VES'
-    VND = 'VND'
-    VUV = 'VUV'
-    WST = 'WST'
-    XAF = 'XAF'
-    XAG = 'XAG'
-    XAU = 'XAU'
-    XBA = 'XBA'
-    XBB = 'XBB'
-    XBC = 'XBC'
-    XBD = 'XBD'
-    XCD = 'XCD'
-    XCG = 'XCG'
-    XDR = 'XDR'
-    XOF = 'XOF'
-    XPD = 'XPD'
-    XPF = 'XPF'
-    XPT = 'XPT'
-    XSU = 'XSU'
-    XUA = 'XUA'
-    XXX = 'XXX'
-    YER = 'YER'
-    ZAR = 'ZAR'
-    ZMW = 'ZMW'
-    ZWL = 'ZWL'
+
+    AED = "AED"
+    AFN = "AFN"
+    ALL = "ALL"
+    AMD = "AMD"
+    ANG = "ANG"
+    AOA = "AOA"
+    ARS = "ARS"
+    AUD = "AUD"
+    AWG = "AWG"
+    AZN = "AZN"
+    BAM = "BAM"
+    BBD = "BBD"
+    BDT = "BDT"
+    BGN = "BGN"
+    BHD = "BHD"
+    BIF = "BIF"
+    BMD = "BMD"
+    BND = "BND"
+    BOB = "BOB"
+    BOV = "BOV"
+    BRL = "BRL"
+    BSD = "BSD"
+    BTN = "BTN"
+    BWP = "BWP"
+    BYN = "BYN"
+    BZD = "BZD"
+    CAD = "CAD"
+    CDF = "CDF"
+    CHE = "CHE"
+    CHF = "CHF"
+    CHW = "CHW"
+    CLF = "CLF"
+    CLP = "CLP"
+    CNY = "CNY"
+    COP = "COP"
+    COU = "COU"
+    CRC = "CRC"
+    CUC = "CUC"
+    CUP = "CUP"
+    CVE = "CVE"
+    CZK = "CZK"
+    DJF = "DJF"
+    DKK = "DKK"
+    DOP = "DOP"
+    DZD = "DZD"
+    EGP = "EGP"
+    ERN = "ERN"
+    ETB = "ETB"
+    EUR = "EUR"
+    FJD = "FJD"
+    FKP = "FKP"
+    GBP = "GBP"
+    GEL = "GEL"
+    GGP = "GGP"
+    GHS = "GHS"
+    GIP = "GIP"
+    GMD = "GMD"
+    GNF = "GNF"
+    GTQ = "GTQ"
+    GYD = "GYD"
+    HKD = "HKD"
+    HNL = "HNL"
+    HRK = "HRK"
+    HTG = "HTG"
+    HUF = "HUF"
+    IDR = "IDR"
+    ILS = "ILS"
+    IMP = "IMP"
+    INR = "INR"
+    IQD = "IQD"
+    IRR = "IRR"
+    ISK = "ISK"
+    JEP = "JEP"
+    JMD = "JMD"
+    JOD = "JOD"
+    JPY = "JPY"
+    KES = "KES"
+    KGS = "KGS"
+    KHR = "KHR"
+    KMF = "KMF"
+    KPW = "KPW"
+    KRW = "KRW"
+    KWD = "KWD"
+    KYD = "KYD"
+    KZT = "KZT"
+    LAK = "LAK"
+    LBP = "LBP"
+    LKR = "LKR"
+    LRD = "LRD"
+    LSL = "LSL"
+    LYD = "LYD"
+    MAD = "MAD"
+    MDL = "MDL"
+    MGA = "MGA"
+    MKD = "MKD"
+    MMK = "MMK"
+    MNT = "MNT"
+    MOP = "MOP"
+    MRU = "MRU"
+    MUR = "MUR"
+    MVR = "MVR"
+    MWK = "MWK"
+    MXN = "MXN"
+    MXV = "MXV"
+    MYR = "MYR"
+    MZN = "MZN"
+    NAD = "NAD"
+    NGN = "NGN"
+    NIO = "NIO"
+    NOK = "NOK"
+    NPR = "NPR"
+    NZD = "NZD"
+    OMR = "OMR"
+    PAB = "PAB"
+    PEN = "PEN"
+    PGK = "PGK"
+    PHP = "PHP"
+    PKR = "PKR"
+    PLN = "PLN"
+    PYG = "PYG"
+    QAR = "QAR"
+    RON = "RON"
+    RSD = "RSD"
+    RUB = "RUB"
+    RWF = "RWF"
+    SAR = "SAR"
+    SBD = "SBD"
+    SCR = "SCR"
+    SDG = "SDG"
+    SEK = "SEK"
+    SGD = "SGD"
+    SHP = "SHP"
+    SLL = "SLL"
+    SOS = "SOS"
+    SRD = "SRD"
+    SSP = "SSP"
+    STN = "STN"
+    SVC = "SVC"
+    SYP = "SYP"
+    SZL = "SZL"
+    THB = "THB"
+    TJS = "TJS"
+    TMT = "TMT"
+    TND = "TND"
+    TOP = "TOP"
+    TRY = "TRY"
+    TTD = "TTD"
+    TWD = "TWD"
+    TZS = "TZS"
+    UAH = "UAH"
+    UGX = "UGX"
+    USD = "USD"
+    USN = "USN"
+    UYI = "UYI"
+    UYU = "UYU"
+    UYW = "UYW"
+    UZS = "UZS"
+    VES = "VES"
+    VND = "VND"
+    VUV = "VUV"
+    WST = "WST"
+    XAF = "XAF"
+    XAG = "XAG"
+    XAU = "XAU"
+    XBA = "XBA"
+    XBB = "XBB"
+    XBC = "XBC"
+    XBD = "XBD"
+    XCD = "XCD"
+    XCG = "XCG"
+    XDR = "XDR"
+    XOF = "XOF"
+    XPD = "XPD"
+    XPF = "XPF"
+    XPT = "XPT"
+    XSU = "XSU"
+    XUA = "XUA"
+    XXX = "XXX"
+    YER = "YER"
+    ZAR = "ZAR"
+    ZMW = "ZMW"
+    ZWL = "ZWL"
+
+
 class TkodyKrajowUe(Enum):
     """
     Kody krajów członkowskich Unii Europejskiej, w tym kod dla obszaru
@@ -579,34 +602,37 @@ class TkodyKrajowUe(Enum):
     :cvar SE: SZWECJA
     :cvar XI: IRLANDIA PÓŁNOCNA
     """
-    AT = 'AT'
-    BE = 'BE'
-    BG = 'BG'
-    CY = 'CY'
-    CZ = 'CZ'
-    DK = 'DK'
-    EE = 'EE'
-    FI = 'FI'
-    FR = 'FR'
-    DE = 'DE'
-    EL = 'EL'
-    HR = 'HR'
-    HU = 'HU'
-    IE = 'IE'
-    IT = 'IT'
-    LV = 'LV'
-    LT = 'LT'
-    LU = 'LU'
-    MT = 'MT'
-    NL = 'NL'
-    PL = 'PL'
-    PT = 'PT'
-    RO = 'RO'
-    SK = 'SK'
-    SI = 'SI'
-    ES = 'ES'
-    SE = 'SE'
-    XI = 'XI'
+
+    AT = "AT"
+    BE = "BE"
+    BG = "BG"
+    CY = "CY"
+    CZ = "CZ"
+    DK = "DK"
+    EE = "EE"
+    FI = "FI"
+    FR = "FR"
+    DE = "DE"
+    EL = "EL"
+    HR = "HR"
+    HU = "HU"
+    IE = "IE"
+    IT = "IT"
+    LV = "LV"
+    LT = "LT"
+    LU = "LU"
+    MT = "MT"
+    NL = "NL"
+    PL = "PL"
+    PT = "PT"
+    RO = "RO"
+    SK = "SK"
+    SI = "SI"
+    ES = "ES"
+    SE = "SE"
+    XI = "XI"
+
+
 class Tladunek(Enum):
     """
     Typy ładunków.
@@ -632,6 +658,7 @@ class Tladunek(Enum):
     :cvar VALUE_19: Skrzynia
     :cvar VALUE_20: Worek
     """
+
     VALUE_1 = 1
     VALUE_2 = 2
     VALUE_3 = 3
@@ -652,8 +679,12 @@ class Tladunek(Enum):
     VALUE_18 = 18
     VALUE_19 = 19
     VALUE_20 = 20
+
+
 class TnaglowekWariantFormularza(Enum):
     VALUE_3 = 3
+
+
 class ToznaczenieProcedury(Enum):
     """
     Oznaczenia dotyczące procedur dla faktur.
@@ -691,14 +722,17 @@ class ToznaczenieProcedury(Enum):
         zakresu danych zawartych w deklaracjach podatkowych i w
         ewidencji w zakresie podatku od towarów i usług
     """
-    WSTO_EE = 'WSTO_EE'
-    IED = 'IED'
-    TT_D = 'TT_D'
-    I_42 = 'I_42'
-    I_63 = 'I_63'
-    B_SPV = 'B_SPV'
-    B_SPV_DOSTAWA = 'B_SPV_DOSTAWA'
-    B_MPV_PROWIZJA = 'B_MPV_PROWIZJA'
+
+    WSTO_EE = "WSTO_EE"
+    IED = "IED"
+    TT_D = "TT_D"
+    I_42 = "I_42"
+    I_63 = "I_63"
+    B_SPV = "B_SPV"
+    B_SPV_DOSTAWA = "B_SPV_DOSTAWA"
+    B_MPV_PROWIZJA = "B_MPV_PROWIZJA"
+
+
 class ToznaczenieProceduryZ(Enum):
     """
     Oznaczenia dotyczące procedur dla zamówień.
@@ -728,12 +762,15 @@ class ToznaczenieProceduryZ(Enum):
         zakresu danych zawartych w deklaracjach podatkowych i w
         ewidencji w zakresie podatku od towarów i usług
     """
-    WSTO_EE = 'WSTO_EE'
-    IED = 'IED'
-    TT_D = 'TT_D'
-    B_SPV = 'B_SPV'
-    B_SPV_DOSTAWA = 'B_SPV_DOSTAWA'
-    B_MPV_PROWIZJA = 'B_MPV_PROWIZJA'
+
+    WSTO_EE = "WSTO_EE"
+    IED = "IED"
+    TT_D = "TT_D"
+    B_SPV = "B_SPV"
+    B_SPV_DOSTAWA = "B_SPV_DOSTAWA"
+    B_MPV_PROWIZJA = "B_MPV_PROWIZJA"
+
+
 @dataclass(kw_only=True)
 class Tpodmiot1:
     """
@@ -742,6 +779,7 @@ class Tpodmiot1:
     :ivar nip: Identyfikator podatkowy NIP
     :ivar nazwa: Imię i nazwisko lub nazwa
     """
+
     class Meta:
         name = "TPodmiot1"
 
@@ -750,7 +788,7 @@ class Tpodmiot1:
             "name": "NIP",
             "type": "Element",
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
-            "pattern": r'[1-9]((\d[1-9])|([1-9]\d))\d{7}',
+            "pattern": r"[1-9]((\d[1-9])|([1-9]\d))\d{7}",
         }
     )
     nazwa: str = field(
@@ -762,6 +800,8 @@ class Tpodmiot1:
             "max_length": 512,
         }
     )
+
+
 class TrachunekWlasnyBanku(Enum):
     """
     Typy rachunków własnych.
@@ -780,9 +820,12 @@ class TrachunekWlasnyBanku(Enum):
         oszczędnościowo-kredytowej prowadzony przez ten bank lub tę kasę
         w ramach gospodarki własnej, niebędący rachunkiem rozliczeniowym
     """
+
     VALUE_1 = 1
     VALUE_2 = 2
     VALUE_3 = 3
+
+
 class TrodzajFaktury(Enum):
     """
     Rodzaj faktury.
@@ -801,13 +844,16 @@ class TrodzajFaktury(Enum):
     :cvar KOR_ROZ: Faktura korygująca fakturę wystawioną w związku z
         art. 106f ust. 3 ustawy
     """
-    VAT = 'VAT'
-    KOR = 'KOR'
-    ZAL = 'ZAL'
-    ROZ = 'ROZ'
-    UPR = 'UPR'
-    KOR_ZAL = 'KOR_ZAL'
-    KOR_ROZ = 'KOR_ROZ'
+
+    VAT = "VAT"
+    KOR = "KOR"
+    ZAL = "ZAL"
+    ROZ = "ROZ"
+    UPR = "UPR"
+    KOR_ZAL = "KOR_ZAL"
+    KOR_ROZ = "KOR_ROZ"
+
+
 class TrodzajTransportu(Enum):
     """
     Rodzaj transportu.
@@ -820,6 +866,7 @@ class TrodzajTransportu(Enum):
     :cvar VALUE_7: Stałe instalacje przesyłowe
     :cvar VALUE_8: Żegluga śródlądowa
     """
+
     VALUE_1 = 1
     VALUE_2 = 2
     VALUE_3 = 3
@@ -827,6 +874,8 @@ class TrodzajTransportu(Enum):
     VALUE_5 = 5
     VALUE_7 = 7
     VALUE_8 = 8
+
+
 class TrolaPodmiotu3(Enum):
     """
     Rola podmiotu trzeciego.
@@ -858,6 +907,7 @@ class TrolaPodmiotu3(Enum):
     :cvar VALUE_10: Członek grupy VAT - odbiorca
     :cvar VALUE_11: Pracownik
     """
+
     VALUE_1 = 1
     VALUE_2 = 2
     VALUE_3 = 3
@@ -869,6 +919,8 @@ class TrolaPodmiotu3(Enum):
     VALUE_9 = 9
     VALUE_10 = 10
     VALUE_11 = 11
+
+
 class TrolaPodmiotuUpowaznionego(Enum):
     """
     Rola podmiotu upoważnionego.
@@ -881,9 +933,12 @@ class TrolaPodmiotuUpowaznionego(Enum):
         fakturze występują dane przedstawiciela podatkowego, o którym
         mowa w art. 18a - 18d ustawy
     """
+
     VALUE_1 = 1
     VALUE_2 = 2
     VALUE_3 = 3
+
+
 class TstatusInfoPodatnika(Enum):
     """
     Status podatnika.
@@ -894,10 +949,13 @@ class TstatusInfoPodatnika(Enum):
     :cvar VALUE_3: Podatnik znajdujący się w stanie upadłości
     :cvar VALUE_4: Przedsiębiorstwo w spadku
     """
+
     VALUE_1 = 1
     VALUE_2 = 2
     VALUE_3 = 3
     VALUE_4 = 4
+
+
 class TstawkaPodatku(Enum):
     """
     Stawka podatku.
@@ -924,20 +982,23 @@ class TstawkaPodatku(Enum):
     :cvar NP_II: niepodlegajace opodatkowaniu na terytorium kraju,
         świadczenie usług o których mowa w art. 100 ust. 1 pkt 4 ustawy
     """
-    VALUE_23 = '23'
-    VALUE_22 = '22'
-    VALUE_8 = '8'
-    VALUE_7 = '7'
-    VALUE_5 = '5'
-    VALUE_4 = '4'
-    VALUE_3 = '3'
-    VALUE_0_KR = '0 KR'
-    VALUE_0_WDT = '0 WDT'
-    VALUE_0_EX = '0 EX'
-    ZW = 'zw'
-    OO = 'oo'
-    NP_I = 'np I'
-    NP_II = 'np II'
+
+    VALUE_23 = "23"
+    VALUE_22 = "22"
+    VALUE_8 = "8"
+    VALUE_7 = "7"
+    VALUE_5 = "5"
+    VALUE_4 = "4"
+    VALUE_3 = "3"
+    VALUE_0_KR = "0 KR"
+    VALUE_0_WDT = "0 WDT"
+    VALUE_0_EX = "0 EX"
+    ZW = "zw"
+    OO = "oo"
+    NP_I = "np I"
+    NP_II = "np II"
+
+
 class TtypKorekty(Enum):
     """
     Typ skutku korekty w ewidencji dla podatku od towarów i usług.
@@ -948,9 +1009,12 @@ class TtypKorekty(Enum):
     :cvar VALUE_3: Korekta skutkująca w dacie innej, w tym gdy dla
         różnych pozycji faktury korygującej daty te są różne
     """
+
     VALUE_1 = 1
     VALUE_2 = 2
     VALUE_3 = 3
+
+
 @dataclass(kw_only=True)
 class Tadres:
     """
@@ -961,6 +1025,7 @@ class Tadres:
     :ivar adres_l2: Adres [Address]
     :ivar gln: Globalny Numer Lokalizacyjny [Global Location Number]
     """
+
     class Meta:
         name = "TAdres"
 
@@ -988,7 +1053,7 @@ class Tadres:
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
             "min_length": 1,
             "max_length": 512,
-        }
+        },
     )
     gln: None | str = field(
         default=None,
@@ -998,8 +1063,10 @@ class Tadres:
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
             "min_length": 1,
             "max_length": 13,
-        }
+        },
     )
+
+
 @dataclass(kw_only=True)
 class Tnaglowek:
     """
@@ -1011,6 +1078,7 @@ class Tnaglowek:
     :ivar system_info: Nazwa systemu teleinformatycznego, z którego
         korzysta podatnik
     """
+
     class Meta:
         name = "TNaglowek"
 
@@ -1046,7 +1114,7 @@ class Tnaglowek:
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
             "min_length": 1,
             "max_length": 256,
-        }
+        },
     )
 
     @dataclass(kw_only=True)
@@ -1054,22 +1122,24 @@ class Tnaglowek:
         value: TkodFormularza = field()
         kod_systemowy: str = field(
             init=False,
-            default='FA (3)',
+            default="FA (3)",
             metadata={
                 "name": "kodSystemowy",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
         wersja_schemy: str = field(
             init=False,
-            default='1-0E',
+            default="1-0E",
             metadata={
                 "name": "wersjaSchemy",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class Tpodmiot2:
     """
@@ -1086,6 +1156,7 @@ class Tpodmiot2:
         identyfikator nie występuje na fakturze: 1- tak
     :ivar nazwa: Imię i nazwisko lub nazwa
     """
+
     class Meta:
         name = "TPodmiot2"
 
@@ -1095,8 +1166,8 @@ class Tpodmiot2:
             "name": "NIP",
             "type": "Element",
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
-            "pattern": r'[1-9]((\d[1-9])|([1-9]\d))\d{7}',
-        }
+            "pattern": r"[1-9]((\d[1-9])|([1-9]\d))\d{7}",
+        },
     )
     kod_ue: None | TkodyKrajowUe = field(
         default=None,
@@ -1104,7 +1175,7 @@ class Tpodmiot2:
             "name": "KodUE",
             "type": "Element",
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
-        }
+        },
     )
     nr_vat_ue: None | str = field(
         default=None,
@@ -1112,8 +1183,8 @@ class Tpodmiot2:
             "name": "NrVatUE",
             "type": "Element",
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
-            "pattern": r'(\d|[A-Z]|\+|\*){1,12}',
-        }
+            "pattern": r"(\d|[A-Z]|\+|\*){1,12}",
+        },
     )
     kod_kraju: None | TkodKraju = field(
         default=None,
@@ -1121,7 +1192,7 @@ class Tpodmiot2:
             "name": "KodKraju",
             "type": "Element",
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
-        }
+        },
     )
     nr_id: None | str = field(
         default=None,
@@ -1132,7 +1203,7 @@ class Tpodmiot2:
             "min_length": 1,
             "max_length": 50,
             "white_space": "replace",
-        }
+        },
     )
     brak_id: None | Twybor1 = field(
         default=None,
@@ -1140,7 +1211,7 @@ class Tpodmiot2:
             "name": "BrakID",
             "type": "Element",
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
-        }
+        },
     )
     nazwa: None | str = field(
         default=None,
@@ -1150,8 +1221,10 @@ class Tpodmiot2:
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
             "min_length": 1,
             "max_length": 512,
-        }
+        },
     )
+
+
 @dataclass(kw_only=True)
 class Tpodmiot3:
     """
@@ -1170,6 +1243,7 @@ class Tpodmiot3:
         identyfikator nie występuje na fakturze: 1- tak
     :ivar nazwa: Imię i nazwisko lub nazwa
     """
+
     class Meta:
         name = "TPodmiot3"
 
@@ -1179,8 +1253,8 @@ class Tpodmiot3:
             "name": "NIP",
             "type": "Element",
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
-            "pattern": r'[1-9]((\d[1-9])|([1-9]\d))\d{7}',
-        }
+            "pattern": r"[1-9]((\d[1-9])|([1-9]\d))\d{7}",
+        },
     )
     idwew: None | str = field(
         default=None,
@@ -1190,8 +1264,8 @@ class Tpodmiot3:
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
             "min_length": 1,
             "max_length": 20,
-            "pattern": r'[1-9]((\d[1-9])|([1-9]\d))\d{7}-\d{5}',
-        }
+            "pattern": r"[1-9]((\d[1-9])|([1-9]\d))\d{7}-\d{5}",
+        },
     )
     kod_ue: None | TkodyKrajowUe = field(
         default=None,
@@ -1199,7 +1273,7 @@ class Tpodmiot3:
             "name": "KodUE",
             "type": "Element",
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
-        }
+        },
     )
     nr_vat_ue: None | str = field(
         default=None,
@@ -1207,8 +1281,8 @@ class Tpodmiot3:
             "name": "NrVatUE",
             "type": "Element",
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
-            "pattern": r'(\d|[A-Z]|\+|\*){1,12}',
-        }
+            "pattern": r"(\d|[A-Z]|\+|\*){1,12}",
+        },
     )
     kod_kraju: None | TkodKraju = field(
         default=None,
@@ -1216,7 +1290,7 @@ class Tpodmiot3:
             "name": "KodKraju",
             "type": "Element",
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
-        }
+        },
     )
     nr_id: None | str = field(
         default=None,
@@ -1227,7 +1301,7 @@ class Tpodmiot3:
             "min_length": 1,
             "max_length": 50,
             "white_space": "replace",
-        }
+        },
     )
     brak_id: None | Twybor1 = field(
         default=None,
@@ -1235,7 +1309,7 @@ class Tpodmiot3:
             "name": "BrakID",
             "type": "Element",
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
-        }
+        },
     )
     nazwa: None | str = field(
         default=None,
@@ -1245,8 +1319,10 @@ class Tpodmiot3:
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
             "min_length": 1,
             "max_length": 512,
-        }
+        },
     )
+
+
 @dataclass(kw_only=True)
 class TrachunekBankowy:
     """
@@ -1258,6 +1334,7 @@ class TrachunekBankowy:
     :ivar nazwa_banku: Nazwa
     :ivar opis_rachunku: Opis rachunku
     """
+
     class Meta:
         name = "TRachunekBankowy"
 
@@ -1276,8 +1353,8 @@ class TrachunekBankowy:
             "name": "SWIFT",
             "type": "Element",
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
-            "pattern": r'[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3}){0,1}',
-        }
+            "pattern": r"[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3}){0,1}",
+        },
     )
     rachunek_wlasny_banku: None | TrachunekWlasnyBanku = field(
         default=None,
@@ -1285,7 +1362,7 @@ class TrachunekBankowy:
             "name": "RachunekWlasnyBanku",
             "type": "Element",
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
-        }
+        },
     )
     nazwa_banku: None | str = field(
         default=None,
@@ -1295,7 +1372,7 @@ class TrachunekBankowy:
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
             "min_length": 1,
             "max_length": 256,
-        }
+        },
     )
     opis_rachunku: None | str = field(
         default=None,
@@ -1305,8 +1382,10 @@ class TrachunekBankowy:
             "namespace": "http://crd.gov.pl/wzor/2025/06/25/13775/",
             "min_length": 1,
             "max_length": 256,
-        }
+        },
     )
+
+
 @dataclass(kw_only=True)
 class Faktura:
     """
@@ -1332,6 +1411,7 @@ class Faktura:
     :ivar stopka: Pozostałe dane na fakturze
     :ivar zalacznik: Załącznik do faktury VAT
     """
+
     class Meta:
         namespace = "http://crd.gov.pl/wzor/2025/06/25/13775/"
 
@@ -1359,14 +1439,14 @@ class Faktura:
             "name": "Podmiot3",
             "type": "Element",
             "max_occurs": 100,
-        }
+        },
     )
     podmiot_upowazniony: None | Faktura.PodmiotUpowazniony = field(
         default=None,
         metadata={
             "name": "PodmiotUpowazniony",
             "type": "Element",
-        }
+        },
     )
     fa: Faktura.Fa = field(
         metadata={
@@ -1379,14 +1459,14 @@ class Faktura:
         metadata={
             "name": "Stopka",
             "type": "Element",
-        }
+        },
     )
     zalacznik: None | Faktura.Zalacznik = field(
         default=None,
         metadata={
             "name": "Zalacznik",
             "type": "Element",
-        }
+        },
     )
 
     @dataclass(kw_only=True)
@@ -1403,12 +1483,13 @@ class Faktura:
         :ivar dane_kontaktowe: Dane kontaktowe podatnika
         :ivar status_info_podatnika: Status podatnika
         """
+
         prefiks_podatnika: None | TkodyKrajowUe = field(
             default=None,
             metadata={
                 "name": "PrefiksPodatnika",
                 "type": "Element",
-            }
+            },
         )
         nr_eori: None | str = field(
             default=None,
@@ -1417,7 +1498,7 @@ class Faktura:
                 "type": "Element",
                 "min_length": 1,
                 "max_length": 256,
-            }
+            },
         )
         dane_identyfikacyjne: Tpodmiot1 = field(
             metadata={
@@ -1436,7 +1517,7 @@ class Faktura:
             metadata={
                 "name": "AdresKoresp",
                 "type": "Element",
-            }
+            },
         )
         dane_kontaktowe: list[Faktura.Podmiot1.DaneKontaktowe] = field(
             default_factory=list,
@@ -1444,14 +1525,14 @@ class Faktura:
                 "name": "DaneKontaktowe",
                 "type": "Element",
                 "max_occurs": 3,
-            }
+            },
         )
         status_info_podatnika: None | TstatusInfoPodatnika = field(
             default=None,
             metadata={
                 "name": "StatusInfoPodatnika",
                 "type": "Element",
-            }
+            },
         )
 
         @dataclass(kw_only=True)
@@ -1460,6 +1541,7 @@ class Faktura:
             :ivar email: Adres e-mail podatnika
             :ivar telefon: Numer telefonu podatnika
             """
+
             email: None | str = field(
                 default=None,
                 metadata={
@@ -1467,8 +1549,8 @@ class Faktura:
                     "type": "Element",
                     "min_length": 3,
                     "max_length": 255,
-                    "pattern": r'(.)+@(.)+',
-                }
+                    "pattern": r"(.)+@(.)+",
+                },
             )
             telefon: None | str = field(
                 default=None,
@@ -1477,7 +1559,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 16,
-                }
+                },
             )
 
     @dataclass(kw_only=True)
@@ -1508,6 +1590,7 @@ class Faktura:
             lub ID-Wew i określić rolę jako 10. Wartość "2" oznacza, że
             faktura nie dotyczy członka grupy VAT
         """
+
         nr_eori: None | str = field(
             default=None,
             metadata={
@@ -1515,7 +1598,7 @@ class Faktura:
                 "type": "Element",
                 "min_length": 1,
                 "max_length": 256,
-            }
+            },
         )
         dane_identyfikacyjne: Tpodmiot2 = field(
             metadata={
@@ -1528,14 +1611,14 @@ class Faktura:
             metadata={
                 "name": "Adres",
                 "type": "Element",
-            }
+            },
         )
         adres_koresp: None | Tadres = field(
             default=None,
             metadata={
                 "name": "AdresKoresp",
                 "type": "Element",
-            }
+            },
         )
         dane_kontaktowe: list[Faktura.Podmiot2.DaneKontaktowe] = field(
             default_factory=list,
@@ -1543,7 +1626,7 @@ class Faktura:
                 "name": "DaneKontaktowe",
                 "type": "Element",
                 "max_occurs": 3,
-            }
+            },
         )
         nr_klienta: None | str = field(
             default=None,
@@ -1552,7 +1635,7 @@ class Faktura:
                 "type": "Element",
                 "min_length": 1,
                 "max_length": 256,
-            }
+            },
         )
         idnabywcy: None | str = field(
             default=None,
@@ -1561,7 +1644,7 @@ class Faktura:
                 "type": "Element",
                 "min_length": 1,
                 "max_length": 32,
-            }
+            },
         )
         jst: Podmiot2Jst = field(
             metadata={
@@ -1582,6 +1665,7 @@ class Faktura:
             :ivar email: Adres e-mail nabywcy
             :ivar telefon: Numer telefonu nabywcy
             """
+
             email: None | str = field(
                 default=None,
                 metadata={
@@ -1589,8 +1673,8 @@ class Faktura:
                     "type": "Element",
                     "min_length": 3,
                     "max_length": 255,
-                    "pattern": r'(.)+@(.)+',
-                }
+                    "pattern": r"(.)+@(.)+",
+                },
             )
             telefon: None | str = field(
                 default=None,
@@ -1599,7 +1683,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 16,
-                }
+                },
             )
 
     @dataclass(kw_only=True)
@@ -1627,6 +1711,7 @@ class Faktura:
             podmiot wymieniony jako podmiot trzeci posługuje się nim w
             umowie lub zamówieniu
         """
+
         idnabywcy: None | str = field(
             default=None,
             metadata={
@@ -1634,7 +1719,7 @@ class Faktura:
                 "type": "Element",
                 "min_length": 1,
                 "max_length": 32,
-            }
+            },
         )
         nr_eori: None | str = field(
             default=None,
@@ -1643,7 +1728,7 @@ class Faktura:
                 "type": "Element",
                 "min_length": 1,
                 "max_length": 256,
-            }
+            },
         )
         dane_identyfikacyjne: Tpodmiot3 = field(
             metadata={
@@ -1656,14 +1741,14 @@ class Faktura:
             metadata={
                 "name": "Adres",
                 "type": "Element",
-            }
+            },
         )
         adres_koresp: None | Tadres = field(
             default=None,
             metadata={
                 "name": "AdresKoresp",
                 "type": "Element",
-            }
+            },
         )
         dane_kontaktowe: list[Faktura.Podmiot3.DaneKontaktowe] = field(
             default_factory=list,
@@ -1671,21 +1756,21 @@ class Faktura:
                 "name": "DaneKontaktowe",
                 "type": "Element",
                 "max_occurs": 3,
-            }
+            },
         )
         rola: None | TrolaPodmiotu3 = field(
             default=None,
             metadata={
                 "name": "Rola",
                 "type": "Element",
-            }
+            },
         )
         rola_inna: None | Twybor1 = field(
             default=None,
             metadata={
                 "name": "RolaInna",
                 "type": "Element",
-            }
+            },
         )
         opis_roli: None | str = field(
             default=None,
@@ -1694,19 +1779,19 @@ class Faktura:
                 "type": "Element",
                 "min_length": 1,
                 "max_length": 256,
-            }
+            },
         )
         udzial: None | Decimal = field(
             default=None,
             metadata={
                 "name": "Udzial",
                 "type": "Element",
-                "min_inclusive": Decimal('0'),
-                "max_inclusive": Decimal('100'),
+                "min_inclusive": Decimal("0"),
+                "max_inclusive": Decimal("100"),
                 "total_digits": 9,
                 "fraction_digits": 6,
                 "white_space": "collapse",
-            }
+            },
         )
         nr_klienta: None | str = field(
             default=None,
@@ -1715,7 +1800,7 @@ class Faktura:
                 "type": "Element",
                 "min_length": 1,
                 "max_length": 256,
-            }
+            },
         )
 
         @dataclass(kw_only=True)
@@ -1724,6 +1809,7 @@ class Faktura:
             :ivar email: Adres e-mail podmiotu trzeciego
             :ivar telefon: Numer telefonu podmiotu trzeciego
             """
+
             email: None | str = field(
                 default=None,
                 metadata={
@@ -1731,8 +1817,8 @@ class Faktura:
                     "type": "Element",
                     "min_length": 3,
                     "max_length": 255,
-                    "pattern": r'(.)+@(.)+',
-                }
+                    "pattern": r"(.)+@(.)+",
+                },
             )
             telefon: None | str = field(
                 default=None,
@@ -1741,7 +1827,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 16,
-                }
+                },
             )
 
     @dataclass(kw_only=True)
@@ -1756,6 +1842,7 @@ class Faktura:
         :ivar dane_kontaktowe: Dane kontaktowe podmiotu upoważnionego
         :ivar rola_pu: Rola podmiotu upoważnionego
         """
+
         nr_eori: None | str = field(
             default=None,
             metadata={
@@ -1763,7 +1850,7 @@ class Faktura:
                 "type": "Element",
                 "min_length": 1,
                 "max_length": 256,
-            }
+            },
         )
         dane_identyfikacyjne: Tpodmiot1 = field(
             metadata={
@@ -1782,7 +1869,7 @@ class Faktura:
             metadata={
                 "name": "AdresKoresp",
                 "type": "Element",
-            }
+            },
         )
         dane_kontaktowe: list[Faktura.PodmiotUpowazniony.DaneKontaktowe] = field(
             default_factory=list,
@@ -1790,7 +1877,7 @@ class Faktura:
                 "name": "DaneKontaktowe",
                 "type": "Element",
                 "max_occurs": 3,
-            }
+            },
         )
         rola_pu: TrolaPodmiotuUpowaznionego = field(
             metadata={
@@ -1805,6 +1892,7 @@ class Faktura:
             :ivar email_pu: Adres e-mail podmiotu upoważnionego
             :ivar telefon_pu: Numer telefonu podmiotu upoważnionego
             """
+
             email_pu: None | str = field(
                 default=None,
                 metadata={
@@ -1812,8 +1900,8 @@ class Faktura:
                     "type": "Element",
                     "min_length": 3,
                     "max_length": 255,
-                    "pattern": r'(.)+@(.)+',
-                }
+                    "pattern": r"(.)+@(.)+",
+                },
             )
             telefon_pu: None | str = field(
                 default=None,
@@ -1822,7 +1910,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 16,
-                }
+                },
             )
 
     @dataclass(kw_only=True)
@@ -2086,6 +2174,7 @@ class Faktura:
             korekcie w celu potwierdzenia braku zmiany wartości danej
             pozycji
         """
+
         kod_waluty: TkodWaluty = field(
             metadata={
                 "name": "KodWaluty",
@@ -2098,7 +2187,7 @@ class Faktura:
                 "type": "Element",
                 "min_inclusive": "2006-01-01",
                 "max_inclusive": "2050-01-01",
-                "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
+                "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
             }
         )
         p_1_m: None | str = field(
@@ -2108,7 +2197,7 @@ class Faktura:
                 "type": "Element",
                 "min_length": 1,
                 "max_length": 256,
-            }
+            },
         )
         p_2: str = field(
             metadata={
@@ -2126,7 +2215,7 @@ class Faktura:
                 "max_occurs": 1000,
                 "min_length": 1,
                 "max_length": 256,
-            }
+            },
         )
         p_6: None | str = field(
             default=None,
@@ -2135,15 +2224,15 @@ class Faktura:
                 "type": "Element",
                 "min_inclusive": "2006-01-01",
                 "max_inclusive": "2050-01-01",
-                "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
-            }
+                "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
+            },
         )
         okres_fa: None | Faktura.Fa.OkresFa = field(
             default=None,
             metadata={
                 "name": "OkresFa",
                 "type": "Element",
-            }
+            },
         )
         p_13_1: None | str = field(
             default=None,
@@ -2152,8 +2241,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_14_1: None | str = field(
             default=None,
@@ -2162,8 +2251,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_14_1_w: None | str = field(
             default=None,
@@ -2172,8 +2261,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_13_2: None | str = field(
             default=None,
@@ -2182,8 +2271,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_14_2: None | str = field(
             default=None,
@@ -2192,8 +2281,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_14_2_w: None | str = field(
             default=None,
@@ -2202,8 +2291,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_13_3: None | str = field(
             default=None,
@@ -2212,8 +2301,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_14_3: None | str = field(
             default=None,
@@ -2222,8 +2311,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_14_3_w: None | str = field(
             default=None,
@@ -2232,8 +2321,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_13_4: None | str = field(
             default=None,
@@ -2242,8 +2331,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_14_4: None | str = field(
             default=None,
@@ -2252,8 +2341,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_14_4_w: None | str = field(
             default=None,
@@ -2262,8 +2351,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_13_5: None | str = field(
             default=None,
@@ -2272,8 +2361,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_14_5: None | str = field(
             default=None,
@@ -2282,8 +2371,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_13_6_1: None | str = field(
             default=None,
@@ -2292,8 +2381,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_13_6_2: None | str = field(
             default=None,
@@ -2302,8 +2391,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_13_6_3: None | str = field(
             default=None,
@@ -2312,8 +2401,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_13_7: None | str = field(
             default=None,
@@ -2322,8 +2411,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_13_8: None | str = field(
             default=None,
@@ -2332,8 +2421,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_13_9: None | str = field(
             default=None,
@@ -2342,8 +2431,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_13_10: None | str = field(
             default=None,
@@ -2352,8 +2441,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_13_11: None | str = field(
             default=None,
@@ -2362,8 +2451,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         p_15: str = field(
             metadata={
@@ -2371,7 +2460,7 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
             }
         )
         kurs_waluty_z: None | str = field(
@@ -2381,8 +2470,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 22,
                 "fraction_digits": 6,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,6})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,6})?",
+            },
         )
         adnotacje: Faktura.Fa.Adnotacje = field(
             metadata={
@@ -2403,14 +2492,14 @@ class Faktura:
                 "type": "Element",
                 "min_length": 1,
                 "max_length": 256,
-            }
+            },
         )
         typ_korekty: None | TtypKorekty = field(
             default=None,
             metadata={
                 "name": "TypKorekty",
                 "type": "Element",
-            }
+            },
         )
         dane_fa_korygowanej: list[Faktura.Fa.DaneFaKorygowanej] = field(
             default_factory=list,
@@ -2418,7 +2507,7 @@ class Faktura:
                 "name": "DaneFaKorygowanej",
                 "type": "Element",
                 "max_occurs": 50000,
-            }
+            },
         )
         okres_fa_korygowanej: None | str = field(
             default=None,
@@ -2427,7 +2516,7 @@ class Faktura:
                 "type": "Element",
                 "min_length": 1,
                 "max_length": 256,
-            }
+            },
         )
         nr_fa_korygowany: None | str = field(
             default=None,
@@ -2436,14 +2525,14 @@ class Faktura:
                 "type": "Element",
                 "min_length": 1,
                 "max_length": 256,
-            }
+            },
         )
         podmiot1_k: None | Faktura.Fa.Podmiot1K = field(
             default=None,
             metadata={
                 "name": "Podmiot1K",
                 "type": "Element",
-            }
+            },
         )
         podmiot2_k: list[Faktura.Fa.Podmiot2K] = field(
             default_factory=list,
@@ -2451,7 +2540,7 @@ class Faktura:
                 "name": "Podmiot2K",
                 "type": "Element",
                 "max_occurs": 101,
-            }
+            },
         )
         p_15_zk: None | str = field(
             default=None,
@@ -2460,8 +2549,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 18,
                 "fraction_digits": 2,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+            },
         )
         kurs_waluty_zk: None | str = field(
             default=None,
@@ -2470,8 +2559,8 @@ class Faktura:
                 "type": "Element",
                 "total_digits": 22,
                 "fraction_digits": 6,
-                "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,6})?',
-            }
+                "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,6})?",
+            },
         )
         zaliczka_czesciowa: list[Faktura.Fa.ZaliczkaCzesciowa] = field(
             default_factory=list,
@@ -2479,21 +2568,21 @@ class Faktura:
                 "name": "ZaliczkaCzesciowa",
                 "type": "Element",
                 "max_occurs": 31,
-            }
+            },
         )
         fp: None | Twybor1 = field(
             default=None,
             metadata={
                 "name": "FP",
                 "type": "Element",
-            }
+            },
         )
         tp: None | Twybor1 = field(
             default=None,
             metadata={
                 "name": "TP",
                 "type": "Element",
-            }
+            },
         )
         dodatkowy_opis: list[TkluczWartosc] = field(
             default_factory=list,
@@ -2501,7 +2590,7 @@ class Faktura:
                 "name": "DodatkowyOpis",
                 "type": "Element",
                 "max_occurs": 10000,
-            }
+            },
         )
         faktura_zaliczkowa: list[Faktura.Fa.FakturaZaliczkowa] = field(
             default_factory=list,
@@ -2509,14 +2598,14 @@ class Faktura:
                 "name": "FakturaZaliczkowa",
                 "type": "Element",
                 "max_occurs": 100,
-            }
+            },
         )
         zwrot_akcyzy: None | Twybor1 = field(
             default=None,
             metadata={
                 "name": "ZwrotAkcyzy",
                 "type": "Element",
-            }
+            },
         )
         fa_wiersz: list[Faktura.Fa.FaWiersz] = field(
             default_factory=list,
@@ -2524,35 +2613,35 @@ class Faktura:
                 "name": "FaWiersz",
                 "type": "Element",
                 "max_occurs": 10000,
-            }
+            },
         )
         rozliczenie: None | Faktura.Fa.Rozliczenie = field(
             default=None,
             metadata={
                 "name": "Rozliczenie",
                 "type": "Element",
-            }
+            },
         )
         platnosc: None | Faktura.Fa.Platnosc = field(
             default=None,
             metadata={
                 "name": "Platnosc",
                 "type": "Element",
-            }
+            },
         )
         warunki_transakcji: None | Faktura.Fa.WarunkiTransakcji = field(
             default=None,
             metadata={
                 "name": "WarunkiTransakcji",
                 "type": "Element",
-            }
+            },
         )
         zamowienie: None | Faktura.Fa.Zamowienie = field(
             default=None,
             metadata={
                 "name": "Zamowienie",
                 "type": "Element",
-            }
+            },
         )
 
         @dataclass(kw_only=True)
@@ -2593,6 +2682,7 @@ class Faktura:
                 w przeciwnym przypadku - wartość "2"
             :ivar pmarzy:
             """
+
             p_16: Twybor12 = field(
                 metadata={
                     "name": "P_16",
@@ -2668,12 +2758,13 @@ class Faktura:
                     ustawy albo przepisów wydanych na podstawie art. 82
                     ust. 3 ustawy lub na podstawie innych przepisów
                 """
+
                 p_19: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "P_19",
                         "type": "Element",
-                    }
+                    },
                 )
                 p_19_a: None | str = field(
                     default=None,
@@ -2682,7 +2773,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 256,
-                    }
+                    },
                 )
                 p_19_b: None | str = field(
                     default=None,
@@ -2691,7 +2782,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 256,
-                    }
+                    },
                 )
                 p_19_c: None | str = field(
                     default=None,
@@ -2700,14 +2791,14 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 256,
-                    }
+                    },
                 )
                 p_19_n: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "P_19N",
                         "type": "Element",
-                    }
+                    },
                 )
 
             @dataclass(kw_only=True)
@@ -2722,34 +2813,37 @@ class Faktura:
                 :ivar p_22_n: Znacznik braku wewnątrzwspólnotowej
                     dostawy nowych środków transportu
                 """
+
                 p_22: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "P_22",
                         "type": "Element",
-                    }
+                    },
                 )
                 p_42_5: None | Twybor12 = field(
                     default=None,
                     metadata={
                         "name": "P_42_5",
                         "type": "Element",
-                    }
+                    },
                 )
-                nowy_srodek_transportu: list[Faktura.Fa.Adnotacje.NoweSrodkiTransportu.NowySrodekTransportu] = field(
+                nowy_srodek_transportu: list[
+                    Faktura.Fa.Adnotacje.NoweSrodkiTransportu.NowySrodekTransportu
+                ] = field(
                     default_factory=list,
                     metadata={
                         "name": "NowySrodekTransportu",
                         "type": "Element",
                         "max_occurs": 10000,
-                    }
+                    },
                 )
                 p_22_n: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "P_22N",
                         "type": "Element",
-                    }
+                    },
                 )
 
                 @dataclass(kw_only=True)
@@ -2801,13 +2895,14 @@ class Faktura:
                         lit. c ustawy, można podać numer fabryczny
                         nowego środka transportu
                     """
+
                     p_22_a: str = field(
                         metadata={
                             "name": "P_22A",
                             "type": "Element",
                             "min_inclusive": "2006-01-01",
                             "max_inclusive": "2050-01-01",
-                            "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
+                            "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
                         }
                     )
                     p_nr_wiersza_nst: int = field(
@@ -2826,7 +2921,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
                     p_22_bmd: None | str = field(
                         default=None,
@@ -2835,7 +2930,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
                     p_22_bk: None | str = field(
                         default=None,
@@ -2844,7 +2939,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
                     p_22_bnr: None | str = field(
                         default=None,
@@ -2853,7 +2948,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
                     p_22_brp: None | str = field(
                         default=None,
@@ -2862,7 +2957,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
                     p_22_b: None | str = field(
                         default=None,
@@ -2871,7 +2966,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
                     p_22_b1: None | str = field(
                         default=None,
@@ -2880,7 +2975,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
                     p_22_b2: None | str = field(
                         default=None,
@@ -2889,7 +2984,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
                     p_22_b3: None | str = field(
                         default=None,
@@ -2898,7 +2993,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
                     p_22_b4: None | str = field(
                         default=None,
@@ -2907,7 +3002,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
                     p_22_bt: None | str = field(
                         default=None,
@@ -2916,7 +3011,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
                     p_22_c: None | str = field(
                         default=None,
@@ -2925,7 +3020,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
                     p_22_c1: None | str = field(
                         default=None,
@@ -2934,7 +3029,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
                     p_22_d: None | str = field(
                         default=None,
@@ -2943,7 +3038,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
                     p_22_d1: None | str = field(
                         default=None,
@@ -2952,7 +3047,7 @@ class Faktura:
                             "type": "Element",
                             "min_length": 1,
                             "max_length": 256,
-                        }
+                        },
                     )
 
             @dataclass(kw_only=True)
@@ -2984,47 +3079,48 @@ class Faktura:
                 :ivar p_pmarzy_n: Znacznik braku wystąpienia procedur
                     marży, o których mowa w art. 119 lub art. 120 ustawy
                 """
+
                 p_pmarzy: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "P_PMarzy",
                         "type": "Element",
-                    }
+                    },
                 )
                 p_pmarzy_2: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "P_PMarzy_2",
                         "type": "Element",
-                    }
+                    },
                 )
                 p_pmarzy_3_1: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "P_PMarzy_3_1",
                         "type": "Element",
-                    }
+                    },
                 )
                 p_pmarzy_3_2: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "P_PMarzy_3_2",
                         "type": "Element",
-                    }
+                    },
                 )
                 p_pmarzy_3_3: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "P_PMarzy_3_3",
                         "type": "Element",
-                    }
+                    },
                 )
                 p_pmarzy_n: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "P_PMarzyN",
                         "type": "Element",
-                    }
+                    },
                 )
 
         @dataclass(kw_only=True)
@@ -3040,13 +3136,14 @@ class Faktura:
                 kwoty podatku w przypadkach, o których mowa w dziale VI
                 ustawy
             """
+
             p_6_z: str = field(
                 metadata={
                     "name": "P_6Z",
                     "type": "Element",
                     "min_inclusive": "2006-01-01",
                     "max_inclusive": "2050-01-01",
-                    "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
+                    "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
                 }
             )
             p_15_z: str = field(
@@ -3055,7 +3152,7 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 18,
                     "fraction_digits": 2,
-                    "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
+                    "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
                 }
             )
             kurs_waluty_zw: None | str = field(
@@ -3065,8 +3162,8 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 22,
                     "fraction_digits": 6,
-                    "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,6})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,6})?",
+                },
             )
 
         @dataclass(kw_only=True)
@@ -3083,12 +3180,13 @@ class Faktura:
                 zaliczkową w KSeF. Pole obowiązkowe w przypadku, gdy
                 faktura zaliczkowa była wystawiona za pomocą KSeF
             """
+
             nr_kse_fzn: None | Twybor1 = field(
                 default=None,
                 metadata={
                     "name": "NrKSeFZN",
                     "type": "Element",
-                }
+                },
             )
             nr_fa_zaliczkowej: None | str = field(
                 default=None,
@@ -3097,15 +3195,15 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 256,
-                }
+                },
             )
             nr_kse_ffa_zaliczkowej: None | str = field(
                 default=None,
                 metadata={
                     "name": "NrKSeFFaZaliczkowej",
                     "type": "Element",
-                    "pattern": r'([1-9]((\d[1-9])|([1-9]\d))\d{7}|M\d{9}|[A-Z]{3}\d{7})-(20[2-9][0-9]|2[1-9][0-9]{2}|[3-9][0-9]{3})(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])-([0-9A-F]{6})-?([0-9A-F]{6})-([0-9A-F]{2})',
-                }
+                    "pattern": r"([1-9]((\d[1-9])|([1-9]\d))\d{7}|M\d{9}|[A-Z]{3}\d{7})-(20[2-9][0-9]|2[1-9][0-9]{2}|[3-9][0-9]{3})(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])-([0-9A-F]{6})-?([0-9A-F]{6})-([0-9A-F]{2})",
+                },
             )
 
         @dataclass(kw_only=True)
@@ -3183,6 +3281,7 @@ class Faktura:
                 osobnych wierszy z odrębną numeracją oraz w przypadku
                 potwierdzania braku zmiany wartości danej pozycji
             """
+
             nr_wiersza_fa: int = field(
                 metadata={
                     "name": "NrWierszaFa",
@@ -3199,7 +3298,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 50,
-                }
+                },
             )
             p_6_a: None | str = field(
                 default=None,
@@ -3208,8 +3307,8 @@ class Faktura:
                     "type": "Element",
                     "min_inclusive": "2006-01-01",
                     "max_inclusive": "2050-01-01",
-                    "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
-                }
+                    "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
+                },
             )
             p_7: None | str = field(
                 default=None,
@@ -3218,7 +3317,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 512,
-                }
+                },
             )
             indeks: None | str = field(
                 default=None,
@@ -3227,7 +3326,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 50,
-                }
+                },
             )
             gtin: None | str = field(
                 default=None,
@@ -3236,7 +3335,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 20,
-                }
+                },
             )
             pkwi_u: None | str = field(
                 default=None,
@@ -3245,7 +3344,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 50,
-                }
+                },
             )
             cn: None | str = field(
                 default=None,
@@ -3254,7 +3353,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 50,
-                }
+                },
             )
             pkob: None | str = field(
                 default=None,
@@ -3263,7 +3362,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 50,
-                }
+                },
             )
             p_8_a: None | str = field(
                 default=None,
@@ -3272,7 +3371,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 256,
-                }
+                },
             )
             p_8_b: None | str = field(
                 default=None,
@@ -3281,8 +3380,8 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 22,
                     "fraction_digits": 6,
-                    "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,6})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,6})?",
+                },
             )
             p_9_a: None | str = field(
                 default=None,
@@ -3291,8 +3390,8 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 22,
                     "fraction_digits": 8,
-                    "pattern": r'-?([1-9]\d{0,13}|0)(\.\d{1,8})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,13}|0)(\.\d{1,8})?",
+                },
             )
             p_9_b: None | str = field(
                 default=None,
@@ -3301,8 +3400,8 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 22,
                     "fraction_digits": 8,
-                    "pattern": r'-?([1-9]\d{0,13}|0)(\.\d{1,8})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,13}|0)(\.\d{1,8})?",
+                },
             )
             p_10: None | str = field(
                 default=None,
@@ -3311,8 +3410,8 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 22,
                     "fraction_digits": 8,
-                    "pattern": r'-?([1-9]\d{0,13}|0)(\.\d{1,8})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,13}|0)(\.\d{1,8})?",
+                },
             )
             p_11: None | str = field(
                 default=None,
@@ -3321,8 +3420,8 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 18,
                     "fraction_digits": 2,
-                    "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+                },
             )
             p_11_a: None | str = field(
                 default=None,
@@ -3331,8 +3430,8 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 18,
                     "fraction_digits": 2,
-                    "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+                },
             )
             p_11_vat: None | str = field(
                 default=None,
@@ -3341,34 +3440,34 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 18,
                     "fraction_digits": 2,
-                    "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+                },
             )
             p_12: None | TstawkaPodatku = field(
                 default=None,
                 metadata={
                     "name": "P_12",
                     "type": "Element",
-                }
+                },
             )
             p_12_xii: None | Decimal = field(
                 default=None,
                 metadata={
                     "name": "P_12_XII",
                     "type": "Element",
-                    "min_inclusive": Decimal('0'),
-                    "max_inclusive": Decimal('100'),
+                    "min_inclusive": Decimal("0"),
+                    "max_inclusive": Decimal("100"),
                     "total_digits": 9,
                     "fraction_digits": 6,
                     "white_space": "collapse",
-                }
+                },
             )
             p_12_zal_15: None | Twybor1 = field(
                 default=None,
                 metadata={
                     "name": "P_12_Zal_15",
                     "type": "Element",
-                }
+                },
             )
             kwota_akcyzy: None | str = field(
                 default=None,
@@ -3377,22 +3476,22 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 18,
                     "fraction_digits": 2,
-                    "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+                },
             )
             gtu: None | Tgtu = field(
                 default=None,
                 metadata={
                     "name": "GTU",
                     "type": "Element",
-                }
+                },
             )
             procedura: None | ToznaczenieProcedury = field(
                 default=None,
                 metadata={
                     "name": "Procedura",
                     "type": "Element",
-                }
+                },
             )
             kurs_waluty: None | str = field(
                 default=None,
@@ -3401,15 +3500,15 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 22,
                     "fraction_digits": 6,
-                    "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,6})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,6})?",
+                },
             )
             stan_przed: None | Twybor1 = field(
                 default=None,
                 metadata={
                     "name": "StanPrzed",
                     "type": "Element",
-                }
+                },
             )
 
         @dataclass(kw_only=True)
@@ -3424,13 +3523,14 @@ class Faktura:
                 Odliczenia
             :ivar do_rozliczenia: Kwota nadpłacona do rozliczenia/zwrotu
             """
+
             obciazenia: list[Faktura.Fa.Rozliczenie.Obciazenia] = field(
                 default_factory=list,
                 metadata={
                     "name": "Obciazenia",
                     "type": "Element",
                     "max_occurs": 100,
-                }
+                },
             )
             suma_obciazen: None | str = field(
                 default=None,
@@ -3439,8 +3539,8 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 18,
                     "fraction_digits": 2,
-                    "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+                },
             )
             odliczenia: list[Faktura.Fa.Rozliczenie.Odliczenia] = field(
                 default_factory=list,
@@ -3448,7 +3548,7 @@ class Faktura:
                     "name": "Odliczenia",
                     "type": "Element",
                     "max_occurs": 100,
-                }
+                },
             )
             suma_odliczen: None | str = field(
                 default=None,
@@ -3457,8 +3557,8 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 18,
                     "fraction_digits": 2,
-                    "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+                },
             )
             do_zaplaty: None | str = field(
                 default=None,
@@ -3467,8 +3567,8 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 18,
                     "fraction_digits": 2,
-                    "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+                },
             )
             do_rozliczenia: None | str = field(
                 default=None,
@@ -3477,8 +3577,8 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 18,
                     "fraction_digits": 2,
-                    "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+                },
             )
 
             @dataclass(kw_only=True)
@@ -3488,13 +3588,14 @@ class Faktura:
                     P_15
                 :ivar powod: Powód obciążenia
                 """
+
                 kwota: str = field(
                     metadata={
                         "name": "Kwota",
                         "type": "Element",
                         "total_digits": 18,
                         "fraction_digits": 2,
-                        "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
+                        "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
                     }
                 )
                 powod: str = field(
@@ -3513,13 +3614,14 @@ class Faktura:
                     P_15
                 :ivar powod: Powód odliczenia
                 """
+
                 kwota: str = field(
                     metadata={
                         "name": "Kwota",
                         "type": "Element",
                         "total_digits": 18,
                         "fraction_digits": 2,
-                        "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
+                        "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
                     }
                 )
                 powod: str = field(
@@ -3558,12 +3660,13 @@ class Faktura:
             :ivar ipkse_f: Identyfikator płatności Krajowego Systemu
                 e-Faktur
             """
+
             zaplacono: None | Twybor1 = field(
                 default=None,
                 metadata={
                     "name": "Zaplacono",
                     "type": "Element",
-                }
+                },
             )
             data_zaplaty: None | str = field(
                 default=None,
@@ -3572,15 +3675,15 @@ class Faktura:
                     "type": "Element",
                     "min_inclusive": "2016-07-01",
                     "max_inclusive": "2050-01-01",
-                    "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
-                }
+                    "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
+                },
             )
             znacznik_zaplaty_czesciowej: None | Twybor12 = field(
                 default=None,
                 metadata={
                     "name": "ZnacznikZaplatyCzesciowej",
                     "type": "Element",
-                }
+                },
             )
             zaplata_czesciowa: list[Faktura.Fa.Platnosc.ZaplataCzesciowa] = field(
                 default_factory=list,
@@ -3588,7 +3691,7 @@ class Faktura:
                     "name": "ZaplataCzesciowa",
                     "type": "Element",
                     "max_occurs": 100,
-                }
+                },
             )
             termin_platnosci: list[Faktura.Fa.Platnosc.TerminPlatnosci] = field(
                 default_factory=list,
@@ -3596,21 +3699,21 @@ class Faktura:
                     "name": "TerminPlatnosci",
                     "type": "Element",
                     "max_occurs": 100,
-                }
+                },
             )
             forma_platnosci: None | TformaPlatnosci = field(
                 default=None,
                 metadata={
                     "name": "FormaPlatnosci",
                     "type": "Element",
-                }
+                },
             )
             platnosc_inna: None | Twybor1 = field(
                 default=None,
                 metadata={
                     "name": "PlatnoscInna",
                     "type": "Element",
-                }
+                },
             )
             opis_platnosci: None | str = field(
                 default=None,
@@ -3619,7 +3722,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 256,
-                }
+                },
             )
             rachunek_bankowy: list[TrachunekBankowy] = field(
                 default_factory=list,
@@ -3627,7 +3730,7 @@ class Faktura:
                     "name": "RachunekBankowy",
                     "type": "Element",
                     "max_occurs": 100,
-                }
+                },
             )
             rachunek_bankowy_faktora: list[TrachunekBankowy] = field(
                 default_factory=list,
@@ -3635,14 +3738,14 @@ class Faktura:
                     "name": "RachunekBankowyFaktora",
                     "type": "Element",
                     "max_occurs": 20,
-                }
+                },
             )
             skonto: None | Faktura.Fa.Platnosc.Skonto = field(
                 default=None,
                 metadata={
                     "name": "Skonto",
                     "type": "Element",
-                }
+                },
             )
             link_do_platnosci: None | str = field(
                 default=None,
@@ -3651,8 +3754,8 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 512,
-                    "pattern": r'(https?)://([a-zA-Z0-9][a-zA-Z0-9-]*\.)+[a-zA-Z]{2,}(:[0-9]{1,5})?(/[^\s?#]*)?\?([^#\s]*&)?IPKSeF=[0-9]{3}[a-zA-Z0-9]{10}(&[^#\s]*)?(#.*)?',
-                }
+                    "pattern": r"(https?)://([a-zA-Z0-9][a-zA-Z0-9-]*\.)+[a-zA-Z]{2,}(:[0-9]{1,5})?(/[^\s?#]*)?\?([^#\s]*&)?IPKSeF=[0-9]{3}[a-zA-Z0-9]{10}(&[^#\s]*)?(#.*)?",
+                },
             )
             ipkse_f: None | str = field(
                 default=None,
@@ -3661,8 +3764,8 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 13,
-                    "pattern": r'[0-9]{3}[a-zA-Z0-9]{10}',
-                }
+                    "pattern": r"[0-9]{3}[a-zA-Z0-9]{10}",
+                },
             )
 
             @dataclass(kw_only=True)
@@ -3671,6 +3774,7 @@ class Faktura:
                 :ivar termin: Termin płatności
                 :ivar termin_opis: Opis terminu płatności
                 """
+
                 termin: None | str = field(
                     default=None,
                     metadata={
@@ -3678,15 +3782,15 @@ class Faktura:
                         "type": "Element",
                         "min_inclusive": "2016-07-01",
                         "max_inclusive": "2050-01-01",
-                        "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
-                    }
+                        "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
+                    },
                 )
                 termin_opis: None | Faktura.Fa.Platnosc.TerminPlatnosci.TerminOpis = field(
                     default=None,
                     metadata={
                         "name": "TerminOpis",
                         "type": "Element",
-                    }
+                    },
                 )
 
                 @dataclass(kw_only=True)
@@ -3721,6 +3825,7 @@ class Faktura:
                     spełnić, aby skorzystać ze skonta
                 :ivar wysokosc_skonta: Wysokość skonta
                 """
+
                 warunki_skonta: str = field(
                     metadata={
                         "name": "WarunkiSkonta",
@@ -3751,13 +3856,14 @@ class Faktura:
                 :ivar opis_platnosci: Uszczegółowienie innej formy
                     płatności
                 """
+
                 kwota_zaplaty_czesciowej: str = field(
                     metadata={
                         "name": "KwotaZaplatyCzesciowej",
                         "type": "Element",
                         "total_digits": 18,
                         "fraction_digits": 2,
-                        "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
+                        "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
                     }
                 )
                 data_zaplaty_czesciowej: str = field(
@@ -3766,7 +3872,7 @@ class Faktura:
                         "type": "Element",
                         "min_inclusive": "2016-07-01",
                         "max_inclusive": "2050-01-01",
-                        "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
+                        "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
                     }
                 )
                 forma_platnosci: None | TformaPlatnosci = field(
@@ -3774,14 +3880,14 @@ class Faktura:
                     metadata={
                         "name": "FormaPlatnosci",
                         "type": "Element",
-                    }
+                    },
                 )
                 platnosc_inna: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "PlatnoscInna",
                         "type": "Element",
-                    }
+                    },
                 )
                 opis_platnosci: None | str = field(
                     default=None,
@@ -3790,7 +3896,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 256,
-                    }
+                    },
                 )
 
         @dataclass(kw_only=True)
@@ -3820,13 +3926,14 @@ class Faktura:
                 trójstronna uproszczona, o której mowa w art. 135 ust. 1
                 pkt 4 ustawy
             """
+
             umowy: list[Faktura.Fa.WarunkiTransakcji.Umowy] = field(
                 default_factory=list,
                 metadata={
                     "name": "Umowy",
                     "type": "Element",
                     "max_occurs": 100,
-                }
+                },
             )
             zamowienia: list[Faktura.Fa.WarunkiTransakcji.Zamowienia] = field(
                 default_factory=list,
@@ -3834,7 +3941,7 @@ class Faktura:
                     "name": "Zamowienia",
                     "type": "Element",
                     "max_occurs": 100,
-                }
+                },
             )
             nr_partii_towaru: list[str] = field(
                 default_factory=list,
@@ -3844,7 +3951,7 @@ class Faktura:
                     "max_occurs": 1000,
                     "min_length": 1,
                     "max_length": 256,
-                }
+                },
             )
             warunki_dostawy: None | str = field(
                 default=None,
@@ -3853,7 +3960,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 256,
-                }
+                },
             )
             kurs_umowny: None | str = field(
                 default=None,
@@ -3862,15 +3969,15 @@ class Faktura:
                     "type": "Element",
                     "total_digits": 22,
                     "fraction_digits": 6,
-                    "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,6})?',
-                }
+                    "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,6})?",
+                },
             )
             waluta_umowna: None | TkodWaluty = field(
                 default=None,
                 metadata={
                     "name": "WalutaUmowna",
                     "type": "Element",
-                }
+                },
             )
             transport: list[Faktura.Fa.WarunkiTransakcji.Transport] = field(
                 default_factory=list,
@@ -3878,14 +3985,14 @@ class Faktura:
                     "name": "Transport",
                     "type": "Element",
                     "max_occurs": 20,
-                }
+                },
             )
             podmiot_posredniczacy: None | Twybor1 = field(
                 default=None,
                 metadata={
                     "name": "PodmiotPosredniczacy",
                     "type": "Element",
-                }
+                },
             )
 
             @dataclass(kw_only=True)
@@ -3894,6 +4001,7 @@ class Faktura:
                 :ivar data_umowy: Data umowy
                 :ivar nr_umowy: Numer umowy
                 """
+
                 data_umowy: None | str = field(
                     default=None,
                     metadata={
@@ -3901,8 +4009,8 @@ class Faktura:
                         "type": "Element",
                         "min_inclusive": "1990-01-01",
                         "max_inclusive": "2050-01-01",
-                        "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
-                    }
+                        "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
+                    },
                 )
                 nr_umowy: None | str = field(
                     default=None,
@@ -3911,7 +4019,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 256,
-                    }
+                    },
                 )
 
             @dataclass(kw_only=True)
@@ -3920,6 +4028,7 @@ class Faktura:
                 :ivar data_zamowienia: Data zamówienia
                 :ivar nr_zamowienia: Numer zamówienia
                 """
+
                 data_zamowienia: None | str = field(
                     default=None,
                     metadata={
@@ -3927,8 +4036,8 @@ class Faktura:
                         "type": "Element",
                         "min_inclusive": "1990-01-01",
                         "max_inclusive": "2050-01-01",
-                        "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
-                    }
+                        "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
+                    },
                 )
                 nr_zamowienia: None | str = field(
                     default=None,
@@ -3937,7 +4046,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 256,
-                    }
+                    },
                 )
 
             @dataclass(kw_only=True)
@@ -3966,19 +4075,20 @@ class Faktura:
                 :ivar wysylka_do: Adres miejsca docelowego, do którego
                     został zlecony transport
                 """
+
                 rodzaj_transportu: None | TrodzajTransportu = field(
                     default=None,
                     metadata={
                         "name": "RodzajTransportu",
                         "type": "Element",
-                    }
+                    },
                 )
                 transport_inny: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "TransportInny",
                         "type": "Element",
-                    }
+                    },
                 )
                 opis_innego_transportu: None | str = field(
                     default=None,
@@ -3987,14 +4097,14 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 50,
-                    }
+                    },
                 )
                 przewoznik: None | Faktura.Fa.WarunkiTransakcji.Transport.Przewoznik = field(
                     default=None,
                     metadata={
                         "name": "Przewoznik",
                         "type": "Element",
-                    }
+                    },
                 )
                 nr_zlecenia_transportu: None | str = field(
                     default=None,
@@ -4003,21 +4113,21 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 256,
-                    }
+                    },
                 )
                 opis_ladunku: None | Tladunek = field(
                     default=None,
                     metadata={
                         "name": "OpisLadunku",
                         "type": "Element",
-                    }
+                    },
                 )
                 ladunek_inny: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "LadunekInny",
                         "type": "Element",
-                    }
+                    },
                 )
                 opis_innego_ladunku: None | str = field(
                     default=None,
@@ -4026,7 +4136,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 50,
-                    }
+                    },
                 )
                 jednostka_opakowania: None | str = field(
                     default=None,
@@ -4035,7 +4145,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 256,
-                    }
+                    },
                 )
                 data_godz_rozp_transportu: None | XmlDateTime = field(
                     default=None,
@@ -4045,7 +4155,7 @@ class Faktura:
                         "min_inclusive": XmlDateTime(2021, 10, 1, 0, 0, 0, 0, 0),
                         "max_inclusive": XmlDateTime(2050, 1, 1, 23, 59, 59, 0, 0),
                         "white_space": "collapse",
-                    }
+                    },
                 )
                 data_godz_zak_transportu: None | XmlDateTime = field(
                     default=None,
@@ -4055,14 +4165,14 @@ class Faktura:
                         "min_inclusive": XmlDateTime(2021, 10, 1, 0, 0, 0, 0, 0),
                         "max_inclusive": XmlDateTime(2050, 1, 1, 23, 59, 59, 0, 0),
                         "white_space": "collapse",
-                    }
+                    },
                 )
                 wysylka_z: None | Tadres = field(
                     default=None,
                     metadata={
                         "name": "WysylkaZ",
                         "type": "Element",
-                    }
+                    },
                 )
                 wysylka_przez: list[Tadres] = field(
                     default_factory=list,
@@ -4070,14 +4180,14 @@ class Faktura:
                         "name": "WysylkaPrzez",
                         "type": "Element",
                         "max_occurs": 20,
-                    }
+                    },
                 )
                 wysylka_do: None | Tadres = field(
                     default=None,
                     metadata={
                         "name": "WysylkaDo",
                         "type": "Element",
-                    }
+                    },
                 )
 
                 @dataclass(kw_only=True)
@@ -4087,6 +4197,7 @@ class Faktura:
                         przewoźnika
                     :ivar adres_przewoznika: Adres przewoźnika
                     """
+
                     dane_identyfikacyjne: Tpodmiot2 = field(
                         metadata={
                             "name": "DaneIdentyfikacyjne",
@@ -4108,13 +4219,14 @@ class Faktura:
             :ivar zamowienie_wiersz: Szczegółowe pozycje zamówienia lub
                 umowy w walucie, w której wystawiono fakturę zaliczkową
             """
+
             wartosc_zamowienia: str = field(
                 metadata={
                     "name": "WartoscZamowienia",
                     "type": "Element",
                     "total_digits": 18,
                     "fraction_digits": 2,
-                    "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
+                    "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
                 }
             )
             zamowienie_wiersz: list[Faktura.Fa.Zamowienie.ZamowienieWiersz] = field(
@@ -4124,7 +4236,7 @@ class Faktura:
                     "type": "Element",
                     "min_occurs": 1,
                     "max_occurs": 10000,
-                }
+                },
             )
 
             @dataclass(kw_only=True)
@@ -4175,6 +4287,7 @@ class Faktura:
                     odrębną numeracją oraz w przypadku potwierdzania
                     braku zmiany wartości danej pozycji
                 """
+
                 nr_wiersza_zam: int = field(
                     metadata={
                         "name": "NrWierszaZam",
@@ -4191,7 +4304,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 50,
-                    }
+                    },
                 )
                 p_7_z: None | str = field(
                     default=None,
@@ -4200,7 +4313,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 512,
-                    }
+                    },
                 )
                 indeks_z: None | str = field(
                     default=None,
@@ -4209,7 +4322,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 50,
-                    }
+                    },
                 )
                 gtinz: None | str = field(
                     default=None,
@@ -4218,7 +4331,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 20,
-                    }
+                    },
                 )
                 pkwi_uz: None | str = field(
                     default=None,
@@ -4227,7 +4340,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 50,
-                    }
+                    },
                 )
                 cnz: None | str = field(
                     default=None,
@@ -4236,7 +4349,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 50,
-                    }
+                    },
                 )
                 pkobz: None | str = field(
                     default=None,
@@ -4245,7 +4358,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 50,
-                    }
+                    },
                 )
                 p_8_az: None | str = field(
                     default=None,
@@ -4254,7 +4367,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 256,
-                    }
+                    },
                 )
                 p_8_bz: None | str = field(
                     default=None,
@@ -4263,8 +4376,8 @@ class Faktura:
                         "type": "Element",
                         "total_digits": 22,
                         "fraction_digits": 6,
-                        "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,6})?',
-                    }
+                        "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,6})?",
+                    },
                 )
                 p_9_az: None | str = field(
                     default=None,
@@ -4273,8 +4386,8 @@ class Faktura:
                         "type": "Element",
                         "total_digits": 22,
                         "fraction_digits": 8,
-                        "pattern": r'-?([1-9]\d{0,13}|0)(\.\d{1,8})?',
-                    }
+                        "pattern": r"-?([1-9]\d{0,13}|0)(\.\d{1,8})?",
+                    },
                 )
                 p_11_netto_z: None | str = field(
                     default=None,
@@ -4283,8 +4396,8 @@ class Faktura:
                         "type": "Element",
                         "total_digits": 18,
                         "fraction_digits": 2,
-                        "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-                    }
+                        "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+                    },
                 )
                 p_11_vat_z: None | str = field(
                     default=None,
@@ -4293,48 +4406,48 @@ class Faktura:
                         "type": "Element",
                         "total_digits": 18,
                         "fraction_digits": 2,
-                        "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-                    }
+                        "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+                    },
                 )
                 p_12_z: None | TstawkaPodatku = field(
                     default=None,
                     metadata={
                         "name": "P_12Z",
                         "type": "Element",
-                    }
+                    },
                 )
                 p_12_z_xii: None | Decimal = field(
                     default=None,
                     metadata={
                         "name": "P_12Z_XII",
                         "type": "Element",
-                        "min_inclusive": Decimal('0'),
-                        "max_inclusive": Decimal('100'),
+                        "min_inclusive": Decimal("0"),
+                        "max_inclusive": Decimal("100"),
                         "total_digits": 9,
                         "fraction_digits": 6,
                         "white_space": "collapse",
-                    }
+                    },
                 )
                 p_12_z_zal_15: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "P_12Z_Zal_15",
                         "type": "Element",
-                    }
+                    },
                 )
                 gtuz: None | Tgtu = field(
                     default=None,
                     metadata={
                         "name": "GTUZ",
                         "type": "Element",
-                    }
+                    },
                 )
                 procedura_z: None | ToznaczenieProceduryZ = field(
                     default=None,
                     metadata={
                         "name": "ProceduraZ",
                         "type": "Element",
-                    }
+                    },
                 )
                 kwota_akcyzy_z: None | str = field(
                     default=None,
@@ -4343,15 +4456,15 @@ class Faktura:
                         "type": "Element",
                         "total_digits": 18,
                         "fraction_digits": 2,
-                        "pattern": r'-?([1-9]\d{0,15}|0)(\.\d{1,2})?',
-                    }
+                        "pattern": r"-?([1-9]\d{0,15}|0)(\.\d{1,2})?",
+                    },
                 )
                 stan_przed_z: None | Twybor1 = field(
                     default=None,
                     metadata={
                         "name": "StanPrzedZ",
                         "type": "Element",
-                    }
+                    },
                 )
 
         @dataclass(kw_only=True)
@@ -4363,13 +4476,14 @@ class Faktura:
                 data dokonania lub zakończenia dostawy towarów lub
                 wykonania usługi
             """
+
             p_6_od: str = field(
                 metadata={
                     "name": "P_6_Od",
                     "type": "Element",
                     "min_inclusive": "2006-01-01",
                     "max_inclusive": "2050-01-01",
-                    "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
+                    "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
                 }
             )
             p_6_do: str = field(
@@ -4378,7 +4492,7 @@ class Faktura:
                     "type": "Element",
                     "min_inclusive": "2006-01-01",
                     "max_inclusive": "2050-01-01",
-                    "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
+                    "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
                 }
             )
 
@@ -4394,13 +4508,14 @@ class Faktura:
             :ivar nr_kse_fn: Znacznik faktury korygowanej wystawionej
                 poza KSeF
             """
+
             data_wyst_fa_korygowanej: str = field(
                 metadata={
                     "name": "DataWystFaKorygowanej",
                     "type": "Element",
                     "min_inclusive": "2006-01-01",
                     "max_inclusive": "2050-01-01",
-                    "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
+                    "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
                 }
             )
             nr_fa_korygowanej: str = field(
@@ -4416,22 +4531,22 @@ class Faktura:
                 metadata={
                     "name": "NrKSeF",
                     "type": "Element",
-                }
+                },
             )
             nr_kse_ffa_korygowanej: None | str = field(
                 default=None,
                 metadata={
                     "name": "NrKSeFFaKorygowanej",
                     "type": "Element",
-                    "pattern": r'([1-9]((\d[1-9])|([1-9]\d))\d{7}|M\d{9}|[A-Z]{3}\d{7})-(20[2-9][0-9]|2[1-9][0-9]{2}|[3-9][0-9]{3})(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])-([0-9A-F]{6})-?([0-9A-F]{6})-([0-9A-F]{2})',
-                }
+                    "pattern": r"([1-9]((\d[1-9])|([1-9]\d))\d{7}|M\d{9}|[A-Z]{3}\d{7})-(20[2-9][0-9]|2[1-9][0-9]{2}|[3-9][0-9]{3})(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])-([0-9A-F]{6})-?([0-9A-F]{6})-([0-9A-F]{2})",
+                },
             )
             nr_kse_fn: None | Twybor1 = field(
                 default=None,
                 metadata={
                     "name": "NrKSeFN",
                     "type": "Element",
-                }
+                },
             )
 
         @dataclass(kw_only=True)
@@ -4444,12 +4559,13 @@ class Faktura:
             :ivar dane_identyfikacyjne: Dane identyfikujące podatnika
             :ivar adres: Adres podatnika
             """
+
             prefiks_podatnika: None | TkodyKrajowUe = field(
                 default=None,
                 metadata={
                     "name": "PrefiksPodatnika",
                     "type": "Element",
-                }
+                },
             )
             dane_identyfikacyjne: Tpodmiot1 = field(
                 metadata={
@@ -4475,6 +4591,7 @@ class Faktura:
                 fakturze korygującej zmieniły się w stosunku do danych
                 na fakturze korygowanej
             """
+
             dane_identyfikacyjne: Tpodmiot2 = field(
                 metadata={
                     "name": "DaneIdentyfikacyjne",
@@ -4486,7 +4603,7 @@ class Faktura:
                 metadata={
                     "name": "Adres",
                     "type": "Element",
-                }
+                },
             )
             idnabywcy: None | str = field(
                 default=None,
@@ -4495,7 +4612,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 32,
-                }
+                },
             )
 
     @dataclass(kw_only=True)
@@ -4505,13 +4622,14 @@ class Faktura:
         :ivar rejestry: Numery podmiotu lub grupy podmiotów w innych
             rejestrach i bazach danych
         """
+
         informacje: list[Faktura.Stopka.Informacje] = field(
             default_factory=list,
             metadata={
                 "name": "Informacje",
                 "type": "Element",
                 "max_occurs": 3,
-            }
+            },
         )
         rejestry: list[Faktura.Stopka.Rejestry] = field(
             default_factory=list,
@@ -4519,7 +4637,7 @@ class Faktura:
                 "name": "Rejestry",
                 "type": "Element",
                 "max_occurs": 100,
-            }
+            },
         )
 
         @dataclass(kw_only=True)
@@ -4527,6 +4645,7 @@ class Faktura:
             """
             :ivar stopka_faktury: Stopka faktury
             """
+
             stopka_faktury: None | str = field(
                 default=None,
                 metadata={
@@ -4534,7 +4653,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 3500,
-                }
+                },
             )
 
         @dataclass(kw_only=True)
@@ -4545,6 +4664,7 @@ class Faktura:
             :ivar regon: REGON
             :ivar bdo: BDO
             """
+
             pelna_nazwa: None | str = field(
                 default=None,
                 metadata={
@@ -4552,23 +4672,23 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 256,
-                }
+                },
             )
             krs: None | str = field(
                 default=None,
                 metadata={
                     "name": "KRS",
                     "type": "Element",
-                    "pattern": r'\d{10}',
-                }
+                    "pattern": r"\d{10}",
+                },
             )
             regon: None | str = field(
                 default=None,
                 metadata={
                     "name": "REGON",
                     "type": "Element",
-                    "pattern": r'\d{14}',
-                }
+                    "pattern": r"\d{14}",
+                },
             )
             bdo: None | str = field(
                 default=None,
@@ -4577,7 +4697,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 9,
-                }
+                },
             )
 
     @dataclass(kw_only=True)
@@ -4585,6 +4705,7 @@ class Faktura:
         """
         :ivar blok_danych: Szczegółowe dane załącznika
         """
+
         blok_danych: list[Faktura.Zalacznik.BlokDanych] = field(
             default_factory=list,
             metadata={
@@ -4592,7 +4713,7 @@ class Faktura:
                 "type": "Element",
                 "min_occurs": 1,
                 "max_occurs": 1000,
-            }
+            },
         )
 
         @dataclass(kw_only=True)
@@ -4603,6 +4724,7 @@ class Faktura:
             :ivar tekst: Część tekstowa bloku danych
             :ivar tabela: Tabele
             """
+
             znaglowek: None | str = field(
                 default=None,
                 metadata={
@@ -4610,7 +4732,7 @@ class Faktura:
                     "type": "Element",
                     "min_length": 1,
                     "max_length": 512,
-                }
+                },
             )
             meta_dane: list[Faktura.Zalacznik.BlokDanych.MetaDane] = field(
                 default_factory=list,
@@ -4619,14 +4741,14 @@ class Faktura:
                     "type": "Element",
                     "min_occurs": 1,
                     "max_occurs": 1000,
-                }
+                },
             )
             tekst: None | Faktura.Zalacznik.BlokDanych.Tekst = field(
                 default=None,
                 metadata={
                     "name": "Tekst",
                     "type": "Element",
-                }
+                },
             )
             tabela: list[Faktura.Zalacznik.BlokDanych.Tabela] = field(
                 default_factory=list,
@@ -4634,7 +4756,7 @@ class Faktura:
                     "name": "Tabela",
                     "type": "Element",
                     "max_occurs": 1000,
-                }
+                },
             )
 
             @dataclass(kw_only=True)
@@ -4643,6 +4765,7 @@ class Faktura:
                 :ivar zklucz: Klucz
                 :ivar zwartosc: Wartość
                 """
+
                 zklucz: str = field(
                     metadata={
                         "name": "ZKlucz",
@@ -4665,6 +4788,7 @@ class Faktura:
                 """
                 :ivar akapit: Opis
                 """
+
                 akapit: list[str] = field(
                     default_factory=list,
                     metadata={
@@ -4674,7 +4798,7 @@ class Faktura:
                         "max_occurs": 10,
                         "min_length": 1,
                         "max_length": 512,
-                    }
+                    },
                 )
 
             @dataclass(kw_only=True)
@@ -4686,13 +4810,14 @@ class Faktura:
                 :ivar wiersz: Wiersze tabeli
                 :ivar suma: Podsumowania tabeli
                 """
+
                 tmeta_dane: list[Faktura.Zalacznik.BlokDanych.Tabela.TmetaDane] = field(
                     default_factory=list,
                     metadata={
                         "name": "TMetaDane",
                         "type": "Element",
                         "max_occurs": 1000,
-                    }
+                    },
                 )
                 opis: None | str = field(
                     default=None,
@@ -4701,7 +4826,7 @@ class Faktura:
                         "type": "Element",
                         "min_length": 1,
                         "max_length": 512,
-                    }
+                    },
                 )
                 tnaglowek: Faktura.Zalacznik.BlokDanych.Tabela.Tnaglowek = field(
                     metadata={
@@ -4716,14 +4841,14 @@ class Faktura:
                         "type": "Element",
                         "min_occurs": 1,
                         "max_occurs": 1000,
-                    }
+                    },
                 )
                 suma: None | Faktura.Zalacznik.BlokDanych.Tabela.Suma = field(
                     default=None,
                     metadata={
                         "name": "Suma",
                         "type": "Element",
-                    }
+                    },
                 )
 
                 @dataclass(kw_only=True)
@@ -4732,6 +4857,7 @@ class Faktura:
                     :ivar tklucz: Klucz
                     :ivar twartosc: Wartość
                     """
+
                     tklucz: str = field(
                         metadata={
                             "name": "TKlucz",
@@ -4758,7 +4884,7 @@ class Faktura:
                             "type": "Element",
                             "min_occurs": 1,
                             "max_occurs": 20,
-                        }
+                        },
                     )
 
                     @dataclass(kw_only=True)
@@ -4767,6 +4893,7 @@ class Faktura:
                         :ivar nkom: Zawartość pola
                         :ivar typ:
                         """
+
                         nkom: str = field(
                             metadata={
                                 "name": "NKom",
@@ -4787,6 +4914,7 @@ class Faktura:
                     """
                     :ivar wkom: Zawartość pola
                     """
+
                     wkom: list[str] = field(
                         default_factory=list,
                         metadata={
@@ -4796,7 +4924,7 @@ class Faktura:
                             "max_occurs": 20,
                             "min_length": 0,
                             "max_length": 256,
-                        }
+                        },
                     )
 
                 @dataclass(kw_only=True)
@@ -4804,6 +4932,7 @@ class Faktura:
                     """
                     :ivar skom: Zawartość pola
                     """
+
                     skom: list[str] = field(
                         default_factory=list,
                         metadata={
@@ -4813,5 +4942,5 @@ class Faktura:
                             "max_occurs": 20,
                             "min_length": 0,
                             "max_length": 256,
-                        }
+                        },
                     )

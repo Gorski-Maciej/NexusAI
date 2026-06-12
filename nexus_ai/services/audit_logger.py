@@ -11,9 +11,11 @@ from nexus_ai.db.analytics import DuckDBManager
 # ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
 try:
     from nexus_crypto import sha256 as _sha256
+
     HAS_NEXUS_CRYPTO = True
 except ImportError:
     import hashlib as _hashlib
+
     HAS_NEXUS_CRYPTO = False
 
     def _sha256(data: bytes) -> str:
@@ -48,7 +50,9 @@ class AuditLogger:
 
     @staticmethod
     def _canonical_payload(data_payload: dict[str, Any]) -> str:
-        return msgspec_dumps(data_payload, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+        return msgspec_dumps(
+            data_payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")
+        )
 
     @classmethod
     def _compute_hash(cls, previous_hash: str, payload_json: str) -> str:
@@ -74,7 +78,14 @@ class AuditLogger:
                 INSERT INTO audit_log (id, timestamp, event_type, data_payload, previous_hash, current_hash)
                 VALUES (?, ?, ?, ?, ?, ?)
                 """,
-                (uuid.uuid4().hex, timestamp, event_type, payload_json, previous_hash, current_hash),
+                (
+                    uuid.uuid4().hex,
+                    timestamp,
+                    event_type,
+                    payload_json,
+                    previous_hash,
+                    current_hash,
+                ),
             )
             connection.execute("COMMIT")
             return current_hash
@@ -97,7 +108,9 @@ class AuditLogger:
             if previous_hash != expected_previous:
                 return False, str(event_id)
 
-            payload_json = self._canonical_payload(payload if isinstance(payload, dict) else msgspec_loads(payload))
+            payload_json = self._canonical_payload(
+                payload if isinstance(payload, dict) else msgspec_loads(payload)
+            )
             expected_current = self._compute_hash(previous_hash, payload_json)
             if current_hash != expected_current:
                 return False, str(event_id)

@@ -7,6 +7,7 @@ Provides:
 - Guard functions for protecting endpoints
 - Helper to check if a user has a specific permission
 """
+
 from __future__ import annotations
 
 from msgspec import Struct
@@ -16,12 +17,15 @@ from litestar.connection import ASGIConnection
 from litestar.exceptions import NotAuthorizedException
 from litestar.handlers.base import BaseRouteHandler
 
+
 class NexusRole(StrEnum):
     """System roles with descending privileges."""
+
     ADMIN = "admin"
     ACCOUNTANT = "accountant"
     AUDITOR = "auditor"
     VIEWER = "viewer"
+
 
 # ── Permission codenames (mirrored from models/role.py) ──────────────────────
 
@@ -33,32 +37,26 @@ PERMISSIONS = {
     "invoice:delete": "Delete invoices",
     "invoice:approve": "Approve invoices",
     "invoice:submit-ksef": "Submit invoices to KSeF",
-
     # Company
     "company:view": "View company profiles",
     "company:edit": "Edit company profiles",
     "company:delete": "Delete companies",
-
     # Audit
     "audit:view": "View audit logs",
     "audit:export": "Export audit logs",
-
     # User management
     "user:view": "View users",
     "user:create": "Create users",
     "user:edit": "Edit users",
     "user:delete": "Delete users",
-
     # System admin
     "admin:access": "Access admin panel",
     "admin:settings": "Modify system settings",
     "admin:failed-tasks": "Manage failed tasks / DLQ",
-
     # Financial
     "finance:view": "View financial data",
     "finance:reconcile": "Reconcile accounts",
     "finance:export": "Export financial reports",
-
     # Contractor
     "contractor:view": "View contractors",
     "contractor:edit": "Edit contractors",
@@ -69,16 +67,25 @@ PERMISSIONS = {
 ROLE_PERMISSIONS_MAP: dict[str, list[str]] = {
     "admin": list(PERMISSIONS.keys()),  # Admin gets everything
     "accountant": [
-        "invoice:create", "invoice:view", "invoice:edit", "invoice:approve", "invoice:submit-ksef",
-        "company:view", "company:edit",
+        "invoice:create",
+        "invoice:view",
+        "invoice:edit",
+        "invoice:approve",
+        "invoice:submit-ksef",
+        "company:view",
+        "company:edit",
         "audit:view",
-        "finance:view", "finance:reconcile", "finance:export",
-        "contractor:view", "contractor:edit",
+        "finance:view",
+        "finance:reconcile",
+        "finance:export",
+        "contractor:view",
+        "contractor:edit",
     ],
     "auditor": [
         "invoice:view",
         "company:view",
-        "audit:view", "audit:export",
+        "audit:view",
+        "audit:export",
         "finance:view",
         "contractor:view",
     ],
@@ -91,12 +98,15 @@ ROLE_PERMISSIONS_MAP: dict[str, list[str]] = {
     ],
 }
 
+
 class RoleContext(Struct):
     """Represents the authenticated user's role context with actor info."""
+
     role: str
     actor: str
     user_id: str | None = None
     permissions: list[str] | None = None
+
 
 def get_current_role_context(connection: ASGIConnection) -> RoleContext:
     """Extract role context from the authenticated user on the connection.
@@ -118,6 +128,7 @@ def get_current_role_context(connection: ASGIConnection) -> RoleContext:
         user_id=user_id,
     )
 
+
 def has_permission(connection: ASGIConnection, permission: str) -> bool:
     """Check if the authenticated user has a specific permission.
 
@@ -134,7 +145,9 @@ def has_permission(connection: ASGIConnection, permission: str) -> bool:
     perms = ROLE_PERMISSIONS_MAP.get(role_str, [])
     return permission in perms
 
+
 # ── Guard functions for Litestar route handlers ──────────────────────────────
+
 
 def requires_permission(permission: str):
     """Factory for Litestar route guards.
@@ -146,14 +159,14 @@ def requires_permission(permission: str):
     Returns a guard function that raises NotAuthorizedException
     if the user lacks the required permission.
     """
+
     def _guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
         if not has_permission(connection, permission):
             # Include the required permission in the error for debugging
-            raise NotAuthorizedException(
-                f"Missing required permission: {permission}"
-            )
+            raise NotAuthorizedException(f"Missing required permission: {permission}")
 
     return _guard
+
 
 def admin_only_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
     """Guard: only admin role can access."""
@@ -161,17 +174,22 @@ def admin_only_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
     if ctx.role != "admin":
         raise NotAuthorizedException("Only administrators can execute this operation.")
 
+
 def accountant_or_admin_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
     """Guard: accountant or admin can access."""
     ctx = get_current_role_context(connection)
     if ctx.role not in ("admin", "accountant"):
-        raise NotAuthorizedException("Only accountants or administrators can execute this operation.")
+        raise NotAuthorizedException(
+            "Only accountants or administrators can execute this operation."
+        )
+
 
 def authenticated_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
     """Guard: any authenticated user can access."""
     user = getattr(connection, "user", None)
     if not user:
         raise NotAuthorizedException("Authentication required.")
+
 
 def owner_only_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
     """Guard: only 'owner' role (original admin superset) can access.
@@ -186,6 +204,7 @@ def owner_only_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
     if role not in ("owner", "admin"):
         raise NotAuthorizedException("Only owners or administrators can execute this operation.")
 
+
 def owner_or_worker_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
     """Guard: 'owner', 'admin', or 'accountant' roles can access.
 
@@ -198,6 +217,7 @@ def owner_or_worker_guard(connection: ASGIConnection, _: BaseRouteHandler) -> No
     role = str(getattr(user, "role", "viewer")).strip().lower()
     if role not in ("owner", "admin", "accountant", "worker"):
         raise NotAuthorizedException("Insufficient permissions for this operation.")
+
 
 def get_current_role(connection: ASGIConnection) -> str:
     """Get the current user's role string.

@@ -28,12 +28,16 @@ _GROSZ = Decimal("0.01")
 
 # ── Lazy import helpers ─────────────────────────────────────────────────────
 
+
 def _get_money_class():
     """Lazy import of Money to avoid circular dependencies at module load."""
     from nexus_ai.services.currency_converter import Money
+
     return Money
 
+
 # ── Exceptions ──────────────────────────────────────────────────────────────
+
 
 class InvalidRateError(ValueError):
     """Raised when a rate string cannot be parsed as a valid Decimal.
@@ -44,12 +48,13 @@ class InvalidRateError(ValueError):
 
     def __init__(self, rate_str: str) -> None:
         super().__init__(
-            f"Invalid rate value: {rate_str!r}. "
-            f"Rates must be valid decimal strings (e.g. '0.23')."
+            f"Invalid rate value: {rate_str!r}. Rates must be valid decimal strings (e.g. '0.23')."
         )
         self.rate_str = rate_str
 
+
 # ── Data structures ──────────────────────────────────────────────────────────
+
 
 class InvoicePositions(Struct, frozen=True):
     """A single invoice line item in grosze.
@@ -81,6 +86,7 @@ class InvoicePositions(Struct, frozen=True):
             InvoicePositions with net_grosze extracted from Money.
         """
         from nexus_ai.services.currency_converter import Money
+
         if not isinstance(net, Money):
             raise TypeError(f"Expected Money, got {type(net).__name__}")
         return cls(net_grosze=money_to_grosze(net), vat_rate=vat_rate)
@@ -94,6 +100,7 @@ class InvoicePositions(Struct, frozen=True):
         """Return the VAT amount as Money."""
         _get_money_class()
         return to_money(self.vat_grosze, currency)
+
 
 class InvoiceSummary(Struct, frozen=True):
     """Invoice totals in grosze.
@@ -128,6 +135,7 @@ class InvoiceSummary(Struct, frozen=True):
             ValueError: If currencies differ between amounts.
         """
         from nexus_ai.services.currency_converter import Money
+
         if not all(isinstance(x, Money) for x in (netto, vat, brutto)):
             raise TypeError("All amounts must be Money instances")
         _require_same_currency(netto, vat, "InvoiceSummary")
@@ -150,6 +158,7 @@ class InvoiceSummary(Struct, frozen=True):
         """Return the brutto as Money."""
         return to_money(self.brutto_grosze, currency)
 
+
 class ValidationResult(Struct, frozen=True):
     """Result of invariant validation.
 
@@ -161,7 +170,9 @@ class ValidationResult(Struct, frozen=True):
     is_valid: bool
     error_message: str = ""
 
+
 # ── Rate parsing (Rozdział Ról: Zen-Engine → Decimal) ──────────────────────
+
 
 def parse_rate(rate_str: str) -> Decimal:
     """Parse a rate string to Decimal with validation.
@@ -194,7 +205,9 @@ def parse_rate(rate_str: str) -> Decimal:
     except Exception as exc:
         raise InvalidRateError(rate_str) from exc
 
+
 # ── Core math functions (grosze-based, int in/out) ─────────────────────────
+
 
 def to_grosze(amount: Decimal | str | float | int) -> int:
     """Convert any numeric representation to grosze (int) with ROUND_HALF_UP.
@@ -225,6 +238,7 @@ def to_grosze(amount: Decimal | str | float | int) -> int:
     grosze = d * Decimal("100")
     return int(grosze.to_integral_value(rounding=ROUND_HALF_UP))
 
+
 def to_zlotowki(grosze: int) -> Decimal:
     """Convert grosze back to Decimal (złotówki) for display.
 
@@ -234,9 +248,8 @@ def to_zlotowki(grosze: int) -> Decimal:
     Returns:
         Decimal amount in złotówki with 2 decimal places.
     """
-    return (Decimal(grosze) / Decimal("100")).quantize(
-        _GROSZ, rounding=ROUND_HALF_UP
-    )
+    return (Decimal(grosze) / Decimal("100")).quantize(_GROSZ, rounding=ROUND_HALF_UP)
+
 
 def multiply_net_by_vat(net_grosze: int, vat_rate: Decimal) -> int:
     """Multiply net amount (grosze) by VAT rate, rounded to full grosze.
@@ -255,6 +268,7 @@ def multiply_net_by_vat(net_grosze: int, vat_rate: Decimal) -> int:
     vat_decimal = Decimal(str(net_grosze)) * vat_rate
     return int(vat_decimal.to_integral_value(rounding=ROUND_HALF_UP))
 
+
 def add_tax(net_grosze: int, vat_grosze: int) -> int:
     """Sum net and VAT in grosze to get brutto.
 
@@ -267,7 +281,9 @@ def add_tax(net_grosze: int, vat_grosze: int) -> int:
     """
     return net_grosze + vat_grosze
 
+
 # ── Money-aware functions (Fowler's Money wrappers) ────────────────────────
+
 
 def money_to_grosze(money: _Money) -> int:
     """Convert a Money amount to grosze (int).
@@ -297,6 +313,7 @@ def money_to_grosze(money: _Money) -> int:
     # Nexus-Money: bezpośredni dostęp do amount_cents (int)
     return money.amount_cents
 
+
 def to_money(grosze: int, currency: str = "PLN") -> _Money:
     """Convert grosze (int) to a Money amount.
 
@@ -317,11 +334,14 @@ def to_money(grosze: int, currency: str = "PLN") -> _Money:
     Money = _get_money_class()  # noqa: N806
     return Money(amount_cents=grosze, currency=currency)
 
+
 def _require_same_currency(a: _Money, b: _Money, operation: str = "operate") -> None:
     """Validate that two Money objects have the same currency."""
     if a.currency_code != b.currency_code:
         from nexus_ai.services.currency_converter import CurrencyMismatchError
+
         raise CurrencyMismatchError(a.currency_code, b.currency_code, operation)
+
 
 def multiply_net_by_vat_money(net: _Money, vat_rate: Decimal) -> _Money:
     """Multiply net Money amount by VAT rate, return VAT as Money.
@@ -339,6 +359,7 @@ def multiply_net_by_vat_money(net: _Money, vat_rate: Decimal) -> _Money:
     vat_grosze = multiply_net_by_vat(money_to_grosze(net), vat_rate)
     return to_money(vat_grosze, net.currency_code)
 
+
 def add_tax_money(net: _Money, vat: _Money) -> _Money:
     Money = _get_money_class()  # noqa: N806
     if not isinstance(net, Money) or not isinstance(vat, Money):
@@ -346,6 +367,7 @@ def add_tax_money(net: _Money, vat: _Money) -> _Money:
     _require_same_currency(net, vat, "add_tax_money")
     gross_grosze = add_tax(money_to_grosze(net), money_to_grosze(vat))
     return to_money(gross_grosze, net.currency_code)
+
 
 def calculate_vat_by_policy_money(
     positions: list[InvoicePositions],
@@ -369,7 +391,9 @@ def calculate_vat_by_policy_money(
     total_vat_grosze = calculate_vat_by_policy(positions, vat_rate, rounding_level)
     return to_money(total_vat_grosze, currency)
 
+
 # ── Rounding Policy ──────────────────────────────────────────────────────────
+
 
 def calculate_vat_by_policy(
     positions: list[InvoicePositions],
@@ -399,10 +423,8 @@ def calculate_vat_by_policy(
         total_net = sum(pos.net_grosze for pos in positions)
         return multiply_net_by_vat(total_net, vat_rate)
 
-    raise ValueError(
-        f"Unknown rounding_level: {rounding_level!r}; "
-        f"expected 'position' or 'total'"
-    )
+    raise ValueError(f"Unknown rounding_level: {rounding_level!r}; expected 'position' or 'total'")
+
 
 class RoundingPolicy:
     """Convenience wrapper around rounding strategy constants and logic."""
@@ -432,7 +454,9 @@ class RoundingPolicy:
         """
         return calculate_vat_by_policy_money(positions, vat_rate, rounding_level, currency)
 
+
 # ── Invariant Guard ──────────────────────────────────────────────────────────
+
 
 def validate_invariants(
     positions: list[InvoicePositions],
@@ -489,7 +513,9 @@ def validate_invariants(
 
     return ValidationResult(is_valid=True)
 
+
 # ── Convenience Engine ───────────────────────────────────────────────────────
+
 
 class TaxMathEngine:
     """Infallible tax math — integer-only, ROUND_HALF_UP, no floats.
@@ -523,8 +549,7 @@ class TaxMathEngine:
             Tuple of ``(total_vat_grosze, list[InvoicePositions])``.
         """
         inv_positions = [
-            InvoicePositions(net_grosze=int(net), vat_rate=vat_rate)
-            for net in positions_net
+            InvoicePositions(net_grosze=int(net), vat_rate=vat_rate) for net in positions_net
         ]
         total_vat = calculate_vat_by_policy(inv_positions, vat_rate, rounding_level)
         return total_vat, inv_positions
@@ -565,9 +590,7 @@ class TaxMathEngine:
         # Validate all are Money and same currency
         for i, amt in enumerate(positions_net):
             if not isinstance(amt, Money):
-                raise TypeError(
-                    f"positions_net[{i}]: expected Money, got {type(amt).__name__}"
-                )
+                raise TypeError(f"positions_net[{i}]: expected Money, got {type(amt).__name__}")
         for amt in positions_net[1:]:
             _require_same_currency(positions_net[0], amt, "calculate_positions_vat_money")
 
@@ -601,9 +624,7 @@ class TaxMathEngine:
 
         for i, amt in enumerate(positions_net):
             if not isinstance(amt, Money):
-                raise TypeError(
-                    f"positions_net[{i}]: expected Money, got {type(amt).__name__}"
-                )
+                raise TypeError(f"positions_net[{i}]: expected Money, got {type(amt).__name__}")
         for amt in positions_net[1:]:
             _require_same_currency(positions_net[0], amt, "sum_positions_net_money")
 

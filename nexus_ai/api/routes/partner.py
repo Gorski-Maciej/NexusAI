@@ -1,4 +1,5 @@
 """Partner Hub API endpoints — accounting office multi-tenant view."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -64,6 +65,7 @@ class PartnerController(Controller):
         Używa parameterized queries aby zapobiec SQL injection.
         """
         from api.services import CursorPagination
+
         safe_limit = max(1, min(int(limit), 200)) + 1  # +1 dla detection has_more
         try:
             base_query = """
@@ -108,7 +110,7 @@ class PartnerController(Controller):
 
             has_more = len(rows) > safe_limit - 1
             if has_more:
-                rows = rows[:safe_limit - 1]
+                rows = rows[: safe_limit - 1]
 
             clients = []
             for r in rows:
@@ -122,16 +124,20 @@ class PartnerController(Controller):
                 else:
                     status = "OK"
 
-                clients.append({
-                    "id": str(r[0]) if r[0] else "",
-                    "name": str(r[1]) if r[1] else "Nieznany",
-                    "nip": str(r[2]) if r[2] else "",
-                    "invoice_count": pending,
-                    "status": status,
-                    "last_activity": str(r[7]) if r[7] else "",
-                })
+                clients.append(
+                    {
+                        "id": str(r[0]) if r[0] else "",
+                        "name": str(r[1]) if r[1] else "Nieznany",
+                        "nip": str(r[2]) if r[2] else "",
+                        "invoice_count": pending,
+                        "status": status,
+                        "last_activity": str(r[7]) if r[7] else "",
+                    }
+                )
 
-            next_cursor = CursorPagination.build_next_cursor(clients, date_key="last_activity", id_key="id")
+            next_cursor = CursorPagination.build_next_cursor(
+                clients, date_key="last_activity", id_key="id"
+            )
             return {"items": clients, "next_cursor": next_cursor, "has_more": has_more}
         except Exception:
             return {"items": [], "next_cursor": None, "has_more": False}
@@ -185,17 +191,19 @@ class PartnerController(Controller):
                 )
                 if rows:
                     for r in rows:
-                        invoices.append({
-                            "invoice_id": str(r[0]) if r[0] else "",
-                            "number": str(r[1]) if r[1] else "",
-                            "contractor": str(r[2]) if r[2] else "",
-                            "amount_gross": float(r[3]) if r[3] else 0.0,
-                            "currency": str(r[4]) if r[4] else "PLN",
-                            "status": str(r[5]) if r[5] else "",
-                            "issue_date": str(r[6]) if r[6] else "",
-                            "created_at": str(r[7]) if r[7] else "",
-                            "confidence": float(r[8]) if r[8] else 0.0,
-                        })
+                        invoices.append(
+                            {
+                                "invoice_id": str(r[0]) if r[0] else "",
+                                "number": str(r[1]) if r[1] else "",
+                                "contractor": str(r[2]) if r[2] else "",
+                                "amount_gross": float(r[3]) if r[3] else 0.0,
+                                "currency": str(r[4]) if r[4] else "PLN",
+                                "status": str(r[5]) if r[5] else "",
+                                "issue_date": str(r[6]) if r[6] else "",
+                                "created_at": str(r[7]) if r[7] else "",
+                                "confidence": float(r[8]) if r[8] else 0.0,
+                            }
+                        )
             finally:
                 mgr.close()
         except Exception:

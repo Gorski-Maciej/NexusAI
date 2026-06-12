@@ -1,4 +1,5 @@
 """Taskiq worker bootstrap and local connectivity smoke test."""
+
 from __future__ import annotations
 
 import gc
@@ -9,7 +10,7 @@ import signal
 import sys
 
 import anyio
-from pathlib import Path
+from pathlib import Path as _SyncPath
 
 import pendulum
 import psutil
@@ -22,9 +23,9 @@ from nexus_ai.core.config import AppConfig
 from nexus_ai.services.vision.agent import VisionAgent
 
 if getattr(sys, "frozen", False):
-    BASE_PATH = Path(sys._MEIPASS)
+    BASE_PATH = _SyncPath(sys._MEIPASS)
 else:
-    BASE_PATH = Path(__file__).resolve().parent
+    BASE_PATH = _SyncPath(__file__).resolve().parent
 
 MODELS_CACHE_DIR = BASE_PATH / "models"
 os.environ.setdefault("HF_HOME", str(MODELS_CACHE_DIR))
@@ -108,7 +109,10 @@ class WorkerGuard:
             self.adjust_concurrency_limit()
             logger.debug(
                 "Heartbeat uptime=%s RAM=%.1fMB max_concurrent=%d tasks=%d",
-                uptime, ram_mb, self.max_concurrent, self.active_tasks,
+                uptime,
+                ram_mb,
+                self.max_concurrent,
+                self.active_tasks,
             )
             await anyio.sleep(60)
 
@@ -138,6 +142,7 @@ async def on_worker_startup(state) -> None:
 _TASKIQ_TASK_POST_EVENT = getattr(TaskiqEvents, "TASK_POST_EXECUTION", None)
 
 if _TASKIQ_TASK_POST_EVENT is not None:
+
     @broker.on_event(_TASKIQ_TASK_POST_EVENT)
     async def on_task_post_execution(state, task_result) -> None:
         state.guard.check_resources()
@@ -147,6 +152,7 @@ if _TASKIQ_TASK_POST_EVENT is not None:
 # Also handle post-execute if it exists in newer taskiq versions
 _TASKIQ_TASK_POST_EXECUTE = getattr(TaskiqEvents, "TASK_POST_EXECUTE", None)
 if _TASKIQ_TASK_POST_EXECUTE is not None and _TASKIQ_TASK_POST_EXECUTE != _TASKIQ_TASK_POST_EVENT:
+
     @broker.on_event(_TASKIQ_TASK_POST_EXECUTE)
     async def on_task_post_execute(state, task_result) -> None:
         state.guard.check_resources()

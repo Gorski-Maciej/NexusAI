@@ -6,10 +6,13 @@ from pathlib import Path
 
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
+
 class LocaleCatalog(Struct, frozen=True):
     messages: dict[str, str]
 
+
 LOCALES_DIR = Path(__file__).resolve().parent / "locales"
+
 
 @lru_cache(maxsize=8)
 def _load_catalog(language: str) -> LocaleCatalog:
@@ -22,6 +25,7 @@ def _load_catalog(language: str) -> LocaleCatalog:
         data = {}
     return LocaleCatalog(messages={k: str(v) for k, v in data.items()})
 
+
 def resolve_language(accept_language: str | None) -> str:
     if not accept_language:
         return "pl"
@@ -30,10 +34,12 @@ def resolve_language(accept_language: str | None) -> str:
         return "en"
     return "pl"
 
+
 def t(key: str, *, language: str = "pl", **kwargs: object) -> str:
     catalog = _load_catalog(language)
     fallback = _load_catalog("pl")
     template = catalog.messages.get(key) or fallback.messages.get(key) or key
     return template.format(**kwargs)
+
 
 # contract marker: upload.file_too_large

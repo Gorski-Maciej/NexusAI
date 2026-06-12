@@ -74,7 +74,11 @@ class MetricsController(Controller):
             # that can be scraped. We trigger a collection and return the text.
             metrics_text = _exporter._collect()  # noqa: SLF001  # internal API for sync collection
             if metrics_text:
-                return metrics_text.decode("utf-8") if isinstance(metrics_text, bytes) else str(metrics_text)
+                return (
+                    metrics_text.decode("utf-8")
+                    if isinstance(metrics_text, bytes)
+                    else str(metrics_text)
+                )
             return "# No metrics collected yet"
         except ImportError as e:
             return f"# Metrics not available - opentelemetry-prometheus-exporter not installed: {e}"
@@ -82,8 +86,11 @@ class MetricsController(Controller):
             # Fallback: use the exporter's string representation
             try:
                 from io import StringIO
+
                 buf = StringIO()
-                _exporter._registry.write_to_file(buf) if _exporter and hasattr(_exporter, '_registry') else None  # noqa: SLF001
+                _exporter._registry.write_to_file(buf) if _exporter and hasattr(
+                    _exporter, "_registry"
+                ) else None  # noqa: SLF001
                 return buf.getvalue() if buf else "# Cannot generate metrics"
             except Exception:
                 return "# Metrics endpoint: OpenTelemetry Prometheus exporter initialized but cannot generate output in this runtime"

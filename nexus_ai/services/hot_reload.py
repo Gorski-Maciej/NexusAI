@@ -24,7 +24,12 @@ from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 
 logger = get_logger("nexus.hot_reload")
 
-SUBJECTS = ("billing.rules.updated", "risk.thresholds.updated", "tax.rules.updated", "ledger.rules.updated")
+SUBJECTS = (
+    "billing.rules.updated",
+    "risk.thresholds.updated",
+    "tax.rules.updated",
+    "ledger.rules.updated",
+)
 
 
 class HotReloadListener:
@@ -157,7 +162,10 @@ class HotReloadListener:
         action = payload.get("action", "unknown")
         logger.info(
             "[HOT-RELOAD] Event subject=%s rule_id=%s action=%s payload=%s",
-            subject, rule_id, action, payload,
+            subject,
+            rule_id,
+            action,
+            payload,
         )
 
         # Update health counters
@@ -167,6 +175,7 @@ class HotReloadListener:
         # Record Prometheus metrics
         try:
             from api.telemetry_metrics import record_hot_reload_event
+
             record_hot_reload_event(subject)
         except Exception:
             pass

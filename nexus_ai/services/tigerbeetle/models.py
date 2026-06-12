@@ -18,6 +18,7 @@ from sqlmodel import Field, SQLModel
 
 class StrEnum(BaseStrEnum):
     """String enum base class używając Python 3.11+ enum.StrEnum."""
+
     pass
 
 
@@ -57,6 +58,7 @@ class CompanyProfile(SQLModel, table=True):
 
     Zgodnie z aa3fvcx.txt: SQLite+SQLCipher, UUID i JSON jako TEXT.
     """
+
     __tablename__ = "company_profiles"  # type: ignore[assignment]
 
     id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
@@ -69,11 +71,14 @@ class CompanyProfile(SQLModel, table=True):
     vat_proportion: Decimal | None = Field(default=None, max_digits=5, decimal_places=4)
     tigerbeetle_ledger_map: str = Field(default="{}")
     company_policy: str = Field(default="{}")
-    created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"), nullable=False)
+    created_at: pendulum.DateTime = Field(
+        default_factory=lambda: pendulum.now("UTC"), nullable=False
+    )
 
 
 class CompanyPartner(SQLModel, table=True):
     """Wspólnicy spółki."""
+
     __tablename__ = "company_partners"  # type: ignore[assignment]
 
     id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
@@ -85,6 +90,7 @@ class CompanyPartner(SQLModel, table=True):
 
 class TaxPolicy(SQLModel, table=True):
     """Polityka podatkowa firmy."""
+
     __tablename__ = "tax_policies"  # type: ignore[assignment]
 
     id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
@@ -93,11 +99,14 @@ class TaxPolicy(SQLModel, table=True):
     pit_costs_enabled: bool = Field(default=True, nullable=False)
     requires_full_ledger: bool = Field(default=False, nullable=False)
     vat_settlement_cycle: str = Field(default="monthly", nullable=False, max_length=32)
-    effective_from: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"), nullable=False)
+    effective_from: pendulum.DateTime = Field(
+        default_factory=lambda: pendulum.now("UTC"), nullable=False
+    )
 
 
 class LedgerTransfer(SQLModel, table=True):
     """Transakcja księgowa w TigerBeetle — podwójny zapis."""
+
     __tablename__ = "ledger_transfers"  # type: ignore[assignment]
 
     id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
@@ -109,11 +118,14 @@ class LedgerTransfer(SQLModel, table=True):
     source_document_id: str = Field(nullable=False, max_length=128)
     status: str = Field(default=TransferStatus.PENDING, nullable=False, max_length=32)
     meta: str = Field(default="{}")
-    created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"), nullable=False)
+    created_at: pendulum.DateTime = Field(
+        default_factory=lambda: pendulum.now("UTC"), nullable=False
+    )
 
 
 class FinancialPeriod(SQLModel, table=True):
     """Okres finansowy — otwarty, miękko zamknięty, twardo zamknięty."""
+
     __tablename__ = "financial_periods"  # type: ignore[assignment]
 
     period_id: str = Field(primary_key=True, max_length=7)

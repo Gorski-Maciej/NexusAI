@@ -36,6 +36,7 @@ DEFAULT_POLL_INTERVAL = 5.0
 
 class ProtocolNotFoundError(KeyError):
     """Podany protokół nie istnieje w protocols.toml."""
+
     pass
 
 
@@ -121,9 +122,7 @@ class ProtocolLoader:
             try:
                 callback(version)
             except Exception as exc:
-                logger.error(
-                    "[ProtocolLoader] on_change callback failed: %s", exc
-                )
+                logger.error("[ProtocolLoader] on_change callback failed: %s", exc)
 
     # ── Ładowanie ────────────────────────────────────────────────────────
 
@@ -293,7 +292,9 @@ class ProtocolLoader:
             )
         return dict(matrix)
 
-    def get_decision_matrix_combinations(self, matrix_name: str = "validation_verdict") -> dict[str, Any]:
+    def get_decision_matrix_combinations(
+        self, matrix_name: str = "validation_verdict"
+    ) -> dict[str, Any]:
         """Pobierz kombinacje z matrycy decyzyjnej.
 
         Args:
@@ -361,30 +362,58 @@ class ProtocolLoader:
         problematic = set(cat_adj.get("problematic_categories", []))
 
         if cat_lower in recurring:
-            base["auto_post"] = float(base.get("auto_post", 0.92)) + float(cat_adj.get("recurring_auto_post_adjustment", -0.025))
-            base["suggest"] = float(base.get("suggest", 0.75)) + float(cat_adj.get("recurring_suggest_adjustment", -0.015))
+            base["auto_post"] = float(base.get("auto_post", 0.92)) + float(
+                cat_adj.get("recurring_auto_post_adjustment", -0.025)
+            )
+            base["suggest"] = float(base.get("suggest", 0.75)) + float(
+                cat_adj.get("recurring_suggest_adjustment", -0.015)
+            )
         elif cat_lower in problematic:
-            base["auto_post"] = float(base.get("auto_post", 0.92)) + float(cat_adj.get("problematic_auto_post_adjustment", 0.05))
-            base["suggest"] = float(base.get("suggest", 0.75)) + float(cat_adj.get("problematic_suggest_adjustment", 0.025))
+            base["auto_post"] = float(base.get("auto_post", 0.92)) + float(
+                cat_adj.get("problematic_auto_post_adjustment", 0.05)
+            )
+            base["suggest"] = float(base.get("suggest", 0.75)) + float(
+                cat_adj.get("problematic_suggest_adjustment", 0.025)
+            )
 
         # Adaptacja kontrahenta
         if vendor_known and vendor_invoice_count >= 3:
-            base["auto_post"] = float(base.get("auto_post", 0.92)) + float(vendor_adj.get("known_vendor_auto_post_adjustment", -0.05))
-            base["suggest"] = float(base.get("suggest", 0.75)) + float(vendor_adj.get("known_vendor_suggest_adjustment", -0.025))
+            base["auto_post"] = float(base.get("auto_post", 0.92)) + float(
+                vendor_adj.get("known_vendor_auto_post_adjustment", -0.05)
+            )
+            base["suggest"] = float(base.get("suggest", 0.75)) + float(
+                vendor_adj.get("known_vendor_suggest_adjustment", -0.025)
+            )
         elif not vendor_known:
-            base["auto_post"] = float(base.get("auto_post", 0.92)) + float(vendor_adj.get("new_vendor_auto_post_adjustment", 0.10))
-            base["suggest"] = float(base.get("suggest", 0.75)) + float(vendor_adj.get("new_vendor_suggest_adjustment", 0.05))
+            base["auto_post"] = float(base.get("auto_post", 0.92)) + float(
+                vendor_adj.get("new_vendor_auto_post_adjustment", 0.10)
+            )
+            base["suggest"] = float(base.get("suggest", 0.75)) + float(
+                vendor_adj.get("new_vendor_suggest_adjustment", 0.05)
+            )
 
         # Adaptacja kwoty
         if amount_gross <= low_amount:
-            base["auto_post"] = float(base.get("auto_post", 0.92)) + float(amount_adj.get("low_amount_auto_post_adjustment", -0.025))
-            base["suggest"] = float(base.get("suggest", 0.75)) + float(amount_adj.get("low_amount_suggest_adjustment", -0.015))
+            base["auto_post"] = float(base.get("auto_post", 0.92)) + float(
+                amount_adj.get("low_amount_auto_post_adjustment", -0.025)
+            )
+            base["suggest"] = float(base.get("suggest", 0.75)) + float(
+                amount_adj.get("low_amount_suggest_adjustment", -0.015)
+            )
         elif amount_gross >= low_amount * 20:
-            base["auto_post"] = float(base.get("auto_post", 0.92)) + float(amount_adj.get("high_amount_auto_post_adjustment", 0.10))
-            base["suggest"] = float(base.get("suggest", 0.75)) + float(amount_adj.get("high_amount_suggest_adjustment", 0.05))
+            base["auto_post"] = float(base.get("auto_post", 0.92)) + float(
+                amount_adj.get("high_amount_auto_post_adjustment", 0.10)
+            )
+            base["suggest"] = float(base.get("suggest", 0.75)) + float(
+                amount_adj.get("high_amount_suggest_adjustment", 0.05)
+            )
         elif amount_gross >= low_amount * 4:
-            base["auto_post"] = float(base.get("auto_post", 0.92)) + float(amount_adj.get("medium_amount_auto_post_adjustment", 0.025))
-            base["suggest"] = float(base.get("suggest", 0.75)) + float(amount_adj.get("medium_amount_suggest_adjustment", 0.015))
+            base["auto_post"] = float(base.get("auto_post", 0.92)) + float(
+                amount_adj.get("medium_amount_auto_post_adjustment", 0.025)
+            )
+            base["suggest"] = float(base.get("suggest", 0.75)) + float(
+                amount_adj.get("medium_amount_suggest_adjustment", 0.015)
+            )
 
         # Zaokrąglij i ogranicz do [0.0, 1.0]
         for k in ("auto_post", "suggest", "ask_user"):
@@ -541,7 +570,7 @@ class ProtocolLoader:
         if task:
             lines.append(task)
         if checks:
-            lines.append("\n".join(f"{i+1}. {c}" for i, c in enumerate(checks)))
+            lines.append("\n".join(f"{i + 1}. {c}" for i, c in enumerate(checks)))
 
         # Dodaj protokoły decyzyjne (opcjonalnie)
         if include_protocols:
@@ -554,6 +583,7 @@ class ProtocolLoader:
                     lines.append(f"- {name}: Jeśli {cond} → {action}")
 
         return "\n".join(lines)
+
 
 # ── Global singleton ──────────────────────────────────────────────────────
 

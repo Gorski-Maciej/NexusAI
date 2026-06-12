@@ -1,4 +1,5 @@
 """Export API endpoints for invoice data."""
+
 from __future__ import annotations
 
 from enum import StrEnum
@@ -11,6 +12,7 @@ from nexus_ai.api.dto import GenericDictDTO, TAG_FILES, TAG_SYSTEM
 
 class ExportFormat(StrEnum):
     """Supported export formats."""
+
     CSV = "csv"
     EXCEL = "xlsx"
     JSON = "json"
@@ -19,6 +21,7 @@ class ExportFormat(StrEnum):
 
 class ExportController(Controller):
     """Handle invoice data export."""
+
     path = "/api/v1/exports"
     tags = [TAG_FILES, TAG_SYSTEM]
 

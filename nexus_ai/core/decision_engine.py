@@ -35,6 +35,7 @@ from nexus_ai.db.models import Invoice
 _rules_cache = get_cache()
 CACHE_KEY = "decision_rules:active"
 
+
 def invalidate_rules_cache() -> None:
     """Unieważnij cache reguł decyzyjnych.
 
@@ -43,9 +44,11 @@ def invalidate_rules_cache() -> None:
     """
     _rules_cache.delete_sync(CACHE_KEY)
 
+
 # =========================================================================
 # Decision data structures
 # =========================================================================
+
 
 class DecisionVerdict(Struct):
     """Decision result from the engine."""
@@ -67,6 +70,7 @@ class DecisionVerdict(Struct):
             "semantic_anomaly": self.semantic_anomaly,
         }
 
+
 # =========================================================================
 # Domyślne progi decyzyjne (zastępują TrustScoreCalculator z autopilot.py)
 # =========================================================================
@@ -79,6 +83,7 @@ DEFAULT_THRESHOLDS: dict[str, float] = {
 
 _RECURRING_CATEGORIES = {"paliwo", "czynsz", "media", "telekomunikacja", "leasing"}
 _PROBLEMATIC_CATEGORIES = {"usługi it", "doradztwo", "marketing", "szkolenia"}
+
 
 def get_adapted_thresholds(
     category: str = "",
@@ -147,6 +152,7 @@ def get_adapted_thresholds(
         base[key] = round(min(max(base[key], 0.0), 1.0), 4)
     return base
 
+
 # =========================================================================
 # DecisionEngine — SQL-based decision making
 # =========================================================================
@@ -168,45 +174,94 @@ CREATE INDEX IF NOT EXISTS idx_decision_rules_valid
 DEFAULT_DECISION_RULES: list[dict[str, Any]] = [
     # ---- level 1: Auto-post for trusted vendors ----
     {
-        "condition": {"vendor_known": True, "vendor_invoice_count__gte": 10, "vendor_trust__gte": 0.85, "amount_gross__lte": 5000, "ocr_confidence__gte": 0.92},
-        "output": {"decision": "AUTO_POST", "confidence": 0.95, "reasoning": "Zaufany kontrahent, niska kwota, wysoki OCR"},
+        "condition": {
+            "vendor_known": True,
+            "vendor_invoice_count__gte": 10,
+            "vendor_trust__gte": 0.85,
+            "amount_gross__lte": 5000,
+            "ocr_confidence__gte": 0.92,
+        },
+        "output": {
+            "decision": "AUTO_POST",
+            "confidence": 0.95,
+            "reasoning": "Zaufany kontrahent, niska kwota, wysoki OCR",
+        },
         "priority": 10,
     },
     {
-        "condition": {"vendor_known": True, "vendor_invoice_count__gte": 3, "vendor_trust__gte": 0.80, "amount_gross__lte": 3000, "ocr_confidence__gte": 0.90},
-        "output": {"decision": "AUTO_POST", "confidence": 0.90, "reasoning": "Znany kontrahent, niska kwota"},
+        "condition": {
+            "vendor_known": True,
+            "vendor_invoice_count__gte": 3,
+            "vendor_trust__gte": 0.80,
+            "amount_gross__lte": 3000,
+            "ocr_confidence__gte": 0.90,
+        },
+        "output": {
+            "decision": "AUTO_POST",
+            "confidence": 0.90,
+            "reasoning": "Znany kontrahent, niska kwota",
+        },
         "priority": 20,
     },
     # ---- level 2: Suggest ----
     {
-        "condition": {"vendor_known": True, "amount_gross__lte": 10000, "ocr_confidence__gte": 0.85},
-        "output": {"decision": "SUGGEST", "confidence": 0.80, "reasoning": "Znany kontrahent, średnia kwota"},
+        "condition": {
+            "vendor_known": True,
+            "amount_gross__lte": 10000,
+            "ocr_confidence__gte": 0.85,
+        },
+        "output": {
+            "decision": "SUGGEST",
+            "confidence": 0.80,
+            "reasoning": "Znany kontrahent, średnia kwota",
+        },
         "priority": 30,
     },
     {
-        "condition": {"vendor_known": False, "amount_gross__lte": 5000, "ocr_confidence__gte": 0.90},
-        "output": {"decision": "SUGGEST", "confidence": 0.75, "reasoning": "Nowy kontrahent ale niska kwota i wysoki OCR"},
+        "condition": {
+            "vendor_known": False,
+            "amount_gross__lte": 5000,
+            "ocr_confidence__gte": 0.90,
+        },
+        "output": {
+            "decision": "SUGGEST",
+            "confidence": 0.75,
+            "reasoning": "Nowy kontrahent ale niska kwota i wysoki OCR",
+        },
         "priority": 40,
     },
     # ---- level 3: Ask user ----
     {
         "condition": {"amount_gross__lte": 50000, "ocr_confidence__gte": 0.80},
-        "output": {"decision": "ASK_USER", "confidence": 0.60, "reasoning": "Średnia kwota lub nieznany kontrahent"},
+        "output": {
+            "decision": "ASK_USER",
+            "confidence": 0.60,
+            "reasoning": "Średnia kwota lub nieznany kontrahent",
+        },
         "priority": 50,
     },
     # ---- level 4: Block ----
     {
         "condition": {"amount_gross__gte": 50000},
-        "output": {"decision": "BLOCK", "confidence": 0.40, "reasoning": "Wysoka kwota — wymagana ręczna weryfikacja"},
+        "output": {
+            "decision": "BLOCK",
+            "confidence": 0.40,
+            "reasoning": "Wysoka kwota — wymagana ręczna weryfikacja",
+        },
         "priority": 100,
     },
     # ---- fallback ----
     {
         "condition": {},
-        "output": {"decision": "ASK_USER", "confidence": 0.50, "reasoning": "Brak pasującej reguły — eskaluj"},
+        "output": {
+            "decision": "ASK_USER",
+            "confidence": 0.50,
+            "reasoning": "Brak pasującej reguły — eskaluj",
+        },
         "priority": 999,
     },
 ]
+
 
 class DecisionEngine:
     """SQL/DuckDB-based decision engine.
@@ -424,9 +479,11 @@ class DecisionEngine:
                     return False
         return True
 
+
 # =========================================================================
 # InvoiceClassifier — simple vs complex (replaces WorkflowPlanner)
 # =========================================================================
+
 
 def classify_invoice(
     invoice_data: dict[str, Any],
@@ -450,6 +507,7 @@ def classify_invoice(
         return "simple"
     return "complex"
 
+
 # =========================================================================
 # TrustScore — SQL-based trust calculation (replaces TrustScoreCalculator)
 # =========================================================================
@@ -461,6 +519,7 @@ TRUST_WEIGHTS = {
     "context_trust": 0.10,
     "risk_guard": 0.15,
 }
+
 
 def calculate_trust_score(
     invoice_data: dict[str, Any],
@@ -507,6 +566,7 @@ def calculate_trust_score(
             "risk_guard": 1.0,
         },
     }
+
 
 def validate_nip(nip: str) -> bool:
     """Validate NIP checksum (Polish tax ID).

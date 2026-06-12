@@ -1,4 +1,5 @@
 """Dashboard API endpoints — daily briefing and summary statistics."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -169,7 +170,9 @@ class DashboardController(Controller):
         try:
             auth = getattr(request, "auth", None)
             if auth is not None:
-                sub = getattr(auth, "claims", {}).get("sub", None) or getattr(auth, "username", None)
+                sub = getattr(auth, "claims", {}).get("sub", None) or getattr(
+                    auth, "username", None
+                )
                 if sub:
                     return str(sub)
         except Exception:

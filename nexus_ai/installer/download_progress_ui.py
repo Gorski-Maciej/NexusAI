@@ -32,6 +32,7 @@ logger = get_logger("nexus.installer.ui")
 
 # ── Color palette for dark mode ─────────────────────────────────────────────
 
+
 class Colors:
     BG_DARK = "#1a1a2e"
     BG_CARD = "#16213e"
@@ -47,8 +48,10 @@ class Colors:
 
 # ── Download state ──────────────────────────────────────────────────────────
 
+
 class DownloadState:
     """Shared state between UI and download logic."""
+
     def __init__(self):
         self.cancel_event = anyio.Event()
         self.is_downloading = False
@@ -67,11 +70,13 @@ class DownloadState:
 
 # ── Progress UI ─────────────────────────────────────────────────────────────
 
+
 class DownloadProgressApp:
     """Flet UI for model download progress."""
 
     def __init__(self, state: DownloadState):
         self.state = state
+
     def build(self, page: ft.Page) -> None:
         """Build the Flet UI layout."""
         self.page = page
@@ -91,20 +96,22 @@ class DownloadProgressApp:
 
         # ── Header ───────────────────────────────────────────────────────
         header = ft.Container(
-            content=ft.Column([
-                ft.Text(
-                    "NexusAI — First-Time Setup",
-                    size=26,
-                    weight=ft.FontWeight.BOLD,
-                    color=Colors.ACCENT_BLUE,
-                ),
-                ft.Text(
-                    "Downloading AI models for local processing.\n"
-                    "This may take a few minutes depending on your internet connection.",
-                    size=13,
-                    color=Colors.TEXT_SECONDARY,
-                ),
-            ]),
+            content=ft.Column(
+                [
+                    ft.Text(
+                        "NexusAI — First-Time Setup",
+                        size=26,
+                        weight=ft.FontWeight.BOLD,
+                        color=Colors.ACCENT_BLUE,
+                    ),
+                    ft.Text(
+                        "Downloading AI models for local processing.\n"
+                        "This may take a few minutes depending on your internet connection.",
+                        size=13,
+                        color=Colors.TEXT_SECONDARY,
+                    ),
+                ]
+            ),
             margin=ft.margin.only(bottom=20),
         )
 
@@ -124,13 +131,20 @@ class DownloadProgressApp:
         )
 
         progress_section = ft.Container(
-            content=ft.Column([
-                ft.Text("Overall Progress", size=16, weight=ft.FontWeight.BOLD, color=Colors.TEXT_PRIMARY),
-                ft.Container(height=8),
-                self.overall_progress_bar,
-                ft.Container(height=6),
-                self.overall_progress_text,
-            ]),
+            content=ft.Column(
+                [
+                    ft.Text(
+                        "Overall Progress",
+                        size=16,
+                        weight=ft.FontWeight.BOLD,
+                        color=Colors.TEXT_PRIMARY,
+                    ),
+                    ft.Container(height=8),
+                    self.overall_progress_bar,
+                    ft.Container(height=6),
+                    self.overall_progress_text,
+                ]
+            ),
             bgcolor=Colors.BG_CARD,
             border_radius=12,
             padding=20,
@@ -157,15 +171,22 @@ class DownloadProgressApp:
         )
 
         file_section = ft.Container(
-            content=ft.Column([
-                ft.Text("Current File", size=14, weight=ft.FontWeight.BOLD, color=Colors.TEXT_PRIMARY),
-                ft.Container(height=6),
-                self.current_file_label,
-                ft.Container(height=4),
-                self.current_file_progress,
-                ft.Container(height=4),
-                self.current_file_speed,
-            ]),
+            content=ft.Column(
+                [
+                    ft.Text(
+                        "Current File",
+                        size=14,
+                        weight=ft.FontWeight.BOLD,
+                        color=Colors.TEXT_PRIMARY,
+                    ),
+                    ft.Container(height=6),
+                    self.current_file_label,
+                    ft.Container(height=4),
+                    self.current_file_progress,
+                    ft.Container(height=4),
+                    self.current_file_speed,
+                ]
+            ),
             bgcolor=Colors.BG_CARD,
             border_radius=12,
             padding=20,
@@ -436,13 +457,17 @@ class DownloadProgressApp:
             self.finish_button.visible = True
             self.finish_button.text = "Exit Setup"
         elif fail_count > 0:
-            self.status_log.value = f"⚠ {fail_count} model(s) failed to download. Check your internet connection."
+            self.status_log.value = (
+                f"⚠ {fail_count} model(s) failed to download. Check your internet connection."
+            )
             self.status_log.color = Colors.ACCENT_RED
             self.cancel_button.visible = False
             self.retry_button.visible = True
             self.finish_button.visible = True
         else:
-            self.status_log.value = f"✓ All {success_count} models downloaded and verified successfully!"
+            self.status_log.value = (
+                f"✓ All {success_count} models downloaded and verified successfully!"
+            )
             self.status_log.color = Colors.ACCENT_GREEN
             self.overall_progress_text.value = "100% — Complete!"
             self.overall_progress_bar.value = 1.0
@@ -518,6 +543,7 @@ class DownloadProgressApp:
 
 
 # ── Entry point ─────────────────────────────────────────────────────────────
+
 
 def run_download_ui() -> bool:
     """Run the download progress UI as a standalone Flet app.

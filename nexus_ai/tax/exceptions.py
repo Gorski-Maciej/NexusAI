@@ -7,6 +7,7 @@ All exceptions inherit from TaxEngineError for clean catching.
 
 class TaxEngineError(Exception):
     """Base exception for all tax engine errors."""
+
     pass
 
 
@@ -15,6 +16,7 @@ class NoMatchingRuleError(TaxEngineError):
 
     This blocks the transaction — the invoice enters an exception queue.
     """
+
     pass
 
 
@@ -23,4 +25,5 @@ class DecisionTraceIntegrityError(TaxEngineError):
 
     Indicates possible data tampering or corruption.
     """
+
     pass

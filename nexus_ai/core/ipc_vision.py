@@ -32,11 +32,7 @@ class ImageMemoryManager:
         shared_array = np.ndarray(img_array.shape, dtype=img_array.dtype, buffer=shm.buf)
         shared_array[:] = img_array[:]
 
-        return {
-            "name": shm_name,
-            "shape": img_array.shape,
-            "dtype": str(img_array.dtype)
-        }
+        return {"name": shm_name, "shape": img_array.shape, "dtype": str(img_array.dtype)}
 
     @staticmethod
     def retrieve_image(metadata: dict) -> "np.ndarray":
@@ -44,5 +40,7 @@ class ImageMemoryManager:
         if np is None:
             raise MissingNumpyError()
         shm = shared_memory.SharedMemory(name=metadata["name"])
-        shared_array = np.ndarray(metadata["shape"], dtype=np.dtype(metadata["dtype"]), buffer=shm.buf)
+        shared_array = np.ndarray(
+            metadata["shape"], dtype=np.dtype(metadata["dtype"]), buffer=shm.buf
+        )
         return shared_array

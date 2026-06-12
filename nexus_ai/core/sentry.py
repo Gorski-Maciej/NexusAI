@@ -45,10 +45,7 @@ def init_sentry(config: AppConfig | None = None) -> bool:
     if _sentry_initialized:
         return True
 
-    dsn = (
-        os.getenv("NEXUS_SENTRY_DSN", "")
-        or os.getenv("SENTRY_DSN", "")
-    )
+    dsn = os.getenv("NEXUS_SENTRY_DSN", "") or os.getenv("SENTRY_DSN", "")
 
     if not dsn:
         logger.info("[Sentry] Not configured — skipping initialization")
@@ -92,6 +89,7 @@ def capture_exception(exc: Exception) -> None:
         return
     try:
         import sentry_sdk
+
         sentry_sdk.capture_exception(exc)
     except Exception as e:
         logger.warning("[Sentry] capture_exception failed: %s", e)
@@ -103,6 +101,7 @@ def set_user_context(user_id: str | None = None, **kwargs: str) -> None:
         return
     try:
         import sentry_sdk
+
         sentry_sdk.set_user({"id": user_id, **kwargs})
     except Exception as e:
         logger.warning("[Sentry] set_user_context failed: %s", e)
@@ -114,6 +113,7 @@ def add_breadcrumb(message: str, category: str = "default", level: str = "info")
         return
     try:
         import sentry_sdk
+
         sentry_sdk.add_breadcrumb(
             message=message,
             category=category,

@@ -1,4 +1,5 @@
 """Daily Briefing View — 1 minuta dziennie dla najważniejszych decyzji."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -83,16 +84,18 @@ class DailyBriefingView:
         controls: list[ft.Control] = [
             # Header
             ft.Container(
-                content=ft.Column([
-                    ft.Icon(ft.icons.WB_SUNNY_OUTLINED, size=40, color=ft.colors.AMBER_400),
-                    ft.Container(height=8),
-                    ft.Text(
-                        message,
-                        size=22,
-                        weight=ft.FontWeight.BOLD,
-                        color=ft.colors.WHITE,
-                    ),
-                ]),
+                content=ft.Column(
+                    [
+                        ft.Icon(ft.icons.WB_SUNNY_OUTLINED, size=40, color=ft.colors.AMBER_400),
+                        ft.Container(height=8),
+                        ft.Text(
+                            message,
+                            size=22,
+                            weight=ft.FontWeight.BOLD,
+                            color=ft.colors.WHITE,
+                        ),
+                    ]
+                ),
                 padding=ft.Padding(top=10, bottom=20, left=0, right=0),
             ),
             ft.Divider(height=2, color=ft.colors.GREY_700),
@@ -100,44 +103,54 @@ class DailyBriefingView:
         ]
 
         if not decisions:
-            controls.extend([
-                ft.Container(
-                    content=ft.Column([
-                        ft.Icon(ft.icons.CHECK_CIRCLE_OUTLINE, size=64, color=ft.colors.GREEN_400),
-                        ft.Container(height=12),
-                        ft.Text(
-                            "Wszystkie faktury zostały automatycznie",
-                            size=16,
-                            color=ft.colors.GREY_300,
+            controls.extend(
+                [
+                    ft.Container(
+                        content=ft.Column(
+                            [
+                                ft.Icon(
+                                    ft.icons.CHECK_CIRCLE_OUTLINE,
+                                    size=64,
+                                    color=ft.colors.GREEN_400,
+                                ),
+                                ft.Container(height=12),
+                                ft.Text(
+                                    "Wszystkie faktury zostały automatycznie",
+                                    size=16,
+                                    color=ft.colors.GREY_300,
+                                ),
+                                ft.Text(
+                                    "zaksięgowane przez system AI.",
+                                    size=16,
+                                    color=ft.colors.GREY_300,
+                                ),
+                            ]
                         ),
-                        ft.Text(
-                            "zaksięgowane przez system AI.",
-                            size=16,
-                            color=ft.colors.GREY_300,
-                        ),
-                    ]),
-                    alignment=ft.alignment.center,
-                    padding=ft.Padding(top=40, bottom=40, left=0, right=0),
-                ),
-            ])
+                        alignment=ft.alignment.center,
+                        padding=ft.Padding(top=40, bottom=40, left=0, right=0),
+                    ),
+                ]
+            )
         else:
             for decision in decisions:
                 controls.append(self._build_decision_card(decision))
 
         # Refresh button at the bottom
-        controls.extend([
-            ft.Container(height=16),
-            ft.Row(
-                alignment=ft.MainAxisAlignment.CENTER,
-                controls=[
-                    ft.OutlinedButton(
-                        "Odśwież",
-                        icon=ft.icons.REFRESH,
-                        on_click=lambda _: self._schedule_load(),
-                    ),
-                ],
-            ),
-        ])
+        controls.extend(
+            [
+                ft.Container(height=16),
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    controls=[
+                        ft.OutlinedButton(
+                            "Odśwież",
+                            icon=ft.icons.REFRESH,
+                            on_click=lambda _: self._schedule_load(),
+                        ),
+                    ],
+                ),
+            ]
+        )
 
         return ft.Column(
             controls=controls,
@@ -159,86 +172,94 @@ class DailyBriefingView:
             bgcolor=ft.colors.SURFACE_CONTAINER_HIGHEST,
             ink=True,
             animate=ft.animation.Animation(200, ft.AnimationCurve.EASE_IN_OUT),
-            content=ft.Column([
-                # Header: contractor + amount
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                    controls=[
-                        ft.Row([
-                            ft.Icon(ft.icons.DESCRIPTION, size=20, color=ft.colors.BLUE_300),
-                            ft.Container(width=8),
+            content=ft.Column(
+                [
+                    # Header: contractor + amount
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        controls=[
+                            ft.Row(
+                                [
+                                    ft.Icon(
+                                        ft.icons.DESCRIPTION, size=20, color=ft.colors.BLUE_300
+                                    ),
+                                    ft.Container(width=8),
+                                    ft.Text(
+                                        contractor,
+                                        size=16,
+                                        weight=ft.FontWeight.SEMI_BOLD,
+                                        color=ft.colors.WHITE,
+                                    ),
+                                ]
+                            ),
                             ft.Text(
-                                contractor,
+                                f"{amount} {currency}",
                                 size=16,
-                                weight=ft.FontWeight.SEMI_BOLD,
-                                color=ft.colors.WHITE,
+                                weight=ft.FontWeight.BOLD,
+                                color=ft.colors.AMBER_300,
                             ),
-                        ]),
-                        ft.Text(
-                            f"{amount} {currency}",
-                            size=16,
-                            weight=ft.FontWeight.BOLD,
-                            color=ft.colors.AMBER_300,
-                        ),
-                    ],
-                ),
-                ft.Container(height=8),
-                # Invoice number
-                ft.Text(
-                    f"Faktura: {number}",
-                    size=13,
-                    color=ft.colors.GREY_400,
-                ),
-                ft.Container(height=4),
-                # Reason
-                ft.Row([
-                    ft.Icon(ft.icons.INFO_OUTLINE, size=16, color=ft.colors.GREY_400),
-                    ft.Container(width=6),
-                    ft.Text(
-                        reason,
-                        size=13,
-                        color=ft.colors.GREY_300,
-                        expand=True,
+                        ],
                     ),
-                ]),
-                ft.Container(height=12),
-                ft.Divider(height=1, color=ft.colors.GREY_700),
-                ft.Container(height=8),
-                # Action buttons
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.END,
-                    spacing=8,
-                    controls=[
-                        ft.ElevatedButton(
-                            "Sprawdź",
-                            icon=ft.icons.VISIBILITY,
-                            style=ft.ButtonStyle(
-                                color=ft.colors.WHITE,
-                                bgcolor=ft.colors.BLUE_800,
+                    ft.Container(height=8),
+                    # Invoice number
+                    ft.Text(
+                        f"Faktura: {number}",
+                        size=13,
+                        color=ft.colors.GREY_400,
+                    ),
+                    ft.Container(height=4),
+                    # Reason
+                    ft.Row(
+                        [
+                            ft.Icon(ft.icons.INFO_OUTLINE, size=16, color=ft.colors.GREY_400),
+                            ft.Container(width=6),
+                            ft.Text(
+                                reason,
+                                size=13,
+                                color=ft.colors.GREY_300,
+                                expand=True,
                             ),
-                            on_click=lambda e, iid=invoice_id: self._on_check(iid),
-                        ),
-                        ft.ElevatedButton(
-                            "Odrzuć",
-                            icon=ft.icons.CLOSE,
-                            style=ft.ButtonStyle(
-                                color=ft.colors.WHITE,
-                                bgcolor=ft.colors.RED_900,
+                        ]
+                    ),
+                    ft.Container(height=12),
+                    ft.Divider(height=1, color=ft.colors.GREY_700),
+                    ft.Container(height=8),
+                    # Action buttons
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.END,
+                        spacing=8,
+                        controls=[
+                            ft.ElevatedButton(
+                                "Sprawdź",
+                                icon=ft.icons.VISIBILITY,
+                                style=ft.ButtonStyle(
+                                    color=ft.colors.WHITE,
+                                    bgcolor=ft.colors.BLUE_800,
+                                ),
+                                on_click=lambda e, iid=invoice_id: self._on_check(iid),
                             ),
-                            on_click=lambda e, iid=invoice_id: self._on_reject(iid),
-                        ),
-                        ft.FilledButton(
-                            "Zatwierdź",
-                            icon=ft.icons.CHECK,
-                            style=ft.ButtonStyle(
-                                color=ft.colors.WHITE,
-                                bgcolor=ft.colors.GREEN_700,
+                            ft.ElevatedButton(
+                                "Odrzuć",
+                                icon=ft.icons.CLOSE,
+                                style=ft.ButtonStyle(
+                                    color=ft.colors.WHITE,
+                                    bgcolor=ft.colors.RED_900,
+                                ),
+                                on_click=lambda e, iid=invoice_id: self._on_reject(iid),
                             ),
-                            on_click=lambda e, iid=invoice_id: self._on_approve(iid),
-                        ),
-                    ],
-                ),
-            ]),
+                            ft.FilledButton(
+                                "Zatwierdź",
+                                icon=ft.icons.CHECK,
+                                style=ft.ButtonStyle(
+                                    color=ft.colors.WHITE,
+                                    bgcolor=ft.colors.GREEN_700,
+                                ),
+                                on_click=lambda e, iid=invoice_id: self._on_approve(iid),
+                            ),
+                        ],
+                    ),
+                ]
+            ),
             padding=20,
         )
 

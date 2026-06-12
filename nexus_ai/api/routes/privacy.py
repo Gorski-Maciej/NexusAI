@@ -29,4 +29,9 @@ class PrivacyController(Controller):
         notified = False
         if total > 0:
             notified = notify_dpo(config.dpo_alert_webhook, findings)
-        return {"status": "ok", "findings": findings, "total_matches": total, "dpo_notified": bool(notified)}
+        return {
+            "status": "ok",
+            "findings": findings,
+            "total_matches": total,
+            "dpo_notified": bool(notified),
+        }

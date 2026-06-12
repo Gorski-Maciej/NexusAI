@@ -9,17 +9,22 @@ from typing import Any
 MONEY_QUANT = Decimal("0.01")
 QTY_QUANT = Decimal("0.0001")
 
+
 class InventoryMismatch(Exception):  # noqa: N818
     pass
+
 
 class DualWriteConsistencyError(InventoryMismatch):
     pass
 
+
 class InsufficientStockError(InventoryMismatch):
     pass
 
+
 def _to_decimal(value: Any, quant: Decimal) -> Decimal:
     return Decimal(str(value)).quantize(quant, rounding=ROUND_HALF_UP)
+
 
 class InventoryBatch(Struct):
     batch_id: str
@@ -29,12 +34,14 @@ class InventoryBatch(Struct):
     unit_cost_net: Decimal
     source_document_id: str | None = None
 
+
 class FIFOConsumptionLine(Struct):
     batch_id: str
     product_id: str
     qty_taken: Decimal
     unit_cost_net: Decimal
     line_cogs_net: Decimal
+
 
 class FIFOConsumptionResult(Struct):
     product_id: str
@@ -43,7 +50,10 @@ class FIFOConsumptionResult(Struct):
     total_cogs_net: Decimal
     lines: list[FIFOConsumptionLine]
 
-def calculate_fifo_cogs(product_id: str, issue_qty: Decimal | float | int, open_batches: list[InventoryBatch]) -> FIFOConsumptionResult:
+
+def calculate_fifo_cogs(
+    product_id: str, issue_qty: Decimal | float | int, open_batches: list[InventoryBatch]
+) -> FIFOConsumptionResult:
     """Consume inventory batches in FIFO order and return COGS breakdown.
 
     Raises InsufficientStockError when stock is insufficient.
@@ -83,7 +93,9 @@ def calculate_fifo_cogs(product_id: str, issue_qty: Decimal | float | int, open_
         remaining -= take_qty
 
     if remaining > Decimal("0"):
-        raise InsufficientStockError(f"Insufficient inventory for product_id={product_id}; missing_qty={remaining}")
+        raise InsufficientStockError(
+            f"Insufficient inventory for product_id={product_id}; missing_qty={remaining}"
+        )
 
     return FIFOConsumptionResult(
         product_id=product_id,
@@ -93,7 +105,10 @@ def calculate_fifo_cogs(product_id: str, issue_qty: Decimal | float | int, open_
         lines=lines,
     )
 
-def apply_fifo_consumption(open_batches: list[InventoryBatch], consumption: FIFOConsumptionResult) -> list[InventoryBatch]:
+
+def apply_fifo_consumption(
+    open_batches: list[InventoryBatch], consumption: FIFOConsumptionResult
+) -> list[InventoryBatch]:
     """Return updated copies of batches after applying FIFO consumption lines."""
 
     updates = {line.batch_id: line.qty_taken for line in consumption.lines}
@@ -115,6 +130,7 @@ def apply_fifo_consumption(open_batches: list[InventoryBatch], consumption: FIFO
         )
     return out
 
+
 async def calculate_and_post_cogs(
     *,
     product_id: str,
@@ -127,7 +143,9 @@ async def calculate_and_post_cogs(
     duckdb_writer: Any | None = None,
 ) -> FIFOConsumptionResult:
     consumption = calculate_fifo_cogs(product_id, qty_sold, open_batches)
-    amount_minor = int((consumption.total_cogs_net * Decimal("100")).to_integral_value(rounding=ROUND_HALF_UP))
+    amount_minor = int(
+        (consumption.total_cogs_net * Decimal("100")).to_integral_value(rounding=ROUND_HALF_UP)
+    )
     pending = await tb_client.create_two_phase_transfer(
         debit_account=debit_account_731_cogs,
         credit_account=credit_account_330_inventory,
@@ -149,5 +167,7 @@ async def calculate_and_post_cogs(
         except Exception as exc:
             if hasattr(duckdb_writer, "rollback"):
                 duckdb_writer.rollback()
-            raise DualWriteConsistencyError("DuckDB write failed after TigerBeetle posting") from exc
+            raise DualWriteConsistencyError(
+                "DuckDB write failed after TigerBeetle posting"
+            ) from exc
     return consumption

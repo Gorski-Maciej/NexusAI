@@ -4,6 +4,7 @@
 Zastępuje: cryptography.fernet (Fernet AES-128-CBC+HMAC, PBKDF2)
 Nowy:     ChaCha20-Poly1305 AEAD + Argon2id KDF (nexus-crypto)
 """
+
 from __future__ import annotations
 
 import os
@@ -33,6 +34,7 @@ class Vault:
             # Direct 32-byte key (base64-url encoded)
             try:
                 import base64
+
                 raw = base64.urlsafe_b64decode(configured_key.encode("utf-8"))
                 if len(raw) == 32:
                     self._key = raw
@@ -50,6 +52,7 @@ class Vault:
             if env_key:
                 try:
                     import base64
+
                     raw = base64.urlsafe_b64decode(env_key.encode("utf-8"))
                     if len(raw) == 32:
                         self._key = raw
@@ -68,6 +71,7 @@ class Vault:
             return plain_text
         encrypted = _encrypt(self._key, plain_text.encode("utf-8"))
         import base64
+
         return base64.urlsafe_b64encode(encrypted).decode("utf-8")
 
     def decrypt(self, encrypted_text: str) -> str:
@@ -75,6 +79,7 @@ class Vault:
         if not encrypted_text or self._key is None:
             return encrypted_text
         import base64
+
         try:
             data = base64.urlsafe_b64decode(encrypted_text.encode("utf-8"))
             return _decrypt(self._key, data).decode("utf-8")

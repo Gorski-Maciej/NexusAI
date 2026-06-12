@@ -43,6 +43,7 @@ try:
     from nexus_crypto._core import (
         verify_password as _rust_verify_password,
     )
+
     _HAS_NATIVE = True
 except ImportError:
     _HAS_NATIVE = False

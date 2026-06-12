@@ -71,9 +71,7 @@ class AuditController(Controller):
             from tax.audit import DecisionTraceLogger, verify_chain_integrity
         except ImportError as exc:
             logger.error("Failed to import audit modules: %s", exc)
-            raise NotFoundException(
-                detail="Audit module not available"
-            ) from exc
+            raise NotFoundException(detail="Audit module not available") from exc
 
         config = AppConfig()
         conn = duckdb.connect(str(config.duckdb_path))
@@ -104,17 +102,23 @@ class AuditController(Controller):
             inv_result = {}
             if calc_input:
                 try:
-                    calc_in = msgspec_loads(calc_input) if isinstance(calc_input, str) else calc_input
+                    calc_in = (
+                        msgspec_loads(calc_input) if isinstance(calc_input, str) else calc_input
+                    )
                 except (DecodeError, TypeError):
                     calc_in = {"raw": str(calc_input)}
             if calc_output:
                 try:
-                    calc_out = msgspec_loads(calc_output) if isinstance(calc_output, str) else calc_output
+                    calc_out = (
+                        msgspec_loads(calc_output) if isinstance(calc_output, str) else calc_output
+                    )
                 except (DecodeError, TypeError):
                     calc_out = {"raw": str(calc_output)}
             if invariants:
                 try:
-                    inv_result = msgspec_loads(invariants) if isinstance(invariants, str) else invariants
+                    inv_result = (
+                        msgspec_loads(invariants) if isinstance(invariants, str) else invariants
+                    )
                 except (DecodeError, TypeError):
                     inv_result = {"raw": str(invariants)}
 
@@ -122,7 +126,11 @@ class AuditController(Controller):
             # calc_in: {"positions_net_grosze": [12345], "vat_rate": "0.23", "rounding_level": "position"}
             # calc_out: {"netto_grosze": 12345, "vat_grosze": 2839, "brutto_grosze": 15184}
             positions_raw = calc_in.get("positions_net_grosze", [])
-            net_grosze = sum(positions_raw) if isinstance(positions_raw, list) else _safe_int(calc_in.get("net", 0))
+            net_grosze = (
+                sum(positions_raw)
+                if isinstance(positions_raw, list)
+                else _safe_int(calc_in.get("net", 0))
+            )
             vat_grosze = _safe_int(calc_out.get("vat_grosze", calc_out.get("vat", 0)))
             brutto_grosze = _safe_int(calc_out.get("brutto_grosze", calc_out.get("brutto", 0)))
 
@@ -136,7 +144,11 @@ class AuditController(Controller):
             trace_json_snapshot = None
             if trace_json_raw:
                 try:
-                    tj = msgspec_loads(trace_json_raw) if isinstance(trace_json_raw, str) else trace_json_raw
+                    tj = (
+                        msgspec_loads(trace_json_raw)
+                        if isinstance(trace_json_raw, str)
+                        else trace_json_raw
+                    )
                     evaluated_rules = tj.get("evaluated_rules")
                     trace_json_snapshot = tj.get("context_snapshot")
                 except (DecodeError, TypeError):
@@ -254,7 +266,9 @@ def _build_report_dict(
             "evaluated_rules": evaluated_rules,
             "context_snapshot": trace_json_snapshot,
             "raw": trace_json_raw,
-        } if trace_json_raw else None,
+        }
+        if trace_json_raw
+        else None,
         # RiskGuard decision (already parsed by get_trace)
         "risk_verdict": risk_verdict if isinstance(risk_verdict, (dict, type(None))) else None,
         # Invariant validation
@@ -311,39 +325,47 @@ def _render_html_report(report: dict[str, Any]) -> str:
     ctx_snapshot = (trace_json or {}).get("context_snapshot", {})
 
     # ── Context snapshot table ──────────────────────────────────────
-    context_rows = _html_table_rows({
-        "Kategoria wydatku": ctx.get("category_code", "—"),
-        "Forma opodatkowania": ctx.get("company_tax_form", "—"),
-        "NIP kontrahenta": ctx.get("vendor_nip", "—"),
-        "Status VAT kontrahenta": ctx.get("vendor_vat_status", "—"),
-        "Konto na Białej Liście": "TAK" if ctx.get("vendor_account_on_whitelist") is True else "NIE",
-        "Zaufanie do kontrahenta": ctx.get("vendor_trust", "—"),
-        "Typ wydatku": ctx.get("expense_type", "—"),
-    })
+    context_rows = _html_table_rows(
+        {
+            "Kategoria wydatku": ctx.get("category_code", "—"),
+            "Forma opodatkowania": ctx.get("company_tax_form", "—"),
+            "NIP kontrahenta": ctx.get("vendor_nip", "—"),
+            "Status VAT kontrahenta": ctx.get("vendor_vat_status", "—"),
+            "Konto na Białej Liście": "TAK"
+            if ctx.get("vendor_account_on_whitelist") is True
+            else "NIE",
+            "Zaufanie do kontrahenta": ctx.get("vendor_trust", "—"),
+            "Typ wydatku": ctx.get("expense_type", "—"),
+        }
+    )
 
     if ctx_snapshot:
         for k, v in ctx_snapshot.items():
             context_rows += f"<tr><td>trace_json.{k}</td><td>{_html_escape(str(v))}</td></tr>\n"
 
     # ── Verdict table ───────────────────────────────────────────────
-    verdict_rows = _html_table_rows({
-        "Stawka VAT": vrd.get("vat_rate", "—"),
-        "Metoda zaokrąglania": vrd.get("rounding_level", "—"),
-        "Kwalifikacja KUP": vrd.get("income_tax_qualification", "—"),
-        "Kod GTU": vrd.get("gtu_code", "—"),
-        "Procedura": vrd.get("procedure", vrd.get("procedure_code", "—")),
-        "Akcja": vrd.get("action", "—"),
-        "Routing reason": vrd.get("reason", "—"),
-    })
+    verdict_rows = _html_table_rows(
+        {
+            "Stawka VAT": vrd.get("vat_rate", "—"),
+            "Metoda zaokrąglania": vrd.get("rounding_level", "—"),
+            "Kwalifikacja KUP": vrd.get("income_tax_qualification", "—"),
+            "Kod GTU": vrd.get("gtu_code", "—"),
+            "Procedura": vrd.get("procedure", vrd.get("procedure_code", "—")),
+            "Akcja": vrd.get("action", "—"),
+            "Routing reason": vrd.get("reason", "—"),
+        }
+    )
 
     # ── Calculations table ──────────────────────────────────────────
-    calc_rows = _html_table_rows({
-        "Netto": f"{calc.get('net_pln', '0.00')} PLN ({calc.get('net_grosze', 0)} gr)",
-        "VAT": f"{calc.get('vat_pln', '0.00')} PLN ({calc.get('vat_grosze', 0)} gr)",
-        "Brutto": f"{calc.get('brutto_pln', '0.00')} PLN ({calc.get('brutto_grosze', 0)} gr)",
-        "Stawka VAT (surowa)": calc.get("vat_rate_raw", "—"),
-        "Poziom zaokrąglania": calc.get("rounding_level_raw", "—"),
-    })
+    calc_rows = _html_table_rows(
+        {
+            "Netto": f"{calc.get('net_pln', '0.00')} PLN ({calc.get('net_grosze', 0)} gr)",
+            "VAT": f"{calc.get('vat_pln', '0.00')} PLN ({calc.get('vat_grosze', 0)} gr)",
+            "Brutto": f"{calc.get('brutto_pln', '0.00')} PLN ({calc.get('brutto_grosze', 0)} gr)",
+            "Stawka VAT (surowa)": calc.get("vat_rate_raw", "—"),
+            "Poziom zaokrąglania": calc.get("rounding_level_raw", "—"),
+        }
+    )
 
     # ── Evaluated rules table ───────────────────────────────────────
     rules_rows = ""
@@ -363,20 +385,26 @@ def _render_html_report(report: dict[str, Any]) -> str:
             f"</tr>\n"
         )
     if not rules_rows:
-        rules_rows = "<tr><td colspan='4' style='color:#888'>Brak danych o ewaluowanych regułach</td></tr>\n"
+        rules_rows = (
+            "<tr><td colspan='4' style='color:#888'>Brak danych o ewaluowanych regułach</td></tr>\n"
+        )
 
     # ── Integrity section ───────────────────────────────────────────
     integrity_color = "#27ae60" if intg.get("chain_intact") else "#e74c3c"
-    integrity_label = "✅ Łańcuch nienaruszony" if intg.get("chain_intact") else "❌ NARUSZENIE INTEGRALNOŚCI"
+    integrity_label = (
+        "✅ Łańcuch nienaruszony" if intg.get("chain_intact") else "❌ NARUSZENIE INTEGRALNOŚCI"
+    )
 
     # ── Risk verdict ────────────────────────────────────────────────
     risk_rows = ""
     if isinstance(risk_v, dict) and risk_v:
-        risk_rows = _html_table_rows({
-            "Decyzja": risk_v.get("action", risk_v.get("decision", "—")),
-            "Powód": risk_v.get("reason", "—"),
-            "Bezpieczna": risk_v.get("is_safe", "—"),
-        })
+        risk_rows = _html_table_rows(
+            {
+                "Decyzja": risk_v.get("action", risk_v.get("decision", "—")),
+                "Powód": risk_v.get("reason", "—"),
+                "Bezpieczna": risk_v.get("is_safe", "—"),
+            }
+        )
     else:
         risk_rows = "<tr><td colspan='2'>Brak danych RiskGuard</td></tr>\n"
 
@@ -386,7 +414,7 @@ def _render_html_report(report: dict[str, Any]) -> str:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Raport decyzji podatkowej – {_html_escape(str(report.get('transaction_id', '')))[:16]}…</title>
+<title>Raport decyzji podatkowej – {_html_escape(str(report.get("transaction_id", "")))[:16]}…</title>
 <style>
   * {{ margin:0; padding:0; box-sizing:border-box; }}
   body {{ font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:#f5f6fa; color:#2c3e50; padding:2rem; }}
@@ -417,10 +445,10 @@ def _render_html_report(report: dict[str, Any]) -> str:
 <button class="print-btn" onclick="window.print()">🖨️ Drukuj</button>
 <h1>📋 Raport decyzji podatkowej</h1>
 <p class="meta">
-  Transakcja: <code>{_html_escape(str(report.get('transaction_id', '')))}</code><br>
-  Ślad audytowy: <code>{_html_escape(str(report.get('trace_id', '')))}</code><br>
-  ID reguły: <code>{_html_escape(str(report.get('rule_id', '—'))) if report.get('rule_id') else '—'}</code><br>
-  Data decyzji: {_html_escape(str(report.get('decision_date', '')))}
+  Transakcja: <code>{_html_escape(str(report.get("transaction_id", "")))}</code><br>
+  Ślad audytowy: <code>{_html_escape(str(report.get("trace_id", "")))}</code><br>
+  ID reguły: <code>{_html_escape(str(report.get("rule_id", "—"))) if report.get("rule_id") else "—"}</code><br>
+  Data decyzji: {_html_escape(str(report.get("decision_date", "")))}
 </p>
 
 <h2>🏷️ Kontekst decyzyjny</h2>
@@ -429,7 +457,7 @@ def _render_html_report(report: dict[str, Any]) -> str:
 {context_rows}</table>
 
 <h2>📜 Ślad decyzyjny (decision_trace)</h2>
-<div class="decision-trace">{_html_escape(decision_trace_text) if decision_trace_text else '—'}</div>
+<div class="decision-trace">{_html_escape(decision_trace_text) if decision_trace_text else "—"}</div>
 
 <h2>⚖️ Werdykt</h2>
 <table>
@@ -454,17 +482,17 @@ def _render_html_report(report: dict[str, Any]) -> str:
 <h2>✅ Walidacja niezmienników</h2>
 <table>
 <tr><th>Pole</th><th>Wartość</th></tr>
-<tr><td>Wynik</td><td>{'✅ Przeszła' if inv.get('passed') in (True, 'True', 'true') else ('❌ NIE PRZESZŁA — ' + _html_escape(str(inv.get('details', {}).get('error_message', ''))))}</td></tr>
+<tr><td>Wynik</td><td>{"✅ Przeszła" if inv.get("passed") in (True, "True", "true") else ("❌ NIE PRZESZŁA — " + _html_escape(str(inv.get("details", {}).get("error_message", ""))))}</td></tr>
 </table>
 
 <h2>🔗 Dowód kryptograficzny</h2>
 <table>
 <tr><th>Pole</th><th>Wartość</th></tr>
 <tr><td>Integralność łańcucha</td><td><span class="integrity-bar">{integrity_label}</span></td></tr>
-<tr><td>Poprzedni hash</td><td class="hash">{intg.get('previous_hash', '—')}</td></tr>
-<tr><td>Bieżący hash</td><td class="hash">{intg.get('current_hash', '—')}</td></tr>
-<tr><td>Liczba naruszeń</td><td>{intg.get('issues_count', 0)}</td></tr>
-<tr><td>Ostatnia weryfikacja</td><td>{intg.get('last_verified', '—')}</td></tr>
+<tr><td>Poprzedni hash</td><td class="hash">{intg.get("previous_hash", "—")}</td></tr>
+<tr><td>Bieżący hash</td><td class="hash">{intg.get("current_hash", "—")}</td></tr>
+<tr><td>Liczba naruszeń</td><td>{intg.get("issues_count", 0)}</td></tr>
+<tr><td>Ostatnia weryfikacja</td><td>{intg.get("last_verified", "—")}</td></tr>
 </table>
 
 <p class="meta" style="margin-top:2rem; text-align:center;">
@@ -489,8 +517,8 @@ def _html_escape(text: str) -> str:
     """Escape HTML special characters."""
     return (
         text.replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-            .replace('"', "&quot;")
-            .replace("'", "&#x27;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+        .replace("'", "&#x27;")
     )

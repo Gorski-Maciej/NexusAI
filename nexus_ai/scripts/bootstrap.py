@@ -41,16 +41,20 @@ logger = get_logger("nexus.bootstrap")
 
 # ── Step result tracking ─────────────────────────────────────────────────────
 
+
 class StepResult(Struct):
     """Result of a single bootstrap step."""
+
     name: str
     status: str  # "ok", "skipped", "warning", "error"
     message: str = ""
     duration_ms: float = 0.0
     details: dict[str, Any] = field(default_factory=dict)
 
+
 class BootstrapReport(Struct):
     """Complete report of the bootstrap process."""
+
     steps: list[StepResult] = field(default_factory=list)
     started_at: str = ""
     finished_at: str = ""
@@ -85,7 +89,9 @@ class BootstrapReport(Struct):
         print("=" * 70)
         print()
 
+
 # ── Bootstrap steps ──────────────────────────────────────────────────────────
+
 
 async def step_validate_config(config: Any) -> StepResult:
     """Step 1: Validate configuration and environment."""
@@ -138,6 +144,7 @@ async def step_validate_config(config: Any) -> StepResult:
         details={"environment": env, "base_dir": str(base_dir)},
     )
 
+
 async def step_check_dependencies(config: Any) -> StepResult:
     """Step 2: Check required Python packages."""
     start = time.perf_counter()
@@ -145,13 +152,13 @@ async def step_check_dependencies(config: Any) -> StepResult:
 
     # Technologie zgodne z aa3fvcx.txt — nowy, ultralekki stack
     REQUIRED_CORE = [  # noqa: N806
-        ("litestar", "litestar"),      # API framework (zastępuje FastAPI)
-        ("granian", "granian"),        # ASGI server w Rust (zastępuje Uvicorn)
-        ("sqlmodel", "sqlmodel"),       # ORM 2w1 (SQLAlchemy + Pydantic)
-        ("alembic", "alembic"),         # Migracje schematu
-        ("taskiq", "taskiq"),           # Async-native kolejka zadań
-        ("duckdb", "duckdb"),           # Lokalna hurtownia OLAP
-        ("msgspec", "msgspec"),          # Ultraszybka serializacja
+        ("litestar", "litestar"),  # API framework (zastępuje FastAPI)
+        ("granian", "granian"),  # ASGI server w Rust (zastępuje Uvicorn)
+        ("sqlmodel", "sqlmodel"),  # ORM 2w1 (SQLAlchemy + Pydantic)
+        ("alembic", "alembic"),  # Migracje schematu
+        ("taskiq", "taskiq"),  # Async-native kolejka zadań
+        ("duckdb", "duckdb"),  # Lokalna hurtownia OLAP
+        ("msgspec", "msgspec"),  # Ultraszybka serializacja
     ]
 
     missing: list[str] = []
@@ -177,13 +184,16 @@ async def step_check_dependencies(config: Any) -> StepResult:
         duration_ms=(time.perf_counter() - start) * 1000,
     )
 
+
 async def step_create_directories(config: Any) -> StepResult:
     """Step 4: Create required data directories."""
     start = time.perf_counter()
     name = "Create data directories"
 
     if not hasattr(config, "base_dir"):
-        return StepResult(name=name, status="error", message="Config missing base_dir", duration_ms=0)
+        return StepResult(
+            name=name, status="error", message="Config missing base_dir", duration_ms=0
+        )
 
     dirs = [
         config.base_dir,
@@ -214,6 +224,7 @@ async def step_create_directories(config: Any) -> StepResult:
         duration_ms=(time.perf_counter() - start) * 1000,
         details={"directories": [str(d) for d in dirs]},
     )
+
 
 async def step_run_migrations(config: Any) -> StepResult:
     """Step 5: Run Alembic database migrations."""
@@ -246,6 +257,7 @@ async def step_run_migrations(config: Any) -> StepResult:
         logger.warning("  Alembic not installed, creating tables via SQLAlchemy...")
         try:
             from db.database import create_oltp_engine, init_schema
+
             engine = create_oltp_engine(config)
             await init_schema(engine)
             await engine.dispose()
@@ -270,6 +282,7 @@ async def step_run_migrations(config: Any) -> StepResult:
             duration_ms=(time.perf_counter() - start) * 1000,
         )
 
+
 async def step_initialize_olap(config: Any) -> StepResult:
     """Step 6: Initialize DuckDB OLAP schema."""
     start = time.perf_counter()
@@ -278,8 +291,12 @@ async def step_initialize_olap(config: Any) -> StepResult:
     try:
         from db.analytics import DuckDBManager
 
-        duckdb_path = config.duckdb_path if hasattr(config, "duckdb_path") else Path("nexus_olap.duckdb")
-        sqlite_path = config.sqlite_path if hasattr(config, "sqlite_path") else Path("nexus_oltp.db")
+        duckdb_path = (
+            config.duckdb_path if hasattr(config, "duckdb_path") else Path("nexus_olap.duckdb")
+        )
+        sqlite_path = (
+            config.sqlite_path if hasattr(config, "sqlite_path") else Path("nexus_oltp.db")
+        )
 
         manager = DuckDBManager(db_path=duckdb_path, sqlite_path=sqlite_path)
         # Initialize views and materializations
@@ -307,6 +324,7 @@ async def step_initialize_olap(config: Any) -> StepResult:
             message=f"DuckDB init warning: {exc}",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
+
 
 async def step_seed_data(config: Any) -> StepResult:
     """Step 7: Load seed data (idempotent)."""
@@ -347,6 +365,7 @@ async def step_seed_data(config: Any) -> StepResult:
             message=f"Seed data partially loaded: {exc}",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
+
 
 async def step_verify_nats(config: Any) -> StepResult:
     """Step 8: Verify NATS connection."""
@@ -391,6 +410,7 @@ async def step_verify_nats(config: Any) -> StepResult:
             duration_ms=(time.perf_counter() - start) * 1000,
         )
 
+
 async def step_verify_tigerbeetle(config: Any) -> StepResult:
     """Step 9: Verify TigerBeetle connection."""
     start = time.perf_counter()
@@ -432,7 +452,9 @@ async def step_verify_tigerbeetle(config: Any) -> StepResult:
             duration_ms=(time.perf_counter() - start) * 1000,
         )
 
+
 # ── Main bootstrap orchestrator ──────────────────────────────────────────────
+
 
 async def run_bootstrap(
     *,
@@ -451,6 +473,7 @@ async def run_bootstrap(
     """
     if config is None:
         from core.config import AppConfig
+
         config = AppConfig()
 
     report = BootstrapReport(
@@ -512,7 +535,9 @@ async def run_bootstrap(
 
     return report
 
+
 # ── CLI entry point ──────────────────────────────────────────────────────────
+
 
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point: python -m nexus_ai.scripts.bootstrap"""
@@ -526,8 +551,8 @@ def main(argv: list[str] | None = None) -> int:
         type=str,
         nargs="*",
         help="Specific steps to run (default: all). Options: validate_config, check_dependencies, "
-             "create_directories, run_migrations, initialize_olap, seed_data, "
-             "verify_nats, verify_tigerbeetle",
+        "create_directories, run_migrations, initialize_olap, seed_data, "
+        "verify_nats, verify_tigerbeetle",
     )
     parser.add_argument(
         "--skip-seed",
@@ -552,11 +577,19 @@ def main(argv: list[str] | None = None) -> int:
 
     step_filter = args.steps
     if args.skip_seed and step_filter is None:
-        step_filter = [s for s in [
-            "validate_config", "check_dependencies", "check_ai_models",
-            "create_directories", "run_migrations", "initialize_olap",
-            "verify_nats", "verify_tigerbeetle",
-        ]]
+        step_filter = [
+            s
+            for s in [
+                "validate_config",
+                "check_dependencies",
+                "check_ai_models",
+                "create_directories",
+                "run_migrations",
+                "initialize_olap",
+                "verify_nats",
+                "verify_tigerbeetle",
+            ]
+        ]
         result = anyio.run(run_bootstrap, step_filter)
 
     if result.overall_status == "error":
@@ -567,6 +600,7 @@ def main(argv: list[str] | None = None) -> int:
     print("  ✓  NexusAI is ready. Run 'python main.py --mode api' to start.")
     print()
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

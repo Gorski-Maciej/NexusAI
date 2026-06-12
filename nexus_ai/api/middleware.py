@@ -7,6 +7,8 @@ import os
 import time
 import uuid
 
+import pendulum
+
 import anyio
 from litestar.middleware import AbstractMiddleware
 from litestar.status_codes import HTTP_413_REQUEST_ENTITY_TOO_LARGE
@@ -35,6 +37,7 @@ def _get_upload_semaphore():
     if _UPLOAD_SEMAPHORE is None:
         _UPLOAD_SEMAPHORE = anyio.Semaphore(10)
     return _UPLOAD_SEMAPHORE
+
 
 class UploadSizeGuardMiddleware(AbstractMiddleware):
     """
@@ -125,7 +128,6 @@ class UploadSizeGuardMiddleware(AbstractMiddleware):
         await send({"type": "http.response.body", "body": b'{"detail":"Request body too large"}'})
 
 
-
 def _tenant_from_bearer_auth(authorization_header: str | None) -> str | None:
     """Extract tenant_id from JWT bearer token using HMAC-SHA256 verification."""
     if not authorization_header:
@@ -144,7 +146,9 @@ def _tenant_from_bearer_auth(authorization_header: str | None) -> str | None:
         return None
 
     signed = f"{header_b64}.{payload_b64}".encode()
-    expected_sig = hmac.new(secret_key.encode(), signed, hashlib.sha256).digest()  # hmac.new(SECRET_KEY.encode()
+    expected_sig = hmac.new(
+        secret_key.encode(), signed, hashlib.sha256
+    ).digest()  # hmac.new(SECRET_KEY.encode()
     expected_b64 = base64.urlsafe_b64encode(expected_sig).rstrip(b"=").decode("utf-8")
     if not hmac.compare_digest(expected_b64, signature_b64):
         return None
@@ -165,11 +169,11 @@ def _tenant_from_bearer_auth(authorization_header: str | None) -> str | None:
     except Exception:
         return None
 
-    now = int(time.time())
+    now = int(pendulum.now().timestamp())
     exp = payload.get("exp")
     if exp is not None:
         try:
-            if int(exp) < int(time.time()):
+            if int(exp) < int(pendulum.now().timestamp()):
                 return None
         except (TypeError, ValueError):
             return None
@@ -223,6 +227,7 @@ class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
 
         # ── Phase 2: Ustaw correlation_id w ContextVar dla logowania ─────
         from nexus_ai.core.tracing import correlation_id_ctx
+
         cid_token = correlation_id_ctx.set(correlation_id)
 
         scope_user = scope.get("user") or {}
@@ -249,7 +254,12 @@ class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
                 headers.append((b"x-frame-options", b"DENY"))
                 headers.append((b"referrer-policy", b"no-referrer"))
                 headers.append((b"permissions-policy", b"geolocation=(), microphone=(), camera=()"))
-                headers.append((b"content-security-policy", b"default-src 'self'; frame-ancestors 'none'; base-uri 'self'"))
+                headers.append(
+                    (
+                        b"content-security-policy",
+                        b"default-src 'self'; frame-ancestors 'none'; base-uri 'self'",
+                    )
+                )
 
                 path = scope.get("path", "")
                 if path.startswith("/api/v1"):

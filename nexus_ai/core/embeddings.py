@@ -26,13 +26,16 @@ from typing import Any
 # ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
 try:
     from nexus_crypto import sha256 as _sha256
+
     HAS_NEXUS_CRYPTO = True
 except ImportError:
     import hashlib as _hashlib
+
     HAS_NEXUS_CRYPTO = False
 
     def _sha256(data: bytes) -> str:
         return _hashlib.sha256(data).hexdigest()
+
 
 from nexus_ai.core.cache import get_cache
 from structlog import get_logger
@@ -51,7 +54,7 @@ EMBEDDING_DIM = 768  # Domyślny wymiar (wykrywany dynamicznie z modelu)
 
 
 class EmbeddingService:
-    """    Generuje embeddingi tekstu przez llama-cpp-python.
+    """Generuje embeddingi tekstu przez llama-cpp-python.
 
     Zgodnie z aa3fvcx.txt: używa llama-cpp-python z embedding=True.
     Nie definiuje konkretnego modelu — ścieżka jest parametrem.
@@ -85,7 +88,8 @@ class EmbeddingService:
                 "[EmbeddingService] Model %s not found at %s. "
                 "Using fallback hash-based embeddings. "
                 "Place a .gguf model in models/ directory.",
-                model_path.name, model_path,
+                model_path.name,
+                model_path,
             )
             self._initialized = True
             return
@@ -95,9 +99,9 @@ class EmbeddingService:
 
             self._model = Llama(
                 model_path=str(model_path),
-                embedding=True,       # Tryb embedding — kluczowe!
-                n_ctx=2048,           # Mniejszy kontekst (embedding nie potrzebuje dużo)
-                n_gpu_layers=-1,      # Wykorzystaj GPU jeśli dostępne
+                embedding=True,  # Tryb embedding — kluczowe!
+                n_ctx=2048,  # Mniejszy kontekst (embedding nie potrzebuje dużo)
+                n_gpu_layers=-1,  # Wykorzystaj GPU jeśli dostępne
                 verbose=False,
             )
             # Wykryj wymiar embeddingu
@@ -107,12 +111,14 @@ class EmbeddingService:
                 self._embedding_dim = len(vec)
                 logger.info(
                     "[EmbeddingService] Initialized: %s (dim=%d)",
-                    model_path.name, self._embedding_dim,
+                    model_path.name,
+                    self._embedding_dim,
                 )
             except Exception:
                 logger.info(
                     "[EmbeddingService] Initialized: %s (dim=%d, estimated)",
-                    model_path.name, self._embedding_dim,
+                    model_path.name,
+                    self._embedding_dim,
                 )
             self._initialized = True
 
@@ -128,7 +134,8 @@ class EmbeddingService:
             logger.warning(
                 "[EmbeddingService] Failed to load model %s: %s. "
                 "Using fallback hash-based embeddings.",
-                model_path.name, exc,
+                model_path.name,
+                exc,
             )
             self._initialized = True
 
@@ -159,14 +166,15 @@ class EmbeddingService:
             return vector
 
         try:
-            truncated = text[:self._max_length]
+            truncated = text[: self._max_length]
             response = self._model.create_embedding(truncated)
             vector = response["data"][0]["embedding"]
             _embedding_cache.set_sync(cache_key, vector, ttl=3600)
             return vector
         except Exception as exc:
             logger.warning(
-                "[EmbeddingService] Embedding failed: %s — fallback to hash vector", exc,
+                "[EmbeddingService] Embedding failed: %s — fallback to hash vector",
+                exc,
             )
             vector = self._fallback_embedding(text)
             _embedding_cache.set_sync(cache_key, vector, ttl=3600)
@@ -187,14 +195,15 @@ class EmbeddingService:
             return [self._fallback_embedding(t) for t in texts]
 
         try:
-            truncated = [t[:self._max_length] for t in texts]
+            truncated = [t[: self._max_length] for t in texts]
             response = self._model.create_embedding(truncated)
             # Sort results by index to preserve input order
             sorted_data = sorted(response["data"], key=lambda x: x["index"])
             return [item["embedding"] for item in sorted_data]
         except Exception as exc:
             logger.warning(
-                "[EmbeddingService] Batch embedding failed: %s — fallback", exc,
+                "[EmbeddingService] Batch embedding failed: %s — fallback",
+                exc,
             )
             return [self._fallback_embedding(t) for t in texts]
 

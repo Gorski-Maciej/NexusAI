@@ -8,16 +8,18 @@ Integruje się z:
   - DecisionQueue (kolejka decyzji oczekujących na użytkownika)
   - EventLog (historia zdarzeń)
   - Scheduler (terminy przypomnień)
+
+Storage: Główna baza danych (SQLAlchemy / Alembic).
+DDL w migracji 0003_consolidate_service_tables (tabela: notifications).
 """
 
 from __future__ import annotations
 
 import enum
-import sqlite3
-from pathlib import Path
 from typing import Any
 
 import pendulum
+from sqlalchemy import Engine, text
 from structlog import get_logger
 
 from nexus_ai.services.decision_queue import DecisionQueue
@@ -27,6 +29,7 @@ logger = get_logger("nexus.services.notification_manager")
 
 class NotificationPriority(enum.IntEnum):
     """Priorytety powiadomień."""
+
     LOW = 0
     NORMAL = 1
     HIGH = 2
@@ -35,6 +38,7 @@ class NotificationPriority(enum.IntEnum):
 
 class NotificationCategory(enum.Enum):
     """Kategorie powiadomień."""
+
     INFO = "info"
     ALERT = "alert"
     DECISION = "decision"
@@ -54,45 +58,11 @@ class NotificationManager:
       - Błędy systemowe (ERROR)
       - Codzienne podsumowania (DAILY_BRIEFING)
 
-    Storage: SQLite z auto-migracją schematu.
+    Storage: Główna baza danych (Alembic, tabela: notifications).
     """
 
-    def __init__(self, db_path: Path | str | None = None) -> None:
-        self._db_path = Path(db_path) if db_path else Path("app_data/notifications.db")
-        self._db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._init_schema()
-
-    def _init_schema(self) -> None:
-        """Inicjalizuj schemat bazy danych."""
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.executescript("""
-                CREATE TABLE IF NOT EXISTS notifications (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id TEXT NOT NULL,
-                    title TEXT NOT NULL,
-                    message TEXT NOT NULL,
-                    category TEXT NOT NULL DEFAULT 'info',
-                    priority INTEGER NOT NULL DEFAULT 1,
-                    source_agent TEXT NOT NULL DEFAULT '',
-                    reference_type TEXT,
-                    reference_id TEXT,
-                    is_read INTEGER NOT NULL DEFAULT 0,
-                    requires_action INTEGER NOT NULL DEFAULT 0,
-                    expires_at TEXT,
-                    created_at TEXT NOT NULL
-                );
-                CREATE INDEX IF NOT EXISTS idx_notif_user_read
-                    ON notifications(user_id, is_read, created_at DESC);
-                CREATE INDEX IF NOT EXISTS idx_notif_category
-                    ON notifications(category, created_at DESC);
-                CREATE INDEX IF NOT EXISTS idx_notif_expires
-                    ON notifications(expires_at)
-                    WHERE expires_at IS NOT NULL;
-            """)
-            conn.commit()
-        finally:
-            conn.close()
+    def __init__(self, engine: Engine) -> None:
+        self._engine = engine
 
     def send(
         self,
@@ -109,18 +79,6 @@ class NotificationManager:
     ) -> int:
         """Wyślij powiadomienie do użytkownika.
 
-        Args:
-            user_id: ID użytkownika
-            title: Tytuł powiadomienia
-            message: Treść powiadomienia
-            category: Kategoria (info, alert, decision, reminder, error)
-            priority: Priorytet (0=low, 1=normal, 2=high, 3=critical)
-            source_agent: Nazwa komponentu źródłowego
-            reference_type: Typ referencji (invoice, decision, itp.)
-            reference_id: ID referencji
-            requires_action: Czy wymaga akcji użytkownika
-            expires_in_hours: Po ilu godzinach wygasa
-
         Returns:
             ID utworzonego powiadomienia
         """
@@ -129,30 +87,42 @@ class NotificationManager:
         if expires_in_hours is not None:
             expires_at = pendulum.now("UTC").add(hours=expires_in_hours).isoformat()
 
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            cursor = conn.execute(
-                """INSERT INTO notifications
-                   (user_id, title, message, category, priority, source_agent,
-                    reference_type, reference_id, is_read, requires_action,
-                    expires_at, created_at)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)""",
-                (
-                    user_id, title, message, category, priority,
-                    source_agent or "", reference_type, reference_id,
-                    requires_action, expires_at, now,
+        with self._engine.begin() as conn:
+            result = conn.execute(
+                text(
+                    """INSERT INTO notifications
+                       (user_id, title, message, category, priority, source_agent,
+                        reference_type, reference_id, is_read, requires_action,
+                        expires_at, created_at)
+                       VALUES (:user_id, :title, :message, :category, :priority, :source_agent,
+                               :reference_type, :reference_id, 0, :requires_action,
+                               :expires_at, :created_at)"""
                 ),
+                {
+                    "user_id": user_id,
+                    "title": title,
+                    "message": message,
+                    "category": category,
+                    "priority": priority,
+                    "source_agent": source_agent or "",
+                    "reference_type": reference_type,
+                    "reference_id": reference_id,
+                    "requires_action": requires_action,
+                    "expires_at": expires_at,
+                    "created_at": now,
+                },
             )
-            conn.commit()
-            notif_id = int(cursor.lastrowid)
+            notif_id = int(result.lastrowid)
 
-            logger.info(
-                "[NotificationManager] sent user=%s cat=%s pri=%d agent=%s id=%d",
-                user_id, category, priority, source_agent, notif_id,
-            )
-            return notif_id
-        finally:
-            conn.close()
+        logger.info(
+            "[NotificationManager] sent user=%s cat=%s pri=%d agent=%s id=%d",
+            user_id,
+            category,
+            priority,
+            source_agent,
+            notif_id,
+        )
+        return notif_id
 
     def send_decision_request(
         self,
@@ -184,7 +154,7 @@ class NotificationManager:
 
         # Dodaj również do DecisionQueue dla kolejkowania decyzji
         try:
-            dq = DecisionQueue()
+            dq = DecisionQueue(engine=self._engine)
             dq.enqueue(
                 user_id=user_id,
                 notification_id=notif_id,
@@ -210,58 +180,50 @@ class NotificationManager:
         min_priority: int | None = None,
     ) -> list[dict[str, Any]]:
         """Pobierz powiadomienia użytkownika."""
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.row_factory = sqlite3.Row
-            query = "SELECT * FROM notifications WHERE user_id = ?"
-            params: list[Any] = [user_id]
+        with self._engine.connect() as conn:
+            query = "SELECT * FROM notifications WHERE user_id = :user_id"
+            params: dict[str, Any] = {"user_id": user_id}
 
             if unread_only:
                 query += " AND is_read = 0"
             if category:
-                query += " AND category = ?"
-                params.append(category)
+                query += " AND category = :category"
+                params["category"] = category
             if min_priority is not None:
-                query += " AND priority >= ?"
-                params.append(min_priority)
+                query += " AND priority >= :min_priority"
+                params["min_priority"] = min_priority
 
-            query += " ORDER BY priority DESC, created_at DESC LIMIT ?"
-            params.append(limit)
+            query += " ORDER BY priority DESC, created_at DESC LIMIT :limit"
+            params["limit"] = limit
 
-            return [dict(r) for r in conn.execute(query, params).fetchall()]
-        finally:
-            conn.close()
+            rows = conn.execute(text(query), params).mappings().all()
+            return [dict(r) for r in rows]
 
     def get_unread_count(self, user_id: str, min_priority: int | None = None) -> int:
         """Policz nieprzeczytane powiadomienia."""
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            query = "SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0"
-            params: list[Any] = [user_id]
+        with self._engine.connect() as conn:
+            query = "SELECT COUNT(*) FROM notifications WHERE user_id = :user_id AND is_read = 0"
+            params: dict[str, Any] = {"user_id": user_id}
             if min_priority is not None:
-                query += " AND priority >= ?"
-                params.append(min_priority)
-            return conn.execute(query, params).fetchone()[0]
-        finally:
-            conn.close()
+                query += " AND priority >= :min_priority"
+                params["min_priority"] = min_priority
+            return int(conn.execute(text(query), params).scalar() or 0)
 
     def mark_read(self, notification_id: int) -> None:
         """Oznacz powiadomienie jako przeczytane."""
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.execute("UPDATE notifications SET is_read = 1 WHERE id = ?", (notification_id,))
-            conn.commit()
-        finally:
-            conn.close()
+        with self._engine.begin() as conn:
+            conn.execute(
+                text("UPDATE notifications SET is_read = 1 WHERE id = :nid"),
+                {"nid": notification_id},
+            )
 
     def mark_all_read(self, user_id: str) -> None:
         """Oznacz wszystkie powiadomienia użytkownika jako przeczytane."""
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.execute("UPDATE notifications SET is_read = 1 WHERE user_id = ?", (user_id,))
-            conn.commit()
-        finally:
-            conn.close()
+        with self._engine.begin() as conn:
+            conn.execute(
+                text("UPDATE notifications SET is_read = 1 WHERE user_id = :user_id"),
+                {"user_id": user_id},
+            )
 
     def clean_expired(self) -> int:
         """Usuń wygasłe powiadomienia (expires_at < now).
@@ -270,21 +232,21 @@ class NotificationManager:
             Liczba usuniętych powiadomień.
         """
         now = pendulum.now("UTC").isoformat()
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            cursor = conn.execute(
-                "DELETE FROM notifications WHERE expires_at IS NOT NULL AND expires_at < ?",
-                (now,),
+        with self._engine.begin() as conn:
+            result = conn.execute(
+                text(
+                    "DELETE FROM notifications WHERE expires_at IS NOT NULL AND expires_at < :now"
+                ),
+                {"now": now},
             )
-            conn.commit()
-            deleted = cursor.rowcount
-            if deleted:
-                logger.info("[NotificationManager] cleaned %d expired notifications", deleted)
-            return deleted
-        finally:
-            conn.close()
+            deleted = result.rowcount
+        if deleted:
+            logger.info("[NotificationManager] cleaned %d expired notifications", deleted)
+        return deleted
 
-    def get_alerts(self, user_id: str, min_priority: int = NotificationPriority.HIGH) -> list[dict[str, Any]]:
+    def get_alerts(
+        self, user_id: str, min_priority: int = NotificationPriority.HIGH
+    ) -> list[dict[str, Any]]:
         """Pobierz aktywne alerty wysokiego priorytetu."""
         return self.get_notifications(
             user_id=user_id,

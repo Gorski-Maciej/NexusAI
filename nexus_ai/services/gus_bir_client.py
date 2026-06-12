@@ -53,8 +53,10 @@ SOAP_ENVELOPE = """<?xml version="1.0" encoding="UTF-8"?>
     </soap:Body>
 </soap:Envelope>"""
 
+
 class GusBirResult(Struct):
     """Wynik wyszukiwania pojedynczej firmy w GUS BIR."""
+
     regon: str = ""
     nip: str = ""
     name: str = ""
@@ -69,6 +71,7 @@ class GusBirResult(Struct):
     status: str = "unknown"
     pkd_codes: list[dict[str, str]] = field(default_factory=list)
     legal_form: str = ""
+
 
 class GusBirClient:
     """SOAP client for GUS BIR (Baza Internetowa REGON).
@@ -131,14 +134,14 @@ class GusBirClient:
             self._client = httpx.AsyncClient(timeout=self._timeout)
 
         body = (
-            "<ns:Zaloguj>"
-            f"<ns:pKluczUzytkownika>{self._api_key}</ns:pKluczUzytkownika>"
-            "</ns:Zaloguj>"
+            f"<ns:Zaloguj><ns:pKluczUzytkownika>{self._api_key}</ns:pKluczUzytkownika></ns:Zaloguj>"
         )
         try:
             result = await self._soap_call("Zaloguj", body)
             self._sid = result.strip()
-            logger.info("[GUS-BIR] Login successful, sid=%s...", self._sid[:10] if self._sid else "empty")
+            logger.info(
+                "[GUS-BIR] Login successful, sid=%s...", self._sid[:10] if self._sid else "empty"
+            )
             return bool(self._sid)
         except Exception as exc:
             logger.error("[GUS-BIR] Login failed: %s", exc)
@@ -341,7 +344,9 @@ class GusBirClient:
             r.commune = _extract_tag(block, "Gmina") or ""
             r.city = _extract_tag(block, "Miejscowosc") or ""
             r.street = _extract_tag(block, "Ulica") or ""
-            r.property_number = _extract_tag(block, "NrNieruchomosci") or _extract_tag(block, "NrLokalu") or ""
+            r.property_number = (
+                _extract_tag(block, "NrNieruchomosci") or _extract_tag(block, "NrLokalu") or ""
+            )
             r.zip_code = _extract_tag(block, "KodPocztowy") or ""
             r.post_city = _extract_tag(block, "Poczta") or ""
             status_raw = _extract_tag(block, "StatusNip") or ""
@@ -375,6 +380,7 @@ class GusBirClient:
             result.pkd_codes.append({"code": code.strip(), "name": name.strip()})
 
         return result
+
 
 def _extract_tag(xml_text: str, tag: str) -> str:
     """Wyodrebnij zawartosc taga XML (z namespacem lub bez)."""

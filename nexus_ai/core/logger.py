@@ -17,6 +17,7 @@ Usage (structlog — kontekstowy, z bound contextem):
     log = get_logger(__name__)
     log.info("event_occurred", invoice_id="123", amount=4500.00)
 """
+
 from __future__ import annotations
 
 import logging
@@ -230,6 +231,7 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
 def _redirect_standard_logging() -> None:
     """Przekierowuje standardowy logging do Loguru, aby logi z bibliotek zewnętrznych
     (np. SQLAlchemy, httpx) trafiały do ujednoliconego systemu."""
+
     class _InterceptHandler(logging.Handler):
         def emit(self, record: logging.LogRecord) -> None:
             try:
@@ -243,9 +245,7 @@ def _redirect_standard_logging() -> None:
                 frame = frame.f_back
                 depth += 1
 
-            logger.opt(depth=depth, exception=record.exc_info).log(
-                level, record.getMessage()
-            )
+            logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
 
     root_logger = logging.getLogger()
     root_logger.handlers.clear()

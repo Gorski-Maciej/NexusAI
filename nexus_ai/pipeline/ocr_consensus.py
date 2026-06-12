@@ -23,20 +23,24 @@ from structlog import get_logger
 
 logger = get_logger("nexus.pipeline.ocr_consensus")
 
+
 class OCREngine(Enum):
     TESSERACT = "tesseract"
     PADDLE = "paddleocr"
     SURYA = "surya"
+
 
 class OCRFieldResult(Struct):
     value: str | None
     confidence: float  # 0.0 - 1.0
     source: str
 
+
 class OCRConsensusDecision(Struct):
     accepted: OCRFieldResult | None
     confidence_conflict: bool
     votes: list[OCRFieldResult] = field(default_factory=list)
+
 
 def decide_field_consensus(
     results: list[OCRFieldResult],
@@ -105,7 +109,9 @@ def decide_field_consensus(
         votes=results,
     )
 
+
 # ── Silniki OCR ─────────────────────────────────────────────────────────────
+
 
 class TesseractEngine:
     """Tesseract OCR — klasyczny silnik dla drukowanego tekstu."""
@@ -117,6 +123,7 @@ class TesseractEngine:
 
     def _check_available(self) -> None:
         import shutil
+
         self._available = shutil.which("tesseract") is not None
         if not self._available:
             logger.warning("[OCR] Tesseract not found in PATH")
@@ -134,6 +141,7 @@ class TesseractEngine:
             logger.error("[OCR] Tesseract failed: %s", exc)
             return None
 
+
 class PaddleOCREngine:
     """PaddleOCR — deep learning OCR dla nietypowych czcionek."""
 
@@ -145,6 +153,7 @@ class PaddleOCREngine:
     def _init_engine(self) -> None:
         try:
             from paddleocr import PaddleOCR
+
             self._ocr = PaddleOCR(use_angle_cls=True, lang="pl", show_log=False)
             self._available = True
             logger.info("[OCR] PaddleOCR initialized successfully")
@@ -158,9 +167,7 @@ class PaddleOCREngine:
             return None
         try:
             # PaddleOCR jest synchroniczny — uruchom w wątku
-            result = await anyio.to_thread.run_sync(
-                self._ocr.ocr, str(image_path)
-            )
+            result = await anyio.to_thread.run_sync(self._ocr.ocr, str(image_path))
             if result and result[0]:
                 lines = [line[1][0] for line in result[0] if line[1]]
                 return "\n".join(lines)
@@ -168,6 +175,7 @@ class PaddleOCREngine:
         except Exception as exc:
             logger.error("[OCR] PaddleOCR failed: %s", exc)
             return None
+
 
 class SuryaOCREngine:
     """Surya OCR — layout-aware OCR dla trudnych warunków."""
@@ -181,6 +189,7 @@ class SuryaOCREngine:
             import surya.model.detection
             import surya.model.recognition
             import surya.ocr
+
             self._available = True
             logger.info("[OCR] Surya OCR initialized successfully")
         except ImportError:
@@ -203,14 +212,13 @@ class SuryaOCREngine:
                 model_recog = surya.model.recognition.load_model()
                 model_detect = surya.model.detection.load_model()
                 predictions = surya.ocr.ocr(
-                    [image], [self.lang_map("pol")],
-                    model_recog, model_detect,
+                    [image],
+                    [self.lang_map("pol")],
+                    model_recog,
+                    model_detect,
                 )
                 if predictions and predictions[0].text_lines:
-                    return "\n".join(
-                        line.text for line in predictions[0].text_lines
-                        if line.text
-                    )
+                    return "\n".join(line.text for line in predictions[0].text_lines if line.text)
                 return None
 
             result = await anyio.to_thread.run_sync(_run_ocr)
@@ -225,7 +233,9 @@ class SuryaOCREngine:
         mapping = {"pol": "pl", "eng": "en", "deu": "de"}
         return mapping.get(lang, "pl")
 
+
 # ── PDF → Image conversion ────────────────────────────────────────────────
+
 
 def pdf_to_images(pdf_path: Path, dpi: int = 300) -> list[Path]:
     """Convert PDF pages to images using PyMuPDF (fitz).
@@ -258,7 +268,9 @@ def pdf_to_images(pdf_path: Path, dpi: int = 300) -> list[Path]:
 
     return image_paths
 
+
 # ── Główna funkcja orchestrująca ─────────────────────────────────────────
+
 
 async def run_ocr_pipeline(
     file_path: Path,
@@ -305,9 +317,7 @@ async def run_ocr_pipeline(
         text = await engine.extract_text(image_path)
         return name, text
 
-    results = await anyio.gather(*[
-        _run_engine(name, engine) for name, engine in engines
-    ])
+    results = await anyio.gather(*[_run_engine(name, engine) for name, engine in engines])
 
     # Krok 3: Zbierz wyniki
     texts: dict[str, str | None] = dict(results)

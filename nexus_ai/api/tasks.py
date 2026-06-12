@@ -10,13 +10,17 @@ import time
 # ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
 try:
     from nexus_crypto import sha256 as _sha256
+
     HAS_NEXUS_CRYPTO = True
 except ImportError:
     import hashlib as _hashlib
+
     HAS_NEXUS_CRYPTO = False
 
     def _sha256(data: bytes) -> str:
         return _hashlib.sha256(data).hexdigest()
+
+
 from pathlib import Path
 from typing import Any
 
@@ -36,7 +40,12 @@ from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import create_oltp_engine, create_session_factory
 from nexus_ai.pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
 from nexus_ai.services.accounting import AccountingService
-from nexus_ai.core.decision_engine import DecisionEngine, DecisionVerdict, classify_invoice, calculate_trust_score
+from nexus_ai.core.decision_engine import (
+    DecisionEngine,
+    DecisionVerdict,
+    classify_invoice,
+    calculate_trust_score,
+)
 from nexus_ai.events.event_emitter import EventEmitter, get_event_emitter
 from nexus_ai.services.currency_converter import (
     Money,  # Nexus-Money (msgspec.Struct, zastępuje py-moneyed)
@@ -78,7 +87,9 @@ MAX_OUTBOX_RETRIES = 3
 # Circuit Breaker: stamina.retry (async-native) zastępuje custom CircuitBreaker
 # stamina automatycznie zarządza retry + circuit breaker w jednym dekoratorze
 INVOICE_OCR_EVENT_TYPES = {"process_invoice_ocr", "invoice_uploaded"}
-LARGE_ATTACHMENT_EVENT_TYPES = {"attachment_large_uploaded"}# Singleton instances (lazy init, shared across tasks)
+LARGE_ATTACHMENT_EVENT_TYPES = {
+    "attachment_large_uploaded"
+}  # Singleton instances (lazy init, shared across tasks)
 _DECISION_ENGINE: DecisionEngine | None = None
 _DUCKDB: DuckDBManager | None = None
 
@@ -162,7 +173,13 @@ async def decision_evaluate(invoice_id: str, extracted_data: dict) -> dict:
                     metadata={
                         "extracted_data_snapshot": {
                             k: extracted_data[k]
-                            for k in ("amount_gross", "amount_net", "category", "contractor_nip", "ocr_confidence")
+                            for k in (
+                                "amount_gross",
+                                "amount_net",
+                                "category",
+                                "contractor_nip",
+                                "ocr_confidence",
+                            )
                             if k in extracted_data
                         },
                     },
@@ -223,15 +240,20 @@ async def _post_invoice(invoice_id: str, extracted_data: dict, verdict: Decision
     try:
         async with session_factory() as session:
             await session.execute(
-                text("UPDATE invoices SET status = 'APPROVED', updated_at = CURRENT_TIMESTAMP WHERE id = :id"),
+                text(
+                    "UPDATE invoices SET status = 'APPROVED', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
+                ),
                 {"id": invoice_id},
             )
             await session.commit()
-            logger.info("[DECIDE] auto-posted invoice_id=%s (conf=%.4f)", invoice_id, verdict.confidence)
+            logger.info(
+                "[DECIDE] auto-posted invoice_id=%s (conf=%.4f)", invoice_id, verdict.confidence
+            )
 
         # Store in sqlite-vec for future anomaly detection
         try:
             from nexus_ai.services.semantic_guard import SemanticGuard
+
             sg = SemanticGuard()
             full_text = extracted_data.get("ocr_full_text", "") or ""
             if full_text:
@@ -257,11 +279,17 @@ async def _mark_for_review(invoice_id: str, verdict: DecisionVerdict) -> None:
     try:
         async with session_factory() as session:
             await session.execute(
-                text("UPDATE invoices SET status = 'PENDING_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"),
+                text(
+                    "UPDATE invoices SET status = 'PENDING_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
+                ),
                 {"id": invoice_id},
             )
             await session.commit()
-            logger.info("[DECIDE] marked for review invoice_id=%s (conf=%.4f)", invoice_id, verdict.confidence)
+            logger.info(
+                "[DECIDE] marked for review invoice_id=%s (conf=%.4f)",
+                invoice_id,
+                verdict.confidence,
+            )
     finally:
         await engine.dispose()
 
@@ -274,11 +302,18 @@ async def _escalate_to_human(invoice_id: str, verdict: DecisionVerdict, reason: 
     try:
         async with session_factory() as session:
             await session.execute(
-                text("UPDATE invoices SET status = 'MANUAL_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"),
+                text(
+                    "UPDATE invoices SET status = 'MANUAL_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
+                ),
                 {"id": invoice_id},
             )
             await session.commit()
-            logger.info("[DECIDE] escalated invoice_id=%s reason=%s (conf=%.4f)", invoice_id, reason, verdict.confidence)
+            logger.info(
+                "[DECIDE] escalated invoice_id=%s reason=%s (conf=%.4f)",
+                invoice_id,
+                reason,
+                verdict.confidence,
+            )
     finally:
         await engine.dispose()
 
@@ -298,7 +333,9 @@ async def _dispatch_outbox_event(row: dict) -> None:
             raise ValueError("Missing invoice_id in outbox payload")
         try:
             with stamina.retry(on=Exception, attempts=3, timeout=10.0):
-                await broker.kick("process_invoice_ocr", invoice_id=str(invoice_id), payload=payload)
+                await broker.kick(
+                    "process_invoice_ocr", invoice_id=str(invoice_id), payload=payload
+                )
         except Exception as exc:
             logger.warning("[OUTBOX] NATS broker.kick failed after retries: %s", exc)
             raise
@@ -309,7 +346,9 @@ async def _dispatch_outbox_event(row: dict) -> None:
             raise ValueError("Missing attachment_id in outbox payload")
         try:
             with stamina.retry(on=Exception, attempts=3, timeout=10.0):
-                await broker.kick("process_large_attachment", attachment_id=str(attachment_id), payload=payload)
+                await broker.kick(
+                    "process_large_attachment", attachment_id=str(attachment_id), payload=payload
+                )
         except Exception as exc:
             logger.warning("[OUTBOX] NATS broker.kick failed after retries: %s", exc)
             raise
@@ -335,6 +374,7 @@ async def _dispatch_outbox_event(row: dict) -> None:
         ensure_tax_schema(conn)
 
         from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
+
         tb = TigerBeetleClient()
 
         pipeline = TaxPipeline(
@@ -384,6 +424,7 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
     saga_engine = None
     try:
         from nexus_ai.core.saga import PersistedSagaStore
+
         config = AppConfig()
         saga_engine = _make_engine(config)
         saga_store = PersistedSagaStore(saga_engine)
@@ -414,11 +455,15 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
         primary_amount = _safe_float(payload.get("ocr_primary_amount_gross"))
         secondary_amount = _safe_float(payload.get("ocr_secondary_amount_gross"))
         primary = OCRAmountResult(
-            amount_gross=Money.from_string(str(primary_amount), "PLN") if primary_amount is not None else None,
+            amount_gross=Money.from_string(str(primary_amount), "PLN")
+            if primary_amount is not None
+            else None,
             source="surya",
         )
         secondary = OCRAmountResult(
-            amount_gross=Money.from_string(str(secondary_amount), "PLN") if secondary_amount is not None else None,
+            amount_gross=Money.from_string(str(secondary_amount), "PLN")
+            if secondary_amount is not None
+            else None,
             source="paddle",
         )
         consensus = decide_amount_consensus(primary, secondary, tolerance=0.01)
@@ -438,17 +483,33 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
             contractor_nip = payload.get("contractor_nip", "")
             bank_account = payload.get("bank_account", "")
 
-            nip_verification = await accounting.verify_nip(contractor_nip) if contractor_nip else None
+            nip_verification = (
+                await accounting.verify_nip(contractor_nip) if contractor_nip else None
+            )
             nip_valid = nip_verification is not None
-            iban_valid = accounting.validate_iban(bank_account) if bank_account else True  # IBAN nie jest wymagany
+            iban_valid = (
+                accounting.validate_iban(bank_account) if bank_account else True
+            )  # IBAN nie jest wymagany
 
             if nip_verification:
-                logger.info("[OCR] NIP verified invoice_id=%s name=%s", invoice_id, nip_verification.get("name", "unknown"))
+                logger.info(
+                    "[OCR] NIP verified invoice_id=%s name=%s",
+                    invoice_id,
+                    nip_verification.get("name", "unknown"),
+                )
             else:
-                logger.warning("[OCR] NIP verification failed for invoice_id=%s nip=%s", invoice_id, contractor_nip)
+                logger.warning(
+                    "[OCR] NIP verification failed for invoice_id=%s nip=%s",
+                    invoice_id,
+                    contractor_nip,
+                )
 
             if not iban_valid and bank_account:
-                logger.warning("[OCR] IBAN validation failed for invoice_id=%s iban=%s", invoice_id, bank_account)
+                logger.warning(
+                    "[OCR] IBAN validation failed for invoice_id=%s iban=%s",
+                    invoice_id,
+                    bank_account,
+                )
 
             # Dodaj flagi walidacji do payloadu
             payload["nip_valid"] = nip_valid
@@ -463,8 +524,10 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
         # --- Context Enrichment (Part IV): Biała Lista + cache kontrahentów ---
         try:
             import duckdb
+
             conn = duckdb.connect(str(AppConfig().duckdb_path))
             from nexus_ai.services.context_enricher import ContextEnricher, ensure_cache_schema
+
             ensure_cache_schema(conn)
             enricher = ContextEnricher(conn)
             enriched = await enricher.enrich(payload)
@@ -482,6 +545,7 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
         # --- Semantic Anomaly Detection (Part VI): sqlite-vec + HerBERT ---
         try:
             from nexus_ai.services.semantic_guard import SemanticGuard
+
             semantic_guard = SemanticGuard()
             full_text = payload.get("ocr_full_text", "")
             amount_net_val = _safe_float(payload.get("amount_net")) or 0.0
@@ -497,7 +561,9 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
                     anomaly.get("anomaly_score", 0),
                     anomaly.get("alert"),
                 )
-                await _mark_invoice_blocked(invoice_id, anomaly.get("alert", "Semantic anomaly detected"))
+                await _mark_invoice_blocked(
+                    invoice_id, anomaly.get("alert", "Semantic anomaly detected")
+                )
                 return
         except Exception as sem_err:
             logger.warning("[OCR] SemanticGuard failed for %s: %s", invoice_id, sem_err)
@@ -518,7 +584,8 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
             "number": payload.get("number", ""),
             "issue_date": payload.get("issue_date", ""),
             "category": payload.get("category", ""),
-            "ocr_confidence": _safe_float(payload.get("ocr_confidence")) or (1.0 - float(consensus.confidence_conflict) * 0.5),
+            "ocr_confidence": _safe_float(payload.get("ocr_confidence"))
+            or (1.0 - float(consensus.confidence_conflict) * 0.5),
             "layout_confidence": _safe_float(payload.get("layout_confidence")) or 0.5,
             "amount_consensus": not consensus.confidence_conflict,
             "llm_validation": _safe_float(payload.get("llm_validation")) or 0.5,
@@ -542,7 +609,9 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
                 "trust_score": float(payload.get("vendor_trust_score", 0.5)),
                 "category_consistent": bool(payload.get("vendor_category_consistent", True)),
                 "auto_approve": bool(payload.get("vendor_auto_approve", False)),
-                "category_preference_match": bool(payload.get("vendor_category_preference_match", True)),
+                "category_preference_match": bool(
+                    payload.get("vendor_category_preference_match", True)
+                ),
             },
             "bank_account_consistent": bool(payload.get("bank_account_consistent", True)),
             "amount_typical": bool(payload.get("amount_typical", True)),
@@ -557,16 +626,19 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
         # Jeśli żadna reguła nie matchuje = wszystkie pola mają wystarczającą pewność.
         try:
             import duckdb
+
             ze_conn = duckdb.connect(str(AppConfig().duckdb_path))
             from nexus_ai.core.context_interpreter import ContextInterpreter as CtxInterpreter
             from nexus_ai.tax.rules import RuleEngine, ensure_tax_schemas, seed_default_rules
+
             ensure_tax_schemas(ze_conn)
             seed_default_rules(ze_conn)
 
             # Zbuduj kontekst dla RuleEngine z danych payloadu + field_confidence
             ctx_data: dict[str, Any] = {
                 "category_code": (payload.get("category") or "").upper(),
-                "transaction_date": payload.get("issue_date", "") or payload.get("transaction_date", pendulum.now().date().isoformat()),
+                "transaction_date": payload.get("issue_date", "")
+                or payload.get("transaction_date", pendulum.now().date().isoformat()),
                 "company_tax_form": payload.get("company_tax_form", "CIT_STANDARD"),
                 "vendor_country": payload.get("vendor_country", "PL"),
                 "vendor_nip": payload.get("contractor_nip", ""),
@@ -609,10 +681,12 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
 
             ze_conn.close()
         except Exception as risk_err:
-            logger.warning("[OCR] Zen-Engine field confidence check failed for %s: %s", invoice_id, risk_err)
+            logger.warning(
+                "[OCR] Zen-Engine field confidence check failed for %s: %s", invoice_id, risk_err
+            )
             extracted_data["field_confidence_status"] = "CHECK_FAILED"
 
-    # Rozwiązanie 33: Przejście do AI_CLASSIFY
+        # Rozwiązanie 33: Przejście do AI_CLASSIFY
         try:
             if saga_store:
                 await saga_store.transition(
@@ -627,6 +701,7 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
     config = AppConfig()
     try:
         import nats
+
         nc = await nats.connect(config.nats_url)
         # Publish to invoice.extracted for rules_check subscriber
         await nc.publish(
@@ -648,7 +723,9 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
             await broker.kick(task_name, invoice_id=invoice_id, extracted_data=extracted_data)
         logger.info(
             "[OCR] workflow=%s tasks=%s for invoice_id=%s",
-            workflow_type, tasks_to_run, invoice_id,
+            workflow_type,
+            tasks_to_run,
+            invoice_id,
         )
 
         # Rozwiązanie 33: SEND_EVENT - sukces
@@ -693,7 +770,9 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
     try:
         # Użyj globalnego bufora - w środowisku workers nie ma dostępu do app.state
         # Dlatego czyszczenie jest opcjonalne i best-effort
-        logger.info("[OCR] processing complete for invoice_id=%s, buffer can be cleared", invoice_id)
+        logger.info(
+            "[OCR] processing complete for invoice_id=%s, buffer can be cleared", invoice_id
+        )
     except Exception:
         pass
 
@@ -710,10 +789,10 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
 @broker.task(task_name="process_large_attachment")
 async def process_large_attachment(attachment_id: str, payload: dict | None = None) -> None:
     """Dedicated worker path for large attachments uploaded via /upload-large."""
-    logger.info("[ATTACHMENT] processing large attachment_id=%s payload=%s", attachment_id, bool(payload))
+    logger.info(
+        "[ATTACHMENT] processing large attachment_id=%s payload=%s", attachment_id, bool(payload)
+    )
     return
-
-
 
 
 @broker.task(schedule=[{"cron": "0 * * * *"}], task_name="refresh_materialized_cashflow")
@@ -728,8 +807,6 @@ async def refresh_materialized_cashflow() -> None:
         manager.close()
     await clear_cache_async(prefix="api.routes.analytics")
     logger.info("[OLAP] refreshed m_daily_cashflow")
-
-
 
 
 async def _refresh_cashflow_materialized(manager: DuckDBManager) -> None:
@@ -759,28 +836,9 @@ async def dead_letter_processor_task() -> None:
 
     try:
         import nats
+
         nc = await nats.connect(config.nats_url)
         sub = await nc.subscribe("nats.deadletter", queue="nexus-dlq-workers")
-
-        # Sprawdź, czy tabela failed_tasks istnieje, jeśli nie - utwórz
-        async with session_factory() as session:
-            await session.execute(
-                text(
-                    """
-                    CREATE TABLE IF NOT EXISTS failed_tasks (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        task_type TEXT NOT NULL,
-                        task_id TEXT,
-                        error_message TEXT,
-                        stack_trace TEXT,
-                        payload TEXT,
-                        failed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        acknowledged BOOLEAN DEFAULT 0
-                    )
-                    """
-                )
-            )
-            await session.commit()
 
         # Sprawdź wiadomości w DLQ
         try:
@@ -862,9 +920,11 @@ async def cleanup_hard_deleted_invoices_task() -> None:
     try:
         async with session_factory() as session:
             from nexus_ai.services.security_service import SecurityService
+
             result = await SecurityService.cleanup_old_scans(session, years=5)
             logger.info(
-                "[RETENTION] Hard-deleted invoices cleanup: %s", result,
+                "[RETENTION] Hard-deleted invoices cleanup: %s",
+                result,
             )
     finally:
         await engine.dispose()
@@ -882,9 +942,13 @@ async def cleanup_archived_invoices_task() -> None:
     try:
         async with session_factory() as session:
             from nexus_ai.services.security_service import SecurityService
-            result = await SecurityService.archive_old_invoices(session, archive_table="archived_invoices")
+
+            result = await SecurityService.archive_old_invoices(
+                session, archive_table="archived_invoices"
+            )
             logger.info(
-                "[RETENTION] Archived old invoices: %s", result,
+                "[RETENTION] Archived old invoices: %s",
+                result,
             )
     finally:
         await engine.dispose()
@@ -939,19 +1003,27 @@ async def stuck_saga_recovery_task() -> None:
         for saga in stuck:
             if saga.state in intermediate_states:
                 try:
-                    await store.compensate(saga.saga_id, payload={
-                        "reason": "stuck_timeout",
-                        "stuck_state": saga.state,
-                        "stuck_duration": (pendulum.now("UTC") - saga.updated_at).total_seconds(),
-                    })
+                    await store.compensate(
+                        saga.saga_id,
+                        payload={
+                            "reason": "stuck_timeout",
+                            "stuck_state": saga.state,
+                            "stuck_duration": (
+                                pendulum.now("UTC") - saga.updated_at
+                            ).total_seconds(),
+                        },
+                    )
                     compensated += 1
                     logger.info(
                         "[SAGA] Auto-compensated stuck saga=%s state=%s stuck_minutes=%.1f",
-                        saga.saga_id, saga.state,
+                        saga.saga_id,
+                        saga.state,
                         (pendulum.now("UTC") - saga.updated_at).total_seconds() / 60,
                     )
                 except Exception as comp_err:
-                    logger.warning("[SAGA] Failed to compensate stuck saga=%s: %s", saga.saga_id, comp_err)
+                    logger.warning(
+                        "[SAGA] Failed to compensate stuck saga=%s: %s", saga.saga_id, comp_err
+                    )
 
         if compensated > 0:
             logger.info("[SAGA] Recovered %d stuck sagas", compensated)
@@ -961,7 +1033,7 @@ async def stuck_saga_recovery_task() -> None:
 
 
 # Semafory dla limitów współbieżności (Rozwiązanie 29)
-_OCR_SEMAPHORE = anyio.Semaphore(3)           # process_invoice_ocr: max 3 równolegle
+_OCR_SEMAPHORE = anyio.Semaphore(3)  # process_invoice_ocr: max 3 równolegle
 
 
 @broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="relay_outbox_events")
@@ -977,25 +1049,6 @@ async def relay_outbox_events() -> None:
     session_factory = create_session_factory(engine)
 
     async with session_factory() as session:
-        # Upewnij się, że tabela dead_letter_events istnieje
-        await session.execute(
-            text(
-                """
-                CREATE TABLE IF NOT EXISTS dead_letter_events (
-                    id TEXT PRIMARY KEY,
-                    event_type TEXT NOT NULL,
-                    aggregate_id TEXT,
-                    payload TEXT,
-                    error_message TEXT,
-                    stack_trace TEXT,
-                    retry_count INTEGER DEFAULT 0,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    dead_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-                """
-            )
-        )
-
         # 1. Odblokuj stare zadania w statusie PROCESSING (timeout >= 5 minut)
         stale_timeout = 300  # 5 minutes
         await session.execute(
@@ -1034,9 +1087,10 @@ async def relay_outbox_events() -> None:
 
         # 3. Pobierz zarezerwowane wiersze
         rows = (
-            await session.execute(
-                text(
-                    """
+            (
+                await session.execute(
+                    text(
+                        """
                     SELECT id, event_type, aggregate_id, payload, COALESCE(retry_count, 0) as retry_count
                     FROM outbox_events
                     WHERE status = 'PROCESSING'
@@ -1044,24 +1098,27 @@ async def relay_outbox_events() -> None:
                     ORDER BY created_at ASC
                     LIMIT 100
                     """
-                ),
+                    ),
+                )
             )
-        ).mappings().all()
+            .mappings()
+            .all()
+        )
 
         for row in rows:
             try:
                 # Idempotentność: sprawdź czy to zdarzenie było już przetworzone
                 event_id = row["id"]
                 existing = await session.execute(
-                    text(
-                        "SELECT 1 FROM processed_events WHERE id = :id"
-                    ),
+                    text("SELECT 1 FROM processed_events WHERE id = :id"),
                     {"id": event_id},
                 )
                 if existing.fetchone():
                     logger.info("[OUTBOX] Skipping already processed event id=%s", event_id)
                     await session.execute(
-                        text("UPDATE outbox_events SET status = 'SENT', processed = 1, processed_at = CURRENT_TIMESTAMP WHERE id = :id"),
+                        text(
+                            "UPDATE outbox_events SET status = 'SENT', processed = 1, processed_at = CURRENT_TIMESTAMP WHERE id = :id"
+                        ),
                         {"id": event_id},
                     )
                     continue
@@ -1087,7 +1144,9 @@ async def relay_outbox_events() -> None:
                 )
 
                 await session.execute(
-                    text("UPDATE outbox_events SET status = 'SENT', processed = 1, processed_at = CURRENT_TIMESTAMP WHERE id = :id"),
+                    text(
+                        "UPDATE outbox_events SET status = 'SENT', processed = 1, processed_at = CURRENT_TIMESTAMP WHERE id = :id"
+                    ),
                     {"id": event_id},
                 )
             except Exception as exc:
@@ -1136,9 +1195,7 @@ async def relay_outbox_events() -> None:
 
         # 4. Cleanup starych wpisów processed_events (> 24h)
         await session.execute(
-            text(
-                "DELETE FROM processed_events WHERE processed_at < datetime('now', '-1 day')"
-            )
+            text("DELETE FROM processed_events WHERE processed_at < datetime('now', '-1 day')")
         )
 
         await session.commit()
@@ -1166,9 +1223,14 @@ async def outbox_relay_process_pending_task() -> None:
         # Wczesne wyjście: jeśli nie ma oczekujących zdarzeń, nie twórz relay
         async with session_factory() as session:
             pending_count = int(
-                (await session.execute(
-                    text("SELECT COUNT(*) FROM outbox_events WHERE status IN ('PENDING', 'FAILED')")
-                )).scalar() or 0
+                (
+                    await session.execute(
+                        text(
+                            "SELECT COUNT(*) FROM outbox_events WHERE status IN ('PENDING', 'FAILED')"
+                        )
+                    )
+                ).scalar()
+                or 0
             )
         if pending_count == 0:
             return
@@ -1187,8 +1249,11 @@ async def outbox_relay_process_pending_task() -> None:
         logger.info(
             "[OUTBOX-RELAY] Cron processed=%d failed=%d dead_letter=%d "
             "skipped=%d total=%d (%.0fms)",
-            stats.processed, stats.failed, stats.dead_letter,
-            stats.skipped_idempotent, stats.total,
+            stats.processed,
+            stats.failed,
+            stats.dead_letter,
+            stats.skipped_idempotent,
+            stats.total,
             stats.processing_time_ms,
         )
     except Exception as exc:
@@ -1218,7 +1283,12 @@ async def finops_hourly_estimate_task() -> None:
     # ru_maxrss: KB on Linux, bytes on macOS; assume Linux deployment for this project.
     ram_gb = max((resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024 / 1024), 0.1)
     hourly_cost = estimate_runtime_cost(cpu_cores=cpu_cores, ram_gb=ram_gb, runtime_hours=1.0)
-    logger.info("[FINOPS] estimated hourly runtime cost usd=%s cpu_cores=%s ram_gb=%.3f", hourly_cost, cpu_cores, ram_gb)
+    logger.info(
+        "[FINOPS] estimated hourly runtime cost usd=%s cpu_cores=%s ram_gb=%.3f",
+        hourly_cost,
+        cpu_cores,
+        ram_gb,
+    )
 
 
 @broker.task(schedule=[{"cron": "45 * * * *"}], task_name="replay_dead_letter_outbox")
@@ -1265,7 +1335,11 @@ def _build_field_confidence(
 
     # Kwota brutto (z konsensusu lub payloadu)
     gross_str = payload.get("amount_gross")
-    gross_val = consensus.amount_gross if consensus and consensus.amount_gross is not None else _safe_float(gross_str)
+    gross_val = (
+        consensus.amount_gross
+        if consensus and consensus.amount_gross is not None
+        else _safe_float(gross_str)
+    )
     if gross_val is not None:
         base_conf = _safe_float(payload.get("ocr_confidence")) or 0.5
         # Jeśli konflikt konsensusu — obniż confidence dla gross
@@ -1405,6 +1479,7 @@ async def schema_drift_daily_check_task() -> None:
     finally:
         await engine.dispose()
 
+
 # contract marker: sync_single_invoice_to_duckdb(session, config, invoice_id)
 
 
@@ -1413,7 +1488,9 @@ async def flush_otel_fallback_buffer_task() -> None:
     """Replay file-buffered telemetry spans when OLAP becomes available again."""
     config = AppConfig()
     stats = await flush_fallback_spans(
-        lambda: DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path, read_only=False),
+        lambda: DuckDBManager(
+            db_path=config.duckdb_path, sqlite_path=config.sqlite_path, read_only=False
+        ),
         retries=3,
         base_delay=0.5,
     )
@@ -1437,7 +1514,9 @@ async def migration_integrity_daily_check_task() -> None:
         elif status == "baseline_created":
             logger.info("[MIGRATION-INTEGRITY] baseline created tables=%s", result.get("tables"))
         else:
-            logger.warning("[MIGRATION-INTEGRITY] status=%s issues=%s", status, result.get("issues"))
+            logger.warning(
+                "[MIGRATION-INTEGRITY] status=%s issues=%s", status, result.get("issues")
+            )
     finally:
         await engine.dispose()
 
@@ -1449,8 +1528,8 @@ async def cleanup_old_logs_task() -> None:
         return
 
     now = pendulum.now()
-    cutoff_compress = now - pendulum.duration(days=7)   # Kompresuj logi starsze niż 7 dni
-    cutoff_delete = now - pendulum.duration(days=30)    # Usuń logi starsze niż 30 dni
+    cutoff_compress = now - pendulum.duration(days=7)  # Kompresuj logi starsze niż 7 dni
+    cutoff_delete = now - pendulum.duration(days=30)  # Usuń logi starsze niż 30 dni
 
     removed = 0
     compressed = 0
@@ -1475,12 +1554,15 @@ async def cleanup_old_logs_task() -> None:
                     try:
                         import gzip
                         import shutil
+
                         with open(f, "rb") as f_in:
                             with gzip.open(compressed_name, "wb") as f_out:
                                 shutil.copyfileobj(f_in, f_out)
                         f.unlink()
                         compressed += 1
-                        logger.debug("[CLEANUP] compressed log: %s -> %s", f.name, compressed_name.name)
+                        logger.debug(
+                            "[CLEANUP] compressed log: %s -> %s", f.name, compressed_name.name
+                        )
                     except Exception as e:
                         logger.warning("[CLEANUP] failed to compress %s: %s", f.name, e)
 
@@ -1546,7 +1628,9 @@ async def daily_briefing_send(user_id: str | None = None) -> dict:
 
             if user_id:
                 result = await briefing_service.generate_and_send(user_id, channels=["in_app"])
-                logger.info("[DAILY-BRIEFING] sent for user_id=%s status=%s", user_id, result["status"])
+                logger.info(
+                    "[DAILY-BRIEFING] sent for user_id=%s status=%s", user_id, result["status"]
+                )
                 return {"result": "OK", "user_id": user_id, **result}
 
             default_users = ["default", "admin"]
@@ -1612,7 +1696,9 @@ async def check_hanging_transactions_task() -> None:
         else:
             logger.debug("[HANGING-TX] Plik WAL ma %.2f MB - OK", wal_size_mb)
     else:
-        logger.debug("[HANGING-TX] Brak pliku WAL - SQLite działa w trybie DELETE lub WAL jest pusty")
+        logger.debug(
+            "[HANGING-TX] Brak pliku WAL - SQLite działa w trybie DELETE lub WAL jest pusty"
+        )
 
     # Dodatkowo: sprawdź długo trwające zapytania przez PRAGMA
     engine = _make_engine(config)
@@ -1727,7 +1813,9 @@ async def daily_nbp_rate_fill_task() -> None:
 
         # Inicjalizuj ForexEngine z minimalnym zestawem parametrów
         engine = ForexEngine(
-            duckdb_manager=DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path),
+            duckdb_manager=DuckDBManager(
+                db_path=config.duckdb_path, sqlite_path=config.sqlite_path
+            ),
             tb_client=None,  # TigerBeetle nie jest potrzebny tylko do kursów
             account_receivable=0,
             account_fx_gain=0,
@@ -1751,7 +1839,10 @@ async def daily_nbp_rate_fill_task() -> None:
 
         logger.info(
             "[NBP-FILL] daily fill complete: currencies=%d, days=%d, filled=%d, errors=%d",
-            len(currencies), 30, filled, errors,
+            len(currencies),
+            30,
+            filled,
+            errors,
         )
     except Exception as exc:
         logger.error("[NBP-FILL] failed: %s", exc)
@@ -1791,4 +1882,3 @@ async def cleanup_expired_refresh_tokens_task() -> None:
             logger.info("[TOKEN-CLEANUP] Removed %d expired/revoked refresh tokens", deleted)
     finally:
         await engine.dispose()
-

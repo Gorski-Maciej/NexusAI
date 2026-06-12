@@ -35,7 +35,7 @@ class SharedImageBuffer:
             "shm_name": shm.name,
             "shape": image.shape,
             "dtype": str(image.dtype),
-            "nbytes": image.nbytes
+            "nbytes": image.nbytes,
         }
 
     @staticmethod

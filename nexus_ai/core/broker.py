@@ -18,12 +18,14 @@ broker = NatsBroker(
     connect_timeout=2,
 )
 
+
 @broker.on_event(TaskiqEvents.WORKER_STARTUP)
 async def startup(state):
     """Logika uruchamiana przy starcie workera."""
     print("[Worker] Łączenie z systemami...")
     state.ocr_processor = None
     print("[Worker] Gotowy do przetwarzania faktur (lazy loading modeli).")
+
 
 @broker.on_event(TaskiqEvents.WORKER_SHUTDOWN)
 async def shutdown(state):

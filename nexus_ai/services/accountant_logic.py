@@ -5,10 +5,12 @@ from typing import Any
 
 from nexus_ai.db.analytics import DuckDBManager
 
+
 class AccountSuggestion(Struct):
     account_wn: str
     account_ma: str
     reason: str
+
 
 class ZPKEngine:
     """Semantic Chart of Accounts engine backed by DuckDB."""
@@ -69,8 +71,12 @@ class ZPKEngine:
                 ),
             )
 
-    def suggest_accounts(self, invoice_data: dict[str, Any], company_profile: dict[str, Any]) -> AccountSuggestion:
-        keywords = [str(item.get("name", "")).lower().strip() for item in invoice_data.get("items", [])]
+    def suggest_accounts(
+        self, invoice_data: dict[str, Any], company_profile: dict[str, Any]
+    ) -> AccountSuggestion:
+        keywords = [
+            str(item.get("name", "")).lower().strip() for item in invoice_data.get("items", [])
+        ]
         vendor_nip = str(invoice_data.get("vendor_nip", "")).strip()
         keyword_hash = "|".join(sorted([k for k in keywords if k]))
 
@@ -85,7 +91,9 @@ class ZPKEngine:
             (vendor_nip, keyword_hash),
         )
         if historical:
-            return AccountSuggestion(account_wn=historical[0][0], account_ma=historical[0][1], reason="history")
+            return AccountSuggestion(
+                account_wn=historical[0][0], account_ma=historical[0][1], reason="history"
+            )
 
         profile_kind = str(company_profile.get("business_kind", "")).lower()
         if any(word in keyword_hash for word in ["prąd", "energia", "electricity"]):
@@ -97,7 +105,15 @@ class ZPKEngine:
 
         return AccountSuggestion("409", "202", "fallback_other_costs")
 
-    def learn_mapping(self, *, vendor_nip: str, keyword_hash: str, account_wn: str, account_ma: str, source: str = "owner") -> None:
+    def learn_mapping(
+        self,
+        *,
+        vendor_nip: str,
+        keyword_hash: str,
+        account_wn: str,
+        account_ma: str,
+        source: str = "owner",
+    ) -> None:
         self.db.execute(
             """
             INSERT INTO zpk_mapping_history (vendor_nip, keyword_hash, account_wn, account_ma, source)
@@ -106,7 +122,9 @@ class ZPKEngine:
             (vendor_nip, keyword_hash, account_wn, account_ma, source),
         )
 
-    def ensure_vendor_subaccount(self, parent_account: str, vendor_nip: str, description: str) -> str:
+    def ensure_vendor_subaccount(
+        self, parent_account: str, vendor_nip: str, description: str
+    ) -> str:
         account_number = f"{parent_account}-{vendor_nip}"
         self.db.execute(
             """

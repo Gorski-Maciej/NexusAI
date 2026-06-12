@@ -16,6 +16,7 @@ import pendulum
 try:
     from cryptography.hazmat.primitives import serialization as _serialization
     from cryptography.hazmat.primitives.asymmetric import padding as _asym_padding
+
     _HAS_CRYPTOGRAPHY = True
 except ImportError:
     _HAS_CRYPTOGRAPHY = False
@@ -71,4 +72,4 @@ class KsefCryptoProvider:
             message,
             _asym_padding.PKCS1v15(),  # Obowiązkowy standard KSeF
         )
-        return base64.b64encode(encrypted).decode('utf-8')
+        return base64.b64encode(encrypted).decode("utf-8")

@@ -45,15 +45,14 @@ def _load_bindings() -> Any | None:
         import importlib
 
         # Próbuj załadować wygenerowane bindingi
-        _BINDINGS_MODULE = importlib.import_module(
-            "nexus_ai.core.integrations.ksef.bindings"
-        )
+        _BINDINGS_MODULE = importlib.import_module("nexus_ai.core.integrations.ksef.bindings")
         logger.info("[KSeF] xsdata bindings loaded successfully")
     except Exception as exc:
         logger.warning(
             "[KSeF] xsdata bindings not available: %s. Run: "
             "xsdata nexus_ai/core/integrations/ksef/schema/FA_VAT.xsd "
-            "--package nexus_ai.core.integrations.ksef.bindings", exc
+            "--package nexus_ai.core.integrations.ksef.bindings",
+            exc,
         )
         _BINDINGS_MODULE = None
     return _BINDINGS_MODULE
@@ -69,6 +68,7 @@ def get_binding(name: str) -> type | None:
 
 # ── Ręczne klasy pomocnicze (gdy bindingi nie są wygenerowane) ─────────────
 
+
 def build_init_session_request(nip: str, encrypted_token: str) -> bytes:
     """Build InitSessionTokenRequest XML using xsdata or manual fallback."""
     InitSessionToken = get_binding("InitSessionTokenRequest")
@@ -82,9 +82,7 @@ def build_init_session_request(nip: str, encrypted_token: str) -> bytes:
             if all([context_cls, doc_type_cls, form_code_cls]):
                 request = InitSessionToken(
                     context=context_cls(
-                        document_type=doc_type_cls(
-                            form_code=form_code_cls(value="FA")
-                        ),
+                        document_type=doc_type_cls(form_code=form_code_cls(value="FA")),
                         token=encrypted_token,
                     )
                 )

@@ -8,6 +8,7 @@ from pathlib import Path
 import pendulum
 from anyio import to_thread
 from litestar import Controller, post
+from structlog import get_logger
 from litestar.connection import Request
 from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
@@ -30,6 +31,9 @@ from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.services.audit_logger import AuditLogger
 
+
+logger = get_logger("nexus.api.invoices")
+
 UPLOAD_CHUNK_SIZE = 1024 * 1024
 MAX_INVOICE_UPLOAD_BYTES = 50 * 1024 * 1024
 MAX_ATTACHMENT_UPLOAD_BYTES = 500 * 1024 * 1024
@@ -46,7 +50,9 @@ def _validate_content_length(headers: dict[str, str], max_bytes: int) -> None:
     except ValueError:
         return
     if size > max_bytes:
-        raise ClientException(detail=f"Request body too large ({size} > {max_bytes})", status_code=413)
+        raise ClientException(
+            detail=f"Request body too large ({size} > {max_bytes})", status_code=413
+        )
 
 
 async def _write_chunk(temp_file, chunk: bytes) -> None:
@@ -88,7 +94,9 @@ class InvoiceController(Controller):
         language = resolve_language(request.headers.get("accept-language"))
         _validate_content_length(request.headers, MAX_INVOICE_UPLOAD_BYTES)
         if not file_obj:
-            raise ClientException(detail=t("upload.missing_file", language=language), status_code=400)
+            raise ClientException(
+                detail=t("upload.missing_file", language=language), status_code=400
+            )
 
         hasher = hashlib.sha256()
         total_size = 0
@@ -144,14 +152,16 @@ class InvoiceController(Controller):
         payload_hash = hasher.hexdigest()
 
         idempotency_key = request.headers.get("idempotency-key")
-        idempotency_store = IdempotencyStore(config.idempotency_db_path)
+        idempotency_store = IdempotencyStore(db_session.bind)
 
         if idempotency_key:
             cached = idempotency_store.get(idempotency_key, payload_hash)
             if cached:
                 return TaskResponse(**cached)
 
-        saved = storage.finalize_temp_upload(temp_path=temp_path, digest=payload_hash, size_bytes=total_size, suffix=".pdf")
+        saved = storage.finalize_temp_upload(
+            temp_path=temp_path, digest=payload_hash, size_bytes=total_size, suffix=".pdf"
+        )
 
         task_id = uuid.uuid4().hex
         invoice_id = uuid.uuid4().hex
@@ -182,8 +192,34 @@ class InvoiceController(Controller):
         db_session.commit()
         await clear_cache_async(prefix="api.routes.analytics")
 
+        # ── Emit InvoiceCreated event ───────────────────────────────────
+        try:
+            event_emitter = request.app.state.event_emitter
+            await event_emitter.emit_invoice_created(
+                invoice_id=invoice_id,
+                number=file_obj.filename or "",
+                file_path=str(saved.file_path),
+                metadata={
+                    "task_id": task_id,
+                    "file_hash": saved.file_hash,
+                    "size_bytes": saved.size_bytes,
+                    "source": "upload",
+                },
+            )
+            logger.info(
+                "[EVENT] InvoiceCreated emitted for invoice_id=%s", invoice_id
+            )
+        except Exception as event_err:
+            logger.warning(
+                "[EVENT] Failed to emit InvoiceCreated for %s: %s",
+                invoice_id,
+                event_err,
+            )
+
         # Immutable audit trail (hash-chained) for compliance-grade evidencing.
-        audit_manager = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path, read_only=False)
+        audit_manager = DuckDBManager(
+            db_path=config.duckdb_path, sqlite_path=config.sqlite_path, read_only=False
+        )
         try:
             AuditLogger(audit_manager).append_event(
                 "invoice.uploaded",
@@ -209,11 +245,15 @@ class InvoiceController(Controller):
         )
 
         if idempotency_key:
-            idempotency_store.save(idempotency_key, payload_hash, {
-                "task_id": response.task_id,
-                "status": response.status,
-                "message": response.message,
-            })
+            idempotency_store.save(
+                idempotency_key,
+                payload_hash,
+                {
+                    "task_id": response.task_id,
+                    "status": response.status,
+                    "message": response.message,
+                },
+            )
 
         return response
 
@@ -241,9 +281,11 @@ class InvoiceController(Controller):
         language = resolve_language(request.headers.get("accept-language"))
         _validate_content_length(request.headers, MAX_ATTACHMENT_UPLOAD_BYTES)
         if not file_obj:
-            raise ClientException(detail=t("upload.missing_file", language=language), status_code=400)
+            raise ClientException(
+                detail=t("upload.missing_file", language=language), status_code=400
+            )
         idempotency_key = request.headers.get("idempotency-key")
-        idempotency_store = IdempotencyStore(config.idempotency_db_path)
+        idempotency_store = IdempotencyStore(db_session.bind)
 
         hasher = hashlib.sha256()
         total_size = 0
@@ -259,7 +301,9 @@ class InvoiceController(Controller):
                     if not first_chunk:
                         first_chunk = chunk[:512]
                     total_size += len(chunk)
-                    if total_size > min(config.max_attachment_upload_bytes, MAX_ATTACHMENT_UPLOAD_BYTES):
+                    if total_size > min(
+                        config.max_attachment_upload_bytes, MAX_ATTACHMENT_UPLOAD_BYTES
+                    ):
                         raise ClientException(
                             detail=t(
                                 "upload.file_too_large",
@@ -286,7 +330,9 @@ class InvoiceController(Controller):
 
         # Rozwiązanie 31: Walidacja MIME i sygnatur plików
         try:
-            normalized_content, detected_mime = FileValidator.validate_file(first_chunk, file_obj.filename or "")
+            normalized_content, detected_mime = FileValidator.validate_file(
+                first_chunk, file_obj.filename or ""
+            )
             if normalized_content != first_chunk:
                 with Path(temp_path).open("wb") as f:
                     f.write(normalized_content)
@@ -302,7 +348,9 @@ class InvoiceController(Controller):
             cached = idempotency_store.get(idempotency_key, payload_hash)
             if cached:
                 return TaskResponse(**cached)
-        saved = storage.finalize_temp_upload(temp_path=temp_path, digest=payload_hash, size_bytes=total_size, suffix=".bin")
+        saved = storage.finalize_temp_upload(
+            temp_path=temp_path, digest=payload_hash, size_bytes=total_size, suffix=".bin"
+        )
         task_id = uuid.uuid4().hex
         attachment_id = uuid.uuid4().hex
         event_payload = {
@@ -330,12 +378,20 @@ class InvoiceController(Controller):
             },
         )
         db_session.commit()
-        response = TaskResponse(task_id=task_id, status="QUEUED", message="Large attachment accepted for dedicated processing queue")
+        response = TaskResponse(
+            task_id=task_id,
+            status="QUEUED",
+            message="Large attachment accepted for dedicated processing queue",
+        )
         if idempotency_key:
             idempotency_store.save(
                 idempotency_key,
                 payload_hash,
-                {"task_id": response.task_id, "status": response.status, "message": response.message},
+                {
+                    "task_id": response.task_id,
+                    "status": response.status,
+                    "message": response.message,
+                },
             )
         return response
 

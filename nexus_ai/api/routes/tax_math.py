@@ -139,14 +139,16 @@ class TaxMathController(Controller):
             net_money_list.append(money)
 
         if not net_money_list:
-            return Response({
-                "status": "ok",
-                "total_net": Money.zero(data.currency),
-                "total_vat": Money.zero(data.currency),
-                "total_gross": Money.zero(data.currency),
-                "currency": data.currency,
-                "positions": [],
-            })
+            return Response(
+                {
+                    "status": "ok",
+                    "total_net": Money.zero(data.currency),
+                    "total_vat": Money.zero(data.currency),
+                    "total_gross": Money.zero(data.currency),
+                    "currency": data.currency,
+                    "positions": [],
+                }
+            )
 
         # ── 2. Walidacja waluty ───────────────────────────────────────────
         first_currency = net_money_list[0].currency_code
@@ -178,18 +180,22 @@ class TaxMathController(Controller):
         for np_net, inv_pos in zip(net_money_list, inv_positions):
             vat_money = multiply_net_by_vat_money(np_net, vat_rate)
             gross_money = add_tax_money(np_net, vat_money)
-            positions_result.append({
-                "net": np_net,
-                "vat": vat_money,
-                "gross": gross_money,
-                "vat_rate": str(vat_rate),
-            })
+            positions_result.append(
+                {
+                    "net": np_net,
+                    "vat": vat_money,
+                    "gross": gross_money,
+                    "vat_rate": str(vat_rate),
+                }
+            )
 
-        return Response({
-            "status": "ok",
-            "total_net": total_net_money,
-            "total_vat": total_vat_money,
-            "total_gross": total_gross_money,
-            "currency": first_currency,
-            "positions": positions_result,
-        })
+        return Response(
+            {
+                "status": "ok",
+                "total_net": total_net_money,
+                "total_vat": total_vat_money,
+                "total_gross": total_gross_money,
+                "currency": first_currency,
+                "positions": positions_result,
+            }
+        )

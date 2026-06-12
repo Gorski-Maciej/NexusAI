@@ -9,10 +9,14 @@ class Twybor1(Enum):
     """
     Pojedyncze pole wyboru.
     """
+
     VALUE_1 = 1
+
+
 class Twybor12(Enum):
     """
     Podwójne pole wyboru.
     """
+
     VALUE_1 = 1
     VALUE_2 = 2

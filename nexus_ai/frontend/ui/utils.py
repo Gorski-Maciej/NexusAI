@@ -13,6 +13,7 @@ class Debouncer:
 
     def __call__(self, coroutine_func: Callable):
         """Wywołuje funkcję asynchroniczną dopiero po upływie zadanego czasu."""
+
         async def debounce_wrapper(*args, **kwargs):
             async def delayed_call():
                 await anyio.sleep(self.wait_ms)

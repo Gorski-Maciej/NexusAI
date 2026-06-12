@@ -6,6 +6,7 @@ _log = _get_logger("nexus.db")
 
 # ── Safe imports — non-critical modules may fail in constrained envs ──
 
+
 def _safe_import(qualname: str, names: list[str]):
     try:
         mod = __import__(qualname, fromlist=names)
@@ -15,19 +16,30 @@ def _safe_import(qualname: str, names: list[str]):
         return [None] * len(names)
 
 
-Base, create_oltp_engine, create_async_oltp_engine, create_session_factory, \
-    create_async_session_factory, get_session, get_async_session, SQLCIPHER_AVAILABLE \
-    = _safe_import(
-    "db.database", [
-        "Base", "create_oltp_engine", "create_async_oltp_engine",
-        "create_session_factory", "create_async_session_factory",
-        "get_session", "get_async_session", "SQLCIPHER_AVAILABLE",
-    ]
+(
+    Base,
+    create_oltp_engine,
+    create_async_oltp_engine,
+    create_session_factory,
+    create_async_session_factory,
+    get_session,
+    get_async_session,
+    SQLCIPHER_AVAILABLE,
+) = _safe_import(
+    "db.database",
+    [
+        "Base",
+        "create_oltp_engine",
+        "create_async_oltp_engine",
+        "create_session_factory",
+        "create_async_session_factory",
+        "get_session",
+        "get_async_session",
+        "SQLCIPHER_AVAILABLE",
+    ],
 )
 
-DuckDBLimits, DuckDBManager = _safe_import(
-    "db.analytics", ["DuckDBLimits", "DuckDBManager"]
-)
+DuckDBLimits, DuckDBManager = _safe_import("db.analytics", ["DuckDBLimits", "DuckDBManager"])
 
 [OutboxManager] = _safe_import("db.outbox", ["OutboxManager"])
 

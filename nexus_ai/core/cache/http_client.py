@@ -30,8 +30,7 @@ try:
 except ImportError:
     HAS_HISHEL = False
     logger.warning(
-        "[HTTP-CACHE] hishel not installed — HTTP caching disabled. "
-        "Install: pip install hishel"
+        "[HTTP-CACHE] hishel not installed — HTTP caching disabled. Install: pip install hishel"
     )
 
 
@@ -87,6 +86,7 @@ def create_cached_client(
 
 
 # ── Prekonfigurowane klienty dla zewnętrznych API ────────────────────────
+
 
 class CachedHttpClient:
     """Prekonfigurowany klient HTTP z cache'em dla zewnętrznych API.

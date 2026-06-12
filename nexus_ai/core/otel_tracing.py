@@ -93,11 +93,13 @@ def init_tracing(
         from opentelemetry.sdk.trace import TracerProvider
         from opentelemetry.sdk.trace.export import BatchSpanProcessor, SimpleSpanProcessor
 
-        resource = Resource.create({
-            "service.name": service_name,
-            "service.version": os.getenv("NEXUS_VERSION", "2.0.0"),
-            "deployment.environment": environment,
-        })
+        resource = Resource.create(
+            {
+                "service.name": service_name,
+                "service.version": os.getenv("NEXUS_VERSION", "2.0.0"),
+                "deployment.environment": environment,
+            }
+        )
 
         provider = TracerProvider(resource=resource)
 
@@ -132,7 +134,9 @@ def init_tracing(
 
         logger.info(
             "[OTEL-TRACING] Tracing initialized: service=%s env=%s otlp=%s",
-            service_name, environment, endpoint or "disabled",
+            service_name,
+            environment,
+            endpoint or "disabled",
         )
 
     except ImportError as exc:

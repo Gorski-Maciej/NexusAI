@@ -37,6 +37,7 @@ logger = get_logger(__name__)
 
 class ProtocolViolationError(Exception):
     """Decyzja modelu narusza zdefiniowany protokół SOP."""
+
     pass
 
 
@@ -208,7 +209,9 @@ class ProtocolExecutor:
         lines.append("\n=== DECYZJA ===")
         lines.append("Na podstawie danych, protokołów i przykładów podejmij decyzję.")
         lines.append("Return ONLY a valid JSON object. No other text.")
-        lines.append('{\n    "decision": "AUTO_POST" | "SUGGEST" | "ASK_USER" | "ESCALATE",\n    "confidence": 0.0-1.0,\n    "reasoning": "Uzasadnienie na podstawie protokołów i arkusza faktów",\n    "action_plan": ["Krok 1: ...", "Krok 2: ..."],\n    "risk_level": "low" | "medium" | "high",\n    "requires_human_approval": true | false\n}')
+        lines.append(
+            '{\n    "decision": "AUTO_POST" | "SUGGEST" | "ASK_USER" | "ESCALATE",\n    "confidence": 0.0-1.0,\n    "reasoning": "Uzasadnienie na podstawie protokołów i arkusza faktów",\n    "action_plan": ["Krok 1: ...", "Krok 2: ..."],\n    "risk_level": "low" | "medium" | "high",\n    "requires_human_approval": true | false\n}'
+        )
 
         return "\n".join(lines), sop_loaded
 

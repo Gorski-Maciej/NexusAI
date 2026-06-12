@@ -7,13 +7,17 @@ from msgspec import Struct
 # ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
 try:
     from nexus_crypto import sha256 as _sha256
+
     HAS_NEXUS_CRYPTO = True
 except ImportError:
     import hashlib as _hashlib
+
     HAS_NEXUS_CRYPTO = False
 
     def _sha256(data: bytes) -> str:
         return _hashlib.sha256(data).hexdigest()
+
+
 from decimal import Decimal
 from pathlib import Path
 from typing import Protocol
@@ -23,8 +27,10 @@ import pendulum
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
+
 class DuplicateTransferError(RuntimeError):
     pass
+
 
 class BankTransaction(Struct):
     booking_date: date
@@ -39,8 +45,10 @@ class BankTransaction(Struct):
     def amount_cents(self) -> int:
         return int((self.amount * 100).quantize(Decimal("1")))
 
+
 class StatementParser(Protocol):
     def parse(self, file_path: Path) -> list[BankTransaction]: ...
+
 
 class CSVStatementParser:
     """Reference parser for local CSV exports from banks."""
@@ -63,6 +71,7 @@ class CSVStatementParser:
                 )
         return rows
 
+
 class ParserFactory:
     @staticmethod
     def get_parser(file_path: Path) -> StatementParser:
@@ -70,16 +79,26 @@ class ParserFactory:
             return CSVStatementParser()
         raise ValueError(f"Unsupported statement format: {file_path.suffix}")
 
+
 def generate_idempotency_id(tx: BankTransaction) -> uuid.UUID:
     raw = f"{tx.booking_date.isoformat()}|{tx.amount}|{tx.title}|{tx.counterparty_account}|{tx.balance_after}"
     digest = _sha256(raw.encode("utf-8"))
     return uuid.uuid5(uuid.NAMESPACE_DNS, digest)
 
+
 class StatementContinuityError(RuntimeError):
     pass
 
+
 class IdempotentBankImporter:
-    def __init__(self, *, tb_client: TigerBeetleClient, duckdb: DuckDBManager, ledger_id: int = 1, transfer_code: int = 777):
+    def __init__(
+        self,
+        *,
+        tb_client: TigerBeetleClient,
+        duckdb: DuckDBManager,
+        ledger_id: int = 1,
+        transfer_code: int = 777,
+    ):
         self.tb_client = tb_client
         self.duckdb = duckdb
         self.ledger_id = ledger_id
@@ -106,7 +125,9 @@ class IdempotentBankImporter:
     def validate_balance_continuity(self, transactions: list[BankTransaction]) -> None:
         if not transactions:
             return
-        last = self.duckdb.execute("SELECT balance_after FROM bank_history ORDER BY booking_date DESC, imported_at DESC LIMIT 1")
+        last = self.duckdb.execute(
+            "SELECT balance_after FROM bank_history ORDER BY booking_date DESC, imported_at DESC LIMIT 1"
+        )
         if not last:
             return
         expected_opening = Decimal(str(last[0][0]))
@@ -126,7 +147,9 @@ class IdempotentBankImporter:
         for tx in transactions:
             tx_uuid = generate_idempotency_id(tx)
             tx_id = str(tx_uuid)
-            exists = self.duckdb.execute("SELECT 1 FROM bank_history WHERE tx_id = ? LIMIT 1", (tx_id,))
+            exists = self.duckdb.execute(
+                "SELECT 1 FROM bank_history WHERE tx_id = ? LIMIT 1", (tx_id,)
+            )
             if exists:
                 duplicates += 1
                 continue

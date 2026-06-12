@@ -20,7 +20,7 @@ def main_ui(page: ft.Page):
 
         page.dialog = ft.AlertDialog(
             title=ft.Text("Zakończono"),
-            content=ft.Text("Aktualizacja gotowa. Uruchom program ponownie.")
+            content=ft.Text("Aktualizacja gotowa. Uruchom program ponownie."),
         )
         page.dialog.open = True
         page.update()
@@ -34,8 +34,8 @@ def main_ui(page: ft.Page):
                 leading=ft.Icon(ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40),
                 content=ft.Text(f"Dostępna aktualizacja do wersji {update_info['version']}"),
                 actions=[
-                    ft.TextButton("Aktualizuj", data=update_info['url'], on_click=on_update_click)
-                ]
+                    ft.TextButton("Aktualizuj", data=update_info["url"], on_click=on_update_click)
+                ],
             )
             page.banner = banner
             banner.open = True

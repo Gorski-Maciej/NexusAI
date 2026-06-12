@@ -41,7 +41,11 @@ class AutoDecreeEngine:
         # Przykładowa logika "twardych reguł" dla popularnych NIPów:
         rules = {
             "5260250995": {"category": "Paliwo", "vat_deduction": 0.5, "account": "401-1"},  # Orlen
-            "5261040567": {"category": "Telekomunikacja", "vat_deduction": 1.0, "account": "402-5"},  # Orange
+            "5261040567": {
+                "category": "Telekomunikacja",
+                "vat_deduction": 1.0,
+                "account": "402-5",
+            },  # Orange
         }
 
         if contractor_nip in rules:

@@ -1,4 +1,5 @@
 """Notification service for daily briefings, user notifications, and DailyBriefingGenerator."""
+
 from __future__ import annotations
 
 import anyio
@@ -18,6 +19,7 @@ logger = get_logger("nexus.services.notification")
 # ---------------------------------------------------------------------------
 # Daily Briefing Generator
 # ---------------------------------------------------------------------------
+
 
 class DailyBriefingGenerator:
     """Generator codziennych podsumowań finansowych (Daily Briefing).
@@ -100,7 +102,10 @@ class DailyBriefingGenerator:
 
         logger.info(
             "[DailyBriefing] generated for user_id=%s: %d processed, %d pending, %d blocked",
-            user_id, total_processed, pending_review, blocked.get("count", 0),
+            user_id,
+            total_processed,
+            pending_review,
+            blocked.get("count", 0),
         )
         return briefing
 
@@ -140,7 +145,11 @@ class DailyBriefingGenerator:
                 "SELECT contractor_nip, COUNT(*) as cnt, SUM(amount_gross) as total FROM oltp.invoices WHERE DATE(created_at) = DATE(?) GROUP BY contractor_nip ORDER BY cnt DESC LIMIT 3",
                 [day],
             )
-            return [{"nip": str(r[0]), "count": int(r[1]), "total_amount": float(r[2])} for r in rows] if rows else []
+            return (
+                [{"nip": str(r[0]), "count": int(r[1]), "total_amount": float(r[2])} for r in rows]
+                if rows
+                else []
+            )
         except Exception:
             return []
 
@@ -162,14 +171,29 @@ class DailyBriefingGenerator:
     def _generate_alerts(auto_posted, blocked, pending_review) -> list[dict[str, Any]]:
         alerts: list[dict[str, Any]] = []
         if blocked.get("count", 0) > 0:
-            alerts.append({"type": "blocked_invoices", "severity": "high",
-                "message": f"{blocked['count']} faktur zostało zablokowanych (kwota: {blocked.get('total_amount', 0):.2f} PLN)"})
+            alerts.append(
+                {
+                    "type": "blocked_invoices",
+                    "severity": "high",
+                    "message": f"{blocked['count']} faktur zostało zablokowanych (kwota: {blocked.get('total_amount', 0):.2f} PLN)",
+                }
+            )
         if pending_review > 5:
-            alerts.append({"type": "backlog", "severity": "medium",
-                "message": f"{pending_review} faktur oczekuje na Twoją decyzję"})
+            alerts.append(
+                {
+                    "type": "backlog",
+                    "severity": "medium",
+                    "message": f"{pending_review} faktur oczekuje na Twoją decyzję",
+                }
+            )
         if auto_posted.get("count", 0) == 0 and pending_review == 0:
-            alerts.append({"type": "no_activity", "severity": "info",
-                "message": "Brak aktywności — żadne faktury nie zostały dzisiaj przetworzone"})
+            alerts.append(
+                {
+                    "type": "no_activity",
+                    "severity": "info",
+                    "message": "Brak aktywności — żadne faktury nie zostały dzisiaj przetworzone",
+                }
+            )
         return alerts
 
 
@@ -297,12 +321,15 @@ class NotificationService:
         auto_posted = await anyio.to_thread.run_sync(self._count_today_auto_posted, user_id, today)
 
         briefing = {
-            "user_id": user_id, "date": today,
+            "user_id": user_id,
+            "date": today,
             "total_decisions": len(decisions),
             "auto_posted": {"count": auto_posted, "total_amount": 0.0},
-            "pending_review": len(decisions), "decisions": decisions,
+            "pending_review": len(decisions),
+            "decisions": decisions,
             "blocked": {"count": 0, "total_amount": 0.0},
-            "alerts": [], "trust_trend": "stable",
+            "alerts": [],
+            "trust_trend": "stable",
         }
 
         if decisions:
@@ -390,7 +417,10 @@ class NotificationService:
 
         logger.info(
             "[Notification] sent user=%s type=%s channels=%s results=%s",
-            user_id, notification_type, channels, results,
+            user_id,
+            notification_type,
+            channels,
+            results,
         )
         return results
 
@@ -411,13 +441,17 @@ class NotificationService:
         if cfg.fcm_credentials_path:
             logger.info(
                 "[Notification] push FCM user=%s title=%s (credentials=%s)",
-                user_id, title, cfg.fcm_credentials_path,
+                user_id,
+                title,
+                cfg.fcm_credentials_path,
             )
             # TODO: firebase_admin.messaging.send()
         elif cfg.apns_key_path:
             logger.info(
                 "[Notification] push APNs user=%s title=%s (key=%s)",
-                user_id, title, cfg.apns_key_path,
+                user_id,
+                title,
+                cfg.apns_key_path,
             )
             # TODO: apns_client.send()
         else:
@@ -455,7 +489,11 @@ class NotificationService:
 
         logger.info(
             "[Notification] email user=%s title=%s priority=%s (smtp=%s:%d)",
-            user_id, title, priority, cfg.smtp_host, cfg.smtp_port,
+            user_id,
+            title,
+            priority,
+            cfg.smtp_host,
+            cfg.smtp_port,
         )
         # TODO: anyio.to_thread.run_sync(smtplib.SMTP.sendmail) lub aiosmtplib.send()
 
@@ -480,7 +518,9 @@ class NotificationService:
 
         logger.info(
             "[Notification] sms user=%s type=%s (twilio=%s)",
-            user_id, notification_type, cfg.twilio_account_sid,
+            user_id,
+            notification_type,
+            cfg.twilio_account_sid,
         )
         # TODO: twilio.rest.Client.messages.create()
 
@@ -527,7 +567,9 @@ class NotificationService:
             from nexus_ai.db.analytics import DuckDBManager
 
             cfg = AppConfig()
-            mgr = DuckDBManager(db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True)
+            mgr = DuckDBManager(
+                db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True
+            )
             try:
                 rows = mgr.execute(
                     """
@@ -543,15 +585,17 @@ class NotificationService:
                     return []
                 decisions = []
                 for r in rows:
-                    decisions.append({
-                        "invoice_id": str(r[0]),
-                        "number": str(r[1]) if r[1] else "",
-                        "amount_gross": float(r[2]) if r[2] else 0.0,
-                        "currency": str(r[3]) if r[3] else "PLN",
-                        "status": str(r[4]) if r[4] else "PENDING_REVIEW",
-                        "contractor_nip": str(r[5]) if r[5] else "",
-                        "created_at": str(r[6]) if r[6] else "",
-                    })
+                    decisions.append(
+                        {
+                            "invoice_id": str(r[0]),
+                            "number": str(r[1]) if r[1] else "",
+                            "amount_gross": float(r[2]) if r[2] else 0.0,
+                            "currency": str(r[3]) if r[3] else "PLN",
+                            "status": str(r[4]) if r[4] else "PENDING_REVIEW",
+                            "contractor_nip": str(r[5]) if r[5] else "",
+                            "created_at": str(r[6]) if r[6] else "",
+                        }
+                    )
                 return decisions
             finally:
                 mgr.close()
@@ -566,7 +610,9 @@ class NotificationService:
             from nexus_ai.db.analytics import DuckDBManager
 
             cfg = AppConfig()
-            mgr = DuckDBManager(db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True)
+            mgr = DuckDBManager(
+                db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True
+            )
             try:
                 row = mgr.execute(
                     """

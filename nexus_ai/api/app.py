@@ -7,18 +7,19 @@ from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.plugins import SwaggerRenderPlugin
+from litestar.plugins.sqlalchemy import SQLAlchemyPlugin, SQLAlchemyConfig
 
 from nexus_ai.api.dependencies import provide_config as _app_config_provider
 
 from nexus_ai.api.dependencies import (
     provide_config,
     provide_db_engine,
-    provide_db_session,
     provide_duckdb,
+    provide_event_emitter,
     provide_shared_image_buffer,
     provide_tenant_manager,
 )
-from nexus_ai.api.exceptions import global_exception_handler
+from nexus_ai.api.exceptions import EXCEPTION_HANDLERS
 from nexus_ai.api.metrics_middleware import MetricsMiddleware
 from nexus_ai.api.middleware import (
     CorrelationAndDeprecationMiddleware,
@@ -60,8 +61,9 @@ from nexus_ai.api.routes.version import VersionController
 from nexus_ai.api.routes.workers import WorkerStatusController
 from nexus_ai.api.routes.ws import progress_sse
 from nexus_ai.api.security import jwt_auth
-from nexus_ai.api.state import on_shutdown, on_startup
+from nexus_ai.api.state import make_on_startup, on_shutdown
 from nexus_ai.api.static import get_static_config
+from nexus_ai.db.database import create_session_factory
 from nexus_ai.services.currency_converter import Money, msgspec_money_enc_hook
 
 SUPPORTED_HEALTH_ENDPOINTS = ("/api/v1/health", "/api/v2/health")
@@ -70,6 +72,24 @@ SUPPORTED_HEALTH_ENDPOINTS = ("/api/v1/health", "/api/v2/health")
 def create_app() -> Litestar:
     """Single official backend bootstrap point."""
     config = provide_config()
+
+    # ── Utwórz engine + session_factory dla SQLAlchemyPlugin ────────────
+    from nexus_ai.api.state import _make_engine
+
+    engine = _make_engine(config)
+    session_factory = create_session_factory(engine)
+
+    # ── SQLAlchemyPlugin — wstrzykuje db_session: Session do kontrolerów ─
+    # Zastępuje manualny provide_db_session z dependencies.py
+    sqlalchemy_plugin = SQLAlchemyPlugin(
+        config=SQLAlchemyConfig(
+            engine_instance=engine,
+            session_maker=session_factory,
+        )
+    )
+
+    # ── on_startup z pre-created engine ─────────────────────────────────
+    on_startup = make_on_startup(engine, session_factory)
 
     cors_allow_credentials = config.cors_origins != ["*"]
 
@@ -113,20 +133,31 @@ def create_app() -> Litestar:
             TaxMathController,
             progress_sse,
         ],
+        plugins=[sqlalchemy_plugin],
         on_app_init=[jwt_auth.on_app_init],
         on_startup=[on_startup],
         on_shutdown=[on_shutdown],
         dependencies={
             "config": provide_config,
             "tenant_manager": provide_tenant_manager,
-            "db_session": provide_db_session,
             "db_engine": provide_db_engine,
             "duckdb": provide_duckdb,
             "buffer": provide_shared_image_buffer,
+            "event_emitter": provide_event_emitter,
         },
-        exception_handlers={Exception: global_exception_handler},
-        middleware=[UploadSizeGuardMiddleware, SimpleRateLimitMiddleware, CorrelationAndDeprecationMiddleware, MetricsMiddleware],
-        cors_config=CORSConfig(allow_origins=config.cors_origins, allow_methods=["*"], allow_headers=["*"], allow_credentials=cors_allow_credentials),
+        exception_handlers=EXCEPTION_HANDLERS,
+        middleware=[
+            UploadSizeGuardMiddleware,
+            SimpleRateLimitMiddleware,
+            CorrelationAndDeprecationMiddleware,
+            MetricsMiddleware,
+        ],
+        cors_config=CORSConfig(
+            allow_origins=config.cors_origins,
+            allow_methods=["*"],
+            allow_headers=["*"],
+            allow_credentials=cors_allow_credentials,
+        ),
         csrf_config=CSRFConfig(
             secret=config.jwt_secret or "dev-csrf-secret",
             cookie_name="csrf_token",
@@ -138,7 +169,9 @@ def create_app() -> Litestar:
                 # Wszystkie endpointy /health
                 re.compile(r"/health"),
             ],
-        ) if config.csrf_enabled else None,
+        )
+        if config.csrf_enabled
+        else None,
         # OpenAPI/Swagger wyłączone w produkcji zgodnie z aa3fvcx.txt (Punkt 3).
         # W trybie desktopowym (Flet) Swagger UI jest zbędny — oszczędza RAM i czas startu.
         # Import SwaggerRenderPlugin na górze pliku jest bezpieczny (import klasy = 0 kosztu).
@@ -150,7 +183,9 @@ def create_app() -> Litestar:
                 f"Health endpoints: {SUPPORTED_HEALTH_ENDPOINTS[0]}, {SUPPORTED_HEALTH_ENDPOINTS[1]}"
             ),
             render_plugins=[SwaggerRenderPlugin()],
-        ) if config.debug else None,
+        )
+        if config.debug
+        else None,
         static_files_config=get_static_config(config),
         debug=config.debug,
         type_encoders={Money: msgspec_money_enc_hook},

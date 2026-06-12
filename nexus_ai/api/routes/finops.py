@@ -38,7 +38,9 @@ class FinOpsController(Controller):
 
         try:
             async with session_factory() as session:
-                total_invoices = int((await session.execute(text("SELECT COUNT(*) FROM invoices"))).scalar_one())
+                total_invoices = int(
+                    (await session.execute(text("SELECT COUNT(*) FROM invoices"))).scalar_one()
+                )
         finally:
             await engine.dispose()
 

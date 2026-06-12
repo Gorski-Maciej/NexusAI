@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS integrity_checkpoints (
 );
 """
 
+
 class IntegrityReport(Struct):
     """Raport z weryfikacji integralności.
 
@@ -71,11 +72,13 @@ class IntegrityReport(Struct):
         first_inconsistent_trace: ID pierwszego niespójnego wpisu.
         verified_at: ISO timestamp weryfikacji.
     """
+
     status: str = "ok"
     total_records: int = 0
     violations: list[dict[str, Any]] = field(default_factory=list)
     first_inconsistent_trace: str | None = None
     verified_at: str = ""
+
 
 class IntegrityVerifier:
     """Weryfikator Integralności — sprawdza łańcuch hashy decision_traces.
@@ -116,9 +119,7 @@ class IntegrityVerifier:
         issues = verify_chain_integrity(self._conn)
 
         # Policz całkowitą liczbę wpisów
-        count_row = self._conn.execute(
-            "SELECT COUNT(1) FROM decision_traces"
-        ).fetchone()
+        count_row = self._conn.execute("SELECT COUNT(1) FROM decision_traces").fetchone()
         total = int(count_row[0]) if count_row else 0
 
         if not issues:
@@ -209,8 +210,10 @@ class IntegrityVerifier:
             "violations_count": len(report.violations),
             "first_issue": first_violation.get("issue"),
             "trace_id": first_violation.get("trace_id"),
-            "expected_hash": first_violation.get("expected_current") or first_violation.get("expected_previous"),
-            "actual_hash": first_violation.get("stored_current") or first_violation.get("stored_previous"),
+            "expected_hash": first_violation.get("expected_current")
+            or first_violation.get("expected_previous"),
+            "actual_hash": first_violation.get("stored_current")
+            or first_violation.get("stored_previous"),
             "all_violations": report.violations,
         }
 
@@ -267,9 +270,7 @@ class IntegrityVerifier:
             )
             logger.critical("[INTEGRITY] System LOCKED — read-only mode activated")
         else:
-            self._conn.execute(
-                "DELETE FROM system_flags WHERE flag_key = 'integrity_verified'"
-            )
+            self._conn.execute("DELETE FROM system_flags WHERE flag_key = 'integrity_verified'")
             logger.info("[INTEGRITY] System UNLOCKED — write operations resumed")
 
     def list_violations(
@@ -286,11 +287,9 @@ class IntegrityVerifier:
         Returns:
             Lista słowników z polami violation_id, trace_id, detected_at, resolved_at.
         """
-        query = (
-            """SELECT violation_id, first_inconsistent_trace, expected_hash,
+        query = """SELECT violation_id, first_inconsistent_trace, expected_hash,
                       actual_hash, details_json, detected_at, resolved_at, resolved_by
                FROM integrity_violations"""
-        )
         if only_open:
             query += " WHERE resolved_at IS NULL"
         query += " ORDER BY detected_at DESC LIMIT ?"
@@ -346,8 +345,7 @@ class IntegrityVerifier:
             return
 
         last_row = self._conn.execute(
-            "SELECT trace_id, timestamp FROM decision_traces "
-            "ORDER BY timestamp DESC LIMIT 1"
+            "SELECT trace_id, timestamp FROM decision_traces ORDER BY timestamp DESC LIMIT 1"
         ).fetchone()
         if not last_row:
             return

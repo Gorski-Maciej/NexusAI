@@ -6,6 +6,7 @@ Zgodnie z aa3fvcx.txt:
 - sentence-transformers → llama-cpp-python embedding (technologia ze stacku)
 - EmbeddingService używa istniejących modeli GGUF
 """
+
 from __future__ import annotations
 
 import hashlib  # MD5 for quick context dedup (non-cryptographic, not available in nexus_crypto)

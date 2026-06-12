@@ -18,7 +18,9 @@ def _validate_dimension(dimension: str) -> str:
     Rozwiązanie 20: Odrzuca wartości spoza białej listy.
     """
     if dimension not in ALLOWED_DIMENSIONS:
-        logger.warning("[SQL-INJECTION] Invalid dimension '%s' blocked, using default 'month'", dimension)
+        logger.warning(
+            "[SQL-INJECTION] Invalid dimension '%s' blocked, using default 'month'", dimension
+        )
         return "month"
     return dimension
 
@@ -28,7 +30,9 @@ def _validate_currency(currency: str) -> str:
     Rozwiązanie 20: Odrzuca nieprawidłowe kody ISO.
     """
     if not currency or len(currency) != 3 or not currency.isalpha():
-        logger.warning("[SQL-INJECTION] Invalid currency '%s' blocked, using default 'PLN'", currency)
+        logger.warning(
+            "[SQL-INJECTION] Invalid currency '%s' blocked, using default 'PLN'", currency
+        )
         return "PLN"
     return currency.upper()
 
@@ -42,7 +46,9 @@ class AnalyticsController(Controller):
         """Pobiera raport cashflow z kumulacją i opcjonalną konwersją walut (ASOF JOIN).
         Rozwiązanie 20: Walidacja parametrów dimension i report_currency na białej liście.
         """
-        manager = DuckDBManager(db_path="nexus_olap.duckdb", sqlite_path="app_data/nexus_oltp.db", read_only=True)
+        manager = DuckDBManager(
+            db_path="nexus_olap.duckdb", sqlite_path="app_data/nexus_oltp.db", read_only=True
+        )
 
         # Walidacja parametrów na białej liście (Rozwiązanie 20)
         safe_dimension = _validate_dimension(getattr(data, "dimension", "month"))
@@ -107,9 +113,18 @@ class AnalyticsController(Controller):
         try:
             results = manager.execute(query, (data.start_date, data.end_date))
             if not results:
-                return {"rows": [], "total_gross": 0.0, "cumulative_gross": 0.0, "report_currency": safe_currency}
+                return {
+                    "rows": [],
+                    "total_gross": 0.0,
+                    "cumulative_gross": 0.0,
+                    "report_currency": safe_currency,
+                }
             rows = [
-                {"period": str(r[0]), "total_gross": float(r[1] or 0.0), "cumulative_gross": float(r[2] or 0.0)}
+                {
+                    "period": str(r[0]),
+                    "total_gross": float(r[1] or 0.0),
+                    "cumulative_gross": float(r[2] or 0.0),
+                }
                 for r in results
             ]
             return {

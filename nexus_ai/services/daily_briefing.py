@@ -30,6 +30,7 @@ logger = get_logger("nexus.services.daily_briefing")
 # Data types
 # ---------------------------------------------------------------------------
 
+
 class DailyBriefing(Struct):
     """Struktura codziennego podsumowania finansowego."""
 
@@ -58,9 +59,11 @@ class DailyBriefing(Struct):
     def from_dict(cls, data: dict[str, Any]) -> DailyBriefing:
         return cls(**data)
 
+
 # ---------------------------------------------------------------------------
 # DailyBriefingService
 # ---------------------------------------------------------------------------
+
 
 class DailyBriefingService:
     """
@@ -137,9 +140,7 @@ class DailyBriefingService:
                 logger.error("[DailyBriefing] channel=%s failed: %s", channel, exc)
                 send_results[channel] = {"status": "error", "error": str(exc)}
 
-        all_success = all(
-            r.get("status") == "sent" for r in send_results.values()
-        )
+        all_success = all(r.get("status") == "sent" for r in send_results.values())
 
         return {
             "briefing": briefing.to_dict(),
@@ -196,9 +197,7 @@ class DailyBriefingService:
         # Wzbogać o correction rate z DecisionLogger
         if self._logger:
             try:
-                stats = await anyio.to_thread.run_sync(
-                    self._logger.get_user_correction_stats
-                )
+                stats = await anyio.to_thread.run_sync(self._logger.get_user_correction_stats)
                 briefing.correction_rate = stats.get("correction_rate", 0.0)
             except Exception:
                 pass
@@ -289,7 +288,9 @@ class DailyBriefingService:
             )
             logger.info(
                 "[DailyBriefing] in-app sent user=%s date=%s notification_id=%s",
-                briefing.user_id, briefing.date, notification_id,
+                briefing.user_id,
+                briefing.date,
+                notification_id,
             )
             return {"status": "sent", "notification_id": notification_id}
         except Exception as exc:
@@ -302,7 +303,8 @@ class DailyBriefingService:
         """
         logger.info(
             "[DailyBriefing] push placeholder user=%s date=%s",
-            briefing.user_id, briefing.date,
+            briefing.user_id,
+            briefing.date,
         )
         # TODO: Integracja z Firebase Cloud Messaging lub Apple Push Notification Service
         return {
@@ -316,7 +318,8 @@ class DailyBriefingService:
         """
         logger.info(
             "[DailyBriefing] email placeholder user=%s date=%s",
-            briefing.user_id, briefing.date,
+            briefing.user_id,
+            briefing.date,
         )
         # TODO: Integracja z SMTP / SendGrid / SES
         return {
@@ -324,7 +327,11 @@ class DailyBriefingService:
             "message": "Email notifications not yet configured",
         }
 
-    def _fallback_briefing(        self, user_id: str, today: str, now: pendulum.DateTime,
+    def _fallback_briefing(
+        self,
+        user_id: str,
+        today: str,
+        now: pendulum.DateTime,
     ) -> DailyBriefing:
         """Generuj podstawowe podsumowanie gdy DailyBriefingGenerator nie jest dostępny."""
         pending = 0
@@ -336,11 +343,13 @@ class DailyBriefingService:
 
         alerts = []
         if pending > 5:
-            alerts.append({
-                "type": "backlog",
-                "severity": "medium",
-                "message": f"{pending} powiadomień oczekuje na przeczytanie",
-            })
+            alerts.append(
+                {
+                    "type": "backlog",
+                    "severity": "medium",
+                    "message": f"{pending} powiadomień oczekuje na przeczytanie",
+                }
+            )
 
         return DailyBriefing(
             user_id=user_id,
@@ -356,38 +365,46 @@ class DailyBriefingService:
         alerts: list[dict[str, Any]] = []
 
         if briefing.blocked.get("count", 0) > 0:
-            alerts.append({
-                "type": "blocked_invoices",
-                "severity": "high",
-                "message": (
-                    f"{briefing.blocked['count']} faktur zostało zablokowanych "
-                    f"(kwota: {briefing.blocked.get('total_amount', 0):.2f} PLN)"
-                ),
-            })
+            alerts.append(
+                {
+                    "type": "blocked_invoices",
+                    "severity": "high",
+                    "message": (
+                        f"{briefing.blocked['count']} faktur zostało zablokowanych "
+                        f"(kwota: {briefing.blocked.get('total_amount', 0):.2f} PLN)"
+                    ),
+                }
+            )
 
         if briefing.pending_review > 5:
-            alerts.append({
-                "type": "backlog",
-                "severity": "medium",
-                "message": f"{briefing.pending_review} faktur oczekuje na Twoją decyzję",
-            })
+            alerts.append(
+                {
+                    "type": "backlog",
+                    "severity": "medium",
+                    "message": f"{briefing.pending_review} faktur oczekuje na Twoją decyzję",
+                }
+            )
 
         if briefing.correction_rate > 0.2:
-            alerts.append({
-                "type": "high_correction_rate",
-                "severity": "medium",
-                "message": (
-                    f"Wysoki wskaźnik korekt ({briefing.correction_rate:.1%}) — "
-                    f"rozważ dostrojenie progów decyzyjnych"
-                ),
-            })
+            alerts.append(
+                {
+                    "type": "high_correction_rate",
+                    "severity": "medium",
+                    "message": (
+                        f"Wysoki wskaźnik korekt ({briefing.correction_rate:.1%}) — "
+                        f"rozważ dostrojenie progów decyzyjnych"
+                    ),
+                }
+            )
 
         if briefing.auto_posted.get("count", 0) == 0 and briefing.pending_review == 0:
-            alerts.append({
-                "type": "no_activity",
-                "severity": "info",
-                "message": "Brak aktywności — żadne faktury nie zostały dzisiaj przetworzone",
-            })
+            alerts.append(
+                {
+                    "type": "no_activity",
+                    "severity": "info",
+                    "message": "Brak aktywności — żadne faktury nie zostały dzisiaj przetworzone",
+                }
+            )
 
         return alerts
 

@@ -30,8 +30,12 @@ def ensure_shadow_resource_schema(duckdb: DuckDBManager) -> None:
         """
     )
 
-    duckdb.execute("CREATE INDEX IF NOT EXISTS idx_iot_power_log_timestamp ON iot_power_log(timestamp)")
-    duckdb.execute("CREATE INDEX IF NOT EXISTS idx_access_control_ts_emp ON access_control_log(timestamp, employee_id)")
+    duckdb.execute(
+        "CREATE INDEX IF NOT EXISTS idx_iot_power_log_timestamp ON iot_power_log(timestamp)"
+    )
+    duckdb.execute(
+        "CREATE INDEX IF NOT EXISTS idx_access_control_ts_emp ON access_control_log(timestamp, employee_id)"
+    )
 
 
 def employee_presence_power_correlation_query(window_minutes: int = 15) -> str:

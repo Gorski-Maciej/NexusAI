@@ -11,6 +11,7 @@ Zgodnie z aa3fvcx.txt:
 
 All metrics are lazy-initialized (no import-time side effects).
 """
+
 from __future__ import annotations
 
 from opentelemetry import metrics
@@ -292,4 +293,5 @@ def record_hot_reload_event(subject: str) -> None:
         hot_reload_events_total.add(1, {"subject": subject})
     if hot_reload_last_event_seconds is not None:
         import time as _time
+
         hot_reload_last_event_seconds.set(_time.time(), {"subject": subject})

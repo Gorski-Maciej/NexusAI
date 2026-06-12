@@ -8,11 +8,13 @@ from sqlalchemy import Engine, text
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
+
 class SagaState(Struct):
     saga_id: str
     state: str
     payload: dict[str, Any]
     updated_at: pendulum.DateTime
+
 
 class PersistedSagaStore:
     """Durable saga state store persisted in SQLite with transition history."""
@@ -53,37 +55,13 @@ class PersistedSagaStore:
                     continue
         raise ValueError(f"Cannot parse timestamp: {value!r}")
 
-    def ensure_schema(self) -> None:
-        with self._engine.begin() as conn:
-            conn.execute(
-                text(
-                    """
-                    CREATE TABLE IF NOT EXISTS workflow_saga_state (
-                        saga_id TEXT PRIMARY KEY,
-                        current_state TEXT NOT NULL,
-                        payload_json TEXT NOT NULL DEFAULT '{}',
-                        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-                    )
-                    """
-                )
-            )
-            conn.execute(
-                text(
-                    """
-                    CREATE TABLE IF NOT EXISTS workflow_saga_history (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        saga_id TEXT NOT NULL,
-                        previous_state TEXT,
-                        new_state TEXT NOT NULL,
-                        payload_json TEXT NOT NULL DEFAULT '{}',
-                        transitioned_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-                    )
-                    """
-                )
-            )
-            conn.execute(text("CREATE INDEX IF NOT EXISTS idx_workflow_saga_history_saga_id ON workflow_saga_history(saga_id, transitioned_at DESC)"))
-
-    def transition(self, saga_id: str, new_state: str, payload: dict[str, Any] | str | None = None, expected_current_state: str | None = None) -> SagaState:
+    def transition(
+        self,
+        saga_id: str,
+        new_state: str,
+        payload: dict[str, Any] | str | None = None,
+        expected_current_state: str | None = None,
+    ) -> SagaState:
         if not saga_id.strip():
             raise ValueError("saga_id cannot be empty")
         if not new_state.strip():
@@ -102,7 +80,9 @@ class PersistedSagaStore:
             ).scalar_one_or_none()
             previous_state = str(current) if current is not None else None
             if expected_current_state is not None and previous_state != expected_current_state:
-                raise ValueError(f"state_conflict: expected={expected_current_state} actual={previous_state}")
+                raise ValueError(
+                    f"state_conflict: expected={expected_current_state} actual={previous_state}"
+                )
 
             conn.execute(
                 text(
@@ -144,17 +124,21 @@ class PersistedSagaStore:
     def get(self, saga_id: str) -> SagaState | None:
         with self._engine.begin() as conn:
             row = (
-                conn.execute(
-                    text(
-                        """
+                (
+                    conn.execute(
+                        text(
+                            """
                         SELECT saga_id, current_state, payload_json, updated_at
                         FROM workflow_saga_state
                         WHERE saga_id = :saga_id
                         """
-                    ),
-                    {"saga_id": saga_id},
+                        ),
+                        {"saga_id": saga_id},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
         if not row:
             return None
         payload, _ = self._normalize_payload(row["payload_json"])
@@ -171,18 +155,22 @@ class PersistedSagaStore:
         cutoff_str = cutoff.format("YYYY-MM-DD HH:mm:ss")
         with self._engine.begin() as conn:
             rows = (
-                conn.execute(
-                    text(
-                        """
+                (
+                    conn.execute(
+                        text(
+                            """
                         SELECT saga_id, current_state, payload_json, updated_at
                         FROM workflow_saga_state
                         WHERE updated_at < :cutoff
                         ORDER BY updated_at ASC
                         """
-                    ),
-                    {"cutoff": cutoff_str},
+                        ),
+                        {"cutoff": cutoff_str},
+                    )
                 )
-            ).mappings().all()
+                .mappings()
+                .all()
+            )
         return [
             SagaState(
                 saga_id=str(r["saga_id"]),
@@ -197,19 +185,23 @@ class PersistedSagaStore:
         safe_limit = min(max(1, int(limit)), 500)
         with self._engine.begin() as conn:
             rows = (
-                conn.execute(
-                    text(
-                        """
+                (
+                    conn.execute(
+                        text(
+                            """
                         SELECT id, previous_state, new_state, payload_json, transitioned_at
                         FROM workflow_saga_history
                         WHERE saga_id = :saga_id
                         ORDER BY id DESC
                         LIMIT :limit
                         """
-                    ),
-                    {"saga_id": saga_id, "limit": safe_limit},
+                        ),
+                        {"saga_id": saga_id, "limit": safe_limit},
+                    )
                 )
-            ).mappings().all()
+                .mappings()
+                .all()
+            )
         return [
             {
                 "id": int(r["id"]),

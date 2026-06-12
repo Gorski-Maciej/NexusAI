@@ -83,11 +83,15 @@ class NexusRootUI:
 
         # Build layout with navigation rail
         self.page.add(
-            ft.Row([
-                self.nav_rail,
-                ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
-                self.main_content,
-            ], expand=True, spacing=0)
+            ft.Row(
+                [
+                    self.nav_rail,
+                    ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
+                    self.main_content,
+                ],
+                expand=True,
+                spacing=0,
+            )
         )
 
         # Załadowanie domyślnego widoku
@@ -99,25 +103,44 @@ class NexusRootUI:
         try:
             summary = await self.api.get("/analytics/summary")
 
-            self.main_content.content = ft.Column([
-                ft.Text("Financial Dashboard", size=28, weight=ft.FontWeight.BOLD),
-                ft.Container(height=16),
-                ft.Row([
-                    self._create_stat_card("Net Total", f"{summary.get('total_net', 0)} PLN"),
-                    self._create_stat_card("Gross Total", f"{summary.get('total_gross', 0)} PLN"),
-                    self._create_stat_card("Analyzed", str(summary.get('count', 0))),
-                    self._create_stat_card("Status", "Active"),
-                ]),
-                ft.Container(height=24),
-                ft.Text("Quick Actions", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREY_300),
-                ft.Container(height=8),
-                ft.Row([
-                    ft.ElevatedButton("Upload Invoice", icon=ft.icons.UPLOAD_FILE),
-                    ft.ElevatedButton("View Reports", icon=ft.icons.ASSESSMENT),
-                    ft.OutlinedButton("Task Monitor", icon=ft.icons.TASK_ALT,
-                                      on_click=lambda _: self.page.run_task(self._load_view("tasks"))),
-                ]),
-            ], scroll=ft.ScrollMode.AUTO)
+            self.main_content.content = ft.Column(
+                [
+                    ft.Text("Financial Dashboard", size=28, weight=ft.FontWeight.BOLD),
+                    ft.Container(height=16),
+                    ft.Row(
+                        [
+                            self._create_stat_card(
+                                "Net Total", f"{summary.get('total_net', 0)} PLN"
+                            ),
+                            self._create_stat_card(
+                                "Gross Total", f"{summary.get('total_gross', 0)} PLN"
+                            ),
+                            self._create_stat_card("Analyzed", str(summary.get("count", 0))),
+                            self._create_stat_card("Status", "Active"),
+                        ]
+                    ),
+                    ft.Container(height=24),
+                    ft.Text(
+                        "Quick Actions",
+                        size=18,
+                        weight=ft.FontWeight.BOLD,
+                        color=ft.colors.GREY_300,
+                    ),
+                    ft.Container(height=8),
+                    ft.Row(
+                        [
+                            ft.ElevatedButton("Upload Invoice", icon=ft.icons.UPLOAD_FILE),
+                            ft.ElevatedButton("View Reports", icon=ft.icons.ASSESSMENT),
+                            ft.OutlinedButton(
+                                "Task Monitor",
+                                icon=ft.icons.TASK_ALT,
+                                on_click=lambda _: self.page.run_task(self._load_view("tasks")),
+                            ),
+                        ]
+                    ),
+                ],
+                scroll=ft.ScrollMode.AUTO,
+            )
             self.page.update()
         except Exception as e:
             self.main_content.content = ft.Text(f"Dashboard load error: {e}", color="red")
@@ -125,11 +148,13 @@ class NexusRootUI:
 
     async def _load_invoices(self):
         """Placeholder for invoice list view."""
-        self.main_content.content = ft.Column([
-            ft.Text("Invoices", size=28, weight=ft.FontWeight.BOLD),
-            ft.Container(height=16),
-            ft.Text("Invoice management view — coming soon.", color=ft.colors.GREY_400),
-        ])
+        self.main_content.content = ft.Column(
+            [
+                ft.Text("Invoices", size=28, weight=ft.FontWeight.BOLD),
+                ft.Container(height=16),
+                ft.Text("Invoice management view — coming soon.", color=ft.colors.GREY_400),
+            ]
+        )
         self.page.update()
 
     async def _load_task_monitor(self):
@@ -149,10 +174,9 @@ class NexusRootUI:
         return ft.Card(
             content=ft.Container(
                 padding=20,
-                content=ft.Column([
-                    ft.Text(title, size=14, color="grey"),
-                    ft.Text(value, size=24, weight="bold")
-                ])
+                content=ft.Column(
+                    [ft.Text(title, size=14, color="grey"), ft.Text(value, size=24, weight="bold")]
+                ),
             ),
             expand=True,
         )

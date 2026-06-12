@@ -32,6 +32,7 @@ logger = get_logger("nexus.replay")
 
 # ── Data structures ──────────────────────────────────────────────────────────
 
+
 class ReplayResult(Struct):
     """Result of a single replay operation.
 
@@ -43,6 +44,7 @@ class ReplayResult(Struct):
         differences: List of field-level differences (if mismatch).
         error: Error message if replay failed (e.g. missing trace).
     """
+
     transaction_id: str
     match: bool = False
     original_verdict: dict[str, Any] = field(default_factory=dict)
@@ -53,6 +55,7 @@ class ReplayResult(Struct):
     @property
     def is_match(self) -> bool:
         return self.match and not self.error
+
 
 # ── Key fields for comparison ────────────────────────────────────────────────
 # Fields that must match exactly for a replay to succeed.
@@ -67,6 +70,7 @@ _COMPARISON_FIELDS = [
 ]
 
 # ── Replay Engine ────────────────────────────────────────────────────────────
+
 
 class ReplayEngine:
     """Odtwarza decyzję podatkową dla historycznej faktury.
@@ -190,13 +194,16 @@ class ReplayEngine:
 
         logger.info(
             "Batch replay %s–%s: %d/%d matched",
-            period_start.isoformat(), period_end.isoformat(),
+            period_start.isoformat(),
+            period_end.isoformat(),
             sum(1 for r in results if r.match),
             len(results),
         )
         return results
 
+
 # ── Verdict comparison ───────────────────────────────────────────────────────
+
 
 def _compare_verdicts(
     original: dict[str, Any],
@@ -221,10 +228,12 @@ def _compare_verdicts(
         if orig_val is None and replay_val is None:
             continue
         if orig_val is None or replay_val is None or str(orig_val) != str(replay_val):
-            differences.append({
-                "field": comp_field,
-                "original": orig_val,
-                "replayed": replay_val,
-            })
+            differences.append(
+                {
+                    "field": comp_field,
+                    "original": orig_val,
+                    "replayed": replay_val,
+                }
+            )
 
     return differences

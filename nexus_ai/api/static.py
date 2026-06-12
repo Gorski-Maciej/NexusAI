@@ -9,10 +9,5 @@ def get_static_config(config: AppConfig) -> list[StaticFilesConfig]:
     upload_dir.mkdir(parents=True, exist_ok=True)
 
     return [
-        StaticFilesConfig(
-            directories=[upload_dir],
-            path="/files",
-            name="uploads",
-            html_mode=False
-        )
+        StaticFilesConfig(directories=[upload_dir], path="/files", name="uploads", html_mode=False)
     ]

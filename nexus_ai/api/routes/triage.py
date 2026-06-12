@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import anyio
+
 from litestar import Controller, get, post
 from litestar.connection import Request
 from litestar.exceptions import ClientException
 from sqlalchemy.orm import Session
+from structlog import get_logger
 
 from nexus_ai.api.dto import (
     TAG_TRIAGE,
@@ -15,15 +18,19 @@ from nexus_ai.api.rbac import get_current_role, owner_only_guard
 from nexus_ai.api.schemas import TriageItem, TriageResolutionRequest, TriageResolutionResponse
 from nexus_ai.services.triage_service import list_pending_triage_items, resolve_triage_item
 
+logger = get_logger("nexus.api.triage")
+
 
 class TriageController(Controller):
     """Triage — przegląd i korekta faktur przed księgowaniem."""
+
     path = "/api/triage"
     tags = [TAG_TRIAGE]
 
 
 class TriageControllerV2(Controller):
     """Triage controller for /api/v2/triage (Rozwiązanie 22: wersjonowanie API)."""
+
     path = "/api/v2/triage"
     tags = [TAG_TRIAGE]
 
@@ -72,7 +79,7 @@ class TriageControllerV2(Controller):
         ),
         operation_id="resolveTriageItem",
     )
-    def resolve(
+    async def resolve(
         self,
         invoice_id: str,
         data: TriageResolutionRequest,
@@ -81,14 +88,16 @@ class TriageControllerV2(Controller):
     ) -> TriageResolutionResponse:
         try:
             role_ctx = get_current_role(request)
-            invoice = resolve_triage_item(
-                db_session,
-                invoice_id=invoice_id,
-                corrected_data=data.corrected_data,
-                action=data.action,
-                updated_by=role_ctx.actor,
-                tenant_id=str(getattr(request.user, "tenant_id", "default") or "default"),
-                expected_version=data.expected_version,
+            invoice = await anyio.to_thread.run_sync(
+                lambda: resolve_triage_item(
+                    db_session,
+                    invoice_id=invoice_id,
+                    corrected_data=data.corrected_data,
+                    action=data.action,
+                    updated_by=role_ctx.actor,
+                    tenant_id=str(getattr(request.user, "tenant_id", "default") or "default"),
+                    expected_version=data.expected_version,
+                )
             )
         except ValueError as exc:
             detail = str(exc)
@@ -100,4 +109,23 @@ class TriageControllerV2(Controller):
         else:
             message = "Invoice was voided/rejected from triage"
 
-        return TriageResolutionResponse(invoice_id=invoice.id, status=invoice.status, message=message)
+        # ── Emit DecisionOverridden event ───────────────────────────────
+        try:
+            event_emitter = request.app.state.event_emitter
+            await event_emitter.emit_decision_overridden(
+                invoice_id=invoice_id,
+                original_decision="SUGGEST",
+                user_decision="CONFIRM_POST" if data.action == "confirm_post" else "VOID",
+                user_id=str(getattr(request.user, "id", "system")),
+                metadata={
+                    "source": "triage",
+                    "action": data.action,
+                },
+            )
+            logger.info("[EVENT] DecisionOverridden emitted for invoice_id=%s", invoice_id)
+        except Exception as event_err:
+            logger.warning("[EVENT] Failed to emit DecisionOverridden: %s", event_err)
+
+        return TriageResolutionResponse(
+            invoice_id=invoice.id, status=invoice.status, message=message
+        )

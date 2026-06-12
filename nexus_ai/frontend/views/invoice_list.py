@@ -29,10 +29,7 @@ class InfiniteInvoiceList(ft.UserControl):
 
         # ListView natywnie zarządza pamięcią (renderuje tylko widoczne na ekranie)
         self.list_view = ft.ListView(
-            expand=True,
-            spacing=10,
-            padding=20,
-            on_scroll=self.handle_scroll
+            expand=True, spacing=10, padding=20, on_scroll=self.handle_scroll
         )
 
     async def load_more(self):
@@ -40,7 +37,7 @@ class InfiniteInvoiceList(ft.UserControl):
             return
 
         self.is_loading = True
-        self.list_view.controls.append(ft.ProgressRing()) # Wskaźnik ładowania na dole
+        self.list_view.controls.append(ft.ProgressRing())  # Wskaźnik ładowania na dole
         self.update()
 
         # Pobieranie danych z użyciem kursora (Cursor Pagination)

@@ -14,6 +14,7 @@ DEFAULT_DEPRECIATION_ACCOUNT = 400
 DEFAULT_LEDGER_ID = 2
 DEFAULT_TRANSFER_CODE = 1001
 
+
 class FixedAsset(Struct):
     id: str
     asset_name: str
@@ -22,6 +23,7 @@ class FixedAsset(Struct):
     depreciation_rate: float
     purchase_date: pendulum.Date
     last_depreciation_date: pendulum.Date | None
+
 
 class FixedAssetsService:
     def __init__(self, duckdb: DuckDBManager, tigerbeetle: TigerBeetleClient) -> None:
@@ -53,12 +55,19 @@ class FixedAssetsService:
             return 0
         if initial_value <= residual_value:
             return 0
-        annual_amount = ((initial_value - residual_value) * rate).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-        monthly_amount = (annual_amount / Decimal("12")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        annual_amount = ((initial_value - residual_value) * rate).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
+        monthly_amount = (annual_amount / Decimal("12")).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
         if monthly_amount <= Decimal("0.00"):
             return 0
 
-        self.duckdb.execute("DELETE FROM depreciation_schedule WHERE asset_id = ? AND is_posted = FALSE", (asset_id,))
+        self.duckdb.execute(
+            "DELETE FROM depreciation_schedule WHERE asset_id = ? AND is_posted = FALSE",
+            (asset_id,),
+        )
 
         schedule_rows: list[tuple] = []
         month_cursor = pendulum.Date(purchase_date.year, purchase_date.month, 1).add(months=1)
@@ -66,15 +75,29 @@ class FixedAssetsService:
             "SELECT COALESCE(SUM(amount), 0) FROM depreciation_schedule WHERE asset_id = ? AND is_posted = TRUE",
             (asset_id,),
         )
-        posted_sum = Decimal(str(posted_sum_rows[0][0])).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-        remaining = (initial_value - residual_value - posted_sum).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        posted_sum = Decimal(str(posted_sum_rows[0][0])).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
+        remaining = (initial_value - residual_value - posted_sum).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
         if remaining <= Decimal("0.00"):
             return 0
 
         while remaining > Decimal("0.00"):
             installment = monthly_amount if monthly_amount <= remaining else remaining
             installment = installment.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-            schedule_rows.append((asset_id, month_cursor.end_of("month"), float(installment), False, "PENDING", DEFAULT_LEDGER_ID, DEFAULT_TRANSFER_CODE))
+            schedule_rows.append(
+                (
+                    asset_id,
+                    month_cursor.end_of("month"),
+                    float(installment),
+                    False,
+                    "PENDING",
+                    DEFAULT_LEDGER_ID,
+                    DEFAULT_TRANSFER_CODE,
+                )
+            )
             remaining = (remaining - installment).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
             month_cursor = month_cursor.add(months=1)
 
@@ -105,7 +128,15 @@ class FixedAssetsService:
         )
 
         posted = 0
-        for asset_id, planned_date, amount, debit, credit, initial_value, residual_value in due_rows:
+        for (
+            asset_id,
+            planned_date,
+            amount,
+            debit,
+            credit,
+            initial_value,
+            residual_value,
+        ) in due_rows:
             transfer = await self.tigerbeetle.create_two_phase_transfer(
                 debit_account=int(debit),
                 credit_account=int(credit),

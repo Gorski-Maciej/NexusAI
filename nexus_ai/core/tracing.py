@@ -8,11 +8,13 @@ from loguru import logger
 # Zmienna kontekstowa unikalna dla każdego "requestu"
 correlation_id_ctx: ContextVar[str] = ContextVar("correlation_id", default="system")
 
+
 def init_trace() -> str:
     """Tworzy nowe ID dla nowego dokumentu."""
     cid = uuid.uuid4().hex
     correlation_id_ctx.set(cid)
     return cid
+
 
 def setup_tracing_logger():
     logger.remove()

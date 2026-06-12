@@ -101,8 +101,13 @@ class TraceGenerator:
 
         # Podstawowe pola z kontekstu
         replacements["rule_id"] = str(rule.get("rule_id", "?"))
-        for key in ("category_code", "transaction_date", "vendor_country",
-                     "company_tax_form", "vendor_vat_status"):
+        for key in (
+            "category_code",
+            "transaction_date",
+            "vendor_country",
+            "company_tax_form",
+            "vendor_vat_status",
+        ):
             replacements[key] = str(context.get(key, "?"))
 
         # Pola z werdyktu
@@ -117,8 +122,14 @@ class TraceGenerator:
         replacements["vat_rate_percent"] = str(vat_rate_percent)
 
         # Pozostałe pola werdyktu
-        for key in ("vat_rate", "rounding_level", "income_tax_qualification",
-                     "gtu_code", "procedure", "transaction_mark"):
+        for key in (
+            "vat_rate",
+            "rounding_level",
+            "income_tax_qualification",
+            "gtu_code",
+            "procedure",
+            "transaction_mark",
+        ):
             replacements[key] = str(verdict.get(key, "?"))
 
         # Pola z czytelnymi etykietami
@@ -188,8 +199,13 @@ class TraceGenerator:
             # Nie kopiuj całego kontekstu — tylko kluczowe pola
             trace["context_snapshot"] = {
                 k: context[k]
-                for k in ("category_code", "transaction_date", "vendor_country",
-                          "company_tax_form", "vendor_vat_status")
+                for k in (
+                    "category_code",
+                    "transaction_date",
+                    "vendor_country",
+                    "company_tax_form",
+                    "vendor_vat_status",
+                )
                 if k in context
             }
 

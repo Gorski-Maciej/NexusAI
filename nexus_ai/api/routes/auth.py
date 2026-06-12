@@ -11,6 +11,7 @@ Provides:
 - POST /api/auth/reset-password/confirm — set new password
 - GET  /api/auth/csrf-token — get CSRF token
 """
+
 from __future__ import annotations
 
 import re
@@ -20,13 +21,16 @@ import uuid
 # ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
 try:
     from nexus_crypto import sha256 as _sha256
+
     HAS_NEXUS_CRYPTO = True
 except ImportError:
     import hashlib as _hashlib
+
     HAS_NEXUS_CRYPTO = False
 
     def _sha256(data: bytes) -> str:
         return _hashlib.sha256(data).hexdigest()
+
 
 import msgspec
 import pendulum
@@ -130,18 +134,22 @@ async def _get_user_by_username(db_session, username: str) -> dict | None:
     """Fetch a user by username or email, returning a dict or None."""
     async with db_session.begin() as conn:
         row = (
-            await conn.execute(
-                text(
-                    """SELECT id, username, email, full_name, password_hash, role,
+            (
+                await conn.execute(
+                    text(
+                        """SELECT id, username, email, full_name, password_hash, role,
                               tenant_id, is_active, is_verified, must_change_password,
                               jwt_version, last_login
                        FROM users
                        WHERE username = :username OR email = :username
                        LIMIT 1"""
-                ),
-                {"username": username},
+                    ),
+                    {"username": username},
+                )
             )
-        ).mappings().first()
+            .mappings()
+            .first()
+        )
     return dict(row) if row else None
 
 
@@ -150,6 +158,7 @@ async def _get_user_by_username(db_session, username: str) -> dict | None:
 
 class AuthController(Controller):
     """Autoryzacja i zarządzanie kontem użytkownika."""
+
     path = "/api/auth"
     tags = [TAG_AUTH]
 
@@ -165,7 +174,9 @@ class AuthController(Controller):
         ),
         operation_id="registerUser",
     )
-    async def register(self, data: RegisterRequest, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
+    async def register(
+        self, data: RegisterRequest, request: Request, db_engine: AsyncEngine
+    ) -> Response[dict[str, str]]:
         """Register a new user account."""
         # Validate password strength
         pwd_error = _validate_password(data.password)
@@ -213,40 +224,29 @@ class AuthController(Controller):
 
             # Assign default 'viewer' role
             role_row = (
-                await conn.execute(
-                    text("SELECT id FROM roles WHERE name = 'viewer' LIMIT 1")
-                )
-            ).mappings().first()
+                (await conn.execute(text("SELECT id FROM roles WHERE name = 'viewer' LIMIT 1")))
+                .mappings()
+                .first()
+            )
             if role_row:
                 ur_id = uuid.uuid4().hex
                 await conn.execute(
-                    text(
-                        "INSERT INTO user_roles (id, user_id, role_id) VALUES (:id, :uid, :rid)"
-                    ),
+                    text("INSERT INTO user_roles (id, user_id, role_id) VALUES (:id, :uid, :rid)"),
                     {"id": ur_id, "uid": user_id, "rid": role_row["id"]},
                 )
 
-            # Save confirmation token (simplified: store in a simple table)
-            await conn.execute(
-                text(
-                    """CREATE TABLE IF NOT EXISTS email_tokens (
-                        id TEXT PRIMARY KEY,
-                        user_id TEXT NOT NULL,
-                        token TEXT UNIQUE NOT NULL,
-                        purpose TEXT NOT NULL DEFAULT 'confirm',
-                        expires_at TIMESTAMP NOT NULL,
-                        used BOOLEAN NOT NULL DEFAULT 0,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                    )"""
-                )
-            )
             token_expires = (pendulum.now("UTC") + pendulum.duration(hours=24)).isoformat()
             await conn.execute(
                 text(
                     """INSERT INTO email_tokens (id, user_id, token, purpose, expires_at)
                        VALUES (:id, :uid, :token, 'confirm', :expires)"""
                 ),
-                {"id": uuid.uuid4().hex, "uid": user_id, "token": confirm_token, "expires": token_expires},
+                {
+                    "id": uuid.uuid4().hex,
+                    "uid": user_id,
+                    "token": confirm_token,
+                    "expires": token_expires,
+                },
             )
 
             await conn.commit()
@@ -254,6 +254,7 @@ class AuthController(Controller):
         # Send verification email (fire-and-forget via notification service)
         try:
             from services.email_service import send_verification_email
+
             await send_verification_email(normalized_email, confirm_token, normalized_username)
         except Exception:
             logger.warning("Failed to send verification email for %s", normalized_email)
@@ -280,7 +281,9 @@ class AuthController(Controller):
         ),
         operation_id="loginUser",
     )
-    async def login(self, data: LoginRequest, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
+    async def login(
+        self, data: LoginRequest, request: Request, db_engine: AsyncEngine
+    ) -> Response[dict[str, str]]:
         """Authenticate user and return access + refresh tokens."""
         user = await _get_user_by_username(db_engine, data.username)
         if not user or not user.get("is_active"):
@@ -362,21 +365,27 @@ class AuthController(Controller):
         ),
         operation_id="refreshToken",
     )
-    async def refresh(self, data: RefreshRequest, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
+    async def refresh(
+        self, data: RefreshRequest, request: Request, db_engine: AsyncEngine
+    ) -> Response[dict[str, str]]:
         """Refresh access token using a single-use refresh token (rotation)."""
         hashed_input = _hash_refresh_token(data.refresh_token)
 
         async with db_engine.connect() as conn:
             row = (
-                await conn.execute(
-                    text(
-                        """SELECT user_id, expires_at, is_revoked
+                (
+                    await conn.execute(
+                        text(
+                            """SELECT user_id, expires_at, is_revoked
                            FROM refresh_tokens
                            WHERE token_hash = :token_hash LIMIT 1"""
-                    ),
-                    {"token_hash": hashed_input},
+                        ),
+                        {"token_hash": hashed_input},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
 
         if not row:
             raise NotAuthorizedException("Invalid refresh token")
@@ -393,16 +402,20 @@ class AuthController(Controller):
         # Fetch user
         async with db_engine.connect() as conn:
             user_row = (
-                await conn.execute(
-                    text(
-                        """SELECT id, username, email, full_name, password_hash, role,
+                (
+                    await conn.execute(
+                        text(
+                            """SELECT id, username, email, full_name, password_hash, role,
                                   tenant_id, is_active, is_verified, must_change_password,
                                   jwt_version, last_login
                            FROM users WHERE id = :id LIMIT 1"""
-                    ),
-                    {"id": user_id},
+                        ),
+                        {"id": user_id},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
             user = dict(user_row) if user_row else {}
             if not user.get("is_active"):
                 raise NotAuthorizedException("User is inactive")
@@ -482,7 +495,9 @@ class AuthController(Controller):
             db_engine, user_id, "LOGOUT", {"username": getattr(user, "username", "")}
         )
 
-        return Response(content={"status": "ok", "message": "Logged out successfully"}, status_code=200)
+        return Response(
+            content={"status": "ok", "message": "Logged out successfully"}, status_code=200
+        )
 
     @get(
         "/me",
@@ -503,16 +518,20 @@ class AuthController(Controller):
 
         async with db_engine.connect() as conn:
             row = (
-                await conn.execute(
-                    text(
-                        """SELECT id, username, email, full_name, role,
+                (
+                    await conn.execute(
+                        text(
+                            """SELECT id, username, email, full_name, role,
                                   is_active, is_verified, must_change_password,
                                   last_login, created_at
                            FROM users WHERE id = :id LIMIT 1"""
-                    ),
-                    {"id": user.id},
+                        ),
+                        {"id": user.id},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
 
         if not row:
             raise NotAuthorizedException("User not found")
@@ -540,19 +559,25 @@ class AuthController(Controller):
         ),
         operation_id="confirmEmail",
     )
-    async def confirm_email(self, token: str, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
+    async def confirm_email(
+        self, token: str, request: Request, db_engine: AsyncEngine
+    ) -> Response[dict[str, str]]:
         """Confirm email address using token from verification email."""
         async with db_engine.connect() as conn:
             row = (
-                await conn.execute(
-                    text(
-                        """SELECT id, user_id, expires_at, used
+                (
+                    await conn.execute(
+                        text(
+                            """SELECT id, user_id, expires_at, used
                            FROM email_tokens
                            WHERE token = :token AND purpose = 'confirm' LIMIT 1"""
-                    ),
-                    {"token": token},
+                        ),
+                        {"token": token},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
 
             if not row:
                 raise NotAuthorizedException("Invalid confirmation token")
@@ -592,17 +617,23 @@ class AuthController(Controller):
         ),
         operation_id="requestPasswordReset",
     )
-    async def reset_password(self, data: ResetPasswordRequest, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
+    async def reset_password(
+        self, data: ResetPasswordRequest, request: Request, db_engine: AsyncEngine
+    ) -> Response[dict[str, str]]:
         """Send password reset email with a reset token."""
         email = data.email.strip().lower()
 
         async with db_engine.connect() as conn:
             user = (
-                await conn.execute(
-                    text("SELECT id, username FROM users WHERE email = :email LIMIT 1"),
-                    {"email": email},
+                (
+                    await conn.execute(
+                        text("SELECT id, username FROM users WHERE email = :email LIMIT 1"),
+                        {"email": email},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
 
             if user:
                 reset_token = _generate_email_token()
@@ -624,6 +655,7 @@ class AuthController(Controller):
                 # Send reset email
                 try:
                     from services.email_service import send_password_reset_email
+
                     await send_password_reset_email(email, reset_token, user["username"])
                 except Exception:
                     logger.warning("Failed to send password reset email to %s", email)
@@ -649,7 +681,9 @@ class AuthController(Controller):
         ),
         operation_id="confirmPasswordReset",
     )
-    async def reset_password_confirm(self, data: ResetPasswordConfirmRequest, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
+    async def reset_password_confirm(
+        self, data: ResetPasswordConfirmRequest, request: Request, db_engine: AsyncEngine
+    ) -> Response[dict[str, str]]:
         """Set a new password using a reset token."""
         # Validate new password
         pwd_error = _validate_password(data.new_password)
@@ -658,15 +692,19 @@ class AuthController(Controller):
 
         async with db_engine.connect() as conn:
             row = (
-                await conn.execute(
-                    text(
-                        """SELECT id, user_id, expires_at, used
+                (
+                    await conn.execute(
+                        text(
+                            """SELECT id, user_id, expires_at, used
                            FROM email_tokens
                            WHERE token = :token AND purpose = 'reset' LIMIT 1"""
-                    ),
-                    {"token": data.token},
+                        ),
+                        {"token": data.token},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
 
             if not row:
                 raise NotAuthorizedException("Invalid reset token")
@@ -698,7 +736,8 @@ class AuthController(Controller):
 
         await _log_auth_event(db_engine, user_id, "PASSWORD_RESET", {})
         return Response(
-            content={"status": "ok", "message": "Password has been reset successfully"}, status_code=200
+            content={"status": "ok", "message": "Password has been reset successfully"},
+            status_code=200,
         )
 
     @post(
@@ -713,7 +752,9 @@ class AuthController(Controller):
         ),
         operation_id="changePassword",
     )
-    async def change_password(self, data: ChangePasswordRequest, request: Request, db_engine: AsyncEngine) -> Response[dict[str, str]]:
+    async def change_password(
+        self, data: ChangePasswordRequest, request: Request, db_engine: AsyncEngine
+    ) -> Response[dict[str, str]]:
         """Change password for authenticated user (requires current password)."""
         user = getattr(request, "user", None)
         if not user:
@@ -725,11 +766,15 @@ class AuthController(Controller):
 
         async with db_engine.connect() as conn:
             row = (
-                await conn.execute(
-                    text("SELECT password_hash FROM users WHERE id = :id LIMIT 1"),
-                    {"id": user.id},
+                (
+                    await conn.execute(
+                        text("SELECT password_hash FROM users WHERE id = :id LIMIT 1"),
+                        {"id": user.id},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
 
             if not row or not verify_password(data.current_password, row["password_hash"]):
                 raise NotAuthorizedException("Current password is incorrect")

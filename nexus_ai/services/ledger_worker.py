@@ -54,18 +54,24 @@ class SimpleRuleBasedAgent:
 class LedgerWorker:
     """Worker przetwarzający zdarzenia księgowe z blokadą okresów finansowych."""
 
-    def __init__(self, session: Session, tb_client: TigerBeetleClient, agent: TaxClassifierAgent) -> None:
+    def __init__(
+        self, session: Session, tb_client: TigerBeetleClient, agent: TaxClassifierAgent
+    ) -> None:
         self.session = session
         self.tb_client = tb_client
         self.agent = agent
 
     def _apply_financial_period_lock(self, company_id: uuid.UUID, event: dict) -> dict:
         issue_date = pendulum.parse(str(event["date_of_issue"])).date()
-        tax_point_date = pendulum.parse(str(event.get("tax_point_date", event["date_of_issue"]))).date()
+        tax_point_date = pendulum.parse(
+            str(event.get("tax_point_date", event["date_of_issue"]))
+        ).date()
         period_id = issue_date.format("YYYY-MM")
 
         period = self.session.scalar(
-            select(FinancialPeriod).where(FinancialPeriod.company_id == company_id, FinancialPeriod.period_id == period_id)
+            select(FinancialPeriod).where(
+                FinancialPeriod.company_id == company_id, FinancialPeriod.period_id == period_id
+            )
         )
         if period is None or period.status != FinancialPeriodStatus.HARD_CLOSED:
             event.setdefault("posting_date", issue_date.isoformat())
@@ -74,7 +80,10 @@ class LedgerWorker:
 
         open_period = self.session.scalar(
             select(FinancialPeriod)
-            .where(FinancialPeriod.company_id == company_id, FinancialPeriod.status == FinancialPeriodStatus.OPEN)
+            .where(
+                FinancialPeriod.company_id == company_id,
+                FinancialPeriod.status == FinancialPeriodStatus.OPEN,
+            )
             .order_by(FinancialPeriod.period_id.asc())
         )
         if open_period is None:

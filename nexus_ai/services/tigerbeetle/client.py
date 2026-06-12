@@ -13,6 +13,7 @@ import os
 import uuid
 from msgspec import Struct
 
+
 class TwoPhaseTransfer(Struct):
     """Dwufazowy przelew TigerBeetle (pending → post)."""
 
@@ -22,6 +23,7 @@ class TwoPhaseTransfer(Struct):
     amount_minor: int
     source_document_id: uuid.UUID
     user_data_128: int = 0
+
 
 class TigerBeetleMapper:
     """Konwertuje polskie symbole kont (np. 401-02) na uint128 dla TigerBeetle.
@@ -38,6 +40,7 @@ class TigerBeetleMapper:
     def build_map(self, accounts: list[str]) -> dict[str, int]:
         return {acc: self.account_to_uint128(acc) for acc in accounts}
 
+
 class TigerBeetleClient:
     """Wrapper dla TigerBeetle — interface-ready, safe stub dla lokalnego developmentu.
 
@@ -50,9 +53,13 @@ class TigerBeetleClient:
     - operacje asynchroniczne (anyio/async)
     """
 
-    def __init__(self, cluster_id: int | None = None, replica_addresses: list[str] | None = None) -> None:
+    def __init__(
+        self, cluster_id: int | None = None, replica_addresses: list[str] | None = None
+    ) -> None:
         self.cluster_id = cluster_id or int(os.getenv("TB_CLUSTER_ID", "0"))
-        self.replica_addresses = replica_addresses or os.getenv("TB_REPLICA_ADDRESSES", "3000").split(",")
+        self.replica_addresses = replica_addresses or os.getenv(
+            "TB_REPLICA_ADDRESSES", "3000"
+        ).split(",")
         self._pending_transfers: dict[int, TwoPhaseTransfer] = {}
         self._account_credits_posted: dict[int, int] = {}
 

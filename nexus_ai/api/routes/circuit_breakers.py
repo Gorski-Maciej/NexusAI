@@ -4,6 +4,7 @@ Zgodnie z aa3fvcx.txt: stamina zastępuje custom CircuitBreaker.
 stamina zarządza retry + circuit breaker przez dekoratory, nie przez
 centralny rejestr. Ten endpoint zwraca status resilience systemu.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -40,5 +41,5 @@ class CircuitBreakerController(Controller):
             "status": "active",
             "details": "Retry + circuit breaker managed by stamina decorators",
             "note": "stamina does not expose a central breaker registry. "
-                     "Each @stamina.retry decorator manages its own state internally.",
+            "Each @stamina.retry decorator manages its own state internally.",
         }

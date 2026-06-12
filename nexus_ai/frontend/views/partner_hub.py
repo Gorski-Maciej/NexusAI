@@ -1,4 +1,5 @@
 """Partner Hub View — biuro rachunkowe: lista klientów i ich faktury."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -130,48 +131,54 @@ class PartnerHubView:
             ),
         ]
 
-        return ft.Column([
-            # Header
-            ft.Row([
-                ft.Icon(ft.icons.BUSINESS_CENTER, size=32, color=ft.colors.BLUE_300),
-                ft.Container(width=12),
+        return ft.Column(
+            [
+                # Header
+                ft.Row(
+                    [
+                        ft.Icon(ft.icons.BUSINESS_CENTER, size=32, color=ft.colors.BLUE_300),
+                        ft.Container(width=12),
+                        ft.Text(
+                            "Partner Hub — Biuro Rachunkowe",
+                            size=24,
+                            weight=ft.FontWeight.BOLD,
+                            color=ft.colors.WHITE,
+                        ),
+                        ft.Container(expand=True),
+                        ft.OutlinedButton(
+                            "Odśwież",
+                            icon=ft.icons.REFRESH,
+                            on_click=lambda _: self._schedule_load(),
+                        ),
+                    ]
+                ),
+                ft.Container(height=16),
+                # Summary bar
+                self._build_summary_bar(),
+                ft.Container(height=16),
+                # Filters
+                ft.Row(
+                    spacing=8,
+                    controls=self._filter_chips,
+                ),
+                ft.Container(height=16),
+                ft.Divider(height=1, color=ft.colors.GREY_700),
+                ft.Container(height=8),
+                # Client list
                 ft.Text(
-                    "Partner Hub — Biuro Rachunkowe",
-                    size=24,
-                    weight=ft.FontWeight.BOLD,
-                    color=ft.colors.WHITE,
+                    f"Klienci ({len(filtered)})",
+                    size=14,
+                    color=ft.colors.GREY_400,
                 ),
-                ft.Container(expand=True),
-                ft.OutlinedButton(
-                    "Odśwież",
-                    icon=ft.icons.REFRESH,
-                    on_click=lambda _: self._schedule_load(),
-                ),
-            ]),
-            ft.Container(height=16),
-            # Summary bar
-            self._build_summary_bar(),
-            ft.Container(height=16),
-            # Filters
-            ft.Row(
-                spacing=8,
-                controls=self._filter_chips,
-            ),
-            ft.Container(height=16),
-            ft.Divider(height=1, color=ft.colors.GREY_700),
-            ft.Container(height=8),
-            # Client list
-            ft.Text(
-                f"Klienci ({len(filtered)})",
-                size=14,
-                color=ft.colors.GREY_400,
-            ),
-            ft.Container(height=8),
-        ] + [
-            self._build_client_card(c) for c in filtered
-        ] + [
-            ft.Container(height=20),
-        ], scroll=ft.ScrollMode.AUTO, expand=True)
+                ft.Container(height=8),
+            ]
+            + [self._build_client_card(c) for c in filtered]
+            + [
+                ft.Container(height=20),
+            ],
+            scroll=ft.ScrollMode.AUTO,
+            expand=True,
+        )
 
     def _build_summary_bar(self) -> ft.Row:
         total = len(self._clients)
@@ -181,14 +188,23 @@ class PartnerHubView:
 
         def _stat_card(label: str, value: int, icon: str, color: str) -> ft.Container:
             return ft.Container(
-                content=ft.Row([
-                    ft.Icon(icon, size=20, color=color),
-                    ft.Container(width=8),
-                    ft.Column([
-                        ft.Text(str(value), size=18, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
-                        ft.Text(label, size=11, color=ft.colors.GREY_400),
-                    ]),
-                ]),
+                content=ft.Row(
+                    [
+                        ft.Icon(icon, size=20, color=color),
+                        ft.Container(width=8),
+                        ft.Column(
+                            [
+                                ft.Text(
+                                    str(value),
+                                    size=18,
+                                    weight=ft.FontWeight.BOLD,
+                                    color=ft.colors.WHITE,
+                                ),
+                                ft.Text(label, size=11, color=ft.colors.GREY_400),
+                            ]
+                        ),
+                    ]
+                ),
                 padding=12,
                 border_radius=8,
                 bgcolor=ft.colors.SURFACE_CONTAINER_HIGHEST,
@@ -201,7 +217,9 @@ class PartnerHubView:
                 _stat_card("Klienci", total, ft.icons.GROUPS, ft.colors.BLUE_300),
                 _stat_card("Wymaga uwagi", attention, ft.icons.WARNING_AMBER, ft.colors.ORANGE_400),
                 _stat_card("OK", ok_count, ft.icons.CHECK_CIRCLE, ft.colors.GREEN_400),
-                _stat_card("Faktury do decyzji", pending, ft.icons.DESCRIPTION, ft.colors.PURPLE_300),
+                _stat_card(
+                    "Faktury do decyzji", pending, ft.icons.DESCRIPTION, ft.colors.PURPLE_300
+                ),
             ],
         )
 
@@ -237,44 +255,60 @@ class PartnerHubView:
             bgcolor=ft.colors.SURFACE_CONTAINER_HIGHEST,
             ink=True,
             on_click=lambda e, cid=client_id: self._on_client_click(cid),
-            content=ft.Row([
-                ft.Container(
-                    content=ft.Icon(status_icon, size=28, color=status_color),
-                    padding=8,
-                ),
-                ft.Column([
-                    ft.Row([
-                        ft.Text(name, size=16, weight=ft.FontWeight.SEMI_BOLD, color=ft.colors.WHITE),
-                        ft.Container(expand=True),
-                        ft.Container(
-                            content=ft.Text(status, size=11, color=ft.colors.WHITE),
-                            padding=ft.Padding(top=4, bottom=4, left=10, right=10),
-                            border_radius=12,
-                            bgcolor=status_color + "33",
-                        ),
-                    ]),
-                    ft.Container(height=4),
-                    ft.Row([
-                        ft.Text(f"NIP: {nip}", size=12, color=ft.colors.GREY_400),
-                        ft.Container(width=16),
-                        ft.Icon(ft.icons.DESCRIPTION, size=14, color=ft.colors.GREY_400),
-                        ft.Container(width=4),
-                        ft.Text(
-                            f"{invoice_count} do decyzji",
-                            size=12,
-                            color=ft.colors.GREY_300,
-                        ),
-                        ft.Container(expand=True),
-                        ft.Icon(ft.icons.SCHEDULE, size=14, color=ft.colors.GREY_500),
-                        ft.Container(width=4),
-                        ft.Text(activity_text, size=12, color=ft.colors.GREY_500),
-                    ]),
-                ], expand=True),
-                ft.Container(
-                    content=ft.Icon(ft.icons.CHEVRON_RIGHT, size=20, color=ft.colors.GREY_500),
-                    padding=8,
-                ),
-            ]),
+            content=ft.Row(
+                [
+                    ft.Container(
+                        content=ft.Icon(status_icon, size=28, color=status_color),
+                        padding=8,
+                    ),
+                    ft.Column(
+                        [
+                            ft.Row(
+                                [
+                                    ft.Text(
+                                        name,
+                                        size=16,
+                                        weight=ft.FontWeight.SEMI_BOLD,
+                                        color=ft.colors.WHITE,
+                                    ),
+                                    ft.Container(expand=True),
+                                    ft.Container(
+                                        content=ft.Text(status, size=11, color=ft.colors.WHITE),
+                                        padding=ft.Padding(top=4, bottom=4, left=10, right=10),
+                                        border_radius=12,
+                                        bgcolor=status_color + "33",
+                                    ),
+                                ]
+                            ),
+                            ft.Container(height=4),
+                            ft.Row(
+                                [
+                                    ft.Text(f"NIP: {nip}", size=12, color=ft.colors.GREY_400),
+                                    ft.Container(width=16),
+                                    ft.Icon(
+                                        ft.icons.DESCRIPTION, size=14, color=ft.colors.GREY_400
+                                    ),
+                                    ft.Container(width=4),
+                                    ft.Text(
+                                        f"{invoice_count} do decyzji",
+                                        size=12,
+                                        color=ft.colors.GREY_300,
+                                    ),
+                                    ft.Container(expand=True),
+                                    ft.Icon(ft.icons.SCHEDULE, size=14, color=ft.colors.GREY_500),
+                                    ft.Container(width=4),
+                                    ft.Text(activity_text, size=12, color=ft.colors.GREY_500),
+                                ]
+                            ),
+                        ],
+                        expand=True,
+                    ),
+                    ft.Container(
+                        content=ft.Icon(ft.icons.CHEVRON_RIGHT, size=20, color=ft.colors.GREY_500),
+                        padding=8,
+                    ),
+                ]
+            ),
             padding=16,
         )
 
@@ -288,38 +322,46 @@ class PartnerHubView:
 
         controls: list[ft.Control] = [
             # Back button
-            ft.Row([
-                ft.IconButton(
-                    icon=ft.icons.ARROW_BACK,
-                    on_click=lambda _: self._back_to_clients(),
-                ),
-                ft.Container(width=8),
-                ft.Text(
-                    f"Faktury — {client_name}",
-                    size=20,
-                    weight=ft.FontWeight.BOLD,
-                    color=ft.colors.WHITE,
-                ),
-            ]),
+            ft.Row(
+                [
+                    ft.IconButton(
+                        icon=ft.icons.ARROW_BACK,
+                        on_click=lambda _: self._back_to_clients(),
+                    ),
+                    ft.Container(width=8),
+                    ft.Text(
+                        f"Faktury — {client_name}",
+                        size=20,
+                        weight=ft.FontWeight.BOLD,
+                        color=ft.colors.WHITE,
+                    ),
+                ]
+            ),
             ft.Container(height=16),
         ]
 
         if not self._client_invoices:
-            controls.extend([
-                ft.Container(
-                    content=ft.Column([
-                        ft.Icon(ft.icons.INVENTORY_2_OUTLINED, size=48, color=ft.colors.GREY_500),
-                        ft.Container(height=12),
-                        ft.Text(
-                            "Brak faktur oczekujących na decyzję",
-                            size=16,
-                            color=ft.colors.GREY_400,
+            controls.extend(
+                [
+                    ft.Container(
+                        content=ft.Column(
+                            [
+                                ft.Icon(
+                                    ft.icons.INVENTORY_2_OUTLINED, size=48, color=ft.colors.GREY_500
+                                ),
+                                ft.Container(height=12),
+                                ft.Text(
+                                    "Brak faktur oczekujących na decyzję",
+                                    size=16,
+                                    color=ft.colors.GREY_400,
+                                ),
+                            ]
                         ),
-                    ]),
-                    alignment=ft.alignment.center,
-                    padding=ft.Padding(top=40, bottom=40, left=0, right=0),
-                ),
-            ])
+                        alignment=ft.alignment.center,
+                        padding=ft.Padding(top=40, bottom=40, left=0, right=0),
+                    ),
+                ]
+            )
         else:
             for inv in self._client_invoices:
                 controls.append(self._build_invoice_row(inv))
@@ -338,8 +380,10 @@ class PartnerHubView:
         confidence = float(inv.get("confidence", 0))
         status = inv.get("status", "PENDING_REVIEW")
 
-        confidence_color = ft.colors.GREEN_400 if confidence >= 0.85 else (
-            ft.colors.ORANGE_400 if confidence >= 0.5 else ft.colors.RED_400
+        confidence_color = (
+            ft.colors.GREEN_400
+            if confidence >= 0.85
+            else (ft.colors.ORANGE_400 if confidence >= 0.5 else ft.colors.RED_400)
         )
 
         return ft.Container(
@@ -347,38 +391,52 @@ class PartnerHubView:
             border_radius=8,
             bgcolor=ft.colors.SURFACE_CONTAINER_HIGHEST,
             ink=True,
-            content=ft.Row([
-                ft.Column([
-                    ft.Row([
-                        ft.Text(contractor, size=15, weight=ft.FontWeight.SEMI_BOLD, color=ft.colors.WHITE),
-                        ft.Container(width=12),
-                        ft.Text(f"#{number}", size=12, color=ft.colors.GREY_400),
-                    ]),
-                    ft.Container(height=4),
-                    ft.Row([
-                        ft.Container(
-                            content=ft.Text(status.replace("_", " "), size=10),
-                            padding=ft.Padding(top=2, bottom=2, left=8, right=8),
-                            border_radius=8,
-                            bgcolor=ft.colors.YELLOW_800,
-                        ),
-                        ft.Container(width=12),
-                        ft.Text("Pewność: ", size=11, color=ft.colors.GREY_400),
-                        ft.Text(
-                            f"{confidence:.0%}",
-                            size=11,
-                            color=confidence_color,
-                            weight=ft.FontWeight.BOLD,
-                        ),
-                    ]),
-                ], expand=True),
-                ft.Text(
-                    f"{amount} {currency}",
-                    size=15,
-                    weight=ft.FontWeight.BOLD,
-                    color=ft.colors.AMBER_300,
-                ),
-            ]),
+            content=ft.Row(
+                [
+                    ft.Column(
+                        [
+                            ft.Row(
+                                [
+                                    ft.Text(
+                                        contractor,
+                                        size=15,
+                                        weight=ft.FontWeight.SEMI_BOLD,
+                                        color=ft.colors.WHITE,
+                                    ),
+                                    ft.Container(width=12),
+                                    ft.Text(f"#{number}", size=12, color=ft.colors.GREY_400),
+                                ]
+                            ),
+                            ft.Container(height=4),
+                            ft.Row(
+                                [
+                                    ft.Container(
+                                        content=ft.Text(status.replace("_", " "), size=10),
+                                        padding=ft.Padding(top=2, bottom=2, left=8, right=8),
+                                        border_radius=8,
+                                        bgcolor=ft.colors.YELLOW_800,
+                                    ),
+                                    ft.Container(width=12),
+                                    ft.Text("Pewność: ", size=11, color=ft.colors.GREY_400),
+                                    ft.Text(
+                                        f"{confidence:.0%}",
+                                        size=11,
+                                        color=confidence_color,
+                                        weight=ft.FontWeight.BOLD,
+                                    ),
+                                ]
+                            ),
+                        ],
+                        expand=True,
+                    ),
+                    ft.Text(
+                        f"{amount} {currency}",
+                        size=15,
+                        weight=ft.FontWeight.BOLD,
+                        color=ft.colors.AMBER_300,
+                    ),
+                ]
+            ),
             padding=14,
         )
 

@@ -77,6 +77,7 @@ class ContextEnricher:
             self._white_list = white_list_service
         else:
             from services.white_list_service import WhiteListService
+
             self._white_list = WhiteListService()
 
         self._gus_bir = gus_bir_client
@@ -161,13 +162,21 @@ class ContextEnricher:
                     result = await self._check_gus_bir(nip)
                     return result, True
                 except Exception as e:
-                    logger.warning("[ContextEnricher] GUS BIR failed nip=%s: %s — continuing without GUS data", nip, e)
+                    logger.warning(
+                        "[ContextEnricher] GUS BIR failed nip=%s: %s — continuing without GUS data",
+                        nip,
+                        e,
+                    )
                     return {}, False
 
             white_list_result, wl_ok = await _safe_white_list()
             gus_data, gus_ok = await _safe_gus_bir()
 
-            on_whitelist = bool(white_list_result.get("on_whitelist", False)) if isinstance(white_list_result, dict) else bool(white_list_result)
+            on_whitelist = (
+                bool(white_list_result.get("on_whitelist", False))
+                if isinstance(white_list_result, dict)
+                else bool(white_list_result)
+            )
             if not wl_ok:
                 api_ok = False
 
@@ -185,7 +194,8 @@ class ContextEnricher:
 
                 whitelist_accounts_json = (
                     white_list_data.get("accounts_json", "[]")
-                    if isinstance(white_list_data, dict) else "[]"
+                    if isinstance(white_list_data, dict)
+                    else "[]"
                 )
 
                 self._save_to_cache(
@@ -266,7 +276,10 @@ class ContextEnricher:
                 return {"on_whitelist": result, "accounts_json": "[]"}
             # Nawet bez konta — sprawdź czy NIP istnieje
             # WhiteListService.verify_bank_account wymaga konta
-            return {"on_whitelist": True, "accounts_json": "[]"}  # brak konta = nie możemy zablokować
+            return {
+                "on_whitelist": True,
+                "accounts_json": "[]",
+            }  # brak konta = nie możemy zablokować
         except Exception as exc:
             logger.warning("[ContextEnricher] White List check failed nip=%s: %s", nip, exc)
             return {"on_whitelist": False, "accounts_json": "[]"}
@@ -285,6 +298,7 @@ class ContextEnricher:
             Słownik z danymi firmy z GUS (lub pusty).
         """
         import os
+
         api_key = os.environ.get("GUS_BIR_API_KEY", "")
         if not api_key:
             logger.debug(
@@ -296,6 +310,7 @@ class ContextEnricher:
         # Leniwe tworzenie klienta GUS BIR
         if self._gus_bir is None:
             from services.gus_bir_client import GusBirClient
+
             self._gus_bir = GusBirClient(api_key=api_key)
 
         try:
@@ -311,7 +326,8 @@ class ContextEnricher:
         except Exception as exc:
             logger.warning(
                 "[ContextEnricher] GUS BIR check failed nip=%s: %s",
-                nip, exc,
+                nip,
+                exc,
             )
             return {}
 
@@ -409,8 +425,16 @@ class ContextEnricher:
                 whitelist_accounts, fetched_at)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)""",
             (
-                nip, vat_status, pkd, account_whitelist, vendor_trust,
-                company_name, city, street, legal_form, gus_verified,
+                nip,
+                vat_status,
+                pkd,
+                account_whitelist,
+                vendor_trust,
+                company_name,
+                city,
+                street,
+                legal_form,
+                gus_verified,
                 whitelist_accounts,
             ),
         )

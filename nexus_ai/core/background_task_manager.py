@@ -139,7 +139,9 @@ class BackgroundTaskManager:
                 name: {
                     "running": not task.done(),
                     "cancelled": task.cancelled() if hasattr(task, "cancelled") else False,
-                    "uptime_seconds": round(now - self._metadata.get(name, {}).get("started_at", now), 1),
+                    "uptime_seconds": round(
+                        now - self._metadata.get(name, {}).get("started_at", now), 1
+                    ),
                     "description": self._metadata.get(name, {}).get("description"),
                 }
                 for name, task in self._tasks.items()

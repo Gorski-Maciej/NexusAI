@@ -38,7 +38,7 @@ class CashflowForecaster:
         std_daily = float(tail["daily_delta"].std() or 0.0)
         projected_total = float(df["cumulative_delta"][-1] + avg_daily * days_ahead)
         # 95% confidence approximation for accumulated random walk variance
-        volatility_buffer = 1.96 * std_daily * (days_ahead ** 0.5)
+        volatility_buffer = 1.96 * std_daily * (days_ahead**0.5)
         projected_low = projected_total - volatility_buffer
         projected_high = projected_total + volatility_buffer
 

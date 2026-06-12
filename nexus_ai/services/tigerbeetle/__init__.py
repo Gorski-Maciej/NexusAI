@@ -6,7 +6,11 @@ Zgodnie z aa3fvcx.txt:
 - amount jako int (grosze), bez Decimal
 """
 
-from nexus_ai.services.tigerbeetle.client import TigerBeetleClient, TigerBeetleMapper, TwoPhaseTransfer
+from nexus_ai.services.tigerbeetle.client import (
+    TigerBeetleClient,
+    TigerBeetleMapper,
+    TwoPhaseTransfer,
+)
 from nexus_ai.services.tigerbeetle.ledger_initializer import LedgerInitializer
 from nexus_ai.services.tigerbeetle.models import (
     Base,

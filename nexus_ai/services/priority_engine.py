@@ -22,6 +22,7 @@ from typing import Any
 
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
+
 class PrioritizedRule(Struct, frozen=True):
     """Reguła z priorytetem, gotowa do ewaluacji.
 
@@ -31,10 +32,12 @@ class PrioritizedRule(Struct, frozen=True):
         action_json: Surowy JSON action do zwrócenia przy dopasowaniu.
         priority: Niższa liczba = wyższy priorytet.
     """
+
     rule_id: str
     condition_sql: str
     action_json: str
     priority: int
+
 
 class MatchResult(Struct):
     """Wynik dopasowania reguły.
@@ -45,10 +48,12 @@ class MatchResult(Struct):
         rule_id: UUID wygranej reguły.
         priority: Priorytet wygranej reguły.
     """
+
     matched: bool = False
     verdict: dict[str, Any] = field(default_factory=dict)
     rule_id: str = ""
     priority: int = 0
+
 
 class PriorityEngine:
     """Priority Engine — ewaluacja reguł first-match-wins z priorytetami.
@@ -89,12 +94,14 @@ class PriorityEngine:
 
                 # Record evaluation if tracker provided
                 if _tracker is not None:
-                    _tracker.append({
-                        "rule_id": rule.rule_id,
-                        "condition_sql": rule.condition_sql,
-                        "result": result,
-                        "selected": False,  # Will be updated if this rule wins
-                    })
+                    _tracker.append(
+                        {
+                            "rule_id": rule.rule_id,
+                            "condition_sql": rule.condition_sql,
+                            "result": result,
+                            "selected": False,  # Will be updated if this rule wins
+                        }
+                    )
 
                 if result:
                     verdict = msgspec_loads(rule.action_json)
@@ -114,13 +121,15 @@ class PriorityEngine:
             except Exception:
                 # Log and skip malformed conditions — record failure if tracking
                 if _tracker is not None:
-                    _tracker.append({
-                        "rule_id": rule.rule_id,
-                        "condition_sql": rule.condition_sql,
-                        "result": False,
-                        "selected": False,
-                        "error": "Malformed condition"
-                    })
+                    _tracker.append(
+                        {
+                            "rule_id": rule.rule_id,
+                            "condition_sql": rule.condition_sql,
+                            "result": False,
+                            "selected": False,
+                            "error": "Malformed condition",
+                        }
+                    )
                 continue
 
         return MatchResult(matched=False)
@@ -162,13 +171,15 @@ class PriorityEngine:
 
         for (condition, priority), rule_ids in groups.items():
             if len(rule_ids) > 1:
-                warnings.append({
-                    "condition_sql": condition,
-                    "priority": priority,
-                    "rule_ids": rule_ids,
-                    "warning": (
-                        f"Rule conflict: {len(rule_ids)} rules with same "
-                        f"condition and priority={priority}."
-                    ),
-                })
+                warnings.append(
+                    {
+                        "condition_sql": condition,
+                        "priority": priority,
+                        "rule_ids": rule_ids,
+                        "warning": (
+                            f"Rule conflict: {len(rule_ids)} rules with same "
+                            f"condition and priority={priority}."
+                        ),
+                    }
+                )
         return warnings

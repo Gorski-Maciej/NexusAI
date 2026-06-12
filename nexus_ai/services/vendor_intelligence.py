@@ -6,6 +6,7 @@ from msgspec import Struct
 from nexus_ai.core.cache import get_cache
 from nexus_ai.db.analytics import DuckDBManager
 
+
 class VendorMetric(Struct):
     nip: str
     vendor_name: str
@@ -13,6 +14,7 @@ class VendorMetric(Struct):
     price_volatility_index: float
     total_volume_ytd: float
     reliability_score: float
+
 
 class VendorAnalyst:
     """Background analytical engine for local-first vendor intelligence.

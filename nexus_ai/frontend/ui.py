@@ -1,4 +1,5 @@
 """Flet UI for Nexus Accounting OS desktop frontend."""
+
 from __future__ import annotations
 
 import argparse
@@ -13,8 +14,10 @@ from nexus_ai.frontend.api_client import ApiConfig, InvoiceDTO, NexusApiClient, 
 HTTP_CLIENT: httpx.Client | None = None
 APP_NAME: Final[str] = "Nexus Accounting OS"
 
+
 class InvoiceRegistryView(ft.Column):
     """Virtualized invoice register with optimistic update support."""
+
     def __init__(self) -> None:
         super().__init__(expand=True, spacing=12)
         self.items = ft.ListView(expand=1, spacing=10, auto_scroll=True)
@@ -48,13 +51,15 @@ class InvoiceRegistryView(ft.Column):
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 controls=[
                     ft.Text(f"{invoice.number}{status_suffix}"),
-                    ft.Text(f"{invoice.amount_gross} {invoice.currency}")
-                ]
-            )
+                    ft.Text(f"{invoice.amount_gross} {invoice.currency}"),
+                ],
+            ),
         )
+
 
 class NexusApp:
     """Composable app controller separating UI from HTTP data layer."""
+
     def __init__(self, page: ft.Page, api: NexusApiClient) -> None:
         self.page = page
         self.api = api
@@ -73,7 +78,7 @@ class NexusApp:
                 ft.DataColumn(ft.Text("Status")),
                 ft.DataColumn(ft.Text("Data")),
             ],
-            rows=[]
+            rows=[],
         )
         self.stats_row = ft.Row(spacing=20)
         self.loader = ft.ProgressBar(visible=False, color="blue")
@@ -112,14 +117,14 @@ class NexusApp:
                         ft.ElevatedButton(
                             "Dodaj Fakturę (OCR)",
                             icon=ft.icons.UPLOAD_FILE,
-                            on_click=lambda _: self.file_picker.pick_files()
+                            on_click=lambda _: self.file_picker.pick_files(),
                         ),
                         ft.IconButton(ft.icons.REFRESH, on_click=lambda _: self.refresh_data()),
                     ]
                 ),
                 self.loader,
-                ft.Column([self.registry_table], scroll=ft.ScrollMode.ADAPTIVE, expand=True)
-            ]
+                ft.Column([self.registry_table], scroll=ft.ScrollMode.ADAPTIVE, expand=True),
+            ],
         )
         self.page.add(layout)
 
@@ -145,7 +150,7 @@ class NexusApp:
                 "APPROVED": ft.colors.GREEN,
                 "PROCESSING": ft.colors.ORANGE,
                 "MANUAL_REVIEW": ft.colors.BLUE,
-                "FAILED": ft.colors.RED
+                "FAILED": ft.colors.RED,
             }.get(getattr(inv, "status", "NEW"), ft.colors.GREY)
 
             self.registry_table.rows.append(
@@ -154,7 +159,9 @@ class NexusApp:
                         ft.DataCell(ft.Text(inv.number or "W trakcie...")),
                         ft.DataCell(ft.Text(inv.customer_id or "-")),
                         ft.DataCell(ft.Text(f"{inv.amount_gross:.2f} {inv.currency}")),
-                        ft.DataCell(ft.Chip(ft.Text(getattr(inv, "status", "NEW")), bgcolor=status_color)),
+                        ft.DataCell(
+                            ft.Chip(ft.Text(getattr(inv, "status", "NEW")), bgcolor=status_color)
+                        ),
                         ft.DataCell(ft.Text(inv.created_at.format("YYYY-MM-DD HH:mm"))),
                     ]
                 )
@@ -162,28 +169,37 @@ class NexusApp:
 
     def _update_stats(self, stats: dict):
         self.stats_row.controls = [
-            self._build_stat_card("Suma Brutto", f"{stats.get('total_gross', 0):.2f} PLN", ft.icons.MONEY),
-            self._build_stat_card("Liczba Faktur", str(stats.get('count', 0)), ft.icons.COPY),
-            self._build_stat_card("Średnia Wartość", f"{stats.get('avg_amount', 0):.2f} PLN", ft.icons.ANALYTICS)
+            self._build_stat_card(
+                "Suma Brutto", f"{stats.get('total_gross', 0):.2f} PLN", ft.icons.MONEY
+            ),
+            self._build_stat_card("Liczba Faktur", str(stats.get("count", 0)), ft.icons.COPY),
+            self._build_stat_card(
+                "Średnia Wartość", f"{stats.get('avg_amount', 0):.2f} PLN", ft.icons.ANALYTICS
+            ),
         ]
 
     def _build_stat_card(self, title: str, value: str, icon: str):
         return ft.Card(
             content=ft.Container(
                 padding=15,
-                content=ft.Row([
-                    ft.Icon(icon, size=40, color="blue"),
-                    ft.Column([
-                        ft.Text(title, size=14, color="grey"),
-                        ft.Text(value, size=20, weight="bold")
-                    ])
-                ])
+                content=ft.Row(
+                    [
+                        ft.Icon(icon, size=40, color="blue"),
+                        ft.Column(
+                            [
+                                ft.Text(title, size=14, color="grey"),
+                                ft.Text(value, size=20, weight="bold"),
+                            ]
+                        ),
+                    ]
+                ),
             )
         )
 
     def _on_file_selected(self, e: ft.FilePickerResultEvent):
         # Placeholder dla wyboru pliku
         pass
+
 
 def _read_bootstrap(page: ft.Page) -> ApiConfig:
     """Resolve dynamic backend port and bootstrap token from UI inputs."""
@@ -202,6 +218,7 @@ def _read_bootstrap(page: ft.Page) -> ApiConfig:
         raise ValueError("Brak wymaganych parametrów startowych: port i token.")
     return ApiConfig(port=int(port), token=token)
 
+
 async def main(page: ft.Page) -> None:
     """Flet app entrypoint."""
     try:
@@ -214,6 +231,7 @@ async def main(page: ft.Page) -> None:
     except Exception as exc:
         page.add(ft.Text(f"Błąd inicjalizacji UI: {exc}", color=ft.colors.RED_400))
         page.update()
+
 
 if __name__ == "__main__":
     ft.app(target=main)

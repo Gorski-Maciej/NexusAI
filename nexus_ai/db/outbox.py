@@ -14,10 +14,7 @@ class OutboxManager:
 
     @staticmethod
     def publish_event(
-        session: Session,
-        event_type: str,
-        payload: dict[str, Any],
-        aggregate_id: str
+        session: Session, event_type: str, payload: dict[str, Any], aggregate_id: str
     ) -> None:
         """
         Zapisuje zdarzenie (np. eksport_erp, wysylka_ksef) w tej samej transakcji co dane.
@@ -28,9 +25,10 @@ class OutboxManager:
             aggregate_id=aggregate_id,
             payload=msgspec_dumps(payload, ensure_ascii=False),
             status="PENDING",
-            created_at=pendulum.now("UTC")
+            created_at=pendulum.now("UTC"),
         )
         session.add(event)
+
 
 # Pseudo-kod workera wyciągający dane do NATS
 def _outbox_processor(session_factory, nats_client):

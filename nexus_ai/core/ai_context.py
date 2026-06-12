@@ -15,10 +15,12 @@ class AIContextManager:
         max_chars = (self.max_tokens - reserve_tokens) * self.chars_per_token
 
         if len(text) > max_chars:
-            logger.warning(f"Tekst dokumentu zbyt długi ({len(text)} znaków). Przycinanie do {max_chars}.")
+            logger.warning(
+                f"Tekst dokumentu zbyt długi ({len(text)} znaków). Przycinanie do {max_chars}."
+            )
             # Przycinamy do ostatniej kropki, aby nie rwać zdań
             truncated = text[:max_chars]
-            last_dot = truncated.rfind('.')
-            return truncated[:last_dot + 1] if last_dot > 0 else truncated
+            last_dot = truncated.rfind(".")
+            return truncated[: last_dot + 1] if last_dot > 0 else truncated
 
         return text

@@ -158,7 +158,8 @@ class ProjectionWorker:
             await self._connect_nats()
         except Exception as exc:
             logger.warning(
-                "[PROJECTION-WORKER] NATS connection failed: %s", exc,
+                "[PROJECTION-WORKER] NATS connection failed: %s",
+                exc,
             )
 
         # Uruchom konsumentów JetStream dla każdej projekcji
@@ -171,7 +172,8 @@ class ProjectionWorker:
                 self._consumer_tasks.append(task)
                 logger.info(
                     "[PROJECTION-WORKER] Consumer started: %s/%s",
-                    stream_name, projection.name,
+                    stream_name,
+                    projection.name,
                 )
 
         # Fallback polling (gdy NATS niedostępny lub jako uzupełnienie)
@@ -226,7 +228,8 @@ class ProjectionWorker:
             except Exception as exc:
                 logger.warning(
                     "[PROJECTION-WORKER] Error closing projection %s: %s",
-                    projection.name, exc,
+                    projection.name,
+                    exc,
                 )
 
         logger.info("[PROJECTION-WORKER] Stopped")
@@ -286,7 +289,8 @@ class ProjectionWorker:
             except Exception as exc:
                 logger.warning(
                     "[PROJECTION-WORKER] Failed to ensure stream %s: %s",
-                    stream_name, exc,
+                    stream_name,
+                    exc,
                 )
 
     @staticmethod
@@ -336,7 +340,8 @@ class ProjectionWorker:
             )
             logger.info(
                 "[PROJECTION-WORKER] Pull subscriber ready: %s/%s",
-                stream_name, projection.name,
+                stream_name,
+                projection.name,
             )
 
             while not self._shutdown_event.is_set():
@@ -354,7 +359,8 @@ class ProjectionWorker:
                     if not self._shutdown_event.is_set():
                         logger.warning(
                             "[PROJECTION-WORKER] Fetch error for %s: %s",
-                            projection.name, exc,
+                            projection.name,
+                            exc,
                         )
                         await anyio.sleep(1)
 
@@ -366,7 +372,8 @@ class ProjectionWorker:
         except Exception as exc:
             logger.error(
                 "[PROJECTION-WORKER] Consumer %s failed: %s",
-                projection.name, exc,
+                projection.name,
+                exc,
             )
 
     async def _process_message(
@@ -395,7 +402,9 @@ class ProjectionWorker:
             await projection._handle_event(event)
             logger.debug(
                 "[PROJECTION-WORKER] Processed %s → %s (version=%d)",
-                projection.name, event_type, event.version,
+                projection.name,
+                event_type,
+                event.version,
             )
 
             # 3. Ack wiadomość
@@ -411,9 +420,9 @@ class ProjectionWorker:
                     )
                 except Exception as cp_err:
                     logger.warning(
-                        "[PROJECTION-WORKER] Failed to update checkpoint "
-                        "for %s: %s",
-                        projection.name, cp_err,
+                        "[PROJECTION-WORKER] Failed to update checkpoint for %s: %s",
+                        projection.name,
+                        cp_err,
                     )
 
         except Exception as exc:
@@ -421,7 +430,9 @@ class ProjectionWorker:
             event_type_str = event.event_type if event else "unknown"
             logger.warning(
                 "[PROJECTION-WORKER] Failed to process %s event %s: %s",
-                projection.name, event_type_str, exc,
+                projection.name,
+                event_type_str,
+                exc,
             )
             try:
                 await msg.nak(delay=5)
@@ -448,21 +459,23 @@ class ProjectionWorker:
                         processed = await projection.process()
                         if processed > 0:
                             logger.info(
-                                "[PROJECTION-WORKER:FALLBACK] %s "
-                                "processed %d events",
-                                projection.name, processed,
+                                "[PROJECTION-WORKER:FALLBACK] %s processed %d events",
+                                projection.name,
+                                processed,
                             )
                     except Exception as exc:
                         logger.warning(
                             "[PROJECTION-WORKER:FALLBACK] %s failed: %s",
-                            projection.name, exc,
+                            projection.name,
+                            exc,
                         )
 
             except anyio.CancelledError:
                 break
             except Exception as exc:
                 logger.error(
-                    "[PROJECTION-WORKER:FALLBACK] Loop error: %s", exc,
+                    "[PROJECTION-WORKER:FALLBACK] Loop error: %s",
+                    exc,
                 )
 
     # ── Diagnostics ──────────────────────────────────────────────────────

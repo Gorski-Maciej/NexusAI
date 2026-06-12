@@ -12,15 +12,19 @@ logger = get_logger("nexus.core.secrets")
 
 try:
     import nexus_crypto
+
     HAS_NEXUS_CRYPTO = True
 except ImportError:
     HAS_NEXUS_CRYPTO = False
     nexus_crypto = None  # type: ignore[assignment]
-    logger.warning("nexus-crypto (Rust module) not available — secrets cache will use plaintext storage")
+    logger.warning(
+        "nexus-crypto (Rust module) not available — secrets cache will use plaintext storage"
+    )
 
 # keyring is optional (system keychain)
 try:
     import keyring as _kr
+
     HAS_KEYRING = True
 except ImportError:
     HAS_KEYRING = False
@@ -28,6 +32,7 @@ except ImportError:
 
 class SecretsManager:
     """Ochrona kluczy API i haseł przy użyciu natywnego magazynu systemu operacyjnego."""
+
     SERVICE_NAME = "NexusAI_System"
 
     @staticmethod
@@ -66,7 +71,9 @@ class LocalSecretsCache:
     Zastępuje: Fernet (cryptography) → ChaCha20-Poly1305 (nexus-crypto)
     """
 
-    def __init__(self, cache_path: Path | str = "app_data/secrets_cache.json", ttl_hours: int = 24) -> None:
+    def __init__(
+        self, cache_path: Path | str = "app_data/secrets_cache.json", ttl_hours: int = 24
+    ) -> None:
         self.cache_path = Path(cache_path)
         self.ttl_hours = ttl_hours
         self.cache_path.parent.mkdir(parents=True, exist_ok=True)
@@ -85,6 +92,7 @@ class LocalSecretsCache:
             return None
         try:
             import base64
+
             raw = base64.urlsafe_b64decode(key_str.encode("utf-8"))
             if len(raw) == 32:
                 return raw
@@ -92,7 +100,9 @@ class LocalSecretsCache:
             if HAS_NEXUS_CRYPTO:
                 key, _ = nexus_crypto.derive_key(key_str)
                 return key
-            logger.warning("nexus-crypto not available, cannot derive key from password; falling back to plaintext cache")
+            logger.warning(
+                "nexus-crypto not available, cannot derive key from password; falling back to plaintext cache"
+            )
             return None
         except Exception:
             logger.warning("Invalid NEXUS_SECRETS_CACHE_KEY; falling back to plaintext cache")
@@ -103,6 +113,7 @@ class LocalSecretsCache:
             return value, False
         encrypted = nexus_crypto.encrypt(self._key, value.encode("utf-8"))
         import base64
+
         return base64.urlsafe_b64encode(encrypted).decode("utf-8"), True
 
     def _decrypt(self, value: str, encrypted: bool) -> str | None:
@@ -112,6 +123,7 @@ class LocalSecretsCache:
             return None
         try:
             import base64
+
             data = base64.urlsafe_b64decode(value.encode("utf-8"))
             return nexus_crypto.decrypt(self._key, data).decode("utf-8")
         except Exception:

@@ -18,6 +18,7 @@ class TidentyfikatorOsobyFizycznej:
     :ivar data_urodzenia: Data urodzenia
     :ivar pesel: Identyfikator podatkowy numer PESEL
     """
+
     class Meta:
         name = "TIdentyfikatorOsobyFizycznej"
 
@@ -26,7 +27,7 @@ class TidentyfikatorOsobyFizycznej:
             "name": "NIP",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'[1-9]((\d[1-9])|([1-9]\d))\d{7}',
+            "pattern": r"[1-9]((\d[1-9])|([1-9]\d))\d{7}",
         }
     )
     imie_pierwsze: str = field(
@@ -54,7 +55,7 @@ class TidentyfikatorOsobyFizycznej:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_inclusive": "1900-01-01",
             "max_inclusive": "2050-12-31",
-            "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
+            "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
         }
     )
     pesel: None | str = field(
@@ -63,9 +64,11 @@ class TidentyfikatorOsobyFizycznej:
             "name": "PESEL",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'\d{11}',
-        }
+            "pattern": r"\d{11}",
+        },
     )
+
+
 @dataclass(kw_only=True)
 class TidentyfikatorOsobyFizycznej1:
     """
@@ -78,6 +81,7 @@ class TidentyfikatorOsobyFizycznej1:
     :ivar nazwisko: Nazwisko
     :ivar data_urodzenia: Data urodzenia
     """
+
     class Meta:
         name = "TIdentyfikatorOsobyFizycznej1"
 
@@ -87,8 +91,8 @@ class TidentyfikatorOsobyFizycznej1:
             "name": "NIP",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'[1-9]((\d[1-9])|([1-9]\d))\d{7}',
-        }
+            "pattern": r"[1-9]((\d[1-9])|([1-9]\d))\d{7}",
+        },
     )
     pesel: None | str = field(
         default=None,
@@ -96,8 +100,8 @@ class TidentyfikatorOsobyFizycznej1:
             "name": "PESEL",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'\d{11}',
-        }
+            "pattern": r"\d{11}",
+        },
     )
     imie_pierwsze: str = field(
         metadata={
@@ -124,9 +128,11 @@ class TidentyfikatorOsobyFizycznej1:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_inclusive": "1900-01-01",
             "max_inclusive": "2050-12-31",
-            "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
+            "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
         }
     )
+
+
 @dataclass(kw_only=True)
 class TidentyfikatorOsobyFizycznej2:
     """
@@ -138,6 +144,7 @@ class TidentyfikatorOsobyFizycznej2:
     :ivar nazwisko: Nazwisko
     :ivar data_urodzenia: Data urodzenia
     """
+
     class Meta:
         name = "TIdentyfikatorOsobyFizycznej2"
 
@@ -146,7 +153,7 @@ class TidentyfikatorOsobyFizycznej2:
             "name": "NIP",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'[1-9]((\d[1-9])|([1-9]\d))\d{7}',
+            "pattern": r"[1-9]((\d[1-9])|([1-9]\d))\d{7}",
         }
     )
     imie_pierwsze: str = field(
@@ -174,9 +181,11 @@ class TidentyfikatorOsobyFizycznej2:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_inclusive": "1900-01-01",
             "max_inclusive": "2050-12-31",
-            "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
+            "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
         }
     )
+
+
 @dataclass(kw_only=True)
 class TidentyfikatorOsobyFizycznejPelny:
     """
@@ -190,6 +199,7 @@ class TidentyfikatorOsobyFizycznejPelny:
     :ivar imie_matki: Imię matki
     :ivar pesel: Identyfikator podatkowy numer PESEL
     """
+
     class Meta:
         name = "TIdentyfikatorOsobyFizycznejPelny"
 
@@ -199,8 +209,8 @@ class TidentyfikatorOsobyFizycznejPelny:
             "name": "NIP",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'[1-9]((\d[1-9])|([1-9]\d))\d{7}',
-        }
+            "pattern": r"[1-9]((\d[1-9])|([1-9]\d))\d{7}",
+        },
     )
     imie_pierwsze: str = field(
         metadata={
@@ -227,7 +237,7 @@ class TidentyfikatorOsobyFizycznejPelny:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_inclusive": "1900-01-01",
             "max_inclusive": "2050-12-31",
-            "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
+            "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
         }
     )
     imie_ojca: str = field(
@@ -253,9 +263,11 @@ class TidentyfikatorOsobyFizycznejPelny:
             "name": "PESEL",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'\d{11}',
+            "pattern": r"\d{11}",
         }
     )
+
+
 @dataclass(kw_only=True)
 class TidentyfikatorOsobyFizycznejZagranicznej:
     """
@@ -270,6 +282,7 @@ class TidentyfikatorOsobyFizycznejZagranicznej:
     :ivar nip: Identyfikator podatkowy NIP [Tax Identification Number
         (NIP)]
     """
+
     class Meta:
         name = "TIdentyfikatorOsobyFizycznejZagranicznej"
 
@@ -298,7 +311,7 @@ class TidentyfikatorOsobyFizycznejZagranicznej:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_inclusive": "1900-01-01",
             "max_inclusive": "2050-12-31",
-            "pattern": r'((\d{4})-(\d{2})-(\d{2}))',
+            "pattern": r"((\d{4})-(\d{2})-(\d{2}))",
         }
     )
     miejsce_urodzenia: str = field(
@@ -318,7 +331,7 @@ class TidentyfikatorOsobyFizycznejZagranicznej:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_length": 1,
             "max_length": 30,
-        }
+        },
     )
     imie_matki: None | str = field(
         default=None,
@@ -328,7 +341,7 @@ class TidentyfikatorOsobyFizycznejZagranicznej:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_length": 1,
             "max_length": 30,
-        }
+        },
     )
     nip: None | str = field(
         default=None,
@@ -336,9 +349,11 @@ class TidentyfikatorOsobyFizycznejZagranicznej:
             "name": "NIP",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'[1-9]((\d[1-9])|([1-9]\d))\d{7}',
-        }
+            "pattern": r"[1-9]((\d[1-9])|([1-9]\d))\d{7}",
+        },
     )
+
+
 @dataclass(kw_only=True)
 class TidentyfikatorOsobyNiefizycznej:
     """
@@ -348,6 +363,7 @@ class TidentyfikatorOsobyNiefizycznej:
     :ivar pelna_nazwa: Pełna nazwa
     :ivar regon: Numer REGON
     """
+
     class Meta:
         name = "TIdentyfikatorOsobyNiefizycznej"
 
@@ -356,7 +372,7 @@ class TidentyfikatorOsobyNiefizycznej:
             "name": "NIP",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'[1-9]((\d[1-9])|([1-9]\d))\d{7}',
+            "pattern": r"[1-9]((\d[1-9])|([1-9]\d))\d{7}",
         }
     )
     pelna_nazwa: str = field(
@@ -374,9 +390,11 @@ class TidentyfikatorOsobyNiefizycznej:
             "name": "REGON",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'\d{14}',
-        }
+            "pattern": r"\d{14}",
+        },
     )
+
+
 @dataclass(kw_only=True)
 class TidentyfikatorOsobyNiefizycznej1:
     """
@@ -386,6 +404,7 @@ class TidentyfikatorOsobyNiefizycznej1:
     :ivar nip: Identyfikator podatkowy NIP
     :ivar pelna_nazwa: Pełna nazwa
     """
+
     class Meta:
         name = "TIdentyfikatorOsobyNiefizycznej1"
 
@@ -394,7 +413,7 @@ class TidentyfikatorOsobyNiefizycznej1:
             "name": "NIP",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'[1-9]((\d[1-9])|([1-9]\d))\d{7}',
+            "pattern": r"[1-9]((\d[1-9])|([1-9]\d))\d{7}",
         }
     )
     pelna_nazwa: str = field(
@@ -406,6 +425,8 @@ class TidentyfikatorOsobyNiefizycznej1:
             "max_length": 240,
         }
     )
+
+
 @dataclass(kw_only=True)
 class TidentyfikatorOsobyNiefizycznejPelny:
     """
@@ -416,6 +437,7 @@ class TidentyfikatorOsobyNiefizycznejPelny:
     :ivar skrocona_nazwa: Skrócona nazwa
     :ivar regon: Numer REGON
     """
+
     class Meta:
         name = "TIdentyfikatorOsobyNiefizycznejPelny"
 
@@ -425,8 +447,8 @@ class TidentyfikatorOsobyNiefizycznejPelny:
             "name": "NIP",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'[1-9]((\d[1-9])|([1-9]\d))\d{7}',
-        }
+            "pattern": r"[1-9]((\d[1-9])|([1-9]\d))\d{7}",
+        },
     )
     pelna_nazwa: str = field(
         metadata={
@@ -451,9 +473,11 @@ class TidentyfikatorOsobyNiefizycznejPelny:
             "name": "REGON",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'\d{14}',
+            "pattern": r"\d{14}",
         }
     )
+
+
 @dataclass(kw_only=True)
 class TidentyfikatorOsobyNiefizycznejZagranicznej:
     """
@@ -464,6 +488,7 @@ class TidentyfikatorOsobyNiefizycznejZagranicznej:
     :ivar nip: Identyfikator podatkowy NIP [Tax Identification Number
         (NIP)]
     """
+
     class Meta:
         name = "TIdentyfikatorOsobyNiefizycznejZagranicznej"
 
@@ -484,7 +509,7 @@ class TidentyfikatorOsobyNiefizycznejZagranicznej:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_length": 1,
             "max_length": 70,
-        }
+        },
     )
     nip: None | str = field(
         default=None,
@@ -492,9 +517,11 @@ class TidentyfikatorOsobyNiefizycznejZagranicznej:
             "name": "NIP",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'[1-9]((\d[1-9])|([1-9]\d))\d{7}',
-        }
+            "pattern": r"[1-9]((\d[1-9])|([1-9]\d))\d{7}",
+        },
     )
+
+
 @dataclass(kw_only=True)
 class TadresPolski:
     """
@@ -511,6 +538,7 @@ class TadresPolski:
     :ivar kod_pocztowy: Kod pocztowy
     :ivar poczta: Nazwa urzędu pocztowego
     """
+
     class Meta:
         name = "TAdresPolski"
 
@@ -521,7 +549,7 @@ class TadresPolski:
             "name": "KodKraju",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
     wojewodztwo: str = field(
         metadata={
@@ -558,7 +586,7 @@ class TadresPolski:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_length": 1,
             "max_length": 65,
-        }
+        },
     )
     nr_domu: str = field(
         metadata={
@@ -577,7 +605,7 @@ class TadresPolski:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_length": 1,
             "max_length": 10,
-        }
+        },
     )
     miejscowosc: str = field(
         metadata={
@@ -606,6 +634,8 @@ class TadresPolski:
             "max_length": 56,
         }
     )
+
+
 @dataclass(kw_only=True)
 class TadresPolski1:
     """
@@ -621,6 +651,7 @@ class TadresPolski1:
     :ivar miejscowosc: Nazwa miejscowości
     :ivar kod_pocztowy: Kod pocztowy
     """
+
     class Meta:
         name = "TAdresPolski1"
 
@@ -631,7 +662,7 @@ class TadresPolski1:
             "name": "KodKraju",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
     wojewodztwo: str = field(
         metadata={
@@ -668,7 +699,7 @@ class TadresPolski1:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_length": 1,
             "max_length": 65,
-        }
+        },
     )
     nr_domu: str = field(
         metadata={
@@ -687,7 +718,7 @@ class TadresPolski1:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_length": 1,
             "max_length": 10,
-        }
+        },
     )
     miejscowosc: str = field(
         metadata={
@@ -707,6 +738,8 @@ class TadresPolski1:
             "max_length": 8,
         }
     )
+
+
 @dataclass(kw_only=True)
 class TadresZagraniczny:
     """
@@ -719,6 +752,7 @@ class TadresZagraniczny:
     :ivar nr_domu: Numer budynku [Building number]
     :ivar nr_lokalu: Numer lokalu [Flat number]
     """
+
     class Meta:
         name = "TAdresZagraniczny"
 
@@ -727,7 +761,7 @@ class TadresZagraniczny:
             "name": "KodKraju",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-            "pattern": r'P[A-KM-Z]|[A-OQ-Z][A-Z]',
+            "pattern": r"P[A-KM-Z]|[A-OQ-Z][A-Z]",
         }
     )
     kod_pocztowy: None | str = field(
@@ -738,7 +772,7 @@ class TadresZagraniczny:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_length": 1,
             "max_length": 8,
-        }
+        },
     )
     miejscowosc: str = field(
         metadata={
@@ -757,7 +791,7 @@ class TadresZagraniczny:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_length": 1,
             "max_length": 65,
-        }
+        },
     )
     nr_domu: None | str = field(
         default=None,
@@ -767,7 +801,7 @@ class TadresZagraniczny:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_length": 1,
             "max_length": 9,
-        }
+        },
     )
     nr_lokalu: None | str = field(
         default=None,
@@ -777,13 +811,16 @@ class TadresZagraniczny:
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
             "min_length": 1,
             "max_length": 10,
-        }
+        },
     )
+
+
 @dataclass(kw_only=True)
 class TpodmiotDowolnyBezAdresu:
     """
     Skrócony zestaw danych o osobie fizycznej lub niefizycznej.
     """
+
     class Meta:
         name = "TPodmiotDowolnyBezAdresu"
 
@@ -793,7 +830,7 @@ class TpodmiotDowolnyBezAdresu:
             "name": "OsobaFizyczna",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
     osoba_niefizyczna: None | TidentyfikatorOsobyNiefizycznej = field(
         default=None,
@@ -801,14 +838,17 @@ class TpodmiotDowolnyBezAdresu:
             "name": "OsobaNiefizyczna",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
+
+
 @dataclass(kw_only=True)
 class TpodmiotDowolnyBezAdresu1:
     """
     Skrócony zestaw danych o osobie fizycznej lub niefizycznej z
     identyfikatorem NIP albo PESEL.
     """
+
     class Meta:
         name = "TPodmiotDowolnyBezAdresu1"
 
@@ -818,7 +858,7 @@ class TpodmiotDowolnyBezAdresu1:
             "name": "OsobaFizyczna",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
     osoba_niefizyczna: None | TidentyfikatorOsobyNiefizycznej = field(
         default=None,
@@ -826,14 +866,17 @@ class TpodmiotDowolnyBezAdresu1:
             "name": "OsobaNiefizyczna",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
+
+
 @dataclass(kw_only=True)
 class TpodmiotDowolnyBezAdresu2:
     """
     Skrócony zestaw danych o osobie fizycznej lub niefizycznej z
     identyfikatorem NIP.
     """
+
     class Meta:
         name = "TPodmiotDowolnyBezAdresu2"
 
@@ -843,7 +886,7 @@ class TpodmiotDowolnyBezAdresu2:
             "name": "OsobaFizyczna",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
     osoba_niefizyczna: None | TidentyfikatorOsobyNiefizycznej = field(
         default=None,
@@ -851,14 +894,17 @@ class TpodmiotDowolnyBezAdresu2:
             "name": "OsobaNiefizyczna",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
+
+
 @dataclass(kw_only=True)
 class TpodmiotDowolnyBezAdresu3:
     """
     Skrócony zestaw danych o osobie fizycznej lub niefizycznej z
     identyfikatorem NIP - bez elementu numer REGON dla osoby niefizycznej.
     """
+
     class Meta:
         name = "TPodmiotDowolnyBezAdresu3"
 
@@ -868,7 +914,7 @@ class TpodmiotDowolnyBezAdresu3:
             "name": "OsobaFizyczna",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
     osoba_niefizyczna: None | TidentyfikatorOsobyNiefizycznej1 = field(
         default=None,
@@ -876,13 +922,16 @@ class TpodmiotDowolnyBezAdresu3:
             "name": "OsobaNiefizyczna",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
+
+
 @dataclass(kw_only=True)
 class Tadres:
     """
     Dane określające adres.
     """
+
     class Meta:
         name = "TAdres"
 
@@ -892,7 +941,7 @@ class Tadres:
             "name": "AdresPol",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
     adres_zagr: None | TadresZagraniczny = field(
         default=None,
@@ -900,13 +949,16 @@ class Tadres:
             "name": "AdresZagr",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
+
+
 @dataclass(kw_only=True)
 class Tadres1:
     """
     Dane określające adres - bez elementu Poczta w adresie polskim.
     """
+
     class Meta:
         name = "TAdres1"
 
@@ -916,7 +968,7 @@ class Tadres1:
             "name": "AdresPol",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
     adres_zagr: None | TadresZagraniczny = field(
         default=None,
@@ -924,13 +976,16 @@ class Tadres1:
             "name": "AdresZagr",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
+
+
 @dataclass(kw_only=True)
 class TosobaFizyczna:
     """
     Podstawowy zestaw danych o osobie fizycznej.
     """
+
     class Meta:
         name = "TOsobaFizyczna"
 
@@ -953,19 +1008,22 @@ class TosobaFizyczna:
     class AdresZamieszkania(Tadres):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TosobaFizyczna1:
     """
     Podstawowy zestaw danych o osobie fizycznej z identyfikatorem NIP albo
     PESEL.
     """
+
     class Meta:
         name = "TOsobaFizyczna1"
 
@@ -988,18 +1046,21 @@ class TosobaFizyczna1:
     class AdresZamieszkania(Tadres):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TosobaFizyczna2:
     """
     Podstawowy zestaw danych o osobie fizycznej z identyfikatorem NIP.
     """
+
     class Meta:
         name = "TOsobaFizyczna2"
 
@@ -1022,19 +1083,22 @@ class TosobaFizyczna2:
     class AdresZamieszkania(Tadres):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TosobaFizyczna3:
     """
     Podstawowy zestaw danych o osobie fizycznej z identyfikatorem NIP albo
     PESEL - bez elementu Poczta w adresie polskim.
     """
+
     class Meta:
         name = "TOsobaFizyczna3"
 
@@ -1057,19 +1121,22 @@ class TosobaFizyczna3:
     class AdresZamieszkania(Tadres1):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TosobaFizyczna4:
     """
     Podstawowy zestaw danych o osobie fizycznej z identyfikatorem NIP - bez
     elementu Poczta w adresie polskim.
     """
+
     class Meta:
         name = "TOsobaFizyczna4"
 
@@ -1092,19 +1159,22 @@ class TosobaFizyczna4:
     class AdresZamieszkania(Tadres1):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TosobaFizyczna5:
     """
     Podstawowy zestaw danych o osobie fizycznej - bez elementu Poczta w
     adresie polskim.
     """
+
     class Meta:
         name = "TOsobaFizyczna5"
 
@@ -1127,18 +1197,21 @@ class TosobaFizyczna5:
     class AdresZamieszkania(Tadres1):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TosobaFizycznaPelna:
     """
     Pełny zestaw danych o osobie fizycznej.
     """
+
     class Meta:
         name = "TOsobaFizycznaPelna"
 
@@ -1161,19 +1234,22 @@ class TosobaFizycznaPelna:
     class AdresZamieszkania(Tadres):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TosobaFizycznaPelna1:
     """
     Pełny zestaw danych o osobie fizycznej - bez elementu Poczta w adresie
     polskim.
     """
+
     class Meta:
         name = "TOsobaFizycznaPelna1"
 
@@ -1196,18 +1272,21 @@ class TosobaFizycznaPelna1:
     class AdresZamieszkania(Tadres1):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TosobaNiefizyczna:
     """
     Podstawowy zestaw danych o osobie niefizycznej.
     """
+
     class Meta:
         name = "TOsobaNiefizyczna"
 
@@ -1230,19 +1309,22 @@ class TosobaNiefizyczna:
     class AdresSiedziby(Tadres):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TosobaNiefizyczna1:
     """
     Podstawowy zestaw danych o osobie niefizycznej - bez elementu Poczta w
     adresie polskim.
     """
+
     class Meta:
         name = "TOsobaNiefizyczna1"
 
@@ -1265,19 +1347,22 @@ class TosobaNiefizyczna1:
     class AdresSiedziby(Tadres1):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TosobaNiefizyczna2:
     """
     Podstawowy zestaw danych o osobie niefizycznej - bez elementu Numer
     REGON oraz bez elementu Poczta w adresie polskim.
     """
+
     class Meta:
         name = "TOsobaNiefizyczna2"
 
@@ -1300,18 +1385,21 @@ class TosobaNiefizyczna2:
     class AdresSiedziby(Tadres1):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TosobaNiefizycznaPelna:
     """
     Pełny zestaw danych o niefizycznej.
     """
+
     class Meta:
         name = "TOsobaNiefizycznaPelna"
 
@@ -1334,19 +1422,22 @@ class TosobaNiefizycznaPelna:
     class AdresSiedziby(Tadres):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TosobaNiefizycznaPelna1:
     """
     Pełny zestaw danych o osobie niefizycznej - bez elementu Poczta w
     adresie polskim.
     """
+
     class Meta:
         name = "TOsobaNiefizycznaPelna1"
 
@@ -1369,18 +1460,21 @@ class TosobaNiefizycznaPelna1:
     class AdresSiedziby(Tadres1):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TpodmiotDowolny(TpodmiotDowolnyBezAdresu):
     """
     Podstawowy zestaw danych o osobie fizycznej lub niefizycznej.
     """
+
     class Meta:
         name = "TPodmiotDowolny"
 
@@ -1396,19 +1490,22 @@ class TpodmiotDowolny(TpodmiotDowolnyBezAdresu):
     class AdresZamieszkaniaSiedziby(Tadres):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TpodmiotDowolny1(TpodmiotDowolnyBezAdresu):
     """
     Podstawowy zestaw danych o osobie fizycznej lub niefizycznej - bez
     elementu Poczta w adresie polskim.
     """
+
     class Meta:
         name = "TPodmiotDowolny1"
 
@@ -1424,19 +1521,22 @@ class TpodmiotDowolny1(TpodmiotDowolnyBezAdresu):
     class AdresZamieszkaniaSiedziby(Tadres1):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TpodmiotDowolny2(TpodmiotDowolnyBezAdresu3):
     """
     Podstawowy zestaw danych o osobie fizycznej lub niefizycznej - bez
     elementu Numer REGON oraz bez elementu Poczta w adresie polskim.
     """
+
     class Meta:
         name = "TPodmiotDowolny2"
 
@@ -1452,18 +1552,21 @@ class TpodmiotDowolny2(TpodmiotDowolnyBezAdresu3):
     class AdresZamieszkaniaSiedziby(Tadres1):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TpodmiotDowolnyPelny:
     """
     Pełny zestaw danych o osobie fizycznej lub niefizycznej.
     """
+
     class Meta:
         name = "TPodmiotDowolnyPelny"
 
@@ -1473,7 +1576,7 @@ class TpodmiotDowolnyPelny:
             "name": "OsobaFizyczna",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
     osoba_niefizyczna: None | TidentyfikatorOsobyNiefizycznejPelny = field(
         default=None,
@@ -1481,7 +1584,7 @@ class TpodmiotDowolnyPelny:
             "name": "OsobaNiefizyczna",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
     adres_zamieszkania_siedziby: TpodmiotDowolnyPelny.AdresZamieszkaniaSiedziby = field(
         metadata={
@@ -1495,19 +1598,22 @@ class TpodmiotDowolnyPelny:
     class AdresZamieszkaniaSiedziby(Tadres):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )
+
+
 @dataclass(kw_only=True)
 class TpodmiotDowolnyPelny1:
     """
     Pełny zestaw danych o osobie fizycznej lub niefizycznej - bez elementu
     Poczta w adresie polskim.
     """
+
     class Meta:
         name = "TPodmiotDowolnyPelny1"
 
@@ -1517,7 +1623,7 @@ class TpodmiotDowolnyPelny1:
             "name": "OsobaFizyczna",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
     osoba_niefizyczna: None | TidentyfikatorOsobyNiefizycznejPelny = field(
         default=None,
@@ -1525,7 +1631,7 @@ class TpodmiotDowolnyPelny1:
             "name": "OsobaNiefizyczna",
             "type": "Element",
             "namespace": "http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/",
-        }
+        },
     )
     adres_zamieszkania_siedziby: TpodmiotDowolnyPelny1.AdresZamieszkaniaSiedziby = field(
         metadata={
@@ -1539,10 +1645,10 @@ class TpodmiotDowolnyPelny1:
     class AdresZamieszkaniaSiedziby(Tadres1):
         rodzaj_adresu: str = field(
             init=False,
-            default='RAD',
+            default="RAD",
             metadata={
                 "name": "rodzajAdresu",
                 "type": "Attribute",
                 "required": True,
-            }
+            },
         )

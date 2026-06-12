@@ -22,5 +22,5 @@ class SecurityService:
         if path.exists():
             size = path.stat().st_size
             with open(path, "ba+", buffering=0) as f:
-                f.write(b'\x00' * size)
+                f.write(b"\x00" * size)
             path.unlink()

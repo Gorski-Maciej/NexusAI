@@ -91,6 +91,7 @@ def get_database_url() -> str:
     """Resolve the database URL from NexusAI config or environment."""
     try:
         from nexus_ai.core.config import AppConfig
+
         config_obj = AppConfig()
         url = f"sqlite:///{config_obj.sqlite_path.as_posix()}"
         # Check for a user-provided override

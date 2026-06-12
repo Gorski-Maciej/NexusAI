@@ -4,15 +4,18 @@ Zgodnie z aa3fvcx.txt (Punkt 26): historia wszystkich zdarzeń i podjętych
 decyzji, przeszukiwalna dla systemu analitycznego (DuckDB).
 
 Storage: DuckDB dla wydajnych zapytań OLAP.
-Fallback: SQLite gdy DuckDB niedostępny.
+Fallback: Główna baza SQLAlchemy (Alembic, tabele: event_log).
+
+DDL event_log przeniesione do migracji 0003_consolidate_service_tables.
+DDL DuckDB (event_log_analytics) pozostaje jako _init_duckdb().
 """
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 import pendulum
+from sqlalchemy import Engine, text
 from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
@@ -32,50 +35,20 @@ class EventLog:
       - Codzienne podsumowania
 
     Dostępna dla systemu analitycznego (DuckDB) do generowania raportów i trendów.
+
+    Storage:
+      - SQLite (główna baza, Alembic 0003): event_log — fallback dla zapytań
+      - DuckDB: event_log_analytics — wydajne zapytania OLAP
     """
 
     def __init__(
         self,
-        db_path: Path | str | None = None,
+        engine: Engine,
         duckdb_manager: Any = None,
     ) -> None:
-        self._db_path = Path(db_path) if db_path else Path("app_data/event_log.db")
-        self._db_path.parent.mkdir(parents=True, exist_ok=True)
+        self._engine = engine
         self._duckdb = duckdb_manager
-        self._init_schema()
-
-    def _init_schema(self) -> None:
-        """Inicjalizuj schemat — SQLite dla trwałości + DuckDB dla analityki."""
-        conn = self._sqlite_conn()
-        try:
-            conn.executescript("""
-                CREATE TABLE IF NOT EXISTS event_log (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    event_type TEXT NOT NULL,
-                    source TEXT NOT NULL DEFAULT '',
-                    description TEXT NOT NULL DEFAULT '',
-                    user_id TEXT,
-                    agent_name TEXT,
-                    metadata TEXT NOT NULL DEFAULT '{}',
-                    severity TEXT NOT NULL DEFAULT 'info',
-                    created_at TEXT NOT NULL
-                );
-                CREATE INDEX IF NOT EXISTS idx_event_type
-                    ON event_log(event_type, created_at DESC);
-                CREATE INDEX IF NOT EXISTS idx_event_source
-                    ON event_log(source, created_at DESC);
-                CREATE INDEX IF NOT EXISTS idx_event_user
-                    ON event_log(user_id, created_at DESC);
-                CREATE INDEX IF NOT EXISTS idx_event_severity
-                    ON event_log(severity, created_at DESC);
-                CREATE INDEX IF NOT EXISTS idx_event_created
-                    ON event_log(created_at DESC);
-            """)
-            conn.commit()
-        finally:
-            conn.close()
-
-        # Inicjalizuj DuckDB jeśli dostępny
+        # DuckDB schema (analytics) — pozostaje jako DDL w kodzie
         self._init_duckdb()
 
     def _init_duckdb(self) -> None:
@@ -98,10 +71,6 @@ class EventLog:
             """)
         except Exception as exc:
             logger.debug("[EventLog] DuckDB init skipped: %s", exc)
-
-    def _sqlite_conn(self):
-        import sqlite3
-        return sqlite3.connect(str(self._db_path))
 
     def log(
         self,
@@ -130,40 +99,59 @@ class EventLog:
         now = pendulum.now("UTC").isoformat()
         metadata_json = msgspec_dumps(metadata or {})
 
-        conn = self._sqlite_conn()
-        try:
-            cursor = conn.execute(
-                """INSERT INTO event_log
-                   (event_type, source, description, user_id, agent_name,
-                    metadata, severity, created_at)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-                (event_type, source, description, user_id, agent_name,
-                 metadata_json, severity, now),
+        with self._engine.begin() as conn:
+            result = conn.execute(
+                text(
+                    """INSERT INTO event_log
+                       (event_type, source, description, user_id, agent_name,
+                        metadata, severity, created_at)
+                       VALUES (:event_type, :source, :description, :user_id, :agent_name,
+                               :metadata, :severity, :created_at)"""
+                ),
+                {
+                    "event_type": event_type,
+                    "source": source,
+                    "description": description,
+                    "user_id": user_id,
+                    "agent_name": agent_name,
+                    "metadata": metadata_json,
+                    "severity": severity,
+                    "created_at": now,
+                },
             )
-            conn.commit()
-            event_id = int(cursor.lastrowid)
+            event_id = int(result.lastrowid)
 
-            # Równolegle zapisz do DuckDB jeśli dostępny
-            if self._duckdb:
-                try:
-                    self._duckdb.execute(
-                        """INSERT INTO event_log_analytics
-                           (id, event_type, source, description, user_id,
-                            agent_name, metadata, severity, created_at)
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?::TIMESTAMP)""",
-                        (event_id, event_type, source, description, user_id,
-                         agent_name, metadata_json, severity, now),
-                    )
-                except Exception as exc:
-                    logger.debug("[EventLog] DuckDB insert skipped: %s", exc)
+        # Równolegle zapisz do DuckDB jeśli dostępny
+        if self._duckdb:
+            try:
+                self._duckdb.execute(
+                    """INSERT INTO event_log_analytics
+                       (id, event_type, source, description, user_id,
+                        agent_name, metadata, severity, created_at)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?::TIMESTAMP)""",
+                    (
+                        event_id,
+                        event_type,
+                        source,
+                        description,
+                        user_id,
+                        agent_name,
+                        metadata_json,
+                        severity,
+                        now,
+                    ),
+                )
+            except Exception as exc:
+                logger.debug("[EventLog] DuckDB insert skipped: %s", exc)
 
-            logger.debug(
-                "[EventLog] logged id=%d type=%s source=%s severity=%s",
-                event_id, event_type, source, severity,
-            )
-            return event_id
-        finally:
-            conn.close()
+        logger.debug(
+            "[EventLog] logged id=%d type=%s source=%s severity=%s",
+            event_id,
+            event_type,
+            source,
+            severity,
+        )
+        return event_id
 
     def query(
         self,
@@ -179,7 +167,7 @@ class EventLog:
         """Przeszukaj log zdarzeń z opcjonalnymi filtrami.
 
         Używa DuckDB jeśli dostępny (szybsze zapytania),
-        w przeciwnym razie SQLite.
+        w przeciwnym razie główna baza SQLAlchemy.
         """
         # Prefer DuckDB dla zapytań analitycznych
         if self._duckdb and (event_type or source or severity):
@@ -194,7 +182,7 @@ class EventLog:
                 until=until,
             )
 
-        return self._query_sqlite(
+        return self._query_sql(
             event_type=event_type,
             source=source,
             user_id=user_id,
@@ -205,7 +193,7 @@ class EventLog:
             until=until,
         )
 
-    def _query_sqlite(
+    def _query_sql(
         self,
         event_type: str | None,
         source: str | None,
@@ -216,43 +204,39 @@ class EventLog:
         since: str | None,
         until: str | None,
     ) -> list[dict[str, Any]]:
-        import sqlite3
-        conn = sqlite3.connect(str(self._db_path))
-        conn.row_factory = sqlite3.Row
-
+        with self._engine.connect() as conn:
             query = "SELECT * FROM event_log WHERE 1=1"
-            params: list[Any] = []
+            params: dict[str, Any] = {}
 
             if event_type:
-                query += " AND event_type = ?"
-                params.append(event_type)
+                query += " AND event_type = :event_type"
+                params["event_type"] = event_type
             if source:
-                query += " AND source = ?"
-                params.append(source)
+                query += " AND source = :source"
+                params["source"] = source
             if user_id:
-                query += " AND user_id = ?"
-                params.append(user_id)
+                query += " AND user_id = :user_id"
+                params["user_id"] = user_id
             if severity:
-                query += " AND severity = ?"
-                params.append(severity)
+                query += " AND severity = :severity"
+                params["severity"] = severity
             if agent_name:
-                query += " AND agent_name = ?"
-                params.append(agent_name)
+                query += " AND agent_name = :agent_name"
+                params["agent_name"] = agent_name
             if since:
-                query += " AND created_at >= ?"
-                params.append(since)
+                query += " AND created_at >= :since"
+                params["since"] = since
             if until:
-                query += " AND created_at <= ?"
-                params.append(until)
+                query += " AND created_at <= :until"
+                params["until"] = until
 
-            query += " ORDER BY created_at DESC LIMIT ?"
-            params.append(limit)
+            query += " ORDER BY created_at DESC LIMIT :limit"
+            params["limit"] = limit
 
-            rows = conn.execute(query, params).fetchall()
+            rows = conn.execute(text(query), params).mappings().all()
             result = []
             for row in rows:
                 row_dict = dict(row)
-                # Parsuj metadata JSON
                 if isinstance(row_dict.get("metadata"), str):
                     try:
                         row_dict["metadata"] = msgspec_loads(row_dict["metadata"])
@@ -260,8 +244,6 @@ class EventLog:
                         pass
                 result.append(row_dict)
             return result
-        finally:
-            conn.close()
 
     def _query_duckdb(
         self,
@@ -275,7 +257,7 @@ class EventLog:
         until: str | None,
     ) -> list[dict[str, Any]]:
         if not self._duckdb:
-            return self._query_sqlite(
+            return self._query_sql(
                 event_type, source, user_id, severity, agent_name, limit, since, until
             )
 
@@ -328,8 +310,8 @@ class EventLog:
                 result.append(row_dict)
             return result
         except Exception as exc:
-            logger.debug("[EventLog] DuckDB query failed, falling back to SQLite: %s", exc)
-            return self._query_sqlite(
+            logger.debug("[EventLog] DuckDB query failed, falling back to SQL: %s", exc)
+            return self._query_sql(
                 event_type, source, user_id, severity, agent_name, limit, since, until
             )
 
@@ -367,33 +349,41 @@ class EventLog:
                     "period_days": days,
                     "total": total[0][0] if total else 0,
                     "by_type": {str(r[0]): int(r[1]) for r in by_type} if by_type else {},
-                    "by_severity": {str(r[0]): int(r[1]) for r in by_severity} if by_severity else {},
+                    "by_severity": {str(r[0]): int(r[1]) for r in by_severity}
+                    if by_severity
+                    else {},
                     "by_source": {str(r[0]): int(r[1]) for r in by_source} if by_source else {},
                 }
             except Exception:
                 pass
 
-        # Fallback do SQLite
-        conn = self._sqlite_conn()
-        try:
-            total = conn.execute(
-                "SELECT COUNT(*) FROM event_log WHERE created_at >= ?",
-                (since,),
-            ).fetchone()[0]
+        # Fallback do SQLAlchemy
+        with self._engine.connect() as conn:
+            total = int(
+                conn.execute(
+                    text("SELECT COUNT(*) FROM event_log WHERE created_at >= :since"),
+                    {"since": since},
+                ).scalar()
+                or 0
+            )
 
-            rows_by_type = conn.execute(
-                "SELECT event_type, COUNT(*) as cnt FROM event_log "
-                "WHERE created_at >= ? GROUP BY event_type ORDER BY cnt DESC",
-                (since,),
-            ).fetchall()
+            rows = (
+                conn.execute(
+                    text(
+                        "SELECT event_type, COUNT(*) as cnt FROM event_log "
+                        "WHERE created_at >= :since GROUP BY event_type ORDER BY cnt DESC"
+                    ),
+                    {"since": since},
+                )
+                .mappings()
+                .all()
+            )
 
             return {
                 "period_days": days,
                 "total": total,
-                "by_type": {r[0]: r[1] for r in rows_by_type},
+                "by_type": {r["event_type"]: r["cnt"] for r in rows},
             }
-        finally:
-            conn.close()
 
     def get_by_reference(self, reference_type: str, reference_id: str) -> list[dict[str, Any]]:
         """Znajdź zdarzenia powiązane z konkretną referencją."""
@@ -409,16 +399,12 @@ class EventLog:
             Liczba usuniętych wpisów.
         """
         cutoff = pendulum.now("UTC").subtract(days=days).isoformat()
-        conn = self._sqlite_conn()
-        try:
-            cursor = conn.execute(
-                "DELETE FROM event_log WHERE created_at < ?",
-                (cutoff,),
+        with self._engine.begin() as conn:
+            result = conn.execute(
+                text("DELETE FROM event_log WHERE created_at < :cutoff"),
+                {"cutoff": cutoff},
             )
-            conn.commit()
-            deleted = cursor.rowcount
-            if deleted:
-                logger.info("[EventLog] cleaned %d old entries (>%d days)", deleted, days)
-            return deleted
-        finally:
-            conn.close()
+            deleted = result.rowcount
+        if deleted:
+            logger.info("[EventLog] cleaned %d old entries (>%d days)", deleted, days)
+        return deleted

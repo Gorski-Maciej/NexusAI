@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
 
+
 class FXPostingDecision(Struct, frozen=True):
     invoice_id: str
     fx_delta: Decimal
@@ -16,10 +17,17 @@ class FXPostingDecision(Struct, frozen=True):
     account_code: str
     entry_side: str
 
+
 def ensure_fx_schema(duckdb: DuckDBManager) -> None:
-    duckdb.execute("ALTER TABLE invoices_replica ADD COLUMN IF NOT EXISTS currency_code VARCHAR DEFAULT 'PLN'")
-    duckdb.execute("ALTER TABLE invoices_replica ADD COLUMN IF NOT EXISTS base_currency_amount DECIMAL(18, 2)")
-    duckdb.execute("ALTER TABLE invoices_replica ADD COLUMN IF NOT EXISTS exchange_rate_at_issue DECIMAL(18, 8)")
+    duckdb.execute(
+        "ALTER TABLE invoices_replica ADD COLUMN IF NOT EXISTS currency_code VARCHAR DEFAULT 'PLN'"
+    )
+    duckdb.execute(
+        "ALTER TABLE invoices_replica ADD COLUMN IF NOT EXISTS base_currency_amount DECIMAL(18, 2)"
+    )
+    duckdb.execute(
+        "ALTER TABLE invoices_replica ADD COLUMN IF NOT EXISTS exchange_rate_at_issue DECIMAL(18, 8)"
+    )
 
     duckdb.execute(
         """
@@ -32,6 +40,7 @@ def ensure_fx_schema(duckdb: DuckDBManager) -> None:
         """
     )
 
+
 def post_realized_fx_difference(
     *,
     invoice_id: str,
@@ -40,8 +49,12 @@ def post_realized_fx_difference(
     exchange_rate_at_issue: Decimal,
     payment_date_rate: Decimal,
 ) -> FXPostingDecision | None:
-    original_local = (payment_amount_foreign * exchange_rate_at_issue).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-    settlement_local = (payment_amount_foreign * payment_date_rate).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    original_local = (payment_amount_foreign * exchange_rate_at_issue).quantize(
+        Decimal("0.01"), rounding=ROUND_HALF_UP
+    )
+    settlement_local = (payment_amount_foreign * payment_date_rate).quantize(
+        Decimal("0.01"), rounding=ROUND_HALF_UP
+    )
     fx_delta = settlement_local - original_local
 
     if abs(fx_delta) < Decimal("0.01"):
@@ -60,7 +73,10 @@ def post_realized_fx_difference(
         return FXPostingDecision(invoice_id, fx_delta, True, "750_FX_Income", "CREDIT")
     return FXPostingDecision(invoice_id, fx_delta, False, "751_FX_Expense", "DEBIT")
 
-def calculate_unrealized_fx_deltas(duckdb: DuckDBManager,    month_end: pendulum.Date) -> list[tuple[Any, ...]]:
+
+def calculate_unrealized_fx_deltas(
+    duckdb: DuckDBManager, month_end: pendulum.Date
+) -> list[tuple[Any, ...]]:
     return duckdb.execute(
         """
         WITH open_fx AS (

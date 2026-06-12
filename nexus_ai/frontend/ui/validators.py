@@ -11,7 +11,7 @@ class FormValidator:
         """Walidacja polskiego NIP (10 cyfr, bez myślników)."""
         if not nip:
             return False
-        clean_nip = re.sub(r'\D', '', nip)
+        clean_nip = re.sub(r"\D", "", nip)
         if len(clean_nip) != 10:
             return False
 
@@ -30,7 +30,7 @@ class FormValidator:
             return False, "Pole wymagane"
         try:
             # Obsługa przecinka i kropki
-            val = Decimal(value.replace(',', '.'))
+            val = Decimal(value.replace(",", "."))
             if val < 0:
                 return False, "Kwota nie może być ujemna"
             return True, ""

@@ -7,11 +7,7 @@ class AppState:
     """Globalny magazyn stanu aplikacji (odpowiednik Redux/Provider)."""
 
     def __init__(self):
-        self._state: dict[str, Any] = {
-            "current_user": None,
-            "theme": "dark",
-            "active_tasks": []
-        }
+        self._state: dict[str, Any] = {"current_user": None, "theme": "dark", "active_tasks": []}
         # Event Bus: { event_name: [list_of_callbacks] }
         self._listeners: dict[str, list[Callable]] = {}
 
@@ -33,5 +29,6 @@ class AppState:
         if event_name in self._listeners:
             for callback in self._listeners[event_name]:
                 callback(data)
+
 
 app_state = AppState()

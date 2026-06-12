@@ -132,12 +132,17 @@ class RiskController(Controller):
                 )
                 logger.info(
                     "[RISK-API] Created threshold rule_id=%s condition=%s output=%s by=%s",
-                    rule_id, condition, output, created_by,
+                    rule_id,
+                    condition,
+                    output,
+                    created_by,
                 )
-                return Response({
-                    "rule_id": rule_id,
-                    "message": "Risk threshold rule created",
-                })
+                return Response(
+                    {
+                        "rule_id": rule_id,
+                        "message": "Risk threshold rule created",
+                    }
+                )
 
             return self._with_guard(_create)
         except HTTPException:
@@ -171,10 +176,12 @@ class RiskController(Controller):
                         detail=f"Risk threshold not found or already inactive: {rule_id}",
                     )
                 logger.info("[RISK-API] Deprecated threshold rule_id=%s", rule_id)
-                return Response({
-                    "rule_id": rule_id,
-                    "message": "Risk threshold rule deprecated (valid_to set to today)",
-                })
+                return Response(
+                    {
+                        "rule_id": rule_id,
+                        "message": "Risk threshold rule deprecated (valid_to set to today)",
+                    }
+                )
 
             return self._with_guard(_deprecate)
         except HTTPException:
@@ -210,15 +217,17 @@ class RiskController(Controller):
                     expense_type=expense_type,
                     field=field,
                 )
-                return Response({
-                    "required_ml_confidence": threshold.required_ml_confidence,
-                    "action_if_below": threshold.action_if_below,
-                    "params": {
-                        "tax_form": tax_form or "any",
-                        "expense_type": expense_type or "any",
-                        "field": field or "any",
-                    },
-                })
+                return Response(
+                    {
+                        "required_ml_confidence": threshold.required_ml_confidence,
+                        "action_if_below": threshold.action_if_below,
+                        "params": {
+                            "tax_form": tax_form or "any",
+                            "expense_type": expense_type or "any",
+                            "field": field or "any",
+                        },
+                    }
+                )
 
             return self._with_guard(_evaluate)
         except Exception as exc:
@@ -273,12 +282,14 @@ class RiskController(Controller):
                     tax_form=tax_form,
                     expense_type=expense_type,
                 )
-                return Response({
-                    "is_safe": verdict.is_safe,
-                    "action": verdict.action,
-                    "reason": verdict.reason,
-                    "required_for_field": verdict.required_for_field,
-                })
+                return Response(
+                    {
+                        "is_safe": verdict.is_safe,
+                        "action": verdict.action,
+                        "reason": verdict.reason,
+                        "required_for_field": verdict.required_for_field,
+                    }
+                )
 
             return self._with_guard(_eval_batch)
         except Exception as exc:

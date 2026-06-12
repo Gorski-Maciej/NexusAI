@@ -18,7 +18,7 @@ def create_backup():
     target_zip = backup_path / backup_name
     print(f" Tworzenie kopii zapasowej: {backup_name}...")
 
-    with zipfile.ZipFile(target_zip, 'w', zipfile.ZIP_DEFLATED) as zipf:
+    with zipfile.ZipFile(target_zip, "w", zipfile.ZIP_DEFLATED) as zipf:
         # Pakujemy bazy danych
         if config.sqlite_path.exists():
             zipf.write(config.sqlite_path, config.sqlite_path.name)
@@ -34,6 +34,7 @@ def create_backup():
                 zipf.write(file_path, archive_name)
 
     print(f"✅ Kopia zapasowa gotowa: {target_zip}")
+
 
 if __name__ == "__main__":
     create_backup()

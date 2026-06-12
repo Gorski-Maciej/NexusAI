@@ -24,7 +24,9 @@ def ensure_accounting_template_schema(duckdb: DuckDBManager) -> None:
         )
         """
     )
-    duckdb.execute("CREATE INDEX IF NOT EXISTS idx_accounting_templates_name ON accounting_templates(name)")
+    duckdb.execute(
+        "CREATE INDEX IF NOT EXISTS idx_accounting_templates_name ON accounting_templates(name)"
+    )
 
 
 class RulesEngine:
@@ -79,8 +81,14 @@ class RulesEngine:
             raise ValueError(f"Template '{template_name}' not found")
 
         required_debits, required_credits, validation_script = rows[0]
-        debit_accounts = required_debits if isinstance(required_debits, list) else msgspec_loads(required_debits)
-        credit_accounts = required_credits if isinstance(required_credits, list) else msgspec_loads(required_credits)
+        debit_accounts = (
+            required_debits if isinstance(required_debits, list) else msgspec_loads(required_debits)
+        )
+        credit_accounts = (
+            required_credits
+            if isinstance(required_credits, list)
+            else msgspec_loads(required_credits)
+        )
         return debit_accounts, credit_accounts, validation_script
 
     async def validate_and_post(self, proposal_json: dict[str, Any]) -> dict[str, Any]:
@@ -99,7 +107,9 @@ class RulesEngine:
         missing_debits = [acc for acc in required_debits if acc not in debit_accounts]
         missing_credits = [acc for acc in required_credits if acc not in credit_accounts]
         if missing_debits or missing_credits:
-            raise ValueError(f"Template mismatch: missing_debits={missing_debits}, missing_credits={missing_credits}")
+            raise ValueError(
+                f"Template mismatch: missing_debits={missing_debits}, missing_credits={missing_credits}"
+            )
 
         total_debit = sum(Decimal(str(e["amount"])) for e in entries if e["side"] == "DEBIT")
         total_credit = sum(Decimal(str(e["amount"])) for e in entries if e["side"] == "CREDIT")

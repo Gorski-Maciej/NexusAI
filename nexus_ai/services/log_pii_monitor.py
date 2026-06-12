@@ -19,7 +19,9 @@ def scan_logs_for_pii(log_dir: Path, max_files: int = 200) -> dict[str, int]:
     if not log_dir.exists():
         return findings
 
-    files = sorted(log_dir.glob("**/*.log"), key=lambda p: p.stat().st_mtime, reverse=True)[:max_files]
+    files = sorted(log_dir.glob("**/*.log"), key=lambda p: p.stat().st_mtime, reverse=True)[
+        :max_files
+    ]
     for file_path in files:
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
@@ -35,7 +37,9 @@ def notify_dpo(webhook_url: str, findings: dict[str, int], retries: int = 3) -> 
         return False
     payload = msgspec_dumps_bytes({"event": "pii_scan_alert", "findings": findings})
     for _ in range(max(retries, 1)):
-        req = request.Request(webhook_url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
+        req = request.Request(
+            webhook_url, data=payload, headers={"Content-Type": "application/json"}, method="POST"
+        )
         try:
             with request.urlopen(req, timeout=5) as response:
                 if 200 <= response.status < 300:

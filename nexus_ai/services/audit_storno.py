@@ -11,12 +11,14 @@ from msgspec import Struct
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any, Protocol
 
+
 class DuckDBWriter(Protocol):
     def begin(self) -> None: ...
     def commit(self) -> None: ...
     def rollback(self) -> None: ...
     def mark_invoice_voided(self, invoice_id: str) -> None: ...
     def create_draft_from_invoice(self, invoice_id: str) -> str: ...
+
 
 class LedgerTransferRecord(Struct, frozen=True):
     transfer_id: int
@@ -26,11 +28,18 @@ class LedgerTransferRecord(Struct, frozen=True):
     currency: str
     source_document_id: uuid.UUID
 
+
 class StornoException(Exception):
     pass
 
-async def reverse_transaction(*, tb_client: Any, duckdb_writer: DuckDBWriter,
-                              original_transfer: LedgerTransferRecord, invoice_id: str) -> dict[str, Any]:
+
+async def reverse_transaction(
+    *,
+    tb_client: Any,
+    duckdb_writer: DuckDBWriter,
+    original_transfer: LedgerTransferRecord,
+    invoice_id: str,
+) -> dict[str, Any]:
     """Odwraca transakcję księgową — tworzy nowy wpis odwracający (nie DELETE).
 
     TigerBeetle nie pozwala na usunięcie zapisu — storno to nowy wpis.
@@ -41,7 +50,9 @@ async def reverse_transaction(*, tb_client: Any, duckdb_writer: DuckDBWriter,
     if original_transfer.amount_minor <= 0:
         raise StornoException("Original transfer amount must be positive")
 
-    reverse_source_id = uuid.uuid5(uuid.NAMESPACE_URL, f"storno:{original_transfer.transfer_id}:{invoice_id}")
+    reverse_source_id = uuid.uuid5(
+        uuid.NAMESPACE_URL, f"storno:{original_transfer.transfer_id}:{invoice_id}"
+    )
     pending = await tb_client.create_two_phase_transfer(
         debit_account=original_transfer.credit_account,
         credit_account=original_transfer.debit_account,
@@ -61,9 +72,14 @@ async def reverse_transaction(*, tb_client: Any, duckdb_writer: DuckDBWriter,
         duckdb_writer.rollback()
         raise StornoException("DuckDB storno mutation failed after TigerBeetle posting") from exc
 
-    return {"status": "reversed", "original_transfer_id": original_transfer.transfer_id,
-            "reverse_pending_id": pending.pending_id, "user_data_128": str(original_transfer.transfer_id),
-            "new_draft_id": draft_id}
+    return {
+        "status": "reversed",
+        "original_transfer_id": original_transfer.transfer_id,
+        "reverse_pending_id": pending.pending_id,
+        "user_data_128": str(original_transfer.transfer_id),
+        "new_draft_id": draft_id,
+    }
+
 
 def decimal_to_minor_units(amount: Decimal, scale: int = 2) -> int:
     """Konwertuje Decimal na grosze (int) — dla TigerBeetle."""

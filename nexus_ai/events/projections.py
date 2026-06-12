@@ -99,13 +99,16 @@ class Projection:
             except Exception as exc:
                 logger.error(
                     "[PROJECTION:%s] Failed to process event %s: %s",
-                    self._name, event.event_id, exc,
+                    self._name,
+                    event.event_id,
+                    exc,
                 )
 
         if processed:
             logger.info(
                 "[PROJECTION:%s] Processed %d events (checkpoint=%d)",
-                self._name, processed,
+                self._name,
+                processed,
                 self._event_store.get_checkpoint(self._name),
             )
 
@@ -191,11 +194,15 @@ class InvoiceProjection(Projection):
 
     def _fetch_events(self, checkpoint: int) -> list[DomainEvent]:
         # Pobierz wszystkie eventy typu invoice od checkpointu
-        return self._event_store.read_events_since_version(
-            aggregate_type="invoice",
-            from_version=checkpoint,
-            limit=500,
-        ) if checkpoint >= 0 else []
+        return (
+            self._event_store.read_events_since_version(
+                aggregate_type="invoice",
+                from_version=checkpoint,
+                limit=500,
+            )
+            if checkpoint >= 0
+            else []
+        )
 
     def _truncate(self) -> None:
         conn = self._get_conn()
@@ -340,12 +347,9 @@ class InvoiceProjection(Projection):
         """
         conn = self._get_conn()
         rows = conn.execute(
-            "SELECT status, COUNT(*) as cnt FROM invoice_read_model "
-            "GROUP BY status"
+            "SELECT status, COUNT(*) as cnt FROM invoice_read_model GROUP BY status"
         ).fetchall()
-        total = conn.execute(
-            "SELECT COUNT(*) FROM invoice_read_model"
-        ).fetchone()[0]
+        total = conn.execute("SELECT COUNT(*) FROM invoice_read_model").fetchone()[0]
         return {
             "total": int(total),
             "by_status": {r["status"]: int(r["cnt"]) for r in rows},
@@ -416,11 +420,15 @@ class DecisionProjection(Projection):
             self._conn = None
 
     def _fetch_events(self, checkpoint: int) -> list[DomainEvent]:
-        return self._event_store.read_events_since_version(
-            aggregate_type="decision",
-            from_version=checkpoint,
-            limit=500,
-        ) if checkpoint >= 0 else []
+        return (
+            self._event_store.read_events_since_version(
+                aggregate_type="decision",
+                from_version=checkpoint,
+                limit=500,
+            )
+            if checkpoint >= 0
+            else []
+        )
 
     def _truncate(self) -> None:
         conn = self._get_conn()
@@ -516,9 +524,7 @@ class DecisionProjection(Projection):
             "SELECT decision, COUNT(*) as cnt FROM decision_analytics "
             "WHERE decision IS NOT NULL GROUP BY decision"
         ).fetchall()
-        total = conn.execute(
-            "SELECT COUNT(*) FROM decision_analytics"
-        ).fetchone()[0]
+        total = conn.execute("SELECT COUNT(*) FROM decision_analytics").fetchone()[0]
         return {
             "total": int(total),
             "by_decision": {r["decision"]: int(r["cnt"]) for r in by_decision},

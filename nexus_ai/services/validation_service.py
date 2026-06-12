@@ -1,4 +1,3 @@
-
 from sqlalchemy import and_, select
 from sqlalchemy.orm import Session
 
@@ -10,18 +9,13 @@ class ValidationService:
     """Zaawansowana walidacja biznesowa zapobiegająca duplikatom i błędom."""
 
     @staticmethod
-    def is_duplicate(
-            session: Session,
-            nip: str,
-            number: str,
-            amount_gross: Money
-    ) -> bool:
+    def is_duplicate(session: Session, nip: str, number: str, amount_gross: Money) -> bool:
         """Sprawdza, czy w bazie istnieje już taka faktura dla tego dostawcy."""
         query = select(Invoice).where(
             and_(
                 Invoice.contractor_nip == nip,
                 Invoice.number == number,
-                Invoice.amount_gross == amount_gross
+                Invoice.amount_gross == amount_gross,
             )
         )
         result = session.execute(query)

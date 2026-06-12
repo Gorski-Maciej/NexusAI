@@ -5,7 +5,9 @@ class KsefService:
     """Obsługa Krajowego Systemu e-Faktur (API Ministerstwa Finansów)."""
 
     def __init__(self, is_production: bool = False):
-        self.base_url = "https://ksef.mf.gov.pl/api" if is_production else "https://ksef-test.mf.gov.pl/api"
+        self.base_url = (
+            "https://ksef.mf.gov.pl/api" if is_production else "https://ksef-test.mf.gov.pl/api"
+        )
         self.session_token: str | None = None
 
     async def _init_session(self, nip: str, authorization_token: str) -> bool:

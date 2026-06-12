@@ -1,4 +1,5 @@
 """File management endpoints."""
+
 from __future__ import annotations
 
 from litestar import Controller, Response, delete, get
@@ -10,6 +11,7 @@ class FileController(Controller):
     """File management API.
     Rozwiązanie 31: CSP sandbox dla ścieżki /files aby zapobiec wykonaniu złośliwych plików.
     """
+
     path = "/api/v1/files"
     tags = [TAG_FILES]
 

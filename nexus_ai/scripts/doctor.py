@@ -85,7 +85,9 @@ def check_system() -> str:
         disk = psutil.disk_usage("/")
         lines = [
             _ok(f"Platform: {sys.platform}"),
-            _ok(f"RAM: {ram.available / 1024**3:.1f} GB / {ram.total / 1024**3:.1f} GB ({ram.percent:.0f}% used)"),
+            _ok(
+                f"RAM: {ram.available / 1024**3:.1f} GB / {ram.total / 1024**3:.1f} GB ({ram.percent:.0f}% used)"
+            ),
             _ok(f"Disk: {disk.free / 1024**3:.1f} GB / {disk.total / 1024**3:.1f} GB free"),
         ]
         return "\n".join(lines)
@@ -144,7 +146,9 @@ def check_models() -> str:
         for d in surya_dirs:
             lines.append(f"    {_ok(d.name)}")
     else:
-        lines.append(f"  {_info('Surya OCR models: run python -m nexus_ai.scripts.download_models --surya')}")
+        lines.append(
+            f"  {_info('Surya OCR models: run python -m nexus_ai.scripts.download_models --surya')}"
+        )
 
     return "\n".join(lines)
 
@@ -159,7 +163,9 @@ def check_nats() -> str:
         if result == 0:
             return _ok("NATS server is running on localhost:4222")
         else:
-            return _warn("NATS server not detected on localhost:4222 — start with: nats-server -p 4222 -js")
+            return _warn(
+                "NATS server not detected on localhost:4222 — start with: nats-server -p 4222 -js"
+            )
     except Exception as exc:
         return _fail(f"NATS check failed: {exc}")
 
@@ -176,7 +182,7 @@ def check_env() -> str:
     if env == "prod":
         missing = [v for v in required_vars if not os.environ.get(v)]
         if missing:
-            lines.append(f"  {_fail(f'PROD: Missing required env vars: {', '.join(missing)}')}")
+            lines.append(f"  {_fail(f'PROD: Missing required env vars: {", ".join(missing)}')}")
         else:
             lines.append(f"  {_ok('PROD: Required security env vars set')}")
     else:
@@ -271,7 +277,9 @@ async def run_diagnostics() -> dict[str, Any]:
     else:
         print(f"  {_fail(f'{pass_count} passed, {warn_count} warnings, {fail_count} FAILED')}")
 
-    print(f"  {_info('Tip: Run python -m nexus_ai.scripts.download_models to download missing models')}")
+    print(
+        f"  {_info('Tip: Run python -m nexus_ai.scripts.download_models to download missing models')}"
+    )
     print(f"  {_info('Tip: Run nats-server -p 4222 -js to start NATS')}")
     print()
 

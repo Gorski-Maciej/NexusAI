@@ -1,4 +1,5 @@
 """Autopilot API endpoints — decision history, trust scores, and user actions."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -178,12 +179,17 @@ class AutopilotController(Controller):
                     from sqlalchemy import select as sa_select
 
                     from nexus_ai.db.models import Invoice
+
                     result = await session.execute(
                         sa_select(Invoice.version_id).where(Invoice.id == invoice_id)
                     )
                     row = result.scalar_one_or_none()
                     if row is None:
-                        return {"result": "ERROR", "invoice_id": invoice_id, "error": "Invoice not found"}
+                        return {
+                            "result": "ERROR",
+                            "invoice_id": invoice_id,
+                            "error": "Invoice not found",
+                        }
 
                     # Aktualizuj z weryfikacją wersji (optimistic locking)
                     result = await session.execute(
@@ -197,18 +203,38 @@ class AutopilotController(Controller):
                         return {
                             "result": "CONFLICT",
                             "invoice_id": invoice_id,
-                            "error": "Conflict: invoice was modified by another user"
+                            "error": "Conflict: invoice was modified by another user",
                         }
                     await session.commit()
             finally:
                 await engine.dispose()
 
-            # 3. Send notification (fire-and-forget via BackgroundTaskManager)
+            # 3. Emit DecisionOverridden event ─────────────────────────
+            try:
+                event_emitter = request.app.state.event_emitter
+                await event_emitter.emit_decision_overridden(
+                    invoice_id=invoice_id,
+                    original_decision="AUTO_POST",
+                    user_decision="ACCEPTED",
+                    user_id=str(getattr(request.user, "id", "system")),
+                    metadata={"source": "autopilot", "action": "accept"},
+                )
+                logger.info("[EVENT] DecisionOverridden emitted for invoice_id=%s", invoice_id)
+            except Exception as event_err:
+                logger.warning("[EVENT] Failed to emit DecisionOverridden: %s", event_err)
+
+            # 4. Send notification (fire-and-forget via BackgroundTaskManager)
             notif_db = config.base_dir / "app_data" / "notifications.sqlite"
             service = NotificationService(notif_db)
             request.app.state.bg_tasks.start_task(
                 f"notif_accept_{invoice_id}",
-                _send_notification_async(service, "anonymous", invoice_id, "Decyzja zaakceptowana ✅", f"Faktura {invoice_id[:8]}... została zaakceptowana przez użytkownika."),
+                _send_notification_async(
+                    service,
+                    "anonymous",
+                    invoice_id,
+                    "Decyzja zaakceptowana ✅",
+                    f"Faktura {invoice_id[:8]}... została zaakceptowana przez użytkownika.",
+                ),
                 metadata={"description": "Notification: accept decision"},
             )
 
@@ -261,12 +287,17 @@ class AutopilotController(Controller):
                     from sqlalchemy import select as sa_select
 
                     from nexus_ai.db.models import Invoice
+
                     result = await session.execute(
                         sa_select(Invoice.version_id).where(Invoice.id == invoice_id)
                     )
                     row = result.scalar_one_or_none()
                     if row is None:
-                        return {"result": "ERROR", "invoice_id": invoice_id, "error": "Invoice not found"}
+                        return {
+                            "result": "ERROR",
+                            "invoice_id": invoice_id,
+                            "error": "Invoice not found",
+                        }
 
                     # Aktualizuj z weryfikacją wersji (optimistic locking)
                     result = await session.execute(
@@ -280,18 +311,38 @@ class AutopilotController(Controller):
                         return {
                             "result": "CONFLICT",
                             "invoice_id": invoice_id,
-                            "error": "Conflict: invoice was modified by another user"
+                            "error": "Conflict: invoice was modified by another user",
                         }
                     await session.commit()
             finally:
                 await engine.dispose()
 
-            # 3. Send notification (fire-and-forget via BackgroundTaskManager)
+            # 3. Emit DecisionOverridden event ─────────────────────────
+            try:
+                event_emitter = request.app.state.event_emitter
+                await event_emitter.emit_decision_overridden(
+                    invoice_id=invoice_id,
+                    original_decision="AUTO_POST",
+                    user_decision="REJECTED",
+                    user_id=str(getattr(request.user, "id", "system")),
+                    metadata={"source": "autopilot", "action": "reject"},
+                )
+                logger.info("[EVENT] DecisionOverridden emitted for invoice_id=%s", invoice_id)
+            except Exception as event_err:
+                logger.warning("[EVENT] Failed to emit DecisionOverridden: %s", event_err)
+
+            # 4. Send notification (fire-and-forget via BackgroundTaskManager)
             notif_db = config.base_dir / "app_data" / "notifications.sqlite"
             service = NotificationService(notif_db)
             request.app.state.bg_tasks.start_task(
                 f"notif_reject_{invoice_id}",
-                _send_notification_async(service, "anonymous", invoice_id, "Decyzja odrzucona ❌", f"Faktura {invoice_id[:8]}... została odrzucona przez użytkownika."),
+                _send_notification_async(
+                    service,
+                    "anonymous",
+                    invoice_id,
+                    "Decyzja odrzucona ❌",
+                    f"Faktura {invoice_id[:8]}... została odrzucona przez użytkownika.",
+                ),
                 metadata={"description": "Notification: reject decision"},
             )
 

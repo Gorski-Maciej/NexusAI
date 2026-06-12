@@ -49,6 +49,7 @@ CREATE INDEX IF NOT EXISTS idx_ledger_rules_valid ON ledger_validation_rules(val
 
 # ── Wyjątki ───────────────────────────────────────────────────────────────
 
+
 class LedgerValidationError(ValueError):
     """Raised when a transaction fails pre-ledger validation."""
 
@@ -57,7 +58,9 @@ class LedgerValidationError(ValueError):
         self.reason = reason
         self.details = details or {}
 
+
 # ── Helper: lazy import for tax.math_engine ────────────────────────────────
+
 
 def _get_math_engine():
     """Lazy import to avoid circular dependency."""
@@ -69,9 +72,12 @@ def _get_math_engine():
     from tax.math_engine import (
         validate_invariants as validate_math_invariants,
     )
+
     return ValidationResult, InvoiceSummary, InvoicePositions, validate_math_invariants
 
+
 # ── Główna klasa walidatora ────────────────────────────────────────────────
+
 
 class TransferSpec(Struct):
     """Pojedynczy transfer do walidacji.
@@ -85,6 +91,7 @@ class TransferSpec(Struct):
             wyciągany przez ``money_to_grosze()`` przy konstrukcji.
         transfer_type: Typ transferu (np. 'expense', 'vat_input').
     """
+
     debit_account_id: int
     credit_account_id: int
     amount_grosze: int = 0
@@ -95,12 +102,14 @@ class TransferSpec(Struct):
         """Jeśli podano amount_money, wyciągnij amount_grosze automatycznie."""
         if self.amount_money is not None:
             from tax.math_engine import money_to_grosze
+
             object.__setattr__(self, "amount_grosze", money_to_grosze(self.amount_money))
 
     @property
     def currency(self) -> str | None:
         """Kod waluty transferu (jeśli amount_money podane)."""
         return self.amount_money.currency_code if self.amount_money is not None else None
+
 
 class PreLedgerValidator:
     """WalIDATOR przedwysyłkowy dla TigerBeetle.
@@ -164,12 +173,19 @@ class PreLedgerValidator:
                    VALUES (?, ?, ?, ?, ?, ?)""",
                 (
                     f"default_{ttype}_{debit}_{credit}",
-                    ttype, debit, credit, sign, prio,
+                    ttype,
+                    debit,
+                    credit,
+                    sign,
+                    prio,
                 ),
             )
         logger.info(
             "[PRE-LEDGER] Default rules seeded (expense=%d, vat=%d, payables=%d, rev=%d)",
-            expense_account_id, vat_account_id, payables_account_id, revenue_account_id,
+            expense_account_id,
+            vat_account_id,
+            payables_account_id,
+            revenue_account_id,
         )
 
     # ── Public API ───────────────────────────────────────────────────────
@@ -377,6 +393,7 @@ class PreLedgerValidator:
 
             # Decimal sum vs grosze sum — powinny być zgodne
             from tax.math_engine import money_to_grosze
+
             computed_grosze = money_to_grosze(total_money)
             if computed_grosze != total_grosze:
                 errors.append(
@@ -387,12 +404,16 @@ class PreLedgerValidator:
 
             logger.debug(
                 "[BALANCE] Debit=Credit total=%s %s (%d gr), transfers=%d",
-                total_money.amount, ref_currency, total_grosze, len(transfers),
+                total_money.amount,
+                ref_currency,
+                total_grosze,
+                len(transfers),
             )
         else:
             logger.debug(
                 "[BALANCE] Debit=Credit total=%d gr, transfers=%d (int-only)",
-                total_grosze, len(transfers),
+                total_grosze,
+                len(transfers),
             )
 
         return errors
@@ -437,17 +458,32 @@ class PreLedgerValidator:
     ) -> str:
         """Dodaje nową regułę walidacji (append-only)."""
         import uuid
+
         rule_id = f"ledger_{uuid.uuid4().hex[:12]}"
         self._conn.execute(
             """INSERT INTO ledger_validation_rules
                (rule_id, transaction_type, debit_account_id, credit_account_id,
                 amount_sign, priority, valid_from, valid_to, created_by)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            (rule_id, transaction_type, debit_account_id, credit_account_id,
-             amount_sign, priority, valid_from, valid_to, created_by),
+            (
+                rule_id,
+                transaction_type,
+                debit_account_id,
+                credit_account_id,
+                amount_sign,
+                priority,
+                valid_from,
+                valid_to,
+                created_by,
+            ),
         )
-        logger.info("[PRE-LEDGER] Rule created id=%s type=%s debit=%d credit=%d",
-                    rule_id, transaction_type, debit_account_id, credit_account_id)
+        logger.info(
+            "[PRE-LEDGER] Rule created id=%s type=%s debit=%d credit=%d",
+            rule_id,
+            transaction_type,
+            debit_account_id,
+            credit_account_id,
+        )
         return rule_id
 
     def delete_rule(self, rule_id: str) -> bool:
@@ -457,8 +493,7 @@ class PreLedgerValidator:
         """
         # Sprawdź czy reguła istnieje i jest aktywna
         row = self._conn.execute(
-            "SELECT rule_id FROM ledger_validation_rules "
-            "WHERE rule_id = ? AND valid_to IS NULL",
+            "SELECT rule_id FROM ledger_validation_rules WHERE rule_id = ? AND valid_to IS NULL",
             (rule_id,),
         ).fetchone()
 
@@ -484,7 +519,5 @@ class PreLedgerValidator:
                    WHERE valid_to IS NULL OR valid_to >= CURRENT_DATE"""
             ).fetchone()
         else:
-            row = self._conn.execute(
-                "SELECT COUNT(*) FROM ledger_validation_rules"
-            ).fetchone()
+            row = self._conn.execute("SELECT COUNT(*) FROM ledger_validation_rules").fetchone()
         return int(row[0]) if row else 0

@@ -28,11 +28,14 @@ def _build_cli_parser() -> argparse.ArgumentParser:
         add_help=False,  # help obsługiwany przez main.py
     )
     parser.add_argument(
-        "--watch", action="store_true",
+        "--watch",
+        action="store_true",
         help="Watch config files for changes and auto-reload (development use)",
     )
     parser.add_argument(
-        "--watch-interval", type=int, default=5,
+        "--watch-interval",
+        type=int,
+        default=5,
         help="Poll interval in seconds for --watch (default: 5)",
     )
     return parser
@@ -52,6 +55,7 @@ def main(argv: list[str] | None = None) -> int:
     # Muszą być ustawione PRZED importem nexus_ai.main (który ładuje config)
     if cli_args.watch:
         import os
+
         os.environ["NEXUS_WATCH_MODE"] = "1"
         os.environ["NEXUS_WATCH_INTERVAL"] = str(cli_args.watch_interval)
 

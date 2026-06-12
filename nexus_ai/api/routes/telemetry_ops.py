@@ -45,7 +45,9 @@ class TelemetryOpsController(Controller):
     async def fallback_replay(self) -> dict:
         config = AppConfig()
         return await flush_fallback_spans(
-            lambda: DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path, read_only=False),
+            lambda: DuckDBManager(
+                db_path=config.duckdb_path, sqlite_path=config.sqlite_path, read_only=False
+            ),
             retries=3,
             base_delay=0.5,
         )

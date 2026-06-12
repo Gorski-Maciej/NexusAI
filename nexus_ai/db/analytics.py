@@ -7,9 +7,11 @@ from typing import Any
 
 import duckdb
 
+
 class DuckDBLimits(Struct):
     memory_limit: str = "512MB"
     threads: int = 2
+
 
 class DuckDBManager:
     """Thread-safe DuckDB manager with native SQLite Zero-ETL attach.
@@ -26,7 +28,13 @@ class DuckDBManager:
     ``_ddl_lock``, aby uniknąć konfliktów DDL między wątkami.
     """
 
-    def __init__(self, db_path: Path | str, limits: DuckDBLimits = DuckDBLimits(), read_only: bool = False, sqlite_path: Path | str = "app_data/nexus_oltp.db") -> None:
+    def __init__(
+        self,
+        db_path: Path | str,
+        limits: DuckDBLimits = DuckDBLimits(),
+        read_only: bool = False,
+        sqlite_path: Path | str = "app_data/nexus_oltp.db",
+    ) -> None:
         self._db_path = Path(db_path)
         self._limits = limits
         self._read_only = read_only
@@ -58,7 +66,7 @@ class DuckDBManager:
         conn = duckdb.connect(str(self._db_path), read_only=self._read_only)
         conn.execute(f"SET memory_limit='{self._limits.memory_limit}'")
         conn.execute(f"SET threads={self._limits.threads}")
-        temp_dir = (self._db_path.parent / 'duckdb_tmp')
+        temp_dir = self._db_path.parent / "duckdb_tmp"
         temp_dir.mkdir(parents=True, exist_ok=True)
         conn.execute(f"SET temp_directory='{temp_dir.as_posix()}'")
         # Konfiguracja dla lepszej współbieżności
@@ -110,7 +118,9 @@ class DuckDBManager:
         conn.execute("DETACH IF EXISTS oltp;")
         conn.execute(f"ATTACH '{self._sqlite_path}' AS oltp (TYPE SQLITE);")
 
-    def execute(self, query: str, parameters: tuple[Any, ...] | list[Any] | None = None) -> list[tuple[Any, ...]]:
+    def execute(
+        self, query: str, parameters: tuple[Any, ...] | list[Any] | None = None
+    ) -> list[tuple[Any, ...]]:
         """
         Wykonuje zapytanie. Dla zapytań SELECT tworzy nowe połączenie,
         co zapobiega blokowaniu między współbieżnymi zapytaniami.
@@ -170,13 +180,25 @@ class DuckDBManager:
             """
             self._execute_unsafe(query)
 
-            self._execute_unsafe("CREATE INDEX IF NOT EXISTS idx_m_daily_cashflow_day ON m_daily_cashflow(day)")
-            self._execute_unsafe("CREATE INDEX IF NOT EXISTS idx_m_daily_cashflow_currency ON m_daily_cashflow(currency)")
-            self._execute_unsafe("CREATE INDEX IF NOT EXISTS idx_invoices_issue_date ON oltp.invoices(issue_date)")
-            self._execute_unsafe("CREATE INDEX IF NOT EXISTS idx_invoices_status ON oltp.invoices(status)")
-            self._execute_unsafe("CREATE INDEX IF NOT EXISTS idx_invoices_contractor_nip ON oltp.invoices(contractor_nip)")
+            self._execute_unsafe(
+                "CREATE INDEX IF NOT EXISTS idx_m_daily_cashflow_day ON m_daily_cashflow(day)"
+            )
+            self._execute_unsafe(
+                "CREATE INDEX IF NOT EXISTS idx_m_daily_cashflow_currency ON m_daily_cashflow(currency)"
+            )
+            self._execute_unsafe(
+                "CREATE INDEX IF NOT EXISTS idx_invoices_issue_date ON oltp.invoices(issue_date)"
+            )
+            self._execute_unsafe(
+                "CREATE INDEX IF NOT EXISTS idx_invoices_status ON oltp.invoices(status)"
+            )
+            self._execute_unsafe(
+                "CREATE INDEX IF NOT EXISTS idx_invoices_contractor_nip ON oltp.invoices(contractor_nip)"
+            )
 
-    def _execute_unsafe(self, query: str, parameters: tuple[Any, ...] | list[Any] | None = None) -> list[tuple[Any, ...]]:
+    def _execute_unsafe(
+        self, query: str, parameters: tuple[Any, ...] | list[Any] | None = None
+    ) -> list[tuple[Any, ...]]:
         """Wykonaj zapytanie DDL/DML bez locka — lock musi być już przejęty na zewnątrz."""
         conn = self.connect()
         if parameters:

@@ -8,16 +8,18 @@ Każda decyzja ma:
   - Termin ważności (expires_at)
   - Status (pending, approved, rejected, expired)
   - Powiązanie z powiadomieniem (notification_id)
+
+Storage: Główna baza danych (SQLAlchemy / Alembic).
+DDL w migracji 0003_consolidate_service_tables (tabela: dq_decisions).
 """
 
 from __future__ import annotations
 
 import enum
-import sqlite3
-from pathlib import Path
 from typing import Any
 
 import pendulum
+from sqlalchemy import Engine, text
 from structlog import get_logger
 
 from nexus_ai.services.event_log import EventLog
@@ -27,6 +29,7 @@ logger = get_logger("nexus.services.decision_queue")
 
 class DecisionStatus(enum.Enum):
     """Status decyzji w kolejce."""
+
     PENDING = "pending"
     APPROVED = "approved"
     REJECTED = "rejected"
@@ -35,6 +38,7 @@ class DecisionStatus(enum.Enum):
 
 class DecisionPriority(enum.IntEnum):
     """Priorytety decyzji."""
+
     LOW = 0
     NORMAL = 1
     HIGH = 2
@@ -42,7 +46,7 @@ class DecisionPriority(enum.IntEnum):
 
 
 class DecisionQueue:
-    """Trwała kolejka decyzji (SQLite) z priorytetami i terminami ważności.
+    """Trwała kolejka decyzji (główna baza danych) z priorytetami i terminami ważności.
 
     Obsługuje:
       - Kolejkowanie decyzji systemowych
@@ -56,50 +60,17 @@ class DecisionQueue:
       - Scheduler: czyści wygasłe decyzje
       - EventLog: loguje rozstrzygnięte decyzje
       - DecisionHistory: analiza decyzji użytkownika
-"""
+
+    Tabela: dq_decisions (migracja 0003).
+    """
 
     def __init__(
         self,
-        db_path: Path | str | None = None,
+        engine: Engine,
         history_tracker: Any | None = None,
     ) -> None:
-        self._db_path = Path(db_path) if db_path else Path("app_data/decisions.db")
-        self._db_path.parent.mkdir(parents=True, exist_ok=True)
+        self._engine = engine
         self._tracker = history_tracker
-        self._init_schema()
-
-    def _init_schema(self) -> None:
-        """Inicjalizuj schemat bazy danych."""
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.executescript("""
-                CREATE TABLE IF NOT EXISTS decisions (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id TEXT NOT NULL,
-                    notification_id INTEGER NOT NULL DEFAULT 0,
-                    title TEXT NOT NULL,
-                    message TEXT NOT NULL,
-                    source_agent TEXT NOT NULL DEFAULT '',
-                    reference_type TEXT NOT NULL DEFAULT '',
-                    reference_id TEXT NOT NULL DEFAULT '',
-                    status TEXT NOT NULL DEFAULT 'pending',
-                    priority INTEGER NOT NULL DEFAULT 1,
-                    expires_at TEXT,
-                    resolved_at TEXT,
-                    resolution TEXT,
-                    created_at TEXT NOT NULL
-                );
-                CREATE INDEX IF NOT EXISTS idx_decisions_user_pending
-                    ON decisions(user_id, status, priority DESC, created_at DESC);
-                CREATE INDEX IF NOT EXISTS idx_decisions_expires
-                    ON decisions(expires_at)
-                    WHERE status = 'pending' AND expires_at IS NOT NULL;
-                CREATE INDEX IF NOT EXISTS idx_decisions_reference
-                    ON decisions(reference_type, reference_id);
-            """)
-            conn.commit()
-        finally:
-            conn.close()
 
     def enqueue(
         self,
@@ -134,30 +105,43 @@ class DecisionQueue:
         if expires_in_hours is not None:
             expires_at = pendulum.now("UTC").add(hours=expires_in_hours).isoformat()
 
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            cursor = conn.execute(
-                """INSERT INTO decisions
-                   (user_id, notification_id, title, message, source_agent,
-                    reference_type, reference_id, status, priority,
-                    expires_at, created_at)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                (
-                    user_id, notification_id, title, message, source_agent,
-                    reference_type, reference_id, DecisionStatus.PENDING.value,
-                    priority, expires_at, now,
+        with self._engine.begin() as conn:
+            result = conn.execute(
+                text(
+                    """INSERT INTO dq_decisions
+                       (user_id, notification_id, title, message, source_agent,
+                        reference_type, reference_id, status, priority,
+                        expires_at, created_at)
+                       VALUES (:user_id, :notification_id, :title, :message, :source_agent,
+                               :reference_type, :reference_id, :status, :priority,
+                               :expires_at, :created_at)"""
                 ),
+                {
+                    "user_id": user_id,
+                    "notification_id": notification_id,
+                    "title": title,
+                    "message": message,
+                    "source_agent": source_agent,
+                    "reference_type": reference_type,
+                    "reference_id": reference_id,
+                    "status": DecisionStatus.PENDING.value,
+                    "priority": priority,
+                    "expires_at": expires_at,
+                    "created_at": now,
+                },
             )
-            conn.commit()
-            decision_id = int(cursor.lastrowid)
+            decision_id = int(result.lastrowid)
 
-            logger.info(
-                "[DecisionQueue] enqueued id=%d user=%s agent=%s ref=%s/%s priority=%d",
-                decision_id, user_id, source_agent, reference_type, reference_id, priority,
-            )
-            return decision_id
-        finally:
-            conn.close()
+        logger.info(
+            "[DecisionQueue] enqueued id=%d user=%s agent=%s ref=%s/%s priority=%d",
+            decision_id,
+            user_id,
+            source_agent,
+            reference_type,
+            reference_id,
+            priority,
+        )
+        return decision_id
 
     def get_pending(self, user_id: str, limit: int = 20) -> list[dict[str, Any]]:
         """Pobierz oczekujące decyzje użytkownika.
@@ -165,37 +149,43 @@ class DecisionQueue:
         Zwraca decyzje posortowane według priorytetu (od najwyższego)
         i daty utworzenia (od najnowszych).
         """
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.row_factory = sqlite3.Row
-            rows = conn.execute(
-                """SELECT * FROM decisions
-                   WHERE user_id = ? AND status = 'pending'
-                     AND (expires_at IS NULL OR expires_at > ?)
-                   ORDER BY priority DESC, created_at DESC
-                   LIMIT ?""",
-                (user_id, pendulum.now("UTC").isoformat(), limit),
-            ).fetchall()
+        now = pendulum.now("UTC").isoformat()
+        with self._engine.connect() as conn:
+            rows = (
+                conn.execute(
+                    text(
+                        """SELECT * FROM dq_decisions
+                       WHERE user_id = :user_id AND status = 'pending'
+                         AND (expires_at IS NULL OR expires_at > :now)
+                       ORDER BY priority DESC, created_at DESC
+                       LIMIT :limit"""
+                    ),
+                    {"user_id": user_id, "now": now, "limit": limit},
+                )
+                .mappings()
+                .all()
+            )
             return [dict(r) for r in rows]
-        finally:
-            conn.close()
 
     def get_all_pending(self, limit: int = 100) -> list[dict[str, Any]]:
         """Pobierz wszystkie oczekujące decyzje (dla administratora)."""
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.row_factory = sqlite3.Row
-            rows = conn.execute(
-                """SELECT * FROM decisions
-                   WHERE status = 'pending'
-                     AND (expires_at IS NULL OR expires_at > ?)
-                   ORDER BY priority DESC, created_at DESC
-                   LIMIT ?""",
-                (pendulum.now("UTC").isoformat(), limit),
-            ).fetchall()
+        now = pendulum.now("UTC").isoformat()
+        with self._engine.connect() as conn:
+            rows = (
+                conn.execute(
+                    text(
+                        """SELECT * FROM dq_decisions
+                       WHERE status = 'pending'
+                         AND (expires_at IS NULL OR expires_at > :now)
+                       ORDER BY priority DESC, created_at DESC
+                       LIMIT :limit"""
+                    ),
+                    {"now": now, "limit": limit},
+                )
+                .mappings()
+                .all()
+            )
             return [dict(r) for r in rows]
-        finally:
-            conn.close()
 
     def resolve(
         self,
@@ -206,74 +196,70 @@ class DecisionQueue:
         category: str = "__global__",
         amount_gross: float = 0.0,
     ) -> bool:
-        """        Rozstrzygnij decyzję (approve/reject) i zapisz do historii.
-
-        Args:
-            decision_id: ID decyzji
-            resolution: Odpowiedź użytkownika (tekst lub 'approved'/'rejected')
-            status: Nowy status (approved, rejected)
-            contractor_nip: NIP kontrahenta (dla historii)
-            category: Kategoria wydatku (dla historii)
-            amount_gross: Kwota brutto (dla historii)
+        """Rozstrzygnij decyzję (approve/reject) i zapisz do historii.
 
         Returns:
             True jeśli znaleziono i zaktualizowano, False jeśli nie znaleziono.
         """
-        conn = sqlite3.connect(str(self._db_path))
-        try:
+        with self._engine.begin() as conn:
             now = pendulum.now("UTC").isoformat()
-            cursor = conn.execute(
-                """UPDATE decisions
-                   SET status = ?, resolved_at = ?, resolution = ?
-                   WHERE id = ? AND status = 'pending'""",
-                (status, now, resolution, decision_id),
+            result = conn.execute(
+                text(
+                    """UPDATE dq_decisions
+                       SET status = :status, resolved_at = :now, resolution = :resolution
+                       WHERE id = :decision_id AND status = 'pending'"""
+                ),
+                {
+                    "status": status,
+                    "now": now,
+                    "resolution": resolution,
+                    "decision_id": decision_id,
+                },
             )
-            conn.commit()
-            updated = cursor.rowcount > 0
+            updated = result.rowcount > 0
 
-            if updated:
-                logger.info(
-                    "[DecisionQueue] resolved id=%d status=%s resolution=%s",
-                    decision_id, status, resolution,
+        if updated:
+            logger.info(
+                "[DecisionQueue] resolved id=%d status=%s resolution=%s",
+                decision_id,
+                status,
+                resolution,
+            )
+
+            # Zaloguj do EventLog
+            try:
+                el = EventLog(engine=self._engine)
+                el.log(
+                    event_type=f"decision.{status}",
+                    source="decision_queue",
+                    description=f"Decision #{decision_id}: {resolution}",
+                    metadata={
+                        "decision_id": decision_id,
+                        "resolution": resolution,
+                        "status": status,
+                    },
                 )
+            except Exception as exc:
+                logger.warning("[DecisionQueue] Failed to log to EventLog: %s", exc)
 
-                # Zaloguj do EventLog
+            # Zapisz decyzję do historii
+            if self._tracker is not None and contractor_nip:
                 try:
-                    el = EventLog()
-                    el.log(
-                        event_type=f"decision.{status}",
-                        source="decision_queue",
-                        description=f"Decision #{decision_id}: {resolution}",
-                        metadata={
-                            "decision_id": decision_id,
-                            "resolution": resolution,
-                            "status": status,
-                        },
+                    self._tracker.record_decision(
+                        contractor_nip=contractor_nip,
+                        category=category,
+                        decision=status,
+                        amount_gross=amount_gross,
+                    )
+                    logger.debug(
+                        "[DecisionQueue] history updated nip=%s status=%s",
+                        contractor_nip,
+                        status,
                     )
                 except Exception as exc:
-                    logger.warning("[DecisionQueue] Failed to log to EventLog: %s", exc)
+                    logger.warning("[DecisionQueue] history record failed: %s", exc)
 
-                # Zapisz decyzję do historii
-                if self._tracker is not None and contractor_nip:
-                    try:
-                        self._tracker.record_decision(
-                            contractor_nip=contractor_nip,
-                            category=category,
-                            decision=status,
-                            amount_gross=amount_gross,
-                        )
-                        logger.debug(
-                            "[DecisionQueue] history updated nip=%s status=%s",
-                            contractor_nip, status,
-                        )
-                    except Exception as exc:
-                        logger.warning(
-                            "[DecisionQueue] history record failed: %s", exc
-                        )
-
-            return updated
-        finally:
-            conn.close()
+        return updated
 
     def expire_old(self) -> int:
         """Oznacz wygasłe decyzje jako expired.
@@ -282,53 +268,58 @@ class DecisionQueue:
             Liczba oznaczonych jako wygasłe.
         """
         now = pendulum.now("UTC").isoformat()
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            cursor = conn.execute(
-                """UPDATE decisions
-                   SET status = 'expired', resolved_at = ?, resolution = 'auto-expired'
-                   WHERE status = 'pending' AND expires_at IS NOT NULL AND expires_at < ?""",
-                (now, now),
+        with self._engine.begin() as conn:
+            result = conn.execute(
+                text(
+                    """UPDATE dq_decisions
+                       SET status = 'expired', resolved_at = :now, resolution = 'auto-expired'
+                       WHERE status = 'pending' AND expires_at IS NOT NULL AND expires_at < :now"""
+                ),
+                {"now": now},
             )
-            conn.commit()
-            expired = cursor.rowcount
-            if expired:
-                logger.info("[DecisionQueue] expired %d old decisions", expired)
-            return expired
-        finally:
-            conn.close()
+            expired = result.rowcount
+        if expired:
+            logger.info("[DecisionQueue] expired %d old decisions", expired)
+        return expired
 
     def get_stats(self, user_id: str | None = None) -> dict[str, Any]:
         """Zwróć statystyki kolejki decyzji."""
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            base_query = "FROM decisions"
-            params: list[Any] = []
+        with self._engine.connect() as conn:
+            base = "FROM dq_decisions"
+            params: dict[str, Any] = {}
             if user_id:
-                base_query += " WHERE user_id = ?"
-                params.append(user_id)
+                base += " WHERE user_id = :user_id"
+                params["user_id"] = user_id
 
-            total = conn.execute(f"SELECT COUNT(*) {base_query}", params).fetchone()[0]
-            pending = conn.execute(
-                f"SELECT COUNT(*) {base_query} AND status = 'pending'" if user_id
-                else "SELECT COUNT(*) FROM decisions WHERE status = 'pending'",
-                params if user_id else [],
-            ).fetchone()[0]
+            total = int(conn.execute(text(f"SELECT COUNT(*) {base}"), params).scalar() or 0)
+
+            pending_params = dict(params)
+            pending_where = (
+                f"{base} AND status = 'pending'"
+                if user_id
+                else "FROM dq_decisions WHERE status = 'pending'"
+            )
+            pending = int(
+                conn.execute(text(f"SELECT COUNT(*) {pending_where}"), pending_params).scalar() or 0
+            )
 
             # Decyzje rozstrzygnięte dzisiaj
             today = pendulum.now().date().isoformat()
-            resolved_today = conn.execute(
-                "SELECT COUNT(*) FROM decisions WHERE resolved_at >= ? AND resolved_at < ?"
-                if not user_id else
-                f"SELECT COUNT(*) FROM decisions WHERE user_id = ? AND resolved_at >= ? AND resolved_at < ?",
-                params + [f"{today}T00:00:00", f"{today}T23:59:59"] if user_id
-                else [f"{today}T00:00:00", f"{today}T23:59:59"],
-            ).fetchone()[0]
+            resolved_params: dict[str, Any] = {
+                "start": f"{today}T00:00:00",
+                "end": f"{today}T23:59:59",
+            }
+            resolved_where = "FROM dq_decisions WHERE resolved_at >= :start AND resolved_at < :end"
+            if user_id:
+                resolved_where += " AND user_id = :user_id"
+                resolved_params["user_id"] = user_id
+            resolved_today = int(
+                conn.execute(text(f"SELECT COUNT(*) {resolved_where}"), resolved_params).scalar()
+                or 0
+            )
 
             return {
                 "total": total,
                 "pending": pending,
                 "resolved_today": resolved_today,
             }
-        finally:
-            conn.close()

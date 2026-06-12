@@ -5,7 +5,7 @@ import socket
 import sys
 
 import anyio
-from pathlib import Path
+from pathlib import Path as _SyncPath
 
 import anyio
 
@@ -14,24 +14,24 @@ import pendulum
 from structlog import get_logger
 
 # --- KONFIGURACJA OFFLINE AI ---
-if getattr(sys, 'frozen', False):
-    base_path = Path(sys._MEIPASS)
+if getattr(sys, "frozen", False):
+    base_path = _SyncPath(sys._MEIPASS)
 else:
-    base_path = Path(__file__).parent
+    base_path = _SyncPath(__file__).parent
 
 models_cache_dir = base_path / "models"
 os.environ["HF_HOME"] = str(models_cache_dir)
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
 # --- LOGOWANIE ---
-log_dir = Path("logs")
+log_dir = _SyncPath("logs")
 log_dir.mkdir(exist_ok=True)
 log_file = log_dir / f"nexus_{pendulum.now().format('YYYYMMDD')}.log"
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[logging.StreamHandler(), logging.FileHandler(log_file, encoding="utf-8")]
+    handlers=[logging.StreamHandler(), logging.FileHandler(log_file, encoding="utf-8")],
 )
 logger = get_logger("nexus.main")
 
@@ -43,7 +43,7 @@ from nexus_ai.scripts.setup_env import bootstrap_system  # noqa: E402
 def get_free_port() -> int:
     """Dynamicznie znajduje wolny port na localhost."""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(('', 0))
+        s.bind(("", 0))
         return s.getsockname()[1]
 
 
@@ -76,7 +76,8 @@ class NexusOrchestrator:
             logger.info("Uruchamianie NATS JetStream...")
             self.nats_process = await anyio.Process(
                 [str(nats_path), "-p", "4222", "-js"],
-                stdout=anyio.ProcessPipe.DEVNULL, stderr=anyio.ProcessPipe.DEVNULL
+                stdout=anyio.ProcessPipe.DEVNULL,
+                stderr=anyio.ProcessPipe.DEVNULL,
             ).__aenter__()
             await anyio.sleep(2)
         else:
@@ -93,15 +94,19 @@ class NexusOrchestrator:
         backend_env = os.environ.copy()
         backend_env["NEXUS_PORT"] = str(port)
         backend_env["NEXUS_TOKEN"] = self.bootstrap_token
-        backend_env["PYTHONPATH"] = str(Path.cwd())
+        backend_env["PYTHONPATH"] = str(_SyncPath.cwd())
 
         # Granian zamiast Uvicorn
         logger.info(f"Inicjalizacja API (Granian) na http://127.0.0.1:{port}")
         self.api_process = await anyio.Process(
-            [sys.executable, "-c",
-             f"import granian; granian.Granian('api.app:create_app', host='127.0.0.1', port={port}).serve()"],
+            [
+                sys.executable,
+                "-c",
+                f"import granian; granian.Granian('api.app:create_app', host='127.0.0.1', port={port}).serve()",
+            ],
             env=backend_env,
-            stdout=anyio.ProcessPipe.PIPE, stderr=anyio.ProcessPipe.PIPE,
+            stdout=anyio.ProcessPipe.PIPE,
+            stderr=anyio.ProcessPipe.PIPE,
         ).__aenter__()
         await anyio.sleep(2)
 
@@ -128,12 +133,17 @@ async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
 
     page.add(
         ft.Container(
-            content=ft.Column([
-                ft.Image(src="assets/logo_splash.png", width=150),
-                ft.Divider(height=40, color="transparent"),
-                status_text, pb
-            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-            expand=True, alignment=ft.alignment.center
+            content=ft.Column(
+                [
+                    ft.Image(src="assets/logo_splash.png", width=150),
+                    ft.Divider(height=40, color="transparent"),
+                    status_text,
+                    pb,
+                ],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            ),
+            expand=True,
+            alignment=ft.alignment.center,
         )
     )
     page.update()
@@ -153,7 +163,8 @@ async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
     await orchestrator.start_backend_api(port)
 
     status_text.value = "Krok 4/4: Synchronizacja interfejsu..."
-    page.update()        await anyio.sleep(1.5)
+    page.update()
+    await anyio.sleep(1.5)
 
     async with anyio.create_task_group() as tg:
         tg.start_soon(_check_updates_on_startup, page)
@@ -168,6 +179,7 @@ async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
     page.session.set("api_token", orchestrator.bootstrap_token)
 
     from ui.root import NexusRootUI
+
     app_ui = NexusRootUI(page, orchestrator)
     await app_ui.build()
     page.update()
@@ -176,6 +188,7 @@ async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
 async def _check_system_dependencies() -> bool:
     try:
         from installer.dependency_ui import run_dependency_ui
+
         return run_dependency_ui()
     except Exception:
         return True
@@ -184,7 +197,8 @@ async def _check_system_dependencies() -> bool:
 async def _check_models_on_startup() -> bool:
     try:
         from installer.download_progress_ui import check_and_download_if_needed
-        models_dir = Path("models")
+
+        models_dir = _SyncPath("models")
         return check_and_download_if_needed(models_dir)
     except Exception:
         return True
@@ -193,6 +207,7 @@ async def _check_models_on_startup() -> bool:
 async def _check_updates_on_startup(page: ft.Page | None = None):
     try:
         from installer.updater import check_for_updates
+
         result = await check_for_updates()
         if result.update_available and result.info:
             logger.info("[Updater] Update available: v%s", result.latest_version)
@@ -212,9 +227,7 @@ async def start_app():
     backend_port = get_free_port()
 
     try:
-        await ft.app_async(
-            target=lambda page: main_ui(page, orchestrator, backend_port)
-        )
+        await ft.app_async(target=lambda page: main_ui(page, orchestrator, backend_port))
     except Exception as e:
         logger.critical(f"BŁĄD KRYTYCZNY STARTU: {e}")
     finally:

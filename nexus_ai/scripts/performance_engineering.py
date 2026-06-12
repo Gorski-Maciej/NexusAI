@@ -6,6 +6,7 @@ by telemetry pipelines.
 Zgodnie z aa3fvcx.txt: locust zastępuje k6 — testy wydajności w Pythonie
 zamiast JavaScript, używając tych samych bibliotek (httpx, msgspec) co aplikacja.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -26,7 +27,9 @@ async def _run(cmd: list[str]) -> int:
     return result.returncode
 
 
-async def run_locust(script: Path, base_url: str, token: str, vus: int, duration: str, out: Path) -> int:
+async def run_locust(
+    script: Path, base_url: str, token: str, vus: int, duration: str, out: Path
+) -> int:
     """Run locust load test and export JSON summary.
 
     Zgodnie z aa3fvcx.txt: locust zastępuje k6.
@@ -97,7 +100,14 @@ def _parse_locust_csv(summary_path: Path) -> dict[str, float]:
     return {"p95": avg_p95, "p99": avg_p99, "error_rate": error_rate, "req_rate": 0.0}
 
 
-def enforce_thresholds(summary_path: Path, max_p95_ms: float, max_error_rate: float, *, max_p99_ms: float | None = None, min_rps: float | None = None) -> int:
+def enforce_thresholds(
+    summary_path: Path,
+    max_p95_ms: float,
+    max_error_rate: float,
+    *,
+    max_p99_ms: float | None = None,
+    min_rps: float | None = None,
+) -> int:
     if not summary_path.exists():
         print(f"[perf] summary file not found: {summary_path}", file=sys.stderr)
         return 1
@@ -120,7 +130,15 @@ def enforce_thresholds(summary_path: Path, max_p95_ms: float, max_error_rate: fl
     return 0
 
 
-def _write_gate_summary(*, rc: int, summary: Path, max_p95_ms: float, max_error_rate: float, max_p99_ms: float | None, min_rps: float | None) -> None:
+def _write_gate_summary(
+    *,
+    rc: int,
+    summary: Path,
+    max_p95_ms: float,
+    max_error_rate: float,
+    max_p99_ms: float | None,
+    min_rps: float | None,
+) -> None:
     summary.parent.mkdir(parents=True, exist_ok=True)
     gate = {
         "exit_code": rc,
@@ -130,11 +148,15 @@ def _write_gate_summary(*, rc: int, summary: Path, max_p95_ms: float, max_error_
         "max_p99_ms": max_p99_ms,
         "min_rps": min_rps,
     }
-    (summary.parent / "perf_gate_summary.json").write_text(msgspec_dumps(gate, ensure_ascii=False, indent=2), encoding="utf-8")
+    (summary.parent / "perf_gate_summary.json").write_text(
+        msgspec_dumps(gate, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 
 
 async def main() -> int:
-    parser = argparse.ArgumentParser(description="Run load tests (locust) and enforce SLO thresholds.")
+    parser = argparse.ArgumentParser(
+        description="Run load tests (locust) and enforce SLO thresholds."
+    )
     parser.add_argument("--script", default="tests/performance/locustfile.py")
     parser.add_argument("--base-url", required=True)
     parser.add_argument("--token", default="")
@@ -148,16 +170,45 @@ async def main() -> int:
     args = parser.parse_args()
 
     summary = Path(args.summary)
-    rc = await run_locust(Path(args.script), args.base_url, args.token, args.vus, args.duration, summary)
+    rc = await run_locust(
+        Path(args.script), args.base_url, args.token, args.vus, args.duration, summary
+    )
     if rc not in (0, 2):
-        _write_gate_summary(rc=rc, summary=summary, max_p95_ms=args.max_p95_ms, max_error_rate=args.max_error_rate, max_p99_ms=args.max_p99_ms, min_rps=args.min_rps)
+        _write_gate_summary(
+            rc=rc,
+            summary=summary,
+            max_p95_ms=args.max_p95_ms,
+            max_error_rate=args.max_error_rate,
+            max_p99_ms=args.max_p99_ms,
+            min_rps=args.min_rps,
+        )
         return rc
     if rc == 2:
-        _write_gate_summary(rc=0, summary=summary, max_p95_ms=args.max_p95_ms, max_error_rate=args.max_error_rate, max_p99_ms=args.max_p99_ms, min_rps=args.min_rps)
+        _write_gate_summary(
+            rc=0,
+            summary=summary,
+            max_p95_ms=args.max_p95_ms,
+            max_error_rate=args.max_error_rate,
+            max_p99_ms=args.max_p99_ms,
+            min_rps=args.min_rps,
+        )
         return 0
 
-    gate_rc = enforce_thresholds(summary, args.max_p95_ms, args.max_error_rate, max_p99_ms=args.max_p99_ms, min_rps=args.min_rps)
-    _write_gate_summary(rc=gate_rc, summary=summary, max_p95_ms=args.max_p95_ms, max_error_rate=args.max_error_rate, max_p99_ms=args.max_p99_ms, min_rps=args.min_rps)
+    gate_rc = enforce_thresholds(
+        summary,
+        args.max_p95_ms,
+        args.max_error_rate,
+        max_p99_ms=args.max_p99_ms,
+        min_rps=args.min_rps,
+    )
+    _write_gate_summary(
+        rc=gate_rc,
+        summary=summary,
+        max_p95_ms=args.max_p95_ms,
+        max_error_rate=args.max_error_rate,
+        max_p99_ms=args.max_p99_ms,
+        min_rps=args.min_rps,
+    )
     return gate_rc
 
 

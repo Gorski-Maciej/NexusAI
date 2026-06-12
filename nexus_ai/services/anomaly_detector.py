@@ -26,4 +26,3 @@ class SmartAnomalyDetector:
         # Isolation Forest:
         # Tutaj w prawdziwym kodzie będzie logika dopasowania modelu (np. model.fit(df))
         return False
-

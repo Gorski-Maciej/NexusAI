@@ -12,6 +12,7 @@ from structlog import get_logger
 
 logger = get_logger("nexus.api.security")
 
+
 def _resolve_jwt_secret() -> str:
     """Pobiera klucz JWT z env; brak twardo zakodowanego klucza w repozytorium."""
     env_secret = os.getenv("NEXUS_JWT_SECRET", "").strip()
@@ -24,7 +25,9 @@ def _resolve_jwt_secret() -> str:
     logger.warning("NEXUS_JWT_SECRET is missing; using ephemeral dev-only JWT secret.")
     return generated
 
+
 SECRET_KEY = _resolve_jwt_secret()
+
 
 def _resolve_jwt_expiration_seconds() -> int:
     raw = os.getenv("NEXUS_JWT_EXPIRATION_SECONDS", "3600").strip()
@@ -37,6 +40,7 @@ def _resolve_jwt_expiration_seconds() -> int:
         logger.warning("Non-positive NEXUS_JWT_EXPIRATION_SECONDS=%s, fallback to 3600", raw)
         return 3600
     return value
+
 
 JWT_ISSUER = os.getenv("NEXUS_JWT_ISSUER", "nexus-ai")
 JWT_AUDIENCE = os.getenv("NEXUS_JWT_AUDIENCE", "nexus-api")
@@ -55,6 +59,7 @@ if JWT_EXPIRATION_SECONDS > 900:
     )
     JWT_EXPIRATION_SECONDS = 900
 
+
 async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> User | None:
     if not token.sub:
         return None
@@ -67,14 +72,18 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> Use
     if db_engine is not None:
         async with db_engine.connect() as conn:
             row = (
-                await conn.execute(
-                    text(
-                        "SELECT id, username, role, tenant_id, is_active, jwt_version "
-                        "FROM users WHERE id = :id OR username = :id LIMIT 1"
-                    ),
-                    {"id": str(token.sub)},
+                (
+                    await conn.execute(
+                        text(
+                            "SELECT id, username, role, tenant_id, is_active, jwt_version "
+                            "FROM users WHERE id = :id OR username = :id LIMIT 1"
+                        ),
+                        {"id": str(token.sub)},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
 
             if not row:
                 return None
@@ -91,7 +100,9 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> Use
                         # Token was issued before a logout/password change
                         logger.warning(
                             "Rejected stale JWT for user %s: token_v=%s, db_v=%s",
-                            row["username"], token_jwt_version, db_jwt_version,
+                            row["username"],
+                            token_jwt_version,
+                            db_jwt_version,
                         )
                         return None
                 except (ValueError, TypeError):
@@ -115,11 +126,13 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> Use
 
     return None
 
+
 class User(Struct):
     id: str
     username: str
     role: str
     tenant_id: str | None = None
+
 
 jwt_auth = JWTAuth[User](
     retrieve_user_handler=retrieve_user_handler,

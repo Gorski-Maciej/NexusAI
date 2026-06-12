@@ -1,4 +1,5 @@
 """Asynchronous workflow tasks powered by Taskiq + NATS JetStream."""
+
 from __future__ import annotations
 
 import os
@@ -43,6 +44,7 @@ class TimedModelCache:
     Gdy w przyszłości modele staną się msgspec-serializowalne, L2 (SQLite)
     włączy się automatycznie bez zmian w tym kodzie.
     """
+
     def __init__(self, ttl_seconds: int = 600):
         self._nexus = get_cache(default_ttl=ttl_seconds)
         self._models: dict[str, object] = {}
@@ -83,6 +85,8 @@ class TimedModelCache:
         with self._lock:
             self._models.pop(key, None)
         self._nexus._ram_cache.pop(f"_model_cache_ttl:{key}", None)
+
+
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import SessionLocal, create_oltp_engine, create_session_factory
@@ -107,7 +111,9 @@ logger = get_logger()
 # Python 3.13t (free-threaded): zamiast 1 OCR na raz, wykorzystaj wszystkie wolne rdzenie.
 # Domyślnie os.cpu_count_free() jeśli dostępne, fallback do os.cpu_count(), fallback 4.
 _DEFAULT_OCR_CONCURRENCY = os.cpu_count() or 4
-OCR_INFERENCE_SEMAPHORE = anyio.Semaphore(int(os.getenv("NEXUS_MAX_PARALLEL_OCR", str(_DEFAULT_OCR_CONCURRENCY))))
+OCR_INFERENCE_SEMAPHORE = anyio.Semaphore(
+    int(os.getenv("NEXUS_MAX_PARALLEL_OCR", str(_DEFAULT_OCR_CONCURRENCY)))
+)
 OCR_TASK_TIMEOUT_SEC = int(os.getenv("NEXUS_OCR_TIMEOUT_SEC", "300"))
 
 NATS_URL = os.getenv("NEXUS_NATS_URL", "nats://127.0.0.1:4222")
@@ -115,20 +121,26 @@ broker = PullBasedJetStreamBroker(servers=NATS_URL, queue="nexus-ai-workers")
 
 _MODEL_CACHE = TimedModelCache(ttl_seconds=int(os.getenv("NEXUS_MODEL_CACHE_TTL_SEC", "600")))
 
+
 async def _load_document_processor() -> DocumentProcessor:
     return await anyio.to_thread.run_sync(DocumentProcessor)
+
 
 async def _load_vision_agent() -> VisionAgent:
     return await anyio.to_thread.run_sync(VisionAgent)
 
+
 class InvoiceEventPayload(Struct):
     """Canonical payload embedded in Outbox events."""
+
     invoice_id: str
     image_path: str
     contractor_id: str
 
+
 class InvoiceProcessingMachine:
     """Invoice lifecycle state machine (no statemachine dependency)."""
+
     STATES = {
         "new": "NEW",
         "processing": "PROCESSING",
@@ -159,13 +171,16 @@ class InvoiceProcessingMachine:
     def current_state(self):
         return _StateProxy(self.STATES[self._state])
 
+
 class _StateProxy:
     """Lightweight proxy to mimic statemachine.State.id interface."""
+
     def __init__(self, state_id: str):
         self.id = state_id
 
     def __repr__(self):
         return f"State(id='{self.id}')"
+
 
 def pin_worker_cpu_affinity(reserve_core0: bool = True) -> None:
     """Pin worker process to non-UI CPU cores to protect Flet responsiveness."""
@@ -177,12 +192,14 @@ def pin_worker_cpu_affinity(reserve_core0: bool = True) -> None:
         target = available
     process.cpu_affinity(target)
 
+
 def _get_vector_store() -> Any:
     """Get or create vector store (sqlite-vec).
 
     Zastępuje: LanceDB + Polars → sqlite-vec VectorStore.
     """
     from db.vector_store import VectorStore
+
     store = VectorStore("app_data/vectors.db")
     # Ensure invoice_vectors-like table exists
     conn = store._get_conn()
@@ -200,6 +217,7 @@ def _get_vector_store() -> Any:
     conn.commit()
     return store
 
+
 def _simple_features(raw_text: str) -> list[float]:
     """Small dense vector placeholder; replace with embedding model output."""
     length = float(len(raw_text))
@@ -207,6 +225,7 @@ def _simple_features(raw_text: str) -> list[float]:
     letters = float(sum(ch.isalpha() for ch in raw_text))
     lines = float(max(raw_text.count("\n"), 1))
     return [length, digits, letters, lines]
+
 
 def _pick_pending_outbox(session: Session) -> OutboxEvent | None:
     query = (
@@ -218,6 +237,7 @@ def _pick_pending_outbox(session: Session) -> OutboxEvent | None:
     result = session.execute(query)
     return result.scalar_one_or_none()
 
+
 def _update_invoice_status(session: Session, invoice_id: str, status: str) -> None:
     invoice = session.get(Invoice, invoice_id)
     if invoice is None:
@@ -226,9 +246,11 @@ def _update_invoice_status(session: Session, invoice_id: str, status: str) -> No
     invoice.updated_at = pendulum.now("UTC")
     session.flush()
 
+
 @broker.on_event(TaskiqEvents.WORKER_STARTUP)
 async def _startup(_state: Any) -> None:
     pin_worker_cpu_affinity(reserve_core0=True)
+
 
 @broker.task(task_name="process_invoice_task")
 async def process_invoice_task() -> dict[str, str]:
@@ -253,9 +275,13 @@ async def process_invoice_task() -> dict[str, str]:
                 processor = await _MODEL_CACHE.get("document_processor", _load_document_processor)
                 vision_agent = await _MODEL_CACHE.get("vision_agent", _load_vision_agent)
                 with anyio.fail_after(OCR_TASK_TIMEOUT_SEC):
-                    processed = await anyio.to_thread.run_sync(processor.process, Path(payload.image_path))
+                    processed = await anyio.to_thread.run_sync(
+                        processor.process, Path(payload.image_path)
+                    )
                 with anyio.fail_after(OCR_TASK_TIMEOUT_SEC):
-                    vision = await vision_agent.analyze(Path(payload.image_path), processed.primary.raw_text)
+                    vision = await vision_agent.analyze(
+                        Path(payload.image_path), processed.primary.raw_text
+                    )
             vision_payload = {
                 "vendor_nip": vision.vendor_nip,
                 "total_gross": vision.total_gross,
@@ -300,7 +326,9 @@ async def process_invoice_task() -> dict[str, str]:
         except TimeoutError as exc:
             machine.fail()
             event.status = OutboxStatus.FAILED
-            event.payload = msgspec_dumps({"error": f"OCR_TIMEOUT:{exc}", "original_payload": event.payload})
+            event.payload = msgspec_dumps(
+                {"error": f"OCR_TIMEOUT:{exc}", "original_payload": event.payload}
+            )
             _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
 
         except Exception as exc:
@@ -313,8 +341,11 @@ async def process_invoice_task() -> dict[str, str]:
         engine.dispose()
         return {"result": "OK"}
 
+
 @broker.task(task_name="store_active_learning_feedback")
-async def store_active_learning_feedback(contractor_id: str, corrected_payload: dict[str, Any]) -> dict[str, str]:
+async def store_active_learning_feedback(
+    contractor_id: str, corrected_payload: dict[str, Any]
+) -> dict[str, str]:
     """Persist user corrections for active learning and preferred retrieval."""
     config = AppConfig(base_dir=Path.cwd())
     engine = _make_engine(config)
@@ -354,6 +385,7 @@ async def store_active_learning_feedback(contractor_id: str, corrected_payload: 
     engine.dispose()
     return {"result": "LEARNING_SAVED"}
 
+
 @broker.task(schedule=[{"cron": "0 16 * * *"}])
 async def scheduled_backup_task():
     """Codziennie o 16:00"""
@@ -361,6 +393,7 @@ async def scheduled_backup_task():
     manager = BackupManager(config)
     path = manager.create_encrypted_zip(config.encryption_key)
     logger.info(f"Backup wykonany pomyślnie: {path}")
+
 
 @broker.task(schedule=[{"cron": "55 23 28-31 * *"}], task_name="cron_post_depreciation")
 async def cron_post_depreciation() -> dict[str, int | str]:
@@ -374,6 +407,7 @@ async def cron_post_depreciation() -> dict[str, int | str]:
     posted = await service.execute_monthly_depreciation(as_of=today)
     return {"result": "OK", "posted": posted}
 
+
 @broker.task(schedule=[{"cron": "*/5 * * * *"}])
 async def invoice_reconciliation_loop():
     """Wyszukuje porzucone faktury i podejmuje akcje naprawcze."""
@@ -382,8 +416,7 @@ async def invoice_reconciliation_loop():
 
     with SessionLocal() as session:
         stmt = select(Invoice).where(
-            Invoice.status == "PROCESSING",
-            Invoice.updated_at <= timeout_threshold
+            Invoice.status == "PROCESSING", Invoice.updated_at <= timeout_threshold
         )
         result = session.execute(stmt)
         stuck_invoices = result.scalars().all()
@@ -393,6 +426,7 @@ async def invoice_reconciliation_loop():
             return
 
         import nats
+
         nc = await nats.connect("nats://localhost:4222")
         for invoice in stuck_invoices:
             if invoice.retry_count < 3:
@@ -402,11 +436,9 @@ async def invoice_reconciliation_loop():
                 )
                 invoice.retry_count += 1
                 invoice.updated_at = pendulum.now("UTC")
-                payload = msgspec_dumps({
-                    "invoice_id": invoice.id,
-                    "file_path": invoice.file_path,
-                    "is_retry": True
-                })
+                payload = msgspec_dumps(
+                    {"invoice_id": invoice.id, "file_path": invoice.file_path, "is_retry": True}
+                )
                 await nc.publish("invoices.new", payload.encode())
             else:
                 logger.error(
@@ -415,17 +447,22 @@ async def invoice_reconciliation_loop():
                 )
                 invoice.status = "ERROR: TIMEOUT"
                 invoice.updated_at = pendulum.now("UTC")
-                error_payload = msgspec_dumps({
-                    "status": "FAILED",
-                    "message": "Przekroczono limit czasu (Krytyczny błąd przetwarzania)."
-                })
+                error_payload = msgspec_dumps(
+                    {
+                        "status": "FAILED",
+                        "message": "Przekroczono limit czasu (Krytyczny błąd przetwarzania).",
+                    }
+                )
                 await nc.publish(f"invoices.status.{invoice.id}", error_payload.encode())
 
         session.commit()
         await nc.close()
 
+
 class _DefaultDunningAIAgent:
-    def generate_dunning_text(self, invoice_data: dict[str, Any], vendor_score: float, level: int) -> str:
+    def generate_dunning_text(
+        self, invoice_data: dict[str, Any], vendor_score: float, level: int
+    ) -> str:
         tone = "uprzejmy" if vendor_score >= 0.8 else "stanowczy"
         return (
             f"To automatyczne przypomnienie ({tone}, poziom {level}) dla faktury {invoice_data['invoice_number']} "
@@ -433,12 +470,14 @@ class _DefaultDunningAIAgent:
             f"Zaległość: {invoice_data['days_overdue']} dni."
         )
 
+
 class _DefaultEmailProvider:
     def send(self, *, to_email: str, subject: str, body: str) -> bool:
         if not to_email:
             return False
         logger.info("[Dunning] Wysyłka email to=%s subject=%s", to_email, subject)
         return True
+
 
 @broker.task(task_name="run_daily_dunning_check", schedule=[{"cron": "0 9 * * *"}])
 async def run_daily_dunning_check() -> dict[str, int]:
@@ -452,6 +491,7 @@ async def run_daily_dunning_check() -> dict[str, int]:
     )
     return await engine.run_daily_dunning_check()
 
+
 @broker.task(task_name="execute_monthly_depreciation", schedule=[{"cron": "0 0 1 * *"}])
 async def execute_monthly_depreciation_task() -> dict[str, int]:
     """Posts due depreciation entries to TigerBeetle on the 1st day of each month."""
@@ -460,6 +500,7 @@ async def execute_monthly_depreciation_task() -> dict[str, int]:
     posted = await service.execute_monthly_depreciation()
     logger.info("[FixedAssets] Posted %s depreciation entries", posted)
     return {"posted": posted}
+
 
 @broker.on_event(TaskiqEvents.WORKER_SHUTDOWN)
 async def _shutdown(_state: Any) -> None:

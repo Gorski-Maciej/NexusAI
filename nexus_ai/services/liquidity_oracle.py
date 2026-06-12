@@ -11,11 +11,13 @@ from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
 
+
 class LiquidityPoint(Struct, frozen=True):
     date: str
     optimistic_balance: str
     likely_balance: str
     pessimistic_balance: str
+
 
 def ensure_liquidity_schema(duckdb: DuckDBManager) -> None:
     duckdb.execute(
@@ -68,6 +70,7 @@ def ensure_liquidity_schema(duckdb: DuckDBManager) -> None:
         """
     )
 
+
 def _vat_buffer_today(duckdb: DuckDBManager) -> Decimal:
     rows = duckdb.execute(
         """
@@ -80,6 +83,7 @@ def _vat_buffer_today(duckdb: DuckDBManager) -> Decimal:
     )
     return Decimal(str(rows[0][0] if rows else 0)).quantize(Decimal("0.01"))
 
+
 def calculate_liquidity_timeline(
     duckdb: DuckDBManager,
     tigerbeetle: TigerBeetleClient,
@@ -91,7 +95,11 @@ def calculate_liquidity_timeline(
 
     cleared = Decimal(tigerbeetle._account_credits_posted.get(account_bank_id, 0)) / Decimal(100)
     pending = Decimal(
-        sum(t.amount_minor for t in tigerbeetle._pending_transfers.values() if t.credit_account == account_bank_id)
+        sum(
+            t.amount_minor
+            for t in tigerbeetle._pending_transfers.values()
+            if t.credit_account == account_bank_id
+        )
     ) / Decimal(100)
     start_balance = (cleared + pending).quantize(Decimal("0.01"))
 

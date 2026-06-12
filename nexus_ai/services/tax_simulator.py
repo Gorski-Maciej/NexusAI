@@ -19,7 +19,13 @@ from nexus_ai.services.tax_strategies import StrategyContext, StrategyRegistry
 from nexus_ai.services.tigerbeetle.models import LegalForm, TaxForm
 from nexus_ai.services.rule_store import RuleStore
 from nexus_ai.tax.exceptions import NoMatchingRuleError
-from nexus_ai.tax.rules import ContextInterpreter, RuleEngine, seed_default_rules, seed_single_rule_set
+from nexus_ai.tax.rules import (
+    ContextInterpreter,
+    RuleEngine,
+    seed_default_rules,
+    seed_single_rule_set,
+)
+
 
 class ShadowLedgerInput(Struct):
     company_id: str
@@ -28,6 +34,7 @@ class ShadowLedgerInput(Struct):
     month_start: pendulum.Date
     month_end: pendulum.Date
 
+
 class TaxSimulator:
     """Predykcyjny symulator podatkowy — DuckDB + Polars shadow ledgers.
 
@@ -35,11 +42,18 @@ class TaxSimulator:
     bez wpływu na główną bazę transakcyjną.
     """
 
-    def __init__(self, *, duckdb_path: str = "nexus.duckdb", strategy_registry: StrategyRegistry | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        duckdb_path: str = "nexus.duckdb",
+        strategy_registry: StrategyRegistry | None = None,
+    ) -> None:
         self.duckdb_path = duckdb_path
         self.strategy_registry = strategy_registry or StrategyRegistry()
 
-    async def run_shadow_simulation(self, current_month_data: Any, *, legal_form: LegalForm, vat_proportion: float = 1.0) -> Any:
+    async def run_shadow_simulation(
+        self, current_month_data: Any, *, legal_form: LegalForm, vat_proportion: float = 1.0
+    ) -> Any:
         pl = self._require_polars()
         frame = self._ensure_polars_frame(current_month_data, pl)
         metrics = self._aggregate_month_metrics(frame, pl)
@@ -49,15 +63,24 @@ class TaxSimulator:
             if not self._is_strategy_compatible(tax_form=tax_form, legal_form=legal_form):
                 continue
             policy = strategy.policy_payload(
-                StrategyContext(legal_form=legal_form, ksef_active=True, vat_proportion=vat_proportion)
+                StrategyContext(
+                    legal_form=legal_form, ksef_active=True, vat_proportion=vat_proportion
+                )
             )
-            rows.append(self._simulate_policy_row(metrics=metrics, policy=policy, tax_form=tax_form, pl=pl))
+            rows.append(
+                self._simulate_policy_row(metrics=metrics, policy=policy, tax_form=tax_form, pl=pl)
+            )
 
         if not rows:
-            return pl.DataFrame(schema={
-                "tax_form": pl.Utf8, "income_tax_due": pl.Float64,
-                "vat_due": pl.Float64, "effective_tax_rate": pl.Float64, "cash_left": pl.Float64,
-            })
+            return pl.DataFrame(
+                schema={
+                    "tax_form": pl.Utf8,
+                    "income_tax_due": pl.Float64,
+                    "vat_due": pl.Float64,
+                    "effective_tax_rate": pl.Float64,
+                    "cash_left": pl.Float64,
+                }
+            )
         return pl.DataFrame(rows).sort("cash_left", descending=True)
 
     async def load_current_month_data(self, params: ShadowLedgerInput) -> Any:
@@ -73,7 +96,9 @@ class TaxSimulator:
             )
             return relation.pl()
 
-    async def run_simulation(self, invoices: list[dict[str, Any]], target_rule_set_id: str) -> dict[str, Any]:
+    async def run_simulation(
+        self, invoices: list[dict[str, Any]], target_rule_set_id: str
+    ) -> dict[str, Any]:
         conn = duckdb.connect(":memory:")
         try:
             store = RuleStore(conn)
@@ -106,11 +131,19 @@ class TaxSimulator:
 
                 income_rate_str = current_verdict.get("simulated_income_tax_rate", "0")
                 income_rate = Decimal(income_rate_str) if income_rate_str else Decimal("0")
-                current_income_tax = (net * income_rate).quantize(Decimal("0.01")) if income_rate > 0 else Decimal("0")
+                current_income_tax = (
+                    (net * income_rate).quantize(Decimal("0.01"))
+                    if income_rate > 0
+                    else Decimal("0")
+                )
                 total_current_income_tax += current_income_tax
 
                 if month_key not in current_monthly:
-                    current_monthly[month_key] = {"vat": Decimal("0"), "income_tax": Decimal("0"), "count": 0}
+                    current_monthly[month_key] = {
+                        "vat": Decimal("0"),
+                        "income_tax": Decimal("0"),
+                        "count": 0,
+                    }
                 current_monthly[month_key]["vat"] += current_vat
                 current_monthly[month_key]["income_tax"] += current_income_tax
                 current_monthly[month_key]["count"] += 1
@@ -143,7 +176,9 @@ class TaxSimulator:
                 total_sim_vat += sim_vat
 
                 income_rate_sim_str = sim_verdict.get("simulated_income_tax_rate", "0")
-                income_rate_sim = Decimal(income_rate_sim_str) if income_rate_sim_str else Decimal("0")
+                income_rate_sim = (
+                    Decimal(income_rate_sim_str) if income_rate_sim_str else Decimal("0")
+                )
                 is_lump_sum = sim_verdict.get("simulated_lump_sum_revenue_basis", False)
 
                 if is_lump_sum:
@@ -155,19 +190,36 @@ class TaxSimulator:
                 total_sim_income_tax += sim_income_tax
 
                 if month_key not in sim_monthly:
-                    sim_monthly[month_key] = {"vat": Decimal("0"), "income_tax": Decimal("0"), "net_total": Decimal("0"), "count": 0}
+                    sim_monthly[month_key] = {
+                        "vat": Decimal("0"),
+                        "income_tax": Decimal("0"),
+                        "net_total": Decimal("0"),
+                        "count": 0,
+                    }
                 sim_monthly[month_key]["vat"] += sim_vat
                 sim_monthly[month_key]["income_tax"] += sim_income_tax
                 sim_monthly[month_key]["net_total"] += net
                 sim_monthly[month_key]["count"] += 1
 
-            current_breakdown = [{"month": m, "vat": round(float(d["vat"]), 2),
-                                  "income_tax": round(float(d["income_tax"]), 2),
-                                  "invoice_count": d["count"]} for m, d in sorted(current_monthly.items())]
-            sim_breakdown = [{"month": month, "vat": round(float(d["vat"]), 2),
-                              "income_tax": round(float(d["income_tax"]), 2),
-                              "net_total": round(float(d["net_total"]), 2),
-                              "invoice_count": d["count"]} for month, d in sorted(sim_monthly.items())]
+            current_breakdown = [
+                {
+                    "month": m,
+                    "vat": round(float(d["vat"]), 2),
+                    "income_tax": round(float(d["income_tax"]), 2),
+                    "invoice_count": d["count"],
+                }
+                for m, d in sorted(current_monthly.items())
+            ]
+            sim_breakdown = [
+                {
+                    "month": month,
+                    "vat": round(float(d["vat"]), 2),
+                    "income_tax": round(float(d["income_tax"]), 2),
+                    "net_total": round(float(d["net_total"]), 2),
+                    "invoice_count": d["count"],
+                }
+                for month, d in sorted(sim_monthly.items())
+            ]
 
             return {
                 "current_vat_total": round(float(total_current_vat), 2),
@@ -183,17 +235,37 @@ class TaxSimulator:
 
     @staticmethod
     def _aggregate_month_metrics(frame: Any, pl: Any) -> dict[str, float]:
-        aggregated = frame.select([
-            pl.col("net").filter(pl.col("kind") == "revenue").sum().fill_null(0.0).alias("revenue_net"),
-            pl.col("net").filter(pl.col("kind") == "expense").sum().fill_null(0.0).alias("expense_net"),
-            pl.col("vat_amount").filter(pl.col("kind") == "revenue").sum().fill_null(0.0).alias("output_vat"),
-            pl.col("vat_amount").mul(pl.col("vat_deductible_ratio").fill_null(1.0))
-              .filter(pl.col("kind") == "expense").sum().fill_null(0.0).alias("input_vat"),
-        ])
+        aggregated = frame.select(
+            [
+                pl.col("net")
+                .filter(pl.col("kind") == "revenue")
+                .sum()
+                .fill_null(0.0)
+                .alias("revenue_net"),
+                pl.col("net")
+                .filter(pl.col("kind") == "expense")
+                .sum()
+                .fill_null(0.0)
+                .alias("expense_net"),
+                pl.col("vat_amount")
+                .filter(pl.col("kind") == "revenue")
+                .sum()
+                .fill_null(0.0)
+                .alias("output_vat"),
+                pl.col("vat_amount")
+                .mul(pl.col("vat_deductible_ratio").fill_null(1.0))
+                .filter(pl.col("kind") == "expense")
+                .sum()
+                .fill_null(0.0)
+                .alias("input_vat"),
+            ]
+        )
         return aggregated.to_dicts()[0]
 
     @staticmethod
-    def _simulate_policy_row(*, metrics: dict[str, float], policy: dict[str, Any], tax_form: TaxForm, pl: Any) -> dict[str, Any]:
+    def _simulate_policy_row(
+        *, metrics: dict[str, float], policy: dict[str, Any], tax_form: TaxForm, pl: Any
+    ) -> dict[str, Any]:
         revenue = float(metrics["revenue_net"])
         expense = float(metrics["expense_net"])
         taxable_income = max(revenue - expense, 0.0)
@@ -215,9 +287,13 @@ class TaxSimulator:
         cash_left = max(revenue - expense - total_tax, 0.0)
         effective_tax_rate = (total_tax / revenue) if revenue > 0 else 0.0
 
-        return {"tax_form": tax_form.value, "income_tax_due": round(income_tax_due, 2),
-                "vat_due": round(vat_due, 2), "effective_tax_rate": round(effective_tax_rate, 4),
-                "cash_left": round(cash_left, 2)}
+        return {
+            "tax_form": tax_form.value,
+            "income_tax_due": round(income_tax_due, 2),
+            "vat_due": round(vat_due, 2),
+            "effective_tax_rate": round(effective_tax_rate, 4),
+            "cash_left": round(cash_left, 2),
+        }
 
     @staticmethod
     def _is_strategy_compatible(*, tax_form: TaxForm, legal_form: LegalForm) -> bool:

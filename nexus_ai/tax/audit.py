@@ -20,9 +20,11 @@ from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 # ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
 try:
     from nexus_crypto import sha256 as _sha256
+
     HAS_NEXUS_CRYPTO = True
 except ImportError:
     import hashlib as _hashlib
+
     HAS_NEXUS_CRYPTO = False
 
     def _sha256(data: bytes) -> str:
@@ -100,18 +102,20 @@ def _compute_current_hash(
     Canonical field order:
     ``previous_hash|trace_id|transaction_id|context_json|verdict_json|calculation_input|calculation_output|invariants_result|risk_verdict|timestamp``
     """
-    payload = "|".join([
-        previous_hash,
-        trace_id,
-        transaction_id,
-        context_json,
-        verdict_json,
-        calculation_input,
-        calculation_output,
-        invariants_result,
-        risk_verdict,
-        timestamp_iso,
-    ])
+    payload = "|".join(
+        [
+            previous_hash,
+            trace_id,
+            transaction_id,
+            context_json,
+            verdict_json,
+            calculation_input,
+            calculation_output,
+            invariants_result,
+            risk_verdict,
+            timestamp_iso,
+        ]
+    )
     return _sha256(payload.encode("utf-8"))
 
 
@@ -176,17 +180,18 @@ class DecisionTraceLogger:
         # Canonical JSON: sort_keys=True ensures deterministic serialization
         context_json = (
             msgspec_dumps(context, ensure_ascii=False, default=str, sort_keys=True)
-            if context else "{}"
+            if context
+            else "{}"
         )
         verdict_json = (
             msgspec_dumps(verdict, ensure_ascii=False, default=str, sort_keys=True)
-            if verdict else "{}"
+            if verdict
+            else "{}"
         )
 
         # Retrieve the last current_hash from the chain
         last_row = self._conn.execute(
-            "SELECT current_hash FROM decision_traces "
-            "ORDER BY timestamp DESC LIMIT 1"
+            "SELECT current_hash FROM decision_traces ORDER BY timestamp DESC LIMIT 1"
         ).fetchone()
         previous_hash = str(last_row[0]) if last_row else _GENESIS_HASH
 
@@ -278,16 +283,13 @@ class DecisionTraceLogger:
             The latest SHA-256 hex digest, or ``_GENESIS_HASH`` if table is empty.
         """
         row = self._conn.execute(
-            "SELECT current_hash FROM decision_traces "
-            "ORDER BY timestamp DESC LIMIT 1"
+            "SELECT current_hash FROM decision_traces ORDER BY timestamp DESC LIMIT 1"
         ).fetchone()
         return str(row[0]) if row else _GENESIS_HASH
 
     def entry_count(self) -> int:
         """Return total number of decision trace entries."""
-        row = self._conn.execute(
-            "SELECT COUNT(1) FROM decision_traces"
-        ).fetchone()
+        row = self._conn.execute("SELECT COUNT(1) FROM decision_traces").fetchone()
         return int(row[0]) if row else 0
 
 
@@ -333,16 +335,18 @@ def verify_chain_integrity(conn: duckdb.DuckDBPyConnection) -> list[dict[str, An
 
         # 1. Previous hash linkage
         if stored_previous != expected_previous:
-            issues.append({
-                "trace_id": trace_id,
-                "issue": "previous_hash_mismatch",
-                "expected_previous": expected_previous,
-                "stored_previous": stored_previous,
-                "message": (
-                    f"Entry {trace_id}: stored previous_hash does not match "
-                    f"the previous entry's current_hash"
-                ),
-            })
+            issues.append(
+                {
+                    "trace_id": trace_id,
+                    "issue": "previous_hash_mismatch",
+                    "expected_previous": expected_previous,
+                    "stored_previous": stored_previous,
+                    "message": (
+                        f"Entry {trace_id}: stored previous_hash does not match "
+                        f"the previous entry's current_hash"
+                    ),
+                }
+            )
 
         # 2. Current hash integrity (includes ALL fields now)
         recomputed = _compute_current_hash(
@@ -358,16 +362,18 @@ def verify_chain_integrity(conn: duckdb.DuckDBPyConnection) -> list[dict[str, An
             risk_verdict=risk_verdict,
         )
         if recomputed != stored_current:
-            issues.append({
-                "trace_id": trace_id,
-                "issue": "current_hash_mismatch",
-                "expected_current": recomputed,
-                "stored_current": stored_current,
-                "message": (
-                    f"Entry {trace_id}: stored current_hash does not match "
-                    f"recomputed hash — data may have been tampered with"
-                ),
-            })
+            issues.append(
+                {
+                    "trace_id": trace_id,
+                    "issue": "current_hash_mismatch",
+                    "expected_current": recomputed,
+                    "stored_current": stored_current,
+                    "message": (
+                        f"Entry {trace_id}: stored current_hash does not match "
+                        f"recomputed hash — data may have been tampered with"
+                    ),
+                }
+            )
 
         expected_previous = stored_current
 

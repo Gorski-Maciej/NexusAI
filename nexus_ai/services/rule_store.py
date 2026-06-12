@@ -112,7 +112,10 @@ class RuleStore:
         self._conn.execute(TAX_RULES_SCHEMA)
         self._conn.execute(RULE_CHANGE_LOG_SCHEMA)
         # Backward-compatible migration for new columns
-        for col, col_type in [("description_template", "VARCHAR"), ("rule_set_id", "VARCHAR NOT NULL DEFAULT ''")]:
+        for col, col_type in [
+            ("description_template", "VARCHAR"),
+            ("rule_set_id", "VARCHAR NOT NULL DEFAULT ''"),
+        ]:
             try:
                 self._conn.execute(
                     f"ALTER TABLE tax_rules ADD COLUMN IF NOT EXISTS {col} {col_type}"
@@ -150,8 +153,16 @@ class RuleStore:
             UUID nowej reguły.
         """
         rule_id = uuid.uuid4().hex
-        vf = valid_from.isoformat() if isinstance(valid_from, (pendulum.Date, pendulum.DateTime)) else valid_from
-        vt = valid_to.isoformat() if isinstance(valid_to, (pendulum.Date, pendulum.DateTime)) else valid_to
+        vf = (
+            valid_from.isoformat()
+            if isinstance(valid_from, (pendulum.Date, pendulum.DateTime))
+            else valid_from
+        )
+        vt = (
+            valid_to.isoformat()
+            if isinstance(valid_to, (pendulum.Date, pendulum.DateTime))
+            else valid_to
+        )
         now = pendulum.now("UTC").isoformat()
 
         self._conn.execute(
@@ -205,7 +216,11 @@ class RuleStore:
         """
         if valid_to is None:
             valid_to = pendulum.now().date()
-        vt = valid_to.isoformat() if isinstance(valid_to, (pendulum.Date, pendulum.DateTime)) else valid_to
+        vt = (
+            valid_to.isoformat()
+            if isinstance(valid_to, (pendulum.Date, pendulum.DateTime))
+            else valid_to
+        )
         now = pendulum.now("UTC").isoformat()
 
         # Sprawdź czy reguła istnieje i jest otwarta
@@ -369,7 +384,9 @@ class RuleStore:
         if active_only:
             where.append("valid_to IS NULL")
         if date_filter:
-            where.append("valid_from <= CAST(? AS DATE) AND (valid_to IS NULL OR valid_to >= CAST(? AS DATE))")
+            where.append(
+                "valid_from <= CAST(? AS DATE) AND (valid_to IS NULL OR valid_to >= CAST(? AS DATE))"
+            )
             params.extend([date_filter, date_filter])
 
         where_clause = " AND ".join(where) if where else "1=1"
@@ -470,6 +487,7 @@ class RuleStore:
             return
 
         from tax.rules import DEFAULT_TAX_RULES
+
         for rule in DEFAULT_TAX_RULES:
             self.add_rule(
                 condition_sql=rule["condition_sql"],

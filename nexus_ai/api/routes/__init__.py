@@ -1,4 +1,5 @@
 """API routes package for NexusAI backend."""
+
 from __future__ import annotations
 
 from .analytics import AnalyticsController

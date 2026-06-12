@@ -13,6 +13,7 @@ Usage:
     errors = check_high_error_rate(error_count, total_count)
     disk = check_disk_space()
 """
+
 from __future__ import annotations
 
 import shutil
@@ -21,6 +22,7 @@ from pathlib import Path
 from typing import Any
 
 # ── Alert rule definitions ────────────────────────────────────────────────────
+
 
 class PrometheusAlertRule(Struct):
     """A single Prometheus alerting rule."""
@@ -48,21 +50,20 @@ class PrometheusAlertRule(Struct):
             },
         }
 
+
 # ── Built-in alert rules ─────────────────────────────────────────────────────
 
 ALERT_RULES: list[PrometheusAlertRule] = [
     PrometheusAlertRule(
         name="HighErrorRate",
         expr=(
-            "rate(http_requests_total{status=~'5..'}[5m]) "
-            "/ rate(http_requests_total[5m]) > 0.01"
+            "rate(http_requests_total{status=~'5..'}[5m]) / rate(http_requests_total[5m]) > 0.01"
         ),
         duration="5m",
         severity="critical",
         summary="High HTTP error rate",
         description=(
-            "More than 1% of HTTP requests are returning 5xx errors "
-            "in the last 5 minutes."
+            "More than 1% of HTTP requests are returning 5xx errors in the last 5 minutes."
         ),
     ),
     PrometheusAlertRule(
@@ -94,8 +95,7 @@ ALERT_RULES: list[PrometheusAlertRule] = [
         severity="critical",
         summary="Low disk space",
         description=(
-            "Less than 10% disk space remaining. "
-            "Backup and cleanup required immediately."
+            "Less than 10% disk space remaining. Backup and cleanup required immediately."
         ),
     ),
     PrometheusAlertRule(
@@ -115,6 +115,7 @@ ALERT_RULES: list[PrometheusAlertRule] = [
         description="No active worker processing tasks. OCR and AI tasks will queue up.",
     ),
 ]
+
 
 def generate_alert_rules_yaml() -> str:
     """Generate Prometheus alert rules YAML content.
@@ -136,7 +137,9 @@ def generate_alert_rules_yaml() -> str:
             lines.append(f"          {k}: {v}")
     return "\n".join(lines)
 
+
 # ── Programmatic health check functions ──────────────────────────────────────
+
 
 def check_high_error_rate(
     error_count_5xx: int,
@@ -169,6 +172,7 @@ def check_high_error_rate(
         "error_rate_pct": round(error_rate, 2),
         "threshold_pct": threshold_pct,
     }
+
 
 def check_disk_space(path: str | Path = "/", threshold_gb: float = 1.0) -> dict[str, Any]:
     """Check available disk space.

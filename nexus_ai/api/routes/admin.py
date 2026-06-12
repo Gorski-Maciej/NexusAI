@@ -6,6 +6,7 @@ Endpoints:
 - DELETE /api/admin/failed-tasks/{id}        — Delete a failed task entry
 - POST   /api/admin/failed-tasks/retry-all   — Retry all unresolved failed tasks
 """
+
 from __future__ import annotations
 
 import uuid
@@ -37,6 +38,7 @@ class ChangeRoleRequest(msgspec.Struct):
 
 class RiskThresholdCreate(msgspec.Struct):
     """Request body for creating a new risk threshold rule."""
+
     condition: dict
     output: dict
     valid_from: str = "2024-01-01"
@@ -49,6 +51,7 @@ logger = get_logger("nexus.api.admin")
 
 class AdminController(Controller):
     """Panel administracyjny — zarządzanie użytkownikami, regułami, DLQ."""
+
     path = "/api/admin"
     guards = [admin_only_guard]
     tags = [TAG_ADMIN]
@@ -92,9 +95,10 @@ class AdminController(Controller):
 
             # Fetch rows
             rows = (
-                await conn.execute(
-                    text(
-                        f"""SELECT ft.id, ft.task_name, ft.task_id, ft.error_type,
+                (
+                    await conn.execute(
+                        text(
+                            f"""SELECT ft.id, ft.task_name, ft.task_id, ft.error_type,
                                   ft.error_message, ft.retry_count, ft.max_retries,
                                   ft.resolved, ft.resolved_at, ft.resolved_by,
                                   ft.resolution_note, ft.failed_at, ft.created_at
@@ -102,10 +106,13 @@ class AdminController(Controller):
                            WHERE {where_sql}
                            ORDER BY ft.failed_at DESC
                            LIMIT :limit OFFSET :offset"""
-                    ),
-                    {**params, "limit": limit, "offset": offset},
+                        ),
+                        {**params, "limit": limit, "offset": offset},
+                    )
                 )
-            ).mappings().all()
+                .mappings()
+                .all()
+            )
 
         tasks = [dict(r) for r in rows]
         return {
@@ -123,19 +130,27 @@ class AdminController(Controller):
         description="Reset a failed task and re-queue it for retry.",
         operation_id="retryFailedTask",
     )
-    async def retry_failed_task(self, task_id: str, request: Request, db_engine: AsyncEngine) -> Response[dict]:
+    async def retry_failed_task(
+        self, task_id: str, request: Request, db_engine: AsyncEngine
+    ) -> Response[dict]:
         async with db_engine.connect() as conn:
             row = (
-                await conn.execute(
-                    text(
-                        "SELECT id, task_name, payload, retry_count FROM failed_tasks WHERE id = :id AND resolved = 0"
-                    ),
-                    {"id": task_id},
+                (
+                    await conn.execute(
+                        text(
+                            "SELECT id, task_name, payload, retry_count FROM failed_tasks WHERE id = :id AND resolved = 0"
+                        ),
+                        {"id": task_id},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
 
             if not row:
-                raise NotFoundException(detail=f"Failed task not found or already resolved: {task_id}")
+                raise NotFoundException(
+                    detail=f"Failed task not found or already resolved: {task_id}"
+                )
 
             # Reset the task - mark as resolved so it can be re-queued
             user = getattr(request, "user", None)
@@ -177,7 +192,9 @@ class AdminController(Controller):
         description="Permanently delete a failed task entry.",
         operation_id="deleteFailedTask",
     )
-    async def delete_failed_task(self, task_id: str, request: Request, db_engine: AsyncEngine) -> Response[dict]:
+    async def delete_failed_task(
+        self, task_id: str, request: Request, db_engine: AsyncEngine
+    ) -> Response[dict]:
         async with db_engine.connect() as conn:
             row = (
                 await conn.execute(
@@ -212,10 +229,14 @@ class AdminController(Controller):
     async def retry_all_failed_tasks(self, request: Request, db_engine: AsyncEngine) -> dict:
         async with db_engine.connect() as conn:
             rows = (
-                await conn.execute(
-                    text("SELECT id, task_name, payload FROM failed_tasks WHERE resolved = 0")
+                (
+                    await conn.execute(
+                        text("SELECT id, task_name, payload FROM failed_tasks WHERE resolved = 0")
+                    )
                 )
-            ).mappings().all()
+                .mappings()
+                .all()
+            )
 
             user = getattr(request, "user", None)
             username = getattr(user, "username", "system") if user else "system"
@@ -257,7 +278,9 @@ class AdminController(Controller):
         description="Change a user's role. Valid roles: admin, accountant, auditor, viewer.",
         operation_id="changeUserRole",
     )
-    async def change_user_role(self, user_id: str, data: ChangeRoleRequest, request: Request, db_engine: AsyncEngine) -> Response[dict]:
+    async def change_user_role(
+        self, user_id: str, data: ChangeRoleRequest, request: Request, db_engine: AsyncEngine
+    ) -> Response[dict]:
         valid_roles = {"admin", "accountant", "auditor", "viewer"}
         new_role = data.role.strip().lower()
 
@@ -272,11 +295,15 @@ class AdminController(Controller):
         async with db_engine.begin() as conn:
             # Check user exists
             user_row = (
-                await conn.execute(
-                    text("SELECT id, username, role FROM users WHERE id = :id LIMIT 1"),
-                    {"id": user_id},
+                (
+                    await conn.execute(
+                        text("SELECT id, username, role FROM users WHERE id = :id LIMIT 1"),
+                        {"id": user_id},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
 
             if not user_row:
                 raise NotFoundException(detail=f"User not found: {user_id}")
@@ -293,11 +320,15 @@ class AdminController(Controller):
 
             # Re-assign user_roles: remove old role mappings, add new one
             role_row = (
-                await conn.execute(
-                    text("SELECT id, name FROM roles WHERE name = :name LIMIT 1"),
-                    {"name": new_role},
+                (
+                    await conn.execute(
+                        text("SELECT id, name FROM roles WHERE name = :name LIMIT 1"),
+                        {"name": new_role},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
 
             if role_row:
                 # Remove all existing role assignments
@@ -307,9 +338,7 @@ class AdminController(Controller):
                 )
                 # Add new role assignment
                 await conn.execute(
-                    text(
-                        "INSERT INTO user_roles (id, user_id, role_id) VALUES (:id, :uid, :rid)"
-                    ),
+                    text("INSERT INTO user_roles (id, user_id, role_id) VALUES (:id, :uid, :rid)"),
                     {"id": uuid.uuid4().hex, "uid": user_id, "rid": role_row["id"]},
                 )
 
@@ -332,7 +361,10 @@ class AdminController(Controller):
 
         logger.info(
             "Role changed for user '%s' (%s): %s -> %s by %s",
-            username, user_id, old_role, new_role,
+            username,
+            user_id,
+            old_role,
+            new_role,
             actor_name,
         )
 
@@ -396,13 +428,20 @@ class AdminController(Controller):
                 valid_from=data.valid_from,
                 valid_to=data.valid_to,
                 priority=data.priority,
-                created_by=getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin",
+                created_by=getattr(request.user, "username", "admin")
+                if hasattr(request, "user")
+                else "admin",
             )
-            logger.info("[ADMIN] Risk threshold created id=%s by=%s", rule_id, getattr(request.user, "username", "admin"))
+            logger.info(
+                "[ADMIN] Risk threshold created id=%s by=%s",
+                rule_id,
+                getattr(request.user, "username", "admin"),
+            )
 
             # TODO: Publish NATS event risk.thresholds.updated for hot-reload
             try:
                 import nats
+
                 nc = await nats.connect(AppConfig().nats_url)
                 await nc.publish(
                     "risk.thresholds.updated",
@@ -443,9 +482,7 @@ class AdminController(Controller):
         try:
             async with db_engine.connect() as conn:
                 count = (
-                    await conn.execute(
-                        text("SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0")
-                    )
+                    await conn.execute(text("SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0"))
                 ).scalar()
             health["failed_tasks_unresolved"] = count or 0
         except Exception:
@@ -475,7 +512,9 @@ class AdminController(Controller):
         conn = duckdb.connect(str(config.duckdb_path))
         try:
             guard = RiskGuard(conn)
-            username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+            username = (
+                getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+            )
             ok = guard.deprecate_threshold(rule_id, created_by=username)
             if not ok:
                 raise NotFoundException(
@@ -486,6 +525,7 @@ class AdminController(Controller):
             # Publish NATS event for hot-reload
             try:
                 import nats
+
                 nc = await nats.connect(AppConfig().nats_url)
                 await nc.publish(
                     "risk.thresholds.updated",
@@ -588,6 +628,7 @@ class AdminController(Controller):
             # NATS hot-reload
             try:
                 import nats
+
                 nc = await nats.connect(AppConfig().nats_url)
                 await nc.publish(
                     "billing.rules.updated",
@@ -627,6 +668,7 @@ class AdminController(Controller):
             # NATS hot-reload event
             try:
                 import nats
+
                 nc = await nats.connect(AppConfig().nats_url)
                 await nc.publish(
                     "billing.rules.updated",
@@ -813,7 +855,9 @@ class AdminController(Controller):
         try:
             store = RuleStore(conn)
             store.ensure_schema()
-            username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+            username = (
+                getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+            )
             rule_id = store.add_rule(
                 condition_sql=condition_sql,
                 action=body.get("action", {}),
@@ -828,6 +872,7 @@ class AdminController(Controller):
             # NATS hot-reload event
             try:
                 import nats
+
                 nc = await nats.connect(AppConfig().nats_url)
                 await nc.publish(
                     "tax.rules.updated",
@@ -863,7 +908,9 @@ class AdminController(Controller):
         try:
             store = RuleStore(conn)
             store.ensure_schema()
-            username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+            username = (
+                getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+            )
             ok = store.close_rule(rule_id, valid_to=valid_to, closed_by=username)
             if not ok:
                 raise NotFoundException(detail=f"Rule not found or already closed: {rule_id}")
@@ -872,6 +919,7 @@ class AdminController(Controller):
             # NATS hot-reload event
             try:
                 import nats
+
                 nc = await nats.connect(AppConfig().nats_url)
                 await nc.publish(
                     "tax.rules.updated",
@@ -994,7 +1042,9 @@ class AdminController(Controller):
         conn = duckdb.connect(str(config.duckdb_path))
         try:
             validator = PreLedgerValidator(conn)
-            username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+            username = (
+                getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+            )
             rule_id = validator.add_rule(
                 transaction_type=transaction_type,
                 debit_account_id=debit_account_id,
@@ -1005,12 +1055,17 @@ class AdminController(Controller):
                 valid_to=body.get("valid_to"),
                 created_by=username,
             )
-            logger.info("[ADMIN] Ledger rule created id=%s type=%s by=%s",
-                        rule_id, transaction_type, username)
+            logger.info(
+                "[ADMIN] Ledger rule created id=%s type=%s by=%s",
+                rule_id,
+                transaction_type,
+                username,
+            )
 
             # NATS hot-reload event
             try:
                 import nats
+
                 nc = await nats.connect(AppConfig().nats_url)
                 await nc.publish(
                     "ledger.rules.updated",
@@ -1047,6 +1102,7 @@ class AdminController(Controller):
             # NATS hot-reload event
             try:
                 import nats
+
                 nc = await nats.connect(AppConfig().nats_url)
                 await nc.publish(
                     "ledger.rules.updated",
@@ -1115,10 +1171,14 @@ class AdminController(Controller):
         conn = duckdb.connect(str(config.duckdb_path))
         try:
             handler = FallbackHandler(conn)
-            username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+            username = (
+                getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+            )
             ok = handler.resolve(event_id, resolution_note=resolution_note, assigned_to=username)
             if not ok:
-                raise NotFoundException(detail=f"Fallback event not found or already resolved: {event_id}")
+                raise NotFoundException(
+                    detail=f"Fallback event not found or already resolved: {event_id}"
+                )
             return {"status": "ok", "event_id": event_id, "action": "resolved"}
         finally:
             conn.close()
@@ -1184,7 +1244,8 @@ class AdminController(Controller):
                     result["violation_id"] = violation_id
                     logger.critical(
                         "[ADMIN] Integrity violation detected id=%s trace=%s",
-                        violation_id, report.first_inconsistent_trace,
+                        violation_id,
+                        report.first_inconsistent_trace,
                     )
 
                     if system_lock:
@@ -1220,7 +1281,9 @@ class AdminController(Controller):
             handler = FallbackHandler(conn)
             ok = handler.ignore(event_id)
             if not ok:
-                raise NotFoundException(detail=f"Fallback event not found or already resolved: {event_id}")
+                raise NotFoundException(
+                    detail=f"Fallback event not found or already resolved: {event_id}"
+                )
             return {"status": "ok", "event_id": event_id, "action": "ignored"}
         finally:
             conn.close()

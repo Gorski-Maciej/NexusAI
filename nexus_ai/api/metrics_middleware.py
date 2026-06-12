@@ -9,6 +9,7 @@ Records:
 
 Used together with ``api.state._init_otel_metrics()`` on the API process.
 """
+
 from __future__ import annotations
 
 import time

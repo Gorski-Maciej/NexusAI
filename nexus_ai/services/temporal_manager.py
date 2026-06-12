@@ -22,6 +22,7 @@ from typing import Any
 import duckdb
 import pendulum
 
+
 class TemporalRule(Struct, frozen=True):
     """A single rule with its temporal window.
 
@@ -33,12 +34,14 @@ class TemporalRule(Struct, frozen=True):
         valid_from: Start date (inclusive).
         valid_to: End date (inclusive), None = active indefinitely.
     """
+
     rule_id: str
     condition_sql: str
     action_json: str
     priority: int
     valid_from: pendulum.Date
     valid_to: pendulum.Date | None
+
 
 class TemporalManager:
     """Menedżer Temporalny — filtruje reguły według daty transakcji.
@@ -93,7 +96,9 @@ class TemporalManager:
                 condition_sql=str(r[1]),
                 action_json=str(r[2]),
                 priority=int(r[3]),
-                valid_from=pendulum.Date.fromisoformat(str(r[4])) if r[4] else pendulum.now().date(),
+                valid_from=pendulum.Date.fromisoformat(str(r[4]))
+                if r[4]
+                else pendulum.now().date(),
                 valid_to=pendulum.Date.fromisoformat(str(r[5])) if r[5] else None,
             )
             for r in rows
@@ -178,11 +183,13 @@ class TemporalManager:
                     b_end = b.valid_to or date.max
                     # Check overlap: a_start <= b_end and b_start <= a_end
                     if a.valid_from <= b_end and b.valid_from <= a_end:
-                        conflicts.append({
-                            "condition_sql": condition,
-                            "rule_a": a.rule_id,
-                            "rule_b": b.rule_id,
-                            "window_a": f"{a.valid_from} – {a.valid_to or '∞'}",
-                            "window_b": f"{b.valid_from} – {b.valid_to or '∞'}",
-                        })
+                        conflicts.append(
+                            {
+                                "condition_sql": condition,
+                                "rule_a": a.rule_id,
+                                "rule_b": b.rule_id,
+                                "window_a": f"{a.valid_from} – {a.valid_to or '∞'}",
+                                "window_b": f"{b.valid_from} – {b.valid_to or '∞'}",
+                            }
+                        )
         return conflicts

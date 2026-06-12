@@ -81,19 +81,25 @@ class OutboxOpsController(Controller):
         try:
             async with session_factory() as session:
                 pending = int(
-                    (await session.execute(
-                        text("SELECT COUNT(*) FROM outbox_events WHERE status='PENDING'")
-                    )).scalar_one()
+                    (
+                        await session.execute(
+                            text("SELECT COUNT(*) FROM outbox_events WHERE status='PENDING'")
+                        )
+                    ).scalar_one()
                 )
                 failed = int(
-                    (await session.execute(
-                        text("SELECT COUNT(*) FROM outbox_events WHERE status='FAILED'")
-                    )).scalar_one()
+                    (
+                        await session.execute(
+                            text("SELECT COUNT(*) FROM outbox_events WHERE status='FAILED'")
+                        )
+                    ).scalar_one()
                 )
                 dead = int(
-                    (await session.execute(
-                        text("SELECT COUNT(*) FROM outbox_events WHERE status='DEAD_LETTER'")
-                    )).scalar_one()
+                    (
+                        await session.execute(
+                            text("SELECT COUNT(*) FROM outbox_events WHERE status='DEAD_LETTER'")
+                        )
+                    ).scalar_one()
                 )
                 return {"pending": pending, "failed": failed, "dead_letter": dead}
         finally:

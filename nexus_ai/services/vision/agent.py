@@ -12,8 +12,10 @@ from msgspec import Struct
 from pathlib import Path
 from typing import Any
 
+
 class VisionExtraction(Struct):
     """Wynik ekstrakcji wizualnej z faktury."""
+
     vendor_nip: str | None
     total_gross: float | None
     vat_rate: float | None
@@ -22,6 +24,7 @@ class VisionExtraction(Struct):
     handwritten_notes_summary: str
     source: str = "ocr-fallback"
 
+
 def _to_float(value: Any) -> float | None:
     if value is None:
         return None
@@ -29,6 +32,7 @@ def _to_float(value: Any) -> float | None:
         return float(str(value).replace(" ", "").replace(",", "."))
     except ValueError:
         return None
+
 
 class VisionAgent:
     """Ekstrakcja wizualna z obrazów faktur przez heurystyki OCR.
@@ -64,21 +68,30 @@ class VisionAgent:
         nip_match = re.search(r"\b\d{10}\b", normalized)
         gross_match = re.search(
             r"(?:brutto|total|razem)\D{0,12}(\d[\d\s]*[.,]\d{2})",
-            normalized, re.IGNORECASE,
+            normalized,
+            re.IGNORECASE,
         )
         vat_match = re.search(
-            r"(?:VAT|PTU)\D{0,6}(\d{1,2})\s?%", normalized, re.IGNORECASE,
+            r"(?:VAT|PTU)\D{0,6}(\d{1,2})\s?%",
+            normalized,
+            re.IGNORECASE,
         )
-        paid = bool(re.search(
-            r"\b(zapłacono|paid|opłacono)\b", normalized, re.IGNORECASE,
-        ))
-        anomalies = bool(re.search(
-            r"\b(korekta|duplikat|anulowano)\b", normalized, re.IGNORECASE,
-        ))
+        paid = bool(
+            re.search(
+                r"\b(zapłacono|paid|opłacono)\b",
+                normalized,
+                re.IGNORECASE,
+            )
+        )
+        anomalies = bool(
+            re.search(
+                r"\b(korekta|duplikat|anulowano)\b",
+                normalized,
+                re.IGNORECASE,
+            )
+        )
         handwritten_hint = (
-            "possible handwritten note detected"
-            if "odręcz" in normalized.lower()
-            else ""
+            "possible handwritten note detected" if "odręcz" in normalized.lower() else ""
         )
 
         total_gross = None

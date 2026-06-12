@@ -7,6 +7,7 @@ i otrzymuje zdarzenia postępu w formacie SSE (data: {...}).
 
 Litestar natywnie wspiera SSE przez Stream + SSEEvent.
 """
+
 from __future__ import annotations
 
 from typing import Any, AsyncGenerator
@@ -135,11 +136,13 @@ async def progress_sse(request: Any) -> Any:
         try:
             # Wyślij zdarzenie connected
             yield SSEEvent(
-                data=msgspec_dumps({
-                    "type": "connected",
-                    "task_id": task_id,
-                    "message": "Progress SSE stream ready",
-                }),
+                data=msgspec_dumps(
+                    {
+                        "type": "connected",
+                        "task_id": task_id,
+                        "message": "Progress SSE stream ready",
+                    }
+                ),
             )
 
             async with receive:

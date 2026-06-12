@@ -21,6 +21,7 @@ from nexus_ai.services.billing_estimator import (
 
 class BillingController(Controller):
     """Estymacja kosztów i czasu przetwarzania dokumentów."""
+
     path = "/api/v2/billing"
     tags = [TAG_FINANCE]
 
@@ -50,22 +51,28 @@ class BillingController(Controller):
             seed_default_billing_rules(conn)
             estimator = BillingEstimator(conn)
 
-            services = [s.strip() for s in additional_services.split(",") if s.strip()] if additional_services else None
+            services = (
+                [s.strip() for s in additional_services.split(",") if s.strip()]
+                if additional_services
+                else None
+            )
             estimate = estimator.estimate(
                 document_type=document_type,
                 tax_form=tax_form,
                 additional_services=services,
             )
 
-            return Response({
-                "total_price_pln": estimate.total_price_pln,
-                "total_time_hours": estimate.total_time_hours,
-                "breakdown": estimate.breakdown or [],
-                "params": {
-                    "document_type": document_type,
-                    "tax_form": tax_form,
-                    "additional_services": services or [],
-                },
-            })
+            return Response(
+                {
+                    "total_price_pln": estimate.total_price_pln,
+                    "total_time_hours": estimate.total_time_hours,
+                    "breakdown": estimate.breakdown or [],
+                    "params": {
+                        "document_type": document_type,
+                        "tax_form": tax_form,
+                        "additional_services": services or [],
+                    },
+                }
+            )
         finally:
             conn.close()

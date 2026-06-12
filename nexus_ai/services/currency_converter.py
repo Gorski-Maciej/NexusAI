@@ -21,7 +21,11 @@ from sqlalchemy import DECIMAL as SADECIMAL
 from sqlalchemy import TypeDecorator
 from structlog import get_logger
 
+import httpx
+import stamina
+
 from nexus_ai.core.cache import get_cache
+from nexus_ai.core.cache.http_client import CachedHttpClient
 
 logger = get_logger("nexus.currency")
 
@@ -109,7 +113,9 @@ class Money(msgspec.Struct, frozen=True):
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Money:
         """Deserialize from dict (reverse of ``to_dict``)."""
-        return cls(amount_cents=int(data["amount_cents"]), currency=str(data.get("currency", "PLN")))
+        return cls(
+            amount_cents=int(data["amount_cents"]), currency=str(data.get("currency", "PLN"))
+        )
 
     @classmethod
     def from_decimal(cls, amount: Decimal | str | float, currency: str = "PLN") -> Money:
@@ -157,7 +163,9 @@ class Money(msgspec.Struct, frozen=True):
     def __mul__(self, scalar: int | Decimal) -> Money:
         """Multiply by scalar (int or Decimal)."""
         if isinstance(scalar, Decimal):
-            cents = int((Decimal(self.amount_cents) * scalar).to_integral_value(rounding=ROUND_HALF_UP))
+            cents = int(
+                (Decimal(self.amount_cents) * scalar).to_integral_value(rounding=ROUND_HALF_UP)
+            )
         else:
             cents = self.amount_cents * scalar
         return Money(cents, self.currency)
@@ -208,21 +216,24 @@ class CurrencyConverter:
         conn.execute(EXCHANGE_RATES_SCHEMA)
         # NexusCache (L1 RAM) for faster rate lookups (synchroniczne get_sync/set_sync)
         self._cache = get_cache()
+        # CachedHttpClient dla NBP API z cache'em HTTP (hishel) + stamina retry
+        self._http_client = CachedHttpClient()
 
     async def close(self) -> None:
-        """Zamknij połączenie DuckDB — zwolnij plik/katalog bazy danych."""
+        """Zamknij połączenia — DuckDB + CachedHttpClient."""
         self._conn.close()
+        await self._http_client.close()
 
-    def convert(
+    async def convert(
         self,
         amount: Money,
         target_currency: str = "PLN",
         rate_date: pendulum.Date | None = None,
     ) -> Money:
-        """Convert amount to target currency using NBP mid-rate.
+        """Convert amount to target currency using NBP mid-rate (async, z CachedHttpClient).
 
-        Wykorzystuje NexusCache (L1 RAM) dla szybkiego dostępu do kursów.
-        Metoda pozostaje synchroniczna — NexusCache jest używany przez get_sync().
+        Fazа 2: Asynchroniczna — używa ``CachedHttpClient`` (hishel cache HTTP) +
+        ``stamina`` retry z wykładniczym backoffem.
 
         Args:
             amount: Money to convert.
@@ -241,7 +252,7 @@ class CurrencyConverter:
         if rate_date is None:
             rate_date = pendulum.now().date()
 
-        rate = self._get_rate(amount.currency, rate_date)
+        rate = await self._get_rate(amount.currency, rate_date)
         converted_cents = int(
             (Decimal(amount.amount_cents) * rate / Decimal("100")).to_integral_value(
                 rounding=ROUND_HALF_UP
@@ -249,20 +260,21 @@ class CurrencyConverter:
         )
         logger.info(
             "Converted %s %s → %s at rate %s (date=%s)",
-            amount.amount, amount.currency, target_currency,
-            rate, rate_date.isoformat(),
+            amount.amount,
+            amount.currency,
+            target_currency,
+            rate,
+            rate_date.isoformat(),
         )
         return Money(converted_cents, target_currency)
 
-    def _get_rate(self, currency: str, rate_date: pendulum.Date) -> Decimal:
-        """Get exchange rate from NexusCache → DuckDB → NBP API.
+    async def _get_rate(self, currency: str, rate_date: pendulum.Date) -> Decimal:
+        """Get exchange rate from NexusCache → DuckDB → NBP API (async).
 
         Kolejność sprawdzania:
           1. NexusCache (L1 RAM — najszybszy, przez get_sync)
           2. DuckDB (exchange_rates — autorytatywny magazyn)
-          3. NBP API (synchroniczne httpx)
-
-        Metoda pozostaje synchroniczna dla kompatybilności z istniejącymi callerami.
+          3. NBP API przez CachedHttpClient (hishel cache HTTP) + stamina retry
 
         For PLN → other: use 1/rate (divide)
         For other → PLN: use rate directly (multiply)
@@ -296,8 +308,8 @@ class CurrencyConverter:
             self._cache.set_sync(cache_key, str(rate))
             return rate
 
-        # Fetch from NBP API
-        rate = self._fetch_nbp_rate(normalized_currency, rate_date)
+        # Fetch from NBP API (async przez CachedHttpClient)
+        rate = await self._fetch_nbp_rate(normalized_currency, rate_date)
 
         # Store in both DuckDB (authoritative) and NexusCache (fast)
         self._conn.execute(
@@ -308,14 +320,15 @@ class CurrencyConverter:
         self._cache.set_sync(cache_key, str(rate))
         return rate
 
-    def _fetch_nbp_rate(self, currency: str, rate_date: pendulum.Date) -> Decimal:
-        """Fetch exchange rate from NBP API.
+    async def _fetch_nbp_rate(self, currency: str, rate_date: pendulum.Date) -> Decimal:
+        """Fetch exchange rate from NBP API (async, z CachedHttpClient + stamina retry).
 
-        Uses Table A (mid rates). Synchroniczna — NBP API jest proste.
-        Tries last 3 business days if weekend/holiday.
+        Fazа 2:
+        - ``CachedHttpClient`` (hishel) cache'uje odpowiedzi HTTP z NBP
+        - ``stamina`` retry z wykładniczym backoffem (3 próby)
+        - Przeszukuje 7 dni wstecz (weekendy/holidays)
         """
-        import httpx
-
+        last_error: Exception | None = None
         for days_back in range(7):  # try up to 7 days back
             try_date = rate_date - pendulum.duration(days=days_back)
             # Skip weekends
@@ -327,20 +340,39 @@ class CurrencyConverter:
                 date=try_date.isoformat(),
             )
             try:
-                response = httpx.get(url, timeout=10.0)
-                if response.status_code == 200:
-                    data = response.json()
-                    mid_rate = Decimal(str(data["rates"][0]["mid"]))
-                    logger.info(
-                        "NBP rate: 1 %s = %s PLN (date=%s)",
-                        currency, mid_rate, try_date.isoformat(),
-                    )
-                    return mid_rate
-            except Exception as exc:
-                logger.warning("NBP API error for %s on %s: %s", currency, try_date, exc)
+                for attempt in stamina.retry_context(
+                    on=(httpx.HTTPError, httpx.TimeoutException, httpx.ConnectError),
+                    attempts=3,
+                    timeout=10.0,
+                ):
+                    with attempt:
+                        response = await self._http_client.get(url)
+                        if response.status_code == 200:
+                            data = response.json()
+                            mid_rate = Decimal(str(data["rates"][0]["mid"]))
+                            logger.info(
+                                "NBP rate: 1 %s = %s PLN (date=%s)",
+                                currency,
+                                mid_rate,
+                                try_date.isoformat(),
+                            )
+                            return mid_rate
+                        elif response.status_code == 404:
+                            # Currency not published for this date — try next day
+                            break
+                        response.raise_for_status()
+            except httpx.HTTPError as exc:
+                last_error = exc
+                logger.warning(
+                    "NBP API error for %s on %s (attempt %d): %s",
+                    currency,
+                    try_date,
+                    days_back + 1,
+                    exc,
+                )
                 continue
 
-        raise CurrencyRateNotFoundError(currency, rate_date)
+        raise CurrencyRateNotFoundError(currency, rate_date) from last_error
 
     # ── Conversion trail (for audit) ────────────────────────────────────
 

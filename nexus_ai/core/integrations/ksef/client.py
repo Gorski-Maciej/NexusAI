@@ -12,4 +12,4 @@ class KsefClient:
         async with httpx.AsyncClient(headers=self.headers) as client:
             url = f"{self.base_url}Invoice/Get/{ksef_reference}"
             resp = await client.get(url)
-            return resp.content # Zwraca surowy bajtowo XML faktury
+            return resp.content  # Zwraca surowy bajtowo XML faktury

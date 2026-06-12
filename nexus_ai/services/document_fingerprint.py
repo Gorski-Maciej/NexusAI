@@ -9,12 +9,14 @@ import hashlib  # SHA-1, MD5, SHA-256 streaming — bez odpowiednika w nexus_cry
 # ── SHA-256 (non-streaming) przez nexus-crypto (Rust+PyO3) ────────────────
 try:
     from nexus_crypto import sha256 as _sha256
+
     HAS_NEXUS_CRYPTO = True
 except ImportError:
     HAS_NEXUS_CRYPTO = False
 
     def _sha256(data: bytes) -> str:
         return hashlib.sha256(data).hexdigest()
+
 
 from nexus_ai.db.analytics import DuckDBManager
 
@@ -25,10 +27,12 @@ except Exception:  # pragma: no cover
     imagehash = None
     Image = None
 
+
 class DocumentFingerprint(Struct):
     binary_hash: str
     visual_hash: str
     semantic_hash: str
+
 
 def _sha256_file(file_path: Path) -> str:
     """Compute SHA-256 of a file (streaming via hashlib — nexus_crypto.sha256() doesn't support streaming)."""
@@ -37,6 +41,7 @@ def _sha256_file(file_path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()
+
 
 def _visual_fingerprint(file_path: Path) -> str:
     """Best-effort visual hash; falls back to deterministic prefix hash if imaging libs are missing."""
@@ -51,19 +56,25 @@ def _visual_fingerprint(file_path: Path) -> str:
         sample = handle.read(4096)
     return hashlib.sha1(sample).hexdigest()[:16]
 
+
 def _semantic_hash(extracted_data: dict[str, Any]) -> str:
-    raw = f"{extracted_data.get('nip','')}_{extracted_data.get('total_gross','')}_{extracted_data.get('date','')}"
+    raw = f"{extracted_data.get('nip', '')}_{extracted_data.get('total_gross', '')}_{extracted_data.get('date', '')}"
     return hashlib.md5(raw.encode("utf-8")).hexdigest()
 
-def generate_document_fingerprint(file_path: Path, extracted_data: dict[str, Any]) -> DocumentFingerprint:
+
+def generate_document_fingerprint(
+    file_path: Path, extracted_data: dict[str, Any]
+) -> DocumentFingerprint:
     return DocumentFingerprint(
         binary_hash=_sha256_file(file_path),
         visual_hash=_visual_fingerprint(file_path),
         semantic_hash=_semantic_hash(extracted_data),
     )
 
+
 def binary_anchor_u128(binary_hash: str) -> int:
     return int(binary_hash[:32], 16)
+
 
 def ensure_fingerprint_schema(duckdb: DuckDBManager) -> None:
     duckdb.execute(
@@ -90,7 +101,10 @@ def ensure_fingerprint_schema(duckdb: DuckDBManager) -> None:
         """
     )
 
-def store_fingerprint(duckdb: DuckDBManager, *, invoice_id: str, file_path: Path, fp: DocumentFingerprint) -> None:
+
+def store_fingerprint(
+    duckdb: DuckDBManager, *, invoice_id: str, file_path: Path, fp: DocumentFingerprint
+) -> None:
     ensure_fingerprint_schema(duckdb)
     duckdb.execute(
         """
@@ -98,8 +112,16 @@ def store_fingerprint(duckdb: DuckDBManager, *, invoice_id: str, file_path: Path
         (invoice_id, file_path, binary_hash, visual_hash, semantic_hash, tigerbeetle_anchor_u128)
         VALUES (?, ?, ?, ?, ?, ?)
         """,
-        (invoice_id, str(file_path), fp.binary_hash, fp.visual_hash, fp.semantic_hash, str(binary_anchor_u128(fp.binary_hash))),
+        (
+            invoice_id,
+            str(file_path),
+            fp.binary_hash,
+            fp.visual_hash,
+            fp.semantic_hash,
+            str(binary_anchor_u128(fp.binary_hash)),
+        ),
     )
+
 
 def compute_monthly_merkle_root(binary_hashes: list[str]) -> str:
     if not binary_hashes:
@@ -110,9 +132,10 @@ def compute_monthly_merkle_root(binary_hashes: list[str]) -> str:
             level.append(level[-1])
         nxt: list[str] = []
         for i in range(0, len(level), 2):
-            nxt.append(_sha256(f"{level[i]}{level[i+1]}".encode()))
+            nxt.append(_sha256(f"{level[i]}{level[i + 1]}".encode()))
         level = nxt
     return level[0]
+
 
 def store_monthly_merkle_root(duckdb: DuckDBManager, period_yyyymm: str) -> str:
     ensure_fingerprint_schema(duckdb)
@@ -135,6 +158,7 @@ def store_monthly_merkle_root(duckdb: DuckDBManager, period_yyyymm: str) -> str:
         (period_yyyymm, root, len(hashes)),
     )
     return root
+
 
 def verify_or_flag_tamper(stored: DocumentFingerprint, current: DocumentFingerprint) -> str:
     if stored.binary_hash == current.binary_hash:

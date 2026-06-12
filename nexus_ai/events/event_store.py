@@ -104,7 +104,9 @@ class EventStore:
     # ── Write operations ───────────────────────────────────────────────
 
     @staticmethod
-    def _dbg_trace(method: str, aggregate_type: str, aggregate_id: str, version: int | None = None) -> None:
+    def _dbg_trace(
+        method: str, aggregate_type: str, aggregate_id: str, version: int | None = None
+    ) -> None:
         """Emit OTel span dla operacji EventStore."""
         from nexus_ai.core.otel_tracing import buffer_span
 
@@ -363,8 +365,7 @@ class EventStore:
         conn = self._get_conn()
         if aggregate_type and event_type:
             result = conn.execute(
-                "SELECT COUNT(*) FROM event_stream "
-                "WHERE aggregate_type = ? AND event_type = ?",
+                "SELECT COUNT(*) FROM event_stream WHERE aggregate_type = ? AND event_type = ?",
                 (aggregate_type, event_type),
             ).fetchone()[0]
         elif aggregate_type:
@@ -417,7 +418,9 @@ class EventStore:
         conn.commit()
         logger.debug(
             "[EVENT-STORE] Snapshot saved for %s:%s (version=%d)",
-            aggregate_type, aggregate_id, version,
+            aggregate_type,
+            aggregate_id,
+            version,
         )
 
     def load_snapshot(
@@ -457,8 +460,7 @@ class EventStore:
         """
         conn = self._get_conn()
         row = conn.execute(
-            "SELECT last_version FROM projection_checkpoints "
-            "WHERE projection_name = ?",
+            "SELECT last_version FROM projection_checkpoints WHERE projection_name = ?",
             (projection_name,),
         ).fetchone()
         return int(row["last_version"]) if row else 0
@@ -509,9 +511,9 @@ class EventStore:
         conn = self._get_conn()
         total_events = conn.execute("SELECT COUNT(*) FROM event_stream").fetchone()[0]
         total_snapshots = conn.execute("SELECT COUNT(*) FROM snapshots").fetchone()[0]
-        total_projections = conn.execute(
-            "SELECT COUNT(*) FROM projection_checkpoints"
-        ).fetchone()[0]
+        total_projections = conn.execute("SELECT COUNT(*) FROM projection_checkpoints").fetchone()[
+            0
+        ]
         aggregates = conn.execute(
             "SELECT aggregate_type, COUNT(DISTINCT aggregate_id) as cnt "
             "FROM event_stream GROUP BY aggregate_type"
@@ -531,4 +533,5 @@ class EventStore:
 def pendulum_now() -> str:
     """Zwróć aktualny timestamp ISO 8601."""
     import pendulum
+
     return pendulum.now("UTC").isoformat()

@@ -64,6 +64,7 @@ _stream_cache_lock = threading.Lock()
 
 # ── JetStream Event Bus ───────────────────────────────────────────────────
 
+
 class JetStreamEventBus:
     """Publikuje eventy domenowe do NATS JetStream.
 
@@ -143,7 +144,8 @@ class JetStreamEventBus:
         except Exception as exc:
             logger.warning(
                 "[JETSTREAM] Failed to ensure stream %s: %s",
-                stream_name, exc,
+                stream_name,
+                exc,
             )
 
     async def publish(self, event: DomainEvent) -> bool:
@@ -175,7 +177,8 @@ class JetStreamEventBus:
         except Exception as exc:
             logger.warning(
                 "[JETSTREAM] Failed to publish %s: %s",
-                event.event_type, exc,
+                event.event_type,
+                exc,
             )
             return False
 
@@ -210,7 +213,9 @@ class JetStreamEventBus:
     def is_connected(self) -> bool:
         return self._connected
 
+
 # ── JetStream Consumer ────────────────────────────────────────────────────
+
 
 class ConsumerConfig(Struct):
     """Konfiguracja konsumera JetStream dla projekcji.
@@ -223,12 +228,14 @@ class ConsumerConfig(Struct):
         max_deliver: Maksymalna liczba dostaw przed DLQ.
         ack_wait: Czas oczekiwania na ack w sekundach.
     """
+
     stream_name: str = ""
     consumer_name: str = ""
     deliver_policy: str = "all"  # "all" | "last" | "new" | "by_start_sequence"
     filter_subject: str = ""
     max_deliver: int = 3
     ack_wait: int = 30
+
 
 class JetStreamConsumer:
     """Konsumuje eventy z JetStream i przekazuje do handlerów.
@@ -271,7 +278,9 @@ class JetStreamConsumer:
                     tg.start_soon(self._consume_stream, cfg)
                     logger.info(
                         "[JETSTREAM] Consumer started: %s/%s (filter=%s)",
-                        cfg.stream_name, cfg.consumer_name, cfg.filter_subject or "*",
+                        cfg.stream_name,
+                        cfg.consumer_name,
+                        cfg.filter_subject or "*",
                     )
 
         # Uruchom konsumentów jako background task (nie blokuje start())
@@ -310,7 +319,8 @@ class JetStreamConsumer:
                     pass
                 except Exception as exc:
                     logger.warning(
-                        "[JETSTREAM] Consumer error: %s", exc,
+                        "[JETSTREAM] Consumer error: %s",
+                        exc,
                     )
                     await anyio.sleep(1)
 
@@ -319,7 +329,8 @@ class JetStreamConsumer:
         except Exception as exc:
             logger.error(
                 "[JETSTREAM] Consumer %s failed: %s",
-                cfg.consumer_name, exc,
+                cfg.consumer_name,
+                exc,
             )
 
     async def stop(self) -> None:
@@ -333,10 +344,12 @@ class JetStreamConsumer:
             except Exception:
                 pass
 
+
 # ── Global singleton (thread-safe dla free-threaded Python) ───────────────
 
 _default_bus: JetStreamEventBus | None = None
 _default_bus_lock = threading.Lock()
+
 
 def get_event_bus(
     nats_servers: list[str] | str | None = None,

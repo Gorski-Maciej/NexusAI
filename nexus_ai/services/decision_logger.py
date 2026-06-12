@@ -122,9 +122,7 @@ class DecisionLogger:
             ("decisions_meta", "invoice_id"),
         ]:
             idx_name = f"idx_{table}_{col}"
-            self._duckdb.execute(
-                f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table}({col})"
-            )
+            self._duckdb.execute(f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table}({col})")
 
     async def log_decision(
         self,
@@ -168,7 +166,9 @@ class DecisionLogger:
                     None,  # user_correction — populated later
                     decision_level,
                     decision_pattern,
-                    msgspec_dumps(ple_stm_snapshot, ensure_ascii=False) if ple_stm_snapshot else None,
+                    msgspec_dumps(ple_stm_snapshot, ensure_ascii=False)
+                    if ple_stm_snapshot
+                    else None,
                     msgspec_dumps(ple_ltm_profile, ensure_ascii=False) if ple_ltm_profile else None,
                 ),
             )
@@ -185,7 +185,10 @@ class DecisionLogger:
 
             logger.debug(
                 "[DecisionLogger] logged decision_id=%s invoice_id=%s decision=%s level=%s",
-                decision_id, invoice_id, final_decision, decision_level,
+                decision_id,
+                invoice_id,
+                final_decision,
+                decision_level,
             )
         except Exception as exc:
             logger.error("[DecisionLogger] failed to log invoice_id=%s: %s", invoice_id, exc)
@@ -256,10 +259,15 @@ class DecisionLogger:
             )
             logger.info(
                 "[DecisionLogger] recorded user correction invoice_id=%s correction=%s",
-                invoice_id, correction,
+                invoice_id,
+                correction,
             )
         except Exception as exc:
-            logger.error("[DecisionLogger] failed to record correction for invoice_id=%s: %s", invoice_id, exc)
+            logger.error(
+                "[DecisionLogger] failed to record correction for invoice_id=%s: %s",
+                invoice_id,
+                exc,
+            )
 
     def get_trust_score_trend(
         self,
@@ -292,14 +300,20 @@ class DecisionLogger:
                 "min_trust": round(min(scores), 4),
                 "max_trust": round(max(scores), 4),
                 "trend": self._compute_trend(scores),
-                "decisions_breakdown": {
-                    d: decisions.count(d) for d in set(decisions)
-                },
+                "decisions_breakdown": {d: decisions.count(d) for d in set(decisions)},
                 "component_averages": {
-                    "ai_confidence": round(sum(float(r[1]) for r in rows) / len(rows), 4) if rows else 0.0,
-                    "vendor_reliability": round(sum(float(r[2]) for r in rows) / len(rows), 4) if rows else 0.0,
-                    "data_consistency": round(sum(float(r[3]) for r in rows) / len(rows), 4) if rows else 0.0,
-                    "context_trust": round(sum(float(r[4]) for r in rows) / len(rows), 4) if rows else 0.0,
+                    "ai_confidence": round(sum(float(r[1]) for r in rows) / len(rows), 4)
+                    if rows
+                    else 0.0,
+                    "vendor_reliability": round(sum(float(r[2]) for r in rows) / len(rows), 4)
+                    if rows
+                    else 0.0,
+                    "data_consistency": round(sum(float(r[3]) for r in rows) / len(rows), 4)
+                    if rows
+                    else 0.0,
+                    "context_trust": round(sum(float(r[4]) for r in rows) / len(rows), 4)
+                    if rows
+                    else 0.0,
                 },
             }
         except Exception as exc:
@@ -312,9 +326,7 @@ class DecisionLogger:
     ) -> dict[str, Any]:
         """Aggregate correction statistics for adaptive weight tuning."""
         try:
-            total = self._duckdb.execute(
-                "SELECT COUNT(*) FROM decisions"
-            )[0][0]
+            total = self._duckdb.execute("SELECT COUNT(*) FROM decisions")[0][0]
 
             corrected = self._duckdb.execute(
                 "SELECT COUNT(*) FROM decisions WHERE user_correction IS NOT NULL"
@@ -355,12 +367,10 @@ class DecisionLogger:
                 "total_decisions": int(total),
                 "total_corrected": int(corrected),
                 "correction_rate": round(corrected / max(total, 1), 4),
-                "decision_breakdown": {
-                    str(row[0]): int(row[1]) for row in decision_breakdown
-                },
-                "level_breakdown": {
-                    str(row[0]): int(row[1]) for row in level_breakdown
-                } if level_breakdown else {},
+                "decision_breakdown": {str(row[0]): int(row[1]) for row in decision_breakdown},
+                "level_breakdown": {str(row[0]): int(row[1]) for row in level_breakdown}
+                if level_breakdown
+                else {},
                 "correction_breakdown": [
                     {"from": str(r[0]), "to": str(r[1]), "count": int(r[2])}
                     for r in correction_breakdown
@@ -370,8 +380,12 @@ class DecisionLogger:
         except Exception as exc:
             logger.error("[DecisionLogger] failed to get correction stats: %s", exc)
             return {
-                "total_decisions": 0, "total_corrected": 0, "correction_rate": 0.0,
-                "decision_breakdown": {}, "level_breakdown": {}, "correction_breakdown": [],
+                "total_decisions": 0,
+                "total_corrected": 0,
+                "correction_rate": 0.0,
+                "decision_breakdown": {},
+                "level_breakdown": {},
+                "correction_breakdown": [],
             }
 
     def get_decisions_for_invoice(
@@ -412,7 +426,8 @@ class DecisionLogger:
         except Exception as exc:
             logger.error(
                 "[DecisionLogger] failed to get decisions for invoice_id=%s: %s",
-                invoice_id, exc,
+                invoice_id,
+                exc,
             )
             return []
 
@@ -519,7 +534,12 @@ class DecisionLogger:
                     "context_trust_correction_rate": 0.0,
                 }
 
-            counts = {"ai_confidence": 0, "vendor_reliability": 0, "data_consistency": 0, "context_trust": 0}
+            counts = {
+                "ai_confidence": 0,
+                "vendor_reliability": 0,
+                "data_consistency": 0,
+                "context_trust": 0,
+            }
             total_corrected = len(rows)
 
             for row in rows:
@@ -638,7 +658,7 @@ class DecisionLogger:
                 other = [d for d in results if d["category"] != category]
                 same_cat.sort(key=lambda x: x["trust_score"], reverse=True)
                 other.sort(key=lambda x: x["trust_score"], reverse=True)
-                results = same_cat[:limit] + other[:max(0, limit - len(same_cat))]
+                results = same_cat[:limit] + other[: max(0, limit - len(same_cat))]
             else:
                 results.sort(key=lambda x: x["trust_score"], reverse=True)
                 results = results[:limit]

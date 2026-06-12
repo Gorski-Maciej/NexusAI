@@ -11,7 +11,9 @@ SchemaHook = Callable[[DuckDBManager], None]
 OptionalHook = tuple[str, str]
 
 
-def _run_optional_schema_hook(module_name: str, function_name: str, duck_mgr: DuckDBManager) -> None:
+def _run_optional_schema_hook(
+    module_name: str, function_name: str, duck_mgr: DuckDBManager
+) -> None:
     """Run optional schema initializer only when module is available in runtime."""
     if find_spec(module_name) is None:
         return
@@ -47,12 +49,16 @@ class AnalyticsSchemaManager:
         existing_cols = duck_mgr.execute("PRAGMA table_info('invoices_replica')")
         col_names = [col[1] for col in existing_cols]
 
-        if 'issue_date' not in col_names:
+        if "issue_date" not in col_names:
             duck_mgr.execute("ALTER TABLE invoices_replica ADD COLUMN issue_date DATE")
 
         # Tworzenie indeksów dla przyspieszenia raportów OLAP
-        duck_mgr.execute("CREATE INDEX IF NOT EXISTS idx_invoices_date ON invoices_replica (issue_date)")
-        duck_mgr.execute("CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices_replica (status)")
+        duck_mgr.execute(
+            "CREATE INDEX IF NOT EXISTS idx_invoices_date ON invoices_replica (issue_date)"
+        )
+        duck_mgr.execute(
+            "CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices_replica (status)"
+        )
 
         core_schema_hooks: tuple[SchemaHook, ...] = (
             ensure_telemetry_schema,
@@ -131,9 +137,19 @@ def ensure_fixed_assets_schema(duck_mgr: DuckDBManager):
 
     existing_cols = duck_mgr.execute("PRAGMA table_info('fixed_assets')")
     col_names = {col[1] for col in existing_cols}
-    _ensure_column(duck_mgr, "fixed_assets", col_names, "residual_value", "DECIMAL(18, 2) NOT NULL DEFAULT 0")
-    _ensure_column(duck_mgr, "fixed_assets", col_names, "salvage_value", "DECIMAL(18, 2) NOT NULL DEFAULT 0")
-    _ensure_column(duck_mgr, "fixed_assets", col_names, "depreciation_method", "VARCHAR NOT NULL DEFAULT 'LINEAR'")
+    _ensure_column(
+        duck_mgr, "fixed_assets", col_names, "residual_value", "DECIMAL(18, 2) NOT NULL DEFAULT 0"
+    )
+    _ensure_column(
+        duck_mgr, "fixed_assets", col_names, "salvage_value", "DECIMAL(18, 2) NOT NULL DEFAULT 0"
+    )
+    _ensure_column(
+        duck_mgr,
+        "fixed_assets",
+        col_names,
+        "depreciation_method",
+        "VARCHAR NOT NULL DEFAULT 'LINEAR'",
+    )
     _ensure_column(duck_mgr, "fixed_assets", col_names, "annual_rate", "DOUBLE")
     _ensure_column(duck_mgr, "fixed_assets", col_names, "start_date", "DATE")
     _ensure_column(duck_mgr, "fixed_assets", col_names, "invoice_id", "UUID")
@@ -154,7 +170,13 @@ def ensure_fixed_assets_schema(duck_mgr: DuckDBManager):
     """)
     schedule_cols = duck_mgr.execute("PRAGMA table_info('depreciation_schedule')")
     schedule_col_names = {col[1] for col in schedule_cols}
-    _ensure_column(duck_mgr, "depreciation_schedule", schedule_col_names, "status", "VARCHAR NOT NULL DEFAULT 'PENDING'")
+    _ensure_column(
+        duck_mgr,
+        "depreciation_schedule",
+        schedule_col_names,
+        "status",
+        "VARCHAR NOT NULL DEFAULT 'PENDING'",
+    )
 
 
 def ensure_rmk_schema(duck_mgr: DuckDBManager):

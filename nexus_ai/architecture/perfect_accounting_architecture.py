@@ -304,7 +304,9 @@ def build_blueprint() -> ArchitectureBlueprint:
         PipelineStage("Decisioning", "PyTorch 2.x", validator="TensorFlow 3.x"),
     ]
 
-    return ArchitectureBlueprint(components=components, ocr_pipeline=ocr_pipeline, ml_pipeline=ml_pipeline)
+    return ArchitectureBlueprint(
+        components=components, ocr_pipeline=ocr_pipeline, ml_pipeline=ml_pipeline
+    )
 
 
 def validate_blueprint_coverage(blueprint: ArchitectureBlueprint) -> tuple[bool, set[str]]:

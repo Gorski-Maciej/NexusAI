@@ -42,6 +42,7 @@ class SimulateRequest(msgspec.Struct):
 
 class TaxPolicyController(Controller):
     """Symulacja polityki podatkowej i zmiany formy opodatkowania."""
+
     path = "/api/v2/tax-policy"
     tags = [TAG_TAX]
 
@@ -78,37 +79,43 @@ class TaxPolicyController(Controller):
             available_sets = get_simulation_rule_sets()
             target = data.target_tax_form.upper()
             if target not in available_sets:
-                return Response({
-                    "status": "error",
-                    "message": (
-                        f"Nieznana forma opodatkowania: {target}. "
-                        f"Dostępne: {', '.join(available_sets)}"
-                    ),
-                    "available_rule_sets": available_sets,
-                }, status_code=400)
+                return Response(
+                    {
+                        "status": "error",
+                        "message": (
+                            f"Nieznana forma opodatkowania: {target}. "
+                            f"Dostępne: {', '.join(available_sets)}"
+                        ),
+                        "available_rule_sets": available_sets,
+                    },
+                    status_code=400,
+                )
 
             # ── 2. Pobierz faktury z bazy ────────────────────────────────
             invoices = self._load_invoices(data, conn)
 
             if not invoices:
-                return Response({
-                    "status": "warning",
-                    "message": "Brak faktur w podanym okresie. Symulacja używa przykładowych danych.",
-                    "current_vat_total": 0.0,
-                    "current_income_tax": 0.0,
-                    "simulated_vat_total": 0.0,
-                    "simulated_income_tax": 0.0,
-                    "difference_vat": 0.0,
-                    "difference_income_tax": 0.0,
-                    "invoices_simulated": 0,
-                    "chart_data": {"labels": [], "current": [], "simulated": []},
-                    "target_tax_form": target,
-                    "period": {"start": data.period_start, "end": data.period_end},
-                    "available_rule_sets": available_sets,
-                })
+                return Response(
+                    {
+                        "status": "warning",
+                        "message": "Brak faktur w podanym okresie. Symulacja używa przykładowych danych.",
+                        "current_vat_total": 0.0,
+                        "current_income_tax": 0.0,
+                        "simulated_vat_total": 0.0,
+                        "simulated_income_tax": 0.0,
+                        "difference_vat": 0.0,
+                        "difference_income_tax": 0.0,
+                        "invoices_simulated": 0,
+                        "chart_data": {"labels": [], "current": [], "simulated": []},
+                        "target_tax_form": target,
+                        "period": {"start": data.period_start, "end": data.period_end},
+                        "available_rule_sets": available_sets,
+                    }
+                )
 
             # ── 3. Wykonaj symulację (jeden przebieg — current + sim) ──────
             from nexus_ai.services.tax_simulator import TaxSimulator
+
             simulator = TaxSimulator()
 
             result = await simulator.run_simulation(
@@ -123,14 +130,28 @@ class TaxPolicyController(Controller):
             # Miesięczne dane wykresu z obu breakdownów
             monthly_map: dict[str, dict[str, float]] = {}
             for m in result["current_monthly_breakdown"]:
-                monthly_map.setdefault(m["month"], {"current_vat": 0.0, "current_income_tax": 0.0,
-                                                      "simulated_vat": 0.0, "simulated_income_tax": 0.0})
+                monthly_map.setdefault(
+                    m["month"],
+                    {
+                        "current_vat": 0.0,
+                        "current_income_tax": 0.0,
+                        "simulated_vat": 0.0,
+                        "simulated_income_tax": 0.0,
+                    },
+                )
                 monthly_map[m["month"]]["current_vat"] += m["vat"]
                 monthly_map[m["month"]]["current_income_tax"] += m["income_tax"]
 
             for m in result["simulated_monthly_breakdown"]:
-                monthly_map.setdefault(m["month"], {"current_vat": 0.0, "current_income_tax": 0.0,
-                                                      "simulated_vat": 0.0, "simulated_income_tax": 0.0})
+                monthly_map.setdefault(
+                    m["month"],
+                    {
+                        "current_vat": 0.0,
+                        "current_income_tax": 0.0,
+                        "simulated_vat": 0.0,
+                        "simulated_income_tax": 0.0,
+                    },
+                )
                 monthly_map[m["month"]]["simulated_vat"] += m["vat"]
                 monthly_map[m["month"]]["simulated_income_tax"] += m["income_tax"]
 
@@ -139,26 +160,32 @@ class TaxPolicyController(Controller):
                 "labels": all_months,
                 "current_vat": [round(monthly_map[m]["current_vat"], 2) for m in all_months],
                 "simulated_vat": [round(monthly_map[m]["simulated_vat"], 2) for m in all_months],
-                "current_income_tax": [round(monthly_map[m]["current_income_tax"], 2) for m in all_months],
-                "simulated_income_tax": [round(monthly_map[m]["simulated_income_tax"], 2) for m in all_months],
+                "current_income_tax": [
+                    round(monthly_map[m]["current_income_tax"], 2) for m in all_months
+                ],
+                "simulated_income_tax": [
+                    round(monthly_map[m]["simulated_income_tax"], 2) for m in all_months
+                ],
             }
 
-            return Response({
-                "status": "ok",
-                "current_vat_total": round(result["current_vat_total"], 2),
-                "current_income_tax": round(result["current_income_tax"], 2),
-                "simulated_vat_total": round(result["simulated_vat_total"], 2),
-                "simulated_income_tax": round(result["simulated_income_tax"], 2),
-                "difference_vat": round(diff_vat, 2),
-                "difference_income_tax": round(diff_income_tax, 2),
-                "target_tax_form": target,
-                "period": {"start": data.period_start, "end": data.period_end},
-                "invoices_simulated": len(invoices),
-                "current_monthly_breakdown": result["current_monthly_breakdown"],
-                "simulated_monthly_breakdown": result["simulated_monthly_breakdown"],
-                "chart_data": chart_data,
-                "available_rule_sets": available_sets,
-            })
+            return Response(
+                {
+                    "status": "ok",
+                    "current_vat_total": round(result["current_vat_total"], 2),
+                    "current_income_tax": round(result["current_income_tax"], 2),
+                    "simulated_vat_total": round(result["simulated_vat_total"], 2),
+                    "simulated_income_tax": round(result["simulated_income_tax"], 2),
+                    "difference_vat": round(diff_vat, 2),
+                    "difference_income_tax": round(diff_income_tax, 2),
+                    "target_tax_form": target,
+                    "period": {"start": data.period_start, "end": data.period_end},
+                    "invoices_simulated": len(invoices),
+                    "current_monthly_breakdown": result["current_monthly_breakdown"],
+                    "simulated_monthly_breakdown": result["simulated_monthly_breakdown"],
+                    "chart_data": chart_data,
+                    "available_rule_sets": available_sets,
+                }
+            )
 
         finally:
             conn.close()
@@ -172,13 +199,17 @@ class TaxPolicyController(Controller):
     )
     async def list_rule_sets(self) -> Response[dict]:
         """Zwróć listę dostępnych zestawów reguł symulacyjnych."""
-        return Response({
-            "rule_sets": get_simulation_rule_sets(),
-        })
+        return Response(
+            {
+                "rule_sets": get_simulation_rule_sets(),
+            }
+        )
 
     # ── Private helpers ──────────────────────────────────────────────────────
 
-    def _load_invoices(self, data: SimulateRequest, conn: duckdb.DuckDBPyConnection) -> list[dict[str, Any]]:
+    def _load_invoices(
+        self, data: SimulateRequest, conn: duckdb.DuckDBPyConnection
+    ) -> list[dict[str, Any]]:
         """Load historical invoices from DuckDB / SQLite for the given period."""
         sqlite_path = data.sqlite_path
 
@@ -186,6 +217,7 @@ class TaxPolicyController(Controller):
         if not sqlite_path:
             try:
                 from core.config import AppConfig
+
                 config = AppConfig()
                 sqlite_path = str(config.sqlite_path)
             except Exception:
@@ -222,13 +254,15 @@ class TaxPolicyController(Controller):
                         net = r[4]
                         if net is None:
                             continue
-                        invoices.append({
-                            "category_code": str(r[0]),
-                            "transaction_date": str(r[1]) if r[1] else data.period_start,
-                            "company_tax_form": str(r[2]),
-                            "vendor_country": str(r[3]),
-                            "amount_net": Decimal(str(net)),
-                        })
+                        invoices.append(
+                            {
+                                "category_code": str(r[0]),
+                                "transaction_date": str(r[1]) if r[1] else data.period_start,
+                                "company_tax_form": str(r[2]),
+                                "vendor_country": str(r[3]),
+                                "amount_net": Decimal(str(net)),
+                            }
+                        )
                     return invoices
             except Exception as exc:
                 logger.warning("[TAX-SIM] Could not load from SQLite: %s", exc)

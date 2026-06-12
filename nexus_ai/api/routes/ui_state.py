@@ -91,17 +91,21 @@ class UIStateController(Controller):
 
         async with request.app.state.db_engine.begin() as conn:
             row = (
-                await conn.execute(
-                    text(
-                        """
+                (
+                    await conn.execute(
+                        text(
+                            """
                         SELECT payload_json, updated_at
                         FROM ui_drafts
                         WHERE tenant_id = :tenant_id AND actor_id = :actor_id AND draft_key = :draft_key
                         """
-                    ),
-                    {"tenant_id": tenant_id, "actor_id": actor, "draft_key": draft_key},
+                        ),
+                        {"tenant_id": tenant_id, "actor_id": actor, "draft_key": draft_key},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
 
         if not row:
             return {"status": "not_found", "draft_key": draft_key, "payload": {}}
@@ -110,8 +114,12 @@ class UIStateController(Controller):
             payload = msgspec_loads(row["payload_json"])
         except Exception:
             payload = {"raw": row["payload_json"]}
-        return {"status": "ok", "draft_key": draft_key, "updated_at": str(row["updated_at"]), "payload": payload}
-
+        return {
+            "status": "ok",
+            "draft_key": draft_key,
+            "updated_at": str(row["updated_at"]),
+            "payload": payload,
+        }
 
     @delete(
         "/drafts/{draft_key:str}",
@@ -140,7 +148,6 @@ class UIStateController(Controller):
 
         return {"status": "ok", "draft_key": draft_key}
 
-
     @get(
         "/drafts",
         return_dto=UIListDraftsDTO,
@@ -156,22 +163,28 @@ class UIStateController(Controller):
 
         async with request.app.state.db_engine.begin() as conn:
             rows = (
-                await conn.execute(
-                    text(
-                        """
+                (
+                    await conn.execute(
+                        text(
+                            """
                         SELECT draft_key, updated_at
                         FROM ui_drafts
                         WHERE tenant_id = :tenant_id AND actor_id = :actor_id
                         ORDER BY updated_at DESC
                         LIMIT :limit
                         """
-                    ),
-                    {"tenant_id": tenant_id, "actor_id": actor, "limit": safe_limit},
+                        ),
+                        {"tenant_id": tenant_id, "actor_id": actor, "limit": safe_limit},
+                    )
                 )
-            ).mappings().all()
+                .mappings()
+                .all()
+            )
 
         return {
             "status": "ok",
             "count": len(rows),
-            "items": [{"draft_key": str(r["draft_key"]), "updated_at": str(r["updated_at"])} for r in rows],
+            "items": [
+                {"draft_key": str(r["draft_key"]), "updated_at": str(r["updated_at"])} for r in rows
+            ],
         }

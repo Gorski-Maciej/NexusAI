@@ -64,6 +64,7 @@ _STAGE_TO_STATUS = {
 
 # ── Task item widget ────────────────────────────────────────────────────────
 
+
 class TaskItem(ft.Container):
     """Single task row with icon, name, progress bar, and status."""
 
@@ -108,30 +109,49 @@ class TaskItem(ft.Container):
         )
 
         super().__init__(
-            content=ft.Column([
-                ft.Row([
-                    ft.Icon(icon_name, size=20, color=status_color),
-                    ft.Column([
-                        ft.Text(display_name, size=13,
-                                weight=ft.FontWeight.BOLD, color=ft.colors.GREY_100),
-                        ft.Row([
-                            self.progress_bar,
-                            ft.Container(width=8),
-                            self.progress_pct,
-                        ], alignment=ft.MainAxisAlignment.START),
-                    ], expand=True, spacing=4),
-                    ft.Column([
-                        self.status_text,
-                        self.time_text,
-                    ], horizontal_alignment=ft.CrossAxisAlignment.END, spacing=2),
-                ], alignment=ft.MainAxisAlignment.START, spacing=12),
-            ]),
+            content=ft.Column(
+                [
+                    ft.Row(
+                        [
+                            ft.Icon(icon_name, size=20, color=status_color),
+                            ft.Column(
+                                [
+                                    ft.Text(
+                                        display_name,
+                                        size=13,
+                                        weight=ft.FontWeight.BOLD,
+                                        color=ft.colors.GREY_100,
+                                    ),
+                                    ft.Row(
+                                        [
+                                            self.progress_bar,
+                                            ft.Container(width=8),
+                                            self.progress_pct,
+                                        ],
+                                        alignment=ft.MainAxisAlignment.START,
+                                    ),
+                                ],
+                                expand=True,
+                                spacing=4,
+                            ),
+                            ft.Column(
+                                [
+                                    self.status_text,
+                                    self.time_text,
+                                ],
+                                horizontal_alignment=ft.CrossAxisAlignment.END,
+                                spacing=2,
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.START,
+                        spacing=12,
+                    ),
+                ]
+            ),
             padding=ft.padding.all(12),
             bgcolor=ft.colors.with_opacity(0.05, ft.colors.WHITE),
             border_radius=8,
-            border=ft.border.all(
-                1, ft.colors.with_opacity(0.1, ft.colors.WHITE)
-            ),
+            border=ft.border.all(1, ft.colors.with_opacity(0.1, ft.colors.WHITE)),
             animate=ft.animation.Animation(300, ft.AnimationCurve.EASE_OUT),
         )
 
@@ -222,6 +242,7 @@ class TaskItem(ft.Container):
 
 # ── Task Monitor Panel ──────────────────────────────────────────────────────
 
+
 class TaskMonitorPanel:
     """Full task monitoring panel for the main UI."""
 
@@ -253,36 +274,48 @@ class TaskMonitorPanel:
 
         # ── Empty state ──────────────────────────────────────────────────
         self.empty_state = ft.Container(
-            content=ft.Column([
-                ft.Icon(ft.icons.TASK_ALT, size=64, color=ft.colors.GREY_700),
-                ft.Container(height=12),
-                ft.Text("No Tasks", size=18,
-                        weight=ft.FontWeight.BOLD, color=ft.colors.GREY_500),
-                ft.Text(
-                    "Background tasks will appear here when processing starts.",
-                    size=13, color=ft.colors.GREY_600, text_align=ft.TextAlign.CENTER,
-                ),
-            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            content=ft.Column(
+                [
+                    ft.Icon(ft.icons.TASK_ALT, size=64, color=ft.colors.GREY_700),
+                    ft.Container(height=12),
+                    ft.Text(
+                        "No Tasks", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREY_500
+                    ),
+                    ft.Text(
+                        "Background tasks will appear here when processing starts.",
+                        size=13,
+                        color=ft.colors.GREY_600,
+                        text_align=ft.TextAlign.CENTER,
+                    ),
+                ],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            ),
             alignment=ft.alignment.center,
             expand=True,
         )
 
         # ── Summary bar ──────────────────────────────────────────────────
-        self.active_count = ft.Text("0", size=20,
-                                    weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_400)
-        self.completed_count = ft.Text("0", size=20,
-                                       weight=ft.FontWeight.BOLD, color=ft.colors.GREEN_400)
-        self.failed_count = ft.Text("0", size=20,
-                                    weight=ft.FontWeight.BOLD, color=ft.colors.RED_400)
+        self.active_count = ft.Text(
+            "0", size=20, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_400
+        )
+        self.completed_count = ft.Text(
+            "0", size=20, weight=ft.FontWeight.BOLD, color=ft.colors.GREEN_400
+        )
+        self.failed_count = ft.Text(
+            "0", size=20, weight=ft.FontWeight.BOLD, color=ft.colors.RED_400
+        )
 
         self.summary_bar = ft.Container(
-            content=ft.Row([
-                self._summary_item("Active", self.active_count, ft.colors.BLUE_400),
-                ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
-                self._summary_item("Completed", self.completed_count, ft.colors.GREEN_400),
-                ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
-                self._summary_item("Failed", self.failed_count, ft.colors.RED_400),
-            ], alignment=ft.MainAxisAlignment.SPACE_EVENLY),
+            content=ft.Row(
+                [
+                    self._summary_item("Active", self.active_count, ft.colors.BLUE_400),
+                    ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
+                    self._summary_item("Completed", self.completed_count, ft.colors.GREEN_400),
+                    ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
+                    self._summary_item("Failed", self.failed_count, ft.colors.RED_400),
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_EVENLY,
+            ),
             bgcolor=ft.colors.with_opacity(0.03, ft.colors.WHITE),
             padding=ft.padding.all(16),
             border_radius=8,
@@ -299,43 +332,59 @@ class TaskMonitorPanel:
         app_state.subscribe("progress_update", self._on_progress_update)
 
     def _summary_item(self, label: str, count_text: ft.Text, color: str) -> ft.Column:
-        return ft.Column([
-            count_text,
-            ft.Text(label, size=12, color=ft.colors.GREY_500),
-        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=2)
+        return ft.Column(
+            [
+                count_text,
+                ft.Text(label, size=12, color=ft.colors.GREY_500),
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=2,
+        )
 
     def build(self) -> ft.Container:
         """Build and return the task monitor container."""
         return ft.Container(
-            content=ft.Column([
-                ft.Row([
-                    ft.Text("Background Tasks", size=20,
-                            weight=ft.FontWeight.BOLD, color=ft.colors.GREY_100),
-                    ft.Container(expand=True),
-                    ft.IconButton(
-                        icon=ft.icons.REFRESH,
-                        tooltip="Refresh",
-                        on_click=lambda _: self.page.run_task(self.refresh()),
-                        icon_size=20,
+            content=ft.Column(
+                [
+                    ft.Row(
+                        [
+                            ft.Text(
+                                "Background Tasks",
+                                size=20,
+                                weight=ft.FontWeight.BOLD,
+                                color=ft.colors.GREY_100,
+                            ),
+                            ft.Container(expand=True),
+                            ft.IconButton(
+                                icon=ft.icons.REFRESH,
+                                tooltip="Refresh",
+                                on_click=lambda _: self.page.run_task(self.refresh()),
+                                icon_size=20,
+                            ),
+                            ft.Switch(
+                                value=False,
+                                label="Auto-refresh",
+                                on_change=self._on_auto_refresh,
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.START,
                     ),
-                    ft.Switch(
-                        value=False,
-                        label="Auto-refresh",
-                        on_change=self._on_auto_refresh,
+                    ft.Container(height=8),
+                    self.summary_bar,
+                    ft.Container(height=8),
+                    self.filter_tabs,
+                    ft.Container(
+                        content=ft.Stack(
+                            [
+                                self.task_list,
+                                self.empty_state,
+                            ],
+                            expand=True,
+                        ),
+                        expand=True,
                     ),
-                ], alignment=ft.MainAxisAlignment.START),
-                ft.Container(height=8),
-                self.summary_bar,
-                ft.Container(height=8),
-                self.filter_tabs,
-                ft.Container(
-                    content=ft.Stack([
-                        self.task_list,
-                        self.empty_state,
-                    ], expand=True),
-                    expand=True,
-                ),
-            ]),
+                ]
+            ),
             expand=True,
             padding=ft.padding.all(20),
         )
@@ -391,12 +440,11 @@ class TaskMonitorPanel:
                 else:
                     # WebSocket nie odpowiada → polling co 5s
                     interval = self._poll_interval
-                    logger.warning(
-                        "WebSocket cichy od %.0fs — fallback do HTTP polling", age
-                    )
+                    logger.warning("WebSocket cichy od %.0fs — fallback do HTTP polling", age)
 
                 await self._fetch_tasks()
                 await anyio.sleep(interval)
+
         async with anyio.create_task_group() as tg:
             tg.start_soon(_loop)
 
@@ -453,8 +501,14 @@ class TaskMonitorPanel:
         # Apply current filter
         self._apply_filter()
 
-    def add_task(self, task_id: str, task_name: str, status: str = "QUEUED",
-                 progress: float = 0.0, error: str = "") -> None:
+    def add_task(
+        self,
+        task_id: str,
+        task_name: str,
+        status: str = "QUEUED",
+        progress: float = 0.0,
+        error: str = "",
+    ) -> None:
         """Add a new task to the monitor (for local/event-driven updates)."""
         task_data = {
             "task_id": task_id,

@@ -12,11 +12,13 @@ import msgspec
 from litestar.middleware import AbstractMiddleware
 from litestar.response import Response
 
+
 class RateLimitRule(Struct):
     prefix: str
     max_requests: int
     per_seconds: int
     role_limits: dict[str, int] | None = None  # Per-role overrides: {"OWNER": 100, "WORKER": 20}
+
 
 class SimpleRateLimitMiddleware(AbstractMiddleware):
     """
@@ -29,21 +31,70 @@ class SimpleRateLimitMiddleware(AbstractMiddleware):
         # --- Rozszerzone reguły rate limitingu (Rozwiązanie 25) ---
         self.rules = [
             # Auth (ograniczone, by zapobiec brute-force)
-            RateLimitRule(prefix="/api/auth", max_requests=10, per_seconds=60, role_limits={"OWNER": 20}),
+            RateLimitRule(
+                prefix="/api/auth", max_requests=10, per_seconds=60, role_limits={"OWNER": 20}
+            ),
             # Endpointy operacji zapisu (niskie limity)
-            RateLimitRule(prefix="/api/v2/invoices", max_requests=30, per_seconds=60, role_limits={"OWNER": 60, "WORKER": 15}),
-            RateLimitRule(prefix="/api/v2/autopilot", max_requests=15, per_seconds=60, role_limits={"OWNER": 30, "WORKER": 5}),
-            RateLimitRule(prefix="/api/v2/dashboard", max_requests=60, per_seconds=60, role_limits={"OWNER": 120, "WORKER": 30}),
-            RateLimitRule(prefix="/api/v2/partner", max_requests=30, per_seconds=60, role_limits={"OWNER": 60, "WORKER": 10}),
-            RateLimitRule(prefix="/api/v2/analytics", max_requests=30, per_seconds=60, role_limits={"OWNER": 60, "WORKER": 15}),
+            RateLimitRule(
+                prefix="/api/v2/invoices",
+                max_requests=30,
+                per_seconds=60,
+                role_limits={"OWNER": 60, "WORKER": 15},
+            ),
+            RateLimitRule(
+                prefix="/api/v2/autopilot",
+                max_requests=15,
+                per_seconds=60,
+                role_limits={"OWNER": 30, "WORKER": 5},
+            ),
+            RateLimitRule(
+                prefix="/api/v2/dashboard",
+                max_requests=60,
+                per_seconds=60,
+                role_limits={"OWNER": 120, "WORKER": 30},
+            ),
+            RateLimitRule(
+                prefix="/api/v2/partner",
+                max_requests=30,
+                per_seconds=60,
+                role_limits={"OWNER": 60, "WORKER": 10},
+            ),
+            RateLimitRule(
+                prefix="/api/v2/analytics",
+                max_requests=30,
+                per_seconds=60,
+                role_limits={"OWNER": 60, "WORKER": 15},
+            ),
             # System ops (tylko OWNER)
-            RateLimitRule(prefix="/api/v1/system/", max_requests=20, per_seconds=60, role_limits={"OWNER": 30}),
+            RateLimitRule(
+                prefix="/api/v1/system/", max_requests=20, per_seconds=60, role_limits={"OWNER": 30}
+            ),
             # Endpointy triage
-            RateLimitRule(prefix="/api/v2/triage", max_requests=20, per_seconds=60, role_limits={"OWNER": 40, "WORKER": 10}),
-            RateLimitRule(prefix="/api/triage", max_requests=20, per_seconds=60, role_limits={"OWNER": 40, "WORKER": 10}),
+            RateLimitRule(
+                prefix="/api/v2/triage",
+                max_requests=20,
+                per_seconds=60,
+                role_limits={"OWNER": 40, "WORKER": 10},
+            ),
+            RateLimitRule(
+                prefix="/api/triage",
+                max_requests=20,
+                per_seconds=60,
+                role_limits={"OWNER": 40, "WORKER": 10},
+            ),
             # Upload plików
-            RateLimitRule(prefix="/api/v2/files", max_requests=10, per_seconds=60, role_limits={"OWNER": 20, "WORKER": 5}),
-            RateLimitRule(prefix="/api/v1/files", max_requests=10, per_seconds=60, role_limits={"OWNER": 20, "WORKER": 5}),
+            RateLimitRule(
+                prefix="/api/v2/files",
+                max_requests=10,
+                per_seconds=60,
+                role_limits={"OWNER": 20, "WORKER": 5},
+            ),
+            RateLimitRule(
+                prefix="/api/v1/files",
+                max_requests=10,
+                per_seconds=60,
+                role_limits={"OWNER": 20, "WORKER": 5},
+            ),
             # Export
             RateLimitRule(prefix="/api/v2/exports", max_requests=15, per_seconds=60),
             # WebSocket
@@ -55,10 +106,17 @@ class SimpleRateLimitMiddleware(AbstractMiddleware):
             RateLimitRule(prefix="/api/v1/stats", max_requests=20, per_seconds=60),
             RateLimitRule(prefix="/api/v1/tasks", max_requests=20, per_seconds=60),
             # Fallback dla pozostałych v1 i v2
-            RateLimitRule(prefix="/api/v2/", max_requests=60, per_seconds=60, role_limits={"OWNER": 120, "WORKER": 30}),
+            RateLimitRule(
+                prefix="/api/v2/",
+                max_requests=60,
+                per_seconds=60,
+                role_limits={"OWNER": 120, "WORKER": 30},
+            ),
             RateLimitRule(prefix="/api/v1/", max_requests=30, per_seconds=60),
         ]
-        self._hits: dict[tuple[str, str, str], deque[float]] = defaultdict(deque)  # (prefix, role, ip) -> timestamps
+        self._hits: dict[tuple[str, str, str], deque[float]] = defaultdict(
+            deque
+        )  # (prefix, role, ip) -> timestamps
         self._lock = anyio.Lock()
         self._max_keys = 20000
         self._trust_proxy = os.getenv("NEXUS_TRUST_PROXY", "0") == "1"
@@ -126,8 +184,7 @@ class SimpleRateLimitMiddleware(AbstractMiddleware):
             # Cleanup starych kluczy
             if len(self._hits) > self._max_keys:
                 stale_keys = [
-                    k for k, q in self._hits.items()
-                    if not q or q[-1] < now - rule.per_seconds
+                    k for k, q in self._hits.items() if not q or q[-1] < now - rule.per_seconds
                 ]
                 for stale in stale_keys[: len(self._hits) - self._max_keys]:
                     self._hits.pop(stale, None)
@@ -157,7 +214,9 @@ class SimpleRateLimitMiddleware(AbstractMiddleware):
             queue.append(now)
 
         # Dodaj nagłówki rate limit do odpowiedzi
-        await self._send_with_ratelimit_headers(scope, receive, send, effective_max, remaining, reset_at)
+        await self._send_with_ratelimit_headers(
+            scope, receive, send, effective_max, remaining, reset_at
+        )
 
     async def _send_with_ratelimit_headers(
         self, scope, receive, send, limit: int, remaining: int, reset_at: int
@@ -168,15 +227,9 @@ class SimpleRateLimitMiddleware(AbstractMiddleware):
         async def send_wrapper(message):
             if message["type"] == "http.response.start":
                 headers = list(message.get("headers", []))
-                headers.append(
-                    (b"X-RateLimit-Limit", str(limit).encode())
-                )
-                headers.append(
-                    (b"X-RateLimit-Remaining", str(remaining).encode())
-                )
-                headers.append(
-                    (b"X-RateLimit-Reset", str(reset_at).encode())
-                )
+                headers.append((b"X-RateLimit-Limit", str(limit).encode()))
+                headers.append((b"X-RateLimit-Remaining", str(remaining).encode()))
+                headers.append((b"X-RateLimit-Reset", str(reset_at).encode()))
                 message["headers"] = headers
             await original_send(message)
 

@@ -16,27 +16,36 @@ class InvoiceDetailView:
         self.dd_currency = ft.Dropdown(
             label="Waluta",
             width=100,
-            options=[ft.dropdown.Option("PLN"), ft.dropdown.Option("EUR"), ft.dropdown.Option("USD")]
+            options=[
+                ft.dropdown.Option("PLN"),
+                ft.dropdown.Option("EUR"),
+                ft.dropdown.Option("USD"),
+            ],
         )
 
         # Komponent obrazu
         self.img_invoice = ft.Image(
-            src="https://via.placeholder.com/800x1200?",
-            fit=ft.ImageFit.CONTAIN
+            src="https://via.placeholder.com/800x1200?", fit=ft.ImageFit.CONTAIN
         )
         self.zoom_level = 1.0
 
     def build(self):
-        left_column = ft.Column([
-            self.txt_number, self.txt_nip, self.txt_net, self.txt_gross, self.dd_currency
-        ], expand=1)
-        right_column = ft.Column([
-            self.img_invoice,
-            ft.Row([
-                ft.IconButton(icon=ft.icons.ZOOM_IN, on_click=self.zoom_in),
-                ft.IconButton(icon=ft.icons.ZOOM_OUT, on_click=self.zoom_out)
-            ])
-        ], expand=2)
+        left_column = ft.Column(
+            [self.txt_number, self.txt_nip, self.txt_net, self.txt_gross, self.dd_currency],
+            expand=1,
+        )
+        right_column = ft.Column(
+            [
+                self.img_invoice,
+                ft.Row(
+                    [
+                        ft.IconButton(icon=ft.icons.ZOOM_IN, on_click=self.zoom_in),
+                        ft.IconButton(icon=ft.icons.ZOOM_OUT, on_click=self.zoom_out),
+                    ]
+                ),
+            ],
+            expand=2,
+        )
         return ft.Row([left_column, right_column], expand=True, spacing=30)
 
     async def load_data(self):
@@ -49,7 +58,7 @@ class InvoiceDetailView:
         self.dd_currency.value = invoice.currency
 
         # W desktopowej aplikacji src będzie ścieżką lokalną (file://...)
-        if hasattr(invoice, 'file_path'):
+        if hasattr(invoice, "file_path"):
             self.img_invoice.src = invoice.file_path
         self.img_invoice.update()
         self.txt_number.page.update()

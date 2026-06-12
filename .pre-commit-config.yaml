@@ -1,0 +1,26 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# pre-commit — automatyczne formatowanie kodu przed każdym commitem
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Instalacja:
+#   pre-commit install
+#
+# Ręczne uruchomienie na wszystkich plikach:
+#   pre-commit run --all-files
+#
+# Pominięcie hooków dla konkretnego commita:
+#   git commit --no-verify
+#
+# Wymaga: ruff (zainstalowany przez `pixi install --environment dev`)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version — zgodna z wersją w pixi.toml / pyproject.toml
+    rev: v0.3.0
+    hooks:
+      # ── Ruff formatter: auto-formatuj kod zgodnie z pyproject.toml [tool.ruff] ──
+      - id: ruff-format
+        name: ruff-format
+        description: "Auto-formatuj Python code (Ruff formatter)"
+        args: []

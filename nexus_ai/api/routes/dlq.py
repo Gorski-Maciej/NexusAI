@@ -65,17 +65,13 @@ class DLQController(Controller):
         async with request.app.state.db_engine.connect() as conn:
             # Total unresolved
             unresolved_row = (
-                await conn.execute(
-                    text("SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0")
-                )
+                await conn.execute(text("SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0"))
             ).scalar()
             total_unresolved = int(unresolved_row or 0)
 
             # Total resolved
             resolved_row = (
-                await conn.execute(
-                    text("SELECT COUNT(*) FROM failed_tasks WHERE resolved = 1")
-                )
+                await conn.execute(text("SELECT COUNT(*) FROM failed_tasks WHERE resolved = 1"))
             ).scalar()
             total_resolved = int(resolved_row or 0)
 
@@ -159,9 +155,10 @@ class DLQController(Controller):
 
             # Fetch rows
             rows = (
-                await conn.execute(
-                    text(
-                        f"""
+                (
+                    await conn.execute(
+                        text(
+                            f"""
                         SELECT ft.id, ft.task_name, ft.task_id, ft.error_type,
                                ft.error_message, ft.retry_count, ft.max_retries,
                                ft.resolved, ft.resolved_at, ft.resolved_by,
@@ -171,10 +168,13 @@ class DLQController(Controller):
                         ORDER BY ft.failed_at DESC
                         LIMIT :limit OFFSET :offset
                         """
-                    ),
-                    {**params, "limit": limit, "offset": offset},
+                        ),
+                        {**params, "limit": limit, "offset": offset},
+                    )
                 )
-            ).mappings().all()
+                .mappings()
+                .all()
+            )
 
         tasks = []
         for r in rows:
@@ -207,9 +207,10 @@ class DLQController(Controller):
         """View details of a specific DLQ item."""
         async with request.app.state.db_engine.connect() as conn:
             row = (
-                await conn.execute(
-                    text(
-                        """
+                (
+                    await conn.execute(
+                        text(
+                            """
                         SELECT id, task_name, task_id, error_type, error_message,
                                stack_trace, payload, retry_count, max_retries,
                                resolved, resolved_at, resolved_by, resolution_note,
@@ -218,10 +219,13 @@ class DLQController(Controller):
                         WHERE id = :id
                         LIMIT 1
                         """
-                    ),
-                    {"id": item_id},
+                        ),
+                        {"id": item_id},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
 
         if not row:
             raise NotFoundException(detail=f"DLQ item not found: {item_id}")
@@ -256,18 +260,20 @@ class DLQController(Controller):
         """Retry a specific DLQ item — resets it and re-queues for processing."""
         async with request.app.state.db_engine.connect() as conn:
             row = (
-                await conn.execute(
-                    text(
-                        "SELECT id, task_name, payload FROM failed_tasks WHERE id = :id AND resolved = 0"
-                    ),
-                    {"id": item_id},
+                (
+                    await conn.execute(
+                        text(
+                            "SELECT id, task_name, payload FROM failed_tasks WHERE id = :id AND resolved = 0"
+                        ),
+                        {"id": item_id},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
 
             if not row:
-                raise NotFoundException(
-                    detail=f"Unresolved DLQ item not found: {item_id}"
-                )
+                raise NotFoundException(detail=f"Unresolved DLQ item not found: {item_id}")
 
             user = getattr(request, "user", None)
             username = getattr(user, "username", "system") if user else "system"
@@ -337,12 +343,14 @@ class DLQController(Controller):
         """Retry all unresolved DLQ items."""
         async with request.app.state.db_engine.connect() as conn:
             rows = (
-                await conn.execute(
-                    text(
-                        "SELECT id, task_name, payload FROM failed_tasks WHERE resolved = 0"
+                (
+                    await conn.execute(
+                        text("SELECT id, task_name, payload FROM failed_tasks WHERE resolved = 0")
                     )
                 )
-            ).mappings().all()
+                .mappings()
+                .all()
+            )
 
             user = getattr(request, "user", None)
             username = getattr(user, "username", "system") if user else "system"
@@ -386,9 +394,7 @@ class DLQController(Controller):
                     )
                     retried += 1
                 except Exception as exc:
-                    logger.warning(
-                        "Failed to retry DLQ item %s: %s", task_id, exc
-                    )
+                    logger.warning("Failed to retry DLQ item %s: %s", task_id, exc)
                     skipped += 1
 
             await conn.commit()

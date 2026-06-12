@@ -14,7 +14,7 @@ async def bootstrap_system():
         config.base_dir / "app_data" / "scans",
         config.base_dir / "app_data" / "exports",
         config.base_dir / "logs",
-        config.base_dir / "models"
+        config.base_dir / "models",
     ]
 
     for folder in folders:
@@ -27,6 +27,7 @@ async def bootstrap_system():
         print(" Baza danych została pomyślnie zainicjowana.")
     except Exception as e:
         print(f" Błąd bazy danych: {e}")
+
 
 if __name__ == "__main__":
     anyio.run(bootstrap_system())

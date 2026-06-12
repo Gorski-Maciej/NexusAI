@@ -8,6 +8,7 @@ import pendulum
 try:
     import networkx as nx
 except Exception:  # pragma: no cover - optional fallback when networkx is unavailable
+
     class _FallbackGraph:
         def __init__(self):
             self._nodes: dict[str, dict[str, str]] = {}
@@ -35,6 +36,7 @@ except Exception:  # pragma: no cover - optional fallback when networkx is unava
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
 
+
 class FraudAlert(Struct, frozen=True):
     rule_code: str
     severity: str
@@ -42,6 +44,7 @@ class FraudAlert(Struct, frozen=True):
     vendor_id: str
     shared_attribute: str
     shared_value: str
+
 
 class FraudGraphScanner:
     def __init__(self, duckdb: DuckDBManager):
@@ -84,7 +87,25 @@ class FraudGraphScanner:
             for vendor in vendors:
                 for shared in set(graph.neighbors(employee)).intersection(graph.neighbors(vendor)):
                     if shared.startswith("IBAN:"):
-                        alerts.append(FraudAlert("GHOST_VENDOR_SHARED_IBAN", "CRITICAL", employee.split(':',1)[1], vendor.split(':',1)[1], "IBAN", shared.removeprefix("IBAN:")))
+                        alerts.append(
+                            FraudAlert(
+                                "GHOST_VENDOR_SHARED_IBAN",
+                                "CRITICAL",
+                                employee.split(":", 1)[1],
+                                vendor.split(":", 1)[1],
+                                "IBAN",
+                                shared.removeprefix("IBAN:"),
+                            )
+                        )
                     elif shared.startswith("ADDR:"):
-                        alerts.append(FraudAlert("GHOST_VENDOR_SHARED_ADDRESS", "HIGH", employee.split(':',1)[1], vendor.split(':',1)[1], "ADDRESS", shared.removeprefix("ADDR:")))
+                        alerts.append(
+                            FraudAlert(
+                                "GHOST_VENDOR_SHARED_ADDRESS",
+                                "HIGH",
+                                employee.split(":", 1)[1],
+                                vendor.split(":", 1)[1],
+                                "ADDRESS",
+                                shared.removeprefix("ADDR:"),
+                            )
+                        )
         return alerts

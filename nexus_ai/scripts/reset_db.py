@@ -10,7 +10,7 @@ def hard_reset():
     print("⚠️ OSTRZEŻENIE: Czyścisz całą bazę danych i wszystkie skany!")
     confirm = input("Czy na pewno chcesz kontynuować? (t/N): ")
 
-    if confirm.lower() != 't':
+    if confirm.lower() != "t":
         print("Operacja anulowana.")
         return
 
@@ -31,6 +31,7 @@ def hard_reset():
         print(" Wyczyszczono folder app_data.")
 
     print("✅ System został zresetowany do stanu fabrycznego.")
+
 
 if __name__ == "__main__":
     hard_reset()

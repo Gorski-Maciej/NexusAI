@@ -10,6 +10,7 @@ from nexus_ai.services.currency_converter import Money
 
 # -- msgspec Structs --
 
+
 class InvoiceCreate(msgspec.Struct):
     """Dane wymagane przy ręcznym tworzeniu lub uploadzie faktury.
 
@@ -17,6 +18,7 @@ class InvoiceCreate(msgspec.Struct):
     a nie ``Money`` — ponieważ to schema requestowa (dekodowana z JSON).
     Konwersja ``Decimal → Money`` następuje w kontrolerze.
     """
+
     number: str
     contractor_nip: str
     file_path: str = ""
@@ -55,6 +57,7 @@ def validate_invoice_create(payload: InvoiceCreate) -> None:
         except ValueError as e:
             raise ValueError(f"contractor_nip validation failed: {e}")
 
+
 class InvoiceResponse(msgspec.Struct):
     """Struktura zwracana do frontendu (response — ``Money`` serializowane przez enc_hook).
 
@@ -62,6 +65,7 @@ class InvoiceResponse(msgspec.Struct):
     ``amount_net`` i ``amount_gross`` to ``Money`` — serializowane przez
     ``AppConfig.type_encoders`` w configu aplikacji.
     """
+
     id: str
     number: str | None
     contractor_nip: str | None = None
@@ -77,14 +81,17 @@ class InvoiceResponse(msgspec.Struct):
     updated_at: pendulum.DateTime | None = None
     version_id: int = 1  # Optimistic locking (Rozwiązanie 23)
 
+
 class AnalyticsQuery(msgspec.Struct):
     start_date: str
     end_date: str
     dimension: str = "monthly"
     report_currency: str = "PLN"
 
+
 class VatSummary(msgspec.Struct):
     """Zagregowane dane analityczne z DuckDB (response — ``Money`` serializowane przez enc_hook)."""
+
     month: str
     total_net: Money
     total_gross: Money
@@ -93,10 +100,12 @@ class VatSummary(msgspec.Struct):
 
 # -- API response/request structs --
 
+
 class TaskResponse(msgspec.Struct):
     task_id: str
     status: str
     message: str
+
 
 class InvoiceResponsePydantic(msgspec.Struct):
     id: str
@@ -110,6 +119,7 @@ class InvoiceResponsePydantic(msgspec.Struct):
     updated_at: pendulum.DateTime
     version_id: int = 1  # Optimistic locking (Rozwiązanie 23)
 
+
 class DashboardSummaryResponse(msgspec.Struct):
     total_net: float
     total_gross: float
@@ -121,6 +131,7 @@ class InvoiceUploadResponse(msgspec.Struct):
 
     Returned after a successful file upload with content-addressable storage.
     """
+
     filename: str
     status: str
     size_bytes: int
@@ -133,6 +144,7 @@ class InvoiceUploadResponseLarge(InvoiceUploadResponse):
 
     Extends ``InvoiceUploadResponse`` with a ``kind`` field.
     """
+
     kind: str = "large_attachment"
 
 
@@ -142,6 +154,7 @@ class InvoiceListResponse(msgspec.Struct):
     ``items`` to lista ``InvoiceResponse``, ``next_cursor`` to token
     dla następnej strony, ``has_more`` wskazuje czy istnieją kolejne strony.
     """
+
     items: list[InvoiceResponse]
     next_cursor: str | None = None
     has_more: bool = False

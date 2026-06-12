@@ -50,7 +50,7 @@ class KsefCrypto:
             payload,
             padding.PKCS1v15(),  # KLUCZOWE: MF nie akceptuje OAEP
         )
-        return base64.b64encode(encrypted).decode('utf-8')
+        return base64.b64encode(encrypted).decode("utf-8")
 
     @staticmethod
     def build_auth_xml(nip: str, encrypted_token: str) -> str:

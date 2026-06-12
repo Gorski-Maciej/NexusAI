@@ -92,18 +92,22 @@ SEED_COMPANIES: list[dict[str, Any]] = [
         "ksef_active": True,
         "vat_active": True,
         "vat_proportion": "1.0000",
-        "tigerbeetle_ledger_map": msgspec_dumps({
-            "revenue": 100,
-            "vat_input": 200,
-            "vat_output": 300,
-            "expenses": 400,
-        }),
-        "company_policy": msgspec_dumps({
-            "auto_post_enabled": True,
-            "auto_post_threshold": 0.92,
-            "require_double_approval": False,
-            "retention_years": 5,
-        }),
+        "tigerbeetle_ledger_map": msgspec_dumps(
+            {
+                "revenue": 100,
+                "vat_input": 200,
+                "vat_output": 300,
+                "expenses": 400,
+            }
+        ),
+        "company_policy": msgspec_dumps(
+            {
+                "auto_post_enabled": True,
+                "auto_post_threshold": 0.92,
+                "require_double_approval": False,
+                "retention_years": 5,
+            }
+        ),
     },
     {
         "id": uuid.uuid4().hex,
@@ -113,18 +117,22 @@ SEED_COMPANIES: list[dict[str, Any]] = [
         "ksef_active": True,
         "vat_active": True,
         "vat_proportion": "1.0000",
-        "tigerbeetle_ledger_map": msgspec_dumps({
-            "revenue": 101,
-            "vat_input": 201,
-            "vat_output": 301,
-            "expenses": 401,
-        }),
-        "company_policy": msgspec_dumps({
-            "auto_post_enabled": True,
-            "auto_post_threshold": 0.85,
-            "require_double_approval": False,
-            "retention_years": 5,
-        }),
+        "tigerbeetle_ledger_map": msgspec_dumps(
+            {
+                "revenue": 101,
+                "vat_input": 201,
+                "vat_output": 301,
+                "expenses": 401,
+            }
+        ),
+        "company_policy": msgspec_dumps(
+            {
+                "auto_post_enabled": True,
+                "auto_post_threshold": 0.85,
+                "require_double_approval": False,
+                "retention_years": 5,
+            }
+        ),
     },
     {
         "id": uuid.uuid4().hex,
@@ -134,18 +142,22 @@ SEED_COMPANIES: list[dict[str, Any]] = [
         "ksef_active": True,
         "vat_active": True,
         "vat_proportion": "0.5000",  # Partial VAT deduction
-        "tigerbeetle_ledger_map": msgspec_dumps({
-            "revenue": 102,
-            "vat_input": 202,
-            "vat_output": 302,
-            "expenses": 402,
-        }),
-        "company_policy": msgspec_dumps({
-            "auto_post_enabled": False,
-            "auto_post_threshold": 0.95,
-            "require_double_approval": True,
-            "retention_years": 10,
-        }),
+        "tigerbeetle_ledger_map": msgspec_dumps(
+            {
+                "revenue": 102,
+                "vat_input": 202,
+                "vat_output": 302,
+                "expenses": 402,
+            }
+        ),
+        "company_policy": msgspec_dumps(
+            {
+                "auto_post_enabled": False,
+                "auto_post_threshold": 0.95,
+                "require_double_approval": True,
+                "retention_years": 10,
+            }
+        ),
     },
 ]
 
@@ -382,9 +394,21 @@ SEED_INVOICE_STATUSES: list[dict[str, Any]] = [
     {"code": "NEW", "name": "Nowa", "description": "Nowa faktura oczekująca na weryfikację"},
     {"code": "APPROVED", "name": "Zatwierdzona", "description": "Faktura zatwierdzona do wysyłki"},
     {"code": "PROCESSING", "name": "Przetwarzana", "description": "Trwa przetwarzanie przez AI"},
-    {"code": "SUBMITTED_KSEF", "name": "Wysłana do KSeF", "description": "Faktura wysłana do Krajowego Systemu e-Faktur"},
-    {"code": "KSEF_ACCEPTED", "name": "Zaakceptowana przez KSeF", "description": "Faktura zaakceptowana przez KSeF"},
-    {"code": "KSEF_REJECTED", "name": "Odrzucona przez KSeF", "description": "Faktura odrzucona przez KSeF"},
+    {
+        "code": "SUBMITTED_KSEF",
+        "name": "Wysłana do KSeF",
+        "description": "Faktura wysłana do Krajowego Systemu e-Faktur",
+    },
+    {
+        "code": "KSEF_ACCEPTED",
+        "name": "Zaakceptowana przez KSeF",
+        "description": "Faktura zaakceptowana przez KSeF",
+    },
+    {
+        "code": "KSEF_REJECTED",
+        "name": "Odrzucona przez KSeF",
+        "description": "Faktura odrzucona przez KSeF",
+    },
     {"code": "ERROR", "name": "Błąd", "description": "Wystąpił błąd podczas przetwarzania"},
 ]
 
@@ -416,6 +440,251 @@ SEED_TAX_POLICIES: list[dict[str, Any]] = [
         "vat_settlement_cycle": "monthly",
     },
 ]
+
+
+# ── RBAC seed: roles, permissions, admin user (from _ensure_schema_tables) ──
+
+SEED_ROLES: list[tuple[str, str]] = [
+    ("admin", "System administrator — full access"),
+    ("accountant", "Accountant — financial operations"),
+    ("auditor", "Auditor — read-only audit access"),
+    ("viewer", "Viewer — read-only basic access"),
+]
+
+SEED_PERMISSIONS: dict[str, dict[str, str]] = {
+    "invoice:create": {"resource": "invoice", "action": "create", "description": "Create invoices"},
+    "invoice:view": {"resource": "invoice", "action": "view", "description": "View invoices"},
+    "invoice:edit": {"resource": "invoice", "action": "edit", "description": "Edit invoices"},
+    "invoice:delete": {"resource": "invoice", "action": "delete", "description": "Delete invoices"},
+    "invoice:approve": {
+        "resource": "invoice",
+        "action": "approve",
+        "description": "Approve invoices",
+    },
+    "invoice:submit-ksef": {
+        "resource": "invoice",
+        "action": "submit-ksef",
+        "description": "Submit invoices to KSeF",
+    },
+    "company:view": {
+        "resource": "company",
+        "action": "view",
+        "description": "View company profiles",
+    },
+    "company:edit": {
+        "resource": "company",
+        "action": "edit",
+        "description": "Edit company profiles",
+    },
+    "company:delete": {
+        "resource": "company",
+        "action": "delete",
+        "description": "Delete companies",
+    },
+    "audit:view": {"resource": "audit", "action": "view", "description": "View audit logs"},
+    "audit:export": {"resource": "audit", "action": "export", "description": "Export audit logs"},
+    "user:view": {"resource": "user", "action": "view", "description": "View users"},
+    "user:create": {"resource": "user", "action": "create", "description": "Create users"},
+    "user:edit": {"resource": "user", "action": "edit", "description": "Edit users"},
+    "user:delete": {"resource": "user", "action": "delete", "description": "Delete users"},
+    "admin:access": {"resource": "admin", "action": "access", "description": "Access admin panel"},
+    "admin:settings": {
+        "resource": "admin",
+        "action": "settings",
+        "description": "Modify system settings",
+    },
+    "admin:failed-tasks": {
+        "resource": "admin",
+        "action": "failed-tasks",
+        "description": "Manage failed tasks / DLQ",
+    },
+    "admin:hot-reload": {
+        "resource": "admin",
+        "action": "hot-reload",
+        "description": "View hot-reload health status",
+    },
+    "finance:view": {"resource": "finance", "action": "view", "description": "View financial data"},
+    "finance:reconcile": {
+        "resource": "finance",
+        "action": "reconcile",
+        "description": "Reconcile accounts",
+    },
+    "finance:export": {
+        "resource": "finance",
+        "action": "export",
+        "description": "Export financial reports",
+    },
+    "contractor:view": {
+        "resource": "contractor",
+        "action": "view",
+        "description": "View contractors",
+    },
+    "contractor:edit": {
+        "resource": "contractor",
+        "action": "edit",
+        "description": "Edit contractors",
+    },
+}
+
+ROLE_PERMISSIONS_MAP: dict[str, list[str]] = {
+    "admin": list(SEED_PERMISSIONS.keys()),
+    "accountant": [
+        "invoice:create",
+        "invoice:view",
+        "invoice:edit",
+        "invoice:approve",
+        "invoice:submit-ksef",
+        "company:view",
+        "company:edit",
+        "audit:view",
+        "finance:view",
+        "finance:reconcile",
+        "finance:export",
+        "contractor:view",
+        "contractor:edit",
+    ],
+    "auditor": [
+        "invoice:view",
+        "company:view",
+        "audit:view",
+        "audit:export",
+        "finance:view",
+        "contractor:view",
+    ],
+    "viewer": [
+        "invoice:view",
+        "company:view",
+        "audit:view",
+        "finance:view",
+        "contractor:view",
+    ],
+}
+
+
+async def seed_rbac(
+    engine: Any,
+) -> dict[str, int]:
+    """Seed RBAC: roles, permissions, admin user, role-permission mappings.
+
+    Idempotent — uses ON CONFLICT DO NOTHING for all inserts.
+
+    Returns:
+        Dict with counts: roles, permissions, role_permissions, admin_user.
+    """
+    from sqlalchemy import text
+
+    from nexus_ai.api.auth_service import hash_password
+
+    admin_username = os.getenv("NEXUS_ADMIN_USERNAME", "admin")
+    admin_password = os.getenv("NEXUS_ADMIN_PASSWORD", "admin")
+    admin_password_hash = hash_password(admin_password)
+
+    counts: dict[str, int] = {"roles": 0, "permissions": 0, "role_permissions": 0, "admin_user": 0}
+
+    async with engine.begin() as conn:
+        # --- Seed default roles ---
+        role_ids: dict[str, str] = {}
+        for role_name, role_desc in SEED_ROLES:
+            await conn.execute(
+                text(
+                    "INSERT INTO roles (id, name, description, is_system) "
+                    "VALUES (:id, :name, :desc, 1) ON CONFLICT(name) DO NOTHING"
+                ),
+                {"id": uuid.uuid4().hex, "name": role_name, "desc": role_desc},
+            )
+        # Fetch role IDs after insert
+        roles_result = await conn.execute(text("SELECT id, name FROM roles"))
+        for role_row in roles_result.mappings().all():
+            role_ids[role_row["name"]] = role_row["id"]
+        counts["roles"] = len(role_ids)
+
+        # --- Seed permissions ---
+        perm_ids: dict[str, str] = {}
+        for codename, info in SEED_PERMISSIONS.items():
+            await conn.execute(
+                text(
+                    "INSERT INTO permissions (id, codename, resource, action, description) "
+                    "VALUES (:id, :codename, :resource, :action, :desc) ON CONFLICT(codename) DO NOTHING"
+                ),
+                {
+                    "id": uuid.uuid4().hex,
+                    "codename": codename,
+                    "resource": info["resource"],
+                    "action": info["action"],
+                    "desc": info["description"],
+                },
+            )
+        # Fetch permission IDs after insert
+        perms_result = await conn.execute(text("SELECT id, codename FROM permissions"))
+        for perm_row in perms_result.mappings().all():
+            perm_ids[perm_row["codename"]] = perm_row["id"]
+        counts["permissions"] = len(perm_ids)
+
+        # --- Seed role-permission mappings ---
+        rp_count = 0
+        for role_name, codenames in ROLE_PERMISSIONS_MAP.items():
+            role_id = role_ids.get(role_name)
+            if not role_id:
+                continue
+            for codename in codenames:
+                perm_id = perm_ids.get(codename)
+                if not perm_id:
+                    continue
+                await conn.execute(
+                    text(
+                        "INSERT INTO role_permissions (id, role_id, permission_id) "
+                        "VALUES (:id, :rid, :pid) ON CONFLICT DO NOTHING"
+                    ),
+                    {"id": uuid.uuid4().hex, "rid": role_id, "pid": perm_id},
+                )
+                rp_count += 1
+        counts["role_permissions"] = rp_count
+
+        # --- Seed admin user ---
+        await conn.execute(
+            text(
+                """
+                INSERT INTO users (id, username, password_hash, role, tenant_id, is_active)
+                VALUES (:id, :username, :password_hash, :role, :tenant_id, :is_active)
+                ON CONFLICT(username) DO NOTHING
+                """
+            ),
+            {
+                "id": "admin",
+                "username": admin_username,
+                "password_hash": admin_password_hash,
+                "role": "admin",
+                "tenant_id": "default",
+                "is_active": True,
+            },
+        )
+        counts["admin_user"] = 1
+
+        # --- Assign admin to admin role in user_roles ---
+        admin_role_id = role_ids.get("admin")
+        if admin_role_id:
+            existing_ur = await conn.execute(
+                text("SELECT id FROM user_roles WHERE user_id = :uid AND role_id = :rid LIMIT 1"),
+                {"uid": "admin", "rid": admin_role_id},
+            )
+            if not existing_ur.scalar():
+                await conn.execute(
+                    text(
+                        "INSERT INTO user_roles (id, user_id, role_id) "
+                        "VALUES (:id, :uid, :rid) ON CONFLICT DO NOTHING"
+                    ),
+                    {"id": uuid.uuid4().hex, "uid": "admin", "rid": admin_role_id},
+                )
+
+        await conn.execute(text("ANALYZE;"))
+
+    logger.info(
+        "[RBAC] Seeded: %d roles, %d permissions, %d mappings, admin user",
+        counts["roles"],
+        counts["permissions"],
+        counts["role_permissions"],
+    )
+    return counts
 
 
 # ── Seeder implementation ────────────────────────────────────────────────────
@@ -470,6 +739,7 @@ async def seed_users(db_session: Any, config: Any) -> dict:
         # Generate random password for admin, env-overridable for accountant
         if username == "admin":
             import secrets as _secrets
+
             raw_password = os.getenv("NEXUS_ADMIN_PASSWORD", "")
             if not raw_password:
                 raw_password = _secrets.token_urlsafe(16)  # e.g. "x8kL3mP9qR2vW5nA"
@@ -515,23 +785,30 @@ async def seed_users(db_session: Any, config: Any) -> dict:
             # Assign appropriate roles via user_roles
             role_name = "admin" if username == "admin" else "accountant"
             role_row = (
-                await db_session.execute(
-                    text("SELECT id FROM roles WHERE name = :name LIMIT 1"),
-                    {"name": role_name},
+                (
+                    await db_session.execute(
+                        text("SELECT id FROM roles WHERE name = :name LIMIT 1"),
+                        {"name": role_name},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
             if role_row:
                 ur_id = uuid.uuid4().hex
                 await db_session.execute(
-                    text(
-                        "INSERT INTO user_roles (id, user_id, role_id) VALUES (:id, :uid, :rid)"
-                    ),
+                    text("INSERT INTO user_roles (id, user_id, role_id) VALUES (:id, :uid, :rid)"),
                     {"id": ur_id, "uid": user_id, "rid": role_row["id"]},
                 )
 
             await db_session.commit()
             count += 1
-            logger.info("  User '%s' created (role=%s, must_change_password=%s)", username, role, must_change)
+            logger.info(
+                "  User '%s' created (role=%s, must_change_password=%s)",
+                username,
+                role,
+                must_change,
+            )
 
     if admin_password:
         result["admin_password"] = admin_password
@@ -643,12 +920,14 @@ async def seed_invoices(db_session: Any, config: Any) -> int:
 
             # Create an outbox event for the invoice
             outbox_id = uuid.uuid4().hex
-            event_payload = msgspec_dumps({
-                "invoice_id": inv_id,
-                "number": invoice["number"],
-                "source": "seed_data",
-                "created_at": now,
-            })
+            event_payload = msgspec_dumps(
+                {
+                    "invoice_id": inv_id,
+                    "number": invoice["number"],
+                    "source": "seed_data",
+                    "created_at": now,
+                }
+            )
             await db_session.execute(
                 text(
                     """\
@@ -698,30 +977,39 @@ async def seed_dictionaries(db_session: Any) -> dict[str, int]:
     Uses ON CONFLICT DO NOTHING for idempotency.
     """
     from sqlalchemy import text
+
     counts: dict[str, int] = {}
 
     # Create dictionary tables if they don't exist
     async with db_session.begin():
-        await db_session.execute(text(
-            "CREATE TABLE IF NOT EXISTS dict_vat_rates ("
-            "id TEXT PRIMARY KEY, code TEXT UNIQUE NOT NULL, rate REAL NOT NULL, "
-            "description TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
-        ))
-        await db_session.execute(text(
-            "CREATE TABLE IF NOT EXISTS dict_currencies ("
-            "id TEXT PRIMARY KEY, code TEXT UNIQUE NOT NULL, name TEXT, "
-            "symbol TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
-        ))
-        await db_session.execute(text(
-            "CREATE TABLE IF NOT EXISTS dict_invoice_statuses ("
-            "id TEXT PRIMARY KEY, code TEXT UNIQUE NOT NULL, name TEXT, "
-            "description TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
-        ))
-        await db_session.execute(text(
-            "CREATE TABLE IF NOT EXISTS dict_tax_forms ("
-            "id TEXT PRIMARY KEY, code TEXT UNIQUE NOT NULL, name TEXT, "
-            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
-        ))
+        await db_session.execute(
+            text(
+                "CREATE TABLE IF NOT EXISTS dict_vat_rates ("
+                "id TEXT PRIMARY KEY, code TEXT UNIQUE NOT NULL, rate REAL NOT NULL, "
+                "description TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+            )
+        )
+        await db_session.execute(
+            text(
+                "CREATE TABLE IF NOT EXISTS dict_currencies ("
+                "id TEXT PRIMARY KEY, code TEXT UNIQUE NOT NULL, name TEXT, "
+                "symbol TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+            )
+        )
+        await db_session.execute(
+            text(
+                "CREATE TABLE IF NOT EXISTS dict_invoice_statuses ("
+                "id TEXT PRIMARY KEY, code TEXT UNIQUE NOT NULL, name TEXT, "
+                "description TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+            )
+        )
+        await db_session.execute(
+            text(
+                "CREATE TABLE IF NOT EXISTS dict_tax_forms ("
+                "id TEXT PRIMARY KEY, code TEXT UNIQUE NOT NULL, name TEXT, "
+                "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+            )
+        )
         await db_session.commit()
 
     # Seed VAT rates
@@ -739,7 +1027,12 @@ async def seed_dictionaries(db_session: Any) -> dict[str, int]:
                     "INSERT INTO dict_vat_rates (id, code, rate, description) "
                     "VALUES (:id, :code, :rate, :desc)"
                 ),
-                {"id": uuid.uuid4().hex, "code": vat["code"], "rate": vat["rate"], "desc": vat["description"]},
+                {
+                    "id": uuid.uuid4().hex,
+                    "code": vat["code"],
+                    "rate": vat["rate"],
+                    "desc": vat["description"],
+                },
             )
             await db_session.commit()
             vat_count += 1
@@ -761,7 +1054,12 @@ async def seed_dictionaries(db_session: Any) -> dict[str, int]:
                     "INSERT INTO dict_currencies (id, code, name, symbol) "
                     "VALUES (:id, :code, :name, :symbol)"
                 ),
-                {"id": uuid.uuid4().hex, "code": cur["code"], "name": cur["name"], "symbol": cur["symbol"]},
+                {
+                    "id": uuid.uuid4().hex,
+                    "code": cur["code"],
+                    "name": cur["name"],
+                    "symbol": cur["symbol"],
+                },
             )
             await db_session.commit()
             cur_count += 1
@@ -783,7 +1081,12 @@ async def seed_dictionaries(db_session: Any) -> dict[str, int]:
                     "INSERT INTO dict_invoice_statuses (id, code, name, description) "
                     "VALUES (:id, :code, :name, :desc)"
                 ),
-                {"id": uuid.uuid4().hex, "code": st["code"], "name": st["name"], "desc": st["description"]},
+                {
+                    "id": uuid.uuid4().hex,
+                    "code": st["code"],
+                    "name": st["name"],
+                    "desc": st["description"],
+                },
             )
             await db_session.commit()
             st_count += 1
@@ -801,10 +1104,7 @@ async def seed_dictionaries(db_session: Any) -> dict[str, int]:
             if existing.scalar():
                 continue
             await db_session.execute(
-                text(
-                    "INSERT INTO dict_tax_forms (id, code, name) "
-                    "VALUES (:id, :code, :name)"
-                ),
+                text("INSERT INTO dict_tax_forms (id, code, name) VALUES (:id, :code, :name)"),
                 {"id": uuid.uuid4().hex, "code": tf["code"], "name": tf["name"]},
             )
             await db_session.commit()
@@ -987,11 +1287,39 @@ async def seed_task_status(db_session: Any) -> int:
     from sqlalchemy import text
 
     tasks = [
-        ("seed-task-001", "OCR Processing", "COMPLETED", 1.0, None, pendulum.now("UTC") - pendulum.duration(hours=2)),
-        ("seed-task-002", "AI Analysis", "COMPLETED", 1.0, None, pendulum.now("UTC") - pendulum.duration(hours=1)),
-        ("seed-task-003", "KSeF Submission", "RUNNING", 0.45, None, pendulum.now("UTC") - pendulum.duration(minutes=30)),
+        (
+            "seed-task-001",
+            "OCR Processing",
+            "COMPLETED",
+            1.0,
+            None,
+            pendulum.now("UTC") - pendulum.duration(hours=2),
+        ),
+        (
+            "seed-task-002",
+            "AI Analysis",
+            "COMPLETED",
+            1.0,
+            None,
+            pendulum.now("UTC") - pendulum.duration(hours=1),
+        ),
+        (
+            "seed-task-003",
+            "KSeF Submission",
+            "RUNNING",
+            0.45,
+            None,
+            pendulum.now("UTC") - pendulum.duration(minutes=30),
+        ),
         ("seed-task-004", "VAT Reconciliation", "QUEUED", 0.0, None, pendulum.now("UTC")),
-        ("seed-task-005", "Shadow Ledger Sync", "FAILED", 0.0, "TigerBeetle connection timeout", pendulum.now("UTC") - pendulum.duration(minutes=15)),
+        (
+            "seed-task-005",
+            "Shadow Ledger Sync",
+            "FAILED",
+            0.0,
+            "TigerBeetle connection timeout",
+            pendulum.now("UTC") - pendulum.duration(minutes=15),
+        ),
     ]
 
     count = 0
@@ -1026,154 +1354,6 @@ async def seed_task_status(db_session: Any) -> int:
     return count
 
 
-async def ensure_core_tables(engine: Any) -> None:
-    """Create core tables if they don't exist (idempotent)."""
-    from sqlalchemy import text
-
-    async with engine.begin() as conn:
-        # Users table
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS users (
-                id TEXT PRIMARY KEY, username TEXT UNIQUE NOT NULL, email TEXT,
-                full_name TEXT, password_hash TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'worker',
-                tenant_id TEXT NOT NULL DEFAULT 'default', is_active BOOLEAN NOT NULL DEFAULT 1,
-                is_verified BOOLEAN NOT NULL DEFAULT 0, must_change_password BOOLEAN NOT NULL DEFAULT 0,
-                jwt_version INTEGER NOT NULL DEFAULT 1, last_login TIMESTAMP,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        # Roles
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS roles (
-                id TEXT PRIMARY KEY, name TEXT UNIQUE NOT NULL, description TEXT,
-                is_system BOOLEAN NOT NULL DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        # Permissions
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS permissions (
-                id TEXT PRIMARY KEY, codename TEXT UNIQUE NOT NULL, description TEXT,
-                resource TEXT NOT NULL, action TEXT NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        # User roles
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS user_roles (
-                id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-                role_id TEXT NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        # Role permissions
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS role_permissions (
-                id TEXT PRIMARY KEY, role_id TEXT NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
-                permission_id TEXT NOT NULL REFERENCES permissions(id) ON DELETE CASCADE,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE(role_id, permission_id)
-            )
-        """))
-        # Audit logs
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS audit_logs (
-                id TEXT PRIMARY KEY, user_id TEXT, invoice_id TEXT, action TEXT NOT NULL,
-                old_value TEXT, new_value TEXT, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        # Email tokens
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS email_tokens (
-                id TEXT PRIMARY KEY, user_id TEXT NOT NULL, token TEXT UNIQUE NOT NULL,
-                purpose TEXT NOT NULL DEFAULT 'confirm', expires_at TIMESTAMP NOT NULL,
-                used BOOLEAN NOT NULL DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        # Outbox events
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS outbox_events (
-                id TEXT PRIMARY KEY, event_type TEXT NOT NULL, aggregate_id TEXT NOT NULL,
-                payload TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'PENDING',
-                processed BOOLEAN NOT NULL DEFAULT 0, retry_count INTEGER NOT NULL DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        # Failed tasks
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS failed_tasks (
-                id TEXT PRIMARY KEY, task_name TEXT NOT NULL, task_id TEXT,
-                payload TEXT NOT NULL DEFAULT '{}', error_type TEXT NOT NULL,
-                error_message TEXT NOT NULL, stack_trace TEXT, retry_count INTEGER NOT NULL DEFAULT 0,
-                max_retries INTEGER NOT NULL DEFAULT 3, resolved BOOLEAN NOT NULL DEFAULT 0,
-                resolved_at TIMESTAMP, resolved_by TEXT, resolution_note TEXT,
-                failed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        # Contractors
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS contractors (
-                id TEXT PRIMARY KEY, name TEXT NOT NULL, nip TEXT UNIQUE NOT NULL,
-                address TEXT, bank_account TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        # Invoices
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS invoices (
-                id TEXT PRIMARY KEY, number TEXT UNIQUE NOT NULL, amount_net TEXT,
-                amount_gross TEXT, currency TEXT NOT NULL DEFAULT 'PLN',
-                issue_date TEXT, contractor_nip TEXT, contractor_id TEXT,
-                status TEXT NOT NULL DEFAULT 'NEW', file_path TEXT,
-                tenant_id TEXT NOT NULL DEFAULT 'default', created_by TEXT, updated_by TEXT,
-                version_id INTEGER DEFAULT 1, is_deleted BOOLEAN NOT NULL DEFAULT 0,
-                deleted_at TIMESTAMP, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        # Company profiles
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS company_profiles (
-                id TEXT PRIMARY KEY, name TEXT NOT NULL, nip TEXT UNIQUE NOT NULL,
-                legal_form TEXT, ksef_active BOOLEAN NOT NULL DEFAULT 1, ksef_token TEXT,
-                vat_active BOOLEAN NOT NULL DEFAULT 1, vat_proportion TEXT DEFAULT '1.0000',
-                tigerbeetle_ledger_map TEXT, company_policy TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        # Tax policies
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS tax_policies (
-                id TEXT PRIMARY KEY, company_id TEXT NOT NULL, tax_form TEXT NOT NULL,
-                pit_costs_enabled BOOLEAN NOT NULL DEFAULT 1, requires_full_ledger BOOLEAN NOT NULL DEFAULT 0,
-                vat_settlement_cycle TEXT DEFAULT 'monthly', effective_from TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        # Financial periods
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS financial_periods (
-                period_id TEXT NOT NULL, company_id TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'open',
-                PRIMARY KEY (period_id, company_id)
-            )
-        """))
-        # FX rates
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS fx_rates (
-                id TEXT PRIMARY KEY, currency TEXT NOT NULL, rate_to_pln REAL NOT NULL,
-                effective_at TIMESTAMP NOT NULL, source TEXT NOT NULL DEFAULT 'manual',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        # Task status
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS task_status (
-                task_id TEXT PRIMARY KEY, task_name TEXT NOT NULL, user_id TEXT,
-                status TEXT NOT NULL DEFAULT 'QUEUED', progress REAL DEFAULT 0.0,
-                result TEXT, error_message TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-
-    logger.info("  Core tables ensured (%d tables)", 17)
-
-
 async def seed_all(config: Any | None = None) -> dict[str, int]:
     """
     Load all seed data into the database.
@@ -1193,9 +1373,6 @@ async def seed_all(config: Any | None = None) -> dict[str, int]:
     await ensure_directories(cfg)
 
     engine = create_oltp_engine(cfg)
-
-    # Create all core tables before seeding
-    await ensure_core_tables(engine)
 
     session_factory = create_session_factory(engine)
     session = session_factory()
@@ -1249,6 +1426,7 @@ async def seed_all(config: Any | None = None) -> dict[str, int]:
 
 
 # ── CLI entry point ──────────────────────────────────────────────────────────
+
 
 def main() -> int:
     """CLI entry point: python -m nexus_ai.scripts.seed_data"""

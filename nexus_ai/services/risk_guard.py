@@ -34,6 +34,7 @@ from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 _risk_nexus = get_cache()
 RISK_CACHE_PREFIX = "risk_threshold:"
 
+
 def invalidate_risk_cache() -> None:
     """Unieważnij cache progów ryzyka.
 
@@ -45,6 +46,7 @@ def invalidate_risk_cache() -> None:
     """
     _risk_nexus.delete_prefix_sync(RISK_CACHE_PREFIX)
     _risk_nexus.delete_prefix_sync("risk_thresholds_batch:")
+
 
 # ── Schema ───────────────────────────────────────────────────────────────────
 
@@ -126,10 +128,13 @@ DEFAULT_RISK_THRESHOLDS: list[dict[str, Any]] = [
 
 # ── Data structures ──────────────────────────────────────────────────────────
 
+
 class RiskThreshold(Struct, frozen=True):
     """Próg ryzyka dla konkretnego kontekstu podatkowego."""
+
     required_ml_confidence: float
     action_if_below: str  # BLOCK_AND_ALERT | TRIAGE_QUEUE | AUTO_POST
+
 
 class RiskVerdict(Struct, frozen=True):
     """Wynik ewaluacji RiskGuard — zagregowany dla wszystkich pól faktury.
@@ -140,10 +145,12 @@ class RiskVerdict(Struct, frozen=True):
         reason: Uzasadnienie — które pole i dlaczego.
         required_for_field: Mapa {field_name: required_confidence} dla audytu.
     """
+
     is_safe: bool
     action: str
     reason: str = ""
     required_for_field: dict[str, float] = field(default_factory=dict)
+
 
 _ACTION_PRIORITY = {
     "AUTO_POST": 0,
@@ -152,9 +159,11 @@ _ACTION_PRIORITY = {
 }
 """Priority order for actions: higher number = more restrictive."""
 
+
 def ensure_schema(conn: duckdb.DuckDBPyConnection) -> None:
     """Create risk_thresholds table if not present."""
     conn.execute(RISK_THRESHOLDS_SCHEMA)
+
 
 def seed_default_thresholds(conn: duckdb.DuckDBPyConnection) -> None:
     """Insert default risk thresholds only if table is empty."""
@@ -179,7 +188,9 @@ def seed_default_thresholds(conn: duckdb.DuckDBPyConnection) -> None:
     # Unieważnij cache — świeże progi w DuckDB
     invalidate_risk_cache()
 
+
 # ── RiskGuard ────────────────────────────────────────────────────────────────
+
 
 class RiskGuard:
     """Strażnik ryzyka — odczytuje aktywne reguły i zwraca próg ufności.
@@ -238,8 +249,14 @@ class RiskGuard:
         ).fetchall()
 
         for cond_json_raw, output_json_raw, priority in rows:
-            condition = msgspec_loads(cond_json_raw) if isinstance(cond_json_raw, str) else cond_json_raw
-            output = msgspec_loads(output_json_raw) if isinstance(output_json_raw, str) else output_json_raw
+            condition = (
+                msgspec_loads(cond_json_raw) if isinstance(cond_json_raw, str) else cond_json_raw
+            )
+            output = (
+                msgspec_loads(output_json_raw)
+                if isinstance(output_json_raw, str)
+                else output_json_raw
+            )
 
             rule_tax_form = condition.get("tax_form", "")
             rule_expense = condition.get("expense_type", "")
@@ -261,17 +278,23 @@ class RiskGuard:
             )
 
             # Zapisz w NexusCache (bez TTL — unieważniamy ręcznie przez invalidate_risk_cache)
-            _risk_nexus.set_sync(cache_key, {
-                "confidence": result.required_ml_confidence,
-                "action": result.action_if_below,
-            })
+            _risk_nexus.set_sync(
+                cache_key,
+                {
+                    "confidence": result.required_ml_confidence,
+                    "action": result.action_if_below,
+                },
+            )
             return result
 
         # Fallback — zapisz default threshold w cache (bez TTL)
-        _risk_nexus.set_sync(cache_key, {
-            "confidence": self.DEFAULT_THRESHOLD.required_ml_confidence,
-            "action": self.DEFAULT_THRESHOLD.action_if_below,
-        })
+        _risk_nexus.set_sync(
+            cache_key,
+            {
+                "confidence": self.DEFAULT_THRESHOLD.required_ml_confidence,
+                "action": self.DEFAULT_THRESHOLD.action_if_below,
+            },
+        )
         return self.DEFAULT_THRESHOLD
 
     def _load_thresholds_for_context(
@@ -309,8 +332,14 @@ class RiskGuard:
         batch: dict[str, dict[str, Any]] = {}
 
         for cond_json_raw, output_json_raw, priority in rows:
-            condition = msgspec_loads(cond_json_raw) if isinstance(cond_json_raw, str) else cond_json_raw
-            output = msgspec_loads(output_json_raw) if isinstance(output_json_raw, str) else output_json_raw
+            condition = (
+                msgspec_loads(cond_json_raw) if isinstance(cond_json_raw, str) else cond_json_raw
+            )
+            output = (
+                msgspec_loads(output_json_raw)
+                if isinstance(output_json_raw, str)
+                else output_json_raw
+            )
 
             rule_tax_form = condition.get("tax_form", "")
             rule_expense = condition.get("expense_type", "")

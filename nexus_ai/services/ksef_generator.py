@@ -144,7 +144,9 @@ def generate_ksef_xml(
     ET.SubElement(naglowek, "WariantFormularza").text = "4"
     ET.SubElement(naglowek, "SystemInfo").text = "NexusAI v1.0"
     ET.SubElement(naglowek, "CelZlozenia").text = "1"  # 1 = fakturowanie
-    ET.SubElement(naglowek, "DataWytworzenia").text = pendulum.now("UTC").format("YYYY-MM-DDTHH:mm:ss")
+    ET.SubElement(naglowek, "DataWytworzenia").text = pendulum.now("UTC").format(
+        "YYYY-MM-DDTHH:mm:ss"
+    )
 
     # Podmiot sprzedawcy (wystawca faktury)
     podmiot = ET.SubElement(root, "Podmiot1")  # Sprzedawca

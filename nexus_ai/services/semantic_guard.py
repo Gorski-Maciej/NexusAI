@@ -65,12 +65,24 @@ logger = get_logger("nexus.services.semantic_guard")
 # ── Anomaly rules (inline, bez DuckDB — zgodnie z aa3fvcx.txt minimalizm) ──
 
 ANOMALY_RULES: list[dict[str, Any]] = [
-    {"min_score": 0.80, "min_amount": 10000, "action": "BLOCK_DECREE",
-     "alert": "Drastyczna zmiana profilu usług. Wymagana ręczna weryfikacja."},
-    {"min_score": 0.60, "min_amount": 10000, "action": "WARN",
-     "alert": "Znacząca zmiana profilu usług. Zalecana weryfikacja."},
-    {"min_score": 0.40, "min_amount": 50000, "action": "WARN",
-     "alert": "Nietypowa wartość faktury względem historii."},
+    {
+        "min_score": 0.80,
+        "min_amount": 10000,
+        "action": "BLOCK_DECREE",
+        "alert": "Drastyczna zmiana profilu usług. Wymagana ręczna weryfikacja.",
+    },
+    {
+        "min_score": 0.60,
+        "min_amount": 10000,
+        "action": "WARN",
+        "alert": "Znacząca zmiana profilu usług. Zalecana weryfikacja.",
+    },
+    {
+        "min_score": 0.40,
+        "min_amount": 50000,
+        "action": "WARN",
+        "alert": "Nietypowa wartość faktury względem historii.",
+    },
     {"min_score": 0.0, "min_amount": 0, "action": "ALLOW", "alert": None},
 ]
 
@@ -153,12 +165,12 @@ class SemanticGuard:
                 - alert: str | None
         """
         # Sprawdź NexusCache (L1 RAM) — szybki path, oszczędza ~55-220ms
-        eval_cache_key = f"semantic_eval:{vendor_nip}:{amount_net}:{_text_hash(invoice_text.encode())}"
+        eval_cache_key = (
+            f"semantic_eval:{vendor_nip}:{amount_net}:{_text_hash(invoice_text.encode())}"
+        )
         cached = _semantic_eval_cache.get_sync(eval_cache_key)
         if cached is not None:
-            logger.debug(
-                "[SemanticGuard] evaluate cache HIT for vendor=%s", vendor_nip
-            )
+            logger.debug("[SemanticGuard] evaluate cache HIT for vendor=%s", vendor_nip)
             return cached
 
         embedding = self._get_embedding(invoice_text)
@@ -213,6 +225,7 @@ class SemanticGuard:
     ) -> None:
         """Store verified invoice in sqlite-vec for future anomaly detection."""
         import uuid
+
         embedding = self._get_embedding(invoice_text)
         store = self._init_store()
         conn = store._get_conn()
@@ -235,7 +248,10 @@ class SemanticGuard:
         conn.commit()
         logger.info(
             "[SemanticGuard] Stored invoice %s for vendor %s (cat=%s, net=%.2f)",
-            transaction_id, vendor_nip, category_code, float(amount_net),
+            transaction_id,
+            vendor_nip,
+            category_code,
+            float(amount_net),
         )
         # Event-based cache invalidation — po zapisie nowej faktury
         # historia vector search się zmienia; następne evaluate()

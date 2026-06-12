@@ -1,4 +1,5 @@
 """Scan logs for potential PII leaks and optionally create redacted copies/reports."""
+
 from __future__ import annotations
 
 import argparse
@@ -16,13 +17,16 @@ PII_PATTERNS: dict[str, str] = {
     "IBAN_PL": r"\bPL\d{26}\b",
 }
 
+
 class Finding(Struct, frozen=True):
     pattern: str
     line_no: int
     line: str
 
+
 def _normalize_digits(value: str) -> str:
     return "".join(ch for ch in value if ch.isdigit())
+
 
 def _is_valid_pesel(value: str) -> bool:
     digits = _normalize_digits(value)
@@ -33,6 +37,7 @@ def _is_valid_pesel(value: str) -> bool:
     control = (10 - (checksum % 10)) % 10
     return control == int(digits[10])
 
+
 def _is_valid_nip(value: str) -> bool:
     digits = _normalize_digits(value)
     if len(digits) != 10:
@@ -41,12 +46,14 @@ def _is_valid_nip(value: str) -> bool:
     checksum = sum(int(d) * w for d, w in zip(digits[:9], weights, strict=True)) % 11
     return checksum != 10 and checksum == int(digits[9])
 
+
 def _match_is_valid(pattern: str, matched_value: str) -> bool:
     if pattern == "PESEL":
         return _is_valid_pesel(matched_value)
     if pattern == "NIP":
         return _is_valid_nip(matched_value)
     return True
+
 
 def scan_text(text: str) -> list[Finding]:
     findings: list[Finding] = []
@@ -59,8 +66,10 @@ def scan_text(text: str) -> list[Finding]:
                     findings.append(Finding(pattern=name, line_no=idx, line=line.strip()))
     return findings
 
+
 def scan_file(path: Path) -> list[Finding]:
     return scan_text(path.read_text(encoding="utf-8", errors="ignore"))
+
 
 def scan_path(path: Path) -> dict[str, list[Finding]]:
     if path.is_file():
@@ -74,11 +83,13 @@ def scan_path(path: Path) -> dict[str, list[Finding]]:
             result[str(file_path)] = scan_file(file_path)
     return result
 
+
 def _redact_text(text: str) -> str:
     redacted = text
     for regex in PII_PATTERNS.values():
         redacted = re.sub(regex, "[REDACTED]", redacted)
     return redacted
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Scan log files for possible PII leaks.")
@@ -94,7 +105,10 @@ def main() -> int:
     if total_findings == 0:
         print("[pii-scan] OK - no findings")
         if args.json_report:
-            Path(args.json_report).write_text(msgspec_dumps({"total_findings": 0, "files": {}}, ensure_ascii=False, indent=2), encoding="utf-8")
+            Path(args.json_report).write_text(
+                msgspec_dumps({"total_findings": 0, "files": {}}, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
         return 0
 
     print(f"[pii-scan] ALERT - {total_findings} finding(s)")
@@ -119,9 +133,12 @@ def main() -> int:
                 if findings
             },
         }
-        Path(args.json_report).write_text(msgspec_dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        Path(args.json_report).write_text(
+            msgspec_dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
 
     return 1
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

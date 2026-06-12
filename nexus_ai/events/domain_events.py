@@ -35,9 +35,7 @@ class DomainEvent(msgspec.Struct, kw_only=True, frozen=True):
     event_id: str = msgspec.field(default_factory=lambda: uuid.uuid4().hex)
     aggregate_type: str = ""
     event_type: str = ""
-    timestamp: str = msgspec.field(
-        default_factory=lambda: pendulum.now("UTC").isoformat()
-    )
+    timestamp: str = msgspec.field(default_factory=lambda: pendulum.now("UTC").isoformat())
     aggregate_id: str = ""
     version: int = 0
     metadata: dict[str, Any] = msgspec.field(default_factory=dict)

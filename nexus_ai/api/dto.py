@@ -92,12 +92,20 @@ TAG_UI_STATE = "UI State"
 class NexusDTO(MsgspecDTO):
     """Bazowa klasa DTO dla wszystkich endpointów NexusAI.
 
+    Fazа 2: Dynamiczne DTO z msgspec.
+    - ``backend="msgspec"`` — jawny backend msgspec dla optymalnej wydajności
+    - ``max_nested_depth=5`` — ograniczenie zagnieżdżenia dla bezpieczeństwa
+    - ``rename_fields`` — konwersja snake_case↔camelCase dla JSON API
+
     Automatycznie dodaje opisy pól do schematu OpenAPI.
     DTOConfig pozwala na precyzyjne kontrolowanie które pola są
     widoczne w request (client → server) i response (server → client).
     """
 
-    config = DTOConfig()
+    config = DTOConfig(
+        backend="msgspec",
+        max_nested_depth=5,
+    )
 
 
 # ── Auth DTOs ───────────────────────────────────────────────────────────
@@ -107,6 +115,7 @@ class RegisterDTO(NexusDTO):
     """DTO dla POST /api/auth/register — walidacja rejestracji."""
 
     config = DTOConfig(
+        backend="msgspec",
         rename_fields={
             "full_name": "fullName",
         },
@@ -147,6 +156,7 @@ class AuthResponseDTO(NexusDTO):
     """DTO dla odpowiedzi auth — ukrywa wrażliwe pola."""
 
     config = DTOConfig(
+        backend="msgspec",
         exclude={"password", "password_hash", "token"},
     )
 
@@ -162,6 +172,7 @@ class InvoiceCreateDTO(NexusDTO):
     """
 
     config = DTOConfig(
+        backend="msgspec",
         rename_fields={
             "amount_net": "amountNet",
             "amount_gross": "amountGross",
@@ -189,6 +200,7 @@ class InvoiceResponseDTO(NexusDTO):
     """
 
     config = DTOConfig(
+        backend="msgspec",
         rename_fields={
             "amount_net": "amountNet",
             "amount_gross": "amountGross",
@@ -213,6 +225,7 @@ class InvoiceListResponseDTO(NexusDTO):
     """
 
     config = DTOConfig(
+        backend="msgspec",
         rename_fields={
             "next_cursor": "nextCursor",
             "has_more": "hasMore",
@@ -238,6 +251,7 @@ class InvoiceUploadResponseDTO(NexusDTO):
     """
 
     config = DTOConfig(
+        backend="msgspec",
         rename_fields={
             "file_hash": "fileHash",
             "file_path": "filePath",
@@ -251,6 +265,7 @@ class TaskResponseDTO(NexusDTO):
     """DTO dla odpowiedzi z task_id (kolejkowanie zadań)."""
 
     config = DTOConfig(
+        backend="msgspec",
         rename_fields={"task_id": "taskId"},
     )
 

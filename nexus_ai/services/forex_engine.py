@@ -22,6 +22,7 @@ from nexus_ai.core.cache import get_cache
 from nexus_ai.core.msgspec_utils import msgspec_loads
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
+
 class FXResult(Struct, frozen=True):
     invoice_id: str
     payment_id: str
@@ -32,13 +33,16 @@ class FXResult(Struct, frozen=True):
     fx_diff_pln: Decimal
     direction: str
 
+
 FX_CACHE_PREFIXES = ["fx_rate:", "fx_missing:"]
+
 
 def invalidate_forex_cache() -> None:
     """Unieważnij cache kursów walut — usuwa wszystkie klucze z prefixami fx_rate: i fx_missing: z L1 RAM."""
     cache = get_cache()
     cache.delete_prefix_sync("fx_rate:")
     cache.delete_prefix_sync("fx_missing:")
+
 
 class ForexEngine:
     """Silnik kursów walut — NBP API + NexusCache + DuckDB.
@@ -52,7 +56,14 @@ class ForexEngine:
     _rate_nexus = get_cache()
     _missing_nexus = get_cache()
 
-    def __init__(self, duckdb_manager: Any, tb_client: TigerBeetleClient, account_receivable: int, account_fx_gain: int, account_fx_loss: int) -> None:
+    def __init__(
+        self,
+        duckdb_manager: Any,
+        tb_client: TigerBeetleClient,
+        account_receivable: int,
+        account_fx_gain: int,
+        account_fx_loss: int,
+    ) -> None:
         self.duckdb = duckdb_manager
         self.tb_client = tb_client
         self.account_receivable = account_receivable
@@ -116,7 +127,9 @@ class ForexEngine:
             (currency_code, rate_date),
         )
 
-    def fetch_nbp_rate(self, target_date: date, currency: str, max_lookback_days: int = 5) -> Decimal:
+    def fetch_nbp_rate(
+        self, target_date: date, currency: str, max_lookback_days: int = 5
+    ) -> Decimal:
         self.ensure_exchange_rate_schema()
         currency_code = currency.upper()
 
@@ -177,7 +190,9 @@ class ForexEngine:
                 return Decimal(str(last_known[0][0]))
             return Decimal("1.0")
 
-    def _do_fetch_nbp(self, target_date: date, currency_code: str, max_lookback_days: int) -> Decimal:
+    def _do_fetch_nbp(
+        self, target_date: date, currency_code: str, max_lookback_days: int
+    ) -> Decimal:
         for offset in range(max_lookback_days + 1):
             rate_day = target_date - pendulum.duration(days=offset)
             if not self._is_business_day(rate_day):
@@ -211,7 +226,9 @@ class ForexEngine:
             else:
                 self._mark_as_missing(currency_code, rate_day)
 
-        raise ValueError(f"NBP rate not found for {currency_code} within {max_lookback_days} days before {target_date}")
+        raise ValueError(
+            f"NBP rate not found for {currency_code} within {max_lookback_days} days before {target_date}"
+        )
 
     def upload_rates_csv(self, csv_content: str) -> dict[str, Any]:
         import csv
@@ -280,7 +297,9 @@ class ForexEngine:
                     debit_account=self.account_receivable,
                     credit_account=self.account_fx_gain,
                     amount_minor=minor,
-                    source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"fx:{invoice_uuid}:{payment_uuid}"),
+                    source_document_id=uuid.uuid5(
+                        uuid.NAMESPACE_URL, f"fx:{invoice_uuid}:{payment_uuid}"
+                    ),
                 )
             else:
                 direction = "LOSS"
@@ -288,7 +307,9 @@ class ForexEngine:
                     debit_account=self.account_fx_loss,
                     credit_account=self.account_receivable,
                     amount_minor=minor,
-                    source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"fx:{invoice_uuid}:{payment_uuid}"),
+                    source_document_id=uuid.uuid5(
+                        uuid.NAMESPACE_URL, f"fx:{invoice_uuid}:{payment_uuid}"
+                    ),
                 )
             await self.tb_client.post_pending_transfer(pending.pending_id)
 

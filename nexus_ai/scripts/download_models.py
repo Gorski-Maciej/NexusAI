@@ -66,11 +66,16 @@ def verify_model(filepath: Path, expected_hash: str) -> bool:
 def _check_disk_space(models_dir: Path, required_bytes: int = 5 * 1024**3) -> bool:
     try:
         import shutil
-        total, used, free = shutil.disk_usage(models_dir.parent if models_dir.exists() else models_dir)
+
+        total, used, free = shutil.disk_usage(
+            models_dir.parent if models_dir.exists() else models_dir
+        )
         free_gb = free / 1024**3
         required_gb = required_bytes / 1024**3
         if free < required_bytes:
-            print(f"  [WARN] Low disk space: {free_gb:.1f} GB free, but {required_gb:.1f} GB recommended.")
+            print(
+                f"  [WARN] Low disk space: {free_gb:.1f} GB free, but {required_gb:.1f} GB recommended."
+            )
             return False
         print(f"  [OK] Disk space: {free_gb:.1f} GB free")
         return True
@@ -80,7 +85,9 @@ def _check_disk_space(models_dir: Path, required_bytes: int = 5 * 1024**3) -> bo
         return True
 
 
-def download_surya_models(models_dir: Path | None = None, verify_only: bool = False) -> dict[str, str]:
+def download_surya_models(
+    models_dir: Path | None = None, verify_only: bool = False
+) -> dict[str, str]:
     """Download Surya OCR models (zgodne z aa3fvcx.txt Punkt 10)."""
     if models_dir is None:
         project_root = Path(__file__).resolve().parent.parent.parent

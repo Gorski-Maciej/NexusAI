@@ -9,7 +9,9 @@ from nexus_ai.services.tigerbeetle.models import LegalForm, TaxForm
 class LedgerInitializer:
     """Inicjalizuje plan kont w TigerBeetle na podstawie formy prawnej i opodatkowania."""
 
-    def __init__(self, tb_client: TigerBeetleClient | None = None, mapper: TigerBeetleMapper | None = None) -> None:
+    def __init__(
+        self, tb_client: TigerBeetleClient | None = None, mapper: TigerBeetleMapper | None = None
+    ) -> None:
         self.tb_client = tb_client or TigerBeetleClient()
         self.mapper = mapper or TigerBeetleMapper()
 

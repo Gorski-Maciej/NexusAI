@@ -24,10 +24,12 @@ def build_triage_split_screen(
     image_panel = ft.Container(
         expand=2,
         padding=12,
-        content=ft.Stack([
-            ft.Image(src=image_path, fit=ft.ImageFit.CONTAIN, expand=True),
-            bbox_overlay,
-        ]),
+        content=ft.Stack(
+            [
+                ft.Image(src=image_path, fit=ft.ImageFit.CONTAIN, expand=True),
+                bbox_overlay,
+            ]
+        ),
     )
 
     form_controls: list[ft.Control] = []
@@ -43,7 +45,9 @@ def build_triage_split_screen(
 
     action_bar = ft.Row(
         controls=[
-            ft.FilledButton("Confirm & Post Ledger", icon=ft.icons.CHECK_CIRCLE, on_click=on_confirm),
+            ft.FilledButton(
+                "Confirm & Post Ledger", icon=ft.icons.CHECK_CIRCLE, on_click=on_confirm
+            ),
             ft.OutlinedButton("Void / Reject", icon=ft.icons.CANCEL, on_click=on_reject),
         ],
         spacing=12,

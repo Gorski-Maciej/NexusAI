@@ -3,6 +3,7 @@
 Usage:
     python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --mode baseline
 """
+
 from __future__ import annotations
 
 import argparse
@@ -60,7 +61,17 @@ async def run_codeql(*, strict_tools: bool = False) -> int:
     report.mkdir(parents=True, exist_ok=True)
     sarif = report / "codeql.sarif"
     query_suite = "codeql/python-queries:codeql-suites/python-security-and-quality.qls"
-    return await _run([codeql, "database", "analyze", "--format=sarif-latest", f"--output={sarif}", "codeql-db", query_suite])
+    return await _run(
+        [
+            codeql,
+            "database",
+            "analyze",
+            "--format=sarif-latest",
+            f"--output={sarif}",
+            "codeql-db",
+            query_suite,
+        ]
+    )
 
 
 def _load_zap_summary(report_path: Path) -> dict[str, int]:
@@ -90,14 +101,25 @@ def _load_zap_summary(report_path: Path) -> dict[str, int]:
 def _enforce_zap_severity_gate(mode: str, max_high: int, max_medium: int) -> int:
     report = Path("reports") / f"zap_{mode}.json"
     counts = _load_zap_summary(report)
-    print(f"[security-scan] zap-severity high={counts['high']} medium={counts['medium']} low={counts['low']} info={counts['informational']}")
+    print(
+        f"[security-scan] zap-severity high={counts['high']} medium={counts['medium']} low={counts['low']} info={counts['informational']}"
+    )
     if counts["high"] > max_high or counts["medium"] > max_medium:
         print("[security-scan] severity gate breached", file=sys.stderr)
         return 1
     return 0
 
 
-def _write_summary(*, zap_rc: int, semgrep_rc: int, codeql_rc: int, strict_tools: bool, severity_gate_rc: int, max_high: int, max_medium: int) -> None:
+def _write_summary(
+    *,
+    zap_rc: int,
+    semgrep_rc: int,
+    codeql_rc: int,
+    strict_tools: bool,
+    severity_gate_rc: int,
+    max_high: int,
+    max_medium: int,
+) -> None:
     report = Path("reports")
     report.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -110,17 +132,25 @@ def _write_summary(*, zap_rc: int, semgrep_rc: int, codeql_rc: int, strict_tools
         "max_medium": max_medium,
         "policy": os.getenv("NEXUS_SECURITY_POLICY", "cli"),
     }
-    (report / "security_scan_summary.json").write_text(msgspec_dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    (report / "security_scan_summary.json").write_text(
+        msgspec_dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 
 
 async def main() -> int:
     parser = argparse.ArgumentParser(description="Run security checks (DAST + SAST).")
-    parser.add_argument("--target", required=True, help="Staging API URL, e.g. http://localhost:8000")
+    parser.add_argument(
+        "--target", required=True, help="Staging API URL, e.g. http://localhost:8000"
+    )
     parser.add_argument("--mode", choices=["baseline", "full"], default="baseline")
     parser.add_argument("--skip-semgrep", action="store_true")
     parser.add_argument("--skip-zap", action="store_true")
     parser.add_argument("--run-codeql", action="store_true")
-    parser.add_argument("--strict-tools", action="store_true", help="Fail when required scanner binaries are missing")
+    parser.add_argument(
+        "--strict-tools",
+        action="store_true",
+        help="Fail when required scanner binaries are missing",
+    )
     parser.add_argument("--max-zap-high", type=int, default=0)
     parser.add_argument("--max-zap-medium", type=int, default=0)
     parser.add_argument("--policy", choices=["strict", "moderate", "lenient"], default="strict")
@@ -133,10 +163,18 @@ async def main() -> int:
         args.max_zap_high = max(args.max_zap_high, 1)
         args.max_zap_medium = max(args.max_zap_medium, 20)
 
-    zap_rc = 0 if args.skip_zap else await run_zap(target=args.target, mode=args.mode, strict_tools=args.strict_tools)
+    zap_rc = (
+        0
+        if args.skip_zap
+        else await run_zap(target=args.target, mode=args.mode, strict_tools=args.strict_tools)
+    )
     semgrep_rc = 0 if args.skip_semgrep else await run_semgrep(strict_tools=args.strict_tools)
     codeql_rc = await run_codeql(strict_tools=args.strict_tools) if args.run_codeql else 0
-    severity_gate_rc = 0 if args.skip_zap else _enforce_zap_severity_gate(args.mode, args.max_zap_high, args.max_zap_medium)
+    severity_gate_rc = (
+        0
+        if args.skip_zap
+        else _enforce_zap_severity_gate(args.mode, args.max_zap_high, args.max_zap_medium)
+    )
 
     _write_summary(
         zap_rc=zap_rc,

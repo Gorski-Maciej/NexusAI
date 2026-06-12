@@ -5,6 +5,7 @@ from decimal import Decimal, InvalidOperation
 
 from nexus_ai.services.currency_converter import Money
 
+
 class ParsedInvoice(Struct):
     number: str | None = None
     nip: str | None = None
@@ -12,6 +13,7 @@ class ParsedInvoice(Struct):
     amount_gross: Money = Money.zero("PLN")
     iban: str | None = None
     currency: str = "PLN"
+
 
 class InvoiceParser:
     def __init__(self):
@@ -67,6 +69,7 @@ class InvoiceParser:
                         continue
         return Decimal("0.00")
 
+
 # Asynchroniczne wykorzystanie ActiveLearning w parsowaniu
 async def process_extraction(raw_text: str, active_learning_engine):
     # 1. Standardowy OCR/Regex
@@ -74,27 +77,30 @@ async def process_extraction(raw_text: str, active_learning_engine):
     extracted_data = parser.parse(raw_text).__dict__
 
     # 2. Zapytanie do Active Learning
-    suggestion = await active_learning_engine.get_suggested_correction(raw_text, extracted_data['nip'])
+    suggestion = await active_learning_engine.get_suggested_correction(
+        raw_text, extracted_data["nip"]
+    )
     if suggestion:
         # Nadpisujemy dane tymi, które użytkownik wprowadził poprzednio
         extracted_data.update(suggestion)
-        extracted_data['status'] = "AUTO_CORRECTED"
+        extracted_data["status"] = "AUTO_CORRECTED"
 
     return extracted_data
+
 
 async def check_for_anomalies(nip: str, current_amount: float, active_learning_engine):
     # 1. Pobieramy ostatnie 10 faktur od tego samego NIP-u z LanceDB
     historical_data = active_learning_engine.get_history_for_nip(nip, limit=10)
 
     if len(historical_data) < 3:
-        return None # Za mało danych do analizy
+        return None  # Za mało danych do analizy
 
     # 2. Obliczamy średnią i sprawdzamy odchylenie
     amounts = []
     for doc in historical_data:
-        amt = doc['amount_net']
+        amt = doc["amount_net"]
         # Nowa wersja: amount_net to Money, użyj .amount
-        if hasattr(amt, 'amount'):
+        if hasattr(amt, "amount"):
             amounts.append(float(amt.amount))
         else:
             amounts.append(float(amt))
@@ -102,10 +108,12 @@ async def check_for_anomalies(nip: str, current_amount: float, active_learning_e
 
     # 3. Reguła biznesowa: Jeśli kwota jest o 40% wyższa/niższa niż średnia
     threshold = 0.40
-    current_float = current_amount.amount if hasattr(current_amount, 'amount') else float(current_amount)
+    current_float = (
+        current_amount.amount if hasattr(current_amount, "amount") else float(current_amount)
+    )
     if current_float > avg_amount * (1 + threshold):
         return {
             "is_anomaly": True,
-            "message": f"Uwaga: Kwota ({current_float} zł) jest drastycznie wyższa niż zazwyczaj od tego dostawcy (średnia: {avg_amount:.2f} zł)."
+            "message": f"Uwaga: Kwota ({current_float} zł) jest drastycznie wyższa niż zazwyczaj od tego dostawcy (średnia: {avg_amount:.2f} zł).",
         }
     return None

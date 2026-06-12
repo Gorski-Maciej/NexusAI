@@ -1,4 +1,5 @@
 """FX / Exchange Rates management endpoints (Rozwiązanie 28)."""
+
 from __future__ import annotations
 
 from typing import Any

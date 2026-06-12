@@ -11,10 +11,15 @@ class BaseExporter(ABC):
         """Zwraca sformatowany ciąg znaków (XML/TXT) do zapisu."""
         pass
 
+
 class OptimaExporter(BaseExporter):
     """Eksport do formatu Comarch Optima (XML)."""
+
     def export(self, invoices: list[Invoice]) -> str:
-        root = ET.Element("ROOT", xmlns="[http://www.comarch.pl/optima/dokumenty](http://www.comarch.pl/optima/dokumenty)")
+        root = ET.Element(
+            "ROOT",
+            xmlns="[http://www.comarch.pl/optima/dokumenty](http://www.comarch.pl/optima/dokumenty)",
+        )
         rejestry = ET.SubElement(root, "REJESTRY_ZAKUPU")
 
         for inv in invoices:
@@ -24,4 +29,4 @@ class OptimaExporter(BaseExporter):
             ET.SubElement(doc, "DATA_WYSTAWIENIA").text = inv.issue_date.isoformat()
             # Optima wymaga rozbicia na pozycje (uproszczenie)
 
-        return ET.tostring(root, encoding='unicode')
+        return ET.tostring(root, encoding="unicode")

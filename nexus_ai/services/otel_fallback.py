@@ -1,4 +1,5 @@
 """File-based fallback buffer for telemetry export failures."""
+
 from __future__ import annotations
 
 import os
@@ -13,6 +14,7 @@ import pendulum
 
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
 
+
 class BufferedSpan(Struct):
     trace_id: str
     name: str
@@ -20,8 +22,14 @@ class BufferedSpan(Struct):
     end_ts: str
     attributes: dict[str, Any]
 
+
 class FileSpanBuffer:
-    def __init__(self, file_path: Path | str = "app_data/otel_spans_buffer.jsonl", max_records: int = 10_000, max_bytes: int = 10 * 1024 * 1024) -> None:
+    def __init__(
+        self,
+        file_path: Path | str = "app_data/otel_spans_buffer.jsonl",
+        max_records: int = 10_000,
+        max_bytes: int = 10 * 1024 * 1024,
+    ) -> None:
         self.file_path = Path(file_path)
         self.max_records = max_records
         self.max_bytes = max_bytes
@@ -34,6 +42,7 @@ class FileSpanBuffer:
         try:
             try:
                 import fcntl
+
                 fcntl.flock(fd, fcntl.LOCK_EX)
             except Exception:
                 pass
@@ -41,6 +50,7 @@ class FileSpanBuffer:
         finally:
             try:
                 import fcntl
+
                 fcntl.flock(fd, fcntl.LOCK_UN)
             except Exception:
                 pass
@@ -61,8 +71,22 @@ class FileSpanBuffer:
                     continue
         return records
 
-    def append(self, trace_id: str, name: str, *, start_ts: pendulum.DateTime, end_ts: pendulum.DateTime, attributes: dict[str, Any] | None = None) -> None:
-        span = BufferedSpan(trace_id=trace_id, name=name, start_ts=start_ts.in_tz("UTC").isoformat(), end_ts=end_ts.in_tz("UTC").isoformat(), attributes=attributes or {})
+    def append(
+        self,
+        trace_id: str,
+        name: str,
+        *,
+        start_ts: pendulum.DateTime,
+        end_ts: pendulum.DateTime,
+        attributes: dict[str, Any] | None = None,
+    ) -> None:
+        span = BufferedSpan(
+            trace_id=trace_id,
+            name=name,
+            start_ts=start_ts.in_tz("UTC").isoformat(),
+            end_ts=end_ts.in_tz("UTC").isoformat(),
+            attributes=attributes or {},
+        )
         with self._file_lock():
             with self.file_path.open("a", encoding="utf-8") as fp:
                 fp.write(msgspec_dumps(msgspec.structs.asdict(span), ensure_ascii=False) + "\n")
@@ -84,7 +108,9 @@ class FileSpanBuffer:
         size_required = self.file_path.stat().st_size > self.max_bytes
         if not trim_required and not size_required:
             return
-        while records and (len(records) > self.max_records or self._estimate_bytes(records) > self.max_bytes):
+        while records and (
+            len(records) > self.max_records or self._estimate_bytes(records) > self.max_bytes
+        ):
             records.pop(0)
         tmp = self.file_path.with_suffix(self.file_path.suffix + ".tmp")
         with tmp.open("w", encoding="utf-8") as fp:

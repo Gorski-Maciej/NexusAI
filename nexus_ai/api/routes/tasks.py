@@ -15,6 +15,7 @@ logger = get_logger("nexus.api.tasks.routes")
 
 class TaskController(Controller):
     """Status i zarządzanie zadaniami asynchronicznymi."""
+
     path = "/api/v1/tasks"
     tags = [TAG_TASKS]
 
@@ -33,19 +34,23 @@ class TaskController(Controller):
 
         async with engine.connect() as conn:
             row = (
-                await conn.execute(
-                    text(
-                        """
+                (
+                    await conn.execute(
+                        text(
+                            """
                         SELECT task_id, task_name, status, progress, result, error_message,
                                created_at, updated_at
                         FROM task_status
                         WHERE task_id = :task_id
                         LIMIT 1
                         """
-                    ),
-                    {"task_id": task_id},
+                        ),
+                        {"task_id": task_id},
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
 
         if not row:
             return {"task_id": task_id, "status": "UNKNOWN", "message": "Task not found"}
@@ -57,8 +62,12 @@ class TaskController(Controller):
             "progress": float(row["progress"] or 0.0),
             "result": row["result"],
             "error_message": row["error_message"],
-            "created_at": row["created_at"].isoformat() if hasattr(row["created_at"], "isoformat") else str(row["created_at"]),
-            "updated_at": row["updated_at"].isoformat() if hasattr(row["updated_at"], "isoformat") else str(row["updated_at"]),
+            "created_at": row["created_at"].isoformat()
+            if hasattr(row["created_at"], "isoformat")
+            else str(row["created_at"]),
+            "updated_at": row["updated_at"].isoformat()
+            if hasattr(row["updated_at"], "isoformat")
+            else str(row["updated_at"]),
         }
 
     @post(
@@ -80,12 +89,15 @@ class TaskController(Controller):
         import nats
 
         from core.config import AppConfig
+
         config = AppConfig()
         try:
             nc = await nats.connect(config.nats_url)
             await nc.publish(
                 f"task.cancel.{task_id}",
-                msgspec_dumps({"task_id": task_id, "cancelled_at": pendulum.now("UTC").isoformat()}).encode(),
+                msgspec_dumps(
+                    {"task_id": task_id, "cancelled_at": pendulum.now("UTC").isoformat()}
+                ).encode(),
             )
             await nc.close()
         except Exception as e:

@@ -8,11 +8,14 @@ from typing import TYPE_CHECKING, Any, Literal
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
 
+
 class AccountNature(StrEnum):
     DEBIT = "DEBIT"
     CREDIT = "CREDIT"
 
+
 TransactionType = Literal["INVOICE_SALE", "BAD_DEBT_PROVISION", "DIVIDEND_PAYOUT"]
+
 
 class LedgerEntryPacket(Struct, frozen=True):
     transaction_type: TransactionType
@@ -22,6 +25,7 @@ class LedgerEntryPacket(Struct, frozen=True):
     amount_minor: int
     currency: str
     metadata_tags: dict[str, Any]
+
 
 def ensure_compliance_analytics_schema(duckdb: DuckDBManager) -> None:
     duckdb.execute(
@@ -134,7 +138,10 @@ def ensure_compliance_analytics_schema(duckdb: DuckDBManager) -> None:
         """
     )
 
-def infer_ledger_entries(duckdb: DuckDBManager, transaction_data: dict[str, Any]) -> LedgerEntryPacket:
+
+def infer_ledger_entries(
+    duckdb: DuckDBManager, transaction_data: dict[str, Any]
+) -> LedgerEntryPacket:
     transaction_type = str(transaction_data["transaction_type"])
     amount = Decimal(str(transaction_data["amount"]))
     currency = str(transaction_data.get("currency", "PLN"))
@@ -164,6 +171,7 @@ def infer_ledger_entries(duckdb: DuckDBManager, transaction_data: dict[str, Any]
         currency=currency.upper(),
         metadata_tags=transaction_data.get("metadata_tags", {}),
     )
+
 
 def query_account_balances_by_tag(
     duckdb: DuckDBManager,

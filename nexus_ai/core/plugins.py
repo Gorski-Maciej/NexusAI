@@ -23,7 +23,11 @@ class PluginManager:
 
                 for _, obj in inspect.getmembers(module):
                     # Szukamy klas kończących się na 'Exporter'
-                    if inspect.isclass(obj) and obj.__name__.endswith("Exporter") and obj.__name__ != "BaseExporter":
+                    if (
+                        inspect.isclass(obj)
+                        and obj.__name__.endswith("Exporter")
+                        and obj.__name__ != "BaseExporter"
+                    ):
                         self.exporters[obj.__name__] = obj
                         logger.info(f"Zarejestrowano eksporter: {obj.__name__}")
         except Exception as e:

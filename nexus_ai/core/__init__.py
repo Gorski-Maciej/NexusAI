@@ -6,6 +6,7 @@ Nowy stack (zgodny z aa3fvcx.txt):
 - stamina zamiast tenacity + pybreaker (async-native retry + CB)
 - msgspec zamiast pydantic-settings + python-dotenv + json
 """
+
 from __future__ import annotations
 
 import logging as _logging
@@ -25,6 +26,7 @@ from nexus_ai.core.logger import logger  # noqa: E402
 
 # ── Optional / gracefully-falling modules ───────────────────────────────────
 
+
 def _safe_import(qualname: str, names: list[str]):
     """Try to import *names* from *qualname*; return (module, imported_names) on success."""
     try:
@@ -33,6 +35,7 @@ def _safe_import(qualname: str, names: list[str]):
     except (ImportError, ModuleNotFoundError, AttributeError) as exc:
         _log.debug("Optional import %s.%s unavailable: %s", qualname, names, exc)
         return None, [None] * len(names)
+
 
 # core.crypto — Vault (uses nexus-crypto now, always available)
 from nexus_ai.core.crypto import Vault  # noqa: E402
@@ -60,7 +63,8 @@ _, [PluginManager] = _safe_import("core.plugins", ["PluginManager"])
 
 # core.storage (optional)
 _, [StorageProvider, LocalStorageProvider] = _safe_import(
-    "core.storage", ["StorageProvider", "LocalStorageProvider"]  # noqa: E402
+    "core.storage",
+    ["StorageProvider", "LocalStorageProvider"],  # noqa: E402
 )
 
 # core.events (optional)
@@ -69,6 +73,8 @@ _, [NexusEvent] = _safe_import("core.events", ["NexusEvent"])  # noqa: E402
 
 # ── Late-bound globals ──────────────────────────────────────────────────────
 plugin_manager = None
+
+
 def _init_globals():
     global plugin_manager
     if PluginManager is not None:
@@ -79,6 +85,7 @@ def _init_globals():
         except Exception as exc:
             _log.debug("PluginManager init failed: %s", exc)
             plugin_manager = None
+
 
 _init_globals()
 

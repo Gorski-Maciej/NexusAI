@@ -200,8 +200,7 @@ def create_oltp_engine(
     """
     if not SQLCIPHER_AVAILABLE:
         raise RuntimeError(
-            "SQLCipher not available. Run with: "
-            "LD_PRELOAD=/usr/lib/.../libsqlcipher.so"
+            "SQLCipher not available. Run with: LD_PRELOAD=/usr/lib/.../libsqlcipher.so"
         )
 
     url = _sqlite_url(config, sqlite_path)
@@ -243,8 +242,7 @@ def create_async_oltp_engine(
     """
     if not SQLCIPHER_AVAILABLE:
         raise RuntimeError(
-            "SQLCipher not available. Run with: "
-            "LD_PRELOAD=/usr/lib/.../libsqlcipher.so"
+            "SQLCipher not available. Run with: LD_PRELOAD=/usr/lib/.../libsqlcipher.so"
         )
 
     url = _async_sqlite_url(config, sqlite_path)
@@ -309,9 +307,7 @@ def consolidate_database(engine) -> None:
             conn.execute(text("VACUUM;"))
 
             result2 = conn.execute(text("PRAGMA wal_checkpoint;"))
-            logger.info(
-                "WAL checkpoint status after TRUNCATE: %s", result2.fetchone()
-            )
+            logger.info("WAL checkpoint status after TRUNCATE: %s", result2.fetchone())
     except Exception as e:
         logger.error("Failed to consolidate database: %s", e)
 
@@ -341,6 +337,7 @@ async def get_async_session(
 
 class Base(DeclarativeBase):
     """Declarative base for OLTP SQLAlchemy models."""
+
     pass
 
 

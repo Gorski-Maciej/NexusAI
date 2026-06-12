@@ -46,6 +46,7 @@ CREATE INDEX IF NOT EXISTS idx_fallback_tx
     ON fallback_events(transaction_id);
 """
 
+
 class FallbackEvent(Struct):
     """Incydent braku reguły.
 
@@ -61,6 +62,7 @@ class FallbackEvent(Struct):
         resolved_at: Data rozwiązania.
         resolution_note: Notatka o rozwiązaniu.
     """
+
     event_id: str
     transaction_id: str
     context_snapshot: str
@@ -72,11 +74,14 @@ class FallbackEvent(Struct):
     resolved_at: str = ""
     resolution_note: str = ""
 
+
 def ensure_schema(conn: duckdb.DuckDBPyConnection) -> None:
     """Create fallback_events table if not present."""
     conn.execute(FALLBACK_EVENTS_SCHEMA)
 
+
 # ── Fallback Handler ────────────────────────────────────────────────────────
+
 
 class FallbackHandler:
     """Handler for no-matching-rule situations.
@@ -130,7 +135,10 @@ class FallbackHandler:
 
         logger.warning(
             "[FALLBACK] event=%s transaction=%s type=%s details=%s",
-            event_id, transaction_id, error_type, error_details,
+            event_id,
+            transaction_id,
+            error_type,
+            error_details,
         )
 
         return event_id

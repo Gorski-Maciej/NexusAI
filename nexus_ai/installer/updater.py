@@ -35,6 +35,7 @@ logger = get_logger("nexus.installer.updater")
 # Read from pyproject.toml or hardcoded
 try:
     import tomllib
+
     _project_root = Path(__file__).resolve().parent.parent.parent
     _pyproject = _project_root / "pyproject.toml"
     if _pyproject.exists():
@@ -48,8 +49,10 @@ except Exception:
 
 # ── Data types ──────────────────────────────────────────────────────────────
 
+
 class UpdateInfo(Struct):
     """Information about an available update."""
+
     version: str
     release_notes: str
     download_url: str
@@ -58,13 +61,16 @@ class UpdateInfo(Struct):
     minimum_version: str
     critical: bool
 
+
 class UpdateCheckResult(Struct):
     """Result of checking for updates."""
+
     update_available: bool
     current_version: str = CURRENT_VERSION
     latest_version: str = CURRENT_VERSION
     info: UpdateInfo | None = None
     error: str | None = None
+
 
 class UpdateProgressCallback(Protocol):
     def __call__(
@@ -75,6 +81,7 @@ class UpdateProgressCallback(Protocol):
         speed_bps: float,
         status: str,
     ) -> None: ...
+
 
 # ── Version endpoint URLs (tried in order) ──────────────────────────────────
 
@@ -91,6 +98,7 @@ LOCAL_VERSION_FILE = None  # Path to local version.json for testing
 
 # ── Version comparison ──────────────────────────────────────────────────────
 
+
 def _parse_version(version_str: str) -> tuple[int, ...]:
     """Parse version string like '1.2.3' into tuple of ints."""
     try:
@@ -98,11 +106,14 @@ def _parse_version(version_str: str) -> tuple[int, ...]:
     except (ValueError, AttributeError):
         return (0, 0, 0)
 
+
 def _is_newer(latest: str, current: str) -> bool:
     """Check if latest version > current version."""
     return _parse_version(latest) > _parse_version(current)
 
+
 # ── Check for updates ───────────────────────────────────────────────────────
+
 
 async def check_for_updates(
     custom_url: str | None = None,
@@ -192,7 +203,9 @@ async def check_for_updates(
         error="Could not reach update server",
     )
 
+
 # ── Download update ─────────────────────────────────────────────────────────
+
 
 async def download_update(
     update_info: UpdateInfo,
@@ -261,6 +274,7 @@ async def download_update(
             mode = "ab" if resume_bytes > 0 and response.status_code == 206 else "wb"
             downloaded = resume_bytes if mode == "ab" else 0
             import time as _time3
+
             start_time = _time3.monotonic()
             chunk_size = 8192
 
@@ -292,7 +306,9 @@ async def download_update(
         logger.error("Update download failed: %s", e)
         return None
 
+
 # ── Install update ──────────────────────────────────────────────────────────
+
 
 async def install_update(installer_path: Path) -> None:
     """Launch the downloaded installer and exit the current application.
@@ -326,14 +342,16 @@ async def install_update(installer_path: Path) -> None:
         with open(cleanup_script, "w") as f:
             f.write("@echo off\n")
             f.write("timeout /t 30 /nobreak >nul\n")
-            f.write(f"rmdir /s /q \"{temp_dir}\"\n")
-            f.write("del \"%~f0\"\n")
+            f.write(f'rmdir /s /q "{temp_dir}"\n')
+            f.write('del "%~f0"\n')
         await anyio.run_process(["cmd", "/c", str(cleanup_script)])
 
     except Exception as e:
         logger.error("Failed to launch installer: %s", e)
 
+
 # ── Flet update dialog ──────────────────────────────────────────────────────
+
 
 def build_update_dialog(
     page,
@@ -432,7 +450,9 @@ def build_update_dialog(
 
     return dialog
 
+
 # ── Update progress dialog ──────────────────────────────────────────────────
+
 
 def build_update_progress_dialog(page):
     """Build a Flet dialog showing update download progress.

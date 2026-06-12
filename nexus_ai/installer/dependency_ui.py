@@ -25,6 +25,7 @@ logger = get_logger("nexus.installer.dependency_ui")
 
 class DependencyInstallState:
     """Shared state for dependency installation UI."""
+
     def __init__(self):
         self.cancel_event = anyio.Event()
         self.is_downloading = False
@@ -63,46 +64,64 @@ class DependencyInstallApp:
 
         # Header
         header = ft.Container(
-            content=ft.Column([
-                ft.Text(
-                    "NexusAI — Environment Setup",
-                    size=24, weight=ft.FontWeight.BOLD, color="#00b4d8",
-                ),
-                ft.Text(
-                    "Downloading and configuring system components.\n"
-                    "This is a one-time setup for background services.",
-                    size=13, color="#a0a0b0",
-                ),
-            ]),
+            content=ft.Column(
+                [
+                    ft.Text(
+                        "NexusAI — Environment Setup",
+                        size=24,
+                        weight=ft.FontWeight.BOLD,
+                        color="#00b4d8",
+                    ),
+                    ft.Text(
+                        "Downloading and configuring system components.\n"
+                        "This is a one-time setup for background services.",
+                        size=13,
+                        color="#a0a0b0",
+                    ),
+                ]
+            ),
             margin=ft.margin.only(bottom=20),
         )
 
         # Overall progress
         self.progress_bar = ft.ProgressBar(
-            value=0.0, width=500, bar_height=8,
-            color="#00b4d8", bgcolor="#0f3460",
+            value=0.0,
+            width=500,
+            bar_height=8,
+            color="#00b4d8",
+            bgcolor="#0f3460",
         )
         self.progress_text = ft.Text(
-            "Preparing...", size=14,
-            color="#e0e0e0", weight=ft.FontWeight.BOLD,
+            "Preparing...",
+            size=14,
+            color="#e0e0e0",
+            weight=ft.FontWeight.BOLD,
         )
 
         progress_section = ft.Container(
-            content=ft.Column([
-                ft.Text("System Components", size=16,
-                        weight=ft.FontWeight.BOLD, color="#e0e0e0"),
-                ft.Container(height=8),
-                self.progress_bar,
-                ft.Container(height=6),
-                self.progress_text,
-            ]),
-            bgcolor="#16213e", border_radius=12, padding=20,
+            content=ft.Column(
+                [
+                    ft.Text(
+                        "System Components", size=16, weight=ft.FontWeight.BOLD, color="#e0e0e0"
+                    ),
+                    ft.Container(height=8),
+                    self.progress_bar,
+                    ft.Container(height=6),
+                    self.progress_text,
+                ]
+            ),
+            bgcolor="#16213e",
+            border_radius=12,
+            padding=20,
             margin=ft.margin.only(bottom=16),
         )
 
         # Status log
         self.status_log = ft.Text(
-            "Initializing...", size=12, color="#707080", italic=True,
+            "Initializing...",
+            size=12,
+            color="#707080",
+            italic=True,
         )
 
         # Binary status cards
@@ -110,34 +129,55 @@ class DependencyInstallApp:
         self._binary_status_card("TigerBeetle", "Accounting ledger", "⏳")
 
         binaries_section = ft.Container(
-            content=ft.Column([
-                self.nats_status,
-                ft.Container(height=8),
-                self.tb_status,
-            ]),
-            bgcolor="#16213e", border_radius=12, padding=16,
+            content=ft.Column(
+                [
+                    self.nats_status,
+                    ft.Container(height=8),
+                    self.tb_status,
+                ]
+            ),
+            bgcolor="#16213e",
+            border_radius=12,
+            padding=16,
             margin=ft.margin.only(bottom=16),
         )
 
         # Buttons
         self.cancel_btn = ft.ElevatedButton(
-            "Cancel", icon=ft.icons.CANCEL_OUTLINED,
-            color="#ef476f", bgcolor="#16213e",
-            on_click=self._on_cancel, width=140, height=40,
+            "Cancel",
+            icon=ft.icons.CANCEL_OUTLINED,
+            color="#ef476f",
+            bgcolor="#16213e",
+            on_click=self._on_cancel,
+            width=140,
+            height=40,
         )
         self.continue_btn = ft.ElevatedButton(
-            "Continue to NexusAI", icon=ft.icons.CHECK_CIRCLE_OUTLINE,
-            color="#06d6a0", bgcolor="#16213e",
-            on_click=self._on_continue, visible=False, width=200, height=40,
+            "Continue to NexusAI",
+            icon=ft.icons.CHECK_CIRCLE_OUTLINE,
+            color="#06d6a0",
+            bgcolor="#16213e",
+            on_click=self._on_continue,
+            visible=False,
+            width=200,
+            height=40,
         )
 
         page.add(
             ft.Container(
                 content=ft.Column(
-                    [header, progress_section, binaries_section, self.status_log,
-                     ft.Container(height=16),
-                     ft.Row([self.cancel_btn, self.continue_btn],
-                            alignment=ft.MainAxisAlignment.CENTER, spacing=16)],
+                    [
+                        header,
+                        progress_section,
+                        binaries_section,
+                        self.status_log,
+                        ft.Container(height=16),
+                        ft.Row(
+                            [self.cancel_btn, self.continue_btn],
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            spacing=16,
+                        ),
+                    ],
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 ),
                 expand=True,
@@ -160,14 +200,22 @@ class DependencyInstallApp:
             self._tb_icon = icon_text
 
         return ft.Container(
-            content=ft.Row([
-                icon_text,
-                ft.Column([
-                    ft.Text(name, size=14, weight=ft.FontWeight.BOLD, color="#e0e0e0"),
-                    ft.Text(description, size=11, color="#707080"),
-                ], spacing=2, expand=True),
-                status_text,
-            ], alignment=ft.MainAxisAlignment.START, spacing=12),
+            content=ft.Row(
+                [
+                    icon_text,
+                    ft.Column(
+                        [
+                            ft.Text(name, size=14, weight=ft.FontWeight.BOLD, color="#e0e0e0"),
+                            ft.Text(description, size=11, color="#707080"),
+                        ],
+                        spacing=2,
+                        expand=True,
+                    ),
+                    status_text,
+                ],
+                alignment=ft.MainAxisAlignment.START,
+                spacing=12,
+            ),
             padding=12,
         )
 
@@ -233,9 +281,7 @@ class DependencyInstallApp:
         """Start the dependency download process."""
         # Determine bin directory
         if getattr(sys, "frozen", False):
-            app_data = Path(
-                os.environ.get("APPDATA", Path.home() / "AppData" / "Roaming")
-            )
+            app_data = Path(os.environ.get("APPDATA", Path.home() / "AppData" / "Roaming"))
             self.state.bin_dir = app_data / "NexusAI" / "bin"
         else:
             self.state.bin_dir = Path("bin") / "deps"
@@ -298,8 +344,14 @@ class DependencyInstallApp:
         self.page.update()
 
     def _on_progress(
-        self, *, current_binary, downloaded_bytes, total_bytes,
-        speed_bps, overall_progress, status,
+        self,
+        *,
+        current_binary,
+        downloaded_bytes,
+        total_bytes,
+        speed_bps,
+        overall_progress,
+        status,
     ):
         s = self.state
         s.current_binary = current_binary

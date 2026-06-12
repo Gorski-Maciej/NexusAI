@@ -7,6 +7,7 @@ from nexus_ai.core.logger import logger
 
 # from core.tasks import process_invoice_task # Importowane z zadań
 
+
 class MailIngestionService:
     def __init__(self, config):
         self.config = config
@@ -22,10 +23,10 @@ class MailIngestionService:
             mail.select("inbox")
 
             # Szukamy nieprzeczytanych wiadomości
-            _, messages = mail.search(None, 'UNSEEN')
+            _, messages = mail.search(None, "UNSEEN")
 
             for num in messages[0].split():
-                _, data = mail.fetch(num, '(RFC822)')
+                _, data = mail.fetch(num, "(RFC822)")
                 email.message_from_bytes(data[0][1])
                 # Tu logika zapisywania załączników PDF
 

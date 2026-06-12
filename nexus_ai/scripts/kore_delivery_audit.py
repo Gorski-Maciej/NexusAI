@@ -13,11 +13,12 @@ REQUIREMENTS: dict[str, tuple[Check, ...]] = {
         {"file": "nexus_ai/scripts/performance_engineering.py", "contains": ("k6", "p95")},
     ),
     "6_workspace_nuitka": (
-        {"file": "nexus_ai/scripts/build_workspace_flatten.py", "contains": ("workspace", "flatten")},
+        {
+            "file": "nexus_ai/scripts/build_workspace_flatten.py",
+            "contains": ("workspace", "flatten"),
+        },
     ),
-    "7_dast_sast": (
-        {"file": "nexus_ai/scripts/security_scan.py", "contains": ("zap", "semgrep")},
-    ),
+    "7_dast_sast": ({"file": "nexus_ai/scripts/security_scan.py", "contains": ("zap", "semgrep")},),
     "8_i18n": (
         {"file": "nexus_ai/api/i18n.py", "contains": ("locales",)},
         {"file": "nexus_ai/api/locales/pl.json"},
@@ -31,11 +32,17 @@ REQUIREMENTS: dict[str, tuple[Check, ...]] = {
         {"file": "nexus_ai/core/secrets.py", "contains": ("ttl_hours", "cache", "offline")},
     ),
     "10_ui_state_hydration": (
-        {"file": "nexus_ai/api/routes/ui_state.py", "contains": ("/api/v1/ui", "ui_drafts", "save_draft", "get_draft")},
+        {
+            "file": "nexus_ai/api/routes/ui_state.py",
+            "contains": ("/api/v1/ui", "ui_drafts", "save_draft", "get_draft"),
+        },
         {"file": "nexus_ai/api/state.py", "contains": ("CREATE TABLE IF NOT EXISTS ui_drafts",)},
     ),
     "11_advanced_controls": (
-        {"file": "nexus_ai/api/routes/kore_closure.py", "contains": ("/closure", "runtime_counters", "kore_delivery_audit.py")},
+        {
+            "file": "nexus_ai/api/routes/kore_closure.py",
+            "contains": ("/closure", "runtime_counters", "kore_delivery_audit.py"),
+        },
         {"file": "nexus_ai/scripts/migration_sanity_check.py"},
         {"file": "nexus_ai/scripts/log_pii_scanner.py"},
         {"file": "nexus_ai/services/otel_fallback.py"},
@@ -43,21 +50,56 @@ REQUIREMENTS: dict[str, tuple[Check, ...]] = {
     ),
     "1_jwt_rbac_login": (
         {"file": "nexus_ai/api/app.py", "contains": ("on_app_init=[jwt_auth.on_app_init]",)},
-        {"file": "nexus_ai/api/rbac.py", "contains": ("getattr(connection, \"user\"",), "not_contains": ("X-Nexus-Role",)},
+        {
+            "file": "nexus_ai/api/rbac.py",
+            "contains": ('getattr(connection, "user"',),
+            "not_contains": ("X-Nexus-Role",),
+        },
         {"file": "nexus_ai/api/routes/auth.py", "contains": ("jwt_auth.login",)},
-        {"file": "nexus_ai/api/security.py", "contains": ("retrieve_user_handler", "SELECT id, username, role")},
+        {
+            "file": "nexus_ai/api/security.py",
+            "contains": ("retrieve_user_handler", "SELECT id, username, role"),
+        },
     ),
     "2_zero_etl_outbox_analytics": (
-        {"file": "nexus_ai/db/analytics.py", "contains": ("ATTACH '", "TYPE SQLITE", "SET memory_limit", "SET threads")},
-        {"file": "nexus_ai/api/tasks.py", "contains": ("relay_outbox_events", "replay_dead_letter_outbox_task")},
-        {"file": "nexus_ai/api/routes/system_integrity.py", "contains": ("/ui-drafts/cleanup", "cleanup_stale_ui_drafts")},
-        {"file": "nexus_ai/api/controllers/analytics.py", "contains": ("read_only=True", "SUM(total_gross) OVER", "cumulative_gross", "ASOF LEFT JOIN", "report_currency")},
-        {"file": "nexus_ai/api/state.py", "contains": ("CREATE TABLE IF NOT EXISTS fx_rates", "idx_fx_rates_currency_effective")},
-        {"file": "nexus_ai/services/replication.py", "contains": ("setup_zero_etl",), "not_contains": ("INSERT OR REPLACE INTO invoices_replica",)},
+        {
+            "file": "nexus_ai/db/analytics.py",
+            "contains": ("ATTACH '", "TYPE SQLITE", "SET memory_limit", "SET threads"),
+        },
+        {
+            "file": "nexus_ai/api/tasks.py",
+            "contains": ("relay_outbox_events", "replay_dead_letter_outbox_task"),
+        },
+        {
+            "file": "nexus_ai/api/routes/system_integrity.py",
+            "contains": ("/ui-drafts/cleanup", "cleanup_stale_ui_drafts"),
+        },
+        {
+            "file": "nexus_ai/api/controllers/analytics.py",
+            "contains": (
+                "read_only=True",
+                "SUM(total_gross) OVER",
+                "cumulative_gross",
+                "ASOF LEFT JOIN",
+                "report_currency",
+            ),
+        },
+        {
+            "file": "nexus_ai/api/state.py",
+            "contains": ("CREATE TABLE IF NOT EXISTS fx_rates", "idx_fx_rates_currency_effective"),
+        },
+        {
+            "file": "nexus_ai/services/replication.py",
+            "contains": ("setup_zero_etl",),
+            "not_contains": ("INSERT OR REPLACE INTO invoices_replica",),
+        },
     ),
     "3_storage_streaming": (
         {"file": "nexus_ai/services/storage.py", "contains": ("stream",)},
-        {"file": "nexus_ai/api/middleware.py", "contains": ("UploadSizeGuardMiddleware", "/invoices/upload-large")},
+        {
+            "file": "nexus_ai/api/middleware.py",
+            "contains": ("UploadSizeGuardMiddleware", "/invoices/upload-large"),
+        },
         {"file": "nexus_ai/api/shared_image_buffer.py", "contains": ("SharedImageBuffer",)},
     ),
     "4_11_enterprise_hardening": (

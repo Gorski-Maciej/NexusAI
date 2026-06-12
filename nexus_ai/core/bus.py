@@ -23,5 +23,6 @@ class EventBus:
                 for callback in self._subscribers[event_type]:
                     tg.start_soon(callback, data)
 
+
 # Globalny singleton
 bus = EventBus()

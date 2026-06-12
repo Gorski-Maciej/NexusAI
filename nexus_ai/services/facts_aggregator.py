@@ -52,6 +52,7 @@ logger = get_logger(__name__)
 # FactSheet — struktura danych wyjściowych dla DecisionEngine
 # ---------------------------------------------------------------------------
 
+
 class FactSheet(Struct):
     """Ustrukturyzowany arkusz faktów zebranych przed decyzją.
 
@@ -190,9 +191,11 @@ class FactSheet(Struct):
 
         # Źródła danych
         src = self.sources_available
-        lines.append(f"Źródła danych: SQLite={'✓' if src.get('sqlite') else '✗'}, "
-                      f"DuckDB={'✓' if src.get('duckdb') else '✗'}, "
-                      f"sqlite-vec={'✓' if src.get('vector_store') else '✗'}")
+        lines.append(
+            f"Źródła danych: SQLite={'✓' if src.get('sqlite') else '✗'}, "
+            f"DuckDB={'✓' if src.get('duckdb') else '✗'}, "
+            f"sqlite-vec={'✓' if src.get('vector_store') else '✗'}"
+        )
         lines.append("")
 
         # Podstawowe dane
@@ -227,10 +230,12 @@ class FactSheet(Struct):
             lines.append("Podobne faktury (semantycznie):")
             for i, inv in enumerate(similar, 1):
                 dist = inv.get("_distance", 0)
-                lines.append(f"  {i}. ID={inv.get('id', '?')} "
-                              f"kwota={inv.get('amount_gross', '?')} "
-                              f"kategoria={inv.get('category', '?')} "
-                              f"(odległość: {dist:.4f})")
+                lines.append(
+                    f"  {i}. ID={inv.get('id', '?')} "
+                    f"kwota={inv.get('amount_gross', '?')} "
+                    f"kategoria={inv.get('category', '?')} "
+                    f"(odległość: {dist:.4f})"
+                )
             lines.append("")
 
         # TigerBeetle (secure ledger)
@@ -243,7 +248,7 @@ class FactSheet(Struct):
             # niezależnie — ledger_accounts może być puste ale transfers nie i odwrotnie).
             ACCOUNT_LABELS = {
                 "401-01": "Usługi obce (expense)",
-                "202":    "Rozrachunki z dostawcami (payables)",
+                "202": "Rozrachunki z dostawcami (payables)",
                 "221-01": "VAT naliczony (input VAT)",
             }
 
@@ -282,7 +287,9 @@ class FactSheet(Struct):
         if rules:
             lines.append("Aktywne reguły podatkowe:")
             for i, rule in enumerate(rules, 1):
-                lines.append(f"  {i}. {rule.get('description_template', rule.get('condition_sql', '?'))}")
+                lines.append(
+                    f"  {i}. {rule.get('description_template', rule.get('condition_sql', '?'))}"
+                )
             lines.append("")
 
         # Korekty użytkownika
@@ -320,18 +327,22 @@ class FactSheet(Struct):
         # Sprawdź NexusCache (L1 RAM + L2 SQLite) — jeśli dane źródłowe
         # się nie zmieniły, zwróć cache bez przeliczania.
         # Klucz uwzględnia hash danych źródłowych i max_examples.
-        data_hash = hash((
-            str(self.recent_invoices),
-            str(self.similar_invoices),
-            str(self.globally_similar_cases),
-            str(self.global_recent_decisions),
-            str(self.trust_score_trend.get("decisions_breakdown", {})),
-            str(self.user_correction_patterns),
-        ))
+        data_hash = hash(
+            (
+                str(self.recent_invoices),
+                str(self.similar_invoices),
+                str(self.globally_similar_cases),
+                str(self.global_recent_decisions),
+                str(self.trust_score_trend.get("decisions_breakdown", {})),
+                str(self.user_correction_patterns),
+            )
+        )
         cache_key = f"few_shot:{data_hash}:{max_examples}"
         cached = _few_shot_nexus.get_sync(cache_key)
         if cached is not None:
-            logger.debug("[FactSheet] few-shot cache HIT: %d chars (key=%s)", len(cached), cache_key)
+            logger.debug(
+                "[FactSheet] few-shot cache HIT: %d chars (key=%s)", len(cached), cache_key
+            )
             return cached
 
         examples: list[str] = []
@@ -363,7 +374,11 @@ class FactSheet(Struct):
                 trust = float(decision_data.get("trust_score", 0.0))
                 level = str(decision_data.get("decision_level", ""))
                 pattern = str(decision_data.get("decision_pattern", ""))
-                correction = str(decision_data.get("user_correction", "")) if decision_data.get("user_correction") else ""
+                correction = (
+                    str(decision_data.get("user_correction", ""))
+                    if decision_data.get("user_correction")
+                    else ""
+                )
 
                 entry = (
                     f"[Podobna faktura (semantycznie, odległość: {distance:.4f})]\n"
@@ -506,9 +521,11 @@ class FactSheet(Struct):
 
         return result
 
+
 # ---------------------------------------------------------------------------
 # FactsAggregator — główna klasa
 # ---------------------------------------------------------------------------
+
 
 class FactsAggregator:
     """Agregator Faktów — warstwa RAG przed decyzją.
@@ -562,6 +579,7 @@ class FactsAggregator:
             FactSheet z danymi ze wszystkich dostępnych źródeł.
         """
         import time
+
         t0 = time.monotonic()
 
         sheet = FactSheet(
@@ -575,7 +593,9 @@ class FactsAggregator:
             amount_net=float(invoice_data.get("amount_net", 0) or 0),
             amount_gross=float(invoice_data.get("amount_gross", 0) or 0),
             category=str(invoice_data.get("category", "") or ""),
-            issue_date=str(invoice_data.get("issue_date", "") or invoice_data.get("date", "") or ""),
+            issue_date=str(
+                invoice_data.get("issue_date", "") or invoice_data.get("date", "") or ""
+            ),
         )
 
         # Uruchom wszystkie źródła równolegle przez TaskGroup
@@ -684,16 +704,13 @@ class FactsAggregator:
                         source_status.setdefault("global", True)
 
             except Exception as exc:
-                logger.warning(
-                    "[FactsAggregator] task %s failed: %s", name, exc
-                )
+                logger.warning("[FactsAggregator] task %s failed: %s", name, exc)
 
         sheet.sources_available = source_status
         sheet.build_duration_ms = round((time.monotonic() - t0) * 1000, 1)
 
         logger.info(
-            "[FactsAggregator] built fact sheet for invoice=%s "
-            "sources=%s duration=%.1fms",
+            "[FactsAggregator] built fact sheet for invoice=%s sources=%s duration=%.1fms",
             sheet.invoice_id,
             {k for k, v in source_status.items() if v},
             sheet.build_duration_ms,
@@ -840,11 +857,13 @@ class FactsAggregator:
                 except Exception:
                     payload = {"raw": p.correction_payload}
 
-                corrections.append({
-                    "id": p.id,
-                    "description": payload.get("description", payload.get("reasoning", "")),
-                    "timestamp": str(p.created_at),
-                })
+                corrections.append(
+                    {
+                        "id": p.id,
+                        "description": payload.get("description", payload.get("reasoning", "")),
+                        "timestamp": str(p.created_at),
+                    }
+                )
 
             return corrections
         except Exception as exc:
@@ -882,12 +901,14 @@ class FactsAggregator:
             elif name == "vendor_intel":
                 result = await self._fetch_vendor_intelligence(sheet.contractor_nip)
             elif name == "vector_similar":
-                result = await self._fetch_similar_invoices({
-                    "contractor_nip": sheet.contractor_nip,
-                    "amount_gross": sheet.amount_gross,
-                    "category": sheet.category,
-                    "invoice_id": sheet.invoice_id,
-                })
+                result = await self._fetch_similar_invoices(
+                    {
+                        "contractor_nip": sheet.contractor_nip,
+                        "amount_gross": sheet.amount_gross,
+                        "category": sheet.category,
+                        "invoice_id": sheet.invoice_id,
+                    }
+                )
             elif name == "tigerbeetle":
                 result = await self._fetch_ledger_history(sheet.contractor_nip, sheet.invoice_id)
             elif name == "global_decisions":
@@ -904,16 +925,16 @@ class FactsAggregator:
             results[name] = result
 
         except Exception as exc:
-            logger.warning(
-                "[FactsAggregator] worker %s failed: %s", name, exc
-            )
+            logger.warning("[FactsAggregator] worker %s failed: %s", name, exc)
             results[name] = None
 
     # ── DuckDB helpers (implementacje dla _worker_fetch) ────────────────
 
     async def _fetch_trust_score_trend(self) -> dict[str, Any]:
         """Pobierz trend trust score z DecisionLogger (DuckDB)."""
-        if self._decision_logger is None or not hasattr(self._decision_logger, 'get_trust_score_trend'):
+        if self._decision_logger is None or not hasattr(
+            self._decision_logger, "get_trust_score_trend"
+        ):
             return {}
         try:
             trend = self._decision_logger.get_trust_score_trend()
@@ -957,7 +978,9 @@ class FactsAggregator:
 
     async def _fetch_global_recent_decisions(self) -> list[dict[str, Any]]:
         """Pobierz ostatnie globalne decyzje z DecisionLogger."""
-        if self._decision_logger is None or not hasattr(self._decision_logger, 'get_recent_decisions_global'):
+        if self._decision_logger is None or not hasattr(
+            self._decision_logger, "get_recent_decisions_global"
+        ):
             return []
         try:
             decisions = self._decision_logger.get_recent_decisions_global(limit=5)
@@ -972,7 +995,9 @@ class FactsAggregator:
         amount_gross: float = 0.0,
     ) -> list[dict[str, Any]]:
         """Pobierz globalnie podobne przypadki z DecisionLogger."""
-        if self._decision_logger is None or not hasattr(self._decision_logger, 'get_globally_similar_cases'):
+        if self._decision_logger is None or not hasattr(
+            self._decision_logger, "get_globally_similar_cases"
+        ):
             return []
         try:
             cases = self._decision_logger.get_globally_similar_cases(
@@ -987,9 +1012,7 @@ class FactsAggregator:
 
     # ── sqlite-vec — podobieństwo semantyczne ─────────────────────
 
-    async def _fetch_similar_invoices(
-        self, invoice_data: dict[str, Any]
-    ) -> list[dict[str, Any]]:
+    async def _fetch_similar_invoices(self, invoice_data: dict[str, Any]) -> list[dict[str, Any]]:
         """Znajdź podobne faktury semantycznie przez sqlite-vec i wzbogać o decyzje.
 
         Krok 1: Generuje embedding z opisu faktury.
@@ -1016,9 +1039,7 @@ class FactsAggregator:
             )
 
             # Generuj embedding
-            embedding = await anyio.to_thread.run_sync(
-                self._embedding_service.embed, invoice_text
-            )
+            embedding = await anyio.to_thread.run_sync(self._embedding_service.embed, invoice_text)
 
             if not embedding:
                 return []
@@ -1041,9 +1062,7 @@ class FactsAggregator:
             return enriched
 
         except Exception as exc:
-            logger.warning(
-                "[FactsAggregator] similar invoices fetch failed: %s", exc
-            )
+            logger.warning("[FactsAggregator] similar invoices fetch failed: %s", exc)
             return []
 
     async def _enrich_similar_with_decision(
@@ -1113,18 +1132,23 @@ class FactsAggregator:
                         db_invoice = row.scalar_one_or_none()
 
                         if db_invoice is not None:
-                            enriched.update({
-                                "status": str(db_invoice.status or "?"),
-                                "number": str(db_invoice.number or ""),
-                                "amount_net": float(db_invoice.amount_net or 0),
-                                "amount_gross": float(db_invoice.amount_gross or inv.get("amount_gross", 0)),
-                            })
+                            enriched.update(
+                                {
+                                    "status": str(db_invoice.status or "?"),
+                                    "number": str(db_invoice.number or ""),
+                                    "amount_net": float(db_invoice.amount_net or 0),
+                                    "amount_gross": float(
+                                        db_invoice.amount_gross or inv.get("amount_gross", 0)
+                                    ),
+                                }
+                            )
                         else:
                             enriched["status"] = "?"
                     except Exception as exc:
                         logger.debug(
                             "[FactsAggregator] failed to enrich similar invoice %s: %s",
-                            inv_id, exc,
+                            inv_id,
+                            exc,
                         )
                         enriched["status"] = "?"
                 else:
@@ -1145,7 +1169,8 @@ class FactsAggregator:
                     except Exception as exc:
                         logger.debug(
                             "[FactsAggregator] failed to fetch decision for %s: %s",
-                            inv_id, exc,
+                            inv_id,
+                            exc,
                         )
                         enriched["decision"] = None
 
@@ -1165,9 +1190,7 @@ class FactsAggregator:
             return similar
 
         except Exception as exc:
-            logger.warning(
-                "[FactsAggregator] enrichment failed: %s — returning raw results", exc
-            )
+            logger.warning("[FactsAggregator] enrichment failed: %s — returning raw results", exc)
             for inv in similar:
                 inv.setdefault("status", "?")
                 inv.setdefault("decision", None)
@@ -1192,9 +1215,7 @@ class FactsAggregator:
 
     # ── TigerBeetle — historia księgowań kontrahenta ────────────────
 
-    async def _fetch_ledger_history(
-        self, contractor_nip: str, invoice_id: str
-    ) -> dict[str, Any]:
+    async def _fetch_ledger_history(self, contractor_nip: str, invoice_id: str) -> dict[str, Any]:
         """Pobierz historię księgową kontrahenta z TigerBeetle (secure ledger).
 
         Dla danego kontrahenta sprawdza:
@@ -1223,8 +1244,8 @@ class FactsAggregator:
             # W produkcji pobierana z Company.tigerbeetle_ledger_map
             account_map = {
                 "401-01": "401-01",  # Usługi obce (expense)
-                "202": "202",          # Rozrachunki z dostawcami (payables)
-                "221-01": "221-01",    # VAT naliczony
+                "202": "202",  # Rozrachunki z dostawcami (payables)
+                "221-01": "221-01",  # VAT naliczony
             }
 
             # Użyj TigerBeetleMapper do konwersji symboli na uint128
@@ -1263,14 +1284,14 @@ class FactsAggregator:
             }
 
         except Exception as exc:
-            logger.warning(
-                "[FactsAggregator] TigerBeetle ledger fetch failed: %s", exc
-            )
+            logger.warning("[FactsAggregator] TigerBeetle ledger fetch failed: %s", exc)
             return {}
+
 
 # ── Factory ──────────────────────────────────────────────────────────────
 
 _default_aggregator: FactsAggregator | None = None
+
 
 def get_facts_aggregator(
     duckdb: DuckDBManager | None = None,

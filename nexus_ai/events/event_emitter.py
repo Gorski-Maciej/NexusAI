@@ -292,10 +292,13 @@ class EventEmitter:
 
     def _next_version(self, aggregate_type: str, aggregate_id: str) -> int:
         """Pobierz następną wersję dla agregatu."""
-        return self._store.get_version(
-            aggregate_type=aggregate_type,
-            aggregate_id=aggregate_id,
-        ) + 1
+        return (
+            self._store.get_version(
+                aggregate_type=aggregate_type,
+                aggregate_id=aggregate_id,
+            )
+            + 1
+        )
 
     async def _emit(
         self,
@@ -373,9 +376,7 @@ def get_event_emitter(
             config = AppConfig.from_toml()
             from nexus_ai.events.event_store import EventStore
 
-            event_store = EventStore(
-                db_path=str(config.base_dir / "app_data" / "events.db")
-            )
+            event_store = EventStore(db_path=str(config.base_dir / "app_data" / "events.db"))
         _default_emitter = EventEmitter(
             event_store=event_store,
             jetstream=jetstream,

@@ -5,16 +5,18 @@ Zgodnie z aa3fvcx.txt:
 - msgspec ma wbudowany parser TOML — nie potrzebuje python-dotenv
 - Konfiguracja w czystym TOML zamiast .env
 """
+
 from __future__ import annotations
 
 import base64
 import binascii
 import importlib.util
 import os
-import time
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
+
+import pendulum
 
 from msgspec import Struct, toml
 
@@ -32,6 +34,7 @@ zawiera {env}.toml, protocols.toml, models_manifest.json, version.json.
 
 
 # ── ConfigLoader — mtime-based auto-reload dla TOML config ────────────────
+
 
 class ConfigLoader:
     """Automatyczny loader config TOML z mtime-based auto-reload.
@@ -114,7 +117,7 @@ class ConfigLoader:
     # ── Wewnętrzne ──────────────────────────────────────────────────────
 
     def _load(self) -> dict[str, Any]:
-        now = time.time()
+        now = pendulum.now().timestamp()
 
         if not self._auto_reload_enabled:
             if self._data is not None:
@@ -250,7 +253,89 @@ def get_config_loader(
     return _default_config_loader
 
 
+# ══════════════════════════════════════════════════════════════════════════
+# msgspec.toml typed schema — Fazа 2
+# Zgodnie z aa3fvcx.txt (Punkt 2): msgspec.toml.decode z type=... daje
+# typowaną walidację TOML z czytelnymi błędami (DecodeError + ValidationError).
+# Zastępuje ręczne mapowanie TOML→Struct przez _TOML_MAP i _resolve_field_value.
+# ══════════════════════════════════════════════════════════════════════════
+
+
+class _AppSection(Struct, kw_only=True):
+    """msgspec schema dla sekcji [app] w config/{env}.toml.
+
+    Wszystkie pola opcjonalne — Struct użyje defaultów zdefiniowanych
+    w AppConfig jeśli wartość nie występuje w TOML.
+    """
+
+    environment: str | None = None
+    base_dir: str | None = None
+    jwt_expiration_seconds: int | None = None
+    refresh_token_days: int | None = None
+    jwt_issuer: str | None = None
+    jwt_audience: str | None = None
+    csrf_enabled: bool | None = None
+    db_pool_size: int | None = None
+    db_pool_overflow: int | None = None
+    nats_max_reconnect: int | None = None
+    nats_reconnect_delay_seconds: int | None = None
+    max_task_retries: int | None = None
+    retry_backoff_base_seconds: float | None = None
+    retry_backoff_max_seconds: float | None = None
+    sqlite_file: str | None = None
+    duckdb_file: str | None = None
+    storage_dir: str | None = None
+    idempotency_db: str | None = None
+    debug: bool | None = None
+    sqlcipher_key_env: str | None = None
+    duckdb_memory_limit: str | None = None
+    duckdb_threads: int | None = None
+    cors_origins: str | None = None
+    max_invoice_upload_mb: int | None = None
+    max_attachment_upload_mb: int | None = None
+    outbox_replay_limit: int | None = None
+    migration_baseline_file: str | None = None
+    migration_checksum_baseline_file: str | None = None
+    autopilot_auto_post_threshold: float | None = None
+    autopilot_suggest_threshold: float | None = None
+    autopilot_ask_threshold: float | None = None
+    autopilot_adaptation_enabled: bool | None = None
+    autopilot_adaptation_learning_rate: float | None = None
+    autopilot_low_amount_threshold: float | None = None
+    rules_max_invoice_amount: float | None = None
+    rules_require_nip_validation: bool | None = None
+    analytics_anomaly_threshold: float | None = None
+    decision_timeout_seconds: int | None = None
+
+
+class _NatsSection(Struct, kw_only=True):
+    """msgspec schema dla sekcji [nats]."""
+
+    url: str | None = None
+    max_reconnect: int | None = None
+    reconnect_delay_seconds: int | None = None
+
+
+class _IntegrationsSection(Struct, kw_only=True):
+    """msgspec schema dla sekcji [integrations]."""
+
+    dpo_alert_webhook: str | None = None
+
+
+class _TomlConfigRoot(Struct, kw_only=True):
+    """msgspec schema dla całego pliku config/{env}.toml.
+
+    msgspec.toml.decode(..., type=_TomlConfigRoot) zwaliduje typy
+    wszystkich wartości i rzuci DecodeError/ValidationError przy błędzie.
+    """
+
+    app: _AppSection | None = None
+    nats: _NatsSection | None = None
+    integrations: _IntegrationsSection | None = None
+
+
 # ── Legacyjne funkcje ładowania (kompatybilność wsteczna) ────────────────
+
 
 def _load_toml_profile(environment: str) -> None:
     """Load environment-specific config from config/{env}.toml.
@@ -328,6 +413,7 @@ def _load_secrets_symbols():
         spec = None
     if spec is not None:
         from nexus_ai.core.secrets import LocalSecretsCache, OfflineFirstSecretResolver
+
         return LocalSecretsCache, OfflineFirstSecretResolver
     module_path = Path(__file__).with_name("secrets.py")
     local_spec = importlib.util.spec_from_file_location("core_secrets_local", module_path)
@@ -475,112 +561,133 @@ class AppConfig(Struct, kw_only=True):
         "decision_timeout_seconds": "NEXUS_DECISION_TIMEOUT",
     }
 
-    # ── TOML field → section.key mapping ──
-    # Mapuje nazwy pól AppConfig na ścieżki w strukturze TOML
-    _TOML_MAP: dict[str, str] = {
-        "environment": "app.environment",
-        "base_dir": "app.base_dir",
-        "jwt_expiration_seconds": "app.jwt_expiration_seconds",
-        "refresh_token_days": "app.refresh_token_days",
-        "jwt_issuer": "app.jwt_issuer",
-        "jwt_audience": "app.jwt_audience",
-        "csrf_enabled": "app.csrf_enabled",
-        "db_pool_size": "app.db_pool_size",
-        "db_pool_overflow": "app.db_pool_overflow",
-        "nats_max_reconnect": "app.nats_max_reconnect",
-        "nats_reconnect_delay_seconds": "app.nats_reconnect_delay_seconds",
-        "max_task_retries": "app.max_task_retries",
-        "retry_backoff_base_seconds": "app.retry_backoff_base_seconds",
-        "retry_backoff_max_seconds": "app.retry_backoff_max_seconds",
-        "sqlite_file_name": "app.sqlite_file",
-        "duckdb_file_name": "app.duckdb_file",
-        "storage_dir_name": "app.storage_dir",
-        "idempotency_db_name": "app.idempotency_db",
-        "debug": "app.debug",
-        "sqlcipher_key_env": "app.sqlcipher_key_env",
-        "duckdb_memory_limit": "app.duckdb_memory_limit",
-        "duckdb_threads": "app.duckdb_threads",
-        "cors_origins_raw": "app.cors_origins",
-        "max_invoice_upload_mb": "app.max_invoice_upload_mb",
-        "max_attachment_upload_mb": "app.max_attachment_upload_mb",
-        "dpo_alert_webhook": "integrations.dpo_alert_webhook",
-        "outbox_replay_limit": "app.outbox_replay_limit",
-        "migration_baseline_name": "app.migration_baseline_file",
-        "migration_checksum_baseline_name": "app.migration_checksum_baseline_file",
-        "autopilot_auto_post_threshold": "app.autopilot_auto_post_threshold",
-        "autopilot_suggest_threshold": "app.autopilot_suggest_threshold",
-        "autopilot_ask_threshold": "app.autopilot_ask_threshold",
-        "autopilot_adaptation_enabled": "app.autopilot_adaptation_enabled",
-        "autopilot_adaptation_learning_rate": "app.autopilot_adaptation_learning_rate",
-        "autopilot_low_amount_threshold": "app.autopilot_low_amount_threshold",
-        "rules_max_invoice_amount": "app.rules_max_invoice_amount",
-        "rules_require_nip_validation": "app.rules_require_nip_validation",
-        "analytics_anomaly_threshold": "app.analytics_anomaly_threshold",
-        "nats_url": "nats.url",
-        "decision_timeout_seconds": "app.decision_timeout_seconds",
+    # ── AppConfig field → (toml_section, toml_field) mapping ──
+    # Fazа 2: Używany przez _resolve_field_value do odczytu z _TomlConfigRoot.
+    # Stała klasowa — tworzona raz, nie przy każdym wywołaniu.
+    _TOML_FIELD_MAP: dict[str, tuple[str, str]] = {
+        "environment": ("app", "environment"),
+        "base_dir": ("app", "base_dir"),
+        "jwt_expiration_seconds": ("app", "jwt_expiration_seconds"),
+        "refresh_token_days": ("app", "refresh_token_days"),
+        "jwt_issuer": ("app", "jwt_issuer"),
+        "jwt_audience": ("app", "jwt_audience"),
+        "csrf_enabled": ("app", "csrf_enabled"),
+        "db_pool_size": ("app", "db_pool_size"),
+        "db_pool_overflow": ("app", "db_pool_overflow"),
+        "nats_max_reconnect": ("app", "nats_max_reconnect"),
+        "nats_reconnect_delay_seconds": ("app", "nats_reconnect_delay_seconds"),
+        "max_task_retries": ("app", "max_task_retries"),
+        "retry_backoff_base_seconds": ("app", "retry_backoff_base_seconds"),
+        "retry_backoff_max_seconds": ("app", "retry_backoff_max_seconds"),
+        "sqlite_file_name": ("app", "sqlite_file"),
+        "duckdb_file_name": ("app", "duckdb_file"),
+        "storage_dir_name": ("app", "storage_dir"),
+        "idempotency_db_name": ("app", "idempotency_db"),
+        "debug": ("app", "debug"),
+        "sqlcipher_key_env": ("app", "sqlcipher_key_env"),
+        "duckdb_memory_limit": ("app", "duckdb_memory_limit"),
+        "duckdb_threads": ("app", "duckdb_threads"),
+        "cors_origins_raw": ("app", "cors_origins"),
+        "max_invoice_upload_mb": ("app", "max_invoice_upload_mb"),
+        "max_attachment_upload_mb": ("app", "max_attachment_upload_mb"),
+        "dpo_alert_webhook": ("integrations", "dpo_alert_webhook"),
+        "outbox_replay_limit": ("app", "outbox_replay_limit"),
+        "migration_baseline_name": ("app", "migration_baseline_file"),
+        "migration_checksum_baseline_name": ("app", "migration_checksum_baseline_file"),
+        "autopilot_auto_post_threshold": ("app", "autopilot_auto_post_threshold"),
+        "autopilot_suggest_threshold": ("app", "autopilot_suggest_threshold"),
+        "autopilot_ask_threshold": ("app", "autopilot_ask_threshold"),
+        "autopilot_adaptation_enabled": ("app", "autopilot_adaptation_enabled"),
+        "autopilot_adaptation_learning_rate": ("app", "autopilot_adaptation_learning_rate"),
+        "autopilot_low_amount_threshold": ("app", "autopilot_low_amount_threshold"),
+        "rules_max_invoice_amount": ("app", "rules_max_invoice_amount"),
+        "rules_require_nip_validation": ("app", "rules_require_nip_validation"),
+        "analytics_anomaly_threshold": ("app", "analytics_anomaly_threshold"),
+        "nats_url": ("nats", "url"),
+        "decision_timeout_seconds": ("app", "decision_timeout_seconds"),
     }
 
     @classmethod
-    def _load_toml_file(cls, env: str | None = None) -> dict[str, Any]:
-        """Wczytaj plik TOML dla danego środowiska.
+    def _load_toml_file(cls, env: str | None = None) -> _TomlConfigRoot:
+        """Wczytaj plik TOML dla danego środowiska z typowaną walidacją (msgspec schema).
+
+        Fazа 2: Używa ``msgspec.toml.decode(..., type=_TomlConfigRoot)`` do
+        typowanej walidacji całego pliku TOML. Błędy walidacji (DecodeError,
+        ValidationError) są logowane i nie przerywają startu — aplikacja używa
+        defaultów z AppConfig.
 
         Args:
             env: Nazwa środowiska ("dev", "stage", "prod").
                  Domyślnie z NEXUS_ENV lub "dev".
 
         Returns:
-            Sparsowany słownik TOML.
+            Ztypowany obiekt _TomlConfigRoot z danymi TOML (puste sekcje = None).
         """
         if env is None:
             env = os.getenv("NEXUS_ENV", "dev").lower().strip()
         toml_path = ENV_CONFIG_DIR / f"{env}.toml"
         if not toml_path.exists():
             logger.warning("[Config] TOML file not found: %s — using defaults", toml_path)
-            return {}
+            return _TomlConfigRoot()
         try:
             with open(toml_path, "rb") as f:
-                data: dict[str, Any] = toml.decode(f.read())
-            logger.info("[Config] Loaded TOML: %s (%d sections)", toml_path.name, len(data))
-            return data
+                config_root = toml.decode(f.read(), type=_TomlConfigRoot)
+            logger.info(
+                "[Config] Loaded + validated TOML: %s (app=%s, nats=%s, integrations=%s)",
+                toml_path.name,
+                "present" if config_root.app else "defaults",
+                "present" if config_root.nats else "defaults",
+                "present" if config_root.integrations else "defaults",
+            )
+            return config_root
+        except msgspec.DecodeError as exc:
+            logger.warning("[Config] TOML decode error in %s: %s — using defaults", toml_path, exc)
+            return _TomlConfigRoot()
+        except msgspec.ValidationError as exc:
+            logger.warning(
+                "[Config] TOML validation error in %s: %s — using defaults", toml_path, exc
+            )
+            return _TomlConfigRoot()
         except Exception as exc:
             logger.warning("[Config] Failed to load %s: %s — using defaults", toml_path, exc)
-            return {}
+            return _TomlConfigRoot()
 
     @classmethod
     def _resolve_field_value(
         cls,
         field_name: str,
-        toml_data: dict[str, Any],
+        toml_root: _TomlConfigRoot,
     ) -> Any | None:
-        """Rozwiąż wartość pola: env var > TOML > None (użyj defaultu Structu).
+        """Rozwiąż wartość pola: env var > TOML (msgspec schema) > None (użyj defaultu).
+
+        Fazа 2: TOML jest sparsowany przez ``msgspec.toml.decode(..., type=_TomlConfigRoot)``,
+        więc wartości mają już poprawne typy (int, float, bool, str).
+        Nie potrzebujemy już ``_cast()`` ani ``_get_field_type()``.
 
         Args:
             field_name: Nazwa pola w AppConfig.
-            toml_data: Sparsowany słownik TOML.
+            toml_root: Ztypowany obiekt _TomlConfigRoot.
 
         Returns:
             Wartość lub None (oznacza "użyj defaultu z klasy").
         """
-        # 1. Sprawdź zmienną środowiskową
+        # 1. Sprawdź zmienną środowiskową (env var > TOML)
         env_key = cls._ENV_MAP.get(field_name)
         if env_key and env_key in os.environ:
             raw = os.environ[env_key]
+            # Rzutowanie typów dla env vars (string → właściwy typ)
             field_type = cls._get_field_type(field_name)
             return cls._cast(raw, field_type)
 
-        # 2. Sprawdź TOML
-        toml_path = cls._TOML_MAP.get(field_name)
-        if toml_path and toml_data:
-            parts = toml_path.split(".")
-            val: Any = toml_data
-            for part in parts:
-                if isinstance(val, dict):
-                    val = val.get(part)
-                else:
-                    val = None
-                    break
-            if val is not None:
-                return val
+        # 2. Sprawdź TOML przez msgspec schema (używa cls._TOML_FIELD_MAP — stała klasowa)
+        mapping = cls._TOML_FIELD_MAP.get(field_name)
+        if mapping:
+            section_name, field_in_section = mapping
+            section = getattr(toml_root, section_name, None)
+            if section is not None:
+                value = getattr(section, field_in_section, None)
+                if value is not None:
+                    return value
 
         # 3. Ani env, ani TOML — użyj defaultu zdefiniowanego w klasie
         return None
@@ -623,9 +730,13 @@ class AppConfig(Struct, kw_only=True):
 
     @classmethod
     def from_toml(cls, env: str | None = None) -> AppConfig:
-        """Utwórz AppConfig z bezpośrednim parsowaniem TOML.
+        """Utwórz AppConfig z bezpośrednim parsowaniem TOML (msgspec schema).
 
-        Priority: env var > TOML value > hardcoded Struct default.
+        Fazа 2: Używa ``msgspec.toml.decode(..., type=_TomlConfigRoot)`` do
+        typowanej walidacji całego pliku TOML. Błędy walidacji (DecodeError,
+        ValidationError) są logowane i nie przerywają startu.
+
+        Priority: env var > TOML value (msgspec schema) > hardcoded Struct default.
 
         Args:
             env: Nazwa środowiska ("dev", "stage", "prod").
@@ -636,11 +747,11 @@ class AppConfig(Struct, kw_only=True):
         if env is None:
             env = os.getenv("NEXUS_ENV", "dev").lower().strip()
 
-        toml_data = cls._load_toml_file(env)
+        toml_root = cls._load_toml_file(env)
         kwargs: dict[str, Any] = {}
 
         for field_name in cls.__struct_fields__:
-            value = cls._resolve_field_value(field_name, toml_data)
+            value = cls._resolve_field_value(field_name, toml_root)
             if value is not None:
                 kwargs[field_name] = value
 
@@ -665,16 +776,32 @@ class AppConfig(Struct, kw_only=True):
         """Validate config after initialization. Call after creating instance."""
         self.environment = self.environment.lower().strip()
         if self.environment not in {"dev", "stage", "prod"}:
-            raise ConfigValidationError(
-                "NEXUS_ENV must be one of: dev, stage, prod"
-            )
+            raise ConfigValidationError("NEXUS_ENV must be one of: dev, stage, prod")
 
-        self.base_dir = Path(self.base_dir).resolve() if isinstance(self.base_dir, str) else self.base_dir.resolve()
+        self.base_dir = (
+            Path(self.base_dir).resolve()
+            if isinstance(self.base_dir, str)
+            else self.base_dir.resolve()
+        )
         # Offline-first secret resolution: prefer live env, fallback to encrypted/local cache.
         cache = LocalSecretsCache(self.base_dir / "app_data" / "secrets_cache.json", ttl_hours=24)
         resolver = OfflineFirstSecretResolver(cache)
-        self.jwt_secret = resolver.resolve("jwt_secret", lambda: os.getenv("NEXUS_INFISCAL_JWT_SECRET", "").strip() or self.jwt_secret) or ""
-        self.encryption_key = resolver.resolve("encryption_key", lambda: os.getenv("NEXUS_INFISCAL_ENCRYPTION_KEY", "").strip() or self.encryption_key) or ""
+        self.jwt_secret = (
+            resolver.resolve(
+                "jwt_secret",
+                lambda: os.getenv("NEXUS_INFISCAL_JWT_SECRET", "").strip() or self.jwt_secret,
+            )
+            or ""
+        )
+        self.encryption_key = (
+            resolver.resolve(
+                "encryption_key",
+                lambda: (
+                    os.getenv("NEXUS_INFISCAL_ENCRYPTION_KEY", "").strip() or self.encryption_key
+                ),
+            )
+            or ""
+        )
         self.base_dir.mkdir(parents=True, exist_ok=True)
         self.storage_dir.mkdir(parents=True, exist_ok=True)
 
@@ -705,7 +832,9 @@ class AppConfig(Struct, kw_only=True):
         if self.max_attachment_upload_mb <= 0:
             raise ConfigValidationError("NEXUS_MAX_ATTACHMENT_UPLOAD_MB must be > 0")
         if self.max_attachment_upload_mb < self.max_invoice_upload_mb:
-            raise ConfigValidationError("NEXUS_MAX_ATTACHMENT_UPLOAD_MB must be >= NEXUS_MAX_INVOICE_UPLOAD_MB")
+            raise ConfigValidationError(
+                "NEXUS_MAX_ATTACHMENT_UPLOAD_MB must be >= NEXUS_MAX_INVOICE_UPLOAD_MB"
+            )
         if self.outbox_replay_limit <= 0:
             raise ConfigValidationError("NEXUS_OUTBOX_REPLAY_LIMIT must be > 0")
 
@@ -758,5 +887,3 @@ class AppConfig(Struct, kw_only=True):
             raise ConfigValidationError("NEXUS_ENCRYPTION_KEY must be valid base64-url") from exc
         if len(raw) != 32:
             raise ConfigValidationError("NEXUS_ENCRYPTION_KEY must decode to exactly 32 bytes")
-
-

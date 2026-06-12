@@ -31,7 +31,13 @@ async def cleanup_stale_ui_drafts(engine, older_than_hours: int) -> dict:
         )
         after = int((await conn.execute(text("SELECT COUNT(1) FROM ui_drafts"))).scalar_one())
 
-    return {"status": "ok", "older_than_hours": hours, "deleted": max(0, before - after), "remaining": after}
+    return {
+        "status": "ok",
+        "older_than_hours": hours,
+        "deleted": max(0, before - after),
+        "remaining": after,
+    }
+
 
 from nexus_ai.services.migration_sanity import (  # noqa: E402
     run_migration_sanity_checks,
@@ -60,9 +66,14 @@ class SystemIntegrityController(Controller):
         try:
             sanity = await run_migration_sanity_checks(engine)
             rowcount = await verify_migration_integrity(engine, config.migration_baseline_path)
-            checksums = await verify_migration_checksums(engine, config.migration_checksum_baseline_path)
+            checksums = await verify_migration_checksums(
+                engine, config.migration_checksum_baseline_path
+            )
             return {
-                "status": "ok" if rowcount.get("status") in {"ok", "baseline_created"} and checksums.get("status") in {"ok", "baseline_created"} else "warning",
+                "status": "ok"
+                if rowcount.get("status") in {"ok", "baseline_created"}
+                and checksums.get("status") in {"ok", "baseline_created"}
+                else "warning",
                 "sanity": sanity,
                 "rowcount_integrity": rowcount,
                 "checksum_integrity": checksums,
@@ -100,7 +111,9 @@ class SystemIntegrityController(Controller):
         description="Transitions a saga to a new state with optimistic locking (Rozwiązanie 33).",
         operation_id="transitionSaga",
     )
-    async def transition_saga(self, request: Request, saga_id: str, data: SagaTransitionRequest) -> dict:
+    async def transition_saga(
+        self, request: Request, saga_id: str, data: SagaTransitionRequest
+    ) -> dict:
         new_state = data.new_state.strip()
         payload = data.payload
         try:
@@ -146,7 +159,6 @@ class SystemIntegrityController(Controller):
                 for i in items
             ],
         }
-
 
     @post(
         "/saga/{saga_id:str}/compensate",

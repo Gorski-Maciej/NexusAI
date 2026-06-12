@@ -79,7 +79,9 @@ def _load_prompt_pack(lang: str) -> dict[PromptTemplate, str]:
     # Ensure all known templates exist (fallback per-template).
     for template in PromptTemplate:
         if template not in prompt_map:
-            fallback = _DEFAULT_PROMPTS.get(lang, {}).get(template) or _DEFAULT_PROMPTS["pl"][template]
+            fallback = (
+                _DEFAULT_PROMPTS.get(lang, {}).get(template) or _DEFAULT_PROMPTS["pl"][template]
+            )
             prompt_map[template] = fallback
 
     _prompt_cache.set_sync(cache_key, prompt_map, ttl=3600)
@@ -96,7 +98,13 @@ def _render_with_context(template_text: str, context: dict[str, str] | None = No
         raise ValueError(f"Missing prompt context key: {missing}") from exc
 
 
-def render_prompt(template: PromptTemplate, content: str, lang: str = "pl", *, context: dict[str, str] | None = None) -> str:
+def render_prompt(
+    template: PromptTemplate,
+    content: str,
+    lang: str = "pl",
+    *,
+    context: dict[str, str] | None = None,
+) -> str:
     prompt_map = _load_prompt_pack(lang)
     instruction = prompt_map.get(template) or _DEFAULT_PROMPTS["pl"][template]
     instruction = _render_with_context(instruction, context)

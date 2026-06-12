@@ -27,6 +27,7 @@ logger = get_logger("nexus.core.cache")
 
 try:
     from diskcache import Cache as _DiskcacheCache
+
     HAS_DISKCACHE = True
 except ImportError:
     HAS_DISKCACHE = False

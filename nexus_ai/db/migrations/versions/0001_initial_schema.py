@@ -69,7 +69,10 @@ def upgrade() -> None:
         sa.Column("deleted_at", sa.DateTime(), nullable=True),
         sa.Column("retry_count", sa.Integer(), nullable=False, server_default="0"),
         sa.Column("processing_status", sa.String(), nullable=True),
-        sa.ForeignKeyConstraint(["contractor_id"], ["contractors.id"],),
+        sa.ForeignKeyConstraint(
+            ["contractor_id"],
+            ["contractors.id"],
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index("idx_invoices_contractor_nip", "invoices", ["contractor_nip"])
@@ -108,7 +111,9 @@ def upgrade() -> None:
         sa.Column("processing_started_at", sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index("idx_outbox_pending", "outbox_events", ["status", "processed", "retry_count", "created_at"])
+    op.create_index(
+        "idx_outbox_pending", "outbox_events", ["status", "processed", "retry_count", "created_at"]
+    )
 
     # audit_logs
     op.create_table(
@@ -122,7 +127,10 @@ def upgrade() -> None:
         sa.Column("new_value", sa.Text(), nullable=True),
         sa.Column("timestamp", sa.DateTime(), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=True),
-        sa.ForeignKeyConstraint(["invoice_id"], ["invoices.id"],),
+        sa.ForeignKeyConstraint(
+            ["invoice_id"],
+            ["invoices.id"],
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index("idx_audit_invoice_id", "audit_logs", ["invoice_id"])
@@ -185,7 +193,9 @@ def upgrade() -> None:
         sa.Column("actor_id", sa.String(), nullable=False),
         sa.Column("draft_key", sa.String(), nullable=False),
         sa.Column("payload_json", sa.Text(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=False, server_default=sa.func.current_timestamp()),
+        sa.Column(
+            "updated_at", sa.DateTime(), nullable=False, server_default=sa.func.current_timestamp()
+        ),
         sa.PrimaryKeyConstraint("tenant_id", "actor_id", "draft_key"),
     )
 
@@ -229,7 +239,12 @@ def upgrade() -> None:
         sa.Column("processed_at", sa.DateTime(), nullable=True),
         sa.UniqueConstraint("event_type", "aggregate_id"),
     )
-    op.create_index("idx_processed_events_business_key", "processed_events", ["event_type", "aggregate_id"], unique=True)
+    op.create_index(
+        "idx_processed_events_business_key",
+        "processed_events",
+        ["event_type", "aggregate_id"],
+        unique=True,
+    )
 
     # ── Roboton_Reflekton tables ──────────────────────────────────────────
 

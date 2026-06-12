@@ -20,7 +20,9 @@ async def main(page: ft.Page):
         pending_count = 0
         if pending_count > 50:
             upload_button.disabled = True
-            status_text.value = f"⚠️ System przetwarza {pending_count} faktur. Poczekaj na zakończenie..."
+            status_text.value = (
+                f"⚠️ System przetwarza {pending_count} faktur. Poczekaj na zakończenie..."
+            )
             status_text.visible = True
         else:
             upload_button.disabled = False
@@ -54,12 +56,15 @@ async def main(page: ft.Page):
     page.run_task(nats_status_listener)
 
     page.add(
-        ft.Column([
-            upload_button,
-            status_text,
-            # ... reszta listy faktur ...
-        ])
+        ft.Column(
+            [
+                upload_button,
+                status_text,
+                # ... reszta listy faktur ...
+            ]
+        )
     )
+
 
 if __name__ == "__main__":
     ft.app(target=main)

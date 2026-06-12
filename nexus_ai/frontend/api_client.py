@@ -1,4 +1,5 @@
 """HTTP communication layer for local Litestar backend."""
+
 from __future__ import annotations
 
 from msgspec import Struct
@@ -11,8 +12,10 @@ import msgspec
 import pendulum
 from structlog import get_logger
 
+
 class InvoiceDTO(msgspec.Struct, kw_only=True):
     """Invoice structure consumed by frontend views."""
+
     id: str
     number: str
     customer_id: str
@@ -22,8 +25,10 @@ class InvoiceDTO(msgspec.Struct, kw_only=True):
     created_at: pendulum.DateTime
     pending: bool = False
 
+
 class ApiConfig(Struct):
     """API runtime configuration from bootstrap handshake."""
+
     port: int
     token: str
 
@@ -31,17 +36,20 @@ class ApiConfig(Struct):
     def base_url(self) -> str:
         return f"http://127.0.0.1:{self.port}"
 
+
 def create_http_client(config: ApiConfig) -> httpx.Client:
     """Create global HTTPX client with connection limits and JWT header."""
     return httpx.Client(
         base_url=config.base_url,
         timeout=10.0,
         limits=httpx.Limits(max_connections=10),
-        headers={"Authorization": f"Bearer {config.token}"}
+        headers={"Authorization": f"Bearer {config.token}"},
     )
+
 
 class NexusApiClient:
     """Thin typed wrapper around HTTPX for frontend data access."""
+
     def __init__(self, client: httpx.Client) -> None:
         self._client = client
 
@@ -119,15 +127,14 @@ class NexusApiClient:
         response = self._client.get("/analytics/summary")
         return response.json()
 
+
 # Wariant asynchroniczny API klienta połączony z resztą definicji
 class AsyncNexusApiClient:
     def __init__(self, port: int, token: str):
         self.base_url = f"http://127.0.0.1:{port}"
         self.token = token
         self.client = httpx.AsyncClient(
-            base_url=self.base_url,
-            headers={"Authorization": f"Bearer {self.token}"},
-            timeout=10.0
+            base_url=self.base_url, headers={"Authorization": f"Bearer {self.token}"}, timeout=10.0
         )
 
     async def list_invoices(self) -> list[Any]:
@@ -179,10 +186,13 @@ class AsyncNexusApiClient:
         """Zamyka połączenie (ważne przy wyłączaniu aplikacji)."""
         await self.client.aclose()
 
+
 logger = get_logger("nexus.ui.api")
+
 
 class NexusAPIClientUI:
     """Centralny punkt komunikacji UI z backendem Litestar."""
+
     def __init__(self, base_url: str = "http://127.0.0.1:8000/api/v1", token: str = None):
         self.base_url = base_url
         self.token = token
@@ -200,9 +210,7 @@ class NexusAPIClientUI:
             if api_version != "v1":
                 base = base.replace("/api/v1", f"/api/{api_version}")
             response = await self._client.get(
-                f"{base}{endpoint}",
-                headers=self._get_headers(),
-                params=params
+                f"{base}{endpoint}", headers=self._get_headers(), params=params
             )
             response.raise_for_status()
             return response.json()
@@ -218,17 +226,16 @@ class NexusAPIClientUI:
         import os
 
         import anyio
+
         try:
-            async with await anyio.open_file(file_path, 'rb') as f:
+            async with await anyio.open_file(file_path, "rb") as f:
                 content = await f.read()
-            files = {'file': (os.path.basename(file_path), content, 'application/pdf')}
+            files = {"file": (os.path.basename(file_path), content, "application/pdf")}
             headers = {}
             if self.token:
                 headers["Authorization"] = f"Bearer {self.token}"
             response = await self._client.post(
-                f"{self.base_url}{endpoint}",
-                headers=headers,
-                files=files
+                f"{self.base_url}{endpoint}", headers=headers, files=files
             )
             response.raise_for_status()
             return response.json()
@@ -239,7 +246,9 @@ class NexusAPIClientUI:
     async def get_pending_count(self) -> int:
         """Pobiera liczbę faktur oczekujących na przetworzenie."""
         try:
-            response = await self._client.get(f"{self.base_url}/invoices/stats/pending", headers=self._get_headers())
+            response = await self._client.get(
+                f"{self.base_url}/invoices/stats/pending", headers=self._get_headers()
+            )
             return response.json().get("count", 0)
         except Exception:
             return 0

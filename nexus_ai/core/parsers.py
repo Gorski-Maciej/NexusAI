@@ -14,7 +14,7 @@ class DataParser:
             return Decimal("0.00")
 
         # Usuwanie spacji, walut i zamiana przecinka na kropkę
-        clean_val = re.sub(r'[^\d.,-]', '', str(value)).replace(',', '.')
+        clean_val = re.sub(r"[^\d.,-]", "", str(value)).replace(",", ".")
         try:
             return Decimal(clean_val)
         except InvalidOperation:
@@ -23,4 +23,4 @@ class DataParser:
     @staticmethod
     def clean_nip(nip: str) -> str:
         """Normalizuje NIP do formatu 10 cyfr."""
-        return re.sub(r'\D', '', str(nip))
+        return re.sub(r"\D", "", str(nip))

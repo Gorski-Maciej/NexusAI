@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Generator
 from functools import lru_cache
 
 from litestar.connection import Request
-from sqlalchemy.ext.asyncio import AsyncEngine
-from sqlalchemy.orm import Session
 
 from nexus_ai.api.shared_image_buffer import SharedImageBuffer
 from nexus_ai.core.config import AppConfig
@@ -40,19 +37,12 @@ def provide_tenant_manager() -> TenantManager:
     return _get_tenant_manager()
 
 
-def provide_db_session(request: Request) -> Generator[Session, None, None]:
-    session_factory = request.app.state.db_session_factory
+def provide_db_engine(request: Request):
+    """Provide the SQLAlchemy engine from application state.
 
-    with session_factory() as session:
-        with session.begin():
-            yield session
-
-
-def provide_db_engine(request: Request) -> AsyncEngine:
-    """Provide the async SQLAlchemy engine from application state.
-
-    Umożliwia kontrolerom wstrzykiwanie ``db_engine`` przez DI
-    zamiast bezpośredniego ``request.app.state.db_engine``.
+    Wstrzykiwany przez DI do kontrolerów które używają ``db_engine``
+    bezpośrednio (auth, admin, dlq, ui_state, itd.).
+    Zastąpiony przez ``SQLAlchemyPlugin`` w docelowej architekturze.
     """
     return request.app.state.db_engine
 
@@ -69,3 +59,13 @@ def provide_duckdb() -> DuckDBManager:
 
 def provide_shared_image_buffer(request: Request) -> SharedImageBuffer:
     return request.app.state.shared_image_buffer
+
+
+def provide_event_emitter(request: Request):
+    """Provide the EventEmitter singleton from application state.
+
+    Wstrzykiwany przez DI do kontrolerów które potrzebują emisji
+    eventów domenowych (upload, triage, autopilot).
+    EventEmitter jest inicjalizowany podczas ``on_startup``.
+    """
+    return request.app.state.event_emitter

@@ -10,6 +10,7 @@ from nexus_ai.db.analytics import DuckDBManager
 
 class AnalyticsController(Controller):
     """Analityka i raportowanie danych księgowych."""
+
     path = "/api/v2/analytics"
     guards = [owner_only_guard]
     tags = [TAG_ANALYTICS]
@@ -52,7 +53,9 @@ class AnalyticsController(Controller):
             return DashboardSummaryResponse(total_net=0.0, total_gross=0.0, total_documents=0)
 
         row = result[0]
-        return DashboardSummaryResponse(total_net=float(row[0]), total_gross=float(row[1]), total_documents=int(row[2]))
+        return DashboardSummaryResponse(
+            total_net=float(row[0]), total_gross=float(row[1]), total_documents=int(row[2])
+        )
 
     @get(
         "/fx/asof",
@@ -62,7 +65,9 @@ class AnalyticsController(Controller):
         operation_id="getFxAsOfSample",
     )
     @ttl_cache(seconds=60)
-    async def get_fx_asof_sample(self, duckdb: DuckDBManager, currency: str = "EUR") -> list[dict[str, object]]:
+    async def get_fx_asof_sample(
+        self, duckdb: DuckDBManager, currency: str = "EUR"
+    ) -> list[dict[str, object]]:
         """AS OF JOIN sample for historical FX valuation."""
         query = """
         SELECT

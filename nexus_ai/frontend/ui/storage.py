@@ -6,6 +6,7 @@ from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 logger = get_logger("nexus.ui.storage")
 
+
 class LocalStorage:
     """Zarządza trwałymi danymi po stronie klienta (odpowiednik LocalStorage w przeglądarkach)."""
 

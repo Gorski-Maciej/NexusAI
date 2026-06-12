@@ -30,7 +30,7 @@ class AccountingService:
         calculated_rates = [
             round(net * Decimal("1.23"), 2),
             round(net * Decimal("1.08"), 2),
-            round(net * Decimal("1.05"), 2)
+            round(net * Decimal("1.05"), 2),
         ]
         return round(gross, 2) in calculated_rates
 

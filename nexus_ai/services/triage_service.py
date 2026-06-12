@@ -11,24 +11,36 @@ from nexus_ai.db.models import Invoice
 
 TRIAGE_CONFIDENCE_THRESHOLD = 0.85
 
+
 class TriageDecision(Struct):
     send_to_review: bool
     reason: str | None = None
 
-def should_triage_document(*, confidence_score: float, amount_net: Decimal, amount_vat: Decimal, amount_gross: Decimal) -> TriageDecision:
+
+def should_triage_document(
+    *, confidence_score: float, amount_net: Decimal, amount_vat: Decimal, amount_gross: Decimal
+) -> TriageDecision:
     """Core triage rule used by workers before posting accounting effects."""
     if confidence_score < TRIAGE_CONFIDENCE_THRESHOLD:
         return TriageDecision(send_to_review=True, reason="LOW_CONFIDENCE")
 
-    if (amount_net + amount_vat).quantize(Decimal("0.01")) != amount_gross.quantize(Decimal("0.01")):
+    if (amount_net + amount_vat).quantize(Decimal("0.01")) != amount_gross.quantize(
+        Decimal("0.01")
+    ):
         return TriageDecision(send_to_review=True, reason="MATH_MISMATCH")
 
     return TriageDecision(send_to_review=False)
 
+
 def list_pending_triage_items(session: Session, *, tenant_id: str) -> list[Invoice]:
-    stmt = select(Invoice).where(Invoice.status == "PENDING_REVIEW", Invoice.tenant_id == tenant_id).order_by(Invoice.created_at.desc())
+    stmt = (
+        select(Invoice)
+        .where(Invoice.status == "PENDING_REVIEW", Invoice.tenant_id == tenant_id)
+        .order_by(Invoice.created_at.desc())
+    )
     result = session.execute(stmt)
     return list(result.scalars().all())
+
 
 def resolve_triage_item(
     session: Session,

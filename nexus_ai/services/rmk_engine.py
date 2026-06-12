@@ -13,6 +13,7 @@ RMK_ASSET_ACCOUNT_ID = "640"
 RMK_LEDGER_ID = 1
 RMK_TRANSFER_CODE = 2001
 
+
 class RMKInvoiceData(Struct):
     invoice_id: str
     description: str
@@ -21,13 +22,16 @@ class RMKInvoiceData(Struct):
     end_date: pendulum.Date
     cost_account_id: str
 
+
 def _month_end(year: int, month: int) -> pendulum.Date:
     return pendulum.Date(year, month, calendar.monthrange(year, month)[1])
+
 
 def _first_of_next_month(input_date: pendulum.Date) -> pendulum.Date:
     if input_date.month == 12:
         return pendulum.Date(input_date.year + 1, 1, 1)
     return pendulum.Date(input_date.year, input_date.month + 1, 1)
+
 
 class RMKEngine:
     """Accruals & Deferrals generator (RMK) with day-level pro-rata precision."""
@@ -41,7 +45,9 @@ class RMKEngine:
 
         deferred_id = uuid.uuid4().hex
         total_days = (invoice_data.end_date - invoice_data.start_date).days + 1
-        daily_rate = (invoice_data.total_net_amount / Decimal(total_days)).quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
+        daily_rate = (invoice_data.total_net_amount / Decimal(total_days)).quantize(
+            Decimal("0.0001"), rounding=ROUND_HALF_UP
+        )
 
         self.duckdb.execute(
             """
@@ -74,7 +80,9 @@ class RMKEngine:
             period_end = min(invoice_data.end_date, month_finish)
 
             covered_days = (period_end - period_start).days + 1
-            month_amount = (daily_rate * Decimal(covered_days)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            month_amount = (daily_rate * Decimal(covered_days)).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            )
             allocations.append((month_finish, month_amount))
             month_cursor = _first_of_next_month(month_cursor)
 
@@ -82,7 +90,10 @@ class RMKEngine:
         diff = invoice_data.total_net_amount - booked
         if allocations and diff != Decimal("0.00"):
             post_date, amount = allocations[-1]
-            allocations[-1] = (post_date, (amount + diff).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+            allocations[-1] = (
+                post_date,
+                (amount + diff).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+            )
 
         for posting_date, amount in allocations:
             self.duckdb.execute(

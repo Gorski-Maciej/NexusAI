@@ -5,16 +5,18 @@ Zgodnie z aa3fvcx.txt (Punkt 26): zarządzanie terminami przypomnień
 
 Oparty na Python + anyio dla lekkiej, asynchronicznej pracy w tle.
 Integruje się z NotificationManager do wysyłania przypomnień.
+
+Storage: Główna baza danych (SQLAlchemy / Alembic).
+DDL w migracji 0003_consolidate_service_tables.
 """
 
 from __future__ import annotations
 
 import enum
-import sqlite3
-from pathlib import Path
 from typing import Any, Callable
 
 import pendulum
+from sqlalchemy import Engine, text
 from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
@@ -24,16 +26,18 @@ logger = get_logger("nexus.services.scheduler")
 
 class ReminderType(enum.Enum):
     """Typy przypomnień."""
-    ZUS_DEADLINE = "zus_deadline"              # Terminy składek ZUS
-    LICENSE_EXPIRY = "license_expiry"           # Upływające licencje
-    TAX_REPORT = "tax_report"                    # Cykliczne raporty podatkowe
-    INVOICE_DEADLINE = "invoice_deadline"       # Terminy płatności faktur
-    CONTRACT_RENEWAL = "contract_renewal"       # Odnowienie umów
-    CUSTOM = "custom"                           # Niestandardowe
+
+    ZUS_DEADLINE = "zus_deadline"  # Terminy składek ZUS
+    LICENSE_EXPIRY = "license_expiry"  # Upływające licencje
+    TAX_REPORT = "tax_report"  # Cykliczne raporty podatkowe
+    INVOICE_DEADLINE = "invoice_deadline"  # Terminy płatności faktur
+    CONTRACT_RENEWAL = "contract_renewal"  # Odnowienie umów
+    CUSTOM = "custom"  # Niestandardowe
 
 
 class ReminderStatus(enum.Enum):
     """Status przypomnienia."""
+
     ACTIVE = "active"
     SENT = "sent"
     DISMISSED = "dismissed"
@@ -55,62 +59,20 @@ class Scheduler:
       - EventLog: loguje wykonane zadania
       - DecisionQueue: może dodawać decyzje wymagające uwagi
 
-    Storage: SQLite z auto-migracją.
+    Storage: Główna baza danych (Alembic).
+    Tabele: scheduled_tasks, reminders (migracja 0003).
     """
 
     def __init__(
         self,
-        db_path: Path | str | None = None,
+        engine: Engine,
         notification_manager: Any = None,
         event_log: Any = None,
     ) -> None:
-        self._db_path = Path(db_path) if db_path else Path("app_data/scheduler.db")
-        self._db_path.parent.mkdir(parents=True, exist_ok=True)
+        self._engine = engine
         self._notification_manager = notification_manager
         self._event_log = event_log
         self._callbacks: dict[str, Callable] = {}
-        self._init_schema()
-
-    def _init_schema(self) -> None:
-        """Inicjalizuj schemat bazy."""
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.executescript("""
-                CREATE TABLE IF NOT EXISTS scheduled_tasks (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
-                    task_type TEXT NOT NULL DEFAULT 'custom',
-                    trigger_at TEXT NOT NULL,
-                    interval_minutes INTEGER,
-                    callback TEXT NOT NULL DEFAULT '',
-                    params TEXT NOT NULL DEFAULT '{}',
-                    is_active INTEGER NOT NULL DEFAULT 1,
-                    last_run_at TEXT,
-                    next_run_at TEXT,
-                    created_at TEXT NOT NULL
-                );
-                CREATE TABLE IF NOT EXISTS reminders (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id TEXT NOT NULL,
-                    title TEXT NOT NULL,
-                    message TEXT NOT NULL,
-                    reminder_type TEXT NOT NULL DEFAULT 'custom',
-                    remind_at TEXT NOT NULL,
-                    status TEXT NOT NULL DEFAULT 'active',
-                    reference_type TEXT,
-                    reference_id TEXT,
-                    notification_id INTEGER DEFAULT NULL,
-                    created_at TEXT NOT NULL
-                );
-                CREATE INDEX IF NOT EXISTS idx_reminders_pending
-                    ON reminders(status, remind_at);
-                CREATE INDEX IF NOT EXISTS idx_scheduler_next
-                    ON scheduled_tasks(next_run_at)
-                    WHERE is_active = 1;
-            """)
-            conn.commit()
-        finally:
-            conn.close()
 
     # ── Przypomnienia (reminders) ─────────────────────────────────────────
 
@@ -126,39 +88,41 @@ class Scheduler:
     ) -> int:
         """Dodaj nowe przypomnienie.
 
-        Args:
-            user_id: ID użytkownika
-            title: Tytuł przypomnienia
-            message: Treść przypomnienia
-            remind_at: Kiedy przypomnieć (ISO datetime)
-            reminder_type: Typ przypomnienia
-            reference_type: Typ referencji
-            reference_id: ID referencji
-
         Returns:
             ID utworzonego przypomnienia
         """
         now = pendulum.now("UTC").isoformat()
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            cursor = conn.execute(
-                """INSERT INTO reminders
-                   (user_id, title, message, reminder_type, remind_at,
-                    status, reference_type, reference_id, created_at)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                (user_id, title, message, reminder_type, remind_at,
-                 ReminderStatus.ACTIVE.value, reference_type, reference_id, now),
+        with self._engine.begin() as conn:
+            result = conn.execute(
+                text(
+                    """INSERT INTO reminders
+                       (user_id, title, message, reminder_type, remind_at,
+                        status, reference_type, reference_id, created_at)
+                       VALUES (:user_id, :title, :message, :reminder_type, :remind_at,
+                               :status, :reference_type, :reference_id, :created_at)"""
+                ),
+                {
+                    "user_id": user_id,
+                    "title": title,
+                    "message": message,
+                    "reminder_type": reminder_type,
+                    "remind_at": remind_at,
+                    "status": ReminderStatus.ACTIVE.value,
+                    "reference_type": reference_type,
+                    "reference_id": reference_id,
+                    "created_at": now,
+                },
             )
-            conn.commit()
-            reminder_id = int(cursor.lastrowid)
+            reminder_id = int(result.lastrowid)
 
-            logger.info(
-                "[Scheduler] reminder added id=%d user=%s type=%s at=%s",
-                reminder_id, user_id, reminder_type, remind_at,
-            )
-            return reminder_id
-        finally:
-            conn.close()
+        logger.info(
+            "[Scheduler] reminder added id=%d user=%s type=%s at=%s",
+            reminder_id,
+            user_id,
+            reminder_type,
+            remind_at,
+        )
+        return reminder_id
 
     def add_zus_deadline_reminder(
         self,
@@ -166,16 +130,7 @@ class Scheduler:
         deadline_date: str,
         days_before: int = 7,
     ) -> int:
-        """Dodaj przypomnienie o deadline ZUS.
-
-        Args:
-            user_id: ID użytkownika
-            deadline_date: Data deadline (YYYY-MM-DD)
-            days_before: Na ile dni przed deadline przypomnieć (domyślnie 7)
-
-        Returns:
-            ID utworzonego przypomnienia
-        """
+        """Dodaj przypomnienie o deadline ZUS."""
         deadline = pendulum.parse(deadline_date)
         remind_at = deadline.subtract(days=days_before)
 
@@ -183,7 +138,7 @@ class Scheduler:
             user_id=user_id,
             title=f"Termin składki ZUS — {deadline.format('DD.MM.YYYY')}",
             message=f"Zbliża się termin opłacenia składki ZUS ({deadline.format('DD.MM.YYYY')}). "
-                    f"Pozostało {days_before} dni.",
+            f"Pozostało {days_before} dni.",
             remind_at=remind_at.isoformat(),
             reminder_type=ReminderType.ZUS_DEADLINE.value,
             reference_type="zus_deadline",
@@ -205,7 +160,7 @@ class Scheduler:
             user_id=user_id,
             title=f"Licencja {license_name} wygasa {expiry.format('DD.MM.YYYY')}",
             message=f"Licencja '{license_name}' wygaśnie za {days_before} dni. "
-                    f"Termin: {expiry.format('DD.MM.YYYY')}.",
+            f"Termin: {expiry.format('DD.MM.YYYY')}.",
             remind_at=remind_at.isoformat(),
             reminder_type=ReminderType.LICENSE_EXPIRY.value,
             reference_type="license",
@@ -227,7 +182,7 @@ class Scheduler:
             user_id=user_id,
             title=f"Raport {report_name} — termin {due.format('DD.MM.YYYY')}",
             message=f"Zbliża się termin złożenia raportu '{report_name}'. "
-                    f"Termin: {due.format('DD.MM.YYYY')}.",
+            f"Termin: {due.format('DD.MM.YYYY')}.",
             remind_at=remind_at.isoformat(),
             reminder_type=ReminderType.TAX_REPORT.value,
             reference_type="tax_report",
@@ -245,19 +200,23 @@ class Scheduler:
             Lista przetworzonych przypomnień.
         """
         now = pendulum.now("UTC").isoformat()
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.row_factory = sqlite3.Row
-            due = conn.execute(
-                """SELECT * FROM reminders
-                   WHERE status = ? AND remind_at <= ?
-                   ORDER BY remind_at ASC
-                   LIMIT 50""",
-                (ReminderStatus.ACTIVE.value, now),
-            ).fetchall()
+        with self._engine.connect() as conn:
+            rows = (
+                conn.execute(
+                    text(
+                        """SELECT * FROM reminders
+                       WHERE status = :status AND remind_at <= :now
+                       ORDER BY remind_at ASC
+                       LIMIT 50"""
+                    ),
+                    {"status": ReminderStatus.ACTIVE.value, "now": now},
+                )
+                .mappings()
+                .all()
+            )
 
             processed = []
-            for reminder in due:
+            for reminder in rows:
                 reminder_dict = dict(reminder)
 
                 # Wyślij powiadomienie
@@ -275,21 +234,24 @@ class Scheduler:
                             expires_in_hours=72,
                         )
                         # Zapisz ID powiadomienia
-                        conn.execute(
-                            "UPDATE reminders SET notification_id = ? WHERE id = ?",
-                            (notif_id, reminder_dict["id"]),
-                        )
+                        with self._engine.begin() as uc:
+                            uc.execute(
+                                text("UPDATE reminders SET notification_id = :nid WHERE id = :rid"),
+                                {"nid": notif_id, "rid": reminder_dict["id"]},
+                            )
                     except Exception as exc:
                         logger.warning(
                             "[Scheduler] Failed to send notification for reminder %d: %s",
-                            reminder_dict["id"], exc,
+                            reminder_dict["id"],
+                            exc,
                         )
 
                 # Oznacz jako wysłane
-                conn.execute(
-                    "UPDATE reminders SET status = ? WHERE id = ?",
-                    (ReminderStatus.SENT.value, reminder_dict["id"]),
-                )
+                with self._engine.begin() as uc:
+                    uc.execute(
+                        text("UPDATE reminders SET status = :status WHERE id = :rid"),
+                        {"status": ReminderStatus.SENT.value, "rid": reminder_dict["id"]},
+                    )
 
                 # Zaloguj do EventLog
                 if self._event_log:
@@ -310,14 +272,10 @@ class Scheduler:
 
                 processed.append(reminder_dict)
 
-            conn.commit()
+        if processed:
+            logger.info("[Scheduler] processed %d due reminders", len(processed))
 
-            if processed:
-                logger.info("[Scheduler] processed %d due reminders", len(processed))
-
-            return processed
-        finally:
-            conn.close()
+        return processed
 
     # ── Cykliczne zadania ──────────────────────────────────────────────────
 
@@ -336,14 +294,6 @@ class Scheduler:
     ) -> int:
         """Dodaj zadanie cykliczne.
 
-        Args:
-            name: Nazwa zadania
-            task_type: Typ zadania
-            trigger_at: Kiedy uruchomić (ISO datetime)
-            interval_minutes: Interwał w minutach (None = jednorazowe)
-            callback: Nazwa zarejestrowanego callbacka
-            params: Parametry zadania (JSON)
-
         Returns:
             ID utworzonego zadania
         """
@@ -352,29 +302,38 @@ class Scheduler:
 
         next_run = trigger_at
         if interval_minutes and pendulum.parse(trigger_at) < pendulum.now("UTC"):
-            # Jeśli trigger_at już minął, oblicz następny termin
             next_run = pendulum.now("UTC").isoformat()
 
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            cursor = conn.execute(
-                """INSERT INTO scheduled_tasks
-                   (name, task_type, trigger_at, interval_minutes,
-                    callback, params, is_active, next_run_at, created_at)
-                   VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)""",
-                (name, task_type, trigger_at, interval_minutes,
-                 callback, params_json, next_run, now),
+        with self._engine.begin() as conn:
+            result = conn.execute(
+                text(
+                    """INSERT INTO scheduled_tasks
+                       (name, task_type, trigger_at, interval_minutes,
+                        callback, params, is_active, next_run_at, created_at)
+                       VALUES (:name, :task_type, :trigger_at, :interval_minutes,
+                               :callback, :params, 1, :next_run_at, :created_at)"""
+                ),
+                {
+                    "name": name,
+                    "task_type": task_type,
+                    "trigger_at": trigger_at,
+                    "interval_minutes": interval_minutes,
+                    "callback": callback,
+                    "params": params_json,
+                    "next_run_at": next_run,
+                    "created_at": now,
+                },
             )
-            conn.commit()
-            task_id = int(cursor.lastrowid)
+            task_id = int(result.lastrowid)
 
-            logger.info(
-                "[Scheduler] task added id=%d name=%s type=%s interval=%s",
-                task_id, name, task_type, interval_minutes,
-            )
-            return task_id
-        finally:
-            conn.close()
+        logger.info(
+            "[Scheduler] task added id=%d name=%s type=%s interval=%s",
+            task_id,
+            name,
+            task_type,
+            interval_minutes,
+        )
+        return task_id
 
     def process_due_tasks(self) -> list[dict[str, Any]]:
         """Przetwórz wszystkie dojrzałe zadania cykliczne.
@@ -383,20 +342,24 @@ class Scheduler:
         aktualizuje next_run_at dla zadań cyklicznych.
         """
         now = pendulum.now("UTC").isoformat()
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.row_factory = sqlite3.Row
-            due = conn.execute(
-                """SELECT * FROM scheduled_tasks
-                   WHERE is_active = 1 AND next_run_at IS NOT NULL
-                     AND next_run_at <= ?
-                   ORDER BY next_run_at ASC
-                   LIMIT 20""",
-                (now,),
-            ).fetchall()
+        with self._engine.connect() as conn:
+            rows = (
+                conn.execute(
+                    text(
+                        """SELECT * FROM scheduled_tasks
+                       WHERE is_active = 1 AND next_run_at IS NOT NULL
+                         AND next_run_at <= :now
+                       ORDER BY next_run_at ASC
+                       LIMIT 20"""
+                    ),
+                    {"now": now},
+                )
+                .mappings()
+                .all()
+            )
 
             processed = []
-            for task in due:
+            for task in rows:
                 task_dict = dict(task)
 
                 # Wykonaj callback
@@ -407,12 +370,15 @@ class Scheduler:
                         self._callbacks[callback_name](**params)
                         logger.info(
                             "[Scheduler] executed callback '%s' for task %d",
-                            callback_name, task_dict["id"],
+                            callback_name,
+                            task_dict["id"],
                         )
                     except Exception as exc:
                         logger.error(
                             "[Scheduler] callback '%s' failed for task %d: %s",
-                            callback_name, task_dict["id"], exc,
+                            callback_name,
+                            task_dict["id"],
+                            exc,
                         )
 
                 # Oblicz następny termin
@@ -422,19 +388,19 @@ class Scheduler:
                 if interval:
                     next_run = pendulum.now("UTC").add(minutes=interval).isoformat()
 
-                conn.execute(
-                    """UPDATE scheduled_tasks
-                       SET last_run_at = ?, next_run_at = ?
-                       WHERE id = ?""",
-                    (last_run, next_run, task_dict["id"]),
-                )
+                with self._engine.begin() as uc:
+                    uc.execute(
+                        text(
+                            """UPDATE scheduled_tasks
+                               SET last_run_at = :last_run, next_run_at = :next_run
+                               WHERE id = :tid"""
+                        ),
+                        {"last_run": last_run, "next_run": next_run, "tid": task_dict["id"]},
+                    )
 
                 processed.append(task_dict)
 
-            conn.commit()
-            return processed
-        finally:
-            conn.close()
+        return processed
 
     # ── Zapytania ──────────────────────────────────────────────────────────
 
@@ -448,75 +414,60 @@ class Scheduler:
         now = pendulum.now("UTC").isoformat()
         until = pendulum.now("UTC").add(days=days).isoformat()
 
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.row_factory = sqlite3.Row
-
+        with self._engine.connect() as conn:
             query = """SELECT * FROM reminders
                        WHERE status = 'active'
-                         AND remind_at >= ?
-                         AND remind_at <= ?"""
-            params: list[Any] = [now, until]
+                         AND remind_at >= :now
+                         AND remind_at <= :until"""
+            params: dict[str, Any] = {"now": now, "until": until}
 
             if user_id:
-                query += " AND user_id = ?"
-                params.append(user_id)
+                query += " AND user_id = :user_id"
+                params["user_id"] = user_id
 
-            query += " ORDER BY remind_at ASC LIMIT ?"
-            params.append(limit)
+            query += " ORDER BY remind_at ASC LIMIT :limit"
+            params["limit"] = limit
 
-            return [dict(r) for r in conn.execute(query, params).fetchall()]
-        finally:
-            conn.close()
+            rows = conn.execute(text(query), params).mappings().all()
+            return [dict(r) for r in rows]
 
     def get_overdue_reminders(self, user_id: str | None = None) -> list[dict[str, Any]]:
         """Pobierz zaległe (niewysłane, po terminie) przypomnienia."""
         now = pendulum.now("UTC").isoformat()
 
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.row_factory = sqlite3.Row
-
+        with self._engine.connect() as conn:
             query = """SELECT * FROM reminders
                        WHERE status = 'active'
-                         AND remind_at < ?"""
-            params: list[Any] = [now]
+                         AND remind_at < :now"""
+            params: dict[str, Any] = {"now": now}
 
             if user_id:
-                query += " AND user_id = ?"
-                params.append(user_id)
+                query += " AND user_id = :user_id"
+                params["user_id"] = user_id
 
             query += " ORDER BY remind_at ASC LIMIT 50"
 
-            return [dict(r) for r in conn.execute(query, params).fetchall()]
-        finally:
-            conn.close()
+            rows = conn.execute(text(query), params).mappings().all()
+            return [dict(r) for r in rows]
 
     def get_pending_count(self, user_id: str | None = None) -> int:
         """Policz aktywne, jeszcze niewysłane przypomnienia."""
         now = pendulum.now("UTC").isoformat()
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            query = "SELECT COUNT(*) FROM reminders WHERE status = 'active' AND remind_at > ?"
-            params: list[Any] = [now]
+        with self._engine.connect() as conn:
+            query = "SELECT COUNT(*) FROM reminders WHERE status = 'active' AND remind_at > :now"
+            params: dict[str, Any] = {"now": now}
             if user_id:
-                query += " AND user_id = ?"
-                params.append(user_id)
-            return conn.execute(query, params).fetchone()[0]
-        finally:
-            conn.close()
+                query += " AND user_id = :user_id"
+                params["user_id"] = user_id
+            return int(conn.execute(text(query), params).scalar() or 0)
 
     def dismiss_reminder(self, reminder_id: int) -> None:
         """Odrzuć przypomnienie (nie chcemy więcej przypomnień o tym)."""
-        conn = sqlite3.connect(str(self._db_path))
-        try:
+        with self._engine.begin() as conn:
             conn.execute(
-                "UPDATE reminders SET status = ? WHERE id = ?",
-                (ReminderStatus.DISMISSED.value, reminder_id),
+                text("UPDATE reminders SET status = :status WHERE id = :rid"),
+                {"status": ReminderStatus.DISMISSED.value, "rid": reminder_id},
             )
-            conn.commit()
-        finally:
-            conn.close()
 
     # ── Sprzątanie ─────────────────────────────────────────────────────────
 
@@ -530,28 +481,23 @@ class Scheduler:
             Dict z liczbą usuniętych wpisów.
         """
         cutoff = pendulum.now("UTC").subtract(days=days).isoformat()
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            # Usuń wysłane/odrzucone przypomnienia starsze niż N dni
+        with self._engine.begin() as conn:
             removed_reminders = conn.execute(
-                "DELETE FROM reminders WHERE status != 'active' AND created_at < ?",
-                (cutoff,),
+                text("DELETE FROM reminders WHERE status != 'active' AND created_at < :cutoff"),
+                {"cutoff": cutoff},
             ).rowcount
 
-            # Usuń nieaktywne zadania starsze niż N dni
             removed_tasks = conn.execute(
-                "DELETE FROM scheduled_tasks WHERE is_active = 0 AND created_at < ?",
-                (cutoff,),
+                text("DELETE FROM scheduled_tasks WHERE is_active = 0 AND created_at < :cutoff"),
+                {"cutoff": cutoff},
             ).rowcount
 
-            conn.commit()
+        if removed_reminders or removed_tasks:
+            logger.info(
+                "[Scheduler] cleaned %d reminders, %d tasks (>%d days)",
+                removed_reminders,
+                removed_tasks,
+                days,
+            )
 
-            if removed_reminders or removed_tasks:
-                logger.info(
-                    "[Scheduler] cleaned %d reminders, %d tasks (>%d days)",
-                    removed_reminders, removed_tasks, days,
-                )
-
-            return {"reminders": removed_reminders, "tasks": removed_tasks}
-        finally:
-            conn.close()
+        return {"reminders": removed_reminders, "tasks": removed_tasks}

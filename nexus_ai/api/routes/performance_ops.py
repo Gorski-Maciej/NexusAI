@@ -33,8 +33,8 @@ class PerformanceOpsController(Controller):
             return {"status": "invalid", "summary_available": True}
 
         metrics = payload.get("metrics", {}) if isinstance(payload, dict) else {}
-        p95 = (((metrics.get("http_req_duration") or {}).get("values") or {}).get("p(95)"))
-        fail_rate = (((metrics.get("checks") or {}).get("values") or {}).get("fails"))
+        p95 = ((metrics.get("http_req_duration") or {}).get("values") or {}).get("p(95)")
+        fail_rate = ((metrics.get("checks") or {}).get("values") or {}).get("fails")
         return {
             "status": "ok",
             "summary_available": True,

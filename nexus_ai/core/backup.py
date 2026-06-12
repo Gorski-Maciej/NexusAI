@@ -5,6 +5,7 @@ Zgodnie z aa3fvcx.txt:
 - ChaCha20-Poly1305 AEAD + Argon2id KDF (nexus-crypto, Rust+PyO3)
 - Legacy NEXUSENC1 (AES-256-CBC + PBKDF2) wspierany dla kompatybilności wstecznej
 """
+
 import io
 import os
 import zipfile
@@ -19,7 +20,12 @@ logger = get_logger("nexus.core.backup")
 # ── Optional: cryptography for legacy NEXUSENC1 (AES-256-CBC) compatibility ───
 try:
     from cryptography.hazmat.primitives import padding as _crypto_padding
-    from cryptography.hazmat.primitives.ciphers import Cipher as _Cipher, algorithms as _algos, modes as _modes
+    from cryptography.hazmat.primitives.ciphers import (
+        Cipher as _Cipher,
+        algorithms as _algos,
+        modes as _modes,
+    )
+
     _HAS_CRYPTOGRAPHY = True
 except ImportError:
     _HAS_CRYPTOGRAPHY = False
@@ -43,7 +49,9 @@ class BackupManager:
             password: Hasło do szyfrowania. Jeśli puste, używa klucza z config.encryption_key.
         """
         if not password:
-            password = getattr(self.config, "encryption_key", "") or os.getenv("NEXUS_ENCRYPTION_KEY", "")
+            password = getattr(self.config, "encryption_key", "") or os.getenv(
+                "NEXUS_ENCRYPTION_KEY", ""
+            )
 
         timestamp = pendulum.now().format("YYYYMMDD_HHmm")
         zip_buffer = io.BytesIO()
@@ -75,7 +83,8 @@ class BackupManager:
             ext = ".enc"
             logger.info(
                 "[BACKUP] Encrypted backup with ChaCha20-Poly1305 (size: %d -> %d bytes)",
-                len(zip_data), len(final_data),
+                len(zip_data),
+                len(final_data),
             )
         else:
             final_data = zip_data
@@ -88,7 +97,11 @@ class BackupManager:
             f.write(final_data)
 
         self.prune_old_backups(keep_days=30)
-        logger.info("[BACKUP] Created backup: %s (%.2f MB)", final_path.name, len(final_data) / (1024 * 1024))
+        logger.info(
+            "[BACKUP] Created backup: %s (%.2f MB)",
+            final_path.name,
+            len(final_data) / (1024 * 1024),
+        )
         return str(final_path)
 
     def decrypt_backup(self, backup_path: Path | str, password: str) -> bytes:
@@ -124,6 +137,7 @@ class BackupManager:
             encrypted = data[25:]
             # PBKDF2 key derivation (legacy — używane tylko dla NEXUSENC1)
             import hashlib
+
             key = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, 600_000, dklen=32)
             # AES-256-CBC decrypt
             iv = encrypted[:16]

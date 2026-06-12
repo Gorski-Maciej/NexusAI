@@ -23,15 +23,23 @@ def build_vendor_card(vendor: dict) -> ft.Card:
             content=ft.Column(
                 spacing=10,
                 controls=[
-                    ft.Text(vendor.get("vendor_name", "Unknown vendor"), size=18, weight=ft.FontWeight.BOLD),
+                    ft.Text(
+                        vendor.get("vendor_name", "Unknown vendor"),
+                        size=18,
+                        weight=ft.FontWeight.BOLD,
+                    ),
                     ft.Text(f"NIP: {vendor.get('nip', '---')}", size=12, color=ft.colors.GREY_400),
                     ft.Text(stars, size=20, color=ft.colors.AMBER_400),
                     ft.LineChart(
-                        data_series=[ft.LineChartData(data_points=points, curved=True, stroke_width=2)],
+                        data_series=[
+                            ft.LineChartData(data_points=points, curved=True, stroke_width=2)
+                        ],
                         min_y=0,
                         expand=True,
                         height=110,
-                        horizontal_grid_lines=ft.ChartGridLines(interval=1000, color=ft.colors.GREY_800),
+                        horizontal_grid_lines=ft.ChartGridLines(
+                            interval=1000, color=ft.colors.GREY_800
+                        ),
                         tooltip_bgcolor=ft.colors.with_opacity(0.85, ft.colors.BLACK),
                     ),
                     ft.Text("Smart Alerts", size=14, weight=ft.FontWeight.W_600),

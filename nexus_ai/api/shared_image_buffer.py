@@ -8,9 +8,11 @@ from threading import Lock
 
 try:
     from PIL import Image
+
     HAS_PIL = True
 except ImportError:
     HAS_PIL = False
+
 
 class SharedFrame(Struct):
     doc_id: str
@@ -21,6 +23,7 @@ class SharedFrame(Struct):
 
     def __post_init__(self) -> None:
         self.size_bytes = len(self.payload)
+
 
 class SharedImageBuffer:
     """In-memory frame buffer for live OCR previews with global memory limits and TTL.
@@ -49,14 +52,20 @@ class SharedImageBuffer:
         """Dodaje ramkę z opcjonalną kompresją JPEG i kontrolą globalnego limitu pamięci."""
         with self._lock:
             # Opcjonalna kompresja JPEG dla obrazów
-            if compress_jpeg and HAS_PIL and frame.mime_type in ("image/png", "image/tiff", "image/bmp", "image/webp"):
+            if (
+                compress_jpeg
+                and HAS_PIL
+                and frame.mime_type in ("image/png", "image/tiff", "image/bmp", "image/webp")
+            ):
                 try:
                     img = Image.open(io.BytesIO(frame.payload))
                     rgb = img.convert("RGB")
                     buf = io.BytesIO()
                     rgb.save(buf, format="JPEG", quality=70, optimize=True)
                     compressed = buf.getvalue()
-                    if len(compressed) < len(frame.payload) * 0.9:  # Tylko jeśli faktycznie mniejsze
+                    if (
+                        len(compressed) < len(frame.payload) * 0.9
+                    ):  # Tylko jeśli faktycznie mniejsze
                         frame.payload = compressed
                         frame.mime_type = "image/jpeg"
                         frame.size_bytes = len(compressed)

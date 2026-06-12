@@ -1,4 +1,5 @@
 """Statistics and metrics endpoints."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -10,6 +11,7 @@ from nexus_ai.api.dto import GenericDictDTO, TAG_ANALYTICS
 
 class StatsController(Controller):
     """Statistics and metrics API."""
+
     path = "/api/v1/stats"
     tags = [TAG_ANALYTICS]
 

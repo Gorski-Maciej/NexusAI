@@ -40,36 +40,36 @@ async def count_unresolved_dlq(db_engine: Any) -> int:
 
     try:
         async with db_engine.connect() as conn:
-            row = await conn.execute(
-                text("SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0")
-            )
+            row = await conn.execute(text("SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0"))
             return int(row.scalar() or 0)
     except Exception as exc:
         logger.error("Failed to count unresolved DLQ items: %s", exc)
         return -1
 
 
-async def fetch_recent_unresolved_dlq(
-    db_engine: Any, limit: int = 10
-) -> list[dict[str, Any]]:
+async def fetch_recent_unresolved_dlq(db_engine: Any, limit: int = 10) -> list[dict[str, Any]]:
     """Fetch the most recent unresolved DLQ items for detailed notification."""
     from sqlalchemy import text
 
     try:
         async with db_engine.connect() as conn:
             rows = (
-                await conn.execute(
-                    text(
-                        """SELECT id, task_name, error_type, error_message,
+                (
+                    await conn.execute(
+                        text(
+                            """SELECT id, task_name, error_type, error_message,
                                   retry_count, max_retries, failed_at
                            FROM failed_tasks
                            WHERE resolved = 0
                            ORDER BY failed_at DESC
                            LIMIT :limit"""
-                    ),
-                    {"limit": limit},
+                        ),
+                        {"limit": limit},
+                    )
                 )
-            ).mappings().all()
+                .mappings()
+                .all()
+            )
             return [dict(r) for r in rows]
     except Exception as exc:
         logger.error("Failed to fetch unresolved DLQ items: %s", exc)
@@ -173,9 +173,7 @@ async def run_continuous_check(
     config: Any = None,
 ) -> None:
     """Run DLQ checks in a loop at the specified interval."""
-    logger.info(
-        "[DLQ_NOTIFIER] Starting continuous watcher (interval=%d min)", interval_minutes
-    )
+    logger.info("[DLQ_NOTIFIER] Starting continuous watcher (interval=%d min)", interval_minutes)
     while True:
         try:
             await check_dlq_and_notify(db_engine, config)
@@ -188,9 +186,7 @@ async def run_continuous_check(
 
 
 def build_parser() -> ArgumentParser:
-    parser = ArgumentParser(
-        description="DLQ Notifier — monitor failed tasks and send alerts"
-    )
+    parser = ArgumentParser(description="DLQ Notifier — monitor failed tasks and send alerts")
     parser.add_argument(
         "--watch",
         action="store_true",
@@ -230,9 +226,7 @@ def main() -> int:
         engine = create_oltp_engine(config)
 
         if args.watch:
-            anyio.run(
-                run_continuous_check, engine, interval_minutes=args.interval, config=config
-            )
+            anyio.run(run_continuous_check, engine, interval_minutes=args.interval, config=config)
         else:
             result = anyio.run(check_dlq_and_notify, engine, config=config)
             print(f"[DLQ_NOTIFIER] Unresolved DLQ items: {result}")

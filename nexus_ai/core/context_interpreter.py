@@ -24,56 +24,62 @@ from typing import Any
 
 # ── Exception ─────────────────────────────────────────────────────
 
+
 class ContextInterpreterError(ValueError):
     """Błąd interpretacji kontekstu — brak wymaganego pola lub nieprawidłowy typ."""
+
     pass
 
 
 # ── Allowed keys whitelist ────────────────────────────────────────
 
-ALLOWED_KEYS: frozenset[str] = frozenset({
-    # Podstawowe
-    "category_code",
-    "transaction_date",
-    "vendor_country",
-    "company_tax_form",
-    "vendor_nip",
-    "amount_net",
-    "amount_net_grosze",
-    # Wzbogacone przez inne moduły
-    "vendor_vat_status",
-    "vendor_pkd",
-    "vendor_account_on_whitelist",
-    "expense_type",
-    "confidence_vat_rate",
-    # Field Confidence (per-field metadata)
-    "fc_total_gross",
-    "fc_total_net",
-    "fc_vat_rate",
-    "fc_vat_amount",
-    "fc_vendor_nip",
-    "fc_vendor_name",
-    "fc_invoice_number",
-    "fc_issue_date",
-    "fc_iban",
-    "fc_category_code",
-    "fc_minimum",
-    # Field Confidence values (serialized dla kontekstu)
-    "fc_total_gross_value",
-    "fc_total_net_value",
-    "fc_vat_rate_value",
-    "fc_vat_amount_value",
-    "fc_vendor_nip_value",
-    "fc_vendor_name_value",
-    "fc_invoice_number_value",
-    "fc_issue_date_value",
-    "fc_iban_value",
-    "fc_category_code_value",
-})
+ALLOWED_KEYS: frozenset[str] = frozenset(
+    {
+        # Podstawowe
+        "category_code",
+        "transaction_date",
+        "vendor_country",
+        "company_tax_form",
+        "vendor_nip",
+        "amount_net",
+        "amount_net_grosze",
+        # Wzbogacone przez inne moduły
+        "vendor_vat_status",
+        "vendor_pkd",
+        "vendor_account_on_whitelist",
+        "expense_type",
+        "confidence_vat_rate",
+        # Field Confidence (per-field metadata)
+        "fc_total_gross",
+        "fc_total_net",
+        "fc_vat_rate",
+        "fc_vat_amount",
+        "fc_vendor_nip",
+        "fc_vendor_name",
+        "fc_invoice_number",
+        "fc_issue_date",
+        "fc_iban",
+        "fc_category_code",
+        "fc_minimum",
+        # Field Confidence values (serialized dla kontekstu)
+        "fc_total_gross_value",
+        "fc_total_net_value",
+        "fc_vat_rate_value",
+        "fc_vat_amount_value",
+        "fc_vendor_nip_value",
+        "fc_vendor_name_value",
+        "fc_invoice_number_value",
+        "fc_issue_date_value",
+        "fc_iban_value",
+        "fc_category_code_value",
+    }
+)
 
-REQUIRED_KEYS: frozenset[str] = frozenset({
-    "transaction_date",
-})
+REQUIRED_KEYS: frozenset[str] = frozenset(
+    {
+        "transaction_date",
+    }
+)
 
 COUNTRY_NORMALIZATION: dict[str, str] = {
     "polska": "PL",
@@ -150,9 +156,7 @@ class ContextInterpreter:
             or invoice_data.get("date")
         )
         if raw_date is None:
-            raise ContextInterpreterError(
-                "Missing required field: transaction_date"
-            )
+            raise ContextInterpreterError("Missing required field: transaction_date")
         if isinstance(raw_date, date):
             ctx["transaction_date"] = raw_date.isoformat()
         else:
@@ -160,9 +164,8 @@ class ContextInterpreter:
 
         # ── vendor_country ─────────────────────────────────────────
         vendor = invoice_data.get("vendor", {})
-        raw_country = (
-            invoice_data.get("vendor_country")
-            or (vendor.get("country") if isinstance(vendor, dict) else None)
+        raw_country = invoice_data.get("vendor_country") or (
+            vendor.get("country") if isinstance(vendor, dict) else None
         )
         if raw_country:
             normalized = COUNTRY_NORMALIZATION.get(str(raw_country).lower().strip())
@@ -171,9 +174,7 @@ class ContextInterpreter:
             ctx["vendor_country"] = "PL"
 
         # ── company_tax_form ───────────────────────────────────────
-        ctx["company_tax_form"] = str(
-            invoice_data.get("company_tax_form", "CIT_STANDARD")
-        )
+        ctx["company_tax_form"] = str(invoice_data.get("company_tax_form", "CIT_STANDARD"))
 
         # ── vendor_nip ─────────────────────────────────────────────
         raw_nip = (
@@ -189,11 +190,7 @@ class ContextInterpreter:
             ctx["vendor_nip"] = ""
 
         # ── amount_net ─────────────────────────────────────────────
-        raw_net = (
-            invoice_data.get("amount_net")
-            or invoice_data.get("total_net")
-            or Decimal("0")
-        )
+        raw_net = invoice_data.get("amount_net") or invoice_data.get("total_net") or Decimal("0")
         if isinstance(raw_net, Decimal):
             net_decimal = raw_net
         elif isinstance(raw_net, (int, float)):
@@ -209,15 +206,11 @@ class ContextInterpreter:
         ctx["amount_net"] = str(net_decimal)
 
         # ── amount_net_grosze ──────────────────────────────────────
-        grossze = int(
-            (net_decimal * Decimal("100")).to_integral_value(rounding=ROUND_HALF_UP)
-        )
+        grossze = int((net_decimal * Decimal("100")).to_integral_value(rounding=ROUND_HALF_UP))
         ctx["amount_net_grosze"] = str(grossze)
 
         # ── vendor_vat_status ──────────────────────────────────────
-        ctx["vendor_vat_status"] = str(
-            invoice_data.get("vendor_vat_status", "unknown")
-        )
+        ctx["vendor_vat_status"] = str(invoice_data.get("vendor_vat_status", "unknown"))
 
         # ── vendor_pkd ─────────────────────────────────────────────
         ctx["vendor_pkd"] = str(
@@ -249,9 +242,18 @@ class ContextInterpreter:
         raw_fc = invoice_data.get("field_confidence") or invoice_data.get("fc")
         if isinstance(raw_fc, dict) and raw_fc:
             # Mapujemy pola field_confidence na klucze fc_* dla kontekstu
-            for field_key in ("total_gross", "total_net", "vat_rate", "vat_amount",
-                              "vendor_nip", "vendor_name", "invoice_number",
-                              "issue_date", "iban", "category_code"):
+            for field_key in (
+                "total_gross",
+                "total_net",
+                "vat_rate",
+                "vat_amount",
+                "vendor_nip",
+                "vendor_name",
+                "invoice_number",
+                "issue_date",
+                "iban",
+                "category_code",
+            ):
                 fc_key = f"fc_{field_key}"
                 entry = raw_fc.get(field_key)
                 if isinstance(entry, dict) and "confidence" in entry:

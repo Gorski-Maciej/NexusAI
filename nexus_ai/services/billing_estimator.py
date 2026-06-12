@@ -38,57 +38,92 @@ CREATE INDEX IF NOT EXISTS idx_billing_rules_valid
 DEFAULT_BILLING_RULES: list[dict[str, Any]] = [
     {
         "condition_json": {"document_type": "invoice_national", "tax_form": "CIT_STANDARD"},
-        "price_json": {"price_pln": 1.50, "processing_time_hours": 0.5, "description": "Faktura krajowa CIT"},
+        "price_json": {
+            "price_pln": 1.50,
+            "processing_time_hours": 0.5,
+            "description": "Faktura krajowa CIT",
+        },
         "valid_from": "2024-01-01",
         "priority": 10,
     },
     {
         "condition_json": {"document_type": "invoice_national", "tax_form": "LUMP_SUM"},
-        "price_json": {"price_pln": 1.20, "processing_time_hours": 0.3, "description": "Faktura krajowa ryczałt"},
+        "price_json": {
+            "price_pln": 1.20,
+            "processing_time_hours": 0.3,
+            "description": "Faktura krajowa ryczałt",
+        },
         "valid_from": "2024-01-01",
         "priority": 10,
     },
     {
         "condition_json": {"document_type": "invoice_national", "tax_form": "LINEAR"},
-        "price_json": {"price_pln": 1.50, "processing_time_hours": 0.5, "description": "Faktura krajowa liniowy"},
+        "price_json": {
+            "price_pln": 1.50,
+            "processing_time_hours": 0.5,
+            "description": "Faktura krajowa liniowy",
+        },
         "valid_from": "2024-01-01",
         "priority": 10,
     },
     {
         "condition_json": {"document_type": "invoice_foreign"},
-        "price_json": {"price_pln": 3.00, "processing_time_hours": 1.0, "description": "Faktura zagraniczna"},
+        "price_json": {
+            "price_pln": 3.00,
+            "processing_time_hours": 1.0,
+            "description": "Faktura zagraniczna",
+        },
         "valid_from": "2024-01-01",
         "priority": 10,
     },
     {
         "condition_json": {"document_type": "invoice_national", "additional_service": "ksef"},
-        "price_json": {"price_pln": 0.50, "processing_time_hours": 0.1, "description": "Eksport KSeF"},
+        "price_json": {
+            "price_pln": 0.50,
+            "processing_time_hours": 0.1,
+            "description": "Eksport KSeF",
+        },
         "valid_from": "2024-01-01",
         "priority": 20,
     },
     {
-        "condition_json": {"document_type": "invoice_national", "additional_service": "semantic_guard"},
-        "price_json": {"price_pln": 0.30, "processing_time_hours": 0.05, "description": "Weryfikacja semantyczna AI"},
+        "condition_json": {
+            "document_type": "invoice_national",
+            "additional_service": "semantic_guard",
+        },
+        "price_json": {
+            "price_pln": 0.30,
+            "processing_time_hours": 0.05,
+            "description": "Weryfikacja semantyczna AI",
+        },
         "valid_from": "2024-01-01",
         "priority": 20,
     },
     {
         "condition_json": {},
-        "price_json": {"price_pln": 0.50, "processing_time_hours": 0.2, "description": "Faktura podstawowa"},
+        "price_json": {
+            "price_pln": 0.50,
+            "processing_time_hours": 0.2,
+            "description": "Faktura podstawowa",
+        },
         "valid_from": "2024-01-01",
         "priority": 999,
     },
 ]
 
+
 class BillingEstimate(Struct):
     """Estymacja kosztu i czasu przetwarzania."""
+
     total_price_pln: float = 0.0
     total_time_hours: float = 0.0
     breakdown: list[dict[str, Any]] | None = None
 
+
 def ensure_schema(conn: duckdb.DuckDBPyConnection) -> None:
     """Create billing_rules table if not present."""
     conn.execute(BILLING_RULES_SCHEMA)
+
 
 def seed_default_billing_rules(conn: duckdb.DuckDBPyConnection) -> None:
     """Insert default billing rules if table is empty."""
@@ -109,6 +144,7 @@ def seed_default_billing_rules(conn: duckdb.DuckDBPyConnection) -> None:
                 rule["priority"],
             ),
         )
+
 
 class BillingEstimator:
     """Estymator kosztów przetwarzania dokumentów.
@@ -153,11 +189,13 @@ class BillingEstimator:
             price = msgspec_loads(price_json) if isinstance(price_json, str) else price_json
 
             if self._matches(condition, document_type, tax_form, additional_services):
-                matched.append({
-                    "description": price.get("description", ""),
-                    "price_pln": float(price.get("price_pln", 0)),
-                    "time_hours": float(price.get("processing_time_hours", 0)),
-                })
+                matched.append(
+                    {
+                        "description": price.get("description", ""),
+                        "price_pln": float(price.get("price_pln", 0)),
+                        "time_hours": float(price.get("processing_time_hours", 0)),
+                    }
+                )
                 used_rules.add(idx)
 
         total_price = sum(m["price_pln"] for m in matched)

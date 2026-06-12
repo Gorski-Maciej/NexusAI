@@ -26,6 +26,7 @@ logger = get_logger("nexus.installer.dependencies")
 
 # ── Progress callback ───────────────────────────────────────────────────────
 
+
 class DependencyProgressCallback(Protocol):
     def __call__(
         self,
@@ -38,7 +39,9 @@ class DependencyProgressCallback(Protocol):
         status: str,  # downloading, extracting, verifying, done, error
     ) -> None: ...
 
+
 # ─── Platform detection ─────────────────────────────────────────────────────
+
 
 def _get_platform() -> str:
     """Return platform key: windows, linux, darwin."""
@@ -51,6 +54,7 @@ def _get_platform() -> str:
         return "darwin"
     return system
 
+
 def _get_arch() -> str:
     """Return architecture: amd64, arm64, 386."""
     machine = platform.machine().lower()
@@ -62,10 +66,13 @@ def _get_arch() -> str:
         return "386"
     return "amd64"  # Default to amd64
 
+
 # ── Binary definitions ──────────────────────────────────────────────────────
+
 
 class BinaryDefinition(Struct):
     """Definition of a binary to download."""
+
     name: str
     display_name: str
     version: str
@@ -73,6 +80,7 @@ class BinaryDefinition(Struct):
     filename_template: str  # Output filename
     description: str
     required: bool = True
+
 
 BINARY_MANIFEST: list[BinaryDefinition] = [
     BinaryDefinition(
@@ -101,9 +109,11 @@ BINARY_MANIFEST: list[BinaryDefinition] = [
     ),
 ]
 
+
 def _get_ext() -> str:
     """Get executable extension for current platform."""
     return ".exe" if _get_platform() == "windows" else ""
+
 
 def _is_executable(path: Path) -> bool:
     """Check if a file is executable."""
@@ -113,7 +123,9 @@ def _is_executable(path: Path) -> bool:
         return path.suffix.lower() in (".exe", ".bat", ".cmd")
     return os.access(path, os.X_OK)
 
+
 # ── URL building ────────────────────────────────────────────────────────────
+
 
 def _build_download_url(binary_def: BinaryDefinition) -> str:
     """Build the download URL for a binary based on current platform.
@@ -149,7 +161,9 @@ def _build_download_url(binary_def: BinaryDefinition) -> str:
 
     return url
 
+
 # ── ZIP extraction ───────────────────────────────────────────────────────────
+
 
 def _extract_binary_from_zip(
     temp_zip: Path,
@@ -169,7 +183,8 @@ def _extract_binary_from_zip(
         with zipfile.ZipFile(temp_zip, "r") as zf:
             # Find the binary in the archive
             binary_candidates = [
-                n for n in zf.namelist()
+                n
+                for n in zf.namelist()
                 if binary_def.name in n and (n.endswith(ext) or n.endswith(".exe"))
             ]
             if not binary_candidates:
@@ -177,22 +192,23 @@ def _extract_binary_from_zip(
                 if ext:
                     # On Windows, look for .exe or other extension
                     binary_candidates = [
-                        n for n in zf.namelist()
-                        if n.endswith(ext) or n.endswith(".exe")
+                        n for n in zf.namelist() if n.endswith(ext) or n.endswith(".exe")
                     ]
                 else:
                     # On Linux/macOS, look for files without extension or .exe
                     binary_candidates = [
-                        n for n in zf.namelist()
-                        if ("." not in Path(n).name) or n.endswith(".exe")
+                        n for n in zf.namelist() if ("." not in Path(n).name) or n.endswith(".exe")
                     ]
             if not binary_candidates:
                 logger.error("No binary found in %s archive", binary_def.display_name)
                 if progress_cb:
                     progress_cb(
                         current_binary=binary_def.display_name,
-                        downloaded_bytes=0, total_bytes=100,
-                        speed_bps=0, overall_progress=0, status="error",
+                        downloaded_bytes=0,
+                        total_bytes=100,
+                        speed_bps=0,
+                        overall_progress=0,
+                        status="error",
                     )
                 return False
 
@@ -212,7 +228,9 @@ def _extract_binary_from_zip(
         logger.error("Corrupt ZIP file for %s", binary_def.display_name)
         return False
 
+
 # ── Download and extract ────────────────────────────────────────────────────
+
 
 async def download_binary(
     binary_def: BinaryDefinition,
@@ -269,9 +287,7 @@ async def download_binary(
             client = http_client
             own_client = False
         else:
-            client = await httpx.AsyncClient(
-                timeout=120.0, follow_redirects=True
-            ).__aenter__()
+            client = await httpx.AsyncClient(timeout=120.0, follow_redirects=True).__aenter__()
             own_client = True
 
         try:
@@ -279,19 +295,25 @@ async def download_binary(
                 if response.status_code != 200:
                     logger.error(
                         "Failed to download %s: HTTP %d from %s",
-                        binary_def.display_name, response.status_code, url,
+                        binary_def.display_name,
+                        response.status_code,
+                        url,
                     )
                     if progress_cb:
                         progress_cb(
                             current_binary=binary_def.display_name,
-                            downloaded_bytes=0, total_bytes=100,
-                            speed_bps=0, overall_progress=0, status="error",
+                            downloaded_bytes=0,
+                            total_bytes=100,
+                            speed_bps=0,
+                            overall_progress=0,
+                            status="error",
                         )
                     return None
 
                 total_size = int(response.headers.get("content-length", 0))
                 downloaded = 0
                 import time as _time4
+
                 start_time = _time4.monotonic()
 
                 with open(temp_zip, "wb") as f:
@@ -321,12 +343,18 @@ async def download_binary(
         if progress_cb:
             progress_cb(
                 current_binary=binary_def.display_name,
-                downloaded_bytes=total_size, total_bytes=total_size,
-                speed_bps=0, overall_progress=0.5, status="extracting",
+                downloaded_bytes=total_size,
+                total_bytes=total_size,
+                speed_bps=0,
+                overall_progress=0.5,
+                status="extracting",
             )
 
         extract_ok = _extract_binary_from_zip(
-            temp_zip, binary_def, dest_path, ext,
+            temp_zip,
+            binary_def,
+            dest_path,
+            ext,
             progress_cb=progress_cb,
         )
         if not extract_ok:
@@ -339,14 +367,18 @@ async def download_binary(
         if progress_cb:
             progress_cb(
                 current_binary=binary_def.display_name,
-                downloaded_bytes=100, total_bytes=100,
-                speed_bps=0, overall_progress=1.0,
+                downloaded_bytes=100,
+                total_bytes=100,
+                speed_bps=0,
+                overall_progress=1.0,
                 status="done" if _is_executable(dest_path) else "error",
             )
 
         logger.info(
             "%s downloaded to %s (%d bytes)",
-            binary_def.display_name, dest_path, dest_path.stat().st_size,
+            binary_def.display_name,
+            dest_path,
+            dest_path.stat().st_size,
         )
         return dest_path
 
@@ -356,12 +388,17 @@ async def download_binary(
         if progress_cb:
             progress_cb(
                 current_binary=binary_def.display_name,
-                downloaded_bytes=0, total_bytes=100,
-                speed_bps=0, overall_progress=0, status="error",
+                downloaded_bytes=0,
+                total_bytes=100,
+                speed_bps=0,
+                overall_progress=0,
+                status="error",
             )
         return None
 
+
 # ── Binary manager (start/stop processes) ───────────────────────────────────
+
 
 class BinaryManager:
     """Manages lifecycle of background binary processes."""
@@ -420,7 +457,8 @@ class BinaryManager:
                 )
                 if init_result.returncode != 0:
                     logger.error(
-                        "TigerBeetle init failed: %s", init_result.stderr.decode() if init_result.stderr else ""
+                        "TigerBeetle init failed: %s",
+                        init_result.stderr.decode() if init_result.stderr else "",
                     )
                     return False
                 logger.info("TigerBeetle data file initialized at %s", data_file)
@@ -479,12 +517,11 @@ class BinaryManager:
         """Check if all managed processes are running."""
         if not self._processes:
             return False
-        return all(
-            p.returncode is None for p in self._processes.values()
-            if p is not None
-        )
+        return all(p.returncode is None for p in self._processes.values() if p is not None)
+
 
 # ── Check if dependencies need to be downloaded ─────────────────────────────
+
 
 def check_dependencies(bin_dir: Path) -> dict:
     """Check which system dependencies are installed.
@@ -505,7 +542,9 @@ def check_dependencies(bin_dir: Path) -> dict:
         "bin_dir": bin_dir,
     }
 
+
 # ── Main orchestrator ───────────────────────────────────────────────────────
+
 
 async def download_all_dependencies(
     bin_dir: Path,
@@ -529,13 +568,16 @@ async def download_all_dependencies(
         if progress_cb:
             progress_cb(
                 current_binary=binary_def.display_name,
-                downloaded_bytes=0, total_bytes=100,
-                speed_bps=0, overall_progress=overall_start,
+                downloaded_bytes=0,
+                total_bytes=100,
+                speed_bps=0,
+                overall_progress=overall_start,
                 status="downloading",
             )
 
         result = await download_binary(
-            binary_def, bin_dir,
+            binary_def,
+            bin_dir,
             progress_cb=progress_cb,
             cancel_event=cancel_event,
         )
@@ -546,8 +588,10 @@ async def download_all_dependencies(
             overall_end = (i + 1) / max(total, 1)
             progress_cb(
                 current_binary=binary_def.display_name,
-                downloaded_bytes=100, total_bytes=100,
-                speed_bps=0, overall_progress=overall_end,
+                downloaded_bytes=100,
+                total_bytes=100,
+                speed_bps=0,
+                overall_progress=overall_end,
                 status="done" if success else "error",
             )
 

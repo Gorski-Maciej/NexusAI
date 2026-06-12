@@ -115,7 +115,7 @@ def main(argv: list[str] | None = None) -> int:
     """
     parser = argparse.ArgumentParser(
         description="NexusAI Projection Worker — consumes events from "
-                    "NATS JetStream and updates CQRS projections",
+        "NATS JetStream and updates CQRS projections",
     )
     parser.add_argument(
         "--nats",
@@ -123,7 +123,7 @@ def main(argv: list[str] | None = None) -> int:
         action="append",
         dest="nats_servers",
         help="NATS server URL (powtarzalne dla wielu serwerów). "
-             "Domyślnie: NEXUS_NATS_URL lub nats://localhost:4222",
+        "Domyślnie: NEXUS_NATS_URL lub nats://localhost:4222",
     )
     parser.add_argument(
         "--no-fallback",
@@ -134,32 +134,29 @@ def main(argv: list[str] | None = None) -> int:
         "--fallback-interval",
         type=float,
         default=30.0,
-        help="Interwał fallback pollowania EventStore w sekundach "
-             "(domyślnie: 30)",
+        help="Interwał fallback pollowania EventStore w sekundach (domyślnie: 30)",
     )
     parser.add_argument(
         "--poll-interval",
         type=float,
         default=1.0,
-        help="Interwał pollowania JetStream pull consumer w sekundach "
-             "(domyślnie: 1.0)",
+        help="Interwał pollowania JetStream pull consumer w sekundach (domyślnie: 1.0)",
     )
     parser.add_argument(
         "--batch-size",
         type=int,
         default=10,
-        help="Maksymalna liczba wiadomości w jednym fetchu JetStream "
-             "(domyślnie: 10)",
+        help="Maksymalna liczba wiadomości w jednym fetchu JetStream (domyślnie: 10)",
     )
     parser.add_argument(
         "--base-dir",
         type=str,
         default=None,
-        help="Bazowy katalog dla danych (EventStore, projekcje). "
-             "Domyślnie: bieżący katalog",
+        help="Bazowy katalog dla danych (EventStore, projekcje). Domyślnie: bieżący katalog",
     )
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
         help="Debug logging",
     )
@@ -197,7 +194,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     except Exception as exc:
         logger.exception(
-            "[PROJECTION-WORKER] Fatal error: %s", exc,
+            "[PROJECTION-WORKER] Fatal error: %s",
+            exc,
         )
         return 1
 

@@ -34,11 +34,7 @@ platforms = ["linux-64", "linux-aarch64", "win-64"]   # win-64 dla Nuitka + Inno
 # ══════════════════════════════════════════════════════════════════════════════
 
 [dependencies]
-python = "3.13.*"                       # CPython 3.13 — conda-forge
-# Free-threaded (3.13t, bez GIL): użyj matchspec dla _cp313t
-#   pixi add --build "python=3.13.* *_cp313t"
-#   conda install python=3.13.2=*_cp313t
-# Free-threaded Python: -30-40% RAM, prawdziwa wielowątkowość
+python = "3.13.* *_cp313t"              # Free-threaded (3.13t, bez GIL) — -30-40% RAM, prawdziwa wielowątkowość
 
 # ── OCR i przetwarzanie obrazów ─────────────────────────────────────────────
 tesseract = ">=5.3.0"                    # OCR — ekstrakcja tekstu z faktur
@@ -122,15 +118,7 @@ pendulum = ">=3.0.0"
 numpy = ">=2.0.0"
 sentry-sdk = ">=2.0.0"        # Error tracking SDK
 
-# Instaluj ręcznie gdy potrzebne (nie ma w conda-forge / PyPI dla aarch64):
-# pytest-anyio: pip install pytest-anyio
-# pre-commit: pip install pre-commit
-# schemathesis: pip install schemathesis
-# locust: pip install locust
-# py-spy: pip install py-spy
-# crosshair: pip install crosshair
-# flet: pip install flet
-# llama-cpp-python: pip install llama-cpp-python
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # System requirements
@@ -171,6 +159,10 @@ download-models = { cmd = "python -m nexus_ai.scripts.download_models", descript
 # ── Pobranie binariów systemowych ──────────────────────────────────────────
 download-binaries = { cmd = "python -m nexus_ai.scripts.setup_env", description = "Pobierz NATS Server i TigerBeetle" }
 
+# ── Lint / Format (wymaga ruff, dostępne przez pixi run --environment dev) ──
+format = { cmd = "ruff format nexus_ai/", description = "Auto-formatuj kod Python przez Ruff" }
+format-check = { cmd = "ruff format --check nexus_ai/", description = "Sprawdź formatowanie bez modyfikacji" }
+
 # ── Czyszczenie ──────────────────────────────────────────────────────────────
 clean = { cmd = "rm -rf build/ dist/ *.egg-info/ .pytest_cache/ .mypy_cache/ __pycache__/", description = "Wyczyść artefakty builda" }
 clean-all = { cmd = "rm -rf build/ dist/ *.egg-info/ .pytest_cache/ .mypy_cache/ __pycache__/ app_data/", description = "Wyczyść wszystko (łącznie z danymi)" }
@@ -192,9 +184,15 @@ shell = { cmd = "$SHELL || cmd || pwsh", description = "Aktywuj shell w środowi
 cmake = ">=3.28.0"         # Potrzebne do kompilacji llama-cpp-python z CUDA
 
 [feature.dev.pypi-dependencies]
-# ── Testowanie ──────────────────────────────────────────────────────────────pytest = ">=8.0.0"
+# ── Testowanie ──────────────────────────────────────────────────────────────
+pytest = ">=8.0.0"
 pytest-cov = ">=5.0.0"
-hypothesis = ">=6.100.0"  # Zachowany dla złożonych property-based tests
+pytest-anyio = ">=0.1.0"          # natywne async test fixtures (anyio)
+hypothesis = ">=6.100.0"          # Zachowany dla złożonych property-based tests
+crosshair = ">=0.1.0"             # SMT-driven property testing (zastępuje hypothesis w nowym stacku)
+schemathesis = ">=3.0.0"          # Property-based API testing (OpenAPI)
+locust = ">=2.0.0"               # Load testing w Pythonie
+py-spy = ">=0.3.0"               # Sampling profiler (bez GIL)
 
 # ── Linter / Formatter / Type checker ───────────────────────────────────────
 ruff = ">=0.3.0"

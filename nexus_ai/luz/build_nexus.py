@@ -7,7 +7,9 @@ import anyio
 async def build_executable():
     """Kompiluje aplikację do natywnego pliku .exe za pomocą Nuitki."""
     command = [
-        sys.executable, "-m", "nuitka",
+        sys.executable,
+        "-m",
+        "nuitka",
         "--standalone",  # Tworzy niezależny folder z plikiem .exe
         "--onefile",  # Opcjonalnie: pakuje wszystko do jednego pliku
         # Zgodnie z aa3fvcx.txt: pydantic → msgspec, torch → llama-cpp-python
@@ -15,7 +17,7 @@ async def build_executable():
         "--enable-plugin=numpy",
         "--include-data-dir=app_data=app_data",  # Dołącza puste foldery na bazy
         "--output-dir=dist",
-        "main.py"
+        "main.py",
     ]
 
     print("Rozpoczynam kompilację Nuitka. To może potrwać kilkadziesiąt minut...")

@@ -27,6 +27,7 @@ logger = get_logger("nexus.installer.models_downloader")
 
 # ── Progress callback type ──────────────────────────────────────────────────
 
+
 class ProgressCallback(Protocol):
     def __call__(
         self,
@@ -39,10 +40,13 @@ class ProgressCallback(Protocol):
         status: str,
     ) -> None: ...
 
+
 # ── Data types ──────────────────────────────────────────────────────────────
+
 
 class ModelEntry(Struct):
     """A single model entry from the manifest."""
+
     key: str
     repo_id: str
     filename: str
@@ -51,15 +55,19 @@ class ModelEntry(Struct):
     size_mb: int
     required: bool
 
+
 class DownloadResult(Struct):
     """Result of downloading a single model."""
+
     key: str
     success: bool
     error: str | None = None
     sha256_match: bool | None = None
     bytes_downloaded: int = 0
 
+
 # ── Manifest loader ─────────────────────────────────────────────────────────
+
 
 def load_manifest(manifest_path: str | Path | None = None) -> list[ModelEntry]:
     """Load model manifest from JSON file.
@@ -93,19 +101,23 @@ def load_manifest(manifest_path: str | Path | None = None) -> list[ModelEntry]:
     models_data = data.get("models", {})
     entries: list[ModelEntry] = []
     for key, info in models_data.items():
-        entries.append(ModelEntry(
-            key=key,
-            repo_id=info.get("repo_id", ""),
-            filename=info.get("filename", key),
-            sha256=info.get("sha256", ""),
-            description=info.get("description", ""),
-            size_mb=info.get("size_mb", 0),
-            required=info.get("required", False),
-        ))
+        entries.append(
+            ModelEntry(
+                key=key,
+                repo_id=info.get("repo_id", ""),
+                filename=info.get("filename", key),
+                sha256=info.get("sha256", ""),
+                description=info.get("description", ""),
+                size_mb=info.get("size_mb", 0),
+                required=info.get("required", False),
+            )
+        )
 
     return entries
 
+
 # ── SHA-256 verification ────────────────────────────────────────────────────
+
 
 def compute_sha256(filepath: Path) -> str:
     """Compute SHA-256 checksum of a file."""
@@ -118,6 +130,7 @@ def compute_sha256(filepath: Path) -> str:
             sha.update(chunk)
     return sha.hexdigest()
 
+
 def verify_file(filepath: Path, expected_hash: str) -> bool:
     """Verify a file's SHA-256 checksum. Returns True if match or no hash provided."""
     if not expected_hash:
@@ -128,7 +141,9 @@ def verify_file(filepath: Path, expected_hash: str) -> bool:
     actual = compute_sha256(filepath)
     return actual == expected_hash
 
+
 # ── HuggingFace download with resume ────────────────────────────────────────
+
 
 async def download_file(
     url: str,
@@ -184,6 +199,7 @@ async def download_file(
             mode = "ab" if resume_bytes > 0 and response.status_code == 206 else "wb"
             downloaded = resume_bytes if mode == "ab" else 0
             import time as _time5
+
             start_time = _time5.monotonic()
 
             with open(temp_path, mode) as f:
@@ -221,13 +237,17 @@ async def download_file(
     except Exception as e:
         return False, f"Download failed: {e}"
 
+
 # ── HuggingFace file resolver ───────────────────────────────────────────────
+
 
 def _get_hf_download_url(repo_id: str, filename: str) -> str:
     """Construct HuggingFace download URL for a specific file in a repo."""
     return f"https://huggingface.co/{repo_id}/resolve/main/{filename}"
 
+
 # ── Main download orchestrator ──────────────────────────────────────────────
+
 
 async def download_all_models(
     models_dir: str | Path,
@@ -266,9 +286,7 @@ async def download_all_models(
 
     for i, entry in enumerate(entries):
         if cancel_event and cancel_event.is_set():
-            results.append(DownloadResult(
-                key=entry.key, success=False, error="Cancelled by user"
-            ))
+            results.append(DownloadResult(key=entry.key, success=False, error="Cancelled by user"))
             break
 
         dest_path = models_dir / entry.key
@@ -278,10 +296,14 @@ async def download_all_models(
             if verify_file(dest_path, entry.sha256):
                 model_size = dest_path.stat().st_size
                 downloaded_bytes_all += model_size
-                results.append(DownloadResult(
-                    key=entry.key, success=True, sha256_match=True,
-                    bytes_downloaded=model_size,
-                ))
+                results.append(
+                    DownloadResult(
+                        key=entry.key,
+                        success=True,
+                        sha256_match=True,
+                        bytes_downloaded=model_size,
+                    )
+                )
                 if progress_cb:
                     progress_cb(
                         current_file=entry.key,
@@ -305,10 +327,13 @@ async def download_all_models(
         try:
             import huggingface_hub  # noqa: F401
         except ImportError:
-            results.append(DownloadResult(
-                key=entry.key, success=False,
-                error="huggingface-hub not installed. Run: pip install huggingface-hub",
-            ))
+            results.append(
+                DownloadResult(
+                    key=entry.key,
+                    success=False,
+                    error="huggingface-hub not installed. Run: pip install huggingface-hub",
+                )
+            )
             continue
 
         # Report starting
@@ -332,7 +357,10 @@ async def download_all_models(
             prev_downloaded: int,
         ) -> ProgressCallback:
             _prev = prev_downloaded
-            def cb(*, current_file, downloaded_bytes, total_bytes, speed_bps, overall_progress, status):
+
+            def cb(
+                *, current_file, downloaded_bytes, total_bytes, speed_bps, overall_progress, status
+            ):
                 nonlocal _prev
                 # Calculate overall progress including previously downloaded models
                 this_progress = _prev + downloaded_bytes
@@ -346,15 +374,19 @@ async def download_all_models(
                         overall_progress=overall,
                         status=status,
                     )
+
             return cb
 
         entry_progress_cb = make_progress_for_entry(
-            entry.key, entry.size_mb * 1024 * 1024,
-            total_bytes, downloaded_bytes_all,
+            entry.key,
+            entry.size_mb * 1024 * 1024,
+            total_bytes,
+            downloaded_bytes_all,
         )
 
         success, error = await download_file(
-            url, dest_path,
+            url,
+            dest_path,
             progress_cb=entry_progress_cb,
             cancel_event=cancel_event,
         )
@@ -365,11 +397,14 @@ async def download_all_models(
             file_size = dest_path.stat().st_size
             downloaded_bytes_all += file_size
 
-            results.append(DownloadResult(
-                key=entry.key, success=True,
-                sha256_match=sha256_ok,
-                bytes_downloaded=file_size,
-            ))
+            results.append(
+                DownloadResult(
+                    key=entry.key,
+                    success=True,
+                    sha256_match=sha256_ok,
+                    bytes_downloaded=file_size,
+                )
+            )
 
             if progress_cb:
                 progress_cb(
@@ -381,13 +416,19 @@ async def download_all_models(
                     status="completed" if sha256_ok else "hash_mismatch",
                 )
         else:
-            results.append(DownloadResult(
-                key=entry.key, success=False, error=error,
-            ))
+            results.append(
+                DownloadResult(
+                    key=entry.key,
+                    success=False,
+                    error=error,
+                )
+            )
 
     return results
 
+
 # ── First-run detection ─────────────────────────────────────────────────────
+
 
 def check_models_present(models_dir: str | Path, manifest_path: str | Path | None = None) -> dict:
     """Check which models are present and valid.

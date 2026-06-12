@@ -76,8 +76,13 @@ class ProgressWebSocketClient:
                                 msg_type = data.get("type", "")
 
                                 # Pomiń wiadomości systemowe
-                                if msg_type in ("connected", "subscribed",
-                                                "unsubscribed", "pong", "ping"):
+                                if msg_type in (
+                                    "connected",
+                                    "subscribed",
+                                    "unsubscribed",
+                                    "pong",
+                                    "ping",
+                                ):
                                     continue
 
                                 app_state.emit("progress_update", data)

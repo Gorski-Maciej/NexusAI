@@ -17,13 +17,19 @@ class NexusStatusBar(ft.Container):
         self.nats_led = ft.Container(width=8, height=8, border_radius=4, bgcolor=ft.colors.GREY_700)
         self.status_msg = ft.Text("Inicjalizacja systemu...", size=11, color=ft.colors.GREY_500)
 
-        self.content = ft.Row([
-            ft.Row([
-                ft.Text("SQLITE", size=10, weight=ft.FontWeight.BOLD), self.db_led,
-                ft.VerticalDivider(width=10),
-                ft.Text("NATS/AI", size=10, weight=ft.FontWeight.BOLD), self.nats_led,
-            ])
-        ])
+        self.content = ft.Row(
+            [
+                ft.Row(
+                    [
+                        ft.Text("SQLITE", size=10, weight=ft.FontWeight.BOLD),
+                        self.db_led,
+                        ft.VerticalDivider(width=10),
+                        ft.Text("NATS/AI", size=10, weight=ft.FontWeight.BOLD),
+                        self.nats_led,
+                    ]
+                )
+            ]
+        )
 
     def update_status(self, db_ok: bool, nats_ok: bool, message: str):
         self.db_led.bgcolor = ft.colors.GREEN if db_ok else ft.colors.RED

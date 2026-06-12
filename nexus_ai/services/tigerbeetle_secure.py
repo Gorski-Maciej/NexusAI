@@ -46,7 +46,9 @@ class SecureTigerBeetleClient:
 
         return self._inner.create_two_phase_transfer(**kwargs)
 
-    def _log_security_alert(self, session: Session, *, actor: str, operation: str, details: dict) -> None:
+    def _log_security_alert(
+        self, session: Session, *, actor: str, operation: str, details: dict
+    ) -> None:
         session.add(
             SecurityAlert(
                 actor=actor,

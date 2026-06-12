@@ -11,10 +11,7 @@ class OptimisticField(ft.UserControl):
         self.field_name = field_name
         self.original_value = initial_value
 
-        self.text_field = ft.TextField(
-            value=initial_value,
-            on_submit=self.handle_update
-        )
+        self.text_field = ft.TextField(value=initial_value, on_submit=self.handle_update)
 
     async def handle_update(self, e):
         new_value = self.text_field.value
@@ -28,10 +25,7 @@ class OptimisticField(ft.UserControl):
 
         # 2. Strzał do API w tle
         try:
-            success = await self.api.update_invoice(
-                self.invoice_id,
-                {self.field_name: new_value}
-            )
+            success = await self.api.update_invoice(self.invoice_id, {self.field_name: new_value})
             if not success:
                 self.text_field.border_color = ft.colors.RED_400
                 self.update()

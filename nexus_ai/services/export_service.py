@@ -9,9 +9,7 @@ class ExportService:
 
     @staticmethod
     def generate_export_payload(
-            session: Session,
-            invoice_ids: list[str],
-            system_name: str = "INSERT_EPP"
+        session: Session, invoice_ids: list[str], system_name: str = "INSERT_EPP"
     ) -> str:
         """Pobiera faktury i generuje plik tekstowy dla systemu księgowego."""
         # 1. Pobieramy faktury z bazy

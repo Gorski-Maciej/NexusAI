@@ -1,4 +1,5 @@
 """Worker status monitoring endpoint (Rozwiązanie 29)."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -37,9 +38,11 @@ class WorkerStatusController(Controller):
 
             process = psutil.Process(os.getpid())
             current_mem = process.memory_info().rss
-            uptime_seconds = int((pendulum.now("UTC") - pendulum.from_timestamp(
-                process.create_time(), tz="UTC"
-            )).total_seconds())
+            uptime_seconds = int(
+                (
+                    pendulum.now("UTC") - pendulum.from_timestamp(process.create_time(), tz="UTC")
+                ).total_seconds()
+            )
             cpu_percent = process.cpu_percent(interval=0.1)
 
             return {

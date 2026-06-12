@@ -19,6 +19,7 @@ def _load_gputil_module():
     if importlib.util.find_spec("GPUtil") is None:
         return None
     import GPUtil
+
     return GPUtil
 
 
@@ -88,7 +89,9 @@ def ensure_telemetry_schema(duckdb: DuckDBManager) -> None:
     )
 
 
-def track_performance(stage_name: str, *, duckdb_provider: Callable[[], DuckDBManager]) -> Callable[[F], F]:
+def track_performance(
+    stage_name: str, *, duckdb_provider: Callable[[], DuckDBManager]
+) -> Callable[[F], F]:
     """Decorator for worker stages that writes timing + VRAM telemetry to DuckDB."""
 
     def decorator(func: F) -> F:
@@ -174,7 +177,9 @@ def store_finops_snapshot(
     }
 
 
-async def flush_fallback_spans(duckdb_provider: Callable[[], DuckDBManager], *, retries: int = 3, base_delay: float = 0.5) -> dict[str, int]:
+async def flush_fallback_spans(
+    duckdb_provider: Callable[[], DuckDBManager], *, retries: int = 3, base_delay: float = 0.5
+) -> dict[str, int]:
     """Replay file-buffered telemetry spans into DuckDB with retry/backoff."""
     buffer = FileSpanBuffer(max_records=_resolve_otel_buffer_max_records())
     queue_before = len(buffer.read_all())
@@ -200,13 +205,23 @@ async def flush_fallback_spans(duckdb_provider: Callable[[], DuckDBManager], *, 
             try:
                 sent = buffer.replay(_sender)
                 remaining = len(buffer.read_all())
-                return {"sent": int(sent), "remaining": int(remaining), "queue_before": int(queue_before), "attempts": int(attempt + 1)}
+                return {
+                    "sent": int(sent),
+                    "remaining": int(remaining),
+                    "queue_before": int(queue_before),
+                    "attempts": int(attempt + 1),
+                }
             except Exception:
                 if attempt >= retries - 1:
                     break
-                await anyio.sleep(base_delay * (2 ** attempt))
+                await anyio.sleep(base_delay * (2**attempt))
 
-        return {"sent": 0, "remaining": len(buffer.read_all()), "queue_before": int(queue_before), "attempts": int(retries)}
+        return {
+            "sent": 0,
+            "remaining": len(buffer.read_all()),
+            "queue_before": int(queue_before),
+            "attempts": int(retries),
+        }
     finally:
         try:
             db.close()

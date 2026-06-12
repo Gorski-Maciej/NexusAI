@@ -43,6 +43,7 @@ def async_retry(
         async def send_to_ksef(data: dict) -> dict:
             ...
     """
+
     def decorator(func: F) -> F:
         @functools.wraps(func)
         async def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -54,5 +55,7 @@ def async_retry(
                 with attempt:
                     return await func(*args, **kwargs)
             raise RuntimeError("Retry attempts exhausted") from None
+
         return wrapper  # type: ignore[return-value]
+
     return decorator

@@ -10,6 +10,7 @@ Ta definicja zastępuje starą strukturę rozproszonych modeli (models/invoice.p
 models/outbox.py, models/audit.py, models/contractor.py) — wszystkie modele
 są teraz w jednym pliku.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -31,9 +32,10 @@ Base = _SQLModelType
 
 class OutboxStatus(BaseStrEnum):
     """Statusy zdarzeń outbox.
-    
+
     StrEnum dziedziczy już po str, więc nie trzeba jawnie dodawać str jako bazy.
     """
+
     PENDING = "PENDING"
     PROCESSING = "PROCESSING"
     PROCESSED = "PROCESSED"
@@ -47,6 +49,7 @@ class OutboxStatus(BaseStrEnum):
 
 class Invoice(SQLModel, table=True):
     """Faktura — główny model biznesowy."""
+
     __tablename__ = "invoices"  # type: ignore[assignment]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -62,11 +65,15 @@ class Invoice(SQLModel, table=True):
     processing_status: str | None = Field(default=None)
     issue_date: str | None = Field(default=None)
     created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"))
-    updated_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"), sa_column_kwargs={"onupdate": lambda: pendulum.now("UTC")})
+    updated_at: pendulum.DateTime = Field(
+        default_factory=lambda: pendulum.now("UTC"),
+        sa_column_kwargs={"onupdate": lambda: pendulum.now("UTC")},
+    )
 
 
 class ActiveLearningPattern(SQLModel, table=True):
     """Wzorce aktywnego uczenia — korekty użytkownika dla AI."""
+
     __tablename__ = "active_learning_patterns"  # type: ignore[assignment]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -78,6 +85,7 @@ class ActiveLearningPattern(SQLModel, table=True):
 
 class Contractor(SQLModel, table=True):
     """Kontrahenci."""
+
     __tablename__ = "contractors"  # type: ignore[assignment]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -90,6 +98,7 @@ class Contractor(SQLModel, table=True):
 
 class AuditLog(SQLModel, table=True):
     """Audit trail for all changes made to invoices."""
+
     __tablename__ = "audit_logs"  # type: ignore[assignment]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -106,6 +115,7 @@ class AuditLog(SQLModel, table=True):
 
 class OutboxEvent(SQLModel, table=True):
     """Transactional outbox events for guaranteed delivery."""
+
     __tablename__ = "outbox_events"  # type: ignore[assignment]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -123,6 +133,7 @@ class OutboxEvent(SQLModel, table=True):
 
 class SecurityAlert(SQLModel, table=True):
     """Security events (RBAC violations, suspicious access)."""
+
     __tablename__ = "security_alerts"  # type: ignore[assignment]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -135,6 +146,7 @@ class SecurityAlert(SQLModel, table=True):
 
 class UserAccount(SQLModel, table=True):
     """User accounts for authentication and authorization."""
+
     __tablename__ = "users"  # type: ignore[assignment]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

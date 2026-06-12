@@ -18,10 +18,10 @@ import signal
 import sys
 
 import anyio
-from pathlib import Path
+from pathlib import Path as _SyncPath
 
 # ── Project root (directory containing nexus_ai/) ──
-_PROJECT_ROOT = Path(__file__).resolve().parent
+_PROJECT_ROOT = _SyncPath(__file__).resolve().parent
 
 # ── Logging setup ──
 from nexus_ai.core.logger import get_logger, setup_logger  # noqa: E402
@@ -52,7 +52,9 @@ def _build_parser() -> argparse.ArgumentParser:
         """,
     )
     parser.add_argument(
-        "--mode", type=str, default="api",
+        "--mode",
+        type=str,
+        default="api",
         choices=["api", "worker", "all", "bootstrap", "doctor"],
         help="Startup mode (default: api)",
     )
@@ -62,18 +64,23 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--migrate", action="store_true", help="Run Alembic migrations and exit")
     parser.add_argument("--load-fixtures", action="store_true", help="Load demo/seed data and exit")
     parser.add_argument("--fetch-models", action="store_true", help="Download AI models and exit")
-    parser.add_argument("--compute-checksums", action="store_true", help="Compute SHA-256 checksums for models")
+    parser.add_argument(
+        "--compute-checksums", action="store_true", help="Compute SHA-256 checksums for models"
+    )
     parser.add_argument("--check-models", action="store_true", help="Check AI model presence")
     parser.add_argument("--check-updates", action="store_true", help="Check for updates")
     parser.add_argument("--host", type=str, default="127.0.0.1", help="API bind address")
     parser.add_argument("--port", type=int, default=8000, help="API port")
     parser.add_argument("--workers", type=int, default=1, help="Number of workers")
     parser.add_argument(
-        "--watch", action="store_true",
+        "--watch",
+        action="store_true",
         help="Watch config/protocol files for changes and log auto-reload events",
     )
     parser.add_argument(
-        "--watch-interval", type=int, default=None,
+        "--watch-interval",
+        type=int,
+        default=None,
         help="Poll interval in seconds for --watch (default: 5 for protocols, 5 for config)",
     )
     return parser
@@ -107,9 +114,7 @@ def setup_watch_mode(args: argparse.Namespace) -> None:
 
     raw_interval = getattr(args, "watch_interval", None)
     interval = (
-        raw_interval
-        if raw_interval is not None
-        else int(os.getenv("NEXUS_WATCH_INTERVAL", "5"))
+        raw_interval if raw_interval is not None else int(os.getenv("NEXUS_WATCH_INTERVAL", "5"))
     )
     # auto_reload=0 / auto_reload=False is disabled — ale --watch wymaga enabled
     if not interval:
@@ -118,14 +123,10 @@ def setup_watch_mode(args: argparse.Namespace) -> None:
     from nexus_ai.core.protocol_loader import get_protocol_loader
     from nexus_ai.core.config import get_config_loader
 
-    logger.info(
-        "=" * 56
-    )
+    logger.info("=" * 56)
     logger.info("WATCH MODE ENABLED (poll every %ds)", interval)
     logger.info("Watching: protocols.toml, config/*.toml")
-    logger.info(
-        "=" * 56
-    )
+    logger.info("=" * 56)
 
     # --- ProtocolLoader z auto-reload ---
     protocol_loader = get_protocol_loader(auto_reload=interval)
@@ -156,14 +157,22 @@ def setup_watch_mode(args: argparse.Namespace) -> None:
 
 async def _run_bootstrap(args: argparse.Namespace | None = None) -> None:
     from nexus_ai.scripts.bootstrap import run_bootstrap
+
     logger.info(">>> Bootstrap: Running comprehensive initialization...")
     steps = None
     if args:
         step_list = []
         if getattr(args, "skip_seed", False):
-            step_list = ["validate_config", "check_dependencies", "check_ai_models",
-                        "create_directories", "run_migrations", "initialize_olap",
-                        "verify_nats", "verify_tigerbeetle"]
+            step_list = [
+                "validate_config",
+                "check_dependencies",
+                "check_ai_models",
+                "create_directories",
+                "run_migrations",
+                "initialize_olap",
+                "verify_nats",
+                "verify_tigerbeetle",
+            ]
         if step_list:
             steps = step_list
     report = await run_bootstrap(steps=steps)
@@ -221,13 +230,16 @@ async def _start_api_server(host: str, port: int) -> None:
 
 async def _start_worker() -> None:
     from nexus_ai.core.config import AppConfig
+
     AppConfig()
     logger.info(">>> Starting Taskiq worker...")
 
     cmd = [sys.executable, "-m", "nexus_ai.luz.worker"]
     worker_proc = await anyio.open_process(
-        cmd, cwd=_PROJECT_ROOT,
-        stdout=anyio.abc.ProcessPipe.PIPE, stderr=anyio.abc.ProcessPipe.PIPE,
+        cmd,
+        cwd=_PROJECT_ROOT,
+        stdout=anyio.abc.ProcessPipe.PIPE,
+        stderr=anyio.abc.ProcessPipe.PIPE,
     )
     logger.info("Worker started (PID: %s)", worker_proc.pid)
 
@@ -296,11 +308,16 @@ def _run_alembic_migrations() -> int:
     try:
         from alembic import command
         from nexus_ai.core.alembic_utils import get_alembic_config
+
         alembic_cfg = get_alembic_config()
         if alembic_cfg is None:
-            logger.error("[MIGRATE] Cannot get Alembic config (pyproject.toml missing or [tool.alembic] not found)")
+            logger.error(
+                "[MIGRATE] Cannot get Alembic config (pyproject.toml missing or [tool.alembic] not found)"
+            )
             return 1
-        logger.info("[MIGRATE] Running: alembic upgrade head (config from pyproject.toml [tool.alembic])")
+        logger.info(
+            "[MIGRATE] Running: alembic upgrade head (config from pyproject.toml [tool.alembic])"
+        )
         command.upgrade(alembic_cfg, "head")
         logger.info("[MIGRATE] All migrations applied.")
         return 0
@@ -309,12 +326,11 @@ def _run_alembic_migrations() -> int:
         return 1
 
 
-
-
 async def _run_load_fixtures() -> int:
     try:
         from nexus_ai.core.config import AppConfig
         from nexus_ai.scripts.seed_data import seed_all
+
         config = AppConfig()
         result = await seed_all(config)
         total = sum(result.values())
@@ -335,7 +351,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.load_fixtures:
         return anyio.run(_run_load_fixtures)
     if args.compute_checksums:
-        logger.info("--compute-checksums: use python -m nexus_ai.scripts.download_models --verify-only")
+        logger.info(
+            "--compute-checksums: use python -m nexus_ai.scripts.download_models --verify-only"
+        )
         return 0
     if args.check_models:
         return 0

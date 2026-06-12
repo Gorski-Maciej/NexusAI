@@ -12,6 +12,7 @@ from __future__ import annotations
 try:
     from cryptography import x509 as _x509
     from cryptography.hazmat.primitives.asymmetric import padding as _asym_padding
+
     _HAS_CRYPTOGRAPHY = True
 except ImportError:
     _HAS_CRYPTOGRAPHY = False
@@ -63,7 +64,7 @@ class SignatureValidator:
                     cert.signature,
                     cert.tbs_certificate_bytes,
                     _asym_padding.PKCS1v15(),
-                    cert.signature_hash_algorithm
+                    cert.signature_hash_algorithm,
                 )
                 return True
             except Exception:

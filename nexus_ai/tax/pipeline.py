@@ -44,6 +44,7 @@ from .rules import RuleEngine
 
 logger = get_logger("nexus.tax.pipeline")
 
+
 class PipelineResult(Struct):
     """Result of processing a single invoice through the tax pipeline.
 
@@ -71,6 +72,7 @@ class PipelineResult(Struct):
     error: str | None = None
     routing: str | None = None
     routing_reason: str | None = None
+
 
 class TaxPipeline:
     """Orchestrates the complete tax processing pipeline.
@@ -168,7 +170,9 @@ class TaxPipeline:
         if routing:
             logger.warning(
                 "[TAX-PIPELINE] Verdict has _routing=%s reason=%s tx_id=%s",
-                routing, routing_reason, tx_id,
+                routing,
+                routing_reason,
+                tx_id,
             )
 
         # ── Step 2c: decision_trace (zgodność z dokumentacją) ─────────────
@@ -219,9 +223,7 @@ class TaxPipeline:
             ]
         else:
             # Single-line invoice: use amount_net directly as Money
-            single_net = TaxMathEngine.to_grosze(
-                invoice_data.get("amount_net", Decimal("0"))
-            )
+            single_net = TaxMathEngine.to_grosze(invoice_data.get("amount_net", Decimal("0")))
             positions_net_money = [to_money(single_net, currency)]
 
         # Calculate VAT using Money-aware API
@@ -245,10 +247,12 @@ class TaxPipeline:
         )
 
         validation = validate_invariants(inv_positions, summary)
-        invariants_json = msgspec_dumps({
-            "is_valid": validation.is_valid,
-            "error_message": validation.error_message,
-        })
+        invariants_json = msgspec_dumps(
+            {
+                "is_valid": validation.is_valid,
+                "error_message": validation.error_message,
+            }
+        )
 
         # ── Step 5: PreLedgerValidator (przed TigerBeetle) ────────────────
         tb_ok = validation.is_valid
@@ -293,12 +297,16 @@ class TaxPipeline:
             if routing == "BLOCK_AND_ALERT":
                 logger.warning(
                     "[TAX-PIPELINE] BLOCKED by routing=%s tid=%s reason=%s",
-                    routing, tx_id, routing_reason,
+                    routing,
+                    tx_id,
+                    routing_reason,
                 )
             else:
                 logger.info(
                     "[TAX-PIPELINE] Routing=%s tid=%s reason=%s",
-                    routing, tx_id, routing_reason,
+                    routing,
+                    tx_id,
+                    routing_reason,
                 )
         elif not validation.is_valid or not pre_ledger_ok:
             # Skip TigerBeetle — invariant failure or pre-ledger check
@@ -318,8 +326,12 @@ class TaxPipeline:
             try:
                 await self._write_outbox(outbox_payload)
                 tb_result = {"status": "OUTBOX_ENQUEUED", "transaction_id": tx_id}
-                logger.info("[TAX-OUTBOX] Enqueued tid=%s net=%d vat=%d",
-                            tx_id, total_net_grosze, total_vat_grosze)
+                logger.info(
+                    "[TAX-OUTBOX] Enqueued tid=%s net=%d vat=%d",
+                    tx_id,
+                    total_net_grosze,
+                    total_vat_grosze,
+                )
             except Exception as exc:
                 tb_result = {"status": "ERROR", "error": str(exc)}
                 tb_ok = False
@@ -339,16 +351,20 @@ class TaxPipeline:
                 tb_ok = False
 
         # ── Step 7: Decision Trace Logger ────────────────────────────────
-        calc_input = msgspec_dumps({
-            "positions_net_grosze": positions_net,
-            "vat_rate": str(vat_rate),
-            "rounding_level": rounding_level,
-        })
-        calc_output = msgspec_dumps({
-            "netto_grosze": total_net_grosze,
-            "vat_grosze": total_vat_grosze,
-            "brutto_grosze": total_brutto_grosze,
-        })
+        calc_input = msgspec_dumps(
+            {
+                "positions_net_grosze": positions_net,
+                "vat_rate": str(vat_rate),
+                "rounding_level": rounding_level,
+            }
+        )
+        calc_output = msgspec_dumps(
+            {
+                "netto_grosze": total_net_grosze,
+                "vat_grosze": total_vat_grosze,
+                "brutto_grosze": total_brutto_grosze,
+            }
+        )
 
         # Generate detailed trace_json with evaluated rules
         trace_json_str = TraceGenerator.generate_trace_json(
@@ -391,7 +407,9 @@ class TaxPipeline:
                 trust_score=float(verdict.get("trust_score", verdict.get("ai_confidence", 0.5))),
                 ai_confidence=float(verdict.get("ai_confidence", 0.5)),
                 decision_pattern=str(rule_id or "")[:64],
-                reasoning=decision_trace_text[:512] if decision_trace_text else "Tax pipeline decision",
+                reasoning=decision_trace_text[:512]
+                if decision_trace_text
+                else "Tax pipeline decision",
                 metadata={
                     "transaction_id": tx_id,
                     "trace_id": trace_id,
@@ -404,12 +422,15 @@ class TaxPipeline:
             )
             logger.info(
                 "[TAX-EVENT] DecisionMade emitted for invoice_id=%s decision=%s tx_id=%s",
-                invoice_id, decision_val, tx_id,
+                invoice_id,
+                decision_val,
+                tx_id,
             )
         except Exception as emit_err:
             logger.warning(
                 "[TAX-EVENT] Failed to emit DecisionMade for tx_id=%s: %s",
-                tx_id, emit_err,
+                tx_id,
+                emit_err,
             )
 
         # ── Step 8: Result ───────────────────────────────────────────────
@@ -542,7 +563,9 @@ class TaxPipeline:
         )
         logger.info(
             "[ACTIVE-LEARNING] Recorded correction tid=%s example_id=%s by=%s",
-            transaction_id, example_id, verified_by,
+            transaction_id,
+            example_id,
+            verified_by,
         )
 
     async def get_active_learning_stats(self) -> dict[str, Any]:
@@ -560,9 +583,7 @@ class TaxPipeline:
             )"""
         )
 
-        total = self._conn.execute(
-            "SELECT COUNT(*) FROM active_learning_examples"
-        ).fetchone()
+        total = self._conn.execute("SELECT COUNT(*) FROM active_learning_examples").fetchone()
         unused = self._conn.execute(
             "SELECT COUNT(*) FROM active_learning_examples WHERE used_for_training = FALSE"
         ).fetchone()

@@ -28,15 +28,15 @@ class NexusRouter:
             route=self.page.route,
             controls=[
                 self._build_app_bar(),
-                view_handler.build(), # Każdy widok ma metodę build()
+                view_handler.build(),  # Każdy widok ma metodę build()
             ],
-            drawer=self._build_drawer()
+            drawer=self._build_drawer(),
         )
         self.page.views.append(view)
         self.page.update()
 
         # Trigger async data load for all views that support it
-        if hasattr(view_handler, 'load_data'):
+        if hasattr(view_handler, "load_data"):
             self.page.run_task(view_handler.load_data)
 
     def _build_app_bar(self):
@@ -91,6 +91,6 @@ class NexusRouter:
             "/404",
             [
                 ft.AppBar(title=ft.Text("Błąd 404")),
-                ft.Text("Nie znaleziono żądanej strony.", size=30, color="red")
-            ]
+                ft.Text("Nie znaleziono żądanej strony.", size=30, color="red"),
+            ],
         )

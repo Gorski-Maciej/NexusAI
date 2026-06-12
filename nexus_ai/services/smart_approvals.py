@@ -6,15 +6,20 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
 
+
 class ApprovalDecision(Struct, frozen=True):
     invoice_id: str
     score: int
     approval_status: str
     reasons: list[str]
 
+
 def ensure_smart_approval_schema(duckdb: DuckDBManager) -> None:
-    duckdb.execute("ALTER TABLE invoices_replica ADD COLUMN IF NOT EXISTS ai_confidence_score INTEGER")
+    duckdb.execute(
+        "ALTER TABLE invoices_replica ADD COLUMN IF NOT EXISTS ai_confidence_score INTEGER"
+    )
     duckdb.execute("ALTER TABLE invoices_replica ADD COLUMN IF NOT EXISTS approval_status VARCHAR")
+
 
 def evaluate_approval_routing(duckdb: DuckDBManager, invoice_id: str) -> ApprovalDecision:
     rows = duckdb.execute(
@@ -47,7 +52,11 @@ def evaluate_approval_routing(duckdb: DuckDBManager, invoice_id: str) -> Approva
         (vendor_id, invoice_id),
     )
     historical_avg = float(avg_rows[0][0]) if avg_rows and avg_rows[0][0] is not None else None
-    if historical_avg is not None and historical_avg > 0 and float(gross_amount) > historical_avg * 1.5:
+    if (
+        historical_avg is not None
+        and historical_avg > 0
+        and float(gross_amount) > historical_avg * 1.5
+    ):
         score -= 40
         reasons.append("AMOUNT_OVER_150pct_HISTORY")
 
@@ -69,7 +78,10 @@ def evaluate_approval_routing(duckdb: DuckDBManager, invoice_id: str) -> Approva
         "UPDATE invoices_replica SET ai_confidence_score = ?, approval_status = ? WHERE id = ?",
         (score, status, invoice_id),
     )
-    return ApprovalDecision(invoice_id=invoice_id, score=score, approval_status=status, reasons=reasons)
+    return ApprovalDecision(
+        invoice_id=invoice_id, score=score, approval_status=status, reasons=reasons
+    )
+
 
 def assert_auto_approved_or_block(duckdb: DuckDBManager, invoice_id: str) -> None:
     decision = evaluate_approval_routing(duckdb, invoice_id)

@@ -11,20 +11,32 @@ from typing import Any, Protocol
 
 import pendulum
 
+
 class DunningAIAgent(Protocol):
-    def generate_dunning_text(self, invoice_data: dict[str, Any], vendor_score: float, level: int) -> str: ...
+    def generate_dunning_text(
+        self, invoice_data: dict[str, Any], vendor_score: float, level: int
+    ) -> str: ...
+
 
 class DunningEmailProvider(Protocol):
     def send(self, *, to_email: str, subject: str, body: str) -> bool: ...
+
 
 class DunningGuardrails(Struct, frozen=True):
     cooldown_days: int = 7
     min_amount_pln: float = 10.0
 
+
 class DunningEngine:
     """Automatyczny silnik windykacji — wysyła przypomnienia o płatnościach."""
 
-    def __init__(self, duckdb_manager: Any, ai_agent: DunningAIAgent, email_provider: DunningEmailProvider, guardrails: DunningGuardrails = DunningGuardrails()) -> None:
+    def __init__(
+        self,
+        duckdb_manager: Any,
+        ai_agent: DunningAIAgent,
+        email_provider: DunningEmailProvider,
+        guardrails: DunningGuardrails = DunningGuardrails(),
+    ) -> None:
         self.duckdb = duckdb_manager
         self.ai_agent = ai_agent
         self.email_provider = email_provider
@@ -59,9 +71,12 @@ class DunningEngine:
 
     @staticmethod
     def determine_level(days_overdue: int) -> int | None:
-        if days_overdue >= 30: return 3
-        if days_overdue >= 10: return 2
-        if days_overdue >= 3: return 1
+        if days_overdue >= 30:
+            return 3
+        if days_overdue >= 10:
+            return 2
+        if days_overdue >= 3:
+            return 1
         return None
 
     async def run_daily_dunning_check(self) -> dict[str, int]:
@@ -74,17 +89,29 @@ class DunningEngine:
 
         sent = 0
         failed = 0
-        for invoice_id, number, contractor_nip, balance_due, customer_email, vendor_score, days_overdue in rows:
+        for (
+            invoice_id,
+            number,
+            contractor_nip,
+            balance_due,
+            customer_email,
+            vendor_score,
+            days_overdue,
+        ) in rows:
             level = self.determine_level(int(days_overdue))
             if level is None:
                 continue
 
             payload = {
-                "invoice_id": str(invoice_id), "invoice_number": number,
-                "contractor_nip": contractor_nip, "balance_due": float(balance_due),
+                "invoice_id": str(invoice_id),
+                "invoice_number": number,
+                "contractor_nip": contractor_nip,
+                "balance_due": float(balance_due),
                 "days_overdue": int(days_overdue),
             }
-            content = self.ai_agent.generate_dunning_text(payload, float(vendor_score or 0.5), level)
+            content = self.ai_agent.generate_dunning_text(
+                payload, float(vendor_score or 0.5), level
+            )
             delivered = self.email_provider.send(
                 to_email=str(customer_email or ""),
                 subject=f"Przypomnienie o płatności FV {number}",

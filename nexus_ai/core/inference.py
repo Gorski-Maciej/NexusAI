@@ -76,7 +76,10 @@ class InferenceService:
             self._loaded = True
             logger.info(
                 "[InferenceService] Loaded model: %s (ctx=%d, threads=%d, gpu_layers=%d)",
-                self._model_path.name, self._n_ctx, self._n_threads, self._n_gpu_layers,
+                self._model_path.name,
+                self._n_ctx,
+                self._n_threads,
+                self._n_gpu_layers,
             )
         except ImportError:
             logger.warning(

@@ -26,6 +26,7 @@ from typing import Any
 
 # ── Data Structures ──────────────────────────────────────────────────────────
 
+
 class FieldConfidence(Struct, frozen=True):
     """Pewność odczytu pojedynczego pola faktury.
 
@@ -42,9 +43,7 @@ class FieldConfidence(Struct, frozen=True):
     def __post_init__(self) -> None:
         """Validate confidence range."""
         if not 0.0 <= self.confidence <= 1.0:
-            raise ValueError(
-                f"Confidence must be in [0.0, 1.0], got {self.confidence}"
-            )
+            raise ValueError(f"Confidence must be in [0.0, 1.0], got {self.confidence}")
 
     def is_reliable(self, threshold: float = 0.85) -> bool:
         """Czy pole można uznać za wiarygodne powyżej zadanego progu."""
@@ -63,6 +62,7 @@ class FieldConfidence(Struct, frozen=True):
         if isinstance(self.value, Decimal):
             return str(self.value)
         return self.value
+
 
 # ── Typ pomocniczy dla słownika field_confidence ────────────────────────────
 
@@ -83,6 +83,7 @@ Typowe klucze:
 """
 
 # ── Factory functions ────────────────────────────────────────────────────────
+
 
 def field_confidence_from_dict(data: dict[str, dict[str, Any]]) -> FieldConfidenceDict:
     """Utwórz FieldConfidenceDict z surowego słownika.
@@ -114,19 +115,16 @@ def field_confidence_from_dict(data: dict[str, dict[str, Any]]) -> FieldConfiden
                 f"expected dict, got {type(item).__name__}"
             )
         if "value" not in item:
-            raise ValueError(
-                f"Missing 'value' in field_confidence entry for {field_name!r}"
-            )
+            raise ValueError(f"Missing 'value' in field_confidence entry for {field_name!r}")
         if "confidence" not in item:
-            raise ValueError(
-                f"Missing 'confidence' in field_confidence entry for {field_name!r}"
-            )
+            raise ValueError(f"Missing 'confidence' in field_confidence entry for {field_name!r}")
         result[field_name] = FieldConfidence(
             value=item["value"],
             confidence=float(item["confidence"]),
             source=str(item.get("source", "unknown")),
         )
     return result
+
 
 def field_confidence_to_dict(fc: FieldConfidenceDict) -> dict[str, dict[str, Any]]:
     """Skonwertuj FieldConfidenceDict na słownik do JSON.
@@ -139,7 +137,9 @@ def field_confidence_to_dict(fc: FieldConfidenceDict) -> dict[str, dict[str, Any
     """
     return {name: conf.to_dict() for name, conf in fc.items()}
 
+
 # ── Helpers ──────────────────────────────────────────────────────────────────
+
 
 def minimum_confidence(fc: FieldConfidenceDict) -> float:
     """Zwróć najniższy confidence spośród wszystkich pól.
@@ -154,6 +154,7 @@ def minimum_confidence(fc: FieldConfidenceDict) -> float:
         return 1.0
     return min(conf.confidence for conf in fc.values())
 
+
 def fields_below_threshold(
     fc: FieldConfidenceDict,
     threshold: float = 0.85,
@@ -167,11 +168,8 @@ def fields_below_threshold(
     Returns:
         Lista (nazwa_pola, confidence) dla pól poniżej progu.
     """
-    return [
-        (name, conf.confidence)
-        for name, conf in fc.items()
-        if conf.confidence < threshold
-    ]
+    return [(name, conf.confidence) for name, conf in fc.items() if conf.confidence < threshold]
+
 
 def extract_fields_with_confidence(
     fc: FieldConfidenceDict,

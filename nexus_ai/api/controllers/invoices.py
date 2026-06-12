@@ -65,15 +65,19 @@ class InvoiceController(Controller):
         from api.services import CursorPagination
 
         safe_limit = max(1, min(int(limit), 200))
-        query = select(Invoice).order_by(Invoice.created_at.desc(), Invoice.id.desc()).limit(safe_limit + 1)
+        query = (
+            select(Invoice)
+            .order_by(Invoice.created_at.desc(), Invoice.id.desc())
+            .limit(safe_limit + 1)
+        )
 
         if cursor:
             decoded = CursorPagination.decode_cursor(cursor)
             if decoded:
                 cursor_date, cursor_id = decoded
                 query = query.where(
-                    (Invoice.created_at < cursor_date) |
-                    ((Invoice.created_at == cursor_date) & (Invoice.id < cursor_id))
+                    (Invoice.created_at < cursor_date)
+                    | ((Invoice.created_at == cursor_date) & (Invoice.id < cursor_id))
                 )
 
         result = db_session.execute(query)
@@ -85,11 +89,15 @@ class InvoiceController(Controller):
 
         items = [
             InvoiceResponse(
-                id=inv.id, number=inv.number,
-                amount_net=inv.amount_net, amount_gross=inv.amount_gross,
-                currency=inv.currency, status=inv.status,
+                id=inv.id,
+                number=inv.number,
+                amount_net=inv.amount_net,
+                amount_gross=inv.amount_gross,
+                currency=inv.currency,
+                status=inv.status,
                 created_at=inv.created_at,
-            ) for inv in invoices
+            )
+            for inv in invoices
         ]
 
         next_cursor = None
@@ -180,13 +188,16 @@ class InvoiceController(Controller):
         return_dto=InvoiceUploadResponseDTO,
     )
     async def upload_invoice(
-        self,
-        data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)
+        self, data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)
     ) -> InvoiceUploadResponse:
         """Strumieniowy zapis uploadu + CAS hash (SHA-256) bez blokowania event loop."""
         config = AppConfig()
         max_bytes = config.max_invoice_upload_bytes
-        content_length = getattr(data, "headers", {}).get("content-length") if getattr(data, "headers", None) else None
+        content_length = (
+            getattr(data, "headers", {}).get("content-length")
+            if getattr(data, "headers", None)
+            else None
+        )
         if content_length:
             try:
                 if int(content_length) > max_bytes:
@@ -216,7 +227,9 @@ class InvoiceController(Controller):
                 raise ClientException(status_code=400, detail="Empty file")
 
             digest = hasher.hexdigest()
-            saved = storage.finalize_temp_upload(temp_path=temp_path, digest=digest, size_bytes=total_size, suffix=".pdf")
+            saved = await storage.finalize_temp_upload(
+                temp_path=temp_path, digest=digest, size_bytes=total_size, suffix=".pdf"
+            )
             return InvoiceUploadResponse(
                 filename=Path(saved.file_path).name,
                 status="uploaded",
@@ -226,11 +239,10 @@ class InvoiceController(Controller):
             )
         except Exception:
             try:
-                os.unlink(temp_path)
+                await to_thread.run_sync(os.unlink, temp_path)
             except FileNotFoundError:
                 pass
             raise
-
 
     @post(
         "/upload-large",
@@ -244,8 +256,7 @@ class InvoiceController(Controller):
         return_dto=InvoiceUploadResponseDTO,
     )
     async def upload_large_attachment(
-        self,
-        data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)
+        self, data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)
     ) -> InvoiceUploadResponseLarge:
         """Dedicated path for very large attachments isolated from regular invoice uploads."""
         config = AppConfig()
@@ -271,7 +282,7 @@ class InvoiceController(Controller):
             if total_size == 0:
                 raise ClientException(status_code=400, detail="Empty file")
 
-            saved = storage.finalize_temp_upload(
+            saved = await storage.finalize_temp_upload(
                 temp_path=temp_path,
                 digest=hasher.hexdigest(),
                 size_bytes=total_size,
@@ -287,7 +298,7 @@ class InvoiceController(Controller):
             )
         except Exception:
             try:
-                os.unlink(temp_path)
+                await to_thread.run_sync(os.unlink, temp_path)
             except FileNotFoundError:
                 pass
             raise

@@ -9,7 +9,8 @@ from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 
 def _quote_ident(identifier: str) -> str:
-    return "\"" + identifier.replace("\"", "\"\"") + "\""
+    return '"' + identifier.replace('"', '""') + '"'
+
 
 def run_migration_sanity_checks(engine: Engine) -> dict[str, int]:
     """
@@ -44,7 +45,9 @@ def verify_schema_drift(engine: Engine, baseline_path: Path) -> dict[str, object
     current = capture_runtime_schema(engine)
     baseline_path.parent.mkdir(parents=True, exist_ok=True)
     if not baseline_path.exists():
-        baseline_path.write_text(msgspec_dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
+        baseline_path.write_text(
+            msgspec_dumps(current, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
         return {"status": "baseline_created", "tables": len(current), "issues": []}
 
     baseline = msgspec_loads(baseline_path.read_bytes())
@@ -84,7 +87,9 @@ def verify_migration_integrity(engine: Engine, baseline_path: Path) -> dict[str,
     current = capture_table_row_counts(engine)
     baseline_path.parent.mkdir(parents=True, exist_ok=True)
     if not baseline_path.exists():
-        baseline_path.write_text(msgspec_dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
+        baseline_path.write_text(
+            msgspec_dumps(current, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
         return {"status": "baseline_created", "issues": [], "tables": len(current)}
 
     baseline = msgspec_loads(baseline_path.read_bytes())
@@ -105,7 +110,9 @@ def capture_table_checksums(engine: Engine, tables: list[str] | None = None) -> 
     checksums: dict[str, str] = {}
     with engine.connect() as conn:
         if tables is None:
-            table_rows = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'")).fetchall()
+            table_rows = conn.execute(
+                text("SELECT name FROM sqlite_master WHERE type='table'")
+            ).fetchall()
             tables = [str(t[0]) for t in table_rows if not str(t[0]).startswith("sqlite_")]
         for table in tables:
             table_quoted = _quote_ident(table)
@@ -117,11 +124,15 @@ def capture_table_checksums(engine: Engine, tables: list[str] | None = None) -> 
     return checksums
 
 
-def verify_migration_checksums(engine: Engine, baseline_path: Path, tables: list[str] | None = None) -> dict[str, object]:
+def verify_migration_checksums(
+    engine: Engine, baseline_path: Path, tables: list[str] | None = None
+) -> dict[str, object]:
     current = capture_table_checksums(engine, tables=tables)
     baseline_path.parent.mkdir(parents=True, exist_ok=True)
     if not baseline_path.exists():
-        baseline_path.write_text(msgspec_dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
+        baseline_path.write_text(
+            msgspec_dumps(current, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
         return {"status": "baseline_created", "issues": [], "tables": len(current)}
 
     baseline = msgspec_loads(baseline_path.read_bytes())

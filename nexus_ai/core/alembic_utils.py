@@ -43,9 +43,7 @@ def get_alembic_config() -> Any:
         if not alembic_cfg_dict:
             return None
 
-        script_location = alembic_cfg_dict.get(
-            "script_location", "nexus_ai/db/migrations"
-        )
+        script_location = alembic_cfg_dict.get("script_location", "nexus_ai/db/migrations")
         # Resolve relative to project root
         full_script_location = str((project_root / script_location).resolve())
 

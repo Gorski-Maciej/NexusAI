@@ -1,4 +1,5 @@
 """Health check endpoints."""
+
 from __future__ import annotations
 
 import os
@@ -17,6 +18,7 @@ from nexus_ai.api.dto import GenericDictDTO, HealthResponseDTO, TAG_HEALTH
 
 class HealthController(Controller):
     """Health check and status endpoints."""
+
     path = "/api/v1/health"
     tags = [TAG_HEALTH]
 
@@ -71,13 +73,19 @@ class HealthController(Controller):
         try:
             users_count = int(db_session.execute(text("SELECT COUNT(*) FROM users")).scalar_one())
             pending_outbox = int(
-                db_session.execute(text("SELECT COUNT(*) FROM outbox_events WHERE status = 'PENDING'")).scalar_one()
+                db_session.execute(
+                    text("SELECT COUNT(*) FROM outbox_events WHERE status = 'PENDING'")
+                ).scalar_one()
             )
             failed_outbox = int(
-                db_session.execute(text("SELECT COUNT(*) FROM outbox_events WHERE status = 'FAILED'")).scalar_one()
+                db_session.execute(
+                    text("SELECT COUNT(*) FROM outbox_events WHERE status = 'FAILED'")
+                ).scalar_one()
             )
             dead_letter_outbox = int(
-                db_session.execute(text("SELECT COUNT(*) FROM outbox_events WHERE status = 'DEAD_LETTER'")).scalar_one()
+                db_session.execute(
+                    text("SELECT COUNT(*) FROM outbox_events WHERE status = 'DEAD_LETTER'")
+                ).scalar_one()
             )
         except Exception:
             db_ok = False
@@ -138,8 +146,12 @@ class HealthController(Controller):
                 "pending_tasks": await self._pending_tasks(),
             },
             "reports": {
-                "perf_gate_summary_present": self._report_file_exists("reports/performance/perf_gate_summary.json"),
-                "security_scan_summary_present": self._report_file_exists("reports/security_scan_summary.json"),
+                "perf_gate_summary_present": self._report_file_exists(
+                    "reports/performance/perf_gate_summary.json"
+                ),
+                "security_scan_summary_present": self._report_file_exists(
+                    "reports/security_scan_summary.json"
+                ),
             },
         }
 
@@ -156,6 +168,7 @@ class HealthController(Controller):
             return int(result)
         except Exception:
             return None
+
     def _sqlite_wal_size(self) -> int:
         wal_path = "nexus_oltp.db-wal"
         return os.path.getsize(wal_path) if os.path.exists(wal_path) else 0
@@ -167,12 +180,15 @@ class HealthController(Controller):
         """Check TigerBeetle connection."""
         try:
             from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
+
             client = TigerBeetleClient()
             try:
                 accounts = client.lookup_accounts([])
                 return {
                     "status": "OK" if accounts is not None else "ERROR",
-                    "message": f"Connected, accounts_found={len(accounts) if accounts else 0}" if accounts is not None else "No response",
+                    "message": f"Connected, accounts_found={len(accounts) if accounts else 0}"
+                    if accounts is not None
+                    else "No response",
                 }
             except Exception as exc:
                 return {"status": "ERROR", "message": str(exc)}
@@ -185,6 +201,7 @@ class HealthController(Controller):
             return {"status": "NOT_INSTALLED", "message": "TigerBeetle client not available"}
         except Exception as exc:
             return {"status": "ERROR", "message": str(exc)}
+
     async def _failed_tasks_count(self) -> int:
         """Count unresolved failed tasks in DLQ."""
         try:
@@ -211,7 +228,9 @@ class HealthController(Controller):
             from services.audit_logger import AuditLogger
 
             cfg = AppConfig()
-            manager = DuckDBManager(db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True)
+            manager = DuckDBManager(
+                db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True
+            )
             try:
                 valid, _ = AuditLogger(manager).verify_chain()
                 return bool(valid)
@@ -229,7 +248,9 @@ class HealthController(Controller):
             cfg = AppConfig()
             engine = create_oltp_engine(cfg)
             try:
-                return verify_schema_drift(engine, cfg.base_dir / "app_data" / "schema_baseline.json")
+                return verify_schema_drift(
+                    engine, cfg.base_dir / "app_data" / "schema_baseline.json"
+                )
             finally:
                 engine.dispose()
         except Exception:
@@ -241,7 +262,9 @@ class HealthController(Controller):
             from db.analytics import DuckDBManager
 
             cfg = AppConfig()
-            manager = DuckDBManager(db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True)
+            manager = DuckDBManager(
+                db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True
+            )
             try:
                 result = manager.execute("SELECT COUNT(*) FROM dq_invalid_invoices")
                 return int(result[0][0]) if result else 0
@@ -255,8 +278,11 @@ class HealthController(Controller):
         try:
             from core.config import AppConfig
             from db.analytics import DuckDBManager
+
             cfg = AppConfig()
-            manager = DuckDBManager(db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True)
+            manager = DuckDBManager(
+                db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True
+            )
             try:
                 result = manager.execute("SELECT 1")
                 return bool(result)
@@ -270,6 +296,7 @@ class HealthController(Controller):
         nats_url = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
         try:
             from nats.aio.client import Client as NatsClient
+
             nc = NatsClient()
             try:
                 with anyio.fail_after(5):
@@ -282,7 +309,6 @@ class HealthController(Controller):
             return False
         except Exception:
             return False
-
 
 
 class HealthControllerV2(HealthController):

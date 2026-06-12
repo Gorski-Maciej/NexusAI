@@ -49,13 +49,21 @@ class KoreClosureController(Controller):
         if summary_path.exists():
             security_summary = msgspec_loads(summary_path.read_bytes())
         else:
-            security_summary = {"status": "missing", "detail": "reports/security_scan_summary.json not found"}
+            security_summary = {
+                "status": "missing",
+                "detail": "reports/security_scan_summary.json not found",
+            }
 
         db_engine = request.app.state.db_engine
         async with db_engine.begin() as conn:
+
             async def _count(table_name: str) -> int:
                 try:
-                    return int((await conn.execute(text(f"SELECT COUNT(1) FROM {table_name}"))).scalar_one())
+                    return int(
+                        (
+                            await conn.execute(text(f"SELECT COUNT(1) FROM {table_name}"))
+                        ).scalar_one()
+                    )
                 except Exception:
                     return 0
 

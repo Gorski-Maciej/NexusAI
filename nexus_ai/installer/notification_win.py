@@ -46,9 +46,7 @@ def _show_toast_winrt(title: str, message: str, app_name: str = "NexusAI") -> bo
         )
 
         # Create a toast template
-        template = ToastNotificationManager.get_template_content(
-            ToastTemplateType.TOAST_TEXT02
-        )
+        template = ToastNotificationManager.get_template_content(ToastTemplateType.TOAST_TEXT02)
         xml = template.get_xml()
 
         # Parse and modify XML
@@ -76,6 +74,7 @@ def _show_toast_winrt(title: str, message: str, app_name: str = "NexusAI") -> bo
 
 
 # ── Public API ──────────────────────────────────────────────────────────────
+
 
 def show_notification(
     title: str,
@@ -127,7 +126,7 @@ def show_download_complete(success_count: int, fail_count: int = 0) -> None:
             "Download Failed",
             f"Failed to download {fail_count} AI model(s).\n"
             "Please check your internet connection and restart NexusAI.",
-            )
+        )
 
 
 def show_update_available(version: str, release_notes: str) -> None:
