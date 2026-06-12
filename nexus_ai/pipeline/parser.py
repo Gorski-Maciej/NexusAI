@@ -1,13 +1,11 @@
 # pipeline/parser.py
 import re
-from dataclasses import dataclass
+from msgspec import Struct
 from decimal import Decimal, InvalidOperation
 
 from nexus_ai.services.currency_converter import Money
 
-
-@dataclass
-class ParsedInvoice:
+class ParsedInvoice(Struct):
     number: str | None = None
     nip: str | None = None
     amount_net: Money = Money.zero("PLN")

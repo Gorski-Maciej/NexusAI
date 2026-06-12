@@ -11,12 +11,12 @@ Zgodnie z aa3fvcx.txt:
 from __future__ import annotations
 
 import functools
-import logging
 from typing import Any, Callable, TypeVar
 
 import stamina
+from nexus_ai.core.logger import get_logger
 
-logger = logging.getLogger("nexus.core.resilience")
+logger = get_logger("nexus.core.resilience")
 
 F = TypeVar("F", bound=Callable[..., Any])
 

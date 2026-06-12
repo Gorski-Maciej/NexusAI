@@ -13,6 +13,7 @@ class PerformanceOpsController(Controller):
 
     path = "/api/v1/system/performance"
     guards = [owner_only_guard]
+    tags = ["System"]
 
     @get("/k6-summary")
     async def k6_summary(self) -> dict:

@@ -12,6 +12,7 @@ class PartnerController(Controller):
     """Partner Hub — multi-tenant view for accounting offices."""
 
     path = "/api/v2/partner"
+    tags = ["Finance"]
 
     @get("/clients")
     async def get_clients(

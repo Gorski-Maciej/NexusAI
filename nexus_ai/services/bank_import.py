@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import csv
 import uuid
-from dataclasses import dataclass
+from msgspec import Struct
 
 # ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
 try:
@@ -23,13 +23,10 @@ import pendulum
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
-
 class DuplicateTransferError(RuntimeError):
     pass
 
-
-@dataclass(slots=True)
-class BankTransaction:
+class BankTransaction(Struct):
     booking_date: date
     amount: Decimal
     title: str
@@ -42,10 +39,8 @@ class BankTransaction:
     def amount_cents(self) -> int:
         return int((self.amount * 100).quantize(Decimal("1")))
 
-
 class StatementParser(Protocol):
     def parse(self, file_path: Path) -> list[BankTransaction]: ...
-
 
 class CSVStatementParser:
     """Reference parser for local CSV exports from banks."""
@@ -68,7 +63,6 @@ class CSVStatementParser:
                 )
         return rows
 
-
 class ParserFactory:
     @staticmethod
     def get_parser(file_path: Path) -> StatementParser:
@@ -76,16 +70,13 @@ class ParserFactory:
             return CSVStatementParser()
         raise ValueError(f"Unsupported statement format: {file_path.suffix}")
 
-
 def generate_idempotency_id(tx: BankTransaction) -> uuid.UUID:
     raw = f"{tx.booking_date.isoformat()}|{tx.amount}|{tx.title}|{tx.counterparty_account}|{tx.balance_after}"
     digest = _sha256(raw.encode("utf-8"))
     return uuid.uuid5(uuid.NAMESPACE_DNS, digest)
 
-
 class StatementContinuityError(RuntimeError):
     pass
-
 
 class IdempotentBankImporter:
     def __init__(self, *, tb_client: TigerBeetleClient, duckdb: DuckDBManager, ledger_id: int = 1, transfer_code: int = 777):

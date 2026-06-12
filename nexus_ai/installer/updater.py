@@ -20,7 +20,7 @@ import tempfile
 
 import anyio
 from collections.abc import Callable
-from dataclasses import dataclass
+from msgspec import Struct
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -46,11 +46,9 @@ try:
 except Exception:
     CURRENT_VERSION = "0.1.0"
 
-
 # ── Data types ──────────────────────────────────────────────────────────────
 
-@dataclass
-class UpdateInfo:
+class UpdateInfo(Struct):
     """Information about an available update."""
     version: str
     release_notes: str
@@ -60,16 +58,13 @@ class UpdateInfo:
     minimum_version: str
     critical: bool
 
-
-@dataclass
-class UpdateCheckResult:
+class UpdateCheckResult(Struct):
     """Result of checking for updates."""
     update_available: bool
     current_version: str = CURRENT_VERSION
     latest_version: str = CURRENT_VERSION
     info: UpdateInfo | None = None
     error: str | None = None
-
 
 class UpdateProgressCallback(Protocol):
     def __call__(
@@ -80,7 +75,6 @@ class UpdateProgressCallback(Protocol):
         speed_bps: float,
         status: str,
     ) -> None: ...
-
 
 # ── Version endpoint URLs (tried in order) ──────────────────────────────────
 
@@ -95,7 +89,6 @@ UPDATE_ENDPOINTS = [
 
 LOCAL_VERSION_FILE = None  # Path to local version.json for testing
 
-
 # ── Version comparison ──────────────────────────────────────────────────────
 
 def _parse_version(version_str: str) -> tuple[int, ...]:
@@ -105,11 +98,9 @@ def _parse_version(version_str: str) -> tuple[int, ...]:
     except (ValueError, AttributeError):
         return (0, 0, 0)
 
-
 def _is_newer(latest: str, current: str) -> bool:
     """Check if latest version > current version."""
     return _parse_version(latest) > _parse_version(current)
-
 
 # ── Check for updates ───────────────────────────────────────────────────────
 
@@ -200,7 +191,6 @@ async def check_for_updates(
         update_available=False,
         error="Could not reach update server",
     )
-
 
 # ── Download update ─────────────────────────────────────────────────────────
 
@@ -302,7 +292,6 @@ async def download_update(
         logger.error("Update download failed: %s", e)
         return None
 
-
 # ── Install update ──────────────────────────────────────────────────────────
 
 async def install_update(installer_path: Path) -> None:
@@ -343,7 +332,6 @@ async def install_update(installer_path: Path) -> None:
 
     except Exception as e:
         logger.error("Failed to launch installer: %s", e)
-
 
 # ── Flet update dialog ──────────────────────────────────────────────────────
 
@@ -443,7 +431,6 @@ def build_update_dialog(
     )
 
     return dialog
-
 
 # ── Update progress dialog ──────────────────────────────────────────────────
 

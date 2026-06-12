@@ -12,7 +12,7 @@ Sprawdza:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
@@ -27,7 +27,6 @@ if TYPE_CHECKING:
 #   pre_ledger_validator → tax.math_engine → (via tax.__init__) → tax.pipeline → pre_ledger_validator
 
 logger = get_logger("nexus.pre_ledger_validator")
-
 
 # ── Schemat tabeli reguł walidacji księgi ─────────────────────────────────
 
@@ -48,9 +47,7 @@ CREATE INDEX IF NOT EXISTS idx_ledger_rules_type ON ledger_validation_rules(tran
 CREATE INDEX IF NOT EXISTS idx_ledger_rules_valid ON ledger_validation_rules(valid_from, valid_to);
 """
 
-
 # ── Wyjątki ───────────────────────────────────────────────────────────────
-
 
 class LedgerValidationError(ValueError):
     """Raised when a transaction fails pre-ledger validation."""
@@ -60,9 +57,7 @@ class LedgerValidationError(ValueError):
         self.reason = reason
         self.details = details or {}
 
-
 # ── Helper: lazy import for tax.math_engine ────────────────────────────────
-
 
 def _get_math_engine():
     """Lazy import to avoid circular dependency."""
@@ -76,12 +71,9 @@ def _get_math_engine():
     )
     return ValidationResult, InvoiceSummary, InvoicePositions, validate_math_invariants
 
-
 # ── Główna klasa walidatora ────────────────────────────────────────────────
 
-
-@dataclass
-class TransferSpec:
+class TransferSpec(Struct):
     """Pojedynczy transfer do walidacji.
 
     Attributes:
@@ -109,7 +101,6 @@ class TransferSpec:
     def currency(self) -> str | None:
         """Kod waluty transferu (jeśli amount_money podane)."""
         return self.amount_money.currency_code if self.amount_money is not None else None
-
 
 class PreLedgerValidator:
     """WalIDATOR przedwysyłkowy dla TigerBeetle.

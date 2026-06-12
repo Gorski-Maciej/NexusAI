@@ -35,6 +35,7 @@ class SystemIntegrityController(Controller):
 
     path = "/api/v1/system/integrity"
     guards = [owner_only_guard]
+    tags = ["System"]
 
     @get("/migration")
     async def migration_integrity(self) -> dict:

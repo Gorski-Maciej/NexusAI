@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from typing import Any
 
 import pendulum
@@ -8,14 +8,11 @@ from sqlalchemy import Engine, text
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
-
-@dataclass(slots=True)
-class SagaState:
+class SagaState(Struct):
     saga_id: str
     state: str
     payload: dict[str, Any]
     updated_at: pendulum.DateTime
-
 
 class PersistedSagaStore:
     """Durable saga state store persisted in SQLite with transition history."""

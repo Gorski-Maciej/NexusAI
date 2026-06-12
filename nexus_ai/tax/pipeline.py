@@ -14,7 +14,7 @@ Tax Pipeline — orchestrates the complete tax processing flow.
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass
+from msgspec import Struct
 from decimal import Decimal
 from typing import Any
 
@@ -24,6 +24,7 @@ from structlog import get_logger
 
 from nexus_ai.core.context_interpreter import ContextInterpreter
 from nexus_ai.core.msgspec_utils import msgspec_dumps
+from nexus_ai.events.event_emitter import get_event_emitter
 from nexus_ai.services.pre_ledger_validator import (
     PreLedgerValidator,
     TransferSpec,
@@ -43,9 +44,7 @@ from .rules import RuleEngine
 
 logger = get_logger("nexus.tax.pipeline")
 
-
-@dataclass
-class PipelineResult:
+class PipelineResult(Struct):
     """Result of processing a single invoice through the tax pipeline.
 
     Attributes:
@@ -72,7 +71,6 @@ class PipelineResult:
     error: str | None = None
     routing: str | None = None
     routing_reason: str | None = None
-
 
 class TaxPipeline:
     """Orchestrates the complete tax processing pipeline.
@@ -370,6 +368,49 @@ class TaxPipeline:
             decision_trace=decision_trace_text,
             trace_json=trace_json_str,
         )
+
+        # ── Step 7b: Emit DecisionMade event ─────────────────────────────
+        try:
+            emitter = get_event_emitter()
+            invoice_id = str(invoice_data.get("invoice_id", tx_id))
+            action = verdict.get("action", "AUTO_POST")
+
+            # Mapuj routing na decyzję
+            decision_val = action
+            if routing:
+                if routing == "BLOCK_AND_ALERT":
+                    decision_val = "BLOCK"
+                elif routing == "TRIAGE_QUEUE":
+                    decision_val = "ASK_USER"
+                else:
+                    decision_val = routing
+
+            await emitter.emit_decision_made(
+                invoice_id=invoice_id,
+                decision=decision_val,
+                trust_score=float(verdict.get("trust_score", verdict.get("ai_confidence", 0.5))),
+                ai_confidence=float(verdict.get("ai_confidence", 0.5)),
+                decision_pattern=str(rule_id or "")[:64],
+                reasoning=decision_trace_text[:512] if decision_trace_text else "Tax pipeline decision",
+                metadata={
+                    "transaction_id": tx_id,
+                    "trace_id": trace_id,
+                    "vat_rate": verdict.get("vat_rate", ""),
+                    "routing": routing,
+                    "routing_reason": routing_reason,
+                    "net_grosze": total_net_grosze,
+                    "vat_grosze": total_vat_grosze,
+                },
+            )
+            logger.info(
+                "[TAX-EVENT] DecisionMade emitted for invoice_id=%s decision=%s tx_id=%s",
+                invoice_id, decision_val, tx_id,
+            )
+        except Exception as emit_err:
+            logger.warning(
+                "[TAX-EVENT] Failed to emit DecisionMade for tx_id=%s: %s",
+                tx_id, emit_err,
+            )
 
         # ── Step 8: Result ───────────────────────────────────────────────
         # Jeśli werdykt ma _routing, zwróć informację o routingu zamiast

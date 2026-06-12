@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from pathlib import Path
 from typing import Any
 
@@ -25,13 +25,10 @@ except Exception:  # pragma: no cover
     imagehash = None
     Image = None
 
-
-@dataclass(slots=True)
-class DocumentFingerprint:
+class DocumentFingerprint(Struct):
     binary_hash: str
     visual_hash: str
     semantic_hash: str
-
 
 def _sha256_file(file_path: Path) -> str:
     """Compute SHA-256 of a file (streaming via hashlib — nexus_crypto.sha256() doesn't support streaming)."""
@@ -40,7 +37,6 @@ def _sha256_file(file_path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()
-
 
 def _visual_fingerprint(file_path: Path) -> str:
     """Best-effort visual hash; falls back to deterministic prefix hash if imaging libs are missing."""
@@ -55,11 +51,9 @@ def _visual_fingerprint(file_path: Path) -> str:
         sample = handle.read(4096)
     return hashlib.sha1(sample).hexdigest()[:16]
 
-
 def _semantic_hash(extracted_data: dict[str, Any]) -> str:
     raw = f"{extracted_data.get('nip','')}_{extracted_data.get('total_gross','')}_{extracted_data.get('date','')}"
     return hashlib.md5(raw.encode("utf-8")).hexdigest()
-
 
 def generate_document_fingerprint(file_path: Path, extracted_data: dict[str, Any]) -> DocumentFingerprint:
     return DocumentFingerprint(
@@ -68,10 +62,8 @@ def generate_document_fingerprint(file_path: Path, extracted_data: dict[str, Any
         semantic_hash=_semantic_hash(extracted_data),
     )
 
-
 def binary_anchor_u128(binary_hash: str) -> int:
     return int(binary_hash[:32], 16)
-
 
 def ensure_fingerprint_schema(duckdb: DuckDBManager) -> None:
     duckdb.execute(
@@ -98,7 +90,6 @@ def ensure_fingerprint_schema(duckdb: DuckDBManager) -> None:
         """
     )
 
-
 def store_fingerprint(duckdb: DuckDBManager, *, invoice_id: str, file_path: Path, fp: DocumentFingerprint) -> None:
     ensure_fingerprint_schema(duckdb)
     duckdb.execute(
@@ -109,7 +100,6 @@ def store_fingerprint(duckdb: DuckDBManager, *, invoice_id: str, file_path: Path
         """,
         (invoice_id, str(file_path), fp.binary_hash, fp.visual_hash, fp.semantic_hash, str(binary_anchor_u128(fp.binary_hash))),
     )
-
 
 def compute_monthly_merkle_root(binary_hashes: list[str]) -> str:
     if not binary_hashes:
@@ -123,7 +113,6 @@ def compute_monthly_merkle_root(binary_hashes: list[str]) -> str:
             nxt.append(_sha256(f"{level[i]}{level[i+1]}".encode()))
         level = nxt
     return level[0]
-
 
 def store_monthly_merkle_root(duckdb: DuckDBManager, period_yyyymm: str) -> str:
     ensure_fingerprint_schema(duckdb)
@@ -146,7 +135,6 @@ def store_monthly_merkle_root(duckdb: DuckDBManager, period_yyyymm: str) -> str:
         (period_yyyymm, root, len(hashes)),
     )
     return root
-
 
 def verify_or_flag_tamper(stored: DocumentFingerprint, current: DocumentFingerprint) -> str:
     if stored.binary_hash == current.binary_hash:

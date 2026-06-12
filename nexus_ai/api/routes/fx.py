@@ -16,6 +16,7 @@ class FXController(Controller):
     """
 
     path = "/api/v1/system/fx"
+    tags = ["FX"]
 
     @post("/upload-rates", media_type=MediaType.JSON)
     async def upload_rates(

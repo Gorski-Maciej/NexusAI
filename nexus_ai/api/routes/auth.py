@@ -38,6 +38,14 @@ from sqlalchemy import text
 from structlog import get_logger
 
 from nexus_ai.api.auth_service import hash_password, verify_password
+from nexus_ai.api.dto import (
+    ChangePasswordDTO,
+    LoginDTO,
+    PasswordResetConfirmDTO,
+    PasswordResetDTO,
+    RefreshDTO,
+    RegisterDTO,
+)
 from nexus_ai.api.exceptions import DuplicateResourceError
 from nexus_ai.api.security import REFRESH_TOKEN_EXPIRATION_DAYS, jwt_auth
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
@@ -137,9 +145,11 @@ async def _get_user_by_username(db_session, username: str) -> dict | None:
 
 
 class AuthController(Controller):
+    """Autoryzacja i zarządzanie kontem użytkownika."""
     path = "/api/auth"
+    tags = ["Auth"]
 
-    @post("/register")
+    @post("/register", dto=RegisterDTO)
     async def register(self, data: RegisterRequest, request: Request) -> Response[dict[str, str]]:
         """Register a new user account."""
         # Validate password strength
@@ -243,7 +253,7 @@ class AuthController(Controller):
             status_code=201,
         )
 
-    @post("/login")
+    @post("/login", dto=LoginDTO)
     async def login(self, data: LoginRequest, request: Request) -> Response[dict[str, str]]:
         """Authenticate user and return access + refresh tokens."""
         async with request.app.state.db_session_factory() as session:
@@ -316,7 +326,7 @@ class AuthController(Controller):
 
         return Response(content=body, status_code=200)
 
-    @post("/refresh")
+    @post("/refresh", dto=RefreshDTO)
     async def refresh(self, data: RefreshRequest, request: Request) -> Response[dict[str, str]]:
         """Refresh access token using a single-use refresh token (rotation)."""
         hashed_input = _hash_refresh_token(data.refresh_token)
@@ -508,7 +518,7 @@ class AuthController(Controller):
             content={"status": "ok", "message": "Email confirmed successfully"}, status_code=200
         )
 
-    @post("/reset-password")
+    @post("/reset-password", dto=PasswordResetDTO)
     async def reset_password(self, data: ResetPasswordRequest, request: Request) -> Response[dict[str, str]]:
         """Send password reset email with a reset token."""
         email = data.email.strip().lower()
@@ -554,7 +564,7 @@ class AuthController(Controller):
             status_code=200,
         )
 
-    @post("/reset-password/confirm")
+    @post("/reset-password/confirm", dto=PasswordResetConfirmDTO)
     async def reset_password_confirm(self, data: ResetPasswordConfirmRequest, request: Request) -> Response[dict[str, str]]:
         """Set a new password using a reset token."""
         # Validate new password
@@ -607,7 +617,7 @@ class AuthController(Controller):
             content={"status": "ok", "message": "Password has been reset successfully"}, status_code=200
         )
 
-    @post("/change-password")
+    @post("/change-password", dto=ChangePasswordDTO)
     async def change_password(self, data: ChangePasswordRequest, request: Request) -> Response[dict[str, str]]:
         """Change password for authenticated user (requires current password)."""
         user = getattr(request, "user", None)
@@ -646,10 +656,27 @@ class AuthController(Controller):
 
     @get("/csrf-token")
     async def get_csrf_token(self, request: Request) -> dict[str, str]:
-        """Return a CSRF token for double-submit cookie protection."""
-        from api.middleware import _generate_csrf_token
-        token = _generate_csrf_token()
-        return {"csrf_token": token}
+        """Return a CSRF token for double-submit cookie protection.
+
+        Litestar CSRFConfig automatically sets the ``csrf_token`` cookie
+        on every response (double-submit cookie pattern). The client
+        reads the cookie value and sends it as ``X-CSRF-Token`` header
+        on mutating requests (POST, PUT, DELETE, PATCH).
+
+        This endpoint exists for backward compatibility with clients that
+        explicitly request a CSRF token before mutating operations.
+        On first call, the cookie is not yet set (CSRFConfig sets it on
+        the *response*), so we return a one-time random token.
+        After the first response, the client receives the real signed
+        CSRF cookie from CSRFConfig.
+        """
+        # Najpierw spróbuj odczytać z ciastka (już ustawionego przez CSRFConfig)
+        csrf_token = request.cookies.get("csrf_token")
+        if csrf_token:
+            return {"csrf_token": csrf_token}
+        # Przy pierwszym wywołaniu ciasteczko nie istnieje — zwróć tymczasowy token
+        # CSRFConfig ustawi autorytatywne ciasteczko w odpowiedzi
+        return {"csrf_token": secrets.token_urlsafe(32)}
 
 
 # ── Audit helper ─────────────────────────────────────────────────────────────

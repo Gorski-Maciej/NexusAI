@@ -24,6 +24,7 @@ class AutopilotController(Controller):
     """
 
     path = "/api/v2/autopilot"
+    tags = ["System"]
 
     @get("/decisions")
     async def list_decisions(

@@ -8,16 +8,14 @@ Zgodnie z aa3fvcx.txt:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from typing import Any
 
 import pendulum
 
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
-
-@dataclass(frozen=True, slots=True)
-class BudgetStatus:
+class BudgetStatus(Struct, frozen=True):
     status: str
     message: str
     account_code: str
@@ -27,7 +25,6 @@ class BudgetStatus:
     projected_amount: float
     current_usage_percent: float
     projected_usage_percent: float
-
 
 class BudgetaryControlEngine:
     """Kontrola budżetu — sprawdza limity dla kont księgowych w TigerBeetle."""

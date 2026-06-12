@@ -18,6 +18,7 @@ class ExportFormat(StrEnum):
 class ExportController(Controller):
     """Handle invoice data export."""
     path = "/api/v1/exports"
+    tags = ["Files", "System"]
 
     @get("/{export_id:str}/status")
     async def get_export_status(self, export_id: str) -> dict[str, Any]:

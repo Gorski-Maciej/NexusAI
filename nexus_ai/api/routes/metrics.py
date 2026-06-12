@@ -56,6 +56,7 @@ class MetricsController(Controller):
     """Prometheus metrics exposition endpoint via OpenTelemetry (no auth required)."""
 
     path = "/metrics"
+    tags = ["Metrics"]
 
     @get()
     async def prometheus_metrics(self) -> str:

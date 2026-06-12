@@ -13,6 +13,7 @@ class SecurityPostureController(Controller):
 
     path = "/api/v1/system/security"
     guards = [owner_only_guard]
+    tags = ["Security"]
 
     @get("/summary")
     async def summary(self) -> dict:

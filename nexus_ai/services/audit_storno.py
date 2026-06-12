@@ -7,10 +7,9 @@ więc storno to nowy wpis odwracający, nie usunięcie oryginału.
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass
+from msgspec import Struct
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any, Protocol
-
 
 class DuckDBWriter(Protocol):
     def begin(self) -> None: ...
@@ -19,9 +18,7 @@ class DuckDBWriter(Protocol):
     def mark_invoice_voided(self, invoice_id: str) -> None: ...
     def create_draft_from_invoice(self, invoice_id: str) -> str: ...
 
-
-@dataclass(slots=True, frozen=True)
-class LedgerTransferRecord:
+class LedgerTransferRecord(Struct, frozen=True):
     transfer_id: int
     debit_account: int
     credit_account: int
@@ -29,10 +26,8 @@ class LedgerTransferRecord:
     currency: str
     source_document_id: uuid.UUID
 
-
 class StornoException(Exception):
     pass
-
 
 async def reverse_transaction(*, tb_client: Any, duckdb_writer: DuckDBWriter,
                               original_transfer: LedgerTransferRecord, invoice_id: str) -> dict[str, Any]:
@@ -69,7 +64,6 @@ async def reverse_transaction(*, tb_client: Any, duckdb_writer: DuckDBWriter,
     return {"status": "reversed", "original_transfer_id": original_transfer.transfer_id,
             "reverse_pending_id": pending.pending_id, "user_data_128": str(original_transfer.transfer_id),
             "new_draft_id": draft_id}
-
 
 def decimal_to_minor_units(amount: Decimal, scale: int = 2) -> int:
     """Konwertuje Decimal na grosze (int) — dla TigerBeetle."""

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 
 import pendulum
 from decimal import ROUND_HALF_UP, Decimal
@@ -9,15 +9,12 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
 
-
-@dataclass(frozen=True)
-class FXPostingDecision:
+class FXPostingDecision(Struct, frozen=True):
     invoice_id: str
     fx_delta: Decimal
     is_gain: bool
     account_code: str
     entry_side: str
-
 
 def ensure_fx_schema(duckdb: DuckDBManager) -> None:
     duckdb.execute("ALTER TABLE invoices_replica ADD COLUMN IF NOT EXISTS currency_code VARCHAR DEFAULT 'PLN'")
@@ -34,7 +31,6 @@ def ensure_fx_schema(duckdb: DuckDBManager) -> None:
         )
         """
     )
-
 
 def post_realized_fx_difference(
     *,
@@ -63,7 +59,6 @@ def post_realized_fx_difference(
     if is_gain:
         return FXPostingDecision(invoice_id, fx_delta, True, "750_FX_Income", "CREDIT")
     return FXPostingDecision(invoice_id, fx_delta, False, "751_FX_Expense", "DEBIT")
-
 
 def calculate_unrealized_fx_deltas(duckdb: DuckDBManager,    month_end: pendulum.Date) -> list[tuple[Any, ...]]:
     return duckdb.execute(

@@ -11,11 +11,9 @@ from __future__ import annotations
 import hashlib
 import os
 import uuid
-from dataclasses import dataclass
+from msgspec import Struct
 
-
-@dataclass(slots=True)
-class TwoPhaseTransfer:
+class TwoPhaseTransfer(Struct):
     """Dwufazowy przelew TigerBeetle (pending → post)."""
 
     pending_id: int
@@ -24,7 +22,6 @@ class TwoPhaseTransfer:
     amount_minor: int
     source_document_id: uuid.UUID
     user_data_128: int = 0
-
 
 class TigerBeetleMapper:
     """Konwertuje polskie symbole kont (np. 401-02) na uint128 dla TigerBeetle.
@@ -40,7 +37,6 @@ class TigerBeetleMapper:
 
     def build_map(self, accounts: list[str]) -> dict[str, int]:
         return {acc: self.account_to_uint128(acc) for acc in accounts}
-
 
 class TigerBeetleClient:
     """Wrapper dla TigerBeetle — interface-ready, safe stub dla lokalnego developmentu.

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
@@ -11,14 +11,11 @@ from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
 
-
-@dataclass(frozen=True)
-class LiquidityPoint:
+class LiquidityPoint(Struct, frozen=True):
     date: str
     optimistic_balance: str
     likely_balance: str
     pessimistic_balance: str
-
 
 def ensure_liquidity_schema(duckdb: DuckDBManager) -> None:
     duckdb.execute(
@@ -71,7 +68,6 @@ def ensure_liquidity_schema(duckdb: DuckDBManager) -> None:
         """
     )
 
-
 def _vat_buffer_today(duckdb: DuckDBManager) -> Decimal:
     rows = duckdb.execute(
         """
@@ -83,7 +79,6 @@ def _vat_buffer_today(duckdb: DuckDBManager) -> Decimal:
         """
     )
     return Decimal(str(rows[0][0] if rows else 0)).quantize(Decimal("0.01"))
-
 
 def calculate_liquidity_timeline(
     duckdb: DuckDBManager,

@@ -8,8 +8,10 @@ from nexus_ai.db.analytics import DuckDBManager
 
 
 class AnalyticsController(Controller):
+    """Analityka i raportowanie danych księgowych."""
     path = "/api/v2/analytics"
     guards = [owner_only_guard]
+    tags = ["Analytics"]
 
     @get("/dashboard/summary")
     @ttl_cache(seconds=60)

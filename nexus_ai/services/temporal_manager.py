@@ -16,7 +16,7 @@ Dzięki temporalności:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from typing import Any
 
 import pendulum
@@ -24,9 +24,7 @@ import pendulum
 import duckdb
 import pendulum
 
-
-@dataclass(frozen=True)
-class TemporalRule:
+class TemporalRule(Struct, frozen=True):
     """A single rule with its temporal window.
 
     Attributes:
@@ -43,7 +41,6 @@ class TemporalRule:
     priority: int
     valid_from: pendulum.Date
     valid_to: pendulum.Date | None
-
 
 class TemporalManager:
     """Menedżer Temporalny — filtruje reguły według daty transakcji.

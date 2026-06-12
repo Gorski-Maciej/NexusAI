@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 
 import pendulum
 from decimal import ROUND_HALF_UP, Decimal
@@ -9,25 +9,19 @@ from typing import Any
 MONEY_QUANT = Decimal("0.01")
 QTY_QUANT = Decimal("0.0001")
 
-
 class InventoryMismatch(Exception):  # noqa: N818
     pass
-
 
 class DualWriteConsistencyError(InventoryMismatch):
     pass
 
-
 class InsufficientStockError(InventoryMismatch):
     pass
-
 
 def _to_decimal(value: Any, quant: Decimal) -> Decimal:
     return Decimal(str(value)).quantize(quant, rounding=ROUND_HALF_UP)
 
-
-@dataclass(slots=True)
-class InventoryBatch:
+class InventoryBatch(Struct):
     batch_id: str
     product_id: str
     received_date: pendulum.Date
@@ -35,24 +29,19 @@ class InventoryBatch:
     unit_cost_net: Decimal
     source_document_id: str | None = None
 
-
-@dataclass(slots=True)
-class FIFOConsumptionLine:
+class FIFOConsumptionLine(Struct):
     batch_id: str
     product_id: str
     qty_taken: Decimal
     unit_cost_net: Decimal
     line_cogs_net: Decimal
 
-
-@dataclass(slots=True)
-class FIFOConsumptionResult:
+class FIFOConsumptionResult(Struct):
     product_id: str
     requested_qty: Decimal
     fulfilled_qty: Decimal
     total_cogs_net: Decimal
     lines: list[FIFOConsumptionLine]
-
 
 def calculate_fifo_cogs(product_id: str, issue_qty: Decimal | float | int, open_batches: list[InventoryBatch]) -> FIFOConsumptionResult:
     """Consume inventory batches in FIFO order and return COGS breakdown.
@@ -104,7 +93,6 @@ def calculate_fifo_cogs(product_id: str, issue_qty: Decimal | float | int, open_
         lines=lines,
     )
 
-
 def apply_fifo_consumption(open_batches: list[InventoryBatch], consumption: FIFOConsumptionResult) -> list[InventoryBatch]:
     """Return updated copies of batches after applying FIFO consumption lines."""
 
@@ -126,7 +114,6 @@ def apply_fifo_consumption(open_batches: list[InventoryBatch], consumption: FIFO
             )
         )
     return out
-
 
 async def calculate_and_post_cogs(
     *,

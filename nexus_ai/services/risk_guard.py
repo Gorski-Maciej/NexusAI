@@ -18,7 +18,7 @@ invalidate_risk_cache() — zgodnie z wzorcem DecisionEngine.
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass, field
+from msgspec import Struct, field
 from typing import Any
 
 import duckdb
@@ -33,7 +33,6 @@ from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 # Brak TTL — gwarantuje natychmiastową świeżość reguł.
 _risk_nexus = get_cache()
 RISK_CACHE_PREFIX = "risk_threshold:"
-
 
 def invalidate_risk_cache() -> None:
     """Unieważnij cache progów ryzyka.
@@ -125,19 +124,14 @@ DEFAULT_RISK_THRESHOLDS: list[dict[str, Any]] = [
     },
 ]
 
-
 # ── Data structures ──────────────────────────────────────────────────────────
 
-
-@dataclass(frozen=True)
-class RiskThreshold:
+class RiskThreshold(Struct, frozen=True):
     """Próg ryzyka dla konkretnego kontekstu podatkowego."""
     required_ml_confidence: float
     action_if_below: str  # BLOCK_AND_ALERT | TRIAGE_QUEUE | AUTO_POST
 
-
-@dataclass(frozen=True)
-class RiskVerdict:
+class RiskVerdict(Struct, frozen=True):
     """Wynik ewaluacji RiskGuard — zagregowany dla wszystkich pól faktury.
 
     Attributes:
@@ -151,7 +145,6 @@ class RiskVerdict:
     reason: str = ""
     required_for_field: dict[str, float] = field(default_factory=dict)
 
-
 _ACTION_PRIORITY = {
     "AUTO_POST": 0,
     "TRIAGE_QUEUE": 1,
@@ -159,11 +152,9 @@ _ACTION_PRIORITY = {
 }
 """Priority order for actions: higher number = more restrictive."""
 
-
 def ensure_schema(conn: duckdb.DuckDBPyConnection) -> None:
     """Create risk_thresholds table if not present."""
     conn.execute(RISK_THRESHOLDS_SCHEMA)
-
 
 def seed_default_thresholds(conn: duckdb.DuckDBPyConnection) -> None:
     """Insert default risk thresholds only if table is empty."""
@@ -188,9 +179,7 @@ def seed_default_thresholds(conn: duckdb.DuckDBPyConnection) -> None:
     # Unieważnij cache — świeże progi w DuckDB
     invalidate_risk_cache()
 
-
 # ── RiskGuard ────────────────────────────────────────────────────────────────
-
 
 class RiskGuard:
     """Strażnik ryzyka — odczytuje aktywne reguły i zwraca próg ufności.

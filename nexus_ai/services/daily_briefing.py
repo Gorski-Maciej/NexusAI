@@ -14,7 +14,8 @@ Współpracuje z:
 from __future__ import annotations
 
 import anyio
-from dataclasses import asdict, dataclass, field
+from msgspec import Struct, field
+from msgspec.structs import asdict
 from typing import Any
 
 import pendulum
@@ -25,13 +26,11 @@ from nexus_ai.core.msgspec_utils import msgspec_dumps
 
 logger = get_logger("nexus.services.daily_briefing")
 
-
 # ---------------------------------------------------------------------------
 # Data types
 # ---------------------------------------------------------------------------
 
-@dataclass(slots=True)
-class DailyBriefing:
+class DailyBriefing(Struct):
     """Struktura codziennego podsumowania finansowego."""
 
     user_id: str
@@ -50,7 +49,7 @@ class DailyBriefing:
     generated_at: str = ""
 
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        return msgspec.structs.asdict(self)
 
     def to_json(self) -> str:
         return msgspec_dumps(self.to_dict(), ensure_ascii=False, default=str)
@@ -58,7 +57,6 @@ class DailyBriefing:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> DailyBriefing:
         return cls(**data)
-
 
 # ---------------------------------------------------------------------------
 # DailyBriefingService

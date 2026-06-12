@@ -12,6 +12,7 @@ class I18nOpsController(Controller):
 
     path = "/api/v1/system/i18n"
     guards = [owner_only_guard]
+    tags = ["I18N"]
 
     @get("/status")
     async def status(self) -> dict:

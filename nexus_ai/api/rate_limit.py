@@ -5,21 +5,18 @@ import base64
 import os
 import time
 from collections import defaultdict, deque
-from dataclasses import dataclass
+from msgspec import Struct
 from typing import Any
 
 import msgspec
 from litestar.middleware import AbstractMiddleware
 from litestar.response import Response
 
-
-@dataclass(slots=True)
-class RateLimitRule:
+class RateLimitRule(Struct):
     prefix: str
     max_requests: int
     per_seconds: int
     role_limits: dict[str, int] | None = None  # Per-role overrides: {"OWNER": 100, "WORKER": 20}
-
 
 class SimpleRateLimitMiddleware(AbstractMiddleware):
     """

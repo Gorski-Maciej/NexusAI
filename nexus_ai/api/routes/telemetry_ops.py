@@ -14,6 +14,7 @@ class TelemetryOpsController(Controller):
 
     path = "/api/v1/system/telemetry"
     guards = [owner_only_guard]
+    tags = ["System"]
 
     @get("/fallback-status")
     async def fallback_status(self) -> dict:

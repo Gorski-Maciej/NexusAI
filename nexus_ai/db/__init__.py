@@ -1,8 +1,8 @@
 """Database layer packages (OLTP and OLAP)."""
 
-import logging as _logging
+from nexus_ai.core.logger import get_logger as _get_logger
 
-_log = _logging.getLogger("nexus.db")
+_log = _get_logger("nexus.db")
 
 # ── Safe imports — non-critical modules may fail in constrained envs ──
 
@@ -15,8 +15,14 @@ def _safe_import(qualname: str, names: list[str]):
         return [None] * len(names)
 
 
-Base, create_oltp_engine, create_session_factory, get_session = _safe_import(
-    "db.database", ["Base", "create_oltp_engine", "create_session_factory", "get_session"]
+Base, create_oltp_engine, create_async_oltp_engine, create_session_factory, \
+    create_async_session_factory, get_session, get_async_session, SQLCIPHER_AVAILABLE \
+    = _safe_import(
+    "db.database", [
+        "Base", "create_oltp_engine", "create_async_oltp_engine",
+        "create_session_factory", "create_async_session_factory",
+        "get_session", "get_async_session", "SQLCIPHER_AVAILABLE",
+    ]
 )
 
 DuckDBLimits, DuckDBManager = _safe_import(
@@ -37,8 +43,12 @@ __all__ = [
     "DuckDBLimits",
     "DuckDBManager",
     "create_oltp_engine",
+    "create_async_oltp_engine",
     "create_session_factory",
+    "create_async_session_factory",
     "get_session",
+    "get_async_session",
+    "SQLCIPHER_AVAILABLE",
     "OutboxManager",
     "atomic_transaction",
     "AnalyticsViewsSetup",

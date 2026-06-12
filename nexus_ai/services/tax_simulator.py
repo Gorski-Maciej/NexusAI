@@ -8,7 +8,7 @@ Zgodnie z aa3fvcx.txt:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from decimal import Decimal
 from typing import Any
 
@@ -21,15 +21,12 @@ from nexus_ai.services.rule_store import RuleStore
 from nexus_ai.tax.exceptions import NoMatchingRuleError
 from nexus_ai.tax.rules import ContextInterpreter, RuleEngine, seed_default_rules, seed_single_rule_set
 
-
-@dataclass(slots=True)
-class ShadowLedgerInput:
+class ShadowLedgerInput(Struct):
     company_id: str
     legal_form: LegalForm
     vat_proportion: float
     month_start: pendulum.Date
     month_end: pendulum.Date
-
 
 class TaxSimulator:
     """Predykcyjny symulator podatkowy — DuckDB + Polars shadow ledgers.

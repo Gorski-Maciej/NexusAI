@@ -10,7 +10,7 @@ Zgodnie z aa3fvcx.txt:
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass
+from msgspec import Struct
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 from urllib import error, request
@@ -22,9 +22,7 @@ from nexus_ai.core.cache import get_cache
 from nexus_ai.core.msgspec_utils import msgspec_loads
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
-
-@dataclass(frozen=True, slots=True)
-class FXResult:
+class FXResult(Struct, frozen=True):
     invoice_id: str
     payment_id: str
     currency_code: str
@@ -34,16 +32,13 @@ class FXResult:
     fx_diff_pln: Decimal
     direction: str
 
-
 FX_CACHE_PREFIXES = ["fx_rate:", "fx_missing:"]
-
 
 def invalidate_forex_cache() -> None:
     """Unieważnij cache kursów walut — usuwa wszystkie klucze z prefixami fx_rate: i fx_missing: z L1 RAM."""
     cache = get_cache()
     cache.delete_prefix_sync("fx_rate:")
     cache.delete_prefix_sync("fx_missing:")
-
 
 class ForexEngine:
     """Silnik kursów walut — NBP API + NexusCache + DuckDB.

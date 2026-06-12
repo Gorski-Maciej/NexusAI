@@ -3,7 +3,8 @@ from __future__ import annotations
 
 import argparse
 import re
-from dataclasses import asdict, dataclass
+from msgspec import Struct
+from msgspec.structs import asdict
 from pathlib import Path
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
@@ -15,17 +16,13 @@ PII_PATTERNS: dict[str, str] = {
     "IBAN_PL": r"\bPL\d{26}\b",
 }
 
-
-@dataclass(frozen=True)
-class Finding:
+class Finding(Struct, frozen=True):
     pattern: str
     line_no: int
     line: str
 
-
 def _normalize_digits(value: str) -> str:
     return "".join(ch for ch in value if ch.isdigit())
-
 
 def _is_valid_pesel(value: str) -> bool:
     digits = _normalize_digits(value)
@@ -36,7 +33,6 @@ def _is_valid_pesel(value: str) -> bool:
     control = (10 - (checksum % 10)) % 10
     return control == int(digits[10])
 
-
 def _is_valid_nip(value: str) -> bool:
     digits = _normalize_digits(value)
     if len(digits) != 10:
@@ -45,14 +41,12 @@ def _is_valid_nip(value: str) -> bool:
     checksum = sum(int(d) * w for d, w in zip(digits[:9], weights, strict=True)) % 11
     return checksum != 10 and checksum == int(digits[9])
 
-
 def _match_is_valid(pattern: str, matched_value: str) -> bool:
     if pattern == "PESEL":
         return _is_valid_pesel(matched_value)
     if pattern == "NIP":
         return _is_valid_nip(matched_value)
     return True
-
 
 def scan_text(text: str) -> list[Finding]:
     findings: list[Finding] = []
@@ -65,10 +59,8 @@ def scan_text(text: str) -> list[Finding]:
                     findings.append(Finding(pattern=name, line_no=idx, line=line.strip()))
     return findings
 
-
 def scan_file(path: Path) -> list[Finding]:
     return scan_text(path.read_text(encoding="utf-8", errors="ignore"))
-
 
 def scan_path(path: Path) -> dict[str, list[Finding]]:
     if path.is_file():
@@ -82,13 +74,11 @@ def scan_path(path: Path) -> dict[str, list[Finding]]:
             result[str(file_path)] = scan_file(file_path)
     return result
 
-
 def _redact_text(text: str) -> str:
     redacted = text
     for regex in PII_PATTERNS.values():
         redacted = re.sub(regex, "[REDACTED]", redacted)
     return redacted
-
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Scan log files for possible PII leaks.")
@@ -124,7 +114,7 @@ def main() -> int:
         payload = {
             "total_findings": total_findings,
             "files": {
-                file_name: [asdict(item) for item in findings]
+                file_name: [msgspec.structs.asdict(item) for item in findings]
                 for file_name, findings in scans.items()
                 if findings
             },
@@ -132,7 +122,6 @@ def main() -> int:
         Path(args.json_report).write_text(msgspec_dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
     return 1
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -1,24 +1,20 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
 
-
-@dataclass(frozen=True)
-class ApprovalDecision:
+class ApprovalDecision(Struct, frozen=True):
     invoice_id: str
     score: int
     approval_status: str
     reasons: list[str]
 
-
 def ensure_smart_approval_schema(duckdb: DuckDBManager) -> None:
     duckdb.execute("ALTER TABLE invoices_replica ADD COLUMN IF NOT EXISTS ai_confidence_score INTEGER")
     duckdb.execute("ALTER TABLE invoices_replica ADD COLUMN IF NOT EXISTS approval_status VARCHAR")
-
 
 def evaluate_approval_routing(duckdb: DuckDBManager, invoice_id: str) -> ApprovalDecision:
     rows = duckdb.execute(
@@ -74,7 +70,6 @@ def evaluate_approval_routing(duckdb: DuckDBManager, invoice_id: str) -> Approva
         (score, status, invoice_id),
     )
     return ApprovalDecision(invoice_id=invoice_id, score=score, approval_status=status, reasons=reasons)
-
 
 def assert_auto_approved_or_block(duckdb: DuckDBManager, invoice_id: str) -> None:
     decision = evaluate_approval_routing(duckdb, invoice_id)

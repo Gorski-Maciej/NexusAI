@@ -75,6 +75,7 @@ class TaxMathController(Controller):
     """Kontroler kalkulacji podatkowych z obsługą Fowler's Money."""
 
     path = "/api/v2/tax"
+    tags = ["Tax"]
 
     @post("/calculate-money", sync_to_thread=False)
     def calculate_money(self, data: CalculateMoneyRequest) -> Response[dict[str, Any]]:

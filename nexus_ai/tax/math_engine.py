@@ -14,7 +14,7 @@ Zasady:    - Całkowity zakaz float — wszystkie kwoty w groszach (int).
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from decimal import ROUND_HALF_UP, Decimal
 from typing import TYPE_CHECKING
 
@@ -28,15 +28,12 @@ _GROSZ = Decimal("0.01")
 
 # ── Lazy import helpers ─────────────────────────────────────────────────────
 
-
 def _get_money_class():
     """Lazy import of Money to avoid circular dependencies at module load."""
     from nexus_ai.services.currency_converter import Money
     return Money
 
-
 # ── Exceptions ──────────────────────────────────────────────────────────────
-
 
 class InvalidRateError(ValueError):
     """Raised when a rate string cannot be parsed as a valid Decimal.
@@ -52,12 +49,9 @@ class InvalidRateError(ValueError):
         )
         self.rate_str = rate_str
 
-
 # ── Data structures ──────────────────────────────────────────────────────────
 
-
-@dataclass(frozen=True)
-class InvoicePositions:
+class InvoicePositions(Struct, frozen=True):
     """A single invoice line item in grosze.
 
     Attributes:
@@ -101,9 +95,7 @@ class InvoicePositions:
         _get_money_class()
         return to_money(self.vat_grosze, currency)
 
-
-@dataclass(frozen=True)
-class InvoiceSummary:
+class InvoiceSummary(Struct, frozen=True):
     """Invoice totals in grosze.
 
     All three fields are integers (grosze) — never floats.
@@ -158,9 +150,7 @@ class InvoiceSummary:
         """Return the brutto as Money."""
         return to_money(self.brutto_grosze, currency)
 
-
-@dataclass(frozen=True)
-class ValidationResult:
+class ValidationResult(Struct, frozen=True):
     """Result of invariant validation.
 
     Attributes:
@@ -171,9 +161,7 @@ class ValidationResult:
     is_valid: bool
     error_message: str = ""
 
-
 # ── Rate parsing (Rozdział Ról: Zen-Engine → Decimal) ──────────────────────
-
 
 def parse_rate(rate_str: str) -> Decimal:
     """Parse a rate string to Decimal with validation.
@@ -206,9 +194,7 @@ def parse_rate(rate_str: str) -> Decimal:
     except Exception as exc:
         raise InvalidRateError(rate_str) from exc
 
-
 # ── Core math functions (grosze-based, int in/out) ─────────────────────────
-
 
 def to_grosze(amount: Decimal | str | float | int) -> int:
     """Convert any numeric representation to grosze (int) with ROUND_HALF_UP.
@@ -239,7 +225,6 @@ def to_grosze(amount: Decimal | str | float | int) -> int:
     grosze = d * Decimal("100")
     return int(grosze.to_integral_value(rounding=ROUND_HALF_UP))
 
-
 def to_zlotowki(grosze: int) -> Decimal:
     """Convert grosze back to Decimal (złotówki) for display.
 
@@ -252,7 +237,6 @@ def to_zlotowki(grosze: int) -> Decimal:
     return (Decimal(grosze) / Decimal("100")).quantize(
         _GROSZ, rounding=ROUND_HALF_UP
     )
-
 
 def multiply_net_by_vat(net_grosze: int, vat_rate: Decimal) -> int:
     """Multiply net amount (grosze) by VAT rate, rounded to full grosze.
@@ -271,7 +255,6 @@ def multiply_net_by_vat(net_grosze: int, vat_rate: Decimal) -> int:
     vat_decimal = Decimal(str(net_grosze)) * vat_rate
     return int(vat_decimal.to_integral_value(rounding=ROUND_HALF_UP))
 
-
 def add_tax(net_grosze: int, vat_grosze: int) -> int:
     """Sum net and VAT in grosze to get brutto.
 
@@ -284,9 +267,7 @@ def add_tax(net_grosze: int, vat_grosze: int) -> int:
     """
     return net_grosze + vat_grosze
 
-
 # ── Money-aware functions (Fowler's Money wrappers) ────────────────────────
-
 
 def money_to_grosze(money: _Money) -> int:
     """Convert a Money amount to grosze (int).
@@ -316,7 +297,6 @@ def money_to_grosze(money: _Money) -> int:
     # Nexus-Money: bezpośredni dostęp do amount_cents (int)
     return money.amount_cents
 
-
 def to_money(grosze: int, currency: str = "PLN") -> _Money:
     """Convert grosze (int) to a Money amount.
 
@@ -337,13 +317,11 @@ def to_money(grosze: int, currency: str = "PLN") -> _Money:
     Money = _get_money_class()  # noqa: N806
     return Money(amount_cents=grosze, currency=currency)
 
-
 def _require_same_currency(a: _Money, b: _Money, operation: str = "operate") -> None:
     """Validate that two Money objects have the same currency."""
     if a.currency_code != b.currency_code:
         from nexus_ai.services.currency_converter import CurrencyMismatchError
         raise CurrencyMismatchError(a.currency_code, b.currency_code, operation)
-
 
 def multiply_net_by_vat_money(net: _Money, vat_rate: Decimal) -> _Money:
     """Multiply net Money amount by VAT rate, return VAT as Money.
@@ -361,7 +339,6 @@ def multiply_net_by_vat_money(net: _Money, vat_rate: Decimal) -> _Money:
     vat_grosze = multiply_net_by_vat(money_to_grosze(net), vat_rate)
     return to_money(vat_grosze, net.currency_code)
 
-
 def add_tax_money(net: _Money, vat: _Money) -> _Money:
     Money = _get_money_class()  # noqa: N806
     if not isinstance(net, Money) or not isinstance(vat, Money):
@@ -369,7 +346,6 @@ def add_tax_money(net: _Money, vat: _Money) -> _Money:
     _require_same_currency(net, vat, "add_tax_money")
     gross_grosze = add_tax(money_to_grosze(net), money_to_grosze(vat))
     return to_money(gross_grosze, net.currency_code)
-
 
 def calculate_vat_by_policy_money(
     positions: list[InvoicePositions],
@@ -393,9 +369,7 @@ def calculate_vat_by_policy_money(
     total_vat_grosze = calculate_vat_by_policy(positions, vat_rate, rounding_level)
     return to_money(total_vat_grosze, currency)
 
-
 # ── Rounding Policy ──────────────────────────────────────────────────────────
-
 
 def calculate_vat_by_policy(
     positions: list[InvoicePositions],
@@ -430,7 +404,6 @@ def calculate_vat_by_policy(
         f"expected 'position' or 'total'"
     )
 
-
 class RoundingPolicy:
     """Convenience wrapper around rounding strategy constants and logic."""
 
@@ -459,9 +432,7 @@ class RoundingPolicy:
         """
         return calculate_vat_by_policy_money(positions, vat_rate, rounding_level, currency)
 
-
 # ── Invariant Guard ──────────────────────────────────────────────────────────
-
 
 def validate_invariants(
     positions: list[InvoicePositions],
@@ -518,9 +489,7 @@ def validate_invariants(
 
     return ValidationResult(is_valid=True)
 
-
 # ── Convenience Engine ───────────────────────────────────────────────────────
-
 
 class TaxMathEngine:
     """Infallible tax math — integer-only, ROUND_HALF_UP, no floats.

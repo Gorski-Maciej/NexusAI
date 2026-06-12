@@ -13,7 +13,9 @@ logger = get_logger("nexus.api.tasks.routes")
 
 
 class TaskController(Controller):
+    """Status i zarządzanie zadaniami asynchronicznymi."""
     path = "/api/v1/tasks"
+    tags = ["Tasks"]
 
     @get("/{task_id:str}")
     async def get_task_status(self, task_id: str, request: Request) -> dict:

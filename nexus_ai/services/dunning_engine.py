@@ -6,25 +6,20 @@ Zgodnie z aa3fvcx.txt: DuckDB dla analityki, Taskiq dla harmonogramu cron.
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass
+from msgspec import Struct
 from typing import Any, Protocol
 
 import pendulum
 
-
 class DunningAIAgent(Protocol):
     def generate_dunning_text(self, invoice_data: dict[str, Any], vendor_score: float, level: int) -> str: ...
-
 
 class DunningEmailProvider(Protocol):
     def send(self, *, to_email: str, subject: str, body: str) -> bool: ...
 
-
-@dataclass(frozen=True, slots=True)
-class DunningGuardrails:
+class DunningGuardrails(Struct, frozen=True):
     cooldown_days: int = 7
     min_amount_pln: float = 10.0
-
 
 class DunningEngine:
     """Automatyczny silnik windykacji — wysyła przypomnienia o płatnościach."""

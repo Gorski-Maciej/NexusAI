@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import secrets
-from dataclasses import dataclass
+from msgspec import Struct
 
 import pendulum
 from litestar.connection import ASGIConnection
@@ -115,9 +115,7 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> Use
 
     return None
 
-
-@dataclass(slots=True)
-class User:
+class User(Struct):
     id: str
     username: str
     role: str

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import calendar
 import uuid
-from dataclasses import dataclass
+from msgspec import Struct
 from decimal import ROUND_HALF_UP, Decimal
 
 import pendulum
@@ -13,9 +13,7 @@ RMK_ASSET_ACCOUNT_ID = "640"
 RMK_LEDGER_ID = 1
 RMK_TRANSFER_CODE = 2001
 
-
-@dataclass(slots=True)
-class RMKInvoiceData:
+class RMKInvoiceData(Struct):
     invoice_id: str
     description: str
     total_net_amount: Decimal
@@ -23,16 +21,13 @@ class RMKInvoiceData:
     end_date: pendulum.Date
     cost_account_id: str
 
-
 def _month_end(year: int, month: int) -> pendulum.Date:
     return pendulum.Date(year, month, calendar.monthrange(year, month)[1])
-
 
 def _first_of_next_month(input_date: pendulum.Date) -> pendulum.Date:
     if input_date.month == 12:
         return pendulum.Date(input_date.year + 1, 1, 1)
     return pendulum.Date(input_date.year, input_date.month + 1, 1)
-
 
 class RMKEngine:
     """Accruals & Deferrals generator (RMK) with day-level pro-rata precision."""

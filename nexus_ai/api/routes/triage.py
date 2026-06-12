@@ -11,12 +11,15 @@ from nexus_ai.services.triage_service import list_pending_triage_items, resolve_
 
 
 class TriageController(Controller):
+    """Triage — przegląd i korekta faktur przed księgowaniem."""
     path = "/api/triage"
+    tags = ["Triage"]
 
 
 class TriageControllerV2(Controller):
     """Triage controller for /api/v2/triage (Rozwiązanie 22: wersjonowanie API)."""
     path = "/api/v2/triage"
+    tags = ["Triage"]
 
     @get("/pending")
     def get_pending(self, db_session: Session, request: Request) -> list[TriageItem]:

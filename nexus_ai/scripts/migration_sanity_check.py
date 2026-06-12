@@ -4,16 +4,13 @@ from __future__ import annotations
 import argparse
 import hashlib  # streaming SHA-256 for table checksums (nexus_crypto doesn't support streaming)
 import sqlite3
-from dataclasses import dataclass
+from msgspec import Struct
 from pathlib import Path
 
-
-@dataclass
-class TableStat:
+class TableStat(Struct):
     name: str
     rows: int
     checksum: str | None = None
-
 
 def collect_table_stats(db_path: Path, tables: list[str], *, with_checksum: bool = False) -> dict[str, TableStat]:
     with sqlite3.connect(db_path) as conn:
@@ -26,14 +23,12 @@ def collect_table_stats(db_path: Path, tables: list[str], *, with_checksum: bool
             result[table] = TableStat(name=table, rows=int(rows), checksum=checksum)
         return result
 
-
 def table_checksum(conn: sqlite3.Connection, table: str) -> str:
     hasher = hashlib.sha256()
     cursor = conn.execute(f"SELECT * FROM {table}")
     for row in cursor:
         h.update(repr(row).encode("utf-8"))
     return h.hexdigest()
-
 
 def compare_stats(before: dict[str, TableStat], after: dict[str, TableStat], *, compare_checksum: bool = False) -> list[str]:
     issues: list[str] = []
@@ -47,7 +42,6 @@ def compare_stats(before: dict[str, TableStat], after: dict[str, TableStat], *, 
         if compare_checksum and b.checksum and a.checksum and b.rows == a.rows and b.checksum != a.checksum:
             issues.append(f"Checksum drift in {table}: {b.checksum[:12]} -> {a.checksum[:12]}")
     return issues
-
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run migration row-count sanity check.")
@@ -72,7 +66,6 @@ def main() -> int:
     for name in tables:
         print(f" - {name}: {before[name].rows} -> {after[name].rows}")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

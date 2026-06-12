@@ -40,6 +40,7 @@ class RiskController(Controller):
     """Zarządzanie progami ryzyka dla RiskGuard."""
 
     path = "/api/v2/admin/risk-thresholds"
+    tags = ["Risk"]
 
     # ── Helpers ───────────────────────────────────────────────────────────
 

@@ -10,7 +10,7 @@ from nexus_ai.core.config import AppConfig
 from nexus_ai.core.tenant import TenantManager
 from nexus_ai.db.analytics import DuckDBLimits, DuckDBManager
 
-_config = AppConfig()
+_config = AppConfig.from_toml()
 _tenant_manager = TenantManager(_config)
 _duckdb_limits = DuckDBLimits(memory_limit=_config.duckdb_memory_limit, threads=_config.duckdb_threads)
 

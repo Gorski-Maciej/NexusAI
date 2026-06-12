@@ -15,6 +15,7 @@ class WorkerStatusController(Controller):
     """
 
     path = "/api/v1/system/workers"
+    tags = ["System"]
 
     @get("/status")
     async def get_worker_status(self) -> dict[str, Any]:

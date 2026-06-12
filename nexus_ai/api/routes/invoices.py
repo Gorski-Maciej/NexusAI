@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 from nexus_ai.api.cache import clear_cache_async
 from nexus_ai.api.i18n import resolve_language, t
 from nexus_ai.api.rbac import owner_or_worker_guard
+from nexus_ai.api.dto import TaskResponseDTO
 from nexus_ai.api.schemas import TaskResponse
 from nexus_ai.api.services import ContentAddressableStorage, FileValidator, IdempotencyStore
 from nexus_ai.core.config import AppConfig
@@ -49,12 +50,13 @@ async def _write_chunk(temp_file, chunk: bytes) -> None:
 
 
 class InvoiceController(Controller):
-    """Invoice APIs (v1)."""
+    """Invoice APIs (v1) — upload i zarządzanie fakturami."""
 
     path = "/api/v1/invoices"
     guards = [owner_or_worker_guard]
+    tags = ["Invoices"]
 
-    @post("/upload", media_type=RequestEncodingType.MULTI_PART)
+    @post("/upload", media_type=RequestEncodingType.MULTI_PART, return_dto=TaskResponseDTO)
     async def upload_invoice(
         self,
         data: dict[str, UploadFile],
@@ -195,7 +197,7 @@ class InvoiceController(Controller):
 
         return response
 
-    @post("/upload-large", media_type=RequestEncodingType.MULTI_PART)
+    @post("/upload-large", media_type=RequestEncodingType.MULTI_PART, return_dto=TaskResponseDTO)
     async def upload_large_attachment(
         self,
         data: dict[str, UploadFile],
@@ -308,6 +310,7 @@ class InvoiceController(Controller):
 
 
 class InvoiceControllerV2(InvoiceController):
-    """Invoice APIs (v2)."""
+    """Invoice APIs (v2) — upload i zarządzanie fakturami."""
 
     path = "/api/v2/invoices"
+    tags = ["Invoices"]

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass
+from msgspec import Struct
 from decimal import ROUND_HALF_UP, Decimal
 
 import pendulum
@@ -14,9 +14,7 @@ DEFAULT_DEPRECIATION_ACCOUNT = 400
 DEFAULT_LEDGER_ID = 2
 DEFAULT_TRANSFER_CODE = 1001
 
-
-@dataclass(slots=True)
-class FixedAsset:
+class FixedAsset(Struct):
     id: str
     asset_name: str
     initial_value: Decimal
@@ -24,7 +22,6 @@ class FixedAsset:
     depreciation_rate: float
     purchase_date: pendulum.Date
     last_depreciation_date: pendulum.Date | None
-
 
 class FixedAssetsService:
     def __init__(self, duckdb: DuckDBManager, tigerbeetle: TigerBeetleClient) -> None:

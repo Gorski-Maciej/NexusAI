@@ -12,6 +12,7 @@ class PrivacyController(Controller):
 
     path = "/api/v1/system/privacy"
     guards = [owner_only_guard]
+    tags = ["Privacy"]
 
     @get("/pii-scan")
     async def scan_pii_logs(self) -> dict:

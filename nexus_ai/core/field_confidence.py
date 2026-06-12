@@ -20,15 +20,13 @@ Zastosowania:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from decimal import Decimal
 from typing import Any
 
 # ── Data Structures ──────────────────────────────────────────────────────────
 
-
-@dataclass(frozen=True)
-class FieldConfidence:
+class FieldConfidence(Struct, frozen=True):
     """Pewność odczytu pojedynczego pola faktury.
 
     Attributes:
@@ -66,7 +64,6 @@ class FieldConfidence:
             return str(self.value)
         return self.value
 
-
 # ── Typ pomocniczy dla słownika field_confidence ────────────────────────────
 
 FieldConfidenceDict = dict[str, FieldConfidence]
@@ -85,9 +82,7 @@ Typowe klucze:
   - ``category_code`` — kategoria wydatku
 """
 
-
 # ── Factory functions ────────────────────────────────────────────────────────
-
 
 def field_confidence_from_dict(data: dict[str, dict[str, Any]]) -> FieldConfidenceDict:
     """Utwórz FieldConfidenceDict z surowego słownika.
@@ -133,7 +128,6 @@ def field_confidence_from_dict(data: dict[str, dict[str, Any]]) -> FieldConfiden
         )
     return result
 
-
 def field_confidence_to_dict(fc: FieldConfidenceDict) -> dict[str, dict[str, Any]]:
     """Skonwertuj FieldConfidenceDict na słownik do JSON.
 
@@ -145,9 +139,7 @@ def field_confidence_to_dict(fc: FieldConfidenceDict) -> dict[str, dict[str, Any
     """
     return {name: conf.to_dict() for name, conf in fc.items()}
 
-
 # ── Helpers ──────────────────────────────────────────────────────────────────
-
 
 def minimum_confidence(fc: FieldConfidenceDict) -> float:
     """Zwróć najniższy confidence spośród wszystkich pól.
@@ -161,7 +153,6 @@ def minimum_confidence(fc: FieldConfidenceDict) -> float:
     if not fc:
         return 1.0
     return min(conf.confidence for conf in fc.values())
-
 
 def fields_below_threshold(
     fc: FieldConfidenceDict,
@@ -181,7 +172,6 @@ def fields_below_threshold(
         for name, conf in fc.items()
         if conf.confidence < threshold
     ]
-
 
 def extract_fields_with_confidence(
     fc: FieldConfidenceDict,

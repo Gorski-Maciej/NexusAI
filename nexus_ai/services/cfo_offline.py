@@ -10,18 +10,16 @@ z kolejką asynchroniczną, cache i magazynem relacji.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from msgspec import Struct, field
 from typing import Any, Protocol
 
 import pendulum
-
 
 class TaskQueue(Protocol):
     """Abstrakcja kolejki (Celery/NATS)."""
 
     def publish(self, topic: str, payload: dict[str, Any]) -> None:
         ...
-
 
 class CacheStore(Protocol):
     """Abstrakcja cache (SQLite/local).
@@ -34,16 +32,13 @@ class CacheStore(Protocol):
     def set(self, key: str, value: Any, ttl_seconds: int = 3600) -> None:
         ...
 
-
 class RelationStore(Protocol):
     """Abstrakcja relacji biznesowych (Supabase/Postgres lub Neo4j)."""
 
     def link(self, source: str, relation: str, target: str, metadata: dict[str, Any] | None = None) -> None:
         ...
 
-
-@dataclass(slots=True)
-class InvoiceRecord:
+class InvoiceRecord(Struct):
     invoice_id: str
     supplier_nip: str
     amount_gross: float
@@ -54,13 +49,10 @@ class InvoiceRecord:
     ocr_text: str
     metadata: dict[str, Any] = field(default_factory=dict)
 
-
-@dataclass(slots=True)
-class RAGAnswer:
+class RAGAnswer(Struct):
     answer: str
     evidence_chunks: list[str]
     chart_spec: dict[str, Any]
-
 
 class LocalRAGService:
     """Lokalny pipeline RAG z OCR->embeddings->vector search->LLM."""
@@ -88,7 +80,6 @@ class LocalRAGService:
         chart_spec = _build_chart_from_hits(hits)
         return RAGAnswer(answer=answer, evidence_chunks=[h["chunk"] for h in hits], chart_spec=chart_spec)
 
-
 class KSEFDefenderService:
     """Detekcja anomalii faktur na podstawie historii i cech aktualnej faktury."""
 
@@ -113,7 +104,6 @@ class KSEFDefenderService:
             reason = "anomaly: bank_account_changed"
 
         return is_anomaly, score, reason
-
 
 class CashflowForecastService:
     """Analiza DuckDB: przyszłe zobowiązania i alerty niedoboru płynności."""
@@ -193,7 +183,6 @@ class CashflowForecastService:
             cursor += pendulum.duration(days=1)
 
         return forecast
-
 
 class PaymentPriorityService:
     """Silnik priorytetyzacji płatności dla zobowiązań zakupowych."""
@@ -302,7 +291,6 @@ class PaymentPriorityService:
             "wait": waiting,
         }
 
-
 class AutoDecreeService:
     """Klasyfikacja pozycji faktury do kont księgowych."""
 
@@ -328,7 +316,6 @@ class AutoDecreeService:
             "status": "AUTO_APPROVED" if auto_approved else "REVIEW_REQUIRED",
             "min_confidence": min(confidences) if confidences else 0.0,
         }
-
 
 class CFOOrchestrator:
     """Orkiestruje przepływ danych między modułami offline-first."""
@@ -389,10 +376,8 @@ class CFOOrchestrator:
         self.relations.link(invoice.invoice_id, "CLASSIFIED_AS", status)
         return {"status": status, "decree": decree, "cashflow": cashflow}
 
-
 def _chunk_text(text: str, size: int = 800) -> list[str]:
     return [text[i : i + size] for i in range(0, len(text), size)] or [""]
-
 
 def _build_chart_from_hits(hits: list[dict[str, Any]]) -> dict[str, Any]:
     return {
@@ -402,7 +387,6 @@ def _build_chart_from_hits(hits: list[dict[str, Any]]) -> dict[str, Any]:
         "values": [float(hit.get("score", 0.0)) for hit in hits],
     }
 
-
 def _estimate_min_balance(series: list[tuple[Any, ...]], opening_balance: float = 0.0) -> float:
     running = opening_balance
     min_balance = opening_balance
@@ -411,7 +395,6 @@ def _estimate_min_balance(series: list[tuple[Any, ...]], opening_balance: float 
         min_balance = min(min_balance, running)
     return min_balance
 
-
 def _invoice_to_features(invoice: InvoiceRecord) -> dict[str, Any]:
     return {
         "amount_gross": invoice.amount_gross,
@@ -419,7 +402,6 @@ def _invoice_to_features(invoice: InvoiceRecord) -> dict[str, Any]:
         "bank_account": invoice.bank_account,
         "line_count": len(invoice.lines),
     }
-
 
 def _bank_account_changed(invoice: InvoiceRecord) -> bool:
     known_accounts = set(invoice.metadata.get("known_supplier_accounts", []))

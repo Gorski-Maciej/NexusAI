@@ -1,17 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from typing import Any
 
 from nexus_ai.db.analytics import DuckDBManager
 
-
-@dataclass(slots=True)
-class AccountSuggestion:
+class AccountSuggestion(Struct):
     account_wn: str
     account_ma: str
     reason: str
-
 
 class ZPKEngine:
     """Semantic Chart of Accounts engine backed by DuckDB."""

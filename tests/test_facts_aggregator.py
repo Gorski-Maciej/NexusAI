@@ -186,7 +186,7 @@ class TestFactSheet:
 class TestFactsAggregator:
     """Testy FactsAggregator z mockami."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_build_with_all_sources(
         self,
         sample_invoice_data: dict,
@@ -215,7 +215,7 @@ class TestFactsAggregator:
         assert isinstance(sheet.build_duration_ms, float)
         assert sheet.build_duration_ms >= 0
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_build_without_sources(
         self, sample_invoice_data: dict
     ) -> None:
@@ -232,7 +232,7 @@ class TestFactsAggregator:
         assert sheet.similar_invoices == []
         assert sheet.active_tax_rules == []
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_build_with_only_vector_store(
         self,
         sample_invoice_data: dict,
@@ -252,7 +252,7 @@ class TestFactsAggregator:
         assert sheet.sources_available.get("vector_store") is True
         assert len(sheet.similar_invoices) == 2
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_build_with_error_in_one_source(
         self,
         sample_invoice_data: dict,
@@ -276,7 +276,7 @@ class TestFactsAggregator:
         assert sheet.invoice_id == "inv-123"
         assert sheet.build_duration_ms >= 0
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_build_runs_tasks_in_parallel(
         self,
         sample_invoice_data: dict,
@@ -303,7 +303,7 @@ class TestFactsAggregator:
         assert duration < 5.0
         assert sheet.invoice_id == "inv-123"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_build_stores_duration(
         self,
         sample_invoice_data: dict,
@@ -313,7 +313,7 @@ class TestFactsAggregator:
         sheet = await aggregator.build(sample_invoice_data)
         assert sheet.build_duration_ms > 0
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_fact_sheet_to_dict_contains_all_keys(
         self, sample_invoice_data: dict
     ) -> None:
@@ -340,7 +340,7 @@ class TestFactsAggregator:
 class TestFactsAggregatorPromptIntegration:
     """Testy integracji FactSheet z promptem modelu."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_prompt_section_is_parseable(self) -> None:
         """Sprawdź, że sekcja promptu ma czytelny format."""
         sheet = FactSheet(
@@ -370,7 +370,7 @@ class TestFactsAggregatorPromptIntegration:
         assert any("VAT 23%" in line for line in lines)
         assert any("Split payment" in line for line in lines)
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_empty_fact_sheet_does_not_crash(
         self, sample_invoice_data: dict
     ) -> None:
@@ -661,7 +661,7 @@ class TestFewShotLearning:
 class TestTigerBeetleSource:
     """Testy integracji TigerBeetle z FactsAggregator."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_build_with_tigerbeetle(
         self,
         sample_invoice_data: dict,
@@ -685,7 +685,7 @@ class TestTigerBeetleSource:
         assert sheet.ledger_total_turnover > 0
         assert tb_client.get_account_credits_posted.call_count >= 3  # 3 konta domyślne
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_build_without_tigerbeetle(
         self,
         sample_invoice_data: dict,
@@ -698,7 +698,7 @@ class TestTigerBeetleSource:
         assert sheet.ledger_accounts == {}
         assert sheet.ledger_total_turnover == 0.0
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_tigerbeetle_error_isolated(
         self,
         sample_invoice_data: dict,
@@ -719,7 +719,7 @@ class TestTigerBeetleSource:
         assert sheet.ledger_accounts == {}
         assert sheet.ledger_total_turnover == 0.0
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_tigerbeetle_to_prompt_section(
         self,
         sample_invoice_data: dict,
@@ -740,7 +740,7 @@ class TestTigerBeetleSource:
         assert "1500.00" in prompt or "1500" in prompt
         assert "Łączny obrót" in prompt
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_tigerbeetle_to_dict(
         self,
         sample_invoice_data: dict,
@@ -760,7 +760,7 @@ class TestTigerBeetleSource:
         assert len(d["ledger"]["accounts"]) > 0
         assert d["ledger"]["total_turnover"] > 0
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_tigerbeetle_with_all_sources(
         self,
         sample_invoice_data: dict,
@@ -795,7 +795,7 @@ class TestTigerBeetleSource:
         # TigerBeetle nie wpływa na inne źródła
         assert "sources" in sheet.sources_available or sheet.sources_available == {}
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_tigerbeetle_mapper_integration(
         self,
         sample_invoice_data: dict,

@@ -17,10 +17,11 @@ from __future__ import annotations
 
 import hashlib
 import hmac
-import logging
 import os
 
-logger = logging.getLogger("nexus.crypto")
+from nexus_ai.core.logger import get_logger
+
+logger = get_logger("nexus.crypto")
 
 # Try to load the native Rust extension
 try:

@@ -10,7 +10,7 @@ import uuid
 
 import anyio
 from collections.abc import AsyncIterator
-from dataclasses import dataclass, field
+from msgspec import Struct, field
 from typing import Any
 
 import nats
@@ -22,9 +22,7 @@ from nexus_ai.core.msgspec_utils import msgspec_loads
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 from nexus_ai.services.tigerbeetle.models import CompanyProfile, LedgerTransfer, TransferStatus
 
-
-@dataclass(slots=True)
-class MissingInvoiceAlert:
+class MissingInvoiceAlert(Struct):
     company_id: uuid.UUID
     contractor_nip: str
     amount_minor: int
@@ -38,9 +36,7 @@ class MissingInvoiceAlert:
                 "transaction_id": self.transaction_id,
                 "bank_posted_at": self.bank_posted_at.isoformat(), "reason": self.reason}
 
-
-@dataclass
-class AlertHub:
+class AlertHub(Struct):
     _subscribers: set[tuple[anyio.MemoryObjectSendStream, anyio.MemoryObjectReceiveStream]] = field(default_factory=set)
 
     async def publish(self, event: dict[str, Any]) -> None:
@@ -56,7 +52,6 @@ class AlertHub:
                     yield item
         finally:
             self._subscribers.discard((send, receive))
-
 
 class ReconciliationEngine:
     """Silnik uzgadniania transakcji bankowych z księgowymi w TigerBeetle."""
@@ -132,14 +127,11 @@ class ReconciliationEngine:
                 self.alert_hub.publish(alert.to_sse_event())
             return False
 
-
-@dataclass(frozen=True, slots=True)
-class ClearingAccountsConfig:
+class ClearingAccountsConfig(Struct, frozen=True):
     account_bank_main: int
     account_expense_fees: int
     account_receivable: int
     provider_clearing_accounts: dict[str, int]
-
 
 class ClearingAccountsEngine:
     """Implementuje ekstrakcję opłat i uzgadnianie wypłat z idempotencją."""
@@ -192,21 +184,16 @@ class ClearingAccountsEngine:
         return {"status": "posted" if posted else "failed", "operation_id": operation_id,
                 "pending_id": pending.pending_id, "clearing_credits_posted": clearing_balance}
 
-
-@dataclass(frozen=True, slots=True)
-class OpenInvoice:
+class OpenInvoice(Struct, frozen=True):
     invoice_id: str
     amount_due_minor: int
     due_date: pendulum.DateTime
 
-
-@dataclass(frozen=True, slots=True)
-class BankReconciliationConfig:
+class BankReconciliationConfig(Struct, frozen=True):
     account_bank_main: int
     account_receivable: int
     account_rounding_differences: int
     rounding_threshold_minor: int = 10
-
 
 class BankReconciliationEngine:
     def __init__(self, tb_client: TigerBeetleClient, config: BankReconciliationConfig) -> None:

@@ -11,7 +11,7 @@ DEAD_LETTER_SUBJECT = "nats.deadletter"
 
 # Inicjalizujemy broker NATS z limitem współbieżności (Rozwiązanie 29).
 broker = NatsBroker(
-    servers=["nats://127.0.0.1:4222"],
+    servers=[config.nats_url],
     queue="nexus_tasks",
     subject="nexus.tasks",
     max_reconnect_attempts=0,

@@ -30,6 +30,7 @@ class UIStateController(Controller):
 
     path = "/api/v1/ui"
     guards = [owner_or_worker_guard]
+    tags = ["UI State"]
 
     @post("/drafts/{draft_key:str}")
     async def save_draft(self, request: Request, draft_key: str, data: dict) -> dict:

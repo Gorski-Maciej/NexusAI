@@ -11,7 +11,7 @@ First-match-wins według typu dokumentu i formy opodatkowania.
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass
+from msgspec import Struct
 from typing import Any
 
 import duckdb
@@ -80,19 +80,15 @@ DEFAULT_BILLING_RULES: list[dict[str, Any]] = [
     },
 ]
 
-
-@dataclass
-class BillingEstimate:
+class BillingEstimate(Struct):
     """Estymacja kosztu i czasu przetwarzania."""
     total_price_pln: float = 0.0
     total_time_hours: float = 0.0
     breakdown: list[dict[str, Any]] | None = None
 
-
 def ensure_schema(conn: duckdb.DuckDBPyConnection) -> None:
     """Create billing_rules table if not present."""
     conn.execute(BILLING_RULES_SCHEMA)
-
 
 def seed_default_billing_rules(conn: duckdb.DuckDBPyConnection) -> None:
     """Insert default billing rules if table is empty."""
@@ -113,7 +109,6 @@ def seed_default_billing_rules(conn: duckdb.DuckDBPyConnection) -> None:
                 rule["priority"],
             ),
         )
-
 
 class BillingEstimator:
     """Estymator kosztów przetwarzania dokumentów.

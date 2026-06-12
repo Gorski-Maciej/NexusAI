@@ -32,7 +32,7 @@ from functools import cache
 
 import pendulum
 from collections.abc import Callable
-from dataclasses import dataclass
+from msgspec import Struct
 from typing import Any
 
 from sqlalchemy import text
@@ -81,13 +81,9 @@ DEFAULT_ACCOUNT_VAT_ID = 22100
 DEFAULT_ACCOUNT_PAYABLES_ID = 20200
 """Domyślne ID konta rozrachunków (Ma) — polski plan kont."""
 
-
-
 # ── Data structures ───────────────────────────────────────────────────────────
 
-
-@dataclass
-class OutboxStats:
+class OutboxStats(Struct):
     """Statystyki pojedynczej iteracji przetwarzania.
 
     Attributes:
@@ -105,27 +101,21 @@ class OutboxStats:
     total: int = 0
     processing_time_ms: float = 0.0
 
-
 # ── Exceptions ────────────────────────────────────────────────────────────────
-
 
 class OutboxRelayError(Exception):
     """Base exception for OutboxRelay errors."""
     pass
 
-
 class TigerBeetlePostingError(OutboxRelayError):
     """Raised when TigerBeetle posting fails after all retries."""
     pass
-
 
 class UnknownEventTypeError(OutboxRelayError):
     """Raised when an outbox event has an unknown/unhandled event_type."""
     pass
 
-
 # ── OutboxRelay ───────────────────────────────────────────────────────────────
-
 
 class OutboxRelay:
     """Transactional Outbox Relay — gwarantowana dostawa zdarzeń do TigerBeetle.

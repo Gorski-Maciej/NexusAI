@@ -30,7 +30,7 @@ import time
 
 import anyio
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from msgspec import Struct, field
 from pathlib import Path
 from typing import Any
 
@@ -41,8 +41,7 @@ logger = get_logger("nexus.bootstrap")
 
 # ── Step result tracking ─────────────────────────────────────────────────────
 
-@dataclass
-class StepResult:
+class StepResult(Struct):
     """Result of a single bootstrap step."""
     name: str
     status: str  # "ok", "skipped", "warning", "error"
@@ -50,9 +49,7 @@ class StepResult:
     duration_ms: float = 0.0
     details: dict[str, Any] = field(default_factory=dict)
 
-
-@dataclass
-class BootstrapReport:
+class BootstrapReport(Struct):
     """Complete report of the bootstrap process."""
     steps: list[StepResult] = field(default_factory=list)
     started_at: str = ""
@@ -87,7 +84,6 @@ class BootstrapReport:
         print(f"  Overall: {self.overall_status.upper()}")
         print("=" * 70)
         print()
-
 
 # ── Bootstrap steps ──────────────────────────────────────────────────────────
 
@@ -142,7 +138,6 @@ async def step_validate_config(config: Any) -> StepResult:
         details={"environment": env, "base_dir": str(base_dir)},
     )
 
-
 async def step_check_dependencies(config: Any) -> StepResult:
     """Step 2: Check required Python packages."""
     start = time.perf_counter()
@@ -182,7 +177,6 @@ async def step_check_dependencies(config: Any) -> StepResult:
         duration_ms=(time.perf_counter() - start) * 1000,
     )
 
-
 async def step_create_directories(config: Any) -> StepResult:
     """Step 4: Create required data directories."""
     start = time.perf_counter()
@@ -220,7 +214,6 @@ async def step_create_directories(config: Any) -> StepResult:
         duration_ms=(time.perf_counter() - start) * 1000,
         details={"directories": [str(d) for d in dirs]},
     )
-
 
 async def step_run_migrations(config: Any) -> StepResult:
     """Step 5: Run Alembic database migrations."""
@@ -277,7 +270,6 @@ async def step_run_migrations(config: Any) -> StepResult:
             duration_ms=(time.perf_counter() - start) * 1000,
         )
 
-
 async def step_initialize_olap(config: Any) -> StepResult:
     """Step 6: Initialize DuckDB OLAP schema."""
     start = time.perf_counter()
@@ -315,7 +307,6 @@ async def step_initialize_olap(config: Any) -> StepResult:
             message=f"DuckDB init warning: {exc}",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
-
 
 async def step_seed_data(config: Any) -> StepResult:
     """Step 7: Load seed data (idempotent)."""
@@ -356,7 +347,6 @@ async def step_seed_data(config: Any) -> StepResult:
             message=f"Seed data partially loaded: {exc}",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
-
 
 async def step_verify_nats(config: Any) -> StepResult:
     """Step 8: Verify NATS connection."""
@@ -401,7 +391,6 @@ async def step_verify_nats(config: Any) -> StepResult:
             duration_ms=(time.perf_counter() - start) * 1000,
         )
 
-
 async def step_verify_tigerbeetle(config: Any) -> StepResult:
     """Step 9: Verify TigerBeetle connection."""
     start = time.perf_counter()
@@ -442,7 +431,6 @@ async def step_verify_tigerbeetle(config: Any) -> StepResult:
             message=f"TigerBeetle check skipped: {exc}",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
-
 
 # ── Main bootstrap orchestrator ──────────────────────────────────────────────
 
@@ -524,7 +512,6 @@ async def run_bootstrap(
 
     return report
 
-
 # ── CLI entry point ──────────────────────────────────────────────────────────
 
 def main(argv: list[str] | None = None) -> int:
@@ -569,7 +556,8 @@ def main(argv: list[str] | None = None) -> int:
             "validate_config", "check_dependencies", "check_ai_models",
             "create_directories", "run_migrations", "initialize_olap",
             "verify_nats", "verify_tigerbeetle",
-        ]]        result = anyio.run(run_bootstrap, step_filter)
+        ]]
+        result = anyio.run(run_bootstrap, step_filter)
 
     if result.overall_status == "error":
         print("Bootstrap completed with ERRORS. Review the summary above.")
@@ -579,7 +567,6 @@ def main(argv: list[str] | None = None) -> int:
     print("  ✓  NexusAI is ready. Run 'python main.py --mode api' to start.")
     print()
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

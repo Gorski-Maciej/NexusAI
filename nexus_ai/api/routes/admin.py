@@ -41,8 +41,10 @@ logger = get_logger("nexus.api.admin")
 
 
 class AdminController(Controller):
+    """Panel administracyjny — zarządzanie użytkownikami, regułami, DLQ."""
     path = "/api/admin"
     guards = [admin_only_guard]
+    tags = ["Admin"]
 
     @get("/failed-tasks", guards=[requires_permission("admin:failed-tasks")])
     async def list_failed_tasks(self, request: Request) -> dict:

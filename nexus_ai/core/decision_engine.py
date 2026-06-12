@@ -19,7 +19,7 @@ Zastępuje stare agenty AI deterministycznymi regułami SQL:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from msgspec import Struct, field
 from typing import Any
 from uuid import uuid4
 
@@ -35,7 +35,6 @@ from nexus_ai.db.models import Invoice
 _rules_cache = get_cache()
 CACHE_KEY = "decision_rules:active"
 
-
 def invalidate_rules_cache() -> None:
     """Unieważnij cache reguł decyzyjnych.
 
@@ -44,14 +43,11 @@ def invalidate_rules_cache() -> None:
     """
     _rules_cache.delete_sync(CACHE_KEY)
 
-
 # =========================================================================
 # Decision data structures
 # =========================================================================
 
-
-@dataclass(slots=True)
-class DecisionVerdict:
+class DecisionVerdict(Struct):
     """Decision result from the engine."""
 
     decision: str  # AUTO_POST | SUGGEST | ASK_USER | BLOCK
@@ -71,7 +67,6 @@ class DecisionVerdict:
             "semantic_anomaly": self.semantic_anomaly,
         }
 
-
 # =========================================================================
 # Domyślne progi decyzyjne (zastępują TrustScoreCalculator z autopilot.py)
 # =========================================================================
@@ -84,7 +79,6 @@ DEFAULT_THRESHOLDS: dict[str, float] = {
 
 _RECURRING_CATEGORIES = {"paliwo", "czynsz", "media", "telekomunikacja", "leasing"}
 _PROBLEMATIC_CATEGORIES = {"usługi it", "doradztwo", "marketing", "szkolenia"}
-
 
 def get_adapted_thresholds(
     category: str = "",
@@ -153,7 +147,6 @@ def get_adapted_thresholds(
         base[key] = round(min(max(base[key], 0.0), 1.0), 4)
     return base
 
-
 # =========================================================================
 # DecisionEngine — SQL-based decision making
 # =========================================================================
@@ -214,7 +207,6 @@ DEFAULT_DECISION_RULES: list[dict[str, Any]] = [
         "priority": 999,
     },
 ]
-
 
 class DecisionEngine:
     """SQL/DuckDB-based decision engine.
@@ -432,11 +424,9 @@ class DecisionEngine:
                     return False
         return True
 
-
 # =========================================================================
 # InvoiceClassifier — simple vs complex (replaces WorkflowPlanner)
 # =========================================================================
-
 
 def classify_invoice(
     invoice_data: dict[str, Any],
@@ -460,7 +450,6 @@ def classify_invoice(
         return "simple"
     return "complex"
 
-
 # =========================================================================
 # TrustScore — SQL-based trust calculation (replaces TrustScoreCalculator)
 # =========================================================================
@@ -472,7 +461,6 @@ TRUST_WEIGHTS = {
     "context_trust": 0.10,
     "risk_guard": 0.15,
 }
-
 
 def calculate_trust_score(
     invoice_data: dict[str, Any],
@@ -519,7 +507,6 @@ def calculate_trust_score(
             "risk_guard": 1.0,
         },
     }
-
 
 def validate_nip(nip: str) -> bool:
     """Validate NIP checksum (Polish tax ID).

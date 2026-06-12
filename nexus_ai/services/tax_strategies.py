@@ -6,26 +6,21 @@ Zgodnie z aa3fvcx.txt: używane przez TaxSimulator do symulacji "co by było gdy
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from msgspec import Struct
 from typing import Protocol
 
 from nexus_ai.services.tigerbeetle.models import LegalForm, TaxForm
 
-
 class InvalidTaxPolicyError(ValueError):
     """Raised when tax policy is incompatible with legal form."""
-
 
 class LedgerInitializer(Protocol):
     def initialize(self, *, legal_form: LegalForm, tax_form: TaxForm) -> dict[str, int]: ...
 
-
-@dataclass(slots=True)
-class StrategyContext:
+class StrategyContext(Struct):
     legal_form: LegalForm
     ksef_active: bool
     vat_proportion: float
-
 
 class TaxStrategy(ABC):
     tax_form: TaxForm
@@ -33,7 +28,6 @@ class TaxStrategy(ABC):
     @abstractmethod
     def policy_payload(self, context: StrategyContext) -> dict:
         raise NotImplementedError
-
 
 class JdgLumpSumStrategy(TaxStrategy):
     tax_form = TaxForm.LUMP_SUM
@@ -45,7 +39,6 @@ class JdgLumpSumStrategy(TaxStrategy):
                 "vat_proportion": context.vat_proportion, "ksef_active": context.ksef_active,
                 "revenue_rates": [0.02, 0.03, 0.055, 0.085, 0.12, 0.14, 0.15, 0.17]}
 
-
 class JdgLinearStrategy(TaxStrategy):
     tax_form = TaxForm.LINEAR
 
@@ -54,7 +47,6 @@ class JdgLinearStrategy(TaxStrategy):
             raise InvalidTaxPolicyError("Podatek liniowy dostępny tylko dla JDG i spółki cywilnej.")
         return {"tax_form": self.tax_form, "pit_costs_enabled": True, "requires_full_ledger": False,
                 "pit_rate": 0.19, "vat_proportion": context.vat_proportion, "ksef_active": context.ksef_active}
-
 
 class CorpFullLedgerStrategy(TaxStrategy):
     tax_form = TaxForm.CIT_STANDARD
@@ -65,7 +57,6 @@ class CorpFullLedgerStrategy(TaxStrategy):
         return {"tax_form": self.tax_form, "pit_costs_enabled": False, "requires_full_ledger": True,
                 "cit_rates": {"small": 0.09, "standard": 0.19}, "ksef_active": context.ksef_active}
 
-
 class CitEstonianStrategy(TaxStrategy):
     tax_form = TaxForm.CIT_ESTONIAN
 
@@ -74,7 +65,6 @@ class CitEstonianStrategy(TaxStrategy):
             raise InvalidTaxPolicyError("CIT Estoński dostępny tylko dla spółek kapitałowych.")
         return {"tax_form": self.tax_form, "pit_costs_enabled": False, "requires_full_ledger": True,
                 "deferred_tax": True, "distribution_tax_rate": 0.2, "ksef_active": context.ksef_active}
-
 
 class StrategyRegistry:
     """Rejestr strategii podatkowych — używany przez TaxSimulator."""

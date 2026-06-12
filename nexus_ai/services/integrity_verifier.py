@@ -16,7 +16,7 @@ Funkcjonalności:
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass, field
+from msgspec import Struct, field
 from typing import Any
 
 import duckdb
@@ -61,9 +61,7 @@ CREATE TABLE IF NOT EXISTS integrity_checkpoints (
 );
 """
 
-
-@dataclass
-class IntegrityReport:
+class IntegrityReport(Struct):
     """Raport z weryfikacji integralności.
 
     Attributes:
@@ -78,7 +76,6 @@ class IntegrityReport:
     violations: list[dict[str, Any]] = field(default_factory=list)
     first_inconsistent_trace: str | None = None
     verified_at: str = ""
-
 
 class IntegrityVerifier:
     """Weryfikator Integralności — sprawdza łańcuch hashy decision_traces.

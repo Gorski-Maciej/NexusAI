@@ -8,7 +8,7 @@ Zgodnie z aa3fvcx.txt:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
@@ -16,24 +16,18 @@ from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
 _ALLOWED_RATES = {"23", "8", "5", "0", "np", "zw"}
 
-
-@dataclass(frozen=True, slots=True)
-class VATBreakdown:
+class VATBreakdown(Struct, frozen=True):
     rate: str
     net_amount: Decimal
     vat_amount: Decimal
     gross_amount: Decimal
 
-
-@dataclass(frozen=True, slots=True)
-class VATIntegrityResult:
+class VATIntegrityResult(Struct, frozen=True):
     invoice_id: str
     status: str
     errors: list[str]
 
-
-@dataclass(frozen=True, slots=True)
-class ReconciliationAlert:
+class ReconciliationAlert(Struct, frozen=True):
     status: str
     vat_in_ledger: Decimal
     vat_out_ledger: Decimal
@@ -41,7 +35,6 @@ class ReconciliationAlert:
     vat_out_register: Decimal
     missing_in_duckdb: list[str]
     missing_in_ledger: list[str]
-
 
 class VATReconciliationEngine:
     """Silnik weryfikacji integralności VAT między OCR, DuckDB i TigerBeetle."""

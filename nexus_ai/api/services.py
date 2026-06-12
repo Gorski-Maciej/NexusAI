@@ -19,7 +19,7 @@ except ImportError:
         return hashlib.sha256(data).hexdigest()
 from collections.abc import Iterable
 from contextlib import suppress
-from dataclasses import dataclass
+from msgspec import Struct
 from pathlib import Path
 from typing import Any
 
@@ -27,23 +27,18 @@ import pendulum
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
-
 def _load_fsspec_module():
     if importlib.util.find_spec("fsspec") is None:
         return None
     import fsspec
     return fsspec
 
-
 fsspec = _load_fsspec_module()
 
-
-@dataclass(slots=True)
-class StoredUpload:
+class StoredUpload(Struct):
     file_hash: str
     file_path: str
     size_bytes: int
-
 
 class FileValidator:
     """Validator plików na podstawie sygnatur MIME i magic bytes (Rozwiązanie 31)."""
@@ -132,7 +127,6 @@ class FileValidator:
         except Exception as e:
             raise ValueError(f"Invalid image file: {e}")
 
-
 class ContentAddressableStorage:
     """File storage using SHA-256 as canonical key (dedupe-friendly)."""
 
@@ -185,7 +179,6 @@ class ContentAddressableStorage:
         self._save_archive_variant(file_path=file_path, suffix=suffix)
         return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=size_bytes)
 
-
     def _save_archive_variant(self, file_path: Path, suffix: str) -> None:
         """Best-effort archival compression for image uploads (non-destructive sidecar)."""
         ext = suffix.lower()
@@ -203,7 +196,6 @@ class ContentAddressableStorage:
                 rgb.save(file_path.with_suffix(".jpg"), format="JPEG", quality=80, optimize=True)
         except Exception:
             return
-
 
 class CursorPagination:
     """Keyset (cursor) pagination helper dla list API (Rozwiązanie 32)."""
@@ -235,7 +227,6 @@ class CursorPagination:
         last_date = str(getattr(last, date_key, last.get(date_key, "")) if isinstance(last, dict) else getattr(last, date_key, ""))
         last_id = int(getattr(last, id_key, last.get(id_key, 0)) if isinstance(last, dict) else getattr(last, id_key, 0))
         return CursorPagination.encode_cursor(last_date, last_id)
-
 
 class IdempotencyStore:
     """SQLite-backed idempotency registry with payload hash and TTL."""

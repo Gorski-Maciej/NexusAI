@@ -19,7 +19,9 @@ from nexus_ai.services.billing_estimator import (
 
 
 class BillingController(Controller):
+    """Estymacja kosztów i czasu przetwarzania dokumentów."""
     path = "/api/v2/billing"
+    tags = ["Finance"]
 
     @get("/estimate")
     async def estimate(

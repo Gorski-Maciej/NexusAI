@@ -10,6 +10,7 @@ class VersionController(Controller):
     """API version information endpoint."""
 
     path = "/api/version"
+    tags = ["System"]
 
     @get("/")
     async def get_version(self) -> dict[str, Any]:

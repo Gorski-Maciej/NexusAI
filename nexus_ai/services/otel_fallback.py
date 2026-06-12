@@ -4,7 +4,8 @@ from __future__ import annotations
 import os
 from collections.abc import Iterator
 from contextlib import contextmanager
-from dataclasses import asdict, dataclass
+from msgspec import Struct
+from msgspec.structs import asdict
 from pathlib import Path
 from typing import Any
 
@@ -12,15 +13,12 @@ import pendulum
 
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
 
-
-@dataclass(slots=True)
-class BufferedSpan:
+class BufferedSpan(Struct):
     trace_id: str
     name: str
     start_ts: str
     end_ts: str
     attributes: dict[str, Any]
-
 
 class FileSpanBuffer:
     def __init__(self, file_path: Path | str = "app_data/otel_spans_buffer.jsonl", max_records: int = 10_000, max_bytes: int = 10 * 1024 * 1024) -> None:
@@ -67,7 +65,7 @@ class FileSpanBuffer:
         span = BufferedSpan(trace_id=trace_id, name=name, start_ts=start_ts.in_tz("UTC").isoformat(), end_ts=end_ts.in_tz("UTC").isoformat(), attributes=attributes or {})
         with self._file_lock():
             with self.file_path.open("a", encoding="utf-8") as fp:
-                fp.write(msgspec_dumps(asdict(span), ensure_ascii=False) + "\n")
+                fp.write(msgspec_dumps(msgspec.structs.asdict(span), ensure_ascii=False) + "\n")
             self._enforce_retention_locked()
 
     def read_all(self) -> list[dict[str, Any]]:

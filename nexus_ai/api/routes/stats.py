@@ -9,6 +9,7 @@ from litestar import Controller, get
 class StatsController(Controller):
     """Statistics and metrics API."""
     path = "/api/v1/stats"
+    tags = ["Analytics"]
 
     @get("/processing")
     async def get_processing_stats(self) -> dict[str, Any]:

@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import re
+
 from litestar import Litestar
 from litestar.config.cors import CORSConfig
+from litestar.config.csrf import CSRFConfig
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.plugins import SwaggerRenderPlugin
 
@@ -17,7 +20,6 @@ from nexus_ai.api.exceptions import global_exception_handler
 from nexus_ai.api.metrics_middleware import MetricsMiddleware
 from nexus_ai.api.middleware import (
     CorrelationAndDeprecationMiddleware,
-    CSRFProtectionMiddleware,
     UploadSizeGuardMiddleware,
 )
 from nexus_ai.api.rate_limit import SimpleRateLimitMiddleware
@@ -119,8 +121,20 @@ def create_app() -> Litestar:
             "buffer": provide_shared_image_buffer,
         },
         exception_handlers={Exception: global_exception_handler},
-        middleware=[UploadSizeGuardMiddleware, SimpleRateLimitMiddleware, CSRFProtectionMiddleware, CorrelationAndDeprecationMiddleware, MetricsMiddleware],
+        middleware=[UploadSizeGuardMiddleware, SimpleRateLimitMiddleware, CorrelationAndDeprecationMiddleware, MetricsMiddleware],
         cors_config=CORSConfig(allow_origins=config.cors_origins, allow_methods=["*"], allow_headers=["*"], allow_credentials=cors_allow_credentials),
+        csrf_config=CSRFConfig(
+            secret=config.jwt_secret or "dev-csrf-secret",
+            cookie_name="csrf_token",
+            header_name="X-CSRF-Token",
+            safe_methods={"GET", "HEAD", "OPTIONS", "TRACE"},
+            exclude=[
+                # Wszystkie endpointy /api/auth/* (rejestracja, logowanie, refresh, itp.)
+                re.compile(r"^/api/auth/"),
+                # Wszystkie endpointy /health
+                re.compile(r"/health"),
+            ],
+        ) if config.csrf_enabled else None,
         # OpenAPI/Swagger wyłączone w produkcji zgodnie z aa3fvcx.txt (Punkt 3).
         # W trybie desktopowym (Flet) Swagger UI jest zbędny — oszczędza RAM i czas startu.
         # Import SwaggerRenderPlugin na górze pliku jest bezpieczny (import klasy = 0 kosztu).

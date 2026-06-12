@@ -1,7 +1,7 @@
 """Domain error taxonomy + HTTP JSON envelope."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 
 from litestar.connection import Request
 from litestar.exceptions import HTTPException
@@ -10,39 +10,31 @@ from structlog import get_logger
 
 logger = get_logger("nexus.api.exceptions")
 
-
-@dataclass(slots=True)
-class DomainError(Exception):
+class DomainError(Exception, Struct):
     code: str
     message: str
     category: str
     status_code: int = 400
 
-
 class ValidationDomainError(DomainError):
     def __init__(self, message: str) -> None:
         super().__init__(code="VALIDATION_ERROR", message=message, category="validation", status_code=422)
-
 
 class IntegrationDomainError(DomainError):
     def __init__(self, message: str) -> None:
         super().__init__(code="INTEGRATION_ERROR", message=message, category="integration", status_code=502)
 
-
 class TimeoutDomainError(DomainError):
     def __init__(self, message: str) -> None:
         super().__init__(code="TIMEOUT", message=message, category="timeout", status_code=504)
-
 
 class BusinessRuleDomainError(DomainError):
     def __init__(self, message: str) -> None:
         super().__init__(code="BUSINESS_RULE", message=message, category="business", status_code=409)
 
-
 class SecurityDomainError(DomainError):
     def __init__(self, message: str) -> None:
         super().__init__(code="SECURITY_ERROR", message=message, category="security", status_code=401)
-
 
 # ── Business exception classes ───────────────────────────────────────────────
 
@@ -56,7 +48,6 @@ class InvoiceNotFoundError(DomainError):
             status_code=404,
         )
 
-
 class ContractorNotFoundError(DomainError):
     """Raised when a contractor is not found."""
     def __init__(self, contractor_id: str) -> None:
@@ -66,7 +57,6 @@ class ContractorNotFoundError(DomainError):
             category="business",
             status_code=404,
         )
-
 
 class CompanyNotFoundError(DomainError):
     """Raised when a company is not found."""
@@ -78,7 +68,6 @@ class CompanyNotFoundError(DomainError):
             status_code=404,
         )
 
-
 class InsufficientPermissionsError(DomainError):
     """Raised when a user lacks the required permission."""
     def __init__(self, permission: str) -> None:
@@ -88,7 +77,6 @@ class InsufficientPermissionsError(DomainError):
             category="security",
             status_code=403,
         )
-
 
 class KSeFConnectionError(DomainError):
     """Raised when connection to KSeF fails."""
@@ -100,7 +88,6 @@ class KSeFConnectionError(DomainError):
             status_code=503,
         )
 
-
 class RateLimitExceededError(DomainError):
     """Raised when rate limit is exceeded."""
     def __init__(self, retry_after: int = 60) -> None:
@@ -111,7 +98,6 @@ class RateLimitExceededError(DomainError):
             status_code=429,
         )
 
-
 class DuplicateResourceError(DomainError):
     """Raised when trying to create a resource that already exists."""
     def __init__(self, resource: str, identifier: str) -> None:
@@ -121,7 +107,6 @@ class DuplicateResourceError(DomainError):
             category="validation",
             status_code=409,
         )
-
 
 # ── Error envelope ───────────────────────────────────────────────────────────
 
@@ -146,7 +131,6 @@ def _error_envelope(
         },
         status_code=status_code,
     )
-
 
 def global_exception_handler(request: Request, exc: Exception) -> Response:
     if isinstance(exc, DomainError):

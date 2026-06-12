@@ -1,21 +1,18 @@
 from __future__ import annotations
 
 import anyio
-from dataclasses import dataclass
+from msgspec import Struct
 
 from nexus_ai.core.cache import get_cache
 from nexus_ai.db.analytics import DuckDBManager
 
-
-@dataclass(slots=True)
-class VendorMetric:
+class VendorMetric(Struct):
     nip: str
     vendor_name: str
     avg_payment_delay: float
     price_volatility_index: float
     total_volume_ytd: float
     reliability_score: float
-
 
 class VendorAnalyst:
     """Background analytical engine for local-first vendor intelligence.

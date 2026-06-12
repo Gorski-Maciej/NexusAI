@@ -341,77 +341,79 @@ class AppConfig(Struct, kw_only=True):
     """Centralized application settings registry for all environments.
 
     msgspec.Struct — lżejszy i szybszy niż dataclass.
-    Wczytuje wartości z os.environ (wcześniej załadowane z TOML lub legacy .env).
+    Wczytuje wartości BEZPOŚREDNIO z pliku TOML (przez msgspec.toml.decode),
+    a nie przez os.environ. Zmienne środowiskowe mają wyższy priorytet niż TOML,
+    co pozwala Docker/K8s na runtime overrides.
 
     Uwaga: msgspec.Struct nie wywołuje automatycznie ``__post_init__``.
     Użyj ``AppConfig.create()`` która woła walidację po inicjalizacji.
     """
 
     # ── Core ──
-    environment: str = os.getenv("NEXUS_ENV", "dev")
-    base_dir: Path = Path(os.getenv("NEXUS_BASE_DIR", Path.cwd().as_posix()))
+    environment: str = "dev"
+    base_dir: str = "."
 
     # ── JWT configuration ──
-    jwt_expiration_seconds: int = int(os.getenv("NEXUS_JWT_EXPIRATION_SECONDS", "900"))
-    refresh_token_days: int = int(os.getenv("NEXUS_REFRESH_TOKEN_DAYS", "30"))
-    jwt_issuer: str = os.getenv("NEXUS_JWT_ISSUER", "nexus-ai")
-    jwt_audience: str = os.getenv("NEXUS_JWT_AUDIENCE", "nexus-api")
+    jwt_expiration_seconds: int = 900
+    refresh_token_days: int = 30
+    jwt_issuer: str = "nexus-ai"
+    jwt_audience: str = "nexus-api"
 
     # ── CSRF ──
-    csrf_enabled: bool = os.getenv("NEXUS_CSRF_ENABLED", "1") == "1"
+    csrf_enabled: bool = True
 
     # ── Connection pool limits ──
-    db_pool_size: int = int(os.getenv("NEXUS_DB_POOL_SIZE", "5"))
-    db_pool_overflow: int = int(os.getenv("NEXUS_DB_POOL_OVERFLOW", "10"))
-    nats_max_reconnect: int = int(os.getenv("NEXUS_NATS_MAX_RECONNECT", "10"))
-    nats_reconnect_delay_seconds: int = int(os.getenv("NEXUS_NATS_RECONNECT_DELAY", "2"))
+    db_pool_size: int = 5
+    db_pool_overflow: int = 10
+    nats_max_reconnect: int = 10
+    nats_reconnect_delay_seconds: int = 2
 
     # ── Retry policy defaults (stamina) ──
-    max_task_retries: int = int(os.getenv("NEXUS_MAX_TASK_RETRIES", "3"))
-    retry_backoff_base_seconds: float = float(os.getenv("NEXUS_RETRY_BACKOFF_BASE", "1.0"))
-    retry_backoff_max_seconds: float = float(os.getenv("NEXUS_RETRY_BACKOFF_MAX", "60.0"))
+    max_task_retries: int = 3
+    retry_backoff_base_seconds: float = 1.0
+    retry_backoff_max_seconds: float = 60.0
 
     # ── Database ──
-    sqlite_file_name: str = os.getenv("NEXUS_SQLITE_FILE", "app_data/databases/nexus_oltp.db")
-    duckdb_file_name: str = os.getenv("NEXUS_DUCKDB_FILE", "app_data/databases/nexus_olap.duckdb")
-    storage_dir_name: str = os.getenv("NEXUS_STORAGE_DIR", "app_data/uploads")
-    idempotency_db_name: str = os.getenv("NEXUS_IDEMPOTENCY_DB", "app_data/databases/idempotency.sqlite")
-    debug: bool = os.getenv("NEXUS_DEBUG", "0") == "1"
-    sqlcipher_key_env: str = os.getenv("NEXUS_SQLCIPHER_KEY_ENV", "NEXUS_SQLCIPHER_KEY")
+    sqlite_file_name: str = "app_data/databases/nexus_oltp.db"
+    duckdb_file_name: str = "app_data/databases/nexus_olap.duckdb"
+    storage_dir_name: str = "app_data/uploads"
+    idempotency_db_name: str = "app_data/databases/idempotency.sqlite"
+    debug: bool = False
+    sqlcipher_key_env: str = "NEXUS_SQLCIPHER_KEY"
 
-    jwt_secret: str = os.getenv("NEXUS_JWT_SECRET", "")
-    encryption_key: str = os.getenv("NEXUS_ENCRYPTION_KEY", "")
+    jwt_secret: str = ""
+    encryption_key: str = ""
 
-    duckdb_memory_limit: str = os.getenv("NEXUS_DUCKDB_MEMORY_LIMIT", "512MB")
-    duckdb_threads: int = int(os.getenv("NEXUS_DUCKDB_THREADS", "2"))
-    cors_origins_raw: str = os.getenv("NEXUS_CORS_ORIGINS", "*")
-    max_invoice_upload_mb: int = int(os.getenv("NEXUS_MAX_INVOICE_UPLOAD_MB", "50"))
-    max_attachment_upload_mb: int = int(os.getenv("NEXUS_MAX_ATTACHMENT_UPLOAD_MB", "500"))
-    dpo_alert_webhook: str = os.getenv("NEXUS_DPO_ALERT_WEBHOOK", "").strip()
-    outbox_replay_limit: int = int(os.getenv("NEXUS_OUTBOX_REPLAY_LIMIT", "100"))
-    migration_baseline_name: str = os.getenv("NEXUS_MIGRATION_BASELINE_FILE", "migration_rowcount_baseline.json")
-    migration_checksum_baseline_name: str = os.getenv("NEXUS_MIGRATION_CHECKSUM_BASELINE_FILE", "migration_checksum_baseline.json")
+    duckdb_memory_limit: str = "512MB"
+    duckdb_threads: int = 2
+    cors_origins_raw: str = "*"
+    max_invoice_upload_mb: int = 50
+    max_attachment_upload_mb: int = 500
+    dpo_alert_webhook: str = ""
+    outbox_replay_limit: int = 100
+    migration_baseline_name: str = "migration_rowcount_baseline.json"
+    migration_checksum_baseline_name: str = "migration_checksum_baseline.json"
 
     # ── Decision thresholds ──
-    autopilot_auto_post_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_AUTO_POST", "0.92"))
-    autopilot_suggest_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_SUGGEST", "0.75"))
-    autopilot_ask_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_ASK", "0.50"))
+    autopilot_auto_post_threshold: float = 0.92
+    autopilot_suggest_threshold: float = 0.75
+    autopilot_ask_threshold: float = 0.50
 
     # ── Adaptation ──
-    autopilot_adaptation_enabled: bool = os.getenv("NEXUS_AUTOPILOT_ADAPTATION", "1") == "1"
-    autopilot_adaptation_learning_rate: float = float(os.getenv("NEXUS_AUTOPILOT_LEARNING_RATE", "0.05"))
-    autopilot_low_amount_threshold: float = float(os.getenv("NEXUS_AUTOPILOT_LOW_AMOUNT", "500.0"))
+    autopilot_adaptation_enabled: bool = True
+    autopilot_adaptation_learning_rate: float = 0.05
+    autopilot_low_amount_threshold: float = 500.0
 
     # ── Rules ──
-    rules_max_invoice_amount: float = float(os.getenv("NEXUS_RULES_MAX_AMOUNT", "100000.0"))
-    rules_require_nip_validation: bool = os.getenv("NEXUS_RULES_REQUIRE_NIP", "1") == "1"
-    analytics_anomaly_threshold: float = float(os.getenv("NEXUS_ANALYTICS_ANOMALY_THRESHOLD", "2.0"))
+    rules_max_invoice_amount: float = 100000.0
+    rules_require_nip_validation: bool = True
+    analytics_anomaly_threshold: float = 2.0
 
     # ── NATS ──
-    nats_url: str = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
+    nats_url: str = "nats://localhost:4222"
 
     # ── Timeouts ──
-    decision_timeout_seconds: int = int(os.getenv("NEXUS_DECISION_TIMEOUT", "60"))
+    decision_timeout_seconds: int = 60
 
     # ── Computed properties (as methods for Struct compatibility) ──
 
@@ -419,16 +421,238 @@ class AppConfig(Struct, kw_only=True):
     def autopilot_vendor_alpha_proximity_min(self) -> int:
         return int(os.getenv("NEXUS_AUTOPILOT_VENDOR_ALPHA_MIN", "3"))
 
+    # ── TOML ↔ env var mapping ──
+
+    _ENV_MAP: dict[str, str] = {
+        "environment": "NEXUS_ENV",
+        "base_dir": "NEXUS_BASE_DIR",
+        "jwt_expiration_seconds": "NEXUS_JWT_EXPIRATION_SECONDS",
+        "refresh_token_days": "NEXUS_REFRESH_TOKEN_DAYS",
+        "jwt_issuer": "NEXUS_JWT_ISSUER",
+        "jwt_audience": "NEXUS_JWT_AUDIENCE",
+        "csrf_enabled": "NEXUS_CSRF_ENABLED",
+        "db_pool_size": "NEXUS_DB_POOL_SIZE",
+        "db_pool_overflow": "NEXUS_DB_POOL_OVERFLOW",
+        "nats_max_reconnect": "NEXUS_NATS_MAX_RECONNECT",
+        "nats_reconnect_delay_seconds": "NEXUS_NATS_RECONNECT_DELAY",
+        "max_task_retries": "NEXUS_MAX_TASK_RETRIES",
+        "retry_backoff_base_seconds": "NEXUS_RETRY_BACKOFF_BASE",
+        "retry_backoff_max_seconds": "NEXUS_RETRY_BACKOFF_MAX",
+        "sqlite_file_name": "NEXUS_SQLITE_FILE",
+        "duckdb_file_name": "NEXUS_DUCKDB_FILE",
+        "storage_dir_name": "NEXUS_STORAGE_DIR",
+        "idempotency_db_name": "NEXUS_IDEMPOTENCY_DB",
+        "debug": "NEXUS_DEBUG",
+        "sqlcipher_key_env": "NEXUS_SQLCIPHER_KEY_ENV",
+        "jwt_secret": "NEXUS_JWT_SECRET",
+        "encryption_key": "NEXUS_ENCRYPTION_KEY",
+        "duckdb_memory_limit": "NEXUS_DUCKDB_MEMORY_LIMIT",
+        "duckdb_threads": "NEXUS_DUCKDB_THREADS",
+        "cors_origins_raw": "NEXUS_CORS_ORIGINS",
+        "max_invoice_upload_mb": "NEXUS_MAX_INVOICE_UPLOAD_MB",
+        "max_attachment_upload_mb": "NEXUS_MAX_ATTACHMENT_UPLOAD_MB",
+        "dpo_alert_webhook": "NEXUS_DPO_ALERT_WEBHOOK",
+        "outbox_replay_limit": "NEXUS_OUTBOX_REPLAY_LIMIT",
+        "migration_baseline_name": "NEXUS_MIGRATION_BASELINE_FILE",
+        "migration_checksum_baseline_name": "NEXUS_MIGRATION_CHECKSUM_BASELINE_FILE",
+        "autopilot_auto_post_threshold": "NEXUS_AUTOPILOT_AUTO_POST",
+        "autopilot_suggest_threshold": "NEXUS_AUTOPILOT_SUGGEST",
+        "autopilot_ask_threshold": "NEXUS_AUTOPILOT_ASK",
+        "autopilot_adaptation_enabled": "NEXUS_AUTOPILOT_ADAPTATION",
+        "autopilot_adaptation_learning_rate": "NEXUS_AUTOPILOT_LEARNING_RATE",
+        "autopilot_low_amount_threshold": "NEXUS_AUTOPILOT_LOW_AMOUNT",
+        "rules_max_invoice_amount": "NEXUS_RULES_MAX_AMOUNT",
+        "rules_require_nip_validation": "NEXUS_RULES_REQUIRE_NIP",
+        "analytics_anomaly_threshold": "NEXUS_ANALYTICS_ANOMALY_THRESHOLD",
+        "nats_url": "NEXUS_NATS_URL",
+        "decision_timeout_seconds": "NEXUS_DECISION_TIMEOUT",
+    }
+
+    # ── TOML field → section.key mapping ──
+    # Mapuje nazwy pól AppConfig na ścieżki w strukturze TOML
+    _TOML_MAP: dict[str, str] = {
+        "environment": "app.environment",
+        "base_dir": "app.base_dir",
+        "jwt_expiration_seconds": "app.jwt_expiration_seconds",
+        "refresh_token_days": "app.refresh_token_days",
+        "jwt_issuer": "app.jwt_issuer",
+        "jwt_audience": "app.jwt_audience",
+        "csrf_enabled": "app.csrf_enabled",
+        "db_pool_size": "app.db_pool_size",
+        "db_pool_overflow": "app.db_pool_overflow",
+        "nats_max_reconnect": "app.nats_max_reconnect",
+        "nats_reconnect_delay_seconds": "app.nats_reconnect_delay_seconds",
+        "max_task_retries": "app.max_task_retries",
+        "retry_backoff_base_seconds": "app.retry_backoff_base_seconds",
+        "retry_backoff_max_seconds": "app.retry_backoff_max_seconds",
+        "sqlite_file_name": "app.sqlite_file",
+        "duckdb_file_name": "app.duckdb_file",
+        "storage_dir_name": "app.storage_dir",
+        "idempotency_db_name": "app.idempotency_db",
+        "debug": "app.debug",
+        "sqlcipher_key_env": "app.sqlcipher_key_env",
+        "duckdb_memory_limit": "app.duckdb_memory_limit",
+        "duckdb_threads": "app.duckdb_threads",
+        "cors_origins_raw": "app.cors_origins",
+        "max_invoice_upload_mb": "app.max_invoice_upload_mb",
+        "max_attachment_upload_mb": "app.max_attachment_upload_mb",
+        "dpo_alert_webhook": "integrations.dpo_alert_webhook",
+        "outbox_replay_limit": "app.outbox_replay_limit",
+        "migration_baseline_name": "app.migration_baseline_file",
+        "migration_checksum_baseline_name": "app.migration_checksum_baseline_file",
+        "autopilot_auto_post_threshold": "app.autopilot_auto_post_threshold",
+        "autopilot_suggest_threshold": "app.autopilot_suggest_threshold",
+        "autopilot_ask_threshold": "app.autopilot_ask_threshold",
+        "autopilot_adaptation_enabled": "app.autopilot_adaptation_enabled",
+        "autopilot_adaptation_learning_rate": "app.autopilot_adaptation_learning_rate",
+        "autopilot_low_amount_threshold": "app.autopilot_low_amount_threshold",
+        "rules_max_invoice_amount": "app.rules_max_invoice_amount",
+        "rules_require_nip_validation": "app.rules_require_nip_validation",
+        "analytics_anomaly_threshold": "app.analytics_anomaly_threshold",
+        "nats_url": "nats.url",
+        "decision_timeout_seconds": "app.decision_timeout_seconds",
+    }
+
+    @classmethod
+    def _load_toml_file(cls, env: str | None = None) -> dict[str, Any]:
+        """Wczytaj plik TOML dla danego środowiska.
+
+        Args:
+            env: Nazwa środowiska ("dev", "stage", "prod").
+                 Domyślnie z NEXUS_ENV lub "dev".
+
+        Returns:
+            Sparsowany słownik TOML.
+        """
+        if env is None:
+            env = os.getenv("NEXUS_ENV", "dev").lower().strip()
+        toml_path = ENV_CONFIG_DIR / f"{env}.toml"
+        if not toml_path.exists():
+            logger.warning("[Config] TOML file not found: %s — using defaults", toml_path)
+            return {}
+        try:
+            with open(toml_path, "rb") as f:
+                data: dict[str, Any] = toml.decode(f.read())
+            logger.info("[Config] Loaded TOML: %s (%d sections)", toml_path.name, len(data))
+            return data
+        except Exception as exc:
+            logger.warning("[Config] Failed to load %s: %s — using defaults", toml_path, exc)
+            return {}
+
+    @classmethod
+    def _resolve_field_value(
+        cls,
+        field_name: str,
+        toml_data: dict[str, Any],
+    ) -> Any | None:
+        """Rozwiąż wartość pola: env var > TOML > None (użyj defaultu Structu).
+
+        Args:
+            field_name: Nazwa pola w AppConfig.
+            toml_data: Sparsowany słownik TOML.
+
+        Returns:
+            Wartość lub None (oznacza "użyj defaultu z klasy").
+        """
+        # 1. Sprawdź zmienną środowiskową
+        env_key = cls._ENV_MAP.get(field_name)
+        if env_key and env_key in os.environ:
+            raw = os.environ[env_key]
+            field_type = cls._get_field_type(field_name)
+            return cls._cast(raw, field_type)
+
+        # 2. Sprawdź TOML
+        toml_path = cls._TOML_MAP.get(field_name)
+        if toml_path and toml_data:
+            parts = toml_path.split(".")
+            val: Any = toml_data
+            for part in parts:
+                if isinstance(val, dict):
+                    val = val.get(part)
+                else:
+                    val = None
+                    break
+            if val is not None:
+                return val
+
+        # 3. Ani env, ani TOML — użyj defaultu zdefiniowanego w klasie
+        return None
+
+    @classmethod
+    def _get_field_type(cls, field_name: str) -> type:
+        """Pobierz typ pola Struct po nazwie.
+
+        msgspec.Struct.__struct_fields__ to krotka ``msgspec.inspect.Field``,
+        indeksowana pozycyjnie — używamy pętli zamiast ``__struct_fields__[name]``.
+
+        Args:
+            field_name: Nazwa pola.
+
+        Returns:
+            Typ pola (domyślnie ``str`` jeśli nie znaleziono).
+        """
+        for f in cls.__struct_fields__:
+            if f.name == field_name:
+                return f.type
+        return str
+
+    @staticmethod
+    def _cast(raw: str, target_type: type) -> Any:
+        """Rzutuj string na docelowy typ.
+
+        Obsługuje: bool, int, float, Path, str (domyślnie).
+        """
+        if target_type is bool:
+            return raw.lower() in ("1", "true", "yes")
+        if target_type is int:
+            return int(raw)
+        if target_type is float:
+            return float(raw)
+        if target_type is str:
+            return raw
+        if target_type is Path:
+            return Path(raw)
+        return raw
+
+    @classmethod
+    def from_toml(cls, env: str | None = None) -> AppConfig:
+        """Utwórz AppConfig z bezpośrednim parsowaniem TOML.
+
+        Priority: env var > TOML value > hardcoded Struct default.
+
+        Args:
+            env: Nazwa środowiska ("dev", "stage", "prod").
+
+        Returns:
+            Zwalidowana instancja AppConfig.
+        """
+        if env is None:
+            env = os.getenv("NEXUS_ENV", "dev").lower().strip()
+
+        toml_data = cls._load_toml_file(env)
+        kwargs: dict[str, Any] = {}
+
+        for field_name in cls.__struct_fields__:
+            value = cls._resolve_field_value(field_name, toml_data)
+            if value is not None:
+                kwargs[field_name] = value
+
+        # env i base_dir wymagają specjalnego traktowania
+        if "environment" not in kwargs:
+            kwargs["environment"] = env
+
+        instance = cls(**kwargs)
+        instance.validate()
+        return instance
+
     @classmethod
     def create(cls) -> AppConfig:
         """Create AppConfig instance and run post-init validation.
 
-        Zastępuje ``AppConfig()`` — msgspec.Struct nie woła __post_init__
-        automatycznie, więc ta metoda zapewnia walidację.
+        Od Fazy 2: używa ``from_toml()`` zamiast ``os.environ``.
+        Zachowane dla kompatybilności wstecznej.
         """
-        instance = cls()
-        instance.validate()
-        return instance
+        return cls.from_toml()
 
     def validate(self) -> None:
         """Validate config after initialization. Call after creating instance."""

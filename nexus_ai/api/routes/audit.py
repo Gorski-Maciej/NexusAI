@@ -30,6 +30,7 @@ class AuditController(Controller):
     """Audit explainability endpoints — cryptographic decision trail."""
 
     path = "/api/v2/audit"
+    tags = ["Audit"]
 
     @get("/tax-decision/{transaction_id:str}", guards=[requires_permission("audit:view")])
     async def explain_tax_decision(

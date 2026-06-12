@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session
 class HealthController(Controller):
     """Health check and status endpoints."""
     path = "/api/v1/health"
+    tags = ["Health"]
 
     @get("")
     async def health_check(self) -> dict[str, str]:
@@ -262,3 +263,4 @@ class HealthControllerV2(HealthController):
     """Health endpoints in v2 namespace."""
 
     path = "/api/v2/health"
+    tags = ["Health"]

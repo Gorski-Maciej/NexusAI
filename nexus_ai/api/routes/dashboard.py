@@ -14,6 +14,7 @@ class DashboardController(Controller):
     """Dashboard endpoints for the daily briefing and summary stats."""
 
     path = "/api/v2/dashboard"
+    tags = ["Dashboard"]
 
     @get("/briefing")
     async def get_daily_briefing(self, request: Request, config: AppConfig) -> dict[str, Any]:

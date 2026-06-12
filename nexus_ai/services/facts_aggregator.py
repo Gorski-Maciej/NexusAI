@@ -26,7 +26,7 @@ Usage:
 from __future__ import annotations
 
 import anyio
-from dataclasses import dataclass, field
+from msgspec import Struct, field
 from typing import Any, Callable
 
 from sqlalchemy import select, text
@@ -35,7 +35,6 @@ from sqlalchemy.orm import Session
 from nexus_ai.core.cache import get_cache
 from nexus_ai.core.embeddings import EmbeddingService, get_embedding_service
 from nexus_ai.core.logger import get_logger
-
 
 # ── Globalny cache dla FactSheet (współdzielony między build() calls) ──
 _few_shot_nexus = get_cache(default_ttl=300)  # 5 min TTL dla przykładów few-shot
@@ -49,13 +48,11 @@ from nexus_ai.services.vendor_intelligence import VendorAnalyst
 
 logger = get_logger(__name__)
 
-
 # ---------------------------------------------------------------------------
 # FactSheet — struktura danych wyjściowych dla DecisionEngine
 # ---------------------------------------------------------------------------
 
-@dataclass(slots=True)
-class FactSheet:
+class FactSheet(Struct):
     """Ustrukturyzowany arkusz faktów zebranych przed decyzją.
 
     Zawiera dane ze wszystkich trzech baz, gotowe do wstrzyknięcia
@@ -509,7 +506,6 @@ class FactSheet:
 
         return result
 
-
 # ---------------------------------------------------------------------------
 # FactsAggregator — główna klasa
 # ---------------------------------------------------------------------------
@@ -582,8 +578,8 @@ class FactsAggregator:
             issue_date=str(invoice_data.get("issue_date", "") or invoice_data.get("date", "") or ""),
         )
 
-        # Uruchom wszystkie źródła równolegle
         # Uruchom wszystkie źródła równolegle przez TaskGroup
+        # Każdy worker zapisuje swój wynik do wspólnego słownika `results`
         async with anyio.create_task_group() as tg:
             results: dict[str, Any] = {}
 
@@ -621,12 +617,11 @@ class FactsAggregator:
             if self._decision_logger:
                 tg.start_soon(self._worker_fetch, "global_similar", sheet, results)
 
-        # Zbierz wyniki
+        # Zbierz wyniki (po zakończeniu TaskGroup — wszystkie workery skończone)
         source_status = {"sqlite": False, "duckdb": False, "vector_store": False}
 
-        for name, task in tasks.items():
+        for name, result in results.items():
             try:
-                result = await task
                 if name == "sqlite_contractor":
                     if result:
                         sheet.contractor_known = result.get("known", False)
@@ -858,7 +853,137 @@ class FactsAggregator:
         finally:
             session.close()
 
-    # ── sqlite-vec — podobieństwo semantyczne ─────────────────────
+    # ── Worker dispatcher (wywoływany z TaskGroup) ────────────────
+
+    async def _worker_fetch(
+        self,
+        name: str,
+        sheet: FactSheet,
+        results: dict[str, Any],
+    ) -> None:
+        """Dispatcher for parallel data fetching — wywoływany przez TaskGroup.
+
+        Każdy worker zapisuje swój wynik do `results[name]`.
+        Wyjątki są łapane i logowane — nie przerywają innych workerów.
+        """
+        try:
+            if name == "sqlite_contractor":
+                result = await self._fetch_contractor_data(sheet.contractor_nip)
+            elif name == "sqlite_recent":
+                result = await self._fetch_recent_invoices(sheet.contractor_nip)
+            elif name == "sqlite_corrections":
+                result = await self._fetch_user_corrections(sheet.contractor_nip)
+            elif name == "duckdb_trend":
+                result = await self._fetch_trust_score_trend()
+            elif name == "duckdb_correction_stats":
+                result = await self._fetch_correction_stats()
+            elif name == "duckdb_rules":
+                result = await self._fetch_active_rules(sheet.issue_date)
+            elif name == "vendor_intel":
+                result = await self._fetch_vendor_intelligence(sheet.contractor_nip)
+            elif name == "vector_similar":
+                result = await self._fetch_similar_invoices({
+                    "contractor_nip": sheet.contractor_nip,
+                    "amount_gross": sheet.amount_gross,
+                    "category": sheet.category,
+                    "invoice_id": sheet.invoice_id,
+                })
+            elif name == "tigerbeetle":
+                result = await self._fetch_ledger_history(sheet.contractor_nip, sheet.invoice_id)
+            elif name == "global_decisions":
+                result = await self._fetch_global_recent_decisions()
+            elif name == "global_similar":
+                result = await self._fetch_globally_similar_cases(
+                    category=sheet.category,
+                    amount_gross=sheet.amount_gross,
+                )
+            else:
+                logger.warning("[FactsAggregator] unknown worker name: %s", name)
+                return
+
+            results[name] = result
+
+        except Exception as exc:
+            logger.warning(
+                "[FactsAggregator] worker %s failed: %s", name, exc
+            )
+            results[name] = None
+
+    # ── DuckDB helpers (implementacje dla _worker_fetch) ────────────────
+
+    async def _fetch_trust_score_trend(self) -> dict[str, Any]:
+        """Pobierz trend trust score z DecisionLogger (DuckDB)."""
+        if self._decision_logger is None or not hasattr(self._decision_logger, 'get_trust_score_trend'):
+            return {}
+        try:
+            trend = self._decision_logger.get_trust_score_trend()
+            return trend or {}
+        except Exception as exc:
+            logger.warning("[FactsAggregator] trust score trend fetch failed: %s", exc)
+            return {}
+
+    async def _fetch_correction_stats(self) -> dict[str, Any]:
+        """Pobierz globalne statystyki korekt użytkownika."""
+        if self._decision_logger is None:
+            return {}
+        try:
+            stats = self._decision_logger.get_correction_stats()
+            return stats or {}
+        except Exception as exc:
+            logger.warning("[FactsAggregator] correction stats fetch failed: %s", exc)
+            return {}
+
+    async def _fetch_active_rules(self, issue_date: str) -> list[dict[str, Any]]:
+        """Pobierz aktywne reguły podatkowe z RuleStore."""
+        if self._rule_store is None:
+            return []
+        try:
+            rules = self._rule_store.get_active_rules(as_of=issue_date)
+            return rules or []
+        except Exception as exc:
+            logger.warning("[FactsAggregator] active rules fetch failed: %s", exc)
+            return []
+
+    async def _fetch_vendor_intelligence(self, nip: str) -> str:
+        """Pobierz vendor intelligence z VendorAnalyst."""
+        if self._vendor_analyst is None:
+            return ""
+        try:
+            intel = self._vendor_analyst.analyze(nip)
+            return str(intel) if intel else ""
+        except Exception as exc:
+            logger.warning("[FactsAggregator] vendor intelligence fetch failed: %s", exc)
+            return ""
+
+    async def _fetch_global_recent_decisions(self) -> list[dict[str, Any]]:
+        """Pobierz ostatnie globalne decyzje z DecisionLogger."""
+        if self._decision_logger is None or not hasattr(self._decision_logger, 'get_recent_decisions_global'):
+            return []
+        try:
+            decisions = self._decision_logger.get_recent_decisions_global(limit=5)
+            return decisions or []
+        except Exception as exc:
+            logger.warning("[FactsAggregator] global decisions fetch failed: %s", exc)
+            return []
+
+    async def _fetch_globally_similar_cases(
+        self,
+        category: str = "",
+        amount_gross: float = 0.0,
+    ) -> list[dict[str, Any]]:
+        """Pobierz globalnie podobne przypadki z DecisionLogger."""
+        if self._decision_logger is None or not hasattr(self._decision_logger, 'get_globally_similar_cases'):
+            return []
+        try:
+            cases = self._decision_logger.get_globally_similar_cases(
+                category=category,
+                amount=amount_gross,
+                limit=3,
+            )
+            return cases or []
+        except Exception as exc:
+            logger.warning("[FactsAggregator] globally similar cases fetch failed: %s", exc)
+            return []
 
     # ── sqlite-vec — podobieństwo semantyczne ─────────────────────
 
@@ -1143,11 +1268,9 @@ class FactsAggregator:
             )
             return {}
 
-
 # ── Factory ──────────────────────────────────────────────────────────────
 
 _default_aggregator: FactsAggregator | None = None
-
 
 def get_facts_aggregator(
     duckdb: DuckDBManager | None = None,

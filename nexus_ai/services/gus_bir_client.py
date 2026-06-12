@@ -27,7 +27,7 @@ from __future__ import annotations
 import html
 import os
 import re
-from dataclasses import dataclass, field
+from msgspec import Struct, field
 from typing import Any
 
 import httpx
@@ -53,9 +53,7 @@ SOAP_ENVELOPE = """<?xml version="1.0" encoding="UTF-8"?>
     </soap:Body>
 </soap:Envelope>"""
 
-
-@dataclass
-class GusBirResult:
+class GusBirResult(Struct):
     """Wynik wyszukiwania pojedynczej firmy w GUS BIR."""
     regon: str = ""
     nip: str = ""
@@ -71,7 +69,6 @@ class GusBirResult:
     status: str = "unknown"
     pkd_codes: list[dict[str, str]] = field(default_factory=list)
     legal_form: str = ""
-
 
 class GusBirClient:
     """SOAP client for GUS BIR (Baza Internetowa REGON).
@@ -378,7 +375,6 @@ class GusBirClient:
             result.pkd_codes.append({"code": code.strip(), "name": name.strip()})
 
         return result
-
 
 def _extract_tag(xml_text: str, tag: str) -> str:
     """Wyodrebnij zawartosc taga XML (z namespacem lub bez)."""

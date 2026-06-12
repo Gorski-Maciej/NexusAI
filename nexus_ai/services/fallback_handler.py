@@ -14,7 +14,7 @@ Zadania:
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass
+from msgspec import Struct
 from typing import Any
 
 import duckdb
@@ -24,7 +24,6 @@ from structlog import get_logger
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 logger = get_logger("nexus.fallback")
-
 
 # ── Schema ───────────────────────────────────────────────────────────────────
 
@@ -47,9 +46,7 @@ CREATE INDEX IF NOT EXISTS idx_fallback_tx
     ON fallback_events(transaction_id);
 """
 
-
-@dataclass
-class FallbackEvent:
+class FallbackEvent(Struct):
     """Incydent braku reguły.
 
     Attributes:
@@ -75,14 +72,11 @@ class FallbackEvent:
     resolved_at: str = ""
     resolution_note: str = ""
 
-
 def ensure_schema(conn: duckdb.DuckDBPyConnection) -> None:
     """Create fallback_events table if not present."""
     conn.execute(FALLBACK_EVENTS_SCHEMA)
 
-
 # ── Fallback Handler ────────────────────────────────────────────────────────
-
 
 class FallbackHandler:
     """Handler for no-matching-rule situations.

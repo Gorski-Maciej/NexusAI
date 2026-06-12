@@ -41,6 +41,7 @@ class DLQController(Controller):
 
     path = "/api/v1/system/dlq"
     guards = [admin_only_guard]
+    tags = ["Admin"]
 
     @get("/stats", guards=[requires_permission("admin:dlq")])
     async def dlq_stats(self, request: Request) -> dict:

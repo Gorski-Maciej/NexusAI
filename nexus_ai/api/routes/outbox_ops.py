@@ -26,6 +26,7 @@ class OutboxOpsController(Controller):
 
     path = "/api/v1/system/outbox"
     guards = [owner_only_guard]
+    tags = ["System"]
 
     # ── GET /stats — szczegółowe statystyki ─────────────────────────────
 

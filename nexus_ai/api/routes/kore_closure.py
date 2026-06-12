@@ -16,6 +16,7 @@ class KoreClosureController(Controller):
 
     path = "/api/v1/system/kore"
     guards = [owner_only_guard]
+    tags = ["Audit"]
 
     @get("/closure")
     async def closure_summary(self, request: Request) -> dict:

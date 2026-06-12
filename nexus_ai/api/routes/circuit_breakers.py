@@ -16,6 +16,7 @@ class CircuitBreakerController(Controller):
     """Resilience monitoring — stamina zastępuje custom CircuitBreaker."""
 
     path = "/api/v1/system/circuit-breakers"
+    tags = ["System"]
 
     @get("/")
     async def list_breakers(self, request: Request) -> dict[str, Any]:

@@ -3,7 +3,7 @@ from __future__ import annotations
 import io
 import time
 from collections import deque
-from dataclasses import dataclass, field
+from msgspec import Struct, field
 from threading import Lock
 
 try:
@@ -12,9 +12,7 @@ try:
 except ImportError:
     HAS_PIL = False
 
-
-@dataclass(slots=True)
-class SharedFrame:
+class SharedFrame(Struct):
     doc_id: str
     mime_type: str
     payload: bytes
@@ -23,7 +21,6 @@ class SharedFrame:
 
     def __post_init__(self) -> None:
         self.size_bytes = len(self.payload)
-
 
 class SharedImageBuffer:
     """In-memory frame buffer for live OCR previews with global memory limits and TTL.

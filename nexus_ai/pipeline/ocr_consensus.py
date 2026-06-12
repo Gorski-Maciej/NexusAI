@@ -13,7 +13,7 @@ szansę na identyczny błąd we wszystkich trzech.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from msgspec import Struct, field
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -23,26 +23,20 @@ from structlog import get_logger
 
 logger = get_logger("nexus.pipeline.ocr_consensus")
 
-
 class OCREngine(Enum):
     TESSERACT = "tesseract"
     PADDLE = "paddleocr"
     SURYA = "surya"
 
-
-@dataclass(slots=True)
-class OCRFieldResult:
+class OCRFieldResult(Struct):
     value: str | None
     confidence: float  # 0.0 - 1.0
     source: str
 
-
-@dataclass(slots=True)
-class OCRConsensusDecision:
+class OCRConsensusDecision(Struct):
     accepted: OCRFieldResult | None
     confidence_conflict: bool
     votes: list[OCRFieldResult] = field(default_factory=list)
-
 
 def decide_field_consensus(
     results: list[OCRFieldResult],
@@ -111,9 +105,7 @@ def decide_field_consensus(
         votes=results,
     )
 
-
 # ── Silniki OCR ─────────────────────────────────────────────────────────────
-
 
 class TesseractEngine:
     """Tesseract OCR — klasyczny silnik dla drukowanego tekstu."""
@@ -141,7 +133,6 @@ class TesseractEngine:
         except Exception as exc:
             logger.error("[OCR] Tesseract failed: %s", exc)
             return None
-
 
 class PaddleOCREngine:
     """PaddleOCR — deep learning OCR dla nietypowych czcionek."""
@@ -177,7 +168,6 @@ class PaddleOCREngine:
         except Exception as exc:
             logger.error("[OCR] PaddleOCR failed: %s", exc)
             return None
-
 
 class SuryaOCREngine:
     """Surya OCR — layout-aware OCR dla trudnych warunków."""
@@ -235,9 +225,7 @@ class SuryaOCREngine:
         mapping = {"pol": "pl", "eng": "en", "deu": "de"}
         return mapping.get(lang, "pl")
 
-
 # ── PDF → Image conversion ────────────────────────────────────────────────
-
 
 def pdf_to_images(pdf_path: Path, dpi: int = 300) -> list[Path]:
     """Convert PDF pages to images using PyMuPDF (fitz).
@@ -270,9 +258,7 @@ def pdf_to_images(pdf_path: Path, dpi: int = 300) -> list[Path]:
 
     return image_paths
 
-
 # ── Główna funkcja orchestrująca ─────────────────────────────────────────
-
 
 async def run_ocr_pipeline(
     file_path: Path,

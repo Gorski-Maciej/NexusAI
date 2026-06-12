@@ -1,16 +1,13 @@
-from dataclasses import dataclass
+from msgspec import Struct
 from pathlib import Path
 from threading import Lock
 from typing import Any
 
 import duckdb
 
-
-@dataclass(slots=True)
-class DuckDBLimits:
+class DuckDBLimits(Struct):
     memory_limit: str = "512MB"
     threads: int = 2
-
 
 class DuckDBManager:
     """Thread-safe DuckDB manager with native SQLite Zero-ETL attach.

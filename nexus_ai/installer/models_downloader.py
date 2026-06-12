@@ -16,7 +16,7 @@ import hashlib  # streaming SHA-256 for file verification (nexus_crypto doesn't 
 import sys
 
 import anyio
-from dataclasses import dataclass
+from msgspec import Struct
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -39,11 +39,9 @@ class ProgressCallback(Protocol):
         status: str,
     ) -> None: ...
 
-
 # ── Data types ──────────────────────────────────────────────────────────────
 
-@dataclass
-class ModelEntry:
+class ModelEntry(Struct):
     """A single model entry from the manifest."""
     key: str
     repo_id: str
@@ -53,16 +51,13 @@ class ModelEntry:
     size_mb: int
     required: bool
 
-
-@dataclass
-class DownloadResult:
+class DownloadResult(Struct):
     """Result of downloading a single model."""
     key: str
     success: bool
     error: str | None = None
     sha256_match: bool | None = None
     bytes_downloaded: int = 0
-
 
 # ── Manifest loader ─────────────────────────────────────────────────────────
 
@@ -110,7 +105,6 @@ def load_manifest(manifest_path: str | Path | None = None) -> list[ModelEntry]:
 
     return entries
 
-
 # ── SHA-256 verification ────────────────────────────────────────────────────
 
 def compute_sha256(filepath: Path) -> str:
@@ -124,7 +118,6 @@ def compute_sha256(filepath: Path) -> str:
             sha.update(chunk)
     return sha.hexdigest()
 
-
 def verify_file(filepath: Path, expected_hash: str) -> bool:
     """Verify a file's SHA-256 checksum. Returns True if match or no hash provided."""
     if not expected_hash:
@@ -134,7 +127,6 @@ def verify_file(filepath: Path, expected_hash: str) -> bool:
         return False
     actual = compute_sha256(filepath)
     return actual == expected_hash
-
 
 # ── HuggingFace download with resume ────────────────────────────────────────
 
@@ -229,13 +221,11 @@ async def download_file(
     except Exception as e:
         return False, f"Download failed: {e}"
 
-
 # ── HuggingFace file resolver ───────────────────────────────────────────────
 
 def _get_hf_download_url(repo_id: str, filename: str) -> str:
     """Construct HuggingFace download URL for a specific file in a repo."""
     return f"https://huggingface.co/{repo_id}/resolve/main/{filename}"
-
 
 # ── Main download orchestrator ──────────────────────────────────────────────
 
@@ -396,7 +386,6 @@ async def download_all_models(
             ))
 
     return results
-
 
 # ── First-run detection ─────────────────────────────────────────────────────
 

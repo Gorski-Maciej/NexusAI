@@ -26,6 +26,7 @@ class KsefExportController(Controller):
     """KSeF XML export endpoints."""
 
     path = "/api/v2/invoice"
+    tags = ["Invoices"]
 
     @get("/{invoice_id:str}/ksef", guards=[requires_permission("invoice:ksef")])
     async def download_ksef_xml(self, invoice_id: str) -> Response:

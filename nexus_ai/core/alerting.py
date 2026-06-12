@@ -16,14 +16,13 @@ Usage:
 from __future__ import annotations
 
 import shutil
-from dataclasses import dataclass, field
+from msgspec import Struct, field
 from pathlib import Path
 from typing import Any
 
 # ── Alert rule definitions ────────────────────────────────────────────────────
 
-@dataclass
-class PrometheusAlertRule:
+class PrometheusAlertRule(Struct):
     """A single Prometheus alerting rule."""
 
     name: str
@@ -48,7 +47,6 @@ class PrometheusAlertRule:
                 **self.annotations,
             },
         }
-
 
 # ── Built-in alert rules ─────────────────────────────────────────────────────
 
@@ -118,7 +116,6 @@ ALERT_RULES: list[PrometheusAlertRule] = [
     ),
 ]
 
-
 def generate_alert_rules_yaml() -> str:
     """Generate Prometheus alert rules YAML content.
 
@@ -139,9 +136,7 @@ def generate_alert_rules_yaml() -> str:
             lines.append(f"          {k}: {v}")
     return "\n".join(lines)
 
-
 # ── Programmatic health check functions ──────────────────────────────────────
-
 
 def check_high_error_rate(
     error_count_5xx: int,
@@ -174,7 +169,6 @@ def check_high_error_rate(
         "error_rate_pct": round(error_rate, 2),
         "threshold_pct": threshold_pct,
     }
-
 
 def check_disk_space(path: str | Path = "/", threshold_gb: float = 1.0) -> dict[str, Any]:
     """Check available disk space.

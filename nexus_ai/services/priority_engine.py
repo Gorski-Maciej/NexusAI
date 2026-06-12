@@ -17,14 +17,12 @@ Stateless: nie wymaga DuckDB, może być używany w każdym silniku reguł.
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from msgspec import Struct, field
 from typing import Any
 
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
-
-@dataclass(frozen=True)
-class PrioritizedRule:
+class PrioritizedRule(Struct, frozen=True):
     """Reguła z priorytetem, gotowa do ewaluacji.
 
     Attributes:
@@ -38,9 +36,7 @@ class PrioritizedRule:
     action_json: str
     priority: int
 
-
-@dataclass
-class MatchResult:
+class MatchResult(Struct):
     """Wynik dopasowania reguły.
 
     Attributes:
@@ -53,7 +49,6 @@ class MatchResult:
     verdict: dict[str, Any] = field(default_factory=dict)
     rule_id: str = ""
     priority: int = 0
-
 
 class PriorityEngine:
     """Priority Engine — ewaluacja reguł first-match-wins z priorytetami.

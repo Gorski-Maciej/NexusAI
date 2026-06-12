@@ -9,6 +9,7 @@ class FileController(Controller):
     Rozwiązanie 31: CSP sandbox dla ścieżki /files aby zapobiec wykonaniu złośliwych plików.
     """
     path = "/api/v1/files"
+    tags = ["Files"]
 
     @get("/{file_id:str}", media_type="application/json")
     async def get_file_info(self, file_id: str) -> Response:

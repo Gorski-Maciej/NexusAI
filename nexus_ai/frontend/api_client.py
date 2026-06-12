@@ -1,7 +1,7 @@
 """HTTP communication layer for local Litestar backend."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from decimal import Decimal
 from typing import Any
 from uuid import uuid4
@@ -10,7 +10,6 @@ import httpx
 import msgspec
 import pendulum
 from structlog import get_logger
-
 
 class InvoiceDTO(msgspec.Struct, kw_only=True):
     """Invoice structure consumed by frontend views."""
@@ -23,8 +22,7 @@ class InvoiceDTO(msgspec.Struct, kw_only=True):
     created_at: pendulum.DateTime
     pending: bool = False
 
-@dataclass(slots=True)
-class ApiConfig:
+class ApiConfig(Struct):
     """API runtime configuration from bootstrap handshake."""
     port: int
     token: str
@@ -160,8 +158,6 @@ class AsyncNexusApiClient:
         response.raise_for_status()
         return response.json()
 
-
-
     async def approve_bulk(self, invoice_ids: list[str]) -> bool:
         """Wysyła żądanie masowego zatwierdzenia faktur."""
         response = await self.client.post("/invoices/bulk-approve", json={"ids": invoice_ids})
@@ -182,7 +178,6 @@ class AsyncNexusApiClient:
     async def close(self):
         """Zamyka połączenie (ważne przy wyłączaniu aplikacji)."""
         await self.client.aclose()
-
 
 logger = get_logger("nexus.ui.api")
 
@@ -248,8 +243,6 @@ class NexusAPIClientUI:
             return response.json().get("count", 0)
         except Exception:
             return 0
-
-
 
     async def approve_bulk(self, invoice_ids: list[str]) -> bool:
         """UI helper for bulk invoice approval action."""

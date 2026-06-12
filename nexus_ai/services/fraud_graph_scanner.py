@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from typing import TYPE_CHECKING, Any
 
 import pendulum
@@ -35,16 +35,13 @@ except Exception:  # pragma: no cover - optional fallback when networkx is unava
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
 
-
-@dataclass(frozen=True)
-class FraudAlert:
+class FraudAlert(Struct, frozen=True):
     rule_code: str
     severity: str
     employee_id: str
     vendor_id: str
     shared_attribute: str
     shared_value: str
-
 
 class FraudGraphScanner:
     def __init__(self, duckdb: DuckDBManager):

@@ -17,6 +17,7 @@ from nexus_ai.core.saga import PersistedSagaStore
 from nexus_ai.core.secrets import LocalSecretsCache, OfflineFirstSecretResolver
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import consolidate_database, create_oltp_engine, create_session_factory
+from nexus_ai.core.config import AppConfig
 from nexus_ai.services.hot_reload import HotReloadListener
 from nexus_ai.services.migration_sanity import (
     run_migration_sanity_checks,
@@ -70,6 +71,13 @@ def _init_otel_metrics() -> None:
     logger.info("[METRICS] OpenTelemetry metrics initialized (see /metrics endpoint)")
 
 
+# ── SQLCipher engine helper ────────────────────────────────────────────────
+def _make_engine(config: AppConfig):
+    """Utwórz SQLAlchemy engine z jawnym kluczem SQLCipher."""
+    sqlcipher_key = os.getenv(config.sqlcipher_key_env, "").strip()
+    return create_oltp_engine(config, sqlcipher_key=sqlcipher_key or None)
+
+
 logger = get_logger("nexus.api.state")
 
 
@@ -116,20 +124,48 @@ def _resolve_startup_secret(config, key_name: str, env_var: str, default_value: 
     return resolved or default_value
 
 async def on_startup(app: Litestar) -> None:
-    """Inicjalizacja ciężkich zasobów przy starcie API."""
+    """Inicjalizacja ciężkich zasobów przy starcie API.
+
+    Fazowanie startu:
+      1. Opóźnialne: metryki OTel, cache ML, silnik DB
+      2. Wymagane: sesje, saga_store, schema
+      3. Opcjonalne: broker, DuckDB, outbox, hot-reload
+
+    Każda faza jest izolowana w try/except — awaria nie powoduje
+    całkowitego failure startu (chyba że ``environment in {"stage", "prod"}``
+    i faza krytyczna zawiedzie).
+    """
+
+    # ── Phase 0: Config + ML cache ───────────────────────────────────
     config = app.dependencies["config"]()
     app.state.ml_cache_env = _configure_ml_cache_directories(config.base_dir)
 
-    # Obszar 1: Inicjalizacja metryk OpenTelemetry (zastępuje prometheus_client)
-    _init_otel_metrics()
+    # ── Phase 1: OpenTelemetry metrics ───────────────────────────────
+    try:
+        _init_otel_metrics()
+    except Exception as exc:
+        logger.warning("[STARTUP] OTel metrics init failed (non-fatal): %s", exc)
 
-    # Inicjalizacja silnika bazy danych w stanie aplikacji
-    engine = create_oltp_engine(config)
-    app.state.db_engine = engine
-    app.state.db_session_factory = create_session_factory(engine)
-    app.state.shared_image_buffer = SharedImageBuffer(max_items=128)
-    app.state.saga_store = PersistedSagaStore(engine)
-    await app.state.saga_store.ensure_schema()
+    # ── Phase 2: Database engine + core services ─────────────────────
+    engine = None
+    try:
+        engine = _make_engine(config)
+        app.state.db_engine = engine
+        app.state.db_session_factory = create_session_factory(engine)
+        app.state.shared_image_buffer = SharedImageBuffer(max_items=128)
+        app.state.saga_store = PersistedSagaStore(engine)
+        await app.state.saga_store.ensure_schema()
+    except Exception as exc:
+        logger.critical("[STARTUP] Database engine init FAILED: %s", exc)
+        if config.environment in {"stage", "prod"}:
+            raise
+        app.state.db_engine = None
+        app.state.db_session_factory = None
+        if app.state.saga_store is not None:
+            try:
+                await app.state.saga_store.ensure_schema()
+            except Exception:
+                pass
     admin_username = os.getenv("NEXUS_ADMIN_USERNAME", "admin")
     admin_password = _resolve_startup_secret(config, key_name="admin_password", env_var="NEXUS_ADMIN_PASSWORD", default_value="admin")
     admin_password_hash = hash_password(admin_password)

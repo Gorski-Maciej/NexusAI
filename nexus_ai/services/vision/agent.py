@@ -8,13 +8,11 @@ Qwen2.5-VL (torch/transformers) usunięty — niepotrzebny w nowej architekturze
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from msgspec import Struct
 from pathlib import Path
 from typing import Any
 
-
-@dataclass(slots=True)
-class VisionExtraction:
+class VisionExtraction(Struct):
     """Wynik ekstrakcji wizualnej z faktury."""
     vendor_nip: str | None
     total_gross: float | None
@@ -24,7 +22,6 @@ class VisionExtraction:
     handwritten_notes_summary: str
     source: str = "ocr-fallback"
 
-
 def _to_float(value: Any) -> float | None:
     if value is None:
         return None
@@ -32,7 +29,6 @@ def _to_float(value: Any) -> float | None:
         return float(str(value).replace(" ", "").replace(",", "."))
     except ValueError:
         return None
-
 
 class VisionAgent:
     """Ekstrakcja wizualna z obrazów faktur przez heurystyki OCR.

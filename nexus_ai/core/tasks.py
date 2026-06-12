@@ -5,7 +5,7 @@ import os
 import uuid
 
 import anyio
-from dataclasses import dataclass
+from msgspec import Struct
 from pathlib import Path
 from typing import Any
 
@@ -21,7 +21,6 @@ from nexus_ai.core.backup import BackupManager
 from nexus_ai.core.cache import get_cache
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
-
 
 class TimedModelCache:
     """Cache instancji modeli ML z TTL, wsparty przez NexusCache.
@@ -80,6 +79,16 @@ from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 from nexus_ai.services.vision.agent import VisionAgent
 from nexus_ai.services.fixed_assets import FixedAssetsService
 
+
+# ── SQLCipher engine helper ────────────────────────────────────────────────
+def _make_engine(config: AppConfig | None = None) -> Any:
+    """Utwórz SQLAlchemy engine z jawnym kluczem SQLCipher."""
+    if config is None:
+        config = AppConfig()
+    sqlcipher_key = os.getenv(config.sqlcipher_key_env, "").strip()
+    return create_oltp_engine(config, sqlcipher_key=sqlcipher_key or None)
+
+
 logger = get_logger()
 OCR_INFERENCE_SEMAPHORE = anyio.Semaphore(int(os.getenv("NEXUS_MAX_PARALLEL_OCR", "1")))
 OCR_TASK_TIMEOUT_SEC = int(os.getenv("NEXUS_OCR_TIMEOUT_SEC", "300"))
@@ -89,16 +98,13 @@ broker = PullBasedJetStreamBroker(servers=NATS_URL, queue="nexus-ai-workers")
 
 _MODEL_CACHE = TimedModelCache(ttl_seconds=int(os.getenv("NEXUS_MODEL_CACHE_TTL_SEC", "600")))
 
-
 async def _load_document_processor() -> DocumentProcessor:
     return await anyio.to_thread.run_sync(DocumentProcessor)
-
 
 async def _load_vision_agent() -> VisionAgent:
     return await anyio.to_thread.run_sync(VisionAgent)
 
-@dataclass(slots=True)
-class InvoiceEventPayload:
+class InvoiceEventPayload(Struct):
     """Canonical payload embedded in Outbox events."""
     invoice_id: str
     image_path: str
@@ -136,7 +142,6 @@ class InvoiceProcessingMachine:
     def current_state(self):
         return _StateProxy(self.STATES[self._state])
 
-
 class _StateProxy:
     """Lightweight proxy to mimic statemachine.State.id interface."""
     def __init__(self, state_id: str):
@@ -144,7 +149,6 @@ class _StateProxy:
 
     def __repr__(self):
         return f"State(id='{self.id}')"
-
 
 def pin_worker_cpu_affinity(reserve_core0: bool = True) -> None:
     """Pin worker process to non-UI CPU cores to protect Flet responsiveness."""
@@ -213,7 +217,7 @@ async def _startup(_state: Any) -> None:
 async def process_invoice_task() -> dict[str, str]:
     """Consume pending outbox event and process invoice OCR + workflow update."""
     config = AppConfig(base_dir=Path.cwd())
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
 
     with session_factory() as session:
@@ -296,7 +300,7 @@ async def process_invoice_task() -> dict[str, str]:
 async def store_active_learning_feedback(contractor_id: str, corrected_payload: dict[str, Any]) -> dict[str, str]:
     """Persist user corrections for active learning and preferred retrieval."""
     config = AppConfig(base_dir=Path.cwd())
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     serialized = msgspec_dumps(corrected_payload, ensure_ascii=False)
     vector = _simple_features(serialized)
@@ -340,7 +344,6 @@ async def scheduled_backup_task():
     manager = BackupManager(config)
     path = manager.create_encrypted_zip(config.encryption_key)
     logger.info(f"Backup wykonany pomyślnie: {path}")
-
 
 @broker.task(schedule=[{"cron": "55 23 28-31 * *"}], task_name="cron_post_depreciation")
 async def cron_post_depreciation() -> dict[str, int | str]:
@@ -404,7 +407,6 @@ async def invoice_reconciliation_loop():
         session.commit()
         await nc.close()
 
-
 class _DefaultDunningAIAgent:
     def generate_dunning_text(self, invoice_data: dict[str, Any], vendor_score: float, level: int) -> str:
         tone = "uprzejmy" if vendor_score >= 0.8 else "stanowczy"
@@ -414,14 +416,12 @@ class _DefaultDunningAIAgent:
             f"Zaległość: {invoice_data['days_overdue']} dni."
         )
 
-
 class _DefaultEmailProvider:
     def send(self, *, to_email: str, subject: str, body: str) -> bool:
         if not to_email:
             return False
         logger.info("[Dunning] Wysyłka email to=%s subject=%s", to_email, subject)
         return True
-
 
 @broker.task(task_name="run_daily_dunning_check", schedule=[{"cron": "0 9 * * *"}])
 async def run_daily_dunning_check() -> dict[str, int]:
@@ -435,7 +435,6 @@ async def run_daily_dunning_check() -> dict[str, int]:
     )
     return await engine.run_daily_dunning_check()
 
-
 @broker.task(task_name="execute_monthly_depreciation", schedule=[{"cron": "0 0 1 * *"}])
 async def execute_monthly_depreciation_task() -> dict[str, int]:
     """Posts due depreciation entries to TigerBeetle on the 1st day of each month."""
@@ -444,7 +443,6 @@ async def execute_monthly_depreciation_task() -> dict[str, int]:
     posted = await service.execute_monthly_depreciation()
     logger.info("[FixedAssets] Posted %s depreciation entries", posted)
     return {"posted": posted}
-
 
 @broker.on_event(TaskiqEvents.WORKER_SHUTDOWN)
 async def _shutdown(_state: Any) -> None:

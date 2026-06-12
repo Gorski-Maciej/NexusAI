@@ -16,7 +16,7 @@ Zastosowania:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from msgspec import Struct, field
 from typing import Any
 
 import pendulum
@@ -30,12 +30,9 @@ from nexus_ai.tax.rules import RuleEngine, ensure_tax_schemas
 
 logger = get_logger("nexus.replay")
 
-
 # ── Data structures ──────────────────────────────────────────────────────────
 
-
-@dataclass
-class ReplayResult:
+class ReplayResult(Struct):
     """Result of a single replay operation.
 
     Attributes:
@@ -57,7 +54,6 @@ class ReplayResult:
     def is_match(self) -> bool:
         return self.match and not self.error
 
-
 # ── Key fields for comparison ────────────────────────────────────────────────
 # Fields that must match exactly for a replay to succeed.
 
@@ -70,9 +66,7 @@ _COMPARISON_FIELDS = [
     "action",
 ]
 
-
 # ── Replay Engine ────────────────────────────────────────────────────────────
-
 
 class ReplayEngine:
     """Odtwarza decyzję podatkową dla historycznej faktury.
@@ -202,9 +196,7 @@ class ReplayEngine:
         )
         return results
 
-
 # ── Verdict comparison ───────────────────────────────────────────────────────
-
 
 def _compare_verdicts(
     original: dict[str, Any],

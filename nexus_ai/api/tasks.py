@@ -37,6 +37,7 @@ from nexus_ai.db.database import create_oltp_engine, create_session_factory
 from nexus_ai.pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
 from nexus_ai.services.accounting import AccountingService
 from nexus_ai.core.decision_engine import DecisionEngine, DecisionVerdict, classify_invoice, calculate_trust_score
+from nexus_ai.events.event_emitter import EventEmitter, get_event_emitter
 from nexus_ai.services.currency_converter import (
     Money,  # Nexus-Money (msgspec.Struct, zastępuje py-moneyed)
 )
@@ -47,6 +48,29 @@ from nexus_ai.services.migration_sanity import verify_migration_integrity, verif
 from nexus_ai.services.outbox_replay import replay_dead_letter_events
 from nexus_ai.services.telemetry import flush_fallback_spans
 from nexus_ai.tax.exceptions import NoMatchingRuleError
+
+
+# ── SQLCipher engine helper ────────────────────────────────────────────────
+# Wszystkie zadania w tym pliku tworzą engine przez _make_engine(), który
+# jawnie przekazuje klucz SQLCipher z NEXUS_SQLCIPHER_KEY env var.
+# Dzięki temu zależność od klucza jest widoczna w kodzie, a nie ukryta
+# w _resolve_key() database.py.
+
+
+def _make_engine(config: AppConfig | None = None) -> Any:
+    """Utwórz SQLAlchemy engine z jawnym kluczem SQLCipher.
+
+    Args:
+        config: Opcjonalna konfiguracja. Jeśli None, ładuje AppConfig().
+
+    Returns:
+        SQLAlchemy Engine z włączonym SQLCipher.
+    """
+    if config is None:
+        config = AppConfig()
+    sqlcipher_key = os.getenv(config.sqlcipher_key_env, "").strip()
+    return create_oltp_engine(config, sqlcipher_key=sqlcipher_key or None)
+
 
 broker = PullBasedJetStreamBroker()
 logger = get_logger("nexus.api.tasks")
@@ -92,10 +116,20 @@ async def decision_evaluate(invoice_id: str, extracted_data: dict) -> dict:
     """
     Final decision evaluation.
     Uses DecisionEngine (DuckDB/SQL-based, zgodnie z aa3fvcx.txt).
-    Publishes result to invoice.decision.final topic.
+    Publishes result as DecisionMade event through EventStore + JetStream.
     """
     config = AppConfig()
     engine = _ensure_decision_engine(config)
+
+    # ── Phase 2: EventEmitter dla emisji DecisionMade ────────────────
+    emitter: EventEmitter | None = None
+    try:
+        emitter = get_event_emitter()
+    except Exception as exc:
+        logger.warning(
+            "[DECISION] EventEmitter init failed — events will not be emitted: %s",
+            exc,
+        )
 
     logger.info("[DECISION] evaluating for invoice_id=%s", invoice_id)
 
@@ -111,6 +145,39 @@ async def decision_evaluate(invoice_id: str, extracted_data: dict) -> dict:
             verdict.decision,
             verdict.confidence,
         )
+
+        # ── Emituj DecisionMade event ─────────────────────────────────
+        if emitter is not None:
+            try:
+                await emitter.emit_decision_made(
+                    invoice_id=invoice_id,
+                    decision=verdict.decision,
+                    trust_score=extracted_data.get("trust_score", 0.0),
+                    ai_confidence=verdict.confidence,
+                    alpha_vote=extracted_data.get("alpha_vote", ""),
+                    beta_vote=extracted_data.get("beta_vote", ""),
+                    gamma_vote=extracted_data.get("gamma_vote", ""),
+                    decision_pattern=verdict.matched_rule[:64] if verdict.matched_rule else "",
+                    reasoning=verdict.reasoning,
+                    metadata={
+                        "extracted_data_snapshot": {
+                            k: extracted_data[k]
+                            for k in ("amount_gross", "amount_net", "category", "contractor_nip", "ocr_confidence")
+                            if k in extracted_data
+                        },
+                    },
+                )
+                logger.info(
+                    "[DECISION-EVENT] DecisionMade emitted for invoice_id=%s decision=%s",
+                    invoice_id,
+                    verdict.decision,
+                )
+            except Exception as emit_err:
+                logger.warning(
+                    "[DECISION-EVENT] Failed to emit DecisionMade for %s: %s",
+                    invoice_id,
+                    emit_err,
+                )
 
         # Execute action based on decision
         if verdict.decision == "AUTO_POST":
@@ -151,7 +218,7 @@ async def council_decide(invoice_id: str, extracted_data: dict) -> dict:
 async def _post_invoice(invoice_id: str, extracted_data: dict, verdict: DecisionVerdict) -> None:
     """Auto-post the invoice: update status to APPROVED."""
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
@@ -185,7 +252,7 @@ async def _post_invoice(invoice_id: str, extracted_data: dict, verdict: Decision
 async def _mark_for_review(invoice_id: str, verdict: DecisionVerdict) -> None:
     """Mark invoice for manual review (SUGGEST)."""
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
@@ -202,7 +269,7 @@ async def _mark_for_review(invoice_id: str, verdict: DecisionVerdict) -> None:
 async def _escalate_to_human(invoice_id: str, verdict: DecisionVerdict, reason: str) -> None:
     """Escalate invoice to human for review."""
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
@@ -317,9 +384,8 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
     saga_engine = None
     try:
         from nexus_ai.core.saga import PersistedSagaStore
-        from nexus_ai.db.database import create_oltp_engine
         config = AppConfig()
-        saga_engine = create_oltp_engine(config)
+        saga_engine = _make_engine(config)
         saga_store = PersistedSagaStore(saga_engine)
         await saga_store.ensure_schema()
 
@@ -688,7 +754,7 @@ async def dead_letter_processor_task() -> None:
     i loguje ostrzeżenia dla administratora.
     """
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
 
     try:
@@ -716,64 +782,64 @@ async def dead_letter_processor_task() -> None:
             )
             await session.commit()
 
-        # Sprawdź wiadomości w DLQ            with anyio.fail_after(5.0):
+        # Sprawdź wiadomości w DLQ
+        try:
+            with anyio.fail_after(5.0):
                 msg = await sub.fetch(1, timeout=2.0)
-            while msg:
-                try:
-                    data = msgspec_loads(msg.data)
-                    error_message = data.get("error", "Unknown error")
-                    task_type = data.get("task_type", "unknown")
-                    task_id = data.get("task_id", None)
-                    stack_trace = data.get("stack_trace", "")
-                    payload = data.get("payload", {})
+                while msg:
+                    try:
+                        data = msgspec_loads(msg.data)
+                        error_message = data.get("error", "Unknown error")
+                        task_type = data.get("task_type", "unknown")
+                        task_id = data.get("task_id", None)
+                        stack_trace = data.get("stack_trace", "")
+                        payload = data.get("payload", {})
 
-                    # Zapisz błąd do tabeli failed_tasks
-                    async with session_factory() as session:
-                        await session.execute(
-                            text(
-                                """
-                                INSERT INTO failed_tasks (task_type, task_id, error_message, stack_trace, payload)
-                                VALUES (:task_type, :task_id, :error_message, :stack_trace, :payload)
-                                """
-                            ),
-                            {
-                                "task_type": task_type,
-                                "task_id": task_id,
-                                "error_message": error_message,
-                                "stack_trace": stack_trace,
-                                "payload": msgspec_dumps(payload),
-                            },
+                        async with session_factory() as session:
+                            await session.execute(
+                                text(
+                                    """
+                                    INSERT INTO failed_tasks (task_type, task_id, error_message, stack_trace, payload)
+                                    VALUES (:task_type, :task_id, :error_message, :stack_trace, :payload)
+                                    """
+                                ),
+                                {
+                                    "task_type": task_type,
+                                    "task_id": task_id,
+                                    "error_message": error_message,
+                                    "stack_trace": stack_trace,
+                                    "payload": msgspec_dumps(payload),
+                                },
+                            )
+                            await session.commit()
+
+                        logger.error(
+                            "[DLQ] Dead letter received: task_type=%s task_id=%s error=%s",
+                            task_type,
+                            task_id,
+                            error_message,
                         )
-                        await session.commit()
 
-                    logger.error(
-                        "[DLQ] Dead letter received: task_type=%s task_id=%s error=%s",
-                        task_type,
-                        task_id,
-                        error_message,
-                    )
+                        dpo_webhook = os.getenv("NEXUS_DPO_ALERT_WEBHOOK", "")
+                        if dpo_webhook:
+                            try:
+                                async with httpx.AsyncClient(timeout=5.0) as client:
+                                    await client.post(
+                                        dpo_webhook,
+                                        json={
+                                            "type": "dead_letter",
+                                            "task_type": task_type,
+                                            "error": error_message,
+                                            "timestamp": pendulum.now("UTC").isoformat(),
+                                        },
+                                    )
+                            except Exception:
+                                logger.warning("[DLQ] Failed to notify webhook")
 
-                    # TODO: Powiadom administratora przez webhook, jeśli skonfigurowano
-                    dpo_webhook = os.getenv("NEXUS_DPO_ALERT_WEBHOOK", "")
-                    if dpo_webhook:
-                        try:
-                            async with httpx.AsyncClient(timeout=5.0) as client:
-                                await client.post(
-                                    dpo_webhook,
-                                    json={
-                                        "type": "dead_letter",
-                                        "task_type": task_type,
-                                        "error": error_message,
-                                        "timestamp": pendulum.now("UTC").isoformat(),
-                                    },
-                                )
-                        except Exception:
-                            logger.warning("[DLQ] Failed to notify webhook")
+                    except Exception as parse_err:
+                        logger.warning("[DLQ] Failed to parse DLQ message: %s", parse_err)
 
-                except Exception as parse_err:
-                    logger.warning("[DLQ] Failed to parse DLQ message: %s", parse_err)                    with anyio.fail_after(5.0):
-                        msg = await sub.fetch(1, timeout=2.0)
-
+                    msg = await sub.fetch(1, timeout=2.0)
         except TimeoutError:
             pass  # Brak wiadomości w DLQ
 
@@ -791,7 +857,7 @@ async def cleanup_hard_deleted_invoices_task() -> None:
     Usuwa soft-deleted invoices po upływie retention_period_years od deleted_at.
     """
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
@@ -811,7 +877,7 @@ async def cleanup_archived_invoices_task() -> None:
     Przenosi do tabeli archived_invoices i usuwa z głównej tabeli.
     """
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
@@ -831,7 +897,7 @@ async def cleanup_outbox_events_task() -> None:
     Usuwa zdarzenia SENT i DEAD_LETTER starsze niż 30 dni.
     """
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
@@ -861,9 +927,8 @@ async def stuck_saga_recovery_task() -> None:
     config = AppConfig()
     try:
         from nexus_ai.core.saga import PersistedSagaStore
-        from nexus_ai.db.database import create_oltp_engine
 
-        engine = create_oltp_engine(config)
+        engine = _make_engine(config)
         store = PersistedSagaStore(engine)
         await store.ensure_schema()
 
@@ -908,7 +973,7 @@ async def relay_outbox_events() -> None:
     Records idempotency key in processed_events to prevent double-dispatch.
     """
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
 
     async with session_factory() as session:
@@ -1094,7 +1159,7 @@ async def outbox_relay_process_pending_task() -> None:
       - Idempotentność przez tabelę processed_events
     """
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
 
     try:
@@ -1160,7 +1225,7 @@ async def finops_hourly_estimate_task() -> None:
 async def replay_dead_letter_outbox_task() -> None:
     """Hourly replay of dead-letter outbox events back to FAILED for retry."""
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
@@ -1284,7 +1349,7 @@ def _build_field_confidence(
 async def _mark_invoice_blocked(invoice_id: str, reason: str) -> None:
     """Mark invoice as BLOCKED_FRAUD_SUSPICION due to semantic anomaly or white-list violation."""
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
@@ -1306,7 +1371,7 @@ async def _mark_invoice_blocked(invoice_id: str, reason: str) -> None:
 
 async def _mark_invoice_pending_review(invoice_id: str, reason: str) -> None:
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
@@ -1329,7 +1394,7 @@ async def _mark_invoice_pending_review(invoice_id: str, reason: str) -> None:
 async def schema_drift_daily_check_task() -> None:
     """Daily schema drift verification against runtime baseline snapshot."""
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     baseline_path = config.base_dir / "app_data" / "schema_baseline.json"
     try:
         drift = await verify_schema_drift(engine, baseline_path=baseline_path)
@@ -1362,7 +1427,7 @@ async def flush_otel_fallback_buffer_task() -> None:
 async def migration_integrity_daily_check_task() -> None:
     """Daily data-integrity check against persisted row-count baseline."""
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     baseline_path = config.migration_baseline_path
     try:
         result = await verify_migration_integrity(engine, baseline_path=baseline_path)
@@ -1550,7 +1615,7 @@ async def check_hanging_transactions_task() -> None:
         logger.debug("[HANGING-TX] Brak pliku WAL - SQLite działa w trybie DELETE lub WAL jest pusty")
 
     # Dodatkowo: sprawdź długo trwające zapytania przez PRAGMA
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     try:
         async with engine.connect() as conn:
             result = await conn.execute(sql_text("PRAGMA wal_checkpoint;"))
@@ -1575,7 +1640,7 @@ async def weekly_nip_reverification_task() -> None:
     Sprawdza NIP-y w Białej Liście MF i aktualizuje status w tabeli contractors.
     """
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     accounting = AccountingService()
 
@@ -1624,7 +1689,7 @@ async def weekly_nip_reverification_task() -> None:
 @broker.task(schedule=[{"cron": "30 4 * * 0"}], task_name="sqlite_weekly_vacuum")
 async def sqlite_weekly_vacuum_task() -> None:
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     try:
         async with engine.connect() as conn:
             await conn.execute(text("VACUUM;"))
@@ -1708,7 +1773,7 @@ async def cleanup_expired_refresh_tokens_task() -> None:
     Rozwiązanie 16: Usuwa tokeny starsze niż 7 dni od daty wygaśnięcia.
     """
     config = AppConfig()
-    engine = create_oltp_engine(config)
+    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:

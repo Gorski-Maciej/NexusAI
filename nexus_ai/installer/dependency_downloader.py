@@ -16,14 +16,13 @@ import platform
 import stat
 
 import anyio
-from dataclasses import dataclass
+from msgspec import Struct
 from pathlib import Path
 from typing import Protocol
 import httpx
 from structlog import get_logger
 
 logger = get_logger("nexus.installer.dependencies")
-
 
 # ── Progress callback ───────────────────────────────────────────────────────
 
@@ -39,7 +38,6 @@ class DependencyProgressCallback(Protocol):
         status: str,  # downloading, extracting, verifying, done, error
     ) -> None: ...
 
-
 # ─── Platform detection ─────────────────────────────────────────────────────
 
 def _get_platform() -> str:
@@ -53,7 +51,6 @@ def _get_platform() -> str:
         return "darwin"
     return system
 
-
 def _get_arch() -> str:
     """Return architecture: amd64, arm64, 386."""
     machine = platform.machine().lower()
@@ -65,11 +62,9 @@ def _get_arch() -> str:
         return "386"
     return "amd64"  # Default to amd64
 
-
 # ── Binary definitions ──────────────────────────────────────────────────────
 
-@dataclass
-class BinaryDefinition:
+class BinaryDefinition(Struct):
     """Definition of a binary to download."""
     name: str
     display_name: str
@@ -78,7 +73,6 @@ class BinaryDefinition:
     filename_template: str  # Output filename
     description: str
     required: bool = True
-
 
 BINARY_MANIFEST: list[BinaryDefinition] = [
     BinaryDefinition(
@@ -107,11 +101,9 @@ BINARY_MANIFEST: list[BinaryDefinition] = [
     ),
 ]
 
-
 def _get_ext() -> str:
     """Get executable extension for current platform."""
     return ".exe" if _get_platform() == "windows" else ""
-
 
 def _is_executable(path: Path) -> bool:
     """Check if a file is executable."""
@@ -120,7 +112,6 @@ def _is_executable(path: Path) -> bool:
     if _get_platform() == "windows":
         return path.suffix.lower() in (".exe", ".bat", ".cmd")
     return os.access(path, os.X_OK)
-
 
 # ── URL building ────────────────────────────────────────────────────────────
 
@@ -157,7 +148,6 @@ def _build_download_url(binary_def: BinaryDefinition) -> str:
         )
 
     return url
-
 
 # ── ZIP extraction ───────────────────────────────────────────────────────────
 
@@ -221,7 +211,6 @@ def _extract_binary_from_zip(
     except zipfile.BadZipFile:
         logger.error("Corrupt ZIP file for %s", binary_def.display_name)
         return False
-
 
 # ── Download and extract ────────────────────────────────────────────────────
 
@@ -372,7 +361,6 @@ async def download_binary(
             )
         return None
 
-
 # ── Binary manager (start/stop processes) ───────────────────────────────────
 
 class BinaryManager:
@@ -496,7 +484,6 @@ class BinaryManager:
             if p is not None
         )
 
-
 # ── Check if dependencies need to be downloaded ─────────────────────────────
 
 def check_dependencies(bin_dir: Path) -> dict:
@@ -517,7 +504,6 @@ def check_dependencies(bin_dir: Path) -> dict:
         "missing": missing,
         "bin_dir": bin_dir,
     }
-
 
 # ── Main orchestrator ───────────────────────────────────────────────────────
 

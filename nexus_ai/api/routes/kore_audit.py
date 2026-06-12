@@ -14,6 +14,7 @@ class KoreAuditController(Controller):
 
     path = "/api/v1/system/kore"
     guards = [owner_only_guard]
+    tags = ["Audit"]
 
     @get("/audit")
     async def get_kore_audit(self) -> dict:

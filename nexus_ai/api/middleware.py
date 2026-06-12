@@ -4,17 +4,16 @@ import base64
 import hashlib  # HMAC-SHA256 for JWT signature verification (not available in nexus_crypto)
 import hmac
 import os
-import secrets
 import time
 import uuid
 
 import anyio
 from litestar.middleware import AbstractMiddleware
-from litestar.status_codes import HTTP_403_FORBIDDEN, HTTP_413_REQUEST_ENTITY_TOO_LARGE
+from litestar.status_codes import HTTP_413_REQUEST_ENTITY_TOO_LARGE
 
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
-from nexus_ai.core.msgspec_utils import msgspec_dumps_bytes, msgspec_loads
+from nexus_ai.core.msgspec_utils import msgspec_loads
 from nexus_ai.core.tenant import (
     DEFAULT_TENANT_ID,
     reset_current_tenant_id,
@@ -29,8 +28,6 @@ class RequestBodyTooLargeError(RuntimeError):
 
 
 _UPLOAD_SEMAPHORE = None
-_CSRF_TOKENS: dict[str, float] = {}  # token -> timestamp
-_CSRF_TOKEN_TTL = 3600  # 1 godzina
 
 
 def _get_upload_semaphore():
@@ -38,32 +35,6 @@ def _get_upload_semaphore():
     if _UPLOAD_SEMAPHORE is None:
         _UPLOAD_SEMAPHORE = anyio.Semaphore(10)
     return _UPLOAD_SEMAPHORE
-
-
-def _cleanup_expired_csrf_tokens():
-    now = time.time()
-    expired = [k for k, ts in _CSRF_TOKENS.items() if now - ts > _CSRF_TOKEN_TTL]
-    for k in expired:
-        _CSRF_TOKENS.pop(k, None)
-
-
-def _generate_csrf_token() -> str:
-    token = secrets.token_urlsafe(32)
-    _CSRF_TOKENS[token] = time.time()
-    _cleanup_expired_csrf_tokens()
-    return token
-
-
-def _validate_csrf_token(token: str | None) -> bool:
-    if not token:
-        return False
-    ts = _CSRF_TOKENS.pop(token, None)
-    if ts is None:
-        return False
-    if time.time() - ts > _CSRF_TOKEN_TTL:
-        return False
-    return True
-
 
 class UploadSizeGuardMiddleware(AbstractMiddleware):
     """
@@ -154,85 +125,6 @@ class UploadSizeGuardMiddleware(AbstractMiddleware):
         await send({"type": "http.response.body", "body": b'{"detail":"Request body too large"}'})
 
 
-class CSRFProtectionMiddleware(AbstractMiddleware):
-    """
-    Ochrona CSRF dla endpointów modyfikujących stan (POST, PUT, DELETE).
-    Rozwiązanie 13: Double-submit cookie pattern z X-CSRF-Token.
-    Używa nagłówka X-CSRF-Token do weryfikacji bezpiecznych żądań.
-    """
-
-    SAFE_METHODS = frozenset({"GET", "HEAD", "OPTIONS", "TRACE"})
-
-    async def __call__(self, scope, receive, send):
-        if scope["type"] != "http":
-            await self.app(scope, receive, send)
-            return
-
-        method = scope.get("method", "GET")
-        if method in self.SAFE_METHODS:
-            await self.app(scope, receive, send)
-            return
-
-        path = scope.get("path", "")
-        # Wyklucz endpointy auth i health z walidacji CSRF
-        if path.startswith("/api/auth/"):
-            await self.app(scope, receive, send)
-            return
-        if "/health" in path:
-            await self.app(scope, receive, send)
-            return
-
-        headers = {k.decode().lower(): v.decode() for k, v in scope.get("headers", [])}
-
-        # Dla klientów używających JWT w nagłówku Authorization (Bearer token)
-        # CSRF nie jest wymagane, ponieważ przeglądarka nie dołącza tego nagłówka automatycznie
-        auth_header = headers.get("authorization", "")
-        if auth_header.startswith("Bearer "):
-            await self.app(scope, receive, send)
-            return
-
-        # Dla klientów używających ciasteczek lub innych metod - wymagaj X-CSRF-Token
-        csrf_token = headers.get("x-csrf-token")
-        csrf_cookie = None
-        for k, v in headers.items():
-            if k == "cookie":
-                for cookie in v.split(";"):
-                    cookie = cookie.strip()
-                    if cookie.startswith("csrf_token="):
-                        csrf_cookie = cookie.split("=", 1)[1]
-                        break
-
-        # Double-submit cookie: porównaj token z ciasteczka i nagłówka
-        if csrf_cookie and csrf_token and csrf_cookie == csrf_token:
-            await self.app(scope, receive, send)
-            return
-
-        # Lub użyj walidacji przez pamięć podręczną
-        if _validate_csrf_token(csrf_token):
-            await self.app(scope, receive, send)
-            return
-
-        # Jeśli brak tokena i żądanie używa ciasteczka auth - odrzuć
-        if csrf_cookie or "csrf_token" in str(headers.get("cookie", "")):
-            logger.warning("[CSRF] Invalid or missing CSRF token for %s %s", method, path)
-            await self._send_403(send, "CSRF validation failed")
-            return
-
-        # Dla innych klientów (np. API calls bez ciasteczek) - przepuść
-        await self.app(scope, receive, send)
-
-    @staticmethod
-    async def _send_403(send, detail: str = "Forbidden"):
-        body = msgspec_dumps_bytes({"detail": detail})
-        await send(
-            {
-                "type": "http.response.start",
-                "status": HTTP_403_FORBIDDEN,
-                "headers": [(b"content-type", b"application/json")],
-            }
-        )
-        await send({"type": "http.response.body", "body": body})
-
 
 def _tenant_from_bearer_auth(authorization_header: str | None) -> str | None:
     """Extract tenant_id from JWT bearer token using HMAC-SHA256 verification."""
@@ -313,7 +205,12 @@ def _tenant_from_bearer_auth(authorization_header: str | None) -> str | None:
 class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
     _tenant_from_bearer_auth = staticmethod(_tenant_from_bearer_auth)
 
-    """Adds correlation-id, deprecation headers and tenant context."""
+    """Adds correlation-id, deprecation headers and tenant context.
+
+    Phase 2: Integruje ``correlation_id`` z ``ContextVar`` w ``nexus_ai.core.tracing``
+    oraz z logowaniem (structlog) — każdy log w trakcie requestu ma automatycznie
+    ustawiony ``correlation_id``.
+    """
 
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":
@@ -323,6 +220,11 @@ class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
         started = time.perf_counter()
         request_headers = {k.decode().lower(): v.decode() for k, v in scope.get("headers", [])}
         correlation_id = request_headers.get("x-correlation-id", str(uuid.uuid4()))
+
+        # ── Phase 2: Ustaw correlation_id w ContextVar dla logowania ─────
+        from nexus_ai.core.tracing import correlation_id_ctx
+        cid_token = correlation_id_ctx.set(correlation_id)
+
         scope_user = scope.get("user") or {}
         tenant_from_user = None
         tenant_from_token = self._tenant_from_bearer_auth(request_headers.get("authorization"))
@@ -332,7 +234,7 @@ class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
             tenant_from_user = getattr(scope_user, "tenant_id", None)
 
         # Trust tenant only from authenticated user context injected by JWTAuth.
-        tenant_id = tenant_from_user or tenant_from_token or DEFAULT_TENANT_ID  # tenant_from_user or DEFAULT_TENANT_ID
+        tenant_id = tenant_from_user or tenant_from_token or DEFAULT_TENANT_ID
         tenant_token = set_current_tenant_id(tenant_id)
 
         async def send_wrapper(message):
@@ -375,3 +277,4 @@ class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
             await self.app(scope, receive, send_wrapper)
         finally:
             reset_current_tenant_id(tenant_token)
+            correlation_id_ctx.reset(cid_token)

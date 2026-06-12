@@ -1,26 +1,21 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from msgspec import Struct
 from statistics import mean, pstdev
 
-
-@dataclass(slots=True)
-class FinOpsRates:
+class FinOpsRates(Struct):
     cpu_core_hour_usd: float = 0.035
     ram_gb_hour_usd: float = 0.005
     net_gb_transfer_usd: float = 0.02
     gpu_hour_usd: float = 0.45
 
-
-@dataclass(slots=True)
-class FinOpsSnapshot:
+class FinOpsSnapshot(Struct):
     cpu_cores: float
     ram_gb: float
     runtime_hours: float
     invoices_processed: int
     network_gb: float = 0.0
     gpu_hours: float = 0.0
-
 
 def estimate_runtime_cost(
     cpu_cores: float,
@@ -37,7 +32,6 @@ def estimate_runtime_cost(
     gpu_cost = gpu_hours * rates.gpu_hour_usd
     return round(cpu_cost + ram_cost + network_cost + gpu_cost, 6)
 
-
 def estimate_cost_per_invoice(snapshot: FinOpsSnapshot, rates: FinOpsRates = FinOpsRates()) -> float:
     total = estimate_runtime_cost(
         snapshot.cpu_cores,
@@ -50,7 +44,6 @@ def estimate_cost_per_invoice(snapshot: FinOpsSnapshot, rates: FinOpsRates = Fin
     if snapshot.invoices_processed <= 0:
         return round(total, 6)
     return round(total / snapshot.invoices_processed, 6)
-
 
 def detect_cost_anomaly(current_cost_per_invoice: float, baseline: list[float], z_threshold: float = 2.5) -> tuple[bool, float]:
     """Return (is_anomaly, z_score) for current cost per invoice against baseline series."""

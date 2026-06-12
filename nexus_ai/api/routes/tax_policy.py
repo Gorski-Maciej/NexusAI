@@ -40,7 +40,9 @@ class SimulateRequest(msgspec.Struct):
 
 
 class TaxPolicyController(Controller):
+    """Symulacja polityki podatkowej i zmiany formy opodatkowania."""
     path = "/api/v2/tax-policy"
+    tags = ["Tax"]
 
     @post("/simulate")
     async def simulate(self, data: SimulateRequest) -> Response[dict]:

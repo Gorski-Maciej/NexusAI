@@ -17,6 +17,7 @@ class FinOpsController(Controller):
 
     path = "/api/v1/system/finops"
     guards = [owner_only_guard]
+    tags = ["Finance"]
 
     @get("/cost-per-invoice")
     async def cost_per_invoice(self) -> dict:
