@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from msgspec import Struct, field
-from typing import Any
+from typing import Any, final
 
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
@@ -55,6 +55,7 @@ class MatchResult(Struct):
     priority: int = 0
 
 
+@final
 class PriorityEngine:
     """Priority Engine — ewaluacja reguł first-match-wins z priorytetami.
 

@@ -1,9 +1,14 @@
+from __future__ import annotations
+
+from typing import final
+
 from decimal import ROUND_HALF_UP, Decimal
 
 import httpx
 import pendulum
 
 
+@final
 class AccountingService:
     def __init__(self):
         self.base_url = "https://wl-api.mf.gov.pl/api/search/nip/"

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import final
+
 import anyio
 from msgspec import Struct
 
@@ -16,6 +18,7 @@ class VendorMetric(Struct):
     reliability_score: float
 
 
+@final
 class VendorAnalyst:
     """Background analytical engine for local-first vendor intelligence.
 

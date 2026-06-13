@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+from typing import final
+
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient, TigerBeetleMapper
 from nexus_ai.services.tigerbeetle.models import LegalForm, TaxForm
 
 
+@final
 class LedgerInitializer:
     """Inicjalizuje plan kont w TigerBeetle na podstawie formy prawnej i opodatkowania."""
 

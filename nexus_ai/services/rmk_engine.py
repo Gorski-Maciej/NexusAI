@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import final
+
 import calendar
 import uuid
 from msgspec import Struct
@@ -33,6 +35,7 @@ def _first_of_next_month(input_date: pendulum.Date) -> pendulum.Date:
     return pendulum.Date(input_date.year, input_date.month + 1, 1)
 
 
+@final
 class RMKEngine:
     """Accruals & Deferrals generator (RMK) with day-level pro-rata precision."""
 

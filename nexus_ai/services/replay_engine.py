@@ -17,7 +17,7 @@ Zastosowania:
 from __future__ import annotations
 
 from msgspec import Struct, field
-from typing import Any
+from typing import Any, final
 
 import pendulum
 
@@ -72,6 +72,7 @@ _COMPARISON_FIELDS = [
 # ── Replay Engine ────────────────────────────────────────────────────────────
 
 
+@final
 class ReplayEngine:
     """Odtwarza decyzję podatkową dla historycznej faktury.
 

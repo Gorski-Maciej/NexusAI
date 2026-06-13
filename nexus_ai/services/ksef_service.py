@@ -1,6 +1,11 @@
+from __future__ import annotations
+
+from typing import final
+
 import httpx
 
 
+@final
 class KsefService:
     """Obsługa Krajowego Systemu e-Faktur (API Ministerstwa Finansów)."""
 

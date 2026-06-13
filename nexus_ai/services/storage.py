@@ -4,13 +4,14 @@ import io
 import uuid
 from collections.abc import Iterable
 from pathlib import Path
-from typing import BinaryIO
+from typing import BinaryIO, final
 
 import fsspec
 
 from nexus_ai.core.config import AppConfig
 
 
+@final
 class StorageService:
     """Unified file storage service with chunked streaming writes."""
 

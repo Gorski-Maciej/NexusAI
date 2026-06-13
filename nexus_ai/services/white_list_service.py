@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import final
+
 import pendulum
 
 from nexus_ai.core.cache import get_cache
@@ -5,6 +9,7 @@ from nexus_ai.core.cache.http_client import CachedHttpClient
 from nexus_ai.core.logger import logger
 
 
+@final
 class WhiteListService:
     """Serwis weryfikacji białej listy podatników VAT.
 

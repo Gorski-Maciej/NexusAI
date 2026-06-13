@@ -1,7 +1,12 @@
+from __future__ import annotations
+
+from typing import final
+
 import imaplib
 from pathlib import Path
 
 
+@final
 class MailIngestionService:
     """Automatyczne pobieranie faktur PDF ze zdefiniowanej skrzynki mailowej (IMAP)."""
 

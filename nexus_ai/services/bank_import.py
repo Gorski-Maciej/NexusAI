@@ -20,7 +20,7 @@ except ImportError:
 
 from decimal import Decimal
 from pathlib import Path
-from typing import Protocol
+from typing import Protocol, final
 
 import pendulum
 
@@ -50,6 +50,7 @@ class StatementParser(Protocol):
     def parse(self, file_path: Path) -> list[BankTransaction]: ...
 
 
+@final
 class CSVStatementParser:
     """Reference parser for local CSV exports from banks."""
 
@@ -72,6 +73,7 @@ class CSVStatementParser:
         return rows
 
 
+@final
 class ParserFactory:
     @staticmethod
     def get_parser(file_path: Path) -> StatementParser:
@@ -90,6 +92,7 @@ class StatementContinuityError(RuntimeError):
     pass
 
 
+@final
 class IdempotentBankImporter:
     def __init__(
         self,

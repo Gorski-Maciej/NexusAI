@@ -9,7 +9,7 @@ Zgodnie z aa3fvcx.txt:
 from __future__ import annotations
 
 import uuid
-from typing import Protocol
+from typing import Protocol, final
 
 import pendulum
 from sqlalchemy import select
@@ -33,6 +33,7 @@ class TaxClassifierAgent(Protocol):
     def classify(self, payload: dict, company_policy: dict) -> dict: ...
 
 
+@final
 class SimpleRuleBasedAgent:
     """Prosty agent klasyfikacji — fallback regexowy."""
 
@@ -51,6 +52,7 @@ class SimpleRuleBasedAgent:
         }
 
 
+@final
 class LedgerWorker:
     """Worker przetwarzający zdarzenia księgowe z blokadą okresów finansowych."""
 

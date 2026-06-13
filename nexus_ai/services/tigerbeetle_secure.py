@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import final
+
 from sqlalchemy.orm import Session
 
 from nexus_ai.api.rbac import NexusRole, RoleContext
@@ -12,6 +14,7 @@ class TigerBeetleSecurityException(PermissionError):  # noqa: N818
     pass
 
 
+@final
 class SecureTigerBeetleClient:
     """RBAC-aware wrapper that blocks WORKER from posting committed transfers."""
 

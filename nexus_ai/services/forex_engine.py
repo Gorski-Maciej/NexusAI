@@ -12,7 +12,7 @@ from __future__ import annotations
 import uuid
 from msgspec import Struct
 from decimal import ROUND_HALF_UP, Decimal
-from typing import Any
+from typing import Any, final
 from urllib import error, request
 
 import pendulum
@@ -44,6 +44,7 @@ def invalidate_forex_cache() -> None:
     cache.delete_prefix_sync("fx_missing:")
 
 
+@final
 class ForexEngine:
     """Silnik kursów walut — NBP API + NexusCache + DuckDB.
 

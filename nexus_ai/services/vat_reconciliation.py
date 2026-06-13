@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from msgspec import Struct
 from decimal import ROUND_HALF_UP, Decimal
-from typing import Any
+from typing import Any, final
 
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
@@ -40,6 +40,7 @@ class ReconciliationAlert(Struct, frozen=True):
     missing_in_ledger: list[str]
 
 
+@final
 class VATReconciliationEngine:
     """Silnik weryfikacji integralności VAT między OCR, DuckDB i TigerBeetle."""
 

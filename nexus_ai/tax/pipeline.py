@@ -16,7 +16,7 @@ from __future__ import annotations
 import uuid
 from msgspec import Struct
 from decimal import Decimal
-from typing import Any
+from typing import Any, final
 
 import duckdb
 import pendulum
@@ -45,8 +45,11 @@ from .rules import RuleEngine
 logger = get_logger("nexus.tax.pipeline")
 
 
+@final
 class PipelineResult(Struct):
     """Result of processing a single invoice through the tax pipeline.
+
+    @final: mypyc devirtualizes property access.
 
     Attributes:
         success: Whether the pipeline completed without errors.
@@ -74,8 +77,12 @@ class PipelineResult(Struct):
     routing_reason: str | None = None
 
 
+@final
 class TaxPipeline:
     """Orchestrates the complete tax processing pipeline.
+
+    @final: mypyc devirtualizes all method calls.
+    process_invoice() is called for EVERY invoice — 2-5× speedup matters.
 
     Connects layers I (rules), II (math), and III (audit) into one flow.
 

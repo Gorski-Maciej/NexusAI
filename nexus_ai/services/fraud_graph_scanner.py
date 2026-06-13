@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from msgspec import Struct
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, final
 
 import pendulum
 
@@ -46,6 +46,7 @@ class FraudAlert(Struct, frozen=True):
     shared_value: str
 
 
+@final
 class FraudGraphScanner:
     def __init__(self, duckdb: DuckDBManager):
         self.duckdb = duckdb

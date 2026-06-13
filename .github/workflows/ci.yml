@@ -132,6 +132,64 @@ jobs:
         if: matrix.environment == 'dev'
         run: pixi run -e dev pytest -x --timeout=30 -q -k "smoke or quick" tests/ 2>/dev/null || echo "ℹ️ No smoke tests found"
 
+  # ── mypyc compilation: typed Python → C (2-5× speedup) ────────────────
+  # Kompiluje wszystkie kandydujące moduły przez mypyc.
+  # needs: [build-rust] — nexus-crypto musi być zbudowane przed mypyc,
+  #       ponieważ niektóre moduły importują nexus_crypto na poziomie modułu.
+  # Używa exclude list z pyproject.toml [tool.mypyc] dla plików z dynamicznymi importami.
+  # Cache .so files dla szybszych kolejnych buildów.
+  # Uruchamia testy na skompilowanym kodzie, aby zweryfikować poprawność.
+  mypyc-compile:
+    needs: [build-rust]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Download Rust wheels (nexus-crypto)
+        uses: actions/download-artifact@v4
+        with:
+          name: nexus-crypto-ubuntu-latest
+          path: dist/wheels/
+
+      - name: Install nexus-crypto wheel + dev tools (mypyc, pytest)
+        run: |
+          uv pip install dist/wheels/nexus_crypto-*.whl
+          uv pip install mypyc pytest pytest-anyio
+
+      - name: Cache mypyc compiled *.so files
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/*.cpython-313*.so
+            **/*.so
+            .mypy_cache/
+          key: mypyc-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'uv.lock', 'nexus_ai/tax/**/*.py', 'nexus_ai/core/**/*.py', 'nexus_ai/services/**/*.py', 'nexus_ai/db/**/*.py', 'nexus_ai/events/**/*.py') }}
+
+      - name: Compile with mypyc (all Category A — 57+ service files + core + db + events)
+        continue-on-error: true
+        run: |
+          uv run mypyc \
+            nexus_ai/tax \
+            nexus_ai/core \
+            nexus_ai/services \
+            nexus_ai/db \
+            nexus_ai/events
+
+      - name: Run smoke tests on compiled code (tax math engine)
+        continue-on-error: true
+        run: uv run pytest tests/test_tax_math_engine.py -x -v --timeout=30 -q
+
+      - name: List compiled *.so files
+        run: find . -name "*.so" -type f | sort | head -20
+
   # ── Lint (fast): pixi exec ───────────────────────────────────────────────
   lint-fast:
     runs-on: ubuntu-latest

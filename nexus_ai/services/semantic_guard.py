@@ -10,7 +10,7 @@ Zgodnie z aa3fvcx.txt:
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, final
 
 import pendulum
 from structlog import get_logger
@@ -90,6 +90,7 @@ ANOMALY_RULES: list[dict[str, Any]] = [
 # ── SemanticGuard ────────────────────────────────────────────────────────────
 
 
+@final
 class SemanticGuard:
     """Detektor anomalii semantycznych oparty o sqlite-vec i embeddingi.
 

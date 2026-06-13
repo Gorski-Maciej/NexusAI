@@ -8,7 +8,7 @@ from contextlib import contextmanager
 from msgspec import Struct
 from msgspec.structs import asdict
 from pathlib import Path
-from typing import Any
+from typing import Any, final
 
 import pendulum
 
@@ -23,6 +23,7 @@ class BufferedSpan(Struct):
     attributes: dict[str, Any]
 
 
+@final
 class FileSpanBuffer:
     def __init__(
         self,

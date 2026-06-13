@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import uuid
 from msgspec import Struct, field
-from typing import Any
+from typing import Any, final
 
 import duckdb
 import pendulum
@@ -80,6 +80,7 @@ class IntegrityReport(Struct):
     verified_at: str = ""
 
 
+@final
 class IntegrityVerifier:
     """Weryfikator Integralności — sprawdza łańcuch hashy decision_traces.
 

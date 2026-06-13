@@ -22,7 +22,7 @@ Usage:
 from __future__ import annotations
 
 import uuid
-from typing import Any
+from typing import Any, final
 
 import duckdb
 import pendulum
@@ -85,6 +85,7 @@ CREATE INDEX IF NOT EXISTS idx_rcl_changed
 """
 
 
+@final
 class RuleStore:
     """Magazyn Reguł — repozytorium reguł podatkowych.
 

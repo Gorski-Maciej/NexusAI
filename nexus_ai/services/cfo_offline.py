@@ -11,7 +11,7 @@ z kolejką asynchroniczną, cache i magazynem relacji.
 from __future__ import annotations
 
 from msgspec import Struct, field
-from typing import Any, Protocol
+from typing import Any, Protocol, final
 
 import pendulum
 
@@ -58,6 +58,7 @@ class RAGAnswer(Struct):
     chart_spec: dict[str, Any]
 
 
+@final
 class LocalRAGService:
     """Lokalny pipeline RAG z OCR->embeddings->vector search->LLM."""
 
@@ -89,6 +90,7 @@ class LocalRAGService:
         )
 
 
+@final
 class KSEFDefenderService:
     """Detekcja anomalii faktur na podstawie historii i cech aktualnej faktury."""
 
@@ -115,6 +117,7 @@ class KSEFDefenderService:
         return is_anomaly, score, reason
 
 
+@final
 class CashflowForecastService:
     """Analiza DuckDB: przyszłe zobowiązania i alerty niedoboru płynności."""
 
@@ -201,6 +204,7 @@ class CashflowForecastService:
         return forecast
 
 
+@final
 class PaymentPriorityService:
     """Silnik priorytetyzacji płatności dla zobowiązań zakupowych."""
 
@@ -332,6 +336,7 @@ class PaymentPriorityService:
         }
 
 
+@final
 class AutoDecreeService:
     """Klasyfikacja pozycji faktury do kont księgowych."""
 
@@ -359,6 +364,7 @@ class AutoDecreeService:
         }
 
 
+@final
 class CFOOrchestrator:
     """Orkiestruje przepływ danych między modułami offline-first."""
 

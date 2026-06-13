@@ -15,7 +15,7 @@ Usage:
 from __future__ import annotations
 
 import anyio
-from typing import Any
+from typing import Any, final
 
 import pendulum
 from structlog import get_logger
@@ -32,6 +32,7 @@ SUBJECTS = (
 )
 
 
+@final
 class HotReloadListener:
     """NATS subscriber for rule/threshold change events.
 

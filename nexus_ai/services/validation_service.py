@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import final
+
 from sqlalchemy import and_, select
 from sqlalchemy.orm import Session
 
@@ -5,6 +9,7 @@ from nexus_ai.db.models import Invoice
 from nexus_ai.services.currency_converter import Money
 
 
+@final
 class ValidationService:
     """Zaawansowana walidacja biznesowa zapobiegająca duplikatom i błędom."""
 

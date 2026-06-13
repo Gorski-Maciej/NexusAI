@@ -12,7 +12,7 @@ DDL DuckDB (event_log_analytics) pozostaje jako _init_duckdb().
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, final
 
 import pendulum
 from sqlalchemy import Engine, text
@@ -23,6 +23,7 @@ from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 logger = get_logger("nexus.services.event_log")
 
 
+@final
 class EventLog:
     """Historia zdarzeń i decyzji, przeszukiwalna dla systemu analitycznego (DuckDB).
 

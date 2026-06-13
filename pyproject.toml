@@ -257,13 +257,42 @@ manifest-path = "nexus_ai/rust/Cargo.toml"
 features = ["pyo3/extension-module"]
 
 # ── mypyc — compile typed Python to C (2-5× speedup) ─────────────────────────
+# Phase 1: rozszerzony zakres kompilacji — włączone services/, db/, events/
+# Wyłączone pliki z dynamicznymi importami (importlib, __import__) które mypyc
+# nie może skompilować do C. Te pliki pozostają w interpreterze.
 [tool.mypyc]
 packages = [
     "nexus_ai/tax",
     "nexus_ai/core",
+    "nexus_ai/services",
+    "nexus_ai/db",
+    "nexus_ai/events",
+]
+exclude = [
+    # ── core: dynamiczne importy (__import__, importlib) ─────────────────
+    "nexus_ai.core.__init__",
+    "nexus_ai.core.plugins",
+    "nexus_ai.core.tasks",
+    "nexus_ai.core.logger",
+    "nexus_ai.core.config",
+    "nexus_ai.core.exporters.base",
+    # ── db: dynamiczne importy (importlib) ────────────────────────────
+    "nexus_ai.db.__init__",
+    "nexus_ai.db.analytics_schema",
+    "nexus_ai.db.migrations.*",
+    # ── services: dynamiczne importy ───────────────────────────────────
+    "nexus_ai.services.rules_engine",
+    "nexus_ai.services.telemetry",
+    # ── events: dynamiczne importy ─────────────────────────────────────
+    "nexus_ai.events.__init__",
 ]
 # mypyc compiles modules with strict type annotations to native C extensions.
 # This gives 2-5× speedup for domain models, tax calculations, and audit logic.
+
+# ── Strict mode dla krytycznych modułów ─────────────────────────────────────
+# Uwaga: per-modułowe opcje mypyc wymagają notacji kropkowej (nie ścieżkowej)
+# i są stosowane przez mypyc w trakcie kompilacji. Na razie strict mode
+# włączony globalnie przez CLI flagi w taskach mise/hatch.
 
 # ── Pytest ───────────────────────────────────────────────────────────────────
 [tool.pytest.ini_options]

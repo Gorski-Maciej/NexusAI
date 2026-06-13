@@ -16,7 +16,7 @@ DDL w migracji 0003_consolidate_service_tables (tabela: dq_decisions).
 from __future__ import annotations
 
 import enum
-from typing import Any
+from typing import Any, final
 
 import pendulum
 from sqlalchemy import Engine, text
@@ -45,6 +45,7 @@ class DecisionPriority(enum.IntEnum):
     CRITICAL = 3
 
 
+@final
 class DecisionQueue:
     """Trwała kolejka decyzji (główna baza danych) z priorytetami i terminami ważności.
 

@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from typing import final
+
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.models import Invoice
 
 
+@final
 class ReplicationBridge:
     """Zero-ETL bridge.
 

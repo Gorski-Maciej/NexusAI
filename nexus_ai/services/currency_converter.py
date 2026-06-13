@@ -12,7 +12,7 @@ zgodna z polskimi przepisami (kurs średni NBP z ostatniego dnia roboczego).
 from __future__ import annotations
 
 from decimal import ROUND_HALF_UP, Decimal
-from typing import Any
+from typing import Any, final
 
 import duckdb
 import msgspec
@@ -197,6 +197,7 @@ def _check_currencies(a: Money, b: Money, operation: str = "operate") -> None:
 # ── Currency Converter ──────────────────────────────────────────────────────
 
 
+@final
 class CurrencyConverter:
     """Konwerter walut z kursem NBP i cache w DuckDB.
 

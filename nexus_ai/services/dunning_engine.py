@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import uuid
 from msgspec import Struct
-from typing import Any, Protocol
+from typing import Any, Protocol, final
 
 import pendulum
 
@@ -27,6 +27,7 @@ class DunningGuardrails(Struct, frozen=True):
     min_amount_pln: float = 10.0
 
 
+@final
 class DunningEngine:
     """Automatyczny silnik windykacji — wysyła przypomnienia o płatnościach."""
 

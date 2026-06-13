@@ -1,9 +1,14 @@
+from __future__ import annotations
+
+from typing import final
+
 from pathlib import Path
 
 import pendulum
 from sqlalchemy.orm import Session
 
 
+@final
 class SecurityService:
     """Zarządza retencją danych i bezpiecznym usuwaniem dokumentów."""
 

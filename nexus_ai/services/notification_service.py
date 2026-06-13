@@ -5,7 +5,7 @@ from __future__ import annotations
 import anyio
 import sqlite3
 from pathlib import Path
-from typing import Any
+from typing import Any, final
 
 import pendulum
 from structlog import get_logger
@@ -21,6 +21,7 @@ logger = get_logger("nexus.services.notification")
 # ---------------------------------------------------------------------------
 
 
+@final
 class DailyBriefingGenerator:
     """Generator codziennych podsumowań finansowych (Daily Briefing).
 
@@ -197,6 +198,7 @@ class DailyBriefingGenerator:
         return alerts
 
 
+@final
 class MultiChannelConfig:
     """Configuration dla wielokanałowych powiadomień.
 
@@ -257,6 +259,7 @@ class MultiChannelConfig:
         return cfg
 
 
+@final
 class NotificationService:
     """Manages user notifications and daily briefings backed by SQLite.
 

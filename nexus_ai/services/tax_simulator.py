@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from msgspec import Struct
 from decimal import Decimal
-from typing import Any
+from typing import Any, final
 
 import duckdb
 import pendulum
@@ -35,6 +35,7 @@ class ShadowLedgerInput(Struct):
     month_end: pendulum.Date
 
 
+@final
 class TaxSimulator:
     """Predykcyjny symulator podatkowy — DuckDB + Polars shadow ledgers.
 

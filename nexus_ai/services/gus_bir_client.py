@@ -28,7 +28,7 @@ import html
 import os
 import re
 from msgspec import Struct, field
-from typing import Any
+from typing import Any, final
 
 import httpx
 from structlog import get_logger
@@ -73,6 +73,7 @@ class GusBirResult(Struct):
     legal_form: str = ""
 
 
+@final
 class GusBirClient:
     """SOAP client for GUS BIR (Baza Internetowa REGON).
 

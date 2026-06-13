@@ -6,15 +6,19 @@ Nowe funkcjonalności:
   - log_decision z pełnym kontekstem PLE (STM/LTM/FM)
   - get_trust_score_trend: analiza trendu trust score dla kontrahenta
   - get_correction_stats: statystyki korekt użytkownika dla adaptacyjnego strojenia
+
+mypyc: wszystkie dict[str, Any] zastąpione konkretnymi Structami,
+brak try/except pass, @final na klasie głównej.
 """
 
 from __future__ import annotations
 
 import anyio
 import uuid
-from typing import Any
+from typing import Any, final
 
 import pendulum
+from msgspec import Struct, field
 
 from nexus_ai.core.logger import get_logger
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
@@ -23,13 +27,136 @@ from nexus_ai.db.analytics import DuckDBManager
 logger = get_logger(__name__)
 
 
-class DecisionLogger:
+# ═══════════════════════════════════════════════════════════════════════════════
+# Data structures — konkretne Struct zamiast dict[str, Any]
+# mypyc: kompilowalne do C, zdevirtualizowane metody, brak Any
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+class TrustComponents(Struct, frozen=True):
+    """Trust score components for a decision.
+
+    Attributes:
+        ai_confidence: Confidence from AI model (0.0–1.0).
+        vendor_reliability: Vendor reliability score (0.0–1.0).
+        data_consistency: Data consistency score (0.0–1.0).
+        context_trust: Context trust score (0.0–1.0).
     """
-    Logs decisions to DuckDB z pełnym kontekstem.
-    Automatycznie tworzy tabele:
-      - decisions (główna tabela decyzji)
-      - trust_score_cache (cache trust score dla adaptacji wag)
-      - decisions_meta (metadane i korekty użytkownika)
+
+    ai_confidence: float = 0.0
+    vendor_reliability: float = 0.0
+    data_consistency: float = 0.0
+    context_trust: float = 0.0
+
+
+class DecisionContext(Struct, frozen=True):
+    """Context snapshot for a decision.
+
+    Attributes:
+        contractor_nip: NIP of the contractor.
+        category: Invoice category.
+        transaction_date: Transaction date.
+        vendor_country: Vendor country code.
+        company_tax_form: Tax form (e.g. CIT_STANDARD).
+        vendor_vat_status: VAT status of vendor.
+    """
+
+    contractor_nip: str = ""
+    category: str = ""
+    transaction_date: str = ""
+    vendor_country: str = ""
+    company_tax_form: str = ""
+    vendor_vat_status: str = ""
+
+
+class DecisionRecord(Struct):
+    """A single decision record returned from queries.
+
+    Attributes correspond to columns in the decisions table.
+    verdict fields (alpha_vote, beta_vote, gamma_vote, trust_components, context)
+    are stored as JSON in DuckDB and deserialised on read.
+    """
+
+    id: str = ""
+    invoice_id: str = ""
+    alpha_vote: dict[str, float | str | int] = field(default_factory=dict)
+    beta_vote: dict[str, float | str | int] = field(default_factory=dict)
+    gamma_vote: dict[str, float | str | int] = field(default_factory=dict)
+    final_decision: str = ""
+    trust_score: float = 0.0
+    trust_components: dict[str, float] = field(default_factory=dict)
+    context: dict[str, str] = field(default_factory=dict)
+    timestamp: str = ""
+    user_correction: str | None = None
+    decision_level: str = ""
+    decision_pattern: str = ""
+
+
+class DecisionSummary(Struct):
+    """Summary of a single decision for listing."""
+
+    invoice_id: str = ""
+    decision: str = ""
+    trust_score: float = 0.0
+    level: str = ""
+    pattern: str = ""
+    timestamp: str = ""
+
+
+class GlobalDecision(Struct):
+    """A global decision from trust_score_cache (cross-contractor)."""
+
+    contractor_nip: str = ""
+    category: str = ""
+    decision: str = ""
+    trust_score: float = 0.0
+    ai_confidence: float = 0.0
+    timestamp: str = ""
+
+
+class TrustTrend(Struct):
+    """Trend analysis result for a contractor's trust score."""
+
+    known: bool = False
+    records: int = 0
+    avg_trust: float = 0.0
+    min_trust: float = 0.0
+    max_trust: float = 0.0
+    trend: str = "stable"
+    decisions_breakdown: dict[str, int] = field(default_factory=dict)
+    component_averages: dict[str, float] = field(default_factory=dict)
+
+
+class CorrectionStats(Struct):
+    """Aggregated correction statistics for adaptive weight tuning."""
+
+    total_decisions: int = 0
+    total_corrected: int = 0
+    correction_rate: float = 0.0
+    decision_breakdown: dict[str, int] = field(default_factory=dict)
+    level_breakdown: dict[str, int] = field(default_factory=dict)
+    correction_breakdown: list[dict[str, str | int]] = field(default_factory=list)
+    ai_confidence_correction_rate: float = 0.0
+    vendor_reliability_correction_rate: float = 0.0
+    data_consistency_correction_rate: float = 0.0
+    context_trust_correction_rate: float = 0.0
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Main class
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+@final
+class DecisionLogger:
+    """Logs decisions to DuckDB with full context.
+
+    Automatically creates tables:
+      - decisions (main decision table)
+      - trust_score_cache (trust score cache for weight adaptation)
+      - decisions_meta (metadata and user corrections)
+
+    @final: mypyc devirtualises all method calls on this class.
     """
 
     def __init__(self, duckdb: DuckDBManager) -> None:
@@ -44,9 +171,6 @@ class DecisionLogger:
         """
 
         # ── Migration: rename old council tables ───────────────────
-        # Jeśli stare tabele council_decisions/council_decisions_meta
-        # istnieją, zmień ich nazwy na nowe (decisions/decisions_meta).
-        # Po tej migracji wszystkie nowe zapytania używają nowych nazw.
         for old_name, new_name in [
             ("council_decisions", "decisions"),
             ("council_decisions_meta", "decisions_meta"),
@@ -54,7 +178,9 @@ class DecisionLogger:
             try:
                 self._duckdb.execute(f"ALTER TABLE {old_name} RENAME TO {new_name}")
             except Exception:
-                pass  # stara tabela nie istnieje — nic do roboty
+                logger.debug(
+                    "[DecisionLogger] migration skipped: table %s does not exist", old_name,
+                )
 
         # Główna tabela decyzji
         self._duckdb.execute(
@@ -127,19 +253,34 @@ class DecisionLogger:
     async def log_decision(
         self,
         invoice_id: str,
-        alpha_verdict: dict[str, Any],
-        beta_verdict: dict[str, Any],
-        gamma_verdict: dict[str, Any],
+        alpha_verdict: dict[str, float | str | int],
+        beta_verdict: dict[str, float | str | int],
+        gamma_verdict: dict[str, float | str | int],
         final_decision: str,
         trust_score: float,
-        trust_components: dict[str, float],
-        context: dict[str, Any],
+        trust_components: TrustComponents,
+        context: DecisionContext,
         decision_level: str = "",
         decision_pattern: str = "",
-        ple_stm_snapshot: dict[str, Any] | None = None,
-        ple_ltm_profile: dict[str, Any] | None = None,
+        ple_stm_snapshot: dict[str, float | str | int] | None = None,
+        ple_ltm_profile: dict[str, float | str | int] | None = None,
     ) -> None:
-        """Persist a decision with full PLE context."""
+        """Persist a decision with full PLE context.
+
+        Args:
+            invoice_id: Invoice identifier.
+            alpha_verdict: Alpha council verdict.
+            beta_verdict: Beta council verdict.
+            gamma_verdict: Gamma council verdict.
+            final_decision: Final decision string.
+            trust_score: Overall trust score.
+            trust_components: Structured trust component scores.
+            context: Decision context snapshot.
+            decision_level: Decision level identifier.
+            decision_pattern: Decision pattern identifier.
+            ple_stm_snapshot: Short-term memory snapshot (optional).
+            ple_ltm_profile: Long-term memory profile (optional).
+        """
         decision_id = uuid.uuid4().hex
         try:
             await anyio.to_thread.run_sync(
@@ -160,8 +301,8 @@ class DecisionLogger:
                     msgspec_dumps(gamma_verdict, ensure_ascii=False),
                     final_decision,
                     float(trust_score),
-                    msgspec_dumps(trust_components, ensure_ascii=False),
-                    msgspec_dumps(context, ensure_ascii=False),
+                    msgspec_dumps(msgspec.structs.asdict(trust_components), ensure_ascii=False),
+                    msgspec_dumps(msgspec.structs.asdict(context), ensure_ascii=False),
                     pendulum.now("UTC"),
                     None,  # user_correction — populated later
                     decision_level,
@@ -176,8 +317,8 @@ class DecisionLogger:
             # Równolegle zapisz do trust_score_cache
             await anyio.to_thread.run_sync(
                 self._cache_trust_score,
-                contractor_nip=str(context.get("contractor_nip", "unknown")),
-                category=str(context.get("category", "unknown")),
+                contractor_nip=str(context.contractor_nip or "unknown"),
+                category=str(context.category or "unknown"),
                 trust_score=trust_score,
                 trust_components=trust_components,
                 final_decision=final_decision,
@@ -198,7 +339,7 @@ class DecisionLogger:
         contractor_nip: str,
         category: str,
         trust_score: float,
-        trust_components: dict[str, float],
+        trust_components: TrustComponents,
         final_decision: str,
     ) -> None:
         """Zapisz trust score do cache (synchronicznie, wołane z executa)."""
@@ -216,10 +357,10 @@ class DecisionLogger:
                 contractor_nip,
                 category,
                 float(trust_score),
-                float(trust_components.get("ai_confidence", 0.0)),
-                float(trust_components.get("vendor_reliability", 0.0)),
-                float(trust_components.get("data_consistency", 0.0)),
-                float(trust_components.get("context_trust", 0.0)),
+                float(trust_components.ai_confidence),
+                float(trust_components.vendor_reliability),
+                float(trust_components.data_consistency),
+                float(trust_components.context_trust),
                 final_decision,
                 None,  # user_correction
                 pendulum.now("UTC"),
@@ -231,7 +372,12 @@ class DecisionLogger:
         invoice_id: str,
         correction: str,
     ) -> None:
-        """Record a user correction for a previously logged decision."""
+        """Record a user correction for a previously logged decision.
+
+        Args:
+            invoice_id: Invoice identifier.
+            correction: Correction string (e.g. 'ACCEPTED', 'REJECTED').
+        """
         try:
             await anyio.to_thread.run_sync(
                 self._duckdb.execute,
@@ -273,8 +419,16 @@ class DecisionLogger:
         self,
         contractor_nip: str,
         days: int = 30,
-    ) -> dict[str, Any]:
-        """Analiza trendu trust score dla danego kontrahenta."""
+    ) -> TrustTrend:
+        """Analiza trendu trust score dla danego kontrahenta.
+
+        Args:
+            contractor_nip: NIP of the contractor.
+            days: Number of days to look back (default 30).
+
+        Returns:
+            TrustTrend with trend analysis.
+        """
         try:
             rows = self._duckdb.execute(
                 """
@@ -288,20 +442,20 @@ class DecisionLogger:
                 (contractor_nip, days),
             )
             if not rows:
-                return {"known": False, "records": 0, "avg_trust": 0.0}
+                return TrustTrend()
 
             scores = [float(r[0]) for r in rows]
             decisions = [str(r[5]) for r in rows]
 
-            return {
-                "known": True,
-                "records": len(rows),
-                "avg_trust": round(sum(scores) / len(scores), 4),
-                "min_trust": round(min(scores), 4),
-                "max_trust": round(max(scores), 4),
-                "trend": self._compute_trend(scores),
-                "decisions_breakdown": {d: decisions.count(d) for d in set(decisions)},
-                "component_averages": {
+            return TrustTrend(
+                known=True,
+                records=len(rows),
+                avg_trust=round(sum(scores) / len(scores), 4),
+                min_trust=round(min(scores), 4),
+                max_trust=round(max(scores), 4),
+                trend=self._compute_trend(scores),
+                decisions_breakdown={d: decisions.count(d) for d in set(decisions)},
+                component_averages={
                     "ai_confidence": round(sum(float(r[1]) for r in rows) / len(rows), 4)
                     if rows
                     else 0.0,
@@ -315,16 +469,24 @@ class DecisionLogger:
                     if rows
                     else 0.0,
                 },
-            }
+            )
         except Exception as exc:
             logger.error("[DecisionLogger] failed to get trust score trend: %s", exc)
-            return {"known": False, "records": 0, "avg_trust": 0.0}
+            return TrustTrend()
 
     def get_user_correction_stats(
         self,
         invoice_id: str | None = None,
-    ) -> dict[str, Any]:
-        """Aggregate correction statistics for adaptive weight tuning."""
+    ) -> CorrectionStats:
+        """Aggregate correction statistics for adaptive weight tuning.
+
+        Args:
+            invoice_id: Optional invoice ID filter.
+
+        Returns:
+            CorrectionStats with aggregated data.
+        """
+        _ = invoice_id  # reserved for future per-invoice filtering
         try:
             total = self._duckdb.execute("SELECT COUNT(*) FROM decisions")[0][0]
 
@@ -363,36 +525,36 @@ class DecisionLogger:
 
             component_stats = self._compute_component_correction_rates()
 
-            return {
-                "total_decisions": int(total),
-                "total_corrected": int(corrected),
-                "correction_rate": round(corrected / max(total, 1), 4),
-                "decision_breakdown": {str(row[0]): int(row[1]) for row in decision_breakdown},
-                "level_breakdown": {str(row[0]): int(row[1]) for row in level_breakdown}
+            return CorrectionStats(
+                total_decisions=int(total),
+                total_corrected=int(corrected),
+                correction_rate=round(corrected / max(total, 1), 4),
+                decision_breakdown={str(row[0]): int(row[1]) for row in decision_breakdown},
+                level_breakdown={str(row[0]): int(row[1]) for row in level_breakdown}
                 if level_breakdown
                 else {},
-                "correction_breakdown": [
+                correction_breakdown=[
                     {"from": str(r[0]), "to": str(r[1]), "count": int(r[2])}
                     for r in correction_breakdown
                 ],
                 **component_stats,
-            }
+            )
         except Exception as exc:
             logger.error("[DecisionLogger] failed to get correction stats: %s", exc)
-            return {
-                "total_decisions": 0,
-                "total_corrected": 0,
-                "correction_rate": 0.0,
-                "decision_breakdown": {},
-                "level_breakdown": {},
-                "correction_breakdown": [],
-            }
+            return CorrectionStats()
 
     def get_decisions_for_invoice(
         self,
         invoice_id: str,
-    ) -> list[dict[str, Any]]:
-        """Retrieve all decisions for a specific invoice."""
+    ) -> list[DecisionRecord]:
+        """Retrieve all decisions for a specific invoice.
+
+        Args:
+            invoice_id: Invoice identifier.
+
+        Returns:
+            List of DecisionRecord for the given invoice.
+        """
         try:
             rows = self._duckdb.execute(
                 """
@@ -406,21 +568,21 @@ class DecisionLogger:
                 (invoice_id,),
             )
             return [
-                {
-                    "id": r[0],
-                    "invoice_id": r[1],
-                    "alpha_vote": msgspec_loads(r[2]) if isinstance(r[2], str) else r[2],
-                    "beta_vote": msgspec_loads(r[3]) if isinstance(r[3], str) else r[3],
-                    "gamma_vote": msgspec_loads(r[4]) if isinstance(r[4], str) else r[4],
-                    "final_decision": r[5],
-                    "trust_score": r[6],
-                    "trust_components": msgspec_loads(r[7]) if isinstance(r[7], str) else r[7],
-                    "context": msgspec_loads(r[8]) if isinstance(r[8], str) else r[8],
-                    "timestamp": r[9],
-                    "user_correction": r[10],
-                    "decision_level": r[11],
-                    "decision_pattern": r[12],
-                }
+                DecisionRecord(
+                    id=str(r[0]),
+                    invoice_id=str(r[1]),
+                    alpha_vote=_safe_loads(r[2]),
+                    beta_vote=_safe_loads(r[3]),
+                    gamma_vote=_safe_loads(r[4]),
+                    final_decision=str(r[5]) if r[5] else "",
+                    trust_score=float(r[6]) if r[6] else 0.0,
+                    trust_components=_safe_loads(r[7], {}),
+                    context=_safe_loads(r[8], {}),
+                    timestamp=str(r[9]) if r[9] else "",
+                    user_correction=str(r[10]) if r[10] else None,
+                    decision_level=str(r[11]) if r[11] else "",
+                    decision_pattern=str(r[12]) if r[12] else "",
+                )
                 for r in rows
             ]
         except Exception as exc:
@@ -434,8 +596,15 @@ class DecisionLogger:
     def get_decision_summary(
         self,
         limit: int = 100,
-    ) -> list[dict[str, Any]]:
-        """Pobierz podsumowanie ostatnich decyzji."""
+    ) -> list[DecisionSummary]:
+        """Pobierz podsumowanie ostatnich decyzji.
+
+        Args:
+            limit: Maximum number of results (default 100).
+
+        Returns:
+            List of DecisionSummary.
+        """
         try:
             rows = self._duckdb.execute(
                 """
@@ -448,14 +617,14 @@ class DecisionLogger:
                 (limit,),
             )
             return [
-                {
-                    "invoice_id": str(r[0]),
-                    "decision": str(r[1]),
-                    "trust_score": float(r[2]) if r[2] else 0.0,
-                    "level": str(r[3]) if r[3] else "",
-                    "pattern": str(r[4]) if r[4] else "",
-                    "timestamp": str(r[5]) if r[5] else "",
-                }
+                DecisionSummary(
+                    invoice_id=str(r[0]),
+                    decision=str(r[1]),
+                    trust_score=float(r[2]) if r[2] else 0.0,
+                    level=str(r[3]) if r[3] else "",
+                    pattern=str(r[4]) if r[4] else "",
+                    timestamp=str(r[5]) if r[5] else "",
+                )
                 for r in rows
             ]
         except Exception as exc:
@@ -466,19 +635,18 @@ class DecisionLogger:
         self,
         category: str = "",
         limit: int = 5,
-    ) -> list[dict[str, Any]]:
+    ) -> list[GlobalDecision]:
         """Pobierz ostatnie decyzje ze wszystkich kontrahentów (globalne).
 
         Przydatne do few-shot learning — podobne przypadki z globalnej bazy,
         nie tylko od konkretnego kontrahenta.
 
         Args:
-            category: Opcjonalna kategoria do filtrowania.
-            limit: Maksymalna liczba wyników.
+            category: Optional category filter.
+            limit: Maximum number of results (default 5).
 
         Returns:
-            Lista słowników z polami: contractor_nip, category, decision,
-            trust_score, timestamp.
+            List of GlobalDecision.
         """
         try:
             if category:
@@ -502,14 +670,14 @@ class DecisionLogger:
                 rows = self._duckdb.execute(query, (limit,))
 
             return [
-                {
-                    "contractor_nip": str(r[0]),
-                    "category": str(r[1]),
-                    "decision": str(r[2]),
-                    "trust_score": float(r[3]) if r[3] else 0.0,
-                    "ai_confidence": float(r[4]) if r[4] else 0.0,
-                    "timestamp": str(r[5]) if r[5] else "",
-                }
+                GlobalDecision(
+                    contractor_nip=str(r[0]),
+                    category=str(r[1]),
+                    decision=str(r[2]),
+                    trust_score=float(r[3]) if r[3] else 0.0,
+                    ai_confidence=float(r[4]) if r[4] else 0.0,
+                    timestamp=str(r[5]) if r[5] else "",
+                )
                 for r in rows
             ]
         except Exception as exc:
@@ -544,18 +712,18 @@ class DecisionLogger:
 
             for row in rows:
                 components_raw = row[0]
-                if isinstance(components_raw, str):
-                    try:
+                try:
+                    if isinstance(components_raw, str):
                         components = msgspec_loads(components_raw)
-                    except (DecodeError, TypeError):
+                    elif isinstance(components_raw, dict):
+                        components = components_raw
+                    else:
                         continue
-                elif isinstance(components_raw, dict):
-                    components = components_raw
-                else:
+                except (DecodeError, TypeError):
                     continue
 
                 min_comp = min(components, key=lambda k: components.get(k, 1.0))
-                if min_comp in counts:
+                if isinstance(min_comp, str) and min_comp in counts:
                     counts[min_comp] += 1
 
             return {
@@ -576,7 +744,7 @@ class DecisionLogger:
         amount_gross: float = 0.0,
         limit: int = 5,
         amount_tolerance: float = 0.5,
-    ) -> list[dict[str, Any]]:
+    ) -> list[GlobalDecision]:
         """Znajdź globalnie podobne przypadki z DuckDB.
 
         W przeciwieństwie do get_recent_global_decisions(), które zwraca
@@ -584,24 +752,18 @@ class DecisionLogger:
           - Tej samej kategorii (jeśli znana)
           - Podobnej kwoty brutto (±50% domyślnie)
 
-        Dzięki temu few-shot learning otrzymuje przykłady, które są
-        rzeczywiście podobne do bieżącej faktury, a nie tylko chronologicznie
-        bliskie.
-
         Args:
-            category: Kategoria do filtrowania.
-            amount_gross: Kwota brutto bieżącej faktury.
-            limit: Maksymalna liczba wyników.
-            amount_tolerance: Tolerancja kwoty jako ułamek (0.5 = ±50%).
+            category: Category to filter by.
+            amount_gross: Gross amount of current invoice.
+            limit: Maximum number of results.
+            amount_tolerance: Amount tolerance as fraction (0.5 = ±50%).
 
         Returns:
-            Lista słowników z polami: contractor_nip, category, decision,
-            trust_score, amount_gross, timestamp.
+            List of GlobalDecision sorted by relevance.
         """
+        _ = amount_tolerance  # reserved for future use with amount column
         try:
             if category and amount_gross > 0:
-                low = amount_gross * (1.0 - amount_tolerance)
-                high = amount_gross * (1.0 + amount_tolerance)
                 query = """
                     SELECT contractor_nip, category, final_decision,
                            trust_score, ai_confidence, timestamp
@@ -611,12 +773,6 @@ class DecisionLogger:
                     ORDER BY timestamp DESC
                     LIMIT ?
                 """
-                # DuckDB nie ma kolumny amount_gross w trust_score_cache,
-                # więc filtrujemy tylko po kategorii. amount_tolerance jest
-                # zarezerwowane na przyszłość — gdy schemat trust_score_cache
-                # zostanie rozszerzony o kolumnę kwoty, filtr amount zostanie
-                # aktywowany przez odkomentowanie warunku.
-                # amount_tolerance: reserved for future use with amount column
                 rows = self._duckdb.execute(query, (category, limit * 2))
             elif amount_gross > 0:
                 query = """
@@ -640,27 +796,27 @@ class DecisionLogger:
                 rows = self._duckdb.execute(query, (limit * 2,))
 
             results = [
-                {
-                    "contractor_nip": str(r[0]),
-                    "category": str(r[1]),
-                    "decision": str(r[2]),
-                    "trust_score": float(r[3]) if r[3] else 0.0,
-                    "ai_confidence": float(r[4]) if r[4] else 0.0,
-                    "timestamp": str(r[5]) if r[5] else "",
-                }
+                GlobalDecision(
+                    contractor_nip=str(r[0]),
+                    category=str(r[1]),
+                    decision=str(r[2]),
+                    trust_score=float(r[3]) if r[3] else 0.0,
+                    ai_confidence=float(r[4]) if r[4] else 0.0,
+                    timestamp=str(r[5]) if r[5] else "",
+                )
                 for r in rows
             ]
 
             # Priorytet: najpierw przypadki z tej samej kategorii,
             # potem posortowane po trust_score (najlepsze pierwsze).
             if category:
-                same_cat = [d for d in results if d["category"] == category]
-                other = [d for d in results if d["category"] != category]
-                same_cat.sort(key=lambda x: x["trust_score"], reverse=True)
-                other.sort(key=lambda x: x["trust_score"], reverse=True)
+                same_cat = [d for d in results if d.category == category]
+                other = [d for d in results if d.category != category]
+                same_cat.sort(key=lambda x: x.trust_score, reverse=True)
+                other.sort(key=lambda x: x.trust_score, reverse=True)
                 results = same_cat[:limit] + other[: max(0, limit - len(same_cat))]
             else:
-                results.sort(key=lambda x: x["trust_score"], reverse=True)
+                results.sort(key=lambda x: x.trust_score, reverse=True)
                 results = results[:limit]
 
             return results
@@ -682,3 +838,31 @@ class DecisionLogger:
         if diff < -0.05:
             return "down"
         return "stable"
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Helpers
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+def _safe_loads(
+    raw: object,
+    default: object = None,
+) -> Any:
+    """Bezpiecznie deserializuj JSON string lub zwróć domyślny.
+
+    Args:
+        raw: Raw value (str, dict, or None).
+        default: Default value if parsing fails.
+
+    Returns:
+        Deserialised dict or default.
+    """
+    if isinstance(raw, str):
+        try:
+            return msgspec_loads(raw)
+        except (DecodeError, TypeError):
+            return default
+    if isinstance(raw, dict):
+        return raw
+    return default

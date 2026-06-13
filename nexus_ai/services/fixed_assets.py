@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import final
+
 import uuid
 from msgspec import Struct
 from decimal import ROUND_HALF_UP, Decimal
@@ -25,6 +27,7 @@ class FixedAsset(Struct):
     last_depreciation_date: pendulum.Date | None
 
 
+@final
 class FixedAssetsService:
     def __init__(self, duckdb: DuckDBManager, tigerbeetle: TigerBeetleClient) -> None:
         self.duckdb = duckdb

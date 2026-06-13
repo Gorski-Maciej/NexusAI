@@ -16,25 +16,21 @@ from __future__ import annotations
 
 from msgspec import Struct
 from decimal import ROUND_HALF_UP, Decimal
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, final
 
-if TYPE_CHECKING:
-    from nexus_ai.services.currency_converter import Money as _Money
+# ═══════════════════════════════════════════════════════════════════════════════
+# mypyc optimization: direct import zamiast lazy _get_money_class()
+# currency_converter.py NIE importuje z tego modułu (importuje tylko
+# core/cache/) — brak cyklu zależności.
+# mypyc może skompilować Money do C i zinline'ować wszystkie odwołania.
+# ═══════════════════════════════════════════════════════════════════════════════
+from nexus_ai.services.currency_converter import Money as _Money
+
 
 # ── Global rounding context ─────────────────────────────────────────────────
 # Nigdy nie zmieniaj lokalnie — zawsze ROUND_HALF_UP, 2 miejsca po przecinku
 
 _GROSZ = Decimal("0.01")
-
-# ── Lazy import helpers ─────────────────────────────────────────────────────
-
-
-def _get_money_class():
-    """Lazy import of Money to avoid circular dependencies at module load."""
-    from nexus_ai.services.currency_converter import Money
-
-    return Money
-
 
 # ── Exceptions ──────────────────────────────────────────────────────────────
 
@@ -56,8 +52,11 @@ class InvalidRateError(ValueError):
 # ── Data structures ──────────────────────────────────────────────────────────
 
 
+@final
 class InvoicePositions(Struct, frozen=True):
     """A single invoice line item in grosze.
+
+    @final: mypyc devirtualizes all method calls on this class.
 
     Attributes:
         net_grosze: Net amount in grosze (integer).
@@ -85,25 +84,24 @@ class InvoicePositions(Struct, frozen=True):
         Returns:
             InvoicePositions with net_grosze extracted from Money.
         """
-        from nexus_ai.services.currency_converter import Money
-
-        if not isinstance(net, Money):
+        if not isinstance(net, _Money):
             raise TypeError(f"Expected Money, got {type(net).__name__}")
         return cls(net_grosze=money_to_grosze(net), vat_rate=vat_rate)
 
     def to_net_money(self, currency: str = "PLN") -> _Money:
         """Return the net amount as Money."""
-        _get_money_class()
         return to_money(self.net_grosze, currency)
 
     def to_vat_money(self, currency: str = "PLN") -> _Money:
         """Return the VAT amount as Money."""
-        _get_money_class()
         return to_money(self.vat_grosze, currency)
 
 
+@final
 class InvoiceSummary(Struct, frozen=True):
     """Invoice totals in grosze.
+
+    @final: mypyc devirtualizes all method calls on this class.
 
     All three fields are integers (grosze) — never floats.
     """
@@ -134,9 +132,7 @@ class InvoiceSummary(Struct, frozen=True):
         Raises:
             ValueError: If currencies differ between amounts.
         """
-        from nexus_ai.services.currency_converter import Money
-
-        if not all(isinstance(x, Money) for x in (netto, vat, brutto)):
+        if not all(isinstance(x, _Money) for x in (netto, vat, brutto)):
             raise TypeError("All amounts must be Money instances")
         _require_same_currency(netto, vat, "InvoiceSummary")
         _require_same_currency(netto, brutto, "InvoiceSummary")
@@ -159,8 +155,11 @@ class InvoiceSummary(Struct, frozen=True):
         return to_money(self.brutto_grosze, currency)
 
 
+@final
 class ValidationResult(Struct, frozen=True):
     """Result of invariant validation.
+
+    @final: mypyc devirtualizes all method calls on this class.
 
     Attributes:
         is_valid: True if all invariants pass.
@@ -304,8 +303,7 @@ def money_to_grosze(money: _Money) -> int:
         >>> money_to_grosze(Money(amount_cents=12345, currency="PLN"))
         12345
     """
-    Money = _get_money_class()  # noqa: N806
-    if not isinstance(money, Money):
+    if not isinstance(money, _Money):
         raise TypeError(
             f"Expected Money, got {type(money).__name__}. "
             f"Use to_grosze() for plain Decimal/str/float."
@@ -331,8 +329,7 @@ def to_money(grosze: int, currency: str = "PLN") -> _Money:
         >>> to_money(12345)
         Money(amount_cents=12345, currency='PLN')
     """
-    Money = _get_money_class()  # noqa: N806
-    return Money(amount_cents=grosze, currency=currency)
+    return _Money(amount_cents=grosze, currency=currency)
 
 
 def _require_same_currency(a: _Money, b: _Money, operation: str = "operate") -> None:
@@ -353,16 +350,14 @@ def multiply_net_by_vat_money(net: _Money, vat_rate: Decimal) -> _Money:
     Returns:
         VAT amount as Money in the same currency as net.
     """
-    Money = _get_money_class()  # noqa: N806
-    if not isinstance(net, Money):
+    if not isinstance(net, _Money):
         raise TypeError(f"Expected Money, got {type(net).__name__}")
     vat_grosze = multiply_net_by_vat(money_to_grosze(net), vat_rate)
     return to_money(vat_grosze, net.currency_code)
 
 
 def add_tax_money(net: _Money, vat: _Money) -> _Money:
-    Money = _get_money_class()  # noqa: N806
-    if not isinstance(net, Money) or not isinstance(vat, Money):
+    if not isinstance(net, _Money) or not isinstance(vat, _Money):
         raise TypeError("Both arguments must be Money instances")
     _require_same_currency(net, vat, "add_tax_money")
     gross_grosze = add_tax(money_to_grosze(net), money_to_grosze(vat))
@@ -426,6 +421,7 @@ def calculate_vat_by_policy(
     raise ValueError(f"Unknown rounding_level: {rounding_level!r}; expected 'position' or 'total'")
 
 
+@final
 class RoundingPolicy:
     """Convenience wrapper around rounding strategy constants and logic."""
 
@@ -517,6 +513,7 @@ def validate_invariants(
 # ── Convenience Engine ───────────────────────────────────────────────────────
 
 
+@final
 class TaxMathEngine:
     """Infallible tax math — integer-only, ROUND_HALF_UP, no floats.
 
@@ -581,15 +578,13 @@ class TaxMathEngine:
             TypeError: If any amount is not Money.
             CurrencyMismatchError: If currencies differ.
         """
-        Money = _get_money_class()  # noqa: N806
-
         if not positions_net:
-            zero = Money.zero()
+            zero = _Money.zero()
             return zero, []
 
         # Validate all are Money and same currency
         for i, amt in enumerate(positions_net):
-            if not isinstance(amt, Money):
+            if not isinstance(amt, _Money):
                 raise TypeError(f"positions_net[{i}]: expected Money, got {type(amt).__name__}")
         for amt in positions_net[1:]:
             _require_same_currency(positions_net[0], amt, "calculate_positions_vat_money")
@@ -617,13 +612,11 @@ class TaxMathEngine:
         Raises:
             CurrencyMismatchError: If currencies differ.
         """
-        Money = _get_money_class()  # noqa: N806
-
         if not positions_net:
-            return Money.zero()
+            return _Money.zero()
 
         for i, amt in enumerate(positions_net):
-            if not isinstance(amt, Money):
+            if not isinstance(amt, _Money):
                 raise TypeError(f"positions_net[{i}]: expected Money, got {type(amt).__name__}")
         for amt in positions_net[1:]:
             _require_same_currency(positions_net[0], amt, "sum_positions_net_money")

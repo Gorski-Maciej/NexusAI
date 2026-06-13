@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from msgspec import Struct
-from typing import Protocol
+from typing import Protocol, final
 
 from nexus_ai.services.tigerbeetle.models import LegalForm, TaxForm
 
@@ -97,6 +97,7 @@ class CitEstonianStrategy(TaxStrategy):
         }
 
 
+@final
 class StrategyRegistry:
     """Rejestr strategii podatkowych — używany przez TaxSimulator."""
 

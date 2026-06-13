@@ -27,7 +27,15 @@ from __future__ import annotations
 
 import anyio
 from msgspec import Struct, field
-from typing import Any, Callable
+from typing import Any, Callable, final
+
+from nexus_ai.services.decision_logger import (
+    CorrectionStats,
+    DecisionContext,
+    GlobalDecision,
+    TrustComponents,
+    TrustTrend,
+)
 
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
@@ -53,6 +61,7 @@ logger = get_logger(__name__)
 # ---------------------------------------------------------------------------
 
 
+@final
 class FactSheet(Struct):
     """Ustrukturyzowany arkusz faktów zebranych przed decyzją.
 
@@ -86,7 +95,7 @@ class FactSheet(Struct):
     # ── DuckDB (OLAP) ──────────────────────────────────────────────
 
     # Trend trust score dla kontrahenta
-    trust_score_trend: dict[str, Any] = field(default_factory=dict)
+    trust_score_trend: TrustTrend = field(default_factory=TrustTrend)
 
     # Aktywne reguły podatkowe
     active_tax_rules: list[dict[str, Any]] = field(default_factory=list)
@@ -95,7 +104,7 @@ class FactSheet(Struct):
     vendor_intelligence: str = ""
 
     # Statystyki korekt użytkownika (globalne)
-    correction_stats: dict[str, Any] = field(default_factory=dict)
+    correction_stats: CorrectionStats = field(default_factory=CorrectionStats)
 
     # ── sqlite-vec (embeddingi) ───────────────────────────────────
 
@@ -115,14 +124,14 @@ class FactSheet(Struct):
     # Ostatnie decyzje ze wszystkich kontrahentów (do few-shot learning)
     # Pobierane z DecisionLogger.trust_score_cache — podobne przypadki
     # z globalnej bazy, poszerzające perspektywę modelu poza jednego kontrahenta.
-    global_recent_decisions: list[dict[str, Any]] = field(default_factory=list)
+    global_recent_decisions: list[GlobalDecision] = field(default_factory=list)
 
     # Globalnie podobne przypadki — jak global_recent_decisions, ale filtrowane
     # po kategorii i priorytetyzowane po trust_score (nie tylko ostatnie).
     # Pobierane z DecisionLogger.get_globally_similar_cases() — szuka przypadków
     # o tej samej kategorii i podobnej kwocie, niezależnie od kontrahenta.
     # Daje modelowi lepsze przykłady few-shot niż surowe ostatnie decyzje.
-    globally_similar_cases: list[dict[str, Any]] = field(default_factory=list)
+    globally_similar_cases: list[GlobalDecision] = field(default_factory=list)
 
     # Łączny obrót (suma transferów) dla kontrahenta
     ledger_total_turnover: float = 0.0
@@ -217,11 +226,11 @@ class FactSheet(Struct):
 
         # Trend trust score
         trend = self.trust_score_trend
-        if trend.get("known"):
+        if trend.known:
             lines.append(f"Trend trust score (ostatnie 30 dni):")
-            lines.append(f"  Średnia: {trend.get('avg_trust', 0):.4f}")
-            lines.append(f"  Trend: {trend.get('trend', 'brak')}")
-            lines.append(f"  Liczba decyzji: {trend.get('records', 0)}")
+            lines.append(f"  Średnia: {trend.avg_trust:.4f}")
+            lines.append(f"  Trend: {trend.trend}")
+            lines.append(f"  Liczba decyzji: {trend.records}")
             lines.append("")
 
         # Podobne faktury (z embeddingów)
@@ -333,7 +342,7 @@ class FactSheet(Struct):
                 str(self.similar_invoices),
                 str(self.globally_similar_cases),
                 str(self.global_recent_decisions),
-                str(self.trust_score_trend.get("decisions_breakdown", {})),
+                str(self.trust_score_trend.decisions_breakdown),
                 str(self.user_correction_patterns),
             )
         )
@@ -422,11 +431,11 @@ class FactSheet(Struct):
         remaining -= global_sim_count
 
         for inv in self.globally_similar_cases[:global_sim_count]:
-            nip = inv.get("contractor_nip", "?")
-            cat = inv.get("category", "?")
-            decision = inv.get("decision", "SUGGEST")
-            trust = inv.get("trust_score", 0.0)
-            ai_conf = inv.get("ai_confidence", 0.0)
+            nip = inv.contractor_nip or "?"
+            cat = inv.category or "?"
+            decision = inv.decision or "SUGGEST"
+            trust = inv.trust_score
+            ai_conf = inv.ai_confidence
 
             examples.append(
                 f"[Globalnie podobny przypadek (inny kontrahent, kategoria: {cat})]\n"
@@ -442,10 +451,10 @@ class FactSheet(Struct):
         remaining -= global_count
 
         for inv in self.global_recent_decisions[:global_count]:
-            nip = inv.get("contractor_nip", "?")
-            cat = inv.get("category", "?")
-            decision = inv.get("decision", "SUGGEST")
-            trust = inv.get("trust_score", 0.0)
+            nip = inv.contractor_nip or "?"
+            cat = inv.category or "?"
+            decision = inv.decision or "SUGGEST"
+            trust = inv.trust_score
 
             examples.append(
                 f"[Globalna decyzja (inny kontrahent)]\n"
@@ -486,16 +495,16 @@ class FactSheet(Struct):
 
         # 5. Dodaj kontekst z trendu decyzji
         trend = self.trust_score_trend
-        decisions_bd = trend.get("decisions_breakdown", {}) if trend.get("known") else {}
+        decisions_bd = trend.decisions_breakdown if trend.known else {}
         if decisions_bd:
             breakdown = ", ".join(
                 f"{k}: {v}" for k, v in sorted(decisions_bd.items(), key=lambda x: -x[1])
             )
             context = (
                 f"\n[Wzorzec decyzyjny dla tego kontrahenta]\n"
-                f"  Liczba decyzji: {trend.get('records', 0)} w ostatnich 30 dniach\n"
+                f"  Liczba decyzji: {trend.records} w ostatnich 30 dniach\n"
                 f"  Rozkład decyzji: {breakdown}\n"
-                f"  Trend trust score: {trend.get('trend', 'stable')} (śr. {trend.get('avg_trust', 0):.2f})"
+                f"  Trend trust score: {trend.trend} (śr. {trend.avg_trust:.2f})"
             )
             examples.append(context)
 
@@ -527,6 +536,7 @@ class FactSheet(Struct):
 # ---------------------------------------------------------------------------
 
 
+@final
 class FactsAggregator:
     """Agregator Faktów — warstwa RAG przed decyzją.
 
@@ -662,12 +672,14 @@ class FactsAggregator:
                         source_status["sqlite"] = True
 
                 elif name == "duckdb_trend":
-                    sheet.trust_score_trend = result or {}
-                    if result and result.get("known"):
+                    if result is not None:
+                        sheet.trust_score_trend = result
+                    if result and result.known:
                         source_status["duckdb"] = True
 
                 elif name == "duckdb_correction_stats":
-                    sheet.correction_stats = result or {}
+                    if result is not None:
+                        sheet.correction_stats = result
 
                 elif name == "duckdb_rules":
                     sheet.active_tax_rules = result or []
@@ -893,7 +905,7 @@ class FactsAggregator:
             elif name == "sqlite_corrections":
                 result = await self._fetch_user_corrections(sheet.contractor_nip)
             elif name == "duckdb_trend":
-                result = await self._fetch_trust_score_trend()
+                result = await self._fetch_trust_score_trend(sheet.contractor_nip)
             elif name == "duckdb_correction_stats":
                 result = await self._fetch_correction_stats()
             elif name == "duckdb_rules":
@@ -917,6 +929,7 @@ class FactsAggregator:
                 result = await self._fetch_globally_similar_cases(
                     category=sheet.category,
                     amount_gross=sheet.amount_gross,
+                    limit=3,
                 )
             else:
                 logger.warning("[FactsAggregator] unknown worker name: %s", name)
@@ -930,29 +943,27 @@ class FactsAggregator:
 
     # ── DuckDB helpers (implementacje dla _worker_fetch) ────────────────
 
-    async def _fetch_trust_score_trend(self) -> dict[str, Any]:
+    async def _fetch_trust_score_trend(self, contractor_nip: str) -> TrustTrend | None:
         """Pobierz trend trust score z DecisionLogger (DuckDB)."""
-        if self._decision_logger is None or not hasattr(
-            self._decision_logger, "get_trust_score_trend"
-        ):
-            return {}
+        if self._decision_logger is None or not contractor_nip:
+            return None
         try:
-            trend = self._decision_logger.get_trust_score_trend()
-            return trend or {}
+            return self._decision_logger.get_trust_score_trend(
+                contractor_nip=contractor_nip, days=30,
+            )
         except Exception as exc:
             logger.warning("[FactsAggregator] trust score trend fetch failed: %s", exc)
-            return {}
+            return None
 
-    async def _fetch_correction_stats(self) -> dict[str, Any]:
+    async def _fetch_correction_stats(self) -> CorrectionStats | None:
         """Pobierz globalne statystyki korekt użytkownika."""
         if self._decision_logger is None:
-            return {}
+            return None
         try:
-            stats = self._decision_logger.get_correction_stats()
-            return stats or {}
+            return self._decision_logger.get_user_correction_stats()
         except Exception as exc:
             logger.warning("[FactsAggregator] correction stats fetch failed: %s", exc)
-            return {}
+            return None
 
     async def _fetch_active_rules(self, issue_date: str) -> list[dict[str, Any]]:
         """Pobierz aktywne reguły podatkowe z RuleStore."""
@@ -976,15 +987,12 @@ class FactsAggregator:
             logger.warning("[FactsAggregator] vendor intelligence fetch failed: %s", exc)
             return ""
 
-    async def _fetch_global_recent_decisions(self) -> list[dict[str, Any]]:
+    async def _fetch_global_recent_decisions(self) -> list[GlobalDecision]:
         """Pobierz ostatnie globalne decyzje z DecisionLogger."""
-        if self._decision_logger is None or not hasattr(
-            self._decision_logger, "get_recent_decisions_global"
-        ):
+        if self._decision_logger is None:
             return []
         try:
-            decisions = self._decision_logger.get_recent_decisions_global(limit=5)
-            return decisions or []
+            return self._decision_logger.get_recent_global_decisions(limit=5)
         except Exception as exc:
             logger.warning("[FactsAggregator] global decisions fetch failed: %s", exc)
             return []
@@ -993,19 +1001,17 @@ class FactsAggregator:
         self,
         category: str = "",
         amount_gross: float = 0.0,
-    ) -> list[dict[str, Any]]:
+        limit: int = 3,
+    ) -> list[GlobalDecision]:
         """Pobierz globalnie podobne przypadki z DecisionLogger."""
-        if self._decision_logger is None or not hasattr(
-            self._decision_logger, "get_globally_similar_cases"
-        ):
+        if self._decision_logger is None:
             return []
         try:
-            cases = self._decision_logger.get_globally_similar_cases(
+            return self._decision_logger.get_globally_similar_cases(
                 category=category,
-                amount=amount_gross,
-                limit=3,
+                amount_gross=amount_gross,
+                limit=limit,
             )
-            return cases or []
         except Exception as exc:
             logger.warning("[FactsAggregator] globally similar cases fetch failed: %s", exc)
             return []

@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import uuid
 from msgspec import Struct, field
-from typing import Any
+from typing import Any, final
 
 import duckdb
 import pendulum
@@ -192,6 +192,7 @@ def seed_default_thresholds(conn: duckdb.DuckDBPyConnection) -> None:
 # ── RiskGuard ────────────────────────────────────────────────────────────────
 
 
+@final
 class RiskGuard:
     """Strażnik ryzyka — odczytuje aktywne reguły i zwraca próg ufności.
 

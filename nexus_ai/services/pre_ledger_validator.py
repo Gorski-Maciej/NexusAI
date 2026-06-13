@@ -8,23 +8,28 @@ Sprawdza:
   - Czy suma debetów = suma kredytów (bilans)
   - Czy kwoty nie przekraczają limitów
   - Deleguje do TaxInvariantGuard dla niezmienników matematycznych
+
+mypyc: wszystkie importy z tax.math_engine są bezpośrednie (modułowe),
+nie ma cyklu — tax/__init__.py importuje tax.math_engine przed tax.pipeline.
 """
 
 from __future__ import annotations
 
 from msgspec import Struct
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any
+from typing import Any, final
 
 import duckdb
 from structlog import get_logger
 
-if TYPE_CHECKING:
-    from services.currency_converter import Money as _Money
-    from tax.math_engine import InvoicePositions, InvoiceSummary, ValidationResult
-
-# Lazy imports for runtime to avoid circular dependency:
-#   pre_ledger_validator → tax.math_engine → (via tax.__init__) → tax.pipeline → pre_ledger_validator
+from nexus_ai.services.currency_converter import Money as _Money
+from nexus_ai.tax.math_engine import (
+    InvoicePositions,
+    InvoiceSummary,
+    ValidationResult,
+    money_to_grosze,
+    validate_invariants as validate_math_invariants,
+)
 
 logger = get_logger("nexus.pre_ledger_validator")
 
@@ -59,23 +64,6 @@ class LedgerValidationError(ValueError):
         self.details = details or {}
 
 
-# ── Helper: lazy import for tax.math_engine ────────────────────────────────
-
-
-def _get_math_engine():
-    """Lazy import to avoid circular dependency."""
-    from tax.math_engine import (
-        InvoicePositions,
-        InvoiceSummary,
-        ValidationResult,
-    )
-    from tax.math_engine import (
-        validate_invariants as validate_math_invariants,
-    )
-
-    return ValidationResult, InvoiceSummary, InvoicePositions, validate_math_invariants
-
-
 # ── Główna klasa walidatora ────────────────────────────────────────────────
 
 
@@ -101,8 +89,6 @@ class TransferSpec(Struct):
     def __post_init__(self) -> None:
         """Jeśli podano amount_money, wyciągnij amount_grosze automatycznie."""
         if self.amount_money is not None:
-            from tax.math_engine import money_to_grosze
-
             object.__setattr__(self, "amount_grosze", money_to_grosze(self.amount_money))
 
     @property
@@ -111,6 +97,7 @@ class TransferSpec(Struct):
         return self.amount_money.currency_code if self.amount_money is not None else None
 
 
+@final
 class PreLedgerValidator:
     """WalIDATOR przedwysyłkowy dla TigerBeetle.
 
@@ -209,8 +196,6 @@ class PreLedgerValidator:
         Returns:
             ValidationResult — is_valid=True iff wszystkie testy przejdą.
         """
-        ValidationResult, _, _, validate_math_invariants = _get_math_engine()  # noqa: N806
-
         errors: list[str] = []
 
         # 1. Walidacja niezmienników matematycznych (delegacja do TaxInvariantGuard)
@@ -378,21 +363,16 @@ class PreLedgerValidator:
         # Jeśli są Money, wykonaj balance check z Money
         money_transfers = [t for t in transfers if t.amount_money is not None]
         if money_transfers:
-            from services.currency_converter import Money
-
             # Waluta jest już zweryfikowana przez _validate_currency_consistency.
             # Zakładamy, że wszystkie Money mają tę samą walutę.
             ref_currency = money_transfers[0].currency
             if ref_currency is None:
                 return ["[BALANCE] Invalid state: Money transfer without currency"]
 
-            total_money = Money.zero(ref_currency)
+            total_money = _Money.zero(ref_currency)
             for t in money_transfers:
                 if t.amount_money is not None:
-                    total_money += t.amount_money  # type: ignore[operator]
-
-            # Decimal sum vs grosze sum — powinny być zgodne
-            from tax.math_engine import money_to_grosze
+                    total_money += t.amount_money
 
             computed_grosze = money_to_grosze(total_money)
             if computed_grosze != total_grosze:

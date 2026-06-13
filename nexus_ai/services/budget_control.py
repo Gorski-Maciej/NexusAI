@@ -9,7 +9,7 @@ Zgodnie z aa3fvcx.txt:
 from __future__ import annotations
 
 from msgspec import Struct
-from typing import Any
+from typing import Any, final
 
 import pendulum
 
@@ -28,6 +28,7 @@ class BudgetStatus(Struct, frozen=True):
     projected_usage_percent: float
 
 
+@final
 class BudgetaryControlEngine:
     """Kontrola budżetu — sprawdza limity dla kont księgowych w TigerBeetle."""
 

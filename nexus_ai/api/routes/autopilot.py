@@ -78,7 +78,6 @@ class AutopilotController(Controller):
                 # get_decision_summary queries DuckDB with cursor pagination
                 items = await logger.get_decision_summary(
                     limit=safe_limit + 1,  # +1 dla detection has_more
-                    cursor=cursor,
                 )
 
                 if not items:
@@ -92,7 +91,22 @@ class AutopilotController(Controller):
                     items, date_key="timestamp", id_key="invoice_id"
                 )
 
-                return {"items": items, "next_cursor": next_cursor, "has_more": has_more}
+                # Serializuj Struct items do dict (DTO wymaga dict/serializable)
+                return {
+                    "items": [
+                        {
+                            "invoice_id": item.invoice_id,
+                            "decision": item.decision,
+                            "trust_score": item.trust_score,
+                            "level": item.level,
+                            "pattern": item.pattern,
+                            "timestamp": item.timestamp,
+                        }
+                        for item in items
+                    ],
+                    "next_cursor": next_cursor,
+                    "has_more": has_more,
+                }
             finally:
                 mgr.close()
         except Exception:

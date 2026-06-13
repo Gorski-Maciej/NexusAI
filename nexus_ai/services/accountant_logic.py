@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from msgspec import Struct
-from typing import Any
+from typing import Any, final
 
 from nexus_ai.db.analytics import DuckDBManager
 
@@ -12,6 +12,7 @@ class AccountSuggestion(Struct):
     reason: str
 
 
+@final
 class ZPKEngine:
     """Semantic Chart of Accounts engine backed by DuckDB."""
 

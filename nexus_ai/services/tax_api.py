@@ -1,9 +1,14 @@
+from __future__ import annotations
+
+from typing import final
+
 import httpx
 import pendulum
 
 from nexus_ai.core.config import AppConfig
 
 
+@final
 class TaxApiService:
     def __init__(self, config: AppConfig):
         self.config = config

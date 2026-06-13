@@ -1,8 +1,13 @@
+from __future__ import annotations
+
+from typing import final
+
 import polars as pl
 
 from nexus_ai.db.analytics import DuckDBManager
 
 
+@final
 class SmartAnomalyDetector:
     """Wykrywa podejrzane faktury przy użyciu algorytmów statystycznych."""
 

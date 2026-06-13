@@ -16,7 +16,7 @@ DDL w migracji 0003_consolidate_service_tables (tabela: notifications).
 from __future__ import annotations
 
 import enum
-from typing import Any
+from typing import Any, final
 
 import pendulum
 from sqlalchemy import Engine, text
@@ -47,6 +47,7 @@ class NotificationCategory(enum.Enum):
     DAILY_BRIEFING = "daily_briefing"
 
 
+@final
 class NotificationManager:
     """Centralny system zarządzania powiadomieniami.
 

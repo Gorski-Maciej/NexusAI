@@ -8,6 +8,8 @@ Zgodnie z aa3fvcx.txt:
 
 from __future__ import annotations
 
+from typing import final
+
 import os
 import uuid
 from msgspec import Struct
@@ -26,6 +28,7 @@ class TwoPhaseTransfer(Struct):
     user_data_128: int = 0
 
 
+@final
 class TigerBeetleMapper:
     """Konwertuje polskie symbole kont (np. 401-02) na uint128 dla TigerBeetle.
 
@@ -42,6 +45,7 @@ class TigerBeetleMapper:
         return {acc: self.account_to_uint128(acc) for acc in accounts}
 
 
+@final
 class TigerBeetleClient:
     """Wrapper dla TigerBeetle — interface-ready, safe stub dla lokalnego developmentu.
 

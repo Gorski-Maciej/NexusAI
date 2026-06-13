@@ -7,6 +7,8 @@ Qwen2.5-VL (torch/transformers) usunięty — niepotrzebny w nowej architekturze
 
 from __future__ import annotations
 
+from typing import final
+
 import re
 from msgspec import Struct
 from pathlib import Path
@@ -34,6 +36,7 @@ def _to_float(value: Any) -> float | None:
         return None
 
 
+@final
 class VisionAgent:
     """Ekstrakcja wizualna z obrazów faktur przez heurystyki OCR.
 

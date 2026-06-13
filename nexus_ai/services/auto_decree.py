@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from typing import final
+
 from pathlib import Path
 
 from nexus_ai.core.config import AppConfig
 from nexus_ai.db.vector_store import VectorStore
 
 
+@final
 class AutoDecreeEngine:
     """Silnik automatycznego dekretowania faktur.
 

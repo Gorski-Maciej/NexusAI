@@ -10,7 +10,7 @@ cały proces decyzyjny nawet po latach.
 from __future__ import annotations
 
 import uuid
-from typing import Any
+from typing import Any, final
 
 import duckdb
 import pendulum
@@ -122,8 +122,12 @@ def _compute_current_hash(
 # ── Logger ───────────────────────────────────────────────────────────────────
 
 
+@final
 class DecisionTraceLogger:
     """Append-only logger for tax decisions with a cryptographic hash chain.
+
+    @final: mypyc devirtualizes all method calls on this class.
+    Used for EVERY tax decision — 2-5× speedup matters.
 
     Every call to :meth:`log` inserts an immutable record linked to the
     previous one via SHA-256. Tampering with any entry breaks the chain.

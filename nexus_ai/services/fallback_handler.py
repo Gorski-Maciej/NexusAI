@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import uuid
 from msgspec import Struct
-from typing import Any
+from typing import Any, final
 
 import duckdb
 import pendulum
@@ -83,6 +83,7 @@ def ensure_schema(conn: duckdb.DuckDBPyConnection) -> None:
 # ── Fallback Handler ────────────────────────────────────────────────────────
 
 
+@final
 class FallbackHandler:
     """Handler for no-matching-rule situations.
 

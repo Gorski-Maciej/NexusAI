@@ -11,7 +11,7 @@ import uuid
 import anyio
 from collections.abc import AsyncIterator
 from msgspec import Struct, field
-from typing import Any
+from typing import Any, final
 
 import nats
 import pendulum
@@ -63,6 +63,7 @@ class AlertHub(Struct):
             self._subscribers.discard((send, receive))
 
 
+@final
 class ReconciliationEngine:
     """Silnik uzgadniania transakcji bankowych z księgowymi w TigerBeetle."""
 
@@ -166,6 +167,7 @@ class ClearingAccountsConfig(Struct, frozen=True):
     provider_clearing_accounts: dict[str, int]
 
 
+@final
 class ClearingAccountsEngine:
     """Implementuje ekstrakcję opłat i uzgadnianie wypłat z idempotencją."""
 
@@ -247,6 +249,7 @@ class BankReconciliationConfig(Struct, frozen=True):
     rounding_threshold_minor: int = 10
 
 
+@final
 class BankReconciliationEngine:
     def __init__(self, tb_client: TigerBeetleClient, config: BankReconciliationConfig) -> None:
         self.tb_client = tb_client

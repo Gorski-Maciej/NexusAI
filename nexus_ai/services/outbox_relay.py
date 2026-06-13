@@ -33,7 +33,7 @@ from functools import cache
 import pendulum
 from collections.abc import Callable
 from msgspec import Struct
-from typing import Any
+from typing import Any, final
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -131,6 +131,7 @@ class UnknownEventTypeError(OutboxRelayError):
 # ── OutboxRelay ───────────────────────────────────────────────────────────────
 
 
+@final
 class OutboxRelay:
     """Transactional Outbox Relay — gwarantowana dostawa zdarzeń do TigerBeetle.
 

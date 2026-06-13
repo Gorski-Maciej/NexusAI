@@ -13,7 +13,7 @@ Komponenty:
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, final
 
 import anyio
 import duckdb
@@ -54,6 +54,7 @@ def ensure_cache_schema(conn: duckdb.DuckDBPyConnection) -> None:
 # ── Enricher ─────────────────────────────────────────────────────────────────
 
 
+@final
 class ContextEnricher:
     """Asynchroniczny enricher kontekstu z rejestrów państwowych.
 

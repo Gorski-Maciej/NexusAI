@@ -7,6 +7,8 @@ The `cryptography` package is used here as an optional dependency.
 
 from __future__ import annotations
 
+from typing import final
+
 
 # ── Optional: cryptography for X.509 certificates (niedostępne w nexus-crypto) ─
 try:
@@ -18,6 +20,7 @@ except ImportError:
     _HAS_CRYPTOGRAPHY = False
 
 
+@final
 class SignatureValidator:
     """Weryfikacja podpisów elektronicznych w oparciu o listę zaufaną.
 

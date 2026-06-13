@@ -6,6 +6,8 @@ Zgodnie z aa3fvcx.txt:
 - amount jako int (grosze), bez Decimal
 """
 
+from __future__ import annotations
+
 from nexus_ai.services.tigerbeetle.client import (
     TigerBeetleClient,
     TigerBeetleMapper,

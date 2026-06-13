@@ -13,7 +13,7 @@ DDL w migracji 0003_consolidate_service_tables.
 from __future__ import annotations
 
 import enum
-from typing import Any, Callable
+from typing import Any, Callable, final
 
 import pendulum
 from sqlalchemy import Engine, text
@@ -44,6 +44,7 @@ class ReminderStatus(enum.Enum):
     COMPLETED = "completed"
 
 
+@final
 class Scheduler:
     """Zarządzanie terminami i cyklicznymi zadaniami.
 

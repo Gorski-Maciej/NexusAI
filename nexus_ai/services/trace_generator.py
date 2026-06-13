@@ -17,7 +17,7 @@ Usage:
 from __future__ import annotations
 
 import re
-from typing import Any
+from typing import Any, final
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 
@@ -61,6 +61,7 @@ DEFAULT_DESCRIPTION_TEMPLATE = (
 _TEMPLATE_PATTERN = re.compile(r"\{(\w+)\}")
 
 
+@final
 class TraceGenerator:
     """Generator Ścieżki Decyzyjnej — tworzy czytelny opis decyzji.
 

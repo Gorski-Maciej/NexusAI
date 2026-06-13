@@ -1,9 +1,14 @@
+from __future__ import annotations
+
+from typing import final
+
 from sqlalchemy.orm import Session
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.models import AuditLog
 
 
+@final
 class AuditService:
     @staticmethod
     def log_change(

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from typing import Any
+from typing import Any, final
 
 import pendulum
 
@@ -39,6 +39,7 @@ def ensure_forensic_audit_schema(duckdb: DuckDBManager) -> None:
     duckdb.execute("CREATE INDEX IF NOT EXISTS idx_audit_log_timestamp ON audit_log(timestamp)")
 
 
+@final
 class AuditLogger:
     """Hash-chained audit logger backed by DuckDB."""
 

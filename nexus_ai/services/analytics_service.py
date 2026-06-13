@@ -1,6 +1,11 @@
+from __future__ import annotations
+
+from typing import final
+
 from nexus_ai.db.analytics import DuckDBManager
 
 
+@final
 class AnalyticsService:
     def __init__(self, duckdb: DuckDBManager):
         self.duckdb = duckdb
