@@ -40,6 +40,8 @@ REM ── Parse arguments ─────────────────�
 set "SKIP_INSTALL="
 set "NUITKA_ONLY="
 set "CLEAN_BUILD="
+set "USE_CLANG="
+set "USE_ZIG="
 set "SHOW_HELP="
 
 :parse_args
@@ -47,6 +49,8 @@ if "%~1"=="" goto :done_parse
 if /I "%~1"=="--skip-install" set "SKIP_INSTALL=1"
 if /I "%~1"=="--nuitka-only" set "NUITKA_ONLY=1"
 if /I "%~1"=="--clean" set "CLEAN_BUILD=1"
+if /I "%~1"=="--use-clang" set "USE_CLANG=1"
+if /I "%~1"=="--use-zig" set "USE_ZIG=1"
 if /I "%~1"=="--help" set "SHOW_HELP=1"
 shift
 goto :parse_args
@@ -59,6 +63,8 @@ if defined SHOW_HELP (
     echo   --skip-install     Skip pip install of dependencies
     echo   --nuitka-only      Create only the .exe, skip Inno Setup
     echo   --clean            Clean build artifacts first
+    echo   --use-clang        Use Clang instead of MSVC/GCC (smaller binary)
+    echo   --use-zig          Use Zig as linker (cross-compilation ready)
     echo   --help             Show this help
     exit /b 0
 )
@@ -143,11 +149,53 @@ echo   Using pyproject.toml Nuitka configuration for onefile build.
 echo   To see full config, check [tool.nuitka] section in pyproject.toml.
 echo.
 
+REM ── Check for ccache ────────────────────────────────────────────────────
+echo   Checking for ccache...
+where /q ccache 2>nul
+if not errorlevel 1 (
+    echo   ccache: FOUND — 10-50x faster rebuilds
+    if not defined CCACHE_DIR set "CCACHE_DIR=%USERPROFILE%\.cache\ccache"
+    if not defined CCACHE_MAXSIZE set "CCACHE_MAXSIZE=5G"
+    if not exist "%CCACHE_DIR%" mkdir "%CCACHE_DIR%"
+) else (
+    echo   ccache: NOT FOUND — install for faster rebuilds
+    echo   Install: choco install ccache
+)
+
+REM ── Setup NUITKA_CACHE_DIR ──────────────────────────────────────────────
+if not defined NUITKA_CACHE_DIR set "NUITKA_CACHE_DIR=%USERPROFILE%\.cache\nuitka"
+if not exist "%NUITKA_CACHE_DIR%" mkdir "%NUITKA_CACHE_DIR%"
+echo   NUITKA_CACHE_DIR: %NUITKA_CACHE_DIR%
+echo.
+
+REM ── Select compiler (Clang vs MSVC vs Zig) ─────────────────────────────
+set "NUITKA_EXTRA_FLAGS="
+if defined USE_CLANG (
+    where /q clang 2>nul
+    if not errorlevel 1 (
+        echo   Clang: ENABLED — smaller binary, faster compilation
+        set "NUITKA_EXTRA_FLAGS=%NUITKA_EXTRA_FLAGS% --clang"
+    ) else (
+        echo   [WARN] Clang requested but not found on PATH.
+    )
+)
+if defined USE_ZIG (
+    where /q zig 2>nul
+    if not errorlevel 1 (
+        echo   Zig: ENABLED — faster linking, cross-compilation ready
+        set "NUITKA_EXTRA_FLAGS=%NUITKA_EXTRA_FLAGS% --zig"
+    ) else (
+        echo   [WARN] Zig requested but not found on PATH.
+    )
+)
+
 cd /d "%PROJECT_ROOT%"
 python -m nuitka ^
     --project-name=nexus-ai ^
     --output-dir="%DIST_DIR%" ^
     --output-name="%EXE_NAME%" ^
+    --lto=yes ^
+    %NUITKA_EXTRA_FLAGS% ^
     main.py
 
 if errorlevel 1 (
@@ -159,6 +207,14 @@ if errorlevel 1 (
     echo   - Missing C compiler (install MSVC or MinGW)
     echo   - Out of memory during compilation
     exit /b 1
+)
+
+REM ── Show ccache stats ──────────────────────────────────────────────────
+where /q ccache 2>nul
+if not errorlevel 1 (
+    echo.
+    echo   ccache statistics:
+    ccache --show-stats 2>&1
 )
 echo.
 echo   Done. Executable: %DIST_DIR%\%EXE_NAME%.exe

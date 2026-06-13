@@ -521,11 +521,54 @@ scripts = {
 #   iscc build_scripts/setup.iss
 #
 [tool.nuitka]
-# ── Core build options ───────────────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════════════════════
+# Core build options
+# ═══════════════════════════════════════════════════════════════════════════
 onefile = true                  # Pojedynczy plik .exe (nie folder)
 standalone = true               # Samodzielny, bez zależności systemowych
 
-# ── Plugins ──────────────────────────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════════════════════
+# OPTYMALIZACJE WYDAJNOŚCI
+# ═══════════════════════════════════════════════════════════════════════════
+# LTO (Link Time Optimization) — 5-15% szybszy kod, mniejszy binary
+lto = true
+
+# Python flags są zdefiniowane warunkowo w main.py (nuitka-project-if: NEXUS_DEBUG)
+# Tutaj NIE definiujemy python-flag, aby nie nadpisywać logiki warunkowej.
+# Główna konfiguracja: main.py → dyrektywy nuitka-project:
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ONEFILE CACHE — szybki start przy kolejnych uruchomieniach
+# ═══════════════════════════════════════════════════════════════════════════
+onefile-tempdir-spec = "{CACHE_DIR}/NexusAI/{PRODUCT}/{VERSION}"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# METADATA APLIKACJI — widoczne we właściwościach pliku na Windows
+# ═══════════════════════════════════════════════════════════════════════════
+product-name = "NexusAI"
+copyright = "© 2026 NexusAI Team"
+file-description = "NexusAI — AI-Powered Accounting System"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# UPX — kompresja finalnego binary (30-50% mniejszy plik)
+# UPX to zewnętrzne narzędzie, NIE plugin Nuitka.
+# Instalacja: apt install upx (Linux), choco install upx (Windows), brew install upx (macOS)
+# Użycie po buildzie:
+#   upx --best --lzma dist/NexusAI
+# Uwaga: UPX wydłuża start aplikacji o ~100-200ms (czas dekompresji)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Custom user plugin — zaawansowana kontrola nad kompilacją
+# ═══════════════════════════════════════════════════════════════════════════
+# user-plugin jest zdefiniowane w main.py (dyrektywa nuitka-project:)
+# Plik: nexus_ai/build/nuitka_plugins.py
+# Funkcje: force-compile modułów krytycznych, hidden imports, DLL handling,
+#          data file inclusion, build logging, post-build verification
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Plugins — wszystkie niezbędne dla stacku NexusAI
+# ═══════════════════════════════════════════════════════════════════════════
 enable-plugin = [
     "pydantic",                  # Obsługa Pydantic/SQLModel
     "numpy",                     # Obsługa NumPy

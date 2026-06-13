@@ -8,6 +8,18 @@ przez TaxPipeline w jeden przepływ danych:
   - Audyt kryptograficzny (DecisionTraceLogger, SHA-256 hash chain)
 """
 
+from __future__ import annotations
+
+# ── Nuitka compilation guard ── ─────────────────────────────────────────────
+# When compiled by Nuitka, __compiled__ is True. Use it to skip fallback
+# import paths that are only needed in interpreted/dev mode.
+# Standard Nuitka idiom: try/except NameError.
+try:
+    __compiled__  # type: ignore[name-defined]
+    _NUITKA_COMPILED: bool = True
+except NameError:
+    _NUITKA_COMPILED: bool = False
+
 from nexus_ai.core.context_interpreter import (
     ALLOWED_KEYS,
     ContextInterpreter,

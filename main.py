@@ -27,9 +27,39 @@ Build command:
 # These directives make `python -m nuitka main.py` work standalone.
 # pyproject.toml [tool.nuitka] remains canonical for all builds.
 
+# ═══════════════════════════════════════════════════════════════════════════
+# TRYB KOMPILACJI
+# ═══════════════════════════════════════════════════════════════════════════
 # nuitka-project: --onefile
 # nuitka-project: --standalone
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PLUGINY — wszystkie niezbędne dla stacku NexusAI
+# ═══════════════════════════════════════════════════════════════════════════
 # nuitka-project: --enable-plugin=pydantic,numpy,anti-bloat,mimalloc,multiprocessing,trio
+# nuitka-project: --user-plugin=nexus_ai/build/nuitka_plugins.py
+
+# ═══════════════════════════════════════════════════════════════════════════
+# OPTYMALIZACJE WYDAJNOŚCI (LTO + Python flags)
+# ═══════════════════════════════════════════════════════════════════════════
+# LTO (Link Time Optimization) — 5-15% szybszy kod, mniejszy binary
+# nuitka-project: --lto=yes
+
+# Python flags dla release build (wyłączone w debug)
+# Ustaw NEXUS_DEBUG=1 przed `python -m nuitka main.py` aby wyłączyć te optymalizacje
+# nuitka-project-if: os.environ.get("NEXUS_DEBUG", "0") != "1":
+# nuitka-project: --python-flag=no_asserts
+# nuitka-project: --python-flag=no_docstrings
+# nuitka-project: --python-flag=isolated
+
+# (Uwaga: [tool.nuitka] w pyproject.toml również definiuje python-flag —
+#  jeśli obie konfiguracje są aktywne, ta w main.py ma wyższy priorytet
+#  dla warunkowych flag. Dla spójności, pyproject.toml definiuje te same
+#  flagi, co zapewnia działanie nawet gdy main.py nie jest używany.)
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PACKAGE INCLUDE — wszystkie pakiety aplikacji + zależności
+# ═══════════════════════════════════════════════════════════════════════════
 # nuitka-project: --include-package=nexus_ai
 # nuitka-project: --include-package=nexus_crypto
 # nuitka-project: --include-package=granian
@@ -39,13 +69,50 @@ Build command:
 # nuitka-project: --include-package=stamina
 # nuitka-project: --include-package=loguru
 # nuitka-project: --include-package=pendulum
-# nuitka-project: --nofollow-import-to=tkinter,unittest,distutils,setuptools,pip,pdb,test,ensurepip,lib2to3,idlelib,turtle,venv
+# nuitka-project: --include-package=duckdb
+# nuitka-project: --include-package=polars
+# nuitka-project: --include-package=httpx
+# nuitka-project: --include-package=nats
+# nuitka-project: --include-package=taskiq
+# nuitka-project: --include-package=llama_cpp
+
+# ═══════════════════════════════════════════════════════════════════════════
+# NOFOLLOW — wykluczenie zbędnych modułów (oszczędność 5-10 MB)
+# ═══════════════════════════════════════════════════════════════════════════
+# nuitka-project: --nofollow-import-to=tkinter,unittest,distutils,setuptools,pip,pdb,test,ensurepip,lib2to3,idlelib,turtle,venv,http.server,socketserver,xmlrpc,cgi,dbm,msilib,smtpd,telnetlib,uu,xdrlib
+
+# ═══════════════════════════════════════════════════════════════════════════
+# METADATA APLIKACJI — wersja, copyright, nazwa produktu
+# ═══════════════════════════════════════════════════════════════════════════
+# nuitka-project-set: VERSION = __import__("json").load(open("{MAIN_DIRECTORY}/config/version.json"))["version"]
+# nuitka-project: --product-name=NexusAI
+# nuitka-project: --file-version={VERSION}
+# nuitka-project: --copyright="© 2026 NexusAI Team"
+# nuitka-project: --file-description="NexusAI — AI-Powered Accounting System"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ONEFILE CACHE — szybki start (unikanie wielokrotnego rozpakowywania)
+# ═══════════════════════════════════════════════════════════════════════════
+# nuitka-project: --onefile-tempdir-spec={CACHE_DIR}/NexusAI/{PRODUCT}/{VERSION}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# RAPORT KOMPILACJI — debugowanie i compliance
+# ═══════════════════════════════════════════════════════════════════════════
+# nuitka-project-if: os.environ.get("NEXUS_BUILD_REPORT", "0") == "1":
+# nuitka-project: --report=build/compilation-report.xml
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PLATFORM-SPECIFIC
+# ═══════════════════════════════════════════════════════════════════════════
 # nuitka-project-if: os.name == "nt":
 # nuitka-project: --windows-icon-from-ico=assets/nexus.ico
 # nuitka-project: --windows-console-mode=disable
 # nuitka-project-else:
 # nuitka-project: --linux-onefile-icon=assets/nexus.png
 
+# ═══════════════════════════════════════════════════════════════════════════
+# INFRASTRUKTURA KOMPILACJI
+# ═══════════════════════════════════════════════════════════════════════════
 # nuitka-project: --jobs=0
 # nuitka-project: --assume-yes-for-downloads
 

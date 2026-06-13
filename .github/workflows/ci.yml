@@ -190,6 +190,15 @@ jobs:
       - name: List compiled *.so files
         run: find . -name "*.so" -type f | sort | head -20
 
+      - name: Upload mypyc compiled .so files (for Nuitka build step)
+        uses: actions/upload-artifact@v4
+        with:
+          name: mypyc-compiled-so
+          path: |
+            **/*.cpython-313*.so
+            **/*.so
+          retention-days: 1
+
   # ── Benchmark: mimalloc vs system allocator ────────────────────────────
   # Porównuje wydajność z mimalloc (LD_PRELOAD) i bez (system malloc).
   # Mierzy: czas alokacji, fragmentację, zużycie RAM.
@@ -512,9 +521,121 @@ jobs:
           path: nexus_ai/rust/target/wheels/*.whl
           retention-days: 7
 
-  # ── Build standalone .exe: Nuitka przez hatch ───────────────────────────────
-  build-nuitka:
+  # ── PGO (Profile-Guided Optimization) — Nuitka ────────────────────────────
+  # PGO tworzy instrumentowany binary, uruchamia go z reprezentatywnymi danymi
+  # testowymi, a następnie przebudowuje z zebranym profilem.
+  # Efekt: 15-40% szybszy kod, szczególnie w pętlach i gorących ścieżkach.
+  #
+  # Proces:
+  #   1. Build z --pgo (instrumentowany binary → main.pgo)
+  #   2. Uruchom instrumentowany binary z sample data (zbiera profile)
+  #   3. Rebuild bez --pgo (Nuitka automatycznie używa zebranych profili)
+  #
+  # Uwaga: --pgo wymaga GCC (--clang nie wspiera --pgo).
+  pgo-benchmark:
     needs: [test-hatch-matrix, build-rust]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CCACHE_DIR: ~/.cache/ccache
+      NUITKA_CACHE_DIR: ~/.cache/nuitka
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pipx
+        run: pip install pipx && pipx ensurepath
+
+      - name: Install hatch
+        run: pipx install hatch
+
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ccache
+          key: ccache-pgo-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'nexus_ai/**/*.py') }}
+          restore-keys: |
+            ccache-pgo-${{ runner.os }}-
+
+      - name: Cache NUITKA_CACHE_DIR
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/nuitka
+          key: nuitka-pgo-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            nuitka-pgo-${{ runner.os }}-
+
+      - name: Install system deps (ccache, GCC)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ccache g++
+
+      - name: Download Rust wheels
+        uses: actions/download-artifact@v4
+        with:
+          name: nexus-crypto-ubuntu-latest
+          path: dist/wheels/
+
+      - name: Step 1 — Build instrumented binary (--pgo)
+        id: pgo-build
+        continue-on-error: true
+        run: |
+          echo "=== Step 1: Building instrumented binary (--pgo) ==="
+          pip install dist/wheels/nexus_crypto-*.whl
+          hatch run build:build-nuitka -- --pgo
+          echo "pgo_build_exit=$?" >> $GITHUB_OUTPUT
+          # The PGO instrumented binary is named main.pgo or similar
+          ls -la dist/ 2>/dev/null || echo "No dist files yet"
+
+      - name: Step 2 — Run instrumented binary with sample data
+        if: steps.pgo-build.outputs.pgo_build_exit == '0'
+        id: pgo-profile
+        continue-on-error: true
+        run: |
+          echo "=== Step 2: Running instrumented binary to collect profiles ==="
+          # Find the PGO instrumented binary
+          PGO_BIN=$(find dist -name "*.pgo" -o -name "*pgo*" 2>/dev/null | head -1)
+          if [ -z "$PGO_BIN" ]; then
+            # Fallback: main binary was built with --pgo, just run it
+            PGO_BIN=$(find dist -name "NexusAI*" -type f 2>/dev/null | head -1)
+          fi
+          if [ -n "$PGO_BIN" ]; then
+            echo "Running PGO binary: $PGO_BIN"
+            chmod +x "$PGO_BIN"
+            # Run with --help to generate baseline profile
+            "$PGO_BIN" --help 2>&1 || true
+            # Run with sample CLI commands to exercise hot paths
+            "$PGO_BIN" --version 2>&1 || true
+            # Run health check (if supported)
+            "$PGO_BIN" doctor --quick 2>&1 || true
+          else
+            echo "No PGO binary found in dist/"
+            ls -la dist/ 2>/dev/null
+          fi
+          echo "pgo_profile_exit=$?" >> $GITHUB_OUTPUT
+
+      - name: Step 3 — Rebuild optimized binary (PGO profiles collected)
+        if: steps.pgo-build.outputs.pgo_build_exit == '0'
+        run: |
+          echo "=== Step 3: Rebuilding optimized binary with PGO profiles ==="
+          # Rebuild WITHOUT --pgo — Nuitka automatically uses the collected profiles
+          hatch run build:build-nuitka
+          echo "Rebuild complete."
+
+      - name: Verify final binary
+        run: |
+          echo "Final binary:"
+          ls -lh dist/NexusAI* 2>/dev/null || echo "Binary not found in dist/"
+          file dist/NexusAI* 2>/dev/null || true
+
+      - name: Upload PGO-optimized binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-ai-pgo-ubuntu-latest
+          path: dist/nexus-ai*
+          retention-days: 30
+
+  # ── Build standalone .exe: Nuitka przez hatch (z mypyc .so) ───────────────
+  build-nuitka:
+    needs: [test-hatch-matrix, build-rust, mypyc-compile]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
@@ -571,7 +692,14 @@ jobs:
           name: nexus-crypto-${{ matrix.os }}
           path: dist/wheels/
 
-      - name: Build with Nuitka via hatch
+      - name: Download mypyc compiled .so files (Linux only — Nuitka picks them up)
+        if: runner.os == 'Linux'
+        uses: actions/download-artifact@v4
+        with:
+          name: mypyc-compiled-so
+          path: ./
+
+      - name: Build with Nuitka via hatch (prefer-source-code=no picks up .so)
         run: hatch run build:build-nuitka
         env:
           NUITKA_CACHE_DIR: ~/.cache/nuitka

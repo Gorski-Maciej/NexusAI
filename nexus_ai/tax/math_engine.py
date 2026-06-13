@@ -37,11 +37,22 @@ logger = logging.getLogger("nexus.tax.math_engine")
 
 _GROSZ = Decimal("0.01")
 
+# ── Nuitka compilation guard ── ─────────────────────────────────────────────
+# __compiled__ is set by Nuitka when this module is compiled to C.
+# Use it to skip import-time checks and enable aggressive optimizations.
+# Standard Nuitka idiom: try/except NameError instead of __builtins__ inspection.
+try:
+    __compiled__  # type: ignore[name-defined]
+    _NUITKA_COMPILED: bool = True
+except NameError:
+    _NUITKA_COMPILED: bool = False
+
 # ── Fallback flag ───────────────────────────────────────────────────────────
 
 _HAS_NATIVE_RUST = False
 
 # ── Try to load the native Rust TaxMathEngine ──────────────────────────────
+# When compiled by Nuitka, skip the import-time logging (logger might not be ready yet).
 
 try:
     from nexus_crypto._core import (
@@ -57,13 +68,15 @@ try:
         validate_invariants as _rust_validate_invariants,
     )
     _HAS_NATIVE_RUST = True
-    logger.info(
-        "TaxMathEngine: Rust native extension loaded — using rust_decimal for core math"
-    )
+    if not _NUITKA_COMPILED:
+        logger.info(
+            "TaxMathEngine: Rust native extension loaded — using rust_decimal for core math"
+        )
 except (ImportError, OSError):
-    logger.info(
-        "TaxMathEngine: Rust native not available — using pure Python Decimal fallback"
-    )
+    if not _NUITKA_COMPILED:
+        logger.info(
+            "TaxMathEngine: Rust native not available — using pure Python Decimal fallback"
+        )
 
 
 # ── Exceptions ──────────────────────────────────────────────────────────────

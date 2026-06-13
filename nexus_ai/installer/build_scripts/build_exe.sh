@@ -55,12 +55,16 @@ EXE_NAME="NexusAI"
 SKIP_INSTALL=false
 NUITKA_ONLY=false
 CLEAN_BUILD=false
+USE_CLANG=false
+USE_ZIG=false
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --skip-install) SKIP_INSTALL=true; shift ;;
         --nuitka-only)  NUITKA_ONLY=true; shift ;;
         --clean)        CLEAN_BUILD=true; shift ;;
+        --use-clang)    USE_CLANG=true; shift ;;
+        --use-zig)      USE_ZIG=true; shift ;;
         --help|-h)
             echo "Usage: $0 [options]"
             echo ""
@@ -68,6 +72,8 @@ while [[ $# -gt 0 ]]; do
             echo "  --skip-install     Skip pip install of dependencies"
             echo "  --nuitka-only      Create only the binary, skip packaging"
             echo "  --clean            Clean build artifacts first"
+            echo "  --use-clang        Use Clang instead of GCC (smaller binary, better diagnostics)"
+            echo "  --use-zig          Use Zig as linker (faster linking, cross-compilation ready)"
             echo "  --help             Show this help"
             exit 0
             ;;
@@ -162,10 +168,54 @@ case "$(uname -s)" in
     *)       EXE_SUFFIX="" ;;
 esac
 
+# ── Detect Nuitka cache ──────────────────────────────────────────────────
+echo "  Checking ccache..."
+if command -v ccache &>/dev/null; then
+    echo "  ccache: FOUND — 10-50× faster rebuilds"
+    export CCACHE_DIR="${CCACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/ccache}"
+    export CCACHE_MAXSIZE=${CCACHE_MAXSIZE:-5G}
+    mkdir -p "$CCACHE_DIR"
+else
+    echo "  ccache: NOT FOUND — install for faster rebuilds"
+    echo "    Linux: apt install ccache"
+    echo "    macOS: brew install ccache"
+fi
+
+# ── Setup NUITKA_CACHE_DIR ───────────────────────────────────────────────
+export NUITKA_CACHE_DIR="${NUITKA_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/nuitka}"
+mkdir -p "$NUITKA_CACHE_DIR"
+echo "  NUITKA_CACHE_DIR: $NUITKA_CACHE_DIR"
+echo ""
+
+# ── Select compiler (Clang vs GCC vs Zig) ────────────────────────────────
+NUITKA_EXTRA_FLAGS=""
+if $USE_CLANG; then
+    if command -v clang &>/dev/null; then
+        echo "  Clang: ENABLED — smaller binary, faster compilation, better diagnostics"
+        NUITKA_EXTRA_FLAGS="$NUITKA_EXTRA_FLAGS --clang"
+    else
+        echo "  [WARN] Clang requested but not found. Install: apt install clang"
+    fi
+fi
+if $USE_ZIG; then
+    if command -v zig &>/dev/null; then
+        echo "  Zig: ENABLED — faster linking, cross-compilation ready"
+        NUITKA_EXTRA_FLAGS="$NUITKA_EXTRA_FLAGS --zig"
+    else
+        echo "  [WARN] Zig requested but not found. Install: https://ziglang.org/download/"
+    fi
+fi
+
+# ── Run Nuitka ───────────────────────────────────────────────────────────
+# Uwaga: flagi poniżej są dopełnieniem konfiguracji z pyproject.toml i main.py
+# Główna konfiguracja Nuitka jest w dyrektywach nuitka-project: w main.py
+# Dodatkowe flagi poniżej są wymagane tylko gdy pyproject.toml/main.py nie są używane
 "$PYTHON" -m nuitka \
     --project-name=nexus-ai \
     --output-dir="$DIST_DIR" \
     --output-name="$EXE_NAME" \
+    --lto=yes \
+    $NUITKA_EXTRA_FLAGS \
     main.py
 
 NUITKA_EXIT=$?
@@ -178,6 +228,13 @@ if [ $NUITKA_EXIT -ne 0 ]; then
     echo "  - Missing Python development headers (apt install python3-dev)"
     echo "  - Out of memory during compilation (try: export NUITKA_JOBS=2)"
     exit 1
+fi
+
+# ── Show ccache stats ────────────────────────────────────────────────────
+if command -v ccache &>/dev/null; then
+    echo ""
+    echo "  ccache statistics:"
+    ccache --show-stats 2>&1 | sed 's/^/    /'
 fi
 
 echo ""
