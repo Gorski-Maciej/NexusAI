@@ -1,6 +1,6 @@
 [package]
 name = "nexus-crypto"
-version = "0.1.0"
+version = "0.3.0"
 edition = "2021"
 description = "NexusAI — custom crypto module (AEAD, Argon2id, SHA-256) in Rust + PyO3"
 
@@ -9,7 +9,8 @@ name = "nexus_crypto"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.22", features = ["extension-module"] }
+pyo3 = { version = "0.22", features = ["extension-module", "experimental-inspect"] }
+pyo3-log = "0.11"
 chacha20poly1305 = "0.10"
 argon2 = "0.5"
 sha2 = "0.10"
@@ -18,6 +19,14 @@ rand = "0.9"
 hex = "0.4"
 zeroize = "1"
 hmac = "0.12"
+log = "0.4"
+rust_decimal = "1.36"
+jsonwebtoken = "9"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+base64 = "0.22"
+quick-xml = "0.36"
+chrono = { version = "0.4", default-features = false, features = ["std"] }
 
 [profile.release]
 opt-level = 3

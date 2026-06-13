@@ -4,9 +4,13 @@ build-backend = "maturin"
 
 [project]
 name = "nexus-crypto"
-version = "0.2.0"
-description = "NexusAI custom crypto module — Rust+PyO3 native extension"
+version = "0.3.0"
+description = "NexusAI custom crypto module — Rust+PyO3 native extension with custom exceptions and pyo3-log"
 requires-python = ">=3.13"
+
+[tool.maturin]
+module-name = "nexus_crypto._core"
+features = ["pyo3/extension-module"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["."]
