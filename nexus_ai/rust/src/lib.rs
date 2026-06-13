@@ -34,8 +34,13 @@ mod jwt;
 mod ksef;
 mod mac;
 mod password;
+mod rule_engine;
+mod rules_engine;
 mod secure;
+mod temporal_manager;
 mod tax;
+mod tax_pipeline;
+mod trace_logger;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Python bindings (PyO3)
@@ -321,6 +326,21 @@ fn _core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Register KSeF XML generator
     ksef::register(m)?;
 
-    log::info!("nexus_crypto: registered 9 functions, 1 class, 5 custom exceptions, TaxMathEngine, JWT, KSeF");
+    // Register TaxPipeline (context → rules → math → invariants → audit)
+    tax_pipeline::register(m)?;
+
+    // Register TraceLogger (SHA-256 hash chain + verify_chain_integrity)
+    trace_logger::register(m)?;
+
+    // Register RuleEngine (PriorityEngine — first-match-wins)
+    rule_engine::register(m)?;
+
+    // Register RulesEngine (self-contained pipeline)
+    rules_engine::register(m)?;
+
+    // Register TemporalManager (date filtering, overlap validation)
+    temporal_manager::register(m)?;
+
+    log::info!("nexus_crypto: registered 10 functions, 1 class, 5 custom exceptions, TaxMathEngine, JWT, KSeF, TaxPipeline, TraceLogger, RulesEngine, TemporalManager");
     Ok(())
 }

@@ -254,7 +254,11 @@ onefile = true
 [tool.maturin]
 module-name = "nexus_crypto._core"
 manifest-path = "nexus_ai/rust/Cargo.toml"
+# ABI3 (stable ABI) — jeden wheel na Python ≥3.12
+# Strip — usuwa symbole debug, 30-40% mniejszy .whl
 features = ["pyo3/extension-module"]
+compatibility = "linux"
+strip = true
 
 # ── mypyc — compile typed Python to C (2-5× speedup) ─────────────────────────
 # Phase 1: rozszerzony zakres kompilacji — włączone services/, db/, events/

@@ -136,8 +136,8 @@ run = "uv run python -m nexus_ai.scripts.doctor"
 # ── Build ────────────────────────────────────────────────────────────────────
 
 [tasks.build-rust]
-description = "Skompiluj nexus-crypto (Rust + PyO3) — tryb develop"
-run = "cd nexus_ai/rust && maturin develop --release"
+description = "Skompiluj nexus-crypto (Rust + PyO3) — tryb develop\n  \"--strip\" usuwa symbole debug → 30-40% mniejszy .whl\n  ABI3 (stable ABI) → jeden wheel na Python ≥3.12"
+run = "cd nexus_ai/rust && maturin develop --release --strip"
 
 [tasks.mypyc-optimize]
 description = "🧬 Kompilacja mypyc — typowany Python → C (2-5× przyspieszenie)\n  Dla strict mode: mise run mypyc-optimize-tax"
@@ -243,8 +243,8 @@ description = "🧬 Kompilacja mypyc --strict z disallow_untyped_defs — tylko 
 run = "uv run mypyc --strict --disallow-untyped-defs nexus_ai/tax"
 
 [tasks.build-rust-release]
-description = "Skompiluj nexus-crypto (koło binarne .whl)"
-run = "cd nexus_ai/rust && maturin build --release"
+description = "Skompiluj nexus-crypto (koło binarne .whl)\n  --strip: usuwa symbole debug → 30-40% mniejszy .whl\n  ABI3: jeden wheel na Python ≥3.12 (3.12, 3.13, 3.13t)"
+run = "cd nexus_ai/rust && maturin build --release --strip"
 
 [tasks.build-nuitka]
 description = "Skompiluj aplikację do samodzielnego .exe (Nuitka)"

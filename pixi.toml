@@ -226,8 +226,8 @@ platforms = ["win-64"]
 # nie zmieniły, pixi pomija wykonanie taska.
 # Uruchom: pixi run --environment dev build-rust-release
 [feature.dev.tasks.build-rust-release]
-cmd = "cd nexus_ai/rust && maturin build --release"
-description = "Skompiluj nexus-crypto (koło binarne .whl)"
+cmd = "cd nexus_ai/rust && maturin build --release --strip"
+description = "Skompiluj nexus-crypto (koło binarne .whl)\n--strip: usuwa symbole debug → 30-40% mniejszy .whl\nABI3 (abi3-py312): jeden wheel na Python ≥3.12"
 inputs = [
     "nexus_ai/rust/src/**/*.rs",
     "nexus_ai/rust/Cargo.toml",

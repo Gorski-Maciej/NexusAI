@@ -2,6 +2,10 @@
 // TaxMathEngine — Integer-only tax arithmetic in Rust + PyO3
 // ═══════════════════════════════════════════════════════════════════════════════
 //
+// Structured logging: log::info!, log::debug!, log::warn!
+// All logs are forwarded to Python structlog via pyo3-log (init in lib.rs)
+// ═══════════════════════════════════════════════════════════════════════════════
+//
 // Zgodnie z aa3fvcx.txt:
 // - Całkowity zakaz float — wszystkie kwoty w groszach (i64)
 // - ROUND_HALF_UP (MidpointAwayFromZero) dla wszystkich zaokrągleń
@@ -64,6 +68,7 @@ impl Money {
 
     /// Zwraca kwotę jako string z 2 miejscami po przecinku (np. "123.45 PLN").
     fn __str__(&self) -> String {
+        log::debug!("Money.__str__: {} {} gr", self.currency, self.amount_cents);
         self.to_string_impl()
     }
 
@@ -88,11 +93,21 @@ impl Money {
 
     fn __add__(&self, other: &Self) -> PyResult<Self> {
         if self.currency != other.currency {
+            log::warn!(
+                "Money.__add__: currency mismatch: {} vs {}",
+                self.currency, other.currency
+            );
             return Err(PyValueError::new_err(format!(
                 "Currency mismatch: cannot add {} and {}",
                 self.currency, other.currency
             )));
         }
+        log::debug!(
+            "Money.__add__: {} {} gr + {} {} gr = {} gr",
+            self.currency, self.amount_cents,
+            other.currency, other.amount_cents,
+            self.amount_cents + other.amount_cents
+        );
         Ok(Money {
             amount_cents: self.amount_cents + other.amount_cents,
             currency: self.currency.clone(),
@@ -101,11 +116,21 @@ impl Money {
 
     fn __sub__(&self, other: &Self) -> PyResult<Self> {
         if self.currency != other.currency {
+            log::warn!(
+                "Money.__sub__: currency mismatch: {} vs {}",
+                self.currency, other.currency
+            );
             return Err(PyValueError::new_err(format!(
                 "Currency mismatch: cannot subtract {} and {}",
                 self.currency, other.currency
             )));
         }
+        log::debug!(
+            "Money.__sub__: {} {} gr - {} {} gr = {} gr",
+            self.currency, self.amount_cents,
+            other.currency, other.amount_cents,
+            self.amount_cents - other.amount_cents
+        );
         Ok(Money {
             amount_cents: self.amount_cents - other.amount_cents,
             currency: self.currency.clone(),
@@ -240,14 +265,17 @@ pub fn parse_rate(rate_str: &str) -> PyResult<String> {
 ///     Amount in grosze, always rounded to nearest integer.
 #[pyfunction]
 pub fn to_grosze(amount: &str) -> PyResult<i64> {
+    log::debug!("to_grosze: converting {:?}", amount);
     let d = Decimal::from_str(amount).map_err(|e| {
         PyValueError::new_err(format!("Cannot parse amount {:?} as decimal: {e}", amount))
     })?;
     let grosze = d * Decimal::from(100);
     let rounded = grosze.round_dp_with_strategy(0, ROUND_HALF_UP);
-    rounded.to_i64().ok_or_else(|| {
+    let result = rounded.to_i64().ok_or_else(|| {
         PyValueError::new_err(format!("Amount too large: {amount}"))
-    })
+    })?;
+    log::debug!("to_grosze: {:?} -> {} gr", amount, result);
+    Ok(result)
 }
 
 /// Convert grosze back to złotówki string with 2 decimal places.
@@ -260,7 +288,9 @@ pub fn to_grosze(amount: &str) -> PyResult<i64> {
 #[pyfunction]
 pub fn to_zlotowki(grosze: i64) -> String {
     let d = Decimal::from_i64(grosze).unwrap() / Decimal::from(100);
-    format!("{:.2}", d.round_dp_with_strategy(2, ROUND_HALF_UP))
+    let result = format!("{:.2}", d.round_dp_with_strategy(2, ROUND_HALF_UP));
+    log::debug!("to_zlotowki: {} gr -> {:?}", grosze, result);
+    result
 }
 
 /// Multiply net amount (grosze) by VAT rate, rounded to full grosze.
@@ -275,13 +305,16 @@ pub fn to_zlotowki(grosze: i64) -> String {
 ///     VAT amount in grosze, rounded to nearest integer.
 #[pyfunction]
 pub fn multiply_net_by_vat(net_grosze: i64, vat_rate: &str) -> PyResult<i64> {
+    log::debug!("multiply_net_by_vat: net={} gr, rate={}", net_grosze, vat_rate);
     let rate = parse_rate_decimal(vat_rate)?;
     let net = Decimal::from_i64(net_grosze).unwrap();
     let vat = net * rate;
     let rounded = vat.round_dp_with_strategy(0, ROUND_HALF_UP);
-    rounded.to_i64().ok_or_else(|| {
+    let result = rounded.to_i64().ok_or_else(|| {
         PyValueError::new_err(format!("VAT result too large: net={net_grosze}, rate={vat_rate}"))
-    })
+    })?;
+    log::info!("multiply_net_by_vat: net={} gr × rate={} = {} gr VAT", net_grosze, vat_rate, result);
+    Ok(result)
 }
 
 /// Sum net and VAT in grosze to get brutto.
@@ -358,6 +391,13 @@ pub fn validate_invariants(
     positions: Vec<PyRef<'_, InvoicePositions>>,
     summary: &InvoiceSummary,
 ) -> PyResult<ValidationResult> {
+    log::info!(
+        "validate_invariants: {} positions, netto={} gr, vat={} gr, brutto={} gr",
+        positions.len(),
+        summary.netto_grosze,
+        summary.vat_grosze,
+        summary.brutto_grosze,
+    );
     let mut errors: Vec<String> = Vec::new();
 
     // Invariant 1: sum of position net == summary net

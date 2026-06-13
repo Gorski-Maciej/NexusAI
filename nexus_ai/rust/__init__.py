@@ -142,12 +142,64 @@ try:
         verify_jwt as _rust_verify_jwt,
     )
 
+    # Tax Pipeline (Rust-native, no Python fallback)
+    from nexus_crypto._core import (
+        AuditParams as _RustAuditParams,
+        ContextInterpreter as _RustContextInterpreter,
+        DecisionTraceHasher as _RustDecisionTraceHasher,
+        PipelineComputeResult as _RustPipelineComputeResult,
+        compute_pipeline as _rust_compute_pipeline,
+        evaluate_rules as _rust_evaluate_rules,
+        run_full_pipeline as _rust_run_full_pipeline,
+    )
+
+    # Trace Logger (Rust-native, no Python fallback)
+    from nexus_crypto._core import (
+        DecisionTraceLogger as _RustDecisionTraceLogger,
+        PreparedLog as _RustPreparedLog,
+        compute_current_hash as _rust_compute_current_hash,
+        genesis_hash as _rust_genesis_hash,
+        verify_chain_integrity as _rust_verify_chain_integrity,
+    )
+
+    # Rule Engine (Rust-native, no Python fallback)
+    from nexus_crypto._core import (
+        PriorityEngine as _RustPriorityEngine,
+        RulesEngine as _RustRulesEngine,
+        TemporalManager as _RustTemporalManager,
+    )
+
     _HAS_NATIVE = True
 
     # Override Python fallback with native Rust implementations
     Sha256Hasher = _RustSha256Hasher  # type: ignore[misc]
     hmac_sha256 = _rust_hmac_sha256  # type: ignore[assignment]
     blake2b = _rust_blake2b  # type: ignore[assignment]
+
+    # Re-export Rust-native tax pipeline types
+    AuditParams = _RustAuditParams  # type: ignore[misc]
+    ContextInterpreter = _RustContextInterpreter  # type: ignore[misc]
+    DecisionTraceHasher = _RustDecisionTraceHasher  # type: ignore[misc]
+    PipelineComputeResult = _RustPipelineComputeResult  # type: ignore[misc]
+    compute_pipeline = _rust_compute_pipeline  # type: ignore[assignment]
+    evaluate_rules = _rust_evaluate_rules  # type: ignore[assignment]
+    run_full_pipeline = _rust_run_full_pipeline  # type: ignore[assignment]
+
+    # Re-export Rust-native trace logger types
+    DecisionTraceLogger = _RustDecisionTraceLogger  # type: ignore[misc]
+    PreparedLog = _RustPreparedLog  # type: ignore[misc]
+    compute_current_hash = _rust_compute_current_hash  # type: ignore[assignment]
+    genesis_hash = _rust_genesis_hash  # type: ignore[assignment]
+    verify_chain_integrity = _rust_verify_chain_integrity  # type: ignore[assignment]
+
+    # Re-export Rust-native PriorityEngine
+    PriorityEngine = _RustPriorityEngine  # type: ignore[misc]
+
+    # Re-export Rust-native RulesEngine
+    RulesEngine = _RustRulesEngine  # type: ignore[misc]
+
+    # Re-export Rust-native TemporalManager
+    TemporalManager = _RustTemporalManager  # type: ignore[misc]
 
     # Override exception classes with native PyO3 implementations
     CryptoError = _CryptoError  # type: ignore[misc]
@@ -159,7 +211,7 @@ try:
 
     logger.info(
         "nexus-crypto native extension loaded successfully — "
-        "Rust+PyO3 module with custom exceptions, TaxMathEngine, and JWT"
+        "Rust+PyO3 module with custom exceptions, TaxMathEngine, JWT, and TaxPipeline"
     )
 
 except ImportError as _exc:
@@ -681,4 +733,14 @@ __all__ = [
     "ValidationResult", "RoundingPolicy",
     # JWT
     "verify_jwt", "decode_jwt_header",
+    # Tax Pipeline (Rust-native)
+    "AuditParams", "ContextInterpreter", "DecisionTraceHasher", "PipelineComputeResult",
+    "compute_pipeline", "evaluate_rules", "run_full_pipeline",
+    # Trace Logger (Rust-native)
+    "DecisionTraceLogger", "PreparedLog", "compute_current_hash",
+    "genesis_hash", "verify_chain_integrity",
+    # Rule Engine (Rust-native)
+    "PriorityEngine",
+    "RulesEngine",
+    "TemporalManager",
 ]

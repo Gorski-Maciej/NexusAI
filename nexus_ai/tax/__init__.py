@@ -13,18 +13,24 @@ from nexus_ai.core.context_interpreter import (
     ContextInterpreter,
     ContextInterpreterError,
 )
-from nexus_ai.services.priority_engine import (
+from nexus_ai.services.priority_engine import (  # legacy — data Structs only
     MatchResult,
     PrioritizedRule,
-    PriorityEngine,
 )
 from nexus_ai.services.rule_store import (
     RuleStore,
 )
-from nexus_ai.services.temporal_manager import (
-    TemporalManager,
+from nexus_ai.services.temporal_manager import (  # legacy — data Struct only
     TemporalRule,
 )
+from nexus_crypto import (
+    PriorityEngine as _RustPriorityEngine,
+    TemporalManager as _RustTemporalManager,
+)
+
+# Override with Rust-native implementations
+PriorityEngine = _RustPriorityEngine  # type: ignore[misc]
+TemporalManager = _RustTemporalManager  # type: ignore[misc]
 
 from .audit import (
     DecisionTraceLogger,

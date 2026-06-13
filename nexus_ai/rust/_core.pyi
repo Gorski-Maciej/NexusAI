@@ -108,3 +108,206 @@ def verify_jwt(
     required_audience: str | None = None,
 ) -> dict | None: ...
 def decode_jwt_header(token: str) -> dict | None: ...
+
+# ── Tax Pipeline (Rust native) — Full 5-step pipeline ─────────────────────
+
+class ContextInterpreter:
+    """Builds flat context dict from invoice data for rule evaluation."""
+    @staticmethod
+    def build(invoice_data_json: str) -> str: ...
+
+class DecisionTraceHasher:
+    """SHA-256 hash chain computation for decision trace."""
+    @staticmethod
+    def compute_hash(
+        previous_hash: str,
+        trace_id: str,
+        transaction_id: str,
+        context_json: str,
+        verdict_json: str,
+        timestamp_iso: str,
+        calculation_input: str = ...,
+        calculation_output: str = ...,
+        invariants_result: str = ...,
+        risk_verdict: str = ...,
+    ) -> str: ...
+    @staticmethod
+    def genesis_hash() -> str: ...
+
+class AuditParams:
+    """Optional audit trail metadata for pipeline results."""
+    current_hash: str
+    context_json: str
+    verdict_json: str
+    evaluated_rules_json: str
+    def __init__(
+        self,
+        current_hash: str,
+        context_json: str,
+        verdict_json: str,
+        evaluated_rules_json: str,
+    ) -> None: ...
+    def __repr__(self) -> str: ...
+
+class PipelineComputeResult:
+    """Result of the synchronous pipeline computation (all 5 steps).
+    
+    Audit trail fields are grouped in the optional ``audit_params`` field.
+    """
+    is_valid: bool
+    error_message: str
+    netto_grosze: int
+    vat_grosze: int
+    brutto_grosze: int
+    positions_net_grosze: list[int]
+    calculation_input_json: str
+    calculation_output_json: str
+    invariants_result_json: str
+    audit_params: AuditParams | None
+    matched_rule_id: str
+    routing: str
+    routing_reason: str
+    parsed_vat_rate: str
+    parsed_rounding_level: str
+    def __init__(
+        self,
+        is_valid: bool,
+        error_message: str,
+        netto_grosze: int,
+        vat_grosze: int,
+        brutto_grosze: int,
+        positions_net_grosze: list[int],
+        calculation_input_json: str,
+        calculation_output_json: str,
+        invariants_result_json: str,
+        audit_params: AuditParams | None = ...,
+        matched_rule_id: str = ...,
+        routing: str = ...,
+        routing_reason: str = ...,
+        parsed_vat_rate: str = ...,
+        parsed_rounding_level: str = ...,
+    ) -> None: ...
+    def __repr__(self) -> str: ...
+
+def compute_pipeline(
+    vat_rate: str,
+    rounding_level: str,
+    positions_net_str: list[str],
+    previous_hash: str | None = ...,
+    context_json: str | None = ...,
+    verdict_json: str | None = ...,
+    trace_id: str | None = ...,
+    transaction_id: str | None = ...,
+    timestamp_iso: str | None = ...,
+) -> PipelineComputeResult: ...
+
+def evaluate_rules(
+    rules_json: str,
+    context_json: str,
+) -> str: ...
+
+def run_full_pipeline(
+    invoice_data_json: str,
+    rules_json: str,
+    previous_hash: str | None = ...,
+    trace_id: str | None = ...,
+    transaction_id: str | None = ...,
+    timestamp_iso: str | None = ...,
+) -> PipelineComputeResult: ...
+
+# ── Trace Logger (Rust native) — Cryptographic audit trail ─────────────────
+
+class PreparedLog:
+    """Pre-computed decision trace log entry, ready for DuckDB INSERT."""
+    trace_id: str
+    transaction_id: str
+    rule_id: str
+    context_json: str
+    verdict_json: str
+    calculation_input: str
+    calculation_output: str
+    invariants_result: str
+    risk_verdict: str
+    decision_trace: str
+    trace_json: str
+    previous_hash: str
+    current_hash: str
+    timestamp: str
+    def values(self) -> list[str]: ...
+    def __repr__(self) -> str: ...
+
+class DecisionTraceLogger:
+    """Append-only cryptographic audit trail for tax decisions.
+    
+    Prepares hash-chained log entries (no I/O). DuckDB INSERT is caller's
+    responsibility.
+    """
+    @staticmethod
+    def prepare_log(
+        transaction_id: str,
+        previous_hash: str,
+        context_json: str,
+        verdict_json: str,
+        rule_id: str = ...,
+        calculation_input: str = ...,
+        calculation_output: str = ...,
+        invariants_result: str = ...,
+        risk_verdict: str = ...,
+        decision_trace: str = ...,
+        trace_json: str = ...,
+        timestamp_iso: str | None = ...,
+    ) -> PreparedLog: ...
+    @staticmethod
+    def get_trace_query() -> str: ...
+    @staticmethod
+    def latest_hash_query() -> str: ...
+    @staticmethod
+    def entry_count_query() -> str: ...
+
+def compute_current_hash(
+    previous_hash: str,
+    trace_id: str,
+    transaction_id: str,
+    context_json: str,
+    verdict_json: str,
+    timestamp_iso: str,
+    calculation_input: str = ...,
+    calculation_output: str = ...,
+    invariants_result: str = ...,
+    risk_verdict: str = ...,
+) -> str: ...
+
+def genesis_hash() -> str: ...
+
+def verify_chain_integrity(entries_json: str) -> str: ...
+
+# ── Rule Engine (Rust native) — PriorityEngine first-match-wins ──────────
+
+class PriorityEngine:
+    """First-match-wins rule evaluation with deterministic sorting."""
+    @staticmethod
+    def resolve(rules_json: str, context_json: str) -> str: ...
+    @staticmethod
+    def sort_rules(rules_json: str) -> str: ...
+    @staticmethod
+    def validate_priorities(rules_json: str) -> str: ...
+
+class RulesEngine:
+    """Comprehensive rule evaluation pipeline — self-contained SQL evaluator."""
+    @staticmethod
+    def evaluate(rules_json: str, context_json: str) -> str: ...
+    @staticmethod
+    def batch_evaluate(rules_json: str, contexts_json: str) -> str: ...
+    @staticmethod
+    def validate(rules_json: str) -> str: ...
+    @staticmethod
+    def sort_rules(rules_json: str) -> str: ...
+
+class TemporalManager:
+    """Temporal rule filtering and validation in pure Rust."""
+    @staticmethod
+    def filter_rules(rules_json: str, date_str: str) -> str: ...
+    @staticmethod
+    def sort_by_temporal(rules_json: str) -> str: ...
+    @staticmethod
+    def validate_overlap(rules_json: str) -> str: ...

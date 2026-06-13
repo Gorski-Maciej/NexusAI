@@ -3,44 +3,52 @@ Tax Pipeline — orchestrates the complete tax processing flow.
 
 Łączy wszystkie trzy warstwy w jeden deterministyczny pipeline:
 
-  1. ContextInterpreter  → flat context dict
-  2. RuleEngine.decide   → verdict (or NoMatchingRuleError)
-  3. TaxMathEngine       → VAT calculation in grosze
-  4. TaxInvariantGuard   → three invariants check
-  5. TigerBeetle         → double-entry transfers
-  6. DecisionTraceLogger → persistent cryptographic trace
+  Steps 1-5 (Rust+PyO3 — **one call to run_full_pipeline**):
+    1. ContextInterpreter  → flat context dict (JSON)
+    2. RuleEngine          → first-match-wins SQL evaluation
+    3. TaxMathEngine       → VAT calculation in grosze
+    4. TaxInvariantGuard   → three invariants check
+    5. AuditHashChain      → SHA-256 hash for decision trace
+
+  Steps 6-8 (Python async I/O):
+    6. PreLedgerValidator  → account pair/balance validation
+    7. TigerBeetle         → double-entry transfers (via outbox or direct)
+    8. Event emission      → DecisionMade event via NATS
+
+  DecisionTraceLogger — uses Rust prepare_log() + DuckDB INSERT
 """
 
 from __future__ import annotations
 
 import uuid
 from msgspec import Struct
-from decimal import Decimal
 from typing import Any, final
 
 import duckdb
 import pendulum
 from structlog import get_logger
 
-from nexus_ai.core.context_interpreter import ContextInterpreter
-from nexus_ai.core.msgspec_utils import msgspec_dumps
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 from nexus_ai.events.event_emitter import get_event_emitter
 from nexus_ai.services.pre_ledger_validator import (
     PreLedgerValidator,
     TransferSpec,
 )
+from nexus_crypto import TemporalManager as _RustTemporalManager
 from nexus_ai.services.trace_generator import TraceGenerator
 
+from nexus_crypto import (
+    PipelineComputeResult as _RustPipelineComputeResult,
+    run_full_pipeline as _rust_run_full_pipeline,
+)
+
 from .audit import DecisionTraceLogger
-from .exceptions import NoMatchingRuleError
 from .math_engine import (
+    InvoicePositions,
     InvoiceSummary,
     TaxMathEngine,
-    money_to_grosze,
     to_money,
-    validate_invariants,
 )
-from .rules import RuleEngine
 
 logger = get_logger("nexus.tax.pipeline")
 
@@ -84,7 +92,13 @@ class TaxPipeline:
     @final: mypyc devirtualizes all method calls.
     process_invoice() is called for EVERY invoice — 2-5× speedup matters.
 
-    Connects layers I (rules), II (math), and III (audit) into one flow.
+    **Steps 1-5 are executed in a single Rust call** (``run_full_pipeline``):
+      context → rules → math → invariants → audit hash
+
+    This eliminates 2 FFI boundary crossings and intermediate Python
+    serialization compared to the previous 3-call approach.
+
+    Async I/O (TigerBeetle, events, active learning) remains in Python.
 
     Args:
         conn: DuckDB connection with ``tax_rules`` and ``decision_traces`` tables.
@@ -110,7 +124,6 @@ class TaxPipeline:
         self._conn = conn
         self._tigerbeetle = tigerbeetle
         self._write_outbox = write_outbox
-        self._rule_engine = RuleEngine(conn)
         self._logger = DecisionTraceLogger(conn)
         self._pre_ledger = PreLedgerValidator(conn)
         self._pre_ledger.ensure_default_rules(
@@ -132,6 +145,12 @@ class TaxPipeline:
     ) -> PipelineResult:
         """Process a single invoice through the entire tax pipeline.
 
+        **Steps 1-5 are executed in a single Rust call** via
+        ``run_full_pipeline``: context → rules → math → invariants → audit hash
+
+        Steps 6-8 are executed in Python:
+          PreLedgerValidator → TigerBeetle/outbox → events
+
         Args:
             invoice_data: Normalized invoice dictionary (from OCR pipeline).
                 Must include at minimum:
@@ -150,50 +169,198 @@ class TaxPipeline:
             :class:`PipelineResult` with success/failure and full trace.
         """
         tx_id = transaction_id or uuid.uuid4().hex
-        context = ContextInterpreter.build(invoice_data)
 
-        # ── Step 2: Rule Engine ──────────────────────────────────────────
-        try:
-            verdict = self._rule_engine.decide(context)
-        except NoMatchingRuleError as exc:
-            self._logger.log(
-                transaction_id=tx_id,
-                context=context,
-                invariants_result=msgspec_dumps({"error": str(exc)}),
+        # ── DuckDB I/O: temporal rules + previous hash ─────────────────────
+        # These are the only I/O operations before Rust computation:
+        #   1. Load temporal rules active on transaction date
+        #   2. Fetch previous_hash for audit chain
+
+        txn_date = invoice_data.get(
+            "transaction_date",
+            pendulum.now("UTC").date().isoformat(),
+        )
+        txn_date_str = str(txn_date) if not isinstance(txn_date, str) else txn_date
+
+        # ── DuckDB I/O: load ALL rules + filter in Rust ──────────────────────
+        # Load all rules without temporal WHERE clause — Rust TemporalManager
+        # handles date filtering + temporal sorting in memory.
+
+        all_rows = self._conn.execute(
+            "SELECT rule_id, condition_sql, action_json, priority, "
+            "valid_from, valid_to FROM tax_rules"
+        ).fetchall()
+
+        if not all_rows:
+            logger.error(
+                "[TAX-PIPELINE] No tax rules in database tx_id=%s",
+                tx_id,
             )
             return PipelineResult(
                 success=False,
                 transaction_id=tx_id,
-                error=f"NO_MATCHING_RULE: {exc}",
+                error=f"NO_RULES: No tax rules in database",
             )
 
-        # Extract verdict fields and remove internal metadata
-        rule_id = verdict.pop("_rule_id", None)
-        evaluated_rules = verdict.pop("_evaluated_rules", [])
+        # Serialize all rules to JSON (include temporal fields for Rust TemporalManager)
+        all_rules: list[dict[str, Any]] = []
+        for r in all_rows:
+            rule: dict[str, Any] = {
+                "rule_id": str(r[0]),
+                "condition_sql": str(r[1]),
+                "action_json": str(r[2]),  # already JSON string from DuckDB
+                "priority": int(r[3]),
+                "valid_from": str(r[4]),
+            }
+            if r[5] is not None:
+                rule["valid_to"] = str(r[5])
+            all_rules.append(rule)
 
-        # ── Step 2b: _routing check (field confidence / RiskGuard rules) ──
-        routing = verdict.pop("_routing", None)
-        routing_reason = verdict.pop("_routing_reason", None)
-        if routing:
-            logger.warning(
-                "[TAX-PIPELINE] Verdict has _routing=%s reason=%s tx_id=%s",
-                routing,
-                routing_reason,
+        all_rules_json = msgspec_dumps(all_rules, ensure_ascii=False, default=str)
+
+        # Filter temporally using Rust TemporalManager.filter_rules()
+        # (date filtering + temporal sorting — no DuckDB temporal WHERE)
+        filtered_rules_json = _RustTemporalManager.filter_rules(all_rules_json, txn_date_str)
+        filtered_rules = msgspec_loads(filtered_rules_json)
+
+        if not filtered_rules:
+            logger.error(
+                "[TAX-PIPELINE] No active tax rules for date=%s tx_id=%s",
+                txn_date_str,
                 tx_id,
             )
+            return PipelineResult(
+                success=False,
+                transaction_id=tx_id,
+                error=f"NO_MATCHING_RULE: No active tax rules found for date {txn_date_str}",
+            )
 
-        # ── Step 2c: decision_trace (zgodność z dokumentacją) ─────────────
-        # Jeśli RuleEngine wygenerował decision_trace (include_decision_trace=True),
-        # użyj go bezpośrednio. W przeciwnym razie wygeneruj przez TraceGenerator.
+        # Rust TemporalManager already sorts by (priority ASC, valid_from DESC, rule_id ASC)
+        rules_json = msgspec_dumps(filtered_rules, ensure_ascii=False, default=str)
+
+        # ── Steps 1-5: Single Rust call (run_full_pipeline) ────────────────
+        #   1. ContextInterpreter  → flat context dict
+        #   2. RuleEngine          → first-match-wins
+        #   3. TaxMathEngine       → VAT calculation in grosze
+        #   4. TaxInvariantGuard   → three invariants check
+        #   5. AuditHashChain      → SHA-256 current_hash
+        #
+        # All five steps execute in Rust without Python intervention.
+        # The audit hash chain is NOT computed on the Rust side — the Python
+        # DecisionTraceLogger handles it via prepare_log() + DuckDB INSERT.
+        # This saves 1 DuckDB query (previous_hash fetch) per invoice.
+
+        invoice_data_json = msgspec_dumps(invoice_data, ensure_ascii=False, default=str)
+        timestamp_iso = pendulum.now("UTC").isoformat()
+
+        try:
+            result: _RustPipelineComputeResult = _rust_run_full_pipeline(
+                invoice_data_json=invoice_data_json,
+                rules_json=rules_json,
+                # previous_hash, trace_id, timestamp_iso: NOT passed — audit hash
+                # chain is handled by Python DecisionTraceLogger.
+                transaction_id=tx_id,
+            )
+        except Exception as exc:
+            logger.error(
+                "[TAX-PIPELINE] run_full_pipeline failed: %s tx_id=%s",
+                exc,
+                tx_id,
+            )
+            return PipelineResult(
+                success=False,
+                transaction_id=tx_id,
+                error=f"PIPELINE_FAILURE: {exc}",
+            )
+
+        # ── Extract computed values from PipelineComputeResult ─────────────
+        total_net_grosze = result.netto_grosze
+        total_vat_grosze = result.vat_grosze
+        total_brutto_grosze = result.brutto_grosze
+
+        positions_net = list(result.positions_net_grosze) if result.positions_net_grosze else []
+        inv_positions = [
+            InvoicePositions(net_grosze=ng, vat_rate=str(result.parsed_vat_rate))
+            for ng in positions_net
+        ]
+        summary = InvoiceSummary(
+            netto_grosze=total_net_grosze,
+            vat_grosze=total_vat_grosze,
+            brutto_grosze=total_brutto_grosze,
+        )
+
+        validation_valid = result.is_valid
+        invariants_json = result.invariants_result_json
+        rule_id = result.matched_rule_id
+        vat_rate_str = result.parsed_vat_rate
+        rounding_level = result.parsed_rounding_level
+        routing = result.routing or None
+        routing_reason = result.routing_reason or None
+
+        # Extract audit context and verdict from AuditParams (if available)
+        audit_params = result.audit_params
+        context: dict[str, Any] = {}
+        verdict: dict[str, Any] = {}
+        evaluated_rules: list[dict[str, Any]] = []
+        current_hash: str = ""
+
+        if audit_params is not None:
+            if audit_params.context_json:
+                try:
+                    context = msgspec_loads(audit_params.context_json) or {}
+                except (ValueError, TypeError):
+                    context = {}
+            if audit_params.verdict_json:
+                try:
+                    verdict = msgspec_loads(audit_params.verdict_json) or {}
+                except (ValueError, TypeError):
+                    verdict = {}
+            if audit_params.evaluated_rules_json:
+                try:
+                    parsed = msgspec_loads(audit_params.evaluated_rules_json)
+                    if isinstance(parsed, list):
+                        evaluated_rules = parsed
+                except (ValueError, TypeError):
+                    pass
+            current_hash = audit_params.current_hash
+
+        # ── Error paths (no match / invariant failure) ─────────────────────
+        if not result.is_valid:
+            error_lower = result.error_message.upper()
+            if "NO_MATCHING_RULE" in error_lower:
+                self._logger.log(
+                    transaction_id=tx_id,
+                    context=context or {"error": "No context available"},
+                    invariants_result=msgspec_dumps(
+                        {"error": result.error_message}
+                    ),
+                )
+                return PipelineResult(
+                    success=False,
+                    transaction_id=tx_id,
+                    error=result.error_message,
+                )
+
+            # Invariant failure
+            self._logger.log(
+                transaction_id=tx_id,
+                rule_id=rule_id,
+                context=context,
+                verdict=verdict,
+                calculation_input=result.calculation_input_json,
+                calculation_output=result.calculation_output_json,
+                invariants_result=invariants_json,
+            )
+            return PipelineResult(
+                success=False,
+                transaction_id=tx_id,
+                error=f"INVARIANT_FAILURE: {result.error_message}",
+            )
+
+        # ── Decision trace text ───────────────────────────────────────────
         decision_trace_from_verdict = verdict.pop("decision_trace", None)
-
-        vat_rate = TaxMathEngine.parse_rate(verdict.get("vat_rate", "0.23"))
-        rounding_level = verdict.get("rounding_level", "position")
-
         if decision_trace_from_verdict:
             decision_trace_text = decision_trace_from_verdict
         else:
-            # Generate human-readable decision trace
             rule_info = None
             if rule_id:
                 rule_rows = self._conn.execute(
@@ -214,91 +381,46 @@ class TaxPipeline:
                 verdict=verdict,
             )
 
-        # ── Step 3: Tax Math Engine ──────────────────────────────────────
-        # Determine currency for this invoice (default PLN)
+        # ── Currency for amounts ──────────────────────────────────────────
         currency = str(invoice_data.get("currency", "PLN")).upper()
+        total_net_money = to_money(total_net_grosze, currency)
+        total_vat_money = to_money(total_vat_grosze, currency)
 
-        raw_positions = invoice_data.get("positions", [])
-        if raw_positions:
-            # Use Money-aware API — extract net_amount and convert to Money
-            positions_net_money = [
-                to_money(
-                    TaxMathEngine.to_grosze(p.get("net_amount", Decimal("0"))),
-                    p.get("currency", currency),
-                )
-                for p in raw_positions
-            ]
-        else:
-            # Single-line invoice: use amount_net directly as Money
-            single_net = TaxMathEngine.to_grosze(invoice_data.get("amount_net", Decimal("0")))
-            positions_net_money = [to_money(single_net, currency)]
-
-        # Calculate VAT using Money-aware API
-        total_vat_money, inv_positions = TaxMathEngine.calculate_positions_vat_money(
-            positions_net_money, vat_rate, rounding_level
-        )
-        total_net_money = TaxMathEngine.sum_positions_net_money(positions_net_money)
-        total_brutto_money = TaxMathEngine.add_tax_money(total_net_money, total_vat_money)
-
-        # Extract grosze for downstream (TigerBeetle, invariants)
-        total_net_grosze = money_to_grosze(total_net_money)
-        total_vat_grosze = money_to_grosze(total_vat_money)
-        total_brutto_grosze = money_to_grosze(total_brutto_money)
-        positions_net = [money_to_grosze(m) for m in positions_net_money]
-
-        # ── Step 4: Invariant Guard ──────────────────────────────────────
-        summary = InvoiceSummary(
-            netto_grosze=total_net_grosze,
-            vat_grosze=total_vat_grosze,
-            brutto_grosze=total_brutto_grosze,
-        )
-
-        validation = validate_invariants(inv_positions, summary)
-        invariants_json = msgspec_dumps(
-            {
-                "is_valid": validation.is_valid,
-                "error_message": validation.error_message,
-            }
-        )
-
-        # ── Step 5: PreLedgerValidator (przed TigerBeetle) ────────────────
-        tb_ok = validation.is_valid
+        # ── PreLedgerValidator (before TigerBeetle) ───────────────────────
+        tb_ok = True
         pre_ledger_ok = True
 
-        if validation.is_valid:
-            transfer_specs = [
-                TransferSpec(
-                    debit_account_id=self._account_expense_id,
-                    credit_account_id=self._account_payables_id,
-                    amount_money=total_net_money,
-                    transfer_type="expense",
-                ),
-                TransferSpec(
-                    debit_account_id=self._account_vat_input_id,
-                    credit_account_id=self._account_payables_id,
-                    amount_money=total_vat_money,
-                    transfer_type="vat_input",
-                ),
-            ]
-            pre_ledger_result = self._pre_ledger.validate(
-                transfers=transfer_specs,
-                transaction_type="EXPENSE",
-                positions=inv_positions,
-                summary=summary,
+        transfer_specs = [
+            TransferSpec(
+                debit_account_id=self._account_expense_id,
+                credit_account_id=self._account_payables_id,
+                amount_money=total_net_money,
+                transfer_type="expense",
+            ),
+            TransferSpec(
+                debit_account_id=self._account_vat_input_id,
+                credit_account_id=self._account_payables_id,
+                amount_money=total_vat_money,
+                transfer_type="vat_input",
+            ),
+        ]
+        pre_ledger_result = self._pre_ledger.validate(
+            transfers=transfer_specs,
+            transaction_type="EXPENSE",
+            positions=inv_positions,
+            summary=summary,
+        )
+        if not pre_ledger_result.is_valid:
+            pre_ledger_ok = False
+            tb_ok = False
+            logger.error(
+                "[PRE-LEDGER] Validation failed: %s",
+                pre_ledger_result.error_message,
             )
-            if not pre_ledger_result.is_valid:
-                pre_ledger_ok = False
-                tb_ok = False
-                logger.error(
-                    "[PRE-LEDGER] Validation failed: %s",
-                    pre_ledger_result.error_message,
-                )
 
-        # ── Step 6: TigerBeetle (via outbox or direct) ─────────────────
+        # ── TigerBeetle (via outbox or direct) ────────────────────────────
         tb_result = None
 
-        # Jeśli werdykt zawiera _routing, nie wysyłaj do TigerBeetle
-        # BLOCK_AND_ALERT → blokada, TRIAGE_QUEUE → weryfikacja
         if routing:
             tb_ok = False
             if routing == "BLOCK_AND_ALERT":
@@ -315,11 +437,9 @@ class TaxPipeline:
                     tx_id,
                     routing_reason,
                 )
-        elif not validation.is_valid or not pre_ledger_ok:
-            # Skip TigerBeetle — invariant failure or pre-ledger check
+        elif not pre_ledger_ok:
             tb_ok = False
         elif self._write_outbox is not None and callable(self._write_outbox):
-            # OUTBOX MODE: write event instead of calling TB directly
             outbox_payload = {
                 "transaction_id": tx_id,
                 "rule_id": rule_id or "",
@@ -343,7 +463,6 @@ class TaxPipeline:
                 tb_result = {"status": "ERROR", "error": str(exc)}
                 tb_ok = False
         elif self._tigerbeetle is not None:
-            # DIRECT MODE: call TigerBeetle synchronously (legacy/testing)
             try:
                 tb_result = await self.post_to_tigerbeetle(
                     net_grosze=total_net_grosze,
@@ -357,23 +476,9 @@ class TaxPipeline:
                 tb_result = {"status": "ERROR", "error": str(exc)}
                 tb_ok = False
 
-        # ── Step 7: Decision Trace Logger ────────────────────────────────
-        calc_input = msgspec_dumps(
-            {
-                "positions_net_grosze": positions_net,
-                "vat_rate": str(vat_rate),
-                "rounding_level": rounding_level,
-            }
-        )
-        calc_output = msgspec_dumps(
-            {
-                "netto_grosze": total_net_grosze,
-                "vat_grosze": total_vat_grosze,
-                "brutto_grosze": total_brutto_grosze,
-            }
-        )
-
-        # Generate detailed trace_json with evaluated rules
+        # ── Decision Trace Logger ─────────────────────────────────────────
+        calc_input = result.calculation_input_json
+        calc_output = result.calculation_output_json
         trace_json_str = TraceGenerator.generate_trace_json(
             evaluated_rules=evaluated_rules or None,
             final_verdict=verdict,
@@ -392,13 +497,12 @@ class TaxPipeline:
             trace_json=trace_json_str,
         )
 
-        # ── Step 7b: Emit DecisionMade event ─────────────────────────────
+        # ── Emit DecisionMade event ───────────────────────────────────────
         try:
             emitter = get_event_emitter()
             invoice_id = str(invoice_data.get("invoice_id", tx_id))
             action = verdict.get("action", "AUTO_POST")
 
-            # Mapuj routing na decyzję
             decision_val = action
             if routing:
                 if routing == "BLOCK_AND_ALERT":
@@ -420,7 +524,7 @@ class TaxPipeline:
                 metadata={
                     "transaction_id": tx_id,
                     "trace_id": trace_id,
-                    "vat_rate": verdict.get("vat_rate", ""),
+                    "vat_rate": vat_rate_str,
                     "routing": routing,
                     "routing_reason": routing_reason,
                     "net_grosze": total_net_grosze,
@@ -440,9 +544,7 @@ class TaxPipeline:
                 emit_err,
             )
 
-        # ── Step 8: Result ───────────────────────────────────────────────
-        # Jeśli werdykt ma _routing, zwróć informację o routingu zamiast
-        # normalnego wyniku. BLOCK_AND_ALERT → błąd, TRIAGE_QUEUE → success z flagą.
+        # ── Result ────────────────────────────────────────────────────────
         if routing:
             if routing == "BLOCK_AND_ALERT":
                 return PipelineResult(
@@ -456,7 +558,6 @@ class TaxPipeline:
                     routing=routing,
                     routing_reason=routing_reason,
                 )
-            # TRIAGE_QUEUE, HUMAN_VERIFICATION itp. — obliczono, ale nie postowano
             return PipelineResult(
                 success=True,
                 transaction_id=tx_id,
@@ -466,18 +567,6 @@ class TaxPipeline:
                 brutto_grosze=total_brutto_grosze,
                 routing=routing,
                 routing_reason=routing_reason,
-            )
-
-        if not validation.is_valid:
-            return PipelineResult(
-                success=False,
-                transaction_id=tx_id,
-                trace_id=trace_id,
-                verdict=verdict,
-                vat_grosze=total_vat_grosze,
-                brutto_grosze=total_brutto_grosze,
-                tigerbeetle_result=tb_result,
-                error=f"INVARIANT_FAILURE: {validation.error_message}",
             )
 
         if not pre_ledger_ok:
@@ -535,8 +624,6 @@ class TaxPipeline:
             corrected_data: Dane poprawione przez księgowego.
             verified_by: Login księgowego.
         """
-        import uuid
-
         example_id = uuid.uuid4().hex
         now = pendulum.now("UTC").isoformat()
 

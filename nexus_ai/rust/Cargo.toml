@@ -1,15 +1,19 @@
 [package]
 name = "nexus-crypto"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 description = "NexusAI — custom crypto module (AEAD, Argon2id, SHA-256) in Rust + PyO3"
+# Pojedynczy wheel na Python ≥3.12 (ABI3 stable ABI)
+rust-version = "1.78"
 
 [lib]
 name = "nexus_crypto"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.22", features = ["extension-module", "experimental-inspect"] }
+# PyO3 z ABI3 (stable ABI) — jeden wheel na Python ≥3.12
+# Działa na Python 3.12, 3.13, 3.13t bez rekompilacji
+pyo3 = { version = "0.22", features = ["extension-module", "experimental-inspect", "abi3-py312"] }
 pyo3-log = "0.11"
 chacha20poly1305 = "0.10"
 argon2 = "0.5"
@@ -26,7 +30,8 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 base64 = "0.22"
 quick-xml = "0.36"
-chrono = { version = "0.4", default-features = false, features = ["std"] }
+chrono = { version = "0.4", default-features = false, features = ["std", "clock"] }
+uuid = { version = "1", features = ["v4"] }
 
 [profile.release]
 opt-level = 3

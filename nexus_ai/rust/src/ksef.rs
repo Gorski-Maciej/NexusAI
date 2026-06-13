@@ -2,6 +2,10 @@
 // KSeF — Generator XML FA_VAT (Rust + quick-xml)
 // ═══════════════════════════════════════════════════════════════════════════════
 //
+// Structured logging: log::info!, log::debug!, log::warn!
+// All logs are forwarded to Python structlog via pyo3-log (init in lib.rs)
+// ═══════════════════════════════════════════════════════════════════════════════
+//
 // Zastępuje xml.etree.ElementTree w services/ksef_generator.py
 // używając quick-xlm dla wydajności i bezpieczeństwa typów.
 //
@@ -42,22 +46,27 @@ const CATEGORY_GTU: &[(&str, &str)] = &[
 /// Get string value from dict, returning empty string if missing.
 fn dict_str(d: &Bound<'_, PyDict>, key: &str) -> String {
     d.get_item(key)
-        .and_then(|v| v.and_then(|v| v.extract::<String>().ok()))
+        .ok()  // PyResult<Option<...>> -> Option<Option<...>>
+        .and_then(|v| v)  // flatten: Option<Bound<...>>
+        .and_then(|v| v.extract::<String>().ok())
         .unwrap_or_default()
 }
 
 /// Get i64 from dict, returning 0 if missing.
 fn dict_int(d: &Bound<'_, PyDict>, key: &str) -> i64 {
     d.get_item(key)
-        .and_then(|v| v.and_then(|v| v.extract::<i64>().ok()))
+        .ok()  // PyResult<Option<...>> -> Option<Option<...>>
+        .and_then(|v| v)  // flatten: Option<Bound<...>>
+        .and_then(|v| v.extract::<i64>().ok())
         .unwrap_or(0)
 }
 
 /// Get bool from dict (accepts "1", "true", True).
+///
+/// PyO3 0.22: Bound::get_item() returns PyResult<Option<Bound<'_, PyAny>>>.
 fn dict_bool(d: &Bound<'_, PyDict>, key: &str) -> bool {
-    d.get_item(key)
-        .and_then(|v| v)
-        .is_some_and(|v| {
+    match d.get_item(key) {
+        Ok(Some(v)) => {
             if let Ok(b) = v.extract::<bool>() {
                 b
             } else if let Ok(s) = v.extract::<String>() {
@@ -65,13 +74,16 @@ fn dict_bool(d: &Bound<'_, PyDict>, key: &str) -> bool {
             } else {
                 false
             }
-        })
+        }
+        _ => false,
+    }
 }
 
 /// Get nested dict from a key.
 fn dict_subdict<'a>(d: &'a Bound<'_, PyDict>, key: &str) -> Option<Bound<'a, PyDict>> {
     d.get_item(key)
-        .and_then(|v| v)
+        .ok()  // PyResult<Option<...>> -> Option<Option<...>>
+        .and_then(|v| v)  // flatten: Option<Bound<...>>
         .and_then(|v| v.downcast::<PyDict>().ok().map(|d| d.to_owned()))
 }
 
@@ -86,8 +98,9 @@ fn grosze_to_pln(grosze: i64) -> String {
 
 /// Format current UTC time as YYYY-MM-DDTHH:mm:ss.
 fn utc_now_iso() -> String {
-    use chrono::Utc;
-    Utc::now().format("%Y-%m-%dT%H:%M:%S").to_string()
+    // Utc::now() requires chrono "clock" feature
+    // (Cargo.toml: default-features=false, features=["std", "clock"])
+    chrono::Utc::now().format("%Y-%m-%dT%H:%M:%S").to_string()
 }
 
 // ── Low-level XML helpers (avoid fluent builder lifetime issues) ─────────────
@@ -95,7 +108,7 @@ fn utc_now_iso() -> String {
 /// Write <tag>text</tag> using low-level Event API.
 fn write_simple_element<W: Write>(writer: &mut Writer<W>, tag: &str, text: &str) -> Result<(), quick_xml::Error> {
     writer.write_event(Event::Start(BytesStart::new(tag)))?;
-    writer.write_event(Event::Text(BytesText::new(text.as_bytes())))?;
+    writer.write_event(Event::Text(BytesText::new(text.as_ref())))?;
     writer.write_event(Event::End(BytesEnd::new(tag)))?;
     Ok(())
 }
@@ -310,18 +323,13 @@ fn generate_ksef_xml(
     // Get positions list
     let positions: Vec<Bound<'_, PyDict>> = invoice_data
         .get_item("positions")
-        .and_then(|v| v)
-        .and_then(|v| {
-            if let Ok(list) = v.downcast::<PyList>() {
-                Some(
-                    list.iter()
-                        .filter_map(|item| item.downcast::<PyDict>().ok().map(|d| d.to_owned()))
-                        .collect(),
-                )
-            } else {
-                None
-            }
-        })
+        .ok()
+        .flatten()
+        .and_then(|v| v.downcast::<PyList>().ok().map(|list| {
+            list.iter()
+                .filter_map(|item| item.downcast::<PyDict>().ok().map(|d| d.to_owned()))
+                .collect()
+        }))
         .unwrap_or_default();
 
     // Build XML using low-level Event API
@@ -334,7 +342,7 @@ fn generate_ksef_xml(
         .map_err(|e| PyValueError::new_err(format!("XML write error: {e}")))?;
 
     // Root: Faktura with xmlns
-    let faktura_start = BytesStart::new("Faktura");
+    let mut faktura_start = BytesStart::new("Faktura");
     faktura_start.push_attribute(("xmlns", "http://ksef.mf.gov.pl/schema/gtw/faktura/2023/03/31"));
     writer
         .write_event(Event::Start(faktura_start))
@@ -424,6 +432,7 @@ fn generate_ksef_xml(
     let xml_str = String::from_utf8(buffer)
         .map_err(|e| PyValueError::new_err(format!("UTF-8 encoding error: {e}")))?;
 
+    log::info!("generate_ksef_xml: generated {} bytes for invoice {}", xml_str.len(), invoice_number);
     Ok(xml_str)
 }
 

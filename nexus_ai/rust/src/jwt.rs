@@ -2,6 +2,10 @@
 // JWT — HS256 verification + claims validation (jsonwebtoken + PyO3)
 // ═══════════════════════════════════════════════════════════════════════════════
 //
+// Structured logging: log::info!, log::debug!, log::warn!
+// All logs are forwarded to Python structlog via pyo3-log (init in lib.rs)
+// ═══════════════════════════════════════════════════════════════════════════════
+//
 // Zastępuje: nexus_ai/api/middleware.py → _tenant_from_bearer_auth()
 // Nowy:     Rust + jsonwebtoken crate — 10-50× szybsza weryfikacja JWT
 //
@@ -181,7 +185,7 @@ pub fn verify_jwt(
     required_issuer: Option<String>,
     required_audience: Option<String>,
 ) -> PyResult<PyObject> {
-    log::info!("verify_jwt: verifying token");
+    log::info!("verify_jwt: verifying token ({} chars)", token.len());
 
     // Basic validation
     if token.is_empty() {

@@ -7,8 +7,17 @@ podatkowe first-match-wins z parametrizzowanym SQL.
 Komponenty:
   - tax_rules table (DuckDB) — immutable, temporal rule store
   - ContextInterpreter — builds flat context dict from invoice data
-  - RuleEngine — first-match-wins evaluation with parameterized SQL
+  - RuleEngine — first-match-wins evaluation (Rust PriorityEngine)
   - DEFAULT_TAX_RULES — example rule set for Polish tax law
+
+Rule evaluation (decide) uses Rust PriorityEngine via nexus_crypto:
+  - SQL condition evaluation in Rust (no DuckDB temp table)
+  - First-match-wins with deterministic sorting
+  - Returns enriched verdict with _rule_id, _priority, _evaluated_rules
+
+DuckDB I/O remains in Python for:
+  - Temporal rule loading (valid_from/valid_to filtering)
+  - Rule lifecycle (add_rule, close_rule)
 """
 
 from __future__ import annotations
@@ -20,9 +29,56 @@ from typing import Any
 import duckdb
 import pendulum
 
-from nexus_ai.core.msgspec_utils import msgspec_dumps
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 from .exceptions import NoMatchingRuleError
+
+# ── Rust-native PriorityEngine ───────────────────────────────────────────────
+
+try:
+    from nexus_crypto import (
+        PriorityEngine as _RustPriorityEngine,
+        TemporalManager as _RustTemporalManager,
+    )
+
+    _HAS_RUST_PRIORITY = True
+except ImportError:
+    _HAS_RUST_PRIORITY = False
+
+    # Fallback stub — PriorityEngine
+    class _RustPriorityEngine:  # type: ignore[no-redef]
+        @staticmethod
+        def resolve(rules_json: str, context_json: str) -> str:  # type: ignore[misc]
+            raise ImportError(
+                "nexus_crypto native module not available — "
+                "build with: cd nexus_ai/rust && maturin develop"
+            )
+
+        @staticmethod
+        def sort_rules(rules_json: str) -> str:  # type: ignore[misc]
+            raise ImportError("nexus_crypto native module not available")
+
+        @staticmethod
+        def validate_priorities(rules_json: str) -> str:  # type: ignore[misc]
+            raise ImportError("nexus_crypto native module not available")
+
+    # Fallback stub — TemporalManager
+    class _RustTemporalManager:  # type: ignore[no-redef]
+        @staticmethod
+        def filter_rules(rules_json: str, date_str: str) -> str:  # type: ignore[misc]
+            raise ImportError(
+                "nexus_crypto native module not available — "
+                "build with: cd nexus_ai/rust && maturin develop"
+            )
+
+        @staticmethod
+        def sort_by_temporal(rules_json: str) -> str:  # type: ignore[misc]
+            raise ImportError("nexus_crypto native module not available")
+
+        @staticmethod
+        def validate_overlap(rules_json: str) -> str:  # type: ignore[misc]
+            raise ImportError("nexus_crypto native module not available")
+
 
 # ── Schemas ──────────────────────────────────────────────────────────────────
 
@@ -145,11 +201,6 @@ DEFAULT_TAX_RULES: list[dict[str, Any]] = [
         "created_by": "system",
     },
     # ◈ ◈ ◈ FIELD CONFIDENCE RULES (Priority 8) ◈ ◈ ◈
-    # Zastępują Pythonowy RiskGuard — reguły Zen-Engine dla progów ufności per-field.
-    # Każda reguła zawiera domyślną vat_rate=0.23 oraz _routing/_routing_reason.
-    # Jeśli żadna reguła nie matchuje (wysoka pewność), pipeline kontynuuje normalnie.
-    # Kolejność: od najbardziej restrykcyjnych (CIT_STANDARD) do ogólnych.
-    # ── CIT_STANDARD + niska pewność stawki VAT → BLOCK_AND_ALERT
     {
         "condition_sql": "company_tax_form = 'CIT_STANDARD' AND fc_vat_rate < '0.98' AND fc_vat_rate > ''",
         "action_json": {
@@ -166,7 +217,6 @@ DEFAULT_TAX_RULES: list[dict[str, Any]] = [
         "description_template": "BLOKADA: CIT_STANDARD – niska pewność stawki VAT ({fc_vat_rate}).",
         "created_by": "system",
     },
-    # ── CIT_STANDARD + niska pewność kwoty netto → BLOCK_AND_ALERT
     {
         "condition_sql": "company_tax_form = 'CIT_STANDARD' AND fc_total_net < '0.95' AND fc_total_net > ''",
         "action_json": {
@@ -182,7 +232,6 @@ DEFAULT_TAX_RULES: list[dict[str, Any]] = [
         "priority": 8,
         "created_by": "system",
     },
-    # ── CIT_ESTONIAN + niska pewność stawki VAT → BLOCK_AND_ALERT
     {
         "condition_sql": "company_tax_form = 'CIT_ESTONIAN' AND fc_vat_rate < '0.95' AND fc_vat_rate > ''",
         "action_json": {
@@ -198,7 +247,6 @@ DEFAULT_TAX_RULES: list[dict[str, Any]] = [
         "priority": 8,
         "created_by": "system",
     },
-    # ── LINEAR (ryczałt) + każde pole → TRIAGE_QUEUE (niższy próg)
     {
         "condition_sql": "company_tax_form = 'LINEAR' AND fc_minimum < '0.85' AND fc_minimum > ''",
         "action_json": {
@@ -214,7 +262,6 @@ DEFAULT_TAX_RULES: list[dict[str, Any]] = [
         "priority": 8,
         "created_by": "system",
     },
-    # ── LUMP_SUM + niska pewność stawki VAT → TRIAGE_QUEUE
     {
         "condition_sql": "company_tax_form = 'LUMP_SUM' AND fc_vat_rate < '0.95' AND fc_vat_rate > ''",
         "action_json": {
@@ -230,7 +277,6 @@ DEFAULT_TAX_RULES: list[dict[str, Any]] = [
         "priority": 8,
         "created_by": "system",
     },
-    # ── LUMP_SUM + niska pewność kwoty netto → TRIAGE_QUEUE (błąd nie wpływa na podatek)
     {
         "condition_sql": "company_tax_form = 'LUMP_SUM' AND fc_total_net < '0.60' AND fc_total_net > ''",
         "action_json": {
@@ -246,7 +292,6 @@ DEFAULT_TAX_RULES: list[dict[str, Any]] = [
         "priority": 8,
         "created_by": "system",
     },
-    # ── Wydatki mieszane auto (MIXED_AUTO) → BLOCK_AND_ALERT
     {
         "condition_sql": "category_code = 'MIXED_AUTO' AND fc_minimum < '0.90' AND fc_minimum > ''",
         "action_json": {
@@ -262,7 +307,6 @@ DEFAULT_TAX_RULES: list[dict[str, Any]] = [
         "priority": 8,
         "created_by": "system",
     },
-    # ── Wydatki reprezentacyjne (REPRESENTATION) → BLOCK_AND_ALERT
     {
         "condition_sql": "category_code = 'REPRESENTATION' AND fc_minimum < '0.95' AND fc_minimum > ''",
         "action_json": {
@@ -278,7 +322,6 @@ DEFAULT_TAX_RULES: list[dict[str, Any]] = [
         "priority": 8,
         "created_by": "system",
     },
-    # ── Niska pewność NIP (dowolna forma) → BLOCK_AND_ALERT
     {
         "condition_sql": "fc_vendor_nip < '0.80' AND fc_vendor_nip > ''",
         "action_json": {
@@ -294,7 +337,6 @@ DEFAULT_TAX_RULES: list[dict[str, Any]] = [
         "priority": 8,
         "created_by": "system",
     },
-    # ── Niska pewność kategorii → TRIAGE_QUEUE (kategoria wymaga weryfikacji)
     {
         "condition_sql": "fc_category_code < '0.80' AND fc_category_code > ''",
         "action_json": {
@@ -310,7 +352,6 @@ DEFAULT_TAX_RULES: list[dict[str, Any]] = [
         "priority": 8,
         "created_by": "system",
     },
-    # ── Bardzo niska pewność ogólna (fc_minimum) → TRIAGE_QUEUE
     {
         "condition_sql": "fc_minimum < '0.70' AND fc_minimum > ''",
         "action_json": {
@@ -326,7 +367,6 @@ DEFAULT_TAX_RULES: list[dict[str, Any]] = [
         "priority": 8,
         "created_by": "system",
     },
-    # ── Domyślny próg ufności dla CIT_STANDARD (fallback dla pozostałych pól) → BLOCK
     {
         "condition_sql": "company_tax_form = 'CIT_STANDARD' AND fc_minimum < '0.85' AND fc_minimum > ''",
         "action_json": {
@@ -394,8 +434,6 @@ def seed_default_rules(conn: duckdb.DuckDBPyConnection) -> None:
 
 
 # ── Simulation Rule Sets ───────────────────────────────────────────────────
-# Osobne zestawy reguł dla każdej formy opodatkowania.
-# Używane przez TaxSimulator do porównania „co by bylo, gdyby".
 
 DEFAULT_SIMULATION_RULES: list[dict[str, Any]] = [
     # ── CIT_STANDARD ───────────────────────────────────────────────────
@@ -520,7 +558,7 @@ DEFAULT_SIMULATION_RULES: list[dict[str, Any]] = [
         "rule_set_id": "CIT_ESTONIAN",
         "created_by": "simulation",
     },
-    # ── LINEAR (podatek liniowy 19%) ──────────────────────────────────
+    # ── LINEAR ──────────────────────────────────────────────────
     {
         "condition_sql": "category_code = 'FUEL' AND vendor_country = 'PL'",
         "action_json": {
@@ -566,7 +604,7 @@ DEFAULT_SIMULATION_RULES: list[dict[str, Any]] = [
         "rule_set_id": "LINEAR",
         "created_by": "simulation",
     },
-    # ── LUMP_SUM (rycza³t 12%) ────────────────────────────────────────
+    # ── LUMP_SUM ────────────────────────────────────────
     {
         "condition_sql": "category_code = 'FUEL' AND vendor_country = 'PL'",
         "action_json": {
@@ -706,13 +744,9 @@ def seed_simulation_rules(conn: duckdb.DuckDBPyConnection) -> None:
 def seed_single_rule_set(conn: duckdb.DuckDBPyConnection, target_rule_set_id: str) -> int:
     """Wstaw reguły tylko dla JEDNEGO docelowego zestawu symulacyjnego.
 
-    Zamiast seedować wszystkie 4 zestawy (CIT_STANDARD, CIT_ESTONIAN, LINEAR, LUMP_SUM)
-    i potem usuwać niepotrzebne, seeduje TYLKO target_rule_set_id.
-    To redukuje liczbę INSERTów z ~40 do ~10 na jedną symulację.
-
     Args:
         conn: Połączenie DuckDB.
-        target_rule_set_id: Docelowy zestaw (np. "CIT_ESTONIAN").
+        target_rule_set_id: Docelowy zestaw (np. \"CIT_ESTONIAN\").
 
     Returns:
         Liczba wstawionych reguł.
@@ -725,14 +759,11 @@ def seed_single_rule_set(conn: duckdb.DuckDBPyConnection, target_rule_set_id: st
     store = RuleStore(conn)
     store.ensure_schema()
 
-    # Najpierw usuń istniejące reguły tego zestawu (idempotentność)
     store.delete_rule_set(target_rule_set_id)
 
-    # Filtruj tylko reguły dla docelowego zestawu
     target_rules = [
         r for r in DEFAULT_SIMULATION_RULES if r.get("rule_set_id") == target_rule_set_id
     ]
-
     if not target_rules:
         raise ValueError(f"Unknown simulation rule set: {target_rule_set_id}")
 
@@ -784,7 +815,6 @@ class ContextInterpreter:
         """
         ctx: dict[str, Any] = {}
 
-        # Required fields with defaults
         ctx["category_code"] = str(invoice_data.get("category_code", "UNKNOWN"))
 
         raw_date = invoice_data.get("transaction_date", "")
@@ -798,7 +828,6 @@ class ContextInterpreter:
         ctx["vendor_vat_status"] = str(invoice_data.get("vendor_vat_status", "unknown"))
         ctx["vendor_pkd"] = str(invoice_data.get("vendor_pkd", ""))
 
-        # amount_net — store as string, validated to Decimal upstream
         raw_net = invoice_data.get("amount_net", "0")
         if isinstance(raw_net, Decimal):
             ctx["amount_net"] = str(raw_net)
@@ -816,13 +845,15 @@ class ContextInterpreter:
 class RuleEngine:
     """Deterministic, temporal, auditable rule engine.
 
-    Uses first-match-wins evaluation against the tax_rules table.
-    Rules are filtered by validity date and sorted by priority.
+    Uses Rust PriorityEngine for first-match-wins evaluation
+    with the SQL Condition Evaluator (no DuckDB temp table).
+
+    Rules are loaded from DuckDB with temporal filtering (via TemporalManager).
 
     Safety:
-      - Context values are stored as VARCHAR in a temp table.
-      - condition_sql can only reference valid column names.
-      - No dynamic code execution — pure SQL expression evaluation.
+      - Context values are always strings (serialized to JSON for Rust).
+      - No dynamic SQL execution — condition evaluation is done in Rust.
+      - First-match-wins with deterministic sorting by (priority, rule_id).
     """
 
     def __init__(self, conn: duckdb.DuckDBPyConnection) -> None:
@@ -832,9 +863,6 @@ class RuleEngine:
 
         store = RuleStore(conn)
         store.ensure_schema()
-        # Don't seed here — external callers (fixtures, startup code)
-        # call seed_default_rules() explicitly to avoid interfering
-        # with test scenarios that intentionally delete all rules.
 
     def decide(
         self,
@@ -844,7 +872,7 @@ class RuleEngine:
     ) -> dict[str, Any]:
         """Evaluate context against rules and return the first matching verdict.
 
-        Uses TemporalManager for temporal filtering and PriorityEngine
+        Uses TemporalManager for temporal filtering and Rust PriorityEngine
         for deterministic first-match-wins evaluation.
 
         The returned verdict dict includes:
@@ -869,61 +897,72 @@ class RuleEngine:
         Raises:
             NoMatchingRuleError: If no rule matches the context.
         """
-        # 1. Prepare context as a single-row temp table
-        self._prepare_context_table(context)
-
-        # 2. Use TemporalManager to get rules active on transaction date
-        from nexus_ai.services.temporal_manager import TemporalManager
-
+        # 1. Load ALL rules from DuckDB (no temporal filtering — Rust handles it)
         txn_date = context.get("transaction_date", pendulum.now().date().isoformat())
-        temporal = TemporalManager(self._conn)
-        active_rules = temporal.get_active_rules(txn_date)
 
-        if not active_rules:
+        all_rows = self._conn.execute(
+            "SELECT rule_id, condition_sql, action_json, priority, "
+            "valid_from, valid_to FROM tax_rules"
+        ).fetchall()
+
+        if not all_rows:
+            raise NoMatchingRuleError("No tax rules found in database")
+
+        # 2. Serialize all rules to JSON (include temporal fields for Rust TemporalManager)
+        all_rules: list[dict[str, Any]] = []
+        for r in all_rows:
+            rule: dict[str, Any] = {
+                "rule_id": str(r[0]),
+                "condition_sql": str(r[1]),
+                "action_json": str(r[2]),  # already JSON string from DuckDB
+                "priority": int(r[3]),
+                "valid_from": str(r[4]),
+            }
+            if r[5] is not None:
+                rule["valid_to"] = str(r[5])
+            all_rules.append(rule)
+
+        all_rules_json = msgspec_dumps(all_rules, ensure_ascii=False, default=str)
+
+        # 3. Filter temporally using Rust TemporalManager.filter_rules()
+        #    (date filtering + temporal sorting — no DuckDB temporal WHERE)
+        filtered_rules_json = _RustTemporalManager.filter_rules(all_rules_json, txn_date)
+        filtered_rules = msgspec_loads(filtered_rules_json)
+
+        if not filtered_rules:
             raise NoMatchingRuleError(f"No active tax rules found for date {txn_date}")
 
-        # 3. Convert to PrioritizedRule and use PriorityEngine
-        from nexus_ai.services.priority_engine import PrioritizedRule, PriorityEngine
+        # 4. Evaluate rules with Rust PriorityEngine.resolve()
+        context_json = msgspec_dumps(context, ensure_ascii=False, default=str)
+        rules_json = msgspec_dumps(filtered_rules, ensure_ascii=False, default=str)
+        result_str = _RustPriorityEngine.resolve(rules_json, context_json)
+        result = msgspec_loads(result_str)
 
-        prioritized = [
-            PrioritizedRule(
-                rule_id=r.rule_id,
-                condition_sql=r.condition_sql,
-                action_json=r.action_json,
-                priority=r.priority,
-            )
-            for r in active_rules
-        ]
-
-        priority_engine = PriorityEngine()
-
-        # Collect all evaluated rules for audit trail
-        evaluated_rules: list[dict[str, Any]] = []
-
-        def _eval(condition_sql: str) -> bool:
-            result = self._conn.execute(
-                f"SELECT COUNT(1) FROM _tax_ctx WHERE {condition_sql}"
-            ).fetchone()
-            return bool(result and result[0] > 0)
-
-        # Custom resolve wrapper that records all evaluations
-        match = priority_engine.resolve(
-            prioritized,
-            _eval,
-            _tracker=evaluated_rules,
-        )
-
-        if not match.matched:
+        if not result.get("matched", False):
             raise NoMatchingRuleError(
                 f"No matching rule for context: {msgspec_dumps(context, ensure_ascii=False)}"
             )
 
-        # Attach evaluated rules to verdict for downstream consumers (pipeline)
-        match.verdict["_evaluated_rules"] = evaluated_rules
+        # 5. Extract verdict and metadata
+        verdict: dict[str, Any] = result.get("verdict", {})
 
-        # Optionally generate human-readable decision_trace (zgodnie z dokumentacją)
+        # Parse evaluated_rules_json into list
+        evaluated_rules_str = result.get("evaluated_rules_json", "[]")
+        evaluated_rules: list[dict[str, Any]] = []
+        if evaluated_rules_str:
+            try:
+                parsed = msgspec_loads(evaluated_rules_str)
+                if isinstance(parsed, list):
+                    evaluated_rules = parsed
+            except (ValueError, TypeError):
+                pass
+
+        # Attach evaluated rules to verdict
+        verdict["_evaluated_rules"] = evaluated_rules
+
+        # Optionally generate human-readable decision_trace
         if include_decision_trace:
-            rule_id = match.verdict.get("_rule_id", "")
+            rule_id = verdict.get("_rule_id", "")
             if rule_id:
                 rule_rows = self._conn.execute(
                     "SELECT rule_id, condition_sql, action_json, description_template "
@@ -939,45 +978,25 @@ class RuleEngine:
                     }
                     from nexus_ai.services.trace_generator import TraceGenerator
 
-                    match.verdict["decision_trace"] = TraceGenerator.generate(
+                    verdict["decision_trace"] = TraceGenerator.generate(
                         rule=rule_info,
                         context=context,
-                        verdict=match.verdict,
+                        verdict=verdict,
                     )
 
-        return match.verdict
-
-    def _prepare_context_table(self, context: dict[str, Any]) -> None:
-        """Create a single-row _tax_ctx temp table from the context dict.
-
-        All values are stored as VARCHAR for safe SQL evaluation.
-        The table is dropped and recreated on each call to handle
-        changing context keys.
-        """
-        self._conn.execute("DROP TABLE IF EXISTS _tax_ctx")
-
-        cols = ", ".join(f'"{k}" VARCHAR' for k in context)
-        placeholders = ", ".join(["?" for _ in context])
-        values = [str(v) for v in context.values()]
-
-        self._conn.execute(f"CREATE TEMP TABLE _tax_ctx ({cols})")
-        self._conn.execute(f"INSERT INTO _tax_ctx VALUES ({placeholders})", values)
+        return verdict
 
     # ── Access to formal components ────────────────────────────────────
 
     @property
     def temporal_manager(self):
-        """Access the underlying TemporalManager."""
-        from nexus_ai.services.temporal_manager import TemporalManager
-
-        return TemporalManager(self._conn)
+        """Access the Rust TemporalManager for temporal filtering."""
+        return _RustTemporalManager
 
     @property
     def priority_engine(self):
-        """Access the underlying PriorityEngine."""
-        from services.priority_engine import PriorityEngine
-
-        return PriorityEngine()
+        """Access the Rust PriorityEngine."""
+        return _RustPriorityEngine
 
     # ── Rule lifecycle (immutable: append-only + close) ─────────────────
 
@@ -994,7 +1013,7 @@ class RuleEngine:
 
         Args:
             condition_sql: SQL WHERE expression (e.g. ``category_code = 'FUEL'``).
-            action: Verdict dict (e.g. ``{"vat_rate": "0.23", ...}``).
+            action: Verdict dict (e.g. ``{\"vat_rate\": \"0.23\", ...}``).
             valid_from: Start date (ISO string or pendulum.Date).
             valid_to: End date (or None for indefinitely active).
             priority: Lower = higher priority.

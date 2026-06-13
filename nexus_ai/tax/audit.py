@@ -1,34 +1,58 @@
 """
 Decision Trace Logger — append-only cryptographic audit trail.
 
-Zgodny z aa3fvcx.txt — SHA-256 hash chain przez nexus-crypto (Rust+PyO3)
-z fallback do hashlib. Każda decyzja podatkowa pozostawia niezmienny,
-kryptograficznie zabezpieczony ślad, który pozwala odtworzyć
-cały proces decyzyjny nawet po latach.
+Zgodny z aa3fvcx.txt — SHA-256 hash chain w Rust+PyO3.
+Rust wykonuje całą kryptografię (UUID, timestamp, SHA-256 hash chain,
+chain integrity verification). Python wykonuje DuckDB I/O (INSERT, SELECT).
+
+Architektura:
+  - Rust (nexus_crypto):  compute_current_hash, genesis_hash,
+    DecisionTraceLogger.prepare_log(), PreparedLog.values(),
+    verify_chain_integrity()
+  - Python (ten plik):    DuckDB schema, INSERT, SELECT, get_trace(),
+    latest_hash(), entry_count() — cienka nakładka na Rust
 """
 
 from __future__ import annotations
 
-import uuid
 from typing import Any, final
 
 import duckdb
-import pendulum
 
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+# ── Rust-native crypto (nexus_crypto) ───────────────────────────────────────
 
-# ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
 try:
-    from nexus_crypto import sha256 as _sha256
-
-    HAS_NEXUS_CRYPTO = True
+    from nexus_crypto import (
+        DecisionTraceLogger as _RustDecisionTraceLogger,
+        PreparedLog as _RustPreparedLog,
+        compute_current_hash as _rust_compute_current_hash,
+        verify_chain_integrity as _rust_verify_chain_integrity,
+    )
+    _HAS_NEXUS_CRYPTO = True
 except ImportError:
     import hashlib as _hashlib
 
-    HAS_NEXUS_CRYPTO = False
+    _HAS_NEXUS_CRYPTO = False
 
-    def _sha256(data: bytes) -> str:
-        return _hashlib.sha256(data).hexdigest()
+    # Fallback DecisionTraceLogger stub (raises ImportError on use)
+    class _RustDecisionTraceLogger:  # type: ignore[no-redef]
+        @staticmethod
+        def prepare_log(*args, **kwargs):  # type: ignore[no-untyped-def]
+            raise ImportError("nexus_crypto native module not available — build with: cd nexus_ai/rust && maturin develop")
+
+    class _RustPreparedLog:  # type: ignore[no-redef]
+        pass
+
+    def _rust_compute_current_hash(*args, **kwargs):  # type: ignore[no-untyped-def]
+        # Pure Python fallback for _compute_current_hash
+        payload = "|".join([str(a) for a in args])
+        return _hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+    def _rust_verify_chain_integrity(entries_json: str) -> str:  # type: ignore[misc]
+        raise ImportError("nexus_crypto native module not available — build with: cd nexus_ai/rust && maturin develop")
+
+
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 # ── Schema ───────────────────────────────────────────────────────────────────
 
@@ -87,36 +111,25 @@ def _compute_current_hash(
     invariants_result: str = "",
     risk_verdict: str = "",
 ) -> str:
-    """Compute SHA-256 over pipe-delimited decision fields.
+    """Compute SHA-256 over pipe-delimited decision fields — Rust-native.
 
-    The consistent ordering prevents hash ambiguity.
-    All critical data fields are included so that tampering with ANY
-    part of the decision is detected.
-
-    NOTE: ``decision_trace`` and ``trace_json`` (human-readable artifacts)
-    are intentionally EXCLUDED from the hash for backward compatibility.
-    The core fields (context, verdict, calculation) already provide
-    full integrity — tampering with derived text would not hide
-    tampering with the source data.
-
+    Delegate to Rust ``compute_current_hash()`` (nexus_crypto).
     Canonical field order:
-    ``previous_hash|trace_id|transaction_id|context_json|verdict_json|calculation_input|calculation_output|invariants_result|risk_verdict|timestamp``
+      previous_hash|trace_id|transaction_id|context_json|verdict_json|
+      calculation_input|calculation_output|invariants_result|risk_verdict|timestamp
     """
-    payload = "|".join(
-        [
-            previous_hash,
-            trace_id,
-            transaction_id,
-            context_json,
-            verdict_json,
-            calculation_input,
-            calculation_output,
-            invariants_result,
-            risk_verdict,
-            timestamp_iso,
-        ]
+    return _rust_compute_current_hash(
+        previous_hash,
+        trace_id,
+        transaction_id,
+        context_json,
+        verdict_json,
+        timestamp_iso,
+        calculation_input,
+        calculation_output,
+        invariants_result,
+        risk_verdict,
     )
-    return _sha256(payload.encode("utf-8"))
 
 
 # ── Logger ───────────────────────────────────────────────────────────────────
@@ -128,6 +141,10 @@ class DecisionTraceLogger:
 
     @final: mypyc devirtualizes all method calls on this class.
     Used for EVERY tax decision — 2-5× speedup matters.
+
+    Cryptographic operations (UUID, timestamp, SHA-256 hash chain)
+    are performed by Rust ``nexus_crypto.DecisionTraceLogger``.
+    DuckDB I/O remains in Python as a thin wrapper.
 
     Every call to :meth:`log` inserts an immutable record linked to the
     previous one via SHA-256. Tampering with any entry breaks the chain.
@@ -177,10 +194,6 @@ class DecisionTraceLogger:
         Returns:
             The ``trace_id`` (UUID) of the newly created entry.
         """
-        trace_id = uuid.uuid4().hex
-        now = pendulum.now("UTC")
-        timestamp_iso = now.isoformat()
-
         # Canonical JSON: sort_keys=True ensures deterministic serialization
         context_json = (
             msgspec_dumps(context, ensure_ascii=False, default=str, sort_keys=True)
@@ -193,25 +206,29 @@ class DecisionTraceLogger:
             else "{}"
         )
 
-        # Retrieve the last current_hash from the chain
+        # Retrieve the last current_hash from the chain (DuckDB I/O)
         last_row = self._conn.execute(
             "SELECT current_hash FROM decision_traces ORDER BY timestamp DESC LIMIT 1"
         ).fetchone()
         previous_hash = str(last_row[0]) if last_row else _GENESIS_HASH
 
-        current_hash = _compute_current_hash(
-            previous_hash=previous_hash,
-            trace_id=trace_id,
+        # Use Rust DecisionTraceLogger.prepare_log() for crypto:
+        #   UUID generation, ISO timestamp, SHA-256 hash chain
+        entry: _RustPreparedLog = _RustDecisionTraceLogger.prepare_log(
             transaction_id=transaction_id,
+            previous_hash=previous_hash,
             context_json=context_json,
             verdict_json=verdict_json,
-            timestamp_iso=timestamp_iso,
+            rule_id=rule_id or "",
             calculation_input=calculation_input or "",
             calculation_output=calculation_output or "",
             invariants_result=invariants_result or "",
             risk_verdict=risk_verdict or "",
+            decision_trace=decision_trace or "",
+            trace_json=trace_json or "",
         )
 
+        # Insert into DuckDB using PreparedLog.values() (Rust → flat list)
         self._conn.execute(
             """INSERT INTO decision_traces
                (trace_id, transaction_id, rule_id, context_json, verdict_json,
@@ -219,25 +236,10 @@ class DecisionTraceLogger:
                 risk_verdict, decision_trace, trace_json,
                 previous_hash, current_hash, timestamp)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            (
-                trace_id,
-                transaction_id,
-                rule_id,
-                context_json,
-                verdict_json,
-                calculation_input,
-                calculation_output,
-                invariants_result,
-                risk_verdict,
-                decision_trace,
-                trace_json,
-                previous_hash,
-                current_hash,
-                timestamp_iso,
-            ),
+            entry.values(),
         )
 
-        return trace_id
+        return entry.trace_id
 
     def get_trace(self, transaction_id: str) -> list[dict[str, Any]]:
         """Retrieve all decision traces for a given transaction.
@@ -297,11 +299,14 @@ class DecisionTraceLogger:
         return int(row[0]) if row else 0
 
 
-# ── Chain Verifier ───────────────────────────────────────────────────────────
+# ── Chain Verifier — Rust-native ────────────────────────────────────────────
 
 
 def verify_chain_integrity(conn: duckdb.DuckDBPyConnection) -> list[dict[str, Any]]:
-    """Verify the full decision trace hash chain from oldest to newest.
+    """Verify the full decision trace hash chain — Rust-native.
+
+    Reads all entries from DuckDB, passes them as JSON to Rust
+    ``verify_chain_integrity()``, and returns the results.
 
     For each entry, this function:
       1. Checks that ``previous_hash`` matches the previous entry's ``current_hash``.
@@ -321,64 +326,27 @@ def verify_chain_integrity(conn: duckdb.DuckDBPyConnection) -> list[dict[str, An
            ORDER BY timestamp ASC"""
     ).fetchall()
 
-    issues: list[dict[str, Any]] = []
-    expected_previous = _GENESIS_HASH
+    # Build JSON array for Rust verifier
+    entries = [
+        {
+            "trace_id": str(r[0]),
+            "transaction_id": str(r[1]),
+            "context_json": str(r[2]) if r[2] else "{}",
+            "verdict_json": str(r[3]) if r[3] else "{}",
+            "calculation_input": str(r[4]) if r[4] else "",
+            "calculation_output": str(r[5]) if r[5] else "",
+            "invariants_result": str(r[6]) if r[6] else "",
+            "risk_verdict": str(r[7]) if r[7] else "",
+            "previous_hash": str(r[8]),
+            "current_hash": str(r[9]),
+            "timestamp": str(r[10]),
+        }
+        for r in rows
+    ]
 
-    for row in rows:
-        trace_id = str(row[0])
-        transaction_id = str(row[1])
-        context_json = str(row[2]) if row[2] else "{}"
-        verdict_json = str(row[3]) if row[3] else "{}"
-        calculation_input = str(row[4]) if row[4] else ""
-        calculation_output = str(row[5]) if row[5] else ""
-        invariants_result = str(row[6]) if row[6] else ""
-        risk_verdict = str(row[7]) if row[7] else ""
-        stored_previous = str(row[8])
-        stored_current = str(row[9])
-        timestamp_iso = str(row[10])
+    # Use Rust verify_chain_integrity() — pure, no I/O
+    entries_json = msgspec_dumps(entries, ensure_ascii=False, default=str)
+    result_json = _rust_verify_chain_integrity(entries_json)
+    result = msgspec_loads(result_json) if result_json else []
 
-        # 1. Previous hash linkage
-        if stored_previous != expected_previous:
-            issues.append(
-                {
-                    "trace_id": trace_id,
-                    "issue": "previous_hash_mismatch",
-                    "expected_previous": expected_previous,
-                    "stored_previous": stored_previous,
-                    "message": (
-                        f"Entry {trace_id}: stored previous_hash does not match "
-                        f"the previous entry's current_hash"
-                    ),
-                }
-            )
-
-        # 2. Current hash integrity (includes ALL fields now)
-        recomputed = _compute_current_hash(
-            previous_hash=stored_previous,
-            trace_id=trace_id,
-            transaction_id=transaction_id,
-            context_json=context_json,
-            verdict_json=verdict_json,
-            timestamp_iso=timestamp_iso,
-            calculation_input=calculation_input,
-            calculation_output=calculation_output,
-            invariants_result=invariants_result,
-            risk_verdict=risk_verdict,
-        )
-        if recomputed != stored_current:
-            issues.append(
-                {
-                    "trace_id": trace_id,
-                    "issue": "current_hash_mismatch",
-                    "expected_current": recomputed,
-                    "stored_current": stored_current,
-                    "message": (
-                        f"Entry {trace_id}: stored current_hash does not match "
-                        f"recomputed hash — data may have been tampered with"
-                    ),
-                }
-            )
-
-        expected_previous = stored_current
-
-    return issues
+    return result if isinstance(result, list) else []

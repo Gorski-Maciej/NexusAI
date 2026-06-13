@@ -356,8 +356,13 @@ jobs:
           path: htmlcov/
           retention-days: 14
 
-  # ── Build Rust extension: nexus-crypto przez hatch ────────────────────────
-  # Używa hatch env build:build-rust (nexus-build rust)
+  # ── Build Rust extension: nexus-crypto przez Maturin (ABI3 + strip) ────
+  # Konfiguracja:
+  #   - ABI3 (abi3-py312) — jeden wheel na Python ≥3.12 (3.12, 3.13, 3.13t)
+  #   --strip — usuwa symbole debug, 30-40% mniejszy .whl
+  #   - LTO + codegen-units=1 — maksymalna optymalizacja
+  #   - Cross-platform: Linux x86_64, Windows x86_64
+  #   - Cache Rust toolchain + cargo registry dla szybszych buildów
   build-rust:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
@@ -366,6 +371,21 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        # Default host target (x86_64-unknown-linux-gnu na Linux,
+        # x86_64-pc-windows-msvc na Windows) jest wystarczające
+        # dla kompilacji Maturin — nie dodajemy extra targets
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            nexus_ai/rust/target
+          key: cargo-${{ runner.os }}-${{ hashFiles('nexus_ai/rust/Cargo.lock') }}
 
       - name: Install pipx
         run: pip install pipx && pipx ensurepath
@@ -381,8 +401,11 @@ jobs:
             ~/.cache/pip
           key: hatch-build-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
 
-      - name: Build Rust (nexus-build rust via hatch)
+      - name: Build Rust (nexus-build rust via hatch) — ABI3 + strip
         run: hatch run build:build-rust
+
+      - name: List built wheels
+        run: ls -lh nexus_ai/rust/target/wheels/
 
       - name: Upload wheel
         uses: actions/upload-artifact@v4
