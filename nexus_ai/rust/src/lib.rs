@@ -26,21 +26,20 @@
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 
-mod aead;
+pub mod aead;
 mod blake;
 mod digest;
-mod exceptions;
-mod jwt;
-mod ksef;
-mod mac;
-mod password;
-mod rule_engine;
-mod rules_engine;
-mod secure;
-mod temporal_manager;
-mod tax;
-mod tax_pipeline;
-mod trace_logger;
+pub mod engine;
+pub mod exceptions;
+pub mod jwt;
+pub mod ksef;
+pub mod mac;
+pub mod password;
+pub mod secure;
+pub mod temporal_manager;
+pub mod tax;
+pub mod tax_pipeline;
+pub mod trace_logger;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Python bindings (PyO3)
@@ -332,15 +331,15 @@ fn _core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Register TraceLogger (SHA-256 hash chain + verify_chain_integrity)
     trace_logger::register(m)?;
 
-    // Register RuleEngine (PriorityEngine — first-match-wins)
-    rule_engine::register(m)?;
+    // Register PriorityEngine (thin wrapper over shared pipeline)
+    engine::priority_engine::register(m)?;
 
-    // Register RulesEngine (self-contained pipeline)
-    rules_engine::register(m)?;
+    // Register RulesEngine (thin wrapper over shared pipeline)
+    engine::rules_engine::register(m)?;
 
     // Register TemporalManager (date filtering, overlap validation)
     temporal_manager::register(m)?;
 
-    log::info!("nexus_crypto: registered 10 functions, 1 class, 5 custom exceptions, TaxMathEngine, JWT, KSeF, TaxPipeline, TraceLogger, RulesEngine, TemporalManager");
+    log::info!("nexus_crypto: registered 10 functions, 1 class, 5 custom exceptions, TaxMathEngine, JWT, KSeF, TaxPipeline, TraceLogger, PriorityEngine, RulesEngine (shared pipeline), TemporalManager");
     Ok(())
 }

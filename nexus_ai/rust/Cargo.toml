@@ -8,7 +8,7 @@ rust-version = "1.78"
 
 [lib]
 name = "nexus_crypto"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "lib"]
 
 [dependencies]
 # PyO3 z ABI3 (stable ABI) — jeden wheel na Python ≥3.12
@@ -32,6 +32,24 @@ base64 = "0.22"
 quick-xml = "0.36"
 chrono = { version = "0.4", default-features = false, features = ["std", "clock"] }
 uuid = { version = "1", features = ["v4"] }
+thiserror = "2"
+rayon = "1.10"
+libc = "0.2"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "tax_math"
+harness = false
+
+[[bench]]
+name = "rules_engine"
+harness = false
+
+[[bench]]
+name = "secure"
+harness = false
 
 [profile.release]
 opt-level = 3

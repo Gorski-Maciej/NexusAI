@@ -21,8 +21,11 @@
 
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
+use rayon::prelude::*;
 use rust_decimal::prelude::*;
 use rust_decimal::RoundingStrategy;
+
+
 
 // ── Constants ───────────────────────────────────────────────────────────────
 
@@ -333,7 +336,12 @@ pub fn add_tax(net_grosze: i64, vat_grosze: i64) -> i64 {
 /// Calculate total VAT according to the chosen rounding strategy.
 ///
 /// ``position`` — round per line, then sum (precise per-item VAT).
+///     Uses **rayon parallelism** for large position lists (>64 items).
+///     Each position's Decimal arithmetic runs independently per thread.
+///
 /// ``total``    — sum net first, then round once (matches total-invoice math).
+///     Uses SIMD-friendly aligned parallel i64 sum via rayon par_iter.
+///     LLVM auto-vectorizes the i64 gather+sum into SIMD (paddq on x86_64).
 ///
 /// Args:
 ///     positions: List of invoice line items (net in grosze).
@@ -350,23 +358,75 @@ pub fn calculate_vat_by_policy(
 ) -> PyResult<i64> {
     let rate = parse_rate_decimal(vat_rate)?;
 
+    // Pre-extract net_grosze into a contiguous Vec<i64> for SIMD-friendly
+    // parallel processing. This avoids rayon trait bounds issues with PyRef
+    // and gives better cache locality (contiguous i64 array).
+    let nets: Vec<i64> = positions.iter().map(|p| p.net_grosze).collect();
+    let net_count = nets.len();
+
     match rounding_level {
         "position" => {
-            let mut total_vat: i64 = 0;
-            for pos in positions.iter() {
-                let net = Decimal::from_i64(pos.net_grosze).unwrap();
-                let vat = (net * rate).round_dp_with_strategy(0, ROUND_HALF_UP);
-                total_vat += vat.to_i64().unwrap_or(0);
+            // ── Position-level rounding ─────────────────────────────────
+            // Small lists: sequential (avoid rayon overhead for <64 items)
+            // Large lists: parallel via rayon par_iter + sum
+            // LLVM auto-vectorizes the i64 sum (paddq on x86_64).
+
+            if net_count <= 64 {
+                let mut total_vat: i64 = 0;
+                for &net_gr in nets.iter() {
+                    let net = Decimal::from_i64(net_gr).unwrap();
+                    let vat = (net * rate).round_dp_with_strategy(0, ROUND_HALF_UP);
+                    total_vat += vat.to_i64().unwrap_or(0);
+                }
+                log::debug!(
+                    "calculate_vat_by_policy(position/sequential): {} nets → {} gr VAT",
+                    net_count,
+                    total_vat,
+                );
+                Ok(total_vat)
+            } else {
+                log::info!(
+                    "calculate_vat_by_policy(position/rayon): {} nets, parallelism enabled",
+                    net_count,
+                );
+
+                let total_vat: i64 = nets
+                    .par_iter()
+                    .map(|&net_gr| {
+                        let net = Decimal::from_i64(net_gr).unwrap();
+                        let vat = (net * rate).round_dp_with_strategy(0, ROUND_HALF_UP);
+                        vat.to_i64().unwrap_or(0)
+                    })
+                    .sum();
+
+                log::info!(
+                    "calculate_vat_by_policy(position/rayon): {} nets → {} gr VAT",
+                    net_count,
+                    total_vat,
+                );
+                Ok(total_vat)
             }
-            Ok(total_vat)
         }
         "total" => {
-            let total_net: i64 = positions.iter().map(|p| p.net_grosze).sum();
+            // ── Total-level rounding (SIMD-friendly) ────────────────────
+            // Parallel i64 sum via rayon par_iter on contiguous Vec<i64>.
+            // LLVM auto-vectorizes this into SIMD (paddq, etc.) on x86_64
+            // and ARM NEON.
+
+            let total_net: i64 = nets.par_iter().sum();
+
             let net = Decimal::from_i64(total_net).unwrap();
             let vat = (net * rate).round_dp_with_strategy(0, ROUND_HALF_UP);
-            vat.to_i64().ok_or_else(|| {
+            let result = vat.to_i64().ok_or_else(|| {
                 PyValueError::new_err("VAT result too large")
-            })
+            })?;
+
+            log::debug!(
+                "calculate_vat_by_policy(total/rayon+SIMD): {} nets → {} gr VAT",
+                net_count,
+                result,
+            );
+            Ok(result)
         }
         _ => Err(PyValueError::new_err(format!(
             "Unknown rounding_level: {rounding_level:?}; expected 'position' or 'total'"

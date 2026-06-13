@@ -24,6 +24,7 @@ use rust_decimal::RoundingStrategy;
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 
+use crate::engine::pipeline;
 use crate::tax;
 
 // ── Constants ───────────────────────────────────────────────────────────────
@@ -138,238 +139,26 @@ fn get_str(obj: &serde_json::Map<String, Value>, key: &str, default: &str) -> St
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Step 2: SQL Condition Evaluator — lightweight parser for rule conditions
+// Step 2: Rule Evaluation — deleguje do engine::pipeline (wspólny evaluator)
 // ═══════════════════════════════════════════════════════════════════════════════
 //
-// Obsługuje wzorce używane w DEFAULT_TAX_RULES:
-//   - field = 'value'          (string equality)
-//   - field IN ('v1', 'v2')    (IN list)
-//   - field < 'value'          (string comparison, numeryczne)
-//   - field > ''               (non-empty)
-//   - field1 = 'v1' AND field2 = 'v2'   (AND composition)
-//   - ( ... AND ... )          (parentheses)
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/// Token types for SQL condition parsing.
-#[derive(Debug, Clone, PartialEq)]
-enum Token {
-    Ident(String),
-    StringLit(String),
-    Op(String),      // =, <, >
-    In,              // IN
-    And,             // AND
-    LParen,          // (
-    RParen,          // )
-    Comma,
-}
-
-/// Simple tokenizer for SQL WHERE condition expressions.
-fn tokenize(input: &str) -> Vec<Token> {
-    let mut tokens = Vec::new();
-    let mut chars = input.chars().peekable();
-
-    while let Some(&ch) = chars.peek() {
-        match ch {
-            // Whitespace
-            c if c.is_whitespace() => { chars.next(); }
-            // String literals (single-quoted)
-            '\'' => {
-                chars.next(); // consume opening '
-                let mut s = String::new();
-                while let Some(&c) = chars.peek() {
-                    if c == '\'' {
-                        chars.next(); // consume closing '
-                        break;
-                    }
-                    s.push(c);
-                    chars.next();
-                }
-                tokens.push(Token::StringLit(s));
-            }
-            // Parentheses
-            '(' => { chars.next(); tokens.push(Token::LParen); }
-            ')' => { chars.next(); tokens.push(Token::RParen); }
-            // Comma
-            ',' => { chars.next(); tokens.push(Token::Comma); }
-            // Operators: =, <, >
-            '=' => { chars.next(); tokens.push(Token::Op("=".to_string())); }
-            '<' => { chars.next(); tokens.push(Token::Op("<".to_string())); }
-            '>' => { chars.next(); tokens.push(Token::Op(">".to_string())); }
-            // Identifiers and keywords (alphanumeric + underscores)
-            c if c.is_ascii_alphanumeric() || c == '_' => {
-                let mut ident = String::new();
-                while let Some(&c) = chars.peek() {
-                    if c.is_ascii_alphanumeric() || c == '_' {
-                        ident.push(c);
-                        chars.next();
-                    } else {
-                        break;
-                    }
-                }
-                let upper = ident.to_uppercase();
-                match upper.as_str() {
-                    "IN" => tokens.push(Token::In),
-                    "AND" => tokens.push(Token::And),
-                    _ => tokens.push(Token::Ident(ident)),
-                }
-            }
-            _ => { chars.next(); } // skip unknown
-        }
-    }
-    tokens
-}
-
-/// Evaluate a single condition token sequence against a context value.
-///
-/// Handles `field op 'value'` and `field IN ('v1', 'v2')` patterns.
-fn eval_simple(tokens: &[Token], context: &serde_json::Map<String, Value>) -> bool {
-    if tokens.is_empty() {
-        return true;
-    }
-
-    // Handle AND composition: split on AND tokens
-    let and_groups: Vec<&[Token]> = split_on_and(tokens);
-
-    for group in &and_groups {
-        if !eval_and_group(group, context) {
-            return false;
-        }
-    }
-    true
-}
-
-/// Split token sequence on AND tokens (top-level only, not inside parens).
-fn split_on_and(tokens: &[Token]) -> Vec<&[Token]> {
-    let mut groups = Vec::new();
-    let mut depth = 0;
-    let mut start = 0;
-
-    for (i, token) in tokens.iter().enumerate() {
-        match token {
-            Token::LParen => depth += 1,
-            Token::RParen => depth -= 1,
-            Token::And if depth == 0 => {
-                groups.push(&tokens[start..i]);
-                start = i + 1;
-            }
-            _ => {}
-        }
-    }
-    if start < tokens.len() {
-        groups.push(&tokens[start..]);
-    }
-    groups
-}
-
-/// Evaluate an AND group (one side of AND, potentially with parens).
-fn eval_and_group(tokens: &[Token], context: &serde_json::Map<String, Value>) -> bool {
-    // Strip outer parentheses
-    let inner = strip_parens(tokens);
-
-    // Find operator position
-    let op_pos = inner.iter().position(|t| matches!(t, Token::Op(_) | Token::In));
-
-    match op_pos {
-        Some(pos) => {
-            match &inner[pos] {
-                Token::Op(op) => {
-                    // Pattern: <ident> <op> <string_lit>
-                    if pos >= 1 && pos + 1 < inner.len() {
-                        if let Token::Ident(field) = &inner[pos - 1] {
-                            if let Token::StringLit(expected) = &inner[pos + 1] {
-                                return eval_compare(field, op, expected, context);
-                            }
-                        }
-                    }
-                    false
-                }
-                // Pattern: <ident> IN ( <lit>, <lit>, ... )
-                _ if matches!(inner[pos], Token::In) => {
-                    if pos >= 1 {
-                        if let Token::Ident(field) = &inner[pos - 1] {
-                            let values: Vec<&str> = inner[pos + 1..]
-                                .iter()
-                                .filter_map(|t| {
-                                    if let Token::StringLit(s) = t { Some(s.as_str()) } else { None }
-                                })
-                                .collect();
-                            return eval_in(field, &values, context);
-                        }
-                    }
-                    false
-                }
-                _ => false,
-            }
-        }
-        None => {
-            // No operator — single token or empty
-            !inner.is_empty()
-        }
-    }
-}
-
-/// Strip matching outer parentheses.
-fn strip_parens(tokens: &[Token]) -> &[Token] {
-    if tokens.len() >= 2 && tokens[0] == Token::LParen && tokens[tokens.len() - 1] == Token::RParen {
-        // Check that the parens match (depth returns to 0 at the end)
-        let mut depth = 0;
-        for (i, t) in tokens.iter().enumerate() {
-            match t {
-                Token::LParen => depth += 1,
-                Token::RParen => {
-                    depth -= 1;
-                    if depth == 0 && i != tokens.len() - 1 {
-                        return tokens; // early return — not matching outer parens
-                    }
-                }
-                _ => {}
-            }
-        }
-        &tokens[1..tokens.len() - 1]
-    } else {
-        tokens
-    }
-}
-
-/// Evaluate `field =/</> 'value'` against context.
-fn eval_compare(field: &str, op: &str, expected: &str, context: &serde_json::Map<String, Value>) -> bool {
-    let actual = match context.get(field) {
-        Some(Value::String(s)) => s.as_str(),
-        _ => return false,
-    };
-
-    match op {
-        "=" => actual == expected,
-        "<" => actual < expected,   // string comparison (works for numeric strings)
-        ">" => actual > expected,   // includes > '' (non-empty check)
-        _ => false,
-    }
-}
-
-/// Evaluate `field IN ('v1', 'v2')` against context.
-fn eval_in(field: &str, values: &[&str], context: &serde_json::Map<String, Value>) -> bool {
-    let actual = match context.get(field) {
-        Some(Value::String(s)) => s.as_str(),
-        _ => return false,
-    };
-    values.contains(&actual)
-}
-
-/// Evaluate a condition_sql expression against a context dict.
-///
-/// Returns true if the condition matches (i.e., there exists a row in the
-/// virtual context table that satisfies the condition — equivalent to
-/// DuckDB's `SELECT COUNT(1) FROM _tax_ctx WHERE condition_sql`).
-fn evaluate_condition(condition_sql: &str, context: &serde_json::Map<String, Value>) -> bool {
-    let tokens = tokenize(condition_sql);
-    eval_simple(&tokens, context)
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// RuleEngine — first-match-wins evaluation
+// ZDUPLIKOWANY SQL tokenizer/parser/evaluator usunięty.
+// Używamy JEDNEGO źródła prawdy: engine::condition + engine::pipeline.
+//
+// evaluate_rules_inner zastąpiony delegacją do:
+//   pipeline::evaluate_rules_pipeline(&rules, &context)
+//   pipeline::eval_result_to_json(&result)
+//
+// Szczegóły:
+//   Token → engine::condition::Token
+//   tokenize() → engine::condition::tokenize()
+//   evaluate_condition() → engine::condition::evaluate_condition()
+//   evaluate_rules_pipeline() → engine::pipeline::evaluate_rules_pipeline()
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /// Evaluate rules (first-match-wins) against a context.
+///
+/// Deleguje do wspólnego pipeline (engine::pipeline + engine::condition).
 ///
 /// Args:
 ///     rules_json: JSON array of rule objects with:
@@ -396,76 +185,21 @@ pub(crate) fn evaluate_rules_inner(rules_json: &str, context_json: &str) -> PyRe
     let rules: Vec<Value> = serde_json::from_str(rules_json)
         .map_err(|e| PyValueError::new_err(format!("Invalid rules JSON: {e}")))?;
 
-    let mut evaluated: Vec<Value> = Vec::with_capacity(rules.len());
-    let mut matched_rule: Option<(Value, String, i64)> = None;
+    log::info!(
+        "evaluate_rules_inner (pipeline): {} rules",
+        rules.len(),
+    );
 
-    for rule in &rules {
-        let obj = match rule.as_object() {
-            Some(o) => o,
-            None => continue,
-        };
+    let result = pipeline::evaluate_rules_pipeline(&rules, &context);
+    let output = pipeline::eval_result_to_json(&result);
 
-        let rule_id = obj.get("rule_id")
-            .and_then(|v| v.as_str())
-            .unwrap_or("")
-            .to_string();
-        let condition_sql = obj.get("condition_sql")
-            .and_then(|v| v.as_str())
-            .unwrap_or("")
-            .to_string();
-        let action_json_str = obj.get("action_json")
-            .and_then(|v| v.as_str())
-            .unwrap_or("{}")
-            .to_string();
-        let priority = obj.get("priority")
-            .and_then(|v| v.as_i64())
-            .unwrap_or(100);
+    log::info!(
+        "evaluate_rules_inner (pipeline): matched={}, rule_id={}",
+        result.matched,
+        if result.matched { &result.rule_id } else { "(none)" },
+    );
 
-        let matches = evaluate_condition(&condition_sql, &context);
-        let is_selected = matched_rule.is_none() && matches;
-
-        evaluated.push(json!({
-            "rule_id": rule_id,
-            "condition_sql": condition_sql,
-            "result": matches,
-            "selected": is_selected,
-        }));
-
-        if is_selected {
-            matched_rule = Some((
-                serde_json::from_str(&action_json_str)
-                    .unwrap_or_else(|_| json!({})),
-                rule_id,
-                priority,
-            ));
-            // Don't break — still need to fill evaluated_rules for all rules
-        }
-    }
-
-    let evaluated_json = serde_json::to_string(&evaluated).expect("infallible json");
-
-    match matched_rule {
-        Some((mut verdict, rule_id, priority)) => {
-            if let Some(v_obj) = verdict.as_object_mut() {
-                v_obj.insert("_rule_id".to_string(), Value::String(rule_id.clone()));
-                v_obj.insert("_priority".to_string(), json!(priority));
-                v_obj.insert("_evaluated_rules".to_string(), Value::Array(evaluated));
-            }
-            let verdict_json = serde_json::to_string(&verdict).expect("infallible json");
-            Ok(serde_json::to_string(&json!({
-                "matched": true,
-                "verdict": verdict,
-                "rule_id": rule_id,
-                "priority": priority,
-                "evaluated_rules_json": evaluated_json,
-            })).expect("infallible json"))
-        }
-        None => Ok(serde_json::to_string(&json!({
-            "matched": false,
-            "error": "No matching rule found for context",
-            "evaluated_rules_json": evaluated_json,
-        })).expect("infallible json")),
-    }
+    Ok(serde_json::to_string(&output).expect("infallible json"))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
