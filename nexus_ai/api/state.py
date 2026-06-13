@@ -48,6 +48,8 @@ async def _start_metrics_background_task(app: Litestar) -> None:
     Rejestruje task w ``app.state.bg_tasks`` zamiast manualnego
     ``anyio.ensure_backend().create_task()`` — task jest automatycznie
     anulowany przez ``cancel_all()`` podczas shutdownu.
+
+    Od Fazy 4: dodaje monitoring wycieków pamięci mimalloc.
     """
     try:
         import psutil
@@ -55,8 +57,8 @@ async def _start_metrics_background_task(app: Litestar) -> None:
         _proc = psutil.Process()
 
         async def _update_system_metrics() -> None:
-            """Periodically update system-level gauges."""
-            from nexus_ai.api.telemetry_metrics import set_memory_usage
+            """Periodically update system-level gauges + detect memory leaks."""
+            from nexus_ai.api.telemetry_metrics import record_mimalloc_stats, set_memory_usage
 
             while True:
                 try:
@@ -64,15 +66,22 @@ async def _start_metrics_background_task(app: Litestar) -> None:
                     set_memory_usage(mem)
                 except Exception:
                     pass
+
+                # Co 30s sprawdź czy mimalloc nie ma wycieku
+                try:
+                    record_mimalloc_stats()
+                except Exception:
+                    pass
+
                 await anyio.sleep(30)
 
         app.state.bg_tasks.start_task(
             "metrics_updater",
             _update_system_metrics(),
-            metadata={"description": "System metrics gauge (30s interval)"},
+            metadata={"description": "System metrics gauge + mimalloc leak detection (30s interval)"},
         )
         logger.info(
-            "[METRICS] System metrics updater started via BackgroundTaskManager (30s interval)"
+            "[METRICS] System metrics updater + mimalloc leak detection started (30s interval)"
         )
     except ImportError:
         logger.debug("[METRICS] psutil not available — system metrics disabled")
@@ -177,9 +186,29 @@ def make_on_startup(engine, session_factory):
         # ── Phase 0: Config + ML cache ───────────────────────────────
         app.state.ml_cache_env = _configure_ml_cache_directories(config.base_dir)
 
+        # ── Phase 0.5: mimalloc bridge + metrics ──────────────────────
+        try:
+            from nexus_ai.core.mimalloc_bridge import MIOption, is_active as _mi_active, option_set as _mi_set
+
+            if _mi_active():
+                logger.info("[MIMALLOC] mimalloc ACTIVE — Microsoft allocator engaged")
+                # Ustaw optymalne opcje w runtime (nadpisanie env varów)
+                _mi_set(MIOption.LARGE_OS_PAGES, 1)        # Huge OS pages
+                _mi_set(MIOption.ALLOW_LARGE_OS_PAGES, 1)   # Allow large pages
+                _mi_set(MIOption.SHOW_STATS, 0)             # Stats off by default
+                _mi_set(MIOption.EAGER_COMMIT, 1)           # Eager commit
+            else:
+                logger.warning("[MIMALLOC] mimalloc NOT active — using system allocator")
+        except Exception as exc:
+            logger.debug("[MIMALLOC] Bridge check failed: %s", exc)
+
         # ── Phase 1: OpenTelemetry metrics ───────────────────────────
         try:
             _init_otel_metrics_sync()
+            # Rejestruj metryki mimalloc po inicjalizacji OTel
+            from nexus_ai.api.telemetry_metrics import record_mimalloc_stats
+
+            record_mimalloc_stats()
             await _start_metrics_background_task(app)
         except Exception as exc:
             logger.warning("[STARTUP] OTel metrics init failed (non-fatal): %s", exc)

@@ -23,6 +23,13 @@
 //
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// ── Global allocator: Microsoft mimalloc ──────────────────────────────────────
+// Zgodnie z aa3fvcx.txt: mimalloc jako domyślny alokator.
+// secure mode: guard pages + szyfrowane listy free + randomizacja alokacji.
+// Wszystkie Rust module (crypto, tax, JWT, KSeF) używają go automatycznie.
+#[global_allocator]
+static GLOBAL_ALLOCATOR: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 

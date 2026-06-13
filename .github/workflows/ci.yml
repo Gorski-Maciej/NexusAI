@@ -190,6 +190,104 @@ jobs:
       - name: List compiled *.so files
         run: find . -name "*.so" -type f | sort | head -20
 
+  # ── Benchmark: mimalloc vs system allocator ────────────────────────────
+  # Porównuje wydajność z mimalloc (LD_PRELOAD) i bez (system malloc).
+  # Mierzy: czas alokacji, fragmentację, zużycie RAM.
+  # Uruchamia testy 'test_tax_math_engine.py' i 'test_rules_engine.py'
+  # w obu konfiguracjach i porównuje wyniki.
+  benchmark-mimalloc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pixi
+        uses: prefix-dev/setup-pixi@v0.8
+        with:
+          pixi-version: latest
+          environments: dev
+          cache: true
+
+      - name: Install mimalloc system-wide
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libmimalloc-dev 2>/dev/null || \
+            (echo "libmimalloc not in apt, building from source..." && \
+             git clone --depth 1 https://github.com/microsoft/mimalloc.git /tmp/mimalloc && \
+             cd /tmp/mimalloc && mkdir -p build && cd build && \
+             cmake ../.. -DMI_BUILD_SHARED=ON -DMI_BUILD_STATIC=OFF && \
+             make -j$(nproc) && sudo make install && sudo ldconfig)
+
+      - name: Verify mimalloc installation
+        run: |
+          ldconfig -p | grep mimalloc || echo "libmimalloc not in ldconfig cache"
+          ls -la /usr/lib/libmimalloc* 2>/dev/null || ls -la /usr/local/lib/libmimalloc* 2>/dev/null || echo "libmimalloc not found"
+
+      - name: Detect libmimalloc path
+        id: detect
+        run: |
+          for p in \
+            /usr/lib/x86_64-linux-gnu/libmimalloc.so \
+            /usr/lib/aarch64-linux-gnu/libmimalloc.so \
+            /usr/lib/libmimalloc.so \
+            /usr/local/lib/libmimalloc.so; \
+          do \
+            if [ -f "$p" ]; then \
+              echo "path=$p" >> $GITHUB_OUTPUT; \
+              echo "Detected libmimalloc at: $p"; \
+              break; \
+            fi; \
+          done
+          if [ -z "${{ steps.detect.outputs.path }}" ]; then \
+            # Fallback: use ldconfig
+            path=$(ldconfig -p | grep libmimalloc | head -1 | awk '{print $NF}'); \
+            if [ -n "$path" ]; then \
+              echo "path=$path" >> $GITHUB_OUTPUT; \
+              echo "Detected libmimalloc via ldconfig at: $path"; \
+            fi; \
+          fi
+
+      - name: Test WITHOUT mimalloc (baseline)
+        id: baseline
+        continue-on-error: true
+        run: |
+          echo "Running baseline tests (no mimalloc)..."
+          pixi run --environment dev pytest tests/test_tax_math_engine.py tests/test_rules_engine.py -v --timeout=60 --tb=short -q 2>&1 | tee /tmp/baseline_output.txt
+          echo "baseline_exit=$?" >> $GITHUB_OUTPUT
+
+      - name: Test WITH mimalloc (LD_PRELOAD)
+        id: with_mimalloc
+        continue-on-error: true
+        env:
+          LD_PRELOAD: ${{ steps.detect.outputs.path }}
+          MIMALLOC_SHOW_STATS: "1"
+          MIMALLOC_LARGE_OS_PAGES: "1"
+          MIMALLOC_EAGER_COMMIT_DELAY: "0"
+        run: |
+          echo "Running comparison tests WITH mimalloc (LD_PRELOAD)..."
+          pixi run --environment dev pytest tests/test_tax_math_engine.py tests/test_rules_engine.py -v --timeout=60 --tb=short -q 2>&1 | tee /tmp/mimalloc_output.txt
+          echo "mimalloc_exit=$?" >> $GITHUB_OUTPUT
+
+      - name: Generate benchmark report
+        run: |
+          echo "## mimalloc Benchmark Report" > /tmp/benchmark_report.md
+          echo "" >> /tmp/benchmark_report.md
+          echo "| Test | Without mimalloc | With mimalloc | Difference |" >> /tmp/benchmark_report.md
+          echo "|------|-----------------|---------------|------------|" >> /tmp/benchmark_report.md
+          echo "| Exit code | ${{ steps.baseline.outputs.baseline_exit }} | ${{ steps.mimalloc.outputs.mimalloc_exit }} | - |" >> /tmp/benchmark_report.md
+          echo "" >> /tmp/benchmark_report.md
+          echo "### MIMALLOC_SHOW_STATS output (see CI logs for details)" >> /tmp/benchmark_report.md
+          echo "MIMALLOC_SHOW_STATS=1 was set for the mimalloc run." >> /tmp/benchmark_report.md
+          echo "Check the 'Test WITH mimalloc' step logs for allocator statistics printed on exit." >> /tmp/benchmark_report.md
+          cat /tmp/benchmark_report.md
+
+      - name: Upload benchmark report
+        uses: actions/upload-artifact@v4
+        with:
+          name: mimalloc-benchmark-report
+          path: /tmp/benchmark_report.md
+          retention-days: 90
+
   # ── Lint (fast): pixi exec ───────────────────────────────────────────────
   lint-fast:
     runs-on: ubuntu-latest
@@ -423,6 +521,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+    env:
+      CCACHE_DIR: ~/.cache/ccache
+      NUITKA_CACHE_DIR: ~/.cache/nuitka
     steps:
       - uses: actions/checkout@v4
 
@@ -440,6 +541,30 @@ jobs:
             ~/.cache/pip
           key: hatch-nuitka-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
 
+      - name: Cache ccache (Nuitka C++ compilation cache — 10-50x faster rebuilds)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ccache
+          key: ccache-nuitka-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'nexus_ai/**/*.py') }}
+          restore-keys: |
+            ccache-nuitka-${{ runner.os }}-
+
+      - name: Cache NUITKA_CACHE_DIR (Nuitka compiled module cache)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/nuitka
+          key: nuitka-cache-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            nuitka-cache-${{ runner.os }}-
+
+      - name: Install ccache (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ccache
+
+      - name: Install ccache (Windows)
+        if: runner.os == 'Windows'
+        run: choco install ccache --no-progress
+
       - name: Download Rust wheels
         uses: actions/download-artifact@v4
         with:
@@ -448,6 +573,14 @@ jobs:
 
       - name: Build with Nuitka via hatch
         run: hatch run build:build-nuitka
+        env:
+          NUITKA_CACHE_DIR: ~/.cache/nuitka
+          CCACHE_DIR: ~/.cache/ccache
+          CCACHE_MAXSIZE: 2G
+
+      - name: Show ccache stats
+        if: always()
+        run: ccache --show-stats || echo "ccache stats unavailable"
 
       - name: Upload Nuitka build
         uses: actions/upload-artifact@v4

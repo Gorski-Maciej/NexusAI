@@ -9,6 +9,13 @@ szansę na identyczny błąd we wszystkich trzech.
 - Tesseract: klasyczny OCR, mistrz ustrukturyzowanego druku
 - PaddleOCR: deep learning OCR, radzi sobie z nietypowymi czcionkami
 - Surya OCR: layout-aware OCR, rozumie strukturę strony
+
+Optymalizacja pamięci (audyt mimalloc Faza 2):
+  Każde wywołanie ``run_ocr_pipeline()`` tworzy izolowaną stertę
+  mimalloc (InvoiceOCRHeap), która jest niszczona po zakończeniu
+  przetwarzania. Dzięki temu pamięć alokowana przez silniki OCR
+  (obrazy, bufory, modele) jest zwalniana atomowo, bez czekania
+  na GC Pythona.
 """
 
 from __future__ import annotations
@@ -278,49 +285,65 @@ async def run_ocr_pipeline(
     use_tesseract: bool = True,
     use_paddle: bool = True,
     use_surya: bool = True,
+    invoice_id: str | None = None,
 ) -> dict[str, OCRConsensusDecision]:
-    """Run the full OCR pipeline with 3-way consensus.
+    """Run the full OCR pipeline with 3-way consensus and isolated mimalloc heap.
 
     Args:
         file_path: Path to PDF or image file.
         use_tesseract: Enable Tesseract OCR engine.
         use_paddle: Enable PaddleOCR engine.
         use_surya: Enable Surya OCR engine.
+        invoice_id: Optional invoice ID for mimalloc heap isolation.
+                   If provided, creates a dedicated mimalloc heap and destroys
+                   it after processing — freeing all memory atomically.
 
     Returns:
         Dict with consensus decisions for each field.
     """
 
-    # Krok 1: Konwersja PDF → obrazy (jeśli potrzeba)
-    image_paths: list[Path] = []
-    if file_path.suffix.lower() == ".pdf":
-        image_paths = pdf_to_images(file_path)
-    else:
-        image_paths = [file_path]
+    # Krok 0: Izolowana sterta mimalloc (jeśli dostępna)
+    heap_id = invoice_id or file_path.stem
+    from nexus_ai.core.mimalloc_bridge import InvoiceOCRHeap
 
-    if not image_paths:
-        logger.error("[OCR] No images to process")
-        return {}
+    async with InvoiceOCRHeap(heap_id, label="ocr_pipeline") as _heap_ctx:
+        # Krok 1: Konwersja PDF → obrazy (jeśli potrzeba)
+        image_paths: list[Path] = []
+        if file_path.suffix.lower() == ".pdf":
+            image_paths = pdf_to_images(file_path)
+        else:
+            image_paths = [file_path]
 
-    image_path = image_paths[0]  # Process first page for now
+        if not image_paths:
+            logger.error("[OCR] No images to process")
+            return {}
 
-    # Krok 2: Uruchom silniki OCR równolegle
-    engines = []
-    if use_tesseract:
-        engines.append(("tesseract", TesseractEngine()))
-    if use_paddle:
-        engines.append(("paddle", PaddleOCREngine()))
-    if use_surya:
-        engines.append(("surya", SuryaOCREngine()))
+        image_path = image_paths[0]  # Process first page for now
 
-    async def _run_engine(name: str, engine: Any) -> tuple[str, str | None]:
-        text = await engine.extract_text(image_path)
-        return name, text
+        # Krok 2: Uruchom silniki OCR równolegle
+        engines = []
+        if use_tesseract:
+            engines.append(("tesseract", TesseractEngine()))
+        if use_paddle:
+            engines.append(("paddle", PaddleOCREngine()))
+        if use_surya:
+            engines.append(("surya", SuryaOCREngine()))
 
-    results = await anyio.gather(*[_run_engine(name, engine) for name, engine in engines])
+        async def _run_engine(name: str, engine: Any) -> tuple[str, str | None]:
+            text = await engine.extract_text(image_path)
+            return name, text
 
-    # Krok 3: Zbierz wyniki
-    texts: dict[str, str | None] = dict(results)
-    logger.info("[OCR] Engines completed: %s", {k: len(v or "") for k, v in texts.items()})
+        results = await anyio.gather(
+            *[_run_engine(name, engine) for name, engine in engines]
+        )
 
-    return texts
+        # Krok 3: Zbierz wyniki
+        texts: dict[str, str | None] = dict(results)
+        logger.info(
+            "[OCR] Engines completed: %s",
+            {k: len(v or "") for k, v in texts.items()},
+        )
+
+        return texts
+    # ← Po wyjściu z context managera: heap_destroy() zwalnia całą
+    #    pamięć alokowaną podczas przetwarzania tej faktury.

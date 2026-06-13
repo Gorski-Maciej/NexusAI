@@ -35,6 +35,17 @@ os.environ.setdefault("OMP_NUM_THREADS", "4")
 os.environ.setdefault("OPENBLAS_NUM_THREADS", "4")
 os.environ.setdefault("MKL_NUM_THREADS", "4")
 
+# ── mimalloc konfiguracja dla workera (audyt Faza 3) ───────────────────────
+# Worker długo żyje i intensywnie alokuje dla modeli AI.
+# Optymalizacje:
+#   - Huge OS pages — redukcja TLB misses dla LightOnOCR-1B (~800MB)
+#   - Eager commit — niższe opóźnienia alokacji
+#   - Page reset wyłączony — worker nie resetuje stron, żeby nie tracić czasu
+os.environ.setdefault("MIMALLOC_LARGE_OS_PAGES", "1")
+os.environ.setdefault("MIMALLOC_RESERVE_HUGE_OS_PAGES", "1")
+os.environ.setdefault("MIMALLOC_EAGER_COMMIT_DELAY", "0")
+os.environ.setdefault("MIMALLOC_PAGE_RESET", "0")
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s (PID:%(process)d): %(message)s",

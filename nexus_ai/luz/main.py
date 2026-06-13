@@ -59,7 +59,13 @@ def is_already_running(port=47999):
 
 
 class NexusOrchestrator:
-    """Zarządza NATS, Workerem i API (Granian), gwarantując restart i poprawne zamknięcie."""
+    """Zarządza NATS, Workerem i API (Granian), gwarantując restart i poprawne zamknięcie.
+
+    Zgodnie z audytem mimalloc Faza 3:
+    - NATS i TigerBeetle jako subprocesy otrzymują LD_PRELOAD z libmimalloc.so
+      dla 5-15% redukcji RAM i minimalnej fragmentacji.
+    - Worker Taskiq dziedziczy konfigurację po głównym procesie (MIMALLOC_* env vars).
+    """
 
     def __init__(self):
         self.config = AppConfig()
@@ -67,27 +73,69 @@ class NexusOrchestrator:
         self.worker_process = None
         self.api_process = None
         self.bootstrap_token = secrets.token_urlsafe(32)
+        # Konfiguracja mimalloc dla subprocesów
+        self._subprocess_env = self._build_subprocess_env()
+
+    @staticmethod
+    def _build_subprocess_env() -> dict[str, str]:
+        """Zbuduj zmienne środowiskowe dla subprocesów (NATS, TigerBeetle).
+
+        Ustawia LD_PRELOAD z mimalloc (jeśli dostępny) oraz optymalne
+        MIMALLOC_* dla brokerów wiadomości i silników księgowych.
+        """
+        env = os.environ.copy()
+        # LD_PRELOAD z mimalloc — podmiana alokatora dla procesów potomnych
+        # Sprawdź najpierw czy jest ustawiony w środowisku nadrzędnym
+        ld_preload = env.get("LD_PRELOAD", "")
+        if "libmimalloc" not in ld_preload:
+            # Próbuj znaleźć libmimalloc w standardowych lokalizacjach
+            cands = [
+                "/usr/lib/libmimalloc.so",
+                "/usr/lib/x86_64-linux-gnu/libmimalloc.so",
+                "/usr/lib/aarch64-linux-gnu/libmimalloc.so",
+                "/usr/local/lib/libmimalloc.so",
+            ]
+            # Dodaj ścieżkę z pixi/conda (gdy użytkownik używa pixi.toml)
+            conda_prefix = os.environ.get("CONDA_PREFIX", "")
+            if conda_prefix:
+                cands.insert(0, f"{conda_prefix}/lib/libmimalloc.so")
+            for candidate in cands:
+                if os.path.exists(candidate):
+                    if ld_preload:
+                        env["LD_PRELOAD"] = f"{candidate}:{ld_preload}"
+                    else:
+                        env["LD_PRELOAD"] = candidate
+                    break
+        # Optymalizacje mimalloc dla brokerów
+        env.setdefault("MIMALLOC_LARGE_OS_PAGES", "1")
+        env.setdefault("MIMALLOC_RESERVE_HUGE_OS_PAGES", "1")
+        env.setdefault("MIMALLOC_EAGER_COMMIT_DELAY", "0")
+        env.setdefault("MIMALLOC_PAGE_RESET", "0")
+        return env
 
     async def start_nats(self):
-        """Uruchamia lokalny serwer NATS z JetStream."""
+        """Uruchamia lokalny serwer NATS z JetStream i mimalloc LD_PRELOAD."""
         nats_bin = "nats-server.exe" if os.name == "nt" else "nats-server"
         nats_path = self.config.base_dir / nats_bin
         if nats_path.exists():
-            logger.info("Uruchamianie NATS JetStream...")
+            logger.info("Uruchamianie NATS JetStream z mimalloc...")
             self.nats_process = await anyio.Process(
                 [str(nats_path), "-p", "4222", "-js"],
                 stdout=anyio.ProcessPipe.DEVNULL,
                 stderr=anyio.ProcessPipe.DEVNULL,
+                env=self._subprocess_env,
             ).__aenter__()
             await anyio.sleep(2)
         else:
             logger.error("Nie znaleziono binarki NATS!")
 
     async def start_worker(self):
-        """Uruchamia proces Taskiq worker (OCR/AI)."""
+        """Uruchamia proces Taskiq worker (OCR/AI) z mimalloc."""
         logger.info("Uruchamianie Workera AI...")
         cmd = [sys.executable, "-m", "taskiq", "worker", "worker:broker", "--fs-startup"]
-        self.worker_process = await anyio.Process(cmd).__aenter__()
+        self.worker_process = await anyio.Process(
+            cmd, env=self._subprocess_env
+        ).__aenter__()
 
     async def start_backend_api(self, port: int):
         """Uruchamia serwer API (Litestar + Granian) jako proces."""

@@ -35,6 +35,10 @@ uuid = { version = "1", features = ["v4"] }
 thiserror = "2"
 rayon = "1.10"
 libc = "0.2"
+# mimalloc — global allocator for Rust (5-15% less RAM, secure mode)
+# secure: guard pages + encrypted free lists + randomized allocation
+# Zgodnie z aa3fvcx.txt: Microsoft mimalloc, statycznie wkompilowany
+mimalloc = { version = "0.1", features = ["secure"] }
 
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }

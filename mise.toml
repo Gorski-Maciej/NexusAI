@@ -54,6 +54,17 @@ NEXUS_DB_PATH = "{{config_root}}/app_data/nexus.db"
 NEXUS_UNIX_SOCKET = "/tmp/nexus-api.sock"
 NEXUS_WATCH_INTERVAL = "5"
 
+# ── mimalloc — Microsoft memory allocator (5-15% mniej RAM) ──────────────────
+# Zgodnie z aa3fvcx.txt: statycznie wkompilowany w Nuitkę, dynamicznie
+# przez LD_PRELOAD w dev. Zmienne konfiguracyjne dla optymalnej wydajności.
+# Uwaga: LD_PRELOAD jest ustawiany w pixi.toml [activation.env] dla środowiska pixi.
+# Te zmienne są dostępne dla wszystkich procesów uruchomionych przez mise.
+MIMALLOC_LARGE_OS_PAGES = "1"           # huge OS pages — mniej TLB misses
+MIMALLOC_RESERVE_HUGE_OS_PAGES = "1"    # rezerwacja dla modeli AI
+MIMALLOC_EAGER_COMMIT_DELAY = "0"       # eager commit — niskie latency
+MIMALLOC_PAGE_RESET = "0"               # wyłącz page reset dla workerów
+MIMALLOC_EAGER_COMMIT = "1"             # commituj od razu
+
 # ── Aliasy powłoki (dostępne w katalogu projektu) ────────────────────────────
 [shell_alias]
 na = "mise run start-nats"

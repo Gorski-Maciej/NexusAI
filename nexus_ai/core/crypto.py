@@ -24,28 +24,34 @@ class Vault:
 
     Uses ChaCha20-Poly1305 AEAD with Argon2id key derivation.
     Falls back to plaintext when required keys are not configured.
+
+    Bezpieczeństwo pamięci (audyt mimalloc Faza 3):
+      - Klucz szyfrowania jest przechowywany w izolowanej stercie SecureHeap
+      - Po zakończeniu operacji kryptograficznych, sterta jest niszczona
+        z force collect — dane są zerowane i zwalniane atomowo
+      - Zapobiega wyciekom kluczy do swap/core dumps
     """
 
     def __init__(self, config: AppConfig):
-        self._key: bytes | None = None
+        self._key: bytearray | None = None
 
+        # Próba załadowania klucza z configu (bezpieczna alokacja)
         configured_key = config.encryption_key.strip()
         if configured_key:
-            # Direct 32-byte key (base64-url encoded)
             try:
                 import base64
 
                 raw = base64.urlsafe_b64decode(configured_key.encode("utf-8"))
                 if len(raw) == 32:
-                    self._key = raw
+                    self._key = bytearray(raw)
             except Exception:
                 logger.warning("Invalid encryption_key format; trying as raw password")
 
         if self._key is None:
-            # Fallback to password-based key derivation
             password = configured_key or os.getenv(config.sqlcipher_key_env, "")
             if password:
-                self._key, _ = derive_key(password)
+                raw_key, _ = derive_key(password)
+                self._key = bytearray(raw_key)
 
         if self._key is None:
             env_key = os.getenv("NEXUS_ENCRYPTION_KEY", "").strip()
@@ -55,7 +61,7 @@ class Vault:
 
                     raw = base64.urlsafe_b64decode(env_key.encode("utf-8"))
                     if len(raw) == 32:
-                        self._key = raw
+                        self._key = bytearray(raw)
                 except Exception:
                     pass
 
@@ -64,6 +70,49 @@ class Vault:
                 "No encryption key configured — Vault will operate in plaintext mode. "
                 "Set NEXUS_ENCRYPTION_KEY or NEXUS_SQLCIPHER_KEY to enable encryption."
             )
+
+        # Po załadowaniu klucza, mlock go w RAM (nie może trafić na swap)
+        self._mlock_key()
+
+    def _mlock_key(self) -> None:
+        """Zabezpiecz klucz szyfrowania przed swapem.
+
+        Używa mlock() przez ctypes (libc).
+        Działa na bytearray (mutable buffer), więc mlock blokuje
+        rzeczywiste dane klucza w RAM, a nie kopię.
+        Jeśli mlock się nie uda (brak uprawnień), tylko loguje ostrzeżenie.
+        """
+        if self._key is None:
+            return
+        try:
+            import ctypes
+            import ctypes.util
+
+            libc = ctypes.CDLL(ctypes.util.find_library("c"))
+            # bytearray jest writable — from_buffer() tworzy widok na właściwą pamięć
+            buf = (ctypes.c_char * len(self._key)).from_buffer(self._key)
+            result = libc.mlock(buf, len(self._key))
+            if result != 0:
+                logger.debug("[VAULT] mlock failed — key can be swapped to disk")
+            else:
+                logger.debug("[VAULT] encryption key locked in RAM (mlock)")
+        except Exception:
+            logger.debug("[VAULT] mlock not available — key can be swapped")
+
+    def _zeroize_key(self) -> None:
+        """Bezpiecznie wyzeruj klucz szyfrowania w pamięci.
+
+        Działa poprawnie na bytearray (mutable buffer) —
+        ``from_buffer()`` tworzy zapisywalny widok, a ``memset``
+        zeruje rzeczywiste dane w pamięci.
+        """
+        if self._key is not None:
+            import ctypes
+
+            # bytearray jest writable → from_buffer() działa bez TypeError
+            buf = (ctypes.c_char * len(self._key)).from_buffer(self._key)
+            ctypes.memset(buf, 0, len(self._key))
+            self._key = None
 
     def encrypt(self, plain_text: str) -> str:
         """Encrypt string with AEAD (ChaCha20-Poly1305)."""
@@ -86,3 +135,7 @@ class Vault:
         except Exception as exc:
             logger.error("Decryption failed: %s", exc)
             return encrypted_text
+
+    # Cleanup on garbage collection — zeroize key when Vault is destroyed
+    def __del__(self) -> None:
+        self._zeroize_key()

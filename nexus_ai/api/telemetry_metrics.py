@@ -88,6 +88,25 @@ outbox_relay_events_total: Counter | None = None
 """Counter: Outbox relay events processed (total across all triggers)."""
 
 
+# ── mimalloc allocator metrics ───────────────────────────────────────────────
+
+mimalloc_heap_committed_bytes: Gauge | None = None
+"""Gauge: Current mimalloc heap committed memory in bytes.
+
+Zgodnie z audytem mimalloc: śledzenie fragmentacji i wycieków pamięci
+w czasie rzeczywistym przez OpenTelemetry Prometheus Exporter.
+"""
+
+mimalloc_available: Gauge | None = None
+"""Gauge: Is mimalloc the active allocator (1=yes, 0=no)."""
+
+mimalloc_leak_detected_total: Counter | None = None
+"""Counter: Total mimalloc memory leak alerts fired."""
+
+mimalloc_growth_pct: Gauge | None = None
+"""Gauge: Current RSS growth percentage (relative to oldest window sample)."""
+
+
 def init_metrics(meter_name: str = "nexus-ai", version: str = "2.0.0") -> None:
     """Initialize all OpenTelemetry metrics.
 
@@ -105,6 +124,7 @@ def init_metrics(meter_name: str = "nexus-ai", version: str = "2.0.0") -> None:
     global worker_up, nats_up, model_inference_duration_seconds, memory_usage_mb
     global hot_reload_events_total, hot_reload_last_event_seconds
     global outbox_relay_events_total
+    global mimalloc_leak_detected_total, mimalloc_growth_pct
 
     if _INITIALIZED:
         return
@@ -203,7 +223,118 @@ def init_metrics(meter_name: str = "nexus-ai", version: str = "2.0.0") -> None:
         unit="1",
     )
 
+    # ── mimalloc ───────────────────────────────────────────────────────
+    mimalloc_heap_committed_bytes = _METER.create_gauge(
+        name="mimalloc_heap_committed_bytes",
+        description="Current mimalloc heap committed memory in bytes",
+        unit="By",
+    )
+    mimalloc_available = _METER.create_gauge(
+        name="mimalloc_available",
+        description="Is mimalloc the active allocator (1=active, 0=system allocator)",
+        unit="1",
+    )
+    mimalloc_leak_detected_total = _METER.create_counter(
+        name="mimalloc_leak_detected_total",
+        description="Total mimalloc memory leak alerts fired",
+        unit="1",
+    )
+    mimalloc_growth_pct = _METER.create_gauge(
+        name="mimalloc_growth_pct",
+        description="Current RSS growth percentage (relative to oldest window sample)",
+        unit="%",
+    )
+
     _INITIALIZED = True
+
+
+# ── mimalloc convenience recorders ──────────────────────────────────────────
+
+
+def record_mimalloc_stats() -> None:
+    """Record current mimalloc metrics as OpenTelemetry gauges.
+
+    Safe to call before init_metrics — checks for None on each instrument.
+    Gdy mimalloc nie jest aktywny, ustawia mimalloc_available=0.
+
+    Od Fazy 4: wykrywa wycieki pamięci przez ``MemoryLeakDetector``
+    i inkrementuje ``mimalloc_leak_detected_total`` przy nienormalnym wzroście.
+    """
+    from nexus_ai.core.mimalloc_bridge import is_active, stats_as_dict
+
+    if mimalloc_available is not None:
+        mimalloc_available.set(1.0 if is_active() else 0.0)
+
+    if not is_active():
+        return
+
+    stats = stats_as_dict()
+    rss = stats.get("process_rss_bytes")
+    if mimalloc_heap_committed_bytes is not None and rss is not None:
+        mimalloc_heap_committed_bytes.set(float(rss))
+
+    # ── Leak detection przez globalny detektor ──────────────────────
+    _detect_and_record_leak(stats)
+
+
+import threading as _threading
+
+_GLOBAL_LEAK_DETECTOR = None  # type: ignore
+"""Globalna instancja ``MemoryLeakDetector`` dla ``record_mimalloc_stats``.
+
+Inicjalizowana leniwie z podwójnym sprawdzaniem (double-checked locking)
+dla bezpieczeństwa w free-threaded Python 3.13t.
+"""
+
+_LEAK_DETECTOR_LOCK = _threading.Lock()
+"""Lock dla thread-safe inicjalizacji ``_GLOBAL_LEAK_DETECTOR``."""
+
+
+def _get_leak_detector() -> object:
+    """Zwróć globalny ``MemoryLeakDetector`` (lazy init, thread-safe).
+
+    Używa double-checked locking dla wydajności na gorącej ścieżce:
+    - Pierwsze ``is None`` bez locka (szybka ścieżka)
+    - Drugie ``is None`` pod lockiem (bezpieczeństwo)
+    """
+    global _GLOBAL_LEAK_DETECTOR
+    if _GLOBAL_LEAK_DETECTOR is not None:
+        return _GLOBAL_LEAK_DETECTOR
+    with _LEAK_DETECTOR_LOCK:
+        if _GLOBAL_LEAK_DETECTOR is not None:
+            return _GLOBAL_LEAK_DETECTOR
+        from nexus_ai.core.mimalloc_bridge import MemoryLeakDetector
+
+        _GLOBAL_LEAK_DETECTOR = MemoryLeakDetector(
+            growth_threshold_pct=20.0,  # 20% wzrostu = alert
+            window_size=3,              # 3 pomiary (90s przy 30s interwale)
+            min_rss_mb=100.0,           # ignoruj <100 MB RSS
+        )
+        return _GLOBAL_LEAK_DETECTOR
+
+
+def _detect_and_record_leak(stats: dict) -> None:
+    """Sprawdź czy wystąpił wyciek i zapisz metryki.
+
+    Używa globalnego ``MemoryLeakDetector`` (lazy init przez ``_get_leak_detector``).
+    """
+    detector = _get_leak_detector()
+    leak_detected, growth_pct = detector.check_growth(stats)
+
+    if mimalloc_growth_pct is not None:
+        mimalloc_growth_pct.set(growth_pct)
+
+    if leak_detected and _GLOBAL_LEAK_DETECTOR.should_alert():
+        if mimalloc_leak_detected_total is not None:
+            mimalloc_leak_detected_total.add(1)
+        import logging as _lg
+
+        _lg.getLogger("nexus.mimalloc").warning(
+            "[LEAK] Potential memory leak detected: RSS growth %.1f%% "
+            "over last %d samples",
+            growth_pct,
+            _GLOBAL_LEAK_DETECTOR.window_size,
+        )
 
 
 # ── Convenience recorders (safe to call before init_metrics) ──────────────────

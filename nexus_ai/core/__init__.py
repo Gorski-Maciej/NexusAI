@@ -37,6 +37,22 @@ def _safe_import(qualname: str, names: list[str]):
         return None, [None] * len(names)
 
 
+# core.mimalloc — Python ctypes bridge do mimalloc API (optional)
+# Gdy mimalloc nie jest LD_PRELOAD'owany, wszystkie funkcje zwracają None/False.
+from nexus_ai.core.mimalloc_bridge import (  # noqa: E402
+    InvoiceOCRHeap,
+    MemoryLeakDetector,
+    SecureHeap,
+    heap_destroy,
+    heap_new,
+    is_active,
+    option_get,
+    option_set,
+    record_metrics,
+    save_stats_to_file,
+    stats_as_dict,
+)
+
 # core.crypto — Vault (uses nexus-crypto now, always available)
 from nexus_ai.core.crypto import Vault  # noqa: E402
 
@@ -110,4 +126,16 @@ __all__ = [
     "DataParser",
     "AIContextManager",
     "plugin_manager",
+    # Mimalloc bridge
+    "is_active",
+    "heap_new",
+    "heap_destroy",
+    "option_set",
+    "option_get",
+    "stats_as_dict",
+    "record_metrics",
+    "save_stats_to_file",
+    "MemoryLeakDetector",
+    "InvoiceOCRHeap",
+    "SecureHeap",
 ]

@@ -24,6 +24,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import ctypes
+
 import anyio
 
 try:
@@ -228,6 +230,72 @@ def check_database() -> str:
 # ── Main runner ──────────────────────────────────────────────────────────────
 
 
+def check_mimalloc() -> str:
+    """Check if mimalloc is the active memory allocator with live stats.
+
+    Zgodnie z aa3fvcx.txt: mimalloc zastępuje glibc malloc dla:
+    - 5-15% mniejszego zużycia RAM
+    - szybszych alokacji/dealokacji (free list multi-sharding)
+    - minimalnej fragmentacji (eager page purging)
+
+    Sprawdza przez ctypes czy symbol mi_malloc (specyficzny dla mimalloc)
+    jest dostępny w aktualnym procesie. Jeśli nie, system używa domyślnego
+    alokatora (glibc malloc na Linux).
+
+    Returns:
+        Komunikat diagnostyczny z ANSI kolorowaniem.
+    """
+    try:
+        lib = ctypes.CDLL(None)
+        # Próba dostępu do symbolu specyficznego dla mimalloc — mi_malloc
+        lib.mi_malloc  # type: ignore[attr-defined]
+
+        lines: list[str] = []
+
+        # ── Live stats from mimalloc_bridge ────────────────────────
+        try:
+            from nexus_ai.core.mimalloc_bridge import stats_as_dict, option_get, MIOption
+
+            stats = stats_as_dict()
+            rss = stats.get("process_rss_bytes")
+            if rss is not None:
+                rss_mb = rss / (1024 * 1024)
+                lines.append(f"    {_ok(f'RSS: {rss_mb:.1f} MB')}")
+
+            options = stats.get("options", {})
+            if options:
+                for name, val in options.items():
+                    lines.append(f"    {_ok(f'mi_option_{name}={val}')}")
+
+        except (ImportError, Exception):
+            lines.append(f"    {_info('Live stats: bridge not available')}")
+
+        # ── Environment config ─────────────────────────────────────
+        lines.append(f"  {_bold('Config:')}")
+        env_vars = {
+            "MIMALLOC_LARGE_OS_PAGES": "Huge OS pages",
+            "MIMALLOC_RESERVE_HUGE_OS_PAGES": "Reserve huge pages",
+            "MIMALLOC_EAGER_COMMIT_DELAY": "Eager commit delay",
+            "MIMALLOC_PAGE_RESET": "Page reset",
+            "MIMALLOC_PURGE_DELAY": "Purge delay",
+        }
+        for var, desc in env_vars.items():
+            val = os.environ.get(var, "0")
+            marker = _ok if val == "1" else _info
+            lines.append(f"    {marker(f'{desc} ({var}={val})')}")
+
+        return (
+            _ok("mimalloc ACTIVE — Microsoft allocator") + "\n"
+            + "  " + "\n  ".join(lines)
+        )
+    except (OSError, AttributeError):
+        return _warn(
+            "mimalloc NOT ACTIVE — using system allocator (glibc malloc)\n"
+            "    Fix: Ensure LD_PRELOAD includes libmimalloc.so or\n"
+            "    run: pixi install (if mimalloc is in conda-forge deps)"
+        )
+
+
 async def run_diagnostics() -> dict[str, Any]:
     """Run all diagnostics and print results.
 
@@ -241,6 +309,7 @@ async def run_diagnostics() -> dict[str, Any]:
 
     checks: dict[str, str] = {
         "Python": check_python_version(),
+        "mimalloc": check_mimalloc(),
         "System": check_system(),
         "GPU": await check_gpu(),
         "Models": check_models(),

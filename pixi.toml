@@ -48,6 +48,12 @@ libxslt = ">=1.1.39"                     # XSLT (dla lxml)
 # ── Database ─────────────────────────────────────────────────────────────────
 pkg-config = ">=0.29.2"                  # Wykrywanie bibliotek systemowych
 
+# ── mimalloc — Microsoft memory allocator (5-15% mniej RAM) ────────────────
+# Zgodnie z aa3fvcx.txt: podmienia standardowy malloc, minimalna fragmentacja,
+# wysoka wydajność w wielowątkowości. Używany przez LD_PRELOAD dla wszystkich
+# procesów w środowisku pixi oraz jako statyczny plugin w Nuitka build.
+mimalloc = ">=2.1.0"                    # Microsoft mimalloc — 5-15% mniej RAM
+
 # ── Rust toolchain (dla Maturin / PyO3 / nexus-crypto) ──────────────────────
 rust = ">=1.78.0"
 
@@ -139,6 +145,26 @@ NEXUS_LOG_LEVEL = "info"
 NEXUS_HOST = "127.0.0.1"
 NEXUS_PORT = "8000"
 NEXUS_DB_PATH = "${PIXI_PROJECT_ROOT}/app_data/nexus.db"
+
+# ── mimalloc — dynamiczne przeładowanie alokatora przez LD_PRELOAD ───────────
+# Po `pixi install` wszystkie procesy w środowisku (API, worker, testy) używają
+# mimalloc jako domyślnego alokatora. Zero zmiany kodu — natychmiastowy zysk.
+# {PIXI_ROOT_PREFIX} to katalog instalacyjny pixi (conda-forge prefix).
+LD_PRELOAD = "$CONDA_PREFIX/lib/libmimalloc.so"
+# Uwaga: $CONDA_PREFIX jest ustawiane przez pixi przed zastosowaniem [activation.env]
+# To ten sam wzorzec co w nexus_ai/db/database.py (L21) dla libsqlcipher.so
+
+# ── Konfiguracja mimalloc (zgodnie z dokumentacją v3.3.2) ───────────────────
+# Włącz ogromne strony OS (TLB miss reduction) dla wydajności modeli AI
+MIMALLOC_LARGE_OS_PAGES = "1"
+# Rezerwacja huge pages dla dużych alokacji (modele GGUF ~800MB)
+MIMALLOC_RESERVE_HUGE_OS_PAGES = "1"
+# Szybsze commitowanie pamięci — niższe opóźnienia alokacji
+MIMALLOC_EAGER_COMMIT_DELAY = "0"
+# Page reset wyłączony dla long-running procesów (worker, API)
+MIMALLOC_PAGE_RESET = "0"
+# Statystyki wyłączone domyślnie — włącz przez `export MIMALLOC_SHOW_STATS=1`
+MIMALLOC_SHOW_STATS = "0"
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Tasks — komendy ORKIESTRACJI środowiska (pixi-specific)

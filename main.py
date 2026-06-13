@@ -15,10 +15,39 @@ See ``mise run --list`` for all available tasks.
 
 Nuitka Build Configuration
 --------------------------
-Nuitka configuration is in [tool.nuitka] in pyproject.toml (canonical source).
+Primary configuration is in [tool.nuitka] in pyproject.toml (canonical source).
+Directives below enable `python -m nuitka main.py` without pyproject.toml.
 Build command:
     python -m nuitka main.py
 """
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Nuitka build directives (source-level config)
+# ═══════════════════════════════════════════════════════════════════════════
+# These directives make `python -m nuitka main.py` work standalone.
+# pyproject.toml [tool.nuitka] remains canonical for all builds.
+
+# nuitka-project: --onefile
+# nuitka-project: --standalone
+# nuitka-project: --enable-plugin=pydantic,numpy,anti-bloat,mimalloc,multiprocessing,trio
+# nuitka-project: --include-package=nexus_ai
+# nuitka-project: --include-package=nexus_crypto
+# nuitka-project: --include-package=granian
+# nuitka-project: --include-package=litestar
+# nuitka-project: --include-package=msgspec
+# nuitka-project: --include-package=anyio
+# nuitka-project: --include-package=stamina
+# nuitka-project: --include-package=loguru
+# nuitka-project: --include-package=pendulum
+# nuitka-project: --nofollow-import-to=tkinter,unittest,distutils,setuptools,pip,pdb,test,ensurepip,lib2to3,idlelib,turtle,venv
+# nuitka-project-if: os.name == "nt":
+# nuitka-project: --windows-icon-from-ico=assets/nexus.ico
+# nuitka-project: --windows-console-mode=disable
+# nuitka-project-else:
+# nuitka-project: --linux-onefile-icon=assets/nexus.png
+
+# nuitka-project: --jobs=0
+# nuitka-project: --assume-yes-for-downloads
 
 from __future__ import annotations
 
@@ -28,7 +57,48 @@ import sys
 from pathlib import Path
 
 
+def _setup_mimalloc() -> None:
+    """Skonfiguruj mimalloc environment variables przed startem.
+
+    Zgodnie z aa3fvcx.txt: mimalloc jako domyślny alokator pamięci.
+    Ustawia zmienne środowiskowe dla optymalnej wydajności:
+    - huge OS pages dla modeli AI
+    - show stats w trybie debug
+    - eager commit dla niskich opóźnień
+    """
+    # huge OS pages — redukcja TLB misses dla dużych obiektów (LightOnOCR-1B ~800MB)
+    os.environ.setdefault("MIMALLOC_LARGE_OS_PAGES", "1")
+    # rezerwacja huge pages dla modeli GGUF
+    os.environ.setdefault("MIMALLOC_RESERVE_HUGE_OS_PAGES", "1")
+    # eager commit — niższe opóźnienia alokacji dla API
+    os.environ.setdefault("MIMALLOC_EAGER_COMMIT_DELAY", "0")
+    # page reset wyłączony dla long-running procesów
+    os.environ.setdefault("MIMALLOC_PAGE_RESET", "0")
+
+    if "--debug" in sys.argv or os.environ.get("NEXUS_DEBUG") == "1":
+        os.environ.setdefault("MIMALLOC_SHOW_STATS", "1")
+        os.environ.setdefault("MIMALLOC_VERBOSE", "1")
+
+    if "--mimalloc-stats" in sys.argv:
+        os.environ["MIMALLOC_SHOW_STATS"] = "1"
+        import atexit
+
+        def _dump_mimalloc_stats() -> None:
+            """Zapisz statystyki mimalloc do pliku przy zakończeniu procesu."""
+            try:
+                from nexus_ai.core.mimalloc_bridge import save_stats_to_file
+
+                path = save_stats_to_file("mimalloc_stats.json")
+                if path:
+                    print(f"[MIMALLOC] Stats saved to {path}")
+            except Exception:
+                pass
+
+        atexit.register(_dump_mimalloc_stats)
+
+
 def main() -> int:
+    _setup_mimalloc()
     """Delegate CLI arguments to mise run (~15 lines of logic).
 
     Usage:
