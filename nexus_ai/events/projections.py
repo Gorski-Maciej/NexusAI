@@ -185,10 +185,18 @@ class InvoiceProjection(Projection):
             self._conn = sqlite3.connect(str(self._db_path))
             self._conn.row_factory = sqlite3.Row
             self._conn.execute("PRAGMA journal_mode=WAL")
+            self._conn.execute("PRAGMA synchronous=NORMAL")
+            self._conn.execute("PRAGMA cache_size = -25600")    # 100MB cache
+            self._conn.execute("PRAGMA temp_store = MEMORY")    # Temp tables w RAM
+            self._conn.execute("PRAGMA mmap_size = 2147483648") # 2GB mmap
         return self._conn
 
     def close(self) -> None:
         if self._conn is not None:
+            try:
+                self._conn.execute("PRAGMA optimize")  # SUPERMOC: optimize przed close
+            except Exception:
+                pass
             self._conn.close()
             self._conn = None
 
@@ -412,10 +420,18 @@ class DecisionProjection(Projection):
             self._conn = sqlite3.connect(str(self._db_path))
             self._conn.row_factory = sqlite3.Row
             self._conn.execute("PRAGMA journal_mode=WAL")
+            self._conn.execute("PRAGMA synchronous=NORMAL")
+            self._conn.execute("PRAGMA cache_size = -25600")
+            self._conn.execute("PRAGMA temp_store = MEMORY")
+            self._conn.execute("PRAGMA mmap_size = 2147483648")
         return self._conn
 
     def close(self) -> None:
         if self._conn is not None:
+            try:
+                self._conn.execute("PRAGMA optimize")
+            except Exception:
+                pass
             self._conn.close()
             self._conn = None
 

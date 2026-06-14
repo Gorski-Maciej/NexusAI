@@ -40,6 +40,7 @@ from nexus_ai.api.routes.dashboard import DashboardController
 from nexus_ai.api.routes.dlq import DLQController
 from nexus_ai.api.routes.exports import ExportController
 from nexus_ai.api.routes.files import FileController
+from nexus_ai.api.routes.events_schema import EventsSchemaController
 from nexus_ai.api.routes.finops import FinOpsController
 from nexus_ai.api.routes.fx import FXController
 from nexus_ai.api.routes.health import HealthController, HealthControllerV2
@@ -202,6 +203,7 @@ def create_app() -> Litestar:
             TaxMathController,
             TaxPolicyController,
             RiskController,
+            EventsSchemaController,
         ],
     )
 

@@ -138,19 +138,35 @@ class NexusOrchestrator:
         ).__aenter__()
 
     async def start_backend_api(self, port: int):
-        """Uruchamia serwer API (Litestar + Granian) jako proces."""
+        """Uruchamia serwer API (Litestar + Granian) jako proces.
+
+        Wykorzystuje canonical entrypoint z ``nexus_ai.api.server.run_backend``
+        który ma pełną konfigurację Granian (backpressure, HTTP/2, metrics,
+        proxy headers, static files, itd.).
+
+        Subprocess jest kontynuacją konieczną, ponieważ ``granian.Granian.serve()``
+        jest blokujące. Dla pełnej integracji w jednym procesie rozważ
+        ``granian.server.embed.Server`` (eksperymentalne).
+        """
         backend_env = os.environ.copy()
         backend_env["NEXUS_PORT"] = str(port)
         backend_env["NEXUS_TOKEN"] = self.bootstrap_token
-        backend_env["PYTHONPATH"] = str(_SyncPath.cwd())
+        # Ustaw PYTHONPATH na katalog projektu (parent katalogu luz/)
+        # Zamiast _SyncPath.cwd() który może być inny przy starcie z poziomu luz/
+        project_root = _SyncPath(__file__).resolve().parent.parent.parent
+        backend_env["PYTHONPATH"] = str(project_root)
 
-        # Granian zamiast Uvicorn
+        # Granian — pełna konfiguracja przez env vars
         logger.info(f"Inicjalizacja API (Granian) na http://127.0.0.1:{port}")
+        logger.info(
+            "[GRANIAN] Superpowers: backpressure=100, backlog=2048, "
+            "HTTP/2=auto, metrics=true, uvloop, respawn=true"
+        )
         self.api_process = await anyio.Process(
             [
                 sys.executable,
                 "-c",
-                f"import granian; granian.Granian('api.app:create_app', host='127.0.0.1', port={port}).serve()",
+                "from nexus_ai.api.server import run_backend; run_backend()",
             ],
             env=backend_env,
             stdout=anyio.ProcessPipe.PIPE,
@@ -159,11 +175,26 @@ class NexusOrchestrator:
         await anyio.sleep(2)
 
     def cleanup(self):
-        """Krytyczne sprzątanie procesów."""
+        """Krytyczne sprzątanie procesów z graceful shutdown.
+
+        Dla API (Granian) wysyła SIGTERM przed SIGKILL, co pozwala
+        na dokończenie aktywnych requestów (graceful_shutdown_timeout=30s).
+        """
         logger.info("Zamykanie komponentów Nexus AI...")
-        for proc in [self.worker_process, self.nats_process, self.api_process]:
+        for proc in [self.api_process, self.worker_process, self.nats_process]:
             if proc is not None and proc.returncode is None:
+                logger.debug("Wysyłanie SIGTERM do procesu PID=%d", proc.pid)
                 proc.terminate()
+        # Daj czas na graceful shutdown
+        import time as _sync_time
+        _sync_time.sleep(0.5)
+        # Force kill pozostałych
+        for proc in [self.api_process, self.worker_process, self.nats_process]:
+            if proc is not None and proc.returncode is None:
+                try:
+                    proc.kill()
+                except ProcessLookupError:
+                    pass
         logger.info("System zamknięty pomyślnie.")
 
 

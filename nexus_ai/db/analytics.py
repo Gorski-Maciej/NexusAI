@@ -54,14 +54,12 @@ class DuckDBManager:
     def _create_connection(self) -> duckdb.DuckDBPyConnection:
         """Tworzy nowe, skonfigurowane połączenie DuckDB i rejestruje w globalnym registry.
 
-        Rejestracja w ``_all_connections`` umożliwia ``close()`` zamknięcie
-        wszystkich per-thread połączeń, nie tylko bieżącego wątku.
-        Używa blokady ``_close_lock`` dla bezpieczeństwa w free-threaded Python 3.13t.
-
-        Uwaga: ``get_connection_for_query()`` też używa tej metody, ale te
-        krótkożyciowe połączenia są zamykane przez wywołującego i NIE powinny
-        być rejestrowane — dlatego rejestracja odbywa się w ``connect()``,
-        a nie tutaj.
+        SUPERMOCE DuckDB:
+        - memory_limit, threads, temp_directory — zarządzanie zasobami
+        - perfect_ht_threshold — optymalizacja hash join dla małych tabel
+        - enable_progress_bar — wizualizacja długich zapytań (CLI)
+        - preserve_insertion_order — szybsze agregacje (gdy nie potrzebujemy order)
+        - default_null_order — spójność sortowania NULLS
         """
         conn = duckdb.connect(str(self._db_path), read_only=self._read_only)
         conn.execute(f"SET memory_limit='{self._limits.memory_limit}'")
@@ -69,8 +67,24 @@ class DuckDBManager:
         temp_dir = self._db_path.parent / "duckdb_tmp"
         temp_dir.mkdir(parents=True, exist_ok=True)
         conn.execute(f"SET temp_directory='{temp_dir.as_posix()}'")
+
+        # ── SUPERMOCE DuckDB ─────────────────────────────────────
         # Konfiguracja dla lepszej współbieżności
         conn.execute("SET perfect_ht_threshold=2;")
+
+        # SUPERMOC: Progress bar dla długich zapytań (w CLI)
+        conn.execute("SET enable_progress_bar=true;")
+        conn.execute("SET enable_progress_bar_print=true;")
+
+        # SUPERMOC: Szybsze agregacje (gdy nie potrzebujemy kolejności INSERT)
+        conn.execute("SET preserve_insertion_order=false;")
+
+        # SUPERMOC: Spójne sortowanie NULLS LAST (zgodne z SQL standard)
+        conn.execute("SET default_null_order='NULLS_LAST';")
+
+        # SUPERMOC: Włącz wsparcie JSON dla typu JSON
+        conn.execute("SET json_execute_serialize=true;")
+
         return conn
 
     def connect(self) -> duckdb.DuckDBPyConnection:

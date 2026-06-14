@@ -58,19 +58,74 @@ class FakeDuckDBManager:
 
 
 EXTERNAL_MOCK_MODULES: list[str] = [
+    # Granian — Rust ASGI server
+    "granian",
+    "granian.constants",
+    "granian.server",
+    "granian.server.embed",
+    "granian.utils",
+    "granian.utils.proxies",
+    # HTTP / Network
     "httpx",
+    "hishel",
+    # AI / ML
     "llama_cpp",
+    "llama_cpp.llama_chat_format",
+    # NATS / Messaging
     "nats",
-    "litestar", "litestar.plugins",
-    "fsspec", "fsspec.implementations", "fsspec.implementations.local",
-    "PIL", "PIL.Image",
-    "fitz",  # PyMuPDF
+    "nats.aio",
+    "nats.aio.client",
+    "nats.js",
+    "nats.js.api",
+    "nats.errors",
     "taskiq", "taskiq_nats",
+    # Litestar
+    "litestar",
+    "litestar.plugins",
+    "litestar.plugins.core",
+    "litestar.connection",
+    "litestar.handlers",
+    "litestar.handlers.base",
+    "litestar.middleware",
+    "litestar.config",
+    "litestar.config.cors",
+    "litestar.config.csrf",
+    "litestar.config.response_cache",
+    "litestar.openapi",
+    "litestar.openapi.config",
+    "litestar.openapi.plugins",
+    "litestar.openapi.spec",
+    "litestar.plugins.problem_details",
+    "litestar.plugins.prometheus",
+    "litestar.plugins.opentelemetry",
+    "litestar.plugins.sqlalchemy",
+    "litestar.response",
+    "litestar.status_codes",
+    "litestar.middleware.rate_limit",
+    "litestar.testing",
+    "litestar.types",
+    # OTel
+    "opentelemetry",
+    "opentelemetry-api",
+    "opentelemetry-sdk",
+    "opentelemetry-exporter-prometheus",
+    # Filesystem
+    "fsspec", "fsspec.implementations", "fsspec.implementations.local",
+    # Imaging
+    "PIL", "PIL.Image",
+    "PIL._imaging", "PIL.ImageFilter", "PIL.ImageEnhance",
+    # PDF
+    "fitz",  # PyMuPDF
+    # System
     "psutil",
     "structlog",
+    # Crypto
     "nexus_crypto",
+    # Resilience
     "stamina",
+    # DB
     "duckdb",
+    # Pydantic / SQLModel
     "pydantic_core",
     "pydantic_core._pydantic_core",
     "pydantic",
@@ -82,6 +137,14 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     "sqlmodel",
     "sqlmodel.sql",
     "sqlmodel.sql.expression",
+    # Alembic
+    "alembic",
+    "alembic.command",
+    "alembic.config",
+    "alembic.runtime",
+    "alembic.runtime.migration",
+    # Arrow
+    "pyarrow",
 ]
 
 for mod_name in EXTERNAL_MOCK_MODULES:

@@ -14,7 +14,7 @@ import importlib.util
 import os
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 import pendulum
 
@@ -261,27 +261,35 @@ def get_config_loader(
 # ══════════════════════════════════════════════════════════════════════════
 
 
+from typing import Annotated
+from msgspec import Meta
+
+
 class _AppSection(Struct, kw_only=True):
     """msgspec schema dla sekcji [app] w config/{env}.toml.
 
     Wszystkie pola opcjonalne — Struct użyje defaultów zdefiniowanych
     w AppConfig jeśli wartość nie występuje w TOML.
+
+    Używa ``Annotated[T, Meta(ge=..., le=...)]`` dla walidacji zakresów
+    przy parsowaniu TOML przez msgspec — błędy są łapane i logowane,
+    aplikacja używa bezpiecznych defaultów.
     """
 
     environment: str | None = None
     base_dir: str | None = None
-    jwt_expiration_seconds: int | None = None
-    refresh_token_days: int | None = None
+    jwt_expiration_seconds: Annotated[int | None, Meta(ge=60, le=86400)] = None
+    refresh_token_days: Annotated[int | None, Meta(ge=1, le=365)] = None
     jwt_issuer: str | None = None
     jwt_audience: str | None = None
     csrf_enabled: bool | None = None
-    db_pool_size: int | None = None
-    db_pool_overflow: int | None = None
-    nats_max_reconnect: int | None = None
-    nats_reconnect_delay_seconds: int | None = None
-    max_task_retries: int | None = None
-    retry_backoff_base_seconds: float | None = None
-    retry_backoff_max_seconds: float | None = None
+    db_pool_size: Annotated[int | None, Meta(ge=1, le=100)] = None
+    db_pool_overflow: Annotated[int | None, Meta(ge=0, le=200)] = None
+    nats_max_reconnect: Annotated[int | None, Meta(ge=0, le=100)] = None
+    nats_reconnect_delay_seconds: Annotated[float | None, Meta(ge=0.1, le=60)] = None
+    max_task_retries: Annotated[int | None, Meta(ge=0, le=20)] = None
+    retry_backoff_base_seconds: Annotated[float | None, Meta(ge=0.1, le=30)] = None
+    retry_backoff_max_seconds: Annotated[float | None, Meta(ge=1.0, le=300)] = None
     sqlite_file: str | None = None
     duckdb_file: str | None = None
     storage_dir: str | None = None
@@ -289,23 +297,23 @@ class _AppSection(Struct, kw_only=True):
     debug: bool | None = None
     sqlcipher_key_env: str | None = None
     duckdb_memory_limit: str | None = None
-    duckdb_threads: int | None = None
+    duckdb_threads: Annotated[int | None, Meta(ge=1, le=64)] = None
     cors_origins: str | None = None
-    max_invoice_upload_mb: int | None = None
-    max_attachment_upload_mb: int | None = None
-    outbox_replay_limit: int | None = None
+    max_invoice_upload_mb: Annotated[int | None, Meta(ge=1, le=1000)] = None
+    max_attachment_upload_mb: Annotated[int | None, Meta(ge=1, le=10000)] = None
+    outbox_replay_limit: Annotated[int | None, Meta(ge=1, le=10000)] = None
     migration_baseline_file: str | None = None
     migration_checksum_baseline_file: str | None = None
-    autopilot_auto_post_threshold: float | None = None
-    autopilot_suggest_threshold: float | None = None
-    autopilot_ask_threshold: float | None = None
+    autopilot_auto_post_threshold: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
+    autopilot_suggest_threshold: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
+    autopilot_ask_threshold: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
     autopilot_adaptation_enabled: bool | None = None
-    autopilot_adaptation_learning_rate: float | None = None
-    autopilot_low_amount_threshold: float | None = None
-    rules_max_invoice_amount: float | None = None
+    autopilot_adaptation_learning_rate: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
+    autopilot_low_amount_threshold: Annotated[float | None, Meta(ge=0.0)] = None
+    rules_max_invoice_amount: Annotated[float | None, Meta(ge=0.0)] = None
     rules_require_nip_validation: bool | None = None
-    analytics_anomaly_threshold: float | None = None
-    decision_timeout_seconds: int | None = None
+    analytics_anomaly_threshold: Annotated[float | None, Meta(ge=0.0)] = None
+    decision_timeout_seconds: Annotated[int | None, Meta(ge=5, le=600)] = None
 
 
 class _NatsSection(Struct, kw_only=True):
@@ -516,7 +524,7 @@ class AppConfig(Struct, kw_only=True):
 
     # ── TOML ↔ env var mapping ──
 
-    _ENV_MAP: dict[str, str] = {
+    _ENV_MAP: ClassVar[dict[str, str]] = {
         "environment": "NEXUS_ENV",
         "base_dir": "NEXUS_BASE_DIR",
         "jwt_expiration_seconds": "NEXUS_JWT_EXPIRATION_SECONDS",
@@ -564,7 +572,7 @@ class AppConfig(Struct, kw_only=True):
     # ── AppConfig field → (toml_section, toml_field) mapping ──
     # Fazа 2: Używany przez _resolve_field_value do odczytu z _TomlConfigRoot.
     # Stała klasowa — tworzona raz, nie przy każdym wywołaniu.
-    _TOML_FIELD_MAP: dict[str, tuple[str, str]] = {
+    _TOML_FIELD_MAP: ClassVar[dict[str, tuple[str, str]]] = {
         "environment": ("app", "environment"),
         "base_dir": ("app", "base_dir"),
         "jwt_expiration_seconds": ("app", "jwt_expiration_seconds"),

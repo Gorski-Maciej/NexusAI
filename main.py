@@ -119,9 +119,10 @@ Build command:
 from __future__ import annotations
 
 import os
-import subprocess
 import sys
 from pathlib import Path
+
+import anyio
 
 
 def _setup_mimalloc() -> None:
@@ -164,7 +165,7 @@ def _setup_mimalloc() -> None:
         atexit.register(_dump_mimalloc_stats)
 
 
-def main() -> int:
+async def main() -> int:
     _setup_mimalloc()
     """Delegate CLI arguments to mise run (~15 lines of logic).
 
@@ -193,22 +194,22 @@ def main() -> int:
 
     for flag, task in FLAGS.items():
         if flag in args:
-            return _run_mise(task)
+            return await _run_mise(task)
     for i, a in enumerate(args):
         if a == "--mode" and i + 1 < len(args):
             if args[i + 1] in MODES:
-                return _run_mise(MODES[args[i + 1]])
+                return await _run_mise(MODES[args[i + 1]])
             print(f"Unknown mode: {args[i+1]}, available: {', '.join(MODES)}")
             return 1
-    return _run_mise("api")
+    return await _run_mise("api")
 
 
-def _run_mise(task: str) -> int:
-    """Run a mise task and return its exit code."""
+async def _run_mise(task: str) -> int:
+    """Run a mise task and return its exit code via anyio.run_process."""
     project_root = Path(__file__).resolve().parent
     cmd = ["mise", "run", task]
     try:
-        result = subprocess.run(cmd, cwd=project_root)
+        result = await anyio.run_process(cmd, cwd=project_root)
         return result.returncode
     except FileNotFoundError:
         print("❌ mise not found. Install: curl https://mise.run | sh", file=sys.stderr)
@@ -217,4 +218,4 @@ def _run_mise(task: str) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(anyio.run(main))

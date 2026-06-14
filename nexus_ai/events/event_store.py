@@ -94,6 +94,11 @@ class EventStore:
             self._conn.row_factory = sqlite3.Row
             self._conn.execute("PRAGMA journal_mode=WAL")
             self._conn.execute("PRAGMA synchronous=NORMAL")
+            self._conn.execute("PRAGMA cache_size = -51200")    # 200MB cache
+            self._conn.execute("PRAGMA temp_store = MEMORY")    # Temp tables w RAM
+            self._conn.execute("PRAGMA mmap_size = 4294967296") # 4GB mmap I/O
+            self._conn.execute("PRAGMA foreign_keys = ON")      # Wymuś FK
+            self._conn.execute("PRAGMA application_id = 1313827925")  # NEXU
         return self._conn
 
     def close(self) -> None:

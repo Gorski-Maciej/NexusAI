@@ -20,9 +20,11 @@ Zastosowania:
 
 from __future__ import annotations
 
-from msgspec import Struct
 from decimal import Decimal
 from typing import Any
+
+import msgspec
+from msgspec import Struct
 
 # ── Data Structures ──────────────────────────────────────────────────────────
 
@@ -48,6 +50,50 @@ class FieldConfidence(Struct, frozen=True):
     def is_reliable(self, threshold: float = 0.85) -> bool:
         """Czy pole można uznać za wiarygodne powyżej zadanego progu."""
         return self.confidence >= threshold
+
+    def with_confidence(self, confidence: float) -> FieldConfidence:
+        """Zwróć nowy FieldConfidence z podmienionym confidence (frozen → replace).
+
+        Używa ``msgspec.structs.replace()`` zamiast ręcznego kopiowania pól.
+        Dzięki ``frozen=True``, oryginalny obiekt pozostaje niezmieniony.
+
+        Args:
+            confidence: Nowa wartość confidence (0.0–1.0).
+
+        Returns:
+            Nowy FieldConfidence z tym samym value/source ale nowym confidence.
+
+        Example:
+            >>> fc = FieldConfidence(value=100.0, confidence=0.5)
+            >>> fc2 = fc.with_confidence(0.95)
+            >>> fc2.confidence
+            0.95
+            >>> fc.confidence  # oryginał niezmieniony
+            0.5
+        """
+        return msgspec.structs.replace(self, confidence=confidence)
+
+    def with_value(self, value: Any) -> FieldConfidence:
+        """Zwróć nowy FieldConfidence z podmienioną wartością (frozen → replace).
+
+        Args:
+            value: Nowa wartość.
+
+        Returns:
+            Nowy FieldConfidence z tym samym confidence/source ale nowym value.
+        """
+        return msgspec.structs.replace(self, value=value)
+
+    def with_source(self, source: str) -> FieldConfidence:
+        """Zwróć nowy FieldConfidence z podmienionym źródłem (frozen → replace).
+
+        Args:
+            source: Nowa nazwa źródła (np. "surya_ocr", "manual").
+
+        Returns:
+            Nowy FieldConfidence z tym samym value/confidence ale nowym source.
+        """
+        return msgspec.structs.replace(self, source=source)
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize to dict for JSON storage."""
@@ -86,7 +132,11 @@ Typowe klucze:
 
 
 def field_confidence_from_dict(data: dict[str, dict[str, Any]]) -> FieldConfidenceDict:
-    """Utwórz FieldConfidenceDict z surowego słownika.
+    """Utwórz FieldConfidenceDict z surowego słownika przez msgspec.convert.
+
+    Używa ``msgspec.convert(..., strict=True)`` zamiast ręcznej walidacji —
+    msgspec sam rzuca ValidationError jeśli brak wymaganych pól lub typy
+    się nie zgadzają. Eliminuje ~10 linii ręcznej walidacji.
 
     Oczekiwany format wejściowy:
     .. code-block:: json
@@ -96,34 +146,21 @@ def field_confidence_from_dict(data: dict[str, dict[str, Any]]) -> FieldConfiden
             "vat_rate": {"value": 0.23, "confidence": 0.99}
         }
 
-    ``source`` jest opcjonalny (domyślnie ``"unknown"``).
+    ``source`` jest opcjonalny (domyślnie ``"unknown"`` w FieldConfidence).
 
     Args:
         data: Surowe dane z OCR (słownik słowników).
 
     Returns:
-        FieldConfidenceDict z walidacją.
+        FieldConfidenceDict z walidacją przez msgspec.
 
     Raises:
-        ValueError: Jeśli struktura jest nieprawidłowa.
+        msgspec.ValidationError: Jeśli struktura jest nieprawidłowa.
     """
-    result: FieldConfidenceDict = {}
-    for field_name, item in data.items():
-        if not isinstance(item, dict):
-            raise ValueError(
-                f"Invalid field_confidence entry for {field_name!r}: "
-                f"expected dict, got {type(item).__name__}"
-            )
-        if "value" not in item:
-            raise ValueError(f"Missing 'value' in field_confidence entry for {field_name!r}")
-        if "confidence" not in item:
-            raise ValueError(f"Missing 'confidence' in field_confidence entry for {field_name!r}")
-        result[field_name] = FieldConfidence(
-            value=item["value"],
-            confidence=float(item["confidence"]),
-            source=str(item.get("source", "unknown")),
-        )
-    return result
+    return {
+        field_name: msgspec.convert(item, FieldConfidence, strict=True)
+        for field_name, item in data.items()
+    }
 
 
 def field_confidence_to_dict(fc: FieldConfidenceDict) -> dict[str, dict[str, Any]]:

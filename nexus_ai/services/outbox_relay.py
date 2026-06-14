@@ -30,6 +30,7 @@ import time
 import uuid
 from functools import cache
 
+import anyio
 import pendulum
 from collections.abc import Callable
 from msgspec import Struct
@@ -191,14 +192,14 @@ class OutboxRelay:
             OutboxStats z liczbą przetworzonych, failed, dead_letter.
         """
         stats = OutboxStats()
-        start = time.monotonic()
+        start = anyio.current_time()
 
         with self._session_factory() as session:
             self._unlock_stale_processing(session)
             reserved = self._reserve_events(session)
             if not reserved:
                 stats.total = 0
-                stats.processing_time_ms = (time.monotonic() - start) * 1000
+                stats.processing_time_ms = (anyio.current_time() - start) * 1000
                 return stats
 
             stats.total = len(reserved)
@@ -219,10 +220,10 @@ class OutboxRelay:
             self._cleanup_processed_events(session)
             session.commit()
 
-        stats.processing_time_ms = (time.monotonic() - start) * 1000
+        stats.processing_time_ms = (anyio.current_time() - start) * 1000
         return stats
 
-    def process_events_loop(
+    async def process_events_loop(
         self,
         interval_seconds: float = 5.0,
         max_iterations: int = -1,
@@ -235,6 +236,7 @@ class OutboxRelay:
         """
         iteration = 0
         while max_iterations < 0 or iteration < max_iterations:
+            await anyio.lowlevel.checkpoint()
             try:
                 stats = self.process_pending()
                 if stats.total > 0:
@@ -253,7 +255,7 @@ class OutboxRelay:
 
             iteration += 1
             if max_iterations < 0 or iteration < max_iterations:
-                time.sleep(interval_seconds)
+                await anyio.sleep(interval_seconds)
 
     # ── Event dispatch ──────────────────────────────────────────────────
 

@@ -143,7 +143,7 @@ class HealthController(Controller):
                 "issues": schema_drift.get("issues", []),
             },
             "resources": {
-                "sqlite_wal_size_bytes": self._sqlite_wal_size(),
+                "sqlite_wal_size_bytes": await self._sqlite_wal_size(),
             },
             "queue": {
                 "pending_tasks": await self._pending_tasks(),
@@ -172,9 +172,13 @@ class HealthController(Controller):
         except Exception:
             return None
 
-    def _sqlite_wal_size(self) -> int:
-        wal_path = "nexus_oltp.db-wal"
-        return os.path.getsize(wal_path) if os.path.exists(wal_path) else 0
+    async def _sqlite_wal_size(self) -> int:
+        wal_path = anyio.Path("nexus_oltp.db-wal")
+        try:
+            stat = await wal_path.stat()
+            return stat.st_size
+        except OSError:
+            return 0
 
     def _report_file_exists(self, path: str) -> bool:
         return Path(path).exists()

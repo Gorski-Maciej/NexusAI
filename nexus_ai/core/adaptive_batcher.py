@@ -1,5 +1,4 @@
 # core/adaptive_batcher.py
-import time
 from typing import Any
 
 import anyio
@@ -42,9 +41,9 @@ class AdaptiveBatcher:
                 futures_batch = [(event, result_container)]
 
                 # Zbieranie kolejnych do osiągnięcia batch_size lub timeoutu
-                deadline = time.monotonic() + self.timeout
+                deadline = anyio.current_time() + self.timeout
                 while len(batch) < self.batch_size:
-                    time_left = deadline - time.monotonic()
+                    time_left = deadline - anyio.current_time()
                     if time_left <= 0:
                         break
                     try:

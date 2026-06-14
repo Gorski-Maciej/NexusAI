@@ -4,11 +4,7 @@ from __future__ import annotations
 
 import os
 import uuid
-
-import os
 import threading
-import time as _time
-import uuid
 
 import anyio
 from msgspec import Struct
@@ -52,7 +48,7 @@ class TimedModelCache:
         self._ttl = ttl_seconds
 
     async def get(self, key: str, loader):
-        now = _time.monotonic()
+        now = anyio.current_time()
         ttl_key = f"_model_cache_ttl:{key}"
 
         # Sprawdź NexusCache — czy TTL jeszcze ważny?
@@ -111,7 +107,7 @@ logger = get_logger()
 # Python 3.13t (free-threaded): zamiast 1 OCR na raz, wykorzystaj wszystkie wolne rdzenie.
 # Domyślnie os.cpu_count_free() jeśli dostępne, fallback do os.cpu_count(), fallback 4.
 _DEFAULT_OCR_CONCURRENCY = os.cpu_count() or 4
-OCR_INFERENCE_SEMAPHORE = anyio.Semaphore(
+OCR_INFERENCE_LIMITER = anyio.CapacityLimiter(
     int(os.getenv("NEXUS_MAX_PARALLEL_OCR", str(_DEFAULT_OCR_CONCURRENCY)))
 )
 OCR_TASK_TIMEOUT_SEC = int(os.getenv("NEXUS_OCR_TIMEOUT_SEC", "300"))
@@ -271,7 +267,7 @@ async def process_invoice_task() -> dict[str, str]:
         _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
 
         try:
-            async with OCR_INFERENCE_SEMAPHORE:
+            async with OCR_INFERENCE_LIMITER:
                 processor = await _MODEL_CACHE.get("document_processor", _load_document_processor)
                 vision_agent = await _MODEL_CACHE.get("vision_agent", _load_vision_agent)
                 with anyio.fail_after(OCR_TASK_TIMEOUT_SEC):

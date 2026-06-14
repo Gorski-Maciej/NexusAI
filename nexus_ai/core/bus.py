@@ -199,9 +199,10 @@ class EventBus:
         """
         event_type = type(event)
 
-        # Encode payload once for all subscribers
+        # Encode payload once for all subscribers — używamy msgpack
+        # dla 2-5× szybszej serializacji wewnętrznej w porównaniu do JSON.
         try:
-            payload_bytes = msgspec.json.encode(event)
+            payload_bytes = msgspec.msgpack.encode(event)
         except Exception as exc:
             logger.error("[BUS] Failed to encode event %s: %s", event_type.__name__, exc)
             raise

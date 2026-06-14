@@ -36,10 +36,14 @@ import pendulum
 
 
 # ── DecodeError — zastępuje json.JSONDecodeError ────────────────────────────
-class DecodeError(ValueError):
-    """Zastępuje json.JSONDecodeError.
+class DecodeError(msgspec.DecodeError):
+    """Dziedziczy po msgspec.DecodeError — pełna kompatybilność.
 
     Podnoszony przez msgspec_loads gdy dane nie są poprawnym JSON-em.
+    Dziedziczenie po msgspec.DecodeError (zamiast ValueError) zapewnia
+    zgodność z ekosystemem msgspec — można łapać zarówno DecodeError
+    jak i msgspec.DecodeError.
+
     Użycie:
         try:
             data = msgspec_loads(raw)
@@ -123,6 +127,173 @@ def msgspec_dumps_bytes(obj: Any) -> bytes:
         return _ENCODER.encode(obj)
     except (msgspec.EncodeError, TypeError) as exc:
         raise EncodeError(str(exc)) from exc
+
+
+# ── msgspec.structs.replace — bezpieczna modyfikacja Structów (Faza 3) ────
+
+
+def msgspec_struct_replace(
+    struct_obj,
+    /,
+    **changes: Any,
+) -> Any:
+    """Zastępuje ``dataclasses.replace()`` dla msgspec Structów.
+
+    Tworzy kopię Structa z podmienionymi polami. Działa zarówno dla
+    ``frozen=True`` jak i ``frozen=False`` Structów.
+
+    Używa ``msgspec.structs.replace()`` — natywnej funkcji msgspec
+    napisanej w C, szybszej niż ``Struct(**old.__dict__, field=new)``.
+
+    Args:
+        struct_obj: Instancja Struct do skopiowania.
+        **changes: Pola do podmiany (keyword only).
+
+    Returns:
+        Nowa instancja Struct z podmienionymi polami.
+
+    Example:
+        >>> old = DecisionVerdict(decision="ASK_USER", confidence=0.5, reasoning="")
+        >>> new = msgspec_struct_replace(old, decision="AUTO_POST", confidence=0.95)
+        >>> new.decision
+        'AUTO_POST'
+        >>> new.reasoning  # unchanged
+        ''
+
+    Raises:
+        TypeError: Gdy zmieniane pole nie istnieje w Struct.
+        ValueError: Gdy Struct ma ``forbid_unknown=True``.
+
+    Note:
+        ``msgspec.structs.replace()`` jest napisane w C i działa ~10× szybciej
+        niż ``type(obj)(**asdict(obj), field=new)``. Preferuj tę funkcję
+        zamiast ręcznego tworzenia kopii Structów.
+
+    Kiedy używać:
+        - ``Struct(**data)`` — konstrukcja od zera (OK, nie zmieniaj)
+        - ``msgspec.structs.replace(existing, field=new)`` — modyfikacja
+          istniejącego frozen Structa (użyj replace zamiast ręcznej kopii)
+        - ``existing.field = new`` — tylko dla non-frozen Structów
+          (nie używaj replace, modyfikacja in-place jest szybsza)
+    """
+    return msgspec.structs.replace(struct_obj, **changes)
+
+
+# Przykład użycia:
+# from nexus_ai.core.msgspec_utils import msgspec_struct_replace
+#
+# # Zamiast:
+# old = DecisionVerdict(decision="ASK_USER", confidence=0.5, reasoning="")
+# new = DecisionVerdict(**msgspec.structs.asdict(old), confidence=0.95)
+#
+# # Użyj:
+# new = msgspec_struct_replace(old, confidence=0.95, reasoning="Nowy reason")
+# # new.decision → "ASK_USER" (bez zmian), new.confidence → 0.95
+
+
+# ── JSON Schema generation (Faza 3) ──────────────────────────────────────
+
+# Cache dla wygenerowanych schematów (Struct → JSON Schema)
+_SCHEMA_CACHE: dict[type, dict[str, Any]] = {}
+
+
+def msgspec_json_schema(struct_type: type) -> dict[str, Any]:
+    """Generuj JSON Schema dla msgspec Struct.
+
+    Używa ``msgspec.json.schema()`` do wygenerowania JSON Schema Draft 2020-12
+    dla danego typu Struct. Wynik jest cachowany — to samo Struct generuje
+    ten sam schemat.
+
+    Normalizacja: Jeśli schema ma ``$ref`` na najwyższym poziomie (np. dla
+    tagged unions), dodaje ``title`` z nazwy klasy.
+
+    Args:
+        struct_type: Klasa Struct (np. ``InvoiceCreate``).
+
+    Returns:
+        Słownik JSON Schema z gwarantowanym polem ``title``.
+
+    Example:
+        >>> schema = msgspec_json_schema(InvoiceCreate)
+        >>> schema["title"]
+        'InvoiceCreate'
+    """
+    if struct_type in _SCHEMA_CACHE:
+        return _SCHEMA_CACHE[struct_type]
+
+    try:
+        schema = msgspec.json.schema(struct_type)
+        # Normalizacja: jeśli $ref na szczycie, schema może nie mieć title
+        if "title" not in schema:
+            # Dla $ref, title jest w $defs
+            if "$ref" in schema and "$defs" in schema:
+                ref_key = schema["$ref"].split("/")[-1]
+                if ref_key in schema["$defs"] and "title" in schema["$defs"][ref_key]:
+                    schema["title"] = schema["$defs"][ref_key]["title"]
+                else:
+                    schema["title"] = struct_type.__name__
+            else:
+                schema["title"] = struct_type.__name__
+        _SCHEMA_CACHE[struct_type] = schema
+        return schema
+    except Exception:
+        return {"type": "object", "title": struct_type.__name__}
+
+
+def msgspec_inspect_fields(struct_type: type) -> list[dict[str, Any]]:
+    """Introspekcja pól Struct — używa ``msgspec.inspect``.
+
+    Zwraca listę pól z metadanymi (typ, domyślny, walidacja Meta).
+    Przydatne do generowania dokumentacji, formularzy, automatycznych testów.
+
+    Args:
+        struct_type: Klasa Struct.
+
+    Returns:
+        Lista słowników z polami.
+
+    Example:
+        >>> fields = msgspec_inspect_fields(InvoiceCreate)
+        >>> fields[0]["name"]
+        'number'
+    """
+    try:
+        from msgspec import inspect
+        fields = []
+        for field_info in inspect.info(struct_type).fields:
+            field_dict = {
+                "name": field_info.name,
+                "type": str(field_info.type),
+                "required": field_info.required,
+                "has_default": field_info.has_default,
+            }
+            if hasattr(field_info, "metadata") and field_info.metadata:
+                field_dict["metadata"] = [str(m) for m in field_info.metadata]
+            fields.append(field_dict)
+        return fields
+    except Exception:
+        return []
+
+
+def msgspec_struct_asdict_deep(struct_obj) -> dict[str, Any]:
+    """Konwertuje Struct na dict z obsługą zagnieżdżonych Structów.
+
+    Używa ``msgspec.structs.asdict()`` (napisane w C, rekurencyjne przez
+    definicje pól Struct), a następnie serializuje przez JSON tylko po to
+    by obsłużyć typy niestandardowe (DateTime, Decimal, UUID) — enc_hook
+    w msgspec.json.encode.
+
+    Args:
+        struct_obj: Instancja Struct do konwersji.
+
+    Returns:
+        Słownik z serializowalnymi wartościami.
+    """
+    import msgspec.structs as structs
+
+    raw = structs.asdict(struct_obj)
+    # round-trip przez JSON tylko dla obsługi enc_hook (DateTime, Decimal, UUID)
+    return msgspec.json.decode(msgspec.json.encode(raw, enc_hook=_default_enc_hook))
 
 
 def msgspec_loads(data: str | bytes | bytearray) -> Any:

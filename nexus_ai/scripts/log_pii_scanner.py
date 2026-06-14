@@ -6,6 +6,7 @@ import argparse
 import re
 from msgspec import Struct
 from msgspec.structs import asdict
+from msgspec.structs import asdict
 from pathlib import Path
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps

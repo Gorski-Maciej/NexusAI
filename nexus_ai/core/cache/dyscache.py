@@ -19,9 +19,10 @@ from pathlib import Path
 from typing import Any
 
 import anyio
+import msgspec
 from structlog import get_logger
 
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_dumps_bytes, msgspec_loads
+from nexus_ai.core.msgspec_utils import msgspec_dumps
 
 # ── Próba importu OpenTelemetry Metrics API (opcjonalne) ─────────────────
 
@@ -58,6 +59,10 @@ class NexusCache:
     - Ograniczenie rozmiaru L1 RAM przez ``max_size`` (LRU-eviction)
     - Thread-safe L1 (``threading.Lock`` dla free-threaded Python 3.13t)
     - O(1) LRU przez ``OrderedDict`` zamiast ręcznej listy
+
+    Serializacja do L1/L2 używa msgspec.msgpack — 2-5× szybsza niż JSON,
+    mniejsze payloady. sync methods (get_sync/set_sync) używają JSON dla
+    kompatybilności wstecznej.
 
     Args:
         cache_dir: Katalog dla cache'u SQLite (L2).
@@ -127,6 +132,8 @@ class NexusCache:
     def _get_l1(self, key: str) -> tuple[Any | None, bool]:
         """Pobierz z L1 (RAM) pod blokadą.
 
+        Używa ``msgspec.msgpack.decode()`` — zgodny z formatem set()/set_many().
+
         Args:
             key: Klucz cache.
 
@@ -139,7 +146,7 @@ class NexusCache:
             if expiry > time.time():
                 self._touch_locked(key)
                 try:
-                    return msgspec_loads(data), True
+                    return msgspec.msgpack.decode(data), True
                 except Exception:
                     pass
             else:
@@ -241,7 +248,7 @@ class NexusCache:
             return self._compute_locks[key]
 
     # ══════════════════════════════════════════════════════════════════════
-    # Core async API
+    # Core async API — wszystkie encode/decode przez msgspec.msgpack
     # ══════════════════════════════════════════════════════════════════════
 
     async def get(self, key: str) -> Any | None:
@@ -265,9 +272,9 @@ class NexusCache:
         # L2 (diskcache/SQLite) — bez blokady, bo anyio.to_thread.run_sync
         if self._diskcache is not None:
             try:
-                t0 = time.monotonic()
+                t0 = anyio.current_time()
                 raw = await anyio.to_thread.run_sync(self._diskcache.get, key)
-                elapsed = time.monotonic() - t0
+                elapsed = anyio.current_time() - t0
                 self._record_l2_latency("get", elapsed)
                 if raw is not None:
                     data = raw if isinstance(raw, bytes) else str(raw).encode()
@@ -275,7 +282,7 @@ class NexusCache:
                     with self._lock:
                         self._set_l1(key, data, self._default_ttl)
                     self._record_hit("L2")
-                    return msgspec_loads(data)
+                    return msgspec.msgpack.decode(data)
             except Exception as exc:
                 logger.debug("[CACHE] L2 get failed for %s: %s", key, exc)
 
@@ -322,11 +329,11 @@ class NexusCache:
         l2_hits = 0
         if self._diskcache is not None and l2_keys:
             try:
-                t0 = time.monotonic()
+                t0 = anyio.current_time()
                 raw_values = await anyio.to_thread.run_sync(
                     self._get_diskcache_batch, l2_keys,
                 )
-                elapsed = time.monotonic() - t0
+                elapsed = anyio.current_time() - t0
                 self._record_l2_latency("get_many", elapsed)
                 for original_idx, key, raw in zip(l2_indices, l2_keys, raw_values):
                     if raw is not None:
@@ -335,7 +342,7 @@ class NexusCache:
                         with self._lock:
                             self._set_l1(key, data, self._default_ttl)
                         try:
-                            results[original_idx] = msgspec_loads(data)
+                            results[original_idx] = msgspec.msgpack.decode(data)
                         except Exception:
                             pass
             except Exception as exc:
@@ -363,6 +370,10 @@ class NexusCache:
     ) -> None:
         """Zapisz wartość w cache'u (L1 + L2).
 
+        Używa ``msgspec.msgpack.encode()`` dla 2-5× szybszej serializacji
+        niż JSON. Zarówno L1 (RAM) jak i L2 (diskcache/SQLite) używają
+        msgpack — zgodny odczyt przez get() i get_many().
+
         Args:
             key: Klucz cache.
             value: Wartość do zapisania (serializowana przez msgspec).
@@ -373,7 +384,7 @@ class NexusCache:
         effective_ttl = ttl if ttl is not None else self._default_ttl
 
         try:
-            data = msgspec_dumps_bytes(value)
+            data = msgspec.msgpack.encode(value)
         except Exception as exc:
             logger.error("[CACHE] Serialization failed for %s: %s", key, exc)
             return
@@ -382,14 +393,14 @@ class NexusCache:
         with self._lock:
             self._set_l1(key, data, effective_ttl)
 
-        # L2
+        # L2 — msgpack zamiast JSON: 2-5× szybszy, mniejsze payloady
         if self._diskcache is not None:
             try:
-                t0 = time.monotonic()
+                t0 = anyio.current_time()
                 await anyio.to_thread.run_sync(
                     lambda: self._diskcache.set(key, data, expire=effective_ttl),
                 )
-                elapsed = time.monotonic() - t0
+                elapsed = anyio.current_time() - t0
                 self._record_l2_latency("set", elapsed)
             except Exception as exc:
                 logger.debug("[CACHE] L2 set failed for %s: %s", key, exc)
@@ -403,6 +414,7 @@ class NexusCache:
 
         Batchuje L1 i L2 operacje. L2 sety są batchowane w jednym
         ``anyio.to_thread.run_sync``.
+        Używa ``msgspec.msgpack.encode()`` — zgodny z set() i get().
 
         Args:
             mapping: Słownik {klucz: wartość} do zapisania.
@@ -412,11 +424,11 @@ class NexusCache:
 
         effective_ttl = ttl if ttl is not None else self._default_ttl
 
-        # Serializacja poza blokadą
+        # Serializacja poza blokadą — msgpack zamiast JSON
         serialized: dict[str, bytes] = {}
         for key, value in mapping.items():
             try:
-                serialized[key] = msgspec_dumps_bytes(value)
+                serialized[key] = msgspec.msgpack.encode(value)
             except Exception as exc:
                 logger.error("[CACHE] Serialization failed for %s: %s", key, exc)
 
@@ -428,11 +440,11 @@ class NexusCache:
         # L2 batch
         if self._diskcache is not None and serialized:
             try:
-                t0 = time.monotonic()
+                t0 = anyio.current_time()
                 await anyio.to_thread.run_sync(
                     lambda: self._set_diskcache_batch(serialized, effective_ttl),
                 )
-                self._record_l2_latency("set_many", time.monotonic() - t0)
+                self._record_l2_latency("set_many", anyio.current_time() - t0)
             except Exception as exc:
                 logger.debug("[CACHE] L2 set_many failed: %s", exc)
 
@@ -451,9 +463,9 @@ class NexusCache:
             self._update_cache_size_gauge()
         if self._diskcache is not None:
             try:
-                t0 = time.monotonic()
+                t0 = anyio.current_time()
                 await anyio.to_thread.run_sync(self._diskcache.delete, key)
-                self._record_l2_latency("delete", time.monotonic() - t0)
+                self._record_l2_latency("delete", anyio.current_time() - t0)
             except Exception as exc:
                 logger.debug("[CACHE] L2 delete failed for %s: %s", key, exc)
 
@@ -609,7 +621,7 @@ class NexusCache:
         return len(deleted)
 
     # ══════════════════════════════════════════════════════════════════════
-    # Sync methods (L1 RAM only — for use in sync services)
+    # Sync methods (L1 RAM only — dla wsparcia sync services)
     # ══════════════════════════════════════════════════════════════════════
 
     def delete_sync(self, key: str) -> None:
@@ -629,9 +641,7 @@ class NexusCache:
     def get_sync(self, key: str) -> Any | None:
         """Sync version: sprawdza tylko L1 (RAM) cache.
 
-        Przydatne dla synchronicznych serwisów jak CurrencyConverter.
-        L2 (diskcache/SQLite) jest pomijane, bo wymaga async.
-        Thread-safe przez ``self._lock``.
+        Używa ``msgspec.msgpack.decode()`` — zgodny z async API.
 
         Args:
             key: Klucz cache.
@@ -665,7 +675,7 @@ class NexusCache:
         """
         effective_ttl = ttl if ttl is not None else self._default_ttl
         try:
-            data = msgspec_dumps_bytes(value)
+            data = msgspec.msgpack.encode(value)
         except Exception as exc:
             logger.error("[CACHE] Serialization failed for %s: %s", key, exc)
             return

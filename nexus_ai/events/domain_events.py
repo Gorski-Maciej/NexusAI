@@ -24,8 +24,13 @@ import pendulum
 # ── Base Domain Event ─────────────────────────────────────────────────────
 
 
-class DomainEvent(msgspec.Struct, kw_only=True, frozen=True):
-    """Bazowa klasa dla wszystkich eventów domenowych.
+class DomainEvent(msgspec.Struct, kw_only=True, frozen=True, tag_field="event_type"):
+    """Bazowa klasa dla wszystkich eventów domenowych — z Tagged Unions.
+
+    Używa ``tag_field="event_type"`` — msgspec automatycznie wybiera
+    konkretną klasę eventu na podstawie wartości pola ``event_type``
+    podczas deserializacji. Zastępuje ręczny ``_EVENT_TYPE_REGISTRY``
+    i funkcję ``domain_event_from_dict()``.
 
     Args:
         aggregate_id: ID agregatu (np. invoice_id, decision_id).
@@ -34,7 +39,8 @@ class DomainEvent(msgspec.Struct, kw_only=True, frozen=True):
 
     event_id: str = msgspec.field(default_factory=lambda: uuid.uuid4().hex)
     aggregate_type: str = ""
-    event_type: str = ""
+    # event_type: Pole GENEROWANE AUTOMATYCZNIE przez tag_field="event_type"
+    # msgspec tworzy je na podstawie tag="..." na każdej podklasie
     timestamp: str = msgspec.field(default_factory=lambda: pendulum.now("UTC").isoformat())
     aggregate_id: str = ""
     version: int = 0
@@ -44,11 +50,10 @@ class DomainEvent(msgspec.Struct, kw_only=True, frozen=True):
 # ── Invoice Events ────────────────────────────────────────────────────────
 
 
-class InvoiceCreated(DomainEvent):
+class InvoiceCreated(DomainEvent, tag="invoice.created"):
     """Faktura została utworzona w systemie (po OCR)."""
 
     aggregate_type: str = "invoice"
-    event_type: str = "invoice.created"
 
     number: str = ""
     contractor_nip: str = ""
@@ -61,53 +66,47 @@ class InvoiceCreated(DomainEvent):
     file_path: str = ""
 
 
-class InvoiceSubmitted(DomainEvent):
+class InvoiceSubmitted(DomainEvent, tag="invoice.submitted"):
     """Faktura została przesłana do decyzji (DecisionEngine)."""
 
     aggregate_type: str = "invoice"
-    event_type: str = "invoice.submitted"
 
     amount_gross: float = 0.0
     contractor_nip: str = ""
 
 
-class InvoiceApproved(DomainEvent):
+class InvoiceApproved(DomainEvent, tag="invoice.approved"):
     """Faktura została zatwierdzona (auto-post lub manualnie)."""
 
     aggregate_type: str = "invoice"
-    event_type: str = "invoice.approved"
 
     approved_by: str = "system"  # "system" | "user:{user_id}"
     trust_score: float = 0.0
     decision_level: str = "auto"  # "auto" | "suggest" | "manual"
 
 
-class InvoiceRejected(DomainEvent):
+class InvoiceRejected(DomainEvent, tag="invoice.rejected"):
     """Faktura została odrzucona (manualnie)."""
 
     aggregate_type: str = "invoice"
-    event_type: str = "invoice.rejected"
 
     rejected_by: str = ""
     reason: str = ""
 
 
-class InvoiceBlocked(DomainEvent):
+class InvoiceBlocked(DomainEvent, tag="invoice.blocked"):
     """Faktura została zablokowana (RiskGuard / anomalia)."""
 
     aggregate_type: str = "invoice"
-    event_type: str = "invoice.blocked"
-
     blocked_by: str = "risk_guard"
     reason: str = ""
     risk_score: float = 0.0
 
 
-class InvoicePaid(DomainEvent):
+class InvoicePaid(DomainEvent, tag="invoice.paid"):
     """Faktura została opłacona (przez TigerBeetle)."""
 
     aggregate_type: str = "invoice"
-    event_type: str = "invoice.paid"
 
     amount_gross: float = 0.0
     paid_at: str = ""
@@ -117,11 +116,10 @@ class InvoicePaid(DomainEvent):
 # ── Decision Events ───────────────────────────────────────────────────────
 
 
-class DecisionMade(DomainEvent):
+class DecisionMade(DomainEvent, tag="decision.made"):
     """Decyzja została podjęta przez system (DecisionEngine)."""
 
     aggregate_type: str = "decision"
-    event_type: str = "decision.made"
 
     invoice_id: str = ""
     decision: str = ""  # "AUTO_POST" | "SUGGEST" | "ASK_USER" | "BLOCK"
@@ -134,11 +132,10 @@ class DecisionMade(DomainEvent):
     reasoning: str = ""
 
 
-class DecisionOverridden(DomainEvent):
+class DecisionOverridden(DomainEvent, tag="decision.overridden"):
     """Decyzja systemowa została nadpisana przez użytkownika."""
 
     aggregate_type: str = "decision"
-    event_type: str = "decision.overridden"
 
     invoice_id: str = ""
     original_decision: str = ""
@@ -149,17 +146,16 @@ class DecisionOverridden(DomainEvent):
 # ── Outbox Events ─────────────────────────────────────────────────────────
 
 
-class OutboxEventEmitted(DomainEvent):
+class OutboxEventEmitted(DomainEvent, tag="outbox.emitted"):
     """Zdarzenie outbox zostało wyemitowane (Transactional Outbox)."""
 
     aggregate_type: str = "outbox"
-    event_type: str = "outbox.emitted"
 
     outbox_event_type: str = ""
     payload_json: str = ""
 
 
-class NotificationSent(DomainEvent):
+class NotificationSent(DomainEvent, tag="notification.sent"):
     """Powiadomienie zostało wysłane do użytkownika.
 
     Emitowany przez NotificationService po wysłaniu powiadomienia
@@ -167,7 +163,6 @@ class NotificationSent(DomainEvent):
     """
 
     aggregate_type: str = "notification"
-    event_type: str = "notification.sent"
 
     user_id: str = ""
     notification_type: str = "info"
@@ -177,60 +172,54 @@ class NotificationSent(DomainEvent):
 
 # ── Serialization helpers ─────────────────────────────────────────────────
 
-
-# Rejestr typów eventów dla deserializacji
-_EVENT_TYPE_REGISTRY: dict[str, type[DomainEvent]] = {
-    "invoice.created": InvoiceCreated,
-    "invoice.submitted": InvoiceSubmitted,
-    "invoice.approved": InvoiceApproved,
-    "invoice.rejected": InvoiceRejected,
-    "invoice.blocked": InvoiceBlocked,
-    "invoice.paid": InvoicePaid,
-    "decision.made": DecisionMade,
-    "decision.overridden": DecisionOverridden,
-    "outbox.emitted": OutboxEventEmitted,
-    "notification.sent": NotificationSent,
-}
+# Tagged Unions (tag_field="event_type") automatyzują deserializację:
+# msgspec sam wybiera klasę na podstawie wartości event_type w danych.
+# Dzięki tag=True na każdej podklasie, nie potrzebujemy _EVENT_TYPE_REGISTRY.
 
 
 def domain_event_from_dict(data: dict[str, Any]) -> DomainEvent:
-    """Deserializuj słownik na konkretny typ eventu.
+    """Deserializuj słownik na event przez Tagged Unions.
+
+    Używa ``msgspec.convert(data, DomainEvent, strict=False)`` — dzięki
+    ``tag_field="event_type"`` msgspec automatycznie wybiera właściwą
+    klasę. Zachowane dla kompatybilności wstecznej z event_store.py.
 
     Args:
         data: Słownik z polami eventu (musi zawierać ``event_type``).
 
     Returns:
-        Zdeserializowany event.
+        Odpowiednia podklasa DomainEvent.
     """
-    event_type = data.get("event_type", "")
-    cls = _EVENT_TYPE_REGISTRY.get(event_type)
-    if cls is None:
-        raise ValueError(f"Unknown event type: {event_type}")
-    return msgspec.convert(data, cls, strict=False)
+    return msgspec.convert(data, DomainEvent, strict=False)
 
 
 def encode_event(event: DomainEvent) -> bytes:
-    """Zakoduj event do JSON bytes (przez msgspec).
+    """Zakoduj event do msgpack bytes (przez msgspec).
+
+    Używa ``msgspec.msgpack.encode`` dla 2-5× szybszej serializacji
+    wewnętrznej w porównaniu do JSON. Komunikacja między komponentami
+    (EventStore, JetStream, ProjectionWorker) używa msgpack.
 
     Args:
         event: Event do zakodowania.
 
     Returns:
-        Zserializowany JSON bytes.
+        Zserializowane bajty (msgpack).
     """
-    return msgspec.json.encode(event)
+    return msgspec.msgpack.encode(event)
 
 
 def decode_event(data: bytes) -> DomainEvent:
-    """Dekoduj JSON bytes na event.
+    """Dekoduj msgpack bytes na event przez Tagged Unions.
+
+    Używa ``msgspec.msgpack.decode(..., type=DomainEvent)`` — dzięki
+    ``tag_field="event_type"`` i ``tag="..."`` na każdej podklasie,
+    msgspec automatycznie wybiera właściwą klasę.
 
     Args:
-        data: JSON bytes.
+        data: Bajty (msgpack) do dekodowania.
 
     Returns:
-        Zdeserializowany event.
+        Zdeserializowany event (odpowiednia podklasa DomainEvent).
     """
-    raw = msgspec.json.decode(data)
-    if isinstance(raw, dict):
-        return domain_event_from_dict(raw)
-    raise TypeError(f"Expected dict, got {type(raw)}")
+    return msgspec.msgpack.decode(data, type=DomainEvent)

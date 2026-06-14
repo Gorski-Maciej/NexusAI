@@ -588,9 +588,7 @@ class FactsAggregator:
         Returns:
             FactSheet z danymi ze wszystkich dostępnych źródeł.
         """
-        import time
-
-        t0 = time.monotonic()
+        t0 = anyio.current_time()
 
         sheet = FactSheet(
             invoice_id=str(invoice_data.get("invoice_id", "") or invoice_data.get("id", "")),
@@ -719,7 +717,7 @@ class FactsAggregator:
                 logger.warning("[FactsAggregator] task %s failed: %s", name, exc)
 
         sheet.sources_available = source_status
-        sheet.build_duration_ms = round((time.monotonic() - t0) * 1000, 1)
+        sheet.build_duration_ms = round((anyio.current_time() - t0) * 1000, 1)
 
         logger.info(
             "[FactsAggregator] built fact sheet for invoice=%s sources=%s duration=%.1fms",

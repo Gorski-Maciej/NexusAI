@@ -11,7 +11,7 @@ from nexus_ai.services.currency_converter import Money
 # -- msgspec Structs --
 
 
-class InvoiceCreate(msgspec.Struct):
+class InvoiceCreate(msgspec.Struct, kw_only=True):
     """Dane wymagane przy ręcznym tworzeniu lub uploadzie faktury.
 
     Uwaga: ``amount_net`` i ``amount_gross`` to ``Decimal`` (typ natywny msgspec),
@@ -58,7 +58,7 @@ def validate_invoice_create(payload: InvoiceCreate) -> None:
             raise ValueError(f"contractor_nip validation failed: {e}")
 
 
-class InvoiceResponse(msgspec.Struct):
+class InvoiceResponse(msgspec.Struct, kw_only=True):
     """Struktura zwracana do frontendu (response — ``Money`` serializowane przez enc_hook).
 
     Pola odpowiadają modelowi DB ``Invoice`` z ``nexus_ai/db/models.py``.
@@ -82,14 +82,14 @@ class InvoiceResponse(msgspec.Struct):
     version_id: int = 1  # Optimistic locking (Rozwiązanie 23)
 
 
-class AnalyticsQuery(msgspec.Struct):
+class AnalyticsQuery(msgspec.Struct, kw_only=True):
     start_date: str
     end_date: str
     dimension: str = "monthly"
     report_currency: str = "PLN"
 
 
-class VatSummary(msgspec.Struct):
+class VatSummary(msgspec.Struct, kw_only=True):
     """Zagregowane dane analityczne z DuckDB (response — ``Money`` serializowane przez enc_hook)."""
 
     month: str
@@ -101,13 +101,13 @@ class VatSummary(msgspec.Struct):
 # -- API response/request structs --
 
 
-class TaskResponse(msgspec.Struct):
+class TaskResponse(msgspec.Struct, kw_only=True):
     task_id: str
     status: str
     message: str
 
 
-class InvoiceResponsePydantic(msgspec.Struct):
+class InvoiceResponsePydantic(msgspec.Struct, kw_only=True):
     id: str
     number: str | None
     contractor_nip: str | None
@@ -120,13 +120,13 @@ class InvoiceResponsePydantic(msgspec.Struct):
     version_id: int = 1  # Optimistic locking (Rozwiązanie 23)
 
 
-class DashboardSummaryResponse(msgspec.Struct):
+class DashboardSummaryResponse(msgspec.Struct, kw_only=True):
     total_net: float
     total_gross: float
     total_documents: int
 
 
-class InvoiceUploadResponse(msgspec.Struct):
+class InvoiceUploadResponse(msgspec.Struct, kw_only=True):
     """Response structure for invoice file upload.
 
     Returned after a successful file upload with content-addressable storage.
@@ -148,7 +148,7 @@ class InvoiceUploadResponseLarge(InvoiceUploadResponse):
     kind: str = "large_attachment"
 
 
-class InvoiceListResponse(msgspec.Struct):
+class InvoiceListResponse(msgspec.Struct, kw_only=True):
     """Paginated list response for invoices.
 
     ``items`` to lista ``InvoiceResponse``, ``next_cursor`` to token
@@ -161,7 +161,7 @@ class InvoiceListResponse(msgspec.Struct):
     limit: int = 50
 
 
-class TriageItem(msgspec.Struct):
+class TriageItem(msgspec.Struct, kw_only=True):
     invoice_id: str
     image_path: str
     extracted_data: dict[str, object]
@@ -170,25 +170,25 @@ class TriageItem(msgspec.Struct):
     reason_for_triage: str
 
 
-class TriageResolutionRequest(msgspec.Struct):
+class TriageResolutionRequest(msgspec.Struct, kw_only=True):
     corrected_data: dict[str, object]
     action: str
     expected_version: int | None = None  # Optimistic locking (Rozwiązanie 23)
 
 
-class TriageResolutionResponse(msgspec.Struct):
+class TriageResolutionResponse(msgspec.Struct, kw_only=True):
     invoice_id: str
     status: str
     message: str
 
 
-class SagaTransitionRequest(msgspec.Struct):
+class SagaTransitionRequest(msgspec.Struct, kw_only=True):
     new_state: str
     expected_current_state: str | None = None
     payload: dict[str, object] = msgspec.field(default_factory=dict)
 
 
-class SagaStateResponse(msgspec.Struct):
+class SagaStateResponse(msgspec.Struct, kw_only=True):
     status: str
     saga_id: str
     current_state: str
@@ -201,32 +201,32 @@ class SagaStateResponse(msgspec.Struct):
 # ═══════════════════════════════════════════════════════════════════════════
 
 
-class StatusResponse(msgspec.Struct):
+class StatusResponse(msgspec.Struct, kw_only=True):
     """Generic status+message response."""
     status: str
     message: str
 
 
-class IdResponse(msgspec.Struct):
+class IdResponse(msgspec.Struct, kw_only=True):
     """Response with status + rule_id."""
     status: str
     rule_id: str
 
 
-class ActionResponse(msgspec.Struct):
+class ActionResponse(msgspec.Struct, kw_only=True):
     """Response with status + id + action."""
     status: str
     rule_id: str
     action: str
 
 
-class RetryAllResponse(msgspec.Struct):
+class RetryAllResponse(msgspec.Struct, kw_only=True):
     """Response for bulk retry."""
     status: str
     retried: int
 
 
-class ChangeRoleResponse(msgspec.Struct):
+class ChangeRoleResponse(msgspec.Struct, kw_only=True):
     """Response for role change."""
     status: str
     message: str
@@ -235,7 +235,7 @@ class ChangeRoleResponse(msgspec.Struct):
     new_role: str
 
 
-class FailedTaskItem(msgspec.Struct):
+class FailedTaskItem(msgspec.Struct, kw_only=True):
     """Single failed task entry."""
     id: str
     task_name: str
@@ -252,7 +252,7 @@ class FailedTaskItem(msgspec.Struct):
     created_at: str
 
 
-class FailedTaskListResponse(msgspec.Struct):
+class FailedTaskListResponse(msgspec.Struct, kw_only=True):
     """Paginated failed tasks response."""
     tasks: list[FailedTaskItem]
     total: int
@@ -260,19 +260,19 @@ class FailedTaskListResponse(msgspec.Struct):
     offset: int
 
 
-class RiskThresholdRuleItem(msgspec.Struct):
+class RiskThresholdRuleItem(msgspec.Struct, kw_only=True):
     """Single risk threshold rule."""
     # DuckDB returns dynamic fields — use dict
     pass
 
 
-class RuleListResponse(msgspec.Struct):
+class RuleListResponse(msgspec.Struct, kw_only=True):
     """Generic rule list response."""
     rules: list[dict]
     total: int
 
 
-class PaginatedRuleListResponse(msgspec.Struct):
+class PaginatedRuleListResponse(msgspec.Struct, kw_only=True):
     """Paginated rule list with limit/offset."""
     rules: list[dict]
     total: int
@@ -280,7 +280,7 @@ class PaginatedRuleListResponse(msgspec.Struct):
     offset: int
 
 
-class HealthResponse(msgspec.Struct):
+class HealthResponse(msgspec.Struct, kw_only=True):
     """System health check response."""
     status: str
     timestamp: str
@@ -288,7 +288,7 @@ class HealthResponse(msgspec.Struct):
     failed_tasks_unresolved: int | None = None
 
 
-class ReplayDecisionResponse(msgspec.Struct):
+class ReplayDecisionResponse(msgspec.Struct, kw_only=True):
     """Replay decision result."""
     transaction_id: str
     match: bool
@@ -298,7 +298,7 @@ class ReplayDecisionResponse(msgspec.Struct):
     error: str | None = None
 
 
-class ReplayBatchItem(msgspec.Struct):
+class ReplayBatchItem(msgspec.Struct, kw_only=True):
     """Single replay batch result item."""
     transaction_id: str
     match: bool
@@ -306,7 +306,7 @@ class ReplayBatchItem(msgspec.Struct):
     differences: list[str]
 
 
-class ReplayBatchResponse(msgspec.Struct):
+class ReplayBatchResponse(msgspec.Struct, kw_only=True):
     """Batch replay results."""
     total: int
     matches: int
@@ -314,7 +314,7 @@ class ReplayBatchResponse(msgspec.Struct):
     results: list[ReplayBatchItem]
 
 
-class IntegrityVerifyResponse(msgspec.Struct):
+class IntegrityVerifyResponse(msgspec.Struct, kw_only=True):
     """Integrity verification result."""
     status: str
     total_records: int
@@ -325,19 +325,19 @@ class IntegrityVerifyResponse(msgspec.Struct):
     checkpoint: dict | None = None
 
 
-class FallbackEventItem(msgspec.Struct):
+class FallbackEventItem(msgspec.Struct, kw_only=True):
     """Single fallback event."""
     pass  # DuckDB returns dynamic fields
 
 
-class FallbackListResponse(msgspec.Struct):
+class FallbackListResponse(msgspec.Struct, kw_only=True):
     """Fallback events list."""
     events: list[dict]
     total: int
     pending: int
 
 
-class HotReloadHealthResponse(msgspec.Struct):
+class HotReloadHealthResponse(msgspec.Struct, kw_only=True):
     """Hot-reload listener health."""
     status: str
     nats_url: str
@@ -349,7 +349,7 @@ class HotReloadHealthResponse(msgspec.Struct):
     message: str = ""
 
 
-class RuleChangelogResponse(msgspec.Struct):
+class RuleChangelogResponse(msgspec.Struct, kw_only=True):
     """Rule change log."""
     changes: list[dict]
     total: int
@@ -360,14 +360,14 @@ class RuleChangelogResponse(msgspec.Struct):
 # ═══════════════════════════════════════════════════════════════════════════
 
 
-class RegisterResponse(msgspec.Struct):
+class RegisterResponse(msgspec.Struct, kw_only=True):
     """Registration response."""
     status: str
     message: str
     user_id: str
 
 
-class LoginResponse(msgspec.Struct):
+class LoginResponse(msgspec.Struct, kw_only=True):
     """Login response with tokens."""
     access_token: str
     refresh_token: str
@@ -376,42 +376,42 @@ class LoginResponse(msgspec.Struct):
     refresh_token_expires_in_days: int = 7
 
 
-class LogoutResponse(msgspec.Struct):
+class LogoutResponse(msgspec.Struct, kw_only=True):
     """Logout response."""
     status: str
     message: str
 
 
-class ConfirmEmailResponse(msgspec.Struct):
+class ConfirmEmailResponse(msgspec.Struct, kw_only=True):
     """Email confirmation response."""
     status: str
     message: str
 
 
-class PasswordResetResponse(msgspec.Struct):
+class PasswordResetResponse(msgspec.Struct, kw_only=True):
     """Password reset email sent response."""
     status: str
     message: str
 
 
-class PasswordResetConfirmResponse(msgspec.Struct):
+class PasswordResetConfirmResponse(msgspec.Struct, kw_only=True):
     """Password reset confirm response."""
     status: str
     message: str
 
 
-class ChangePasswordResponse(msgspec.Struct):
+class ChangePasswordResponse(msgspec.Struct, kw_only=True):
     """Password change response."""
     status: str
     message: str
 
 
-class CsrfTokenResponse(msgspec.Struct):
+class CsrfTokenResponse(msgspec.Struct, kw_only=True):
     """CSRF token response."""
     csrf_token: str
 
 
-class UserProfileResponse(msgspec.Struct):
+class UserProfileResponse(msgspec.Struct, kw_only=True):
     """Current user profile."""
     id: str
     username: str
@@ -430,7 +430,7 @@ class UserProfileResponse(msgspec.Struct):
 # ═══════════════════════════════════════════════════════════════════════════
 
 
-class ExportStatusResponse(msgspec.Struct):
+class ExportStatusResponse(msgspec.Struct, kw_only=True):
     """Export status."""
     export_id: str
     status: str
@@ -438,13 +438,13 @@ class ExportStatusResponse(msgspec.Struct):
     file_url: str
 
 
-class ExportDownloadResponse(msgspec.Struct):
+class ExportDownloadResponse(msgspec.Struct, kw_only=True):
     """Export download response."""
     message: str
     format: str
 
 
-class FinOpsResponse(msgspec.Struct):
+class FinOpsResponse(msgspec.Struct, kw_only=True):
     """FinOps cost per invoice."""
     hourly_cost_usd: float
     invoice_count: int
@@ -453,7 +453,7 @@ class FinOpsResponse(msgspec.Struct):
     ram_gb: float
 
 
-class I18nStatusResponse(msgspec.Struct):
+class I18nStatusResponse(msgspec.Struct, kw_only=True):
     """I18n status."""
     api_languages: list[str]
     prompt_languages: list[str]
@@ -461,7 +461,7 @@ class I18nStatusResponse(msgspec.Struct):
     prompt_dir: str
 
 
-class PiiScanResponse(msgspec.Struct):
+class PiiScanResponse(msgspec.Struct, kw_only=True):
     """PII scan results."""
     status: str
     findings: dict[str, int]
@@ -469,7 +469,7 @@ class PiiScanResponse(msgspec.Struct):
     dpo_notified: bool
 
 
-class SecurityPostureResponse(msgspec.Struct):
+class SecurityPostureResponse(msgspec.Struct, kw_only=True):
     """Security posture summary."""
     summary_available: bool
     zap_baseline_available: bool
@@ -477,7 +477,7 @@ class SecurityPostureResponse(msgspec.Struct):
     scan_summary: dict | None = None
 
 
-class K6SummaryResponse(msgspec.Struct):
+class K6SummaryResponse(msgspec.Struct, kw_only=True):
     """K6 performance summary."""
     status: str
     summary_available: bool = True
@@ -486,7 +486,7 @@ class K6SummaryResponse(msgspec.Struct):
     raw: dict | None = None
 
 
-class StatsProcessingResponse(msgspec.Struct):
+class StatsProcessingResponse(msgspec.Struct, kw_only=True):
     """Processing statistics."""
     total_processed: int
     avg_processing_time_ms: int
@@ -494,7 +494,7 @@ class StatsProcessingResponse(msgspec.Struct):
     error_count: int
 
 
-class WorkerStatusResponse(msgspec.Struct):
+class WorkerStatusResponse(msgspec.Struct, kw_only=True):
     """Worker status."""
     status: str
     uptime_seconds: int = 0
@@ -507,7 +507,7 @@ class WorkerStatusResponse(msgspec.Struct):
     error: str | None = None
 
 
-class CircuitBreakerStatusResponse(msgspec.Struct):
+class CircuitBreakerStatusResponse(msgspec.Struct, kw_only=True):
     """Circuit breaker status."""
     provider: str = "stamina"
     status: str = "active"
@@ -515,7 +515,7 @@ class CircuitBreakerStatusResponse(msgspec.Struct):
     note: str = ""
 
 
-class TelemetryFallbackStatusResponse(msgspec.Struct):
+class TelemetryFallbackStatusResponse(msgspec.Struct, kw_only=True):
     """Telemetry fallback status."""
     buffer_file: str
     buffer_exists: bool
@@ -523,21 +523,21 @@ class TelemetryFallbackStatusResponse(msgspec.Struct):
     duckdb_path: str
 
 
-class AutopilotActionResponse(msgspec.Struct):
+class AutopilotActionResponse(msgspec.Struct, kw_only=True):
     """Autopilot accept/reject response."""
     result: str
     invoice_id: str
     action: str
 
 
-class AutopilotEvalTriggerResponse(msgspec.Struct):
+class AutopilotEvalTriggerResponse(msgspec.Struct, kw_only=True):
     """Autopilot trigger evaluation response."""
     result: str
     invoice_id: str
     message: str
 
 
-class PartnerClientItem(msgspec.Struct):
+class PartnerClientItem(msgspec.Struct, kw_only=True):
     """Partner client summary."""
     id: str
     name: str
@@ -547,14 +547,14 @@ class PartnerClientItem(msgspec.Struct):
     last_activity: str
 
 
-class PartnerClientListResponse(msgspec.Struct):
+class PartnerClientListResponse(msgspec.Struct, kw_only=True):
     """Partner client list with cursor pagination."""
     items: list[PartnerClientItem]
     next_cursor: str | None = None
     has_more: bool = False
 
 
-class PartnerInvoiceItem(msgspec.Struct):
+class PartnerInvoiceItem(msgspec.Struct, kw_only=True):
     """Partner client invoice summary."""
     invoice_id: str
     number: str
@@ -567,12 +567,12 @@ class PartnerInvoiceItem(msgspec.Struct):
     confidence: float = 0.0
 
 
-class SaveDraftResponse(msgspec.Struct):
+class SaveDraftResponse(msgspec.Struct, kw_only=True):
     """Response for saving a UI draft."""
     status: str
     draft_key: str
 
 
-class RuleSetsResponse(msgspec.Struct):
+class RuleSetsResponse(msgspec.Struct, kw_only=True):
     """Available tax simulation rule sets."""
     rule_sets: list[str]

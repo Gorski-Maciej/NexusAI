@@ -124,6 +124,7 @@ TAG_I18N = "I18N"
 TAG_SECURITY = "Security"
 TAG_PRIVACY = "Privacy"
 TAG_RISK = "Risk"
+TAG_EVENTS = "Events"
 TAG_UI_STATE = "UI State"
 
 

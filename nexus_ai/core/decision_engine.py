@@ -50,7 +50,7 @@ def invalidate_rules_cache() -> None:
 # =========================================================================
 
 
-class DecisionVerdict(Struct):
+class DecisionVerdict(Struct, frozen=True):
     """Decision result from the engine."""
 
     decision: str  # AUTO_POST | SUGGEST | ASK_USER | BLOCK

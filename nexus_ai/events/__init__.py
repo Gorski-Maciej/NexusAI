@@ -63,6 +63,14 @@ from nexus_ai.events.projections import (
 
 from nexus_ai.events.projection_worker import ProjectionWorker
 
+from nexus_ai.events.event_schema import (
+    DomainEventSchemaRegistry,
+    get_all_event_schemas,
+    get_event_schema_by_type,
+    get_event_type_map,
+    get_event_schema_summary,
+)
+
 __all__ = [
     # Domain events
     "DomainEvent",
@@ -88,4 +96,10 @@ __all__ = [
     "DecisionProjection",
     # Projection Worker
     "ProjectionWorker",
+    # Event Schema
+    "DomainEventSchemaRegistry",
+    "get_all_event_schemas",
+    "get_event_schema_by_type",
+    "get_event_type_map",
+    "get_event_schema_summary",
 ]

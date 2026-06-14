@@ -10,7 +10,7 @@ from litestar import Litestar
 from structlog import get_logger
 
 from nexus_ai.api.shared_image_buffer import SharedImageBuffer
-from nexus_ai.core.background_task_manager import BackgroundTaskManager
+from nexus_ai.core.background_task_manager import BackgroundTaskManager, TaskMetadata
 from nexus_ai.core.broker import broker
 from nexus_ai.core.saga import PersistedSagaStore
 from nexus_ai.db.analytics import DuckDBManager
@@ -75,10 +75,12 @@ async def _start_metrics_background_task(app: Litestar) -> None:
 
                 await anyio.sleep(30)
 
-        app.state.bg_tasks.start_task(
+        await app.state.bg_tasks.start_task(
             "metrics_updater",
-            _update_system_metrics(),
-            metadata={"description": "System metrics gauge + mimalloc leak detection (30s interval)"},
+            _update_system_metrics,
+            metadata=TaskMetadata(
+                description="System metrics gauge + mimalloc leak detection (30s interval)",
+            ),
         )
         logger.info(
             "[METRICS] System metrics updater + mimalloc leak detection started (30s interval)"

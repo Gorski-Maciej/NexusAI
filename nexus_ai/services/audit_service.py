@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import asyncio
 from typing import Any, final
+
+import anyio
 
 from sqlalchemy.orm import Session
 from structlog import get_logger
@@ -101,8 +102,7 @@ class AuditService:
                 logger.warning("[AUDIT] Event emit failed: %s", exc)
 
         try:
-            loop = asyncio.get_running_loop()
-            loop.call_soon(lambda: asyncio.ensure_future(_safe_emit()))
+            anyio.ensure_backend().create_task(_safe_emit())
         except RuntimeError:
             # Brak running event loop — ciche pominięcie emisji
             logger.debug("[AUDIT] No running event loop, skipping audit event emission")

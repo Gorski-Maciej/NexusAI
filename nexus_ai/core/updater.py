@@ -1,6 +1,6 @@
 # core/updater.py
-import os
 
+import anyio
 import httpx
 from packaging import version
 
@@ -35,16 +35,18 @@ async def download_and_swap_update(
     try:
         async with httpx.AsyncClient() as client:
             async with client.stream("GET", download_url) as response:
-                with open(new_exe_path, "wb") as f:
-                    for chunk in response.iter_bytes():
-                        f.write(chunk)
+                async with await anyio.open_file(new_exe_path, "wb") as f:
+                    async for chunk in response.aiter_bytes():
+                        await f.write(chunk)
 
         # Podmiana nazw (Swap)
-        if os.path.exists(old_exe_path):
-            os.remove(old_exe_path)
+        old_path = anyio.Path(old_exe_path)
+        if await old_path.exists():
+            await old_path.unlink()
 
-        os.rename(current_exe, old_exe_path)
-        os.rename(new_exe_path, current_exe)
+        current_path = anyio.Path(current_exe)
+        await current_path.rename(old_exe_path)
+        await anyio.Path(new_exe_path).rename(current_exe)
         return True
     except Exception as e:
         print(f"[Updater] Błąd aktualizacji: {e}")

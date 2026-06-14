@@ -6,7 +6,7 @@ from decimal import Decimal, InvalidOperation
 from nexus_ai.services.currency_converter import Money
 
 
-class ParsedInvoice(Struct):
+class ParsedInvoice(Struct, kw_only=True):
     number: str | None = None
     nip: str | None = None
     amount_net: Money = Money.zero("PLN")
@@ -74,7 +74,7 @@ class InvoiceParser:
 async def process_extraction(raw_text: str, active_learning_engine):
     # 1. Standardowy OCR/Regex
     parser = InvoiceParser()
-    extracted_data = parser.parse(raw_text).__dict__
+    extracted_data = msgspec.structs.asdict(parser.parse(raw_text))
 
     # 2. Zapytanie do Active Learning
     suggestion = await active_learning_engine.get_suggested_correction(

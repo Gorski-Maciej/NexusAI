@@ -117,12 +117,33 @@ depends = ["start-nats", "start-tigerbeetle"]
 run = "python main.py --mode all"
 
 [tasks.api]
-description = "Uruchom tylko serwer API (Granian + Litestar)"
+description = "Uruchom tylko serwer API (Granian + Litestar — pełna konfiguracja)\n  Wykorzystuje server.py z backpressure, HTTP/2, metrics, proxy headers"
 run = "python main.py --mode api"
 
+[tasks.api-prod]
+description = "Uruchom API w trybie produkcyjnym (Granian — 4 workers, RSS limit, respawn)\n  Ustaw MISE_ENV=prod dla konfiguracji produkcyjnej"
+run = """
+NEXUS_GRANIAN_WORKERS=4 \
+NEXUS_GRANIAN_WORKER_MAX_RSS=1024 \
+NEXUS_GRANIAN_WORKER_LIFETIME=86400 \
+NEXUS_GRANIAN_RESPAWN=true \
+NEXUS_GRANIAN_BACKPRESSURE=200 \
+NEXUS_GRANIAN_HTTP2_MAX_STREAMS=512 \
+NEXUS_GRANIAN_RUNTIME_THREADS=4 \
+NEXUS_GRANIAN_RUNTIME_BLOCKING_THREADS=8 \
+NEXUS_GRANIAN_METRICS=true \
+NEXUS_GRANIAN_PID_FILE=/tmp/nexus-api.pid \
+NEXUS_GRANIAN_PROCESS_NAME=nexus-api \
+python main.py --mode api
+"""
+
+[tasks.api-metrics]
+description = "📊 Podgląd metryk Granian (Prometheus)"
+run = "curl -s http://127.0.0.1:9090/metrics | head -50"
+
 [tasks.api-dev]
-description = "Uruchom serwer API z hot-reload (Granian)"
-run = "granian --reload --host 127.0.0.1 --port 8000 nexus_ai.api.app:create_app"
+description = "Uruchom serwer API z hot-reload (Granian — wszystkie supermoce)\n  --backlog=2048, --backpressure=100, HTTP/2 auto, uvloop, access-log\n  --reload-ignore-dirs=.git,__pycache__,.pixi,node_modules"
+run = "granian --reload --host 127.0.0.1 --port 8000 --backlog 2048 --backpressure 100 --http auto --loop uvloop --access-log --access-log-fmt '%(addr)s - %(method)s %(path)s %(status)d %(dt_ms).3f' --no-header-server --metrics --metrics-address 127.0.0.1 --metrics-port 9091 --reload-ignore-dirs .git --reload-ignore-dirs __pycache__ --reload-ignore-dirs .pixi --reload-ignore-dirs node_modules --reload-ignore-patterns '*.pyc' --reload-ignore-patterns '*.so' --reload-tick 200 nexus_ai.api.app:create_app"
 
 [tasks.worker]
 description = "Uruchom tylko worker Taskiq + NATS"
@@ -242,8 +263,6 @@ uv run mypyc \
     nexus_ai/services/vision/agent.py \
     nexus_ai/services/white_list_service.py
 """
-
-[tasks.mypyc-optimize-db]
 
 [tasks.mypyc-optimize-db]
 description = "🧬 Kompilacja mypyc — tylko db/"
@@ -453,9 +472,11 @@ run = """
 
 [tasks.deploy-check]
 description = "🔍 Suchy przebieg wdrożenia — sprawdź co zostanie wykonane"
-run = "echo '📋 Dry run: test → build-all → migrate → restart-api + restart-worker'
- echo '   Run: MISE_ENV=prod mise run deploy'
- echo '   Or:  MISE_ENV=prod mise run deploy-quick'"
+run = """
+echo '📋 Dry run: test -> build-all -> migrate -> restart-api + restart-worker'
+echo '   Run: MISE_ENV=prod mise run deploy'
+echo '   Or:  MISE_ENV=prod mise run deploy-quick'
+"""
 
 [tasks.restart-api]
 description = "Restart serwera API (Granian)"

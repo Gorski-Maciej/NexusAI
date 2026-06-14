@@ -233,24 +233,33 @@ async def council_decide(invoice_id: str, extracted_data: dict) -> dict:
 
 
 async def _post_invoice(invoice_id: str, extracted_data: dict, verdict: DecisionVerdict) -> None:
-    """Auto-post the invoice: update status to APPROVED."""
+    """Auto-post the invoice: update status to APPROVED.
+
+    Uses CancelScope(shield=True) to protect the critical DB write from
+    cancellation — the invoice status update must complete even if the
+    parent task is cancelled.
+    """
     config = AppConfig()
     engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
-            await session.execute(
-                text(
-                    "UPDATE invoices SET status = 'APPROVED', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
-                ),
-                {"id": invoice_id},
-            )
-            await session.commit()
-            logger.info(
-                "[DECIDE] auto-posted invoice_id=%s (conf=%.4f)", invoice_id, verdict.confidence
-            )
+            # Shield: krytyczny zapis do DB — nie może być przerwany przez anulowanie
+            with anyio.CancelScope(shield=True):
+                await session.execute(
+                    text(
+                        "UPDATE invoices SET status = 'APPROVED', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
+                    ),
+                    {"id": invoice_id},
+                )
+                await session.commit()
+                logger.info(
+                    "[DECIDE] auto-posted invoice_id=%s (conf=%.4f)",
+                    invoice_id,
+                    verdict.confidence,
+                )
 
-        # Store in sqlite-vec for future anomaly detection
+        # Store in sqlite-vec for future anomaly detection (outside shield)
         try:
             from nexus_ai.services.semantic_guard import SemanticGuard
 
@@ -266,54 +275,67 @@ async def _post_invoice(invoice_id: str, extracted_data: dict, verdict: Decision
                 )
         except Exception as al_err:
             logger.warning("[ACTIVE-LEARNING] Failed to store in sqlite-vec: %s", al_err)
-
     finally:
         await engine.dispose()
 
 
 async def _mark_for_review(invoice_id: str, verdict: DecisionVerdict) -> None:
-    """Mark invoice for manual review (SUGGEST)."""
+    """Mark invoice for manual review (SUGGEST).
+
+    Uses CancelScope(shield=True) to protect the critical DB write from
+    cancellation — the status update must complete even if the parent
+    task is cancelled.
+    """
     config = AppConfig()
     engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
-            await session.execute(
-                text(
-                    "UPDATE invoices SET status = 'PENDING_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
-                ),
-                {"id": invoice_id},
-            )
-            await session.commit()
-            logger.info(
-                "[DECIDE] marked for review invoice_id=%s (conf=%.4f)",
-                invoice_id,
-                verdict.confidence,
-            )
+            # Shield: krytyczny zapis do DB — nie może być przerwany przez anulowanie
+            with anyio.CancelScope(shield=True):
+                await session.execute(
+                    text(
+                        "UPDATE invoices SET status = 'PENDING_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
+                    ),
+                    {"id": invoice_id},
+                )
+                await session.commit()
+                logger.info(
+                    "[DECIDE] marked for review invoice_id=%s (conf=%.4f)",
+                    invoice_id,
+                    verdict.confidence,
+                )
     finally:
         await engine.dispose()
 
 
 async def _escalate_to_human(invoice_id: str, verdict: DecisionVerdict, reason: str) -> None:
-    """Escalate invoice to human for review."""
+    """Escalate invoice to human for review.
+
+    Uses CancelScope(shield=True) to protect the critical DB write from
+    cancellation — the status update must complete even if the parent
+    task is cancelled.
+    """
     config = AppConfig()
     engine = _make_engine(config)
     session_factory = create_session_factory(engine)
     try:
         async with session_factory() as session:
-            await session.execute(
-                text(
-                    "UPDATE invoices SET status = 'MANUAL_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
-                ),
-                {"id": invoice_id},
-            )
-            await session.commit()
-            logger.info(
-                "[DECIDE] escalated invoice_id=%s reason=%s (conf=%.4f)",
-                invoice_id,
-                reason,
-                verdict.confidence,
-            )
+            # Shield: krytyczny zapis do DB — nie może być przerwany przez anulowanie
+            with anyio.CancelScope(shield=True):
+                await session.execute(
+                    text(
+                        "UPDATE invoices SET status = 'MANUAL_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
+                    ),
+                    {"id": invoice_id},
+                )
+                await session.commit()
+                logger.info(
+                    "[DECIDE] escalated invoice_id=%s reason=%s (conf=%.4f)",
+                    invoice_id,
+                    reason,
+                    verdict.confidence,
+                )
     finally:
         await engine.dispose()
 
@@ -440,7 +462,7 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
         saga_store = None
 
     # Rozwiązanie 29: Semafory na ciężkie operacje OCR (max 3 równolegle)
-    async with _OCR_SEMAPHORE:
+    async with _OCR_LIMITER:
         try:
             # Rozwiązanie 33: Przejście do stanu OCR_EXTRACT
             if saga_store:
@@ -1033,7 +1055,7 @@ async def stuck_saga_recovery_task() -> None:
 
 
 # Semafory dla limitów współbieżności (Rozwiązanie 29)
-_OCR_SEMAPHORE = anyio.Semaphore(3)  # process_invoice_ocr: max 3 równolegle
+_OCR_LIMITER = anyio.CapacityLimiter(3)  # process_invoice_ocr: max 3 równolegle
 
 
 @broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="relay_outbox_events")

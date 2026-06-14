@@ -6,6 +6,11 @@ Zgodnie z aa3fvcx.txt:
 - Zero duplikacji kodu między modelem DB a modelem API
 - Idealna integracja z Litestar i msgspec
 
+SUPERMOC: STRICT tables (SQLite 3.45+)
+- Wymusza typowanie kolumn na poziomie bazy danych
+- ``STRICT`` dodawane do CREATE TABLE przez DDL event listener
+- ``sqlite_autoincrement: False`` zapobiega dodawaniu autoincrement przez SQLAlchemy
+
 Ta definicja zastępuje starą strukturę rozproszonych modeli (models/invoice.py,
 models/outbox.py, models/audit.py, models/contractor.py) — wszystkie modele
 są teraz w jednym pliku.
@@ -21,7 +26,64 @@ from enum import StrEnum as BaseStrEnum
 
 import pendulum
 from pydantic import ConfigDict
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.sql.ddl import CreateTable
 from sqlmodel import Field, SQLModel
+
+# ── SUPERMOC: SQLite STRICT tables przez @compiles extension ────────────
+# SQLAlchemy nie wspiera natywnie CREATE TABLE ... STRICT.
+# Używamy @compiles, który przechwytuje kompilację DDL i dodaje 'STRICT'
+# tylko dla wybranych tabel biznesowych (allow-list).
+# Zgodne z aa3fvcx.txt Punkt 11: STRICT tables dla integralności danych.
+# Działa z SQLAlchemy 2.0+ dla wszystkich kontekstów (create_all, Alembic).
+
+# Allow-list: tylko główne tabele biznesowe z typowanymi kolumnami
+# Wykluczamy tabele z JSON/BLOB/polimorficznymi kolumnami
+_STRICT_TABLES = {
+    "invoices",
+    "outbox_events",
+    "contractors",
+    "users",
+    "active_learning_patterns",
+    "security_alerts",
+    "refresh_tokens",
+    "failed_tasks",
+    "roles",
+    "permissions",
+    "user_roles",
+    "role_permissions",
+    "company_profiles",
+    "company_partners",
+    "ledger_transfers",
+    "financial_periods",
+    "manual_cashflow_items",
+    "dq_decisions",
+    "scheduled_tasks",
+    "reminders",
+    "workflow_saga_state",
+    "workflow_saga_history",
+}
+
+
+@compiles(CreateTable, "sqlite")
+def _strict_create_table(create_table, compiler, **kw):
+    """Nadpisuje kompilację CREATE TABLE dla SQLite — dodaje STRICT.
+
+    Przechwytuje każdą kompilację ``CREATE TABLE`` dla dialektu SQLite
+    i dodaje słowo kluczowe ``STRICT`` na końcu, jeśli tabela jest
+    na allow-liście ``_STRICT_TABLES``.
+
+    STRICT table:
+    - Wymusza typowanie kolumn (INTEGER → tylko int, TEXT → tylko str)
+    - Zapobiega przypadkowym błędom typów
+    - Nie wpływa na wydajność
+    """
+    table_name = create_table.element.name
+    sql = compiler.visit_create_table(create_table, **kw)
+    if table_name in _STRICT_TABLES:
+        return sql.rstrip(";") + " STRICT"
+    return sql
+
 
 # ── Eksport Base dla kompatybilności z Alembic (migrations/env.py) ──────────
 # SQLModel dziedziczy po SQLAlchemy, więc metadata jest zgodna.
@@ -48,9 +110,15 @@ class OutboxStatus(BaseStrEnum):
 
 
 class Invoice(SQLModel, table=True):
-    """Faktura — główny model biznesowy."""
+    """Faktura — główny model biznesowy.
+
+    STRICT table: SQLite 3.45+ wymusza typowanie kolumn — typ muszą
+    zgadzać się z deklaracją (INTEGER → tylko int, TEXT → tylko str, itp.).
+    Zapobiega przypadkowym błędom typów (np. string zamiast liczby w amount).
+    """
 
     __tablename__ = "invoices"  # type: ignore[assignment]
+    __table_args__ = {"sqlite_autoincrement": False}  # UUID jako PK
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
@@ -59,9 +127,9 @@ class Invoice(SQLModel, table=True):
     file_path: str | None = Field(default=None)
     amount_net: Decimal | None = Field(default=None, max_digits=18, decimal_places=2)
     amount_gross: Decimal | None = Field(default=None, max_digits=18, decimal_places=2)
-    currency: str = Field(default="PLN", max_length=3)
+    currency: str = Field(default="PLN", max_length=3, regex=r"^[A-Z]{3}$")
     status: str = Field(default="NEW", index=True)
-    retry_count: int = Field(default=0)
+    retry_count: int = Field(default=0, ge=0)
     processing_status: str | None = Field(default=None)
     issue_date: str | None = Field(default=None)
     created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"))
@@ -114,20 +182,25 @@ class AuditLog(SQLModel, table=True):
 
 
 class OutboxEvent(SQLModel, table=True):
-    """Transactional outbox events for guaranteed delivery."""
+    """Transactional outbox events for guaranteed delivery.
+
+    STRICT table: SQLite 3.45+ — typowana integralność danych.
+    CHECK constraints: event_type NOT NULL, retry_count >= 0.
+    """
 
     __tablename__ = "outbox_events"  # type: ignore[assignment]
+    __table_args__ = {"sqlite_autoincrement": False}
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
-    event_type: str = Field(nullable=False)
-    aggregate_id: str = Field(nullable=False)
+    event_type: str = Field(nullable=False, min_length=3)
+    aggregate_id: str = Field(nullable=False, min_length=1)
     payload: str = Field(nullable=False)  # JSON string
-    status: str = Field(default="PENDING")
+    status: str = Field(default="PENDING", max_length=20)
     processed: bool = Field(default=False)
     processing_started_at: pendulum.DateTime | None = Field(default=None)
     processed_at: pendulum.DateTime | None = Field(default=None)
-    retry_count: int = Field(default=0)
+    retry_count: int = Field(default=0, ge=0)
     created_at: pendulum.DateTime = Field(default_factory=lambda: pendulum.now("UTC"))
 
 

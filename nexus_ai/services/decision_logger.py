@@ -69,7 +69,7 @@ class DecisionContext(Struct, frozen=True):
     vendor_vat_status: str = ""
 
 
-class DecisionRecord(Struct):
+class DecisionRecord(Struct, kw_only=True):
     """A single decision record returned from queries.
 
     Attributes correspond to columns in the decisions table.
@@ -92,7 +92,7 @@ class DecisionRecord(Struct):
     decision_pattern: str = ""
 
 
-class DecisionSummary(Struct):
+class DecisionSummary(Struct, kw_only=True):
     """Summary of a single decision for listing."""
 
     invoice_id: str = ""
@@ -103,7 +103,7 @@ class DecisionSummary(Struct):
     timestamp: str = ""
 
 
-class GlobalDecision(Struct):
+class GlobalDecision(Struct, kw_only=True):
     """A global decision from trust_score_cache (cross-contractor)."""
 
     contractor_nip: str = ""
@@ -114,7 +114,7 @@ class GlobalDecision(Struct):
     timestamp: str = ""
 
 
-class TrustTrend(Struct):
+class TrustTrend(Struct, kw_only=True):
     """Trend analysis result for a contractor's trust score."""
 
     known: bool = False
@@ -127,7 +127,7 @@ class TrustTrend(Struct):
     component_averages: dict[str, float] = field(default_factory=dict)
 
 
-class CorrectionStats(Struct):
+class CorrectionStats(Struct, kw_only=True):
     """Aggregated correction statistics for adaptive weight tuning."""
 
     total_decisions: int = 0

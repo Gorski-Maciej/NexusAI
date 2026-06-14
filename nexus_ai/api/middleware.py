@@ -27,14 +27,14 @@ class RequestBodyTooLargeError(RuntimeError):
     pass
 
 
-_UPLOAD_SEMAPHORE = None
+_UPLOAD_LIMITER: anyio.CapacityLimiter | None = None
 
 
-def _get_upload_semaphore():
-    global _UPLOAD_SEMAPHORE
-    if _UPLOAD_SEMAPHORE is None:
-        _UPLOAD_SEMAPHORE = anyio.Semaphore(10)
-    return _UPLOAD_SEMAPHORE
+def _get_upload_limiter() -> anyio.CapacityLimiter:
+    global _UPLOAD_LIMITER
+    if _UPLOAD_LIMITER is None:
+        _UPLOAD_LIMITER = anyio.CapacityLimiter(10)
+    return _UPLOAD_LIMITER
 
 
 class UploadSizeGuardMiddleware(AbstractMiddleware):
@@ -74,8 +74,8 @@ class UploadSizeGuardMiddleware(AbstractMiddleware):
         total = 0
 
         # Użyj semafora dla ograniczenia równoczesnych uploadów (Rozwiązanie 15)
-        upload_sem = _get_upload_semaphore()
-        async with upload_sem:
+        upload_limiter = _get_upload_limiter()
+        async with upload_limiter:
             try:
                 # Timeout na strumieniowanie danych (Rozwiązanie 15) - tylko faza odbioru
                 async def guarded_receive_with_timeout():

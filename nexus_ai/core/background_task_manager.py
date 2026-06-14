@@ -11,34 +11,34 @@ proper `anyio.create_task_group()` structured concurrency. This ensures:
 Usage:
     # Startup — register task
     app.state.bg_tasks = BackgroundTaskManager()
-    app.state.bg_tasks.start_task(
+    await app.state.bg_tasks.start_task(
         "metrics_updater",
         _update_system_metrics,
-        metadata={"description": "System metrics (30s interval)"},
+        metadata=TaskMetadata(description="System metrics (30s interval)"),
     )
 
     # Shutdown — cancel all via task group exit
     await app.state.bg_tasks.cancel_all()
 
     # Controller — fire-and-forget via DI
-    app.state.bg_tasks.start_task(
+    await app.state.bg_tasks.start_task(
         f"notification_{invoice_id}",
         _send_notification_async,
         service, user, ...,
     )
 
 Key improvements over legacy version:
-  - Uses anyio.create_task_group() instead of ensure_backend().create_task()
+  - Uses anyio.TaskGroup.start() instead of ensure_backend().create_task()
   - Task metadata is a typed msgspec.Struct instead of dict[str, Any]
   - Proper structured concurrency: all subtasks cancelled on group exit
-  - Each task runs in its own nursery for independent lifecycle
+  - Each task is started via TaskGroup.start() which waits for task_status.started()
+  - Persistent nursery ensures tasks are tracked and cancelable
   - Type-safe cancellation with anyio.CancelScope
 """
 
 from __future__ import annotations
 
 import threading
-import time
 from typing import Any, Callable, Coroutine
 
 import anyio
@@ -97,16 +97,17 @@ class BackgroundTaskManager:
       - No orphaned tasks: cancel_all() properly awaits all subtasks
       - Type-safe metadata via msgspec.Struct
       - Proper exception handling per task group
+      - TaskGroup.start() ensures task signals readiness before parent continues
     """
 
     def __init__(self) -> None:
         self._tasks: dict[str, anyio.CancelScope] = {}
         self._metadata: dict[str, TaskMetadata] = {}
         self._lock = threading.Lock()
-        # Separate task group for each named task enables independent lifecycle
-        self._task_nurseries: dict[str, anyio.abc.TaskGroup] = {}
+        # Persistent nursery — lazy-created on first start_task() call
+        self._nursery: anyio.abc.TaskGroup | None = None
 
-    def start_task(
+    async def start_task(
         self,
         name: str,
         coro_fn: Callable[..., Coroutine[Any, Any, Any]],
@@ -114,14 +115,15 @@ class BackgroundTaskManager:
         metadata: TaskMetadata | None = None,
         **kwargs: Any,
     ) -> None:
-        """Register and start a background task using ensure_backend().create_task().
+        """Register and start a background task using TaskGroup.start().
 
-        Uses ``anyio.ensure_backend().create_task()`` internally because
-        ``start_task`` is a synchronous method (cannot await). The coroutine is
-        wrapped in a ``CancelScope``-aware helper that handles:
-          - Cancellation via the stored CancelScope
-          - Exception logging without crashing the caller
-          - Metadata cleanup on exit
+        Uses ``TaskGroup.start()`` internally which provides structured
+        concurrency: the child task signals readiness via ``task_status.started()``,
+        and the parent awaits that signal before continuing. This ensures proper
+        lifecycle — the task is running and cancelable before ``start_task()`` returns.
+
+        The task runs inside a persistent nursery (auto-created on first use),
+        ensuring all tasks are properly cancelled when cancel_all() is called.
 
         Args:
             name: Unique task name (replaces existing task with the same name).
@@ -133,15 +135,31 @@ class BackgroundTaskManager:
         Thread-safe: uses threading.Lock().
         """
         meta = metadata or TaskMetadata()
-        meta.started_at = time.monotonic()
+        meta.started_at = anyio.current_time()
 
-        async def _run_wrapped() -> None:
-            """Wrap the coroutine in a CancelScope for proper cancellation."""
+        # Cancel existing task with the same name
+        with self._lock:
+            existing_scope = self._tasks.get(name)
+            if existing_scope is not None and not existing_scope.cancel_called:
+                existing_scope.cancel()
+                logger.debug("[BG-TASK] Cancelled existing task '%s' (replaced)", name)
+
+        async def _run_wrapped(task_status: anyio.abc.TaskStatus) -> None:
+            """Wrap the coroutine in a CancelScope for proper cancellation.
+
+            Uses TaskGroup.start() protocol: calls ``task_status.started()``
+            after setting up the CancelScope, so the parent knows the task is
+            running before continuing.
+            """
             cancel_scope = anyio.CancelScope()
             # Store scope so cancel_all() can find it
             with self._lock:
                 self._tasks[name] = cancel_scope
                 self._metadata[name] = meta
+
+            # Signal that we're fully initialized and running
+            task_status.started()
+
             try:
                 with cancel_scope:
                     await coro_fn(*args, **kwargs)
@@ -154,15 +172,12 @@ class BackgroundTaskManager:
                     self._tasks.pop(name, None)
                     self._metadata.pop(name, None)
 
-        # Cancel existing task with the same name
-        with self._lock:
-            existing_scope = self._tasks.get(name)
-            if existing_scope is not None and not existing_scope.cancel_called:
-                existing_scope.cancel()
-                logger.debug("[BG-TASK] Cancelled existing task '%s' (replaced)", name)
+        # Lazy-init nursery on first use
+        if self._nursery is None:
+            self._nursery = await anyio.create_task_group().__aenter__()
 
-        # Spawn via anyio (synchronous API, must use ensure_backend().create_task)
-        anyio.ensure_backend().create_task(_run_wrapped())
+        # Use TaskGroup.start() — waits for task_status.started()
+        await self._nursery.start(_run_wrapped)
 
         logger.info(
             "[BG-TASK] Started '%s'%s",
@@ -173,36 +188,38 @@ class BackgroundTaskManager:
     async def cancel_all(self) -> None:
         """Cancel ALL registered background tasks.
 
-        Cancels all CancelScopes and waits for each task to finish.
-        Each task gets a 5-second timeout for graceful shutdown.
-
-        Uses anyio.create_task_group() to run all cancellations concurrently.
+        Cancels the persistent nursery's cancel scope, which cascades to all
+        child tasks. Each task gets a 5-second timeout for graceful shutdown.
         """
-        with self._lock:
-            names = list(self._tasks.keys())
-            scopes = dict(self._tasks)
-
-        if not names:
+        nursery = self._nursery
+        if nursery is None:
             logger.debug("[BG-TASK] No background tasks to cancel")
             return
 
-        async def _cancel_and_join(name: str, scope: anyio.CancelScope) -> None:
-            if scope.cancel_called:
-                return
-            scope.cancel()
-            logger.info("[BG-TASK] Signalled cancellation for '%s'", name)
-            # The _run_wrapped finally block will clean up metadata
+        with self._lock:
+            names = list(self._tasks.keys())
 
-        # Cancel all concurrently — the tasks will clean up via their finally blocks
-        async with anyio.create_task_group() as tg:
-            for name in names:
-                scope = scopes.get(name)
-                if scope is not None:
-                    tg.start_soon(_cancel_and_join, name, scope)
+        if names:
+            logger.info("[BG-TASK] Cancelling %d background task(s)", len(names))
+
+        # Cancel the nursery scope — this cancels all child tasks
+        if not nursery.cancel_scope.cancel_called:
+            nursery.cancel_scope.cancel()
 
         # Give tasks time to clean up (with timeout)
         with anyio.move_on_after(5):
             await anyio.sleep(0)  # Yield to allow pending cleanups
+
+        # Exit and re-create nursery
+        try:
+            await nursery.__aexit__(None, None, None)
+        except BaseExceptionGroup as eg:
+            # TaskGroup may raise BaseExceptionGroup on cancellation — that's expected
+            logger.debug("[BG-TASK] Nursery exit suppressed %d exception(s)", len(eg.exceptions))
+        except Exception:
+            logger.exception("[BG-TASK] Nursery exit error")
+
+        self._nursery = None
 
         # Final cleanup: remove any stragglers
         with self._lock:
@@ -222,7 +239,7 @@ class BackgroundTaskManager:
             Suitable for health check endpoints.
         """
         with self._lock:
-            now = time.monotonic()
+            now = anyio.current_time()
             return {
                 name: TaskInfo(
                     name=name,
@@ -256,7 +273,7 @@ class BackgroundTaskManager:
             meta = self._metadata.get(name)
             if scope is None or meta is None:
                 return None
-            now = time.monotonic()
+            now = anyio.current_time()
             return TaskInfo(
                 name=name,
                 running=not scope.cancel_called,

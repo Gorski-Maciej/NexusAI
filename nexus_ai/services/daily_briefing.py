@@ -16,6 +16,7 @@ from __future__ import annotations
 import anyio
 from msgspec import Struct, field
 from msgspec.structs import asdict
+from msgspec.structs import asdict
 from typing import Any, final
 
 import pendulum

@@ -49,14 +49,9 @@ import anyio
 import pendulum
 from structlog import get_logger
 
-from nexus_ai.events import (
-    DecisionProjection,
-    DomainEvent,
-    EventStore,
-    InvoiceProjection,
-    Projection,
-    decode_event,
-)
+from nexus_ai.events.domain_events import DomainEvent, decode_event
+from nexus_ai.events.projections import DecisionProjection, InvoiceProjection, Projection
+from nexus_ai.events.event_store import EventStore
 from nexus_ai.events.jetstream_bus import STREAM_CONFIG, get_event_bus
 
 logger = get_logger("nexus.events.projection_worker")

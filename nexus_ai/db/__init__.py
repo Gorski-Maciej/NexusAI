@@ -49,6 +49,15 @@ DuckDBLimits, DuckDBManager = _safe_import("db.analytics", ["DuckDBLimits", "Duc
 
 [register_db_hooks] = _safe_import("db.hooks", ["register_db_hooks"])
 
+[FTSManager] = _safe_import("db.fts", ["FTSManager"])
+
+
+def get_fts_manager(db_path=None):
+    """Lazy import dla FTSManager — unikamy cyrkularnych importów."""
+    from nexus_ai.db.fts import get_fts_manager as _get_fts
+
+    return _get_fts(db_path)
+
 
 __all__ = [
     "Base",
@@ -65,4 +74,6 @@ __all__ = [
     "atomic_transaction",
     "AnalyticsViewsSetup",
     "register_db_hooks",
+    "FTSManager",
+    "get_fts_manager",
 ]
