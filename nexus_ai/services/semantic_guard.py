@@ -1,5 +1,11 @@
 """
-SemanticGuard — semantyczny wykrywacz anomalii faktur.
+SemanticGuard — semantyczny wykrywacz anomalii faktur na ASYNC vec0.
+
+Zgodnie z docs/SQLITE_VEC_AUDIT.md:
+- FAZA 1: Konwersja z sync SQL na ASYNC AsyncVectorStore z vec0 virtual table
+- FAZA 2: partition_key=vendor_nip dla pre-filteringu
+- metadata_columns: category_code, amount_net, id przechowywane w vec0
+- Używa VEC0_SCHEMAS["vendor_invoices"] z unified schema registry
 
 Zgodnie z aa3fvcx.txt:
 - Używa sqlite-vec (Punkt 3) do wyszukiwania wektorowego
@@ -12,13 +18,13 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, final
 
+import anyio
 import pendulum
 from structlog import get_logger
 
 from nexus_ai.core.cache import get_cache
 from nexus_ai.core.embeddings import get_embedding_service
-from nexus_ai.core.msgspec_utils import msgspec_dumps
-from nexus_ai.db.vector_store import VectorStore
+from nexus_ai.db.vector_store import AsyncVectorStore
 
 # ── SHA-256 przez nexus-crypto (Rust+PyO3) z fallback do hashlib ────────
 try:
@@ -31,38 +37,20 @@ except ImportError:
 
 
 # NexusCache dla wyników evaluate() (L1 RAM + L2 SQLite przez dyscache)
-# Klucz: semantic_eval:{vendor_nip}:{amount_net}:{sha256(invoice_text)} → dict
-# TTL: 3600s (1h) — wynik zależy od wszystkich trzech parametrów
-# Oszczędza ~55-220ms przy retry/reprocess tej samej faktury
 _semantic_eval_cache = get_cache()
 
 # Prefixy cache dla event-based invalidation
-# store_invoice() woła invalidate_semantic_guard_cache() po zapisie nowej faktury
-# → następne evaluate() ładuje świeże dane z sqlite-vec
 SEMANTIC_CACHE_PREFIXES = ["semantic_eval:"]
 
 
 def invalidate_semantic_guard_cache() -> None:
-    """Event-based cache invalidation dla SemanticGuard.
-
-    Czyści wszystkie cache'owane wyniki ``evaluate()`` przez L1 RAM
-    ``delete_prefix_sync("semantic_eval:")``.
-
-    Wywoływane przez ``store_invoice()`` — po zapisie nowej faktury
-    historia vector search się zmienia, więc cache'owane wyniki
-    ``evaluate()`` stają się nieaktualne.
-
-    Wzorzec identyczny z:
-    - ``DecisionEngine.invalidate_rules_cache()``
-    - ``RiskGuard.invalidate_risk_cache()``
-    - ``ForexEngine.invalidate_forex_cache()``
-    """
+    """Event-based cache invalidation dla SemanticGuard."""
     _semantic_eval_cache.delete_prefix_sync("semantic_eval:")
 
 
 logger = get_logger("nexus.services.semantic_guard")
 
-# ── Anomaly rules (inline, bez DuckDB — zgodnie z aa3fvcx.txt minimalizm) ──
+# ── Anomaly rules ──────────────────────────────────────────────────────────
 
 ANOMALY_RULES: list[dict[str, Any]] = [
     {
@@ -87,17 +75,18 @@ ANOMALY_RULES: list[dict[str, Any]] = [
 ]
 
 
-# ── SemanticGuard ────────────────────────────────────────────────────────────
+# ── SemanticGuard (ASYNC) ───────────────────────────────────────────────────
 
 
 @final
 class SemanticGuard:
-    """Detektor anomalii semantycznych oparty o sqlite-vec i embeddingi.
+    """Detektor anomalii semantycznych — ASYNC na vec0 z partition_key.
 
-    Zgodnie z aa3fvcx.txt:
-    - sqlite-vec do przechowywania i wyszukiwania wektorów
-    - llama-cpp-python do generowania embeddingów
-    - Bez agentów AI, bez protokołów, bez specyficznych modeli
+    FAZA 1+2 SUPERMOCE:
+    - vec0 virtual table z ``partition_key=vendor_nip``
+    - metadata_columns: category_code, amount_net, id
+    - Wszystkie operacje ASYNC — 0ms blokowania async loop
+    - ``search_similar(partition={"vendor_nip": nip})`` — pre-filtering
     """
 
     EMBEDDING_DIM = 768
@@ -107,52 +96,52 @@ class SemanticGuard:
         db_path: str = "app_data/semantic_guard.db",
     ) -> None:
         self._db_path = db_path
-        self._store: VectorStore | None = None
+        self._store: AsyncVectorStore | None = None
         self._embedding_service = get_embedding_service()
         self._embedding_dim: int = self.EMBEDDING_DIM
 
-    def _init_store(self) -> VectorStore:
-        """Lazy init sqlite-vec VectorStore."""
+    async def _init_store(self) -> AsyncVectorStore:
+        """Lazy init ASYNC VectorStore z vec0 vendor_invoices."""
         if self._store is not None:
             return self._store
         Path(self._db_path).parent.mkdir(parents=True, exist_ok=True)
-        self._store = VectorStore(self._db_path)
-        self._ensure_vendor_table()
-        return self._store
+        self._store = AsyncVectorStore(self._db_path)
 
-    def _ensure_vendor_table(self) -> None:
-        """Create vendor_invoices table if not exists."""
-        conn = self._init_store()._get_conn()
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS vendor_invoices (
-                id               TEXT PRIMARY KEY,
-                vendor_nip       TEXT NOT NULL,
-                embedding        BLOB NOT NULL,
-                category_code    TEXT DEFAULT '',
-                amount_net       REAL DEFAULT 0.0,
-                invoice_text     TEXT DEFAULT '',
-                transaction_id   TEXT DEFAULT '',
-                timestamp        TEXT NOT NULL DEFAULT (datetime('now'))
+        # FAZA 2: Użyj unified schema registry + vec0 z partition_key
+        await self._store.ensure_vec0_table("vendor_invoices")
+
+        # Tabela pomocnicza dla przechowywania oryginalnego tekstu faktury
+        conn = await self._store.get_conn()
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS vendor_invoice_text (
+                rowid           INTEGER PRIMARY KEY,
+                vendor_nip      TEXT NOT NULL,
+                invoice_text    TEXT DEFAULT '',
+                transaction_id  TEXT DEFAULT '',
+                timestamp       TEXT NOT NULL DEFAULT (datetime('now'))
             )
         """)
-        conn.commit()
+        await conn.commit()
+        return self._store
 
     def _get_embedding(self, text: str) -> list[float]:
-        """Generate embedding vector from text using llama-cpp-python."""
+        """Generate embedding vector from text."""
         vec = self._embedding_service.embed(text)
         self._embedding_dim = len(vec)
         return vec
 
-    def evaluate(
+    async def evaluate(
         self,
         invoice_text: str,
         vendor_nip: str,
         amount_net: float = 0.0,
     ) -> dict[str, Any]:
-        """Evaluate invoice for semantic anomalies.
+        """Evaluate invoice for semantic anomalies (ASYNC).
 
-        Wynik cache'owany w NexusCache (``semantic_eval:{vendor_nip}:{sha256(invoice_text)}``)
-        przez 3600s. Oszczędza ~55-220ms przy retry/reprocess tej samej faktury.
+        FAZA 1 SUPERMOC: async przez search_similar() — 0ms blokowania.
+        FAZA 2 SUPERMOC: pre-filtering przez partition={"vendor_nip": nip}.
+
+        Wynik cache'owany w NexusCache przez 3600s.
 
         Args:
             invoice_text: Pełny tekst faktury (po OCR).
@@ -160,12 +149,9 @@ class SemanticGuard:
             amount_net: Kwota netto faktury.
 
         Returns:
-            Dict z polami:
-                - action: ALLOW | WARN | BLOCK_DECREE
-                - anomaly_score: float (0.0 = normal, 1.0 = highly anomalous)
-                - alert: str | None
+            Dict z polami: action, anomaly_score, alert.
         """
-        # Sprawdź NexusCache (L1 RAM) — szybki path, oszczędza ~55-220ms
+        # Sprawdź NexusCache
         eval_cache_key = (
             f"semantic_eval:{vendor_nip}:{amount_net}:{_text_hash(invoice_text.encode())}"
         )
@@ -174,27 +160,23 @@ class SemanticGuard:
             logger.debug("[SemanticGuard] evaluate cache HIT for vendor=%s", vendor_nip)
             return cached
 
-        embedding = self._get_embedding(invoice_text)
-        store = self._init_store()
-        conn = store._get_conn()
-        query_blob = store._vector_to_blob(embedding)
+        embedding = await anyio.to_thread.run_sync(self._get_embedding, invoice_text)
+        store = await self._init_store()
 
-        # Query historical vendor invoices using sqlite-vec cosine distance
+        # FAZA 1+2: ASYNC search_similar z partition_key pre-filtering
         try:
-            rows = conn.execute(
-                """SELECT *, vec_distance_cosine(embedding, ?) AS _distance
-                   FROM vendor_invoices
-                   WHERE vendor_nip = ?
-                   ORDER BY _distance ASC
-                   LIMIT 5""",
-                (query_blob, vendor_nip),
-            ).fetchall()
+            similar = await store.search_similar(
+                query_vector=embedding,
+                limit=5,
+                table_name="vendor_invoices",
+                partition={"vendor_nip": vendor_nip},
+            )
         except Exception:
-            rows = []
+            similar = []
 
         # Calculate anomaly score
-        if rows:
-            distances = [float(r["_distance"]) for r in rows]
+        if similar:
+            distances = [float(r["_distance"]) for r in similar]
             anomaly_score = sum(distances) / len(distances)
         else:
             anomaly_score = 0.0  # New vendor — no history
@@ -203,20 +185,23 @@ class SemanticGuard:
         action = "ALLOW"
         alert = None
 
-        # Sprawdź reguły anomalii (inline, zgodnie z aa3fvcx.txt minimalizm)
         for rule in ANOMALY_RULES:
             if anomaly_score >= rule["min_score"] and amount_net >= rule["min_amount"]:
                 action = rule["action"]
                 alert = rule["alert"]
                 break
 
-        return {
+        result = {
             "action": action,
             "anomaly_score": round(anomaly_score, 4),
             "alert": alert,
         }
 
-    def store_invoice(
+        # Zapisz w NexusCache
+        _semantic_eval_cache.set_sync(eval_cache_key, result, ttl=3600)
+        return result
+
+    async def store_invoice(
         self,
         vendor_nip: str,
         invoice_text: str,
@@ -224,29 +209,47 @@ class SemanticGuard:
         amount_net: float = 0.0,
         transaction_id: str = "",
     ) -> None:
-        """Store verified invoice in sqlite-vec for future anomaly detection."""
+        """Store verified invoice in vec0 for future anomaly detection (ASYNC).
+
+        FAZA 1 SUPERMOC: async insert_vectors_batch() przez vec0.
+        FAZA 2 SUPERMOC: metadata (category_code, amount_net) przechowywane
+        w vec0 jako metadata_columns — brak osobnej tabeli, brak JOIN-ów.
+        """
         import uuid
 
-        embedding = self._get_embedding(invoice_text)
-        store = self._init_store()
-        conn = store._get_conn()
+        embedding = await anyio.to_thread.run_sync(self._get_embedding, invoice_text)
+        store = await self._init_store()
 
-        conn.execute(
-            """INSERT INTO vendor_invoices
-               (id, vendor_nip, embedding, category_code, amount_net, invoice_text, transaction_id, timestamp)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        record_id = uuid.uuid4().hex
+
+        # FAZA 2: insert z metadata przez unified schema
+        await store.insert_vectors_batch(
+            vectors=[(record_id, embedding)],
+            table_name="vendor_invoices",
+            metadata=[{
+                "vendor_nip": vendor_nip,
+                "category_code": category_code,
+                "amount_net": float(amount_net),
+                "id": record_id,
+            }],
+        )
+
+        # Zapisz tekst faktury w tabeli pomocniczej
+        conn = await store.get_conn()
+        await conn.execute(
+            """INSERT INTO vendor_invoice_text
+               (rowid, vendor_nip, invoice_text, transaction_id, timestamp)
+               VALUES (?, ?, ?, ?, ?)""",
             (
-                uuid.uuid4().hex,
+                record_id,
                 vendor_nip,
-                store._vector_to_blob(embedding),
-                category_code,
-                float(amount_net),
                 invoice_text[:5000],
                 transaction_id,
                 pendulum.now("UTC").isoformat(),
             ),
         )
-        conn.commit()
+        await conn.commit()
+
         logger.info(
             "[SemanticGuard] Stored invoice %s for vendor %s (cat=%s, net=%.2f)",
             transaction_id,
@@ -254,7 +257,4 @@ class SemanticGuard:
             category_code,
             float(amount_net),
         )
-        # Event-based cache invalidation — po zapisie nowej faktury
-        # historia vector search się zmienia; następne evaluate()
-        # dla tego vendora załaduje świeże dane z sqlite-vec.
         invalidate_semantic_guard_cache()

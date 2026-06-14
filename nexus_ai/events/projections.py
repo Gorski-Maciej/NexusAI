@@ -1,24 +1,30 @@
 """
-Projections — CQRS read-side that rebuilds denormalized views from event streams.
+AsyncProjections — CQRS read-side with async aiosqlite.
 
 Każda projekcja:
-  1. Czyta eventy z EventStore (od ostatniego checkpointu)
-  2. Aktualizuje denormalizowany widok (SQLite / DuckDB)
+  1. Czyta eventy z AsyncEventStore (od ostatniego checkpointu)
+  2. Aktualizuje denormalizowany widok (SQLite przez aiosqlite)
   3. Zapisuje checkpoint po przetworzeniu
 
-Projekcje mogą być odtwarzane od początku (rebuilt) przez ustawienie
-checkpointu na 0.
+Zgodnie z docs/AIOSQLITE_AUDIT.md:
+- FAZA 2: Konwersja Projections z sync sqlite3 na async aiosqlite
+- AsyncBaseService dla współdzielonego AsyncDBPool
+
+SUPERMOC:
+- async/await dla wszystkich operacji DB
+- FTS5 na invoice_read_model z triggerami synchronizacji
+- Partial indexes dla najczęstszych zapytań
 """
 
 from __future__ import annotations
 
-import json
-import sqlite3
 from pathlib import Path
 from typing import Any
 
+import aiosqlite
 from structlog import get_logger
 
+from nexus_ai.db.async_base_service import AsyncBaseService
 from nexus_ai.events.domain_events import (
     DomainEvent,
     InvoiceApproved,
@@ -30,7 +36,7 @@ from nexus_ai.events.domain_events import (
     DecisionMade,
     DecisionOverridden,
 )
-from nexus_ai.events.event_store import EventStore
+from nexus_ai.events.event_store import AsyncEventStore
 
 logger = get_logger("nexus.events.projections")
 
@@ -38,15 +44,15 @@ logger = get_logger("nexus.events.projections")
 # ── Projection base class ────────────────────────────────────────────────
 
 
-class Projection:
-    """Bazowa klasa dla projekcji CQRS.
+class AsyncProjection:
+    """Bazowa klasa dla async projekcji CQRS.
 
     Args:
-        event_store: EventStore do odczytu eventów.
+        event_store: AsyncEventStore do odczytu eventów.
         name: Nazwa projekcji (używana jako klucz checkpointu).
     """
 
-    def __init__(self, event_store: EventStore, name: str) -> None:
+    def __init__(self, event_store: AsyncEventStore, name: str) -> None:
         self._event_store = event_store
         self._name = name
 
@@ -55,43 +61,27 @@ class Projection:
         return self._name
 
     async def rebuild(self) -> int:
-        """Odtwórz projekcję od początku.
-
-        Czyści tabelę, resetuje checkpoint i przetwarza wszystkie eventy od wersji 0.
-
-        Returns:
-            Liczba przetworzonych eventów.
-        """
-        self._truncate()
-        self._event_store.update_checkpoint(self._name, "", 0)
+        """Odtwórz projekcję od początku (async)."""
+        await self._truncate()
+        await self._event_store.update_checkpoint(self._name, "", 0)
         return await self.process()
 
-    def _truncate(self) -> None:
-        """Wyczyść tabelę projekcji (przed rebuildem)."""
+    async def _truncate(self) -> None:
+        """Wyczyść tabelę projekcji (async)."""
         raise NotImplementedError
 
     async def process(self) -> int:
-        """Przetwórz nowe eventy od ostatniego checkpointu.
-
-        Checkpoint przechowuje wersję ostatniego przetworzonego eventu.
-        Przy kolejnym wywołaniu pomijamy tę wersję (``from_version + 1``),
-        aby nie przetwarzać tego samego eventu dwukrotnie.
-        Dzięki idempotentnym INSERT OR REPLACE podwójne przetworzenie
-        nie psuje danych, ale jest niepotrzebnym narzutem.
-
-        Returns:
-            Liczba przetworzonych eventów.
-        """
-        checkpoint = self._event_store.get_checkpoint(self._name)
+        """Przetwórz nowe eventy od ostatniego checkpointu (async)."""
+        checkpoint = await self._event_store.get_checkpoint(self._name)
         from_version = checkpoint + 1 if checkpoint > 0 else 0
         processed = 0
 
-        events = self._fetch_events(from_version)
+        events = await self._fetch_events(from_version)
         for event in events:
             try:
                 await self._handle_event(event)
                 processed += 1
-                self._event_store.update_checkpoint(
+                await self._event_store.update_checkpoint(
                     self._name,
                     event.event_id,
                     event.version,
@@ -109,46 +99,52 @@ class Projection:
                 "[PROJECTION:%s] Processed %d events (checkpoint=%d)",
                 self._name,
                 processed,
-                self._event_store.get_checkpoint(self._name),
+                await self._event_store.get_checkpoint(self._name),
             )
 
         return processed
 
-    def _fetch_events(self, checkpoint: int) -> list[DomainEvent]:
-        """Pobierz eventy od checkpointu."""
-        # Domyślnie pobiera wszystkie eventy typu invoice.*
-        # Nadpisz w konkretnej projekcji dla optymalizacji
+    async def _fetch_events(self, checkpoint: int) -> list[DomainEvent]:
         raise NotImplementedError
 
     async def _handle_event(self, event: DomainEvent) -> None:
-        """Przetwórz pojedynczy event."""
         raise NotImplementedError
 
 
-# ── Invoice Projection ────────────────────────────────────────────────────
+# ── Invoice Projection (async) ───────────────────────────────────────────
 
 
-class InvoiceProjection(Projection):
-    """Projekcja faktur — denormalizowany widok dla szybkich zapytań.
+class AsyncInvoiceProjection(AsyncProjection, AsyncBaseService):
+    """Async projekcja faktur — denormalizowany widok dla szybkich zapytań.
 
-    Tworzy i utrzymuje tabelę ``invoice_read_model`` w SQLite z bieżącym
-    stanem każdej faktury, odtworzonym ze strumienia eventów.
+    Używa aiosqlite dla async operacji.
     """
 
     def __init__(
         self,
-        event_store: EventStore,
+        event_store: AsyncEventStore,
         db_path: str | Path | None = None,
     ) -> None:
-        super().__init__(event_store, name="invoice_projection")
-        self._db_path = Path(db_path) if db_path else Path("app_data/projections/invoices.db")
-        self._db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._conn: sqlite3.Connection | None = None
-        self._ensure_schema()
+        AsyncProjection.__init__(self, event_store, name="invoice_projection")
+        db_path = db_path or Path("app_data/projections/invoices.db")
+        AsyncBaseService.__init__(self, db_path)
+        Path(str(db_path)).parent.mkdir(parents=True, exist_ok=True)
 
-    def _ensure_schema(self) -> None:
-        conn = self._get_conn()
-        conn.executescript("""
+    async def _on_connect(self, conn: aiosqlite.Connection) -> None:
+        """Hook: PRAGMY + schema creation dla projekcji faktur.
+
+        SUPERMOC: Tworzy schemat przy pierwszym połączeniu.
+        W oryginalnym sync kodzie, _ensure_schema() było wołane w __init__.
+        Teraz wołane w _on_connect — async, leniwie, przy pierwszym użyciu.
+        """
+        await conn.execute("PRAGMA cache_size = -25600;")     # 100MB cache
+        await conn.execute("PRAGMA temp_store = MEMORY;")     # Temp tables w RAM
+        await conn.execute("PRAGMA mmap_size = 2147483648;")  # 2GB mmap
+        # SUPERMOC: Utwórz schemat przy pierwszym połączeniu
+        await self._ensure_schema()
+
+    async def _ensure_schema(self) -> None:
+        await self.executescript("""
             CREATE TABLE IF NOT EXISTS invoice_read_model (
                 invoice_id          TEXT PRIMARY KEY,
                 number              TEXT,
@@ -177,33 +173,61 @@ class InvoiceProjection(Projection):
 
             CREATE INDEX IF NOT EXISTS idx_invoice_rm_contractor
                 ON invoice_read_model(contractor_nip);
+
+            CREATE INDEX IF NOT EXISTS idx_invoice_rm_blocked
+                ON invoice_read_model(updated_at) WHERE status = 'blocked';
+
+            CREATE INDEX IF NOT EXISTS idx_invoice_rm_approved
+                ON invoice_read_model(updated_at) WHERE status = 'approved';
+
+            CREATE INDEX IF NOT EXISTS idx_invoice_rm_pending
+                ON invoice_read_model(updated_at) WHERE status IN ('created', 'submitted');
+
+            CREATE INDEX IF NOT EXISTS idx_invoice_rm_contractor_upper
+                ON invoice_read_model(UPPER(contractor_nip));
+
+            CREATE VIRTUAL TABLE IF NOT EXISTS invoice_rm_fts
+            USING fts5(
+                invoice_id UNINDEXED,
+                number,
+                contractor_nip UNINDEXED,
+                contractor_name,
+                category,
+                status UNINDEXED,
+                content='invoice_read_model',
+                content_rowid='rowid',
+                tokenize='unicode61',
+                prefix='2,3'
+            );
+
+            CREATE TRIGGER IF NOT EXISTS trg_invoice_rm_fts_insert
+            AFTER INSERT ON invoice_read_model
+            BEGIN
+                INSERT INTO invoice_rm_fts(rowid, invoice_id, number, contractor_nip, contractor_name, category, status)
+                VALUES (new.rowid, new.invoice_id, new.number, new.contractor_nip, new.contractor_name, new.category, new.status);
+            END;
+
+            CREATE TRIGGER IF NOT EXISTS trg_invoice_rm_fts_delete
+            AFTER DELETE ON invoice_read_model
+            BEGIN
+                INSERT INTO invoice_rm_fts(invoice_rm_fts, rowid, invoice_id, number, contractor_nip, contractor_name, category, status)
+                VALUES ('delete', old.rowid, old.invoice_id, old.number, old.contractor_nip, old.contractor_name, old.category, old.status);
+            END;
+
+            CREATE TRIGGER IF NOT EXISTS trg_invoice_rm_fts_update
+            AFTER UPDATE ON invoice_read_model
+            BEGIN
+                INSERT INTO invoice_rm_fts(invoice_rm_fts, rowid, invoice_id, number, contractor_nip, contractor_name, category, status)
+                VALUES ('delete', old.rowid, old.invoice_id, old.number, old.contractor_nip, old.contractor_name, old.category, old.status);
+                INSERT INTO invoice_rm_fts(rowid, invoice_id, number, contractor_nip, contractor_name, category, status)
+                VALUES (new.rowid, new.invoice_id, new.number, new.contractor_nip, new.contractor_name, new.category, new.status);
+            END;
         """)
-        conn.commit()
+        await self.commit()
 
-    def _get_conn(self) -> sqlite3.Connection:
-        if self._conn is None:
-            self._conn = sqlite3.connect(str(self._db_path))
-            self._conn.row_factory = sqlite3.Row
-            self._conn.execute("PRAGMA journal_mode=WAL")
-            self._conn.execute("PRAGMA synchronous=NORMAL")
-            self._conn.execute("PRAGMA cache_size = -25600")    # 100MB cache
-            self._conn.execute("PRAGMA temp_store = MEMORY")    # Temp tables w RAM
-            self._conn.execute("PRAGMA mmap_size = 2147483648") # 2GB mmap
-        return self._conn
-
-    def close(self) -> None:
-        if self._conn is not None:
-            try:
-                self._conn.execute("PRAGMA optimize")  # SUPERMOC: optimize przed close
-            except Exception:
-                pass
-            self._conn.close()
-            self._conn = None
-
-    def _fetch_events(self, checkpoint: int) -> list[DomainEvent]:
-        # Pobierz wszystkie eventy typu invoice od checkpointu
+    async def _fetch_events(self, checkpoint: int) -> list[DomainEvent]:
         return (
-            self._event_store.read_events_since_version(
+            await self._event_store.read_events_since_version(
                 aggregate_type="invoice",
                 from_version=checkpoint,
                 limit=500,
@@ -212,17 +236,16 @@ class InvoiceProjection(Projection):
             else []
         )
 
-    def _truncate(self) -> None:
-        conn = self._get_conn()
-        conn.execute("DELETE FROM invoice_read_model")
-        conn.commit()
+    async def _truncate(self) -> None:
+        await self.execute("DELETE FROM invoice_read_model")
+        await self.commit()
         logger.info("[PROJECTION:%s] Truncated read model", self._name)
 
     async def _handle_event(self, event: DomainEvent) -> None:
-        conn = self._get_conn()
+        conn = await self.get_conn()
 
         if isinstance(event, InvoiceCreated):
-            conn.execute(
+            await conn.execute(
                 """INSERT OR REPLACE INTO invoice_read_model
                    (invoice_id, number, contractor_nip, contractor_name,
                     amount_net, amount_gross, currency, category,
@@ -247,7 +270,7 @@ class InvoiceProjection(Projection):
             )
 
         elif isinstance(event, InvoiceSubmitted):
-            conn.execute(
+            await conn.execute(
                 """UPDATE invoice_read_model
                    SET status = 'submitted', current_version = ?, updated_at = ?
                    WHERE invoice_id = ?""",
@@ -255,7 +278,7 @@ class InvoiceProjection(Projection):
             )
 
         elif isinstance(event, InvoiceApproved):
-            conn.execute(
+            await conn.execute(
                 """UPDATE invoice_read_model
                    SET status = 'approved', approved_by = ?,
                        trust_score = ?, current_version = ?, updated_at = ?
@@ -270,7 +293,7 @@ class InvoiceProjection(Projection):
             )
 
         elif isinstance(event, InvoiceRejected):
-            conn.execute(
+            await conn.execute(
                 """UPDATE invoice_read_model
                    SET status = 'rejected', rejected_by = ?,
                        current_version = ?, updated_at = ?
@@ -279,7 +302,7 @@ class InvoiceProjection(Projection):
             )
 
         elif isinstance(event, InvoiceBlocked):
-            conn.execute(
+            await conn.execute(
                 """UPDATE invoice_read_model
                    SET status = 'blocked', blocked_reason = ?,
                        current_version = ?, updated_at = ?
@@ -288,7 +311,7 @@ class InvoiceProjection(Projection):
             )
 
         elif isinstance(event, InvoicePaid):
-            conn.execute(
+            await conn.execute(
                 """UPDATE invoice_read_model
                    SET status = 'paid', paid_at = ?,
                        current_version = ?, updated_at = ?
@@ -296,98 +319,77 @@ class InvoiceProjection(Projection):
                 (event.paid_at, event.version, event.timestamp, event.aggregate_id),
             )
 
-        conn.commit()
+        await conn.commit()
 
-    def query(
+    async def query(
         self,
         status: str | None = None,
         contractor_nip: str | None = None,
         limit: int = 100,
     ) -> list[dict[str, Any]]:
-        """Zapytaj widok faktur.
-
-        Args:
-            status: Filtr po statusie (np. "approved", "blocked").
-            contractor_nip: Filtr po NIP kontrahenta.
-            limit: Maksymalna liczba wyników.
-
-        Returns:
-            Lista faktur.
-        """
-        conn = self._get_conn()
-        query = "SELECT * FROM invoice_read_model WHERE 1=1"
+        """Zapytaj widok faktur (async)."""
+        sql = "SELECT * FROM invoice_read_model WHERE 1=1"
         params: list[Any] = []
 
         if status:
-            query += " AND status = ?"
+            sql += " AND status = ?"
             params.append(status)
         if contractor_nip:
-            query += " AND contractor_nip = ?"
+            sql += " AND contractor_nip = ?"
             params.append(contractor_nip)
 
-        query += " ORDER BY updated_at DESC LIMIT ?"
+        sql += " ORDER BY updated_at DESC LIMIT ?"
         params.append(limit)
 
-        rows = conn.execute(query, params).fetchall()
-        return [dict(r) for r in rows]
+        return await self.fetchall(sql, params)
 
-    def get_by_id(self, invoice_id: str) -> dict[str, Any] | None:
-        """Pobierz fakturę po ID.
-
-        Args:
-            invoice_id: ID faktury.
-
-        Returns:
-            Słownik z danymi faktury lub None.
-        """
-        conn = self._get_conn()
-        row = conn.execute(
+    async def get_by_id(self, invoice_id: str) -> dict[str, Any] | None:
+        """Pobierz fakturę po ID (async)."""
+        return await self.fetchone(
             "SELECT * FROM invoice_read_model WHERE invoice_id = ?",
             (invoice_id,),
-        ).fetchone()
-        return dict(row) if row else None
+        )
 
-    def get_stats(self) -> dict[str, Any]:
-        """Zwróć statystyki widoku faktur.
-
-        Returns:
-            Słownik z liczbą faktur per status.
-        """
-        conn = self._get_conn()
-        rows = conn.execute(
+    async def get_stats(self) -> dict[str, Any]:
+        """Zwróć statystyki widoku faktur (async)."""
+        cursor = await self.execute(
             "SELECT status, COUNT(*) as cnt FROM invoice_read_model GROUP BY status"
-        ).fetchall()
-        total = conn.execute("SELECT COUNT(*) FROM invoice_read_model").fetchone()[0]
+        )
+        rows = await cursor.fetchall()
+        total_cursor = await self.execute("SELECT COUNT(*) FROM invoice_read_model")
+        total_row = await total_cursor.fetchone()
         return {
-            "total": int(total),
-            "by_status": {r["status"]: int(r["cnt"]) for r in rows},
+            "total": int(total_row[0]) if total_row else 0,
+            "by_status": {str(r[0]): int(r[1]) for r in rows},
         }
 
 
-# ── Decision Projection ───────────────────────────────────────────────────
+# ── Decision Projection (async) ──────────────────────────────────────────
 
 
-class DecisionProjection(Projection):
-    """Projekcja decyzji — analityczny widok decyzji dla DuckDB.
-
-    Utrzymuje tabelę ``decision_analytics`` z denormalizowanymi danymi
-    o każdej podjętej decyzji, gotową do zapytań OLAP.
-    """
+class AsyncDecisionProjection(AsyncProjection, AsyncBaseService):
+    """Async projekcja decyzji — analityczny widok dla DuckDB."""
 
     def __init__(
         self,
-        event_store: EventStore,
+        event_store: AsyncEventStore,
         db_path: str | Path | None = None,
     ) -> None:
-        super().__init__(event_store, name="decision_projection")
-        self._db_path = Path(db_path) if db_path else Path("app_data/projections/decisions.db")
-        self._db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._conn: sqlite3.Connection | None = None
-        self._ensure_schema()
+        AsyncProjection.__init__(self, event_store, name="decision_projection")
+        db_path = db_path or Path("app_data/projections/decisions.db")
+        AsyncBaseService.__init__(self, db_path)
+        Path(str(db_path)).parent.mkdir(parents=True, exist_ok=True)
 
-    def _ensure_schema(self) -> None:
-        conn = self._get_conn()
-        conn.executescript("""
+    async def _on_connect(self, conn: aiosqlite.Connection) -> None:
+        """Hook: PRAGMY + schema creation dla projekcji decyzji."""
+        await conn.execute("PRAGMA cache_size = -25600;")
+        await conn.execute("PRAGMA temp_store = MEMORY;")
+        await conn.execute("PRAGMA mmap_size = 2147483648;")
+        # SUPERMOC: Utwórz schemat przy pierwszym połączeniu
+        await self._ensure_schema()
+
+    async def _ensure_schema(self) -> None:
+        await self.executescript("""
             CREATE TABLE IF NOT EXISTS decision_analytics (
                 decision_id         TEXT PRIMARY KEY,
                 invoice_id          TEXT NOT NULL,
@@ -412,32 +414,18 @@ class DecisionProjection(Projection):
 
             CREATE INDEX IF NOT EXISTS idx_decision_analytics_type
                 ON decision_analytics(event_type);
+
+            CREATE INDEX IF NOT EXISTS idx_decision_analytics_decision_notnull
+                ON decision_analytics(timestamp) WHERE decision IS NOT NULL;
+
+            CREATE INDEX IF NOT EXISTS idx_decision_analytics_overridden
+                ON decision_analytics(timestamp) WHERE event_type = 'decision.overridden';
         """)
-        conn.commit()
+        await self.commit()
 
-    def _get_conn(self) -> sqlite3.Connection:
-        if self._conn is None:
-            self._conn = sqlite3.connect(str(self._db_path))
-            self._conn.row_factory = sqlite3.Row
-            self._conn.execute("PRAGMA journal_mode=WAL")
-            self._conn.execute("PRAGMA synchronous=NORMAL")
-            self._conn.execute("PRAGMA cache_size = -25600")
-            self._conn.execute("PRAGMA temp_store = MEMORY")
-            self._conn.execute("PRAGMA mmap_size = 2147483648")
-        return self._conn
-
-    def close(self) -> None:
-        if self._conn is not None:
-            try:
-                self._conn.execute("PRAGMA optimize")
-            except Exception:
-                pass
-            self._conn.close()
-            self._conn = None
-
-    def _fetch_events(self, checkpoint: int) -> list[DomainEvent]:
+    async def _fetch_events(self, checkpoint: int) -> list[DomainEvent]:
         return (
-            self._event_store.read_events_since_version(
+            await self._event_store.read_events_since_version(
                 aggregate_type="decision",
                 from_version=checkpoint,
                 limit=500,
@@ -446,17 +434,16 @@ class DecisionProjection(Projection):
             else []
         )
 
-    def _truncate(self) -> None:
-        conn = self._get_conn()
-        conn.execute("DELETE FROM decision_analytics")
-        conn.commit()
+    async def _truncate(self) -> None:
+        await self.execute("DELETE FROM decision_analytics")
+        await self.commit()
         logger.info("[PROJECTION:%s] Truncated analytics", self._name)
 
     async def _handle_event(self, event: DomainEvent) -> None:
-        conn = self._get_conn()
+        conn = await self.get_conn()
 
         if isinstance(event, DecisionMade):
-            conn.execute(
+            await conn.execute(
                 """INSERT OR REPLACE INTO decision_analytics
                    (decision_id, invoice_id, event_type, decision,
                     trust_score, ai_confidence, alpha_vote, beta_vote,
@@ -481,7 +468,7 @@ class DecisionProjection(Projection):
             )
 
         elif isinstance(event, DecisionOverridden):
-            conn.execute(
+            await conn.execute(
                 """INSERT OR REPLACE INTO decision_analytics
                    (decision_id, invoice_id, event_type,
                     original_decision, user_decision, user_id,
@@ -499,49 +486,42 @@ class DecisionProjection(Projection):
                 ),
             )
 
-        conn.commit()
+        await conn.commit()
 
-    def query(
+    async def query(
         self,
         decision_type: str | None = None,
         limit: int = 100,
     ) -> list[dict[str, Any]]:
-        """Zapytaj widok decyzji.
-
-        Args:
-            decision_type: "decision.made" lub "decision.overridden".
-            limit: Maksymalna liczba wyników.
-
-        Returns:
-            Lista decyzji.
-        """
-        conn = self._get_conn()
-        query = "SELECT * FROM decision_analytics WHERE 1=1"
+        """Zapytaj widok decyzji (async)."""
+        sql = "SELECT * FROM decision_analytics WHERE 1=1"
         params: list[Any] = []
 
         if decision_type:
-            query += " AND event_type = ?"
+            sql += " AND event_type = ?"
             params.append(decision_type)
 
-        query += " ORDER BY timestamp DESC LIMIT ?"
+        sql += " ORDER BY timestamp DESC LIMIT ?"
         params.append(limit)
 
-        rows = conn.execute(query, params).fetchall()
-        return [dict(r) for r in rows]
+        return await self.fetchall(sql, params)
 
-    def get_stats(self) -> dict[str, Any]:
-        """Zwróć statystyki decyzji.
-
-        Returns:
-            Słownik z rozkładem decyzji.
-        """
-        conn = self._get_conn()
-        by_decision = conn.execute(
+    async def get_stats(self) -> dict[str, Any]:
+        """Zwróć statystyki decyzji (async)."""
+        cursor = await self.execute(
             "SELECT decision, COUNT(*) as cnt FROM decision_analytics "
             "WHERE decision IS NOT NULL GROUP BY decision"
-        ).fetchall()
-        total = conn.execute("SELECT COUNT(*) FROM decision_analytics").fetchone()[0]
+        )
+        rows = await cursor.fetchall()
+        total_cursor = await self.execute("SELECT COUNT(*) FROM decision_analytics")
+        total_row = await total_cursor.fetchone()
         return {
-            "total": int(total),
-            "by_decision": {r["decision"]: int(r["cnt"]) for r in by_decision},
+            "total": int(total_row[0]) if total_row else 0,
+            "by_decision": {str(r[0]): int(r[1]) for r in rows},
         }
+
+
+# ── Aliases dla kompatybilności wstecznej ────────────────────────────────
+Projection = AsyncProjection
+InvoiceProjection = AsyncInvoiceProjection
+DecisionProjection = AsyncDecisionProjection

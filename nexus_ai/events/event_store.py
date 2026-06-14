@@ -1,7 +1,20 @@
 """
-EventStore — append-only event store backed by SQLite.
+AsyncEventStore — append-only event store backed by aiosqlite.
 
 Przechowuje zdarzenia w tabeli ``event_stream`` jako append-only log.
+ASYNCHRONICZNY — używa aiosqlite zamiast synchronicznego sqlite3.
+
+SUPERMOCE aiosqlite:
+- await conn.execute() — async zapytania
+- await conn.executescript() — async multi-zapytania
+- await cursor.fetchall() — async fetch
+- async context manager — async with
+
+Zgodnie z docs/AIOSQLITE_AUDIT.md:
+- FAZA 1: Konwersja EventStore z sync sqlite3 na async aiosqlite
+- Obsługa SQLCipher przez sync bridge (PRAGMA key)
+- Współdzielenie połączenia przez AsyncDBPool
+
 Wspiera:
   - Zapis wielu eventów w jednej transakcji (batch append)
   - Optimistic concurrency (expected_version)
@@ -13,13 +26,14 @@ Wspiera:
 from __future__ import annotations
 
 import json
-import sqlite3
-import time
+import os
 from pathlib import Path
 from typing import Any
 
+import aiosqlite
 from structlog import get_logger
 
+from nexus_ai.db.async_db_pool import get_async_db_pool
 from nexus_ai.events.domain_events import (
     DomainEvent,
     domain_event_from_dict,
@@ -29,8 +43,11 @@ from nexus_ai.events.domain_events import (
 logger = get_logger("nexus.events.store")
 
 
-class EventStore:
-    """Append-only event store backed by SQLite.
+class AsyncEventStore:
+    """Append-only event store backed by aiosqlite.
+
+    ASYNCHRONICZNY — wszystkie operacje są awaitable.
+    Używa AsyncDBPool dla współdzielonego połączenia.
 
     Args:
         db_path: Ścieżka do pliku SQLite.
@@ -39,14 +56,35 @@ class EventStore:
     def __init__(self, db_path: str | Path) -> None:
         self._db_path = Path(db_path)
         self._db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._conn: sqlite3.Connection | None = None
-        self._ensure_schema()
+        self._pool = get_async_db_pool()
+        self._conn: aiosqlite.Connection | None = None
 
-    # ── Schema ─────────────────────────────────────────────────────────
+    async def _get_conn(self) -> aiosqlite.Connection:
+        """Pobierz async połączenie przez AsyncDBPool z SQLCipher.
 
-    def _ensure_schema(self) -> None:
-        conn = self._get_conn()
-        conn.executescript("""
+        SUPERMOC: Połączenie jest współdzielone między serwisami.
+        SQLCipher PRAGMA key ustawiane przy pierwszym połączeniu.
+        """
+        if self._conn is None or self._conn.is_closed():
+            # SUPERMOC: SQLCipher przez sync bridge
+            key = os.environ.get("NEXUS_EVENT_STORE_KEY", "") or os.environ.get(
+                "NEXUS_SQLCIPHER_KEY", ""
+            )
+            sqlcipher_key = key if key else None
+
+            self._conn = await self._pool.get_conn(
+                str(self._db_path),
+                row_factory=aiosqlite.Row,
+                sqlcipher_key=sqlcipher_key,
+            )
+            await self._ensure_schema()
+        return self._conn
+
+    async def _ensure_schema(self) -> None:
+        """Utwórz schemat EventStore (async)."""
+        conn = await self._get_conn()
+        await conn.executescript(
+            """
             CREATE TABLE IF NOT EXISTS event_stream (
                 event_id         TEXT PRIMARY KEY,
                 aggregate_type   TEXT NOT NULL,
@@ -83,27 +121,18 @@ class EventStore:
                 last_version     INTEGER NOT NULL DEFAULT 0,
                 updated_at       TEXT NOT NULL
             );
-        """)
-        conn.commit()
+        """
+        )
+        await conn.commit()
 
-    # ── Connection management ──────────────────────────────────────────
-
-    def _get_conn(self) -> sqlite3.Connection:
-        if self._conn is None:
-            self._conn = sqlite3.connect(str(self._db_path))
-            self._conn.row_factory = sqlite3.Row
-            self._conn.execute("PRAGMA journal_mode=WAL")
-            self._conn.execute("PRAGMA synchronous=NORMAL")
-            self._conn.execute("PRAGMA cache_size = -51200")    # 200MB cache
-            self._conn.execute("PRAGMA temp_store = MEMORY")    # Temp tables w RAM
-            self._conn.execute("PRAGMA mmap_size = 4294967296") # 4GB mmap I/O
-            self._conn.execute("PRAGMA foreign_keys = ON")      # Wymuś FK
-            self._conn.execute("PRAGMA application_id = 1313827925")  # NEXU
-        return self._conn
-
-    def close(self) -> None:
+    async def close(self) -> None:
+        """Zamknij połączenie."""
         if self._conn is not None:
-            self._conn.close()
+            try:
+                await self._conn.execute("PRAGMA optimize;")
+            except Exception:
+                pass
+            await self._pool.close_conn(str(self._db_path))
             self._conn = None
 
     # ── Write operations ───────────────────────────────────────────────
@@ -126,21 +155,21 @@ class EventStore:
             },
         )
 
-    def append_events(
+    async def append_events(
         self,
         aggregate_type: str,
         aggregate_id: str,
         events: list[DomainEvent],
         expected_version: int | None = None,
     ) -> list[str]:
-        """Zapisz eventy do strumienia w jednej transakcji.
+        """Zapisz eventy do strumienia w jednej transakcji (async).
 
         Args:
             aggregate_type: Typ agregatu (np. "invoice", "decision").
             aggregate_id: ID agregatu.
             events: Lista eventów do zapisania.
             expected_version: Oczekiwana wersja agregatu (optimistic concurrency).
-                              ``None`` = pomiń walidację wersji.
+                              None = pomiń walidację wersji.
 
         Returns:
             Lista ID zapisanych eventów.
@@ -148,18 +177,23 @@ class EventStore:
         Raises:
             ValueError: Gdy expected_version nie zgadza się z aktualną wersją.
         """
-        conn = self._get_conn()
+        conn = await self._get_conn()
         event_ids: list[str] = []
 
-        with conn:  # transactional
+        # SUPERMOC: SAVEPOINT dla zagnieżdżonych transakcji (async)
+        await conn.execute("SAVEPOINT event_append;")
+        try:
             # Sprawdź optimistic concurrency
             if expected_version is not None:
-                current = conn.execute(
+                cursor = await conn.execute(
                     "SELECT COALESCE(MAX(version), 0) FROM event_stream "
                     "WHERE aggregate_type = ? AND aggregate_id = ?",
                     (aggregate_type, aggregate_id),
-                ).fetchone()[0]
+                )
+                row = await cursor.fetchone()
+                current = int(row[0]) if row else 0
                 if current != expected_version:
+                    await conn.execute("ROLLBACK TO SAVEPOINT event_append;")
                     raise ValueError(
                         f"Optimistic concurrency violation: "
                         f"expected version {expected_version}, "
@@ -170,11 +204,13 @@ class EventStore:
             for event in events:
                 event_data = encode_event(event)
                 metadata_json = json.dumps(event.metadata)
-                conn.execute(
+                # SUPERMOC: RETURNING clause (async)
+                cursor = await conn.execute(
                     """INSERT INTO event_stream
                        (event_id, aggregate_type, aggregate_id, event_type,
                         version, timestamp, data, metadata_json)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                       RETURNING event_id""",
                     (
                         event.event_id,
                         aggregate_type,
@@ -186,7 +222,9 @@ class EventStore:
                         metadata_json,
                     ),
                 )
-                event_ids.append(event.event_id)
+                row = await cursor.fetchone()
+                returned_id = str(row[0]) if row else event.event_id
+                event_ids.append(returned_id)
 
             if event_ids:
                 logger.info(
@@ -197,11 +235,17 @@ class EventStore:
                     events[-1].version,
                 )
 
+            # SUPERMOC: Release SAVEPOINT (async commit)
+            await conn.execute("RELEASE SAVEPOINT event_append;")
+        except Exception:
+            await conn.execute("ROLLBACK TO SAVEPOINT event_append;")
+            raise
+
         return event_ids
 
     # ── Read operations ────────────────────────────────────────────────
 
-    def read_events(
+    async def read_events(
         self,
         aggregate_type: str,
         aggregate_id: str,
@@ -209,209 +253,166 @@ class EventStore:
         to_version: int | None = None,
         limit: int = 1000,
     ) -> list[DomainEvent]:
-        """Odczytaj eventy dla konkretnego agregatu.
+        """Odczytaj eventy dla konkretnego agregatu (async).
 
         Args:
             aggregate_type: Typ agregatu.
             aggregate_id: ID agregatu.
             from_version: Minimalna wersja (inkluzywnie).
-            to_version: Maksymalna wersja (inkluzywnie). ``None`` = bez limitu.
+            to_version: Maksymalna wersja (inkluzywnie). None = bez limitu.
             limit: Maksymalna liczba eventów.
 
         Returns:
             Lista eventów posortowanych po wersji rosnąco.
         """
-        conn = self._get_conn()
+        conn = await self._get_conn()
         if to_version is not None:
-            rows = conn.execute(
+            cursor = await conn.execute(
                 """SELECT data FROM event_stream
                    WHERE aggregate_type = ? AND aggregate_id = ?
                      AND version >= ? AND version <= ?
                    ORDER BY version ASC LIMIT ?""",
                 (aggregate_type, aggregate_id, from_version, to_version, limit),
-            ).fetchall()
+            )
         else:
-            rows = conn.execute(
+            cursor = await conn.execute(
                 """SELECT data FROM event_stream
                    WHERE aggregate_type = ? AND aggregate_id = ?
                      AND version >= ?
                    ORDER BY version ASC LIMIT ?""",
                 (aggregate_type, aggregate_id, from_version, limit),
-            ).fetchall()
+            )
+        rows = await cursor.fetchall()
+        return [domain_event_from_dict(json.loads(row[0])) for row in rows]
 
-        return [domain_event_from_dict(json.loads(row["data"])) for row in rows]
-
-    def read_events_by_type(
+    async def read_events_by_type(
         self,
         event_type: str,
         since: str | None = None,
         limit: int = 100,
     ) -> list[DomainEvent]:
-        """Odczytaj eventy po typie (dla projekcji).
-
-        Args:
-            event_type: Typ eventu (np. "invoice.created").
-                       Pusty string = wszystkie typy.
-            since: Timestamp ISO 8601 — tylko eventy po tej dacie.
-            limit: Maksymalna liczba eventów.
-
-        Returns:
-            Lista eventów.
-        """
-        conn = self._get_conn()
+        """Odczytaj eventy po typie (dla projekcji, async)."""
+        conn = await self._get_conn()
         if event_type and since:
-            rows = conn.execute(
+            cursor = await conn.execute(
                 """SELECT data FROM event_stream
                    WHERE event_type = ? AND timestamp >= ?
                    ORDER BY timestamp ASC LIMIT ?""",
                 (event_type, since, limit),
-            ).fetchall()
+            )
         elif event_type:
-            rows = conn.execute(
+            cursor = await conn.execute(
                 """SELECT data FROM event_stream
                    WHERE event_type = ?
                    ORDER BY timestamp ASC LIMIT ?""",
                 (event_type, limit),
-            ).fetchall()
+            )
         elif since:
-            rows = conn.execute(
+            cursor = await conn.execute(
                 """SELECT data FROM event_stream
                    WHERE timestamp >= ?
                    ORDER BY timestamp ASC LIMIT ?""",
                 (since, limit),
-            ).fetchall()
+            )
         else:
-            rows = conn.execute(
+            cursor = await conn.execute(
                 """SELECT data FROM event_stream
                    ORDER BY timestamp ASC LIMIT ?""",
                 (limit,),
-            ).fetchall()
+            )
+        rows = await cursor.fetchall()
+        return [domain_event_from_dict(json.loads(row[0])) for row in rows]
 
-        return [domain_event_from_dict(json.loads(row["data"])) for row in rows]
-
-    def read_stream(
+    async def read_stream(
         self,
         aggregate_type: str,
         aggregate_id: str,
     ) -> list[DomainEvent]:
-        """Odczytaj pełny strumień eventów dla agregatu.
+        """Odczytaj pełny strumień eventów dla agregatu (async)."""
+        return await self.read_events(aggregate_type, aggregate_id, from_version=0)
 
-        Args:
-            aggregate_type: Typ agregatu.
-            aggregate_id: ID agregatu.
-
-        Returns:
-            Pełna historia eventów.
-        """
-        return self.read_events(aggregate_type, aggregate_id, from_version=0)
-
-    def get_version(self, aggregate_type: str, aggregate_id: str) -> int:
-        """Pobierz aktualną wersję agregatu.
-
-        Args:
-            aggregate_type: Typ agregatu.
-            aggregate_id: ID agregatu.
-
-        Returns:
-            Numer wersji (0 = agregat nie istnieje).
-        """
-        conn = self._get_conn()
-        result = conn.execute(
+    async def get_version(self, aggregate_type: str, aggregate_id: str) -> int:
+        """Pobierz aktualną wersję agregatu (async)."""
+        conn = await self._get_conn()
+        cursor = await conn.execute(
             "SELECT COALESCE(MAX(version), 0) FROM event_stream "
             "WHERE aggregate_type = ? AND aggregate_id = ?",
             (aggregate_type, aggregate_id),
-        ).fetchone()[0]
-        return int(result)
+        )
+        row = await cursor.fetchone()
+        return int(row[0]) if row else 0
 
-    def read_events_since_version(
+    async def read_events_since_version(
         self,
         aggregate_type: str,
         from_version: int = 0,
         limit: int = 500,
     ) -> list[DomainEvent]:
-        """Odczytaj eventy dla danego typu agregatu od określonej wersji.
+        """Odczytaj eventy dla danego typu agregatu od określonej wersji (async).
 
         Używane przez projekcje CQRS do czytania wszystkich eventów
         danego typu (np. wszystkie invoice.* eventy) od ostatniego
         checkpointu.
-
-        Args:
-            aggregate_type: Typ agregatu (np. "invoice", "decision").
-            from_version: Minimalna wersja (inkluzywnie).
-            limit: Maksymalna liczba eventów.
-
-        Returns:
-            Lista eventów posortowanych po wersji.
         """
-        conn = self._get_conn()
-        rows = conn.execute(
+        conn = await self._get_conn()
+        cursor = await conn.execute(
             """SELECT data FROM event_stream
                WHERE aggregate_type = ? AND version >= ?
                ORDER BY version ASC LIMIT ?""",
             (aggregate_type, from_version, limit),
-        ).fetchall()
+        )
+        rows = await cursor.fetchall()
+        return [domain_event_from_dict(json.loads(row[0])) for row in rows]
 
-        return [domain_event_from_dict(json.loads(row["data"])) for row in rows]
-
-    def count_events(
+    async def count_events(
         self,
         aggregate_type: str | None = None,
         event_type: str | None = None,
     ) -> int:
-        """Policz eventy (opcjonalnie filtrowane).
-
-        Args:
-            aggregate_type: Opcjonalny filtr po typie agregatu.
-            event_type: Opcjonalny filtr po typie eventu.
-
-        Returns:
-            Liczba eventów.
-        """
-        conn = self._get_conn()
+        """Policz eventy (async, opcjonalnie filtrowane)."""
+        conn = await self._get_conn()
         if aggregate_type and event_type:
-            result = conn.execute(
+            cursor = await conn.execute(
                 "SELECT COUNT(*) FROM event_stream WHERE aggregate_type = ? AND event_type = ?",
                 (aggregate_type, event_type),
-            ).fetchone()[0]
+            )
         elif aggregate_type:
-            result = conn.execute(
+            cursor = await conn.execute(
                 "SELECT COUNT(*) FROM event_stream WHERE aggregate_type = ?",
                 (aggregate_type,),
-            ).fetchone()[0]
+            )
         elif event_type:
-            result = conn.execute(
+            cursor = await conn.execute(
                 "SELECT COUNT(*) FROM event_stream WHERE event_type = ?",
                 (event_type,),
-            ).fetchone()[0]
+            )
         else:
-            result = conn.execute("SELECT COUNT(*) FROM event_stream").fetchone()[0]
-        return int(result)
+            cursor = await conn.execute("SELECT COUNT(*) FROM event_stream")
+        row = await cursor.fetchone()
+        return int(row[0]) if row else 0
 
     # ── Snapshots ──────────────────────────────────────────────────────
 
-    def save_snapshot(
+    async def save_snapshot(
         self,
         aggregate_type: str,
         aggregate_id: str,
         version: int,
         state: dict[str, Any],
     ) -> None:
-        """Zapisz snapshot stanu agregatu.
+        """Zapisz snapshot stanu agregatu (async).
 
-        Snapshoty pozwalają szybko odbudować stan agregatu bez replayu
-        wszystkich eventów od początku.
-
-        Args:
-            aggregate_type: Typ agregatu.
-            aggregate_id: ID agregatu.
-            version: Wersja agregatu (musi zgadzać się z ostatnim eventem).
-            state: Stan agregatu (JSON-serializowalny).
+        SUPERMOC: UPSERT (INSERT ... ON CONFLICT DO UPDATE) przez aiosqlite.
         """
-        conn = self._get_conn()
-        conn.execute(
-            """INSERT OR REPLACE INTO snapshots
+        conn = await self._get_conn()
+        await conn.execute(
+            """INSERT INTO snapshots
                (aggregate_id, aggregate_type, version, state_json, timestamp)
-               VALUES (?, ?, ?, ?, ?)""",
+               VALUES (?, ?, ?, ?, ?)
+               ON CONFLICT(aggregate_id, aggregate_type) DO UPDATE SET
+                   version = EXCLUDED.version,
+                   state_json = EXCLUDED.state_json,
+                   timestamp = EXCLUDED.timestamp""",
             (
                 aggregate_id,
                 aggregate_type,
@@ -420,7 +421,7 @@ class EventStore:
                 pendulum_now(),
             ),
         )
-        conn.commit()
+        await conn.commit()
         logger.debug(
             "[EVENT-STORE] Snapshot saved for %s:%s (version=%d)",
             aggregate_type,
@@ -428,108 +429,116 @@ class EventStore:
             version,
         )
 
-    def load_snapshot(
+    async def load_snapshot(
         self,
         aggregate_type: str,
         aggregate_id: str,
     ) -> tuple[int, dict[str, Any]] | None:
-        """Wczytaj snapshot stanu agregatu.
-
-        Args:
-            aggregate_type: Typ agregatu.
-            aggregate_id: ID agregatu.
-
-        Returns:
-            ``(version, state_dict)`` lub ``None`` jeśli snapshot nie istnieje.
-        """
-        conn = self._get_conn()
-        row = conn.execute(
+        """Wczytaj snapshot stanu agregatu (async)."""
+        conn = await self._get_conn()
+        cursor = await conn.execute(
             "SELECT version, state_json FROM snapshots "
             "WHERE aggregate_id = ? AND aggregate_type = ?",
             (aggregate_id, aggregate_type),
-        ).fetchone()
+        )
+        row = await cursor.fetchone()
         if row is None:
             return None
-        return int(row["version"]), json.loads(row["state_json"])
+        return int(row[0]), json.loads(row[1])
 
     # ── Projection checkpoints ─────────────────────────────────────────
 
-    def get_checkpoint(self, projection_name: str) -> int:
-        """Pobierz ostatni wersję checkpoint dla projekcji.
-
-        Args:
-            projection_name: Nazwa projekcji.
-
-        Returns:
-            Ostatnia przetworzona wersja (0 = brak checkpointu).
-        """
-        conn = self._get_conn()
-        row = conn.execute(
+    async def get_checkpoint(self, projection_name: str) -> int:
+        """Pobierz ostatni wersję checkpoint dla projekcji (async)."""
+        conn = await self._get_conn()
+        cursor = await conn.execute(
             "SELECT last_version FROM projection_checkpoints WHERE projection_name = ?",
             (projection_name,),
-        ).fetchone()
-        return int(row["last_version"]) if row else 0
+        )
+        row = await cursor.fetchone()
+        return int(row[0]) if row else 0
 
-    def update_checkpoint(
+    async def update_checkpoint(
         self,
         projection_name: str,
         last_event_id: str,
         last_version: int,
     ) -> None:
-        """Zaktualizuj checkpoint dla projekcji.
+        """Zaktualizuj checkpoint dla projekcji (async).
 
-        Args:
-            projection_name: Nazwa projekcji.
-            last_event_id: ID ostatniego przetworzonego eventu.
-            last_version: Numer wersji ostatniego przetworzonego eventu.
+        SUPERMOC: UPSERT przez aiosqlite.
         """
-        conn = self._get_conn()
-        conn.execute(
-            """INSERT OR REPLACE INTO projection_checkpoints
+        conn = await self._get_conn()
+        await conn.execute(
+            """INSERT INTO projection_checkpoints
                (projection_name, last_event_id, last_version, updated_at)
-               VALUES (?, ?, ?, ?)""",
+               VALUES (?, ?, ?, ?)
+               ON CONFLICT(projection_name) DO UPDATE SET
+                   last_event_id = EXCLUDED.last_event_id,
+                   last_version = EXCLUDED.last_version,
+                   updated_at = EXCLUDED.updated_at""",
             (projection_name, last_event_id, last_version, pendulum_now()),
         )
-        conn.commit()
+        await conn.commit()
 
-    def list_projections(self) -> list[dict[str, Any]]:
-        """Zwróć listę wszystkich projekcji z ich checkpointami.
-
-        Returns:
-            Lista słowników: projection_name, last_event_id, last_version, updated_at.
-        """
-        conn = self._get_conn()
-        rows = conn.execute(
+    async def list_projections(self) -> list[dict[str, Any]]:
+        """Zwróć listę wszystkich projekcji z ich checkpointami (async)."""
+        conn = await self._get_conn()
+        cursor = await conn.execute(
             "SELECT projection_name, last_event_id, last_version, updated_at "
             "FROM projection_checkpoints ORDER BY projection_name"
-        ).fetchall()
-        return [dict(r) for r in rows]
+        )
+        rows = await cursor.fetchall()
+        return [
+            {
+                "projection_name": r[0],
+                "last_event_id": r[1],
+                "last_version": int(r[2]),
+                "updated_at": r[3],
+            }
+            for r in rows
+        ]
 
     # ── Stats ──────────────────────────────────────────────────────────
 
-    def get_stats(self) -> dict[str, Any]:
-        """Zwróć statystyki EventStore.
+    async def get_stats(self) -> dict[str, Any]:
+        """Zwróć statystyki EventStore (async).
 
         Returns:
             Słownik z liczbą eventów, snapshotów i projekcji.
         """
-        conn = self._get_conn()
-        total_events = conn.execute("SELECT COUNT(*) FROM event_stream").fetchone()[0]
-        total_snapshots = conn.execute("SELECT COUNT(*) FROM snapshots").fetchone()[0]
-        total_projections = conn.execute("SELECT COUNT(*) FROM projection_checkpoints").fetchone()[
-            0
-        ]
-        aggregates = conn.execute(
+        conn = await self._get_conn()
+
+        cursor = await conn.execute("SELECT COUNT(*) FROM event_stream")
+        row = await cursor.fetchone()
+        total_events = int(row[0]) if row else 0
+
+        cursor = await conn.execute("SELECT COUNT(*) FROM snapshots")
+        row = await cursor.fetchone()
+        total_snapshots = int(row[0]) if row else 0
+
+        cursor = await conn.execute("SELECT COUNT(*) FROM projection_checkpoints")
+        row = await cursor.fetchone()
+        total_projections = int(row[0]) if row else 0
+
+        cursor = await conn.execute(
             "SELECT aggregate_type, COUNT(DISTINCT aggregate_id) as cnt "
             "FROM event_stream GROUP BY aggregate_type"
-        ).fetchall()
+        )
+        rows = await cursor.fetchall()
+        aggregates = {str(r[0]): int(r[1]) for r in rows}
 
         return {
-            "total_events": int(total_events),
-            "total_snapshots": int(total_snapshots),
-            "total_projections": int(total_projections),
-            "aggregates": {r["aggregate_type"]: int(r["cnt"]) for r in aggregates},
+            "total_events": total_events,
+            "total_snapshots": total_snapshots,
+            "total_projections": total_projections,
+            "aggregates": aggregates,
         }
+
+# ── Alias dla kompatybilności wstecznej ─────────────────────────────────
+# Stary EventStore jest teraz AsyncEventStore
+# UWAGA: Wszystkie metody są async — callery muszą używać await
+EventStore = AsyncEventStore
 
 
 # ── Helper ────────────────────────────────────────────────────────────────

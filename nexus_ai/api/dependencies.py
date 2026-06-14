@@ -43,6 +43,10 @@ def provide_db_engine(request: Request):
     Wstrzykiwany przez DI do kontrolerów które używają ``db_engine``
     bezpośrednio (auth, admin, dlq, ui_state, itd.).
     Zastąpiony przez ``SQLAlchemyPlugin`` w docelowej architekturze.
+
+    SUPERMOC: Engine jest zwalniany przez ``on_shutdown`` (engine.dispose()).
+    Zobacz ``state.on_shutdown`` — wywołuje ``engine.dispose()`` aby
+    zamknąć wszystkie połączenia w pool przed zamknięciem aplikacji.
     """
     return request.app.state.db_engine
 

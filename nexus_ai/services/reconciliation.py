@@ -16,6 +16,7 @@ from typing import Any, final
 import nats
 import pendulum
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm import Session, sessionmaker
 
 from nexus_ai.core.msgspec_utils import msgspec_loads
@@ -69,13 +70,14 @@ class ReconciliationEngine:
 
     def __init__(
         self,
-        session_factory: sessionmaker[Session],
+        session_factory: sessionmaker[Session] | async_sessionmaker[AsyncSession],
         tb_client: TigerBeetleClient,
         alert_hub: AlertHub,
         nats_url: str = "nats://127.0.0.1:4222",
         subject: str = "bank.transactions.raw",
     ) -> None:
         self.session_factory = session_factory
+        self._is_async = isinstance(session_factory, async_sessionmaker)
         self.tb_client = tb_client
         self.alert_hub = alert_hub
         self.nats_url = nats_url
@@ -93,9 +95,16 @@ class ReconciliationEngine:
 
     async def _on_nats_message(self, msg: Any) -> None:
         payload = msgspec_loads(msg.data)
-        self.process_bank_transaction(payload)
+        # SUPERMOC: run_sync() dla async Session — bezpieczne wywołanie
+        # sync kodu z async kontekstu. Blokuje tylko ten wątek, nie event loop.
+        if self._is_async:
+            async with self.session_factory() as session:  # type: ignore[attr-defined]
+                await session.run_sync(lambda s: self._process_bank_transaction_sync(s, payload))
+        else:
+            with self.session_factory() as session:
+                self._process_bank_transaction_sync(session, payload)
 
-    def process_bank_transaction(self, payload: dict[str, Any]) -> bool:
+    def _process_bank_transaction_sync(self, session: Session, payload: dict[str, Any]) -> bool:
         company_id = uuid.UUID(payload["company_id"])
         amount_minor = int(payload["amount_minor"])
         contractor_nip = str(payload["contractor_nip"])

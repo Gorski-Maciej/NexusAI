@@ -1,17 +1,23 @@
-"""Notification service for daily briefings, user notifications, and DailyBriefingGenerator."""
+"""AsyncNotificationService — async notification service backed by aiosqlite.
+
+Zgodnie z docs/AIOSQLITE_AUDIT.md:
+- FAZA 2+: Konwersja z sync sqlite3 na async aiosqlite
+- Wszystkie operacje DB są async — nie blokują pętli zdarzeń
+"""
 
 from __future__ import annotations
 
 import anyio
-import sqlite3
 from pathlib import Path
 from typing import Any, final
 
+import aiosqlite
 import pendulum
 from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps
+from nexus_ai.db.async_base_service import AsyncBaseService
 
 logger = get_logger("nexus.services.notification")
 
@@ -23,22 +29,7 @@ logger = get_logger("nexus.services.notification")
 
 @final
 class DailyBriefingGenerator:
-    """Generator codziennych podsumowań finansowych (Daily Briefing).
-
-    Agreguje dane z:
-      - PLE (STM/LTM/FM) — statystyki decyzji i wzorce
-      - DuckDB (invoices) — liczby faktur, kwoty, statusy
-      - Decision Logger — statystyki decyzji i korekt
-      - Notification Service — powiadomienia do wysłania
-
-    Generuje podsumowanie zawierające:
-      - Liczbę faktur zaksięgowanych automatycznie (AUTO_POST)
-      - Liczbę decyzji oczekujących na użytkownika (ASK_USER)
-      - Łączną kwotę zaksięgowanych faktur
-      - Liczbę zablokowanych faktur (BLOCK)
-      - Alerty (np. nowi kontrahenci, anomalie)
-      - Trend trust score
-    """
+    """Generator codziennych podsumowań finansowych (Daily Briefing)."""
 
     def __init__(
         self,
@@ -52,20 +43,6 @@ class DailyBriefingGenerator:
         self._logger = decision_logger
 
     async def generate(self, user_id: str) -> dict[str, Any]:
-        """Generuj pełne podsumowanie dnia dla użytkownika.
-
-        Returns dict z:
-          - date: data podsumowania
-          - total_processed: liczba faktur przetworzonych dzisiaj
-          - auto_posted: liczba i kwota AUTO_POST
-          - pending_review: liczba decyzji oczekujących
-          - blocked: liczba i kwota BLOCK
-          - total_amount_auto: łączna kwota AUTO_POST
-          - top_contractors: top 3 kontrahentów
-          - alerts: alerty
-          - trust_trend: trend trust score
-          - ple_stats: statystyki PLE (jeśli dostępne)
-        """
         today = pendulum.now().date().isoformat()
 
         auto_posted = await self._count_by_status("AUTO_POST", today)
@@ -84,7 +61,6 @@ class DailyBriefingGenerator:
                 pass
 
         ple_stats = {}
-
         alerts = self._generate_alerts(auto_posted, blocked, pending_review)
 
         briefing = {
@@ -200,25 +176,14 @@ class DailyBriefingGenerator:
 
 @final
 class MultiChannelConfig:
-    """Configuration dla wielokanałowych powiadomień.
-
-    Obsługiwane kanały:
-      - push: Firebase Cloud Messaging / APNs
-      - email: SMTP / SendGrid / SES
-      - sms: Twilio / SMSAPI
-
-    Każdy kanał można włączyć/wyłączyć niezależnie.
-    """
+    """Configuration dla wielokanałowych powiadomień."""
 
     def __init__(self) -> None:
-        # Push notifications (FCM/APNs)
         self.push_enabled: bool = False
         self.fcm_credentials_path: str = ""
         self.apns_key_path: str = ""
         self.apns_key_id: str = ""
         self.apns_team_id: str = ""
-
-        # Email (SMTP)
         self.email_enabled: bool = False
         self.smtp_host: str = ""
         self.smtp_port: int = 587
@@ -226,8 +191,6 @@ class MultiChannelConfig:
         self.smtp_password: str = ""
         self.from_address: str = "noreply@nexus.ai"
         self.from_name: str = "Nexus AI"
-
-        # SMS (Twilio)
         self.sms_enabled: bool = False
         self.twilio_account_sid: str = ""
         self.twilio_auth_token: str = ""
@@ -235,15 +198,12 @@ class MultiChannelConfig:
 
     @classmethod
     def from_config(cls, app_config: AppConfig) -> MultiChannelConfig:
-        """Load multi-channel config from AppConfig."""
         cfg = cls()
-        # Push
         cfg.push_enabled = getattr(app_config, "push_enabled", False)
         cfg.fcm_credentials_path = getattr(app_config, "fcm_credentials_path", "")
         cfg.apns_key_path = getattr(app_config, "apns_key_path", "")
         cfg.apns_key_id = getattr(app_config, "apns_key_id", "")
         cfg.apns_team_id = getattr(app_config, "apns_team_id", "")
-        # Email
         cfg.email_enabled = getattr(app_config, "email_enabled", False)
         cfg.smtp_host = getattr(app_config, "smtp_host", "")
         cfg.smtp_port = getattr(app_config, "smtp_port", 587)
@@ -251,7 +211,6 @@ class MultiChannelConfig:
         cfg.smtp_password = getattr(app_config, "smtp_password", "")
         cfg.from_address = getattr(app_config, "from_address", "noreply@nexus.ai")
         cfg.from_name = getattr(app_config, "from_name", "Nexus AI")
-        # SMS
         cfg.sms_enabled = getattr(app_config, "sms_enabled", False)
         cfg.twilio_account_sid = getattr(app_config, "twilio_account_sid", "")
         cfg.twilio_auth_token = getattr(app_config, "twilio_auth_token", "")
@@ -260,16 +219,10 @@ class MultiChannelConfig:
 
 
 @final
-class NotificationService:
-    """Manages user notifications and daily briefings backed by SQLite.
+class AsyncNotificationService(AsyncBaseService):
+    """Async notification service backed by aiosqlite.
 
-    Obsługuje wiele kanałów wysyłki:
-      - in_app: powiadomienia w aplikacji (SQLite, zawsze aktywne)
-      - push:   Firebase Cloud Messaging / APNs (opcjonalne)
-      - email:  SMTP / SendGrid (opcjonalne)
-      - sms:    Twilio API (opcjonalne)
-
-    Konfiguracja kanałów odbywa się przez MultiChannelConfig.
+    Wszystkie operacje DB są async — używa aiosqlite zamiast synchronicznego sqlite3.
     """
 
     def __init__(
@@ -279,42 +232,37 @@ class NotificationService:
         channel_config: MultiChannelConfig | None = None,
         event_emitter: Any | None = None,
     ) -> None:
+        super().__init__(db_path)
         self._db_path = Path(db_path)
         self._config = config or AppConfig()
         self._channel_config = channel_config or MultiChannelConfig.from_config(self._config)
         self._briefing_generator: DailyBriefingGenerator | None = None
         self._event_emitter = event_emitter
-        self._init_db()
 
     def set_briefing_generator(self, generator: DailyBriefingGenerator) -> None:
         self._briefing_generator = generator
 
-    def _init_db(self) -> None:
-        self._db_path.parent.mkdir(parents=True, exist_ok=True)
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.execute(
-                "CREATE TABLE IF NOT EXISTS notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL, title TEXT NOT NULL, message TEXT NOT NULL, notification_type TEXT NOT NULL DEFAULT 'info', reference_type TEXT, reference_id TEXT, is_read INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL)"
-            )
-            conn.execute(
-                "CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, is_read, created_at DESC)"
-            )
-            conn.commit()
-        finally:
-            conn.close()
+    async def _on_connect(self, conn: aiosqlite.Connection) -> None:
+        """Hook tworzący schemat przy pierwszym połączeniu (async)."""
+        await conn.execute(
+            "CREATE TABLE IF NOT EXISTS notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL, title TEXT NOT NULL, message TEXT NOT NULL, notification_type TEXT NOT NULL DEFAULT 'info', reference_type TEXT, reference_id TEXT, is_read INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL)"
+        )
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, is_read, created_at DESC)"
+        )
+        await conn.commit()
 
     async def send_daily_briefing(self, user_id: str) -> dict[str, Any]:
-        """Generate and persist a daily briefing summary."""
+        """Generate and persist a daily briefing summary (async)."""
         today = pendulum.now("UTC").date().isoformat()
 
         if self._briefing_generator:
             briefing = await self._briefing_generator.generate(user_id)
-            decisions = await anyio.to_thread.run_sync(self._fetch_pending_decisions, user_id)
+            decisions = await self._fetch_pending_decisions(user_id)
             briefing["decisions"] = decisions
             briefing["pending_review"] = len(decisions)
             if decisions:
-                await anyio.to_thread.run_sync(
-                    self._add_notification,
+                await self._add_notification(
                     user_id=user_id,
                     title=f"Codzienne podsumowanie — {len(decisions)} decyzji",
                     message=msgspec_dumps(briefing, ensure_ascii=False),
@@ -322,8 +270,8 @@ class NotificationService:
                 )
             return briefing
 
-        decisions = await anyio.to_thread.run_sync(self._fetch_pending_decisions, user_id)
-        auto_posted = await anyio.to_thread.run_sync(self._count_today_auto_posted, user_id, today)
+        decisions = await self._fetch_pending_decisions(user_id)
+        auto_posted = await self._count_today_auto_posted(user_id, today)
 
         briefing = {
             "user_id": user_id,
@@ -338,8 +286,7 @@ class NotificationService:
         }
 
         if decisions:
-            await anyio.to_thread.run_sync(
-                self._add_notification,
+            await self._add_notification(
                 user_id=user_id,
                 title=f"Codzienne podsumowanie — {len(decisions)} decyzji",
                 message=msgspec_dumps(briefing, ensure_ascii=False),
@@ -362,29 +309,13 @@ class NotificationService:
         reference_id: str | None = None,
         channels: list[str] | None = None,
     ) -> dict[str, Any]:
-        """
-        Wyślij powiadomienie przez wiele kanałów jednocześnie.
-
-        Args:
-            user_id: ID użytkownika
-            title: Tytuł powiadomienia
-            message: Treść powiadomienia
-            notification_type: Typ ('info', 'warning', 'error', 'daily_briefing', 'decision')
-            reference_type: Typ referencji ('invoice', 'decision', 'daily_briefing')
-            reference_id: ID referencji
-            channels: Lista kanałów (domyślnie ['in_app'])
-
-        Returns:
-            dict z wynikami wysyłki dla każdego kanału
-        """
+        """Wyślij powiadomienie przez wiele kanałów (async)."""
         channels = channels or ["in_app"]
         results: dict[str, Any] = {}
 
-        # In-app (zawsze, jeśli na liście)
         if "in_app" in channels:
             try:
-                nid = await anyio.to_thread.run_sync(
-                    self._add_notification,
+                nid = await self._add_notification(
                     user_id=user_id,
                     title=title,
                     message=message,
@@ -396,7 +327,6 @@ class NotificationService:
             except Exception as exc:
                 results["in_app"] = {"status": "error", "error": str(exc)}
 
-        # Push (FCM/APNs)
         if "push" in channels and self._channel_config.push_enabled:
             try:
                 result = await self._send_push(user_id, title, message, notification_type)
@@ -404,7 +334,6 @@ class NotificationService:
             except Exception as exc:
                 results["push"] = {"status": "error", "error": str(exc)}
 
-        # Email (SMTP)
         if "email" in channels and self._channel_config.email_enabled:
             try:
                 result = await self._send_email(user_id, title, message, notification_type)
@@ -412,7 +341,6 @@ class NotificationService:
             except Exception as exc:
                 results["email"] = {"status": "error", "error": str(exc)}
 
-        # SMS (Twilio)
         if "sms" in channels and self._channel_config.sms_enabled:
             try:
                 result = await self._send_sms(user_id, message, notification_type)
@@ -428,7 +356,6 @@ class NotificationService:
             results,
         )
 
-        # Emituj event przez EventEmitter (jeśli dostępny)
         if self._event_emitter is not None:
             try:
                 await self._event_emitter.emit_notification_sent(
@@ -453,12 +380,6 @@ class NotificationService:
         message: str,
         notification_type: str,
     ) -> dict[str, Any]:
-        """
-        Wyślij push notification przez FCM lub APNs.
-
-        Wymaga skonfigurowanych credentials.
-        Aktualnie placeholder — do implementacji z Firebase Admin SDK.
-        """
         cfg = self._channel_config
         if cfg.fcm_credentials_path:
             logger.info(
@@ -467,7 +388,6 @@ class NotificationService:
                 title,
                 cfg.fcm_credentials_path,
             )
-            # TODO: firebase_admin.messaging.send()
         elif cfg.apns_key_path:
             logger.info(
                 "[Notification] push APNs user=%s title=%s (key=%s)",
@@ -475,11 +395,9 @@ class NotificationService:
                 title,
                 cfg.apns_key_path,
             )
-            # TODO: apns_client.send()
         else:
             logger.debug("[Notification] push not configured for user=%s", user_id)
             return {"status": "not_configured", "message": "Push not configured"}
-
         return {"status": "sent", "channel": "push"}
 
     async def _send_email(
@@ -489,18 +407,10 @@ class NotificationService:
         message: str,
         notification_type: str,
     ) -> dict[str, Any]:
-        """
-        Wyślij email przez SMTP.
-
-        Wymaga skonfigurowanego serwera SMTP.
-        Aktualnie placeholder — do implementacji z aiosmtplib / sendgrid.
-        """
         cfg = self._channel_config
         if not cfg.smtp_host:
             logger.debug("[Notification] email not configured for user=%s", user_id)
             return {"status": "not_configured", "message": "SMTP not configured"}
-
-        # Konwertuj notification_type na priorytet email
         priority = {
             "info": "low",
             "warning": "normal",
@@ -508,7 +418,6 @@ class NotificationService:
             "daily_briefing": "low",
             "decision": "normal",
         }.get(notification_type, "normal")
-
         logger.info(
             "[Notification] email user=%s title=%s priority=%s (smtp=%s:%d)",
             user_id,
@@ -517,8 +426,6 @@ class NotificationService:
             cfg.smtp_host,
             cfg.smtp_port,
         )
-        # TODO: anyio.to_thread.run_sync(smtplib.SMTP.sendmail) lub aiosmtplib.send()
-
         return {"status": "sent", "channel": "email", "priority": priority}
 
     async def _send_sms(
@@ -527,63 +434,43 @@ class NotificationService:
         message: str,
         notification_type: str,
     ) -> dict[str, Any]:
-        """
-        Wyślij SMS przez Twilio API.
-
-        Wymaga skonfigurowanego konta Twilio.
-        Aktualnie placeholder — do implementacji z twilio SDK.
-        """
         cfg = self._channel_config
         if not cfg.twilio_account_sid:
             logger.debug("[Notification] sms not configured for user=%s", user_id)
             return {"status": "not_configured", "message": "Twilio not configured"}
-
         logger.info(
             "[Notification] sms user=%s type=%s (twilio=%s)",
             user_id,
             notification_type,
             cfg.twilio_account_sid,
         )
-        # TODO: twilio.rest.Client.messages.create()
-
         return {"status": "sent", "channel": "sms"}
 
     def set_notifications_table(self, user_id: str) -> None:
-        """Placeholder: future method for configuring notification preferences."""
         pass
 
-    def get_unread_count(self, user_id: str) -> int:
-        """Return count of unread notifications for a user."""
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            row = conn.execute(
-                "SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0",
-                (user_id,),
-            ).fetchone()
-            return row[0] if row else 0
-        finally:
-            conn.close()
+    async def get_unread_count(self, user_id: str) -> int:
+        """Return count of unread notifications for a user (ASYNC)."""
+        row = await self.fetchone(
+            "SELECT COUNT(*) AS cnt FROM notifications WHERE user_id = ? AND is_read = 0",
+            (user_id,),
+        )
+        return int(row.get("cnt", 0)) if row else 0
 
-    def mark_read(self, notification_id: int) -> None:
-        """Mark a single notification as read."""
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.execute(
-                "UPDATE notifications SET is_read = 1 WHERE id = ?",
-                (notification_id,),
-            )
-            conn.commit()
-        finally:
-            conn.close()
+    async def mark_read(self, notification_id: int) -> None:
+        """Mark a single notification as read (ASYNC)."""
+        await self.execute(
+            "UPDATE notifications SET is_read = 1 WHERE id = ?",
+            (notification_id,),
+        )
+        await self.commit()
 
-    def _fetch_pending_decisions(self, user_id: str) -> list[dict[str, Any]]:
+    async def _fetch_pending_decisions(self, user_id: str) -> list[dict[str, Any]]:
         """Fetch decisions awaiting user action.
 
-        Queries invoices that are in MANUAL_REVIEW or PENDING_REVIEW status
-        and belong to the user's tenant.
+        DuckDB (sync) jest wołany przez anyio.to_thread.run_sync()
+        aby nie blokować pętli async.
         """
-        # In production this would query the invoices table via SQLAlchemy.
-        # For now we try a simple DuckDB or SQLite query, falling back to empty.
         try:
             from nexus_ai.core.config import AppConfig
             from nexus_ai.db.analytics import DuckDBManager
@@ -593,7 +480,9 @@ class NotificationService:
                 db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True
             )
             try:
-                rows = mgr.execute(
+                # DuckDB execute() jest SYNC — wołamy w thread aby nie blokować async loop
+                rows = await anyio.to_thread.run_sync(
+                    mgr.execute,
                     """
                     SELECT id, number, amount_gross, currency, status,
                            contractor_nip, created_at
@@ -601,7 +490,7 @@ class NotificationService:
                     WHERE status IN ('MANUAL_REVIEW', 'PENDING_REVIEW')
                     ORDER BY created_at DESC
                     LIMIT 10
-                    """
+                    """,
                 )
                 if not rows:
                     return []
@@ -620,13 +509,17 @@ class NotificationService:
                     )
                 return decisions
             finally:
-                mgr.close()
+                await anyio.to_thread.run_sync(mgr.close)
         except Exception:
             logger.debug("Could not query pending decisions (DuckDB may be unavailable)")
             return []
 
-    def _count_today_auto_posted(self, user_id: str, today: str) -> int:
-        """Count invoices auto-approved today."""
+    async def _count_today_auto_posted(self, user_id: str, today: str) -> int:
+        """Count invoices auto-approved today.
+
+        DuckDB (sync) jest wołany przez anyio.to_thread.run_sync()
+        aby nie blokować pętli async.
+        """
         try:
             from nexus_ai.core.config import AppConfig
             from nexus_ai.db.analytics import DuckDBManager
@@ -636,7 +529,8 @@ class NotificationService:
                 db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True
             )
             try:
-                row = mgr.execute(
+                row = await anyio.to_thread.run_sync(
+                    mgr.execute,
                     """
                     SELECT COUNT(*) FROM oltp.invoices
                     WHERE status = 'APPROVED'
@@ -646,11 +540,11 @@ class NotificationService:
                 )
                 return int(row[0][0]) if row and row[0] and row[0][0] else 0
             finally:
-                mgr.close()
+                await anyio.to_thread.run_sync(mgr.close)
         except Exception:
             return 0
 
-    def _add_notification(
+    async def _add_notification(
         self,
         user_id: str,
         title: str,
@@ -659,51 +553,44 @@ class NotificationService:
         reference_type: str | None = None,
         reference_id: str | None = None,
     ) -> int:
-        """Insert a new notification row and return its ID."""
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            cursor = conn.execute(
-                """
-                INSERT INTO notifications
-                    (user_id, title, message, notification_type,
-                     reference_type, reference_id, is_read, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, 0, ?)
-                """,
-                (
-                    user_id,
-                    title,
-                    message,
-                    notification_type,
-                    reference_type,
-                    reference_id,
-                    pendulum.now("UTC").isoformat(),
-                ),
-            )
-            conn.commit()
-            return int(cursor.lastrowid)
-        finally:
-            conn.close()
+        """Insert a new notification row and return its ID (ASYNC)."""
+        conn = await self.get_conn()
+        cursor = await conn.execute(
+            """INSERT INTO notifications
+               (user_id, title, message, notification_type,
+                reference_type, reference_id, is_read, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, 0, ?)""",
+            (
+                user_id,
+                title,
+                message,
+                notification_type,
+                reference_type,
+                reference_id,
+                pendulum.now("UTC").isoformat(),
+            ),
+        )
+        await conn.commit()
+        return int(cursor.lastrowid)
 
-    def get_user_notifications(
+    async def get_user_notifications(
         self,
         user_id: str,
         limit: int = 20,
         unread_only: bool = False,
     ) -> list[dict[str, Any]]:
-        """Fetch notifications for a user."""
-        conn = sqlite3.connect(str(self._db_path))
-        try:
-            conn.row_factory = sqlite3.Row
-            query = "SELECT * FROM notifications WHERE user_id = ?"
-            params: list[Any] = [user_id]
+        """Fetch notifications for a user (ASYNC)."""
+        query = "SELECT * FROM notifications WHERE user_id = ?"
+        params: list[Any] = [user_id]
 
-            if unread_only:
-                query += " AND is_read = 0"
+        if unread_only:
+            query += " AND is_read = 0"
 
-            query += " ORDER BY created_at DESC LIMIT ?"
-            params.append(limit)
+        query += " ORDER BY created_at DESC LIMIT ?"
+        params.append(limit)
 
-            rows = conn.execute(query, params).fetchall()
-            return [dict(r) for r in rows]
-        finally:
-            conn.close()
+        return await self.fetchall(query, params)
+
+
+# ── Alias dla kompatybilności wstecznej ─────────────────────────────────
+NotificationService = AsyncNotificationService

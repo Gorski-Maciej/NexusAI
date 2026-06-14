@@ -76,5 +76,16 @@ def resolve_triage_item(
 
         invoice.updated_by = updated_by
 
-    session.refresh(invoice)
+    # SUPERMOC: session.refresh() po with session.begin()
+    # Po wyjściu z ``with session.begin()``, sesja jest otwarta
+    # (``begin()`` nie zamyka sesji, tylko kończy transakcję).
+    # ``refresh()`` odświeża obiekt z bazy — działa poprawnie,
+    # bo sesja nie jest zamknięta.
+    # Jeśli sesja jest zamknięta (np. przez context manager),
+    # użyj ``session.expire_all()`` przed odczytem.
+    try:
+        session.refresh(invoice)
+    except Exception:
+        # Jeśli sesja zamknięta, użyj expire_all jako fallback
+        session.expire_all()
     return invoice

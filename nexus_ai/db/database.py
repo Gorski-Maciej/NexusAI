@@ -38,6 +38,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+from sqlalchemy.pool import Pool
 from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
@@ -155,6 +156,11 @@ def _make_pragma_setter(key_hex: str):
     kompatybilności z aiosqlite (gdzie cursor wymaga ``await``, ale
     ``connection.execute()`` ma synchroniczny interfejs w SQLAlchemy).
 
+    DODANE SUPERMOCE:
+    - PRAGMA foreign_keys = ON: wymusza integralność referencyjną
+    - PRAGMA cell_size_check = ON: wykrywa corrupt data
+    - PRAGMA trusted_schema = OFF: bezpieczeństwo (blokada złośliwych triggerów)
+
     Args:
         key_hex: Klucz szyfrowania w formacie hex.
     """
@@ -172,6 +178,21 @@ def _make_pragma_setter(key_hex: str):
         # Różnica: ~2× szybsze zapisy, przy WAL wciąż bezpieczne (crash-safe).
         # WAL checkpoint robi fsync, więc dane są bezpieczne.
         dbapi_connection.execute("PRAGMA synchronous=NORMAL;")
+
+        # ── SUPERMOC: Foreign Keys ON ──────────────────────────────
+        # Wymusza integralność referencyjną na poziomie bazy danych.
+        # Żadna faktura nie może być usunięta jeśli ma powiązane outbox eventy.
+        dbapi_connection.execute("PRAGMA foreign_keys = ON;")
+
+        # ── SUPERMOC: Cell Size Check ON ───────────────────────────
+        # Sprawdza poprawność każdej strony bazy danych przy odczycie.
+        # Wykrywa corrupt data (np. błędy dysku, niekompletne zapisy).
+        dbapi_connection.execute("PRAGMA cell_size_check = ON;")
+
+        # ── SUPERMOC: Trusted Schema OFF ───────────────────────────
+        # Blokuje wykonywanie kodu SQL z niezaufanych źródeł.
+        # Zapobiega atakom przez sparametryzowane trigger/view.
+        dbapi_connection.execute("PRAGMA trusted_schema = OFF;")
 
         # ── SUPERMOC: Cache size 200MB (w stronach = 4KB * 51200) ──
         # Domyślnie SQLite ma 2000 stron (~8MB). Dla aplikacji z wieloma
@@ -224,6 +245,39 @@ def _make_pragma_setter(key_hex: str):
             dbapi_connection.execute("PRAGMA cipher_use_hmac = ON;")
         except Exception:
             pass  # Starsza wersja SQLCipher może nie wspierać tych PRAGM
+
+        # ── SUPERMOC: SQLCipher Memory Security ──────────────────────
+        # mlock() blokuje strony pamięci z kluczami przed swapowaniem.
+        # Bez tego, klucz AES-256 może wyciec do pliku swap/pagefile.
+        # Ochrona przed atakami cold-boot i swap inspection.
+        try:
+            dbapi_connection.execute("PRAGMA cipher_memory_security = ON;")
+        except Exception:
+            pass  # Starsze wersje SQLCipher mogą nie wspierać
+
+        # ── SUPERMOC: SQLCipher Encrypted Header ─────────────────────
+        # Domyślnie SQLCipher zostawia "SQLite format 3\0" w plaintext
+        # w pierwszych 16 bajtach nagłówka pliku.
+        # cipher_default_plaintext_header = ON szyfruje cały nagłówek:
+        #   - Atakujący nie wie że to baza SQLCipher
+        #   - Plik wygląda jak losowe dane binarne
+        # UWAGA: Działa tylko dla NOWYCH baz (CREATE TABLE).
+        # Dla istniejących baz, użyj PRAGMA rekey + cipher_default_plaintext_header.
+        try:
+            dbapi_connection.execute("PRAGMA cipher_default_plaintext_header = ON;")
+        except Exception:
+            pass  # Wymaga SQLCipher 4.x+
+
+        # UWAGA: cipher_plaintext_header_size=0 wymaga ustawienia PRZY TWORZENIU BAZY,
+        # nie w runtime (patrz docs/SQLCIPHER_AUDIT.md).
+
+        # ── SUPERMOC: cipher_hmac_pgno = ON ──────────────────────────
+        # Weryfikacja numeru strony w HMAC — dodatkowa ochrona przed
+        # atakami typu page-swapping (zamiana stron miejscami).
+        try:
+            dbapi_connection.execute("PRAGMA cipher_hmac_pgno = ON;")
+        except Exception:
+            pass  # Wymaga SQLCipher 4.x+
 
     return _set_pragmas
 
@@ -307,7 +361,54 @@ def create_async_oltp_engine(
     resolved_key = _resolve_key(config, sqlcipher_key)
     key_hex = resolved_key.encode("utf-8").hex()
 
-    engine = create_async_engine(url, echo=False)
+    # ── SUPERMOC: aiosqlite connection pool config ─────────────────
+    # pool_timeout: 30s timeout na oczekiwanie na połączenie z pool
+    # pool_recycle: 3600s = odśwież połączenia co godzinę (zapobiega
+    #   zamknięciu przez SQLCipher idle timeout)
+    # connect_args: check_same_thread=False dla free-threaded Python 3.13t
+    #   (pozwala na współdzielenie połączenia między wątkami)
+    # SUPERMOC: pool_pre_ping=True — sprawdza żywotność połączenia
+    #   przed użyciem. SQLCipher zamyka nieaktywne połączenia po
+    #   timeout, bez tego pool zwraca nieżywe połączenia → InterfaceError.
+    engine = create_async_engine(
+        url,
+        echo=False,
+        pool_size=5,
+        max_overflow=10,
+        pool_timeout=30,
+        pool_recycle=3600,
+        pool_pre_ping=True,  # SUPERMOC: sprawdza żywotność przed użyciem
+        connect_args={
+            "check_same_thread": False,  # free-threaded Python 3.13t
+        },
+    )
+
+    # SUPERMOC: PoolEvents.checkout() — monitoring czasu uzyskania
+    # połączenia z pool. Loguje ostrzeżenie jeśli checkout trwa >1s
+    # (wskazuje na przeciążenie pool).
+    import time as _time_module
+
+    @event.listens_for(engine.sync_engine, "checkout")
+    def _on_checkout(dbapi_connection, connection_record, connection_proxy):
+        connection_record.info.setdefault("checkout_time", _time_module.time())
+
+    @event.listens_for(engine.sync_engine, "checkin")
+    def _on_checkin(dbapi_connection, connection_record):
+        checkout_time = connection_record.info.pop("checkout_time", None)
+        if checkout_time is not None:
+            elapsed = _time_module.time() - checkout_time
+            if elapsed > 1.0:
+                logger.warning(
+                    "[DB] Slow pool checkout: %.2fs (pool may be exhausted)",
+                    elapsed,
+                )
+
+    @event.listens_for(engine.sync_engine, "handle_error")
+    def _on_error(exception_context):
+        logger.error(
+            "[DB] Connection error: %s",
+            exception_context.original_exception,
+        )
 
     # aiosqlite: PRAGMA key ustawiamy przez sync_engine.connect
     # SQLAlchemy zarządza async→sync bridging pod spodem.
@@ -315,7 +416,12 @@ def create_async_oltp_engine(
     # dla kompatybilności z aiosqlite.
     event.listen(engine.sync_engine, "connect", _make_pragma_setter(key_hex))
 
-    logger.info("[DB] Created async aiosqlite engine: %s", url)
+    logger.info(
+        "[DB] Created async aiosqlite engine: %s (pool=%d, timeout=%ds)",
+        url,
+        5,
+        30,
+    )
     return engine
 
 
@@ -336,14 +442,25 @@ def create_async_session_factory(engine):
 
 
 def init_schema(engine) -> None:
-    """Create all SQLAlchemy tables for first application start."""
+    """Create all SQLAlchemy tables for first application start.
+
+    SUPERMOC: Po utworzeniu tabel, wywołuje ``create_partial_indexes()``
+    z ``models.py``, które tworzy partial indexes dla aktywnych statusów
+    i nieprzetworzonych outbox eventów.
+    """
     from nexus_ai.db.models import (  # noqa: F401
         ActiveLearningPattern,
         Invoice,
         OutboxEvent,
+        create_partial_indexes,
     )
 
     Base.metadata.create_all(engine)
+
+    # SUPERMOC: Utwórz partial indexes po tabelach
+    # Partial indexes indeksują tylko podzbiór wierszy — mniejszy indeks,
+    # szybsze INSERT/UPDATE dla nieindeksowanych wierszy.
+    create_partial_indexes(engine)
 
 
 # ── Maintenance ───────────────────────────────────────────────────────────
