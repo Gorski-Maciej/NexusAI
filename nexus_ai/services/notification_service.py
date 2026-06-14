@@ -277,11 +277,13 @@ class NotificationService:
         db_path: Path | str,
         config: AppConfig | None = None,
         channel_config: MultiChannelConfig | None = None,
+        event_emitter: Any | None = None,
     ) -> None:
         self._db_path = Path(db_path)
         self._config = config or AppConfig()
         self._channel_config = channel_config or MultiChannelConfig.from_config(self._config)
         self._briefing_generator: DailyBriefingGenerator | None = None
+        self._event_emitter = event_emitter
         self._init_db()
 
     def set_briefing_generator(self, generator: DailyBriefingGenerator) -> None:
@@ -425,6 +427,23 @@ class NotificationService:
             channels,
             results,
         )
+
+        # Emituj event przez EventEmitter (jeśli dostępny)
+        if self._event_emitter is not None:
+            try:
+                await self._event_emitter.emit_notification_sent(
+                    user_id=user_id,
+                    notification_type=notification_type,
+                    title=title,
+                    channels=list(results.keys()),
+                    metadata={
+                        "reference_type": reference_type,
+                        "reference_id": reference_id,
+                    },
+                )
+            except Exception as event_err:
+                logger.warning("[NOTIF] Failed to emit NotificationSent: %s", event_err)
+
         return results
 
     async def _send_push(

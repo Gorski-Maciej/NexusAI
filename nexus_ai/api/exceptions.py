@@ -150,18 +150,29 @@ def _error_envelope(
     category: str,
     status_code: int,
 ) -> Response:
+    """RFC 9457 Problem Details response envelope.
+
+    Zgodny ze standardem RFC 9457 (Problem Details for HTTP APIs).
+    Używa ``application/problem+json`` jako media type.
+    ``type`` to URL do dokumentacji błędu.
+
+    Zarejestrowany ``ProblemDetailsPlugin`` w app.py automatycznie
+    konwertuje także wszystkie ``HTTPException`` na RFC 9457.
+    """
     correlation_id = request.headers.get("x-correlation-id", "unknown")
     return Response(
-        content={
-            "error": {
-                "code": code,
-                "category": category,
-                "message": message,
-                "path": request.url.path,
-                "correlation_id": correlation_id,
-            }
-        },
+        media_type="application/problem+json",
         status_code=status_code,
+        content={
+            "type": f"https://errors.nexusai.app/{code.lower()}",
+            "title": message.split(":")[0] if ":" in message else message[:80],
+            "status": status_code,
+            "detail": message,
+            "instance": request.url.path,
+            "code": code,
+            "category": category,
+            "correlation_id": correlation_id,
+        },
     )
 
 

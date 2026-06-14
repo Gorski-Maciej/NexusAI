@@ -6,12 +6,12 @@ from litestar.exceptions import ClientException
 from sqlalchemy import text
 
 from nexus_ai.api.dto import (
-    GenericDictDTO,
     TAG_UI_STATE,
     UIDeleteDraftDTO,
     UIGetDraftDTO,
     UIListDraftsDTO,
     UISaveDraftDTO,
+    SaveDraftResponseDTO,
 )
 from nexus_ai.api.rbac import owner_or_worker_guard
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
@@ -36,14 +36,14 @@ def serialize_draft_payload(data: dict) -> str:
 class UIStateController(Controller):
     """Offline-resilient UI draft persistence for server-driven clients (e.g. Flet/WebSocket UI)."""
 
-    path = "/api/v1/ui"
+    path = "/ui"
     guards = [owner_or_worker_guard]
     tags = [TAG_UI_STATE]
 
     @post(
         "/drafts/{draft_key:str}",
         dto=UISaveDraftDTO,
-        return_dto=GenericDictDTO,
+        return_dto=SaveDraftResponseDTO,
         summary="Save UI draft",
         description="Saves or updates a UI draft for offline-resilient persistence.",
         operation_id="saveUiDraft",

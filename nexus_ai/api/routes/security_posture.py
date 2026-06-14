@@ -4,7 +4,7 @@ from pathlib import Path
 
 from litestar import Controller, get
 
-from nexus_ai.api.dto import GenericDictDTO, TAG_SECURITY
+from nexus_ai.api.dto import SecurityPostureDTO, TAG_SECURITY
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
@@ -12,13 +12,13 @@ from nexus_ai.core.msgspec_utils import msgspec_loads
 class SecurityPostureController(Controller):
     """Operational read-only security posture summary endpoint."""
 
-    path = "/api/v1/system/security"
+    path = "/system/security"
     guards = [owner_only_guard]
     tags = [TAG_SECURITY]
 
     @get(
         "/summary",
-        return_dto=GenericDictDTO,
+        return_dto=SecurityPostureDTO,
         summary="Get security posture summary",
         description="Returns the security scan summary including ZAP baseline and full scan results.",
         operation_id="getSecurityPosture",

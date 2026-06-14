@@ -6,7 +6,7 @@ import resource
 from litestar import Controller, get
 from sqlalchemy import text
 
-from nexus_ai.api.dto import GenericDictDTO, TAG_FINANCE
+from nexus_ai.api.dto import FinOpsDTO, TAG_FINANCE
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.core.config import AppConfig
 from nexus_ai.db.database import create_oltp_engine, create_session_factory
@@ -16,13 +16,13 @@ from nexus_ai.services.finops_meter import estimate_runtime_cost
 class FinOpsController(Controller):
     """Operational FinOps metrics for self-hosted runtime."""
 
-    path = "/api/v1/system/finops"
+    path = "/system/finops"
     guards = [owner_only_guard]
     tags = [TAG_FINANCE]
 
     @get(
         "/cost-per-invoice",
-        return_dto=GenericDictDTO,
+        return_dto=FinOpsDTO,
         summary="Get cost per invoice",
         description="Returns FinOps metrics: hourly cost, invoice count, and cost per invoice in USD.",
         operation_id="getCostPerInvoice",

@@ -53,6 +53,7 @@ from nexus_ai.events import (
     InvoiceRejected,
     InvoiceSubmitted,
     JetStreamEventBus,
+    NotificationSent,
 )
 
 logger = get_logger("nexus.events.emitter")
@@ -287,6 +288,41 @@ class EventEmitter:
             metadata=metadata or {},
         )
         return await self._emit("invoice", invoice_id, event)
+
+    # ── Notification events ───────────────────────────────────────────
+
+    async def emit_notification_sent(
+        self,
+        user_id: str,
+        notification_type: str = "info",
+        title: str = "",
+        channels: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> str:
+        """Emituj NotificationSent — powiadomienie wysłane do użytkownika.
+
+        Args:
+            user_id: ID użytkownika.
+            notification_type: Typ powiadomienia (info, warning, error, daily_briefing, decision).
+            title: Tytuł powiadomienia.
+            channels: Lista kanałów przez które wysłano.
+            metadata: Dodatkowe metadane.
+
+        Returns:
+            event_id wyemitowanego eventu.
+        """
+        aggregate_id = user_id
+        version = self._next_version("notification", aggregate_id)
+        event = NotificationSent(
+            aggregate_id=aggregate_id,
+            version=version,
+            user_id=user_id,
+            notification_type=notification_type,
+            title=title,
+            channels=channels or [],
+            metadata=metadata or {},
+        )
+        return await self._emit("notification", aggregate_id, event)
 
     # ── Internal methods ───────────────────────────────────────────────
 

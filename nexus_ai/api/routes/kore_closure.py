@@ -15,7 +15,7 @@ from nexus_ai.core.msgspec_utils import msgspec_loads
 class KoreClosureController(Controller):
     """Single endpoint with executable closure summary for KORE 1-11."""
 
-    path = "/api/v1/system/kore"
+    path = "/system/kore"
     guards = [owner_only_guard]
     tags = [TAG_AUDIT]
 

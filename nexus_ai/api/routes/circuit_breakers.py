@@ -12,18 +12,18 @@ from typing import Any
 from litestar import Controller, get
 from litestar.connection import Request
 
-from nexus_ai.api.dto import GenericDictDTO, TAG_SYSTEM
+from nexus_ai.api.dto import CircuitBreakerStatusDTO, TAG_SYSTEM
 
 
 class CircuitBreakerController(Controller):
     """Resilience monitoring — stamina zastępuje custom CircuitBreaker."""
 
-    path = "/api/v1/system/circuit-breakers"
+    path = "/system/circuit-breakers"
     tags = [TAG_SYSTEM]
 
     @get(
         "/",
-        return_dto=GenericDictDTO,
+        return_dto=CircuitBreakerStatusDTO,
         summary="List circuit breakers",
         description="Returns resilience status managed by stamina (async-native, anyio). stamina does not expose a central registry.",
         operation_id="listCircuitBreakers",

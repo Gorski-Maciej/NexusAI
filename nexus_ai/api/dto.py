@@ -36,18 +36,59 @@ from __future__ import annotations
 from litestar.dto import DTOConfig, MsgspecDTO
 
 from nexus_ai.api.schemas import (
+    ActionResponse,
     AnalyticsQuery,
+    AutopilotActionResponse,
+    AutopilotEvalTriggerResponse,
+    ChangePasswordResponse,
+    ChangeRoleResponse,
+    CircuitBreakerStatusResponse,
+    ConfirmEmailResponse,
+    CsrfTokenResponse,
     DashboardSummaryResponse,
+    ExportDownloadResponse,
+    ExportStatusResponse,
+    FailedTaskListResponse,
+    FallbackListResponse,
+    FinOpsResponse,
+    HealthResponse,
+    HotReloadHealthResponse,
+    I18nStatusResponse,
+    IdResponse,
+    IntegrityVerifyResponse,
     InvoiceCreate,
     InvoiceListResponse,
     InvoiceResponse,
+    K6SummaryResponse,
+    LoginResponse,
+    LogoutResponse,
+    PaginatedRuleListResponse,
+    PartnerClientListResponse,
+    PartnerInvoiceItem,
+    PasswordResetConfirmResponse,
+    PasswordResetResponse,
+    PiiScanResponse,
+    ReplayBatchResponse,
+    ReplayDecisionResponse,
+    RegisterResponse,
+    RetryAllResponse,
+    RuleChangelogResponse,
+    RuleSetsResponse,
+    RuleListResponse,
     SagaStateResponse,
     SagaTransitionRequest,
+    SaveDraftResponse,
+    SecurityPostureResponse,
+    StatsProcessingResponse,
+    StatusResponse,
     TaskResponse,
+    TelemetryFallbackStatusResponse,
     TriageItem,
     TriageResolutionRequest,
     TriageResolutionResponse,
+    UserProfileResponse,
     VatSummary,
+    WorkerStatusResponse,
 )
 from nexus_ai.api.routes.admin import ChangeRoleRequest, RiskThresholdCreate
 from nexus_ai.api.routes.auth import (
@@ -370,6 +411,392 @@ class GenericListDTO(NexusDTO):
     pass
 
 
+# ── Admin Response DTOs ─────────────────────────────────────────────────
+
+
+class StatusResponseDTO(NexusDTO):
+    """DTO dla prostych odpowiedzi status+message."""
+
+    pass
+
+
+class IdResponseDTO(NexusDTO):
+    """DTO dla odpowiedzi z status+rule_id."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={"rule_id": "ruleId"},
+    )
+
+
+class ActionResponseDTO(NexusDTO):
+    """DTO dla odpowiedzi z status+rule_id+action."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={"rule_id": "ruleId"},
+    )
+
+
+class RetryAllResponseDTO(NexusDTO):
+    """DTO dla odpowiedzi bulk retry."""
+
+    pass
+
+
+class ChangeRoleResponseDTO(NexusDTO):
+    """DTO dla odpowiedzi zmiany roli."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={"user_id": "userId", "old_role": "oldRole", "new_role": "newRole"},
+    )
+
+
+class FailedTaskListDTO(NexusDTO):
+    """DTO dla paginowanej listy failed tasks."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={"failed_at": "failedAt", "created_at": "createdAt"},
+    )
+
+
+class RuleListResponseDTO(NexusDTO):
+    """DTO dla listy reguł."""
+
+    pass
+
+
+class PaginatedRuleListDTO(NexusDTO):
+    """DTO dla paginowanej listy reguł."""
+
+    pass
+
+
+class HealthResponseDTO(NexusDTO):
+    """DTO dla odpowiedzi health check."""
+
+    pass
+
+
+class ReplayDecisionDTO(NexusDTO):
+    """DTO dla odpowiedzi replay decyzji."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "transaction_id": "transactionId",
+            "original_verdict": "originalVerdict",
+            "replayed_verdict": "replayedVerdict",
+        },
+    )
+
+
+class ReplayBatchDTO(NexusDTO):
+    """DTO dla odpowiedzi batch replay."""
+
+    pass
+
+
+class IntegrityVerifyDTO(NexusDTO):
+    """DTO dla odpowiedzi weryfikacji integralności."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "total_records": "totalRecords",
+            "verified_at": "verifiedAt",
+            "violation_id": "violationId",
+            "system_locked": "systemLocked",
+        },
+    )
+
+
+class FallbackListDTO(NexusDTO):
+    """DTO dla listy fallback events."""
+
+    pass
+
+
+class HotReloadHealthDTO(NexusDTO):
+    """DTO dla health hot-reload listenera."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "nats_url": "natsUrl",
+            "events_total": "eventsTotal",
+            "events_per_subject": "eventsPerSubject",
+            "last_event_at": "lastEventAt",
+            "uptime_seconds": "uptimeSeconds",
+        },
+    )
+
+
+class RuleChangelogDTO(NexusDTO):
+    """DTO dla logu zmian reguł."""
+
+    pass
+
+
+# ── Auth Response DTOs ───────────────────────────────────────────────
+
+
+class RegisterResponseDTO(NexusDTO):
+    """DTO dla odpowiedzi rejestracji."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={"user_id": "userId"},
+    )
+
+
+class LoginResponseDTO(NexusDTO):
+    """DTO dla odpowiedzi logowania z tokenami."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "access_token": "accessToken",
+            "refresh_token": "refreshToken",
+            "token_type": "tokenType",
+            "expires_in": "expiresIn",
+            "refresh_token_expires_in_days": "refreshTokenExpiresInDays",
+        },
+    )
+
+
+class LogoutResponseDTO(NexusDTO):
+    """DTO dla odpowiedzi wylogowania."""
+
+    pass
+
+
+class ConfirmEmailResponseDTO(NexusDTO):
+    """DTO dla odpowiedzi potwierdzenia email."""
+
+    pass
+
+
+class PasswordResetResponseDTO(NexusDTO):
+    """DTO dla odpowiedzi resetu hasła (email wysłany)."""
+
+    pass
+
+
+class PasswordResetConfirmResponseDTO(NexusDTO):
+    """DTO dla odpowiedzi potwierdzenia resetu hasła."""
+
+    pass
+
+
+class ChangePasswordResponseDTO(NexusDTO):
+    """DTO dla odpowiedzi zmiany hasła."""
+
+    pass
+
+
+class CsrfTokenResponseDTO(NexusDTO):
+    """DTO dla odpowiedzi CSRF tokena."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={"csrf_token": "csrfToken"},
+    )
+
+
+class UserProfileResponseDTO(NexusDTO):
+    """DTO dla profilu użytkownika."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "user_id": "userId",
+            "full_name": "fullName",
+            "is_active": "isActive",
+            "is_verified": "isVerified",
+            "must_change_password": "mustChangePassword",
+            "last_login": "lastLogin",
+            "created_at": "createdAt",
+        },
+    )
+
+
+# ── Other Response DTOs ───────────────────────────────────────────────
+
+
+class ExportStatusDTO(NexusDTO):
+    """DTO dla statusu eksportu."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={"export_id": "exportId", "file_url": "fileUrl"},
+    )
+
+
+class ExportDownloadDTO(NexusDTO):
+    """DTO dla odpowiedzi pobrania eksportu."""
+
+    pass
+
+
+class FinOpsDTO(NexusDTO):
+    """DTO dla FinOps metryk."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "hourly_cost_usd": "hourlyCostUsd",
+            "invoice_count": "invoiceCount",
+            "cost_per_invoice_usd": "costPerInvoiceUsd",
+            "cpu_cores": "cpuCores",
+            "ram_gb": "ramGb",
+        },
+    )
+
+
+class I18nStatusDTO(NexusDTO):
+    """DTO dla statusu i18n."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "api_languages": "apiLanguages",
+            "prompt_languages": "promptLanguages",
+            "api_locale_dir": "apiLocaleDir",
+            "prompt_dir": "promptDir",
+        },
+    )
+
+
+class PiiScanDTO(NexusDTO):
+    """DTO dla wyników skanowania PII."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "total_matches": "totalMatches",
+            "dpo_notified": "dpoNotified",
+        },
+    )
+
+
+class SecurityPostureDTO(NexusDTO):
+    """DTO dla podsumowania security posture."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "summary_available": "summaryAvailable",
+            "zap_baseline_available": "zapBaselineAvailable",
+            "zap_full_available": "zapFullAvailable",
+            "scan_summary": "scanSummary",
+        },
+    )
+
+
+class K6SummaryDTO(NexusDTO):
+    """DTO dla podsumowania k6."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "summary_available": "summaryAvailable",
+            "p95_ms": "p95Ms",
+            "check_failures": "checkFailures",
+        },
+    )
+
+
+class StatsProcessingDTO(NexusDTO):
+    """DTO dla statystyk przetwarzania."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "total_processed": "totalProcessed",
+            "avg_processing_time_ms": "avgProcessingTimeMs",
+            "success_rate": "successRate",
+            "error_count": "errorCount",
+        },
+    )
+
+
+class WorkerStatusDTO(NexusDTO):
+    """DTO dla statusu workera."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "uptime_seconds": "uptimeSeconds",
+            "ram_mb": "ramMb",
+            "cpu_percent": "cpuPercent",
+            "active_tasks": "activeTasks",
+            "max_concurrent": "maxConcurrent",
+            "python_version": "pythonVersion",
+        },
+    )
+
+
+class CircuitBreakerStatusDTO(NexusDTO):
+    """DTO dla statusu circuit breaker."""
+
+    pass
+
+
+class TelemetryFallbackStatusDTO(NexusDTO):
+    """DTO dla statusu fallback telemetry."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "buffer_file": "bufferFile",
+            "buffer_exists": "bufferExists",
+            "queued_spans": "queuedSpans",
+            "duckdb_path": "duckdbPath",
+        },
+    )
+
+
+class AutopilotActionDTO(NexusDTO):
+    """DTO dla odpowiedzi accept/reject autopilota."""
+
+    pass
+
+
+class AutopilotEvalTriggerDTO(NexusDTO):
+    """DTO dla odpowiedzi triggera ewaluacji autopilota."""
+
+    pass
+
+
+class PartnerClientListDTO(NexusDTO):
+    """DTO dla listy klientów partnera z cursor pagination."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "next_cursor": "nextCursor",
+            "has_more": "hasMore",
+        },
+    )
+
+
+class PartnerClientInvoicesDTO(NexusDTO):
+    """DTO dla listy faktur klienta partnera."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={
+            "invoice_id": "invoiceId",
+            "amount_gross": "amountGross",
+            "issue_date": "issueDate",
+            "created_at": "createdAt",
+        },
+    )
+
+
 # ── Health DTOs ─────────────────────────────────────────────────────────
 
 
@@ -523,6 +950,24 @@ class UIListDraftsDTO(NexusDTO):
     pass
 
 
+class SaveDraftResponseDTO(NexusDTO):
+    """DTO dla odpowiedzi zapisu draftu UI."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={"draft_key": "draftKey"},
+    )
+
+
+class RuleSetsDTO(NexusDTO):
+    """DTO dla listy zestawów reguł symulacyjnych."""
+
+    config = DTOConfig(
+        backend="msgspec",
+        rename_fields={"rule_sets": "ruleSets"},
+    )
+
+
 # ── DLQ DTOs ───────────────────────────────────────────────────────────-
 
 
@@ -661,17 +1106,44 @@ class AuditDecisionReportDTO(NexusDTO):
 DTO_REGISTRY: dict[str, type[NexusDTO]] = {
     # Auth
     "RegisterRequest": RegisterDTO,
+    "RegisterResponse": RegisterResponseDTO,
     "LoginRequest": LoginDTO,
+    "LoginResponse": LoginResponseDTO,
     "RefreshRequest": RefreshDTO,
+    "LogoutResponse": LogoutResponseDTO,
+    "ConfirmEmailResponse": ConfirmEmailResponseDTO,
     "ResetPasswordRequest": PasswordResetDTO,
     "ResetPasswordConfirmRequest": PasswordResetConfirmDTO,
+    "PasswordResetResponse": PasswordResetResponseDTO,
+    "PasswordResetConfirmResponse": PasswordResetConfirmResponseDTO,
     "ChangePasswordRequest": ChangePasswordDTO,
+    "ChangePasswordResponse": ChangePasswordResponseDTO,
+    "CsrfTokenResponse": CsrfTokenResponseDTO,
+    "UserProfileResponse": UserProfileResponseDTO,
     # Invoice
     "InvoiceUpload": InvoiceUploadDTO,
     "TaskResponse": TaskResponseDTO,
+    "InvoiceCreate": InvoiceCreateDTO,
+    "InvoiceResponse": InvoiceResponseDTO,
+    "InvoiceListResponse": InvoiceListResponseDTO,
     # Admin
     "ChangeRoleRequest": ChangeRoleDTO,
+    "ChangeRoleResponse": ChangeRoleResponseDTO,
     "RiskThresholdCreate": RiskThresholdDTO,
+    "StatusResponse": StatusResponseDTO,
+    "IdResponse": IdResponseDTO,
+    "ActionResponse": ActionResponseDTO,
+    "RetryAllResponse": RetryAllResponseDTO,
+    "FailedTaskListResponse": FailedTaskListDTO,
+    "RuleListResponse": RuleListResponseDTO,
+    "PaginatedRuleListResponse": PaginatedRuleListDTO,
+    "HealthResponse": HealthResponseDTO,
+    "ReplayDecisionResponse": ReplayDecisionDTO,
+    "ReplayBatchResponse": ReplayBatchDTO,
+    "IntegrityVerifyResponse": IntegrityVerifyDTO,
+    "FallbackListResponse": FallbackListDTO,
+    "HotReloadHealthResponse": HotReloadHealthDTO,
+    "RuleChangelogResponse": RuleChangelogDTO,
     # Tax
     "CalculateMoneyRequest": TaxMathRequestDTO,
     "MoneyAmount": TaxMathResponseDTO,
@@ -685,15 +1157,14 @@ DTO_REGISTRY: dict[str, type[NexusDTO]] = {
     "SagaStateResponse": SagaStateDTO,
     # Dashboard
     "DashboardSummaryResponse": DashboardSummaryDTO,
-    # Generic
+    "DashboardBriefingResponse": DashboardBriefingDTO,
+    # Generic (keeping for backward compat)
     "GenericDict": GenericDictDTO,
     # Analytics
     "AnalyticsQuery": AnalyticsQueryDTO,
     "VatSummary": AnalyticsFXResponseDTO,
     # Billing
     "BillingEstimate": BillingEstimateResponseDTO,
-    # Health
-    "HealthResponse": HealthResponseDTO,
     # Version
     "VersionInfo": VersionInfoDTO,
     # Tasks
@@ -707,4 +1178,21 @@ DTO_REGISTRY: dict[str, type[NexusDTO]] = {
     "KoreAudit": KoreAuditDTO,
     # Audit
     "AuditDecisionReport": AuditDecisionReportDTO,
+    # Other
+    "ExportStatusResponse": ExportStatusDTO,
+    "ExportDownloadResponse": ExportDownloadDTO,
+    "FinOpsResponse": FinOpsDTO,
+    "I18nStatusResponse": I18nStatusDTO,
+    "PiiScanResponse": PiiScanDTO,
+    "SecurityPostureResponse": SecurityPostureDTO,
+    "K6SummaryResponse": K6SummaryDTO,
+    "StatsProcessingResponse": StatsProcessingDTO,
+    "WorkerStatusResponse": WorkerStatusDTO,
+    "CircuitBreakerStatusResponse": CircuitBreakerStatusDTO,
+    "TelemetryFallbackStatusResponse": TelemetryFallbackStatusDTO,
+    "AutopilotActionResponse": AutopilotActionDTO,
+    "AutopilotEvalTriggerResponse": AutopilotEvalTriggerDTO,
+    "PartnerClientListResponse": PartnerClientListDTO,
+    "SaveDraftResponse": SaveDraftResponseDTO,
+    "RuleSetsResponse": RuleSetsDTO,
 }

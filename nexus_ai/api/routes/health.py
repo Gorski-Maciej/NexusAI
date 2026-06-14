@@ -19,7 +19,7 @@ from nexus_ai.api.dto import GenericDictDTO, HealthResponseDTO, TAG_HEALTH
 class HealthController(Controller):
     """Health check and status endpoints."""
 
-    path = "/api/v1/health"
+    path = "/health"
     tags = [TAG_HEALTH]
 
     @get(
@@ -28,6 +28,7 @@ class HealthController(Controller):
         summary="Basic health check",
         description="Returns API status and version.",
         operation_id="healthCheck",
+        headers={"Cache-Control": "public, max-age=300"},
     )
     async def health_check(self) -> dict[str, str]:
         """Basic health check."""
@@ -39,6 +40,7 @@ class HealthController(Controller):
         summary="Kubernetes liveness probe",
         description="Returns alive status for Kubernetes liveness probe.",
         operation_id="healthLiveness",
+        headers={"Cache-Control": "public, max-age=300"},
     )
     async def liveness_probe(self) -> dict[str, str]:
         """Kubernetes liveness probe."""
@@ -50,6 +52,7 @@ class HealthController(Controller):
         summary="Kubernetes readiness probe",
         description="Returns ready status for Kubernetes readiness probe.",
         operation_id="healthReadiness",
+        headers={"Cache-Control": "public, max-age=300"},
     )
     async def readiness_probe(self) -> dict[str, str]:
         """Kubernetes readiness probe."""
@@ -314,5 +317,5 @@ class HealthController(Controller):
 class HealthControllerV2(HealthController):
     """Health endpoints in v2 namespace."""
 
-    path = "/api/v2/health"
+    path = "/health"
     tags = [TAG_HEALTH]

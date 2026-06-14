@@ -159,6 +159,22 @@ class OutboxEventEmitted(DomainEvent):
     payload_json: str = ""
 
 
+class NotificationSent(DomainEvent):
+    """Powiadomienie zostało wysłane do użytkownika.
+
+    Emitowany przez NotificationService po wysłaniu powiadomienia
+    przez dowolny kanał (in_app, push, email, SMS).
+    """
+
+    aggregate_type: str = "notification"
+    event_type: str = "notification.sent"
+
+    user_id: str = ""
+    notification_type: str = "info"
+    title: str = ""
+    channels: list[str] = []
+
+
 # ── Serialization helpers ─────────────────────────────────────────────────
 
 
@@ -173,6 +189,7 @@ _EVENT_TYPE_REGISTRY: dict[str, type[DomainEvent]] = {
     "decision.made": DecisionMade,
     "decision.overridden": DecisionOverridden,
     "outbox.emitted": OutboxEventEmitted,
+    "notification.sent": NotificationSent,
 }
 
 

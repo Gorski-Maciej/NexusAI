@@ -6,19 +6,19 @@ from typing import Any
 
 from litestar import Controller, get
 
-from nexus_ai.api.dto import GenericDictDTO, TAG_FINANCE
+from nexus_ai.api.dto import GenericListDTO, PartnerClientListDTO, TAG_FINANCE
 from nexus_ai.core.config import AppConfig
 
 
 class PartnerController(Controller):
     """Partner Hub — multi-tenant view for accounting offices."""
 
-    path = "/api/v2/partner"
+    path = "/partner"
     tags = [TAG_FINANCE]
 
     @get(
         "/clients",
-        return_dto=GenericDictDTO,
+        return_dto=PartnerClientListDTO,
         summary="Get partner clients",
         description="Returns list of clients (tenants) for the accounting office with cursor pagination (Rozwiązanie 32).",
         operation_id="getPartnerClients",
@@ -144,7 +144,7 @@ class PartnerController(Controller):
 
     @get(
         "/clients/{client_id:str}/invoices",
-        return_dto=GenericDictDTO,
+        return_dto=GenericListDTO,
         summary="Get client invoices",
         description="Returns invoices needing decisions for a specific client (tenant).",
         operation_id="getPartnerClientInvoices",

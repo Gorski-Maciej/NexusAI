@@ -156,30 +156,36 @@ def _tenant_from_bearer_auth(authorization_header: str | None) -> str | None:
     return str(tenant) if tenant else None
 
 
-class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
-    _tenant_from_bearer_auth = staticmethod(_tenant_from_bearer_auth)
+class TenantContextMiddleware(AbstractMiddleware):
+    """Ustawia ``correlation_id`` i ``tenant_id`` w ContextVar dla każdego requestu.
 
-    """Adds correlation-id, deprecation headers and tenant context.
+    Zastępuje ``CorrelationAndDeprecationMiddleware`` po przeniesieniu:
+    - Nagłówki bezpieczeństwa → ``_app_after_request`` w app.py
+    - Nagłówki deprecation → ``_v1_after_request`` w app.py
+    - correlation-id response header → ``_app_after_request`` w app.py
 
-    Phase 2: Integruje ``correlation_id`` z ``ContextVar`` w ``nexus_ai.core.tracing``
-    oraz z logowaniem (structlog) — każdy log w trakcie requestu ma automatycznie
-    ustawiony ``correlation_id``.
+    Ten middleware pozostaje ponieważ:
+    - ``correlation_id_ctx.set()`` wymaga ContextVar (poza scope odpowiedzi)
+    - ``set_current_tenant_id()`` wymaga ContextVar
+    - ``_tenant_from_bearer_auth()`` wymaga dostępu do headers requestu
     """
+
+    _tenant_from_bearer_auth = staticmethod(_tenant_from_bearer_auth)
 
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
 
-        started = time.perf_counter()
         request_headers = {k.decode().lower(): v.decode() for k, v in scope.get("headers", [])}
         correlation_id = request_headers.get("x-correlation-id", uuid.uuid4().hex)
 
-        # ── Phase 2: Ustaw correlation_id w ContextVar dla logowania ─────
+        # ── Ustaw correlation_id w ContextVar dla logowania ──────────────
         from nexus_ai.core.tracing import correlation_id_ctx
 
         cid_token = correlation_id_ctx.set(correlation_id)
 
+        # ── Ustaw tenant_id w ContextVar ─────────────────────────────────
         scope_user = scope.get("user") or {}
         tenant_from_user = None
         tenant_from_token = self._tenant_from_bearer_auth(request_headers.get("authorization"))
@@ -188,7 +194,6 @@ class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
         else:
             tenant_from_user = getattr(scope_user, "tenant_id", None)
 
-        # Trust tenant only from authenticated user context injected by JWTAuth.
         tenant_id = tenant_from_user or tenant_from_token or DEFAULT_TENANT_ID
         tenant_token = set_current_tenant_id(tenant_id)
 
@@ -197,35 +202,6 @@ class CorrelationAndDeprecationMiddleware(AbstractMiddleware):
                 headers = message.setdefault("headers", [])
                 headers.append((b"x-correlation-id", correlation_id.encode()))
                 headers.append((b"x-tenant-id", tenant_id.encode()))
-
-                process_time_ms = (time.perf_counter() - started) * 1000.0
-                headers.append((b"x-process-time", f"{process_time_ms:.2f}ms".encode()))
-                headers.append((b"x-content-type-options", b"nosniff"))
-                headers.append((b"x-frame-options", b"DENY"))
-                headers.append((b"referrer-policy", b"no-referrer"))
-                headers.append((b"permissions-policy", b"geolocation=(), microphone=(), camera=()"))
-                headers.append(
-                    (
-                        b"content-security-policy",
-                        b"default-src 'self'; frame-ancestors 'none'; base-uri 'self'",
-                    )
-                )
-
-                path = scope.get("path", "")
-                if path.startswith("/api/v1"):
-                    headers.append((b"deprecation", b"true"))
-                    headers.append((b"sunset", b"Wed, 31 Dec 2026 23:59:59 GMT"))
-                    headers.append((b"link", b'</api/v2>; rel="successor-version"'))
-                # Rozwiązanie 22: deprecation headers dla nie-wersjonowanych ścieżek
-                elif path.startswith("/api/triage"):
-                    headers.append((b"deprecation", b"true"))
-                    headers.append((b"sunset", b"Wed, 31 Dec 2026 23:59:59 GMT"))
-                    headers.append((b"link", b'</api/v2/triage>; rel="successor-version"'))
-                elif path.startswith("/api/analytics"):
-                    headers.append((b"deprecation", b"true"))
-                    headers.append((b"sunset", b"Wed, 31 Dec 2026 23:59:59 GMT"))
-                    headers.append((b"link", b'</api/v2/analytics>; rel="successor-version"'))
-
             await send(message)
 
         try:

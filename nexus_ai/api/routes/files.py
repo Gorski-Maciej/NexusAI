@@ -12,7 +12,7 @@ class FileController(Controller):
     Rozwiązanie 31: CSP sandbox dla ścieżki /files aby zapobiec wykonaniu złośliwych plików.
     """
 
-    path = "/api/v1/files"
+    path = "/files"
     tags = [TAG_FILES]
 
     @get(

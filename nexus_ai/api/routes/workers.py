@@ -7,7 +7,7 @@ from typing import Any
 import pendulum
 from litestar import Controller, get
 
-from nexus_ai.api.dto import GenericDictDTO, TAG_SYSTEM
+from nexus_ai.api.dto import WorkerStatusDTO, TAG_SYSTEM
 
 
 class WorkerStatusController(Controller):
@@ -17,12 +17,12 @@ class WorkerStatusController(Controller):
       - GET /api/v1/system/workers/status: aktualne obciążenie workera
     """
 
-    path = "/api/v1/system/workers"
+    path = "/system/workers"
     tags = [TAG_SYSTEM]
 
     @get(
         "/status",
-        return_dto=GenericDictDTO,
+        return_dto=WorkerStatusDTO,
         summary="Get worker status",
         description="Returns current worker load, task count, concurrency limit, and resource usage (Rozwiązanie 29).",
         operation_id="getWorkerStatus",

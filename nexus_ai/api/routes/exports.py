@@ -7,7 +7,7 @@ from typing import Any
 
 from litestar import Controller, get
 
-from nexus_ai.api.dto import GenericDictDTO, TAG_FILES, TAG_SYSTEM
+from nexus_ai.api.dto import ExportDownloadDTO, ExportStatusDTO, TAG_FILES, TAG_SYSTEM
 
 
 class ExportFormat(StrEnum):
@@ -22,12 +22,12 @@ class ExportFormat(StrEnum):
 class ExportController(Controller):
     """Handle invoice data export."""
 
-    path = "/api/v1/exports"
+    path = "/exports"
     tags = [TAG_FILES, TAG_SYSTEM]
 
     @get(
         "/{export_id:str}/status",
-        return_dto=GenericDictDTO,
+        return_dto=ExportStatusDTO,
         summary="Get export status",
         description="Returns the status of an ongoing or completed export.",
         operation_id="getExportStatus",
@@ -43,7 +43,7 @@ class ExportController(Controller):
 
     @get(
         "/{export_id:str}/download",
-        return_dto=GenericDictDTO,
+        return_dto=ExportDownloadDTO,
         summary="Download export file",
         description="Downloads an exported file by its ID.",
         operation_id="downloadExport",

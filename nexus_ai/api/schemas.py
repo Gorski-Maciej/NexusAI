@@ -194,3 +194,385 @@ class SagaStateResponse(msgspec.Struct):
     current_state: str
     updated_at: str
     payload: dict[str, object]
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Admin API Response Structs
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class StatusResponse(msgspec.Struct):
+    """Generic status+message response."""
+    status: str
+    message: str
+
+
+class IdResponse(msgspec.Struct):
+    """Response with status + rule_id."""
+    status: str
+    rule_id: str
+
+
+class ActionResponse(msgspec.Struct):
+    """Response with status + id + action."""
+    status: str
+    rule_id: str
+    action: str
+
+
+class RetryAllResponse(msgspec.Struct):
+    """Response for bulk retry."""
+    status: str
+    retried: int
+
+
+class ChangeRoleResponse(msgspec.Struct):
+    """Response for role change."""
+    status: str
+    message: str
+    user_id: str
+    old_role: str
+    new_role: str
+
+
+class FailedTaskItem(msgspec.Struct):
+    """Single failed task entry."""
+    id: str
+    task_name: str
+    task_id: str
+    error_type: str
+    error_message: str
+    retry_count: int
+    max_retries: int
+    resolved: bool
+    resolved_at: str | None = None
+    resolved_by: str | None = None
+    resolution_note: str | None = None
+    failed_at: str
+    created_at: str
+
+
+class FailedTaskListResponse(msgspec.Struct):
+    """Paginated failed tasks response."""
+    tasks: list[FailedTaskItem]
+    total: int
+    limit: int
+    offset: int
+
+
+class RiskThresholdRuleItem(msgspec.Struct):
+    """Single risk threshold rule."""
+    # DuckDB returns dynamic fields — use dict
+    pass
+
+
+class RuleListResponse(msgspec.Struct):
+    """Generic rule list response."""
+    rules: list[dict]
+    total: int
+
+
+class PaginatedRuleListResponse(msgspec.Struct):
+    """Paginated rule list with limit/offset."""
+    rules: list[dict]
+    total: int
+    limit: int
+    offset: int
+
+
+class HealthResponse(msgspec.Struct):
+    """System health check response."""
+    status: str
+    timestamp: str
+    database: str | None = None
+    failed_tasks_unresolved: int | None = None
+
+
+class ReplayDecisionResponse(msgspec.Struct):
+    """Replay decision result."""
+    transaction_id: str
+    match: bool
+    original_verdict: str
+    replayed_verdict: str
+    differences: list[str]
+    error: str | None = None
+
+
+class ReplayBatchItem(msgspec.Struct):
+    """Single replay batch result item."""
+    transaction_id: str
+    match: bool
+    error: str | None = None
+    differences: list[str]
+
+
+class ReplayBatchResponse(msgspec.Struct):
+    """Batch replay results."""
+    total: int
+    matches: int
+    mismatches: int
+    results: list[ReplayBatchItem]
+
+
+class IntegrityVerifyResponse(msgspec.Struct):
+    """Integrity verification result."""
+    status: str
+    total_records: int
+    verified_at: str
+    violations: list[dict]
+    violation_id: str | None = None
+    system_locked: bool = False
+    checkpoint: dict | None = None
+
+
+class FallbackEventItem(msgspec.Struct):
+    """Single fallback event."""
+    pass  # DuckDB returns dynamic fields
+
+
+class FallbackListResponse(msgspec.Struct):
+    """Fallback events list."""
+    events: list[dict]
+    total: int
+    pending: int
+
+
+class HotReloadHealthResponse(msgspec.Struct):
+    """Hot-reload listener health."""
+    status: str
+    nats_url: str
+    subscriptions: list[dict]
+    events_total: int
+    events_per_subject: dict[str, int]
+    last_event_at: str | None = None
+    uptime_seconds: float = 0.0
+    message: str = ""
+
+
+class RuleChangelogResponse(msgspec.Struct):
+    """Rule change log."""
+    changes: list[dict]
+    total: int
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Auth API Response Structs
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class RegisterResponse(msgspec.Struct):
+    """Registration response."""
+    status: str
+    message: str
+    user_id: str
+
+
+class LoginResponse(msgspec.Struct):
+    """Login response with tokens."""
+    access_token: str
+    refresh_token: str
+    token_type: str = "Bearer"
+    expires_in: int = 3600
+    refresh_token_expires_in_days: int = 7
+
+
+class LogoutResponse(msgspec.Struct):
+    """Logout response."""
+    status: str
+    message: str
+
+
+class ConfirmEmailResponse(msgspec.Struct):
+    """Email confirmation response."""
+    status: str
+    message: str
+
+
+class PasswordResetResponse(msgspec.Struct):
+    """Password reset email sent response."""
+    status: str
+    message: str
+
+
+class PasswordResetConfirmResponse(msgspec.Struct):
+    """Password reset confirm response."""
+    status: str
+    message: str
+
+
+class ChangePasswordResponse(msgspec.Struct):
+    """Password change response."""
+    status: str
+    message: str
+
+
+class CsrfTokenResponse(msgspec.Struct):
+    """CSRF token response."""
+    csrf_token: str
+
+
+class UserProfileResponse(msgspec.Struct):
+    """Current user profile."""
+    id: str
+    username: str
+    email: str | None = None
+    full_name: str | None = None
+    role: str = "viewer"
+    is_active: bool = True
+    is_verified: bool = False
+    must_change_password: bool = False
+    last_login: str | None = None
+    created_at: str
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Other API Response Structs
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class ExportStatusResponse(msgspec.Struct):
+    """Export status."""
+    export_id: str
+    status: str
+    format: str
+    file_url: str
+
+
+class ExportDownloadResponse(msgspec.Struct):
+    """Export download response."""
+    message: str
+    format: str
+
+
+class FinOpsResponse(msgspec.Struct):
+    """FinOps cost per invoice."""
+    hourly_cost_usd: float
+    invoice_count: int
+    cost_per_invoice_usd: float
+    cpu_cores: float
+    ram_gb: float
+
+
+class I18nStatusResponse(msgspec.Struct):
+    """I18n status."""
+    api_languages: list[str]
+    prompt_languages: list[str]
+    api_locale_dir: str
+    prompt_dir: str
+
+
+class PiiScanResponse(msgspec.Struct):
+    """PII scan results."""
+    status: str
+    findings: dict[str, int]
+    total_matches: int
+    dpo_notified: bool
+
+
+class SecurityPostureResponse(msgspec.Struct):
+    """Security posture summary."""
+    summary_available: bool
+    zap_baseline_available: bool
+    zap_full_available: bool
+    scan_summary: dict | None = None
+
+
+class K6SummaryResponse(msgspec.Struct):
+    """K6 performance summary."""
+    status: str
+    summary_available: bool = True
+    p95_ms: float | None = None
+    check_failures: float | None = None
+    raw: dict | None = None
+
+
+class StatsProcessingResponse(msgspec.Struct):
+    """Processing statistics."""
+    total_processed: int
+    avg_processing_time_ms: int
+    success_rate: float
+    error_count: int
+
+
+class WorkerStatusResponse(msgspec.Struct):
+    """Worker status."""
+    status: str
+    uptime_seconds: int = 0
+    ram_mb: float = 0.0
+    cpu_percent: float = 0.0
+    active_tasks: int = 0
+    max_concurrent: int = 5
+    pid: int = 0
+    python_version: str = ""
+    error: str | None = None
+
+
+class CircuitBreakerStatusResponse(msgspec.Struct):
+    """Circuit breaker status."""
+    provider: str = "stamina"
+    status: str = "active"
+    details: str = ""
+    note: str = ""
+
+
+class TelemetryFallbackStatusResponse(msgspec.Struct):
+    """Telemetry fallback status."""
+    buffer_file: str
+    buffer_exists: bool
+    queued_spans: int
+    duckdb_path: str
+
+
+class AutopilotActionResponse(msgspec.Struct):
+    """Autopilot accept/reject response."""
+    result: str
+    invoice_id: str
+    action: str
+
+
+class AutopilotEvalTriggerResponse(msgspec.Struct):
+    """Autopilot trigger evaluation response."""
+    result: str
+    invoice_id: str
+    message: str
+
+
+class PartnerClientItem(msgspec.Struct):
+    """Partner client summary."""
+    id: str
+    name: str
+    nip: str
+    invoice_count: int
+    status: str
+    last_activity: str
+
+
+class PartnerClientListResponse(msgspec.Struct):
+    """Partner client list with cursor pagination."""
+    items: list[PartnerClientItem]
+    next_cursor: str | None = None
+    has_more: bool = False
+
+
+class PartnerInvoiceItem(msgspec.Struct):
+    """Partner client invoice summary."""
+    invoice_id: str
+    number: str
+    contractor: str
+    amount_gross: float = 0.0
+    currency: str = "PLN"
+    status: str = ""
+    issue_date: str = ""
+    created_at: str = ""
+    confidence: float = 0.0
+
+
+class SaveDraftResponse(msgspec.Struct):
+    """Response for saving a UI draft."""
+    status: str
+    draft_key: str
+
+
+class RuleSetsResponse(msgspec.Struct):
+    """Available tax simulation rule sets."""
+    rule_sets: list[str]

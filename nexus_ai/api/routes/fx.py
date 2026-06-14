@@ -18,7 +18,7 @@ class FXController(Controller):
       - POST /api/v1/system/fx/upload-rates: ręczne wczytanie kursów NBP z CSV
     """
 
-    path = "/api/v1/system/fx"
+    path = "/system/fx"
     tags = [TAG_FX]
 
     @post(

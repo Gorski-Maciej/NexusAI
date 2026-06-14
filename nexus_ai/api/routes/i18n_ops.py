@@ -4,20 +4,20 @@ from pathlib import Path
 
 from litestar import Controller, get
 
-from nexus_ai.api.dto import GenericDictDTO, TAG_I18N
+from nexus_ai.api.dto import I18nStatusDTO, TAG_I18N
 from nexus_ai.api.rbac import owner_only_guard
 
 
 class I18nOpsController(Controller):
     """Operational i18n visibility for API/UI/prompts."""
 
-    path = "/api/v1/system/i18n"
+    path = "/system/i18n"
     guards = [owner_only_guard]
     tags = [TAG_I18N]
 
     @get(
         "/status",
-        return_dto=GenericDictDTO,
+        return_dto=I18nStatusDTO,
         summary="Get i18n status",
         description="Returns available API and prompt language translations.",
         operation_id="getI18nStatus",

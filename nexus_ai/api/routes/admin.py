@@ -22,9 +22,24 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from structlog import get_logger
 
 from nexus_ai.api.dto import (
+    ActionResponseDTO,
     ChangeRoleDTO,
+    ChangeRoleResponseDTO,
+    FailedTaskListDTO,
+    FallbackListDTO,
     GenericDictDTO,
+    HealthResponseDTO,
+    HotReloadHealthDTO,
+    IdResponseDTO,
+    IntegrityVerifyDTO,
+    PaginatedRuleListDTO,
+    ReplayBatchDTO,
+    ReplayDecisionDTO,
+    RetryAllResponseDTO,
     RiskThresholdDTO,
+    RuleChangelogDTO,
+    RuleListResponseDTO,
+    StatusResponseDTO,
     TAG_ADMIN,
 )
 from nexus_ai.api.rbac import admin_only_guard, requires_permission
@@ -52,14 +67,14 @@ logger = get_logger("nexus.api.admin")
 class AdminController(Controller):
     """Panel administracyjny — zarządzanie użytkownikami, regułami, DLQ."""
 
-    path = "/api/admin"
+    path = "/admin"
     guards = [admin_only_guard]
     tags = [TAG_ADMIN]
 
     @get(
         "/failed-tasks",
         guards=[requires_permission("admin:failed-tasks")],
-        return_dto=GenericDictDTO,
+        return_dto=FailedTaskListDTO,
         summary="List failed tasks",
         description="List all failed tasks with pagination and filtering by resolved status and task name.",
         operation_id="listFailedTasks",
@@ -125,7 +140,7 @@ class AdminController(Controller):
     @post(
         "/failed-tasks/{task_id:str}/retry",
         guards=[requires_permission("admin:failed-tasks")],
-        return_dto=GenericDictDTO,
+        return_dto=StatusResponseDTO,
         summary="Retry failed task",
         description="Reset a failed task and re-queue it for retry.",
         operation_id="retryFailedTask",
@@ -187,7 +202,7 @@ class AdminController(Controller):
         "/failed-tasks/{task_id:str}",
         status_code=200,
         guards=[requires_permission("admin:failed-tasks")],
-        return_dto=GenericDictDTO,
+        return_dto=StatusResponseDTO,
         summary="Delete failed task",
         description="Permanently delete a failed task entry.",
         operation_id="deleteFailedTask",
@@ -221,7 +236,7 @@ class AdminController(Controller):
     @post(
         "/failed-tasks/retry-all",
         guards=[requires_permission("admin:failed-tasks")],
-        return_dto=GenericDictDTO,
+        return_dto=RetryAllResponseDTO,
         summary="Retry all failed tasks",
         description="Retry all unresolved failed tasks in bulk.",
         operation_id="retryAllFailedTasks",
@@ -273,7 +288,7 @@ class AdminController(Controller):
         "/users/{user_id:str}/role",
         guards=[requires_permission("user:edit")],
         dto=ChangeRoleDTO,
-        return_dto=GenericDictDTO,
+        return_dto=ChangeRoleResponseDTO,
         summary="Change user role",
         description="Change a user's role. Valid roles: admin, accountant, auditor, viewer.",
         operation_id="changeUserRole",
@@ -384,7 +399,7 @@ class AdminController(Controller):
     @get(
         "/risk-thresholds",
         guards=[requires_permission("admin:risk-thresholds")],
-        return_dto=GenericDictDTO,
+        return_dto=RuleListResponseDTO,
         summary="List risk thresholds",
         description="List all active risk threshold rules.",
         operation_id="listRiskThresholds",
@@ -408,7 +423,7 @@ class AdminController(Controller):
         "/risk-thresholds",
         guards=[requires_permission("admin:risk-thresholds")],
         dto=RiskThresholdDTO,
-        return_dto=GenericDictDTO,
+        return_dto=IdResponseDTO,
         summary="Create risk threshold",
         description="Create a new risk threshold rule (append-only, never update). Requires condition and output dicts.",
         operation_id="createRiskThreshold",
@@ -438,7 +453,7 @@ class AdminController(Controller):
                 getattr(request.user, "username", "admin"),
             )
 
-            # TODO: Publish NATS event risk.thresholds.updated for hot-reload
+            # Publish NATS event risk.thresholds.updated for hot-reload
             try:
                 import nats
 
@@ -457,7 +472,7 @@ class AdminController(Controller):
 
     @get(
         "/system/health",
-        return_dto=GenericDictDTO,
+        return_dto=HealthResponseDTO,
         summary="System health check",
         description="Comprehensive system health check including database, failed tasks, and system status.",
         operation_id="adminSystemHealth",
@@ -493,7 +508,7 @@ class AdminController(Controller):
     @put(
         "/risk-thresholds/{rule_id:str}/deprecate",
         guards=[requires_permission("admin:risk-thresholds")],
-        return_dto=GenericDictDTO,
+        return_dto=ActionResponseDTO,
         summary="Deprecate risk threshold",
         description="Deactivate a risk threshold rule by setting valid_to = today.",
         operation_id="deprecateRiskThreshold",
@@ -542,7 +557,7 @@ class AdminController(Controller):
     @get(
         "/risk-thresholds/history",
         guards=[requires_permission("admin:risk-thresholds")],
-        return_dto=GenericDictDTO,
+        return_dto=RuleListResponseDTO,
         summary="List risk thresholds history",
         description="Full version history of all risk threshold rules (append-only).",
         operation_id="listRiskThresholdsHistory",
@@ -571,7 +586,7 @@ class AdminController(Controller):
     @get(
         "/billing-rules",
         guards=[requires_permission("admin:billing-rules")],
-        return_dto=GenericDictDTO,
+        return_dto=RuleListResponseDTO,
         summary="List billing rules",
         description="List all active billing rules.",
         operation_id="listBillingRules",
@@ -594,7 +609,7 @@ class AdminController(Controller):
     @post(
         "/billing-rules",
         guards=[requires_permission("admin:billing-rules")],
-        return_dto=GenericDictDTO,
+        return_dto=IdResponseDTO,
         summary="Create billing rule",
         description="Create a new billing rule (append-only, never update).",
         operation_id="createBillingRule",
@@ -645,7 +660,7 @@ class AdminController(Controller):
     @post(
         "/billing-rules/{rule_id:str}/deprecate",
         guards=[requires_permission("admin:billing-rules")],
-        return_dto=GenericDictDTO,
+        return_dto=ActionResponseDTO,
         summary="Deprecate billing rule",
         description="Deactivate a billing rule.",
         operation_id="deprecateBillingRule",
@@ -685,7 +700,7 @@ class AdminController(Controller):
     @get(
         "/billing-rules/history",
         guards=[requires_permission("admin:billing-rules")],
-        return_dto=GenericDictDTO,
+        return_dto=RuleListResponseDTO,
         summary="List billing rules history",
         description="Full version history of all billing rules (append-only).",
         operation_id="listBillingRulesHistory",
@@ -710,7 +725,7 @@ class AdminController(Controller):
     @post(
         "/audit/replay/{transaction_id:str}",
         guards=[requires_permission("admin:audit")],
-        return_dto=GenericDictDTO,
+        return_dto=ReplayDecisionDTO,
         summary="Replay decision",
         description="Replay a historical tax decision and compare verdicts.",
         operation_id="replayDecision",
@@ -743,7 +758,7 @@ class AdminController(Controller):
     @post(
         "/audit/replay-batch",
         guards=[requires_permission("admin:audit")],
-        return_dto=GenericDictDTO,
+        return_dto=ReplayBatchDTO,
         summary="Replay batch decisions",
         description="Replay all decisions in a date range.",
         operation_id="replayBatch",
@@ -799,7 +814,7 @@ class AdminController(Controller):
     @get(
         "/rules",
         guards=[requires_permission("admin:rules")],
-        return_dto=GenericDictDTO,
+        return_dto=PaginatedRuleListDTO,
         summary="List tax rules",
         description="List all tax rules with optional filtering.",
         operation_id="listTaxRules",
@@ -834,7 +849,7 @@ class AdminController(Controller):
     @post(
         "/rules",
         guards=[requires_permission("admin:rules")],
-        return_dto=GenericDictDTO,
+        return_dto=IdResponseDTO,
         summary="Create tax rule",
         description="Create a new tax rule (append-only, never update). Requires condition_sql.",
         operation_id="createTaxRule",
@@ -889,7 +904,7 @@ class AdminController(Controller):
     @post(
         "/rules/{rule_id:str}/close",
         guards=[requires_permission("admin:rules")],
-        return_dto=GenericDictDTO,
+        return_dto=ActionResponseDTO,
         summary="Close tax rule",
         description="Close a tax rule (set valid_to to today).",
         operation_id="closeTaxRule",
@@ -962,7 +977,7 @@ class AdminController(Controller):
     @get(
         "/rules/changelog",
         guards=[requires_permission("admin:rules")],
-        return_dto=GenericDictDTO,
+        return_dto=RuleChangelogDTO,
         summary="List rule changes",
         description="Get tax rule change log.",
         operation_id="listRuleChanges",
@@ -991,7 +1006,7 @@ class AdminController(Controller):
     @get(
         "/ledger-rules",
         guards=[requires_permission("admin:ledger")],
-        return_dto=GenericDictDTO,
+        return_dto=RuleListResponseDTO,
         summary="List ledger rules",
         description="List all ledger validation rules.",
         operation_id="listLedgerRules",
@@ -1014,7 +1029,7 @@ class AdminController(Controller):
     @post(
         "/ledger-rules",
         guards=[requires_permission("admin:ledger")],
-        return_dto=GenericDictDTO,
+        return_dto=IdResponseDTO,
         summary="Create ledger rule",
         description="Create a new ledger validation rule (append-only).",
         operation_id="createLedgerRule",
@@ -1082,7 +1097,7 @@ class AdminController(Controller):
     @delete(
         "/ledger-rules/{rule_id:str}",
         guards=[requires_permission("admin:ledger")],
-        return_dto=GenericDictDTO,
+        return_dto=ActionResponseDTO,
         summary="Delete ledger rule",
         description="Deactivate a ledger validation rule (soft-delete via valid_to).",
         operation_id="deleteLedgerRule",
@@ -1121,7 +1136,7 @@ class AdminController(Controller):
     @get(
         "/fallback-events",
         guards=[requires_permission("admin:fallback")],
-        return_dto=GenericDictDTO,
+        return_dto=FallbackListDTO,
         summary="List fallback events",
         description="List fallback events (no-matching-rule incidents).",
         operation_id="listFallbackEvents",
@@ -1153,7 +1168,7 @@ class AdminController(Controller):
     @post(
         "/fallback-events/{event_id:str}/resolve",
         guards=[requires_permission("admin:fallback")],
-        return_dto=GenericDictDTO,
+        return_dto=ActionResponseDTO,
         summary="Resolve fallback event",
         description="Resolve a fallback event.",
         operation_id="resolveFallbackEvent",
@@ -1188,7 +1203,7 @@ class AdminController(Controller):
     @post(
         "/audit/verify-integrity",
         guards=[requires_permission("admin:audit")],
-        return_dto=GenericDictDTO,
+        return_dto=IntegrityVerifyDTO,
         summary="Verify integrity",
         description="Verify integrity of the decision trace hash chain.",
         operation_id="verifyIntegrity",
@@ -1264,7 +1279,7 @@ class AdminController(Controller):
     @post(
         "/fallback-events/{event_id:str}/ignore",
         guards=[requires_permission("admin:fallback")],
-        return_dto=GenericDictDTO,
+        return_dto=ActionResponseDTO,
         summary="Ignore fallback event",
         description="Ignore a fallback event without resolving.",
         operation_id="ignoreFallbackEvent",
@@ -1293,7 +1308,7 @@ class AdminController(Controller):
     @get(
         "/hot-reload/health",
         guards=[requires_permission("admin:hot-reload")],
-        return_dto=GenericDictDTO,
+        return_dto=HotReloadHealthDTO,
         summary="Hot-reload health",
         description="Show NATS hot-reload listener status and per-subject event counts.",
         operation_id="getHotReloadHealth",

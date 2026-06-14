@@ -13,7 +13,7 @@ from nexus_ai.api.rbac import owner_only_guard
 class KoreAuditController(Controller):
     """Operational endpoint exposing KORE 1-11 compliance audit report."""
 
-    path = "/api/v1/system/kore"
+    path = "/system/kore"
     guards = [owner_only_guard]
     tags = [TAG_AUDIT]
 

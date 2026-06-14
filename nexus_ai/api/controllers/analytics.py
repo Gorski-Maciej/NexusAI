@@ -3,7 +3,6 @@ from typing import Any
 from litestar import Controller, get, post
 from structlog import get_logger
 
-from nexus_ai.api.cache import ttl_cache
 from nexus_ai.api.schemas import AnalyticsQuery
 from nexus_ai.db.analytics import DuckDBManager
 
@@ -40,8 +39,7 @@ def _validate_currency(currency: str) -> str:
 class AnalyticsController(Controller):
     path = "/api/analytics"
 
-    @post("/cashflow")
-    @ttl_cache(seconds=60)
+    @post("/cashflow", cache=60)
     async def get_cashflow_report(self, data: AnalyticsQuery) -> dict:
         """Pobiera raport cashflow z kumulacją i opcjonalną konwersją walut (ASOF JOIN).
         Rozwiązanie 20: Walidacja parametrów dimension i report_currency na białej liście.
@@ -138,8 +136,7 @@ class AnalyticsController(Controller):
         finally:
             manager.close()
 
-    @get("/monthly-trend")
-    @ttl_cache(seconds=60)
+    @get("/monthly-trend", cache=60)
     async def get_monthly_trend(self, state: Any) -> list[dict[str, Any]]:
         manager: DuckDBManager = state.olap_manager
         # Optymalizacja: wybieramy tylko potrzebne kolumny, filtrujemy NULL-e dla indeksu

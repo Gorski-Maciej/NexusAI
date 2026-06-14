@@ -48,7 +48,7 @@ logger = get_logger("nexus.api.dlq")
 class DLQController(Controller):
     """Dead Letter Queue management endpoints."""
 
-    path = "/api/v1/system/dlq"
+    path = "/system/dlq"
     guards = [admin_only_guard]
     tags = [TAG_ADMIN]
 

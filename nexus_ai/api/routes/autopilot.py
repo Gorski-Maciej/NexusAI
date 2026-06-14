@@ -4,23 +4,28 @@ from __future__ import annotations
 
 from typing import Any
 
-import anyio
-
 from litestar import Controller, get, post
+from litestar.background_tasks import BackgroundTask
 from litestar.connection import Request
+from litestar.response import Response as LitestarResponse
 
+from nexus_ai.api.background_tasks import emit_decision_and_notification_bg
 from nexus_ai.api.dto import (
+    AutopilotActionDTO,
     AutopilotDecisionDTO,
     AutopilotDecisionsDTO,
+    AutopilotEvalTriggerDTO as AutopilotEvalTriggerResponseDTO,
     AutopilotStatsDTO,
     AutopilotTriggerDTO,
     AutopilotTrustScoreDTO,
-    GenericDictDTO,
     TAG_SYSTEM,
 )
 from nexus_ai.core.config import AppConfig
 from nexus_ai.services.decision_logger import DecisionLogger
 from nexus_ai.services.notification_service import NotificationService
+from structlog import get_logger as _get_logger
+
+logger = _get_logger("nexus.api.autopilot")
 
 
 class AutopilotController(Controller):
@@ -33,7 +38,7 @@ class AutopilotController(Controller):
       - Autopilot statistics and health
     """
 
-    path = "/api/v2/autopilot"
+    path = "/autopilot"
     tags = [TAG_SYSTEM]
 
     @get(
@@ -151,7 +156,7 @@ class AutopilotController(Controller):
 
     @post(
         "/decisions/{invoice_id:str}/accept",
-        return_dto=GenericDictDTO,
+        return_dto=AutopilotActionDTO,
         summary="Accept a decision",
         description="Accepts a pending Autopilot decision, updates invoice status to APPROVED with optimistic locking.",
         operation_id="acceptAutopilotDecision",
@@ -223,43 +228,35 @@ class AutopilotController(Controller):
             finally:
                 await engine.dispose()
 
-            # 3. Emit DecisionOverridden event ─────────────────────────
-            try:
-                event_emitter = request.app.state.event_emitter
-                await event_emitter.emit_decision_overridden(
-                    invoice_id=invoice_id,
-                    original_decision="AUTO_POST",
-                    user_decision="ACCEPTED",
-                    user_id=str(getattr(request.user, "id", "system")),
-                    metadata={"source": "autopilot", "action": "accept"},
-                )
-                logger.info("[EVENT] DecisionOverridden emitted for invoice_id=%s", invoice_id)
-            except Exception as event_err:
-                logger.warning("[EVENT] Failed to emit DecisionOverridden: %s", event_err)
-
-            # 4. Send notification (fire-and-forget via BackgroundTaskManager)
+            # ── Background tasks (fire-and-forget) ─────────────────────
+            event_emitter = getattr(request.app.state, "event_emitter", None)
             notif_db = config.base_dir / "app_data" / "notifications.sqlite"
             service = NotificationService(notif_db)
-            request.app.state.bg_tasks.start_task(
-                f"notif_accept_{invoice_id}",
-                _send_notification_async(
-                    service,
-                    "anonymous",
-                    invoice_id,
-                    "Decyzja zaakceptowana ✅",
-                    f"Faktura {invoice_id[:8]}... została zaakceptowana przez użytkownika.",
-                ),
-                metadata={"description": "Notification: accept decision"},
+            user_id = str(getattr(request.user, "id", "system"))
+
+            background_tasks = BackgroundTask(
+                emit_decision_and_notification_bg,
+                event_emitter=event_emitter,
+                notification_service=service,
+                invoice_id=invoice_id,
+                original_decision="AUTO_POST",
+                user_decision="ACCEPTED",
+                user_id=user_id,
+                metadata={"source": "autopilot", "action": "accept"},
+                notification_title="Decyzja zaakceptowana ✅",
             )
 
-            return {"result": "OK", "invoice_id": invoice_id, "action": "ACCEPTED"}
+            return LitestarResponse(
+                content={"result": "OK", "invoice_id": invoice_id, "action": "ACCEPTED"},
+                background=background_tasks if event_emitter else None,
+            )
 
         except Exception as exc:
             return {"result": "ERROR", "invoice_id": invoice_id, "error": str(exc)}
 
     @post(
         "/decisions/{invoice_id:str}/reject",
-        return_dto=GenericDictDTO,
+        return_dto=AutopilotActionDTO,
         summary="Reject a decision",
         description="Rejects a pending Autopilot decision, updates invoice status to REJECTED with optimistic locking.",
         operation_id="rejectAutopilotDecision",
@@ -331,36 +328,28 @@ class AutopilotController(Controller):
             finally:
                 await engine.dispose()
 
-            # 3. Emit DecisionOverridden event ─────────────────────────
-            try:
-                event_emitter = request.app.state.event_emitter
-                await event_emitter.emit_decision_overridden(
-                    invoice_id=invoice_id,
-                    original_decision="AUTO_POST",
-                    user_decision="REJECTED",
-                    user_id=str(getattr(request.user, "id", "system")),
-                    metadata={"source": "autopilot", "action": "reject"},
-                )
-                logger.info("[EVENT] DecisionOverridden emitted for invoice_id=%s", invoice_id)
-            except Exception as event_err:
-                logger.warning("[EVENT] Failed to emit DecisionOverridden: %s", event_err)
-
-            # 4. Send notification (fire-and-forget via BackgroundTaskManager)
+            # ── Background tasks (fire-and-forget) ─────────────────────
+            event_emitter = getattr(request.app.state, "event_emitter", None)
             notif_db = config.base_dir / "app_data" / "notifications.sqlite"
             service = NotificationService(notif_db)
-            request.app.state.bg_tasks.start_task(
-                f"notif_reject_{invoice_id}",
-                _send_notification_async(
-                    service,
-                    "anonymous",
-                    invoice_id,
-                    "Decyzja odrzucona ❌",
-                    f"Faktura {invoice_id[:8]}... została odrzucona przez użytkownika.",
-                ),
-                metadata={"description": "Notification: reject decision"},
+            user_id = str(getattr(request.user, "id", "system"))
+
+            background_tasks = BackgroundTask(
+                emit_decision_and_notification_bg,
+                event_emitter=event_emitter,
+                notification_service=service,
+                invoice_id=invoice_id,
+                original_decision="AUTO_POST",
+                user_decision="REJECTED",
+                user_id=user_id,
+                metadata={"source": "autopilot", "action": "reject"},
+                notification_title="Decyzja odrzucona ❌",
             )
 
-            return {"result": "OK", "invoice_id": invoice_id, "action": "REJECTED"}
+            return LitestarResponse(
+                content={"result": "OK", "invoice_id": invoice_id, "action": "REJECTED"},
+                background=background_tasks if event_emitter else None,
+            )
 
         except Exception as exc:
             return {"result": "ERROR", "invoice_id": invoice_id, "error": str(exc)}
@@ -453,7 +442,7 @@ class AutopilotController(Controller):
     @post(
         "/evaluate",
         dto=AutopilotTriggerDTO,
-        return_dto=GenericDictDTO,
+        return_dto=AutopilotEvalTriggerResponseDTO,
         summary="Trigger evaluation",
         description="Manually triggers Autopilot evaluation for an invoice via NATS task queue.",
         operation_id="triggerAutopilotEvaluation",
@@ -508,23 +497,3 @@ class AutopilotController(Controller):
             }
 
 
-async def _send_notification_async(
-    service: NotificationService,
-    user_id: str,
-    invoice_id: str,
-    title: str,
-    message: str,
-) -> None:
-    """Fire-and-forget helper to send a notification via the NotificationService."""
-    try:
-        await anyio.to_thread.run_sync(
-            service._add_notification,
-            user_id=user_id,
-            title=title,
-            message=message,
-            notification_type="user_action",
-            reference_type="invoice",
-            reference_id=invoice_id,
-        )
-    except Exception:
-        pass

@@ -2,14 +2,17 @@ from __future__ import annotations
 
 import re
 
-from litestar import Litestar
+from litestar import Litestar, Router
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
+from litestar.config.response_cache import ResponseCacheConfig
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.plugins import SwaggerRenderPlugin
+from litestar.plugins.problem_details import ProblemDetailsConfig, ProblemDetailsPlugin
+from litestar.plugins.prometheus import PrometheusConfig, PrometheusController
+from litestar.plugins.opentelemetry import OpenTelemetryPlugin
 from litestar.plugins.sqlalchemy import SQLAlchemyPlugin, SQLAlchemyConfig
-
-from nexus_ai.api.dependencies import provide_config as _app_config_provider
+from litestar.response import Response
 
 from nexus_ai.api.dependencies import (
     provide_config,
@@ -20,12 +23,14 @@ from nexus_ai.api.dependencies import (
     provide_tenant_manager,
 )
 from nexus_ai.api.exceptions import EXCEPTION_HANDLERS
-from nexus_ai.api.metrics_middleware import MetricsMiddleware
+from litestar.middleware.rate_limit import RateLimitConfig
+from litestar.connection import ASGIConnection
+from litestar.handlers.base import BaseRouteHandler
+from structlog import get_logger as _get_logger
+
 from nexus_ai.api.middleware import (
-    CorrelationAndDeprecationMiddleware,
-    UploadSizeGuardMiddleware,
+    TenantContextMiddleware,
 )
-from nexus_ai.api.rate_limit import SimpleRateLimitMiddleware
 from nexus_ai.api.routes.admin import AdminController
 from nexus_ai.api.routes.analytics import AnalyticsController
 from nexus_ai.api.routes.auth import AuthController
@@ -43,7 +48,6 @@ from nexus_ai.api.routes.invoices import InvoiceController, InvoiceControllerV2
 from nexus_ai.api.routes.kore_audit import KoreAuditController
 from nexus_ai.api.routes.kore_closure import KoreClosureController
 from nexus_ai.api.routes.live_preview import LivePreviewController
-from nexus_ai.api.routes.metrics import MetricsController
 from nexus_ai.api.routes.outbox_ops import OutboxOpsController
 from nexus_ai.api.routes.partner import PartnerController
 from nexus_ai.api.routes.performance_ops import PerformanceOpsController
@@ -67,6 +71,61 @@ from nexus_ai.db.database import create_session_factory
 from nexus_ai.services.currency_converter import Money, msgspec_money_enc_hook
 
 SUPPORTED_HEALTH_ENDPOINTS = ("/api/v1/health", "/api/v2/health")
+
+
+# ── Router-level guards dla Layered Architecture ──────────────────────
+# V1 guard — ostrzeżenie o deprecation dla klientów
+# V2 guard — weryfikacja minimalnej wersji klienta (Accept-Version)
+
+
+def _v1_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
+    """V1 guard: loguje użycie deprecated API.
+    Docelowo może blokować nowych klientów po dacie sunset."""
+    _get_logger("nexus.api.versioning").warning(
+        "Deprecated API v1 called: path=%s method=%s",
+        connection.url.path,
+        connection.method,
+    )
+
+
+# ── Router-level after_request hooks dla Layered Architecture ──────────
+
+
+async def _v1_after_request(response: Response) -> Response:
+    """Dodaje nagłówki deprecation dla /api/v1 (wersja deprecated)."""
+    response.headers["Deprecation"] = "true"
+    response.headers["Sunset"] = "Wed, 31 Dec 2026 23:59:59 GMT"
+    response.headers["Link"] = '</api/v2>; rel="successor-version"'
+    return response
+
+
+async def _v2_after_request(response: Response) -> Response:
+    """Dodaje nagłówek wersji dla /api/v2."""
+    response.headers["X-API-Version"] = "v2"
+    return response
+
+
+# ── App-level after_request (zastępuje correlation-id + security headers z CorrelationAndDeprecationMiddleware) ──
+
+
+async def _app_after_request(response: Response) -> Response:
+    """Dodaje nagłówki bezpieczeństwa do każdej odpowiedzi HTTP.
+
+    Zastępuje część funkcjonalności ``CorrelationAndDeprecationMiddleware``:
+    - X-Content-Type-Options, X-Frame-Options, Referrer-Policy
+    - Permissions-Policy, Content-Security-Policy
+
+    Tenant context i x-correlation-id są obsługiwane przez ``TenantContextMiddleware``.
+    Metryki czasu przetwarzania są zbierane przez ``PrometheusConfig``.
+    """
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; frame-ancestors 'none'; base-uri 'self'"
+    )
+    return response
 
 
 def create_app() -> Litestar:
@@ -93,10 +152,17 @@ def create_app() -> Litestar:
 
     cors_allow_credentials = config.cors_origins != ["*"]
 
-    return Litestar(
+    # ── Layered Architecture: Routery wg wersji API ────────────────────
+    # Każdy Router ma własne: tags, guards, after_request.
+    # Kontrolery dziedziczą te ustawienia od rodzica Router (merge).
+
+    v1_router = Router(
+        path="/api/v1",
+        tags=["v1"],
+        guards=[_v1_guard],
+        after_request=_v1_after_request,
         route_handlers=[
             HealthController,
-            HealthControllerV2,
             KoreAuditController,
             KoreClosureController,
             SystemIntegrityController,
@@ -108,32 +174,70 @@ def create_app() -> Litestar:
             PerformanceOpsController,
             TelemetryOpsController,
             InvoiceController,
-            InvoiceControllerV2,
             LivePreviewController,
+            TaskController,
+            TriageController,
+            ExportController,
+            FileController,
+            UIStateController,
+            CircuitBreakerController,
+            FXController,
+            DLQController,
+            WorkerStatusController,
+        ],
+    )
+
+    v2_router = Router(
+        path="/api/v2",
+        tags=["v2"],
+        after_request=_v2_after_request,
+        route_handlers=[
+            HealthControllerV2,
+            InvoiceControllerV2,
+            TriageControllerV2,
             AnalyticsController,
             DashboardController,
             PartnerController,
-            TaskController,
-            TriageController,
-            TriageControllerV2,
-            ExportController,
-            FileController,
+            AutopilotController,
+            TaxMathController,
+            TaxPolicyController,
+            RiskController,
+        ],
+    )
+
+    unversioned_router = Router(
+        path="/api",
+        route_handlers=[
             AuthController,
             AdminController,
-            UIStateController,
-            AutopilotController,
-            MetricsController,
-            CircuitBreakerController,
             VersionController,
-            FXController,
-            DLQController,
-            RiskController,
-            WorkerStatusController,
-            TaxPolicyController,
-            TaxMathController,
-            progress_sse,
         ],
-        plugins=[sqlalchemy_plugin],
+    )
+
+    # ── Prometheus metrics config (zastępuje MetricsMiddleware + MetricsController) ──
+    prometheus_config = PrometheusConfig(
+        metrics_prefix="nexus",
+        exclude=["/metrics", "/health", "/schema"],
+    )
+
+    return Litestar(
+        after_request=[_app_after_request],
+        route_handlers=[
+            v1_router,
+            v2_router,
+            unversioned_router,
+            PrometheusController,  # Zastępuje MetricsController — wbudowany /metrics
+            progress_sse,  # path="/api/v1/events/progress" — pełna ścieżka
+        ],
+        plugins=[
+            sqlalchemy_plugin,
+            # OpenTelemetryPlugin — automatyczne tracing spanów dla każdego requestu
+            OpenTelemetryPlugin(),
+            # ProblemDetailsPlugin — RFC 9457 dla wszystkich błędów HTTP (w tym własnych DomainError)
+            ProblemDetailsPlugin(
+                ProblemDetailsConfig(enable_for_all_http_exceptions=True)
+            ),
+        ],
         on_app_init=[jwt_auth.on_app_init],
         on_startup=[on_startup],
         on_shutdown=[on_shutdown],
@@ -147,11 +251,30 @@ def create_app() -> Litestar:
         },
         exception_handlers=EXCEPTION_HANDLERS,
         middleware=[
-            UploadSizeGuardMiddleware,
-            SimpleRateLimitMiddleware,
-            CorrelationAndDeprecationMiddleware,
-            MetricsMiddleware,
+            # Wbudowany Litestar RateLimitMiddleware — zastępuje SimpleRateLimitMiddleware
+            RateLimitConfig(
+                rate_limit=("minute", 60),
+                exclude=[
+                    "/api/v1/health",
+                    "/api/v2/health",
+                    "/schema/openapi.yml",
+                    "/schema/swagger",
+                    "/api/auth",
+                ],
+            ).middleware,
+            # TenantContextMiddleware — ustawia ContextVar tenant_id dla każdego requestu
+            # Zastępuje część CorrelationAndDeprecationMiddleware (tenant context + correlation-id)
+            TenantContextMiddleware,
+            # Prometheus middleware — metryki HTTP (zastępuje MetricsMiddleware)
+            prometheus_config.middleware,
         ],
+        # ── ResponseCacheConfig — wbudowane cachowanie odpowiedzi ──────
+        # Zastępuje własny @ttl_cache dekorator z cache.py
+        # ``@get(cache=60)`` na endpointach = 60s TTL
+        response_cache_config=ResponseCacheConfig(default_expiration=60),
+        # ── request_max_body_size — zastępuje UploadSizeGuardMiddleware ──
+        # 50MB dla największych uploadów
+        request_max_body_size=50 * 1024 * 1024,
         cors_config=CORSConfig(
             allow_origins=config.cors_origins,
             allow_methods=["*"],

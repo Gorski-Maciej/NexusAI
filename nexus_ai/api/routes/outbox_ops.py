@@ -30,7 +30,7 @@ class OutboxOpsController(Controller):
       - ``POST /replay-dead-letter``   → przywrócenie DEAD_LETTER do FAILED
     """
 
-    path = "/api/v1/system/outbox"
+    path = "/system/outbox"
     guards = [owner_only_guard]
     tags = [TAG_SYSTEM]
 

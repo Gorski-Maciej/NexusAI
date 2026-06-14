@@ -43,7 +43,7 @@ class SimulateRequest(msgspec.Struct):
 class TaxPolicyController(Controller):
     """Symulacja polityki podatkowej i zmiany formy opodatkowania."""
 
-    path = "/api/v2/tax-policy"
+    path = "/tax-policy"
     tags = [TAG_TAX]
 
     @post(

@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import pytest
 from nexus_ai.core.msgspec_utils import msgspec_dumps
-from httpx import AsyncClient
+from litestar.testing import AsyncTestClient
 
 # pytest-anyio: znacznik modułowy dla async test functions
 pytestmark = pytest.mark.anyio
@@ -24,24 +24,24 @@ pytestmark = pytest.mark.anyio
 class TestHealthEndpoint:
     """Test /api/v1/health endpoints."""
 
-    async def test_health_check(self, async_client: AsyncClient) -> None:
+    async def test_health_check(self, async_client: AsyncTestClient) -> None:
         """GET /api/v1/health should return 200."""
         response = await async_client.get("/api/v1/health")
         assert response.status_code == 200
         data = response.json()
         assert "status" in data
 
-    async def test_health_live(self, async_client: AsyncClient) -> None:
+    async def test_health_live(self, async_client: AsyncTestClient) -> None:
         """GET /api/v1/health/live should return 200."""
         response = await async_client.get("/api/v1/health/live")
         assert response.status_code == 200
 
-    async def test_health_ready(self, async_client: AsyncClient) -> None:
+    async def test_health_ready(self, async_client: AsyncTestClient) -> None:
         """GET /api/v1/health/ready should return 200."""
         response = await async_client.get("/api/v1/health/ready")
         assert response.status_code == 200
 
-    async def test_version_endpoint(self, async_client: AsyncClient) -> None:
+    async def test_version_endpoint(self, async_client: AsyncTestClient) -> None:
         """GET /api/version should return version info."""
         response = await async_client.get("/api/version")
         assert response.status_code == 200
@@ -53,7 +53,7 @@ class TestHealthEndpoint:
 class TestAuthFlow:
     """Test authentication flow (login, token validation)."""
 
-    async def test_login_success(self, async_client: AsyncClient, sample_user: dict) -> None:
+    async def test_login_success(self, async_client: AsyncTestClient, sample_user: dict) -> None:
         """POST /api/auth/login with valid credentials should return tokens."""
         response = await async_client.post(
             "/api/auth/login",
@@ -72,7 +72,7 @@ class TestAuthFlow:
             data = response.json()
             assert "access_token" in data or "token" in data
 
-    async def test_login_invalid_credentials(self, async_client: AsyncClient) -> None:
+    async def test_login_invalid_credentials(self, async_client: AsyncTestClient) -> None:
         """POST /api/auth/login with invalid credentials should return 401."""
         response = await async_client.post(
             "/api/auth/login",
@@ -83,7 +83,7 @@ class TestAuthFlow:
             f"Expected 401 for invalid credentials, got {response.status_code}"
         )
 
-    async def test_get_csrf_token(self, async_client: AsyncClient) -> None:
+    async def test_get_csrf_token(self, async_client: AsyncTestClient) -> None:
         """GET /api/auth/csrf-token should return a CSRF token."""
         response = await async_client.get("/api/auth/csrf-token")
         assert response.status_code == 200, (

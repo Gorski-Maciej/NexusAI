@@ -12,7 +12,7 @@ from nexus_ai.api.dto import TAG_SYSTEM, VersionInfoDTO
 class VersionController(Controller):
     """API version information endpoint."""
 
-    path = "/api/version"
+    path = "/version"
     tags = [TAG_SYSTEM]
 
     @get(

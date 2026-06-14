@@ -46,13 +46,21 @@ from nexus_ai.api.auth_service import hash_password, verify_password
 from nexus_ai.api.dto import (
     AuthResponseDTO,
     ChangePasswordDTO,
-    GenericDictDTO,
+    ChangePasswordResponseDTO,
+    ConfirmEmailResponseDTO,
+    CsrfTokenResponseDTO,
     LoginDTO,
+    LoginResponseDTO,
+    LogoutResponseDTO,
     PasswordResetConfirmDTO,
     PasswordResetDTO,
+    PasswordResetConfirmResponseDTO,
+    PasswordResetResponseDTO,
     RefreshDTO,
     RegisterDTO,
+    RegisterResponseDTO,
     TAG_AUTH,
+    UserProfileResponseDTO,
 )
 from nexus_ai.api.exceptions import DuplicateResourceError
 from nexus_ai.api.security import REFRESH_TOKEN_EXPIRATION_DAYS, jwt_auth
@@ -159,13 +167,13 @@ async def _get_user_by_username(db_session, username: str) -> dict | None:
 class AuthController(Controller):
     """Autoryzacja i zarządzanie kontem użytkownika."""
 
-    path = "/api/auth"
+    path = "/auth"
     tags = [TAG_AUTH]
 
     @post(
         "/register",
         dto=RegisterDTO,
-        return_dto=GenericDictDTO,
+        return_dto=RegisterResponseDTO,
         summary="Register a new user",
         description=(
             "Creates a new user account with password strength validation. "
@@ -272,7 +280,7 @@ class AuthController(Controller):
     @post(
         "/login",
         dto=LoginDTO,
-        return_dto=GenericDictDTO,
+        return_dto=LoginResponseDTO,
         summary="Authenticate user and get tokens",
         description=(
             "Authenticates using username/email and password. "
@@ -357,7 +365,7 @@ class AuthController(Controller):
     @post(
         "/refresh",
         dto=RefreshDTO,
-        return_dto=GenericDictDTO,
+        return_dto=LoginResponseDTO,
         summary="Refresh access token",
         description=(
             "Exchanges a single-use refresh token for a new access token. "
@@ -462,7 +470,7 @@ class AuthController(Controller):
 
     @post(
         "/logout",
-        return_dto=GenericDictDTO,
+        return_dto=LogoutResponseDTO,
         summary="Logout and invalidate all tokens",
         description=(
             "Invalidates all existing tokens by incrementing the user's jwt_version. "
@@ -501,7 +509,7 @@ class AuthController(Controller):
 
     @get(
         "/me",
-        return_dto=AuthResponseDTO,
+        return_dto=UserProfileResponseDTO,
         summary="Get current user profile",
         description=(
             "Returns the authenticated user's profile including role, "
@@ -551,7 +559,7 @@ class AuthController(Controller):
 
     @post(
         "/confirm/{token:str}",
-        return_dto=GenericDictDTO,
+        return_dto=ConfirmEmailResponseDTO,
         summary="Confirm email address",
         description=(
             "Confirms the user's email address using the token "
@@ -609,7 +617,7 @@ class AuthController(Controller):
     @post(
         "/reset-password",
         dto=PasswordResetDTO,
-        return_dto=GenericDictDTO,
+        return_dto=PasswordResetResponseDTO,
         summary="Request password reset email",
         description=(
             "Sends a password reset email with a single-use token. "
@@ -672,7 +680,7 @@ class AuthController(Controller):
     @post(
         "/reset-password/confirm",
         dto=PasswordResetConfirmDTO,
-        return_dto=GenericDictDTO,
+        return_dto=PasswordResetConfirmResponseDTO,
         summary="Reset password with token",
         description=(
             "Sets a new password using the reset token from the email. "
@@ -743,7 +751,7 @@ class AuthController(Controller):
     @post(
         "/change-password",
         dto=ChangePasswordDTO,
-        return_dto=GenericDictDTO,
+        return_dto=ChangePasswordResponseDTO,
         summary="Change current user password",
         description=(
             "Changes the password for the authenticated user. "
@@ -796,7 +804,7 @@ class AuthController(Controller):
 
     @get(
         "/csrf-token",
-        return_dto=GenericDictDTO,
+        return_dto=CsrfTokenResponseDTO,
         summary="Get CSRF token",
         description=(
             "Returns a CSRF token for double-submit cookie protection. "

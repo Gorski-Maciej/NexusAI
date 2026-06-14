@@ -6,7 +6,6 @@ from litestar.exceptions import ClientException
 from sqlalchemy import text
 
 from nexus_ai.api.dto import (
-    GenericDictDTO,
     MigrationIntegrityDTO,
     SagaCompensateDTO,
     SagaStateDTO,
@@ -49,7 +48,7 @@ from nexus_ai.services.migration_sanity import (  # noqa: E402
 class SystemIntegrityController(Controller):
     """On-demand production integrity checks for migrations and schema."""
 
-    path = "/api/v1/system/integrity"
+    path = "/system/integrity"
     guards = [owner_only_guard]
     tags = [TAG_SYSTEM]
 

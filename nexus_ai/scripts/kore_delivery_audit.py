@@ -25,7 +25,8 @@ REQUIREMENTS: dict[str, tuple[Check, ...]] = {
         {"file": "nexus_ai/api/locales/en.json"},
     ),
     "9_large_file_limits": (
-        {"file": "nexus_ai/api/middleware.py", "contains": ("UploadSizeGuardMiddleware", "413")},
+        # UploadSizeGuardMiddleware → Litestar request_max_body_size (Quick Win)
+        {"file": "nexus_ai/api/app.py", "contains": ("request_max_body_size", "50 * 1024 * 1024")},
         {"file": "nexus_ai/api/routes/invoices.py", "contains": ("upload-large", "max_bytes")},
     ),
     "10_offline_secrets": (
@@ -97,8 +98,8 @@ REQUIREMENTS: dict[str, tuple[Check, ...]] = {
     "3_storage_streaming": (
         {"file": "nexus_ai/services/storage.py", "contains": ("stream",)},
         {
-            "file": "nexus_ai/api/middleware.py",
-            "contains": ("UploadSizeGuardMiddleware", "/invoices/upload-large"),
+            "file": "nexus_ai/api/app.py",
+            "contains": ("request_max_body_size",),
         },
         {"file": "nexus_ai/api/shared_image_buffer.py", "contains": ("SharedImageBuffer",)},
     ),

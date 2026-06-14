@@ -6,7 +6,7 @@ from typing import Any
 
 from litestar import Controller, get
 
-from nexus_ai.api.dto import GenericDictDTO, TAG_ANALYTICS
+from nexus_ai.api.dto import StatsProcessingDTO, TAG_ANALYTICS
 
 
 class StatsController(Controller):
@@ -17,7 +17,7 @@ class StatsController(Controller):
 
     @get(
         "/processing",
-        return_dto=GenericDictDTO,
+        return_dto=StatsProcessingDTO,
         summary="Get processing statistics",
         description="Returns invoice processing statistics including success rate and error count.",
         operation_id="getProcessingStats",

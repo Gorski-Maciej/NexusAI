@@ -46,6 +46,7 @@ from nexus_ai.events.domain_events import (
     InvoicePaid,
     DecisionMade,
     DecisionOverridden,
+    NotificationSent,
     OutboxEventEmitted,
     domain_event_from_dict,
 )
@@ -65,6 +66,7 @@ from nexus_ai.events.projection_worker import ProjectionWorker
 __all__ = [
     # Domain events
     "DomainEvent",
+    "NotificationSent",
     "InvoiceCreated",
     "InvoiceSubmitted",
     "InvoiceApproved",

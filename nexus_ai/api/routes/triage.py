@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+from typing import Any
+
 import anyio
 
 from litestar import Controller, get, post
+from litestar.background_tasks import BackgroundTask
 from litestar.connection import Request
 from litestar.exceptions import ClientException
+from litestar.response import Response as LitestarResponse
 from sqlalchemy.orm import Session
 from structlog import get_logger
 
@@ -17,6 +21,7 @@ from nexus_ai.api.dto import (
 from nexus_ai.api.rbac import get_current_role, owner_only_guard
 from nexus_ai.api.schemas import TriageItem, TriageResolutionRequest, TriageResolutionResponse
 from nexus_ai.services.triage_service import list_pending_triage_items, resolve_triage_item
+from nexus_ai.api.background_tasks import emit_decision_overridden_bg
 
 logger = get_logger("nexus.api.triage")
 
@@ -24,14 +29,14 @@ logger = get_logger("nexus.api.triage")
 class TriageController(Controller):
     """Triage — przegląd i korekta faktur przed księgowaniem."""
 
-    path = "/api/triage"
+    path = "/triage"
     tags = [TAG_TRIAGE]
 
 
 class TriageControllerV2(Controller):
     """Triage controller for /api/v2/triage (Rozwiązanie 22: wersjonowanie API)."""
 
-    path = "/api/v2/triage"
+    path = "/triage"
     tags = [TAG_TRIAGE]
 
     @get(
@@ -109,23 +114,24 @@ class TriageControllerV2(Controller):
         else:
             message = "Invoice was voided/rejected from triage"
 
-        # ── Emit DecisionOverridden event ───────────────────────────────
-        try:
-            event_emitter = request.app.state.event_emitter
-            await event_emitter.emit_decision_overridden(
+        # ── Emit DecisionOverridden event (fire-and-forget via BackgroundTask) ──
+        event_emitter = getattr(request.app.state, "event_emitter", None)
+        user_decision = "CONFIRM_POST" if data.action == "confirm_post" else "VOID"
+
+        return LitestarResponse(
+            content=TriageResolutionResponse(
+                invoice_id=invoice.id, status=invoice.status, message=message
+            ),
+            background=BackgroundTask(
+                emit_decision_overridden_bg,
+                event_emitter=event_emitter,
                 invoice_id=invoice_id,
                 original_decision="SUGGEST",
-                user_decision="CONFIRM_POST" if data.action == "confirm_post" else "VOID",
+                user_decision=user_decision,
                 user_id=str(getattr(request.user, "id", "system")),
                 metadata={
                     "source": "triage",
                     "action": data.action,
                 },
-            )
-            logger.info("[EVENT] DecisionOverridden emitted for invoice_id=%s", invoice_id)
-        except Exception as event_err:
-            logger.warning("[EVENT] Failed to emit DecisionOverridden: %s", event_err)
-
-        return TriageResolutionResponse(
-            invoice_id=invoice.id, status=invoice.status, message=message
+            ) if event_emitter else None,
         )

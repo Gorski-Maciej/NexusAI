@@ -159,8 +159,13 @@ class DecisionLogger:
     @final: mypyc devirtualises all method calls on this class.
     """
 
-    def __init__(self, duckdb: DuckDBManager) -> None:
+    def __init__(
+        self,
+        duckdb: DuckDBManager,
+        event_emitter: Any | None = None,
+    ) -> None:
         self._duckdb = duckdb
+        self._event_emitter = event_emitter
         self._ensure_schema()
 
     def _ensure_schema(self) -> None:
@@ -331,6 +336,26 @@ class DecisionLogger:
                 final_decision,
                 decision_level,
             )
+
+            # Emituj event przez EventEmitter (jeśli dostępny)
+            if self._event_emitter is not None:
+                try:
+                    await self._event_emitter.emit_decision_made(
+                        invoice_id=invoice_id,
+                        decision=final_decision,
+                        trust_score=trust_score,
+                        ai_confidence=trust_components.ai_confidence,
+                        decision_pattern=decision_pattern,
+                        metadata={
+                            "decision_id": decision_id,
+                            "decision_level": decision_level,
+                        },
+                    )
+                except Exception as event_err:
+                    logger.warning(
+                        "[DecisionLogger] Failed to emit DecisionMade: %s", event_err,
+                    )
+
         except Exception as exc:
             logger.error("[DecisionLogger] failed to log invoice_id=%s: %s", invoice_id, exc)
 
@@ -408,6 +433,22 @@ class DecisionLogger:
                 invoice_id,
                 correction,
             )
+
+            # Emituj event przez EventEmitter (jeśli dostępny)
+            if self._event_emitter is not None:
+                try:
+                    await self._event_emitter.emit_decision_overridden(
+                        invoice_id=invoice_id,
+                        original_decision="SYSTEM",
+                        user_decision=correction,
+                        user_id="system",
+                        metadata={"source": "decision_logger"},
+                    )
+                except Exception as event_err:
+                    logger.warning(
+                        "[DecisionLogger] Failed to emit DecisionOverridden: %s", event_err,
+                    )
+
         except Exception as exc:
             logger.error(
                 "[DecisionLogger] failed to record correction for invoice_id=%s: %s",

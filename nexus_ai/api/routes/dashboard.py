@@ -15,7 +15,7 @@ from nexus_ai.services.notification_service import NotificationService
 class DashboardController(Controller):
     """Dashboard endpoints for the daily briefing and summary stats."""
 
-    path = "/api/v2/dashboard"
+    path = "/dashboard"
     tags = [TAG_DASHBOARD]
 
     @get(
@@ -24,6 +24,7 @@ class DashboardController(Controller):
         summary="Get daily briefing",
         description="Returns today's briefing with top decisions needing user action.",
         operation_id="getDailyBriefing",
+        headers={"Cache-Control": "public, max-age=300"},
     )
     async def get_daily_briefing(self, request: Request, config: AppConfig) -> dict[str, Any]:
         """Return today's briefing: top 1-3 decisions needing user action.
@@ -71,6 +72,7 @@ class DashboardController(Controller):
         summary="Get dashboard summary",
         description="Returns dashboard summary statistics including booked today, pending approval, and auto-approval rate.",
         operation_id="getDashboardSummary",
+        headers={"Cache-Control": "public, max-age=300"},
     )
     async def get_dashboard_summary(self, config: AppConfig) -> dict[str, Any]:
         """Return dashboard summary statistics.

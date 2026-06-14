@@ -11,7 +11,7 @@ from nexus_ai.api.shared_image_buffer import SharedImageBuffer
 class LivePreviewController(Controller):
     """Live preview dokumentów (OCR podgląd)."""
 
-    path = "/api/v1/live-preview"
+    path = "/live-preview"
     tags = [TAG_INVOICES]
 
     @get(

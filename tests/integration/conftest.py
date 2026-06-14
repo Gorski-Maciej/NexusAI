@@ -4,7 +4,7 @@ conftest.py — Integration test configuration for NexusAI.
 Sets up:
 - A temporary SQLite database
 - An async SQLAlchemy engine + session
-- A test Litestar app client (via `httpx.AsyncClient`)
+- A test Litestar app client (via `AsyncTestClient`)
 - Fixtures for common test data
 """
 
@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import AsyncGenerator
 
 import pytest
-from httpx import ASGITransport, AsyncClient
+from litestar.testing import AsyncTestClient
 from sqlalchemy import text
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -162,10 +162,14 @@ def test_app(db_engine):
 
 
 @pytest.fixture(scope="session")
-async def async_client(test_app) -> AsyncGenerator[AsyncClient, None]:
-    """Provide an HTTP client for integration testing via ASGI."""
-    transport = ASGITransport(app=test_app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+async def async_client(test_app) -> AsyncGenerator[AsyncTestClient, None]:
+    """Provide an HTTP client for integration testing via Litestar's AsyncTestClient.
+
+    Zastępuje: httpx.ASGITransport + AsyncClient → Litestar AsyncTestClient.
+    AsyncTestClient zapewnia tę samą API (get, post, put, delete) co httpx,
+    ale jest w pełni zintegrowany z lifecyclem Litestar (on_startup/on_shutdown).
+    """
+    async with AsyncTestClient(app=test_app) as client:
         yield client
 
 

@@ -9,6 +9,8 @@ from pathlib import Path
 import pendulum
 from anyio import to_thread
 from litestar import Controller, post
+from litestar.background_tasks import BackgroundTask
+from litestar.response import Response as LitestarResponse
 from structlog import get_logger
 from litestar.connection import Request
 from litestar.datastructures import UploadFile
@@ -17,6 +19,7 @@ from litestar.exceptions import ClientException
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from nexus_ai.api.background_tasks import emit_invoice_created_bg
 from nexus_ai.api.cache import clear_cache_async
 from nexus_ai.api.i18n import resolve_language, t
 from nexus_ai.api.rbac import owner_or_worker_guard
@@ -40,6 +43,7 @@ MAX_INVOICE_UPLOAD_BYTES = 50 * 1024 * 1024
 MAX_ATTACHMENT_UPLOAD_BYTES = 500 * 1024 * 1024
 EVENT_INVOICE_UPLOADED = "invoice_uploaded"
 EVENT_ATTACHMENT_LARGE_UPLOADED = "attachment_large_uploaded"
+
 
 
 def _validate_content_length(headers: dict[str, str], max_bytes: int) -> None:
@@ -68,7 +72,7 @@ class InvoiceController(Controller):
       - POST /api/v1/invoices/upload-large — upload dużego załącznika (do 500MB)
     """
 
-    path = "/api/v1/invoices"
+    path = "/invoices"
     guards = [owner_or_worker_guard]
     tags = [TAG_INVOICES]
 
@@ -193,29 +197,14 @@ class InvoiceController(Controller):
         db_session.commit()
         await clear_cache_async(prefix="api.routes.analytics")
 
-        # ── Emit InvoiceCreated event ───────────────────────────────────
-        try:
-            event_emitter = request.app.state.event_emitter
-            await event_emitter.emit_invoice_created(
-                invoice_id=invoice_id,
-                number=file_obj.filename or "",
-                file_path=str(saved.file_path),
-                metadata={
-                    "task_id": task_id,
-                    "file_hash": saved.file_hash,
-                    "size_bytes": saved.size_bytes,
-                    "source": "upload",
-                },
-            )
-            logger.info(
-                "[EVENT] InvoiceCreated emitted for invoice_id=%s", invoice_id
-            )
-        except Exception as event_err:
-            logger.warning(
-                "[EVENT] Failed to emit InvoiceCreated for %s: %s",
-                invoice_id,
-                event_err,
-            )
+        # ── Emit InvoiceCreated event (fire-and-forget via BackgroundTask) ─
+        event_emitter = request.app.state.event_emitter
+        invoice_created_metadata = {
+            "task_id": task_id,
+            "file_hash": saved.file_hash,
+            "size_bytes": saved.size_bytes,
+            "source": "upload",
+        }
 
         # Immutable audit trail (hash-chained) for compliance-grade evidencing.
         audit_manager = DuckDBManager(
@@ -236,7 +225,7 @@ class InvoiceController(Controller):
         finally:
             audit_manager.close()
 
-        response = TaskResponse(
+        response_data = TaskResponse(
             task_id=task_id,
             status="QUEUED",
             message=(
@@ -250,13 +239,24 @@ class InvoiceController(Controller):
                 idempotency_key,
                 payload_hash,
                 {
-                    "task_id": response.task_id,
-                    "status": response.status,
-                    "message": response.message,
+                    "task_id": response_data.task_id,
+                    "status": response_data.status,
+                    "message": response_data.message,
                 },
             )
 
-        return response
+        # Zwróć Response z BackgroundTask — InvoiceCreated event po wysłaniu odpowiedzi
+        return LitestarResponse(
+            content=response_data,
+            background=BackgroundTask(
+                emit_invoice_created_bg,
+                event_emitter=event_emitter,
+                invoice_id=invoice_id,
+                filename=file_obj.filename or "",
+                file_path=str(saved.file_path),
+                metadata=invoice_created_metadata,
+            ),
+        )
 
     @post(
         "/upload-large",
@@ -405,5 +405,5 @@ class InvoiceControllerV2(InvoiceController):
       - POST /api/v2/invoices/upload-large — upload dużego załącznika (do 500MB)
     """
 
-    path = "/api/v2/invoices"
+    path = "/invoices"
     tags = [TAG_INVOICES]

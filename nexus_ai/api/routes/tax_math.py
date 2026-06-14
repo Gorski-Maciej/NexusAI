@@ -79,7 +79,7 @@ class CalculateMoneyRequest(msgspec.Struct):
 class TaxMathController(Controller):
     """Kontroler kalkulacji podatkowych z obsługą Fowler's Money."""
 
-    path = "/api/v2/tax"
+    path = "/tax"
     tags = [TAG_TAX]
 
     @post(
