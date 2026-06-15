@@ -41,6 +41,7 @@ from sqlalchemy.orm import Session
 from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
+from nexus_ai.db.models import OutboxStatus
 
 # ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
 try:
@@ -438,10 +439,10 @@ class OutboxRelay:
         """Odblokuj zdarzenia stuck w statusie PROCESSING (>= 5 minut)."""
         result = session.execute(
             text(
-                """
+                f"""
                 UPDATE outbox_events
-                SET status = 'FAILED', processing_started_at = NULL
-                WHERE status = 'PROCESSING'
+                SET status = '{OutboxStatus.FAILED.value}', processing_started_at = NULL
+                WHERE status = '{OutboxStatus.PROCESSING.value}'
                   AND processing_started_at IS NOT NULL
                   AND (strftime('%%s', 'now') - strftime('%%s', processing_started_at)) > :timeout
                 """
@@ -455,13 +456,13 @@ class OutboxRelay:
         """Atomowa rezerwacja zdarzeń."""
         session.execute(
             text(
-                """
+                f"""
                 UPDATE outbox_events
-                SET status = 'PROCESSING',
+                SET status = '{OutboxStatus.PROCESSING.value}',
                     processing_started_at = CURRENT_TIMESTAMP
                 WHERE id IN (
                     SELECT id FROM outbox_events
-                    WHERE status IN ('PENDING', 'FAILED')
+                    WHERE status IN ('{OutboxStatus.PENDING.value}', '{OutboxStatus.FAILED.value}')
                       AND processed = 0
                       AND COALESCE(retry_count, 0) < :max_retries
                     ORDER BY created_at ASC
@@ -475,11 +476,11 @@ class OutboxRelay:
         rows = (
             session.execute(
                 text(
-                    """
+                    f"""
                 SELECT id, event_type, aggregate_id, payload,
                        COALESCE(retry_count, 0) AS retry_count
                 FROM outbox_events
-                WHERE status = 'PROCESSING'
+                WHERE status = '{OutboxStatus.PROCESSING.value}'
                   AND processing_started_at IS NOT NULL
                 ORDER BY created_at ASC
                 LIMIT :limit
@@ -538,9 +539,9 @@ class OutboxRelay:
         """Oznacz zdarzenie jako pomyślnie wysłane."""
         session.execute(
             text(
-                """
+                f"""
                 UPDATE outbox_events
-                SET status = 'SENT', processed = 1, processed_at = CURRENT_TIMESTAMP
+                SET status = '{OutboxStatus.SENT.value}', processed = 1, processed_at = CURRENT_TIMESTAMP
                 WHERE id = :id
                 """
             ),
@@ -551,11 +552,11 @@ class OutboxRelay:
         """Oznacz zdarzenie jako failed (będzie retried z opóźnieniem)."""
         session.execute(
             text(
-                """
+                f"""
                 UPDATE outbox_events
                 SET retry_count = retry_count + 1,
                     processing_started_at = NULL,
-                    status = 'FAILED'
+                    status = '{OutboxStatus.FAILED.value}'
                 WHERE id = :id
                 """
             ),
@@ -601,11 +602,11 @@ class OutboxRelay:
 
         session.execute(
             text(
-                """
+                f"""
                 UPDATE outbox_events
                 SET retry_count = retry_count + 1,
                     processing_started_at = NULL,
-                    status = 'DEAD_LETTER'
+                    status = '{OutboxStatus.DEAD_LETTER.value}'
                 WHERE id = :id
                 """
             ),
@@ -673,31 +674,31 @@ class OutboxRelay:
         with self._session_factory() as session:
             pending = int(
                 session.execute(
-                    text("SELECT COUNT(*) FROM outbox_events WHERE status = 'PENDING'")
+                    text(f"SELECT COUNT(*) FROM outbox_events WHERE status = '{OutboxStatus.PENDING.value}'")
                 ).scalar()
                 or 0
             )
             processing = int(
                 session.execute(
-                    text("SELECT COUNT(*) FROM outbox_events WHERE status = 'PROCESSING'")
+                    text(f"SELECT COUNT(*) FROM outbox_events WHERE status = '{OutboxStatus.PROCESSING.value}'")
                 ).scalar()
                 or 0
             )
             failed = int(
                 session.execute(
-                    text("SELECT COUNT(*) FROM outbox_events WHERE status = 'FAILED'")
+                    text(f"SELECT COUNT(*) FROM outbox_events WHERE status = '{OutboxStatus.FAILED.value}'")
                 ).scalar()
                 or 0
             )
             dead_letter = int(
                 session.execute(
-                    text("SELECT COUNT(*) FROM outbox_events WHERE status = 'DEAD_LETTER'")
+                    text(f"SELECT COUNT(*) FROM outbox_events WHERE status = '{OutboxStatus.DEAD_LETTER.value}'")
                 ).scalar()
                 or 0
             )
             sent = int(
                 session.execute(
-                    text("SELECT COUNT(*) FROM outbox_events WHERE status = 'SENT'")
+                    text(f"SELECT COUNT(*) FROM outbox_events WHERE status = '{OutboxStatus.SENT.value}'")
                 ).scalar()
                 or 0
             )

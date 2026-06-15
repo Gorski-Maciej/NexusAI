@@ -1,14 +1,13 @@
 """
-AsyncProjections — CQRS read-side with async aiosqlite.
+AsyncProjections — CQRS read-side with sqlite3.
+
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + asyncio.to_thread
+zamiast aiosqlite.
 
 Każda projekcja:
   1. Czyta eventy z AsyncEventStore (od ostatniego checkpointu)
-  2. Aktualizuje denormalizowany widok (SQLite przez aiosqlite)
+  2. Aktualizuje denormalizowany widok (SQLite przez sqlite3)
   3. Zapisuje checkpoint po przetworzeniu
-
-Zgodnie z docs/AIOSQLITE_AUDIT.md:
-- FAZA 2: Konwersja Projections z sync sqlite3 na async aiosqlite
-- AsyncBaseService dla współdzielonego AsyncDBPool
 
 SUPERMOC:
 - async/await dla wszystkich operacji DB
@@ -18,10 +17,11 @@ SUPERMOC:
 
 from __future__ import annotations
 
+import asyncio
+import sqlite3
 from pathlib import Path
 from typing import Any
 
-import aiosqlite
 from structlog import get_logger
 
 from nexus_ai.db.async_base_service import AsyncBaseService
@@ -115,10 +115,7 @@ class AsyncProjection:
 
 
 class AsyncInvoiceProjection(AsyncProjection, AsyncBaseService):
-    """Async projekcja faktur — denormalizowany widok dla szybkich zapytań.
-
-    Używa aiosqlite dla async operacji.
-    """
+    """Async projekcja faktur — denormalizowany widok dla szybkich zapytań."""
 
     def __init__(
         self,
@@ -130,17 +127,13 @@ class AsyncInvoiceProjection(AsyncProjection, AsyncBaseService):
         AsyncBaseService.__init__(self, db_path)
         Path(str(db_path)).parent.mkdir(parents=True, exist_ok=True)
 
-    async def _on_connect(self, conn: aiosqlite.Connection) -> None:
-        """Hook: PRAGMY + schema creation dla projekcji faktur.
-
-        SUPERMOC: Tworzy schemat przy pierwszym połączeniu.
-        W oryginalnym sync kodzie, _ensure_schema() było wołane w __init__.
-        Teraz wołane w _on_connect — async, leniwie, przy pierwszym użyciu.
-        """
-        await conn.execute("PRAGMA cache_size = -25600;")     # 100MB cache
-        await conn.execute("PRAGMA temp_store = MEMORY;")     # Temp tables w RAM
-        await conn.execute("PRAGMA mmap_size = 2147483648;")  # 2GB mmap
-        # SUPERMOC: Utwórz schemat przy pierwszym połączeniu
+    async def _on_connect(self, conn: sqlite3.Connection) -> None:
+        """Hook: PRAGMY + schema creation dla projekcji faktur."""
+        def _sync() -> None:
+            conn.execute("PRAGMA cache_size = -25600;")     # 100MB cache
+            conn.execute("PRAGMA temp_store = MEMORY;")     # Temp tables w RAM
+            conn.execute("PRAGMA mmap_size = 2147483648;")  # 2GB mmap
+        await asyncio.to_thread(_sync)
         await self._ensure_schema()
 
     async def _ensure_schema(self) -> None:
@@ -244,82 +237,85 @@ class AsyncInvoiceProjection(AsyncProjection, AsyncBaseService):
     async def _handle_event(self, event: DomainEvent) -> None:
         conn = await self.get_conn()
 
-        if isinstance(event, InvoiceCreated):
-            await conn.execute(
-                """INSERT OR REPLACE INTO invoice_read_model
-                   (invoice_id, number, contractor_nip, contractor_name,
-                    amount_net, amount_gross, currency, category,
-                    issue_date, status, current_version, file_path,
-                    created_at, updated_at)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'created', ?, ?, ?, ?)""",
-                (
-                    event.aggregate_id,
-                    event.number,
-                    event.contractor_nip,
-                    event.contractor_name,
-                    event.amount_net,
-                    event.amount_gross,
-                    event.currency,
-                    event.category,
-                    event.issue_date,
-                    event.version,
-                    event.file_path,
-                    event.timestamp,
-                    event.timestamp,
-                ),
-            )
+        def _sync_handle() -> None:
+            if isinstance(event, InvoiceCreated):
+                conn.execute(
+                    """INSERT OR REPLACE INTO invoice_read_model
+                       (invoice_id, number, contractor_nip, contractor_name,
+                        amount_net, amount_gross, currency, category,
+                        issue_date, status, current_version, file_path,
+                        created_at, updated_at)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'created', ?, ?, ?, ?)""",
+                    (
+                        event.aggregate_id,
+                        event.number,
+                        event.contractor_nip,
+                        event.contractor_name,
+                        event.amount_net,
+                        event.amount_gross,
+                        event.currency,
+                        event.category,
+                        event.issue_date,
+                        event.version,
+                        event.file_path,
+                        event.timestamp,
+                        event.timestamp,
+                    ),
+                )
 
-        elif isinstance(event, InvoiceSubmitted):
-            await conn.execute(
-                """UPDATE invoice_read_model
-                   SET status = 'submitted', current_version = ?, updated_at = ?
-                   WHERE invoice_id = ?""",
-                (event.version, event.timestamp, event.aggregate_id),
-            )
+            elif isinstance(event, InvoiceSubmitted):
+                conn.execute(
+                    """UPDATE invoice_read_model
+                       SET status = 'submitted', current_version = ?, updated_at = ?
+                       WHERE invoice_id = ?""",
+                    (event.version, event.timestamp, event.aggregate_id),
+                )
 
-        elif isinstance(event, InvoiceApproved):
-            await conn.execute(
-                """UPDATE invoice_read_model
-                   SET status = 'approved', approved_by = ?,
-                       trust_score = ?, current_version = ?, updated_at = ?
-                   WHERE invoice_id = ?""",
-                (
-                    event.approved_by,
-                    event.trust_score,
-                    event.version,
-                    event.timestamp,
-                    event.aggregate_id,
-                ),
-            )
+            elif isinstance(event, InvoiceApproved):
+                conn.execute(
+                    """UPDATE invoice_read_model
+                       SET status = 'approved', approved_by = ?,
+                           trust_score = ?, current_version = ?, updated_at = ?
+                       WHERE invoice_id = ?""",
+                    (
+                        event.approved_by,
+                        event.trust_score,
+                        event.version,
+                        event.timestamp,
+                        event.aggregate_id,
+                    ),
+                )
 
-        elif isinstance(event, InvoiceRejected):
-            await conn.execute(
-                """UPDATE invoice_read_model
-                   SET status = 'rejected', rejected_by = ?,
-                       current_version = ?, updated_at = ?
-                   WHERE invoice_id = ?""",
-                (event.rejected_by, event.version, event.timestamp, event.aggregate_id),
-            )
+            elif isinstance(event, InvoiceRejected):
+                conn.execute(
+                    """UPDATE invoice_read_model
+                       SET status = 'rejected', rejected_by = ?,
+                           current_version = ?, updated_at = ?
+                       WHERE invoice_id = ?""",
+                    (event.rejected_by, event.version, event.timestamp, event.aggregate_id),
+                )
 
-        elif isinstance(event, InvoiceBlocked):
-            await conn.execute(
-                """UPDATE invoice_read_model
-                   SET status = 'blocked', blocked_reason = ?,
-                       current_version = ?, updated_at = ?
-                   WHERE invoice_id = ?""",
-                (event.reason, event.version, event.timestamp, event.aggregate_id),
-            )
+            elif isinstance(event, InvoiceBlocked):
+                conn.execute(
+                    """UPDATE invoice_read_model
+                       SET status = 'blocked', blocked_reason = ?,
+                           current_version = ?, updated_at = ?
+                       WHERE invoice_id = ?""",
+                    (event.reason, event.version, event.timestamp, event.aggregate_id),
+                )
 
-        elif isinstance(event, InvoicePaid):
-            await conn.execute(
-                """UPDATE invoice_read_model
-                   SET status = 'paid', paid_at = ?,
-                       current_version = ?, updated_at = ?
-                   WHERE invoice_id = ?""",
+            elif isinstance(event, InvoicePaid):
+                conn.execute(
+                    """UPDATE invoice_read_model
+                       SET status = 'paid', paid_at = ?,
+                           current_version = ?, updated_at = ?
+                       WHERE invoice_id = ?""",
                 (event.paid_at, event.version, event.timestamp, event.aggregate_id),
-            )
+                )
 
-        await conn.commit()
+            conn.commit()
+
+        await asyncio.to_thread(_sync_handle)
 
     async def query(
         self,
@@ -352,16 +348,19 @@ class AsyncInvoiceProjection(AsyncProjection, AsyncBaseService):
 
     async def get_stats(self) -> dict[str, Any]:
         """Zwróć statystyki widoku faktur (async)."""
-        cursor = await self.execute(
-            "SELECT status, COUNT(*) as cnt FROM invoice_read_model GROUP BY status"
-        )
-        rows = await cursor.fetchall()
-        total_cursor = await self.execute("SELECT COUNT(*) FROM invoice_read_model")
-        total_row = await total_cursor.fetchone()
-        return {
-            "total": int(total_row[0]) if total_row else 0,
-            "by_status": {str(r[0]): int(r[1]) for r in rows},
-        }
+        conn = await self.get_conn()
+        def _sync() -> dict[str, Any]:
+            cursor = conn.execute(
+                "SELECT status, COUNT(*) as cnt FROM invoice_read_model GROUP BY status"
+            )
+            rows = cursor.fetchall()
+            total_cursor = conn.execute("SELECT COUNT(*) FROM invoice_read_model")
+            total_row = total_cursor.fetchone()
+            return {
+                "total": int(total_row[0]) if total_row else 0,
+                "by_status": {str(r[0]): int(r[1]) for r in rows},
+            }
+        return await asyncio.to_thread(_sync)
 
 
 # ── Decision Projection (async) ──────────────────────────────────────────
@@ -380,12 +379,13 @@ class AsyncDecisionProjection(AsyncProjection, AsyncBaseService):
         AsyncBaseService.__init__(self, db_path)
         Path(str(db_path)).parent.mkdir(parents=True, exist_ok=True)
 
-    async def _on_connect(self, conn: aiosqlite.Connection) -> None:
+    async def _on_connect(self, conn: sqlite3.Connection) -> None:
         """Hook: PRAGMY + schema creation dla projekcji decyzji."""
-        await conn.execute("PRAGMA cache_size = -25600;")
-        await conn.execute("PRAGMA temp_store = MEMORY;")
-        await conn.execute("PRAGMA mmap_size = 2147483648;")
-        # SUPERMOC: Utwórz schemat przy pierwszym połączeniu
+        def _sync() -> None:
+            conn.execute("PRAGMA cache_size = -25600;")
+            conn.execute("PRAGMA temp_store = MEMORY;")
+            conn.execute("PRAGMA mmap_size = 2147483648;")
+        await asyncio.to_thread(_sync)
         await self._ensure_schema()
 
     async def _ensure_schema(self) -> None:
@@ -442,51 +442,54 @@ class AsyncDecisionProjection(AsyncProjection, AsyncBaseService):
     async def _handle_event(self, event: DomainEvent) -> None:
         conn = await self.get_conn()
 
-        if isinstance(event, DecisionMade):
-            await conn.execute(
-                """INSERT OR REPLACE INTO decision_analytics
-                   (decision_id, invoice_id, event_type, decision,
-                    trust_score, ai_confidence, alpha_vote, beta_vote,
-                    gamma_vote, decision_pattern, reasoning,
-                    version, timestamp)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                (
-                    event.event_id,
-                    event.invoice_id,
-                    event.event_type,
-                    event.decision,
-                    event.trust_score,
-                    event.ai_confidence,
-                    event.alpha_vote,
-                    event.beta_vote,
-                    event.gamma_vote,
-                    event.decision_pattern,
-                    event.reasoning,
-                    event.version,
-                    event.timestamp,
-                ),
-            )
+        def _sync_handle() -> None:
+            if isinstance(event, DecisionMade):
+                conn.execute(
+                    """INSERT OR REPLACE INTO decision_analytics
+                       (decision_id, invoice_id, event_type, decision,
+                        trust_score, ai_confidence, alpha_vote, beta_vote,
+                        gamma_vote, decision_pattern, reasoning,
+                        version, timestamp)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        event.event_id,
+                        event.invoice_id,
+                        event.event_type,
+                        event.decision,
+                        event.trust_score,
+                        event.ai_confidence,
+                        event.alpha_vote,
+                        event.beta_vote,
+                        event.gamma_vote,
+                        event.decision_pattern,
+                        event.reasoning,
+                        event.version,
+                        event.timestamp,
+                    ),
+                )
 
-        elif isinstance(event, DecisionOverridden):
-            await conn.execute(
-                """INSERT OR REPLACE INTO decision_analytics
-                   (decision_id, invoice_id, event_type,
-                    original_decision, user_decision, user_id,
-                    version, timestamp)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-                (
-                    event.event_id,
-                    event.invoice_id,
-                    event.event_type,
-                    event.original_decision,
-                    event.user_decision,
-                    event.user_id,
-                    event.version,
-                    event.timestamp,
-                ),
-            )
+            elif isinstance(event, DecisionOverridden):
+                conn.execute(
+                    """INSERT OR REPLACE INTO decision_analytics
+                       (decision_id, invoice_id, event_type,
+                        original_decision, user_decision, user_id,
+                        version, timestamp)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        event.event_id,
+                        event.invoice_id,
+                        event.event_type,
+                        event.original_decision,
+                        event.user_decision,
+                        event.user_id,
+                        event.version,
+                        event.timestamp,
+                    ),
+                )
 
-        await conn.commit()
+            conn.commit()
+
+        await asyncio.to_thread(_sync_handle)
 
     async def query(
         self,
@@ -508,17 +511,20 @@ class AsyncDecisionProjection(AsyncProjection, AsyncBaseService):
 
     async def get_stats(self) -> dict[str, Any]:
         """Zwróć statystyki decyzji (async)."""
-        cursor = await self.execute(
-            "SELECT decision, COUNT(*) as cnt FROM decision_analytics "
-            "WHERE decision IS NOT NULL GROUP BY decision"
-        )
-        rows = await cursor.fetchall()
-        total_cursor = await self.execute("SELECT COUNT(*) FROM decision_analytics")
-        total_row = await total_cursor.fetchone()
-        return {
-            "total": int(total_row[0]) if total_row else 0,
-            "by_decision": {str(r[0]): int(r[1]) for r in rows},
-        }
+        conn = await self.get_conn()
+        def _sync() -> dict[str, Any]:
+            cursor = conn.execute(
+                "SELECT decision, COUNT(*) as cnt FROM decision_analytics "
+                "WHERE decision IS NOT NULL GROUP BY decision"
+            )
+            rows = cursor.fetchall()
+            total_cursor = conn.execute("SELECT COUNT(*) FROM decision_analytics")
+            total_row = total_cursor.fetchone()
+            return {
+                "total": int(total_row[0]) if total_row else 0,
+                "by_decision": {str(r[0]): int(r[1]) for r in rows},
+            }
+        return await asyncio.to_thread(_sync)
 
 
 # ── Aliases dla kompatybilności wstecznej ────────────────────────────────

@@ -47,7 +47,7 @@ from nexus_ai.core.logger import get_logger
 # ── Globalny cache dla FactSheet (współdzielony między build() calls) ──
 _few_shot_nexus = get_cache(default_ttl=300)  # 5 min TTL dla przykładów few-shot
 from nexus_ai.db.analytics import DuckDBManager
-from nexus_ai.db.models import ActiveLearningPattern, Contractor, Invoice
+from nexus_ai.db.models import ActiveLearningPattern, Contractor, Invoice, InvoiceStatus
 from nexus_ai.db.vector_store import VectorStore
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient, TigerBeetleMapper
 from nexus_ai.services.decision_logger import DecisionLogger
@@ -408,11 +408,11 @@ class FactSheet(Struct):
             else:
                 # Fallback: mapuj status z SQLite na decyzję
                 decision_map = {
-                    "PAID": "AUTO_POST",
-                    "APPROVED": "AUTO_POST",
-                    "SUGGESTED": "SUGGEST",
-                    "PENDING": "ASK_USER",
-                    "BLOCKED": "BLOCK",
+                    InvoiceStatus.PAID.value: "AUTO_POST",
+                    InvoiceStatus.APPROVED.value: "AUTO_POST",
+                    InvoiceStatus.SUGGESTED.value: "SUGGEST",
+                    InvoiceStatus.PENDING_REVIEW.value: "ASK_USER",
+                    InvoiceStatus.BLOCKED.value: "BLOCK",
                 }
                 decision = decision_map.get(status, "SUGGEST")
 
@@ -477,11 +477,11 @@ class FactSheet(Struct):
 
             # Mapuj status na decyzję
             decision_map = {
-                "PAID": "AUTO_POST",
-                "APPROVED": "AUTO_POST",
-                "SUGGESTED": "SUGGEST",
-                "PENDING": "ASK_USER",
-                "BLOCKED": "BLOCK",
+                InvoiceStatus.PAID.value: "AUTO_POST",
+                InvoiceStatus.APPROVED.value: "AUTO_POST",
+                InvoiceStatus.SUGGESTED.value: "SUGGEST",
+                InvoiceStatus.PENDING_REVIEW.value: "ASK_USER",
+                InvoiceStatus.BLOCKED.value: "BLOCK",
             }
             decision = decision_map.get(status, "SUGGEST")
 

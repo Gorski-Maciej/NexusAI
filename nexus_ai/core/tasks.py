@@ -86,7 +86,7 @@ class TimedModelCache:
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import SessionLocal, create_oltp_engine, create_session_factory
-from nexus_ai.db.models import ActiveLearningPattern, Invoice, OutboxEvent, OutboxStatus
+from nexus_ai.db.models import ActiveLearningPattern, Invoice, InvoiceStatus, OutboxEvent, OutboxStatus
 from nexus_ai.pipeline.ocr import DocumentProcessor, ReviewStatus
 from nexus_ai.services.dunning_engine import DunningEngine
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
@@ -135,14 +135,17 @@ class InvoiceEventPayload(Struct):
 
 
 class InvoiceProcessingMachine:
-    """Invoice lifecycle state machine (no statemachine dependency)."""
+    """Invoice lifecycle state machine (no statemachine dependency).
+
+    SUPERMOC: Używa InvoiceStatus enum zamiast gołych stringów.
+    """
 
     STATES = {
-        "new": "NEW",
-        "processing": "PROCESSING",
-        "approved": "APPROVED",
-        "manual_review": "MANUAL_REVIEW",
-        "failed": "FAILED",
+        "new": InvoiceStatus.NEW,
+        "processing": InvoiceStatus.PROCESSING,
+        "approved": InvoiceStatus.APPROVED,
+        "manual_review": InvoiceStatus.MANUAL_REVIEW,
+        "failed": InvoiceStatus.FAILED,
     }
 
     def __init__(self):
@@ -412,7 +415,7 @@ async def invoice_reconciliation_loop():
 
     with SessionLocal() as session:
         stmt = select(Invoice).where(
-            Invoice.status == "PROCESSING", Invoice.updated_at <= timeout_threshold
+            Invoice.status == InvoiceStatus.PROCESSING, Invoice.updated_at <= timeout_threshold
         )
         result = session.execute(stmt)
         stuck_invoices = result.scalars().all()
@@ -441,11 +444,11 @@ async def invoice_reconciliation_loop():
                     f"[Watchdog] Faktura ID: {invoice.id} trwale uszkadza Workera. "
                     f"Zatrzymano próby. Status -> ERROR: TIMEOUT"
                 )
-                invoice.status = "ERROR: TIMEOUT"
+                invoice.status = InvoiceStatus.ERROR_TIMEOUT
                 invoice.updated_at = pendulum.now("UTC")
                 error_payload = msgspec_dumps(
                     {
-                        "status": "FAILED",
+                        "status": InvoiceStatus.FAILED.value,
                         "message": "Przekroczono limit czasu (Krytyczny błąd przetwarzania).",
                     }
                 )

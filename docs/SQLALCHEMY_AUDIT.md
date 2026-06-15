@@ -88,8 +88,8 @@
 ├──────────────────────────────────────────────────────────┤
 │              Engine Layer                                 │
 │  ┌─────────────────────┬────────────────────────────┐    │
-│  │ Sync Engine         │ Async Engine (aiosqlite)   │    │
-│  │ create_oltp_engine  │ create_async_oltp_engine   │    │
+│  │ Sync Engine         │ Sync Engine + asyncio.to_thread()   │    │
+│  │ create_oltp_engine  │ create_sync_oltp_engine + asyncio.to_thread   │    │
 │  │ pool_pre_ping=True  │ pool_pre_ping=True         │    │
 │  │ SQLCipher PRAGMAs   │ PoolEvents + PoolEvents    │    │
 │  └─────────────────────┴────────────────────────────┘    │

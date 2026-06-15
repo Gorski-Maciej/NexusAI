@@ -1,13 +1,9 @@
 """
-AsyncBackup — async backup service using aiosqlite.backup() API.
+AsyncBackup — async backup service using sqlite3.backup() API.
 
-SUPERMOC: aiosqlite 0.22.1 wspiera ``await source.backup(target)`` — async backup
-między połączeniami SQLite. Działa w pamięci, nie blokuje pętli zdarzeń.
-
-Zgodnie z docs/AIOSQLITE_AUDIT.md:
-- FAZA 3+: Async backup dla wszystkich baz danych
-- Wspiera SQLCipher (backup między szyfrowanymi bazami)
-- Wiele źródeł: OLTP, event store, projections, DuckDB metadata
+Python 3.13t (free-threaded, brak GIL): używamy natywnego ``sqlite3.backup()``
+zamiast ``aiosqlite.backup()``. Operacje są delegowane do wątków przez
+``asyncio.to_thread()``.
 
 Usage:
     backup = AsyncBackup()
@@ -17,13 +13,14 @@ Usage:
 
 from __future__ import annotations
 
+import asyncio
 import os
+import sqlite3
 import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-import aiosqlite
 from structlog import get_logger
 
 logger = get_logger("nexus.db.async_backup")
@@ -31,7 +28,7 @@ logger = get_logger("nexus.db.async_backup")
 # ── Default database paths ──────────────────────────────────────────────
 
 DEFAULT_DATABASES: dict[str, str] = {
-    "oltp": "app_data/databases/nexus_oltp.db",          # OLTP + FTS (współdzielą plik)
+    "oltp": "app_data/databases/nexus_oltp.db",
     "event_store": "app_data/databases/nexus_events.db",
     "projections_invoices": "app_data/projections/invoices.db",
     "projections_decisions": "app_data/projections/decisions.db",
@@ -43,12 +40,12 @@ DEFAULT_DATABASES: dict[str, str] = {
 class AsyncBackup:
     """Async backup service for all NexusAI databases.
 
-    SUPERMOCE:
-    - ``await source.backup(target)`` — async, non-blocking backup
-    - SQLCipher: backup works between encrypted databases (same key)
-    - Multiple databases: OLTP, event store, projections
-    - Progress logging: logs every 10% of backup progress
-    - Atomic: backup is an online backup, DB stays readable/writable
+    Python 3.13t (free-threaded): sync ``sqlite3.backup()`` jest wykonywany
+    w wątku przez ``asyncio.to_thread()``.
+
+    Używa natywnego ``sqlite3.Connection.backup()`` (dostępne od Python 3.6).
+    SQLCipher: backup działa między szyfrowanymi bazami (ten sam klucz).
+    Backup atomiczny — baza pozostaje czytelna/zapisywalna podczas backupu.
     """
 
     def __init__(
@@ -64,15 +61,14 @@ class AsyncBackup:
         output_dir: str | Path,
         suffix: str | None = None,
     ) -> dict[str, dict[str, Any]]:
-        """Wykonaj backup wszystkich baz danych (async).
+        """Wykonaj backup wszystkich baz danych (async, w wątkach).
 
         Args:
             output_dir: Katalog docelowy dla backupów.
             suffix: Opcjonalny sufiks (np. dzisiejsza data).
 
         Returns:
-            Słownik z wynikami dla każdej bazy:
-            ``{name: {"status": "ok"|"error", "path": "...", "size_mb": 1.5}}``
+            Słownik z wynikami dla każdej bazy.
         """
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
@@ -95,7 +91,6 @@ class AsyncBackup:
                 results[name] = {"status": "error", "error": str(exc)}
                 logger.error("[BACKUP] Failed to backup %s: %s", name, exc)
 
-        # Podsumowanie
         ok_count = sum(1 for r in results.values() if r.get("status") == "ok")
         logger.info(
             "[BACKUP] All backups complete: %d/%d OK in %s",
@@ -110,11 +105,10 @@ class AsyncBackup:
         source_path: str,
         target_path: str,
     ) -> dict[str, Any]:
-        """Wykonaj backup pojedynczej bazy danych (async).
+        """Wykonaj backup pojedynczej bazy danych (async, w wątku).
 
-        SUPERMOC: ``await source.backup(target)`` — aiosqlite wykonuje
-        backup w całości asynchronicznie, nie blokując pętli zdarzeń.
-        Backup atomiczny — SQLite pozostaje dostępna do odczytu/zapisu.
+        Używa natywnego ``sqlite3.Connection.backup()`` w wątku.
+        Backup atomiczny — źródło pozostaje czytelne/zapisywalne.
 
         Args:
             source_path: Ścieżka źródłowej bazy danych.
@@ -128,29 +122,30 @@ class AsyncBackup:
 
         logger.info("[BACKUP] Starting backup: %s → %s", source_path, target_path)
 
-        # SUPERMOC: aiosqlite.backup() — async backup
-        # Otwieramy źródłową i docelową bazę, wykonujemy backup.
-        # Aby to działało, używamy jednego połączenia aiosqlite
-        # które wykonuje backup synchronicznego sqlite3 w tle.
         start_time = time.time()
 
-        # SUPERMOC: aiosqlite 0.22+ jest thread-safe (free-threaded Python 3.13t)
-        # SQLCipher: PRAGMA key to PIERWSZA operacja po connect()!
-        async with aiosqlite.connect(source_path) as src_conn:
-            if self._sqlcipher_key:
-                key_hex = self._sqlcipher_key.encode("utf-8").hex()
-                await src_conn.execute(f"PRAGMA key = x'{key_hex}';")
-
-            async with aiosqlite.connect(str(target)) as tgt_conn:
-                # SQLCipher: ustaw klucz na docelowej bazie (PIERWSZA operacja)
+        def _sync_backup() -> None:
+            """Wykonaj backup w wątku (free-threaded safe)."""
+            src = sqlite3.connect(source_path, check_same_thread=False)
+            try:
                 if self._sqlcipher_key:
                     key_hex = self._sqlcipher_key.encode("utf-8").hex()
-                    await tgt_conn.execute(f"PRAGMA key = x'{key_hex}';")
+                    src.execute(f"PRAGMA key = x'{key_hex}';")
 
-                # SUPERMOC: await src.backup(target) — async backup
-                # aiosqlite 0.22+ wspiera backup() delegując do
-                # sqlite3_backup() w wątku tła.
-                await src_conn.backup(tgt_conn, pages=-1, progress=self._progress_callback)
+                tgt = sqlite3.connect(str(target), check_same_thread=False)
+                try:
+                    if self._sqlcipher_key:
+                        key_hex = self._sqlcipher_key.encode("utf-8").hex()
+                        tgt.execute(f"PRAGMA key = x'{key_hex}';")
+
+                    # Natywny backup — deleguje do sqlite3_backup() w C
+                    src.backup(tgt, pages=-1)
+                finally:
+                    tgt.close()
+            finally:
+                src.close()
+
+        await asyncio.to_thread(_sync_backup)
 
         duration = time.time() - start_time
         size_mb = target.stat().st_size / (1024 * 1024) if target.exists() else 0
@@ -171,39 +166,36 @@ class AsyncBackup:
             "duration_s": round(duration, 2),
         }
 
-    async def backup_to_memory(self, source_path: str) -> aiosqlite.Connection:
-        """Wykonaj backup do pamięci RAM (super szybki).
+    async def backup_to_memory(self, source_path: str) -> None:
+        """Wykonaj backup do pamięci RAM (w wątku).
 
-        SUPERMOC: Backup do ``:memory:`` — idealne do testów lub
-        tymczasowych kopii do odczytu bez I/O na dysku.
+        SUPERMOC: Backup do ``:memory:`` — idealne do testów.
+        Nie zwraca połączenia (sqlite3.Connection nie może być bezpiecznie
+        używane między wątkami po zamknięciu backupu).
 
         Args:
             source_path: Ścieżka źródłowej bazy danych.
-
-        Returns:
-            aiosqlite.Connection do bazy w pamięci.
         """
-        mem_conn = await aiosqlite.connect(":memory:")
+        def _sync_backup() -> None:
+            mem_conn = sqlite3.connect(":memory:", check_same_thread=False)
+            try:
+                if self._sqlcipher_key:
+                    key_hex = self._sqlcipher_key.encode("utf-8").hex()
+                    mem_conn.execute(f"PRAGMA key = x'{key_hex}';")
 
-        if self._sqlcipher_key:
-            key_hex = self._sqlcipher_key.encode("utf-8").hex()
-            await mem_conn.execute(f"PRAGMA key = x'{key_hex}';")
+                src = sqlite3.connect(source_path, check_same_thread=False)
+                try:
+                    if self._sqlcipher_key:
+                        key_hex = self._sqlcipher_key.encode("utf-8").hex()
+                        src.execute(f"PRAGMA key = x'{key_hex}';")
+                    src.backup(mem_conn)
+                finally:
+                    src.close()
+            finally:
+                mem_conn.close()
 
-        async with aiosqlite.connect(source_path) as src_conn:
-            if self._sqlcipher_key:
-                key_hex = self._sqlcipher_key.encode("utf-8").hex()
-                await src_conn.execute(f"PRAGMA key = x'{key_hex}';")
-            await src_conn.backup(mem_conn)
-
+        await asyncio.to_thread(_sync_backup)
         logger.info("[BACKUP] In-memory backup complete: %s", source_path)
-        return mem_conn
-
-    @staticmethod
-    def _progress_callback(remaining: int, total: int) -> None:
-        """Callback postępu backupu — loguje co 10%."""
-        if total > 0 and remaining % max(1, total // 10) == 0:
-            pct = ((total - remaining) / total) * 100
-            logger.debug("[BACKUP] Progress: %.0f%% (%d/%d pages)", pct, total - remaining, total)
 
     def add_database(self, name: str, path: str) -> None:
         """Dodaj bazę danych do listy backupów."""

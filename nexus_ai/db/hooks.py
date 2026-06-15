@@ -1,3 +1,5 @@
+from enum import Enum as _EnumType
+
 from sqlalchemy import event
 from structlog import get_logger
 
@@ -8,20 +10,8 @@ from nexus_ai.db.models import Invoice
 logger = get_logger("nexus.db.hooks")
 
 
-# ── Safe decimal converter ──────────────────────────────────────────────
-# SUPERMOC: Decimal → str zamiast Decimal → float.
-# float traci precyzję groszową: Decimal("123.45") → float = 123.44999...
-# DuckDB rozumie string "123.45" jako DECIMAL.
-
-
-def _decimal_to_duckdb(value) -> str | None:
-    """Konwertuj Decimal na string dla DuckDB (bez strat precyzji)."""
-    if value is None:
-        return None
-    # Obsługa Nexus-Money (amount_cents) i py-moneyed (amount)
-    if hasattr(value, "amount"):
-        return str(value.amount)
-    return str(value)
+# _decimal_to_duckdb usunięty — model_dump(mode="json") automatycznie
+# konwertuje Decimal → str przez Pydantic v2
 
 
 def register_db_hooks(config: AppConfig):
@@ -39,16 +29,20 @@ def register_db_hooks(config: AppConfig):
     duck_mgr.connect()
 
     def _build_data(target: Invoice) -> dict[str, str | None]:
-        """Zbuduj słownik danych do DuckDB z bezpieczną konwersją Decimal."""
-        return {
-            "id": str(target.id),
-            "number": target.number,
-            "contractor_nip": target.contractor_nip,
-            "amount_net": _decimal_to_duckdb(target.amount_net),
-            "amount_gross": _decimal_to_duckdb(target.amount_gross),
-            "currency": target.currency,
-            "status": target.status,
-        }
+        """Zbuduj słownik danych do DuckDB z bezpieczną konwersją Decimal.
+
+        SUPERMOC: Używa SQLModel.model_dump() zamiast ręcznego dict-building.
+        ``mode="json"`` automatycznie konwertuje Decimal → string,
+        DateTime → ISO string.
+        """
+        data = target.model_dump(
+            include={"id", "number", "contractor_nip", "amount_net", "amount_gross", "currency", "status"},
+            mode="json",
+        )
+        # Konwersja Enum → str dla DuckDB
+        if isinstance(data.get("status"), Enum):
+            data["status"] = data["status"].value
+        return data
 
     def _replicate(target: Invoice) -> None:
         """Wykonaj upsert do DuckDB dla pojedynczej faktury."""

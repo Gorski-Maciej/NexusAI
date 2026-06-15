@@ -26,6 +26,7 @@ import pendulum
 from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
+from nexus_ai.db.models import InvoiceStatus, OutboxStatus
 
 logger = get_logger("nexus.seed")
 
@@ -205,7 +206,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "10000.00",
         "amount_gross": "12300.00",
         "currency": "PLN",
-        "status": "APPROVED",
+        "status": InvoiceStatus.APPROVED.value,
         "issue_date": "2026-05-15",
         "contractor_nip": SEED_NIPS[3],
         "file_path": "seed_data/fv_2026_001.pdf",
@@ -215,7 +216,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "2500.00",
         "amount_gross": "2700.00",
         "currency": "PLN",
-        "status": "APPROVED",
+        "status": InvoiceStatus.APPROVED.value,
         "issue_date": "2026-05-16",
         "contractor_nip": SEED_NIPS[4],
         "file_path": "seed_data/fv_2026_002.pdf",
@@ -225,7 +226,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "15000.00",
         "amount_gross": "18450.00",
         "currency": "PLN",
-        "status": "PROCESSING",
+        "status": InvoiceStatus.PROCESSING.value,
         "issue_date": "2026-05-18",
         "contractor_nip": SEED_NIPS[3],
         "file_path": "seed_data/fv_2026_003.pdf",
@@ -235,7 +236,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "800.00",
         "amount_gross": "984.00",
         "currency": "PLN",
-        "status": "NEW",
+        "status": InvoiceStatus.NEW.value,
         "issue_date": "2026-05-20",
         "contractor_nip": "1234567890",
         "file_path": "seed_data/fv_2026_004.pdf",
@@ -245,7 +246,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "4500.00",
         "amount_gross": "5535.00",
         "currency": "PLN",
-        "status": "NEW",
+        "status": InvoiceStatus.NEW.value,
         "issue_date": "2026-05-22",
         "contractor_nip": "2345678901",
         "file_path": "seed_data/fv_2026_005.pdf",
@@ -255,7 +256,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "23000.00",
         "amount_gross": "28290.00",
         "currency": "PLN",
-        "status": "ERROR",
+        "status": InvoiceStatus.ERROR.value,
         "issue_date": "2026-05-10",
         "contractor_nip": "3456789012",
         "file_path": "seed_data/fv_2026_006.pdf",
@@ -265,7 +266,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "1200.00",
         "amount_gross": "1296.00",
         "currency": "EUR",
-        "status": "APPROVED",
+        "status": InvoiceStatus.APPROVED.value,
         "issue_date": "2026-05-12",
         "contractor_nip": SEED_NIPS[3],
         "file_path": "seed_data/fv_2026_007.pdf",
@@ -275,7 +276,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "750.00",
         "amount_gross": "922.50",
         "currency": "PLN",
-        "status": "PROCESSING",
+        "status": InvoiceStatus.PROCESSING.value,
         "issue_date": "2026-05-25",
         "contractor_nip": SEED_NIPS[4],
         "file_path": "seed_data/fv_2026_008.pdf",
@@ -285,7 +286,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "3200.00",
         "amount_gross": "3936.00",
         "currency": "PLN",
-        "status": "NEW",
+        "status": InvoiceStatus.NEW.value,
         "issue_date": "2026-05-26",
         "contractor_nip": "1234567890",
         "file_path": "seed_data/fv_2026_009.pdf",
@@ -295,7 +296,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "8900.00",
         "amount_gross": "10947.00",
         "currency": "PLN",
-        "status": "APPROVED",
+        "status": InvoiceStatus.APPROVED.value,
         "issue_date": "2026-05-08",
         "contractor_nip": "2345678901",
         "file_path": "seed_data/fv_2026_010.pdf",
@@ -305,7 +306,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "550.00",
         "amount_gross": "550.00",
         "currency": "PLN",
-        "status": "NEW",
+        "status": InvoiceStatus.NEW.value,
         "issue_date": "2026-05-28",
         "contractor_nip": SEED_NIPS[3],
         "file_path": "seed_data/fv_2026_011.pdf",
@@ -315,7 +316,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "18500.00",
         "amount_gross": "22755.00",
         "currency": "PLN",
-        "status": "PROCESSING",
+        "status": InvoiceStatus.PROCESSING.value,
         "issue_date": "2026-05-05",
         "contractor_nip": "3456789012",
         "file_path": "seed_data/fv_2026_012.pdf",
@@ -325,7 +326,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "4300.00",
         "amount_gross": "5289.00",
         "currency": "PLN",
-        "status": "ERROR",
+        "status": InvoiceStatus.ERROR.value,
         "issue_date": "2026-05-03",
         "contractor_nip": SEED_NIPS[4],
         "file_path": "seed_data/fv_2026_013.pdf",
@@ -335,7 +336,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "6700.00",
         "amount_gross": "8241.00",
         "currency": "PLN",
-        "status": "NEW",
+        "status": InvoiceStatus.NEW.value,
         "issue_date": "2026-04-30",
         "contractor_nip": "1234567890",
         "file_path": "seed_data/fv_2026_014.pdf",
@@ -345,7 +346,7 @@ SEED_INVOICES: list[dict[str, Any]] = [
         "amount_net": "11200.00",
         "amount_gross": "13776.00",
         "currency": "PLN",
-        "status": "APPROVED",
+        "status": InvoiceStatus.APPROVED.value,
         "issue_date": "2026-04-28",
         "contractor_nip": SEED_NIPS[3],
         "file_path": "seed_data/fv_2026_015.pdf",
@@ -932,7 +933,7 @@ async def seed_invoices(db_session: Any, config: Any) -> int:
                 text(
                     """\
                     INSERT INTO outbox_events (id, event_type, aggregate_id, payload, status, processed, created_at)
-                    VALUES (:id, :event_type, :aggregate_id, :payload, 'PENDING', 0, :created_at)
+                    VALUES (:id, :event_type, :aggregate_id, :payload, :status, 0, :created_at)
                     """
                 ),
                 {
@@ -940,6 +941,7 @@ async def seed_invoices(db_session: Any, config: Any) -> int:
                     "event_type": "seed_invoice_created",
                     "aggregate_id": inv_id,
                     "payload": event_payload,
+                    "status": OutboxStatus.PENDING.value,
                     "created_at": now,
                 },
             )

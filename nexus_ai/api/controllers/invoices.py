@@ -31,7 +31,7 @@ from nexus_ai.api.schemas import (
 from nexus_ai.api.services import ContentAddressableStorage
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps
-from nexus_ai.db.models import Invoice, OutboxEvent
+from nexus_ai.db.models import Invoice, InvoiceStatus, OutboxEvent, OutboxStatus
 
 
 class InvoiceController(Controller):
@@ -140,7 +140,7 @@ class InvoiceController(Controller):
             amount_gross=data.amount_gross,
             currency=data.currency,
             issue_date=data.issue_date or None,
-            status="NEW",
+            status=InvoiceStatus.NEW,
         )
         db_session.add(new_invoice)
         db_session.add(
@@ -154,7 +154,7 @@ class InvoiceController(Controller):
                     },
                     ensure_ascii=False,
                 ),
-                status="PENDING",
+                status=OutboxStatus.PENDING,
                 processed=False,
             )
         )

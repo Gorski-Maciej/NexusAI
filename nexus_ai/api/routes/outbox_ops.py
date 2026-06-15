@@ -70,10 +70,11 @@ class OutboxOpsController(Controller):
             return await relay.get_stats()
 
         # Fallback: podstawowe zapytania SQL bez OutboxRelay
-        from sqlalchemy import text
+        from sqlalchemy import func, select, text
 
         from core.config import AppConfig
         from db.database import create_oltp_engine, create_session_factory
+        from nexus_ai.db.models import OutboxEvent, OutboxStatus
 
         config = AppConfig()
         engine = create_oltp_engine(config)
@@ -83,21 +84,21 @@ class OutboxOpsController(Controller):
                 pending = int(
                     (
                         await session.execute(
-                            text("SELECT COUNT(*) FROM outbox_events WHERE status='PENDING'")
+                            select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.PENDING)
                         )
                     ).scalar_one()
                 )
                 failed = int(
                     (
                         await session.execute(
-                            text("SELECT COUNT(*) FROM outbox_events WHERE status='FAILED'")
+                            select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.FAILED)
                         )
                     ).scalar_one()
                 )
                 dead = int(
                     (
                         await session.execute(
-                            text("SELECT COUNT(*) FROM outbox_events WHERE status='DEAD_LETTER'")
+                            select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.DEAD_LETTER)
                         )
                     ).scalar_one()
                 )

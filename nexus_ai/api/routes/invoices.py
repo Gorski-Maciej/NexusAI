@@ -33,6 +33,7 @@ from nexus_ai.api.services import ContentAddressableStorage, FileValidator, Idem
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.analytics import DuckDBManager
+from nexus_ai.db.models import OutboxStatus
 from nexus_ai.services.audit_logger import AuditLogger
 
 
@@ -190,7 +191,7 @@ class InvoiceController(Controller):
                 "event_type": EVENT_INVOICE_UPLOADED,
                 "aggregate_id": invoice_id,
                 "payload": msgspec_dumps(event_payload),
-                "status": "PENDING",
+                "status": OutboxStatus.PENDING.value,
                 "processed": False,
             },
         )
@@ -226,8 +227,8 @@ class InvoiceController(Controller):
             audit_manager.close()
 
         response_data = TaskResponse(
-            task_id=task_id,
-            status="QUEUED",
+            task_id=task_id,status="QUEUED"
+,
             message=(
                 f"Invoice accepted: hash={saved.file_hash}, size={saved.size_bytes}, "
                 f"workflow=UPLOADED->OUTBOX_PENDING ({pendulum.now('UTC').to_iso8601_string()})"
@@ -374,14 +375,14 @@ class InvoiceController(Controller):
                 "event_type": EVENT_ATTACHMENT_LARGE_UPLOADED,
                 "aggregate_id": attachment_id,
                 "payload": msgspec_dumps(event_payload),
-                "status": "PENDING",
+                "status": OutboxStatus.PENDING.value,
                 "processed": False,
             },
         )
         db_session.commit()
         response = TaskResponse(
-            task_id=task_id,
-            status="QUEUED",
+            task_id=task_id,status="QUEUED"
+,
             message="Large attachment accepted for dedicated processing queue",
         )
         if idempotency_key:

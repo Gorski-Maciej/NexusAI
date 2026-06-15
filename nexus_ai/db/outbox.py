@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
-from nexus_ai.db.models import OutboxEvent
+from nexus_ai.db.models import OutboxEvent, OutboxStatus
 
 
 class OutboxManager:
@@ -23,7 +23,7 @@ class OutboxManager:
             event_type=event_type,
             aggregate_id=aggregate_id,
             payload=msgspec_dumps(payload, ensure_ascii=False),
-            status="PENDING",
+            status=OutboxStatus.PENDING,
             created_at=pendulum.now("UTC"),
         )
         session.add(event)
@@ -81,7 +81,7 @@ async def process_outbox_events(
         for event in events:
             try:
                 # Atomowa zmiana statusu na PROCESSING (zapobiega double-process)
-                event.status = "PROCESSING"
+                event.status = OutboxStatus.PROCESSING
                 event.processing_started_at = pendulum.now("UTC")
                 await session.flush()
 
@@ -92,13 +92,13 @@ async def process_outbox_events(
                 # Oznacz jako przetworzone
                 event.processed = True
                 event.processed_at = pendulum.now("UTC")
-                event.status = "PROCESSED"
+                event.status = OutboxStatus.PROCESSED
                 processed_count += 1
             except Exception:
                 event.retry_count = event.retry_count + 1
-                event.status = "FAILED"
+                event.status = OutboxStatus.FAILED
                 if event.retry_count >= 5:
-                    event.status = "DEAD_LETTER"
+                    event.status = OutboxStatus.DEAD_LETTER
 
         await session.commit()
         return processed_count

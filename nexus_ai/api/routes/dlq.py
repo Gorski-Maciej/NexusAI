@@ -27,8 +27,10 @@ from litestar import Controller, delete, get, post
 from litestar.connection import Request
 from litestar.exceptions import NotFoundException
 from litestar.response import Response
-from sqlalchemy import text
+from sqlalchemy import func, select, text
 from structlog import get_logger
+
+from nexus_ai.db.models import OutboxEvent, OutboxStatus
 
 from nexus_ai.api.dto import (
     DLQBulkRetryResponseDTO,
@@ -94,7 +96,7 @@ class DLQController(Controller):
             # Dead-letter outbox events
             dl_outbox = (
                 await conn.execute(
-                    text("SELECT COUNT(*) FROM outbox_events WHERE status = 'DEAD_LETTER'")
+                    select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.DEAD_LETTER)
                 )
             ).scalar()
             dead_letter_outbox = int(dl_outbox or 0)
@@ -102,7 +104,7 @@ class DLQController(Controller):
             # Failed outbox events
             failed_outbox = (
                 await conn.execute(
-                    text("SELECT COUNT(*) FROM outbox_events WHERE status = 'FAILED'")
+                    select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.FAILED)
                 )
             ).scalar()
             failed_outbox_count = int(failed_outbox or 0)
@@ -298,10 +300,9 @@ class DLQController(Controller):
             event_id = uuid.uuid4().hex
             await conn.execute(
                 text(
-                    """
+                    f"""
                     INSERT INTO outbox_events (id, event_type, aggregate_id, payload, status, processed, created_at)
-                    VALUES (:id, :event_type, :aggregate_id, :payload, 'PENDING', 0, :created_at)
-                    """
+                    VALUES (:id, :event_type, :aggregate_id, :payload, '{OutboxStatus.PENDING.value}', 0, :created_at)"""
                 ),
                 {
                     "id": event_id,
@@ -379,9 +380,9 @@ class DLQController(Controller):
                     event_id = uuid.uuid4().hex
                     await conn.execute(
                         text(
-                            """
+                            f"""
                             INSERT INTO outbox_events (id, event_type, aggregate_id, payload, status, processed, created_at)
-                            VALUES (:id, :event_type, :aggregate_id, :payload, 'PENDING', 0, :created_at)
+                            VALUES (:id, :event_type, :aggregate_id, :payload, '{OutboxStatus.PENDING.value}', 0, :created_at)
                             """
                         ),
                         {

@@ -1,12 +1,8 @@
 """
-AsyncFTSManager — async FTS5 Full-Text Search via aiosqlite.
+AsyncFTSManager — async FTS5 Full-Text Search via sqlite3.
 
-SUPERMOC: aiosqlite zamiast synchronicznego sqlite3 dla FTS5.
-Wszystkie operacje wyszukiwania są async — nie blokują pętli zdarzeń.
-
-Zgodnie z docs/AIOSQLITE_AUDIT.md:
-- FAZA 1: Konwersja FTSManager z sync sqlite3 na async aiosqlite
-- Współdzielenie AsyncDBPool
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + asyncio.to_thread
+zamiast aiosqlite.
 
 SUPERMOCE FTS5:
 - FTS5 (Full-Text Search v5) — wbudowany silnik wyszukiwania
@@ -19,10 +15,11 @@ SUPERMOCE FTS5:
 
 from __future__ import annotations
 
+import asyncio
+import sqlite3
 from pathlib import Path
 from typing import Any
 
-import aiosqlite
 from structlog import get_logger
 
 from nexus_ai.db.async_base_service import AsyncBaseService
@@ -33,7 +30,7 @@ logger = get_logger("nexus.db.fts")
 class AsyncFTSManager(AsyncBaseService):
     """Async zarządca FTS5 tabel dla wyszukiwania pełnotekstowego.
 
-    Używa aiosqlite dla async operacji — nie blokuje pętli zdarzeń.
+    Python 3.13t (free-threaded): synchroniczne sqlite3 + asyncio.to_thread.
 
     Tabele FTS5:
     - ``invoices_fts``: numer faktury, nazwa kontrahenta, status, kategoria
@@ -45,26 +42,25 @@ class AsyncFTSManager(AsyncBaseService):
     def __init__(self, db_path: str | Path) -> None:
         super().__init__(db_path)
 
-    async def _on_connect(self, conn: aiosqlite.Connection) -> None:
-        """Hook dodający PRAGMY specyficzne dla FTS5.
-
-        Wołany automatycznie przez AsyncBaseService.get_conn()
-        po pobraniu nowego połączenia z AsyncDBPool.
-        """
-        await conn.execute("PRAGMA cache_size = -25600;")  # 100MB
-        await conn.execute("PRAGMA temp_store = MEMORY;")
+    async def _on_connect(self, conn: sqlite3.Connection) -> None:
+        """Hook dodający PRAGMY specyficzne dla FTS5."""
+        def _sync() -> None:
+            conn.execute("PRAGMA cache_size = -25600;")  # 100MB
+            conn.execute("PRAGMA temp_store = MEMORY;")
+        await asyncio.to_thread(_sync)
 
     async def close(self) -> None:
-        """Zamknij z PRAGMA optimize (tylko jeśli połączenie aktywne).
-
-        SUPERMOC: Sprawdza self._conn przed get_conn() aby nie tworzyć
-        nowego połączenia tylko dla PRAGMA optimize.
-        """
-        try:
-            if self._conn is not None and not self._conn.is_closed():
-                await self._conn.execute("PRAGMA optimize;")
-        except Exception:
-            pass
+        """Zamknij z PRAGMA optimize (tylko jeśli połączenie aktywne)."""
+        if self._conn is not None:
+            try:
+                def _optimize() -> None:
+                    try:
+                        self._conn.execute("PRAGMA optimize;")
+                    except Exception:
+                        pass
+                await asyncio.to_thread(_optimize)
+            except Exception:
+                pass
         await super().close()
 
     # ── Schema definitions ──────────────────────────────────────────
@@ -208,10 +204,7 @@ class AsyncFTSManager(AsyncBaseService):
         limit: int = 20,
         offset: int = 0,
     ) -> list[dict[str, Any]]:
-        """SZUKAJ faktur przez FTS5 z podświetlonymi trafieniami (ASYNC).
-
-        SUPERMOC: async aiosqlite — nie blokuje pętli zdarzeń.
-        """
+        """SZUKAJ faktur przez FTS5 z podświetlonymi trafieniami (ASYNC)."""
         if not query.strip():
             return []
 
@@ -293,16 +286,19 @@ class AsyncFTSManager(AsyncBaseService):
 
         try:
             conn = await self.get_conn()
-            cursor = await conn.execute(
-                """SELECT fts.*, fts.rank
-                   FROM events_fts fts
-                   WHERE events_fts MATCH ?
-                   ORDER BY fts.rank
-                   LIMIT ?""",
-                (query, limit),
-            )
-            rows = await cursor.fetchall()
-            return [dict(r) for r in rows]
+
+            def _sync() -> list[dict[str, Any]]:
+                cursor = conn.execute(
+                    """SELECT fts.*
+                       FROM events_fts fts
+                       WHERE events_fts MATCH ?
+                       ORDER BY rank
+                       LIMIT ?""",
+                    (query, limit),
+                )
+                return [dict(r) for r in cursor.fetchall()]
+
+            return await asyncio.to_thread(_sync)
         except Exception as exc:
             logger.warning("[FTS] Event search failed: %s — query=%r", exc, query)
             return []
@@ -335,11 +331,11 @@ class AsyncFTSManager(AsyncBaseService):
 
         conn = await self.get_conn()
 
-        try:
-            # Krok 1: Wyniki FTS5 (async)
+        def _sync_hybrid() -> list[dict[str, Any]]:
+            # Krok 1: Wyniki FTS5
             fts_results: list[dict[str, Any]] = []
             if keyword_query.strip():
-                cursor = await conn.execute(
+                cursor = conn.execute(
                     """SELECT i.*, fts.rank
                        FROM invoices_fts fts
                        JOIN invoices i ON i.id = fts.invoice_id
@@ -348,8 +344,7 @@ class AsyncFTSManager(AsyncBaseService):
                        LIMIT ?""",
                     (keyword_query, limit * 3),
                 )
-                rows = await cursor.fetchall()
-                fts_results = [dict(r) for r in rows]
+                fts_results = [dict(r) for r in cursor.fetchall()]
                 if fts_results:
                     max_rank = max(r.get("rank", 0) for r in fts_results)
                     min_rank = min(r.get("rank", 0) for r in fts_results)
@@ -358,13 +353,13 @@ class AsyncFTSManager(AsyncBaseService):
                         r["_fts_score"] = 1.0 - (r.get("rank", 0) - min_rank) / rank_range
                         r["_hybrid_score"] = alpha * r["_fts_score"]
 
-            # Krok 2: Wyniki vec0 (async)
+            # Krok 2: Wyniki vec0
             if query_vector:
                 try:
                     import sqlite_vec
 
                     query_blob = sqlite_vec.serialize_float32(query_vector)
-                    cursor = await conn.execute(
+                    cursor = conn.execute(
                         """SELECT i.*, vec_distance_cosine(v.embedding, ?) AS _vec_distance
                            FROM invoice_vectors v
                            JOIN invoices i ON i.id = v.rowid
@@ -373,7 +368,7 @@ class AsyncFTSManager(AsyncBaseService):
                            LIMIT ?""",
                         (query_blob, query_blob, limit * 3),
                     )
-                    vec_rows = await cursor.fetchall()
+                    vec_rows = cursor.fetchall()
                     vec_results = [dict(r) for r in vec_rows]
                     if vec_results:
                         max_dist = max(r["_vec_distance"] for r in vec_results)
@@ -382,8 +377,8 @@ class AsyncFTSManager(AsyncBaseService):
                         for r in vec_results:
                             r["_vec_score"] = 1.0 - (r["_vec_distance"] - min_dist) / dist_range
                             r["_hybrid_score"] = (1.0 - alpha) * r["_vec_score"]
-                except Exception as exc:
-                    logger.debug("[FTS] vec0 unavailable for hybrid search: %s", exc)
+                except Exception:
+                    logger.debug("[FTS] vec0 unavailable for hybrid search", exc_info=True)
                     vec_results = []
             else:
                 vec_results = []
@@ -409,6 +404,8 @@ class AsyncFTSManager(AsyncBaseService):
             results.sort(key=lambda x: x.get("_hybrid_score", 0.0), reverse=True)
             return results[:limit]
 
+        try:
+            return await asyncio.to_thread(_sync_hybrid)
         except Exception as exc:
             logger.warning("[FTS] Hybrid search failed: %s", exc)
             if keyword_query.strip():
@@ -430,9 +427,8 @@ class AsyncFTSManager(AsyncBaseService):
         category: str = "",
     ) -> None:
         """Indeksuj pojedynczą fakturę (ASYNC)."""
-        conn = await self.get_conn()
-        await conn.execute("DELETE FROM invoices_fts WHERE invoice_id = ?", (invoice_id,))
-        await conn.execute(
+        await self.execute("DELETE FROM invoices_fts WHERE invoice_id = ?", (invoice_id,))
+        await self.execute(
             """INSERT INTO invoices_fts(
                    invoice_id, number, contractor_nip, contractor_name,
                    amount_net, amount_gross, currency, status, category
@@ -449,7 +445,7 @@ class AsyncFTSManager(AsyncBaseService):
                 category or "",
             ),
         )
-        await conn.commit()
+        await self.commit()
 
     async def index_contractor(
         self,
@@ -460,32 +456,34 @@ class AsyncFTSManager(AsyncBaseService):
         vat_status: str = "",
     ) -> None:
         """Indeksuj pojedynczego kontrahenta (ASYNC)."""
-        conn = await self.get_conn()
-        await conn.execute(
+        await self.execute(
             "DELETE FROM contractors_fts WHERE contractor_id = ?", (contractor_id,)
         )
-        await conn.execute(
+        await self.execute(
             """INSERT INTO contractors_fts(
                    contractor_id, nip, name, address, vat_status
                ) VALUES (?, ?, ?, ?, ?)""",
             (contractor_id, nip, name, address, vat_status),
         )
-        await conn.commit()
+        await self.commit()
 
     async def delete_invoice(self, invoice_id: str) -> None:
         """Usuń fakturę z indeksu FTS5 (ASYNC)."""
-        conn = await self.get_conn()
-        await conn.execute("DELETE FROM invoices_fts WHERE invoice_id = ?", (invoice_id,))
-        await conn.commit()
+        await self.execute("DELETE FROM invoices_fts WHERE invoice_id = ?", (invoice_id,))
+        await self.commit()
 
     async def rebuild_index(self) -> None:
         """Przebuduj wszystkie indeksy FTS5 (ASYNC)."""
         conn = await self.get_conn()
-        await conn.execute("INSERT INTO invoices_fts(invoices_fts) VALUES('rebuild')")
-        await conn.execute("INSERT INTO contractors_fts(contractors_fts) VALUES('rebuild')")
-        await conn.execute("INSERT INTO audit_logs_fts(audit_logs_fts) VALUES('rebuild')")
-        await conn.execute("INSERT INTO events_fts(events_fts) VALUES('rebuild')")
-        await conn.commit()
+
+        def _sync() -> None:
+            conn.execute("INSERT INTO invoices_fts(invoices_fts) VALUES('rebuild')")
+            conn.execute("INSERT INTO contractors_fts(contractors_fts) VALUES('rebuild')")
+            conn.execute("INSERT INTO audit_logs_fts(audit_logs_fts) VALUES('rebuild')")
+            conn.execute("INSERT INTO events_fts(events_fts) VALUES('rebuild')")
+            conn.commit()
+
+        await asyncio.to_thread(_sync)
         logger.info("[FTS] All indexes rebuilt (async)")
 
 

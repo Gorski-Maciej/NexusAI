@@ -20,8 +20,7 @@ Lista technologii wykorzystanych w projekcie NexusAI
 16. msgspec
 17. SQLite
 18. SQLCipher
-19. aiosqlite
-20. sqlite-vec
+19. sqlite-vec
 21. SQLAlchemy
 22. SQLModel
 23. Pydantic

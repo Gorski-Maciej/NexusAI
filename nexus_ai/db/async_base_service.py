@@ -1,16 +1,18 @@
 """
-AsyncBaseService — bazowa klasa dla serwisów używających aiosqlite.
+AsyncBaseService — bazowa klasa dla serwisów DB (sync sqlite3 + async wrapper).
 
-SUPERMOC: DRY dla async serwisów DB. Każdy serwis dziedziczy po AsyncBaseService
-i dostaje automatycznie:
+Python 3.13t (free-threaded, brak GIL): wywołania synchronicznego sqlite3
+są bezpieczne z wielu wątków. Każda operacja DB jest delegowana do wątku
+przez ``asyncio.to_thread()``.
+
+Zgodnie z decyzją architektoniczną: rezygnujemy z aiosqlite na rzecz
+natywnego sqlite3 + asyncio.to_thread.
+
+Każdy serwis dziedziczy po AsyncBaseService i dostaje automatycznie:
 - AsyncDBPool zarządzanie połączeniami
 - WAL mode, synchronous=NORMAL
 - Automatyczne PRAGMY przy pierwszym połączeniu
 - Bezpieczne close()/zamykanie
-
-Zgodnie z docs/AIOSQLITE_AUDIT.md:
-- FAZA 3: AsyncBaseService dla DRY
-- Współdzielenie AsyncDBPool między serwisami
 
 Usage:
     class MyService(AsyncBaseService):
@@ -18,17 +20,16 @@ Usage:
             super().__init__(db_path)
 
         async def query(self) -> list[dict]:
-            conn = await self.get_conn()
-            cursor = await conn.execute("SELECT * FROM table")
-            return await cursor.fetchall()
+            return await self.fetchall("SELECT * FROM table")
 """
 
 from __future__ import annotations
 
+import asyncio
+import sqlite3
 from pathlib import Path
 from typing import Any
 
-import aiosqlite
 from structlog import get_logger
 
 from nexus_ai.db.async_db_pool import get_async_db_pool
@@ -37,14 +38,17 @@ logger = get_logger("nexus.db.async_base")
 
 
 class AsyncBaseService:
-    """Bazowa klasa dla serwisów używających aiosqlite.
+    """Bazowa klasa dla serwisów DB (sync sqlite3 + async wrapper).
+
+    Wszystkie operacje sqlite3 są wykonywane w wątku przez
+    ``asyncio.to_thread()`` — Python 3.13t (free-threaded) nie ma GIL,
+    więc synchroniczne API nie blokuje pętli zdarzeń.
 
     Zapewnia:
     - Leniwe połączenie przez AsyncDBPool
     - Automatyczne PRAGMY
     - Bezpieczne zamykanie
-    - Row factory (aiosqlite.Row)
-    - Dedicated pool na serwis (lub można użyć globalnego)
+    - Row factory (sqlite3.Row)
 
     Args:
         db_path: Ścieżka do pliku SQLite.
@@ -68,20 +72,24 @@ class AsyncBaseService:
         self._enable_extensions = enable_extensions
         self._sqlcipher_key = sqlcipher_key
         self._wal_mode = wal_mode
-        self._conn: aiosqlite.Connection | None = None
+        self._conn: sqlite3.Connection | None = None
 
-    async def get_conn(self) -> aiosqlite.Connection:
-        """Pobierz async połączenie przez AsyncDBPool.
+    async def get_conn(self) -> sqlite3.Connection:
+        """Pobierz sync połączenie przez AsyncDBPool (w wątku).
 
         SUPERMOC: Połączenie jest współdzielone między serwisami
-        przez globalny AsyncDBPool. Po pobraniu nowego połączenia,
-        woła ``_on_connect()`` hook dla dodatkowych PRAGM subklas.
+        przez globalny AsyncDBPool. ``check_same_thread=False`` pozwala
+        na użycie z różnych wątków (free-threaded Python 3.13t).
+
+        Po pobraniu nowego połączenia, woła ``_on_connect()`` hook
+        dla dodatkowych PRAGM subklas.
 
         Returns:
-            aiosqlite.Connection z ustawionymi PRAGMAMI.
+            sqlite3.Connection z ustawionymi PRAGMAMI.
         """
-        if self._conn is None or self._conn.is_closed():
-            self._conn = await self._pool.get_conn(
+        if self._conn is None:
+            self._conn = await asyncio.to_thread(
+                self._pool.get_conn,
                 self._db_path,
                 enable_extensions=self._enable_extensions,
                 sqlcipher_key=self._sqlcipher_key,
@@ -91,14 +99,14 @@ class AsyncBaseService:
             await self._on_connect(self._conn)
         return self._conn
 
-    async def _on_connect(self, conn: aiosqlite.Connection) -> None:
+    async def _on_connect(self, conn: sqlite3.Connection) -> None:
         """Hook wołany po uzyskaniu nowego połączenia z pool.
 
         Nadpisz w podklasie, aby dodać dodatkowe PRAGMY
         (np. cache_size, temp_store, mmap_size) po pobraniu połączenia.
 
         Args:
-            conn: aiosqlite.Connection gotowe do użycia.
+            conn: sqlite3.Connection gotowe do użycia.
         """
         pass  # Domyślnie brak dodatkowych PRAGM
 
@@ -106,84 +114,96 @@ class AsyncBaseService:
         self,
         sql: str,
         parameters: Any | None = None,
-    ) -> aiosqlite.Cursor:
-        """Wykonaj async zapytanie SQL.
-
-        Args:
-            sql: Zapytanie SQL.
-            parameters: Parametry bind (krotka lub słownik).
-
-        Returns:
-            aiosqlite.Cursor z wynikami.
-        """
+    ) -> sqlite3.Cursor:
+        """Wykonaj zapytanie SQL (w wątku przez asyncio.to_thread)."""
         conn = await self.get_conn()
-        if parameters is not None:
-            return await conn.execute(sql, parameters)
-        return await conn.execute(sql)
+
+        def _sync_execute() -> sqlite3.Cursor:
+            if parameters is not None:
+                return conn.execute(sql, parameters)
+            return conn.execute(sql)
+
+        return await asyncio.to_thread(_sync_execute)
 
     async def executescript(self, sql: str) -> None:
-        """Wykonaj async skrypt SQL (multi-statement).
-
-        Args:
-            sql: Skrypt SQL (może zawierać wiele zapytań).
-        """
+        """Wykonaj skrypt SQL (multi-statement, w wątku)."""
         conn = await self.get_conn()
-        await conn.executescript(sql)
+
+        def _sync() -> None:
+            conn.executescript(sql)
+
+        await asyncio.to_thread(_sync)
 
     async def executemany(
         self,
         sql: str,
         parameters: list[tuple[Any, ...]],
     ) -> None:
-        """Wykonaj async batch INSERT/UPDATE.
-
-        Args:
-            sql: SQL z placeholderami.
-            parameters: Lista krotek parametrów.
-        """
+        """Wykonaj batch INSERT/UPDATE (w wątku)."""
         conn = await self.get_conn()
-        await conn.executemany(sql, parameters)
+
+        def _sync() -> None:
+            conn.executemany(sql, parameters)
+
+        await asyncio.to_thread(_sync)
 
     async def fetchone(
         self,
         sql: str,
         parameters: Any | None = None,
     ) -> dict[str, Any] | None:
-        """Pobierz jeden wiersz jako słownik."""
+        """Pobierz jeden wiersz jako słownik (w wątku)."""
         conn = await self.get_conn()
-        cursor = await conn.execute(sql, parameters or ())
-        row = await cursor.fetchone()
-        return dict(row) if row else None
+
+        def _sync_fetch() -> dict[str, Any] | None:
+            cursor = conn.execute(sql, parameters or ())
+            row = cursor.fetchone()
+            return dict(row) if row else None
+
+        return await asyncio.to_thread(_sync_fetch)
 
     async def fetchall(
         self,
         sql: str,
         parameters: Any | None = None,
     ) -> list[dict[str, Any]]:
-        """Pobierz wszystkie wiersze jako listę słowników."""
+        """Pobierz wszystkie wiersze jako listę słowników (w wątku)."""
         conn = await self.get_conn()
-        cursor = await conn.execute(sql, parameters or ())
-        rows = await cursor.fetchall()
-        return [dict(r) for r in rows]
+
+        def _sync_fetch() -> list[dict[str, Any]]:
+            cursor = conn.execute(sql, parameters or ())
+            rows = cursor.fetchall()
+            return [dict(r) for r in rows]
+
+        return await asyncio.to_thread(_sync_fetch)
 
     async def commit(self) -> None:
-        """Wykonaj async commit."""
-        if self._conn is not None and not self._conn.is_closed():
-            await self._conn.commit()
+        """Wykonaj commit (w wątku)."""
+        if self._conn is not None:
+            def _sync() -> None:
+                self._conn.commit()
+            await asyncio.to_thread(_sync)
 
     async def rollback(self) -> None:
-        """Wykonaj async rollback."""
-        if self._conn is not None and not self._conn.is_closed():
-            await self._conn.rollback()
+        """Wykonaj rollback (w wątku)."""
+        if self._conn is not None:
+            def _sync() -> None:
+                self._conn.rollback()
+            await asyncio.to_thread(_sync)
 
     async def close(self) -> None:
-        """Zamknij połączenie (usuwa z pool)."""
+        """Zamknij połączenie (w wątku)."""
         if self._conn is not None:
             try:
-                await self._conn.execute("PRAGMA optimize;")
+                def _optimize() -> None:
+                    try:
+                        self._conn.execute("PRAGMA optimize;")
+                    except Exception:
+                        pass
+                await asyncio.to_thread(_optimize)
             except Exception:
                 pass
-            await self._pool.close_conn(self._db_path)
+            await asyncio.to_thread(self._pool.close_conn, self._db_path)
             self._conn = None
 
     async def __aenter__(self) -> AsyncBaseService:

@@ -11,6 +11,13 @@ from typing import Any, Protocol, final
 
 import pendulum
 
+from enum import StrEnum
+
+
+class DunningStatus(StrEnum):
+    SENT = "SENT"
+    FAILED = "FAILED"
+
 
 class DunningAIAgent(Protocol):
     def generate_dunning_text(
@@ -118,7 +125,7 @@ class DunningEngine:
                 subject=f"Przypomnienie o płatności FV {number}",
                 body=content,
             )
-            status = "SENT" if delivered else "FAILED"
+            status = DunningStatus.SENT if delivered else DunningStatus.FAILED
             sent += 1 if delivered else 0
             failed += 0 if delivered else 1
             self.duckdb.execute(

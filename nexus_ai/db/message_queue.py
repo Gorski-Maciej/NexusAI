@@ -1,11 +1,8 @@
 """
-AsyncSQLiteQueue — async SQLite Message Queue via aiosqlite.
+AsyncSQLiteQueue — async SQLite Message Queue via sqlite3.
 
-SUPERMOC: aiosqlite zamiast synchronicznego sqlite3 dla kolejki komunikatów.
-Wszystkie operacje enqueue/dequeue są async — nie blokują pętli zdarzeń.
-
-Zgodnie z docs/AIOSQLITE_AUDIT.md:
-- FAZA 2: Konwersja MessageQueue z sync sqlite3 na async aiosqlite
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + asyncio.to_thread
+zamiast aiosqlite.
 
 SUPERMOCE:
 - Atomiczne enqueue/dequeue w jednej transakcji (async)
@@ -24,7 +21,9 @@ Usage:
 
 from __future__ import annotations
 
+import asyncio
 import json
+import sqlite3
 import time
 import uuid
 from pathlib import Path
@@ -34,7 +33,7 @@ from nexus_ai.db.async_base_service import AsyncBaseService
 
 
 class AsyncSQLiteQueue(AsyncBaseService):
-    """Async lekka kolejka komunikatów w SQLite przez aiosqlite.
+    """Async lekka kolejka komunikatów w SQLite przez sqlite3 + asyncio.to_thread.
 
     SUPERMOCE:
     - Atomiczne enqueue/dequeue w jednej transakcji (async)
@@ -42,7 +41,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
     - Opóźnione wiadomości (delay_until)
     - Dead letter queue
     - Partial indexes
-    - async — nie blokuje pętli zdarzeń
+    - async — nie blokuje pętli zdarzeń (przez asyncio.to_thread)
     """
 
     def __init__(
@@ -54,7 +53,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
         super().__init__(db_path)
         self._max_retries = max_retries
         self._poll_interval = poll_interval
-        self._schema_checked = False  # Flaga dla _on_connect hook
+        self._schema_checked = False
 
     async def _ensure_schema(self) -> None:
         """Utwórz schemat kolejki (async)."""
@@ -97,19 +96,20 @@ class AsyncSQLiteQueue(AsyncBaseService):
         """)
         await self.commit()
 
-    async def _on_connect(self, conn: aiosqlite.Connection) -> None:
-        """Hook tworzący schemat kolejki przy pierwszym połączeniu.
-
-        SUPERMOC: Sprawdza raz czy tabela istnieje, tworzy jeśli nie.
-        Używa flagi ``_schema_checked`` aby nie sprawdzać przy każdym
-        połączeniu (było: schema check na każdym get_conn()).
-        """
+    async def _on_connect(self, conn: sqlite3.Connection) -> None:
+        """Hook tworzący schemat kolejki przy pierwszym połączeniu."""
         if not getattr(self, "_schema_checked", False):
-            cursor = await conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='mq_messages'"
-            )
-            row = await cursor.fetchone()
-            if row is None:
+            def _sync() -> None:
+                cursor = conn.execute(
+                    "SELECT name FROM sqlite_master WHERE type='table' AND name='mq_messages'"
+                )
+                row = cursor.fetchone()
+                if row is None:
+                    # Need to call _ensure_schema which uses self methods
+                    return False
+                return True
+            exists = await asyncio.to_thread(_sync)
+            if not exists:
                 await self._ensure_schema()
             self._schema_checked = True
 
@@ -149,38 +149,41 @@ class AsyncSQLiteQueue(AsyncBaseService):
         ids: list[str] = []
         now = time.time()
 
-        await conn.execute("BEGIN")
-        try:
-            for msg in messages:
-                msg_id = uuid.uuid4().hex
-                payload = msg.get("payload", {})
-                payload_str = json.dumps(payload) if isinstance(payload, dict) else payload
-                delay = msg.get("delay_seconds")
-                delay_until = now + delay if delay else None
+        def _sync_batch() -> list[str]:
+            batch_ids: list[str] = []
+            conn.execute("BEGIN")
+            try:
+                for msg in messages:
+                    msg_id = uuid.uuid4().hex
+                    payload = msg.get("payload", {})
+                    payload_str = json.dumps(payload) if isinstance(payload, dict) else payload
+                    delay = msg.get("delay_seconds")
+                    delay_until = now + delay if delay else None
 
-                await conn.execute(
-                    """INSERT INTO mq_messages
-                       (id, queue, payload, priority, status, delay_until,
-                        retry_count, max_retries, created_at, updated_at)
-                       VALUES (?, ?, ?, ?, 'pending', ?, 0, ?, ?, ?)""",
-                    (
-                        msg_id,
-                        msg.get("queue", "default"),
-                        payload_str,
-                        msg.get("priority", 5),
-                        delay_until,
-                        msg.get("max_retries", self._max_retries),
-                        now,
-                        now,
-                    ),
-                )
-                ids.append(msg_id)
-            await conn.commit()
-        except Exception:
-            await conn.rollback()
-            raise
+                    conn.execute(
+                        """INSERT INTO mq_messages
+                           (id, queue, payload, priority, status, delay_until,
+                            retry_count, max_retries, created_at, updated_at)
+                           VALUES (?, ?, ?, ?, 'pending', ?, 0, ?, ?, ?)""",
+                        (
+                            msg_id,
+                            msg.get("queue", "default"),
+                            payload_str,
+                            msg.get("priority", 5),
+                            delay_until,
+                            msg.get("max_retries", self._max_retries),
+                            now,
+                            now,
+                        ),
+                    )
+                    batch_ids.append(msg_id)
+                conn.commit()
+            except Exception:
+                conn.rollback()
+                raise
+            return batch_ids
 
-        return ids
+        return await asyncio.to_thread(_sync_batch)
 
     # ── Dequeue ──────────────────────────────────────────────────────
 
@@ -189,68 +192,67 @@ class AsyncSQLiteQueue(AsyncBaseService):
         queue: str | None = None,
         batch_size: int = 1,
     ) -> list[dict[str, Any]] | dict[str, Any] | None:
-        """Pobierz następną wiadomość z kolejki (atomicznie, ASYNC).
-
-        SUPERMOC: Atomiczny UPDATE z WHERE status='pending' — dwa równoczesne
-        dequeue nie dostaną tej samej wiadomości.
-        """
+        """Pobierz następną wiadomość z kolejki (atomicznie, ASYNC)."""
         conn = await self.get_conn()
         now = time.time()
 
-        # Krok 1: Znajdź wiadomości do przetworzenia
-        if queue:
-            cursor = await conn.execute(
-                """SELECT id FROM mq_messages
-                   WHERE queue = ? AND status = 'pending'
-                     AND (delay_until IS NULL OR delay_until <= ?)
-                   ORDER BY priority DESC, created_at ASC
-                   LIMIT ?""",
-                (queue, now, batch_size),
+        def _sync_dequeue() -> list[dict[str, Any]] | dict[str, Any] | None:
+            # Krok 1: Znajdź wiadomości do przetworzenia
+            if queue:
+                cursor = conn.execute(
+                    """SELECT id FROM mq_messages
+                       WHERE queue = ? AND status = 'pending'
+                         AND (delay_until IS NULL OR delay_until <= ?)
+                       ORDER BY priority DESC, created_at ASC
+                       LIMIT ?""",
+                    (queue, now, batch_size),
+                )
+            else:
+                cursor = conn.execute(
+                    """SELECT id FROM mq_messages
+                       WHERE status = 'pending'
+                         AND (delay_until IS NULL OR delay_until <= ?)
+                       ORDER BY priority DESC, created_at ASC
+                       LIMIT ?""",
+                    (now, batch_size),
+                )
+            rows = cursor.fetchall()
+
+            if not rows:
+                return None if batch_size == 1 else []
+
+            msg_ids = [str(r[0]) for r in rows]
+
+            # Krok 2: Atomiczny UPDATE
+            placeholders = ", ".join("?" * len(msg_ids))
+            cursor = conn.execute(
+                f"""UPDATE mq_messages
+                    SET status = 'processing', updated_at = ?
+                    WHERE id IN ({placeholders}) AND status = 'pending'""",
+                (now, *msg_ids),
             )
-        else:
-            cursor = await conn.execute(
-                """SELECT id FROM mq_messages
-                   WHERE status = 'pending'
-                     AND (delay_until IS NULL OR delay_until <= ?)
-                   ORDER BY priority DESC, created_at ASC
-                   LIMIT ?""",
-                (now, batch_size),
+            if cursor.rowcount == 0:
+                conn.commit()
+                return None if batch_size == 1 else []
+
+            # Krok 3: Pobierz pełne dane
+            cursor = conn.execute(
+                f"""SELECT id, queue, payload, priority, status,
+                           retry_count, max_retries, created_at
+                    FROM mq_messages
+                    WHERE id IN ({placeholders})""",
+                (*msg_ids,),
             )
-        rows = await cursor.fetchall()
+            results = cursor.fetchall()
+            conn.commit()
 
-        if not rows:
-            return None if batch_size == 1 else []
+            messages = [dict(r) for r in results]
 
-        msg_ids = [str(r[0]) for r in rows]
+            if batch_size == 1:
+                return messages[0] if messages else None
+            return messages
 
-        # Krok 2: Atomiczny UPDATE
-        placeholders = ", ".join("?" * len(msg_ids))
-        cursor = await conn.execute(
-            f"""UPDATE mq_messages
-                SET status = 'processing', updated_at = ?
-                WHERE id IN ({placeholders}) AND status = 'pending'""",
-            (now, *msg_ids),
-        )
-        if cursor.rowcount == 0:
-            await conn.commit()
-            return None if batch_size == 1 else []
-
-        # Krok 3: Pobierz pełne dane
-        cursor = await conn.execute(
-            f"""SELECT id, queue, payload, priority, status,
-                       retry_count, max_retries, created_at
-                FROM mq_messages
-                WHERE id IN ({placeholders})""",
-            (*msg_ids,),
-        )
-        results = await cursor.fetchall()
-        await conn.commit()
-
-        messages = [dict(r) for r in results]
-
-        if batch_size == 1:
-            return messages[0] if messages else None
-        return messages
+        return await asyncio.to_thread(_sync_dequeue)
 
     # ── Ack / Nack ───────────────────────────────────────────────────
 
@@ -272,84 +274,93 @@ class AsyncSQLiteQueue(AsyncBaseService):
         conn = await self.get_conn()
         now = time.time()
 
-        cursor = await conn.execute(
-            "SELECT retry_count, max_retries FROM mq_messages WHERE id = ?",
-            (msg_id,),
-        )
-        row = await cursor.fetchone()
-
-        if row is None:
-            return False
-
-        retry_count = int(row[0]) + 1
-        max_retries = int(row[1])
-
-        if retry_count >= max_retries:
-            # Dead Letter Queue
-            await conn.execute(
-                """INSERT INTO mq_dead_letter
-                   (id, queue, payload, priority, retry_count, error, created_at, moved_at)
-                   SELECT id, queue, payload, priority, retry_count, ?, created_at, ?
-                   FROM mq_messages WHERE id = ?""",
-                (error or "max_retries_exceeded", now, msg_id),
+        def _sync_nack() -> bool:
+            cursor = conn.execute(
+                "SELECT retry_count, max_retries FROM mq_messages WHERE id = ?",
+                (msg_id,),
             )
-            await conn.execute(
-                "UPDATE mq_messages SET status = 'dlq', updated_at = ? WHERE id = ?",
-                (now, msg_id),
-            )
-        else:
-            await conn.execute(
-                """UPDATE mq_messages
-                   SET status = 'pending', retry_count = ?, updated_at = ?
-                   WHERE id = ?""",
-                (retry_count, now, msg_id),
-            )
+            row = cursor.fetchone()
 
-        await conn.commit()
-        return True
+            if row is None:
+                return False
+
+            retry_count = int(row[0]) + 1
+            max_retries = int(row[1])
+
+            if retry_count >= max_retries:
+                conn.execute(
+                    """INSERT INTO mq_dead_letter
+                       (id, queue, payload, priority, retry_count, error, created_at, moved_at)
+                       SELECT id, queue, payload, priority, retry_count, ?, created_at, ?
+                       FROM mq_messages WHERE id = ?""",
+                    (error or "max_retries_exceeded", now, msg_id),
+                )
+                conn.execute(
+                    "UPDATE mq_messages SET status = 'dlq', updated_at = ? WHERE id = ?",
+                    (now, msg_id),
+                )
+            else:
+                conn.execute(
+                    """UPDATE mq_messages
+                       SET status = 'pending', retry_count = ?, updated_at = ?
+                       WHERE id = ?""",
+                    (retry_count, now, msg_id),
+                )
+
+            conn.commit()
+            return True
+
+        return await asyncio.to_thread(_sync_nack)
 
     # ── Stats ─────────────────────────────────────────────────────────
 
     async def get_stats(self) -> dict[str, int]:
         """Zwróć statystyki kolejki (ASYNC)."""
         conn = await self.get_conn()
-        cursor = await conn.execute(
-            "SELECT status, COUNT(*) as cnt FROM mq_messages GROUP BY status"
-        )
-        rows = await cursor.fetchall()
-        dlq_cursor = await conn.execute("SELECT COUNT(*) FROM mq_dead_letter")
-        dlq_row = await dlq_cursor.fetchone()
 
-        stats: dict[str, int] = {str(r[0]): int(r[1]) for r in rows}
-        stats["dead_letter"] = int(dlq_row[0]) if dlq_row else 0
-        return stats
+        def _sync() -> dict[str, int]:
+            cursor = conn.execute(
+                "SELECT status, COUNT(*) as cnt FROM mq_messages GROUP BY status"
+            )
+            rows = cursor.fetchall()
+            dlq_cursor = conn.execute("SELECT COUNT(*) FROM mq_dead_letter")
+            dlq_row = dlq_cursor.fetchone()
+
+            stats: dict[str, int] = {str(r[0]): int(r[1]) for r in rows}
+            stats["dead_letter"] = int(dlq_row[0]) if dlq_row else 0
+            return stats
+
+        return await asyncio.to_thread(_sync)
 
     async def replay_dlq(self) -> int:
         """Przenieś wszystkie wiadomości z DLQ z powrotem do kolejki (ASYNC)."""
         conn = await self.get_conn()
         now = time.time()
 
-        cursor = await conn.execute("SELECT id FROM mq_dead_letter")
-        rows = await cursor.fetchall()
+        def _sync() -> int:
+            cursor = conn.execute("SELECT id FROM mq_dead_letter")
+            rows = cursor.fetchall()
 
-        if not rows:
-            return 0
+            if not rows:
+                return 0
 
-        ids = [str(r[0]) for r in rows]
+            ids = [str(r[0]) for r in rows]
 
-        await conn.execute(
-            """INSERT OR IGNORE INTO mq_messages
-               (id, queue, payload, priority, status, retry_count, max_retries, created_at, updated_at)
-               SELECT id, queue, payload, priority, 'pending', 0, 3, created_at, ?
-               FROM mq_dead_letter""",
-            (now,),
-        )
+            conn.execute(
+                """INSERT OR IGNORE INTO mq_messages
+                   (id, queue, payload, priority, status, retry_count, max_retries, created_at, updated_at)
+                   SELECT id, queue, payload, priority, 'pending', 0, 3, created_at, ?
+                   FROM mq_dead_letter""",
+                (now,),
+            )
 
-        placeholders = ", ".join("?" * len(ids))
-        await conn.execute(f"DELETE FROM mq_dead_letter WHERE id IN ({placeholders})", ids)
-        await conn.commit()
+            placeholders = ", ".join("?" * len(ids))
+            conn.execute(f"DELETE FROM mq_dead_letter WHERE id IN ({placeholders})", ids)
+            conn.commit()
 
-        return len(ids)
+            return len(ids)
+
+        return await asyncio.to_thread(_sync)
 
 
 # ── Alias dla kompatybilności wstecznej ─────────────────────────────────

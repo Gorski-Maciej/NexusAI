@@ -7,7 +7,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from nexus_ai.db.models import Invoice
+from nexus_ai.db.models import Invoice, InvoiceStatus
 
 TRIAGE_CONFIDENCE_THRESHOLD = 0.85
 
@@ -35,7 +35,7 @@ def should_triage_document(
 def list_pending_triage_items(session: Session, *, tenant_id: str) -> list[Invoice]:
     stmt = (
         select(Invoice)
-        .where(Invoice.status == "PENDING_REVIEW", Invoice.tenant_id == tenant_id)
+        .where(Invoice.status == InvoiceStatus.PENDING_REVIEW, Invoice.tenant_id == tenant_id)
         .order_by(Invoice.created_at.desc())
     )
     result = session.execute(stmt)
@@ -68,9 +68,9 @@ def resolve_triage_item(
             invoice.amount_gross = Decimal(str(amount_gross))
 
         if action == "confirm_post":
-            invoice.status = "APPROVED"
+            invoice.status = InvoiceStatus.APPROVED
         elif action == "void_reject":
-            invoice.status = "REJECTED"
+            invoice.status = InvoiceStatus.REJECTED
         else:
             raise ValueError("Unsupported triage action")
 

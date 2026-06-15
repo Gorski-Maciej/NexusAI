@@ -34,7 +34,7 @@
 |---------|-------|-----------------|
 | Czas wyszukiwania semantic_guard | ~55-220ms (sync) | ~5-20ms (async vec0) |
 | Czas wyszukiwania active_learning | ~30-100ms (sync O(n)) | ~3-10ms (async IVF) |
-| Blokowanie async loop | Tak (sync sqlite3) | Nie (async aiosqlite) |
+| Blokowanie async loop | Tak (sync sqlite3) | Nie (sync sqlite3 + asyncio.to_thread) |
 | Zajętość RAM na wektor | 768×4 = 3072 bajty (float32) | 768×1 = 768 bajtów (int8, opcjonalnie) |
 
 ---

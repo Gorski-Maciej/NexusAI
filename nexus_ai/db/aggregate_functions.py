@@ -178,31 +178,18 @@ class ProductAggregate:
 def register_aggregates(conn: Any) -> None:
     """Zarejestruj wszystkie custom aggregate functions w połączeniu SQLite.
 
-    SUPERMOC: Po wywołaniu tej funkcji, wszystkie połączenia SQLite/aiosqlite
+    SUPERMOC: Po wywołaniu tej funkcji, wszystkie połączenia sqlite3.Connection
     mają dostęp do: median(), mode(), percentile(), product().
 
     Args:
-        conn: Połączenie sqlite3.Connection lub aiosqlite.Connection.
-            aiosqlite wspiera `create_aggregate` tak samo jak sqlite3.
+        conn: Połączenie sqlite3.Connection.
 
     Usage:
-        # sync
         import sqlite3
         conn = sqlite3.connect(":memory:")
         register_aggregates(conn)
         conn.execute("SELECT median(amount) FROM invoices")
-
-        # async
-        import aiosqlite
-        async def use_aggregates():
-            conn = await aiosqlite.connect(":memory:")
-            register_aggregates(conn)  # aiosqlite tez wspiera create_aggregate!
-            cursor = await conn.execute("SELECT median(amount) FROM invoices")
-            row = await cursor.fetchone()
     """
-    # ── SUPERMOC: aiosqlite wspiera create_aggregate ────────────────
-    # aiosqlite opakowuje sqlite3.Connection i deleguje create_aggregate
-    # do wewnętrznego synchronicznego połączenia. Działa bez zmian.
     conn.create_aggregate("median", 1, MedianAggregate)
     conn.create_aggregate("mode", 1, ModeAggregate)
     conn.create_aggregate("percentile", 2, PercentileAggregate)

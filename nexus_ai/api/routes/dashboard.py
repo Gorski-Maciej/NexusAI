@@ -9,6 +9,7 @@ from litestar.connection import Request
 
 from nexus_ai.api.dto import DashboardBriefingDTO, DashboardSummaryDTO, TAG_DASHBOARD
 from nexus_ai.core.config import AppConfig
+from nexus_ai.db.models import InvoiceStatus
 from nexus_ai.services.notification_service import NotificationService
 
 
@@ -110,11 +111,12 @@ class DashboardController(Controller):
                 today = "CURRENT_DATE"
 
                 # Booked today
+                approved_paid = (InvoiceStatus.APPROVED.value, InvoiceStatus.PAID.value)
                 row = mgr.execute(
                     f"""
                     SELECT COUNT(*), COALESCE(SUM(amount_gross), 0)
                     FROM oltp.invoices
-                    WHERE status IN ('APPROVED', 'PAID')
+                    WHERE status IN {approved_paid}
                       AND DATE(updated_at) = {today}
                     """
                 )
@@ -123,20 +125,22 @@ class DashboardController(Controller):
                     summary["total_gross_today"] = float(row[0][1]) if row[0][1] else 0.0
 
                 # Pending approval
+                new_processing = (InvoiceStatus.NEW.value, InvoiceStatus.PROCESSING.value)
                 row = mgr.execute(
-                    """
+                    f"""
                     SELECT COUNT(*) FROM oltp.invoices
-                    WHERE status IN ('NEW', 'PROCESSING')
+                    WHERE status IN {new_processing}
                     """
                 )
                 if row and row[0] and row[0][0]:
                     summary["pending_approval"] = int(row[0][0])
 
                 # Pending review
+                review_statuses = (InvoiceStatus.MANUAL_REVIEW.value, InvoiceStatus.PENDING_REVIEW.value)
                 row = mgr.execute(
-                    """
+                    f"""
                     SELECT COUNT(*) FROM oltp.invoices
-                    WHERE status IN ('MANUAL_REVIEW', 'PENDING_REVIEW')
+                    WHERE status IN {review_statuses}
                     """
                 )
                 if row and row[0] and row[0][0]:
@@ -151,7 +155,7 @@ class DashboardController(Controller):
                 row = mgr.execute(
                     f"""
                     SELECT
-                        COUNT(*) FILTER (WHERE status IN ('APPROVED', 'PAID')) * 1.0 /
+                        COUNT(*) FILTER (WHERE status IN {approved_paid}) * 1.0 /
                         NULLIF(COUNT(*), 0)
                     FROM oltp.invoices
                     WHERE DATE(updated_at) >= {today} - INTERVAL '7 days'

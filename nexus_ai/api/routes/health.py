@@ -10,10 +10,11 @@ from typing import Any
 
 import pendulum
 from litestar import Controller, get
-from sqlalchemy import text
+from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
 from nexus_ai.api.dto import GenericDictDTO, HealthResponseDTO, TAG_HEALTH
+from nexus_ai.db.models import OutboxEvent, OutboxStatus
 
 
 class HealthController(Controller):
@@ -77,17 +78,17 @@ class HealthController(Controller):
             users_count = int(db_session.execute(text("SELECT COUNT(*) FROM users")).scalar_one())
             pending_outbox = int(
                 db_session.execute(
-                    text("SELECT COUNT(*) FROM outbox_events WHERE status = 'PENDING'")
+                    select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.PENDING)
                 ).scalar_one()
             )
             failed_outbox = int(
                 db_session.execute(
-                    text("SELECT COUNT(*) FROM outbox_events WHERE status = 'FAILED'")
+                    select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.FAILED)
                 ).scalar_one()
             )
             dead_letter_outbox = int(
                 db_session.execute(
-                    text("SELECT COUNT(*) FROM outbox_events WHERE status = 'DEAD_LETTER'")
+                    select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.DEAD_LETTER)
                 ).scalar_one()
             )
         except Exception:

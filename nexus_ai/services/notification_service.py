@@ -1,17 +1,16 @@
-"""AsyncNotificationService — async notification service backed by aiosqlite.
+"""AsyncNotificationService — async notification service backed by sqlite3.
 
-Zgodnie z docs/AIOSQLITE_AUDIT.md:
-- FAZA 2+: Konwersja z sync sqlite3 na async aiosqlite
-- Wszystkie operacje DB są async — nie blokują pętli zdarzeń
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + asyncio.to_thread
+zamiast aiosqlite.
 """
 
 from __future__ import annotations
 
-import anyio
+import asyncio
+import sqlite3
 from pathlib import Path
 from typing import Any, final
 
-import aiosqlite
 import pendulum
 from structlog import get_logger
 
@@ -220,10 +219,7 @@ class MultiChannelConfig:
 
 @final
 class AsyncNotificationService(AsyncBaseService):
-    """Async notification service backed by aiosqlite.
-
-    Wszystkie operacje DB są async — używa aiosqlite zamiast synchronicznego sqlite3.
-    """
+    """Async notification service backed by sqlite3 + asyncio.to_thread."""
 
     def __init__(
         self,
@@ -242,15 +238,17 @@ class AsyncNotificationService(AsyncBaseService):
     def set_briefing_generator(self, generator: DailyBriefingGenerator) -> None:
         self._briefing_generator = generator
 
-    async def _on_connect(self, conn: aiosqlite.Connection) -> None:
+    async def _on_connect(self, conn: sqlite3.Connection) -> None:
         """Hook tworzący schemat przy pierwszym połączeniu (async)."""
-        await conn.execute(
-            "CREATE TABLE IF NOT EXISTS notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL, title TEXT NOT NULL, message TEXT NOT NULL, notification_type TEXT NOT NULL DEFAULT 'info', reference_type TEXT, reference_id TEXT, is_read INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL)"
-        )
-        await conn.execute(
-            "CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, is_read, created_at DESC)"
-        )
-        await conn.commit()
+        def _sync() -> None:
+            conn.execute(
+                "CREATE TABLE IF NOT EXISTS notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL, title TEXT NOT NULL, message TEXT NOT NULL, notification_type TEXT NOT NULL DEFAULT 'info', reference_type TEXT, reference_id TEXT, is_read INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL)"
+            )
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, is_read, created_at DESC)"
+            )
+            conn.commit()
+        await asyncio.to_thread(_sync)
 
     async def send_daily_briefing(self, user_id: str) -> dict[str, Any]:
         """Generate and persist a daily briefing summary (async)."""
@@ -555,23 +553,27 @@ class AsyncNotificationService(AsyncBaseService):
     ) -> int:
         """Insert a new notification row and return its ID (ASYNC)."""
         conn = await self.get_conn()
-        cursor = await conn.execute(
-            """INSERT INTO notifications
-               (user_id, title, message, notification_type,
-                reference_type, reference_id, is_read, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, 0, ?)""",
-            (
-                user_id,
-                title,
-                message,
-                notification_type,
-                reference_type,
-                reference_id,
-                pendulum.now("UTC").isoformat(),
-            ),
-        )
-        await conn.commit()
-        return int(cursor.lastrowid)
+
+        def _sync() -> int:
+            cursor = conn.execute(
+                """INSERT INTO notifications
+                   (user_id, title, message, notification_type,
+                    reference_type, reference_id, is_read, created_at)
+                   VALUES (?, ?, ?, ?, ?, ?, 0, ?)""",
+                (
+                    user_id,
+                    title,
+                    message,
+                    notification_type,
+                    reference_type,
+                    reference_id,
+                    pendulum.now("UTC").isoformat(),
+                ),
+            )
+            conn.commit()
+            return int(cursor.lastrowid)
+
+        return await asyncio.to_thread(_sync)
 
     async def get_user_notifications(
         self,

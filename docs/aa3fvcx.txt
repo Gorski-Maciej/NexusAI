@@ -236,15 +236,17 @@ Dlaczego wracamy do SQLite z Limbo: Limbo było szybsze, ale nie wspiera szyfrow
 
 ---
 
-aiosqlite – Cienka, asynchroniczna warstwa
+sqlite3 + asyncio.to_thread – Natywny SQLite w Pythonie 3.13t (free-threaded)
 
-Co to jest: Niewielka biblioteka, która opakowuje synchroniczne API SQLite w standardowe, asynchroniczne wywołania Pythona (async/await).
+Co to jest: Python 3.13t (free-threaded, bez GIL) pozwala używać synchronicznego sqlite3 API z wielu wątków bez blokowania pętli zdarzeń. Każda operacja sqlite3 jest delegowana do wątku przez asyncio.to_thread().
 
-Dlaczego jest niezbędna:
+Dlaczego to lepsze rozwiązanie niż aiosqlite:
 
-· Pełna integracja z resztą stosu: Litestar, SQLAlchemy/SQLModel i Granian działają asynchronicznie. aiosqlite pozwala SQLite działać w tym samym, nieblokującym modelu, bez polegania na wątkach.
-· Minimalny narzut: To nie jest ciężki "pooler" połączeń. To dosłownie cienka warstwa, która wykonuje zapytania w dedykowanym wątku w tle, zwalniając główną pętlę asynchroniczną. Nie zwiększa zużycia pamięci ani skomplikowania.
-· Alternatywa w Pythonie 3.13t: Dzięki brakowi GIL-a, mógłbyś potencjalnie wywoływać SQLite bezpośrednio z wielu wątków. aiosqlite pozostaje jednak bezpieczniejszym i wygodniejszym wyborem, który nie wymaga ręcznego zarządzania wątkami.
+· Zero dodatkowych zależności: używamy natywnego modułu sqlite3, który jest częścią standardowej biblioteki Pythona. aiosqlite nie jest już potrzebne.
+· Python 3.13t bez GIL: w zwykłym Pythonie GIL wymuszał użycie asynchronicznych sterowników (jak aiosqlite), aby nie blokować pętli zdarzeń. Teraz można wykonywać synchroniczny kod sqlite3 w osobnych wątkach, a GIL nie jest wąskim gardłem.
+· Mniejszy narzut: to samo połączenie sqlite3.Connection jest używane z wielu wątków (check_same_thread=False). Każda operacja jest pakowana w asyncio.to_thread() i wykonywana w puli wątków Pythona.
+· Bezpośrednia kompatybilność z SQLCipher: sqlite3 z Python 3.13t może być skompilowany z obsługą SQLCipher przez LD_PRELOAD libsqlcipher.so. aiosqlite nie dodaje tu żadnej wartości.
+· Pełna integracja z resztą stosu: Litestar, SQLAlchemy/SQLModel i Granian działają asynchronicznie. Operacje sqlite3 są wykonywane w wątkach przez asyncio.to_thread(), dzięki czemu pętla zdarzeń pozostaje nieblokowana.
 
 ---
 

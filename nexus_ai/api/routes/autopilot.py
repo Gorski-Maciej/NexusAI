@@ -21,6 +21,7 @@ from nexus_ai.api.dto import (
     TAG_SYSTEM,
 )
 from nexus_ai.core.config import AppConfig
+from nexus_ai.db.models import InvoiceStatus
 from nexus_ai.services.decision_logger import DecisionLogger
 from nexus_ai.services.notification_service import NotificationService
 from structlog import get_logger as _get_logger
@@ -213,7 +214,7 @@ class AutopilotController(Controller):
                     # Aktualizuj z weryfikacją wersji (optimistic locking)
                     result = await session.execute(
                         text(
-                            "UPDATE invoices SET status = 'APPROVED', updated_at = CURRENT_TIMESTAMP, "
+                            f"UPDATE invoices SET status = '{InvoiceStatus.APPROVED.value}', updated_at = CURRENT_TIMESTAMP, "
                             "version_id = version_id + 1 WHERE id = :id AND version_id = :version"
                         ),
                         {"id": invoice_id, "version": row},
@@ -313,7 +314,7 @@ class AutopilotController(Controller):
                     # Aktualizuj z weryfikacją wersji (optimistic locking)
                     result = await session.execute(
                         text(
-                            "UPDATE invoices SET status = 'REJECTED', updated_at = CURRENT_TIMESTAMP, "
+                            f"UPDATE invoices SET status = '{InvoiceStatus.REJECTED.value}', updated_at = CURRENT_TIMESTAMP, "
                             "version_id = version_id + 1 WHERE id = :id AND version_id = :version"
                         ),
                         {"id": invoice_id, "version": row},
