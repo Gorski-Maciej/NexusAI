@@ -45,9 +45,13 @@ SURYA_MODELS: dict[str, dict[str, str]] = {
 }
 
 
+import fsspec
+
+
 def _compute_sha256(filepath: Path) -> str:
     h = Sha256Hasher()
-    with open(filepath, "rb") as f:
+    # SUPERMOC fsspec: open() działa z każdym protokołem
+    with fsspec.open(str(filepath), "rb") as f:
         while True:
             chunk = f.read(65536)
             if not chunk:

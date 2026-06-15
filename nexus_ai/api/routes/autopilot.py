@@ -230,15 +230,10 @@ class AutopilotController(Controller):
                 await engine.dispose()
 
             # ── Background tasks (fire-and-forget) ─────────────────────
-            event_emitter = getattr(request.app.state, "event_emitter", None)
-            notif_db = config.base_dir / "app_data" / "notifications.sqlite"
-            service = NotificationService(notif_db)
             user_id = str(getattr(request.user, "id", "system"))
 
             background_tasks = BackgroundTask(
                 emit_decision_and_notification_bg,
-                event_emitter=event_emitter,
-                notification_service=service,
                 invoice_id=invoice_id,
                 original_decision="AUTO_POST",
                 user_decision="ACCEPTED",
@@ -249,7 +244,7 @@ class AutopilotController(Controller):
 
             return LitestarResponse(
                 content={"result": "OK", "invoice_id": invoice_id, "action": "ACCEPTED"},
-                background=background_tasks if event_emitter else None,
+                background=background_tasks,
             )
 
         except Exception as exc:
@@ -330,15 +325,10 @@ class AutopilotController(Controller):
                 await engine.dispose()
 
             # ── Background tasks (fire-and-forget) ─────────────────────
-            event_emitter = getattr(request.app.state, "event_emitter", None)
-            notif_db = config.base_dir / "app_data" / "notifications.sqlite"
-            service = NotificationService(notif_db)
             user_id = str(getattr(request.user, "id", "system"))
 
             background_tasks = BackgroundTask(
                 emit_decision_and_notification_bg,
-                event_emitter=event_emitter,
-                notification_service=service,
                 invoice_id=invoice_id,
                 original_decision="AUTO_POST",
                 user_decision="REJECTED",
@@ -349,7 +339,7 @@ class AutopilotController(Controller):
 
             return LitestarResponse(
                 content={"result": "OK", "invoice_id": invoice_id, "action": "REJECTED"},
-                background=background_tasks if event_emitter else None,
+                background=background_tasks,
             )
 
         except Exception as exc:

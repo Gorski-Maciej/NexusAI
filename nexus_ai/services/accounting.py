@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import final
 
 from decimal import ROUND_HALF_UP, Decimal
@@ -45,24 +46,28 @@ class AccountingService:
         return vat.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     async def verify_nip(self, nip: str) -> dict | None:
-        """Sprawdza NIP w bazie Ministerstwa Finansów (Biała Lista)."""
-        # Oczyszczanie NIPu ze zbędnych znaków (np. myślników)
-        clean_nip = "".join(filter(str.isdigit, nip))
-        if not clean_nip or len(clean_nip) != 10:
-            return None
+        """DEPRECATED: Użyj WhiteListService zamiast AccountingService.verify_nip().
 
+        AccountingService.verify_nip() jest duplikatem WhiteListService.verify_bank_account().
+        WhiteListService używa CachedHttpClient (hishel) zamiast surowego httpx.AsyncClient.
+
+        Ta metoda jest zachowana dla kompatybilności wstecznej, ale deleguje
+        do WhiteListService z cache'em HTTP.
+        """
+        warnings.warn(
+            "AccountingService.verify_nip() is deprecated. "
+            "Use WhiteListService.verify_bank_account() from nexus_ai.services.white_list_service instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        from nexus_ai.services.white_list_service import WhiteListService
+
+        service = WhiteListService()
         try:
-            async with httpx.AsyncClient(timeout=5.0) as client:
-                today = pendulum.now().date().isoformat()
-                response = await client.get(f"{self.base_url}{clean_nip}?date={today}")
-
-                if response.status_code == 200:
-                    data = response.json()
-                    return data.get("result", {}).get("subject")
-                return None
-        except httpx.RequestError as e:
-            print(f"[AccountingService] Błąd połączenia z Białą Listą: {e}")
+            result = await service.verify_bank_account(nip, "")
+            return {"nip": nip, "valid": result}
+        except Exception:
             return None
-        except Exception as e:
-            print(f"[AccountingService] Nieznany błąd weryfikacji NIP: {e}")
-            return None
+        finally:
+            await service.close()

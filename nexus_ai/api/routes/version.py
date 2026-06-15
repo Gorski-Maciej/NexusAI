@@ -21,6 +21,7 @@ class VersionController(Controller):
         summary="Get API version info",
         description="Returns current API version, deprecated versions, and migration paths.",
         operation_id="getApiVersion",
+        cache=3600,
     )
     async def get_version(self) -> dict[str, Any]:
         """Return current API version and deprecation info."""

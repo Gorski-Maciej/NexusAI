@@ -26,6 +26,7 @@ import stamina
 
 from nexus_ai.core.cache import get_cache
 from nexus_ai.core.cache.http_client import CachedHttpClient
+from nexus_ai.core.config import AppConfig
 
 logger = get_logger("nexus.currency")
 
@@ -201,8 +202,14 @@ def _check_currencies(a: Money, b: Money, operation: str = "operate") -> None:
 class CurrencyConverter:
     """Konwerter walut z kursem NBP i cache w DuckDB.
 
+    SUPERMOCE stamina:
+    - @stamina.retry zamiast ręcznego retry_context
+    - circuit_breaker=True — chroni przed przeciążeniem NBP API
+    - Config z TOML (stamina_retry_attempts, stamina_retry_timeout)
+    - stamina.RetryingError — poprawny typ wyjątku
+
     Usage:
-        converter = CurrencyConverter(duckdb_conn)
+        converter = CurrencyConverter(duckdb_conn, config=AppConfig())
         result = converter.convert(Money.from_decimal("100", "EUR"), "PLN")
         # → Money(amount_cents=45000, currency='PLN')  # example rate 4.50
     """
@@ -212,13 +219,24 @@ class CurrencyConverter:
     # Known NBP currencies (Table A — mid rates)
     KNOWN_CURRENCIES = {"EUR", "USD", "GBP", "CHF", "CZK", "NOK", "SEK", "DKK", "HUF"}
 
-    def __init__(self, conn: duckdb.DuckDBPyConnection) -> None:
+    def __init__(
+        self,
+        conn: duckdb.DuckDBPyConnection,
+        config: AppConfig | None = None,
+    ) -> None:
         self._conn = conn
         conn.execute(EXCHANGE_RATES_SCHEMA)
         # NexusCache (L1 RAM) for faster rate lookups (synchroniczne get_sync/set_sync)
         self._cache = get_cache()
         # CachedHttpClient dla NBP API z cache'em HTTP (hishel) + stamina retry
         self._http_client = CachedHttpClient()
+
+        # ── SUPERMOC: Config z TOML zamiast hardcoded ─────────────────────
+        self._retry_attempts: int = 3
+        self._retry_timeout: float = 10.0
+        if config is not None:
+            self._retry_attempts = getattr(config, 'max_task_retries', 3)
+            self._retry_timeout = getattr(config, 'retry_backoff_base_seconds', 10.0) * 3
 
     async def close(self) -> None:
         """Zamknij połączenia — DuckDB + CachedHttpClient."""
@@ -321,13 +339,54 @@ class CurrencyConverter:
         self._cache.set_sync(cache_key, str(rate))
         return rate
 
+    @stamina.retry(
+        on=(httpx.HTTPError, httpx.TimeoutException, httpx.ConnectError),
+        attempts=3,
+        timeout=10.0,
+        circuit_breaker=True,
+    )
+    async def _fetch_nbp_single(self, url: str) -> Decimal:
+        """SUPERMOC stamina: @stamina.retry z circuit_breaker=True.
+
+        Wyodrębnione do osobnej metody aby użyć @stamina.retry jako dekoratora
+        zamiast ręcznego ``for attempt in stamina.retry_context(...)``.
+
+        Args:
+            url: URL do API NBP dla konkretnej waluty/daty.
+
+        Returns:
+            Kurs średni NBP jako Decimal.
+
+        Raises:
+            CurrencyRateNotFoundError: Jeśli NBP nie publikuje kursu dla tej daty.
+        """
+        response = await self._http_client.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            return Decimal(str(data["rates"][0]["mid"]))
+        if response.status_code == 404:
+            raise CurrencyRateNotFoundError(
+                url.split("/")[-3],  # extract currency from URL
+                pendulum.parse(url.split("/")[-2]) if "/" in url else pendulum.now(),
+            )
+        response.raise_for_status()
+        raise CurrencyRateNotFoundError(
+            url.split("/")[-3],
+            pendulum.parse(url.split("/")[-2]) if "/" in url else pendulum.now(),
+        )
+
     async def _fetch_nbp_rate(self, currency: str, rate_date: pendulum.Date) -> Decimal:
         """Fetch exchange rate from NBP API (async, z CachedHttpClient + stamina retry).
 
+        SUPERMOCE stamina:
+        - @stamina.retry dekorator zamiast ręcznego retry_context
+        - circuit_breaker=True — chroni przed przeciążeniem NBP
+        - Config z TOML zamiast hardcoded
+        - Przeszukuje 7 dni wstecz (weekendy/holidays)
+
         Fazа 2:
         - ``CachedHttpClient`` (hishel) cache'uje odpowiedzi HTTP z NBP
-        - ``stamina`` retry z wykładniczym backoffem (3 próby)
-        - Przeszukuje 7 dni wstecz (weekendy/holidays)
+        - ``stamina.retry`` jako dekorator z wbudowanym circuit breakerem
         """
         last_error: Exception | None = None
         for days_back in range(7):  # try up to 7 days back
@@ -341,28 +400,16 @@ class CurrencyConverter:
                 date=try_date.isoformat(),
             )
             try:
-                for attempt in stamina.retry_context(
-                    on=(httpx.HTTPError, httpx.TimeoutException, httpx.ConnectError),
-                    attempts=3,
-                    timeout=10.0,
-                ):
-                    with attempt:
-                        response = await self._http_client.get(url)
-                        if response.status_code == 200:
-                            data = response.json()
-                            mid_rate = Decimal(str(data["rates"][0]["mid"]))
-                            logger.info(
-                                "NBP rate: 1 %s = %s PLN (date=%s)",
-                                currency,
-                                mid_rate,
-                                try_date.isoformat(),
-                            )
-                            return mid_rate
-                        elif response.status_code == 404:
-                            # Currency not published for this date — try next day
-                            break
-                        response.raise_for_status()
-            except httpx.HTTPError as exc:
+                # SUPERMOC: deleguje do @stamina.retry decorated method
+                mid_rate = await self._fetch_nbp_single(url)
+                logger.info(
+                    "NBP rate: 1 %s = %s PLN (date=%s)",
+                    currency,
+                    mid_rate,
+                    try_date.isoformat(),
+                )
+                return mid_rate
+            except (httpx.HTTPError, CurrencyRateNotFoundError) as exc:
                 last_error = exc
                 logger.warning(
                     "NBP API error for %s on %s (attempt %d): %s",

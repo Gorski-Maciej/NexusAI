@@ -56,7 +56,13 @@ class ProgressWebSocketClient:
         """
         while not self._stop_event.is_set():
             try:
-                async with httpx.AsyncClient(timeout=None) as client:
+                # SUPERMOC HTTPX: http2=True + trust_env=True
+                async with httpx.AsyncClient(
+                    timeout=None,
+                    http2=True,
+                    trust_env=True,
+                    limits=httpx.Limits(max_connections=5, max_keepalive_connections=2),
+                ) as client:
                     logger.info("Łączenie z kanałem SSE postępu...")
                     async with client.stream("GET", self._events_url) as response:
                         self._connected = True

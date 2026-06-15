@@ -146,12 +146,17 @@ class FileValidator:
 
 
 class ContentAddressableStorage:
-    """File storage using SHA-256 as canonical key (dedupe-friendly)."""
+    """File storage using SHA-256 as canonical key (dedupe-friendly).
 
-    def __init__(self, root: _SyncPath) -> None:
+    SUPERMOC fsspec: Używa konfigurowalnego protokołu ("file", "s3", "memory")
+    z config TOML — deduplikacja przez SHA-256 działa w każdym backendzie.
+    """
+
+    def __init__(self, root: _SyncPath, protocol: str = "file") -> None:
         self.root = root
+        self._protocol = protocol
         if fsspec is not None:
-            self.fs = fsspec.filesystem("file")
+            self.fs = fsspec.filesystem(protocol)
             self.fs.makedirs(str(self.root), exist_ok=True)
         else:
             self.fs = None
@@ -160,6 +165,14 @@ class ContentAddressableStorage:
     @staticmethod
     def _sha256(payload: bytes) -> str:
         return _sha256(payload)
+
+    def _resolve_path(self, digest: str, suffix: str) -> str:
+        """Zwraca pełną ścieżkę dla digest w aktywnym protokole."""
+        dir_name = Path(str(self.root)) / digest[:2] / digest[2:4]
+        file_path = dir_name / f"{digest}{suffix}"
+        if self._protocol != "file" and self.fs is not None:
+            return f"{self._protocol}://{file_path}"
+        return str(file_path)
 
     def put(self, payload: bytes, suffix: str = ".pdf") -> StoredUpload:
         digest = self._sha256(payload)
@@ -203,6 +216,7 @@ class ContentAddressableStorage:
                 await anyio.to_thread.run_sync(os.unlink, temp_path)
             return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=size_bytes)
         if self.fs is not None:
+            # SUPERMOC fsspec: mv działa między lokalnymi i zdalnymi FS
             self.fs.mv(temp_path, str(file_path))
         else:
             _SyncPath(temp_path).replace(file_path)

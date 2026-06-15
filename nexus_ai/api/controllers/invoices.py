@@ -28,6 +28,8 @@ from nexus_ai.api.schemas import (
     InvoiceUploadResponseLarge,
     validate_invoice_create,
 )
+import fsspec
+
 from nexus_ai.api.services import ContentAddressableStorage
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps
@@ -213,7 +215,8 @@ class InvoiceController(Controller):
         total_size = 0
 
         try:
-            with Path(temp_path).open("ab") as temp_file:
+            # SUPERMOC fsspec: uniwersalne otwieranie plików — działa z file://, s3://, memory://
+            async with await fsspec.open_async(temp_path, "ab") as temp_file:
                 while True:
                     chunk = await data.read(chunk_size)
                     if not chunk:
@@ -222,7 +225,7 @@ class InvoiceController(Controller):
                     if total_size > max_bytes:
                         raise ClientException(status_code=413, detail="Request body too large")
                     hasher.update(chunk)
-                    await to_thread.run_sync(temp_file.write, chunk)
+                    await temp_file.write(chunk)
 
             if total_size == 0:
                 raise ClientException(status_code=400, detail="Empty file")
@@ -269,7 +272,8 @@ class InvoiceController(Controller):
         total_size = 0
 
         try:
-            with Path(temp_path).open("ab") as temp_file:
+            # SUPERMOC fsspec: uniwersalne otwieranie plików
+            async with await fsspec.open_async(temp_path, "ab") as temp_file:
                 while True:
                     chunk = await data.read(chunk_size)
                     if not chunk:
@@ -278,7 +282,7 @@ class InvoiceController(Controller):
                     if total_size > max_bytes:
                         raise ClientException(status_code=413, detail="Request body too large")
                     hasher.update(chunk)
-                    await to_thread.run_sync(temp_file.write, chunk)
+                    await temp_file.write(chunk)
 
             if total_size == 0:
                 raise ClientException(status_code=400, detail="Empty file")

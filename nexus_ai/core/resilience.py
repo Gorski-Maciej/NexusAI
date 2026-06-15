@@ -32,6 +32,10 @@ def async_retry(
     Zastępuje: @tenacity.retry + pybreaker.CircuitBreaker
     Nowy:     @stamina.retry (wbudowany circuit breaker)
 
+    SUPERMOC:
+      - circuit_breaker=True — włącza wbudowany Circuit Breaker
+      - stamina.RetryingError — poprawny typ wyjątku
+
     Args:
         on: Tuple of exceptions to retry on (default: Exception).
         attempts: Max number of retry attempts (default: 3).
@@ -51,11 +55,17 @@ def async_retry(
                 on=on,
                 attempts=attempts,
                 timeout=timeout,
+                circuit_breaker=circuit_breaker,
             ):
                 with attempt:
                     return await func(*args, **kwargs)
-            raise RuntimeError("Retry attempts exhausted") from None
+            raise stamina.RetryingError(
+                f"{func.__name__} failed after {attempts} attempts (timeout={timeout}s)"
+            ) from None
 
         return wrapper  # type: ignore[return-value]
 
     return decorator
+
+
+# @stamina.retry on=(Exception,), attempts=3, timeout=10.0)  # zarezerwowane do przyszłego użycia

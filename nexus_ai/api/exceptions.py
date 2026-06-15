@@ -177,14 +177,24 @@ def _error_envelope(
 
 
 def domain_error_handler(request: Request, exc: DomainError) -> Response:
-    """Dedykowany handler dla DomainError."""
-    return _error_envelope(
-        request,
-        code=exc.code,
-        message=exc.message,
-        category=exc.category,
+    """Dedykowany handler dla DomainError.
+
+    SUPERMOC Litestar: Rzucamy HTTPException wewnątrz handlera, który jest
+    automatycznie przechwytywany przez ProblemDetailsPlugin i formatowany
+    jako RFC 9457 Problem Details (application/problem+json).
+
+    Dzięki temu: jeden system obsługi błędów, spójny format dla wszystkich
+    odpowiedzi błędów, automatyczne OpenAPI schema.
+    """
+    raise HTTPException(
+        detail=exc.message,
         status_code=exc.status_code,
+        headers={
+            "X-Error-Code": exc.code,
+            "X-Error-Category": exc.category,
+        },
     )
+    # Nie dochodzimy tu — HTTPException jest rzucany powyżej
 
 
 def http_exception_handler(request: Request, exc: HTTPException) -> Response:

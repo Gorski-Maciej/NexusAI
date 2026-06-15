@@ -7,7 +7,6 @@ import uuid
 from pathlib import Path
 
 import pendulum
-from anyio import to_thread
 from litestar import Controller, post
 from litestar.background_tasks import BackgroundTask
 from litestar.response import Response as LitestarResponse
@@ -31,6 +30,8 @@ from nexus_ai.api.dto import (
 from nexus_ai.api.schemas import TaskResponse
 from nexus_ai.api.services import ContentAddressableStorage, FileValidator, IdempotencyStore
 from nexus_ai.core.config import AppConfig
+import fsspec
+
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.models import OutboxStatus
@@ -59,10 +60,6 @@ def _validate_content_length(headers: dict[str, str], max_bytes: int) -> None:
         raise ClientException(
             detail=f"Request body too large ({size} > {max_bytes})", status_code=413
         )
-
-
-async def _write_chunk(temp_file, chunk: bytes) -> None:
-    await to_thread.run_sync(temp_file.write, chunk)
 
 
 class InvoiceController(Controller):
@@ -110,7 +107,8 @@ class InvoiceController(Controller):
         temp_path = storage.create_temp_upload_file()
         first_chunk = b""
         try:
-            with Path(temp_path).open("ab") as temp_file:
+            # SUPERMOC fsspec: uniwersalne otwieranie plików
+            async with await fsspec.open_async(temp_path, "ab") as temp_file:
                 while True:
                     chunk = await file_obj.read(UPLOAD_CHUNK_SIZE)
                     if not chunk:
@@ -128,7 +126,7 @@ class InvoiceController(Controller):
                             status_code=413,
                         )
                     hasher.update(chunk)
-                    await _write_chunk(temp_file, chunk)
+                    await temp_file.write(chunk)
         except Exception:
             try:
                 os.unlink(temp_path)
@@ -199,7 +197,6 @@ class InvoiceController(Controller):
         await clear_cache_async(prefix="api.routes.analytics")
 
         # ── Emit InvoiceCreated event (fire-and-forget via BackgroundTask) ─
-        event_emitter = request.app.state.event_emitter
         invoice_created_metadata = {
             "task_id": task_id,
             "file_hash": saved.file_hash,
@@ -251,7 +248,6 @@ class InvoiceController(Controller):
             content=response_data,
             background=BackgroundTask(
                 emit_invoice_created_bg,
-                event_emitter=event_emitter,
                 invoice_id=invoice_id,
                 filename=file_obj.filename or "",
                 file_path=str(saved.file_path),
@@ -295,7 +291,8 @@ class InvoiceController(Controller):
         temp_path = storage.create_temp_upload_file()
         first_chunk = b""
         try:
-            with Path(temp_path).open("ab") as temp_file:
+            # SUPERMOC fsspec: uniwersalne otwieranie plików
+            async with await fsspec.open_async(temp_path, "ab") as temp_file:
                 while True:
                     chunk = await file_obj.read(UPLOAD_CHUNK_SIZE)
                     if not chunk:
@@ -315,7 +312,7 @@ class InvoiceController(Controller):
                             status_code=413,
                         )
                     hasher.update(chunk)
-                    await _write_chunk(temp_file, chunk)
+                    await temp_file.write(chunk)
         except Exception:
             try:
                 os.unlink(temp_path)
@@ -336,8 +333,9 @@ class InvoiceController(Controller):
                 first_chunk, file_obj.filename or ""
             )
             if normalized_content != first_chunk:
-                with Path(temp_path).open("wb") as f:
-                    f.write(normalized_content)
+                # SUPERMOC fsspec: uniwersalne otwieranie plików
+                async with await fsspec.open_async(temp_path, "wb") as f:
+                    await f.write(normalized_content)
         except ValueError as ve:
             try:
                 os.unlink(temp_path)

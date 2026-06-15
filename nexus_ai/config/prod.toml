@@ -54,6 +54,13 @@ db_pool_overflow = 20
 nats_max_reconnect = 30
 nats_reconnect_delay_seconds = 5
 
+[storage]
+# ── SUPERMOC fsspec: Jednolita abstrakcja systemów plików ──
+protocol = "file"
+root = "app_data/uploads"
+auto_mkdir = true
+cache_size_mb = 0
+
 # ── Retry (stamina) ──
 max_task_retries = 5
 retry_backoff_base_seconds = 2.0
@@ -110,6 +117,33 @@ reconnect_delay_seconds = 5
 cluster_id = 0
 replica_addresses = "3000"
 
+[security]
+# ── SUPERMOC Litestar: Security config ──
+jwt_exclude_paths = [
+    "/api/auth/login",
+    "/api/auth/register",
+    "/api/auth/refresh",
+    "/api/auth/csrf-token",
+    "/api/auth/reset-password",
+    "/api/auth/reset-password/confirm",
+    "/api/auth/confirm",
+    "/api/v1/health",
+    "/api/v2/health",
+    "/schema/openapi.yml",
+    "/schema/swagger",
+]
+csrf_exclude_patterns = ["/api/auth/", "/health"]
+rate_limit_auth = 10
+rate_limit_upload = 30
+rate_limit_general = 60
+
+[stamina]
+# ── SUPERMOC: Globalne ustawienia stamina ──
+retry_attempts = 5
+retry_timeout = 15.0
+circuit_breaker_enabled = true
+circuit_breaker_cooldown = 60.0
+
 [forex]
 # ── Nexus-Forex configuration ──
 enabled = true
@@ -119,8 +153,6 @@ http_timeout_sec = 15
 rate_cache_maxsize = 1000
 refresh_interval_hours = 24
 default_currencies = "EUR,USD,GBP,CHF,CZK,SEK,NOK,HUF"
-stamina_retry_attempts = 5
-stamina_retry_timeout = 30
 missing_date_ttl_days = 30
 
 [ai]

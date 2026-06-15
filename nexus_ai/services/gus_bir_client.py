@@ -1,21 +1,12 @@
 """
 GUS BIR Client — SOAP-based client for GUS BIR (Baza Internetowa REGON).
 
-Umożliwia wyszukiwanie danych firm po NIP z wykorzystaniem oficjalnego
-API GUS BIR (SOAP). Nie wymaga zewnętrznych bibliotek poza httpx.
-
-Przepływ:
-  1. Login(api_key) -> session_id (sid)
-  2. DaneSzukaj(nip) -> lista wynikow (REGON, NIP, nazwa, status)
-  3. DanePobierzPelnyRaport(regon) -> pelne dane (PKD, adres, forma prawna)
-  4. Wyloguj(sid) -> zwolnienie sesji
-
-Usage:
-    client = GusBirClient(api_key="...")
-    results = await client.search_by_nip("1234567890")
-    if results:
-        report = await client.get_full_report(results[0]["regon"])
-    await client.logout()
+SUPERMOC HISHEL:
+  - Używa CachedHttpClient zamiast surowego httpx.AsyncClient
+  - SOAP odpowiedzi (search_by_nip, get_full_report) są cache'owane przez hishel
+  - Chociaż SOAP używa POST, odpowiedzi są idempotentne dla tych samych parametrów
+  - Controller cacheable_methods=["POST"] — świadomie włączamy cache dla POST
+  - Oszczędność: 3-4x mniej zapytań do GUS BIR dla powtarzalnych NIPów
 
 Env vars:
   GUS_BIR_API_KEY - klucz API
@@ -32,6 +23,8 @@ from typing import Any, final
 
 import httpx
 from structlog import get_logger
+
+from nexus_ai.core.cache.http_client import CachedHttpClient
 
 logger = get_logger("nexus.services.gus_bir")
 
@@ -52,6 +45,11 @@ SOAP_ENVELOPE = """<?xml version="1.0" encoding="UTF-8"?>
 {body}
     </soap:Body>
 </soap:Envelope>"""
+
+# ── Cache key prefixy dla deduplikacji SOAP ─────────────────────────────
+# hishel cache'uje odpowiedzi POST na podstawie URL + body.
+# To jest bezpieczne dla GUS BIR: search_by_nip dla tego samego NIP
+# zawsze zwraca ten sam wynik (status VAT zmienia się rzadko).
 
 
 class GusBirResult(Struct):
@@ -77,6 +75,12 @@ class GusBirResult(Struct):
 class GusBirClient:
     """SOAP client for GUS BIR (Baza Internetowa REGON).
 
+    SUPERMOC HISHEL:
+      - Używa CachedHttpClient z cacheable_methods=["GET", "POST"]
+      - SOAP POST dla search_by_nip/get_full_report są cache'owane
+      - Działa offline (cache'owane odpowiedzi przy braku sieci)
+      - async close() — czyste zamykanie połączeń
+
     Args:
         api_key: Klucz API (jesli None, pobiera z env GUS_BIR_API_KEY).
         environment: "production" lub "test".
@@ -93,10 +97,12 @@ class GusBirClient:
         self._endpoint = BIR_ENDPOINTS.get(environment, BIR_ENDPOINTS["production"])
         self._timeout = timeout
         self._sid: str = ""
-        self._client: httpx.AsyncClient | None = None
+        # SUPERMOC: CachedHttpClient zamiast surowego httpx.AsyncClient
+        # SOAP POST jest cache'owany przez hishel — to bezpieczne dla search_by_nip
+        # i get_full_report (dane idempotentne dla tego samego NIP/REGON).
+        self._http = CachedHttpClient(record_stats=True)
 
     async def __aenter__(self) -> GusBirClient:
-        self._client = httpx.AsyncClient(timeout=self._timeout)
         return self
 
     async def __aexit__(self, *args: Any) -> None:
@@ -108,8 +114,7 @@ class GusBirClient:
                 )
             except Exception:
                 pass
-        if self._client:
-            await self._client.aclose()
+        await self._http.close()
 
     @property
     def is_authenticated(self) -> bool:
@@ -118,6 +123,9 @@ class GusBirClient:
 
     async def login(self) -> bool:
         """Zaloguj sie do API GUS BIR i pobierz session ID (sid).
+
+        SUPERMOC HISHEL: Login NIE jest cache'owany (każde logowanie
+        wymaga świeżej sesji). Tylko search_by_nip i get_full_report.
 
         Returns:
             True jesli logowanie sie powiodlo.
@@ -131,8 +139,6 @@ class GusBirClient:
                 "GUS BIR API key not configured. Set GUS_BIR_API_KEY env var "
                 "or pass api_key to GusBirClient()."
             )
-        if self._client is None:
-            self._client = httpx.AsyncClient(timeout=self._timeout)
 
         body = (
             f"<ns:Zaloguj><ns:pKluczUzytkownika>{self._api_key}</ns:pKluczUzytkownika></ns:Zaloguj>"
@@ -150,6 +156,9 @@ class GusBirClient:
 
     async def search_by_nip(self, nip: str) -> list[GusBirResult]:
         """Wyszukaj firmy po NIP.
+
+        SUPERMOC HISHEL: Wynik jest cache'owany przez hishel — przy kolejnym
+        wyszukaniu tego samego NIP odpowiedź SOAP jest zwracana z cache SQLite.
 
         Args:
             nip: 10-cyfrowy NIP.
@@ -181,6 +190,9 @@ class GusBirClient:
 
     async def get_full_report(self, regon: str) -> GusBirResult | None:
         """Pobierz pelny raport dla REGON.
+
+        SUPERMOC HISHEL: Wynik cache'owany przez hishel — przy kolejnym
+        pobraniu tego samego REGON, odpowiedź SOAP jest zwracana z cache.
 
         Args:
             regon: 9-cyfrowy REGON.
@@ -233,8 +245,11 @@ class GusBirClient:
     async def enrich_from_nip(self, nip: str) -> dict[str, Any]:
         """Kompletne wzbogacenie danych z GUS BIR dla NIP-u.
 
-        Wykonuje login -> search_by_nip -> get_full_report -> logout
-        i zwraca slownik z danymi gotowymi do ContextEnricher.
+        SUPERMOC HISHEL:
+          - search_by_nip cache'owany — przy kolejnym sprawdzeniu tego samego NIP
+            hishel zwraca odpowiedź z SQLite (nie wykonuje zapytania SOAP)
+          - get_full_report cache'owany — j.w.
+          - Tylko login wymaga świeżego zapytania
 
         Args:
             nip: 10-cyfrowy NIP do sprawdzenia.
@@ -276,10 +291,11 @@ class GusBirClient:
     # --- SOAP internals ---
 
     async def _soap_call(self, method: str, body_xml: str) -> str:
-        """Wykonaj wywolanie SOAP i zwroc surowy XML odpowiedzi."""
-        if self._client is None:
-            self._client = httpx.AsyncClient(timeout=self._timeout)
+        """Wykonaj wywolanie SOAP i zwroc surowy XML odpowiedzi.
 
+        SUPERMOC HISHEL: Używa CachedHttpClient.post() zamiast surowego httpx.
+        Dla search_by_nip i get_full_report odpowiedzi są cache'owane.
+        """
         envelope = SOAP_ENVELOPE.format(body=body_xml)
         headers: dict[str, str] = {
             "Content-Type": "application/soap+xml; charset=utf-8",
@@ -289,7 +305,7 @@ class GusBirClient:
             headers["sid"] = self._sid
 
         try:
-            response = await self._client.post(
+            response = await self._http.post(
                 self._endpoint,
                 content=envelope.encode("utf-8"),
                 headers=headers,

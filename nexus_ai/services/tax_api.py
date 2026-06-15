@@ -1,35 +1,69 @@
+"""
+TaxApiService — DEPRECATED.
+
+ZASTĄPIONY PRZEZ: services.white_list_service.WhiteListService
+
+Powód:
+  - WhiteListService używa CachedHttpClient (hishel) zamiast surowego httpx.AsyncClient
+  - WhiteListService ma podwójny cache: NexusCache (wynik) + hishel (HTTP response)
+  - TaxApiService był duplikatem — ta sama funkcja (weryfikacja NIP), gorsza implementacja
+
+Usage (nowy sposób):
+    from nexus_ai.services.white_list_service import WhiteListService
+    service = WhiteListService()
+    await service.verify_bank_account(nip, account)
+
+Data deprecation: 2026-06-15
+Planowane usunięcie: 2026-09-15
+"""
+
 from __future__ import annotations
 
+import warnings
 from typing import final
 
-import httpx
 import pendulum
 
 from nexus_ai.core.config import AppConfig
+from nexus_ai.services.white_list_service import WhiteListService
 
 
 @final
 class TaxApiService:
+    """DEPRECATED: Użyj WhiteListService zamiast TaxApiService.
+
+    TaxApiService był pierwszą implementacją klienta Białej Listy MF,
+    ale został zastąpiony przez WhiteListService, który:
+      - Używa CachedHttpClient (hishel) zamiast httpx.AsyncClient
+      - Ma podwójny cache: NexusCache (wynik) + hishel (HTTP Cache-Control/ETag)
+      - Implementuje async close() dla czystego zamykania zasobów
+    """
+
     def __init__(self, config: AppConfig):
+        warnings.warn(
+            "TaxApiService is deprecated. Use WhiteListService instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.config = config
-        self.base_url = "https://wl-api.mf.gov.pl/api/search/nip/"  # Oficjalne API MF
+        self._white_list = WhiteListService()
 
     async def verify_nip(self, nip: str) -> dict | None:
-        """Sprawdza NIP w bazie Ministerstwa Finansów (Biała Lista)."""
+        """Sprawdza NIP w bazie Ministerstwa Finansów (Biała Lista).
+
+        Deleguje do WhiteListService.verify_bank_account() z pustym kontem.
+        """
         if not nip or len(nip) != 10:
             return None
 
         try:
-            async with httpx.AsyncClient(timeout=5.0) as client:
-                # Wymagane przez MF: data sprawdzenia
-                today = pendulum.now().date().isoformat()
-                response = await client.get(f"{self.base_url}{nip}?date={today}")
-
-                if response.status_code == 200:
-                    data = response.json()
-                    return data.get("result", {}).get("subject")
-        except Exception as e:
-            print(f"Błąd połączenia z Białą Listą: {e}")
+            today = pendulum.now().date().isoformat()
+            # WhiteListService sprawdza konto — bez konta zwraca informację o NIP
+            is_valid = await self._white_list.verify_bank_account(nip, "")
+            return {"nip": nip, "valid": is_valid, "date": today}
+        except Exception:
             return None
 
-        return None
+    async def close(self) -> None:
+        """Zamknij WhiteListService (CachedHttpClient)."""
+        await self._white_list.close()

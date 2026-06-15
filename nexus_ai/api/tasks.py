@@ -29,11 +29,14 @@ import pendulum
 import stamina
 from sqlalchemy import text
 from sqlalchemy import text as sql_text
+from sqlalchemy.orm import Session
 from structlog import get_logger
-from taskiq_nats import PullBasedJetStreamBroker
-
+from taskiq import Kicker
+from taskiq import TaskiqDepends
+from nexus_ai.core.broker import broker
 from nexus_ai.api.cache import clear_cache_async
 from nexus_ai.core.config import AppConfig
+from nexus_ai.core.di import get_db_session, get_config, get_duckdb_manager, get_engine
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_dumps_bytes, msgspec_loads
 from nexus_ai.core.resilience import async_retry
 from nexus_ai.db.analytics import DuckDBManager
@@ -46,7 +49,6 @@ from nexus_ai.core.decision_engine import (
     classify_invoice,
     calculate_trust_score,
 )
-from nexus_ai.events.event_emitter import EventEmitter, get_event_emitter
 from nexus_ai.services.currency_converter import (
     Money,  # Nexus-Money (msgspec.Struct, zastępuje py-moneyed)
 )
@@ -59,29 +61,33 @@ from nexus_ai.services.telemetry import flush_fallback_spans
 from nexus_ai.tax.exceptions import NoMatchingRuleError
 
 
-# ── SQLCipher engine helper ────────────────────────────────────────────────
-# Wszystkie zadania w tym pliku tworzą engine przez _make_engine(), który
-# jawnie przekazuje klucz SQLCipher z NEXUS_SQLCIPHER_KEY env var.
-# Dzięki temu zależność od klucza jest widoczna w kodzie, a nie ukryta
-# w _resolve_key() database.py.
+# ── Legacy engine helper (kompatybilność wsteczna) — DEPRECATED ────────────
+# UWAGA: Nowe zadania używają TaskiqDepends(get_db_session) zamiast _make_engine.
+# Ta funkcja pozostaje dla kompatybilności — używa DI engine cache.
+
+import warnings
 
 
-def _make_engine(config: AppConfig | None = None) -> Any:
-    """Utwórz SQLAlchemy engine z jawnym kluczem SQLCipher.
+def _make_engine(config: AppConfig | None = None):
+    """[LEGACY] Utwórz SQLAlchemy engine — do migracji na TaskiqDepends.
 
-    Args:
-        config: Opcjonalna konfiguracja. Jeśli None, ładuje AppConfig().
+    UWAGA: Nowe zadania używają TaskiqDepends(get_db_session) zamiast _make_engine.
+    Ta funkcja pozostaje dla kompatybilności — tworzy nowy engine (bez DI cache).
+    Docelowo wszystkie zadania mają być przeniesione na DI.
 
-    Returns:
-        SQLAlchemy Engine z włączonym SQLCipher.
+    Deprecated: Użyj TaskiqDepends(get_db_session) zamiast tej funkcji.
     """
+    warnings.warn(
+        "_make_engine jest deprecated. Użyj TaskiqDepends(get_db_session) zamiast ręcznego tworzenia engine.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if config is None:
         config = AppConfig()
     sqlcipher_key = os.getenv(config.sqlcipher_key_env, "").strip()
     return create_oltp_engine(config, sqlcipher_key=sqlcipher_key or None)
 
 
-broker = PullBasedJetStreamBroker()
 logger = get_logger("nexus.api.tasks")
 MAX_OUTBOX_RETRIES = 3
 # Circuit Breaker: stamina.retry (async-native) zastępuje custom CircuitBreaker
@@ -122,25 +128,25 @@ def _close_all_components() -> None:
 atexit.register(_close_all_components)
 
 
-@broker.task(task_name="decision_evaluate")
-async def decision_evaluate(invoice_id: str, extracted_data: dict) -> dict:
+@broker.task(
+    task_name="decision_evaluate",
+    labels={"service": "api", "operation": "decision", "criticality": "high"},
+    timeout=60.0,
+)
+async def decision_evaluate(
+    invoice_id: str,
+    extracted_data: dict,
+    config: AppConfig = TaskiqDepends(get_config),
+    db: Session = TaskiqDepends(get_db_session),
+) -> dict:
     """
     Final decision evaluation.
-    Uses DecisionEngine (DuckDB/SQL-based, zgodnie z aa3fvcx.txt).
-    Publishes result as DecisionMade event through EventStore + JetStream.
-    """
-    config = AppConfig()
-    engine = _ensure_decision_engine(config)
 
-    # ── Phase 2: EventEmitter dla emisji DecisionMade ────────────────
-    emitter: EventEmitter | None = None
-    try:
-        emitter = get_event_emitter()
-    except Exception as exc:
-        logger.warning(
-            "[DECISION] EventEmitter init failed — events will not be emitted: %s",
-            exc,
-        )
+    SUPERMOC TASKIQ:
+    - TaskiqDepends wstrzykuje config i db — zero boilerplate
+    - Helpery przyjmują Session zamiast tworzyć własny engine
+    """
+    engine = _ensure_decision_engine(config)
 
     logger.info("[DECISION] evaluating for invoice_id=%s", invoice_id)
 
@@ -157,10 +163,8 @@ async def decision_evaluate(invoice_id: str, extracted_data: dict) -> dict:
             verdict.confidence,
         )
 
-        # ── Emituj DecisionMade event ─────────────────────────────────
-        if emitter is not None:
-            try:
-                await emitter.emit_decision_made(
+        try:
+            await broker.kick("event_emit_decision_made",
                     invoice_id=invoice_id,
                     decision=verdict.decision,
                     trust_score=extracted_data.get("trust_score", 0.0),
@@ -173,36 +177,20 @@ async def decision_evaluate(invoice_id: str, extracted_data: dict) -> dict:
                     metadata={
                         "extracted_data_snapshot": {
                             k: extracted_data[k]
-                            for k in (
-                                "amount_gross",
-                                "amount_net",
-                                "category",
-                                "contractor_nip",
-                                "ocr_confidence",
-                            )
+                            for k in ("amount_gross", "amount_net", "category", "contractor_nip", "ocr_confidence")
                             if k in extracted_data
                         },
                     },
                 )
-                logger.info(
-                    "[DECISION-EVENT] DecisionMade emitted for invoice_id=%s decision=%s",
-                    invoice_id,
-                    verdict.decision,
-                )
-            except Exception as emit_err:
-                logger.warning(
-                    "[DECISION-EVENT] Failed to emit DecisionMade for %s: %s",
-                    invoice_id,
-                    emit_err,
-                )
+        except Exception as emit_err:
+            logger.warning("[DECISION-EVENT] Failed to emit: %s", emit_err)
 
-        # Execute action based on decision
         if verdict.decision == "AUTO_POST":
-            await _post_invoice(invoice_id, extracted_data, verdict)
+            await _post_invoice(invoice_id, extracted_data, verdict, db)
         elif verdict.decision == "SUGGEST":
-            await _mark_for_review(invoice_id, verdict)
+            await _mark_for_review(invoice_id, verdict, db)
         elif verdict.decision in ("ASK_USER", "BLOCK", "ESCALATE"):
-            await _escalate_to_human(invoice_id, verdict, reason=f"decision: {verdict.decision}")
+            await _escalate_to_human(invoice_id, verdict, db, reason=f"decision: {verdict.decision}")
 
         return {
             "result": "OK",
@@ -217,127 +205,166 @@ async def decision_evaluate(invoice_id: str, extracted_data: dict) -> dict:
         return {"result": "ERROR", "invoice_id": invoice_id, "error": str(exc)}
 
 
-@broker.task(task_name="council_decide")
+@broker.task(
+    task_name="council_decide",
+    labels={"service": "api", "operation": "decision", "criticality": "high", "deprecated": "true"},
+    timeout=60.0,
+)
 async def council_decide(invoice_id: str, extracted_data: dict) -> dict:
     """
     [DEPRECATED] Decision task — use decision_evaluate instead.
 
     Zachowany dla kompatybilności wstecznej. Deleguje do decision_evaluate.
-    Zgodnie z aa3fvcx.txt: wszystkie decyzje przez DecisionEngine (DuckDB/SQL).
+    Używa tymczasowego engine zamiast TaskiqDepends (brak DI w deprecated task).
     """
     logger.warning(
         "[DEPRECATED] council_decide task called for invoice_id=%s — use decision_evaluate",
         invoice_id,
     )
-    return await decision_evaluate(invoice_id, extracted_data)
+    # council_decide nie używa TaskiqDepends (deprecated), więc tworzy engine ręcznie
+    config = AppConfig()
+    engine = _ensure_decision_engine(config)
+
+    try:
+        verdict = engine.decide(
+            invoice_data=extracted_data,
+            vendor_profile=extracted_data.get("vendor_profile", {}),
+        )
+        try:
+            await broker.kick("event_emit_decision_made",
+                    invoice_id=invoice_id, decision=verdict.decision,
+                    trust_score=extracted_data.get("trust_score", 0.0),
+                    ai_confidence=verdict.confidence,
+                    alpha_vote=extracted_data.get("alpha_vote", ""),
+                    beta_vote=extracted_data.get("beta_vote", ""),
+                    gamma_vote=extracted_data.get("gamma_vote", ""),
+                    decision_pattern=verdict.matched_rule[:64] if verdict.matched_rule else "",
+                    reasoning=verdict.reasoning,
+                    metadata={
+                        "extracted_data_snapshot": {
+                            k: extracted_data[k]
+                            for k in ("amount_gross", "amount_net", "category", "contractor_nip", "ocr_confidence")
+                            if k in extracted_data
+                        },
+                    },
+                )
+        except Exception:
+            pass
+
+        # council_decide nie ma Session z DI — używa tymczasowego engine
+        if verdict.decision == "AUTO_POST":
+            config_temp = AppConfig()
+            eng = _make_engine(config_temp)
+            sess_fac = create_session_factory(eng)
+            async with sess_fac() as sess:
+                await _post_invoice(invoice_id, extracted_data, verdict, sess)
+            await eng.dispose()
+        elif verdict.decision == "SUGGEST":
+            config_temp = AppConfig()
+            eng = _make_engine(config_temp)
+            sess_fac = create_session_factory(eng)
+            async with sess_fac() as sess:
+                await _mark_for_review(invoice_id, verdict, sess)
+            await eng.dispose()
+        elif verdict.decision in ("ASK_USER", "BLOCK", "ESCALATE"):
+            config_temp = AppConfig()
+            eng = _make_engine(config_temp)
+            sess_fac = create_session_factory(eng)
+            async with sess_fac() as sess:
+                await _escalate_to_human(invoice_id, verdict, sess, reason=f"decision: {verdict.decision}")
+            await eng.dispose()
+
+        return {
+            "result": "OK",
+            "invoice_id": invoice_id,
+            "decision": verdict.decision,
+            "confidence": verdict.confidence,
+            "reasoning": verdict.reasoning,
+        }
+    except Exception as exc:
+        logger.exception("[DECISION] evaluation failed for invoice_id=%s: %s", invoice_id, exc)
+        return {"result": "ERROR", "invoice_id": invoice_id, "error": str(exc)}
 
 
-async def _post_invoice(invoice_id: str, extracted_data: dict, verdict: DecisionVerdict) -> None:
+async def _post_invoice(
+    invoice_id: str,
+    extracted_data: dict,
+    verdict: DecisionVerdict,
+    db: Session,
+) -> None:
     """Auto-post the invoice: update status to APPROVED.
 
-    Uses CancelScope(shield=True) to protect the critical DB write from
-    cancellation — the invoice status update must complete even if the
-    parent task is cancelled.
+    SUPERMOC: Przyjmuje Session z DI zamiast tworzyć własny engine.
+    Uses CancelScope(shield=True) to protect the critical DB write.
     """
-    config = AppConfig()
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
+    with anyio.CancelScope(shield=True):
+        await db.execute(
+            text(
+                "UPDATE invoices SET status = 'APPROVED', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
+            ),
+            {"id": invoice_id},
+        )
+        logger.info(
+            "[DECIDE] auto-posted invoice_id=%s (conf=%.4f)",
+            invoice_id,
+            verdict.confidence,
+        )
+
+    # Store in sqlite-vec for future anomaly detection (outside shield)
     try:
-        async with session_factory() as session:
-            # Shield: krytyczny zapis do DB — nie może być przerwany przez anulowanie
-            with anyio.CancelScope(shield=True):
-                await session.execute(
-                    text(
-                        "UPDATE invoices SET status = 'APPROVED', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
-                    ),
-                    {"id": invoice_id},
-                )
-                await session.commit()
-                logger.info(
-                    "[DECIDE] auto-posted invoice_id=%s (conf=%.4f)",
-                    invoice_id,
-                    verdict.confidence,
-                )
+        from nexus_ai.services.semantic_guard import SemanticGuard
 
-        # Store in sqlite-vec for future anomaly detection (outside shield)
-        try:
-            from nexus_ai.services.semantic_guard import SemanticGuard
-
-            sg = SemanticGuard()
-            full_text = extracted_data.get("ocr_full_text", "") or ""
-            if full_text:
-                sg.store_invoice(
-                    vendor_nip=extracted_data.get("contractor_nip", ""),
-                    invoice_text=full_text,
-                    category_code=extracted_data.get("category", ""),
-                    amount_net=float(extracted_data.get("amount_net", 0) or 0),
-                    transaction_id=invoice_id,
-                )
-        except Exception as al_err:
-            logger.warning("[ACTIVE-LEARNING] Failed to store in sqlite-vec: %s", al_err)
-    finally:
-        await engine.dispose()
+        sg = SemanticGuard()
+        full_text = extracted_data.get("ocr_full_text", "") or ""
+        if full_text:
+            sg.store_invoice(
+                vendor_nip=extracted_data.get("contractor_nip", ""),
+                invoice_text=full_text,
+                category_code=extracted_data.get("category", ""),
+                amount_net=float(extracted_data.get("amount_net", 0) or 0),
+                transaction_id=invoice_id,
+            )
+    except Exception as al_err:
+        logger.warning("[ACTIVE-LEARNING] Failed to store in sqlite-vec: %s", al_err)
 
 
-async def _mark_for_review(invoice_id: str, verdict: DecisionVerdict) -> None:
+async def _mark_for_review(invoice_id: str, verdict: DecisionVerdict, db: Session) -> None:
     """Mark invoice for manual review (SUGGEST).
 
-    Uses CancelScope(shield=True) to protect the critical DB write from
-    cancellation — the status update must complete even if the parent
-    task is cancelled.
+    SUPERMOC: Przyjmuje Session z DI zamiast tworzyć własny engine.
     """
-    config = AppConfig()
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
-    try:
-        async with session_factory() as session:
-            # Shield: krytyczny zapis do DB — nie może być przerwany przez anulowanie
-            with anyio.CancelScope(shield=True):
-                await session.execute(
-                    text(
-                        "UPDATE invoices SET status = 'PENDING_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
-                    ),
-                    {"id": invoice_id},
-                )
-                await session.commit()
-                logger.info(
-                    "[DECIDE] marked for review invoice_id=%s (conf=%.4f)",
-                    invoice_id,
-                    verdict.confidence,
-                )
-    finally:
-        await engine.dispose()
+    with anyio.CancelScope(shield=True):
+        await db.execute(
+            text(
+                "UPDATE invoices SET status = 'PENDING_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
+            ),
+            {"id": invoice_id},
+        )
+        logger.info(
+            "[DECIDE] marked for review invoice_id=%s (conf=%.4f)",
+            invoice_id,
+            verdict.confidence,
+        )
 
 
-async def _escalate_to_human(invoice_id: str, verdict: DecisionVerdict, reason: str) -> None:
+async def _escalate_to_human(invoice_id: str, verdict: DecisionVerdict, db: Session, reason: str = "") -> None:
     """Escalate invoice to human for review.
 
-    Uses CancelScope(shield=True) to protect the critical DB write from
-    cancellation — the status update must complete even if the parent
-    task is cancelled.
+    SUPERMOC: Przyjmuje Session z DI zamiast tworzyć własny engine.
     """
-    config = AppConfig()
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
-    try:
-        async with session_factory() as session:
-            # Shield: krytyczny zapis do DB — nie może być przerwany przez anulowanie
-            with anyio.CancelScope(shield=True):
-                await session.execute(
-                    text(
-                        "UPDATE invoices SET status = 'MANUAL_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
-                    ),
-                    {"id": invoice_id},
-                )
-                await session.commit()
-                logger.info(
-                    "[DECIDE] escalated invoice_id=%s reason=%s (conf=%.4f)",
-                    invoice_id,
-                    reason,
-                    verdict.confidence,
-                )
-    finally:
-        await engine.dispose()
+    with anyio.CancelScope(shield=True):
+        await db.execute(
+            text(
+                "UPDATE invoices SET status = 'MANUAL_REVIEW', updated_at = CURRENT_TIMESTAMP WHERE id = :id"
+            ),
+            {"id": invoice_id},
+        )
+        logger.info(
+            "[DECIDE] escalated invoice_id=%s reason=%s (conf=%.4f)",
+            invoice_id,
+            reason,
+            verdict.confidence,
+        )
 
 
 async def _dispatch_outbox_event(row: dict) -> None:
@@ -349,30 +376,52 @@ async def _dispatch_outbox_event(row: dict) -> None:
     except Exception:
         payload = {}
 
+    # SUPERMOC TASKIQ: Kicker.with_task_id() dla deterministycznego ID
+    # JetStream deduplikuje na podstawie Nats-Msg-Id = task_id
+    # Zastępuje ręczną tabelę processed_events dla idempotentności
+
     if event_type == "process_invoice_ocr" or event_type == "invoice_uploaded":
         invoice_id = payload.get("invoice_id") or row.get("aggregate_id")
         if not invoice_id:
             raise ValueError("Missing invoice_id in outbox payload")
+        task_id = f"outbox:ocr:{invoice_id}:{row.get('id', 'unknown')}"
         try:
-            with stamina.retry(on=Exception, attempts=3, timeout=10.0):
-                await broker.kick(
-                    "process_invoice_ocr", invoice_id=str(invoice_id), payload=payload
-                )
+            for attempt in stamina.retry_context(
+                on=(Exception,),
+                attempts=3,
+                timeout=10.0,
+                circuit_breaker=True,
+            ):
+                with attempt:
+                    await (
+                        Kicker("process_invoice_ocr", broker=broker)
+                        .with_task_id(task_id)
+                        .kiq(invoice_id=str(invoice_id), payload=payload)
+                    )
         except Exception as exc:
-            logger.warning("[OUTBOX] NATS broker.kick failed after retries: %s", exc)
+            logger.warning("[OUTBOX] Kicker failed after retries: %s", exc)
             raise
         return
     if event_type == "attachment_large_uploaded":
         attachment_id = payload.get("attachment_id") or row.get("aggregate_id")
         if not attachment_id:
             raise ValueError("Missing attachment_id in outbox payload")
+        task_id = f"outbox:attachment:{attachment_id}:{row.get('id', 'unknown')}"
         try:
-            with stamina.retry(on=Exception, attempts=3, timeout=10.0):
-                await broker.kick(
-                    "process_large_attachment", attachment_id=str(attachment_id), payload=payload
-                )
+            for attempt in stamina.retry_context(
+                on=(Exception,),
+                attempts=3,
+                timeout=10.0,
+                circuit_breaker=True,
+            ):
+                with attempt:
+                    await (
+                        Kicker("process_large_attachment", broker=broker)
+                        .with_task_id(task_id)
+                        .kiq(attachment_id=str(attachment_id), payload=payload)
+                    )
         except Exception as exc:
-            logger.warning("[OUTBOX] NATS broker.kick failed after retries: %s", exc)
+            logger.warning("[OUTBOX] Kicker failed after retries: %s", exc)
             raise
         return
 
@@ -431,24 +480,35 @@ async def _dispatch_outbox_event(row: dict) -> None:
     raise ValueError(f"Unsupported outbox event_type: {event_type}")
 
 
-@broker.task(task_name="process_invoice_ocr")
-async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> None:
+@broker.task(
+    task_name="process_invoice_ocr",
+    labels={"service": "api", "operation": "ocr", "criticality": "high"},
+    timeout=300.0,
+)
+async def process_invoice_ocr(
+    invoice_id: str,
+    payload: dict | None = None,
+    config: AppConfig = TaskiqDepends(get_config),
+    db: Session = TaskiqDepends(get_db_session),
+    engine: Any = TaskiqDepends(get_engine),
+) -> None:
     """Dedicated OCR pipeline entrypoint triggered by outbox relay.
-    Rozwiązanie 29: Limit współbieżności przez semafor (max 3).
-    Rozwiązanie 33: Koordynacja przez Saga Store.
+
+    SUPERMOC TASKIQ:
+    - TaskiqDepends wstrzykuje config i db — zero boilerplate
+    - Helpery _mark_invoice_* przyjmują Session z DI
     """
     logger.info("[OCR] processing invoice_id=%s", invoice_id)
     payload = payload or {}
 
-    # Rozwiązanie 33: Rozpocznij sagę dla procesu OCR
+    # Rozpocznij sagę dla procesu OCR
     saga_id = f"ocr_{invoice_id}"
     saga_store = None
     saga_engine = None
     try:
         from nexus_ai.core.saga import PersistedSagaStore
 
-        config = AppConfig()
-        saga_engine = _make_engine(config)
+        saga_engine = engine
         saga_store = PersistedSagaStore(saga_engine)
         await saga_store.ensure_schema()
 
@@ -491,7 +551,7 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
         consensus = decide_amount_consensus(primary, secondary, tolerance=0.01)
 
         if consensus.confidence_conflict:
-            await _mark_invoice_pending_review(invoice_id, reason="CONFIDENCE_CONFLICT")
+            await _mark_invoice_pending_review(invoice_id, reason="CONFIDENCE_CONFLICT", db=db)
             logger.warning(
                 "[OCR] confidence conflict for invoice_id=%s primary=%s secondary=%s",
                 invoice_id,
@@ -584,7 +644,7 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
                     anomaly.get("alert"),
                 )
                 await _mark_invoice_blocked(
-                    invoice_id, anomaly.get("alert", "Semantic anomaly detected")
+                    invoice_id, anomaly.get("alert", "Semantic anomaly detected"), db
                 )
                 return
         except Exception as sem_err:
@@ -687,12 +747,12 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
                     extracted_data["field_confidence_reason"] = routing_reason
 
                     if routing == "BLOCK_AND_ALERT":
-                        await _mark_invoice_blocked(invoice_id, routing_reason)
+                        await _mark_invoice_blocked(invoice_id, routing_reason, db)
                         ze_conn.close()
                         return
                     elif routing == "TRIAGE_QUEUE":
                         await _mark_invoice_pending_review(
-                            invoice_id, reason=f"FIELD_CONFIDENCE: {routing_reason}"
+                            invoice_id, reason=f"FIELD_CONFIDENCE: {routing_reason}", db=db
                         )
                     # else: inne wartości routing (np. HUMAN_VERIFICATION) — kontynuuj
             except NoMatchingRuleError:
@@ -780,8 +840,14 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
     # Zero-ETL path: no OLTP->OLAP row replication in worker.
     # Invoice OCR lifecycle is event-driven; analytics layer reads SQLite via DuckDB ATTACH.
     try:
-        with stamina.retry(on=Exception, attempts=3, timeout=30.0):
-            await _refresh_cashflow_for_event()
+        for attempt in stamina.retry_context(
+            on=(Exception,),
+            attempts=3,
+            timeout=30.0,
+            circuit_breaker=True,
+        ):
+            with attempt:
+                await _refresh_cashflow_for_event()
     except Exception as olap_err:
         logger.warning("[OLAP] cashflow refresh failed after retries: %s", olap_err)
 
@@ -795,17 +861,14 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
     except Exception:
         pass
 
-    finally:
-        if saga_engine is not None:
-            try:
-                await saga_engine.dispose()
-            except Exception:
-                pass
-
     return
 
 
-@broker.task(task_name="process_large_attachment")
+@broker.task(
+    task_name="process_large_attachment",
+    labels={"service": "api", "operation": "attachment", "criticality": "medium"},
+    timeout=600.0,
+)
 async def process_large_attachment(attachment_id: str, payload: dict | None = None) -> None:
     """Dedicated worker path for large attachments uploaded via /upload-large."""
     logger.info(
@@ -814,16 +877,19 @@ async def process_large_attachment(attachment_id: str, payload: dict | None = No
     return
 
 
-@broker.task(schedule=[{"cron": "0 * * * *"}], task_name="refresh_materialized_cashflow")
+@broker.task(
+    schedule=[{"cron": "0 * * * *"}],
+    task_name="refresh_materialized_cashflow",
+    labels={"service": "api", "operation": "analytics", "criticality": "medium", "schedule": "hourly"},
+    timeout=120.0,
+)
 @async_retry(max_retries=3, base_delay=1.0, max_delay=8.0)
-async def refresh_materialized_cashflow() -> None:
-    config = AppConfig()
-    manager = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
-    try:
-        with stamina.retry(on=Exception, attempts=3, timeout=30.0):
-            await _refresh_cashflow_materialized(manager)
-    finally:
-        manager.close()
+async def refresh_materialized_cashflow(
+    duckdb: DuckDBManager = TaskiqDepends(get_duckdb_manager),
+) -> None:
+    # SUPERMOC: TaskiqDepends wstrzykuje DuckDBManager
+    with stamina.retry(on=Exception, attempts=3, timeout=30.0):
+        _refresh_cashflow_materialized(duckdb)
     await clear_cache_async(prefix="api.routes.analytics")
     logger.info("[OLAP] refreshed m_daily_cashflow")
 
@@ -832,27 +898,41 @@ async def _refresh_cashflow_materialized(manager: DuckDBManager) -> None:
     manager.refresh_materialized_cashflow()
 
 
-async def _refresh_cashflow_for_event() -> None:
-    config = AppConfig()
-    manager = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
+async def _refresh_cashflow_for_event(
+    duckdb: DuckDBManager | None = None,
+) -> None:
+    if duckdb is None:
+        duckdb = DuckDBManager(
+            db_path=AppConfig().duckdb_path,
+            sqlite_path=AppConfig().sqlite_path,
+        )
+        _owns_duckdb = True
+    else:
+        _owns_duckdb = False
     try:
-        manager.refresh_materialized_cashflow()
+        duckdb.refresh_materialized_cashflow()
     finally:
-        manager.close()
+        if _owns_duckdb:
+            duckdb.close()
     await clear_cache_async(prefix="api.routes.analytics")
 
 
-@broker.task(schedule=[{"cron": "*/5 * * * *"}], task_name="dead_letter_processor")
-async def dead_letter_processor_task() -> None:
+@broker.task(
+    schedule=[{"cron": "*/5 * * * *"}],
+    task_name="dead_letter_processor",
+    labels={"service": "api", "operation": "dlq", "criticality": "high", "schedule": "5min"},
+    timeout=60.0,
+)
+async def dead_letter_processor_task(
+    config: AppConfig = TaskiqDepends(get_config),
+    db: Session = TaskiqDepends(get_db_session),
+) -> None:
     """
     Okresowe zadanie (co 5 minut) monitorujące Dead Letter Queue.
-    Subskrybuje subjekt nats.deadletter, zapisuje błędy do tabeli failed_tasks
-    i loguje ostrzeżenia dla administratora.
-    """
-    config = AppConfig()
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
 
+    SUPERMOC TASKIQ:
+    - TaskiqDepends wstrzykuje config i db — zero boilerplate
+    """
     from nexus_ai.core.nats_utils import NatsErrors, get_connection, safe_close
 
     NatsErrors.init()
@@ -867,7 +947,6 @@ async def dead_letter_processor_task() -> None:
     try:
         sub = await nc.subscribe("nats.deadletter", queue="nexus-dlq-workers")
 
-        # Sprawdź wiadomości w DLQ
         try:
             with anyio.fail_after(5.0):
                 msg = await sub.fetch(1, timeout=2.0)
@@ -880,23 +959,22 @@ async def dead_letter_processor_task() -> None:
                         stack_trace = data.get("stack_trace", "")
                         payload = data.get("payload", {})
 
-                        async with session_factory() as session:
-                            await session.execute(
-                                text(
-                                    """
-                                    INSERT INTO failed_tasks (task_type, task_id, error_message, stack_trace, payload)
-                                    VALUES (:task_type, :task_id, :error_message, :stack_trace, :payload)
-                                    """
-                                ),
-                                {
-                                    "task_type": task_type,
-                                    "task_id": task_id,
-                                    "error_message": error_message,
-                                    "stack_trace": stack_trace,
-                                    "payload": msgspec_dumps(payload),
-                                },
-                            )
-                            await session.commit()
+                        # SUPERMOC: używamy db z DI zamiast tworzyć osobny engine
+                        await db.execute(
+                            text(
+                                """
+                                INSERT INTO failed_tasks (task_type, task_id, error_message, stack_trace, payload)
+                                VALUES (:task_type, :task_id, :error_message, :stack_trace, :payload)
+                                """
+                            ),
+                            {
+                                "task_type": task_type,
+                                "task_id": task_id,
+                                "error_message": error_message,
+                                "stack_trace": stack_trace,
+                                "payload": msgspec_dumps(payload),
+                            },
+                        )
 
                         logger.error(
                             "[DLQ] Dead letter received: task_type=%s task_id=%s error=%s",
@@ -928,101 +1006,112 @@ async def dead_letter_processor_task() -> None:
 
                     msg = await sub.fetch(1, timeout=2.0)
         except NatsErrors.TimeoutError:
-            pass  # Brak wiadomości w DLQ
+            pass
         except NatsErrors.ConnectionClosedError:
             logger.warning("[DLQ] Connection closed during fetch")
         except Exception as dlq_err:
             logger.warning("[DLQ] Dead letter processor error: %s", dlq_err)
     finally:
         await safe_close(nc)
-        await engine.dispose()
+        # SUPERMOC: DI auto-commituje sesję — engine cache'owany
 
 
-@broker.task(schedule=[{"cron": "0 5 * * *"}], task_name="cleanup_hard_deleted_invoices")
-async def cleanup_hard_deleted_invoices_task() -> None:
+@broker.task(
+    schedule=[{"cron": "0 5 * * *"}],
+    task_name="cleanup_hard_deleted_invoices",
+    labels={"service": "api", "operation": "cleanup", "criticality": "low", "schedule": "daily"},
+    timeout=300.0,
+)
+async def cleanup_hard_deleted_invoices_task(
+    db: Session = TaskiqDepends(get_db_session),
+) -> None:
     """
-    Miesięczne zadanie fizycznego usuwania faktur po okresie retencji (Rozwiązanie 27: RODO).
-    Usuwa soft-deleted invoices po upływie retention_period_years od deleted_at.
+    Miesięczne zadanie fizycznego usuwania faktur po okresie retencji.
+
+    SUPERMOC: TaskiqDepends wstrzykuje sesję DB — zero boilerplate.
     """
-    config = AppConfig()
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
-    try:
-        async with session_factory() as session:
-            from nexus_ai.services.security_service import SecurityService
+    from nexus_ai.services.security_service import SecurityService
 
-            result = await SecurityService.cleanup_old_scans(session, years=5)
-            logger.info(
-                "[RETENTION] Hard-deleted invoices cleanup: %s",
-                result,
-            )
-    finally:
-        await engine.dispose()
+    result = await SecurityService.cleanup_old_scans(db, years=5)
+    logger.info(
+        "[RETENTION] Hard-deleted invoices cleanup: %s",
+        result,
+    )
 
 
-@broker.task(schedule=[{"cron": "0 6 * * 0"}], task_name="cleanup_archived_invoices")
-async def cleanup_archived_invoices_task() -> None:
+@broker.task(
+    schedule=[{"cron": "0 6 * * 0"}],
+    task_name="cleanup_archived_invoices",
+    labels={"service": "api", "operation": "cleanup", "criticality": "low", "schedule": "weekly"},
+    timeout=300.0,
+)
+async def cleanup_archived_invoices_task(
+    db: Session = TaskiqDepends(get_db_session),
+) -> None:
     """
-    Tygodniowe zadanie archiwizacji REJECTED/FAILED invoices starszych niż 1 rok (Rozwiązanie 27).
-    Przenosi do tabeli archived_invoices i usuwa z głównej tabeli.
+    Tygodniowe zadanie archiwizacji REJECTED/FAILED invoices.
+
+    SUPERMOC: TaskiqDepends wstrzykuje sesję DB — zero boilerplate.
     """
-    config = AppConfig()
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
-    try:
-        async with session_factory() as session:
-            from nexus_ai.services.security_service import SecurityService
+    from nexus_ai.services.security_service import SecurityService
 
-            result = await SecurityService.archive_old_invoices(
-                session, archive_table="archived_invoices"
-            )
-            logger.info(
-                "[RETENTION] Archived old invoices: %s",
-                result,
-            )
-    finally:
-        await engine.dispose()
+    result = await SecurityService.archive_old_invoices(
+        db, archive_table="archived_invoices"
+    )
+    logger.info(
+        "[RETENTION] Archived old invoices: %s",
+        result,
+    )
 
 
-@broker.task(schedule=[{"cron": "0 4 * * *"}], task_name="cleanup_outbox_events")
-async def cleanup_outbox_events_task() -> None:
+@broker.task(
+    schedule=[{"cron": "0 4 * * *"}],
+    task_name="cleanup_outbox_events",
+    labels={"service": "api", "operation": "cleanup", "criticality": "low", "schedule": "daily"},
+    timeout=120.0,
+)
+async def cleanup_outbox_events_task(
+    db: Session = TaskiqDepends(get_db_session),
+) -> None:
     """
     Codzienne zadanie czyszczenia starych zdarzeń outbox (Rozwiązanie 27).
     Usuwa zdarzenia SENT i DEAD_LETTER starsze niż 30 dni.
+
+    SUPERMOC: TaskiqDepends wstrzykuje sesję DB — zero boilerplate.
     """
-    config = AppConfig()
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
-    try:
-        async with session_factory() as session:
-            result = await session.execute(
-                text(
-                    """
-                    DELETE FROM outbox_events
-                    WHERE status IN ('SENT', 'DEAD_LETTER')
-                      AND created_at < datetime('now', '-30 days')
-                    """
-                )
-            )
-            deleted = result.rowcount
-            await session.commit()
-            logger.info("[RETENTION] Cleaned old outbox events: deleted=%d", deleted)
-    finally:
-        await engine.dispose()
+    result = await db.execute(
+        text(
+            """
+            DELETE FROM outbox_events
+            WHERE status IN ('SENT', 'DEAD_LETTER')
+              AND created_at < datetime('now', '-30 days')
+            """
+        )
+    )
+    deleted = result.rowcount
+    logger.info("[RETENTION] Cleaned old outbox events: deleted=%d", deleted)
+    # SUPERMOC: DI auto-commituje sesję
 
 
-@broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="stuck_saga_recovery")
-async def stuck_saga_recovery_task() -> None:
+@broker.task(
+    schedule=[{"cron": "*/1 * * * *"}],
+    task_name="stuck_saga_recovery",
+    labels={"service": "api", "operation": "saga", "criticality": "high", "schedule": "1min"},
+    timeout=30.0,
+)
+async def stuck_saga_recovery_task(
+    engine: Any = TaskiqDepends(get_engine),
+) -> None:
     """
     Co minutę sprawdza zawieszone sagi (Rozwiązanie 33).
     Sagi w stanie pośrednim (OCR_EXTRACT, AI_CLASSIFY, BOOK_ENTRY) dłużej niż 10 minut
     są automatycznie kompensowane.
+
+    SUPERMOC: TaskiqDepends wstrzykuje cache'owany engine — zero boilerplate.
     """
-    config = AppConfig()
     try:
         from nexus_ai.core.saga import PersistedSagaStore
 
-        engine = _make_engine(config)
         store = PersistedSagaStore(engine)
         await store.ensure_schema()
 
@@ -1057,245 +1146,232 @@ async def stuck_saga_recovery_task() -> None:
 
         if compensated > 0:
             logger.info("[SAGA] Recovered %d stuck sagas", compensated)
-        await engine.dispose()
     except Exception as exc:
         logger.warning("[SAGA] Stuck saga recovery error: %s", exc)
+    # SUPERMOC: Engine jest cache'owany przez DI — nie ma engine.dispose()
 
 
 # Semafory dla limitów współbieżności (Rozwiązanie 29)
 _OCR_LIMITER = anyio.CapacityLimiter(3)  # process_invoice_ocr: max 3 równolegle
 
 
-@broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="relay_outbox_events")
-async def relay_outbox_events() -> None:
+@broker.task(
+    schedule=[{"cron": "*/1 * * * *"}],
+    task_name="relay_outbox_events",
+    labels={"service": "api", "operation": "outbox", "criticality": "high", "schedule": "1min"},
+    timeout=120.0,
+)
+async def relay_outbox_events(
+    db: Session = TaskiqDepends(get_db_session),
+) -> None:
     """
     Relay pending outbox events with atomic UPDATE semantics (Rozwiązanie 11).
     Uses two-step atomic UPDATE to prevent duplicate processing by concurrent workers.
     Detects stale PROCESSING tasks (>= 5 min) and reclaims them.
-    Records idempotency key in processed_events to prevent double-dispatch.
-    """
-    config = AppConfig()
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
 
-    async with session_factory() as session:
-        # 1. Odblokuj stare zadania w statusie PROCESSING (timeout >= 5 minut)
-        stale_timeout = 300  # 5 minutes
-        await session.execute(
-            text(
-                """
-                UPDATE outbox_events
-                SET status = 'FAILED', processing_started_at = NULL
+    SUPERMOC TASKIQ:
+    - TaskiqDepends wstrzykuje sesję DB — zero boilerplate
+    - task_id_generator w broker.py zapewnia deduplikację przez JetStream Nats-Msg-Id
+    - Tabela processed_events jest stopniowo wycofywana na rzecz deduplikacji JetStream
+    """
+    # 1. Odblokuj stare zadania w statusie PROCESSING (timeout >= 5 minut)
+    stale_timeout = 300  # 5 minutes
+    await db.execute(
+        text(
+            """
+            UPDATE outbox_events
+            SET status = 'FAILED', processing_started_at = NULL
+            WHERE status = 'PROCESSING'
+              AND processing_started_at IS NOT NULL
+              AND (strftime('%%s', 'now') - strftime('%%s', processing_started_at)) > :timeout
+            """
+        ),
+        {"timeout": stale_timeout},
+    )
+
+    # 2. Atomowa rezerwacja: UPDATE z warunkiem na status = 'PENDING'/'FAILED'
+    # Dwa etapy: najpierw zaznaczamy zdarzenia do przetworzenia
+    await db.execute(
+        text(
+            """
+            UPDATE outbox_events
+            SET status = 'PROCESSING',
+                processing_started_at = CURRENT_TIMESTAMP
+            WHERE id IN (
+                SELECT id FROM outbox_events
+                WHERE status IN ('PENDING', 'FAILED')
+                  AND processed = 0
+                  AND COALESCE(retry_count, 0) < :max_retries
+                ORDER BY created_at ASC
+                LIMIT 100
+            )
+            """
+        ),
+        {"max_retries": MAX_OUTBOX_RETRIES},
+    )
+
+    # 3. Pobierz zarezerwowane wiersze
+    rows = (
+        (
+            await db.execute(
+                text(
+                    """
+                SELECT id, event_type, aggregate_id, payload, COALESCE(retry_count, 0) as retry_count
+                FROM outbox_events
                 WHERE status = 'PROCESSING'
                   AND processing_started_at IS NOT NULL
-                  AND (strftime('%%s', 'now') - strftime('%%s', processing_started_at)) > :timeout
+                ORDER BY created_at ASC
+                LIMIT 100
                 """
-            ),
-            {"timeout": stale_timeout},
-        )
-
-        # 2. Atomowa rezerwacja: UPDATE z warunkiem na status = 'PENDING'/'FAILED'
-        # Dwa etapy: najpierw zaznaczamy zdarzenia do przetworzenia
-        await session.execute(
-            text(
-                """
-                UPDATE outbox_events
-                SET status = 'PROCESSING',
-                    processing_started_at = CURRENT_TIMESTAMP
-                WHERE id IN (
-                    SELECT id FROM outbox_events
-                    WHERE status IN ('PENDING', 'FAILED')
-                      AND processed = 0
-                      AND COALESCE(retry_count, 0) < :max_retries
-                    ORDER BY created_at ASC
-                    LIMIT 100
-                )
-                """
-            ),
-            {"max_retries": MAX_OUTBOX_RETRIES},
-        )
-
-        # 3. Pobierz zarezerwowane wiersze
-        rows = (
-            (
-                await session.execute(
-                    text(
-                        """
-                    SELECT id, event_type, aggregate_id, payload, COALESCE(retry_count, 0) as retry_count
-                    FROM outbox_events
-                    WHERE status = 'PROCESSING'
-                      AND processing_started_at IS NOT NULL
-                    ORDER BY created_at ASC
-                    LIMIT 100
-                    """
-                    ),
-                )
+                ),
             )
-            .mappings()
-            .all()
         )
+        .mappings()
+        .all()
+    )
 
-        for row in rows:
-            try:
-                # Idempotentność: sprawdź czy to zdarzenie było już przetworzone
-                event_id = row["id"]
-                existing = await session.execute(
-                    text("SELECT 1 FROM processed_events WHERE id = :id"),
-                    {"id": event_id},
-                )
-                if existing.fetchone():
-                    logger.info("[OUTBOX] Skipping already processed event id=%s", event_id)
-                    await session.execute(
+    for row in rows:
+        try:
+            # SUPERMOC: Deduplikacja przez JetStream Nats-Msg-Id (task_id_generator)
+            # task_id_generator tworzy deterministyczne ID na podstawie hash(argumentów)
+            # Jeśli to samo zadanie zostanie wysłane ponownie, JetStream odrzuci duplikat
+            await _dispatch_outbox_event(row)
+
+            # SUPERMOC: Pomijamy INSERT do processed_events — deduplikacja jest
+            # obsługiwana przez JetStream Nats-Msg-Id (duplicate_window=2min)
+            await db.execute(
+                text(
+                    "UPDATE outbox_events SET status = 'SENT', processed = 1, processed_at = CURRENT_TIMESTAMP WHERE id = :id"
+                ),
+                {"id": row["id"]},
+            )
+        except Exception as exc:
+            logger.exception("[OUTBOX] Failed to relay event id=%s: %s", row["id"], exc)
+            new_retry_count = row["retry_count"] + 1
+            is_dead_letter = new_retry_count >= MAX_OUTBOX_RETRIES
+
+            if is_dead_letter:
+                try:
+                    await db.execute(
                         text(
-                            "UPDATE outbox_events SET status = 'SENT', processed = 1, processed_at = CURRENT_TIMESTAMP WHERE id = :id"
+                            """
+                            INSERT OR IGNORE INTO dead_letter_events
+                                (id, event_type, aggregate_id, payload, error_message, stack_trace, retry_count)
+                            VALUES (:id, :event_type, :aggregate_id, :payload, :error_message, :stack_trace, :retry_count)
+                            """
                         ),
-                        {"id": event_id},
+                        {
+                            "id": row["id"],
+                            "event_type": row["event_type"],
+                            "aggregate_id": row["aggregate_id"],
+                            "payload": row["payload"],
+                            "error_message": str(exc),
+                            "stack_trace": __import__("traceback").format_exc(),
+                            "retry_count": new_retry_count,
+                        },
                     )
-                    continue
+                except Exception as dle:
+                    logger.warning("[OUTBOX] Failed to write dead_letter_event: %s", dle)
 
-                await _dispatch_outbox_event(row)
+            await db.execute(
+                text(
+                    """
+                    UPDATE outbox_events
+                    SET retry_count = retry_count + 1,
+                        processing_started_at = NULL,
+                        status = CASE
+                            WHEN retry_count + 1 >= :max_retries THEN 'DEAD_LETTER'
+                            ELSE 'FAILED'
+                        END
+                    WHERE id = :id
+                    """
+                ),
+                {"id": row["id"], "max_retries": MAX_OUTBOX_RETRIES},
+            )
 
-                # Zapisz do tabeli idempotentności
-                payload_raw = row.get("payload") or "{}"
-                payload_hash = _sha256(payload_raw.encode())
-                await session.execute(
-                    text(
-                        """
-                        INSERT OR IGNORE INTO processed_events (id, event_type, aggregate_id, payload_hash, processed_at)
-                        VALUES (:id, :event_type, :aggregate_id, :payload_hash, CURRENT_TIMESTAMP)
-                        """
-                    ),
-                    {
-                        "id": event_id,
-                        "event_type": row["event_type"],
-                        "aggregate_id": row["aggregate_id"],
-                        "payload_hash": payload_hash,
-                    },
-                )
-
-                await session.execute(
-                    text(
-                        "UPDATE outbox_events SET status = 'SENT', processed = 1, processed_at = CURRENT_TIMESTAMP WHERE id = :id"
-                    ),
-                    {"id": event_id},
-                )
-            except Exception as exc:
-                logger.exception("[OUTBOX] Failed to relay event id=%s: %s", row["id"], exc)
-                new_retry_count = row["retry_count"] + 1
-                is_dead_letter = new_retry_count >= MAX_OUTBOX_RETRIES
-
-                if is_dead_letter:
-                    try:
-                        await session.execute(
-                            text(
-                                """
-                                INSERT OR IGNORE INTO dead_letter_events
-                                    (id, event_type, aggregate_id, payload, error_message, stack_trace, retry_count)
-                                VALUES (:id, :event_type, :aggregate_id, :payload, :error_message, :stack_trace, :retry_count)
-                                """
-                            ),
-                            {
-                                "id": row["id"],
-                                "event_type": row["event_type"],
-                                "aggregate_id": row["aggregate_id"],
-                                "payload": row["payload"],
-                                "error_message": str(exc),
-                                "stack_trace": __import__("traceback").format_exc(),
-                                "retry_count": new_retry_count,
-                            },
-                        )
-                    except Exception as dle:
-                        logger.warning("[OUTBOX] Failed to write dead_letter_event: %s", dle)
-
-                await session.execute(
-                    text(
-                        """
-                        UPDATE outbox_events
-                        SET retry_count = retry_count + 1,
-                            processing_started_at = NULL,
-                            status = CASE
-                                WHEN retry_count + 1 >= :max_retries THEN 'DEAD_LETTER'
-                                ELSE 'FAILED'
-                            END
-                        WHERE id = :id
-                        """
-                    ),
-                    {"id": row["id"], "max_retries": MAX_OUTBOX_RETRIES},
-                )
-
-        # 4. Cleanup starych wpisów processed_events (> 24h)
-        await session.execute(
+    # 4. Cleanup starych wpisów processed_events (> 24h) — tylko jeśli tabela istnieje
+    try:
+        await db.execute(
             text("DELETE FROM processed_events WHERE processed_at < datetime('now', '-1 day')")
         )
+    except Exception:
+        pass  # Tabela może nie istnieć — bezpieczne ignorowanie
 
-        await session.commit()
-
-    await engine.dispose()
+    # SUPERMOC: DI auto-commituje sesję — engine jest cache'owany
 
 
-@broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="outbox_relay_process_pending")
-async def outbox_relay_process_pending_task() -> None:
+@broker.task(
+    schedule=[{"cron": "*/1 * * * *"}],
+    task_name="outbox_relay_process_pending",
+    labels={"service": "api", "operation": "outbox", "criticality": "high", "schedule": "1min"},
+    timeout=120.0,
+)
+async def outbox_relay_process_pending_task(
+    engine: Any = TaskiqDepends(get_engine),
+) -> None:
     """
     Co minutę przetwarzaj oczekujące zdarzenia outbox przez OutboxRelay.
 
-    Używa ``OutboxRelay.process_pending()`` zamiast starego inline relay:
-      - Asynchroniczny odczyt outbox_events z bazy SQLite
-      - Wysyłka TAX_CALCULATED do TigerBeetle (dwa transfery)
-      - Wykładnicze opóźnienie między retry
-      - Dead Letter Queue po wyczerpaniu prób
-      - Idempotentność przez tabelę processed_events
+    Używa ``OutboxRelay.process_pending()`` zamiast starego inline relay.
+
+    SUPERMOC TASKIQ:
+    - TaskiqDepends wstrzykuje cache'owany engine — zero boilerplate
+    - Engine współdzielony przez DI — nie ma create/dispose per task
     """
-    config = AppConfig()
-    engine = _make_engine(config)
     session_factory = create_session_factory(engine)
 
-    try:
-        # Wczesne wyjście: jeśli nie ma oczekujących zdarzeń, nie twórz relay
-        async with session_factory() as session:
-            pending_count = int(
-                (
-                    await session.execute(
-                        text(
-                            "SELECT COUNT(*) FROM outbox_events WHERE status IN ('PENDING', 'FAILED')"
-                        )
+    # Wczesne wyjście: jeśli nie ma oczekujących zdarzeń, nie twórz relay
+    async with session_factory() as session:
+        pending_count = int(
+            (
+                await session.execute(
+                    text(
+                        "SELECT COUNT(*) FROM outbox_events WHERE status IN ('PENDING', 'FAILED')"
                     )
-                ).scalar()
-                or 0
-            )
-        if pending_count == 0:
-            return
-
-        from nexus_ai.services.outbox_relay import OutboxRelay
-
-        relay = OutboxRelay(
-            session_factory=session_factory,
-            tigerbeetle=None,  # W workerze TigerBeetle jest opcjonalne
-            max_retries=3,
-            base_delay_seconds=1.0,
+                )
+            ).scalar()
+            or 0
         )
+    if pending_count == 0:
+        return
 
-        stats = await relay.process_pending()
+    from nexus_ai.services.outbox_relay import OutboxRelay
 
-        logger.info(
-            "[OUTBOX-RELAY] Cron processed=%d failed=%d dead_letter=%d "
-            "skipped=%d total=%d (%.0fms)",
-            stats.processed,
-            stats.failed,
-            stats.dead_letter,
-            stats.skipped_idempotent,
-            stats.total,
-            stats.processing_time_ms,
-        )
-    except Exception as exc:
-        logger.exception("[OUTBOX-RELAY] Cron processing failed: %s", exc)
-    finally:
-        await engine.dispose()
+    relay = OutboxRelay(
+        session_factory=session_factory,
+        tigerbeetle=None,  # W workerze TigerBeetle jest opcjonalne
+        max_retries=3,
+        base_delay_seconds=1.0,
+    )
+
+    stats = await relay.process_pending()
+
+    logger.info(
+        "[OUTBOX-RELAY] Cron processed=%d failed=%d dead_letter=%d "
+        "skipped=%d total=%d (%.0fms)",
+        stats.processed,
+        stats.failed,
+        stats.dead_letter,
+        stats.skipped_idempotent,
+        stats.total,
+        stats.processing_time_ms,
+    )
+    # SUPERMOC: Engine jest cache'owany przez DI — nie ma engine.dispose()
 
 
-@broker.task(schedule=[{"cron": "10 2 * * *"}], task_name="scan_logs_for_pii")
-async def scan_logs_for_pii_task() -> None:
-    """Daily proactive scan for accidental PII in log files."""
-    config = AppConfig()
+@broker.task(
+    schedule=[{"cron": "10 2 * * *"}],
+    task_name="scan_logs_for_pii",
+    labels={"service": "api", "operation": "security", "criticality": "high", "schedule": "daily"},
+    timeout=300.0,
+)
+async def scan_logs_for_pii_task(
+    config: AppConfig = TaskiqDepends(get_config),
+) -> None:
+    """Daily proactive scan for accidental PII in log files.
+
+    SUPERMOC: TaskiqDepends wstrzykuje config — zero boilerplate.
+    """
     findings = scan_logs_for_pii(config.base_dir / "app_data" / "logs")
     total = sum(findings.values())
     if total > 0:
@@ -1306,7 +1382,12 @@ async def scan_logs_for_pii_task() -> None:
         logger.info("[PII-SCAN] no sensitive data patterns detected")
 
 
-@broker.task(schedule=[{"cron": "0 * * * *"}], task_name="finops_hourly_estimate")
+@broker.task(
+    schedule=[{"cron": "0 * * * *"}],
+    task_name="finops_hourly_estimate",
+    labels={"service": "api", "operation": "finops", "criticality": "low", "schedule": "hourly"},
+    timeout=30.0,
+)
 async def finops_hourly_estimate_task() -> None:
     """Hourly rough infrastructure cost estimate for FinOps observability."""
     cpu_cores = float(os.cpu_count() or 1)
@@ -1321,19 +1402,23 @@ async def finops_hourly_estimate_task() -> None:
     )
 
 
-@broker.task(schedule=[{"cron": "45 * * * *"}], task_name="replay_dead_letter_outbox")
-async def replay_dead_letter_outbox_task() -> None:
-    """Hourly replay of dead-letter outbox events back to FAILED for retry."""
-    config = AppConfig()
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
-    try:
-        async with session_factory() as session:
-            moved = await replay_dead_letter_events(session, limit=config.outbox_replay_limit)
-            if moved:
-                logger.info("[OUTBOX-REPLAY] moved dead-letter events for retry: %s", moved)
-    finally:
-        await engine.dispose()
+@broker.task(
+    schedule=[{"cron": "45 * * * *"}],
+    task_name="replay_dead_letter_outbox",
+    labels={"service": "api", "operation": "outbox", "criticality": "medium", "schedule": "hourly"},
+    timeout=60.0,
+)
+async def replay_dead_letter_outbox_task(
+    config: AppConfig = TaskiqDepends(get_config),
+    db: Session = TaskiqDepends(get_db_session),
+) -> None:
+    """Hourly replay of dead-letter outbox events back to FAILED for retry.
+
+    SUPERMOC: TaskiqDepends wstrzykuje config i db — zero boilerplate.
+    """
+    moved = await replay_dead_letter_events(db, limit=config.outbox_replay_limit)
+    if moved:
+        logger.info("[OUTBOX-REPLAY] moved dead-letter events for retry: %s", moved)
 
 
 def _safe_float(value: object) -> float | None:
@@ -1450,70 +1535,68 @@ def _build_field_confidence(
     return fc
 
 
-async def _mark_invoice_blocked(invoice_id: str, reason: str) -> None:
-    """Mark invoice as BLOCKED_FRAUD_SUSPICION due to semantic anomaly or white-list violation."""
-    config = AppConfig()
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
-    try:
-        async with session_factory() as session:
-            await session.execute(
-                text(
-                    """
-                    UPDATE invoices
-                    SET status = 'BLOCKED_FRAUD_SUSPICION', updated_at = CURRENT_TIMESTAMP
-                    WHERE id = :invoice_id
-                    """
-                ),
-                {"invoice_id": invoice_id},
-            )
-            await session.commit()
-            logger.warning("[FRAUD] Invoice %s blocked: %s", invoice_id, reason)
-    finally:
-        await engine.dispose()
+async def _mark_invoice_blocked(invoice_id: str, reason: str, db: Session) -> None:
+    """Mark invoice as BLOCKED_FRAUD_SUSPICION.
+
+    SUPERMOC: Przyjmuje Session z DI zamiast tworzyć własny engine.
+    """
+    await db.execute(
+        text(
+            """
+            UPDATE invoices
+            SET status = 'BLOCKED_FRAUD_SUSPICION', updated_at = CURRENT_TIMESTAMP
+            WHERE id = :invoice_id
+            """
+        ),
+        {"invoice_id": invoice_id},
+    )
+    logger.warning("[FRAUD] Invoice %s blocked: %s", invoice_id, reason)
 
 
-async def _mark_invoice_pending_review(invoice_id: str, reason: str) -> None:
-    config = AppConfig()
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
-    try:
-        async with session_factory() as session:
-            await session.execute(
-                text(
-                    """
-                    UPDATE invoices
-                    SET status = 'PENDING_REVIEW'
-                    WHERE id = :invoice_id
-                    """
-                ),
-                {"invoice_id": invoice_id},
-            )
-            await session.commit()
-    finally:
-        await engine.dispose()
+async def _mark_invoice_pending_review(invoice_id: str, reason: str, db: Session) -> None:
+    await db.execute(
+        text(
+            """
+            UPDATE invoices
+            SET status = 'PENDING_REVIEW'
+            WHERE id = :invoice_id
+            """
+        ),
+        {"invoice_id": invoice_id},
+    )
 
 
-@broker.task(schedule=[{"cron": "15 3 * * *"}], task_name="schema_drift_daily_check")
-async def schema_drift_daily_check_task() -> None:
-    """Daily schema drift verification against runtime baseline snapshot."""
-    config = AppConfig()
-    engine = _make_engine(config)
+@broker.task(
+    schedule=[{"cron": "15 3 * * *"}],
+    task_name="schema_drift_daily_check",
+    labels={"service": "api", "operation": "schema", "criticality": "medium", "schedule": "daily"},
+    timeout=120.0,
+)
+async def schema_drift_daily_check_task(
+    config: AppConfig = TaskiqDepends(get_config),
+    engine: Any = TaskiqDepends(get_engine),
+) -> None:
+    """Daily schema drift verification against runtime baseline snapshot.
+
+    SUPERMOC: TaskiqDepends wstrzykuje config i engine — zero boilerplate.
+    """
     baseline_path = config.base_dir / "app_data" / "schema_baseline.json"
-    try:
-        drift = await verify_schema_drift(engine, baseline_path=baseline_path)
-        if drift["status"] == "drift_detected":
-            logger.warning("[SCHEMA-DRIFT] detected: %s", drift["issues"])
-        else:
-            logger.info("[SCHEMA-DRIFT] status=%s tables=%s", drift["status"], drift["tables"])
-    finally:
-        await engine.dispose()
+    drift = await verify_schema_drift(engine, baseline_path=baseline_path)
+    if drift["status"] == "drift_detected":
+        logger.warning("[SCHEMA-DRIFT] detected: %s", drift["issues"])
+    else:
+        logger.info("[SCHEMA-DRIFT] status=%s tables=%s", drift["status"], drift["tables"])
 
 
 # contract marker: sync_single_invoice_to_duckdb(session, config, invoice_id)
 
 
-@broker.task(schedule=[{"cron": "*/10 * * * *"}], task_name="flush_otel_fallback_buffer")
+@broker.task(
+    schedule=[{"cron": "*/10 * * * *"}],
+    task_name="flush_otel_fallback_buffer",
+    labels={"service": "api", "operation": "telemetry", "criticality": "low", "schedule": "10min"},
+    timeout=60.0,
+)
 async def flush_otel_fallback_buffer_task() -> None:
     """Replay file-buffered telemetry spans when OLAP becomes available again."""
     config = AppConfig()
@@ -1530,28 +1613,39 @@ async def flush_otel_fallback_buffer_task() -> None:
         logger.info("[OTEL-FALLBACK] replay stats=%s", stats)
 
 
-@broker.task(schedule=[{"cron": "20 3 * * *"}], task_name="migration_integrity_daily_check")
-async def migration_integrity_daily_check_task() -> None:
-    """Daily data-integrity check against persisted row-count baseline."""
-    config = AppConfig()
-    engine = _make_engine(config)
+@broker.task(
+    schedule=[{"cron": "20 3 * * *"}],
+    task_name="migration_integrity_daily_check",
+    labels={"service": "api", "operation": "schema", "criticality": "medium", "schedule": "daily"},
+    timeout=120.0,
+)
+async def migration_integrity_daily_check_task(
+    config: AppConfig = TaskiqDepends(get_config),
+    engine: Any = TaskiqDepends(get_engine),
+) -> None:
+    """Daily data-integrity check against persisted row-count baseline.
+
+    SUPERMOC: TaskiqDepends wstrzykuje config i engine — zero boilerplate.
+    """
     baseline_path = config.migration_baseline_path
-    try:
-        result = await verify_migration_integrity(engine, baseline_path=baseline_path)
-        status = str(result.get("status"))
-        if status == "ok":
-            logger.info("[MIGRATION-INTEGRITY] status=ok tables=%s", result.get("tables"))
-        elif status == "baseline_created":
-            logger.info("[MIGRATION-INTEGRITY] baseline created tables=%s", result.get("tables"))
-        else:
-            logger.warning(
-                "[MIGRATION-INTEGRITY] status=%s issues=%s", status, result.get("issues")
-            )
-    finally:
-        await engine.dispose()
+    result = await verify_migration_integrity(engine, baseline_path=baseline_path)
+    status = str(result.get("status"))
+    if status == "ok":
+        logger.info("[MIGRATION-INTEGRITY] status=ok tables=%s", result.get("tables"))
+    elif status == "baseline_created":
+        logger.info("[MIGRATION-INTEGRITY] baseline created tables=%s", result.get("tables"))
+    else:
+        logger.warning(
+            "[MIGRATION-INTEGRITY] status=%s issues=%s", status, result.get("issues")
+        )
 
 
-@broker.task(schedule=[{"cron": "0 3 * * 0"}], task_name="cleanup_old_logs")
+@broker.task(
+    schedule=[{"cron": "0 3 * * 0"}],
+    task_name="cleanup_old_logs",
+    labels={"service": "api", "operation": "cleanup", "criticality": "low", "schedule": "weekly"},
+    timeout=120.0,
+)
 async def cleanup_old_logs_task() -> None:
     log_dir = Path("app_data/logs")
     if not log_dir.exists():
@@ -1602,7 +1696,12 @@ async def cleanup_old_logs_task() -> None:
     logger.info("[CLEANUP] old logs removed=%s compressed=%s", removed, compressed)
 
 
-@broker.task(schedule=[{"cron": "*/5 * * * *"}], task_name="cleanup_temp_upload_files")
+@broker.task(
+    schedule=[{"cron": "*/5 * * * *"}],
+    task_name="cleanup_temp_upload_files",
+    labels={"service": "api", "operation": "cleanup", "criticality": "low", "schedule": "5min"},
+    timeout=30.0,
+)
 async def cleanup_temp_upload_files_task() -> None:
     uploads_dir = Path("app_data/uploads")
     if not uploads_dir.exists():
@@ -1627,7 +1726,12 @@ async def cleanup_temp_upload_files_task() -> None:
     logger.info("[CLEANUP] temp upload files removed=%s", removed)
 
 
-@broker.task(schedule=[{"cron": "30 6 * * *"}], task_name="daily_briefing_send")
+@broker.task(
+    schedule=[{"cron": "30 6 * * *"}],
+    task_name="daily_briefing_send",
+    labels={"service": "api", "operation": "briefing", "criticality": "medium", "schedule": "daily"},
+    timeout=120.0,
+)
 async def daily_briefing_send(user_id: str | None = None) -> dict:
     """
     Generuj i wyślij codzienne podsumowanie finansowe (Daily Briefing).
@@ -1683,7 +1787,12 @@ async def daily_briefing_send(user_id: str | None = None) -> dict:
         return {"result": "ERROR", "error": str(exc)}
 
 
-@broker.task(schedule=[{"cron": "0 5 * * 0"}], task_name="cleanup_old_reports")
+@broker.task(
+    schedule=[{"cron": "0 5 * * 0"}],
+    task_name="cleanup_old_reports",
+    labels={"service": "api", "operation": "cleanup", "criticality": "low", "schedule": "weekly"},
+    timeout=60.0,
+)
 async def cleanup_old_reports_task() -> None:
     cutoff = pendulum.now() - pendulum.duration(days=30)
     report_dirs = [Path("reports/performance"), Path("reports/security"), Path("reports/pii")]
@@ -1706,14 +1815,23 @@ async def cleanup_old_reports_task() -> None:
 # sqlite-vec nie wymaga kompakcji (SQLite VACUUM robi to przez sqlite_weekly_vacuum)
 
 
-@broker.task(schedule=[{"cron": "0 * * * *"}], task_name="check_hanging_transactions")
-async def check_hanging_transactions_task() -> None:
+@broker.task(
+    schedule=[{"cron": "0 * * * *"}],
+    task_name="check_hanging_transactions",
+    labels={"service": "api", "operation": "monitoring", "criticality": "medium", "schedule": "hourly"},
+    timeout=30.0,
+)
+async def check_hanging_transactions_task(
+    config: AppConfig = TaskiqDepends(get_config),
+    engine: Any = TaskiqDepends(get_engine),
+) -> None:
     """
     Okresowe zadanie (co godzinę) wykrywające wiszące transakcje.
     Sprawdza dziennik WAL SQLite - jeśli plik WAL jest duży, może to wskazywać
     na otwartą transakcję. Loguje ostrzeżenie.
+
+    SUPERMOC: TaskiqDepends wstrzykuje config i engine — zero boilerplate.
     """
-    config = AppConfig()
     wal_path = config.sqlite_path.with_suffix(".db-wal")
     if wal_path.exists():
         wal_size_mb = wal_path.stat().st_size / (1024 * 1024)
@@ -1731,7 +1849,6 @@ async def check_hanging_transactions_task() -> None:
         )
 
     # Dodatkowo: sprawdź długo trwające zapytania przez PRAGMA
-    engine = _make_engine(config)
     try:
         async with engine.connect() as conn:
             result = await conn.execute(sql_text("PRAGMA wal_checkpoint;"))
@@ -1745,76 +1862,88 @@ async def check_hanging_transactions_task() -> None:
                 )
     except Exception as e:
         logger.warning("[HANGING-TX] Nie udało się sprawdzić stanu WAL: %s", e)
-    finally:
-        await engine.dispose()
 
 
-@broker.task(schedule=[{"cron": "0 6 * * 1"}], task_name="weekly_nip_reverification")
-async def weekly_nip_reverification_task() -> None:
+@broker.task(
+    schedule=[{"cron": "0 6 * * 1"}],
+    task_name="weekly_nip_reverification",
+    labels={"service": "api", "operation": "verification", "criticality": "medium", "schedule": "weekly"},
+    timeout=600.0,
+)
+async def weekly_nip_reverification_task(
+    db: Session = TaskiqDepends(get_db_session),
+) -> None:
     """
     Cotygodniowe zadanie ponownej weryfikacji NIP-ów kontrahentów.
     Sprawdza NIP-y w Białej Liście MF i aktualizuje status w tabeli contractors.
+
+    SUPERMOC: TaskiqDepends wstrzykuje sesję DB — zero boilerplate.
     """
-    config = AppConfig()
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
     accounting = AccountingService()
 
-    try:
-        async with session_factory() as session:
-            # Pobierz wszystkich kontrahentów
-            from sqlalchemy import select as sa_select
+    # Pobierz wszystkich kontrahentów
+    from sqlalchemy import select as sa_select
 
-            from nexus_ai.db.models import Contractor
+    from nexus_ai.db.models import Contractor
 
-            result = await session.execute(sa_select(Contractor))
-            contractors = result.scalars().all()
+    result = await db.execute(sa_select(Contractor))
+    contractors = result.scalars().all()
 
-            verified_count = 0
-            failed_count = 0
-            for contractor in contractors:
-                try:
-                    verification = await accounting.verify_nip(contractor.nip)
-                    if verification:
-                        verified_count += 1
-                        logger.info(
-                            "[NIP-VERIFY] Contractors NIP=%s verified: %s",
-                            contractor.nip,
-                            verification.get("name", "unknown"),
-                        )
-                    else:
-                        failed_count += 1
-                        logger.warning(
-                            "[NIP-VERIFY] Contractors NIP=%s verification FAILED",
-                            contractor.nip,
-                        )
-                except Exception as ve:
-                    failed_count += 1
-                    logger.warning("[NIP-VERIFY] Error verifying NIP=%s: %s", contractor.nip, ve)
+    verified_count = 0
+    failed_count = 0
+    for contractor in contractors:
+        try:
+            verification = await accounting.verify_nip(contractor.nip)
+            if verification:
+                verified_count += 1
+                logger.info(
+                    "[NIP-VERIFY] Contractors NIP=%s verified: %s",
+                    contractor.nip,
+                    verification.get("name", "unknown"),
+                )
+            else:
+                failed_count += 1
+                logger.warning(
+                    "[NIP-VERIFY] Contractors NIP=%s verification FAILED",
+                    contractor.nip,
+                )
+        except Exception as ve:
+            failed_count += 1
+            logger.warning("[NIP-VERIFY] Error verifying NIP=%s: %s", contractor.nip, ve)
 
-            logger.info(
-                "[NIP-VERIFY] Weekly reverification complete: verified=%d, failed=%d, total=%d",
-                verified_count,
-                failed_count,
-                len(contractors),
-            )
-    finally:
-        await engine.dispose()
+    logger.info(
+        "[NIP-VERIFY] Weekly reverification complete: verified=%d, failed=%d, total=%d",
+        verified_count,
+        failed_count,
+        len(contractors),
+    )
+    # SUPERMOC: DI auto-commituje sesję
 
 
-@broker.task(schedule=[{"cron": "30 4 * * 0"}], task_name="sqlite_weekly_vacuum")
-async def sqlite_weekly_vacuum_task() -> None:
-    config = AppConfig()
-    engine = _make_engine(config)
-    try:
-        async with engine.connect() as conn:
-            await conn.execute(text("VACUUM;"))
-        logger.info("[SQLITE] weekly VACUUM completed")
-    finally:
-        await engine.dispose()
+@broker.task(
+    schedule=[{"cron": "30 4 * * 0"}],
+    task_name="sqlite_weekly_vacuum",
+    labels={"service": "api", "operation": "maintenance", "criticality": "medium", "schedule": "weekly"},
+    timeout=600.0,
+)
+async def sqlite_weekly_vacuum_task(
+    engine: Any = TaskiqDepends(get_engine),
+) -> None:
+    """Weekly SQLite VACUUM for database maintenance.
+
+    SUPERMOC: TaskiqDepends wstrzykuje cache'owany engine — zero boilerplate.
+    """
+    async with engine.connect() as conn:
+        await conn.execute(text("VACUUM;"))
+    logger.info("[SQLITE] weekly VACUUM completed")
 
 
-@broker.task(schedule=[{"cron": "15 4 * * 0"}], task_name="cleanup_duckdb_temp")
+@broker.task(
+    schedule=[{"cron": "15 4 * * 0"}],
+    task_name="cleanup_duckdb_temp",
+    labels={"service": "api", "operation": "cleanup", "criticality": "low", "schedule": "weekly"},
+    timeout=30.0,
+)
 async def cleanup_duckdb_temp_task() -> None:
     config = AppConfig()
     temp_dir = config.duckdb_path.parent / "duckdb_tmp"
@@ -1831,7 +1960,12 @@ async def cleanup_duckdb_temp_task() -> None:
     logger.info("[DUCKDB] temp files removed=%s", removed)
 
 
-@broker.task(schedule=[{"cron": "15 12 * * *"}], task_name="daily_nbp_rate_fill")
+@broker.task(
+    schedule=[{"cron": "15 12 * * *"}],
+    task_name="daily_nbp_rate_fill",
+    labels={"service": "api", "operation": "forex", "criticality": "medium", "schedule": "daily"},
+    timeout=300.0,
+)
 async def daily_nbp_rate_fill_task() -> None:
     """
     Codzienne zadanie (12:15) uzupełniające brakujące kursy NBP dla ostatnich 30 dni.
@@ -1878,7 +2012,12 @@ async def daily_nbp_rate_fill_task() -> None:
         logger.error("[NBP-FILL] failed: %s", exc)
 
 
-@broker.task(schedule=[{"cron": "*/1 * * * *"}], task_name="log_resilience_states")
+@broker.task(
+    schedule=[{"cron": "*/1 * * * *"}],
+    task_name="log_resilience_states",
+    labels={"service": "api", "operation": "monitoring", "criticality": "low", "schedule": "1min"},
+    timeout=10.0,
+)
 async def log_resilience_states_task() -> None:
     """
     Co minutę monitoruj stan systemu pod kątem problemów z zewnętrznymi API.
@@ -1887,28 +2026,30 @@ async def log_resilience_states_task() -> None:
     logger.debug("[RESILIENCE] stamina active — retry + circuit breaker via decorators")
 
 
-@broker.task(schedule=[{"cron": "0 5 * * *"}], task_name="cleanup_expired_refresh_tokens")
-async def cleanup_expired_refresh_tokens_task() -> None:
+@broker.task(
+    schedule=[{"cron": "0 5 * * *"}],
+    task_name="cleanup_expired_refresh_tokens",
+    labels={"service": "api", "operation": "cleanup", "criticality": "medium", "schedule": "daily"},
+    timeout=120.0,
+)
+async def cleanup_expired_refresh_tokens_task(
+    db: Session = TaskiqDepends(get_db_session),
+) -> None:
     """
     Codzienne zadanie czyszczenia wygasłych i odwołanych refresh tokenów.
     Rozwiązanie 16: Usuwa tokeny starsze niż 7 dni od daty wygaśnięcia.
+
+    SUPERMOC: TaskiqDepends wstrzykuje sesję DB — zero boilerplate.
     """
-    config = AppConfig()
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
-    try:
-        async with session_factory() as session:
-            result = await session.execute(
-                text(
-                    """
-                    DELETE FROM refresh_tokens
-                    WHERE expires_at < datetime('now', '-7 days')
-                       OR (is_revoked = 1 AND created_at < datetime('now', '-30 days'))
-                    """
-                )
-            )
-            deleted = result.rowcount
-            await session.commit()
-            logger.info("[TOKEN-CLEANUP] Removed %d expired/revoked refresh tokens", deleted)
-    finally:
-        await engine.dispose()
+    result = await db.execute(
+        text(
+            """
+            DELETE FROM refresh_tokens
+            WHERE expires_at < datetime('now', '-7 days')
+               OR (is_revoked = 1 AND created_at < datetime('now', '-30 days'))
+            """
+        )
+    )
+    deleted = result.rowcount
+    logger.info("[TOKEN-CLEANUP] Removed %d expired/revoked refresh tokens", deleted)
+    # SUPERMOC: DI auto-commituje sesję

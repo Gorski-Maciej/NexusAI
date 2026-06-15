@@ -1,39 +1,31 @@
 """
-Central Background Task Manager for NexusAI API — TaskGroup-based structured concurrency.
+[DEPRECATED] BackgroundTaskManager — zastąpiony przez Taskiq.
 
-Replaces `anyio.ensure_backend().create_task()` scattered across controllers with
-proper `anyio.create_task_group()` structured concurrency. This ensures:
-  - All child tasks are cancelled when the parent task group exits
-  - No orphaned tasks on shutdown
-  - Proper cancellation propagation through the task tree
-  - Thread-safety for free-threaded Python 3.13t
+UWAGA: Ten moduł jest LEGACY i zostanie usunięty w wersji 3.0.0.
 
-Usage:
-    # Startup — register task
-    app.state.bg_tasks = BackgroundTaskManager()
-    await app.state.bg_tasks.start_task(
-        "metrics_updater",
-        _update_system_metrics,
-        metadata=TaskMetadata(description="System metrics (30s interval)"),
+WSZYSTKIE background taski powinny być zadaniami Taskiq:
+  - Long-running: @broker.task, fire-and-forget przez broker.kick()
+  - Periodic: @broker.task(schedule=[{"cron": "..."}])
+  - Lifecycle: @broker.on_event(TaskiqEvents.WORKER_STARTUP)
+
+Zalety przejścia na Taskiq:
+  - Persistentność: zadania nie giną przy restarcie API
+  - Monitorowanie: metryki przez middleware
+  - Skalowanie: wiele workerów
+  - Mniej kodu: ~300 LOC mniej
+
+Usage (NOWY SPOSÓB — Taskiq):
+    # Periodic task (zamiast BackgroundTaskManager)
+    @broker.task(
+        schedule=[{"cron": "*/30 * * * * *"}],
+        task_name="metrics_updater",
+        labels={"service": "core", "operation": "metrics"},
     )
+    async def update_system_metrics():
+        ...
 
-    # Shutdown — cancel all via task group exit
-    await app.state.bg_tasks.cancel_all()
-
-    # Controller — fire-and-forget via DI
-    await app.state.bg_tasks.start_task(
-        f"notification_{invoice_id}",
-        _send_notification_async,
-        service, user, ...,
-    )
-
-Key improvements over legacy version:
-  - Uses anyio.TaskGroup.start() instead of ensure_backend().create_task()
-  - Task metadata is a typed msgspec.Struct instead of dict[str, Any]
-  - Proper structured concurrency: all subtasks cancelled on group exit
-  - Each task is started via TaskGroup.start() which waits for task_status.started()
-  - Persistent nursery ensures tasks are tracked and cancelable
-  - Type-safe cancellation with anyio.CancelScope
+    # Fire-and-forget (zamiast start_task)
+    await broker.kick("send_notification", notification_id="...")
 """
 
 from __future__ import annotations

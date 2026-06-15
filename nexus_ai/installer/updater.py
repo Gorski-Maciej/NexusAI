@@ -155,7 +155,14 @@ async def check_for_updates(
     # Try remote endpoints
     urls = [custom_url] if custom_url else UPDATE_ENDPOINTS
 
-    async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:
+    # SUPERMOC HTTPX: http2=True + httpx.Limits dla ochrony przed rate limiting
+    async with httpx.AsyncClient(
+        timeout=httpx.Timeout(connect=10.0, read=timeout, write=10.0, pool=300.0),
+        limits=httpx.Limits(max_connections=5, max_keepalive_connections=3),
+        http2=True,
+        follow_redirects=True,
+        trust_env=True,
+    ) as client:
         for url in urls:
             if not url:
                 continue
@@ -244,7 +251,12 @@ async def download_update(
     headers = {"Range": f"bytes={resume_bytes}-"} if resume_bytes > 0 else {}
 
     try:
-        async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+        async with httpx.AsyncClient(
+            timeout=httpx.Timeout(connect=15.0, read=120.0, write=30.0, pool=300.0),
+            limits=httpx.Limits(max_connections=5, max_keepalive_connections=3),
+            http2=True,
+            follow_redirects=True,
+        ) as client:
             response = await client.get(update_info.download_url, headers=headers)
 
             if response.status_code == 416:  # Already complete

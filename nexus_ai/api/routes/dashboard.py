@@ -25,6 +25,7 @@ class DashboardController(Controller):
         summary="Get daily briefing",
         description="Returns today's briefing with top decisions needing user action.",
         operation_id="getDailyBriefing",
+        cache=120,
         headers={"Cache-Control": "public, max-age=300"},
     )
     async def get_daily_briefing(self, request: Request, config: AppConfig) -> dict[str, Any]:

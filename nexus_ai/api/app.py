@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from typing import Any
 
 from litestar import Litestar, Router
 from litestar.config.cors import CORSConfig
@@ -18,14 +19,14 @@ from nexus_ai.api.dependencies import (
     provide_config,
     provide_db_engine,
     provide_duckdb,
-    provide_event_emitter,
     provide_shared_image_buffer,
     provide_tenant_manager,
 )
 from nexus_ai.api.exceptions import EXCEPTION_HANDLERS
-from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.connection import ASGIConnection
+from litestar.connection import Request
 from litestar.handlers.base import BaseRouteHandler
+from litestar.middleware.rate_limit import RateLimitConfig
 from structlog import get_logger as _get_logger
 
 from nexus_ai.api.middleware import (
@@ -65,11 +66,43 @@ from nexus_ai.api.routes.ui_state import UIStateController
 from nexus_ai.api.routes.version import VersionController
 from nexus_ai.api.routes.workers import WorkerStatusController
 from nexus_ai.api.routes.ws import progress_sse
-from nexus_ai.api.security import jwt_auth
+from nexus_ai.api.security import jwt_auth, jwt_cookie_auth
 from nexus_ai.api.state import make_on_startup, on_shutdown
 from nexus_ai.api.static import get_static_config
 from nexus_ai.db.database import create_session_factory
 from nexus_ai.services.currency_converter import Money, msgspec_money_enc_hook
+
+
+# ── SUPERMOC Litestar: Per-role rate limiting identifier ──
+# Używany przez RateLimitConfig.identifier_for_request w create_app().
+# Zdefiniowany na poziomie modułu dla testowalności.
+
+
+def _role_aware_identifier(request: Request) -> str:
+    """Per-role rate limiting identifier.
+
+    Zwraca role-aware klucz dla RateLimitMiddleware:
+    - Zalogowani: ``user:{role}:{user.id}`` — admini mają wyższe limity
+    - Auth endpoints: ``auth:{ip}`` — brute-force protection per-IP
+    - Niezalogowani: ``anon:{ip}`` — standardowy limit
+
+    Używa ``request.url.path`` zamiast    ``str(request.url)`` dla
+    precyzyjnego dopasowania ścieżki bez fałszywych trafień z query string.
+
+    Uwaga: request.client to tuple (host, port) w ASGI — używamy [0] dla hosta.
+    Nie request.client.host — to nie jest obiekt, a tuple!
+    """
+    user = getattr(request, "user", None)
+    if user:
+        role = getattr(user, "role", "viewer")
+        return f"user:{role}:{user.id}"
+    path = getattr(request.url, "path", "/")
+    # Auth endpoints (login/register): strict limit per-IP
+    client_host = request.client[0] if request.client else "unknown"
+    if path.startswith("/api/auth/"):
+        return f"auth:{client_host}"
+    return f"anon:{client_host}"
+
 
 SUPPORTED_HEALTH_ENDPOINTS = ("/api/v1/health", "/api/v2/health")
 
@@ -216,6 +249,23 @@ def create_app() -> Litestar:
         ],
     )
 
+    # ── SUPERMOC Litestar: Per-role rate limiting identifier ──
+    # Używa _role_aware_identifier zdefiniowanego na poziomie modułu.
+    # Jeden RateLimitConfig z custom identifier dla wszystkich endpointów.
+    # identifier_for_request zwraca role-aware klucz, co daje per-role limity.
+    # Endpointy wykluczone: health, schema — nie wymagają rate limitingu.
+
+    # ── CSRF exclude z configu ──
+    csrf_exclude_patterns: list[Any] = []
+    if config.csrf_exclude_patterns:
+        for pattern in config.csrf_exclude_patterns:
+            csrf_exclude_patterns.append(re.compile(pattern))
+    else:
+        csrf_exclude_patterns = [
+            re.compile(r"^/api/auth/"),
+            re.compile(r"/health"),
+        ]
+
     # ── Prometheus metrics config (zastępuje MetricsMiddleware + MetricsController) ──
     prometheus_config = PrometheusConfig(
         metrics_prefix="nexus",
@@ -240,7 +290,7 @@ def create_app() -> Litestar:
                 ProblemDetailsConfig(enable_for_all_http_exceptions=True)
             ),
         ],
-        on_app_init=[jwt_auth.on_app_init],
+        on_app_init=[jwt_auth.on_app_init, jwt_cookie_auth.on_app_init],
         on_startup=[on_startup],
         on_shutdown=[on_shutdown],
         dependencies={
@@ -249,20 +299,20 @@ def create_app() -> Litestar:
             "db_engine": provide_db_engine,
             "duckdb": provide_duckdb,
             "buffer": provide_shared_image_buffer,
-            "event_emitter": provide_event_emitter,
+
         },
         exception_handlers=EXCEPTION_HANDLERS,
         middleware=[
-            # Wbudowany Litestar RateLimitMiddleware — zastępuje SimpleRateLimitMiddleware
+            # SUPERMOC Litestar: RateLimitMiddleware z per-role identifier
+            # Jeden middleware zamiast trzech — identifier zwraca role-aware klucz
             RateLimitConfig(
-                rate_limit=("minute", 60),
+                rate_limit=("minute", config.rate_limit_general),
+                identifier_for_request=_role_aware_identifier,
                 exclude=[
-                    "/api/v1/health",
-                    "/api/v2/health",
-                    "/schema/openapi.yml",
-                    "/schema/swagger",
-                    "/api/auth",
+                    "/api/v1/health", "/api/v2/health",
+                    "/schema/openapi.yml", "/schema/swagger",
                 ],
+                exclude_opt_key="no_rate_limit",
             ).middleware,
             # TenantContextMiddleware — ustawia ContextVar tenant_id dla każdego requestu
             # Zastępuje część CorrelationAndDeprecationMiddleware (tenant context + correlation-id)
@@ -288,12 +338,7 @@ def create_app() -> Litestar:
             cookie_name="csrf_token",
             header_name="X-CSRF-Token",
             safe_methods={"GET", "HEAD", "OPTIONS", "TRACE"},
-            exclude=[
-                # Wszystkie endpointy /api/auth/* (rejestracja, logowanie, refresh, itp.)
-                re.compile(r"^/api/auth/"),
-                # Wszystkie endpointy /health
-                re.compile(r"/health"),
-            ],
+            exclude=csrf_exclude_patterns,
         )
         if config.csrf_enabled
         else None,

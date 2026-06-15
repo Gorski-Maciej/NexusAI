@@ -324,6 +324,55 @@ class _NatsSection(Struct, kw_only=True):
     reconnect_delay_seconds: int | None = None
 
 
+class _StorageSection(Struct, kw_only=True):
+    """msgspec schema dla sekcji [storage].
+
+    SUPERMOC fsspec: Jednolita abstrakcja systemów plików.
+    - protocol: "file", "s3", "sftp", "memory", "zip" — zmiana backendu bez zmiany kodu
+    - root: ścieżka bazowa w wybranym protokole
+    - auto_mkdir: automatyczne tworzenie katalogów
+    - cache_size: rozmiar cache dla CachingFileSystem (w MB, 0 = wyłączony)
+
+    Używane przez: services/storage.py, core/exporters/storage.py, api/services.py,
+    api/routes/invoices.py, api/controllers/invoices.py, scripts/backup.py.
+    """
+
+    protocol: str | None = None
+    root: str | None = None
+    auto_mkdir: bool | None = None
+    cache_size_mb: Annotated[int | None, Meta(ge=0, le=10240)] = None
+
+
+class _StaminaSection(Struct, kw_only=True):
+    """msgspec schema dla sekcji [stamina].
+
+    SUPERMOC: Globalne ustawienia stamina dla całego projektu.
+    Używane przez resilience.py, currency_converter.py, forex_engine.py, api/tasks.py.
+    """
+
+    retry_attempts: Annotated[int | None, Meta(ge=1, le=20)] = None
+    retry_timeout: Annotated[float | None, Meta(ge=1.0, le=300.0)] = None
+    circuit_breaker_enabled: bool | None = None
+    circuit_breaker_cooldown: Annotated[float | None, Meta(ge=5.0, le=600.0)] = None
+
+
+class _SecuritySection(Struct, kw_only=True):
+    """msgspec schema dla sekcji [security].
+
+    Litestar SUPERMOC:
+    - jwt_exclude_paths: ścieżki publiczne (bez JWT auth)
+    - csrf_exclude_paths: ścieżki bez CSRF (np. auth endpoints)
+    - rate_limit_auth: limit dla /api/auth (brute-force protection)
+    - rate_limit_general: limit dla pozostałych endpointów
+    """
+
+    jwt_exclude_paths: list[str] | None = None
+    csrf_exclude_patterns: list[str] | None = None
+    rate_limit_auth: Annotated[int | None, Meta(ge=1, le=100)] = None
+    rate_limit_upload: Annotated[int | None, Meta(ge=1, le=200)] = None
+    rate_limit_general: Annotated[int | None, Meta(ge=1, le=1000)] = None
+
+
 class _IntegrationsSection(Struct, kw_only=True):
     """msgspec schema dla sekcji [integrations]."""
 
@@ -339,6 +388,9 @@ class _TomlConfigRoot(Struct, kw_only=True):
 
     app: _AppSection | None = None
     nats: _NatsSection | None = None
+    stamina: _StaminaSection | None = None
+    storage: _StorageSection | None = None
+    security: _SecuritySection | None = None
     integrations: _IntegrationsSection | None = None
 
 
@@ -473,6 +525,26 @@ class AppConfig(Struct, kw_only=True):
     max_task_retries: int = 3
     retry_backoff_base_seconds: float = 1.0
     retry_backoff_max_seconds: float = 60.0
+
+    # ── SUPERMOC: Globalne stamina settings ──
+    # ── SUPERMOC: Globalne stamina settings ──
+    stamina_retry_attempts: int = 3
+    stamina_retry_timeout: float = 10.0
+    stamina_circuit_breaker_enabled: bool = True
+    stamina_circuit_breaker_cooldown: float = 60.0
+
+    # ── SUPERMOC: fsspec — jednolita abstrakcja systemów plików ──
+    storage_protocol: str = "file"
+    storage_root: str = "app_data/uploads"
+    storage_auto_mkdir: bool = True
+    storage_cache_size_mb: int = 0
+
+    # ── SUPERMOC: Litestar Security — konfigurowalne z TOML ──
+    jwt_exclude_paths: list[str] | None = None
+    csrf_exclude_patterns: list[str] | None = None
+    rate_limit_auth: int = 10
+    rate_limit_upload: int = 30
+    rate_limit_general: int = 60
 
     # ── Database ──
     sqlite_file_name: str = "app_data/databases/nexus_oltp.db"
@@ -613,6 +685,22 @@ class AppConfig(Struct, kw_only=True):
         "analytics_anomaly_threshold": ("app", "analytics_anomaly_threshold"),
         "nats_url": ("nats", "url"),
         "decision_timeout_seconds": ("app", "decision_timeout_seconds"),
+        # SUPERMOC: stamina global settings
+        "stamina_retry_attempts": ("stamina", "retry_attempts"),
+        "stamina_retry_timeout": ("stamina", "retry_timeout"),
+        "stamina_circuit_breaker_enabled": ("stamina", "circuit_breaker_enabled"),
+        "stamina_circuit_breaker_cooldown": ("stamina", "circuit_breaker_cooldown"),
+        # SUPERMOC: fsspec global settings
+        "storage_protocol": ("storage", "protocol"),
+        "storage_root": ("storage", "root"),
+        "storage_auto_mkdir": ("storage", "auto_mkdir"),
+        "storage_cache_size_mb": ("storage", "cache_size_mb"),
+        # SUPERMOC: Litestar Security settings
+        "jwt_exclude_paths": ("security", "jwt_exclude_paths"),
+        "csrf_exclude_patterns": ("security", "csrf_exclude_patterns"),
+        "rate_limit_auth": ("security", "rate_limit_auth"),
+        "rate_limit_upload": ("security", "rate_limit_upload"),
+        "rate_limit_general": ("security", "rate_limit_general"),
     }
 
     @classmethod
@@ -879,6 +967,19 @@ class AppConfig(Struct, kw_only=True):
     @property
     def migration_checksum_baseline_path(self) -> Path:
         return self.base_dir / "app_data" / self.migration_checksum_baseline_name
+
+    @property
+    def effective_jwt_exclude(self) -> list[str]:
+        """Zwraca listę wykluczeń JWT z configu lub domyślne."""
+        if self.jwt_exclude_paths:
+            return self.jwt_exclude_paths
+        return [
+            "/api/auth/login", "/api/auth/register", "/api/auth/refresh",
+            "/api/auth/csrf-token", "/api/auth/reset-password",
+            "/api/auth/reset-password/confirm", "/api/auth/confirm",
+            "/api/v1/health", "/api/v2/health",
+            "/schema/openapi.yml", "/schema/swagger",
+        ]
 
     @property
     def cors_origins(self) -> list[str]:

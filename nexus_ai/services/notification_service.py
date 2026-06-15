@@ -14,6 +14,7 @@ from typing import Any, final
 import pendulum
 from structlog import get_logger
 
+from nexus_ai.core.broker import broker
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.async_base_service import AsyncBaseService
@@ -226,14 +227,13 @@ class AsyncNotificationService(AsyncBaseService):
         db_path: Path | str,
         config: AppConfig | None = None,
         channel_config: MultiChannelConfig | None = None,
-        event_emitter: Any | None = None,
+
     ) -> None:
         super().__init__(db_path)
         self._db_path = Path(db_path)
         self._config = config or AppConfig()
         self._channel_config = channel_config or MultiChannelConfig.from_config(self._config)
         self._briefing_generator: DailyBriefingGenerator | None = None
-        self._event_emitter = event_emitter
 
     def set_briefing_generator(self, generator: DailyBriefingGenerator) -> None:
         self._briefing_generator = generator
@@ -354,20 +354,19 @@ class AsyncNotificationService(AsyncBaseService):
             results,
         )
 
-        if self._event_emitter is not None:
-            try:
-                await self._event_emitter.emit_notification_sent(
-                    user_id=user_id,
-                    notification_type=notification_type,
-                    title=title,
-                    channels=list(results.keys()),
-                    metadata={
-                        "reference_type": reference_type,
-                        "reference_id": reference_id,
-                    },
-                )
-            except Exception as event_err:
-                logger.warning("[NOTIF] Failed to emit NotificationSent: %s", event_err)
+        try:
+            await broker.kick("event_emit_notification_sent",
+                user_id=user_id,
+                notification_type=notification_type,
+                title=title,
+                channels=list(results.keys()),
+                metadata={
+                    "reference_type": reference_type,
+                    "reference_id": reference_id,
+                },
+            )
+        except Exception as event_err:
+            logger.warning("[NOTIF] Failed to emit NotificationSent: %s", event_err)
 
         return results
 

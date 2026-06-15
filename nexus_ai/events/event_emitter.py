@@ -1,79 +1,71 @@
 """
-EventEmitter — warstwa integracji między DecisionEngine/TaxPipeline a Event Sourcing.
+[DEPRECATED] EventEmitter — zastąpiony przez events/taskiq_events.py + broker.kick().
 
-Łączy EventStore (append-only log) + JetStreamEventBus (pub/sub) w jeden
-punkt wejścia dla emisji eventów domenowych.
+SUPERMOC TASKIQ:
+  - Zamiast EventEmitter.emit_*() używaj broker.kick("event_emit_*", ...)
+  - Deterministic task_id przez broker._task_id_generator — JetStream deduplikacja
+  - Pełna kompatybilność: ta klasa deleguje do broker.kick() z tym samym API
 
-Każda emisja:
-  1. Tworzy event domenowy (np. DecisionMade, InvoiceSubmitted)
-  2. Appenduje do EventStore (niezawodny, lokalny log)
-  3. Publikuje przez JetStream (jeśli dostępny — graceful degradation)
-  4. Loguje do structlog
+Usage (NOWY SPOSÓB):
+    from nexus_ai.core.broker import broker
 
-Usage:
-    emitter = EventEmitter(event_store=store, jetstream=bus)
-
-    # Podczas decyzji:
-    await emitter.emit_decision_made(
-        invoice_id="inv-123",
-        decision="AUTO_POST",
-        trust_score=0.95,
-        ai_confidence=0.92,
-        alpha_vote="AUTO_POST",
-        beta_vote="AUTO_POST",
-        gamma_vote="SUGGEST",
-        decision_pattern="trusted_vendor_low_amount",
-        reasoning="Zaufany kontrahent, niska kwota — auto-post",
+    await broker.kick(
+        "event_emit_decision_made",
+        invoice_id=invoice_id,
+        decision=verdict.decision,
+        ...
     )
 
-    # Podczas zatwierdzenia:
-    await emitter.emit_invoice_approved(
-        invoice_id="inv-123",
-        approved_by="system",
-        trust_score=0.95,
-    )
+Usage (STARY SPOSÓB — deprecated):
+    emitter = get_event_emitter()
+    await emitter.emit_decision_made(invoice_id=..., decision=...)
 """
 
 from __future__ import annotations
 
+import warnings
 from typing import Any
 
-import pendulum
 from structlog import get_logger
 
-from nexus_ai.events import (
-    DecisionMade,
-    DecisionOverridden,
-    DomainEvent,
-    EventStore,
-    InvoiceApproved,
-    InvoiceBlocked,
-    InvoiceCreated,
-    InvoicePaid,
-    InvoiceRejected,
-    InvoiceSubmitted,
-    JetStreamEventBus,
-    NotificationSent,
-)
+from nexus_ai.core.broker import broker
 
 logger = get_logger("nexus.events.emitter")
 
+# ── Task name map ─────────────────────────────────────────────────────────
+# Mapuje metody EventEmitter na nazwy zadań w taskiq_events.py
+
+_TASK_MAP: dict[str, str] = {
+    "emit_decision_made": "event_emit_decision_made",
+    "emit_decision_overridden": "event_emit_decision_overridden",
+    "emit_invoice_created": "event_emit_invoice_created",
+    "emit_invoice_submitted": "event_emit_invoice_submitted",
+    "emit_invoice_approved": "event_emit_invoice_approved",
+    "emit_invoice_rejected": "event_emit_invoice_rejected",
+    "emit_invoice_blocked": "event_emit_invoice_blocked",
+    "emit_invoice_paid": "event_emit_invoice_paid",
+    "emit_notification_sent": "event_emit_notification_sent",
+}
+
 
 class EventEmitter:
-    """Emituje eventy domenowe przez EventStore + JetStream.
+    """[DEPRECATED] Deleguje emisję eventów do broker.kick().
 
-    Args:
-        event_store: Instancja EventStore (append-only log).
-        jetstream: Opcjonalna instancja JetStreamEventBus (pub/sub).
+    UWAGA: Ta klasa jest deprecated. Zamiast niej używaj bezpośrednio:
+        await broker.kick("event_emit_decision_made", ...)
+
+    Klasa zachowana dla kompatybilności wstecznej podczas migracji.
+    Wszystkie metody delegują do broker.kick() z deterministycznym task_id.
     """
 
-    def __init__(
-        self,
-        event_store: EventStore,
-        jetstream: JetStreamEventBus | None = None,
-    ) -> None:
-        self._store = event_store
-        self._jetstream = jetstream
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        warnings.warn(
+            "EventEmitter jest deprecated. Użyj broker.kick('event_emit_*', ...) zamiast EventEmitter.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        # Ignorujemy parametry — delegujemy do broker.kick
+        super().__init__()
 
     # ── Decision events ────────────────────────────────────────────────
 
@@ -90,30 +82,9 @@ class EventEmitter:
         reasoning: str = "",
         metadata: dict[str, Any] | None = None,
     ) -> str:
-        """Emituj DecisionMade — decyzja podjęta przez DecisionEngine.
-
-        Tworzy DecisionMade event, appenduje do EventStore i publikuje
-        przez JetStream (jeśli dostępny).
-
-        Args:
-            invoice_id: ID faktury.
-            decision: Decyzja (AUTO_POST | SUGGEST | ASK_USER | BLOCK).
-            trust_score: Wynik trust score (0.0-1.0).
-            ai_confidence: Pewność AI (0.0-1.0).
-            alpha_vote: Głos alfa (np. "AUTO_POST").
-            beta_vote: Głos beta.
-            gamma_vote: Głos gamma.
-            decision_pattern: Wzorzec decyzyjny.
-            reasoning: Uzasadnienie decyzji.
-            metadata: Dodatkowe metadane.
-
-        Returns:
-            event_id wyemitowanego eventu.
-        """
-        version = self._next_version("decision", invoice_id)
-        event = DecisionMade(
-            aggregate_id=f"decision:{invoice_id}",
-            version=version,
+        """[DEPRECATED] Deleguje do broker.kick("event_emit_decision_made", ...)."""
+        return await broker.kick(
+            "event_emit_decision_made",
             invoice_id=invoice_id,
             decision=decision,
             trust_score=trust_score,
@@ -123,9 +94,8 @@ class EventEmitter:
             gamma_vote=gamma_vote,
             decision_pattern=decision_pattern,
             reasoning=reasoning,
-            metadata=metadata or {},
+            metadata=metadata,
         )
-        return await self._emit("decision", f"decision:{invoice_id}", event)
 
     async def emit_decision_overridden(
         self,
@@ -135,29 +105,15 @@ class EventEmitter:
         user_id: str,
         metadata: dict[str, Any] | None = None,
     ) -> str:
-        """Emituj DecisionOverridden — decyzja nadpisana przez użytkownika.
-
-        Args:
-            invoice_id: ID faktury.
-            original_decision: Oryginalna decyzja systemu.
-            user_decision: Decyzja użytkownika.
-            user_id: ID użytkownika.
-            metadata: Dodatkowe metadane.
-
-        Returns:
-            event_id wyemitowanego eventu.
-        """
-        version = self._next_version("decision", invoice_id)
-        event = DecisionOverridden(
-            aggregate_id=f"decision:{invoice_id}",
-            version=version,
+        """[DEPRECATED] Deleguje do broker.kick("event_emit_decision_overridden", ...)."""
+        return await broker.kick(
+            "event_emit_decision_overridden",
             invoice_id=invoice_id,
             original_decision=original_decision,
             user_decision=user_decision,
             user_id=user_id,
-            metadata=metadata or {},
+            metadata=metadata,
         )
-        return await self._emit("decision", f"decision:{invoice_id}", event)
 
     # ── Invoice events ─────────────────────────────────────────────────
 
@@ -175,11 +131,10 @@ class EventEmitter:
         file_path: str = "",
         metadata: dict[str, Any] | None = None,
     ) -> str:
-        """Emituj InvoiceCreated — faktura utworzona po OCR."""
-        version = self._next_version("invoice", invoice_id)
-        event = InvoiceCreated(
-            aggregate_id=invoice_id,
-            version=version,
+        """[DEPRECATED] Deleguje do broker.kick("event_emit_invoice_created", ...)."""
+        return await broker.kick(
+            "event_emit_invoice_created",
+            invoice_id=invoice_id,
             number=number,
             contractor_nip=contractor_nip,
             contractor_name=contractor_name,
@@ -189,9 +144,8 @@ class EventEmitter:
             category=category,
             issue_date=issue_date,
             file_path=file_path,
-            metadata=metadata or {},
+            metadata=metadata,
         )
-        return await self._emit("invoice", invoice_id, event)
 
     async def emit_invoice_submitted(
         self,
@@ -200,16 +154,14 @@ class EventEmitter:
         contractor_nip: str = "",
         metadata: dict[str, Any] | None = None,
     ) -> str:
-        """Emituj InvoiceSubmitted — faktura przesłana do decyzji."""
-        version = self._next_version("invoice", invoice_id)
-        event = InvoiceSubmitted(
-            aggregate_id=invoice_id,
-            version=version,
+        """[DEPRECATED] Deleguje do broker.kick("event_emit_invoice_submitted", ...)."""
+        return await broker.kick(
+            "event_emit_invoice_submitted",
+            invoice_id=invoice_id,
             amount_gross=amount_gross,
             contractor_nip=contractor_nip,
-            metadata=metadata or {},
+            metadata=metadata,
         )
-        return await self._emit("invoice", invoice_id, event)
 
     async def emit_invoice_approved(
         self,
@@ -219,17 +171,15 @@ class EventEmitter:
         decision_level: str = "auto",
         metadata: dict[str, Any] | None = None,
     ) -> str:
-        """Emituj InvoiceApproved — faktura zatwierdzona."""
-        version = self._next_version("invoice", invoice_id)
-        event = InvoiceApproved(
-            aggregate_id=invoice_id,
-            version=version,
+        """[DEPRECATED] Deleguje do broker.kick("event_emit_invoice_approved", ...)."""
+        return await broker.kick(
+            "event_emit_invoice_approved",
+            invoice_id=invoice_id,
             approved_by=approved_by,
             trust_score=trust_score,
             decision_level=decision_level,
-            metadata=metadata or {},
+            metadata=metadata,
         )
-        return await self._emit("invoice", invoice_id, event)
 
     async def emit_invoice_rejected(
         self,
@@ -238,16 +188,14 @@ class EventEmitter:
         reason: str = "",
         metadata: dict[str, Any] | None = None,
     ) -> str:
-        """Emituj InvoiceRejected — faktura odrzucona."""
-        version = self._next_version("invoice", invoice_id)
-        event = InvoiceRejected(
-            aggregate_id=invoice_id,
-            version=version,
+        """[DEPRECATED] Deleguje do broker.kick("event_emit_invoice_rejected", ...)."""
+        return await broker.kick(
+            "event_emit_invoice_rejected",
+            invoice_id=invoice_id,
             rejected_by=rejected_by,
             reason=reason,
-            metadata=metadata or {},
+            metadata=metadata,
         )
-        return await self._emit("invoice", invoice_id, event)
 
     async def emit_invoice_blocked(
         self,
@@ -257,17 +205,15 @@ class EventEmitter:
         risk_score: float = 0.0,
         metadata: dict[str, Any] | None = None,
     ) -> str:
-        """Emituj InvoiceBlocked — faktura zablokowana przez RiskGuard."""
-        version = self._next_version("invoice", invoice_id)
-        event = InvoiceBlocked(
-            aggregate_id=invoice_id,
-            version=version,
+        """[DEPRECATED] Deleguje do broker.kick("event_emit_invoice_blocked", ...)."""
+        return await broker.kick(
+            "event_emit_invoice_blocked",
+            invoice_id=invoice_id,
             blocked_by=blocked_by,
             reason=reason,
             risk_score=risk_score,
-            metadata=metadata or {},
+            metadata=metadata,
         )
-        return await self._emit("invoice", invoice_id, event)
 
     async def emit_invoice_paid(
         self,
@@ -277,17 +223,18 @@ class EventEmitter:
         transaction_id: str = "",
         metadata: dict[str, Any] | None = None,
     ) -> str:
-        """Emituj InvoicePaid — faktura opłacona (przez TigerBeetle)."""
-        version = self._next_version("invoice", invoice_id)
-        event = InvoicePaid(
-            aggregate_id=invoice_id,
-            version=version,
+        """[DEPRECATED] Deleguje do broker.kick("event_emit_invoice_paid", ...)."""
+        if not paid_at:
+            import pendulum
+            paid_at = pendulum.now("UTC").isoformat()
+        return await broker.kick(
+            "event_emit_invoice_paid",
+            invoice_id=invoice_id,
             amount_gross=amount_gross,
-            paid_at=paid_at or pendulum.now("UTC").isoformat(),
+            paid_at=paid_at,
             transaction_id=transaction_id,
-            metadata=metadata or {},
+            metadata=metadata,
         )
-        return await self._emit("invoice", invoice_id, event)
 
     # ── Notification events ───────────────────────────────────────────
 
@@ -299,122 +246,36 @@ class EventEmitter:
         channels: list[str] | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> str:
-        """Emituj NotificationSent — powiadomienie wysłane do użytkownika.
-
-        Args:
-            user_id: ID użytkownika.
-            notification_type: Typ powiadomienia (info, warning, error, daily_briefing, decision).
-            title: Tytuł powiadomienia.
-            channels: Lista kanałów przez które wysłano.
-            metadata: Dodatkowe metadane.
-
-        Returns:
-            event_id wyemitowanego eventu.
-        """
-        aggregate_id = user_id
-        version = self._next_version("notification", aggregate_id)
-        event = NotificationSent(
-            aggregate_id=aggregate_id,
-            version=version,
+        """[DEPRECATED] Deleguje do broker.kick("event_emit_notification_sent", ...)."""
+        return await broker.kick(
+            "event_emit_notification_sent",
             user_id=user_id,
             notification_type=notification_type,
             title=title,
             channels=channels or [],
-            metadata=metadata or {},
-        )
-        return await self._emit("notification", aggregate_id, event)
-
-    # ── Internal methods ───────────────────────────────────────────────
-
-    def _next_version(self, aggregate_type: str, aggregate_id: str) -> int:
-        """Pobierz następną wersję dla agregatu."""
-        return (
-            self._store.get_version(
-                aggregate_type=aggregate_type,
-                aggregate_id=aggregate_id,
-            )
-            + 1
+            metadata=metadata,
         )
 
-    async def _emit(
-        self,
-        aggregate_type: str,
-        aggregate_id: str,
-        event: DomainEvent,
-    ) -> str:
-        """Wewnętrzna metoda: append + publish."""
-        try:
-            # 1. Append do EventStore (append-only log)
-            self._store.append_events(
-                aggregate_type=aggregate_type,
-                aggregate_id=aggregate_id,
-                events=[event],
-            )
-            logger.info(
-                "[EVENT-EMITTER] Appended %s:%s version=%d to EventStore",
-                event.event_type,
-                event.aggregate_id,
-                event.version,
-            )
 
-            # 2. Publikuj przez JetStream (jeśli dostępny)
-            if self._jetstream is not None:
-                published = await self._jetstream.publish(event)
-                if not published:
-                    logger.warning(
-                        "[EVENT-EMITTER] JetStream publish failed for %s:%s "
-                        "(event stored in EventStore, will be retried)",
-                        event.event_type,
-                        event.aggregate_id,
-                    )
-            else:
-                logger.debug(
-                    "[EVENT-EMITTER] No JetStream bus — event %s:%s stored locally",
-                    event.event_type,
-                    event.aggregate_id,
-                )
-
-            return event.event_id
-
-        except Exception as exc:
-            logger.error(
-                "[EVENT-EMITTER] Failed to emit %s:%s: %s",
-                event.event_type,
-                event.aggregate_id,
-                exc,
-            )
-            raise
-
-
-# ── Global singleton ──────────────────────────────────────────────────────
+# ── Global singleton (deprecated) ─────────────────────────────────────────
 
 _default_emitter: EventEmitter | None = None
 
 
 def get_event_emitter(
-    event_store: EventStore | None = None,
-    jetstream: JetStreamEventBus | None = None,
+    event_store: Any = None,
+    jetstream: Any = None,
 ) -> EventEmitter:
-    """Zwraca globalną instancję EventEmitter (singleton).
+    """[DEPRECATED] Zwraca globalną instancję EventEmitter (singleton).
 
-    Args:
-        event_store: Instancja EventStore. Wymagana przy pierwszym wywołaniu.
-        jetstream: Opcjonalna instancja JetStreamEventBus.
+    UWAGA: Ta funkcja jest deprecated. Użyj bezpośrednio:
+        await broker.kick("event_emit_*", ...)
 
-    Returns:
-        Globalna instancja EventEmitter.
+    Zwraca wspóldzieloną instancję EventEmitter która deleguje do broker.kick().
+    Parametry ``event_store`` i ``jetstream`` są ignorowane —
+    EventEmitter nie zarządza już bezpośrednio EventStore/JetStream.
     """
     global _default_emitter
     if _default_emitter is None:
-        if event_store is None:
-            from nexus_ai.core.config import AppConfig
-
-            config = AppConfig.from_toml()
-            from nexus_ai.events.event_store import EventStore
-
-            event_store = EventStore(db_path=str(config.base_dir / "app_data" / "events.db"))
-        _default_emitter = EventEmitter(
-            event_store=event_store,
-            jetstream=jetstream,
-        )
+        _default_emitter = EventEmitter()
     return _default_emitter

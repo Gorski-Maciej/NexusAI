@@ -24,16 +24,29 @@ class StorageProvider(ABC):
 
 
 class LocalStorageProvider(StorageProvider):
-    """Provider oparty o fsspec z nieblokującym I/O realizowanym w wątku roboczym."""
+    """Provider oparty o fsspec z nieblokującym I/O w wątku roboczym.
+
+    SUPERMOC fsspec: Używa konfigurowalnego protokołu ("file", "s3", "sftp", "memory")
+    z config TOML — zmiana backendu bez zmiany kodu.
+    """
 
     def __init__(self, config: AppConfig):
-        self.base_path = config.base_dir / "app_data" / "uploads"
-        self.fs = fsspec.filesystem("file")
-        self.fs.makedirs(str(self.base_path), exist_ok=True)
+        self._protocol = config.storage_protocol
+        self._base_path = config.base_dir / config.storage_root
+
+        fs_kwargs: dict = {}
+        if config.storage_auto_mkdir:
+            fs_kwargs["auto_mkdir"] = True
+
+        self.fs = fsspec.filesystem(self._protocol, **fs_kwargs)
+        if self._protocol == "file":
+            self.fs.makedirs(str(self._base_path), exist_ok=True)
 
     def _resolve_path(self, filename: str) -> str:
         safe_name = Path(filename).name
-        return str(self.base_path / safe_name)
+        if self._protocol == "file":
+            return str(self._base_path / safe_name)
+        return f"{self._protocol}://{self._base_path}/{safe_name}"
 
     async def save_file(self, filename: str, content: bytes) -> str:
         file_path = self._resolve_path(filename)
@@ -47,7 +60,7 @@ class LocalStorageProvider(StorageProvider):
 
     async def get_file(self, file_path: str) -> bytes:
         def _read() -> bytes:
-            with self.fs.open(file_path, "rb") as handle:
+            with fsspec.open(file_path, "rb") as handle:
                 return handle.read()
 
         return await to_thread.run_sync(_read)

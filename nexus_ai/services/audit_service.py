@@ -8,9 +8,9 @@ from sqlalchemy import event
 from sqlalchemy.orm import Session
 from structlog import get_logger
 
+from nexus_ai.core.broker import broker
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.models import AuditLog, Invoice
-from nexus_ai.events import DomainEvent, EventEmitter
 
 logger = get_logger("nexus.services.audit_service")
 
@@ -170,43 +170,37 @@ class AuditService:
             )
             session.add(entry)
 
-            # Fire-and-forget emisja eventu audytowego
-            if event_emitter is not None:
-                AuditService._try_emit_event(event_emitter, target_id, action, user_id, len(changes))
+            # Fire-and-forget emisja eventu audytowego przez Taskiq
+            AuditService._try_emit_event(target_id, action, user_id, len(changes))
 
     @staticmethod
     def _try_emit_event(
-        emitter: EventEmitter,
         target_id: str,
         action: str,
         user_id: str,
         change_count: int,
     ) -> None:
-        """Próbuje wyemitować event audytowy fire-and-forget.
+        """Próbuje wyemitować event audytowy fire-and-forget przez Taskiq.
 
-        Używa ``asyncio.get_running_loop().call_soon()`` jeśli event loop
+        Używa ``anyio.ensure_backend().create_task()`` jeśli event loop
         jest dostępny — w przeciwnym razie cicho pomija emisję.
-        Wyjątki z ``emit()`` są łapane i logowane jako warning.
         """
-        event = DomainEvent(
-            event_type="audit.change_logged",
-            aggregate_id=target_id,
-            version=1,
-            data={
-                "action": action,
-                "user_id": user_id,
-                "change_count": change_count,
-            },
-        )
-
-        async def _safe_emit() -> None:
+        async def _safe_kick() -> None:
             try:
-                await emitter.emit(event)
+                await broker.kick("event_emit_domain_event",
+                    event_type="audit.change_logged",
+                    aggregate_id=target_id,
+                    data={
+                        "action": action,
+                        "user_id": user_id,
+                        "change_count": change_count,
+                    },
+                )
             except Exception as exc:
-                logger.warning("[AUDIT] Event emit failed: %s", exc)
+                logger.warning("[AUDIT] Event kick failed: %s", exc)
 
         try:
-            anyio.ensure_backend().create_task(_safe_emit())
+            anyio.ensure_backend().create_task(_safe_kick())
         except RuntimeError:
             # Brak running event loop — ciche pominięcie emisji
             logger.debug("[AUDIT] No running event loop, skipping audit event emission")

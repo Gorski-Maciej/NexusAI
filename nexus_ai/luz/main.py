@@ -132,7 +132,16 @@ class NexusOrchestrator:
     async def start_worker(self):
         """Uruchamia proces Taskiq worker (OCR/AI) z mimalloc."""
         logger.info("Uruchamianie Workera AI...")
-        cmd = [sys.executable, "-m", "taskiq", "worker", "worker:broker", "--fs-startup"]
+        cmd = [
+    sys.executable, "-m", "taskiq", "worker",
+    "worker:broker",
+    "--fs-startup",
+    "--workers", os.getenv("NEXUS_WORKER_PROCESSES", "2"),
+    "--max-async-tasks", os.getenv("NEXUS_WORKER_MAX_ASYNC", "10"),
+    "--max-prefetch", os.getenv("NEXUS_WORKER_PREFETCH", "3"),
+    "--ack-type", "when_executed",
+    "--log-level", os.getenv("NEXUS_LOG_LEVEL", "info"),
+]
         self.worker_process = await anyio.Process(
             cmd, env=self._subprocess_env
         ).__aenter__()

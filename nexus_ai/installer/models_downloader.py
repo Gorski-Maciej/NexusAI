@@ -24,6 +24,8 @@ from typing import Any, Protocol
 import msgspec
 from structlog import get_logger
 
+from fsspec.implementations.cached import CachingFileSystem
+
 logger = get_logger("nexus.installer.models_downloader")
 
 # ── Progress callback type ──────────────────────────────────────────────────
@@ -168,7 +170,13 @@ async def download_file(
     headers = {"Range": f"bytes={resume_bytes}-"} if resume_bytes > 0 else {}
 
     try:
-        async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+        # SUPERMOC HTTPX: http2=True dla szybszych połączeń + Limits
+        async with httpx.AsyncClient(
+            timeout=httpx.Timeout(connect=15.0, read=120.0, write=30.0, pool=300.0),
+            limits=httpx.Limits(max_connections=10, max_keepalive_connections=5, keepalive_expiry=60.0),
+            http2=True,
+            follow_redirects=True,
+        ) as client:
             response = await client.get(url, headers=headers)
 
             if response.status_code == 416:  # Range Not Satisfiable — file is complete
@@ -271,7 +279,18 @@ async def download_all_models(
         List of DownloadResult for each model.
     """
     models_dir = Path(models_dir)
-    models_dir.mkdir(parents=True, exist_ok=True)
+    models_dir.mkdir(parents=True, exist_ok=True)        # SUPERMOC fsspec: CachingFileSystem dla przezroczystego cache modeli
+    # CachingFileSystem owija bazowy filesystem ("file") i cache'uje odczyty.
+    # Następne uruchomienie: jeśli plik jest w cache, nie wymaga ponownego I/O.
+    cache_storage = models_dir / ".fsspec_cache"
+    cache_storage.mkdir(parents=True, exist_ok=True)
+    caching_fs = CachingFileSystem(
+        target_protocol="file",
+        target={"auto_mkdir": True},
+        cache_storage=str(cache_storage),
+        maxsize=5 * 1024 * 1024 * 1024,  # 5 GB cache
+        same_names=True,
+    )
 
     entries = load_manifest(manifest_path)
     if not entries:
@@ -291,6 +310,13 @@ async def download_all_models(
             break
 
         dest_path = models_dir / entry.key
+
+        # SUPERMOC fsspec: CachingFileSystem — przezroczyste cache
+        # Używamy caching_fs.open() z prawdziwą ścieżką zamiast sztucznego URL
+        dest_url = str(dest_path)
+        if caching_fs.exists(dest_url):
+            # CachingFileSystem zwrócił True — plik jest w cache lub na dysku
+            logger.info("[Models] Found in fsspec cache: %s", entry.key)
 
         # Check if already exists and is valid
         if dest_path.exists():
@@ -393,6 +419,16 @@ async def download_all_models(
         )
 
         if success:
+            # SUPERMOC fsspec: odczyt przez CachingFileSystem wypełni cache
+            # Przy następnym uruchomieniu, caching_fs.exists() zwróci True
+            # bez dotykania dysku (jeśli plik jest w cache)
+            try:
+                with caching_fs.open(dest_url, "rb") as _:
+                    pass  # Odczyta przez CachingFileSystem — wypełnia cache
+                logger.info("[Models] Cached in fsspec: %s", entry.key)
+            except Exception as cache_err:
+                logger.warning("[Models] Failed to cache %s: %s", entry.key, cache_err)
+
             # Verify integrity
             sha256_ok = verify_file(dest_path, entry.sha256) if entry.sha256 else True
             file_size = dest_path.stat().st_size

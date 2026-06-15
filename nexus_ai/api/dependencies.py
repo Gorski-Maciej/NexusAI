@@ -65,11 +65,4 @@ def provide_shared_image_buffer(request: Request) -> SharedImageBuffer:
     return request.app.state.shared_image_buffer
 
 
-def provide_event_emitter(request: Request):
-    """Provide the EventEmitter singleton from application state.
 
-    Wstrzykiwany przez DI do kontrolerów które potrzebują emisji
-    eventów domenowych (upload, triage, autopilot).
-    EventEmitter jest inicjalizowany podczas ``on_startup``.
-    """
-    return request.app.state.event_emitter

@@ -282,16 +282,12 @@ async def download_binary(
         )
 
     try:
-        # Choose client: injected mock vs real httpx client
-        if http_client is not None:
-            client = http_client
-            own_client = False
-        else:
-            client = await httpx.AsyncClient(timeout=120.0, follow_redirects=True).__aenter__()
-            own_client = True
+        # SUPERMOC HTTPX: async with + http2=True + Limits
+        _SCOPE = locals()  # For streaming
 
-        try:
-            async with client.stream("GET", url) as response:
+        async def _do_download(_client: httpx.AsyncClient) -> int | None:
+            """Download file and return total_size on success, None on failure."""
+            async with _client.stream("GET", url) as response:
                 if response.status_code != 200:
                     logger.error(
                         "Failed to download %s: HTTP %d from %s",
@@ -310,7 +306,7 @@ async def download_binary(
                         )
                     return None
 
-                total_size = int(response.headers.get("content-length", 0))
+                total = int(response.headers.get("content-length", 0))
                 downloaded = 0
                 import time as _time4
 
@@ -329,15 +325,30 @@ async def download_binary(
                             progress_cb(
                                 current_binary=binary_def.display_name,
                                 downloaded_bytes=downloaded,
-                                total_bytes=total_size,
+                                total_bytes=total,
                                 speed_bps=speed,
                                 overall_progress=0.3,
                                 status="downloading",
                             )
-        finally:
-            # Only close the client if we created it
-            if own_client:
-                await client.__aexit__(None, None, None)
+            return total  # return total_size for extraction progress
+
+        if http_client is not None:
+            # Injected mock client - użyj bezpośrednio
+            total_size = await _do_download(http_client)
+        else:
+            # SUPERMOC HTTPX: własny klient z HTTP/2, Limits, Timeout
+            async with httpx.AsyncClient(
+                timeout=httpx.Timeout(connect=15.0, read=120.0, write=30.0, pool=300.0),
+                limits=httpx.Limits(max_connections=10, max_keepalive_connections=5, keepalive_expiry=60.0),
+                http2=True,
+                follow_redirects=True,
+                trust_env=True,
+            ) as _client:
+                total_size = await _do_download(_client)
+
+        if total_size is None:
+            return None
+        # total_size is now available in outer scope for extraction progress
 
         # Extract
         if progress_cb:

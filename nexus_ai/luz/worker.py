@@ -19,6 +19,7 @@ from taskiq import TaskiqEvents
 
 import nexus_ai.core.tasks  # noqa: F401  # required to register @broker.task handlers
 from nexus_ai.core.broker import broker
+from nexus_ai.core.cache.http_client import warm_http_cache
 from nexus_ai.core.config import AppConfig
 from nexus_ai.services.vision.agent import VisionAgent
 
@@ -135,6 +136,13 @@ async def on_worker_startup(state) -> None:
     state.guard = WorkerGuard(ram_limit_gb=8.0)
     state.vision_agent = VisionAgent()
     state.heartbeat_task = anyio.ensure_backend().create_task(state.guard.heartbeat())
+
+    # SUPERMOC HISHEL: Warm HTTP cache przy starcie workera
+    try:
+        await warm_http_cache()
+        logger.info("[HTTP-CACHE-WARM] Cache warmed at worker startup")
+    except Exception as exc:
+        logger.debug("[HTTP-CACHE-WARM] Cache warming skipped (non-fatal): %s", exc)
 
     # Freeze GC po załadowaniu modeli — Python 3.13t (free-threaded)
     # Zamraża obiekty nienaruszalne, redukując overhead GC o ~30%

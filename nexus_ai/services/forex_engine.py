@@ -14,6 +14,7 @@ from msgspec import Struct
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any, final
 
+import httpx
 import pendulum
 import stamina
 
@@ -243,13 +244,15 @@ class ForexEngine:
             )
 
             try:
-                with stamina.retry(
-                    on=(Exception,),
-                    attempts=2,
-                    timeout=10.0,
+                for attempt in stamina.retry_context(
+                    on=(httpx.HTTPError, httpx.ConnectError, httpx.TimeoutException),
+                    attempts=3,
+                    timeout=15.0,
+                    circuit_breaker=True,
                 ):
-                    # SUPERMOC: DuckDB czyta API bezpośrednio przez httpfs
-                    rows = self.duckdb.execute(
+                    with attempt:
+                        # SUPERMOC: DuckDB czyta API bezpośrednio przez httpfs
+                        rows = self.duckdb.execute(
                         """SELECT CAST(
                             json_extract_string(
                                 (SELECT content FROM read_text(?)),

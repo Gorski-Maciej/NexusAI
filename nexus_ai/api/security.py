@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import os
 import secrets
+from functools import lru_cache
 from msgspec import Struct
 
 import pendulum
 from litestar.connection import ASGIConnection
-from litestar.security.jwt import JWTAuth, Token
+from litestar.security.jwt import JWTAuth, JWTCookieAuth, Token
 from sqlalchemy import text
 from structlog import get_logger
 
@@ -134,23 +135,53 @@ class User(Struct):
     tenant_id: str | None = None
 
 
+@lru_cache(maxsize=1)
+def _get_jwt_exclude() -> list[str]:
+    """Pobiera listę wykluczeń JWT z configu TOML (SUPERMOC Litestar).
+
+    Sekcja [security] w config/{env}.toml → AppConfig.effective_jwt_exclude.
+    Wynik cache'owany przez lru_cache (jedno parsowanie TOML na całe życie procesu).
+    Fallback: domyślna lista jeśli config nie jest dostępny.
+    """
+    try:
+        from nexus_ai.core.config import AppConfig
+        config = AppConfig.from_toml()
+        exclude = config.effective_jwt_exclude
+        if exclude:
+            return exclude
+    except Exception:
+        pass
+    return [
+        "/api/auth/login", "/api/auth/register", "/api/auth/refresh",
+        "/api/auth/csrf-token", "/api/auth/reset-password",
+        "/api/auth/reset-password/confirm", "/api/auth/confirm",
+        "/api/v1/health", "/api/v2/health",
+        "/schema/openapi.yml", "/schema/swagger",
+    ]
+
+
+# ── SUPERMOC Litestar: Dual Auth (JWTAuth dla API + JWTCookieAuth dla Web) ──
+# JWTAuth: Bearer token w nagłówku Authorization — dla API/CLI/mobilnych
+# JWTCookieAuth: Token w secure cookie — dla web (Flet UI, przeglądarki)
+# Oba używają tego samego retrieve_user_handler i token_secret.
+
 jwt_auth = JWTAuth[User](
     retrieve_user_handler=retrieve_user_handler,
     token_secret=SECRET_KEY,
     accepted_issuers=[JWT_ISSUER],
     accepted_audiences=[JWT_AUDIENCE],
     default_token_expiration=pendulum.duration(seconds=JWT_EXPIRATION_SECONDS),
-    exclude=[
-        "/api/auth/login",
-        "/api/auth/register",
-        "/api/auth/refresh",
-        "/api/auth/csrf-token",
-        "/api/auth/reset-password",
-        "/api/auth/reset-password/confirm",
-        "/api/auth/confirm",  # Prefix match for /api/auth/confirm/{token}
-        "/api/v1/health",
-        "/api/v2/health",
-        "/schema/openapi.yml",
-        "/schema/swagger",
-    ],
+    exclude=_get_jwt_exclude(),
+)
+
+# JWTCookieAuth dla klientów webowych (Flet UI, przeglądarki)
+# Token jest przechowywany w secure, httponly cookie zamiast nagłówka Authorization.
+# Automatycznie dodaje OAuth2 security scheme do OpenAPI/Swagger.
+jwt_cookie_auth = JWTCookieAuth[User](
+    retrieve_user_handler=retrieve_user_handler,
+    token_secret=SECRET_KEY,
+    accepted_issuers=[JWT_ISSUER],
+    accepted_audiences=[JWT_AUDIENCE],
+    default_token_expiration=pendulum.duration(seconds=JWT_EXPIRATION_SECONDS),
+    exclude=_get_jwt_exclude(),
 )

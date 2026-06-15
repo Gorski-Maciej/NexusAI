@@ -115,7 +115,6 @@ class TriageControllerV2(Controller):
             message = "Invoice was voided/rejected from triage"
 
         # ── Emit DecisionOverridden event (fire-and-forget via BackgroundTask) ──
-        event_emitter = getattr(request.app.state, "event_emitter", None)
         user_decision = "CONFIRM_POST" if data.action == "confirm_post" else "VOID"
 
         return LitestarResponse(
@@ -124,7 +123,6 @@ class TriageControllerV2(Controller):
             ),
             background=BackgroundTask(
                 emit_decision_overridden_bg,
-                event_emitter=event_emitter,
                 invoice_id=invoice_id,
                 original_decision="SUGGEST",
                 user_decision=user_decision,
@@ -133,5 +131,5 @@ class TriageControllerV2(Controller):
                     "source": "triage",
                     "action": data.action,
                 },
-            ) if event_emitter else None,
+            ),
         )

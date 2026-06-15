@@ -109,8 +109,11 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     "opentelemetry-api",
     "opentelemetry-sdk",
     "opentelemetry-exporter-prometheus",
-    # Filesystem
-    "fsspec", "fsspec.implementations", "fsspec.implementations.local",
+    # Filesystem — SUPERMOC fsspec: MemoryFileSystem dla testów bez I/O
+    # fsspec jest realną zależnością, mockujemy tylko implementacje
+    "fsspec.implementations.memory",
+    "fsspec.implementations.cached",
+    "fsspec.implementations.zip",
     # Imaging
     "PIL", "PIL.Image",
     "PIL._imaging", "PIL.ImageFilter", "PIL.ImageEnhance",

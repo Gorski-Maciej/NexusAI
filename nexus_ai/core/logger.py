@@ -225,7 +225,41 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
     # Przekieruj standardowe logging do Loguru
     _redirect_standard_logging()
 
+    # ── SUPERMOC: stamina retry + circuit breaker logging ────────────────────
+    _setup_stamina_logging()
+
     _INITIALIZED = True
+
+
+def _setup_stamina_logging() -> None:
+    """SUPERMOC: Konfiguruje logging dla stamina retry + circuit breaker.
+
+    stamina używa standardowego modułu logging. Przekierowujemy jego logi
+    przez Loguru/structlog, aby każda retry i każde otwarcie Circuit Breakera
+    było widoczne w ustrukturyzowanych logach z kontekstem.
+
+    Poziomy logowania stamina:
+      - DEBUG: każda próba retry
+      - WARNING: retry z błędem
+      - ERROR: circuit breaker opened/closed
+    """
+    stamina_logger = logging.getLogger("stamina")
+    stamina_logger.setLevel(logging.DEBUG)
+
+    class _StaminaInterceptHandler(logging.Handler):
+        def emit(self, record: logging.LogRecord) -> None:
+            try:
+                level = logger.level(record.levelname).name
+            except ValueError:
+                level = record.levelno
+            logger.opt(depth=6, exception=record.exc_info).log(
+                level, f"[STAMINA] {record.getMessage()}",
+            )
+
+    stamina_logger.handlers.clear()
+    stamina_logger.addHandler(_StaminaInterceptHandler())
+    stamina_logger.propagate = False
+    logger.debug("[STAMINA] Retry logger configured — stamina events visible in structlog")
 
 
 def _redirect_standard_logging() -> None:

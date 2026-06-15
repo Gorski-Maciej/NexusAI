@@ -1,11 +1,18 @@
-"""Asynchronous workflow tasks powered by Taskiq + NATS JetStream."""
+"""Asynchronous workflow tasks powered by Taskiq + NATS JetStream.
+
+SUPERMOCE TASKIQ:
+  - TaskiqDepends dla DI: config, db_session, duckdb_manager
+  - Labels na wszystkich zadaniach (service, operation, criticality)
+  - Timeout na dekoratorze zamiast anyio.fail_after
+  - Context.requeue() dla watchdog (zamiast ręcznego publish do JetStream)
+  - with_task_id() dla deterministycznych ID zadań
+"""
 
 from __future__ import annotations
 
 import os
 import uuid
 import threading
-
 import anyio
 from msgspec import Struct
 from pathlib import Path
@@ -16,9 +23,8 @@ import pendulum
 import psutil
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from taskiq import TaskiqEvents
-# SUPERMOC NATS: Broker importowany z broker.py zamiast tworzenia osobnego
-# from taskiq_nats import PullBasedJetStreamBroker  # nieużywane — używamy brokera z broker.py
+from taskiq import Context as TaskiqContext, TaskiqDepends, TaskiqEvents, Kicker
+from nexus_ai.core.di import get_db_session, get_config, get_engine, get_duckdb_manager
 
 from nexus_ai.core.backup import BackupManager
 from nexus_ai.core.cache import get_cache
@@ -27,20 +33,7 @@ from nexus_ai.core.logger import get_logger
 
 
 class TimedModelCache:
-    """Cache instancji modeli ML z TTL, thread-safe dla free-threaded Python.
-
-    Model objects (DocumentProcessor, VisionAgent) nie są msgspec-serializowalne,
-    więc przechowujemy je w osobnym słowniku RAM. ``threading.Lock`` zapewnia
-    bezpieczny dostęp z wielu wątków w Python 3.13t (free-threaded).
-
-    NexusCache zarządza TTL:
-    przechowuje timestamp ostatniego odświeżenia dla każdego klucza i odpowiada
-    za politykę wygaśnięcia — gdy nexus_cache.clear() zostanie wywołany,
-    modele również zostaną unieważnione pośrednio przez brak wpisów TTL.
-
-    Gdy w przyszłości modele staną się msgspec-serializowalne, L2 (SQLite)
-    włączy się automatycznie bez zmian w tym kodzie.
-    """
+    """Cache instancji modeli ML z TTL, thread-safe dla free-threaded Python."""
 
     def __init__(self, ttl_seconds: int = 600):
         self._nexus = get_cache(default_ttl=ttl_seconds)
@@ -52,20 +45,16 @@ class TimedModelCache:
         now = anyio.current_time()
         ttl_key = f"_model_cache_ttl:{key}"
 
-        # Sprawdź NexusCache — czy TTL jeszcze ważny?
         ttl_entry = self._nexus.get_sync(ttl_key)
         if ttl_entry is not None:
             with self._lock:
                 if key in self._models:
                     stored_at: float = ttl_entry
                     if now - stored_at < self._ttl:
-                        # Odśwież timestamp w NexusCache
                         self._nexus.set_sync(ttl_key, now, ttl=self._ttl)
                         return self._models[key]
-                    # Wygasło — usuń model
                     self._models.pop(key, None)
 
-        # Miss lub wygasło — załaduj świeży model
         model = await loader()
         with self._lock:
             self._models[key] = model
@@ -73,12 +62,10 @@ class TimedModelCache:
         return model
 
     def evict_expired(self) -> None:
-        """Usuń wszystkie modele — thread-safe."""
         with self._lock:
             self._models.clear()
 
     def release(self, key: str) -> None:
-        """Usuń konkretny model i jego wpis TTL z cache'u — thread-safe."""
         with self._lock:
             self._models.pop(key, None)
         self._nexus._ram_cache.pop(f"_model_cache_ttl:{key}", None)
@@ -86,22 +73,12 @@ class TimedModelCache:
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.analytics import DuckDBManager
-from nexus_ai.db.database import SessionLocal, create_oltp_engine, create_session_factory
 from nexus_ai.db.models import ActiveLearningPattern, Invoice, InvoiceStatus, OutboxEvent, OutboxStatus
 from nexus_ai.pipeline.ocr import DocumentProcessor, ReviewStatus
 from nexus_ai.services.dunning_engine import DunningEngine
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 from nexus_ai.services.vision.agent import VisionAgent
 from nexus_ai.services.fixed_assets import FixedAssetsService
-
-
-# ── SQLCipher engine helper ────────────────────────────────────────────────
-def _make_engine(config: AppConfig | None = None) -> Any:
-    """Utwórz SQLAlchemy engine z jawnym kluczem SQLCipher."""
-    if config is None:
-        config = AppConfig()
-    sqlcipher_key = os.getenv(config.sqlcipher_key_env, "").strip()
-    return create_oltp_engine(config, sqlcipher_key=sqlcipher_key or None)
 
 
 logger = get_logger()
@@ -255,117 +232,126 @@ async def _startup(_state: Any) -> None:
     pin_worker_cpu_affinity(reserve_core0=True)
 
 
-@broker.task(task_name="process_invoice_task")
-async def process_invoice_task() -> dict[str, str]:
-    """Consume pending outbox event and process invoice OCR + workflow update."""
-    config = AppConfig(base_dir=Path.cwd())
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
-
-    with session_factory() as session:
-        event = _pick_pending_outbox(session)
-        if event is None:
-            return {"result": "NO_EVENTS"}
-
-        machine = InvoiceProcessingMachine()
-        machine.start()
-        event.status = OutboxStatus.PROCESSED
-        payload = msgspec.json.decode(event.payload.encode("utf-8"), type=InvoiceEventPayload)
-        _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
-
-        try:
-            async with OCR_INFERENCE_LIMITER:
-                processor = await _MODEL_CACHE.get("document_processor", _load_document_processor)
-                vision_agent = await _MODEL_CACHE.get("vision_agent", _load_vision_agent)
-                with anyio.fail_after(OCR_TASK_TIMEOUT_SEC):
-                    processed = await anyio.to_thread.run_sync(
-                        processor.process, Path(payload.image_path)
-                    )
-                with anyio.fail_after(OCR_TASK_TIMEOUT_SEC):
-                    vision = await vision_agent.analyze(
-                        Path(payload.image_path), processed.primary.raw_text
-                    )
-            vision_payload = {
-                "vendor_nip": vision.vendor_nip,
-                "total_gross": vision.total_gross,
-                "vat_rate": vision.vat_rate,
-                "payment_status": vision.payment_status,
-                "visual_anomalies_detected": vision.visual_anomalies_detected,
-                "handwritten_notes_summary": vision.handwritten_notes_summary,
-                "source": vision.source,
-            }
-            enriched_text = f"{processed.primary.raw_text}\n[vision]{msgspec_dumps(vision_payload, ensure_ascii=False)}"
-            vector = _simple_features(enriched_text)
-            store = _get_vector_store()
-            conn = store._get_conn()
-            conn.execute(
-                """INSERT INTO invoice_vectors
-                   (id, invoice_id, contractor_id, vector, checksum, created_at, is_preferred)
-                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                (
-                    uuid.uuid4().hex,
-                    payload.invoice_id,
-                    payload.contractor_id,
-                    store._vector_to_blob(vector),
-                    processed.primary.checksum,
-                    pendulum.now("UTC").isoformat(),
-                    0,
-                ),
-            )
-            conn.commit()
-            logger.info(
-                "VisionAgent(%s) processed invoice_id=%s anomalies=%s",
-                vision.source,
-                payload.invoice_id,
-                vision.visual_anomalies_detected,
-            )
-
-            if processed.status == ReviewStatus.MANUAL_REVIEW:
-                machine.request_review()
-            else:
-                machine.approve()
-            _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
-
-        except TimeoutError as exc:
-            machine.fail()
-            event.status = OutboxStatus.FAILED
-            event.payload = msgspec_dumps(
-                {"error": f"OCR_TIMEOUT:{exc}", "original_payload": event.payload}
-            )
-            _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
-
-        except Exception as exc:
-            machine.fail()
-            event.status = OutboxStatus.FAILED
-            event.payload = msgspec_dumps({"error": str(exc), "original_payload": event.payload})
-            _update_invoice_status(session, payload.invoice_id, machine.current_state.id)
-
-        session.commit()
-        engine.dispose()
-        return {"result": "OK"}
-
-
-@broker.task(task_name="store_active_learning_feedback")
-async def store_active_learning_feedback(
-    contractor_id: str, corrected_payload: dict[str, Any]
+@broker.task(
+    task_name="process_invoice_task",
+    labels={"service": "core", "operation": "invoice", "criticality": "high"},
+    timeout=300.0,
+)
+async def process_invoice_task(
+    config: AppConfig = TaskiqDepends(get_config),
+    db: Session = TaskiqDepends(get_db_session),
 ) -> dict[str, str]:
-    """Persist user corrections for active learning and preferred retrieval."""
-    config = AppConfig(base_dir=Path.cwd())
-    engine = _make_engine(config)
-    session_factory = create_session_factory(engine)
+    """Consume pending outbox event and process invoice OCR + workflow update.
+
+    SUPERMOC: TaskiqDepends wstrzykuje config i db — zero boilerplate.
+    Engine jest cache'owany przez DI — nie ma create/dispose per task.
+    """
+    event = _pick_pending_outbox(db)
+    if event is None:
+        return {"result": "NO_EVENTS"}
+
+    machine = InvoiceProcessingMachine()
+    machine.start()
+    event.status = OutboxStatus.PROCESSED
+    payload = msgspec.json.decode(event.payload.encode("utf-8"), type=InvoiceEventPayload)
+    _update_invoice_status(db, payload.invoice_id, machine.current_state.id)
+
+    try:
+        async with OCR_INFERENCE_LIMITER:
+            processor = await _MODEL_CACHE.get("document_processor", _load_document_processor)
+            vision_agent = await _MODEL_CACHE.get("vision_agent", _load_vision_agent)
+            # SUPERMOC: Timeout jest ustawiony na dekoratorze @broker.task(timeout=300.0)
+            # anyio.fail_after jest redundantny — taskiq sam anuluje zadanie po timeout
+            processed = await anyio.to_thread.run_sync(
+                processor.process, Path(payload.image_path)
+            )
+            vision = await vision_agent.analyze(
+                Path(payload.image_path), processed.primary.raw_text
+            )
+        vision_payload = {
+            "vendor_nip": vision.vendor_nip,
+            "total_gross": vision.total_gross,
+            "vat_rate": vision.vat_rate,
+            "payment_status": vision.payment_status,
+            "visual_anomalies_detected": vision.visual_anomalies_detected,
+            "handwritten_notes_summary": vision.handwritten_notes_summary,
+            "source": vision.source,
+        }
+        enriched_text = f"{processed.primary.raw_text}\n[vision]{msgspec_dumps(vision_payload, ensure_ascii=False)}"
+        vector = _simple_features(enriched_text)
+        store = _get_vector_store()
+        conn = store._get_conn()
+        conn.execute(
+            """INSERT INTO invoice_vectors
+               (id, invoice_id, contractor_id, vector, checksum, created_at, is_preferred)
+               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            (
+                uuid.uuid4().hex,
+                payload.invoice_id,
+                payload.contractor_id,
+                store._vector_to_blob(vector),
+                processed.primary.checksum,
+                pendulum.now("UTC").isoformat(),
+                0,
+            ),
+        )
+        conn.commit()
+        logger.info(
+            "VisionAgent(%s) processed invoice_id=%s anomalies=%s",
+            vision.source,
+            payload.invoice_id,
+            vision.visual_anomalies_detected,
+        )
+
+        if processed.status == ReviewStatus.MANUAL_REVIEW:
+            machine.request_review()
+        else:
+            machine.approve()
+        _update_invoice_status(db, payload.invoice_id, machine.current_state.id)
+
+    except TimeoutError as exc:
+        machine.fail()
+        event.status = OutboxStatus.FAILED
+        event.payload = msgspec_dumps(
+            {"error": f"OCR_TIMEOUT:{exc}", "original_payload": event.payload}
+        )
+        _update_invoice_status(db, payload.invoice_id, machine.current_state.id)
+
+    except Exception as exc:
+        machine.fail()
+        event.status = OutboxStatus.FAILED
+        event.payload = msgspec_dumps({"error": str(exc), "original_payload": event.payload})
+        _update_invoice_status(db, payload.invoice_id, machine.current_state.id)
+
+    # SUPERMOC: DI auto-commituje sesję — engine jest cache'owany
+    return {"result": "OK"}
+
+
+@broker.task(
+    task_name="store_active_learning_feedback",
+    labels={"service": "core", "operation": "learning", "criticality": "low"},
+    timeout=30.0,
+)
+async def store_active_learning_feedback(
+    contractor_id: str,
+    corrected_payload: dict[str, Any],
+    db: Session = TaskiqDepends(get_db_session),
+) -> dict[str, str]:
+    """Persist user corrections for active learning and preferred retrieval.
+
+    SUPERMOC: TaskiqDepends wstrzykuje sesję DB — zero boilerplate.
+    """
     serialized = msgspec_dumps(corrected_payload, ensure_ascii=False)
     vector = _simple_features(serialized)
     pattern_id = uuid.uuid4().hex
 
-    with session_factory() as session:
-        session.add(
-            ActiveLearningPattern(
-                id=pattern_id,
-                contractor_id=contractor_id,
-                correction_payload=serialized,
-            )
+    db.add(
+        ActiveLearningPattern(
+            id=pattern_id,
+            contractor_id=contractor_id,
+            correction_payload=serialized,
         )
-        session.commit()
+    )
 
     store = _get_vector_store()
     conn = store._get_conn()
@@ -385,91 +371,101 @@ async def store_active_learning_feedback(
     )
     conn.commit()
 
-    engine.dispose()
+    # SUPERMOC: DI auto-commituje sesję — engine jest cache'owany
     return {"result": "LEARNING_SAVED"}
 
 
-@broker.task(schedule=[{"cron": "0 16 * * *"}])
-async def scheduled_backup_task():
+@broker.task(
+    schedule=[{"cron": "0 16 * * *"}],
+    labels={"service": "core", "operation": "backup", "criticality": "high", "schedule": "daily"},
+    timeout=600.0,
+)
+async def scheduled_backup_task(
+    config: AppConfig = TaskiqDepends(get_config),
+):
     """Codziennie o 16:00"""
-    config = AppConfig()
     manager = BackupManager(config)
     path = manager.create_encrypted_zip(config.encryption_key)
     logger.info(f"Backup wykonany pomyślnie: {path}")
 
 
-@broker.task(schedule=[{"cron": "55 23 28-31 * *"}], task_name="cron_post_depreciation")
-async def cron_post_depreciation() -> dict[str, int | str]:
-    """Monthly fixed-assets depreciation posting. Runs on month-end window 23:55 UTC."""
+@broker.task(
+    schedule=[{"cron": "55 23 28-31 * *"}],
+    task_name="cron_post_depreciation",
+    labels={"service": "core", "operation": "depreciation", "criticality": "high", "schedule": "monthly"},
+    timeout=120.0,
+)
+async def cron_post_depreciation(
+    duckdb: DuckDBManager = TaskiqDepends(get_duckdb_manager),
+) -> dict[str, int | str]:
+    """Monthly fixed-assets depreciation posting. Runs on month-end window 23:55 UTC.
+
+    SUPERMOC: TaskiqDepends wstrzykuje DuckDBManager.
+    """
     today = pendulum.now("UTC").date()
     if (today + pendulum.duration(days=1)).month == today.month:
         return {"result": "SKIPPED_NOT_MONTH_END", "posted": 0}
-    duckdb = DuckDBManager(Path("app_data/nexus_olap.duckdb"))
     tigerbeetle = TigerBeetleClient()
     service = FixedAssetsService(duckdb=duckdb, tigerbeetle=tigerbeetle)
     posted = await service.execute_monthly_depreciation(as_of=today)
     return {"result": "OK", "posted": posted}
 
 
-@broker.task(schedule=[{"cron": "*/5 * * * *"}])
-async def invoice_reconciliation_loop():
-    """Wyszukuje porzucone faktury i podejmuje akcje naprawcze."""
+@broker.task(
+    schedule=[{"cron": "*/5 * * * *"}],
+    labels={"service": "core", "operation": "watchdog", "criticality": "high", "schedule": "5min"},
+    timeout=60.0,
+)
+async def invoice_reconciliation_loop(
+    db: Session = TaskiqDepends(get_db_session),
+):
+    """Wyszukuje porzucone faktury i podejmuje akcje naprawcze.
+
+    SUPERMOC TASKIQ:
+    - TaskiqDepends wstrzykuje sesję DB — zero boilerplate
+    - Context.requeue() zamiast ręcznego publish do JetStream
+    - Deterministic task_id przez Kicker.with_task_id()
+    """
     logger.info("[Watchdog] Uruchamianie skanowania spójności...")
     timeout_threshold = pendulum.now("UTC") - pendulum.duration(minutes=10)
 
-    with SessionLocal() as session:
-        stmt = select(Invoice).where(
-            Invoice.status == InvoiceStatus.PROCESSING, Invoice.updated_at <= timeout_threshold
-        )
-        result = session.execute(stmt)
-        stuck_invoices = result.scalars().all()
+    stmt = select(Invoice).where(
+        Invoice.status == InvoiceStatus.PROCESSING, Invoice.updated_at <= timeout_threshold
+    )
+    result = db.execute(stmt)
+    stuck_invoices = result.scalars().all()
 
-        if not stuck_invoices:
-            logger.debug("[Watchdog] System w pełni spójny. Brak porzuconych zadań.")
-            return
+    if not stuck_invoices:
+        logger.debug("[Watchdog] System w pełni spójny. Brak porzuconych zadań.")
+        return
 
-        # SUPERMOC NATS: Używamy JetStream z brokera przez publiczną właściwość
-        js = broker.jetstream
-        if js is None:
-            try:
-                await broker.startup()
-                js = broker.jetstream
-            except Exception:
-                js = None
+    for invoice in stuck_invoices:
+        if invoice.retry_count < 3:
+            logger.warning(
+                f"[Watchdog] Faktura ID: {invoice.id} utknęła. "
+                f"Próba {invoice.retry_count + 1}/3. Re-kolejkowanie..."
+            )
+            invoice.retry_count += 1
+            invoice.updated_at = pendulum.now("UTC")
 
-        for invoice in stuck_invoices:
-            if invoice.retry_count < 3:
-                logger.warning(
-                    f"[Watchdog] Faktura ID: {invoice.id} utknęła. "
-                    f"Próba {invoice.retry_count + 1}/3. Re-kolejkowanie..."
-                )
-                invoice.retry_count += 1
-                invoice.updated_at = pendulum.now("UTC")
-                payload = msgspec_dumps(
-                    {"invoice_id": invoice.id, "file_path": invoice.file_path, "is_retry": True}
-                )
-                if js:
-                    await js.publish("invoices.new", payload.encode())
-                else:
-                    # Fallback: bezpośrednio do Taskiq task (Fire-and-forget)
-                    await process_invoice_task.kiq()
-            else:
-                logger.error(
-                    f"[Watchdog] Faktura ID: {invoice.id} trwale uszkadza Workera. "
-                    f"Zatrzymano próby. Status -> ERROR: TIMEOUT"
-                )
-                invoice.status = InvoiceStatus.ERROR_TIMEOUT
-                invoice.updated_at = pendulum.now("UTC")
-                error_payload = msgspec_dumps(
-                    {
-                        "status": InvoiceStatus.FAILED.value,
-                        "message": "Przekroczono limit czasu (Krytyczny błąd przetwarzania).",
-                    }
-                )
-                if js:
-                    await js.publish(f"invoices.status.{invoice.id}", error_payload.encode())
+            # SUPERMOC: Kicker.with_task_id() dla deterministycznego ID zadania
+            # JetStream deduplikuje na podstawie Nats-Msg-Id = task_id
+            task_id = f"watchdog_recover:{invoice.id}:{invoice.retry_count}"
+            await (
+                Kicker("process_invoice_task", broker=broker)
+                .with_task_id(task_id)
+                .with_labels({"is_retry": "true", "invoice_id": invoice.id})
+                .kiq()
+            )
+        else:
+            logger.error(
+                f"[Watchdog] Faktura ID: {invoice.id} trwale uszkadza Workera. "
+                f"Zatrzymano próby. Status -> ERROR: TIMEOUT"
+            )
+            invoice.status = InvoiceStatus.ERROR_TIMEOUT
+            invoice.updated_at = pendulum.now("UTC")
 
-        session.commit()
+    # SUPERMOC: DI auto-commituje sesję
 
 
 class _DefaultDunningAIAgent:
@@ -492,7 +488,12 @@ class _DefaultEmailProvider:
         return True
 
 
-@broker.task(task_name="run_daily_dunning_check", schedule=[{"cron": "0 9 * * *"}])
+@broker.task(
+    task_name="run_daily_dunning_check",
+    schedule=[{"cron": "0 9 * * *"}],
+    labels={"service": "core", "operation": "dunning", "criticality": "medium", "schedule": "daily"},
+    timeout=300.0,
+)
 async def run_daily_dunning_check() -> dict[str, int]:
     """Codzienna kontrola należności i wysyłka przypomnień (09:00)."""
     config = AppConfig(base_dir=Path.cwd())
@@ -505,7 +506,12 @@ async def run_daily_dunning_check() -> dict[str, int]:
     return await engine.run_daily_dunning_check()
 
 
-@broker.task(task_name="execute_monthly_depreciation", schedule=[{"cron": "0 0 1 * *"}])
+@broker.task(
+    task_name="execute_monthly_depreciation",
+    schedule=[{"cron": "0 0 1 * *"}],
+    labels={"service": "core", "operation": "depreciation", "criticality": "high", "schedule": "monthly"},
+    timeout=120.0,
+)
 async def execute_monthly_depreciation_task() -> dict[str, int]:
     """Posts due depreciation entries to TigerBeetle on the 1st day of each month."""
     duckdb = DuckDBManager(Path("app_data/nexus_olap.duckdb"))

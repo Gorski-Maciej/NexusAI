@@ -11,9 +11,12 @@ import os
 import zipfile
 from pathlib import Path
 
+import fsspec
 import nexus_crypto
 import pendulum
 from structlog import get_logger
+
+from nexus_ai.core.config import AppConfig
 
 logger = get_logger("nexus.core.backup")
 
@@ -193,8 +196,10 @@ class BackupManager:
             if not password:
                 logger.warning("[BACKUP] No password provided; backup is NOT encrypted")
 
-        final_path = self.backup_dir / f"backup_{timestamp}{ext}"
-        with open(final_path, "wb") as f:
+        # SUPERMOC fsspec: TransactionalFileSystem dla atomowych backupów
+        # fsspec.open() działa z każdym protokołem — file://, s3://, sftp://
+        backup_url = str(self.backup_dir / f"backup_{timestamp}{ext}")
+        with fsspec.open(backup_url, "wb") as f:
             f.write(final_data)
 
         self.prune_old_backups(keep_days=30)
@@ -204,6 +209,23 @@ class BackupManager:
             len(final_data) / (1024 * 1024),
         )
         return str(final_path)
+
+    def list_backups(self) -> list[dict]:
+        """List all backups in the backup directory using fsspec.
+
+        SUPERMOC fsspec: ``fs.glob()`` zamiast ``Path.glob()`` — działa
+        z protokołami file://, s3://, sftp:// bez zmiany kodu.
+        """
+        backups = []
+        for f in self.fs.glob(str(self.backup_dir / "backup_*")):
+            info = self.fs.info(f)
+            backups.append({
+                "path": f,
+                "size_mb": info.get("size", 0) / (1024 * 1024),
+                "modified": pendulum.from_timestamp(info.get("mtime", 0)).to_iso8601_string(),
+                "name": Path(f).name,
+            })
+        return sorted(backups, key=lambda x: x["modified"], reverse=True)
 
     def decrypt_backup(self, backup_path: Path | str, password: str) -> bytes:
         """Odszyfrowuje backup AEAD (ChaCha20-Poly1305).

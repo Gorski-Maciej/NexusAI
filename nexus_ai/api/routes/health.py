@@ -27,13 +27,26 @@ class HealthController(Controller):
         "",
         return_dto=HealthResponseDTO,
         summary="Basic health check",
-        description="Returns API status and version.",
+        description="Returns API status and version with stamina Circuit Breaker status.",
         operation_id="healthCheck",
+        cache=300,
+        exclude_opt_key="no_rate_limit",
         headers={"Cache-Control": "public, max-age=300"},
     )
     async def health_check(self) -> dict[str, str]:
-        """Basic health check."""
-        return {"status": "OK", "version": "1.0.0"}
+        """Basic health check with stamina Circuit Breaker status.
+
+        SUPERMOC stamina: is_active() informuje czy Circuit Breaker jest zamknięty.
+        Gdy CB otwarty — status = "OK_BUT_CIRCUIT_OPEN" (system działa ale z cache).
+        """
+        import stamina
+        cb_active = stamina.is_active()
+        status = "OK" if cb_active else "OK_BUT_CIRCUIT_OPEN"
+        return {
+            "status": status,
+            "circuit_breaker_open": not cb_active,
+            "version": "1.0.0",
+        }
 
     @get(
         "/live",
@@ -41,7 +54,7 @@ class HealthController(Controller):
         summary="Kubernetes liveness probe",
         description="Returns alive status for Kubernetes liveness probe.",
         operation_id="healthLiveness",
-        headers={"Cache-Control": "public, max-age=300"},
+        exclude_opt_key="no_rate_limit",
     )
     async def liveness_probe(self) -> dict[str, str]:
         """Kubernetes liveness probe."""
@@ -53,7 +66,7 @@ class HealthController(Controller):
         summary="Kubernetes readiness probe",
         description="Returns ready status for Kubernetes readiness probe.",
         operation_id="healthReadiness",
-        headers={"Cache-Control": "public, max-age=300"},
+        exclude_opt_key="no_rate_limit",
     )
     async def readiness_probe(self) -> dict[str, str]:
         """Kubernetes readiness probe."""

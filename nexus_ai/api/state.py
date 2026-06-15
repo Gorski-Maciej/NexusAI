@@ -12,6 +12,8 @@ from structlog import get_logger
 from nexus_ai.api.shared_image_buffer import SharedImageBuffer
 from nexus_ai.core.background_task_manager import BackgroundTaskManager, TaskMetadata
 from nexus_ai.core.broker import broker
+from nexus_ai.core.cache.http_client import warm_http_cache
+from nexus_ai.core.di import dispose_all_engines
 from nexus_ai.core.saga import PersistedSagaStore
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import consolidate_database, create_oltp_engine, create_session_factory
@@ -22,7 +24,7 @@ from nexus_ai.services.migration_sanity import (
     verify_migration_checksums,
     verify_migration_integrity,
 )
-from nexus_ai.events.event_emitter import EventEmitter
+
 from nexus_ai.services.outbox_relay import OutboxRelay
 
 # ── OpenTelemetry metrics initialization ───────────────────────────────────
@@ -225,24 +227,8 @@ def make_on_startup(engine, session_factory):
             app.state.saga_store = PersistedSagaStore(engine)
             await app.state.saga_store.ensure_schema()
 
-            # Inicjalizuj EventEmitter dla event-driven architecture
-            from nexus_ai.events.event_store import EventStore
-            from nexus_ai.events.jetstream_bus import JetStreamEventBus
-
-            event_store = EventStore(
-                db_path=str(config.base_dir / "app_data" / "events.db")
-            )
-            try:
-                jetstream = JetStreamEventBus(nats_servers=config.nats_url)
-                await jetstream.connect()
-            except Exception:
-                jetstream = None
-                logger.warning("[STARTUP] JetStream unavailable — events stored locally")
-
-            app.state.event_emitter = EventEmitter(
-                event_store=event_store,
-                jetstream=jetstream,
-            )
+            # Taskiq event handlers są rejestrowane przez import nexus_ai.events.taskiq_events
+            # Event emisja odbywa się przez broker.kick("event_emit_*", ...)
             logger.info("[STARTUP] Database engine ready (SQLAlchemyPlugin)")
         except Exception as exc:
             logger.critical("[STARTUP] Database engine init FAILED: %s", exc)
@@ -316,10 +302,21 @@ def make_on_startup(engine, session_factory):
                     raise
 
         # ── Phase 4: Broker, warm-up, auto-seed ─────────────────────
+        # SUPERMOC HISHEL: Warm HTTP cache przy starcie API
+        try:
+            await warm_http_cache()
+            logger.info("[HTTP-CACHE-WARM] Cache warmed at API startup")
+        except Exception as exc:
+            logger.debug("[HTTP-CACHE-WARM] Cache warming skipped (non-fatal): %s", exc)
+
         if not broker.is_worker_process:
             try:
                 with anyio.fail_after(5.0):
                     await broker.startup()
+                logger.info(
+                    "[STARTUP] Taskiq broker started with middleware: metrics, pii-scan, tracing | "
+                    "Result backend: SQLite"
+                )
             except Exception as exc:
                 logger.warning("NATS broker unavailable — task queue disabled: %s", exc)
 
@@ -405,7 +402,14 @@ async def on_shutdown(app: Litestar) -> None:
     except Exception as exc:
         logger.warning("[HOT-RELOAD] Error stopping listener: %s", exc)
 
-    # 3. Konsolidacja WAL + zwolnienie zasobów engine'u
+    # 3. Dispose DI engine cache (TaskiqDepends cached engines)
+    try:
+        await dispose_all_engines()
+        logger.info("[SHUTDOWN] DI engines disposed")
+    except Exception as exc:
+        logger.warning("[SHUTDOWN] DI engine dispose error: %s", exc)
+
+    # 4. Konsolidacja WAL + zwolnienie zasobów engine'u
     if engine is not None:
         await consolidate_database(engine)
         await engine.dispose()

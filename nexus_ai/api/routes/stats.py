@@ -21,6 +21,7 @@ class StatsController(Controller):
         summary="Get processing statistics",
         description="Returns invoice processing statistics including success rate and error count.",
         operation_id="getProcessingStats",
+        cache=120,
     )
     async def get_processing_stats(self) -> dict[str, Any]:
         """Get invoice processing statistics."""

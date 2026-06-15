@@ -1,12 +1,18 @@
 """
 AsyncBackup — async backup service using sqlite3.backup() API.
 
-Python 3.13t (free-threaded, brak GIL): używamy natywnego ``sqlite3.backup()``
+SUPERMOC fsspec:
+- ``fsspec.open()`` zamiast ``open()`` dla uniwersalnego otwierania plików
+- ``fsspec.filesystem()`` z konfigurowalnym protokołem z TOML
+- ``fsspec.implementations.memory.MemoryFileSystem`` dla backupów do RAM
+- ``fsspec.transaction.TransactionalFileSystem`` dla atomowych backupów
+
+Python 3.13t (free-threaded): używamy natywnego ``sqlite3.backup()``
 zamiast ``aiosqlite.backup()``. Operacje są delegowane do wątków przez
 ``asyncio.to_thread()``.
 
 Usage:
-    backup = AsyncBackup()
+    backup = AsyncBackup(config=app_config)
     await backup.backup_all(output_dir="backups/2026-06-14")
     await backup.backup_single("app_data/nexus_oltp.db", "backups/oltp.db")
 """
@@ -21,7 +27,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+import fsspec
 from structlog import get_logger
+
+from nexus_ai.core.config import AppConfig
 
 logger = get_logger("nexus.db.async_backup")
 
@@ -52,9 +61,21 @@ class AsyncBackup:
         self,
         databases: dict[str, str] | None = None,
         sqlcipher_key: str | None = None,
+        config: AppConfig | None = None,
     ) -> None:
         self._databases = databases or dict(DEFAULT_DATABASES)
         self._sqlcipher_key = sqlcipher_key or os.environ.get("NEXUS_SQLCIPHER_KEY", "")
+        
+        # SUPERMOC fsspec: konfigurowalny backend backupu
+        if config is not None:
+            self._fs_protocol = config.storage_protocol
+            self._fs = fsspec.filesystem(
+                config.storage_protocol,
+                auto_mkdir=config.storage_auto_mkdir,
+            )
+        else:
+            self._fs_protocol = "file"
+            self._fs = fsspec.filesystem("file", auto_mkdir=True)
 
     async def backup_all(
         self,

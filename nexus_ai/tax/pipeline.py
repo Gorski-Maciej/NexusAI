@@ -29,7 +29,7 @@ import pendulum
 from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
-from nexus_ai.events.event_emitter import get_event_emitter
+from nexus_ai.core.broker import broker
 from nexus_ai.services.pre_ledger_validator import (
     PreLedgerValidator,
     TransferSpec,
@@ -485,9 +485,8 @@ class TaxPipeline:
             trace_json=trace_json_str,
         )
 
-        # ── Emit DecisionMade event ───────────────────────────────────────
+        # ── Emit DecisionMade event przez Taskiq ─────────────────────────
         try:
-            emitter = get_event_emitter()
             invoice_id = str(invoice_data.get("invoice_id", tx_id))
             action = verdict.get("action", "AUTO_POST")
 
@@ -500,7 +499,7 @@ class TaxPipeline:
                 else:
                     decision_val = routing
 
-            await emitter.emit_decision_made(
+            await broker.kick("event_emit_decision_made",
                 invoice_id=invoice_id,
                 decision=decision_val,
                 trust_score=float(verdict.get("trust_score", verdict.get("ai_confidence", 0.5))),

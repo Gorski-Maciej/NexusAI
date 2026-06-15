@@ -1,18 +1,11 @@
 from __future__ import annotations
 
-import os
+from uuid import uuid4 as _uuid4
 
 from nexus_crypto import verify_jwt as _verify_jwt_rust
-import time
-import uuid
 
-import pendulum
-
-import anyio
 from litestar.middleware import AbstractMiddleware
-from litestar.status_codes import HTTP_413_REQUEST_ENTITY_TOO_LARGE
 
-from nexus_ai.core.config import AppConfig
 from nexus_ai.core.logger import get_logger
 from nexus_ai.core.tenant import (
     DEFAULT_TENANT_ID,
@@ -21,109 +14,6 @@ from nexus_ai.core.tenant import (
 )
 
 logger = get_logger()
-
-
-class RequestBodyTooLargeError(RuntimeError):
-    pass
-
-
-_UPLOAD_LIMITER: anyio.CapacityLimiter | None = None
-
-
-def _get_upload_limiter() -> anyio.CapacityLimiter:
-    global _UPLOAD_LIMITER
-    if _UPLOAD_LIMITER is None:
-        _UPLOAD_LIMITER = anyio.CapacityLimiter(10)
-    return _UPLOAD_LIMITER
-
-
-class UploadSizeGuardMiddleware(AbstractMiddleware):
-    """
-    Hard request-body guard for upload endpoints, including chunked transfer.
-    Rozwiązanie 15: Progressive size check, upload semaphore, timeout.
-    """
-
-    async def __call__(self, scope, receive, send):
-        if scope["type"] != "http":
-            await self.app(scope, receive, send)
-            return
-
-        path = scope.get("path", "")
-        config = self._resolve_config(scope)
-        limit = None
-        if path.endswith("/invoices/upload"):
-            limit = config.max_invoice_upload_bytes
-        elif path.endswith("/invoices/upload-large"):
-            limit = config.max_attachment_upload_bytes
-
-        if not limit:
-            await self.app(scope, receive, send)
-            return
-
-        # Fast-fail when content-length is provided.
-        headers = {k.decode().lower(): v.decode() for k, v in scope.get("headers", [])}
-        content_length = headers.get("content-length")
-        if content_length:
-            try:
-                if int(content_length) > limit:
-                    await self._send_413(send)
-                    return
-            except ValueError:
-                pass
-
-        total = 0
-
-        # Użyj semafora dla ograniczenia równoczesnych uploadów (Rozwiązanie 15)
-        upload_limiter = _get_upload_limiter()
-        async with upload_limiter:
-            try:
-                # Timeout na strumieniowanie danych (Rozwiązanie 15) - tylko faza odbioru
-                async def guarded_receive_with_timeout():
-                    nonlocal total
-                    try:
-                        with anyio.fail_after(120.0):
-                            message = await receive()
-                    except TimeoutError:
-                        raise RequestBodyTooLargeError("upload stream timeout")
-                    if message.get("type") == "http.request":
-                        body = message.get("body", b"")
-                        total += len(body)
-                        if total > limit:
-                            raise RequestBodyTooLargeError("request body too large")
-                    return message
-
-                await self.app(scope, guarded_receive_with_timeout, send)
-            except TimeoutError:
-                logger.warning("[UPLOAD] Request timeout for path=%s", path)
-                await self._send_413(send)
-            except RequestBodyTooLargeError as e:
-                if "timeout" in str(e):
-                    logger.warning("[UPLOAD] Upload stream timeout for path=%s", path)
-                await self._send_413(send)
-
-    @staticmethod
-    def _resolve_config(scope) -> AppConfig:
-        app = scope.get("app")
-        if app is not None:
-            dependencies = getattr(app, "dependencies", None) or {}
-            provider = dependencies.get("config")
-            if callable(provider):
-                try:
-                    return provider()
-                except Exception:
-                    pass
-        return AppConfig()
-
-    @staticmethod
-    async def _send_413(send):
-        await send(
-            {
-                "type": "http.response.start",
-                "status": HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                "headers": [(b"content-type", b"application/json")],
-            }
-        )
-        await send({"type": "http.response.body", "body": b'{"detail":"Request body too large"}'})
 
 
 def _tenant_from_bearer_auth(authorization_header: str | None) -> str | None:
