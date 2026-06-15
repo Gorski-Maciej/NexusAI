@@ -85,23 +85,15 @@ class TaskController(Controller):
         # Sygnalizuj anulowanie lokalnie (przez WebSocket)
         signal_cancel(task_id)
 
-        # Wyślij zdarzenie anulowania przez NATS
-        import nats
-
-        from core.config import AppConfig
+        # Wyślij zdarzenie anulowania przez NATS (z nats_utils)
+        from nexus_ai.core import nats_utils
+        from nexus_ai.core.config import AppConfig
 
         config = AppConfig()
-        try:
-            nc = await nats.connect(config.nats_url)
-            await nc.publish(
-                f"task.cancel.{task_id}",
-                msgspec_dumps(
-                    {"task_id": task_id, "cancelled_at": pendulum.now("UTC").isoformat()}
-                ).encode(),
-            )
-            await nc.close()
-        except Exception as e:
-            logger.warning("[CANCEL] Failed to publish cancel event to NATS: %s", e)
+        await nats_utils.publish_event(
+            f"task.cancel.{task_id}",
+            {"task_id": task_id, "cancelled_at": pendulum.now("UTC").isoformat()},
+        )
 
         # Zaktualizuj status w bazie
         engine = getattr(request.app.state, "db_engine", None)

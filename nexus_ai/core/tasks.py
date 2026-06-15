@@ -17,7 +17,8 @@ import psutil
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from taskiq import TaskiqEvents
-from taskiq_nats import PullBasedJetStreamBroker
+# SUPERMOC NATS: Broker importowany z broker.py zamiast tworzenia osobnego
+# from taskiq_nats import PullBasedJetStreamBroker  # nieużywane — używamy brokera z broker.py
 
 from nexus_ai.core.backup import BackupManager
 from nexus_ai.core.cache import get_cache
@@ -112,8 +113,11 @@ OCR_INFERENCE_LIMITER = anyio.CapacityLimiter(
 )
 OCR_TASK_TIMEOUT_SEC = int(os.getenv("NEXUS_OCR_TIMEOUT_SEC", "300"))
 
-NATS_URL = os.getenv("NEXUS_NATS_URL", "nats://127.0.0.1:4222")
-broker = PullBasedJetStreamBroker(servers=NATS_URL, queue="nexus-ai-workers")
+# SUPERMOC NATS: Używamy jednego, skonfigurowanego brokera z broker.py
+# zamiast tworzyć osobnego PullBasedJetStreamBroker tutaj.
+from nexus_ai.core.broker import broker as _broker
+
+broker = _broker
 
 _MODEL_CACHE = TimedModelCache(ttl_seconds=int(os.getenv("NEXUS_MODEL_CACHE_TTL_SEC", "600")))
 
@@ -424,9 +428,15 @@ async def invoice_reconciliation_loop():
             logger.debug("[Watchdog] System w pełni spójny. Brak porzuconych zadań.")
             return
 
-        import nats
+        # SUPERMOC NATS: Używamy JetStream z brokera przez publiczną właściwość
+        js = broker.jetstream
+        if js is None:
+            try:
+                await broker.startup()
+                js = broker.jetstream
+            except Exception:
+                js = None
 
-        nc = await nats.connect("nats://localhost:4222")
         for invoice in stuck_invoices:
             if invoice.retry_count < 3:
                 logger.warning(
@@ -438,7 +448,11 @@ async def invoice_reconciliation_loop():
                 payload = msgspec_dumps(
                     {"invoice_id": invoice.id, "file_path": invoice.file_path, "is_retry": True}
                 )
-                await nc.publish("invoices.new", payload.encode())
+                if js:
+                    await js.publish("invoices.new", payload.encode())
+                else:
+                    # Fallback: bezpośrednio do Taskiq task (Fire-and-forget)
+                    await process_invoice_task.kiq()
             else:
                 logger.error(
                     f"[Watchdog] Faktura ID: {invoice.id} trwale uszkadza Workera. "
@@ -452,10 +466,10 @@ async def invoice_reconciliation_loop():
                         "message": "Przekroczono limit czasu (Krytyczny błąd przetwarzania).",
                     }
                 )
-                await nc.publish(f"invoices.status.{invoice.id}", error_payload.encode())
+                if js:
+                    await js.publish(f"invoices.status.{invoice.id}", error_payload.encode())
 
         session.commit()
-        await nc.close()
 
 
 class _DefaultDunningAIAgent:

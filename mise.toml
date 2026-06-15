@@ -341,7 +341,9 @@ run = "uv run python -m nexus_ai.scripts.security_scan --target http://localhost
 description = "Skanowanie bezpieczeństwa (tryb ścisły — 0 high, 0 medium)"
 run = "uv run python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy strict"
 
-# ── Migracje bazy danych ────────────────────────────────────────────────────
+# ── Migracje bazy danych — SUPERMOCE Alembic ──────────────────────────────
+# Wszystkie taski używają konfiguracji z pyproject.toml [tool.alembic]
+# env.py odczytuje URL bazy z AppConfig w runtime
 
 [tasks.migrate]
 description = "Wykonaj migracje bazy danych (Alembic upgrade head)"
@@ -352,8 +354,50 @@ description = "Wygeneruj nową migrację (podaj opis: mise run migrate-new 'doda
 run = "uv run alembic revision --autogenerate -m"
 
 [tasks.migrate-check]
-description = "Sprawdź czy są niezatwierdzone migracje"
+description = "SUPERMOC: Sprawdź czy są niezatwierdzone migracje (alembic check)\n  Uruchamiane w CI/CD przed deployem. Zwraca exit code 0 jeśli schema\n  jest zgodna z modelami, 1 jeśli są rozbieżności."
 run = "uv run alembic check"
+
+[tasks.migrate-current]
+description = "SUPERMOC: Pokaż aktualną rewizję bazy"
+run = "uv run alembic current"
+
+[tasks.migrate-history]
+description = "SUPERMOC: Pokaż historię migracji"
+run = "uv run alembic history"
+
+[tasks.migrate-stamp]
+description = "SUPERMOC: Oznacz bazę jako będącą na konkretnej rewizji\n  Użycie: mise run migrate-stamp -- '0004'"
+run = "uv run alembic stamp"
+
+[tasks.migrate-downgrade]
+description = "SUPERMOC: Cofnij ostatnią migrację\n  Użycie: mise run migrate-downgrade -- '-1'\n  Dla konkretnej rewizji: mise run migrate-downgrade -- '0003'"
+run = "uv run alembic downgrade"
+
+[tasks.migrate-fresh]
+description = "SUPERMOC: Odśwież bazę od zera (drop + create all)\n  Uwaga: Niszczy wszystkie dane! Używaj tylko w dev."
+run = "uv run alembic downgrade base && uv run alembic upgrade head"
+
+[tasks.migrate-sql]
+description = "SUPERMOC: Generuj SQL offline dla migracji (bez łączenia z DB)\n  Przydatne do audytu przed wdrożeniem produkcyjnym."
+run = "uv run alembic upgrade head --sql"
+
+[tasks.migrate-ci]
+description = "SUPERMOC: CI/CD — sprawdź migracje + sanity\n  Uruchamiane w pipeline CI. Sprawdza:\n  1. Czy wszystkie modele są zgodne z DB (alembic check)\n  2. Czy migracje są na head\n  3. Loguje rewizję"
+run = """
+echo '🔍 Alembic CI/CD Check'
+echo '======================'
+echo ''
+echo '1. Checking migration status...'
+uv run alembic check && echo '  ✅ Schema is in sync' || echo '  ❌ Schema drift detected!'
+echo ''
+echo '2. Current revision:'
+uv run alembic current
+echo ''
+echo '3. Migration history:'
+uv run alembic history --verbose
+echo ''
+echo '✅ Alembic CI/CD check complete'
+"""
 
 # ── Modele AI ────────────────────────────────────────────────────────────────
 

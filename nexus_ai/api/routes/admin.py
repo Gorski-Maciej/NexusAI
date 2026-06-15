@@ -45,6 +45,7 @@ from nexus_ai.api.dto import (
 from nexus_ai.api.rbac import admin_only_guard, requires_permission
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_dumps_bytes
+from nexus_ai.core.nats_utils import publish_event as _publish_nats_event
 
 
 class ChangeRoleRequest(msgspec.Struct):
@@ -454,17 +455,10 @@ class AdminController(Controller):
             )
 
             # Publish NATS event risk.thresholds.updated for hot-reload
-            try:
-                import nats
-
-                nc = await nats.connect(AppConfig().nats_url)
-                await nc.publish(
-                    "risk.thresholds.updated",
-                    msgspec_dumps_bytes({"rule_id": rule_id, "action": "created"}),
-                )
-                await nc.close()
-            except Exception as pub_err:
-                logger.warning("[ADMIN] Failed to publish NATS event: %s", pub_err)
+            await _publish_nats_event(
+                "risk.thresholds.updated",
+                {"rule_id": rule_id, "action": "created"},
+            )
 
             return {"status": "ok", "rule_id": rule_id}
         finally:
@@ -538,17 +532,10 @@ class AdminController(Controller):
             logger.info("[ADMIN] Risk threshold deprecated id=%s by=%s", rule_id, username)
 
             # Publish NATS event for hot-reload
-            try:
-                import nats
-
-                nc = await nats.connect(AppConfig().nats_url)
-                await nc.publish(
-                    "risk.thresholds.updated",
-                    msgspec_dumps_bytes({"rule_id": rule_id, "action": "deprecated"}),
-                )
-                await nc.close()
-            except Exception as pub_err:
-                logger.warning("[ADMIN] Failed to publish NATS event: %s", pub_err)
+            await _publish_nats_event(
+                "risk.thresholds.updated",
+                {"rule_id": rule_id, "action": "deprecated"},
+            )
 
             return {"status": "ok", "rule_id": rule_id, "action": "deprecated"}
         finally:
@@ -641,17 +628,10 @@ class AdminController(Controller):
             logger.info("[ADMIN] Billing rule created id=%s", rule_id)
 
             # NATS hot-reload
-            try:
-                import nats
-
-                nc = await nats.connect(AppConfig().nats_url)
-                await nc.publish(
-                    "billing.rules.updated",
-                    msgspec_dumps_bytes({"rule_id": rule_id, "action": "created"}),
-                )
-                await nc.close()
-            except Exception as pub_err:
-                logger.warning("[ADMIN] Failed to publish NATS event: %s", pub_err)
+            await _publish_nats_event(
+                "billing.rules.updated",
+                {"rule_id": rule_id, "action": "created"},
+            )
 
             return {"status": "ok", "rule_id": rule_id}
         finally:
@@ -681,17 +661,10 @@ class AdminController(Controller):
             logger.info("[ADMIN] Billing rule deprecated id=%s", rule_id)
 
             # NATS hot-reload event
-            try:
-                import nats
-
-                nc = await nats.connect(AppConfig().nats_url)
-                await nc.publish(
-                    "billing.rules.updated",
-                    msgspec_dumps_bytes({"rule_id": rule_id, "action": "deprecated"}),
-                )
-                await nc.close()
-            except Exception as pub_err:
-                logger.warning("[ADMIN] Failed to publish NATS event: %s", pub_err)
+            await _publish_nats_event(
+                "billing.rules.updated",
+                {"rule_id": rule_id, "action": "deprecated"},
+            )
 
             return {"status": "ok", "rule_id": rule_id, "action": "deprecated"}
         finally:
@@ -885,17 +858,10 @@ class AdminController(Controller):
             logger.info("[ADMIN] Tax rule created id=%s by=%s", rule_id, username)
 
             # NATS hot-reload event
-            try:
-                import nats
-
-                nc = await nats.connect(AppConfig().nats_url)
-                await nc.publish(
-                    "tax.rules.updated",
-                    msgspec_dumps_bytes({"rule_id": rule_id, "action": "created"}),
-                )
-                await nc.close()
-            except Exception as pub_err:
-                logger.warning("[ADMIN] Failed to publish NATS event: %s", pub_err)
+            await _publish_nats_event(
+                "tax.rules.updated",
+                {"rule_id": rule_id, "action": "created"},
+            )
 
             return {"status": "ok", "rule_id": rule_id}
         finally:
@@ -932,17 +898,10 @@ class AdminController(Controller):
             logger.info("[ADMIN] Tax rule closed id=%s by=%s", rule_id, username)
 
             # NATS hot-reload event
-            try:
-                import nats
-
-                nc = await nats.connect(AppConfig().nats_url)
-                await nc.publish(
-                    "tax.rules.updated",
-                    msgspec_dumps_bytes({"rule_id": rule_id, "action": "closed"}),
-                )
-                await nc.close()
-            except Exception as pub_err:
-                logger.warning("[ADMIN] Failed to publish NATS event: %s", pub_err)
+            await _publish_nats_event(
+                "tax.rules.updated",
+                {"rule_id": rule_id, "action": "closed"},
+            )
 
             return {"status": "ok", "rule_id": rule_id, "action": "closed"}
         finally:
@@ -1078,17 +1037,10 @@ class AdminController(Controller):
             )
 
             # NATS hot-reload event
-            try:
-                import nats
-
-                nc = await nats.connect(AppConfig().nats_url)
-                await nc.publish(
-                    "ledger.rules.updated",
-                    msgspec_dumps_bytes({"rule_id": rule_id, "action": "created"}),
-                )
-                await nc.close()
-            except Exception as pub_err:
-                logger.warning("[ADMIN] Failed to publish NATS event: %s", pub_err)
+            await _publish_nats_event(
+                "ledger.rules.updated",
+                {"rule_id": rule_id, "action": "created"},
+            )
 
             return {"status": "ok", "rule_id": rule_id}
         finally:
@@ -1115,17 +1067,10 @@ class AdminController(Controller):
             validator.delete_rule(rule_id)
 
             # NATS hot-reload event
-            try:
-                import nats
-
-                nc = await nats.connect(AppConfig().nats_url)
-                await nc.publish(
-                    "ledger.rules.updated",
-                    msgspec_dumps_bytes({"rule_id": rule_id, "action": "deprecated"}),
-                )
-                await nc.close()
-            except Exception as pub_err:
-                logger.warning("[ADMIN] Failed to publish NATS event: %s", pub_err)
+            await _publish_nats_event(
+                "ledger.rules.updated",
+                {"rule_id": rule_id, "action": "deprecated"},
+            )
 
             return {"status": "ok", "rule_id": rule_id, "action": "deprecated"}
         finally:

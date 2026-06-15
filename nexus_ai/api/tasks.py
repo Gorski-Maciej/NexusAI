@@ -721,18 +721,15 @@ async def process_invoice_ocr(invoice_id: str, payload: dict | None = None) -> N
 
     # Trigger decision & rules check via NATS (poza semaforem - lekkie operacje NATS)
     config = AppConfig()
+    from nexus_ai.core.nats_utils import publish_event
+
+    await publish_event(
+        "invoice.extracted",
+        {"invoice_id": invoice_id, "extracted_data": extracted_data},
+    )
+
+    # Dynamic workflow — decide which tasks to run (zgodnie z aa3fvcx.txt)
     try:
-        import nats
-
-        nc = await nats.connect(config.nats_url)
-        # Publish to invoice.extracted for rules_check subscriber
-        await nc.publish(
-            "invoice.extracted",
-            msgspec_dumps_bytes({"invoice_id": invoice_id, "extracted_data": extracted_data}),
-        )
-        await nc.close()
-
-        # Dynamic workflow — decide which tasks to run (zgodnie z aa3fvcx.txt)
         workflow_type = classify_invoice(
             invoice_data=extracted_data,
             vendor_profile=extracted_data.get("vendor_profile", {}),
@@ -856,10 +853,18 @@ async def dead_letter_processor_task() -> None:
     engine = _make_engine(config)
     session_factory = create_session_factory(engine)
 
-    try:
-        import nats
+    from nexus_ai.core.nats_utils import NatsErrors, get_connection, safe_close
 
-        nc = await nats.connect(config.nats_url)
+    NatsErrors.init()
+    nc = await get_connection(
+        nats_url=config.nats_url,
+        name="nexus-dlq",
+    )
+    if nc is None:
+        logger.warning("[DLQ] NATS not available — skipping dead letter check")
+        return
+
+    try:
         sub = await nc.subscribe("nats.deadletter", queue="nexus-dlq-workers")
 
         # Sprawdź wiadomości w DLQ
@@ -916,17 +921,20 @@ async def dead_letter_processor_task() -> None:
                             except Exception:
                                 logger.warning("[DLQ] Failed to notify webhook")
 
+                    except NatsErrors.TimeoutError:
+                        pass
                     except Exception as parse_err:
                         logger.warning("[DLQ] Failed to parse DLQ message: %s", parse_err)
 
                     msg = await sub.fetch(1, timeout=2.0)
-        except TimeoutError:
+        except NatsErrors.TimeoutError:
             pass  # Brak wiadomości w DLQ
-
-        await nc.close()
-    except Exception as dlq_err:
-        logger.warning("[DLQ] Dead letter processor error: %s", dlq_err)
+        except NatsErrors.ConnectionClosedError:
+            logger.warning("[DLQ] Connection closed during fetch")
+        except Exception as dlq_err:
+            logger.warning("[DLQ] Dead letter processor error: %s", dlq_err)
     finally:
+        await safe_close(nc)
         await engine.dispose()
 
 

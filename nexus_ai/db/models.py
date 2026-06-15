@@ -177,44 +177,75 @@ class Invoice(SQLModel, table=True):
     )
 
     # SUPERMOC: Mapped[] annotations dla full type safety
+    # SUPERMOC: Alembic-aware — sa_column_kwargs z komentarzami dla autogenerate
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
-    number: Mapped[str | None] = Field(default=None, index=True)
-    contractor_nip: Mapped[str | None] = Field(default=None, index=True)
-    file_path: Mapped[str | None] = Field(default=None)
+    number: Mapped[str | None] = Field(default=None, index=True,
+        sa_column_kwargs={"comment": "Numer faktury (np. FV/2026/001)"},
+    )
+    contractor_nip: Mapped[str | None] = Field(default=None, index=True,
+        sa_column_kwargs={"comment": "NIP kontrahenta (10 cyfr)"},
+    )
+    file_path: Mapped[str | None] = Field(default=None,
+        sa_column_kwargs={"comment": "Ścieżka do pliku PDF/obrazu faktury"},
+    )
     amount_net: Mapped[Decimal | None] = Field(
         default=None, max_digits=18, decimal_places=2,
         ge=Decimal("0.00"),  # SUPERMOC: Pydantic validation
-        sa_column_kwargs={"check": "amount_net >= 0"},
+        sa_column_kwargs={
+            "comment": "Kwota netto w PLN",
+            "check": "amount_net >= 0",
+        },
     )
     amount_gross: Mapped[Decimal | None] = Field(
         default=None, max_digits=18, decimal_places=2,
         ge=Decimal("0.00"),
-        sa_column_kwargs={"check": "amount_gross >= 0"},
+        sa_column_kwargs={
+            "comment": "Kwota brutto w PLN (netto + VAT)",
+            "check": "amount_gross >= 0",
+        },
     )
     currency: Mapped[str] = Field(
         default="PLN", max_length=3, regex=r"^[A-Z]{3}$",
-        sa_column_kwargs={"check": "length(currency) = 3"},
+        sa_column_kwargs={
+            "comment": "Kod waluty ISO 4217 (3 litery)",
+            "check": "length(currency) = 3",
+        },
     )
     # SUPERMOC: Enum column — InvoiceStatus zamiast gołego str
     status: Mapped[InvoiceStatus] = Field(
         default=InvoiceStatus.NEW,
         index=True,
         sa_type=SAEnum(InvoiceStatus),
+        sa_column_kwargs={"comment": "Status faktury (InvoiceStatus enum)"},
     )
-    retry_count: Mapped[int] = Field(default=0, ge=0)
-    processing_status: Mapped[str | None] = Field(default=None)
-    issue_date: Mapped[str | None] = Field(default=None)
+    retry_count: Mapped[int] = Field(default=0, ge=0,
+        sa_column_kwargs={"comment": "Liczba ponownych prób przetwarzania"},
+    )
+    processing_status: Mapped[str | None] = Field(default=None,
+        sa_column_kwargs={"comment": "Status przetwarzania (OCR, AI, walidacja)"},
+    )
+    issue_date: Mapped[str | None] = Field(default=None,
+        sa_column_kwargs={"comment": "Data wystawienia faktury (ISO format)"},
+    )
     created_at: Mapped[pendulum.DateTime] = Field(
         default_factory=lambda: pendulum.now("UTC"),
         sa_type=PendulumDateTime,
+        sa_column_kwargs={"comment": "Timestamp utworzenia rekordu"},
     )
     updated_at: Mapped[pendulum.DateTime] = Field(
         default_factory=lambda: pendulum.now("UTC"),
-        sa_column_kwargs={"onupdate": lambda: pendulum.now("UTC")},
+        sa_column_kwargs={
+            "comment": "Timestamp ostatniej modyfikacji",
+            "onupdate": lambda: pendulum.now("UTC"),
+        },
         sa_type=PendulumDateTime,
     )
-    tenant_id: Mapped[str] = Field(default="default", index=True)
-    updated_by: Mapped[str | None] = Field(default=None)
+    tenant_id: Mapped[str] = Field(default="default", index=True,
+        sa_column_kwargs={"comment": "Tenant ID dla multi-tenant isolation"},
+    )
+    updated_by: Mapped[str | None] = Field(default=None,
+        sa_column_kwargs={"comment": "Kto ostatnio modyfikował rekord"},
+    )
 
     # SUPERMOC: Relationship() — dwukierunkowe relacje
     outbox_events: Mapped[list["OutboxEvent"]] = Relationship(back_populates="invoice")
@@ -517,37 +548,26 @@ class UserAccount(SQLModel, table=True):
 Base = SQLModel
 
 
-# ── Partial indexes (zachowane dla create_partial_indexes) ──────────────
+# ── Partial indexes (DEPRECATED — przeniesione do migracji 0004) ─────────
+# SUPERMOC: Wszystkie partial indexes zostały przeniesione do migracji Alembic 0004.
+# Ta funkcja pozostaje jako fallback dla fresh databases bez migracji.
+# Docelowo: usuń w następnej wersji.
 
 _PARTIAL_INDEXES: dict[str, list[str]] = {
-    "invoices": [
-        "CREATE INDEX IF NOT EXISTS idx_invoices_active_status ON invoices(status) WHERE status IN ('PAID', 'APPROVED', 'PENDING_REVIEW')",
-        "CREATE INDEX IF NOT EXISTS idx_invoices_active_created ON invoices(created_at) WHERE status NOT IN ('NEW', 'REJECTED')",
-    ],
-    "outbox_events": [
-        "CREATE INDEX IF NOT EXISTS idx_outbox_pending ON outbox_events(status, created_at) WHERE processed = FALSE",
-    ],
+    # SUPERMOC: Te indeksy są teraz tworzone przez migrację 0004
+    # jako idx_invoices_active_status_mig, idx_invoices_active_updated_mig,
+    # idx_outbox_pending_only_mig
 }
 
 
 def create_partial_indexes(engine) -> None:
     """Utwórz partial indexes dla tabel z _PARTIAL_INDEXES.
 
-    Uwaga: Partial indexes z __table_args__ (sqlite_where) działają tylko
-    przy create_all. Ten fallback tworzy dodatkowe partial indexes które
-    nie mogą być wyrażone przez SQLModel Index(sqlite_where=...).
+    DEPRECATED: Partial indexes przeniesione do migracji Alembic 0004.
+    Ta funkcja jest pusta (safety-net dla świeżych baz).
     """
-    from sqlalchemy import text as _sql_text
     from structlog import get_logger as _get_log
 
     _log = _get_log("nexus.db.indexes")
-
-    with engine.connect() as conn:
-        for table_name, indexes in _PARTIAL_INDEXES.items():
-            for index_sql in indexes:
-                try:
-                    conn.execute(_sql_text(index_sql))
-                    _log.info("[DB] Created partial index on %s", table_name)
-                except Exception as exc:
-                    _log.warning("[DB] Partial index on %s skipped: %s", table_name, exc)
-        conn.commit()
+    _log.debug("[DB] create_partial_indexes is deprecated — indexes in Alembic 0004")
+    # Partial indexes are now created by Alembic migration 0004

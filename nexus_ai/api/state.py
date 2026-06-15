@@ -253,12 +253,33 @@ def make_on_startup(engine, session_factory):
         if engine is not None:
             try:
                 from alembic import command
+                from alembic.runtime.migration import MigrationContext
                 from nexus_ai.core.alembic_utils import get_alembic_config
 
                 alembic_cfg = get_alembic_config()
                 if alembic_cfg is not None:
-                    command.upgrade(alembic_cfg, "head")
-                    logger.info("[STARTUP] Alembic migrations applied (head)")
+                    # SUPERMOC: Sprawdź najpierw czy migracje są potrzebne
+                    from alembic.script import ScriptDirectory
+
+                    script = ScriptDirectory.from_config(alembic_cfg)
+                    head_rev = script.get_current_head()
+
+                    with engine.connect() as conn:
+                        mctx = MigrationContext.configure(conn)
+                        current_rev = mctx.get_current_revision()
+
+                    if current_rev != head_rev:
+                        logger.info(
+                            "[STARTUP] Alembic migration needed: %s -> %s",
+                            current_rev or "(fresh DB)",
+                            head_rev,
+                        )
+                        command.upgrade(alembic_cfg, "head")
+                        logger.info("[STARTUP] Alembic migrations applied (head)")
+                    else:
+                        logger.info(
+                            "[STARTUP] Alembic already at head (%s)", current_rev
+                        )
                 else:
                     logger.warning("[STARTUP] Alembic config not found — skipping migrations")
             except Exception as exc:

@@ -469,6 +469,17 @@ script_location = "nexus_ai/db/migrations"
 # sqlalchemy.url resolved at runtime by env.py via AppConfig — not hardcoded here
 file_template = "%%(rev)s_%%(slug)s"
 timezone = "UTC"
+
+# SUPERMOC: Wiele katalogów wersji (core + features)
+# version_locations = "nexus_ai/db/migrations/versions/core nexus_ai/db/migrations/versions/features"
+
+# SUPERMOC: Pre-compiled templates dla szybszego generowania
+# sourceless = false  # Ustaw na true dla produkcji
+
+# SUPERMOC: Konfiguracja batch mode dla SQLite
+# batch_mode = true
+# batch_transaction_size = 50
+
 # Post-write hooks (formatting after autogenerate)
 post_write_hooks = "ruff"
 post_write_hooks_ruff_type = "console_scripts"

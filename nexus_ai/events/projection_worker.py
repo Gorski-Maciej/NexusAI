@@ -205,12 +205,10 @@ class ProjectionWorker:
                 pass
             self._fallback_task = None
 
-        # Zamknij połączenie NATS
+        # Zamknij połączenie NATS (z flush przed drain)
         if self._nc is not None:
-            try:
-                await self._nc.drain()
-            except Exception:
-                pass
+            from nexus_ai.core.nats_utils import safe_close
+            await safe_close(self._nc)
             self._nc = None
             self._js = None
             self._connected = False
@@ -245,14 +243,22 @@ class ProjectionWorker:
     # ── NATS connection ──────────────────────────────────────────────────
 
     async def _connect_nats(self) -> None:
-        """Połącz z NATS i skonfiguruj JetStream."""
-        import nats as nats_module
+        """Połącz z NATS i skonfiguruj JetStream.
+
+        SUPERMOC nats-py:
+          - Connection callbacks (disconnected_cb, reconnected_cb, closed_cb)
+          - nats-py error types (NatsErrors.TimeoutError, ConnectionClosedError)
+        """
+        from nexus_ai.core.nats_utils import NatsErrors, get_connection
+
+        NatsErrors.init()
+
         from nats.js.api import StorageType
 
-        self._nc = await nats_module.connect(
-            servers=self._nats_servers,
-            connect_timeout=10.0,
+        self._nc = await get_connection(
+            nats_url=self._nats_servers,
             name="nexus-projection-worker",
+            connect_timeout=10.0,
         )
         self._js = self._nc.jetstream()
         self._connected = True
@@ -327,11 +333,15 @@ class ProjectionWorker:
             sub = await self._js.pull_subscribe(
                 subject=filter_subject or ">",
                 stream=stream_name,
-                durable=f"{projection.name}-worker",
-                config={
-                    "max_deliver": 3,
-                    "ack_wait": 30,
-                },
+                durable=f"{projection.name}-worker",                    config={
+                        "max_deliver": 3,
+                        "ack_wait": 30,
+                        "max_ack_pending": 100,
+                        "idle_heartbeat": 10,
+                        "flow_control": True,
+                        "ordered": True,
+                        "headers_only": False,
+                    },
             )
             logger.info(
                 "[PROJECTION-WORKER] Pull subscriber ready: %s/%s",

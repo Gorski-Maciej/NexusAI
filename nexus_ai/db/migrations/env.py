@@ -68,6 +68,21 @@ if config.config_file_name is not None:
 
 logger = logging.getLogger("alembic.env")
 
+# ── SUPERMOC: Zbiór tabel DuckDB-only (pomijane w autogenerate) ──────
+_DUCKDB_ONLY_TABLES = frozenset({
+    "telemetry_spans",
+    "telemetry_metrics",
+    "analytics_events",
+    "analytics_summaries",
+    "zpk_accounts",
+    "zpk_mapping_history",
+    "zpk_subaccounts",
+    "decision_traces",
+    "decision_analytics",
+    "fallback_events",
+    "context_enricher_cache",
+})
+
 # ── Target metadata: collect all Base.metadata used in the project ──
 # Wszystkie modele zdefiniowane w nexus_ai.db.models (SQLModel)
 from nexus_ai.db.models import (
@@ -85,6 +100,29 @@ target_metadata = DbModelsBase.metadata
 for table_name, table in RobotonBase.metadata.tables.items():
     if table_name not in target_metadata.tables:
         target_metadata.tables[table_name] = table
+
+
+# ── SUPERMOC: include_object — filtr tabel DuckDB-only z autogenerate ─
+
+def _include_object(obj, name: str, type_: str, reflected: bool, compare_to) -> bool:
+    """Filtruj obiekty schematu dla Alembic autogenerate.
+
+    Pomija:
+    - Tabele DuckDB-only (analytics, zpk, telemetry)
+    - Wewnętrzne tabele sqlite_*
+    - Indeksy sqlite_autoindex*
+    """
+    if type_ == "table":
+        if name.startswith("sqlite_"):
+            return False
+        if name in _DUCKDB_ONLY_TABLES:
+            return False
+        return True
+    if type_ == "index":
+        if name.startswith("sqlite_autoindex"):
+            return False
+        return True
+    return True
 
 
 def get_database_url() -> str:
@@ -114,6 +152,8 @@ def run_migrations_offline() -> None:
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
         render_as_batch=True,  # Required for SQLite ALTER TABLE support
+        # SUPERMOC: include_object — filtr DuckDB-only tables dla offline
+        include_object=_include_object,
     )
     with context.begin_transaction():
         context.run_migrations()
@@ -136,9 +176,39 @@ def run_migrations_online() -> None:
             connection=connection,
             target_metadata=target_metadata,
             render_as_batch=True,
+            # ════════════════════════════════════════════════════════════
+            # SUPERMOCE Alembic (Faza 1 + 2):
+            # ════════════════════════════════════════════════════════════
+            compare_type=True,              # Wykrywa zmiany typów kolumn
+            compare_server_default=True,    # Wykrywa zmiany wartości domyślnych
+            transaction_per_migration=True, # Każda migracja = osobna transakcja (SQLite-safe)
+            include_object=_include_object, # Filtr DuckDB-only tables
         )
         with context.begin_transaction():
             context.run_migrations()
+
+        # ════════════════════════════════════════════════════════════════
+        # SUPERMOC: user_version sync — po migracji aktualizuj PRAGMA
+        # user_version. To pozwala zewnętrznym narzędziom szybko odczytać
+        # wersję schematu bez analizowania tabel Alembic.
+        # ════════════════════════════════════════════════════════════════
+        try:
+            from alembic.runtime.migration import MigrationContext as _MCtx
+            _mctx = _MCtx.configure(connection)
+            _current_rev = _mctx.get_current_revision()
+            if _current_rev:
+                # Weź pierwszą część rewizji (np. "0001" z "0001_initial_schema")
+                _rev_part = _current_rev.split("_")[0] if "_" in _current_rev else _current_rev
+                _digits = "".join(c for c in _rev_part if c.isdigit())
+                if _digits:
+                    _version = int(_digits) % (2**32)  # 32-bit unsigned
+                    connection.execute(text(f"PRAGMA user_version = {_version}"))
+                    logger.info(
+                        "[ALEMBIC-LIFECYCLE] user_version synced: %d (rev %s)",
+                        _version, _current_rev,
+                    )
+        except Exception as _exc:
+            logger.warning("[ALEMBIC-LIFECYCLE] user_version sync failed: %s", _exc)
 
     connectable.dispose()
 

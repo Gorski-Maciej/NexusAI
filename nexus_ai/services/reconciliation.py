@@ -13,11 +13,12 @@ from collections.abc import AsyncIterator
 from msgspec import Struct, field
 from typing import Any, final
 
-import nats
 import pendulum
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm import Session, sessionmaker
+
+from nexus_ai.core.nats_utils import NatsErrors, get_connection, safe_close
 
 from nexus_ai.core.msgspec_utils import msgspec_loads
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
@@ -85,12 +86,17 @@ class ReconciliationEngine:
         self._nc = None
 
     async def start(self) -> None:
-        self._nc = await nats.connect(self.nats_url)
-        await self._nc.subscribe(self.subject, cb=self._on_nats_message)
+        NatsErrors.init()
+        self._nc = await get_connection(
+            nats_url=self.nats_url,
+            name="nexus-reconciliation",
+        )
+        if self._nc is not None:
+            await self._nc.subscribe(self.subject, cb=self._on_nats_message)
 
     async def stop(self) -> None:
         if self._nc is not None:
-            await self._nc.close()
+            await safe_close(self._nc)
             self._nc = None
 
     async def _on_nats_message(self, msg: Any) -> None:

@@ -13,16 +13,37 @@ def _quote_ident(identifier: str) -> str:
     return '"' + identifier.replace('"', '""') + '"'
 
 
-def run_migration_sanity_checks(engine: Engine) -> dict[str, int]:
+def get_current_alembic_revision(engine: Engine) -> str | None:
+    """SUPERMOC: Pobierz aktualną rewizję Alembic z bazy.
+
+    Używa MigrationContext do odczytu wersji schematu.
+    Zwraca None jeśli baza nie ma jeszcze rewizji (fresh database).
+    """
+    try:
+        from alembic.runtime.migration import MigrationContext
+
+        with engine.connect() as conn:
+            context = MigrationContext.configure(conn)
+            return context.get_current_revision()
+    except Exception:
+        return None
+
+
+def run_migration_sanity_checks(engine: Engine) -> dict[str, int | str | None]:
     """
     Lightweight post-migration sanity checks.
     Returns key counters useful for alerting / observability.
+
+    SUPERMOC: Includes Alembic revision in the result for traceability.
     """
+    alembic_revision = get_current_alembic_revision(engine)
+
     with engine.connect() as conn:
         invoices_count = int(conn.execute(text("SELECT COUNT(*) FROM invoices")).scalar_one())
         outbox_count = int(conn.execute(text("SELECT COUNT(*) FROM outbox_events")).scalar_one())
         users_count = int(conn.execute(text("SELECT COUNT(*) FROM users")).scalar_one())
     return {
+        "alembic_revision": alembic_revision,
         "invoices_count": invoices_count,
         "outbox_count": outbox_count,
         "users_count": users_count,

@@ -245,7 +245,11 @@ async def step_run_migrations(config: Any) -> StepResult:
                 duration_ms=(time.perf_counter() - start) * 1000,
             )
 
+        # SUPERMOC: Alembic command.upgrade jest idempotentny — jeśli baza
+        # jest już na head, upgrade nie robi nic. Nie ma potrzeby sprawdzania
+        # rewizji ręcznie.
         command.upgrade(alembic_cfg, "head")
+        logger.info("[BOOTSTRAP] All migrations applied (or already at head)")
 
         return StepResult(
             name=name,
@@ -374,34 +378,43 @@ async def step_verify_nats(config: Any) -> StepResult:
 
     nats_url = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
 
-    try:
-        from nats.aio.client import Client as NatsClient
+    from nexus_ai.core.nats_utils import NatsErrors, get_connection, safe_close
 
-        nc = NatsClient()
-        try:
-            with anyio.fail_after(5):
-                await nc.connect(nats_url, connect_timeout=3)
-            await nc.close()
+    NatsErrors.init()
+    try:
+        nc = await get_connection(
+            nats_url=nats_url,
+            name="nexus-bootstrap",
+            connect_timeout=3.0,
+        )
+        if nc is not None:
+            await safe_close(nc)
             return StepResult(
                 name=name,
                 status="ok",
                 message=f"Connected to {nats_url}",
                 duration_ms=(time.perf_counter() - start) * 1000,
             )
-        except TimeoutError:
-            return StepResult(
-                name=name,
-                status="warning",
-                message=f"NATS not reachable at {nats_url} (timeout)",
-                duration_ms=(time.perf_counter() - start) * 1000,
-            )
-        except Exception as exc:
-            return StepResult(
-                name=name,
-                status="warning",
-                message=f"NATS unavailable: {exc}",
-                duration_ms=(time.perf_counter() - start) * 1000,
-            )
+        return StepResult(
+            name=name,
+            status="warning",
+            message=f"NATS not reachable at {nats_url} (timeout)",
+            duration_ms=(time.perf_counter() - start) * 1000,
+        )
+    except NatsErrors.TimeoutError:
+        return StepResult(
+            name=name,
+            status="warning",
+            message=f"NATS not reachable at {nats_url} (timeout)",
+            duration_ms=(time.perf_counter() - start) * 1000,
+        )
+    except NatsErrors.ConnectionClosedError as exc:
+        return StepResult(
+            name=name,
+            status="warning",
+            message=f"NATS connection error: {exc}",
+            duration_ms=(time.perf_counter() - start) * 1000,
+        )
     except ImportError:
         return StepResult(
             name=name,

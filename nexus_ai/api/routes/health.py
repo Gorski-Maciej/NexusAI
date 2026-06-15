@@ -300,11 +300,26 @@ class HealthController(Controller):
             return False
 
     async def _nats_check(self) -> bool:
-        """Check NATS connection."""
+        """Check NATS connection with JetStream status.
+
+        SUPERMOC NATS: Używa NatsSupervisor do pełnej diagnostyki.
+        """
         nats_url = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
         try:
+            # SUPERMOC: NatsSupervisor z pełnym monitoringiem
+            from nexus_ai.core.nats_health import NatsSupervisor
+            supervisor = NatsSupervisor(nats_servers=[nats_url])
+            await supervisor.start()
+            try:
+                health = await supervisor.quick_health()
+                return health.get("nats") == "OK"
+            finally:
+                await supervisor.stop()
+        except ImportError:
+            pass
+        # Fallback: podstawowy ping NATS
+        try:
             from nats.aio.client import Client as NatsClient
-
             nc = NatsClient()
             try:
                 with anyio.fail_after(5):
@@ -313,10 +328,36 @@ class HealthController(Controller):
                 return True
             except Exception:
                 return False
-        except ImportError:
-            return False
         except Exception:
             return False
+
+    @get(
+        "/nats",
+        return_dto=GenericDictDTO,
+        summary="NATS JetStream health and status",
+        description="Returns detailed NATS JetStream status: connection, streams with info, consumers with pending counts.",
+        operation_id="healthNats",
+    )
+    async def nats_health(self) -> dict[str, Any]:
+        """NATS JetStream full status endpoint.
+
+        Returns:
+            Pełny stan NATS: connection, streams, consumers, metryki.
+        """
+        try:
+            from nexus_ai.core.nats_health import NatsSupervisor
+            nats_url = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
+            supervisor = NatsSupervisor(nats_servers=[nats_url])
+            await supervisor.start()
+            try:
+                status = await supervisor.get_full_status()
+                return status
+            finally:
+                await supervisor.stop()
+        except ImportError:
+            return {"status": "NOT_AVAILABLE", "message": "NatsSupervisor not available"}
+        except Exception as exc:
+            return {"status": "ERROR", "message": str(exc)}
 
 
 class HealthControllerV2(HealthController):
