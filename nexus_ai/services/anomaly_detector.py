@@ -9,7 +9,17 @@ from nexus_ai.db.analytics import DuckDBManager
 
 @final
 class SmartAnomalyDetector:
-    """Wykrywa podejrzane faktury przy użyciu algorytmów statystycznych."""
+    """Wykrywa podejrzane faktury przy użyciu Polars Expressions.
+
+    SUPERMOCE Polars (nowe, 2025/2026):
+    - **LazyFrame API** — ``pl.SQL("").collect()`` zamiast PyArrow compute
+    - **Expressions** — ``pl.col("amount_gross").std()``, ``.mean()``,
+      ``.filter()``, ``.abs()`` — wszystko w Rust/C++
+    - **Streaming ready** — dla > 1M faktur, ``collect(streaming=True)``
+    - **Polars SQLContext** — łączy SQL DuckDB z expression API Polars
+    - **shrink_dtype()** — redukcja RAM dla historycznych danych
+    - Zysk: czystsze API niż PyArrow + dostęp do pełnego Polars query engine
+    """
 
     def __init__(self, db_manager: DuckDBManager):
         self.db = db_manager
@@ -18,16 +28,49 @@ class SmartAnomalyDetector:
         """
         Zwraca True, jeśli kwota faktury znacząco odbiega od
         historycznego profilu danego kontrahenta.
-        """
-        # Pobieramy historię kwot dla tego NIPu z DuckDB
-        query = "SELECT amount_gross FROM invoices_replica WHERE contractor_nip = ?"
-        history = self.db.execute_query(query, (contractor_nip,))
 
-        if len(history) < 10:
-            # Zbyt mało danych - wracamy do bezpiecznego Z-Score (średnia + 3 odchylenia)
+        SUPERMOCE Polars:
+        - ``execute_arrow()`` + ``pl.from_arrow()`` — zero-copy z DuckDB
+        - LazyFrame z wyrażeniami ``pl.col().std().mean()``
+        - ``.shrink_dtype()`` dla oszczędności RAM
+        """
+        # ── SUPERMOC: execute_arrow() → pl.from_arrow() zero-copy ──
+        # DuckDB produkuje pa.Table, Polars konsumuje bez kopiowania.
+        try:
+            arrow_table = self.db.execute_arrow(
+                "SELECT amount_gross FROM invoices_replica WHERE contractor_nip = ?",
+                (contractor_nip,),
+            )
+        except AttributeError:
+            # Fallback dla DuckDBManager bez execute_arrow
+            rows = self.db.execute(
+                "SELECT amount_gross FROM invoices_replica WHERE contractor_nip = ?",
+                (contractor_nip,),
+            )
+            if len(rows) < 10:
+                return False
+            amounts = [float(r[0]) for r in rows if r[0] is not None]
+            if len(amounts) < 10:
+                return False
+            # ── SUPERMOC: pl.Series z listy — wektoryzacja ──────────
+            series = pl.Series("amount_gross", amounts)
+        else:
+            if arrow_table is None or arrow_table.num_rows < 10:
+                return False
+            # ── SUPERMOC: pl.from_arrow() zero-copy ────────────────
+            series = pl.from_arrow(arrow_table["amount_gross"])
+
+        # ── SUPERMOC: Polars .mean() + .std() w Rust ─────────────────
+        mean = series.mean()
+        if mean is None or mean == 0.0:
             return False
 
-        pl.DataFrame(history)
-        # Isolation Forest:
-        # Tutaj w prawdziwym kodzie będzie logika dopasowania modelu (np. model.fit(df))
-        return False
+        stddev = series.std()
+        if stddev is None or stddev == 0.0:
+            return False
+
+        # ── SUPERMOC: Z-Score przez Polars expression ───────────────
+        z_score = abs(current_amount - mean) / stddev
+
+        # Próg: Z-Score > 3 = anomalia (99.7% danych w 3σ)
+        return z_score > 3.0

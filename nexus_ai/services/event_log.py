@@ -320,40 +320,62 @@ class EventLog:
         self,
         days: int = 30,
     ) -> dict[str, Any]:
-        """Zwróć statystyki zdarzeń z ostatnich N dni."""
+        """Zwróć statystyki zdarzeń z ostatnich N dni.
+
+        SUPERMOC Polars:
+        - ``execute_arrow()`` + ``pl.from_arrow()" — zero-copy z DuckDB
+        - ``pl.DataFrame.group_by()" zamiast ``GROUP BY`` w SQL
+        - ``pl.col().count().sort()" — czytelniejsze niż ``ORDER BY cnt DESC``
+        - ``shrink_dtype()" dla oszczędności RAM
+        """
         since = pendulum.now("UTC").subtract(days=days).isoformat()
 
-        # Użyj DuckDB dla agregacji jeśli dostępny
+        # ── SUPERMOC: execute_arrow() + Polars zamiast raw DuckDB ──
         if self._duckdb:
             try:
-                total = self._duckdb.execute(
-                    "SELECT COUNT(*) FROM event_log_analytics WHERE created_at >= ?::TIMESTAMP",
+                import polars as pl
+
+                # ── SUPERMOC: execute_arrow() — zero-copy Arrow ────
+                arrow_table = self._duckdb.execute_arrow(
+                    "SELECT event_type, source, severity, created_at "
+                    "FROM event_log_analytics WHERE created_at >= ?::TIMESTAMP",
                     (since,),
                 )
-                by_type = self._duckdb.execute(
-                    "SELECT event_type, COUNT(*) as cnt FROM event_log_analytics "
-                    "WHERE created_at >= ?::TIMESTAMP GROUP BY event_type ORDER BY cnt DESC",
-                    (since,),
-                )
-                by_severity = self._duckdb.execute(
-                    "SELECT severity, COUNT(*) as cnt FROM event_log_analytics "
-                    "WHERE created_at >= ?::TIMESTAMP GROUP BY severity ORDER BY cnt DESC",
-                    (since,),
-                )
-                by_source = self._duckdb.execute(
-                    "SELECT source, COUNT(*) as cnt FROM event_log_analytics "
-                    "WHERE created_at >= ?::TIMESTAMP GROUP BY source ORDER BY cnt DESC",
-                    (since,),
-                )
+
+                if arrow_table is None or arrow_table.num_rows == 0:
+                    return {
+                        "period_days": days,
+                        "total": 0,
+                        "by_type": {},
+                        "by_severity": {},
+                        "by_source": {},
+                    }
+
+                # ── SUPERMOC: pl.from_arrow() zero-copy ───────────
+                df = pl.from_arrow(arrow_table)
+
+                # ── SUPERMOC: group_by() zamiast GROUP BY SQL ─────
+                total = df.height
+                by_type = df.group_by("event_type").agg(
+                    pl.len().alias("cnt")
+                ).sort("cnt", descending=True)
+                by_severity = df.group_by("severity").agg(
+                    pl.len().alias("cnt")
+                ).sort("cnt", descending=True)
+                by_source = df.group_by("source").agg(
+                    pl.len().alias("cnt")
+                ).sort("cnt", descending=True)
+
+                # ── SUPERMOC: shrink_dtype() — redukcja RAM ──────
+                by_type = by_type.shrink_dtype()
+                by_severity = by_severity.shrink_dtype()
 
                 return {
                     "period_days": days,
-                    "total": total[0][0] if total else 0,
-                    "by_type": {str(r[0]): int(r[1]) for r in by_type} if by_type else {},
-                    "by_severity": {str(r[0]): int(r[1]) for r in by_severity}
-                    if by_severity
-                    else {},
-                    "by_source": {str(r[0]): int(r[1]) for r in by_source} if by_source else {},
+                    "total": total,
+                    "by_type": dict(by_type.rows()),
+                    "by_severity": dict(by_severity.rows()),
+                    "by_source": dict(by_source.rows()),
                 }
             except Exception:
                 pass

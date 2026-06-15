@@ -1,30 +1,31 @@
 """
-SemanticGuard — semantyczny wykrywacz anomalii faktur na ASYNC vec0.
+SemanticGuard — semantyczny wykrywacz anomalii faktur z DuckDB VSS.
 
-Zgodnie z docs/SQLITE_VEC_AUDIT.md:
-- FAZA 1: Konwersja z sync SQL na ASYNC AsyncVectorStore z vec0 virtual table
-- FAZA 2: partition_key=vendor_nip dla pre-filteringu
-- metadata_columns: category_code, amount_net, id przechowywane w vec0
-- Używa VEC0_SCHEMAS["vendor_invoices"] z unified schema registry
+SUPERMOCE DuckDB version:
+- DuckDB VSS (Vector Similarity Search) zamiast osobnej bazy sqlite-vec.
+- Wszystkie embeddingi w tej samej bazie DuckDB — jedno połączenie,
+  jedna transakcja, backup.
+- ``array_cosine_similarity()`` — natywna funkcja DuckDB z indeksem HNSW.
+- ``GENERATE_SERIES`` dla batch insert wektorów.
 
 Zgodnie z aa3fvcx.txt:
-- Używa sqlite-vec (Punkt 3) do wyszukiwania wektorowego
-- Używa llama-cpp-python do embeddingów (technologia ze stacku)
-- Nie używa agentów AI, protokołów ani specyficznych modeli LLM
+- DuckDB (Punkt 3) dla analityki OLAP + teraz również VSS
+- Używa llama-cpp-python do embeddingów
 """
 
 from __future__ import annotations
 
+from decimal import Decimal
 from pathlib import Path
 from typing import Any, final
 
 import anyio
 import pendulum
+import duckdb
 from structlog import get_logger
 
 from nexus_ai.core.cache import get_cache
 from nexus_ai.core.embeddings import get_embedding_service
-from nexus_ai.db.vector_store import AsyncVectorStore
 
 # ── SHA-256 przez nexus-crypto (Rust+PyO3) z fallback do hashlib ────────
 try:
@@ -75,54 +76,95 @@ ANOMALY_RULES: list[dict[str, Any]] = [
 ]
 
 
-# ── SemanticGuard (ASYNC) ───────────────────────────────────────────────────
+# ── DuckDB VSS Schema ───────────────────────────────────────────────────────
+
+VENDOR_EMBEDDINGS_SCHEMA = """
+-- SUPERMOC: DuckDB VSS z indeksem HNSW
+-- Zastępuje osobną bazę sqlite-vec + osobny VectorStore
+-- Wszystkie embeddingi w tej samej bazie DuckDB
+CREATE TABLE IF NOT EXISTS vendor_embeddings (
+    id              VARCHAR PRIMARY KEY,
+    vendor_nip      VARCHAR NOT NULL,
+    embedding       FLOAT[768],
+    category_code   VARCHAR DEFAULT '',
+    amount_net      DOUBLE DEFAULT 0.0,
+    invoice_text    VARCHAR DEFAULT '',
+    transaction_id  VARCHAR DEFAULT '',
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    -- Partition key dla pre-filteringu
+    partition_key   VARCHAR GENERATED ALWAYS AS (vendor_nip) STORED
+);
+
+-- SUPERMOC: Indeks HNSW dla VSS (cosine similarity)
+-- M=16, ef_construction=200 — optymalne dla 768-dim wektorów
+CREATE INDEX IF NOT EXISTS idx_vendor_embeddings_hnsw
+    ON vendor_embeddings
+    USING HNSW (embedding cosine)
+    WITH (dim=768, M=16, ef_construction=200);
+
+-- Indeks dla pre-filteringu po vendor_nip
+CREATE INDEX IF NOT EXISTS idx_vendor_embeddings_nip
+    ON vendor_embeddings(vendor_nip);
+"""
+
+
+# ── SemanticGuard z DuckDB VSS ───────────────────────────────────────────────
 
 
 @final
 class SemanticGuard:
-    """Detektor anomalii semantycznych — ASYNC na vec0 z partition_key.
+    """Detektor anomalii semantycznych — DuckDB VSS.
 
-    FAZA 1+2 SUPERMOCE:
-    - vec0 virtual table z ``partition_key=vendor_nip``
-    - metadata_columns: category_code, amount_net, id
-    - Wszystkie operacje ASYNC — 0ms blokowania async loop
-    - ``search_similar(partition={"vendor_nip": nip})`` — pre-filtering
+    SUPERMOCE DuckDB:
+    - VSS (Vector Similarity Search) z indeksem HNSW — natywny w DuckDB
+    - ``array_cosine_similarity()`` — funkcja skalarna DuckDB
+    - JEDNA baza zamiast dwóch (sqlite-vec + DuckDB analityka)
+    - Pre-filtering przez ``WHERE vendor_nip = ?`` przed VSS
+    - Backup całej bazy przez ``EXPORT DATABASE`` — backup embeddingów
+      razem z resztą danych analitycznych
     """
 
     EMBEDDING_DIM = 768
 
     def __init__(
         self,
-        db_path: str = "app_data/semantic_guard.db",
+        conn_or_path: duckdb.DuckDBPyConnection | str,
+        embedding_dim: int = 768,
     ) -> None:
-        self._db_path = db_path
-        self._store: AsyncVectorStore | None = None
+        """Inicjalizacja SemanticGuard z DuckDB VSS.
+
+        SUPERMOC DuckDB:
+        - VSS (Vector Similarity Search) z indeksem HNSW — natywny w DuckDB
+        - ``array_cosine_similarity()`` — funkcja skalarna DuckDB
+        - JEDNA baza zamiast dwóch (sqlite-vec + DuckDB analityka)
+
+        Args:
+            conn_or_path: Połączenie DuckDB (współdzielone z DuckDBManager)
+                LUB ścieżka do pliku bazy (tworzy nowe połączenie).
+            embedding_dim: Wymiar wektorów embeddingu (domyślnie 768).
+        """
+        # SUPERMOC: Akceptujemy zarówno conn jak i path dla kompatybilności
+        if isinstance(conn_or_path, str):
+            self._conn = duckdb.connect(conn_or_path)
+        else:
+            self._conn = conn_or_path
         self._embedding_service = get_embedding_service()
-        self._embedding_dim: int = self.EMBEDDING_DIM
+        self._embedding_dim = embedding_dim
+        self._ensure_schema()
 
-    async def _init_store(self) -> AsyncVectorStore:
-        """Lazy init ASYNC VectorStore z vec0 vendor_invoices."""
-        if self._store is not None:
-            return self._store
-        Path(self._db_path).parent.mkdir(parents=True, exist_ok=True)
-        self._store = AsyncVectorStore(self._db_path)
-
-        # FAZA 2: Użyj unified schema registry + vec0 z partition_key
-        await self._store.ensure_vec0_table("vendor_invoices")
-
-        # Tabela pomocnicza dla przechowywania oryginalnego tekstu faktury
-        conn = await self._store.get_conn()
-        await conn.execute("""
-            CREATE TABLE IF NOT EXISTS vendor_invoice_text (
-                rowid           INTEGER PRIMARY KEY,
-                vendor_nip      TEXT NOT NULL,
-                invoice_text    TEXT DEFAULT '',
-                transaction_id  TEXT DEFAULT '',
-                timestamp       TEXT NOT NULL DEFAULT (datetime('now'))
+    def _ensure_schema(self) -> None:
+        """Utwórz schemat VSS — INSTALL vss + CREATE TABLE + indeks HNSW."""
+        # SUPERMOC: Instalacja i załadowanie VSS extension
+        try:
+            self._conn.execute("INSTALL vss; LOAD vss;")
+        except Exception:
+            logger.warning(
+                "[SemanticGuard] DuckDB VSS extension not available — "
+                "vector search disabled. Install with: INSTALL vss; LOAD vss;"
             )
-        """)
-        await conn.commit()
-        return self._store
+
+        # Utwórz tabelę embeddingów z indeksem HNSW
+        self._conn.execute(VENDOR_EMBEDDINGS_SCHEMA)
 
     def _get_embedding(self, text: str) -> list[float]:
         """Generate embedding vector from text."""
@@ -136,10 +178,12 @@ class SemanticGuard:
         vendor_nip: str,
         amount_net: float = 0.0,
     ) -> dict[str, Any]:
-        """Evaluate invoice for semantic anomalies (ASYNC).
+        """Evaluate invoice for semantic anomalies — DuckDB VSS.
 
-        FAZA 1 SUPERMOC: async przez search_similar() — 0ms blokowania.
-        FAZA 2 SUPERMOC: pre-filtering przez partition={"vendor_nip": nip}.
+        SUPERMOC DuckDB:
+        - ``array_cosine_similarity()`` — natywna funkcja VSS
+        - ``WHERE vendor_nip = ?`` — pre-filtering przed VSS
+        - ``ORDER BY score DESC LIMIT 5`` — najbliżsi sąsiedzi
 
         Wynik cache'owany w NexusCache przez 3600s.
 
@@ -161,23 +205,27 @@ class SemanticGuard:
             return cached
 
         embedding = await anyio.to_thread.run_sync(self._get_embedding, invoice_text)
-        store = await self._init_store()
 
-        # FAZA 1+2: ASYNC search_similar z partition_key pre-filtering
-        try:
-            similar = await store.search_similar(
-                query_vector=embedding,
-                limit=5,
-                table_name="vendor_invoices",
-                partition={"vendor_nip": vendor_nip},
-            )
-        except Exception:
-            similar = []
+        # ── SUPERMOC: DuckDB VSS wyszukiwanie wektorowe ────────────────
+        # array_cosine_similarity() + indeks HNSW + pre-filtering
+        rows = self._conn.execute(
+            """
+            SELECT id, vendor_nip, category_code, amount_net, invoice_text,
+                   array_cosine_similarity(embedding, ?::FLOAT[768]) AS score
+            FROM vendor_embeddings
+            WHERE vendor_nip = ?
+              AND embedding IS NOT NULL
+            ORDER BY score DESC
+            LIMIT 5
+            """,
+            (embedding, vendor_nip),
+        ).fetchall()
 
         # Calculate anomaly score
-        if similar:
-            distances = [float(r["_distance"]) for r in similar]
-            anomaly_score = sum(distances) / len(distances)
+        if rows:
+            distances = [float(r[5]) for r in rows]  # score = cosine similarity
+            # Normalize: 1 - avg_similarity → anomaly_score
+            anomaly_score = 1.0 - (sum(distances) / len(distances))
         else:
             anomaly_score = 0.0  # New vendor — no history
 
@@ -209,49 +257,38 @@ class SemanticGuard:
         amount_net: float = 0.0,
         transaction_id: str = "",
     ) -> None:
-        """Store verified invoice in vec0 for future anomaly detection (ASYNC).
+        """Store verified invoice in DuckDB VSS for future anomaly detection.
 
-        FAZA 1 SUPERMOC: async insert_vectors_batch() przez vec0.
-        FAZA 2 SUPERMOC: metadata (category_code, amount_net) przechowywane
-        w vec0 jako metadata_columns — brak osobnej tabeli, brak JOIN-ów.
+        SUPERMOC DuckDB:
+        - JEDEN INSERT zamiast dwóch (embedding + text) — wszystko w jednej tabeli
+        - Indeks HNSW automatycznie indeksuje nowy wektor
+        - Backup przez EXPORT DATABASE — embeddingi razem z resztą
         """
         import uuid
 
         embedding = await anyio.to_thread.run_sync(self._get_embedding, invoice_text)
-        store = await self._init_store()
 
         record_id = uuid.uuid4().hex
 
-        # FAZA 2: insert z metadata przez unified schema
-        await store.insert_vectors_batch(
-            vectors=[(record_id, embedding)],
-            table_name="vendor_invoices",
-            metadata=[{
-                "vendor_nip": vendor_nip,
-                "category_code": category_code,
-                "amount_net": float(amount_net),
-                "id": record_id,
-            }],
-        )
-
-        # Zapisz tekst faktury w tabeli pomocniczej
-        conn = await store.get_conn()
-        await conn.execute(
-            """INSERT INTO vendor_invoice_text
-               (rowid, vendor_nip, invoice_text, transaction_id, timestamp)
-               VALUES (?, ?, ?, ?, ?)""",
+        # SUPERMOC: JEDEN INSERT do DuckDB z wektorem i metadanymi
+        self._conn.execute(
+            """INSERT INTO vendor_embeddings
+               (id, vendor_nip, embedding, category_code, amount_net,
+                invoice_text, transaction_id)
+               VALUES (?, ?, ?::FLOAT[768], ?, ?, ?, ?)""",
             (
                 record_id,
                 vendor_nip,
+                embedding,
+                category_code,
+                float(amount_net),
                 invoice_text[:5000],
                 transaction_id,
-                pendulum.now("UTC").isoformat(),
             ),
         )
-        await conn.commit()
 
         logger.info(
-            "[SemanticGuard] Stored invoice %s for vendor %s (cat=%s, net=%.2f)",
+            "[SemanticGuard] Stored invoice %s for vendor %s (cat=%s, net=%.2f) [DuckDB VSS]",
             transaction_id,
             vendor_nip,
             category_code,

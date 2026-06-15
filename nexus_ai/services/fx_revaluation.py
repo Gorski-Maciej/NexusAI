@@ -77,10 +77,25 @@ def post_realized_fx_difference(
 def calculate_unrealized_fx_deltas(
     duckdb: DuckDBManager, month_end: pendulum.Date
 ) -> list[tuple[Any, ...]]:
-    return duckdb.execute(
+    """SUPERMOC Polars: Oblicz niezrealizowane różnice kursowe przez
+    ``execute_arrow()`` + ``pl.from_arrow()`` + ``pl.DataFrame.with_columns()``
+    zamiast czystego DuckDB SQL.
+
+    Polars pozwala na:
+    - Łatwiejsze rozszerzanie o dodatkowe obliczenia (np. weighted deltas)
+    - ``shrink_dtype()`` dla redukcji RAM
+    - ``filter()`` z wyrażeniami dla dalszego przetwarzania
+    - ``sink_parquet()" jeśli wynik ma być zapisany
+    """
+    import polars as pl
+
+    # ── SUPERMOC: execute_arrow() + pl.from_arrow() zero-copy ────
+    # DuckDB produkuje Arrow Table, Polars konsumuje bez kopiowania.
+    arrow_table = duckdb.execute_arrow(
         """
         WITH open_fx AS (
-            SELECT id, type AS invoice_type, currency_code, amount_gross AS amount_foreign, exchange_rate_at_issue
+            SELECT id, type AS invoice_type, currency_code,
+                   amount_gross AS amount_foreign, exchange_rate_at_issue
             FROM invoices_replica
             WHERE status IN ('PARTIAL', 'UNPAID')
               AND currency_code IS NOT NULL
@@ -90,9 +105,28 @@ def calculate_unrealized_fx_deltas(
             o.id,
             o.invoice_type,
             o.currency_code,
-            ROUND((o.amount_foreign * r.rate) - (o.amount_foreign * o.exchange_rate_at_issue), 2) AS unrealized_delta
+            o.amount_foreign,
+            o.exchange_rate_at_issue,
+            r.rate AS month_end_rate
         FROM open_fx o
         JOIN fx_rates r ON r.currency_code = o.currency_code AND r.rate_date = ?
         """,
         (month_end,),
     )
+
+    if arrow_table is None or arrow_table.num_rows == 0:
+        return []
+
+    # ── SUPERMOC: Polars DataFrame z wyrażeniami ─────────────────
+    # ``pl.col().sub().round(2)`` zamiast SQL ROUND().
+    df = pl.from_arrow(arrow_table).with_columns([
+        (
+            pl.col("amount_foreign") * pl.col("month_end_rate")
+            - pl.col("amount_foreign") * pl.col("exchange_rate_at_issue")
+        ).round(2).alias("unrealized_delta")
+    ])
+
+    # ── SUPERMOC: shrink_dtype() dla redukcji RAM ────────────────
+    df = df.shrink_dtype()
+
+    return df.select(["id", "invoice_type", "currency_code", "unrealized_delta"]).rows()

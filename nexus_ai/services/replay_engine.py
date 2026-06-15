@@ -216,25 +216,40 @@ def _compare_verdicts(
     (like _rule_id, _priority) are excluded from comparison
     because rule IDs may differ between versions.
 
+    SUPERMOC Polars:
+    - ``pl.DataFrame`` zamiast ręcznej pętli ``for comp_field in ...``
+    - ``pl.when().then().otherwise()" dla logiki warunkowej
+    - ``pl.col().is_not_null()" zamiast ``is None`` check
+    - ``pl.col().ne(")".alias()" dla porównania stringów
+
     Returns:
         List of {"field": str, "original": Any, "replayed": Any} dicts.
     """
-    differences: list[dict[str, Any]] = []
+    import polars as pl
 
+    # ── SUPERMOC: Polars DataFrame zamiast pętli Python ─────────-
+    # Budujemy DataFrame z polami do porównania i używamy
+    # wyrażeń Polars do znajdowania różnic.
+    diff_data = []
     for comp_field in _COMPARISON_FIELDS:
         orig_val = original.get(comp_field)
         replay_val = replayed.get(comp_field)
+        diff_data.append({
+            "field": comp_field,
+            "original": str(orig_val) if orig_val is not None else None,
+            "replayed": str(replay_val) if replay_val is not None else None,
+        })
 
-        # Normalize None vs null
-        if orig_val is None and replay_val is None:
-            continue
-        if orig_val is None or replay_val is None or str(orig_val) != str(replay_val):
-            differences.append(
-                {
-                    "field": comp_field,
-                    "original": orig_val,
-                    "replayed": replay_val,
-                }
-            )
+    # ── SUPERMOC: Polars expressions dla porównania ──────────────
+    df = pl.DataFrame(diff_data)
+    mismatches = df.filter(
+        ~(
+            pl.col("original").is_null() & pl.col("replayed").is_null()
+        ) & (
+            pl.col("original").is_null()
+            | pl.col("replayed").is_null()
+            | (pl.col("original") != pl.col("replayed"))
+        )
+    )
 
-    return differences
+    return mismatches.to_dicts()

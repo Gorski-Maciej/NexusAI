@@ -34,85 +34,66 @@ class FixedAssetsService:
         self.tigerbeetle = tigerbeetle
 
     def generate_schedule(self, asset_id: str) -> int:
-        """Generate/refresh straight-line depreciation schedule starting next month."""
-        row = self.duckdb.execute(
-            """
-            SELECT id, asset_name, initial_value, COALESCE(salvage_value, residual_value, 0), depreciation_method,
-                   COALESCE(annual_rate, depreciation_rate), COALESCE(start_date, purchase_date), last_depreciation_date,
-                   account_id_debit, account_id_credit
-            FROM fixed_assets
-            WHERE id = ? AND status = 'ACTIVE'
-            """,
-            (asset_id,),
-        )
-        if not row:
-            return 0
+        """Generate/refresh straight-line depreciation schedule starting next month.
 
-        asset = row[0]
-        initial_value = Decimal(str(asset[2])).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-        residual_value = Decimal(str(asset[3])).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-        depreciation_method = str(asset[4] or "LINEAR").upper()
-        rate = Decimal(str(asset[5]))
-        purchase_date = asset[6]
-        if depreciation_method != "LINEAR":
-            return 0
-        if initial_value <= residual_value:
-            return 0
-        annual_amount = ((initial_value - residual_value) * rate).quantize(
-            Decimal("0.01"), rounding=ROUND_HALF_UP
-        )
-        monthly_amount = (annual_amount / Decimal("12")).quantize(
-            Decimal("0.01"), rounding=ROUND_HALF_UP
-        )
-        if monthly_amount <= Decimal("0.00"):
-            return 0
-
+        SUPERMOC DuckDB: ``GENERATE_SERIES`` zamiast pętli ``while`` w Pythonie.
+        DuckDB generuje cały harmonogram w jednym SQL.
+        Eliminacja: ~30 linii pętli Python.
+        """
+        # ── SUPERMOC: DuckDB GENERATE_SERIES ───────────────────────────
+        # Zamiast while loop w Pythonie na 50 lat miesięcznie,
+        # DuckDB generuje serie od 1 do 600 miesięcy i oblicza
+        # raty amortyzacji w jednym SQL.
         self.duckdb.execute(
             "DELETE FROM depreciation_schedule WHERE asset_id = ? AND is_posted = FALSE",
             (asset_id,),
         )
-
-        schedule_rows: list[tuple] = []
-        month_cursor = pendulum.Date(purchase_date.year, purchase_date.month, 1).add(months=1)
-        posted_sum_rows = self.duckdb.execute(
-            "SELECT COALESCE(SUM(amount), 0) FROM depreciation_schedule WHERE asset_id = ? AND is_posted = TRUE",
-            (asset_id,),
-        )
-        posted_sum = Decimal(str(posted_sum_rows[0][0])).quantize(
-            Decimal("0.01"), rounding=ROUND_HALF_UP
-        )
-        remaining = (initial_value - residual_value - posted_sum).quantize(
-            Decimal("0.01"), rounding=ROUND_HALF_UP
-        )
-        if remaining <= Decimal("0.00"):
-            return 0
-
-        while remaining > Decimal("0.00"):
-            installment = monthly_amount if monthly_amount <= remaining else remaining
-            installment = installment.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-            schedule_rows.append(
-                (
-                    asset_id,
-                    month_cursor.end_of("month"),
-                    float(installment),
-                    False,
-                    "PENDING",
-                    DEFAULT_LEDGER_ID,
-                    DEFAULT_TRANSFER_CODE,
-                )
+        self.duckdb.execute(
+            """
+            INSERT INTO depreciation_schedule (;
+            INSERT INTO depreciation_schedule (
+                asset_id, planned_date, amount, is_posted, status, ledger_id, transfer_code
             )
-            remaining = (remaining - installment).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-            month_cursor = month_cursor.add(months=1)
-
-        for row_values in schedule_rows:
-            self.duckdb.execute(
-                """
-                INSERT INTO depreciation_schedule (asset_id, planned_date, amount, is_posted, status, ledger_id, transfer_code)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """,
-                row_values,
-            )
-        return len(schedule_rows)
+            SELECT
+                fa.id AS asset_id,
+                (date_trunc('month', fa.purchase_date)
+                    + INTERVAL '1 month' * gn.n
+                    + INTERVAL '1 month'
+                    - INTERVAL '1 day')::DATE AS planned_date,
+                LEAST(
+                    ((fa.initial_value - COALESCE(fa.residual_value, 0))
+                        * COALESCE(fa.annual_rate, fa.depreciation_rate) / 12),
+                    (fa.initial_value - COALESCE(fa.residual_value, 0)
+                        - COALESCE((SELECT SUM(amount) FROM depreciation_schedule
+                                    WHERE asset_id = fa.id AND is_posted = TRUE), 0)
+                    )
+                ) AS amount,
+                FALSE AS is_posted,
+                'PENDING' AS status,
+                ? AS ledger_id,
+                ? AS transfer_code
+            FROM fixed_assets fa
+            CROSS JOIN (
+                SELECT unnest(generate_series(1, 600)) AS n
+            ) AS gn
+            WHERE fa.id = ?
+              AND fa.status = 'ACTIVE'
+              AND UPPER(COALESCE(fa.depreciation_method, 'LINEAR')) = 'LINEAR'
+              AND fa.initial_value > COALESCE(fa.residual_value, 0)
+              AND gn.n * ((fa.initial_value - COALESCE(fa.residual_value, 0))
+                    * COALESCE(fa.annual_rate, fa.depreciation_rate) / 12)
+                  < (fa.initial_value - COALESCE(fa.residual_value, 0)
+                    - COALESCE((SELECT SUM(amount) FROM depreciation_schedule
+                                WHERE asset_id = fa.id AND is_posted = TRUE), 0)
+                    )
+            """,
+            (DEFAULT_LEDGER_ID, DEFAULT_TRANSFER_CODE, asset_id),
+        )
+        # DuckDB: wykonaj SELECT change_count() dla liczby wstawionych wierszy
+        count = self.duckdb.execute(
+            "SELECT changes()"
+        ).fetchone()
+        return count[0] if count else 0
 
     async def execute_monthly_depreciation(self, as_of: date | None = None) -> int:
         today = as_of or pendulum.now().date()

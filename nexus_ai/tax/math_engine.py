@@ -306,6 +306,73 @@ def to_grosze(amount: Decimal | str | float | int) -> int:
     return int(grosze.to_integral_value(rounding=ROUND_HALF_UP))
 
 
+# ── SUPERMOC: DuckDB Python UDF dla kalkulacji VAT ──────────────────────────
+# DuckDB pozwala na rejestrację funkcji Python jako UDF z typem "native".
+# Dzięki temu kalkulacje VAT mogą być wykonywane bezpośrednio w SQL,
+# bez przechodzenia przez FFI do Rusta.
+#
+# Zastosowanie:
+#   conn.create_function("calculate_vat", calculate_vat_udf, ...)
+#   conn.execute("SELECT calculate_vat(net_grosze, vat_rate) FROM ...")
+
+
+def calculate_vat_udf(net_grosze: int, rate_str: str) -> int:
+    """DuckDB Python UDF: Oblicz VAT w groszach.
+
+    Ta funkcja może być zarejestrowana jako DuckDB UDF:
+    ``conn.create_function("calculate_vat", calculate_vat_udf, ...)``
+
+    Args:
+        net_grosze: Kwota netto w groszach.
+        rate_str: Stawka VAT jako string (np. "0.23").
+
+    Returns:
+        VAT w groszach (int).
+    """
+    try:
+        rate = Decimal(rate_str)
+        vat = Decimal(str(net_grosze)) * rate
+        return int(vat.to_integral_value(rounding=ROUND_HALF_UP))
+    except Exception:
+        return 0
+
+
+def register_vat_udfs(conn: Any) -> None:
+    """Zarejestruj wszystkie Python UDF dla kalkulacji VAT w DuckDB.
+
+    SUPERMOC DuckDB: ``create_function()`` rejestruje funkcję Python
+    jako natywny UDF w DuckDB. Funkcja może być używana w SQL:
+    ``SELECT calculate_vat(net_grosze, vat_rate) FROM invoices``
+
+    Args:
+        conn: DuckDB connection.
+    """
+    conn.create_function(
+        "calculate_vat",
+        calculate_vat_udf,
+        [int, str],  # argument types
+        int,  # return type
+        type="native",
+        side_effects=False,
+        null_handling="strict",
+    )
+
+    # UDF dla zaokrąglania groszy (HALF_UP)
+    def _round_half_up(value: int, precision: int = 1) -> int:
+        """Zaokrąglij do najbliższej jednostki precision z HALF_UP."""
+        d = Decimal(value) / Decimal(str(precision))
+        return int(d.to_integral_value(rounding=ROUND_HALF_UP)) * precision
+
+    conn.create_function(
+        "round_half_up_grosze",
+        _round_half_up,
+        [int, int],
+        int,
+        type="native",
+        side_effects=False,
+    )
+
+
 def to_zlotowki(grosze: int) -> Decimal:
     """Convert grosze back to Decimal (złotówki) for display."""
     if _HAS_NATIVE_RUST:

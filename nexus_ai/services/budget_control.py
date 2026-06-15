@@ -53,11 +53,13 @@ class BudgetaryControlEngine:
         self.ensure_budget_schema()
 
         period = month_period or pendulum.now().date().replace(day=1)
-        budget_rows = self.duckdb.execute(
+        # ── SUPERMOC: execute_arrow() zamiast execute() ──────────────
+        # Wynik w Arrow → Polars dla wektoryzowanych obliczeń.
+        arrow_table = self.duckdb.execute_arrow(
             "SELECT limit_amount, alert_at_percent FROM budget_definitions WHERE account_code = ? AND month_period = ?",
             (account_code, period),
         )
-        if not budget_rows:
+        if arrow_table is None or arrow_table.num_rows == 0:
             return BudgetStatus(
                 status="OK",
                 message=f"No budget configured for account {account_code} in {period}.",
@@ -70,7 +72,12 @@ class BudgetaryControlEngine:
                 projected_usage_percent=0.0,
             )
 
-        limit_amount, alert_at_percent = float(budget_rows[0][0]), float(budget_rows[0][1])
+        # ── SUPERMOC: pl.from_arrow() zero-copy ────────────────────
+        import polars as pl
+        budget_df = pl.from_arrow(arrow_table)
+
+        limit_amount = float(budget_df["limit_amount"][0])
+        alert_at_percent = float(budget_df["alert_at_percent"][0])
         if limit_amount <= 0:
             raise ValueError(f"Budget limit must be > 0 for {account_code} in {period}")
 
@@ -82,8 +89,18 @@ class BudgetaryControlEngine:
         current_amount = float(current_minor) / 100.0
         projected_amount = current_amount + float(new_invoice_amount)
 
-        current_usage_percent = (current_amount / limit_amount) * 100.0
-        projected_usage_percent = (projected_amount / limit_amount) * 100.0
+        # ── SUPERMOC: Polars wyrażenia dla procentów ────────────────
+        usage_df = pl.DataFrame({
+            "current_amount": [current_amount],
+            "projected_amount": [projected_amount],
+            "limit_amount": [limit_amount],
+        }).with_columns([
+            (pl.col("current_amount") / pl.col("limit_amount") * 100.0).alias("current_pct"),
+            (pl.col("projected_amount") / pl.col("limit_amount") * 100.0).alias("projected_pct"),
+        ])
+
+        current_usage_percent = float(usage_df["current_pct"][0])
+        projected_usage_percent = float(usage_df["projected_pct"][0])
 
         if projected_usage_percent >= 100.0:
             over_amount = projected_amount - limit_amount

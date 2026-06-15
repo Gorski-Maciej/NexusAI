@@ -236,7 +236,13 @@ class TaxSimulator:
 
     @staticmethod
     def _aggregate_month_metrics(frame: Any, pl: Any) -> dict[str, float]:
-        aggregated = frame.select(
+        # ── SUPERMOC: LazyFrame z wyrażeniami ─────────────────────
+        # Zamiast DataFrame.select(), używamy .lazy() dla optymalizacji
+        # grafu zapytań przez Polars optimizer.
+        # ``collect(streaming=True)`` dla dużych miesięcznych zbiorów.
+        lazy = frame.lazy() if hasattr(frame, 'lazy') else pl.LazyFrame(frame)
+
+        aggregated = lazy.select(
             [
                 pl.col("net")
                 .filter(pl.col("kind") == "revenue")
@@ -261,7 +267,12 @@ class TaxSimulator:
                 .alias("input_vat"),
             ]
         )
-        return aggregated.to_dicts()[0]
+        # ── SUPERMOC: streaming tylko dla dużych zbiorów (>1M rows) ──
+        # Dla małych miesięcznych agregacji streaming dodaje narzut.
+        # Sprawdzamy height DataFrame — LazyFrame nie ma materializowanych
+        # danych, ale jeśli frame ma 'height', to jest DataFrame.
+        needs_streaming = hasattr(frame, 'height') and frame.height > 1_000_000
+        return aggregated.collect(streaming=needs_streaming).to_dicts()[0]
 
     @staticmethod
     def _simulate_policy_row(

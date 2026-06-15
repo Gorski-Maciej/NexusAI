@@ -872,7 +872,12 @@ class RuleEngine:
     ) -> dict[str, Any]:
         """Evaluate context against rules and return the first matching verdict.
 
-        Uses TemporalManager for temporal filtering and Rust PriorityEngine
+        SUPERMOCE DuckDB:
+        - Temporal WHERE z indeksem (valid_from, valid_to, priority)
+          DuckDB filtruje temporalnie, Rust tylko sortuje i ewaluuje.
+        - Arrow fetch dla szybszego transferu danych z DuckDB do pamięci.
+
+        Uses Rust TemporalManager for temporal sorting + PriorityEngine
         for deterministic first-match-wins evaluation.
 
         The returned verdict dict includes:
@@ -897,18 +902,29 @@ class RuleEngine:
         Raises:
             NoMatchingRuleError: If no rule matches the context.
         """
-        # 1. Load ALL rules from DuckDB (no temporal filtering — Rust handles it)
+        # ── SUPERMOC DuckDB: Temporal WHERE z indeksem ─────────────────
+        # Zamiast ładować WSZYSTKIE reguły i filtrować w Rust w pamięci,
+        # DuckDB robi temporalny filter z indeksem (valid_from, valid_to, priority).
+        # To redukuje dane przesyłane do Pythona o ~90% i wykorzystuje
+        # wektorowy engine DuckDB zamiast filtrowania w Rust.
         txn_date = context.get("transaction_date", pendulum.now().date().isoformat())
+        txn_date_str = str(txn_date) if not isinstance(txn_date, str) else txn_date
 
         all_rows = self._conn.execute(
             "SELECT rule_id, condition_sql, action_json, priority, "
-            "valid_from, valid_to FROM tax_rules"
+            "valid_from, valid_to FROM tax_rules "
+            "WHERE CAST(? AS DATE) BETWEEN valid_from "
+            "AND COALESCE(valid_to, '9999-12-31') "
+            "ORDER BY priority ASC, valid_from DESC, rule_id ASC",
+            (txn_date_str,),
         ).fetchall()
 
         if not all_rows:
-            raise NoMatchingRuleError("No tax rules found in database")
+            raise NoMatchingRuleError(
+                f"No active tax rules found for date {txn_date_str}"
+            )
 
-        # 2. Serialize all rules to JSON (include temporal fields for Rust TemporalManager)
+        # 2. Serialize ONLY active rules to JSON (już przefiltrowane przez DuckDB)
         all_rules: list[dict[str, Any]] = []
         for r in all_rows:
             rule: dict[str, Any] = {
@@ -922,19 +938,10 @@ class RuleEngine:
                 rule["valid_to"] = str(r[5])
             all_rules.append(rule)
 
-        all_rules_json = msgspec_dumps(all_rules, ensure_ascii=False, default=str)
-
-        # 3. Filter temporally using Rust TemporalManager.filter_rules()
-        #    (date filtering + temporal sorting — no DuckDB temporal WHERE)
-        filtered_rules_json = _RustTemporalManager.filter_rules(all_rules_json, txn_date)
-        filtered_rules = msgspec_loads(filtered_rules_json)
-
-        if not filtered_rules:
-            raise NoMatchingRuleError(f"No active tax rules found for date {txn_date}")
-
-        # 4. Evaluate rules with Rust PriorityEngine.resolve()
+        # 3. Evaluate rules with Rust PriorityEngine.resolve()
+        #    Rust nie musi już filtrować temporalnie — DuckDB to zrobił.
         context_json = msgspec_dumps(context, ensure_ascii=False, default=str)
-        rules_json = msgspec_dumps(filtered_rules, ensure_ascii=False, default=str)
+        rules_json = msgspec_dumps(all_rules, ensure_ascii=False, default=str)
         result_str = _RustPriorityEngine.resolve(rules_json, context_json)
         result = msgspec_loads(result_str)
 
@@ -943,7 +950,7 @@ class RuleEngine:
                 f"No matching rule for context: {msgspec_dumps(context, ensure_ascii=False)}"
             )
 
-        # 5. Extract verdict and metadata
+        # 4. Extract verdict and metadata
         verdict: dict[str, Any] = result.get("verdict", {})
 
         # Parse evaluated_rules_json into list

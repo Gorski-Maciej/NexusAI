@@ -183,6 +183,7 @@ dev = [
     "schemathesis>=3.30.0",  # Automatyczny fuzz testing API ze schematu OpenAPI
     "locust>=2.29.0",        # Pythonowe testy wydajności (zamiast k6)
     "py-spy>=0.3.14",        # Natywny profiler w Rust, narzut <1%
+    "pytest-benchmark>=4.0.0",  # Benchmarki wydajności (porównanie przed/po Polars)
     "sentry-sdk>=2.0.0",
 ]
 ui = [
