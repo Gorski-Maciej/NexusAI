@@ -37,10 +37,10 @@ class TestFieldConfidence:
 
     def test_create_valid(self) -> None:
         """Utworzenie FieldConfidence z poprawnymi wartościami."""
-        fc = FieldConfidence(value=1230.00, confidence=0.88, source="surya_ocr")
+        fc = FieldConfidence(value=1230.00, confidence=0.88, source="doctr_ocr")
         assert fc.value == 1230.00
         assert fc.confidence == 0.88
-        assert fc.source == "surya_ocr"
+        assert fc.source == "doctr_ocr"
 
     def test_create_min_confidence(self) -> None:
         """Confidence = 0.0 jest dozwolone."""
@@ -111,7 +111,7 @@ class TestFieldConfidenceDict:
     """Testy dla factory functions."""
 
     SAMPLE_DATA: dict[str, dict[str, Any]] = {
-        "total_gross": {"value": 1230.00, "confidence": 0.88, "source": "surya_ocr"},
+        "total_gross": {"value": 1230.00, "confidence": 0.88, "source": "doctr_ocr"},
         "vat_rate": {"value": 0.23, "confidence": 0.99},
         "vendor_nip": {"value": "1234567890", "confidence": 0.95},
     }

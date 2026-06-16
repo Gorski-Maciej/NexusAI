@@ -881,7 +881,7 @@ Oczekiwany efekt: Zen‑Engine automatycznie blokuje płatności na niezweryfiko
 
 ---
 
-2. Metadane ufności z modeli AI (Surya / LiLT / HerBERT)
+2. Metadane ufności z modeli AI (docTR / LiLT / HerBERT)
 
 Cel: Przekazać do silnika reguł informację o pewności odczytu każdego pola – Zen‑Engine może wtedy podejmować decyzję o eskalacji do weryfikacji ręcznej lub o dopuszczeniu do automatycznego księgowania.
 
@@ -1292,7 +1292,7 @@ Klasyczny system sprawdzi tylko matematykę faktury. Nie wykryje, że kontrahent
 
 A. Wektoryzacja treści faktury
 
-Po ekstrakcji tekstu przez OCR (Surya), cała treść faktury (nie tylko pola strukturalne, ale też opisy pozycji) jest zamieniana na embedding przez model HerBERT / Sentence-Transformers. Masz już to w Code/CORE/active_learning.py – wystarczy rozszerzyć pipeline.
+Po ekstrakcji tekstu przez OCR (docTR), cała treść faktury (nie tylko pola strukturalne, ale też opisy pozycji) jest zamieniana na embedding przez model HerBERT / Sentence-Transformers. Masz już to w Code/CORE/active_learning.py – wystarczy rozszerzyć pipeline.
 
 B. Zapytanie do LanceDB
 

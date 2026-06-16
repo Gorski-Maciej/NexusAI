@@ -117,10 +117,24 @@
     - 'paddle.*test*'
     - 'paddle.*example*'
 
-# ── Surya OCR — layout-aware OCR ────────────────────────────────────────────
-- package-name: 'surya_ocr'
-  module-name: 'surya_ocr'
+# ── docTR — modular OCR engine (DBNet + PARSeq, Apache 2.0) ────────────────
+# Zastępuje Surya OCR. Modele: db_resnet50 (~200 MB) + parseq (~300 MB)
+- package-name: 'doctr'
+  module-name: 'doctr'
   stdlib: no
+  nofollow:
+    - 'doctr.*test*'
+    - 'doctr.*benchmark*'
+
+# ── EasyOCR — CNN + LSTM OCR engine (4th engine) ────────────────────────────
+# EasyOCR uses PyTorch for model inference.
+# Models are downloaded on first use to ~/.EasyOCR/model/
+- package-name: 'easyocr'
+  module-name: 'easyocr'
+  stdlib: no
+  nofollow:
+    - 'easyocr.*test*'
+    - 'easyocr.*benchmark*'
 
 # ── Torch — optional, loaded only for vision agent ──────────────────────────
 # Only include if needed — very large.

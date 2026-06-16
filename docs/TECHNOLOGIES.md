@@ -372,7 +372,8 @@ class CurrencyConverter:
 | ~~torch~~ | — | **Usunięte** — niepotrzebne przy modelach GGUF |
 | ~~sentence-transformers~~ | — | **Usunięte** — embeddingi przez sqlite-vec |
 | **PaddleOCR** ≥2.8 | — | Drugi silnik OCR — deep learning, obsługa nietypowych czcionek (aa3fvcx.txt) |
-| **Surya OCR** ≥0.4 | — | Trzeci silnik OCR — layout-aware (aa3fvcx.txt) |
+| **docTR** ≥0.9 | — | Trzeci silnik OCR — DBNet + PARSeq, Apache 2.0, ekstrakcja tabel (zastępuje Surya OCR) |
+| **EasyOCR** ≥1.7 | — | Czwarty silnik OCR — CNN + LSTM (CRAFT + CRNN), niezależna architektura |
 | **PyMuPDF (fitz)** ≥1.24 | — | Konwersja PDF → obrazy dla OCR (aa3fvcx.txt) |
 | **xsdata** ≥24.0 | — | Automatyczne generowanie klas Pythona z XSD (KSeF) |
 

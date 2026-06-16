@@ -1,9 +1,9 @@
 {
-  "manifest_version": "2.0.0",
-  "last_updated": "2026-06-11",
-  "description": "NexusAI Model Manifest — SHA-256 integrity verification for all AI models (GGUF + Surya OCR)",
-  "total_models": 14,
-  "total_size_gb": 10.1,
+  "manifest_version": "2.2.0",
+  "last_updated": "2026-06-16",
+  "description": "NexusAI Model Manifest — SHA-256 integrity verification for all AI models (GGUF + docTR + EasyOCR). docTR replaced Surya OCR (Apache 2.0, 4x smaller models).",
+  "total_models": 11,
+  "total_size_gb": 9.1,
   "models": [
     {
       "name": "LFM2.5-1.2B-Q4_K_M",
@@ -96,39 +96,12 @@
       "group": "embeddings"
     },
     {
-      "name": "surya_det3",
-      "version": "3.0",
-      "url": "https://huggingface.co/vikp/surya_det3",
-      "sha256": "5a2a74e413345541b7ca0db0cb1d41785649eb99fe6a1b5166aa8bd7c0a8881d",
-      "size_mb": 147,
-      "role": "Surya OCR — Text line detection (model.safetensors)",
-      "group": "ocr"
-    },
-    {
-      "name": "surya_layout3",
-      "version": "3.0",
-      "url": "https://huggingface.co/vikp/surya_layout3",
-      "sha256": "64a74e7f804289d76c13f7aab35ad32c6071ccb41db04d8626909c84063971b4",
-      "size_mb": 147,
-      "role": "Surya OCR — Table structure detection (model.safetensors)",
-      "group": "ocr"
-    },
-    {
-      "name": "surya_rec",
-      "version": "3.0",
-      "url": "https://huggingface.co/vikp/surya_rec",
-      "sha256": "6a08bbdeda630f5f546f9cbae5a8a1bbed57be61a8f04c2a01c028544e0c90e7",
-      "size_mb": 1002,
-      "role": "Surya OCR — Text recognition (model.safetensors)",
-      "group": "ocr"
-    },
-    {
-      "name": "surya_order",
-      "version": "3.0",
-      "url": "https://huggingface.co/vikp/surya_order",
-      "sha256": "d6688651c37649cc60492f18b5e6bf085f852e0f05e0543b6ca57f25fa884b4a",
-      "size_mb": 526,
-      "role": "Surya OCR — Reading order detection (model.safetensors)",
+      "name": "easyocr_craft",
+      "version": "1.0",
+      "url": "https://github.com/JaidedAI/EasyOCR/releases/download/v1.7/craft_mlt_25k.pth",
+      "sha256": "",
+      "size_mb": 490,
+      "role": "EasyOCR — CRAFT text detection model (CNN)",
       "group": "ocr"
     }
   ]

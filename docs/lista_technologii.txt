@@ -49,7 +49,7 @@ Lista technologii wykorzystanych w projekcie NexusAI
 46. xsdata
 47. Tesseract OCR
 48. PaddleOCR
-49. Surya OCR
+49. docTR (python-doctr)
 50. Pillow
 51. OpenCV
 52. PyMuPDF (fitz)

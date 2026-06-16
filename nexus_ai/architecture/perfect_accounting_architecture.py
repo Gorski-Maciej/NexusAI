@@ -85,7 +85,7 @@ REQUIRED_TECHNOLOGIES = {
     "DuckDB",
     "NATS",
     "fsspec",
-    "Surya OCR",
+    "docTR",
     "PaddleOCR V4 Server",
     "scikit-learn",
     "PyTorch 2.x",
@@ -192,7 +192,7 @@ def build_blueprint() -> ArchitectureBlueprint:
                 "Walidacja krzyżowa i konsensus wielosilnikowy",
             ),
             technologies=(
-                Technology(name="Surya OCR", role="silnik primary OCR"),
+                Technology(name="docTR", role="silnik primary OCR (DBNet + PARSeq)"),
                 Technology(name="PaddleOCR V4 Server", role="silnik walidujący"),
                 Technology(name="PyTorch 2.x", role="główny runtime ML"),
                 Technology(name="TensorFlow 3.x", role="drugi runtime ML"),
@@ -303,10 +303,10 @@ def build_blueprint() -> ArchitectureBlueprint:
     ]
 
     ocr_pipeline = [
-        PipelineStage(name="Preprocessing", primary="Surya OCR", controls=("deskew", "denoise", "binarization")),
+        PipelineStage(name="Preprocessing", primary="docTR", controls=("deskew", "denoise", "binarization", "orientation")),
         PipelineStage(
             name="Cross Validation",
-            primary="Surya OCR",
+            primary="docTR",
             validator="PaddleOCR V4 Server",
             controls=(
                 "ekstrakcja sum kontrolnych",

@@ -137,7 +137,7 @@ Technologia         | Opis
 llama-cpp-python    | LLM inference CPU/GPU (GGUF)
 huggingface-hub     | Pobieranie modeli z SHA-256
 USUNIETE:           | transformers, torch, sentence-transformers,
-                    | surya-ocr, paddleocr, onnxruntime, opencv-python
+                    | python-doctr, paddleocr, easyocr, onnxruntime, opencv-python
 
 12. MODELE AI (GGUF) - 8 modeli, ~6.9 GB lacznie
 -------------------------------------------------

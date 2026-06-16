@@ -111,7 +111,8 @@ pillow = ">=10.0.0"
 pymupdf = ">=1.24.0"           # PDF → image conversion (OCR pipeline)
 paddlepaddle = ">=3.0.0"       # Deep learning OCR engine
 paddleocr = ">=2.8.0"          # PaddleOCR — drugi silnik OCR
-surya-ocr = ">=0.4.0"          # Surya OCR — trzeci silnik OCR (layout-aware)
+python-doctr = ">=0.9.0"         # docTR — trzeci silnik OCR (DBNet + PARSeq, Apache 2.0)
+easyocr = ">=1.7.0"            # EasyOCR — czwarty silnik OCR (CNN + LSTM)
 
 # ── Analytics / OLAP ────────────────────────────────────────────────────────
 duckdb = ">=1.0.0"

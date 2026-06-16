@@ -148,7 +148,7 @@ trust = ocr_conf × 0.30 + vendor_score × 0.25 + data_consistency × 0.20
 
 | Składnik | Waga | Źródło |
 |---|---|---|
-| `ocr_conf` | 0.30 | Pipeline OCR (LightOnOCR-1B, PaddleOCR, Surya) |
+| `ocr_conf` | 0.30 | Pipeline OCR (LightOnOCR-1B, docTR, EasyOCR, PaddleOCR) |
 | `vendor_score` | 0.25 | Historia kontrahenta (SQLite) |
 | `data_consistency` | 0.20 | Zgodność pędów faktury |
 | `context` | 0.10 | Kontekst kontrahenta (DuckDB) |

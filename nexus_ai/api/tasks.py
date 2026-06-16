@@ -536,19 +536,36 @@ async def process_invoice_ocr(
 
         primary_amount = _safe_float(payload.get("ocr_primary_amount_gross"))
         secondary_amount = _safe_float(payload.get("ocr_secondary_amount_gross"))
-        primary = OCRAmountResult(
-            amount_gross=Money.from_string(str(primary_amount), "PLN")
-            if primary_amount is not None
-            else None,
-            source="surya",
+        easyocr_amount = _safe_float(payload.get("ocr_easyocr_amount_gross"))
+
+        ocr_results = [
+            OCRAmountResult(
+                amount_gross=Money.from_string(str(primary_amount), "PLN")
+                if primary_amount is not None
+                else None,
+                source="doctr",
+            ),
+            OCRAmountResult(
+                amount_gross=Money.from_string(str(secondary_amount), "PLN")
+                if secondary_amount is not None
+                else None,
+                source="paddle",
+            ),
+        ]
+        # 4-way consensus: dodaj wynik EasyOCR jeśli dostępny
+        if easyocr_amount is not None:
+            ocr_results.append(
+                OCRAmountResult(
+                    amount_gross=Money.from_string(str(easyocr_amount), "PLN"),
+                    source="easyocr",
+                )
+            )
+
+        consensus = decide_amount_consensus(
+            ocr_results,
+            tolerance=0.01,
+            majority_threshold=2 if len(ocr_results) <= 2 else 3,
         )
-        secondary = OCRAmountResult(
-            amount_gross=Money.from_string(str(secondary_amount), "PLN")
-            if secondary_amount is not None
-            else None,
-            source="paddle",
-        )
-        consensus = decide_amount_consensus(primary, secondary, tolerance=0.01)
 
         if consensus.confidence_conflict:
             await _mark_invoice_pending_review(invoice_id, reason="CONFIDENCE_CONFLICT", db=db)

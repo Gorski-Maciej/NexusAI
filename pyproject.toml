@@ -135,7 +135,8 @@ dependencies = [
     "pymupdf>=1.24.0",
     "paddlepaddle>=3.0.0",
     "paddleocr>=2.8.0",
-    "surya-ocr>=0.4.0",
+    "python-doctr>=0.9.0",
+    "easyocr>=1.7.0",
 
     # ═══════════════════════════════════════════════════════════════════════
     # Analytics / OLAP — DuckDB + Polars (zastępuje pandas)

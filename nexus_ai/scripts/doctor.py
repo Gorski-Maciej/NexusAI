@@ -128,7 +128,8 @@ def check_models() -> str:
         return _fail(f"Models directory not found at {_MODELS_DIR}")
 
     gguf_files = list(_MODELS_DIR.rglob("*.gguf"))
-    surya_dirs = [d for d in _MODELS_DIR.iterdir() if d.is_dir() and "surya" in d.name.lower()]
+    # docTR modele są pobierane przez python-doctr przy pierwszym użyciu do cache PyTorch/huggingface
+    # Nie wymagają osobnego katalogu w models/
 
     lines: list[str] = []
 
@@ -143,13 +144,14 @@ def check_models() -> str:
     else:
         lines.append(f"  {_warn('No GGUF model files found. Place .gguf files in models/')}")
 
-    if surya_dirs:
-        lines.append(f"  {_ok(f'Surya OCR models: {len(surya_dirs)} directory/ies')}")
-        for d in surya_dirs:
-            lines.append(f"    {_ok(d.name)}")
-    else:
+    # Sprawdź czy docTR jest dostępny (przez próbę importu)
+    try:
+        import doctr
+        doctr_version = getattr(doctr, "__version__", "installed")
+        lines.append(f"  {_ok(f'docTR {doctr_version} — modular OCR engine (DBNet + PARSeq)')}")
+    except ImportError:
         lines.append(
-            f"  {_info('Surya OCR models: run python -m nexus_ai.scripts.download_models --surya')}"
+            f"  {_info('docTR: run pixi install (python-doctr>=0.9.0)')}"
         )
 
     return "\n".join(lines)
@@ -198,10 +200,12 @@ def check_env() -> str:
     else:
         lines.append(f"  {_warn(f'TOML config not found: config/{env}.toml — using defaults')}")
 
-    # Check Surya OCR models
-    for d in _MODELS_DIR.iterdir() if _MODELS_DIR.exists() else []:
-        if d.is_dir() and "surya" in d.name.lower():
-            lines.append(f"  {_ok(f'Surya OCR model: {d.name}')}")
+    # Check docTR availability
+    try:
+        import doctr
+        lines.append(f"  {_ok('docTR available — DBNet + PARSeq engine')}")
+    except ImportError:
+        lines.append(f"  {_info('docTR not installed — run pixi install')}")
 
     return "\n".join(lines)
 

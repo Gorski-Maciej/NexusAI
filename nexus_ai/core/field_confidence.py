@@ -35,7 +35,7 @@ class FieldConfidence(Struct, frozen=True):
     Attributes:
         value: Wartość pola (może być str, Decimal, float, int, bool).
         confidence: Poziom pewności od 0.0 do 1.0.
-        source: Źródło odczytu (np. "surya_ocr", "paddle_ocr", "llm", "regex").
+        source: Źródło odczytu (np. "doctr_ocr", "paddle_ocr", "easyocr", "llm", "regex").
     """
 
     value: Any
@@ -88,7 +88,7 @@ class FieldConfidence(Struct, frozen=True):
         """Zwróć nowy FieldConfidence z podmienionym źródłem (frozen → replace).
 
         Args:
-            source: Nowa nazwa źródła (np. "surya_ocr", "manual").
+            source: Nowa nazwa źródła (np. "doctr_ocr", "easyocr", "manual").
 
         Returns:
             Nowy FieldConfidence z tym samym value/confidence ale nowym source.
@@ -142,7 +142,7 @@ def field_confidence_from_dict(data: dict[str, dict[str, Any]]) -> FieldConfiden
     .. code-block:: json
 
         {
-            "total_gross": {"value": 1230.00, "confidence": 0.88, "source": "surya_ocr"},
+            "total_gross": {"value": 1230.00, "confidence": 0.88, "source": "doctr_ocr"},
             "vat_rate": {"value": 0.23, "confidence": 0.99}
         }
 

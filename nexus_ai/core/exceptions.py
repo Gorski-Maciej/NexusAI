@@ -11,7 +11,7 @@ class NexusBaseException(Exception):  # noqa: N818
 
 
 class AIProcessingError(NexusBaseException):
-    """Zgłaszany, gdy model lokalny (Llama/Surya) napotka błąd lub rzuci OOM."""
+    """Zgłaszany, gdy model lokalny (Llama/docTR) napotka błąd lub rzuci OOM."""
 
     def __init__(self, message: str = "Błąd silnika AI podczas analizy dokumentu."):
         super().__init__(message, code="AI_PROCESSING_FAILED")

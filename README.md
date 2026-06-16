@@ -145,7 +145,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | **xsdata** — XSD → Python code generation | — | ✅ | `nexus_ai/core/integrations/ksef/xsd_bindings.py` |
 | **Tesseract OCR** — klasyczny OCR | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `TesseractEngine` |
 | **PaddleOCR** — deep learning OCR | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `PaddleOCREngine` |
-| **Surya OCR** — layout-aware OCR | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `SuryaOCREngine` |
+| **docTR** (Python-docTR) — modułowy OCR (DBNet + PARSeq) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `DocTREngine` |
 | **Mechanizm Walidacji Krzyżowej** (3 silniki) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `decide_field_consensus()` |
 | **Pillow + OpenCV** — preprocessing obrazów | — | ✅ | W `pixi.toml` |
 | **PyMuPDF (fitz)** — konwersja PDF → obraz | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `pdf_to_images()` |

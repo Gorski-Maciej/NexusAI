@@ -849,15 +849,21 @@ Co to jest: PaddleOCR to nowoczesny silnik OCR oparty na głębokich sieciach ne
 
 ---
 
-Surya OCR – Ekspert od trudnych warunków
+docTR (python-doctr) – Ekspert od trudnych warunków (zastąpił Surya OCR)
 
-Co to jest: Surya OCR to stosunkowo nowy, ale niezwykle potężny silnik OCR, specjalizujący się w rozumieniu całego układu strony. W Twoim systemie pełni rolę trzeciego, specjalistycznego odczytu do najtrudniejszych przypadków.
+> ⚠️ **Zmiana architektoniczna:** Surya OCR został zastąpiony przez docTR.
+> Powody: Apache 2.0 license (Surya: Open Rail-M), 4× mniejsze modele (~500 MB vs ~1.8 GB),
+> wbudowana ekstrakcja tabel, detekcja orientacji strony, eksport do ONNX dla 2-3× szybszej
+> inferencji na CPU, łatwy fine-tuning przez PyTorch.
+> Architektura docTR: DBNet (detekcja) + PARSeq (rozpoznawanie Transformer-based).
+
+Co to jest: docTR (Document Text Recognition) to nowoczesny, modułowy silnik OCR od Mindee, napisany w PyTorch. W Twoim systemie zastąpił Surya jako trzeci, specjalistyczny odczyt do najtrudniejszych przypadków.
 
 Dlaczego jest wisienką na torcie precyzji:
 
 · Rozumienie układu strony: Surya nie tylko widzi znaki, ale rozumie strukturę dokumentu – podział na kolumny, tabele, nagłówki i bloki tekstu. Jest to kluczowe przy skanach, gdzie faktura mogła być krzywo położona, lub przy zdjęciach z telefonu, gdzie tekst jest w wielu miejscach.
 · Odporność na szumy: Model Surya jest trenowany specjalnie pod kątem pracy z obrazami o niskiej jakości, z artefaktami kompresji JPEG i szumem z aparatu. Jest to bezpiecznik na wypadek, gdy dwa pierwsze silniki miałyby wątpliwości przez słabą jakość źródła.
-· Niezależność architektury: Surya opiera się na zupełnie innej architekturze niż Tesseract i PaddleOCR, co czyni go idealnym, trzecim głosem w procesie walidacji krzyżowej.
+· Niezależność architektury: docTR opiera się na modułowej architekturze (DBNet + PARSeq), fundamentalnie różnej od Tesseract (LSTM), PaddleOCR (PaddlePaddle CNN) i EasyOCR (CRAFT + CRNN), co czyni go idealnym, trzecim głosem w procesie walidacji krzyżowej.
 
 ---
 
