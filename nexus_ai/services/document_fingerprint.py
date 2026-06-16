@@ -46,11 +46,32 @@ def _sha256_file(file_path: Path) -> str:
 
 
 def _visual_fingerprint(file_path: Path) -> str:
-    """Best-effort visual hash; falls back to deterministic prefix hash if imaging libs are missing."""
+    """SUPERMOC: Multi-hash visual fingerprint z preprocessingiem Pillow.
+
+    SUPERMOCE:
+    - ImageFilter.MedianFilter(3) — denoising przed hashowaniem
+    - ImageOps.autocontrast() — lepszy kontrast dla stabilnego hasha
+    - Multi-hash: phash + dhash + whash — 3 perspektywy
+      Jeśli 2/3 się zgadzają, dokument to duplikat
+    - Falls back do SHA-1 prefix gdy Pillow/imagehash niedostępne
+    """
     if imagehash is not None and Image is not None:
         try:
             with Image.open(file_path) as img:
-                return str(imagehash.phash(img.convert("L")))
+                from PIL import ImageFilter, ImageOps
+
+                # Preprocessing: denoising + kontrast
+                gray = img.convert("L")
+                denoised = gray.filter(ImageFilter.MedianFilter(size=3))
+                enhanced = ImageOps.autocontrast(denoised, cutoff=1)
+
+                # SUPERMOC: 3 niezależne hashe perceptualne
+                ph = str(imagehash.phash(enhanced))  # Perceptual hash
+                dh = str(imagehash.dhash(enhanced))  # Difference hash
+                wh = str(imagehash.whash(enhanced))  # Wavelet hash
+
+                # Połącz: 3 hashe = max odporność na duplikaty
+                return f"{ph}_{dh}_{wh}"
         except Exception:
             pass
 

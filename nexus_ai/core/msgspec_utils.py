@@ -57,60 +57,6 @@ class EncodeError(TypeError):
     """Zastępuje TypeError przy serializacji (gdy obiekt nie jest serializowalny)."""
 
 
-# ── MessagePack support (Faza 2) ──────────────────────────────────────────
-
-
-# MessagePack encoder z tym samym enc_hook co JSON
-_MSGPACK_ENCODER = msgspec.msgpack.Encoder(enc_hook=_default_enc_hook)
-
-
-def msgspec_msgpack_dumps(obj: Any) -> bytes:
-    """Zastępuje msgpack.dumps(obj) — serializacja binarna MessagePack.
-
-    MessagePack jest ~20% mniejszy i ~30% szybszy od JSON dla danych
-    binarnych i numerycznych. Używaj gdy:
-    - Przesyłasz dane przez NATS / JetStream (mniejszy rozmiar)
-    - Cache'ujesz struktury w Redis / NexusCache
-    - Potrzebujesz szybkiej serializacji dla strumieni danych
-
-    Używa msgspec.msgpack.Encoder z tym samym enc_hook co JSON,
-    więc Decimal, DateTime, UUID, Money są obsługiwane.
-
-    Args:
-        obj: Obiekt do serializacji.
-
-    Returns:
-        Bajty MessagePack.
-
-    Example:
-        >>> data = msgspec_msgpack_dumps({"amount": Decimal("123.45"), "curr": "PLN"})
-        >>> # data to bytes ~25% mniejsze niż JSON
-        >>> obj = msgspec_msgpack_loads(data)
-    """
-    try:
-        return _MSGPACK_ENCODER.encode(obj)
-    except (msgspec.EncodeError, TypeError) as exc:
-        raise EncodeError(str(exc)) from exc
-
-
-def msgspec_msgpack_loads(data: bytes | bytearray) -> Any:
-    """Zastępuje msgpack.loads(data) — deserializacja binarna MessagePack.
-
-    Args:
-        data: Bajty MessagePack.
-
-    Returns:
-        Python object.
-
-    Raises:
-        DecodeError: Gdy dane nie są poprawnym MessagePack.
-    """
-    try:
-        return msgspec.msgpack.decode(data)
-    except msgspec.ValidationError as exc:
-        raise DecodeError(str(exc)) from exc
-
-
 def _default_enc_hook(obj: Any) -> Any:
     """enc_hook dla msgspec.json.Encoder — serializuje typy niestandardowe.
 
@@ -133,6 +79,37 @@ def _default_enc_hook(obj: Any) -> Any:
 
 
 _ENCODER = msgspec.json.Encoder(enc_hook=_default_enc_hook)
+
+
+# ── MessagePack support ─────────────────────────────────────────────────
+# MessagePack encoder z tym samym enc_hook co JSON
+_MSGPACK_ENCODER = msgspec.msgpack.Encoder(enc_hook=_default_enc_hook)
+
+
+def msgspec_msgpack_dumps(obj: Any) -> bytes:
+    """Zastępuje msgpack.dumps(obj) — serializacja binarna MessagePack.
+
+    MessagePack jest ~20% mniejszy i ~30% szybszy od JSON dla danych
+    binarnych i numerycznych. Używaj gdy:
+    - Przesyłasz dane przez NATS / JetStream (mniejszy rozmiar)
+    - Cache'ujesz struktury w Redis / NexusCache
+    - Potrzebujesz szybkiej serializacji dla strumieni danych
+
+    Używa msgspec.msgpack.Encoder z tym samym enc_hook co JSON,
+    więc Decimal, DateTime, UUID, Money są obsługiwane.
+    """
+    try:
+        return _MSGPACK_ENCODER.encode(obj)
+    except (msgspec.EncodeError, TypeError) as exc:
+        raise EncodeError(str(exc)) from exc
+
+
+def msgspec_msgpack_loads(data: bytes | bytearray) -> Any:
+    """Zastępuje msgpack.loads(data) — deserializacja binarna MessagePack."""
+    try:
+        return msgspec.msgpack.decode(data)
+    except msgspec.ValidationError as exc:
+        raise DecodeError(str(exc)) from exc
 
 
 def msgspec_dumps(obj: Any, **kwargs: Any) -> str:

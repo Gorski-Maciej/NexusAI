@@ -74,3 +74,7 @@ class SmartAnomalyDetector:
 
         # Próg: Z-Score > 3 = anomalia (99.7% danych w 3σ)
         return z_score > 3.0
+
+
+# Alias dla zgodności z services/__init__.py
+AnomalyDetector = SmartAnomalyDetector

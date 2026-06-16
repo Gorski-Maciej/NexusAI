@@ -27,6 +27,7 @@ from nexus_ai.api.routes.ksef import KsefController
 from nexus_ai.api.routes.live_preview import LivePreviewController
 from nexus_ai.api.routes.outbox_ops import OutboxOpsController
 from nexus_ai.api.routes.partner import PartnerController
+from nexus_ai.api.pdf_endpoints import PDFController
 from nexus_ai.api.routes.performance_ops import PerformanceOpsController
 from nexus_ai.api.routes.privacy import PrivacyController
 from nexus_ai.api.routes.risk import RiskController
@@ -66,6 +67,7 @@ __all__ = [
     "KsefController",
     "LivePreviewController",
     "OutboxOpsController",
+    "PDFController",
     "PartnerController",
     "PerformanceOpsController",
     "PrivacyController",

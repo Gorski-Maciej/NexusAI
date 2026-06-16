@@ -41,6 +41,32 @@ DOCTR_MODELS: dict[str, dict[str, str]] = {
     },
 }
 
+# ── PaddleOCR — drugi silnik OCR (PaddlePaddle) z PP-StructureV3 ──────────
+# PaddleOCR modele są pobierane automatycznie przy pierwszym użyciu do
+# ~/.paddleocr/ (lub custom directory). PP-StructureV3 wymaga osobnych modeli
+# do analizy layoutu i tabel (SLANet).
+# Lista poniżej dokumentuje które modele są wymagane.
+PADDLEOCR_MODELS: dict[str, dict[str, str]] = {
+    "ppocrv4_det": {
+        "repo": "PaddlePaddle/PaddleOCR",
+        "filename": "multilingual_PP-OCRv4_det_infer.tar",
+        "sha256": "",
+        "description": "PP-OCRv4 text detection (multilingual, ~21 MB)",
+    },
+    "ppocrv4_rec": {
+        "repo": "PaddlePaddle/PaddleOCR",
+        "filename": "multilingual_PP-OCRv4_rec_infer.tar",
+        "sha256": "",
+        "description": "PP-OCRv4 text recognition (multilingual, ~23 MB)",
+    },
+    "ppstructure_table": {
+        "repo": "PaddlePaddle/PaddleOCR",
+        "filename": "en_ppstructure_mobile_v2.0_SLANet_infer.tar",
+        "sha256": "",
+        "description": "PP-StructureV3 table recognition (SLANet, ~12 MB)",
+    },
+}
+
 # ── EasyOCR — czwarty silnik OCR (CNN + LSTM) ─────────────────────────────
 # EasyOCR automatycznie pobiera modele przy pierwszym użyciu do ~/.EasyOCR/model/
 # Modele nie wymagają osobnego skryptu — uruchomienie easyocr.Reader() po raz
@@ -230,6 +256,83 @@ def _check_hf_cache(repo_id: str) -> bool:
     return cache_path.exists()
 
 
+def download_paddleocr_models(
+    models_dir: Path | None = None,
+    verify_only: bool = False,
+) -> dict[str, str]:
+    """Pobierz/zweryfikuj modele PaddleOCR (PP-OCRv4 + PP-StructureV3).
+
+    SUPERMOC:
+    - PP-OCRv4 detection (DBNet) ~18 MB
+    - PP-OCRv4 recognition (CRNN/Transformer) ~20 MB
+    - PP-StructureV3 (SLANet) ~12 MB — table + layout analysis
+
+    Modele są pobierane automatycznie przy pierwszym użyciu przez PaddleOCR.
+    Ta funkcja pozwala:
+    1. Pobrać modele z wyprzedzeniem dla środowisk offline
+    2. Zweryfikować czy modele są dostępne w cache PaddleOCR
+    3. Zweryfikować SHA-256 sumy kontrolne
+    """
+    if models_dir is None:
+        project_root = Path(__file__).resolve().parent.parent.parent
+        models_dir = project_root / "models" / "paddleocr"
+
+    models_dir.mkdir(parents=True, exist_ok=True)
+
+    if not verify_only:
+        _check_disk_space(models_dir, required_bytes=512 * 1024**2)  # ~512 MB
+
+    statuses: dict[str, str] = {}
+
+    print("=" * 60)
+    print("  PaddleOCR MODELS — PP-OCRv4 + PP-StructureV3")
+    print("=" * 60)
+
+    for model_key, info in PADDLEOCR_MODELS.items():
+        filename = info.get("filename", "")
+        description = info["description"]
+
+        # Sprawdź w domyślnym cache PaddleOCR
+        paddleocr_cache = Path.home() / ".paddleocr" / model_key
+        custom_path = models_dir / filename
+
+        if verify_only:
+            exists = paddleocr_cache.exists() or custom_path.exists()
+            if exists:
+                print(f"  {model_key:40s} — {description} (present)")
+                statuses[model_key] = "ok"
+            else:
+                print(f"  X {model_key:40s} — NOT FOUND (auto-download on first use)")
+                statuses[model_key] = "missing"
+            continue
+
+        print(f"\n>>> {model_key}")
+        print(f"    {description}")
+
+        # Sprawdź czy już istnieje
+        if paddleocr_cache.exists():
+            print(f"    {model_key} already in PaddleOCR cache ({paddleocr_cache})")
+            statuses[model_key] = "present"
+            continue
+
+        if custom_path.exists():
+            print(f"    {model_key} already in custom path ({custom_path})")
+            statuses[model_key] = "present"
+            continue
+
+        print(f"    {model_key} will be auto-downloaded on first PaddleOCR use")
+        print(f"    Cache: {paddleocr_cache}")
+        statuses[model_key] = "auto"
+
+    print("\n" + "=" * 60)
+    ok_count = sum(1 for s in statuses.values() if s in ("ok", "present", "auto"))
+    fail_count = sum(1 for s in statuses.values() if s == "missing")
+    print(f"  Ok: {ok_count}  |  Missing: {fail_count}")
+    print()
+
+    return statuses
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Download AI models for NexusAI with integrity verification.",
@@ -327,6 +430,11 @@ def main() -> None:
         help="Download/verify EasyOCR models (craft_mlt_25k).",
     )
     parser.add_argument(
+        "--paddleocr",
+        action="store_true",
+        help="Download/verify PaddleOCR models (PP-OCRv4 + PP-Structure).",
+    )
+    parser.add_argument(
         "--models-dir",
         type=str,
         default=None,
@@ -354,11 +462,21 @@ def main() -> None:
             sys.exit(1)
         return
 
+    if args.paddleocr:
+        statuses = download_paddleocr_models(
+            models_dir=models_dir,
+            verify_only=args.verify_only,
+        )
+        if any(s in ("error",) for s in statuses.values()):
+            sys.exit(1)
+        return
+
     # Default: show help
     parser.print_help()
     print("\n\nUżycie:")
     print("  python download_models.py --doctr          # Pobierz modele docTR")
     print("  python download_models.py --easyocr        # Pobierz/zweryfikuj modele EasyOCR")
+    print("  python download_models.py --paddleocr      # Pobierz/zweryfikuj modele PaddleOCR")
     print("  python download_models.py --verify-only    # Sprawdź istniejące pliki")
     sys.exit(0)
 

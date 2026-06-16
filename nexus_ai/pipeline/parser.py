@@ -16,6 +16,24 @@ class ParsedInvoice(Struct, kw_only=True):
 
 
 class InvoiceParser:
+    """Parser faktur z tekstu OCR z supermocami PaddleOCR bbox.
+
+    SUPERMOCE:
+    - Bounding box analysis: używa pozycji tekstu z PaddleOCR do identyfikacji pól
+    - PaddleOCR zwraca 4-rogowe bbox: [[x1,y1],[x2,y2],[x3,y3],[x4,y4]]
+    - Można określić "co gdzie jest" na fakturze na podstawie Y-position
+    - Header/NIP jest zazwyczaj w górnej części (top < 30% height)
+    - Kwoty są w dolnej części (bottom > 60% height)
+    - IBAN jest w stopce (bottom > 80% height)
+    """
+
+    # Stałe pozycyjne dla typowych pól faktury (% wysokości strony)
+    HEADER_TOP = 0.30  # Górne 30% — nagłówek, NIP
+    BODY_START = 0.30   # Środkowe 30-60% — pozycje
+    BODY_END = 0.60
+    FOOTER_TOP = 0.60   # Dolne >60% — kwoty
+    IBAN_TOP = 0.80     # >80% — stopka, IBAN
+
     def __init__(self):
         # Wzorce dla danych strukturalnych
         self.re_nip = re.compile(r"(?:NIP[:\s]*)?(\d{3}[-\s]?\d{3}[-\s]?\d{2}[-\s]?\d{2}|\d{10})")
@@ -50,6 +68,90 @@ class InvoiceParser:
         net_decimal = self._find_amount_near_keywords(lines, self.net_keywords)
         result.amount_gross = Money.from_string(str(gross_decimal), result.currency)
         result.amount_net = Money.from_string(str(net_decimal), result.currency)
+
+        return result
+
+    def parse_with_bbox(
+        self,
+        raw_text: str,
+        blocks: list[dict],
+        page_height: float | None = None,
+    ) -> ParsedInvoice:
+        """Parsowanie faktury z uwzględnieniem bounding boxów z PaddleOCR.
+
+        SUPERMOC: Używa pozycji tekstu (Y-coordinate z bboxów) do
+        inteligentniejszej ekstrakcji pól. NIP w górnej części strony
+        to NIP sprzedawcy. Kwota w dolnej części to total.
+
+        Args:
+            raw_text: Tekst z OCR.
+            blocks: Lista bloków z PaddleOCR: [{bbox, text, confidence}, ...]
+            page_height: Wysokość strony w pikselach. Jeśli None,
+                wyciągana z maksymalnego Y w bboxach.
+
+        Returns:
+            ParsedInvoice z uwzględnieniem pozycji.
+        """
+        result = self.parse(raw_text)
+
+        if not blocks:
+            return result
+
+        # Auto-detect page_height z bboxów jeśli nie podano
+        if page_height is None:
+            max_y = 0.0
+            for block in blocks:
+                bbox = block.get("bbox", [])
+                if bbox and len(bbox) >= 4:
+                    try:
+                        max_y = max(max_y, bbox[2][1], bbox[3][1])
+                    except (IndexError, TypeError):
+                        pass
+            page_height = max_y if max_y > 0 else 1000.0
+
+        # Grupuj bloki według pozycji Y
+        footer_text = ""
+        header_text = ""
+
+        for block in blocks:
+            bbox = block.get("bbox", [])
+            text = block.get("text", "")
+            if not bbox or not text:
+                continue
+
+            # bbox format: [[x1,y1],[x2,y2],[x3,y3],[x4,y4]]
+            try:
+                y_center = (bbox[0][1] + bbox[2][1]) / 2
+                y_norm = y_center / page_height
+            except (IndexError, TypeError, ZeroDivisionError):
+                continue
+
+            if y_norm >= self.FOOTER_TOP:
+                footer_text += text + " "
+            elif y_norm <= self.HEADER_TOP:
+                header_text += text + " "
+
+        # Użyj pozycji do potwierdzenia/wzmocnienia ekstrakcji
+        # NIP w headerze to NIP sprzedawcy
+        if header_text:
+            header_nip = self.re_nip.search(header_text)
+            if header_nip and not result.nip:
+                result.nip = re.sub(r"\D", "", header_nip.group(1))
+
+        # IBAN w footerze
+        if footer_text:
+            footer_iban = self.re_iban.search(footer_text)
+            if footer_iban and not result.iban:
+                result.iban = re.sub(r"\s", "", footer_iban.group(1))
+
+            # Kwoty w footerze
+            footer_amount = self._find_amount_near_keywords(
+                [footer_text], self.gross_keywords
+            )
+            if footer_amount and footer_amount > 0:
+                result.amount_gross = Money.from_string(
+                    str(footer_amount), result.currency
+                )
 
         return result
 

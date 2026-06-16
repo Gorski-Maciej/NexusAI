@@ -12,6 +12,49 @@ class AccountSuggestion(Struct):
     reason: str
 
 
+class AccountantLogic:
+    """Logika biznesowa księgowego — deleguje do ZPKEngine.
+
+    Zgodnie z aa3fvcx.txt: Decision Engine oparty na DuckDB/MS SQL,
+    bez konkretnych modeli LLM ani agentów AI.
+
+    Używany przez services/__init__.py do eksportu jako AccountantLogic.
+    Deleguje logikę mapowania kont do ZPKEngine.
+    """
+
+    def __init__(self, db: DuckDBManager | None = None):
+        self._zpk = ZPKEngine(db) if db else None
+
+    @property
+    def zpk(self) -> ZPKEngine | None:
+        return self._zpk
+
+    def suggest(self, invoice_data: dict[str, Any], company_profile: dict[str, Any]) -> AccountSuggestion:
+        """Sugeruj konta księgowe dla faktury na podstawie reguł ZPK."""
+        if self._zpk is None:
+            return AccountSuggestion(account_wn="409", account_ma="202", reason="no_engine")
+        return self._zpk.suggest_accounts(invoice_data, company_profile)
+
+    def learn(
+        self,
+        *,
+        vendor_nip: str,
+        keyword_hash: str,
+        account_wn: str,
+        account_ma: str,
+        source: str = "owner",
+    ) -> None:
+        """Zapisz mapowanie kont dla przyszłych faktur tego samego kontrahenta."""
+        if self._zpk is not None:
+            self._zpk.learn_mapping(
+                vendor_nip=vendor_nip,
+                keyword_hash=keyword_hash,
+                account_wn=account_wn,
+                account_ma=account_ma,
+                source=source,
+            )
+
+
 @final
 class ZPKEngine:
     """Semantic Chart of Accounts engine backed by DuckDB."""

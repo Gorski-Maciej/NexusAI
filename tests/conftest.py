@@ -79,6 +79,9 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     "nats.js.api",
     "nats.errors",
     "taskiq", "taskiq_nats",
+    "taskiq.abc", "taskiq.abc.middleware",
+    "taskiq.message", "taskiq.result", "taskiq.broker",
+    "taskiq.scheduler", "taskiq.receiver",
     # Litestar
     "litestar",
     "litestar.plugins",
@@ -118,16 +121,21 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     "PIL", "PIL.Image",
     "PIL._imaging", "PIL.ImageFilter", "PIL.ImageEnhance",
     # PDF
-    "fitz",  # PyMuPDF
+    "pypdfium2",  # PDFium engine (zastępuje PyMuPDF)
     # System
     "psutil",
     "structlog",
+    # PaddleOCR
+    "paddleocr",
+    "paddleocr.PaddleOCR",
+    "paddleocr.PPStructure",
     # Crypto
     "nexus_crypto",
     # Resilience
     "stamina",
     # DB
     "duckdb",
+    "polars",
     # Pydantic / SQLModel
     "pydantic_core",
     "pydantic_core._pydantic_core",
@@ -149,6 +157,20 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     # Arrow
     "pyarrow",
 ]
+
+INTERNAL_MOCK_MODULES: list[str] = [
+    # Przecięcie pre-existing import chain:
+    # test → pipeline/ocr_consensus → pipeline/__init__ → parser → services → broker → ERROR
+    "nexus_ai.pipeline.parser",
+    "nexus_ai.services.currency_converter",
+    "nexus_ai.services.audit_service",
+    "nexus_ai.core.broker",
+    "nexus_ai.core.taskiq_middleware",
+    "nexus_ai.core.taskiq_result_backend",
+]
+
+for mod_name in INTERNAL_MOCK_MODULES:
+    sys.modules[mod_name] = _MockModule(mod_name)
 
 for mod_name in EXTERNAL_MOCK_MODULES:
     sys.modules[mod_name] = _MockModule(mod_name)

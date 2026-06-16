@@ -108,7 +108,7 @@ tigerbeetle = ">=0.16.0"
 lxml = ">=5.1.0"
 xsdata = ">=24.0.0"           # XSD → Python code generation (KSeF)
 pillow = ">=10.0.0"
-pymupdf = ">=1.24.0"           # PDF → image conversion (OCR pipeline)
+pypdfium2 = ">=4.0.0"          # PDF → image conversion via PDFium engine (zastępuje PyMuPDF)
 paddlepaddle = ">=3.0.0"       # Deep learning OCR engine
 paddleocr = ">=2.8.0"          # PaddleOCR — drugi silnik OCR
 python-doctr = ">=0.9.0"         # docTR — trzeci silnik OCR (DBNet + PARSeq, Apache 2.0)

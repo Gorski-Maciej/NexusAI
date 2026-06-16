@@ -130,17 +130,16 @@ class FileValidator:
 
     @staticmethod
     def _normalize_image(content: bytes) -> bytes:
-        """Open image with Pillow and convert to JPEG for normalization."""
+        """SUPERMOC: Normalizacja obrazu przez Pillow z EXIF transpose + progressive JPEG."""
         try:
-            from io import BytesIO
+            from nexus_ai.core.image_utils import normalize_image_to_jpeg
 
-            from PIL import Image
-
-            img = Image.open(BytesIO(content))
-            rgb = img.convert("RGB")
-            buf = BytesIO()
-            rgb.save(buf, format="JPEG", quality=85, optimize=True)
-            return buf.getvalue()
+            return normalize_image_to_jpeg(
+                content,
+                max_size=(2048, 2048),
+                quality=85,
+                apply_autocontrast=True,
+            )
         except Exception as e:
             raise ValueError(f"Invalid image file: {e}")
 
@@ -231,13 +230,15 @@ class ContentAddressableStorage:
         if file_path.with_suffix(".jpg").exists():
             return
         try:
-            from PIL import Image
+            from nexus_ai.core.image_utils import normalize_image_to_jpeg
         except Exception:
             return
         try:
-            with Image.open(file_path) as img:
-                rgb = img.convert("RGB")
-                rgb.save(file_path.with_suffix(".jpg"), format="JPEG", quality=80, optimize=True)
+            content = file_path.read_bytes()
+            jpeg_bytes = normalize_image_to_jpeg(
+                content, max_size=(2048, 2048), quality=80, apply_autocontrast=False
+            )
+            file_path.with_suffix(".jpg").write_bytes(jpeg_bytes)
         except Exception:
             return
 

@@ -1,17 +1,11 @@
 from __future__ import annotations
 
-import io
 import time
 from collections import deque
 from msgspec import Struct, field
 from threading import Lock
 
-try:
-    from PIL import Image
-
-    HAS_PIL = True
-except ImportError:
-    HAS_PIL = False
+from nexus_ai.core.image_utils import HAS_PIL, normalize_image_to_jpeg
 
 
 class SharedFrame(Struct):
@@ -51,21 +45,21 @@ class SharedImageBuffer:
     def push(self, frame: SharedFrame, compress_jpeg: bool = True) -> None:
         """Dodaje ramkę z opcjonalną kompresją JPEG i kontrolą globalnego limitu pamięci."""
         with self._lock:
-            # Opcjonalna kompresja JPEG dla obrazów
+            # SUPERMOC: Kompresja JPEG przez normalize_image_to_jpeg()
+            # EXIF transpose + progressive + optimize + LOAD_TRUNCATED_IMAGES
             if (
                 compress_jpeg
                 and HAS_PIL
                 and frame.mime_type in ("image/png", "image/tiff", "image/bmp", "image/webp")
             ):
                 try:
-                    img = Image.open(io.BytesIO(frame.payload))
-                    rgb = img.convert("RGB")
-                    buf = io.BytesIO()
-                    rgb.save(buf, format="JPEG", quality=70, optimize=True)
-                    compressed = buf.getvalue()
-                    if (
-                        len(compressed) < len(frame.payload) * 0.9
-                    ):  # Tylko jeśli faktycznie mniejsze
+                    compressed = normalize_image_to_jpeg(
+                        frame.payload,
+                        max_size=(2048, 2048),
+                        quality=70,
+                        apply_autocontrast=False,
+                    )
+                    if len(compressed) < len(frame.payload) * 0.9:
                         frame.payload = compressed
                         frame.mime_type = "image/jpeg"
                         frame.size_bytes = len(compressed)
