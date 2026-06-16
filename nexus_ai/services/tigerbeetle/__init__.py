@@ -1,18 +1,24 @@
 """TigerBeetle — bezpieczny, lokalny silnik księgowy (podwójny zapis).
 
-Zgodnie z aa3fvcx.txt:
+Zgodnie z aa3fvcx.txt oraz audytem TigerBeetle 2026:
 - TigerBeetle: matematycznie gwarantowana integralność finansowa
 - komunikacja przez gniazdo UNIX
 - amount jako int (grosze), bez Decimal
+- Linked transfers (atomic chains)
+- Natywne two-phase transfers
+- Batch transfers (do 8190)
+- Multi-ledger isolation
 """
 
 from __future__ import annotations
 
 from nexus_ai.services.tigerbeetle.client import (
+    LEDGER,
+    TRANSFER_CODE,
     TigerBeetleClient,
     TigerBeetleMapper,
-    TwoPhaseTransfer,
 )
+
 from nexus_ai.services.tigerbeetle.ledger_initializer import LedgerInitializer
 from nexus_ai.services.tigerbeetle.models import (
     Base,
@@ -20,7 +26,7 @@ from nexus_ai.services.tigerbeetle.models import (
     CompanyProfile,
     FinancialPeriod,
     FinancialPeriodStatus,
-    LedgerTransfer,
+    LedgerTransferCache,
     LegalForm,
     TaxForm,
     TaxPolicy,
@@ -28,14 +34,19 @@ from nexus_ai.services.tigerbeetle.models import (
 )
 
 __all__ = [
+    # Konfiguracja
+    "LEDGER",
+    "TRANSFER_CODE",
+    # Klient
     "TigerBeetleClient",
     "TigerBeetleMapper",
-    "TwoPhaseTransfer",
+    # Inicjalizacja
     "LedgerInitializer",
+    # Modele SQLite (cache)
     "CompanyProfile",
     "CompanyPartner",
     "TaxPolicy",
-    "LedgerTransfer",
+    "LedgerTransferCache",
     "FinancialPeriod",
     "TransferStatus",
     "FinancialPeriodStatus",

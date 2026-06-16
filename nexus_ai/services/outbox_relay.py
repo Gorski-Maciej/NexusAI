@@ -1,38 +1,26 @@
-"""
-OutboxRelay — Transactional Outbox pattern for guaranteed event delivery.
+"""OutboxRelay — Transactional Outbox z SUPERMOCAMI TigerBeetle.
+
+SUPERMOCE:
+- Linked transfers dla atomowego dispatchu TAX_CALCULATED
+- Batch transferów (oba w jednym wywołaniu)
+- Natywne pending/post zamiast własnej implementacji
+- code field dla kategoryzacji
+- user_data_128 dla source_document_id
+- Multi-ledger: PLN=700, VAT_INPUT=711
 
 Transactional Outbox zapewnia atomowość: zapis faktury i zdarzenia do outbox
 w tej samej transakcji, a dopiero potem asynchroniczna wysyłka do TigerBeetle.
-Gwarantuje „at-least-once delivery" nawet przy restartach i awariach.
-
-Główne cechy:
-  - Asynchroniczny odczyt outbox_events z bazy SQLite (via SQLAlchemy)
-  - Wysyłka TAX_CALCULATED do TigerBeetle z dwufazowymi transferami
-  - Wykładnicze opóźnienie między retry (exponential backoff)
-  - Dead Letter Queue po wyczerpaniu prób
-  - Idempotentność przez tabelę processed_events
-  - Circuit breaker na NATS/TigerBeetle — chroni przed kaskadowymi awariami
-
-Usage:
-    relay = OutboxRelay(
-        session_factory=session_factory,
-        tigerbeetle=tb_client,
-        max_retries=3,
-        base_delay_seconds=1.0,
-    )
-    stats = relay.process_pending()
-    # → {"processed": 5, "failed": 1, "dead_letter": 0}
 """
 
 from __future__ import annotations
 
 import time
-import uuid
-from functools import cache
+import uuid as uuid_module
+from collections.abc import Callable
 
 import anyio
 import pendulum
-from collections.abc import Callable
+import tigerbeetle as tb
 from msgspec import Struct
 from typing import Any, final
 
@@ -42,65 +30,38 @@ from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 from nexus_ai.db.models import OutboxStatus
+from nexus_ai.services.tigerbeetle.client import (
+    LEDGER,
+    TRANSFER_CODE,
+    TigerBeetleClient,
+    _generate_tb_id,
+    _uuid_to_u128,
+)
 
-# ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
 try:
     from nexus_crypto import sha256 as _sha256
-
     HAS_NEXUS_CRYPTO = True
 except ImportError:
     import hashlib as _hashlib
-
     HAS_NEXUS_CRYPTO = False
-
     def _sha256(data: bytes) -> str:
         return _hashlib.sha256(data).hexdigest()
 
 
 logger = get_logger("nexus.services.outbox_relay")
 
-# ── Constants ─────────────────────────────────────────────────────────────────
-
 DEFAULT_MAX_RETRIES = 3
-"""Maksymalna liczba prób wysyłki zdarzenia przed przeniesieniem do DLQ."""
-
 DEFAULT_BASE_DELAY_SECONDS = 1.0
-"""Bazowe opóźnienie przed pierwszą retry (w sekundach)."""
-
 DEFAULT_MAX_DELAY_SECONDS = 60.0
-"""Maksymalne opóźnienie między retry (exponential backoff capped)."""
-
 DEFAULT_BATCH_SIZE = 100
-"""Maksymalna liczba zdarzeń przetwarzanych w jednej iteracji."""
-
 PROCESSING_TIMEOUT_SECONDS = 300
-"""Czas (w sekundach) po którym zdarzenie w statusie PROCESSING jest uznawane za
-stuck i automatycznie odblokowywane (status → FAILED)."""
 
 DEFAULT_ACCOUNT_EXPENSE_ID = 40100
-"""Domyślne ID konta kosztów (Wn) — polski plan kont."""
-
 DEFAULT_ACCOUNT_VAT_ID = 22100
-"""Domyślne ID konta VAT naliczonego (Wn) — polski plan kont."""
-
 DEFAULT_ACCOUNT_PAYABLES_ID = 20200
-"""Domyślne ID konta rozrachunków (Ma) — polski plan kont."""
-
-# ── Data structures ───────────────────────────────────────────────────────────
 
 
 class OutboxStats(Struct):
-    """Statystyki pojedynczej iteracji przetwarzania.
-
-    Attributes:
-        processed: Liczba zdarzeń pomyślnie przetworzonych.
-        failed: Liczba zdarzeń, które nie powiodły się (będą retried).
-        dead_letter: Liczba zdarzeń przeniesionych do DLQ.
-        skipped_idempotent: Liczba zdarzeń pominiętych (już przetworzone).
-        total: Łączna liczba zdarzeń w batchu.
-        processing_time_ms: Czas przetwarzania w milisekundach.
-    """
-
     processed: int = 0
     failed: int = 0
     dead_letter: int = 0
@@ -109,44 +70,23 @@ class OutboxStats(Struct):
     processing_time_ms: float = 0.0
 
 
-# ── Exceptions ────────────────────────────────────────────────────────────────
-
-
 class OutboxRelayError(Exception):
-    """Base exception for OutboxRelay errors."""
-
     pass
 
 
 class TigerBeetlePostingError(OutboxRelayError):
-    """Raised when TigerBeetle posting fails after all retries."""
-
     pass
 
 
 class UnknownEventTypeError(OutboxRelayError):
-    """Raised when an outbox event has an unknown/unhandled event_type."""
-
     pass
-
-
-# ── OutboxRelay ───────────────────────────────────────────────────────────────
 
 
 @final
 class OutboxRelay:
-    """Transactional Outbox Relay — gwarantowana dostawa zdarzeń do TigerBeetle.
+    """Transactional Outbox Relay z SUPERMOCAMI TigerBeetle.
 
-    Args:
-        session_factory: SQLAlchemy async session factory.
-        tigerbeetle: TigerBeetleClient do wysyłki transferów.
-            Jeśli None, zdarzenia TAX_CALCULATED są pomijane (tylko log).
-        max_retries: Maksymalna liczba retry przed DLQ.
-        base_delay_seconds: Bazowe opóźnienie przed pierwszą retry.
-        max_delay_seconds: Maksymalne opóźnienie (cap dla exponential backoff).
-        batch_size: Maksymalna liczba zdarzeń w jednej iteracji.
-        process_tax_calculated: Jeśli True, przetwarza TAX_CALCULATED.
-        on_dead_letter: Opcjonalny callback wywoływany przy przeniesieniu do DLQ.
+    Linked transfers + batch zamiast 2 osobnych wywołań.
     """
 
     def __init__(
@@ -176,22 +116,8 @@ class OutboxRelay:
         self._account_vat_id = account_vat_id
         self._account_payables_id = account_payables_id
 
-    # ── Public API ───────────────────────────────────────────────────────
-
     def process_pending(self) -> OutboxStats:
-        """Przetwórz wszystkie oczekujące zdarzenia w outbox.
-
-        Wykonuje pełny cykl:
-          1. Odblokowanie stuck PROCESSING zdarzeń (timeout >= 5 min)
-          2. Atomowa rezerwacja zdarzeń PENDING/FAILED
-          3. Dla każdego: dispatch → TigerBeetle
-          4. Idempotentność przez processed_events
-          5. Retry z exponential backoff
-          6. DLQ po wyczerpaniu prób
-
-        Returns:
-            OutboxStats z liczbą przetworzonych, failed, dead_letter.
-        """
+        """Przetwórz wszystkie oczekujące zdarzenia w outbox."""
         stats = OutboxStats()
         start = anyio.current_time()
 
@@ -229,12 +155,6 @@ class OutboxRelay:
         interval_seconds: float = 5.0,
         max_iterations: int = -1,
     ) -> None:
-        """Pętla przetwarzania — uruchamia ``process_pending()`` w nieskończoność.
-
-        Args:
-            interval_seconds: Odstęp między iteracjami (sekundy).
-            max_iterations: Maksymalna liczba iteracji (-1 = nieskończoność).
-        """
         iteration = 0
         while max_iterations < 0 or iteration < max_iterations:
             await anyio.lowlevel.checkpoint()
@@ -253,30 +173,15 @@ class OutboxRelay:
                     )
             except Exception as exc:
                 logger.exception("[OUTBOX-RELAY] Iteration %d failed: %s", iteration, exc)
-
             iteration += 1
             if max_iterations < 0 or iteration < max_iterations:
                 await anyio.sleep(interval_seconds)
-
-    # ── Event dispatch ──────────────────────────────────────────────────
 
     def _process_single_event(
         self,
         session: Session,
         row: dict[str, Any],
     ) -> tuple[str, float]:
-        """Przetwórz pojedyncze zdarzenie outbox.
-
-        Args:
-            session: Aktywna sesja SQLAlchemy.
-            row: Wiersz z outbox_events (id, event_type, aggregate_id, payload…).
-
-        Returns:
-            ``("sent", 0.0)`` — sukces,
-            ``("skipped", 0.0)`` — idempotentne pominięcie,
-            ``("dead_letter", 0.0)`` — po wyczerpaniu retry,
-            ``("failed", delay)`` — tymczasowy błąd z zalecanym opóźnieniem.
-        """
         event_id = row["id"]
         event_type = str(row.get("event_type", "")).strip().lower()
         aggregate_id = str(row.get("aggregate_id", ""))
@@ -309,50 +214,36 @@ class OutboxRelay:
                 "[OUTBOX] Unknown event_type=%s id=%s — moving to DLQ", event_type, event_id
             )
             self._move_to_dead_letter(
-                session,
-                event_id,
-                event_type,
-                aggregate_id,
-                payload_raw,
-                f"Unknown event_type: {event_type}",
-                retry_count,
+                session, event_id, event_type, aggregate_id, payload_raw,
+                f"Unknown event_type: {event_type}", retry_count,
             )
             return ("dead_letter", 0.0)
-
         except Exception as exc:
             logger.exception(
                 "[OUTBOX] Failed to process event id=%s type=%s: %s", event_id, event_type, exc
             )
             new_retry = retry_count + 1
             is_dead_letter = new_retry >= self._max_retries
-
             if is_dead_letter:
                 self._move_to_dead_letter(
                     session, event_id, event_type, aggregate_id, payload_raw, str(exc), new_retry
                 )
                 return ("dead_letter", 0.0)
-
             delay = self._compute_backoff(new_retry)
             self._mark_failed(session, event_id, delay)
             return ("failed", delay)
 
-    # ── Dispatchers ─────────────────────────────────────────────────────
+    # ── SUPERMOC: Linked transfers dispatch ──────────────────────────────
 
     def _dispatch_tax_calculated(self, payload_raw: str) -> None:
-        """Dispatch TAX_CALCULATED event — post double-entry transfers to TigerBeetle.
+        """Dispatch TAX_CALCULATED — linked transfers z batch.
 
-        Oczekiwany payload:
-        .. code-block:: json
-
-            {
-                "transaction_id": "uuid",
-                "rule_id": "uuid",
-                "net_grosze": 12345,
-                "vat_grosze": 2839,
-                "brutto_grosze": 15184,
-                "account_debit": "expenses",
-                "account_credit": "liabilities"
-            }
+        SUPERMOCE:
+        - Linked transfers: expense + VAT w atomowym chainie
+        - Batch: oba w jednym create_transfers()
+        - code: 1001=expense, 1002=vat
+        - user_data_128: UUID dokumentu
+        - Multi-ledger: 700 dla netto, 711 dla VAT
         """
         if not self._process_tax_calculated:
             logger.debug("[OUTBOX] TAX_CALCULATED processing disabled, skipping")
@@ -373,30 +264,54 @@ class OutboxRelay:
 
         if self._tigerbeetle is not None:
             try:
-                t1 = self._tigerbeetle.create_two_phase_transfer(
-                    debit_account=self._account_expense_id,
-                    credit_account=self._account_payables_id,
-                    amount_minor=net_grosze,
-                    source_document_id=uuid.UUID(transaction_id),
-                )
-                posted1 = self._tigerbeetle.post_pending_transfer(t1.pending_id)
+                source_uuid = uuid_module.UUID(transaction_id)
 
-                t2 = self._tigerbeetle.create_two_phase_transfer(
-                    debit_account=self._account_vat_id,
-                    credit_account=self._account_payables_id,
-                    amount_minor=vat_grosze,
-                    source_document_id=uuid.UUID(transaction_id),
-                )
-                posted2 = self._tigerbeetle.post_pending_transfer(t2.pending_id)
+                # SUPERMOC: Build linked chain z BALANCING_CREDIT
+                # TB automatycznie wyrówna różnice groszowe przy outbox replay
+                specs = [
+                    {
+                        "debit": self._account_expense_id,
+                        "credit": self._account_payables_id,
+                        "amount": net_grosze,
+                        "code": TRANSFER_CODE["EXPENSE_NET"],
+                        "ledger": LEDGER["PLN"],
+                    },
+                    {
+                        "debit": self._account_vat_id,
+                        "credit": self._account_payables_id,
+                        "amount": vat_grosze,
+                        "code": TRANSFER_CODE["EXPENSE_VAT"],
+                        "ledger": LEDGER["VAT_INPUT"],
+                        # SUPERMOC: BALANCING_CREDIT — TB automatycznie wyrówna różnicę
+                        "flags": tb.TransferFlags.BALANCING_CREDIT,
+                    },
+                ]
 
-                if not (posted1 and posted2):
+                # SUPERMOC: batch_linked_transfers tworzy atomic chain
+                transfers = self._tigerbeetle.build_linked_transfers(
+                    specs,
+                    source_document_id=source_uuid,
+                    ledger=LEDGER["PLN"],
+                )
+
+                # SUPERMOC: IMPORTED flag for retry/replay
+                for t in transfers:
+                    t.flags |= tb.TransferFlags.IMPORTED
+
+                # SUPERMOC: jeden batch call zamiast 2 osobnych
+                results = self._tigerbeetle.create_transfers(transfers)
+
+                # Sprawdź wyniki — status=0 oznacza OK
+                all_ok = all(r.status == 0 for r in results)
+
+                if not all_ok:
                     raise TigerBeetlePostingError(
-                        f"TigerBeetle partial posting for tid={transaction_id}: "
-                        f"expense_posted={posted1}, vat_posted={posted2}"
+                        f"TigerBeetle linked chain failed for tid={transaction_id}: "
+                        f"net={results[0] if results else '?'}, vat={results[1] if len(results) > 1 else '?'}"
                     )
 
                 logger.info(
-                    "[OUTBOX] TAX_CALCULATED posted tid=%s net=%d vat=%d brutto=%d",
+                    "[OUTBOX] TAX_CALCULATED linked-posted tid=%s net=%d vat=%d brutto=%d",
                     transaction_id,
                     net_grosze,
                     vat_grosze,
@@ -405,7 +320,8 @@ class OutboxRelay:
 
             except Exception as exc:
                 logger.exception(
-                    "[OUTBOX] TAX_CALCULATED TB posting failed tid=%s: %s", transaction_id, exc
+                    "[OUTBOX] TAX_CALCULATED TB linked posting failed tid=%s: %s",
+                    transaction_id, exc,
                 )
                 raise TigerBeetlePostingError(
                     f"TigerBeetle posting failed for tid={transaction_id}: {exc}"
@@ -420,15 +336,12 @@ class OutboxRelay:
             )
 
     def _dispatch_invoice_ocr(self, aggregate_id: str, payload_raw: str) -> None:
-        """Dispatch invoice OCR event."""
         logger.info("[OUTBOX] Invoice OCR event: aggregate_id=%s", aggregate_id)
 
     def _dispatch_large_attachment(self, aggregate_id: str, payload_raw: str) -> None:
-        """Dispatch large attachment event."""
         logger.info("[OUTBOX] Large attachment event: aggregate_id=%s", aggregate_id)
 
     def _dispatch_generic(self, event_type: str, aggregate_id: str, payload_raw: str) -> None:
-        """Dispatch a generic retry event."""
         logger.info(
             "[OUTBOX] Generic retry event: type=%s aggregate_id=%s", event_type, aggregate_id
         )
@@ -436,16 +349,13 @@ class OutboxRelay:
     # ── Database helpers ───────────────────────────────────────────────
 
     def _unlock_stale_processing(self, session: Session) -> None:
-        """Odblokuj zdarzenia stuck w statusie PROCESSING (>= 5 minut)."""
         result = session.execute(
             text(
-                f"""
-                UPDATE outbox_events
-                SET status = '{OutboxStatus.FAILED.value}', processing_started_at = NULL
-                WHERE status = '{OutboxStatus.PROCESSING.value}'
-                  AND processing_started_at IS NOT NULL
-                  AND (strftime('%%s', 'now') - strftime('%%s', processing_started_at)) > :timeout
-                """
+                f"UPDATE outbox_events SET status = '{OutboxStatus.FAILED.value}', "
+                "processing_started_at = NULL "
+                f"WHERE status = '{OutboxStatus.PROCESSING.value}' "
+                "AND processing_started_at IS NOT NULL "
+                "AND (strftime('%%s', 'now') - strftime('%%s', processing_started_at)) > :timeout"
             ),
             {"timeout": PROCESSING_TIMEOUT_SECONDS},
         )
@@ -453,79 +363,52 @@ class OutboxRelay:
             logger.warning("[OUTBOX] Unlocked %d stale PROCESSING events", result.rowcount)
 
     def _reserve_events(self, session: Session) -> list[dict[str, Any]]:
-        """Atomowa rezerwacja zdarzeń."""
         session.execute(
             text(
-                f"""
-                UPDATE outbox_events
-                SET status = '{OutboxStatus.PROCESSING.value}',
-                    processing_started_at = CURRENT_TIMESTAMP
-                WHERE id IN (
-                    SELECT id FROM outbox_events
-                    WHERE status IN ('{OutboxStatus.PENDING.value}', '{OutboxStatus.FAILED.value}')
-                      AND processed = 0
-                      AND COALESCE(retry_count, 0) < :max_retries
-                    ORDER BY created_at ASC
-                    LIMIT :limit
-                )
-                """
+                f"UPDATE outbox_events SET status = '{OutboxStatus.PROCESSING.value}', "
+                "processing_started_at = CURRENT_TIMESTAMP "
+                "WHERE id IN (SELECT id FROM outbox_events "
+                f"WHERE status IN ('{OutboxStatus.PENDING.value}', '{OutboxStatus.FAILED.value}') "
+                "AND processed = 0 AND COALESCE(retry_count, 0) < :max_retries "
+                "ORDER BY created_at ASC LIMIT :limit)"
             ),
             {"max_retries": self._max_retries, "limit": self._batch_size},
         )
-
         rows = (
             session.execute(
                 text(
-                    f"""
-                SELECT id, event_type, aggregate_id, payload,
-                       COALESCE(retry_count, 0) AS retry_count
-                FROM outbox_events
-                WHERE status = '{OutboxStatus.PROCESSING.value}'
-                  AND processing_started_at IS NOT NULL
-                ORDER BY created_at ASC
-                LIMIT :limit
-                """
+                    f"SELECT id, event_type, aggregate_id, payload, "
+                    "COALESCE(retry_count, 0) AS retry_count "
+                    f"FROM outbox_events WHERE status = '{OutboxStatus.PROCESSING.value}' "
+                    "AND processing_started_at IS NOT NULL "
+                    "ORDER BY created_at ASC LIMIT :limit"
                 ),
                 {"limit": self._batch_size},
             )
             .mappings()
             .all()
         )
-
         return [dict(r) for r in rows]
 
     def _is_already_processed(
-        self,
-        session: Session,
-        event_id: str,
-        event_type: str,
-        aggregate_id: str,
-        payload_raw: str,
+        self, session: Session, event_id: str, event_type: str,
+        aggregate_id: str, payload_raw: str,
     ) -> bool:
-        """Sprawdź idempotentność."""
         row = session.execute(
-            text("SELECT 1 FROM processed_events WHERE id = :id"),
-            {"id": event_id},
+            text("SELECT 1 FROM processed_events WHERE id = :id"), {"id": event_id}
         )
         return row.fetchone() is not None
 
     def _record_idempotency(
-        self,
-        session: Session,
-        event_id: str,
-        event_type: str,
-        aggregate_id: str,
-        payload_raw: str,
+        self, session: Session, event_id: str, event_type: str,
+        aggregate_id: str, payload_raw: str,
     ) -> None:
-        """Zapisz wpis idempotentności."""
         payload_hash = _sha256(payload_raw.encode())
         session.execute(
             text(
-                """
-                INSERT OR IGNORE INTO processed_events
-                    (id, event_type, aggregate_id, payload_hash, processed_at)
-                VALUES (:id, :event_type, :aggregate_id, :payload_hash, CURRENT_TIMESTAMP)
-                """
+                "INSERT OR IGNORE INTO processed_events "
+                "(id, event_type, aggregate_id, payload_hash, processed_at) "
+                "VALUES (:id, :event_type, :aggregate_id, :payload_hash, CURRENT_TIMESTAMP)"
             ),
             {
                 "id": event_id,
@@ -536,29 +419,20 @@ class OutboxRelay:
         )
 
     def _mark_sent(self, session: Session, event_id: str) -> None:
-        """Oznacz zdarzenie jako pomyślnie wysłane."""
         session.execute(
             text(
-                f"""
-                UPDATE outbox_events
-                SET status = '{OutboxStatus.SENT.value}', processed = 1, processed_at = CURRENT_TIMESTAMP
-                WHERE id = :id
-                """
+                f"UPDATE outbox_events SET status = '{OutboxStatus.SENT.value}', "
+                "processed = 1, processed_at = CURRENT_TIMESTAMP WHERE id = :id"
             ),
             {"id": event_id},
         )
 
     def _mark_failed(self, session: Session, event_id: str, delay: float) -> None:
-        """Oznacz zdarzenie jako failed (będzie retried z opóźnieniem)."""
         session.execute(
             text(
-                f"""
-                UPDATE outbox_events
-                SET retry_count = retry_count + 1,
-                    processing_started_at = NULL,
-                    status = '{OutboxStatus.FAILED.value}'
-                WHERE id = :id
-                """
+                f"UPDATE outbox_events SET retry_count = retry_count + 1, "
+                "processing_started_at = NULL, "
+                f"status = '{OutboxStatus.FAILED.value}' WHERE id = :id"
             ),
             {"id": event_id},
         )
@@ -566,26 +440,17 @@ class OutboxRelay:
             logger.info("[OUTBOX] Event %s failed — retrying after %.1fs delay", event_id, delay)
 
     def _move_to_dead_letter(
-        self,
-        session: Session,
-        event_id: str,
-        event_type: str,
-        aggregate_id: str,
-        payload_raw: str,
-        error_message: str,
-        retry_count: int,
+        self, session: Session, event_id: str, event_type: str,
+        aggregate_id: str, payload_raw: str, error_message: str, retry_count: int,
     ) -> None:
-        """Przenieś zdarzenie do Dead Letter Queue."""
         try:
             session.execute(
                 text(
-                    """
-                    INSERT OR IGNORE INTO dead_letter_events
-                        (id, event_type, aggregate_id, payload, error_message,
-                         stack_trace, retry_count, dead_at)
-                    VALUES (:id, :event_type, :aggregate_id, :payload,
-                            :error_message, :stack_trace, :retry_count, CURRENT_TIMESTAMP)
-                    """
+                    "INSERT OR IGNORE INTO dead_letter_events "
+                    "(id, event_type, aggregate_id, payload, error_message, "
+                    "stack_trace, retry_count, dead_at) "
+                    "VALUES (:id, :event_type, :aggregate_id, :payload, "
+                    ":error_message, :stack_trace, :retry_count, CURRENT_TIMESTAMP)"
                 ),
                 {
                     "id": event_id,
@@ -602,110 +467,71 @@ class OutboxRelay:
 
         session.execute(
             text(
-                f"""
-                UPDATE outbox_events
-                SET retry_count = retry_count + 1,
-                    processing_started_at = NULL,
-                    status = '{OutboxStatus.DEAD_LETTER.value}'
-                WHERE id = :id
-                """
+                f"UPDATE outbox_events SET retry_count = retry_count + 1, "
+                "processing_started_at = NULL, "
+                f"status = '{OutboxStatus.DEAD_LETTER.value}' WHERE id = :id"
             ),
             {"id": event_id},
         )
 
         logger.error(
             "[OUTBOX] Event %s moved to DLQ (type=%s, retries=%d): %s",
-            event_id,
-            event_type,
-            retry_count,
-            error_message,
+            event_id, event_type, retry_count, error_message,
         )
 
         if self._on_dead_letter is not None:
             try:
-                self._on_dead_letter(
-                    {
-                        "event_id": event_id,
-                        "event_type": event_type,
-                        "aggregate_id": aggregate_id,
-                        "error": error_message,
-                        "retry_count": retry_count,
-                    }
-                )
+                self._on_dead_letter({
+                    "event_id": event_id,
+                    "event_type": event_type,
+                    "aggregate_id": aggregate_id,
+                    "error": error_message,
+                    "retry_count": retry_count,
+                })
             except Exception as cb_err:
                 logger.warning("[OUTBOX] DLQ callback failed: %s", cb_err)
 
     def _cleanup_processed_events(self, session: Session) -> None:
-        """Usuń stare wpisy idempotentności (> 24h)."""
         session.execute(
             text("DELETE FROM processed_events WHERE processed_at < datetime('now', '-1 day')")
         )
 
-    # ── Utility ─────────────────────────────────────────────────────────
-
     def _compute_backoff(self, attempt: int) -> float:
-        """Oblicz opóźnienie z exponential backoff.
-
-        Wzór: min(base_delay * 2^(attempt-2), max_delay) dla attempt >= 2,
-        0.0 dla attempt <= 1.
-
-        Przykład (base_delay=1.0):
-          - attempt=1: 0.0s (pierwsza próba, brak opóźnienia)
-          - attempt=2: 1.0s
-          - attempt=3: 2.0s
-          - attempt=4: 4.0s
-          - attempt=7: 32.0s (cap przy max_delay=60.0)
-
-        Args:
-            attempt: Numer próby (1-based).
-
-        Returns:
-            Opóźnienie w sekundach.
-        """
         if attempt <= 1:
             return 0.0
         delay = self._base_delay * (2 ** (attempt - 2))
         return min(delay, self._max_delay)
 
-    # ── Status ──────────────────────────────────────────────────────────
-
     def get_stats(self) -> dict[str, int]:
-        """Pobierz statystyki outbox (pending, failed, dead_letter, sent)."""
         with self._session_factory() as session:
             pending = int(
                 session.execute(
                     text(f"SELECT COUNT(*) FROM outbox_events WHERE status = '{OutboxStatus.PENDING.value}'")
-                ).scalar()
-                or 0
+                ).scalar() or 0
             )
             processing = int(
                 session.execute(
                     text(f"SELECT COUNT(*) FROM outbox_events WHERE status = '{OutboxStatus.PROCESSING.value}'")
-                ).scalar()
-                or 0
+                ).scalar() or 0
             )
             failed = int(
                 session.execute(
                     text(f"SELECT COUNT(*) FROM outbox_events WHERE status = '{OutboxStatus.FAILED.value}'")
-                ).scalar()
-                or 0
+                ).scalar() or 0
             )
             dead_letter = int(
                 session.execute(
                     text(f"SELECT COUNT(*) FROM outbox_events WHERE status = '{OutboxStatus.DEAD_LETTER.value}'")
-                ).scalar()
-                or 0
+                ).scalar() or 0
             )
             sent = int(
                 session.execute(
                     text(f"SELECT COUNT(*) FROM outbox_events WHERE status = '{OutboxStatus.SENT.value}'")
-                ).scalar()
-                or 0
+                ).scalar() or 0
             )
             dlq_events = int(
                 session.execute(text("SELECT COUNT(*) FROM dead_letter_events")).scalar() or 0
             )
-
         return {
             "pending": pending,
             "processing": processing,

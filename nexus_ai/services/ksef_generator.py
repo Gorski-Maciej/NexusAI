@@ -1,29 +1,52 @@
 """
 KSeF Generator — generuje XML FA_VAT zgodny ze schematem KSeF.
 
+Dwie ścieżki generowania XML:
+  1. [PREFERRED] xsdata — używa wygenerowanych klas z FA_VAT XSD (type-safe)
+  2. [FALLBACK]  lxml.etree — ręczne budowanie drzewa XML (gdy bindingi xsdata niedostępne)
+
 Zintegrowany z DecisionEngine — na podstawie werdyktu reguł podatkowych
 (GTU, procedury, stawki VAT) buduje poprawny dokument XML zgodny z XSD
 Ministerstwa Finansów.
 
-Obsługuje:
-  - ksef_fields z werdyktu (gtu_code, procedure_code, transaction_mark, split_payment)
-  - category_gtu_map — mapowanie kategorii na domyślne kody GTU
-  - Walidacja przez lxml (jeśli XSD dostępne)
-  - Konwersja groszy na złotówki (string z 2 miejscami po przecinku)
+Kluczowe supermoce xsdata:
+  - Automatyczna serializacja XML z typowaniem (XmlSerializer)
+  - Parsowanie XML do typowanych klas (XmlParser)
+  - Walidacja XSD (XmlValidator)
+  - Obsługa namespace'ów z XSD
+  - Wygenerowane klasy dla FA_VAT v1-0E
 """
 
 from __future__ import annotations
 
 import uuid
 from typing import Any
-from xml.etree import ElementTree as ET
 
 import pendulum
+from lxml import etree as ET
 from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 
 logger = get_logger("nexus.ksef")
+
+
+# ── Próba załadowania xsdata bindingów (preferowana ścieżka) ────────────────
+
+try:
+    from nexus_ai.core.integrations.ksef.xsd_bindings import (
+        faktura_to_xml,
+        faktura_from_dict,
+        _load_bindings as _load_ksef_bindings,
+        validate_with_xsdata,
+    )
+
+    _XS_DATA_AVAILABLE = _load_ksef_bindings() is not None
+except ImportError:
+    _XS_DATA_AVAILABLE = False
+    faktura_to_xml = None  # type: ignore[assignment]
+    faktura_from_dict = None  # type: ignore[assignment]
+    validate_with_xsdata = None  # type: ignore[assignment]
 
 
 # ── Category → GTU map ───────────────────────────────────────────────────────
@@ -99,9 +122,9 @@ def generate_ksef_xml(
 ) -> str:
     """Generuje XML FA_VAT na podstawie danych faktury i werdyktu Zen-Engine.
 
-    Uwaga: Docelowo należy użyć xsdata z wygenerowanymi klasami z FA_VAT XSD.
-    Póki schema XSD nie jest pobrana, generujemy XML ręcznie (struktura zgodna
-    z dokumentacją KSeF).
+    Dwie ścieżki:
+      1. [PREFERRED] xsdata — używa wygenerowanych klas z FA_VAT XSD (type-safe)
+      2. [FALLBACK]  lxml.etree — ręczne budowanie drzewa XML
 
     Args:
         invoice_data: Znormalizowana faktura (kwoty w groszach).
@@ -113,6 +136,24 @@ def generate_ksef_xml(
     Returns:
         String XML (UTF-8, bez BOM) zgodny z FA_VAT.
     """
+    # ── Ścieżka 1: xsdata (preferowana) ───────────────────────────────────
+    if _XS_DATA_AVAILABLE and faktura_from_dict is not None and faktura_to_xml is not None:
+        try:
+            faktura = faktura_from_dict(invoice_data, verdict)
+            if faktura is not None:
+                xml_bytes = faktura_to_xml(faktura)
+                if xml_bytes is not None:
+                    invoice_id = str(invoice_data.get("invoice_id", uuid.uuid4().hex))
+                    xml_str = xml_bytes.decode("utf-8")
+                    logger.debug(
+                        "[KSeF] xsdata XML generated for invoice %s (%d bytes)",
+                        invoice_id, len(xml_str),
+                    )
+                    return xml_str
+        except Exception as exc:
+            logger.warning("[KSeF] xsdata generation failed, falling back to lxml: %s", exc)
+
+    # ── Ścieżka 2: lxml fallback ──────────────────────────────────────────
     # Wyciągnij dane
     invoice_id = str(invoice_data.get("invoice_id", uuid.uuid4().hex))
     invoice_number = str(invoice_data.get("number", invoice_id))
@@ -209,8 +250,13 @@ def generate_ksef_xml(
             if pos_vat:
                 ET.SubElement(pos_elem, "KwotaVat").text = f"{pos_vat / 100:.2f}"
 
-    # Serializuj
-    xml_bytes = ET.tostring(root, encoding="utf-8", xml_declaration=True)
+    # Serializuj (lxml: pretty_print=True dla czytelności, xml_declaration=True)
+    xml_bytes = ET.tostring(
+        root,
+        encoding="utf-8",
+        xml_declaration=True,
+        pretty_print=True,
+    )
     xml_str = xml_bytes.decode("utf-8")
 
     logger.debug("KSeF XML generated for invoice %s (%d bytes)", invoice_id, len(xml_str))
@@ -219,6 +265,9 @@ def generate_ksef_xml(
 
 def validate_ksef_xml(xml_str: str, xsd_path: str | None = None) -> tuple[bool, str]:
     """Validate generated XML against FA_VAT XSD schema.
+
+    Uses lxml's ``XMLSchema`` validator with detailed error logging.
+    lxml provides line/column numbers in error_log for precise debugging.
 
     Args:
         xml_str: XML string to validate.
@@ -231,28 +280,40 @@ def validate_ksef_xml(xml_str: str, xsd_path: str | None = None) -> tuple[bool, 
         return True, "No XSD provided — validation skipped"
 
     try:
-        from lxml import etree
-    except ImportError:
-        logger.warning("lxml not available — XML validation skipped")
-        return True, "lxml not available — validation skipped"
-
-    try:
-        schema_root = etree.parse(xsd_path)
-        schema = etree.XMLSchema(schema_root)
-        xml_doc = etree.fromstring(xml_str.encode("utf-8"))
+        schema_root = ET.parse(xsd_path)
+        schema = ET.XMLSchema(schema_root)
+        xml_doc = ET.fromstring(xml_str.encode("utf-8"))
 
         if schema.validate(xml_doc):
             return True, "XML valid against XSD"
         else:
-            errors = "\n".join(str(e) for e in schema.error_log)
-            return False, f"XML validation failed:\n{errors}"
+            # lxml error_log zawiera numer linii/kolumny każdego błędu
+            errors: list[str] = []
+            for err in schema.error_log:
+                errors.append(
+                    f"  Line {err.line}, Col {err.column}: [{err.type_name}] {err.message}"
+                )
+            error_text = "\n".join(errors)
+            logger.warning("[KSeF] XSD validation failed:\n%s", error_text)
+            return False, f"XML validation failed ({len(errors)} errors):\n{error_text}"
 
+    except ET.XMLSyntaxError as exc:
+        logger.error("[KSeF] XML syntax error: %s", exc)
+        return False, f"XML syntax error: {exc}"
+    except ET.DocumentInvalid as exc:
+        logger.error("[KSeF] Document invalid: %s", exc)
+        return False, f"Document invalid: {exc}"
     except Exception as exc:
+        logger.error("[KSeF] Validation error: %s", exc)
         return False, f"Validation error: {exc}"
 
 
-def _add_entity(parent: ET.Element, entity_data: dict[str, Any]) -> None:
-    """Dodaj dane podmiotu (sprzedawcy/nabywcy) do XML."""
+def _add_entity(parent: ET._Element, entity_data: dict[str, Any]) -> None:
+    """Dodaj dane podmiotu (sprzedawcy/nabywcy) do XML.
+
+    Używa lxml.etree dla lepszej wydajności i walidacji typów.
+    W lxml ``_Element`` to podstawowy typ elementu (zamiast ``Element`` z stdlib).
+    """
     if not entity_data:
         return
     nip = str(entity_data.get("nip", ""))

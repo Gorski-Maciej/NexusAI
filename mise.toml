@@ -102,8 +102,16 @@ description = "Uruchom NATS JetStream broker na porcie 4222"
 run = "nats-server -p 4222 -js"
 
 [tasks.start-tigerbeetle]
-description = "Uruchom TigerBeetle ledger na porcie 3000"
+description = "SUPERMOC: Uruchom TigerBeetle ledger na UNIX socket (szybszy niż TCP)\n  Zgodnie z audytem: komunikacja przez UNIX socket = zero narzutu TCP/IP\n  Gniazdo: /tmp/nexus-tb.sock"
+run = "tigerbeetle start --addresses=/tmp/nexus-tb.sock --cluster=0 data/tigerbeetle.bin"
+
+[tasks.start-tigerbeetle-tcp]
+description = "Uruchom TigerBeetle na TCP (port 3000) — dla zdalnego dostępu"
 run = "tigerbeetle start --addresses=3000 --cluster=0 data/tigerbeetle.bin"
+
+[tasks.format-tigerbeetle]
+description = "Sformatuj plik danych TigerBeetle"
+run = "tigerbeetle format --cluster=0 --replica=0 --replica-count=1 --development data/tigerbeetle.bin"
 
 [tasks.download-binaries]
 description = "Pobierz NATS Server i TigerBeetle (binarki systemowe)"

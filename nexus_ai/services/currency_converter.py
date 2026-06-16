@@ -188,6 +188,84 @@ class Money(msgspec.Struct, frozen=True):
     def __repr__(self) -> str:
         return f"Money(amount_cents={self.amount_cents}, currency={self.currency!r})"
 
+    # ── Rust Money bridge (Faza 3) ────────────────────────────────────────
+
+    @classmethod
+    def from_rust_money(cls, rust_money) -> Money:
+        """Create Python Money from Rust ``nexus_crypto.Money`` (PyO3).
+
+        Both Rust ``nexus_crypto.Money`` and Python ``Money`` share the same
+        schema: ``amount_cents: int`` and ``currency: str``.
+
+        Args:
+            rust_money: Instance of ``nexus_crypto.Money`` (Rust PyO3 class).
+
+        Returns:
+            Python ``Money`` instance.
+
+        Example:
+            >>> from nexus_crypto import Money as RustMoney
+            >>> rust = RustMoney(amount_cents=12345, currency="PLN")
+            >>> py = Money.from_rust_money(rust)
+            >>> py.amount_cents
+            12345
+            >>> py.currency
+            'PLN'
+        """
+        return cls(
+            amount_cents=int(rust_money.amount_cents),
+            currency=str(rust_money.currency),
+        )
+
+    def to_rust_money(self):
+        """Convert Python Money to Rust ``nexus_crypto.Money``.
+
+        Umożliwia przekazanie kwoty do Rust TaxMathEngine, InvoicePositions,
+        i innych funkcji PyO3 bez ręcznej konwersji.
+
+        Returns:
+            ``nexus_crypto.Money`` instance, or None if not available.
+
+        Example:
+            >>> py = Money(amount_cents=12345, currency="PLN")
+            >>> rust = py.to_rust_money()
+            >>> rust.amount_cents
+            12345
+        """
+        try:
+            from nexus_crypto import Money as RustMoney
+            return RustMoney(amount_cents=self.amount_cents, currency=self.currency)
+        except ImportError:
+            # Rust native module not available — return None
+            return None
+
+    @classmethod
+    def validate_currency(cls, currency: str) -> str:
+        """Validate and normalize currency code.
+
+        Args:
+            currency: Currency code (e.g. "pln", "eur", "USD").
+
+        Returns:
+            Normalized uppercase currency code.
+
+        Raises:
+            ValueError: If currency is not a valid 3-letter code.
+
+        Example:
+            >>> Money.validate_currency("eur")
+            'EUR'
+            >>> Money.validate_currency("PLN")
+            'PLN'
+        """
+        currency = currency.upper().strip()
+        if len(currency) != 3 or not currency.isalpha():
+            raise ValueError(
+                f"Invalid currency code: {currency!r}. "
+                f"Must be a 3-letter ISO 4217 code (e.g. 'PLN', 'EUR', 'USD')."
+            )
+        return currency
+
 
 def _check_currencies(a: Money, b: Money, operation: str = "operate") -> None:
     """Validate that two Money objects have the same currency."""

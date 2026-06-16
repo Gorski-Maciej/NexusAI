@@ -142,17 +142,40 @@ async def calculate_and_post_cogs(
     source_document_id: Any,
     duckdb_writer: Any | None = None,
 ) -> FIFOConsumptionResult:
+    """SUPERMOC: Post COGS to TigerBeetle with code/ledger/user_data.
+
+    Używa code=TransferCode.COGS (5001), ledger=INVENTORY (706).
+    """
     consumption = calculate_fifo_cogs(product_id, qty_sold, open_batches)
     amount_minor = int(
         (consumption.total_cogs_net * Decimal("100")).to_integral_value(rounding=ROUND_HALF_UP)
     )
-    pending = await tb_client.create_two_phase_transfer(
-        debit_account=debit_account_731_cogs,
-        credit_account=credit_account_330_inventory,
-        amount_minor=amount_minor,
-        source_document_id=source_document_id,
+
+    # SUPERMOC: Użyj realnego API TB z batch transferem
+    import tigerbeetle as tb
+    from nexus_ai.services.tigerbeetle.client import (
+        LEDGER, TRANSFER_CODE, _generate_tb_id, _uuid_to_u128,
     )
-    posted = await tb_client.post_pending_transfer(pending.pending_id)
+    source_u128 = source_document_id.int if hasattr(source_document_id, 'int') else _uuid_to_u128(uuid.UUID(str(source_document_id)))
+    
+    transfer = tb.Transfer(
+        id=_generate_tb_id(),
+        debit_account_id=debit_account_731_cogs,
+        credit_account_id=credit_account_330_inventory,
+        amount=amount_minor,
+        pending_id=0,
+        user_data_128=source_u128,
+        user_data_64=0,
+        user_data_32=0,
+        timeout=0,
+        ledger=LEDGER["INVENTORY"],
+        code=TRANSFER_CODE["COGS"],
+        flags=0,
+        timestamp=0,
+    )
+    results = tb_client.create_transfers([transfer])
+    posted = all(r.status == 0 for r in results)
+
     if not posted:
         raise InventoryMismatch("Failed to post COGS transfer to TigerBeetle")
 

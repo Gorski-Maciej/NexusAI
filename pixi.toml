@@ -98,6 +98,12 @@ stamina = ">=0.1.0"
 # ── Cryptography (lokalny moduł Rust) ───────────────────────────────────────
 nexus-crypto = { path = "./nexus_ai/rust", editable = true }
 
+# ── TigerBeetle — oficjalny Python client (double-entry accounting engine) ──
+# ``tigerbeetle`` (pypi: ``tigerbeetle-client``) — oficjalny klient
+# Komunikacja przez gniazdo UNIX/TCP, auto-batching, linked transfers
+# Wersja 0.16.x zgodna z TigerBeetle 0.16 w mise.toml
+tigerbeetle = ">=0.16.0"
+
 # ── Document / Image processing ─────────────────────────────────────────────
 lxml = ">=5.1.0"
 xsdata = ">=24.0.0"           # XSD → Python code generation (KSeF)

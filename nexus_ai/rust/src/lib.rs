@@ -184,6 +184,35 @@ fn decrypt(py: Python<'_>, key: &[u8], data: &[u8]) -> PyResult<Py<PyBytes>> {
     Ok(PyBytes::new_bound(py, &plaintext).into())
 }
 
+/// Decrypt data into a SensitiveBytes (RAII-protected output).
+///
+/// Like `decrypt()`, but returns a `SensitiveBytes` wrapper that
+/// automatically zeroizes the plaintext on garbage collection.
+///
+/// Args:
+///     key: 32-byte encryption key (bytes).
+///     data: nonce (12B) || ciphertext (bytes).
+///
+/// Returns:
+///     SensitiveBytes wrapping the decrypted plaintext (auto-zeroized on drop).
+///
+/// Raises:
+///     KeyLengthError: If key is not exactly 32 bytes.
+///     DecryptionError: If decryption fails (wrong key or tampered data).
+#[pyfunction]
+fn decrypt_into_sensitive(key: &[u8], data: &[u8]) -> PyResult<secure::PySensitiveBytes> {
+    log::info!("decrypt_into_sensitive: {} bytes of ciphertext", data.len());
+    let sensitive = aead::decrypt_into_sensitive(key, data).map_err(|e| {
+        if e.contains("Key must be exactly") {
+            exceptions::KeyLengthError::new_err(e)
+        } else {
+            exceptions::DecryptionError::new_err(e)
+        }
+    })?;
+    log::debug!("decrypt_into_sensitive: success, RAII-protected plaintext");
+    Ok(secure::PySensitiveBytes { inner: sensitive })
+}
+
 /// Hash a password using Argon2id.
 ///
 /// Args:
@@ -312,6 +341,7 @@ fn _core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Register functions
     m.add_function(wrap_pyfunction!(encrypt, m)?)?;
     m.add_function(wrap_pyfunction!(decrypt, m)?)?;
+    m.add_function(wrap_pyfunction!(decrypt_into_sensitive, m)?)?;
     m.add_function(wrap_pyfunction!(hash_password, m)?)?;
     m.add_function(wrap_pyfunction!(verify_password, m)?)?;
     m.add_function(wrap_pyfunction!(sha256, m)?)?;
@@ -322,6 +352,9 @@ fn _core(m: &Bound<'_, PyModule>) -> PyResult<()> {
 
     // Register classes
     m.add_class::<Sha256Hasher>()?;
+
+    // Register secure memory types (RAII protected buffers)
+    secure::register(m)?;  // SensitiveBytes, MlockedVec, protect_*
 
     // Register TaxMathEngine (Rust + PyO3 — integer-only tax arithmetic)
     tax::register(m)?;
@@ -347,6 +380,6 @@ fn _core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Register TemporalManager (date filtering, overlap validation)
     temporal_manager::register(m)?;
 
-    log::info!("nexus_crypto: registered 10 functions, 1 class, 5 custom exceptions, TaxMathEngine, JWT, KSeF, TaxPipeline, TraceLogger, PriorityEngine, RulesEngine (shared pipeline), TemporalManager");
+    log::info!("nexus_crypto: registered 10 functions, 7 classes, 5 custom exceptions, TaxMathEngine, JWT, KSeF, TaxPipeline, TraceLogger, PriorityEngine, RulesEngine (shared pipeline), TemporalManager, SecureMemory (SensitiveBytes, MlockedVec, protect_*)");
     Ok(())
 }

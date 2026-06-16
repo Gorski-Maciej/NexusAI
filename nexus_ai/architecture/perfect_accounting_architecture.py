@@ -2,12 +2,18 @@
 
 Plik definiuje rozszerzoną architekturę docelową wraz z komponentami,
 mechanizmami niezawodności i mapowaniem wymaganych technologii.
+
+Zgodnie z aa3fvcx.txt: msgspec.Struct zastępuje @dataclass.
+- msgspec.Struct jest 10-100x szybszy przy serializacji
+- frozen=True + kw_only=True zapewnia tę samą immutabilność
+- Wbudowana walidacja typów (bez dekoratora @dataclass)
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from enum import StrEnum
+
+import msgspec
 
 
 class Layer(StrEnum):
@@ -19,34 +25,48 @@ class Layer(StrEnum):
     OPS = "ops"
 
 
-@dataclass(frozen=True)
-class Technology:
+class Technology(msgspec.Struct, frozen=True, kw_only=True):
+    """Zastępuje @dataclass(frozen=True).
+
+    Zalety msgspec.Struct:
+    - 10-100x szybsza serializacja (json_encode)
+    - Wbudowana walidacja typów
+    - frozen=True → immutabilna (to samo co @dataclass(frozen=True))
+    - kw_only=True → jawne nazwy pól przy konstrukcji
+    """
     name: str
     role: str
 
 
-@dataclass(frozen=True)
-class Component:
+class Component(msgspec.Struct, frozen=True, kw_only=True):
+    """Zastępuje @dataclass(frozen=True).
+
+    Używa tuple dla responsibilitie i technologii — immutable i hashable."""
     name: str
     layer: Layer
     responsibilities: tuple[str, ...]
     technologies: tuple[Technology, ...]
 
 
-@dataclass(frozen=True)
-class PipelineStage:
+class PipelineStage(msgspec.Struct, frozen=True, kw_only=True):
+    """Zastępuje @dataclass(frozen=True).
+
+    validator i controls mają domyślne wartości None/() dla kompatybilności."""
     name: str
     primary: str
     validator: str | None = None
     controls: tuple[str, ...] = ()
 
 
-@dataclass
-class ArchitectureBlueprint:
+class ArchitectureBlueprint(msgspec.Struct, kw_only=True):
+    """Zastępuje @dataclass.
+
+    mutable (kw_only=True, frozen=False) — bo components/ocr_pipeline/ml_pipeline
+    mogą być modyfikowane po konstrukcji przez build_blueprint()."""
     name: str = "NexusAI Accounting Platform"
-    components: list[Component] = field(default_factory=list)
-    ocr_pipeline: list[PipelineStage] = field(default_factory=list)
-    ml_pipeline: list[PipelineStage] = field(default_factory=list)
+    components: list[Component] = msgspec.field(default_factory=list)
+    ocr_pipeline: list[PipelineStage] = msgspec.field(default_factory=list)
+    ml_pipeline: list[PipelineStage] = msgspec.field(default_factory=list)
 
     def technology_names(self) -> set[str]:
         names: set[str] = set()
@@ -144,9 +164,9 @@ def build_blueprint() -> ArchitectureBlueprint:
                 "Obsługa walidacji dokumentów i alertów błędów OCR/ML",
             ),
             technologies=(
-                Technology("Python", "język aplikacji"),
-                Technology("Flet", "interfejs Flutter for Python"),
-                Technology("Playwright", "testy E2E UI"),
+                Technology(name="Python", role="język aplikacji"),
+                Technology(name="Flet", role="interfejs Flutter for Python"),
+                Technology(name="Playwright", role="testy E2E UI"),
             ),
         ),
         Component(
@@ -157,11 +177,11 @@ def build_blueprint() -> ArchitectureBlueprint:
                 "Autoryzacja Litestar Security + JWT",
             ),
             technologies=(
-                Technology("Litestar", "framework API"),
-                Technology("Litestar Security", "warstwa security"),
-                Technology("JWT", "tokeny wewnętrzne"),
-                Technology("HTTPX", "klienci integracyjni"),
-                Technology("Pydantic V2", "walidacja modeli"),
+                Technology(name="Litestar", role="framework API"),
+                Technology(name="Litestar Security", role="warstwa security"),
+                Technology(name="JWT", role="tokeny wewnętrzne"),
+                Technology(name="HTTPX", role="klienci integracyjni"),
+                Technology(name="Pydantic V2", role="walidacja modeli"),
             ),
         ),
         Component(
@@ -172,16 +192,16 @@ def build_blueprint() -> ArchitectureBlueprint:
                 "Walidacja krzyżowa i konsensus wielosilnikowy",
             ),
             technologies=(
-                Technology("Surya OCR", "silnik primary OCR"),
-                Technology("PaddleOCR V4 Server", "silnik walidujący"),
-                Technology("PyTorch 2.x", "główny runtime ML"),
-                Technology("TensorFlow 3.x", "drugi runtime ML"),
-                Technology("Hugging Face", "fine-tuning i hosting modeli"),
-                Technology("Sentence-Transformers", "embedding semantyczny"),
-                Technology("LanceDB", "vector DB i semantic search"),
-                Technology("INT8 Quantization", "optymalizacja inferencji"),
-                Technology("AutoGluon-Light", "automatyczny dobór modelu"),
-                Technology("scikit-learn", "feature engineering"),
+                Technology(name="Surya OCR", role="silnik primary OCR"),
+                Technology(name="PaddleOCR V4 Server", role="silnik walidujący"),
+                Technology(name="PyTorch 2.x", role="główny runtime ML"),
+                Technology(name="TensorFlow 3.x", role="drugi runtime ML"),
+                Technology(name="Hugging Face", role="fine-tuning i hosting modeli"),
+                Technology(name="Sentence-Transformers", role="embedding semantyczny"),
+                Technology(name="LanceDB", role="vector DB i semantic search"),
+                Technology(name="INT8 Quantization", role="optymalizacja inferencji"),
+                Technology(name="AutoGluon-Light", role="automatyczny dobór modelu"),
+                Technology(name="scikit-learn", role="feature engineering"),
             ),
         ),
         Component(
@@ -192,14 +212,14 @@ def build_blueprint() -> ArchitectureBlueprint:
                 "Asynchroniczne taski i event sourcing",
             ),
             technologies=(
-                Technology("Python-Statemachine", "BPM"),
-                Technology("Taskiq", "kolejka tasków"),
-                Technology("FastStream", "event streaming z NATS"),
-                Technology("NATS", "event bus"),
-                Technology("NATS JetStream", "trwały log zdarzeń"),
-                Technology("CQRS/Event Sourcing", "wzorzec domenowy"),
-                Technology("Modular Monolith", "organizacja kodu"),
-                Technology("Plugins + Hooks", "rozszerzalność"),
+                Technology(name="Python-Statemachine", role="BPM"),
+                Technology(name="Taskiq", role="kolejka tasków"),
+                Technology(name="FastStream", role="event streaming z NATS"),
+                Technology(name="NATS", role="event bus"),
+                Technology(name="NATS JetStream", role="trwały log zdarzeń"),
+                Technology(name="CQRS/Event Sourcing", role="wzorzec domenowy"),
+                Technology(name="Modular Monolith", role="organizacja kodu"),
+                Technology(name="Plugins + Hooks", role="rozszerzalność"),
             ),
         ),
         Component(
@@ -210,13 +230,13 @@ def build_blueprint() -> ArchitectureBlueprint:
                 "OLAP, ETL i analityka finansowa",
             ),
             technologies=(
-                Technology("SQLite", "OLTP + event store"),
-                Technology("DuckDB", "OLAP + SILM"),
-                Technology("fsspec", "unified storage adapter"),
-                Technology("dlt", "ładowanie danych"),
-                Technology("Polars", "transformacje analityczne"),
-                Technology("Vector", "kolektor logów"),
-                Technology("VictoriaMetrics", "metryki"),
+                Technology(name="SQLite", role="OLTP + event store"),
+                Technology(name="DuckDB", role="OLAP + SILM"),
+                Technology(name="fsspec", role="unified storage adapter"),
+                Technology(name="dlt", role="ładowanie danych"),
+                Technology(name="Polars", role="transformacje analityczne"),
+                Technology(name="Vector", role="kolektor logów"),
+                Technology(name="VictoriaMetrics", role="metryki"),
             ),
         ),
         Component(
@@ -227,40 +247,40 @@ def build_blueprint() -> ArchitectureBlueprint:
                 "Backup / DR, SIEM i compliance",
             ),
             technologies=(
-                Technology("uv", "zarządzanie środowiskiem i lockfile"),
-                Technology("Nuitka", "kompilacja aplikacji"),
-                Technology("Podman", "kontenery"),
-                Technology("Pulumi", "IaC w Pythonie"),
-                Technology("GitHub Actions", "CI/CD"),
-                Technology("GitLab CI", "CI/CD alternatywny"),
-                Technology("Woodpecker CI", "self-hosted runner"),
-                Technology("GitLab Runner", "self-hosted runner"),
-                Technology("Fabric", "automatyzacja operacyjna"),
-                Technology("Invoke", "task runner"),
-                Technology("Trivy", "SCA i security scan"),
-                Technology("pip-audit", "SCA dla Pythona"),
-                Technology("SOPS", "szyfrowanie sekretów"),
-                Technology("Age", "klucze do SOPS"),
-                Technology("Falco", "runtime security"),
-                Technology("Sentry Lite", "observability błędów"),
-                Technology("loguru", "logging aplikacyjny"),
-                Technology("Litestream", "replikacja SQLite"),
-                Technology("MinIO", "object storage backup"),
-                Technology("Kopia", "snapshot backup"),
-                Technology("Cloudflare R2", "offsite backup"),
-                Technology("pytest", "testy jednostkowe"),
-                Technology("Hypothesis", "testy property-based"),
-                Technology("Dagger", "pipeline testowy"),
-                Technology("Schemathesis", "testy kontraktowe API"),
-                Technology("Ruff", "SAST lint"),
-                Technology("Bandit", "SAST security"),
-                Technology("Infisical", "secrets manager"),
-                Technology("Checkov", "IaC security"),
-                Technology("Coolify", "self-hosted management"),
-                Technology("Headscale", "control plane sieci"),
-                Technology("PocketBase", "backend-in-a-box"),
-                Technology("Rathole", "tunelowanie"),
-                Technology("frp", "reverse proxy/tunnel"),
+                Technology(name="uv", role="zarządzanie środowiskiem i lockfile"),
+                Technology(name="Nuitka", role="kompilacja aplikacji"),
+                Technology(name="Podman", role="kontenery"),
+                Technology(name="Pulumi", role="IaC w Pythonie"),
+                Technology(name="GitHub Actions", role="CI/CD"),
+                Technology(name="GitLab CI", role="CI/CD alternatywny"),
+                Technology(name="Woodpecker CI", role="self-hosted runner"),
+                Technology(name="GitLab Runner", role="self-hosted runner"),
+                Technology(name="Fabric", role="automatyzacja operacyjna"),
+                Technology(name="Invoke", role="task runner"),
+                Technology(name="Trivy", role="SCA i security scan"),
+                Technology(name="pip-audit", role="SCA dla Pythona"),
+                Technology(name="SOPS", role="szyfrowanie sekretów"),
+                Technology(name="Age", role="klucze do SOPS"),
+                Technology(name="Falco", role="runtime security"),
+                Technology(name="Sentry Lite", role="observability błędów"),
+                Technology(name="loguru", role="logging aplikacyjny"),
+                Technology(name="Litestream", role="replikacja SQLite"),
+                Technology(name="MinIO", role="object storage backup"),
+                Technology(name="Kopia", role="snapshot backup"),
+                Technology(name="Cloudflare R2", role="offsite backup"),
+                Technology(name="pytest", role="testy jednostkowe"),
+                Technology(name="Hypothesis", role="testy property-based"),
+                Technology(name="Dagger", role="pipeline testowy"),
+                Technology(name="Schemathesis", role="testy kontraktowe API"),
+                Technology(name="Ruff", role="SAST lint"),
+                Technology(name="Bandit", role="SAST security"),
+                Technology(name="Infisical", role="secrets manager"),
+                Technology(name="Checkov", role="IaC security"),
+                Technology(name="Coolify", role="self-hosted management"),
+                Technology(name="Headscale", role="control plane sieci"),
+                Technology(name="PocketBase", role="backend-in-a-box"),
+                Technology(name="Rathole", role="tunelowanie"),
+                Technology(name="frp", role="reverse proxy/tunnel"),
             ),
         ),
         Component(
@@ -271,22 +291,22 @@ def build_blueprint() -> ArchitectureBlueprint:
                 "GUS, NBP, VIES i Biała Lista VAT",
             ),
             technologies=(
-                Technology("xsdata", "serializacja XSD/SOAP"),
-                Technology("Authlib", "PSD2 OAuth2"),
-                Technology("OData-query", "ERP/POS konektory"),
-                Technology("GUS BIR API", "REGON lookup"),
-                Technology("NBP API", "kursy walut"),
-                Technology("Biała Lista VAT", "weryfikacja NIP MF"),
-                Technology("VIES", "weryfikacja VAT UE"),
+                Technology(name="xsdata", role="serializacja XSD/SOAP"),
+                Technology(name="Authlib", role="PSD2 OAuth2"),
+                Technology(name="OData-query", role="ERP/POS konektory"),
+                Technology(name="GUS BIR API", role="REGON lookup"),
+                Technology(name="NBP API", role="kursy walut"),
+                Technology(name="Biała Lista VAT", role="weryfikacja NIP MF"),
+                Technology(name="VIES", role="weryfikacja VAT UE"),
             ),
         ),
     ]
 
     ocr_pipeline = [
-        PipelineStage("Preprocessing", "Surya OCR", controls=("deskew", "denoise", "binarization")),
+        PipelineStage(name="Preprocessing", primary="Surya OCR", controls=("deskew", "denoise", "binarization")),
         PipelineStage(
-            "Cross Validation",
-            "Surya OCR",
+            name="Cross Validation",
+            primary="Surya OCR",
             validator="PaddleOCR V4 Server",
             controls=(
                 "ekstrakcja sum kontrolnych",
@@ -299,9 +319,9 @@ def build_blueprint() -> ArchitectureBlueprint:
     ]
 
     ml_pipeline = [
-        PipelineStage("Layout NLP", "LiLT + HerBERT + LayoutLMv1"),
-        PipelineStage("Semantic Retrieval", "Sentence-Transformers", validator="LanceDB"),
-        PipelineStage("Decisioning", "PyTorch 2.x", validator="TensorFlow 3.x"),
+        PipelineStage(name="Layout NLP", primary="LiLT + HerBERT + LayoutLMv1"),
+        PipelineStage(name="Semantic Retrieval", primary="Sentence-Transformers", validator="LanceDB"),
+        PipelineStage(name="Decisioning", primary="PyTorch 2.x", validator="TensorFlow 3.x"),
     ]
 
     return ArchitectureBlueprint(

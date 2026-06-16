@@ -119,6 +119,14 @@ dependencies = [
     "litestar[jwt]>=2.8.0",
 
     # ═══════════════════════════════════════════════════════════════════════
+    # TigerBeetle — oficjalny Python client (double-entry accounting engine)
+    # Zgodnie z audytem: zastępuje stuba rzeczywistym klientem
+    # ``tigerbeetle-client`` to oficjalny klient Python TigerBeetle
+    # Wersja 0.16.x zgodna z TigerBeetle 0.16 w mise.toml
+    # ═══════════════════════════════════════════════════════════════════════
+    "tigerbeetle>=0.16.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
     # Document / XML processing
     # ═══════════════════════════════════════════════════════════════════════
     "lxml>=5.1.0",

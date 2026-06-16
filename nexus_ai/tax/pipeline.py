@@ -1,31 +1,30 @@
-"""
-Tax Pipeline — orchestrates the complete tax processing flow.
+"""Tax Pipeline — orchestrates the complete tax processing flow z SUPERMOCAMI TigerBeetle.
 
-Łączy wszystkie trzy warstwy w jeden deterministyczny pipeline:
+SUPERMOCE:
+- Linked transfers dla atomowego księgowania expense + VAT
+- Batch transferów (oba w jednym wywołaniu)
+- Natywne pending/post
+- code field dla każdego transferu
+- user_data_128 dla source_document_id (UUID → u128)
+- Multi-ledger: PLN=700, VAT_INPUT=711
 
-  Steps 1-5 (Rust+PyO3 — **one call to run_full_pipeline**):
-    1. ContextInterpreter  → flat context dict (JSON)
-    2. RuleEngine          → first-match-wins SQL evaluation
-    3. TaxMathEngine       → VAT calculation in grosze
-    4. TaxInvariantGuard   → three invariants check
-    5. AuditHashChain      → SHA-256 hash for decision trace
-
+Zgodnie z aa3fvcx.txt:
+  Steps 1-5 (Rust+PyO3 — one call to run_full_pipeline)
   Steps 6-8 (Python async I/O):
     6. PreLedgerValidator  → account pair/balance validation
-    7. TigerBeetle         → double-entry transfers (via outbox or direct)
+    7. TigerBeetle         → double-entry linked transfers (BATCH + LINKED)
     8. Event emission      → DecisionMade event via NATS
-
-  DecisionTraceLogger — uses Rust prepare_log() + DuckDB INSERT
 """
 
 from __future__ import annotations
 
-import uuid
+import uuid as uuid_module
 from msgspec import Struct
 from typing import Any, final
 
 import duckdb
 import pendulum
+import tigerbeetle as tb
 from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
@@ -34,7 +33,13 @@ from nexus_ai.services.pre_ledger_validator import (
     PreLedgerValidator,
     TransferSpec,
 )
-from nexus_crypto import TemporalManager as _RustTemporalManager
+from nexus_ai.services.tigerbeetle.client import (
+    LEDGER,
+    TRANSFER_CODE,
+    TigerBeetleClient,
+    _generate_tb_id,
+    _uuid_to_u128,
+)
 from nexus_ai.services.trace_generator import TraceGenerator
 
 from nexus_crypto import (
@@ -55,23 +60,7 @@ logger = get_logger("nexus.tax.pipeline")
 
 @final
 class PipelineResult(Struct):
-    """Result of processing a single invoice through the tax pipeline.
-
-    @final: mypyc devirtualizes property access.
-
-    Attributes:
-        success: Whether the pipeline completed without errors.
-        transaction_id: UUID of the processed transaction.
-        trace_id: UUID of the decision trace entry (None on early failure).
-        verdict: Rule engine verdict dict (None on early failure).
-        vat_grosze: Calculated VAT in grosze.
-        brutto_grosze: Calculated gross in grosze.
-        tigerbeetle_result: Result from TigerBeetle posting (None if not configured).
-        error: Error message if success is False.
-        routing: Routing action from verdict (e.g. BLOCK_AND_ALERT, TRIAGE_QUEUE).
-            None if no routing was requested (normal processing).
-        routing_reason: Human-readable reason for the routing action.
-    """
+    """Result of processing a single invoice through the tax pipeline."""
 
     success: bool
     transaction_id: str
@@ -89,26 +78,12 @@ class PipelineResult(Struct):
 class TaxPipeline:
     """Orchestrates the complete tax processing pipeline.
 
-    @final: mypyc devirtualizes all method calls.
-    process_invoice() is called for EVERY invoice — 2-5× speedup matters.
-
-    **Steps 1-5 are executed in a single Rust call** (``run_full_pipeline``):
-      context → rules → math → invariants → audit hash
-
-    This eliminates 2 FFI boundary crossings and intermediate Python
-    serialization compared to the previous 3-call approach.
-
-    Async I/O (TigerBeetle, events, active learning) remains in Python.
-
-    Args:
-        conn: DuckDB connection with ``tax_rules`` and ``decision_traces`` tables.
-        tigerbeetle: Optional TigerBeetle client for double-entry posting.
-        write_outbox: Optional async callback to write outbox events.
-            Signature: ``async write_outbox(payload: dict) -> None``.
-            When provided, TigerBeetle posting is deferred to outbox relay.
-        account_expense_id: TigerBeetle account ID for expense (Wn).
-        account_vat_input_id: TigerBeetle account ID for VAT input (Wn).
-        account_payables_id: TigerBeetle account ID for payables (Ma).
+    SUPERMOCE TigerBeetle:
+    - Linked transfers: expense + VAT w atomowym chainie
+    - Batch: oba transfery w jednym create_transfers() call
+    - code: 1001 dla expense, 1002 dla VAT
+    - user_data_128: UUID dokumentu
+    - ledger: 700 dla PLN, 711 dla VAT
     """
 
     def __init__(
@@ -132,7 +107,6 @@ class TaxPipeline:
             payables_account_id=account_payables_id,
         )
 
-        # Default TigerBeetle account IDs (Polish chart of accounts)
         self._account_expense_id = account_expense_id
         self._account_vat_input_id = account_vat_input_id
         self._account_payables_id = account_payables_id
@@ -143,37 +117,8 @@ class TaxPipeline:
         *,
         transaction_id: str | None = None,
     ) -> PipelineResult:
-        """Process a single invoice through the entire tax pipeline.
-
-        **Steps 1-5 are executed in a single Rust call** via
-        ``run_full_pipeline``: context → rules → math → invariants → audit hash
-
-        Steps 6-8 are executed in Python:
-          PreLedgerValidator → TigerBeetle/outbox → events
-
-        Args:
-            invoice_data: Normalized invoice dictionary (from OCR pipeline).
-                Must include at minimum:
-                - ``category_code``: str
-                - ``transaction_date``: str (YYYY-MM-DD) or date
-                - ``company_tax_form``: str
-                - ``vendor_country``: str
-                - ``amount_net``: Decimal | str | float
-                Optional:
-                - ``positions``: list[dict] with ``net_amount`` keys
-                - ``vendor_vat_status``: str
-                - ``vendor_pkd``: str
-            transaction_id: Optional pre-assigned UUID. Auto-generated if None.
-
-        Returns:
-            :class:`PipelineResult` with success/failure and full trace.
-        """
-        tx_id = transaction_id or uuid.uuid4().hex
-
-        # ── DuckDB I/O: temporal rules + previous hash ─────────────────────
-        # These are the only I/O operations before Rust computation:
-        #   1. Load temporal rules active on transaction date
-        #   2. Fetch previous_hash for audit chain
+        """Process a single invoice through the entire tax pipeline."""
+        tx_id = transaction_id or uuid_module.uuid4().hex
 
         txn_date = invoice_data.get(
             "transaction_date",
@@ -181,12 +126,7 @@ class TaxPipeline:
         )
         txn_date_str = str(txn_date) if not isinstance(txn_date, str) else txn_date
 
-        # ── SUPERMOC DuckDB: Temporal WHERE z indeksem ────────────────────
-        # Zamiast ładować WSZYSTKIE reguły (100k+) i filtrować w Rust w pamięci,
-        # DuckDB robi temporalny filter z indeksem (valid_from, valid_to, priority).
-        # Redukcja transferu danych: ~90% mniej danych przez FFI.
-        # DuckDB już sortuje po (priority ASC, valid_from DESC, rule_id ASC).
-
+        # ── DuckDB I/O: temporal rules + previous hash ──────────────────
         all_rows = self._conn.execute(
             "SELECT rule_id, condition_sql, action_json, priority, "
             "valid_from, valid_to FROM tax_rules "
@@ -208,13 +148,12 @@ class TaxPipeline:
                 error=f"NO_MATCHING_RULE: No active tax rules found for date {txn_date_str}",
             )
 
-        # Serialize ONLY active rules to JSON (już przefiltrowane przez DuckDB)
         all_rules: list[dict[str, Any]] = []
         for r in all_rows:
             rule: dict[str, Any] = {
                 "rule_id": str(r[0]),
                 "condition_sql": str(r[1]),
-                "action_json": str(r[2]),  # already JSON string from DuckDB
+                "action_json": str(r[2]),
                 "priority": int(r[3]),
                 "valid_from": str(r[4]),
             }
@@ -222,21 +161,7 @@ class TaxPipeline:
                 rule["valid_to"] = str(r[5])
             all_rules.append(rule)
 
-        # Rust tylko sortuje (DuckDB już posortował) i ewaluuje
         rules_json = msgspec_dumps(all_rules, ensure_ascii=False, default=str)
-
-        # ── Steps 1-5: Single Rust call (run_full_pipeline) ────────────────
-        #   1. ContextInterpreter  → flat context dict
-        #   2. RuleEngine          → first-match-wins
-        #   3. TaxMathEngine       → VAT calculation in grosze
-        #   4. TaxInvariantGuard   → three invariants check
-        #   5. AuditHashChain      → SHA-256 current_hash
-        #
-        # All five steps execute in Rust without Python intervention.
-        # The audit hash chain is NOT computed on the Rust side — the Python
-        # DecisionTraceLogger handles it via prepare_log() + DuckDB INSERT.
-        # This saves 1 DuckDB query (previous_hash fetch) per invoice.
-
         invoice_data_json = msgspec_dumps(invoice_data, ensure_ascii=False, default=str)
         timestamp_iso = pendulum.now("UTC").isoformat()
 
@@ -244,8 +169,6 @@ class TaxPipeline:
             result: _RustPipelineComputeResult = _rust_run_full_pipeline(
                 invoice_data_json=invoice_data_json,
                 rules_json=rules_json,
-                # previous_hash, trace_id, timestamp_iso: NOT passed — audit hash
-                # chain is handled by Python DecisionTraceLogger.
                 transaction_id=tx_id,
             )
         except Exception as exc:
@@ -260,7 +183,7 @@ class TaxPipeline:
                 error=f"PIPELINE_FAILURE: {exc}",
             )
 
-        # ── Extract computed values from PipelineComputeResult ─────────────
+        # ── Extract computed values ────────────────────────────────────
         total_net_grosze = result.netto_grosze
         total_vat_grosze = result.vat_grosze
         total_brutto_grosze = result.brutto_grosze
@@ -284,7 +207,6 @@ class TaxPipeline:
         routing = result.routing or None
         routing_reason = result.routing_reason or None
 
-        # Extract audit context and verdict from AuditParams (if available)
         audit_params = result.audit_params
         context: dict[str, Any] = {}
         verdict: dict[str, Any] = {}
@@ -311,16 +233,14 @@ class TaxPipeline:
                     pass
             current_hash = audit_params.current_hash
 
-        # ── Error paths (no match / invariant failure) ─────────────────────
+        # ── Error paths ─────────────────────────────────────────────────
         if not result.is_valid:
             error_lower = result.error_message.upper()
             if "NO_MATCHING_RULE" in error_lower:
                 self._logger.log(
                     transaction_id=tx_id,
                     context=context or {"error": "No context available"},
-                    invariants_result=msgspec_dumps(
-                        {"error": result.error_message}
-                    ),
+                    invariants_result=msgspec_dumps({"error": result.error_message}),
                 )
                 return PipelineResult(
                     success=False,
@@ -328,7 +248,6 @@ class TaxPipeline:
                     error=result.error_message,
                 )
 
-            # Invariant failure
             self._logger.log(
                 transaction_id=tx_id,
                 rule_id=rule_id,
@@ -344,7 +263,7 @@ class TaxPipeline:
                 error=f"INVARIANT_FAILURE: {result.error_message}",
             )
 
-        # ── Decision trace text ───────────────────────────────────────────
+        # ── Decision trace ──────────────────────────────────────────────
         decision_trace_from_verdict = verdict.pop("decision_trace", None)
         if decision_trace_from_verdict:
             decision_trace_text = decision_trace_from_verdict
@@ -369,12 +288,12 @@ class TaxPipeline:
                 verdict=verdict,
             )
 
-        # ── Currency for amounts ──────────────────────────────────────────
+        # ── Currency ────────────────────────────────────────────────────
         currency = str(invoice_data.get("currency", "PLN")).upper()
         total_net_money = to_money(total_net_grosze, currency)
         total_vat_money = to_money(total_vat_grosze, currency)
 
-        # ── PreLedgerValidator (before TigerBeetle) ───────────────────────
+        # ── PreLedgerValidator (before TigerBeetle) ─────────────────────
         tb_ok = True
         pre_ledger_ok = True
 
@@ -406,7 +325,8 @@ class TaxPipeline:
                 pre_ledger_result.error_message,
             )
 
-        # ── TigerBeetle (via outbox or direct) ────────────────────────────
+        # ── SUPERMOC: TigerBeetle linked transfers ──────────────────────
+        # Zamiast 2 osobnych wywołań: 1 linked chain z batch transferów
         tb_result = None
 
         if routing:
@@ -452,7 +372,7 @@ class TaxPipeline:
                 tb_ok = False
         elif self._tigerbeetle is not None:
             try:
-                tb_result = await self.post_to_tigerbeetle(
+                tb_result = await self.post_to_tigerbeetle_linked(
                     net_grosze=total_net_grosze,
                     vat_grosze=total_vat_grosze,
                     brutto_grosze=total_brutto_grosze,
@@ -464,7 +384,7 @@ class TaxPipeline:
                 tb_result = {"status": "ERROR", "error": str(exc)}
                 tb_ok = False
 
-        # ── Decision Trace Logger ─────────────────────────────────────────
+        # ── Decision Trace Logger ───────────────────────────────────────
         calc_input = result.calculation_input_json
         calc_output = result.calculation_output_json
         trace_json_str = TraceGenerator.generate_trace_json(
@@ -485,7 +405,7 @@ class TaxPipeline:
             trace_json=trace_json_str,
         )
 
-        # ── Emit DecisionMade event przez Taskiq ─────────────────────────
+        # ── Emit DecisionMade event ─────────────────────────────────────
         try:
             invoice_id = str(invoice_data.get("invoice_id", tx_id))
             action = verdict.get("action", "AUTO_POST")
@@ -531,7 +451,7 @@ class TaxPipeline:
                 emit_err,
             )
 
-        # ── Result ────────────────────────────────────────────────────────
+        # ── Result handling ─────────────────────────────────────────────
         if routing:
             if routing == "BLOCK_AND_ALERT":
                 return PipelineResult(
@@ -594,7 +514,114 @@ class TaxPipeline:
             routing_reason=routing_reason,
         )
 
-    # ── Active Learning: record corrections from manual verification ───
+    # ── SUPERMOC: Linked + batch transfer to TigerBeetle ──────────────────
+
+    async def post_to_tigerbeetle_linked(
+        self,
+        net_grosze: int,
+        vat_grosze: int,
+        brutto_grosze: int,
+        source_document_id: str,
+    ) -> dict[str, Any]:
+        """Post double-entry transfers to TigerBeetle jako LINKED CHAIN.
+
+        SUPERMOCE:
+        - Linked transfers: expense + VAT w atomowym chainie
+        - Batch: oba w jednym create_transfers()
+        - code: 1001=expense, 1002=vat
+        - user_data_128: UUID dokumentu
+        - ledger: 700 dla netto, 711 dla VAT
+
+        Transfer structure (expense invoice):
+          Transfer 1 (linked): Expense → Payables (net)    [ledger=700, code=1001]
+          Transfer 2 (no link): VAT → Payables (vat)       [ledger=711, code=1002]
+          → ATOMIC: albo oba, albo żaden
+        """
+        source_uuid = (
+            uuid_module.UUID(source_document_id)
+            if isinstance(source_document_id, str)
+            else source_document_id
+        )
+
+        # SUPERMOC: Build linked chain z BALANCING_CREDIT
+        # TB automatycznie wyrówna różnice groszowe (netto + VAT vs brutto)
+        specs = [
+            {
+                "debit": self._account_expense_id,
+                "credit": self._account_payables_id,
+                "amount": net_grosze,
+                "code": TRANSFER_CODE["EXPENSE_NET"],
+                "ledger": LEDGER["PLN"],
+            },
+            {
+                "debit": self._account_vat_input_id,
+                "credit": self._account_payables_id,
+                "amount": vat_grosze,
+                "code": TRANSFER_CODE["EXPENSE_VAT"],
+                "ledger": LEDGER["VAT_INPUT"],
+                # SUPERMOC: BALANCING_CREDIT — TB automatycznie wyrówna
+                # różnicę między sumą debetów a kredytem na koncie payables
+                "flags": tb.TransferFlags.BALANCING_CREDIT,
+            },
+        ]
+
+        # SUPERMOC: build_linked_transfers tworzy chain z flags.linked
+        transfers = self._tigerbeetle.build_linked_transfers(
+            specs,
+            source_document_id=source_uuid,
+            ledger=LEDGER["PLN"],  # base ledger
+        )
+
+        # SUPERMOC: Batch create — jeden round-trip
+        results = await self._tigerbeetle.create_transfers_async(transfers)
+
+        # Sprawdź wyniki — status=0 oznacza OK
+        all_ok = all(r.status == 0 for r in results)
+
+        return {
+            "status": "POSTED" if all_ok else "LINKED_CHAIN_FAILED",
+            "transfers": [
+                {
+                    "type": "expense",
+                    "debit": self._account_expense_id,
+                    "credit": self._account_payables_id,
+                    "amount_minor": net_grosze,
+                    "ledger": LEDGER["PLN"],
+                    "code": TRANSFER_CODE["EXPENSE_NET"],
+                    "result": str(results[0]) if len(results) > 0 else "unknown",
+                },
+                {
+                    "type": "vat_input",
+                    "debit": self._account_vat_input_id,
+                    "credit": self._account_payables_id,
+                    "amount_minor": vat_grosze,
+                    "ledger": LEDGER["VAT_INPUT"],
+                    "code": TRANSFER_CODE["EXPENSE_VAT"],
+                    "result": str(results[1]) if len(results) > 1 else "unknown",
+                },
+            ],
+            "total_debit": net_grosze + vat_grosze,
+            "total_credit": brutto_grosze,
+        }
+
+    # ── Legacy method (backward compat) ──────────────────────────────────
+
+    async def post_to_tigerbeetle(
+        self,
+        net_grosze: int,
+        vat_grosze: int,
+        brutto_grosze: int,
+        source_document_id: str,
+    ) -> dict[str, Any]:
+        """Legacy — deleguje do post_to_tigerbeetle_linked."""
+        return await self.post_to_tigerbeetle_linked(
+            net_grosze=net_grosze,
+            vat_grosze=vat_grosze,
+            brutto_grosze=brutto_grosze,
+            source_document_id=source_document_id,
+        )
+
+    # ── Active Learning ──────────────────────────────────────────────────
 
     async def record_active_learning_example(
         self,
@@ -603,36 +630,22 @@ class TaxPipeline:
         corrected_data: dict[str, Any],
         verified_by: str = "system",
     ) -> None:
-        """Zapisuje przykład ręcznej korekty dla active learning.
-
-        Args:
-            transaction_id: UUID transakcji.
-            original_data: Surowe dane przed korektą (AI guess).
-            corrected_data: Dane poprawione przez księgowego.
-            verified_by: Login księgowego.
-        """
-        example_id = uuid.uuid4().hex
+        """Zapisuje przykład ręcznej korekty dla active learning."""
+        example_id = uuid_module.uuid4().hex
         now = pendulum.now("UTC").isoformat()
 
-        # Ensure schema exists
         self._conn.execute(
-            """CREATE TABLE IF NOT EXISTS active_learning_examples (
-                example_id      VARCHAR PRIMARY KEY,
-                transaction_id  VARCHAR NOT NULL,
-                original_data   VARCHAR NOT NULL,
-                corrected_data  VARCHAR NOT NULL,
-                verified_by     VARCHAR NOT NULL,
-                verified_at     TIMESTAMP NOT NULL,
-                used_for_training BOOLEAN NOT NULL DEFAULT FALSE,
-                created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )"""
+            "CREATE TABLE IF NOT EXISTS active_learning_examples ("
+            "example_id VARCHAR PRIMARY KEY, transaction_id VARCHAR NOT NULL, "
+            "original_data VARCHAR NOT NULL, corrected_data VARCHAR NOT NULL, "
+            "verified_by VARCHAR NOT NULL, verified_at TIMESTAMP NOT NULL, "
+            "used_for_training BOOLEAN NOT NULL DEFAULT FALSE, "
+            "created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)"
         )
-
         self._conn.execute(
-            """INSERT INTO active_learning_examples
-               (example_id, transaction_id, original_data, corrected_data,
-                verified_by, verified_at)
-               VALUES (?, ?, ?, ?, ?, ?)""",
+            "INSERT INTO active_learning_examples "
+            "(example_id, transaction_id, original_data, corrected_data, verified_by, verified_at) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
             (
                 example_id,
                 transaction_id,
@@ -652,86 +665,18 @@ class TaxPipeline:
     async def get_active_learning_stats(self) -> dict[str, Any]:
         """Statystyki active learning dla dashboardu."""
         self._conn.execute(
-            """CREATE TABLE IF NOT EXISTS active_learning_examples (
-                example_id      VARCHAR PRIMARY KEY,
-                transaction_id  VARCHAR NOT NULL,
-                original_data   VARCHAR NOT NULL,
-                corrected_data  VARCHAR NOT NULL,
-                verified_by     VARCHAR NOT NULL,
-                verified_at     TIMESTAMP NOT NULL,
-                used_for_training BOOLEAN NOT NULL DEFAULT FALSE,
-                created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )"""
+            "CREATE TABLE IF NOT EXISTS active_learning_examples ("
+            "example_id VARCHAR PRIMARY KEY, transaction_id VARCHAR NOT NULL, "
+            "original_data VARCHAR NOT NULL, corrected_data VARCHAR NOT NULL, "
+            "verified_by VARCHAR NOT NULL, verified_at TIMESTAMP NOT NULL, "
+            "used_for_training BOOLEAN NOT NULL DEFAULT FALSE, "
+            "created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)"
         )
-
         total = self._conn.execute("SELECT COUNT(*) FROM active_learning_examples").fetchone()
         unused = self._conn.execute(
             "SELECT COUNT(*) FROM active_learning_examples WHERE used_for_training = FALSE"
         ).fetchone()
-
         return {
             "total_examples": int(total[0]) if total else 0,
             "unused_for_training": int(unused[0]) if unused else 0,
-        }
-
-    async def post_to_tigerbeetle(
-        self,
-        net_grosze: int,
-        vat_grosze: int,
-        brutto_grosze: int,
-        source_document_id: str,
-    ) -> dict[str, Any]:
-        """Post double-entry transfers to TigerBeetle.
-
-        Transfer structure (expense invoice):
-          - Debit  (Wn): Expense account   → Credit (Ma): Payables  (net)
-          - Debit  (Wn): VAT input account  → Credit (Ma): Payables  (VAT)
-          Balance: net + vat = gross
-        """
-        source_uuid = (
-            uuid.UUID(source_document_id)
-            if isinstance(source_document_id, str)
-            else source_document_id
-        )
-
-        # Transfer 1: expense (net)
-        t1 = await self._tigerbeetle.create_two_phase_transfer(
-            debit_account=self._account_expense_id,
-            credit_account=self._account_payables_id,
-            amount_minor=net_grosze,
-            source_document_id=source_uuid,
-        )
-        posted1 = await self._tigerbeetle.post_pending_transfer(t1.pending_id)
-
-        # Transfer 2: VAT input (vat)
-        t2 = await self._tigerbeetle.create_two_phase_transfer(
-            debit_account=self._account_vat_input_id,
-            credit_account=self._account_payables_id,
-            amount_minor=vat_grosze,
-            source_document_id=source_uuid,
-        )
-        posted2 = await self._tigerbeetle.post_pending_transfer(t2.pending_id)
-
-        return {
-            "status": "POSTED" if (posted1 and posted2) else "PARTIAL",
-            "transfers": [
-                {
-                    "type": "expense",
-                    "debit": self._account_expense_id,
-                    "credit": self._account_payables_id,
-                    "amount_minor": net_grosze,
-                    "pending_id": t1.pending_id,
-                    "posted": posted1,
-                },
-                {
-                    "type": "vat_input",
-                    "debit": self._account_vat_input_id,
-                    "credit": self._account_payables_id,
-                    "amount_minor": vat_grosze,
-                    "pending_id": t2.pending_id,
-                    "posted": posted2,
-                },
-            ],
-            "total_debit": net_grosze + vat_grosze,  # = gross
-            "total_credit": brutto_grosze,
         }

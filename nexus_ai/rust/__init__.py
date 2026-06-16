@@ -201,6 +201,16 @@ try:
     # Re-export Rust-native TemporalManager
     TemporalManager = _RustTemporalManager  # type: ignore[misc]
 
+    # Secure memory types
+    from nexus_crypto._core import (
+        SensitiveBytes as _RustSensitiveBytes,
+        MlockedVec as _RustMlockedVec,
+        decrypt_into_sensitive as _rust_decrypt_into_sensitive,
+        protect_read as _rust_protect_read,
+        protect_rw as _rust_protect_rw,
+        protect_none as _rust_protect_none,
+    )
+
     # Override exception classes with native PyO3 implementations
     CryptoError = _CryptoError  # type: ignore[misc]
     KeyLengthError = _KeyLengthError  # type: ignore[misc]
@@ -209,9 +219,18 @@ try:
     IntegrityError = _IntegrityError  # type: ignore[misc]
     HashError = _HashError  # type: ignore[misc]
 
+    # Re-export secure memory types (Rust-native, no Python fallback)
+    SensitiveBytes = _RustSensitiveBytes  # type: ignore[misc]
+    MlockedVec = _RustMlockedVec  # type: ignore[misc]
+    decrypt_into_sensitive = _rust_decrypt_into_sensitive  # type: ignore[assignment]
+    protect_read = _rust_protect_read  # type: ignore[assignment]
+    protect_rw = _rust_protect_rw  # type: ignore[assignment]
+    protect_none = _rust_protect_none  # type: ignore[assignment]
+
     logger.info(
         "nexus-crypto native extension loaded successfully — "
-        "Rust+PyO3 module with custom exceptions, TaxMathEngine, JWT, and TaxPipeline"
+        "Rust+PyO3 module with custom exceptions, TaxMathEngine, JWT, TaxPipeline, "
+        "SecureMemory (SensitiveBytes, MlockedVec, protect_*)"
     )
 
 except ImportError as _exc:
@@ -726,6 +745,10 @@ __all__ = [
     # Custom exceptions
     "CryptoError", "KeyLengthError", "DecryptionError",
     "EncryptionError", "IntegrityError", "HashError",
+    # Secure Memory (Rust-native)
+    "SensitiveBytes", "MlockedVec",
+    "decrypt_into_sensitive",
+    "protect_read", "protect_rw", "protect_none",
     # Tax Math Engine
     "TaxMathEngine", "to_grosze", "to_zlotowki",
     "multiply_net_by_vat", "add_tax", "calculate_vat_by_policy",

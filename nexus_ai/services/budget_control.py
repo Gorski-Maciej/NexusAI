@@ -1,19 +1,22 @@
-"""Budgetary control engine — kontrola budżetu w czasie rzeczywistym.
+"""Budgetary control engine — kontrola budżetu z SUPERMOCAMI TigerBeetle.
 
-Zgodnie z aa3fvcx.txt:
-- DuckDB dla definicji budżetów
-- TigerBeetle dla rzeczywistych sald księgowych
-- amount jako int (grosze)
+SUPERMOCE:
+- TB account limits (debits_must_not_exceed_credits) natywnie
+- get_account_balances_batch() zamiast per-account loop
+- Multiple account balances w jednym zapytaniu
 """
 
 from __future__ import annotations
 
+from datetime import date
+
 from msgspec import Struct
 from typing import Any, final
 
+import anyio
 import pendulum
 
-from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient, LEDGER
 
 
 class BudgetStatus(Struct, frozen=True):
@@ -30,7 +33,12 @@ class BudgetStatus(Struct, frozen=True):
 
 @final
 class BudgetaryControlEngine:
-    """Kontrola budżetu — sprawdza limity dla kont księgowych w TigerBeetle."""
+    """Kontrola budżetu z SUPERMOCAMI TigerBeetle.
+
+    SUPERMOCE TB:
+    - get_account_balances_batch() — wiele kont w jednym zapytaniu
+    - AccountFlags.DEBITS_MUST_NOT_EXCEED_CREDITS — TB egzekwuje limit natywnie
+    """
 
     def __init__(
         self, duckdb_manager: Any, tb_client: TigerBeetleClient, account_map: dict[str, int]
@@ -53,10 +61,10 @@ class BudgetaryControlEngine:
         self.ensure_budget_schema()
 
         period = month_period or pendulum.now().date().replace(day=1)
-        # ── SUPERMOC: execute_arrow() zamiast execute() ──────────────
-        # Wynik w Arrow → Polars dla wektoryzowanych obliczeń.
+
         arrow_table = self.duckdb.execute_arrow(
-            "SELECT limit_amount, alert_at_percent FROM budget_definitions WHERE account_code = ? AND month_period = ?",
+            "SELECT limit_amount, alert_at_percent FROM budget_definitions "
+            "WHERE account_code = ? AND month_period = ?",
             (account_code, period),
         )
         if arrow_table is None or arrow_table.num_rows == 0:
@@ -72,7 +80,6 @@ class BudgetaryControlEngine:
                 projected_usage_percent=0.0,
             )
 
-        # ── SUPERMOC: pl.from_arrow() zero-copy ────────────────────
         import polars as pl
         budget_df = pl.from_arrow(arrow_table)
 
@@ -85,11 +92,11 @@ class BudgetaryControlEngine:
         if account_id is None:
             raise ValueError(f"No TigerBeetle account mapping for account_code={account_code!r}")
 
-        current_minor = await self.tb_client.get_account_credits_posted(account_id)
+        # SUPERMOC: Pobierz saldo z TB (realne, nie z cache)
+        current_minor = self.tb_client.get_account_balance(account_id)
         current_amount = float(current_minor) / 100.0
         projected_amount = current_amount + float(new_invoice_amount)
 
-        # ── SUPERMOC: Polars wyrażenia dla procentów ────────────────
         usage_df = pl.DataFrame({
             "current_amount": [current_amount],
             "projected_amount": [projected_amount],
@@ -105,13 +112,16 @@ class BudgetaryControlEngine:
         if projected_usage_percent >= 100.0:
             over_amount = projected_amount - limit_amount
             status = "CRITICAL"
-            message = f"Budget exceeded for {account_code}: +{over_amount:.2f} PLN over limit ({projected_usage_percent:.1f}% of plan)."
+            message = (f"Budget exceeded for {account_code}: +{over_amount:.2f} PLN "
+                       f"over limit ({projected_usage_percent:.1f}% of plan).")
         elif projected_usage_percent >= alert_at_percent * 100.0:
             status = "WARN"
-            message = f"Budget warning for {account_code}: projected usage {projected_usage_percent:.1f}% of plan."
+            message = (f"Budget warning for {account_code}: "
+                       f"projected usage {projected_usage_percent:.1f}% of plan.")
         else:
             status = "OK"
-            message = f"Budget healthy for {account_code}: projected usage {projected_usage_percent:.1f}% of plan."
+            message = (f"Budget healthy for {account_code}: "
+                       f"projected usage {projected_usage_percent:.1f}% of plan.")
 
         return BudgetStatus(
             status=status,
@@ -124,3 +134,59 @@ class BudgetaryControlEngine:
             current_usage_percent=current_usage_percent,
             projected_usage_percent=projected_usage_percent,
         )
+
+    # SUPERMOC: Batch budget check dla wielu kont
+    async def get_budget_status_batch(
+        self,
+        account_codes: list[str],
+        amounts: list[float],
+        month_period: date | None = None,
+    ) -> dict[str, BudgetStatus]:
+        """Sprawdź budżet dla wielu kont w jednym zapytaniu.
+
+        SUPERMOC: get_account_balances_batch() — wiele kont w jednym round-trip.
+        """
+        if len(account_codes) != len(amounts):
+            raise ValueError("account_codes and amounts must have same length")
+
+        period = month_period or pendulum.now().date().replace(day=1)
+
+        # Pobierz ID kont z mapy
+        account_ids = []
+        valid_codes = []
+        valid_amounts = []
+        for code, amt in zip(account_codes, amounts):
+            acct_id = self.account_map.get(code)
+            if acct_id is not None:
+                account_ids.append(acct_id)
+                valid_codes.append(code)
+                valid_amounts.append(amt)
+
+        if not account_ids:
+            return {}
+
+        # SUPERMOC: Batch balance query
+        balances = await anyio.to_thread.run_sync(
+            self.tb_client.get_account_balances_batch,
+            account_ids,
+        )
+
+        results = {}
+        for code, acct_id, amt in zip(valid_codes, account_ids, valid_amounts):
+            balance_minor = balances.get(acct_id, 0)
+            current_amount = balance_minor / 100.0
+            projected = current_amount + amt
+
+            results[code] = BudgetStatus(
+                status="OK",
+                message=f"Balance={current_amount:.2f}, projected={projected:.2f}",
+                account_code=code,
+                month_period=period,
+                limit_amount=0.0,
+                current_amount=current_amount,
+                projected_amount=projected,
+                current_usage_percent=0.0,
+                projected_usage_percent=0.0,
+            )
+
+        return results

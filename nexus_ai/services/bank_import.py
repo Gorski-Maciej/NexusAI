@@ -203,12 +203,32 @@ class IdempotentBankImporter:
                 continue
 
             try:
-                await self.tb_client.create_two_phase_transfer(
-                    debit_account=tx.source_account_id,
-                    credit_account=tx.destination_account_id,
-                    amount_minor=tx.amount_cents,
-                    source_document_id=tx_uuid,
+                # SUPERMOC: Użyj realnego API TB z batch transferem
+                import tigerbeetle as tb
+                from nexus_ai.services.tigerbeetle.client import (
+                    LEDGER, TRANSFER_CODE, _generate_tb_id,
                 )
+                transfer = tb.Transfer(
+                    id=_generate_tb_id(),
+                    debit_account_id=tx.source_account_id,
+                    credit_account_id=tx.destination_account_id,
+                    amount=tx.amount_cents,
+                    pending_id=0,
+                    user_data_128=tx_uuid.int,
+                    user_data_64=int(tx.booking_date.isoformat().replace('-', '')),
+                    user_data_32=0,
+                    timeout=0,
+                    ledger=LEDGER["PLN"],
+                    code=TRANSFER_CODE["PAYMENT_IN"],
+                    flags=tb.TransferFlags.IMPORTED,  # SUPERMOC: oznacz jako import bankowy
+                    timestamp=0,
+                )
+                results = self.tb_client.create_transfers([transfer])
+                if not all(r.status == 0 for r in results):
+                    if any("exists" in str(r.status) for r in results):
+                        duplicates += 1
+                        continue
+                    raise RuntimeError(f"TB posting failed: {results}")
             except Exception as exc:
                 if "exists" in str(exc).lower():
                     duplicates += 1

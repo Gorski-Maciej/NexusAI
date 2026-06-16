@@ -124,3 +124,128 @@ pub fn decrypt_into_sensitive(key: &[u8], data: &[u8]) -> Result<SensitiveBytes,
     );
     Ok(SensitiveBytes::from_vec(plaintext))
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Tests — AEAD encrypt/decrypt + decrypt_into_sensitive
+// ═══════════════════════════════════════════════════════════════════════════════
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn test_key() -> Vec<u8> {
+        vec![0xABu8; 32]
+    }
+
+    #[test]
+    fn test_encrypt_decrypt_roundtrip() {
+        let key = test_key();
+        let plaintext = b"Hello, NexusAI AEAD!";
+
+        let ciphertext = encrypt(&key, plaintext).expect("encrypt should succeed");
+        assert!(ciphertext.len() > plaintext.len(), "ciphertext should include nonce");
+        assert_eq!(ciphertext.len(), 12 + plaintext.len() + 16 /* tag */);
+
+        let decrypted = decrypt(&key, &ciphertext).expect("decrypt should succeed");
+        assert_eq!(decrypted, plaintext, "decrypted should match original");
+    }
+
+    #[test]
+    fn test_encrypt_different_keys() {
+        let key1 = test_key();
+        let mut key2 = test_key();
+        key2[0] = 0x42; // different key
+        let plaintext = b"Sensitive data";
+
+        let ciphertext = encrypt(&key1, plaintext).expect("encrypt with key1");
+        let result = decrypt(&key2, &ciphertext);
+        assert!(result.is_err(), "decrypt with wrong key should fail");
+    }
+
+    #[test]
+    fn test_encrypt_wrong_key_length() {
+        let short_key = vec![0xABu8; 16]; // 16 bytes, not 32
+        let result = encrypt(&short_key, b"test");
+        assert!(result.is_err(), "encrypt with short key should fail");
+        assert!(result.unwrap_err().contains("Key must be exactly"));
+    }
+
+    #[test]
+    fn test_decrypt_wrong_key_length() {
+        let short_key = vec![0xABu8; 16];
+        let result = decrypt(&short_key, &[0u8; 32]);
+        assert!(result.is_err(), "decrypt with short key should fail");
+        assert!(result.unwrap_err().contains("Key must be exactly"));
+    }
+
+    #[test]
+    fn test_decrypt_short_data() {
+        let key = test_key();
+        let result = decrypt(&key, &[0u8; 4]);
+        assert!(result.is_err(), "decrypt with too short data should fail");
+        assert!(result.unwrap_err().contains("missing nonce"));
+    }
+
+    #[test]
+    fn test_decrypt_tampered_ciphertext() {
+        let key = test_key();
+        let plaintext = b"Tamper test data";
+
+        let mut ciphertext = encrypt(&key, plaintext).expect("encrypt");
+        // Tamper with a byte in the ciphertext portion (after nonce)
+        if ciphertext.len() > 13 {
+            ciphertext[13] ^= 0xFF; // flip bits
+        }
+
+        let result = decrypt(&key, &ciphertext);
+        assert!(result.is_err(), "decrypt of tampered data should fail");
+    }
+
+    #[test]
+    fn test_encrypt_empty_plaintext() {
+        let key = test_key();
+        let ciphertext = encrypt(&key, b"").expect("encrypt empty should succeed");
+        let decrypted = decrypt(&key, &ciphertext).expect("decrypt empty should succeed");
+        assert_eq!(decrypted, b"", "empty plaintext roundtrip");
+    }
+
+    #[test]
+    fn test_encrypt_large_data() {
+        let key = test_key();
+        let plaintext = vec![0x42u8; 1_000_000]; // 1 MB
+
+        let ciphertext = encrypt(&key, &plaintext).expect("encrypt large data");
+        let decrypted = decrypt(&key, &ciphertext).expect("decrypt large data");
+        assert_eq!(decrypted, plaintext, "large data roundtrip");
+    }
+
+    #[test]
+    fn test_decrypt_into_sensitive_roundtrip() {
+        let key = test_key();
+        let plaintext = b"Sensitive data — will be zeroized on drop";
+
+        let ciphertext = encrypt(&key, plaintext).expect("encrypt");
+        let sensitive = decrypt_into_sensitive(&key, &ciphertext).expect("decrypt_into_sensitive");
+
+        // Should match original
+        assert_eq!(sensitive.len(), plaintext.len());
+        assert_eq!(&sensitive[..], &plaintext[..]);
+
+        // Should be SensitiveBytes (with RAII zeroize)
+        let hex = sensitive.hexdigest();
+        assert_eq!(hex.len(), 16); // first 8 bytes as hex
+    }
+
+    #[test]
+    fn test_encrypt_deterministic_nonce() {
+        // Nonce should be different each time (ChaCha20Poly1305::generate_nonce uses OsRng)
+        let key = test_key();
+        let plaintext = b"Same plaintext";
+
+        let ct1 = encrypt(&key, plaintext).expect("encrypt 1");
+        let ct2 = encrypt(&key, plaintext).expect("encrypt 2");
+
+        // Nonces (first 12 bytes) should differ
+        assert_ne!(&ct1[..12], &ct2[..12], "nonces should be different");
+    }
+}

@@ -1,24 +1,9 @@
-"""
-bootstrap.py — NexusAI Multi-Step Bootstrap & Initialization System
-=====================================================================
+"""bootstrap.py — z prawdziwą TigerBeetle weryfikacją przez realny klient.
 
-A centralized, idempotent process that prepares the environment for first run.
-Can be invoked multiple times without duplicating data.
-
-Steps:
-  1. Validate configuration (TOML config file, environment variables)
-  2. Check and download AI models if missing
-  3. Create required data directories
-  4. Initialize database schemas (SQLite/OLTP, DuckDB/OLAP)
-  5. Run Alembic database migrations
-  6. Load seed data (dictionaries)
-  7. Verify connections to external services (NATS, TigerBeetle)
-  8. Print summary and readiness confirmation
-
-Usage:
-    python -m nexus_ai.scripts.bootstrap
-    nexus bootstrap
-    python main.py --bootstrap
+SUPERMOCE:
+- Real TigerBeetle connection test przez lookup_accounts
+- Sprawdzanie czy serwer TB odpowiada
+- Graceful degradation gdy TB nie zainstalowane
 """
 
 from __future__ import annotations
@@ -39,22 +24,16 @@ from structlog import get_logger
 
 logger = get_logger("nexus.bootstrap")
 
-# ── Step result tracking ─────────────────────────────────────────────────────
-
 
 class StepResult(Struct):
-    """Result of a single bootstrap step."""
-
     name: str
-    status: str  # "ok", "skipped", "warning", "error"
+    status: str
     message: str = ""
     duration_ms: float = 0.0
     details: dict[str, Any] = field(default_factory=dict)
 
 
 class BootstrapReport(Struct):
-    """Complete report of the bootstrap process."""
-
     steps: list[StepResult] = field(default_factory=list)
     started_at: str = ""
     finished_at: str = ""
@@ -71,7 +50,6 @@ class BootstrapReport(Struct):
         self.steps.append(step)
 
     def print_summary(self) -> None:
-        """Print a formatted summary to stdout."""
         print()
         print("=" * 70)
         print("  NEXUSAI BOOTSTRAP SUMMARY")
@@ -90,22 +68,15 @@ class BootstrapReport(Struct):
         print()
 
 
-# ── Bootstrap steps ──────────────────────────────────────────────────────────
-
-
 async def step_validate_config(config: Any) -> StepResult:
-    """Step 1: Validate configuration and environment."""
     start = time.perf_counter()
     name = "Validate configuration"
-
     errors: list[str] = []
 
-    # Check NEXUS_ENV
     env = os.getenv("NEXUS_ENV", "dev")
     if env not in ("dev", "stage", "prod"):
         errors.append(f"NEXUS_ENV='{env}' must be one of: dev, stage, prod")
 
-    # Check base directory
     base_dir = config.base_dir if hasattr(config, "base_dir") else Path.cwd()
     if not base_dir.exists():
         try:
@@ -113,7 +84,6 @@ async def step_validate_config(config: Any) -> StepResult:
         except OSError as exc:
             errors.append(f"Cannot create base directory {base_dir}: {exc}")
 
-    # Check JWT secret in stage/prod
     jwt_secret = os.getenv("NEXUS_JWT_SECRET", "")
     if env in ("stage", "prod") and not jwt_secret:
         errors.append("NEXUS_JWT_SECRET is REQUIRED in stage/prod environment")
@@ -121,7 +91,6 @@ async def step_validate_config(config: Any) -> StepResult:
     if env in ("stage", "prod") and not encryption_key:
         errors.append("NEXUS_ENCRYPTION_KEY is REQUIRED in stage/prod environment")
 
-    # Verify TOML config profile file exists
     config_dir = Path(__file__).resolve().parent.parent.parent / "config"
     profile_file = config_dir / f"{env}.toml"
     if not profile_file.exists():
@@ -129,16 +98,13 @@ async def step_validate_config(config: Any) -> StepResult:
 
     if errors:
         return StepResult(
-            name=name,
-            status="error",
+            name=name, status="error",
             message="; ".join(errors),
             duration_ms=(time.perf_counter() - start) * 1000,
             details={"errors": errors},
         )
-
     return StepResult(
-        name=name,
-        status="ok",
+        name=name, status="ok",
         message=f"Environment '{env}' validated",
         duration_ms=(time.perf_counter() - start) * 1000,
         details={"environment": env, "base_dir": str(base_dir)},
@@ -146,19 +112,18 @@ async def step_validate_config(config: Any) -> StepResult:
 
 
 async def step_check_dependencies(config: Any) -> StepResult:
-    """Step 2: Check required Python packages."""
     start = time.perf_counter()
     name = "Check Python dependencies"
 
-    # Technologie zgodne z aa3fvcx.txt — nowy, ultralekki stack
-    REQUIRED_CORE = [  # noqa: N806
-        ("litestar", "litestar"),  # API framework (zastępuje FastAPI)
-        ("granian", "granian"),  # ASGI server w Rust (zastępuje Uvicorn)
-        ("sqlmodel", "sqlmodel"),  # ORM 2w1 (SQLAlchemy + Pydantic)
-        ("alembic", "alembic"),  # Migracje schematu
-        ("taskiq", "taskiq"),  # Async-native kolejka zadań
-        ("duckdb", "duckdb"),  # Lokalna hurtownia OLAP
-        ("msgspec", "msgspec"),  # Ultraszybka serializacja
+    REQUIRED_CORE = [
+        ("litestar", "litestar"),
+        ("granian", "granian"),
+        ("sqlmodel", "sqlmodel"),
+        ("alembic", "alembic"),
+        ("taskiq", "taskiq"),
+        ("duckdb", "duckdb"),
+        ("msgspec", "msgspec"),
+        ("tigerbeetle", "tigerbeetle"),
     ]
 
     missing: list[str] = []
@@ -170,23 +135,19 @@ async def step_check_dependencies(config: Any) -> StepResult:
 
     if missing:
         return StepResult(
-            name=name,
-            status="error",
+            name=name, status="error",
             message=f"Missing packages: {', '.join(missing)}. Run: pip install -r requirements.txt",
             duration_ms=(time.perf_counter() - start) * 1000,
             details={"missing": missing},
         )
-
     return StepResult(
-        name=name,
-        status="ok",
-        message=f"{len(REQUIRED_CORE)} core packages available",
+        name=name, status="ok",
+        message=f"{len(REQUIRED_CORE)} core packages available (including tigerbeetle)",
         duration_ms=(time.perf_counter() - start) * 1000,
     )
 
 
 async def step_create_directories(config: Any) -> StepResult:
-    """Step 4: Create required data directories."""
     start = time.perf_counter()
     name = "Create data directories"
 
@@ -204,8 +165,6 @@ async def step_create_directories(config: Any) -> StepResult:
         config.base_dir / "app_data" / "logs",
         config.base_dir / "models",
     ]
-
-    # Add storage_dir if it's different
     if hasattr(config, "storage_dir"):
         dirs.append(config.storage_dir)
 
@@ -218,8 +177,7 @@ async def step_create_directories(config: Any) -> StepResult:
             logger.warning("  Could not create directory %s: %s", d, exc)
 
     return StepResult(
-        name=name,
-        status="ok",
+        name=name, status="ok",
         message=f"{created} directories ready",
         duration_ms=(time.perf_counter() - start) * 1000,
         details={"directories": [str(d) for d in dirs]},
@@ -227,33 +185,23 @@ async def step_create_directories(config: Any) -> StepResult:
 
 
 async def step_run_migrations(config: Any) -> StepResult:
-    """Step 5: Run Alembic database migrations."""
     start = time.perf_counter()
     name = "Run database migrations"
-
     try:
         from alembic import command
         from nexus_ai.core.alembic_utils import get_alembic_config
 
         alembic_cfg = get_alembic_config()
-
         if alembic_cfg is None:
             return StepResult(
-                name=name,
-                status="warning",
+                name=name, status="warning",
                 message="pyproject.toml [tool.alembic] not found, creating tables directly",
                 duration_ms=(time.perf_counter() - start) * 1000,
             )
-
-        # SUPERMOC: Alembic command.upgrade jest idempotentny — jeśli baza
-        # jest już na head, upgrade nie robi nic. Nie ma potrzeby sprawdzania
-        # rewizji ręcznie.
         command.upgrade(alembic_cfg, "head")
         logger.info("[BOOTSTRAP] All migrations applied (or already at head)")
-
         return StepResult(
-            name=name,
-            status="ok",
+            name=name, status="ok",
             message="All migrations applied (config from pyproject.toml [tool.alembic])",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
@@ -261,37 +209,31 @@ async def step_run_migrations(config: Any) -> StepResult:
         logger.warning("  Alembic not installed, creating tables via SQLAlchemy...")
         try:
             from db.database import create_oltp_engine, init_schema
-
             engine = create_oltp_engine(config)
             await init_schema(engine)
             await engine.dispose()
             return StepResult(
-                name=name,
-                status="ok",
+                name=name, status="ok",
                 message="Schema created via init_schema()",
                 duration_ms=(time.perf_counter() - start) * 1000,
             )
         except Exception as exc:
             return StepResult(
-                name=name,
-                status="error",
+                name=name, status="error",
                 message=f"Schema creation failed: {exc}",
                 duration_ms=(time.perf_counter() - start) * 1000,
             )
     except Exception as exc:
         return StepResult(
-            name=name,
-            status="error",
+            name=name, status="error",
             message=f"Migration failed: {exc}",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
 
 
 async def step_initialize_olap(config: Any) -> StepResult:
-    """Step 6: Initialize DuckDB OLAP schema."""
     start = time.perf_counter()
     name = "Initialize OLAP schema"
-
     try:
         from db.analytics import DuckDBManager
 
@@ -303,45 +245,38 @@ async def step_initialize_olap(config: Any) -> StepResult:
         )
 
         manager = DuckDBManager(db_path=duckdb_path, sqlite_path=sqlite_path)
-        # Initialize views and materializations
         if hasattr(manager, "initialize"):
             manager.initialize()
         manager.close()
 
         return StepResult(
-            name=name,
-            status="ok",
+            name=name, status="ok",
             message=f"DuckDB ready at {duckdb_path.name}",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
     except ImportError as exc:
         return StepResult(
-            name=name,
-            status="warning",
+            name=name, status="warning",
             message=f"DuckDB not available: {exc}",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
     except Exception as exc:
         return StepResult(
-            name=name,
-            status="warning",
+            name=name, status="warning",
             message=f"DuckDB init warning: {exc}",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
 
 
 async def step_seed_data(config: Any) -> StepResult:
-    """Step 7: Load seed data (idempotent)."""
     start = time.perf_counter()
     name = "Load seed data"
 
-    # Check if already seeded
     seeded_file = config.base_dir / ".seeded" if hasattr(config, "base_dir") else Path(".seeded")
     if seeded_file.exists():
         seeded_at = seeded_file.read_text(encoding="utf-8").strip()
         return StepResult(
-            name=name,
-            status="skipped",
+            name=name, status="skipped",
             message=f"Already seeded at {seeded_at[:19]} (delete .seeded to re-seed)",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
@@ -351,81 +286,75 @@ async def step_seed_data(config: Any) -> StepResult:
 
         result = await seed_all(config)
         total = sum(result.values()) if result else 0
-
-        # Write .seeded marker
         seeded_file.write_text(pendulum.now("UTC").isoformat())
 
         return StepResult(
-            name=name,
-            status="ok",
+            name=name, status="ok",
             message=f"{total} entities loaded",
             duration_ms=(time.perf_counter() - start) * 1000,
             details=result,
         )
     except Exception as exc:
         return StepResult(
-            name=name,
-            status="warning",
+            name=name, status="warning",
             message=f"Seed data partially loaded: {exc}",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
 
 
 async def step_verify_nats(config: Any) -> StepResult:
-    """Step 8: Verify NATS connection."""
     start = time.perf_counter()
     name = "Verify NATS connection"
-
     nats_url = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
 
     from nexus_ai.core.nats_utils import NatsErrors, get_connection, safe_close
 
     NatsErrors.init()
     try:
-        nc = await get_connection(
-            nats_url=nats_url,
-            name="nexus-bootstrap",
-            connect_timeout=3.0,
-        )
+        nc = await get_connection(nats_url=nats_url, name="nexus-bootstrap", connect_timeout=3.0)
         if nc is not None:
             await safe_close(nc)
             return StepResult(
-                name=name,
-                status="ok",
+                name=name, status="ok",
                 message=f"Connected to {nats_url}",
                 duration_ms=(time.perf_counter() - start) * 1000,
             )
         return StepResult(
-            name=name,
-            status="warning",
+            name=name, status="warning",
             message=f"NATS not reachable at {nats_url} (timeout)",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
     except NatsErrors.TimeoutError:
         return StepResult(
-            name=name,
-            status="warning",
+            name=name, status="warning",
             message=f"NATS not reachable at {nats_url} (timeout)",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
     except NatsErrors.ConnectionClosedError as exc:
         return StepResult(
-            name=name,
-            status="warning",
+            name=name, status="warning",
             message=f"NATS connection error: {exc}",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
     except ImportError:
         return StepResult(
-            name=name,
-            status="skipped",
+            name=name, status="skipped",
             message="NATS client not installed",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
 
 
+# ── SUPERMOC: Real TigerBeetle verification ──────────────────────────────
+
 async def step_verify_tigerbeetle(config: Any) -> StepResult:
-    """Step 9: Verify TigerBeetle connection."""
+    """Step 9: Verify TigerBeetle connection using real client.
+
+    SUPERMOCE:
+    - Real connection test przez lookup_accounts
+    - Sprawdzanie czy serwer TB jest uruchomiony
+    - Inicjalizacja planu kont przez LedgerInitializer
+    - Graceful degradation gdy TB nie dostępne
+    """
     start = time.perf_counter()
     name = "Verify TigerBeetle connection"
 
@@ -434,39 +363,69 @@ async def step_verify_tigerbeetle(config: Any) -> StepResult:
 
         client = TigerBeetleClient()
         try:
-            # Try a simple lookup to verify connection
+            # SUPERMOC: lookup_accounts — testuje czy TB odpowiada
             accounts = client.lookup_accounts([])
+            accounts_count = len(accounts)
+
+            # SUPERMOC: Inicjalizacja planu kont przez LedgerInitializer
+            if accounts_count == 0:
+                try:
+                    from nexus_ai.services.tigerbeetle import LedgerInitializer
+                    from nexus_ai.services.tigerbeetle.models import LegalForm, TaxForm
+
+                    initializer = LedgerInitializer(tb_client=client)
+                    account_map = await initializer.configure_ledger(
+                        legal_form=LegalForm.SP_ZOO,
+                        tax_form=TaxForm.CIT_STANDARD,
+                    )
+                    print(f"  [LEDGER-INIT] Accounts created: {len(account_map)}")
+                    accounts_count = len(account_map)
+                except Exception as init_err:
+                    logger.warning("LedgerInitializer failed: %s", init_err)
+
+            client.close()
+
             return StepResult(
-                name=name,
-                status="ok",
-                message="Connection verified",
+                name=name, status="ok",
+                message=f"TigerBeetle connected (cluster={client.cluster_id}, "
+                        f"addresses={client.replica_addresses}, accounts={accounts_count})",
                 duration_ms=(time.perf_counter() - start) * 1000,
-                details={"accounts_found": len(accounts) if accounts else 0},
+                details={
+                    "cluster_id": client.cluster_id,
+                    "addresses": client.replica_addresses,
+                    "accounts_found": accounts_count,
+                },
             )
         except Exception as exc:
+            error_str = str(exc)
+            if "Connection refused" in error_str:
+                return StepResult(
+                    name=name, status="warning",
+                    message=f"TigerBeetle not running (connection refused on {client.replica_addresses})",
+                    duration_ms=(time.perf_counter() - start) * 1000,
+                )
             return StepResult(
-                name=name,
-                status="warning",
+                name=name, status="warning",
                 message=f"TigerBeetle unavailable: {exc}",
                 duration_ms=(time.perf_counter() - start) * 1000,
             )
+        finally:
+            try:
+                client.close()
+            except Exception:
+                pass
     except ImportError:
         return StepResult(
-            name=name,
-            status="skipped",
-            message="TigerBeetle client not installed",
+            name=name, status="skipped",
+            message="tigerbeetle client not installed (pip install tigerbeetle)",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
     except Exception as exc:
         return StepResult(
-            name=name,
-            status="warning",
-            message=f"TigerBeetle check skipped: {exc}",
+            name=name, status="warning",
+            message=f"TigerBeetle check: {exc}",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
-
-
-# ── Main bootstrap orchestrator ──────────────────────────────────────────────
 
 
 async def run_bootstrap(
@@ -474,19 +433,8 @@ async def run_bootstrap(
     config: Any = None,
     steps: list[str] | None = None,
 ) -> BootstrapReport:
-    """
-    Run the full bootstrap process.
-
-    Args:
-        config: Pre-configured AppConfig instance. If None, creates default.
-        steps: Optional list of step names to run. If None, runs all steps.
-
-    Returns:
-        BootstrapReport with detailed step results.
-    """
     if config is None:
         from core.config import AppConfig
-
         config = AppConfig()
 
     report = BootstrapReport(
@@ -494,7 +442,6 @@ async def run_bootstrap(
         environment=os.getenv("NEXUS_ENV", "dev"),
     )
 
-    # Define all available steps
     all_steps: list[tuple[str, Callable]] = [
         ("validate_config", step_validate_config),
         ("check_dependencies", step_check_dependencies),
@@ -506,7 +453,6 @@ async def run_bootstrap(
         ("verify_tigerbeetle", step_verify_tigerbeetle),
     ]
 
-    # Filter steps if specified
     if steps is not None:
         all_steps = [(name, func) for name, func in all_steps if name in steps]
 
@@ -542,45 +488,25 @@ async def run_bootstrap(
         print()
 
     report.finished_at = pendulum.now("UTC").isoformat()
-
-    # Print summary
     report.print_summary()
-
     return report
 
 
-# ── CLI entry point ──────────────────────────────────────────────────────────
-
-
 def main(argv: list[str] | None = None) -> int:
-    """CLI entry point: python -m nexus_ai.scripts.bootstrap"""
     import argparse
 
     parser = argparse.ArgumentParser(
         description="NexusAI Bootstrap — Initialize environment for first run",
     )
     parser.add_argument(
-        "--steps",
-        type=str,
-        nargs="*",
-        help="Specific steps to run (default: all). Options: validate_config, check_dependencies, "
-        "create_directories, run_migrations, initialize_olap, seed_data, "
-        "verify_nats, verify_tigerbeetle",
+        "--steps", type=str, nargs="*",
+        help="Specific steps to run (default: all).",
     )
-    parser.add_argument(
-        "--skip-seed",
-        action="store_true",
-        help="Skip seed data loading",
-    )
-    parser.add_argument(
-        "--force",
-        action="store_true",
-        help="Force re-run even if already bootstrapped",
-    )
+    parser.add_argument("--skip-seed", action="store_true", help="Skip seed data loading")
+    parser.add_argument("--force", action="store_true", help="Force re-run even if already bootstrapped")
 
     args = parser.parse_args(argv)
 
-    # Configure logging
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
@@ -591,16 +517,10 @@ def main(argv: list[str] | None = None) -> int:
     step_filter = args.steps
     if args.skip_seed and step_filter is None:
         step_filter = [
-            s
-            for s in [
-                "validate_config",
-                "check_dependencies",
-                "check_ai_models",
-                "create_directories",
-                "run_migrations",
-                "initialize_olap",
-                "verify_nats",
-                "verify_tigerbeetle",
+            s for s in [
+                "validate_config", "check_dependencies", "check_ai_models",
+                "create_directories", "run_migrations", "initialize_olap",
+                "verify_nats", "verify_tigerbeetle",
             ]
         ]
         result = anyio.run(run_bootstrap, step_filter)

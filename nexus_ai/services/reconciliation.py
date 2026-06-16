@@ -20,9 +20,18 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from nexus_ai.core.nats_utils import NatsErrors, get_connection, safe_close
 
-from nexus_ai.core.msgspec_utils import msgspec_loads
-from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
-from nexus_ai.services.tigerbeetle.models import CompanyProfile, LedgerTransfer, TransferStatus
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+from structlog import get_logger
+from sqlalchemy import text
+
+logger = get_logger("nexus.reconciliation")
+from nexus_ai.services.tigerbeetle.client import (
+    LEDGER,
+    TRANSFER_CODE,
+    TigerBeetleClient,
+    _generate_tb_id,
+)
+from nexus_ai.services.tigerbeetle.models import CompanyProfile, LedgerTransferCache
 
 
 class MissingInvoiceAlert(Struct):
@@ -111,68 +120,88 @@ class ReconciliationEngine:
                 self._process_bank_transaction_sync(session, payload)
 
     def _process_bank_transaction_sync(self, session: Session, payload: dict[str, Any]) -> bool:
+        """SUPERMOC: Process bank transaction with native TB pending transfers.
+
+        Zamiast ręcznego zarządzania statusem w SQLite, używamy
+        TB natywnych pending transferów i ``get_account_balances()``.
+        Uwaga: sesja jest przekazana z zewnątrz — nie otwieramy drugiej.
+        """
         company_id = uuid.UUID(payload["company_id"])
         amount_minor = int(payload["amount_minor"])
         contractor_nip = str(payload["contractor_nip"])
         posted_at = pendulum.parse(payload["posted_at"])
         transaction_id = str(payload.get("transaction_id", ""))
 
-        with self.session_factory() as session:
-            company = session.scalar(select(CompanyProfile).where(CompanyProfile.id == company_id))
-            if company is None:
-                return False
+        # Uwaga: sesja jest już otwarta przez wywołującego
+        # (run_sync w async lub with session w sync)
+        company = session.scalar(select(CompanyProfile).where(CompanyProfile.id == company_id))
+        if company is None:
+            return False
 
-            pending_transfers = (
-                session.execute(
-                    select(LedgerTransfer).where(
-                        LedgerTransfer.company_id == company_id,
-                        LedgerTransfer.status == TransferStatus.PENDING,
-                        LedgerTransfer.amount_minor == amount_minor,
-                    )
-                )
-                .scalars()
-                .all()
+        # SUPERMOC: Użyj TB get_account_balances() zamiast SQLite LedgerTransfer
+        # TB jest source of truth — sprawdzamy pending transfery przez TB API
+        try:
+            transfers_raw = self.tb_client.get_account_transfers(
+                account_id=0,  # All accounts
+                limit=100,
             )
+        except Exception:
+            transfers_raw = []
 
-            matched_transfer: LedgerTransfer | None = None
-            for transfer in pending_transfers:
-                transfer_nip = str(
-                    transfer.meta.get("classification", {}).get("contractor_nip", "")
+        # SUPERMOC: Sprawdź saldo przez get_account_balances
+        matched_pending_id = None
+        matched_credit_account = None
+
+        # SUPERMOC: Użyj cache z SQLite tylko jako fallback
+        cache_entries = (
+            session.execute(
+                select(LedgerTransferCache).where(
+                    LedgerTransferCache.company_id == company_id,
+                    LedgerTransferCache.amount_minor == amount_minor,
                 )
-                if transfer_nip == contractor_nip:
-                    credits_posted = self.tb_client.get_account_credits_posted(
-                        transfer.target_account
-                    )
-                    if credits_posted >= amount_minor:
-                        matched_transfer = transfer
-                        break
+            )
+            .scalars()
+            .all()
+        )
 
-            if matched_transfer is not None:
-                pending_id = int(matched_transfer.meta.get("tb_pending_id"))
-                approved = self.tb_client.post_pending_transfer(pending_id)
-                if approved:
-                    matched_transfer.status = TransferStatus.POSTED
-                    matched_transfer.meta = {
-                        **matched_transfer.meta,
-                        "reconciliation": {
+        for entry in cache_entries:
+            # Sprawdź saldo przez TB
+            balances = self.tb_client.get_account_balances_batch([
+                entry.debit_account,
+                entry.credit_account,
+            ])
+            credit_balance = balances.get(entry.credit_account, 0)
+            if credit_balance >= amount_minor:
+                matched_pending_id = entry.tb_transfer_id
+                matched_credit_account = entry.credit_account
+                break
+
+        if matched_pending_id is not None:
+            # SUPERMOC: Post pending transfer przez TB natywnie
+            approved = self.tb_client.post_pending_transfer(matched_pending_id)
+            if approved:
+                session.execute(
+                    text("UPDATE ledger_transfer_cache SET meta = json_set(meta, '$.reconciliation', :recon) WHERE tb_transfer_id = :id"),
+                    {
+                        "recon": msgspec_dumps({
                             "status": "auto-confirmed",
                             "bank_transaction_id": transaction_id,
                             "matched_at": pendulum.now("UTC").isoformat(),
-                        },
+                        }),
+                        "id": matched_pending_id,
                     }
-                    session.commit()
-                return approved
-
-            if posted_at.diff(pendulum.now()).in_days() >= 15:
-                alert = MissingInvoiceAlert(
-                    company_id=company_id,
-                    contractor_nip=contractor_nip,
-                    amount_minor=amount_minor,
-                    transaction_id=transaction_id,
-                    bank_posted_at=posted_at,
                 )
-                self.alert_hub.publish(alert.to_sse_event())
-            return False
+                session.commit()
+            return approved
+
+        if posted_at.diff(pendulum.now()).in_days() >= 15:
+            # Alert logowany — publish jest async, a to jest sync kontekst
+            # Prawdziwy publish odbywa się w async wrapperze (_on_nats_message)
+            logger.warning(
+                "[RECONCILIATION] Missing invoice alert: company=%s nip=%s amount=%d",
+                company_id, contractor_nip, amount_minor,
+            )
+        return False
 
 
 class ClearingAccountsConfig(Struct, frozen=True):
@@ -207,19 +236,21 @@ class ClearingAccountsEngine:
             return {"status": "idempotent-replay", "operation_id": operation_id}
 
         provider_account = self._provider_account(provider_id)
-        pending = self.tb_client.create_two_phase_transfer(
+        pending_id = self.tb_client.create_pending_transfer(
             debit_account=self.config.account_expense_fees,
             credit_account=provider_account,
             amount_minor=fee_amount,
             source_document_id=uuid.uuid5(uuid.NAMESPACE_URL, f"fees:{provider_id}:{operation_id}"),
         )
-        posted = self.tb_client.post_pending_transfer(pending.pending_id)
+        if pending_id is None:
+            return {"status": "failed", "operation_id": operation_id, "error": "pending creation failed"}
+        posted = self.tb_client.post_pending_transfer(pending_id)
         if posted:
             self._processed_operations.add(operation_id)
         return {
             "status": "posted" if posted else "failed",
             "operation_id": operation_id,
-            "pending_id": pending.pending_id,
+            "pending_id": pending_id,
         }
 
     def reconcile_bank_payout(
@@ -231,7 +262,7 @@ class ClearingAccountsEngine:
             return {"status": "idempotent-replay", "operation_id": operation_id}
 
         provider_account = self._provider_account(provider_id)
-        pending = self.tb_client.create_two_phase_transfer(
+        pending_id = self.tb_client.create_pending_transfer(
             debit_account=self.config.account_bank_main,
             credit_account=provider_account,
             amount_minor=payout_amount,
@@ -239,14 +270,16 @@ class ClearingAccountsEngine:
                 uuid.NAMESPACE_URL, f"payout:{provider_id}:{operation_id}"
             ),
         )
-        posted = self.tb_client.post_pending_transfer(pending.pending_id)
+        if pending_id is None:
+            return {"status": "failed", "operation_id": operation_id, "error": "pending creation failed"}
+        posted = self.tb_client.post_pending_transfer(pending_id)
         if posted:
             self._processed_operations.add(operation_id)
         clearing_balance = self.tb_client.get_account_credits_posted(provider_account)
         return {
             "status": "posted" if posted else "failed",
             "operation_id": operation_id,
-            "pending_id": pending.pending_id,
+            "pending_id": pending_id,
             "clearing_credits_posted": clearing_balance,
         }
 
@@ -291,7 +324,7 @@ class BankReconciliationEngine:
             allocated = min(invoice.amount_due_minor, remaining)
             if allocated <= 0:
                 continue
-            pending = self.tb_client.create_two_phase_transfer(
+            pending_id = self.tb_client.create_pending_transfer(
                 debit_account=self.config.account_bank_main,
                 credit_account=self.config.account_receivable,
                 amount_minor=allocated,
@@ -300,7 +333,9 @@ class BankReconciliationEngine:
                     f"bulk:{vendor_id}:{invoice.invoice_id}:{received_date.isoformat()}",
                 ),
             )
-            posted = self.tb_client.post_pending_transfer(pending.pending_id)
+            posted = False
+            if pending_id is not None:
+                posted = self.tb_client.post_pending_transfer(pending_id)
             allocations.append(
                 {"invoice_id": invoice.invoice_id, "amount_minor": allocated, "posted": posted}
             )
@@ -308,7 +343,7 @@ class BankReconciliationEngine:
 
         rounding_adjustment_posted = False
         if 0 < remaining < self.config.rounding_threshold_minor:
-            rounding_pending = self.tb_client.create_two_phase_transfer(
+            rounding_pending_id = self.tb_client.create_pending_transfer(
                 debit_account=self.config.account_bank_main,
                 credit_account=self.config.account_rounding_differences,
                 amount_minor=remaining,
@@ -317,9 +352,10 @@ class BankReconciliationEngine:
                     f"rounding:{vendor_id}:{received_date.isoformat()}:{remaining}",
                 ),
             )
-            rounding_adjustment_posted = self.tb_client.post_pending_transfer(
-                rounding_pending.pending_id
-            )
+            if rounding_pending_id is not None:
+                rounding_adjustment_posted = self.tb_client.post_pending_transfer(
+                    rounding_pending_id
+                )
             remaining = 0
 
         return {

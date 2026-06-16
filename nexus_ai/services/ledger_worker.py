@@ -1,9 +1,10 @@
-"""Ledger worker — przetwarzanie zdarzeń księgowych z blokadą okresów finansowych.
+"""Ledger worker — przetwarzanie zdarzeń księgowych z natywnymi pending transferami TB.
 
-Zgodnie z aa3fvcx.txt:
-- TigerBeetle dla podwójnego zapisu
-- SQLModel/SQLAlchemy dla OLTP (okresy, profile firm)
-- pendulum dla dat (zastępuje datetime)
+Zgodnie z audytem (Faza 2.7 + Faza 3):
+- Natywne pending transfery TB (flags.pending) zamiast stubowych
+- LedgerTransferCache zamiast LedgerTransfer (TB = source of truth)
+- code, ledger, user_data_128 dla bogatych metadanych
+- get_account_balances() zamiast ręcznego śledzenia sald
 """
 
 from __future__ import annotations
@@ -15,13 +16,16 @@ import pendulum
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
+from nexus_ai.services.tigerbeetle.client import (
+    LEDGER,
+    TRANSFER_CODE,
+    TigerBeetleClient,
+)
 from nexus_ai.services.tigerbeetle.models import (
     CompanyProfile,
     FinancialPeriod,
     FinancialPeriodStatus,
-    LedgerTransfer,
-    TransferStatus,
+    LedgerTransferCache,
 )
 
 
@@ -54,7 +58,13 @@ class SimpleRuleBasedAgent:
 
 @final
 class LedgerWorker:
-    """Worker przetwarzający zdarzenia księgowe z blokadą okresów finansowych."""
+    """Worker przetwarzający zdarzenia księgowe z blokadą okresów finansowych.
+
+    SUPERMOCE:
+    - Natywne pending transfery TB zamiast stubowych TwoPhaseTransfer
+    - LedgerTransferCache jako cache (TB = source of truth)
+    - code/ledger/user_data_128 dla każdego transferu
+    """
 
     def __init__(
         self, session: Session, tb_client: TigerBeetleClient, agent: TaxClassifierAgent
@@ -101,7 +111,13 @@ class LedgerWorker:
         event["metadata"] = metadata
         return event
 
-    def process_invoice_extracted(self, event: dict) -> LedgerTransfer:
+    def process_invoice_extracted(self, event: dict) -> LedgerTransferCache:
+        """SUPERMOC: Utwórz natywny pending transfer TB + cache w SQLite.
+
+        Zamiast starego LedgerTransfer z ręcznym statusem, używamy:
+        1. ``create_pending_transfer()`` — natywny pending TB
+        2. ``LedgerTransferCache`` — tylko cache (TB = source of truth)
+        """
         company_id = uuid.UUID(event["company_id"])
         event = self._apply_financial_period_lock(company_id, event)
         company = self.session.scalar(select(CompanyProfile).where(CompanyProfile.id == company_id))
@@ -109,34 +125,52 @@ class LedgerWorker:
             raise ValueError("Nie znaleziono CompanyProfile dla eventu.")
 
         classification = self.agent.classify(event, company.company_policy)
-        ledger_map = company.tigerbeetle_ledger_map
-        debit_account = ledger_map[classification["debit_symbol"]]
-        credit_account = ledger_map[classification["credit_symbol"]]
+        ledger_data = company.tigerbeetle_ledger_map
+        debit_account = int(ledger_data[classification["debit_symbol"]])
+        credit_account = int(ledger_data[classification["credit_symbol"]])
+        amount_minor = int(classification["amount_minor"])
         source_document_id = uuid.UUID(classification["source_document_id"])
 
-        pending = self.tb_client.create_two_phase_transfer(
+        # SUPERMOC: Natywny pending transfer TB
+        # Zamiast TwoPhaseTransfer stuba, używamy TB flags.pending
+        # create_pending_transfer zwraca klient-generowany transfer_id
+        import uuid as uuid_mod
+        timestamp_64 = int(pendulum.now("UTC").timestamp())
+        tb_transfer_id = self.tb_client.create_pending_transfer(
             debit_account=debit_account,
             credit_account=credit_account,
-            amount_minor=int(classification["amount_minor"]),
+            amount_minor=amount_minor,
             source_document_id=source_document_id,
+            ledger=LEDGER["PLN"],
+            code=TRANSFER_CODE["EXPENSE_NET"],
+            user_data_64=timestamp_64,
+            timeout=86400,  # 24h timeout dla pending transferu
         )
+
+        if tb_transfer_id is None:
+            raise RuntimeError("TigerBeetle pending transfer creation failed")
 
         classification.setdefault("contractor_nip", event.get("contractor_nip", ""))
 
-        transfer = LedgerTransfer(
-            company_id=company_id,
-            source_account=debit_account,
-            target_account=credit_account,
-            amount_minor=int(classification["amount_minor"]),
-            source_document_id=source_document_id,
-            status=TransferStatus.PENDING,
-            meta={"tb_pending_id": pending.pending_id, "classification": classification},
+        # SUPERMOC: LedgerTransferCache (TB = source of truth)
+        # Brak statusu — TB przechowuje prawdziwy stan
+        from nexus_ai.core.msgspec_utils import msgspec_dumps
+        cache_entry = LedgerTransferCache(
+            company_id=str(company_id),
+            tb_transfer_id=tb_transfer_id,
+            debit_account=debit_account,
+            credit_account=credit_account,
+            amount_minor=amount_minor,
+            source_document_id=source_document_id.hex,
+            ledger=LEDGER["PLN"],
+            code=TRANSFER_CODE["EXPENSE_NET"],
+            meta=msgspec_dumps({"classification": classification}),
         )
-        self.session.add(transfer)
+        self.session.add(cache_entry)
         self.session.commit()
-        self.session.refresh(transfer)
-        return transfer
+        self.session.refresh(cache_entry)
+        return cache_entry
 
 
-# Alias dla kompatybilności wstecznej — po zdefiniowaniu LedgerWorker
+# Alias dla kompatybilności wstecznej
 RobotonWorker = LedgerWorker

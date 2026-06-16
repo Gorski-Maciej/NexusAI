@@ -1,5 +1,10 @@
 """SQLModel definitions dla TigerBeetle — podsystem księgowy.
 
+TRANSFORMACJA:
+- LedgerTransfer → LedgerTransferCache (TB jako source of truth)
+- Cache tylko dla szybkich odczytów, TTL 5 min
+- TB jest jedynym źródłem prawdy dla stanu księgi
+
 Zgodnie z aa3fvcx.txt:
 - SQLModel łączy SQLAlchemy + Pydantic w jednej klasie
 - SQLite+SQLCipher — UUID i JSON jako TEXT
@@ -18,7 +23,6 @@ from sqlmodel import Field, SQLModel
 
 class StrEnum(BaseStrEnum):
     """String enum base class używając Python 3.11+ enum.StrEnum."""
-
     pass
 
 
@@ -38,6 +42,7 @@ class TaxForm(StrEnum):
 
 
 class TransferStatus(StrEnum):
+    """Status transferu — TB jest source of truth, SQLite to cache."""
     PENDING = "pending"
     POSTED = "posted"
     REJECTED = "rejected"
@@ -51,6 +56,39 @@ class FinancialPeriodStatus(StrEnum):
 
 # ── Eksport Base dla kompatybilności z migracjami ──────────────
 Base = SQLModel
+
+
+class LedgerTransferCache(SQLModel, table=True):
+    """Cache transferów księgowych (TB jako source of truth).
+
+    TRANSFORMACJA: To już nie jest główny storage transferów.
+    TB (TigerBeetle) przechowuje wszystkie transfery.
+    SQLite przechowuje tylko cache dla szybkich odczytów z TTL.
+
+    Cache jest odświeżany przez worker z get_account_transfers().
+    """
+
+    __tablename__ = "ledger_transfer_cache"  # type: ignore[assignment]
+
+    id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
+    tb_transfer_id: int = Field(nullable=False, index=True)
+    company_id: str = Field(foreign_key="company_profiles.id", nullable=False)
+    debit_account: int = Field(nullable=False)
+    credit_account: int = Field(nullable=False)
+    amount_minor: int = Field(nullable=False)
+    currency: str = Field(default="PLN", nullable=False, max_length=3)
+    source_document_id: str = Field(nullable=False, max_length=128)
+    code: int = Field(default=1001, nullable=False)
+    ledger: int = Field(default=700, nullable=False)
+    meta: str = Field(default="{}", nullable=False)
+    cached_at: pendulum.DateTime = Field(
+        default_factory=lambda: pendulum.now("UTC"), nullable=False
+    )
+
+
+# Backward compatibility alias — LedgerTransfer → LedgerTransferCache
+# TB jest source of truth dla księgi, SQLite to tylko cache
+LedgerTransfer = LedgerTransferCache
 
 
 class CompanyProfile(SQLModel, table=True):
@@ -100,25 +138,6 @@ class TaxPolicy(SQLModel, table=True):
     requires_full_ledger: bool = Field(default=False, nullable=False)
     vat_settlement_cycle: str = Field(default="monthly", nullable=False, max_length=32)
     effective_from: pendulum.DateTime = Field(
-        default_factory=lambda: pendulum.now("UTC"), nullable=False
-    )
-
-
-class LedgerTransfer(SQLModel, table=True):
-    """Transakcja księgowa w TigerBeetle — podwójny zapis."""
-
-    __tablename__ = "ledger_transfers"  # type: ignore[assignment]
-
-    id: str = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
-    company_id: str = Field(foreign_key="company_profiles.id", nullable=False)
-    source_account: int = Field(nullable=False)
-    target_account: int = Field(nullable=False)
-    amount_minor: int = Field(nullable=False)
-    currency: str = Field(default="PLN", nullable=False, max_length=3)
-    source_document_id: str = Field(nullable=False, max_length=128)
-    status: str = Field(default=TransferStatus.PENDING, nullable=False, max_length=32)
-    meta: str = Field(default="{}")
-    created_at: pendulum.DateTime = Field(
         default_factory=lambda: pendulum.now("UTC"), nullable=False
     )
 

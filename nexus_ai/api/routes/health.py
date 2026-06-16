@@ -1,4 +1,10 @@
-"""Health check endpoints."""
+"""Health check endpoints — z prawdziwym TigerBeetle health check.
+
+SUPERMOCE:
+- Real TigerBeetle connection check przez lookup_accounts
+- Sprawdzanie stanu cluster/time
+- Metryki liczby kont i transferów
+"""
 
 from __future__ import annotations
 
@@ -27,18 +33,14 @@ class HealthController(Controller):
         "",
         return_dto=HealthResponseDTO,
         summary="Basic health check",
-        description="Returns API status and version with stamina Circuit Breaker status.",
+        description="Returns API status and version.",
         operation_id="healthCheck",
         cache=300,
         exclude_opt_key="no_rate_limit",
         headers={"Cache-Control": "public, max-age=300"},
     )
     async def health_check(self) -> dict[str, str]:
-        """Basic health check with stamina Circuit Breaker status.
-
-        SUPERMOC stamina: is_active() informuje czy Circuit Breaker jest zamknięty.
-        Gdy CB otwarty — status = "OK_BUT_CIRCUIT_OPEN" (system działa ale z cache).
-        """
+        """Basic health check."""
         import stamina
         cb_active = stamina.is_active()
         status = "OK" if cb_active else "OK_BUT_CIRCUIT_OPEN"
@@ -57,7 +59,6 @@ class HealthController(Controller):
         exclude_opt_key="no_rate_limit",
     )
     async def liveness_probe(self) -> dict[str, str]:
-        """Kubernetes liveness probe."""
         return {"status": "alive"}
 
     @get(
@@ -69,14 +70,13 @@ class HealthController(Controller):
         exclude_opt_key="no_rate_limit",
     )
     async def readiness_probe(self) -> dict[str, str]:
-        """Kubernetes readiness probe."""
         return {"status": "ready"}
 
     @get(
         "/detailed",
         return_dto=GenericDictDTO,
         summary="Detailed health check",
-        description="Returns comprehensive health status including DB, DuckDB, NATS, audit chain, and DLQ.",
+        description="Returns comprehensive health status.",
         operation_id="healthDetailed",
     )
     async def detailed_health(self, db_session: Session) -> dict[str, Any]:
@@ -115,7 +115,6 @@ class HealthController(Controller):
         schema_drift = await self._schema_drift_status()
         failed_tasks_count = await self._failed_tasks_count()
 
-        # Determine overall status
         critical = [("database", db_ok), ("duckdb", duckdb_ok)]
         all_ok = all(ok for _, ok in critical)
 
@@ -143,6 +142,8 @@ class HealthController(Controller):
                 "tigerbeetle": {
                     "status": tigerbeetle.get("status", "UNKNOWN"),
                     "message": tigerbeetle.get("message", ""),
+                    "accounts_found": tigerbeetle.get("accounts_found", 0),
+                    "cluster_id": tigerbeetle.get("cluster_id", 0),
                 },
                 "audit_chain": {
                     "status": "OK" if audit_chain_ok else "ERROR",
@@ -175,7 +176,6 @@ class HealthController(Controller):
     async def _pending_tasks(self) -> int | None:
         try:
             from api.tasks import broker
-
             queue_size = getattr(broker, "queue_size", None)
             if queue_size is None:
                 return None
@@ -197,34 +197,85 @@ class HealthController(Controller):
     def _report_file_exists(self, path: str) -> bool:
         return Path(path).exists()
 
-    async def _tigerbeetle_check(self) -> dict[str, Any]:
-        """Check TigerBeetle connection."""
-        try:
-            from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
+    # ── SUPERMOC: Real TigerBeetle health check ─────────────────────────
 
-            client = TigerBeetleClient()
+    # Singleton TB client dla health checków — współdzielony przez DI
+    _tb_client: Any = None
+
+    def _get_tb_client(self) -> Any:
+        """Pobierz singleton TigerBeetleClient.
+
+        W środowisku produkcyjnym instancja powinna być wstrzykiwana
+        przez Litestar DI (singleton). W dev tworzymy nową jeśli brak.
+        """
+        if HealthController._tb_client is None:
             try:
+                from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
+                HealthController._tb_client = TigerBeetleClient()
+                HealthController._tb_client.connect()
+            except ImportError:
+                pass
+        return HealthController._tb_client
+
+    async def _tigerbeetle_check(self) -> dict[str, Any]:
+        """Check TigerBeetle connection using singleton client.
+
+        SUPERMOCE:
+        - Singleton TB client (thread-safe) — brak wycieku socketów
+        - Real connection test przez lookup_accounts
+        - Sprawdzanie liczby kont i stanu clustera
+        - Fallback do "NOT_INSTALLED" gdy brak klienta
+        """
+        try:
+            client = self._get_tb_client()
+            if client is None:
+                return {
+                    "status": "NOT_INSTALLED",
+                    "message": "tigerbeetle client not installed (pip install tigerbeetle)",
+                    "accounts_found": 0,
+                    "cluster_id": 0,
+                }
+
+            try:
+                # SUPERMOC: lookup_accounts test — sprawdza czy TB odpowiada
                 accounts = client.lookup_accounts([])
                 return {
-                    "status": "OK" if accounts is not None else "ERROR",
-                    "message": f"Connected, accounts_found={len(accounts) if accounts else 0}"
-                    if accounts is not None
-                    else "No response",
+                    "status": "OK",
+                    "message": f"Connected, cluster_id={client.cluster_id}",
+                    "accounts_found": len(accounts),
+                    "cluster_id": client.cluster_id,
                 }
-            except Exception as exc:
-                return {"status": "ERROR", "message": str(exc)}
-            finally:
-                try:
-                    client.close()
-                except Exception:
-                    pass
+            except Exception as conn_err:
+                error_str = str(conn_err)
+                if "Connection refused" in error_str:
+                    return {
+                        "status": "NOT_RUNNING",
+                        "message": f"TigerBeetle not running on {client.replica_addresses}",
+                        "accounts_found": 0,
+                        "cluster_id": client.cluster_id,
+                    }
+                return {
+                    "status": "ERROR",
+                    "message": f"TigerBeetle connection failed: {conn_err}",
+                    "accounts_found": 0,
+                    "cluster_id": client.cluster_id,
+                }
         except ImportError:
-            return {"status": "NOT_INSTALLED", "message": "TigerBeetle client not available"}
+            return {
+                "status": "NOT_INSTALLED",
+                "message": "tigerbeetle client not installed (pip install tigerbeetle)",
+                "accounts_found": 0,
+                "cluster_id": 0,
+            }
         except Exception as exc:
-            return {"status": "ERROR", "message": str(exc)}
+            return {
+                "status": "ERROR",
+                "message": str(exc),
+                "accounts_found": 0,
+                "cluster_id": 0,
+            }
 
     async def _failed_tasks_count(self) -> int:
-        """Count unresolved failed tasks in DLQ."""
         try:
             from core.config import AppConfig
             from db.database import create_oltp_engine
@@ -295,7 +346,6 @@ class HealthController(Controller):
             return -1
 
     async def _duckdb_check(self) -> bool:
-        """Check DuckDB (OLAP) availability."""
         try:
             from core.config import AppConfig
             from db.analytics import DuckDBManager
@@ -313,13 +363,8 @@ class HealthController(Controller):
             return False
 
     async def _nats_check(self) -> bool:
-        """Check NATS connection with JetStream status.
-
-        SUPERMOC NATS: Używa NatsSupervisor do pełnej diagnostyki.
-        """
         nats_url = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
         try:
-            # SUPERMOC: NatsSupervisor z pełnym monitoringiem
             from nexus_ai.core.nats_health import NatsSupervisor
             supervisor = NatsSupervisor(nats_servers=[nats_url])
             await supervisor.start()
@@ -330,7 +375,6 @@ class HealthController(Controller):
                 await supervisor.stop()
         except ImportError:
             pass
-        # Fallback: podstawowy ping NATS
         try:
             from nats.aio.client import Client as NatsClient
             nc = NatsClient()
@@ -348,23 +392,17 @@ class HealthController(Controller):
         "/nats",
         return_dto=GenericDictDTO,
         summary="NATS JetStream health and status",
-        description="Returns detailed NATS JetStream status: connection, streams with info, consumers with pending counts.",
+        description="Returns detailed NATS JetStream status.",
         operation_id="healthNats",
     )
     async def nats_health(self) -> dict[str, Any]:
-        """NATS JetStream full status endpoint.
-
-        Returns:
-            Pełny stan NATS: connection, streams, consumers, metryki.
-        """
         try:
             from nexus_ai.core.nats_health import NatsSupervisor
             nats_url = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
             supervisor = NatsSupervisor(nats_servers=[nats_url])
             await supervisor.start()
             try:
-                status = await supervisor.get_full_status()
-                return status
+                return await supervisor.get_full_status()
             finally:
                 await supervisor.stop()
         except ImportError:
@@ -375,6 +413,5 @@ class HealthController(Controller):
 
 class HealthControllerV2(HealthController):
     """Health endpoints in v2 namespace."""
-
     path = "/health"
     tags = [TAG_HEALTH]

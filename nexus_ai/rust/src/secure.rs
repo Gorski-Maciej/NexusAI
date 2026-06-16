@@ -243,34 +243,34 @@ impl AsRef<[u8]> for MlockedVec {
 // Uwaga: mprotect wymaga adresów i rozmiarów wyrównanych do strony (4096B).
 // Te funkcje przyjmują surowy wskaźnik i długość, i zaokrąglają je do stron.
 
-/// Set memory to PROT_READ only (no write).
+/// Rust-native: set memory to PROT_READ only (no write).
 ///
 /// Useful for preventing accidental modification of sensitive data
-/// after initialization. Call protect_rw() to re-enable writes.
+/// after initialization. Call raw_protect_rw() to re-enable writes.
 ///
 /// Returns Err if the address/length combination is invalid or
 /// mprotect fails.
-pub fn protect_read(addr: *const u8, len: usize) -> Result<(), String> {
+pub fn raw_protect_read(addr: *const u8, len: usize) -> Result<(), String> {
     protect(addr, len, libc::PROT_READ)
 }
 
-/// Set memory to PROT_READ | PROT_WRITE.
+/// Rust-native: set memory to PROT_READ | PROT_WRITE.
 ///
-/// Re-enables writes after protect_read().
+/// Re-enables writes after raw_protect_read().
 ///
 /// Returns Err if the address/length combination is invalid or
 /// mprotect fails.
-pub fn protect_rw(addr: *const u8, len: usize) -> Result<(), String> {
+pub fn raw_protect_rw(addr: *const u8, len: usize) -> Result<(), String> {
     protect(addr, len, libc::PROT_READ | libc::PROT_WRITE)
 }
 
-/// Set memory to PROT_NONE (no access).
+/// Rust-native: set memory to PROT_NONE (no access).
 ///
 /// Completely removes access to the memory page.
-/// Call protect_rw() to restore access.
+/// Call raw_protect_rw() to restore access.
 ///
 /// Returns Err if mprotect fails.
-pub fn protect_none(addr: *const u8, len: usize) -> Result<(), String> {
+pub fn raw_protect_none(addr: *const u8, len: usize) -> Result<(), String> {
     protect(addr, len, libc::PROT_NONE)
 }
 
@@ -318,6 +318,219 @@ pub fn zero(data: &mut [u8]) {
 /// Securely zero out a Vec<u8>.
 pub fn zero_vec(data: &mut Vec<u8>) {
     data.zeroize();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PyO3 registration — exposes SensitiveBytes, MlockedVec, and protect_* to Python
+// ═══════════════════════════════════════════════════════════════════════════════
+//
+// Python usage:
+//   from nexus_crypto import SensitiveBytes, MlockedVec
+//   from nexus_crypto import protect_read, protect_rw, protect_none
+//
+//   # SensitiveBytes — RAII auto-zeroizing buffer
+//   buf = SensitiveBytes(32)         # allocate + zero-initialize
+//   buf[0:8] = b"\x01\x02..."       # copy key material
+//   buf.hexdigest()                  # safe logging (first 8 bytes only)
+//   len(buf)                         # 32
+//   # On GC: memory is zeroized automatically
+//
+//   # MlockedVec — mlocked + auto-zeroizing buffer
+//   try:
+//       buf = MlockedVec.new(64)    # allocate + mlock
+//       # use buf...
+//       buf.zeroize_and_unlock()    # explicit cleanup
+//   except RuntimeError:             # mlock may fail (RLIMIT_MEMLOCK)
+//       pass
+//
+//   # mprotect helpers (low-level — use with caution)
+//   # Requires page-aligned addresses (usually 4096-byte boundaries)
+//   protect_read(addr, length)       # set to read-only
+//   protect_rw(addr, length)         # restore read-write
+//   protect_none(addr, length)       # remove all access
+// ═══════════════════════════════════════════════════════════════════════════════
+
+use pyo3::prelude::*;
+use pyo3::types::PyBytes;
+
+/// RAII-protected sensitive byte buffer.
+///
+/// Memory is automatically zeroized by the Garbage Collector / on drop.
+///
+/// Python:
+///   buf = SensitiveBytes(32)
+///   buf[0:8] = b"\x01\x02..."
+///   buf.hexdigest()
+#[pyclass(name = "SensitiveBytes")]
+pub(crate) struct PySensitiveBytes {
+    pub(crate) inner: SensitiveBytes,
+}
+
+#[pymethods]
+impl PySensitiveBytes {
+    /// Allocate a zero-initialized sensitive buffer.
+    #[new]
+    fn new(size: usize) -> Self {
+        PySensitiveBytes {
+            inner: SensitiveBytes::new(size),
+        }
+    }
+
+    /// Create a SensitiveBytes from an existing byte sequence (copies data).
+    #[staticmethod]
+    fn from_bytes(py: Python<'_>, data: &[u8]) -> Self {
+        PySensitiveBytes {
+            inner: SensitiveBytes::from_vec(data.to_vec()),
+        }
+    }
+
+    /// Return a hex digest of the first 8 bytes (for safe logging).
+    fn hexdigest(&self) -> String {
+        self.inner.hexdigest()
+    }
+
+    /// Return the length of the buffer.
+    fn __len__(&self) -> usize {
+        self.inner.len()
+    }
+
+    /// Return raw bytes copy of the buffer.
+    fn to_bytes(&self, py: Python<'_>) -> Py<PyBytes> {
+        PyBytes::new_bound(py, &self.inner).into()
+    }
+
+    fn __repr__(&self) -> String {
+        format!("<SensitiveBytes {} bytes>", self.inner.len())
+    }
+}
+
+/// Memory-locked sensitive buffer with auto-zeroize on drop.
+///
+/// Memory is:
+///   1. Locked with mlock() — prevents swapping to disk
+///   2. Zeroized on drop — securely erased before munlock
+///   3. Unlocked with munlock() — after zeroization
+///
+/// Python:
+///   buf = MlockedVec.new(32)
+///   buf.is_locked()  # True
+///   buf.zeroize_and_unlock()
+///
+///   # On GC: automatically zeroized + munlocked
+///
+///   MlockedVec.from_bytes(b"secret data")  # mlock existing data
+#[pyclass(name = "MlockedVec")]
+struct PyMlockedVec {
+    inner: MlockedVec,
+}
+
+#[pymethods]
+impl PyMlockedVec {
+    /// Allocate and mlock a buffer.
+    /// Raises RuntimeError if mlock fails.
+    #[staticmethod]
+    fn new(size: usize) -> PyResult<Self> {
+        MlockedVec::new(size)
+            .map(|inner| PyMlockedVec { inner })
+            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e))
+    }
+
+    /// Create an mlocked buffer from existing bytes.
+    /// Raises RuntimeError if mlock fails.
+    #[staticmethod]
+    fn from_bytes(data: &[u8]) -> PyResult<Self> {
+        MlockedVec::from_vec(data.to_vec())
+            .map(|inner| PyMlockedVec { inner })
+            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e))
+    }
+
+    /// Manually zeroize and unlock the buffer.
+    fn zeroize_and_unlock(&mut self) {
+        self.inner.zeroize_and_unlock();
+    }
+
+    /// Check if the memory is currently locked.
+    fn is_locked(&self) -> bool {
+        self.inner.is_locked()
+    }
+
+    /// Return the length of the buffer.
+    fn __len__(&self) -> usize {
+        self.inner.len()
+    }
+
+    /// Return raw bytes copy of the buffer.
+    fn to_bytes(&self, py: Python<'_>) -> Py<PyBytes> {
+        PyBytes::new_bound(py, &self.inner).into()
+    }
+
+    fn __repr__(&self) -> String {
+        format!(
+            "<MlockedVec {} bytes, locked={}>",
+            self.inner.len(),
+            self.inner.is_locked(),
+        )
+    }
+}
+
+/// Set memory to PROT_READ only (no write).
+///
+/// Args:
+///     addr: Memory address (integer). Must be page-aligned.
+///     length: Number of bytes to protect.
+///
+/// Raises:
+///     RuntimeError: If mprotect fails.
+#[pyfunction]
+fn protect_read(addr: usize, length: usize) -> PyResult<()> {
+    // Żądanie PROT_READ — pamięć tylko do odczytu
+    raw_protect_read(addr as *const u8, length)
+        .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e))
+}
+
+/// Set memory to PROT_READ | PROT_WRITE.
+///
+/// Re-enables writes after protect_read().
+///
+/// Args:
+///     addr: Memory address (integer). Must be page-aligned.
+///     length: Number of bytes to protect.
+///
+/// Raises:
+///     RuntimeError: If mprotect fails.
+#[pyfunction]
+fn protect_rw(addr: usize, length: usize) -> PyResult<()> {
+    raw_protect_rw(addr as *const u8, length)
+        .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e))
+}
+
+/// Set memory to PROT_NONE (no access).
+///
+/// Completely removes access to the memory page.
+///
+/// Args:
+///     addr: Memory address (integer). Must be page-aligned.
+///     length: Number of bytes to protect.
+///
+/// Raises:
+///     RuntimeError: If mprotect fails.
+#[pyfunction]
+fn protect_none(addr: usize, length: usize) -> PyResult<()> {
+    raw_protect_none(addr as *const u8, length)
+        .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e))
+}
+
+/// Register all secure memory types and functions with the Python module.
+pub fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    module.add_class::<PySensitiveBytes>()?;
+    module.add_class::<PyMlockedVec>()?;
+    module.add_function(wrap_pyfunction!(protect_read, module)?)?;
+    module.add_function(wrap_pyfunction!(protect_rw, module)?)?;
+    module.add_function(wrap_pyfunction!(protect_none, module)?)?;
+    log::info!(
+        "secure_memory: registered SensitiveBytes, MlockedVec, protect_read/rw/none"
+    );
+    Ok(())
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -402,9 +615,9 @@ mod tests {
         let len = data.len();
 
         // Should succeed on most platforms
-        let result = protect_read(ptr, len);
+        let result = raw_protect_read(ptr, len);
         // Revert to R/W so the Vec can be safely dropped
-        let _ = protect_rw(ptr, len);
+        let _ = raw_protect_rw(ptr, len);
         // Either way, test shouldn't crash
         if result.is_ok() {
             assert_eq!(data[0], 0x42); // still accessible after mprotect
