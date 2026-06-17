@@ -395,6 +395,87 @@ jobs:
       - name: Run mypy typecheck
         run: pixi run --environment dev typecheck
 
+  # ── Schemathesis: Property-based API Fuzzing ───────────────────────────
+  # Uruchamia automatycze testy API oparte o schemat OpenAPI.
+  # Wykrywa:
+  #   - Naruszenia schematu odpowiedzi (status codes, headers, body)
+  #   - Brakujące lub błędne walidacje danych wejściowych
+  #   - Błędy 5xx
+  #   - Luki bezpieczeństwa (SQL injection, XSS)
+  #   - Problemy wydajnościowe (response time > 5s)
+  #
+  # SUPERMOCE:
+  #   --mode ci      — zrównoważone testy dla CI (mixed + positive + smoke)
+  #   --mode security — security-focused fuzzing (negative data + XSS/SQLi)
+  #   --mode all     — wszystkie testy + stateful workflows
+  #
+  # Inspiracja: posthog/posthog — schemathesis w CI dla każdego PR
+  schemathesis-fuzz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Sync environment
+        run: uv sync --only-dev
+
+      - name: Run schemathesis CI fuzzing
+        run: |
+          python scripts/schemathesis_runner.py \
+            --mode ci \
+            --max-examples 10 \
+            --format junit \
+            --workers auto
+        continue-on-error: true  # Nie blokuje PR — tylko informuje
+
+      - name: Upload schemathesis JUnit report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: schemathesis-junit-report
+          path: reports/schemathesis-junit.xml
+          retention-days: 30
+
+  # ── Schemathesis Security Fuzzing (osobny job, cięższy) ────────────────
+  schemathesis-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Sync environment
+        run: uv sync --only-dev
+
+      - name: Run schemathesis security fuzzing
+        run: |
+          python scripts/schemathesis_runner.py \
+            --mode security \
+            --max-examples 50 \
+            --format junit
+        continue-on-error: true
+
+      - name: Upload security fuzzing report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: schemathesis-security-report
+          path: reports/schemathesis-junit.xml
+          retention-days: 30
+
   # ── Security Scan: Semgrep SAST ────────────────────────────────────────
   # Uruchamia statyczną analizę bezpieczeństwa kodu przez Semgrep.
   # Wykrywa: SQL injection, XSS, hardcoded secrets, unsafe deserialization,
