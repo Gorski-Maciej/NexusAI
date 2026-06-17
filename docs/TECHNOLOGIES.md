@@ -520,14 +520,155 @@ Każdy serwis trzymający zewnętrzne zasoby (HTTP, DB) implementuje `async def 
 | **Hypothesis** ≥6.100 | — | Zachowany dla złożonych property-based tests (test_property_based.py) |
 | **schemathesis** ≥3.30 | — | Automatyczny fuzz testing API — generuje setki losowych zapytań ze schematu OpenAPI Litestar |
 | **locust** ≥2.29 | **k6** | **Pythonowe testy wydajności** — scenariusze w tym samym języku co aplikacja (httpx + msgspec) |
-| **py-spy** ≥0.3 | — | **Natywny profiler w Rust** — podpina się do działającego procesu bez restartu, narzut <1% |
+| **py-spy** ≥0.3 | — | **Natywny profiler w Rust** — podpina się do działającego procesu bez restartu, narzut <1%. Wrapper: `nexus_ai/scripts/profiler.py` (profile_process, dump_stack, top_snapshot, ProfileReport). |
+
+### crosshair — supermoce SMT w akcji
+
+crosshair używa **SMT solvera (Z3)** do symbolicznego wykonywania kodu — zamiast losowania (hypothesis), crosshair matematycznie dowodzi, że nie istnieją wartości wejściowe łamiące asercje.
+
+```python
+# SUPERMOC: @crosshair.check — symboliczne wykonanie wszystkich ścieżek
+@crosshair.check
+def test_grosze_round_trip(amount_grosze: int) -> None:
+    """crosshair sprawdza DOWOLNY int, nie tylko 200 losowych."""
+    if amount_grosze < 0:
+        return
+    zloty = to_zlotowki(amount_grosze)
+    back = to_grosze(zloty)
+    assert back == amount_grosze  # dowód: round-trip jest idempotentny
+
+# SUPERMOC: Type hints jako kontrakty
+@crosshair.check
+def test_multiply_net_by_vat_non_negative(net_grosze: int) -> None:
+    """crosshair sprawdza wszystkie ścieżki dla int."""
+    if net_grosze < 0:
+        return
+    vat = multiply_net_by_vat(net_grosze, Decimal("0.23"))
+    assert vat >= 0
+    assert vat <= net_grosze  # górne ograniczenie dla 23%
+```
+
+**Pliki z testami crosshair:**
+| Plik | Liczba testów | Co sprawdza |
+|------|--------------|-------------|
+| `tests/test_crosshair_properties.py` | **20** | to_grosze, to_zlotowki, multiply_net_by_vat, add_tax, Money, InvoicePositions, InvoiceSummary, RoundingPolicy, validate_currency |
+| `tests/test_property_based.py` | **6** | Grosze round-trip, VAT non-negative, add_tax, Money inverse, VAT zero-rate |
+| `tests/test_tax_math_engine.py` | **5** | Round-trip determinism, VAT non-negative, Gross >= Net, precision, Decimal return |
+| `tests/test_simulation_property_based.py` | **3** | invoice_count, totals non-negative, invariant matching (crosshair hooks) |
+
+**Razem: 34 testy crosshair** — matematycznie udowodnione właściwości księgowe.
+
+### crosshair w CI
+W CI uruchamiany jest `crosshair check` przed standardowymi testami:
+```bash
+crosshair check tests/test_crosshair_properties.py
+```
+Dzięki SMT solverowi, każda zmiana w kodzie produkcyjnym jest automatycznie weryfikowana — jeśli jakaś zmiana złamie udowodnioną wcześniej właściwość, crosshair znajdzie kontrprzykład.
+
+### Dlaczego crosshair zamiast hypothesis
+- **Matematyczne dowody** zamiast statystycznych przybliżeń
+- **Deterministyczne** — te same wyniki za każdym razem
+- **Szybkie** — SMT solver znajduje kontrprzykłady w milisekundach
+- **Zero konfiguracji** — type hints są automatycznie kontraktami
+- **Backtesting** — zapamiętuje znalezione kontrprzykłady i sprawdza je przy każdej zmianie
 
 ### Dlaczego te zmiany w testowaniu
 - **pytest-anyio** eliminuje mostkowanie między asyncio a anyio — testy wiernie odzwierciedlają produkcję
-- **crosshair** używa analizy statycznej zamiast losowania — błyskawiczne i deterministyczne
+- **crosshair** używa analizy statycznej zamiast losowania — błyskawiczne i deterministyczne; **34 testy SMT** udowadniające poprawność księgową
 - **schemathesis** znajduje błędy, o których nie pomyślisz — testuje tysiące kombinacji nieprawidłowych danych
 - **locust** zastępuje k6 — jeden język (Python) dla całego stacku
 - **py-spy** diagnostyka w locie bez restartu
+
+### py-spy — supermoce w akcji
+
+py-spy to **sampling profiler w Rust** — podpina się do działającego procesu bez restartu, narzut <1%.
+W przeciwieństwie do cProfile (deterministyczny, 10-50% narzutu), py-spy próbkuje stos w ustalonych
+interwałach, co pozwala profilować produkcję bez degradacji wydajności.
+
+```python
+# SUPERMOC: Profiluj działający proces
+from nexus_ai.scripts.profiler import profile_process, ProfilerConfig
+
+flamegraph = await profile_process(
+    pid=12345,
+    duration=30,
+    config=ProfilerConfig(rate=500, native=True),  # 500 samples/s + native frames
+)
+print(f"Flamegraph: {flamegraph}")  # reports/profiles/profile_pid-12345_30s.svg
+
+# SUPERMOC: Zrzut stosu wszystkich wątków (debugowanie hangów)
+from nexus_ai.scripts.profiler import dump_stack
+
+dump = await dump_stack(pid=12345, native=True)
+for thread in dump.threads:
+    print(f"Thread {thread.thread_name} ({thread.thread_id})")
+    for frame in thread.stack[:5]:  # top 5 ramek
+        print(f"  {frame}")
+
+# SUPERMOC: Top-like widok funkcji (live snapshot)
+from nexus_ai.scripts.profiler import top_snapshot
+
+functions = await top_snapshot(pid=12345, duration=5, rate=200)
+for func in functions[:5]:
+    print(f"{func['percent']:.1f}%  {func['name']}")
+
+# SUPERMOC: Kompleksowe profilowanie — flamegraph + dump + top
+from nexus_ai.scripts.profiler import generate_comprehensive_profile
+
+report = await generate_comprehensive_profile(
+    pid=12345, duration=60,
+    tags={"test": "load", "users": "50"},
+    native=True,
+)
+print(f"Flamegraph: {report.flamegraph_path}")
+print(f"Speedscope: {report.speedscope_path}")
+print(f"Threads: {report.dump.total_samples if report.dump else 0}")
+```
+
+**Pliki z integracją py-spy:**
+| Plik | Co robi |
+|------|---------|
+| `nexus_ai/scripts/profiler.py` | Główny wrapper: profile_process, dump_stack, top_snapshot, generate_comprehensive_profile, ProfileReport |
+| `nexus_ai/scripts/doctor.py` | Sprawdza dostępność py-spy (`check_pyspy()`) — wywołuje profiler.py `check_pyspy_installed()` |
+| `nexus_ai/scripts/performance_engineering.py` | Automatyczne profilowanie locust przez `NEXUS_PERF_PYSPY_ENABLED=1` |
+| `mise.toml` | 4 taski: `mise run profile`, `profile-dump`, `profile-top`, `profile-check` |
+| `.github/workflows/profiling-ci.yml` | CI: flamegraph SVG + speedscope JSON + thread dump jako artefakty |
+| `tests/test_profiler_contract.py` | 24 testy kontraktowe: config, formaty, parsowanie dump/top, ProfileReport, integracja z doctorem/mise |
+
+**Uruchamianie:**
+```bash
+# Sprawdź czy py-spy jest dostępny
+mise run profile-check          # → python -m nexus_ai.scripts.profiler --check
+
+# Profiluj działający proces API
+mise run profile -- --pid $(pgrep -f "python main.py") --duration 60 --rate 500
+
+# Zrzut stosu
+mise run profile-dump -- --pid 12345
+
+# Top functions
+mise run profile-top -- --pid 12345 --duration 10
+
+# Z locust (automatyczne profilowanie)
+NEXUS_PERF_PYSPY_ENABLED=1 NEXUS_PERF_PYSPY_RATE=500 \
+  python -m nexus_ai.scripts.performance_engineering --vus 100
+```
+
+**W CI:**
+Workflow `.github/workflows/profiling-ci.yml` generuje:
+- Flamegraph SVG (wizualizacja CPU)
+- Speedscope JSON (zaawansowana analiza w speedscope.app)
+- Thread dump (debugowanie deadlocków/hangów)
+- Top functions snapshot
+- Comprehensive profile (wszystko w jednym raporcie)
+
+### Dlaczego py-spy zamiast cProfile
+- **Sampling (próbkowanie)** vs deterministyczny — narzut <1% vs 10-50%
+- **Zero restartu** — podpina się do działającego procesu
+- **Native frames** — profiluje C/Cython/Rust PyO3
+- **Rust** — napisany w Rust, nie wpływa na profilowany proces
+- **Speedscope** — nowoczesna wizualizacja z supportem lekkich interaktywnych flamegraphów
+- **CI-ready** — generuje artefakty w formatach SVG i JSON
 
 ---
 

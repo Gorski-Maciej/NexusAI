@@ -13,6 +13,8 @@ Checks:
   - Database files
   - TOML configuration completeness
   - System resources (RAM, disk)
+  - py-spy profiler availability
+  - mimalloc memory allocator status
 """
 
 from __future__ import annotations
@@ -81,6 +83,47 @@ def check_python_version() -> str:
     if py_ver.major >= 3 and py_ver.minor >= 11:
         return _ok(f"Python {py_ver.major}.{py_ver.minor}.{py_ver.micro} (>=3.11)")
     return _fail(f"Python {py_ver.major}.{py_ver.minor}.{py_ver.micro} (<3.11)")
+
+
+def check_pyspy() -> str:
+    """SUPERMOC py-spy: Sprawdź czy py-spy sampling profiler jest dostępny.
+
+    py-spy to natywny profiler w Rust — podpina się do działającego procesu
+    bez restartu, narzut <1%. Idealny do diagnostyki wydajności w produkcji.
+
+    Sprawdza:
+      - Czy py-spy jest zainstalowany w PATH
+      - Wersję py-spy
+      - Czy może próbkować obecny proces (self-attach)
+    """
+    try:
+        from nexus_ai.scripts.profiler import check_pyspy_installed
+        installed, version = check_pyspy_installed()
+        if installed:
+            # Spróbuj zrobić szybki self-dump (własny proces)
+            try:
+                import shutil
+                pyspy = shutil.which("py-spy")
+                if pyspy:
+                    import subprocess
+                    result = subprocess.run(
+                        [pyspy, "dump", "-p", str(os.getpid()), "--nonblocking"],
+                        capture_output=True, text=True, timeout=5,
+                    )
+                    if result.returncode == 0:
+                        return _ok(f"py-spy ACTIVE: {version}")
+                    return _ok(f"py-spy installed: {version}")
+            except Exception:
+                pass
+            return _ok(f"py-spy: {version}")
+        return _warn(f"py-spy not installed: {version}")
+    except ImportError:
+        # Fallback: sprawdź bezpośrednio przez shutil
+        import shutil
+        pyspy = shutil.which("py-spy")
+        if pyspy:
+            return _ok(f"py-spy binary found at: {pyspy}")
+        return _info("py-spy: run pixi install --environment dev (py-spy>=0.3.0)")
 
 
 def check_system() -> str:
@@ -159,7 +202,7 @@ def check_system() -> str:
     try:
         disk_io = psutil.disk_io_counters(perdisk=True)
         if disk_io:
-            for dev, io in sorted(disk_io.items())[:3]:  # top 3 dyski
+            for dev, io in sorted(disk_io.items())[:3]:
                 lines.append(_ok(
                     f"  {dev}: R={io.read_bytes/1024**2:.1f}MB W={io.write_bytes/1024**2:.1f}MB "
                     f"({io.read_count} reads, {io.write_count} writes)"
@@ -170,7 +213,6 @@ def check_system() -> str:
         pass
 
     # ── NETWORK ─────────────────────────────────────────────────────────
-    # SUPERMOC: net_io_counters(pernic=True) — I/O per interfejs
     try:
         net_io = psutil.net_io_counters(pernic=True)
         if net_io:
@@ -180,7 +222,7 @@ def check_system() -> str:
                         f"  {iface}: TX={io.bytes_sent/1024**2:.1f}MB RX={io.bytes_recv/1024**2:.1f}MB "
                         f"(errors: {io.errin+io.errout})"
                     ))
-                    break  # tylko pierwszy aktywny interfejs
+                    break
             if len(net_io) > 1:
                 total_sent = sum(io.bytes_sent for io in net_io.values())
                 total_recv = sum(io.bytes_recv for io in net_io.values())
@@ -189,18 +231,16 @@ def check_system() -> str:
         pass
 
     # ── SENSORS ─────────────────────────────────────────────────────────
-    # SUPERMOC: sensors_temperatures() — CPU/GPU temps
     try:
         temps = psutil.sensors_temperatures()
         if temps:
-            for name, entries in sorted(temps.items())[:2]:  # top 2 sensory
+            for name, entries in sorted(temps.items())[:2]:
                 for entry in entries:
                     marker = _warn if entry.current > 80 else _ok
                     lines.append(marker(f"{name}: {entry.current:.1f}°C (high={entry.high}, critical={entry.critical})"))
     except (NotImplementedError, AttributeError, OSError):
         pass
 
-    # SUPERMOC: sensors_fans() — wentylatory
     try:
         fans = psutil.sensors_fans()
         if fans:
@@ -211,7 +251,6 @@ def check_system() -> str:
         pass
 
     # ── SYSTEM INFO ─────────────────────────────────────────────────────
-    # SUPERMOC: boot_time() + users()
     try:
         boot = psutil.boot_time()
         import time as _time
@@ -229,8 +268,6 @@ def check_system() -> str:
     except Exception:
         pass
 
-    # ── CONNECTIONS ─────────────────────────────────────────────────────
-    # SUPERMOC: net_connections() — aktywne połączenia sieciowe
     try:
         conns = psutil.net_connections(kind="inet")
         if conns:
@@ -244,46 +281,32 @@ def check_system() -> str:
 
 
 async def check_gpu() -> str:
-    """Check CUDA / GPU availability via nvidia-smi.
-
-    Zastępuje: torch.cuda.is_available() → nvidia-smi (nie wymaga PyTorch).
-    GPU używane przez llama-cpp-python (GGUF) z CUDA backend.
-    """
+    """Check CUDA / GPU availability via nvidia-smi."""
     try:
         result = await anyio.run_process(["nvidia-smi", "-L"], timeout=10)
         res = result.stdout.decode()
-        # Parse GPU count
         gpu_count = res.strip().count("GPU ")
         if gpu_count > 0:
-            # Try to get GPU name
             name_match = re.search(r"GPU \d+: ([^(]+)", res)
             gpu_name = name_match.group(1).strip() if name_match else "NVIDIA"
             return _ok(f"CUDA available: {gpu_count}x {gpu_name}")
     except (TimeoutError, FileNotFoundError):
         pass
-
     return _warn("No CUDA GPU detected — running on CPU (slower for AI models)")
 
 
 def check_models() -> str:
-    """Check GGUF model files presence.
-
-    Zgodnie z aa3fvcx.txt: żadne konkretne modele LLM nie są zdefiniowane.
-    Sprawdza tylko czy katalog models/ istnieje i czy są w nim jakieś pliki.
-    """
+    """Check GGUF model files presence."""
     if not _MODELS_DIR.exists():
         return _fail(f"Models directory not found at {_MODELS_DIR}")
 
     gguf_files = list(_MODELS_DIR.rglob("*.gguf"))
-    # docTR modele są pobierane przez python-doctr przy pierwszym użyciu do cache PyTorch/huggingface
-    # Nie wymagają osobnego katalogu w models/
-
     lines: list[str] = []
 
     if gguf_files:
         total_mb = sum(f.stat().st_size for f in gguf_files) / (1024 * 1024)
         lines.append(f"  {_ok(f'{len(gguf_files)} GGUF model(s) found ({total_mb:.0f} MB total)')}")
-        for f in gguf_files[:5]:  # pokaż max 5
+        for f in gguf_files[:5]:
             size_mb = f.stat().st_size / (1024 * 1024)
             lines.append(f"    {_ok(f.name):40s} {size_mb:.0f} MB")
         if len(gguf_files) > 5:
@@ -291,15 +314,12 @@ def check_models() -> str:
     else:
         lines.append(f"  {_warn('No GGUF model files found. Place .gguf files in models/')}")
 
-    # Sprawdź czy docTR jest dostępny (przez próbę importu)
     try:
         import doctr
         doctr_version = getattr(doctr, "__version__", "installed")
         lines.append(f"  {_ok(f'docTR {doctr_version} — modular OCR engine (DBNet + PARSeq)')}")
     except ImportError:
-        lines.append(
-            f"  {_info('docTR: run pixi install (python-doctr>=0.9.0)')}"
-        )
+        lines.append(f"  {_info('docTR: run pixi install (python-doctr>=0.9.0)')}")
 
     return "\n".join(lines)
 
@@ -322,24 +342,21 @@ def check_nats() -> str:
 
 
 def check_env() -> str:
-    """Check environment configuration for AI."""
-    required_vars = [
-        "NEXUS_JWT_SECRET",
-        "NEXUS_ENCRYPTION_KEY",
-    ]
+    """Check environment configuration."""
+    required_vars = ["NEXUS_JWT_SECRET", "NEXUS_ENCRYPTION_KEY"]
     lines: list[str] = []
 
     env = os.environ.get("NEXUS_ENV", "dev")
     if env == "prod":
         missing = [v for v in required_vars if not os.environ.get(v)]
         if missing:
-            lines.append(f"  {_fail(f'PROD: Missing required env vars: {", ".join(missing)}')}")
+            missing_str = ", ".join(missing)
+            lines.append(f"  {_fail(f'PROD: Missing required env vars: {missing_str}')}")
         else:
             lines.append(f"  {_ok('PROD: Required security env vars set')}")
     else:
         lines.append(f"  {_ok(f'Environment: {env} (security vars optional)')}")
 
-    # Check TOML config profile
     config_dir = _PROJECT_ROOT / "config"
     config_file = config_dir / f"{env}.toml"
     if config_file.exists():
@@ -347,7 +364,6 @@ def check_env() -> str:
     else:
         lines.append(f"  {_warn(f'TOML config not found: config/{env}.toml — using defaults')}")
 
-    # Check docTR availability
     try:
         import doctr
         lines.append(f"  {_ok('docTR available — DBNet + PARSeq engine')}")
@@ -382,46 +398,23 @@ def check_database() -> str:
 
 
 def check_mimalloc() -> str:
-    """Check if mimalloc is the active memory allocator with live stats.
-
-    Zgodnie z aa3fvcx.txt: mimalloc zastępuje glibc malloc dla:
-    - 5-15% mniejszego zużycia RAM
-    - szybszych alokacji/dealokacji (free list multi-sharding)
-    - minimalnej fragmentacji (eager page purging)
-
-    Sprawdza przez ctypes czy symbol mi_malloc (specyficzny dla mimalloc)
-    jest dostępny w aktualnym procesie. Jeśli nie, system używa domyślnego
-    alokatora (glibc malloc na Linux).
-
-    Returns:
-        Komunikat diagnostyczny z ANSI kolorowaniem.
-    """
+    """Check if mimalloc is the active memory allocator with live stats."""
     try:
         lib = ctypes.CDLL(None)
-        # Próba dostępu do symbolu specyficznego dla mimalloc — mi_malloc
         lib.mi_malloc  # type: ignore[attr-defined]
 
         lines: list[str] = []
 
-        # ── Live stats from mimalloc_bridge ────────────────────────
         try:
-            from nexus_ai.core.mimalloc_bridge import stats_as_dict, option_get, MIOption
-
+            from nexus_ai.core.mimalloc_bridge import stats_as_dict
             stats = stats_as_dict()
             rss = stats.get("process_rss_bytes")
             if rss is not None:
                 rss_mb = rss / (1024 * 1024)
                 lines.append(f"    {_ok(f'RSS: {rss_mb:.1f} MB')}")
-
-            options = stats.get("options", {})
-            if options:
-                for name, val in options.items():
-                    lines.append(f"    {_ok(f'mi_option_{name}={val}')}")
-
         except (ImportError, Exception):
             lines.append(f"    {_info('Live stats: bridge not available')}")
 
-        # ── Environment config ─────────────────────────────────────
         lines.append(f"  {_bold('Config:')}")
         env_vars = {
             "MIMALLOC_LARGE_OS_PAGES": "Huge OS pages",
@@ -460,6 +453,7 @@ async def run_diagnostics() -> dict[str, Any]:
 
     checks: dict[str, str] = {
         "Python": check_python_version(),
+        "Profiler": check_pyspy(),
         "mimalloc": check_mimalloc(),
         "System": check_system(),
         "GPU": await check_gpu(),
@@ -479,7 +473,6 @@ async def run_diagnostics() -> dict[str, Any]:
     # ── Summary ──────────────────────────────────────────────────────────
     print(f"  {_bold('── Summary')}")
 
-    # Count passes/warnings/fails
     pass_count = 0
     warn_count = 0
     fail_count = 0
@@ -497,9 +490,8 @@ async def run_diagnostics() -> dict[str, Any]:
     else:
         print(f"  {_fail(f'{pass_count} passed, {warn_count} warnings, {fail_count} FAILED')}")
 
-    print(
-        f"  {_info('Tip: Run python -m nexus_ai.scripts.download_models to download missing models')}"
-    )
+    print(f"  {_info('Tip: Run python -m nexus_ai.scripts.profiler --check to verify py-spy')}")
+    print(f"  {_info('Tip: Run python -m nexus_ai.scripts.profiler --pid $(pgrep nexus-api) to profile API')}")
     print(f"  {_info('Tip: Run nats-server -p 4222 -js to start NATS')}")
     print()
 
@@ -510,23 +502,7 @@ async def run_diagnostics() -> dict[str, Any]:
 
 
 def parse_logs(log_path: str | Path | None = None) -> dict[str, Any]:
-    """SUPERMOC Loguru: Analiza plikow logow za pomoca logger.parse().
-
-    Uzywa logger.parse() do odczytu plikow logow wygenerowanych przez
-    Loguru (zarowno JSON jak i tekstowe) i zwraca statystyki.
-
-    Dla plikow JSON: parsuje kazda linie jako JSON i zlicza wg poziomu.
-    Dla plikow tekstowych: uzywa logger.parse() z regex pattern.
-
-    Usage:
-        python -m nexus_ai.scripts.doctor --parse-logs
-
-    Args:
-        log_path: Sciezka do pliku logow. Domyslnie najnowszy nexus_json.log.
-
-    Returns:
-        Dict ze statystykami logow.
-    """
+    """SUPERMOC Loguru: Analiza plikow logow za pomoca logger.parse()."""
     from loguru import logger as _loguru_logger
     from collections import Counter
 
@@ -563,7 +539,6 @@ def parse_logs(log_path: str | Path | None = None) -> dict[str, Any]:
     logger_names: Counter[str] = Counter()
     timestamps: list[str] = []
 
-    # Proba: JSON line-delimited
     try:
         with open(log_file, "r", encoding="utf-8") as f:
             for line in f:
@@ -586,12 +561,10 @@ def parse_logs(log_path: str | Path | None = None) -> dict[str, Any]:
                     elif level == "WARNING":
                         warning_msgs[msg[:100]] += 1
                 except (json.JSONDecodeError, Exception):
-                    # Nie-JSON format - uzyj logger.parse()
                     pass
     except Exception:
         pass
 
-    # Jesli JSON fail, sprobuj logger.parse() dla tekstowych logow
     if stats["total"] == 0:
         try:
             pattern = r"(?P<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) \| (?P<level>\w+) \| (?P<message>.*)"
@@ -662,12 +635,14 @@ def print_log_stats(stats: dict[str, Any]) -> None:
     if stats['top_errors']:
         print(f"\n  {_bold('Top Errors')}")
         for i, err in enumerate(stats['top_errors'][:5], 1):
-            print(f"    {_fail(f'{i}. [{err["count"]}x]')} {err['message'][:80]}")
+            count = err.get("count", "?")
+            print(f"    {_fail(f'{i}. [{count}x]')} {err['message'][:80]}")
 
     if stats['top_warnings']:
         print(f"\n  {_bold('Top Warnings')}")
         for i, warn in enumerate(stats['top_warnings'][:5], 1):
-            print(f"    {_warn(f'{i}. [{warn["count"]}x]')} {warn['message'][:80]}")
+            count = warn.get("count", "?")
+            print(f"    {_warn(f'{i}. [{count}x]')} {warn['message'][:80]}")
 
     if stats['top_loggers']:
         print(f"\n  {_bold('Top Loggers')}")

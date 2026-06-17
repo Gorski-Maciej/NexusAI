@@ -7,12 +7,14 @@ Covers:
   - RoundingPolicy (position vs total)
   - TaxInvariantGuard (all 3 invariants)
   - Edge cases (0 amounts, single positions, large amounts)
+  - crosshair SMT-driven property tests (zamiast ręcznych pętli)
 """
 
 from __future__ import annotations
 
 from decimal import Decimal
 
+import crosshair
 import pytest
 
 from nexus_ai.tax.math_engine import (
@@ -27,6 +29,73 @@ from nexus_ai.tax.math_engine import (
     calculate_vat_by_policy,
     validate_invariants,
 )
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SUPERMOC crosshair: SMT-driven property tests
+# Zastępuje ręczne pętle testowe (dawny TestPropertyBased)
+# crosshair symbolicznie analizuje wszystkie możliwe wartości int
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+@crosshair.check
+def test_round_trip_deterministic_crosshair(grosze: int) -> None:
+    """SUPERMOC crosshair: to_grosze(to_zlotowki(x)) == x dla dowolnego x.
+
+    crosshair symbolicznie sprawdza wszystkie możliwe wartości int
+    i matematycznie dowodzi, że round-trip jest idempotentny.
+    Zastępuje: ręczne pętle z listą test_cases."""
+    if grosze < 0:
+        return  # crosshair: pomiń ujemne (tylko dla testu)
+    assert to_grosze(to_zlotowki(grosze)) == grosze
+
+
+@crosshair.check
+def test_vat_never_negative_crosshair(net: int) -> None:
+    """SUPERMOC crosshair: VAT nigdy nie jest ujemny dla dodatnich stawek.
+
+    Zastępuje: zagnieżdżone pętle net × rate.
+    crosshair sprawdza wszystkie kombinacje w jednej analizie."""
+    if net < 0:
+        return
+    # Sprawdź wszystkie standardowe stawki
+    for rate_str in ["0.23", "0.08", "0.05"]:
+        vat = multiply_net_by_vat(net, Decimal(rate_str))
+        assert vat >= 0, f"Negative VAT for net={net}, rate={rate_str}"
+
+
+@crosshair.check
+def test_gross_at_least_net_crosshair(net: int) -> None:
+    """SUPERMOC crosshair: Brutto zawsze >= Netto.
+
+    Zastępuje: 4 zagnieżdżone pętle z 5 kwotami i 4 stawkami.
+    crosshair sprawdza wszystkie ścieżki symbolicznie."""
+    if net < 0:
+        return
+    for rate_str in ["0.23", "0.08", "0.05", "0.00"]:
+        vat = multiply_net_by_vat(net, Decimal(rate_str))
+        gross = add_tax(net, vat)
+        assert gross >= net, f"Gross < net for net={net}, rate={rate_str}"
+
+
+@crosshair.check
+def test_multiply_net_by_vat_precision(net: int) -> None:
+    """SUPERMOC crosshair: Wynik multiply_net_by_vat to int (nie float)."""
+    if net < 0 or net > 10_000_000:
+        return
+    vat = multiply_net_by_vat(net, Decimal("0.23"))
+    assert isinstance(vat, int)
+    assert vat >= 0
+
+
+@crosshair.check
+def test_to_zlotowki_returns_decimal(grosze: int) -> None:
+    """SUPERMOC crosshair: to_zlotowki zawsze zwraca Decimal."""
+    if grosze < 0:
+        return
+    result = to_zlotowki(grosze)
+    assert isinstance(result, Decimal)
+    assert result >= Decimal("0")
 
 
 # ── to_grosze / to_zlotowki round-trip ────────────────────────────────────────
@@ -302,25 +371,25 @@ class TestMoneyIntegration:
 
     def test_money_to_grosze_basic(self) -> None:
         """Convert Money to grosze."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         result = money_to_grosze(Money("123.45", "PLN"))
         assert result == 12345
         assert isinstance(result, int)
 
     def test_money_to_grosze_zero(self) -> None:
         """Zero Money converts to 0 grosze."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         assert money_to_grosze(Money("0.00", "PLN")) == 0
 
     def test_money_to_grosze_eur(self) -> None:
         """Money in any currency converts to grosze (EUR test)."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         result = money_to_grosze(Money("50.00", "EUR"))
         assert result == 5000
 
     def test_money_to_grosze_rounding(self) -> None:
         """HALF_UP rounding for Money amounts."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         # 1.235 PLN → 124 gr (HALF_UP)
         assert money_to_grosze(Money("1.235", "PLN")) == 124
         # 1.234 PLN → 123 gr
@@ -328,7 +397,7 @@ class TestMoneyIntegration:
 
     def test_to_money_basic(self) -> None:
         """Convert grosze to Money."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         result = to_money(12345, "PLN")
         assert isinstance(result, Money)
         assert result.currency_code == "PLN"
@@ -336,13 +405,13 @@ class TestMoneyIntegration:
 
     def test_to_money_default_currency(self) -> None:
         """Default currency is PLN."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         result = to_money(100)
         assert result.currency_code == "PLN"
 
     def test_money_round_trip(self) -> None:
         """money_to_grosze(to_money(x)) == x."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         for grosze in [0, 1, 100, 12345, 999999, 100000000]:
             money = to_money(grosze, "PLN")
             back = money_to_grosze(money)
@@ -350,7 +419,7 @@ class TestMoneyIntegration:
 
     def test_multiply_net_by_vat_money(self) -> None:
         """Mulitply Money net by VAT rate."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         net = Money("100.00", "PLN")
         vat = multiply_net_by_vat_money(net, Decimal("0.23"))
         assert isinstance(vat, Money)
@@ -359,7 +428,7 @@ class TestMoneyIntegration:
 
     def test_multiply_net_by_vat_money_zero_rate(self) -> None:
         """Zero VAT rate returns zero Money."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         net = Money("100.00", "PLN")
         vat = multiply_net_by_vat_money(net, Decimal("0.00"))
         assert str(vat.amount) == "0.00"
@@ -367,7 +436,7 @@ class TestMoneyIntegration:
 
     def test_add_tax_money(self) -> None:
         """Add net and VAT as Money."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         net = Money("100.00", "PLN")
         vat = Money("23.00", "PLN")
         gross = add_tax_money(net, vat)
@@ -377,7 +446,7 @@ class TestMoneyIntegration:
 
     def test_add_tax_money_same_currency(self) -> None:
         """Same currency works."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         net = Money("50.00", "EUR")
         vat = Money("11.50", "EUR")
         gross = add_tax_money(net, vat)
@@ -386,7 +455,7 @@ class TestMoneyIntegration:
 
     def test_add_tax_money_different_currency_raises(self) -> None:
         """Adding different currencies raises CurrencyMismatchError."""
-        from services.currency_converter import Money, CurrencyMismatchError
+        from nexus_ai.services.currency_converter import Money, CurrencyMismatchError
         net = Money("100.00", "PLN")
         vat = Money("23.00", "EUR")
         with pytest.raises(CurrencyMismatchError, match="Currency mismatch"):
@@ -394,7 +463,7 @@ class TestMoneyIntegration:
 
     def test_invoice_positions_from_money(self) -> None:
         """Create InvoicePositions from Money."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         net = Money("250.00", "PLN")
         pos = InvoicePositions.from_money(net, Decimal("0.23"))
         assert pos.net_grosze == 25000
@@ -408,7 +477,7 @@ class TestMoneyIntegration:
 
     def test_invoice_positions_to_net_money(self) -> None:
         """Convert InvoicePositions back to Money."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         pos = InvoicePositions(net_grosze=12345, vat_rate=Decimal("0.23"))
         net_money = pos.to_net_money("PLN")
         assert isinstance(net_money, Money)
@@ -417,14 +486,14 @@ class TestMoneyIntegration:
 
     def test_invoice_positions_to_vat_money(self) -> None:
         """Get VAT as Money from InvoicePositions."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         pos = InvoicePositions(net_grosze=10000, vat_rate=Decimal("0.23"))
         vat_money = pos.to_vat_money("PLN")
         assert str(vat_money.amount) == "23.00"
 
     def test_invoice_summary_from_money(self) -> None:
         """Create InvoiceSummary from Money amounts."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         summary = InvoiceSummary.from_money(
             netto=Money("100.00", "PLN"),
             vat=Money("23.00", "PLN"),
@@ -436,7 +505,7 @@ class TestMoneyIntegration:
 
     def test_invoice_summary_from_money_different_currency_raises(self) -> None:
         """Mismatched currencies raise CurrencyMismatchError."""
-        from services.currency_converter import Money, CurrencyMismatchError
+        from nexus_ai.services.currency_converter import Money, CurrencyMismatchError
         with pytest.raises(CurrencyMismatchError):
             InvoiceSummary.from_money(
                 netto=Money("100.00", "PLN"),
@@ -446,7 +515,7 @@ class TestMoneyIntegration:
 
     def test_invoice_summary_to_money(self) -> None:
         """Convert InvoiceSummary fields back to Money."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         summary = InvoiceSummary(netto_grosze=10000, vat_grosze=2300, brutto_grosze=12300)
         assert summary.to_netto_money("PLN") == Money("100.00", "PLN")
         assert summary.to_vat_money("PLN") == Money("23.00", "PLN")
@@ -454,7 +523,7 @@ class TestMoneyIntegration:
 
     def test_calculate_positions_vat_money(self) -> None:
         """Calculate VAT from Money positions, return Money."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         positions_net = [
             Money("100.00", "PLN"),
             Money("200.00", "PLN"),
@@ -470,7 +539,7 @@ class TestMoneyIntegration:
 
     def test_calculate_positions_vat_money_different_currency_raises(self) -> None:
         """Mismatched currencies raise."""
-        from services.currency_converter import Money, CurrencyMismatchError
+        from nexus_ai.services.currency_converter import Money, CurrencyMismatchError
         positions_net = [
             Money("100.00", "PLN"),
             Money("50.00", "EUR"),
@@ -482,7 +551,7 @@ class TestMoneyIntegration:
 
     def test_calculate_positions_vat_money_empty(self) -> None:
         """Empty position list returns zero Money."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         total_vat_money, inv_positions = TaxMathEngine.calculate_positions_vat_money(
             [], Decimal("0.23"), "position"
         )
@@ -492,7 +561,7 @@ class TestMoneyIntegration:
 
     def test_sum_positions_net_money(self) -> None:
         """Sum of multiple Money amounts."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         nets = [Money("100.00", "PLN"), Money("50.00", "PLN"), Money("25.50", "PLN")]
         total = TaxMathEngine.sum_positions_net_money(nets)
         assert str(total.amount) == "175.50"
@@ -500,13 +569,13 @@ class TestMoneyIntegration:
 
     def test_sum_positions_net_money_empty(self) -> None:
         """Empty list returns zero."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         total = TaxMathEngine.sum_positions_net_money([])
         assert str(total.amount) == "0.00"
 
     def test_sum_positions_net_money_different_currency_raises(self) -> None:
         """Different currencies raise."""
-        from services.currency_converter import Money, CurrencyMismatchError
+        from nexus_ai.services.currency_converter import Money, CurrencyMismatchError
         with pytest.raises(CurrencyMismatchError):
             TaxMathEngine.sum_positions_net_money([
                 Money("100.00", "PLN"),
@@ -524,7 +593,7 @@ class TestMoneyIntegration:
 
     def test_calculate_vat_by_policy_money(self) -> None:
         """RoundingPolicy.calculate_money returns Money."""
-        from services.currency_converter import Money
+        from nexus_ai.services.currency_converter import Money
         positions = [
             InvoicePositions(net_grosze=10000, vat_rate=Decimal("0.23")),
             InvoicePositions(net_grosze=5000, vat_rate=Decimal("0.23")),
@@ -536,27 +605,6 @@ class TestMoneyIntegration:
         assert str(vat_money.amount) == "34.50"
         assert vat_money.currency_code == "PLN"
 
-# ── Hypothesis-style property tests (deterministic) ─────────────────────────
-
-
-class TestPropertyBased:
-    def test_round_trip_deterministic(self) -> None:
-        """to_grosze(to_zlotowki(x)) == x for many values."""
-        test_cases = [0, 1, 2, 99, 100, 101, 10000, 999999, 123456789]
-        for grosze in test_cases:
-            assert to_grosze(to_zlotowki(grosze)) == grosze
-
-    def test_vat_never_negative(self) -> None:
-        """VAT amount must never be negative for positive rates."""
-        for net in [0, 1, 100, 10000, 999999]:
-            for rate in [Decimal("0.23"), Decimal("0.08"), Decimal("0.05")]:
-                vat = multiply_net_by_vat(net, rate)
-                assert vat >= 0, f"Negative VAT for net={net}, rate={rate}"
-
-    def test_gross_at_least_net(self) -> None:
-        """Brutto must always be >= netto."""
-        for net in [0, 1, 100, 10000]:
-            for rate in [Decimal("0.23"), Decimal("0.08"), Decimal("0.05"), Decimal("0.00")]:
-                vat = multiply_net_by_vat(net, rate)
-                gross = add_tax(net, vat)
-                assert gross >= net, f"Gross < net for net={net}, rate={rate}"
+# ── crosshair SMT-drvien property tests (zamiast ręcznych pętli) ─────────
+# crosshair symbolicznie analizuje wszystkie możliwe wartości int
+# zamiast iterować przez predefiniowaną listę test_cases.

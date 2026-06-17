@@ -10,7 +10,7 @@ Check = dict[str, object]
 
 REQUIREMENTS: dict[str, tuple[Check, ...]] = {
     "5_performance_engineering": (
-        {"file": "nexus_ai/scripts/performance_engineering.py", "contains": ("k6", "p95")},
+        {"file": "nexus_ai/scripts/performance_engineering.py", "contains": ("locust", "p95"), "not_contains": ("k6",)},
     ),
     "6_workspace_nuitka": (
         {

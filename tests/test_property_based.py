@@ -3,8 +3,11 @@ Property-Based Testing — zaawansowane testowanie matematycznych
 właściwości systemu podatkowego.
 
 Używa hypothesis z dekoratorem @given do generowania losowych danych.
-Crosshair (statyczna analiza SMT) jest dostępny dla prostszych, typowanych testów
-— dla złożonych generatorów hypothesis pozostaje najlepszym narzędziem.
+ORAZ crosshair (SMT solver) do matematycznego dowodzenia poprawności.
+
+Dwie strategie uzupełniają się:
+  - hypothesis: szerokie, losowe testowanie z shrinkingiem
+  - crosshair: głęboka, symboliczna analiza z dowodzeniem
 
 Pięć właściwości (properties) zgodnie z dokumentem:
 
@@ -20,6 +23,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any
 
+import crosshair
 import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -41,6 +45,77 @@ from nexus_ai.tax.math_engine import (
     validate_invariants,
 )
 from nexus_ai.services.currency_converter import Money, CurrencyMismatchError
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SUPERMOC crosshair: SMT-driven property tests
+# ═══════════════════════════════════════════════════════════════════════════════
+# crosshair używa symbolicznego wykonania z Z3 do matematycznego
+# dowodzenia poprawności zamiast losowego fuzzingu.
+# Wszystkie testy poniżej są sprawdzane przez SMT solver.
+
+
+@crosshair.check
+def test_ch_grosze_round_trip(amount_grosze: int) -> None:
+    """SUPERMOC crosshair: Dla dowolnego int, to_zlotowki(to_grosze(x)) == x.
+
+    crosshair symbolicznie sprawdza wszystkie możliwe wartości int
+    i matematycznie dowodzi, że round-trip jest idempotentny."""
+    if amount_grosze < 0:
+        return  # crosshair: pomiń ujemne (nieobsługiwane)
+    zloty = to_zlotowki(amount_grosze)
+    back = to_grosze(zloty)
+    assert back == amount_grosze, (
+        f"Round-trip failed: {amount_grosze} gr -> {zloty} -> {back} gr"
+    )
+
+
+@crosshair.check
+def test_ch_multiply_net_by_vat_non_negative(net_grosze: int) -> None:
+    """SUPERMOC crosshair: Dla nieujemnego netto i 23% VAT, wynik >= 0."""
+    if net_grosze < 0:
+        return
+    vat = multiply_net_by_vat(net_grosze, Decimal("0.23"))
+    assert vat >= 0, f"Negative VAT for net={net_grosze}"
+
+
+@crosshair.check
+def test_ch_add_tax_non_negative(net: int, vat: int) -> None:
+    """SUPERMOC crosshair: add_tax zawsze zwraca sumę."""
+    result = add_tax(net, vat)
+    assert result == net + vat, f"add_tax({net}, {vat}) = {result}, expected {net + vat}"
+
+
+@crosshair.check
+def test_ch_to_zlotowki_precision(grosze: int) -> None:
+    """SUPERMOC crosshair: to_zlotowki zwraca Decimal z dokładnością do 2 miejsc."""
+    if grosze < 0:
+        return
+    result = to_zlotowki(grosze)
+    assert isinstance(result, Decimal)
+    # Sprawdź, że wynik ma max 2 miejsca po przecinku
+    assert result.as_tuple().exponent >= -2, (
+        f"to_zlotowki({grosze}) = {result} ma więcej niż 2 miejsca"
+    )
+
+
+@crosshair.check
+def test_ch_money_to_grosze_inverse(grosze: int) -> None:
+    """SUPERMOC crosshair: money_to_grosze(to_money(x)) == x."""
+    if grosze < 0 or grosze > 10_000_000:
+        return
+    money = to_money(grosze, "PLN")
+    back = money_to_grosze(money)
+    assert back == grosze, f"Money round-trip failed: {grosze} -> {back}"
+
+
+@crosshair.check
+def test_ch_multiply_net_by_vat_zero_rate(net_grosze: int) -> None:
+    """SUPERMOC crosshair: 0% VAT zawsze daje 0."""
+    if net_grosze < 0:
+        return
+    vat = multiply_net_by_vat(net_grosze, Decimal("0.00"))
+    assert vat == 0, f"Zero rate gave non-zero VAT: {vat}"
 
 
 # ── Hypothesis strategies ────────────────────────────────────────────────────
@@ -104,7 +179,7 @@ class TestProperty1RoundTrip:
         grosze = to_grosze(amount_pln)
         back = to_zlotowki(grosze)
         assert back == amount_pln, (
-            f"Round-trip failed: {amount_pln} → {grosze} gr → {back}"
+            f"Round-trip failed: {amount_pln} \u2192 {grosze} gr \u2192 {back}"
         )
 
     @given(grosze_amounts)
@@ -114,7 +189,7 @@ class TestProperty1RoundTrip:
         zloty = to_zlotowki(grosze)
         back = to_grosze(zloty)
         assert back == grosze, (
-            f"Round-trip failed: {grosze} gr → {zloty} → {back} gr"
+            f"Round-trip failed: {grosze} gr \u2192 {zloty} \u2192 {back} gr"
         )
 
 

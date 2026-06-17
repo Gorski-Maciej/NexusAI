@@ -59,7 +59,7 @@ from nexus_ai.api.schemas import (
     InvoiceCreate,
     InvoiceListResponse,
     InvoiceResponse,
-    K6SummaryResponse,
+    LocustSummaryResponse,
     LoginResponse,
     LogoutResponse,
     PaginatedRuleListResponse,
@@ -697,15 +697,25 @@ class SecurityPostureDTO(NexusDTO):
     )
 
 
-class K6SummaryDTO(NexusDTO):
-    """DTO dla podsumowania k6."""
+class LocustSummaryDTO(NexusDTO):
+    """SUPERMOC: DTO dla podsumowania locust.
+
+    Zgodnie z aa3fvcx.txt: locust zastępuje k6.
+    Zawiera pełne metryki wydajnościowe z testów locust.
+    Używa camelCase dla JSON API (summaryAvailable, p95Ms, itp.).
+    """
 
     config = DTOConfig(
         backend="msgspec",
         rename_fields={
             "summary_available": "summaryAvailable",
             "p95_ms": "p95Ms",
+            "p99_ms": "p99Ms",
             "check_failures": "checkFailures",
+            "avg_response_time_ms": "avgResponseTimeMs",
+            "current_rps": "currentRps",
+            "total_requests": "totalRequests",
+            "total_failures": "totalFailures",
         },
     )
 
@@ -1186,7 +1196,7 @@ DTO_REGISTRY: dict[str, type[NexusDTO]] = {
     "I18nStatusResponse": I18nStatusDTO,
     "PiiScanResponse": PiiScanDTO,
     "SecurityPostureResponse": SecurityPostureDTO,
-    "K6SummaryResponse": K6SummaryDTO,
+    "LocustSummaryResponse": LocustSummaryDTO,
     "StatsProcessingResponse": StatsProcessingDTO,
     "WorkerStatusResponse": WorkerStatusDTO,
     "CircuitBreakerStatusResponse": CircuitBreakerStatusDTO,

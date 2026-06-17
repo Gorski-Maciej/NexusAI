@@ -380,12 +380,40 @@ warn_unused_ignores = false
 [tool.uv.sources]
 nexus-crypto = { path = "./nexus_ai/rust", editable = true }
 
-# ── crosshair (property-based testing) ───────────────────────────────────────
-# Zastępuje: hypothesis
-# crosshair uses SMT-based static analysis to mathematically prove correctness
-# instead of random fuzzing. It's faster, more deterministic, and lighter.
+# ── crosshair (SMT-driven property-based testing) ────────────────────────────
+# Zastępuje: hypothesis (głównie)
+# crosshair uses SMT-based static analysis with Z3 solver to mathematically
+# prove correctness instead of random fuzzing. It's faster, more deterministic.
+#
+# SUPERMOCE:
+#   max_examples     — maksymalna liczba przykładów na test
+#   max_unfold       — maksymalna głębokość rozwinięcia pętli/rekurencji
+#   per_condition    — limit czasu na warunek (seconds)
+#   per_test_timeout — limit czasu na pojedynczy test
+#   verbosity        — 0=cicha, 1=normalna, 2=szczegółowa
+#   report_uses      — raportuj użycia obiektów zewnętrznych
+#   backtesting      — sprawdź znalezione wcześniej kontrprzykłady
+#
+# Uruchamianie:
+#   crosshair check tests/test_crosshair_properties.py  # Sprawdź plik
+#   crosshair watch tests/  # Ciągłe monitorowanie przy zmianach
+#
 [tool.crosshair]
-max_examples = 200
+max_examples = 500
+max_unfold = 5
+per_condition = 10.0
+per_test_timeout = 30.0
+verbosity = 1
+report_uses = true
+backtesting = true
+
+# ── Pliki do sprawdzenia przez crosshair w CI ──────────────────────────────
+# crosshair check analizuje te pliki pod kątem kontrprzykładów
+check_paths = [
+    "tests/test_crosshair_properties.py",
+    "tests/test_property_based.py",
+    "tests/test_tax_math_engine.py",
+]
 
 # ── hatch environments (dev scripts) ─────────────────────────────────────────
 [tool.hatch.envs.lint]

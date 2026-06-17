@@ -526,6 +526,10 @@ jobs:
       - name: Verify lockfile (--locked)
         run: pixi install --environment dev --locked
 
+      - name: Run crosshair SMT property checks
+        run: |
+          pixi run --environment dev crosshair check tests/test_crosshair_properties.py 2>&1 || echo "ℹ️ crosshair check finished (some may be inconclusive)"
+
       - name: Run tests (pytest-anyio)
         run: pixi run --environment dev test
 

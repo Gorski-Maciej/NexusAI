@@ -1,0 +1,304 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI — Automated Profiling CI (py-spy)
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Uruchamia py-spy profiling podczas testów wydajnościowych (locust).
+# Generuje flamegraph SVG i speedscope JSON jako artefakty CI.
+#
+# SUPERMOCE py-spy:
+#   - Sampling profiling z narzutem <1% — nie wpływa na wyniki benchmarków
+#   - --native — profilowanie native frames (C/Cython/Rust PyO3)
+#   - --gil — diagnostyka GIL contention (dla Pythona 3.13 z GIL)
+#   - Speedscope export — nowoczesna wizualizacja w przeglądarce
+#   --subprocesses — profilowanie procesów potomnych (locust workers)
+#
+# Uruchamiane:
+#   - Ręcznie: workflow_dispatch
+#   - Automatycznie po każdym pushu na main (if: false — wyłączone domyślnie)
+#   - Jako krok w performance-locust workflow
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: Profiling CI (py-spy)
+
+on:
+  workflow_dispatch:
+    inputs:
+      duration:
+        description: "Czas profilowania w sekundach"
+        required: true
+        default: "60"
+        type: string
+      rate:
+        description: "Częstotliwość próbkowania (samples/sec)"
+        required: true
+        default: "500"
+        type: string
+      native:
+        description: "Profiluj native frames (C/Cython/Rust)"
+        required: false
+        default: false
+        type: boolean
+      gil:
+        description: "Tylko wątki trzymające GIL"
+        required: false
+        default: false
+        type: boolean
+      locust_vus:
+        description: "Liczba wirtualnych użytkowników locust"
+        required: true
+        default: "50"
+        type: string
+      locust_duration:
+        description: "Czas testu locust (np. 5m, 10m)"
+        required: true
+        default: "5m"
+        type: string
+  # Automatycznie po performance-locust workflow
+  workflow_run:
+    workflows: ["Performance Tests (Locust)"]
+    types:
+      - completed
+
+# ── Konfiguracja cache ────────────────────────────────────────────────────────
+env:
+  PIXI_CACHE_DIR: ~/.cache/pixi
+  REPORTS_DIR: reports/profiles
+  LOCUST_REPORTS_DIR: reports/performance
+
+jobs:
+  # ── Główny job profilowania ──────────────────────────────────────────────
+  # Uruchamia py-spy record podczas testów locust
+  profile-performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pixi
+        uses: prefix-dev/setup-pixi@v0.8
+        with:
+          pixi-version: latest
+          environments: dev
+          cache: true
+
+      - name: Verify lockfile
+        run: pixi install --environment dev --locked
+
+      - name: Create reports directories
+        run: |
+          mkdir -p ${{ env.REPORTS_DIR }}
+          mkdir -p ${{ env.LOCUST_REPORTS_DIR }}
+
+      - name: Check py-spy availability
+        run: |
+          pixi run --environment dev python -m nexus_ai.scripts.profiler --check
+
+      - name: Start API server (background)
+        id: start-api
+        run: |
+          # Start API w tle dla testów wydajnościowych
+          pixi run --environment dev python main.py --mode api &
+          API_PID=$!
+          echo "api_pid=$API_PID" >> $GITHUB_OUTPUT
+          # Poczekaj na gotowość API
+          for i in $(seq 1 30); do
+            if curl -s http://127.0.0.1:8000/api/v1/system/health 2>/dev/null | grep -q "ok"; then
+              echo "✅ API ready on PID $API_PID"
+              break
+            fi
+            sleep 1
+          done
+
+      - name: SUPERMOC — Generate Flamegraph SVG (py-spy record)
+        id: flamegraph
+        continue-on-error: true
+        run: |
+          DURATION=${{ inputs.duration || '60' }}
+          RATE=${{ inputs.rate || '500' }}
+          NATIVE_FLAG="${{ inputs.native && '--native' || '' }}"
+          GIL_FLAG="${{ inputs.gil && '--gil' || '' }}"
+          PID=${{ steps.start-api.outputs.api_pid }}
+
+          echo "🔥 Generating flamegraph SVG (PID=$PID, duration=${DURATION}s, rate=${RATE}/s)"
+          pixi run --environment dev python -m nexus_ai.scripts.profiler \
+            --pid "$PID" \
+            --duration "$DURATION" \
+            --rate "$RATE" \
+            $NATIVE_FLAG $GIL_FLAG \
+            --format svg \
+            --output ${{ env.REPORTS_DIR }}/flamegraph_${GITHUB_SHA:0:7}.svg
+          echo "✅ Flamegraph: ${{ env.REPORTS_DIR }}/flamegraph_${GITHUB_SHA:0:7}.svg"
+
+      - name: SUPERMOC — Generate Speedscope JSON (py-spy record)
+        id: speedscope
+        continue-on-error: true
+        run: |
+          DURATION=${{ inputs.duration || '30' }}
+          PID=${{ steps.start-api.outputs.api_pid }}
+
+          echo "🚀 Generating speedscope JSON (PID=$PID, duration=${DURATION}s)"
+          pixi run --environment dev python -m nexus_ai.scripts.profiler \
+            --pid "$PID" \
+            --duration "15" \
+            --rate "500" \
+            --format speedscope \
+            --output ${{ env.REPORTS_DIR }}/speedscope_${GITHUB_SHA:0:7}.json
+          echo "✅ Speedscope: ${{ env.REPORTS_DIR }}/speedscope_${GITHUB_SHA:0:7}.json"
+
+      - name: SUPERMOC — Stack Dump (py-spy dump)
+        id: dump
+        continue-on-error: true
+        run: |
+          PID=${{ steps.start-api.outputs.api_pid }}
+
+          echo "📋 Generating thread dump (PID=$PID)"
+          pixi run --environment dev python -m nexus_ai.scripts.profiler \
+            --pid "$PID" \
+            --dump \
+            2>&1 | tee ${{ env.REPORTS_DIR }}/thread_dump_${GITHUB_SHA:0:7}.txt
+          echo "✅ Thread dump: ${{ env.REPORTS_DIR }}/thread_dump_${GITHUB_SHA:0:7}.txt"
+
+      - name: SUPERMOC — Top Functions Snapshot (py-spy top)
+        id: top
+        continue-on-error: true
+        run: |
+          PID=${{ steps.start-api.outputs.api_pid }}
+
+          echo "📊 Generating top functions snapshot (PID=$PID)"
+          pixi run --environment dev python -m nexus_ai.scripts.profiler \
+            --pid "$PID" \
+            --duration 10 \
+            --rate 200 \
+            --top \
+            2>&1 | tee ${{ env.REPORTS_DIR }}/top_functions_${GITHUB_SHA:0:7}.txt
+          echo "✅ Top functions: ${{ env.REPORTS_DIR }}/top_functions_${GITHUB_SHA:0:7}.txt"
+
+      - name: SUPERMOC — Comprehensive Profile (all-in-one)
+        id: comprehensive
+        continue-on-error: true
+        run: |
+          PID=${{ steps.start-api.outputs.api_pid }}
+
+          echo "🎯 Generating comprehensive profile (PID=$PID)"
+          pixi run --environment dev python -c "
+import anyio
+from nexus_ai.scripts.profiler import generate_comprehensive_profile, ProfileReport
+
+async def main():
+    report = await generate_comprehensive_profile(
+        pid=$PID,
+        duration=30,
+        output_dir='${{ env.REPORTS_DIR }}',
+        tags={'ci': 'true', 'sha': '${{ github.sha }}'},
+        native=${{ inputs.native || 'false' }},
+        gil=${{ inputs.gil || 'false' }},
+    )
+    import json
+    with open('${{ env.REPORTS_DIR }}/comprehensive_${GITHUB_SHA:0:7}.json', 'w') as f:
+        json.dump(report.to_dict(), f, indent=2, default=str)
+    print(f'Comprehensive profile saved')
+
+anyio.run(main)
+"
+          echo "✅ Comprehensive: ${{ env.REPORTS_DIR }}/comprehensive_${GITHUB_SHA:0:7}.json"
+
+      - name: Kill API server
+        if: always()
+        run: |
+          kill ${{ steps.start-api.outputs.api_pid }} 2>/dev/null || true
+
+      - name: List all profiling artifacts
+        if: always()
+        run: |
+          echo "## 📊 Profiling Artifacts" > ${{ env.REPORTS_DIR }}/report.md
+          echo "" >> ${{ env.REPORTS_DIR }}/report.md
+          ls -lh ${{ env.REPORTS_DIR }}/ >> ${{ env.REPORTS_DIR }}/report.md
+          echo "" >> ${{ env.REPORTS_DIR }}/report.md
+          echo "### Flamegraph" >> ${{ env.REPORTS_DIR }}/report.md
+          echo "Open the flamegraph SVG in your browser to visualize CPU usage." >> ${{ env.REPORTS_DIR }}/report.md
+          echo "" >> ${{ env.REPORTS_DIR }}/report.md
+          echo "### Speedscope" >> ${{ env.REPORTS_DIR }}/report.md
+          echo "Open https://speedscope.app and load the speedscope JSON." >> ${{ env.REPORTS_DIR }}/report.md
+          cat ${{ env.REPORTS_DIR }}/report.md
+
+      - name: Upload profiling artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: profiling-artifacts
+          path: |
+            ${{ env.REPORTS_DIR }}/
+            ${{ env.LOCUST_REPORTS_DIR }}/
+          retention-days: 30
+
+  # ── Profiling podczas testów locust (z NEXUS_PERF_PYSPY_ENABLED=1) ──────
+  # Uruchamia locust load test z włączonym py-spy profilingiem.
+  # py-spy automatycznie profiluje proces locust przez NEXUS_PERF_PYSPY_* env vars
+  profile-during-locust:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pixi
+        uses: prefix-dev/setup-pixi@v0.8
+        with:
+          pixi-version: latest
+          environments: dev
+          cache: true
+
+      - name: Verify lockfile
+        run: pixi install --environment dev --locked
+
+      - name: Start API server (background)
+        run: |
+          pixi run --environment dev python main.py --mode api &
+          API_PID=$!
+          echo "api_pid=$API_PID" >> $GITHUB_ENV
+          for i in $(seq 1 30); do
+            if curl -s http://127.0.0.1:8000/api/v1/system/health 2>/dev/null | grep -q "ok"; then
+              echo "✅ API ready on PID $API_PID"
+              break
+            fi
+            sleep 1
+          done
+
+      - name: Run locust with py-spy profiling
+        env:
+          NEXUS_PERF_PYSPY_ENABLED: "1"
+          NEXUS_PERF_PYSPY_DURATION: "120"
+          NEXUS_PERF_PYSPY_RATE: "500"
+          NEXUS_PERF_PYSPY_NATIVE: "1"
+          LOCUST_VUS: ${{ inputs.locust_vus || '50' }}
+          LOCUST_DURATION: ${{ inputs.locust_duration || '5m' }}
+        continue-on-error: true
+        run: |
+          pixi run --environment dev python -m nexus_ai.scripts.performance_engineering \
+            --base-url http://127.0.0.1:8000 \
+            --vus "$LOCUST_VUS" \
+            --duration "$LOCUST_DURATION" \
+            --summary reports/performance/profiled_locust_stats \
+            --max-p95-ms 2000 \
+            --max-p99-ms 3000 \
+            --max-error-rate 0.05
+
+      - name: Upload locust + profiling artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: locust-profiling-artifacts
+          path: |
+            reports/performance/
+            reports/profiles/
+          retention-days: 30
+
+      - name: Kill API server
+        if: always()
+        run: |
+          kill ${{ env.api_pid }} 2>/dev/null || true
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Status Badge
+# ═══════════════════════════════════════════════════════════════════════════════
+# [![Profiling CI](https://github.com/Gorski-Maciej/NexusAI/actions/workflows/profiling-ci.yml/badge.svg)](https://github.com/Gorski-Maciej/NexusAI/actions/workflows/profiling-ci.yml)

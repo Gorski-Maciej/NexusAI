@@ -445,7 +445,26 @@ run = "python main.py --load-fixtures"
 description = "Aktywuj shell w środowisku pixi"
 run = "$SHELL"
 
-# ── pixi Environment Manager — zarządzanie środowiskiem pixi ───────────────
+# ── Profiling (py-spy) — diagnostyka wydajnościowa
+
+[tasks.profile]
+description = "Profiluj proces (py-spy record — flamegraph SVG)"
+run = "uv run python -m nexus_ai.scripts.profiler"
+
+[tasks.profile-dump]
+description = "Zrzut stosu procesu (py-spy dump)"
+run = "uv run python -m nexus_ai.scripts.profiler --dump"
+
+[tasks.profile-top]
+description = "Top-like widok funkcji (py-spy top)"
+run = "uv run python -m nexus_ai.scripts.profiler --top"
+
+[tasks.profile-check]
+description = "Sprawdz czy py-spy jest dostepny"
+run = "uv run python -m nexus_ai.scripts.profiler --check"
+
+# ── pixi Environment Manager — zarządzanie środowiskiem pixi
+ ───────────────
 
 [tasks.pixi-info]
 description = "📊 Diagnostyka środowiska pixi — cache, pakiety, platformy"

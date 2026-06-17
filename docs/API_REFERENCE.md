@@ -226,7 +226,7 @@ curl /api/v2/invoices \
 | GET | `/api/v2/i18n/status` | Status tłumaczeń |
 | POST | `/api/v2/privacy/pii-scan` | Skanowanie PII |
 | GET | `/api/v2/security/posture` | Security posture |
-| GET | `/api/v2/performance/k6-summary` | Podsumowanie wydajności |
+| GET | `/api/v2/performance/locust-summary` | Podsumowanie wydajności (Locust) |
 | GET | `/api/v2/stats/processing` | Statystyki przetwarzania |
 | GET | `/api/v2/workers/status` | Status workerów |
 | GET | `/api/v2/circuit-breakers/status` | Status circuit breakerów |

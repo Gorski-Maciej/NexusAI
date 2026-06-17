@@ -477,12 +477,28 @@ class SecurityPostureResponse(msgspec.Struct, kw_only=True):
     scan_summary: dict | None = None
 
 
-class K6SummaryResponse(msgspec.Struct, kw_only=True):
-    """K6 performance summary."""
+class LocustSummaryResponse(msgspec.Struct, kw_only=True):
+    """SUPERMOC: Locust performance summary.
+
+    Zgodnie z aa3fvcx.txt: locust zastępuje k6.
+    Zawiera pełne metryki wydajnościowe z testów locust:
+      - p95, p99 latencja
+      - RPS (requests per second)
+      - Error rate (fail_ratio)
+      - Liczba żądań
+      - Liczba błędów
+      - Status summary_available
+      - Raw payload z locust stats
+    """
     status: str
     summary_available: bool = True
     p95_ms: float | None = None
+    p99_ms: float | None = None
     check_failures: float | None = None
+    avg_response_time_ms: float | None = None
+    current_rps: float | None = None
+    total_requests: int | None = None
+    total_failures: int | None = None
     raw: dict | None = None
 
 
