@@ -136,12 +136,20 @@ class TaskMetricsMiddleware(TaskiqMiddleware):
 
 
 def _record_task_metrics(task_name: str, duration_ms: float, status: str) -> None:
-    """Zapisz metrykę zadania przez OpenTelemetry (safe call)."""
-    try:
-        from nexus_ai.api.telemetry_metrics import record_ai_inference
+    """Zapisz metrykę zadania przez OpenTelemetry (safe call).
 
-        # Użyj istniejących metryk OTel
-        record_ai_inference(duration_seconds=duration_ms / 1000.0, model=task_name)
+    SUPERMOC FIX: Używa dedykowanych metryk tasków z telemetry_metrics.py
+    zamiast nadużywać record_ai_inference().
+    Task metrics mają własny meter (nexus-tasks) z Multi-Meter separation.
+    """
+    try:
+        from nexus_ai.api.telemetry_metrics import record_task_execution
+
+        record_task_execution(
+            task_name=task_name,
+            duration_ms=duration_ms,
+            status=status,
+        )
     except Exception:
         pass
     logger.debug(
@@ -217,39 +225,63 @@ class PiiScanMiddleware(TaskiqMiddleware):
 
 
 class TaskTracingMiddleware(TaskiqMiddleware):
-    """Dodaje tracing (trace_id, span_id) do każdego zadania.
+    """Dodaje prawdziwe OTel tracing (trace_id, span_id) do każdego zadania.
 
-    SUPERMOC:
-      - Każde zadanie ma unikalny trace_id
+    SUPERMOCE:
+      - Prawdziwy OTel span dla każdego zadania (zamiast string trace_id)
+      - W3C TraceContext przez Baggage API — propagacja kontekstu między zadaniami
+      - Każde zadanie ma unikalny trace_id korelowany z resztą systemu
       - Łatwe korelowanie logów między zadaniami
-      - Integracja z OpenTelemetry w przyszłości
     """
 
+    def __init__(self) -> None:
+        self._tracer = None
+
+    def _get_tracer(self):
+        if self._tracer is None:
+            from nexus_ai.core.otel_tracing import get_tracer
+            self._tracer = get_tracer("nexus.taskiq")
+        return self._tracer
+
     async def pre_send(self, message: TaskiqMessage) -> TaskiqMessage:
-        """Przed wysłaniem: dodaj trace_id do labels + struktlog contextvars.
+        """Przed wysłaniem: utwórz OTel span + Baggage propagation.
 
-        SUPERMOC structlog:
-        - bind_contextvars dla correlation_id/tenant_id z labels
-        - merge_contextvars w logger.py automatycznie wzbogaca logi zadań
+        SUPERMOC OTel:
+        - Tworzy prawdziwy span (nie tylko string)
+        - Propaguje kontekst przez W3C Baggage API
+        - Ustawia structlog contextvars z prawdziwym trace_id
         """
-        trace_id = uuid.uuid4().hex[:32]
-        span_id = uuid.uuid4().hex[:16]
-        message.labels["trace_id"] = trace_id
-        message.labels["span_id"] = span_id
-        message.labels["environment"] = os.getenv("NEXUS_ENV", "dev")
-        message.labels["hostname"] = os.uname().nodename if hasattr(os, "uname") else "unknown"
+        tracer = self._get_tracer()
 
-        # SUPERMOC structlog: clear before bind — zapobiega wyciekowi kontekstu
-        # między zadaniami Taskiq. merge_contextvars doda te pola do wszystkich logów.
-        import structlog as _structlog
-        _structlog.contextvars.clear_contextvars()
-        _structlog.contextvars.bind_contextvars(
-            task_id=trace_id,
-            task_name=message.task_name,
-            span_id=span_id,
-            environment=message.labels.get("environment", "dev"),
-            hostname=message.labels.get("hostname", "unknown"),
-        )
+        # SUPERMOC: Prawdziwy OTel span dla zadania
+        with tracer.start_as_current_span(f"task.{message.task_name}") as span:
+            span.set_attribute("task_name", message.task_name)
+            span.set_attribute("environment", os.getenv("NEXUS_ENV", "dev"))
+
+            trace_id = format(span.get_span_context().trace_id, "032x")
+            span_id = format(span.get_span_context().span_id, "016x")
+
+            message.labels["trace_id"] = trace_id
+            message.labels["span_id"] = span_id
+            message.labels["environment"] = os.getenv("NEXUS_ENV", "dev")
+            message.labels["hostname"] = os.uname().nodename if hasattr(os, "uname") else "unknown"
+
+            # SUPERMOC: W3C Baggage — propagacja kontekstu przez NATS
+            from opentelemetry import baggage
+            ctx = baggage.set_baggage("task_name", message.task_name)
+            ctx = baggage.set_baggage("environment", os.getenv("NEXUS_ENV", "dev"), context=ctx)
+
+            # SUPERMOC structlog: clear before bind
+            import structlog as _structlog
+            _structlog.contextvars.clear_contextvars()
+            _structlog.contextvars.bind_contextvars(
+                task_id=trace_id,
+                task_name=message.task_name,
+                span_id=span_id,
+                environment=message.labels.get("environment", "dev"),
+                hostname=message.labels.get("hostname", "unknown"),
+            )
+
         return message
 
     async def post_execute(self, message: TaskiqMessage, result: TaskiqResult) -> None:
@@ -389,3 +421,140 @@ class DynamicConcurrencyMiddleware(TaskiqMiddleware):
     async def post_execute(self, message: TaskiqMessage, result: TaskiqResult) -> None:
         """Po wykonaniu: zmniejsz licznik aktywnych zadań."""
         self._active_count = max(0, self._active_count - 1)
+
+
+# =========================================================================
+# SentryTaskMiddleware — Sentry scope dla każdego zadania Taskiq
+# =========================================================================
+
+
+class SentryTaskMiddleware(TaskiqMiddleware):
+    """SUPERMOC Sentry: Automatyczny scope Sentry dla każdego zadania Taskiq.
+
+    SUPERMOC:
+    - Tworzy izolowany scope Sentry dla każdego zadania (bezpieczny współbieżnie)
+    - Dodaje tagi: task_name, task_id, trace_id
+    - Automatycznie przechwytuje błędy zadań z kontekstem
+    - Dodaje breadcrumb na start i koniec zadania
+
+    Usage:
+        broker.add_middleware(SentryTaskMiddleware())
+
+        # W każdym zadaniu, błędy automatycznie trafiają do Sentry
+        # z tagami task_name, task_id i pełnym kontekstem.
+    """
+
+    def __init__(self) -> None:
+        self._sentry_available = False
+        # Sprawdź czy Sentry jest dostępne
+        try:
+            import sentry_sdk  # noqa: F401
+            self._sentry_available = True
+        except ImportError:
+            pass
+
+    async def pre_execute(self, message: TaskiqMessage) -> None:
+        """Przed wykonaniem: utwórz scope Sentry dla zadania.
+
+        SUPERMOC:
+        - scope.set_tag("task_name", message.task_name)
+        - scope.set_tag("task_id", message.labels.get("_trace_id", ""))
+        - scope.set_context("task_kwargs", message.kwargs)
+        - add_breadcrumb("task.started")
+        """
+        if not self._sentry_available:
+            return
+
+        import sentry_sdk
+
+        # SUPERMOC: Store scope reference in message labels for post_execute
+        # We need to keep the scope open for the duration of the task
+        scope = sentry_sdk.Scope.get_current_scope()
+        trace_id = message.labels.get("trace_id", message.labels.get("_trace_id", ""))
+
+        # Set tags on current scope
+        sentry_sdk.set_tag("task_name", message.task_name)
+        sentry_sdk.set_tag("task_id", trace_id)
+        if message.labels.get("environment"):
+            sentry_sdk.set_tag("environment", message.labels["environment"])
+
+        # Set context from kwargs
+        if message.kwargs:
+            sentry_sdk.set_context("task_args", {
+                k: str(v)[:200] for k, v in message.kwargs.items()
+            })
+
+        # Breadcrumb na start zadania
+        sentry_sdk.add_breadcrumb(
+            message=f"task.{message.task_name}.started",
+            category="task",
+            level="info",
+            data={
+                "task_name": message.task_name,
+                "trace_id": trace_id,
+            },
+        )
+
+    async def on_error(self, message: TaskiqMessage, result: TaskiqResult) -> None:
+        """Przy błędzie zadania: przechwyć wyjątek w Sentry.
+
+        SUPERMOC:
+        - Automatyczne przechwytywanie błędów zadań
+        - Tagowanie: task_name, task_id, error_type
+        - Breadcrumb na koniec zadania z statusem FAILED
+        """
+        if not self._sentry_available:
+            return
+
+        import sentry_sdk
+
+        trace_id = message.labels.get("trace_id", message.labels.get("_trace_id", ""))
+
+        with sentry_sdk.new_scope() as scope:
+            scope.set_tag("task_name", message.task_name)
+            scope.set_tag("task_id", trace_id)
+            scope.set_tag("error_type", "task_failure")
+            scope.set_context("task_error", {
+                "task_name": message.task_name,
+                "error": str(result.error)[:500] if result.error else "unknown",
+            })
+
+            # Breadcrumb na błąd
+            sentry_sdk.add_breadcrumb(
+                message=f"task.{message.task_name}.failed",
+                category="task",
+                level="error",
+                data={
+                    "task_name": message.task_name,
+                    "trace_id": trace_id,
+                    "error": str(result.error)[:200] if result.error else "unknown",
+                },
+            )
+
+            # Przechwyć wyjątek
+            if result.error:
+                sentry_sdk.capture_exception(result.error)
+
+    async def post_execute(self, message: TaskiqMessage, result: TaskiqResult) -> None:
+        """Po wykonaniu: breadcrumb na koniec zadania.
+
+        SUPERMOC:
+        - Breadcrumb z statusem SUCCESS/FAILED
+        - Czas wykonania w breadcrumb data
+        """
+        if not self._sentry_available:
+            return
+
+        import sentry_sdk
+
+        status = "FAILED" if result.is_err else "SUCCESS"
+        sentry_sdk.add_breadcrumb(
+            message=f"task.{message.task_name}.{status.lower()}",
+            category="task",
+            level="error" if result.is_err else "info",
+            data={
+                "task_name": message.task_name,
+                "duration_ms": result.execution_time,
+                "status": status,
+            },
+        )

@@ -269,6 +269,116 @@ class DuckDBManager:
     # Używane zamiast SQL dla małych/mikro-agregacji w pamięci.
     # Zysk: brak round-trip do DuckDB, operacje w C++ na Arrow data.
 
+    # ── SUPERMOC: DuckDB read_parquet() — SQL bezpośrednio na plikach ──
+    # ``read_parquet('*.parquet')`` pozwala DuckDB czytać pliki Parquet
+    # bezpośrednio, bez wczytywania ich do pamięci przez PyArrow.
+    # Zysk: DuckDB robi predicate pushdown na statystykach Parquet,
+    # czyta tylko potrzebne row groups — szybciej niż PyArrow Dataset.
+
+    def query_parquet(
+        self,
+        parquet_path: str | Path,
+        sql_where: str = "",
+        columns: list[str] | None = None,
+    ) -> Any:
+        """SUPERMOC DuckDB: Wykonaj SQL bezpośrednio na plikach Parquet.
+
+        ``read_parquet('*.parquet')`` — DuckDB czyta Parquet z predicate
+        pushdown, projection pushdown i filter pushdown — automatycznie.
+        Zysk: DuckDB optymalizuje zapytanie pod kątem statystyk Parquet.
+
+        Args:
+            parquet_path: Ścieżka do pliku/katalogu Parquet (glob).
+            sql_where: Opcjonalne WHERE clause.
+            columns: Opcjonalne kolumny do odczytu.
+
+        Returns:
+            ``pyarrow.Table`` — gotowy do przekazania do Polars.
+        """
+        cols_clause = "*"
+        if columns:
+            cols_clause = ", ".join(columns)
+
+        sql = f"SELECT {cols_clause} FROM read_parquet('{parquet_path}')"
+        if sql_where:
+            sql += f" WHERE {sql_where}"
+
+        return self.execute_arrow(sql)
+
+    # ── SUPERMOC: DuckDB parquet_metadata() — diagnostyka Parquet ──────
+    # Funkcja ``parquet_metadata()`` odczytuje statystyki pliku Parquet
+    # bez wczytywania danych — row groups, kolumny, null count, min/max.
+    # Zysk: diagnostyka bez alokacji RAM na dane.
+
+    def get_parquet_metadata(self, parquet_path: str | Path) -> list[dict[str, Any]]:
+        """SUPERMOC DuckDB: Pobierz metadane pliku Parquet.
+
+        ``parquet_metadata('file.parquet')`` zwraca:
+        - file_name, row_group_id, row_group_num_rows
+        - column_id, path_in_schema, type, stats_min, stats_max, stats_null_count
+
+        Zysk: diagnostyka bez wczytywania danych — 0 RAM na payload.
+
+        Args:
+            parquet_path: Ścieżka do pliku Parquet.
+
+        Returns:
+            Lista słowników z metadanymi każdej kolumny.
+        """
+        conn = self.get_connection_for_query()
+        try:
+            result = conn.execute(
+                f"SELECT * FROM parquet_metadata('{parquet_path}')"
+            ).fetchdf()
+            if result is None or result.empty:
+                return []
+            return result.to_dict(orient="records")
+        finally:
+            conn.close()
+
+    # ── SUPERMOC: COPY TO PARQUET — eksport wyników zapytań ───────────
+    # ``COPY (query) TO 'file.parquet' (FORMAT PARQUET, CODEC 'ZSTD')``
+    # Zamiast fetchall() + ręcznego zapisu, DuckDB zapisuje wynik
+    # bezpośrednio do Parquet — zero pamięci na listę krotek.
+    # Zysk: eksport dużych zbiorów bez narzutu RAM.
+
+    def export_to_parquet(
+        self,
+        query: str,
+        output_path: str | Path,
+        compression: str = "ZSTD",
+        row_group_size: int = 100000,
+    ) -> str:
+        """SUPERMOC DuckDB: Eksportuj wynik zapytania bezpośrednio do Parquet.
+
+        ``COPY (query) TO 'file.parquet' (FORMAT PARQUET, CODEC 'ZSTD')``
+        — DuckDB zapisuje wynik bezpośrednio do pliku Parquet bez
+        pośredniej alokacji w Pythonie.
+
+        Args:
+            query: Zapytanie SQL.
+            output_path: Ścieżka docelowa pliku .parquet.
+            compression: Kodowanie kompresji (ZSTD, SNAPPY, GZIP, LZ4, UNCOMPRESSED).
+            row_group_size: Liczba wierszy na row group (int).
+
+        Returns:
+            Ścieżka do utworzonego pliku.
+        """
+        output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        conn = self.get_connection_for_query()
+        try:
+            copy_sql = (
+                f"COPY ({query}) TO '{output_path.as_posix()}' "
+                f"(FORMAT PARQUET, CODEC '{compression}', "
+                f"ROW_GROUP_SIZE {row_group_size})"
+            )
+            conn.execute(copy_sql)
+            return str(output_path)
+        finally:
+            conn.close()
+
     def arrow_aggregate(
         self,
         query: str,

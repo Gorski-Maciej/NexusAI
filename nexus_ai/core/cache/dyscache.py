@@ -93,7 +93,7 @@ class NexusCache:
         self._cache_misses_total: Any = None  # Counter
         self._cache_l2_latency_seconds: Any = None  # Histogram
         self._cache_evictions_total: Any = None  # Counter
-        self._cache_size: Any = None  # Gauge
+        self._cache_size: Any = None  # ObservableGauge (automatyczny callback)
 
         if HAS_DISKCACHE and cache_dir is not None:
             cache_path = Path(cache_dir) / "nexus_cache.db"
@@ -202,11 +202,33 @@ class NexusCache:
                 description="Total L1 cache evictions",
                 unit="1",
             )
-            self._cache_size = meter.create_gauge(
+            # SUPERMOC: ObservableGauge z callbackiem — SDK sam odczytuje rozmiar
+            # Zamiast ręcznego set() przy każdej zmianie, callback zwraca aktualny stan
+            from opentelemetry.metrics import Observation
+
+            def _cache_size_callback():
+                yield Observation(len(self._ram_cache))
+
+            self._cache_size = meter.create_observable_gauge(
                 name="cache_size",
                 description="Current L1 cache size",
                 unit="1",
+                callbacks=[_cache_size_callback],
             )
+            # Dodaj L2 metryki (diskcache)
+            if self._diskcache is not None:
+                def _disk_entries_callback():
+                    try:
+                        yield Observation(len(self._diskcache))
+                    except Exception:
+                        pass
+
+                meter.create_observable_gauge(
+                    name="diskcache_entries_total",
+                    description="Total entries in diskcache L2",
+                    unit="1",
+                    callbacks=[_disk_entries_callback],
+                )
             self._meter = meter
         except Exception:
             pass
@@ -222,9 +244,19 @@ class NexusCache:
             self._cache_misses_total.add(1)
 
     def _record_l2_latency(self, operation: str, duration: float) -> None:
-        """Record L2 operation latency."""
+        """Record L2 operation latency.
+
+        SUPERMOC: Exemplary — korelacja metryk z trace'ami.
+        Exemplars dodają kontekst trace (trace_id, span_id) do metryk,
+        umożliwiając przejście z dashboardu do konkretnego requestu.
+        """
         if self._cache_l2_latency_seconds is not None:
-            self._cache_l2_latency_seconds.record(duration, {"operation": operation})
+            # Exemplar jest automatycznie dodawany przez MeterProvider
+            # przez AlignedHistogramBucketExemplarReservoir z Views API
+            self._cache_l2_latency_seconds.record(
+                duration,
+                {"operation": operation},
+            )
 
     def _record_evictions(self, count: int) -> None:
         """Record eviction count."""

@@ -236,8 +236,23 @@ def global_exception_handler(request: Request, exc: Exception) -> Response:
     - ``HTTPException`` → standardowe kody HTTP
     - ``msgspec.ValidationError`` → 422
 
+    SUPERMOC Sentry: Wysyła każdy nieobsłużony wyjątek do Sentry
+    z kontekstem requestu (method, path, correlation_id).
+
     Ten handler działa jako fallback — loguje i zwraca 500.
     """
+    # SUPERMOC: Wyślij do Sentry z kontekstem requestu
+    try:
+        from nexus_ai.core.sentry import capture_exception
+        capture_exception(
+            exc,
+            method=str(request.method),
+            path=request.url.path,
+            correlation_id=request.headers.get("x-correlation-id", "unknown"),
+        )
+    except Exception:
+        pass
+
     # Log unhandled exceptions internally, but don't expose details to client
     logger.error("Unhandled exception: %s: %s", type(exc).__name__, str(exc), exc_info=True)
     return _error_envelope(

@@ -27,6 +27,37 @@ from nexus_ai.services.migration_sanity import (
 
 from nexus_ai.services.outbox_relay import OutboxRelay
 
+# ── SUPERMOC: OTel graceful shutdown przez otel_config ─────────────────────
+# Rejestruje atexit handler do flushowania pozostaych spanów/metryk/logów
+_OTEL_SHUTDOWN_REGISTERED = False
+
+
+def _ensure_otel_shutdown_registered() -> None:
+    """SUPERMOC: Rejestruje atexit shutdown dla OTel providerów.
+
+    Zapewnia, że TracerProvider.shutdown() i MeterProvider.shutdown()
+    są wywoływane przy wyjściu z aplikacji.
+    """
+    global _OTEL_SHUTDOWN_REGISTERED
+    if _OTEL_SHUTDOWN_REGISTERED:
+        return
+    try:
+        from nexus_ai.core.otel_config import register_otel_shutdown
+        from opentelemetry import trace, metrics
+
+        tracer_provider = trace.get_tracer_provider()
+        meter_provider = metrics.get_meter_provider()
+        if hasattr(tracer_provider, "shutdown"):
+            register_otel_shutdown(
+                tracer_provider=tracer_provider,
+                meter_provider=meter_provider if hasattr(meter_provider, "shutdown") else None,
+            )
+            _OTEL_SHUTDOWN_REGISTERED = True
+            logger.debug("[STARTUP] OTel graceful shutdown registered")
+    except Exception as exc:
+        logger.debug("[STARTUP] OTel shutdown registration skipped: %s", exc)
+
+
 # ── OpenTelemetry metrics initialization ───────────────────────────────────
 # Thread-safe dla free-threaded Python — używa threading.Event zamiast bool
 _METRICS_INITIALIZED_EVENT = threading.Event()
@@ -77,10 +108,13 @@ async def _start_metrics_background_task(app: Litestar) -> None:
             while True:
                 try:
                     # SUPERMOC: oneshot() — batch syscalls
+                    # ObservableGauge w telemetry_metrics.py zastąpił ręczne set()
+                    # CPU, RAM, DISK, TEMP są teraz odczytywane automatycznie przez SDK
                     proc_metrics = process_monitor.collect_metrics()
                     set_memory_usage(proc_metrics.rss_mb)
 
-                    # SUPERMOC: pełne metryki systemowe
+                    # SUPERMOC: pełne metryki systemowe (logowane, nie gauge)
+                    # gauge'e są obsługiwane przez ObservableGauge w init_metrics()
                     sys_metrics = system_monitor.collect_all()
 
                     # Loguj co 5 minut dla AUDIT

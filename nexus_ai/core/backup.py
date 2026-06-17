@@ -40,6 +40,18 @@ try:
 except ImportError:
     _HAS_DUCKDB = False
 
+# ── Delta Lake import for ACID Parquet backups ───────────────────────────────
+# SUPERMOC: Delta Lake dodaje ACID transactions do Parquet:
+# - Atomic commits: write + metadata w jednej transakcji
+# - Time travel: dostęp do dowolnej wersji backupu
+# - Schema enforcement: dodawanie kolumn nie psuje istniejących danych
+# - Zysk: backup z gwarancją ACID, bez ryzyka partial write
+try:
+    import deltalake as _delta
+    _HAS_DELTA = True
+except ImportError:
+    _HAS_DELTA = False
+
 
 class BackupManager:
     """Zarządza pakowaniem i szyfrowaniem bazy danych.
@@ -274,6 +286,134 @@ class BackupManager:
         else:
             # Niezaszyfrowany ZIP
             return data
+
+    # ── SUPERMOC: Delta Lake dla ACID backups ─────────────────────────
+    # Delta Lake dodaje ACID transactions do formatu Parquet:
+    # - Atomic commits: write + metadata w jednej transakcji
+    # - Time travel: dostęp do dowolnej wersji backupu
+    # - Schema enforcement: dodawanie kolumn nie psuje danych
+    # - Zysk: backup z gwarancją ACID, bez ryzyka partial write
+
+    def export_to_delta(
+        self,
+        duckdb_query: str,
+        delta_table_path: str | Path | None = None,
+        mode: str = "append",
+        partition_by: list[str] | None = None,
+    ) -> str:
+        """SUPERMOC Delta Lake: Eksportuj dane z DuckDB do Delta Lake.
+
+        Delta Lake dodaje warstwę ACID na Parquet:
+        - Atomic commits: każdy zapis jest atomowy
+        - Time travel: ``DeltaTable.load_as_version(N)`` do historycznych wersji
+        - Schema enforcement: bezpieczne dodawanie kolumn
+
+        Args:
+            duckdb_query: Zapytanie SQL do DuckDB.
+            delta_table_path: Ścieżka do tabeli Delta (domyślnie backups/delta).
+            mode: "append" (dodaj do istniejącej) lub "overwrite" (nadpisz).
+            partition_by: Kolumny do partycjonowania (np. ["year", "month"]).
+
+        Returns:
+            Ścieżka do Delta Table.
+        """
+        if not _HAS_DELTA:
+            logger.warning(
+                "[BACKUP] Delta Lake not available — install with: pip install deltalake"
+            )
+            return self.create_encrypted_zip()
+
+        delta_path = Path(delta_table_path or self.backup_dir / "delta_backup")
+        delta_path.mkdir(parents=True, exist_ok=True)
+
+        try:
+            # Pobierz dane z DuckDB jako Arrow Table
+            conn = _duckdb.connect()
+            try:
+                arrow_table = conn.execute(duckdb_query).fetch_arrow_table()
+            finally:
+                conn.close()
+
+            # Konwertuj na Pandas DataFrame (niezbędne dla deltalake)
+            import pandas as pd
+            pdf = arrow_table.to_pandas()
+
+            # ── SUPERMOC: Delta Lake write z ACID ────────────────────
+            # ``write_deltalake()`` tworzy _delta_log/ z commitami
+            # Każdy commit to atomowa transakcja JSON.
+            _delta.write_deltalake(
+                str(delta_path),
+                pdf,
+                mode=mode,
+                partition_by=partition_by or [],
+            )
+
+            logger.info(
+                "[BACKUP] Delta Lake backup committed: %s (mode=%s)",
+                delta_path,
+                mode,
+            )
+            return str(delta_path)
+
+        except Exception as exc:
+            logger.error("[BACKUP] Delta Lake backup failed: %s", exc)
+            return ""
+
+    def list_delta_versions(self, delta_path: str | Path | None = None) -> list[dict]:
+        """SUPERMOC Delta Lake: Wyświetl historię wersji Delta Table.
+
+        Delta Lake przechowuje pełną historię commitów w ``_delta_log/``.
+        ``DeltaTable.history()" zwraca każdą wersję z timestampem,
+        operacją i metadanymi.
+        Zysk: time travel — dostęp do każdej wersji backupu.
+
+        Args:
+            delta_path: Ścieżka do Delta Table.
+
+        Returns:
+            Lista słowników z historią wersji.
+        """
+        if not _HAS_DELTA:
+            return [{"error": "Delta Lake not available"}]
+
+        dt_path = str(delta_path or self.backup_dir / "delta_backup")
+        try:
+            table = _delta.DeltaTable(dt_path)
+            history = table.history()
+            if history is None or history.empty:
+                return []
+            return history.to_dict(orient="records")
+        except Exception as exc:
+            return [{"error": str(exc)}]
+
+    def load_delta_version(
+        self,
+        version: int,
+        delta_path: str | Path | None = None,
+    ) -> Any:
+        """SUPERMOC Delta Lake: Wczytaj konkretną wersję backupu (time travel).
+
+        ``DeltaTable.load_as_version(N)`` ładuje stan tabeli z wersji N.
+        Zysk: pełny time travel — dostęp do backupu sprzed tygodnia.
+
+        Args:
+            version: Numer wersji (0 = pierwszy backup).
+            delta_path: Ścieżka do Delta Table.
+
+        Returns:
+            ``pyarrow.Table`` z danymi z danej wersji.
+        """
+        if not _HAS_DELTA:
+            return None
+
+        dt_path = str(delta_path or self.backup_dir / "delta_backup")
+        try:
+            table = _delta.DeltaTable(dt_path)
+            table.load_as_version(version)
+            return table.to_pyarrow_table()
+        except Exception as exc:
+            logger.error("[BACKUP] Failed to load Delta version %d: %s", version, exc)
+            return None
 
     def prune_old_backups(self, keep_days: int = 30) -> int:
         """Remove backups older than keep_days and return deleted count."""

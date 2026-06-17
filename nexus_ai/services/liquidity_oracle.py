@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from msgspec import Struct
 from decimal import Decimal
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pendulum
@@ -199,12 +200,20 @@ def calculate_liquidity_timeline(
     # ── SUPERMOC: shrink_dtype() — -50% RAM ───────────────────────
     df = df.shrink_dtype()
 
-    # ── SUPERMOC: sink_parquet() — zapis prognozy do Parquet ──────
-    # Zapisuje wynik bezpośrednio do Parquet bez trzymania w RAM.
-    # Użyteczne przy wielokrotnych prognozach — można porównywać.
+    # ── SUPERMOC: sink_parquet() — zapis prognozy do Parquet z Hive partycjonowaniem ──
+    # SUPERMOCE Parquet:
+    # - Partycjonowanie: year=/month=/day= — szybkie odcięcie partycji
+    # - ``sink_parquet()`` — streaming zapis bez alokacji RAM
+    # - ``scan_parquet()`` — leniwe odczytywanie historycznych prognoz
     try:
+        now = pendulum.now()
+        parquet_dir = Path("/tmp/liquidity_forecasts")
+        part_path = parquet_dir / f"year={now.year}/month={now.month:02d}/day={now.day:02d}"
+        part_path.mkdir(parents=True, exist_ok=True)
+        forecast_path = part_path / f"forecast_{now.format('HHmmss')}.parquet"
+
         df.lazy().sink_parquet(
-            f"/tmp/liquidity_forecast_{pendulum.now().format('YYYYMMDD')}.parquet",
+            str(forecast_path),
             compression="zstd",
         )
     except Exception:

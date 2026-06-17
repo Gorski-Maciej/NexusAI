@@ -473,68 +473,69 @@ def get_pdf_render_cache() -> PDFRenderCache:
 # ═════════════════════════════════════════════════════════════════════════════
 # OpenTelemetry tracing — timing i liczniki
 # ═════════════════════════════════════════════════════════════════════════════
+# SUPERMOC: Używa start_span() z otel_tracing zamiast ręcznego __enter__/__exit__
+# SUPERMOC: Używa lazy importów dla uniknięcia circular import (core → api)
 
 
 def _get_otel_tracer():
-    try:
-        from opentelemetry import trace
-        return trace.get_tracer("nexus.core.pdfium")
-    except ImportError:
-        return None
+    """Lazy import — unika circular importu między core a api."""
+    from nexus_ai.core.otel_tracing import get_tracer
+    return get_tracer("nexus.core.pdfium")
+
+
+def _start_span(name, tracer_name="nexus.core.pdfium", attributes=None):
+    """Lazy import start_span — unika circular importu."""
+    from nexus_ai.core.otel_tracing import start_span as _ss
+    return _ss(name=name, tracer_name=tracer_name, attributes=attributes)
 
 
 def _record_pdf_metric(name: str, value: float, attributes: dict | None = None) -> None:
+    """Zapisz metrykę PDF do OTel (lazy import — unika circular importu).
+
+    SUPERMOC: Używa istniejącej metryki OCR z telemetry_metrics zamiast tworzyć nowy counter.
+    """
     try:
-        from opentelemetry import metrics
-        meter = metrics.get_meter("nexus.core.pdfium")
-        counter = meter.create_counter(name, description=f"PDF counter: {name}")
-        counter.add(value, attributes or {})
-    except (ImportError, Exception):
+        from nexus_ai.api.telemetry_metrics import record_ocr_duration as _r
+        _r(value / 1000.0)
+    except Exception:
         pass
 
 
 def _timed(func: Callable) -> Callable:
     """Dekorator do mierzenia czasu wykonania z OTel tracingiem.
 
+    SUPERMOC: Używa start_span() context managera z otel_tracing.py
+    zamiast ręcznego __enter__/__exit__ na span.
     FIX: Wyjątki są rejestrowane w span jako zdarzenia.
     """
     import functools
 
     @functools.wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
-        tracer = _get_otel_tracer()
         start = time.time()
-        tracer_span = None
-        if tracer is not None:
-            tracer_span = tracer.start_as_current_span(func.__name__)
-            token = tracer_span.__enter__()
-        try:
-            result = func(*args, **kwargs)
-            if tracer_span is not None:
-                tracer_span.set_attribute("component", "pdfium")
-                tracer_span.set_attribute("duration_ms", (time.time() - start) * 1000)
-            return result
-        except Exception as exc:
-            if tracer_span is not None:
-                tracer_span.record_exception(exc)
-                tracer_span.set_attribute("error", True)
-            raise
-        finally:
-            if tracer_span is not None:
+        with _start_span(
+            name=func.__name__,
+            tracer_name="nexus.core.pdfium",
+            attributes={"component": "pdfium"},
+        ) as span:
+            try:
+                result = func(*args, **kwargs)
+                span.set_attribute("duration_ms", (time.time() - start) * 1000)
+                return result
+            except Exception as exc:
+                span.record_exception(exc)
+                span.set_attribute("error", True)
+                raise
+            finally:
+                duration = (time.time() - start) * 1000
+                logger.opt(lazy=True).debug("[PDFium] {} took {:.2f}ms",
+                    lambda: func.__name__,
+                    lambda: duration,
+                )
                 try:
-                    tracer_span.__exit__(None, None, None)
+                    _record_pdf_metric(f"pdfium.{func.__name__}.duration", duration)
                 except Exception:
                     pass
-            # SUPERMOC Loguru: opt(lazy=True) — duration liczone tylko gdy DEBUG aktywne
-            logger.opt(lazy=True).debug("[PDFium] {} took {:.2f}ms",
-                lambda: func.__name__,
-                lambda: (time.time() - start) * 1000,
-            )
-            duration = (time.time() - start) * 1000
-            try:
-                _record_pdf_metric(f"pdfium.{func.__name__}.duration", duration)
-            except Exception:
-                pass
 
     return wrapper
 

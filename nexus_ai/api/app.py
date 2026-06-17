@@ -268,6 +268,9 @@ def create_app() -> Litestar:
             re.compile(r"/health"),
         ]
 
+    # ── Import metrics debug endpoint ──────────────────────────────
+    from nexus_ai.api.routes.metrics_debug import MetricsDebugController
+
     # ── Prometheus metrics config (zastępuje MetricsMiddleware + MetricsController) ──
     prometheus_config = PrometheusConfig(
         metrics_prefix="nexus",
@@ -281,6 +284,7 @@ def create_app() -> Litestar:
             v2_router,
             unversioned_router,
             PrometheusController,  # Zastępuje MetricsController — wbudowany /metrics
+            MetricsDebugController,  # /debug/metrics — debug endpoint
             progress_sse,  # path="/api/v1/events/progress" — pełna ścieżka
         ],
         plugins=[

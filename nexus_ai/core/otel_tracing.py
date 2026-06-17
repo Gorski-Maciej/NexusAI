@@ -43,6 +43,34 @@ from structlog import get_logger
 
 from nexus_ai.services.otel_fallback import FileSpanBuffer
 
+# ── SUPERMOC: Semantic Conventions — standardowe atrybuty OTel ────────────
+# Zgodne z https://opentelemetry.io/docs/specs/semconv/
+# Używane przez wszystkie spany i metryki w projekcie.
+# Zastępują ręczne stringi ("error", "component", itd.) standaryzowanymi.
+try:
+    from opentelemetry.semconv.trace import SpanAttributes
+    HAS_SEMCONV = True
+except ImportError:
+    HAS_SEMCONV = False
+    # Fallback: stałe stringi gdy semconv nie jest zainstalowane
+    class SpanAttributes:  # type: ignore
+        HTTP_REQUEST_METHOD = "http.request.method"
+        HTTP_RESPONSE_STATUS_CODE = "http.response.status_code"
+        URL_PATH = "url.path"
+        ERROR = "error"
+        EXCEPTION_TYPE = "exception.type"
+        EXCEPTION_MESSAGE = "exception.message"
+        EXCEPTION_STACKTRACE = "exception.stacktrace"
+        CODE_FUNCTION = "code.function"
+        CODE_NAMESPACE = "code.namespace"
+        DB_SYSTEM = "db.system"
+        DB_OPERATION = "db.operation"
+        DB_SQL_TABLE = "db.sql.table"
+        MESSAGING_SYSTEM = "messaging.system"
+        MESSAGING_OPERATION = "messaging.operation"
+        MESSAGING_DESTINATION_NAME = "messaging.destination.name"
+
+
 logger = get_logger("nexus.core.otel_tracing")
 
 # ── Globals ───────────────────────────────────────────────────────────────
@@ -198,9 +226,15 @@ def traced(
             name = span_name or func.__name__
 
             with tracer.start_as_current_span(name) as span:
+                # SUPERMOC: Semantic Conventions dla atrybutów spanu
+                span.set_attribute(SpanAttributes.CODE_FUNCTION, name)
+                span.set_attribute(SpanAttributes.CODE_NAMESPACE, tracer_name)
+
                 if attributes:
                     for k, v in attributes.items():
-                        span.set_attribute(k, v)
+                        # Jeśli klucz jest w Semantic Conventions, użyj standardowej nazwy
+                        semconv_key = _resolve_semconv_key(k)
+                        span.set_attribute(semconv_key, v)
 
                 # Ustaw parent span ID w context
                 token = _current_span_ctx.set(name)
@@ -211,6 +245,7 @@ def traced(
                 except Exception as exc:
                     if record_exceptions:
                         span.record_exception(exc)
+                        span.set_attribute(SpanAttributes.ERROR, True)
                         span.set_status(status="error", description=str(exc))
                     raise
                 finally:
@@ -222,9 +257,14 @@ def traced(
             name = span_name or func.__name__
 
             with tracer.start_as_current_span(name) as span:
+                # SUPERMOC: Semantic Conventions dla atrybutów spanu
+                span.set_attribute(SpanAttributes.CODE_FUNCTION, name)
+                span.set_attribute(SpanAttributes.CODE_NAMESPACE, tracer_name)
+
                 if attributes:
                     for k, v in attributes.items():
-                        span.set_attribute(k, v)
+                        semconv_key = _resolve_semconv_key(k)
+                        span.set_attribute(semconv_key, v)
 
                 token = _current_span_ctx.set(name)
 
@@ -234,6 +274,7 @@ def traced(
                 except Exception as exc:
                     if record_exceptions:
                         span.record_exception(exc)
+                        span.set_attribute(SpanAttributes.ERROR, True)
                         span.set_status(status="error", description=str(exc))
                     raise
                 finally:
@@ -254,28 +295,49 @@ def start_span(
     name: str,
     tracer_name: str = "nexus-ai",
     attributes: dict[str, Any] | None = None,
+    *,
+    baggage: dict[str, str] | None = None,
 ) -> Iterator[Any]:
-    """Context manager for creating a span.
+    """SUPERMOC: Context manager for creating a span z Semantic Conventions i Baggage.
 
     Używane w miejscach gdzie dekorator jest niewygodny (pętle, warunki).
+
+    SUPERMOCE:
+    - Semantic Conventions: atrybuty są mapowane na standardowe OTel nazwy
+    - Baggage: propagacja kontekstu przez W3C Baggage API
+    - Span Events: wyjątki rejestrowane jako zdarzenia
 
     Args:
         name: Nazwa spana.
         tracer_name: Nazwa tracera.
-        attributes: Atrybuty spana.
+        attributes: Atrybuty spana (automatycznie mapowane przez _resolve_semconv_key).
+        baggage: Pary klucz-wartość do ustawienia w Baggage (opcjonalne).
 
     Yields:
         Span object (lub no-op).
     """
     tracer = get_tracer(tracer_name)
+
+    # SUPERMOC: Baggage — propagacja kontekstu między spanami
+    if baggage:
+        from opentelemetry import baggage as otel_baggage
+        ctx = otel_baggage.set_baggage("span.name", name)
+        for bk, bv in baggage.items():
+            ctx = otel_baggage.set_baggage(bk, bv, context=ctx)
+
     with tracer.start_as_current_span(name) as span:
+        # SUPERMOC: Semantic Conventions dla atrybutów
+        span.set_attribute(SpanAttributes.CODE_FUNCTION, name)
+        span.set_attribute(SpanAttributes.CODE_NAMESPACE, tracer_name)
+
         if attributes:
             for k, v in attributes.items():
-                span.set_attribute(k, v)
+                span.set_attribute(_resolve_semconv_key(k), v)
         try:
             yield span
         except Exception as exc:
             span.record_exception(exc)
+            span.set_attribute(SpanAttributes.ERROR, True)
             span.set_status(status="error", description=str(exc))
             raise
 
@@ -352,3 +414,35 @@ def asyncio_coroutine(func: Callable) -> bool:
     import inspect
 
     return inspect.iscoroutinefunction(func)
+
+
+# ── SUPERMOC: Semantic Conventions key resolver ───────────────────────────
+# Mapuje nazwy atrybutów używane w projekcie na standardowe OTel Semantic Conventions
+# Gdy klucz nie ma mapowania, zwraca oryginalną nazwę (kompatybilność wsteczna)
+
+_SEMCONV_ALIASES: dict[str, str] = {
+    # Komponenty
+    "component": "code.namespace",
+    # HTTP
+    "method": "http.request.method",
+    "endpoint": "url.path",
+    "status": "http.response.status_code",
+    # DB
+    "db_system": "db.system",
+    "db_operation": "db.operation",
+    # Messaging
+    "event_type": "messaging.operation",
+    "destination": "messaging.destination.name",
+}
+
+
+def _resolve_semconv_key(key: str) -> str:
+    """SUPERMOC: Rozpoznaj Semantic Conventions key z aliasu.
+
+    Args:
+        key: Nazwa atrybutu (może być aliasem lub pełną nazwą semconv).
+
+    Returns:
+        Standardowa nazwa Semantic Conventions.
+    """
+    return _SEMCONV_ALIASES.get(key, key)

@@ -88,6 +88,45 @@ outbox_relay_events_total: Counter | None = None
 """Counter: Outbox relay events processed (total across all triggers)."""
 
 
+# ── Task execution metrics ──────────────────────────────────────────────────
+
+task_executions_total: Counter | None = None
+"""Counter: Total task executions (labels: task_name, status)."""
+
+task_execution_duration_seconds: Histogram | None = None
+"""Histogram: Task execution duration (label: task_name)."""
+
+active_tasks: Gauge | None = None
+"""Gauge: Current number of active/queued tasks."""
+
+
+# ── EventStore metrics ───────────────────────────────────────────────────────
+
+event_store_events_appended_total: Counter | None = None
+"""Counter: Total events appended to event store (label: aggregate_type)."""
+
+event_store_append_duration_seconds: Histogram | None = None
+"""Histogram: Event store append duration."""
+
+event_store_read_latency_seconds: Histogram | None = None
+"""Histogram: Event store read latency (label: operation)."""
+
+
+# ── System metrics (ObservableGauge) ─────────────────────────────────────────
+
+system_cpu_percent: Any = None
+"""ObservableGauge: CPU usage percent."""
+
+system_memory_percent: Any = None
+"""ObservableGauge: Memory usage percent."""
+
+system_cpu_temperature_celsius: Any = None
+"""ObservableGauge: CPU temperature in Celsius."""
+
+python_gc_collections_total: Any = None
+"""ObservableGauge: Python garbage collector collections by generation."""
+
+
 # ── mimalloc allocator metrics ───────────────────────────────────────────────
 
 mimalloc_heap_committed_bytes: Gauge | None = None
@@ -125,36 +164,46 @@ def init_metrics(meter_name: str = "nexus-ai", version: str = "2.0.0") -> None:
     global hot_reload_events_total, hot_reload_last_event_seconds
     global outbox_relay_events_total
     global mimalloc_leak_detected_total, mimalloc_growth_pct
+    global task_executions_total, task_execution_duration_seconds, active_tasks
+    global event_store_events_appended_total, event_store_append_duration_seconds, event_store_read_latency_seconds
+    global system_cpu_percent, system_memory_percent, system_cpu_temperature_celsius, python_gc_collections_total
 
     if _INITIALIZED:
         return
 
+    # SUPERMOC: Multi-Meter separation — różne komponenty, różne metry
     _METER = metrics.get_meter(meter_name, version)
+    _HTTP_METER = metrics.get_meter("nexus-http", version)
+    _AI_METER = metrics.get_meter("nexus-ai-inference", version)
+    _CACHE_METER = metrics.get_meter("nexus-cache", version)
+    _EVENT_METER = metrics.get_meter("nexus-event-store", version)
+    _TASK_METER = metrics.get_meter("nexus-tasks", version)
+    _SYSTEM_METER = metrics.get_meter("nexus-system", version)
 
-    # ── HTTP ────────────────────────────────────────────────────────────
-    http_requests_total = _METER.create_counter(
+    # ── HTTP (własny meter: nexus-http) ─────────────────────────────────
+    http_requests_total = _HTTP_METER.create_counter(
         name="http_requests_total",
         description="Total number of HTTP requests",
         unit="1",
     )
-    http_request_duration_seconds = _METER.create_histogram(
+    http_request_duration_seconds = _HTTP_METER.create_histogram(
         name="http_request_duration_seconds",
         description="HTTP request duration in seconds",
         unit="s",
     )
-    http_requests_in_flight = _METER.create_up_down_counter(
+    http_requests_in_flight = _HTTP_METER.create_up_down_counter(
         name="http_requests_in_flight",
         description="Current number of in-flight HTTP requests",
         unit="1",
     )
 
-    # ── Business ────────────────────────────────────────────────────────
+    # ── Business (własny meter: nexus-ai-inference) ────────────────────
     invoices_processed_total = _METER.create_counter(
         name="invoices_processed_total",
         description="Total number of processed invoices",
         unit="1",
     )
-    ai_inference_duration_seconds = _METER.create_histogram(
+    ai_inference_duration_seconds = _AI_METER.create_histogram(
         name="ai_inference_duration_seconds",
         description="Duration of AI model inference calls in seconds",
         unit="s",
@@ -167,7 +216,108 @@ def init_metrics(meter_name: str = "nexus-ai", version: str = "2.0.0") -> None:
         unit="s",
     )
 
-    # ── Infrastructure ──────────────────────────────────────────────────
+    # ── Task execution (własny meter: nexus-tasks) ──────────────────────
+    task_executions_total = _TASK_METER.create_counter(
+        name="task_executions_total",
+        description="Total number of task executions",
+        unit="1",
+    )
+    task_execution_duration_seconds = _TASK_METER.create_histogram(
+        name="task_execution_duration_seconds",
+        description="Duration of task execution in seconds",
+        unit="s",
+    )
+    active_tasks = _TASK_METER.create_gauge(
+        name="active_tasks",
+        description="Current number of active tasks",
+        unit="1",
+    )
+
+    # ── EventStore (własny meter: nexus-event-store) ────────────────────
+    event_store_events_appended_total = _EVENT_METER.create_counter(
+        name="event_store_events_appended_total",
+        description="Total events appended to event store",
+        unit="1",
+    )
+    event_store_append_duration_seconds = _EVENT_METER.create_histogram(
+        name="event_store_append_duration_seconds",
+        description="Event store append duration in seconds",
+        unit="s",
+    )
+    event_store_read_latency_seconds = _EVENT_METER.create_histogram(
+        name="event_store_read_latency_seconds",
+        description="Event store read latency in seconds",
+        unit="s",
+    )
+
+    # ── System (własny meter: nexus-system, Observable instruments) ──────
+    # SUPERMOC: ObservableGauge z callbackami — SDK sam odczytuje wartości
+    def _system_cpu_callback():
+        from opentelemetry.metrics import Observation
+        try:
+            import psutil
+            yield Observation(psutil.cpu_percent(), {"type": "overall"})
+        except Exception:
+            pass
+
+    def _system_resource_callback():
+        """SUPERMOC: Multi-instrument callback — jedna funkcja dla RAM, DISK, SWAP."""
+        from opentelemetry.metrics import Observation
+        try:
+            import psutil
+            mem = psutil.virtual_memory()
+            yield Observation(mem.percent, {"resource": "ram"})
+            yield Observation(psutil.disk_usage("/").percent, {"resource": "disk"})
+            swap = psutil.swap_memory()
+            yield Observation(swap.percent, {"resource": "swap"})
+        except Exception:
+            pass
+
+    def _system_temp_callback():
+        from opentelemetry.metrics import Observation
+        try:
+            import psutil
+            temps = psutil.sensors_temperatures()
+            for name, entries in temps.items():
+                for entry in entries:
+                    yield Observation(entry.current, {"sensor": name})
+        except Exception:
+            pass
+
+    def _gc_callback():
+        from opentelemetry.metrics import Observation
+        import gc
+        counts = gc.get_count()
+        yield Observation(counts[0], {"gen": "0"})
+        yield Observation(counts[1], {"gen": "1"})
+        yield Observation(counts[2], {"gen": "2"})
+
+    system_cpu_percent = _SYSTEM_METER.create_observable_gauge(
+        name="system_cpu_percent",
+        description="CPU usage percent",
+        unit="%",
+        callbacks=[_system_cpu_callback],
+    )
+    system_memory_percent = _SYSTEM_METER.create_observable_gauge(
+        name="system_memory_percent",
+        description="Memory/disk/swap usage percent",
+        unit="%",
+        callbacks=[_system_memory_callback],
+    )
+    system_cpu_temperature_celsius = _SYSTEM_METER.create_observable_gauge(
+        name="system_cpu_temperature_celsius",
+        description="CPU temperature in Celsius",
+        unit="°C",
+        callbacks=[_system_temp_callback],
+    )
+    python_gc_collections_total = _SYSTEM_METER.create_observable_counter(
+        name="python_gc_collections_total",
+        description="Python garbage collector collections by generation",
+        unit="1",
+        callbacks=[_gc_callback],
+    )
+
+    # ── Infrastructure (główny meter) ───────────────────────────────────
     nats_events_processed_total = _METER.create_counter(
         name="nats_events_processed_total",
         description="Total number of NATS events processed",
@@ -201,7 +351,7 @@ def init_metrics(meter_name: str = "nexus-ai", version: str = "2.0.0") -> None:
     memory_usage_mb = _METER.create_gauge(
         name="memory_usage_mb",
         description="Current process memory usage in MB",
-        unit="By",
+        unit="MB",
     )
 
     # ── Hot-Reload ──────────────────────────────────────────────────────
@@ -334,10 +484,7 @@ def _detect_and_record_leak(stats: dict) -> None:
             "over last %d samples",
             growth_pct,
             _GLOBAL_LEAK_DETECTOR.window_size,
-        )
-
-
-# ── Convenience recorders (safe to call before init_metrics) ──────────────────
+        )# ── Convenience recorders (safe to call before init_metrics) ──────────────────
 
 
 def record_http_request(method: str, endpoint: str, status: int, duration: float) -> None:
@@ -347,60 +494,105 @@ def record_http_request(method: str, endpoint: str, status: int, duration: float
     if http_request_duration_seconds is not None:
         http_request_duration_seconds.record(duration, {"method": method, "endpoint": endpoint})
 
-
 def record_invoice_processed(status: str = "success") -> None:
     """Record an invoice processing result."""
     if invoices_processed_total is not None:
         invoices_processed_total.add(1, {"status": status})
-
 
 def record_ai_inference(duration_seconds: float, model: str = "unknown") -> None:
     """Record AI inference duration for a specific model."""
     if ai_inference_duration_seconds is not None:
         ai_inference_duration_seconds.record(duration_seconds, {"model_name": model})
 
+def record_ocr_duration(duration_seconds: float, engine: str = "unknown") -> None:
+    """Record OCR processing duration.
 
-def record_ocr_duration(duration_seconds: float) -> None:
-    """Record OCR processing duration."""
+    SUPERMOC FIX: dodano atrybut engine_type dla Prometheus label.
+    Umożliwia porównanie wydajności Tesseract vs PaddleOCR vs EasyOCR vs docTR.
+
+    Args:
+        duration_seconds: Czas przetwarzania OCR w sekundach.
+        engine: Nazwa silnika OCR (tesseract, paddleocr, easyocr, doctr).
+    """
     if ocr_duration_seconds is not None:
-        ocr_duration_seconds.record(duration_seconds)
+        ocr_duration_seconds.record(duration_seconds, {"engine": engine})
 
+def record_task_execution(task_name: str, duration_ms: float, status: str = "SUCCESS") -> None:
+    """SUPERMOC: Record a task execution metric.
+
+    Dedykowana metryka dla tasków — zamiast nadużywania record_ai_inference.
+    Używa osobnego metra nexus-tasks z Multi-Meter separation.
+
+    Args:
+        task_name: Nazwa zadania (np. "process_invoice", "send_to_ksef").
+        duration_ms: Czas wykonania w milisekundach.
+        status: Status wykonania (SUCCESS, FAILED, FAILED_POST_SAVE).
+    """
+    if task_executions_total is not None:
+        task_executions_total.add(1, {"task_name": task_name, "status": status})
+    if task_execution_duration_seconds is not None:
+        task_execution_duration_seconds.record(
+            duration_ms / 1000.0,
+            {"task_name": task_name},
+        )
+
+def set_active_tasks(count: int) -> None:
+    """Set the current number of active tasks."""
+    if active_tasks is not None:
+        active_tasks.set(count)
+
+def record_event_store_append(aggregate_type: str, event_count: int, duration_seconds: float) -> None:
+    """SUPERMOC: Record an event store append operation.
+
+    Args:
+        aggregate_type: Typ agregatu (np. "invoice", "decision").
+        event_count: Liczba zapisanych eventów.
+        duration_seconds: Czas trwania operacji.
+    """
+    if event_store_events_appended_total is not None:
+        event_store_events_appended_total.add(event_count, {"aggregate_type": aggregate_type})
+    if event_store_append_duration_seconds is not None:
+        event_store_append_duration_seconds.record(duration_seconds, {"aggregate_type": aggregate_type})
+
+def record_event_store_read(operation: str, duration_seconds: float) -> None:
+    """SUPERMOC: Record an event store read operation latency.
+
+    Args:
+        operation: Typ operacji (read_events, read_stream, get_version).
+        duration_seconds: Czas trwania operacji.
+    """
+    if event_store_read_latency_seconds is not None:
+        event_store_read_latency_seconds.record(duration_seconds, {"operation": operation})
 
 def record_nats_event(event_type: str, status: str = "processed") -> None:
     """Record a NATS event processing result."""
     if nats_events_processed_total is not None:
         nats_events_processed_total.add(1, {"event_type": event_type, "status": status})
 
-
 def set_db_pool_size(size: int) -> None:
     """Set the current database connection pool size."""
     if db_connection_pool_size is not None:
         db_connection_pool_size.set(size)
-
 
 def set_queue_depth(depth: int) -> None:
     """Set the current NATS queue depth."""
     if queue_depth is not None:
         queue_depth.set(depth)
 
-
 def set_worker_up(up: bool) -> None:
     """Set worker availability gauge."""
     if worker_up is not None:
         worker_up.set(1 if up else 0)
-
 
 def set_nats_up(up: bool) -> None:
     """Set NATS availability gauge."""
     if nats_up is not None:
         nats_up.set(1 if up else 0)
 
-
 def set_memory_usage(mb: float) -> None:
     """Set current process memory usage."""
     if memory_usage_mb is not None:
         memory_usage_mb.set(mb)
-
 
 def record_outbox_relay_triggered(events_count: int) -> None:
     """Record an outbox relay processing trigger.
@@ -410,7 +602,6 @@ def record_outbox_relay_triggered(events_count: int) -> None:
     """
     if outbox_relay_events_total is not None:
         outbox_relay_events_total.add(events_count)
-
 
 def record_hot_reload_event(subject: str) -> None:
     """Record a hot-reload event for the given subject.
