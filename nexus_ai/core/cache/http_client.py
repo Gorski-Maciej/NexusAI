@@ -501,9 +501,8 @@ class CachedHttpClient:
     async def _cb_check(self) -> None:
         """SUPERMOC stamina: Sprawdza stan Circuit Breakera przed wysłaniem żądania.
 
-        Jeśli circuit breaker jest otwarty (stamina.is_active() == False),
-        loguje ostrzeżenie i rzuca stamina.RetryingError — oszczędza czas
-        i zasoby zamiast wysyłać żądanie które i tak by się nie powiodło.
+        Używa stamina.is_active() — publiczne API stamina od v0.1+
+        (udokumentowane w test_stamina_circuit_breaker.py).
         """
         if not stamina.is_active():
             logger.warning(

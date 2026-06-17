@@ -1,21 +1,28 @@
 """
-NexusAI Cache — dyscache multi-level caching layer + hishel HTTP cache.
+NexusAI Cache — multi-level caching layer + hishel HTTP cache.
 
-Zgodnie z aa3fvcx.txt (Punkt 13):
-- dyscache zamiast cachetools / diskcache
-- Natywnie asynchroniczny (anyio)
-- Dwupoziomowy: RAM (L1) + SQLite (L2)
-- Integracja z msgspec dla ultraszybkiej serializacji
+Zgodnie z aa3fvcx.txt (Punkt 13) + AUDYT:
+- CacheBackend ABC z InMemoryBackend, SqliteBackend, RedisBackend
+- NexusCache z pluggable backend (L1 RAM + L2 SQLite/Redis)
 - hishel — inteligentny cache HTTP przez CachedHttpClient
+- NATS distributed cache invalidation
 
-SUPERMOCE HISHEL (Punkt 6):
-  - CachedHttpClient — prekonfigurowany klient z cache'em
-  - create_cached_client() — tworzenie klienta z konfiguracją
-  - create_cached_transport() — transport dla istniejących httpx.AsyncClient
-  - warm_http_cache() — wypełnienie cache przy starcie
-  - get_cache_stats() — monitoring hit/miss ratio
+SUPERMOCE Z AUDYTU:
+  - Pluggable backend przez CacheBackend ABC
+  - InMemoryBackend — thread-safe L1 z LRU eviction
+  - SqliteBackend — async SQLite L2 (prawdziwy async-native)
+  - RedisBackend — rozproszony cache dla multi-instancji
+  - get_or_compute() / get_or_compute_sync() — stampede protection
+  - warm() / warm_sync() — cache warming dla cold start
+  - invalidate_cache() / subscribe_cache_invalidation() — NATS distributed invalidation
 """
 
+from nexus_ai.core.cache.backends import (
+    CacheBackend,
+    InMemoryBackend,
+    SqliteBackend,
+    create_backend,
+)
 from nexus_ai.core.cache.dyscache import NexusCache, get_cache
 from nexus_ai.core.cache.http_client import (
     CachedHttpClient,
@@ -25,9 +32,20 @@ from nexus_ai.core.cache.http_client import (
     reset_cache_stats,
     warm_http_cache,
 )
+from nexus_ai.core.cache.invalidation import (
+    invalidate_cache,
+    subscribe_cache_invalidation,
+)
+from nexus_ai.core.cache.backends_redis import RedisBackend
 
 __all__ = [
-    # NexusCache (L1 RAM + L2 SQLite)
+    # CacheBackend ABC + implementacje
+    "CacheBackend",
+    "InMemoryBackend",
+    "SqliteBackend",
+    "RedisBackend",
+    "create_backend",
+    # NexusCache (L1 RAM + L2 SQLite/Redis)
     "NexusCache",
     "get_cache",
     # hishel HTTP cache (CachedHttpClient)
@@ -37,4 +55,7 @@ __all__ = [
     "warm_http_cache",
     "get_cache_stats",
     "reset_cache_stats",
+    # NATS distributed cache invalidation
+    "invalidate_cache",
+    "subscribe_cache_invalidation",
 ]

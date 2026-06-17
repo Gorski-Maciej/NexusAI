@@ -22,6 +22,25 @@ from msgspec import Struct, toml
 
 from nexus_ai.core.logger import get_logger
 
+
+# ── Helper: deep merge dwóch słowników (base ← env-specific) ───────────────
+# SUPERMOC TOML: Łączy config/base.toml z config/{env}.toml.
+# env-specific wartości nadpisują base. Sekcje są mergowane rekurencyjnie.
+
+
+def deep_merge(base: dict[str, Any], override: dict[str, Any]) -> None:
+    """Rekurencyjne scalanie słowników — override nadpisuje base.
+
+    Args:
+        base: Słownik bazowy (modyfikowany in-place).
+        override: Słownik nadpisujący.
+    """
+    for key, value in override.items():
+        if key in base and isinstance(base[key], dict) and isinstance(value, dict):
+            deep_merge(base[key], value)
+        else:
+            base[key] = value
+
 logger = get_logger(__name__)
 
 ENV_CONFIG_DIR: Path = Path(__file__).resolve().parent.parent / "config"
@@ -37,16 +56,17 @@ zawiera {env}.toml, protocols.toml, models_manifest.json, version.json.
 
 
 class ConfigLoader:
-    """Automatyczny loader config TOML z mtime-based auto-reload.
+    """SUPERMOC TOML: Zaawansowany loader config z merge base.toml + {env}.toml.
 
-    Śledzi zmiany w config/{env}.toml (lub niestandardowym pliku) na podstawie
-    st_mtime. Po wykryciu zmiany:
-      1. Ponownie parsuje plik TOML
-      2. Aktualizuje os.environ (nadpisuje istniejące wartości)
-      3. Wywołuje zarejestrowane callbacki
+    SUPERMOC TOML:
+    - Ładuje config/base.toml jako bazę (wspólne wartości)
+    - Nadpisuje config/{env}.toml (środowiskowe wartości)
+    - mtime-based auto-reload dla obu plików
+    - Aktualizuje os.environ po każdej zmianie
 
     Args:
         path: Ścieżka do pliku TOML. Domyślnie config/{NEXUS_ENV}.toml.
+              UWAGA: base.toml jest ładowany automatycznie przed env-specific.
         auto_reload: Jak często sprawdzać mtime.
                      False (domyślnie) — nigdy, tylko przy pierwszym dostępie.
                      True — co 5 sekund.
@@ -60,9 +80,11 @@ class ConfigLoader:
     ) -> None:
         if path is not None:
             self._path = Path(path)
+            self._base_path: Path | None = None
         else:
             env = os.getenv("NEXUS_ENV", "dev").lower().strip()
             self._path = ENV_CONFIG_DIR / f"{env}.toml"
+            self._base_path = ENV_CONFIG_DIR / "base.toml"
 
         self._data: dict[str, Any] | None = None
         self._last_mtime: float = 0.0
@@ -155,19 +177,30 @@ class ConfigLoader:
             return self._data
 
         try:
+            # 1. Załaduj base.toml (wspólne wartości)
+            merged: dict[str, Any] = {}
+            if self._base_path and self._base_path.exists():
+                with open(self._base_path, "rb") as f:
+                    base_raw = toml.decode(f.read())
+                if isinstance(base_raw, dict):
+                    merged = base_raw
+
+            # 2. Załaduj env-specific config i nadpisz
             with open(self._path, "rb") as f:
-                raw = toml.decode(f.read())
-            self._data = raw if isinstance(raw, dict) else {}
+                env_raw = toml.decode(f.read())
+            if isinstance(env_raw, dict):
+                deep_merge(merged, env_raw)
+
+            self._data = merged
             self._last_mtime = self._path.stat().st_mtime
 
             # Aktualizuj os.environ nowymi wartościami
             self._apply_to_environ(self._data)
 
             logger.info(
-                "[ConfigLoader] Loaded %d sections from %s (mtime=%s)",
+                "[ConfigLoader] Loaded+merged %d sections (base + %s)",
                 len(self._data),
                 self._path.name,
-                self._last_mtime,
             )
 
             # Powiadom callbacki o zmianie
@@ -268,42 +301,61 @@ from msgspec import Meta
 class _AppSection(Struct, kw_only=True):
     """msgspec schema dla sekcji [app] w config/{env}.toml.
 
-    Wszystkie pola opcjonalne — Struct użyje defaultów zdefiniowanych
-    w AppConfig jeśli wartość nie występuje w TOML.
-
-    Używa ``Annotated[T, Meta(ge=..., le=...)]`` dla walidacji zakresów
-    przy parsowaniu TOML przez msgspec — błędy są łapane i logowane,
-    aplikacja używa bezpiecznych defaultów.
+    SUPERMOC TOML: Wszystkie pola z ``Annotated[T, Meta(ge=..., le=...)]``
+    są walidowane przy parsowaniu przez msgspec. Błędy zakresu → logowane,
+    aplikacja używa bezpiecznych defaultów z AppConfig.
     """
 
+    # ── Core ──
     environment: str | None = None
     base_dir: str | None = None
+    host: str | None = None
+    port: Annotated[int | None, Meta(ge=1, le=65535)] = None
+    log_level: str | None = None
+    debug: bool | None = None
+
+    # ── JWT ──
     jwt_expiration_seconds: Annotated[int | None, Meta(ge=60, le=86400)] = None
     refresh_token_days: Annotated[int | None, Meta(ge=1, le=365)] = None
     jwt_issuer: str | None = None
     jwt_audience: str | None = None
     csrf_enabled: bool | None = None
-    db_pool_size: Annotated[int | None, Meta(ge=1, le=100)] = None
-    db_pool_overflow: Annotated[int | None, Meta(ge=0, le=200)] = None
-    nats_max_reconnect: Annotated[int | None, Meta(ge=0, le=100)] = None
-    nats_reconnect_delay_seconds: Annotated[float | None, Meta(ge=0.1, le=60)] = None
-    max_task_retries: Annotated[int | None, Meta(ge=0, le=20)] = None
-    retry_backoff_base_seconds: Annotated[float | None, Meta(ge=0.1, le=30)] = None
-    retry_backoff_max_seconds: Annotated[float | None, Meta(ge=1.0, le=300)] = None
+
+    # ── Database ──
     sqlite_file: str | None = None
     duckdb_file: str | None = None
     storage_dir: str | None = None
     idempotency_db: str | None = None
-    debug: bool | None = None
     sqlcipher_key_env: str | None = None
     duckdb_memory_limit: str | None = None
     duckdb_threads: Annotated[int | None, Meta(ge=1, le=64)] = None
+
+    # ── CORS ──
     cors_origins: str | None = None
+
+    # ── Connection pools ──
+    db_pool_size: Annotated[int | None, Meta(ge=1, le=100)] = None
+    db_pool_overflow: Annotated[int | None, Meta(ge=0, le=200)] = None
+    nats_max_reconnect: Annotated[int | None, Meta(ge=0, le=100)] = None
+    nats_reconnect_delay_seconds: Annotated[float | None, Meta(ge=0.1, le=60)] = None
+
+    # ── Upload limits ──
     max_invoice_upload_mb: Annotated[int | None, Meta(ge=1, le=1000)] = None
     max_attachment_upload_mb: Annotated[int | None, Meta(ge=1, le=10000)] = None
+
+    # ── Retry (stamina) ──
+    max_task_retries: Annotated[int | None, Meta(ge=0, le=20)] = None
+    retry_backoff_base_seconds: Annotated[float | None, Meta(ge=0.1, le=30)] = None
+    retry_backoff_max_seconds: Annotated[float | None, Meta(ge=1.0, le=300)] = None
+
+    # ── Outbox ──
     outbox_replay_limit: Annotated[int | None, Meta(ge=1, le=10000)] = None
+
+    # ── Migration ──
     migration_baseline_file: str | None = None
     migration_checksum_baseline_file: str | None = None
+
+    # ── Decision Engine ──
     autopilot_auto_post_threshold: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
     autopilot_suggest_threshold: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
     autopilot_ask_threshold: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
@@ -379,11 +431,78 @@ class _IntegrationsSection(Struct, kw_only=True):
     dpo_alert_webhook: str | None = None
 
 
+# ── NOWE SEKCJE TOML (FAZA 1 AUDYTU) ─────────────────────────────────
+
+class _TaxSection(Struct, kw_only=True):
+    """msgspec schema dla sekcji [tax] w config/{env}.toml.
+
+    SUPERMOC: Walidacja typów i zakresów przez msgspec.
+    Sekcja [tax] istnieje w dev.toml i prod.toml, ale była
+    wcześniej ignorowana przez typed schema — parsowana tylko jako dict.
+    """
+    default_vat_rate: Annotated[int | None, Meta(ge=0, le=100)] = None
+    cit_rate: Annotated[float | None, Meta(ge=0, le=100)] = None
+    linear_rate: Annotated[float | None, Meta(ge=0, le=100)] = None
+    lump_sum_rates: list[float] | None = None
+    vat_exempt_threshold: Annotated[float | None, Meta(ge=0)] = None
+    vat_quarterly_threshold: Annotated[float | None, Meta(ge=0)] = None
+
+
+class _ForexSection(Struct, kw_only=True):
+    """msgspec schema dla sekcji [forex] w config/{env}.toml."""
+    enabled: bool | None = None
+    nbp_api_url: str | None = None
+    max_lookback_days: Annotated[int | None, Meta(ge=1, le=365)] = None
+    http_timeout_sec: Annotated[float | None, Meta(ge=1, le=60)] = None
+    rate_cache_maxsize: Annotated[int | None, Meta(ge=1, le=10000)] = None
+    refresh_interval_hours: Annotated[int | None, Meta(ge=1, le=168)] = None
+    default_currencies: str | None = None
+    missing_date_ttl_days: Annotated[int | None, Meta(ge=1, le=365)] = None
+
+
+class _AiSection(Struct, kw_only=True):
+    """msgspec schema dla sekcji [ai] w config/{env}.toml.
+
+    Zgodnie z audytem: ścieżki modeli AI zdefiniowane w TOML zamiast
+    w kodzie. Walidacja przez msgspec przy starcie.
+    """
+    council_alpha_model: str | None = None
+    council_beta_model: str | None = None
+    council_gamma_model: str | None = None
+    rules_model: str | None = None
+    analytics_model: str | None = None
+    decision_jamba_model: str | None = None
+    decision_granite_model: str | None = None
+    orchestrator_model: str | None = None
+    ocr_model: str | None = None
+    vision_model: str | None = None
+    embedding_model: str | None = None
+
+
+class _TigerbeetleSection(Struct, kw_only=True):
+    """msgspec schema dla sekcji [tigerbeetle] w config/{env}.toml."""
+    cluster_id: int | None = None
+    replica_addresses: str | None = None
+
+
 class _TomlConfigRoot(Struct, kw_only=True):
     """msgspec schema dla całego pliku config/{env}.toml.
 
-    msgspec.toml.decode(..., type=_TomlConfigRoot) zwaliduje typy
-    wszystkich wartości i rzuci DecodeError/ValidationError przy błędzie.
+    SUPERMOC TOML: 10 sekcji z typowaną walidacją (msgspec.Struct),
+    zakresami (Annotated[T, Meta(ge=..., le=...)]) i wartościami
+    domyślnymi. Każdy błąd typu → logowany przy starcie.
+
+    Sekcje:
+    - app: konfiguracja aplikacji (host, port, JWT, DB, decision engine)
+    - nats: NATS JetStream broker
+    - stamina: resilience (retry, circuit breaker)
+    - storage: fsspec filesystem abstraction
+    - security: Litestar security (JWT exclude, CSRF, rate limit)
+    - integrations: zewnętrzne API webhooki
+    - tax: konfiguracja podatkowa (VAT, CIT, ryczałt)
+    - forex: kursy walut NBP
+    - ai: ścieżki modeli AI
+    - tigerbeetle: double-entry ledger
     """
 
     app: _AppSection | None = None
@@ -392,6 +511,10 @@ class _TomlConfigRoot(Struct, kw_only=True):
     storage: _StorageSection | None = None
     security: _SecuritySection | None = None
     integrations: _IntegrationsSection | None = None
+    tax: _TaxSection | None = None
+    forex: _ForexSection | None = None
+    ai: _AiSection | None = None
+    tigerbeetle: _TigerbeetleSection | None = None
 
 
 # ── Legacyjne funkcje ładowania (kompatybilność wsteczna) ────────────────
@@ -405,10 +528,16 @@ def _load_toml_profile(environment: str) -> None:
        Ta funkcja jest zachowana dla kompatybilności wstecznej — ładuje config
        tylko raz przy imporcie, bez auto-reload.
 
+    SUPERMOC TOML: Ładuje config/base.toml jako bazę, potem nadpisuje
+    config/{env}.toml. Wspólne sekcje (tax, forex, ai, tigerbeetle, security)
+    są definiowane RAZ w base.toml zamiast duplikować w dev.toml i prod.toml.
+
     Ustawia zmienne w os.environ (kompatybilność wsteczna z kodem używającym os.getenv).
     Mapowanie: TOML {"core": {"debug": true}} → NEXUS_DEBUG=1
     """
     profile_path = ENV_CONFIG_DIR / f"{environment}.toml"
+    base_path = ENV_CONFIG_DIR / "base.toml"
+
     if not profile_path.exists():
         legacy_path = ENV_CONFIG_DIR / f"{environment}.env"
         if legacy_path.exists():
@@ -416,11 +545,22 @@ def _load_toml_profile(environment: str) -> None:
         return
 
     try:
+        # 1. Załaduj base.toml (wspólne wartości dla wszystkich środowisk)
+        merged: dict[str, Any] = {}
+        if base_path.exists():
+            with open(base_path, "rb") as f:
+                base_raw = toml.decode(f.read())
+            if isinstance(base_raw, dict):
+                merged = base_raw
+
+        # 2. Załaduj env-specific i nadpisz
         with open(profile_path, "rb") as f:
-            data: dict[str, Any] = toml.decode(f.read())
+            env_raw = toml.decode(f.read())
+        if isinstance(env_raw, dict):
+            deep_merge(merged, env_raw)
 
         loaded = 0
-        for _section, section_data in data.items():
+        for _section, section_data in merged.items():
             if isinstance(section_data, dict):
                 for key, value in section_data.items():
                     env_key = key.upper()
@@ -641,67 +781,70 @@ class AppConfig(Struct, kw_only=True):
         "decision_timeout_seconds": "NEXUS_DECISION_TIMEOUT",
     }
 
-    # ── AppConfig field → (toml_section, toml_field) mapping ──
-    # Fazа 2: Używany przez _resolve_field_value do odczytu z _TomlConfigRoot.
-    # Stała klasowa — tworzona raz, nie przy każdym wywołaniu.
-    _TOML_FIELD_MAP: ClassVar[dict[str, tuple[str, str]]] = {
-        "environment": ("app", "environment"),
-        "base_dir": ("app", "base_dir"),
-        "jwt_expiration_seconds": ("app", "jwt_expiration_seconds"),
-        "refresh_token_days": ("app", "refresh_token_days"),
-        "jwt_issuer": ("app", "jwt_issuer"),
-        "jwt_audience": ("app", "jwt_audience"),
-        "csrf_enabled": ("app", "csrf_enabled"),
-        "db_pool_size": ("app", "db_pool_size"),
-        "db_pool_overflow": ("app", "db_pool_overflow"),
-        "nats_max_reconnect": ("app", "nats_max_reconnect"),
-        "nats_reconnect_delay_seconds": ("app", "nats_reconnect_delay_seconds"),
-        "max_task_retries": ("app", "max_task_retries"),
-        "retry_backoff_base_seconds": ("app", "retry_backoff_base_seconds"),
-        "retry_backoff_max_seconds": ("app", "retry_backoff_max_seconds"),
+    # ── Rejestr sekcji TOML dla auto-mapowania ──
+    # SUPERMOC: Zastępuje ręczny _TOML_FIELD_MAP (34 linie) auto-mapowaniem
+    # przez msgspec.inspect. Każda nowa sekcja → dodajesz tylko wpis tutaj.
+    # Klucz: nazwa sekcji w TOML, Wartość: klasa Struct + prefix env var.
+    _TOML_SECTIONS: ClassVar[dict[str, tuple[type[Struct], str]]] = {
+        "app": (_AppSection, "NEXUS_"),
+        "nats": (_NatsSection, "NEXUS_NATS_"),
+        "stamina": (_StaminaSection, "NEXUS_STAMINA_"),
+        "storage": (_StorageSection, "NEXUS_STORAGE_"),
+        "security": (_SecuritySection, "NEXUS_SECURITY_"),
+        "integrations": (_IntegrationsSection, "NEXUS_INTEGRATIONS_"),
+        "tax": (_TaxSection, "NEXUS_TAX_"),
+        "forex": (_ForexSection, "NEXUS_FOREX_"),
+        "ai": (_AiSection, "NEXUS_AI_"),
+        "tigerbeetle": (_TigerbeetleSection, "NEXUS_TB_"),
+    }
+
+    # ── Auto-generowane mapowanie Struct field → (toml_section, toml_field) ──
+    # SUPERMOC: Wygenerowane z _TOML_SECTIONS przez _build_field_map().
+    # Zastępuje ręczny _TOML_FIELD_MAP (34+ linii) auto-mapowaniem.
+    # Każda nowa sekcja w TOML → dodaj do _TOML_SECTIONS → reszta auto.
+    _TOML_FIELD_MAP: ClassVar[dict[str, tuple[str, str]]] = {}
+
+    # Manualne nadpisania dla pól gdzie AppConfig nazwa ≠ TOML Struct nazwa
+    # SUPERMOC: Auto-map generuje wpisy z _TOML_SECTIONS, ten dict nadpisuje
+    # tylko te pola, gdzie nazwy się różnią (np. sqlite_file_name → sqlite_file).
+    _TOML_OVERRIDES: ClassVar[dict[str, tuple[str, str]]] = {
         "sqlite_file_name": ("app", "sqlite_file"),
         "duckdb_file_name": ("app", "duckdb_file"),
         "storage_dir_name": ("app", "storage_dir"),
         "idempotency_db_name": ("app", "idempotency_db"),
-        "debug": ("app", "debug"),
-        "sqlcipher_key_env": ("app", "sqlcipher_key_env"),
-        "duckdb_memory_limit": ("app", "duckdb_memory_limit"),
-        "duckdb_threads": ("app", "duckdb_threads"),
         "cors_origins_raw": ("app", "cors_origins"),
-        "max_invoice_upload_mb": ("app", "max_invoice_upload_mb"),
-        "max_attachment_upload_mb": ("app", "max_attachment_upload_mb"),
-        "dpo_alert_webhook": ("integrations", "dpo_alert_webhook"),
-        "outbox_replay_limit": ("app", "outbox_replay_limit"),
         "migration_baseline_name": ("app", "migration_baseline_file"),
         "migration_checksum_baseline_name": ("app", "migration_checksum_baseline_file"),
-        "autopilot_auto_post_threshold": ("app", "autopilot_auto_post_threshold"),
-        "autopilot_suggest_threshold": ("app", "autopilot_suggest_threshold"),
-        "autopilot_ask_threshold": ("app", "autopilot_ask_threshold"),
-        "autopilot_adaptation_enabled": ("app", "autopilot_adaptation_enabled"),
-        "autopilot_adaptation_learning_rate": ("app", "autopilot_adaptation_learning_rate"),
-        "autopilot_low_amount_threshold": ("app", "autopilot_low_amount_threshold"),
-        "rules_max_invoice_amount": ("app", "rules_max_invoice_amount"),
-        "rules_require_nip_validation": ("app", "rules_require_nip_validation"),
-        "analytics_anomaly_threshold": ("app", "analytics_anomaly_threshold"),
         "nats_url": ("nats", "url"),
-        "decision_timeout_seconds": ("app", "decision_timeout_seconds"),
-        # SUPERMOC: stamina global settings
         "stamina_retry_attempts": ("stamina", "retry_attempts"),
         "stamina_retry_timeout": ("stamina", "retry_timeout"),
         "stamina_circuit_breaker_enabled": ("stamina", "circuit_breaker_enabled"),
         "stamina_circuit_breaker_cooldown": ("stamina", "circuit_breaker_cooldown"),
-        # SUPERMOC: fsspec global settings
         "storage_protocol": ("storage", "protocol"),
         "storage_root": ("storage", "root"),
         "storage_auto_mkdir": ("storage", "auto_mkdir"),
         "storage_cache_size_mb": ("storage", "cache_size_mb"),
-        # SUPERMOC: Litestar Security settings
-        "jwt_exclude_paths": ("security", "jwt_exclude_paths"),
-        "csrf_exclude_patterns": ("security", "csrf_exclude_patterns"),
-        "rate_limit_auth": ("security", "rate_limit_auth"),
-        "rate_limit_upload": ("security", "rate_limit_upload"),
-        "rate_limit_general": ("security", "rate_limit_general"),
     }
+
+    @classmethod
+    def _build_field_map(cls) -> dict[str, tuple[str, str]]:
+        """SUPERMOC TOML: Auto-generuj mapowanie Struct→TOML z __struct_fields__.
+
+        Zamiast ręcznego _TOML_FIELD_MAP (34 linii), przeglądamy wszystkie
+        zarejestrowane sekcje i ich pola Struct, generując mapowanie
+        (field_name → (section_name, field_name)).
+
+        Returns:
+            Słownik {field_name: (section_name, field_name)}.
+        """
+        result: dict[str, tuple[str, str]] = {}
+        for section_name, (section_cls, _) in cls._TOML_SECTIONS.items():
+            try:
+                for field in msgspec.inspect(section_cls).fields:
+                    result[field.name] = (section_name, field.name)
+            except Exception:
+                continue
+        return result
 
     @classmethod
     def _load_toml_file(cls, env: str | None = None) -> _TomlConfigRoot:
@@ -844,6 +987,12 @@ class AppConfig(Struct, kw_only=True):
             env = os.getenv("NEXUS_ENV", "dev").lower().strip()
 
         toml_root = cls._load_toml_file(env)
+        # Auto-generuj _TOML_FIELD_MAP jeśli pusty (pierwsze wywołanie)
+        if not cls._TOML_FIELD_MAP:
+            cls._TOML_FIELD_MAP.update(cls._build_field_map())
+            # Nadpisz manualnymi override'ami (pola z różnymi nazwami)
+            cls._TOML_FIELD_MAP.update(cls._TOML_OVERRIDES)
+
         kwargs: dict[str, Any] = {}
 
         for field_name in cls.__struct_fields__:

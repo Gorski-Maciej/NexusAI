@@ -63,8 +63,13 @@ class ForexEngine:
     - pendulum (zastępuje datetime)
     """
 
-    _rate_nexus = get_cache()
-    _missing_nexus = get_cache()
+    # SUPERMOC AUDYT: Jeden singleton NexusCache zamiast dwóch osobnych instancji.
+    # Poprzednio: _rate_nexus = get_cache() i _missing_nexus = get_cache()
+    # Każda tworzyła OSOBNĄ instancję z własnym L1 RAM.
+    # Teraz: jeden współdzielony singleton z różnymi prefiksami kluczy.
+    # To oszczędza pamięć RAM i poprawia LRU eviction (wszystkie klucze
+    # w jednym OrderedDict zamiast dwóch).
+    _forex_cache = get_cache()
 
     def __init__(
         self,
@@ -108,7 +113,7 @@ class ForexEngine:
 
     def _known_in_cache(self, currency_code: str, rate_date: date) -> Decimal | None:
         key = f"fx_rate:{currency_code}:{rate_date}"
-        cached = self._rate_nexus.get_sync(key)
+        cached = self._forex_cache.get_sync(key)
         if cached is not None:
             return Decimal(str(cached))
         rows = self.duckdb.execute(
@@ -117,26 +122,26 @@ class ForexEngine:
         )
         if rows:
             rate = Decimal(str(rows[0][0]))
-            self._rate_nexus.set_sync(key, str(rate))
+            self._forex_cache.set_sync(key, str(rate))
             return rate
         return None
 
     def _is_date_missing(self, currency_code: str, rate_date: date) -> bool:
         cache_key = f"fx_missing:{currency_code}:{rate_date}"
-        if self._missing_nexus.get_sync(cache_key) is not None:
+        if self._forex_cache.get_sync(cache_key) is not None:
             return True
         rows = self.duckdb.execute(
             "SELECT 1 FROM exchange_rates WHERE currency_code = ? AND rate_date = ? AND is_missing = TRUE",
             (currency_code, rate_date),
         )
         if rows:
-            self._missing_nexus.set_sync(cache_key, True)
+            self._forex_cache.set_sync(cache_key, True)
             return True
         return False
 
     def _mark_as_missing(self, currency_code: str, rate_date: date) -> None:
         cache_key = f"fx_missing:{currency_code}:{rate_date}"
-        self._missing_nexus.set_sync(cache_key, True)
+        self._forex_cache.set_sync(cache_key, True)
         self.duckdb.execute(
             """INSERT OR REPLACE INTO exchange_rates(currency_code, rate_date, avg_rate, is_missing)
                VALUES (?, ?, 0.0, TRUE)""",
@@ -167,7 +172,7 @@ class ForexEngine:
 
         # 1. Sprawdź NexusCache (L1 RAM)
         cache_key = f"fx_rate:{currency_code}:{target_date}"
-        cached = self._rate_nexus.get_sync(cache_key)
+        cached = self._forex_cache.get_sync(cache_key)
         if cached is not None:
             return Decimal(str(cached))
 
@@ -195,14 +200,14 @@ class ForexEngine:
         )
         if result and result[0][0] is not None:
             rate = Decimal(str(result[0][0]))
-            self._rate_nexus.set_sync(cache_key, str(rate))
+            self._forex_cache.set_sync(cache_key, str(rate))
             return rate
 
         # 3. SUPERMOC: DuckDB httpfs czyta NBP API bezpośrednio
         #    Zero Pythona — DuckDB robi HTTP GET + JSON parse + INSERT
         try:
             rate = self._fetch_nbp_via_httpfs(currency_code, target_date, max_lookback_days)
-            self._rate_nexus.set_sync(cache_key, str(rate))
+            self._forex_cache.set_sync(cache_key, str(rate))
             return rate
         except Exception:
             # Fallback: ostatni znany kurs
@@ -214,7 +219,7 @@ class ForexEngine:
             )
             if last_known:
                 rate = Decimal(str(last_known[0][0]))
-                self._rate_nexus.set_sync(cache_key, str(rate))
+                self._forex_cache.set_sync(cache_key, str(rate))
                 return rate
             return Decimal("1.0")
 
@@ -377,7 +382,7 @@ class ForexEngine:
         for i in range(len(currencies)):
             if currencies[i] and date_strs[i]:
                 cache_key = f"fx_rate:{currencies[i]}:{date_strs[i]}"
-                self._rate_nexus.set_sync(cache_key, str(rates[i]))
+                self._forex_cache.set_sync(cache_key, str(rates[i]))
 
         return {"imported": imported, "errors": errors}
 

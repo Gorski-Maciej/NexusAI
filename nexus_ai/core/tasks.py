@@ -68,7 +68,10 @@ class TimedModelCache:
     def release(self, key: str) -> None:
         with self._lock:
             self._models.pop(key, None)
-        self._nexus._ram_cache.pop(f"_model_cache_ttl:{key}", None)
+        # SUPERMOC AUDYT: Użyj publicznego API clear_l1_sync zamiast _ram_cache.pop
+        # - clear_l1_sync czyści klucz z L1 (RAM) bez naruszania enkapsulacji
+        # - Działa z każdym CacheBackend (InMemoryBackend, SqliteBackend, RedisBackend)
+        self._nexus.clear_l1_sync(f"_model_cache_ttl:{key}")
 
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps

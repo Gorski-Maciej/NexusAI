@@ -1,0 +1,81 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# config/base.toml — NexusAI Shared Base Configuration
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# SUPERMOC TOML: Wspólna konfiguracja bazowa dla wszystkich środowisk.
+# Dev i prod nadpisują tylko to, co się różni (deduplikacja).
+#
+# Ładowane przez: ConfigLoader (core/config.py) — base.toml → {env}.toml
+# Kolejność: base.toml (bazowe) → dev.toml/prod.toml (nadpisania)
+#
+# Korzyści:
+# - [tax], [forex], [security] zdefiniowane RAZ, nie 2×
+# - Mniej duplikacji między dev a prod
+# - Zmiana stawki VAT → edytujesz jeden plik
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[tax]
+# ── Tax configuration (wspólne dla dev i prod) ──
+default_vat_rate = 23
+cit_rate = 19
+linear_rate = 12
+lump_sum_rates = [2.0, 3.0, 5.5, 8.5, 12.0, 15.0, 17.0]
+vat_exempt_threshold = 200000.0
+vat_quarterly_threshold = 2000000.0
+
+[forex]
+# ── Forex configuration (wspólne) ──
+enabled = true
+nbp_api_url = "https://api.nbp.pl/api/exchangerates/rates/A/{currency}/{date}/?format=json"
+max_lookback_days = 5
+rate_cache_maxsize = 1000
+refresh_interval_hours = 24
+default_currencies = "EUR,USD,GBP,CHF,CZK,SEK,NOK,HUF"
+missing_date_ttl_days = 30
+
+[security]
+# ── Litestar security (wspólne) ──
+jwt_exclude_paths = [
+    "/api/auth/login",
+    "/api/auth/register",
+    "/api/auth/refresh",
+    "/api/auth/csrf-token",
+    "/api/auth/reset-password",
+    "/api/auth/reset-password/confirm",
+    "/api/auth/confirm",
+    "/api/v1/health",
+    "/api/v2/health",
+    "/schema/openapi.yml",
+    "/schema/swagger",
+]
+csrf_exclude_patterns = ["/api/auth/", "/health"]
+rate_limit_auth = 10
+rate_limit_upload = 30
+rate_limit_general = 60
+
+[ai]
+# ── AI Models (wspólne ścieżki) ──
+council_alpha_model = "models/LFM2.5-1.2B-Q4_K_M.gguf"
+council_beta_model = "models/Qwen3-0.6B-Q4_K_M.gguf"
+council_gamma_model = "models/LittleLamb-0.3B-Q4_K_M.gguf"
+rules_model = "models/granite-4.0-1b-nano-Q4_K_M.gguf"
+analytics_model = "models/qwen2.5-1.5b-instruct-Q4_K_M.gguf"
+decision_jamba_model = "models/Jamba-Reasoning-3B-Q4_K_M.gguf"
+decision_granite_model = "models/granite-4.0-1b-nano-Q4_K_M.gguf"
+orchestrator_model = "models/LittleLamb-0.3B-Q4_K_M.gguf"
+ocr_model = "models/LightOnOCR-1B-Q4_K_M.gguf"
+vision_model = "models/Phi-3-mini-3.8B-Q4_K_M.gguf"
+embedding_model = "models/bge-small-en-v1.5-Q4_K_M.gguf"
+
+[tigerbeetle]
+# ── TigerBeetle ledger (wspólne) ──
+cluster_id = 0
+replica_addresses = "3000"
+
+[integrations]
+# ── External API endpoints (wspólne) ──
+nbp_api_url = "https://api.nbp.pl/api/exchangerates/rates/a/"
+ksef_api_url = "https://ksef.mf.gov.pl/api/"
+gus_bir_api_url = "https://wyszukiwarka.ceidg.gov.pl/CEIDG"
+white_list_api_url = "https://wl-api.mf.gov.pl/api/"
+dpo_alert_webhook = ""
