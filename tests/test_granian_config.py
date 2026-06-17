@@ -16,9 +16,11 @@ from pathlib import Path
 import pytest
 
 
-@pytest.mark.anyio
 class TestGranianConfig:
-    """Testy konfiguracji Granian z server.py."""
+    """Testy konfiguracji Granian z server.py.
+
+    UWAGA: Wszystkie testy są synchroniczne — brak @pytest.mark.anyio.
+    """
 
     def test_server_py_has_run_backend(self) -> None:
         """Sprawdź czy server.py zawiera run_backend()."""

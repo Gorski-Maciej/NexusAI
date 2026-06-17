@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+import pendulum
 from pathlib import Path
 
 from nexus_ai.services.otel_fallback import FileSpanBuffer
@@ -8,7 +8,7 @@ from nexus_ai.services.otel_fallback import FileSpanBuffer
 
 def test_file_span_buffer_append_read_clear(tmp_path: Path) -> None:
     buffer = FileSpanBuffer(tmp_path / 'buffer.jsonl')
-    now = datetime.now(timezone.utc)
+    now = pendulum.now("UTC")
     buffer.append('trace-1', 'invoice.processed', start_ts=now, end_ts=now, attributes={'ok': True})
     records = buffer.read_all()
     assert len(records) == 1
@@ -20,7 +20,7 @@ def test_file_span_buffer_append_read_clear(tmp_path: Path) -> None:
 def test_file_span_buffer_replay_partial_success(tmp_path: Path) -> None:
     mod = _load_module()
     buffer = mod.FileSpanBuffer(tmp_path / 'buffer.jsonl')
-    now = datetime.now(timezone.utc)
+    now = pendulum.now("UTC")
     buffer.append('trace-1', 'a', start_ts=now, end_ts=now, attributes={})
     buffer.append('trace-2', 'b', start_ts=now, end_ts=now, attributes={})
 

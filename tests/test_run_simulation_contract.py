@@ -14,6 +14,10 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any
 
+# ── SUPERMOC: pytestmark — anyio na poziomie modułu zamiast per-function ───
+pytestmark = pytest.mark.anyio
+
+
 from nexus_ai.services.tax_simulator import TaxSimulator
 
 

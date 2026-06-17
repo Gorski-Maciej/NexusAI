@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from uuid import uuid4 as _uuid4
+import os
+import uuid
 
 from nexus_crypto import verify_jwt as _verify_jwt_rust
 
+import structlog
 from litestar.middleware import AbstractMiddleware
 
 from nexus_ai.core.logger import get_logger
@@ -47,17 +49,21 @@ def _tenant_from_bearer_auth(authorization_header: str | None) -> str | None:
 
 
 class TenantContextMiddleware(AbstractMiddleware):
-    """Ustawia ``correlation_id`` i ``tenant_id`` w ContextVar dla każdego requestu.
+    """SUPERMOC structlog: Ustawia contextvars dla każdego requestu.
+
+    Zamiast własnej ContextVar (correlation_id_ctx), używa:
+      - structlog.contextvars.clear_contextvars() — czyszczenie przed nowym requestem
+      - structlog.contextvars.bind_contextvars() — wiązanie kontekstu
+      - structlog.contextvars.merge_contextvars — automatyczne wzbogacanie logów
+
+    Dzięki temu każdy ``logger.info("msg")`` w całym projekcie automatycznie
+    zawiera: correlation_id, tenant_id, request_id, path, method.
+    Żaden plik nie musi robić ``logger.bind()`` — contextvars robi to za nich.
 
     Zastępuje ``CorrelationAndDeprecationMiddleware`` po przeniesieniu:
     - Nagłówki bezpieczeństwa → ``_app_after_request`` w app.py
     - Nagłówki deprecation → ``_v1_after_request`` w app.py
     - correlation-id response header → ``_app_after_request`` w app.py
-
-    Ten middleware pozostaje ponieważ:
-    - ``correlation_id_ctx.set()`` wymaga ContextVar (poza scope odpowiedzi)
-    - ``set_current_tenant_id()`` wymaga ContextVar
-    - ``_tenant_from_bearer_auth()`` wymaga dostępu do headers requestu
     """
 
     _tenant_from_bearer_auth = staticmethod(_tenant_from_bearer_auth)
@@ -69,13 +75,19 @@ class TenantContextMiddleware(AbstractMiddleware):
 
         request_headers = {k.decode().lower(): v.decode() for k, v in scope.get("headers", [])}
         correlation_id = request_headers.get("x-correlation-id", uuid.uuid4().hex)
+        request_id = uuid.uuid4().hex[:12]
 
-        # ── Ustaw correlation_id w ContextVar dla logowania ──────────────
-        from nexus_ai.core.tracing import correlation_id_ctx
+        # ── SUPERMOC structlog: clear + bind contextvars ────────────────
+        # Wszystkie logi w całym projekcie automatycznie mają te pola
+        structlog.contextvars.clear_contextvars()
+        structlog.contextvars.bind_contextvars(
+            correlation_id=correlation_id,
+            request_id=request_id,
+            request_path=scope.get("path", "/"),
+            request_method=scope.get("method", "?"),
+        )
 
-        cid_token = correlation_id_ctx.set(correlation_id)
-
-        # ── Ustaw tenant_id w ContextVar ─────────────────────────────────
+        # ── Ustaw tenant_id ─────────────────────────────────────────────
         scope_user = scope.get("user") or {}
         tenant_from_user = None
         tenant_from_token = self._tenant_from_bearer_auth(request_headers.get("authorization"))
@@ -87,20 +99,34 @@ class TenantContextMiddleware(AbstractMiddleware):
         tenant_id = tenant_from_user or tenant_from_token or DEFAULT_TENANT_ID
         tenant_token = set_current_tenant_id(tenant_id)
 
+        # SUPERMOC structlog: bind tenant_id do contextvars
+        structlog.contextvars.bind_contextvars(tenant_id=tenant_id)
+
         async def send_wrapper(message):
             if message["type"] == "http.response.start":
                 headers = message.setdefault("headers", [])
                 headers.append((b"x-correlation-id", correlation_id.encode()))
                 headers.append((b"x-tenant-id", tenant_id.encode()))
+                headers.append((b"x-request-id", request_id.encode()))
             await send(message)
 
-        try:
-            logger.bind(correlation_id=correlation_id, tenant_id=tenant_id).debug(
-                "Handling request: method=%s path=%s",
-                scope.get("method", "?"),
-                scope.get("path", "?"),
-            )
-            await self.app(scope, receive, send_wrapper)
-        finally:
-            reset_current_tenant_id(tenant_token)
-            correlation_id_ctx.reset(cid_token)
+        # SUPERMOC Loguru: logger.contextualize() dla automatycznego kontekstu w scope
+        # Każdy log w tym with bloku automatycznie ma correlation_id, request_id, tenant_id
+        from loguru import logger as _loguru_logger
+        with _loguru_logger.contextualize(
+            correlation_id=correlation_id,
+            request_id=request_id,
+            tenant_id=tenant_id,
+            path=scope.get("path", "/"),
+        ):
+            try:
+                # SUPERMOC structlog: merge_contextvars automatycznie doda correlation_id
+                logger.debug("Handling request: method=%s path=%s",
+                             scope.get("method", "?"),
+                             scope.get("path", "?"))
+                await self.app(scope, receive, send_wrapper)
+            finally:
+                reset_current_tenant_id(tenant_token)
+                # Nie resetujemy structlog contextvars — one są czyszczone
+                # na początku next requestu przez clear_contextvars()
+                # logger.contextualize() automatycznie czyści kontekst po wyjściu z with

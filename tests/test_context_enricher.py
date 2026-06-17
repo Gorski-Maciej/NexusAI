@@ -13,6 +13,10 @@ from __future__ import annotations
 import duckdb
 import pytest
 
+# ── SUPERMOC: pytestmark — anyio na poziomie modułu zamiast per-function ───
+pytestmark = pytest.mark.anyio
+
+
 from nexus_ai.services.context_enricher import ContextEnricher, ensure_cache_schema
 
 

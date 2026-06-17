@@ -226,13 +226,30 @@ class TaskTracingMiddleware(TaskiqMiddleware):
     """
 
     async def pre_send(self, message: TaskiqMessage) -> TaskiqMessage:
-        """Przed wysłaniem: dodaj trace_id do labels."""
+        """Przed wysłaniem: dodaj trace_id do labels + struktlog contextvars.
+
+        SUPERMOC structlog:
+        - bind_contextvars dla correlation_id/tenant_id z labels
+        - merge_contextvars w logger.py automatycznie wzbogaca logi zadań
+        """
         trace_id = uuid.uuid4().hex[:32]
         span_id = uuid.uuid4().hex[:16]
         message.labels["trace_id"] = trace_id
         message.labels["span_id"] = span_id
         message.labels["environment"] = os.getenv("NEXUS_ENV", "dev")
         message.labels["hostname"] = os.uname().nodename if hasattr(os, "uname") else "unknown"
+
+        # SUPERMOC structlog: clear before bind — zapobiega wyciekowi kontekstu
+        # między zadaniami Taskiq. merge_contextvars doda te pola do wszystkich logów.
+        import structlog as _structlog
+        _structlog.contextvars.clear_contextvars()
+        _structlog.contextvars.bind_contextvars(
+            task_id=trace_id,
+            task_name=message.task_name,
+            span_id=span_id,
+            environment=message.labels.get("environment", "dev"),
+            hostname=message.labels.get("hostname", "unknown"),
+        )
         return message
 
     async def post_execute(self, message: TaskiqMessage, result: TaskiqResult) -> None:

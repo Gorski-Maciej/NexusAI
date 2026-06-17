@@ -32,6 +32,7 @@ from typing import Any
 import threading
 
 import anyio
+from loguru import logger as _loguru_logger
 from structlog import get_logger
 
 logger = get_logger("nexus.pipeline.ocr_consensus")
@@ -257,6 +258,15 @@ def decide_amount_consensus_legacy(
     )
 
 
+# ── OpenCV (opcjonalnie) ──────────────────────────────────────────────────
+
+from nexus_ai.core.opencv_pipeline import (
+    HAS_CV2,
+    OpenCVPreprocessor,
+    OpenCVPreprocessingConfig,
+)
+
+
 # ── Silniki OCR ─────────────────────────────────────────────────────────────
 
 
@@ -383,6 +393,7 @@ class TesseractEngine:
             logger.error("[OCR] Tesseract failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] Tesseract extract_text failed")
     async def extract_text(self, image_path: Path) -> str | None:
         """Ekstrakcja całego tekstu z dokumentu z supermocami.
 
@@ -391,6 +402,7 @@ class TesseractEngine:
         """
         return await self._run_tesseract(image_path)
 
+    @_loguru_logger.catch(default=None, message="[OCR] Tesseract extract_text_with_confidence failed")
     async def extract_text_with_confidence(self, image_path: Path) -> list[dict] | None:
         """SUPERMOC: Ekstrakcja tekstu z per-block confidence.
 
@@ -507,6 +519,7 @@ class TesseractEngine:
             logger.error("[OCR] Tesseract confidence failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] Tesseract extract_amount failed")
     async def extract_amount(self, image_path: Path) -> float | None:
         """SUPERMOC: Ekstrakcja kwoty z tessedit_char_whitelist='0123456789.,-'.
 
@@ -553,6 +566,7 @@ class TesseractEngine:
             logger.error("[OCR] Tesseract amount failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] Tesseract extract_digits failed")
     async def extract_digits(self, image_path: Path, expected_length: int = 10) -> str | None:
         """SUPERMOC: Ekstrakcja cyfr (NIP/IBAN) z tessedit_char_whitelist='0123456789'.
 
@@ -850,7 +864,7 @@ class PaddleOCREngine:
     def _auto_tune_threshold(self, image: Any) -> float:
         """SUPERMOC: Auto-tuning det_db_thresh na podstawie jakości obrazu.
 
-        Analizuje Variance of Laplacian (ostrość) i kontrast obrazu:
+        Analizuje Variance of Laplacian (ostrość) przez OpenCV.
         - Ostry obraz (>200): det_db_thresh=0.4 (wyższa precyzja)
         - Średni (50-200): det_db_thresh=0.3 (standard)
         - Słaby (<50): det_db_thresh=0.2 (agresywna detekcja)
@@ -858,23 +872,25 @@ class PaddleOCREngine:
         Returns:
             Zoptymalizowana wartość det_db_thresh dla tego obrazu.
         """
+        if not HAS_CV2:
+            return self.det_db_thresh
         try:
-            import cv2
+            import cv2 as _cv2
             import numpy as np
 
             if isinstance(image, np.ndarray):
-                gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY) if image.ndim == 3 else image
+                gray = _cv2.cvtColor(image, _cv2.COLOR_RGB2GRAY) if image.ndim == 3 else image
             else:
                 return self.det_db_thresh
 
-            laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
+            laplacian_var = _cv2.Laplacian(gray, _cv2.CV_64F).var()
             if laplacian_var > 200:
                 return 0.4  # Wysoka precyzja dla ostrych obrazów
             elif laplacian_var > 50:
                 return self.det_db_thresh  # Standard
             else:
                 return 0.2  # Agresywna detekcja dla słabych skanów
-        except ImportError:
+        except Exception:
             return self.det_db_thresh
 
     # ── SUPERMOC: Ekstrakcja z numpy array (zero I/O) ────────────────────
@@ -920,6 +936,7 @@ class PaddleOCREngine:
         """Rozwiąż źródło wejściowe: str/Path → str, numpy → numpy."""
         return str(source) if isinstance(source, (str, Path)) else source
 
+    @_loguru_logger.catch(default=None, message="[OCR] PaddleOCR extract_text failed")
     async def extract_text(self, image: str | Path | Any) -> str | None:
         """Ekstrakcja całego tekstu z dokumentu z supermocami.
 
@@ -943,6 +960,7 @@ class PaddleOCREngine:
             logger.error("[OCR] PaddleOCR failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] PaddleOCR extract_text_with_confidence failed")
     async def extract_text_with_confidence(self, image: str | Path | Any) -> list[dict] | None:
         """SUPERMOC: Ekstrakcja tekstu z per-word confidence scores.
 
@@ -985,6 +1003,7 @@ class PaddleOCREngine:
             logger.error("[OCR] PaddleOCR confidence failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] PaddleOCR extract_amount failed")
     async def extract_amount(self, image: str | Path | Any) -> float | None:
         """SUPERMOC: Ekstrakcja kwoty z filtracją regex.
 
@@ -1044,6 +1063,7 @@ class PaddleOCREngine:
             logger.error("[OCR] PaddleOCR amount extraction failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] PaddleOCR extract_digits failed")
     async def extract_digits(self, image: str | Path | Any, expected_length: int = 10) -> str | None:
         """SUPERMOC: Ekstrakcja cyfr (NIP/IBAN/REGON) z filtracją regex.
 
@@ -1094,6 +1114,7 @@ class PaddleOCREngine:
             logger.error("[OCR] PaddleOCR digits extraction failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] PaddleOCR extract_structured failed")
     async def extract_structured(self, image: str | Path | Any) -> dict | None:
         """SUPERMOC: Pełna strukturalna ekstrakcja z bboxami i confidence.
 
@@ -1147,6 +1168,7 @@ class PaddleOCREngine:
     # FAZA 3: PP-StructureV3 — analiza layoutu i tabel
     # ══════════════════════════════════════════════════════════════════════
 
+    @_loguru_logger.catch(default=None, message="[OCR] PaddleOCR extract_layout failed")
     async def extract_layout(self, image: str | Path | Any) -> list[dict] | None:
         """SUPERMOC: Analiza layoutu dokumentu przez PP-StructureV3.
 
@@ -1187,6 +1209,7 @@ class PaddleOCREngine:
             logger.error("[OCR] PaddleOCR layout analysis failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] PaddleOCR extract_tables failed")
     async def extract_tables(self, image: str | Path | Any) -> list[dict] | None:
         """SUPERMOC: Ekstrakcja tabel przez PP-StructureV3.
 
@@ -1229,6 +1252,7 @@ class PaddleOCREngine:
     # FAZA 3: Detekcja pieczątek/stempli
     # ══════════════════════════════════════════════════════════════════════
 
+    @_loguru_logger.catch(default=None, message="[OCR] PaddleOCR detect_seals failed")
     async def detect_seals(self, image: str | Path | Any) -> list[dict] | None:
         """SUPERMOC: Detekcja pieczątek i stempli na dokumencie.
 
@@ -1490,6 +1514,7 @@ class DocTREngine:
         except Exception as exc:
             logger.warning("[OCR] docTR init failed: %s", exc)
 
+    @_loguru_logger.catch(default=None, message="[OCR] docTR extract_text failed")
     async def extract_text(self, image_path: Path) -> str | None:
         """Ekstrakcja całego tekstu z dokumentu.
 
@@ -1512,6 +1537,7 @@ class DocTREngine:
             logger.error("[OCR] docTR failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] docTR extract_tables failed")
     async def extract_tables(self, image_path: Path) -> list[dict] | None:
         """Ekstrakcja tabel ze strukturą wierszy i kolumn.
 
@@ -1540,6 +1566,7 @@ class DocTREngine:
             logger.error("[OCR] docTR table extraction failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] docTR extract_structured failed")
     async def extract_structured(self, image_path: Path) -> dict:
         """Pełna, strukturalna ekstrakcja dokumentu.
 
@@ -1568,6 +1595,7 @@ class DocTREngine:
             logger.error("[OCR] docTR structured extraction failed: %s", exc)
             return {"status": "error", "message": str(exc)}
 
+    @_loguru_logger.catch(default=None, message="[OCR] docTR extract_text_from_pdf failed")
     async def extract_text_from_pdf(self, pdf_path: Path) -> str | None:
         """OCR całego PDF przez DocumentFile.from_pdf().
 
@@ -1591,6 +1619,7 @@ class DocTREngine:
             logger.error("[OCR] docTR PDF OCR failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] docTR extract_key_fields failed")
     async def extract_key_fields(self, image_path: Path) -> dict | None:
         """Key Information Extraction (KiE) — wyciąganie kluczowych pól.
 
@@ -1615,6 +1644,7 @@ class DocTREngine:
             logger.error("[OCR] docTR KiE failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] docTR extract_text_with_confidence failed")
     async def extract_text_with_confidence(self, image_path: Path) -> list[dict] | None:
         """Ekstrakcja tekstu z per-word confidence scores.
 
@@ -1654,6 +1684,7 @@ class DocTREngine:
             logger.error("[OCR] docTR confidence extraction failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] docTR extract_layout failed")
     async def extract_layout(self, image_path: Path) -> list[dict] | None:
         """SUPERMOC: Layout analysis — wykrywanie struktury dokumentu (Faza 3).
 
@@ -1822,6 +1853,7 @@ class EasyOCREngine:
         except Exception as exc:
             logger.warning("[OCR] EasyOCR init failed: %s", exc)
 
+    @_loguru_logger.catch(default=None, message="[OCR] EasyOCR extract_text failed")
     async def extract_text(self, image_path: Path) -> str | None:
         """Ekstrakcja całego tekstu z dokumentu z pełnymi supermocami.
 
@@ -1848,6 +1880,7 @@ class EasyOCREngine:
             logger.error("[OCR] EasyOCR failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] EasyOCR extract_text_with_confidence failed")
     async def extract_text_with_confidence(self, image_path: Path) -> list[dict] | None:
         """Extract text with per-line confidence scores.
 
@@ -1883,6 +1916,7 @@ class EasyOCREngine:
             logger.error("[OCR] EasyOCR with confidence failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] EasyOCR extract_amount failed")
     async def extract_amount(self, image_path: Path) -> float | None:
         """SUPERMOC: Ekstrakcja kwoty z allowlist='0123456789.,'.
 
@@ -1924,6 +1958,7 @@ class EasyOCREngine:
             logger.error("[OCR] EasyOCR amount extraction failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] EasyOCR extract_digits failed")
     async def extract_digits(self, image_path: Path, expected_length: int = 10) -> str | None:
         """SUPERMOC: Ekstrakcja cyfr (NIP/IBAN) z allowlist='0123456789'.
 
@@ -1966,6 +2001,7 @@ class EasyOCREngine:
             logger.error("[OCR] EasyOCR digits extraction failed: %s", exc)
             return None
 
+    @_loguru_logger.catch(default=None, message="[OCR] EasyOCR extract_text_adaptive failed")
     async def extract_text_adaptive(self, image_path: Path) -> str | None:
         """SUPERMOC: Adaptacyjne OCR z auto-dostrojeniem progów.
 
@@ -2017,7 +2053,7 @@ class EasyOCREngine:
 def _assess_image_quality(image_path: Path) -> float:
     """Ocena jakości obrazu dla adaptacyjnego OCR.
 
-    Używa OpenCV do obliczenia:
+    Używa OpenCV (gdy dostępne) do obliczenia:
     - Variance of Laplacian (ostrość)
     - Średnia jasność
     - Kontrast RMS
@@ -2025,32 +2061,30 @@ def _assess_image_quality(image_path: Path) -> float:
     Returns:
         Float 0.0-1.0: 0 = bardzo słaby, 1 = idealny.
     """
+    if not HAS_CV2:
+        return 0.5
     try:
-        import cv2
+        import cv2 as _cv2
         import numpy as np
 
-        img = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
+        img = _cv2.imread(str(image_path), _cv2.IMREAD_GRAYSCALE)
         if img is None:
-            return 0.5  # Default przy błędzie
+            return 0.5
 
         # 1. Ostrość (Variance of Laplacian)
-        laplacian_var = cv2.Laplacian(img, cv2.CV_64F).var()
-        # Normalizuj: 0-1000+ → 0-1. Typowo dobre zdjęcie ma >100.
+        laplacian_var = _cv2.Laplacian(img, _cv2.CV_64F).var()
         sharpness = min(laplacian_var / 500.0, 1.0)
 
         # 2. Kontrast (RMS)
         rms = img.std()
         contrast = min(rms / 80.0, 1.0)
 
-        # 3. Jasność (średnia powinna być w środku zakresu)
+        # 3. Jasność
         mean_brightness = img.mean()
         brightness = 1.0 - abs(mean_brightness - 127.0) / 127.0
 
-        # Weighted score
         score = sharpness * 0.5 + contrast * 0.3 + brightness * 0.2
         return round(float(np.clip(score, 0.0, 1.0)), 4)
-    except ImportError:
-        return 0.5  # Default bez OpenCV
     except Exception:
         return 0.5
 
@@ -2120,6 +2154,7 @@ async def run_ocr_pipeline(
     doctr_det_arch: str = "db_resnet50",
     doctr_reco_arch: str = "parseq",
     doctr_orientation: bool = True,
+    use_opencv_preprocessing: bool = True,
 ) -> dict[str, str | None]:
     """Run the full OCR pipeline with 4-way consensus and isolated mimalloc heap.
 
@@ -2132,6 +2167,10 @@ async def run_ocr_pipeline(
     - docTR: modułowy OCR (DBNet + PARSeq), ekstrakcja tabel, Apache 2.0
     - EasyOCR: CNN + LSTM (CRAFT + CRNN), inna architektura niż pozostałe
 
+    FAZA 2-3 (OpenCV audit): Gdy use_opencv_preprocessing=True i OpenCV dostępne,
+    każdy obraz jest przepuszczany przez OpenCVPreprocessor (deskew, CLAHE,
+    adaptive threshold, denoising, sharpen) przed wysłaniem do silników OCR.
+
     Args:
         file_path: Path to PDF or image file.
         use_tesseract: Enable Tesseract OCR engine.
@@ -2143,6 +2182,7 @@ async def run_ocr_pipeline(
         doctr_det_arch: docTR detection architecture (default: db_resnet50).
         doctr_reco_arch: docTR recognition architecture (default: parseq).
         doctr_orientation: Enable docTR document orientation detection.
+        use_opencv_preprocessing: Enable OpenCV preprocessing (deskew, CLAHE, etc.).
 
     Returns:
         Dict mapping engine names to extracted text (or None on failure).
@@ -2186,6 +2226,44 @@ async def run_ocr_pipeline(
         if file_image is None and paddle_image is None:
             logger.error("[OCR] No usable image input")
             return {}
+
+        # Krok 1.5: OpenCV preprocessing (Faza 2-3: deskew, CLAHE, adaptive threshold)
+        if use_opencv_preprocessing and HAS_CV2 and file_image is not None:
+            try:
+                from PIL import Image as _PILImage
+
+                pil_img = _PILImage.open(str(file_image))
+                preprocessor = OpenCVPreprocessor()
+                processed = preprocessor.process(pil_img)
+
+                # Zapisz przetworzony obraz tymczasowo
+                cv_output_dir = file_image.parent / f"{file_path.stem}_cv"
+                cv_output_dir.mkdir(parents=True, exist_ok=True)
+                processed_path = cv_output_dir / f"{file_image.name}"
+                processed.save(str(processed_path))
+
+                logger.info(
+                    "[OCR] OpenCV preprocessing applied: %s → %s",
+                    file_image.name, processed_path.name,
+                )
+                file_image = processed_path
+
+                # Dla PDF: przetwórz też numpy pages dla PaddleOCR
+                if numpy_pages:
+                    processed_np = []
+                    for np_page in numpy_pages[:1]:  # Only first page for now
+                        pil_page = _PILImage.fromarray(np_page)
+                        proc_page = preprocessor.process(pil_page)
+                        processed_np.append(np.array(proc_page))
+                    if processed_np:
+                        numpy_pages = processed_np
+                        paddle_image = numpy_pages[0]
+                        logger.info(
+                            "[OCR] OpenCV preprocessing applied to %d numpy pages",
+                            len(processed_np),
+                        )
+            except Exception as exc:
+                logger.warning("[OCR] OpenCV preprocessing failed, using raw: %s", exc)
 
         # Krok 2: Uruchom silniki OCR równolegle
         engines = []
@@ -2241,11 +2319,15 @@ async def run_ocr_pipeline_with_confidence(
     doctr_det_arch: str = "db_resnet50",
     doctr_reco_arch: str = "parseq",
     doctr_orientation: bool = True,
+    use_opencv_preprocessing: bool = True,
 ) -> dict[str, Any]:
     """Run OCR pipeline returning both raw text and per-line confidence data.
 
     Rozszerzona wersja ``run_ocr_pipeline``, która dodatkowo zbiera
     per-line confidence z silników, które to wspierają (EasyOCR).
+
+    FAZA 2-3 (OpenCV audit): Gdy use_opencv_preprocessing=True i OpenCV dostępne,
+    obrazy są przepuszczane przez OpenCVPreprocessor przed OCR.
 
     Returns:
         Dict with:
@@ -2282,6 +2364,38 @@ async def run_ocr_pipeline_with_confidence(
         # PaddleOCR dostaje numpy array, reszta ścieżkę pliku
         paddle_image = numpy_pages[0] if numpy_pages else (image_paths[0] if image_paths else None)
         file_image = image_paths[0] if image_paths else None
+
+        # Krok 1.5: OpenCV preprocessing (identycznie jak w run_ocr_pipeline)
+        if use_opencv_preprocessing and HAS_CV2 and file_image is not None:
+            try:
+                from PIL import Image as _PILImage
+
+                pil_img = _PILImage.open(str(file_image))
+                preprocessor = OpenCVPreprocessor()
+                processed = preprocessor.process(pil_img)
+
+                cv_output_dir = file_image.parent / f"{file_path.stem}_cv"
+                cv_output_dir.mkdir(parents=True, exist_ok=True)
+                processed_path = cv_output_dir / f"{file_image.name}"
+                processed.save(str(processed_path))
+
+                logger.info(
+                    "[OCR] Conf pipeline OpenCV preprocessing: %s → %s",
+                    file_image.name, processed_path.name,
+                )
+                file_image = processed_path
+
+                if numpy_pages:
+                    processed_np = []
+                    for np_page in numpy_pages[:1]:
+                        pil_page = _PILImage.fromarray(np_page)
+                        proc_page = preprocessor.process(pil_page)
+                        processed_np.append(np.array(proc_page))
+                    if processed_np:
+                        numpy_pages = processed_np
+                        paddle_image = numpy_pages[0]
+            except Exception as exc:
+                logger.warning("[OCR] Conf pipeline OpenCV preprocessing failed: %s", exc)
 
         texts: dict[str, str | None] = {}
         confidences: dict[str, list[dict] | None] = {}

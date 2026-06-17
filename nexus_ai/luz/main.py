@@ -319,6 +319,9 @@ async def start_app():
     except Exception as e:
         logger.critical(f"BŁĄD KRYTYCZNY STARTU: {e}")
     finally:
+        # SUPERMOC Loguru: logger.complete() przed zamknięciem — gwarancja dostarczenia logów
+        from loguru import logger as _loguru_logger
+        _loguru_logger.complete()
         orchestrator.cleanup()
 
 

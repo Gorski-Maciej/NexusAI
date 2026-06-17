@@ -20,6 +20,9 @@ from typing import Any, final
 import pendulum
 from msgspec import Struct, field
 
+# ── SUPERMOC pendulum: diff_for_humans po polsku ─────────────────────────
+from nexus_ai.core.time_utils import human_diff
+
 from nexus_ai.core.broker import broker
 from nexus_ai.core.logger import get_logger
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
@@ -309,6 +312,8 @@ class DecisionLogger:
     ) -> None:
         """Persist a decision with full PLE context.
 
+        SUPERMOC pendulum: human_diff() dla czytelnych komunikatów po polsku.
+
         Args:
             invoice_id: Invoice identifier.
             alpha_verdict: Alpha council verdict.
@@ -366,12 +371,16 @@ class DecisionLogger:
                 final_decision=final_decision,
             )
 
+            # SUPERMOC pendulum: human_diff dla czytelnego czasu (start dnia → teraz)
+            day_start = pendulum.now("UTC").start_of("day")
+            since_midnight = human_diff(day_start, pendulum.now("UTC"), locale="pl", absolute=True)
             logger.debug(
-                "[DecisionLogger] logged decision_id=%s invoice_id=%s decision=%s level=%s",
+                "[DecisionLogger] logged decision_id=%s invoice_id=%s decision=%s level=%s (%s od północy)",
                 decision_id,
                 invoice_id,
                 final_decision,
                 decision_level,
+                since_midnight,
             )
 
             # Emituj event przez Taskiq broker.kick

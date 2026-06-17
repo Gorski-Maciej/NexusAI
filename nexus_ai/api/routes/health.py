@@ -159,6 +159,7 @@ class HealthController(Controller):
             },
             "resources": {
                 "sqlite_wal_size_bytes": await self._sqlite_wal_size(),
+                "system": await self._system_resources(),
             },
             "queue": {
                 "pending_tasks": await self._pending_tasks(),
@@ -193,6 +194,53 @@ class HealthController(Controller):
             return stat.st_size
         except OSError:
             return 0
+
+    # ── SUPERMOC psutil: System resources in health check ──────────────
+
+    async def _system_resources(self) -> dict[str, Any]:
+        """Zwróć metryki systemowe z psutil dla /health/detailed.
+
+        SUPERMOCE psutil:
+          - SystemMonitor.collect_all() — CPU, RAM, swap, dysk, sieć, sensory
+          - ProcessMonitor.collect_metrics() — RSS, USS, CPU% procesu
+          - boot_time() — uptime systemu
+          - getloadavg() — load average
+        """
+        try:
+            from nexus_ai.core.monitor import process_monitor, system_monitor
+
+            proc = process_monitor.collect_metrics()
+            sys = system_monitor.collect_all()
+
+            return {
+                "cpu_percent": round(sys.cpu_percent, 1),
+                "cpu_percent_per_core": [round(c, 1) for c in sys.cpu_percent_per_core],
+                "cpu_freq_mhz": round(sys.cpu_freq_current_mhz, 0) if sys.cpu_freq_current_mhz else None,
+                "load_avg": [round(sys.load_avg_1min, 2), round(sys.load_avg_5min, 2), round(sys.load_avg_15min, 2)],
+                "ram_percent": round(sys.ram_percent, 1),
+                "ram_used_gb": round(sys.ram_used_gb, 1),
+                "ram_available_gb": round(sys.ram_available_gb, 1),
+                "ram_process_mb": round(proc.rss_mb, 1),
+                "ram_process_uss_mb": round(proc.uss_mb, 1) if proc.uss_mb else None,
+                "swap_percent": round(sys.swap_percent, 1),
+                "disk_percent": round(sys.disk_percent, 1),
+                "disk_free_gb": round(sys.disk_free_gb, 1),
+                "disk_read_mb": round(sys.disk_read_mb, 1),
+                "disk_write_mb": round(sys.disk_write_mb, 1),
+                "net_recv_mb": round(sys.net_bytes_recv_mb, 1),
+                "net_sent_mb": round(sys.net_bytes_sent_mb, 1),
+                "cpu_temp_celsius": round(sys.cpu_temp_celsius, 1) if sys.cpu_temp_celsius else None,
+                "uptime_days": round(sys.uptime_days, 1),
+                "process_status": proc.status,
+                "process_cpu": round(proc.cpu_percent, 1),
+                "process_threads": proc.num_threads,
+                "process_fds": proc.num_fds,
+                "process_connections": proc.connections_count,
+            }
+        except ImportError:
+            return {"status": "psutil_not_available"}
+        except Exception as exc:
+            return {"status": "error", "error": str(exc)}
 
     def _report_file_exists(self, path: str) -> bool:
         return Path(path).exists()

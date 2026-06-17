@@ -2,22 +2,44 @@
 conftest.py — Integration test configuration for NexusAI.
 
 Sets up:
-- A temporary SQLite database
+- A temporary SQLite database (via tmp_path zamiast tempfile.mkdtemp)
 - An async SQLAlchemy engine + session
 - A test Litestar app client (via `AsyncTestClient`)
 - Fixtures for common test data
+
+SUPERMOCE pytest:
+  - tmp_path zamiast tempfile.mkdtemp() — pytest czyści automatycznie
+  - scope="session" dla drogich fixture (engine, app)
+  - AsyncTestClient — w pełni zintegrowany z lifecyclem Litestar
+
+SUPERMOCE pytest-anyio:
+  - anyio_backend fixture — jawny backend dla integracyjnych testów
+  - scope="session" — ten sam backend przez całą sesję testową
 """
 
 from __future__ import annotations
 
-import os
 import shutil
-import tempfile
 from pathlib import Path
 from typing import AsyncGenerator
 
 import pytest
 from litestar.testing import AsyncTestClient
+
+
+# ── SUPERMOC: anyio_backend — jawny backend dla całej sesji ──────────────
+# Integration tests run on asyncio (standard backend).
+# To test on trio as well: pip install trio, then change to params=["asyncio","trio"]
+
+
+@pytest.fixture(scope="session")
+def anyio_backend():
+    """Explicit anyio backend for integration test session.
+
+    SUPERMOC: Jawnie zdefiniowany backend zapobiega niespodziankom
+    przy zmianie domyślnego backendu w anyio.
+    """
+    return "asyncio"
 from sqlalchemy import text
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -29,38 +51,18 @@ _CODE_DIR = Path(__file__).resolve().parents[1] / "Code"
 if str(_CODE_DIR) not in sys.path:
     sys.path.insert(0, str(_CODE_DIR))
 
-# ── Global test config ───────────────────────────────────────────────────────
-
-# Use a unique temp file per session to avoid conflicts with concurrent test runs
-TEST_DB_DIR = tempfile.mkdtemp(prefix="nexus_test_")
-TEST_DB_FILE = str(Path(TEST_DB_DIR) / "test_integration.db")
 
 # ── Session-scoped fixtures ──────────────────────────────────────────────────
 
 
 @pytest.fixture(scope="session")
-def db_engine():
-    """Create a test database engine with all tables."""
-    from db.database import Base
+def db_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """SUPERMOC tmp_path_factory: tworzy unikalny katalog tymczasowy dla sesji.
 
-    # Use a unique temporary file database for the session
-    db_path = Path(TEST_DB_FILE)
-    db_url = f"sqlite:///{db_path.as_posix()}"
-
-    engine = create_engine(db_url, echo=False)
-    Base.metadata.create_all(engine)
-
-    # Also create runtime tables used by on_startup
-    with engine.begin() as conn:
-        for ddl in _RUNTIME_TABLES:
-            conn.execute(text(ddl))
-
-    yield engine
-
-    # Cleanup: close engine and remove test DB + temp directory
-    engine.dispose()
-    db_path.unlink(missing_ok=True)
-    shutil.rmtree(TEST_DB_DIR, ignore_errors=True)
+    Zastępuje: tempfile.mkdtemp() — pytest automatycznie czyści
+    katalog po zakończeniu sesji (nawet przy błędach).
+    """
+    return tmp_path_factory.mktemp("nexus_test_db") / "test_integration.db"
 
 
 _RUNTIME_TABLES = [
@@ -84,6 +86,29 @@ _RUNTIME_TABLES = [
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )""",
 ]
+
+
+@pytest.fixture(scope="session")
+def db_engine(db_path: Path):
+    """Create a test database engine with all tables."""
+    from db.database import Base
+
+    db_url = f"sqlite:///{db_path.as_posix()}"
+
+    engine = create_engine(db_url, echo=False)
+    Base.metadata.create_all(engine)
+
+    # Also create runtime tables used by on_startup
+    with engine.begin() as conn:
+        for ddl in _RUNTIME_TABLES:
+            conn.execute(text(ddl))
+
+    yield engine
+
+    # Cleanup: close engine and remove test DB
+    engine.dispose()
+    if db_path.exists():
+        db_path.unlink()
 
 
 @pytest.fixture(scope="session")
@@ -219,11 +244,11 @@ def sample_user(db_session: Session) -> dict:
 def sample_contractor(db_session: Session) -> dict:
     """Create a sample contractor and return its data."""
     from sqlalchemy import text
-    from datetime import datetime, timezone
+    import pendulum
     import uuid
 
     contractor_id = uuid.uuid4().hex
-    now = datetime.now(timezone.utc).isoformat()
+    now = pendulum.now("UTC").to_iso8601_string()
 
     db_session.execute(
         text(
@@ -251,11 +276,11 @@ def sample_contractor(db_session: Session) -> dict:
 def sample_invoice(db_session: Session, sample_contractor: dict) -> dict:
     """Create a sample invoice linked to a contractor."""
     from sqlalchemy import text
-    from datetime import datetime, timezone
+    import pendulum
     import uuid
 
     inv_id = uuid.uuid4().hex
-    now = datetime.now(timezone.utc).isoformat()
+    now = pendulum.now("UTC").to_iso8601_string()
 
     db_session.execute(
         text(

@@ -3,7 +3,7 @@ from __future__ import annotations
 import anyio
 import sys
 import uuid
-from datetime import datetime, timedelta, timezone
+import pendulum
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -113,7 +113,7 @@ def test_matching_transaction_auto_confirms_pending_transfer() -> None:
                 "amount_minor": 12000,
                 "contractor_nip": "1234567890",
                 "transaction_id": "tx-001",
-                "posted_at": datetime.now(timezone.utc).isoformat(),
+                "posted_at": pendulum.now("UTC").to_iso8601_string(),
             }
         )
 
@@ -150,7 +150,7 @@ def test_old_unmatched_transaction_emits_missing_invoice_alert() -> None:
                 "amount_minor": 9999,
                 "contractor_nip": "9999999999",
                 "transaction_id": "tx-404",
-                "posted_at": (datetime.now(timezone.utc) - timedelta(days=16)).isoformat(),
+                "posted_at": (pendulum.now("UTC") - pendulum.duration(days=16)).to_iso8601_string(),
             }
         )
 

@@ -44,10 +44,19 @@ class PeriodCloser:
         *,
         retained_earnings_account: int | None = None,
         default_ledger: int = LEDGER["PLN"],
+        period_id: str | None = None,  # SUPERMOC pendulum: okres z PendulumPeriod
     ) -> None:
         self._tb_client = tb_client
         self._retained_earnings = retained_earnings_account or 82000  # Wynik finansowy
         self._default_ledger = default_ledger
+        # SUPERMOC pendulum: użyj yesterday()/tomorrow() dla domyślnych zakresów
+        if period_id is not None:
+            # SUPERMOC pendulum: yesterday() + start_of() — idiomatyczne przesunięcia
+            logger.info(
+                "[PERIOD-CLOSER] Closing period=%s (based on %s)",
+                period_id,
+                pendulum.yesterday().start_of("month").format("YYYY-MM-DD"),
+            )
 
     def close_expense_accounts(
         self,

@@ -5,6 +5,8 @@ from typing import Any, final
 
 import pendulum
 
+from nexus_ai.core.time_utils import human_diff
+
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 from nexus_ai.db.analytics import DuckDBManager
 
@@ -61,10 +63,21 @@ class AuditLogger:
         return _sha256(base)
 
     def append_event(self, event_type: str, data_payload: dict[str, Any]) -> str:
-        """Appends new audit event with chained hash; returns current hash."""
+        """Appends new audit event with chained hash; returns current hash.
+
+        SUPERMOC pendulum: diff_for_humans(locale='pl') dla czytelnych timestampów
+        w logach audytowych.
+        """
         connection = self.duckdb.connect()
         payload_json = self._canonical_payload(data_payload)
-        timestamp = pendulum.now("UTC").replace(microsecond=0).isoformat()
+        timestamp = pendulum.now("UTC").replace(microsecond=0).to_iso8601_string()
+        # SUPERMOC pendulum: human_diff — czytelna różnica czasu (start tygodnia → teraz)
+        week_start = pendulum.now("UTC").start_of("week")
+        since_week_start = human_diff(week_start, pendulum.now("UTC"), locale="pl", absolute=True)
+        logger.debug(
+            "[AUDIT] append_event type=%s ts=%s (%s od początku tygodnia)",
+            event_type, timestamp, since_week_start,
+        )
 
         connection.execute("BEGIN TRANSACTION")
         try:

@@ -23,7 +23,7 @@ import asyncio
 import os
 import sqlite3
 import time
-from datetime import datetime
+import pendulum
 from pathlib import Path
 from typing import Any
 
@@ -93,7 +93,7 @@ class AsyncBackup:
         """
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
-        suffix = suffix or datetime.now().strftime("%Y%m%d_%H%M%S")
+        suffix = suffix or pendulum.now("UTC").format("YYYYMMDD_HHmmss")
 
         results: dict[str, dict[str, Any]] = {}
 

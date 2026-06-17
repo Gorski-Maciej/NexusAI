@@ -193,6 +193,10 @@ dev = [
     "locust>=2.29.0",        # Pythonowe testy wydajności (zamiast k6)
     "py-spy>=0.3.14",        # Natywny profiler w Rust, narzut <1%
     "pytest-benchmark>=4.0.0",  # Benchmarki wydajności (porównanie przed/po Polars)
+    "pytest-xdist>=3.5.0",      # Równoległe testowanie (-n auto) — 4-8× szybciej
+    "pytest-timeout>=2.2.0",     # Globalny timeout testów (--timeout=30)
+    "pytest-sugar>=1.0.0",       # Kolorowe, czytelne raporty
+    "pytest-watch>=4.2.0",       # Auto-retest przy zmianie plików (ptw)
     "sentry-sdk>=2.0.0",
 ]
 ui = [
@@ -319,13 +323,24 @@ exclude = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+addopts = "-n auto --timeout=30 --tb=short -ra"
 filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore::PendingDeprecationWarning",
 ]
+markers = [
+    "integration: Integration test (requires DB/NATS/TigerBeetle)",
+    "anyio: Async test using anyio backend (built-in)",
+    "slow: Slow test (>5s), skipped by default, use --run-slow to run",
+    "benchmark: Performance benchmark (pytest-benchmark)",
+]
 # pytest-anyio: natywna asynchroniczność (anyio backend)
 # Zastępuje pytest-asyncio — testy działają na anyio, tej samej warstwie co kod produkcyjny
 # Uwaga: async test functions wymagają @pytest.mark.anyio lub pytestmark na poziomie modułu
+# SUPERMOC: -n auto → pytest-xdist (4-8× szybciej na multi-core)
+# SUPERMOC: --timeout=30 → pytest-timeout (zero zawieszeń CI)
+# SUPERMOC: --tb=short → zwięzłe tracebacki
+# SUPERMOC: -ra → show all skip/reason summaries at end
 
 # ── Ruff (linter + formatter) ────────────────────────────────────────────────
 [tool.ruff]

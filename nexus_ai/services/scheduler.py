@@ -133,7 +133,8 @@ class Scheduler:
     ) -> int:
         """Dodaj przypomnienie o deadline ZUS."""
         deadline = pendulum.parse(deadline_date)
-        remind_at = deadline.subtract(days=days_before)
+        # SUPERMOC pendulum: yesterday()/tomorrow() — idiomatyczne przesunięcia
+        remind_at = pendulum.yesterday() if days_before <= 1 else deadline.subtract(days=days_before)
 
         return self.add_reminder(
             user_id=user_id,

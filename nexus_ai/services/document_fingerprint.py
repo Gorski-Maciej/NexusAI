@@ -46,12 +46,15 @@ def _sha256_file(file_path: Path) -> str:
 
 
 def _visual_fingerprint(file_path: Path) -> str:
-    """SUPERMOC: Multi-hash visual fingerprint z preprocessingiem Pillow.
+    """SUPERMOC: Multi-hash visual fingerprint z preprocessingiem Pillow + OpenCV.
+
+    FAZA 2 (OpenCV audit): Dodatkowe ORB feature fingerprint gdy OpenCV dostępne.
 
     SUPERMOCE:
     - ImageFilter.MedianFilter(3) — denoising przed hashowaniem
     - ImageOps.autocontrast() — lepszy kontrast dla stabilnego hasha
     - Multi-hash: phash + dhash + whash — 3 perspektywy
+    - OpenCV ORB features — odporny na rotację/skalowanie/cięcie
       Jeśli 2/3 się zgadzają, dokument to duplikat
     - Falls back do SHA-1 prefix gdy Pillow/imagehash niedostępne
     """
@@ -66,11 +69,15 @@ def _visual_fingerprint(file_path: Path) -> str:
                 enhanced = ImageOps.autocontrast(denoised, cutoff=1)
 
                 # SUPERMOC: 3 niezależne hashe perceptualne
-                ph = str(imagehash.phash(enhanced))  # Perceptual hash
-                dh = str(imagehash.dhash(enhanced))  # Difference hash
-                wh = str(imagehash.whash(enhanced))  # Wavelet hash
+                ph = str(imagehash.phash(enhanced))
+                dh = str(imagehash.dhash(enhanced))
+                wh = str(imagehash.whash(enhanced))
 
-                # Połącz: 3 hashe = max odporność na duplikaty
+                # SUPERMOC: OpenCV ORB feature fingerprint (Faza 2)
+                orb_fp = _compute_orb_fingerprint(img)
+
+                if orb_fp:
+                    return f"{ph}_{dh}_{wh}_orb:{orb_fp}"
                 return f"{ph}_{dh}_{wh}"
         except Exception:
             pass
@@ -78,6 +85,29 @@ def _visual_fingerprint(file_path: Path) -> str:
     with file_path.open("rb") as handle:
         sample = handle.read(4096)
     return hashlib.sha1(sample).hexdigest()[:16]
+
+
+def _compute_orb_fingerprint(image: Image.Image) -> str | None:
+    """SUPERMOC: OpenCV ORB feature fingerprint dla identyfikacji dokumentów.
+
+    FAZA 2 (OpenCV audit): Deleguje do compute_orb_features z opencv_pipeline.
+    Oblicza ORB descriptors i konwertuje do string fingerprint.
+    Odporny na skalowanie, rotację i częściowe przycięcie.
+
+    Returns:
+        String fingerprint lub None gdy OpenCV niedostępne.
+    """
+    try:
+        from nexus_ai.core.opencv_pipeline import compute_orb_features
+
+        _, des = compute_orb_features(image, nfeatures=500)
+        if des is None:
+            return None
+
+        # Konwertuj pierwsze 32 bytes descriptors do hex fingerprint
+        return des.tobytes()[:32].hex()
+    except Exception:
+        return None
 
 
 def _semantic_hash(extracted_data: dict[str, Any]) -> str:

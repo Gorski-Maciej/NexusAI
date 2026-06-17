@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+import pendulum
 from pathlib import Path
 
 from nexus_ai.scripts import otel_buffer_replayer as replayer
@@ -9,7 +9,7 @@ from nexus_ai.services.otel_fallback import FileSpanBuffer
 
 def test_replay_with_limits_sends_subset(tmp_path: Path) -> None:
     buffer = FileSpanBuffer(tmp_path / 'buf.jsonl')
-    now = datetime.now(timezone.utc)
+    now = pendulum.now("UTC")
     buffer.append('t1', 'a', start_ts=now, end_ts=now, attributes={})
     buffer.append('t2', 'b', start_ts=now, end_ts=now, attributes={})
 

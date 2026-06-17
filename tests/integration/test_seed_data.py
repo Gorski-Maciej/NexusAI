@@ -109,9 +109,9 @@ class TestSeedDatabase:
     async def test_insert_contractors(self, db_session) -> None:
         """Test inserting contractors into the database."""
         import uuid
-        from datetime import datetime, timezone
+        import pendulum
 
-        now = datetime.now(timezone.utc).isoformat()
+        now = pendulum.now("UTC").to_iso8601_string()
         cid = uuid.uuid4().hex
 
         await db_session.execute(
@@ -137,9 +137,9 @@ class TestSeedDatabase:
     async def test_insert_invoice_with_relationships(self, db_session) -> None:
         """Test inserting an invoice linked to a contractor."""
         import uuid
-        from datetime import datetime, timezone
+        import pendulum
 
-        now = datetime.now(timezone.utc).isoformat()
+        now = pendulum.now("UTC").to_iso8601_string()
 
         # First create a contractor
         cid = uuid.uuid4().hex
@@ -192,9 +192,9 @@ class TestSeedDatabase:
     async def test_outbox_event_creation(self, db_session) -> None:
         """Test creating and querying outbox events."""
         import uuid, json
-        from datetime import datetime, timezone
+        import pendulum
 
-        now = datetime.now(timezone.utc).isoformat()
+        now = pendulum.now("UTC").to_iso8601_string()
         event_id = uuid.uuid4().hex
         inv_id = uuid.uuid4().hex
 
@@ -231,9 +231,9 @@ class TestSeedDatabase:
     async def test_idempotent_insert(self, db_session) -> None:
         """Test that inserting the same record twice is handled gracefully."""
         import uuid
-        from datetime import datetime, timezone
+        import pendulum
 
-        now = datetime.now(timezone.utc).isoformat()
+        now = pendulum.now("UTC").to_iso8601_string()
         cid = uuid.uuid4().hex
 
         # First insert
@@ -264,9 +264,9 @@ class TestSeedDatabase:
     async def test_audit_log_workflow(self, db_session) -> None:
         """Test full audit log workflow: create invoice → audit entry."""
         import uuid
-        from datetime import datetime, timezone
+        import pendulum
 
-        now = datetime.now(timezone.utc).isoformat()
+        now = pendulum.now("UTC").to_iso8601_string()
 
         # Create invoice
         inv_id = uuid.uuid4().hex

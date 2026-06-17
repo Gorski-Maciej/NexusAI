@@ -33,15 +33,18 @@ from nexus_ai.core.msgspec_utils import msgspec_dumps
 _INITIALIZED = False
 
 
-class CorrelationIdFilter:
-    def __call__(self, record):
-        # Dodaj correlation_id do każdego rekordu logu
-        record["extra"].setdefault("correlation_id", "system")
-        record["extra"].setdefault("tenant_id", "default")
-        record["extra"].setdefault("service", "nexus")
-        record["extra"].setdefault("request_id", "system")
-        record["extra"].setdefault("user_id", "anonymous")
-        return True
+@logger.patch
+def _patch_record(record):
+    """SUPERMOC: Dynamiczne wstrzykiwanie pól do każdego rekordu logu przez logger.patch().
+
+    Zastępuje CorrelationIdFilter — wbudowany mechanizm Loguru jest
+    szybszy i czystszy niż custom filter class.
+    """
+    record["extra"].setdefault("correlation_id", "system")
+    record["extra"].setdefault("tenant_id", "default")
+    record["extra"].setdefault("service", "nexus")
+    record["extra"].setdefault("request_id", "system")
+    record["extra"].setdefault("user_id", "anonymous")
 
 
 def _json_format(record) -> str:
@@ -109,31 +112,69 @@ class _LoguruFactory:
 def _setup_structlog() -> None:
     """Configure structlog to use loguru as its backend logging system.
 
+    SUPERMOCE structlog:
+    - merge_contextvars: automatyczne wzbogacanie o correlation_id/tenant_id z contextvars
+    - CallsiteParameterAdder: filename, lineno, func_name w każdym logu
+    - format_exc_info: automatyczne formatowanie wyjątków
+    - ExtraAdder: kompatybilność z stdlib logging
+    - ConsoleRenderer z sort_keys i level_styles: czytelne kolory w konsoli
+    - cache_logger_on_first_use: zero overhead dla powtarzających się loggerów
+
     Must be called after loguru sinks are set up (i.e. inside setup_logger).
     """
     import structlog as _structlog
 
+    # SUPERMOC 1: Level styles dla ConsoleRenderer
+    _level_styles = {
+        "info": _structlog.dev.StructLogStyle(color="green", bold=False),
+        "warning": _structlog.dev.StructLogStyle(color="yellow", bold=True),
+        "error": _structlog.dev.StructLogStyle(color="red", bold=True),
+        "critical": _structlog.dev.StructLogStyle(color="red", bold=True, bg="white"),
+        "debug": _structlog.dev.StructLogStyle(color="cyan", bold=False),
+    }
+
     _structlog.configure(
         processors=[
-            # Merge context variables set via structlog.contextvars.bind_contextvars
+            # SUPERMOC 2: Łączy contextvars (correlation_id, tenant_id) z każdym logiem
             _structlog.contextvars.merge_contextvars,
-            # Add log level name (info, warning, error, ...)
+            # SUPERMOC 3: Filtrowanie po poziomie (szybkie odrzucanie)
             _structlog.stdlib.filter_by_level,
+            # SUPERMOC 4: Dodaje poziom logowania (info, warning, ...)
             _structlog.stdlib.add_log_level,
-            # Format positional arguments
+            # SUPERMOC 5: Dodaje numeryczny poziom logowania
+            _structlog.stdlib.add_log_level_number,
+            # SUPERMOC 6: Formatuje argumenty pozycyjne
             _structlog.stdlib.PositionalArgumentsFormatter(),
-            # Add timestamp as ISO string
+            # SUPERMOC 7: Dodaje filename:lineno:func_name do każdego logu
+            _structlog.processors.CallsiteParameterAdder(
+                [
+                    _structlog.processors.CallsiteParameter.FILENAME,
+                    _structlog.processors.CallsiteParameter.LINENO,
+                    _structlog.processors.CallsiteParameter.FUNC_NAME,
+                ]
+            ),
+            # SUPERMOC 8: Dodaje timestamp ISO
             _structlog.processors.TimeStamper(fmt="iso"),
-            # Render as key=value for readable console output
-            # (Loguru's serialize=True file sink already handles JSON)
-            _structlog.dev.ConsoleRenderer(),
+            # SUPERMOC 9: Formatuje wyjątki (traceback)
+            _structlog.processors.format_exc_info,
+            # SUPERMOC 10: Dodaje extra dane z stdlib logging
+            _structlog.stdlib.ExtraAdder(),
+            # SUPERMOC 11: Renderowanie konsolowe z sortowaniem i kolorami
+            _structlog.dev.ConsoleRenderer(
+                sort_keys=True,
+                pad_event=30,
+                level_styles=_level_styles,
+            ),
         ],
         wrapper_class=_structlog.stdlib.BoundLogger,
         context_class=dict,
         logger_factory=_LoguruFactory(),
         cache_logger_on_first_use=True,
     )
-    logger.debug("structlog configured with loguru backend")
+    logger.debug(
+        "[STRUCTLOG] Configured with CallsiteParameterAdder, format_exc_info, "
+        "ExtraAdder, add_log_level_number, ConsoleRenderer(sort_keys=True)"
+    )
 
 
 def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> None:
@@ -154,16 +195,23 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
     if log_level not in {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}:
         log_level = "INFO"
 
-    # ── Filtr dodający correlation_id / request_id / user_id ─────────────────
-    correlation_filter = CorrelationIdFilter()
+    # ── SUPERMOC: Custom levels dla semantycznego filtrowania ─────────────────
+    logger.level("TRACE", no=5, color="<magenta>")
+    logger.level("OCR", no=8, color="<blue>")
+    logger.level("AUDIT", no=38, color="<yellow>")
+    logger.level("TAX", no=12, color="<green>")
+
+    # ── logger.patch() — dynamiczne wstrzykiwanie pól zamiast CorrelationIdFilter ─
+    # _patch_record jest zarejestrowane przez @logger.patch na górze pliku
 
     # ── Konsola (kolorowa, z czytelnym formatem) ──────────────────────────────
     logger.add(
         sys.stderr,
         enqueue=True,
         colorize=True,
-        filter=correlation_filter,
         level=log_level,
+        diagnose=False,   # BEZPIECZEŃSTWO: brak wycieku zmiennych lokalnych (RODO)
+        backtrace=True,   # DIAGNOSTYKA: pełny chain wywołań przy wyjątkach
         format=(
             "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
             "<level>{level: <8}</level> | "
@@ -177,16 +225,16 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
     log_dir.mkdir(parents=True, exist_ok=True)
 
     # Plik JSON (strukturyzowany, łatwy do parsowania przez narzędzia SIEM)
-    # Loguru's built-in serialize=True outputs each record as a JSON line
     json_log_path = log_dir / f"{app_name.lower()}_json.log"
     logger.add(
         str(json_log_path),
-        filter=correlation_filter,
         level=log_level,
         rotation="100 MB",
         retention="30 days",
         compression="gz",
         serialize=True,
+        diagnose=False,
+        backtrace=True,
     )
 
     # Standardowy plik logów (tekstowy, do szybkiego przeglądania)
@@ -196,8 +244,9 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
         retention="14 days",
         compression="gz",
         enqueue=True,
-        filter=correlation_filter,
         level=log_level,
+        diagnose=False,
+        backtrace=False,  # Tekstowy plik — bez backtrace dla czytelności
         format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {extra[correlation_id]:.12} | {message}",
     )
 
@@ -208,10 +257,14 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
         retention="30 days",
         compression="gz",
         enqueue=True,
-        filter=correlation_filter,
         level="ERROR",
+        diagnose=False,
+        backtrace=True,  # ERROR log — pełny backtrace dla debugowania
         format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {extra[correlation_id]} | {extra[request_id]} | {message}",
     )
+
+    # ── SUPERMOC: DuckDB sink dla WARNING+ logów ─────────────────────────────
+    _setup_duckdb_sink(log_dir, app_name)
 
     # ── Konfiguracja structlog (output przez loguru) ─────────────────────────
     _setup_structlog()
@@ -229,6 +282,73 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
     _setup_stamina_logging()
 
     _INITIALIZED = True
+
+# ── SUPERMOC: DuckDB sink dla analityki logów ──────────────────────────────
+
+
+def _setup_duckdb_sink(log_dir: Path, app_name: str) -> None:
+    """SUPERMOC: Custom Loguru sink → DuckDB dla WARNING+ logów.
+
+    Logi WARNING i wyższe są automatycznie zapisywane do DuckDB
+    dla łatwej analizy SQL. Tabela telemetry_logs jest tworzona
+    automatycznie przy pierwszym użyciu.
+    """
+    try:
+        import duckdb
+        import json
+
+        db_path = log_dir / f"{app_name.lower()}_logs.duckdb"
+        conn = duckdb.connect(str(db_path))
+
+        # Utwórz tabelę jeśli nie istnieje
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS telemetry_logs (
+                timestamp TIMESTAMP,
+                level VARCHAR,
+                logger_name VARCHAR,
+                message VARCHAR,
+                extra JSON,
+                correlation_id VARCHAR,
+                tenant_id VARCHAR
+            )
+        """)
+
+        # Custom sink jako funkcja
+        def _duckdb_sink(message):
+            record = message.record
+            extra = record["extra"]
+            try:
+                conn.execute(
+                    """
+                    INSERT INTO telemetry_logs
+                    (timestamp, level, logger_name, message, extra, correlation_id, tenant_id)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        record["time"].isoformat(),
+                        record["level"].name,
+                        record["name"],
+                        record["message"][:2000],  # Ograniczenie długości
+                        json.dumps(extra, default=str),
+                        extra.get("correlation_id", "system"),
+                        extra.get("tenant_id", "default"),
+                    ),
+                )
+            except Exception:
+                pass  # Ignoruj błędy DuckDB — nie blokuj logowania
+
+        logger.add(
+            _duckdb_sink,
+            level="WARNING",
+            enqueue=True,
+            diagnose=False,
+        )
+        logger.debug("[LOGGER] DuckDB sink initialized: %s", db_path)
+    except ImportError:
+        logger.debug("[LOGGER] DuckDB not available — skipping DuckDB sink")
+    except Exception as exc:
+        logger.debug("[LOGGER] DuckDB sink init failed: %s", exc)
+
 
 
 def _setup_stamina_logging() -> None:

@@ -7,17 +7,26 @@ SUPERMOC TASKIQ:
   - TaskiqDepends działa w pełni z InMemoryBroker
   - TestClient symuluje pełny cykl życia zadania
 
+SUPERMOCE pytest-anyio:
+  - pytestmark modułowo — zero per-function @pytest.mark.anyio
+  - async/await zamiast asyncio.run() — idiomatyczne testowanie async
+  - anyio.sleep/gather zamiast asyncio — jednolita warstwa async
+
 Usage:
     pytest tests/test_inmemory_broker.py -v
 """
 
 from __future__ import annotations
 
-import asyncio
+import anyio
 from typing import Any
 
 import pytest
 from taskiq import InMemoryBroker, TaskiqDepends, TaskiqEvents, TaskiqResult
+
+
+# ── SUPERMOC: pytestmark — anyio na poziomie modułu zamiast per-function ───
+pytestmark = pytest.mark.anyio
 
 
 # =========================================================================
@@ -52,7 +61,7 @@ def broker_with_middleware(broker):
 # =========================================================================
 
 
-def test_basic_task_execution(broker):
+async def test_basic_task_execution(broker):
     """Verify basic task execution with InMemoryBroker."""
     executed = []
 
@@ -61,14 +70,14 @@ def test_basic_task_execution(broker):
         executed.append(True)
         return value * 2
 
-    # InMemoryBroker: synchroniczna symulacja
-    result: TaskiqResult = asyncio.run(broker.kick("test_simple", 21).kiq())
+    # InMemoryBroker: bezpośrednie await zamiast asyncio.run()
+    result: TaskiqResult = await broker.kick("test_simple", 21).kiq()
 
     assert result.return_value == 42
     assert len(executed) == 1
 
 
-def test_task_labels(broker):
+async def test_task_labels(broker):
     """Verify task labels are propagated with InMemoryBroker."""
     @broker.task(
         task_name="test_labels",
@@ -77,22 +86,22 @@ def test_task_labels(broker):
     async def labeled_task() -> str:
         return "done"
 
-    result: TaskiqResult = asyncio.run(broker.kick("test_labels").kiq())
+    result: TaskiqResult = await broker.kick("test_labels").kiq()
     assert result.return_value == "done"
 
 
-def test_task_timeout(broker):
+async def test_task_timeout(broker):
     """Verify task timeout works with InMemoryBroker (fast)."""
     @broker.task(task_name="test_timeout", timeout=0.001)
     async def slow_task():
-        await asyncio.sleep(10.0)
+        await anyio.sleep(10.0)
         return "too_late"
 
     with pytest.raises(Exception):
-        asyncio.run(broker.kick("test_timeout").kiq())
+        await broker.kick("test_timeout").kiq()
 
 
-def test_task_error_handling(broker):
+async def test_task_error_handling(broker):
     """Verify task error handling with InMemoryBroker."""
     @broker.task(task_name="test_error")
     async def failing_task():
@@ -100,7 +109,7 @@ def test_task_error_handling(broker):
         raise ValueError(msg)
 
     with pytest.raises(ValueError, match="Expected test error"):
-        asyncio.run(broker.kick("test_error").kiq())
+        await broker.kick("test_error").kiq()
 
 
 # =========================================================================
@@ -108,7 +117,7 @@ def test_task_error_handling(broker):
 # =========================================================================
 
 
-def test_task_labels_in_message(broker):
+async def test_task_labels_in_message(broker):
     """Verify labels are correctly set in the task message."""
     labels_dict: dict = {}
 
@@ -120,11 +129,11 @@ def test_task_labels_in_message(broker):
         return "ok"
 
     # Store labels for verification by inspecting the broker's messages
-    result: TaskiqResult = asyncio.run(broker.kick("test_labels_check").kiq())
+    result: TaskiqResult = await broker.kick("test_labels_check").kiq()
     assert result.return_value == "ok"
 
 
-def test_task_labels_with_taskiq_events(broker):
+async def test_task_labels_with_taskiq_events(broker):
     """Verify we can listen for task events with InMemoryBroker."""
     startup_called = False
 
@@ -134,7 +143,8 @@ def test_task_labels_with_taskiq_events(broker):
         startup_called = True
 
     # InMemoryBroker supports lifecycle events
-    asyncio.run(broker.startup())
+    # await zamiast asyncio.run()
+    await broker.startup()
     assert startup_called, "WORKER_STARTUP event should have been triggered"
 
 
@@ -143,7 +153,7 @@ def test_task_labels_with_taskiq_events(broker):
 # =========================================================================
 
 
-def test_middleware_execution_order(broker):
+async def test_middleware_execution_order(broker):
     """Verify middleware hooks are called in correct order."""
     call_order: list[str] = []
 
@@ -161,11 +171,8 @@ def test_middleware_execution_order(broker):
         call_order.append("task_body")
         return "done"
 
-    # async def run():
-    #     return await broker.kick("test_order").kiq()
-    # result = asyncio.run(run())
-
-    assert asyncio.run(broker.kick("test_order").kiq()) is not None
+    result = await broker.kick("test_order").kiq()
+    assert result is not None
 
 
 # =========================================================================
@@ -173,7 +180,7 @@ def test_middleware_execution_order(broker):
 # =========================================================================
 
 
-def test_kicker_with_task_id(broker):
+async def test_kicker_with_task_id(broker):
     """Verify Kicker.with_task_id() works with InMemoryBroker."""
 
     @broker.task(task_name="test_with_id")
@@ -182,25 +189,22 @@ def test_kicker_with_task_id(broker):
 
     from taskiq import Kicker
 
-    result = asyncio.run(
-        Kicker("test_with_id", broker=broker)
-        .with_task_id("my-custom-id-42")
+    result = await Kicker("test_with_id", broker=broker)\
+        .with_task_id("my-custom-id-42")\
         .kiq()
-    )
     assert result is not None
 
 
-def test_kicker_with_labels(broker):
+async def test_kicker_with_labels(broker):
     """Verify Kicker.with_labels() adds runtime labels."""
     @broker.task(task_name="test_kicker_labels")
     async def labeled_task() -> str:
         return "labeled"
 
-    assert asyncio.run(
-        broker.kick("test_kicker_labels")
-        .with_labels({"source": "test", "env": "ci"})
+    result = await broker.kick("test_kicker_labels")\
+        .with_labels({"source": "test", "env": "ci"})\
         .kiq()
-    ) is not None
+    assert result is not None
 
 
 # =========================================================================
@@ -208,7 +212,7 @@ def test_kicker_with_labels(broker):
 # =========================================================================
 
 
-def test_concurrent_task_execution(broker):
+async def test_concurrent_task_execution(broker):
     """Verify multiple tasks can be executed concurrently."""
     results: list[int] = []
 
@@ -217,13 +221,12 @@ def test_concurrent_task_execution(broker):
         results.append(value)
         return value
 
-    async def run_multiple():
-        tasks = []
-        for i in range(5):
-            tasks.append(broker.kick("test_concurrent", i).kiq())
-        return await asyncio.gather(*tasks)
-
-    gathered = asyncio.run(run_multiple())
+    # anyio.gather zamiast asyncio.gather
+    tasks = [
+        broker.kick("test_concurrent", i).kiq()
+        for i in range(5)
+    ]
+    gathered = await anyio.gather(*tasks)
     assert len(gathered) == 5
     assert len(results) == 5
 
@@ -233,7 +236,7 @@ def test_concurrent_task_execution(broker):
 # =========================================================================
 
 
-def test_broker_lifecycle(broker):
+async def test_broker_lifecycle(broker):
     """Verify broker startup/shutdown lifecycle."""
     startup_called = False
     shutdown_called = False
@@ -248,13 +251,11 @@ def test_broker_lifecycle(broker):
         nonlocal shutdown_called
         shutdown_called = True
 
-    async def lifecycle():
-        await broker.startup()
-        assert startup_called
-        await broker.shutdown()
-        assert shutdown_called
-
-    asyncio.run(lifecycle())
+    # await zamiast asyncio.run(lifecycle())
+    await broker.startup()
+    assert startup_called
+    await broker.shutdown()
+    assert shutdown_called
 
 
 # =========================================================================
@@ -262,7 +263,7 @@ def test_broker_lifecycle(broker):
 # =========================================================================
 
 
-def test_task_with_di(broker):
+async def test_task_with_di(broker):
     """Verify task with TaskiqDepends works with InMemoryBroker.
 
     UWAGA: TaskiqDepends wymaga rejestracji zależności przed kick.
@@ -272,19 +273,19 @@ def test_task_with_di(broker):
     async def di_task(value: int = 10) -> int:
         return value * 3
 
-    result: TaskiqResult = asyncio.run(broker.kick("test_di").kiq())
+    result: TaskiqResult = await broker.kick("test_di").kiq()
     assert result.return_value == 30
 
 
-def test_task_with_multiple_params(broker):
+async def test_task_with_multiple_params(broker):
     """Verify tasks with complex parameters work."""
     @broker.task(task_name="test_multi_params")
     async def multi_task(a: int, b: str, c: list[int]) -> dict:
         return {"sum": a + len(c), "text": b.upper()}
 
-    result: TaskiqResult = asyncio.run(
-        broker.kick("test_multi_params", 10, "hello", [1, 2, 3]).kiq()
-    )
+    result: TaskiqResult = await broker.kick(
+        "test_multi_params", 10, "hello", [1, 2, 3]
+    ).kiq()
     assert result.return_value == {"sum": 13, "text": "HELLO"}
 
 
@@ -293,7 +294,7 @@ def test_task_with_multiple_params(broker):
 # =========================================================================
 
 
-def test_task_labels_and_timeout_combined(broker):
+async def test_task_labels_and_timeout_combined(broker):
     """Verify combined labels and timeout configuration."""
     @broker.task(
         task_name="test_combined",
@@ -303,12 +304,11 @@ def test_task_labels_and_timeout_combined(broker):
     async def combined_task() -> dict:
         return {"status": "ok", "labels_present": True}
 
-    result: TaskiqResult = asyncio.run(broker.kick("test_combined").kiq())
+    result: TaskiqResult = await broker.kick("test_combined").kiq()
     assert result.return_value["status"] == "ok"
     assert result.return_value["labels_present"]
 
 
-@pytest.mark.asyncio
 async def test_async_event_broker_lifecycle(broker):
     """Verify full broker lifecycle with async events."""
     results: list[str] = []

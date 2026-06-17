@@ -35,8 +35,8 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import datetime
 import json
+import pendulum
 import os
 import sys
 import time
@@ -107,7 +107,7 @@ class RotationStatus:
             "last_rotation": None,
             "key_hashes": {},
             "rotation_count": 0,
-            "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "created_at": pendulum.now("UTC").to_iso8601_string(),
         }
 
     def save(self) -> None:
@@ -126,8 +126,8 @@ class RotationStatus:
         if not last:
             return True
         try:
-            last_date = datetime.datetime.fromisoformat(last)
-            delta = datetime.datetime.now(datetime.timezone.utc) - last_date
+            last_date = pendulum.parse(last)
+            delta = pendulum.now("UTC") - last_date
             return delta.days >= days
         except (ValueError, TypeError):
             return True
@@ -141,7 +141,7 @@ class RotationStatus:
         duration_ms: float,
     ) -> None:
         """Zapisz udaną rotację w statusie."""
-        now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        now = pendulum.now("UTC").to_iso8601_string()
         self._data["last_rotation"] = now
         self._data.setdefault("rotations", []).append({
             "timestamp": now,
@@ -264,7 +264,7 @@ def run_scheduled_rotation(
         0 = sukces, 1 = błąd, 2 = rotacja nie wymagana.
     """
     status = RotationStatus(STATUS_FILE)
-    now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    now = pendulum.now("UTC").to_iso8601_string()
 
     print("=" * 60)
     print(f"  SQLCipher Key Rotation Scheduler")

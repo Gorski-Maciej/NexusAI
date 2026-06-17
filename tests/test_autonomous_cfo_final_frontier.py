@@ -10,7 +10,8 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 import anyio
 import uuid
-from datetime import date, datetime, timezone
+from datetime import date
+import pendulum
 from types import SimpleNamespace
 
 from unittest.mock import MagicMock
@@ -94,11 +95,11 @@ def test_reconcile_bulk_payment_covers_three_invoices_and_posts_sub_10gr_roundin
         result = await engine.reconcile_bulk_payment(
             vendor_id="V-1",
             payment_amount_minor=12007,
-            received_date=datetime.now(timezone.utc),
+            received_date=pendulum.now("UTC"),
             open_invoices=[
-                OpenInvoice(invoice_id="FV/1", amount_due_minor=5000, due_date=datetime(2026, 3, 1, tzinfo=timezone.utc)),
-                OpenInvoice(invoice_id="FV/2", amount_due_minor=5000, due_date=datetime(2026, 3, 2, tzinfo=timezone.utc)),
-                OpenInvoice(invoice_id="FV/3", amount_due_minor=2000, due_date=datetime(2026, 3, 3, tzinfo=timezone.utc)),
+                OpenInvoice(invoice_id="FV/1", amount_due_minor=5000, due_date=pendulum.datetime(2026, 3, 1, tz="UTC")),
+                OpenInvoice(invoice_id="FV/2", amount_due_minor=5000, due_date=pendulum.datetime(2026, 3, 2, tz="UTC")),
+                OpenInvoice(invoice_id="FV/3", amount_due_minor=2000, due_date=pendulum.datetime(2026, 3, 3, tz="UTC")),
             ],
         )
         assert len(result["allocations"]) == 3

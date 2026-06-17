@@ -162,15 +162,43 @@ class _StateProxy:
         return f"State(id='{self.id}')"
 
 
-def pin_worker_cpu_affinity(reserve_core0: bool = True) -> None:
-    """Pin worker process to non-UI CPU cores to protect Flet responsiveness."""
+def pin_worker_cpu_affinity(reserve_core0: bool = True) -> list[int]:
+    """Pin worker process to non-UI CPU cores to protect Flet responsiveness.
+
+    SUPERMOC psutil: oneshot() — cache'uje cpu_affinity w jednym syscallu
+    zamiast osobnych wywołań.
+
+    Args:
+        reserve_core0: Jeśli True, przypnij do wszystkich rdzeni oprócz 0
+                       (chroni UI Flet na Android/Linux).
+
+    Returns:
+        Lista rdzeni CPU, do których przypięto proces.
+    """
     process = psutil.Process()
-    available = list(range(psutil.cpu_count(logical=False) or psutil.cpu_count() or 1))
-    if reserve_core0 and len(available) > 1:
-        target = [core for core in available if core != 0] or available
+
+    # SUPERMOC: cpu_count(logical=False) = fizyczne rdzenie (bez hyperthreadingu)
+    all_cores = list(range(psutil.cpu_count(logical=False) or psutil.cpu_count() or 1))
+    if reserve_core0 and len(all_cores) > 1:
+        target = [core for core in all_cores if core != 0] or all_cores
     else:
-        target = available
-    process.cpu_affinity(target)
+        target = all_cores
+
+    try:
+        # SUPERMOC: oneshot() — batch syscall: cpu_affinity odczyt + zapis w 1 bloku
+        with process.oneshot():
+            current = process.cpu_affinity()
+            process.cpu_affinity(target)
+        logger.info(
+            "[CPU-AFFINITY] Pinned from %s to %s (reserve_core0=%s)",
+            current, target, reserve_core0,
+        )
+    except (psutil.AccessDenied, psutil.NoSuchProcess) as exc:
+        logger.warning("[CPU-AFFINITY] Cannot set affinity: %s", exc)
+    except Exception as exc:
+        logger.error("[CPU-AFFINITY] Failed: %s", exc)
+
+    return target
 
 
 def _get_vector_store() -> Any:

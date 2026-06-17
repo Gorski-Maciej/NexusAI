@@ -129,15 +129,15 @@ class TestDatabaseIntegration:
         from sqlalchemy import text
 
         # Add an outbox event manually — simulating what the API does
-        import uuid, datetime
+        import uuid
+        import pendulum
 
         outbox_id = uuid.uuid4().hex
         event_payload = msgspec_dumps({
             "invoice_id": sample_invoice["id"],
             "source": "test",
         })
-        from datetime import timezone
-        now = datetime.datetime.now(timezone.utc).isoformat()
+        now = pendulum.now("UTC").to_iso8601_string()
 
         await db_session.execute(
             text(
@@ -183,10 +183,10 @@ class TestDatabaseIntegration:
     async def test_invoice_audit_log(self, db_session, sample_invoice: dict) -> None:
         """Test audit log entry creation."""
         from sqlalchemy import text
-        import uuid, datetime
-        from datetime import timezone
+        import uuid
+        import pendulum
 
-        now = datetime.datetime.now(timezone.utc).isoformat()
+        now = pendulum.now("UTC").to_iso8601_string()
         audit_id = uuid.uuid4().hex
 
         await db_session.execute(
@@ -215,10 +215,10 @@ class TestDatabaseIntegration:
     async def test_multiple_invoices_create_by_seed(self, db_session) -> None:
         """Simulate bulk seeding of invoices (as done by seed_data.py)."""
         from sqlalchemy import text
-        import uuid, datetime
-        from datetime import timezone
+        import uuid
+        import pendulum
 
-        now = datetime.datetime.now(timezone.utc).isoformat()
+        now = pendulum.now("UTC").to_iso8601_string()
 
         invoices_data = [
             ("FV/BULK/001", 1500.00, 1845.00, "NEW", "pl"),
@@ -257,10 +257,10 @@ class TestDatabaseIntegration:
     async def test_fx_rate_crud(self, db_session) -> None:
         """Test basic FX rate CRUD operations."""
         from sqlalchemy import text
-        import uuid, datetime
-        from datetime import timezone
+        import uuid
+        import pendulum
 
-        now = datetime.datetime.now(timezone.utc).isoformat()
+        now = pendulum.now("UTC").to_iso8601_string()
 
         # Create
         fx_id = uuid.uuid4().hex

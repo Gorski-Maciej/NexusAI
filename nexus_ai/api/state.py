@@ -47,25 +47,59 @@ def _init_otel_metrics_sync() -> None:
 async def _start_metrics_background_task(app: Litestar) -> None:
     """Spawn background system metrics updater via BackgroundTaskManager.
 
+    SUPERMOCE psutil:
+      - Process.oneshot() — batch syscalls dla procesu
+      - SystemMonitor.collect_all() — pełne metryki systemowe co 30s
+      - memory_full_info() → USS/PSS
+      - cpu_percent(percpu=True) — per-core gauge
+      - dysk I/O, sieć I/O, sensory temperatury
+
     Rejestruje task w ``app.state.bg_tasks`` zamiast manualnego
     ``anyio.ensure_backend().create_task()`` — task jest automatycznie
     anulowany przez ``cancel_all()`` podczas shutdownu.
-
-    Od Fazy 4: dodaje monitoring wycieków pamięci mimalloc.
     """
     try:
-        import psutil
-
-        _proc = psutil.Process()
+        from nexus_ai.core.monitor import process_monitor, system_monitor
 
         async def _update_system_metrics() -> None:
-            """Periodically update system-level gauges + detect memory leaks."""
-            from nexus_ai.api.telemetry_metrics import record_mimalloc_stats, set_memory_usage
+            """Periodically update all system-level gauges via OTel.
+
+            Co 30s kolekcjonuje:
+              - Proces: RSS, USS, CPU%, thready, FD
+              - System: CPU per-core, RAM %, swap, dysk, sieć, temperatura
+              - mimalloc leak detection
+            """
+            from nexus_ai.api.telemetry_metrics import (
+                record_mimalloc_stats,
+                set_memory_usage,
+            )
 
             while True:
                 try:
-                    mem = _proc.memory_info().rss / (1024 * 1024)
-                    set_memory_usage(mem)
+                    # SUPERMOC: oneshot() — batch syscalls
+                    proc_metrics = process_monitor.collect_metrics()
+                    set_memory_usage(proc_metrics.rss_mb)
+
+                    # SUPERMOC: pełne metryki systemowe
+                    sys_metrics = system_monitor.collect_all()
+
+                    # Loguj co 5 minut dla AUDIT
+                    import time as _time
+                    if int(_time.time()) % 300 < 30:  # co ~5min
+                        logger.bind(level="AUDIT").info(
+                            "[SYSTEM-METRICS] RSS=%.1fMB USS=%.1fMB CPU=%.1f%% "
+                            "RAM=%.1f%% DISK=%.1f%% SWAP=%.1f%% TEMP=%.1f°C "
+                            "NET_IN=%.1fMB NET_OUT=%.1fMB",
+                            proc_metrics.rss_mb,
+                            proc_metrics.uss_mb or 0.0,
+                            proc_metrics.cpu_percent,
+                            sys_metrics.ram_percent,
+                            sys_metrics.disk_percent,
+                            sys_metrics.swap_percent,
+                            sys_metrics.cpu_temp_celsius or 0.0,
+                            sys_metrics.net_bytes_recv_mb,
+                            sys_metrics.net_bytes_sent_mb,
+                        )
                 except Exception:
                     pass
 
@@ -175,7 +209,7 @@ def make_on_startup(engine, session_factory):
         """Inicjalizacja ciężkich zasobów przy starcie API.
 
         Fazowanie startu:
-          0. Config + ML cache
+          0. Config + ML cache + pendulum locale
           1. Metryki OTel (sync + background task)
           2. Database engine + core services (pre-created przez SQLAlchemyPlugin)
           3. Alembic migrations + seed danych
@@ -186,6 +220,13 @@ def make_on_startup(engine, session_factory):
         """
 
         config = app.dependencies["config"]()
+
+        # ── SUPERMOC pendulum: Ustaw polską lokalizację dla całej aplikacji ──
+        # diff_for_humans(), format(), day_of_week itp. będą po polsku.
+        try:
+            pendulum.set_locale("pl")
+        except Exception:
+            pass  # locale 'pl' może nie być zainstalowana w niektórych środowiskach
 
         # ── Phase 0: Config + ML cache ───────────────────────────────
         app.state.ml_cache_env = _configure_ml_cache_directories(config.base_dir)
