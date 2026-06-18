@@ -745,24 +745,4 @@ def _create_sqlite_l2(cache_dir: str | Path | None) -> SqliteBackend:
     backend = SqliteBackend(db_path=str(cache_path))
     logger.info("[CACHE] L2 SqliteBackend initialized: %s", cache_path)
     return backend
-    global _default_cache
-    if _default_cache is None:
-        with _default_cache_lock:
-            if _default_cache is None:
-                l1 = InMemoryBackend(max_size=10_000)
-                l2: CacheBackend | None = None
-                if use_l2:
-                    if cache_dir is None:
-                        cache_dir = Path(os.getcwd()) / "app_data" / "cache"
-                    cache_path = Path(cache_dir) / "nexus_cache.db"
-                    cache_path.parent.mkdir(parents=True, exist_ok=True)
-                    from nexus_ai.core.cache.backends import SqliteBackend
-                    l2 = SqliteBackend(db_path=str(cache_path))
-                    logger.info("[CACHE] L2 SqliteBackend initialized: %s", cache_path)
 
-                _default_cache = NexusCache(
-                    l1_backend=l1,
-                    l2_backend=l2,
-                    default_ttl=default_ttl,
-                )
-    return _default_cache

@@ -17,6 +17,7 @@ import pendulum
 from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
+from nexus_ai.core.fsspec_compat import FSSpecFactory
 
 logger = get_logger("nexus.core.backup")
 
@@ -70,23 +71,26 @@ class BackupManager:
     Szyfrowanie AEAD (ChaCha20-Poly1305) backupów przy użyciu klucza z konfiguracji.
     """
 
-    # ── PyArrow FileSystem ────────────────────────────────────────────
-    # ``pyarrow.fs.LocalFileSystem`` — jednolity interfejs dla wszystkich
-    # operacji na plikach backupu. W przyszłości można podmienić na
-    # ``S3FileSystem`` lub ``GcsFileSystem`` bez zmiany kodu biznesowego.
+    # ── SUPERMOC fsspec: FSSpecFactory zamiast pyarrow.fs ────────────
+    # ``pyarrow.fs.LocalFileSystem`` jest zastąpiony przez fsspec,
+    # który zapewnia ten sam interfejs dla wszystkich protokołów
+    # (file://, s3://, sftp://) bez zmiany kodu biznesowego.
+    # Zmiana storage_protocol w config TOML zmienia backend backupu.
     _fs: Any = None
 
     @property
     def fs(self):
         if self._fs is None:
-            import pyarrow.fs as pa_fs
-            self._fs = pa_fs.LocalFileSystem()
+            self._fs = FSSpecFactory.get_instance().get_filesystem()
         return self._fs
 
     def __init__(self, config):
         self.config = config
         self.backup_dir = Path(config.base_dir) / "backups"
         self.backup_dir.mkdir(exist_ok=True)
+
+        # SUPERMOC: Skonfiguruj FSSpecFactory z AppConfig
+        FSSpecFactory.get_instance().configure_from_app_config(config)
 
     # ── SUPERMOC: DuckDB EXPORT / IMPORT DATABASE ──────────────────────
 

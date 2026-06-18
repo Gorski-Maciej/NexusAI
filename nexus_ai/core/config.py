@@ -393,6 +393,9 @@ class _StorageSection(Struct, kw_only=True):
     root: str | None = None
     auto_mkdir: bool | None = None
     cache_size_mb: Annotated[int | None, Meta(ge=0, le=10240)] = None
+    transactional: bool | None = None  # SUPERMOC fsspec: atomowe operacje
+    chain_enabled: bool | None = None  # SUPERMOC fsspec: chaining FS (simplecache::file)
+    chain_cache_storage: str | None = None  # Ścieżka cache dla chain FS
 
 
 class _StaminaSection(Struct, kw_only=True):
@@ -678,6 +681,9 @@ class AppConfig(Struct, kw_only=True):
     storage_root: str = "app_data/uploads"
     storage_auto_mkdir: bool = True
     storage_cache_size_mb: int = 0
+    storage_transactional: bool = False  # SUPERMOC: AtomicFileSystem
+    storage_chain_enabled: bool = False  # SUPERMOC: chaining FS (simplecache::)
+    storage_chain_cache_storage: str = "app_data/fsspec_cache"  # Cache dir
 
     # ── SUPERMOC: Litestar Security — konfigurowalne z TOML ──
     jwt_exclude_paths: list[str] | None = None
@@ -824,6 +830,9 @@ class AppConfig(Struct, kw_only=True):
         "storage_root": ("storage", "root"),
         "storage_auto_mkdir": ("storage", "auto_mkdir"),
         "storage_cache_size_mb": ("storage", "cache_size_mb"),
+        "storage_transactional": ("storage", "transactional"),
+        "storage_chain_enabled": ("storage", "chain_enabled"),
+        "storage_chain_cache_storage": ("storage", "chain_cache_storage"),
     }
 
     @classmethod

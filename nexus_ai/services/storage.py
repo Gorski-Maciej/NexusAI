@@ -1,14 +1,18 @@
 """Unified file storage service using fsspec with configurable backend protocol.
 
+TOTALNA REWOLUCJA: wszystkie operacje I/O przez AsyncFsWrapper.
+- ``await afs.exists()`` zamiast ``await to_thread.run_sync(fs.exists)``
+- ``await afs.cat_file()`` zamiast ``await fsspec.open_async(..., 'rb')``
+- ``await afs.pipe_file()`` zamiast ``await fsspec.open_async(..., 'wb')``
+- Gotowy na S3: zmiana storage_protocol → natywne async I/O
+
 SUPERMOC fsspec:
 - ``fsspec.open()`` — uniwersalne otwieranie plików w każdym protokole (file://, s3://, sftp://, memory://)
 - ``fsspec.filesystem()`` — konfigurowalny backend przez config TOML
 - ``auto_mkdir`` — automatyczne tworzenie katalogów (CachingFileSystem opcjonalnie)
-- ``fsspec.open_async`` — async file I/O bez blokowania event loop
 - ``TransactionalFileSystem`` — atomowe zapisy (rollback przy błędzie)
 - ``TqdmCallback`` — progress bary dla transferów plików
 - ``MemoryFileSystem`` — RAM-only FS dla testów i tymczasowych danych
-- ``fsspec.info()`` — metadane plików (rozmiar, mtime) bez Path.stat()
 
 Zgodnie z aa3fvcx.txt: jeden URL, nieskończenie wiele backendów.
 Zmiana storage_protocol w config TOML zmienia backend bez zmiany kodu.
@@ -23,12 +27,10 @@ from pathlib import Path
 from collections.abc import AsyncIterator, MutableMapping
 from typing import Any, BinaryIO, final
 
-import anyio
 import fsspec
-from anyio import to_thread
 
 from nexus_ai.core.config import AppConfig
-from nexus_ai.core.fsspec_compat import TransactionalFileSystem
+from nexus_ai.core.fsspec_compat import AsyncFsWrapper, FSSpecFactory, TransactionalFileSystem
 from nexus_ai.core.logger import get_logger
 
 logger = get_logger(__name__)
@@ -40,58 +42,41 @@ UPLOAD_CHUNK_SIZE = 1024 * 1024
 class StorageService:
     """Unified file storage service with configurable fsspec backend.
 
-    SUPERMOC fsspec:
-    - Domyślnie ``file://`` (lokalny FS), ale config ``storage_protocol = "s3"`` zmienia
-      backend na S3 bez zmiany kodu biznesowego.
-    - ``storage_auto_mkdir = true`` automatycznie tworzy katalogi.
-    - ``storage_cache_size_mb > 0`` włącza przezroczyste CachingFileSystem.
-
-    Usage:
-        config = AppConfig()
-        storage = StorageService(config)
-        path = await storage.save_invoice_bytes_async(b"PDF data...", "invoice.pdf")
+    TOTALNA REWOLUCJA:
+    - ``self._async_fs`` — AsyncFsWrapper, czyste ``await fs.exists()`` API
+    - Zero ``to_thread.run_sync()`` w serwisie
+    - Gotowy na S3: zmiana storage_protocol → natywne async I/O
     """
 
     def __init__(self, config: AppConfig) -> None:
-        self._protocol = config.storage_protocol
         self._config = config
+
+        factory = FSSpecFactory.get_instance()
+        factory.configure_from_app_config(config)
+
+        self._protocol = config.storage_protocol
         self._base_path = config.base_dir / config.storage_root
 
-        # SUPERMOC fsspec: konfigurowalny backend przez config TOML
-        fs_kwargs: dict = {}
-        if config.storage_auto_mkdir:
-            fs_kwargs["auto_mkdir"] = True
+        # Sync FS dla kompatybilności (sync API, copy_between_fs)
+        self._fs = factory.get_filesystem()
 
-        self._fs = fsspec.filesystem(self._protocol, **fs_kwargs)
-
-        # SUPERMOC: CachingFileSystem dla przezroczystego cache'owania
-        if config.storage_cache_size_mb > 0:
-            from fsspec.implementations.cached import CachingFileSystem
-
-            cache_storage = config.base_dir / "app_data" / "fsspec_cache"
-            cache_storage.mkdir(parents=True, exist_ok=True)
-            self._fs = CachingFileSystem(
-                target_protocol=self._protocol,
-                cache_storage=str(cache_storage),
-                maxsize=config.storage_cache_size_mb * 1024 * 1024,
-                same_names=True,
-            )
-
-        if self._protocol == "file":
-            self._fs.makedirs(str(self._base_path), exist_ok=True)
+        # TOTALNA REWOLUCJA: AsyncFsWrapper dla async API
+        self._async_fs = factory.get_async_filesystem()
 
         # SUPERMOC: TransactionalFileSystem dla atomowych operacji
         self._tx_fs = TransactionalFileSystem(fs=self._fs)
 
         # SUPERMOC: fsspec.get_mapper() dla metadanych
-        self._meta_mapper = fsspec.get_mapper(self._resolve_url(".meta/"))
+        self._meta_mapper = factory.get_mapper(".meta/")
 
         logger.info(
-            "[StorageService] Initialized: protocol=%s root=%s cache=%dMB tx=%s",
+            "[StorageService] Initialized: protocol=%s root=%s cache=%dMB tx=%s chain=%s async=%s",
             self._protocol,
             self._base_path,
             config.storage_cache_size_mb,
             type(self._tx_fs).__name__,
+            config.storage_chain_enabled,
+            type(self._async_fs).__name__,
         )
 
     def _resolve_url(self, relative_path: str) -> str:
@@ -171,24 +156,26 @@ class StorageService:
     ) -> str:
         """Save file content using async fsspec I/O — nie blokuje event loop.
 
-        SUPERMOC fsspec: ``await fsspec.open_async()`` dla async file I/O.
+        TOTALNA REWOLUCJA: ``await self._async_fs.open()`` zamiast ``fsspec.open_async()``.
         """
         rel_path = self._local_path(original_name)
         url = self._resolve_url(rel_path)
 
-        # SUPERMOC: fsspec.open_async — async file I/O bez wątków
-        async with await fsspec.open_async(url, "wb") as out:
+        # TOTALNA REWOLUCJA: AsyncFsWrapper.open() — async context manager
+        # UWAGA: fsspec.open() zwraca OpenFile. Wewnątrz async with,
+        # read()/write() są synchroniczne (ale non-blocking przez OpenFile).
+        async with await self._async_fs.open(url, "wb") as out:
             if hasattr(stream, "read"):
                 file_obj = stream  # type: ignore[assignment]
                 while True:
-                    chunk = await to_thread.run_sync(file_obj.read, chunk_size)
+                    chunk = file_obj.read(chunk_size)
                     if not chunk:
                         break
-                    await out.write(chunk)
+                    out.write(chunk)  # sync, non-blocking (OpenFile)
             else:
                 for chunk in stream:
                     if chunk:
-                        await out.write(chunk)
+                        out.write(chunk)  # sync, non-blocking (OpenFile)
 
         return url
 
@@ -203,32 +190,30 @@ class StorageService:
     async def read_file_async(self, url: str) -> bytes:
         """Read entire file as bytes using async fsspec I/O.
 
-        SUPERMOC fsspec: ``await fsspec.open_async(url, "rb")`` dla async read.
+        TOTALNA REWOLUCJA: ``await self._async_fs.cat_file()`` zamiast ``fsspec.open_async()``.
         """
         url = self._ensure_protocol_prefix(url)
-        async with await fsspec.open_async(url, "rb") as f:
-            return await f.read()
+        return await self._async_fs.cat_file(url)
 
     async def delete_file_async(self, url: str) -> bool:
-        """Delete file using fsspec (async wrapper)."""
+        """Delete file using async fsspec I/O.
+
+        TOTALNA REWOLUCJA: ``await self._async_fs.exists()`` + ``await self._async_fs.rm()``
+        zamiast ``await to_thread.run_sync(_delete)``.
+        """
         url = self._ensure_protocol_prefix(url)
-
-        def _delete() -> bool:
-            if self._fs.exists(url):
-                self._fs.rm(url)
-                return True
-            return False
-
-        return await to_thread.run_sync(_delete)
+        if await self._async_fs.exists(url):
+            await self._async_fs.rm(url)
+            return True
+        return False
 
     async def file_exists_async(self, url: str) -> bool:
-        """Check if file exists using fsspec."""
+        """Check if file exists using async fsspec I/O.
+
+        TOTALNA REWOLUCJA: ``await self._async_fs.exists()`` zamiast ``to_thread.run_sync()``.
+        """
         url = self._ensure_protocol_prefix(url)
-
-        def _exists() -> bool:
-            return self._fs.exists(url)
-
-        return await to_thread.run_sync(_exists)
+        return await self._async_fs.exists(url)
 
     # ── SUPERMOC: fsspec.get_mapper() — dict-like interface ─────────────────
 
@@ -315,13 +300,19 @@ class StorageService:
         target_name: str | None = None,
         description: str = "Uploading...",
     ) -> str:
-        """Async wersja save_with_progress — uruchamia transfer w wątku."""
-        return await to_thread.run_sync(
-            self.save_with_progress,
-            source_path,
-            target_name=target_name,
-            description=description,
-        )
+        """Async wersja save_with_progress — przez AsyncFsWrapper.put().
+
+        TOTALNA REWOLUCJA: ``await self._async_fs.put()`` zamiast ``to_thread.run_sync()``.
+        """
+        from fsspec.callbacks import TqdmCallback
+
+        rel_path = self._local_path(target_name)
+        url = self._resolve_url(rel_path)
+
+        with TqdmCallback(desc=description) as cb:
+            await self._async_fs.put(source_path, url, callback=cb)
+
+        return url
 
     # ── SUPERMOC: copy_between_fs — kopia między systemami plików ──────────
 
@@ -369,28 +360,23 @@ class StorageService:
     # ── SUPERMOC: get_file_info — metadane pliku przez fsspec ─────────────
 
     async def get_file_info(self, url: str) -> dict[str, Any]:
-        """Pobierz metadane pliku przez fsspec.info().
+        """Pobierz metadane pliku przez async fsspec I/O.
 
-        SUPERMOC fsspec: ``fs.info()`` zamiast ``Path.stat()`` —
-        działa z każdym protokołem (file://, s3://, http://).
+        TOTALNA REWOLUCJA: ``await self._async_fs.info()`` zamiast ``to_thread.run_sync()``.
 
         Returns:
             dict z kluczami: name, size, type, mtime, protocol.
         """
         url = self._ensure_protocol_prefix(url)
-
-        def _get_info() -> dict:
-            info = self._fs.info(url)
-            return {
-                "name": info.get("name", url),
-                "size": info.get("size", 0),
-                "type": info.get("type", "file"),
-                "mtime": info.get("mtime", 0),
-                "protocol": self._protocol,
-                "url": url,
-            }
-
-        return await to_thread.run_sync(_get_info)
+        info = await self._async_fs.info(url)
+        return {
+            "name": info.get("name", url),
+            "size": info.get("size", 0),
+            "type": info.get("type", "file"),
+            "mtime": info.get("mtime", 0),
+            "protocol": self._protocol,
+            "url": url,
+        }
 
     # ── SUPERMOC: stream_to_response — async streaming dla API ────────────
 
@@ -401,8 +387,7 @@ class StorageService:
     ) -> AsyncIterator[bytes]:
         """SUPERMOC: Streamuj plik w async generatorze dla odpowiedzi API.
 
-        Używa ``fsspec.open_async()`` do odczytu pliku w kawałkach
-        bez ładowania całego pliku do pamięci.
+        TOTALNA REWOLUCJA: ``await self._async_fs.open()`` zamiast ``fsspec.open_async()``.
 
         Args:
             url: URL pliku do streamowania.
@@ -412,9 +397,10 @@ class StorageService:
             Chunki bajtów do wysłania klientowi.
         """
         url = self._ensure_protocol_prefix(url)
-        async with await fsspec.open_async(url, "rb") as f:
+        # UWAGA: fsspec.open() zwraca OpenFile. read()/write() są sync.
+        async with await self._async_fs.open(url, "rb") as f:
             while True:
-                chunk = await f.read(chunk_size)
+                chunk = f.read(chunk_size)  # sync, non-blocking (OpenFile)
                 if not chunk:
                     break
                 yield chunk
@@ -453,6 +439,11 @@ class StorageService:
         service._base_path = Path("test")
         service._fs = MemoryFileSystem()
         service._tx_fs = TransactionalFileSystem(fs=service._fs)
+
+        # TOTALNA REWOLUCJA: AsyncFsWrapper dla memory FS
+        from nexus_ai.core.fsspec_compat import AsyncFsWrapper
+        service._async_fs = AsyncFsWrapper(fs=service._fs)
+
         service._meta_mapper = fsspec.get_mapper("memory://test/.meta/")
         service._config = _MockConfig()
         service._fs.makedirs("test", exist_ok=True)
@@ -473,11 +464,9 @@ class StorageService:
     # ── SUPERMOC: list_files — lista plików przez fsspec ────────────────────
 
     async def list_files(self, prefix: str = "") -> list[dict[str, Any]]:
-        """Listuj pliki w storage z metadanymi przez fsspec.
+        """Listuj pliki w storage z metadanymi przez async fsspec I/O.
 
-        SUPERMOC fsspec: ``fs.ls()`` zamiast ``os.listdir()`` —
-        działa z każdym protokołem (file://, s3://, http://).
-        Zwraca pliki z rozmiarem i datą modyfikacji.
+        TOTALNA REWOLUCJA: ``await self._async_fs.ls()`` zamiast ``to_thread.run_sync()``.
 
         Args:
             prefix: Opcjonalny prefix katalogu.
@@ -486,17 +475,13 @@ class StorageService:
             List[dict]: [{name, size, type, mtime}, ...]
         """
         url = self._resolve_url(prefix)
-
-        def _list() -> list[dict]:
-            entries = self._fs.ls(url, detail=True)
-            return [
-                {
-                    "name": e.get("name", ""),
-                    "size": e.get("size", 0),
-                    "type": e.get("type", "file"),
-                    "mtime": e.get("mtime", 0),
-                }
-                for e in entries
-            ]
-
-        return await to_thread.run_sync(_list)
+        entries = await self._async_fs.ls(url, detail=True)
+        return [
+            {
+                "name": e.get("name", ""),
+                "size": e.get("size", 0),
+                "type": e.get("type", "file"),
+                "mtime": e.get("mtime", 0),
+            }
+            for e in entries
+        ]

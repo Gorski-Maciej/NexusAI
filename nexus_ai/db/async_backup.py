@@ -28,9 +28,7 @@ import pendulum
 from pathlib import Path
 from typing import Any
 
-import fsspec
-from fsspec.implementations.cached import CachingFileSystem
-from nexus_ai.core.fsspec_compat import TransactionalFileSystem
+from nexus_ai.core.fsspec_compat import FSSpecFactory, TransactionalFileSystem
 from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
@@ -69,16 +67,17 @@ class AsyncBackup:
         self._databases = databases or dict(DEFAULT_DATABASES)
         self._sqlcipher_key = sqlcipher_key or os.environ.get("NEXUS_SQLCIPHER_KEY", "")
         
-        # SUPERMOC fsspec: konfigurowalny backend backupu
+        # SUPERMOC fsspec: FSSpecFactory — centralna fabryka
         if config is not None:
+            factory = FSSpecFactory.get_instance()
+            factory.configure_from_app_config(config)
+            self._fs = factory.get_filesystem()
             self._fs_protocol = config.storage_protocol
-            self._fs = fsspec.filesystem(
-                config.storage_protocol,
-                auto_mkdir=config.storage_auto_mkdir,
-            )
         else:
+            factory = FSSpecFactory.get_instance()
+            factory.configure(protocol="file", auto_mkdir=True)
+            self._fs = factory.get_filesystem()
             self._fs_protocol = "file"
-            self._fs = fsspec.filesystem("file", auto_mkdir=True)
 
     async def backup_all(
         self,
@@ -258,8 +257,11 @@ class AsyncBackup:
                 finally:
                     src.close()
 
-                # SUPERMOC fsspec: Zapisz binary do MemoryFileSystem
-                mem_fs = fsspec.filesystem("memory")
+                # SUPERMOC fsspec: MemoryFileSystem — force RAM-only
+                # Używamy bezpośrednio MemoryFileSystem zamiast FSSpecFactory
+                # (factory może być skonfigurowany na inny protokół)
+                from fsspec.implementations.memory import MemoryFileSystem as _MemFS
+                mem_fs = _MemFS()
                 mem_path = f"memory://backups/{Path(source_path).name}"
                 with mem_fs.open(mem_path, "wb") as f:
                     with open(tmp_path, "rb") as tmp_f:

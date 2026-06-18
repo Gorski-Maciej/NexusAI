@@ -61,7 +61,14 @@ nats_reconnect_delay_seconds = 2
 protocol = "file"
 root = "app_data/uploads"
 auto_mkdir = true
-cache_size_mb = 0
+cache_size_mb = 100
+
+# ── Transactional support (atomic writes) ──
+transactional = true
+
+# ── Chaining: compose filesystems (simplecache::file, cached::s3) ──
+chain_enabled = true
+chain_cache_storage = "app_data/fsspec_cache"
 
 # ── Retry (stamina) ──
 max_task_retries = 3

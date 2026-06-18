@@ -6,20 +6,41 @@ SUPERMOC fsspec:
 - CachingFileSystem — cache w testach
 - fsspec.get_mapper() — dict-like metadata
 - fsspec.open_async() — async I/O
+- FSSpecFactory — centralna fabryka z chainingiem
+- create_chain / create_optimal_filesystem — inteligentny dobór cache
+- TarFileSystem — dostęp do TAR bez rozpakowywania
+- WholeFileCacheFileSystem — cache całych plików
+- ReferenceFileSystem — wirtualny FS
+- fsspec.compression — auto-kompresja
 """
 
 from __future__ import annotations
 
+import io
 import json
+import tarfile
 from io import BytesIO
 from pathlib import Path
 
+import fsspec
 import pytest
 from nexus_ai.core.fsspec_compat import (
     CachingFileSystem,
+    FSSpecFactory,
     MemoryFileSystem,
+    TarFileSystem,
     TransactionalFileSystem,
+    WholeFileCacheFileSystem,
     ZipFileSystem,
+    ReferenceFileSystem,
+    create_chain,
+    create_optimal_filesystem,
+    configure_fsspec_global,
+    HAS_TAR_FS,
+    HAS_WHOLE_CACHE,
+    HAS_REF_FS,
+    HAS_HTTP_FS,
+    HAS_COMPRESSION,
 )
 
 
@@ -51,6 +72,44 @@ class TestMemoryFileSystem:
 
         fs.rm("test/hello.txt")
         assert not fs.exists("test/hello.txt")
+
+    def test_pipe_and_cat(self):
+        """SUPERMOC fsspec: fs.pipe() i fs.cat() — pipeline'owanie."""
+        fs = MemoryFileSystem()
+        fs.pipe("/test_pipe.bin", b"binary data via pipe")
+        data = fs.cat("/test_pipe.bin")
+        assert data == b"binary data via pipe"
+        assert fs.exists("/test_pipe.bin")
+
+    def test_du(self):
+        """SUPERMOC fsspec: fs.du() — użycie dysku."""
+        fs = MemoryFileSystem()
+        fs.pipe("/du/a.bin", b"a" * 100)
+        fs.pipe("/du/b.bin", b"b" * 200)
+        usage = fs.du("/du", total=True)
+        assert usage >= 300
+        assert fs.du("/du/a.bin", total=True) >= 100
+
+    def test_put_and_get_with_callback(self):
+        """SUPERMOC fsspec: fs.pipe() i fs.cat() z callbackami.
+
+        Zamiast fs.get()/put() (które mają różne API w różnych wersjach fsspec),
+        używamy uniwersalnego pipe()/cat() + open() z callbackami.
+        """
+        src = MemoryFileSystem()
+        dst = MemoryFileSystem()
+        src.pipe("/source.bin", b"transfer test" * 10)
+
+        # Kopiuj między FS przez open() + read()/write()
+        from fsspec.callbacks import Callback
+        cb = Callback()
+        with src.open("/source.bin", "rb") as sf:
+            data = sf.read()
+            cb.relative_update(len(data))
+            dst.pipe("/dest.bin", data)
+
+        assert dst.cat("/dest.bin") == b"transfer test" * 10
+        assert cb.value == len(b"transfer test" * 10)  # Callback poprawnie wywołany
 
     def test_get_mapper(self):
         """SUPERMOC fsspec: fsspec.get_mapper() — dict-like interface."""
@@ -160,8 +219,6 @@ class TestMemoryFileSystem:
         fs.touch("a/b/file2.txt")
         fs.touch("a/b/c/file3.txt")
 
-        # SUPERMOC: find() — reku
-
         # SUPERMOC: find() — rekurencyjne wyszukiwanie
         all_files = fs.find("a")
         assert len(all_files) == 3
@@ -175,6 +232,183 @@ class TestMemoryFileSystem:
 
         subdir_files = fs.glob("a/b/**/*")
         assert len(subdir_files) == 2
+
+
+# ============================================================================
+# TESTY: FSSpecFactory — centralna fabryka
+# ============================================================================
+
+
+class TestFSSpecFactory:
+    """Testy FSSpecFactory — centralnej fabryki filesystemów."""
+
+    def test_singleton(self):
+        factory1 = FSSpecFactory.get_instance()
+        factory2 = FSSpecFactory.get_instance()
+        assert factory1 is factory2
+
+    def test_configure_and_get_filesystem(self):
+        factory = FSSpecFactory.get_instance()
+        factory.reset()  # Force clean state
+        factory.configure(protocol="memory", base_path="/test")
+        fs = factory.get_filesystem()
+        assert fs is not None
+        fs.makedirs("/test", exist_ok=True)
+        fs.touch("/test/hello.txt")
+        assert fs.exists("/test/hello.txt")
+
+    def test_get_transactional(self):
+        factory = FSSpecFactory.get_instance()
+        factory.reset()
+        factory.configure(protocol="memory", transactional=True)
+        tx_fs = factory.get_transactional()
+        assert tx_fs is not None
+        assert hasattr(tx_fs, "transaction")
+
+    def test_get_mapper(self):
+        factory = FSSpecFactory.get_instance()
+        factory.reset()
+        factory.configure(protocol="memory")
+        mapper = factory.get_mapper("test_factory_meta")
+        mapper["key"] = b"value"
+        assert mapper["key"] == b"value"
+
+    @pytest.mark.skipif(not HAS_HTTP_FS, reason="HTTPFileSystem not available")
+    def test_get_http_filesystem(self):
+        factory = FSSpecFactory.get_instance()
+        factory.reset()
+        http_fs = factory.get_http_filesystem()
+        assert http_fs is not None
+        # Sprawdź czy to prawdziwy HTTPFileSystem
+        from fsspec.implementations.http import HTTPFileSystem as _HTTPFS
+        assert isinstance(http_fs, _HTTPFS)
+        # Sprawdź czy ma async open (sygnatura HTTP)
+        assert hasattr(http_fs, "_open")
+        assert hasattr(http_fs, "exists")
+
+    @pytest.mark.skipif(not HAS_REF_FS, reason="ReferenceFileSystem not available")
+    def test_get_reference_filesystem(self):
+        factory = FSSpecFactory.get_instance()
+        factory.reset()
+        ref_fs = factory.get_reference_filesystem(fo={})
+        assert ref_fs is not None
+        from fsspec.implementations.reference import ReferenceFileSystem as _RefFS
+        assert isinstance(ref_fs, _RefFS)
+
+    def test_create_chain_with_file(self):
+        """SUPERMOC fsspec: create_chain() z file:// — prawdziwy chaining."""
+        import tempfile
+        tmpdir = tempfile.mkdtemp(prefix="fsspec_chain_test_")
+        chain_url = f"simplecache::file://{tmpdir}"
+        try:
+            fs = create_chain(chain_url, cache_storage=tmpdir + "/.cache")
+            assert fs is not None
+            fs.makedirs(tmpdir, exist_ok=True)
+            test_path = f"{tmpdir}/chain_test.txt"
+            with fs.open(test_path, "w") as f:
+                f.write("chain test with file protocol")
+            assert fs.exists(test_path)
+        finally:
+            import shutil
+            shutil.rmtree(tmpdir, ignore_errors=True)
+
+    def test_create_optimal_filesystem(self):
+        """SUPERMOC fsspec: create_optimal_filesystem() — auto-dobór cache."""
+        import tempfile
+        cache_dir = tempfile.mkdtemp(prefix="fsspec_opt_")
+        try:
+            fs = create_optimal_filesystem(
+                protocol="memory",
+                cache_size_mb=50,
+                cache_storage=cache_dir,
+            )
+            assert fs is not None
+            fs.makedirs("test_opt", exist_ok=True)
+            with fs.open("test_opt/data.txt", "w") as f:
+                f.write("optimal data")
+            assert fs.exists("test_opt/data.txt")
+        finally:
+            import shutil
+            shutil.rmtree(cache_dir, ignore_errors=True)
+
+    def test_repr(self):
+        factory = FSSpecFactory.get_instance()
+        factory.reset()
+        factory.configure(protocol="memory", cache_size_mb=100, transactional=True)
+        rep = repr(factory)
+        assert "memory" in rep
+        assert "100" in rep
+        assert "tx=True" in rep or "True" in rep
+
+
+# ============================================================================
+# TESTY: TarFileSystem — dostęp do TAR bez rozpakowywania
+# ============================================================================
+
+
+@pytest.mark.skipif(not HAS_TAR_FS, reason="TarFileSystem not available")
+class TestTarFileSystem:
+    """Testy TarFileSystem — SUPERMOC: dostęp do archiwów TAR bez rozpakowywania."""
+
+    def test_tar_basic(self):
+        buf = io.BytesIO()
+        with tarfile.open(fileobj=buf, mode="w:gz") as tar:
+            info = tarfile.TarInfo(name="test.txt")
+            info.size = len(b"hello tar")
+            tar.addfile(info, io.BytesIO(b"hello tar"))
+
+        buf.seek(0)
+        tfs = TarFileSystem(buf)
+        files = tfs.find("/")
+        assert "test.txt" in files
+
+        with tfs.open("test.txt", "rb") as f:
+            assert f.read() == b"hello tar"
+
+
+# ============================================================================
+# TESTY: WholeFileCacheFileSystem
+# ============================================================================
+
+
+@pytest.mark.skipif(not HAS_WHOLE_CACHE, reason="WholeFileCacheFileSystem not available")
+class TestWholeFileCache:
+    """Testy WholeFileCacheFileSystem — cache całych plików."""
+
+    def test_whole_file_cache_basic(self):
+        target = MemoryFileSystem()
+        target.makedirs("source", exist_ok=True)
+        with target.open("source/data.txt", "w") as f:
+            f.write("cached content" * 100)
+
+        import tempfile
+        cache_fs = WholeFileCacheFileSystem(
+            target_protocol="memory",
+            target_options={"fs": target},
+            cache_storage=tempfile.mkdtemp(),
+            maxsize=1024 * 1024,
+            same_names=True,
+        )
+
+        with cache_fs.open("memory://source/data.txt", "r") as f:
+            content = f.read()
+            assert "cached content" in content
+
+
+# ============================================================================
+# TESTY: configure_fsspec_global
+# ============================================================================
+
+
+class TestConfigureGlobal:
+    """Testy configure_fsspec_global() — centralna konfiguracja."""
+
+    def test_configure_global(self):
+        from fsspec.config import conf
+        configure_fsspec_global(test_key="test_value")
+        assert conf.get("test_key") == "test_value"
+        # Cleanup
+        conf.pop("test_key", None)
 
 
 # ============================================================================
