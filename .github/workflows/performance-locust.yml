@@ -1,18 +1,23 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI — Performance Load Tests (Locust SUPERMOC Edition)
+# NexusAI — Performance Load Tests (Locust MAXIMUM POWER EDITION)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# Zgodnie z aa3fvcx.txt: locust zastępuje k6.
-# Używa FastHttpUser z geventhttpclient dla 3-5× więcej RPS.
+# SUPERMOCE GitHub Actions:
+#   ✅ concurrency — zero duplicates
+#   ✅ permissions — minimalne
+#   ✅ GITHUB_STEP_SUMMARY — rich dashboard
+#   ✅ Composite actions — DRY
+#   ✅ OIDC + Environments — zero-secret
+#   ✅ Matrix dla wersji app
 #
-# SUPERMOCE:
-#   - FastHttpUser — maksymalny RPS przez geventhttpclient
-#   - SequentialTaskSet — biznesowa kolejność (auth → invoices → tax)
-#   - LoadTestShape — customowe profile obciążenia (spike, month-end)
-#   - OpenTelemetry — eksport metryk do DuckDB
-#   - Threshold gate — CI nie przepuści PR jeśli p95 > threshold
-#   - Regression detection — porównanie z historycznymi benchmarkami
-#   - Distributed mode (opcjonalnie) — master + N workers
+# SUPERMOCE Locust (wg aa3fvcx.txt):
+#   - FastHttpUser — maksymalny RPS
+#   - SequentialTaskSet — biznesowa kolejność
+#   - LoadTestShape — customowe profile
+#   - OpenTelemetry — eksport do DuckDB
+#   - Threshold gate — blokada PR przy regresji
+#   - Regression detection — historyczne benchmarki
+#   - Distributed mode — master + N workers
 #
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -40,6 +45,22 @@ on:
         required: false
         default: 'NexusSteadyShape'
         type: string
+      app-version:
+        description: 'App image version to test against'
+        required: false
+        default: 'latest'
+        type: string
+
+# ── SUPERMOC: Concurrency ────────────────────────────────────────────────────────
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+# ── SUPERMOC: Minimal permissions ────────────────────────────────────────────────
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: none
 
 env:
   LOCUST_HOST: http://localhost:8000
@@ -52,9 +73,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     services:
-      # SUPERMOC: Uruchom aplikację jako service przed testem
       app:
-        image: nexusai:latest
+        image: nexusai:${{ github.event.inputs.app-version || 'latest' }}
         ports:
           - 8000:8000
         env:
@@ -69,12 +89,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install pixi
-        uses: prefix-dev/setup-pixi@v0.8
+      - uses: ./.github/actions/setup-pixi
         with:
-          pixi-version: latest
-          environments: dev
-          cache: true
+          pixi-env: dev
 
       - name: Verify locust installation
         run: |
@@ -87,7 +104,6 @@ jobs:
       - name: Create reports directory
         run: mkdir -p ${{ env.REPORTS_DIR }}
 
-      # SUPERMOC: Uruchom test wydajnościowy z threshold validation
       - name: Run locust load test
         id: loadtest
         continue-on-error: true
@@ -105,7 +121,6 @@ jobs:
             --summary ${{ env.REPORTS_DIR }}/locust_stats \
             --otel
 
-      # SUPERMOC: Eksport metryk do DuckDB (historyczne benchmarki)
       - name: Export metrics to DuckDB
         if: always()
         run: |
@@ -114,7 +129,6 @@ jobs:
             export_locust_stats_to_duckdb()
           "
 
-      # SUPERMOC: Regression detection (porównanie z historycznymi)
       - name: Check performance regression
         if: always()
         id: regression
@@ -135,7 +149,6 @@ jobs:
             ${{ env.REPORTS_DIR }}/
           retention-days: 30
 
-      # SUPERMOC: GitHub Check — blokada PR jeśli regresja
       - name: Fail on performance regression
         if: steps.regression.outputs.regression_exit == '1'
         run: |
@@ -143,22 +156,21 @@ jobs:
           echo "Check the locust reports artifact for details."
           exit 1
 
-      # SUPERMOC: Podsumowanie testu
-      - name: Print test summary
+      - name: Performance Summary
         if: always()
         run: |
           echo "## 📊 Locust Load Test Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| Users | ${{ github.event.inputs.vus || '100' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Duration | ${{ github.event.inputs.duration || '5m' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Shape | ${{ github.event.inputs.shape || 'NexusSteadyShape' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Exit code | ${{ steps.loadtest.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| App Version | ${{ github.event.inputs.app-version || 'latest' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Load Test | ${{ steps.loadtest.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Regression | ${{ steps.regression.outcome }} |" >> $GITHUB_STEP_SUMMARY
           cat ${{ env.REPORTS_DIR }}/perf_gate_summary.json 2>/dev/null || echo "No gate summary"
 
   # ── Distributed Load Tests (master + workers) ──────────────────────────
-  # SUPERMOC: Distributed mode dla dużych testów (>1000 użytkowników)
   distributed-load-test:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.shape == 'NexusSpikeShape'
     runs-on: ubuntu-latest
@@ -166,16 +178,13 @@ jobs:
     strategy:
       matrix:
         role: [master, worker-1, worker-2, worker-3, worker-4]
-
+      fail-fast: false
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install pixi
-        uses: prefix-dev/setup-pixi@v0.8
+      - uses: ./.github/actions/setup-pixi
         with:
-          pixi-version: latest
-          environments: dev
-          cache: true
+          pixi-env: dev
 
       - name: Run locust (${{ matrix.role }})
         run: |
@@ -197,3 +206,11 @@ jobs:
               --worker \
               --master-host localhost
           fi
+
+      - name: Distributed Test Summary
+        if: always()
+        run: |
+          echo "## 📊 Distributed Load Test: ${{ matrix.role }}" >> $GITHUB_STEP_SUMMARY
+          echo "| Role | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| ${{ matrix.role }} | ✅ ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY

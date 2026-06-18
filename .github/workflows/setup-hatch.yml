@@ -1,0 +1,51 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI — Reusable: Setup Hatch Build System
+# ═══════════════════════════════════════════════════════════════════════════════
+# Reusable workflow dla hatch (pipx + hatch + cache).
+#
+# Użyj przez:
+#   jobs:
+#     setup-hatch:
+#       uses: ./.github/workflows/setup-hatch.yml
+#
+# SUPERMOCE:
+#   - Cache hatch environments dla szybkich kolejnych buildów
+#   - restore-keys dla partial cache hit
+
+name: Setup Hatch
+on:
+  workflow_call:
+    inputs:
+      cache-key-prefix:
+        description: "Prefix for cache key"
+        default: "hatch"
+        type: string
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pipx
+        run: pip install pipx && pipx ensurepath
+
+      - name: Install hatch
+        run: pipx install hatch
+
+      - name: Cache hatch environments
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.hatch/env/virtual
+            ~/.cache/pip
+          key: ${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'pixi.lock') }}
+          restore-keys: |
+            ${{ inputs.cache-key-prefix }}-${{ runner.os }}-
+            ${{ inputs.cache-key-prefix }}-
+
+      - name: Verify hatch installation
+        run: |
+          hatch --version
+          echo "✅ Hatch ready: $(hatch --version)"

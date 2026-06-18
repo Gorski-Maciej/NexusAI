@@ -1,0 +1,45 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI — Reusable: Setup UV Package Manager
+# ═══════════════════════════════════════════════════════════════════════════════
+# Reusable workflow dla uv (Astral) — najszybszy menedżer pakietów PyPI.
+#
+# Użyj przez:
+#   jobs:
+#     setup-uv:
+#       uses: ./.github/workflows/setup-uv.yml
+#
+# SUPERMOCE:
+#   - astral-sh/setup-uv z enable-cache
+#   - cache-dependency-glob dla precyzyjnego unieważniania cache
+
+name: Setup UV
+on:
+  workflow_call:
+    inputs:
+      sync-env:
+        description: "Run uv sync --only-dev after setup"
+        default: true
+        type: boolean
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Sync environment
+        if: inputs.sync-env
+        run: uv sync --only-dev
+
+      - name: Verify uv installation
+        run: |
+          uv --version
+          echo "✅ UV ready: $(uv --version)"

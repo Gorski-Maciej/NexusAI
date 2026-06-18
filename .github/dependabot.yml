@@ -1,0 +1,75 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI — Dependabot Configuration
+# ═══════════════════════════════════════════════════════════════════════════════
+# Automatyczne aktualizacje zależności — zero ręcznej pracy.
+#
+# SUPERMOCE:
+#   - grouped updates (group) — jeden PR na wszystkie akcje
+#   - schedule z timezone — aktualizacje w godzinach pracy
+#   - open-pull-requests-limit — kontrola przepływu PR
+#   - labels — auto-kategoryzacja
+#   - reviewer — auto-assign do review
+#   - commit-message — conventional commits
+#
+# Zgodnie z aa3fvcx.txt:
+#   - GitHub Actions: weekly updates, grouped
+#   - pip/uv: weekly updates, grouped (wyłącz nexus-crypto — lokalny)
+
+version: 2
+updates:
+  # ── GitHub Actions ──────────────────────────────────────────────────────────
+  # Aktualizuje wszystkie akcje używane w .github/workflows/
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "Europe/Warsaw"
+    # SUPERMOC: grouped updates — jeden PR na wszystkie akcje
+    groups:
+      actions-core:
+        patterns:
+          - "actions/*"
+      security-actions:
+        patterns:
+          - "github/codeql-action*"
+          - "ossf/*"
+          - "advanced-security/*"
+          - "sigstore/*"
+          - "slsa-framework/*"
+      third-party-actions:
+        patterns:
+          - "prefix-dev/*"
+          - "astral-sh/*"
+          - "dtolnay/*"
+          - "softprops/*"
+          - "ncipollo/*"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    open-pull-requests-limit: 5
+    # SUPERMOC: auto-assign reviewers
+    # reviewers:
+    #   - "Gorski-Maciej"
+
+  # ── Python (pip/uv) — zależności PyPI ───────────────────────────────────────
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "Europe/Warsaw"
+    # SUPERMOC: grouped updates — jeden PR na wszystkie zależności
+    groups:
+      python-all:
+        patterns:
+          - "*"
+    # Wyłącz nexus-crypto — lokalny pakiet Rust, aktualizowany ręcznie
+    ignore:
+      - dependency-name: "nexus-crypto"
+    labels:
+      - "dependencies"
+      - "python"
+    open-pull-requests-limit: 10
