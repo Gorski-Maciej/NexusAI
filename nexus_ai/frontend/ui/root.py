@@ -3,7 +3,7 @@
 import flet as ft
 from ui.ws_client import ProgressWebSocketClient
 
-from nexus_ai.frontend.api_client import NexusAPIClientUI
+from nexus_ai.frontend.api_client import NexusApiClient
 
 
 class NexusRootUI:
@@ -16,9 +16,9 @@ class NexusRootUI:
         port = page.session.get("api_port")
         token = page.session.get("api_token")
         base_url = f"http://127.0.0.1:{port}/api/v1" if port else "http://127.0.0.1:8000/api/v1"
-        self.api = NexusAPIClientUI(base_url=base_url, token=token)
+        self.api = NexusApiClient(base_url=base_url, token=token)
 
-        self.ws_client = ProgressWebSocketClient()
+        self.ws_client = ProgressWebSocketClient(page=page)
 
         # Task monitor (lazy init)
         self._task_monitor = None
@@ -64,16 +64,17 @@ class NexusRootUI:
         await self._load_view(target)
 
     async def _load_view(self, view_name: str) -> None:
-        """Load a specific view by name."""
+        """Load a specific view by name using a dispatch dict (SUPERMOC)."""
         self._current_view = view_name
-        if view_name == "tasks":
-            await self._load_task_monitor()
-        elif view_name == "dashboard":
-            await self._load_dashboard()
-        elif view_name == "invoices":
-            await self._load_invoices()
-        else:
-            await self._load_dashboard()
+        
+        # SUPERMOC: słownik zamiast if-elif — O(1) dispatch, łatwe rozszerzanie
+        _view_dispatch = {
+            "tasks": self._load_task_monitor,
+            "dashboard": self._load_dashboard,
+            "invoices": self._load_invoices,
+        }
+        handler = _view_dispatch.get(view_name, self._load_dashboard)
+        await handler()
 
     async def build(self):
         """Zarządza globalnym układem (Layout) i rutowaniem."""
@@ -97,7 +98,8 @@ class NexusRootUI:
         # Załadowanie domyślnego widoku
         await self._load_dashboard()
 
-        self.ws_client.start()
+        # SUPERMOC: page.run_task zamiast synchronicznego start() z async with
+        self.page.run_task(self.ws_client.start_async())
 
     async def _load_dashboard(self):
         try:
@@ -170,12 +172,18 @@ class NexusRootUI:
         # Trigger fetch
         await self._task_monitor.refresh()
 
-    def _create_stat_card(self, title, value):
+    def _create_stat_card(self, title: str, value: str) -> ft.Card:
+        """SUPERMOC: Stat card with typed parameters and hover animation."""
         return ft.Card(
             content=ft.Container(
                 padding=20,
+                animate=ft.animation.Animation(200, ft.AnimationCurve.EASE_OUT),
+                on_hover=lambda e: setattr(e.control, "scale", 1.02 if e.data == "true" else 1.0) or e.control.update(),
                 content=ft.Column(
-                    [ft.Text(title, size=14, color="grey"), ft.Text(value, size=24, weight="bold")]
+                    [
+                        ft.Text(title, size=14, color=ft.colors.GREY_400),
+                        ft.Text(value, size=24, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
+                    ]
                 ),
             ),
             expand=True,

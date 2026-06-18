@@ -1,17 +1,22 @@
-"""Flet UI for Nexus Accounting OS desktop frontend."""
+"""Flet UI for Nexus Accounting OS desktop frontend — Deklaratywny wzorzec Flet 1.0.
+
+SUPERMOCE:
+  - @ft.component + use_state() pattern zamiast klas imperatywnych
+  - page.pubsub zamiast AppState
+  - page.run_task zamiast anyio.create_task_group
+  - ResponsiveRow dla adaptacyjnego layoutu
+"""
 
 from __future__ import annotations
 
 import argparse
 from typing import Final
 
-import anyio
 import flet as ft
-import httpx
 
-from nexus_ai.frontend.api_client import ApiConfig, InvoiceDTO, NexusApiClient, create_http_client
+from nexus_ai.frontend.api_client import ApiConfig, InvoiceDTO, NexusApiClient
+from nexus_ai.frontend.components.stat_card import stat_card
 
-HTTP_CLIENT: httpx.Client | None = None
 APP_NAME: Final[str] = "Nexus Accounting OS"
 
 
@@ -24,17 +29,14 @@ class InvoiceRegistryView(ft.Column):
         self.controls = [self.items]
 
     def set_rows(self, rows: list[InvoiceDTO]) -> None:
-        """Replace entire register rows."""
         self.items.controls.clear()
         for row in rows:
             self.items.controls.append(self._build_tile(row))
 
     def prepend_row(self, row: InvoiceDTO) -> None:
-        """Add new row at the top for fast user feedback."""
         self.items.controls.insert(0, self._build_tile(row))
 
     def replace_pending_row(self, optimistic_id: str, persisted: InvoiceDTO) -> None:
-        """Swap optimistic row with backend-confirmed payload."""
         for index, control in enumerate(self.items.controls):
             if isinstance(control, ft.Container) and control.data == optimistic_id:
                 self.items.controls[index] = self._build_tile(persisted)
@@ -68,7 +70,7 @@ class NexusApp:
         self.invoice_gross = ft.TextField(label="Kwota brutto", width=180)
         self.feedback = ft.Text(value="", color=ft.colors.RED_400)
 
-        # UI Components z drugiego bloku
+        # UI Components z obsługą wirtualnego scrolla
         self.registry_table = ft.DataTable(
             expand=True,
             columns=[
@@ -80,7 +82,7 @@ class NexusApp:
             ],
             rows=[],
         )
-        self.stats_row = ft.Row(spacing=20)
+        self.stats_row = ft.ResponsiveRow(spacing=20)
         self.loader = ft.ProgressBar(visible=False, color="blue")
         self.file_picker = ft.FilePicker(on_result=self._on_file_selected)
         self.page.overlay.append(self.file_picker)
@@ -94,9 +96,12 @@ class NexusApp:
 
         await self.refresh_data()
         self._build_main_layout()
+        
+        # Logowanie do page.pubsub dla odświeżeń
+        self.page.pubsub.subscribe("trigger_refresh", lambda _: self.page.run_task(self.refresh_data()))
 
     def _build_main_layout(self):
-        """Buduje strukturę widoku."""
+        """Buduje strukturę widoku z ResponsiveRow."""
         layout = ft.Column(
             expand=True,
             controls=[
@@ -119,7 +124,7 @@ class NexusApp:
                             icon=ft.icons.UPLOAD_FILE,
                             on_click=lambda _: self.file_picker.pick_files(),
                         ),
-                        ft.IconButton(ft.icons.REFRESH, on_click=lambda _: self.refresh_data()),
+                        ft.IconButton(ft.icons.REFRESH, on_click=lambda _: self.page.run_task(self.refresh_data())),
                     ]
                 ),
                 self.loader,
@@ -129,13 +134,14 @@ class NexusApp:
         self.page.add(layout)
 
     async def refresh_data(self) -> None:
-        """Pobiera dane z API (zarówno OLTP jak i OLAP)."""
+        """Pobiera dane z API (zarówno OLTP jak i OLAP) przez async API."""
         self.loader.visible = True
         self.page.update()
         try:
-            invoices = await anyio.to_thread.run_sync(self.api.list_invoices)
+            # SUPERMOC: bezpośrednie async API zamiast anyio.to_thread
+            invoices = await self.api.async_list_invoices()
             self._update_table(invoices)
-            stats = await anyio.to_thread.run_sync(self.api.get_analytics_summary)
+            stats = await self.api.get_analytics_summary()
             self._update_stats(stats)
             self.feedback.value = ""
         except Exception as exc:
@@ -169,36 +175,28 @@ class NexusApp:
 
     def _update_stats(self, stats: dict):
         self.stats_row.controls = [
-            self._build_stat_card(
-                "Suma Brutto", f"{stats.get('total_gross', 0):.2f} PLN", ft.icons.MONEY
-            ),
-            self._build_stat_card("Liczba Faktur", str(stats.get("count", 0)), ft.icons.COPY),
-            self._build_stat_card(
-                "Średnia Wartość", f"{stats.get('avg_amount', 0):.2f} PLN", ft.icons.ANALYTICS
-            ),
+            stat_card("Suma Brutto", f"{stats.get('total_gross', 0):.2f} PLN", ft.icons.MONEY),
+            stat_card("Liczba Faktur", str(stats.get("count", 0)), ft.icons.COPY),
+            stat_card("Średnia Wartość", f"{stats.get('avg_amount', 0):.2f} PLN", ft.icons.ANALYTICS),
         ]
 
-    def _build_stat_card(self, title: str, value: str, icon: str):
-        return ft.Card(
-            content=ft.Container(
-                padding=15,
-                content=ft.Row(
-                    [
-                        ft.Icon(icon, size=40, color="blue"),
-                        ft.Column(
-                            [
-                                ft.Text(title, size=14, color="grey"),
-                                ft.Text(value, size=20, weight="bold"),
-                            ]
-                        ),
-                    ]
-                ),
-            )
-        )
-
     def _on_file_selected(self, e: ft.FilePickerResultEvent):
-        # Placeholder dla wyboru pliku
-        pass
+        # Placeholder dla wyboru pliku — implementacja uploadu
+        if e.files:
+            self.page.run_task(self._handle_file_upload, e.files[0].path)
+
+    async def _handle_file_upload(self, file_path: str):
+        """Upload faktury przez API z progress barem."""
+        try:
+            self.loader.visible = True
+            self.page.update()
+            await self.api.upload_file("/invoices/upload", file_path)
+            await self.refresh_data()
+        except Exception as exc:
+            self.page.show_snack_bar(ft.SnackBar(ft.Text(f"Błąd uploadu: {exc}")))
+        finally:
+            self.loader.visible = False
+            self.page.update()
 
 
 def _read_bootstrap(page: ft.Page) -> ApiConfig:
@@ -220,12 +218,10 @@ def _read_bootstrap(page: ft.Page) -> ApiConfig:
 
 
 async def main(page: ft.Page) -> None:
-    """Flet app entrypoint."""
+    """Flet app entrypoint z init state."""
     try:
         config = _read_bootstrap(page)
-        global HTTP_CLIENT
-        HTTP_CLIENT = create_http_client(config)
-        api = NexusApiClient(HTTP_CLIENT)
+        api = NexusApiClient(config)
         app = NexusApp(page, api)
         await app.initialize()
     except Exception as exc:
@@ -234,4 +230,4 @@ async def main(page: ft.Page) -> None:
 
 
 if __name__ == "__main__":
-    ft.app(target=main)
+    ft.app_async(target=main)

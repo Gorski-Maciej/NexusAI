@@ -137,6 +137,9 @@ pendulum = ">=3.0.0"
 numpy = ">=2.0.0"
 sentry-sdk = ">=2.0.0"        # Error tracking SDK
 
+# ── Charting / Visualization ─────────────────────────────────────────────────
+matplotlib = ">=3.8.0"          # Financial charts via flet.matplotlib_chart.MatplotlibChart
+
 
 
 # ══════════════════════════════════════════════════════════════════════════════

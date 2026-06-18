@@ -1,34 +1,41 @@
 # ui/state.py
-from collections.abc import Callable
+"""
+Global state management for NexusAI Flet UI.
+
+SUPERMOC Flet: Używa page.pubsub zamiast własnego AppState.
+- Flet ma wbudowany system pubsub (page.pubsub.subscribe / send_all_on_topic)
+- Zero dodatkowych zależności
+- Automatyczne czyszczenie przy odłączeniu klienta
+
+Usage:
+    from ui.state import subscribe, emit
+    subscribe("progress_update", handler)
+    emit("progress_update", {"task_id": "..."})
+"""
+
+from __future__ import annotations
+
 from typing import Any
+from collections.abc import Callable
 
 
-class AppState:
-    """Globalny magazyn stanu aplikacji (odpowiednik Redux/Provider)."""
-
-    def __init__(self):
-        self._state: dict[str, Any] = {"current_user": None, "theme": "dark", "active_tasks": []}
-        # Event Bus: { event_name: [list_of_callbacks] }
-        self._listeners: dict[str, list[Callable]] = {}
-
-    def get(self, key: str, default: Any = None) -> Any:
-        return self._state.get(key, default)
-
-    def set(self, key: str, value: Any, notify: bool = True):
-        self._state[key] = value
-        if notify:
-            self.emit(f"{key}_changed", value)
-
-    def subscribe(self, event_name: str, callback: Callable):
-        """Rejestruje komponent UI do nasłuchiwania zmian."""
-        if event_name not in self._listeners:
-            self._listeners[event_name] = []
-        self._listeners[event_name].append(callback)
-
-    def emit(self, event_name: str, data: Any = None):
-        if event_name in self._listeners:
-            for callback in self._listeners[event_name]:
-                callback(data)
+_page_ref = None
 
 
-app_state = AppState()
+def init_page(page):
+    """Initialize with a Flet page reference for pubsub."""
+    global _page_ref
+    _page_ref = page
+
+
+def subscribe(event_name: str, callback: Callable):
+    """Register a UI component to listen for events via page.pubsub."""
+    if _page_ref is not None:
+        # SUPERMOC Flet: użyj wbudowanego pubsub
+        _page_ref.pubsub.subscribe(event_name, callback)
+
+
+def emit(event_name: str, data: Any = None):
+    """Emit event via page.pubsub."""
+    if _page_ref is not None:
+        _page_ref.pubsub.send_all_on_topic(event_name, data)

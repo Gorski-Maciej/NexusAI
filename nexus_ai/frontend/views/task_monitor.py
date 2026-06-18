@@ -13,13 +13,12 @@ from __future__ import annotations
 import time
 from typing import Any
 
+import asyncio
 import anyio
 
 import flet as ft
 import pendulum
 from structlog import get_logger
-from ui.state import app_state
-
 logger = get_logger("nexus.frontend.task_monitor")
 
 # ── Task data types ─────────────────────────────────────────────────────────
@@ -323,13 +322,14 @@ class TaskMonitorPanel:
 
         # ── Auto-refresh + WebSocket ────────────────────────────────────
         self._auto_refresh = False
-        self._refresh_task: anyio.abc.TaskStatus | None = None
+        self._refresh_task: asyncio.Task | None = None
         self._last_ws_update = 0.0  # timestamp ostatniego zdarzenia z WebSocket
         self._fallback_interval = 30  # sekundy między fallback pollingiem przy WS
         self._poll_interval = 5  # sekundy między pollingiem bez WS
 
-        # Subskrybuj zdarzenia WebSocket z app_state
-        app_state.subscribe("progress_update", self._on_progress_update)
+        # Subskrybuj zdarzenia WebSocket przez page.pubsub
+        # Flet ma wbudowany pubsub — nie potrzebuje AppState
+        self.page.pubsub.subscribe("progress_update", self._on_progress_update)
 
     def _summary_item(self, label: str, count_text: ft.Text, color: str) -> ft.Column:
         return ft.Column(
@@ -414,21 +414,20 @@ class TaskMonitorPanel:
         self.task_list.update()
 
     def _on_auto_refresh(self, e: ft.ControlEvent) -> None:
-        """Toggle auto-refresh."""
+        """Toggle auto-refresh using page.run_task for async."""
         self._auto_refresh = e.control.value
         if self._auto_refresh:
-            self._start_auto_refresh()
+            self.page.run_task(self._start_auto_refresh())
         else:
             self._stop_auto_refresh()
 
-    def _start_auto_refresh(self) -> None:
-        """Start fallback polling loop.
+    async def _start_auto_refresh(self) -> None:
+        """Start fallback polling loop using page.run_task.
 
-        Gdy WebSocket jest aktywny (ostatnie zdarzenie < 30s temu),
-        polling jest rzadszy (30s). Gdy WebSocket jest martwy,
-        polling wraca do 5s jako fallback.
+        Używa page.run_task() zamiast anyio.create_task_group() — 
+        to jest poprawny wzorzec dla Flet, nie blokuje event loop.
         """
-        if self._refresh_task is not None:
+        if self._refresh_task is not None and not self._refresh_task.done():
             return
 
         async def _loop():
@@ -445,12 +444,12 @@ class TaskMonitorPanel:
                 await self._fetch_tasks()
                 await anyio.sleep(interval)
 
-        async with anyio.create_task_group() as tg:
-            tg.start_soon(_loop)
+        # page.run_task zwraca Task który możemy śledzić
+        self._refresh_task = self.page.run_task(_loop())
 
     def _stop_auto_refresh(self) -> None:
         """Stop auto-refresh loop."""
-        if self._refresh_task and not self._refresh_task.done():
+        if self._refresh_task is not None and not self._refresh_task.done():
             self._refresh_task.cancel()
             self._refresh_task = None
 

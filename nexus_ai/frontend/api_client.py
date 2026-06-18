@@ -1,12 +1,10 @@
-"""
-HTTP communication layer for local Litestar backend.
+"""HTTP communication layer for local Litestar backend.
 
-SUPERMOCE HTTPX:
-  - http2=True — HTTP/2 multiplexing dla szybszych requestów
-  - httpx.Limits — ochrona connection pool
-  - httpx.Timeout — precyzyjne timeouty (connect/read/write/pool)
-  - Jednolity NexusApiClient z sync + async metodami
-  - async close() — czyste zamykanie połączeń
+SUPERMOCE:
+  - Cache warstwa przez in-memory cache z TTL
+  - Tylko async API (sync wrappers usunięte — zapobiega crashom)
+  - HTTP/2 multiplexing
+  - async close() cleanup
 """
 
 from __future__ import annotations
@@ -48,22 +46,22 @@ class ApiConfig(Struct):
 
 
 class NexusApiClient:
-    """SUPERMOC HTTPX: Jednolity klient API z sync + async metodami.
+    """Jednolity klient API z cache warstwą, HTTP/2.
 
-    Zastępuje stare 3 klasy (NexusApiClient, AsyncNexusApiClient, NexusAPIClientUI)
-    jedną spójną implementacją z HTTP/2, Limits, Timeout, event_hooks.
-
-    Usage:
+    Użycie (TYLKO ASYNC):
         client = NexusApiClient(config)
-        # Sync
-        invoices = client.list_invoices()
-        # Async
+        invoices = await client.async_list_invoices()
         summary = await client.get_analytics_summary()
-        # Cleanup
         await client.close()
     """
 
-    def __init__(self, config: ApiConfig | None = None, port: int = 8000, token: str = "", base_url: str = "http://127.0.0.1:8000/api/v1"):
+    def __init__(
+        self,
+        config: ApiConfig | None = None,
+        port: int = 8000,
+        token: str = "",
+        base_url: str = "http://127.0.0.1:8000/api/v1",
+    ):
         if config is not None:
             base_url = config.base_url
             token = config.token
@@ -71,19 +69,15 @@ class NexusApiClient:
 
         self.base_url = f"http://127.0.0.1:{port}" if port != 8000 else base_url
         self.token = token
-        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"} if token else {"Content-Type": "application/json"}
+        headers = (
+            {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+            if token
+            else {"Content-Type": "application/json"}
+        )
 
-        # SUPERMOC HTTPX: Współdzielone konfiguracje dla sync + async
         limits = Limits(max_connections=10, max_keepalive_connections=5, keepalive_expiry=30.0)
         default_timeout = Timeout(connect=5.0, read=10.0, write=10.0, pool=300.0)
-        download_timeout = Timeout(connect=5.0, read=30.0, write=10.0, pool=300.0)
 
-        self._sync = httpx.Client(
-            base_url=self.base_url,
-            timeout=default_timeout,
-            limits=limits,
-            headers=headers,
-        )
         self._async = httpx.AsyncClient(
             base_url=self.base_url,
             http2=True,
@@ -93,7 +87,10 @@ class NexusApiClient:
             headers=headers,
             event_hooks={"request": [self._log_request], "response": [self._log_response]},
         )
-        logger = get_logger("nexus.ui.api")
+
+        # Cache in-memory
+        self._cache: dict[str, tuple[Any, float]] = {}
+        self._cache_ttl: float = 5.0
 
     @staticmethod
     async def _log_request(request: httpx.Request) -> None:
@@ -104,76 +101,113 @@ class NexusApiClient:
     async def _log_response(response: httpx.Response) -> None:
         logger = get_logger("nexus.ui.api")
         elapsed = response.elapsed.total_seconds() * 1000 if response.elapsed else 0
-        logger.debug("[HTTP] ← %s %s (%d, %.1fms)", response.request.method, response.url, response.status_code, elapsed)
+        logger.debug(
+            "[HTTP] ← %s %s (%d, %.1fms)",
+            response.request.method,
+            response.url,
+            response.status_code,
+            elapsed,
+        )
 
-    # ── Sync metody ────────────────────────────────────────────────────
+    def _cache_get(self, key: str) -> Any | None:
+        import time
+        if key in self._cache:
+            value, timestamp = self._cache[key]
+            if time.time() - timestamp < self._cache_ttl:
+                return value
+            del self._cache[key]
+        return None
 
-    def list_invoices(self) -> list[InvoiceDTO]:
-        """Fetch invoice register from local backend."""
-        response = self._sync.get("/invoices")
+    def _cache_set(self, key: str, value: Any) -> None:
+        import time
+        self._cache[key] = (value, time.time())
+
+    def _cache_invalidate(self, pattern: str) -> None:
+        """Invalidate cache keys matching pattern."""
+        keys_to_delete = [k for k in self._cache if k.startswith(pattern)]
+        for k in keys_to_delete:
+            self._cache.pop(k, None)
+
+    # ── Async API — preferowane ────────────────────────────────────────
+
+    async def async_list_invoices(self) -> list[Any]:
+        """Pobiera listę wszystkich faktur (async z cache)."""
+        cache_key = "invoices:list"
+        cached = self._cache_get(cache_key)
+        if cached is not None:
+            return cached
+
+        response = await self._async.get("/invoices")
         if response.status_code == 404:
             return []
         response.raise_for_status()
         payload = response.json()
-        if not isinstance(payload, list):
-            return []
-        return [self._coerce_invoice(item) for item in payload if isinstance(item, dict)]
+        data = payload if isinstance(payload, list) else []
+        self._cache_set(cache_key, data)
+        return data
 
-    def create_invoice(self, invoice: InvoiceDTO) -> InvoiceDTO:
-        """Create invoice in backend and return persisted representation."""
-        response = self._sync.post("/invoices", json=self._invoice_payload(invoice))
+    async def create_invoice(self, invoice: InvoiceDTO) -> InvoiceDTO:
+        """Create invoice in backend."""
+        response = await self._async.post("/invoices", json=self._invoice_payload(invoice))
         if response.status_code == 404:
             return invoice
         response.raise_for_status()
         payload = response.json()
+        self._cache_invalidate("invoices:")
         if isinstance(payload, dict):
             return self._coerce_invoice(payload)
         return invoice
 
-    def get_analytics_summary(self) -> dict:
-        response = self._sync.get("/analytics/summary")
-        return response.json()
-
-    # ── Async metody ───────────────────────────────────────────────────
-
-    async def async_list_invoices(self) -> list[Any]:
-        """Pobiera listę wszystkich faktur (async)."""
-        response = await self._async.get("/invoices")
-        response.raise_for_status()
-        return response.json()
+    async def get_analytics_summary(self) -> dict:
+        """Get analytics summary (async z cache)."""
+        cache_key = "analytics:summary"
+        cached = self._cache_get(cache_key)
+        if cached is not None:
+            return cached
+        response = await self._async.get("/analytics/summary")
+        data = response.json()
+        self._cache_set(cache_key, data)
+        return data
 
     async def get_invoice(self, invoice_id: str) -> dict[str, Any]:
         """Pobiera szczegółowe dane jednej faktury."""
+        cache_key = f"invoices:{invoice_id}"
+        cached = self._cache_get(cache_key)
+        if cached is not None:
+            return cached
+
         response = await self._async.get(f"/invoices/{invoice_id}")
         if response.status_code == 404:
             raise Exception("Nie znaleziono faktury w bazie.")
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+        self._cache_set(cache_key, data)
+        return data
 
     async def update_invoice(self, invoice_id: str, updated_data: dict[str, Any]) -> bool:
-        """Wysyła poprawki wprowadzone przez użytkownika w Widoku Detali."""
+        """Wysyła poprawki — czyści cache po zapisie."""
         response = await self._async.patch(f"/invoices/{invoice_id}", json=updated_data)
         if response.status_code == 200:
+            self._cache_invalidate(f"invoices:{invoice_id}")
+            self._cache_invalidate("invoices:")
             return True
         response.raise_for_status()
         return False
 
     async def get_vat_summary(self) -> list[dict[str, Any]]:
-        """Pobiera statystyki z DuckDB przez API."""
         response = await self._async.get("/analytics/vat-summary")
         response.raise_for_status()
         return response.json()
 
     async def approve_bulk(self, invoice_ids: list[str]) -> bool:
-        """Wysyła żądanie masowego zatwierdzenia faktur."""
         response = await self._async.post("/invoices/bulk-approve", json={"ids": invoice_ids})
         if response.status_code in (200, 204):
+            self._cache_invalidate("invoices:")
             return True
         response.raise_for_status()
         return False
 
     async def get_high_confidence_ids(self, threshold: float = 0.95) -> list[str]:
-        """Pobiera ID faktur, które AI oceniło jako pewne."""
         response = await self._async.get(f"/invoices/high-confidence?min={threshold}")
         response.raise_for_status()
         payload = response.json()
@@ -181,8 +215,91 @@ class NexusApiClient:
             return [str(item) for item in payload]
         return []
 
+    # ── Chart data API methods ─────────────────────────────────────────
+
+    async def get_monthly_trend(self) -> list[dict[str, Any]]:
+        """Get monthly trend data for charts.
+
+        Returns:
+            List of {month, total} dicts from /api/analytics/monthly-trend.
+        """
+        cache_key = "analytics:monthly_trend"
+        cached = self._cache_get(cache_key)
+        if cached is not None:
+            return cached
+        try:
+            response = await self._async.get("/api/analytics/monthly-trend")
+            data = response.json()
+            self._cache_set(cache_key, data)
+            return data if isinstance(data, list) else []
+        except Exception:
+            return []
+
+    async def get_cashflow_report(
+        self,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        dimension: str = "month",
+    ) -> dict[str, Any]:
+        """Get cashflow report for charts.
+
+        POST /api/analytics/cashflow
+
+        Args:
+            start_date: Start date (ISO format). Defaults to 12 months ago.
+            end_date: End date (ISO format). Defaults to today.
+            dimension: Time dimension (day, month, quarter, year).
+
+        Returns:
+            Dict with "rows" containing {period, total_gross, cumulative_gross}.
+        """
+        cache_key = f"analytics:cashflow:{dimension}"
+        cached = self._cache_get(cache_key)
+        if cached is not None:
+            return cached
+
+        if start_date is None:
+            start_date = pendulum.now().subtract(years=1).format("YYYY-MM-DD")
+        if end_date is None:
+            end_date = pendulum.now().format("YYYY-MM-DD")
+
+        try:
+            response = await self._async.post(
+                "/api/analytics/cashflow",
+                json={
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "dimension": dimension,
+                    "report_currency": "PLN",
+                },
+            )
+            data = response.json()
+            self._cache_set(cache_key, data)
+            return data if isinstance(data, dict) else {"rows": []}
+        except Exception:
+            return {"rows": []}
+
+    async def get_dashboard_summary(self) -> dict[str, Any]:
+        """Get dashboard summary stats.
+
+        GET /dashboard/summary
+
+        Returns:
+            Dict with booked_today, pending_approval, pending_review, etc.
+        """
+        cache_key = "dashboard:summary"
+        cached = self._cache_get(cache_key)
+        if cached is not None:
+            return cached
+        try:
+            response = await self._async.get("/dashboard/summary")
+            data = response.json()
+            self._cache_set(cache_key, data)
+            return data if isinstance(data, dict) else {}
+        except Exception:
+            return {}
+
     async def get_pending_count(self) -> int:
-        """Pobiera liczbę faktur oczekujących na przetworzenie."""
         try:
             response = await self._async.get("/invoices/stats/pending")
             return response.json().get("count", 0)
@@ -190,7 +307,6 @@ class NexusApiClient:
             return 0
 
     async def upload_file(self, endpoint: str, file_path: str) -> dict:
-        """Wysyła plik PDF na serwer."""
         import os
         import anyio
         async with await anyio.open_file(file_path, "rb") as f:
@@ -200,8 +316,8 @@ class NexusApiClient:
         response.raise_for_status()
         return response.json()
 
-    async def get(self, endpoint: str, params: dict = None, api_version: str = "v1") -> dict | list:
-        """Generic async GET (kompatybilność z NexusAPIClientUI)."""
+    async def get(self, endpoint: str, params: dict | None = None, api_version: str = "v1") -> dict | list:
+        """Generic async GET."""
         base = self.base_url
         if api_version != "v1":
             base = base.replace("/api/v1", f"/api/{api_version}")
@@ -217,15 +333,14 @@ class NexusApiClient:
             raise Exception("Nie można połączyć się z serwerem Nexus AI.")
 
     async def close(self):
-        """Zamyka sync + async klienty."""
-        self._sync.close()
+        """Zamyka async klient."""
+        self._cache.clear()
         await self._async.aclose()
 
     # ── Helpers ─────────────────────────────────────────────────────────
 
     @staticmethod
     def build_optimistic(number: str, gross_amount: Decimal) -> InvoiceDTO:
-        """Build local optimistic invoice before backend confirmation."""
         return InvoiceDTO(
             id=str(uuid4()),
             number=number,
@@ -267,61 +382,6 @@ class NexusApiClient:
             "currency": invoice.currency,
             "created_at": invoice.created_at.isoformat(),
         }
-
-
-# ── Wrapper kompatybilności wstecznej ──────────────────────────────────
-
-
-class AsyncNexusApiClient:
-    """DEPRECATED: Użyj NexusApiClient z async metodami.
-
-    Zachowany dla kompatybilności wstecznej.
-    """
-    def __init__(self, port: int, token: str):
-        import warnings
-        warnings.warn("AsyncNexusApiClient is deprecated. Use NexusApiClient instead.", DeprecationWarning, stacklevel=2)
-        self._impl = NexusApiClient(port=port, token=token)
-
-    async def list_invoices(self): return await self._impl.async_list_invoices()
-    async def get_invoice(self, invoice_id): return await self._impl.get_invoice(invoice_id)
-    async def update_invoice(self, invoice_id, data): return await self._impl.update_invoice(invoice_id, data)
-    async def get_vat_summary(self): return await self._impl.get_vat_summary()
-    async def approve_bulk(self, ids): return await self._impl.approve_bulk(ids)
-    async def get_high_confidence_ids(self, threshold=0.95): return await self._impl.get_high_confidence_ids(threshold)
-    async def close(self): await self._impl.close()
-
-
-class NexusAPIClientUI:
-    """DEPRECATED: Użyj NexusApiClient z async metodami.
-
-    Zachowany dla kompatybilności wstecznej.
-    """
-    def __init__(self, base_url: str = "http://127.0.0.1:8000/api/v1", token: str = None):
-        import warnings
-        warnings.warn("NexusAPIClientUI is deprecated. Use NexusApiClient instead.", DeprecationWarning, stacklevel=2)
-        self._impl = NexusApiClient(base_url=base_url, token=token or "")
-
-    async def get(self, *args, **kwargs): return await self._impl.get(*args, **kwargs)
-    async def upload_file(self, *args, **kwargs): return await self._impl.upload_file(*args, **kwargs)
-    async def get_pending_count(self): return await self._impl.get_pending_count()
-    async def approve_bulk(self, ids): return await self._impl.approve_bulk(ids)
-    async def get_high_confidence_ids(self, threshold=0.95): return await self._impl.get_high_confidence_ids(threshold)
-    async def close(self): await self._impl.close()
-
-
-def create_http_client(config: ApiConfig) -> httpx.Client:
-    """SUPERMOC HTTPX: Tworzy globalny klient HTTP z Limits + HTTP/2 Ready.
-
-    DEPRECATED: Użyj NexusApiClient(config) zamiast tego.
-    """
-    import warnings
-    warnings.warn("create_http_client() is deprecated. Use NexusApiClient(config) instead.", DeprecationWarning, stacklevel=2)
-    return httpx.Client(
-        base_url=config.base_url,
-        timeout=Timeout(10.0),
-        limits=Limits(max_connections=10),
-        headers={"Authorization": f"Bearer {config.token}"},
-    )
 
 
 logger = get_logger("nexus.ui.api")

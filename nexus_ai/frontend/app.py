@@ -1,22 +1,21 @@
-# frontend/app.py (Fragment)
-import anyio
-
+# frontend/app.py — Flet updater z poprawnym async pattern
 import flet as ft
 
 from nexus_ai.core.updater import check_for_updates, download_and_apply_update
 
 
 def main_ui(page: ft.Page):
-    # ... Inicjalizacja Twojego UI ...
+    """Inicjalizacja UI z updaterem używającym page.run_task()."""
 
-    def on_update_click(e):
-        # Pokazujemy pasek ładowania
-        page.snack_bar = ft.SnackBar(ft.Text("Pobieranie i instalowanie aktualizacji..."))
+    async def on_update_click_async(e):
+        """Async handler — nie blokuje UI bo używa page.run_task wewnątrz."""
+        page.snack_bar = ft.SnackBar(
+            ft.Text("Pobieranie i instalowanie aktualizacji...")
+        )
         page.snack_bar.open = True
         page.update()
 
-        # Pobieranie (w prawdziwym UI zrób to asynchronicznie)
-        anyio.run(download_and_apply_update(e.control.data))
+        await download_and_apply_update(e.control.data)
 
         page.dialog = ft.AlertDialog(
             title=ft.Text("Zakończono"),
@@ -25,10 +24,13 @@ def main_ui(page: ft.Page):
         page.dialog.open = True
         page.update()
 
+    def on_update_click(e):
+        # SUPERMOC: page.run_task zamiast anyio.run() — nie blokuje UI
+        page.run_task(on_update_click_async(e))
+
     async def init_updater():
         update_info = await check_for_updates()
         if update_info["update_available"]:
-            # Wyświetlamy banner we Flecie
             banner = ft.Banner(
                 bgcolor=ft.colors.AMBER_100,
                 leading=ft.Icon(ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40),

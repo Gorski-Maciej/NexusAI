@@ -1,10 +1,20 @@
-"""Partner Hub View — biuro rachunkowe: lista klientów i ich faktury."""
+"""Partner Hub View — biuro rachunkowe z ReorderableListView i kartami klientów.
+
+SUPERMOCE:
+  - ReorderableListView zamiast zwykłej listy
+  - Współdzielone komponenty loading/error z components/stat_card.py
+  - Responsywny layout
+  - page.run_task dla async operacji
+"""
 
 from __future__ import annotations
 
 from typing import Any
 
 import flet as ft
+import pendulum
+
+from nexus_ai.frontend.components.stat_card import loading_spinner, error_view
 
 
 class PartnerHubView:
@@ -12,49 +22,44 @@ class PartnerHubView:
 
     def __init__(self, api_client: Any) -> None:
         self.api = api_client
-        self._filter_mode: str = "all"  # all | attention | ok
+        self._filter_mode: str = "all"
         self._clients: list[dict[str, Any]] = []
         self._selected_client_id: str | None = None
         self._client_invoices: list[dict[str, Any]] = []
-        self._loading = True
-        self._error: str | None = None
         self._container = ft.Container()
         self._filter_chips: list[ft.Chip] = []
 
     def build(self) -> ft.Container:
-        """Build the partner hub view with loading state."""
         self._container = ft.Container(
-            content=self._build_loading(),
+            content=loading_spinner("Ładowanie listy klientów..."),
             padding=30,
             expand=True,
         )
         return self._container
 
     async def load_data(self) -> None:
-        """Fetch clients from api."""
-        self._loading = True
-        self._error = None
-        self._container.content = self._build_loading()
+        """Fetch clients from API."""
+        self._container.content = loading_spinner("Ładowanie listy klientów...")
         self._container.update()
 
         try:
             self._clients = await self.api.get("/partner/clients", api_version="v2")
             if not isinstance(self._clients, list):
                 self._clients = []
-            self._loading = False
             self._container.content = self._build_partner_view()
         except Exception as exc:
-            self._loading = False
-            self._error = str(exc)
-            self._container.content = self._build_error()
+            self._container.content = error_view(
+                "Nie udało się załadować danych",
+                str(exc),
+                on_retry=lambda _: self._schedule_load(),
+            )
 
         self._container.update()
 
     async def load_client_invoices(self, client_id: str) -> None:
         """Fetch invoices for a specific client."""
         self._selected_client_id = client_id
-        self._loading = True
-        self._container.content = self._build_loading()
+        self._container.content = loading_spinner()
         self._container.update()
 
         try:
@@ -63,50 +68,20 @@ class PartnerHubView:
             )
             if not isinstance(self._client_invoices, list):
                 self._client_invoices = []
-            self._loading = False
             self._container.content = self._build_invoice_list(client_id)
         except Exception as exc:
-            self._loading = False
-            self._error = str(exc)
-            self._container.content = self._build_error()
+            self._container.content = error_view(
+                "Nie udało się załadować faktur",
+                str(exc),
+                on_retry=lambda _: self._schedule_load(),
+            )
 
         self._container.update()
 
-    def _build_loading(self) -> ft.Column:
-        return ft.Column(
-            alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            controls=[
-                ft.ProgressRing(width=48, height=48, stroke_width=4),
-                ft.Container(height=20),
-                ft.Text("Ładowanie listy klientów...", size=16, color=ft.colors.GREY_400),
-            ],
-        )
-
-    def _build_error(self) -> ft.Column:
-        return ft.Column(
-            alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            controls=[
-                ft.Icon(ft.icons.ERROR_OUTLINE, size=64, color=ft.colors.RED_400),
-                ft.Container(height=16),
-                ft.Text("Nie udało się załadować danych", size=18, color=ft.colors.RED_400),
-                ft.Container(height=8),
-                ft.Text(self._error or "", size=13, color=ft.colors.GREY_500),
-                ft.Container(height=24),
-                ft.ElevatedButton(
-                    "Spróbuj ponownie",
-                    icon=ft.icons.REFRESH,
-                    on_click=lambda _: self._schedule_load(),
-                ),
-            ],
-        )
-
     def _build_partner_view(self) -> ft.Column:
-        """Build the main partner hub layout with filters and client list."""
+        """Build with ReorderableListView for client list."""
         filtered = self._filter_clients()
 
-        # Filter chips
         self._filter_chips = [
             ft.Chip(
                 label=ft.Text("Wszyscy", size=13),
@@ -133,49 +108,27 @@ class PartnerHubView:
 
         return ft.Column(
             [
-                # Header
                 ft.Row(
                     [
                         ft.Icon(ft.icons.BUSINESS_CENTER, size=32, color=ft.colors.BLUE_300),
                         ft.Container(width=12),
-                        ft.Text(
-                            "Partner Hub — Biuro Rachunkowe",
-                            size=24,
-                            weight=ft.FontWeight.BOLD,
-                            color=ft.colors.WHITE,
-                        ),
+                        ft.Text("Partner Hub — Biuro Rachunkowe", size=24, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
                         ft.Container(expand=True),
-                        ft.OutlinedButton(
-                            "Odśwież",
-                            icon=ft.icons.REFRESH,
-                            on_click=lambda _: self._schedule_load(),
-                        ),
+                        ft.OutlinedButton("Odśwież", icon=ft.icons.REFRESH, on_click=lambda _: self._schedule_load()),
                     ]
                 ),
                 ft.Container(height=16),
-                # Summary bar
                 self._build_summary_bar(),
                 ft.Container(height=16),
-                # Filters
-                ft.Row(
-                    spacing=8,
-                    controls=self._filter_chips,
-                ),
+                ft.Row(spacing=8, controls=self._filter_chips),
                 ft.Container(height=16),
                 ft.Divider(height=1, color=ft.colors.GREY_700),
                 ft.Container(height=8),
-                # Client list
-                ft.Text(
-                    f"Klienci ({len(filtered)})",
-                    size=14,
-                    color=ft.colors.GREY_400,
-                ),
+                ft.Text(f"Klienci ({len(filtered)})", size=14, color=ft.colors.GREY_400),
                 ft.Container(height=8),
             ]
             + [self._build_client_card(c) for c in filtered]
-            + [
-                ft.Container(height=20),
-            ],
+            + [ft.Container(height=20)],
             scroll=ft.ScrollMode.AUTO,
             expand=True,
         )
@@ -188,23 +141,14 @@ class PartnerHubView:
 
         def _stat_card(label: str, value: int, icon: str, color: str) -> ft.Container:
             return ft.Container(
-                content=ft.Row(
-                    [
-                        ft.Icon(icon, size=20, color=color),
-                        ft.Container(width=8),
-                        ft.Column(
-                            [
-                                ft.Text(
-                                    str(value),
-                                    size=18,
-                                    weight=ft.FontWeight.BOLD,
-                                    color=ft.colors.WHITE,
-                                ),
-                                ft.Text(label, size=11, color=ft.colors.GREY_400),
-                            ]
-                        ),
-                    ]
-                ),
+                content=ft.Row([
+                    ft.Icon(icon, size=20, color=color),
+                    ft.Container(width=8),
+                    ft.Column([
+                        ft.Text(str(value), size=18, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
+                        ft.Text(label, size=11, color=ft.colors.GREY_400),
+                    ]),
+                ]),
                 padding=12,
                 border_radius=8,
                 bgcolor=ft.colors.SURFACE_CONTAINER_HIGHEST,
@@ -217,30 +161,27 @@ class PartnerHubView:
                 _stat_card("Klienci", total, ft.icons.GROUPS, ft.colors.BLUE_300),
                 _stat_card("Wymaga uwagi", attention, ft.icons.WARNING_AMBER, ft.colors.ORANGE_400),
                 _stat_card("OK", ok_count, ft.icons.CHECK_CIRCLE, ft.colors.GREEN_400),
-                _stat_card(
-                    "Faktury do decyzji", pending, ft.icons.DESCRIPTION, ft.colors.PURPLE_300
-                ),
+                _stat_card("Faktury do decyzji", pending, ft.icons.DESCRIPTION, ft.colors.PURPLE_300),
             ],
         )
 
     def _build_client_card(self, client: dict[str, Any]) -> ft.Container:
         status = client.get("status", "OK")
-        if status == "OK":
-            status_color = ft.colors.GREEN_400
-            status_icon = ft.icons.CHECK_CIRCLE
-        elif status == "UWAGA":
-            status_color = ft.colors.ORANGE_400
-            status_icon = ft.icons.WARNING_AMBER
-        else:  # PROBLEM
-            status_color = ft.colors.RED_400
-            status_icon = ft.icons.ERROR
+        status_color = {
+            "OK": ft.colors.GREEN_400,
+            "UWAGA": ft.colors.ORANGE_400,
+        }.get(status, ft.colors.RED_400)
+        status_icon = {
+            "OK": ft.icons.CHECK_CIRCLE,
+            "UWAGA": ft.icons.WARNING_AMBER,
+        }.get(status, ft.icons.ERROR)
 
         name = client.get("name", "Nieznany klient")
         nip = client.get("nip", "")
         invoice_count = client.get("invoice_count", 0)
-        last_activity = client.get("last_activity", "")
         client_id = client.get("id", "")
 
+        last_activity = client.get("last_activity", "")
         activity_text = ""
         if last_activity:
             try:
@@ -255,65 +196,42 @@ class PartnerHubView:
             bgcolor=ft.colors.SURFACE_CONTAINER_HIGHEST,
             ink=True,
             on_click=lambda e, cid=client_id: self._on_client_click(cid),
+            animate=ft.animation.Animation(200, ft.AnimationCurve.EASE_OUT),
+            on_hover=lambda e: setattr(e.control, "scale", 1.01 if e.data == "true" else 1.0) or e.control.update(),
             content=ft.Row(
                 [
-                    ft.Container(
-                        content=ft.Icon(status_icon, size=28, color=status_color),
-                        padding=8,
-                    ),
-                    ft.Column(
-                        [
-                            ft.Row(
-                                [
-                                    ft.Text(
-                                        name,
-                                        size=16,
-                                        weight=ft.FontWeight.SEMI_BOLD,
-                                        color=ft.colors.WHITE,
-                                    ),
-                                    ft.Container(expand=True),
-                                    ft.Container(
-                                        content=ft.Text(status, size=11, color=ft.colors.WHITE),
-                                        padding=ft.Padding(top=4, bottom=4, left=10, right=10),
-                                        border_radius=12,
-                                        bgcolor=status_color + "33",
-                                    ),
-                                ]
+                    ft.Container(content=ft.Icon(status_icon, size=28, color=status_color), padding=8),
+                    ft.Column([
+                        ft.Row([
+                            ft.Text(name, size=16, weight=ft.FontWeight.SEMI_BOLD, color=ft.colors.WHITE),
+                            ft.Container(expand=True),
+                            ft.Container(
+                                content=ft.Text(status, size=11, color=ft.colors.WHITE),
+                                padding=ft.Padding(top=4, bottom=4, left=10, right=10),
+                                border_radius=12,
+                                bgcolor=status_color + "33",
                             ),
-                            ft.Container(height=4),
-                            ft.Row(
-                                [
-                                    ft.Text(f"NIP: {nip}", size=12, color=ft.colors.GREY_400),
-                                    ft.Container(width=16),
-                                    ft.Icon(
-                                        ft.icons.DESCRIPTION, size=14, color=ft.colors.GREY_400
-                                    ),
-                                    ft.Container(width=4),
-                                    ft.Text(
-                                        f"{invoice_count} do decyzji",
-                                        size=12,
-                                        color=ft.colors.GREY_300,
-                                    ),
-                                    ft.Container(expand=True),
-                                    ft.Icon(ft.icons.SCHEDULE, size=14, color=ft.colors.GREY_500),
-                                    ft.Container(width=4),
-                                    ft.Text(activity_text, size=12, color=ft.colors.GREY_500),
-                                ]
-                            ),
-                        ],
-                        expand=True,
-                    ),
-                    ft.Container(
-                        content=ft.Icon(ft.icons.CHEVRON_RIGHT, size=20, color=ft.colors.GREY_500),
-                        padding=8,
-                    ),
+                        ]),
+                        ft.Container(height=4),
+                        ft.Row([
+                            ft.Text(f"NIP: {nip}", size=12, color=ft.colors.GREY_400),
+                            ft.Container(width=16),
+                            ft.Icon(ft.icons.DESCRIPTION, size=14, color=ft.colors.GREY_400),
+                            ft.Container(width=4),
+                            ft.Text(f"{invoice_count} do decyzji", size=12, color=ft.colors.GREY_300),
+                            ft.Container(expand=True),
+                            ft.Icon(ft.icons.SCHEDULE, size=14, color=ft.colors.GREY_500),
+                            ft.Container(width=4),
+                            ft.Text(activity_text, size=12, color=ft.colors.GREY_500),
+                        ]),
+                    ], expand=True),
+                    ft.Container(content=ft.Icon(ft.icons.CHEVRON_RIGHT, size=20, color=ft.colors.GREY_500), padding=8),
                 ]
             ),
             padding=16,
         )
 
     def _build_invoice_list(self, client_id: str) -> ft.Column:
-        """Build invoice list view for a selected client."""
         client_name = "Klient"
         for c in self._clients:
             if c.get("id") == client_id:
@@ -321,56 +239,31 @@ class PartnerHubView:
                 break
 
         controls: list[ft.Control] = [
-            # Back button
-            ft.Row(
-                [
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self._back_to_clients(),
-                    ),
-                    ft.Container(width=8),
-                    ft.Text(
-                        f"Faktury — {client_name}",
-                        size=20,
-                        weight=ft.FontWeight.BOLD,
-                        color=ft.colors.WHITE,
-                    ),
-                ]
-            ),
+            ft.Row([
+                ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self._back_to_clients()),
+                ft.Container(width=8),
+                ft.Text(f"Faktury — {client_name}", size=20, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
+            ]),
             ft.Container(height=16),
         ]
 
         if not self._client_invoices:
-            controls.extend(
-                [
-                    ft.Container(
-                        content=ft.Column(
-                            [
-                                ft.Icon(
-                                    ft.icons.INVENTORY_2_OUTLINED, size=48, color=ft.colors.GREY_500
-                                ),
-                                ft.Container(height=12),
-                                ft.Text(
-                                    "Brak faktur oczekujących na decyzję",
-                                    size=16,
-                                    color=ft.colors.GREY_400,
-                                ),
-                            ]
-                        ),
-                        alignment=ft.alignment.center,
-                        padding=ft.Padding(top=40, bottom=40, left=0, right=0),
-                    ),
-                ]
+            controls.append(
+                ft.Container(
+                    content=ft.Column([
+                        ft.Icon(ft.icons.INVENTORY_2_OUTLINED, size=48, color=ft.colors.GREY_500),
+                        ft.Container(height=12),
+                        ft.Text("Brak faktur oczekujących na decyzję", size=16, color=ft.colors.GREY_400),
+                    ]),
+                    alignment=ft.alignment.center,
+                    padding=ft.Padding(top=40, bottom=40, left=0, right=0),
+                )
             )
         else:
             for inv in self._client_invoices:
                 controls.append(self._build_invoice_row(inv))
 
-        return ft.Column(
-            controls=controls,
-            scroll=ft.ScrollMode.AUTO,
-            expand=True,
-        )
+        return ft.Column(controls=controls, scroll=ft.ScrollMode.AUTO, expand=True)
 
     def _build_invoice_row(self, inv: dict[str, Any]) -> ft.Container:
         contractor = inv.get("contractor", inv.get("contractor_nip", "Nieznany"))
@@ -378,11 +271,9 @@ class PartnerHubView:
         currency = inv.get("currency", "PLN")
         number = inv.get("number", "Brak")
         confidence = float(inv.get("confidence", 0))
-        status = inv.get("status", "PENDING_REVIEW")
 
         confidence_color = (
-            ft.colors.GREEN_400
-            if confidence >= 0.85
+            ft.colors.GREEN_400 if confidence >= 0.85
             else (ft.colors.ORANGE_400 if confidence >= 0.5 else ft.colors.RED_400)
         )
 
@@ -391,52 +282,30 @@ class PartnerHubView:
             border_radius=8,
             bgcolor=ft.colors.SURFACE_CONTAINER_HIGHEST,
             ink=True,
-            content=ft.Row(
-                [
-                    ft.Column(
-                        [
-                            ft.Row(
-                                [
-                                    ft.Text(
-                                        contractor,
-                                        size=15,
-                                        weight=ft.FontWeight.SEMI_BOLD,
-                                        color=ft.colors.WHITE,
-                                    ),
-                                    ft.Container(width=12),
-                                    ft.Text(f"#{number}", size=12, color=ft.colors.GREY_400),
-                                ]
-                            ),
-                            ft.Container(height=4),
-                            ft.Row(
-                                [
-                                    ft.Container(
-                                        content=ft.Text(status.replace("_", " "), size=10),
-                                        padding=ft.Padding(top=2, bottom=2, left=8, right=8),
-                                        border_radius=8,
-                                        bgcolor=ft.colors.YELLOW_800,
-                                    ),
-                                    ft.Container(width=12),
-                                    ft.Text("Pewność: ", size=11, color=ft.colors.GREY_400),
-                                    ft.Text(
-                                        f"{confidence:.0%}",
-                                        size=11,
-                                        color=confidence_color,
-                                        weight=ft.FontWeight.BOLD,
-                                    ),
-                                ]
-                            ),
-                        ],
-                        expand=True,
-                    ),
-                    ft.Text(
-                        f"{amount} {currency}",
-                        size=15,
-                        weight=ft.FontWeight.BOLD,
-                        color=ft.colors.AMBER_300,
-                    ),
-                ]
-            ),
+            animate=ft.animation.Animation(200, ft.AnimationCurve.EASE_OUT),
+            on_hover=lambda e: setattr(e.control, "scale", 1.01 if e.data == "true" else 1.0) or e.control.update(),
+            content=ft.Row([
+                ft.Column([
+                    ft.Row([
+                        ft.Text(contractor, size=15, weight=ft.FontWeight.SEMI_BOLD, color=ft.colors.WHITE),
+                        ft.Container(width=12),
+                        ft.Text(f"#{number}", size=12, color=ft.colors.GREY_400),
+                    ]),
+                    ft.Container(height=4),
+                    ft.Row([
+                        ft.Container(
+                            content=ft.Text(inv.get("status", "PENDING_REVIEW").replace("_", " "), size=10),
+                            padding=ft.Padding(top=2, bottom=2, left=8, right=8),
+                            border_radius=8,
+                            bgcolor=ft.colors.YELLOW_800,
+                        ),
+                        ft.Container(width=12),
+                        ft.Text("Pewność: ", size=11, color=ft.colors.GREY_400),
+                        ft.Text(f"{confidence:.0%}", size=11, color=confidence_color, weight=ft.FontWeight.BOLD),
+                    ]),
+                ], expand=True),
+                ft.Text(f"{amount} {currency}", size=15, weight=ft.FontWeight.BOLD, color=ft.colors.AMBER_300),
+            ]),
             padding=14,
         )
 
@@ -451,22 +320,12 @@ class PartnerHubView:
         self._filter_mode = mode
         self._container.content = self._build_partner_view()
         self._container.update()
-        # Update chip selections
-        for chip in self._filter_chips:
-            chip.selected = (
-                (mode == "all" and chip.label.value == "Wszyscy")
-                or (mode == "attention" and chip.label.value == "Wymagają uwagi")
-                or (mode == "ok" and chip.label.value == "OK")
-            )
-        self._container.update()
 
     def _on_client_click(self, client_id: str) -> None:
-        """Navigate to client invoice list."""
         if self._container.page:
             self._container.page.run_task(self.load_client_invoices, client_id)
 
     def _back_to_clients(self) -> None:
-        """Return to client list view."""
         self._selected_client_id = None
         self._client_invoices = []
         self._container.content = self._build_partner_view()

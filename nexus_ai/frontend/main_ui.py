@@ -1,15 +1,17 @@
-# frontend/main_ui.py (fragment)
+"""frontend/main_ui.py — Flet entrypoint z dynamicznym portem i tokenem."""
+from __future__ import annotations
+
 import flet as ft
 
-from nexus_ai.frontend.api_client import NexusAPIClientUI  # Używamy wersji z obsługą UI
+from nexus_ai.frontend.api_client import NexusApiClient
 
 
 def main(page: ft.Page):
     port = page.session.get("api_port")
     token = page.session.get("api_token")
 
-    # Przekazujemy dynamiczny port i bezpieczny token
+    # Używamy NexusApiClient zamiast przestarzałego NexusAPIClientUI
     base_url = f"http://127.0.0.1:{port}/api/v1" if port else "http://127.0.0.1:8000/api/v1"
-    NexusAPIClientUI(base_url=base_url, token=token)
+    api = NexusApiClient(base_url=base_url, token=token)
 
-    # ... reszta logiki interfejsu (router, widoki) …
+    # ... reszta logiki interfejsu (router, widoki)

@@ -59,13 +59,7 @@ def is_already_running(port=47999):
 
 
 class NexusOrchestrator:
-    """Zarządza NATS, Workerem i API (Granian), gwarantując restart i poprawne zamknięcie.
-
-    Zgodnie z audytem mimalloc Faza 3:
-    - NATS i TigerBeetle jako subprocesy otrzymują LD_PRELOAD z libmimalloc.so
-      dla 5-15% redukcji RAM i minimalnej fragmentacji.
-    - Worker Taskiq dziedziczy konfigurację po głównym procesie (MIMALLOC_* env vars).
-    """
+    """Zarządza NATS, Workerem i API (Granian), gwarantując restart i poprawne zamknięcie."""
 
     def __init__(self):
         self.config = AppConfig()
@@ -73,29 +67,19 @@ class NexusOrchestrator:
         self.worker_process = None
         self.api_process = None
         self.bootstrap_token = secrets.token_urlsafe(32)
-        # Konfiguracja mimalloc dla subprocesów
         self._subprocess_env = self._build_subprocess_env()
 
     @staticmethod
     def _build_subprocess_env() -> dict[str, str]:
-        """Zbuduj zmienne środowiskowe dla subprocesów (NATS, TigerBeetle).
-
-        Ustawia LD_PRELOAD z mimalloc (jeśli dostępny) oraz optymalne
-        MIMALLOC_* dla brokerów wiadomości i silników księgowych.
-        """
         env = os.environ.copy()
-        # LD_PRELOAD z mimalloc — podmiana alokatora dla procesów potomnych
-        # Sprawdź najpierw czy jest ustawiony w środowisku nadrzędnym
         ld_preload = env.get("LD_PRELOAD", "")
         if "libmimalloc" not in ld_preload:
-            # Próbuj znaleźć libmimalloc w standardowych lokalizacjach
             cands = [
                 "/usr/lib/libmimalloc.so",
                 "/usr/lib/x86_64-linux-gnu/libmimalloc.so",
                 "/usr/lib/aarch64-linux-gnu/libmimalloc.so",
                 "/usr/local/lib/libmimalloc.so",
             ]
-            # Dodaj ścieżkę z pixi/conda (gdy użytkownik używa pixi.toml)
             conda_prefix = os.environ.get("CONDA_PREFIX", "")
             if conda_prefix:
                 cands.insert(0, f"{conda_prefix}/lib/libmimalloc.so")
@@ -106,7 +90,6 @@ class NexusOrchestrator:
                     else:
                         env["LD_PRELOAD"] = candidate
                     break
-        # Optymalizacje mimalloc dla brokerów
         env.setdefault("MIMALLOC_LARGE_OS_PAGES", "1")
         env.setdefault("MIMALLOC_RESERVE_HUGE_OS_PAGES", "1")
         env.setdefault("MIMALLOC_EAGER_COMMIT_DELAY", "0")
@@ -114,7 +97,6 @@ class NexusOrchestrator:
         return env
 
     async def start_nats(self):
-        """Uruchamia lokalny serwer NATS z JetStream i mimalloc LD_PRELOAD."""
         nats_bin = "nats-server.exe" if os.name == "nt" else "nats-server"
         nats_path = self.config.base_dir / nats_bin
         if nats_path.exists():
@@ -130,7 +112,6 @@ class NexusOrchestrator:
             logger.error("Nie znaleziono binarki NATS!")
 
     async def start_worker(self):
-        """Uruchamia proces Taskiq worker (OCR/AI) z mimalloc."""
         logger.info("Uruchamianie Workera AI...")
         cmd = [
     sys.executable, "-m", "taskiq", "worker",
@@ -147,25 +128,12 @@ class NexusOrchestrator:
         ).__aenter__()
 
     async def start_backend_api(self, port: int):
-        """Uruchamia serwer API (Litestar + Granian) jako proces.
-
-        Wykorzystuje canonical entrypoint z ``nexus_ai.api.server.run_backend``
-        który ma pełną konfigurację Granian (backpressure, HTTP/2, metrics,
-        proxy headers, static files, itd.).
-
-        Subprocess jest kontynuacją konieczną, ponieważ ``granian.Granian.serve()``
-        jest blokujące. Dla pełnej integracji w jednym procesie rozważ
-        ``granian.server.embed.Server`` (eksperymentalne).
-        """
         backend_env = os.environ.copy()
         backend_env["NEXUS_PORT"] = str(port)
         backend_env["NEXUS_TOKEN"] = self.bootstrap_token
-        # Ustaw PYTHONPATH na katalog projektu (parent katalogu luz/)
-        # Zamiast _SyncPath.cwd() który może być inny przy starcie z poziomu luz/
         project_root = _SyncPath(__file__).resolve().parent.parent.parent
         backend_env["PYTHONPATH"] = str(project_root)
 
-        # Granian — pełna konfiguracja przez env vars
         logger.info(f"Inicjalizacja API (Granian) na http://127.0.0.1:{port}")
         logger.info(
             "[GRANIAN] Superpowers: backpressure=100, backlog=2048, "
@@ -184,20 +152,13 @@ class NexusOrchestrator:
         await anyio.sleep(2)
 
     def cleanup(self):
-        """Krytyczne sprzątanie procesów z graceful shutdown.
-
-        Dla API (Granian) wysyła SIGTERM przed SIGKILL, co pozwala
-        na dokończenie aktywnych requestów (graceful_shutdown_timeout=30s).
-        """
         logger.info("Zamykanie komponentów Nexus AI...")
         for proc in [self.api_process, self.worker_process, self.nats_process]:
             if proc is not None and proc.returncode is None:
                 logger.debug("Wysyłanie SIGTERM do procesu PID=%d", proc.pid)
                 proc.terminate()
-        # Daj czas na graceful shutdown
         import time as _sync_time
         _sync_time.sleep(0.5)
-        # Force kill pozostałych
         for proc in [self.api_process, self.worker_process, self.nats_process]:
             if proc is not None and proc.returncode is None:
                 try:
@@ -208,33 +169,31 @@ class NexusOrchestrator:
 
 
 async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
-    """Główny punkt wejścia dla interfejsu graficznego ze Splash Screenem."""
+    """Główny punkt wejścia dla interfejsu graficznego z progress dialog (zamiast splash page)."""
     page.title = "Nexus AI - System Księgowy"
-    page.window_width = 450
-    page.window_height = 600
-    page.window_resizable = False
     page.theme_mode = ft.ThemeMode.DARK
-    page.window_always_on_top = True
+
+    # SUPERMOC: AlertDialog zamiast page.clean() — płynniejsze przejście
+    splash = ft.AlertDialog(
+        modal=True,
+        content=ft.Column(
+            [
+                ft.Image(src="assets/logo_splash.png", width=150, height=150),
+                ft.Divider(height=20, color="transparent"),
+                ft.ProgressBar(width=300, color="blue", bgcolor="#1e1e1e"),
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            width=350,
+        ),
+    )
+    page.dialog = splash
+    splash.open = True
+    page.update()
+
+    # SUPERMOC: SafeArea — obsługa notchy na urządzeniach mobilnych
+    page.add(ft.SafeArea(ft.Container()))
 
     status_text = ft.Text("Przygotowywanie systemów...", size=14, italic=True)
-    pb = ft.ProgressBar(width=350, color="blue", bgcolor="#1e1e1e")
-
-    page.add(
-        ft.Container(
-            content=ft.Column(
-                [
-                    ft.Image(src="assets/logo_splash.png", width=150),
-                    ft.Divider(height=40, color="transparent"),
-                    status_text,
-                    pb,
-                ],
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            ),
-            expand=True,
-            alignment=ft.alignment.center,
-        )
-    )
-    page.update()
 
     status_text.value = "Krok 1/4: Sprawdzanie bazy danych..."
     page.update()
@@ -257,11 +216,11 @@ async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
     async with anyio.create_task_group() as tg:
         tg.start_soon(_check_updates_on_startup, page)
 
-    page.clean()
-    page.window_always_on_top = False
-    page.window_resizable = True
+    # Zamknij splash
+    splash.open = False
     page.window_width = 1280
     page.window_height = 850
+    page.window_resizable = True
 
     page.session.set("api_port", port)
     page.session.set("api_token", orchestrator.bootstrap_token)
@@ -276,7 +235,6 @@ async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
 async def _check_system_dependencies() -> bool:
     try:
         from installer.dependency_ui import run_dependency_ui
-
         return run_dependency_ui()
     except Exception:
         return True
@@ -285,7 +243,6 @@ async def _check_system_dependencies() -> bool:
 async def _check_models_on_startup() -> bool:
     try:
         from installer.download_progress_ui import check_and_download_if_needed
-
         models_dir = _SyncPath("models")
         return check_and_download_if_needed(models_dir)
     except Exception:
@@ -295,7 +252,6 @@ async def _check_models_on_startup() -> bool:
 async def _check_updates_on_startup(page: ft.Page | None = None):
     try:
         from installer.updater import check_for_updates
-
         result = await check_for_updates()
         if result.update_available and result.info:
             logger.info("[Updater] Update available: v%s", result.latest_version)
@@ -319,7 +275,6 @@ async def start_app():
     except Exception as e:
         logger.critical(f"BŁĄD KRYTYCZNY STARTU: {e}")
     finally:
-        # SUPERMOC Loguru: logger.complete() przed zamknięciem — gwarancja dostarczenia logów
         from loguru import logger as _loguru_logger
         _loguru_logger.complete()
         orchestrator.cleanup()
