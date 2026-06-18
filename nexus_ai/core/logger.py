@@ -295,7 +295,7 @@ def _setup_duckdb_sink(log_dir: Path, app_name: str) -> None:
     """
     try:
         import duckdb
-        import json
+        from nexus_ai.core.msgspec_utils import msgspec_dumps as _msgspec_dumps_logger
 
         db_path = log_dir / f"{app_name.lower()}_logs.duckdb"
         conn = duckdb.connect(str(db_path))
@@ -329,7 +329,7 @@ def _setup_duckdb_sink(log_dir: Path, app_name: str) -> None:
                         record["level"].name,
                         record["name"],
                         record["message"][:2000],  # Ograniczenie długości
-                        json.dumps(extra, default=str),
+                        _msgspec_dumps_logger(extra, default=str),
                         extra.get("correlation_id", "system"),
                         extra.get("tenant_id", "default"),
                     ),

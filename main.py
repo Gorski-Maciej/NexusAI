@@ -107,6 +107,7 @@ Build command:
 # nuitka-project-if: os.name == "nt":
 # nuitka-project: --windows-icon-from-ico=assets/nexus.ico
 # nuitka-project: --windows-console-mode=disable
+# nuitka-project: --windows-splash-screen=assets/splash.png
 # nuitka-project-else:
 # nuitka-project: --linux-onefile-icon=assets/nexus.png
 

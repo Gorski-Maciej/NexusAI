@@ -1,7 +1,7 @@
 """
 AsyncFTSManager — async FTS5 Full-Text Search via sqlite3.
 
-Python 3.13t (free-threaded): używamy natywnego sqlite3 + asyncio.to_thread
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync
 zamiast aiosqlite.
 
 SUPERMOCE FTS5:
@@ -15,7 +15,7 @@ SUPERMOCE FTS5:
 
 from __future__ import annotations
 
-import asyncio
+import anyio
 import sqlite3
 from pathlib import Path
 from typing import Any
@@ -30,7 +30,7 @@ logger = get_logger("nexus.db.fts")
 class AsyncFTSManager(AsyncBaseService):
     """Async zarządca FTS5 tabel dla wyszukiwania pełnotekstowego.
 
-    Python 3.13t (free-threaded): synchroniczne sqlite3 + asyncio.to_thread.
+    Python 3.13t (free-threaded): synchroniczne sqlite3 + anyio.to_thread.run_sync.
 
     Tabele FTS5:
     - ``invoices_fts``: numer faktury, nazwa kontrahenta, status, kategoria
@@ -47,7 +47,7 @@ class AsyncFTSManager(AsyncBaseService):
         def _sync() -> None:
             conn.execute("PRAGMA cache_size = -25600;")  # 100MB
             conn.execute("PRAGMA temp_store = MEMORY;")
-        await asyncio.to_thread(_sync)
+        await anyio.to_thread.run_sync(_sync)
 
     async def close(self) -> None:
         """Zamknij z PRAGMA optimize (tylko jeśli połączenie aktywne)."""
@@ -58,7 +58,7 @@ class AsyncFTSManager(AsyncBaseService):
                         self._conn.execute("PRAGMA optimize;")
                     except Exception:
                         pass
-                await asyncio.to_thread(_optimize)
+                await anyio.to_thread.run_sync(_optimize)
             except Exception:
                 pass
         await super().close()
@@ -298,7 +298,7 @@ class AsyncFTSManager(AsyncBaseService):
                 )
                 return [dict(r) for r in cursor.fetchall()]
 
-            return await asyncio.to_thread(_sync)
+            return await anyio.to_thread.run_sync(_sync)
         except Exception as exc:
             logger.warning("[FTS] Event search failed: %s — query=%r", exc, query)
             return []
@@ -405,7 +405,7 @@ class AsyncFTSManager(AsyncBaseService):
             return results[:limit]
 
         try:
-            return await asyncio.to_thread(_sync_hybrid)
+            return await anyio.to_thread.run_sync(_sync_hybrid)
         except Exception as exc:
             logger.warning("[FTS] Hybrid search failed: %s", exc)
             if keyword_query.strip():
@@ -483,7 +483,7 @@ class AsyncFTSManager(AsyncBaseService):
             conn.execute("INSERT INTO events_fts(events_fts) VALUES('rebuild')")
             conn.commit()
 
-        await asyncio.to_thread(_sync)
+        await anyio.to_thread.run_sync(_sync)
         logger.info("[FTS] All indexes rebuilt (async)")
 
 

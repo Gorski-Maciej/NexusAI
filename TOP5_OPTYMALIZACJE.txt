@@ -1,0 +1,252 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║          NEXUSAI - TOP 5 OPTYMALIZACJI DO NATYCHMIASTOWEGO WDROZENIA       ║
+╠═══════════════════════════════════════════════════════════════════════════════╣
+║ Data: 2026-06-18                                                            ║
+║ Zrodlo: Pełna inwentaryzacja technologiczna + pomiary rzeczywiste RAM       ║
+║         (Python 3.13t base: 11 MB, wszystkie biblioteki: ~80 MB RSS)        ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+
+===============================================================================
+RANKING: WPLYW vs KOSZT WDROZENIA
+===============================================================================
+
+Poniższe optymalizacje są uszeregowane według stosunku:
+  ZYSK (RAM + dysk) / KOSZT (czas + ryzyko)
+
+
+===============================================================================
+#1: DYNAMICZNE OGRANICZENIE GRANIAN WORKERS + DUCKDB MEMORY LIMIT
+===============================================================================
+
+ZYSK:      -0.4 do -0.8 GB RAM  |  DYSK: 0 GB
+KOSZT:     30 minut | RYZYKO: Minimalne (zmiana konfiguracji)
+PLIKI:     server.py, database.py
+
+PROBLEM:
+  - Granian domyslnie 4 workers * ~125 MB = 0.5 GB RAM
+  - DuckDB domyslnie uzywa 80% dostepnego RAM (na 8 GB = 6.4 GB na OLAP!)
+  - Na dev (1-2 rdzenie) wystarczy 1-2 workers
+
+ROZWIAZANIE:
+  1. server.py: dynamiczne `workers=max(1, cpu_count()-1)`
+  2. database.py: `PRAGMA memory_limit='512MB'`
+  3. W dev: `workers=1`
+
+IMPLEMENTACJA:
+  server.py:
+    import os
+    workers = int(os.getenv("NEXUS_GRANIAN_WORKERS", max(1, os.cpu_count() or 2) - 1))
+
+  database.py (przy inicjalizacji DuckDB):
+    conn.execute("SET memory_limit = '512MB'")
+    conn.execute("SET threads = ?", (max(1, os.cpu_count() or 2) - 1,))
+
+ZYSK: -0.4 do -0.8 GB RAM
+
+
+===============================================================================
+#2: LAZY LOADING MODELI AI (GGUF + OCR)
+===============================================================================
+
+ZYSK:      -0.8 do -3.0 GB RAM  |  DYSK: 0 GB
+KOSZT:     2-4 godziny | RYZYKO: Niskie
+PLIKI:     core/inference.py, services/vision/agent.py
+
+PROBLEM:
+  - Model LLM GGUF (~800 MB - 3 GB) ladowany przy starcie workera
+  - Modele OCR ladowane wszystkie na start
+  - RAM marnowany przez caly czas zycia procesu, nawet gdy AI/OCR nie jest uzywane
+
+ROZWIAZANIE:
+  1. Lazy loading: `_model: ModelType | None = None`
+  2. Getter: `def get_model(self) -> ModelType: if self._model is None: self._load()`
+  3. Cache z TTL: automatyczne zwalnianie po okresie bezczynnosci
+  4. Unload: reczne zwolnienie modelu gdy niepotrzebny
+
+IMPLEMENTACJA (core/inference.py):
+    class ModelManager:
+        _model: Any | None = None
+        _loaded_at: float = 0
+        _ttl: int = 300  # 5 minut
+
+        async def infer(self, prompt: str) -> str:
+            model = await self.get_model()
+            return await model(prompt)
+
+        async def get_model(self):
+            if self._model is None or (time.time() - self._loaded_at) > self._ttl:
+                await self._unload()
+                self._model = await self._load()
+                self._loaded_at = time.time()
+            return self._model
+
+        async def _unload(self):
+            if self._model is not None:
+                del self._model
+                gc.collect()
+                self._model = None
+
+ZYSK: -0.8 do -3.0 GB RAM (przy braku zadan AI)
+
+
+===============================================================================
+#3: REDUKCJA SILNIKOW OCR Z 4 DO 2
+===============================================================================
+
+ZYSK:      -0.5 do -1.5 GB RAM  |  DYSK: -0.5 GB
+KOSZT:     1-2 godziny | RYZYKO: Niskie
+PLIKI:     pipeline/ocr_consensus.py, pyproject.toml
+
+PROBLEM:
+  - Projekt uzywa 4 silnikow OCR: Tesseract + PaddleOCR + docTR + EasyOCR
+  - Kazdy utrzymuje swoje modele w pamieci
+  - Konsensus 4 silnikow daje marginalna poprawa jakosci vs 2 silniki
+  - PaddlePaddle: ~600 MB na dysku, ~0.5 GB RAM
+  - docTR: ~200 MB na dysku, ~0.3 GB RAM
+  - EasyOCR: ~100 MB na dysku, ~0.3 GB RAM
+
+ROZWIAZANIE:
+  1. Zostawic: Tesseract (lekki, szybki) + PaddleOCR (najdokladniejszy)
+  2. Wyłączyc: docTR + EasyOCR przez konfiguracje
+  3. Konsensus = majority voting z 2 zamiast 4
+
+IMPLEMENTACJA (pipeline/ocr_consensus.py):
+    # W konstruktorze:
+    ACTIVE_ENGINES = os.getenv("NEXUS_OCR_ENGINES", "tesseract,paddleocr").split(",")
+    # LUB
+    active_engines = config.get("ocr_engines", ["tesseract", "paddleocr"])
+
+ZYSK: -0.5 do -1.5 GB RAM, -0.5 GB dysku
+
+
+===============================================================================
+#4: ONNX RUNTIME ZAMIAST PADDLEPADDLE
+===============================================================================
+
+ZYSK:      -0.3 GB RAM  |  DYSK: -0.45 GB
+KOSZT:     4-8 godzin | RYZYKO: Srednie (wymaga konwersji modeli)
+PLIKI:     pipeline/ocr_consensus.py, pyproject.toml
+
+PROBLEM:
+  - PaddlePaddle to najwiekszy pojedynczy pakiet: ~600 MB na dysku
+  - Wymaga calej biblioteki deep learningowej tylko dla OCR
+
+ROZWIAZANIE:
+  1. Konwersja modeli PaddleOCR -> ONNX (przez paddle2onnx)
+  2. ONNX Runtime ~150 MB zamiast 600 MB
+  3. Obsluga quantyzacji INT8 -> kolejne -50% RAM podczas inference
+
+IMPLEMENTACJA:
+    # pip install onnxruntime onnx
+    # paddle2onnx --model_dir paddle_model/ --save_dir onnx_model/
+
+    class ONNXOCREngine(BaseOCREngine):
+        def __init__(self):
+            import onnxruntime as ort
+            self.session = ort.InferenceSession("models/ocr.onnx")
+
+    # W pip zamiast paddlepaddle>=3.0.0:
+    # "onnxruntime>=1.17.0",
+
+ZYSK: -0.3 GB RAM, -0.45 GB dysku
+
+
+===============================================================================
+#5: USUNIECIE MARTWYCH ZALEZNOSCI
+===============================================================================
+
+ZYSK:      -0.05 GB RAM  |  DYSK: -0.1 GB
+KOSZT:     15 minut | RYZYKO: Minimalne
+PLIKI:     pyproject.toml, pixi.toml
+
+PROBLEM:
+  - sentry-sdk w dev: uzywany rzadko (~0.02 GB)
+  - hypothesis + crosshair oba w dev: robia to samo (property-based testing)
+  - matplotlib w runtime: uzywany TYLKO przez Flet dashboard (optional)
+  - structlog + loguru: dwa systemy logowania w jednym projekcie
+
+ROZWIAZANIE:
+  1. hypothesis: usunac (crosshair jako zastepca, nowoczesniejszy)
+  2. matplotlib: przeniesc do optional-dependencies ui
+  3. sentry-sdk: zostawic (przydatne w produkcji)
+  4. structlog: zostawic (uzywany w core/)
+  5. OpenCV python binding: usunac (systemowy libopencv wystarczy)
+
+IMPLEMENTACJA (pyproject.toml):
+    [project.optional-dependencies]
+    dev = [
+        "pytest>=8.0.0",
+        "pytest-cov>=5.0.0",
+        "crosshair>=0.1.0",
+        # "hypothesis>=6.100.0",  # USUNIETY - crosshair wystarczy
+        "ruff>=0.3.0",
+        "mypy>=1.8.0",
+        "pre-commit>=3.6.0",
+        "schemathesis>=3.30.0",
+        "locust>=2.29.0",
+        "py-spy>=0.3.14",
+        "pytest-benchmark>=4.0.0",
+        "pytest-xdist>=3.5.0",
+        "pytest-timeout>=2.2.0",
+        "pytest-sugar>=1.0.0",
+        "pytest-watch>=4.2.0",
+        "sentry-sdk>=2.0.0",
+    ]
+    ui = [
+        "flet>=0.28.0",
+        "matplotlib>=3.8.0",  # PRZENIESIONE z runtime do ui
+    ]
+
+    # Z runtime:
+    # "matplotlib>=3.8.0",  # USUNIETY (przeniesiony do ui)
+    # "opencv-python-headless>=4.9.0",  # USUNIETY (systemowy libopencv)
+
+ZYSK: -0.05 GB RAM, -0.1 GB dysku (na starcie projektu)
+
+
+===============================================================================
+PODSUMOWANIE LACZNYCH ZYSKOW
+===============================================================================
+
+#   OPTYMALIZACJA                    | ZYSK RAM     | ZYSK DYSKU   | CZAS   | RYZYKO
+#-----------------------------------------------------------------------------------------
+# 1  Granian workers + DuckDB limit  | -0.4/-0.8 GB | 0 GB         | 30 min | MINIMALNE
+# 2  Lazy loading modeli AI          | -0.8/-3.0 GB | 0 GB         | 2-4h   | NISKIE
+# 3  Redukcja OCR 4->2               | -0.5/-1.5 GB | -0.5 GB      | 1-2h   | NISKIE
+# 4  ONNX zamiast PaddlePaddle       | -0.3 GB      | -0.45 GB     | 4-8h   | SREDNIE
+# 5  Usuniecie martwych depow        | -0.05 GB     | -0.1 GB      | 15 min | MINIMALNE
+#-----------------------------------------------------------------------------------------
+#  RAZEM (optymistycznie)            | -2.0/-5.6 GB | -1.0 GB      | 8-15h  |
+#  RAZEM (#1+#2+#5 - quick wins)     | -1.2/-3.8 GB | -0.1 GB      | 3-5h   |
+
+REKOMENDACJA:
+
+  KROK 1 (30 minut): #1 + #5 -> -0.5 GB RAM
+    - Zmiana konfiguracji Granian workers
+    - DuckDB memory limit
+    - Usuniecie hypothesis i przeniesienie matplotlib
+
+  KROK 2 (2-4 godziny): #2 -> -0.8 do -3.0 GB RAM
+    - Lazy loading modeli AI/OCR
+    - Cache z TTL i auto-unload
+
+  KROK 3 (1-2 godziny): #3 -> -0.5 do -1.5 GB RAM
+    - Wylaczenie dwoch silnikow OCR (docTR + EasyOCR)
+    - Konfiguracja przez zmienna srodowiskowa
+
+  KROK 4 (4-8 godzin): #4 -> -0.3 GB RAM, -0.45 GB dysku
+    - Konwersja PaddleOCR -> ONNX
+    - Wymiana PaddlePaddle na ONNX Runtime
+
+  LACZNIE po wszystkich krokach:
+    RAM:  z 3.5 GB (typowe) -> 0.5-1.0 GB
+    DYSK: z 5.0 GB (dev)    -> 3.5-4.0 GB
+
+  Nowe rekomendowane minimum:
+    Dev:  4 GB RAM, 8 GB dysk
+    Prod: 8 GB RAM, 5 GB dysk (Nuitka standalone)
+
+===============================================================================
+                     KONIEC RAPORTU TOP 5
+===============================================================================

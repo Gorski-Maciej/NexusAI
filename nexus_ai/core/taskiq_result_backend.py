@@ -16,7 +16,8 @@ Usage:
 
 from __future__ import annotations
 
-import json
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads as _msgspec_loads, msgspec_dumps_bytes
+import json as _json
 import sqlite3
 import threading
 from pathlib import Path
@@ -29,6 +30,7 @@ from structlog import get_logger
 logger = get_logger("nexus.taskiq.result_backend")
 
 
+@final
 class SqliteResultBackend(TaskiqResultBackend):
     """Taskiq Result Backend przechowujący wyniki w SQLite.
 
@@ -102,12 +104,12 @@ class SqliteResultBackend(TaskiqResultBackend):
                         task_id,
                         result.task_name or "",
                         "SUCCESS" if result.is_err is False else "FAILED" if result.is_err else "UNKNOWN",
-                        json.dumps(result.return_value) if result.return_value is not None else None,
+                        msgspec_dumps(result.return_value) if result.return_value is not None else None,
                         str(result.error) if result.error else None,
                         result.execution_time,
                         result.started_at.isoformat() if result.started_at else None,
                         result.finished_at.isoformat() if result.finished_at else None,
-                        json.dumps(result.labels) if result.labels else None,
+                        msgspec_dumps(result.labels) if result.labels else None,
                     ),
                 )
                 conn.commit()
@@ -154,10 +156,10 @@ class SqliteResultBackend(TaskiqResultBackend):
             task_id=str(row["task_id"]),
             task_name=str(row["task_name"]),
             is_err=row["status"] == "FAILED",
-            return_value=json.loads(row["return_value"]) if row["return_value"] else None,
+            return_value=_msgspec_loads(row["return_value"]) if row["return_value"] else None,
             error=Exception(row["error"]) if row["error"] else None,
             execution_time=float(row["execution_time_ms"]) if row["execution_time_ms"] else 0.0,
-            labels=json.loads(row["labels_json"]) if row["labels_json"] else {},
+            labels=_msgspec_loads(row["labels_json"]) if row["labels_json"] else {},
         )
 
     async def get_results_by_status(self, status: str, limit: int = 100) -> list[dict[str, Any]]:
@@ -204,6 +206,7 @@ class SqliteResultBackend(TaskiqResultBackend):
 # =========================================================================
 
 
+@final
 class HybridResultBackend(TaskiqResultBackend):
     """Hybrid result backend: próbuje NATS Object Store, fallback do SQLite.
 
@@ -300,7 +303,7 @@ class HybridResultBackend(TaskiqResultBackend):
             if await self._ensure_nats():
                 try:
                     entry = await self._obj_store.get(task_id)
-                    data = json.loads(entry.data)
+                    data = _msgspec_loads(entry.data)
                     return TaskiqResult(
                         task_id=data["task_id"],
                         task_name=data.get("task_name", ""),

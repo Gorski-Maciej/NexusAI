@@ -15,7 +15,6 @@ from __future__ import annotations
 import time
 from typing import Any
 
-import asyncio
 import anyio
 import flet as ft
 import pendulum

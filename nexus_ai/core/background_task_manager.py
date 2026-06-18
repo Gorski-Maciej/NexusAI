@@ -31,7 +31,7 @@ Usage (NOWY SPOSÓB — Taskiq):
 from __future__ import annotations
 
 import threading
-from typing import Any, Callable, Coroutine
+from typing import final,  Any, Callable, Coroutine
 
 import anyio
 import msgspec
@@ -75,6 +75,7 @@ class TaskInfo(msgspec.Struct, kw_only=True):
     owner: str = ""
 
 
+final
 class BackgroundTaskManager:
     """Central manager for long-running background tasks — TaskGroup-based.
 

@@ -592,7 +592,7 @@ def save_stats_to_file(path: str | os.PathLike) -> str | None:
     if not stats.get("active", False):
         return None
 
-    import json
+    from nexus_ai.core.msgspec_utils import msgspec_dumps as _msgspec_dumps
     import time as _time
 
     stats["timestamp"] = _time.time()
@@ -601,7 +601,7 @@ def save_stats_to_file(path: str | os.PathLike) -> str | None:
 
     try:
         with open(path, "w", encoding="utf-8") as f:
-            json.dump(stats, f, indent=2, default=str)
+            f.write(_msgspec_dumps(stats, ensure_ascii=False, indent=2, default=str))
         return str(path)
     except (OSError, PermissionError) as exc:
         _log.warning("Failed to save mimalloc stats to %s: %s", path, exc)

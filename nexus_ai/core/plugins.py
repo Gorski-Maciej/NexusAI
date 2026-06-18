@@ -36,7 +36,7 @@ import inspect
 import pkgutil
 import threading
 from collections.abc import Awaitable, Callable
-from typing import Any, Protocol, runtime_checkable
+from typing import final,  Any, Protocol, runtime_checkable
 
 from structlog import get_logger
 
@@ -121,6 +121,7 @@ class PluginInfo:
 # ── PluginManager v2 — core plugin system ─────────────────────────────────
 
 
+final
 class PluginManager:
     """Lifecycle-aware plugin system with typed hooks and event subscription.
 

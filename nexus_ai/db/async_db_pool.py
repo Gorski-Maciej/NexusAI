@@ -34,7 +34,7 @@ class AsyncDBPool:
 
     Zarządza jednym połączeniem na ścieżkę pliku DB.
     WSZYSTKIE metody są SYNCHRONICZNE — callery używają
-    ``asyncio.to_thread()`` dla async wrappera (free-threaded safe).
+    ``anyio.to_thread.run_sync()`` dla async wrappera (free-threaded safe).
 
     SUPERMOCE:
     - Współdzielenie połączeń między serwisami

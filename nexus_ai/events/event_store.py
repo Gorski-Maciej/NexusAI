@@ -2,10 +2,10 @@
 AsyncEventStore — append-only event store backed by sqlite3 + Parquet archiving.
 
 Przechowuje zdarzenia w tabeli ``event_stream`` jako append-only log.
-Python 3.13t (free-threaded): używamy natywnego sqlite3 + asyncio.to_thread.
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync.
 
 Zgodnie z decyzją architektoniczną: rezygnujemy z aiosqlite na rzecz
-natywnego sqlite3 + asyncio.to_thread (free-threaded Python 3.13t).
+natywnego sqlite3 + anyio.to_thread.run_sync (free-threaded Python 3.13t).
 
 SUPERMOCE Parquet (nowe):
 - **Event archiving do Parquet** — stare eventy są archiwizowane do Parquet
@@ -25,8 +25,8 @@ Wspiera:
 
 from __future__ import annotations
 
-import asyncio
-import json
+import anyio
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads as _msgspec_loads
 import os
 import sqlite3
 from pathlib import Path
@@ -61,10 +61,10 @@ logger = get_logger("nexus.events.store")
 
 
 class AsyncEventStore:
-    """Append-only event store backed by sqlite3 (sync + asyncio.to_thread).
+    """Append-only event store backed by sqlite3 (sync + anyio.to_thread.run_sync).
 
     Python 3.13t (free-threaded): wszystkie operacje sqlite3 wykonujemy
-    w wątku przez ``asyncio.to_thread()``.
+    w wątku przez ``anyio.to_thread.run_sync()``.
 
     Używa AsyncDBPool dla współdzielonego połączenia.
 
@@ -89,7 +89,7 @@ class AsyncEventStore:
             )
             sqlcipher_key = key if key else None
 
-            self._conn = await asyncio.to_thread(
+            self._conn = await anyio.to_thread.run_sync(
                 self._pool.get_conn,
                 str(self._db_path),
                 row_factory=sqlite3.Row,
@@ -145,7 +145,7 @@ class AsyncEventStore:
             )
             conn.commit()
 
-        await asyncio.to_thread(_sync)
+        await anyio.to_thread.run_sync(_sync)
 
     async def close(self) -> None:
         """Zamknij połączenie."""
@@ -156,10 +156,10 @@ class AsyncEventStore:
                         self._conn.execute("PRAGMA optimize;")
                     except Exception:
                         pass
-                await asyncio.to_thread(_optimize)
+                await anyio.to_thread.run_sync(_optimize)
             except Exception:
                 pass
-            await asyncio.to_thread(self._pool.close_conn, str(self._db_path))
+            await anyio.to_thread.run_sync(self._pool.close_conn, str(self._db_path))
             self._conn = None
 
     # ── Write operations ───────────────────────────────────────────────
@@ -246,7 +246,7 @@ class AsyncEventStore:
 
                 for event in events:
                     event_data = encode_event(event)
-                    metadata_json = json.dumps(event.metadata)
+                    metadata_json = msgspec_dumps(event.metadata)
                     cursor = conn.execute(
                         """INSERT INTO event_stream
                            (event_id, aggregate_type, aggregate_id, event_type,
@@ -288,7 +288,7 @@ class AsyncEventStore:
         await self._trace_append(aggregate_type, aggregate_id, events)
 
         t0 = _time.perf_counter()
-        result = await asyncio.to_thread(_sync_append)
+        result = await anyio.to_thread.run_sync(_sync_append)
         elapsed = _time.perf_counter() - t0
 
         # SUPERMOC: Record EventStore metrics (lazy import przez _get_record_append)
@@ -335,7 +335,7 @@ class AsyncEventStore:
             # SUPERMOC: msgspec.msgpack.decode z Tagged Unions zamiast json.loads + domain_event_from_dict
             return [decode_event(row[0]) for row in rows]
 
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
     async def read_events_by_type(
         self,
@@ -378,7 +378,7 @@ class AsyncEventStore:
             # SUPERMOC: msgspec.msgpack.decode z Tagged Unions
             return [decode_event(row[0]) for row in rows]
 
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
     async def read_stream(
         self,
@@ -401,7 +401,7 @@ class AsyncEventStore:
             row = cursor.fetchone()
             return int(row[0]) if row else 0
 
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
     async def read_events_since_version(
         self,
@@ -423,7 +423,7 @@ class AsyncEventStore:
             # SUPERMOC: msgspec.msgpack.decode z Tagged Unions
             return [decode_event(row[0]) for row in rows]
 
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
     async def count_events(
         self,
@@ -454,7 +454,7 @@ class AsyncEventStore:
             row = cursor.fetchone()
             return int(row[0]) if row else 0
 
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
     # ── Snapshots ──────────────────────────────────────────────────────
 
@@ -484,13 +484,13 @@ class AsyncEventStore:
                     aggregate_id,
                     aggregate_type,
                     version,
-                    json.dumps(state),
+                    msgspec_dumps(state),
                     pendulum_now(),
                 ),
             )
             conn.commit()
 
-        await asyncio.to_thread(_sync)
+        await anyio.to_thread.run_sync(_sync)
         logger.debug(
             "[EVENT-STORE] Snapshot saved for %s:%s (version=%d)",
             aggregate_type,
@@ -516,9 +516,9 @@ class AsyncEventStore:
             if row is None:
                 return None
             # SUPERMOC: msgspec.json.decode zamiast json.loads dla snapshotów
-            return int(row[0]), msgspec.json.decode(row[1])
+            return int(row[0]), _msgspec_loads(row[1])
 
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
     # ── Projection checkpoints ─────────────────────────────────────────
 
@@ -534,7 +534,7 @@ class AsyncEventStore:
             row = cursor.fetchone()
             return int(row[0]) if row else 0
 
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
     async def update_checkpoint(
         self,
@@ -558,7 +558,7 @@ class AsyncEventStore:
             )
             conn.commit()
 
-        await asyncio.to_thread(_sync)
+        await anyio.to_thread.run_sync(_sync)
 
     async def list_projections(self) -> list[dict[str, Any]]:
         """Zwróć listę wszystkich projekcji z checkpointami (async, w wątku)."""
@@ -580,7 +580,7 @@ class AsyncEventStore:
                 for r in rows
             ]
 
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
     # ── Stats ──────────────────────────────────────────────────────────
 
@@ -718,7 +718,7 @@ class AsyncEventStore:
         # Archiwizuje po batch_size eventów na raz, aż wszystkie
         # stare eventy zostaną przeniesione do Parquet.
         while True:
-            archived = await asyncio.to_thread(_archive_batch)
+            archived = await anyio.to_thread.run_sync(_archive_batch)
             if archived == 0:
                 break
             total_archived += archived
@@ -825,7 +825,7 @@ class AsyncEventStore:
                 "archived_size_mb": round(archived_size_bytes / (1024 * 1024), 2),
             }
 
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
 
 # ── Alias dla kompatybilności wstecznej ─────────────────────────────────

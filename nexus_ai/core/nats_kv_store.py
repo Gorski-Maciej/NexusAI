@@ -34,7 +34,7 @@ Usage:
 
 from __future__ import annotations
 
-import json
+from nexus_ai.core.msgspec_utils import msgspec_dumps_bytes, msgspec_loads as _msgspec_loads
 from typing import Any, AsyncIterator
 
 import anyio
@@ -54,6 +54,7 @@ DEFAULT_BUCKETS = {
 }
 
 
+@final
 class NatsConfigStore:
     """NATS Key-Value Store dla rozproszonej konfiguracji.
 
@@ -156,7 +157,7 @@ class NatsConfigStore:
         kv = self._kv_stores.get(bucket)
         if kv is not None:
             try:
-                data = json.dumps(value).encode("utf-8")
+                data = msgspec_dumps_bytes(value)
                 await kv.put(key, data)
                 return True
             except Exception as exc:
@@ -190,7 +191,7 @@ class NatsConfigStore:
             try:
                 entry = await kv.get(key)
                 if entry is not None:
-                    return json.loads(entry.value.decode("utf-8"))
+                    return _msgspec_loads(entry.value)
             except Exception as exc:
                 logger.warning("[KV] Failed to get %s/%s: %s", bucket, key, exc)
 

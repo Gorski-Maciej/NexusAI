@@ -35,7 +35,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import json
+from nexus_ai.core.msgspec_utils import msgspec_dumps as _msgspec_dumps, msgspec_loads as _msgspec_loads
 import pendulum
 import os
 import sys
@@ -100,8 +100,8 @@ class RotationStatus:
         if self._path.exists():
             try:
                 with open(self._path) as f:
-                    return json.load(f)
-            except (json.JSONDecodeError, OSError):
+                    return _msgspec_loads(f.read())
+            except (ValueError, OSError):
                 pass
         return {
             "last_rotation": None,
@@ -114,7 +114,7 @@ class RotationStatus:
         """Zapisz status do pliku JSON."""
         self._path.parent.mkdir(parents=True, exist_ok=True)
         with open(self._path, "w") as f:
-            json.dump(self._data, f, indent=2, default=str)
+            f.write(_msgspec_dumps(self._data, ensure_ascii=False, indent=2, default=str))
 
     def is_rotation_due(self, days: int = DEFAULT_ROTATION_DAYS) -> bool:
         """Sprawdź czy rotacja jest wymagana.

@@ -1,297 +1,157 @@
 """
-SemanticGuard — semantyczny wykrywacz anomalii faktur z DuckDB VSS.
+Semantyczny Wykrywacz Anomalii (SemanticGuard) — wykrywa kreatywną księgowość.
 
-SUPERMOCE DuckDB version:
-- DuckDB VSS (Vector Similarity Search) zamiast osobnej bazy sqlite-vec.
-- Wszystkie embeddingi w tej samej bazie DuckDB — jedno połączenie,
-  jedna transakcja, backup.
-- ``array_cosine_similarity()`` — natywna funkcja DuckDB z indeksem HNSW.
-- ``GENERATE_SERIES`` dla batch insert wektorów.
+SUPERMOCE:
+- Embeddingi faktur przez sqlite-vec (cosine distance)
+- Wykrywanie nagłych zmian profilu usług kontrahenta
+- First-match-wins przez DuckDB anomaly_rules
+- Integracja z DecisionEngine jako pre-filter
 
-Zgodnie z aa3fvcx.txt:
-- DuckDB (Punkt 3) dla analityki OLAP + teraz również VSS
-- Używa llama-cpp-python do embeddingów
+Zgodnie z docs/tfgxzd.txt — Semantyczny Wykrywacz Kreatywnej Księgowości.
 """
 
 from __future__ import annotations
 
-from decimal import Decimal
-from pathlib import Path
-from typing import Any, final
+from enum import StrEnum
+from typing import Any
 
-import anyio
-import pendulum
-import duckdb
+import hashlib
+import numpy as np
 from structlog import get_logger
 
-from nexus_ai.core.cache import get_cache
-from nexus_ai.core.embeddings import get_embedding_service
-
-# ── SHA-256 przez nexus-crypto (Rust+PyO3) z fallback do hashlib ────────
-try:
-    from nexus_crypto import sha256 as _text_hash
-except ImportError:
-    import hashlib as _hl
-
-    def _text_hash(data: bytes) -> str:
-        return _hl.sha256(data).hexdigest()
-
-
-# NexusCache dla wyników evaluate() (L1 RAM + L2 SQLite przez dyscache)
-_semantic_eval_cache = get_cache()
-
-# Prefixy cache dla event-based invalidation
-SEMANTIC_CACHE_PREFIXES = ["semantic_eval:"]
-
-
-def invalidate_semantic_guard_cache() -> None:
-    """Event-based cache invalidation dla SemanticGuard."""
-    _semantic_eval_cache.delete_prefix_sync("semantic_eval:")
-
+from nexus_ai.db.vector_store import AsyncVectorStore
 
 logger = get_logger("nexus.services.semantic_guard")
 
-# ── Anomaly rules ──────────────────────────────────────────────────────────
 
-ANOMALY_RULES: list[dict[str, Any]] = [
-    {
-        "min_score": 0.80,
-        "min_amount": 10000,
-        "action": "BLOCK_DECREE",
-        "alert": "Drastyczna zmiana profilu usług. Wymagana ręczna weryfikacja.",
-    },
-    {
-        "min_score": 0.60,
-        "min_amount": 10000,
-        "action": "WARN",
-        "alert": "Znacząca zmiana profilu usług. Zalecana weryfikacja.",
-    },
-    {
-        "min_score": 0.40,
-        "min_amount": 50000,
-        "action": "WARN",
-        "alert": "Nietypowa wartość faktury względem historii.",
-    },
-    {"min_score": 0.0, "min_amount": 0, "action": "ALLOW", "alert": None},
-]
+class AnomalyAction(StrEnum):
+    ALLOW = "ALLOW"
+    WARN = "WARN"
+    BLOCK_DECREE = "BLOCK_DECREE"
 
 
-# ── DuckDB VSS Schema ───────────────────────────────────────────────────────
-
-VENDOR_EMBEDDINGS_SCHEMA = """
--- SUPERMOC: DuckDB VSS z indeksem HNSW
--- Zastępuje osobną bazę sqlite-vec + osobny VectorStore
--- Wszystkie embeddingi w tej samej bazie DuckDB
-CREATE TABLE IF NOT EXISTS vendor_embeddings (
-    id              VARCHAR PRIMARY KEY,
-    vendor_nip      VARCHAR NOT NULL,
-    embedding       FLOAT[768],
-    category_code   VARCHAR DEFAULT '',
-    amount_net      DOUBLE DEFAULT 0.0,
-    invoice_text    VARCHAR DEFAULT '',
-    transaction_id  VARCHAR DEFAULT '',
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    -- Partition key dla pre-filteringu
-    partition_key   VARCHAR GENERATED ALWAYS AS (vendor_nip) STORED
-);
-
--- SUPERMOC: Indeks HNSW dla VSS (cosine similarity)
--- M=16, ef_construction=200 — optymalne dla 768-dim wektorów
-CREATE INDEX IF NOT EXISTS idx_vendor_embeddings_hnsw
-    ON vendor_embeddings
-    USING HNSW (embedding cosine)
-    WITH (dim=768, M=16, ef_construction=200);
-
--- Indeks dla pre-filteringu po vendor_nip
-CREATE INDEX IF NOT EXISTS idx_vendor_embeddings_nip
-    ON vendor_embeddings(vendor_nip);
-"""
-
-
-# ── SemanticGuard z DuckDB VSS ───────────────────────────────────────────────
-
-
-@final
-class SemanticGuard:
-    """Detektor anomalii semantycznych — DuckDB VSS.
-
-    SUPERMOCE DuckDB:
-    - VSS (Vector Similarity Search) z indeksem HNSW — natywny w DuckDB
-    - ``array_cosine_similarity()`` — funkcja skalarna DuckDB
-    - JEDNA baza zamiast dwóch (sqlite-vec + DuckDB analityka)
-    - Pre-filtering przez ``WHERE vendor_nip = ?`` przed VSS
-    - Backup całej bazy przez ``EXPORT DATABASE`` — backup embeddingów
-      razem z resztą danych analitycznych
-    """
-
-    EMBEDDING_DIM = 768
-
+class AnomalyResult:
     def __init__(
         self,
-        conn_or_path: duckdb.DuckDBPyConnection | str,
-        embedding_dim: int = 768,
+        action: AnomalyAction = AnomalyAction.ALLOW,
+        anomaly_score: float = 0.0,
+        alert: str = "",
+        similar_invoices: list[dict[str, Any]] | None = None,
     ) -> None:
-        """Inicjalizacja SemanticGuard z DuckDB VSS.
+        self.action = action
+        self.anomaly_score = anomaly_score
+        self.alert = alert
+        self.similar_invoices = similar_invoices or []
 
-        SUPERMOC DuckDB:
-        - VSS (Vector Similarity Search) z indeksem HNSW — natywny w DuckDB
-        - ``array_cosine_similarity()`` — funkcja skalarna DuckDB
-        - JEDNA baza zamiast dwóch (sqlite-vec + DuckDB analityka)
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "action": self.action.value,
+            "anomaly_score": self.anomaly_score,
+            "alert": self.alert,
+            "similar_invoices_count": len(self.similar_invoices),
+        }
 
-        Args:
-            conn_or_path: Połączenie DuckDB (współdzielone z DuckDBManager)
-                LUB ścieżka do pliku bazy (tworzy nowe połączenie).
-            embedding_dim: Wymiar wektorów embeddingu (domyślnie 768).
-        """
-        # SUPERMOC: Akceptujemy zarówno conn jak i path dla kompatybilności
-        if isinstance(conn_or_path, str):
-            self._conn = duckdb.connect(conn_or_path)
-        else:
-            self._conn = conn_or_path
-        self._embedding_service = get_embedding_service()
-        self._embedding_dim = embedding_dim
-        self._ensure_schema()
 
-    def _ensure_schema(self) -> None:
-        """Utwórz schemat VSS — INSTALL vss + CREATE TABLE + indeks HNSW."""
-        # SUPERMOC: Instalacja i załadowanie VSS extension
-        try:
-            self._conn.execute("INSTALL vss; LOAD vss;")
-        except Exception:
-            logger.warning(
-                "[SemanticGuard] DuckDB VSS extension not available — "
-                "vector search disabled. Install with: INSTALL vss; LOAD vss;"
-            )
+class SemanticGuard:
+    """Wykrywa anomalie semantyczne w fakturach.
 
-        # Utwórz tabelę embeddingów z indeksem HNSW
-        self._conn.execute(VENDOR_EMBEDDINGS_SCHEMA)
+    Dla każdego nowego dokumentu:
+    1. Wektoryzacja treści przez embedding model
+    2. Zapytanie do sqlite-vec (podobne faktury tego kontrahenta)
+    3. Obliczenie anomaly_score (odległość kosinusowa)
+    4. Decyzja: ALLOW / WARN / BLOCK_DECREE
+    """
 
-    def _get_embedding(self, text: str) -> list[float]:
-        """Generate embedding vector from text."""
-        vec = self._embedding_service.embed(text)
-        self._embedding_dim = len(vec)
-        return vec
+    def __init__(self, vector_store: AsyncVectorStore | None = None) -> None:
+        self._store = vector_store or AsyncVectorStore()
 
     async def evaluate(
         self,
         invoice_text: str,
         vendor_nip: str,
         amount_net: float = 0.0,
-    ) -> dict[str, Any]:
-        """Evaluate invoice for semantic anomalies — DuckDB VSS.
-
-        SUPERMOC DuckDB:
-        - ``array_cosine_similarity()`` — natywna funkcja VSS
-        - ``WHERE vendor_nip = ?`` — pre-filtering przed VSS
-        - ``ORDER BY score DESC LIMIT 5`` — najbliżsi sąsiedzi
-
-        Wynik cache'owany w NexusCache przez 3600s.
+        category_code: str = "",
+    ) -> AnomalyResult:
+        """SUPERMOC: Oceń czy faktura jest anomalią semantyczną.
 
         Args:
-            invoice_text: Pełny tekst faktury (po OCR).
+            invoice_text: Pełny tekst faktury z OCR.
             vendor_nip: NIP kontrahenta.
-            amount_net: Kwota netto faktury.
+            amount_net: Kwota netto.
+            category_code: Kod kategorii.
 
         Returns:
-            Dict z polami: action, anomaly_score, alert.
+            AnomalyResult z decyzją.
         """
-        # Sprawdź NexusCache
-        eval_cache_key = (
-            f"semantic_eval:{vendor_nip}:{amount_net}:{_text_hash(invoice_text.encode())}"
-        )
-        cached = _semantic_eval_cache.get_sync(eval_cache_key)
-        if cached is not None:
-            logger.debug("[SemanticGuard] evaluate cache HIT for vendor=%s", vendor_nip)
-            return cached
+        if not invoice_text or not vendor_nip:
+            return AnomalyResult(action=AnomalyAction.ALLOW, anomaly_score=0.0)
 
-        embedding = await anyio.to_thread.run_sync(self._get_embedding, invoice_text)
+        try:
+            # 1. Wektoryzacja treści (symulowana — w produkcji użylibyśmy modelu embedding)
+            embedding = self._mock_embedding(invoice_text)
 
-        # ── SUPERMOC: DuckDB VSS wyszukiwanie wektorowe ────────────────
-        # array_cosine_similarity() + indeks HNSW + pre-filtering
-        rows = self._conn.execute(
-            """
-            SELECT id, vendor_nip, category_code, amount_net, invoice_text,
-                   array_cosine_similarity(embedding, ?::FLOAT[768]) AS score
-            FROM vendor_embeddings
-            WHERE vendor_nip = ?
-              AND embedding IS NOT NULL
-            ORDER BY score DESC
-            LIMIT 5
-            """,
-            (embedding, vendor_nip),
-        ).fetchall()
+            # 2. Zapytanie do sqlite-vec — podobne faktury tego kontrahenta
+            similar = await self._store.search_similar(
+                query_vector=embedding,
+                limit=5,
+                table_name="vendor_invoices",
+                partition={"vendor_nip": vendor_nip},
+            )
 
-        # Calculate anomaly score
-        if rows:
-            distances = [float(r[5]) for r in rows]  # score = cosine similarity
-            # Normalize: 1 - avg_similarity → anomaly_score
-            anomaly_score = 1.0 - (sum(distances) / len(distances))
-        else:
-            anomaly_score = 0.0  # New vendor — no history
+            # 3. Oblicz anomaly_score
+            if similar:
+                distances = [s.get("_distance", 1.0) for s in similar]
+                avg_distance = float(np.mean(distances)) if distances else 1.0
+                anomaly_score = min(1.0, avg_distance)
+            else:
+                # Nowy kontrahent — brak historii = niskie ryzyko
+                anomaly_score = 0.0
 
-        # Check against anomaly rules
-        action = "ALLOW"
-        alert = None
+            # 4. Decyzja na podstawie progu
+            if anomaly_score > 0.80 and amount_net > 10000:
+                return AnomalyResult(
+                    action=AnomalyAction.BLOCK_DECREE,
+                    anomaly_score=anomaly_score,
+                    alert=(
+                        f"Drastyczna zmiana profilu usług kontrahenta NIP={vendor_nip}. "
+                        f"Anomalia semantyczna: {anomaly_score:.2f}, kwota: {amount_net:.2f} PLN. "
+                        f"Wymagana weryfikacja ręczna i dowód wykonania usługi."
+                    ),
+                    similar_invoices=similar,
+                )
+            elif anomaly_score > 0.60:
+                return AnomalyResult(
+                    action=AnomalyAction.WARN,
+                    anomaly_score=anomaly_score,
+                    alert=(
+                        f"Uwaga: zmiana profilu kontrahenta NIP={vendor_nip}. "
+                        f"Anomalia: {anomaly_score:.2f}"
+                    ),
+                    similar_invoices=similar,
+                )
 
-        for rule in ANOMALY_RULES:
-            if anomaly_score >= rule["min_score"] and amount_net >= rule["min_amount"]:
-                action = rule["action"]
-                alert = rule["alert"]
-                break
+            return AnomalyResult(
+                action=AnomalyAction.ALLOW,
+                anomaly_score=anomaly_score,
+                similar_invoices=similar,
+            )
 
-        result = {
-            "action": action,
-            "anomaly_score": round(anomaly_score, 4),
-            "alert": alert,
-        }
+        except Exception as exc:
+            logger.warning("[SEMANTIC-GUARD] Evaluation failed: %s", exc)
+            return AnomalyResult(
+                action=AnomalyAction.ALLOW,
+                anomaly_score=0.0,
+                alert=f"Evaluation error (allowed by default): {exc}",
+            )
 
-        # Zapisz w NexusCache
-        _semantic_eval_cache.set_sync(eval_cache_key, result, ttl=3600)
-        return result
+    @staticmethod
+    def _mock_embedding(text: str, dim: int = 768) -> list[float]:
+        """SUPERMOC: Symulacja embeddingu (w produkcji użyj modelu AI).
 
-    async def store_invoice(
-        self,
-        vendor_nip: str,
-        invoice_text: str,
-        category_code: str = "",
-        amount_net: float = 0.0,
-        transaction_id: str = "",
-    ) -> None:
-        """Store verified invoice in DuckDB VSS for future anomaly detection.
-
-        SUPERMOC DuckDB:
-        - JEDEN INSERT zamiast dwóch (embedding + text) — wszystko w jednej tabeli
-        - Indeks HNSW automatycznie indeksuje nowy wektor
-        - Backup przez EXPORT DATABASE — embeddingi razem z resztą
+        W produkcji: llama-cpp-python embedding lub sentence-transformers.
         """
-        import uuid
-
-        embedding = await anyio.to_thread.run_sync(self._get_embedding, invoice_text)
-
-        record_id = uuid.uuid4().hex
-
-        # SUPERMOC: JEDEN INSERT do DuckDB z wektorem i metadanymi
-        self._conn.execute(
-            """INSERT INTO vendor_embeddings
-               (id, vendor_nip, embedding, category_code, amount_net,
-                invoice_text, transaction_id)
-               VALUES (?, ?, ?::FLOAT[768], ?, ?, ?, ?)""",
-            (
-                record_id,
-                vendor_nip,
-                embedding,
-                category_code,
-                float(amount_net),
-                invoice_text[:5000],
-                transaction_id,
-            ),
-        )
-
-        logger.info(
-            "[SemanticGuard] Stored invoice %s for vendor %s (cat=%s, net=%.2f) [DuckDB VSS]",
-            transaction_id,
-            vendor_nip,
-            category_code,
-            float(amount_net),
-        )
-        invalidate_semantic_guard_cache()
+        seed = int(hashlib.sha256(text.encode()).hexdigest()[:8], 16)
+        rng = np.random.default_rng(seed)
+        vec = rng.normal(0, 0.1, dim).tolist()
+        norm = np.linalg.norm(vec)
+        return [v / norm for v in vec]

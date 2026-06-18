@@ -53,7 +53,7 @@ from __future__ import annotations
 
 import argparse
 import csv
-import json
+from nexus_ai.core.msgspec_utils import msgspec_loads as _msgspec_loads
 import os
 import shutil
 import sys
@@ -312,12 +312,12 @@ def _parse_locust_json(summary_prefix: Path) -> dict[str, float]:
     for jp in json_paths:
         if jp.exists():
             try:
-                data = json.loads(jp.read_text(encoding="utf-8"))
+                data = _msgspec_loads(jp.read_text(encoding="utf-8"))
                 metrics = data.get("metrics", {})
                 if metrics:
                     json_stats = data
                     break
-            except (json.JSONDecodeError, OSError):
+            except (ValueError, OSError):
                 continue
 
     if json_stats:

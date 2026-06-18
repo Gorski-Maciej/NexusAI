@@ -27,8 +27,8 @@ async def build_executable(
     version_path = Path(__file__).parent.parent / "config" / "version.json"
     version = "2.0.0"
     if version_path.exists():
-        import json
-        version = json.loads(version_path.read_text()).get("version", version)
+        from nexus_ai.core.msgspec_utils import msgspec_loads as _msgspec_loads
+        version = _msgspec_loads(version_path.read_text()).get("version", version)
 
     project_root = Path(__file__).parent.parent
     dist_dir = project_root / "dist"

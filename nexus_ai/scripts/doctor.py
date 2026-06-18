@@ -19,7 +19,7 @@ Checks:
 
 from __future__ import annotations
 
-import json
+from nexus_ai.core.msgspec_utils import msgspec_loads as _msgspec_loads
 import os
 import re
 import socket
@@ -105,8 +105,8 @@ def check_pyspy() -> str:
                 import shutil
                 pyspy = shutil.which("py-spy")
                 if pyspy:
-                    import subprocess
-                    result = subprocess.run(
+                    import subprocess as _sp
+                    result = _sp.run(
                         [pyspy, "dump", "-p", str(os.getpid()), "--nonblocking"],
                         capture_output=True, text=True, timeout=5,
                     )
@@ -546,7 +546,7 @@ def parse_logs(log_path: str | Path | None = None) -> dict[str, Any]:
                 if not line:
                     continue
                 try:
-                    record = json.loads(line)
+                    record = _msgspec_loads(line)
                     stats["total"] += 1
                     level = record.get("level", "UNKNOWN")
                     level_count[level] += 1
@@ -560,7 +560,7 @@ def parse_logs(log_path: str | Path | None = None) -> dict[str, Any]:
                         error_msgs[msg[:100]] += 1
                     elif level == "WARNING":
                         warning_msgs[msg[:100]] += 1
-                except (json.JSONDecodeError, Exception):
+                except Exception:
                     pass
     except Exception:
         pass

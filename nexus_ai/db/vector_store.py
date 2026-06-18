@@ -1,7 +1,7 @@
 """
 AsyncVectorStore — async sqlite-vec wrapper with ALL superpowers.
 
-Python 3.13t (free-threaded): używamy natywnego sqlite3 + asyncio.to_thread
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync
 zamiast aiosqlite.
 
 SUPERMOCE (FAZA 2):
@@ -17,7 +17,7 @@ SUPERMOCE (FAZA 2):
 
 from __future__ import annotations
 
-import asyncio
+import anyio
 import hashlib
 import sqlite3
 from typing import Any, Literal
@@ -122,7 +122,7 @@ def _build_vec0_ddl(
 class AsyncVectorStore(AsyncBaseService):
     """Async wrapper around sqlite-vec with ALL superpowers.
 
-    Python 3.13t (free-threaded): synchroniczne sqlite3 + asyncio.to_thread.
+    Python 3.13t (free-threaded): synchroniczne sqlite3 + anyio.to_thread.run_sync.
     """
 
     def __init__(
@@ -139,7 +139,7 @@ class AsyncVectorStore(AsyncBaseService):
         def _sync() -> None:
             sqlite_vec.load(conn)
             conn.execute(f"PRAGMA application_id = {VECTOR_DB_APP_ID};")
-        await asyncio.to_thread(_sync)
+        await anyio.to_thread.run_sync(_sync)
 
     # ── [FAZA 2] Unified Schema Registry ────────────────────────────────
 
@@ -269,7 +269,7 @@ class AsyncVectorStore(AsyncBaseService):
                 conn.execute(sql, row)
             conn.commit()
 
-        await asyncio.to_thread(_sync_batch)
+        await anyio.to_thread.run_sync(_sync_batch)
 
     # ── [FAZA 2] search_similar z partition_key i metadata ─────────────
 
@@ -324,7 +324,7 @@ class AsyncVectorStore(AsyncBaseService):
             return [dict(r) for r in cursor.fetchall()]
 
         try:
-            return await asyncio.to_thread(_sync_search)
+            return await anyio.to_thread.run_sync(_sync_search)
         except Exception:
             return await self._fallback_search(query_blob, query_vector, limit, distance_threshold, distance_fn)
 
@@ -355,7 +355,7 @@ class AsyncVectorStore(AsyncBaseService):
             except Exception:
                 return []
 
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
     # ── Usuwanie wektorów ───────────────────────────────────────────────
 
@@ -385,7 +385,7 @@ class AsyncVectorStore(AsyncBaseService):
             conn.commit()
             return deleted
 
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
     async def __aenter__(self) -> AsyncVectorStore:
         return self

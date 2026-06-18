@@ -84,8 +84,8 @@ class CacheRefresher:
                     continue
 
                 try:
-                    import json
-                    ledger_map = json.loads(str(row[0]))
+                    from nexus_ai.core.msgspec_utils import msgspec_loads as _msgspec_loads
+                    ledger_map = _msgspec_loads(str(row[0]))
                 except (json.JSONDecodeError, TypeError):
                     continue
 

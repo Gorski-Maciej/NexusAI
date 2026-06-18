@@ -3,10 +3,10 @@ AsyncBaseService — bazowa klasa dla serwisów DB (sync sqlite3 + async wrapper
 
 Python 3.13t (free-threaded, brak GIL): wywołania synchronicznego sqlite3
 są bezpieczne z wielu wątków. Każda operacja DB jest delegowana do wątku
-przez ``asyncio.to_thread()``.
+przez ``anyio.to_thread.run_sync()``.
 
 Zgodnie z decyzją architektoniczną: rezygnujemy z aiosqlite na rzecz
-natywnego sqlite3 + asyncio.to_thread.
+natywnego sqlite3 + anyio.to_thread.run_sync.
 
 Każdy serwis dziedziczy po AsyncBaseService i dostaje automatycznie:
 - AsyncDBPool zarządzanie połączeniami
@@ -25,7 +25,7 @@ Usage:
 
 from __future__ import annotations
 
-import asyncio
+import anyio
 import sqlite3
 from pathlib import Path
 from typing import Any
@@ -41,7 +41,7 @@ class AsyncBaseService:
     """Bazowa klasa dla serwisów DB (sync sqlite3 + async wrapper).
 
     Wszystkie operacje sqlite3 są wykonywane w wątku przez
-    ``asyncio.to_thread()`` — Python 3.13t (free-threaded) nie ma GIL,
+    ``anyio.to_thread.run_sync()`` — Python 3.13t (free-threaded) nie ma GIL,
     więc synchroniczne API nie blokuje pętli zdarzeń.
 
     Zapewnia:
@@ -88,7 +88,7 @@ class AsyncBaseService:
             sqlite3.Connection z ustawionymi PRAGMAMI.
         """
         if self._conn is None:
-            self._conn = await asyncio.to_thread(
+            self._conn = await anyio.to_thread.run_sync(
                 self._pool.get_conn,
                 self._db_path,
                 enable_extensions=self._enable_extensions,
@@ -115,7 +115,7 @@ class AsyncBaseService:
         sql: str,
         parameters: Any | None = None,
     ) -> sqlite3.Cursor:
-        """Wykonaj zapytanie SQL (w wątku przez asyncio.to_thread)."""
+        """Wykonaj zapytanie SQL (w wątku przez anyio.to_thread.run_sync)."""
         conn = await self.get_conn()
 
         def _sync_execute() -> sqlite3.Cursor:
@@ -123,7 +123,7 @@ class AsyncBaseService:
                 return conn.execute(sql, parameters)
             return conn.execute(sql)
 
-        return await asyncio.to_thread(_sync_execute)
+        return await anyio.to_thread.run_sync(_sync_execute)
 
     async def executescript(self, sql: str) -> None:
         """Wykonaj skrypt SQL (multi-statement, w wątku)."""
@@ -132,7 +132,7 @@ class AsyncBaseService:
         def _sync() -> None:
             conn.executescript(sql)
 
-        await asyncio.to_thread(_sync)
+        await anyio.to_thread.run_sync(_sync)
 
     async def executemany(
         self,
@@ -145,7 +145,7 @@ class AsyncBaseService:
         def _sync() -> None:
             conn.executemany(sql, parameters)
 
-        await asyncio.to_thread(_sync)
+        await anyio.to_thread.run_sync(_sync)
 
     async def fetchone(
         self,
@@ -160,7 +160,7 @@ class AsyncBaseService:
             row = cursor.fetchone()
             return dict(row) if row else None
 
-        return await asyncio.to_thread(_sync_fetch)
+        return await anyio.to_thread.run_sync(_sync_fetch)
 
     async def fetchall(
         self,
@@ -175,21 +175,21 @@ class AsyncBaseService:
             rows = cursor.fetchall()
             return [dict(r) for r in rows]
 
-        return await asyncio.to_thread(_sync_fetch)
+        return await anyio.to_thread.run_sync(_sync_fetch)
 
     async def commit(self) -> None:
         """Wykonaj commit (w wątku)."""
         if self._conn is not None:
             def _sync() -> None:
                 self._conn.commit()
-            await asyncio.to_thread(_sync)
+            await anyio.to_thread.run_sync(_sync)
 
     async def rollback(self) -> None:
         """Wykonaj rollback (w wątku)."""
         if self._conn is not None:
             def _sync() -> None:
                 self._conn.rollback()
-            await asyncio.to_thread(_sync)
+            await anyio.to_thread.run_sync(_sync)
 
     async def close(self) -> None:
         """Zamknij połączenie (w wątku)."""
@@ -200,10 +200,10 @@ class AsyncBaseService:
                         self._conn.execute("PRAGMA optimize;")
                     except Exception:
                         pass
-                await asyncio.to_thread(_optimize)
+                await anyio.to_thread.run_sync(_optimize)
             except Exception:
                 pass
-            await asyncio.to_thread(self._pool.close_conn, self._db_path)
+            await anyio.to_thread.run_sync(self._pool.close_conn, self._db_path)
             self._conn = None
 
     async def __aenter__(self) -> AsyncBaseService:

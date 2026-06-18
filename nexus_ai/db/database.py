@@ -157,6 +157,11 @@ def _make_pragma_setter(key_hex: str):
             pass
 
         try:
+            dbapi_connection.execute("PRAGMA cipher_plaintext_header_size = 0;")
+        except Exception:
+            pass
+
+        try:
             dbapi_connection.execute("PRAGMA cipher_hmac_pgno = ON;")
         except Exception:
             pass

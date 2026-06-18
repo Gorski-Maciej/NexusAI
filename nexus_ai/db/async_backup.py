@@ -9,7 +9,7 @@ SUPERMOC fsspec:
 
 Python 3.13t (free-threaded): używamy natywnego ``sqlite3.backup()``
 zamiast ``aiosqlite.backup()``. Operacje są delegowane do wątków przez
-``asyncio.to_thread()``.
+``anyio.to_thread.run_sync()``.
 
 Usage:
     backup = AsyncBackup(config=app_config)
@@ -19,7 +19,7 @@ Usage:
 
 from __future__ import annotations
 
-import asyncio
+import anyio
 import os
 import sqlite3
 import tempfile
@@ -51,7 +51,7 @@ class AsyncBackup:
     """Async backup service for all NexusAI databases.
 
     Python 3.13t (free-threaded): sync ``sqlite3.backup()`` jest wykonywany
-    w wątku przez ``asyncio.to_thread()``.
+    w wątku przez ``anyio.to_thread.run_sync()``.
 
     Używa natywnego ``sqlite3.Connection.backup()`` (dostępne od Python 3.6).
     SQLCipher: backup działa między szyfrowanymi bazami (ten sam klucz).
@@ -190,7 +190,7 @@ class AsyncBackup:
             finally:
                 src.close()
 
-        await asyncio.to_thread(_sync_backup)
+        await anyio.to_thread.run_sync(_sync_backup)
 
         duration = time.time() - start_time
 
@@ -269,7 +269,7 @@ class AsyncBackup:
             finally:
                 os.unlink(tmp_path)
 
-        await asyncio.to_thread(_sync_backup)
+        await anyio.to_thread.run_sync(_sync_backup)
         logger.info("[BACKUP] In-memory backup complete: %s → memory://", source_path)
 
     def add_database(self, name: str, path: str) -> None:

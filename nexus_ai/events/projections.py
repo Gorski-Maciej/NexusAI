@@ -1,7 +1,7 @@
 """
 AsyncProjections — CQRS read-side with sqlite3.
 
-Python 3.13t (free-threaded): używamy natywnego sqlite3 + asyncio.to_thread
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync
 zamiast aiosqlite.
 
 Każda projekcja:
@@ -17,7 +17,7 @@ SUPERMOC:
 
 from __future__ import annotations
 
-import asyncio
+import anyio
 import sqlite3
 from pathlib import Path
 from typing import Any
@@ -133,7 +133,7 @@ class AsyncInvoiceProjection(AsyncProjection, AsyncBaseService):
             conn.execute("PRAGMA cache_size = -25600;")     # 100MB cache
             conn.execute("PRAGMA temp_store = MEMORY;")     # Temp tables w RAM
             conn.execute("PRAGMA mmap_size = 2147483648;")  # 2GB mmap
-        await asyncio.to_thread(_sync)
+        await anyio.to_thread.run_sync(_sync)
         await self._ensure_schema()
 
     async def _ensure_schema(self) -> None:
@@ -315,7 +315,7 @@ class AsyncInvoiceProjection(AsyncProjection, AsyncBaseService):
 
             conn.commit()
 
-        await asyncio.to_thread(_sync_handle)
+        await anyio.to_thread.run_sync(_sync_handle)
 
     async def query(
         self,
@@ -360,7 +360,7 @@ class AsyncInvoiceProjection(AsyncProjection, AsyncBaseService):
                 "total": int(total_row[0]) if total_row else 0,
                 "by_status": {str(r[0]): int(r[1]) for r in rows},
             }
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
 
 # ── Decision Projection (async) ──────────────────────────────────────────
@@ -385,7 +385,7 @@ class AsyncDecisionProjection(AsyncProjection, AsyncBaseService):
             conn.execute("PRAGMA cache_size = -25600;")
             conn.execute("PRAGMA temp_store = MEMORY;")
             conn.execute("PRAGMA mmap_size = 2147483648;")
-        await asyncio.to_thread(_sync)
+        await anyio.to_thread.run_sync(_sync)
         await self._ensure_schema()
 
     async def _ensure_schema(self) -> None:
@@ -489,7 +489,7 @@ class AsyncDecisionProjection(AsyncProjection, AsyncBaseService):
 
             conn.commit()
 
-        await asyncio.to_thread(_sync_handle)
+        await anyio.to_thread.run_sync(_sync_handle)
 
     async def query(
         self,
@@ -524,7 +524,7 @@ class AsyncDecisionProjection(AsyncProjection, AsyncBaseService):
                 "total": int(total_row[0]) if total_row else 0,
                 "by_decision": {str(r[0]): int(r[1]) for r in rows},
             }
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
 
 # ── Aliases dla kompatybilności wstecznej ────────────────────────────────

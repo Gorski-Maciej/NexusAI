@@ -34,7 +34,8 @@ Usage:
 
 from __future__ import annotations
 
-import json
+from nexus_ai.core.msgspec_utils import msgspec_dumps_bytes, msgspec_loads as _msgspec_loads
+import json as _json
 import random
 from typing import Any, AsyncIterator
 
@@ -229,7 +230,7 @@ async def publish_event(
 
                 payload = msgspec.json.encode(data)
             except Exception:
-                payload = json.dumps(data).encode("utf-8")
+                payload = msgspec_dumps_bytes(data)("utf-8")
 
         await nc.publish(subject, payload)
 
@@ -249,6 +250,7 @@ async def publish_event(
 # ── Request-Reply (RPC) ──────────────────────────────────────────────────
 
 
+@final
 class NatsRpcClient:
     """NATS Request-Reply klient.
 
@@ -337,7 +339,7 @@ class NatsRpcClient:
 
                 payload = msgspec.json.encode(data)
             except Exception:
-                payload = json.dumps(data).encode("utf-8")
+                payload = msgspec_dumps_bytes(data)("utf-8")
 
         try:
             msg = await self._nc.request(subject, payload, timeout=timeout)
@@ -349,7 +351,7 @@ class NatsRpcClient:
                 return msgspec.json.decode(msg.data)
             except Exception:
                 try:
-                    return json.loads(msg.data)
+                    return _msgspec_loads(msg.data)
                 except Exception:
                     return msg.data
 
@@ -372,6 +374,7 @@ class NatsRpcClient:
 # ── Async Iterator Subscription ──────────────────────────────────────────
 
 
+@final
 class NatsSubscription:
     """NATS subscription z async iteratorem.
 

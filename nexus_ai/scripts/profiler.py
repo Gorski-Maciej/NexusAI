@@ -49,7 +49,6 @@ Użycie:
 
 from __future__ import annotations
 
-import json
 import os
 import shutil
 import signal
@@ -134,8 +133,8 @@ def check_pyspy_installed() -> tuple[bool, str]:
     if pyspy is None:
         return False, "py-spy not found in PATH or common locations"
     try:
-        import subprocess
-        result = subprocess.run(
+        import subprocess as _sp
+        result = _sp.run(
             [pyspy, "--version"],
             capture_output=True, text=True, timeout=10
         )
@@ -245,7 +244,8 @@ async def profile_process(
     )
 
     try:
-        result = await anyio.run_process(cmd, timeout=cfg.duration + 30)
+        async with anyio.fail_after(cfg.duration + 30):
+            result = await anyio.run_process(cmd)
         if result.returncode != 0:
             stderr = result.stderr.decode() if result.stderr else ""
             raise RuntimeError(
@@ -340,12 +340,12 @@ async def profile_subprocess(
 
     env = {**os.environ}
     try:
-        result = await anyio.run_process(
-            full_cmd,
-            env=env,
-            cwd=str(cwd) if cwd else None,
-            timeout=cfg.duration + 60,
-        )
+        async with anyio.fail_after(cfg.duration + 60):
+            result = await anyio.run_process(
+                full_cmd,
+                env=env,
+                cwd=str(cwd) if cwd else None,
+            )
         logger.info("[PY-SPY] Subprocess profile saved: %s (exit=%d)", output_path, result.returncode)
         return output_path, result.returncode
     except TimeoutError:
@@ -415,7 +415,8 @@ async def dump_stack(
         cmd.append("--locals")
 
     try:
-        result = await anyio.run_process(cmd, timeout=30)
+        async with anyio.fail_after(30):
+            result = await anyio.run_process(cmd)
         output = result.stdout.decode() if result.stdout else ""
         stderr = result.stderr.decode() if result.stderr else ""
 
@@ -509,7 +510,8 @@ async def top_snapshot(
         cmd.append("--gil")
 
     try:
-        result = await anyio.run_process(cmd, timeout=duration + 15)
+        async with anyio.fail_after(duration + 15):
+            result = await anyio.run_process(cmd)
         output = result.stdout.decode() if result.stdout else ""
 
         # Parsuj wyjście top (proste parsowanie)

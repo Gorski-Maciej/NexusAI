@@ -54,6 +54,7 @@ except ImportError:
     _HAS_DELTA = False
 
 
+@final
 class BackupManager:
     """Zarządza pakowaniem i szyfrowaniem bazy danych.
 
@@ -219,12 +220,13 @@ class BackupManager:
             f.write(final_data)
 
         self.prune_old_backups(keep_days=30)
+        backup_path_obj = Path(backup_url)
         logger.info(
             "[BACKUP] Created backup: %s (%.2f MB)",
-            final_path.name,
+            backup_path_obj.name,
             len(final_data) / (1024 * 1024),
         )
-        return str(final_path)
+        return str(backup_path_obj)
 
     def list_backups(self) -> list[dict]:
         """List all backups in the backup directory using fsspec.
@@ -338,8 +340,7 @@ class BackupManager:
             finally:
                 conn.close()
 
-            # Konwertuj na Pandas DataFrame (niezbędne dla deltalake)
-            import pandas as pd
+            # Konwertuj Arrow Table → Pandas DataFrame dla deltalake
             pdf = arrow_table.to_pandas()
 
             # ── SUPERMOC: Delta Lake write z ACID ────────────────────

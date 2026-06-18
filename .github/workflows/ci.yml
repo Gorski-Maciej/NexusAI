@@ -799,6 +799,85 @@ jobs:
           echo "| Profile collection | ${{ steps.pgo-profile.outcome }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Rebuild | ✅ ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
 
+  # ── SUPERMOC: Build z Clang (Linux) — mniejszy binary, lepsze diagnostyki ──
+  build-nuitka-clang:
+    needs: [test-hatch-matrix, build-rust, mypyc-compile]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CCACHE_DIR: ~/.cache/ccache
+      NUITKA_CACHE_DIR: ~/.cache/nuitka
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Clang + LLD (fast linker)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq clang lld
+
+      - uses: ./.github/actions/setup-hatch
+        with:
+          cache-key-prefix: hatch-nuitka-clang
+
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ccache
+          key: ccache-nuitka-clang-${{ hashFiles('pyproject.toml', 'nexus_ai/**/*.py') }}
+          restore-keys: |
+            ccache-nuitka-clang-
+
+      - name: Cache NUITKA_CACHE_DIR
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/nuitka
+          key: nuitka-cache-clang-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            nuitka-cache-clang-
+
+      - name: Download Rust wheels
+        uses: actions/download-artifact@v4
+        with:
+          name: nexus-crypto-ubuntu-latest
+          path: dist/wheels/
+
+      - name: Download mypyc compiled .so files
+        uses: actions/download-artifact@v4
+        with:
+          name: mypyc-compiled-so
+          path: ./
+
+      - name: Build with Nuitka + Clang via hatch
+        run: hatch run build:build-nuitka -- --clang
+        env:
+          NUITKA_CACHE_DIR: ~/.cache/nuitka
+          CCACHE_DIR: ~/.cache/ccache
+          CCACHE_MAXSIZE: 2G
+
+      - name: Show ccache stats
+        if: always()
+        run: ccache --show-stats || echo "ccache stats unavailable"
+
+      - name: Upload Clang build
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-ai-clang-ubuntu-latest
+          path: dist/nexus-ai*
+          retention-days: 30
+
+      - name: Clang Build Summary
+        if: always()
+        run: |
+          BINARY_SIZE=$(ls -lh dist/nexus-ai* 2>/dev/null | awk '{print $5}')
+          echo "## 📦 Nuitka Clang Build" >> $GITHUB_STEP_SUMMARY
+          echo "| Artifact | Status | Size |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|------|" >> $GITHUB_STEP_SUMMARY
+          echo "| nexus-ai-clang | ✅ ${{ job.status }} | ${BINARY_SIZE:-N/A} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Compiler | Clang + LLD |" >> $GITHUB_STEP_SUMMARY
+
   # ── Build standalone .exe: Nuitka ───────────────────────────────────────
   build-nuitka:
     needs: [test-hatch-matrix, build-rust, mypyc-compile]

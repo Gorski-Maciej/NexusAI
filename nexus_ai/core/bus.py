@@ -32,7 +32,7 @@ from __future__ import annotations
 
 import time as _time
 from collections.abc import Awaitable, Callable
-from typing import Any, Generic, TypeVar
+from typing import final,  Any, Generic, TypeVar
 
 import anyio
 import msgspec
@@ -106,6 +106,7 @@ class Subscription(Generic[EventT]):
 # ── Typed EventBus ─────────────────────────────────────────────────────────
 
 
+final
 class EventBus:
     """Typed, msgspec-backed in-process event bus with structured concurrency.
 

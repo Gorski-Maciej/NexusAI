@@ -17,7 +17,7 @@ SUPERMOCE Flet Router 0.28+:
 
 from __future__ import annotations
 
-import asyncio
+import anyio
 from typing import Any, Callable
 from urllib.parse import urlparse, parse_qs, urlencode
 
@@ -94,7 +94,7 @@ def FadeInContent(page: ft.Page, content: ft.Control, duration: int = 300):
     opacity = ft.use_state(0.0)
 
     async def _fade_in():
-        await asyncio.sleep(0.05)  # Poczekaj na pierwszy render
+        await anyio.sleep(0.05)  # Poczekaj na pierwszy render
         opacity.set(1.0)
 
     # Guard: uruchom fade-in TYLKO jeśli opacity wciąż 0
@@ -124,7 +124,7 @@ def SlideFadeContent(page: ft.Page, content: ft.Control, direction: str = "left"
     slide_margin = ft.use_state(init_margin)
 
     async def _animate_in():
-        await asyncio.sleep(0.05)
+        await anyio.sleep(0.05)
         opacity.set(1.0)
         slide_margin.set(0.0)
 

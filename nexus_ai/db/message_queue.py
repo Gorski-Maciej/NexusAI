@@ -1,7 +1,7 @@
 """
 AsyncSQLiteQueue — async SQLite Message Queue via sqlite3.
 
-Python 3.13t (free-threaded): używamy natywnego sqlite3 + asyncio.to_thread
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync
 zamiast aiosqlite.
 
 SUPERMOCE:
@@ -21,8 +21,8 @@ Usage:
 
 from __future__ import annotations
 
-import asyncio
-import json
+import anyio
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads as _msgspec_loads
 import sqlite3
 import time
 import uuid
@@ -33,7 +33,7 @@ from nexus_ai.db.async_base_service import AsyncBaseService
 
 
 class AsyncSQLiteQueue(AsyncBaseService):
-    """Async lekka kolejka komunikatów w SQLite przez sqlite3 + asyncio.to_thread.
+    """Async lekka kolejka komunikatów w SQLite przez sqlite3 + anyio.to_thread.run_sync.
 
     SUPERMOCE:
     - Atomiczne enqueue/dequeue w jednej transakcji (async)
@@ -41,7 +41,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
     - Opóźnione wiadomości (delay_until)
     - Dead letter queue
     - Partial indexes
-    - async — nie blokuje pętli zdarzeń (przez asyncio.to_thread)
+    - async — nie blokuje pętli zdarzeń (przez anyio.to_thread.run_sync)
     """
 
     def __init__(
@@ -108,7 +108,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
                     # Need to call _ensure_schema which uses self methods
                     return False
                 return True
-            exists = await asyncio.to_thread(_sync)
+            exists = await anyio.to_thread.run_sync(_sync)
             if not exists:
                 await self._ensure_schema()
             self._schema_checked = True
@@ -125,7 +125,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
     ) -> str:
         """Dodaj wiadomość do kolejki (ASYNC)."""
         msg_id = uuid.uuid4().hex
-        payload_str = json.dumps(payload) if isinstance(payload, dict) else payload
+        payload_str = msgspec_dumps(payload) if isinstance(payload, dict) else payload
         now = time.time()
         delay_until = now + delay_seconds if delay_seconds else None
         retries = max_retries or self._max_retries
@@ -156,7 +156,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
                 for msg in messages:
                     msg_id = uuid.uuid4().hex
                     payload = msg.get("payload", {})
-                    payload_str = json.dumps(payload) if isinstance(payload, dict) else payload
+                    payload_str = msgspec_dumps(payload) if isinstance(payload, dict) else payload
                     delay = msg.get("delay_seconds")
                     delay_until = now + delay if delay else None
 
@@ -183,7 +183,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
                 raise
             return batch_ids
 
-        return await asyncio.to_thread(_sync_batch)
+        return await anyio.to_thread.run_sync(_sync_batch)
 
     # ── Dequeue ──────────────────────────────────────────────────────
 
@@ -252,7 +252,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
                 return messages[0] if messages else None
             return messages
 
-        return await asyncio.to_thread(_sync_dequeue)
+        return await anyio.to_thread.run_sync(_sync_dequeue)
 
     # ── Ack / Nack ───────────────────────────────────────────────────
 
@@ -310,7 +310,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
             conn.commit()
             return True
 
-        return await asyncio.to_thread(_sync_nack)
+        return await anyio.to_thread.run_sync(_sync_nack)
 
     # ── Stats ─────────────────────────────────────────────────────────
 
@@ -330,7 +330,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
             stats["dead_letter"] = int(dlq_row[0]) if dlq_row else 0
             return stats
 
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
     async def replay_dlq(self) -> int:
         """Przenieś wszystkie wiadomości z DLQ z powrotem do kolejki (ASYNC)."""
@@ -360,7 +360,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
 
             return len(ids)
 
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
 
 # ── Alias dla kompatybilności wstecznej ─────────────────────────────────

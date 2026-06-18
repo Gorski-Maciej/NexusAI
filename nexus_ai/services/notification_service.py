@@ -1,12 +1,11 @@
 """AsyncNotificationService — async notification service backed by sqlite3.
 
-Python 3.13t (free-threaded): używamy natywnego sqlite3 + asyncio.to_thread
-zamiast aiosqlite.
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync.
 """
 
 from __future__ import annotations
 
-import asyncio
+import anyio
 import sqlite3
 from pathlib import Path
 from typing import Any, final
@@ -220,7 +219,7 @@ class MultiChannelConfig:
 
 @final
 class AsyncNotificationService(AsyncBaseService):
-    """Async notification service backed by sqlite3 + asyncio.to_thread."""
+    """Async notification service backed by sqlite3 + anyio.to_thread.run_sync."""
 
     def __init__(
         self,
@@ -248,7 +247,7 @@ class AsyncNotificationService(AsyncBaseService):
                 "CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, is_read, created_at DESC)"
             )
             conn.commit()
-        await asyncio.to_thread(_sync)
+        await anyio.to_thread.run_sync(_sync)
 
     async def send_daily_briefing(self, user_id: str) -> dict[str, Any]:
         """Generate and persist a daily briefing summary (async)."""
@@ -572,7 +571,7 @@ class AsyncNotificationService(AsyncBaseService):
             conn.commit()
             return int(cursor.lastrowid)
 
-        return await asyncio.to_thread(_sync)
+        return await anyio.to_thread.run_sync(_sync)
 
     async def get_user_notifications(
         self,

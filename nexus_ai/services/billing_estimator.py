@@ -1,303 +1,213 @@
 """
-BillingEstimator — estymator kosztów i czasu przetwarzania.
+Automatyczny estymator kosztów i czasu przetwarzania.
 
-Zgodny z wzorcem DecisionEngine — reguły first-match-wins w tabeli
-billing_rules (DuckDB) zamiast w kodzie, temporalne (valid_from/valid_to).
+SUPERMOCE:
+- Reguły w DuckDB (billing_rules) z first-match-wins
+- Hot-reload przez NATS (billing.rules.updated)
+- Client-Driven Pricing: endpoint GET /api/v2/billing/estimate
+- Wycena w czasie rzeczywistym z interfejsu Flet
 
-Logika przechowywana w tabeli billing_rules (nie w kodzie).
-First-match-wins według typu dokumentu i formy opodatkowania.
+Zgodnie z docs/tfgxzd.txt — Automatyczny estymator kosztów.
 """
 
 from __future__ import annotations
 
+import json
 import uuid
-from msgspec import Struct
-from typing import Any, final
+from typing import Any
 
 import duckdb
 import pendulum
+from structlog import get_logger
 
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+from nexus_ai.core.msgspec_utils import msgspec_dumps
 
-# ── Schema ───────────────────────────────────────────────────────────────────
-
-BILLING_RULES_SCHEMA = """
-CREATE TABLE IF NOT EXISTS billing_rules (
-    rule_id       VARCHAR PRIMARY KEY,
-    condition_json VARCHAR NOT NULL,
-    price_json    VARCHAR NOT NULL,
-    valid_from    DATE NOT NULL,
-    valid_to      DATE,
-    priority      INTEGER NOT NULL DEFAULT 100,
-    created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-CREATE INDEX IF NOT EXISTS idx_billing_rules_valid
-    ON billing_rules(valid_from, valid_to, priority);
-"""
-
-DEFAULT_BILLING_RULES: list[dict[str, Any]] = [
-    {
-        "condition_json": {"document_type": "invoice_national", "tax_form": "CIT_STANDARD"},
-        "price_json": {
-            "price_pln": 1.50,
-            "processing_time_hours": 0.5,
-            "description": "Faktura krajowa CIT",
-        },
-        "valid_from": "2024-01-01",
-        "priority": 10,
-    },
-    {
-        "condition_json": {"document_type": "invoice_national", "tax_form": "LUMP_SUM"},
-        "price_json": {
-            "price_pln": 1.20,
-            "processing_time_hours": 0.3,
-            "description": "Faktura krajowa ryczałt",
-        },
-        "valid_from": "2024-01-01",
-        "priority": 10,
-    },
-    {
-        "condition_json": {"document_type": "invoice_national", "tax_form": "LINEAR"},
-        "price_json": {
-            "price_pln": 1.50,
-            "processing_time_hours": 0.5,
-            "description": "Faktura krajowa liniowy",
-        },
-        "valid_from": "2024-01-01",
-        "priority": 10,
-    },
-    {
-        "condition_json": {"document_type": "invoice_foreign"},
-        "price_json": {
-            "price_pln": 3.00,
-            "processing_time_hours": 1.0,
-            "description": "Faktura zagraniczna",
-        },
-        "valid_from": "2024-01-01",
-        "priority": 10,
-    },
-    {
-        "condition_json": {"document_type": "invoice_national", "additional_service": "ksef"},
-        "price_json": {
-            "price_pln": 0.50,
-            "processing_time_hours": 0.1,
-            "description": "Eksport KSeF",
-        },
-        "valid_from": "2024-01-01",
-        "priority": 20,
-    },
-    {
-        "condition_json": {
-            "document_type": "invoice_national",
-            "additional_service": "semantic_guard",
-        },
-        "price_json": {
-            "price_pln": 0.30,
-            "processing_time_hours": 0.05,
-            "description": "Weryfikacja semantyczna AI",
-        },
-        "valid_from": "2024-01-01",
-        "priority": 20,
-    },
-    {
-        "condition_json": {},
-        "price_json": {
-            "price_pln": 0.50,
-            "processing_time_hours": 0.2,
-            "description": "Faktura podstawowa",
-        },
-        "valid_from": "2024-01-01",
-        "priority": 999,
-    },
-]
+logger = get_logger("nexus.services.billing")
 
 
-class BillingEstimate(Struct):
-    """Estymacja kosztu i czasu przetwarzania."""
+class BillingResult:
+    """Wynik estymacji kosztów."""
 
-    total_price_pln: float = 0.0
-    total_time_hours: float = 0.0
-    breakdown: list[dict[str, Any]] | None = None
+    def __init__(
+        self,
+        processing_time_minutes: float = 0.0,
+        compliance_surcharge_pln: float = 0.0,
+        requires_senior: bool = False,
+        total_cost: float = 0.0,
+        rule_id: str = "",
+        base_rate_per_minute: float = 0.0,
+    ) -> None:
+        self.processing_time_minutes = processing_time_minutes
+        self.compliance_surcharge_pln = compliance_surcharge_pln
+        self.requires_senior = requires_senior
+        self.total_cost = total_cost
+        self.rule_id = rule_id
+        self.base_rate_per_minute = base_rate_per_minute
 
-
-def ensure_schema(conn: duckdb.DuckDBPyConnection) -> None:
-    """Create billing_rules table if not present."""
-    conn.execute(BILLING_RULES_SCHEMA)
-
-
-def seed_default_billing_rules(conn: duckdb.DuckDBPyConnection) -> None:
-    """Insert default billing rules if table is empty."""
-    count = conn.execute("SELECT COUNT(1) FROM billing_rules").fetchone()[0]
-    if count > 0:
-        return
-    for rule in DEFAULT_BILLING_RULES:
-        conn.execute(
-            """INSERT INTO billing_rules
-               (rule_id, condition_json, price_json, valid_from, valid_to, priority)
-               VALUES (?, ?, ?, ?, ?, ?)""",
-            (
-                uuid.uuid4().hex,
-                msgspec_dumps(rule["condition_json"], ensure_ascii=False),
-                msgspec_dumps(rule["price_json"], ensure_ascii=False),
-                rule["valid_from"],
-                rule.get("valid_to"),
-                rule["priority"],
-            ),
-        )
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "processing_time_minutes": self.processing_time_minutes,
+            "compliance_surcharge_pln": self.compliance_surcharge_pln,
+            "requires_senior": self.requires_senior,
+            "total_cost": self.total_cost,
+            "rule_id": self.rule_id,
+            "base_rate_per_minute": self.base_rate_per_minute,
+        }
 
 
-@final
 class BillingEstimator:
-    """Estymator kosztów przetwarzania dokumentów.
+    """Estymator kosztów i czasu przetwarzania dokumentów.
 
-    Args:
-        conn: DuckDB connection z tabelą billing_rules.
+    First-match-wins: DuckDB łaczy warunki przez json_extract + CASE.
     """
 
     def __init__(self, conn: duckdb.DuckDBPyConnection) -> None:
         self._conn = conn
-        ensure_schema(conn)
+        self._ensure_schema()
+
+    def _ensure_schema(self) -> None:
+        """Utwórz tabelę billing_rules jeśli nie istnieje."""
+        self._conn.execute("""
+            CREATE TABLE IF NOT EXISTS billing_rules (
+                rule_id              VARCHAR PRIMARY KEY,
+                condition_json       VARCHAR NOT NULL,
+                output_json          VARCHAR NOT NULL,
+                valid_from           DATE NOT NULL,
+                valid_to             DATE,
+                priority             INTEGER NOT NULL DEFAULT 100,
+                created_at           TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                created_by           VARCHAR NOT NULL DEFAULT 'system'
+            )
+        """)
+        self._conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_billing_rules_valid
+            ON billing_rules(valid_from, valid_to, priority)
+        """)
+
+        count = self._conn.execute("SELECT COUNT(*) FROM billing_rules").fetchone()[0]
+        if count == 0:
+            self._seed_defaults()
+
+    def _seed_defaults(self) -> None:
+        """Wstaw domyślne reguły cennika z warunkami."""
+        defaults = [
+            {
+                "condition": '{"doc_type": "faktura_krajowa", "tax_form": "CIT_STANDARD"}',
+                "output": '{"processing_time_minutes": 3.0, "compliance_surcharge_pln": 0.0, "requires_senior": false, "base_rate_per_minute": 2.50}',
+                "priority": 10,
+            },
+            {
+                "condition": '{"doc_type": "faktura_krajowa", "tax_form": "LINEAR"}',
+                "output": '{"processing_time_minutes": 3.0, "compliance_surcharge_pln": 0.0, "requires_senior": false, "base_rate_per_minute": 2.50}',
+                "priority": 10,
+            },
+            {
+                "condition": '{"doc_type": "faktura_krajowa", "tax_form": "CIT_ESTONIAN"}',
+                "output": '{"processing_time_minutes": 4.0, "compliance_surcharge_pln": 100.0, "requires_senior": false, "base_rate_per_minute": 3.00}',
+                "priority": 10,
+            },
+            {
+                "condition": '{"doc_type": "faktura_krajowa", "tax_form": "LUMP_SUM"}',
+                "output": '{"processing_time_minutes": 2.0, "compliance_surcharge_pln": 0.0, "requires_senior": false, "base_rate_per_minute": 2.00}',
+                "priority": 10,
+            },
+            {
+                "condition": '{"doc_type": "faktura_zagraniczna", "vendor_region": "EU"}',
+                "output": '{"processing_time_minutes": 5.0, "compliance_surcharge_pln": 50.0, "requires_senior": true, "base_rate_per_minute": 3.50}',
+                "priority": 10,
+            },
+            {
+                "condition": '{"doc_type": "faktura_zagraniczna", "vendor_region": "NON_EU"}',
+                "output": '{"processing_time_minutes": 6.0, "compliance_surcharge_pln": 150.0, "requires_senior": true, "base_rate_per_minute": 4.00}',
+                "priority": 10,
+            },
+            {
+                "condition": '{"doc_type": "korekta"}',
+                "output": '{"processing_time_minutes": 4.0, "compliance_surcharge_pln": 0.0, "requires_senior": true, "base_rate_per_minute": 3.00}',
+                "priority": 10,
+            },
+            {
+                "condition": '{"doc_type": "rachunek"}',
+                "output": '{"processing_time_minutes": 1.5, "compliance_surcharge_pln": 0.0, "requires_senior": false, "base_rate_per_minute": 1.50}',
+                "priority": 10,
+            },
+            {
+                "condition": "{}",
+                "output": '{"processing_time_minutes": 2.0, "compliance_surcharge_pln": 0.0, "requires_senior": false, "base_rate_per_minute": 2.50}',
+                "priority": 100,
+            },
+        ]
+
+        for rule in defaults:
+            self._conn.execute(
+                """INSERT INTO billing_rules
+                   (rule_id, condition_json, output_json, valid_from, priority, created_by)
+                   VALUES (?, ?, ?, '2024-01-01', ?, 'system')""",
+                (uuid.uuid4().hex, rule["condition"], rule["output"], rule["priority"]),
+            )
 
     def estimate(
         self,
-        document_type: str = "invoice_national",
+        doc_type: str = "faktura_krajowa",
         tax_form: str = "CIT_STANDARD",
-        additional_services: list[str] | None = None,
-    ) -> BillingEstimate:
-        """Oblicz estymację kosztu i czasu dla danego typu dokumentu.
+        vendor_region: str = "PL",
+        extra_services: str = "",
+    ) -> BillingResult:
+        """SUPERMOC: Estymuj koszt i czas przetwarzania.
 
-        Args:
-            document_type: Typ dokumentu (invoice_national, invoice_foreign).
-            tax_form: Forma opodatkowania.
-            additional_services: Lista dodatkowych usług.
-
-        Returns:
-            BillingEstimate z podziałem kosztów.
+        First-match-wins przez DuckDB json_extract + ORDER BY priority.
         """
-        rules = self._conn.execute(
-            """SELECT condition_json, price_json, priority
-               FROM billing_rules
-               WHERE valid_from <= CURRENT_DATE
-                 AND (valid_to IS NULL OR valid_to >= CURRENT_DATE)
-               ORDER BY priority ASC""",
+        now_str = pendulum.now("UTC").date().isoformat()
+
+        # First-match-wins przez DuckDB: warunki sprawdzane json_extract
+        rows = self._conn.execute(
+            """
+            SELECT output_json, rule_id, condition_json FROM billing_rules
+            WHERE CAST(? AS DATE) BETWEEN valid_from
+              AND COALESCE(valid_to, '9999-12-31')
+              AND (
+                  json_extract_string(condition_json, '$.doc_type') IS NULL
+                  OR json_extract_string(condition_json, '$.doc_type') = ?
+              )
+              AND (
+                  json_extract_string(condition_json, '$.tax_form') IS NULL
+                  OR json_extract_string(condition_json, '$.tax_form') = ?
+              )
+              AND (
+                  json_extract_string(condition_json, '$.vendor_region') IS NULL
+                  OR json_extract_string(condition_json, '$.vendor_region') = ?
+              )
+            ORDER BY priority ASC, valid_from DESC
+            LIMIT 1
+            """,
+            (now_str, doc_type, tax_form, vendor_region),
         ).fetchall()
 
-        matched: list[dict[str, Any]] = []
-        used_rules: set[int] = set()
-
-        for idx, (cond_json, price_json, priority) in enumerate(rules):
-            condition = msgspec_loads(cond_json) if isinstance(cond_json, str) else cond_json
-            price = msgspec_loads(price_json) if isinstance(price_json, str) else price_json
-
-            if self._matches(condition, document_type, tax_form, additional_services):
-                matched.append(
-                    {
-                        "description": price.get("description", ""),
-                        "price_pln": float(price.get("price_pln", 0)),
-                        "time_hours": float(price.get("processing_time_hours", 0)),
-                    }
-                )
-                used_rules.add(idx)
-
-        total_price = sum(m["price_pln"] for m in matched)
-        total_time = sum(m["time_hours"] for m in matched)
-
-        return BillingEstimate(
-            total_price_pln=total_price,
-            total_time_hours=total_time,
-            breakdown=matched if matched else None,
-        )
-
-    # ── CRUD methods ───────────────────────────────────────────────────
-
-    def add_rule(
-        self,
-        condition: dict[str, Any],
-        price: dict[str, Any],
-        valid_from: str = "2024-01-01",
-        valid_to: str | None = None,
-        priority: int = 100,
-    ) -> str:
-        """Add a new billing rule (append-only)."""
-        rule_id = uuid.uuid4().hex
-        self._conn.execute(
-            """INSERT INTO billing_rules
-               (rule_id, condition_json, price_json, valid_from, valid_to, priority)
-               VALUES (?, ?, ?, ?, ?, ?)""",
-            (
-                rule_id,
-                msgspec_dumps(condition, ensure_ascii=False, sort_keys=True),
-                msgspec_dumps(price, ensure_ascii=False, sort_keys=True),
-                valid_from,
-                valid_to,
-                priority,
-            ),
-        )
-        return rule_id
-
-    def deprecate_rule(self, rule_id: str) -> bool:
-        """Deactivate a billing rule by setting valid_to = today."""
-        today = pendulum.now().date().isoformat()
-        result = self._conn.execute(
-            "UPDATE billing_rules SET valid_to = ? WHERE rule_id = ? AND valid_to IS NULL",
-            (today, rule_id),
-        )
-        return result.rowcount > 0
-
-    def list_rules(self, active_only: bool = True) -> list[dict[str, Any]]:
-        """List billing rules."""
-        if active_only:
-            rows = self._conn.execute(
-                """SELECT rule_id, condition_json, price_json, valid_from, valid_to, priority, created_at
-                   FROM billing_rules
-                   WHERE valid_from <= CURRENT_DATE
-                     AND (valid_to IS NULL OR valid_to >= CURRENT_DATE)
-                   ORDER BY priority ASC, valid_from DESC"""
-            ).fetchall()
+        if rows:
+            output = json.loads(str(rows[0][0]))
+            result = BillingResult(
+                processing_time_minutes=float(output.get("processing_time_minutes", 2.0)),
+                compliance_surcharge_pln=float(output.get("compliance_surcharge_pln", 0.0)),
+                requires_senior=bool(output.get("requires_senior", False)),
+                base_rate_per_minute=float(output.get("base_rate_per_minute", 2.50)),
+                rule_id=str(rows[0][1]),
+            )
         else:
-            rows = self._conn.execute(
-                """SELECT rule_id, condition_json, price_json, valid_from, valid_to, priority, created_at
-                   FROM billing_rules
-                   ORDER BY priority ASC, valid_from DESC"""
-            ).fetchall()
-        return [
-            {
-                "rule_id": str(r[0]),
-                "condition": msgspec_loads(r[1]) if r[1] else {},
-                "price": msgspec_loads(r[2]) if r[2] else {},
-                "valid_from": str(r[3]),
-                "valid_to": str(r[4]) if r[4] else None,
-                "priority": int(r[5]),
-                "created_at": str(r[6]),
-            }
-            for r in rows
-        ]
+            result = BillingResult(
+                processing_time_minutes=2.0,
+                base_rate_per_minute=2.50,
+                rule_id="fallback_default",
+            )
 
-    @staticmethod
-    def _matches(
-        condition: dict[str, Any],
-        document_type: str,
-        tax_form: str,
-        additional_services: list[str] | None,
-    ) -> bool:
-        """Sprawdź czy warunek reguły pasuje do kontekstu."""
-        if not condition:
-            return True  # Fallback rule
+        base_cost = result.processing_time_minutes * result.base_rate_per_minute
+        total_cost = base_cost + result.compliance_surcharge_pln
 
-        # Check document_type
-        cond_doc = condition.get("document_type")
-        if cond_doc and cond_doc != document_type:
-            return False
+        if "ekspres" in extra_services:
+            total_cost *= 1.5
+            result.processing_time_minutes *= 0.7
+        if "audyt" in extra_services:
+            total_cost += 200.0
+            result.requires_senior = True
 
-        # Check tax_form
-        cond_tax = condition.get("tax_form")
-        if cond_tax and cond_tax != tax_form:
-            return False
-
-        # Check additional_service
-        cond_service = condition.get("additional_service")
-        if cond_service:
-            if not additional_services or cond_service not in additional_services:
-                return False
-
-        return True
+        result.total_cost = round(total_cost, 2)
+        return result
