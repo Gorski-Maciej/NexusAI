@@ -20,6 +20,7 @@ import io
 from pathlib import Path
 from typing import Any
 
+import fsspec
 from msgspec import Struct
 from structlog import get_logger
 

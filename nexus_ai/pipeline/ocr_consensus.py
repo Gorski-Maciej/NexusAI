@@ -25,6 +25,7 @@ Optymalizacja pamięci (audyt mimalloc Faza 2):
 
 from __future__ import annotations
 
+import fsspec
 from msgspec import Struct, field
 from enum import Enum
 from pathlib import Path
@@ -348,7 +349,9 @@ class TesseractEngine:
         if not self._available:
             return None
         try:
-            with open(str(image_path), "rb") as f:
+            # SUPERMOC fsspec: fsspec.open() zamiast open()
+            # Działa z file://, s3://, http:// — OCR zdalnych plików
+            with fsspec.open(str(image_path), "rb") as f:
                 image_data = f.read()
 
             args = [
@@ -406,6 +409,7 @@ class TesseractEngine:
     async def extract_text_with_confidence(self, image_path: Path) -> list[dict] | None:
         """SUPERMOC: Ekstrakcja tekstu z per-block confidence.
 
+        SUPERMOC fsspec: fsspec.open() zamiast open() — działa ze zdalnymi plikami.
         Używa Tesseract output formatu TSV do wyciągnięcia poziomu
         ufności dla każdego rozpoznanego słowa/linii.
         Tesseract natywnie wspiera confidence score w formacie TSV.
@@ -416,7 +420,8 @@ class TesseractEngine:
         if not self._available:
             return None
         try:
-            with open(str(image_path), "rb") as f:
+            # SUPERMOC fsspec: fsspec.open() zamiast open()
+            with fsspec.open(str(image_path), "rb") as f:
                 image_data = f.read()
 
             # Uruchom Tesseract z output format TSV dla confidence
@@ -532,10 +537,10 @@ class TesseractEngine:
         if not self._available:
             return None
         try:
-            with open(str(image_path), "rb") as f:
+            # SUPERMOC fsspec: fsspec.open() zamiast open()
+            with fsspec.open(str(image_path), "rb") as f:
                 image_data = f.read()
 
-            # PSM 6 = single block + whitelist dla kwot
             args = [
                 "tesseract",
                 "-",  # stdin
@@ -583,10 +588,10 @@ class TesseractEngine:
         if not self._available:
             return None
         try:
-            with open(str(image_path), "rb") as f:
+            # SUPERMOC fsspec: fsspec.open() zamiast open()
+            with fsspec.open(str(image_path), "rb") as f:
                 image_data = f.read()
 
-            # PSM 7 = single line + whitelist dla cyfr
             args = [
                 "tesseract",
                 "-",
@@ -2117,7 +2122,10 @@ def pdf_to_images(pdf_path: Path, dpi: int = 300) -> list[Path]:
 
     image_paths: list[Path] = []
     try:
-        pdf = pdfium.PdfDocument(str(pdf_path))
+        # SUPERMOC fsspec: fsspec.open() zamiast str(pdf_path)
+        with fsspec.open(str(pdf_path), "rb") as f:
+            pdf_data = f.read()
+        pdf = pdfium.PdfDocument(pdf_data)
         scale = dpi / 72.0  # PDFium: 1.0 = 72 DPI
 
         for page_num in range(len(pdf)):

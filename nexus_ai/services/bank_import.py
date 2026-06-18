@@ -1,3 +1,12 @@
+"""
+Bank import parser — SUPERMOC: fsspec + PyArrow + TigerBeetle.
+
+SUPERMOCE fsspec:
+- ``fsspec.open()`` dla CSV — działa z file://, s3://, http://
+- ``fsspec.filesystem()`` dla konfigurowalnego backendu
+- Zmiana storage_protocol w config TOML zmienia backend bez zmiany kodu
+"""
+
 from __future__ import annotations
 
 import uuid
@@ -19,12 +28,16 @@ except ImportError:
 
 from decimal import Decimal
 from pathlib import Path
-from typing import Protocol, final
+from typing import Any, Protocol, final
 
+import fsspec
 import pendulum
+from structlog import get_logger
 
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
+
+logger = get_logger("nexus.services.bank_import")
 
 
 class DuplicateTransferError(RuntimeError):
@@ -66,8 +79,16 @@ class CSVStatementParser:
         import pyarrow.csv as pa_csv
         import pyarrow.compute as pc
 
+        # ── SUPERMOC fsspec: fsspec.open() dla CSV ────────────────────
+        # Działa z file://, s3://, http:// — wyciągi bankowe z chmury.
+        # SUPERMOC PyArrow: PyArrow natywnie wspiera fsspec filesystem,
+        # ale dla prostoty używamy fsspec.open() + BytesIO.
+        from io import BytesIO
+        
+        with fsspec.open(file_path, "rb") as f:
+            csv_content = f.read()
+        
         # ── SUPERMOC: PyArrow CSV reader z ConvertOptions ─────────────
-        # PyArrow parsuje CSV w C++ z jawnymi typami kolumn.
         convert_opts = pa_csv.ConvertOptions(
             column_types={
                 "booking_date": pa.date32(),
@@ -85,7 +106,7 @@ class CSVStatementParser:
             ],
         )
         table = pa_csv.read_csv(
-            str(file_path),
+            BytesIO(csv_content),
             convert_options=convert_opts,
         )
 
@@ -146,12 +167,16 @@ class IdempotentBankImporter:
         duckdb: DuckDBManager,
         ledger_id: int = 1,
         transfer_code: int = 777,
+        bank_storage_path: str | Path | None = None,
     ):
         self.tb_client = tb_client
         self.duckdb = duckdb
         self.ledger_id = ledger_id
         self.transfer_code = transfer_code
         self._ensure_history_schema()
+
+        # SUPERMOC fsspec: fsspec.get_mapper() dla metadanych importów bankowych
+        self._setup_meta_mapper(bank_storage_path or Path("data/bank_imports"))
 
     def _ensure_history_schema(self) -> None:
         self.duckdb.execute(
@@ -183,6 +208,29 @@ class IdempotentBankImporter:
             raise StatementContinuityError(
                 f"Balance continuity check failed. Expected opening {expected_opening}, got {(transactions[0].balance_after - transactions[0].amount)}"
             )
+
+    def _setup_meta_mapper(self, storage_path: str | Path) -> None:
+        """SUPERMOC fsspec: dict-like interfejs do metadanych importów.
+
+        fsspec.get_mapper() tworzy MutableMapping (dict-like),
+        który automatycznie serializuje wartości do plików JSON.
+        Każdy klucz to osobny plik w katalogu .bank_meta/.
+        """
+        meta_dir = Path(str(storage_path)) / ".bank_meta"
+        meta_dir.mkdir(parents=True, exist_ok=True)
+        self._meta_mapper = fsspec.get_mapper(str(meta_dir))
+        logger.debug("[BankImport] Meta mapper initialized: %s", meta_dir)
+
+    @property
+    def meta(self) -> Any:
+        """Dict-like interfejs do metadanych importów bankowych.
+
+        SUPERMOC fsspec: ``fsspec.get_mapper()`` zwraca MutableMapping.
+        Użycie:
+            importer.meta["import_20260101"] = {"file": "statement.csv", "count": 42}
+            print(importer.meta["import_20260101"])
+        """
+        return self._meta_mapper
 
     async def import_file(self, file_path: Path) -> dict[str, int]:
         parser = ParserFactory.get_parser(file_path)

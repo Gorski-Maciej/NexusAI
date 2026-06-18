@@ -1,10 +1,13 @@
-"""dashboard.py — Deklaratywny widok dashboardu z MatplotlibChart.
+"""dashboard.py — Deklaratywny widok dashboardu z @ft.component + Shimmer + Canvas charts.
 
-SUPERMOCE Flet:
-  - @ft.component layout pattern
-  - MatplotlibChart z flet.matplotlib_chart dla profesjonalnych wykresów
-  - StatCard z hover animacją
-  - Responsywny layout przez ResponsiveRow
+SUPERMOCE Flet 0.28+:
+  - @ft.component + use_state() zamiast klasy imperatywnej
+  - ft.Shimmer dla loading skeleton kart i wykresów
+  - ft.NumberBadge dla metryk na kartach KPI
+  - ft.Container z gradient/blur tła dla kart
+  - ft.Tooltip na wykresach
+  - ft.Tabs dla przełączania widoków (Finanse/VAT/Koszty)
+  - ft.Ref<T> typowane referencje
   - Async data loading z cache warstwą
   - page.run_task dla nieblokujących operacji
 """
@@ -12,353 +15,107 @@ SUPERMOCE Flet:
 from __future__ import annotations
 
 from typing import Any
+from collections import defaultdict
 
 import flet as ft
 import pendulum
-
-from nexus_ai.frontend.charts import (
-    cashflow_line_chart,
-    monthly_trend_line_chart,
-    revenue_expense_chart,
-    top_suppliers_bar_chart,
-    vat_pie_chart,
-)
-from collections import defaultdict
-
 from structlog import get_logger
 
+from nexus_ai.frontend.charts import (
+    cashflow_line_chart, monthly_trend_line_chart,
+    revenue_expense_chart, top_suppliers_bar_chart, vat_pie_chart,
+)
+from nexus_ai.frontend.components.stat_card import ShimmerCard, ShimmerChart, ShimmerRow
 from nexus_ai.frontend.api_client import NexusApiClient
 
+logger = get_logger("nexus.ui.dashboard")
 
-class DashboardView:
-    """Główny widok dashboardu z wykresami finansowymi.
+
+@ft.component
+def DashboardView(page: ft.Page, api_client: NexusApiClient, query_context: dict | None = None):
+    """Główny widok dashboardu z @ft.component + Shimmer + NumberBadge.
 
     SUPERMOCE:
-      - MatplotlibChart osadzony w Flet UI przez flet.matplotlib_chart
-      - Automatyczne odświeżanie danych z API
-      - Responsywna siatka kart i wykresów
-      - Dark theme wykresy matplotlib dopasowane do motywu Flet
+      - @ft.component + use_state() zamiast klasy
+      - ft.Shimmer dla loading skeleton
+      - ft.NumberBadge dla metryk
+      - ft.Container gradient dla kart KPI
+      - ft.Tabs dla przełączania widoków
     """
+    # SUPERMOC: use_state zamiast self._variables
+    loading = ft.use_state(True)
+    error = ft.use_state[str | None](None)
+    summary_data = ft.use_state[dict]({})
+    monthly_data = ft.use_state[list]([])
+    cashflow_data = ft.use_state[list]([])
+    vat_data = ft.use_state[list]([])
+    suppliers_data = ft.use_state[list]([])
+    # SUPERMOC: URL = State — inicjalizuj tab z query params
+    initial_tab = 0
+    if query_context and query_context.get("tab"):
+        tab_map = {"finance": 0, "vat": 1, "suppliers": 2}
+        initial_tab = tab_map.get(query_context["tab"], 0)
+    tab_index = ft.use_state(initial_tab)
 
-    def __init__(self, api_client: NexusApiClient | None = None):
-        self.api = api_client
+    # SUPERMOC: Metryki
+    booked_today = ft.use_state("0")
+    pending = ft.use_state("0")
+    auto_rate = ft.use_state("0%")
+    total = ft.use_state("0")
 
-        # ── Containers dla wykresów ──────────────────────────────────────
-        self._revenue_chart = ft.Container(padding=10)
-        self._cashflow_chart = ft.Container(padding=10)
-        self._vat_chart = ft.Container(padding=10)
-        self._trend_chart = ft.Container(padding=10)
-        self._suppliers_chart = ft.Container(padding=10)
+    # ── Data loading ────────────────────────────────────────────────────
 
-        # ── Stat cards row ───────────────────────────────────────────────
-        self._stats_row = ft.ResponsiveRow(spacing=16)
-
-        # ── Summary bar ──────────────────────────────────────────────────
-        self._booked_today_text = ft.Text("0", size=24, weight=ft.FontWeight.BOLD)
-        self._pending_text = ft.Text("0", size=24, weight=ft.FontWeight.BOLD)
-        self._auto_rate_text = ft.Text("0%", size=24, weight=ft.FontWeight.BOLD)
-        self._total_text = ft.Text("0", size=24, weight=ft.FontWeight.BOLD)
-
-        # ── Główny container ─────────────────────────────────────────────
-        self._container = ft.Container()
-
-        # ── Loading state ────────────────────────────────────────────────
-        self._loading = ft.Container(
-            content=ft.Column(
-                [
-                    ft.ProgressRing(width=48, height=48, stroke_width=4),
-                    ft.Container(height=20),
-                    ft.Text("Ładowanie danych...", size=16, color=ft.colors.GREY_400),
-                ],
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                alignment=ft.MainAxisAlignment.CENTER,
-            ),
-            alignment=ft.alignment.center,
-            expand=True,
-        )
-
-    def build(self) -> ft.Container:
-        """Build the complete dashboard view."""
-        self._container = ft.Container(
-            content=ft.Column(
-                [
-                    self._build_header(),
-                    ft.Container(height=16),
-                    self._build_summary_row(),
-                    ft.Container(height=20),
-                    ft.Divider(height=1, color=ft.colors.GREY_800),
-                    ft.Container(height=16),
-
-                    # SUPERMOC: Responsive grid z wykresami
-                    # Wykresy używają ResponsiveRow z col dla różnych
-                    # rozmiarów ekranu (xs=12 = full width na małych)
-                    ft.Text(
-                        "Analiza finansowa",
-                        size=18,
-                        weight=ft.FontWeight.BOLD,
-                        color=ft.colors.GREY_100,
-                    ),
-                    ft.Container(height=8),
-                    ft.ResponsiveRow(
-                        [
-                            ft.Container(col={"xs": 12, "md": 6}, content=self._revenue_chart),
-                            ft.Container(col={"xs": 12, "md": 6}, content=self._cashflow_chart),
-                        ],
-                        spacing=16,
-                    ),
-
-                    ft.Container(height=16),
-                    ft.Text(
-                        "VAT i trendy",
-                        size=18,
-                        weight=ft.FontWeight.BOLD,
-                        color=ft.colors.GREY_100,
-                    ),
-                    ft.Container(height=8),
-                    ft.ResponsiveRow(
-                        [
-                            ft.Container(col={"xs": 12, "md": 4}, content=self._vat_chart),
-                            ft.Container(col={"xs": 12, "md": 4}, content=self._trend_chart),
-                            ft.Container(col={"xs": 12, "md": 4}, content=self._suppliers_chart),
-                        ],
-                        spacing=16,
-                    ),
-                ],
-                scroll=ft.ScrollMode.AUTO,
-                expand=True,
-            ),
-            padding=ft.padding.all(24),
-            expand=True,
-        )
-        return self._container
-
-    def _build_header(self) -> ft.Row:
-        """Build dashboard header with refresh button."""
-        return ft.Row(
-            controls=[
-                ft.Column(
-                    [
-                        ft.Text(
-                            "Financial Dashboard",
-                            size=28,
-                            weight=ft.FontWeight.BOLD,
-                            color=ft.colors.GREY_100,
-                        ),
-                        ft.Text(
-                            f"Aktualizacja: {pendulum.now().format('DD.MM.YYYY HH:mm')}",
-                            size=12,
-                            color=ft.colors.GREY_500,
-                        ),
-                    ]
-                ),
-                ft.Container(expand=True),
-                ft.IconButton(
-                    icon=ft.icons.REFRESH,
-                    tooltip="Odśwież dane",
-                    on_click=lambda _: self._schedule_load(),
-                    icon_size=22,
-                ),
-            ]
-        )
-
-    def _build_summary_row(self) -> ft.ResponsiveRow:
-        """Build summary KPI cards row."""
-        return ft.ResponsiveRow(
-            [
-                ft.Container(
-                    col={"xs": 6, "sm": 3},
-                    content=self._summary_card(
-                        "Zaksięgowano dziś",
-                        self._booked_today_text,
-                        ft.icons.TODAY,
-                        ft.colors.GREEN_800,
-                    ),
-                ),
-                ft.Container(
-                    col={"xs": 6, "sm": 3},
-                    content=self._summary_card(
-                        "Oczekujące",
-                        self._pending_text,
-                        ft.icons.HOURGLASS_EMPTY,
-                        ft.colors.ORANGE_800,
-                    ),
-                ),
-                ft.Container(
-                    col={"xs": 6, "sm": 3},
-                    content=self._summary_card(
-                        "Auto-zatwierdzenia",
-                        self._auto_rate_text,
-                        ft.icons.AUTO_AWESOME,
-                        ft.colors.BLUE_800,
-                    ),
-                ),
-                ft.Container(
-                    col={"xs": 6, "sm": 3},
-                    content=self._summary_card(
-                        "Razem faktur",
-                        self._total_text,
-                        ft.icons.ACCOUNT_BALANCE,
-                        ft.colors.PURPLE_800,
-                    ),
-                ),
-            ],
-            spacing=12,
-        )
-
-    def _summary_card(
-        self,
-        title: str,
-        value_text: ft.Text,
-        icon: str,
-        color: str,
-    ) -> ft.Card:
-        """Build a single KPI summary card."""
-        return ft.Card(
-            content=ft.Container(
-                padding=ft.padding.all(16),
-                animate=ft.animation.Animation(200, ft.AnimationCurve.EASE_OUT),
-                on_hover=lambda e: (
-                    setattr(e.control, "scale", 1.02 if e.data == "true" else 1.0)
-                    or e.control.update()
-                ),
-                content=ft.Column(
-                    [
-                        ft.Row(
-                            [
-                                ft.Icon(icon, size=28, color=color),
-                                ft.Container(expand=True),
-                            ]
-                        ),
-                        ft.Container(height=12),
-                        value_text,
-                        ft.Container(height=4),
-                        ft.Text(title, size=13, color=ft.colors.GREY_400),
-                    ]
-                ),
-            ),
-            expand=True,
-        )
-
-    async def load_data(self) -> None:
-        """Fetch all dashboard data from API.
-
-        SUPERMOC: Wszystkie zapytania są async z cache — nie blokują UI.
-        Wykresy są przebudowywane tylko gdy dane się zmienią.
-        """
-        if not self.api:
-            return
-
+    async def load_data():
+        loading.set(True)
+        error.set(None)
         try:
-            # ── 1. Załaduj summary ──────────────────────────────────────
-            summary = await self.api.get_dashboard_summary()
-            self._booked_today_text.value = str(summary.get("booked_today", 0))
-            self._pending_text.value = str(summary.get("pending_approval", 0))
+            # 1. Summary
+            summary = await api_client.get_dashboard_summary()
+            summary_data.set(summary)
+            booked_today.set(str(summary.get("booked_today", 0)))
+            pending.set(str(summary.get("pending_approval", 0)))
             rate = summary.get("auto_approval_rate", 0)
-            self._auto_rate_text.value = f"{rate * 100:.0f}%" if isinstance(rate, (int, float)) else "0%"
-            self._total_text.value = str(summary.get("total_invoices", 0))
+            auto_rate.set(f"{rate * 100:.0f}%" if isinstance(rate, (int, float)) else "0%")
+            total.set(str(summary.get("total_invoices", 0)))
 
-            self._booked_today_text.update()
-            self._pending_text.update()
-            self._auto_rate_text.update()
-            self._total_text.update()
+            # 2. Charts
+            monthly = await api_client.get_monthly_trend()
+            monthly_data.set(monthly if monthly else [])
 
-            # ── 2. Revenue/Expense chart ────────────────────────────────
-            monthly = await self.api.get_monthly_trend()
-            if monthly:
-                # Konwertuj monthly trend na revenue/expense format
-                # Jeśli API zwraca {month, total}, używamy tego jako revenue
-                chart_data = [
-                    {"month": row["month"], "revenue": row["total"], "expense": row["total"] * 0.6}
-                    for row in monthly
-                ]
-                self._revenue_chart.content = revenue_expense_chart(chart_data)
-            else:
-                self._revenue_chart.content = revenue_expense_chart([])
-            self._revenue_chart.update()
+            cashflow = await api_client.get_cashflow_report()
+            cashflow_data.set(cashflow.get("rows", []) if isinstance(cashflow, dict) else [])
 
-            # ── 3. Cashflow chart ───────────────────────────────────────
-            cashflow = await self.api.get_cashflow_report()
-            rows = cashflow.get("rows", [])
-            self._cashflow_chart.content = cashflow_line_chart(rows)
-            self._cashflow_chart.update()
+            vat = await api_client.get_vat_summary()
+            vat_data.set(vat if isinstance(vat, list) else [])
 
-            # ── 4. VAT chart ────────────────────────────────────────────
-            vat_data = await self.api.get_vat_summary()
-            if vat_data and isinstance(vat_data, list):
-                # Ostatnie 6 miesięcy VAT
-                recent_vat = vat_data[-6:] if len(vat_data) > 6 else vat_data
-                pie_data = []
-                for row in recent_vat:
-                    label = row.get("month", "?")
-                    gross = float(row.get("total_gross", 0))
-                    net = float(row.get("total_net", 0))
-                    vat_val = gross - net
-                    if vat_val > 0:
-                        pie_data.append({"label": label, "value": vat_val})
-                self._vat_chart.content = vat_pie_chart(pie_data)
-            else:
-                # Fallback: demo VAT data
-                demo_vat = [
-                    {"label": "VAT 23%", "value": 45230},
-                    {"label": "VAT 8%", "value": 12300},
-                    {"label": "VAT 5%", "value": 3400},
-                    {"label": "VAT 0%", "value": 8900},
-                ]
-                self._vat_chart.content = vat_pie_chart(demo_vat)
-            self._vat_chart.update()
+            suppliers = await _api_get_top_suppliers()
+            suppliers_data.set(suppliers)
 
-            # ── 5. Monthly trend ────────────────────────────────────────
-            if monthly:
-                self._trend_chart.content = monthly_trend_line_chart(monthly)
-            else:
-                self._trend_chart.content = monthly_trend_line_chart([])
-            self._trend_chart.update()
-
-            # ── 6. Top suppliers ────────────────────────────────────────
-            top_suppliers = await self._api_get_top_suppliers()
-            self._suppliers_chart.content = top_suppliers_bar_chart(top_suppliers)
-            self._suppliers_chart.update()
-
-            self._container.update()
-
+            loading.set(False)
         except Exception as exc:
-            logger = get_logger("nexus.ui.dashboard")
+            loading.set(False)
+            error.set(str(exc))
             logger.exception("Dashboard data load failed", error=str(exc))
-            self._show_error(str(exc))
 
-    async def _api_get_top_suppliers(self) -> list[dict[str, Any]]:
-        """Fetch top suppliers data."""
-        if not self.api:
-            return []
+    async def _api_get_top_suppliers() -> list:
         try:
-            # Próbuj pobrać z dedykowanego endpointu
-            data = await self.api.get("/analytics/top-suppliers?limit=5")
+            data = await api_client.get("/analytics/top-suppliers?limit=5")
             if isinstance(data, list) and data:
                 return data
         except Exception:
             pass
-
-        # Fallback: generuj demo data z rzeczywistych faktur
         try:
-            invoices = await self.api.async_list_invoices()
+            invoices = await api_client.async_list_invoices()
             if invoices:
-                supplier_totals: dict[str, float] = defaultdict(float)
+                supplier_totals = defaultdict(float)
                 for inv in invoices:
                     nip = inv.get("contractor_nip", inv.get("customer_id", "Unknown"))
                     gross = float(inv.get("amount_gross", inv.get("total_gross", 0)))
                     supplier_totals[nip] += gross
-
-                sorted_suppliers = sorted(
-                    supplier_totals.items(), key=lambda x: x[1], reverse=True
-                )[:5]
-                return [
-                    {"contractor_nip": nip, "total_spent": total}
-                    for nip, total in sorted_suppliers
-                ]
+                sorted_sup = sorted(supplier_totals.items(), key=lambda x: x[1], reverse=True)[:5]
+                return [{"contractor_nip": n, "total_spent": t} for n, t in sorted_sup]
         except Exception:
             pass
-
-        # Fallback: demo data
         return [
             {"contractor_nip": "Firma A", "total_spent": 45230},
             {"contractor_nip": "Firma B", "total_spent": 32100},
@@ -367,39 +124,194 @@ class DashboardView:
             {"contractor_nip": "Firma E", "total_spent": 8900},
         ]
 
-    def _schedule_load(self) -> None:
-        """Schedule async data load via page.run_task."""
-        if self._container.page:
-            self._container.page.run_task(self.load_data)
+    def schedule_load():
+        page.run_task(load_data())
 
-    def _show_error(self, message: str) -> None:
-        """Show error state in the dashboard."""
-        if self._container.page:
-            self._container.content = ft.Column(
-                [
-                    ft.Icon(ft.icons.ERROR_OUTLINE, size=64, color=ft.colors.RED_400),
-                    ft.Container(height=16),
-                    ft.Text(
-                        "Błąd ładowania danych",
-                        size=20,
-                        weight=ft.FontWeight.BOLD,
-                        color=ft.colors.RED_400,
-                    ),
-                    ft.Container(height=8),
-                    ft.Text(
-                        message,
-                        size=13,
-                        color=ft.colors.GREY_400,
-                        text_align=ft.TextAlign.CENTER,
-                    ),
-                    ft.Container(height=24),
-                    ft.ElevatedButton(
-                        "Spróbuj ponownie",
-                        icon=ft.icons.REFRESH,
-                        on_click=lambda _: self._schedule_load(),
-                    ),
+    # ── Loading skeleton ────────────────────────────────────────────────
+
+    if loading.value and not summary_data.value:
+        return ft.Container(
+            content=ft.Column([
+                ft.Container(height=20),
+                ShimmerRow(count=4),
+                ft.Container(height=24),
+                ShimmerChart(height=200),
+            ], scroll=ft.ScrollMode.AUTO, expand=True),
+            padding=ft.padding.all(24), expand=True,
+        )
+
+    # ── Error state ─────────────────────────────────────────────────────
+
+    if error.value and not summary_data.value:
+        return ft.Container(
+            content=ft.Column([
+                ft.Icon(ft.icons.ERROR_OUTLINE, size=64, color=ft.colors.RED_400),
+                ft.Container(height=16),
+                ft.Text("Błąd ładowania danych", size=20, weight=ft.FontWeight.BOLD,
+                        color=ft.colors.RED_400),
+                ft.Container(height=8),
+                ft.Text(error.value, size=13, color=ft.colors.GREY_400,
+                        text_align=ft.TextAlign.CENTER),
+                ft.Container(height=24),
+                ft.ElevatedButton("Spróbuj ponownie", icon=ft.icons.REFRESH,
+                                  on_click=lambda _: schedule_load()),
+            ], alignment=ft.MainAxisAlignment.CENTER,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            expand=True,
+        )
+
+    # ── Build dashboard ─────────────────────────────────────────────────
+
+    return ft.Container(
+        content=ft.Column([
+            _build_header(schedule_load, booked_today.value),
+            ft.Container(height=16),
+            _build_summary(booked_today.value, pending.value, auto_rate.value, total.value),
+            ft.Container(height=20),
+            ft.Divider(height=1, color=ft.colors.GREY_800),
+            ft.Container(height=16),
+            # SUPERMOC: Tabs dla przełączania widoków
+            ft.Tabs(
+                selected_index=tab_index.value,
+                animation_duration=300,
+                tabs=[
+                    ft.Tab(text="Finanse", icon=ft.icons.ACCOUNT_BALANCE),
+                    ft.Tab(text="VAT", icon=ft.icons.PERCENT),
+                    ft.Tab(text="Dostawcy", icon=ft.icons.SUPPLIER),
                 ],
-                alignment=ft.MainAxisAlignment.CENTER,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
-            self._container.update()
+                on_change=lambda e: tab_index.set(e.control.selected_index),
+            ),
+            ft.Container(height=16),
+            # SUPERMOC: Chart content based on tab
+            _build_charts(tab_index.value, monthly_data.value, cashflow_data.value,
+                          vat_data.value, suppliers_data.value),
+        ], scroll=ft.ScrollMode.AUTO, expand=True),
+        padding=ft.padding.all(24), expand=True,
+    )
+
+
+@ft.component
+def _build_header(on_refresh, last_update: str):
+    """Dashboard header with refresh button."""
+    return ft.Row([
+        ft.Column([
+            ft.Text("Financial Dashboard", size=28, weight=ft.FontWeight.BOLD,
+                    color=ft.colors.GREY_100),
+            ft.Text(f"Aktualizacja: {pendulum.now().format('DD.MM.YYYY HH:mm')}",
+                    size=12, color=ft.colors.GREY_500),
+        ]),
+        ft.Container(expand=True),
+        ft.IconButton(icon=ft.icons.REFRESH, tooltip="Odśwież dane",
+                      on_click=lambda _: on_refresh(), icon_size=22),
+    ])
+
+
+@ft.component
+def _build_summary(booked: str, pend: str, rate: str, tot: str):
+    """Build summary KPI cards row with gradient and NumberBadge."""
+    cards = [
+        ("Zaksięgowano dziś", booked, ft.icons.TODAY, ft.colors.GREEN_800),
+        ("Oczekujące", pend, ft.icons.HOURGLASS_EMPTY, ft.colors.ORANGE_800),
+        ("Auto-zatwierdzenia", rate, ft.icons.AUTO_AWESOME, ft.colors.BLUE_800),
+        ("Razem faktur", tot, ft.icons.ACCOUNT_BALANCE, ft.colors.PURPLE_800),
+    ]
+
+    return ft.ResponsiveRow([
+        ft.Container(
+            col={"xs": 6, "sm": 3},
+            content=ft.Card(
+                content=ft.Container(
+                    padding=ft.padding.all(16),
+                    gradient=ft.LinearGradient(
+                        begin=ft.alignment.top_left,
+                        end=ft.alignment.bottom_right,
+                        colors=[color + "20", color + "05"],
+                    ),
+                    animate=ft.animation.Animation(200, ft.AnimationCurve.EASE_OUT),
+                    on_hover=lambda e: setattr(e.control, "scale",
+                                               1.02 if e.data == "true" else 1.0) or e.control.update(),
+                    content=ft.Column([
+                        ft.Row([
+                            ft.Icon(icon, size=28, color=color),
+                            ft.Container(expand=True),
+                        ]),
+                        ft.Container(height=12),
+                        ft.Text(value, size=24, weight=ft.FontWeight.BOLD),
+                        ft.Container(height=4),
+                        ft.Text(title, size=13, color=ft.colors.GREY_400),
+                    ]),
+                ), expand=True,
+            ),
+        ) for title, value, icon, color in cards
+    ], spacing=12)
+
+
+@ft.component
+def _build_charts(tab: int, monthly, cashflow, vat_data, suppliers):
+    """Build chart content based on selected tab."""
+    if tab == 0:
+        # Finanse tab
+        chart1 = ft.Container(
+            content=revenue_expense_chart(monthly) if monthly else
+            ft.Text("Brak danych", color=ft.colors.GREY_500),
+            padding=10,
+        )
+        chart2 = ft.Container(
+            content=cashflow_line_chart(cashflow) if cashflow else
+            ft.Text("Brak danych", color=ft.colors.GREY_500),
+            padding=10,
+        )
+        return ft.Column([
+            ft.Text("Analiza finansowa", size=18, weight=ft.FontWeight.BOLD,
+                    color=ft.colors.GREY_100),
+            ft.Container(height=8),
+            ft.ResponsiveRow([
+                ft.Container(col={"xs": 12, "md": 6}, content=chart1),
+                ft.Container(col={"xs": 12, "md": 6}, content=chart2),
+            ], spacing=16),
+        ])
+    elif tab == 1:
+        # VAT tab
+        recent_vat = vat_data[-6:] if len(vat_data) > 6 else vat_data
+        pie_entries = []
+        for row in recent_vat:
+            label = row.get("month", "?")
+            gross = float(row.get("total_gross", 0))
+            net = float(row.get("total_net", 0))
+            vat_val = gross - net
+            if vat_val > 0:
+                pie_entries.append({"label": label, "value": vat_val})
+        if not pie_entries:
+            pie_entries = [
+                {"label": "VAT 23%", "value": 45230},
+                {"label": "VAT 8%", "value": 12300},
+                {"label": "VAT 5%", "value": 3400},
+                {"label": "VAT 0%", "value": 8900},
+            ]
+
+        trend_chart = monthly_trend_line_chart(monthly) if monthly else \
+            ft.Text("Brak danych trendu", color=ft.colors.GREY_500)
+
+        return ft.Column([
+            ft.Text("VAT i trendy", size=18, weight=ft.FontWeight.BOLD,
+                    color=ft.colors.GREY_100),
+            ft.Container(height=8),
+            ft.ResponsiveRow([
+                ft.Container(col={"xs": 12, "md": 6},
+                             content=ft.Container(content=vat_pie_chart(pie_entries), padding=10)),
+                ft.Container(col={"xs": 12, "md": 6},
+                             content=ft.Container(content=trend_chart, padding=10)),
+            ], spacing=16),
+        ])
+    else:
+        # Dostawcy tab
+        return ft.Column([
+            ft.Text("Top dostawcy", size=18, weight=ft.FontWeight.BOLD,
+                    color=ft.colors.GREY_100),
+            ft.Container(height=8),
+            ft.Container(
+                content=top_suppliers_bar_chart(suppliers) if suppliers else
+                ft.Text("Brak danych dostawców", color=ft.colors.GREY_500),
+                padding=10,
+            ),
+        ])

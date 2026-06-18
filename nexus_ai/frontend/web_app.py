@@ -1,21 +1,21 @@
-"""web_app.py — Web mode entry point for NexusAI Flet app.
+"""web_app.py — Web mode entry point for NexusAI Flet Navigator 2.0.
 
-SUPERMOCE Flet:
-  - ft.app_async z view=ft.AppView.WEB_BROWSER — uruchamia jako SPA w przeglądarce
-  - Automatyczna synchronizacja URL z routingiem aplikacji
-  - Obsługa przycisków Wstecz/Dalej przeglądarki
-  - Głębokie linkowanie (deep linking) — bezpośrednie wejście na /invoices/{id}
-  - Responsywny layout dla różnych rozmiarów okna
-  - page.title aktualizowany dynamicznie na podstawie trasy
+SUPERMOCE Flet Router 0.28+:
+  - ft.app_async z view=ft.AppView.WEB_BROWSER — SPA w przeglądarce
+  - TemplateRoute dla URL pattern matching
+  - Navigator 2.0: page.views.append(ft.View(...)) zamiast page.add()
+  - page.client_storage dla zapamiętania ostatniej ścieżki
+  - ft.SafeArea dla mobile-safe layout
+  - page.theme_animation_style dla płynnych przejść
+  - page.window_prevent_close + on_window_event dla lifecycle
+  - ft.Shimmer dla loading skeleton zamiast ProgressRing
+  - page.go() dla inicjalizacji routingu (automatycznie triggeruje on_route_change)
 """
 
 from __future__ import annotations
 
-import sys
-from typing import Any
-
 import flet as ft
-import httpx
+from flet import TemplateRoute
 from structlog import get_logger
 
 from nexus_ai.frontend.api_client import NexusApiClient
@@ -23,41 +23,36 @@ from nexus_ai.frontend.router import NexusRouter
 
 logger = get_logger("nexus.ui.web")
 
-
-# ── Konfiguracja domyślna ──────────────────────────────────────────────────
-
 DEFAULT_API_PORT = 8000
 DEFAULT_WEB_PORT = 8550
 
 
-# ── Web app ─────────────────────────────────────────────────────────────────
-
-
 async def init_web_app(page: ft.Page) -> None:
-    """Initialize Flet app in web browser mode with URL routing.
+    """Initialize Flet app in web browser mode z Navigator 2.0.
 
     SUPERMOC:
-      - ft.app_async z view=ft.AppView.WEB_BROWSER
-      - page.on_route_change dla pełnej kontroli URL
+      - page.on_route_change JEDEN raz — deleguje do NexusRouter.handle_route()
       - page.on_view_pop dla przycisku Wstecz
-      - Auto-wykrywanie portu API z URL parametrów lub domyślnego
+      - page.window_prevent_close dla ochrony zamknięcia
+      - page.theme_animation_style dla płynnych przejść
     """
     # ── Konfiguracja strony dla Web ──────────────────────────────────────
     page.title = "Nexus AI — System Księgowy"
     page.theme_mode = ft.ThemeMode.DARK
     page.padding = 0
     page.bgcolor = "#121212"
-
-    # SUPERMOC: Web-specific viewport configuration
     page.window_width = 1280
     page.window_height = 900
     page.window_resizable = True
     page.window_min_width = 800
     page.window_min_height = 600
-
-    # SUPERMOC: Scroll mode dla web — AUTO zamiast ADAPTIVE
-    # ADAPTIVE działa lepiej na desktopie, AUTO na web
     page.scroll = ft.ScrollMode.ADAPTIVE
+
+    # SUPERMOC: SafeArea dla mobile
+    page.add(ft.SafeArea(
+        content=ft.Container(expand=True),
+        minimum=ft.Padding(left=8, top=8, right=8, bottom=8),
+    ))
 
     # ── Inicjalizacja API ───────────────────────────────────────────────
     api_client = NexusApiClient(
@@ -65,109 +60,82 @@ async def init_web_app(page: ft.Page) -> None:
         token="",
     )
 
-    # ── Router ───────────────────────────────────────────────────────────
+    # ── Router — JEDNO miejsce dla routingu ─────────────────────────────
+    # SUPERMOC: Router zarządza page.on_route_change, page.on_view_pop,
+    # page.window_prevent_close, page.on_window_event przez konstruktor
     router = NexusRouter(page=page, api_client=api_client)
 
-    # ── Pokaż loading screen podczas inicjalizacji ───────────────────────
-    loading = ft.Container(
-        content=ft.Column(
-            [
-                ft.ProgressRing(width=48, height=48, stroke_width=4),
-                ft.Container(height=20),
-                ft.Text(
-                    "Ładowanie aplikacji Nexus AI...",
-                    size=16,
-                    color=ft.colors.GREY_400,
-                ),
-            ],
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            alignment=ft.MainAxisAlignment.CENTER,
+    # ── Pokaż loading screen z Shimmer podczas inicjalizacji ─────────────
+    loading = ft.Shimmer(
+        content=ft.Container(
+            content=ft.Column([
+                ft.Container(height=40, bgcolor=ft.colors.GREY_800, border_radius=8),
+                ft.Container(height=16),
+                ft.Container(height=200, bgcolor=ft.colors.GREY_800, border_radius=12),
+                ft.Container(height=16),
+                ft.Row([
+                    ft.Container(height=100, bgcolor=ft.colors.GREY_800, border_radius=12, expand=True),
+                    ft.Container(width=16),
+                    ft.Container(height=100, bgcolor=ft.colors.GREY_800, border_radius=12, expand=True),
+                    ft.Container(width=16),
+                    ft.Container(height=100, bgcolor=ft.colors.GREY_800, border_radius=12, expand=True),
+                ]),
+            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            alignment=ft.alignment.center, expand=True,
         ),
-        alignment=ft.alignment.center,
-        expand=True,
     )
     await page.add_async(loading)
 
-    # ── Routing dla Web ──────────────────────────────────────────────────
-    # SUPERMOC: page.on_route_change synchronizuje URL przeglądarki z widokiem
-    # page.go() aktualizuje URL i historię przeglądarki
-
+    # ── Routing dla Web ─────────────────────────────────────────────────
+    # SUPERMOC: page.on_route_change — JEDNO miejsce, deleguje do routera
     async def on_route_change(route_event: ft.RouteChangeEvent) -> None:
-        """Handle URL changes from browser navigation (URL bar, back/forward).
-
-        SUPERMOC: page.route zawiera aktualny URL, który jest automatycznie
-        synchronizowany z paskiem adresu przeglądarki.
-        """
+        """Handle URL changes — deleguje do NexusRouter.handle_route()."""
         route = page.route
 
-        # Aktualizuj tytuł strony w pasku przeglądarki
+        # SUPERMOC: Dynamiczny page.title z TemplateRoute
         _update_page_title(page, route)
 
-        # Wyczyść poprzedni widok
-        page.views.clear()
-        page.controls.clear()
-
-        # SUPERMOC: Routing przez dedykowany NexusRouter
-        # - Obsługuje /, /invoices, /invoices/:id, /briefing, /partner
-        # - Automatycznie ładuje dane asynchronicznie
+        # SUPERMOC: Navigator 2.0 — router zarządza page.views
         await router.handle_route(route)
 
-        # SUPERMOC: page.update() jest wymagany po zmianie widoku
-        await page.update_async()
-
-    # Podpięcie pod page.on_route_change
-    # SUPERMOC: Flet automatycznie dodaje URL do historii przeglądarki
-    # przy każdym page.go() — brak dodatkowej konfiguracji
     page.on_route_change = on_route_change
 
-    # ── Obsługa przycisku Wstecz w przeglądarce ──────────────────────────
+    # SUPERMOC: page.on_view_pop dla przycisku Wstecz (Navigator 2.0 pop)
     async def on_view_pop(view_event: ft.ViewPopEvent) -> None:
-        """Handle browser back button.
-
-        SUPERMOC: Flet automatycznie wykrywa przycisk Wstecz/Dalej
-        przeglądarki i wywołuje page.on_view_pop.
-        """
+        """Handle browser back button — Navigator 2.0 pop."""
         if len(page.views) > 1:
-            page.views.pop()
-            top_view = page.views[-1]
-            page.go(top_view.route)
+            router.pop_view()
         else:
-            # Jeśli jesteśmy na głównej — potwierdź zamknięcie
             await page.window_destroy_async()
 
     page.on_view_pop = on_view_pop
 
-    # ── Pierwsze ładowanie ──────────────────────────────────────────────
-    # SUPERMOC: page.go() inicjalizuje routing i ustawia URL w przeglądarce
-    # Jeśli URL już zawiera ścieżkę (deep linking), używamy jej
-    # W przeciwnym razie kierujemy na dashboard (/)
-    initial_route = page.route if page.route and page.route != "/" else "/"
+    # SUPERMOC: Przywróć ostatnią ścieżkę z client_storage
+    last_route = page.client_storage.get("nexus_last_route")
+    initial_route = page.route if page.route and page.route != "/" else (last_route or "/")
     page.go(initial_route)
 
     await page.update_async()
 
 
 def _update_page_title(page: ft.Page, route: str) -> None:
-    """Update browser tab title based on current route.
-
-    SUPERMOC: page.title jest synchronizowany z tytułem karty przeglądarki.
-    """
-    titles = {
-        "/": "Nexus AI — Dashboard",
-        "/invoices": "Nexus AI — Faktury",
-        "/briefing": "Nexus AI — Podsumowanie dnia",
-        "/partner": "Nexus AI — Partnerzy",
-    }
-
-    # Obsługa /invoices/{id}
-    if route.startswith("/invoices/") and len(route) > 10:
-        invoice_id = route.split("/")[-1][:8]
+    """Update browser tab title based on current route with TemplateRoute."""
+    tr = TemplateRoute(route)
+    if tr.match("/"):
+        page.title = "Nexus AI — Dashboard"
+    elif tr.match("/invoices"):
+        page.title = "Nexus AI — Faktury"
+    elif tr.match("/invoices/:id"):
+        invoice_id = tr.id[:8]
         page.title = f"Nexus AI — Faktura #{invoice_id}"
+    elif tr.match("/briefing"):
+        page.title = "Nexus AI — Podsumowanie dnia"
+    elif tr.match("/partner"):
+        page.title = "Nexus AI — Partnerzy"
+    elif tr.match("/tasks"):
+        page.title = "Nexus AI — Monitor zadań"
     else:
-        page.title = titles.get(route, f"Nexus AI — {route.strip('/').title()}")
-
-
-# ── Web launcher ────────────────────────────────────────────────────────────
+        page.title = f"Nexus AI — {route.strip('/').title()}"
 
 
 def run_web_app(
@@ -175,60 +143,17 @@ def run_web_app(
     api_port: int = DEFAULT_API_PORT,
     headless: bool = False,
 ) -> None:
-    """Launch NexusAI Flet app in web browser mode.
-
-    SUPERMOCE:
-      - view=ft.AppView.WEB_BROWSER — otwiera w domyślnej przeglądarce
-      - port=0 — automatycznie wybiera wolny port
-      - Automatyczne otwarcie URL w przeglądarce
-
-    Args:
-        port: Port serwera web (0 = losowy). Domyślnie 8550.
-        api_port: Port API backendu. Domyślnie 8000.
-        headless: Jeśli True, nie otwiera automatycznie przeglądarki.
-    """
-    logger.info(
-        "Starting NexusAI Web App — port=%s, api_port=%s, headless=%s",
-        port if port else "random",
-        api_port,
-        headless,
-    )
-
-    # SUPERMOC: ft.app_async z view=ft.AppView.WEB_BROWSER
-    # Flet uruchamia serwer HTTP i otwiera aplikację w przeglądarce
-    ft.app_async(
-        target=init_web_app,
-        view=ft.AppView.WEB_BROWSER,
-        port=port,
-    )
-
+    """Launch NexusAI Flet app in web browser mode."""
+    logger.info("Starting NexusAI Web App — port=%s, api_port=%s", port or "random", api_port)
+    ft.app_async(target=init_web_app, view=ft.AppView.WEB_BROWSER, port=port)
     logger.info("NexusAI Web App stopped.")
-
-
-# ── CLI entry point ─────────────────────────────────────────────────────────
 
 
 if __name__ == "__main__":
     import argparse
-
     parser = argparse.ArgumentParser(description="NexusAI Flet Web App")
-    parser.add_argument(
-        "--port",
-        type=int,
-        default=DEFAULT_WEB_PORT,
-        help=f"Web server port (default: {DEFAULT_WEB_PORT})",
-    )
-    parser.add_argument(
-        "--api-port",
-        type=int,
-        default=DEFAULT_API_PORT,
-        help=f"API backend port (default: {DEFAULT_API_PORT})",
-    )
-    parser.add_argument(
-        "--headless",
-        action="store_true",
-        help="Run without opening browser automatically",
-    )
-
+    parser.add_argument("--port", type=int, default=DEFAULT_WEB_PORT)
+    parser.add_argument("--api-port", type=int, default=DEFAULT_API_PORT)
+    parser.add_argument("--headless", action="store_true")
     args = parser.parse_args()
     run_web_app(port=args.port, api_port=args.api_port, headless=args.headless)

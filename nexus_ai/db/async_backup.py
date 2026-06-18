@@ -22,12 +22,15 @@ from __future__ import annotations
 import asyncio
 import os
 import sqlite3
+import tempfile
 import time
 import pendulum
 from pathlib import Path
 from typing import Any
 
 import fsspec
+from fsspec.implementations.cached import CachingFileSystem
+from nexus_ai.core.fsspec_compat import TransactionalFileSystem
 from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
@@ -128,6 +131,11 @@ class AsyncBackup:
     ) -> dict[str, Any]:
         """Wykonaj backup pojedynczej bazy danych (async, w wątku).
 
+        SUPERMOC fsspec:
+        - TransactionalFileSystem — atomowy backup (auto-commit/rollback)
+        - fsspec.open() dla targetu — działa z file://, s3://, memory://
+        - fs.info() zamiast Path.stat() dla zdalnych protokołów
+
         Używa natywnego ``sqlite3.Connection.backup()`` w wątku.
         Backup atomiczny — źródło pozostaje czytelne/zapisywalne.
 
@@ -138,8 +146,8 @@ class AsyncBackup:
         Returns:
             Słownik z wynikiem: status, path, size_mb.
         """
-        target = Path(target_path)
-        target.parent.mkdir(parents=True, exist_ok=True)
+        # SUPERMOC fsspec: TransactionalFileSystem dla atomicznych backupów
+        tx_fs = TransactionalFileSystem(self._fs)
 
         logger.info("[BACKUP] Starting backup: %s → %s", source_path, target_path)
 
@@ -153,70 +161,114 @@ class AsyncBackup:
                     key_hex = self._sqlcipher_key.encode("utf-8").hex()
                     src.execute(f"PRAGMA key = x'{key_hex}';")
 
-                tgt = sqlite3.connect(str(target), check_same_thread=False)
-                try:
-                    if self._sqlcipher_key:
-                        key_hex = self._sqlcipher_key.encode("utf-8").hex()
-                        tgt.execute(f"PRAGMA key = x'{key_hex}';")
+                # SUPERMOC: Backup do tymczasowego pliku, potem przenieś przez fsspec
+                import tempfile
+                tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
+                tmp_path = tmp.name
+                tmp.close()
 
-                    # Natywny backup — deleguje do sqlite3_backup() w C
-                    src.backup(tgt, pages=-1)
+                try:
+                    tgt = sqlite3.connect(tmp_path, check_same_thread=False)
+                    try:
+                        if self._sqlcipher_key:
+                            key_hex = self._sqlcipher_key.encode("utf-8").hex()
+                            tgt.execute(f"PRAGMA key = x'{key_hex}';")
+
+                        # Natywny backup — deleguje do sqlite3_backup() w C
+                        src.backup(tgt, pages=-1)
+                    finally:
+                        tgt.close()
+
+                    # SUPERMOC: TransactionalFileSystem — atomowy upload
+                    with tx_fs.transaction():
+                        with tx_fs.open(target_path, "wb") as f:
+                            with open(tmp_path, "rb") as src_f:
+                                f.write(src_f.read())
+                    # Auto-commit po wyjściu z transaction()
                 finally:
-                    tgt.close()
+                    import os
+                    os.unlink(tmp_path)
             finally:
                 src.close()
 
         await asyncio.to_thread(_sync_backup)
 
         duration = time.time() - start_time
-        size_mb = target.stat().st_size / (1024 * 1024) if target.exists() else 0
+
+        # SUPERMOC: fs.info() zamiast Path.stat() — działa ze zdalnymi protokołami
+        try:
+            info = self._fs.info(target_path)
+            size_bytes = info.get("size", 0) if info else 0
+            size_mb = size_bytes / (1024 * 1024)
+        except Exception:
+            size_mb = 0
 
         logger.info(
-            "[BACKUP] Complete: %s → %s (%.1f MB, %.1fs)",
+            "[BACKUP] Complete: %s → %s (%.1f MB, %.1fs, atomic=%s)",
             source_path,
             target_path,
             size_mb,
             duration,
+            True,  # TransactionalFileSystem zapewnia atomowość
         )
 
         return {
             "status": "ok",
-            "path": str(target),
+            "path": target_path,
             "source": source_path,
             "size_mb": round(size_mb, 2),
             "duration_s": round(duration, 2),
+            "atomic": True,
         }
 
     async def backup_to_memory(self, source_path: str) -> None:
         """Wykonaj backup do pamięci RAM (w wątku).
 
-        SUPERMOC: Backup do ``:memory:`` — idealne do testów.
-        Nie zwraca połączenia (sqlite3.Connection nie może być bezpiecznie
-        używane między wątkami po zamknięciu backupu).
+        SUPERMOC: Backup do fsspec MemoryFileSystem — idealne do testów.
+        Używa tymczasowego pliku przez sqlite3.backup(), a następnie
+        zapisuje go do MemoryFileSystem przez fsspec.open().
+        Dzięki temu backup jest poprawną binarną kopią bazy SQLite.
 
         Args:
             source_path: Ścieżka źródłowej bazy danych.
         """
         def _sync_backup() -> None:
-            mem_conn = sqlite3.connect(":memory:", check_same_thread=False)
-            try:
-                if self._sqlcipher_key:
-                    key_hex = self._sqlcipher_key.encode("utf-8").hex()
-                    mem_conn.execute(f"PRAGMA key = x'{key_hex}';")
+            # SUPERMOC: Backup do tymczasowego pliku, potem do MemoryFileSystem
+            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
+            tmp_path = tmp.name
+            tmp.close()
 
+            try:
                 src = sqlite3.connect(source_path, check_same_thread=False)
                 try:
                     if self._sqlcipher_key:
                         key_hex = self._sqlcipher_key.encode("utf-8").hex()
                         src.execute(f"PRAGMA key = x'{key_hex}';")
-                    src.backup(mem_conn)
+
+                    tgt = sqlite3.connect(tmp_path, check_same_thread=False)
+                    try:
+                        if self._sqlcipher_key:
+                            key_hex = self._sqlcipher_key.encode("utf-8").hex()
+                            tgt.execute(f"PRAGMA key = x'{key_hex}';")
+
+                        # Natywny backup SQLite — binarna kopia
+                        src.backup(tgt, pages=-1)
+                    finally:
+                        tgt.close()
                 finally:
                     src.close()
+
+                # SUPERMOC fsspec: Zapisz binary do MemoryFileSystem
+                mem_fs = fsspec.filesystem("memory")
+                mem_path = f"memory://backups/{Path(source_path).name}"
+                with mem_fs.open(mem_path, "wb") as f:
+                    with open(tmp_path, "rb") as tmp_f:
+                        f.write(tmp_f.read())
             finally:
-                mem_conn.close()
+                os.unlink(tmp_path)
 
         await asyncio.to_thread(_sync_backup)
-        logger.info("[BACKUP] In-memory backup complete: %s", source_path)
+        logger.info("[BACKUP] In-memory backup complete: %s → memory://", source_path)
 
     def add_database(self, name: str, path: str) -> None:
         """Dodaj bazę danych do listy backupów."""

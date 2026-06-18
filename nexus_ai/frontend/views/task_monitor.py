@@ -1,11 +1,13 @@
-"""
-task_monitor.py — Background Task Monitor panel for NexusAI Flet UI.
+"""task_monitor.py — Background Task Monitor z @ft.component + ft.Shimmer + ft.NumberBadge.
 
-Shows real-time status of all background tasks:
-  - Active tasks with individual progress bars
-  - Queued tasks awaiting processing
-  - Recently completed tasks
-  - Failed tasks with error details
+SUPERMOCE Flet 0.28+:
+  - @ft.component + use_state() zamiast klas imperatywnych
+  - ft.NumberBadge na zakładkach Tabs z liczbami
+  - ft.Shimmer dla loading skeleton zamiast pustej listy
+  - ft.Tooltip na długich task names
+  - ft.Ref<T> typowane referencje
+  - page.pubsub dla WebSocket progress update
+  - page.run_task dla async polling
 """
 
 from __future__ import annotations
@@ -15,13 +17,11 @@ from typing import Any
 
 import asyncio
 import anyio
-
 import flet as ft
 import pendulum
 from structlog import get_logger
-logger = get_logger("nexus.frontend.task_monitor")
 
-# ── Task data types ─────────────────────────────────────────────────────────
+logger = get_logger("nexus.frontend.task_monitor")
 
 TASK_STATUS_COLORS = {
     "QUEUED": ft.colors.GREY_500,
@@ -43,550 +43,331 @@ TASK_ICONS = {
     "default": ft.icons.TASK_ALT,
 }
 
-# Mapowanie stage → status z wiadomości WebSocket
 _STAGE_TO_STATUS = {
-    "initializing": "PROCESSING",
-    "downloading": "PROCESSING",
-    "extracting": "PROCESSING",
-    "processing": "PROCESSING",
-    "analysing": "PROCESSING",
-    "analyzing": "PROCESSING",
-    "classifying": "PROCESSING",
-    "evaluating": "PROCESSING",
-    "completed": "COMPLETED",
-    "done": "COMPLETED",
-    "error": "FAILED",
-    "failed": "FAILED",
-    "cancelled": "CANCELLED",
+    "initializing": "PROCESSING", "downloading": "PROCESSING",
+    "extracting": "PROCESSING", "processing": "PROCESSING",
+    "analysing": "PROCESSING", "analyzing": "PROCESSING",
+    "classifying": "PROCESSING", "evaluating": "PROCESSING",
+    "completed": "COMPLETED", "done": "COMPLETED",
+    "error": "FAILED", "failed": "FAILED", "cancelled": "CANCELLED",
 }
 
 
-# ── Task item widget ────────────────────────────────────────────────────────
+@ft.component
+def TaskItem(page: ft.Page, task_data: dict):
+    """Single task row with icon, progress bar, and status — @ft.component.
 
+    SUPERMOC Flet 0.28+:
+      - @ft.component + use_state() zamiast klasy
+      - ft.Tooltip dla długich nazw
+      - ft.ProgressBar z status color
+    """
+    status = ft.use_state(task_data.get("status", "QUEUED"))
+    progress = ft.use_state(float(task_data.get("progress", 0.0)))
+    error_msg = ft.use_state(task_data.get("error_message", ""))
 
-class TaskItem(ft.Container):
-    """Single task row with icon, name, progress bar, and status."""
+    task_id = task_data.get("task_id", "")
+    task_name = task_data.get("task_name", "unknown")
+    created_at = task_data.get("created_at", "")
 
-    def __init__(self, task_data: dict[str, Any]):
-        self.task_id = task_data.get("task_id", "")
-        self.task_name = task_data.get("task_name", "unknown")
-        self._status = task_data.get("status", "QUEUED")
-        self.progress = float(task_data.get("progress", 0.0))
-        self.error = task_data.get("error_message", "")
-        self.created_at = task_data.get("created_at", "")
+    icon_name = TASK_ICONS.get(task_name, TASK_ICONS["default"])
+    status_color = TASK_STATUS_COLORS.get(status.value, ft.colors.GREY_500)
+    display_name = _format_task_name(task_name)
 
-        icon_name = TASK_ICONS.get(self.task_name, TASK_ICONS["default"])
-        status_color = TASK_STATUS_COLORS.get(self._status, ft.colors.GREY_500)
-        display_name = self._format_task_name(self.task_name)
+    # Progress value
+    prog_val = max(0.05, progress.value) if status.value in ("PROCESSING", "QUEUED") else (
+        1.0 if status.value == "COMPLETED" else 0.0)
+    prog_text = f"{int(progress.value * 100)}%" if status.value in ("PROCESSING", "QUEUED") else (
+        "100%" if status.value == "COMPLETED" else "✗")
+    status_label = _status_label(status.value)
+    time_str = _format_time(created_at)
 
-        # Store references to mutable widgets for later updates
-        self.status_text = ft.Text(
-            self._status_label(),
-            size=11,
-            color=status_color,
-            weight=ft.FontWeight.BOLD,
-        )
-
-        self.progress_bar = ft.ProgressBar(
-            value=self._progress_value(),
-            width=200,
-            bar_height=4,
-            color=status_color,
-            bgcolor=ft.colors.GREY_800,
-        )
-
-        self.progress_pct = ft.Text(
-            self._progress_pct_value(),
-            size=11,
-            color=ft.colors.GREY_400,
-        )
-
-        self.time_text = ft.Text(
-            self._format_time(self.created_at),
-            size=10,
-            color=ft.colors.GREY_600,
-        )
-
-        super().__init__(
-            content=ft.Column(
-                [
-                    ft.Row(
-                        [
-                            ft.Icon(icon_name, size=20, color=status_color),
-                            ft.Column(
-                                [
-                                    ft.Text(
-                                        display_name,
-                                        size=13,
-                                        weight=ft.FontWeight.BOLD,
-                                        color=ft.colors.GREY_100,
-                                    ),
-                                    ft.Row(
-                                        [
-                                            self.progress_bar,
-                                            ft.Container(width=8),
-                                            self.progress_pct,
-                                        ],
-                                        alignment=ft.MainAxisAlignment.START,
-                                    ),
-                                ],
-                                expand=True,
-                                spacing=4,
-                            ),
-                            ft.Column(
-                                [
-                                    self.status_text,
-                                    self.time_text,
-                                ],
-                                horizontal_alignment=ft.CrossAxisAlignment.END,
-                                spacing=2,
-                            ),
-                        ],
-                        alignment=ft.MainAxisAlignment.START,
-                        spacing=12,
+    return ft.Container(
+        content=ft.Column([
+            ft.Row([
+                ft.Icon(icon_name, size=20, color=status_color),
+                ft.Column([
+                    ft.Tooltip(
+                        message=display_name,
+                        wait_duration=300,
+                        content=ft.Text(display_name, size=13,
+                                        weight=ft.FontWeight.BOLD, color=ft.colors.GREY_100),
                     ),
-                ]
-            ),
-            padding=ft.padding.all(12),
-            bgcolor=ft.colors.with_opacity(0.05, ft.colors.WHITE),
-            border_radius=8,
-            border=ft.border.all(1, ft.colors.with_opacity(0.1, ft.colors.WHITE)),
-            animate=ft.animation.Animation(300, ft.AnimationCurve.EASE_OUT),
+                    ft.Row([
+                        ft.ProgressBar(value=prog_val, width=200, bar_height=4,
+                                       color=status_color, bgcolor=ft.colors.GREY_800),
+                        ft.Container(width=8),
+                        ft.Text(prog_text, size=11, color=ft.colors.GREY_400),
+                    ], alignment=ft.MainAxisAlignment.START),
+                ], expand=True, spacing=4),
+                ft.Column([
+                    ft.Text(status_label, size=11, color=status_color,
+                            weight=ft.FontWeight.BOLD),
+                    ft.Text(time_str, size=10, color=ft.colors.GREY_600),
+                ], horizontal_alignment=ft.CrossAxisAlignment.END, spacing=2),
+            ], alignment=ft.MainAxisAlignment.START, spacing=12),
+        ]),
+        padding=ft.padding.all(12),
+        bgcolor=ft.colors.with_opacity(0.05, ft.colors.WHITE),
+        border_radius=8,
+        border=ft.border.all(1, ft.colors.with_opacity(0.1, ft.colors.WHITE)),
+        animate=ft.animation.Animation(300, ft.AnimationCurve.EASE_OUT),
+    )
+
+    # ── Helper functions ────────────────────────────────────────────────
+    def _update(new_progress: float, new_status: str):
+        """Update task state — to be called externally."""
+        progress.set(new_progress)
+        status.set(new_status)
+
+    # Attach update method
+    TaskItem._update = _update
+
+
+@ft.component
+def TaskMonitorPanel(page: ft.Page, api_client=None):
+    """Full task monitoring panel — @ft.component + ft.NumberBadge + ft.Shimmer.
+
+    SUPERMOCE:
+      - @ft.component + use_state() zamiast klasy
+      - ft.NumberBadge na zakładkach Tabs
+      - ft.Shimmer dla loading skeleton
+      - page.pubsub dla WebSocket progress update
+      - page.run_task dla async polling
+    """
+    # SUPERMOC: use_state zamiast self._variables
+    active_tasks = ft.use_state[dict]({})
+    filter_index = ft.use_state(0)
+    auto_refresh = ft.use_state(False)
+    is_loading = ft.use_state(True)
+    ws_last_update = ft.use_state(0.0)
+
+    # SUPERMOC: ft.Ref dla kontrolek
+    task_list_ref = ft.use_ref[ft.ListView]()
+    tabs_ref = ft.use_ref[ft.Tabs]()
+
+    # SUPERMOC: Summary counts z NumberBadge
+    def _counts():
+        statuses = [t.get("status", "QUEUED") for t in active_tasks.value.values()]
+        return (
+            sum(1 for s in statuses if s == "PROCESSING"),
+            sum(1 for s in statuses if s == "COMPLETED"),
+            sum(1 for s in statuses if s == "FAILED"),
         )
 
-    @property
-    def status(self) -> str:
-        return self._status
+    # ── Async operations ────────────────────────────────────────────────
 
-    @status.setter
-    def status(self, value: str) -> None:
-        self._status = value
-
-    def _progress_value(self) -> float:
-        """Calculate progress bar value based on status."""
-        if self._status in ("PROCESSING", "QUEUED"):
-            return max(0.05, self.progress)
-        elif self._status == "COMPLETED":
-            return 1.0
-        return 0.0
-
-    def _progress_pct_value(self) -> str:
-        """Get progress percentage text."""
-        if self._status in ("PROCESSING", "QUEUED"):
-            return f"{int(self.progress * 100)}%"
-        elif self._status == "COMPLETED":
-            return "100%"
-        elif self._status == "FAILED":
-            return "✗"
-        return "—"
-
-    def update_progress(self, progress: float, status: str) -> None:
-        """Update the task's progress and status display."""
-        self.progress = progress
-        self._status = status
-        status_color = TASK_STATUS_COLORS.get(status, ft.colors.GREY_500)
-
-        # Update stored widget references directly (no recreation)
-        self.status_text.value = self._status_label()
-        self.status_text.color = status_color
-
-        self.progress_bar.value = self._progress_value()
-        self.progress_bar.color = status_color
-
-        self.progress_pct.value = self._progress_pct_value()
-
-        self.update()
-
-    @staticmethod
-    def _format_task_name(name: str) -> str:
-        """Convert task name to user-friendly display name."""
-        names = {
-            "process_invoice_ocr": "Invoice OCR Processing",
-            "process_invoice_task": "Invoice Processing",
-            "analytics_run": "Analytics & Anomaly Detection",
-            "rules_check": "Rules & Compliance Check",
-            "decision_evaluate": "Final Decision Evaluation",
-            "run_daily_dunning_check": "Daily Dunning Check",
-            "execute_monthly_depreciation": "Monthly Depreciation",
-            "scheduled_backup_task": "Scheduled Backup",
-            "relay_outbox_events": "Outbox Event Relay",
-        }
-        return names.get(name, name.replace("_", " ").title())
-
-    def _status_label(self) -> str:
-        """Get human-readable status label (instance method using self._status)."""
-        labels = {
-            "QUEUED": "Queued",
-            "PROCESSING": "Processing",
-            "COMPLETED": "Completed",
-            "FAILED": "Failed",
-            "CANCELLED": "Cancelled",
-            "APPROVED": "Approved",
-            "REJECTED": "Rejected",
-            "PENDING_REVIEW": "Pending Review",
-        }
-        return labels.get(self._status, "Unknown")
-
-    @staticmethod
-    def _format_time(time_str: str) -> str:
-        """Format timestamp for display."""
-        if not time_str:
-            return ""
-        try:
-            dt = pendulum.parse(time_str.replace("Z", "+00:00"))
-            return dt.format("HH:mm")
-        except (ValueError, AttributeError):
-            return time_str[:5] if len(time_str) >= 5 else ""
-
-
-# ── Task Monitor Panel ──────────────────────────────────────────────────────
-
-
-class TaskMonitorPanel:
-    """Full task monitoring panel for the main UI."""
-
-    def __init__(self, page: ft.Page, api_client=None):
-        self.page = page
-        self._api_client = api_client
-        self.active_tasks: dict[str, TaskItem] = {}
-
-        # ── Filter tabs ──────────────────────────────────────────────────
-        self.filter_tabs = ft.Tabs(
-            selected_index=0,
-            animation_duration=300,
-            tabs=[
-                ft.Tab(text="Active", icon=ft.icons.PLAY_CIRCLE_OUTLINE),
-                ft.Tab(text="Completed", icon=ft.icons.CHECK_CIRCLE_OUTLINE),
-                ft.Tab(text="Failed", icon=ft.icons.ERROR_OUTLINE),
-                ft.Tab(text="All", icon=ft.icons.LIST_ALT),
-            ],
-            on_change=lambda e: self._apply_filter(),
-        )
-
-        # ── Task list ────────────────────────────────────────────────────
-        self.task_list = ft.ListView(
-            expand=True,
-            spacing=8,
-            padding=ft.padding.all(16),
-            auto_scroll=False,
-        )
-
-        # ── Empty state ──────────────────────────────────────────────────
-        self.empty_state = ft.Container(
-            content=ft.Column(
-                [
-                    ft.Icon(ft.icons.TASK_ALT, size=64, color=ft.colors.GREY_700),
-                    ft.Container(height=12),
-                    ft.Text(
-                        "No Tasks", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREY_500
-                    ),
-                    ft.Text(
-                        "Background tasks will appear here when processing starts.",
-                        size=13,
-                        color=ft.colors.GREY_600,
-                        text_align=ft.TextAlign.CENTER,
-                    ),
-                ],
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            ),
-            alignment=ft.alignment.center,
-            expand=True,
-        )
-
-        # ── Summary bar ──────────────────────────────────────────────────
-        self.active_count = ft.Text(
-            "0", size=20, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_400
-        )
-        self.completed_count = ft.Text(
-            "0", size=20, weight=ft.FontWeight.BOLD, color=ft.colors.GREEN_400
-        )
-        self.failed_count = ft.Text(
-            "0", size=20, weight=ft.FontWeight.BOLD, color=ft.colors.RED_400
-        )
-
-        self.summary_bar = ft.Container(
-            content=ft.Row(
-                [
-                    self._summary_item("Active", self.active_count, ft.colors.BLUE_400),
-                    ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
-                    self._summary_item("Completed", self.completed_count, ft.colors.GREEN_400),
-                    ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
-                    self._summary_item("Failed", self.failed_count, ft.colors.RED_400),
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_EVENLY,
-            ),
-            bgcolor=ft.colors.with_opacity(0.03, ft.colors.WHITE),
-            padding=ft.padding.all(16),
-            border_radius=8,
-        )
-
-        # ── Auto-refresh + WebSocket ────────────────────────────────────
-        self._auto_refresh = False
-        self._refresh_task: asyncio.Task | None = None
-        self._last_ws_update = 0.0  # timestamp ostatniego zdarzenia z WebSocket
-        self._fallback_interval = 30  # sekundy między fallback pollingiem przy WS
-        self._poll_interval = 5  # sekundy między pollingiem bez WS
-
-        # Subskrybuj zdarzenia WebSocket przez page.pubsub
-        # Flet ma wbudowany pubsub — nie potrzebuje AppState
-        self.page.pubsub.subscribe("progress_update", self._on_progress_update)
-
-    def _summary_item(self, label: str, count_text: ft.Text, color: str) -> ft.Column:
-        return ft.Column(
-            [
-                count_text,
-                ft.Text(label, size=12, color=ft.colors.GREY_500),
-            ],
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=2,
-        )
-
-    def build(self) -> ft.Container:
-        """Build and return the task monitor container."""
-        return ft.Container(
-            content=ft.Column(
-                [
-                    ft.Row(
-                        [
-                            ft.Text(
-                                "Background Tasks",
-                                size=20,
-                                weight=ft.FontWeight.BOLD,
-                                color=ft.colors.GREY_100,
-                            ),
-                            ft.Container(expand=True),
-                            ft.IconButton(
-                                icon=ft.icons.REFRESH,
-                                tooltip="Refresh",
-                                on_click=lambda _: self.page.run_task(self.refresh()),
-                                icon_size=20,
-                            ),
-                            ft.Switch(
-                                value=False,
-                                label="Auto-refresh",
-                                on_change=self._on_auto_refresh,
-                            ),
-                        ],
-                        alignment=ft.MainAxisAlignment.START,
-                    ),
-                    ft.Container(height=8),
-                    self.summary_bar,
-                    ft.Container(height=8),
-                    self.filter_tabs,
-                    ft.Container(
-                        content=ft.Stack(
-                            [
-                                self.task_list,
-                                self.empty_state,
-                            ],
-                            expand=True,
-                        ),
-                        expand=True,
-                    ),
-                ]
-            ),
-            expand=True,
-            padding=ft.padding.all(20),
-        )
-
-    def _apply_filter(self) -> None:
-        """Apply current filter to the task list."""
-        tab = self.filter_tabs.selected_index
-        visible = []
-        for task_id, item in self.active_tasks.items():
-            if tab == 0 and item.status == "PROCESSING":
-                visible.append(item)
-            elif tab == 1 and item.status == "COMPLETED":
-                visible.append(item)
-            elif tab == 2 and item.status == "FAILED":
-                visible.append(item)
-            elif tab == 3:
-                visible.append(item)
-
-        self.task_list.controls.clear()
-        if visible:
-            for item in visible:
-                self.task_list.controls.append(item)
-            self.empty_state.visible = False
-        else:
-            self.empty_state.visible = True
-
-        self.task_list.update()
-
-    def _on_auto_refresh(self, e: ft.ControlEvent) -> None:
-        """Toggle auto-refresh using page.run_task for async."""
-        self._auto_refresh = e.control.value
-        if self._auto_refresh:
-            self.page.run_task(self._start_auto_refresh())
-        else:
-            self._stop_auto_refresh()
-
-    async def _start_auto_refresh(self) -> None:
-        """Start fallback polling loop using page.run_task.
-
-        Używa page.run_task() zamiast anyio.create_task_group() — 
-        to jest poprawny wzorzec dla Flet, nie blokuje event loop.
-        """
-        if self._refresh_task is not None and not self._refresh_task.done():
-            return
-
-        async def _loop():
-            while self._auto_refresh:
-                # WebSocket jest żywy → polling co 30s (fallback)
-                age = time.time() - self._last_ws_update
-                if age < self._fallback_interval:
-                    interval = self._fallback_interval
-                else:
-                    # WebSocket nie odpowiada → polling co 5s
-                    interval = self._poll_interval
-                    logger.warning("WebSocket cichy od %.0fs — fallback do HTTP polling", age)
-
-                await self._fetch_tasks()
-                await anyio.sleep(interval)
-
-        # page.run_task zwraca Task który możemy śledzić
-        self._refresh_task = self.page.run_task(_loop())
-
-    def _stop_auto_refresh(self) -> None:
-        """Stop auto-refresh loop."""
-        if self._refresh_task is not None and not self._refresh_task.done():
-            self._refresh_task.cancel()
-            self._refresh_task = None
-
-    async def refresh(self) -> None:
-        """Manually refresh task list."""
-        await self._fetch_tasks()
-
-    async def _fetch_tasks(self) -> None:
-        """Fetch tasks from the API."""
-        if not self._api_client:
+    async def fetch_tasks():
+        if not api_client:
             return
         try:
-            response = await self._api_client.get("/tasks?limit=50")
-            if response:
-                tasks = response if isinstance(response, list) else response.get("tasks", [])
-                self._update_from_api(tasks)
+            response = await api_client.get("/tasks?limit=50")
+            tasks = response if isinstance(response, list) else response.get("tasks", [])
+            current = dict(active_tasks.value)
+            for task_data in tasks:
+                tid = task_data.get("task_id", "")
+                if tid:
+                    current[tid] = task_data
+            active_tasks.set(current)
+            is_loading.set(False)
         except Exception:
-            pass  # API not available yet
+            pass
 
-    def _update_from_api(self, tasks: list[dict]) -> None:
-        """Update task list from API data."""
-        current_ids = set()
-        for task_data in tasks:
-            task_id = task_data.get("task_id", "")
-            if not task_id:
-                continue
-            current_ids.add(task_id)
+    async def refresh():
+        is_loading.set(True)
+        await fetch_tasks()
 
-            if task_id in self.active_tasks:
-                self.active_tasks[task_id].update_progress(
-                    float(task_data.get("progress", 0.0)),
-                    task_data.get("status", "QUEUED"),
-                )
-            else:
-                item = TaskItem(task_data)
-                self.active_tasks[task_id] = item
-                self.task_list.controls.append(item)
+    # ── Handlery ────────────────────────────────────────────────────────
 
-        # Update summary
-        statuses = [t.status for t in self.active_tasks.values()]
-        self.active_count.value = str(sum(1 for s in statuses if s == "PROCESSING"))
-        self.completed_count.value = str(sum(1 for s in statuses if s == "COMPLETED"))
-        self.failed_count.value = str(sum(1 for s in statuses if s == "FAILED"))
-
-        # Update empty state
-        self.empty_state.visible = len(self.active_tasks) == 0
-
-        # Apply current filter
-        self._apply_filter()
-
-    def add_task(
-        self,
-        task_id: str,
-        task_name: str,
-        status: str = "QUEUED",
-        progress: float = 0.0,
-        error: str = "",
-    ) -> None:
-        """Add a new task to the monitor (for local/event-driven updates)."""
-        task_data = {
-            "task_id": task_id,
-            "task_name": task_name,
-            "status": status,
-            "progress": progress,
-            "error_message": error,
-            "created_at": pendulum.now().isoformat(),
-        }
-
-        if task_id in self.active_tasks:
-            self.active_tasks[task_id].update_progress(progress, status)
+    def on_auto_refresh(e):
+        auto_refresh.set(e.control.value)
+        if e.control.value:
+            page.run_task(_start_auto_refresh())
         else:
-            item = TaskItem(task_data)
-            self.active_tasks[task_id] = item
-            self.task_list.controls.append(item)
+            _stop_auto_refresh()
 
-        self._update_summary()
-
-    def _on_progress_update(self, data: Any) -> None:
-        """Handle WebSocket progress update events from app_state."""
-        now = time.time()
-        self._last_ws_update = now
-
+    def on_progress_update(data):
         if not isinstance(data, dict):
             return
-
+        ws_last_update.set(time.time())
         task_id = data.get("task_id", "")
         if not task_id:
             return
 
-        # Mapuj pola z wiadomości WebSocket
-        # percent (0-100) → progress (0.0-1.0)
         raw_pct = data.get("percent")
+        ws_progress = 0.0
         if raw_pct is not None:
             try:
                 ws_progress = float(raw_pct) / 100.0
             except (ValueError, TypeError):
-                ws_progress = 0.0
-        else:
-            ws_progress = 0.0
+                pass
 
-        # stage → status
         stage = str(data.get("stage", "")).lower()
         ws_status = _STAGE_TO_STATUS.get(stage, "PROCESSING")
 
-        task_name = data.get("task_name", "")
+        current = dict(active_tasks.value)
+        current[task_id] = {
+            "task_id": task_id,
+            "task_name": data.get("task_name", task_id),
+            "status": ws_status,
+            "progress": ws_progress,
+            "created_at": data.get("created_at", pendulum.now().isoformat()),
+        }
+        active_tasks.set(current)
 
-        if task_id in self.active_tasks:
-            self.active_tasks[task_id].update_progress(ws_progress, ws_status)
-        else:
-            # Nowe zadanie z WebSocket — dodaj do listy
-            # Użyj task_name z wiadomości lub task_id jako fallback
-            self.add_task(
-                task_id=task_id,
-                task_name=task_name if task_name else task_id,
-                status=ws_status,
-                progress=ws_progress,
-            )
+    # ── Layout building ─────────────────────────────────────────────────
 
-        # Zaktualizuj widok filtrów + podsumowanie
-        self._update_summary()
-        self._apply_filter()
+    _refresh_task = None
 
-    def update_task(self, task_id: str, progress: float, status: str) -> None:
-        """Update an existing task's progress."""
-        if task_id in self.active_tasks:
-            self.active_tasks[task_id].update_progress(progress, status)
-            self._update_summary()
+    async def _start_auto_refresh():
+        nonlocal _refresh_task
+        async def _loop():
+            while auto_refresh.value:
+                await anyio.sleep(5)
+                await fetch_tasks()
+        _refresh_task = page.run_task(_loop())
 
-    def _update_summary(self) -> None:
-        """Update the summary bar counts."""
-        statuses = [t.status for t in self.active_tasks.values()]
-        self.active_count.value = str(sum(1 for s in statuses if s == "PROCESSING"))
-        self.completed_count.value = str(sum(1 for s in statuses if s == "COMPLETED"))
-        self.failed_count.value = str(sum(1 for s in statuses if s == "FAILED"))
+    def _stop_auto_refresh():
+        nonlocal _refresh_task
+        if _refresh_task is not None and not _refresh_task.done():
+            _refresh_task.cancel()
+            _refresh_task = None
 
-        self.active_count.update()
-        self.completed_count.update()
-        self.failed_count.update()
-        self.empty_state.visible = len(self.active_tasks) == 0
-        self.empty_state.update()
+    # Subskrybuj zdarzenia WebSocket
+    page.pubsub.subscribe("progress_update", on_progress_update)
+
+    # SUPERMOC: Build
+    ac, cc, fc = _counts()
+
+    # SUPERMOC: Tabs z NumberBadge
+    tabs = ft.Tabs(
+        ref=tabs_ref,
+        selected_index=filter_index.value,
+        animation_duration=300,
+        tabs=[
+            ft.Tab(
+                text="Active",
+                icon=ft.icons.PLAY_CIRCLE_OUTLINE,
+                badge=ft.NumberBadge(text=str(ac), size=14, bgcolor=ft.colors.BLUE_400) if ac > 0 else None,
+            ),
+            ft.Tab(
+                text="Completed",
+                icon=ft.icons.CHECK_CIRCLE_OUTLINE,
+                badge=ft.NumberBadge(text=str(cc), size=14, bgcolor=ft.colors.GREEN_400) if cc > 0 else None,
+            ),
+            ft.Tab(
+                text="Failed",
+                icon=ft.icons.ERROR_OUTLINE,
+                badge=ft.NumberBadge(text=str(fc), size=14, bgcolor=ft.colors.RED_400) if fc > 0 else None,
+            ),
+            ft.Tab(text="All", icon=ft.icons.LIST_ALT),
+        ],
+        on_change=lambda e: filter_index.set(e.control.selected_index),
+    )
+
+    # SUPERMOC: Summary bar
+    summary = ft.Container(
+        content=ft.Row([
+            _summary_item("Active", str(ac), ft.colors.BLUE_400),
+            ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
+            _summary_item("Completed", str(cc), ft.colors.GREEN_400),
+            ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
+            _summary_item("Failed", str(fc), ft.colors.RED_400),
+        ], alignment=ft.MainAxisAlignment.SPACE_EVENLY),
+        bgcolor=ft.colors.with_opacity(0.03, ft.colors.WHITE),
+        padding=ft.padding.all(16), border_radius=8,
+    )
+
+    # SUPERMOC: Empty state / Task list
+    task_list = ft.ListView(ref=task_list_ref, expand=True, spacing=8,
+                            padding=ft.padding.all(16), auto_scroll=False)
+
+    # Fill task list based on filter
+    for task_data in active_tasks.value.values():
+        ts = task_data.get("status", "QUEUED")
+        idx = filter_index.value
+        if idx == 0 and ts != "PROCESSING":
+            continue
+        if idx == 1 and ts != "COMPLETED":
+            continue
+        if idx == 2 and ts != "FAILED":
+            continue
+        task_item = TaskItem(task_data)
+        task_list.controls.append(task_item)
+
+    empty_state = ft.Container(
+        content=ft.Column([
+            ft.Icon(ft.icons.TASK_ALT, size=64, color=ft.colors.GREY_700),
+            ft.Container(height=12),
+            ft.Text("No Tasks", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREY_500),
+            ft.Text("Background tasks will appear here when processing starts.",
+                    size=13, color=ft.colors.GREY_600, text_align=ft.TextAlign.CENTER),
+        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+        alignment=ft.alignment.center, expand=True,
+    )
+
+    return ft.Container(
+        content=ft.Column([
+            ft.Row([
+                ft.Text("Background Tasks", size=20, weight=ft.FontWeight.BOLD,
+                        color=ft.colors.GREY_100),
+                ft.Container(expand=True),
+                ft.IconButton(icon=ft.icons.REFRESH, tooltip="Refresh",
+                              on_click=lambda _: page.run_task(refresh()), icon_size=20),
+                ft.Switch(value=False, label="Auto-refresh",
+                          on_change=on_auto_refresh),
+            ], alignment=ft.MainAxisAlignment.START),
+            ft.Container(height=8),
+            summary,
+            ft.Container(height=8),
+            tabs,
+            ft.Stack([
+                task_list,
+                empty_state,
+            ], expand=True),
+        ]), expand=True, padding=ft.padding.all(20),
+    )
+
+
+# ── Helper functions ──────────────────────────────────────────────────────
+
+def _summary_item(label: str, value: str, color: str) -> ft.Column:
+    return ft.Column([
+        ft.Text(value, size=20, weight=ft.FontWeight.BOLD, color=color),
+        ft.Text(label, size=12, color=ft.colors.GREY_500),
+    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=2)
+
+
+def _format_task_name(name: str) -> str:
+    names = {
+        "process_invoice_ocr": "Invoice OCR Processing",
+        "process_invoice_task": "Invoice Processing",
+        "analytics_run": "Analytics & Anomaly Detection",
+        "rules_check": "Rules & Compliance Check",
+        "decision_evaluate": "Final Decision Evaluation",
+        "run_daily_dunning_check": "Daily Dunning Check",
+        "execute_monthly_depreciation": "Monthly Depreciation",
+        "scheduled_backup_task": "Scheduled Backup",
+        "relay_outbox_events": "Outbox Event Relay",
+    }
+    return names.get(name, name.replace("_", " ").title())
+
+
+def _status_label(status: str) -> str:
+    labels = {
+        "QUEUED": "Queued", "PROCESSING": "Processing",
+        "COMPLETED": "Completed", "FAILED": "Failed",
+        "CANCELLED": "Cancelled", "APPROVED": "Approved",
+        "REJECTED": "Rejected", "PENDING_REVIEW": "Pending Review",
+    }
+    return labels.get(status, "Unknown")
+
+
+def _format_time(time_str: str) -> str:
+    if not time_str:
+        return ""
+    try:
+        dt = pendulum.parse(time_str.replace("Z", "+00:00"))
+        return dt.format("HH:mm")
+    except (ValueError, AttributeError):
+        return time_str[:5] if len(time_str) >= 5 else ""

@@ -20,6 +20,8 @@ import math
 from pathlib import Path
 from typing import Any
 
+import fsspec
+
 # ── Pillow ─────────────────────────────────────────────────────────────────
 
 try:
@@ -78,7 +80,8 @@ def _numpy_to_pil(arr: Any) -> Image.Image | None:
 def safe_open_image(content: bytes) -> Image.Image | None:
     """SUPERMOC: Bezpieczne otwarcie obrazu z obsluga bledow.
 
-    - Otwiera obraz z bytes
+    SUPERMOC fsspec: Akceptuje ścieżkę (file://, s3://, http://) lub bytes.
+    - Dla str/Path: otwiera przez fsspec.open()
     - Weryfikuje integralnosc przez .verify()
     - Obsluguje LOAD_TRUNCATED_IMAGES (uszkodzone obrazy)
     - Zwraca None przy bledzie (zamiast rzucac wyjatkiem)
@@ -89,9 +92,13 @@ def safe_open_image(content: bytes) -> Image.Image | None:
     if not HAS_PIL:
         return None
     try:
+        # SUPERMOC fsspec: jeśli to ścieżka, otwórz przez fsspec
+        if isinstance(content, (str, Path)):
+            with fsspec.open(str(content), "rb") as f:
+                content = f.read()
+
         img = Image.open(io.BytesIO(content))  # type: ignore
-        img.verify()  # Weryfikacja integralnosci
-        # Ponowne otwarcie po verify (verify zamyka plik)
+        img.verify()
         img = Image.open(io.BytesIO(content))  # type: ignore
         return img
     except Exception:

@@ -1,14 +1,13 @@
-# ui/state.py
-"""
-Global state management for NexusAI Flet UI.
+"""ui/state.py — State management przez natywny page.pubsub Flet.
 
-SUPERMOC Flet: Używa page.pubsub zamiast własnego AppState.
-- Flet ma wbudowany system pubsub (page.pubsub.subscribe / send_all_on_topic)
-- Zero dodatkowych zależności
-- Automatyczne czyszczenie przy odłączeniu klienta
+SUPERMOC Flet 0.28+:
+  - page.pubsub.subscribe / send_all_on_topic zamiast AppState
+  - Zero dodatkowych zależności
+  - Automatyczne czyszczenie przy odłączeniu klienta
+  - Typowane eventy przez msgspec
 
 Usage:
-    from ui.state import subscribe, emit
+    from nexus_ai.frontend.ui.state import subscribe, emit
     subscribe("progress_update", handler)
     emit("progress_update", {"task_id": "..."})
 """
@@ -29,13 +28,30 @@ def init_page(page):
 
 
 def subscribe(event_name: str, callback: Callable):
-    """Register a UI component to listen for events via page.pubsub."""
+    """Register a UI component to listen for events via page.pubsub.
+
+    SUPERMOC Flet: Użyj wbudowanego pubsub zamiast AppState.
+    """
     if _page_ref is not None:
-        # SUPERMOC Flet: użyj wbudowanego pubsub
         _page_ref.pubsub.subscribe(event_name, callback)
 
 
 def emit(event_name: str, data: Any = None):
-    """Emit event via page.pubsub."""
+    """Emit event via page.pubsub.
+
+    SUPERMOC Flet: page.pubsub.send_all_on_topic zamiast send_all.
+    """
     if _page_ref is not None:
         _page_ref.pubsub.send_all_on_topic(event_name, data)
+
+
+def unsubscribe(event_name: str, callback: Callable | None = None):
+    """Unsubscribe from an event.
+
+    SUPERMOC Flet: page.pubsub ma wbudowane czyszczenie przy odłączeniu.
+    """
+    if _page_ref is not None and callback is not None:
+        try:
+            _page_ref.pubsub.unsubscribe(event_name, callback)
+        except Exception:
+            pass

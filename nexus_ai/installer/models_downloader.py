@@ -98,7 +98,9 @@ def load_manifest(manifest_path: str | Path | None = None) -> list[ModelEntry]:
         logger.warning("Model manifest not found at any expected location")
         return []
 
-    with open(manifest_path, "rb") as f:
+    # SUPERMOC fsspec: fsspec.open() zamiast open()
+    # Działa z file://, s3://, http:// — manifest może być zdalny
+    with fsspec.open(manifest_path, "rb") as f:
         data: dict[str, Any] = msgspec.json.decode(f.read())
 
     models_data = data.get("models", {})
@@ -123,9 +125,14 @@ def load_manifest(manifest_path: str | Path | None = None) -> list[ModelEntry]:
 
 
 def compute_sha256(filepath: Path) -> str:
-    """Compute SHA-256 checksum of a file (streaming via Sha256Hasher)."""
+    """Compute SHA-256 checksum of a file (streaming via Sha256Hasher).
+
+    SUPERMOC fsspec: Używa fsspec.open() zamiast open() — działa
+    z każdym protokołem (file://, s3://, http://).
+    """
     sha = Sha256Hasher()
-    with open(filepath, "rb") as f:
+    # SUPERMOC fsspec: odczyt przez fsspec.open() zamiast open()
+    with fsspec.open(filepath, "rb") as f:
         while True:
             chunk = f.read(65536)  # 64 KB
             if not chunk:

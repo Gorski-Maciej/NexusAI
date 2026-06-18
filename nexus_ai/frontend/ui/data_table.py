@@ -1,10 +1,14 @@
-"""AsyncInvoiceTable — Virtual scrolling DataTable z infinite scroll.
+"""AsyncInvoiceTable — Virtual scrolling DataTable z SearchBar + AutoComplete.
 
-SUPERMOCE:
+SUPERMOCE Flet 0.28+:
+  - ft.SearchBar dla wyszukiwania faktur
+  - ft.AutoComplete dla podpowiedzi przy wyszukiwaniu NIP/numeru
+  - ft.NumberBadge dla liczników
   - Cursor-based pagination zamiast przycisku "Załaduj więcej"
   - Virtual scrolling (ListView z auto_scroll)
   - Status colors z mapowaniem
   - Proper async przez page.run_task
+  - ft.Tooltip na długich polach
 """
 
 from __future__ import annotations
@@ -23,156 +27,152 @@ INVOICE_STATUS_COLORS = {
 }
 
 
-class AsyncInvoiceTable(ft.Column):
-    """Asynchroniczna tabela obsługująca tysiące rekordów przez API z infinite scroll."""
+@ft.component
+def AsyncInvoiceTable(page: ft.Page, api_client):
+    """Asynchroniczna tabela z SearchBar + AutoComplete + infinite scroll.
 
-    def __init__(self, api_client):
-        super().__init__()
-        self.api = api_client
-        self.cursor: str | None = None
-        self._has_more: bool = True
-        self._is_loading: bool = False
+    SUPERMOCE Flet 0.28+:
+      - ft.SearchBar dla wyszukiwania
+      - ft.AutoComplete dla podpowiedzi NIP
+      - ft.NumberBadge dla liczników
+    """
+    cursor = ft.use_state[str | None](None)
+    has_more = ft.use_state(True)
+    is_loading = ft.use_state(False)
+    items = ft.use_state[list]([])
+    search_query = ft.use_state("")
 
-        # ListView zamiast DataTable — wirtualny scroll
-        self.list_view = ft.ListView(
-            expand=True,
-            spacing=8,
-            padding=20,
-            auto_scroll=False,
-        )
+    list_ref = ft.use_ref[ft.ListView]()
+    search_ref = ft.use_ref[ft.SearchBar]()
+    empty_ref = ft.use_ref[ft.Container]()
 
-        # Wskaźnik ładowania (na dole listy)
-        self.loading_ring = ft.ProgressRing(visible=False, width=24, height=24)
-        
-        # Przycisk "Załaduj więcej" (widoczny tylko jeśli są dane)
-        self.load_more_btn = ft.ElevatedButton(
-            "Załaduj więcej",
-            icon=ft.icons.DOWNLOAD,
-            on_click=self._on_load_more,
-            visible=True,
-        )
+    # ── Data loading ────────────────────────────────────────────────────
 
-        # Empty state
-        self.empty_state = ft.Container(
-            content=ft.Column(
-                [
-                    ft.Icon(ft.icons.INVENTORY_2_OUTLINED, size=64, color=ft.colors.GREY_700),
-                    ft.Container(height=12),
-                    ft.Text("Brak faktur", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREY_500),
-                    ft.Text("Dodaj pierwszą fakturę przez OCR.", size=13, color=ft.colors.GREY_600),
-                ],
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            ),
-            alignment=ft.alignment.center,
-            expand=True,
-            visible=True,
-        )
+    async def load_initial():
+        is_loading.set(True)
+        try:
+            resp = await api_client.get("/invoices", params={"cursor": cursor.value, "limit": 50})
+            data = resp if isinstance(resp, list) else resp.get("items", [])
+            has_more.set(len(data) >= 50)
+            items.set(data)
+        except Exception as ex:
+            logger.error(f"Błąd ładowania danych: {ex}")
+        finally:
+            is_loading.set(False)
 
-        self.controls = [
-            ft.Stack(
-                [
+    async def load_more():
+        if is_loading.value or not has_more.value:
+            return
+        is_loading.set(True)
+        try:
+            resp = await api_client.get("/invoices", params={"cursor": cursor.value, "limit": 50})
+            data = resp if isinstance(resp, list) else resp.get("items", [])
+            has_more.set(len(data) >= 50)
+            items.set(list(items.value) + list(data))
+        except Exception as ex:
+            logger.error(f"Błąd ładowania: {ex}")
+        finally:
+            is_loading.set(False)
+
+    # ── Search handling ─────────────────────────────────────────────────
+
+    async def on_search(e):
+        query = e.control.value or ""
+        search_query.set(query)
+        if query:
+            try:
+                resp = await api_client.get("/invoices", params={"q": query, "limit": 50})
+                items.set(resp if isinstance(resp, list) else resp.get("items", []))
+            except Exception:
+                pass
+
+    # ── Build tiles ─────────────────────────────────────────────────────
+
+    visible_items = items.value
+    has_results = len(visible_items) > 0
+
+    list_view = ft.ListView(
+        ref=list_ref, expand=True, spacing=8,
+        padding=20, auto_scroll=False,
+    )
+
+    for inv in visible_items:
+        status = inv.get("status", "NEW")
+        status_color = INVOICE_STATUS_COLORS.get(status, ft.colors.GREY)
+        number = inv.get("number") or "Brak"
+        nip = inv.get("contractor_nip") or "---"
+        amount = f"{inv.get('amount_gross', 0.0):.2f} {inv.get('currency', 'PLN')}"
+        inv_id = inv.get("id", "")
+
+        list_view.controls.append(
+            ft.Container(
+                data=inv_id,
+                content=ft.Row([
                     ft.Column([
-                        self.list_view,
-                        ft.Row(
-                            [self.loading_ring, self.load_more_btn],
-                            alignment=ft.MainAxisAlignment.CENTER,
-                            spacing=10,
+                        ft.Tooltip(
+                            message=number,
+                            content=ft.Text(number, size=15, weight=ft.FontWeight.BOLD),
+                        ),
+                        ft.Tooltip(
+                            message=f"NIP: {nip}",
+                            content=ft.Text(f"NIP: {nip}", size=12, color=ft.colors.GREY_400),
                         ),
                     ], expand=True),
-                    self.empty_state,
-                ],
+                    ft.Chip(label=ft.Text(status, size=11, color=ft.colors.WHITE),
+                            bgcolor=status_color),
+                    ft.Text(amount, size=15, weight=ft.FontWeight.BOLD, color=ft.colors.AMBER_300),
+                    ft.IconButton(icon=ft.icons.VISIBILITY, tooltip="Zobacz PDF",
+                                  on_click=lambda _, iid=inv_id: (
+                                      page.go(f"/invoices/{iid}") if page else None)),
+                ]),
+                padding=16, border_radius=8,
+                bgcolor=ft.colors.SURFACE_CONTAINER_HIGHEST,
+                ink=True,
+                animate=ft.animation.Animation(200, ft.AnimationCurve.EASE_OUT),
+                on_hover=lambda e: setattr(e.control, "scale",
+                                           1.01 if e.data == "true" else 1.0) or e.control.update(),
+            )
+        )
+
+    # SUPERMOC: Empty state
+    empty_state = ft.Container(
+        ref=empty_ref,
+        content=ft.Column([
+            ft.Icon(ft.icons.INVENTORY_2_OUTLINED, size=64, color=ft.colors.GREY_700),
+            ft.Container(height=12),
+            ft.Text("Brak faktur", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREY_500),
+            ft.Text("Dodaj pierwszą fakturę przez OCR.", size=13, color=ft.colors.GREY_600),
+        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+        alignment=ft.alignment.center, expand=True,
+    )
+
+    # SUPERMOC: Loading indicator
+    loading_row = ft.Row([
+        ft.ProgressRing(width=24, height=24),
+        ft.ElevatedButton("Załaduj więcej", icon=ft.icons.DOWNLOAD,
+                          on_click=lambda _: page.run_task(load_more()),
+                          visible=has_more.value),
+    ], alignment=ft.MainAxisAlignment.CENTER, spacing=10)
+
+    # SUPERMOC: Render
+    return ft.Column([
+        # SUPERMOC: SearchBar z wyszukiwarką
+        ft.Row([
+            ft.SearchBar(
+                ref=search_ref,
+                bar_hint_text="Szukaj faktury po numerze lub NIP...",
+                view_hint_text="Wybierz wynik...",
+                on_submit=on_search,
+                on_change=on_search,
+                height=44,
                 expand=True,
             ),
-        ]
-
-    async def load_initial(self):
-        """Load first page of data."""
-        self._is_loading = True
-        self.empty_state.visible = False
-        self.loading_ring.visible = True
-        self.update()
-
-        try:
-            response = await self.api.get("/invoices", params={"cursor": self.cursor, "limit": 50})
-            items = response if isinstance(response, list) else response.get("items", [])
-            self._has_more = len(items) >= 50
-            
-            self.list_view.controls.clear()
-            for inv in items:
-                self.list_view.controls.append(self._build_invoice_tile(inv))
-            
-            self.load_more_btn.visible = self._has_more
-            self.empty_state.visible = len(items) == 0
-        except Exception as ex:
-            logger.error(f"Błąd ładowania danych: {ex}")
-        finally:
-            self._is_loading = False
-            self.loading_ring.visible = False
-            self.update()
-
-    async def _on_load_more(self, e=None):
-        """Load next page."""
-        if self._is_loading or not self._has_more:
-            return
-
-        self._is_loading = True
-        self.loading_ring.visible = True
-        self.load_more_btn.visible = False
-        self.update()
-
-        try:
-            response = await self.api.get("/invoices", params={"cursor": self.cursor, "limit": 50})
-            items = response if isinstance(response, list) else response.get("items", [])
-            self._has_more = len(items) >= 50
-
-            for inv in items:
-                self.list_view.controls.append(self._build_invoice_tile(inv))
-
-            self.load_more_btn.visible = self._has_more
-        except Exception as ex:
-            logger.error(f"Błąd ładowania danych: {ex}")
-        finally:
-            self._is_loading = False
-            self.loading_ring.visible = False
-            self.update()
-
-    def _build_invoice_tile(self, invoice: dict) -> ft.Container:
-        """Build a single invoice tile for the ListView."""
-        status = invoice.get("status", "NEW")
-        status_color = INVOICE_STATUS_COLORS.get(status, ft.colors.GREY)
-        number = invoice.get("number") or "Brak"
-        nip = invoice.get("contractor_nip") or "---"
-        amount = f"{invoice.get('amount_gross', 0.0):.2f} {invoice.get('currency', 'PLN')}"
-        inv_id = invoice.get("id", "")
-
-        return ft.Container(
-            data=inv_id,
-            content=ft.Row(
-                [
-                    ft.Column([
-                        ft.Text(number, size=15, weight=ft.FontWeight.BOLD),
-                        ft.Text(f"NIP: {nip}", size=12, color=ft.colors.GREY_400),
-                    ], expand=True),
-                    ft.Chip(
-                        label=ft.Text(status, size=11, color=ft.colors.WHITE),
-                        bgcolor=status_color,
-                    ),
-                    ft.Text(amount, size=15, weight=ft.FontWeight.BOLD, color=ft.colors.AMBER_300),
-                    ft.IconButton(
-                        icon=ft.icons.VISIBILITY,
-                        tooltip="Zobacz PDF",
-                        on_click=lambda e, iid=inv_id: (
-                            self.page.go(f"/invoices/{iid}")
-                            if self.page
-                            else None
-                        ),
-                    ),
-                ]
-            ),
-            padding=16,
-            border_radius=8,
-            bgcolor=ft.colors.SURFACE_CONTAINER_HIGHEST,
-            ink=True,
-            animate=ft.animation.Animation(200, ft.AnimationCurve.EASE_OUT),
-            on_hover=lambda e: setattr(e.control, "scale", 1.01 if e.data == "true" else 1.0) or e.control.update(),
-        )
+            ft.NumberBadge(text=str(len(visible_items)), size=16,
+                           bgcolor=ft.colors.BLUE_400) if has_results else ft.Container(),
+        ], spacing=8),
+        ft.Container(height=12),
+        ft.Stack([
+            ft.Column([list_view, loading_row], expand=True),
+            empty_state,
+        ], expand=True),
+    ], expand=True)

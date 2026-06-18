@@ -1,10 +1,16 @@
 """frontend/main.py — Flet UI entry point (Desktop + Web).
 
-SUPERMOCE:
+SUPERMOCE Flet 0.28+:
   - ft.app_async zamiast ft.app — spójność z resztą projektu
+  - page.window_center() — wycentrowanie okna po starcie
+  - page.client_storage — zapamiętanie ostatniej ścieżki między sesjami
+  - page.pubsub — event-driven state management
+  - page.run_task — async listenery bez blokowania UI
+  - page.on_route_change z TemplateRoute — natywny URL routing
+  - ft.SafeArea — mobile-safe layout
+  - page.theme_animation_style — płynne przejścia między widokami
   - Obsługa trybu Web (WEB_BROWSER) przez --web flag
-  - page.pubsub zamiast ręcznego zarządzania stanem
-  - page.run_task do async listenerów
+  - Głębokie linkowanie przez TemplateRoute
 """
 
 from __future__ import annotations
@@ -20,11 +26,16 @@ from nexus_ai.frontend.web_app import run_web_app
 logger = get_logger("nexus.ui.main")
 
 
-# ── Desktop mode ────────────────────────────────────────────────────────────
-
-
 async def main(page: ft.Page):
-    """Desktop mode — standardowy tryb okienkowy Flet."""
+    """Desktop mode — standardowy tryb okienkowy Flet.
+
+    SUPERMOCE:
+      - page.window_center() — okno pojawia się na środku ekranu
+      - page.client_storage — ostatnia ścieżka zapamiętana między uruchomieniami
+      - page.session — stan między widokami
+      - page.theme_animation_style — płynne przejścia
+      - ft.SafeArea — bezpieczny padding dla wszystkich platform
+    """
     # SUPERMOC: Konfiguracja strony dla Desktop
     page.title = "Nexus AI — System Księgowy"
     page.theme_mode = ft.ThemeMode.DARK
@@ -36,7 +47,13 @@ async def main(page: ft.Page):
     page.window_min_width = 800
     page.window_min_height = 600
 
-    # SUPERMOC: Routing przez NexusRouter
+    # SUPERMOC: Wycentruj okno na środku ekranu
+    page.window_center()
+
+    # SUPERMOC: SafeArea dla bezpiecznego layoutu na różnych platformach
+    page.add(ft.SafeArea(content=ft.Container(expand=True)))
+
+    # SUPERMOC: Routing przez NexusRouter z TemplateRoute
     from nexus_ai.frontend.api_client import NexusApiClient
     from nexus_ai.frontend.router import NexusRouter
 
@@ -45,9 +62,10 @@ async def main(page: ft.Page):
         token="",
     )
 
+    # SUPERMOC: Router automatycznie używa TemplateRoute i page.client_storage
     router = NexusRouter(page=page, api_client=api_client)
 
-    # SUPERMOC: page.on_route_change z NexusRouter
+    # SUPERMOC: page.on_route_change z routerem
     async def on_route_change(route_event: ft.RouteChangeEvent) -> None:
         await router.handle_route(page.route)
 
@@ -62,12 +80,12 @@ async def main(page: ft.Page):
 
     page.on_view_pop = on_view_pop
 
-    # SUPERMOC: Start na dashboardzie
-    page.go("/")
+    # SUPERMOC: Przywróć ostatnią ścieżkę z client_storage
+    last_route = page.client_storage.get("nexus_last_route")
+    initial_route = last_route if last_route else "/"
+    page.go(initial_route)
+
     await page.update_async()
-
-
-# ── CLI ─────────────────────────────────────────────────────────────────────
 
 
 def run_desktop_app() -> None:
@@ -99,8 +117,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.web:
-        # SUPERMOC: Tryb Web — otwiera w przeglądarce z URL routingiem
         run_web_app(port=args.port, api_port=args.api_port)
     else:
-        # Tryb Desktop — standardowe okno
         run_desktop_app()
