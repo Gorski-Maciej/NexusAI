@@ -25,6 +25,7 @@ Optymalizacja pamięci (audyt mimalloc Faza 2):
 
 from __future__ import annotations
 
+import os
 import fsspec
 from msgspec import Struct, field
 from enum import Enum
@@ -2150,13 +2151,38 @@ def pdf_to_images(pdf_path: Path, dpi: int = 300) -> list[Path]:
 # ── Główna funkcja orkiestrująca ─────────────────────────────────────────
 
 
+# ── TOP5 OPTYMALIZACJA #3: kontrola silników OCR przez zmienną środowiskową ──
+# Domyślnie: Tesseract + PaddleOCR (2 silniki zamiast 4)
+# Ustaw NEXUS_OCR_ENGINES="tesseract,paddleocr,doctr,easyocr" aby włączyć wszystkie
+# Ustaw NEXUS_OCR_ENGINES="tesseract,paddleocr" aby użyć tylko 2 (oszczędność RAM)
+def _parse_ocr_engines() -> dict[str, bool]:
+    """Parsuj zmienną NEXUS_OCR_ENGINES.
+
+    TOP5 OPTYMALIZACJA #3: Redukcja silników OCR z 4 do 2.
+    Domyślnie: Tesseract + PaddleOCR (2 najlepsze silniki).
+    Oszczędność: 0.5-1.5 GB RAM, 0.5 GB dysku.
+    """
+    env = os.environ.get("NEXUS_OCR_ENGINES", "tesseract,paddleocr")
+    engines = [e.strip().lower() for e in env.split(",") if e.strip()]
+
+    return {
+        "tesseract": "tesseract" in engines,
+        "paddleocr": "paddleocr" in engines,
+        "doctr": "doctr" in engines,
+        "easyocr": "easyocr" in engines,
+    }
+
+
+_DEFAULT_OCR_ENGINES = _parse_ocr_engines()
+
+
 async def run_ocr_pipeline(
     file_path: Path,
     *,
-    use_tesseract: bool = True,
-    use_paddle: bool = True,
-    use_doctr: bool = True,
-    use_easyocr: bool = True,
+    use_tesseract: bool | None = None,
+    use_paddle: bool | None = None,
+    use_doctr: bool | None = None,
+    use_easyocr: bool | None = None,
     invoice_id: str | None = None,
     easyocr_gpu: bool = True,
     doctr_det_arch: str = "db_resnet50",
@@ -2164,6 +2190,15 @@ async def run_ocr_pipeline(
     doctr_orientation: bool = True,
     use_opencv_preprocessing: bool = True,
 ) -> dict[str, str | None]:
+    # TOP5 OPTYMALIZACJA #3: użyj NEXUS_OCR_ENGINES jeśli parametry nie są jawnie podane
+    if use_tesseract is None:
+        use_tesseract = _DEFAULT_OCR_ENGINES["tesseract"]
+    if use_paddle is None:
+        use_paddle = _DEFAULT_OCR_ENGINES["paddleocr"]
+    if use_doctr is None:
+        use_doctr = _DEFAULT_OCR_ENGINES["doctr"]
+    if use_easyocr is None:
+        use_easyocr = _DEFAULT_OCR_ENGINES["easyocr"]
     """Run the full OCR pipeline with 4-way consensus and isolated mimalloc heap.
 
     Zgodnie z aa3fvcx.txt: cztery niezależne silniki OCR o fundamentalnie

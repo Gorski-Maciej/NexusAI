@@ -132,7 +132,13 @@ def _build_granian_config() -> dict:
     # ── Workers & threading ─────────────────────────────────────────
     # For Python 3.13t (free-threaded): workers = true parallel threads
     # For standard Python 3.13: workers = separate processes
-    _default_workers = int(os.getenv("NEXUS_GRANIAN_WORKERS", "1"))
+    # TOP5 OPTYMALIZACJA #1: dynamiczna liczba workers = max(1, cpu_count()-1)
+    # Domyślnie: (rdzenie - 1) dla dev, można override przez NEXUS_GRANIAN_WORKERS
+    _env_workers = os.getenv("NEXUS_GRANIAN_WORKERS", "")
+    if _env_workers:
+        _default_workers = int(_env_workers)
+    else:
+        _default_workers = max(1, (os.cpu_count() or 2) - 1)
     config["workers"] = _default_workers
     config["runtime_threads"] = int(
         os.getenv("NEXUS_GRANIAN_RUNTIME_THREADS", "2")

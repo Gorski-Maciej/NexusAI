@@ -201,6 +201,7 @@ dev = [
 ]
 ui = [
     "flet>=0.28.0",
+    "matplotlib>=3.8.0",  # Financial charts via flet.matplotlib_chart.MatplotlibChart
 ]
 
 [project.urls]

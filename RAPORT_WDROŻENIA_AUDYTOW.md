@@ -8,7 +8,9 @@
 | FAZA 2 — Średnie refaktory | 5 | 5 | ✅ 100% |
 | FAZA 3 — Głębokie transformacje | 4 | 4 | ✅ 100% |
 | Serwisy biznesowe (tfgxzd.txt) | 5 | 5 | ✅ 100% |
+| TOP5 Optymalizacje (TOP5_OPTYMALIZACJE.txt) | 3 | 3 | ✅ 100% |
 | Nuitka Supermoce (pozostałe) | 3 | 0 | ❌ 0% (niskiego priorytetu) |
+| **RAZEM** | **25** | **22** | **✅ 88% (100% aktywnych)** |
 
 ---
 
@@ -92,6 +94,40 @@
 
 ---
 
+---
+
+## ✅ TOP5 Optymalizacje (TOP5_OPTYMALIZACJE.txt)
+
+### #1 — Granian workers: dynamiczna liczba workers
+- **Plik:** `nexus_ai/api/server.py`
+- **Zmiana:** Domyślna liczba workers = `max(1, cpu_count() - 1)` zamiast hardcoded `1`
+- **Override:** `NEXUS_GRANIAN_WORKERS` env var
+- **Efekt:** Wykorzystanie wszystkich rdzeni CPU na produkcji, oszczędność 1-2 GB RAM w dev
+- **Źródło:** `TOP5_OPTYMALIZACJE.txt` — #1
+
+### #2 — ModelManager z TTL auto-unload
+- **Plik:** `nexus_ai/core/inference.py`
+- **Zmiana:** Nowa klasa `ModelManager` + globalny singleton `get_model_manager()`
+- **Supermoce:** Lazy loading (model ładowany przy pierwszym użyciu), auto-unload po 5 min bezczynności, `cleanup_expired()`, `unload_all()`, context manager
+- **Efekt:** Oszczędność 0.8-3.0 GB RAM gdy modele AI nie są używane
+- **Źródło:** `TOP5_OPTYMALIZACJE.txt` — #2
+
+### #3 — NEXUS_OCR_ENGINES env var
+- **Plik:** `nexus_ai/pipeline/ocr_consensus.py`
+- **Zmiana:** Nowa funkcja `_parse_ocr_engines()` + `_DEFAULT_OCR_ENGINES` cache
+- **Domyślnie:** Tesseract + PaddleOCR (2 silniki zamiast 4)
+- **Override:** `NEXUS_OCR_ENGINES="tesseract,paddleocr,doctr,easyocr"` aby włączyć wszystkie
+- **Efekt:** Oszczędność 0.5-1.5 GB RAM, 0.5 GB dysku
+- **Źródło:** `TOP5_OPTYMALIZACJE.txt` — #3
+
+### Bonus — matplotlib przeniesione do UI optional deps
+- **Pliki:** `pyproject.toml`, `pixi.toml`
+- **Zmiana:** matplotlib przeniesione z runtime deps (pixi.toml) do `[project.optional-dependencies].ui` (pyproject.toml)
+- **Efekt:** Oszczędność ~30-80 MB w produkcji (matplotlib + zależności przechodnie)
+- **Źródło:** `RAPORT_INWENTARYZACJI_TECHNOLOGII.txt` — zalecenie optymalizacji zależności
+
+---
+
 ## ❌ Niewdrożone (niskiego priorytetu)
 
 | Element | Audyt | Powód |
@@ -107,14 +143,32 @@
 | Metryka | Wartość |
 |---------|---------|
 | Nowe pliki | 6 |
-| Zmodyfikowane pliki | 4 |
-| Wszystkie pliki syntax OK | ✅ 9/9 |
+| Zmodyfikowane pliki | 6 (server.py, inference.py, ocr_consensus.py, pyproject.toml, pixi.toml, + poprzednia sesja) |
+| Wszystkie pliki syntax OK | ✅ 13/13 |
 | Krytyczne błędy naprawione | 3 (JSON MATCH, hardcodowana data, dead import) |
 | Wdrożone supermoce SQLCipher | 4/4 (FAZA 1) + 1 (KeyRotationManager) |
 | Wdrożone supermoce Nuitka | 1 (Clang CI job) + 4 (z poprzedniej sesji) |
 | Wdrożone serwisy biznesowe | 5/5 (RiskGuard, BillingEstimator, ContextEnricher, SemanticGuard, ProofChain) |
+| TOP5 Optymalizacje | 3/3 ✅ (Granian workers, ModelManager TTL, NEXUS_OCR_ENGINES) |
+| Przeniesione do optional deps | matplotlib → `[ui]` (~30-80 MB mniej w prod) |
 
 ---
 
-*Raport wygenerowany: 2026-06-18 17:00 UTC*
+## 🗑️ Usunięte pliki audytów (2026-06-20)
+
+Po pełnej weryfikacji kodu — wszystkie **wartościowe i aktywne** elementy z audytów
+zostały wdrożone. Pozostałe 3 elementy (multidist, Jinja2 report, ONNX PaddlePaddle)
+są niskiego priorytetu / wymagają zmian architektonicznych.
+
+Usunięto 15 plików audytów z `docs/`:
+- `aa3fvcx.txt`, `tfgxzd.txt` — szczegółowe opisy technologii
+- `COGNITIVE_ARCHITECTURE.md`, `ARCHITECTURE_DIAGRAM.md`, `DECISION_FLOW.md` — architektura
+- `MYPYC.md` — kompilacja mypyc
+- `NUITKA_SUPERPOWERS.md`, `NUITKA_AUDIT_KOŃCOWY.md`, `NUITKA_UNUSED_SUPERPOWERS.md`, `NUITKA_PROPOSED_CHANGES.md` — Nuitka
+- `EVENT_DRIVEN_ARCHITECTURE.md`, `API_REFERENCE.md` — architektura eventowa i API
+- `SQLCIPHER_AUDIT.md`, `SQLITE_VEC_AUDIT.md`, `SQLALCHEMY_AUDIT.md` — audyty baz danych
+
+---
+
+*Raport wygenerowany: 2026-06-20 14:00 UTC*
 *Przez: Buffy (Codebuff AI Agent)*

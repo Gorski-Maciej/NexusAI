@@ -138,8 +138,7 @@ numpy = ">=2.0.0"
 sentry-sdk = ">=2.0.0"        # Error tracking SDK
 
 # ── Charting / Visualization ─────────────────────────────────────────────────
-matplotlib = ">=3.8.0"          # Financial charts via flet.matplotlib_chart.MatplotlibChart
-
+# matplotlib przeniesione do [project.optional-dependencies].ui w pyproject.toml
 
 
 # ══════════════════════════════════════════════════════════════════════════════
