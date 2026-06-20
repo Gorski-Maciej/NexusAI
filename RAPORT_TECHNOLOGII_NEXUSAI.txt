@@ -1,0 +1,627 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                  RAPORT INWENTARYZACJI TECHNOLOGII                         ║
+║                         NEXUS AI v2.0.0                                    ║
+║                   Data: 20 czerwca 2026                                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 1. STATYSTYKI OGÓLNE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  • Wszystkie pliki (z wygenerowanymi):  31 481
+  • Pliki źródłowe (bez .git/venv/.pixi):  10 688
+  • Pliki Python (.py):  5 891
+  • Linie kodu Python (nexus_ai/):  102 716
+  • Linie kodu testów (tests/):  27 933
+  • Linie kodu Python ogółem:  ~130 649
+  • Liczba pakietów w uv.lock:  237
+  • Pliki konfiguracyjne TOML:  6
+  • Pliki YAML/YML:  16
+  • Pliki Rust (.rs):  ~4-6
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 2. TECHNOLOGIE WG KATEGORII
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ LEGENDA:
+  [A] = AKTYWNA — technologia aktualnie używana w produkcji
+  [S] = SZCZĄTKOWA — pozostałość/ślad/niewykorzystywana
+  [Z] = ZALEŻNOŚĆ POŚREDNIA — używana przez inną bibliotekę
+  [D] = DEWELOPERSKA — używana tylko w dev/test/build
+
+─── 2.1 JĘZYK I ŚRODOWISKO URZECHOMIENIOWE ─────────────────────────────────
+
+  1. Python ≥3.13 (free-threaded 3.13t)  [A]  — Interpretator bez GIL
+  2. pixi  [A]  — Menedżer środowiska (Rust)
+  3. mise (dawniej rtx)  [A]  — Menedżer wersji + task runner (Rust)
+  4. uv  [A]  — Menedżer pakietów PyPI (Rust)
+  5. hatchling  [A]  — Backend budowania pakietu (PEP 621)
+  6. mypyc  [A]  — Kompilacja typowanego Pythona → C
+  7. Rust (język)  [A]  — Język dla krytycznych modułów
+  8. Nuitka  [A]  — Kompilacja Python → samodzielny .exe
+  9. mimalloc (Microsoft)  [A]  — Alokator pamięci
+  10. hatch-vcs  [A]  — Wtyczka wersjonowania Git dla hatchling
+
+─── 2.2 API / SERWER ASGI ─────────────────────────────────────────────────
+
+  11. Litestar  [A]  — Framework API (ASGI)
+  12. Granian  [A]  — Serwer ASGI w Rust
+  13. anyio  [A]  — Lekka warstwa async (asyncio/trio)
+  14. msgspec  [A]  — Ultraszybka serializacja (JSON/TOML/MessagePack)
+  15. litestar-htmx  [Z]  — Rozszerzenie HTMX dla Litestar
+  16. starlette  [Z]  — Standard ASGI (zależność Litestar)
+  17. httpx  [A]  — Klient HTTP (async)
+  18. httpcore  [Z]  — Rdzeń HTTP (zależność httpx)
+  19. h11  [Z]  — Implementacja HTTP/1.1
+  20. sniffio  [Z]  — Detekcja pętli async
+  21. uvloop  [Z]  — Szybsza pętla asyncio (via Granian extras)
+
+─── 2.3 BAZY DANYCH ───────────────────────────────────────────────────────
+
+  22. SQLite  [A]  — Osadzona baza transakcyjna (OLTP)
+  23. SQLCipher  [A]  — Szyfrowanie bazy SQLite (AES-256)
+  24. sqlmodel  [A]  — ORM 2w1 (SQLAlchemy + Pydantic)
+  25. sqlalchemy  [Z]  — Silnik ORM (zależność SQLModel)
+  26. sqlite-vec  [A]  — Rozszerzenie wektorowe dla SQLite
+  27. alembic  [A]  — Migracje schematu bazy danych
+  28. DuckDB  [A]  — Lokalna hurtownia OLAP
+  29. Polars  [A]  — DataFrame nowej generacji (Rust)
+  30. PyArrow  [A]  — Format danych kolumnowych w pamięci
+  31. aiosqlite  [A]  — Asynchroniczne API dla SQLite
+  32. TigerBeetle  [A]  — Silnik księgowy (double-entry, Zig)
+  33. sortedcontainers  [Z]  — Kontenery sortowane
+  34. lmdb  [Z]  — Memory-mapped key-value store
+  35. alembic  [A]  — Migracje schematu bazy
+
+─── 2.4 WALIDACJA DANYCH I SERIALIZACJA ──────────────────────────────────
+
+  36. msgspec  [A]  — Serializacja + walidacja JSON/TOML/MessagePack
+  37. pydantic  [Z]  — Walidacja (tylko przez SQLModel)
+  38. pydantic-core  [Z]  — Rdzeń Pydantic v2 w Rust
+  39. jsonschema  [Z]  — Walidacja JSON Schema
+  40. jsonschema-rs  [Z]  — Walidacja JSON Schema w Rust
+  41. typing-extensions  [Z]  — Rozszerzenia typów Pythona
+  42. annotated-types  [Z]  — Typy adnotowane
+  43. typing-inspection  [Z]  — Inspekcja typów
+
+─── 2.5 KOLEJKI ZADAŃ I KOMUNIKACJA ──────────────────────────────────────
+
+  44. NATS Server (JetStream)  [A]  — Broker komunikatów (~10 MB)
+  45. nats-py  [A]  — Klient Python dla NATS
+  46. Taskiq  [A]  — Async-native kolejka zadań
+  47. taskiq-nats  [A]  — Broker Taskiq dla NATS JetStream
+  48. taskiq-dependencies  [Z]  — DI dla Taskiq
+  49. msgpack  [Z]  — Format MessagePack
+  50. pyzmq  [S]  — ZeroMQ (pozostałość?)
+  51. websocket-client  [Z]  — Klient WebSocket
+
+─── 2.6 HTTP / SIEC ───────────────────────────────────────────────────────
+
+  52. httpx  [A]  — Klient HTTP (async)
+  53. hishel  [A]  — Inteligentny cache HTTP
+  54. fsspec  [A]  — Abstrakcja systemów plików
+  55. requests  [Z]  — Klient HTTP (sync, zależność)
+  56. urllib3  [Z]  — Rdzeń HTTP (zależność requests)
+  57. certifi  [Z]  — Certyfikaty SSL/TLS
+  58. idna  [Z]  — Internationalized Domain Names
+  59. charset-normalizer  [Z]  — Detekcja kodowania znaków
+  60. multidict  [Z]  — Słownik wielowartościowy
+  61. yarl  [Z]  — URL processing
+  62. frozenlist  [Z]  — Zamrożona lista
+  63. aiosignal  [Z]  — Sygnały async
+  64. propcache  [Z]  — Property cache
+  65. brotli  [Z]  — Kompresja Brotli
+  66. wsproto  [Z]  — Protokół WebSocket
+  67. simple-websocket  [Z]  — WebSocket
+  68. python-engineio  [Z]  — Engine.IO
+  69. python-socketio  [Z]  — Socket.IO
+  70. bidict  [Z]  — Dwukierunkowy słownik
+  71. oauthlib  [Z]  — OAuth (pozostałość?)
+
+─── 2.7 ODPORNOŚĆ NA BŁĘDY ──────────────────────────────────────────────
+
+  72. stamina  [A]  — Retry + Circuit Breaker (async-native)
+  73. tenacity  [S]  — Retry (pozostałość przed migracją na stamina)
+  74. pyrate-limiter  [Z]  — Rate limiter
+
+─── 2.8 KRPYPTOGRAFIA I BEZPIECZEŃSTWO ──────────────────────────────────
+
+  75. nexus-crypto (Rust + PyO3)  [A]  — Własny moduł kryptograficzny
+  76. cryptography  [Z]  — Biblioteka kryptograficzna
+  77. bcrypt  [Z]  — Hashowanie haseł
+  78. PyJWT  [Z]  — JSON Web Tokens
+  79. pynacl  [Z]  — Libsodium bindings (zależność)
+  80. Litestar JWT  [A]  — JWT wbudowany w Litestar
+  81. Litestar CSRF  [A]  — Ochrona CSRF (wbudowana)
+  82. Litestar CORS  [A]  — CORS (wbudowany)
+  83. Litestar Rate Limiting  [A]  — Rate limiting (wbudowany)
+  84. paramiko  [Z]  — SSH (pozostałość?)
+  85. cffi  [Z]  — C Foreign Function Interface
+
+─── 2.9 FINANSE / WALUTY ─────────────────────────────────────────────────
+
+  86. TigerBeetle  [A]  — Silnik księgowy (double-entry)
+  87. nexus-money (msgspec.Struct)  [A]  — Reprezentacja pieniędzy
+  88. tigerbeetle (python client)  [A]  — Klient Python TigerBeetle
+  89. py-moneyed / Money  [S]  — Wzorzec Money (opisany w docs, możliwe że używany)
+  90. pendulum  [A]  — Daty i czas
+  91. python-dateutil  [Z]  — Rozszerzenia dat
+  92. tzdata  [Z]  — Strefy czasowe IANA
+  93. chrono (Rust)  [A]  — Daty/czas po stronie Rust
+  94. rust_decimal (Rust)  [A]  — Decimal w Rust
+  95. forex_engine.py  [A]  — Własny silnik walut
+  96. gus_bir_client.py  [A]  — Klient GUS BIR
+
+─── 2.10 PRZETWARZANIE DOKUMENTÓW / OCR ─────────────────────────────────
+
+  97. lxml  [A]  — Parser XML z walidacją XSD
+  98. xsdata  [A]  — XSD → Python code generation
+  99. Pillow (PIL)  [A]  — Przetwarzanie obrazów
+  100. pypdfium2  [A]  — PDF → image (PDFium engine)
+  101. Tesseract OCR  [A]  — Klasyczny OCR
+  102. Leptonica  [A]  — Przetwarzanie obrazów dla Tesseract
+  103. OpenCV (libopencv)  [A]  — Preprocessing obrazów
+  104. opencv-python  [Z]  — Bindings Python OpenCV
+  105. opencv-python-headless  [Z]  — OpenCV bez GUI
+  106. opencv-contrib-python  [Z]  — OpenCV contrib modules
+  107. PaddlePaddle  [A]  — Deep learning OCR engine
+  108. PaddleOCR  [A]  — Silnik OCR (Baidu)
+  109. python-doctr  [A]  — OCR (DBNet + PARSeq)
+  110. EasyOCR  [A]  — Silnik OCR (CNN + LSTM)
+  111. PyMuPDF / fitz  [A]  — Konwersja PDF → obraz
+  112. fonttools  [Z]  — Narzędzia czcionek
+  113. beautifulsoup4  [Z]  — Parsowanie HTML/XML
+  114. soupsieve  [Z]  — Selektory CSS dla BS4
+  115. defusedxml  [Z]  — Bezpieczne XML
+  116. python-bidi  [Z]  — BiDi text (OCR-related)
+  117. langdetect  [Z]  — Detekcja języka
+  118. python-docx  [Z]  — Parsowanie .docx
+  119. pyclipper  [Z]  — Operacje geometryczne (OCR)
+  120. albumentations  [Z]  — Augmentacje obrazów (OCR)
+  121. albucore  [Z]  — Rdzeń Albumentations
+  122. scikit-image  [Z]  — Przetwarzanie obrazów
+  123. imageio  [Z]  — I/O obrazów
+  124. tifffile  [Z]  — Obsługa TIFF
+  125. shapely  [Z]  — Geometria 2D
+  126. simsimd  [Z]  — SIMD Similarity
+  127. stringzilla  [Z]  — String processing
+  128. lazy-loader  [Z]  — Leniwe ładowanie modułów
+  129. repath  [Z]  — Regex paths
+
+─── 2.11 LOGOWANIE I OBSERWOWALNOŚĆ ─────────────────────────────────────
+
+  130. loguru  [A]  — Silnik logowania
+  131. structlog  [A]  — Ustrukturyzowane logowanie z kontekstem
+  132. OpenTelemetry API  [A]  — Standard telemetrii
+  133. OpenTelemetry SDK  [A]  — Implementacja OTel
+  134. opentelemetry-semantic-conventions  [Z]  — Konwencje semantyczne
+  135. sentry-sdk  [A]  — Śledzenie błędów (opcjonalne)
+  136. rich  [Z]  — Kolorowe formatowanie terminala
+  137. pygments  [Z]  — Kolorowanie składni
+  138. rich-click  [Z]  — Rich dla Click
+  139. termcolor  [Z]  — Kolorowanie terminala
+  140. colorama  [Z]  — ANSI colors (Windows)
+  141. win32-setctime  [Z]  — Ustawianie czasu plików (Windows)
+  142. setproctitle  [Z]  — Ustawianie nazwy procesu
+
+─── 2.12 METRYKI I MONITORING ────────────────────────────────────────────
+
+  143. opentelemetry-exporter-prometheus  [A]  — Eksporter OTel → Prometheus
+  144. prometheus-client  [Z]  — Klient Prometheus
+  145. granian metrics  [A]  — Metryki wbudowane w Granian
+
+─── 2.13 CACHE ────────────────────────────────────────────────────────────
+
+  146. diskcache  [A]  — Cache dyskowy (zastępuje dyscache)
+  147. hishel  [A]  — HTTP cache (inteligentny)
+  148. cache_refresher.py  [A]  — Własny odświeżacz cache
+
+─── 2.14 NARZĘDZIA ───────────────────────────────────────────────────────
+
+  149. pendulum  [A]  — Daty i czas
+  150. psutil  [A]  — Monitorowanie systemu
+  151. numpy  [A]  — Obliczenia numeryczne
+  152. click  [Z]  — CLI framework
+  153. typer  [Z]  — CLI (na bazie Click)
+  154. rich-click  [Z]  — Rich dla Click
+  155. invoke  [Z]  — Task runner
+  156. fire  [Z]  — CLI auto-generator (Google)
+  157. watchfiles  [Z]  — Monitorowanie plików
+  158. watchdog  [Z]  — Monitorowanie plików
+  159. packaging  [Z]  — Wersjonowanie pakietów
+  160. pathspec  [Z]  — Gitignore patterns
+  161. platformdirs  [Z]  — Ścieżki platformy
+  162. shellingham  [Z]  — Detekcja shella
+  163. distlib  [Z]  — Narzędzia dystrybucji
+  164. virtualenv  [Z]  — Środowiska wirtualne
+  165. filelock  [Z]  — Blokady plików
+  166. nodeenv  [Z]  — Środowisko Node.js
+  167. identify  [Z]  — Identyfikacja plików
+  168. cfgv  [Z]  — Walidacja konfiguracji
+  169. configargparse  [Z]  — Parsowanie argumentów
+  170. python-dotenv  [Z]  — .env files
+  171. validators  [Z]  — Walidacja danych
+  172. tqdm  [Z]  — Progress bar
+  173. pycron  [Z]  — Parsowanie cron
+  174. docopt  [Z]  — CLI parser
+  175. six  [Z]  — Kompatybilność Py2/Py3
+  176. markdown-it-py  [Z]  — Parser Markdown
+  177. mdurl  [Z]  — URL processing
+  178. mako  [Z]  — Silnik szablonów
+  179. jinja2  [Z]  — Silnik szablonów
+  180. markupsafe  [Z]  — Bezpieczne znaczniki
+  181. pyyaml  [Z]  — YAML parser
+
+─── 2.15 TESTOWANIE ──────────────────────────────────────────────────────
+
+  182. pytest  [D]  — Framework testowy
+  183. pytest-cov  [D]  — Pokrycie kodu
+  184. pytest-xdist  [D]  — Równoległe testy (-n auto)
+  185. pytest-benchmark  [D]  — Benchmarki wydajności
+  186. pytest-timeout  [D]  — Timeout testów
+  187. pytest-sugar  [D]  — Kolorowe raporty
+  188. pytest-watch  [D]  — Auto-retest przy zmianie
+  189. hypothesis  [D]  — Property-based testing
+  190. hypothesis-graphql  [D]  — Hypothesis dla GraphQL
+  191. hypothesis-jsonschema  [D]  — Hypothesis dla JSON Schema
+  192. crosshair  [D]  — SMT-driven property testing (Z3)
+  193. schemathesis  [D]  — Fuzz testing API
+  194. locust  [D]  — Testy wydajności (Python)
+  195. py-spy  [D]  — Sampling profiler (Rust)
+  196. polyfactory  [D]  — Generowanie danych testowych
+  197. coverage  [Z]  — Pomiar pokrycia
+  198. execnet  [Z]  — Komunikacja międzyprocesowa (xdist)
+  199. py-cpuinfo  [Z]  — CPU info (benchmark)
+  200. faker  [D]  — Generowanie fałszywych danych
+  201. starlette-testclient  [Z]  — Test client dla ASGI
+
+─── 2.16 INTERFEJS DESKTOPOWY ───────────────────────────────────────────
+
+  202. Flet  [A]  — Framework GUI (Flutter/Skia)
+  203. Flet Router  [A]  — Nawigacja w Flet
+  204. matplotlib  [D]  — Wykresy finansowe (opcjonalne UI)
+
+─── 2.17 AI / AGENTY (MÓZG SYSTEMU) ─────────────────────────────────────
+
+  205. llama-cpp-python  [A]  — LLM inference (GGUF)
+  206. huggingface-hub  [A]  — Model Hub
+  207. hf-xet  [Z]  — Transfer danych HuggingFace
+  208. PyTorch (torch)  [Z]  — Framework Deep Learning
+  209. torchvision  [Z]  — Wizja komputerowa (PyTorch)
+  210. safetensors  [Z]  — Bezpieczny format tensorów
+  211. protobuf  [Z]  — Protocol Buffers
+  212. onnx  [Z]  — Open Neural Network Exchange
+  213. opt-einsum  [Z]  — Optymalizacja einsum
+  214. sympy  [Z]  — Matematyka symboliczna (dla torch)
+  215. triton  [Z]  — JIT compiler NVIDIA
+  216. nvidia-cuda-runtime-cu12  [Z]  — CUDA runtime
+  217. nvidia-cublas-cu12  [Z]  — CUDA BLAS
+  218. nvidia-cudnn-cu12  [Z]  — CUDA Deep Neural Network
+  219. nvidia-cuda-nvrtc-cu12  [Z]  — CUDA NVRTC
+  220. nvidia-cuda-cupti-cu12  [Z]  — CUDA Profiling
+  221. nvidia-cufft-cu12  [Z]  — CUDA FFT
+  222. nvidia-curand-cu12  [Z]  — CUDA Random
+  223. nvidia-cusolver-cu12  [Z]  — CUDA Solver
+  224. nvidia-cusparse-cu12  [Z]  — CUDA Sparse
+  225. nvidia-cusparselt-cu12  [Z]  — CUDA Sparse LTO
+  226. nvidia-nccl-cu12  [Z]  — NCCL
+  227. nvidia-nvjitlink-cu12  [Z]  — JIT Link
+  228. nvidia-nvtx-cu12  [Z]  — NVIDIA Tools
+  229. nvidia-nvshmem-cu12  [Z]  — NVIDIA Shared Memory
+  230. nvidia-cufile-cu12  [Z]  — CUDA File
+  231. models GGUF (Qwen3, Granite, Jamba, LittleLamb)  [A]  — Modele AI
+
+─── 2.18 INFRASTRUKTURA / DEVOPS ────────────────────────────────────────
+
+  232. GitHub Actions  [A]  — CI/CD
+  233. pre-commit  [D]  — Hooki git przed commitem
+  234. ruff-pre-commit  [D]  — Hook Ruff dla pre-commit
+  235. ninja  [Z]  — Build system
+  236. setuptools  [Z]  — Build backend (zależność)
+  237. cython  [Z]  — Cython compiler
+
+─── 2.19 SERWISY ZEWNĘTRZNE (API) ────────────────────────────────────────
+
+  238. NBP API (kursy walut)  [A]  — Narodowy Bank Polski
+  239. GUS BIR API  [A]  — Główny Urząd Statystyczny
+  240. Biała Lista MF API  [A]  — Ministerstwo Finansów
+  241. KSeF (Krajowy System e-Faktur)  [A]  — MF (przygotowanie)
+  242. Sentry  [D]  — Śledzenie błędów (opcjonalne)
+
+─── 2.20 SILNIK REGUŁ PODATKOWYCH (TAX ENGINE) ──────────────────────────
+
+  243. Silnik Reguł (rules_engine.py)  [A]  — Deterministiczny silnik reguł
+  244. Repozytorium Reguł (rule_store.py)  [A]  — Przechowywanie reguł w SQLite
+  245. Interpreter Kontekstu (context_interpreter.py)  [A]  — Mapowanie danych
+  246. Maszyna Ewaluacyjna  [A]  — First-match wins
+  247. Menedżer Temporalny (temporal_manager.py)  [A]  — Temporalność reguł
+  248. System Priorytetów (priority_engine.py)  [A]  — Sortowanie reguł
+  249. Fallback Handler (fallback_handler.py)  [A]  — Obsługa błędów NO_MATCH
+  250. TaxMathEngine  [A]  — Matematyka na groszach (Decimal)
+  251. TaxInvariantGuard  [A]  — 3 niezmienniki matematyczne
+  252. RoundingPolicy  [A]  — Polityka zaokrągleń HALF_UP
+  253. PreLedgerValidator  [A]  — Walidacja przed księgą
+
+─── 2.21 SYSTEM KSIĘGOWY ────────────────────────────────────────────────
+
+  254. Double-Entry Validator (TigerBeetle)  [A]  — Podwójny zapis
+  255. Proof Chain (proof_chain.py)  [A]  — Łańcuch audytowy SHA-256
+  256. Decision Logger (decision_logger.py)  [A]  — Rejestrator decyzji
+  257. Integrity Verifier (integrity_verifier.py)  [A]  — Weryfikator integralności
+  258. Shadow Ledger (tax_simulator.py)  [A]  — Symulacje podatkowe
+  259. Outbox Pattern (outbox_relay.py)  [A]  — Niezawodne publikowanie
+  260. Outbox Replay (outbox_replay.py)  [A]  — Ponawianie zdarzeń
+  261. Dead Letter Queue  [A]  — Kolejka martwych listów
+  262. Sage Engine  [A]  — Orchestracja transakcji rozproszonych
+  263. Audit Logger (audit_logger.py)  [A]  — Log audytowy
+
+─── 2.22 BUDOWA I KOMPILACJA ────────────────────────────────────────────
+
+  264. Maturin  [A]  — Build Rust → Python wheel
+  265. Nuitka  [A]  — Kompilacja .exe
+  266. mypyc  [A]  — Kompilacja → C extension
+  267. hatchling  [A]  — Build backend
+  268. cmake  [D]  — Kompilacja C++ (llama-cpp)
+
+─── 2.23 JAKOŚĆ KODU ─────────────────────────────────────────────────────
+
+  269. ruff  [D]  — Linter + formatter
+  270. mypy  [D]  — Type checker
+  271. pre-commit  [D]  — Hooki git
+  272. semgrep  [D]  — SAST security scanning
+
+─── 2.24 NARZĘDZIA SYSTEMOWE (System Dependencies) ──────────────────────
+
+  273. libxml2  [A]  — Parser XML (systemowy)
+  274. libxslt  [A]  — XSLT (systemowy)
+  275. pkg-config  [A]  — Wykrywanie bibliotek systemowych
+  276. cmake  [D]  — Kompilacja
+
+─── 2.25 POZOSTAŁE ZALEŻNOŚCI RUST (nexus-crypto Cargo.toml) ──────────
+
+  277. pyo3 (0.22)  [A]  — Python ↔ Rust bridge
+  278. pyo3-log  [Z]  — Logowanie PyO3
+  279. chacha20poly1305  [A]  — Szyfrowanie AEAD
+  280. argon2  [A]  — Hashowanie haseł
+  281. sha2  [A]  — SHA-256
+  282. blake2  [A]  — BLAKE2 hashing
+  283. hmac  [A]  — HMAC
+  284. rand (0.9)  [A]  — Liczby losowe
+  285. zeroize  [A]  — Zerowanie pamięci
+  286. serde  [Z]  — Serializacja w Rust
+  287. serde_json  [Z]  — JSON w Rust
+  288. base64  [Z]  — Base64
+  289. quick-xml  [A]  — Szybki parser XML (Rust)
+  290. chrono  [Z]  — Daty/czas (Rust)
+  291. uuid  [Z]  — UUID generation
+  292. jsonwebtoken  [Z]  — JWT w Rust
+  293. rayon  [A]  — Równoległość w Rust
+  294. libc  [Z]  — Bindings libc
+  295. mimalloc (Rust)  [A]  — Alokator pamięci (tryb secure)
+  296. thiserror  [Z]  — Error handling (Rust)
+  297. hex  [Z]  — Hex encoding
+  298. criterion  [D]  — Benchmarking (Rust)
+
+─── 2.26 PLIKI KONFIGURACYJNE ───────────────────────────────────────────
+
+  299. pyproject.toml  [A]  — Główna konfiguracja projektu
+  300. pixi.toml  [A]  — Środowisko pixi
+  301. mise.toml  [A]  — Task runner + tools
+  302. mise.prod.toml  [A]  — Konfiguracja produkcyjna
+  303. mise.local.toml  [S]  — Lokalne nadpisania
+  304. uv.lock  [A]  — Lockfile zależności
+  305. pixi.lock  [A]  — Lockfile pixi
+  306. user.nuitka-package-config.yml  [A]  — Konfiguracja Nuitka
+  307. pre-commit-config.yaml  [A]  — Hooki git
+  308. .gitignore  [A]  — Ignorowanie plików
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 3. LISTA WSZYSTKICH BIBLIOTEK I ZALEŻNOŚCI (PAKIETY PYTHON Z uv.lock)
+    (237 pakietów + własne)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ aiohappyeyeballs     aiohttp              aiosignal            albucore
+ albumentations       alembic              annotated-doc        annotated-types
+ anyascii             anyio                ast-serialize        attrs
+ bcrypt               beautifulsoup4       bidict               blinker
+ brotli               certifi              cffi                 cfgv
+ charset-normalizer   click                colorama             configargparse
+ coverage             crosshair            cryptography         cuda-bindings
+ cuda-pathfinder      cython               defusedxml           diskcache
+ distlib              docopt               duckdb               easyocr
+ execnet              faker                filelock             fire
+ flask                flask-cors           flask-login          flet
+ fonttools            frozenlist           fsspec               gevent
+ geventhttpclient     granian              graphql-core         greenlet
+ h11                  h5py                 harfile              hf-xet
+ hishel               httpcore             httpx                huggingface-hub
+ hypothesis           hypothesis-graphql   hypothesis-jsonschema  identify
+ idna                 imageio              iniconfig            invoke
+ itsdangerous         jinja2               jsonschema           jsonschema-rs
+ jsonschema-specifications  junit-xml      langdetect           lazy-loader
+ librt                litestar             litestar-htmx        llama-cpp-python
+ lmdb                 locust               loguru               lxml
+ mako                 markdown-it-py       markupsafe           mdurl
+ ml-dtypes            mpmath               msgpack              msgspec
+ multidict            multipart            mypy                 mypy-extensions
+ nats-py              networkx             nexus-ai             nexus-crypto
+ ninja                nodeenv              numpy                nvidia-cublas-cu12
+ nvidia-cuda-cupti-cu12  nvidia-cuda-nvrtc-cu12  nvidia-cuda-runtime-cu12
+ nvidia-cudnn-cu12    nvidia-cufft-cu12    nvidia-cufile-cu12   nvidia-curand-cu12
+ nvidia-cusolver-cu12 nvidia-cusparse-cu12 nvidia-cusparselt-cu12  nvidia-nccl-cu12
+ nvidia-nvjitlink-cu12  nvidia-nvshmem-cu12  nvidia-nvtx-cu12   oauthlib
+ onnx                 opencv-contrib-python  opencv-python      opencv-python-headless
+ opentelemetry-api    opentelemetry-exporter-prometheus  opentelemetry-sdk
+ opentelemetry-semantic-conventions  opt-einsum  packaging       paddleocr
+ paddlepaddle         paramiko             pathspec             pendulum
+ pillow               platformdirs         pluggy               polars
+ polars-runtime-32    polyfactory          pre-commit           prometheus-client
+ propcache            protobuf             psutil               py-cpuinfo
+ py-spy               pyarrow              pyclipper            pycparser
+ pycron               pydantic             pydantic-core        pygments
+ pyjwt                pynacl               pypdfium2            pyrate-limiter
+ pytest               pytest-benchmark     pytest-cov           pytest-sugar
+ pytest-timeout       pytest-watch         pytest-xdist         python-bidi
+ python-dateutil      python-discovery     python-doctr         python-docx
+ python-dotenv        python-engineio      python-socketio      pywin32
+ pyyaml               pyzmq                rapidfuzz            referencing
+ repath               requests             rich                 rich-click
+ rpds-py              ruff                 safetensors          schemathesis
+ scikit-image         scipy                sentry-sdk           setproctitle
+ setuptools           shapely              shellingham          simple-websocket
+ simsimd              six                  sniffio              sortedcontainers
+ soupsieve            sqlalchemy           sqlite-vec           sqlmodel
+ stamina              starlette            starlette-testclient stringzilla
+ structlog            sympy                taskiq               taskiq-dependencies
+ taskiq-nats          tenacity             termcolor            tifffile
+ tigerbeetle          torch                torchvision          tqdm
+ triton               typer                typing-extensions    typing-inspection
+ tzdata               urllib3              uvloop               validators
+ virtualenv           watchdog             watchfiles           websocket-client
+ werkzeug             win32-setctime       wsproto              xsdata
+ yarl                 zope-event           zope-interface
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 4. ZALEŻNOŚCI SYSTEMOWE (conda-forge / pixi)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  • python = "3.13.* *_cp313t"     [A]  — Free-threaded Python 3.13t
+  • tesseract >=5.3.0               [A]  — Silnik OCR
+  • leptonica >=1.84.0              [A]  — Przetwarzanie obrazów Tesseract
+  • libopencv >=4.9.0               [A]  — OpenCV biblioteka systemowa
+  • libxml2 >=2.12.0                [A]  — Parser XML
+  • libxslt >=1.1.39                [A]  — XSLT
+  • pkg-config >=0.29.2             [A]  — Wykrywanie bibliotek
+  • mimalloc >=2.1.0                [A]  — Alokator pamięci
+  • rust >=1.78.0                   [A]  — Rust toolchain
+  • cmake >=3.28.0                  [D]  — Kompilacja C++ (dev)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 5. NARZĘDZIA ZEWNĘTRZNE (mise.toml)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  • python = "3.13"                [A]  — Python interpreter
+  • rust = "latest"                 [A]  — Rust toolchain
+  • nats-server = "2.10"            [A]  — NATS JetStream broker
+  • tigerbeetle = "0.16"            [A]  — TigerBeetle ledger
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 6. MODUŁY WŁASNE (NexusAI Codebase)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  • nexus-crypto (Rust + PyO3)     [A]  — Kryptografia (AEAD, Argon2id, SHA-256)
+  • nexus-money (msgspec.Struct)    [A]  — Reprezentacja pieniędzy
+  • nexus-forex (Rust + PyO3)      [A]  — Silnik walutowy
+  • nexus-api (server.py)           [A]  — Serwer API Granian + Litestar
+  • nexus-worker (worker.py)        [A]  — Worker Taskiq
+  • nexus-desktop (luz/main.py)     [A]  — Interfejs Flet
+  • nexus-cli (scripts/nexus_cli.py)[A]  — CLI zarządzania
+  • nexus-build (build/hooks.py)    [A]  — Unified build CLI
+  • Proof Chain (proof_chain.py)    [A]  — Łańcuch audytowy SHA-256
+  • TaxMathEngine (tax/)*           [A]  — Matematyka podatkowa
+  • TaxInvariantGuard (tax/)*       [A]  — Weryfikacja 3 niezmienników
+  • Rules Engine (services/)        [A]  — Silnik reguł podatkowych
+  • PreLedgerValidator (services/)  [A]  — Walidacja przedksięgowa
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 7. STRUKTURA KODU ŹRÓDŁOWEGO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ nexus_ai/
+ ├── __init__.py                    — Pakiet główny
+ ├── main.py                        — Centralny entry point
+ ├── api/                           — Warstwa API (Litestar)
+ │   ├── app.py                     — Fabryka aplikacji
+ │   ├── server.py                  — Serwer Granian
+ │   ├── security.py                — JWT authentication
+ │   ├── middleware.py              — HTTP middleware
+ │   ├── dependencies.py            — DI providers
+ │   ├── state.py                   — Lifecycle (start/shutdown)
+ │   ├── locales/                   — i18n (pl.json, en.json)
+ │   └── routes/                    — Kontrolery API
+ ├── core/                          — Moduły współdzielone
+ │   ├── config.py                  — Konfiguracja (TOML via msgspec)
+ │   ├── broker.py                  — NATS Taskiq broker
+ │   ├── tasks.py                   — Zadania tła
+ │   ├── secrets.py                 — Menedżer sekretów
+ │   ├── crypto.py                  — Szyfrowanie (nexus-crypto)
+ │   ├── logger.py                  — Loguru + structlog
+ │   ├── bus.py                     — Event bus (in-process)
+ │   ├── saga.py                    — Persisted saga store
+ │   ├── msgspec_utils.py           — Pomocnicy msgspec
+ │   └── prompts/                   — Szablony promptów AI
+ ├── services/                      — Logika biznesowa (75+ plików)
+ │   ├── rules_engine.py            — Silnik reguł podatkowych
+ │   ├── analytics_service.py       — Analityka
+ │   ├── fraud_graph_scanner.py     — Wykrywanie fraudów
+ │   ├── currency_converter.py      — Konwersja walut
+ │   ├── tax_strategies.py          — Strategie podatkowe
+ │   ├── proof_chain.py             — Łańcuch audytowy
+ │   ├── risk_guard.py              — Strażnik ryzyka
+ │   ├── semantic_guard.py          — Wykrywacz anomalii
+ │   ├── tigerbeetle/               — Klient TigerBeetle
+ │   ├── vision/                    — Agent wizyjny
+ │   └── ...                        — 70+ pozostałych serwisów
+ ├── db/                            — Warstwa danych
+ │   ├── database.py                — SQLModel engine
+ │   ├── models.py                  — ORM modele
+ │   ├── analytics.py               — DuckDB manager
+ │   ├── outbox.py                  — Outbox pattern
+ │   ├── views.py                   — Widoki analityczne
+ │   ├── vector_store.py            — sqlite-vec
+ │   ├── fts.py                     — Full-text search
+ │   └── migrations/                — Skrypty migracji Alembic
+ ├── pipeline/                      — Pipeline OCR
+ │   └── ocr_consensus.py           — Silnik konsensusu OCR
+ ├── tax/                           — Matematyka podatkowa
+ ├── roboton_reflekton/             — Silnik księgowy
+ ├── luz/                           — Aplikacja desktopowa (Flet)
+ │   ├── main.py                    — UI orchestrator
+ │   └── worker.py                  — Taskiq worker
+ ├── frontend/                      — Komponenty Flet UI
+ │   ├── ui.py
+ │   └── router.py
+ ├── build/                         — Build hooks
+ │   └── hooks.py                   — Nuitka/Maturin hooks
+ ├── scripts/                       — Skrypty narzędziowe
+ │   ├── download_models.py         — Pobieranie modeli AI
+ │   ├── doctor.py                  — Diagnostyka systemu
+ │   ├── bootstrap.py               — Inicjalizacja środowiska
+ │   ├── nexus_cli.py               — CLI zarządzania
+ │   └── ...                        — 15+ skryptów
+ ├── events/                        — Eventy systemowe
+ ├── architecture/                   — Dokumentacja architektury
+ ├── config/                        — Profile konfiguracyjne
+ ├── installer/                     — Instalator Windows
+ ├── rust/                          — Moduł Rust (nexus-crypto)
+ │   ├── Cargo.toml
+ │   ├── pyproject.toml
+ │   └── src/lib.rs
+ └── tests/                         — Testy (80+ plików testowych)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 8. RZECZYWISTY STAN TECHNOLOGII (WERYFIKACJA)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ TECHNOLOGIE AKTYWNE [A]:  ~200
+ TECHNOLOGIE SZCZĄTKOWE [S]:  ~4  (tenacity, pyzmq, py-moneyed?, oauthlib)
+ ZALEŻNOŚCI POŚREDNIE [Z]:  ~90+  (przez biblioteki)
+ TECHNOLOGIE DEWELOPERSKIE [D]:  ~30
+ ŁĄCZNIE UNIKALNYCH TECHNOLOGII:  ~308+
+
+ UWAGA: Liczba 31 481 plików ogółem wynika z plików wygenerowanych
+ (target/, .pixi/, node_modules/, __pycache__/, venv/, itp.)
+ Rzeczywista liczba plików źródłowych to ~10 688.
+ Liczba plików Python (.py) to 5 891, z czego ~102 716 linii kodu
+ to kod produkcyjny (nexus_ai/), a ~27 933 to testy (tests/).
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                     KONIEC RAPORTU
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
