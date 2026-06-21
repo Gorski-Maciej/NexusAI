@@ -7,9 +7,8 @@ SUPERMOC fsspec:
 - ``fsspec.implementations.memory.MemoryFileSystem`` dla backupów do RAM
 - ``fsspec.transaction.TransactionalFileSystem`` dla atomowych backupów
 
-Python 3.13t (free-threaded): używamy natywnego ``sqlite3.backup()``
-zamiast ``aiosqlite.backup()``. Operacje są delegowane do wątków przez
-``anyio.to_thread.run_sync()``.
+Python 3.13t (free-threaded): używamy natywnego ``sqlite3.backup()``.
+Operacje są delegowane do wątków przez ``anyio.to_thread.run_sync()``.
 
 Usage:
     backup = AsyncBackup(config=app_config)

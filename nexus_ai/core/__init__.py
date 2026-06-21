@@ -3,7 +3,7 @@
 
 Nowy stack (zgodny z aa3fvcx.txt):
 - nexus-crypto zamiast cryptography (AEAD ChaCha20-Poly1305 + Argon2id)
-- stamina zamiast tenacity + pybreaker (async-native retry + CB)
+- stamina (async-native retry + circuit breaker)
 - msgspec zamiast pydantic-settings + python-dotenv + json
 """
 

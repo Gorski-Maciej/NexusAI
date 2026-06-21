@@ -273,12 +273,7 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     "sqlmodel",
     "sqlmodel.sql",
     "sqlmodel.sql.expression",
-    # Alembic
-    "alembic",
-    "alembic.command",
-    "alembic.config",
-    "alembic.runtime",
-    "alembic.runtime.migration",
+    # Alembic removed — replaced by native migrations/ (NOT mocked, it's our code)
     # Arrow
     "pyarrow",
 ]

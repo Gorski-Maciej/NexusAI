@@ -13,37 +13,34 @@ def _quote_ident(identifier: str) -> str:
     return '"' + identifier.replace('"', '""') + '"'
 
 
-def get_current_alembic_revision(engine: Engine) -> str | None:
-    """SUPERMOC: Pobierz aktualną rewizję Alembic z bazy.
+def get_current_migration_version(db_path: str | Path) -> str | None:
+    """Pobierz aktualną wersję migracji z bazy.
 
-    Używa MigrationContext do odczytu wersji schematu.
-    Zwraca None jeśli baza nie ma jeszcze rewizji (fresh database).
+    Zwraca nazwę pliku ostatniej zastosowanej migracji,
+    lub None jeśli baza nie ma jeszcze migracji (fresh database).
     """
     try:
-        from alembic.runtime.migration import MigrationContext
-
-        with engine.connect() as conn:
-            context = MigrationContext.configure(conn)
-            return context.get_current_revision()
+        from migrations.run_migrations import get_current_version
+        return get_current_version(db_path)
     except Exception:
         return None
 
 
-def run_migration_sanity_checks(engine: Engine) -> dict[str, int | str | None]:
+def run_migration_sanity_checks(engine: Engine, db_path: str | Path | None = None) -> dict[str, int | str | None]:
     """
     Lightweight post-migration sanity checks.
     Returns key counters useful for alerting / observability.
-
-    SUPERMOC: Includes Alembic revision in the result for traceability.
     """
-    alembic_revision = get_current_alembic_revision(engine)
+    migration_version = None
+    if db_path is not None:
+        migration_version = get_current_migration_version(db_path)
 
     with engine.connect() as conn:
         invoices_count = int(conn.execute(text("SELECT COUNT(*) FROM invoices")).scalar_one())
         outbox_count = int(conn.execute(text("SELECT COUNT(*) FROM outbox_events")).scalar_one())
         users_count = int(conn.execute(text("SELECT COUNT(*) FROM users")).scalar_one())
     return {
-        "alembic_revision": alembic_revision,
+        "migration_version": migration_version,
         "invoices_count": invoices_count,
         "outbox_count": outbox_count,
         "users_count": users_count,

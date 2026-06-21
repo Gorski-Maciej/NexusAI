@@ -119,7 +119,7 @@ async def step_check_dependencies(config: Any) -> StepResult:
         ("litestar", "litestar"),
         ("granian", "granian"),
         ("sqlmodel", "sqlmodel"),
-        ("alembic", "alembic"),
+        # alembic removed — replaced by migrations/run_migrations.py
         ("taskiq", "taskiq"),
         ("duckdb", "duckdb"),
         ("msgspec", "msgspec"),
@@ -188,41 +188,27 @@ async def step_run_migrations(config: Any) -> StepResult:
     start = time.perf_counter()
     name = "Run database migrations"
     try:
-        from alembic import command
-        from nexus_ai.core.alembic_utils import get_alembic_config
+        from migrations.run_migrations import run_migrations
 
-        alembic_cfg = get_alembic_config()
-        if alembic_cfg is None:
-            return StepResult(
-                name=name, status="warning",
-                message="pyproject.toml [tool.alembic] not found, creating tables directly",
-                duration_ms=(time.perf_counter() - start) * 1000,
-            )
-        command.upgrade(alembic_cfg, "head")
-        logger.info("[BOOTSTRAP] All migrations applied (or already at head)")
+        result = run_migrations(
+            db_path=config.sqlite_path if hasattr(config, "sqlite_path") else "app_data/nexus.db",
+        )
+        logger.info(
+            "[BOOTSTRAP] All migrations applied: %d files",
+            len(result["applied"]),
+        )
         return StepResult(
             name=name, status="ok",
-            message="All migrations applied (config from pyproject.toml [tool.alembic])",
+            message=f"{len(result['applied'])} migrations applied, {len(result['skipped'])} skipped",
             duration_ms=(time.perf_counter() - start) * 1000,
         )
     except ImportError:
-        logger.warning("  Alembic not installed, creating tables via SQLAlchemy...")
-        try:
-            from db.database import create_oltp_engine, init_schema
-            engine = create_oltp_engine(config)
-            await init_schema(engine)
-            await engine.dispose()
-            return StepResult(
-                name=name, status="ok",
-                message="Schema created via init_schema()",
-                duration_ms=(time.perf_counter() - start) * 1000,
-            )
-        except Exception as exc:
-            return StepResult(
-                name=name, status="error",
-                message=f"Schema creation failed: {exc}",
-                duration_ms=(time.perf_counter() - start) * 1000,
-            )
+        logger.warning("  Migration runner not available, creating tables via SQLAlchemy...")
+        return StepResult(
+            name=name, status="warning",
+            message="migrations package not found — schema may be incomplete",
+            duration_ms=(time.perf_counter() - start) * 1000,
+        )
     except Exception as exc:
         return StepResult(
             name=name, status="error",

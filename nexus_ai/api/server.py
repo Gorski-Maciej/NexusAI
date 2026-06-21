@@ -11,7 +11,7 @@ Full Granian superpower activation:
   - Worker respawn, max RSS, lifetime management
   - Proxy headers via granian.utils.proxies
   - Static file serving in Rust (zero Python overhead)
-  - Custom event loop with uvloop (Linux/macOS)
+  - Custom event loop (Granian Rust-based loop by default)
   - Custom access log format
   - Graceful shutdown with configurable timeout
 """
@@ -19,7 +19,6 @@ Full Granian superpower activation:
 from __future__ import annotations
 
 import os
-import sys
 
 import granian
 from granian.constants import Interfaces
@@ -27,16 +26,9 @@ from granian.constants import Interfaces
 from nexus_ai.api.app import create_app
 
 # ── Event loop customization ────────────────────────────────────────────────
-# Use uvloop on Linux/macOS (20-40% better async I/O throughput)
-# Fallback to asyncio selector loop on Windows
-# Set via env var: NEXUS_GRANIAN_LOOP=uvloop|asyncio|auto|rloop|winloop
+# Granian uses its own Rust-based event loop by default for best performance.
+# The loop can be configured via env var: NEXUS_GRANIAN_LOOP=asyncio|auto|rloop|winloop
 _LOOP: str = "auto"
-if sys.platform != "win32":
-    try:
-        import uvloop  # noqa: F401
-        _LOOP = "uvloop"
-    except ImportError:
-        pass
 
 # ── Static file serving via Granian Rust layer ──────────────────────────────
 # Offloads static file serving to Rust, bypassing Python entirely (~10-100x speedup).
@@ -152,8 +144,8 @@ def _build_granian_config() -> dict:
     config["runtime_mode"] = os.getenv("NEXUS_GRANIAN_RUNTIME_MODE", "auto")
 
     # ── Event loop ──────────────────────────────────────────────────
-    # Options: auto, asyncio, uvloop, rloop, winloop
-    # uvloop ~20-40% better async I/O throughput on Linux/macOS
+    # Options: auto, asyncio, rloop, winloop
+    # Granian defaults to its Rust-based event loop for best performance
     config["loop"] = os.getenv("NEXUS_GRANIAN_LOOP", _LOOP)
 
     # ── Access log with custom format ────────────────────────────────

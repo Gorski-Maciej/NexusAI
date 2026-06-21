@@ -2,8 +2,7 @@
 """Async-native resilience — retry + circuit breaker via stamina.
 
 Zgodnie z aa3fvcx.txt:
-- stamina zastępuje tenacity + pybreaker
-- Async-native, zbudowany na anyio (ta sama warstwa co Litestar + Granian)
+- stamina jest async-native, zbudowany na anyio (ta sama warstwa co Litestar + Granian)
 - Wbudowany Circuit Breaker — po serii błędów odcina dostęp na określony czas
 - Wykładnicze opóźnienia z jitterem
 """
@@ -29,8 +28,7 @@ def async_retry(
 ) -> Callable[[F], F]:
     """Async-native retry + circuit breaker decorator using stamina.
 
-    Zastępuje: @tenacity.retry + pybreaker.CircuitBreaker
-    Nowy:     @stamina.retry (wbudowany circuit breaker)
+    Używa: @stamina.retry (wbudowany circuit breaker)
 
     SUPERMOC:
       - circuit_breaker=True — włącza wbudowany Circuit Breaker

@@ -204,9 +204,9 @@ def _configure_ml_cache_directories(base_dir: Path) -> dict[str, str]:
 
 
 async def _seed_data(engine, config: AppConfig) -> None:
-    """Seed data after Alembic migrations have created all tables.
+    """Seed data after native SQL migrations have created all tables.
 
-    All tables and columns are created by Alembic migrations (0001-0003).
+    All tables and columns are created by native SQL migrations (001-004).
     This function only seeds runtime data:
     - RBAC: roles, permissions, admin user, mappings (via seed_rbac)
     """
@@ -246,7 +246,7 @@ def make_on_startup(engine, session_factory):
           0. Config + ML cache + pendulum locale
           1. Metryki OTel (sync + background task)
           2. Database engine + core services (pre-created przez SQLAlchemyPlugin)
-          3. Alembic migrations + seed danych
+          3. Native SQLite migrations + seed danych
           4. Broker, DuckDB warm-up, auto-seed
           5. OutboxRelay, HotReloadListener
 
@@ -310,41 +310,42 @@ def make_on_startup(engine, session_factory):
             if config.environment in {"stage", "prod"}:
                 raise
 
-        # ── Phase 3: Alembic migrations + seed data ──────────────────
+        # ── Phase 3: Native SQLite migrations + seed data ──────────────
         if engine is not None:
             try:
-                from alembic import command
-                from alembic.runtime.migration import MigrationContext
-                from nexus_ai.core.alembic_utils import get_alembic_config
+                from migrations.run_migrations import (
+                    get_current_version,
+                    run_migrations,
+                )
 
-                alembic_cfg = get_alembic_config()
-                if alembic_cfg is not None:
-                    # SUPERMOC: Sprawdź najpierw czy migracje są potrzebne
-                    from alembic.script import ScriptDirectory
+                db_path = str(config.sqlite_path)
+                sqlcipher_key = os.getenv(config.sqlcipher_key_env, "").strip() or None
 
-                    script = ScriptDirectory.from_config(alembic_cfg)
-                    head_rev = script.get_current_head()
+                # Sprawdź czy migracje są potrzebne
+                current_ver = get_current_version(db_path)
+                latest_file = "004_supermoces.sql"
 
-                    with engine.connect() as conn:
-                        mctx = MigrationContext.configure(conn)
-                        current_rev = mctx.get_current_revision()
-
-                    if current_rev != head_rev:
-                        logger.info(
-                            "[STARTUP] Alembic migration needed: %s -> %s",
-                            current_rev or "(fresh DB)",
-                            head_rev,
-                        )
-                        command.upgrade(alembic_cfg, "head")
-                        logger.info("[STARTUP] Alembic migrations applied (head)")
-                    else:
-                        logger.info(
-                            "[STARTUP] Alembic already at head (%s)", current_rev
-                        )
+                if current_ver is None or current_ver < latest_file:
+                    logger.info(
+                        "[STARTUP] Migration needed: %s -> %s",
+                        current_ver or "(fresh DB)",
+                        latest_file,
+                    )
+                    result = run_migrations(
+                        db_path=db_path,
+                        sqlcipher_key=sqlcipher_key,
+                    )
+                    logger.info(
+                        "[STARTUP] Native migrations applied: %d files",
+                        len(result["applied"]),
+                    )
                 else:
-                    logger.warning("[STARTUP] Alembic config not found — skipping migrations")
+                    logger.info(
+                        "[STARTUP] Database already at latest version (%s)",
+                        current_ver,
+                    )
             except Exception as exc:
-                logger.critical("[STARTUP] Alembic migrations FAILED: %s", exc)
+                logger.critical("[STARTUP] Native migrations FAILED: %s", exc)
                 if config.environment in {"stage", "prod"}:
                     raise
 
@@ -356,10 +357,22 @@ def make_on_startup(engine, session_factory):
                     raise
 
             try:
-                sanity = await run_migration_sanity_checks(engine)
-                integrity = await verify_migration_integrity(engine, config.migration_baseline_path)
-                checksums = await verify_migration_checksums(
-                    engine, config.migration_checksum_baseline_path
+                # run_migration_sanity_checks and related functions are sync
+                # Wrap in anyio.to_thread.run_sync for free-threaded safety
+                sanity = await anyio.to_thread.run_sync(
+                    run_migration_sanity_checks,
+                    engine,
+                    str(config.sqlite_path),
+                )
+                integrity = await anyio.to_thread.run_sync(
+                    verify_migration_integrity,
+                    engine,
+                    config.migration_baseline_path,
+                )
+                checksums = await anyio.to_thread.run_sync(
+                    verify_migration_checksums,
+                    engine,
+                    config.migration_checksum_baseline_path,
                 )
                 logger.info("Migration sanity checks: %s", sanity)
                 logger.info("Migration integrity checks: %s", integrity)

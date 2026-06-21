@@ -1,33 +1,23 @@
-"""charts.py — Financial chart widgets using Matplotlib + Flet MatplotlibChart.
+"""charts.py — Financial chart widgets using native Flet Charts.
+
+Zastępuje: matplotlib + flet.matplotlib_chart.MatplotlibChart
+Nowy:     natywne komponenty Flet Charts (BarChart, LineChart, PieChart)
 
 SUPERMOCE:
-  - flet.matplotlib_chart.MatplotlibChart do embedowania wykresów matplotlib
-  - Revenue/Expense bar chart z kolorowaniem (green/red)
-  - Cashflow projection line chart z wypełnieniem
-  - VAT summary pie chart
-  - Monthly trend bar chart
-  - Dark theme aware wykresy
+  - Ciemny motyw zgodny z NexusAI dark theme (Catppuccin Mocha)
+  - Wykresy w pełni interaktywne (Flutter — zoom, pan, tooltipy natywnie)
+  - Zero zależności od matplotlib — oszczędność ~15 MB w finalnym .exe
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-import matplotlib
-import matplotlib.pyplot as plt
-import numpy as np
+import flet as ft
 
-from flet.matplotlib_chart import MatplotlibChart
-
-# ── Konfiguracja matplotlib ──────────────────────────────────────────────────
-# SUPERMOC: Używamy dedykowanego backendu 'Agg' — nie wymaga GUI, działa
-# w każdej konsoli, zużywa minimalną ilość RAM.
-matplotlib.use("Agg")
-
-# Kolorystyka ciemna (zgodna z NexusAI dark theme)
-_BG_COLOR = "#1e1e2e"
+# ── Kolorystyka Catppuccin Mocha (zgodna z NexusAI dark theme) ──────────────
+_BG_COLOR = ft.colors.with_opacity(0.0, "#1e1e2e")  # przezroczyste tło
 _TEXT_COLOR = "#cdd6f4"
-_GRID_COLOR = "#313244"
 _GREEN = "#a6e3a1"
 _RED = "#f38ba8"
 _BLUE = "#89b4fa"
@@ -35,49 +25,22 @@ _YELLOW = "#f9e2af"
 _PURPLE = "#cba6f7"
 _PINK = "#f5c2e7"
 _PEACH = "#fab387"
+_SURFACE = "#313244"
 
 _COLORS_CYCLE = [_GREEN, _BLUE, _PURPLE, _YELLOW, _PEACH, _PINK, _RED]
 
-plt.rcParams.update(
-    {
-        "figure.facecolor": _BG_COLOR,
-        "axes.facecolor": _BG_COLOR,
-        "axes.edgecolor": _GRID_COLOR,
-        "axes.labelcolor": _TEXT_COLOR,
-        "text.color": _TEXT_COLOR,
-        "xtick.color": _TEXT_COLOR,
-        "ytick.color": _TEXT_COLOR,
-        "grid.color": _GRID_COLOR,
-        "grid.alpha": 0.3,
-        "figure.dpi": 120,
-        "savefig.dpi": 120,
-        "font.size": 10,
-        "axes.titlesize": 13,
-        "axes.titleweight": "bold",
-    }
-)
+_CHART_HEIGHT = 280
+_CHART_WIDTH = 500
 
 
-# ── Helper: tworzenie figury ─────────────────────────────────────────────────
 
 
-def _create_figure(width: float = 5.0, height: float = 3.0) -> tuple[plt.Figure, plt.Axes]:
-    """Create a dark-themed matplotlib figure.
+def _axis_text_style() -> ft.TextStyle:
+    return ft.TextStyle(color=_TEXT_COLOR, size=10)
 
-    SUPERMOC Flet: Każda figura jest embedowana przez ``MatplotlibChart(fig)``.
-    Flet automatycznie konwertuje matplotlib figure na obrazek Flutter,
-    wspiera scroll, zoom i responsywny resize.
-    """
-    fig, ax = plt.subplots(figsize=(width, height))
-    fig.patch.set_facecolor(_BG_COLOR)
-    ax.set_facecolor(_BG_COLOR)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.spines["left"].set_color(_GRID_COLOR)
-    ax.spines["bottom"].set_color(_GRID_COLOR)
-    ax.tick_params(colors=_TEXT_COLOR, labelsize=9)
-    ax.grid(True, alpha=0.2, color=_GRID_COLOR)
-    return fig, ax
+
+def _axis_title_style() -> ft.TextStyle:
+    return ft.TextStyle(color=_TEXT_COLOR, size=11, weight=ft.FontWeight.BOLD)
 
 
 # ── Chart widgets ───────────────────────────────────────────────────────────
@@ -86,273 +49,348 @@ def _create_figure(width: float = 5.0, height: float = 3.0) -> tuple[plt.Figure,
 def revenue_expense_chart(
     monthly_data: list[dict[str, Any]],
     title: str = "Przychody i Koszty (miesięcznie)",
-) -> MatplotlibChart:
-    """Bar chart: przychody vs koszty w podziale miesięcznym.
+) -> ft.Container:
+    """Grouped bar chart: przychody vs koszty w podziale miesięcznym.
 
     Args:
         monthly_data: Lista słowników z kluczami ``month``, ``revenue``, ``expense``.
-                     Jeśli brak ``revenue``/``expense``, używa ``total_gross``.
         title: Tytuł wykresu.
 
     Returns:
-        MatplotlibChart gotowy do dodania do Flet UI.
+        ft.Container z wykresem słupkowym Flet.
     """
-    fig, ax = _create_figure(width=5.5, height=3)
-
     if not monthly_data:
-        ax.text(0.5, 0.5, "Brak danych", ha="center", va="center", color=_TEXT_COLOR, fontsize=12)
-        return MatplotlibChart(fig, expand=True)
+        return _empty_chart(title, "Brak danych")
 
     months = [row.get("month", f"M{i}") for i, row in enumerate(monthly_data)]
-
-    # Jeśli dane zawierają revenue/expense, używamy ich
     has_revenue = "revenue" in monthly_data[0] if monthly_data else False
     has_expense = "expense" in monthly_data[0] if monthly_data else False
 
-    if has_revenue and has_expense:
-        revenues = [float(row.get("revenue", 0)) for row in monthly_data]
-        expenses = [float(row.get("expense", 0)) for row in monthly_data]
+    bar_groups: list[ft.BarChartGroup] = []
 
-        x = np.arange(len(months))
-        width = 0.35
+    for i, row in enumerate(monthly_data):
+        rods: list[ft.BarChartRod] = []
 
-        bars1 = ax.bar(x - width / 2, revenues, width, label="Przychody", color=_GREEN, alpha=0.85)
-        bars2 = ax.bar(x + width / 2, expenses, width, label="Koszty", color=_RED, alpha=0.85)
+        if has_revenue and has_expense:
+            rev = float(row.get("revenue", 0))
+            exp = float(row.get("expense", 0))
 
-        # Dodaj etykiety nad słupkami
-        for bar in bars1:
-            ax.text(
-                bar.get_x() + bar.get_width() / 2,
-                bar.get_height(),
-                f"{bar.get_height():.0f}",
-                ha="center",
-                va="bottom",
-                fontsize=7,
-                color=_TEXT_COLOR,
+            rods.append(
+                ft.BarChartRod(
+                    from_y=0,
+                    to_y=rev,
+                    color=ft.colors.with_opacity(0.85, _GREEN),
+                    width=14,
+                    tooltip=f"Przychody: {rev:,.0f} PLN",
+                )
             )
-        for bar in bars2:
-            ax.text(
-                bar.get_x() + bar.get_width() / 2,
-                bar.get_height(),
-                f"{bar.get_height():.0f}",
-                ha="center",
-                va="bottom",
-                fontsize=7,
-                color=_TEXT_COLOR,
+            rods.append(
+                ft.BarChartRod(
+                    from_y=0,
+                    to_y=exp,
+                    color=ft.colors.with_opacity(0.85, _RED),
+                    width=14,
+                    tooltip=f"Koszty: {exp:,.0f} PLN",
+                )
             )
-
-        ax.legend(facecolor=_BG_COLOR, edgecolor=_GRID_COLOR, labelcolor=_TEXT_COLOR, fontsize=8)
-    else:
-        # Fallback: pojedynczy bar z total_gross
-        totals = [float(row.get("total_gross", row.get("total", 0))) for row in monthly_data]
-        colors = [_GREEN if t >= 0 else _RED for t in totals]
-        bars = ax.bar(months, totals, color=colors, alpha=0.85)
-
-        for bar in bars:
-            ax.text(
-                bar.get_x() + bar.get_width() / 2,
-                bar.get_height(),
-                f"{bar.get_height():.0f}",
-                ha="center",
-                va="bottom",
-                fontsize=7,
-                color=_TEXT_COLOR,
+        else:
+            total = float(row.get("total_gross", row.get("total", 0)))
+            color = _GREEN if total >= 0 else _RED
+            rods.append(
+                ft.BarChartRod(
+                    from_y=0,
+                    to_y=total,
+                    color=ft.colors.with_opacity(0.85, color),
+                    width=20,
+                    tooltip=f"{total:,.0f} PLN",
+                )
             )
 
-    ax.set_title(title, color=_TEXT_COLOR)
-    ax.set_xticks(range(len(months)))
-    ax.set_xticklabels(months, rotation=30, ha="right", fontsize=8)
-    ax.set_ylabel("PLN", color=_TEXT_COLOR)
+        bar_groups.append(
+            ft.BarChartGroup(
+                x=i,
+                bar_rods=rods,
+            )
+        )
 
-    fig.tight_layout()
-    return MatplotlibChart(fig, expand=True)
+    max_val = max(
+        (abs(float(r.get("revenue", 0))) for r in monthly_data),
+        default=1,
+    ) * 1.2
+
+    chart = ft.BarChart(
+        bar_groups=bar_groups,
+        max_y=max_val,
+        interactive=True,
+        tooltip_bgcolor=_SURFACE,
+        border=ft.Border(
+            bottom=ft.BorderSide(color=_SURFACE, width=0.5),
+        ),
+        left_axis=ft.ChartAxis(
+            labels=_generate_axis_labels(max_val),
+            labels_style=_axis_text_style(),
+        ),
+        bottom_axis=ft.ChartAxis(
+            labels=[ft.ChartAxisLabel(value=i, label=ft.Text(m, style=_axis_text_style())) for i, m in enumerate(months)],
+            labels_style=_axis_text_style(),
+        ),
+    )
+
+    return _wrap_chart(chart, title)
 
 
 def cashflow_line_chart(
     cashflow_data: list[dict[str, Any]],
     title: str = "Prognoza przepływów pieniężnych",
-) -> MatplotlibChart:
-    """Line chart: projekcja cashflow z wypełnieniem pod linią.
-
-    SUPERMOC Flet: Wykres matplotlib jest interaktywny przez Flutter —
-    zoom, pan, tooltipy są obsługiwane natywnie.
+) -> ft.Container:
+    """Combined bar + line chart: cashflow projection.
 
     Args:
         cashflow_data: Lista słowników z ``period``, ``total_gross``, ``cumulative_gross``.
         title: Tytuł wykresu.
 
     Returns:
-        MatplotlibChart gotowy do dodania do Flet UI.
+        ft.Container z wykresem Flet.
     """
-    fig, ax = _create_figure(width=5.5, height=3)
-
     if not cashflow_data:
-        ax.text(0.5, 0.5, "Brak danych", ha="center", va="center", color=_TEXT_COLOR, fontsize=12)
-        return MatplotlibChart(fig, expand=True)
+        return _empty_chart(title, "Brak danych")
 
-    # Parsuj okresy
     periods = []
     totals = []
     cumulatives = []
     for row in cashflow_data:
-        period_str = row.get("period", "")
-        total = float(row.get("total_gross", 0))
-        cumulative = float(row.get("cumulative_gross", 0))
-        periods.append(period_str)
-        totals.append(total)
-        cumulatives.append(cumulative)
+        periods.append(row.get("period", ""))
+        totals.append(float(row.get("total_gross", 0)))
+        cumulatives.append(float(row.get("cumulative_gross", 0)))
 
-    x = np.arange(len(periods))
+    max_val = max(max(totals, default=1), max(cumulatives, default=1)) * 1.2
+    min_val = min(0, min(totals, default=0)) * 1.2
 
-    # SUPERMOC: Dwa zestawy danych — słupki dla okresowych + linia dla kumulacji
-    bars = ax.bar(x, totals, color=_BLUE, alpha=0.4, label="Okresowe", width=0.6)
-    ax.plot(x, cumulatives, color=_GREEN, linewidth=2.5, marker="o", label="Skumulowane", zorder=5)
-
-    # Wypełnienie pod linią kumulacji
-    ax.fill_between(x, cumulatives, alpha=0.1, color=_GREEN)
-
-    # Dodaj wartości nad słupkami
-    for bar in bars:
-        ax.text(
-            bar.get_x() + bar.get_width() / 2,
-            bar.get_height(),
-            f"{bar.get_height():.0f}",
-            ha="center",
-            va="bottom",
-            fontsize=7,
-            color=_TEXT_COLOR,
+    # Bar chart for periodic totals
+    bar_groups = [
+        ft.BarChartGroup(
+            x=i,
+            bar_rods=[
+                ft.BarChartRod(
+                    from_y=0,
+                    to_y=totals[i],
+                    color=ft.colors.with_opacity(0.4, _BLUE),
+                    width=16,
+                    tooltip=f"Okresowe: {totals[i]:,.0f} PLN",
+                )
+            ],
         )
+        for i in range(len(periods))
+    ]
 
-    # Dodaj wartości na punktach linii
-    for i, (xi, cum) in enumerate(zip(x, cumulatives)):
-        ax.text(xi, cum, f"{cum:.0f}", ha="center", va="bottom", fontsize=7, color=_GREEN)
+    bar_chart = ft.BarChart(
+        bar_groups=bar_groups,
+        max_y=max_val,
+        min_y=min_val,
+        interactive=True,
+        tooltip_bgcolor=_SURFACE,
+        border=ft.Border(
+            bottom=ft.BorderSide(color=_SURFACE, width=0.5),
+        ),
+        left_axis=ft.ChartAxis(
+            labels=_generate_axis_labels(max_val),
+            labels_style=_axis_text_style(),
+        ),
+        bottom_axis=ft.ChartAxis(
+            labels=[ft.ChartAxisLabel(value=i, label=ft.Text(p, style=_axis_text_style())) for i, p in enumerate(periods)],
+            labels_style=_axis_text_style(),
+        ),
+    )
 
-    ax.set_title(title, color=_TEXT_COLOR)
-    ax.set_xticks(x)
-    ax.set_xticklabels(periods, rotation=30, ha="right", fontsize=8)
-    ax.set_ylabel("PLN", color=_TEXT_COLOR)
-    ax.legend(facecolor=_BG_COLOR, edgecolor=_GRID_COLOR, labelcolor=_TEXT_COLOR, fontsize=8)
+    # Line chart overlay for cumulative
+    line_data = ft.LineChartData(
+        data_points=[
+            ft.LineChartDataPoint(x=i, y=cumulatives[i])
+            for i in range(len(cumulatives))
+        ],
+        stroke_width=2.5,
+        color=ft.colors.with_opacity(0.9, _GREEN),
+        curved=True,
+        stroke_cap_round=True,
+        prevent_curve_edges=True,
+    )
 
-    fig.tight_layout()
-    return MatplotlibChart(fig, expand=True)
+    line_chart = ft.LineChart(
+        data_series=[line_data],
+        max_y=max_val,
+        min_y=min_val,
+        interactive=True,
+        tooltip_bgcolor=_SURFACE,
+        border=ft.Border(
+            bottom=ft.BorderSide(color=_SURFACE, width=0.5),
+        ),
+        left_axis=ft.ChartAxis(
+            labels=_generate_axis_labels(max_val),
+            labels_style=_axis_text_style(),
+        ),
+        bottom_axis=ft.ChartAxis(
+            labels=[ft.ChartAxisLabel(value=i, label=ft.Text(p, style=_axis_text_style())) for i, p in enumerate(periods)],
+            labels_style=_axis_text_style(),
+        ),
+    )
+
+    # Stack both charts in a Stack with transparency
+    # Line chart goes on top (transparent bg), bar chart below
+    stack = ft.Stack(
+        [
+            bar_chart,
+            ft.Container(
+                content=line_chart,
+                bgcolor=ft.colors.TRANSPARENT,
+            ),
+        ],
+        height=_CHART_HEIGHT,
+        width=_CHART_WIDTH,
+    )
+
+    return _wrap_chart(stack, title)
 
 
 def vat_pie_chart(
     vat_data: list[dict[str, Any]],
     title: str = "Struktura VAT",
-) -> MatplotlibChart:
-    """Pie chart: struktura VAT (VAT należny, VAT naliczony, netto).
-
-    SUPERMOC Flet: Wykres kołowy matplotlib renderowany jako obrazek Flutter
-    z zachowaniem przezroczystości i ciemnego motywu.
+) -> ft.Container:
+    """Donut chart: struktura VAT.
 
     Args:
         vat_data: Lista słowników z ``label``, ``value``, opcjonalnie ``color``.
         title: Tytuł wykresu.
 
     Returns:
-        MatplotlibChart gotowy do dodania do Flet UI.
+        ft.Container z donut chart Flet.
     """
-    fig, ax = _create_figure(width=4.5, height=3.5)
-
     if not vat_data:
-        ax.text(0.5, 0.5, "Brak danych VAT", ha="center", va="center", color=_TEXT_COLOR, fontsize=12)
-        return MatplotlibChart(fig, expand=True)
+        return _empty_chart(title, "Brak danych VAT")
 
-    labels = [row.get("label", f"Kategoria {i}") for i, row in enumerate(vat_data)]
-    values = [float(row.get("value", 0)) for row in vat_data]
-    colors = [
-        row.get("color", _COLORS_CYCLE[i % len(_COLORS_CYCLE)])
-        for i, row in enumerate(vat_data)
-    ]
+    total = sum(float(row.get("value", 0)) for row in vat_data)
+    if total == 0:
+        return _empty_chart(title, "Brak wartości VAT")
 
-    if sum(values) == 0:
-        ax.text(0.5, 0.5, "Brak wartości VAT", ha="center", va="center", color=_TEXT_COLOR, fontsize=12)
-        return MatplotlibChart(fig, expand=True)
+    sections = []
+    for i, row in enumerate(vat_data):
+        value = float(row.get("value", 0))
+        label = row.get("label", f"Kat {i}")
+        color = row.get("color", _COLORS_CYCLE[i % len(_COLORS_CYCLE)])
+        pct = (value / total) * 100
 
-    # SUPERMOC: Donut chart (pie + white circle) dla nowoczesnego wyglądu
-    wedges, texts, autotexts = ax.pie(
-        values,
-        labels=labels,
-        colors=colors,
-        autopct="%1.1f%%",
-        startangle=90,
-        pctdistance=0.75,
-        wedgeprops={"linewidth": 2, "edgecolor": _BG_COLOR},
-        textprops={"color": _TEXT_COLOR, "fontsize": 9},
+        sections.append(
+            ft.PieChartSection(
+                value=value,
+                color=color,
+                radius=100,
+                title=f"{pct:.1f}%",
+                title_style=ft.TextStyle(
+                    color=_TEXT_COLOR,
+                    size=10,
+                    weight=ft.FontWeight.BOLD,
+                ),
+                badge=ft.Container(
+                    content=ft.Text(label, size=8, color=_TEXT_COLOR),
+                    bgcolor=ft.colors.with_opacity(0.7, _SURFACE),
+                    border_radius=4,
+                    padding=ft.padding.all(4),
+                ),
+            )
+        )
+
+    chart = ft.PieChart(
+        sections=sections,
+        center_space_radius=0.55,  # Donut hole
+        sections_space=2,
+        start_degree_offset=90,
+        animate=True,
     )
 
-    for autotext in autotexts:
-        autotext.set_color(_BG_COLOR)
-        autotext.set_fontweight("bold")
-
-    # Donut hole — białe kółko w środku
-    centre_circle = plt.Circle((0, 0), 0.50, fc=_BG_COLOR, edgecolor=_GRID_COLOR, linewidth=1)
-    ax.add_artist(centre_circle)
-
-    # Tekst w środku donut
-    total = sum(values)
-    ax.text(
-        0, 0, f"{total:,.0f} PLN", ha="center", va="center", fontsize=11, color=_TEXT_COLOR, fontweight="bold"
-    )
-    ax.text(
-        0, -0.2, "Razem VAT", ha="center", va="center", fontsize=8, color=_TEXT_COLOR
+    # Center text overlay
+    center_text = ft.Container(
+        content=ft.Column(
+            [
+                ft.Text(f"{total:,.0f}", color=_TEXT_COLOR, size=16, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
+                ft.Text("Razem VAT", color=_TEXT_COLOR, size=10, text_align=ft.TextAlign.CENTER),
+            ],
+            spacing=0,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
+        alignment=ft.alignment.center,
     )
 
-    ax.set_title(title, color=_TEXT_COLOR, pad=15)
+    stack = ft.Stack(
+        [
+            chart,
+            center_text,
+        ],
+        width=_CHART_WIDTH,
+        height=_CHART_HEIGHT,
+    )
 
-    fig.tight_layout()
-    return MatplotlibChart(fig, expand=True)
+    return _wrap_chart(stack, title)
 
 
 def monthly_trend_line_chart(
     trend_data: list[dict[str, Any]],
     title: str = "Trend miesięczny",
-) -> MatplotlibChart:
-    """Line chart: trend miesięczny z wypełnieniem gradientowym.
-
-    SUPERMOC Flet: Wykres matplotlib z przezroczystym tłem
-    idealnie komponuje się z ciemnym motywem Flet.
+) -> ft.Container:
+    """Line chart: trend miesięczny.
 
     Args:
         trend_data: Lista słowników z ``month``, ``total``.
         title: Tytuł wykresu.
 
     Returns:
-        MatplotlibChart gotowy do dodania do Flet UI.
+        ft.Container z wykresem liniowym Flet.
     """
-    fig, ax = _create_figure(width=5.5, height=2.8)
-
     if not trend_data:
-        ax.text(0.5, 0.5, "Brak danych trendu", ha="center", va="center", color=_TEXT_COLOR, fontsize=12)
-        return MatplotlibChart(fig, expand=True)
+        return _empty_chart(title, "Brak danych trendu")
 
     months = [row.get("month", "") for row in trend_data]
     totals = [float(row.get("total", 0)) for row in trend_data]
 
-    x = np.arange(len(months))
+    max_val = max(totals, default=1) * 1.2
+    min_val = min(0, min(totals, default=0)) * 1.2
 
-    # SUPERMOC: Gradient fill under the line
-    ax.plot(x, totals, color=_BLUE, linewidth=2.5, marker="o", markersize=5, zorder=5)
-    ax.fill_between(x, totals, alpha=0.15, color=_BLUE)
+    line_data = ft.LineChartData(
+        data_points=[
+            ft.LineChartDataPoint(x=i, y=totals[i])
+            for i in range(len(totals))
+        ],
+        stroke_width=2.5,
+        color=ft.colors.with_opacity(0.9, _BLUE),
+        curved=True,
+        stroke_cap_round=True,
+        prevent_curve_edges=True,
+    )
 
-    # Dodaj punkty z wartościami
-    for i, (xi, val) in enumerate(zip(x, totals)):
-        ax.text(xi, val, f"{val:.0f}", ha="center", va="bottom", fontsize=7, color=_TEXT_COLOR)
+    chart = ft.LineChart(
+        data_series=[line_data],
+        max_y=max_val,
+        min_y=min_val,
+        interactive=True,
+        tooltip_bgcolor=_SURFACE,
+        border=ft.Border(
+            bottom=ft.BorderSide(color=_SURFACE, width=0.5),
+        ),
+        left_axis=ft.ChartAxis(
+            labels=_generate_axis_labels(max_val),
+            labels_style=_axis_text_style(),
+        ),
+        bottom_axis=ft.ChartAxis(
+            labels=[ft.ChartAxisLabel(value=i, label=ft.Text(m, style=_axis_text_style())) for i, m in enumerate(months)],
+            labels_style=_axis_text_style(),
+        ),
+    )
 
-    ax.set_title(title, color=_TEXT_COLOR)
-    ax.set_xticks(x)
-    ax.set_xticklabels(months, rotation=30, ha="right", fontsize=8)
-    ax.set_ylabel("PLN", color=_TEXT_COLOR)
-
-    fig.tight_layout()
-    return MatplotlibChart(fig, expand=True)
+    return _wrap_chart(chart, title)
 
 
 def top_suppliers_bar_chart(
     suppliers: list[dict[str, Any]],
     title: str = "Top dostawcy",
-) -> MatplotlibChart:
+) -> ft.Container:
     """Horizontal bar chart: top suppliers by spending.
 
     Args:
@@ -360,39 +398,140 @@ def top_suppliers_bar_chart(
         title: Tytuł wykresu.
 
     Returns:
-        MatplotlibChart gotowy do dodania do Flet UI.
+        ft.Container z poziomym wykresem słupkowym Flet.
     """
-    fig, ax = _create_figure(width=5, height=3)
-
     if not suppliers:
-        ax.text(0.5, 0.5, "Brak danych", ha="center", va="center", color=_TEXT_COLOR, fontsize=12)
-        return MatplotlibChart(fig, expand=True)
+        return _empty_chart(title, "Brak danych")
 
     names = [row.get("contractor_nip", f"Dostawca {i}")[:12] for i, row in enumerate(suppliers)]
     totals = [float(row.get("total_spent", 0)) for row in suppliers]
 
-    # Reverse for horizontal bar (top at top)
+    # Reverse for top-at-top display
     names = names[::-1]
     totals = totals[::-1]
 
-    colors = [_COLORS_CYCLE[i % len(_COLORS_CYCLE)] for i in range(len(names))][::-1]
+    max_val = max(totals, default=1) * 1.3
 
-    bars = ax.barh(names, totals, color=colors, alpha=0.85, height=0.6)
-
-    for bar in bars:
-        ax.text(
-            bar.get_width() + max(totals) * 0.01,
-            bar.get_y() + bar.get_height() / 2,
-            f"{bar.get_width():,.0f} PLN",
-            ha="left",
-            va="center",
-            fontsize=8,
-            color=_TEXT_COLOR,
+    bar_groups = [
+        ft.BarChartGroup(
+            x=i,
+            bar_rods=[
+                ft.BarChartRod(
+                    from_y=0,
+                    to_y=totals[i],
+                    color=ft.colors.with_opacity(0.85, _COLORS_CYCLE[i % len(_COLORS_CYCLE)]),
+                    width=20,
+                    tooltip=f"{names[i]}: {totals[i]:,.0f} PLN",
+                )
+            ],
         )
+        for i in range(len(names))
+    ]
 
-    ax.set_title(title, color=_TEXT_COLOR)
-    ax.set_xlabel("PLN", color=_TEXT_COLOR)
-    ax.margins(x=0.2)
+    chart = ft.BarChart(
+        bar_groups=bar_groups,
+        max_y=max_val,
+        interactive=True,
+        tooltip_bgcolor=_SURFACE,
+        border=ft.Border(
+            bottom=ft.BorderSide(color=_SURFACE, width=0.5),
+        ),
+        left_axis=ft.ChartAxis(
+            labels=[ft.ChartAxisLabel(value=i, label=ft.Text(n, style=_axis_text_style())) for i, n in enumerate(names)],
+            labels_style=_axis_text_style(),
+        ),
+        bottom_axis=ft.ChartAxis(
+            labels=_generate_axis_labels(max_val),
+            labels_style=_axis_text_style(),
+        ),
+    )
 
-    fig.tight_layout()
-    return MatplotlibChart(fig, expand=True)
+    return _wrap_chart(chart, title)
+
+
+# ── Helper functions ────────────────────────────────────────────────────────
+
+
+def _generate_axis_labels(max_val: float, steps: int = 5) -> list[ft.ChartAxisLabel]:
+    """Generate evenly spaced axis labels from 0 to max_val.
+
+    Args:
+        max_val: Maksymalna wartość na osi.
+        steps: Liczba kroków (etykiet).
+
+    Returns:
+        Lista obiektów ChartAxisLabel.
+    """
+    if max_val <= 0:
+        return [ft.ChartAxisLabel(value=0, label=ft.Text("0", style=_axis_text_style()))]
+
+    step = max_val / steps
+    labels = []
+    for i in range(steps + 1):
+        val = round(i * step, 0)
+        labels.append(
+            ft.ChartAxisLabel(
+                value=val,
+                label=ft.Text(f"{val:,.0f}", style=_axis_text_style()),
+            )
+        )
+    return labels
+
+
+def _empty_chart(title: str, message: str) -> ft.Container:
+    """Create an empty chart placeholder with a message.
+
+    Args:
+        title: Tytuł wyświetlany nad pustym wykresem.
+        message: Komunikat o braku danych.
+
+    Returns:
+        ft.Container z pustym wykresem.
+    """
+    return ft.Container(
+        content=ft.Column(
+            [
+                ft.Text(title, style=_axis_title_style(), text_align=ft.TextAlign.CENTER),
+                ft.Container(height=20),
+                ft.Text(message, color=_TEXT_COLOR, size=14, text_align=ft.TextAlign.CENTER),
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
+        bgcolor=ft.colors.TRANSPARENT,
+        padding=ft.padding.all(20),
+        height=_CHART_HEIGHT,
+    )
+
+
+def _wrap_chart(chart: ft.Control, title: str) -> ft.Container:
+    """Wrap a chart control in a styled container with title.
+
+    Args:
+        chart: Główny kontrolka wykresu (BarChart, LineChart, PieChart, Stack).
+        title: Tytuł wyświetlany nad wykresem.
+
+    Returns:
+        ft.Container z tytułem i wykresem.
+    """
+    return ft.Container(
+        content=ft.Column(
+            [
+                ft.Text(
+                    title,
+                    style=_axis_title_style(),
+                    text_align=ft.TextAlign.CENTER,
+                ),
+                ft.Container(
+                    content=chart,
+                    expand=True,
+                ),
+            ],
+            spacing=8,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
+        bgcolor=ft.colors.with_opacity(0.05, "#ffffff"),
+        border_radius=12,
+        padding=ft.padding.all(16),
+        margin=ft.margin.all(8),
+        expand=True,
+    )

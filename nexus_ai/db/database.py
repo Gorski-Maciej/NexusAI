@@ -1,8 +1,7 @@
 """
 SQLAlchemy + SQLModel setup for SQLCipher (encrypted SQLite) — sync engine only.
 
-Zgodnie z decyzją architektoniczną: rezygnujemy z aiosqlite na rzecz
-natywnego sqlite3 w Pythonie 3.13t (free-threaded).
+Używamy natywnego sqlite3 w Pythonie 3.13t (free-threaded).
 
 SUPERMOCE SQLModel/SQLAlchemy:
 - SQLModel.metadata jako target_metadata (dla Alembic auto-migration)
@@ -298,15 +297,11 @@ def create_session_factory(
 # ── Schema ────────────────────────────────────────────────────────────────
 
 
-def init_schema(engine, *, alembic_cfg: Any = None) -> None:
+def init_schema(engine) -> None:
     """Create all SQLAlchemy tables for first application start.
 
-    SUPERMOC: Używa SQLModel.metadata (Base = SQLModel z models.py).
+    Używa SQLModel.metadata (Base = SQLModel z models.py).
     Po utworzeniu tabel, wywołuje create_partial_indexes().
-
-    SUPERMOC: Jeśli ``alembic_cfg`` jest podany, oznacza (stamp) świeżą
-    bazę jako będącą na head rewizji Alembic. Dzięki temu Alembic wie,
-    że wszystkie tabele już istnieją i nie próbuje ich tworzyć ponownie.
     """
     from nexus_ai.db.models import (
         Base,
@@ -319,23 +314,6 @@ def init_schema(engine, *, alembic_cfg: Any = None) -> None:
     # SUPERMOC: SQLModel.metadata zamiast Base.metadata
     Base.metadata.create_all(engine)
     create_partial_indexes(engine)
-
-    # SUPERMOC: Stamp Alembic version po utworzeniu tabel
-    if alembic_cfg is not None:
-        try:
-            from alembic import command
-            from alembic.script import ScriptDirectory
-
-            script = ScriptDirectory.from_config(alembic_cfg)
-            head_rev = script.get_current_head()
-            if head_rev:
-                command.stamp(alembic_cfg, head_rev)
-                logger.info(
-                    "[DB] Fresh database stamped at Alembic revision: %s",
-                    head_rev,
-                )
-        except Exception as exc:
-            logger.warning("[DB] Failed to stamp Alembic revision: %s", exc)
 
 
 # ── Maintenance ───────────────────────────────────────────────────────────

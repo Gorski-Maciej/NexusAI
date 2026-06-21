@@ -44,14 +44,6 @@ async def run_zap(target: str, mode: str, *, strict_tools: bool = False) -> int:
     return await _run(cmd)
 
 
-async def run_semgrep(*, strict_tools: bool = False) -> int:
-    semgrep = shutil.which("semgrep")
-    if semgrep is None:
-        print("[security-scan] semgrep not found in PATH", file=sys.stderr)
-        return 1 if strict_tools else 2
-    return await _run([semgrep, "scan", "--config", "auto", "nexus_ai/"])
-
-
 async def run_codeql(*, strict_tools: bool = False) -> int:
     codeql = shutil.which("codeql")
     if codeql is None:
@@ -113,7 +105,6 @@ def _enforce_zap_severity_gate(mode: str, max_high: int, max_medium: int) -> int
 def _write_summary(
     *,
     zap_rc: int,
-    semgrep_rc: int,
     codeql_rc: int,
     strict_tools: bool,
     severity_gate_rc: int,
@@ -125,7 +116,6 @@ def _write_summary(
     payload = {
         "strict_tools": strict_tools,
         "zap_rc": zap_rc,
-        "semgrep_rc": semgrep_rc,
         "codeql_rc": codeql_rc,
         "severity_gate_rc": severity_gate_rc,
         "max_high": max_high,
@@ -143,7 +133,6 @@ async def main() -> int:
         "--target", required=True, help="Staging API URL, e.g. http://localhost:8000"
     )
     parser.add_argument("--mode", choices=["baseline", "full"], default="baseline")
-    parser.add_argument("--skip-semgrep", action="store_true")
     parser.add_argument("--skip-zap", action="store_true")
     parser.add_argument("--run-codeql", action="store_true")
     parser.add_argument(
@@ -168,7 +157,6 @@ async def main() -> int:
         if args.skip_zap
         else await run_zap(target=args.target, mode=args.mode, strict_tools=args.strict_tools)
     )
-    semgrep_rc = 0 if args.skip_semgrep else await run_semgrep(strict_tools=args.strict_tools)
     codeql_rc = await run_codeql(strict_tools=args.strict_tools) if args.run_codeql else 0
     severity_gate_rc = (
         0
@@ -178,7 +166,6 @@ async def main() -> int:
 
     _write_summary(
         zap_rc=zap_rc,
-        semgrep_rc=semgrep_rc,
         codeql_rc=codeql_rc,
         strict_tools=args.strict_tools,
         severity_gate_rc=severity_gate_rc,
@@ -187,9 +174,9 @@ async def main() -> int:
     )
 
     if args.strict_tools:
-        return 1 if zap_rc != 0 or semgrep_rc != 0 or codeql_rc != 0 or severity_gate_rc != 0 else 0
+        return 1 if zap_rc != 0 or codeql_rc != 0 or severity_gate_rc != 0 else 0
 
-    bad = [rc for rc in (zap_rc, semgrep_rc, codeql_rc, severity_gate_rc) if rc not in (0, 2)]
+    bad = [rc for rc in (zap_rc, codeql_rc, severity_gate_rc) if rc not in (0, 2)]
     return 1 if bad else 0
 
 

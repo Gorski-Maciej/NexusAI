@@ -205,7 +205,7 @@ class TestGranianConfig:
         assert "dotenv" in dep_str
         assert "pname" in dep_str
         assert "reload" in dep_str
-        assert "uvloop" in dep_str
+        assert "uvloop" not in dep_str
 
     def test_granian_task_in_pixi(self) -> None:
         """Sprawdź czy pixi.toml ma task api-dev z wszystkimi flagami."""
@@ -221,7 +221,7 @@ class TestGranianConfig:
         assert "--backlog" in api_dev_run
         assert "--backpressure" in api_dev_run
         assert "--http auto" in api_dev_run
-        assert "--loop uvloop" in api_dev_run
+        assert "--loop auto" in api_dev_run
         assert "--access-log" in api_dev_run
         assert "--no-header-server" in api_dev_run
         assert "--metrics" in api_dev_run

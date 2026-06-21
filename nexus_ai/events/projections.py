@@ -1,8 +1,7 @@
 """
 AsyncProjections — CQRS read-side with sqlite3.
 
-Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync
-zamiast aiosqlite.
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync.
 
 Każda projekcja:
   1. Czyta eventy z AsyncEventStore (od ostatniego checkpointu)

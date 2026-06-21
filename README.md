@@ -84,7 +84,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | **DuckDB** — lokalna hurtownia OLAP | — | ✅ | `nexus_ai/db/analytics.py` → `DuckDBManager` |
 | **PyArrow** — format danych w pamięci | — | ✅ | Używany przez DuckDB |
 | **Polars** — DataFrame nowej generacji | pandas | ✅ | `nexus_ai/core/analytics.py` |
-| **Alembic** — migracje schematu | — | ✅ | `alembic.ini`, `nexus_ai/db/migrations/` |
+| **Natywne migracje SQL** — migracje schematu | Alembic | ✅ | `migrations/*.sql`, `migrations/run_migrations.py` |
 
 ### Punkt 4 — Walidacja i serializacja
 
@@ -107,7 +107,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **httpx** — klient HTTP (async) | requests | ✅ | `nexus_ai/services/currency_converter.py` |
+| **httpx** — klient HTTP (async) | — (httpx natywnie) | ✅ | `nexus_ai/services/currency_converter.py` |
 | **hishel** — inteligentny cache HTTP | — | ✅ | W `pixi.toml` |
 | **fsspec** — abstrakcja systemów plików | — | ✅ | W `pixi.toml` |
 
@@ -115,7 +115,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **stamina** — retry + circuit breaker (async-native) | tenacity + pybreaker | ✅ | `nexus_ai/core/resilience.py` |
+| **stamina** — retry + circuit breaker (async-native) | — (natywna implementacja) | ✅ | `nexus_ai/core/resilience.py` |
 
 ### Punkt 8 — Kryptografia i bezpieczeństwo
 
@@ -148,7 +148,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | **docTR** (Python-docTR) — modułowy OCR (DBNet + PARSeq) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `DocTREngine` |
 | **Mechanizm Walidacji Krzyżowej** (3 silniki) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `decide_field_consensus()` |
 | **Pillow + OpenCV** — preprocessing obrazów | — | ✅ | W `pixi.toml` |
-| **PyMuPDF (fitz)** — konwersja PDF → obraz | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `pdf_to_images()` |
+| **pypdfium2** — konwersja PDF → obraz (BSD, zastępuje PyMuPDF/fitz) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `pdf_to_images()` |
 
 ### Punkt 11 — Logowanie i obserwowalność
 

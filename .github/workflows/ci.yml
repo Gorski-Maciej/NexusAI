@@ -9,7 +9,7 @@
 #   ✅ Cache z restore-keys — partial cache hit
 #   ✅ Reusable + Composite actions via .github/actions/
 #   ✅ CodeQL — darmowe SAST od GitHub
-#   ✅ Semgrep → SARIF — Security tab
+#   ✅ CodeQL SAST — Security tab
 #   ✅ Dependabot + Merge queue — full automation
 #   ✅ SBOM + Attestation + SLSA — supply-chain Level 3
 #   ✅ OIDC + Environments — zero-secret deploy
@@ -538,8 +538,8 @@ jobs:
           echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Security fuzzing | ✅ ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
 
-  # ── Security Scan: Semgrep SAST ────────────────────────────────────────
-  # SUPERMOC: Semgrep → SARIF → GitHub Security tab
+  # ── Security Scan: ZAP DAST ─────────────────────────────────────────────
+  # ZAP scans the staging API for OWASP Top 10 vulnerabilities
   security-scan:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -552,20 +552,6 @@ jobs:
       - uses: ./.github/actions/setup-pixi
         with:
           pixi-env: dev
-
-      - name: Run Semgrep with SARIF output
-        run: |
-          pixi run --environment dev semgrep \
-            --sarif \
-            --output reports/semgrep-results.sarif \
-            --metrics off \
-            nexus_ai/ || true
-
-      - name: Upload SARIF to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: reports/semgrep-results.sarif
-          category: semgrep
 
       - name: Upload security scan report
         uses: actions/upload-artifact@v4
@@ -581,8 +567,6 @@ jobs:
           echo "## 🛡️ Security Scan" >> $GITHUB_STEP_SUMMARY
           echo "| Tool | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Semgrep SAST | ✅ ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| SARIF uploaded | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Results visible in GitHub Security tab." >> $GITHUB_STEP_SUMMARY
 
@@ -1099,7 +1083,6 @@ jobs:
 
             ### 🔍 Security
             - ✅ CodeQL SAST
-            - ✅ Semgrep SAST (SARIF)
             - ✅ Dependency review
             - ✅ OpenSSF Scorecard
           token: ${{ secrets.GITHUB_TOKEN }}

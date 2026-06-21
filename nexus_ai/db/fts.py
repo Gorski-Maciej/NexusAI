@@ -1,8 +1,7 @@
 """
 AsyncFTSManager — async FTS5 Full-Text Search via sqlite3.
 
-Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync
-zamiast aiosqlite.
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync.
 
 SUPERMOCE FTS5:
 - FTS5 (Full-Text Search v5) — wbudowany silnik wyszukiwania

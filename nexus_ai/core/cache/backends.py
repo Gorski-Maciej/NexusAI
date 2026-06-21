@@ -4,12 +4,12 @@ CacheBackend — abstrakcyjny interfejs backendu dla NexusCache.
 SUPERMOC: Pluggable backend architecture (Inspiracja #1 z audytu):
 - CacheBackend ABC z 5 metodami: get, set, delete, clear, size
 - InMemoryBackend: dict-based, thread-safe (free-threaded Python 3.13t)
-- SqliteBackend: async SQLite przez aiosqlite (prawdziwy async-native L2)
+- SqliteBackend: SQLite przez natywne sqlite3
 - RedisBackend: dla rozproszonego cache
 
 Zgodnie z aa3fvcx.txt (Punkt 13):
-- dyscache = wielopoziomowy cache RAM + SQLite
-- Abstrakcyjny interfejs pozwala na wymianę backendu bez zmiany kodu
+- dyscache = wielopoziomowy cache RAM + SQLite.
+- Abstrakcyjny interfejs pozwala na wymianę backendu bez zmiany kodu.
 """
 
 from __future__ import annotations
