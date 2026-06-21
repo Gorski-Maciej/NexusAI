@@ -56,7 +56,7 @@ Co zyskujesz:
 
 · Konfiguracja w czystym pyproject.toml według standardu PEP 621 – jedno miejsce na metadane projektu, zależności i skrypty.
 · Szybsze budowanie paczki – mniejszy narzut narzędzia.
-· Lepsza integracja z uv i pixi.
+· Lepsza integracja z pixi (uv wbudowany jako resolver).
 · Mniej kodu konfiguracyjnego, łatwiejsze utrzymanie.
 
 ---

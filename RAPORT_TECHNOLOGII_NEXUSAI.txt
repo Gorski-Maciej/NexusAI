@@ -14,7 +14,7 @@
   • Linie kodu Python (nexus_ai/):  102 716
   • Linie kodu testów (tests/):  27 933
   • Linie kodu Python ogółem:  ~130 649
-  • Liczba pakietów w uv.lock:  237
+  • Liczba pakietów (wszystkie przez pixi):  237+
   • Pliki konfiguracyjne TOML:  6
   • Pliki YAML/YML:  16
   • Pliki Rust (.rs):  ~4-6
@@ -32,9 +32,9 @@
 ─── 2.1 JĘZYK I ŚRODOWISKO URZECHOMIENIOWE ─────────────────────────────────
 
   1. Python ≥3.13 (free-threaded 3.13t)  [A]  — Interpretator bez GIL
-  2. pixi  [A]  — Menedżer środowiska (Rust)
-  3. mise (dawniej rtx)  [A]  — Menedżer wersji + task runner (Rust)
-  4. uv  [A]  — Menedżer pakietów PyPI (Rust)
+  2. pixi  [A]  — Menedżer środowiska + task runner (Rust)
+  3. ~~mise (dawniej rtx)~~  [S]  — ZASTĄPIONY PRZEZ pixi.toml [tasks]
+  4. ~~uv~~  [S]  — WBUDOWANY W pixi (wewnętrzny resolver)
   5. hatchling  [A]  — Backend budowania pakietu (PEP 621)
   6. mypyc  [A]  — Kompilacja typowanego Pythona → C
   7. Rust (język)  [A]  — Język dla krytycznych modułów
@@ -76,13 +76,13 @@
 ─── 2.4 WALIDACJA DANYCH I SERIALIZACJA ──────────────────────────────────
 
   36. msgspec  [A]  — Serializacja + walidacja JSON/TOML/MessagePack
-  37. pydantic  [Z]  — Walidacja (tylko przez SQLModel)
-  38. pydantic-core  [Z]  — Rdzeń Pydantic v2 w Rust
-  39. jsonschema  [Z]  — Walidacja JSON Schema
-  40. jsonschema-rs  [Z]  — Walidacja JSON Schema w Rust
-  41. typing-extensions  [Z]  — Rozszerzenia typów Pythona
-  42. annotated-types  [Z]  — Typy adnotowane
-  43. typing-inspection  [Z]  — Inspekcja typów
+  37. pydantic  [Z]  — Walidacja (tylko przez SQLModel — transitive dep)
+  38. pydantic-core  [Z]  — Rdzeń Pydantic v2 w Rust (transitive dep)
+  39. jsonschema  [Z]  — Walidacja JSON Schema (transitive dep Pydantic)
+  40. jsonschema-rs  [Z]  — Walidacja JSON Schema w Rust (transitive dep)
+  41. typing-extensions  [Z]  — Rozszerzenia typów (transitive dep Pydantic)
+  42. annotated-types  [Z]  — Typy adnotowane (transitive dep Pydantic)
+  43. typing-inspection  [Z]  — Inspekcja typów (transitive dep Pydantic)
 
 ─── 2.5 KOLEJKI ZADAŃ I KOMUNIKACJA ──────────────────────────────────────
 
@@ -405,19 +405,19 @@
 ─── 2.26 PLIKI KONFIGURACYJNE ───────────────────────────────────────────
 
   299. pyproject.toml  [A]  — Główna konfiguracja projektu
-  300. pixi.toml  [A]  — Środowisko pixi
-  301. mise.toml  [A]  — Task runner + tools
-  302. mise.prod.toml  [A]  — Konfiguracja produkcyjna
-  303. mise.local.toml  [S]  — Lokalne nadpisania
-  304. uv.lock  [A]  — Lockfile zależności
-  305. pixi.lock  [A]  — Lockfile pixi
+  300. pixi.toml  [A]  — Środowisko pixi (jedyny orchestrator)
+  301. ~~mise.toml~~  [S]  — Task runner + tools (zastąpiony przez pixi.toml)
+  302. ~~mise.prod.toml~~  [S]  — Konfiguracja produkcyjna (zastąpiona przez prod: tasks)
+  303. ~~mise.local.toml~~  [S]  — Lokalne nadpisania (nie istnieje)
+  304. ~~uv.lock~~  [S]  — Lockfile zależności (zastąpiony przez pixi.lock, usunięty)
+  305. pixi.lock  [A]  — Lockfile pixi (jedyny lockfile)
   306. user.nuitka-package-config.yml  [A]  — Konfiguracja Nuitka
   307. pre-commit-config.yaml  [A]  — Hooki git
   308. .gitignore  [A]  — Ignorowanie plików
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- 3. LISTA WSZYSTKICH BIBLIOTEK I ZALEŻNOŚCI (PAKIETY PYTHON Z uv.lock)
+ 3. LISTA WSZYSTKICH BIBLIOTEK I ZALEŻNOŚCI (PAKIETY PYTHON — zarządzane przez pixi)
     (237 pakietów + własne)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -500,13 +500,13 @@
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- 5. NARZĘDZIA ZEWNĘTRZNE (mise.toml)
+ 5. NARZĘDZIA ZEWNĘTRZNE (migrowane do pixi.toml)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  • python = "3.13"                [A]  — Python interpreter
-  • rust = "latest"                 [A]  — Rust toolchain
-  • nats-server = "2.10"            [A]  — NATS JetStream broker
-  • tigerbeetle = "0.16"            [A]  — TigerBeetle ledger
+  • python 3.13t                    [A]  — Python interpreter (conda-forge przez pixi)
+  • rust >=1.78                     [A]  — Rust toolchain (conda-forge przez pixi)
+  • nats-server >=2.10              [A]  — NATS JetStream broker (task: start-nats)
+  • tigerbeetle >=0.16              [A]  — TigerBeetle ledger (task: start-tigerbeetle)
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -610,7 +610,7 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
  TECHNOLOGIE AKTYWNE [A]:  ~200
- TECHNOLOGIE SZCZĄTKOWE [S]:  ~4  (tenacity, pyzmq, py-moneyed?, oauthlib)
+ TECHNOLOGIE SZCZĄTKOWE [S]:  ~6  (tenacity, pyzmq, py-moneyed?, oauthlib, ~~mise~~, ~~uv~~)
  ZALEŻNOŚCI POŚREDNIE [Z]:  ~90+  (przez biblioteki)
  TECHNOLOGIE DEWELOPERSKIE [D]:  ~30
  ŁĄCZNIE UNIKALNYCH TECHNOLOGII:  ~308+

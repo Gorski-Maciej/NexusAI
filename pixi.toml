@@ -497,6 +497,182 @@ description = "Pobierz kursy walut w formacie JSON"
 # Nie potrzebujesz osobnej instalacji uv — pixi już go zawiera.
 #
 # Odpowiedniki komend (jeśli potrzebujesz uruchomić uv bezpośrednio):
+#   uv sync           =>  pixi install
+#   uv lock           =>  pixi update
+#   uv run <cmd>      =>  pixi run <task>  lub  pixi exec -- <cmd>
+#   uv pip install X  =>  pixi add X
+#   uv cache clean    =>  pixi clean (lub: pixi exec -- uv cache clean)
+#   uv self update    =>  pixi self-update
+#
+# Aby uzyskać listę wszystkich dostępnych tasków:
+#   pixi task list
+#
+# Uwaga: pixi exec pozwala uruchomić dowolne narzędzie w środowisku:
+#   pixi exec -- ruff check nexus_ai/
+
+# ── List dependencies (odpowiednik uv tree) ──────────────────────────────
+
+[tasks.list-deps]
+cmd = "pixi list"
+description = "SUPERMOC: Wyświetl drzewo zależności zarządzane przez pixi (odpowiednik: uv tree)"
+
+[tasks.list-deps-graph]
+cmd = "python -c \"import pkg_resources; [print(f'{d.key} {d.version}') for d in sorted(pkg_resources.working_set, key=lambda x: x.key)]" "
+description = "SUPERMOC: Wypisz wszystkie pakiety z wersjami (odpowiednik: uv tree --all)"
+
+# ── Cache management (odpowiednik uv cache clean) ────────────────────────
+
+[tasks.cache-clean]
+cmd = "pip cache purge && pixi clean-cache --yes 2>/dev/null; echo 'Cache cleaned'"
+description = "SUPERMOC: Wyczyść cache pip i pixi (odpowiednik: uv cache clean)"
+
+[tasks.cache-info]
+cmd = "pip cache info 2>/dev/null; du -sh ~/.cache/pixi 2>/dev/null || echo 'No pixi cache found'"
+description = "SUPERMOC: Informacje o cache (wielkość)"
+
+# ── System info & diagnostics ─────────────────────────────────────────────
+
+[tasks.env-info]
+cmd = """
+echo '=== NexusAI Environment Info ==='
+echo "Python:    $(python --version 2>&1)"
+echo "Pixi:      $(pixi --version 2>&1)"
+echo "Project:   ${PIXI_PROJECT_ROOT:-$(pwd)}"
+echo "Platform:  $(uname -a)"
+echo "Shell:     $SHELL"
+echo "User:      $(whoami)"
+echo "CPU cores: $(nproc 2>/dev/null || echo N/A)"
+echo "RAM:       $(free -h 2>/dev/null | grep Mem | awk '{print $2}' || echo N/A)"
+echo "Disk:      $(df -h . 2>/dev/null | tail -1 | awk '{print $4}' || echo N/A)"
+"""
+description = "SUPERMOC: Wyświetl informacje o środowisku"
+
+[tasks.doctor-advanced]
+description = "SUPERMOC: Zaawansowana diagnostyka — sprawdź wszystkie komponenty"
+cmd = """
+echo '=== NexusAI Advanced Diagnostics ==='
+echo ''
+echo '--- Environment ---'
+python --version
+pixi --version
+echo ''
+echo '--- Python packages (top 20) ---'
+pip list --format=columns 2>/dev/null | head -20
+echo ''
+echo '--- Database files ---'
+ls -la app_data/ 2>/dev/null || echo 'No app_data/ directory'
+echo ''
+echo '--- AI Models ---'
+ls models/*.gguf 2>/dev/null | wc -l | xargs -I{} echo "{} GGUF models found"
+echo ''
+echo '--- System binaries ---'
+for bin in nats-server tigerbeetle; do
+  if command -v $bin &>/dev/null; then
+    echo "  $bin: $(which $bin) - OK"
+  else
+    echo "  $bin: NOT FOUND"
+  fi
+done
+echo ''
+echo '--- Git ---'
+git log --oneline -3 2>/dev/null || echo 'Not a git repository'
+echo ''
+echo 'Done.'
+"""
+
+# ── Verify migration completeness ─────────────────────────────────────────
+
+[tasks.verify-migration]
+description = "SUPERMOC: Zweryfikuj czy migracja mise/uv -> pixi jest kompletna"
+cmd = """
+echo '=== Migration Verification ==='
+echo ''
+FAIL=0
+
+# Check 1: No mise files
+echo '[1/6] No mise config files...'
+if ls mise.toml mise.prod.toml mise.local.toml 2>/dev/null | grep -q .; then
+  echo '  FAIL: mise config files found!'
+  FAIL=1
+else
+  echo '  OK: No mise files'
+fi
+
+# Check 2: No uv.lock as direct dependency
+echo '[2/6] No uv.lock file...'
+if [ -f uv.lock ]; then
+  echo '  FAIL: uv.lock found!'
+  FAIL=1
+else
+  echo '  OK: uv.lock removed'
+fi
+
+# Check 3: pixi.toml has tasks
+echo '[3/6] pixi.toml has tasks...'
+if grep -q '\[tasks\]' pixi.toml; then
+  echo "  OK: $(grep -c '\[tasks\.' pixi.toml) tasks found"
+else
+  echo '  FAIL: No tasks in pixi.toml!'
+  FAIL=1
+fi
+
+# Check 4: pixi.toml has activation.env
+echo '[4/6] pixi.toml has activation.env...'
+if grep -q '\[activation\.env\]' pixi.toml; then
+  echo '  OK: activation.env configured'
+else
+  echo '  FAIL: No activation.env!'
+  FAIL=1
+fi
+
+# Check 5: pixi.lock exists
+echo '[5/6] pixi.lock exists...'
+if [ -f pixi.lock ]; then
+  echo '  OK: pixi.lock found'
+else
+  echo '  FAIL: pixi.lock not found!'
+  FAIL=1
+fi
+
+# Check 6: No uv references in CI
+echo '[6/6] No direct uv use in CI workflows...'
+if grep -r '\\buve\\b' .github/workflows/*.yml .github/actions/*/action.yml 2>/dev/null | grep -qv '^.*#'; then
+  echo '  FAIL: uv commands found in CI!'
+  grep -rl '\\buve\\b' .github/workflows/*.yml .github/actions/*/action.yml 2>/dev/null | head -5
+  FAIL=1
+else
+  echo '  OK: No direct uv usage in CI'
+fi
+
+# Check 7: No mise references in CI
+echo '[7/7] No mise references in CI...'
+if grep -r '\\bmise\\b' .github/workflows/*.yml .github/actions/*/*.yml 2>/dev/null | grep -qv '^.*#'; then
+  echo '  FAIL: mise commands found in CI!'
+  grep -rl '\\bmise\\b' .github/workflows/*.yml .github/actions/*/*.yml 2>/dev/null | head -5
+  FAIL=1
+else
+  echo '  OK: No mise references in CI'
+fi
+
+echo ''
+if [ $FAIL -eq 0 ]; then
+  echo 'Result: ALL CHECKS PASSED - Migration is complete!'
+else
+  echo 'Result: SOME CHECKS FAILED - Review above'
+fi
+"""
+
+# ── Self-update ────────────────────────────────────────────
+
+[tasks.self-update]
+cmd = "pixi self-update"
+description = "SUPERMOC: Zaktualizuj pixi do najnowszej wersji"
+
+# UV JEST WBUDOWANY W PIXI.
+# pixi używa uv jako wewnętrznego silnika rozwiązywania zależności.
+# Nie potrzebujesz osobnej instalacji uv — pixi już go zawiera.
+#
+# Odpowiedniki komend (jeśli potrzebujesz uruchomić uv bezpośrednio):
 #   uv sync           →  pixi install
 #   uv lock           →  pixi update
 #   uv run <cmd>      →  pixi run <task>  lub  pixi exec -- <cmd>
