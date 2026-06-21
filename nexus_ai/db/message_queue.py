@@ -1,8 +1,7 @@
 """
 AsyncSQLiteQueue — async SQLite Message Queue via sqlite3.
 
-Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync
-zamiast aiosqlite.
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync.
 
 SUPERMOCE:
 - Atomiczne enqueue/dequeue w jednej transakcji (async)

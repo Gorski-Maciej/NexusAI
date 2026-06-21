@@ -137,7 +137,7 @@ class NexusOrchestrator:
         logger.info(f"Inicjalizacja API (Granian) na http://127.0.0.1:{port}")
         logger.info(
             "[GRANIAN] Superpowers: backpressure=100, backlog=2048, "
-            "HTTP/2=auto, metrics=true, uvloop, respawn=true"
+            "HTTP/2=auto, metrics=true, loop=auto, respawn=true"
         )
         self.api_process = await anyio.Process(
             [

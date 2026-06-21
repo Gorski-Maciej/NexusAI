@@ -18,7 +18,7 @@ REQUIREMENTS: dict[str, tuple[Check, ...]] = {
             "contains": ("workspace", "flatten"),
         },
     ),
-    "7_dast_sast": ({"file": "nexus_ai/scripts/security_scan.py", "contains": ("zap", "semgrep")},),
+    "7_dast_sast": ({"file": "nexus_ai/scripts/security_scan.py", "contains": ("zap", "run_codeql")},),
     "8_i18n": (
         {"file": "nexus_ai/api/i18n.py", "contains": ("locales",)},
         {"file": "nexus_ai/api/locales/pl.json"},

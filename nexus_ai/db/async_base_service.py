@@ -5,8 +5,6 @@ Python 3.13t (free-threaded, brak GIL): wywołania synchronicznego sqlite3
 są bezpieczne z wielu wątków. Każda operacja DB jest delegowana do wątku
 przez ``anyio.to_thread.run_sync()``.
 
-Zgodnie z decyzją architektoniczną: rezygnujemy z aiosqlite na rzecz
-natywnego sqlite3 + anyio.to_thread.run_sync.
 
 Każdy serwis dziedziczy po AsyncBaseService i dostaje automatycznie:
 - AsyncDBPool zarządzanie połączeniami

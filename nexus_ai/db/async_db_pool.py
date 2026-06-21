@@ -5,10 +5,9 @@ Python 3.13t (free-threaded, brak GIL) pozwala bezpiecznie używać
 synchronicznego sqlite3 z wielu wątków. Pool zarządza jednym połączeniem
 na plik DB, współdzielonym między serwisami.
 
-Zgodnie z docs/AIOSQLITE_AUDIT.md:
-- FAZA 3: Centralny pool dla sqlite3 (zamiast aiosqlite)
-- Wspiera SQLCipher przez PRAGMA key
-- Współdzielenie połączeń w free-threaded Python 3.13t
+Centralny pool dla sqlite3 (free-threaded).
+Wspiera SQLCipher przez PRAGMA key.
+Współdzielenie połączeń w free-threaded Python 3.13t.
 
 UWAGA: SQLCipher PRAGMA key musi być PIERWSZĄ operacją po connect().
 PRAGMY przed PRAGMA key rzucają DatabaseError.

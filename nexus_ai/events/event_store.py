@@ -4,8 +4,7 @@ AsyncEventStore — append-only event store backed by sqlite3 + Parquet archivin
 Przechowuje zdarzenia w tabeli ``event_stream`` jako append-only log.
 Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync.
 
-Zgodnie z decyzją architektoniczną: rezygnujemy z aiosqlite na rzecz
-natywnego sqlite3 + anyio.to_thread.run_sync (free-threaded Python 3.13t).
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync.
 
 SUPERMOCE Parquet (nowe):
 - **Event archiving do Parquet** — stare eventy są archiwizowane do Parquet

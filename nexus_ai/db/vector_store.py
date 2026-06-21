@@ -1,8 +1,7 @@
 """
 AsyncVectorStore — async sqlite-vec wrapper with ALL superpowers.
 
-Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync
-zamiast aiosqlite.
+Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync.
 
 SUPERMOCE (FAZA 2):
 - partition_key: partycjonowanie dla tenantów (tenant_id, vendor_nip)

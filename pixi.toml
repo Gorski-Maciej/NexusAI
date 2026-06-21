@@ -69,12 +69,11 @@ rust = ">=1.78.0"
 
 # ── API / ASGI ──────────────────────────────────────────────────────────────
 litestar = { version = ">=2.8.0", extras = ["jwt"] }
-granian = { version = ">=1.0.0", extras = ["dotenv", "pname", "reload", "uvloop"] }
+granian = { version = ">=1.0.0", extras = ["dotenv", "pname", "reload"] }
 
 # ── Database ────────────────────────────────────────────────────────────────
 sqlmodel = ">=0.0.16"
 sqlite-vec = ">=0.1.0"
-alembic = ">=1.13.0"
 
 # ── Serialization & Async ───────────────────────────────────────────────────
 msgspec = ">=0.18.0"
@@ -164,7 +163,7 @@ NEXUS_GRANIAN_HTTP2_MAX_STREAMS = "256"
 NEXUS_GRANIAN_METRICS = "true"
 NEXUS_GRANIAN_METRICS_ADDRESS = "127.0.0.1"
 NEXUS_GRANIAN_METRICS_PORT = "9090"
-NEXUS_GRANIAN_LOOP = "uvloop"
+NEXUS_GRANIAN_LOOP = "auto"
 NEXUS_GRANIAN_ACCESS_LOG = "true"
 NEXUS_GRANIAN_NO_SERVER_HEADER = "true"
 NEXUS_GRANIAN_RESPAWN = "true"
@@ -250,7 +249,7 @@ cmd = "curl -s http://127.0.0.1:9090/metrics | head -50"
 description = "Podgląd metryk Granian (Prometheus)"
 
 [tasks.api-dev]
-cmd = "granian --reload --host 127.0.0.1 --port 8000 --backlog 2048 --backpressure 100 --http auto --loop uvloop --access-log --access-log-fmt '%(addr)s - %(method)s %(path)s %(status)d %(dt_ms).3f' --no-header-server --metrics --metrics-address 127.0.0.1 --metrics-port 9091 --reload-ignore-dirs .git --reload-ignore-dirs __pycache__ --reload-ignore-dirs .pixi --reload-ignore-dirs node_modules --reload-ignore-patterns '*.pyc' --reload-ignore-patterns '*.so' --reload-tick 200 nexus_ai.api.app:create_app"
+cmd = "granian --reload --host 127.0.0.1 --port 8000 --backlog 2048 --backpressure 100 --http auto --loop auto --access-log --access-log-fmt '%(addr)s - %(method)s %(path)s %(status)d %(dt_ms).3f' --no-header-server --metrics --metrics-address 127.0.0.1 --metrics-port 9091 --reload-ignore-dirs .git --reload-ignore-dirs __pycache__ --reload-ignore-dirs .pixi --reload-ignore-dirs node_modules --reload-ignore-patterns '*.pyc' --reload-ignore-patterns '*.so' --reload-tick 200 nexus_ai.api.app:create_app"
 description = "Uruchom serwer API z hot-reload (Granian — wszystkie supermoce)"
 
 [tasks.worker]
@@ -362,68 +361,29 @@ cmd = "mypy nexus_ai/"
 description = "Sprawdź typy przez mypy"
 
 [tasks.security-scan]
-cmd = "python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy lenient"
-description = "Skanowanie bezpieczeństwa (Semgrep SAST) — tryb łagodny"
+cmd = "python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy lenient"    description = "Skanowanie bezpieczeństwa (ruff S) — tryb łagodny"
 
 [tasks.security-scan-strict]
 cmd = "python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy strict"
 description = "Skanowanie bezpieczeństwa (tryb ścisły — 0 high, 0 medium)"
 
-# ── Migracje bazy danych — SUPERMOCE Alembic ──────────────────────────────
+# ── Migracje bazy danych — natywny system SQLite (zastępuje Alembic) ────────
 
 [tasks.migrate]
-cmd = "alembic upgrade head"
-description = "Wykonaj migracje bazy danych (Alembic upgrade head)"
-
-[tasks.migrate-new]
-cmd = "alembic revision --autogenerate -m"
-description = "Wygeneruj nową migrację (podaj opis: pixi run migrate-new 'dodaj_pole')"
+cmd = "python -m migrations.run_migrations"
+description = "Wykonaj migracje bazy danych (natywny system SQL)"
 
 [tasks.migrate-check]
-cmd = "alembic check"
-description = "SUPERMOC: Sprawdź czy są niezatwierdzone migracje (alembic check)"
-
-[tasks.migrate-current]
-cmd = "alembic current"
-description = "SUPERMOC: Pokaż aktualną rewizję bazy"
+cmd = "python -m migrations.run_migrations --current"
+description = "Sprawdź aktualną wersję migracji"
 
 [tasks.migrate-history]
-cmd = "alembic history"
-description = "SUPERMOC: Pokaż historię migracji"
+cmd = "python -m migrations.run_migrations --history"
+description = "Pokaż historię migracji"
 
-[tasks.migrate-stamp]
-cmd = "alembic stamp"
-description = "SUPERMOC: Oznacz bazę jako będącą na konkretnej rewizji"
-
-[tasks.migrate-downgrade]
-cmd = "alembic downgrade"
-description = "SUPERMOC: Cofnij ostatnią migrację"
-
-[tasks.migrate-fresh]
-cmd = "alembic downgrade base && alembic upgrade head"
-description = "SUPERMOC: Odśwież bazę od zera (drop + create all)"
-
-[tasks.migrate-sql]
-cmd = "alembic upgrade head --sql"
-description = "SUPERMOC: Generuj SQL offline dla migracji (bez łączenia z DB)"
-
-[tasks.migrate-ci]
-cmd = """
-echo 'Alembic CI/CD Check'
-echo '======================'
-echo ''
-echo '1. Checking migration status...'
-alembic check && echo '  Schema is in sync' || echo '  Schema drift detected!'
-echo ''
-echo '2. Current revision:'
-alembic current
-echo ''
-echo '3. Migration history:'
-alembic history --verbose
-echo ''
-echo 'Alembic CI/CD check complete'
-"""
-description = "SUPERMOC: CI/CD — sprawdź migracje + sanity"
+[tasks.migrate-dry]
+cmd = "python -m migrations.run_migrations --dry-run"
+description = "Suchy przebieg — wypisz co zostanie wykonane bez zmian"
 
 # ── Modele AI ────────────────────────────────────────────────────────────────
 
@@ -789,8 +749,8 @@ cmd = "echo 'api-dev is not available in production — use: pixi run prod:api'"
 description = "Niedostępne w produkcji"
 
 [tasks.prod-migrate]
-cmd = "NEXUS_LOG_LEVEL=warn alembic upgrade head"
-description = "Wykonaj migracje w środowisku produkcyjnym"
+cmd = "NEXUS_LOG_LEVEL=warn python -m migrations.run_migrations"
+description = "Wykonaj migracje w środowisku produkcyjnym (natywny system)"
 
 [tasks.prod-deploy]
 depends_on = ["test", "build-all", "prod-migrate"]
@@ -828,10 +788,8 @@ ruff = ">=0.3.0"
 mypy = ">=1.8.0"
 
 # ── Build tool — Nuitka (kompilacja Python → C → .exe) ────────────────────
-nuitka = ">=1.8"
+nuitka = ">=1.8"            # ── Security scanning — ruff S rules ──────────────────────────────────────
 
-# ── Security scanning — Semgrep SAST ───────────────────────────────────────
-semgrep = ">=1.40.0"
 
 [feature.dev.tasks]
 # gen-requirements — zastąpione przez pixi.
