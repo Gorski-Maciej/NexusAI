@@ -104,23 +104,12 @@ fi
 if ! $SKIP_INSTALL; then
     echo "[1/5] Installing Python dependencies..."
 
-    # Prefer uv (Astral) — 10-100× faster
-    if command -v uv &>/dev/null; then
-        echo "  Using uv (Astral)..."
-        uv pip install nuitka || {
-            echo "  [WARN] uv failed, trying pip..."
-            "$PYTHON" -m pip install nuitka
-        }
-        uv pip install -e ".[ui]" || {
-            echo "  [WARN] Optional deps failed, installing core..."
-            uv pip install -e "."
-        }
-    else
-        echo "  Using pip..."
-        "$PYTHON" -m pip install --upgrade pip
-        "$PYTHON" -m pip install nuitka
-        "$PYTHON" -m pip install -e "."
-    fi
+    # pixi zarządza środowiskiem — uv jest wbudowany w pixi
+    # Używamy pip (dostępny w środowisku pixi)
+    echo "  Using pip (via pixi environment)..."
+    "$PYTHON" -m pip install --upgrade pip
+    "$PYTHON" -m pip install nuitka
+    "$PYTHON" -m pip install -e "."
 
     echo "  Done."
     echo ""

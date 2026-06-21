@@ -45,8 +45,7 @@ permissions:
 # ── Konfiguracja cache ────────────────────────────────────────────────────────
 env:
   PIXI_CACHE_DIR: ~/.cache/pixi
-  UV_CACHE_DIR: ~/.cache/uv
-  UV_LINK_MODE: copy
+  PIXI_CACHE_DIR: ~/.cache/pixi
   HATCH_CACHE_DIR: ~/.hatch
   REPORTS_DIR: reports
 
@@ -150,7 +149,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: ./.github/actions/setup-uv
+      - uses: ./.github/actions/setup-pixi
+        with:
+          pixi-env: dev
 
       - name: Download Rust wheels
         uses: actions/download-artifact@v4
@@ -158,10 +159,9 @@ jobs:
           name: nexus-crypto-ubuntu-latest
           path: dist/wheels/
 
-      - name: Install nexus-crypto wheel + dev tools
+      - name: Install nexus-crypto wheel (dev env already has mypyc, pytest)
         run: |
-          uv pip install dist/wheels/nexus_crypto-*.whl
-          uv pip install mypyc pytest pytest-anyio
+          pip install dist/wheels/nexus_crypto-*.whl
 
       - name: Cache mypyc compiled *.so files
         uses: actions/cache@v4
@@ -170,24 +170,24 @@ jobs:
             **/*.cpython-313*.so
             **/*.so
             .mypy_cache/
-          key: mypyc-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'uv.lock', 'nexus_ai/tax/**/*.py', 'nexus_ai/core/**/*.py', 'nexus_ai/services/**/*.py', 'nexus_ai/db/**/*.py', 'nexus_ai/events/**/*.py') }}
+          key: mypyc-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'pixi.lock', 'nexus_ai/tax/**/*.py', 'nexus_ai/core/**/*.py', 'nexus_ai/services/**/*.py', 'nexus_ai/db/**/*.py', 'nexus_ai/events/**/*.py') }}
           restore-keys: |
             mypyc-${{ runner.os }}-
             mypyc-
 
-      - name: Compile with mypyc
+      - name: Compile with mypyc (pixi exec)
         continue-on-error: true
         run: |
-          uv run mypyc \
+          pixi exec -- mypyc \
             nexus_ai/tax \
             nexus_ai/core \
             nexus_ai/services \
             nexus_ai/db \
             nexus_ai/events
 
-      - name: Run smoke tests on compiled code
+      - name: Run smoke tests on compiled code (pixi exec)
         continue-on-error: true
-        run: uv run pytest tests/test_tax_math_engine.py -x -v --timeout=30 -q
+        run: pixi exec -- pytest tests/test_tax_math_engine.py -x -v --timeout=30 -q
 
       - name: List compiled *.so files
         run: find . -name "*.so" -type f | sort | head -20
@@ -353,25 +353,9 @@ jobs:
           echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| mypy | ✅ ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
 
-  # ── Test (uv): pytest ───────────────────────────────────────────────────
-  test-uv:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: ./.github/actions/setup-uv
-
-      - name: Run tests with coverage (uv)
-        run: uv run pytest -x -v --timeout=30 --cov=nexus_ai --cov-report=term-missing
-
-      - name: Test Summary
-        if: always()
-        run: |
-          echo "## 🧪 UV Tests" >> $GITHUB_STEP_SUMMARY
-          echo "| Tool | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| pytest | ✅ ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
+  # ── Test (pixi): pytest ───────────────────────────────────────────────────
+  # (uv jest wbudowany w pixi — osobny test-uv nie jest potrzebny)
+  # Użyj: pixi run --environment dev test  lub  pixi run --environment dev test-coverage
 
   # ── Lint: Ruff ──────────────────────────────────────────────────────────
   lint:
@@ -490,11 +474,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: ./.github/actions/setup-uv
+      - uses: ./.github/actions/setup-pixi
+        with:
+          pixi-env: dev
 
-      - name: Run schemathesis CI fuzzing
+      - name: Run schemathesis CI fuzzing (pixi exec)
         run: |
-          python scripts/schemathesis_runner.py \
+          pixi exec -- python scripts/schemathesis_runner.py \
             --mode ci \
             --max-examples 10 \
             --format junit \
@@ -524,11 +510,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: ./.github/actions/setup-uv
+      - uses: ./.github/actions/setup-pixi
+        with:
+          pixi-env: dev
 
-      - name: Run schemathesis security fuzzing
+      - name: Run schemathesis security fuzzing (pixi exec)
         run: |
-          python scripts/schemathesis_runner.py \
+          pixi exec -- python scripts/schemathesis_runner.py \
             --mode security \
             --max-examples 50 \
             --format junit

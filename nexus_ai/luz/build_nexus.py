@@ -121,14 +121,13 @@ if __name__ == "__main__":
 
 # Sekwencja komend do CI/CD lub uruchamiania lokalnego
 
-# 1. Zablokowanie wersji za pomocą 'uv' (szybsza alternatywa dla pip-tools)
-# uv pip compile pyproject.toml -o requirements.txt
-
-# 2. Audyt bezpieczeństwa paczek Pythona
-# uv pip audit requirements.txt
-
+# 1. Zablokowanie wersji — pixi zajmuje się lockowaniem zależności przez pixi.lock
+#    pixi lock  (regeneruje pixi.lock na podstawie pixi.toml)
+#
+# 2. Audyt bezpieczeństwa — pixi exec -- pip-audit .
+#
 # 3. Wygenerowanie SBOM w standardzie CycloneDX (używając narzędzia syft/trivy)
-# trivy fs --format cyclonedx --output nexus_sbom.json .
-
+#    trivy fs --format cyclonedx --output nexus_sbom.json .
+#
 # 4. Skanowanie wygenerowanego SBOM pod kątem krytycznych luk (CVE)
-# trivy sbom nexus_sbom.json --severity CRITICAL,HIGH
+#    trivy sbom nexus_sbom.json --severity CRITICAL,HIGH

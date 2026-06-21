@@ -1,4 +1,4 @@
-#!/usr/bin/env uv run
+#!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.13"
 # dependencies = [
@@ -12,14 +12,16 @@ Pobierz aktualne kursy walut z NBP API.
 Single-file script zgodny z PEP 723 — samowystarczalny, nie wymaga
 instalacji zależności. Uruchom przez:
 
-    uv run scripts/fetch_currency_rates.py
+    pixi run rates
     # lub:
-    ./scripts/fetch_currency_rates.py
+    pixi exec -- python scripts/fetch_currency_rates.py
+    # lub bezpośrednio (w środowisku pixi):
+    python scripts/fetch_currency_rates.py
 
 Przykłady:
-    uv run scripts/fetch_currency_rates.py              # Wszystkie kursy
-    uv run scripts/fetch_currency_rates.py EUR USD GBP  # Wybrane waluty
-    uv run scripts/fetch_currency_rates.py --json       # Format JSON
+    pixi run rates                                        # Wszystkie kursy
+    pixi run rates -- EUR USD GBP                       # Wybrane waluty
+    pixi run rates-json                                 # Format JSON
 """
 
 from __future__ import annotations

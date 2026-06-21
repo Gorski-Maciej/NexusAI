@@ -1,13 +1,13 @@
 """
-NexusAI — CLI entry point (thin wrapper, delegates to mise)
-============================================================
+NexusAI — CLI entry point (thin wrapper, delegates to pixi)
+==============================================================
 
-Backwards-compatibility shim. All CLI commands are delegated to ``mise run``.
+Backwards-compatibility shim. All CLI commands are delegated to ``pixi run``.
 
 Usage:
-    python -m nexus_ai.main --mode api     ->  mise run api
-    python -m nexus_ai.main --migrate      ->  mise run migrate
-    python -m nexus_ai.main --load-fixtures ->  mise run seed
+    python -m nexus_ai.main --mode api     ->  pixi run api
+    python -m nexus_ai.main --migrate      ->  pixi run migrate
+    python -m nexus_ai.main --load-fixtures ->  pixi run seed
 """
 
 from __future__ import annotations
@@ -20,13 +20,13 @@ import anyio
 
 
 async def main(argv: list[str] | None = None) -> int:
-    """Delegate CLI arguments to mise run (backwards-compat shim).
+    """Delegate CLI arguments to pixi run (backwards-compat shim).
 
     Args:
         argv: CLI arguments (defaults to sys.argv[1:]).
 
     Returns:
-        Exit code from mise task.
+        Exit code from pixi task.
     """
     args = argv or sys.argv[1:]
 
@@ -47,26 +47,26 @@ async def main(argv: list[str] | None = None) -> int:
 
     for flag, task in FLAGS.items():
         if flag in args:
-            return await _run_mise(task)
+            return await _run_pixi(task)
     for i, a in enumerate(args):
         if a == "--mode" and i + 1 < len(args) and args[i + 1] in MODES:
-            return await _run_mise(MODES[args[i + 1]])
+            return await _run_pixi(MODES[args[i + 1]])
         if a == "--mode" and i + 1 < len(args):
             print(f"Unknown mode: {args[i+1]}, available: {', '.join(MODES)}")
             return 1
-    return await _run_mise("api")
+    return await _run_pixi("api")
 
 
-async def _run_mise(task: str) -> int:
-    """Run a mise task and return its exit code via anyio.run_process."""
+async def _run_pixi(task: str) -> int:
+    """Run a pixi task and return its exit code via anyio.run_process."""
     project_root = Path(__file__).resolve().parent.parent
-    cmd = ["mise", "run", task]
+    cmd = ["pixi", "run", task]
     try:
         result = await anyio.run_process(cmd, cwd=project_root)
         return result.returncode
     except FileNotFoundError:
-        print("❌ mise not found. Install: curl https://mise.run | sh", file=sys.stderr)
-        print("   Then run: mise install", file=sys.stderr)
+        print("❌ pixi not found. Install: curl -fsSL https://pixi.sh/install.sh | sh", file=sys.stderr)
+        print("   Then run: pixi install", file=sys.stderr)
         return 1
 
 

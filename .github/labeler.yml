@@ -65,7 +65,7 @@
 
 "type:dependencies":
   - changed-files:
-      - any-glob-to-any-file: ["pyproject.toml", "pixi.toml", "uv.lock", "pixi.lock"]
+      - any-glob-to-any-file: ["pyproject.toml", "pixi.toml", "pixi.lock"]
 
 "type:docker":
   - changed-files:

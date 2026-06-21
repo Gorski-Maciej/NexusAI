@@ -56,8 +56,8 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 |---|---|---|---|
 | **Python ≥3.13 (free-threaded)** | Python <3.13 (z GIL) | ✅ | `pixi.toml` → `python = "3.13.*"` |
 | **pixi** — menedżer środowiska (Rust) | Docker, conda, apt-get | ✅ | `pixi.toml` |
-| **mise** — globalny przełącznik wersji | pyenv, asdf, make, just | ✅ | `mise.toml` |
-| **uv** — menedżer pakietów PyPI (Rust) | pip | ✅ | Wbudowany w pixi |
+| ~~**mise** — task runner~~ | ~~pyenv, asdf, make, just~~ | ➡️ **pixi** (zastąpił mise) | `pixi.toml` |
+| ~~**uv** — menedżer pakietów PyPI (Rust)~~ | ~~pip~~ | ➡️ **pixi** (uv wbudowany) | Wbudowany w pixi |
 | **hatchling** — backend budowania | setuptools, setup.py | ✅ | `pyproject.toml` → `build-backend = "hatchling.build"` |
 | **mypyc** — kompilacja typowanego Pythona → C | — | ✅ | `pyproject.toml` → `[tool.mypyc]` |
 | **PyO3 + Maturin** — Rust extensions | — | ✅ | `nexus_ai/rust/Cargo.toml`, `pyproject.toml` → `[tool.maturin]` |
@@ -97,7 +97,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **NATS Server** — broker komunikatów (~10 MB) | Redis, RabbitMQ | ✅ | `mise.toml` → `nats-server = "2.10"` |
+| **NATS Server** — broker komunikatów (~10 MB) | Redis, RabbitMQ | ✅ | `pixi.toml` → `task start-nats` |
 | **nats-py** — klient Python | — | ✅ | `nexus_ai/core/broker.py` |
 | **NATS JetStream** — trwałe strumienie | Redis Streams | ✅ | `nexus_ai/core/tasks.py` |
 | **Taskiq** — kolejka zadań (async-native) | Celery | ✅ | `nexus_ai/core/broker.py` |
@@ -132,7 +132,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **TigerBeetle** — silnik księgowy (double-entry) | — | ✅ | `mise.toml`, `nexus_ai/roboton_reflekton/ledger_client.py` |
+| **TigerBeetle** — silnik księgowy (double-entry) | — | ✅ | `pixi.toml` → `task start-tigerbeetle`, `nexus_ai/roboton_reflekton/ledger_client.py` |
 | **Nexus-Money** (msgspec.Struct) | py-moneyed | ✅ | `nexus_ai/services/currency_converter.py` → `class Money` |
 | **Nexus-Forex** (Rust + PyO3) — własny moduł walutowy | ForexEngine | ✅ | `nexus_ai/roboton_reflekton/nexus_forex/` → `Cargo.toml`, `src/lib.rs` |
 | **TigerBeetle Client (Python)** | — | ✅ | `nexus_ai/roboton_reflekton/ledger_client.py` |
@@ -204,8 +204,8 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **pixi** — deklaratywne środowisko | Docker, conda | ✅ | `pixi.toml` |
-| **mise** — menedżer wersji + task runner | pyenv, asdf, make, just | ✅ | `mise.toml` |
+| **pixi** — deklaratywne środowisko + task runner | Docker, conda, ~~mise~~ | ✅ (jeden plik zamiast mise + pixi) | `pixi.toml` |
+| ~~**mise** — menedżer wersji + task runner~~ | ~~pyenv, asdf, make, just~~ | ➡️ **pixi** (zastąpił mise) | `pixi.toml` |
 | **GitHub Actions** — CI/CD | — | ✅ | `.github/workflows/` |
 
 ### Punkt 26 — SYSTEM POWIADOMIEŃ I CENTRUM DECYZJI
@@ -368,7 +368,7 @@ pixi run api
 pixi run worker
 
 # Start the desktop UI
-pixi run flet
+pixi run desktop
 
 # Run diagnostics
 pixi run doctor

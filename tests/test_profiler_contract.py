@@ -558,28 +558,28 @@ class TestDoctorIntegration:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
-class TestMiseIntegration:
-    """SUPERMOC: mise.toml ma taski dla py-spy."""
+class TestPixiIntegration:
+    """SUPERMOC: pixi.toml ma taski dla py-spy."""
 
-    def test_mise_has_profile_tasks(self) -> None:
-        """mise.toml zawiera taski profilowania."""
-        source = Path("mise.toml").read_text(encoding="utf-8")
+    def test_pixi_has_profile_tasks(self) -> None:
+        """pixi.toml zawiera taski profilowania."""
+        source = Path("pixi.toml").read_text(encoding="utf-8")
         assert "profile" in source
         assert "py-spy" in source
 
-    def test_mise_profile_check_exists(self) -> None:
-        """mise.toml ma task profile-check."""
-        source = Path("mise.toml").read_text(encoding="utf-8")
+    def test_pixi_profile_check_exists(self) -> None:
+        """pixi.toml ma task profile-check."""
+        source = Path("pixi.toml").read_text(encoding="utf-8")
         assert "profile-check" in source
 
-    def test_mise_profile_dump_exists(self) -> None:
-        """mise.toml ma task profile-dump."""
-        source = Path("mise.toml").read_text(encoding="utf-8")
+    def test_pixi_profile_dump_exists(self) -> None:
+        """pixi.toml ma task profile-dump."""
+        source = Path("pixi.toml").read_text(encoding="utf-8")
         assert "profile-dump" in source
 
-    def test_mise_profile_top_exists(self) -> None:
-        """mise.toml ma task profile-top."""
-        source = Path("mise.toml").read_text(encoding="utf-8")
+    def test_pixi_profile_top_exists(self) -> None:
+        """pixi.toml ma task profile-top."""
+        source = Path("pixi.toml").read_text(encoding="utf-8")
         assert "profile-top" in source
 
 

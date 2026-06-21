@@ -31,10 +31,6 @@ build-backend = "hatchling.build"
 #   pixi run pytest    # Run tests
 #   pixi shell         # Activate shell inside the environment
 
-# ── uv (Astral) — fastest PyPI package manager (built into pixi) ───────────
-# uv is included inside pixi, but can also be used standalone:
-#   uv pip install -r requirements.txt   # 10-100× faster than pip
-#   uv venv                             # Create virtual env in milliseconds
 
 [project]
 name = "nexus-ai"
@@ -122,7 +118,7 @@ dependencies = [
     # TigerBeetle — oficjalny Python client (double-entry accounting engine)
     # Zgodnie z audytem: zastępuje stuba rzeczywistym klientem
     # ``tigerbeetle-client`` to oficjalny klient Python TigerBeetle
-    # Wersja 0.16.x zgodna z TigerBeetle 0.16 w mise.toml
+    # Wersja 0.16.x — pobierana przez pixi task download-binaries
     # ═══════════════════════════════════════════════════════════════════════
     "tigerbeetle>=0.16.0",
 
@@ -318,7 +314,7 @@ exclude = [
 # ── Strict mode dla krytycznych modułów ─────────────────────────────────────
 # Uwaga: per-modułowe opcje mypyc wymagają notacji kropkowej (nie ścieżkowej)
 # i są stosowane przez mypyc w trakcie kompilacji. Na razie strict mode
-# włączony globalnie przez CLI flagi w taskach mise/hatch.
+# włączony globalnie przez CLI flagi w taskach pixi/hatch.
 
 # ── Pytest ───────────────────────────────────────────────────────────────────
 [tool.pytest.ini_options]
@@ -363,23 +359,13 @@ strict = false
 ignore_missing_imports = true
 warn_unused_ignores = false
 
-# ── uv (Astral) — najszybszy menedżer pakietów PyPI ──────────────────────────
-# uv jest wbudowany w pixi, ale może być używany samodzielnie:
-#   uv sync              # Synchronizuj środowisko z uv.lock
-#   uv lock              # Generuj/aktualizuj uv.lock
-#   uv run pytest        # Uruchom testy w środowisku
-#   uv export -o req.txt # Eksportuj lockfile do requirements.txt
+# pixi jest jedynym menedżerem środowiska — nie potrzebujesz osobnego uv.
+# pixi używa uv jako wewnętrznego resolvera. Wszystkie zależności
+# są zarządzane przez pixi.toml, a lockowany przez pixi.lock.
 #
-# UWAGA: Dev dependencies są zdefiniowane w [project.optional-dependencies].dev
-# (PEP 621) — to jest canonical source of truth. pixi używa własnej sekcji
-# [feature.dev.pypi-dependencies] w pixi.toml dla zależności systemowych.
-#
-# Przykład użycia z uv:
-#   uv sync --dev          # Instaluje dev z [project.optional-dependencies].dev
-#   uv sync --group dev    # To samo, alias
-#
-[tool.uv.sources]
-nexus-crypto = { path = "./nexus_ai/rust", editable = true }
+# Dev dependencies: [project.optional-dependencies].dev (PEP 621)
+# dla kompatybilności z PyPI. pixi ma własną sekcję
+# [feature.dev.pypi-dependencies] w pixi.toml.
 
 # ── crosshair (SMT-driven property-based testing) ────────────────────────────
 # Zastępuje: hypothesis (głównie)
@@ -468,18 +454,18 @@ legacy-build-rust-dev = "cd nexus_ai/rust && maturin develop --release"
 legacy-build-nuitka = "python -m nuitka --project-name=nexus-ai main.py"
 legacy-build-nuitka-fast = "python -m nuitka --project-name=nexus-ai --mode=standalone --low-memory main.py"
 # Optymalizacja przez mypyc
-optimize = "uv run mypyc nexus_ai/tax nexus_ai/core"
+optimize = "mypyc nexus_ai/tax nexus_ai/core"
 
 # ── Dev env — pełny stack deweloperski ───────────────────────────────────────
 [tool.hatch.envs.dev]
 
 [tool.hatch.envs.dev.scripts]
 api = "granian --reload --host 127.0.0.1 --port 8000 nexus_ai.api.app:create_app"
-worker = "uv run python main.py --mode worker"
-desktop = "uv run python -m nexus_ai.luz.main"
-migrate = "uv run alembic upgrade head"
-seed = "uv run python main.py --load-fixtures"
-doctor = "uv run python -m nexus_ai.scripts.doctor"
+worker = "python main.py --mode worker"
+desktop = "python -m nexus_ai.luz.main"
+migrate = "alembic upgrade head"
+seed = "python main.py --load-fixtures"
+doctor = "python -m nexus_ai.scripts.doctor"
 
 # ── Default env — unified build/CI/CD pipeline (dostępne przez `hatch run`) ────
 # Wszystkie operacje są dostępne przez hatch — jeden interfejs do wszystkiego.

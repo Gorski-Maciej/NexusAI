@@ -89,30 +89,15 @@ if defined CLEAN_BUILD (
     echo.
 )
 
-REM ── Step 1: Install dependencies (prefer uv, fallback to pip) ──────────
+REM ── Step 1: Install dependencies (pixi zarządza środowiskiem) ──────────
 if not defined SKIP_INSTALL (
     echo [1/5] Installing Python dependencies...
     cd /d "%PROJECT_ROOT%"
 
-    where /q uv 2>nul
-    if not errorlevel 1 (
-        echo   Using uv (Astral) — 10-100x faster than pip...
-        uv pip install --system nuitka
-        if errorlevel 1 (
-            echo   [WARN] uv pip install failed, trying pip...
-            python -m pip install nuitka
-        )
-        uv pip install --system -e ".[ui]"
-        if errorlevel 1 (
-            echo   [WARN] Some optional deps failed, installing core only...
-            uv pip install --system -e "."
-        )
-    ) else (
-        echo   uv not found, falling back to pip...
-        python -m pip install --upgrade pip >nul 2>&1
-        python -m pip install nuitka >nul 2>&1
-        python -m pip install -e "." >nul 2>&1
-    )
+    echo   Using pip (via pixi environment)...
+    python -m pip install --upgrade pip >nul 2>&1
+    python -m pip install nuitka >nul 2>&1
+    python -m pip install -e "./../.." >nul 2>&1
 
     echo   Done.
     echo.

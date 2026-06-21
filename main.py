@@ -1,17 +1,17 @@
 """
-NexusAI — CLI entry point (delegates to mise)
-===============================================
+NexusAI — CLI entry point (delegates to pixi)
+================================================
 
-All commands are delegated to ``mise run <task>``.
+All commands are delegated to ``pixi run <task>``.
 
 Quick start:
-    python main.py --mode api     ->  mise run api
-    python main.py --mode worker  ->  mise run worker
-    python main.py --mode all     ->  mise run dev
-    python main.py --migrate      ->  mise run migrate
-    python main.py --fetch-models ->  mise run download-models
+    python main.py --mode api     ->  pixi run api
+    python main.py --mode worker  ->  pixi run worker
+    python main.py --mode all     ->  pixi run dev
+    python main.py --migrate      ->  pixi run migrate
+    python main.py --fetch-models ->  pixi run download-models
 
-See ``mise run --list`` for all available tasks.
+See ``pixi run --list`` for all available tasks.
 
 Nuitka Build Configuration
 --------------------------
@@ -168,13 +168,13 @@ def _setup_mimalloc() -> None:
 
 async def main() -> int:
     _setup_mimalloc()
-    """Delegate CLI arguments to mise run (~15 lines of logic).
+    """Delegate CLI arguments to pixi run (~15 lines of logic).
 
     Usage:
-        python main.py --mode api     ->  mise run api
-        python main.py --migrate      ->  mise run migrate
+        python main.py --mode api     ->  pixi run api
+        python main.py --migrate      ->  pixi run migrate
         python main.py --host 0.0.0.0 --port 8000 --mode worker
-                                    ->  NEXUS_HOST=0.0.0.0 NEXUS_PORT=8000 mise run worker
+                                    ->  NEXUS_HOST=0.0.0.0 NEXUS_PORT=8000 pixi run worker
     """
     args = sys.argv[1:] if len(sys.argv) > 1 else ["--mode", "api"]
 
@@ -195,26 +195,26 @@ async def main() -> int:
 
     for flag, task in FLAGS.items():
         if flag in args:
-            return await _run_mise(task)
+            return await _run_pixi(task)
     for i, a in enumerate(args):
         if a == "--mode" and i + 1 < len(args):
             if args[i + 1] in MODES:
-                return await _run_mise(MODES[args[i + 1]])
+                return await _run_pixi(MODES[args[i + 1]])
             print(f"Unknown mode: {args[i+1]}, available: {', '.join(MODES)}")
             return 1
-    return await _run_mise("api")
+    return await _run_pixi("api")
 
 
-async def _run_mise(task: str) -> int:
-    """Run a mise task and return its exit code via anyio.run_process."""
+async def _run_pixi(task: str) -> int:
+    """Run a pixi task and return its exit code via anyio.run_process."""
     project_root = Path(__file__).resolve().parent
-    cmd = ["mise", "run", task]
+    cmd = ["pixi", "run", task]
     try:
         result = await anyio.run_process(cmd, cwd=project_root)
         return result.returncode
     except FileNotFoundError:
-        print("❌ mise not found. Install: curl https://mise.run | sh", file=sys.stderr)
-        print("   Then run: mise install", file=sys.stderr)
+        print("❌ pixi not found. Install: curl -fsSL https://pixi.sh/install.sh | sh", file=sys.stderr)
+        print("   Then run: pixi install", file=sys.stderr)
         return 1
 
 

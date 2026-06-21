@@ -207,16 +207,16 @@ class TestGranianConfig:
         assert "reload" in dep_str
         assert "uvloop" in dep_str
 
-    def test_granian_task_in_mise(self) -> None:
-        """Sprawdź czy mise.toml ma task api-dev z wszystkimi flagami."""
+    def test_granian_task_in_pixi(self) -> None:
+        """Sprawdź czy pixi.toml ma task api-dev z wszystkimi flagami."""
         import tomllib
 
-        mise = tomllib.loads(
-            Path("mise.toml").read_text(encoding="utf-8")
+        pixi = tomllib.loads(
+            Path("pixi.toml").read_text(encoding="utf-8")
         )
-        tasks = mise.get("tasks", {})
+        tasks = pixi.get("tasks", {})
         assert "api-dev" in tasks
-        api_dev_run = tasks["api-dev"]["run"]
+        api_dev_run = tasks["api-dev"]["cmd"]
         # Sprawdź kluczowe flagi Granian w tasku
         assert "--backlog" in api_dev_run
         assert "--backpressure" in api_dev_run
@@ -229,14 +229,14 @@ class TestGranianConfig:
         assert "--reload-ignore-patterns" in api_dev_run
         assert "--reload-tick" in api_dev_run
 
-    def test_granian_prod_task_in_mise(self) -> None:
-        """Sprawdź czy mise.toml ma task api-prod i api-metrics."""
+    def test_granian_prod_task_in_pixi(self) -> None:
+        """Sprawdź czy pixi.toml ma task api-prod i api-metrics."""
         import tomllib
 
-        mise = tomllib.loads(
-            Path("mise.toml").read_text(encoding="utf-8")
+        pixi = tomllib.loads(
+            Path("pixi.toml").read_text(encoding="utf-8")
         )
-        tasks = mise.get("tasks", {})
+        tasks = pixi.get("tasks", {})
         assert "api-prod" in tasks
         assert "api-metrics" in tasks
 

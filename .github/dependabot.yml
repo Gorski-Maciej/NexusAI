@@ -53,7 +53,7 @@ updates:
     # reviewers:
     #   - "Gorski-Maciej"
 
-  # ── Python (pip/uv) — zależności PyPI ───────────────────────────────────────
+  # ── Python (pixi) — zależności PyPI (uv jest wbudowany w pixi)
   - package-ecosystem: "pip"
     directory: "/"
     schedule:

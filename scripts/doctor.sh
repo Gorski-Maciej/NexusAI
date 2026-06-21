@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
-# mise doctor — system diagnostics
-#MISE description="Run full system diagnostics — check components, DB, NATS, models"
-#MISE depends=["start-nats"]
+# ═══════════════════════════════════════════════════════════════════════════════
+# scripts/doctor.sh — System diagnostics (przeniesione z mise-tasks/)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Uruchom bezpośrednio: bash scripts/doctor.sh
+# Uwaga: 'pixi run doctor' uruchamia Pythonową wersję (nexus_ai/scripts/doctor.py)
+# ═══════════════════════════════════════════════════════════════════════════════
+
 set -euo pipefail
 
 echo "🔍 NexusAI — System Diagnostics"
-echo "================================"
+echo "================================="
 echo ""
 
 echo "── Environment ──"
 echo "  Python:  $(python --version 2>&1)"
-echo "  Mise:    $(mise --version 2>&1)"
 echo "  Pixi:    $(pixi --version 2>&1)"
-echo "  Project: ${MISE_PROJECT_ROOT:-$(pwd)}"
+echo "  Project: ${PIXI_PROJECT_ROOT:-$(pwd)}"
 echo ""
 
 echo "── Database ──"
@@ -50,7 +53,7 @@ MODEL_COUNT=$(find models/ -name "*.gguf" 2>/dev/null | wc -l)
 if [ "$MODEL_COUNT" -gt 0 ]; then
     echo "  GGUF:    ✅  ($MODEL_COUNT models)"
 else
-    echo "  GGUF:    ⚠️  no models found (run: mise run download-models)"
+    echo "  GGUF:    ⚠️  no models found (run: pixi run download-models)"
 fi
 echo ""
 
