@@ -56,7 +56,6 @@ from nexus_ai.services.decision_logger import DecisionLogger
 from nexus_ai.services.finops_meter import estimate_runtime_cost
 from nexus_ai.services.log_pii_monitor import notify_dpo, scan_logs_for_pii
 from nexus_ai.services.migration_sanity import verify_migration_integrity, verify_schema_drift
-from nexus_ai.services.outbox_replay import replay_dead_letter_events
 from nexus_ai.services.telemetry import flush_fallback_spans
 from nexus_ai.tax.exceptions import NoMatchingRuleError
 
@@ -501,39 +500,8 @@ async def process_invoice_ocr(
     logger.info("[OCR] processing invoice_id=%s", invoice_id)
     payload = payload or {}
 
-    # Rozpocznij sagę dla procesu OCR
-    saga_id = f"ocr_{invoice_id}"
-    saga_store = None
-    saga_engine = None
-    try:
-        from nexus_ai.core.saga import PersistedSagaStore
-
-        saga_engine = engine
-        saga_store = PersistedSagaStore(saga_engine)
-        await saga_store.ensure_schema()
-
-        await saga_store.transition(
-            saga_id=saga_id,
-            new_state="START",
-            payload={"invoice_id": invoice_id, "started_at": pendulum.now("UTC").isoformat()},
-        )
-    except Exception as saga_err:
-        logger.warning("[SAGA] Failed to start saga for %s: %s", invoice_id, saga_err)
-        saga_store = None
-
     # Rozwiązanie 29: Semafory na ciężkie operacje OCR (max 3 równolegle)
     async with _OCR_LIMITER:
-        try:
-            # Rozwiązanie 33: Przejście do stanu OCR_EXTRACT
-            if saga_store:
-                await saga_store.transition(
-                    saga_id=saga_id,
-                    new_state="OCR_EXTRACT",
-                    expected_current_state="START",
-                )
-        except Exception:
-            pass
-
         primary_amount = _safe_float(payload.get("ocr_primary_amount_gross"))
         secondary_amount = _safe_float(payload.get("ocr_secondary_amount_gross"))
         easyocr_amount = _safe_float(payload.get("ocr_easyocr_amount_gross"))
@@ -785,17 +753,6 @@ async def process_invoice_ocr(
             )
             extracted_data["field_confidence_status"] = "CHECK_FAILED"
 
-        # Rozwiązanie 33: Przejście do AI_CLASSIFY
-        try:
-            if saga_store:
-                await saga_store.transition(
-                    saga_id=saga_id,
-                    new_state="AI_CLASSIFY",
-                    expected_current_state="OCR_EXTRACT",
-                )
-        except Exception:
-            pass
-
     # Trigger decision & rules check via NATS (poza semaforem - lekkie operacje NATS)
     config = AppConfig()
     from nexus_ai.core.nats_utils import publish_event
@@ -824,35 +781,8 @@ async def process_invoice_ocr(
             invoice_id,
         )
 
-        # Rozwiązanie 33: SEND_EVENT - sukces
-        try:
-            if saga_store:
-                await saga_store.transition(
-                    saga_id=saga_id,
-                    new_state="SEND_EVENT",
-                    payload={"agents": workflow["agents"]},
-                )
-        except Exception:
-            pass
     except Exception as trigger_err:
         logger.warning("[OCR] failed to trigger checks: %s", trigger_err)
-        # Rozwiązanie 33: W przypadku błędu, oznacz sagę jako COMPENSATING
-        try:
-            if saga_store:
-                await saga_store.compensate(saga_id=saga_id, payload={"error": str(trigger_err)})
-        except Exception:
-            pass
-
-    # Rozwiązanie 33: COMPLETED
-    try:
-        if saga_store:
-            await saga_store.transition(
-                saga_id=saga_id,
-                new_state="COMPLETED",
-                payload={"completed_at": pendulum.now("UTC").isoformat()},
-            )
-    except Exception:
-        pass
 
     # Zero-ETL path: no OLTP->OLAP row replication in worker.
     # Invoice OCR lifecycle is event-driven; analytics layer reads SQLite via DuckDB ATTACH.
@@ -1110,64 +1040,6 @@ async def cleanup_outbox_events_task(
     # SUPERMOC: DI auto-commituje sesję
 
 
-@broker.task(
-    schedule=[{"cron": "*/1 * * * *"}],
-    task_name="stuck_saga_recovery",
-    labels={"service": "api", "operation": "saga", "criticality": "high", "schedule": "1min"},
-    timeout=30.0,
-)
-async def stuck_saga_recovery_task(
-    engine: Any = TaskiqDepends(get_engine),
-) -> None:
-    """
-    Co minutę sprawdza zawieszone sagi (Rozwiązanie 33).
-    Sagi w stanie pośrednim (OCR_EXTRACT, AI_CLASSIFY, BOOK_ENTRY) dłużej niż 10 minut
-    są automatycznie kompensowane.
-
-    SUPERMOC: TaskiqDepends wstrzykuje cache'owany engine — zero boilerplate.
-    """
-    try:
-        from nexus_ai.core.saga import PersistedSagaStore
-
-        store = PersistedSagaStore(engine)
-        await store.ensure_schema()
-
-        # Znajdź sagi w pośrednich stanach
-        stuck = await store.list_stuck(older_than_minutes=10)
-        intermediate_states = {"START", "OCR_EXTRACT", "AI_CLASSIFY", "BOOK_ENTRY", "SEND_EVENT"}
-        compensated = 0
-        for saga in stuck:
-            if saga.state in intermediate_states:
-                try:
-                    await store.compensate(
-                        saga.saga_id,
-                        payload={
-                            "reason": "stuck_timeout",
-                            "stuck_state": saga.state,
-                            "stuck_duration": (
-                                pendulum.now("UTC") - saga.updated_at
-                            ).total_seconds(),
-                        },
-                    )
-                    compensated += 1
-                    logger.info(
-                        "[SAGA] Auto-compensated stuck saga=%s state=%s stuck_minutes=%.1f",
-                        saga.saga_id,
-                        saga.state,
-                        (pendulum.now("UTC") - saga.updated_at).total_seconds() / 60,
-                    )
-                except Exception as comp_err:
-                    logger.warning(
-                        "[SAGA] Failed to compensate stuck saga=%s: %s", saga.saga_id, comp_err
-                    )
-
-        if compensated > 0:
-            logger.info("[SAGA] Recovered %d stuck sagas", compensated)
-    except Exception as exc:
-        logger.warning("[SAGA] Stuck saga recovery error: %s", exc)
-    # SUPERMOC: Engine jest cache'owany przez DI — nie ma engine.dispose()
-
-
 # Semafory dla limitów współbieżności (Rozwiązanie 29)
 _OCR_LIMITER = anyio.CapacityLimiter(3)  # process_invoice_ocr: max 3 równolegle
 
@@ -1318,65 +1190,6 @@ async def relay_outbox_events(
 
 
 @broker.task(
-    schedule=[{"cron": "*/1 * * * *"}],
-    task_name="outbox_relay_process_pending",
-    labels={"service": "api", "operation": "outbox", "criticality": "high", "schedule": "1min"},
-    timeout=120.0,
-)
-async def outbox_relay_process_pending_task(
-    engine: Any = TaskiqDepends(get_engine),
-) -> None:
-    """
-    Co minutę przetwarzaj oczekujące zdarzenia outbox przez OutboxRelay.
-
-    Używa ``OutboxRelay.process_pending()`` zamiast starego inline relay.
-
-    SUPERMOC TASKIQ:
-    - TaskiqDepends wstrzykuje cache'owany engine — zero boilerplate
-    - Engine współdzielony przez DI — nie ma create/dispose per task
-    """
-    session_factory = create_session_factory(engine)
-
-    # Wczesne wyjście: jeśli nie ma oczekujących zdarzeń, nie twórz relay
-    async with session_factory() as session:
-        pending_count = int(
-            (
-                await session.execute(
-                    text(
-                        "SELECT COUNT(*) FROM outbox_events WHERE status IN ('PENDING', 'FAILED')"
-                    )
-                )
-            ).scalar()
-            or 0
-        )
-    if pending_count == 0:
-        return
-
-    from nexus_ai.services.outbox_relay import OutboxRelay
-
-    relay = OutboxRelay(
-        session_factory=session_factory,
-        tigerbeetle=None,  # W workerze TigerBeetle jest opcjonalne
-        max_retries=3,
-        base_delay_seconds=1.0,
-    )
-
-    stats = await relay.process_pending()
-
-    logger.info(
-        "[OUTBOX-RELAY] Cron processed=%d failed=%d dead_letter=%d "
-        "skipped=%d total=%d (%.0fms)",
-        stats.processed,
-        stats.failed,
-        stats.dead_letter,
-        stats.skipped_idempotent,
-        stats.total,
-        stats.processing_time_ms,
-    )
-    # SUPERMOC: Engine jest cache'owany przez DI — nie ma engine.dispose()
-
-
-@broker.task(
     schedule=[{"cron": "10 2 * * *"}],
     task_name="scan_logs_for_pii",
     labels={"service": "api", "operation": "security", "criticality": "high", "schedule": "daily"},
@@ -1419,24 +1232,10 @@ async def finops_hourly_estimate_task() -> None:
     )
 
 
-@broker.task(
-    schedule=[{"cron": "45 * * * *"}],
-    task_name="replay_dead_letter_outbox",
-    labels={"service": "api", "operation": "outbox", "criticality": "medium", "schedule": "hourly"},
-    timeout=60.0,
-)
-async def replay_dead_letter_outbox_task(
-    config: AppConfig = TaskiqDepends(get_config),
-    db: Session = TaskiqDepends(get_db_session),
-) -> None:
-    """Hourly replay of dead-letter outbox events back to FAILED for retry.
-
-    SUPERMOC: TaskiqDepends wstrzykuje config i db — zero boilerplate.
-    """
-    moved = await replay_dead_letter_events(db, limit=config.outbox_replay_limit)
-    if moved:
-        logger.info("[OUTBOX-REPLAY] moved dead-letter events for retry: %s", moved)
-
+# ── replay_dead_letter_outbox_task usunięte — zastąpione przez NATS JetStream DLQ
+#    ConsumerConfig.max_deliver=5 automatycznie retryuje
+#    Po 5 failed deliveries → JetStream DLQ ($JS.EVENT.ADVISORY.CONSUMER.MAX_DELIVERIES)
+#    dead_letter_processor_task zapisuje DLQ do failed_tasks
 
 def _safe_float(value: object) -> float | None:
     if value is None:

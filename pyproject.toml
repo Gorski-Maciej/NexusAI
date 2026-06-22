@@ -13,9 +13,9 @@ build-backend = "hatchling.build"
 #   hatch run build-all      # Rust → Nuitka (onefile)
 #   hatch run deploy         # CI → Build → Migracje → Restart
 #
-# Custom build hook dla Nuitka jest zdefiniowany w nexus_ai/build/hooks.py.
-# Gdy hatchling znajdzie plugin na PYTHONPATH, użyje go automatycznie.
-# W przeciwnym razie Nuitka jest uruchamiana przez hatch env scripts.
+# Nuitka build hook (hooks.py) został usunięty — build przez pixi tasks:
+#   pixi run build-nuitka
+#   pixi run build-rust
 #
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -206,17 +206,7 @@ Repository = "https://github.com/Gorski-Maciej/NexusAI"
 nexus-api = "nexus_ai.api.server:run_backend"
 nexus-worker = "nexus_ai.luz.worker:main"
 nexus-desktop = "nexus_ai.luz.main:main"
-nexus = "nexus_ai.scripts.nexus_cli:main"
-nexus-build = "nexus_ai.build.hooks:main"            # Unified build CLI
-
-# ── Hatchling build hook plugin registration ────────────────────────────────
-# Rejestruje nexus_ai.build.hooks.NuitkaBuildHook jako plugin hatchling.
-# Dzięki temu `[tool.hatch.build.hooks.nuitka]` w pyproject.toml jest aktywny.
-# Uwaga: ten plugin jest aktywny tylko gdy nexus-ai jest zainstalowane
-# w środowisku hatch (pip install -e .). W CI hatch tworzy środowisko
-# virtualne, więc plugin jest dostępny.
-[project.entry-points."hatch.build.hook"]
-nuitka = "nexus_ai.build.hooks:NuitkaBuildHook"
+# Zastąpione: nexus → pixi run nexus, nexus-build → pixi run build-*
 
 [tool.hatch.version]
 source = "vcs"
@@ -246,26 +236,10 @@ exclude = [
 [tool.hatch.build.hooks.maturin.metadata]
 # Automatyczna kompilacja Rust przy każdym wheel build
 
-# ── Nuitka — custom build hook (hatchling plugin) ────────────────────────────
-# UWAGA: Ten hook jest aktywny TYLKO gdy nexus-ai jest zainstalowane
-# (pip install -e .) — wtedy hatchling znajdzie plugin przez entry point.
-# W CI, gdzie budujemy wheel od zera, hook jest pomijany (projekt nie jest
-# jeszcze zainstalowany). Nuitka jest wtedy uruchamiana przez hatch env scripts:
-#   hatch run build:build-nuitka
-#
-# Gdy plugin jest aktywny (pip install -e .), hatchling automatycznie
-# wywołuje NuitkaBuildHook.finalize() po zbudowaniu koła, kompilując
-# aplikację do standalone .exe.
-#
-# Opcje:
-#   options.build-rust: czy budować Rust przed Nuitka (domyślnie true)
-#   options.onefile:    czy tworzyć pojedynczy plik (domyślnie true)
-#   options.target:     ścieżka wyjściowa (domyślnie dist/NexusAI)
-#
-[tool.hatch.build.hooks.nuitka]
-[tool.hatch.build.hooks.nuitka.options]
-build-rust = true
-onefile = true
+# ── Nuitka — build przez pixi tasks ──────────────────────────────────────────
+# NuitkaBuildHook (hooks.py) usunięty — build przez:
+#   pixi run build-nuitka
+#   pixi run build-rust
 
 
 [tool.maturin]
@@ -302,7 +276,7 @@ exclude = [
     "nexus_ai.db.analytics_schema",
     # nexus_ai.db.migrations.* removed — replaced by root-level migrations/
     # ── services: dynamiczne importy ───────────────────────────────────
-    "nexus_ai.services.rules_engine",
+    # nexus_ai.services.rules_engine — usunięty, zastąpiony przez OPA + Nexu-TaxEngine
     "nexus_ai.services.telemetry",
     # ── events: dynamiczne importy ─────────────────────────────────────
     "nexus_ai.events.__init__",
@@ -432,22 +406,12 @@ cov = "pytest --cov=nexus_ai"
 python = ["3.13", "3.13t"]
 
 # ── Build env — Rust + Nuitka + mypyc ───────────────────────────────────────
-# Używa nexus-build (CLI z nexus_ai/build/hooks.py) jako unified build tool.
-# Wszystkie operacje build są dostępne przez jeden entry point:
-#   hatch run build:build-all      → Rust + Nuitka
-#   hatch run build:nuitka         → Tylko Nuitka
-#   hatch run build:rust           → Tylko Rust
+# Zastąpione: nexus-build → pixi run build-*
 [tool.hatch.envs.build]
 dependencies = ["maturin>=1.5", "mypyc>=1.8.0", "nuitka>=1.8"]
 
 [tool.hatch.envs.build.scripts]
-# Unified przez nexus-build CLI
-build-all = "nexus-build build-all"
-build-rust = "nexus-build rust"
-build-rust-wheel = "nexus-build rust-wheel"
-build-nuitka = "nexus-build nuitka"
-build-nuitka-fast = "nexus-build nuitka-fast"
-# Legacy shell scripts (backward compat)
+# Legacy shell scripts (backward compat przez hatch)
 legacy-build-rust = "cd nexus_ai/rust && maturin build --release"
 legacy-build-rust-dev = "cd nexus_ai/rust && maturin develop --release"
 legacy-build-nuitka = "python -m nuitka --project-name=nexus-ai main.py"
@@ -467,8 +431,7 @@ seed = "python main.py --load-fixtures"
 doctor = "python -m nexus_ai.scripts.doctor"
 
 # ── Default env — unified build/CI/CD pipeline (dostępne przez `hatch run`) ────
-# Wszystkie operacje są dostępne przez hatch — jeden interfejs do wszystkiego.
-# Używa nexus-build CLI (nexus_ai/build/hooks.py) jako implementacji.
+# Zastąpione: nexus-build → pixi run build-*
 [tool.hatch.envs.default]
 
 [tool.hatch.envs.default.scripts]
@@ -478,25 +441,14 @@ api = "hatch run dev:api"
 worker = "hatch run dev:worker"
 desktop = "hatch run dev:desktop"
 # ── Test + Lint + Typecheck (CI pipeline) ────────────────────
-ci = "nexus-build ci"
-ci-full = "nexus-build ci-full"
 lint = "hatch run lint:check"
 typecheck = "hatch run typecheck:check"
 test = "hatch run test:run"
 test-all = "hatch run test:all"
 test-cov = "hatch run test:cov"
-# ── Build ─────────────────────────────────────────────────────
-build-all = "nexus-build build-all"
-build-rust = "nexus-build rust"
-build-nuitka = "nexus-build nuitka"
-# ── Deploy ────────────────────────────────────────────────────
-deploy = "nexus-build deploy"
-deploy-quick = "nexus-build deploy-quick"
 # ── Database ──────────────────────────────────────────────────
 migrate = "hatch run dev:migrate"
 seed = "hatch run dev:seed"
-# ── Clean ─────────────────────────────────────────────────────
-clean = "nexus-build clean"
 
 # ── Native SQLite migrations (replaces Alembic) ────────────────────────────────
 # Migracje są zarządzane przez skrypt migrations/run_migrations.py

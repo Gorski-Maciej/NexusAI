@@ -195,6 +195,7 @@ class DecisionLogger:
             CREATE TABLE IF NOT EXISTS decisions (
                 id VARCHAR PRIMARY KEY,
                 invoice_id VARCHAR,
+                event_type VARCHAR,
                 alpha_vote JSON,
                 beta_vote JSON,
                 gamma_vote JSON,
@@ -203,6 +204,8 @@ class DecisionLogger:
                 trust_components JSON,
                 context JSON,
                 timestamp TIMESTAMP,
+                previous_hash VARCHAR(64),
+                current_hash VARCHAR(64),
                 user_correction VARCHAR,
                 decision_level VARCHAR,
                 decision_pattern VARCHAR,
@@ -211,6 +214,29 @@ class DecisionLogger:
             )
             """
         )
+
+        # ── Migracja: dodaj brakujące kolumny do istniejącej tabeli decisions ──
+        # CREATE TABLE IF NOT EXISTS nie dodaje kolumn do już istniejącej tabeli.
+        # Poniższe ALTER TABLE ADD COLUMN IF NOT EXISTS zapewnia, że starsze
+        # bazy danych (sprzed tej zmiany) otrzymają nowe kolumny.
+        for col_name, col_type in [
+            ("event_type", "VARCHAR"),
+            ("previous_hash", "VARCHAR(64)"),
+            ("current_hash", "VARCHAR(64)"),
+        ]:
+            try:
+                self._duckdb.execute(
+                    f"ALTER TABLE decisions ADD COLUMN IF NOT EXISTS {col_name} {col_type}"
+                )
+            except Exception:
+                # DuckDB < 0.10 może nie wspierać IF NOT EXISTS w ALTER TABLE
+                # Fallback: spróbuj bez IF NOT EXISTS, złap błąd jeśli kolumna istnieje
+                try:
+                    self._duckdb.execute(
+                        f"ALTER TABLE decisions ADD COLUMN {col_name} {col_type}"
+                    )
+                except Exception:
+                    pass  # kolumna już istnieje — ignoruj
 
         # Trust Score Cache — do adaptacyjnego strojenia wag
         self._duckdb.execute(
@@ -262,6 +288,11 @@ class DecisionLogger:
         # szybsze zapytania dla najczęstszych wzorców.
         # Partial index na decisions WHERE user_correction IS NOT NULL
         # jest ~70% mniejszy niż pełny indeks.
+        # Indeks na current_hash dla szybkiej weryfikacji łańcucha
+        self._duckdb.execute(
+            "CREATE INDEX IF NOT EXISTS idx_decisions_hash "
+            "ON decisions(current_hash)"
+        )
         self._duckdb.execute(
             "CREATE INDEX IF NOT EXISTS idx_decisions_corrected "
             "ON decisions(timestamp) WHERE user_correction IS NOT NULL"

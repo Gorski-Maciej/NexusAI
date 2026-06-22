@@ -971,16 +971,49 @@ class AdminController(Controller):
         operation_id="listLedgerRules",
     )
     async def list_ledger_rules(self, request: Request) -> dict:
-        """List all ledger validation rules."""
+        """List all ledger validation rules — inline DuckDB ops."""
         import duckdb
-
-        from services.pre_ledger_validator import PreLedgerValidator
+        import uuid as _uuid
 
         config = AppConfig()
         conn = duckdb.connect(str(config.duckdb_path))
         try:
-            validator = PreLedgerValidator(conn)
-            rules = validator.list_rules()
+            # Create table if not exists (idempotent)
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS ledger_validation_rules (
+                    rule_id            VARCHAR PRIMARY KEY,
+                    transaction_type   VARCHAR NOT NULL,
+                    debit_account_id   INTEGER NOT NULL,
+                    credit_account_id  INTEGER NOT NULL,
+                    amount_sign        VARCHAR NOT NULL DEFAULT 'POSITIVE',
+                    priority           INTEGER NOT NULL DEFAULT 100,
+                    valid_from         DATE NOT NULL DEFAULT '2024-01-01',
+                    valid_to           DATE,
+                    created_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    created_by         VARCHAR DEFAULT 'system'
+                )
+            """)
+            rows = conn.execute(
+                """SELECT rule_id, transaction_type, debit_account_id, credit_account_id,
+                          amount_sign, priority, valid_from, valid_to, created_at, created_by
+                   FROM ledger_validation_rules
+                   ORDER BY priority ASC, rule_id ASC"""
+            ).fetchall()
+            rules = [
+                {
+                    "rule_id": str(r[0]),
+                    "transaction_type": str(r[1]),
+                    "debit_account_id": int(r[2]),
+                    "credit_account_id": int(r[3]),
+                    "amount_sign": str(r[4]),
+                    "priority": int(r[5]),
+                    "valid_from": str(r[6]),
+                    "valid_to": str(r[7]) if r[7] else None,
+                    "created_at": str(r[8]),
+                    "created_by": str(r[9]),
+                }
+                for r in rows
+            ]
             return {"rules": rules, "total": len(rules)}
         finally:
             conn.close()
@@ -1004,8 +1037,7 @@ class AdminController(Controller):
             priority: int — default 100
         """
         import duckdb
-
-        from services.pre_ledger_validator import PreLedgerValidator
+        import uuid as _uuid
 
         body = await request.json()
         transaction_type = body.get("transaction_type", "EXPENSE").upper()
@@ -1015,19 +1047,40 @@ class AdminController(Controller):
         config = AppConfig()
         conn = duckdb.connect(str(config.duckdb_path))
         try:
-            validator = PreLedgerValidator(conn)
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS ledger_validation_rules (
+                    rule_id            VARCHAR PRIMARY KEY,
+                    transaction_type   VARCHAR NOT NULL,
+                    debit_account_id   INTEGER NOT NULL,
+                    credit_account_id  INTEGER NOT NULL,
+                    amount_sign        VARCHAR NOT NULL DEFAULT 'POSITIVE',
+                    priority           INTEGER NOT NULL DEFAULT 100,
+                    valid_from         DATE NOT NULL DEFAULT '2024-01-01',
+                    valid_to           DATE,
+                    created_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    created_by         VARCHAR DEFAULT 'system'
+                )
+            """)
+            rule_id = f"ledger_{_uuid.uuid4().hex[:12]}"
             username = (
                 getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
             )
-            rule_id = validator.add_rule(
-                transaction_type=transaction_type,
-                debit_account_id=debit_account_id,
-                credit_account_id=credit_account_id,
-                amount_sign=body.get("amount_sign", "POSITIVE"),
-                priority=body.get("priority", 100),
-                valid_from=body.get("valid_from", "2024-01-01"),
-                valid_to=body.get("valid_to"),
-                created_by=username,
+            conn.execute(
+                """INSERT INTO ledger_validation_rules
+                   (rule_id, transaction_type, debit_account_id, credit_account_id,
+                    amount_sign, priority, valid_from, valid_to, created_by)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (
+                    rule_id,
+                    transaction_type,
+                    debit_account_id,
+                    credit_account_id,
+                    body.get("amount_sign", "POSITIVE"),
+                    body.get("priority", 100),
+                    body.get("valid_from", "2024-01-01"),
+                    body.get("valid_to"),
+                    username,
+                ),
             )
             logger.info(
                 "[ADMIN] Ledger rule created id=%s type=%s by=%s",
@@ -1058,13 +1111,15 @@ class AdminController(Controller):
         """Deactivate a ledger validation rule (soft-delete via valid_to)."""
         import duckdb
 
-        from services.pre_ledger_validator import PreLedgerValidator
-
         config = AppConfig()
         conn = duckdb.connect(str(config.duckdb_path))
         try:
-            validator = PreLedgerValidator(conn)
-            validator.delete_rule(rule_id)
+            conn.execute(
+                """UPDATE ledger_validation_rules
+                   SET valid_to = CURRENT_DATE - INTERVAL '1 day'
+                   WHERE rule_id = ? AND valid_to IS NULL""",
+                (rule_id,),
+            )
 
             # NATS hot-reload event
             await _publish_nats_event(
