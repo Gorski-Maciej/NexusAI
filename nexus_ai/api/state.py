@@ -14,7 +14,6 @@ from nexus_ai.core.background_task_manager import BackgroundTaskManager, TaskMet
 from nexus_ai.core.broker import broker
 from nexus_ai.core.cache.http_client import warm_http_cache
 from nexus_ai.core.di import dispose_all_engines
-from nexus_ai.core.saga import PersistedSagaStore
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import consolidate_database, create_oltp_engine, create_session_factory
 from nexus_ai.core.config import AppConfig
@@ -24,8 +23,6 @@ from nexus_ai.services.migration_sanity import (
     verify_migration_checksums,
     verify_migration_integrity,
 )
-
-from nexus_ai.services.outbox_relay import OutboxRelay
 
 # ── SUPERMOC: OTel graceful shutdown przez otel_config ─────────────────────
 # Rejestruje atexit handler do flushowania pozostaych spanów/metryk/logów
@@ -247,8 +244,7 @@ def make_on_startup(engine, session_factory):
           1. Metryki OTel (sync + background task)
           2. Database engine + core services (pre-created przez SQLAlchemyPlugin)
           3. Native SQLite migrations + seed danych
-          4. Broker, DuckDB warm-up, auto-seed
-          5. OutboxRelay, HotReloadListener
+          4. Broker, DuckDB warm-up, auto-seed           5. HotReloadListener
 
         Engine i session_factory są współdzielone z SQLAlchemyPlugin.
         """
@@ -299,8 +295,6 @@ def make_on_startup(engine, session_factory):
             app.state.db_session_factory = session_factory
             app.state.shared_image_buffer = SharedImageBuffer(max_items=128)
             app.state.bg_tasks = BackgroundTaskManager()
-            app.state.saga_store = PersistedSagaStore(engine)
-            await app.state.saga_store.ensure_schema()
 
             # Taskiq event handlers są rejestrowane przez import nexus_ai.events.taskiq_events
             # Event emisja odbywa się przez broker.kick("event_emit_*", ...)
@@ -435,20 +429,7 @@ def make_on_startup(engine, session_factory):
         else:
             logger.info(".seeded marker found — skipping auto-seed.")
 
-        # ── Phase 5: OutboxRelay + HotReloadListener ────────────────
-        try:
-            relay = OutboxRelay(
-                session_factory=app.state.db_session_factory,
-                tigerbeetle=None,
-                max_retries=3,
-                base_delay_seconds=1.0,
-            )
-            app.state.outbox_relay = relay
-            logger.info("[OUTBOX-RELAY] Relay initialized")
-        except Exception as exc:
-            logger.warning("[OUTBOX-RELAY] Failed to initialize: %s", exc)
-            app.state.outbox_relay = None
-
+        # ── Phase 5: HotReloadListener ────────────────
         try:
             listener = HotReloadListener(nats_url=config.nats_url)
             await listener.start()

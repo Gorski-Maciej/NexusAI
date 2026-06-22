@@ -35,7 +35,6 @@ import fsspec
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.models import OutboxStatus
-from nexus_ai.services.audit_logger import AuditLogger
 
 
 logger = get_logger("nexus.api.invoices")
@@ -204,24 +203,30 @@ class InvoiceController(Controller):
             "source": "upload",
         }
 
-        # Immutable audit trail (hash-chained) for compliance-grade evidencing.
-        audit_manager = DuckDBManager(
-            db_path=config.duckdb_path, sqlite_path=config.sqlite_path, read_only=False
-        )
+        # Audit trail przez DecisionTraceLogger (hash chain w DuckDB decision_traces)
         try:
-            AuditLogger(audit_manager).append_event(
-                "invoice.uploaded",
-                {
-                    "invoice_id": invoice_id,
-                    "task_id": task_id,
-                    "file_hash": saved.file_hash,
-                    "file_path": saved.file_path,
-                    "size_bytes": saved.size_bytes,
-                    "received_at": event_payload["received_at"],
-                },
-            )
-        finally:
-            audit_manager.close()
+            import duckdb
+            from nexus_ai.tax.audit import DecisionTraceLogger
+            
+            conn = duckdb.connect(str(config.duckdb_path))
+            try:
+                logger_audit = DecisionTraceLogger(conn)
+                logger_audit.log(
+                    transaction_id=invoice_id,
+                    context={
+                        "invoice_id": invoice_id,
+                        "task_id": task_id,
+                        "file_hash": saved.file_hash,
+                        "file_path": str(saved.file_path),
+                        "size_bytes": int(saved.size_bytes),
+                        "received_at": event_payload["received_at"],
+                    },
+                    verdict={"action": "UPLOADED", "source": "invoice_upload"},
+                )
+            finally:
+                conn.close()
+        except Exception:
+            pass
 
         response_data = TaskResponse(
             task_id=task_id,status="QUEUED"

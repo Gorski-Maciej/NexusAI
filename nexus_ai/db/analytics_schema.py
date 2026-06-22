@@ -74,8 +74,6 @@ class AnalyticsSchemaManager:
 
         optional_schema_hooks: tuple[OptionalHook, ...] = (
             ("services.shadow_resource_correlation", "ensure_shadow_resource_schema"),
-            ("services.audit_logger", "ensure_forensic_audit_schema"),
-            ("services.rules_engine", "ensure_accounting_template_schema"),
             ("services.compliance_analytics", "ensure_compliance_analytics_schema"),
             ("services.fx_revaluation", "ensure_fx_schema"),
             ("services.smart_approvals", "ensure_smart_approval_schema"),

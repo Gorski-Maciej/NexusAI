@@ -82,12 +82,6 @@ hot_reload_last_event_seconds: Gauge | None = None
 """Gauge: Unix timestamp of last hot-reload event (label: subject)."""
 
 
-# ── Outbox relay metrics ─────────────────────────────────────────────────────
-
-outbox_relay_events_total: Counter | None = None
-"""Counter: Outbox relay events processed (total across all triggers)."""
-
-
 # ── Task execution metrics ──────────────────────────────────────────────────
 
 task_executions_total: Counter | None = None
@@ -162,7 +156,6 @@ def init_metrics(meter_name: str = "nexus-ai", version: str = "2.0.0") -> None:
     global db_connection_pool_size, queue_depth
     global worker_up, nats_up, model_inference_duration_seconds, memory_usage_mb
     global hot_reload_events_total, hot_reload_last_event_seconds
-    global outbox_relay_events_total
     global mimalloc_leak_detected_total, mimalloc_growth_pct
     global task_executions_total, task_execution_duration_seconds, active_tasks
     global event_store_events_appended_total, event_store_append_duration_seconds, event_store_read_latency_seconds
@@ -364,13 +357,6 @@ def init_metrics(meter_name: str = "nexus-ai", version: str = "2.0.0") -> None:
         name="hot_reload_last_event_seconds",
         description="Unix timestamp of the last hot-reload event",
         unit="s",
-    )
-
-    # ── Outbox Relay ────────────────────────────────────────────────────
-    outbox_relay_events_total = _METER.create_counter(
-        name="outbox_relay_events_total",
-        description="Total number of outbox relay events processed",
-        unit="1",
     )
 
     # ── mimalloc ───────────────────────────────────────────────────────
@@ -594,14 +580,6 @@ def set_memory_usage(mb: float) -> None:
     if memory_usage_mb is not None:
         memory_usage_mb.set(mb)
 
-def record_outbox_relay_triggered(events_count: int) -> None:
-    """Record an outbox relay processing trigger.
-
-    Increments the outbox relay counter by the number of events processed.
-    Safe to call before init_metrics — checks for None.
-    """
-    if outbox_relay_events_total is not None:
-        outbox_relay_events_total.add(events_count)
 
 def record_hot_reload_event(subject: str) -> None:
     """Record a hot-reload event for the given subject.

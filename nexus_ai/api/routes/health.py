@@ -342,20 +342,24 @@ class HealthController(Controller):
             return -1
 
     async def _audit_chain_check(self) -> bool:
+        """Sprawdza integralność łańcucha decyzji w decision_traces.
+
+        Używa verify_chain_integrity() z tax/audit.py — Rust-native weryfikacja
+        SHA-256 hash chain dla wszystkich decyzji podatkowych.
+        (Zastępuje dawny AuditLogger.verify_chain() na tabeli audit_log.)
+        """
         try:
+            import duckdb
             from core.config import AppConfig
-            from db.analytics import DuckDBManager
-            from services.audit_logger import AuditLogger
+            from nexus_ai.tax.audit import verify_chain_integrity
 
             cfg = AppConfig()
-            manager = DuckDBManager(
-                db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True
-            )
+            conn = duckdb.connect(str(cfg.duckdb_path), read_only=True)
             try:
-                valid, _ = AuditLogger(manager).verify_chain()
-                return bool(valid)
+                issues = verify_chain_integrity(conn)
+                return len(issues) == 0
             finally:
-                manager.close()
+                conn.close()
         except Exception:
             return False
 

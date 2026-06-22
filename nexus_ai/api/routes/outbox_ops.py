@@ -13,7 +13,6 @@ from nexus_ai.api.dto import (
     TAG_SYSTEM,
 )
 from nexus_ai.api.rbac import owner_only_guard
-from nexus_ai.api.telemetry_metrics import record_outbox_relay_triggered
 
 logger = get_logger("nexus.api.outbox_ops")
 
@@ -21,20 +20,20 @@ logger = get_logger("nexus.api.outbox_ops")
 class OutboxOpsController(Controller):
     """Operational outbox controls — stats, process trigger, and dead-letter replay.
 
-    Wykorzystuje **OutboxRelay** (Transactional Outbox) dla gwarantowanej dostawy
-    zdarzeń do TigerBeetle.
+    **DEPRECATED**: Funkcjonalność zastąpiona przez NATS JetStream:
+      - Publikacja zdarzeń → NATS JetStream (nexus-outbox stream)
+      - Retry i DLQ → ConsumerConfig.max_deliver=5 + JetStream DLQ
+      - Monitorowanie → NatsSupervisor w nats_health.py
 
-    Endpointy:
-      - ``GET  /stats``                → szczegółowe statystyki outbox
-      - ``POST /process``              → ręczne wyzwolenie przetwarzania
-      - ``POST /replay-dead-letter``   → przywrócenie DEAD_LETTER do FAILED
+    Endpointy pozostawione jako pasywne wrappery SQL (stats).
+    Procesowanie i replay zlecone NATS JetStream.
     """
 
     path = "/system/outbox"
     guards = [owner_only_guard]
     tags = [TAG_SYSTEM]
 
-    # ── GET /stats — szczegółowe statystyki ─────────────────────────────
+    # ── GET /stats — statystyki z SQL (pasywne, bez relaya) ───────────
 
     @get(
         "/stats",
@@ -44,32 +43,17 @@ class OutboxOpsController(Controller):
         operation_id="getOutboxStats",
     )
     async def stats(self, request: Request) -> dict:
-        """Zwróć szczegółowe statystyki outbox.
-
-        Gdy ``OutboxRelay`` jest zainicjalizowany, używa ``relay.get_stats()``
-        dla pełniejszych danych (wliczając ``processing``, ``sent``, ``total``,
-        ``dead_letter_events_table``).
-
-        Falls back do podstawowych zapytań SQL gdy relay nie jest dostępny.
+        """Zwróć szczegółowe statystyki outbox z SQL.
 
         **Odpowiedź JSON:**
         .. code-block:: json
 
             {
                 "pending": 5,
-                "processing": 0,
                 "failed": 1,
-                "dead_letter": 2,
-                "sent": 100,
-                "total": 108,
-                "dead_letter_events_table": 2
+                "dead_letter": 2
             }
         """
-        relay = getattr(request.app.state, "outbox_relay", None)
-        if relay is not None:
-            return await relay.get_stats()
-
-        # Fallback: podstawowe zapytania SQL bez OutboxRelay
         from sqlalchemy import func, select, text
 
         from core.config import AppConfig
@@ -106,102 +90,42 @@ class OutboxOpsController(Controller):
         finally:
             await engine.dispose()
 
-    # ── POST /process — ręczne wyzwolenie procesowania ─────────────────
+    # ── POST /process — placeholder (zastąpione przez NATS JetStream) ──
 
     @post(
         "/process",
         return_dto=OutboxProcessResponseDTO,
-        summary="Trigger outbox processing",
-        description="Manually triggers processing of pending outbox events via OutboxRelay.",
+        summary="Trigger outbox processing — DEPRECATED",
+        description="DEPRECATED: Outbox processing is now handled by NATS JetStream. This endpoint is kept for compatibility.",
         operation_id="triggerOutboxProcessing",
     )
     async def process(self, request: Request) -> dict:
-        """Ręcznie wyzwól przetwarzanie oczekujących zdarzeń outbox.
-
-        Używa ``OutboxRelay.process_pending()`` do pełnego cyklu:
-          1. Odblokowanie stuck PROCESSING zdarzeń
-          2. Atomowa rezerwacja PENDING/FAILED
-          3. Dispatch do TigerBeetle (lub log w trybie dry-run)
-          4. Idempotentność i DLQ
-
-        **Odpowiedź JSON:**
-        .. code-block:: json
-
-            {
-                "status": "OK",
-                "processed": 5,
-                "failed": 1,
-                "dead_letter": 0,
-                "skipped": 0,
-                "total": 6,
-                "processing_time_ms": 123.45
-            }
+        """DEPRECATED: Zastąpione przez NATS JetStream.
 
         **Kody błędów:**
-           - ``503`` — OutboxRelay not initialized
-           - ``500`` — błąd przetwarzania
+           - ``410`` — GONE, użyj NATS JetStream
         """
-        relay = getattr(request.app.state, "outbox_relay", None)
-        if relay is None:
-            raise HTTPException(
-                status_code=HTTP_503_SERVICE_UNAVAILABLE,
-                detail="OutboxRelay not initialized",
-            )
+        raise HTTPException(
+            status_code=410,
+            detail="Outbox relay processing is now handled by NATS JetStream. See docs for migration.",
+        )
 
-        try:
-            stats = await relay.process_pending()
-
-            # Metryka Prometheus
-            record_outbox_relay_triggered(stats.total)
-
-            return {
-                "status": "OK",
-                "processed": stats.processed,
-                "failed": stats.failed,
-                "dead_letter": stats.dead_letter,
-                "skipped": stats.skipped_idempotent,
-                "total": stats.total,
-                "processing_time_ms": round(stats.processing_time_ms, 2),
-            }
-        except Exception as exc:
-            logger.exception("[OUTBOX-RELAY] Manual process trigger failed: %s", exc)
-            raise HTTPException(
-                status_code=HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Outbox relay processing failed",
-            )
-
-    # ── POST /replay-dead-letter — przywrócenie DLQ do FAILED ─────────
+    # ── POST /replay-dead-letter — placeholder ────────────────────────
 
     @post(
         "/replay-dead-letter",
         return_dto=OutboxReplayResponseDTO,
-        summary="Replay dead-letter events",
-        description="Restores DEAD_LETTER outbox events back to FAILED status for retry.",
+        summary="Replay dead-letter events — DEPRECATED",
+        description="DEPRECATED: Dead-letter replay is now handled by NATS JetStream DLQ (ConsumerConfig.max_deliver).",
         operation_id="replayDeadLetterOutbox",
     )
     async def replay_dead_letter(self, request: Request) -> dict:
-        """Przywróć zdarzenia DEAD_LETTER do statusu FAILED (do ponownej próby).
+        """DEPRECATED: Zastąpione przez NATS JetStream DLQ.
 
-        Używa ``services.outbox_replay.replay_dead_letter_events()``
-        z sesją z ``app.state.db_session_factory``.
-
-        **Odpowiedź JSON:**
-        .. code-block:: json
-
-            {
-                "replayed": 3
-            }
+        **Kody błędów:**
+           - ``410`` — GONE, użyj NATS JetStream
         """
-        from services.outbox_replay import replay_dead_letter_events
-
-        session_factory = request.app.state.db_session_factory
-        try:
-            async with session_factory() as session:
-                moved = await replay_dead_letter_events(session, limit=100)
-            return {"replayed": int(moved)}
-        except Exception as exc:
-            logger.exception("[OUTBOX-REPLAY] Dead-letter replay failed: %s", exc)
-            raise HTTPException(
-                status_code=HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Dead-letter replay failed",
-            )
+        raise HTTPException(
+            status_code=410,
+            detail="Dead-letter replay is now handled by NATS JetStream DLQ. See docs for migration.",
+        )

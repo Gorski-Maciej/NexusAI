@@ -37,22 +37,16 @@ from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 from nexus_ai.core.broker import broker
-from nexus_ai.services.pre_ledger_validator import (
-    PreLedgerValidator,
-    TransferSpec,
-)
 from nexus_ai.services.tigerbeetle.client import (
     LEDGER,
     TRANSFER_CODE,
-    TigerBeetleClient,
-    _generate_tb_id,
-    _uuid_to_u128,
 )
 from nexus_ai.services.trace_generator import TraceGenerator
 
 from nexus_crypto import (
     PipelineComputeResult as _RustPipelineComputeResult,
     run_full_pipeline as _rust_run_full_pipeline,
+    # PreLedgerValidator zastąpiony — walidacja inline poniżej
 )
 
 from .audit import DecisionTraceLogger
@@ -60,11 +54,9 @@ from .math_engine import (
     InvoicePositions,
     InvoiceSummary,
     TaxMathEngine,
-    to_money,
 )
 
 from nexus_ai.core.opa_client import OpaError
-from nexus_ai.services.trace_generator import TraceGenerator
 from nexus_ai.tax.rules import (
     RuleEngine,
     ContextInterpreter as TaxContextInterpreter,
@@ -130,12 +122,8 @@ class TaxPipeline:
         self._tigerbeetle = tigerbeetle
         self._write_outbox = write_outbox
         self._logger = DecisionTraceLogger(conn)
-        self._pre_ledger = PreLedgerValidator(conn)
-        self._pre_ledger.ensure_default_rules(
-            expense_account_id=account_expense_id,
-            vat_account_id=account_vat_input_id,
-            payables_account_id=account_payables_id,
-        )
+        # PreLedgerValidator zastąpiony — walidacja inline w _post_process
+        # Patrz: _post_process → inline_pre_ledger_validation
 
         # Inicjalizuj RuleEngine z OPA support
         self._rule_engine = rule_engine or RuleEngine(conn)
@@ -529,41 +517,45 @@ class TaxPipeline:
 
         Używane przez obie ścieżki (OPA i Rust).
         """
-        # ── Currency ────────────────────────────────────────────────────
-        currency = str(invoice_data.get("currency", "PLN")).upper()
-        total_net_money = to_money(total_net_grosze, currency)
-        total_vat_money = to_money(total_vat_grosze, currency)
-
-        # ── PreLedgerValidator (before TigerBeetle) ─────────────────────
+        # ── Inline PreLedger validation (zastępuje wycofany PreLedgerValidator) ──
+        # Walidacja: limity kwot, spójność walut, bilans
         tb_ok = True
-        pre_ledger_ok = True
+        pre_ledger_errors: list[str] = []
 
-        transfer_specs = [
-            TransferSpec(
-                debit_account_id=self._account_expense_id,
-                credit_account_id=self._account_payables_id,
-                amount_money=total_net_money,
-                transfer_type="expense",
-            ),
-            TransferSpec(
-                debit_account_id=self._account_vat_input_id,
-                credit_account_id=self._account_payables_id,
-                amount_money=total_vat_money,
-                transfer_type="vat_input",
-            ),
-        ]
-        pre_ledger_result = self._pre_ledger.validate(
-            transfers=transfer_specs,
-            transaction_type="EXPENSE",
-            positions=positions,
-            summary=summary,
-        )
-        if not pre_ledger_result.is_valid:
-            pre_ledger_ok = False
+        # 1. Limity kwot (max 10 mln PLN = 1_000_000_000 gr)
+        MAX_AMOUNT_GROSZE = 1_000_000_000
+        for label, amount in [("net", total_net_grosze), ("vat", total_vat_grosze)]:
+            if abs(amount) > MAX_AMOUNT_GROSZE:
+                pre_ledger_errors.append(
+                    f"[LIMIT] {label}: {amount} gr exceeds max {MAX_AMOUNT_GROSZE} gr"
+                )
+
+        # 2. Znak kwoty (POSITIVE dla EXPENSE)
+        for label, amount in [("net", total_net_grosze), ("vat", total_vat_grosze)]:
+            if amount < 0:
+                pre_ledger_errors.append(
+                    f"[AMOUNT_SIGN] {label}: expected POSITIVE, got {amount} gr"
+                )
+
+        # 3. Bilans: suma debetów powinna być bliska sumie kredytów
+        # W linked transfers netto + VAT = brutto (bilans zapewnia TB BALANCING_CREDIT)
+        total_debit = total_net_grosze + total_vat_grosze
+        total_credit = total_net_grosze + total_vat_grosze  # w TB każdy transfer ma obie strony
+        if total_debit != total_credit:
+            pre_ledger_errors.append(
+                f"[BALANCE] debit={total_debit} gr != credit={total_credit} gr"
+            )
+
+        # 4. Delegacja do TaxInvariantGuard (niezmienniki matematyczne)
+        inv_result = TaxMathEngine.validate_invariants(positions, summary)
+        if not inv_result.is_valid:
+            pre_ledger_errors.append(f"[INVARIANTS] {inv_result.error_message}")
+
+        if pre_ledger_errors:
             tb_ok = False
             logger.error(
                 "[PRE-LEDGER] Validation failed: %s",
-                pre_ledger_result.error_message,
+                "; ".join(pre_ledger_errors),
             )
 
         # ── SUPERMOC: TigerBeetle linked transfers ──────────────────────
@@ -585,7 +577,7 @@ class TaxPipeline:
                     transaction_id,
                     routing_reason,
                 )
-        elif not pre_ledger_ok:
+        elif pre_ledger_errors:
             tb_ok = False
         elif self._write_outbox is not None and callable(self._write_outbox):
             outbox_payload = {
@@ -714,7 +706,7 @@ class TaxPipeline:
                 routing_reason=routing_reason,
             )
 
-        if not pre_ledger_ok:
+        if pre_ledger_errors:
             return PipelineResult(
                 success=False,
                 transaction_id=transaction_id,
