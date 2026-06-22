@@ -1,5 +1,16 @@
 """
-Priority Engine — deterministyczny wybór reguły first-match-wins.
+[DEPRECATED] Priority Engine — zastąpiony przez OPA else-chain.
+
+OSTRZEŻENIE: Ten moduł jest zastąpiony przez OPA (Open Policy Agent).
+OPA implementuje first-match-wins deklaratywnie przez else-chain w Rego.
+
+Powód migracji:
+  - OPA jest dedykowanym silnikiem reguł (CNCF)
+  - Rego else-chain jest szybszy i bezpieczniejszy niż Python eval
+  - Deklaratywny first-match-wins bez kodu imperatywnego
+
+Zachowany dla backward compatibility z istniejącymi testami.
+Nowy kod powinien używać RuleEngine.decide_async() → OPA.
 
 Element 1 z dokumentu: rozstrzyganie konfliktów między regułami
 oraz sortowanie według priorytetu.
@@ -13,6 +24,16 @@ Zasady:
 
 Stateless: nie wymaga DuckDB, może być używany w każdym silniku reguł.
 """
+
+import warnings
+warnings.warn(
+    "priority_engine is deprecated and will be removed in a future version. "
+    "Use OPA (Open Policy Agent) with else-chain in Rego for first-match-wins. "
+    "See nexus_ai/tax/rules.rego for the replacement.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 
 from __future__ import annotations
 

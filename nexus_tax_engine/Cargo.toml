@@ -1,0 +1,26 @@
+[package]
+name = "nexus-tax-engine"
+version = "0.1.0"
+edition = "2021"
+description = "Native tax computation engine for NexusAI — integer-only math, invariant guard, rounding policies"
+authors = ["NexusAI Team"]
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+rust_decimal = { version = "1.36", features = ["serde", "maths"] }
+rust_decimal_macros = "1.36"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+pyo3 = { version = "0.23", features = ["extension-module"] }
+uuid = { version = "1", features = ["v4"] }
+
+[dev-dependencies]
+approx = "0.5"
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3

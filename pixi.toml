@@ -204,6 +204,14 @@ description = "Uruchom NATS JetStream broker na porcie 4222"
 cmd = "tigerbeetle start --addresses=/tmp/nexus-tb.sock --cluster=0 data/tigerbeetle.bin"
 description = "SUPERMOC: Uruchom TigerBeetle ledger na UNIX socket (szybszy niż TCP)"
 
+[tasks.start-opa]
+cmd = "opa run --server --addr=localhost:8181 --log-level=error"
+description = "Uruchom OPA (Open Policy Agent) jako sidecar na porcie 8181"
+
+[tasks.start-opa-dev]
+cmd = "opa run --server --addr=localhost:8181 --log-level=debug"
+description = "Uruchom OPA w trybie deweloperskim (debug log)"
+
 [tasks.start-tigerbeetle-tcp]
 cmd = "tigerbeetle start --addresses=3000 --cluster=0 data/tigerbeetle.bin"
 description = "Uruchom TigerBeetle na TCP (port 3000) — dla zdalnego dostępu"
@@ -214,7 +222,7 @@ description = "Sformatuj plik danych TigerBeetle"
 
 [tasks.download-binaries]
 cmd = "python -m nexus_ai.scripts.setup_env"
-description = "Pobierz NATS Server i TigerBeetle (binarki systemowe)"
+description = "Pobierz NATS Server, TigerBeetle i OPA (binarki systemowe)"
 
 # ── Środowisko deweloperskie ────────────────────────────────────────────────
 

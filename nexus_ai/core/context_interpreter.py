@@ -1,8 +1,18 @@
 """
-Context Interpreter — formalny interpreter kontekstu faktury (Element 2).
+[DEPRECATED] Context Interpreter — zastąpiony przez ContextBuilder w Rust.
 
-Przekształca znormalizowane dane faktury (pochodzące z OCR i wzbogaceń)
-w płaski słownik klucz-wartość do ewaluacji warunków SQL reguł.
+OSTRZEŻENIE: Ten moduł jest zastąpiony przez OPA + Nexus-TaxEngine (Rust).
+Context building przeniesiony do Rust jako ContextBuilder, który przygotowuje
+input JSON dla OPA.
+
+Powód migracji:
+  - OPA oczekuje czystego JSON, nie słowników z stringami
+  - Rust ContextBuilder jest ~10x szybszy niż Python
+  - Cały preprocessing jest w jednym miejscu (Rust)
+
+Zachowany dla backward compatibility.
+Nowy kod powinien używać TaxContextInterpreter.build() z tax/rules.py
+lub ContextBuilder w Rust (nexus_tax_engine).
 
 Kluczowe cechy:
   - ALLOWED_KEYS — whitelista dozwolonych kluczy w kontekście
@@ -16,6 +26,15 @@ Usage:
     ctx = interpreter.interpret(invoice_data)
     engine.decide(ctx)
 """
+
+import warnings
+warnings.warn(
+    "context_interpreter (nexus_ai/core/) is deprecated and will be removed. "
+    "Use TaxContextInterpreter from nexus_ai.tax.rules or ContextBuilder in Rust.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 
 from __future__ import annotations
 

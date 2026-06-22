@@ -1,5 +1,18 @@
 """
-Temporal Manager — zarządzanie temporalnością reguł podatkowych.
+[DEPRECATED] Temporal Manager — zastąpiony przez klauzulę temporalną w Rego.
+
+OSTRZEŻENIE: Ten moduł jest zastąpiony przez OPA (Open Policy Agent).
+Filtrowanie temporalne jest teraz klauzulą w każdej regule Rego:
+  input.transaction_date >= rule.valid_from
+  input.transaction_date <= rule.valid_to
+
+Powód migracji:
+  - Temporalność w Rego jest deklaratywna i testowalna
+  - OPA obsługuje temporalność natywnie
+  - Mniej zapytań do DuckDB (OPA przechowuje reguły w pamięci)
+
+Zachowany dla backward compatibility z istniejącymi testami.
+Nowe reguły powinny używać temporalności przez OpaPolicyGenerator.
 
 Element 2 z dokumentu: zapewnia automatyczne stosowanie historycznych
 stawek podatkowych poprzez filtrowanie reguł według daty transakcji.
@@ -13,6 +26,15 @@ Dzięki temporalności:
   - Zmiana przepisów = nowa reguła (nie modyfikacja starej)
   - Stan prawny z dowolnego dnia jest odtwarzalny
 """
+
+import warnings
+warnings.warn(
+    "temporal_manager is deprecated and will be removed in a future version. "
+    "Use OPA temporal clauses in Rego (see nexus_ai/tax/rules.rego) for date filtering.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 
 from __future__ import annotations
 

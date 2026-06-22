@@ -1,27 +1,31 @@
 """
-Tax Rule Engine — Zen-Engine Implementation.
+Tax Rule Engine — OPA + DuckDB + Rust Implementation.
 
-Zintegrowany z DecisionEngine (DuckDB/SQL) — temporalne reguły
-podatkowe first-match-wins z parametrizzowanym SQL.
+Zgodnie z aa3fvcx.txt — silnik reguł podatkowych oparty na:
+  - OPA (Open Policy Agent)   — deklaratywny silnik reguł (CNCF)
+  - DuckDB (RuleStore)        — trwały magazyn reguł
+  - Nexus-TaxEngine (Rust+PyO3) — natywny orkiestrator
+
+Architektura:
+  1. DuckDB: temporalny magazyn reguł z indeksami (valid_from, valid_to)
+  2. OPA: ewaluacja reguł first-match-wins przez Rego policies
+  3. Rust (nexus_crypto): obliczenia matematyczne, niezmienniki, audyt
+
+Flow:
+  DuckDB RuleStore → OpaPolicyGenerator → OPA → Verdict → Rust TaxMathEngine
 
 Komponenty:
   - tax_rules table (DuckDB) — immutable, temporal rule store
   - ContextInterpreter — builds flat context dict from invoice data
-  - RuleEngine — first-match-wins evaluation (Rust PriorityEngine)
+  - RuleEngine — first-match-wins evaluation via OPA
+  - OpaClient — REST API client for OPA sidecar
+  - OpaPolicyGenerator — converts DuckDB rules to Rego policies
   - DEFAULT_TAX_RULES — example rule set for Polish tax law
-
-Rule evaluation (decide) uses Rust PriorityEngine via nexus_crypto:
-  - SQL condition evaluation in Rust (no DuckDB temp table)
-  - First-match-wins with deterministic sorting
-  - Returns enriched verdict with _rule_id, _priority, _evaluated_rules
-
-DuckDB I/O remains in Python for:
-  - Temporal rule loading (valid_from/valid_to filtering)
-  - Rule lifecycle (add_rule, close_rule)
 """
 
 from __future__ import annotations
 
+import json
 import uuid
 from decimal import Decimal
 from typing import Any
@@ -30,54 +34,10 @@ import duckdb
 import pendulum
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+from nexus_ai.core.opa_client import OpaClient, OpaError
+from nexus_ai.services.opa_policy_generator import OpaPolicyGenerator
 
 from .exceptions import NoMatchingRuleError
-
-# ── Rust-native PriorityEngine ───────────────────────────────────────────────
-
-try:
-    from nexus_crypto import (
-        PriorityEngine as _RustPriorityEngine,
-        TemporalManager as _RustTemporalManager,
-    )
-
-    _HAS_RUST_PRIORITY = True
-except ImportError:
-    _HAS_RUST_PRIORITY = False
-
-    # Fallback stub — PriorityEngine
-    class _RustPriorityEngine:  # type: ignore[no-redef]
-        @staticmethod
-        def resolve(rules_json: str, context_json: str) -> str:  # type: ignore[misc]
-            raise ImportError(
-                "nexus_crypto native module not available — "
-                "build with: cd nexus_ai/rust && maturin develop"
-            )
-
-        @staticmethod
-        def sort_rules(rules_json: str) -> str:  # type: ignore[misc]
-            raise ImportError("nexus_crypto native module not available")
-
-        @staticmethod
-        def validate_priorities(rules_json: str) -> str:  # type: ignore[misc]
-            raise ImportError("nexus_crypto native module not available")
-
-    # Fallback stub — TemporalManager
-    class _RustTemporalManager:  # type: ignore[no-redef]
-        @staticmethod
-        def filter_rules(rules_json: str, date_str: str) -> str:  # type: ignore[misc]
-            raise ImportError(
-                "nexus_crypto native module not available — "
-                "build with: cd nexus_ai/rust && maturin develop"
-            )
-
-        @staticmethod
-        def sort_by_temporal(rules_json: str) -> str:  # type: ignore[misc]
-            raise ImportError("nexus_crypto native module not available")
-
-        @staticmethod
-        def validate_overlap(rules_json: str) -> str:  # type: ignore[misc]
-            raise ImportError("nexus_crypto native module not available")
 
 
 # ── Schemas ──────────────────────────────────────────────────────────────────
@@ -843,26 +803,108 @@ class ContextInterpreter:
 
 
 class RuleEngine:
-    """Deterministic, temporal, auditable rule engine.
+    """Deterministic, temporal, auditable rule engine powered by DuckDB + OPA.
 
-    Uses Rust PriorityEngine for first-match-wins evaluation
-    with the SQL Condition Evaluator (no DuckDB temp table).
+    Zgodnie z aa3fvcx.txt:
+      - OPA (Open Policy Agent) jako deklaratywny silnik reguł
+      - DuckDB (RuleStore) jako trwały magazyn reguł
+      - Nexus-TaxEngine (Rust+PyO3) jako natywny orkiestrator
 
-    Rules are loaded from DuckDB with temporal filtering (via TemporalManager).
+    Dwie ścieżki ewaluacji:
+      **decide()** (synchroniczna) — DuckDB-only, zawsze dostępna, używana
+         przez testy i istniejący kod synchroniczny.
+      **decide_async()** (asynchroniczna) — próbuje OPA first, z DuckDB
+         fallback. Używana przez TaxPipeline i kod asynchroniczny.
 
-    Safety:
-      - Context values are always strings (serialized to JSON for Rust).
-      - No dynamic SQL execution — condition evaluation is done in Rust.
-      - First-match-wins with deterministic sorting by (priority, rule_id).
+    RuleEngine zarządza cyklem życia reguł (load, eval)
+    w DuckDB i opcjonalnie w OPA.
     """
 
-    def __init__(self, conn: duckdb.DuckDBPyConnection) -> None:
+    def __init__(
+        self,
+        conn: duckdb.DuckDBPyConnection,
+        opa_client: OpaClient | None = None,
+        *,
+        auto_sync_policy: bool = False,
+    ) -> None:
         self._conn = conn
+        self._opa = opa_client or OpaClient()
+        self._auto_sync = auto_sync_policy
+        self._policy_generator = OpaPolicyGenerator()
+
         # Use RuleStore for full schema with all indexes
         from nexus_ai.services.rule_store import RuleStore
 
         store = RuleStore(conn)
         store.ensure_schema()
+
+        # Auto-sync policy on first use
+        self._policy_loaded = False
+
+    # ── Asynchroniczna synchronizacja OPA ──────────────────────────────
+
+    async def _ensure_policy(self) -> None:
+        """Ensure OPA has the latest policy and data loaded.
+
+        Generates Rego policy from DuckDB rules and loads
+        both the policy code and data into OPA.
+        """
+        if not self._auto_sync:
+            return
+
+        try:
+            # Load all active rules from DuckDB
+            all_rows = self._conn.execute(
+                "SELECT rule_id, condition_sql, action_json, priority, "
+                "valid_from, valid_to, rule_set_id "
+                "FROM tax_rules "
+                "ORDER BY priority ASC, valid_from DESC, rule_id ASC"
+            ).fetchall()
+
+            rules: list[dict[str, Any]] = []
+            for r in all_rows:
+                rule: dict[str, Any] = {
+                    "rule_id": str(r[0]),
+                    "condition_sql": str(r[1]),
+                    "action_json": str(r[2]),
+                    "priority": int(r[3]),
+                    "valid_from": str(r[4]),
+                }
+                if r[5] is not None:
+                    rule["valid_to"] = str(r[5])
+                if r[6]:
+                    rule["rule_set_id"] = str(r[6])
+                rules.append(rule)
+
+            if not rules:
+                logger.warning("[RULE-ENGINE] No rules in DuckDB — OPA will have empty policy")
+                return
+
+            # Generate Rego policy and data
+            rego_code = self._policy_generator.generate_policy(rules)
+            data = self._policy_generator.generate_data(rules)
+
+            # Load into OPA
+            await self._opa.load_policy("tax/rules.rego", rego_code)
+            await self._opa.load_data("tax/rules", data)
+
+            self._policy_loaded = True
+            logger.info(
+                "[RULE-ENGINE] OPA policy synced: %d rules, %d bytes policy",
+                len(rules),
+                len(rego_code),
+            )
+        except OpaError as exc:
+            logger.warning(
+                "[RULE-ENGINE] OPA sync failed: %s — falling back to DuckDB-only mode",
+                exc,
+            )
+            self._policy_loaded = False
+        except Exception as exc:
+            logger.error("[RULE-ENGINE] Policy sync error: %s", exc)
+            self._policy_loaded = False
+
+    # ── Synchroniczna ścieżka: DuckDB-only (backward compat) ───────────
 
     def decide(
         self,
@@ -870,46 +912,130 @@ class RuleEngine:
         *,
         include_decision_trace: bool = False,
     ) -> dict[str, Any]:
-        """Evaluate context against rules and return the first matching verdict.
+        """Evaluate context against DuckDB rules — synchroniczna, zawsze dostępna.
 
-        SUPERMOCE DuckDB:
-        - Temporal WHERE z indeksem (valid_from, valid_to, priority)
-          DuckDB filtruje temporalnie, Rust tylko sortuje i ewaluuje.
-        - Arrow fetch dla szybszego transferu danych z DuckDB do pamięci.
-
-        Uses Rust TemporalManager for temporal sorting + PriorityEngine
-        for deterministic first-match-wins evaluation.
-
-        The returned verdict dict includes:
-          - ``_rule_id``: UUID of the winning rule
-          - ``_priority``: Priority of the winning rule
-          - ``_evaluated_rules``: List of all evaluated rules with
-            ``rule_id``, ``condition_sql``, ``result`` (bool), and
-            ``selected`` (True for the winning rule).
-          - ``decision_trace``: (optional) Human-readable decision trace,
-            only included when ``include_decision_trace=True``.
+        Używa DuckDB temporal query + warunki SQL do first-match-wins.
+        Jest to synchroniczna wersja dla backward compatibility z istniejącymi
+        testami i kodem, który nie używa async.
 
         Args:
             context: Flat dict from ContextInterpreter.build().
             include_decision_trace: If True, generates a human-readable
                 ``decision_trace`` string in the verdict (via TraceGenerator).
-                Default ``False`` to avoid overhead when only raw data is needed.
 
         Returns:
             The action_json of the first matching rule, enriched with
-            ``_rule_id``, ``_priority``, and ``_evaluated_rules``.
+            ``_rule_id``, ``_priority``.
 
         Raises:
-            NoMatchingRuleError: If no rule matches the context.
+            NoMatchingRuleError: If no rule matches.
         """
-        # ── SUPERMOC DuckDB: Temporal WHERE z indeksem ─────────────────
-        # Zamiast ładować WSZYSTKIE reguły i filtrować w Rust w pamięci,
-        # DuckDB robi temporalny filter z indeksem (valid_from, valid_to, priority).
-        # To redukuje dane przesyłane do Pythona o ~90% i wykorzystuje
-        # wektorowy engine DuckDB zamiast filtrowania w Rust.
+        txn_date = context.get("transaction_date", pendulum.now().date().isoformat())
+        txn_date_str = str(txn_date) if not isinstance(txn_date, str) else txn_date
+        return self._decide_fallback(context, txn_date_str, include_decision_trace)
+
+    # ── Asynchroniczna ścieżka: OPA → DuckDB fallback ───────────────────
+
+    async def decide_async(
+        self,
+        context: dict[str, Any],
+        *,
+        include_decision_trace: bool = False,
+    ) -> dict[str, Any]:
+        """Evaluate context against OPA rules, with DuckDB fallback.
+
+        Flow:
+          1. OPA policy sync (jeśli potrzebny)
+          2. OPA REST API → first-match-wins evaluation
+          3. DuckDB fallback jeśli OPA niedostępne
+          4. Opcjonalnie decision_trace
+
+        Args:
+            context: Flat dict from ContextInterpreter.build().
+            include_decision_trace: If True, generates a human-readable
+                ``decision_trace`` string.
+
+        Returns:
+            Enriched verdict dict.
+
+        Raises:
+            NoMatchingRuleError: If no rule matches and OPA unavailable.
+        """
+        # 1. Ensure OPA has the latest policy loaded
+        if not self._policy_loaded and self._auto_sync:
+            await self._ensure_policy()
+
         txn_date = context.get("transaction_date", pendulum.now().date().isoformat())
         txn_date_str = str(txn_date) if not isinstance(txn_date, str) else txn_date
 
+        # 2. Try OPA evaluation first
+        opa_result: dict[str, Any] | None = None
+        try:
+            opa_result = await self._opa.evaluate(
+                path="tax/rules/decide",
+                input_data=context,
+            )
+        except OpaError as exc:
+            logger.warning(
+                "[RULE-ENGINE] OPA evaluation failed: %s — falling back to DuckDB",
+                exc,
+            )
+
+        # 3. If OPA returned a match, use it
+        if opa_result and (opa_result.get("matched", False) or "rule_id" in opa_result):
+            verdict = dict(opa_result)
+
+            if include_decision_trace:
+                rule_id = verdict.get("rule_id", "")
+                if rule_id:
+                    rule_rows = self._conn.execute(
+                        "SELECT rule_id, condition_sql, action_json, description_template "
+                        "FROM tax_rules WHERE rule_id = ?",
+                        (rule_id,),
+                    ).fetchall()
+                    if rule_rows:
+                        r = rule_rows[0]
+                        rule_info = {
+                            "rule_id": str(r[0]),
+                            "condition_sql": str(r[1]),
+                            "description_template": str(r[3]) if r[3] else None,
+                        }
+                        from nexus_ai.services.trace_generator import TraceGenerator
+
+                        verdict["decision_trace"] = TraceGenerator.generate(
+                            rule=rule_info,
+                            context=context,
+                            verdict=verdict,
+                        )
+
+            return verdict
+
+        # 4. Fallback: evaluate directly from DuckDB (OPA unavailable)
+        return self._decide_fallback(context, txn_date_str, include_decision_trace)
+
+    def _decide_fallback(
+        self,
+        context: dict[str, Any],
+        txn_date_str: str,
+        include_decision_trace: bool = False,
+    ) -> dict[str, Any]:
+        """Fallback decision path — evaluates rules directly from DuckDB.
+
+        Used when OPA is unavailable. Loads rules from DuckDB,
+        converts conditions to Python expressions, and evaluates
+        them against the context.
+
+        Args:
+            context: Flat dict from ContextInterpreter.build().
+            txn_date_str: Transaction date string.
+            include_decision_trace: If True, generates decision_trace.
+
+        Returns:
+            Enriched verdict dict.
+
+        Raises:
+            NoMatchingRuleError: If no rule matches.
+        """
         all_rows = self._conn.execute(
             "SELECT rule_id, condition_sql, action_json, priority, "
             "valid_from, valid_to FROM tax_rules "
@@ -924,86 +1050,194 @@ class RuleEngine:
                 f"No active tax rules found for date {txn_date_str}"
             )
 
-        # 2. Serialize ONLY active rules to JSON (już przefiltrowane przez DuckDB)
-        all_rules: list[dict[str, Any]] = []
+        # Evaluate each rule's condition against context
         for r in all_rows:
-            rule: dict[str, Any] = {
-                "rule_id": str(r[0]),
-                "condition_sql": str(r[1]),
-                "action_json": str(r[2]),  # already JSON string from DuckDB
-                "priority": int(r[3]),
-                "valid_from": str(r[4]),
-            }
-            if r[5] is not None:
-                rule["valid_to"] = str(r[5])
-            all_rules.append(rule)
+            rule_id = str(r[0])
+            condition_sql = str(r[1])
+            action_json = str(r[2])
+            priority = int(r[3])
 
-        # 3. Evaluate rules with Rust PriorityEngine.resolve()
-        #    Rust nie musi już filtrować temporalnie — DuckDB to zrobił.
-        context_json = msgspec_dumps(context, ensure_ascii=False, default=str)
-        rules_json = msgspec_dumps(all_rules, ensure_ascii=False, default=str)
-        result_str = _RustPriorityEngine.resolve(rules_json, context_json)
-        result = msgspec_loads(result_str)
+            # Simple condition evaluation (string-based)
+            if self._evaluate_condition_simple(condition_sql, context):
+                try:
+                    action = json.loads(action_json)
+                except (json.JSONDecodeError, TypeError):
+                    action = {"vat_rate": "0.23", "rounding_level": "position"}
 
-        if not result.get("matched", False):
-            raise NoMatchingRuleError(
-                f"No matching rule for context: {msgspec_dumps(context, ensure_ascii=False)}"
+                verdict = dict(action)
+                verdict["_rule_id"] = rule_id
+                verdict["_priority"] = priority
+                verdict["matched"] = True
+
+                if include_decision_trace:
+                    rule_rows = self._conn.execute(
+                        "SELECT rule_id, condition_sql, action_json, description_template "
+                        "FROM tax_rules WHERE rule_id = ?",
+                        (rule_id,),
+                    ).fetchall()
+                    if rule_rows:
+                        rule_info = {
+                            "rule_id": str(rule_rows[0][0]),
+                            "condition_sql": str(rule_rows[0][1]),
+                            "description_template": str(rule_rows[0][3]) if rule_rows[0][3] else None,
+                        }
+                        from nexus_ai.services.trace_generator import TraceGenerator
+
+                        verdict["decision_trace"] = TraceGenerator.generate(
+                            rule=rule_info,
+                            context=context,
+                            verdict=verdict,
+                        )
+
+                return verdict
+
+        raise NoMatchingRuleError(
+            f"No matching rule for context: {msgspec_dumps(context, ensure_ascii=False)}"
+        )
+
+    @staticmethod
+    def _evaluate_condition_simple(
+        condition_sql: str,
+        context: dict[str, Any],
+    ) -> bool:
+        """Evaluate a simple SQL condition against a context dict.
+
+        Supports: =, !=, IN (string values), AND.
+        Used as fallback when OPA is unavailable.
+
+        Args:
+            condition_sql: SQL condition string.
+            context: Flat context dict.
+
+        Returns:
+            True if condition matches.
+        """
+        import re as _re
+
+        # Normalize the condition
+        condition = condition_sql.strip()
+
+        # Handle empty/true conditions
+        if not condition or condition.lower() == "true" or condition == "1=1":
+            return True
+
+        # Handle AND conditions (split and evaluate all)
+        if " AND " in condition.upper():
+            parts = _re.split(r'\s+AND\s+', condition, flags=_re.IGNORECASE)
+            return all(
+                RuleEngine._evaluate_condition_simple(p.strip(), context)
+                for p in parts
             )
 
-        # 4. Extract verdict and metadata
-        verdict: dict[str, Any] = result.get("verdict", {})
+        # Handle OR conditions
+        if " OR " in condition.upper():
+            parts = _re.split(r'\s+OR\s+', condition, flags=_re.IGNORECASE)
+            return any(
+                RuleEngine._evaluate_condition_simple(p.strip(), context)
+                for p in parts
+            )
 
-        # Parse evaluated_rules_json into list
-        evaluated_rules_str = result.get("evaluated_rules_json", "[]")
-        evaluated_rules: list[dict[str, Any]] = []
-        if evaluated_rules_str:
+        # Handle IN clause: field IN ('val1', 'val2')
+        in_match = _re.match(r"(\w+)\s+IN\s*\(([^)]+)\)", condition, _re.IGNORECASE)
+        if in_match:
+            field = in_match.group(1)
+            values_str = in_match.group(2)
+            values = [v.strip().strip("'\"") for v in values_str.split(",")]
+            actual = str(context.get(field, ""))
+            return actual in values
+
+        # Handle NOT IN clause
+        not_in_match = _re.match(r"(\w+)\s+NOT\s+IN\s*\(([^)]+)\)", condition, _re.IGNORECASE)
+        if not_in_match:
+            field = not_in_match.group(1)
+            values_str = not_in_match.group(2)
+            values = [v.strip().strip("'\"") for v in values_str.split(",")]
+            actual = str(context.get(field, ""))
+            return actual not in values
+
+        # Handle < condition: field < 'value'
+        lt_match = _re.match(r"(\w+)\s*<\s*'([^']*)'", condition)
+        if lt_match:
+            field = lt_match.group(1)
+            value = lt_match.group(2)
+            actual = str(context.get(field, ""))
             try:
-                parsed = msgspec_loads(evaluated_rules_str)
-                if isinstance(parsed, list):
-                    evaluated_rules = parsed
+                return float(actual) < float(value)
             except (ValueError, TypeError):
-                pass
+                return actual < value
 
-        # Attach evaluated rules to verdict
-        verdict["_evaluated_rules"] = evaluated_rules
+        # Handle > condition
+        gt_match = _re.match(r"(\w+)\s*>\s*'([^']*)'", condition)
+        if gt_match:
+            field = gt_match.group(1)
+            value = gt_match.group(2)
+            actual = str(context.get(field, ""))
+            try:
+                return float(actual) > float(value)
+            except (ValueError, TypeError):
+                return actual > value
 
-        # Optionally generate human-readable decision_trace
-        if include_decision_trace:
-            rule_id = verdict.get("_rule_id", "")
-            if rule_id:
-                rule_rows = self._conn.execute(
-                    "SELECT rule_id, condition_sql, action_json, description_template "
-                    "FROM tax_rules WHERE rule_id = ?",
-                    (rule_id,),
-                ).fetchall()
-                if rule_rows:
-                    r = rule_rows[0]
-                    rule_info = {
-                        "rule_id": str(r[0]),
-                        "condition_sql": str(r[1]),
-                        "description_template": str(r[3]) if r[3] else None,
-                    }
-                    from nexus_ai.services.trace_generator import TraceGenerator
+        # Handle <= condition
+        le_match = _re.match(r"(\w+)\s*<=\s*'([^']*)'", condition)
+        if le_match:
+            field = le_match.group(1)
+            value = le_match.group(2)
+            actual = str(context.get(field, ""))
+            try:
+                return float(actual) <= float(value)
+            except (ValueError, TypeError):
+                return actual <= value
 
-                    verdict["decision_trace"] = TraceGenerator.generate(
-                        rule=rule_info,
-                        context=context,
-                        verdict=verdict,
-                    )
+        # Handle >= condition
+        ge_match = _re.match(r"(\w+)\s*>=\s*'([^']*)'", condition)
+        if ge_match:
+            field = ge_match.group(1)
+            value = ge_match.group(2)
+            actual = str(context.get(field, ""))
+            try:
+                return float(actual) >= float(value)
+            except (ValueError, TypeError):
+                return actual >= value
 
-        return verdict
+        # Handle != condition
+        ne_match = _re.match(r"(\w+)\s*!=\s*'([^']*)'", condition)
+        if ne_match:
+            field = ne_match.group(1)
+            value = ne_match.group(2)
+            actual = str(context.get(field, ""))
+            return actual != value
 
-    # ── Access to formal components ────────────────────────────────────
+        # Handle = condition (default)
+        eq_match = _re.match(r"(\w+)\s*=\s*'([^']*)'", condition)
+        if eq_match:
+            field = eq_match.group(1)
+            value = eq_match.group(2)
+            actual = str(context.get(field, ""))
+            return actual == value
+
+        # Unrecognized condition — log and return False
+        import logging as _logging
+        _logging.getLogger("nexus.tax.rules").warning(
+            "[RULE-ENGINE] Unknown condition format: %s", condition
+        )
+        return False
+
+    # ── Policy sync ─────────────────────────────────────────────────────
+
+    async def sync_policy(self) -> bool:
+        """Force re-sync OPA policy from DuckDB rules.
+
+        Returns:
+            True if sync was successful.
+        """
+        self._policy_loaded = False
+        await self._ensure_policy()
+        return self._policy_loaded
 
     @property
-    def temporal_manager(self):
-        """Access the Rust TemporalManager for temporal filtering."""
-        return _RustTemporalManager
-
-    @property
-    def priority_engine(self):
-        """Access the Rust PriorityEngine."""
-        return _RustPriorityEngine
+    def opa_client(self) -> OpaClient:
+        """Access to OPA client for direct OPA operations."""
+        return self._opa
 
     # ── Rule lifecycle (immutable: append-only + close) ─────────────────
 

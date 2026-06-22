@@ -1,0 +1,2 @@
+Vec<PyTransferSpec>: pyo3::impl_::extract_argument::PyFunctionArgument<'_, '_>
+pyo3::impl_::extract_argument::PyFunctionArgument<'_, '_>

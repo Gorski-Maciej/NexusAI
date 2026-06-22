@@ -1,5 +1,17 @@
 """
-Fallback Handler — obsługa sytuacji, gdy żadna reguła nie pasuje do kontekstu.
+[DEPRECATED] Fallback Handler — zastąpiony przez default decide w OPA.
+
+OSTRZEŻENIE: Ten moduł jest zastąpiony przez OPA (Open Policy Agent).
+Logika NO_MATCH jest obsługiwana przez "default decide" w Rego.
+
+Powód migracji:
+  - OPA default decide jest deklaratywny i szybszy
+  - Rejestracja w fallback_events przeniesiona do Rust (Nexus-TaxEngine)
+  - Mniej kodu imperatywnego, więcej deklaratywnego
+
+Zachowany dla backward compatibility.
+Nowy kod powinien używać default decide w Rego (rules.rego) + 
+PreLedgerValidator w Rust dla obsługi NO_MATCH.
 
 Element 2 z dokumentu: bezpieczne zachowanie systemu w sytuacjach
 nieprzewidzianych (brak reguły).
@@ -10,6 +22,15 @@ Zadania:
   3. Powiadomienie — alert do księgowego.
   4. Kierowanie do ręcznej kolejki — faktura czeka na ręczną interwencję.
 """
+
+import warnings
+warnings.warn(
+    "fallback_handler is deprecated and will be removed in a future version. "
+    "Use OPA default decide in Rego (see nexus_ai/tax/rules.rego) for NO_MATCH handling.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 
 from __future__ import annotations
 

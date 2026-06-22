@@ -107,6 +107,18 @@ BINARY_MANIFEST: list[BinaryDefinition] = [
         description="High-performance accounting ledger engine",
         required=True,
     ),
+    BinaryDefinition(
+        name="opa",
+        display_name="OPA (Open Policy Agent)",
+        version="0.68.0",
+        url_template=(
+            "https://github.com/open-policy-agent/opa/releases/download/"
+            "v{version}/opa_{platform}_{arch}.zip"
+        ),
+        filename_template="opa{ext}",
+        description="Open Policy Agent — declarative rule engine (CNCF)",
+        required=True,
+    ),
 ]
 
 
@@ -490,10 +502,48 @@ class BinaryManager:
             logger.error("Failed to start TigerBeetle: %s", e)
             return False
 
+    async def start_opa(self, port: int = 8181, log_level: str = "error") -> bool:
+        """Start OPA (Open Policy Agent) as a background sidecar process.
+
+        OPA działa jako serwer REST API na porcie domyślnym 8181.
+        Rego policies są ładowane dynamicznie przez OpaClient.
+
+        Args:
+            port: HTTP port for OPA REST API.
+            log_level: OPA log level (error, warn, info, debug).
+
+        Returns:
+            True if OPA started successfully.
+        """
+        opa_path = self.get_path("opa")
+        if not opa_path.exists():
+            logger.error("OPA binary not found at %s", opa_path)
+            return False
+
+        try:
+            proc = await anyio.Process(
+                [
+                    str(opa_path),
+                    "run",
+                    "--server",
+                    f"--addr=localhost:{port}",
+                    f"--log-level={log_level}",
+                ],
+                stdout=anyio.ProcessPipe.DEVNULL,
+                stderr=anyio.ProcessPipe.DEVNULL,
+            ).__aenter__()
+            self._processes["opa"] = proc
+            logger.info("OPA started (PID: %d, port: %d)", proc.pid, port)
+            return True
+        except Exception as e:
+            logger.error("Failed to start OPA: %s", e)
+            return False
+
     async def start_all(self, data_dir: Path | None = None) -> dict[str, bool]:
         """Start all managed binaries."""
         results = {}
         results["nats-server"] = await self.start_nats()
+        results["opa"] = await self.start_opa()
         if data_dir:
             results["tigerbeetle"] = await self.start_tigerbeetle(data_dir)
         self._running = all(results.values())

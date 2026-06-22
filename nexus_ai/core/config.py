@@ -488,10 +488,29 @@ class _TigerbeetleSection(Struct, kw_only=True):
     replica_addresses: str | None = None
 
 
+class _OpaSection(Struct, kw_only=True):
+    """msgspec schema dla sekcji [opa] w config/{env}.toml.
+
+    OPA (Open Policy Agent) — deklaratywny silnik reguł (CNCF).
+    Działa jako sidecar process (podobnie jak NATS, TigerBeetle).
+
+    Zgodnie z aa3fvcx.txt:
+    - OPA jako silnik reguł podatkowych
+    - REST API na localhost:8181
+    - Rego policies generowane dynamicznie z DuckDB
+    """
+    enabled: bool | None = None
+    url: str | None = None
+    timeout_seconds: Annotated[float | None, Meta(ge=1.0, le=60.0)] = None
+    auto_sync_policy: bool | None = None
+    policy_package: str | None = None
+    policy_rule: str | None = None
+
+
 class _TomlConfigRoot(Struct, kw_only=True):
     """msgspec schema dla całego pliku config/{env}.toml.
 
-    SUPERMOC TOML: 10 sekcji z typowaną walidacją (msgspec.Struct),
+    SUPERMOC TOML: 11 sekcji z typowaną walidacją (msgspec.Struct),
     zakresami (Annotated[T, Meta(ge=..., le=...)]) i wartościami
     domyślnymi. Każdy błąd typu → logowany przy starcie.
 
@@ -506,6 +525,7 @@ class _TomlConfigRoot(Struct, kw_only=True):
     - forex: kursy walut NBP
     - ai: ścieżki modeli AI
     - tigerbeetle: double-entry ledger
+    - opa: Open Policy Agent (reguły podatkowe)
     """
 
     app: _AppSection | None = None
@@ -518,6 +538,7 @@ class _TomlConfigRoot(Struct, kw_only=True):
     forex: _ForexSection | None = None
     ai: _AiSection | None = None
     tigerbeetle: _TigerbeetleSection | None = None
+    opa: _OpaSection | None = None
 
 
 # ── Legacyjne funkcje ładowania (kompatybilność wsteczna) ────────────────
@@ -734,6 +755,14 @@ class AppConfig(Struct, kw_only=True):
     # ── Timeouts ──
     decision_timeout_seconds: int = 60
 
+    # ── OPA (Open Policy Agent) ──
+    opa_enabled: bool = True
+    opa_url: str = "http://localhost:8181"
+    opa_timeout_seconds: float = 10.0
+    opa_auto_sync_policy: bool = True
+    opa_policy_package: str = "tax.rules"
+    opa_policy_rule: str = "decide"
+
     # ── Computed properties (as methods for Struct compatibility) ──
 
     @property
@@ -802,6 +831,7 @@ class AppConfig(Struct, kw_only=True):
         "forex": (_ForexSection, "NEXUS_FOREX_"),
         "ai": (_AiSection, "NEXUS_AI_"),
         "tigerbeetle": (_TigerbeetleSection, "NEXUS_TB_"),
+        "opa": (_OpaSection, "NEXUS_OPA_"),
     }
 
     # ── Auto-generowane mapowanie Struct field → (toml_section, toml_field) ──

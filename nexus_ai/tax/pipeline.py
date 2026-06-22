@@ -1,19 +1,27 @@
 """Tax Pipeline — orchestrates the complete tax processing flow z SUPERMOCAMI TigerBeetle.
 
-SUPERMOCE:
+Zgodnie z aa3fvcx.txt:
+  - OPA (Open Policy Agent) → deklaratywny silnik reguł (first-match-wins)
+  - DuckDB (RuleStore) → trwały magazyn reguł
+  - Nexus-TaxEngine (Rust+PyO3) → natywny orkiestrator: przygotowuje dane dla OPA,
+    odbiera decyzję i wykonuje krytyczne obliczenia matematyczne
+
+Processing flow (OPA-aware):
+  1. ContextInterpreter → flat context z invoice_data
+  2. (Optional) RuleEngine.decide_async() → OPA → first-match wins verdict
+  3. Rust TaxMathEngine → integer-only VAT computation (ROUND_HALF_UP)
+  4. InvariantGuard → balance-check 3 invariantów
+  5. DecisionTraceLogger → SHA-256 hash chain
+  6. PreLedgerValidator → account pair/balance validation
+  7. TigerBeetle → double-entry linked transfers (BATCH + LINKED)
+  8. Event emission → DecisionMade via NATS
+
+SUPERMOCE TigerBeetle:
 - Linked transfers dla atomowego księgowania expense + VAT
 - Batch transferów (oba w jednym wywołaniu)
-- Natywne pending/post
 - code field dla każdego transferu
 - user_data_128 dla source_document_id (UUID → u128)
 - Multi-ledger: PLN=700, VAT_INPUT=711
-
-Zgodnie z aa3fvcx.txt:
-  Steps 1-5 (Rust+PyO3 — one call to run_full_pipeline)
-  Steps 6-8 (Python async I/O):
-    6. PreLedgerValidator  → account pair/balance validation
-    7. TigerBeetle         → double-entry linked transfers (BATCH + LINKED)
-    8. Event emission      → DecisionMade event via NATS
 """
 
 from __future__ import annotations
@@ -55,6 +63,13 @@ from .math_engine import (
     to_money,
 )
 
+from nexus_ai.core.opa_client import OpaError
+from nexus_ai.services.trace_generator import TraceGenerator
+from nexus_ai.tax.rules import (
+    RuleEngine,
+    ContextInterpreter as TaxContextInterpreter,
+)
+
 logger = get_logger("nexus.tax.pipeline")
 
 
@@ -78,12 +93,26 @@ class PipelineResult(Struct):
 class TaxPipeline:
     """Orchestrates the complete tax processing pipeline.
 
-    SUPERMOCE TigerBeetle:
-    - Linked transfers: expense + VAT w atomowym chainie
+    SUPERMOCE:
+    - OPA (Open Policy Agent) → primary rule evaluation engine
+    - DuckDB (RuleStore) → temporal rule storage (fallback when OPA unavailable)
+    - Nexus-TaxEngine (Rust+PyO3) → natywny orkiestrator: przygotowuje dane dla OPA,
+      odbiera decyzję i wykonuje krytyczne obliczenia matematyczne
+    - TigerBeetle → linked transfers: expense + VAT w atomowym chainie
     - Batch: oba transfery w jednym create_transfers() call
     - code: 1001 dla expense, 1002 dla VAT
     - user_data_128: UUID dokumentu
     - ledger: 700 dla PLN, 711 dla VAT
+
+    Processing flow:
+      1. OPA evaluation (primary) → RuleEngine.decide_async() → verdict
+      2. Fallback: Rust pipeline (when OPA unavailable)
+      3. TaxMathEngine → integer-only VAT computation (ROUND_HALF_UP)
+      4. InvariantGuard → balance-check 3 invariantów
+      5. DecisionTraceLogger → SHA-256 hash chain
+      6. PreLedgerValidator → account pair/balance validation
+      7. TigerBeetle → double-entry linked transfers
+      8. Event emission → DecisionMade via NATS
     """
 
     def __init__(
@@ -95,6 +124,7 @@ class TaxPipeline:
         account_expense_id: int = 40100,
         account_vat_input_id: int = 22100,
         account_payables_id: int = 20200,
+        rule_engine: RuleEngine | None = None,
     ) -> None:
         self._conn = conn
         self._tigerbeetle = tigerbeetle
@@ -107,17 +137,37 @@ class TaxPipeline:
             payables_account_id=account_payables_id,
         )
 
+        # Inicjalizuj RuleEngine z OPA support
+        self._rule_engine = rule_engine or RuleEngine(conn)
+
         self._account_expense_id = account_expense_id
         self._account_vat_input_id = account_vat_input_id
         self._account_payables_id = account_payables_id
+
+    # ── Główna metoda przetwarzania: OPA → Rust fallback ───────────────
 
     async def process_invoice(
         self,
         invoice_data: dict[str, Any],
         *,
         transaction_id: str | None = None,
+        opa_evaluation: bool = True,
     ) -> PipelineResult:
-        """Process a single invoice through the entire tax pipeline."""
+        """Process invoice through the tax pipeline.
+
+        Dwie ścieżki:
+          1. OPA (primary): RuleEngine.decide_async() → verdict → TaxMathEngine
+          2. Rust fallback: _rust_run_full_pipeline() (when OPA unavailable)
+
+        Args:
+            invoice_data: Raw invoice data dict.
+            transaction_id: Optional override transaction ID.
+            opa_evaluation: If True (default), tries OPA first.
+                            Set False to force Rust pipeline.
+
+        Returns:
+            PipelineResult with full processing outcome.
+        """
         tx_id = transaction_id or uuid_module.uuid4().hex
 
         txn_date = invoice_data.get(
@@ -126,7 +176,163 @@ class TaxPipeline:
         )
         txn_date_str = str(txn_date) if not isinstance(txn_date, str) else txn_date
 
-        # ── DuckDB I/O: temporal rules + previous hash ──────────────────
+        # ── Try OPA evaluation first (primary path) ────────────────────
+        if opa_evaluation:
+            try:
+                return await self._process_with_opa(
+                    invoice_data=invoice_data,
+                    transaction_id=tx_id,
+                    txn_date_str=txn_date_str,
+                )
+            except OpaError:
+                logger.info(
+                    "[TAX-PIPELINE] OPA unavailable, falling back to Rust pipeline for tx_id=%s",
+                    tx_id,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "[TAX-PIPELINE] OPA path failed (%s), falling back to Rust for tx_id=%s",
+                    exc,
+                    tx_id,
+                )
+
+        # ── Fallback: Rust pipeline ─────────────────────────────────────
+        return await self._process_with_rust(
+            invoice_data=invoice_data,
+            transaction_id=tx_id,
+            txn_date_str=txn_date_str,
+        )
+
+    # ═══════════════════════════════════════════════════════════════════
+    # ŚCIEŻKA 1: OPA (Primary)
+    # ═══════════════════════════════════════════════════════════════════
+
+    async def _process_with_opa(
+        self,
+        invoice_data: dict[str, Any],
+        *,
+        transaction_id: str,
+        txn_date_str: str,
+    ) -> PipelineResult:
+        """Process invoice using OPA rule evaluation + Rust TaxMathEngine.
+
+        Flow:
+          1. Build context via TaxContextInterpreter
+          2. OPA evaluation via RuleEngine.decide_async()
+          3. TaxMathEngine computes net/vat/brutto in grosze
+          4. InvariantGuard validates 3 invariants
+          5. DecisionTraceLogger captures audit chain
+          6. Continue to shared post-processing (PreLedger, TB, events)
+        """
+        # ── 1. Build context ───────────────────────────────────────────
+        context = TaxContextInterpreter.build(invoice_data)
+
+        # ── 2. OPA evaluation ──────────────────────────────────────────
+        verdict = await self._rule_engine.decide_async(
+            context,
+            include_decision_trace=False,
+        )
+
+        # Extract verdict fields
+        rule_id = verdict.get("rule_id", "")
+        vat_rate_str = verdict.get("vat_rate", "0.23")
+        rounding_level = verdict.get("rounding_level", "position")
+        routing = verdict.get("_routing") or None
+        routing_reason = verdict.get("_routing_reason") or None
+
+        # ── 3. TaxMathEngine: compute amounts in grosze (integer-only)  ──
+        # Net amount from invoice data (or extract from context)
+        # TaxMathEngine ma wbudowany Python fallback gdy Rust niedostępny
+        raw_net = invoice_data.get("amount_net", context.get("amount_net", "0"))
+        net_grosze = TaxMathEngine.to_grosze(str(raw_net))
+
+        # Single position invoice (most common)
+        vat_grosze = TaxMathEngine.multiply_net_by_vat(net_grosze, vat_rate_str)
+        brutto_grosze = TaxMathEngine.add_tax(net_grosze, vat_grosze)
+
+        positions = [InvoicePositions(net_grosze=net_grosze, vat_rate=vat_rate_str)]
+        summary = InvoiceSummary(
+            netto_grosze=net_grosze,
+            vat_grosze=vat_grosze,
+            brutto_grosze=brutto_grosze,
+        )
+
+        # ── 4. InvariantGuard (validate 3 invariants) ──────────────────
+        inv_result = TaxMathEngine.validate_invariants(positions, summary)
+        invariants_json = msgspec_dumps({
+            "is_valid": inv_result.is_valid,
+            "error_message": inv_result.error_message,
+        }, ensure_ascii=False)
+
+        if not inv_result.is_valid:
+            self._logger.log(
+                transaction_id=transaction_id,
+                rule_id=rule_id,
+                context=context,
+                verdict=verdict,
+                invariants_result=invariants_json,
+                calculation_input=msgspec_dumps(invoice_data, ensure_ascii=False),
+                calculation_output=msgspec_dumps({
+                    "net_grosze": net_grosze,
+                    "vat_grosze": vat_grosze,
+                    "brutto_grosze": brutto_grosze,
+                }, ensure_ascii=False),
+            )
+            return PipelineResult(
+                success=False,
+                transaction_id=transaction_id,
+                error=f"INVARIANT_FAILURE: {inv_result.error_message}",
+                vat_grosze=vat_grosze,
+                brutto_grosze=brutto_grosze,
+            )
+
+        # ── 5. Decision trace ───────────────────────────────────────────
+        decision_trace_text = self._build_decision_trace(
+            rule_id=rule_id,
+            context=context,
+            verdict=verdict,
+        )
+
+        # ── 6. Continue to shared post-processing ───────────────────────
+        return await self._post_process(
+            transaction_id=transaction_id,
+            invoice_data=invoice_data,
+            context=context,
+            verdict=verdict,
+            rule_id=rule_id,
+            vat_rate_str=vat_rate_str,
+            rounding_level=rounding_level,
+            total_net_grosze=net_grosze,
+            total_vat_grosze=vat_grosze,
+            total_brutto_grosze=brutto_grosze,
+            positions=positions,
+            summary=summary,
+            invariants_json=invariants_json,
+            routing=routing,
+            routing_reason=routing_reason,
+            decision_trace_text=decision_trace_text,
+            evaluated_rules=None,
+            calc_input=msgspec_dumps(invoice_data, ensure_ascii=False, default=str),
+            calc_output=msgspec_dumps({
+                "net_grosze": net_grosze,
+                "vat_grosze": vat_grosze,
+                "brutto_grosze": brutto_grosze,
+            }, ensure_ascii=False, default=str),
+        )
+
+    # ═══════════════════════════════════════════════════════════════════
+    # ŚCIEŻKA 2: Rust pipeline (Fallback)
+    # ═══════════════════════════════════════════════════════════════════
+
+    async def _process_with_rust(
+        self,
+        invoice_data: dict[str, Any],
+        *,
+        transaction_id: str,
+        txn_date_str: str,
+    ) -> PipelineResult:
+        """Process invoice using the original Rust pipeline (fallback)."""
+        # ── DuckDB I/O: temporal rules ─────────────────────────────────
         all_rows = self._conn.execute(
             "SELECT rule_id, condition_sql, action_json, priority, "
             "valid_from, valid_to FROM tax_rules "
@@ -140,11 +346,11 @@ class TaxPipeline:
             logger.error(
                 "[TAX-PIPELINE] No active tax rules for date=%s tx_id=%s",
                 txn_date_str,
-                tx_id,
+                transaction_id,
             )
             return PipelineResult(
                 success=False,
-                transaction_id=tx_id,
+                transaction_id=transaction_id,
                 error=f"NO_MATCHING_RULE: No active tax rules found for date {txn_date_str}",
             )
 
@@ -163,23 +369,22 @@ class TaxPipeline:
 
         rules_json = msgspec_dumps(all_rules, ensure_ascii=False, default=str)
         invoice_data_json = msgspec_dumps(invoice_data, ensure_ascii=False, default=str)
-        timestamp_iso = pendulum.now("UTC").isoformat()
 
         try:
             result: _RustPipelineComputeResult = _rust_run_full_pipeline(
                 invoice_data_json=invoice_data_json,
                 rules_json=rules_json,
-                transaction_id=tx_id,
+                transaction_id=transaction_id,
             )
         except Exception as exc:
             logger.error(
                 "[TAX-PIPELINE] run_full_pipeline failed: %s tx_id=%s",
                 exc,
-                tx_id,
+                transaction_id,
             )
             return PipelineResult(
                 success=False,
-                transaction_id=tx_id,
+                transaction_id=transaction_id,
                 error=f"PIPELINE_FAILURE: {exc}",
             )
 
@@ -189,7 +394,7 @@ class TaxPipeline:
         total_brutto_grosze = result.brutto_grosze
 
         positions_net = list(result.positions_net_grosze) if result.positions_net_grosze else []
-        inv_positions = [
+        positions = [
             InvoicePositions(net_grosze=ng, vat_rate=str(result.parsed_vat_rate))
             for ng in positions_net
         ]
@@ -199,7 +404,6 @@ class TaxPipeline:
             brutto_grosze=total_brutto_grosze,
         )
 
-        validation_valid = result.is_valid
         invariants_json = result.invariants_result_json
         rule_id = result.matched_rule_id
         vat_rate_str = result.parsed_vat_rate
@@ -207,11 +411,13 @@ class TaxPipeline:
         routing = result.routing or None
         routing_reason = result.routing_reason or None
 
+        # Extract audit params
         audit_params = result.audit_params
         context: dict[str, Any] = {}
         verdict: dict[str, Any] = {}
         evaluated_rules: list[dict[str, Any]] = []
-        current_hash: str = ""
+        calc_input = result.calculation_input_json
+        calc_output = result.calculation_output_json
 
         if audit_params is not None:
             if audit_params.context_json:
@@ -231,63 +437,98 @@ class TaxPipeline:
                         evaluated_rules = parsed
                 except (ValueError, TypeError):
                     pass
-            current_hash = audit_params.current_hash
 
         # ── Error paths ─────────────────────────────────────────────────
         if not result.is_valid:
             error_lower = result.error_message.upper()
             if "NO_MATCHING_RULE" in error_lower:
                 self._logger.log(
-                    transaction_id=tx_id,
+                    transaction_id=transaction_id,
                     context=context or {"error": "No context available"},
                     invariants_result=msgspec_dumps({"error": result.error_message}),
                 )
                 return PipelineResult(
                     success=False,
-                    transaction_id=tx_id,
+                    transaction_id=transaction_id,
                     error=result.error_message,
                 )
 
             self._logger.log(
-                transaction_id=tx_id,
+                transaction_id=transaction_id,
                 rule_id=rule_id,
                 context=context,
                 verdict=verdict,
-                calculation_input=result.calculation_input_json,
-                calculation_output=result.calculation_output_json,
+                calculation_input=calc_input,
+                calculation_output=calc_output,
                 invariants_result=invariants_json,
             )
             return PipelineResult(
                 success=False,
-                transaction_id=tx_id,
+                transaction_id=transaction_id,
                 error=f"INVARIANT_FAILURE: {result.error_message}",
             )
 
         # ── Decision trace ──────────────────────────────────────────────
-        decision_trace_from_verdict = verdict.pop("decision_trace", None)
-        if decision_trace_from_verdict:
-            decision_trace_text = decision_trace_from_verdict
-        else:
-            rule_info = None
-            if rule_id:
-                rule_rows = self._conn.execute(
-                    "SELECT rule_id, condition_sql, action_json, description_template "
-                    "FROM tax_rules WHERE rule_id = ?",
-                    (rule_id,),
-                ).fetchall()
-                if rule_rows:
-                    r = rule_rows[0]
-                    rule_info = {
-                        "rule_id": str(r[0]),
-                        "condition_sql": str(r[1]),
-                        "description_template": str(r[3]) if r[3] else None,
-                    }
-            decision_trace_text = TraceGenerator.generate(
-                rule=rule_info,
-                context=context,
-                verdict=verdict,
-            )
+        decision_trace_text = self._build_decision_trace(
+            rule_id=rule_id,
+            context=context,
+            verdict=verdict,
+        )
 
+        # ── Continue to shared post-processing ───────────────────────────
+        return await self._post_process(
+            transaction_id=transaction_id,
+            invoice_data=invoice_data,
+            context=context,
+            verdict=verdict,
+            rule_id=rule_id,
+            vat_rate_str=vat_rate_str,
+            rounding_level=rounding_level,
+            total_net_grosze=total_net_grosze,
+            total_vat_grosze=total_vat_grosze,
+            total_brutto_grosze=total_brutto_grosze,
+            positions=positions,
+            summary=summary,
+            invariants_json=invariants_json,
+            routing=routing,
+            routing_reason=routing_reason,
+            decision_trace_text=decision_trace_text,
+            evaluated_rules=evaluated_rules,
+            calc_input=calc_input,
+            calc_output=calc_output,
+        )
+
+    # ═══════════════════════════════════════════════════════════════════
+    # WSPÓLNE POST-PROCESSING (dla obu ścieżek)
+    # ═══════════════════════════════════════════════════════════════════
+
+    async def _post_process(
+        self,
+        *,
+        transaction_id: str,
+        invoice_data: dict[str, Any],
+        context: dict[str, Any],
+        verdict: dict[str, Any],
+        rule_id: str | None,
+        vat_rate_str: str,
+        rounding_level: str,
+        total_net_grosze: int,
+        total_vat_grosze: int,
+        total_brutto_grosze: int,
+        positions: list,
+        summary: InvoiceSummary,
+        invariants_json: str,
+        routing: str | None,
+        routing_reason: str | None,
+        decision_trace_text: str | None,
+        evaluated_rules: list | None,
+        calc_input: str,
+        calc_output: str,
+    ) -> PipelineResult:
+        """Shared post-processing: PreLedger, TigerBeetle, events.
+
+        Używane przez obie ścieżki (OPA i Rust).
+        """
         # ── Currency ────────────────────────────────────────────────────
         currency = str(invoice_data.get("currency", "PLN")).upper()
         total_net_money = to_money(total_net_grosze, currency)
@@ -314,7 +555,7 @@ class TaxPipeline:
         pre_ledger_result = self._pre_ledger.validate(
             transfers=transfer_specs,
             transaction_type="EXPENSE",
-            positions=inv_positions,
+            positions=positions,
             summary=summary,
         )
         if not pre_ledger_result.is_valid:
@@ -326,7 +567,6 @@ class TaxPipeline:
             )
 
         # ── SUPERMOC: TigerBeetle linked transfers ──────────────────────
-        # Zamiast 2 osobnych wywołań: 1 linked chain z batch transferów
         tb_result = None
 
         if routing:
@@ -335,21 +575,21 @@ class TaxPipeline:
                 logger.warning(
                     "[TAX-PIPELINE] BLOCKED by routing=%s tid=%s reason=%s",
                     routing,
-                    tx_id,
+                    transaction_id,
                     routing_reason,
                 )
             else:
                 logger.info(
                     "[TAX-PIPELINE] Routing=%s tid=%s reason=%s",
                     routing,
-                    tx_id,
+                    transaction_id,
                     routing_reason,
                 )
         elif not pre_ledger_ok:
             tb_ok = False
         elif self._write_outbox is not None and callable(self._write_outbox):
             outbox_payload = {
-                "transaction_id": tx_id,
+                "transaction_id": transaction_id,
                 "rule_id": rule_id or "",
                 "net_grosze": total_net_grosze,
                 "vat_grosze": total_vat_grosze,
@@ -360,10 +600,10 @@ class TaxPipeline:
             }
             try:
                 await self._write_outbox(outbox_payload)
-                tb_result = {"status": "OUTBOX_ENQUEUED", "transaction_id": tx_id}
+                tb_result = {"status": "OUTBOX_ENQUEUED", "transaction_id": transaction_id}
                 logger.info(
                     "[TAX-OUTBOX] Enqueued tid=%s net=%d vat=%d",
-                    tx_id,
+                    transaction_id,
                     total_net_grosze,
                     total_vat_grosze,
                 )
@@ -376,7 +616,7 @@ class TaxPipeline:
                     net_grosze=total_net_grosze,
                     vat_grosze=total_vat_grosze,
                     brutto_grosze=total_brutto_grosze,
-                    source_document_id=tx_id,
+                    source_document_id=transaction_id,
                 )
                 if tb_result.get("status") == "ERROR":
                     tb_ok = False
@@ -385,16 +625,14 @@ class TaxPipeline:
                 tb_ok = False
 
         # ── Decision Trace Logger ───────────────────────────────────────
-        calc_input = result.calculation_input_json
-        calc_output = result.calculation_output_json
         trace_json_str = TraceGenerator.generate_trace_json(
-            evaluated_rules=evaluated_rules or None,
+            evaluated_rules=evaluated_rules,
             final_verdict=verdict,
             context=context,
         )
 
         trace_id = self._logger.log(
-            transaction_id=tx_id,
+            transaction_id=transaction_id,
             rule_id=rule_id,
             context=context,
             verdict=verdict,
@@ -407,7 +645,7 @@ class TaxPipeline:
 
         # ── Emit DecisionMade event ─────────────────────────────────────
         try:
-            invoice_id = str(invoice_data.get("invoice_id", tx_id))
+            invoice_id = str(invoice_data.get("invoice_id", transaction_id))
             action = verdict.get("action", "AUTO_POST")
 
             decision_val = action
@@ -429,7 +667,7 @@ class TaxPipeline:
                 if decision_trace_text
                 else "Tax pipeline decision",
                 metadata={
-                    "transaction_id": tx_id,
+                    "transaction_id": transaction_id,
                     "trace_id": trace_id,
                     "vat_rate": vat_rate_str,
                     "routing": routing,
@@ -442,12 +680,12 @@ class TaxPipeline:
                 "[TAX-EVENT] DecisionMade emitted for invoice_id=%s decision=%s tx_id=%s",
                 invoice_id,
                 decision_val,
-                tx_id,
+                transaction_id,
             )
         except Exception as emit_err:
             logger.warning(
                 "[TAX-EVENT] Failed to emit DecisionMade for tx_id=%s: %s",
-                tx_id,
+                transaction_id,
                 emit_err,
             )
 
@@ -456,7 +694,7 @@ class TaxPipeline:
             if routing == "BLOCK_AND_ALERT":
                 return PipelineResult(
                     success=False,
-                    transaction_id=tx_id,
+                    transaction_id=transaction_id,
                     trace_id=trace_id,
                     verdict=verdict,
                     vat_grosze=total_vat_grosze,
@@ -467,7 +705,7 @@ class TaxPipeline:
                 )
             return PipelineResult(
                 success=True,
-                transaction_id=tx_id,
+                transaction_id=transaction_id,
                 trace_id=trace_id,
                 verdict=verdict,
                 vat_grosze=total_vat_grosze,
@@ -479,7 +717,7 @@ class TaxPipeline:
         if not pre_ledger_ok:
             return PipelineResult(
                 success=False,
-                transaction_id=tx_id,
+                transaction_id=transaction_id,
                 trace_id=trace_id,
                 verdict=verdict,
                 vat_grosze=total_vat_grosze,
@@ -491,7 +729,7 @@ class TaxPipeline:
         if not tb_ok:
             return PipelineResult(
                 success=False,
-                transaction_id=tx_id,
+                transaction_id=transaction_id,
                 trace_id=trace_id,
                 verdict=verdict,
                 vat_grosze=total_vat_grosze,
@@ -504,7 +742,7 @@ class TaxPipeline:
 
         return PipelineResult(
             success=True,
-            transaction_id=tx_id,
+            transaction_id=transaction_id,
             trace_id=trace_id,
             verdict=verdict,
             vat_grosze=total_vat_grosze,
@@ -512,6 +750,43 @@ class TaxPipeline:
             tigerbeetle_result=tb_result,
             routing=routing,
             routing_reason=routing_reason,
+        )
+
+    # ── Helper: Build decision trace ──────────────────────────────────────
+
+    def _build_decision_trace(
+        self,
+        rule_id: str | None,
+        context: dict[str, Any],
+        verdict: dict[str, Any],
+    ) -> str | None:
+        """Build human-readable decision trace from rule info."""
+        decision_trace_from_verdict = verdict.pop("decision_trace", None)
+        if decision_trace_from_verdict:
+            return decision_trace_from_verdict
+
+        if not rule_id:
+            return None
+
+        rule_rows = self._conn.execute(
+            "SELECT rule_id, condition_sql, action_json, description_template "
+            "FROM tax_rules WHERE rule_id = ?",
+            (rule_id,),
+        ).fetchall()
+
+        if not rule_rows:
+            return None
+
+        r = rule_rows[0]
+        rule_info = {
+            "rule_id": str(r[0]),
+            "condition_sql": str(r[1]),
+            "description_template": str(r[3]) if r[3] else None,
+        }
+        return TraceGenerator.generate(
+            rule=rule_info,
+            context=context,
+            verdict=verdict,
         )
 
     # ── SUPERMOC: Linked + batch transfer to TigerBeetle ──────────────────

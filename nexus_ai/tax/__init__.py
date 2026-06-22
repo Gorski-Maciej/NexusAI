@@ -1,58 +1,55 @@
 """
-NexusAI Tax Processing Engine.
+NexusAI Tax Processing Engine — OPA + Rust + DuckDB.
 
-Zintegrowany z DecisionEngine (DuckDB/SQL) — trzy warstwy połączone
-przez TaxPipeline w jeden przepływ danych:
-  - Reguły podatkowe (RuleEngine + Zen-Engine w DuckDB)
-  - Matematyka groszowa (TaxMathEngine, integer-only, ROUND_HALF_UP)
-  - Audyt kryptograficzny (DecisionTraceLogger, SHA-256 hash chain)
+Zgodne z aa3fvcx.txt — trzy warstwy połączone przez TaxPipeline:
+  - OPA (Open Policy Agent) — deklaratywny silnik reguł first-match-wins
+  - Nexus-TaxEngine (Rust) — natywny orkiestrator matematyki na groszach
+  - DuckDB (RuleStore) — trwały magazyn reguł
+
+Moduły zastąpione przez OPA:
+  - context_interpreter.py → ContextBuilder w Rust (pre-processing dla OPA)
+  - temporal_manager.py   → klauzula temporalna w Rego
+  - priority_engine.py    → else-chain first-match-wins w OPA
+  - evaluation_engine.py  → OPA jako maszyna ewaluacyjna
+  - fallback_handler.py   → default decide w Rego
+
+Moduły przeniesione do Rust (Nexus-TaxEngine):
+  - TaxMathEngine         → nexus_tax_engine::math::TaxMath
+  - TaxInvariantGuard     → nexus_tax_engine::math::TaxInvariantGuard
+  - RoundingPolicy        → nexus_tax_engine::math::RoundingPolicy
+  - InvoicePositions      → nexus_tax_engine::math::InvoicePositions
+  - InvoiceSummary        → nexus_tax_engine::math::InvoiceSummary
+  - PreLedgerValidator    → nexus_tax_engine::pre_ledger::PreLedgerValidator
 """
 
 from __future__ import annotations
 
-# ── Nuitka compilation guard ── ─────────────────────────────────────────────
-# When compiled by Nuitka, __compiled__ is True. Use it to skip fallback
-# import paths that are only needed in interpreted/dev mode.
-# Standard Nuitka idiom: try/except NameError.
+# ── Nuitka compilation guard ────────────────────────────────────────────────
 try:
     __compiled__  # type: ignore[name-defined]
     _NUITKA_COMPILED: bool = True
 except NameError:
     _NUITKA_COMPILED: bool = False
 
-from nexus_ai.core.context_interpreter import (
-    ALLOWED_KEYS,
-    ContextInterpreter,
-    ContextInterpreterError,
-)
-from nexus_ai.services.priority_engine import (  # legacy — data Structs only
-    MatchResult,
-    PrioritizedRule,
-)
+# ── Rule Store — pozostaje w Python/DuckDB ─────────────────────────────────
 from nexus_ai.services.rule_store import (
     RuleStore,
 )
-from nexus_ai.services.temporal_manager import (  # legacy — data Struct only
-    TemporalRule,
-)
-from nexus_crypto import (
-    PriorityEngine as _RustPriorityEngine,
-    TemporalManager as _RustTemporalManager,
-)
 
-# Override with Rust-native implementations
-PriorityEngine = _RustPriorityEngine  # type: ignore[misc]
-TemporalManager = _RustTemporalManager  # type: ignore[misc]
-
+# ── Audit ───────────────────────────────────────────────────────────────────
 from .audit import (
     DecisionTraceLogger,
     verify_chain_integrity,
 )
+
+# ── Exceptions ──────────────────────────────────────────────────────────────
 from .exceptions import (
     DecisionTraceIntegrityError,
     NoMatchingRuleError,
     TaxEngineError,
 )
+
+# ── Math — Python wrapper (Rust-backed gdy native dostępny) ─────────────────
 from .math_engine import (
     InvalidRateError,
     InvoicePositions,
@@ -67,18 +64,56 @@ from .math_engine import (
     to_zlotowki,
     validate_invariants,
 )
+
+# ── Pipeline ─────────────────────────────────────────────────────────────────
 from .pipeline import (
     PipelineResult,
     TaxPipeline,
 )
+
+# ── Rules Engine — OPA-first with DuckDB fallback ───────────────────────────
 from .rules import (
     DEFAULT_TAX_RULES,
+    ContextInterpreter,
     RuleEngine,
     ensure_tax_schemas,
     seed_default_rules,
 )
-from .rules import (
-    ContextInterpreter as LegacyContextInterpreter,  # noqa: F401
+
+# ── OPA components ──────────────────────────────────────────────────────────
+from nexus_ai.core.opa_client import (
+    OpaClient,
+    OpaError,
+    OpaConnectionError,
+    OpaEvaluationError,
+    OpaPolicyNotFound,
+)
+from nexus_ai.services.opa_policy_generator import (
+    OpaPolicyGenerator,
+)
+
+# ── Legacy: Rust-native PriorityEngine i TemporalManager z nexus_crypto ─────
+from nexus_crypto import (
+    PriorityEngine as _RustPriorityEngine,
+    TemporalManager as _RustTemporalManager,
+)
+PriorityEngine = _RustPriorityEngine  # type: ignore[misc]
+TemporalManager = _RustTemporalManager  # type: ignore[misc]
+
+# ── Legacy data structs — utrzymane dla backward compatibility ──────────────
+from nexus_ai.services.priority_engine import (  # legacy
+    MatchResult,
+    PrioritizedRule,
+)
+from nexus_ai.services.temporal_manager import (  # legacy
+    TemporalRule,
+)
+
+# ── Context Interpreter — legacy alias ──────────────────────────────────────
+from nexus_ai.core.context_interpreter import (
+    ALLOWED_KEYS,
+    ContextInterpreter as LegacyContextInterpreter,
+    ContextInterpreterError as LegacyContextInterpreterError,
 )
 
 __all__ = [
@@ -87,10 +122,15 @@ __all__ = [
     "NoMatchingRuleError",
     "DecisionTraceIntegrityError",
     "InvalidRateError",
+    # OPA
+    "OpaClient",
+    "OpaError",
+    "OpaConnectionError",
+    "OpaEvaluationError",
+    "OpaPolicyNotFound",
+    "OpaPolicyGenerator",
     # Part I — Rules
     "ContextInterpreter",
-    "ContextInterpreterError",
-    "ALLOWED_KEYS",
     "RuleEngine",
     "ensure_tax_schemas",
     "seed_default_rules",
@@ -113,13 +153,13 @@ __all__ = [
     # Pipeline
     "TaxPipeline",
     "PipelineResult",
-    # Priority Engine (Part I formal)
+    # Priority Engine (legacy)
     "PriorityEngine",
     "PrioritizedRule",
     "MatchResult",
-    # Temporal Manager (Part I formal)
+    # Temporal Manager (legacy)
     "TemporalManager",
     "TemporalRule",
-    # Rule Store (Element 1 formal)
+    # Rule Store
     "RuleStore",
 ]
