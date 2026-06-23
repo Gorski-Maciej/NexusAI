@@ -354,7 +354,6 @@ jobs:
           echo "| mypy | ✅ ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
 
   # ── Test (pixi): pytest ───────────────────────────────────────────────────
-  # (uv jest wbudowany w pixi — osobny test-uv nie jest potrzebny)
   # Użyj: pixi run --environment dev test  lub  pixi run --environment dev test-coverage
 
   # ── Lint: Ruff ──────────────────────────────────────────────────────────
@@ -569,38 +568,6 @@ jobs:
           echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Results visible in GitHub Security tab." >> $GITHUB_STEP_SUMMARY
-
-  # ── Verify Migration: mise/uv → pixi ───────────────────────────────────
-  # SUPERMOC: sprawdza czy migracja jest kompletna, czy nie pojawiły się
-  # nowe pliki mise/uv i czy CI jest na pixi.
-  verify-migration:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: ./.github/actions/setup-pixi
-        with:
-          pixi-env: dev
-
-      - name: Run migration verification
-        run: pixi run verify-migration
-
-      - name: Verify Migration Summary
-        if: always()
-        run: |
-          echo "## ✅ Migration Verification" >> $GITHUB_STEP_SUMMARY
-          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| mise files absent | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| uv.lock removed | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| pixi.toml tasks | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| activation.env | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| pixi.lock exists | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| No uv in CI | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "| No mise in CI | ✅ |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Migration status: **COMPLETE** - All mise/uv functionality migrated to pixi" >> $GITHUB_STEP_SUMMARY
 
   # ── Test: pytest ────────────────────────────────────────────────────────
   test:

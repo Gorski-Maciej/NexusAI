@@ -12,8 +12,7 @@
 #   - commit-message — conventional commits
 #
 # Zgodnie z aa3fvcx.txt:
-#   - GitHub Actions: weekly updates, grouped
-#   - pip/uv: weekly updates, grouped (wyłącz nexus-crypto — lokalny)
+#   - GitHub Actions: weekly updates, grouped  #   - pip: weekly updates, grouped (wyłącz nexus-crypto — lokalny)
 
 version: 2
 updates:
@@ -53,7 +52,7 @@ updates:
     # reviewers:
     #   - "Gorski-Maciej"
 
-  # ── Python (pixi) — zależności PyPI (uv jest wbudowany w pixi)
+  # ── Python (pixi) — zależności PyPI
   - package-ecosystem: "pip"
     directory: "/"
     schedule:

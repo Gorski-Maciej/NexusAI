@@ -104,7 +104,7 @@ fi
 if ! $SKIP_INSTALL; then
     echo "[1/5] Installing Python dependencies..."
 
-    # pixi zarządza środowiskiem — uv jest wbudowany w pixi
+    # pixi zarządza środowiskiem
     # Używamy pip (dostępny w środowisku pixi)
     echo "  Using pip (via pixi environment)..."
     "$PYTHON" -m pip install --upgrade pip

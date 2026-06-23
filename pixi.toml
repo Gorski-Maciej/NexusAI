@@ -33,11 +33,11 @@
 name = "nexus-ai"
 version = "2.0.0"
 description = "NexusAI — Ultralekki, autonomiczny system księgowy z AI"
-channels = ["conda-forge"]
+channels = ["defaults"]
 platforms = ["linux-64", "linux-aarch64", "win-64"]   # win-64 dla Nuitka + Inno Setup (aa3fvcx.txt)
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Zależności systemowe (conda-forge) — tylko runtime
+# Zależności systemowe — tylko runtime
 # ══════════════════════════════════════════════════════════════════════════════
 
 [dependencies]
@@ -369,7 +369,8 @@ cmd = "mypy nexus_ai/"
 description = "Sprawdź typy przez mypy"
 
 [tasks.security-scan]
-cmd = "python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy lenient"    description = "Skanowanie bezpieczeństwa (ruff S) — tryb łagodny"
+cmd = "python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy lenient"
+description = "Skanowanie bezpieczeństwa (ruff S) — tryb łagodny"
 
 [tasks.security-scan-strict]
 cmd = "python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy strict"
@@ -459,40 +460,23 @@ description = "Pobierz kursy walut z NBP (PEP 723 single-file script)"
 cmd = "python scripts/fetch_currency_rates.py --json"
 description = "Pobierz kursy walut w formacie JSON"
 
-# ── uv Package Manager ────────────────────────────────────────────────────────
-# UV JEST WBUDOWANY W PIXI.
-# pixi używa uv jako wewnętrznego silnika rozwiązywania zależności.
-# Nie potrzebujesz osobnej instalacji uv — pixi już go zawiera.
-#
-# Odpowiedniki komend (jeśli potrzebujesz uruchomić uv bezpośrednio):
-#   uv sync           =>  pixi install
-#   uv lock           =>  pixi update
-#   uv run <cmd>      =>  pixi run <task>  lub  pixi exec -- <cmd>
-#   uv pip install X  =>  pixi add X
-#   uv cache clean    =>  pixi clean (lub: pixi exec -- uv cache clean)
-#   uv self update    =>  pixi self-update
-#
-# Aby uzyskać listę wszystkich dostępnych tasków:
-#   pixi task list
-#
-# Uwaga: pixi exec pozwala uruchomić dowolne narzędzie w środowisku:
-#   pixi exec -- ruff check nexus_ai/
-
-# ── List dependencies (odpowiednik uv tree) ──────────────────────────────
+# ── List dependencies ──────────────────────────────────────────────────
 
 [tasks.list-deps]
 cmd = "pixi list"
-description = "SUPERMOC: Wyświetl drzewo zależności zarządzane przez pixi (odpowiednik: uv tree)"
+description = "SUPERMOC: Wyświetl drzewo zależności zarządzane przez pixi"
 
 [tasks.list-deps-graph]
-cmd = "python -c \"import pkg_resources; [print(f'{d.key} {d.version}') for d in sorted(pkg_resources.working_set, key=lambda x: x.key)]" "
-description = "SUPERMOC: Wypisz wszystkie pakiety z wersjami (odpowiednik: uv tree --all)"
+cmd = """
+python -c "import pkg_resources; [print(f'{d.key} {d.version}') for d in sorted(pkg_resources.working_set, key=lambda x: x.key)]"
+"""
+description = "SUPERMOC: Wypisz wszystkie pakiety z wersjami"
 
-# ── Cache management (odpowiednik uv cache clean) ────────────────────────
+# ── Cache management ────────────────────────────────────────────────────
 
 [tasks.cache-clean]
 cmd = "pip cache purge && pixi clean-cache --yes 2>/dev/null; echo 'Cache cleaned'"
-description = "SUPERMOC: Wyczyść cache pip i pixi (odpowiednik: uv cache clean)"
+description = "SUPERMOC: Wyczyść cache pip i pixi"
 
 [tasks.cache-info]
 cmd = "pip cache info 2>/dev/null; du -sh ~/.cache/pixi 2>/dev/null || echo 'No pixi cache found'"
@@ -548,111 +532,11 @@ echo ''
 echo 'Done.'
 """
 
-# ── Verify migration completeness ─────────────────────────────────────────
-
-[tasks.verify-migration]
-description = "SUPERMOC: Zweryfikuj czy migracja mise/uv -> pixi jest kompletna"
-cmd = """
-echo '=== Migration Verification ==='
-echo ''
-FAIL=0
-
-# Check 1: No mise files
-echo '[1/6] No mise config files...'
-if ls mise.toml mise.prod.toml mise.local.toml 2>/dev/null | grep -q .; then
-  echo '  FAIL: mise config files found!'
-  FAIL=1
-else
-  echo '  OK: No mise files'
-fi
-
-# Check 2: No uv.lock as direct dependency
-echo '[2/6] No uv.lock file...'
-if [ -f uv.lock ]; then
-  echo '  FAIL: uv.lock found!'
-  FAIL=1
-else
-  echo '  OK: uv.lock removed'
-fi
-
-# Check 3: pixi.toml has tasks
-echo '[3/6] pixi.toml has tasks...'
-if grep -q '\[tasks\]' pixi.toml; then
-  echo "  OK: $(grep -c '\[tasks\.' pixi.toml) tasks found"
-else
-  echo '  FAIL: No tasks in pixi.toml!'
-  FAIL=1
-fi
-
-# Check 4: pixi.toml has activation.env
-echo '[4/6] pixi.toml has activation.env...'
-if grep -q '\[activation\.env\]' pixi.toml; then
-  echo '  OK: activation.env configured'
-else
-  echo '  FAIL: No activation.env!'
-  FAIL=1
-fi
-
-# Check 5: pixi.lock exists
-echo '[5/6] pixi.lock exists...'
-if [ -f pixi.lock ]; then
-  echo '  OK: pixi.lock found'
-else
-  echo '  FAIL: pixi.lock not found!'
-  FAIL=1
-fi
-
-# Check 6: No uv references in CI
-echo '[6/6] No direct uv use in CI workflows...'
-if grep -r '\\buve\\b' .github/workflows/*.yml .github/actions/*/action.yml 2>/dev/null | grep -qv '^.*#'; then
-  echo '  FAIL: uv commands found in CI!'
-  grep -rl '\\buve\\b' .github/workflows/*.yml .github/actions/*/action.yml 2>/dev/null | head -5
-  FAIL=1
-else
-  echo '  OK: No direct uv usage in CI'
-fi
-
-# Check 7: No mise references in CI
-echo '[7/7] No mise references in CI...'
-if grep -r '\\bmise\\b' .github/workflows/*.yml .github/actions/*/*.yml 2>/dev/null | grep -qv '^.*#'; then
-  echo '  FAIL: mise commands found in CI!'
-  grep -rl '\\bmise\\b' .github/workflows/*.yml .github/actions/*/*.yml 2>/dev/null | head -5
-  FAIL=1
-else
-  echo '  OK: No mise references in CI'
-fi
-
-echo ''
-if [ $FAIL -eq 0 ]; then
-  echo 'Result: ALL CHECKS PASSED - Migration is complete!'
-else
-  echo 'Result: SOME CHECKS FAILED - Review above'
-fi
-"""
-
-# ── Self-update ────────────────────────────────────────────
+# ── Self-update ─────────────────────────────────────────────────────
 
 [tasks.self-update]
 cmd = "pixi self-update"
 description = "SUPERMOC: Zaktualizuj pixi do najnowszej wersji"
-
-# UV JEST WBUDOWANY W PIXI.
-# pixi używa uv jako wewnętrznego silnika rozwiązywania zależności.
-# Nie potrzebujesz osobnej instalacji uv — pixi już go zawiera.
-#
-# Odpowiedniki komend (jeśli potrzebujesz uruchomić uv bezpośrednio):
-#   uv sync           →  pixi install
-#   uv lock           →  pixi update
-#   uv run <cmd>      →  pixi run <task>  lub  pixi exec -- <cmd>
-#   uv pip install X  →  pixi add X
-#   uv cache clean    →  pixi clean (lub: pixi exec -- uv cache clean)
-#   uv self update    →  pixi self-update
-#
-# Aby uzyskać listę wszystkich dostępnych tasków:
-#   pixi task list
-#
-# Uwaga: pixi exec pozwala uruchomić dowolne narzędzie w środowisku:
-#   pixi exec -- ruff check nexus_ai/
 
 # ── Deploy / Release ────────────────────────────────────────────────────────
 
@@ -796,7 +680,9 @@ ruff = ">=0.3.0"
 mypy = ">=1.8.0"
 
 # ── Build tool — Nuitka (kompilacja Python → C → .exe) ────────────────────
-nuitka = ">=1.8"            # ── Security scanning — ruff S rules ──────────────────────────────────────
+nuitka = ">=1.8"
+
+# ── Security scanning — ruff S rules ──────────────────────────────────────
 
 
 [feature.dev.tasks]

@@ -57,7 +57,6 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | **Python ≥3.13 (free-threaded)** | Python <3.13 (z GIL) | ✅ | `pixi.toml` → `python = "3.13.*"` |
 | **pixi** — menedżer środowiska (Rust) | Docker, conda, apt-get | ✅ | `pixi.toml` |
 | ~~**mise** — task runner~~ | ~~pyenv, asdf, make, just~~ | ➡️ **pixi** (zastąpił mise) | `pixi.toml` |
-| ~~**uv** — menedżer pakietów PyPI (Rust)~~ | ~~pip~~ | ➡️ **pixi** (uv wbudowany) | Wbudowany w pixi |
 | **hatchling** — backend budowania | setuptools, setup.py | ✅ | `pyproject.toml` → `build-backend = "hatchling.build"` |
 | **mypyc** — kompilacja typowanego Pythona → C | — | ✅ | `pyproject.toml` → `[tool.mypyc]` |
 | **PyO3 + Maturin** — Rust extensions | — | ✅ | `nexus_ai/rust/Cargo.toml`, `pyproject.toml` → `[tool.maturin]` |

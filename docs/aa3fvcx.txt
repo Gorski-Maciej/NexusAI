@@ -28,7 +28,7 @@ Co daje pixi:
 · Tworzy zamknięte, odizolowane środowisko bez kontenerów (zużywające MB zamiast GB).
 · Idealny dla CI/CD i lokalnego developmentu – to samo polecenie pixi install daje identyczne środowisko na Windows, Linux i macOS.
 
-Dlaczego jest lżejszy: Nie potrzebujesz Dockera, conda ani ręcznych skryptów apt-get. Na dysku ląduje tylko to, co jest niezbędne dla projektu.
+Dlaczego jest lżejszy: Nie potrzebujesz Dockera ani ręcznych skryptów apt-get. Na dysku ląduje tylko to, co jest niezbędne dla projektu.
 
 ---
 
@@ -37,14 +37,6 @@ mise (dodatek) – Globalny przełącznik wersji Pythona
 Rola w architekturze: pixi doskonale zarządza wersją Pythona wewnątrz projektu. mise jest opcjonalnym dodatkiem dla Ciebie jako developera – pozwala błyskawicznie zmienić globalną wersję Pythona na Twojej maszynie (np. mise use python@3.13t), gdy pracujesz nad kilkoma projektami. W samym projekcie wersję ustala pixi, więc mise nie ingeruje w jego zależności.
 
 ---
-
-uv – Najszybszy menadżer pakietów PyPI
-
-Dlaczego jest lepszy od pip:
-
-· Napisany w Rust, rozwiązuje zależności i instaluje pakiety 10–100× szybciej niż pip.
-· pixi ma go wbudowanego, więc podczas instalacji z pixi.toml nie musisz go osobno wywoływać.
-· Możesz go użyć również samodzielnie do szybkiego tworzenia wirtualnych środowisk (uv venv) lub instalacji pojedynczych pakietów w trakcie developmentu.
 
 ---
 
@@ -56,7 +48,7 @@ Co zyskujesz:
 
 · Konfiguracja w czystym pyproject.toml według standardu PEP 621 – jedno miejsce na metadane projektu, zależności i skrypty.
 · Szybsze budowanie paczki – mniejszy narzut narzędzia.
-· Lepsza integracja z pixi (uv wbudowany jako resolver).
+· Lepsza integracja z pixi.
 · Mniej kodu konfiguracyjnego, łatwiejsze utrzymanie.
 
 ---
@@ -168,7 +160,7 @@ Co to jest: Serwer aplikacyjny, który zastępuje Uvicorn. Jego zadaniem jest pr
 Dlaczego jest to rewolucyjna zmiana:
 
 · Architektura bez Pythona: Serwer opiera się na potężnych, sprawdzonych bibliotekach Rusta: tokio (asynchroniczne środowisko uruchomieniowe) i hyper (szybka, poprawna implementacja protokołu HTTP). Nie ma w nim interpretera Pythona, nie jest ograniczony przez GIL, a zarządzanie pamięcią jest w pełni manualne i wysoce zoptymalizowane.
-· Drastycznie mniejsze zużycie RAM: Porzucenie uvloop, httptools i całej otoczki Pythona/Cythona Uvicorna skutkuje 25–40% mniejszym zużyciem pamięci operacyjnej w spoczynku i pod obciążeniem. Dla lokalnej aplikacji, gdzie każdy megabajt ma znaczenie dla komfortu użytkownika, to ogromna różnica.
+· Drastycznie mniejsze zużycie RAM: Porzucenie httptools i całej otoczki Pythona/Cythona Uvicorna skutkuje 25–40% mniejszym zużyciem pamięci operacyjnej w spoczynku i pod obciążeniem. Dla lokalnej aplikacji, gdzie każdy megabajt ma znaczenie dla komfortu użytkownika, to ogromna różnica.
 · Wyższa przepustowość, niższe CPU: Granian bezpośrednio tłumaczy surowe bajty z sieci na zdarzenia ASGI. Ta ścieżka jest wielokrotnie krótsza i wydajniejsza, co przekłada się na mniejsze zużycie procesora przy jednoczesnej obsłudze większej liczby zapytań (często o 30%+).
 · Kluczowa optymalizacja – gniazda UNIX: Ponieważ Twój frontend (Flet) i backend (Litestar) działają na tej samej maszynie, komunikacja nie musi przechodzić przez stos sieciowy TCP/IP. Granian może nasłuchiwać na lokalnym gnieździe UNIX (na Windows – named pipe). To całkowicie eliminuje narzut związany z pakietami sieciowymi, adresacją i potencjalnymi kolizjami portów, dając najszybszą i najbezpieczniejszą możliwą komunikację międzyprocesową na danym komputerze.
 
@@ -3166,7 +3158,7 @@ Oto szczegółowe opisy każdego składnika finalnej wersji Punktu 24 – warstw
 
 ruff – Ultraszybki linter i formatter w jednym
 
-Co to jest: ruff to napisane w Rust narzędzie do lintowania i formatowania kodu Pythona, które w pojedynkę zastępuje dziesiątki starszych, wolniejszych narzędzi. Jest rozwijane przez Astral (tych samych twórców co uv) i w połowie 2026 roku stało się absolutnym, niekwestionowanym standardem w ekosystemie Pythona.
+Co to jest: ruff to napisane w Rust narzędzie do lintowania i formatowania kodu Pythona, które w pojedynkę zastępuje dziesiątki starszych, wolniejszych narzędzi. Jest rozwijane przez Astral i w połowie 2026 roku stało się absolutnym, niekwestionowanym standardem w ekosystemie Pythona.
 
 Dlaczego to przełom w jakości i szybkości:
 

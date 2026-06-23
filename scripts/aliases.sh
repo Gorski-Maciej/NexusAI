@@ -20,7 +20,6 @@
 #   br  → pixi run build-rust
 #   bn  → pixi run build-nuitka
 #   mg  → pixi run migrate
-# (uv jest wbudowany w pixi — nie potrzebuje osobnych aliasów)
 #   dp  → pixi run deploy
 #   dq  → pixi run deploy-quick
 #   dc  → pixi run deploy-check
@@ -49,13 +48,6 @@ alias bn="pixi run build-nuitka"
 
 # ── Database migrations ─────────────────────────────────────────────────────
 alias mg="pixi run migrate"
-
-# ── uv package management ───────────────────────────────────────────────────
-# uv jest wbudowany w pixi — nie potrzebuje osobnych aliasów.
-# Zamiast tego użyj bezpośrednio:
-#   pixi install   (odpowiednik uv sync)
-#   pixi update    (odpowiednik uv lock)
-#   pixi clean     (odpowiednik uv cache clean)
 
 # ── Deploy ──────────────────────────────────────────────────────────────────
 alias dp="pixi run deploy"

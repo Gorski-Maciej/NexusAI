@@ -98,7 +98,6 @@ REQUIRED_TECHNOLOGIES = {
     "Python-Statemachine",
     "Taskiq",
     "FastStream",
-    "uv",
     "Nuitka",
     "Podman",
     "Pulumi",
@@ -247,7 +246,6 @@ def build_blueprint() -> ArchitectureBlueprint:
                 "Backup / DR, SIEM i compliance",
             ),
             technologies=(
-                Technology(name="uv", role="zarządzanie środowiskiem i lockfile"),
                 Technology(name="Nuitka", role="kompilacja aplikacji"),
                 Technology(name="Podman", role="kontenery"),
                 Technology(name="Pulumi", role="IaC w Pythonie"),

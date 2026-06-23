@@ -332,10 +332,6 @@ strict = false
 ignore_missing_imports = true
 warn_unused_ignores = false
 
-# pixi jest jedynym menedżerem środowiska — nie potrzebujesz osobnego uv.
-# pixi używa uv jako wewnętrznego resolvera. Wszystkie zależności
-# są zarządzane przez pixi.toml, a lockowany przez pixi.lock.
-#
 # Dev dependencies: [project.optional-dependencies].dev (PEP 621)
 # dla kompatybilności z PyPI. pixi ma własną sekcję
 # [feature.dev.pypi-dependencies] w pixi.toml.

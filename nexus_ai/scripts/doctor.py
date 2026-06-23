@@ -436,7 +436,7 @@ def check_mimalloc() -> str:
         return _warn(
             "mimalloc NOT ACTIVE — using system allocator (glibc malloc)\n"
             "    Fix: Ensure LD_PRELOAD includes libmimalloc.so or\n"
-            "    run: pixi install (if mimalloc is in conda-forge deps)"
+            "    run: pixi install (if mimalloc is in system deps)"
         )
 
 

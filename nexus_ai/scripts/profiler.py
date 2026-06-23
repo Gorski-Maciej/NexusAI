@@ -110,7 +110,7 @@ def _find_pyspy() -> str | None:
     pyspy = shutil.which("py-spy")
     if pyspy:
         return pyspy
-    # Sprawdź w typowych lokalizacjach pixi/uv
+    # Sprawdź w typowych lokalizacjach pixi
     for candidate in [
         Path(sys.executable).parent / "py-spy",
         Path.home() / ".pixi/envs/default/bin/py-spy",
