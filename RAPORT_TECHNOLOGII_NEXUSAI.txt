@@ -167,8 +167,7 @@
   57. nexus-money (msgspec.Struct)       [A]  — Własna reprezentacja pieniędzy
   58. TigerBeetle (Python client)        [A]  — Klient TigerBeetle (double-entry ledger)
   59. pendulum >=3.0.0 (v3.2.0)         [A]  — Daty i czas (strefy czasowe, interwały)
-  60. rust_decimal (Rust crate)          [A]  — Matematyka finansowa w Rust
-  61. forex_engine (services/forex_engine.py) [A]  — Własny silnik walutowy
+  60. forex_engine (services/forex_engine.py) [A]  — Własny silnik walutowy (usunięty — usunięty wraz z modułem)
 
 ────────────────────────────────────────────────────────────────────────────────
  2.10 PRZETWARZANIE DOKUMENTÓW / OCR
@@ -287,8 +286,7 @@
 
   ── Silnik natywny Rust (nexus-tax-engine) ────────────────────────────────────
   134. nexus-tax-engine (Rust crate)     [A]  — Natywny silnik obliczeń podatkowych
-  135. rust_decimal (Rust crate)         [A]  — Matematyka finansowa (128-bit)
-  136. serde + serde_json (Rust crate)   [Z]  — Serializacja w Rust
+  135. serde + serde_json (Rust crate)   [Z]  — Serializacja w Rust
   137. pyo3 (Rust crate)                 [A]  — Bindings Python ↔ Rust
 
   ── OPA / Rego ────────────────────────────────────────────────────────────────
@@ -489,14 +487,11 @@
   279. thiserror (v2)                     [Z]  — Error handling
   280. log (v0.4)                         [Z]  — Logowanie
   281. mimalloc (v0.1, secure)            [A]  — Alokator pamięci (tryb secure)
-  282. rust_decimal (v1.36, serde+maths)  [A]  — Matematyka finansowa
-  283. criterion (v0.5, html_reports)     [D]  — Benchmarking
+  282. criterion (v0.5, html_reports)     [D]  — Benchmarking
 
   ── nexus-tax-engine (nexus_tax_engine/Cargo.toml) ────────────────────────────
   284. pyo3 (v0.23, extension-module)     [A]  — Python bindings
-  285. rust_decimal (v1.36, serde+maths)  [A]  — Matematyka finansowa
-  286. rust_decimal_macros (v1.36)        [A]  — Makra dla rust_decimal
-  287. serde (v1, derive)                 [Z]  — Serializacja
+  285. serde (v1, derive)                 [Z]  — Serializacja
   288. serde_json (v1)                    [Z]  — JSON
   289. thiserror (v2)                     [Z]  — Error handling
   290. uuid (v1, v4)                      [Z]  — UUID
@@ -637,11 +632,11 @@
 
   ── Moduły Rust (PyO3) ───────────────────────────────────────────────────────
   • nexus-crypto       [A]  — Kryptografia (AEAD, Argon2id, SHA-256, BLAKE2, HMAC, RNG, JWT, zeroizacja)
-  • nexus-tax-engine   [A]  — Natywny silnik podatkowy (rust_decimal, pyo3)
+  • nexus-tax-engine   [A]  — Natywny silnik podatkowy (pyo3)
 
   ── Moduły Python ─────────────────────────────────────────────────────────────
   • nexus-money        [A]  — Reprezentacja pieniędzy (msgspec.Struct)
-  • nexus-forex        [A]  — Silnik walutowy
+  • nexus-forex        [S]  — Silnik walutowy (usunięty — forex_engine.py usunięty, moduł Rust w budowie)
   • nexus-api          [A]  — Serwer API (Granian + Litestar)
   • nexus-worker       [A]  — Worker Taskiq
   • nexus-desktop      [A]  — Interfejs Flet
@@ -666,7 +661,7 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ── Technologie per Status ────────────────────────────────────────────────────
-  TECHNOLOGIE AKTYWNE [A]:            ~200  (8 Rust crate'ów przeniesionych do wewn. dep. nexus-crypto)
+  TECHNOLOGIE AKTYWNE [A]:            ~196  (po konsolidacji rust_decimal + forex_engine)
   TECHNOLOGIE SZCZĄTKOWE [S]:          0
   ZALEŻNOŚCI POŚREDNIE [Z]:           ~65
   TECHNOLOGIE DEWELOPERSKIE [D]:      ~50

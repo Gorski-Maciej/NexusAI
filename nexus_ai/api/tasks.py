@@ -1769,56 +1769,6 @@ async def cleanup_duckdb_temp_task() -> None:
     logger.info("[DUCKDB] temp files removed=%s", removed)
 
 
-@broker.task(
-    schedule=[{"cron": "15 12 * * *"}],
-    task_name="daily_nbp_rate_fill",
-    labels={"service": "api", "operation": "forex", "criticality": "medium", "schedule": "daily"},
-    timeout=300.0,
-)
-async def daily_nbp_rate_fill_task() -> None:
-    """
-    Codzienne zadanie (12:15) uzupełniające brakujące kursy NBP dla ostatnich 30 dni.
-    Rozwiązanie 28: Po publikacji tabeli A przez NBP (~11:45), uzupełniamy cache.
-    """
-    config = AppConfig()
-    try:
-        from nexus_ai.services.forex_engine import ForexEngine
-
-        # Inicjalizuj ForexEngine z minimalnym zestawem parametrów
-        engine = ForexEngine(
-            duckdb_manager=DuckDBManager(
-                db_path=config.duckdb_path, sqlite_path=config.sqlite_path
-            ),
-            tb_client=None,  # TigerBeetle nie jest potrzebny tylko do kursów
-            account_receivable=0,
-            account_fx_gain=0,
-            account_fx_loss=0,
-        )
-
-        today = pendulum.now().date()
-        currencies = ["EUR", "USD", "CHF", "GBP", "CZK", "DKK", "NOK", "SEK", "HUF"]
-        filled = 0
-        errors = 0
-
-        for currency in currencies:
-            for day_offset in range(30):
-                rate_date = today - pendulum.duration(days=day_offset)
-                try:
-                    rate = engine.fetch_nbp_rate(rate_date, currency, max_lookback_days=5)
-                    if rate:
-                        filled += 1
-                except Exception:
-                    errors += 1
-
-        logger.info(
-            "[NBP-FILL] daily fill complete: currencies=%d, days=%d, filled=%d, errors=%d",
-            len(currencies),
-            30,
-            filled,
-            errors,
-        )
-    except Exception as exc:
-        logger.error("[NBP-FILL] failed: %s", exc)
 
 
 @broker.task(

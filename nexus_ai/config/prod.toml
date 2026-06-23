@@ -101,7 +101,3 @@ retry_attempts = 5
 retry_timeout = 15.0
 circuit_breaker_enabled = true
 circuit_breaker_cooldown = 60.0
-
-[forex]
-# ── Prod-specific forex ──
-http_timeout_sec = 15

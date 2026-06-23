@@ -102,6 +102,7 @@ refactor: remove custom resilience module, fully replaced by stamina
 ## Uwagi
 
 - Moduł `resilience.py` był już cienką nakładką na `stamina` (`stamina.retry_context`), więc zastąpienie było proste i bezpieczne.
-- Wszystkie pozostałe miejsca w projekcie (`currency_converter.py`, `forex_engine.py`, `tasks.py`) już używały `stamina` bezpośrednio.
+- Wszystkie pozostałe miejsca w projekcie (`currency_converter.py`, `tasks.py`) już używały `stamina` bezpośrednio.
+- Plik `forex_engine.py` został całkowicie usunięty w osobnym zadaniu konsolidacji.
 - Konfiguracja stamina w `config/base.toml` i `config/dev.toml` (sekcja `[stamina]`) pozostaje bez zmian — jest używana przez `AppConfig.stamina_*` pola.
 - **Rekomendacja:** Po skonfigurowaniu środowiska uruchomić `pixi run test` aby potwierdzić, że wszystkie testy przechodzą.

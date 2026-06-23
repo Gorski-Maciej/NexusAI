@@ -43,7 +43,6 @@ from nexus_ai.api.routes.exports import ExportController
 from nexus_ai.api.routes.files import FileController
 from nexus_ai.api.routes.events_schema import EventsSchemaController
 from nexus_ai.api.routes.finops import FinOpsController
-from nexus_ai.api.routes.fx import FXController
 from nexus_ai.api.routes.health import HealthController, HealthControllerV2
 from nexus_ai.api.routes.i18n_ops import I18nOpsController
 from nexus_ai.api.routes.invoices import InvoiceController, InvoiceControllerV2
@@ -216,7 +215,6 @@ def create_app() -> Litestar:
             FileController,
             UIStateController,
             CircuitBreakerController,
-            FXController,
             DLQController,
             WorkerStatusController,
         ],

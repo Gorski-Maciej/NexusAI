@@ -31,7 +31,6 @@ from nexus_ai.services.facts_aggregator import FactsAggregator
 from nexus_ai.services.fallback_handler import FallbackHandler
 from nexus_ai.services.finops_meter import FinOpsMeter
 from nexus_ai.services.fixed_assets import FixedAssetsService
-from nexus_ai.services.forex_engine import ForexEngine
 from nexus_ai.services.fraud_graph_scanner import FraudGraphScanner
 from nexus_ai.services.fx_revaluation import FXRevaluationService
 from nexus_ai.services.gus_bir_client import GUSBIRClient
@@ -102,7 +101,6 @@ __all__ = [
     "FileSpanBuffer",
     "FinOpsMeter",
     "FixedAssetsService",
-    "ForexEngine",
     "FraudGraphScanner",
     "FXRevaluationService",
     "GUSBIRClient",

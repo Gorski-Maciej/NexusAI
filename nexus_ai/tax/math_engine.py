@@ -6,7 +6,7 @@ zgodny z Nexus-Money (msgspec.Struct) i aa3fvcx.txt (Punkt 9).
 
 Architektura:
   - Core math (to_grosze, multiply_net_by_vat, validate_invariants):
-    Rust + PyO3 (rust_decimal) gdy native moduł dostępny,
+    Rust + PyO3 gdy native moduł dostępny,
     fallback do Python Decimal gdy nie.
   - Money-aware API (money_to_grosze, to_money, itp.):
     Python — pracuje z Pythonowym Money (msgspec.Struct z currency_converter).
@@ -70,7 +70,7 @@ try:
     _HAS_NATIVE_RUST = True
     if not _NUITKA_COMPILED:
         logger.info(
-            "TaxMathEngine: Rust native extension loaded — using rust_decimal for core math"
+            "TaxMathEngine: Rust native extension loaded — using Rust for core math"
         )
 except (ImportError, OSError):
     if not _NUITKA_COMPILED:
@@ -582,7 +582,7 @@ class TaxMathEngine:
     """Infallible tax math — integer-only, ROUND_HALF_UP, no floats.
 
     All methods are static. Use as a namespace for clarity.
-    Powered by Rust + rust_decimal when native module is available.
+    Powered by Rust when native module is available.
     """
 
     # ── Grosze-based API (legacy, fully backward-compatible) ─────────────

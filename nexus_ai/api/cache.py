@@ -9,7 +9,7 @@ Provides:
 
 Uses ``core.cache.NexusCache`` (L1 RAM + L2 SQLite/dyscache, msgspec serialization)
 zamiast osobnej implementacji ``_MemoryFallback``. Spójne z resztą stacku cache
-— ten sam singleton co ``DecisionEngine``, ``ForexEngine``, ``SemanticGuard`` itp.
+— ten sam singleton co ``DecisionEngine``, ``SemanticGuard`` itp.
 
 Użycie:
     from nexus_ai.api.cache import nexus_cache
@@ -31,7 +31,7 @@ from nexus_ai.core.cache import get_cache
 logger = get_logger("nexus.api.cache")
 
 # Global NexusCache singleton (core.cache singleton via get_cache())
-# Współdzielony z DecisionEngine, ForexEngine, SemanticGuard itp.
+# Współdzielony z DecisionEngine, SemanticGuard itp.
 # Klucze API mają prefix "ttlcache:" — brak kolizji z innymi podsystemami.
 nexus_cache = get_cache()
 

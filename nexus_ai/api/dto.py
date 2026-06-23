@@ -119,7 +119,6 @@ TAG_AUDIT = "Audit"
 TAG_FILES = "Files"
 TAG_HEALTH = "Health"
 TAG_FINANCE = "Finance"
-TAG_FX = "FX"
 TAG_I18N = "I18N"
 TAG_SECURITY = "Security"
 TAG_PRIVACY = "Privacy"
@@ -1092,14 +1091,6 @@ class KoreClosureDTO(NexusDTO):
 
     pass
 
-
-# ── FX DTOs ─────────────────────────────────────────────────────────────
-
-
-class FXUploadRatesDTO(NexusDTO):
-    """DTO dla odpowiedzi uploadu kursów FX."""
-
-    pass
 
 
 # ── Audit DTOs ─────────────────────────────────────────────────────────-

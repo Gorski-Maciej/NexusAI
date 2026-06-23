@@ -127,21 +127,6 @@ class TestCurrencyConverterStamina:
         assert "circuit_breaker=True" in source
 
 
-class TestForexEngineStamina:
-    """Faza 2.8: forex_engine z konkretnymi typami błędów."""
-
-    async def test_forex_stamina_specific_exceptions(self) -> None:
-        """Sprawdza że forex_engine używa konkretnych typów błędów zamiast Exception."""
-        import inspect
-
-        from nexus_ai.services.forex_engine import ForexEngine
-
-        source = inspect.getsource(ForexEngine._fetch_nbp_via_httpfs)
-        assert "httpx.HTTPError" in source
-        assert "httpx.ConnectError" in source
-        assert "httpx.TimeoutException" in source
-        assert "circuit_breaker=True" in source
-
 
 class TestTasksStamina:
     """Faza 1.2: tasks.py z circuit_breaker=True."""

@@ -402,7 +402,7 @@ class _StaminaSection(Struct, kw_only=True):
     """msgspec schema dla sekcji [stamina].
 
     SUPERMOC: Globalne ustawienia stamina dla całego projektu.
-    Używane przez currency_converter.py, forex_engine.py, api/tasks.py.
+    Używane przez currency_converter.py, api/tasks.py.
     """
 
     retry_attempts: Annotated[int | None, Meta(ge=1, le=20)] = None
