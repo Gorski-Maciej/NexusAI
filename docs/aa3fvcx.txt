@@ -299,15 +299,16 @@ Dlaczego zastępuje pandas:
 
 ---
 
-Alembic – Bezpieczna ewolucja schematu
+Natywne migracje SQL — bezpieczna ewolucja schematu
 
-Co to jest: Narzędzie do migracji bazy danych, które działa w parze z SQLAlchemy.
+Co to jest: Własny, minimalistyczny system migracji bazy danych, który zastąpił Alembic. Polega na sekwencji plików SQL (001_init.sql, 002_missing_tables.sql, ...) uruchamianych przez skrypt run_migrations.py.
 
-Dlaczego jest niezbędne:
+Dlaczego jest lepszy:
 
-· Kontrola wersji bazy: Wraz z rozwojem aplikacji, schemat bazy będzie się zmieniał (np. nowe pole na fakturze). Alembic pozwala na bezpieczne aktualizowanie bazy użytkownika za pomocą skryptów migracyjnych.
-· Automatyczne generowanie skryptów: Potrafi porównać stan Twoich modeli SQLModel z aktualną bazą danych i automatycznie wygenerować skrypt migracyjny. Oszczędza to czas i eliminuje ryzyko błędu ludzkiego.
-· Lekkość: To tylko narzędzie deweloperskie i część procesu aktualizacji. Nie dodaje żadnego ciężaru do działającej aplikacji.
+· Zero zależności: Nie potrzebujesz Alembic ani żadnej innej zewnętrznej biblioteki do zarządzania schematem. Każda migracja to czysty SQL, który doskonale rozumie każdy narzędzie bazodanowe.
+· Pełna kontrola: Sam decydujesz, co dokładnie znajduje się w każdej migracji. Unikasz pułapek autogeneracji, która czasem tworzy błędne skrypty.
+· Przejrzystość i wersjonowanie: Pliki SQL mają numery i nazwy, które jasno mówią, co zmieniają. Historia zmian schematu jest czytelna i łatwa do audytu.
+· Ultralekkość: to kilka plików SQL i jeden, prosty runner w Pythonie. Żadnego narzutu, żadnych dodatkowych tabel w bazie poza tymi, które sam zdefiniujesz.
 
 ---
 
@@ -3321,7 +3322,7 @@ Co zawiera:
 · Konfigurację ruff (reguły lintowania, formatowania).
 · Konfigurację mypy (poziom sprawdzania typów).
 · Konfigurację pytest (ustawienia test runnera).
-· Konfigurację Alembic (ścieżka do migracji, URL bazy) – zamiast osobnego alembic.ini.
+· Konfigurację migracji (ścieżka do plików SQL) – bez osobnego pliku konfiguracyjnego.
 
 ---
 

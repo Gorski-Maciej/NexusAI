@@ -75,8 +75,7 @@ Source: "..\config\*.toml"; DestDir: "{app}\config"; Flags: ignoreversion
 Source: "..\config\models_manifest.json"; DestDir: "{app}\config"; Flags: ignoreversion
 Source: "..\config\version.json"; DestDir: "{app}\config"; Flags: ignoreversion
 
-; Alembic migrations (dołączone do .exe przez Nuitka, ale też jako kopie dla updatera)
-Source: "..\alembic.ini"; DestDir: "{app}"; Flags: ignoreversion
+; Migracje SQL — natywny system (dołączone do .exe przez Nuitka, ale też jako kopie dla updatera)
 Source: "..\migrations\*"; DestDir: "{app}\migrations"; Flags: ignoreversion recursesubdirs
 
 ; README

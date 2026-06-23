@@ -228,7 +228,7 @@ description = "Pobierz NATS Server, TigerBeetle i OPA (binarki systemowe)"
 
 [tasks.dev]
 cmd = "python main.py --mode all"
-depends_on = ["start-nats", "start-tigerbeetle"]
+depends-on = ["start-nats", "start-tigerbeetle"]
 description = "Uruchom pełne środowisko: NATS + TigerBeetle + API + Worker"
 
 [tasks.api]
@@ -323,7 +323,7 @@ cmd = "python -m nuitka --project-name=nexus-ai --mode=standalone --low-memory m
 description = "Szybki build (standalone folder, niska pamięć)"
 
 [tasks.build-all]
-depends_on = ["build-rust", "build-nuitka"]
+depends-on = ["build-rust", "build-nuitka"]
 cmd = "echo 'All builds complete'"
 description = "Skompiluj wszystko: Rust (PyO3) + Nuitka (standalone .exe)"
 
@@ -541,7 +541,7 @@ description = "SUPERMOC: Zaktualizuj pixi do najnowszej wersji"
 # ── Deploy / Release ────────────────────────────────────────────────────────
 
 [tasks.deploy]
-depends_on = ["test", "build-all", "migrate"]
+depends-on = ["test", "build-all", "migrate"]
 cmd = """
 echo 'All steps passed — restarting services...'
 pixi run restart-api
@@ -551,7 +551,7 @@ echo 'Deployment complete'
 description = "Wdrożenie produkcyjne: testy → build → migracje → restart"
 
 [tasks.deploy-quick]
-depends_on = ["build-rust-release", "migrate"]
+depends-on = ["build-rust-release", "migrate"]
 cmd = """
 echo 'Quick deploy — restarting services...'
 pixi run restart-api
@@ -645,12 +645,12 @@ cmd = "NEXUS_LOG_LEVEL=warn python -m migrations.run_migrations"
 description = "Wykonaj migracje w środowisku produkcyjnym (natywny system)"
 
 [tasks.prod-deploy]
-depends_on = ["test", "build-all", "prod-migrate"]
+depends-on = ["test", "build-all", "prod-migrate"]
 cmd = "NEXUS_LOG_LEVEL=warn pixi run restart-api && echo 'Production deploy complete'"
 description = "Wdrożenie produkcyjne z parametrami prod"
 
 [tasks.prod-deploy-quick]
-depends_on = ["build-rust-release", "prod-migrate"]
+depends-on = ["build-rust-release", "prod-migrate"]
 cmd = "NEXUS_LOG_LEVEL=warn pixi run restart-api && echo 'Production quick deploy complete'"
 description = "Szybkie wdrożenie produkcyjne"
 

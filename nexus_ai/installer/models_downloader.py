@@ -78,7 +78,7 @@ def load_manifest(manifest_path: str | Path | None = None) -> list[ModelEntry]:
     Looks for the manifest in:
     1. Provided path
     2. config/models_manifest.json relative to project root
-    3. sys._MEIPASS/config/models_manifest.json (PyInstaller bundle)
+    3. config/models_manifest.json (w katalogu aplikacji)
     """
     if manifest_path is None:
         # Try to find the manifest

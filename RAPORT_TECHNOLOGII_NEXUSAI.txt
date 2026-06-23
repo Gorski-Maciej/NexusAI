@@ -89,7 +89,6 @@
   14. anyio >=4.4.0                       [A]  — Lekka warstwa async (asyncio/trio backend)
   15. msgspec >=0.18.0                    [A]  — Ultraszybka serializacja (JSON/TOML/MessagePack)
   16. httpx >=0.27.0 (v0.28.1)            [A]  — Klient HTTP (async)
-  17. starlette                           [Z]  — Zależność Litestar (ASGI toolkit)
 
 ────────────────────────────────────────────────────────────────────────────────
  2.3 BAZY DANYCH
@@ -100,7 +99,6 @@
   20. SQLModel >=0.0.16                  [A]  — ORM 2w1 (SQLAlchemy + Pydantic)
   21. SQLAlchemy >=2.0.x (v2.0.50)       [Z]  — Silnik ORM (transitive dep SQLModel)
   22. sqlite-vec >=0.1.0 (v0.1.9)        [A]  — Rozszerzenie wektorowe dla SQLite
-  23. Alembic >=1.18.4 (v1.18.4)         [S]  — Migracje (ZASTĄPIONE: natywne migracje SQL)
   24. DuckDB >=1.0.0 (v1.5.3)            [A]  — Lokalna hurtownia OLAP (kolumnowa)
   25. Polars >=1.0.0 (v1.41.2)           [A]  — DataFrame nowej generacji (Rust)
   26. PyArrow >=15.0.0 (v24.0.0)         [A]  — Format danych kolumnowych w pamięci
@@ -417,7 +415,6 @@
   ── Build scripts (installer/build_scripts/) ──────────────────────────────────
   221. build_exe.bat                     [D]  — Budowanie exe (Windows)
   222. build_exe.sh                      [D]  — Budowanie exe (Linux)
-  223. nexusai.spec                      [S]  — PyInstaller spec (NIEUŻYWANY, zastąpiony Nuitką)
   224. setup.iss                         [D]  — Inno Setup (instalator Windows)
   225. setup.nsi                         [D]  — NSIS (instalator Windows)
 
@@ -587,7 +584,7 @@
   • sqlite-vec         — Rozszerzenie wektorowe (v0.1.9)
   • pyarrow            — Dane kolumnowe (v24.0.0)
   • tigerbeetle        — Double-entry ledger (v0.16.0+)
-  • alembic [S]        — Migracje (v1.18.4) — zastąpione natywnymi SQL
+  • natywne migracje SQL — zastąpiły Alembic
 
   ── OCR i dokumenty ─────────────────────────────────────────────────────────
   • lxml               — XML parser
@@ -688,7 +685,7 @@
 
   ── Technologie per Status ────────────────────────────────────────────────────
   TECHNOLOGIE AKTYWNE [A]:            ~210
-  TECHNOLOGIE SZCZĄTKOWE [S]:          2  (Alembic, PyInstaller spec)
+  TECHNOLOGIE SZCZĄTKOWE [S]:          0
   ZALEŻNOŚCI POŚREDNIE [Z]:           ~65
   TECHNOLOGIE DEWELOPERSKIE [D]:      ~50
 

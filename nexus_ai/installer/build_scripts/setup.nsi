@@ -101,9 +101,7 @@ Section "NexusAI (required)" SecCore
     File "..\config\models_manifest.json"
     File "..\config\version.json"
 
-    ; ── Copy migrations ──────────────────────────────────────────────────
-    SetOutPath "$INSTDIR"
-    File "..\alembic.ini"
+    ; ── Copy migrations (natywny system SQL) ────────────────────────────
     SetOutPath "$INSTDIR\migrations"
     File /r "..\migrations\*.*"
 
