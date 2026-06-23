@@ -507,7 +507,7 @@ Dlaczego jest lepszy i lżejszy od alternatyw:
 
 · Pełna integracja ze stosem: httpx jest zbudowany na bazie anyio – tej samej warstwy co Litestar i Granian. Dzięki temu wszystkie żądania sieciowe współdzielą tę samą pętlę asynchroniczną, bez narzutu na przełączanie kontekstu czy dodatkowe wątki.
 · HTTP/1.1 i HTTP/2: Obsługuje oba protokoły. HTTP/2 jest szczególnie ważny przy komunikacji z nowoczesnymi API (np. KSeF w przyszłości), bo umożliwia multipleksowanie wielu żądań przez jedno połączenie, co redukuje opóźnienia i zużycie zasobów.
-· Lekkość i znajome API: W porównaniu do aiohttp, httpx nie wymaga dodatkowych zależności (multidict, yarl) i oferuje czystsze, bardziej pythoniczne API. Dla programisty to mniej czasu na naukę i mniej kodu do napisania.
+· Lekkość i znajome API: httpx nie wymaga dodatkowych zależności (takich jak multidict, yarl, aiosignal) i oferuje czystsze, bardziej pythoniczne API. Dla programisty to mniej czasu na naukę i mniej kodu do napisania.
 · Bezpośrednie wsparcie dla msgspec: httpx potrafi automatycznie serializować i deserializować dane JSON przy użyciu msgspec, co dodatkowo przyspiesza komunikację z API zewnętrznymi (GUS, NBP, Biała Lista MF).
 
 ---

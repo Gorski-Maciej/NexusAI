@@ -298,7 +298,7 @@ for mod_name in EXTERNAL_MOCK_MODULES:
     sys.modules[mod_name] = _MockModule(mod_name)
 
 for m in [
-    "aiohttp", "yarl", "multidict", "aiosignal", "frozenlist",
+    "yarl", "multidict", "aiosignal", "frozenlist",
     "pyarrow", "pillow", "boto3", "botocore",
     "kubernetes", "opentelemetry",
     "PIL._imaging", "PIL.ImageFilter", "PIL.ImageEnhance",
