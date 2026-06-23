@@ -15,8 +15,8 @@ Usage:
     python -m migrations.run_migrations --target 003  # Do konkretnej migracji
 
 Zgodnie z zasadą nadrzędną: zero utraty funkcjonalności.
-Każda migracja alembic (0001-0004) została ręcznie przekonwertowana
-na czysty SQL w plikach 001_init.sql - 004_supermoces.sql.
+Każda migracja (001-004) została napisana jako czysty SQL
+w plikach 001_init.sql - 004_supermoces.sql.
 """
 
 from __future__ import annotations

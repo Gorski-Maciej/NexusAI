@@ -11,7 +11,7 @@ Każda decyzja ma:
   - Status (pending, approved, rejected, expired)
   - Powiązanie z powiadomieniem (notification_id)
 
-Storage: Główna baza danych (Alembic, tabela: dq_decisions).
+Storage: Główna baza danych (tabela: dq_decisions).
 """
 
 from __future__ import annotations

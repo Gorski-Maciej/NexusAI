@@ -4,7 +4,7 @@
 Nowy stack (zgodny z aa3fvcx.txt):
 - nexus-crypto zamiast cryptography (AEAD ChaCha20-Poly1305 + Argon2id)
 - stamina (async-native retry + circuit breaker)
-- msgspec zamiast pydantic-settings + python-dotenv + json
+- msgspec do serializacji TOML/JSON (zamiast json/orjson)
 """
 
 from __future__ import annotations

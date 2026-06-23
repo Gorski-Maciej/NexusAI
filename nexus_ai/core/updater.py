@@ -12,10 +12,10 @@ from __future__ import annotations
 
 import anyio
 import httpx
-from packaging import version
 from structlog import get_logger
 
 from nexus_ai.core.cache.http_client import CachedHttpClient
+from nexus_ai.core.version_utils import parse_version
 
 logger = get_logger("nexus.updater")
 
@@ -42,7 +42,7 @@ async def check_for_updates() -> dict:
             latest_release = response.json()
             latest_version = latest_release["tag_name"].replace("v", "")
 
-            if version.parse(latest_version) > version.parse(CURRENT_VERSION):
+            if parse_version(latest_version) > parse_version(CURRENT_VERSION):
                 download_url = latest_release["assets"][0]["browser_download_url"]
                 return {
                     "update_available": True,

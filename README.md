@@ -79,18 +79,18 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 |---|---|---|---|
 | **SQLite + SQLCipher** — szyfrowana baza | — | ✅ | `nexus_ai/db/database.py` → PRAGMA key |
 | **sqlite-vec** — wektory w SQLite | LanceDB | ✅ | `nexus_ai/db/vector_store.py` |
-| **SQLModel** — ORM 2w1 | SQLAlchemy + Pydantic (osobno) | ✅ | `nexus_ai/db/models.py` |
+| **SQLModel** — ORM 2w1 | (SQLAlchemy + Pydantic pod spodem) | ✅ | `nexus_ai/db/models.py` |
 | **DuckDB** — lokalna hurtownia OLAP | — | ✅ | `nexus_ai/db/analytics.py` → `DuckDBManager` |
 | **PyArrow** — format danych w pamięci | — | ✅ | Używany przez DuckDB |
 | **Polars** — DataFrame nowej generacji | pandas | ✅ | `nexus_ai/core/analytics.py` |
-| **Natywne migracje SQL** — migracje schematu | Alembic | ✅ | `migrations/*.sql`, `migrations/run_migrations.py` |
+| **Natywne migracje SQL** — migracje schematu | (ręczne SQL) | ✅ | `migrations/*.sql`, `migrations/run_migrations.py` |
 
 ### Punkt 4 — Walidacja i serializacja
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
 | **msgspec** — serializacja API + konfiguracja TOML | json, python-dotenv, pydantic-settings | ✅ | `nexus_ai/core/config.py` → `msgspec.toml.decode` |
-| **Pydantic** — tylko przez SQLModel (ukryty) | — | ✅ | Tylko jako zależność SQLModel |
+| **Pydantic** — tylko przez SQLModel (niewidoczny) | — | ✅ | Tylko jako zależność przechodnia SQLModel |
 
 ### Punkt 5 — Kolejki i komunikacja asynchroniczna
 
@@ -509,7 +509,7 @@ Pre-configured build scripts are in `build_scripts/`:
 [tool.nuitka]
 onefile = true
 standalone = true
-enable-plugins = ["pydantic"]
+enable-plugins = ["pydantic"]  # Needed to bundle SQLModel (which depends on pydantic)
 include-package = ["nexus_ai", "granian", "litestar"]
 ```
 
@@ -718,7 +718,7 @@ NexusAI/
 │   ├── pyproject.toml
 │   └── src/lib.rs
 │
-├── migrations/                    # Alembic database migrations
+├── migrations/                    # Native SQL database migrations
 │   └── versions/
 │
 └── models/                        # AI model files (GGUF) — downloaded separately

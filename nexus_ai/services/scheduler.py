@@ -6,7 +6,7 @@ Zgodnie z aa3fvcx.txt (Punkt 26): zarządzanie terminami przypomnień
 Oparty na Python + anyio dla lekkiej, asynchronicznej pracy w tle.
 Integruje się z NotificationManager do wysyłania przypomnień.
 
-Storage: Główna baza danych (SQLAlchemy / Alembic).
+Storage: Główna baza danych (SQLModel / native SQL).
 DDL w migracji 0003_consolidate_service_tables.
 """
 
@@ -61,7 +61,7 @@ class Scheduler:
       - EventLog: loguje wykonane zadania
       - DecisionQueue: może dodawać decyzje wymagające uwagi
 
-    Storage: Główna baza danych (Alembic).
+    Storage: Główna baza danych (SQLModel).
     Tabele: scheduled_tasks, reminders (migracja 0003).
     """
 

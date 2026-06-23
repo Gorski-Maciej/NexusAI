@@ -1,13 +1,12 @@
 """
 NexusAI core types — msgspec.Struct based value objects and paginated response.
 
-Replaces pydantic RootModel/TypeAdapter with msgspec.Struct for maximum
-performance and zero pydantic dependency in the API layer.
+msgspec.Struct based value objects and paginated response.
 
 SUPERMOCE msgspec:
 - Struct z typami → zero narzutu walidacji
 - Generics przez Generic[T] na Struct
-- Własne metody validate() zamiast pydantic validators
+- Własne metody validate() dla walidacji wartości
 - __post_init__ dla automatycznej walidacji po utworzeniu
 """
 
@@ -105,7 +104,7 @@ class Nip(Struct, frozen=True):
         return self.value
 
 
-# ── Type Adapters (functions instead of pydantic TypeAdapter) ──────
+# ── Type Adapters (functions instead of TypeAdapter) ───────────────
 
 
 def validate_money_list(values: list[str | float | Decimal]) -> list[Decimal]:

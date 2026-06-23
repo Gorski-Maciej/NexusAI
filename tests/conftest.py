@@ -261,7 +261,9 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     # DB
     "duckdb",
     "polars",
-    # Pydantic / SQLModel
+    # SQLModel (zależność przechodnia: pydantic + pydantic-core)
+    # Mocked because SQLModel pulls in pydantic internally.
+    # These are NOT direct project dependencies.
     "pydantic_core",
     "pydantic_core._pydantic_core",
     "pydantic",

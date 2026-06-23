@@ -209,7 +209,7 @@ async def _seed_data(engine, config: AppConfig) -> None:
     """
     from scripts.seed_data import seed_rbac
 
-    logger.info("[SEED] Tables created by Alembic migrations — seeding RBAC")
+    logger.info("[SEED] Tables created by native SQL migrations — seeding RBAC")
 
     try:
         rbac_counts = await seed_rbac(engine)
@@ -242,9 +242,9 @@ def make_on_startup(engine, session_factory):
         Fazowanie startu:
           0. Config + ML cache + pendulum locale
           1. Metryki OTel (sync + background task)
-          2. Database engine + core services (pre-created przez SQLAlchemyPlugin)
-          3. Native SQLite migrations + seed danych
-          4. Broker, DuckDB warm-up, auto-seed           5. HotReloadListener
+          2. Database engine + core services (pre-created przez SQLAlchemyPlugin)      3. Native SQLite migrations + seed danych
+      4. Broker, DuckDB warm-up, auto-seed
+      5. HotReloadListener
 
         Engine i session_factory są współdzielone z SQLAlchemyPlugin.
         """

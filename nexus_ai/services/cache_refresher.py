@@ -14,8 +14,8 @@ import pendulum
 from typing import Any, final
 
 import anyio
-from sqlmodel import text
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker
+from sqlmodel import Session, text
 from structlog import get_logger
 
 from nexus_ai.services.tigerbeetle.client import (

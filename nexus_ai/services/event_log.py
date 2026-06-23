@@ -4,7 +4,7 @@ Zgodnie z aa3fvcx.txt (Punkt 26): historia wszystkich zdarzeń i podjętych
 decyzji, przeszukiwalna dla systemu analitycznego (DuckDB).
 
 Storage: DuckDB dla wydajnych zapytań OLAP.
-Fallback: Główna baza SQLAlchemy (Alembic, tabele: event_log).
+Fallback: Główna baza (SQLModel, tabele: event_log).
 
 DDL event_log przeniesione do migracji 0003_consolidate_service_tables.
 DDL DuckDB (event_log_analytics) pozostaje jako _init_duckdb().
@@ -39,7 +39,7 @@ class EventLog:
     Dostępna dla systemu analitycznego (DuckDB) do generowania raportów i trendów.
 
     Storage:
-      - SQLite (główna baza, Alembic 0003): event_log — fallback dla zapytań
+      - SQLite (główna baza, migracja 0003): event_log — fallback dla zapytań
       - DuckDB: event_log_analytics — wydajne zapytania OLAP
     """
 

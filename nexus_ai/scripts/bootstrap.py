@@ -119,7 +119,7 @@ async def step_check_dependencies(config: Any) -> StepResult:
         ("litestar", "litestar"),
         ("granian", "granian"),
         ("sqlmodel", "sqlmodel"),
-        # alembic removed — replaced by migrations/run_migrations.py
+        # Alembic removed — replaced by migrations/run_migrations.py (native SQL)
         ("taskiq", "taskiq"),
         ("duckdb", "duckdb"),
         ("msgspec", "msgspec"),
@@ -203,7 +203,7 @@ async def step_run_migrations(config: Any) -> StepResult:
             duration_ms=(time.perf_counter() - start) * 1000,
         )
     except ImportError:
-        logger.warning("  Migration runner not available, creating tables via SQLAlchemy...")
+        logger.warning("  Migration runner not available, creating tables via SQLModel...")
         return StepResult(
             name=name, status="warning",
             message="migrations package not found — schema may be incomplete",

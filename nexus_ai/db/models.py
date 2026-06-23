@@ -19,25 +19,23 @@ SUPERMOCE (wszystkie):
 - ge/le constraints na polach numerycznych
 - hybrid_property dla computed fields (amount_vat)
 - TypeDecorator (PendulumDateTime) dla pendulum.DateTime
-- @field_validator (Pydantic v2) zamiast @validates — tryby before/after/wrap
-- @model_validator(mode="after") dla cross-field validation
-- @computed_field dla pól liczonych (amount_vat)
+- Validation via before_flush listener in hooks.py
+- @hybrid_property dla computed fields
 - model_config: validate_assignment=True, extra='forbid', str_strip_whitespace=True
 - with_loader_criteria ready (tenant_id na każdym modelu)
 """
 
 from __future__ import annotations
 
-import re
 import uuid
 from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
-from typing import Any
+from typing import Any, ClassVar
 
 import pendulum
-from pydantic import ConfigDict
-from pydantic import field_validator, model_validator, computed_field
+# Validation moved to nexus_ai/db/hooks.py (before_flush listener).
+# No direct pydantic imports remain.
 from sqlalchemy import TypeDecorator as SATypeDecorator, Enum as SAEnum
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -127,13 +125,6 @@ class UserRole(StrEnum):
     VIEWER = "viewer"
 
 
-# ── Stałe walidacyjne ──────────────────────────────────────────────────────
-
-_EVENT_TYPE_REGEX = re.compile(r'^[a-zA-Z0-9.]+$')
-_USERNAME_REGEX = re.compile(r'^[a-zA-Z0-9_]{3,}$')
-_VALID_USER_ROLES = {r.value for r in UserRole}
-
-
 # ── Models ──────────────────────────────────────────────────────────────────
 
 
@@ -170,15 +161,15 @@ class Invoice(SQLModel, table=True):
         UniqueConstraint("tenant_id", "number", name="uq_tenant_invoice_number"),
         {"sqlite_autoincrement": False},
     )
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True,
-        validate_assignment=True,
-        extra='forbid',
-        str_strip_whitespace=True,
-    )
+    model_config: ClassVar[dict] = {
+        "arbitrary_types_allowed": True,
+        "validate_assignment": True,
+        "extra": "forbid",
+        "str_strip_whitespace": True,
+    }
 
     # SUPERMOC: Mapped[] annotations dla full type safety
-    # SUPERMOC: Alembic-aware — sa_column_kwargs z komentarzami dla autogenerate
+    # SUPERMOC: sa_column_kwargs z komentarzami dla dokumentacji schematu
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     number: Mapped[str | None] = Field(default=None, index=True,
         sa_column_kwargs={"comment": "Numer faktury (np. FV/2026/001)"},
@@ -252,19 +243,9 @@ class Invoice(SQLModel, table=True):
     outbox_events: Mapped[list["OutboxEvent"]] = Relationship(back_populates="invoice")
     audit_logs: Mapped[list["AuditLog"]] = Relationship(back_populates="invoice")
 
-    @field_validator("currency", mode="before")
-    @classmethod
-    def validate_currency(cls, value: str) -> str:
-        """Wymuś 3-znakowy kod waluty ISO, uppercase."""
-        if value is not None and len(value) != 3:
-            raise ValueError(f"Currency must be 3-letter ISO code, got {value!r}")
-        return value.upper() if value else value
-
-    # SUPERMOC: computed_field dla amount_vat (Pydantic v2)
-    @computed_field
     @property
     def amount_vat(self) -> Decimal | None:
-        """VAT = amount_gross - amount_net (Python level, serializowany przez Pydantic)."""
+        """VAT = amount_gross - amount_net (Python-level computed property)."""
         if self.amount_gross is not None and self.amount_net is not None:
             return self.amount_gross - self.amount_net
         return None
@@ -287,27 +268,18 @@ class Invoice(SQLModel, table=True):
             else_=None
         )
 
-    @model_validator(mode="after")
-    def validate_invoice(self) -> "Invoice":
-        """Cross-field validation: amount_net <= amount_gross."""
-        if self.amount_net is not None and self.amount_gross is not None:
-            if self.amount_net > self.amount_gross:
-                raise ValueError(
-                    f"amount_net ({self.amount_net}) cannot exceed "
-                    f"amount_gross ({self.amount_gross})"
-                )
-        return self
+    # Cross-field validation moved to hooks.py (before_flush listener)
 
 
 class ActiveLearningPattern(SQLModel, table=True):
     """Wzorce aktywnego uczenia — korekty użytkownika dla AI."""
 
     __tablename__ = "active_learning_patterns"  # type: ignore[assignment]
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True,
-        validate_assignment=True,
-        extra='forbid',
-    )
+    model_config: ClassVar[dict] = {
+        "arbitrary_types_allowed": True,
+        "validate_assignment": True,
+        "extra": "forbid",
+    }
 
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     contractor_id: Mapped[str] = Field(nullable=False, index=True)
@@ -329,11 +301,11 @@ class Contractor(SQLModel, table=True):
     __table_args__ = (
         Index("idx_contractors_nip_upper", text("UPPER(nip)")),
     )
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True,
-        validate_assignment=True,
-        extra='forbid',
-    )
+    model_config: ClassVar[dict] = {
+        "arbitrary_types_allowed": True,
+        "validate_assignment": True,
+        "extra": "forbid",
+    }
 
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     nip: Mapped[str] = Field(unique=True, nullable=False, index=True)
@@ -355,16 +327,7 @@ class Contractor(SQLModel, table=True):
         },
     )
 
-    @field_validator("nip", mode="before")
-    @classmethod
-    def validate_nip(cls, value: str) -> str:
-        """Walidacja NIP: 10 cyfr, bez myślników/spacji."""
-        if value is not None:
-            cleaned = value.replace("-", "").replace(" ", "")
-            if not cleaned.isdigit() or len(cleaned) != 10:
-                raise ValueError(f"NIP must be 10 digits, got {value!r}")
-            return cleaned
-        return value
+    # NIP validation moved to hooks.py (before_flush listener)
 
 
 class AuditLog(SQLModel, table=True):
@@ -375,11 +338,11 @@ class AuditLog(SQLModel, table=True):
         Index("idx_audit_logs_invoice_action", "invoice_id", "action"),
         Index("idx_audit_logs_timestamp", "timestamp"),
     )
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True,
-        validate_assignment=True,
-        extra='forbid',
-    )
+    model_config: ClassVar[dict] = {
+        "arbitrary_types_allowed": True,
+        "validate_assignment": True,
+        "extra": "forbid",
+    }
 
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     invoice_id: Mapped[str | None] = Field(default=None, foreign_key="invoices.id", index=True)
@@ -422,11 +385,11 @@ class OutboxEvent(SQLModel, table=True):
         Index("idx_outbox_aggregate", "aggregate_id", "event_type"),
         {"sqlite_autoincrement": False},
     )
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True,
-        validate_assignment=True,
-        extra='forbid',
-    )
+    model_config: ClassVar[dict] = {
+        "arbitrary_types_allowed": True,
+        "validate_assignment": True,
+        "extra": "forbid",
+    }
 
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     event_type: Mapped[str] = Field(nullable=False, min_length=3)
@@ -459,13 +422,7 @@ class OutboxEvent(SQLModel, table=True):
     )
     invoice: Mapped["Invoice | None"] = Relationship(back_populates="outbox_events")
 
-    @field_validator("event_type", mode="before")
-    @classmethod
-    def validate_event_type(cls, value: str) -> str:
-        """Waliduj event_type: alphanumeric + dots (np. invoice.created)."""
-        if value is not None and not _EVENT_TYPE_REGEX.match(value):
-            raise ValueError(f"event_type must be alphanumeric with dots, got {value!r}")
-        return value
+    # event_type validation moved to hooks.py (before_flush listener)
 
 
 class SecurityAlert(SQLModel, table=True):
@@ -475,11 +432,11 @@ class SecurityAlert(SQLModel, table=True):
     __table_args__ = (
         Index("idx_security_alerts_actor", "actor", "created_at"),
     )
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True,
-        validate_assignment=True,
-        extra='forbid',
-    )
+    model_config: ClassVar[dict] = {
+        "arbitrary_types_allowed": True,
+        "validate_assignment": True,
+        "extra": "forbid",
+    }
 
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     actor: Mapped[str] = Field(nullable=False)
@@ -500,11 +457,11 @@ class UserAccount(SQLModel, table=True):
     """User accounts — z Enum role i walidacją username."""
 
     __tablename__ = "users"  # type: ignore[assignment]
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True,
-        validate_assignment=True,
-        extra='forbid',
-    )
+    model_config: ClassVar[dict] = {
+        "arbitrary_types_allowed": True,
+        "validate_assignment": True,
+        "extra": "forbid",
+    }
 
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     username: Mapped[str] = Field(unique=True, nullable=False, index=True)
@@ -523,34 +480,16 @@ class UserAccount(SQLModel, table=True):
         sa_type=PendulumDateTime,
     )
 
-    @field_validator("username", mode="before")
-    @classmethod
-    def validate_username(cls, value: str) -> str:
-        """Waliduj username: min 3 znaki, tylko alphanumeric + underscore."""
-        if value is not None and not _USERNAME_REGEX.match(value):
-            raise ValueError(f"Username must be 3+ alphanumeric chars, got {value!r}")
-        return value
-
-    @field_validator("role", mode="before")
-    @classmethod
-    def validate_role(cls, value: UserRole | str) -> UserRole:
-        """Waliduj rolę: tylko dozwolone wartości."""
-        if isinstance(value, str):
-            if value not in _VALID_USER_ROLES:
-                raise ValueError(f"Invalid role {value!r}, allowed: {_VALID_USER_ROLES}")
-            return UserRole(value)
-        if value.value not in _VALID_USER_ROLES:
-            raise ValueError(f"Invalid role {value!r}, allowed: {_VALID_USER_ROLES}")
-        return value
+    # username and role validation moved to hooks.py (before_flush listener)
 
 
-# ── Eksport Base dla kompatybilności z Alembic ──────────────────────────
+# ── Eksport Base dla kompatybilności (SQLModel alias) ────────────────────
 
 Base = SQLModel
 
 
 # ── Partial indexes (DEPRECATED — przeniesione do migracji 0004) ─────────
-# SUPERMOC: Wszystkie partial indexes zostały przeniesione do migracji Alembic 0004.
+# SUPERMOC: Wszystkie partial indexes zostały przeniesione do migracji 0004.
 # Ta funkcja pozostaje jako fallback dla fresh databases bez migracji.
 # Docelowo: usuń w następnej wersji.
 
@@ -564,11 +503,11 @@ _PARTIAL_INDEXES: dict[str, list[str]] = {
 def create_partial_indexes(engine) -> None:
     """Utwórz partial indexes dla tabel z _PARTIAL_INDEXES.
 
-    DEPRECATED: Partial indexes przeniesione do migracji Alembic 0004.
+    DEPRECATED: Partial indexes przeniesione do migracji 0004 (native SQL).
     Ta funkcja jest pusta (safety-net dla świeżych baz).
     """
     from structlog import get_logger as _get_log
 
     _log = _get_log("nexus.db.indexes")
-    _log.debug("[DB] create_partial_indexes is deprecated — indexes in Alembic 0004")
-    # Partial indexes are now created by Alembic migration 0004
+    _log.debug("[DB] create_partial_indexes is deprecated — indexes in migration 0004")
+    # Partial indexes are now created by native SQL migration 0004

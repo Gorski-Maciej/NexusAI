@@ -3,7 +3,7 @@ conftest.py — Integration test configuration for NexusAI.
 
 Sets up:
 - A temporary SQLite database (via tmp_path zamiast tempfile.mkdtemp)
-- An async SQLAlchemy engine + session
+- An async SQLModel engine + session (SQLAlchemy pod spodem)
 - A test Litestar app client (via `AsyncTestClient`)
 - Fixtures for common test data
 
@@ -40,9 +40,8 @@ def anyio_backend():
     przy zmianie domyślnego backendu w anyio.
     """
     return "asyncio"
-from sqlmodel import text
-from sqlmodel import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker
+from sqlmodel import Session, create_engine, text
 
 # Ensure Code/ is on sys.path
 import sys

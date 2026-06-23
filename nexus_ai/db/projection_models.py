@@ -13,10 +13,10 @@ from __future__ import annotations
 import uuid
 from decimal import Decimal
 from enum import StrEnum
-from typing import Any
+from typing import Any, ClassVar
 
 import pendulum
-from pydantic import ConfigDict
+# Note: ConfigDict replaced with plain dict (no direct pydantic import)
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped
 from sqlalchemy.schema import Index
@@ -76,11 +76,11 @@ class InvoiceReadModel(SQLModel, table=True):
         # SUPERMOC: Expression index
         Index("idx_invoice_rm_contractor_upper", text("UPPER(contractor_nip)")),
     )
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True,
-        validate_assignment=True,
-        extra='forbid',
-    )
+    model_config: ClassVar[dict] = {
+        "arbitrary_types_allowed": True,
+        "validate_assignment": True,
+        "extra": "forbid",
+    }
 
     invoice_id: Mapped[str] = Field(primary_key=True)
     number: Mapped[str | None] = Field(default=None)
@@ -130,11 +130,11 @@ class DecisionAnalytics(SQLModel, table=True):
         Index("idx_decision_analytics_overridden", "timestamp",
               sqlite_where=text("event_type = 'decision.overridden'")),
     )
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True,
-        validate_assignment=True,
-        extra='forbid',
-    )
+    model_config: ClassVar[dict] = {
+        "arbitrary_types_allowed": True,
+        "validate_assignment": True,
+        "extra": "forbid",
+    }
 
     decision_id: Mapped[str] = Field(primary_key=True)
     invoice_id: Mapped[str] = Field(nullable=False)
@@ -164,11 +164,11 @@ class UserPreferences(SQLModel, table=True):
     """
 
     __tablename__ = "user_preferences"  # type: ignore[assignment]
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True,
-        validate_assignment=True,
-        extra='forbid',
-    )
+    model_config: ClassVar[dict] = {
+        "arbitrary_types_allowed": True,
+        "validate_assignment": True,
+        "extra": "forbid",
+    }
 
     user_id: Mapped[str] = Field(primary_key=True)
     # SUPERMOC: JSON column dla elastycznych preferencji

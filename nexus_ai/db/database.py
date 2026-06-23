@@ -4,7 +4,7 @@ SQLAlchemy + SQLModel setup for SQLCipher (encrypted SQLite) — sync engine onl
 Używamy natywnego sqlite3 w Pythonie 3.13t (free-threaded).
 
 SUPERMOCE SQLModel/SQLAlchemy:
-- SQLModel.metadata jako target_metadata (dla Alembic auto-migration)
+- SQLModel.metadata jako target_metadata (dla natywnych migracji SQL)
 - with_loader_criteria — automatyczny multi-tenant filtr (WHERE tenant_id = ?)
 - SessionEvents.before_flush dla automatycznego audytu
 - Connection pool tuning (pool_size, max_overflow, pool_recycle)

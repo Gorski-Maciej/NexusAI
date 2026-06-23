@@ -42,11 +42,12 @@ def _check_schemathesis_version() -> str | None:
     try:
         import schemathesis
 
+        from nexus_ai.core.version_utils import parse_version
+
         version = schemathesis.__version__
-        from packaging.version import Version
 
         min_version = "3.30.0"
-        if Version(version) < Version(min_version):
+        if parse_version(version) < parse_version(min_version):
             return (
                 f"⚠️  schemathesis >= {min_version} required, "
                 f"got {version}. Run: pip install -U schemathesis"

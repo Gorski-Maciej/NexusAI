@@ -33,8 +33,9 @@ def instrument_all() -> dict[str, bool]:
     """
     results: dict[str, bool] = {}
 
-    # ── SUPERMOC: SQLAlchemyInstrumentor ──────────────────────────────
-    # Automatyczne trace'owanie każdego zapytania SQL
+    # ── SUPERMOC: SQLAlchemyInstrumentor (przez SQLModel) ─────────────
+    # Automatyczne trace'owanie każdego zapytania SQL wykonywanego przez SQLModel
+    # SQLModel używa SQLAlchemy wewnętrznie, więc instrumentacja działa przez SQLModel
     results["sqlalchemy"] = _instrument_sqlalchemy()
 
     # ── SUPERMOC: HTTPXClientInstrumentor ─────────────────────────────
@@ -65,7 +66,7 @@ def instrument_all() -> dict[str, bool]:
 
 
 def _instrument_sqlalchemy() -> bool:
-    """Instrument SQLAlchemy ORM/core calls."""
+    """Instrument SQLAlchemy ORM/core calls (used by SQLModel internally)."""
     try:
         from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 

@@ -1,5 +1,5 @@
 """
-migrations — Native SQLite migration system (replaces Alembic).
+migrations — Native SQLite migration system.
 
 Python 3.13t (free-threaded): sync sqlite3 API is safe for multi-threaded use.
 """

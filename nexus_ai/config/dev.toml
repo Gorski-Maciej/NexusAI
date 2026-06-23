@@ -3,7 +3,7 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 #
 # Zgodnie z aa3fvcx.txt:
-# - msgspec parsuje TOML → zero zależności od python-dotenv/pydantic-settings
+# - msgspec parsuje TOML → zero zależności od python-dotenv
 # - Konfiguracja w czystym TOML zamiast .env
 # - Struktura zdefiniowana jako msgspec.Struct w core/config.py
 #

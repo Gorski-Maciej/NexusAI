@@ -28,7 +28,8 @@ from typing import Any, AsyncGenerator
 
 import anyio
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker
+from sqlmodel import Session
 from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
