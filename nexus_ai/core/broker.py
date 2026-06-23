@@ -28,9 +28,9 @@ import hashlib
 import os
 from typing import Any
 
+from structlog import get_logger
 from taskiq import TaskiqEvents
 from taskiq_nats import PullBasedJetStreamBroker
-from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.taskiq_middleware import (
