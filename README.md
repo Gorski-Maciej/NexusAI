@@ -96,9 +96,8 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **NATS Server** — broker komunikatów (~10 MB) | Redis, RabbitMQ | ✅ | `pixi.toml` → `task start-nats` |
+| **NATS Server** — broker komunikatów (~10 MB) z wbudowanym JetStream, KV Store i Object Store | Redis, RabbitMQ, Redis Streams | ✅ | `pixi.toml` → `task start-nats` |
 | **nats-py** — klient Python | — | ✅ | `nexus_ai/core/broker.py` |
-| **NATS JetStream** — trwałe strumienie | Redis Streams | ✅ | `nexus_ai/core/tasks.py` |
 | **Taskiq** — kolejka zadań (async-native) | Celery | ✅ | `nexus_ai/core/broker.py` |
 | **taskiq-nats** — spoiwo Taskiq ↔ NATS | — | ✅ | `nexus_ai/core/broker.py` |
 
