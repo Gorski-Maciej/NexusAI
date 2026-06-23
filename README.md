@@ -169,7 +169,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **dyscache** — wielopoziomowy cache (RAM + SQLite) | cachetools, diskcache, Redis | ✅ | `nexus_ai/core/cache/dyscache.py` → `NexusCache` |
+| **diskcache** — SQLite-backed cache z TTL | cachetools, diskcache, Redis | ✅ | `nexus_ai/core/cache/` (DiskBackend na diskcache.Cache) |
 | **msgspec** — serializacja w cache | pickle, json | ✅ | `nexus_ai/core/cache/` (msgspec serialization) |
 
 ### Punkt 14 — Narzędzia

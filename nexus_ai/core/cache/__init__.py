@@ -1,26 +1,16 @@
 """
-NexusAI Cache — multi-level caching layer + hishel HTTP cache.
+NexusAI Cache — warstwa cache oparta na diskcache + hishel HTTP cache + NATS invalidation.
 
-Zgodnie z aa3fvcx.txt (Punkt 13) + AUDYT:
-- CacheBackend ABC z InMemoryBackend, SqliteBackend, RedisBackend
-- NexusCache z pluggable backend (L1 RAM + L2 SQLite/Redis)
+Zgodnie z decyzją optymalizacyjną:
+- Własne backendy (InMemoryBackend, SqliteBackend) → diskcache.Cache
 - hishel — inteligentny cache HTTP przez CachedHttpClient
 - NATS distributed cache invalidation
-
-SUPERMOCE Z AUDYTU:
-  - Pluggable backend przez CacheBackend ABC
-  - InMemoryBackend — thread-safe L1 z LRU eviction
-  - SqliteBackend — async SQLite L2 (prawdziwy async-native)
-  - RedisBackend — rozproszony cache dla multi-instancji
-  - get_or_compute() / get_or_compute_sync() — stampede protection
-  - warm() / warm_sync() — cache warming dla cold start
-  - invalidate_cache() / subscribe_cache_invalidation() — NATS distributed invalidation
 """
 
 from nexus_ai.core.cache.backends import (
     CacheBackend,
     InMemoryBackend,
-    SqliteBackend,
+    DiskBackend,
     create_backend,
 )
 from nexus_ai.core.cache.dyscache import NexusCache, get_cache
@@ -42,10 +32,10 @@ __all__ = [
     # CacheBackend ABC + implementacje
     "CacheBackend",
     "InMemoryBackend",
-    "SqliteBackend",
+    "DiskBackend",
     "RedisBackend",
     "create_backend",
-    # NexusCache (L1 RAM + L2 SQLite/Redis)
+    # NexusCache
     "NexusCache",
     "get_cache",
     # hishel HTTP cache (CachedHttpClient)

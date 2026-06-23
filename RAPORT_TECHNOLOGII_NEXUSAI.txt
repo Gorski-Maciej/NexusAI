@@ -207,8 +207,8 @@
 ────────────────────────────────────────────────────────────────────────────────
 
   85. hishel                             [A]  — Cache HTTP z inteligentnym odświeżaniem
-  86. cache/ (core/cache/)               [A]  — Własne backendy cache
-  87. cache_refresher.py                 [A]  — Własny odświeżacz cache
+  86. diskcache >=5.6.0                 [A]  — SQLite-backed cache (zastąpił własne backendy L1/L2)
+  87. cache/ (core/cache/)               [A]  — Warstwa cache (adapter diskcache + hishel wrapper + NATS invalidation)
 
 ────────────────────────────────────────────────────────────────────────────────
  2.14 AI / AGENTY AI (MÓZG SYSTEMU)
