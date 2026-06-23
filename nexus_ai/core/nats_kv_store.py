@@ -1,5 +1,9 @@
 """
-NATS Key-Value Store — distributed configuration and caching through NATS JetStream.
+Key-Value Store — wbudowane w NATS JetStream API do rozproszonej konfiguracji i cache'owania.
+
+UWAGA: To NIE jest osobna technologia. Key-Value Store to wbudowane API serwera NATS
+JetStream, dostępne przez nats-py. Nie wymaga osobnej instalacji ani konfiguracji —
+jest częścią NATS Server >=2.10.
 
 SUPERMOC NATS: Key-Value Store wbudowany w JetStream.
 Zastępuje: Redis, etcd, Consul dla małych/średnich konfiguracji.
@@ -56,7 +60,9 @@ DEFAULT_BUCKETS = {
 
 @final
 class NatsConfigStore:
-    """NATS Key-Value Store dla rozproszonej konfiguracji.
+    """Key-Value Store — wbudowane w NATS JetStream API dla rozproszonej konfiguracji.
+
+    UWAGA: To wbudowane API NATS, a nie osobna technologia.
 
     SUPERMOCE:
       - Automatyczne tworzenie bucketów przy starcie

@@ -1,5 +1,9 @@
 """
-NATS Object Store — file storage through NATS JetStream.
+Object Store — wbudowane w NATS JetStream API do przechowywania plików.
+
+UWAGA: To NIE jest osobna technologia. Object Store to wbudowane API serwera NATS
+JetStream, dostępne przez nats-py. Nie wymaga osobnej instalacji ani konfiguracji —
+jest częścią NATS Server >=2.10.
 
 SUPERMOC NATS: Object Store wbudowany w JetStream.
 Zastępuje: S3, MinIO, lokalne przechowywanie plików dla małych/średnich rozmiarów.
@@ -53,7 +57,9 @@ DEFAULT_BUCKETS = {
 
 
 class NatsFileStore:
-    """NATS Object Store dla plików.
+    """Object Store — wbudowane w NATS JetStream API dla plików.
+
+    UWAGA: To wbudowane API NATS, a nie osobna technologia.
 
     SUPERMOCE:
       - Automatyczne tworzenie bucketów przy starcie
