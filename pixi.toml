@@ -33,15 +33,15 @@
 name = "nexus-ai"
 version = "2.0.0"
 description = "NexusAI — Ultralekki, autonomiczny system księgowy z AI"
-channels = ["defaults"]
+channels = ["conda-forge"]
 platforms = ["linux-64", "linux-aarch64", "win-64"]   # win-64 dla Nuitka + Inno Setup (aa3fvcx.txt)
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Zależności systemowe — tylko runtime
+# Zależności systemowe (conda-forge) — tylko runtime
 # ══════════════════════════════════════════════════════════════════════════════
 
 [dependencies]
-python = "3.13.* *_cp313t"              # Free-threaded (3.13t, bez GIL) — -30-40% RAM, prawdziwa wielowątkowość
+python = { version = "3.13.*", build = "*_cp313t" }  # Free-threaded (3.13t, bez GIL) — -30-40% RAM, prawdziwa wielowątkowość
 
 # ── OCR i przetwarzanie obrazów ─────────────────────────────────────────────
 tesseract = ">=5.3.0"                    # OCR — ekstrakcja tekstu z faktur
@@ -693,8 +693,7 @@ nuitka = ">=1.8"
 # ── Platform-specific: build-nuitka-win (tylko win-64) ───────────────────
 [feature.dev.tasks.build-nuitka-win]
 cmd = "python -m nuitka --project-name=nexus-ai main.py && iscc nexus_ai/installer/build_scripts/setup.iss"
-description = "Skompiluj .exe + stwórz instalator Windows"
-platforms = ["win-64"]
+description = "Skompiluj .exe + stwórz instalator Windows (tylko win-64)"
 
 # ── Task caching: build-rust-release ────────────────────────────────────
 [feature.dev.tasks.build-rust-release]

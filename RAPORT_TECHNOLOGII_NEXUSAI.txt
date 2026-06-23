@@ -78,6 +78,7 @@
   8.  Nuitka >=1.8                        [A]  — Kompilacja Python → samodzielny .exe
   9.  Rust (język) >=1.78                 [A]  — Język dla krytycznych modułów (toolchain: 1.96.0)
   10. mimalloc >=2.1.0 (Microsoft)        [A]  — Alokator pamięci (LD_PRELOAD, tryb secure w Rust)
+ 11. Conda-Forge (kanał)                 [Z]  — Kanał pakietów systemowych
 
 ────────────────────────────────────────────────────────────────────────────────
  2.2 API / SERWER ASGI
@@ -463,7 +464,7 @@
   253. pre-commit >=4.6.0                [D]  — Hooki git (przed commit)
 
 ────────────────────────────────────────────────────────────────────────────────
- 2.24 ZALEŻNOŚCI SYSTEMOWE (przez pixi)
+ 2.24 ZALEŻNOŚCI SYSTEMOWE (conda-forge przez pixi)
 ────────────────────────────────────────────────────────────────────────────────
 
   254. python = 3.13.*_cp313t            [A]  — Free-threaded Python 3.13t
