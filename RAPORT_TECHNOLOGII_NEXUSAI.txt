@@ -146,15 +146,9 @@
 ────────────────────────────────────────────────────────────────────────────────
 
   ── Moduł własny nexus-crypto (Rust + PyO3) ───────────────────────────────────
-  42. nexus-crypto (własny)              [A]  — AEAD (ChaCha20Poly1305), Argon2id, SHA-256
-  43. chacha20poly1305 (Rust crate)      [A]  — Szyfrowanie AEAD
-  44. argon2 (Rust crate)                [A]  — Hashowanie haseł (Argon2id)
-  45. sha2 (Rust crate)                  [A]  — SHA-256
-  46. blake2 (Rust crate)                [A]  — BLAKE2 hashing
-  47. hmac (Rust crate)                  [A]  — HMAC
-  48. rand (Rust crate)                  [A]  — Liczby losowe (kryptograficzne)
-  49. zeroize (Rust crate)               [A]  — Zerowanie pamięci wrażliwych danych
-  50. jsonwebtoken (Rust crate)          [A]  — JWT w Rust
+  42. nexus-crypto (własny)              [A]  — Własny moduł kryptograficzny (Rust+PyO3).
+       Zawiera wewnętrznie: AEAD (ChaCha20Poly1305), Argon2id, SHA-256, BLAKE2, HMAC,
+       kryptograficzne RNG (OsRng), zeroizację pamięci, JWT (jsonwebtoken crate)
 
   ── Wbudowane w Litestar ──────────────────────────────────────────────────────
   51. Litestar JWT                       [A]  — JWT authentication (wbudowany)
@@ -163,7 +157,7 @@
   54. Litestar Rate Limiting             [A]  — Rate limiting (wbudowany)
 
   ── Pozostałe ─────────────────────────────────────────────────────────────────
-  55. cryptography (v48.0.0)             [Z]  — Biblioteka kryptograficzna (transitive dep)
+  55. cryptography (v48.0.0)             [Z]  — TYLKO KSeF: RSA/X.509 (transitive dep, niezbędne dla Krajowego Systemu e-Faktur)
   56. SQLCipher                          [A]  — Szyfrowanie bazy SQLite
 
 ────────────────────────────────────────────────────────────────────────────────
@@ -482,20 +476,13 @@
   ── nexus-crypto (nexus_ai/rust/Cargo.toml) ───────────────────────────────────
   260. pyo3 (v0.22, ABI3, extension-module) [A]  — Python bindings
   261. pyo3-log (v0.11)                   [Z]  — Logowanie PyO3
-  262. chacha20poly1305 (v0.10)           [A]  — Szyfrowanie AEAD
-  263. argon2 (v0.5)                      [A]  — Hashowanie haseł
-  264. sha2 (v0.10)                       [A]  — SHA-256
-  265. blake2 (v0.10)                     [A]  — BLAKE2 hashing
-  266. hmac (v0.12)                       [A]  — HMAC
-  267. rand (v0.9)                        [A]  — Liczby losowe
-  268. zeroize (v1)                       [A]  — Zerowanie pamięci
-  269. hex (v0.4)                         [Z]  — Hex encoding
-  270. serde (v1, derive)                 [Z]  — Serializacja w Rust
-  271. serde_json (v1)                    [Z]  — JSON w Rust
-  272. base64 (v0.22)                     [Z]  — Base64
-  273. quick-xml (v0.36)                  [A]  — Szybki parser XML
-  274. uuid (v1, v4)                      [Z]  — UUID generation
-  275. jsonwebtoken (v9)                  [A]  — JWT
+  262-269. (8 wewnętrznych crate'ów nexus-crypto — szczegóły implementacyjne)
+  270. hex (v0.4)                         [Z]  — Hex encoding
+  271. serde (v1, derive)                 [Z]  — Serializacja w Rust
+  272. serde_json (v1)                    [Z]  — JSON w Rust
+  273. base64 (v0.22)                     [Z]  — Base64
+  274. quick-xml (v0.36)                  [A]  — Szybki parser XML
+  275. uuid (v1, v4)                      [Z]  — UUID generation
   276. chrono (v0.4)                      [Z]  — Data i czas
   277. rayon (v1.10)                      [A]  — Równoległość danych
   278. libc (v0.2)                        [Z]  — Bindings libc
@@ -640,7 +627,7 @@
   • rich               — Terminal UI (v15.0.0)
   • tqdm               — Progress bar (v4.68.1)
   • requests           — HTTP (v2.34.2)
-  • cryptography       — Kryptografia (v48.0.0)
+  • cryptography       — TYLKO KSeF: RSA/X.509 certyfikaty (v48.0.0)
   • attrs              — Klasy danych (v26.1.0)
 
 
@@ -649,7 +636,7 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ── Moduły Rust (PyO3) ───────────────────────────────────────────────────────
-  • nexus-crypto       [A]  — Kryptografia (AEAD, Argon2id, SHA-256, JWT, HMAC)
+  • nexus-crypto       [A]  — Kryptografia (AEAD, Argon2id, SHA-256, BLAKE2, HMAC, RNG, JWT, zeroizacja)
   • nexus-tax-engine   [A]  — Natywny silnik podatkowy (rust_decimal, pyo3)
 
   ── Moduły Python ─────────────────────────────────────────────────────────────
@@ -679,12 +666,12 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   ── Technologie per Status ────────────────────────────────────────────────────
-  TECHNOLOGIE AKTYWNE [A]:            ~208
+  TECHNOLOGIE AKTYWNE [A]:            ~200  (8 Rust crate'ów przeniesionych do wewn. dep. nexus-crypto)
   TECHNOLOGIE SZCZĄTKOWE [S]:          0
   ZALEŻNOŚCI POŚREDNIE [Z]:           ~65
   TECHNOLOGIE DEWELOPERSKIE [D]:      ~50
 
-  ŁĄCZNIE UNIKALNYCH TECHNOLOGII:     ~324
+  ŁĄCZNIE UNIKALNYCH TECHNOLOGII:     ~316
 
   ── Podział kodu ──────────────────────────────────────────────────────────────
   • Python (produkcja, nexus_ai/):   100 707 linii  (69.0%)

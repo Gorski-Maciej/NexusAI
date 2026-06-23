@@ -119,12 +119,12 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **Nexus-Crypto** (Rust + PyO3) — AEAD + Argon2id + SHA-256 | cryptography (częściowo) | ✅ | `nexus_ai/rust/src/lib.rs` |
+| **Nexus-Crypto** (Rust + PyO3) — AEAD (ChaCha20Poly1305), Argon2id, SHA-256, BLAKE2, HMAC, RNG, JWT, zeroizacja | cryptography (całkowicie) | ✅ | `nexus_ai/rust/src/lib.rs` |
 | **Litestar JWT** — tokeny (wbudowane) | pyjwt | ✅ | `nexus_ai/api/security.py` |
 | **Litestar CSRF** — ochrona (wbudowana) | — | ✅ | `nexus_ai/api/middleware.py` |
 | **Litestar CORS** — kontrola dostępu (wbudowana) | — | ✅ | `nexus_ai/api/app.py` |
 | **Litestar Rate Limiting** — limitowanie (wbudowane) | — | ✅ | `nexus_ai/api/rate_limit.py` |
-| **cryptography** (opcjonalnie) — RSA dla KSeF | — | ⚠️ Tylko KSeF | `nexus_ai/core/integrations/ksef/crypto.py` |
+| **cryptography** (opcjonalnie) — RSA/X.509 dla KSeF (jedyny uzasadniony wyjątek — niedostępne w nexus-crypto) | — | ⚠️ Tylko KSeF | `nexus_ai/core/integrations/ksef/crypto.py` |
 
 ### Punkt 9 — Finanse i waluty
 
@@ -220,7 +220,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | Kategoria | Stan |
 |---|---|
 | ✅ W pełni zaimplementowane | **~90-95** technologii |
-| ⚠️ Uzasadnione wyjątki (RSA dla KSeF) | **2** (`cryptography` — wymóg KSeF) |
+| ⚠️ Uzasadnione wyjątki (RSA/X.509 dla KSeF) | **1** (`cryptography` — wymóg KSeF, niedostępne w nexus-crypto) |
 | ❌ Brakujące technologie | **0** |
 
 ---
