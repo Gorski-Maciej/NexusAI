@@ -81,8 +81,27 @@ async def refresh_materialized_cashflow(...):
 
 ---
 
+## Commit
+
+```
+commit 611d88e
+refactor: remove custom resilience module, fully replaced by stamina
+
+9 files changed, 113 insertions(+), 120 deletions(-)
+```
+
+## Wyniki walidacji
+
+| Narzędzie | Status | Uwagi |
+|-----------|--------|-------|
+| **ruff** | ✅ Przechodzi | Tylko pre-existing issues (niezwiązane z tą zmianą) |
+| **mypy** | ⚠️ Pre-existing errors | 548 błędów w 100 plikach — wszystkie istniały przed zmianą |
+| **pytest** | ⚠️ Środowisko niedostępne | Projekt wymaga free-threaded Python 3.13t z pełnymi zależnościami |
+| **Test funkcjonalny** | ⚠️ Środowisko niedostępne | Wymaga uruchomienia aplikacji z NATS + TigerBeetle |
+
 ## Uwagi
 
 - Moduł `resilience.py` był już cienką nakładką na `stamina` (`stamina.retry_context`), więc zastąpienie było proste i bezpieczne.
 - Wszystkie pozostałe miejsca w projekcie (`currency_converter.py`, `forex_engine.py`, `tasks.py`) już używały `stamina` bezpośrednio.
 - Konfiguracja stamina w `config/base.toml` i `config/dev.toml` (sekcja `[stamina]`) pozostaje bez zmian — jest używana przez `AppConfig.stamina_*` pola.
+- **Rekomendacja:** Po skonfigurowaniu środowiska uruchomić `pixi run test` aby potwierdzić, że wszystkie testy przechodzą.
