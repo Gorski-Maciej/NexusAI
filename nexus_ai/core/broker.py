@@ -49,7 +49,7 @@ DEAD_LETTER_SUBJECT = "nexus.dlq.tasks"
 
 # ── Result Backend (SQLite albo Hybrid) ──────────────────────────────────
 # SUPERMOC: Taskiq przechowuje wyniki zadań
-# SUPERMOC: HybridResultBackend próbuje NATS Object Store, fallback do SQLite
+# SUPERMOC: HybridResultBackend próbuje wbudowany w NATS Object Store, fallback do SQLite
 # Włącz przez ustawienie NEXUS_NATS_URL lub NEXUS_USE_NATS_RESULT_BACKEND=true
 # Domyślnie: SqliteResultBackend (kompatybilność wsteczna)
 _sqlite_path = str(config.base_dir / "app_data" / "task_results.db")
@@ -61,7 +61,7 @@ if _use_nats and _nats_url:
         sqlite_path=_sqlite_path,
         nats_servers=[_nats_url],
     )
-    logger.info("[BROKER] HybridResultBackend active — NATS Object Store + SQLite fallback")
+    logger.info("[BROKER] HybridResultBackend active — wbudowany w NATS Object Store + SQLite fallback")
 else:
     _result_backend = SqliteResultBackend(db_path=_sqlite_path)
     if os.getenv("NEXUS_USE_NATS_RESULT_BACKEND", "") and not _nats_url:

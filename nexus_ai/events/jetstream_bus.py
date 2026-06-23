@@ -4,8 +4,8 @@ JetStreamEventBus — publish/subscribe domain events through NATS JetStream.
 SUPERMOCE NATS (FULL POWER):
   1. JetStream Event Bus — trwałe pub/sub z at-least-once delivery
   2. Reconnect z wykładniczym backoffem — max 5 prób, 1s-30s delay
-  3. NATS Object Store — przechowywanie PDF faktur i backupów w NATS
-  4. NATS Key-Value Store — cache konfiguracji i rule'ów przez NATS
+  3. Object Store (wbudowany w NATS) — przechowywanie PDF faktur i backupów przez NATS
+  4. Key-Value Store (wbudowany w NATS) — cache konfiguracji i rule'ów przez NATS
   5. JetStream Pull Consumer — durable pull subscriber z checkpointami
   6. Dead Letter Queue — automatyczne przekazywanie nieudanych wiadomości
   7. Stream monitoring — metryki dla każdego strumienia
@@ -16,8 +16,8 @@ Architektura:
   - Jeden JetStream Stream na typ agregatu (np. "nexus-invoice", "nexus-decision")
   - Każdy event ma subject: "{stream}.{event_type}" (np. "nexus-invoice.invoice.created")
   - Durable Pull Consumer dla projekcji z checkpointami
-  - Object Store dla plików (PDF faktur, backupów)
-  - Key-Value Store dla konfiguracji rozproszonej
+  - Object Store (wbudowany w NATS) dla plików (PDF faktur, backupów)
+  - Key-Value Store (wbudowany w NATS) dla konfiguracji rozproszonej
 """
 
 from __future__ import annotations
@@ -364,12 +364,10 @@ class JetStreamEventBus:
         except Exception as exc:
             logger.warning(
                 "[JETSTREAM] Failed to ensure stream %s: %s", stream_name, exc,
-            )
-
-    # ── NATS Key-Value Store ────────────────────────────────────────────
+            )    # ── Key-Value Store (wbudowany w NATS) ───────────────────────────────
 
     async def get_kv_store(self, bucket_name: str) -> Any | None:
-        """Pobierz lub utwórz NATS Key-Value Store bucket.
+        """Pobierz lub utwórz Key-Value Store bucket (wbudowany w NATS JetStream).
 
         SUPERMOC NATS: Key-Value Store wbudowany w NATS JetStream.
         SUPERMOC: Obsługa istniejących bucketów — próbuje create, fallback do get.
@@ -383,8 +381,7 @@ class JetStreamEventBus:
             bucket_name: Nazwa bucketa KV (np. "nexus-config", "nexus-rules").
 
         Returns:
-            Instancja KeyValue store lub None jeśli NATS niedostępny.
-        """
+            Instancja KeyValue store lub None jeśli NATS niedostępny."""
         if not await self._ensure_connected():
             return None
         if bucket_name in self._kv_stores:
@@ -408,12 +405,10 @@ class JetStreamEventBus:
                 "[JETSTREAM:KV] Failed to get bucket %s: %s",
                 bucket_name, exc,
             )
-            return None
-
-    # ── NATS Object Store ───────────────────────────────────────────────
+            return None    # ── Object Store (wbudowany w NATS) ──────────────────────────────────
 
     async def get_object_store(self, bucket_name: str) -> Any | None:
-        """Pobierz lub utwórz NATS Object Store bucket.
+        """Pobierz lub utwórz Object Store bucket (wbudowany w NATS JetStream).
 
         SUPERMOC NATS: Object Store wbudowany w NATS JetStream.
         SUPERMOC: Obsługa istniejących bucketów — próbuje create, fallback do get.
@@ -427,8 +422,7 @@ class JetStreamEventBus:
             bucket_name: Nazwa bucketa Object Store (np. "nexus-files", "nexus-backups").
 
         Returns:
-            Instancja ObjectStore lub None jeśli NATS niedostępny.
-        """
+            Instancja ObjectStore lub None jeśli NATS niedostępny."""
         if not await self._ensure_connected():
             return None
         if bucket_name in self._object_stores:

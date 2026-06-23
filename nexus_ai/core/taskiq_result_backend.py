@@ -208,10 +208,10 @@ class SqliteResultBackend(TaskiqResultBackend):
 
 @final
 class HybridResultBackend(TaskiqResultBackend):
-    """Hybrid result backend: próbuje NATS Object Store, fallback do SQLite.
+    """Hybrid result backend: próbuje wbudowanego w NATS Object Store, fallback do SQLite.
 
     SUPERMOC NATS:
-      - Wyniki zadań przechowywane w NATS Object Store (szybsze, rozproszone)
+      - Wyniki zadań przechowywane w Object Store (wbudowana funkcja NATS JetStream)
       - Automatyczny fallback do SQLite gdy NATS niedostępny
       - Dla środowisk z NATS: zero dodatkowej konfiguracji
       - Dla środowisk bez NATS: przezroczysty fallback
@@ -240,7 +240,7 @@ class HybridResultBackend(TaskiqResultBackend):
         self._obj_store: Any = None  # object store
 
     async def _ensure_nats(self) -> bool:
-        """Próbuje połączyć się z NATS Object Store."""
+        """Próbuje połączyć się z wbudowanym w NATS Object Store."""
         if self._obj_store is not None:
             try:
                 await self._nc.ping()
@@ -263,7 +263,8 @@ class HybridResultBackend(TaskiqResultBackend):
             return False
 
     async def set_result(self, task_id: str, result: TaskiqResult) -> None:
-        """Zapisz wynik — próbuje NATS Object Store, fallback do SQLite."""
+        """Zapisz wynik — próbuje wbudowany w NATS Object Store, fallback do SQLite."""
+
         try:
             if await self._ensure_nats():
                 data = json.dumps({
