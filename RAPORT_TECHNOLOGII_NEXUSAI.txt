@@ -174,19 +174,15 @@
 ────────────────────────────────────────────────────────────────────────────────
 
   62. xsdata >=24.0.0                    [A]  — XSD → Python code generation (KSeF)
-  63. lxml >=5.1.0                       [A]  — XML processing
+  63. lxml >=5.1.0                       [A]  — XML processing (wewnętrznie używa libxml2 i libxslt)
   64. Pillow >=10.0.0 (PIL)             [A]  — Przetwarzanie obrazów
   65. pypdfium2 >=4.0.0                 [A]  — PDF → image (PDFium engine, zastępuje PyMuPDF)
-  66. Tesseract >=5.3.0                  [A]  — Klasyczny OCR (systemowy)
-  67. Leptonica >=1.84.0                 [Z]  — Przetwarzanie obrazów dla Tesseract
-  68. OpenCV >=4.9.0 (libopencv)        [A]  — Preprocessing obrazów (systemowy)
-  69. PaddleOCR >=2.8.0                 [A]  — Silnik OCR (Baidu, deep learning)
-  70. PaddlePaddle >=3.0.0 (v3.2.2/3.3.1) [Z]  — Framework DL dla PaddleOCR
-  71. python-doctr >=0.9.0              [A]  — OCR (DBNet + PARSeq), zastąpił Surya
-  72. EasyOCR >=1.7.0                   [A]  — Silnik OCR (CNN + LSTM)
-  73. libxml2 >=2.12.0                   [Z]  — XML parser (systemowy, dla lxml)
-  74. libxslt >=1.1.39                   [Z]  — XSLT (dla lxml)
-  75. ocr_consensus (pipeline/)          [A]  — Własny silnik konsensusu 4-way OCR
+  66. Tesseract >=5.3.0                  [A]  — Klasyczny OCR (systemowy, wewnętrznie używa Leptonica)
+  67. OpenCV >=4.9.0 (libopencv)        [A]  — Preprocessing obrazów (systemowy)
+  68. PaddleOCR >=2.8.0                 [A]  — Silnik OCR (Baidu, deep learning, wewnętrznie używa PaddlePaddle)
+  69. python-doctr >=0.9.0              [A]  — OCR (DBNet + PARSeq), zastąpił Surya
+  70. EasyOCR >=1.7.0                   [A]  — Silnik OCR (CNN + LSTM)
+  71. ocr_consensus (pipeline/)          [A]  — Własny silnik konsensusu 4-way OCR
 
 ────────────────────────────────────────────────────────────────────────────────
  2.11 LOGOWANIE I OBSERWOWALNOŚĆ
@@ -204,8 +200,7 @@
 
   81. OpenTelemetry Exporter Prometheus  [A]  — Eksport metryk do Prometheus
   82. Granian Metrics                    [A]  — Metryki serwera (port 9090/9091)
-  83. py-spy >=0.3.0                     [D]  — Sampling profiler (Rust, narzut <1%)
-  84. psutil >=5.9.0                     [A]  — Monitorowanie procesów i systemu
+  83. psutil >=5.9.0                     [A]  — Monitorowanie procesów i systemu
 
 ────────────────────────────────────────────────────────────────────────────────
  2.13 CACHE
@@ -231,7 +226,6 @@
   94. Transformers (v4.53.3)            [Z]  — Transformers (przez huggingface-hub)
   95. tokenizers (v0.21.4)              [Z]  — Tokenizacja NLP
   96. safetensors (v0.7.0)              [Z]  — Safe tensors format
-  97. PaddlePaddle (v3.2.2/3.3.1)       [Z]  — Framework DL Baidu (dla PaddleOCR)
 
   ── Modele AI (GGUF) ──────────────────────────────────────────────────────────
   98. Council Alpha (LFM-1.2B) GGUF     [A]  — Klasyfikacja faktur
@@ -336,7 +330,7 @@
   165. CI workflow (ci.yml)              [D]  — Główny pipeline CI (hatch run ci)
   166. Hatch Matrix (3.13 + 3.13t)       [D]  — Testy macierzowe Python
   167. Performance Locust                 [D]  — Testy wydajności (Locust)
-  168. Profiling CI (py-spy)             [D]  — Profilowanie wydajności
+  168. Profiling CI                       [D]  — Profilowanie wydajności (z użyciem py-spy)
   169. OpenSSF Scorecard                 [D]  — Bezpieczeństwo repozytorium
   170. Dependabot                        [D]  — Automatyczne aktualizacje
   171. Stale Issue & PR Manager          [D]  — Zarządzanie nieaktywnymi zgłoszeniami
@@ -424,8 +418,7 @@
   227. crosshair >=0.1.0                 [D]  — SMT-driven property testing (Z3 solver)
   228. schemathesis >=3.0.0              [D]  — Fuzz testing API (OpenAPI)
   229. locust >=2.0.0                    [D]  — Testy wydajności (Python)
-  230. py-spy >=0.3.0                    [D]  — Profiler (testy wydajności)
-  231. unittest.mock                     [D]  — Mockowanie (standard library)
+  230. unittest.mock                     [D]  — Mockowanie (standard library)
   232. approx (Rust crate)               [D]  — Porównania zmiennoprzecinkowe (Rust tests)
   233. criterion (Rust crate)            [D]  — Benchmarki Rust (HTML reports)
 
@@ -453,15 +446,14 @@
 
   245. python = 3.13.*_cp313t            [A]  — Free-threaded Python 3.13t
   246. tesseract >=5.3.0                  [A]  — Silnik OCR
-  247. leptonica >=1.84.0                 [Z]  — Przetwarzanie obrazów Tesseract
-  248. libopencv >=4.9.0                  [A]  — OpenCV biblioteka systemowa
-  249. mimalloc >=2.1.0                  [A]  — Alokator pamięci
-  250. rust >=1.78.0 (v1.96.0)           [A]  — Rust toolchain
-  251. libxml2 >=2.12.0                   [Z]  — XML parser
-  252. libxslt >=1.1.39                   [Z]  — XSLT
+  247. libopencv >=4.9.0                  [A]  — OpenCV biblioteka systemowa
+  248. mimalloc >=2.1.0                  [A]  — Alokator pamięci
+  249. rust >=1.78.0 (v1.96.0)           [A]  — Rust toolchain
+  250. libxml2 >=2.12.0                   [Z]  — XML parser (transitive dep lxml)
+  251. libxslt >=1.1.39                   [Z]  — XSLT (transitive dep lxml)
   253. cmake >=3.28.0                    [D]  — Build tool (dla llama-cpp-python CUDA)
   254. pkg-config >=0.29.2               [Z]  — Wykrywanie bibliotek systemowych
-  255. CUDA Toolkit (v13.0.2)            [Z]  — NVIDIA CUDA (przez PyTorch/PaddlePaddle)
+  255. CUDA Toolkit (v13.0.2)            [Z]  — NVIDIA CUDA (przez PyTorch)
   256. nvidia-cuda-runtime (cu12)        [Z]  — CUDA runtime
   257. nvidia-cudnn (cu13)               [Z]  — NVIDIA cuDNN
   258. nvidia-nccl                        [Z]  — NVIDIA NCCL
@@ -603,8 +595,6 @@
   • crosshair          — SMT-driven testing
   • schemathesis       — Fuzz testing API
   • locust             — Load testing
-  • py-spy             — Profiler (v0.3.0+)
-
   ── DevOps ───────────────────────────────────────────────────────────────────
   • ruff               — Linter/Formatter (v0.15.16)
   • mypy               — Type checker (v2.1.0)
@@ -662,11 +652,11 @@
 
   ── Technologie per Status ────────────────────────────────────────────────────
   TECHNOLOGIE AKTYWNE [A]:            ~196  (po konsolidacji rust_decimal + forex_engine)
-  TECHNOLOGIE SZCZĄTKOWE [S]:          0
-  ZALEŻNOŚCI POŚREDNIE [Z]:           ~65
-  TECHNOLOGIE DEWELOPERSKIE [D]:      ~50
+  TECHNOLOGIE SZCZĄTKOWE [S]:          1  (nexus-forex — usunięty)
+  ZALEŻNOŚCI POŚREDNIE [Z]:           ~67
+  TECHNOLOGIE DEWELOPERSKIE [D]:      ~48
 
-  ŁĄCZNIE UNIKALNYCH TECHNOLOGII:     ~316
+  ŁĄCZNIE UNIKALNYCH TECHNOLOGII:     ~312
 
   ── Podział kodu ──────────────────────────────────────────────────────────────
   • Python (produkcja, nexus_ai/):   100 707 linii  (69.0%)

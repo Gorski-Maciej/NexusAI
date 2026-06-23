@@ -139,10 +139,10 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **lxml** — parser XML z walidacją XSD | — | ✅ | W `pixi.toml` |
+| **lxml** — parser XML z walidacją XSD (wewnętrznie używa libxml2 i libxslt) | — | ✅ | W `pixi.toml` |
 | **xsdata** — XSD → Python code generation | — | ✅ | `nexus_ai/core/integrations/ksef/xsd_bindings.py` |
-| **Tesseract OCR** — klasyczny OCR | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `TesseractEngine` |
-| **PaddleOCR** — deep learning OCR | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `PaddleOCREngine` |
+| **Tesseract OCR** — klasyczny OCR (wewnętrznie używa Leptonica) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `TesseractEngine` |
+| **PaddleOCR** — deep learning OCR (wewnętrznie używa PaddlePaddle) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `PaddleOCREngine` |
 | **docTR** (Python-docTR) — modułowy OCR (DBNet + PARSeq) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `DocTREngine` |
 | **Mechanizm Walidacji Krzyżowej** (3 silniki) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `decide_field_consensus()` |
 | **Pillow + OpenCV** — preprocessing obrazów | — | ✅ | W `pixi.toml` |
@@ -189,8 +189,6 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | **schemathesis** — fuzz testing API | — | ✅ | Dev dependency |
 | **locust** — testy wydajności w Pythonie | k6 | ✅ | Dev dependency |
 | **crosshair** — property-based testing (SMT) | hypothesis | ✅ | `pyproject.toml` → `[tool.crosshair]` |
-| **py-spy** — profiler w Rust | cProfile | ✅ | Dev dependency |
-
 ### Punkt 16 — Interfejs użytkownika (Desktop)
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
