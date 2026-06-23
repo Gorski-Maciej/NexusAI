@@ -113,7 +113,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **stamina** — retry + circuit breaker (async-native) | — (natywna implementacja) | ✅ | `nexus_ai/core/resilience.py` |
+| **stamina** — retry + circuit breaker (async-native) | — (własna implementacja usunięta, zastąpiona przez stamina) | ✅ | `@stamina.retry` w kodzie |
 
 ### Punkt 8 — Kryptografia i bezpieczeństwo
 

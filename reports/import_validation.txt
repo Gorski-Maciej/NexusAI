@@ -685,12 +685,6 @@ FAIL  nexus_ai.core.prompts
 import pendulum
 ModuleNotFoundError: No module named 'pendulum'
 
-FAIL  nexus_ai.core.resilience
-  Error: ModuleNotFoundError: No module named 'pendulum'
-  File "/data/data/com.termux/files/home/NexusAI/nexus_ai/core/secrets.py", line 6, in <module>
-import pendulum
-ModuleNotFoundError: No module named 'pendulum'
-
 FAIL  nexus_ai.core.saga
   Error: ModuleNotFoundError: No module named 'pendulum'
   File "/data/data/com.termux/files/home/NexusAI/nexus_ai/core/secrets.py", line 6, in <module>

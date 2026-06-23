@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import atexit
-
-import anyio
 import os
 import resource
 import time
+
+import anyio
 
 # ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
 try:
@@ -21,50 +21,43 @@ except ImportError:
         return _hashlib.sha256(data).hexdigest()
 
 
+# ── Legacy engine helper (kompatybilność wsteczna) — DEPRECATED ────────────
+# UWAGA: Nowe zadania używają TaskiqDepends(get_db_session) zamiast _make_engine.
+# Ta funkcja pozostaje dla kompatybilności — używa DI engine cache.
+import warnings
 from pathlib import Path
 from typing import Any
 
 import httpx
 import pendulum
 import stamina
-from sqlmodel import text
+from sqlmodel import Session, text
 from sqlmodel import text as sql_text
-from sqlmodel import Session
 from structlog import get_logger
-from taskiq import Kicker
-from taskiq import TaskiqDepends
-from nexus_ai.core.broker import broker
+from taskiq import Kicker, TaskiqDepends
+
 from nexus_ai.api.cache import clear_cache_async
+from nexus_ai.core.broker import broker
 from nexus_ai.core.config import AppConfig
-from nexus_ai.core.di import get_db_session, get_config, get_duckdb_manager, get_engine
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_dumps_bytes, msgspec_loads
-from nexus_ai.core.resilience import async_retry
-from nexus_ai.db.analytics import DuckDBManager
-from nexus_ai.db.database import create_oltp_engine, create_session_factory
-from nexus_ai.pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
-from nexus_ai.services.accounting import AccountingService
 from nexus_ai.core.decision_engine import (
     DecisionEngine,
     DecisionVerdict,
     classify_invoice,
-    calculate_trust_score,
 )
+from nexus_ai.core.di import get_config, get_db_session, get_duckdb_manager, get_engine
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+from nexus_ai.db.analytics import DuckDBManager
+from nexus_ai.db.database import create_oltp_engine, create_session_factory
+from nexus_ai.pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
+from nexus_ai.services.accounting import AccountingService
 from nexus_ai.services.currency_converter import (
     Money,  # Nexus-Money (msgspec.Struct, zastępuje py-moneyed)
 )
-from nexus_ai.services.decision_logger import DecisionLogger
 from nexus_ai.services.finops_meter import estimate_runtime_cost
 from nexus_ai.services.log_pii_monitor import notify_dpo, scan_logs_for_pii
 from nexus_ai.services.migration_sanity import verify_migration_integrity, verify_schema_drift
 from nexus_ai.services.telemetry import flush_fallback_spans
 from nexus_ai.tax.exceptions import NoMatchingRuleError
-
-
-# ── Legacy engine helper (kompatybilność wsteczna) — DEPRECATED ────────────
-# UWAGA: Nowe zadania używają TaskiqDepends(get_db_session) zamiast _make_engine.
-# Ta funkcja pozostaje dla kompatybilności — używa DI engine cache.
-
-import warnings
 
 
 def _make_engine(config: AppConfig | None = None):
@@ -830,7 +823,7 @@ async def process_large_attachment(attachment_id: str, payload: dict | None = No
     labels={"service": "api", "operation": "analytics", "criticality": "medium", "schedule": "hourly"},
     timeout=120.0,
 )
-@async_retry(max_retries=3, base_delay=1.0, max_delay=8.0)
+@stamina.retry(on=Exception, attempts=3)
 async def refresh_materialized_cashflow(
     duckdb: DuckDBManager = TaskiqDepends(get_duckdb_manager),
 ) -> None:

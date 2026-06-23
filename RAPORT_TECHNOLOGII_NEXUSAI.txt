@@ -140,7 +140,6 @@
 ────────────────────────────────────────────────────────────────────────────────
 
   40. stamina >=0.1.0                    [A]  — Retry + Circuit Breaker (async-native)
-  41. własny resilience (core/resilience.py) [A]  — Własna warstwa odporności
 
 ────────────────────────────────────────────────────────────────────────────────
  2.8 KRPYPTOGRAFIA I BEZPIECZEŃSTWO

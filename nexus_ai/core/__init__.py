@@ -71,9 +71,6 @@ if not _NUITKA_COMPILED:
     # core.crypto — Vault (uses nexus-crypto now, always available)
     from nexus_ai.core.crypto import Vault  # noqa: E402
 
-    # core.resilience — async_retry (uses stamina now)
-    from nexus_ai.core.resilience import async_retry  # noqa: E402
-
     # core.secrets (optional)
     _, [SecretsManager] = _safe_import("core.secrets", ["SecretsManager"])  # noqa: E402
 
@@ -132,8 +129,6 @@ else:
         stats_as_dict,
     )
     from nexus_ai.core.crypto import Vault  # noqa: E402
-    from nexus_ai.core.resilience import async_retry  # noqa: E402
-
     SecretsManager = None
     SystemMonitor = None
     PromptTemplate = None
@@ -154,7 +149,6 @@ __all__ = [
     "BrokerConnectionError",
     "VectorDBError",
     "Vault",
-    "async_retry",
     "StorageProvider",
     "LocalStorageProvider",
     "NexusEvent",

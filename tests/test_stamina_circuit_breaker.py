@@ -21,12 +21,10 @@ class TestStaminaRetryError:
     """Faza 1.3: stamina.RetryingError zamiast RuntimeError."""
 
     async def test_async_retry_raises_stamina_error(self) -> None:
-        """async_retry powinien rzucać stamina.RetryingError po wyczerpaniu prób."""
-        from nexus_ai.core.resilience import async_retry
-
+        """@stamina.retry powinien rzucać stamina.RetryingError po wyczerpaniu prób."""
         call_count = 0
 
-        @async_retry(on=(ValueError,), attempts=2, timeout=5.0)
+        @stamina.retry(on=(ValueError,), attempts=2, timeout=5.0)
         async def failing_func() -> str:
             nonlocal call_count
             call_count += 1
@@ -38,12 +36,10 @@ class TestStaminaRetryError:
         assert call_count == 2, "Powinny być 2 próby"
 
     async def test_async_retry_success_on_second_try(self) -> None:
-        """async_retry powinien zwrócić wynik gdy funkcja w końcu zadziała."""
-        from nexus_ai.core.resilience import async_retry
-
+        """@stamina.retry powinien zwrócić wynik gdy funkcja w końcu zadziała."""
         call_count = 0
 
-        @async_retry(on=(ValueError,), attempts=3, timeout=5.0)
+        @stamina.retry(on=(ValueError,), attempts=3, timeout=5.0)
         async def eventually_succeeds() -> str:
             nonlocal call_count
             call_count += 1
@@ -60,12 +56,10 @@ class TestStaminaCircuitBreaker:
     """Faza 1.2: circuit_breaker=True we wszystkich retry_context."""
 
     async def test_circuit_breaker_param_passed(self) -> None:
-        """Sprawdza że circuit_breaker=True jest przekazywany do stamina.retry_context."""
-        from nexus_ai.core.resilience import async_retry
-
+        """Sprawdza że stamina.retry z circuit_breaker=True działa poprawnie."""
         call_count = 0
 
-        @async_retry(on=(ValueError,), attempts=2, timeout=5.0, circuit_breaker=True)
+        @stamina.retry(on=(ValueError,), attempts=2, timeout=5.0, circuit_breaker=True)
         async def cb_func() -> str:
             nonlocal call_count
             call_count += 1
