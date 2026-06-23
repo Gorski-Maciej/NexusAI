@@ -38,7 +38,7 @@ from litestar import Controller, get, post
 from litestar.connection import Request
 from litestar.exceptions import NotAuthorizedException, ValidationException
 from litestar.response import Response
-from sqlalchemy import text
+from sqlmodel import text
 from sqlalchemy.ext.asyncio import AsyncEngine
 from structlog import get_logger
 

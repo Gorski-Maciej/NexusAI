@@ -5,7 +5,7 @@ from pathlib import Path
 
 from litestar import Controller, get
 from litestar.connection import Request
-from sqlalchemy import text
+from sqlmodel import text
 
 from nexus_ai.api.dto import KoreClosureDTO, TAG_AUDIT
 from nexus_ai.api.rbac import owner_only_guard

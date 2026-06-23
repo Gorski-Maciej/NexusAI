@@ -15,8 +15,8 @@ from litestar.connection import Request
 from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import ClientException
-from sqlalchemy import text
-from sqlalchemy.orm import Session
+from sqlmodel import text
+from sqlmodel import Session
 
 from nexus_ai.api.background_tasks import emit_invoice_created_bg
 from nexus_ai.api.cache import clear_cache_async

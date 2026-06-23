@@ -15,7 +15,7 @@ Verifies that seed_data.py correctly loads demo data into the database:
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 
 import pytest
-from sqlalchemy import text
+from sqlmodel import text
 
 
 @pytest.mark.integration

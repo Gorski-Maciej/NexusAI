@@ -27,7 +27,7 @@ from litestar import Controller, delete, get, post
 from litestar.connection import Request
 from litestar.exceptions import NotFoundException
 from litestar.response import Response
-from sqlalchemy import func, select, text
+from sqlmodel import func, select, text
 from structlog import get_logger
 
 from nexus_ai.db.models import OutboxEvent, OutboxStatus

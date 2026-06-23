@@ -174,7 +174,7 @@ class AutopilotController(Controller):
         updates invoice status to APPROVED, and sends notification.
         """
         try:
-            from sqlalchemy import text
+            from sqlmodel import text
 
             from db.analytics import DuckDBManager
             from db.database import create_oltp_engine, create_session_factory
@@ -196,7 +196,7 @@ class AutopilotController(Controller):
             try:
                 async with session_factory() as session:
                     # Najpierw pobierz aktualną wersję
-                    from sqlalchemy import select as sa_select
+                    from sqlmodel import select as sa_select
 
                     from nexus_ai.db.models import Invoice
 
@@ -269,7 +269,7 @@ class AutopilotController(Controller):
         updates invoice status to REJECTED, and sends notification.
         """
         try:
-            from sqlalchemy import text
+            from sqlmodel import text
 
             from db.analytics import DuckDBManager
             from db.database import create_oltp_engine, create_session_factory
@@ -291,7 +291,7 @@ class AutopilotController(Controller):
             try:
                 async with session_factory() as session:
                     # Najpierw pobierz aktualną wersję
-                    from sqlalchemy import select as sa_select
+                    from sqlmodel import select as sa_select
 
                     from nexus_ai.db.models import Invoice
 

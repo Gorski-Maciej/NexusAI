@@ -54,7 +54,7 @@ class OutboxOpsController(Controller):
                 "dead_letter": 2
             }
         """
-        from sqlalchemy import func, select, text
+        from sqlmodel import func, select, text
 
         from core.config import AppConfig
         from db.database import create_oltp_engine, create_session_factory

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import final
 
-from sqlalchemy import and_, select
-from sqlalchemy.orm import Session
+from sqlmodel import and_, select
+from sqlmodel import Session
 
 from nexus_ai.db.models import Invoice
 from nexus_ai.services.currency_converter import Money

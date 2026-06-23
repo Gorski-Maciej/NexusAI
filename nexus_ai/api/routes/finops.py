@@ -4,7 +4,7 @@ import os
 import resource
 
 from litestar import Controller, get
-from sqlalchemy import text
+from sqlmodel import text
 
 from nexus_ai.api.dto import FinOpsDTO, TAG_FINANCE
 from nexus_ai.api.rbac import owner_only_guard

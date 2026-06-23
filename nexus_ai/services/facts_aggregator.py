@@ -37,8 +37,8 @@ from nexus_ai.services.decision_logger import (
     TrustTrend,
 )
 
-from sqlalchemy import select, text
-from sqlalchemy.orm import Session
+from sqlmodel import select, text
+from sqlmodel import Session
 
 from nexus_ai.core.cache import get_cache
 from nexus_ai.core.embeddings import EmbeddingService, get_embedding_service

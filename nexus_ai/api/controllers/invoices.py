@@ -10,8 +10,8 @@ from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import ClientException
 from litestar.status_codes import HTTP_201_CREATED
-from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlmodel import select
+from sqlmodel import Session
 
 from nexus_ai.api.dto import (
     InvoiceCreateDTO,

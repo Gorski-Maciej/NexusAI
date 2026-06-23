@@ -36,7 +36,7 @@ DEFAULT_INTERVAL_MINUTES = 60
 
 async def count_unresolved_dlq(db_engine: Any) -> int:
     """Count unresolved (non-resolved) tasks in the DLQ / failed_tasks table."""
-    from sqlalchemy import text
+    from sqlmodel import text
 
     try:
         async with db_engine.connect() as conn:
@@ -49,7 +49,7 @@ async def count_unresolved_dlq(db_engine: Any) -> int:
 
 async def fetch_recent_unresolved_dlq(db_engine: Any, limit: int = 10) -> list[dict[str, Any]]:
     """Fetch the most recent unresolved DLQ items for detailed notification."""
-    from sqlalchemy import text
+    from sqlmodel import text
 
     try:
         async with db_engine.connect() as conn:

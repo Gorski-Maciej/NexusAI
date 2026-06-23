@@ -27,9 +27,9 @@ from typing import Any
 import httpx
 import pendulum
 import stamina
-from sqlalchemy import text
-from sqlalchemy import text as sql_text
-from sqlalchemy.orm import Session
+from sqlmodel import text
+from sqlmodel import text as sql_text
+from sqlmodel import Session
 from structlog import get_logger
 from taskiq import Kicker
 from taskiq import TaskiqDepends
@@ -1698,7 +1698,7 @@ async def weekly_nip_reverification_task(
     accounting = AccountingService()
 
     # Pobierz wszystkich kontrahentów
-    from sqlalchemy import select as sa_select
+    from sqlmodel import select as sa_select
 
     from nexus_ai.db.models import Contractor
 

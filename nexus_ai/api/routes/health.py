@@ -16,8 +16,8 @@ from typing import Any
 
 import pendulum
 from litestar import Controller, get
-from sqlalchemy import func, select, text
-from sqlalchemy.orm import Session
+from sqlmodel import func, select, text
+from sqlmodel import Session
 
 from nexus_ai.api.dto import GenericDictDTO, HealthResponseDTO, TAG_HEALTH
 from nexus_ai.db.models import OutboxEvent, OutboxStatus

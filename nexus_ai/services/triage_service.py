@@ -4,8 +4,8 @@ from msgspec import Struct
 from decimal import Decimal
 from typing import Any
 
-from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlmodel import select
+from sqlmodel import Session
 
 from nexus_ai.db.models import Invoice, InvoiceStatus
 

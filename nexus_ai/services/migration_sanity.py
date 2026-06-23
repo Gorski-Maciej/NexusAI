@@ -4,7 +4,8 @@ from pathlib import Path
 
 from nexus_crypto import Sha256Hasher
 
-from sqlalchemy import Engine, text
+from sqlalchemy import Engine
+from sqlmodel import text
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 

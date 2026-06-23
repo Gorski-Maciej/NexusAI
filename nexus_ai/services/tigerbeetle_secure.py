@@ -13,7 +13,7 @@ from typing import Any, final
 
 import tigerbeetle as tb
 from msgspec import Struct
-from sqlalchemy.orm import Session
+from sqlmodel import Session
 
 from nexus_ai.api.rbac import NexusRole, RoleContext
 from nexus_ai.core.msgspec_utils import msgspec_dumps

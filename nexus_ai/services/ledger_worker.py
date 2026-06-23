@@ -13,8 +13,8 @@ import uuid
 from typing import Protocol, final
 
 import pendulum
-from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlmodel import select
+from sqlmodel import Session
 
 from nexus_ai.services.tigerbeetle.client import (
     LEDGER,

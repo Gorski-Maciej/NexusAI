@@ -5,7 +5,7 @@ from typing import Any, final
 import anyio
 
 from sqlalchemy import event
-from sqlalchemy.orm import Session
+from sqlmodel import Session
 from structlog import get_logger
 
 from nexus_ai.core.broker import broker

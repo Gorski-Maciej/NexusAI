@@ -30,7 +30,7 @@ from typing import Any
 
 import anyio
 import pendulum
-from sqlalchemy import text
+from sqlmodel import text
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 

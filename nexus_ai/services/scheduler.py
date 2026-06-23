@@ -16,7 +16,8 @@ import enum
 from typing import Any, Callable, final
 
 import pendulum
-from sqlalchemy import Engine, text
+from sqlalchemy import Engine
+from sqlmodel import text
 from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads

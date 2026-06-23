@@ -572,7 +572,7 @@ async def seed_rbac(
     Returns:
         Dict with counts: roles, permissions, role_permissions, admin_user.
     """
-    from sqlalchemy import text
+    from sqlmodel import text
 
     from nexus_ai.api.auth_service import hash_password
 
@@ -712,7 +712,7 @@ async def seed_users(db_session: Any, config: Any) -> dict:
     with must_change_password=True to force password change on first login.
     Returns dict with count and the admin password (if created).
     """
-    from sqlalchemy import text
+    from sqlmodel import text
 
     from nexus_ai.api.auth_service import hash_password
 
@@ -824,7 +824,7 @@ async def seed_users(db_session: Any, config: Any) -> dict:
 
 async def seed_contractors(db_session: Any) -> int:
     """Insert seed contractors."""
-    from sqlalchemy import text
+    from sqlmodel import text
 
     count = 0
     for contractor in SEED_CONTRACTORS:
@@ -862,7 +862,7 @@ async def seed_contractors(db_session: Any) -> int:
 
 async def seed_invoices(db_session: Any, config: Any) -> int:
     """Insert seed invoices and corresponding outbox events."""
-    from sqlalchemy import text
+    from sqlmodel import text
 
     count = 0
     for invoice in SEED_INVOICES:
@@ -978,7 +978,7 @@ async def seed_dictionaries(db_session: Any) -> dict[str, int]:
     """Insert dictionary data (VAT rates, currencies, invoice statuses, tax forms).
     Uses ON CONFLICT DO NOTHING for idempotency.
     """
-    from sqlalchemy import text
+    from sqlmodel import text
 
     counts: dict[str, int] = {}
 
@@ -1119,7 +1119,7 @@ async def seed_dictionaries(db_session: Any) -> dict[str, int]:
 
 async def seed_companies(db_session: Any) -> int:
     """Insert seed company profiles."""
-    from sqlalchemy import text
+    from sqlmodel import text
 
     count = 0
     for company in SEED_COMPANIES:
@@ -1168,7 +1168,7 @@ async def seed_companies(db_session: Any) -> int:
 
 async def seed_tax_policies(db_session: Any) -> int:
     """Insert seed tax policies for each company."""
-    from sqlalchemy import text
+    from sqlmodel import text
 
     # Fetch company IDs
     async with db_session.begin():
@@ -1216,7 +1216,7 @@ async def seed_tax_policies(db_session: Any) -> int:
 
 async def seed_financial_periods(db_session: Any) -> int:
     """Insert seed financial periods for each company."""
-    from sqlalchemy import text
+    from sqlmodel import text
 
     async with db_session.begin():
         result = await db_session.execute(text("SELECT id FROM company_profiles"))
@@ -1255,7 +1255,7 @@ async def seed_financial_periods(db_session: Any) -> int:
 
 async def seed_fx_rates(db_session: Any) -> int:
     """Insert sample FX rates."""
-    from sqlalchemy import text
+    from sqlmodel import text
 
     count = 0
     effective_at = pendulum.now("UTC").isoformat()
@@ -1286,7 +1286,7 @@ async def seed_fx_rates(db_session: Any) -> int:
 
 async def seed_task_status(db_session: Any) -> int:
     """Insert demo task status entries."""
-    from sqlalchemy import text
+    from sqlmodel import text
 
     tasks = [
         (

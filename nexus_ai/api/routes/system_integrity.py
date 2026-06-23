@@ -3,7 +3,7 @@ from __future__ import annotations
 from litestar import Controller, get, post
 from litestar.connection import Request
 from litestar.exceptions import ClientException
-from sqlalchemy import text
+from sqlmodel import text
 
 from nexus_ai.api.dto import (
     MigrationIntegrityDTO,

@@ -8,7 +8,7 @@ from msgspec import Struct
 import pendulum
 from litestar.connection import ASGIConnection
 from litestar.security.jwt import JWTAuth, JWTCookieAuth, Token
-from sqlalchemy import text
+from sqlmodel import text
 from structlog import get_logger
 
 logger = get_logger("nexus.api.security")

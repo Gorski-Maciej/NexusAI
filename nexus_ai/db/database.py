@@ -20,9 +20,10 @@ from collections.abc import Generator
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import create_engine, event, text
-from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker, with_loader_criteria
+from sqlalchemy import event
+from sqlalchemy.orm import DeclarativeBase, sessionmaker, with_loader_criteria
 from sqlalchemy.pool import NullPool, QueuePool
+from sqlmodel import Session, create_engine, text
 from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig

@@ -9,7 +9,7 @@ from litestar.background_tasks import BackgroundTask
 from litestar.connection import Request
 from litestar.exceptions import ClientException
 from litestar.response import Response as LitestarResponse
-from sqlalchemy.orm import Session
+from sqlmodel import Session
 from structlog import get_logger
 
 from nexus_ai.api.dto import (

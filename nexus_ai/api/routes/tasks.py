@@ -3,7 +3,7 @@ from __future__ import annotations
 import pendulum
 from litestar import Controller, get, post
 from litestar.connection import Request
-from sqlalchemy import text
+from sqlmodel import text
 from structlog import get_logger
 
 from nexus_ai.api.dto import TAG_TASKS, TaskCancelResponseDTO, TaskStatusDTO

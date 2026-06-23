@@ -14,7 +14,7 @@ from msgspec import Struct, field
 from typing import Any, final
 
 import pendulum
-from sqlalchemy import select
+from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -22,7 +22,7 @@ from nexus_ai.core.nats_utils import NatsErrors, get_connection, safe_close
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 from structlog import get_logger
-from sqlalchemy import text
+from sqlmodel import text
 
 logger = get_logger("nexus.reconciliation")
 from nexus_ai.services.tigerbeetle.client import (

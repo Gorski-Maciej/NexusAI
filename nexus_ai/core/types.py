@@ -1,10 +1,14 @@
-""""
-Pydantic v2 utility types — RootModel, TypeAdapter, Generic paginated response.
+"""
+NexusAI core types — msgspec.Struct based value objects and paginated response.
 
-SUPERMOCE Pydantic v2:
-- RootModel: opakowuje pojedynczy typ w model Pydantic (walidacja + serializacja)
-- TypeAdapter: ad-hoc walidacja dla typów bez pełnego modelu
-- Generic: type-safe paginowane odpowiedzi API
+Replaces pydantic RootModel/TypeAdapter with msgspec.Struct for maximum
+performance and zero pydantic dependency in the API layer.
+
+SUPERMOCE msgspec:
+- Struct z typami → zero narzutu walidacji
+- Generics przez Generic[T] na Struct
+- Własne metody validate() zamiast pydantic validators
+- __post_init__ dla automatycznej walidacji po utworzeniu
 """
 
 from __future__ import annotations
@@ -12,118 +16,168 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any, Generic, TypeVar
 
-from pydantic import RootModel, TypeAdapter, GetCoreSchemaHandler
-from pydantic_core import CoreSchema, core_schema
-
-# ── RootModel — typy dla podstawowych wartości ──────────────────────────
+from msgspec import Struct
 
 
-class MoneyRO(RootModel[Decimal]):
-    """Money value — auto-rounds to 2 decimal places, walidacja przy tworzeniu.
+# ── Value Objects ──────────────────────────────────────────────────
+
+
+class Money(Struct, frozen=True):
+    """Money value — auto-rounds to 2 decimal places.
 
     Użycie:
-        price = MoneyRO(Decimal("123.456"))  # → MoneyRO(root=Decimal('123.46'))
-        price.root  # → Decimal('123.46')
+        price = Money(amount=Decimal("123.456"))  # → Money(amount=Decimal('123.46'))
+        price.amount  # → Decimal('123.46')
 
-    SUPERMOC: RootModel daje full Pydantic walidację dla pojedyńczej wartości.
+    Zamiast RootModel[Decimal]: msgspec.Struct z jednym polem.
     """
 
+    amount: Decimal
+
+    def __post_init__(self) -> None:
+        """Auto-round to 2 decimal places after creation."""
+        if self.amount is not None:
+            object.__setattr__(self, "amount", self.amount.quantize(Decimal("0.01")))
+
     @classmethod
-    def validate(cls, value: str | float | Decimal) -> MoneyRO:
-        """Utwórz MoneyRO z autmatycznym round do 2 miejsc.
+    def validate(cls, value: str | float | Decimal) -> Money:
+        """Utwórz Money z autmatycznym round do 2 miejsc.
 
         Args:
             value: Wartość pieniężna (str, float, lub Decimal).
 
         Returns:
-            Zwalidowany MoneyRO.
+            Zwalidowany Money.
         """
-        return cls(Decimal(str(value)).quantize(Decimal("0.01")))
+        return cls(amount=Decimal(str(value)).quantize(Decimal("0.01")))
 
     def __str__(self) -> str:
-        return f"{self.root:.2f}"
+        return f"{self.amount:.2f}"
 
 
-class OperationIdRO(RootModel[str]):
-    """UUID-based operation identifier — walidacja formatu.
+class OperationId(Struct, frozen=True):
+    """UUID-based operation identifier — walidacja długości.
 
-    Użycie:
-        op_id = OperationIdRO("abc123")
-        op_id.root  # → "abc123"
-
-    SUPERMOC: RootModel z walidacją dla identyfikatorów.
+    Zamiast RootModel[str]: msgspec.Struct z jednym polem.
     """
 
+    value: str
+
     @classmethod
-    def validate(cls, value: str) -> OperationIdRO:
-        """Utwórz OperationIdRO z walidacją długości.
+    def validate(cls, value: str) -> OperationId:
+        """Utwórz OperationId z walidacją długości.
 
         Args:
             value: Identyfikator operacji (UUID hex lub inny string).
 
         Returns:
-            Zwalidowany OperationIdRO.
+            Zwalidowany OperationId.
         """
         if not value or len(value) < 8:
             raise ValueError(f"OperationId must be at least 8 chars, got {len(value)}")
-        return cls(value)
+        return cls(value=value)
 
 
-class NipRO(RootModel[str]):
+class Nip(Struct, frozen=True):
     """NIP — 10-cyfrowy identyfikator z autmatycznym czyszczeniem.
 
-    Użycie:
-        nip = NipRO("123-456-32-18")  # → NipRO(root='1234563218')
-        nip.root  # → '1234563218'
+    Zamiast RootModel[str]: msgspec.Struct z jednym polem.
     """
 
+    value: str
+
     @classmethod
-    def validate(cls, value: str) -> NipRO:
-        """Utwórz NipRO z czyszczeniem i walidacją.
+    def validate(cls, value: str) -> Nip:
+        """Utwórz Nip z czyszczeniem i walidacją.
 
         Args:
             value: NIP (może zawierać myślniki/spacje).
 
         Returns:
-            Zwalidowany NipRO (10 cyfr).
+            Zwalidowany Nip (10 cyfr).
         """
         cleaned = value.replace("-", "").replace(" ", "")
         if not cleaned.isdigit() or len(cleaned) != 10:
             raise ValueError(f"NIP must be 10 digits, got {value!r}")
-        return cls(cleaned)
+        return cls(value=cleaned)
 
     def __str__(self) -> str:
-        return self.root
+        return self.value
 
 
-# ── TypeAdapter — ad-hoc walidacja dla list/dict/set ────────────────────
+# ── Type Adapters (functions instead of pydantic TypeAdapter) ──────
 
-# TypeAdapter dla listy Decimal
-MoneyListAdapter: TypeAdapter[list[Decimal]] = TypeAdapter(list[Decimal])
-"""Walidacja listy kwot: TypeAdapter(list[Decimal]).
 
-Użycie:
-    prices = MoneyListAdapter.validate_python(["10.50", "20.00", "invalid"])
-    # → ValidationError: Input should be a valid decimal
-"""
+def validate_money_list(values: list[str | float | Decimal]) -> list[Decimal]:
+    """Validate a list of money values.
 
-# TypeAdapter dla mapy string→int (np. licznik statusów)
-StatusCounterAdapter: TypeAdapter[dict[str, int]] = TypeAdapter(dict[str, int])
-"""Walidacja słownika string→int.
+    Replaces: TypeAdapter[list[Decimal]]
 
-Użycie:
-    counters = StatusCounterAdapter.validate_python({"NEW": 5, "APPROVED": 3})
-    # → {"NEW": 5, "APPROVED": 3}
-"""
+    Args:
+        values: List of money values as str, float, or Decimal.
 
-# TypeAdapter dla zbioru stringów (np. dozwolone role)
-RoleSetAdapter: TypeAdapter[set[str]] = TypeAdapter(set[str])
-"""Walidacja zbioru stringów.
+    Returns:
+        List of validated Decimal values.
 
-Użycie:
-    roles = RoleSetAdapter.validate_python(["admin", "worker", "admin"])
-    # → {"admin", "worker"}
-"""
+    Raises:
+        ValueError: If any value cannot be converted to Decimal.
+    """
+    result: list[Decimal] = []
+    for v in values:
+        try:
+            result.append(Decimal(str(v)).quantize(Decimal("0.01")))
+        except Exception as e:
+            raise ValueError(f"Invalid money value: {v!r}") from e
+    return result
+
+
+def validate_status_counter(values: dict[str, int]) -> dict[str, int]:
+    """Validate a status counter dict (string→int).
+
+    Replaces: TypeAdapter[dict[str, int]]
+
+    Args:
+        values: Dict of status→count.
+
+    Returns:
+        Validated dict.
+    """
+    for k, v in values.items():
+        if not isinstance(k, str):
+            raise ValueError(f"Status key must be string, got {type(k).__name__}")
+        if not isinstance(v, int) or v < 0:
+            raise ValueError(f"Status count must be non-negative int, got {v!r}")
+    return dict(values)
+
+
+def validate_role_set(values: list[str]) -> set[str]:
+    """Validate a set of role strings.
+
+    Replaces: TypeAdapter[set[str]]
+
+    Args:
+        values: List of role strings.
+
+    Returns:
+        Deduplicated set of role strings.
+    """
+    return set(str(v) for v in values)
+
+
+def validate_snapshot(values: dict[str, Any]) -> dict[str, Any]:
+    """Validate an EventStore snapshot dict.
+
+    Replaces: TypeAdapter[dict[str, Any]]
+
+    Args:
+        values: Snapshot dict.
+
+    Returns:
+        Validated dict.
+    """
+    if not isinstance(values, dict):
+        raise ValueError(f"Snapshot must be a dict, got {type(values).__name__}")
+    return dict(values)
 
 
 # ── Generic Paginated Response ─────────────────────────────────────────
@@ -131,24 +185,20 @@ Użycie:
 T = TypeVar("T")
 
 
-class PaginatedResponse(RootModel[list[T]], Generic[T]):
+class PaginatedResponse(Struct, Generic[T]):
     """Generic paginated API response z total/page/page_size.
 
-    SUPERMOC Pydantic: Generic + RootModel w jednym.
+    Replaces: RootModel[list[T]] with Pydantic Generic.
 
     Użycie:
-        class UserResponse(BaseModel):
-            id: str
-            name: str
-
-        response = PaginatedResponse[UserResponse](
-            root=[UserResponse(id="1", name="Alice")],
-            total=1,
+        response = PaginatedResponse[str](
+            root=["a", "b"],
+            total=10,
             page=1,
             page_size=20,
         )
-        # response.root → [UserResponse(id='1', name='Alice')]
-        # response.total → 1
+        # response.root → ["a", "b"]
+        # response.total → 10
     """
 
     root: list[T] = []
@@ -201,29 +251,25 @@ class PaginatedResponse(RootModel[list[T]], Generic[T]):
         return cls(root=items, total=total, page=page, page_size=page_size)
 
 
-# ── TypeAdapter dla paginowanych odpowiedzi ────────────────────────────
+# ── Backward compatibility aliases ─────────────────────────────────
 
-def paginated_adapter(item_type: type[T]) -> TypeAdapter[PaginatedResponse[T]]:
-    """Utwórz TypeAdapter dla PaginatedResponse[T] z konkretnym typem.
+# Keep old names for backward compatibility during migration
+# These will be removed in a future version
+MoneyRO = Money
+OperationIdRO = OperationId
+NipRO = Nip
 
-    SUPERMOC: TypeAdapter z Generic — pozwala na ad-hoc walidację
-    paginowanych odpowiedzi bez pełnego modelu.
+# For paginated_adapter, provide a function that works differently
+# (returns the class instead of a pydantic TypeAdapter)
+def paginated_adapter(item_type: type[T]) -> type[PaginatedResponse[T]]:
+    """Get PaginatedResponse class parameterized with item_type.
+
+    Replaces: TypeAdapter[PaginatedResponse[T]]
 
     Args:
         item_type: Typ elementu na liście.
 
     Returns:
-        TypeAdapter dla PaginatedResponse[item_type].
+        PaginatedResponse class for the given item type.
     """
-    return TypeAdapter(PaginatedResponse[item_type])  # type: ignore[valid-type]
-
-
-# ── TypeAdapter dla EventStore snapshotów ──────────────────────────────
-
-SnapshotAdapter: TypeAdapter[dict[str, Any]] = TypeAdapter(dict[str, Any])
-"""Walidacja snapshotów EventStore.
-
-Użycie:
-    snapshot = SnapshotAdapter.validate_json('{"version": 5, "state": {...}}')
-"""
-"
+    return PaginatedResponse[item_type]  # type: ignore[valid-type]

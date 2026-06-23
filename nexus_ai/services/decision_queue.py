@@ -20,7 +20,7 @@ import enum
 from typing import Any, final
 
 import pendulum
-from sqlalchemy import text
+from sqlmodel import text
 from sqlalchemy.ext.asyncio import AsyncEngine
 from structlog import get_logger
 

@@ -15,5 +15,5 @@ def test_kore_closure_endpoint_exists() -> None:
     assert "kore_delivery_audit.py" in source
     assert "security_scan_summary.json" in source
     assert "runtime_counters" in source
-    assert "from sqlalchemy import text" in source
+    assert "from sqlmodel import text" in source
     assert "__import__(\"sqlalchemy\")" not in source

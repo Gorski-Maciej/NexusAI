@@ -1,7 +1,7 @@
 from typing import Any, TypeVar
 
-from sqlalchemy import select, text as sa_text
-from sqlalchemy.orm import Session
+from sqlmodel import select, text as sa_text
+from sqlmodel import Session
 
 from nexus_ai.db.database import Base
 

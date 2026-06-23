@@ -21,8 +21,8 @@ from typing import Any
 import msgspec
 import pendulum
 import psutil
-from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlmodel import select
+from sqlmodel import Session
 from taskiq import Context as TaskiqContext, TaskiqDepends, TaskiqEvents, Kicker
 from nexus_ai.core.di import get_db_session, get_config, get_engine, get_duckdb_manager
 

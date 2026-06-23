@@ -5,7 +5,7 @@ from typing import final
 from pathlib import Path
 
 import pendulum
-from sqlalchemy.orm import Session
+from sqlmodel import Session
 
 
 @final

@@ -40,8 +40,8 @@ def anyio_backend():
     przy zmianie domyślnego backendu w anyio.
     """
     return "asyncio"
-from sqlalchemy import text
-from sqlalchemy import create_engine
+from sqlmodel import text
+from sqlmodel import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 # Ensure Code/ is on sys.path
@@ -212,7 +212,7 @@ def db_session(db_session_factory):
 def sample_user(db_session: Session) -> dict:
     """Create a sample user and return its data."""
     from api.auth_service import hash_password
-    from sqlalchemy import text
+    from sqlmodel import text
 
     user_id = "test-user-001"
     username = "testuser"
@@ -243,7 +243,7 @@ def sample_user(db_session: Session) -> dict:
 @pytest.fixture
 def sample_contractor(db_session: Session) -> dict:
     """Create a sample contractor and return its data."""
-    from sqlalchemy import text
+    from sqlmodel import text
     import pendulum
     import uuid
 
@@ -275,7 +275,7 @@ def sample_contractor(db_session: Session) -> dict:
 @pytest.fixture
 def sample_invoice(db_session: Session, sample_contractor: dict) -> dict:
     """Create a sample invoice linked to a contractor."""
-    from sqlalchemy import text
+    from sqlmodel import text
     import pendulum
     import uuid
 

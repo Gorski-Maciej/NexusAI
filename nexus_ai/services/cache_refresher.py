@@ -14,7 +14,7 @@ import pendulum
 from typing import Any, final
 
 import anyio
-from sqlalchemy import text
+from sqlmodel import text
 from sqlalchemy.orm import Session, sessionmaker
 from structlog import get_logger
 

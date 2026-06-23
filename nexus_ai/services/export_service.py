@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import final
 
-from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlmodel import select
+from sqlmodel import Session
 
 from nexus_ai.db.models import Invoice
 

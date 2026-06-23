@@ -5,8 +5,8 @@ import sys
 import types
 from pathlib import Path
 
-from sqlalchemy import text
-from sqlalchemy import create_engine
+from sqlmodel import text
+from sqlmodel import create_engine
 
 
 def _load_cleanup_helper():

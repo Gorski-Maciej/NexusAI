@@ -17,9 +17,10 @@ from typing import Any
 
 import pendulum
 from pydantic import ConfigDict
-from sqlalchemy import JSON, Enum as SAEnum, text
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped
 from sqlalchemy.schema import Index
+from sqlmodel import JSON, text
 from sqlmodel import Field, SQLModel
 
 from nexus_ai.db.models import PendulumDateTime
