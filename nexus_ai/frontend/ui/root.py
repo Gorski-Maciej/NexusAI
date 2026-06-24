@@ -16,7 +16,7 @@ import flet as ft
 from structlog import get_logger
 
 from nexus_ai.frontend.api_client import NexusApiClient
-from nexus_ai.frontend.ui.ws_client import ProgressWebSocketClient
+from nexus_ai.frontend.ui.unix_progress import UnixProgressClient
 from nexus_ai.frontend.views.task_monitor import TaskMonitorPanel
 
 logger = get_logger("nexus.ui.root")
@@ -37,7 +37,7 @@ def NexusRootUI(page: ft.Page, process_manager=None):
     current_view = ft.use_state("dashboard")
     nav_index = ft.use_state(0)
     task_count = ft.use_state(0)
-    ws_client = ft.use_ref[ProgressWebSocketClient]()
+    unix_client = ft.use_ref[UnixProgressClient]()
 
     # SUPERMOC: ft.Ref dla kontrolek
     main_content = ft.use_ref[ft.Container]()
@@ -48,6 +48,12 @@ def NexusRootUI(page: ft.Page, process_manager=None):
     token = page.session.get("api_token") if hasattr(page, "session") else None
     base_url = f"http://127.0.0.1:{port}/api/v1" if port else "http://127.0.0.1:8000/api/v1"
     api = NexusApiClient(base_url=base_url, token=token)
+
+    # SUPERMOC: Uruchom klienta socket UNIX dla postępu zadań
+    if unix_client.current is None:
+        client = UnixProgressClient(page=page)
+        unix_client.current = client
+        page.run_task(client.start_async())
 
     # SUPERMOC: NavigationRail z NumberBadge
     nav_rail = ft.NavigationRail(

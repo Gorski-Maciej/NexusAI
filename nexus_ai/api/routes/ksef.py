@@ -153,7 +153,7 @@ def _load_verdict(conn, invoice_id: str) -> dict[str, Any]:
     Falls back to an empty verdict if no trace found (for testing).
     """
     try:
-        from tax.audit import DecisionTraceLogger
+        from nexus_ai.tax import DecisionTraceLogger
 
         audit_logger = DecisionTraceLogger(conn)
         traces = audit_logger.get_trace(invoice_id)

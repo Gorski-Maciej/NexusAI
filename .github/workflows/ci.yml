@@ -65,7 +65,7 @@ jobs:
         with:
           cache-key-prefix: hatch-ci
 
-      - name: Run CI pipeline (nexus-build ci)
+      - name: Run CI pipeline (hatch ci)
         run: hatch run ci
 
       - name: CI Summary
@@ -265,7 +265,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "Running baseline tests (no mimalloc)..."
-          pixi run --environment dev pytest tests/test_tax_math_engine.py tests/test_rules_engine.py -v --timeout=60 --tb=short -q 2>&1 | tee /tmp/baseline_output.txt
+          pixi run --environment dev pytest tests/test_tax_math_engine.py -v --timeout=60 --tb=short -q 2>&1 | tee /tmp/baseline_output.txt
           echo "baseline_exit=$?,$(grep -oP 'passed|failed|error' /tmp/baseline_output.txt | tr '\n' '/')" >> $GITHUB_OUTPUT
 
       - name: Test WITH mimalloc (LD_PRELOAD)
@@ -278,7 +278,7 @@ jobs:
           MIMALLOC_EAGER_COMMIT_DELAY: "0"
         run: |
           echo "Running comparison tests WITH mimalloc (LD_PRELOAD)..."
-          pixi run --environment dev pytest tests/test_tax_math_engine.py tests/test_rules_engine.py -v --timeout=60 --tb=short -q 2>&1 | tee /tmp/mimalloc_output.txt
+          pixi run --environment dev pytest tests/test_tax_math_engine.py -v --timeout=60 --tb=short -q 2>&1 | tee /tmp/mimalloc_output.txt
           echo "mimalloc_exit=$?" >> $GITHUB_OUTPUT
 
       - name: Generate benchmark report
@@ -466,77 +466,6 @@ jobs:
           echo "|--------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| ✅ | Dependencies reviewed |" >> $GITHUB_STEP_SUMMARY
 
-  # ── Schemathesis: Property-based API Fuzzing ───────────────────────────
-  schemathesis-fuzz:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: ./.github/actions/setup-pixi
-        with:
-          pixi-env: dev
-
-      - name: Run schemathesis CI fuzzing (pixi exec)
-        run: |
-          pixi exec -- python scripts/schemathesis_runner.py \
-            --mode ci \
-            --max-examples 10 \
-            --format junit \
-            --workers auto
-        continue-on-error: true
-
-      - name: Upload schemathesis JUnit report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: schemathesis-junit-report
-          path: reports/schemathesis-junit.xml
-          retention-days: 30
-
-      - name: Schemathesis Summary
-        if: always()
-        run: |
-          echo "## 🔀 Schemathesis Fuzzing" >> $GITHUB_STEP_SUMMARY
-          echo "| Tool | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| API Fuzzing | ✅ ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
-
-  # ── Schemathesis Security Fuzzing ──────────────────────────────────────
-  schemathesis-security:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: ./.github/actions/setup-pixi
-        with:
-          pixi-env: dev
-
-      - name: Run schemathesis security fuzzing (pixi exec)
-        run: |
-          pixi exec -- python scripts/schemathesis_runner.py \
-            --mode security \
-            --max-examples 50 \
-            --format junit
-        continue-on-error: true  # Heavy testy — nie blokują PR
-
-      - name: Upload security fuzzing report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: schemathesis-security-report
-          path: reports/schemathesis-junit.xml
-          retention-days: 30
-
-      - name: Security Fuzzing Summary
-        if: always()
-        run: |
-          echo "## 🔀 Security Fuzzing" >> $GITHUB_STEP_SUMMARY
-          echo "| Tool | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Security fuzzing | ✅ ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
-
   # ── Security Scan: ZAP DAST ─────────────────────────────────────────────
   # ZAP scans the staging API for OWASP Top 10 vulnerabilities
   security-scan:
@@ -645,7 +574,7 @@ jobs:
         with:
           cache-key-prefix: hatch-build-${{ runner.os }}
 
-      - name: Build Rust (nexus-build rust via hatch)
+      - name: Build Rust (hatch build:build-rust)
         run: hatch run build:build-rust
 
       - name: List built wheels

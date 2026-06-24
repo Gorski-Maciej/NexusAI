@@ -74,15 +74,15 @@ class TaskController(Controller):
         "/{task_id:str}/cancel",
         return_dto=TaskCancelResponseDTO,
         summary="Cancel a task",
-        description="Sends a cancellation signal to a long-running task via WebSocket and NATS (Rozwiązanie 17).",
+        description="Sends a cancellation signal to a long-running task via in-process signal and NATS (Rozwiązanie 17).",
         operation_id="cancelTask",
     )
     async def cancel_task(self, task_id: str, request: Request) -> dict:
         """
         Anuluje zadanie długotrwałe.
-        Rozwiązanie 17: Sygnalizuje anulowanie przez WebSocket i NATS.
+        Rozwiązanie 17: Sygnalizuje anulowanie przez flagę in-process i NATS.
         """
-        # Sygnalizuj anulowanie lokalnie (przez WebSocket)
+        # Sygnalizuj anulowanie lokalnie (przez flagę in-process)
         signal_cancel(task_id)
 
         # Wyślij zdarzenie anulowania przez NATS (z nats_utils)

@@ -78,9 +78,9 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
 | **SQLite + SQLCipher** — szyfrowana baza | — | ✅ | `nexus_ai/db/database.py` → PRAGMA key |
-| **sqlite-vec** — wektory w SQLite | LanceDB | ✅ | `nexus_ai/db/vector_store.py` |
-| **SQLModel** — ORM 2w1 | (SQLAlchemy + Pydantic pod spodem) | ✅ | `nexus_ai/db/models.py` |
-| **DuckDB** — lokalna hurtownia OLAP | — | ✅ | `nexus_ai/db/analytics.py` → `DuckDBManager` |
+| **sqlite-vec** — wektory w SQLite | LanceDB | ✅ | `sqlite-vec` SQLite extension |
+| **SQLModel** — ORM 2w1 | (SQLAlchemy + Pydantic pod spodem) | ✅ | SQLModel ORM models |
+| **DuckDB** — lokalna hurtownia OLAP | — | ✅ | DuckDBManager
 | **PyArrow** — format danych w pamięci | — | ✅ | Używany przez DuckDB |
 | **Polars** — DataFrame nowej generacji | pandas | ✅ | `nexus_ai/core/analytics.py` |
 | **Natywne migracje SQL** — migracje schematu | (ręczne SQL) | ✅ | `migrations/*.sql`, `migrations/run_migrations.py` |
@@ -155,7 +155,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | **structlog** — ustrukturyzowane logowanie | — | ✅ | `nexus_ai/core/logger.py` |
 | **Loguru** — silnik zapisu logów | logging | ✅ | `nexus_ai/core/logger.py` |
 | **OpenTelemetry (API + SDK)** — telemetria | — | ✅ | W `pixi.toml` |
-| **DuckDB + Parquet** — lokalna hurtownia telemetrii | — | ✅ | `nexus_ai/db/analytics.py` |
+| **DuckDB + Parquet** — lokalna hurtownia telemetrii | — | ✅ | Telemetry storage via DuckDB |
 
 ### Punkt 12 — Metryki i monitoring
 
@@ -178,7 +178,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 |---|---|---|---|
 | **TOML + msgspec** — konfiguracja | .env, python-dotenv, YAML | ✅ | `nexus_ai/core/config.py` |
 | **pendulum** — daty i czas | datetime, pytz, dateparser | ✅ | Używany w całym projekcie |
-| **psutil** — monitorowanie systemu | — | ✅ | `nexus_ai/scripts/doctor.py` |
+| **psutil** — monitorowanie systemu | — | ✅ | System monitoring via psutil |
 
 ### Punkt 15 — Testowanie
 
@@ -230,7 +230,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 │                     Flet Desktop UI                      │
 │                    (Python / Flutter)                    │
 └──────────────┬──────────────────────────────────────────┘
-               │ HTTP / WebSocket
+               │ HTTP + socket UNIX
 ┌──────────────▼──────────────────────────────────────────┐
 │              Litestar API (ASGI / Granian)               │
 │         /api/v1/* (legacy)  /api/v2/* (current)         │
@@ -334,7 +334,7 @@ pixi install
 # OR: pip install -e ".[ui,ai,dev]"
 
 # 3. Run system diagnostics
-python -m nexus_ai.scripts.doctor
+pixi run doctor
 
 # 4. Start NATS server (in a separate terminal)
 nats-server -p 4222 -js
@@ -487,10 +487,8 @@ pixi run build
 
 Pre-configured build scripts are in `build_scripts/`:
 
-| Script | Platform | Description |
+| Installer Config | Platform | Description |
 |---|---|---|
-| `build_exe.sh` | Linux/macOS | Nuitka onefile build |
-| `build_exe.bat` | Windows | Nuitka onefile build |
 | `setup.iss` | Windows | Inno Setup installer (wraps the .exe) |
 | `setup.nsi` | Windows | NSIS installer (wraps the .exe) |
 
@@ -580,7 +578,7 @@ pixi run test-property
 
 | Test file | What it covers |
 |---|---|
-| `tests/test_rules_engine.py` | Rules engine and validation logic |
+| `tests/test_tax_math_engine.py` | Tax math engine (Rust-backed) |
 | `tests/test_fixed_assets_depreciation.py` | Fixed assets depreciation |
 | `tests/test_inventory_fifo.py` | FIFO inventory accounting |
 | `tests/test_fraud_graph_scanner.py` | Fraud detection graph scanning |
@@ -638,7 +636,7 @@ NexusAI/
 │   │   └── msgspec_utils.py       # msgspec serialization helpers
 │   │
 │   ├── services/                  # Business logic services
-│   │   ├── rules_engine.py        # Invoice validation rules
+│   │   # rules_engine.py (usunięty) → zastąpiony przez OPA + Rust RulesEngine
 │   │   ├── analytics_service.py
 │   │   ├── fraud_graph_scanner.py
 │   │   ├── fixed_assets.py
@@ -651,7 +649,6 @@ NexusAI/
 │   │   ├── database.py            # SQLModel engine + session factory
 │   │   ├── models.py              # SQLModel ORM models
 │   │   ├── analytics.py           # DuckDB manager
-│   │   ├── outbox.py              # Outbox pattern models
 │   │   ├── views.py               # Analytics materialized views
 │   │   ├── hooks.py               # SQLModel event hooks
 │   │   └── vector_store.py        # Vector storage (sqlite-vec)
@@ -683,10 +680,7 @@ NexusAI/
 │   │
 │   └── scripts/                   # Utility scripts
 │       ├── download_models.py     # Model downloader (SHA-256 verified)
-│       ├── doctor.py              # System diagnostics
-│       ├── bootstrap.py           # Environment bootstrap
-│       ├── dlq_notifier.py        # Dead Letter Queue notifier
-│       └── ...                    # 15+ scripts
+│       └── ...                    # Additional scripts
 │
 ├── tests/                         # Test suite
 │   ├── conftest.py
@@ -697,12 +691,13 @@ NexusAI/
 │   └── prod.toml
 │
 ├── build_scripts/                 # Build scripts for onefile executable
-│   ├── build_exe.bat
-│   ├── build_exe.sh
 │   ├── setup.iss
 │   └── setup.nsi
 │
 ├── nexus_crypto/                  # Rust + PyO3 native crypto
+│   ├── Cargo.toml
+│   ├── pyproject.toml
+│   └── src/lib.rs
 │   ├── Cargo.toml
 │   ├── pyproject.toml
 │   └── src/lib.rs
@@ -862,7 +857,7 @@ The script downloads the following models:
 After downloading models, verify the setup:
 
 ```bash
-python -m nexus_ai.scripts.doctor
+pixi run doctor
 ```
 
 This checks:

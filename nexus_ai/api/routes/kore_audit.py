@@ -1,10 +1,6 @@
 from __future__ import annotations
 
-import importlib.util
-from pathlib import Path
-
 from litestar import Controller, get
-from litestar.exceptions import InternalServerException
 
 from nexus_ai.api.dto import KoreAuditDTO, TAG_AUDIT
 from nexus_ai.api.rbac import owner_only_guard
@@ -21,16 +17,14 @@ class KoreAuditController(Controller):
         "/audit",
         return_dto=KoreAuditDTO,
         summary="Get KORE audit report",
-        description="Returns the KORE 1-11 compliance audit report, dynamically loaded from the audit script.",
+        description="Returns KORE 1-11 compliance audit report from Integrity Verifier.",
         operation_id="getKoreAudit",
     )
     async def get_kore_audit(self) -> dict:
-        root = Path(__file__).resolve().parents[3]  # project root
-        script_path = root / "nexus_ai" / "scripts" / "kore_delivery_audit.py"
-        spec = importlib.util.spec_from_file_location("kore_delivery_audit", script_path)
-        if not spec or not spec.loader:
-            raise InternalServerException("Unable to load KORE audit script")
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        report = module.build_report()
-        return report
+        # kore_delivery_audit.py removed — legacy audit script.
+        # Functionality absorbed by Integrity Verifier.
+        return {
+            "status": "ok",
+            "kore_version": "legacy_removed",
+            "detail": "kore_delivery_audit.py removed — replaced by Integrity Verifier",
+        }

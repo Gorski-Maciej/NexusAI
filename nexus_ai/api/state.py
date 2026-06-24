@@ -17,6 +17,7 @@ from nexus_ai.core.di import dispose_all_engines
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import consolidate_database, create_oltp_engine, create_session_factory
 from nexus_ai.core.config import AppConfig
+from nexus_ai.api.routes.ws import start_unix_progress_server, stop_unix_progress_server
 from nexus_ai.services.hot_reload import HotReloadListener
 from nexus_ai.services.migration_sanity import (
     run_migration_sanity_checks,
@@ -439,6 +440,12 @@ def make_on_startup(engine, session_factory):
             logger.warning("[HOT-RELOAD] Failed to start listener: %s", exc)
             app.state.hot_reload_listener = None
 
+        # ── Phase 6: Unix socket progress server ────────────────────
+        try:
+            await start_unix_progress_server()
+        except Exception as exc:
+            logger.warning("[UNIX-SOCKET] Failed to start progress server: %s", exc)
+
         logger.info(">>> Nexus API: Wszystkie systemy gotowe.")
 
     return _on_startup
@@ -477,6 +484,12 @@ async def on_shutdown(app: Litestar) -> None:
         logger.info("[SHUTDOWN] DI engines disposed")
     except Exception as exc:
         logger.warning("[SHUTDOWN] DI engine dispose error: %s", exc)
+
+    # 3.5. Zamknij serwer socket UNIX
+    try:
+        await stop_unix_progress_server()
+    except Exception as exc:
+        logger.warning("[SHUTDOWN] Unix socket server stop error: %s", exc)
 
     # 4. Konsolidacja WAL + zwolnienie zasobów engine'u
     if engine is not None:

@@ -307,7 +307,6 @@ for m in [
     # OpenCV is optional (HAS_CV2 pattern)
     # numpy is real dependency, but mocked for tests without it
     "numpy",
-    "huggingface_hub", "huggingface_hub._snapshot_download",
 ]:
     if m not in sys.modules:
         sys.modules[m] = _MockModule(m)

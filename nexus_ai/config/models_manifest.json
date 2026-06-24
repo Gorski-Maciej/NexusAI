@@ -1,81 +1,18 @@
 {
-  "manifest_version": "2.2.0",
-  "last_updated": "2026-06-16",
-  "description": "NexusAI Model Manifest — SHA-256 integrity verification for all AI models (GGUF + docTR + EasyOCR). docTR replaced Surya OCR (Apache 2.0, 4x smaller models).",
-  "total_models": 11,
-  "total_size_gb": 9.1,
+  "manifest_version": "2.3.0",
+  "last_updated": "2026-06-24",
+  "description": "NexusAI Model Manifest v2.3 — Final architecture: agents from Punkt 17, models from Punkt 20.",
+  "total_models": 5,
+  "total_size_gb": 3.7,
   "models": [
     {
-      "name": "LFM2.5-1.2B-Q4_K_M",
+      "name": "Granite-3.2-3B-Q4_K_M",
       "version": "1.0",
-      "url": "https://huggingface.co/lfm-ai/LFM2.5-1.2B-GGUF/resolve/main/LFM2.5-1.2B-Q4_K_M.gguf",
-      "sha256": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1",
-      "size_mb": 780,
-      "role": "Alpha Agent — Primary classification",
-      "group": "council"
-    },
-    {
-      "name": "Qwen3-0.6B-Q4_K_M",
-      "version": "1.0",
-      "url": "https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/resolve/main/qwen3-0.6b-q4_k_m.gguf",
-      "sha256": "b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2",
-      "size_mb": 430,
-      "role": "Beta Agent — Secondary validation",
-      "group": "council"
-    },
-    {
-      "name": "LittleLamb-0.3B-Q4_K_M",
-      "version": "1.0",
-      "url": "https://huggingface.co/littellamb/LittleLamb-0.3B-GGUF/resolve/main/littellamb-0.3b-q4_k_m.gguf",
-      "sha256": "c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3",
-      "size_mb": 250,
-      "role": "Gamma Agent + WorkflowPlanner — Duplicate detection, orchestration",
-      "group": "council"
-    },
-    {
-      "name": "granite-4.0-1b-nano-Q4_K_M",
-      "version": "1.0",
-      "url": "https://huggingface.co/ibm-granite/granite-4.0-1b-nano-GGUF/resolve/main/granite-4.0-1b-nano-Q4_K_M.gguf",
-      "sha256": "d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4",
-      "size_mb": 980,
-      "role": "Rules SWAT Level 2 + Decision Agent — Business validation",
-      "group": "rules"
-    },
-    {
-      "name": "qwen2.5-1.5b-instruct-Q4_K_M",
-      "version": "1.0",
-      "url": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf",
-      "sha256": "e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5",
-      "size_mb": 980,
-      "role": "Analytics Agent — Main analyst, SQL interpretation",
-      "group": "analytics"
-    },
-    {
-      "name": "Jamba-Reasoning-3B-Q4_K_M",
-      "version": "1.0",
-      "url": "https://huggingface.co/ai21/Jamba-Reasoning-3B-GGUF/resolve/main/jamba-reasoning-3b-q4_k_m.gguf",
-      "sha256": "f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6",
-      "size_mb": 1800,
-      "role": "Decision Agent (JambaStrategist) — Strategic reasoning, final decision",
-      "group": "decision"
-    },
-    {
-      "name": "LightOnOCR-1B-Q4_K_M",
-      "version": "1.0",
-      "url": "https://huggingface.co/lighton/LightOnOCR-1B-GGUF/resolve/main/lightonocr-1b-q4_k_m.gguf",
-      "sha256": "a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7",
-      "size_mb": 800,
-      "role": "OCR Pipeline — Main VLM extraction engine",
-      "group": "ocr"
-    },
-    {
-      "name": "Phi-3-mini-3.8B-Q4_K_M",
-      "version": "1.0",
-      "url": "https://huggingface.co/microsoft/Phi-3-mini-3.8B-GGUF/resolve/main/phi-3-mini-3.8b-q4_k_m.gguf",
-      "sha256": "b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8",
-      "size_mb": 2200,
-      "role": "VisionAgent — OCR fallback, layout analysis, visual anomalies",
-      "group": "ocr"
+      "url": "https://huggingface.co/ibm-granite/granite-3.2-3b-GGUF/resolve/main/granite-3.2-3b-q4_k_m.gguf",
+      "sha256": "",
+      "size_mb": 2400,
+      "role": "Agent Orkiestrator — Główny Decydent (Actor) + Główny Analityk",
+      "group": "orchestrator"
     },
     {
       "name": "Fin-RWKV-169M-Q4_K_M",
@@ -83,26 +20,35 @@
       "url": "https://huggingface.co/fin-rwkv/Fin-RWKV-169M-GGUF/resolve/main/fin-rwkv-169m-q4_k_m.gguf",
       "sha256": "c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9",
       "size_mb": 170,
-      "role": "Rules SWAT Level 4 + Analytics — Financial detective, anomaly detection",
+      "role": "Agent Analityczny — Detektyw Finansowy (anomalie statystyczne)",
       "group": "analytics"
     },
     {
-      "name": "bge-small-en-v1.5-Q4_K_M",
+      "name": "Granite-Guardian-0.5B-Q4_0",
       "version": "1.0",
-      "url": "https://huggingface.co/BAAI/bge-small-en-v1.5-GGUF/resolve/main/bge-small-en-v1.5-q4_k_m.gguf",
-      "sha256": "d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0",
-      "size_mb": 90,
-      "role": "Embedding Model — Semantic search, vector store (sqlite-vec)",
-      "group": "embeddings"
+      "url": "https://huggingface.co/ibm-granite/granite-guardian-0.5b-GGUF/resolve/main/granite-guardian-0.5b-q4_0.gguf",
+      "sha256": "",
+      "size_mb": 400,
+      "role": "Agent Walidator Jakości — Strażnik Merytoryczny + Strażnik Podatkowy",
+      "group": "validator"
     },
     {
-      "name": "easyocr_craft",
+      "name": "GraphSAGE-Encoder-0.1B-Q4_K_M",
       "version": "1.0",
-      "url": "https://github.com/JaidedAI/EasyOCR/releases/download/v1.7/craft_mlt_25k.pth",
+      "url": "",
       "sha256": "",
-      "size_mb": 490,
-      "role": "EasyOCR — CRAFT text detection model (CNN)",
-      "group": "ocr"
+      "size_mb": 150,
+      "role": "Agent Walidator Jakości — Detektor Oszustw (grafowa analiza relacji)",
+      "group": "validator"
+    },
+    {
+      "name": "FinBERT-ESG-0.1B-Q4_K_M",
+      "version": "1.0",
+      "url": "",
+      "sha256": "",
+      "size_mb": 120,
+      "role": "Agent Walidator Jakości — Analiza Ryzyka Kontrahenta (ESG)",
+      "group": "validator"
     }
   ]
 }

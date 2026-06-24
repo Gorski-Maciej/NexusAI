@@ -25,7 +25,6 @@
 #   pixi run prod:migrate   # Migracje w produkcji
 #
 # Dla skrótów (aliasy):
-#   source scripts/aliases.sh   # Ładuje skróty: dv, ap, wk, ts, itd.
 #
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -113,8 +112,10 @@ duckdb = ">=1.0.0"
 pyarrow = ">=15.0.0"
 polars = ">=1.0.0"
 
-# ── Model Hub ───────────────────────────────────────────────────────────────
-huggingface-hub = ">=0.23.0"
+# ── Model Downloader — własny system pobierania modeli.
+# Modele pobierane przez manifest config/models_manifest.json
+# i skrypt download_models.py, weryfikowane SHA-256.
+# huggingface-hub usunięty — zastąpiony przez bezpośrednie HTTP download
 
 # ── Logging ─────────────────────────────────────────────────────────────────
 loguru = ">=0.7.0"
@@ -221,9 +222,8 @@ description = "Uruchom TigerBeetle na TCP (port 3000) — dla zdalnego dostępu"
 cmd = "tigerbeetle format --cluster=0 --replica=0 --replica-count=1 --development data/tigerbeetle.bin"
 description = "Sformatuj plik danych TigerBeetle"
 
-[tasks.download-binaries]
-cmd = "python -m nexus_ai.scripts.setup_env"
-description = "Pobierz NATS Server, TigerBeetle i OPA (binarki systemowe)"
+# download-binaries — usunięty, zastąpiony przez pixi install (system dependencies)
+# setup_env.py został usunięty, a binarki NATS/TigerBeetle/OPA są zarządzane przez pixi
 
 # ── Środowisko deweloperskie ────────────────────────────────────────────────
 
@@ -269,17 +269,26 @@ description = "Uruchom tylko worker Taskiq + NATS"
 cmd = "python -m nexus_ai.luz.main"
 description = "Uruchom interfejs desktopowy (Flet)"
 
-[tasks.nexus]
-cmd = "python -m nexus_ai.scripts.nexus_cli"
-description = "NexusAI CLI — zarządzanie systemem"
+# [tasks.nexus]
+# Zastąpione: nexus-cli (scripts/nexus_cli.py) został usunięty — funkcjonalność
+# rozproszona w dedykowanych taskach pixi:
+#   pixi run doctor      → nexus_ai.scripts.doctor
+#   pixi run migrate     → migrations.run_migrations
+#   pixi run seed        → main.py --load-fixtures
+#   pixi run bootstrap   → main.py --mode bootstrap
+#   pixi run api         → serwer API
+#   pixi run worker      → worker Taskiq
+#   pixi run desktop     → interfejs Flet
+#   pixi run build-*     → taski build
 
 [tasks.bootstrap]
 cmd = "python main.py --mode bootstrap"
 description = "Inicjalizacja środowiska (pierwsze uruchomienie)"
 
 [tasks.doctor]
-cmd = "python -m nexus_ai.scripts.doctor"
+cmd = "python main.py --mode doctor"
 description = "Diagnostyka systemu — sprawdź wszystkie komponenty"
+
 
 # ── Build ────────────────────────────────────────────────────────────────────
 
@@ -300,7 +309,7 @@ cmd = "mypyc nexus_ai/core"
 description = "Kompilacja mypyc — tylko core/"
 
 [tasks.mypyc-optimize-services]
-cmd = "mypyc nexus_ai/services/accountant_logic.py nexus_ai/services/accounting.py nexus_ai/services/analytics_service.py nexus_ai/services/anomaly_detector.py nexus_ai/services/audit_logger.py nexus_ai/services/audit_service.py nexus_ai/services/audit_storno.py nexus_ai/services/auto_decree.py nexus_ai/services/bank_import.py nexus_ai/services/billing_estimator.py nexus_ai/services/budget_control.py nexus_ai/services/cfo_offline.py nexus_ai/services/compliance_analytics.py nexus_ai/services/context_enricher.py nexus_ai/services/currency_converter.py nexus_ai/services/daily_briefing.py nexus_ai/services/decision_logger.py nexus_ai/services/decision_queue.py nexus_ai/services/document_fingerprint.py nexus_ai/services/dunning_engine.py nexus_ai/services/event_log.py nexus_ai/services/export_service.py nexus_ai/services/facts_aggregator.py nexus_ai/services/fallback_handler.py nexus_ai/services/finops_meter.py nexus_ai/services/fixed_assets.py nexus_ai/services/fraud_graph_scanner.py nexus_ai/services/fx_revaluation.py nexus_ai/services/gus_bir_client.py nexus_ai/services/hot_reload.py nexus_ai/services/integrity_verifier.py nexus_ai/services/inventory_fifo.py nexus_ai/services/ksef_generator.py nexus_ai/services/ksef_service.py nexus_ai/services/ledger_worker.py nexus_ai/services/liquidity_oracle.py nexus_ai/services/log_pii_monitor.py nexus_ai/services/mail_fetcher.py nexus_ai/services/migration_sanity.py nexus_ai/services/notification_manager.py nexus_ai/services/notification_service.py nexus_ai/services/otel_fallback.py nexus_ai/services/outbox_relay.py nexus_ai/services/outbox_replay.py nexus_ai/services/pre_ledger_validator.py nexus_ai/services/priority_engine.py nexus_ai/services/reconciliation.py nexus_ai/services/replay_engine.py nexus_ai/services/replication.py nexus_ai/services/risk_guard.py nexus_ai/services/rmk_engine.py nexus_ai/services/rule_store.py nexus_ai/services/scheduler.py nexus_ai/services/security_service.py nexus_ai/services/semantic_guard.py nexus_ai/services/shadow_resource_correlation.py nexus_ai/services/signature_validator.py nexus_ai/services/smart_approvals.py nexus_ai/services/storage.py nexus_ai/services/tax_api.py nexus_ai/services/tax_simulator.py nexus_ai/services/tax_strategies.py nexus_ai/services/temporal_manager.py nexus_ai/services/tigerbeetle/client.py nexus_ai/services/tigerbeetle/ledger_initializer.py nexus_ai/services/tigerbeetle/models.py nexus_ai/services/tigerbeetle_secure.py nexus_ai/services/trace_generator.py nexus_ai/services/triage_service.py nexus_ai/services/validation_service.py nexus_ai/services/vat_reconciliation.py nexus_ai/services/vendor_intelligence.py nexus_ai/services/vision/agent.py nexus_ai/services/white_list_service.py"
+cmd = "mypyc nexus_ai/services/accountant_logic.py nexus_ai/services/accounting.py nexus_ai/services/analytics_service.py nexus_ai/services/anomaly_detector.py nexus_ai/services/audit_service.py nexus_ai/services/audit_storno.py nexus_ai/services/auto_decree.py nexus_ai/services/bank_import.py nexus_ai/services/billing_estimator.py nexus_ai/services/budget_control.py nexus_ai/services/cfo_offline.py nexus_ai/services/compliance_analytics.py nexus_ai/services/context_enricher.py nexus_ai/services/currency_converter.py nexus_ai/services/daily_briefing.py nexus_ai/services/decision_logger.py nexus_ai/services/decision_queue.py nexus_ai/services/document_fingerprint.py nexus_ai/services/dunning_engine.py nexus_ai/services/event_log.py nexus_ai/services/export_service.py nexus_ai/services/facts_aggregator.py nexus_ai/services/fallback_handler.py nexus_ai/services/finops_meter.py nexus_ai/services/fixed_assets.py nexus_ai/services/fraud_graph_scanner.py nexus_ai/services/fx_revaluation.py nexus_ai/services/gus_bir_client.py nexus_ai/services/hot_reload.py nexus_ai/services/integrity_verifier.py nexus_ai/services/inventory_fifo.py nexus_ai/services/ksef_generator.py nexus_ai/services/ksef_service.py nexus_ai/services/liquidity_oracle.py nexus_ai/services/log_pii_monitor.py nexus_ai/services/mail_fetcher.py nexus_ai/services/migration_sanity.py nexus_ai/services/notification_manager.py nexus_ai/services/notification_service.py nexus_ai/services/otel_fallback.py nexus_ai/services/pre_ledger_validator.py nexus_ai/services/priority_engine.py nexus_ai/services/replay_engine.py nexus_ai/services/replication.py nexus_ai/services/risk_guard.py nexus_ai/services/rmk_engine.py nexus_ai/services/rule_store.py nexus_ai/services/scheduler.py nexus_ai/services/security_service.py nexus_ai/services/semantic_guard.py nexus_ai/services/shadow_resource_correlation.py nexus_ai/services/signature_validator.py nexus_ai/services/storage.py nexus_ai/services/tax_api.py nexus_ai/services/tax_simulator.py nexus_ai/services/tax_strategies.py nexus_ai/services/temporal_manager.py nexus_ai/services/tigerbeetle/client.py nexus_ai/services/tigerbeetle/ledger_initializer.py nexus_ai/services/tigerbeetle/models.py nexus_ai/services/tigerbeetle_secure.py nexus_ai/services/trace_generator.py nexus_ai/services/triage_service.py nexus_ai/services/validation_service.py nexus_ai/services/vat_reconciliation.py nexus_ai/services/vendor_intelligence.py nexus_ai/services/vision/agent.py nexus_ai/services/white_list_service.py"
 description = "Kompilacja mypyc — tylko services/ (75 plików)"
 
 [tasks.mypyc-optimize-db]
@@ -370,12 +379,12 @@ cmd = "mypy nexus_ai/"
 description = "Sprawdź typy przez mypy"
 
 [tasks.security-scan]
-cmd = "python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy lenient"
-description = "Skanowanie bezpieczeństwa (ruff S) — tryb łagodny"
+cmd = "ruff check nexus_ai/ --select S"
+description = "Skanowanie bezpieczeństwa (ruff S rules) — tryb łagodny"
 
 [tasks.security-scan-strict]
-cmd = "python -m nexus_ai.scripts.security_scan --target http://localhost:8000 --skip-zap --policy strict"
-description = "Skanowanie bezpieczeństwa (tryb ścisły — 0 high, 0 medium)"
+cmd = "ruff check nexus_ai/ --select S"
+description = "Skanowanie bezpieczeństwa (ruff S rules)"
 
 # ── Migracje bazy danych — natywny system SQLite (zastępuje Alembic) ────────
 
@@ -436,30 +445,14 @@ description = "Aktywuj shell w środowisku pixi"
 # ── Profiling (py-spy) — diagnostyka wydajnościowa ──────────────────────────
 
 [tasks.profile]
-cmd = "python -m nexus_ai.scripts.profiler"
-description = "Profiluj proces (py-spy record — flamegraph SVG)"
-
-[tasks.profile-dump]
-cmd = "python -m nexus_ai.scripts.profiler --dump"
-description = "Zrzut stosu procesu (py-spy dump)"
+cmd = "py-spy record --pid $(pgrep -f 'python main.py' | head -1) --output /tmp/flamegraph.svg"
+description = "Profiluj proces API (py-spy record — flamegraph SVG)"
 
 [tasks.profile-top]
-cmd = "python -m nexus_ai.scripts.profiler --top"
+cmd = "py-spy top --pid $(pgrep -f 'python main.py' | head -1)"
 description = "Top-like widok funkcji (py-spy top)"
 
-[tasks.profile-check]
-cmd = "python -m nexus_ai.scripts.profiler --check"
-description = "Sprawdź czy py-spy jest dostępny"
-
 # ── Single-file Scripts (PEP 723) — kursy walut ─────────────────────────────
-
-[tasks.rates]
-cmd = "python scripts/fetch_currency_rates.py"
-description = "Pobierz kursy walut z NBP (PEP 723 single-file script)"
-
-[tasks.rates-json]
-cmd = "python scripts/fetch_currency_rates.py --json"
-description = "Pobierz kursy walut w formacie JSON"
 
 # ── List dependencies ──────────────────────────────────────────────────
 

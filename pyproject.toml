@@ -145,9 +145,10 @@ dependencies = [
     "llama-cpp-python>=0.2.0",
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Model Hub
+    # Model Downloader — własny system pobierania modeli.
+    # Modele pobierane przez manifest config/models_manifest.json
+    # i skrypt download_models.py, weryfikowane SHA-256.
     # ═══════════════════════════════════════════════════════════════════════
-    "huggingface-hub>=0.23.0",
 
     # ═══════════════════════════════════════════════════════════════════════
     # Logging — Loguru + structlog (ustrukturyzowane logowanie z kontekstem)
@@ -276,7 +277,6 @@ exclude = [
     "nexus_ai.db.analytics_schema",
     # nexus_ai.db.migrations.* removed — replaced by root-level migrations/
     # ── services: dynamiczne importy ───────────────────────────────────
-    # nexus_ai.services.rules_engine — usunięty, zastąpiony przez OPA + Nexu-TaxEngine
     "nexus_ai.services.telemetry",
     # ── events: dynamiczne importy ─────────────────────────────────────
     "nexus_ai.events.__init__",
@@ -555,7 +555,7 @@ include-package = [
     "polars",                    # DataFrame
     "pyarrow",                   # Arrow interop dla DuckDB
     "llama_cpp",                 # LLM inference
-    "huggingface_hub",           # Model download
+    # huggingface_hub — removed, replaced by internal Model Downloader
     "msgspec",                   # Serializacja
     "stamina",                   # Resilience
     "httpx",                     # HTTP client

@@ -8,8 +8,8 @@ SUPERMOCE:
 - SCAN dla prefixowych operacji
 
 Usage:
-    from nexus_ai.core.cache.backends import create_backend
-    backend = create_backend("redis", redis_url="redis://localhost:6379/0")
+    from nexus_ai.core.cache.backends_redis import RedisBackend
+    backend = RedisBackend(redis_url="redis://localhost:6379/0")
     backend.set("key", b"value", expire=3600)
     value = backend.get("key")
 """
@@ -20,7 +20,55 @@ import os
 import threading
 from typing import Any
 
-from nexus_ai.core.cache.backends import CacheBackend
+from abc import ABC, abstractmethod
+
+
+class CacheBackend(ABC):
+    """Abstrakcyjna klasa bazowa dla backendów cache.
+
+    Zdefiniowana lokalnie — backends.py został usunięty.
+    """
+
+    @abstractmethod
+    def get(self, key: str) -> bytes | None:
+        ...
+
+    @abstractmethod
+    def get_batch(self, keys: list[str]) -> list[bytes | None]:
+        return [self.get(k) for k in keys]
+
+    @abstractmethod
+    def set(self, key: str, value: bytes, expire: int | None = None) -> None:
+        ...
+
+    @abstractmethod
+    def set_batch(self, mapping: dict[str, bytes], expire: int | None = None) -> None:
+        for key, value in mapping.items():
+            self.set(key, value, expire=expire)
+
+    @abstractmethod
+    def delete(self, key: str) -> None:
+        ...
+
+    @abstractmethod
+    def delete_batch(self, keys: list[str]) -> None:
+        for key in keys:
+            self.delete(key)
+
+    @abstractmethod
+    def clear(self, prefix: str | None = None) -> None:
+        ...
+
+    @abstractmethod
+    def size(self) -> int:
+        ...
+
+    @abstractmethod
+    def keys(self, prefix: str = "") -> list[str]:
+        ...
+
+    def close(self) -> None:
+        pass
 from structlog import get_logger
 
 logger = get_logger("nexus.core.cache.redis")

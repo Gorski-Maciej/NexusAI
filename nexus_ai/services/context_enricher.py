@@ -17,7 +17,7 @@ from typing import Any
 
 from structlog import get_logger
 
-from nexus_ai.core.cache.dyscache import get_cache
+from nexus_ai.core.cache import get_cache
 from nexus_ai.services.white_list_service import WhiteListService
 from nexus_ai.services.gus_bir_client import GUSBIRClient
 

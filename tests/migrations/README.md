@@ -1,17 +1,15 @@
 # Migration safety checks
 
-Use both scripts after applying migrations on staging snapshots:
+Migration sanity is now built into the native SQL migration system (`migrations/run_migrations.py`):
 
 ```bash
-python Code/SKRIPTS/migration_sanity_check.py --before before.db --after after.db
-python Code/SKRIPTS/schema_drift_check.py --expected before.db --actual after.db
+pixi run migrate              # Apply migrations
+pixi run migrate-check        # Check current version
+pixi run migrate-history      # Show migration history
+pixi run migrate-dry          # Dry run
 ```
 
-- `migration_sanity_check.py` verifies row-count regressions.
-- `schema_drift_check.py` verifies table/column drift.
-
-## Model retention maintenance
-
-```bash
-python Code/SKRIPTS/model_retention_runner.py --root app_data/models --keep-last 3
-```
+The migration runner validates:
+- Row-count consistency (no regressions)
+- Schema drift detection (table/column changes)
+- Checksum verification of applied migrations

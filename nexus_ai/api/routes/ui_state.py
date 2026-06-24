@@ -34,7 +34,7 @@ def serialize_draft_payload(data: dict) -> str:
 
 
 class UIStateController(Controller):
-    """Offline-resilient UI draft persistence for server-driven clients (e.g. Flet/WebSocket UI)."""
+    """Offline-resilient UI draft persistence for server-driven clients (e.g. Flet desktop UI)."""
 
     path = "/ui"
     guards = [owner_or_worker_guard]

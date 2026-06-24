@@ -579,7 +579,7 @@ class MemoryLeakDetector:
 def save_stats_to_file(path: str | os.PathLike) -> str | None:
     """Zapisz aktualne statystyki mimalloc do pliku JSON.
 
-    Używane przez ``doctor.py --stats-file`` oraz główny proces
+    Używane przez główny proces do okresowego zrzutu statystyk alokatora
     do okresowego zrzutu statystyk alokatora.
 
     Args:

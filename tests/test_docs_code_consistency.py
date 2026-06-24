@@ -152,9 +152,9 @@ COMPONENTS_IN_DOCS: list[tuple[str, str, str, str]] = [
     ("nexus_ai.services.currency_converter", "Money", "class", "Section 18 TECHNOLOGIES.md / Section 10"),
     # ContextEnricher
     ("nexus_ai.services.context_enricher", "ContextEnricher", "class", "Section 18 TECHNOLOGIES.md / Appendix F"),
-    # NexusCache — oba w dyscache.py (get_cache re-eksportowany przez __init__)
-    ("nexus_ai.core.cache.dyscache", "NexusCache", "class", "Section 14 TECHNOLOGIES.md"),
-    ("nexus_ai.core.cache.dyscache", "get_cache", "function", "Section 14 TECHNOLOGIES.md"),
+    # NexusCache — w __init__.py (get_cache i NexusCache zdefiniowane inline)
+    ("nexus_ai.core.cache", "NexusCache", "class", "Section 14 TECHNOLOGIES.md"),
+    ("nexus_ai.core.cache", "get_cache", "function", "Section 14 TECHNOLOGIES.md"),
     # CachedHttpClient
     ("nexus_ai.core.cache.http_client", "CachedHttpClient", "class", "Section 18 TECHNOLOGIES.md"),
     # GusBirClient
@@ -478,9 +478,9 @@ EXPECTED_NEXUSCACHE_METHODS = {
 def test_nexuscache_interface() -> None:
     """NexusCache implementuje wszystkie metody wymienione w dokumentacji.
 
-    Używa AST — odporne na brak zależności (dyscache, structlog).
+    Używa AST — odporne na brak zależności.
     """
-    cls_ast = _get_class_ast("nexus_ai.core.cache.dyscache", "NexusCache")
+    cls_ast = _get_class_ast("nexus_ai.core.cache", "NexusCache")
 
     # Zbierz wszystkie metody zdefiniowane w klasie
     defined_methods = {
@@ -504,15 +504,14 @@ def test_nexuscache_interface() -> None:
 
 def test_get_cache_singleton_ast() -> None:
     """get_cache() implementuje wzorzec singleton (global _default_cache)."""
-    path = _module_path("nexus_ai.core.cache.dyscache")
+    # W __init__.py — singleton jest implementowany z _default_cache
+    path = _module_path("nexus_ai.core.cache")
     assert path.exists()
     content = path.read_text()
 
-    # Sprawdź że istnieje globalny _default_cache = None
     assert "_default_cache: NexusCache | None = None" in content or "_default_cache = None" in content, (
         "❌ get_cache() nie implementuje singletona — brak _default_cache = None"
     )
-    # Sprawdź że get_cache sprawdza _default_cache
     assert "if _default_cache is None:" in content, (
         "❌ get_cache() nie implementuje singletona — brak 'if _default_cache is None:'"
     )
@@ -993,15 +992,15 @@ def test_risk_cache_no_ttl_remaining() -> None:
 
 
 # =========================================================================
-# 22.  NexusCache.delete_many() — L1 RAM + L2 dyscache clearing
+# 22.  NexusCache.delete_many() — batch delete
 # =========================================================================
 
 @NEEDS_DEPS
 def test_nexuscache_delete_many_clears_l1() -> None:
     """delete_many() usuwa wskazane klucze z L1 RAM, pozostawia pozostałe."""
-    from nexus_ai.core.cache.dyscache import NexusCache
+    from nexus_ai.core.cache import NexusCache
 
-    cache = NexusCache(default_ttl=300)  # no dyscache (no cache_dir)
+    cache = NexusCache(default_ttl=300)
 
     # Ustaw kilka kluczy
     cache.set_sync("a", 1)
@@ -1030,7 +1029,7 @@ def test_nexuscache_delete_many_clears_l1() -> None:
 @NEEDS_DEPS
 def test_nexuscache_delete_many_no_args() -> None:
     """delete_many() z pustymi argumentami — no-op, nie psuje cache."""
-    from nexus_ai.core.cache.dyscache import NexusCache
+    from nexus_ai.core.cache import NexusCache
 
     cache = NexusCache(default_ttl=300)
 
@@ -1040,47 +1039,13 @@ def test_nexuscache_delete_many_no_args() -> None:
     assert cache.get_sync("keep") == "value", "❌ delete_many() bez arg powinien być no-op"
 
 
-@NEEDS_DEPS
-def test_nexuscache_delete_many_clears_l2() -> None:
-    """delete_many() woła dyscache.delete() dla każdego klucza (L2 clearing)."""
-    from unittest.mock import MagicMock
-    from nexus_ai.core.cache.dyscache import NexusCache
 
-    cache = NexusCache(default_ttl=300)
-    # Zastąp _dyscache mockiem żeby symulować L2 (dyscache/SQLite)
-    mock_l2 = MagicMock()
-    cache._dyscache = mock_l2
-
-    # Ustaw klucze w L1
-    cache.set_sync("x", 100)
-    cache.set_sync("y", 200)
-    cache.set_sync("z", 300)
-
-    # Wywołaj delete_many (L1 + L2)
-    import anyio
-    anyio.run(cache.delete_many, "x", "z")
-
-    # L1: 'x' i 'z' usunięte, 'y' przetrwał
-    assert cache.get_sync("x") is None, "❌ delete_many L1: 'x' nie usunięty"
-    assert cache.get_sync("y") == 200, "❌ delete_many L1: 'y' nie powinien być usunięty"
-    assert cache.get_sync("z") is None, "❌ delete_many L1: 'z' nie usunięty"
-
-    # L2 (mock): delete called exactly twice: with 'x' and 'z'
-    assert mock_l2.delete.call_count == 2, (
-        f"❌ delete_many L2: oczekiwano 2 wywołań dyscache.delete(), "
-        f"ale było {mock_l2.delete.call_count}"
-    )
-    mock_l2.delete.assert_any_call("x")
-    mock_l2.delete.assert_any_call("z")
-
-    # Cleanup
-    cache._dyscache = None
 
 
 @NEEDS_DEPS
 def test_nexuscache_delete_many_nonexistent_key() -> None:
     """delete_many() z nieistniejącym kluczem — nie rzuca błędu."""
-    from nexus_ai.core.cache.dyscache import NexusCache
+    from nexus_ai.core.cache import NexusCache
 
     cache = NexusCache(default_ttl=300)
 
@@ -1103,7 +1068,7 @@ def test_nexuscache_delete_many_nonexistent_key() -> None:
 @NEEDS_DEPS
 def test_nexuscache_get_or_compute_cache_hit() -> None:
     """get_or_compute() zwraca cache'owaną wartość (L1 hit), nie woła compute."""
-    from nexus_ai.core.cache.dyscache import NexusCache
+    from nexus_ai.core.cache import NexusCache
 
     cache = NexusCache(default_ttl=300)
     cache.set_sync("hit_key", "cached_value")
@@ -1127,7 +1092,7 @@ def test_nexuscache_get_or_compute_cache_hit() -> None:
 @NEEDS_DEPS
 def test_nexuscache_get_or_compute_cache_miss() -> None:
     """get_or_compute() woła compute przy L1 miss i cache'uje wynik."""
-    from nexus_ai.core.cache.dyscache import NexusCache
+    from nexus_ai.core.cache import NexusCache
 
     cache = NexusCache(default_ttl=300)
     call_count = 0
@@ -1151,43 +1116,7 @@ def test_nexuscache_get_or_compute_cache_miss() -> None:
     assert call_count == 1, f"❌ compute wołane {call_count}x po drugim get_or_compute, oczekiwano wciąż 1"
 
 
-@NEEDS_DEPS
-def test_nexuscache_get_or_compute_l2_fallback() -> None:
-    """get_or_compute() ładuje z L2 (mock dyscache) gdy L1 miss."""
-    from unittest.mock import AsyncMock, MagicMock
-    from nexus_ai.core.cache.dyscache import NexusCache
 
-    cache = NexusCache(default_ttl=300)
-    # Symuluj L2: klucz "l2_key" istnieje w L2, ale nie w L1
-    # AsyncMock — bo get() w dyscache jest async
-    from nexus_ai.core.msgspec_utils import msgspec_dumps_bytes
-    mock_l2 = MagicMock()
-    mock_l2.get = AsyncMock(return_value=msgspec_dumps_bytes("l2_value"))
-    cache._dyscache = mock_l2
-
-    compute_called = False
-
-    async def compute() -> str:
-        nonlocal compute_called
-        compute_called = True
-        return "should_not_be_called"
-
-    import anyio
-    result = anyio.run(cache.get_or_compute, "l2_key", compute)
-
-    assert result == "l2_value", (
-        f"❌ get_or_compute(L2 fallback) zwróciło '{result}', oczekiwano 'l2_value'"
-    )
-    assert not compute_called, "❌ get_or_compute nie powinno wołać compute gdy L2 ma dane"
-
-    # L1 powinien być teraz ciepły (write-back z L2)
-    l1_hit = cache.get_sync("l2_key")
-    assert l1_hit == "l2_value", (
-        f"❌ get_or_compute nie zapisał L2 danych do L1: '{l1_hit}'"
-    )
-
-    # Cleanup
-    cache._dyscache = None
 
 
 # =========================================================================
@@ -1197,7 +1126,7 @@ def test_nexuscache_get_or_compute_l2_fallback() -> None:
 @NEEDS_DEPS
 def test_nexuscache_keys_with_prefix() -> None:
     """keys(prefix) zwraca tylko klucze L1 RAM zaczynające się od prefixu."""
-    from nexus_ai.core.cache.dyscache import NexusCache
+    from nexus_ai.core.cache import NexusCache
 
     cache = NexusCache(default_ttl=300)
     cache.set_sync("risk_threshold:CIT:vat_rate", 0.98)
@@ -1217,7 +1146,7 @@ def test_nexuscache_keys_with_prefix() -> None:
 @NEEDS_DEPS
 def test_nexuscache_keys_empty_prefix() -> None:
     """keys('') zwraca wszystkie klucze L1 RAM."""
-    from nexus_ai.core.cache.dyscache import NexusCache
+    from nexus_ai.core.cache import NexusCache
 
     cache = NexusCache(default_ttl=300)
     cache.set_sync("key_a", 1)
@@ -1233,7 +1162,7 @@ def test_nexuscache_keys_empty_prefix() -> None:
 @NEEDS_DEPS
 def test_nexuscache_keys_no_match() -> None:
     """keys(nonexistent_prefix) zwraca pustą listę."""
-    from nexus_ai.core.cache.dyscache import NexusCache
+    from nexus_ai.core.cache import NexusCache
 
     cache = NexusCache(default_ttl=300)
     cache.set_sync("real_key", 42)

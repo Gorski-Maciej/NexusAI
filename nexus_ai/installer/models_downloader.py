@@ -51,8 +51,7 @@ class ModelEntry(Struct):
     """A single model entry from the manifest."""
 
     key: str
-    repo_id: str
-    filename: str
+    url: str
     sha256: str
     description: str
     size_mb: int
@@ -103,16 +102,26 @@ def load_manifest(manifest_path: str | Path | None = None) -> list[ModelEntry]:
     with fsspec.open(manifest_path, "rb") as f:
         data: dict[str, Any] = msgspec.json.decode(f.read())
 
-    models_data = data.get("models", {})
+    if isinstance(data, dict) and "models" in data:
+        raw_models = data["models"]
+    else:
+        raw_models = data
+
+    if isinstance(raw_models, dict):
+        items = raw_models.items()
+    elif isinstance(raw_models, list):
+        items = [(m.get("name", str(i)), m) for i, m in enumerate(raw_models)]
+    else:
+        return []
+
     entries: list[ModelEntry] = []
-    for key, info in models_data.items():
+    for key, info in items:
         entries.append(
             ModelEntry(
                 key=key,
-                repo_id=info.get("repo_id", ""),
-                filename=info.get("filename", key),
+                url=info.get("url", ""),
                 sha256=info.get("sha256", ""),
-                description=info.get("description", ""),
+                description=info.get("description", info.get("role", "")),
                 size_mb=info.get("size_mb", 0),
                 required=info.get("required", False),
             )
@@ -254,14 +263,6 @@ async def download_file(
         return False, f"Download failed: {e}"
 
 
-# ── HuggingFace file resolver ───────────────────────────────────────────────
-
-
-def _get_hf_download_url(repo_id: str, filename: str) -> str:
-    """Construct HuggingFace download URL for a specific file in a repo."""
-    return f"https://huggingface.co/{repo_id}/resolve/main/{filename}"
-
-
 # ── Main download orchestrator ──────────────────────────────────────────────
 
 
@@ -357,19 +358,6 @@ async def download_all_models(
         temp_path = dest_path.with_suffix(dest_path.suffix + ".part")
         resume_bytes = temp_path.stat().st_size if temp_path.exists() else 0
 
-        # Make sure huggingface-hub is available
-        try:
-            import huggingface_hub  # noqa: F401
-        except ImportError:
-            results.append(
-                DownloadResult(
-                    key=entry.key,
-                    success=False,
-                    error="huggingface-hub not installed. Run: pip install huggingface-hub",
-                )
-            )
-            continue
-
         # Report starting
         if progress_cb:
             progress_cb(
@@ -381,8 +369,8 @@ async def download_all_models(
                 status="starting",
             )
 
-        # Download from HuggingFace
-        url = _get_hf_download_url(entry.repo_id, entry.filename)
+        # Download model from URL in manifest
+        url = entry.url
 
         def make_progress_for_entry(
             entry_key: str,

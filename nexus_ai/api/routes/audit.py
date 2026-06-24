@@ -68,7 +68,7 @@ class AuditController(Controller):
             import duckdb
 
             from config import AppConfig
-            from tax.audit import DecisionTraceLogger, verify_chain_integrity
+            from nexus_ai.tax import DecisionTraceLogger, verify_chain_integrity
         except ImportError as exc:
             logger.error("Failed to import audit modules: %s", exc)
             raise NotFoundException(detail="Audit module not available") from exc

@@ -103,7 +103,7 @@ def on_test_start(environment: Any, **kwargs: Any) -> None:
     @events.test_start.add_listener — globalny hook na start testu.
     Idealne miejsce na:
       - Inicjalizację połączenia z NATS/TigerBeetle
-      - Warmup cache (dyscache)
+      - Warmup cache (diskcache)
       - Log do Sentry z metadanymi testu
     """
     user_count = getattr(environment.runner, "user_count", 0) if environment.runner else 0

@@ -42,7 +42,7 @@ from structlog import get_logger
 
 logger = get_logger("nexus.core.embeddings")
 
-# NexusCache dla embeddingów (L1 RAM + L2 SQLite przez dyscache)
+# NexusCache dla embeddingów (diskcache-backed)
 # Klucz: semantic_embed:{sha256(text)} → list[float]
 # TTL: 3600s (1h) — embedding jest deterministyczny dla tego samego tekstu
 # Oszczędza ~50-200ms przy wołaniu embed() dla tej samej faktury

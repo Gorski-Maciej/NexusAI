@@ -216,314 +216,254 @@
 
   ── Inference ─────────────────────────────────────────────────────────────────
   88. llama-cpp-python >=0.2.0          [A]  — Inferencja modeli GGUF (CPU/GPU)
-  89. huggingface-hub >=0.23.0 (v0.36.2)[A]  — Model Hub (pobieranie i cache modeli)
-  90. hf-xet                              [Z]  — Transfer danych HuggingFace
+  89. hf-xet                              [Z]  — Transfer danych HuggingFace
 
   ── Frameworki DL (przez zależności) ──────────────────────────────────────────
-  91. PyTorch / torch (v2.12.0)          [Z]  — Framework Deep Learning (przez PaddleOCR/docTR)
-  92. ONNX                               [Z]  — Open Neural Network Exchange
-  93. protobuf                           [Z]  — Protocol Buffers (przez ONNX)
-  94. Transformers (v4.53.3)            [Z]  — Transformers (przez huggingface-hub)
-  95. tokenizers (v0.21.4)              [Z]  — Tokenizacja NLP
-  96. safetensors (v0.7.0)              [Z]  — Safe tensors format
+  90. PyTorch / torch (v2.12.0)          [Z]  — Framework Deep Learning (przez PaddleOCR/docTR)
+  91. ONNX                               [Z]  — Open Neural Network Exchange
+  92. protobuf                           [Z]  — Protocol Buffers (przez ONNX)
+  93. Transformers (v4.53.3)            [Z]  — Transformers (przez HuggingFace)
+  94. tokenizers (v0.21.4)              [Z]  — Tokenizacja NLP
+  95. safetensors (v0.7.0)              [Z]  — Safe tensors format
 
   ── Modele AI (GGUF) ──────────────────────────────────────────────────────────
   98. Council Alpha (LFM-1.2B) GGUF     [A]  — Klasyfikacja faktur
   99. Council Beta (Qwen3-0.6B) GGUF    [A]  — Walidacja danych
-  100. Council Gamma (LittleLamb-0.3B)   [A]  — Planowanie workflow
-  101. Rules (Granite-4.0-1B-nano) GGUF  [A]  — Walidacja biznesowa
-  102. Analytics (Qwen2.5-1.5B) GGUF     [A]  — Analiza danych
-  103. Fin-RWKV-169M GGUF                [A]  — Detekcja finansowa
-  104. Decision (Jamba-Reasoning-3B) GGUF[A]  — Strategiczne rozumowanie
-  105. Vision (LightOnOCR-1B) GGUF       [A]  — OCR (główny silnik AI)
-  106. Vision fallback (Phi-3-mini-3.8B) [A]  — OCR fallback / analiza layoutu
-  107. EasyOCR CRAFT model               [A]  — Detekcja tekstu
-  108. bge-small-en-v1.5 GGUF            [A]  — Embeddings (semantic search)
-  109. docTR model (DBNet + PARSeq)      [A]  — OCR (zastąpił Surya)
+  100.
+  101.
+  102.
+  103.
+  104.
+  105.
+  106.
+  107.
+  108.
+  109.
 
   ── Własne moduły AI ──────────────────────────────────────────────────────────
-  110. decision_engine (core/)           [A]  — Silnik decyzyjny
-  111. inference (core/inference.py)     [A]  — Warstwa inferencji
-  112. embeddings (core/embeddings.py)   [A]  — Embeddingi
-  113. active_learning (core/)           [A]  — Uczenie aktywne
-  114. forecaster (core/forecaster.py)   [A]  — Prognozowanie (AI)
-  115. vision/agent.py                   [A]  — Agent wizyjny (AI Vision)
-  116. prompts/                          [A]  — Szablony promptów AI
+  110.
+  111.
+  112.
+  113.
+  114.
+  115.
+  116.
 
 ────────────────────────────────────────────────────────────────────────────────
  2.15 INTERFEJS DESKTOPOWY (FLET)
 ────────────────────────────────────────────────────────────────────────────────
 
-  117. Flet >=0.28.0                     [A]  — Framework UI (Flutter w Pythonie)
-  118. Flet Router                       [A]  — Nawigacja w Flet
-  119. Flet Charts                       [A]  — Wykresy (BarChart, LineChart, PieChart)
-  120. WebSocket (ws_client)             [A]  — Komunikacja WebSocket UI ↔ API
-  121. i18n (lokalizacje)                [A]  — Internacjonalizacja (pl.json, en.json)
+  117.
+  118.
+  119.
+  121.
 
 ────────────────────────────────────────────────────────────────────────────────
  2.16 SILNIK REGUŁ PODATKOWYCH (TAX ENGINE)
 ────────────────────────────────────────────────────────────────────────────────
 
   ── Własne moduły Python ──────────────────────────────────────────────────────
-  122. TaxMathEngine (tax/math_engine.py)[A]  — Matematyka na groszach (Decimal)
-  123. TaxInvariantGuard                 [A]  — 3 niezmienniki matematyczne
-  124. RoundingPolicy (HALF_UP)          [A]  — Polityka zaokrągleń
-  125. rule_store.py                     [A]  — Przechowywanie reguł w SQLite
-  126. context_interpreter.py            [A]  — Mapowanie danych kontekstowych
-  127. temporal_manager.py               [A]  — Temporalność reguł podatkowych
-  128. priority_engine.py                [A]  — Sortowanie reguł
-  129. fallback_handler.py               [A]  — Obsługa błędów NO_MATCH
-  130. tax/audit.py                      [A]  — Audyt podatkowy
-  131. tax/rules.py                      [A]  — Reguły podatkowe
-  132. tax/pipeline.py                   [A]  — Pipeline podatkowy
-  133. tax/exceptions.py                 [A]  — Wyjątki podatkowe
+  122.
+  123.
+  124.
+  125.
+  126.
+  127.
+  128.
+  129.
+  130.
+  131.
+  132.
+  133.
 
   ── Silnik natywny Rust (nexus-tax-engine) ────────────────────────────────────
-  134. nexus-tax-engine (Rust crate)     [A]  — Natywny silnik obliczeń podatkowych
-  135. serde + serde_json (Rust crate)   [Z]  — Serializacja w Rust
-  137. pyo3 (Rust crate)                 [A]  — Bindings Python ↔ Rust
+  134.
+  135.
+  137.
 
   ── OPA / Rego ────────────────────────────────────────────────────────────────
-  138. OPA (Open Policy Agent)           [A]  — Silnik polityk (sidecar, port 8181)
-  139. Rego (język polityk)              [A]  — Policy-as-code
+  138.
+  139.
 
 ────────────────────────────────────────────────────────────────────────────────
  2.17 SYSTEM KSIĘGOWY
 ────────────────────────────────────────────────────────────────────────────────
 
-  140. Proof Chain (proof_chain.py)      [A]  — Łańcuch audytowy SHA-256
-  141. Decision Logger (decision_logger.py)[A] — Rejestrator decyzji
-  142. Integrity Verifier                [A]  — Weryfikator integralności
-  143. Shadow Ledger (tax_simulator.py)  [A]  — Symulacje podatkowe
-  144. Outbox Pattern (outbox_relay.py)  [A]  — Niezawodne publikowanie zdarzeń
-  145. Outbox Replay (outbox_replay.py)  [A]  — Ponawianie zdarzeń
-  146. Dead Letter Queue (DLQ)           [A]  — Kolejka martwych listów
-  147. Sage Engine (saga.py)             [A]  — Orchestracja transakcji rozproszonych
-  148. Audit Logger (audit_logger.py)    [A]  — Log audytowy
-  149. Ledger Worker (ledger_worker.py)  [A]  — Worker księgowy
-  150. TigerBeetle Client                [A]  — Klient double-entry ledger
-  151. Reconciliation (reconciliation.py)[A]  — Uzgadnianie kont
-  152. Smart Approvals (smart_approvals.py)[A] — Inteligentny obieg akceptacji
+  140.
+  141.
+  142.
+  143.
+  144.
+  145.
+  146.
+  147.
+  148.
+  149.
+  150.
+  151.
+  152.
 
 ────────────────────────────────────────────────────────────────────────────────
- 2.18 BAZY DANYCH — SZCZEGÓŁOWE KOMPONENTY
+ 2.18 SERWISY ZEWNĘTRZNE (API)
 ────────────────────────────────────────────────────────────────────────────────
 
-  153. async_db_pool.py                  [A]  — Asynchroniczna pula połączeń
-  154. async_base_service.py             [A]  — Bazowy serwis async
-  155. models.py                         [A]  — Modele ORM
-  156. projection_models.py              [A]  — Modele projekcji
-  157. analytics.py                      [A]  — Menedżer DuckDB
-  158. analytics_schema.py               [A]  — Schemat analityczny
-  159. vector_store.py                   [A]  — sqlite-vec (wektorowa)
-  160. fts.py                            [A]  — Full-text search (SQLite FTS5)
-  161. sqlcipher_config.py               [A]  — Konfiguracja SQLCipher
-  162. sqlcipher_key_rotation.py         [A]  — Rotacja kluczy SQLCipher
-  163. outbox.py                         [A]  — Outbox pattern (DB)
-  164. zpk_schema.py                     [A]  — Schemat ZPK
+  153.
+  154.
+  155.
+  156.
 
 ────────────────────────────────────────────────────────────────────────────────
- 2.19 INFRASTRUKTURA / DEVOPS
-────────────────────────────────────────────────────────────────────────────────
-
-  ── CI/CD (GitHub Actions) ─────────────────────────────────────────────────────
-  165. CI workflow (ci.yml)              [D]  — Główny pipeline CI (hatch run ci)
-  166. Hatch Matrix (3.13 + 3.13t)       [D]  — Testy macierzowe Python
-  167. Performance Locust                 [D]  — Testy wydajności (Locust)
-  168. Profiling CI                       [D]  — Profilowanie wydajności (z użyciem py-spy)
-  169. OpenSSF Scorecard                 [D]  — Bezpieczeństwo repozytorium
-  170. Dependabot                        [D]  — Automatyczne aktualizacje
-  171. Stale Issue & PR Manager          [D]  — Zarządzanie nieaktywnymi zgłoszeniami
-  172. Auto Label PR                     [D]  — Automatyczne etykietowanie PR
-
-  ── Systemd ────────────────────────────────────────────────────────────────────
-  173. systemd (usługi)                  [A]  — nexus-api, nexus-worker
-
-────────────────────────────────────────────────────────────────────────────────
- 2.20 SERWISY ZEWNĘTRZNE (API)
-────────────────────────────────────────────────────────────────────────────────
-
-  174. GUS BIR API                       [A]  — Główny Urząd Statystyczny (dane firm)
-  175. Biała Lista MF API                [A]  — Ministerstwo Finansów (lista VIES)
-  176. KSeF API                          [A]  — Krajowy System e-Faktur (przygotowanie)
-  177. NBP API                           [A]  — Narodowy Bank Polski (kursy walut)
-  178. HuggingFace Hub API               [A]  — Pobieranie modeli AI
-
-────────────────────────────────────────────────────────────────────────────────
- 2.21 NARZĘDZIA I SKRYPTY
+ 2.19 NARZĘDZIA I SKRYPTY
 ────────────────────────────────────────────────────────────────────────────────
 
   ── Skrypty administracyjne (scripts/) ─────────────────────────────────────────
-  179. bootstrap.py                      [A]  — Inicjalizacja środowiska
-  180. setup_env.py                      [A]  — Pobieranie binariek (NATS, TigerBeetle, OPA)
-  181. doctor.py                         [A]  — Diagnostyka systemu
-  182. profiler.py                       [A]  — Profilowanie (py-spy wrapper)
-  183. download_models.py                [A]  — Pobieranie modeli AI
-  184. seed_data.py                      [A]  — Dane demonstracyjne
-  185. reset_db.py                       [A]  — Reset bazy danych
-  186. backup.py                         [A]  — Backup bazy danych
-  187. security_scan.py                  [A]  — Skanowanie bezpieczeństwa
-  188. log_pii_scanner.py                [A]  — Skaner PII w logach
-  189. pii_scan_runner.py                [A]  — Runner skanera PII
-  190. migration_sanity_check.py          [A]  — Sanity check migracji
-  191. schema_drift_check.py              [A]  — Wykrywanie dryfu schematu
-  192. dlq_notifier.py                   [A]  — Powiadomienia DLQ
-  193. otel_buffer_replayer.py           [A]  — Replayer bufora OTel
-  194. outbox_dead_letter_replayer.py    [A]  — Replayer DLQ outbox
-  195. sqlcipher_key_rotation_scheduler.py[A] — Scheduler rotacji kluczy
-  196. kore_delivery_audit.py            [A]  — Audyt dostawy KOR
-  197. performance_engineering.py        [A]  — Inżynieria wydajności
-  198. projection_worker.py              [A]  — Worker projekcji
-  199. fetch_currency_rates.py           [A]  — Pobieranie kursów walut (PEP 723)
-  200. schemathesis_runner.py            [A]  — Runner Schemathesis
-  201. ci_comprehensive_profile.py        [A]  — Profilowanie CI
+  161.
+  162.
+  163.
+  164.
 
   ── Migracje bazy danych (migrations/) ────────────────────────────────────────
-  202. 001_init.sql                      [A]  — Schemat początkowy (invoices, contractors)
-  203. 002_missing_tables.sql            [A]  — Brakujące tabele
-  204. 003_service_tables.sql            [A]  — Tabele serwisowe
-  205. 004_supermoces.sql                [A]  — Tabele supermocy
-  206. run_migrations.py                 [A]  — Runner migracji (zastępuje Alembic)
+  180.
+  181.
+  182.
+  183.
+  184.
 
   ── Instalator (installer/) ────────────────────────────────────────────────────
-  207. dependency_downloader.py          [A]  — Pobieranie zależności
-  208. dependency_ui.py                  [A]  — UI pobierania zależności
-  209. models_downloader.py              [A]  — Pobieranie modeli
-  210. download_progress_ui.py           [A]  — UI postępu pobierania
-  211. updater.py                        [A]  — Aktualizator aplikacji
-  212. notification_win.py               [A]  — Powiadomienia Windows
+  185.
+  186.
+  187.
+  188.
+  189.
+  190.
 
   ── Build scripts (installer/build_scripts/) ──────────────────────────────────
-  213. build_exe.bat                     [D]  — Budowanie exe (Windows)
-  214. build_exe.sh                      [D]  — Budowanie exe (Linux)
-  215. setup.iss                         [D]  — Inno Setup (instalator Windows)
-  216. setup.nsi                         [D]  — NSIS (instalator Windows)
+  193.
+  194.
 
   ── Skrypty pomocnicze ─────────────────────────────────────────────────────────
-  217. aliases.sh                        [A]  — Aliasy powłoki (dv, ap, wk, ts, itp.)
-  218. doctor.sh                         [A]  — Diagnostyka (shell)
 
 ────────────────────────────────────────────────────────────────────────────────
- 2.22 TESTOWANIE
+ 2.20 TESTOWANIE
 ────────────────────────────────────────────────────────────────────────────────
 
-  219. pytest >=8.0.0                    [D]  — Framework testowy
-  220. pytest-cov >=5.0.0                [D]  — Pokrycie kodu
-  221. pytest-xdist >=3.5.0              [D]  — Równoległe testy (-n auto)
-  222. pytest-timeout >=2.2.0            [D]  — Timeout testów (--timeout=30)
-  223. pytest-sugar >=1.0.0              [D]  — Kolorowe raporty
-  224. pytest-watch >=4.2.0              [D]  — Auto-retest przy zmianach
-  225. pytest-benchmark >=4.0.0          [D]  — Benchmarki wydajności
-  226. hypothesis >=6.100.0              [D]  — Property-based testing
-  227. crosshair >=0.1.0                 [D]  — SMT-driven property testing (Z3 solver)
-  228. schemathesis >=3.0.0              [D]  — Fuzz testing API (OpenAPI)
-  229. locust >=2.0.0                    [D]  — Testy wydajności (Python)
-  230. unittest.mock                     [D]  — Mockowanie (standard library)
-  232. approx (Rust crate)               [D]  — Porównania zmiennoprzecinkowe (Rust tests)
-  233. criterion (Rust crate)            [D]  — Benchmarki Rust (HTML reports)
+  197.
+  198.
+  199.
+  200.
+  201.
+  202.
+  203.
+  204.
+  205.
+  206.
+  207.
+  208.
+  210.
+  211.
 
   ── Pliki testowe ──────────────────────────────────────────────────────────────
-  234. tests/ (155 plików testowych)     [D]  — Testy jednostkowe + integracyjne
-  235. tests/unit/                       [D]  — Testy jednostkowe
-  236. tests/integration/                [D]  — Testy integracyjne
-  237. tests/schemathesis/               [D]  — Testy Schemathesis
-  238. tests/performance/                [D]  — Testy wydajności (Locust)
-  239. tests/benchmarks/                 [D]  — Benchmarki
-  240. tests/security/                   [D]  — Testy bezpieczeństwa
-  241. tests/rego/                       [D]  — Testy reguł Rego (OPA)
+  212.
+  213.
+  214.
+  215.
+  216.
+  217.
+  218.
+  219.
 
 ────────────────────────────────────────────────────────────────────────────────
- 2.23 JAKOŚĆ KODU
+ 2.21 JAKOŚĆ KODU
 ────────────────────────────────────────────────────────────────────────────────
 
-  242. mypy >=1.8.0 (v2.1.0)             [D]  — Type checker (strict mode dla tax/)
-  243. ruff >=0.3.0 (v0.15.16)          [D]  — Linter + Formatter
-  244. pre-commit >=4.6.0                [D]  — Hooki git (przed commit)
+  220.
+  221.
+  222.
 
 ────────────────────────────────────────────────────────────────────────────────
- 2.24 ZALEŻNOŚCI SYSTEMOWE (conda-forge przez pixi)
+ 2.22 ZALEŻNOŚCI SYSTEMOWE (conda-forge przez pixi)
 ────────────────────────────────────────────────────────────────────────────────
 
-  245. python = 3.13.*_cp313t            [A]  — Free-threaded Python 3.13t
-  246. tesseract >=5.3.0                  [A]  — Silnik OCR
-  247. libopencv >=4.9.0                  [A]  — OpenCV biblioteka systemowa
-  248. mimalloc >=2.1.0                  [A]  — Alokator pamięci
-  249. rust >=1.78.0 (v1.96.0)           [A]  — Rust toolchain
-  250. libxml2 >=2.12.0                   [Z]  — XML parser (transitive dep lxml)
-  251. libxslt >=1.1.39                   [Z]  — XSLT (transitive dep lxml)
-  253. cmake >=3.28.0                    [D]  — Build tool (dla llama-cpp-python CUDA)
-  254. pkg-config >=0.29.2               [Z]  — Wykrywanie bibliotek systemowych
-  255. CUDA Toolkit (v13.0.2)            [Z]  — NVIDIA CUDA (przez PyTorch)
-  256. nvidia-cuda-runtime (cu12)        [Z]  — CUDA runtime
-  257. nvidia-cudnn (cu13)               [Z]  — NVIDIA cuDNN
-  258. nvidia-nccl                        [Z]  — NVIDIA NCCL
-  259. nvidia-cublas                     [Z]  — NVIDIA cuBLAS
+  223.
+  224.
+  100.225
+  101.226
+  102.227
+  103.228
+  104.229
+  105.231
+  106.232
+  107.233
+  108.234
+  109.235
+  110.236
+  111.237
 
 ────────────────────────────────────────────────────────────────────────────────
- 2.25 ZALEŻNOŚCI RUST (Cargo)
+ 2.23 ZALEŻNOŚCI RUST (Cargo)
 ────────────────────────────────────────────────────────────────────────────────
 
   ── nexus-crypto (nexus_ai/rust/Cargo.toml) ───────────────────────────────────
-  260. pyo3 (v0.22, ABI3, extension-module) [A]  — Python bindings
-  261. pyo3-log (v0.11)                   [Z]  — Logowanie PyO3
+  112.238
+  113.239
   262-269. (8 wewnętrznych crate'ów nexus-crypto — szczegóły implementacyjne)
-  270. hex (v0.4)                         [Z]  — Hex encoding
-  271. serde (v1, derive)                 [Z]  — Serializacja w Rust
-  272. serde_json (v1)                    [Z]  — JSON w Rust
-  273. base64 (v0.22)                     [Z]  — Base64
-  274. quick-xml (v0.36)                  [A]  — Szybki parser XML
-  275. uuid (v1, v4)                      [Z]  — UUID generation
-  276. chrono (v0.4)                      [Z]  — Data i czas
-  277. rayon (v1.10)                      [A]  — Równoległość danych
-  278. libc (v0.2)                        [Z]  — Bindings libc
-  279. thiserror (v2)                     [Z]  — Error handling
-  280. log (v0.4)                         [Z]  — Logowanie
-  281. mimalloc (v0.1, secure)            [A]  — Alokator pamięci (tryb secure)
-  282. criterion (v0.5, html_reports)     [D]  — Benchmarking
+  114.248
+  115.249
+  116.250
+  117.251
+  118.252
+  119.253
+  120.254
+  121.255
+  122.256
+  123.257
+  124.258
+  125.259
+  126.260
 
   ── nexus-tax-engine (nexus_tax_engine/Cargo.toml) ────────────────────────────
-  284. pyo3 (v0.23, extension-module)     [A]  — Python bindings
-  285. serde (v1, derive)                 [Z]  — Serializacja
-  288. serde_json (v1)                    [Z]  — JSON
-  289. thiserror (v2)                     [Z]  — Error handling
-  290. uuid (v1, v4)                      [Z]  — UUID
-  291. approx (v0.5)                      [D]  — Testy (porównania)
+  127.262
+  128.263
+  129.266
+  130.267
+  131.268
+  132.269
 
 ────────────────────────────────────────────────────────────────────────────────
- 2.26 POZOSTAŁE ZALEŻNOŚCI PYPI (z pixi.lock)
+ 2.24 POZOSTAŁE ZALEŻNOŚCI PYPI (z pixi.lock)
 ────────────────────────────────────────────────────────────────────────────────
 
   ── Kluczowe pakiety PyPI (wybrane) ───────────────────────────────────────────
-  292. jinja2 (v3.1.6)                   [Z]  — Templating (transitive dep)
-  293. rich (v15.0.0)                    [Z]  — Terminal UI (transitive dep)
-  294. tqdm (v4.68.1)                    [Z]  — Progress bar (transitive dep)
-  295. requests (v2.34.2)                [Z]  — HTTP (legacy, transitive dep)
-  296. python-dotenv                     [Z]  — .env loading (transitive dep)
-  297. scipy (v1.17.1)                   [Z]  — Obliczenia naukowe
-  298. scikit-image                       [Z]  — Przetwarzanie obrazów
-  299. shapely                           [Z]  — Geometria (Morphological ops)
-  300. albumentations (v2.0.8)           [Z]  — Augmentacja obrazów
-  301. regex (v2026.5.9)                 [Z]  — Wyrażenia regularne (transitive dep)
+  133.270
+  134.271
+  135.272
+  136.273
+  137.274
+  138.275
+  139.276
+  140.277
+  141.278
+  142.279
 
 ────────────────────────────────────────────────────────────────────────────────
- 2.27 PLIKI KONFIGURACYJNE
+ 2.25 PLIKI KONFIGURACYJNE
 ────────────────────────────────────────────────────────────────────────────────
 
-  302. pixi.toml                          [A]  — Główna konfiguracja środowiska + taski
-  303. pixi.lock                          [A]  — Lockfile (wszystkie zależności)
-  304. pyproject.toml                     [A]  — Konfiguracja projektu Python (hatch, mypy, ruff)
-  305. nexus_ai/rust/Cargo.toml           [A]  — Konfiguracja Rust (nexus-crypto)
-  306. nexus_tax_engine/Cargo.toml        [A]  — Konfiguracja Rust (nexus-tax-engine)
-  307. nexus_ai/rust/pyproject.toml       [A]  — PyPI metadata dla nexus-crypto
-  308. user.nuitka-package-config.yml     [A]  — Konfiguracja Nuitka
-  309. config/base.toml                   [A]  — Wspólna konfiguracja (podatki, forex, AI)
-  310. config/dev.toml                    [A]  — Konfiguracja developerska
-  311. config/prod.toml                   [A]  — Konfiguracja produkcyjna
-  312. config/protocols.toml              [A]  — Protokoły biznesowe (DecisionEngine v2.4)
-  313. config/models_manifest.json        [A]  — Manifest modeli AI (v2.2.0)
-  314. config/version.json                [A]  — Wersja aplikacji (v2.3.0)
-  315. .github/labeler.yml                [D]  — Etykiety PR
-  316. .github/dependabot.yml             [D]  — Automatyczne aktualizacje
+  143.280
+  144.281
+  145.282
+  146.283
+  147.284
+  148.285
+  149.286
+  150.287
+  151.288
+  152.289
+  153.290
+  154.291
+  155.292
+  156.293
+  157.294
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -567,7 +507,6 @@
 
   ── AI / ML ──────────────────────────────────────────────────────────────────
   • llama-cpp-python   — GGUF inference (v0.2.0+)
-  • huggingface-hub    — Model Hub (v0.36.2)
   • torch              — PyTorch (v2.12.0)
   • transformers       — Transformers (v4.53.3)
   • tokenizers         — Tokenizacja (v0.21.4)
@@ -630,8 +569,8 @@
   • nexus-api          [A]  — Serwer API (Granian + Litestar)
   • nexus-worker       [A]  — Worker Taskiq
   • nexus-desktop      [A]  — Interfejs Flet
-  • nexus-cli          [A]  — CLI zarządzania
-  • nexus-build        [A]  — Unified build CLI
+  • nexus-cli          [R]  — Zastąpiony przez pixi tasks (CLI zostało rozproszone)
+  • nexus-build        [R]  — Zastąpiony przez pixi tasks (build-all, build-rust, build-nuitka)
 
   ── Silniki i serwisy ─────────────────────────────────────────────────────────
   • TaxMathEngine      [A]  — Matematyka podatkowa

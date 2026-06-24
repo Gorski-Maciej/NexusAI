@@ -7,7 +7,7 @@ Provides:
 - ``clear_cache_async(prefix)``: Backward-compatible cache clear
 - ``clear_cache(prefix)``: Sync version of ``clear_cache_async``
 
-Uses ``core.cache.NexusCache`` (L1 RAM + L2 SQLite/dyscache, msgspec serialization)
+Uses ``core.cache.NexusCache`` (diskcache-backed, msgspec serialization)
 zamiast osobnej implementacji ``_MemoryFallback``. Spójne z resztą stacku cache
 — ten sam singleton co ``DecisionEngine``, ``SemanticGuard`` itp.
 
@@ -42,7 +42,7 @@ nexus_cache = get_cache()
 def ttl_cache(seconds: int = 60):
     """Decorator that caches async function results using nexus_cache.
 
-    Używa ``nexus_cache`` (core NexusCache) z L1 RAM + L2 SQLite/dyscache.
+    Używa ``nexus_cache`` (core NexusCache) z dyskiem cache (diskcache).
 
     Klucz cache: ``ttlcache:{func.__module__}.{func.__qualname__}:{args[1:]}:{sorted(kwargs.items())}``
 
@@ -90,8 +90,8 @@ def ttl_cache(seconds: int = 60):
 async def clear_cache_async(prefix: str | None = None) -> None:
     """Backward-compatible cache clear function.
 
-    Czyści L1 (RAM) + L2 (diskcache/SQLite) dla kluczy z danym prefixem.
-    Jeśli prefix jest None, czyści cały cache (L1 + L2).
+    Czyści cache dla kluczy z danym prefixem.
+    Jeśli prefix jest None, czyści cały cache.
 
     Args:
         prefix: Prefiks kluczy do usunięcia (np. ``"api.routes.analytics"``).

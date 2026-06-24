@@ -206,7 +206,7 @@ class InvoiceController(Controller):
         # Audit trail przez DecisionTraceLogger (hash chain w DuckDB decision_traces)
         try:
             import duckdb
-            from nexus_ai.tax.audit import DecisionTraceLogger
+            from nexus_ai.tax import DecisionTraceLogger
             
             conn = duckdb.connect(str(config.duckdb_path))
             try:

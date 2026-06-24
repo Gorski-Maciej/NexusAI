@@ -6,7 +6,7 @@ SUPERMOCE Flet 0.28+:
   - ft.Shimmer dla loading skeleton zamiast pustej listy
   - ft.Tooltip na długich task names
   - ft.Ref<T> typowane referencje
-  - page.pubsub dla WebSocket progress update
+  - page.pubsub dla progress update przez socket UNIX
   - page.run_task dla async polling
 """
 
@@ -131,7 +131,7 @@ def TaskMonitorPanel(page: ft.Page, api_client=None):
       - @ft.component + use_state() zamiast klasy
       - ft.NumberBadge na zakładkach Tabs
       - ft.Shimmer dla loading skeleton
-      - page.pubsub dla WebSocket progress update
+      - page.pubsub dla progress update przez socket UNIX
       - page.run_task dla async polling
     """
     # SUPERMOC: use_state zamiast self._variables
@@ -139,7 +139,7 @@ def TaskMonitorPanel(page: ft.Page, api_client=None):
     filter_index = ft.use_state(0)
     auto_refresh = ft.use_state(False)
     is_loading = ft.use_state(True)
-    ws_last_update = ft.use_state(0.0)
+    last_update_ts = ft.use_state(0.0)
 
     # SUPERMOC: ft.Ref dla kontrolek
     task_list_ref = ft.use_ref[ft.ListView]()
@@ -188,7 +188,7 @@ def TaskMonitorPanel(page: ft.Page, api_client=None):
     def on_progress_update(data):
         if not isinstance(data, dict):
             return
-        ws_last_update.set(time.time())
+        last_update_ts.set(time.time())
         task_id = data.get("task_id", "")
         if not task_id:
             return
@@ -232,7 +232,7 @@ def TaskMonitorPanel(page: ft.Page, api_client=None):
             _refresh_task.cancel()
             _refresh_task = None
 
-    # Subskrybuj zdarzenia WebSocket
+    # Subskrybuj zdarzenia postępu (przychodzą przez socket UNIX)
     page.pubsub.subscribe("progress_update", on_progress_update)
 
     # SUPERMOC: Build

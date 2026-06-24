@@ -351,7 +351,7 @@ class HealthController(Controller):
         try:
             import duckdb
             from core.config import AppConfig
-            from nexus_ai.tax.audit import verify_chain_integrity
+            from nexus_ai.tax import verify_chain_integrity
 
             cfg = AppConfig()
             conn = duckdb.connect(str(cfg.duckdb_path), read_only=True)

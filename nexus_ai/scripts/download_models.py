@@ -188,25 +188,9 @@ def download_doctr_models(
         print(f"    Repo: {repo_id}")
         print(f"    Description: {description}")
 
-        # Próbuj pobrać przez huggingface-hub
-        try:
-            from huggingface_hub import snapshot_download
-
-            try:
-                snapshot_download(
-                    repo_id=repo_id,
-                    cache_dir=models_dir,
-                    local_files_only=False,
-                )
-                statuses[model_key] = "downloaded"
-                print(f"    {model_key} downloaded successfully.")
-            except Exception as exc:
-                print(f"    X Error downloading {model_key}: {exc}")
-                statuses[model_key] = "error"
-                continue
-        except ImportError:
-            print("  [INFO] huggingface-hub not installed — models will auto-download on first use")
-            statuses[model_key] = "auto"
+        # Modele docTR pobierane automatycznie przy pierwszym użyciu
+        print(f"    {model_key} will auto-download on first use")
+        statuses[model_key] = "auto"
 
         # SUPERMOC: ONNX export jeśli zażądano
         if export_onnx and statuses.get(model_key) in ("downloaded", "auto"):
