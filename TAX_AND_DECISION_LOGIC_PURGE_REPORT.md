@@ -33,7 +33,7 @@ Zmodyfikowano **3 pliki konfiguracyjne** (tax/__init__.py, services/__init__.py,
 
 | # | Nazwa | Status |
 |---|-------|--------|
-| 144 | `serde` + `serde_json` (Rust crate) | ⏳ **Usunięte z dokumentacji** — pozostają w `Cargo.toml` i `Cargo.lock` jako transitive |
+| 144 | `serde` + `serde_json` (Rust crate) | ✅ **Usunięte z dokumentacji** — pozostają w `Cargo.toml` i `Cargo.lock` jako transitive dep (dołączone zbiorczo do opisu nexus-crypto) |
 
 ## Sekcja 4 — Zmodyfikowane pliki
 
@@ -45,7 +45,7 @@ Zmodyfikowano **3 pliki konfiguracyjne** (tax/__init__.py, services/__init__.py,
 | `nexus_ai/api/routes/audit.py` | **ZMODYFIKOWANY** | Import: `tax.audit` → `nexus_ai.tax` |
 | `nexus_ai/api/routes/health.py` | **ZMODYFIKOWANY** | Import: `nexus_ai.tax.audit` → `nexus_ai.tax` |
 | `nexus_ai/api/routes/invoices.py` | **ZMODYFIKOWANY** | Import: `nexus_ai.tax.audit` → `nexus_ai.tax` |
-| `RAPORT_TECHNOLOGII_NEXUSAI.txt` | ⏳ Do aktualizacji | Usunąć pozycje dla serde/serde_json |
+| `RAPORT_TECHNOLOGII_NEXUSAI.txt` | ✅ **Zaktualizowany** | serde/serde_json usunięte jako osobne pozycje, dołączone zbiorczo do opisu nexus-crypto/nexus-tax-engine |
 
 ## Sekcja 5 — Pozostałe do wykonania
 
@@ -63,7 +63,7 @@ Rozwiązanie: zamiana `from nexus_ai.tax.audit import X` na `from nexus_ai.tax i
 ## Sekcja 6 — Podsumowanie
 
 - **9 plików źródłowych** — fizycznie usunięte
-- **2 pozycje dokumentacji** — serde/serde_json do usunięcia z RAPORT_TECHNOLOGII_NEXUSAI.txt
+- **2 pozycje dokumentacji** — serde/serde_json usunięte z RAPORT_TECHNOLOGII_NEXUSAI.txt (dołączone zbiorczo do opisu nexus-crypto/nexus-tax-engine)
 - **4 pliki** — zmodyfikowane (importy przekierowane)
 - **~12+ plików** — wymaga dalszej aktualizacji importów
 - **Nowa architektura**: OPA/Rego + Nexus-TaxEngine + łańcuch SHA-256 (Rust)

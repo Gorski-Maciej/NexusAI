@@ -148,7 +148,9 @@
   ── Moduł własny nexus-crypto (Rust + PyO3) ───────────────────────────────────
   42. nexus-crypto (własny)              [A]  — Własny moduł kryptograficzny (Rust+PyO3).
        Zawiera wewnętrznie: AEAD (ChaCha20Poly1305), Argon2id, SHA-256, BLAKE2, HMAC,
-       kryptograficzne RNG (OsRng), zeroizację pamięci, JWT (jsonwebtoken crate)
+       kryptograficzne RNG (OsRng), zeroizację pamięci, JWT (jsonwebtoken crate).
+       Wewnętrznie używa m.in. serde, serde_json, uuid, chrono, hex, base64,
+       pyo3-log, log, libc, thiserror.
 
   ── Wbudowane w Litestar ──────────────────────────────────────────────────────
   51. Litestar JWT                       [A]  — JWT authentication (wbudowany)
@@ -277,9 +279,8 @@
   133.
 
   ── Silnik natywny Rust (nexus-tax-engine) ────────────────────────────────────
-  134.
-  135.
-  137.
+  134. nexus-tax-engine (własny)         [A]  — Natywny silnik podatkowy (Rust+PyO3).
+       Wewnętrznie używa m.in. serde, serde_json, uuid, thiserror.
 
   ── OPA / Rego ────────────────────────────────────────────────────────────────
   138.
@@ -404,66 +405,37 @@
 ────────────────────────────────────────────────────────────────────────────────
 
   ── nexus-crypto (nexus_ai/rust/Cargo.toml) ───────────────────────────────────
-  112.238
-  113.239
-  262-269. (8 wewnętrznych crate'ów nexus-crypto — szczegóły implementacyjne)
-  114.248
-  115.249
-  116.250
-  117.251
-  118.252
-  119.253
-  120.254
-  121.255
-  122.256
-  123.257
-  124.258
-  125.259
-  126.260
+  (Wewnętrzne zależności Rusta — zarządzane przez Cargo.toml, nie stanowią
+  samodzielnych wyborów architektonicznych — szczegóły w sekcji 2.8 oraz 4)
 
   ── nexus-tax-engine (nexus_tax_engine/Cargo.toml) ────────────────────────────
-  127.262
-  128.263
-  129.266
-  130.267
-  131.268
-  132.269
+  (Wewnętrzne zależności Rusta — zarządzane przez Cargo.toml, nie stanowią
+  samodzielnych wyborów architektonicznych — szczegóły w sekcji 2.16 oraz 4)
 
 ────────────────────────────────────────────────────────────────────────────────
  2.24 POZOSTAŁE ZALEŻNOŚCI PYPI (z pixi.lock)
 ────────────────────────────────────────────────────────────────────────────────
 
   ── Kluczowe pakiety PyPI (wybrane) ───────────────────────────────────────────
-  133.270
-  134.271
-  135.272
-  136.273
-  137.274
-  138.275
-  139.276
-  140.277
-  141.278
-  142.279
+  133.271
+  134.272
+  135.273
+  136.274
+  137.275
+  138.276
+  139.277
 
 ────────────────────────────────────────────────────────────────────────────────
  2.25 PLIKI KONFIGURACYJNE
 ────────────────────────────────────────────────────────────────────────────────
 
-  143.280
-  144.281
-  145.282
-  146.283
-  147.284
-  148.285
-  149.286
-  150.287
-  151.288
-  152.289
-  153.290
-  154.291
-  155.292
-  156.293
-  157.294
+  143.282
+  144.284
+  145.286
+  146.290
+  147.291
+  148.293
+  149.294
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -539,11 +511,6 @@
   • pendulum           — Daty/czas (v3.2.0)
   • numpy              — Obliczenia numeryczne (v2.0.0+)
   • stamina            — Retry/circuit breaker
-  • scipy              — Obliczenia naukowe (v1.17.1)
-  • jinja2             — Templating (v3.1.6)
-  • rich               — Terminal UI (v15.0.0)
-  • tqdm               — Progress bar (v4.68.1)
-  • requests           — HTTP (v2.34.2)
   • cryptography       — TYLKO KSeF: RSA/X.509 certyfikaty (v48.0.0)
   • attrs              — Klasy danych (v26.1.0)
 
@@ -588,7 +555,7 @@
   ZALEŻNOŚCI POŚREDNIE [Z]:           ~67
   TECHNOLOGIE DEWELOPERSKIE [D]:      ~48
 
-  ŁĄCZNIE UNIKALNYCH TECHNOLOGII:     ~312
+  ŁĄCZNIE UNIKALNYCH TECHNOLOGII:     ~298  (po usunięciu 16 wewnętrznych zależności Rusta + 5 zbędnych pakietów PyPI z listy)
 
   ── Podział kodu ──────────────────────────────────────────────────────────────
   • Python (produkcja, nexus_ai/):   100 707 linii  (69.0%)

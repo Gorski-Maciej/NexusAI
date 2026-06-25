@@ -89,7 +89,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **msgspec** — serializacja API + konfiguracja TOML | json, python-dotenv, pydantic-settings | ✅ | `nexus_ai/core/config.py` → `msgspec.toml.decode` |
+| **msgspec** — serializacja API + konfiguracja TOML | json, pydantic-settings | ✅ | `nexus_ai/core/config.py` → `msgspec.toml.decode` |
 | **Pydantic** — tylko przez SQLModel (niewidoczny) | — | ✅ | Tylko jako zależność przechodnia SQLModel |
 
 ### Punkt 5 — Kolejki i komunikacja asynchroniczna
@@ -176,7 +176,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **TOML + msgspec** — konfiguracja | .env, python-dotenv, YAML | ✅ | `nexus_ai/core/config.py` |
+| **TOML + msgspec** — konfiguracja | .env, YAML | ✅ | `nexus_ai/core/config.py` |
 | **pendulum** — daty i czas | datetime, pytz, dateparser | ✅ | Używany w całym projekcie |
 | **psutil** — monitorowanie systemu | — | ✅ | System monitoring via psutil |
 
