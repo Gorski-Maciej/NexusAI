@@ -41,7 +41,6 @@ from typing import Any
 
 import pytest
 import schemathesis
-from hypothesis import HealthCheck, settings, strategies as st
 from schemathesis import checks as st_checks
 
 from tests.schemathesis.conftest import schema_from_app
@@ -51,12 +50,6 @@ from tests.schemathesis import GenerationMode
 # ── SUPERMOC: module-level schema — tworzona RAZ przy imporcie ────────────
 logger = logging.getLogger("nexus.tests.schemathesis")
 _schema, _test_app = schema_from_app()
-
-# ── Fallback dla HealthCheck.too_slow (Hypothesis starsze niż 6.45) ───────
-try:
-    _SUPPRESS = [HealthCheck.too_slow]  # type: ignore[attr-defined]
-except (ImportError, AttributeError):
-    _SUPPRESS = []
 
 # ── pytestmark — wszystkie testy w tym module mają marker schemathesis ─────
 pytestmark = [
@@ -74,11 +67,6 @@ pytestmark = [
 
 @pytest.mark.slow
 @_schema.parametrize(generation_mode=GenerationMode.POSITIVE)
-@settings(  # type: ignore[misc]
-    max_examples=3,
-    deadline=5000,
-    suppress_health_check=_SUPPRESS,
-)
 def test_positive_happy_path(case: schemathesis.Case) -> None:
     """SUPERMOC: Tylko poprawne dane — szybka weryfikacja happy path.
 
@@ -107,11 +95,6 @@ def test_positive_happy_path(case: schemathesis.Case) -> None:
 
 
 @_schema.parametrize(generation_mode=GenerationMode.NEGATIVE)
-@settings(  # type: ignore[misc]
-    max_examples=10,
-    deadline=None,
-    suppress_health_check=_SUPPRESS,
-)
 def test_negative_scenarios(case: schemathesis.Case) -> None:
     """SUPERMOC: Tylko nieprawidłowe dane — testowanie walidacji.
 
@@ -146,11 +129,6 @@ def test_negative_scenarios(case: schemathesis.Case) -> None:
 
 
 @_schema.parametrize()
-@settings(  # type: ignore[misc]
-    max_examples=5,
-    deadline=None,
-    suppress_health_check=_SUPPRESS,
-)
 def test_mixed_scenarios(case: schemathesis.Case) -> None:
     """SUPERMOC: Mieszane dane (domyślne) — pełny fuzz wszystkich endpointów.
 
@@ -187,11 +165,6 @@ def test_mixed_scenarios(case: schemathesis.Case) -> None:
 
 @pytest.mark.slow
 @_schema.parametrize(endpoint="/api/v2/tax", method="POST")
-@settings(  # type: ignore[misc]
-    max_examples=50,  # Bardzo dokładny fuzz dla podatków
-    deadline=5000,
-    suppress_health_check=_SUPPRESS,
-)
 def test_tax_math_precision(case: schemathesis.Case) -> None:
     """SUPERMOC: Precyzyjny fuzz dla kalkulacji podatkowych.
 
@@ -216,11 +189,6 @@ def test_tax_math_precision(case: schemathesis.Case) -> None:
 
 @pytest.mark.slow
 @_schema.parametrize(endpoint="/api/auth/login", method="POST")
-@settings(  # type: ignore[misc]
-    max_examples=30,
-    deadline=3000,
-    suppress_health_check=_SUPPRESS,
-)
 def test_auth_login_resistance(case: schemathesis.Case) -> None:
     """SUPERMOC: Test odporności loginu na brute-force.
 
@@ -243,11 +211,6 @@ def test_auth_login_resistance(case: schemathesis.Case) -> None:
 
 @pytest.mark.slow
 @_schema.parametrize(method="POST")
-@settings(  # type: ignore[misc]
-    max_examples=10,
-    deadline=5000,
-    suppress_health_check=_SUPPRESS,
-)
 def test_all_post_endpoints(case: schemathesis.Case) -> None:
     """SUPERMOC: Test wszystkich POST endpointów.
 
@@ -276,11 +239,6 @@ def test_all_post_endpoints(case: schemathesis.Case) -> None:
 
 
 @_schema.parametrize(endpoint="/api/v2/invoices")
-@settings(  # type: ignore[misc]
-    max_examples=20,
-    deadline=5000,
-    suppress_health_check=_SUPPRESS,
-)
 def test_invoice_polish_chars(case: schemathesis.Case) -> None:
     """SUPERMOC: Test faktur z polskimi znakami diakrytycznymi.
 
@@ -324,11 +282,6 @@ except ImportError:
 @pytest.mark.skipif(not HAS_SYRuPY, reason="Requires syrupy for snapshot testing")
 @pytest.mark.slow
 @_schema.parametrize(generation_mode=GenerationMode.POSITIVE)
-@settings(  # type: ignore[misc]
-    max_examples=2,
-    deadline=5000,
-    suppress_health_check=_SUPPRESS,
-)
 def test_snapshot_conformance(case: schemathesis.Case, snapshot: SnapshotAssertion) -> None:
     """SUPERMOC: Porównuje odpowiedź z snapshotem.
 

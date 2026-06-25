@@ -25,7 +25,6 @@ import logging
 
 import pytest
 import schemathesis
-from hypothesis import HealthCheck, settings
 from litestar.testing import AsyncTestClient
 
 from tests.schemathesis.conftest import schema_from_app
@@ -37,12 +36,6 @@ _schema, _test_app = schema_from_app()
 # UWAGA: Nie można go zaimportować jako ``from schemathesis.stateful import ...``
 # ponieważ schemathesis.stateful jest modułem dynamicznym. Używamy:
 #   schemathesis.stateful.run_state_machine_as_test()
-
-# ── Fallback dla HealthCheck.too_slow (Hypothesis starsze niż 6.45) ───────
-try:
-    _SUPPRESS = [HealthCheck.too_slow]  # type: ignore[attr-defined]
-except (ImportError, AttributeError):
-    _SUPPRESS = []
 
 pytestmark = [
     pytest.mark.schemathesis,
@@ -81,11 +74,7 @@ def test_stateful_workflows() -> None:
                 schemathesis.checks.status_code_conformance,
                 schemathesis.checks.content_type_conformance,
             ],
-            settings=settings(
-                max_examples=3,  # 3 pełne cykle życia
-                deadline=None,
-                suppress_health_check=_SUPPRESS,
-            ),
+            # settings: używa domyślnych ustawień schemathesis (hypothesis jako transitive dep)
         )
         logger.info("Stateful workflows PASSED")
     except Exception as exc:
@@ -102,11 +91,6 @@ def test_stateful_workflows() -> None:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
-@settings(  # type: ignore[misc]
-    max_examples=1,
-    deadline=10000,
-    suppress_health_check=_SUPPRESS,
-)
 async def test_health_auth_version_workflow() -> None:
     """Ręczny workflow: Health check → Auth login → Weryfikacja.
 
@@ -163,11 +147,6 @@ async def test_health_auth_version_workflow() -> None:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
-@settings(  # type: ignore[misc]
-    max_examples=1,
-    deadline=10000,
-    suppress_health_check=_SUPPRESS,
-)
 async def test_workflow_error_scenarios() -> None:
     """SUPERMOC: Workflow z błędami — testowanie obsługi błędów.
 
@@ -215,11 +194,6 @@ async def test_workflow_error_scenarios() -> None:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
-@settings(  # type: ignore[misc]
-    max_examples=1,
-    deadline=10000,
-    suppress_health_check=_SUPPRESS,
-)
 async def test_auth_bypass_attempts() -> None:
     """SUPERMOC: Test ochrony endpointów przed nieautoryzowanym dostępem.
 

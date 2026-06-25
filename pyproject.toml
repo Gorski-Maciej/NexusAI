@@ -179,8 +179,7 @@ dev = [
     # Osobny pakiet pytest-anyio na PyPI to dummy v0.0.0.
     # Używaj: @pytest.mark.anyio lub pytestmark = pytest.mark.anyio
     "pytest-cov>=5.0.0",
-    "crosshair>=0.1.0.dev0",  # Property-based testing z SMT solverem (tylko dev version on PyPI)
-    "hypothesis>=6.100.0",  # Zachowany dla złożonych property-based tests (test_property_based.py)
+    "crosshair>=0.1.0.dev0",  # Property-based testing z SMT solverem — jedyne narzędzie PBT
     "ruff>=0.3.0",
     "mypy>=1.8.0",
     "schemathesis>=3.30.0",  # Automatyczny fuzz testing API ze schematu OpenAPI
@@ -337,7 +336,7 @@ warn_unused_ignores = false
 # [feature.dev.pypi-dependencies] w pixi.toml.
 
 # ── crosshair (SMT-driven property-based testing) ────────────────────────────
-# Zastępuje: hypothesis (głównie)
+# Jedyne narzędzie do property-based testing w NexusAI (zastąpiło hypothesis).
 # crosshair uses SMT-based static analysis with Z3 solver to mathematically
 # prove correctness instead of random fuzzing. It's faster, more deterministic.
 #
@@ -387,7 +386,6 @@ dependencies = [
     "pytest-anyio>=0.1.0",
     "pytest-cov>=5.0.0",
     "crosshair>=0.1.0.dev0",
-    "hypothesis>=6.100.0",
 ]
 
 [tool.hatch.envs.test.scripts]

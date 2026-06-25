@@ -524,14 +524,7 @@
 
   ── Testowanie ───────────────────────────────────────────────────────────────
   • pytest             — Framework testowy (v8.0.0+)
-  • pytest-cov         — Pokrycie kodu
-  • pytest-xdist       — Równoległe testy
-  • pytest-timeout     — Timeout
-  • pytest-sugar       — Kolorowe raporty
-  • pytest-watch       — Auto-retest
-  • pytest-benchmark   — Benchmarki
-  • hypothesis         — Property-based testing
-  • crosshair          — SMT-driven testing
+  • crosshair          — SMT-driven property-based testing (zastąpił hypothesis)
   • schemathesis       — Fuzz testing API
   • locust             — Load testing
   ── DevOps ───────────────────────────────────────────────────────────────────
