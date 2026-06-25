@@ -657,7 +657,7 @@ description = "Szybkie wdrożenie produkcyjne"
 # ══════════════════════════════════════════════════════════════════════════════
 
 [feature.dev.dependencies]
-cmake = ">=3.28.0"         # Potrzebne do kompilacji llama-cpp-python z CUDA
+cmake = ">=3.28.0"         # Potrzebne do kompilacji natywnych rozszerzeń Pythona (llama-cpp-python, itp.)
 
 [feature.dev.pypi-dependencies]
 # ── Testowanie ──────────────────────────────────────────────────────────────
