@@ -128,7 +128,6 @@ REQUIRED_TECHNOLOGIES = {
     "dlt",
     "Polars",
     "HTTPX",
-    "Pydantic V2",
     "xsdata",
     "Authlib",
     "OData-query",

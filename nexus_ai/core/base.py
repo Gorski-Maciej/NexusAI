@@ -3,7 +3,7 @@
 
 Zgodnie z aa3fvcx.txt: lxml zastępuje xml.etree.ElementTree.
 lxml zapewnia:
-- 5-10× szybsze parsowanie i serializację (C libxml2/libxslt)
+- 5-10× szybsze parsowanie i serializację (natywny C)
 - Walidację XSD (XMLSchema)
 - pretty_print dla czytelnego XML
 """

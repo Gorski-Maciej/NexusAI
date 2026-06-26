@@ -1,10 +1,6 @@
 """
 AsyncDecisionQueue — trwała kolejka decyzji (async).
 
-Zgodnie z docs/AIOSQLITE_AUDIT.md:
-- FAZA 2: Konwersja z sync Engine na AsyncEngine
-- Wszystkie operacje są async — nie blokują pętli zdarzeń
-
 Każda decyzja ma:
   - Priorytet (LOW, NORMAL, HIGH, CRITICAL)
   - Termin ważności (expires_at)

@@ -143,7 +143,6 @@ confidence = 0.50
 # - Jeśli ≥3/4 silników zgodne → confidence boost +0.05
 # - Jeśli 4/4 zgodne → confidence boost +0.10
 # - Jeśli tylko 2/4 zgodne → standardowy próg
-# docTR zastąpił Surya OCR (Apache 2.0, DBNet + PARSeq, ekstrakcja tabel)
 risk_vat_confidence_required = 0.98
 risk_total_net_confidence_required = 0.95
 risk_invoice_date_confidence_required = 0.90
@@ -163,10 +162,8 @@ cache_prompt_pack_ttl = 3600
 cache_model_ttl = 600
 
 # ── OCR consensus — 4-way (Tesseract + PaddleOCR + docTR + EasyOCR) ──
-# docTR zastąpił Surya OCR. docTR ma Apache 2.0, lepszą ekstrakcję tabel,
-# detekcję orientacji i 4× mniejsze modele (~500 MB vs ~1.8 GB Surya).
-# Waga docTR = 0.30 (ex-Surya) — modułowa architektura DBNet + PARSeq
-# jest co najmniej równie skuteczna w analizie layoutu.
+# Waga docTR = 0.30 — modułowa architektura DBNet + PARSeq
+# jest skuteczna w analizie layoutu.
 [thresholds.ocr_consensus]
 # Minimalna liczba silników do konsensusu (4-way: 3 z 4 = supermajority)
 majority_threshold = 3

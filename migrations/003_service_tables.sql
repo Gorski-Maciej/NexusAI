@@ -1,5 +1,4 @@
 -- 003_service_tables.sql — Consolidate service-level tables (NexusAI)
--- Zgodne z migracją Alembic: 0003_consolidate_service_tables.py
 -- Konsoliduje tabele z plików serwisowych: scheduler, event_log, decision_queue,
 -- notification_manager, saga, outbox_relay, idempotency
 

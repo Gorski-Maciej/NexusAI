@@ -370,7 +370,7 @@ def get_tenant_session(session_factory, tenant_id: str) -> Generator[Session, No
 
 
 class Base(DeclarativeBase):
-    """Declarative base for OLTP SQLAlchemy models."""
+    """Declarative base for OLTP database models."""
 
 
 # ── Lazy default session factory ──────────────────────────────────────────

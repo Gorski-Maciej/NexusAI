@@ -1,5 +1,4 @@
 -- 001_init.sql — Initial database schema (NexusAI)
--- Zgodne z migracją Alembic: 0001_initial_schema.py
 -- Zasada: zero utraty funkcjonalności — wszystkie tabele, indeksy, klucze
 
 -- ============================================================

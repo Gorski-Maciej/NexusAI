@@ -97,29 +97,17 @@
   19. SQLite3                               [A]  — Baza danych (wbudowana w Python)
   20. SQLCipher                             [A]  — Szyfrowanie bazy SQLite (AES-256)
   21. SQLModel ≥0.0.16                      [A]  — ORM 2w1 (SQLAlchemy + Pydantic)
-  22. SQLAlchemy ≥2.0.x (v2.0.50)           [Z]  — Silnik ORM (transitive dep SQLModel)
-  23. sqlite-vec ≥0.1.0 (v0.1.9)            [A]  — Rozszerzenie wektorowe dla SQLite
+  22. sqlite-vec ≥0.1.0 (v0.1.9)            [A]  — Rozszerzenie wektorowe dla SQLite
   24. DuckDB ≥1.0.0 (v1.5.3)                [A]  — Lokalna hurtownia OLAP (kolumnowa)
   25. Polars ≥1.0.0 (v1.41.2)               [A]  — DataFrame nowej generacji (Rust)
   26. PyArrow ≥15.0.0 (v24.0.0)             [A]  — Format danych kolumnowych w pamięci
   27. TigerBeetle ≥0.16.0                   [A]  — Silnik księgowy (double-entry, Zig)
-  28. pydantic ≥2.x                         [Z]  — Walidacja (przez SQLModel — transitive dep)
-  29. pydantic-core                          [Z]  — Rdzeń Pydantic v2 w Rust (v2.46.4)
-  30. aiosqlite                              [S]  — Usunięta z zależności, zastąpiona natywnym async SQLite
-  31. Alembic                                [S]  — Usunięty, zastąpiony natywnymi migracjami SQL
-
 ────────────────────────────────────────────────────────────────────────────────
  2.4 WALIDACJA DANYCH I SERIALIZACJA
 ────────────────────────────────────────────────────────────────────────────────
 
   32. msgspec Struct                        [A]  — Własne struktury danych (nexus-money)
-  33. pydantic (przez SQLModel)              [Z]  — Walidacja modeli ORM
-  34. pydantic-core                          [Z]  — Rdzeń Pydantic v2 w Rust
-  35. typing-extensions                      [Z]  — Rozszerzenia typów (transitive dep)
-  36. annotated-types                        [Z]  — Typy adnotowane (transitive dep)
-  37. typing-inspection                      [Z]  — Inspekcja typów (transitive dep)
-  38. attrs (v26.1.0)                        [Z]  — Klasy danych (transitive dep)
-  39. packaging                              [Z]  — Wersjonowanie pakietów
+  33. — (usunięte: pydantic, pydantic-core, typing-extensions, annotated-types, typing-inspection, attrs, packaging)
 
 ────────────────────────────────────────────────────────────────────────────────
  2.5 KOLEJKI ZADAŃ I KOMUNIKACJA
@@ -129,7 +117,6 @@
   41. Taskiq ≥0.11.0 (v0.12.4)              [A]  — Async-native kolejka zadań
   42. taskiq-nats ≥0.5.0                    [A]  — Broker Taskiq dla NATS JetStream
   43. NATS Server ≥2.10                     [A]  — Message broker (JetStream, KV Store, Object Store)
-  44. Celery                                 [S]  — Zastąpiony przez Taskiq
 
 ────────────────────────────────────────────────────────────────────────────────
  2.6 HTTP / SIEC
@@ -143,8 +130,6 @@
 ────────────────────────────────────────────────────────────────────────────────
 
   47. stamina ≥0.1.0                        [A]  — Retry + Circuit Breaker (async-native)
-  48. tenacity                               [S]  — Zastąpiony przez stamina
-  49. pybreaker                              [S]  — Zastąpiony przez stamina (circuit breaker)
 
 ────────────────────────────────────────────────────────────────────────────────
  2.8 KRPYPTOGRAFIA I BEZPIECZEŃSTWO
@@ -152,13 +137,6 @@
 
   ── Moduł własny nexus-crypto (Rust + PyO3) ───────────────────────────────────
   50. nexus-crypto (własny)                 [A]  — Własny moduł kryptograficzny (Rust+PyO3)
-       Zawiera wewnętrznie: AEAD (ChaCha20Poly1305), Argon2id, SHA-256, BLAKE2,
-       HMAC, kryptograficzne RNG (OsRng), zeroizację pamięci, JWT (jsonwebtoken crate)
-  51. serde (Rust)                           [Z]  — Serializacja w Rust (transitive)
-  52. serde_json (Rust)                      [Z]  — JSON w Rust (transitive)
-  53. uuid (Rust)                            [Z]  — Generowanie UUID w Rust
-  54. thiserror (Rust)                       [Z]  — Obsługa błędów w Rust
-  55. pyo3 (Rust)                            [Z]  — PyO3 — most Rust↔Python
 
   ── Wbudowane w Litestar ──────────────────────────────────────────────────────
   56. Litestar JWT                          [A]  — JWT authentication (wbudowany)
@@ -166,42 +144,31 @@
   58. Litestar CORS                         [A]  — CORS (wbudowany)
   59. Litestar Rate Limiting                [A]  — Rate limiting (wbudowany)
 
-  ── Pozostałe ─────────────────────────────────────────────────────────────────
-  60. cryptography (v48.0.0)                [Z]  — TYLKO KSeF: RSA/X.509 (niezbędne dla KSeF)
-  61. SQLCipher                             [A]  — Szyfrowanie bazy SQLite
+  ── Pozostałe ─────────────────────────────────────────────────────────────────   60. SQLCipher                             [A]  — Szyfrowanie bazy SQLite
+
 
 ────────────────────────────────────────────────────────────────────────────────
  2.9 FINANSE / WALUTY
 ────────────────────────────────────────────────────────────────────────────────
 
-  62. nexus-money (msgspec.Struct)          [A]  — Własna reprezentacja pieniędzy
-  63. TigerBeetle (Python client)           [A]  — Klient TigerBeetle (double-entry ledger)
+  61. nexus-money (msgspec.Struct)          [A]  — Własna reprezentacja pieniędzy
+  62. TigerBeetle (Python client)           [A]  — Klient TigerBeetle (double-entry ledger)
   64. pendulum ≥3.0.0 (v3.2.0)              [A]  — Daty i czas (strefy czasowe, interwały)
-  65. forex_engine (Python)                  [S]  — Usunięty (forex_engine.py usunięty wraz z modułem)
-  66. nexus-forex (Rust + PyO3)              [S]  — Moduł walutowy w Rust usunięty (w trakcie odbudowy)
-  67. rust_decimal (Rust)                    [Z]  — Arytmetyka dziesiętna w Rust (nexus-tax-engine)
-  68. py-moneyed                             [S]  — Zastąpiony przez nexus-money (msgspec.Struct)
 
 ────────────────────────────────────────────────────────────────────────────────
  2.10 PRZETWARZANIE DOKUMENTÓW / OCR
 ────────────────────────────────────────────────────────────────────────────────
 
   69. xsdata ≥24.0.0                        [A]  — XSD → Python code generation (KSeF)
-  70. lxml ≥5.1.0                           [A]  — XML processing (używa libxml2 i libxslt)
-  71. libxml2 ≥2.12.0                        [Z]  — Systemowy parser XML (dla lxml)
-  72. libxslt ≥1.1.39                        [Z]  — Systemowy XSLT (dla lxml)
-  73. Leptonica ≥1.84.0                      [Z]  — Przetwarzanie obrazów (dla Tesseract)
-  74. Pillow ≥10.0.0 (PIL)                  [A]  — Przetwarzanie obrazów
-  75. pypdfium2 ≥4.0.0                      [A]  — PDF → image (PDFium engine)
-  76. Tesseract OCR ≥5.3.0                   [A]  — Klasyczny OCR (systemowy)
-  77. OpenCV ≥4.9.0 (libopencv)             [A]  — Preprocessing obrazów (systemowy)
-  78. PaddleOCR ≥2.8.0                      [A]  — Silnik OCR (Baidu, deep learning)
-  79. PaddlePaddle ≥3.0.0                    [Z]  — Framework DL (przez PaddleOCR)
-  80. python-doctr ≥0.9.0                   [A]  — OCR (DBNet + PARSeq)
-  81. EasyOCR ≥1.7.0                        [A]  — Silnik OCR (CNN + LSTM)
-  82. Surya OCR                              [S]  — Zastąpiony przez python-docTR
-  83. PyMuPDF (fitz)                         [S]  — Zastąpiony przez pypdfium2
-  84. pytesseract                            [S]  — Opakowanie Python dla Tesseract (nieużywane bezpośrednio)
+  70. lxml ≥5.1.0                           [A]  — XML processing
+  71. Pillow ≥10.0.0 (PIL)                  [A]  — Przetwarzanie obrazów
+  72. pypdfium2 ≥4.0.0                      [A]  — PDF → image (PDFium engine)
+  73. Tesseract OCR ≥5.3.0                   [A]  — Klasyczny OCR (systemowy)
+  74. OpenCV ≥4.9.0 (libopencv)             [A]  — Preprocessing obrazów (systemowy)
+  75. PaddleOCR ≥2.8.0                      [A]  — Silnik OCR (Baidu, deep learning)
+  76. python-doctr ≥0.9.0                   [A]  — OCR (DBNet + PARSeq)
+  77. EasyOCR ≥1.7.0                        [A]  — Silnik OCR (CNN + LSTM)
+  78. pytesseract                            [S]  — Opakowanie Python dla Tesseract (nieużywane bezpośrednio)
 
 ────────────────────────────────────────────────────────────────────────────────
  2.11 LOGOWANIE I OBSERWOWALNOŚĆ
@@ -221,7 +188,6 @@
   91. OpenTelemetry Exporter Prometheus      [A]  — Eksport metryk do Prometheus
   92. Granian Metrics                        [A]  — Wbudowane metryki serwera (port 9090/9091)
   93. psutil ≥5.9.0                          [A]  — Monitorowanie procesów i systemu
-  94. prometheus_client                      [S]  — Zastąpiony przez OTel Prometheus Exporter
 
 ────────────────────────────────────────────────────────────────────────────────
  2.13 CACHE
@@ -229,8 +195,6 @@
 
   95. hishel                                [A]  — Cache HTTP z inteligentnym odświeżaniem
   96. diskcache ≥5.6.0                      [A]  — SQLite-backed cache (zastąpił własne backendy L1/L2)
-  97. cachetools                             [S]  — Zastąpiony przez diskcache
-  98. diskcache (w dokumentacji)              [S]  — W dokumentacji jest błąd: faktycznie używane jest diskcache
 
 ────────────────────────────────────────────────────────────────────────────────
  2.14 AI / AGENTY AI
@@ -298,8 +262,8 @@
  140. Replay Engine                           [A]  — Odtwarzanie decyzji
 
   ── Silnik natywny Rust (nexus-tax-engine) ────────────────────────────────────
- 141. nexus-tax-engine (własny)              [A]  — Natywny silnik podatkowy (Rust+PyO3)
-       Wewnętrznie używa: serde, serde_json, uuid, thiserror, rust_decimal, pyo3
+ 141. nexus-tax-engine (własny)              [A]  — Natywny silnik podatkowy (Rust+PyO3)        Wewnętrznie używa: rust_decimal
+
 
   ── OPA / Rego ────────────────────────────────────────────────────────────────
  142. OPA (Open Policy Agent)                [A]  — Uniwersalny silnik polityk (sidecar)
@@ -377,46 +341,22 @@
 ────────────────────────────────────────────────────────────────────────────────
 
  184. tesseract ≥5.3.0                        [A]  — OCR engine
- 185. leptonica ≥1.84.0                       [Z]  — Przetwarzanie obrazów (dla Tesseract)
- 186. libopencv ≥4.9.0                        [A]  — OpenCV (preprocessing obrazów)
- 187. libxml2 ≥2.12.0                         [Z]  — XML parser (dla lxml)
- 188. libxslt ≥1.1.39                         [Z]  — XSLT (dla lxml)
- 189. pkg-config ≥0.29.2                      [Z]  — Wykrywanie bibliotek systemowych
- 190. mimalloc ≥2.1.0                         [A]  — Alokator pamięci
- 191. rust ≥1.78.0                            [A]  — Toolchain Rust
- 192. cmake ≥3.28.0                           [D]  — Build narzędzie
+ 185. libopencv ≥4.9.0                        [A]  — OpenCV (preprocessing obrazów)
+ 186. pkg-config ≥0.29.2                      [Z]  — Wykrywanie bibliotek systemowych
+ 187. mimalloc ≥2.1.0                         [A]  — Alokator pamięci
+ 188. rust ≥1.78.0                            [A]  — Toolchain Rust
+ 189. cmake ≥3.28.0                           [D]  — Build narzędzie
 
 ────────────────────────────────────────────────────────────────────────────────
  2.23 ZALEŻNOŚCI RUST (Cargo)
 ────────────────────────────────────────────────────────────────────────────────
 
   ── nexus-crypto (nexus_ai/rust/Cargo.toml) ───────────────────────────────────
-   • pyo3 (PyO3 bindings)
-   • serde, serde_json, serde_derive
-   • uuid (v4)
-   • thiserror
-   • sha2 (SHA-256)
-   • blake2 (BLAKE2b)
-   • hmac (HMAC)
-   • argon2 (Argon2id)
-   • chacha20poly1305 (AEAD)
-   • aead (AEAD trait)
-   • rand / rand_core (RNG)
-   • zeroize (zeroizacja pamięci)
-   • jsonwebtoken (JWT)
-   • base64
-   • hex
-   • chrono (datetime)
-   • pyo3-log / log
-   • libc
+
 
   ── nexus-tax-engine (nexus_tax_engine/Cargo.toml) ────────────────────────────
-   • rust_decimal (z features: serde, maths)
+   • rust_decimal (z features: maths)
    • rust_decimal_macros
-   • serde, serde_json
-   • thiserror
-   • pyo3 (extension-module)
-   • uuid (v4)
    • approx (dev-dependency)
 
 ────────────────────────────────────────────────────────────────────────────────
@@ -473,11 +413,8 @@
   • fsspec                  — Abstrakcja FS                        [A]
 
   ── Bazy danych ──────────────────────────────────────────────────────────────
-  • sqlalchemy              — ORM (v2.0.50 — transitive przez SQLModel) [Z]
   • sqlite-vec              — Rozszerzenie wektorowe (v0.1.9)     [A]
   • pyarrow                 — Dane kolumnowe (v24.0.0)            [A]
-  • pydantic                — Walidacja (transitive przez SQLModel) [Z]
-  • pydantic-core           — Rdzeń Pydantic v2 w Rust            [Z]
   • diskcache               — SQLite-backed cache (v5.6.0+)       [A]
 
   ── OCR i dokumenty ─────────────────────────────────────────────────────────
@@ -485,7 +422,6 @@
   • xsdata                  — XSD → Python codegen                [A]
   • pillow                  — Przetwarzanie obrazów (v10.4.0)     [A]
   • pypdfium2               — PDF → image                         [A]
-  • paddlepaddle            — Deep Learning (v3.2.2/3.3.1)        [Z]
   • paddleocr               — OCR (v2.8.0+)                       [A]
   • python-doctr            — OCR (v0.9.0+)                       [A]
   • easyocr                 — OCR (v1.7.0+)                       [A]
@@ -508,7 +444,7 @@
   ── Finanse i czas ───────────────────────────────────────────────────────────
   • pendulum                — Daty/czas (v3.2.0)                  [A]
   • stamina                 — Retry/circuit breaker                [A]
-  • cryptography            — TYLKO KSeF: RSA/X.509 (v48.0.0)    [Z]
+
 
   ── Testowanie ───────────────────────────────────────────────────────────────
   • pytest                  — Framework testowy (v8.0.0+)         [D]
@@ -537,21 +473,13 @@
 
   ── Systemowe ──────────────────────────────────────────────────────────────
   • tesseract               — OCR engine                           [A]
-  • leptonica               — Image processing (dla Tesseract)     [Z]
   • libopencv               — OpenCV                               [A]
-  • libxml2                 — XML parser                           [Z]
-  • libxslt                 — XSLT                                 [Z]
   • pkg-config              — Library detection                    [Z]
   • mimalloc                — Memory allocator                     [A]
   • rust                    — Rust toolchain                       [A]
   • cmake                   — Build tool                           [D]
 
   ── Zależności przechodnie (wybrane) ────────────────────────────────────────
-  • attrs                   — Klasy danych (v26.1.0)               [Z]
-  • typing-extensions       — Rozszerzenia typów                   [Z]
-  • annotated-types         — Typy adnotowane                      [Z]
-  • typing-inspection       — Inspekcja typów                      [Z]
-  • packaging               — Wersjonowanie                        [Z]
   • multidict               — Multi-dict HTTP                      [Z]
   • yarl                    — URL processing                       [Z]
   • aiosignal               — Async signaling                      [Z]
@@ -619,19 +547,16 @@
   46  | xsdata                                     | ✅ [A] |
   47  | Tesseract OCR                              | ✅ [A] |
   48  | PaddleOCR                                  | ✅ [A] |
-  49  | Surya OCR                                  | ⚠️ [S] | Zastąpiony przez python-docTR (usunięty z kodu)
-  50  | Pillow                                     | ✅ [A] |
-  51  | OpenCV                                     | ✅ [A] |
-  52  | PyMuPDF (fitz)                             | ⚠️ [S] | Zastąpiony przez pypdfium2 (usunięty z kodu)
-  53  | structlog                                  | ✅ [A] |
+  49  | Pillow                                     | ✅ [A] |
+  50  | OpenCV                                     | ✅ [A] |
+  51  | structlog                                  | ✅ [A] |
   54  | Loguru                                     | ✅ [A] |
   55  | OpenTelemetry (API + SDK)                  | ✅ [A] |
   56  | Parquet                                    | ✅ [A] | Format przechowywania (przez DuckDB)
   57  | OpenTelemetry Metrics                      | ✅ [A] | Część OTel SDK
   58  | OpenTelemetry Prometheus Exporter          | ✅ [A] |
   59  | Sentry SDK                                 | ✅ [A] |
-  60  | diskcache                                   | ⚠️ [S] | Błąd w dokumentacji: faktycznie używane jest diskcache, NIE diskcache
-  61  | TOML                                       | ✅ [A] | Przez msgspec
+  60  | TOML                                       | ✅ [A] | Przez msgspec
   62  | pendulum                                   | ✅ [A] |
   63  | psutil                                     | ✅ [A] |
   64  | pytest                                     | ✅ [D] |
@@ -651,9 +576,7 @@
   1. ❌ uv — nigdy nie był używany, wszystko zarządza pixi
   2. ⚠️ aiosqlite — [SZCZĄTKOWA] usunięta z zależności
   3. ⚠️ Alembic — [SZCZĄTKOWA] usunięty, zastąpiony natywnymi migracjami SQL
-  4. ⚠️ Surya OCR — [SZCZĄTKOWA] zastąpiony przez python-docTR
-  5. ⚠️ PyMuPDF (fitz) — [SZCZĄTKOWA] zastąpiony przez pypdfium2
-  6. ⚠️ diskcache — [SZCZĄTKOWA] błąd w dokumentacji (nazwa nie istnieje); faktycznie: diskcache
+
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -745,31 +668,20 @@
    19. SQLite3 [A]
    20. SQLCipher [A]
    21. SQLModel [A]
-   22. SQLAlchemy [Z]
-   23. sqlite-vec [A]
-   24. DuckDB [A]
-   25. Polars [A]
-   26. PyArrow [A]
-   27. TigerBeetle [A]
-   28. pydantic [Z]
-   29. pydantic-core [Z]
-   30. aiosqlite [S]
-   31. Alembic [S]
+   22. sqlite-vec [A]
+   23. DuckDB [A]
+   24. Polars [A]
+   25. PyArrow [A]
+   26. TigerBeetle [A]
 
   WALIDACJA I SERIALIZACJA:
-   32. msgspec.Struct [A]
-   33. typing-extensions [Z]
-   34. annotated-types [Z]
-   35. typing-inspection [Z]
-   36. attrs [Z]
-   37. packaging [Z]
+   27. msgspec.Struct [A]
 
   KOLEJKI I KOMUNIKACJA:
    38. nats-py [A]
    39. Taskiq [A]
    40. taskiq-nats [A]
    41. NATS Server [A]
-   42. Celery [S]
 
   HTTP / SIEC:
    43. hishel [A]
@@ -777,59 +689,31 @@
 
   ODPORNOŚĆ NA BŁĘDY:
    45. stamina [A]
-   46. tenacity [S]
-   47. pybreaker [S]
 
   KRPYPTOGRAFIA I BEZPIECZEŃSTWO:
    48. nexus-crypto (Rust) [A]
-   49. serde (Rust) [Z]
-   50. serde_json (Rust) [Z]
-   51. uuid (Rust) [Z]
-   52. thiserror (Rust) [Z]
-   53. pyo3 (Rust) [Z]
-   54. sha2 (Rust) [Z]
-   55. blake2 (Rust) [Z]
-   56. hmac (Rust) [Z]
-   57. argon2 (Rust) [Z]
-   58. chacha20poly1305 (Rust) [Z]
-   59. rand/rand_core (Rust) [Z]
-   60. zeroize (Rust) [Z]
-   61. jsonwebtoken (Rust) [Z]
-   62. base64 (Rust) [Z]
-   63. hex (Rust) [Z]
-   64. chrono (Rust) [Z]
-   65. Litestar JWT [A]
-   66. Litestar CSRF [A]
-   67. Litestar CORS [A]
-   68. Litestar Rate Limiting [A]
-   69. cryptography (KSeF) [Z]
-   70. SQLCipher [A]
+   49. Litestar JWT [A]
+   50. Litestar CSRF [A]
+   51. Litestar CORS [A]
+   52. Litestar Rate Limiting [A]
+   53. SQLCipher [A]
 
   FINANSE / WALUTY:
    71. nexus-money (msgspec) [A]
    72. TigerBeetle Client [A]
    73. pendulum [A]
-   74. forex_engine [S]
-   75. nexus-forex (Rust) [S]
-   76. rust_decimal (Rust) [Z]
-   77. py-moneyed [S]
 
   PRZETWARZANIE DOKUMENTÓW / OCR:
-   78. xsdata [A]
+   74. xsdata [A]
    79. lxml [A]
-   80. libxml2 [Z]
-   81. libxslt [Z]
-   82. Leptonica [Z]
-   83. Pillow (PIL) [A]
-   84. pypdfium2 [A]
-   85. Tesseract OCR [A]
-   86. OpenCV [A]
-   87. PaddleOCR [A]
-   88. PaddlePaddle [Z]
-   89. python-doctr [A]
-   90. EasyOCR [A]
-   91. Surya OCR [S]
-   92. PyMuPDF (fitz) [S]
+   80. Pillow (PIL) [A]
+   81. pypdfium2 [A]
+   82. Tesseract OCR [A]
+   83. OpenCV [A]
+   84. PaddleOCR [A]
+   85. python-doctr [A]
+   86. EasyOCR [A]
+
 
   LOGOWANIE I OBSERWOWALNOŚĆ:
    93. structlog [A]
@@ -843,16 +727,13 @@
    99. OTel Prometheus Exporter [A]
   100. Granian Metrics [A]
   101. psutil [A]
-  102. prometheus_client [S]
 
   CACHE:
-  103. hishel [A]
-  104. diskcache [A]
-  105. cachetools [S]
-  106. diskcache [S] (błąd w dokumentacji — nie istnieje)
+  102. hishel [A]
+  103. diskcache [A]
 
   AI / AGENTY AI:
-  107. llama-cpp-python [A]
+  104. llama-cpp-python [A]
   108. PyTorch [Z]
   109. ONNX [Z]
   110. protobuf [Z]
@@ -948,21 +829,15 @@
 
   SYSTEMOWE:
   186. tesseract [A]
-  187. leptonica [Z]
-  188. libopencv [A]
-  189. libxml2 [Z]
-  190. libxslt [Z]
-  191. pkg-config [Z]
-  192. mimalloc [A]
-  193. rust [A]
-  194. cmake [D]
+  187. libopencv [A]
+  188. pkg-config [Z]
+  189. mimalloc [A]
+  190. rust [A]
+  191. cmake [D]
 
   ZALEŻNOŚCI RUST (Cargo):
-  195-230: Wewnętrzne zależności Cargo nexus-crypto i nexus-tax-engine
-           (pyo3, serde, serde_json, uuid, thiserror, sha2, blake2, hmac,
-            argon2, chacha20poly1305, aead, rand, rand_core, zeroize,
-            jsonwebtoken, base64, hex, chrono, pyo3-log, log, libc,
-            rust_decimal, rust_decimal_macros, approx)
+  195-196: Wewnętrzne zależności Cargo nexus-crypto i nexus-tax-engine
+           (approx)
 
   KONFIGURACYJNE:
   231. pyproject.toml [A]

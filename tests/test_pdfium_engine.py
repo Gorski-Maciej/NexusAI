@@ -1,16 +1,16 @@
 """
 test_pdfium_engine.py — Kompleksowe testy dla pydfium2.
 
-Zgodnie z planem migracji PyMuPDF → pydfium2:
+Zgodnie z planem migracji do pypdfium2:
 - FAZA 1: Core — otwieranie, renderowanie, zapis
 - FAZA 2: Async + numpy — warianty dla OCR i API
 - FAZA 3: Progressive loading, ekstrakcja tekstu, metadane, msgspec
-- FAZA 4: Porównanie z PyMuPDF (jeśli dostępny)
+- FAZA 4: Render cache
 - FAZA 5: msgspec.Struct, podpisy cyfrowe, formularze, cache
 - FAZA 6: Streaming, OTel tracing
 - FAZA 7: Rozszerzony ProgressivePDFLoader
 
-Wszystkie testy używają pypdfium2 — nie wymagają PyMuPDF.
+Wszystkie testy używają pypdfium2.
 """
 
 from __future__ import annotations

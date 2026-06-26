@@ -79,7 +79,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 |---|---|---|---|
 | **SQLite + SQLCipher** — szyfrowana baza | — | ✅ | `nexus_ai/db/database.py` → PRAGMA key |
 | **sqlite-vec** — wektory w SQLite | LanceDB | ✅ | `sqlite-vec` SQLite extension |
-| **SQLModel** — ORM 2w1 | (SQLAlchemy + Pydantic pod spodem) | ✅ | SQLModel ORM models |
+| **SQLModel** — ORM 2w1 | — | ✅ | SQLModel ORM models |
 | **DuckDB** — lokalna hurtownia OLAP | — | ✅ | DuckDBManager
 | **PyArrow** — format danych w pamięci | — | ✅ | Używany przez DuckDB |
 | **Polars** — DataFrame nowej generacji | pandas | ✅ | `nexus_ai/core/analytics.py` |
@@ -89,8 +89,8 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **msgspec** — serializacja API + konfiguracja TOML | json, pydantic-settings | ✅ | `nexus_ai/core/config.py` → `msgspec.toml.decode` |
-| **Pydantic** — tylko przez SQLModel (niewidoczny) | — | ✅ | Tylko jako zależność przechodnia SQLModel |
+| **msgspec** — serializacja API + konfiguracja TOML | json | ✅ | `nexus_ai/core/config.py` → `msgspec.toml.decode` |
+
 
 ### Punkt 5 — Kolejki i komunikacja asynchroniczna
 
@@ -98,7 +98,6 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 |---|---|---|---|
 | **NATS Server** — broker komunikatów (~10 MB) z wbudowanym JetStream, KV Store i Object Store | Redis, RabbitMQ, Redis Streams | ✅ | `pixi.toml` → `task start-nats` |
 | **nats-py** — klient Python | — | ✅ | `nexus_ai/core/broker.py` |
-| **Taskiq** — kolejka zadań (async-native) | Celery | ✅ | `nexus_ai/core/broker.py` |
 | **taskiq-nats** — spoiwo Taskiq ↔ NATS | — | ✅ | `nexus_ai/core/broker.py` |
 
 ### Punkt 6 — Warstwa HTTP i sieć
@@ -119,34 +118,33 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **Nexus-Crypto** (Rust + PyO3) — AEAD (ChaCha20Poly1305), Argon2id, SHA-256, BLAKE2, HMAC, RNG, JWT, zeroizacja | cryptography (w większości; KSeF RSA/X.509 poza zakresem) | ✅ | `nexus_ai/rust/src/lib.rs` |
+| **Nexus-Crypto** (Rust + PyO3) — AEAD, Argon2id, SHA-256, BLAKE2, HMAC, RNG, JWT, zeroizacja | — (KSeF RSA/X.509 via optional external dep) | ✅ | `nexus_ai/rust/src/lib.rs` |
 | **Litestar JWT** — tokeny (wbudowane) | pyjwt | ✅ | `nexus_ai/api/security.py` |
 | **Litestar CSRF** — ochrona (wbudowana) | — | ✅ | `nexus_ai/api/middleware.py` |
 | **Litestar CORS** — kontrola dostępu (wbudowana) | — | ✅ | `nexus_ai/api/app.py` |
 | **Litestar Rate Limiting** — limitowanie (wbudowane) | — | ✅ | `nexus_ai/api/rate_limit.py` |
-| **cryptography** (opcjonalnie) — RSA/X.509 dla KSeF (jedyny uzasadniony wyjątek — niedostępne w nexus-crypto) | — | ⚠️ Tylko KSeF | `nexus_ai/core/integrations/ksef/crypto.py` |
 
 ### Punkt 9 — Finanse i waluty
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
 | **TigerBeetle** — silnik księgowy (double-entry) | — | ✅ | `pixi.toml` → `task start-tigerbeetle`, `nexus_ai/roboton_reflekton/ledger_client.py` |
-| **Nexus-Money** (msgspec.Struct) | py-moneyed | ✅ | `nexus_ai/services/currency_converter.py` → `class Money` |
-| **Nexus-Forex** (Rust + PyO3) — własny moduł walutowy (usunięty, w trakcie odbudowy) | ForexEngine | ❌ | — |
+| **Nexus-Money** (msgspec.Struct) | — (własna implementacja) | ✅ | `nexus_ai/services/currency_converter.py` → `class Money` |
+
 | **TigerBeetle Client (Python)** | — | ✅ | `nexus_ai/roboton_reflekton/ledger_client.py` |
 
 ### Punkt 10 — Przetwarzanie dokumentów (OCR)
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **lxml** — parser XML z walidacją XSD (wewnętrznie używa libxml2 i libxslt) | — | ✅ | W `pixi.toml` |
+| **lxml** — parser XML z walidacją XSD | — | ✅ | W `pixi.toml` |
 | **xsdata** — XSD → Python code generation | — | ✅ | `nexus_ai/core/integrations/ksef/xsd_bindings.py` |
-| **Tesseract OCR** — klasyczny OCR (wewnętrznie używa Leptonica) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `TesseractEngine` |
-| **PaddleOCR** — deep learning OCR (wewnętrznie używa PaddlePaddle) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `PaddleOCREngine` |
+| **Tesseract OCR** — klasyczny OCR | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `TesseractEngine` |
+| **PaddleOCR** — deep learning OCR | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `PaddleOCREngine` |
 | **docTR** (Python-docTR) — modułowy OCR (DBNet + PARSeq) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `DocTREngine` |
 | **Mechanizm Walidacji Krzyżowej** (3 silniki) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `decide_field_consensus()` |
 | **Pillow + OpenCV** — preprocessing obrazów | — | ✅ | W `pixi.toml` |
-| **pypdfium2** — konwersja PDF → obraz (BSD, zastępuje PyMuPDF/fitz) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `pdf_to_images()` |
+| **pypdfium2** — konwersja PDF → obraz (BSD) | — | ✅ | `nexus_ai/pipeline/ocr_consensus.py` → `pdf_to_images()` |
 
 ### Punkt 11 — Logowanie i obserwowalność
 
@@ -161,7 +159,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **OpenTelemetry Metrics** — metryki | prometheus_client | ✅ | `nexus_ai/api/telemetry_metrics.py` |
+| **OpenTelemetry Metrics** — metryki | — | ✅ | `nexus_ai/api/telemetry_metrics.py` |
 | **Prometheus Exporter** — endpoint /metrics | — | ✅ | W `pixi.toml` |
 | **Sentry SDK** — śledzenie błędów | — | ✅ | `nexus_ai/core/sentry.py` (opcjonalne) |
 
@@ -169,7 +167,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **diskcache** — SQLite-backed cache z TTL | cachetools, diskcache, Redis | ✅ | `nexus_ai/core/cache/` (DiskBackend na diskcache.Cache) |
+| **diskcache** — SQLite-backed cache z TTL | Redis | ✅ | `nexus_ai/core/cache/` (DiskBackend na diskcache.Cache) |
 | **msgspec** — serializacja w cache | pickle, json | ✅ | `nexus_ai/core/cache/` (msgspec serialization) |
 
 ### Punkt 14 — Narzędzia
@@ -218,7 +216,6 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | Kategoria | Stan |
 |---|---|
 | ✅ W pełni zaimplementowane | **~90-95** technologii |
-| ⚠️ Uzasadnione wyjątki (RSA/X.509 dla KSeF) | **1** (`cryptography` — wymóg KSeF, niedostępne w nexus-crypto) |
 | ❌ Brakujące technologie | **0** |
 
 ---
@@ -498,7 +495,7 @@ Pre-configured build scripts are in `build_scripts/`:
 [tool.nuitka]
 onefile = true
 standalone = true
-enable-plugins = ["pydantic"]  # Needed to bundle SQLModel (which depends on pydantic)
+enable-plugins = ["pydantic"]  # Needed to bundle SQLModel
 include-package = ["nexus_ai", "granian", "litestar"]
 ```
 
@@ -801,7 +798,7 @@ Event-driven architecture:
 | **TigerBeetle** | | |
 | `TB_CLUSTER_ID` | `0` | TigerBeetle cluster ID |
 | `TB_REPLICA_ADDRESSES` | `3000` | TigerBeetle replica addresses |
-| **Nexus-Forex** *(usunięty)* | — | Moduł walutowy tymczasowo usunięty (forex_engine.py + Rust) |
+
 
 ---
 

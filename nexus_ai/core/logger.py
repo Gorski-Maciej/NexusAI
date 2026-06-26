@@ -384,7 +384,7 @@ def _setup_stamina_logging() -> None:
 
 def _redirect_standard_logging() -> None:
     """Przekierowuje standardowy logging do Loguru, aby logi z bibliotek zewnętrznych
-    (np. SQLAlchemy, httpx) trafiały do ujednoliconego systemu."""
+    (np. httpx) trafiały do ujednoliconego systemu."""
 
     class _InterceptHandler(logging.Handler):
         def emit(self, record: logging.LogRecord) -> None:

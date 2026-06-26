@@ -478,7 +478,7 @@ class PDFController(Controller):
         """SUPERMOC: Weryfikacja podpisów cyfrowych w dokumencie PDF.
 
         PDFium natywnie wspiera weryfikację podpisów cyfrowych — nie wymaga
-        zewnętrznych bibliotek jak PyMuPDF (pycryptodome).
+        zewnętrznych bibliotek kryptograficznych.
 
         Returns:
             JSON z listą podpisów i ich statusem weryfikacji.
@@ -623,7 +623,7 @@ class PDFController(Controller):
             "engine": "PDFium (Google Chrome)",
             "library": "pypdfium2",
             "version": version,
-            "note": "Zastępuje PyMuPDF (fitz) — licencja BSD-3-Clause, silnik Chrome",
+            "note": "Silnik Chrome, licencja BSD-3-Clause",
         }
 
     @get(

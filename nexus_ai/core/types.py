@@ -187,7 +187,7 @@ T = TypeVar("T")
 class PaginatedResponse(Struct, Generic[T]):
     """Generic paginated API response z total/page/page_size.
 
-    Replaces: RootModel[list[T]] with Pydantic Generic.
+    Replaces: RootModel[list[T]] with msgspec.Generic.
 
     Użycie:
         response = PaginatedResponse[str](
@@ -258,12 +258,9 @@ MoneyRO = Money
 OperationIdRO = OperationId
 NipRO = Nip
 
-# For paginated_adapter, provide a function that works differently
-# (returns the class instead of a pydantic TypeAdapter)
-def paginated_adapter(item_type: type[T]) -> type[PaginatedResponse[T]]:
+# For paginated_adapter, provide a function that works differently    # (returns the class instead of a msgspec.TypeAdapter)
+    def paginated_adapter(item_type: type[T]) -> type[PaginatedResponse[T]]:
     """Get PaginatedResponse class parameterized with item_type.
-
-    Replaces: TypeAdapter[PaginatedResponse[T]]
 
     Args:
         item_type: Typ elementu na liście.

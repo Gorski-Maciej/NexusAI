@@ -1,5 +1,4 @@
 -- 002_missing_tables.sql — Add missing schema tables (NexusAI)
--- Zgodne z migracją Alembic: 0002_add_missing_schema_tables.py
 -- Dodaje tabele: email_tokens, failed_tasks, roles, permissions, user_roles, role_permissions
 -- Oraz brakujące kolumny na users + brakujący indeks na audit_logs
 

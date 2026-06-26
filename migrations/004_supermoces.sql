@@ -1,5 +1,4 @@
 -- 004_supermoces.sql — Consolidation of superpowers (NexusAI)
--- Zgodne z migracją Alembic: 0004_supermoces_consolidation.py
 -- Implementuje: CHECK constraints, partial indexes, expression indexes,
 -- composite indexes, unique constraints, seed data (roles, permissions)
 
@@ -16,11 +15,9 @@
 -- ============================================================
 
 -- Uwaga: SQLite nie ma ALTER TABLE ADD CONSTRAINT.
--- Te CHECK constrainty były dodane przez Alembic z render_as_batch=True.
--- W natywnym systemie SQL muszą być dodane przy CREATE TABLE.
--- Ponieważ tabele już istnieją z migracji 001-003, dodajemy je
--- przez PRAGMA schema upgrade lub przyjmujemy, że walidacja jest
--- na poziomie aplikacji (SQLModel/Pydantic).
+-- Te CHECK constrainty muszą być dodane przy CREATE TABLE.
+-- Ponieważ tabele już istnieją z migracji 001-003, walidacja jest
+-- na poziomie aplikacji.
 
 -- ============================================================
 -- SUPERMOC 3: Partial indexes (przeniesione z runtime)

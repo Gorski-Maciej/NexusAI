@@ -17,7 +17,7 @@ import pendulum
 
 
 class TaskQueue(Protocol):
-    """Abstrakcja kolejki (Celery/NATS)."""
+    """Abstrakcja kolejki (NATS)."""
 
     def publish(self, topic: str, payload: dict[str, Any]) -> None: ...
 

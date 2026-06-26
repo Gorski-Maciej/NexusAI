@@ -1,19 +1,15 @@
 # pipeline/ocr_consensus.py
 """
-4-way OCR Consensus Engine (docTR zastąpił Surya OCR).
+4-way OCR Consensus Engine.
 
 Zgodnie z aa3fvcx.txt (Punkt 10): cztery niezależne silniki OCR
 o fundamentalnie różnych architekturach zapewniają statystycznie
 zerową szansę na identyczny błąd we wszystkich czterech:
 
 - Tesseract: klasyczny OCR (LSTM), mistrz ustrukturyzowanego druku
-- PaddleOCR: deep learning OCR (PaddlePaddle), radzi sobie z nietypowymi czcionkami
+- PaddleOCR: deep learning OCR, radzi sobie z nietypowymi czcionkami
 - docTR: modułowy OCR (PyTorch), detekcja DBNet + rozpoznawanie PARSeq, ekstrakcja tabel
 - EasyOCR: CNN + LSTM (CRAFT + CRNN), inna architektura niż pozostałe
-
-Zgodnie z audytem technologicznym:
-- Surya OCR → docTR: lepsza obsługa tabel, Apache 2.0 license, ONNX export,
-  detekcja orientacji, łatwy fine-tuning, 4× mniejsze modele (~500 MB vs ~1.8 GB)
 
 Optymalizacja pamięci (audyt mimalloc Faza 2):
   Każde wywołanie ``run_ocr_pipeline()`` tworzy izolowaną stertę
@@ -623,7 +619,7 @@ class TesseractEngine:
 
 
 class PaddleOCREngine:
-    """PaddleOCR — deep learning OCR (PaddlePaddle) z pełnią supermocy.
+    """PaddleOCR — deep learning OCR z pełnią supermocy.
 
     Architektura: PP-OCRv4 (DBNet + CRNN/Transformer). Fundamentalnie inny
     framework niż:
@@ -1375,14 +1371,14 @@ class PaddleOCREngine:
 class DocTREngine:
     """docTR — modułowy OCR engine (detekcja + rozpoznawanie + tabele).
 
-    Zastępuje Surya OCR (layout-aware OCR). Architektura:
+    Architektura:
       - det_arch: "db_resnet50" — detekcja tekstu (DBNet)
       - reco_arch: "parseq" — rozpoznawanie (Transformer-based, lepszy od CRNN)
       - TableEngine: osobny predictor dla tabel faktur
 
-    Zalety docTR vs Surya:
-      - Apache 2.0 license (Surya: Open Rail-M)
-      - 4× mniejsze modele (~500 MB vs ~1.8 GB dla 4 modeli Surya)
+    Zalety docTR:
+      - Apache 2.0 license (Open Source)
+      - Małe modele (~500 MB)
       - Wbudowana ekstrakcja tabel (TableEngine)
       - Detekcja orientacji strony (detect_orientation=True)
       - Eksport do ONNX dla 2-3× szybszej inferencji na CPU
@@ -1605,7 +1601,7 @@ class DocTREngine:
     async def extract_text_from_pdf(self, pdf_path: Path) -> str | None:
         """OCR całego PDF przez DocumentFile.from_pdf().
 
-        SUPERMOC: Omija PyMuPDF — ładuje PDF bezpośrednio przez
+        SUPERMOC: Ładuje PDF bezpośrednio przez
         DocumentFile.from_pdf(), co jest szybsze i dokładniejsze.
         Przetwarza WSZYSTKIE strony dokumentu.
         """
@@ -1746,7 +1742,7 @@ class EasyOCREngine:
     + CRNN (CNN + LSTM) dla rozpoznawania znaków. To fundamentalnie
     inna architektura niż:
     - docTR: modułowa detekcja DBNet + rozpoznawanie PARSeq
-    - PaddleOCR: inny szkielet CNN (PaddlePaddle)
+    - PaddleOCR: inny szkielet CNN
     - Tesseract: klasyczny LSTM
 
     SUPERMOCE (audyt technologiczny v3):
@@ -2108,7 +2104,7 @@ def pdf_to_images(pdf_path: Path, dpi: int = 300) -> list[Path]:
     SUPERMOCE:
     - Silnik Google Chrome — renderuje miliardy PDF-ów dziennie
     - Antyaliasing subpikselowy — lepsza jakość niż MuPDF
-    - Licencja BSD-3-Clause (PyMuPDF = AGPL)
+    - Licencja BSD-3-Clause
     - Lżejszy pakiet (~10 MB vs ~15-20 MB)
     - Numpy/PIL natywnie — bitmap.to_pil(), bitmap.to_numpy()
     """
@@ -2218,7 +2214,7 @@ async def run_ocr_pipeline(
         file_path: Path to PDF or image file.
         use_tesseract: Enable Tesseract OCR engine.
         use_paddle: Enable PaddleOCR engine.
-        use_doctr: Enable docTR engine (zastępuje Surya OCR).
+        use_doctr: Enable docTR engine.
         use_easyocr: Enable EasyOCR engine.
         invoice_id: Optional invoice ID for mimalloc heap isolation.
         easyocr_gpu: Whether EasyOCR should use GPU acceleration.

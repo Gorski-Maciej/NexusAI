@@ -2,9 +2,6 @@
 """
 Public endpoint exposing Prometheus metrics for scraping via OpenTelemetry.
 
-Zastępuje: prometheus_client (bezpośrednia zależność)
-Nowy:      OpenTelemetry Metrics SDK + PrometheusExporter
-
 Zgodnie z aa3fvcx.txt:
 - OpenTelemetry Prometheus Exporter — lekki most do ekosystemu Prometheus
 - Endpoint /metrics dla scrapowania przez Prometheus/Grafana

@@ -2,17 +2,16 @@
 pdfium.py — SUPERMOCE pypdfium2 dla NexusAI.
 
 Kompletny zestaw narzędzi do renderowania, ekstrakcji i manipulacji PDF-ami
-przez silnik PDFium (Google Chrome). Zastępuje PyMuPDF (fitz) w 100%.
+przez silnik PDFium (Google Chrome).
 
 Zgodnie z audytem technologicznym:
 - Silnik Google Chrome — renderuje miliardy PDF-ów dziennie
-- Licencja BSD-3-Clause (PyMuPDF = AGPL)
-- Antyaliasing subpikselowy — lepsza jakość niż MuPDF
+- Licencja BSD-3-Clause
+- Antyaliasing subpikselowy — lepsza jakość renderowania
 - Numpy/PIL natywnie — bitmap.to_pil(), bitmap.to_numpy()
-- Lżejszy pakiet (~10 MB vs ~15-20 MB)
+- Lżejszy pakiet (~10 MB)
 
 KLUCZOWA RÓŻNICA W SKALOWANIU:
-  PyMuPDF: dpi=300  → page.get_pixmap(dpi=300)
   PDFium:  scale = dpi / 72.0  (bo PDFium domyślnie 72 DPI)
   Dla 300 DPI: scale = 300/72 ≈ 4.1667
 

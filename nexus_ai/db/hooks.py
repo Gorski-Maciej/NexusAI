@@ -15,8 +15,7 @@ logger = get_logger("nexus.db.hooks")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # VALIDATION FUNCTIONS
-# Replaces pydantic @field_validator/@model_validator decorators from models.py.
-# These run during before_flush, ensuring validation at the DB layer.
+# Validation functions — run during before_flush, ensuring validation at the DB layer.
 # ═══════════════════════════════════════════════════════════════════════════════
 
 _EVENT_TYPE_REGEX = re.compile(r'^[a-zA-Z0-9.]+$')
@@ -75,7 +74,7 @@ def _validate_role(value: str | object, model_id: str) -> str:
 
 
 # _decimal_to_duckdb usunięty — model_dump(mode="json") automatycznie
-# konwertuje Decimal → str (SQLModel via Pydantic v2)
+# konwertuje Decimal → str (SQLModel)
 
 
 def register_db_hooks(config: AppConfig):
@@ -159,7 +158,6 @@ def register_db_hooks(config: AppConfig):
                 _replicate(obj)
 
     # ── SUPERMOC: before_flush dla walidacji modeli ────────────────────
-    # Zastępuje pydantic @field_validator/@model_validator decorators.
     # Uruchamia się PRZED zapisem do DB — błąd walidacji = brak zapisu.
     # To bezpieczniejszy wzorzec niż dekoratory pydantic, bo:
     #   - Walidacja jest jawna i scentralizowana

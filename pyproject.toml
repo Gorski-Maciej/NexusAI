@@ -66,7 +66,7 @@ dependencies = [
     "granian[dotenv,pname,reload]>=1.0.0",
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Database — SQLModel (SQLAlchemy + Pydantic w jednym), sqlite-vec
+    # Database — SQLModel, sqlite-vec
     # ═══════════════════════════════════════════════════════════════════════
     "sqlmodel>=0.0.16",
     "sqlite-vec>=0.1.0",
@@ -102,8 +102,7 @@ dependencies = [
     "stamina>=0.1.0",
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Cryptography — nexus-crypto (Rust + PyO3, własny moduł)
-    # Zastępuje: cryptography (Fernet, PBKDF2, SHA-256)
+    # Nexus-Crypto — własny moduł kryptograficzny (Rust + PyO3)
     # ═══════════════════════════════════════════════════════════════════════
     "nexus-crypto>=0.1.0",
 
@@ -126,7 +125,7 @@ dependencies = [
     "lxml>=5.1.0",
     "xsdata>=24.0.0",
     "pillow>=10.0.0",
-    "pypdfium2>=4.0.0",   # PDF → image conversion via PDFium engine (zastępuje PyMuPDF)
+    "pypdfium2>=4.0.0",   # PDF → image conversion via PDFium engine
     "paddlepaddle>=3.0.0",
     "paddleocr>=2.8.0",
     "python-doctr>=0.9.0",
@@ -157,7 +156,7 @@ dependencies = [
     "structlog>=24.0.0",
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Metrics / Monitoring — OpenTelemetry (zastępuje prometheus_client)
+    # Metrics / Monitoring — OpenTelemetry
     # ═══════════════════════════════════════════════════════════════════════
     "opentelemetry-api>=1.25.0",
     "opentelemetry-sdk>=1.25.0",
@@ -444,7 +443,7 @@ test-cov = "hatch run test:cov"
 migrate = "hatch run dev:migrate"
 seed = "hatch run dev:seed"
 
-# ── Native SQLite migrations (replaces Alembic) ────────────────────────────────
+# ── Native SQLite migrations ────────────────────────────────
 # Migracje są zarządzane przez skrypt migrations/run_migrations.py
 # który odczytuje pliki SQL z katalogu migrations/
 
@@ -534,7 +533,6 @@ file-description = "NexusAI — AI-Powered Accounting System"
 # Plugins — wszystkie niezbędne dla stacku NexusAI
 # ═══════════════════════════════════════════════════════════════════════════
 enable-plugin = [
-    "pydantic",                  # SQLModel bundle support (pydantic as transitive dep via SQLModel)
     "numpy",                     # Obsługa NumPy
     "anti-bloat",                # Usuwa zbędny kod z bibliotek
     "mimalloc",                  # Microsoft mimalloc — 5-15% mniej RAM
@@ -567,7 +565,7 @@ include-package = [
     "opentelemetry",             # OpenTelemetry (API + SDK w jednym)
     "fsspec",                    # Filesystem abstraction
     "sqlite_vec",                # Vector extension dla SQLite
-    # Alembic removed — replaced by migrations/run_migrations.py
+
     "anyio",                     # Async runtime
     "lxml",                      # XML processing
     "PIL",                       # Image processing (Pillow)
@@ -579,13 +577,13 @@ include-data-dir = [
     "nexus_ai/config/=nexus_ai/config/",  # Pliki konfiguracyjne (TOML, JSON) wewnątrz pakietu
     "app_data/=app_data/",               # Runtime data (puste na start)
     "assets/=assets/",                   # Ikony i loga
-    "migrations/=migrations/",  # Natywne migracje SQL (zastępuje Alembic)
+    "migrations/=migrations/",  # Natywne migracje SQL
 ]
 
 # ── Include specific files ───────────────────────────────────────────────
 include-data-files = [
     "pyproject.toml=pyproject.toml",
-    # Alembic usunięty — zastąpiony przez migrations/run_migrations.py
+
     "README.md=README.md",
 ]
 

@@ -91,7 +91,7 @@ fsspec = ">=2024.3.0"
 # ── Resilience ──────────────────────────────────────────────────────────────
 stamina = ">=0.1.0"
 
-# ── Cryptography (lokalny moduł Rust) ───────────────────────────────────────
+# ── Nexus-Crypto (lokalny moduł Rust) ────────────────────────────────────────
 nexus-crypto = { path = "./nexus_ai/rust", editable = true }
 
 # ── TigerBeetle — oficjalny Python client (double-entry accounting engine) ──

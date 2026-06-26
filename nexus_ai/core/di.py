@@ -44,7 +44,7 @@ _SESSION_FACTORY_CACHE: dict[str, sessionmaker] = {}
 
 
 def _get_or_create_engine(config: AppConfig | None = None) -> Engine:
-    """Zwróć lub utwórz silnik SQLAlchemy (cache'owany).
+    """Zwróć lub utwórz silnik bazy danych (cache'owany).
 
     SUPERMOC: Engine jest tworzony raz i cache'owany - nie ma create/dispose
     przy każdym tasku. To daje znaczący zysk wydajności.
@@ -82,7 +82,7 @@ async def get_config() -> AppConfig:
 
 
 async def get_engine(config: AppConfig | None = None) -> Engine:
-    """Zwraca silnik SQLAlchemy (cache'owany przez _get_or_create_engine).
+    """Zwraca silnik bazy danych (cache'owany przez _get_or_create_engine).
 
     SUPERMOC: Engine jest tworzony raz dla całego procesu workera.
     Nie ma create/dispose przy każdym tasku.
@@ -91,7 +91,7 @@ async def get_engine(config: AppConfig | None = None) -> Engine:
 
 
 async def get_db_session(engine: Engine | None = None) -> AsyncGenerator[Session, None]:
-    """Zwraca sesję SQLAlchemy (scoped per task).
+    """Zwraca sesję bazy danych (scoped per task).
 
     SUPERMOC: TaskiqDepends tworzy sesję na czas jednego zadania.
     Sesja jest automatycznie zamykana po zakończeniu zadania.

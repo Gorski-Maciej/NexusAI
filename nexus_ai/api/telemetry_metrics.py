@@ -2,9 +2,6 @@
 """
 OpenTelemetry metrics definitions for NexusAI.
 
-Zastępuje: prometheus_client (ciężka, bezpośrednia zależność)
-Nowy:      OpenTelemetry Metrics API + SDK z Prometheus Exporter
-
 Zgodnie z aa3fvcx.txt:
 - OpenTelemetry Metrics (API + SDK) — jeden standard dla całej telemetrii
 - OpenTelemetry Prometheus Exporter — lekki most do ekosystemu Prometheus

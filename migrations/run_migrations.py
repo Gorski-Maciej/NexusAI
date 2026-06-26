@@ -1,5 +1,5 @@
 """
-run_migrations.py — natywny system migracji SQLite (zastępuje Alembic).
+run_migrations.py — natywny system migracji SQLite.
 
 Python 3.13t (free-threaded): synchroniczne sqlite3 + anyio.to_thread.run_sync.
 

@@ -65,14 +65,13 @@
   nofollow:
     - 'PIL.*test*'
 
-# ── PyMuPDF (fitz) — PDF → image conversion (OCR pipeline) ─────────────────
-# Native libraries: libmupdf, libmupdf-third
-- package-name: 'fitz'
-  module-name: 'fitz'
+# ── pypdfium2 — PDF → image conversion (OCR pipeline) ─────────────────
+# PDFium engine (Google Chrome)
+- package-name: 'pypdfium2'
+  module-name: 'pypdfium2'
   stdlib: no
   dlls:
-    - 'libmupdf.so'
-    - 'libmupdf-third.so'
+    - 'libpdfium.so'
 
 # ── DuckDB — embedded OLAP engine ───────────────────────────────────────────
 # DuckDB is a native library loaded via ctypes/cffi
@@ -118,7 +117,7 @@
     - 'paddle.*example*'
 
 # ── docTR — modular OCR engine (DBNet + PARSeq, Apache 2.0) ────────────────
-# Zastępuje Surya OCR. Modele: db_resnet50 (~200 MB) + parseq (~300 MB)
+# Modele: db_resnet50 (~200 MB) + parseq (~300 MB)
 - package-name: 'doctr'
   module-name: 'doctr'
   stdlib: no

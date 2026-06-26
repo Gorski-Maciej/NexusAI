@@ -677,9 +677,7 @@ Eliminuje to dwie klasy błędów jednocześnie:
 · Decimal Math Engine jest zaimplementowany jako moduł Code/CORE/tax_math.py, importowany przez Code/API/tasks.py.
 · Werdykt Zen-Engine jest zapisywany w decision_traces jako dowód audytowy.
 
----
-
-2. Wzorzec Fowler's Money (Biblioteka py-moneyed)
+---2. Nexus-Money (msgspec) – Bezpieczna walutowo reprezentacja pieniędzy
 
 2.1. Problem, który rozwiązujemy
 
@@ -687,30 +685,39 @@ W systemie finansowym operujemy na różnych walutach. Księgowy może przez pom
 
 2.2. Zasada działania
 
-Wzorzec Money (opisany przez Martina Fowlera) opakowuje wartość liczbową i walutę w jeden, nierozerwalny obiekt. Biblioteka py-moneyed implementuje ten wzorzec dla Pythona.
+Nexus-Money to własna, lekka struktura danych oparta na msgspec.Struct. Reprezentuje pieniądze jako parę: amount_cents: int (kwota w groszach) i currency: str (kod waluty, np. "PLN"). Dzięki temu operacje są wykonywane na liczbach całkowitych, eliminując błędy zaokrągleń, a waluta jest integralną częścią obiektu.
 
-Kluczowe właściwości obiektu Money:
+Kluczowe właściwości Nexus-Money:
 
-· Zawiera wartość (Decimal) i walutę (Currency).
-· Nie można dodać dwóch Money w różnych walutach bez jawnej konwersji.
-· Nie można porównać Money w różnych walutach.
+· Zawiera wartość w groszach (int) i kod waluty (str).
+· Nie można dodać dwóch kwot w różnych walutach bez jawnej konwersji.
+· Nie można porównać kwot w różnych walutach.
 · Konwersja między walutami wymaga podania kursu wymiany.
 
-2.3. Struktura obiektu Money w NexusAI
+2.3. Struktura Nexus-Money w NexusAI
 
-Każda kwota w systemie (netto, VAT, brutto) jest reprezentowana jako obiekt Money:
+Każda kwota w systemie (netto, VAT, brutto) jest reprezentowana jako msgspec.Struct:
 
 ```python
-from moneyed import Money, PLN, EUR
+from msgspec import Struct
 
-netto = Money("1250.00", PLN)
-vat = Money("287.50", PLN)
-brutto = netto + vat  # Money("1537.50", PLN)
+class Money(Struct, frozen=True):
+    amount_cents: int
+    currency: str
+
+    def __add__(self, other: "Money") -> "Money":
+        if self.currency != other.currency:
+            raise ValueError("Nie można dodawać różnych walut")
+        return Money(self.amount_cents + other.amount_cents, self.currency)
+
+netto = Money(125000, "PLN")  # 1250.00 PLN w groszach
+vat = Money(28750, "PLN")        # 287.50 PLN w groszach
+brutto = netto + vat                # Money(153750, "PLN")
 
 # Próba dodania różnych walut:
-faktura_pln = Money("1000.00", PLN)
-faktura_eur = Money("300.00", EUR)
-suma = faktura_pln + faktura_eur  # RZUCA CurrencyMismatch!
+faktura_pln = Money(100000, "PLN")
+faktura_eur = Money(30000, "EUR")
+suma = faktura_pln + faktura_eur  # RZUCA ValueError!
 ```
 
 2.4. Konwersja walutowa
@@ -719,14 +726,15 @@ Dla faktur zagranicznych system automatycznie pobiera kurs z API NBP na dzień r
 
 ```python
 kurs_nbp = fetch_nbp_rate("EUR", transaction_date)
-faktura_pln = faktura_eur.to_currency(PLN, kurs_nbp)
+kwota_w_pln = round(kwota_w_eur * kurs_nbp)
+faktura_pln = Money(kwota_w_pln, "PLN")
 ```
 
 2.5. Integracja z NexusAI
 
 · Wszystkie modele danych faktur (Invoice, InvoiceItem) używają Money zamiast nagich Decimal.
-· Tabele SQLite przechowują kwoty jako dwie kolumny: amount (Decimal) i currency (String).
-· Przy odczycie z bazy wartości są automatycznie konwertowane na Money.
+· Dzięki msgspec.Struct, Money jest automatycznie serializowany przez Litestar bez dodatkowych konwersji.
+· TigerBeetle operuje na liczbach całkowitych – mapowanie 1:1 z amount_cents.
 · Decimal Math Engine operuje na Money, gwarantując bezpieczeństwo walutowe.
 
 2.6. Dlaczego to jest kluczowe
@@ -843,7 +851,7 @@ Warstwa Komponent Rola
 Wiedza DuckDB Przechowuje matryce stawek podatkowych
 Logika Zen-Engine Wybiera regułę: "dla kategorii X, w dniu Y, zastosuj stawkę Z"
 Matematyka Decimal Math Engine Liczy co do grosza, nigdy na float
-Bezpieczeństwo walutowe Money (py-moneyed) Uniemożliwia mieszanie walut
+Bezpieczeństwo walutowe Nexus-Money (msgspec) Uniemożliwia mieszanie walut
 Weryfikacja TaxInvariantGuard Sprawdza trzy równania matematyczne
 Księga TigerBeetle Odrzuca niezbilansowane transakcje
 QA/Audyt Hypothesis Generuje miliony testów, szuka dziur

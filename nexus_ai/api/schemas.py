@@ -107,7 +107,7 @@ class TaskResponse(msgspec.Struct, kw_only=True):
     message: str
 
 
-class InvoiceResponsePydantic(msgspec.Struct, kw_only=True):
+class LegacyInvoiceResponse(msgspec.Struct, kw_only=True):
     id: str
     number: str | None
     contractor_nip: str | None

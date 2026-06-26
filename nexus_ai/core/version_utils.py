@@ -1,7 +1,5 @@
 """
 version_utils.py — Simple version comparison utilities.
-
-Replaces: packaging.version (stdlib-based, no external deps)
 """
 
 from __future__ import annotations
@@ -9,8 +7,6 @@ from __future__ import annotations
 
 def parse_version(v: str) -> tuple[int, ...]:
     """Parse a version string into a comparable tuple of ints.
-
-    Replaces: packaging.version.parse()
 
     Args:
         v: Version string (e.g. "1.2.3", "3.30.0").

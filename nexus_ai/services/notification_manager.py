@@ -1,10 +1,6 @@
 """AsyncNotificationManager — centralny system powiadomień (async).
 
-Zgodnie z docs/AIOSQLITE_AUDIT.md:
-- FAZA 2: Konwersja z sync Engine na AsyncEngine
-- Wszystkie operacje są async — nie blokują pętli zdarzeń
-
-Używa AsyncEngine zamiast sync Engine dla współpracy z async API.
+Wszystkie operacje są async — używa AsyncEngine.
 """
 
 from __future__ import annotations

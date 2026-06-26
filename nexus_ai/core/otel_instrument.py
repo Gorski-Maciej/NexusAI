@@ -2,7 +2,7 @@
 core/otel_instrument.py — Autoinstrumentacja bibliotek zewnętrznych przez OpenTelemetry.
 
 SUPERMOCE:
-  1. SQLAlchemyInstrumentor — automatyczne trace'owanie zapytań SQL
+  1. Instrumentor zapytań SQL przez SQLModel
   2. HTTPXClientInstrumentor — automatyczne trace'owanie requestów HTTP
   3. LoggingInstrumentor — automatyczna korelacja logów z trace'ami
   4. GrpcInstrumentorClient — automatyczne trace'owanie gRPC
@@ -33,9 +33,8 @@ def instrument_all() -> dict[str, bool]:
     """
     results: dict[str, bool] = {}
 
-    # ── SUPERMOC: SQLAlchemyInstrumentor (przez SQLModel) ─────────────
+    # ── SUPERMOC: Instrumentacja zapytań SQL przez SQLModel ──────────
     # Automatyczne trace'owanie każdego zapytania SQL wykonywanego przez SQLModel
-    # SQLModel używa SQLAlchemy wewnętrznie, więc instrumentacja działa przez SQLModel
     results["sqlalchemy"] = _instrument_sqlalchemy()
 
     # ── SUPERMOC: HTTPXClientInstrumentor ─────────────────────────────
@@ -66,7 +65,7 @@ def instrument_all() -> dict[str, bool]:
 
 
 def _instrument_sqlalchemy() -> bool:
-    """Instrument SQLAlchemy ORM/core calls (used by SQLModel internally)."""
+    """Instrument SQL ORM/core calls (used by SQLModel internally)."""
     try:
         from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 
@@ -74,12 +73,12 @@ def _instrument_sqlalchemy() -> bool:
             enable_commenter=True,
             commenter_options={},
         )
-        logger.debug("[OTEL-INSTRUMENT] SQLAlchemy instrumented")
+        logger.debug("[OTEL-INSTRUMENT] SQL instrumented via SQLModel")
         return True
     except ImportError:
         return False
     except Exception as exc:
-        logger.warning("[OTEL-INSTRUMENT] SQLAlchemy instrumentation failed: %s", exc)
+        logger.warning("[OTEL-INSTRUMENT] SQL instrumentation failed: %s", exc)
         return False
 
 

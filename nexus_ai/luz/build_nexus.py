@@ -42,7 +42,7 @@ async def build_executable(
         "--standalone",
         "--onefile",
         # ── Pluginy ──
-        "--enable-plugin=pydantic,numpy,anti-bloat,mimalloc,multiprocessing,trio",
+        "--enable-plugin=numpy,anti-bloat,mimalloc,multiprocessing,trio",
         "--user-plugin=nexus_ai/build/nuitka_plugins.py",
         # ── Pakiety ──
         "--include-package=nexus_ai",

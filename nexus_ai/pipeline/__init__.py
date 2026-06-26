@@ -1,7 +1,7 @@
 # pipeline/__init__.py
 """Pipeline modules — pozostałe po czyszczeniu starych technologii.
 
-Usunięto: ocr_engine (fitz), preprocessor (cv2), coordinator, factory, manager,
+Usunięto: ocr_engine (pypdfium2), preprocessor (cv2), coordinator, factory, manager,
 active_learning (przeniesione do core/active_learning.py).
 """
 

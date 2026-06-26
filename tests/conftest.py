@@ -244,7 +244,7 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     "PIL", "PIL.Image",
     "PIL._imaging", "PIL.ImageFilter", "PIL.ImageEnhance",
     # PDF
-    "pypdfium2",  # PDFium engine (zastępuje PyMuPDF)
+    "pypdfium2",  # PDFium engine
     # System
     "psutil",
     "structlog",
@@ -261,21 +261,10 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     # DB
     "duckdb",
     "polars",
-    # SQLModel (zależność przechodnia: pydantic + pydantic-core)
-    # Mocked because SQLModel pulls in pydantic internally.
-    # These are NOT direct project dependencies.
-    "pydantic_core",
-    "pydantic_core._pydantic_core",
-    "pydantic",
-    "pydantic.v1",
-    "pydantic.fields",
-    "pydantic.main",
-    "pydantic._internal",
-    "pydantic._internal._model_construction",
+    # SQLModel
     "sqlmodel",
     "sqlmodel.sql",
     "sqlmodel.sql.expression",
-    # Alembic removed — replaced by native migrations/ (NOT mocked, it's our code)
     # Arrow
     "pyarrow",
 ]

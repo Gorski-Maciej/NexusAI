@@ -36,7 +36,7 @@ Build command:
 # ═══════════════════════════════════════════════════════════════════════════
 # PLUGINY — wszystkie niezbędne dla stacku NexusAI
 # ═══════════════════════════════════════════════════════════════════════════
-# nuitka-project: --enable-plugin=pydantic,numpy,anti-bloat,mimalloc,multiprocessing,trio
+# nuitka-project: --enable-plugin=numpy,anti-bloat,mimalloc,multiprocessing,trio
 # nuitka-project: --user-plugin=nexus_ai/build/nuitka_plugins.py
 
 # ═══════════════════════════════════════════════════════════════════════════

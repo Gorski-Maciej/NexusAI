@@ -3,13 +3,12 @@ download_models.py — Download AI models for NexusAI with integrity validation.
 
 Zgodnie z aa3fvcx.txt:
 - Żadne konkretne modele LLM nie są zdefiniowane (brak LFM2.5, Qwen3, LittleLamb, etc.)
-- docTR modele są wymagane dla warstwy OCR (zastępują Surya OCR)
+- docTR modele są wymagane dla warstwy OCR
 - Użytkownik może dodać własne GGUF modele do katalogu models/
 
 Referencja architektoniczna:
-- docTR zastąpił Surya OCR (Apache 2.0, DBNet + PARSeq, ekstrakcja tabel)
-- Modele docTR: db_resnet50 (~200 MB) + parseq (~300 MB) — łączny rozmiar ~500 MB
-- Surya OCR wymagał 4 modeli (~1.8 GB), docTR wymaga tylko 2 głównych
+- docTR: db_resnet50 (~200 MB) + parseq (~300 MB) — łączny rozmiar ~500 MB
+- docTR wymaga 2 głównych modeli
 
 Usage:
     python download_models.py --doctr            # Download docTR models only
@@ -25,9 +24,9 @@ from nexus_crypto import Sha256Hasher
 import sys
 from pathlib import Path
 
-# ── docTR models (zastępują Surya OCR, Punkty 10 aa3fvcx.txt) ───────────
-# docTR oferuje Apache 2.0 license, 4× mniejsze modele, wbudowaną
-# ekstrakcję tabel, detekcję orientacji i łatwy fine-tuning.
+# ── docTR models (Punkty 10 aa3fvcx.txt) ───────────
+# Modele docTR: Apache 2.0 license, wbudowana
+# ekstrakcja tabel, detekcja orientacji i łatwy fine-tuning.
 DOCTR_MODELS: dict[str, dict[str, str]] = {
     "db_resnet50": {
         "repo": "mindee/db_resnet50",
@@ -41,7 +40,7 @@ DOCTR_MODELS: dict[str, dict[str, str]] = {
     },
 }
 
-# ── PaddleOCR — drugi silnik OCR (PaddlePaddle) z PP-StructureV3 ──────────
+# ── PaddleOCR — drugi silnik OCR z PP-StructureV3 ──────────────────────
 # PaddleOCR modele są pobierane automatycznie przy pierwszym użyciu do
 # ~/.paddleocr/ (lub custom directory). PP-StructureV3 wymaga osobnych modeli
 # do analizy layoutu i tabel (SLANet).
