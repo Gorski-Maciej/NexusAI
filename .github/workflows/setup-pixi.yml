@@ -15,8 +15,6 @@
 #   - inputs + secrets — elastyczna konfiguracja
 #   - pixi cache — szybkie kolejne uruchomienia
 #
-# Zgodnie z aa3fvcx.txt: pixi zastępuje Dockera dla zależności systemowych.
-
 name: Setup pixi Environment
 on:
   workflow_call:

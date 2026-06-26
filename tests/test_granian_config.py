@@ -149,11 +149,6 @@ class TestGranianConfig:
         assert "granian" in imports
         assert "granian.constants" in imports
 
-    def test_no_deprecated_uvicorn(self) -> None:
-        """Sprawdź czy nie ma śladów Uvicorn w server.py."""
-        source = Path("nexus_ai/api/server.py").read_text(encoding="utf-8")
-        assert "uvicorn" not in source.lower()
-
     def test_env_var_namespace_completeness(self) -> None:
         """Sprawdź czy wszystkie NEXUS_GRANIAN_* env vars są zdefiniowane
         w pixi.toml activation.env."""

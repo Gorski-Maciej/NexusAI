@@ -128,7 +128,7 @@ class TestConfigLoaderEnviron:
 
     def test_environ_not_overwritten_on_reload(self, config_path: Path, monkeypatch) -> None:
         """Env vars nie są nadpisywane — env > TOML (priorytet env vars)."""
-        # Ustaw env var ręcznie (symulacja Docker/Helm)
+        # Ustaw env var ręcznie
         monkeypatch.setenv("NEXUS_LOG_LEVEL", "production-override")
 
         loader = ConfigLoader(path=config_path)

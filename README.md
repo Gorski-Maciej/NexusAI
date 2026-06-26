@@ -7,7 +7,7 @@
 
 **NexusAI** is a next-generation, AI-driven accounting platform designed for Polish businesses. It combines OCR-based invoice processing, multi-agent AI decision-making (council of LLMs), double-entry ledger integration via TigerBeetle, and real-time event streaming via NATS JetStream — all wrapped in a modern Litestar API and a Flet-based desktop UI.
 
-Built as a **single-file executable** (Nuitka onefile) — no Docker, no complex setup.
+Built as a **single-file executable** (Nuitka onefile) — no complex setup.
 
 ---
 
@@ -55,8 +55,8 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Plik konfiguracyjny |
 |---|---|---|---|
 | **Python ≥3.13 (free-threaded)** | Python <3.13 (z GIL) | ✅ | `pixi.toml` → `python = "3.13.*"` |
-| **pixi** — menedżer środowiska (Rust) | Docker, conda, apt-get | ✅ | `pixi.toml` |
-| ~~**mise** — task runner~~ | ~~pyenv, asdf, make, just~~ | ➡️ **pixi** (zastąpił mise) | `pixi.toml` |
+| **pixi** — menedżer środowiska (Rust) | apt-get | ✅ | `pixi.toml` |
+
 | **hatchling** — backend budowania | setuptools, setup.py | ✅ | `pyproject.toml` → `build-backend = "hatchling.build"` |
 | **mypyc** — kompilacja typowanego Pythona → C | — | ✅ | `pyproject.toml` → `[tool.mypyc]` |
 | **PyO3 + Maturin** — Rust extensions | — | ✅ | `nexus_ai/rust/Cargo.toml`, `pyproject.toml` → `[tool.maturin]` |
@@ -69,7 +69,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
 | **Litestar** — framework API | FastAPI | ✅ | `nexus_ai/api/app.py` → `create_app()` |
-| **Granian** — serwer ASGI w Rust | Uvicorn | ✅ | `nexus_ai/api/server.py` → `granian.Granian(...)` |
+| **Granian** — serwer ASGI w Rust | — | ✅ | `nexus_ai/api/server.py` → `granian.Granian(...)` |
 | **anyio** — lekka warstwa współbieżności | — | ✅ | Używany w `ocr_consensus.py`, `luz/worker.py` |
 | **msgspec** — ultraszybka serializacja | json, orjson | ✅ | `nexus_ai/core/msgspec_utils.py` |
 
@@ -200,8 +200,8 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **pixi** — deklaratywne środowisko + task runner | Docker, conda, ~~mise~~ | ✅ (jeden plik zamiast mise + pixi) | `pixi.toml` |
-| ~~**mise** — menedżer wersji + task runner~~ | ~~pyenv, asdf, make, just~~ | ➡️ **pixi** (zastąpił mise) | `pixi.toml` |
+| **pixi** — deklaratywne środowisko + task runner | — | ✅ | `pixi.toml` |
+
 | **GitHub Actions** — CI/CD | — | ✅ | `.github/workflows/` |
 
 ### Punkt 26 — SYSTEM POWIADOMIEŃ I CENTRUM DECYZJI

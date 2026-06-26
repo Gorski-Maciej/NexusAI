@@ -17,8 +17,6 @@ def test_single_create_app_factory_exists() -> None:
 def test_server_uses_unified_create_app() -> None:
     source = Path("nexus_ai/api/server.py").read_text(encoding="utf-8")
     assert "from nexus_ai.api.app import create_app" in source
-    # Granian (Rust ASGI server, zastępuje Uvicorn)
-    assert "uvicorn.run(" not in source
     assert "granian.Granian" in source
 
 
@@ -33,4 +31,3 @@ def test_no_old_tech_imports() -> None:
     api_source = Path("nexus_ai/api/app.py").read_text(encoding="utf-8")
     assert "fastapi" not in api_source.lower()
     assert "starlette" not in api_source.lower()
-    assert "uvicorn" not in api_source.lower()

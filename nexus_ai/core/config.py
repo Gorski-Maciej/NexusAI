@@ -218,7 +218,7 @@ class ConfigLoader:
         """Zastosuj dane TOML do os.environ.
 
         UWAGA: Nie nadpisuje istniejących zmiennych środowiskowych — env vars
-        mają wyższy priorytet niż TOML. Pozwala to Docker/Helm/K8s na
+        mają wyższy priorytet niż TOML. Pozwala to na
         wstrzykiwanie runtime overrides (np. NEXUS_JWT_SECRET).
 
         Mapowanie: TOML {"core": {"debug": true}} → NEXUS_DEBUG=1
@@ -660,7 +660,7 @@ class AppConfig(Struct, kw_only=True):
     msgspec.Struct — lżejszy i szybszy niż dataclass.
     Wczytuje wartości BEZPOŚREDNIO z pliku TOML (przez msgspec.toml.decode),
     a nie przez os.environ. Zmienne środowiskowe mają wyższy priorytet niż TOML,
-    co pozwala Docker/K8s na runtime overrides.
+    co pozwala na runtime overrides.
 
     Uwaga: msgspec.Struct nie wywołuje automatycznie ``__post_init__``.
     Użyj ``AppConfig.create()`` która woła walidację po inicjalizacji.

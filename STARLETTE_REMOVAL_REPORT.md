@@ -44,7 +44,7 @@
 ### Test test_startup_contract.py
 - **Funkcja:** `test_no_old_tech_imports`
 - **Akcja:** **Zachowano** — asercja `assert "starlette" not in api_source.lower()` jest cennym strażnikiem, który automatycznie sprawdzi, czy Starlette nie pojawi się w źródle w przyszłości.
-- **Uwaga:** Test weryfikuje również brak `fastapi` i `uvicorn`.
+- **Uwaga:** Test weryfikuje również brak `fastapi`.
 
 ## Conclusion
 

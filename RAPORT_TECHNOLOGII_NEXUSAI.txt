@@ -79,9 +79,6 @@
    7. Nuitka >=1.8                          [A]  — Kompilacja Python → samodzielny .exe
    8. Rust (język) ≥1.78                    [A]  — Język dla krytycznych modułów
    9. mimalloc ≥2.1.0 (Microsoft)           [A]  — Alokator pamięci (LD_PRELOAD)
-  10. mise                                  [S]  — Zastąpiony przez pixi (task runner + env manager)
-  11. Docker                                [S]  — Zastąpiony przez pixi (środowisko natywne)
-  12. Conda-Forge (kanał)                   [Z]  — Kanał pakietów systemowych
 
 ────────────────────────────────────────────────────────────────────────────────
  2.2 API / SERWER ASGI
@@ -89,7 +86,6 @@
 
   13. Litestar ≥2.8.0 (v2.23.0)             [A]  — Framework API (DTO, OpenAPI, Middleware, JWT, CORS)
   14. Granian ≥1.0.0 (v2.7.5)              [A]  — Serwer ASGI w Rust (HTTP/1.1 + HTTP/2)
-  15. Uvicorn                               [S]  — Zastąpiony przez Granian
   16. anyio ≥4.4.0                          [A]  — Lekka warstwa async (asyncio/trio backend)
   17. msgspec ≥0.18.0                       [A]  — Ultraszybka serializacja (JSON/TOML/MessagePack)
   18. httpx ≥0.27.0 (v0.28.1)               [A]  — Klient HTTP (async)
@@ -377,8 +373,7 @@
  182. mypy ≥1.8.0                             [D]  — Type checker
  183. pre-commit (v4.6.0)                     [D]  — Hooki git
 
-────────────────────────────────────────────────────────────────────────────────
- 2.22 ZALEŻNOŚCI SYSTEMOWE (conda-forge przez pixi)
+────────────────────────────────────────────────────────────────────────────────  2.22 ZALEŻNOŚCI SYSTEMOWE
 ────────────────────────────────────────────────────────────────────────────────
 
  184. tesseract ≥5.3.0                        [A]  — OCR engine
@@ -540,7 +535,7 @@
   • hatch-vcs               — Wtyczka wersjonowania Git            [A]
   • mypyc                   — Kompilacja Python→C                 [A]
 
-  ── Systemowe (conda-forge) ─────────────────────────────────────────────────
+  ── Systemowe ──────────────────────────────────────────────────────────────
   • tesseract               — OCR engine                           [A]
   • leptonica               — Image processing (dla Tesseract)     [Z]
   • libopencv               — OpenCV                               [A]
@@ -738,14 +733,10 @@
     7. Nuitka [A]
     8. Rust [A]
     9. mimalloc [A]
-   10. mise [S]
-   11. Docker [S]
-   12. Conda-Forge [Z]
 
   API / SERWER ASGI:
    13. Litestar [A]
    14. Granian [A]
-   15. Uvicorn [S]
    16. anyio [A]
    17. msgspec [A]
    18. httpx [A]
@@ -955,7 +946,7 @@
   184. pre-commit [D]
   185. GitHub Actions [A]
 
-  SYSTEMOWE (conda-forge):
+  SYSTEMOWE:
   186. tesseract [A]
   187. leptonica [Z]
   188. libopencv [A]

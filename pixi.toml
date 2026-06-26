@@ -2,7 +2,7 @@
 # pixi.toml — NexusAI All-in-One Environment + Task Manager
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# pixi zastępuje mise jako jedyny task runner, environment manager i menedżer
+# pixi jako jedyny task runner, environment manager i menedżer
 # narzędzi w projekcie. Jeden plik definiuje wszystko:
 #   - Python ≥3.13 (free-threaded) — interpreter
 #   - Pakiety PyPI (Litestar, Taskiq, DuckDB, itd.)
@@ -36,7 +36,7 @@ channels = ["conda-forge"]
 platforms = ["linux-64", "linux-aarch64", "win-64"]   # win-64 dla Nuitka + Inno Setup (aa3fvcx.txt)
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Zależności systemowe (conda-forge) — tylko runtime
+# Zależności systemowe — tylko runtime
 # ══════════════════════════════════════════════════════════════════════════════
 
 [dependencies]
@@ -144,7 +144,7 @@ linux = "2.27"
 # Activation — zmienne środowiskowe przy pixi run / pixi shell
 # ══════════════════════════════════════════════════════════════════════════════
 # Te zmienne są automatycznie ustawiane przy każdym `pixi run` lub `pixi shell`.
-# Odpowiednik [env] z mise.toml.
+# Zmienne środowiskowe dla pixi run / pixi shell.
 # {PIXI_PROJECT_ROOT} to zmienna pixi wskazująca na katalog projektu.
 # $CONDA_PREFIX jest ustawiane przez pixi przed zastosowaniem [activation.env].
 
@@ -183,15 +183,14 @@ MIMALLOC_PAGE_RESET = "0"
 MIMALLOC_SHOW_STATS = "0"
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Tasks — KOMPLETNA ORKIESTRACJA projektu (przeniesione z mise.toml)
+# Tasks — KOMPLETNA ORKIESTRACJA projektu
 # ══════════════════════════════════════════════════════════════════════════════
 #
 # Uruchamianie:  pixi run <task-name>
 # Z argumentami: pixi run test -- -k 'test_facts'   (argumenty po --)
 # Środowisko:    pixi run prod:api                  (wersja produkcyjna)
 #
-# Wszystkie 80+ tasków z mise.toml zostało przeniesionych.
-# Żaden task nie został utracony.
+
 # ══════════════════════════════════════════════════════════════════════════════
 
 [tasks]
@@ -620,10 +619,9 @@ fi
 description = "Cofnij ostatnie wdrożenie (git revert HEAD) — z potwierdzeniem"
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Środowiska produkcyjne (odpowiednik mise.prod.toml [env])
+# Środowiska produkcyjne
 # ══════════════════════════════════════════════════════════════════════════════
 # Taski z prefixem "prod:" używają zmiennych produkcyjnych.
-# Uruchom: pixi run prod:api  (zamiast MISE_ENV=prod mise run api)
 # ══════════════════════════════════════════════════════════════════════════════
 
 [tasks.prod-api]

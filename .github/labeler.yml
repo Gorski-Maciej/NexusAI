@@ -67,10 +67,6 @@
   - changed-files:
       - any-glob-to-any-file: ["pyproject.toml", "pixi.toml", "pixi.lock"]
 
-"type:docker":
-  - changed-files:
-      - any-glob-to-any-file: ["Dockerfile", "docker-compose.yml"]
-
 "type:build":
   - changed-files:
       - any-glob-to-any-file: ["user.nuitka-package-config.yml", "build_scripts/**/*"]

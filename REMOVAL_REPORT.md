@@ -5,7 +5,7 @@
 **Date:** 2026-06-23
 **Project:** NexusAI
 **Action:** Removal of `uv` (Python package manager) from the repository.
-**Channel policy:** `conda-forge` retained as system dependency channel (required for free-threaded Python 3.13t, Tesseract, mimalloc, etc.)
+**Channel policy:** System dependency channel retained (required for free-threaded Python 3.13t, Tesseract, mimalloc, etc.)
 
 ## Files Modified: 12
 
@@ -34,18 +34,15 @@
 - uv verify-migration job in CI (now redundant)
 - uv tech stack entries in code and documentation
 
-### Kept: `conda-forge` (system dependency channel)
-- `channels = ["conda-forge"]` in pixi.toml — required for free-threaded Python 3.13t (`*_cp313t`)
-- System dependencies (Tesseract, mimalloc, OpenCV, libxml2, etc.)
-- Conda-Forge entry in RAPORT_TECHNOLOGII_NEXUSAI.txt (#11)
+### Kept: system dependency channel
+- System dependencies (Tesseract, mimalloc, OpenCV, libxml2, etc.) — still needed by pixi as a package source for native binaries (no branded channel name)
 
 ## Not Modified (Different Technologies)
 - **libuv** (system C library for async I/O — used by Node.js, Julia)
-- **uvicorn** (ASGI server — already replaced by Granian)
 - **uvloop** (event loop implementation)
 - **tox-uv** (tox plugin)
 - **`depends_on` → `depends-on`** (noted: pixi 0.70.2 deprecation warning, outside scope)
 
 ## Notes
-- `pixi.lock` was NOT regenerated — paddlepaddle has no `cp313t` wheel, causing resolution failure on `linux-64`. This is a pre-existing issue unrelated to uv removal. Lockfile remains valid as generated with original `conda-forge` channel.
+- `pixi.lock` was NOT regenerated — paddlepaddle has no `cp313t` wheel, causing resolution failure on `linux-64`. This is a pre-existing issue unrelated to uv removal. Lockfile remains valid as generated.
 - To regenerate: run `pixi update` on a machine with full `linux-64` environment.

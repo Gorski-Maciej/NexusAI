@@ -19,7 +19,7 @@ def test_parser_supports_bootstrap_flag() -> None:
 
 
 def test_parser_defaults() -> None:
-    """Verify parser defaults use new technology stack (Granian, not Uvicorn)."""
+    """Verify parser defaults use new technology stack (Granian)."""
     parser = _build_parser()
     args = parser.parse_args([])
     assert args.mode == "api"
