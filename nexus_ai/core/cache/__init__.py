@@ -2,7 +2,7 @@
 NexusAI Cache — warstwa cache oparta na diskcache + hishel HTTP cache + NATS invalidation.
 
 Zgodnie z decyzją optymalizacyjną:
-- Własne backendy (backends.py, dyscache.py) usunięte — zastąpione przez bezpośrednie użycie diskcache
+- Własne backendy (backends.py, diskcache.py) usunięte — zastąpione przez bezpośrednie użycie diskcache
 - hishel — inteligentny cache HTTP przez CachedHttpClient
 - NATS distributed cache invalidation
 """

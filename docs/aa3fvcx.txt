@@ -1028,19 +1028,16 @@ Oto szczegółowe opisy każdego składnika finalnej wersji Punktu 13 – warstw
 
 ---
 
-dyscache – Nowoczesny, wielopoziomowy cache
+diskcache – SQLite-backed cache z TTL
 
-Co to jest: dyscache to biblioteka nowej generacji do cache'owania w Pythonie, zaprojektowana od podstaw pod kątem współbieżności i asynchroniczności. Działa jako inteligentny, dwupoziomowy magazyn: łączy w sobie błyskawiczną pamięć RAM z trwałością bazy danych SQLite, która jest już fundamentem Twojej aplikacji.
+Co to jest: diskcache to biblioteka do cache'owania w Pythonie, która używa SQLite jako backendu. Działa jako inteligentny, trwały magazyn: łączy w sobie szybkość pamięci RAM (dzięki cache'owaniu stron SQLite) z trwałością bazy danych SQLite, która jest już fundamentem Twojej aplikacji.
 
 Dlaczego to przełom w wydajności i lekkości:
 
-· Natywnie asynchroniczny (anyio-native): To jest jej największa, niepodważalna przewaga nad starszymi rozwiązaniami, takimi jak cachetools czy diskcache. dyscache został zbudowany na anyio – tej samej warstwie, która napędza Litestar i Granian. Oznacza to, że wszystkie operacje na cache'u są w pełni nieblokujące. Gdy aplikacja czeka na odczyt z cache'u, nie blokuje pętli zdarzeń, pozwalając serwerowi obsłużyć w tym czasie inne żądania. To idealne, lekkie ogniwo w twoim asynchronicznym łańcuchu.
-· Inteligentna wielopoziomowość (RAM + Dysk): To jest funkcja, która czyni go prawdziwie innowacyjnym. dyscache automatycznie zarządza dwoma poziomami cache'u:
-  · L1 (RAM): Błyskawiczny, ulotny cache dla najczęściej używanych danych (np. aktualne kursy walut, dane kontrahenta z Białej Listy). Dostęp do nich trwa nanosekundy.
-  · L2 (SQLite): Trwały, pojemny cache na dysku. Przechowuje dane, które nie zmieściły się w RAM-ie lub muszą przetrwać restart aplikacji.
-    Dzięki temu zyskujesz pojemność dysku przy zachowaniu prędkości RAM-u, a programista nie musi ręcznie zarządzać opróżnianiem pamięci.
-· Zero dodatkowej infrastruktury: dyscache nie wymaga stawiania zewnętrznego, ciężkiego serwera, takiego jak Redis czy Memcached. Wykorzystuje twoją istniejącą bazę SQLite, co idealnie wpisuje się w filozofię "jeden plik, jeden proces". Nie dokładasz ani jednego megabajta RAM-u do architektury ponad to, co jest absolutnie konieczne.
-· Skalowalność bez zmiany kodu: To jest esencja twojej strategii. dyscache programuje się do abstrakcyjnego interfejsu. Domyślnym backendem jest duet RAM + SQLite, który jest idealny dla samodzielnej aplikacji. Gdy w przyszłości zdecydujesz się na architekturę rozproszoną i potrzebny będzie współdzielony cache dla wielu instancji, wymienisz backend na Redis, a cały kod biznesowy wykonujący operacje cache.get() i cache.set() pozostanie absolutnie nietknięty.
+· Natywnie thread-safe i wydajny: diskcache jest zaprojektowany od podstaw z myślą o współbieżności. Używa SQLite WAL (Write-Ahead Logging) do obsługi jednoczesnych odczytów i zapisów bez blokowania. Wszystkie operacje na cache'u są szybkie i bezpieczne, a narzut na zarządzanie danymi jest minimalny.
+· Inteligentna ewikcja (LRU + TTL): diskcache automatycznie zarządza rozmiarem cache'u, usuwając najrzadziej używane dane (LRU) oraz te z wygasłym TTL. Dzięki temu zyskujesz pojemność dysku przy zachowaniu prędkości RAM-u, a programista nie musi ręcznie zarządzać opróżnianiem pamięci.
+· Zero dodatkowej infrastruktury: diskcache nie wymaga stawiania zewnętrznego, ciężkiego serwera, takiego jak Redis czy Memcached. Wykorzystuje twoją istniejącą bazę SQLite, co idealnie wpisuje się w filozofię "jeden plik, jeden proces". Nie dokładasz ani jednego megabajta RAM-u do architektury ponad to, co jest absolutnie konieczne.
+· Skalowalność bez zmiany kodu: Domyślnym backendem jest SQLite, który jest idealny dla samodzielnej aplikacji. Gdy w przyszłości zdecydujesz się na architekturę rozproszoną i potrzebny będzie współdzielony cache dla wielu instancji, wymienisz backend na Redis (przez backends_redis.py), a cały kod biznesowy wykonujący operacje cache.get() i cache.set() pozostanie absolutnie nietknięty.
 
 ---
 
@@ -1058,7 +1055,7 @@ Przykład użycia w praktyce:
 
 ```python
 import anyio
-from dyscache import Cache
+from diskcache import Cache
 from msgspec import Struct
 
 class Money(Struct, frozen=True):
@@ -1068,13 +1065,15 @@ class Money(Struct, frozen=True):
 cache = Cache()
 
 async def pobierz_kurs_waluty(waluta: str) -> Money:
-    cached = await cache.get(f"kurs:{waluta}")
+    # diskcache obsługujemy przez NexusCache (async wrapper)
+    from nexus_ai.core.cache import get_cache
+    nexus_cache = get_cache()
+    cached = await nexus_cache.get(f"kurs:{waluta}")
     if cached:
-        # Deserializacja z msgspec jest natychmiastowa
         return Money.from_bytes(cached)
     
     kurs = await pobierz_z_api(waluta)
-    await cache.set(f"kurs:{waluta}", kurs.as_bytes(), ttl=3600)
+    await nexus_cache.set(f"kurs:{waluta}", kurs.as_bytes(), ttl=3600)
     return kurs
 ```
 
@@ -1082,7 +1081,7 @@ async def pobierz_kurs_waluty(waluta: str) -> Money:
 
 Podsumowanie synergii w Punkcie 13
 
-Ta warstwa to mistrzostwo minimalizmu i wydajności. dyscache zapewnia elastyczność i trwałość godną zewnętrznego serwera, ale robi to w granicach twojej aplikacji, wykorzystując SQLite. msgspec gwarantuje, że operacje na cache'u są tak szybkie, że stają się przezroczyste dla użytkownika. Razem tworzą system, który jest dziś ultralekki i samowystarczalny, a jutro – poprzez prostą wymianę backendu – gotowy na wyzwania systemu rozproszonego.
+Ta warstwa to mistrzostwo minimalizmu i wydajności. diskcache zapewnia elastyczność i trwałość godną zewnętrznego serwera, ale robi to w granicach twojej aplikacji, wykorzystując SQLite. msgspec gwarantuje, że operacje na cache'u są tak szybkie, że stają się przezroczyste dla użytkownika. Razem tworzą system, który jest dziś ultralekki i samowystarczalny, a jutro – poprzez prostą wymianę backendu – gotowy na wyzwania systemu rozproszonego.
 
 
 
@@ -2743,7 +2742,7 @@ To konkretne serwisy, z którymi Twoja aplikacja musi być zintegrowana. W nowej
 
 · GUS BIR API (SOAP): Źródło oficjalnych danych o firmach (regon, NIP, adres). Komunikacja przez lxml i xsdata.
 · Biała Lista MF API (REST): Weryfikacja rachunków bankowych podatników VAT. Szybkie, lekkie zapytania REST przez httpx.
-· NBP API (REST): Pobieranie oficjalnych kursów walut. Idealny kandydat do cache'owania przez dyscache (Punkt 13).
+· NBP API (REST): Pobieranie oficjalnych kursów walut. Idealny kandydat do cache'owania przez diskcache (Punkt 13).
 · KSeF API (REST): Wysyłka i odbiór faktur elektronicznych. Kluczowy element integracji z systemem państwowym.
 
 ---
@@ -3007,7 +3006,7 @@ Dlaczego to szczyt optymalizacji:
 · Natywna prędkość: Rust kompiluje się do kodu maszynowego – przewalutowania są wykonywane w nanosekundach.
 · Precyzja w groszach: Wszystkie obliczenia operują na liczbach całkowitych (groszach), co eliminuje błędy zaokrągleń. Kurs z NBP (np. 4.25 PLN/EUR) jest przeliczany na relację groszową i używany do mnożeń z zachowaniem pełnej precyzji.
 · Integracja z ekosystemem: Moduł jest budowany przez maturin jako koło binarne, ładowane przez Pythona. Operuje bezpośrednio na typie Nexus-Money, co gwarantuje spójność typów w całym systemie.
-· Źródło kursów: Korzysta z API NBP przez httpx (z Punktu 6), z cache'owaniem przez hishel i dyscache, co zapewnia szybki dostęp do aktualnych kursów bez zbędnych zapytań sieciowych.
+· Źródło kursów: Korzysta z API NBP przez httpx (z Punktu 6), z cache'owaniem przez hishel i diskcache, co zapewnia szybki dostęp do aktualnych kursów bez zbędnych zapytań sieciowych.
 
 ---
 
