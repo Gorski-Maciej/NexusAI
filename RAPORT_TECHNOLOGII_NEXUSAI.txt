@@ -262,7 +262,7 @@
  140. Replay Engine                           [A]  — Odtwarzanie decyzji
 
   ── Silnik natywny Rust (nexus-tax-engine) ────────────────────────────────────
- 141. nexus-tax-engine (własny)              [A]  — Natywny silnik podatkowy (Rust+PyO3)        Wewnętrznie używa: rust_decimal
+ 141. nexus-tax-engine (własny)              [A]  — Natywny silnik podatkowy (Rust+PyO3)
 
 
   ── OPA / Rego ────────────────────────────────────────────────────────────────
@@ -355,8 +355,6 @@
 
 
   ── nexus-tax-engine (nexus_tax_engine/Cargo.toml) ────────────────────────────
-   • rust_decimal (z features: maths)
-   • rust_decimal_macros
    • approx (dev-dependency)
 
 ────────────────────────────────────────────────────────────────────────────────

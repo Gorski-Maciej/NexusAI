@@ -1,5 +1,5 @@
 """
-Tests for Fowler's Money pattern (py-moneyed) and Currency Converter.
+Tests for Money and Currency Converter.
 
 Covers:
   - Money arithmetic (add, sub, mul, div)
@@ -161,7 +161,7 @@ class TestCurrencyConverter:
         from datetime import date
         from nexus_ai.services.currency_converter import CurrencyRateNotFoundError
 
-        # AED exists in py-moneyed but is NOT in KNOWN_CURRENCIES set
+        # AED is NOT in KNOWN_CURRENCIES set
         with pytest.raises(CurrencyRateNotFoundError):
             converter.convert(
                 Money("100.00", "AED"),

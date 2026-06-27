@@ -15,9 +15,9 @@ Po dokładnym skanowaniu dokumentacji (`RAPORT_TECHNOLOGII_NEXUSAI.txt`, `README
 
 | # w raporcie | Nazwa | Typ | Status w dokumentacji |
 |---|---|---|---|
-| 256 | `leptonica >=1.84.0` | [Z] | ✅ Tylko jako adnotacja przy Tesseract: *"(wewnętrznie używa Leptonica)"* — README l.144, RAPORT l.180 |
-| 260 | `libxml2 >=2.12.0` | [Z] | ✅ Tylko jako adnotacja przy lxml: *"(wewnętrznie używa libxml2 i libxslt)"* — README l.142, RAPORT l.177 |
-| 261 | `libxslt >=1.1.39` | [Z] | ✅ J.w. |
+| 256 | `leptonica` | [Z] | ✅ Usunięto — zależność pośrednia Tesseract OCR |
+| 260 | `libxml2` | [Z] | ✅ Usunięto — zależność pośrednia lxml |
+| 261 | `libxslt` | [Z] | ✅ Usunięto — zależność pośrednia lxml |
 | 262 | `cmake >=3.28.0` | [D] | ✅ Nie występuje w dokumentacji jako technologia — tylko w `pixi.toml` (feature.dev) jako narzędzie budowania |
 | 263 | `pkg-config >=0.29.2` | [Z] | ✅ Nie występuje w dokumentacji jako technologia — tylko w `pixi.toml` jako zależność systemowa |
 | 264 | `CUDA Toolkit (v13.0.2)` | [Z] | ✅ Nie występuje w dokumentacji jako technologia |

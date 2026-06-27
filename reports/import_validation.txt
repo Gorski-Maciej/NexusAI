@@ -1073,9 +1073,6 @@ FAIL  nexus_ai.roboton_reflekton.dunning_engine
 import pendulum
 ModuleNotFoundError: No module named 'pendulum'
 
-FAIL  nexus_ai.roboton_reflekton.forex_engine
-  Error: ModuleNotFoundError: No module named 'pendulum'
-  File "/data/data/com.termux/files/home/NexusAI/nexus_ai/roboton_reflekton/forex_engine.py", line 10, in <module>
 import pendulum
 ModuleNotFoundError: No module named 'pendulum'
 

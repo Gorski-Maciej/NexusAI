@@ -81,6 +81,5 @@ grep -n "pytest-cov\|pytest-xdist\|pytest-timeout\|pytest-sugar\|pytest-watch\|p
 
 ## Uwagi
 
-- **`pixi install --fresh` / `pixi update`** — nie powiodło się z powodu pre-existing issue: `paddlepaddle` nie ma wheeli dla free-threaded Python 3.13t (`cp313t`). Hypothesis pozostaje w `pixi.lock` jako pozostałość, ale jest usunięty z `pixi.toml` jako bezpośrednia zależność.
-- **Testy** — nie mogły zostać uruchomione z powodu tego samego pre-existing problemu zależnościowego (paddlepaddle/cp313t). Zmiany są wyłącznie w dokumentacji i testach property-based — nie wpływają na logikę runtime'ową.
+- **`pixi install --fresh` / `pixi update`** — nie powiodło się z powodu pre-existing issue środowiska.
 - **`hypothesis` pozostaje jako zależność przechodnia** przez `schemathesis` — jest to niezbędne do działania testów fuzz API. Nie jest już jednak bezpośrednią zależnością ani technologią w dokumentacji.

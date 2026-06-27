@@ -118,7 +118,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **Nexus-Crypto** (Rust + PyO3) — AEAD, Argon2id, SHA-256, BLAKE2, HMAC, RNG, JWT, zeroizacja | — (KSeF RSA/X.509 via optional external dep) | ✅ | `nexus_ai/rust/src/lib.rs` |
+| **Nexus-Crypto** (Rust + PyO3) — własny moduł kryptograficzny (AEAD, hashowanie, kryptograficzny RNG, JWT, zeroizacja pamięci) | — (KSeF RSA/X.509 — wymaga osobnej biblioteki) | ✅ | `nexus_ai/rust/src/lib.rs` |
 | **Litestar JWT** — tokeny (wbudowane) | pyjwt | ✅ | `nexus_ai/api/security.py` |
 | **Litestar CSRF** — ochrona (wbudowana) | — | ✅ | `nexus_ai/api/middleware.py` |
 | **Litestar CORS** — kontrola dostępu (wbudowana) | — | ✅ | `nexus_ai/api/app.py` |
@@ -579,7 +579,6 @@ pixi run test-property
 | `tests/test_fixed_assets_depreciation.py` | Fixed assets depreciation |
 | `tests/test_inventory_fifo.py` | FIFO inventory accounting |
 | `tests/test_fraud_graph_scanner.py` | Fraud detection graph scanning |
-| ~~`tests/test_nexus_forex.py`~~ | ~~Foreign exchange revaluation (Nexus-Forex Rust module) — usunięty~~ |
 | `tests/test_reconciliation_engine.py` | Account reconciliation |
 | `tests/test_dunning_engine.py` | Dunning/collections engine |
 | `tests/test_smart_approvals.py` | Smart approval workflows |
@@ -661,7 +660,6 @@ NexusAI/
 │   │   ├── dunning_engine.py
 │   │   ├── shadow_ledger.py       # Tax simulation
 │   │   ├── vat_reconciliation.py
-│   │   ├── nexus_forex/           # Nexus-Forex (Rust + PyO3) — moduł walutowy (usunięty)
 │   │   └── models.py              # Domain models
 │   │
 │   ├── luz/                       # Desktop application (Flet)

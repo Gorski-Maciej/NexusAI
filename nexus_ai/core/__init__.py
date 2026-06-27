@@ -2,7 +2,7 @@
 """NexusAI Core — safe lazy imports for constrained environments.
 
 Nowy stack (zgodny z aa3fvcx.txt):
-- nexus-crypto zamiast cryptography (AEAD ChaCha20-Poly1305 + Argon2id)
+- nexus-crypto (AEAD + Argon2id + SHA-256)
 - stamina (async-native retry + circuit breaker)
 - msgspec do serializacji TOML/JSON (zamiast json/orjson)
 """

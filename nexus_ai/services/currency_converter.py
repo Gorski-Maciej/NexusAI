@@ -1,8 +1,7 @@
 """
 Currency Converter — bezpieczna konwersja walut z kursem NBP.
 
-Zastępuje: py-moneyed (Money, Fowler's Money pattern) → Nexus-Money (msgspec.Struct)
-Zgodnie z aa3fvcx.txt: Nexus-Money to minimalistyczna reprezentacja pieniędzy
+Nexus-Money — minimalistyczna reprezentacja pieniędzy
 oparta na msgspec.Struct, z amount_cents: int i currency: str.
 
 Każda operacja walutowa jawna, audytowalna,
@@ -72,16 +71,12 @@ class CurrencyRateNotFoundError(ValueError):
 
 
 # ── Nexus-Money — minimalistyczna reprezentacja pieniędzy (msgspec.Struct) ───
-# Zgodnie z aa3fvcx.txt, Punkt 9: Nexus-Money zastępuje py-moneyed.
 # amount_cents: int — kwota w najmniejszej jednostce (grosze)
 # currency: str — kod waluty (np. "PLN", "EUR")
 
 
 class Money(msgspec.Struct, frozen=True):
     """Nexus-Money — minimalistyczna reprezentacja pieniędzy.
-
-    Zastępuje: py-moneyed.Money
-    Nowy:     msgspec.Struct z amount_cents i currency
 
     Wszystkie operacje arytmetyczne na poziomie groszy (int),
     co eliminuje błędy zaokrągleń zmiennoprzecinkowych.
@@ -91,7 +86,6 @@ class Money(msgspec.Struct, frozen=True):
         currency: Kod waluty (str). Np. "PLN", "EUR", "USD".
 
     Uwaga: Główny konstruktor to ``Money(amount_cents=..., currency=...)``.
-    Dla kompatybilności wstecznej z py-moneyed, użyj ``Money.from_string()``.
     """
 
     amount_cents: int
@@ -130,10 +124,7 @@ class Money(msgspec.Struct, frozen=True):
 
     @classmethod
     def from_string(cls, amount: str, currency: str = "PLN") -> Money:
-        """Create Money from a decimal string (kompatybilność z py-moneyed API).
-
-        Zastępuje: ``Money("123.45", "PLN")`` (py-moneyed)
-        Nowy:     ``Money.from_string("123.45", "PLN")``
+        """Create Money from a decimal string.
 
         Args:
             amount: Kwota jako string (np. "123.45").

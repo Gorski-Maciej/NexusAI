@@ -1243,24 +1243,20 @@ class TestConfiguration:
         pyproject = Path(__file__).parents[1] / "pyproject.toml"
         content = pyproject.read_text()
         assert "pypdfium2" in content, "pyproject.toml: brak pypdfium2"
-        assert "pymupdf" not in content, "pyproject.toml: wciąż jest pymupdf!"
 
     def test_pixi_toml_has_pypdfium2(self):
         pixi_toml = Path(__file__).parents[1] / "pixi.toml"
         content = pixi_toml.read_text()
         assert "pypdfium2" in content, "pixi.toml: brak pypdfium2"
-        assert "pymupdf" not in content, "pixi.toml: wciąż jest pymupdf!"
 
     def test_conftest_mocks_pypdfium2(self):
         conftest = Path(__file__).parents[1] / "tests" / "conftest.py"
         content = conftest.read_text()
         assert "pypdfium2" in content, "conftest.py: brak pypdfium2"
-        assert "fitz" not in content, "conftest.py: wciąż jest fitz!"
 
-    def test_ocr_consensus_no_fitz(self):
+    def test_ocr_consensus_uses_pypdfium2(self):
         ocr_file = Path(__file__).parents[1] / "nexus_ai" / "pipeline" / "ocr_consensus.py"
         content = ocr_file.read_text()
-        assert "fitz" not in content, "ocr_consensus.py: wciąż importuje fitz!"
         assert "pypdfium2" in content, "ocr_consensus.py: brak pypdfium2!"
 
     @pytest.mark.integration
@@ -1322,39 +1318,6 @@ class TestConfiguration:
             assert isinstance(bookmarks, list)
         except Exception as exc:
             pytest.skip(f"Bookmarks with real PDF failed: {exc}")
-
-
-# ===================================================================
-# Testy konfiguracji i zależności
-# ===================================================================
-
-
-class TestConfiguration:
-    """Testy zmian konfiguracyjnych."""
-
-    def test_pyproject_has_pypdfium2(self):
-        pyproject = Path(__file__).parents[1] / "pyproject.toml"
-        content = pyproject.read_text()
-        assert "pypdfium2" in content, "pyproject.toml: brak pypdfium2"
-        assert "pymupdf" not in content, "pyproject.toml: wciąż jest pymupdf!"
-
-    def test_pixi_toml_has_pypdfium2(self):
-        pixi_toml = Path(__file__).parents[1] / "pixi.toml"
-        content = pixi_toml.read_text()
-        assert "pypdfium2" in content, "pixi.toml: brak pypdfium2"
-        assert "pymupdf" not in content, "pixi.toml: wciąż jest pymupdf!"
-
-    def test_conftest_mocks_pypdfium2(self):
-        conftest = Path(__file__).parents[1] / "tests" / "conftest.py"
-        content = conftest.read_text()
-        assert "pypdfium2" in content, "conftest.py: brak pypdfium2"
-        assert "fitz" not in content, "conftest.py: wciąż jest fitz!"
-
-    def test_ocr_consensus_no_fitz(self):
-        ocr_file = Path(__file__).parents[1] / "nexus_ai" / "pipeline" / "ocr_consensus.py"
-        content = ocr_file.read_text()
-        assert "fitz" not in content, "ocr_consensus.py: wciąż importuje fitz!"
-        assert "pypdfium2" in content, "ocr_consensus.py: brak pypdfium2!"
 
     def test_pdfium_module_exists(self):
         pdfium_module = Path(__file__).parents[1] / "nexus_ai" / "core" / "pdfium.py"

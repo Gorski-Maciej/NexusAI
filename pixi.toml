@@ -6,7 +6,7 @@
 # narzędzi w projekcie. Jeden plik definiuje wszystko:
 #   - Python ≥3.13 (free-threaded) — interpreter
 #   - Pakiety PyPI (Litestar, Taskiq, DuckDB, itd.)
-#   - Zależności systemowe (Tesseract, OpenCV, libxml, SQLCipher)
+#   - Zależności systemowe (Tesseract, OpenCV, SQLCipher)
 #   - Wszystkie taski (dev, test, build, deploy, migracje, AI, profiling)
 #   - Zmienne środowiskowe (dev i prod)
 #
@@ -44,12 +44,7 @@ python = { version = "3.13.*", build = "*_cp313t" }  # Free-threaded (3.13t, bez
 
 # ── OCR i przetwarzanie obrazów ─────────────────────────────────────────────
 tesseract = ">=5.3.0"                    # OCR — ekstrakcja tekstu z faktur
-leptonica = ">=1.84.0"                   # Przetwarzanie obrazów dla Tesseract
 libopencv = ">=4.9.0"                    # OpenCV — preprocessing obrazów
-
-# ── XML / Document processing ───────────────────────────────────────────────
-libxml2 = ">=2.12.0"                     # XML parser (dla lxml)
-libxslt = ">=1.1.39"                     # XSLT (dla lxml)
 
 # ── Database ─────────────────────────────────────────────────────────────────
 pkg-config = ">=0.29.2"                  # Wykrywanie bibliotek systemowych
@@ -102,7 +97,6 @@ lxml = ">=5.1.0"
 xsdata = ">=24.0.0"           # XSD → Python code generation (KSeF)
 pillow = ">=10.0.0"
 pypdfium2 = ">=4.0.0"          # PDF → image conversion via PDFium engine
-paddlepaddle = ">=3.0.0"       # Deep learning OCR engine
 paddleocr = ">=2.8.0"          # PaddleOCR — drugi silnik OCR
 python-doctr = ">=0.9.0"         # docTR — trzeci silnik OCR
 easyocr = ">=1.7.0"            # EasyOCR — czwarty silnik OCR

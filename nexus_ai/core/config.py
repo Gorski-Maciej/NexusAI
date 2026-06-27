@@ -451,18 +451,6 @@ class _TaxSection(Struct, kw_only=True):
     vat_quarterly_threshold: Annotated[float | None, Meta(ge=0)] = None
 
 
-class _ForexSection(Struct, kw_only=True):
-    """msgspec schema dla sekcji [forex] w config/{env}.toml."""
-    enabled: bool | None = None
-    nbp_api_url: str | None = None
-    max_lookback_days: Annotated[int | None, Meta(ge=1, le=365)] = None
-    http_timeout_sec: Annotated[float | None, Meta(ge=1, le=60)] = None
-    rate_cache_maxsize: Annotated[int | None, Meta(ge=1, le=10000)] = None
-    refresh_interval_hours: Annotated[int | None, Meta(ge=1, le=168)] = None
-    default_currencies: str | None = None
-    missing_date_ttl_days: Annotated[int | None, Meta(ge=1, le=365)] = None
-
-
 class _AiSection(Struct, kw_only=True):
     """msgspec schema dla sekcji [ai] w config/{env}.toml.
 
@@ -522,7 +510,6 @@ class _TomlConfigRoot(Struct, kw_only=True):
     - security: Litestar security (JWT exclude, CSRF, rate limit)
     - integrations: zewnętrzne API webhooki
     - tax: konfiguracja podatkowa (VAT, CIT, ryczałt)
-    - forex: kursy walut NBP
     - ai: ścieżki modeli AI
     - tigerbeetle: double-entry ledger
     - opa: Open Policy Agent (reguły podatkowe)
@@ -535,7 +522,6 @@ class _TomlConfigRoot(Struct, kw_only=True):
     security: _SecuritySection | None = None
     integrations: _IntegrationsSection | None = None
     tax: _TaxSection | None = None
-    forex: _ForexSection | None = None
     ai: _AiSection | None = None
     tigerbeetle: _TigerbeetleSection | None = None
     opa: _OpaSection | None = None
@@ -553,7 +539,7 @@ def _load_toml_profile(environment: str) -> None:
        tylko raz przy imporcie, bez auto-reload.
 
     SUPERMOC TOML: Ładuje config/base.toml jako bazę, potem nadpisuje
-    config/{env}.toml. Wspólne sekcje (tax, forex, ai, tigerbeetle, security)
+    config/{env}.toml.    Wspólne sekcje (tax, ai, tigerbeetle, security)
     są definiowane RAZ w base.toml zamiast duplikować w dev.toml i prod.toml.
 
     Ustawia zmienne w os.environ (kompatybilność wsteczna z kodem używającym os.getenv).
@@ -828,7 +814,6 @@ class AppConfig(Struct, kw_only=True):
         "security": (_SecuritySection, "NEXUS_SECURITY_"),
         "integrations": (_IntegrationsSection, "NEXUS_INTEGRATIONS_"),
         "tax": (_TaxSection, "NEXUS_TAX_"),
-        "forex": (_ForexSection, "NEXUS_FOREX_"),
         "ai": (_AiSection, "NEXUS_AI_"),
         "tigerbeetle": (_TigerbeetleSection, "NEXUS_TB_"),
         "opa": (_OpaSection, "NEXUS_OPA_"),

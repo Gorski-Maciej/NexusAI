@@ -4,7 +4,6 @@ Tests for Business Logic of POST /api/v2/tax/calculate-money.
 Ze względu na:
 - metaclass conflict w litestar 2.23.0 na Python 3.13
 - brak duckdb (importowanego przez tax/__init__.py → tax/rules.py)
-- brak moneyed (potrzebnego do Money)
 
 Testujemy logikę kalkulacji VAT w groszach (int) — która jest tą samą kalkulacją,
 jakiej używa endpoint, tylko bez warstwy Money.

@@ -367,7 +367,7 @@ class TestTaxMathEngine:
 
 
 class TestMoneyIntegration:
-    """Tests for Fowler's Money (py-moneyed) integration with TaxMathEngine."""
+    """Tests for Nexus-Money integration with TaxMathEngine."""
 
     def test_money_to_grosze_basic(self) -> None:
         """Convert Money to grosze."""

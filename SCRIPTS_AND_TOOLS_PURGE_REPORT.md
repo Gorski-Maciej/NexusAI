@@ -154,13 +154,7 @@ Wszystkie 23 nazwy plików przeszukane w `*.py`, `*.toml`, `*.yml`, `*.md`, `*.s
 
 ### Ruff check i testy
 
-`ruff check .` i `pixi run test` **nie mogły zostać wykonane** z powodu pre-existing issue środowiska pixi — `paddlepaddle` nie ma kompatybilnego wheela dla free-threaded CPython 3.13t (`cp313t`).
-
-**Nie jest to spowodowane przez purge:**
-- Purge nie zmodyfikował żadnych importów w kodzie produkcyjnym (tylko usunął pliki `.py` i testy)
-- Usunięte pliki nie były importowane przez żaden inny moduł
-- Wszystkie zmodyfikowane pliki Python (`kore_audit.py`, `kore_closure.py`, `mimalloc_bridge.py`) przeszły weryfikację składniową (`py_compile`) — **ALL SYNTAX OK**
-- Pre-existing environment issue (`paddlepaddle` + `cp313t`) istniał przed czyszczeniem
+`ruff check .` i `pixi run test` **nie mogły zostać wykonane** z powodu pre-existing issue środowiska pixi.
 
 ---
 

@@ -21,18 +21,9 @@ from nexus_ai.core.fsspec_compat import FSSpecFactory
 
 logger = get_logger("nexus.core.backup")
 
-# ── Optional: cryptography for legacy NEXUSENC1 (AES-256-CBC) compatibility ───
-try:
-    from cryptography.hazmat.primitives import padding as _crypto_padding
-    from cryptography.hazmat.primitives.ciphers import (
-        Cipher as _Cipher,
-        algorithms as _algos,
-        modes as _modes,
-    )
-
-    _HAS_CRYPTOGRAPHY = True
-except ImportError:
-    _HAS_CRYPTOGRAPHY = False
+# Legacy NEXUSENC1 (AES-256-CBC) support has been removed — cryptography package
+# has been removed from the project. Only NEXUSAENC (ChaCha20-Poly1305) is supported.
+_HAS_CRYPTOGRAPHY = False
 
 # ── DuckDB import for EXPORT DATABASE ────────────────────────────────────────
 try:
@@ -264,30 +255,10 @@ class BackupManager:
             return nexus_crypto.decrypt(key, encrypted)
 
         elif data.startswith(b"NEXUSENC1"):
-            # Legacy format (AES-256-CBC + PBKDF2) — wsteczna kompatybilność
-            if not password:
-                raise ValueError("Password required to decrypt legacy backup")
-            if not _HAS_CRYPTOGRAPHY:
-                raise ModuleNotFoundError(
-                    "Legacy backup (NEXUSENC1) requires the `cryptography` package. "
-                    "Install it with: pip install cryptography\n"
-                    "Or decrypt this backup on a system that still has cryptography installed, "
-                    "then re-encrypt with: python -m nexus.backup"
-                )
-            salt = data[9:25]
-            encrypted = data[25:]
-            # PBKDF2 key derivation (legacy — używane tylko dla NEXUSENC1)
-            import hashlib
-
-            key = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, 600_000, dklen=32)
-            # AES-256-CBC decrypt
-            iv = encrypted[:16]
-            ciphertext = encrypted[16:]
-            cipher = _Cipher(_algos.AES(key), _modes.CBC(iv))
-            decryptor = cipher.decryptor()
-            padded_data = decryptor.update(ciphertext) + decryptor.finalize()
-            unpadder = _crypto_padding.PKCS7(128).unpadder()
-            return unpadder.update(padded_data) + unpadder.finalize()
+            raise ValueError(
+                "Legacy NEXUSENC1 backups cannot be decrypted — the `cryptography` "
+                "package has been removed from the project."
+            )
 
         else:
             # Niezaszyfrowany ZIP

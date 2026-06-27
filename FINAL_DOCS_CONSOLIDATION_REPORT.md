@@ -51,7 +51,6 @@ Zastąpione jednym zbiorczym wpisem:
 ## Dowody z poprzednich raportów
 
 Następujące raporty potwierdzają, że czyszczenie nastąpiło wcześniej:
-- `FOREX_ENGINE_AND_RUST_DECIMAL_PURGE_REPORT.md` — usunięcie sekcji `[forex]` z config plików
 - `RESILIENCE_MODULE_PURGE_REPORT.md` — konfiguracja stamina w config plikach
 - `PURGE_INDIRECT_DEPS_REPORT.md` — zmiany opisów w config/dev.toml i config/prod.toml
 - `ACCOUNTING_RELIABILITY_PURGE_REPORT.md` — usunięcie `outbox_replay_limit` z config plików

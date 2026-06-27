@@ -35,7 +35,7 @@
 - uv tech stack entries in code and documentation
 
 ### Kept: system dependency channel
-- System dependencies (Tesseract, mimalloc, OpenCV, libxml2, etc.) — still needed by pixi as a package source for native binaries (no branded channel name)
+- System dependencies (Tesseract, mimalloc, OpenCV, etc.) — still needed by pixi as a package source for native binaries (no branded channel name)
 
 ## Not Modified (Different Technologies)
 - **libuv** (system C library for async I/O — used by Node.js, Julia)
@@ -44,5 +44,5 @@
 - **`depends_on` → `depends-on`** (noted: pixi 0.70.2 deprecation warning, outside scope)
 
 ## Notes
-- `pixi.lock` was NOT regenerated — paddlepaddle has no `cp313t` wheel, causing resolution failure on `linux-64`. This is a pre-existing issue unrelated to uv removal. Lockfile remains valid as generated.
+- `pixi.lock` was NOT regenerated due to a pre-existing environment issue. Lockfile remains valid as generated.
 - To regenerate: run `pixi update` on a machine with full `linux-64` environment.

@@ -51,7 +51,7 @@ from nexus_ai.db.database import create_oltp_engine, create_session_factory
 from nexus_ai.pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
 from nexus_ai.services.accounting import AccountingService
 from nexus_ai.services.currency_converter import (
-    Money,  # Nexus-Money (msgspec.Struct, zastępuje py-moneyed)
+    Money,
 )
 from nexus_ai.services.finops_meter import estimate_runtime_cost
 from nexus_ai.services.log_pii_monitor import notify_dpo, scan_logs_for_pii

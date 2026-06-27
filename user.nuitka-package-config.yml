@@ -38,14 +38,9 @@
     - 'llama_cpp.*bench*'
 
 # ── lxml — XML/HTML processing (KSeF integration) ───────────────────────────
-# Native libraries: libxml2, libxslt, libexslt
 - package-name: 'lxml'
   module-name: 'lxml'
   stdlib: no
-  dlls:
-    - 'libxml2.so'
-    - 'libxslt.so'
-    - 'libexslt.so'
 
 # ── Pillow (PIL) — image processing (OCR preprocessing) ─────────────────────
 # Native libraries: libjpeg, libpng, libtiff, libwebp, libz, liblcms2, libopenjp2
@@ -107,14 +102,6 @@
   stdlib: no
   nofollow:
     - 'paddleocr.*test*'
-
-# ── PaddlePaddle — deep learning framework ──────────────────────────────────
-- package-name: 'paddle'
-  module-name: 'paddle'
-  stdlib: no
-  nofollow:
-    - 'paddle.*test*'
-    - 'paddle.*example*'
 
 # ── docTR — modular OCR engine (DBNet + PARSeq, Apache 2.0) ────────────────
 # Modele: db_resnet50 (~200 MB) + parseq (~300 MB)
