@@ -8,7 +8,7 @@ Zgodnie z audytem technologicznym:
 - Silnik Google Chrome — renderuje miliardy PDF-ów dziennie
 - Licencja BSD-3-Clause
 - Antyaliasing subpikselowy — lepsza jakość renderowania
-- Numpy/PIL natywnie — bitmap.to_pil(), bitmap.to_numpy()
+- PIL natywnie — bitmap.to_pil()
 - Lżejszy pakiet (~10 MB)
 
 KLUCZOWA RÓŻNICA W SKALOWANIU:
@@ -32,7 +32,6 @@ from enum import IntEnum
 
 import fsspec
 from fsspec.implementations.cached import CachingFileSystem
-import numpy as np
 from PIL import Image
 from structlog import get_logger
 
@@ -624,24 +623,19 @@ def render_page_to_pil_enhanced(
 
 
 @_timed
-def render_page_to_numpy_enhanced(
+def render_page_enhanced(
     pdf_path: str | Path,
     page_num: int = 0,
     dpi: int = DEFAULT_DPI,
     rotation: int = 0,
     *,
-    drop_alpha: bool = True,
     preprocess_for_ocr: bool = False,
-) -> np.ndarray:
-    """Renderuj stronę do numpy array z preprocessingiem."""
-    pil_image = render_page_to_pil_enhanced(
+) -> Image.Image:
+    """Renderuj stronę PDF z preprocessingiem, zwraca PIL Image."""
+    return render_page_to_pil_enhanced(
         pdf_path, page_num, dpi, rotation,
         preprocess_for_ocr=preprocess_for_ocr,
     )
-    array = np.asarray(pil_image)
-    if drop_alpha and array.shape[-1] == 4:
-        return array[..., :3]
-    return array
 
 
 @_timed
@@ -722,32 +716,19 @@ def render_page_to_pil(
 
 
 @_timed
-def render_page_to_numpy(
+def render_page(
     pdf_path: str | Path,
     page_num: int = 0,
     dpi: int = DEFAULT_DPI,
     rotation: int = 0,
     *,
-    drop_alpha: bool = True,
     flags: int = RenderFlags.LCD_TEXT,
-) -> np.ndarray:
-    """Renderuj stronę PDF do numpy array.
+) -> Image.Image:
+    """Renderuj stronę PDF do PIL Image.
 
     SUPERMOC fsspec: otwierany przez CachingFileSystem.
     """
-    import pypdfium2 as pdfium
-
-    scale = dpi / PDFIUM_BASE_DPI
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
-    try:
-        page = pdf[page_num]
-        bitmap = page.render(scale=scale, rotation=rotation, flags=flags)
-        array = bitmap.to_numpy()
-        if drop_alpha:
-            return array[..., :3]
-        return array
-    finally:
-        pdf.close()
+    return render_page_to_pil(pdf_path, page_num, dpi, rotation, flags=flags)
 
 
 @_timed
@@ -802,14 +783,12 @@ def render_all_pages(
     *,
     max_pages: int | None = None,
     page_range: tuple[int, int] | None = None,
-    as_numpy: bool = False,
-    drop_alpha: bool = True,
     flags: int = RenderFlags.LCD_TEXT,
     progress_callback: Callable[[PDFProgressInfo], None] | None = None,
-) -> list[Image.Image] | list[np.ndarray]:
+) -> list[Image.Image]:
     """Renderuj wszystkie strony PDF (lub zakres) z callbackiem postępu.
 
-    SUPERMOC fsspec: pdf otwierany przez CachingFileSystem._open_pdf_fsspec_all_pages
+    SUPERMOC fsspec: pdf otwierany przez CachingFileSystem
     """
     import pypdfium2 as pdfium
 
@@ -822,7 +801,7 @@ def render_all_pages(
     if max_pages is not None:
         end = min(start + max_pages, end)
 
-    results: list = []
+    results: list[Image.Image] = []
     try:
         for i in range(start, end):
             page = pdf[i]
@@ -836,13 +815,7 @@ def render_all_pages(
                     page_dpi=dpi,
                 ))
 
-            if as_numpy:
-                arr = bitmap.to_numpy()
-                if drop_alpha:
-                    arr = arr[..., :3]
-                results.append(arr)
-            else:
-                results.append(bitmap.to_pil())
+            results.append(bitmap.to_pil())
     finally:
         pdf.close()
 
@@ -850,7 +823,7 @@ def render_all_pages(
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# FAZA 2: Async + numpy — warianty dla OCR i API
+# FAZA 2: Async — warianty dla OCR i API
 # ═════════════════════════════════════════════════════════════════════════════
 
 
@@ -877,14 +850,13 @@ def pdf_to_images_memory(pdf_path: str | Path, dpi: int = DEFAULT_DPI) -> list[b
 
 
 @_timed
-def pdf_to_numpy_arrays(
+def pdf_to_pil_images(
     pdf_path: str | Path,
     dpi: int = DEFAULT_DPI,
     *,
     max_pages: int | None = None,
-    drop_alpha: bool = True,
-) -> list[np.ndarray]:
-    """Renderuj strony PDF do numpy arrays — zero I/O, idealne dla OCR.
+) -> list[Image.Image]:
+    """Renderuj strony PDF do PIL Images — zero I/O, idealne dla OCR.
 
     SUPERMOC fsspec: pdf otwierany przez CachingFileSystem.
     """
@@ -892,22 +864,18 @@ def pdf_to_numpy_arrays(
 
     scale = dpi / PDFIUM_BASE_DPI
     pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
-    arrays: list[np.ndarray] = []
+    images: list[Image.Image] = []
 
     try:
         for i, page in enumerate(pdf):
             if max_pages is not None and i >= max_pages:
                 break
             bitmap = page.render(scale=scale, rotation=0)
-            rgba = bitmap.to_numpy()
-            if drop_alpha:
-                arrays.append(rgba[..., :3])
-            else:
-                arrays.append(rgba)
+            images.append(bitmap.to_pil())
     finally:
         pdf.close()
 
-    return arrays
+    return images
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -2166,12 +2134,12 @@ __all__ = [
     "PdfDocumentSession",
     # Core
     "open_pdf", "render_page_to_pil", "render_page_to_pil_enhanced",
-    "render_page_to_numpy", "render_page_to_numpy_enhanced",
+    "render_page", "render_page_enhanced",
     "render_page_to_jpeg_bytes", "render_page_to_png_bytes",
     "render_page_to_png_grayscale",
     "render_all_pages", "pdf_page_count",
-    # Async + numpy
-    "pdf_to_images_memory", "pdf_to_numpy_arrays",
+    # Async
+    "pdf_to_images_memory", "pdf_to_pil_images",
     # Streaming
     "render_all_pages_to_memory",
     # Progressive

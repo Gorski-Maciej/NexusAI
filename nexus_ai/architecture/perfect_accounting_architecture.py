@@ -87,15 +87,7 @@ REQUIRED_TECHNOLOGIES = {
     "fsspec",
     "docTR",
     "PaddleOCR V4 Server",
-    "scikit-learn",
-    "PyTorch 2.x",
-    "TensorFlow 3.x",
-    "AutoGluon-Light",
-    "Hugging Face",
-    "Sentence-Transformers",
-    "LanceDB",
-    "INT8 Quantization",
-    "Python-Statemachine",
+    "scikit-learn","Python-Statemachine",
     "Taskiq",
     "FastStream",
     "Nuitka",
@@ -192,14 +184,8 @@ def build_blueprint() -> ArchitectureBlueprint:
             technologies=(
                 Technology(name="docTR", role="silnik primary OCR (DBNet + PARSeq)"),
                 Technology(name="PaddleOCR V4 Server", role="silnik walidujący"),
-                Technology(name="PyTorch 2.x", role="główny runtime ML"),
-                Technology(name="TensorFlow 3.x", role="drugi runtime ML"),
-                Technology(name="Hugging Face", role="fine-tuning i hosting modeli"),
-                Technology(name="Sentence-Transformers", role="embedding semantyczny"),
-                Technology(name="LanceDB", role="vector DB i semantic search"),
-                Technology(name="INT8 Quantization", role="optymalizacja inferencji"),
-                Technology(name="AutoGluon-Light", role="automatyczny dobór modelu"),
-                Technology(name="scikit-learn", role="feature engineering"),
+                Technology(name="docTR", role="silnik primary OCR (DBNet + PARSeq)"),
+                Technology(name="PaddleOCR V4 Server", role="silnik walidujący"),
             ),
         ),
         Component(
@@ -317,8 +303,7 @@ def build_blueprint() -> ArchitectureBlueprint:
 
     ml_pipeline = [
         PipelineStage(name="Layout NLP", primary="LiLT + HerBERT + LayoutLMv1"),
-        PipelineStage(name="Semantic Retrieval", primary="Sentence-Transformers", validator="LanceDB"),
-        PipelineStage(name="Decisioning", primary="PyTorch 2.x", validator="TensorFlow 3.x"),
+
     ]
 
     return ArchitectureBlueprint(

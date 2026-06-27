@@ -294,8 +294,7 @@ for m in [
     "opentelemetry-api", "opentelemetry-sdk",
     "opentelemetry-prometheus-exporter",
     # OpenCV is optional (HAS_CV2 pattern)
-    # numpy is real dependency, but mocked for tests without it
-    "numpy",
+
 ]:
     if m not in sys.modules:
         sys.modules[m] = _MockModule(m)

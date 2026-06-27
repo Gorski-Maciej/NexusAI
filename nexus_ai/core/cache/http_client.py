@@ -128,13 +128,6 @@ API_MOUNTS: dict[str, dict[str, Any]] = {
         "http2": True,
         "ttl": 3600,
     },
-    "HUGGINGFACE": {
-        "base_url": "https://huggingface.co",
-        "timeout": Timeout(connect=15.0, read=120.0, write=30.0, pool=300.0),
-        "limits": Limits(max_connections=10, max_keepalive_connections=5, keepalive_expiry=60.0),
-        "http2": True,
-        "ttl": 0,  # Duże pliki — nie cache'ujemy
-    },
     "DEFAULT": {
         "base_url": None,
         "timeout": Timeout(connect=10.0, read=30.0, write=30.0, pool=300.0),

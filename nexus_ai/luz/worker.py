@@ -42,8 +42,6 @@ else:
 
 MODELS_CACHE_DIR = BASE_PATH / "models"
 os.environ.setdefault("HF_HOME", str(MODELS_CACHE_DIR))
-os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
-os.environ.setdefault("TORCH_HOME", str(MODELS_CACHE_DIR / "torch"))
 os.environ.setdefault("OMP_NUM_THREADS", "4")
 os.environ.setdefault("OPENBLAS_NUM_THREADS", "4")
 os.environ.setdefault("MKL_NUM_THREADS", "4")

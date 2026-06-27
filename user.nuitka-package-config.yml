@@ -126,33 +126,12 @@
     - 'doctr.*benchmark*'
 
 # ── EasyOCR — CNN + LSTM OCR engine (4th engine) ────────────────────────────
-# EasyOCR uses PyTorch for model inference.
-# Models are downloaded on first use to ~/.EasyOCR/model/
 - package-name: 'easyocr'
   module-name: 'easyocr'
   stdlib: no
   nofollow:
     - 'easyocr.*test*'
     - 'easyocr.*benchmark*'
-
-# ── Torch — optional, loaded only for vision agent ──────────────────────────
-# Only include if needed — very large.
-- package-name: 'torch'
-  module-name: 'torch'
-  stdlib: no
-  nofollow:
-    - 'torch.*test*'
-    - 'torch.*example*'
-    - 'torch.contrib.*'
-    - 'torch.backends.*'
-
-# ── transformers — HuggingFace transformer models ───────────────────────────
-- package-name: 'transformers'
-  module-name: 'transformers'
-  stdlib: no
-  nofollow:
-    - 'transformers.*test*'
-    - 'transformers.*benchmark*'
 
 # ── OpenCV — computer vision preprocessing (OCR pipeline) ───────────────────
 # Native libraries: libopencv_core, libopencv_imgproc, libopencv_imgcodecs

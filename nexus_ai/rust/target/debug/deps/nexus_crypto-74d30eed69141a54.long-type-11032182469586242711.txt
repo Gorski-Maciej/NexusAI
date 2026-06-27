@@ -1,1 +1,0 @@
-Vec<pyo3::PyRef<'_, InvoicePositions>>

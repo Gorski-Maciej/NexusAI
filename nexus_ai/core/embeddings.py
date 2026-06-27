@@ -2,13 +2,11 @@
 EmbeddingService — centralized text embedding engine using llama-cpp-python.
 
 Zgodnie z aa3fvcx.txt:
-- Zastępuje: sentence-transformers (biblioteka spoza stacku)
-- Nowy:     llama-cpp-python z embedding=True (technologia z stacku)
+- Używa: llama-cpp-python z embedding=True (technologia z stacku)
 - Integracja z nexus_cache (wbudowany cache) i msgspec (Punkty 4 i 13)
 
 llama-cpp-python jest już w projekcie jako zależność.
-Używa tego samego silnika GGUF do generowania embeddingów, co eliminuje
-osobną zależność sentence-transformers (ok. 500 MB).
+Używa tego samego silnika GGUF do generowania embeddingów.
 
 Użycie:
     from nexus_ai.core.embeddings import EmbeddingService

@@ -137,7 +137,6 @@ class VisionAgent:
         - visual_anomalies, handwritten_notes
         """
         import anyio
-        import numpy as np
 
         def _run_vl():
             result = self._vl_engine.ocr(str(image_path))

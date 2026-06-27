@@ -12,11 +12,11 @@ Zgodnie z docs/tfgxzd.txt — Semantyczny Wykrywacz Kreatywnej Księgowości.
 
 from __future__ import annotations
 
+import math
 from enum import StrEnum
 from typing import Any
 
 import hashlib
-import numpy as np
 from structlog import get_logger
 
 from nexus_ai.db.vector_store import AsyncVectorStore
@@ -101,7 +101,7 @@ class SemanticGuard:
             # 3. Oblicz anomaly_score
             if similar:
                 distances = [s.get("_distance", 1.0) for s in similar]
-                avg_distance = float(np.mean(distances)) if distances else 1.0
+                avg_distance = sum(distances) / len(distances) if distances else 1.0
                 anomaly_score = min(1.0, avg_distance)
             else:
                 # Nowy kontrahent — brak historii = niskie ryzyko
@@ -148,10 +148,18 @@ class SemanticGuard:
     def _mock_embedding(text: str, dim: int = 768) -> list[float]:
         """SUPERMOC: Symulacja embeddingu (w produkcji użyj modelu AI).
 
-        W produkcji: llama-cpp-python embedding lub sentence-transformers.
+        W produkcji: llama-cpp-python embedding.
         """
         seed = int(hashlib.sha256(text.encode()).hexdigest()[:8], 16)
-        rng = np.random.default_rng(seed)
-        vec = rng.normal(0, 0.1, dim).tolist()
-        norm = np.linalg.norm(vec)
+        # Deterministyczny wektor z seed-a
+        vec = []
+        for i in range(dim):
+            # Prosta mieszająca funkcja hash
+            h = seed ^ (i * 2654435761)
+            h = (h ^ (h >> 16)) * 0x45D9F3B
+            h = (h ^ (h >> 16)) & 0xFFFFFFFF
+            val = (h % 1000) / 1000.0 * 0.2 - 0.1  # range ~[-0.1, 0.1]
+            vec.append(val)
+        # Normalizacja do jednostkowej długości
+        norm = math.sqrt(sum(v * v for v in vec))
         return [v / norm for v in vec]

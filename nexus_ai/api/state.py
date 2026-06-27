@@ -183,8 +183,6 @@ def _configure_ml_cache_directories(base_dir: Path) -> dict[str, str]:
 
     env_map = {
         "HF_HOME": str(ml_cache_root / "hf"),
-        "TORCH_HOME": str(ml_cache_root / "torch"),
-        "TRANSFORMERS_CACHE": str(ml_cache_root / "transformers"),
     }
     for _, path_value in env_map.items():
         path = Path(path_value)

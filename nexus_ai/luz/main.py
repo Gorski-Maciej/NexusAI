@@ -21,7 +21,6 @@ else:
 
 models_cache_dir = base_path / "models"
 os.environ["HF_HOME"] = str(models_cache_dir)
-os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
 # --- LOGOWANIE ---
 log_dir = _SyncPath("logs")

@@ -30,14 +30,12 @@ logger = get_logger("nexus.core.opencv_pipeline")
 
 try:
     import cv2
-    import numpy as np
 
     HAS_CV2 = True
     CV2_VERSION = cv2.__version__
 except ImportError:
     HAS_CV2 = False
     cv2 = None  # type: ignore
-    np = None  # type: ignore
     CV2_VERSION = ""
 
 
@@ -156,7 +154,7 @@ class OpenCVPreprocessor:
         11. Auto OCR mode detection
 
         Args:
-            image: PIL Image lub numpy array.
+            image: PIL Image.
 
         Returns:
             PIL Image (przetworzony) lub oryginał przy błędzie/braku OpenCV.
@@ -166,18 +164,28 @@ class OpenCVPreprocessor:
 
         try:
             import cv2
-            import numpy as np
 
-            # Konwersja PIL → numpy jeśli potrzeba
+            # Konwersja PIL → OpenCV Mat jeśli potrzeba
             if hasattr(image, "convert"):
-                arr = np.array(image.convert("RGB"))
-                gray = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)
-            elif isinstance(image, np.ndarray):
-                if image.ndim == 3:
-                    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-                else:
-                    gray = image
-                arr = image
+                from PIL import Image as _PILImage
+                # Konwersja PIL Image do OpenCV BGR formatu
+                pil_rgb = image.convert("RGB")
+                width, height = pil_rgb.size
+                # Zakoduj PIL do OpenCV
+                arr_rgb = pil_rgb.tobytes()
+                # Użyj OpenCV do dekodowania z pamięci
+                import io as _io
+                buf = _io.BytesIO()
+                pil_rgb.save(buf, format="PNG")
+                buf.seek(0)
+                # Read image bytes into OpenCV Mat
+                file_bytes = buf.getvalue()
+                # OpenCV can decode from a byte array via imdecode
+                arr = cv2.imdecode(
+                    cv2.Mat(1, len(file_bytes), cv2.CV_8UC1, file_bytes),
+                    cv2.IMREAD_COLOR
+                )
+                gray = cv2.cvtColor(arr, cv2.COLOR_BGR2GRAY)
             else:
                 return image
 
@@ -282,16 +290,17 @@ class OpenCVPreprocessor:
         4. Rotacja przez warpAffine
 
         Returns:
-            Wyprostowany obraz numpy array.
+            Wyprostowany obraz PIL Image.
         """
         import cv2
-        import numpy as np
+        import math
+        import statistics
 
         edges = cv2.Canny(gray, 50, 150, apertureSize=3)
         lines = cv2.HoughLinesP(
             edges,
             1,
-            np.pi / 180,
+            math.pi / 180,
             100,
             minLineLength=self.config.deskew_min_line_length,
             maxLineGap=10,
@@ -302,14 +311,14 @@ class OpenCVPreprocessor:
         angles = []
         for line in lines:
             x1, y1, x2, y2 = line[0]
-            angle = np.degrees(np.arctan2(y2 - y1, x2 - x1))
+            angle = math.degrees(math.atan2(y2 - y1, x2 - x1))
             if abs(angle) < self.config.deskew_max_angle:
                 angles.append(angle)
 
         if not angles:
             return gray
 
-        median_angle = float(np.median(angles))
+        median_angle = float(statistics.median(angles))
         if abs(median_angle) < 0.5:
             return gray  # Skip if almost straight
 
@@ -339,10 +348,9 @@ class OpenCVPreprocessor:
         4. Jeśli największy kontur > 30% obrazu, wytnij go
 
         Returns:
-            Przycięty obraz numpy array.
+            Przycięty obraz PIL Image.
         """
         import cv2
-        import numpy as np
 
         _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
         contours, _ = cv2.findContours(
@@ -386,7 +394,6 @@ class OpenCVPreprocessor:
             Obraz bez linii tabel.
         """
         import cv2
-        import numpy as np
 
         # Horizontal lines
         h_kernel = cv2.getStructuringElement(
@@ -424,7 +431,7 @@ class OpenCVPreprocessor:
             Obraz bez pieczątek.
         """
         import cv2
-        import numpy as np
+        import math
 
         # Binaryzacja
         _, binary = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY_INV)
@@ -434,18 +441,19 @@ class OpenCVPreprocessor:
             binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
 
-        mask = np.zeros_like(gray)
+        # Stwórz pustą maskę jako kopię gray
+        mask = gray * 0
         for contour in contours:
             area = cv2.contourArea(contour)
             if self.config.stamp_min_area < area < self.config.stamp_max_area:
                 # Sprawdź czy kontur jest okrągły
                 perimeter = cv2.arcLength(contour, True)
                 if perimeter > 0:
-                    circularity = 4 * np.pi * area / (perimeter * perimeter)
+                    circularity = 4 * math.pi * area / (perimeter * perimeter)
                     if circularity > 0.5:  # Okrągły/prawie okrągły
                         cv2.drawContours(mask, [contour], -1, 255, -1)
 
-        if np.count_nonzero(mask) > 0:
+        if cv2.countNonZero(mask) > 0:
             result = cv2.inpaint(gray, mask, 3, cv2.INPAINT_TELEA)
             logger.debug("[OpenCV] Stamps removed: %d contours", len(contours))
             return result
@@ -462,13 +470,9 @@ class OpenCVPreprocessor:
         Używa kernela wyostrzającego z konfigurowalną siłą.
         """
         import cv2
-        import numpy as np
 
         s = self.config.sharpen_strength
-        kernel = np.array(
-            [[-s, -s, -s], [-s, 4 * s + 1, -s], [-s, -s, -s]],
-            dtype=np.float32,
-        )
+        kernel = [[-s, -s, -s], [-s, 4 * s + 1, -s], [-s, -s, -s]]
         return cv2.filter2D(gray, -1, kernel)
 
     # ══════════════════════════════════════════════════════════════════════
@@ -485,16 +489,16 @@ class OpenCVPreprocessor:
             Prawidłowo zorientowany obraz.
         """
         import cv2
-        import numpy as np
+        import math
 
         edges = cv2.Canny(gray, 50, 150, apertureSize=3)
-        lines = cv2.HoughLines(edges, 1, np.pi / 180, 100)
+        lines = cv2.HoughLines(edges, 1, math.pi / 180, 100)
         if lines is None:
             return gray
 
         angles = []
         for rho, theta in lines[:, 0]:
-            angle = np.degrees(theta) % 180
+            angle = math.degrees(theta) % 180
             if angle > 90:
                 angle -= 180
             angles.append(angle)
@@ -502,7 +506,8 @@ class OpenCVPreprocessor:
         if not angles:
             return gray
 
-        median_angle = float(np.median(angles))
+        import statistics
+        median_angle = float(statistics.median(angles))
         h, w = gray.shape
 
         # Jeśli obraz jest obrócony o ~90°, obróć
@@ -547,16 +552,17 @@ class OpenCVPreprocessor:
             "text", "digits", "amounts", lub "mixed".
         """
         import cv2
-        import numpy as np
+        import statistics
 
         h, w = binary.shape
         total_pixels = h * w
-        white_pixels = np.count_nonzero(binary)
+        white_pixels = cv2.countNonZero(binary)
         coverage = white_pixels / total_pixels
 
         # Znajdź kontury (znaki)
+        # Użyj odwróconej binaryzacji
         contours, _ = cv2.findContours(
-            ~binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+            255 - binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
 
         if not contours:
@@ -572,8 +578,8 @@ class OpenCVPreprocessor:
         if not aspect_ratios:
             return "text"
 
-        mean_area = float(np.mean(areas))
-        median_aspect = float(np.median(aspect_ratios))
+        mean_area = float(statistics.mean(areas)) if areas else 0.0
+        median_aspect = float(statistics.median(aspect_ratios)) if aspect_ratios else 1.0
 
         # Digits: małe, wąskie znaki, duża gęstość
         if coverage > 0.3 and median_aspect > 0.5 and median_aspect < 1.5:
@@ -607,7 +613,7 @@ def assess_image_quality_cv2(
     - cv2.calcHist → Entropia
 
     Args:
-        image: PIL Image lub numpy array.
+        image: PIL Image.
 
     Returns:
         dict z kluczami: sharpness, contrast, brightness, entropy,
@@ -618,17 +624,21 @@ def assess_image_quality_cv2(
 
     try:
         import cv2
-        import numpy as np
+        import math
 
-        # Konwersja do numpy
+        # Konwersja PIL → OpenCV grayscale
         if hasattr(image, "convert"):
-            arr = np.array(image.convert("RGB"))
-            gray = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)
-        elif isinstance(image, np.ndarray):
-            if image.ndim == 3:
-                gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-            else:
-                gray = image
+            pil_img = image.convert("RGB")
+            import io as _io
+            buf = _io.BytesIO()
+            pil_img.save(buf, format="PNG")
+            buf.seek(0)
+            file_bytes = buf.getvalue()
+            arr = cv2.imdecode(
+                cv2.Mat(1, len(file_bytes), cv2.CV_8UC1, file_bytes),
+                cv2.IMREAD_COLOR
+            )
+            gray = cv2.cvtColor(arr, cv2.COLOR_BGR2GRAY)
         else:
             return {"error": "Invalid input type", "is_blank": True}
 
@@ -639,7 +649,7 @@ def assess_image_quality_cv2(
 
         # 2. Edge ratio (Canny)
         edges = cv2.Canny(gray, 50, 150)
-        edge_ratio = float(np.count_nonzero(edges) / edges.size)
+        edge_ratio = float(cv2.countNonZero(edges) / edges.size)
         has_edges = edge_ratio > 0.01
 
         # 3. Contrast (RMS)
@@ -653,7 +663,12 @@ def assess_image_quality_cv2(
         hist = cv2.calcHist([gray], [0], None, [256], [0, 256])
         hist = hist / hist.sum()
         hist_nonzero = hist[hist > 0]
-        entropy = float(-(hist_nonzero * np.log2(hist_nonzero)).sum() / 8.0)
+        # Calculate entropy manually
+        entropy_sum = 0.0
+        for val in hist_nonzero.flatten():
+            if val > 0:
+                entropy_sum += val * math.log2(val)
+        entropy = float(-entropy_sum / 8.0)
 
         return {
             "sharpness": round(sharpness, 4),
@@ -724,12 +739,22 @@ def auto_crop_image(image: Any) -> Any:
         return image
 
     try:
-        import numpy as np
         import cv2
 
         if hasattr(image, "convert"):
-            arr = np.array(image.convert("RGB"))
-            gray = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)
+            # Convert PIL to OpenCV format
+            pil_img = image.convert("RGB")
+            import io as _io
+            buf = _io.BytesIO()
+            pil_img.save(buf, format="PNG")
+            buf.seek(0)
+            file_bytes = buf.getvalue()
+            arr = cv2.imdecode(
+                cv2.Mat(1, len(file_bytes), cv2.CV_8UC1, file_bytes),
+                cv2.IMREAD_COLOR
+            )
+            gray = cv2.cvtColor(arr, cv2.COLOR_BGR2GRAY)
+            src_color = arr
         else:
             return image
 
@@ -748,13 +773,13 @@ def auto_crop_image(image: Any) -> Any:
 
         x, y, cw, ch = cv2.boundingRect(largest)
         margin = 10
-        cropped = arr[
+        cropped = src_color[
             max(0, y - margin) : min(h, y + ch + margin),
             max(0, x - margin) : min(w, x + cw + margin),
         ]
         from PIL import Image as PILImage
 
-        return PILImage.fromarray(cropped)
+        return PILImage.fromarray(cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB))
     except Exception:
         return image
 
@@ -784,15 +809,24 @@ def compute_orb_features(
 
     try:
         import cv2
-        import numpy as np
 
         if hasattr(image, "convert"):
-            gray = np.array(image.convert("L"))
+            # Convert PIL Image 'L' to OpenCV
+            pil_l = image.convert("L")
+            import io as _io
+            buf = _io.BytesIO()
+            pil_l.save(buf, format="PNG")
+            buf.seek(0)
+            file_bytes = buf.getvalue()
+            cv_img = cv2.imdecode(
+                cv2.Mat(1, len(file_bytes), cv2.CV_8UC1, file_bytes),
+                cv2.IMREAD_GRAYSCALE
+            )
         else:
             return None, None
 
         orb = cv2.ORB_create(nfeatures=nfeatures)
-        kp, des = orb.detectAndCompute(gray, None)
+        kp, des = orb.detectAndCompute(cv_img, None)
         return kp, des
     except Exception:
         return None, None
@@ -811,8 +845,6 @@ def match_documents(
     Returns:
         dict: {matched, match_count, total_features1, total_features2, score}.
     """
-    import numpy as np
-
     if des1 is None or des2 is None or not HAS_CV2:
         return {
             "matched": False,

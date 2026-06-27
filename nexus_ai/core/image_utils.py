@@ -37,37 +37,45 @@ except ImportError:
 
 try:
     import cv2
-    import numpy as np
 
     HAS_CV2 = True
 except ImportError:
     HAS_CV2 = False
     cv2 = None  # type: ignore
-    np = None  # type: ignore
 
 
 # ============================================================================
-# HELPER: PIL ↔ numpy conversion
+# HELPER: PIL conversion utilities
 # ============================================================================
 
 
-def _pil_to_grayscale_numpy(image: Image.Image) -> Any | None:
-    """Konwersja PIL Image do numpy grayscale dla OpenCV."""
+def _pil_to_grayscale_cv(image: Image.Image) -> Any | None:
+    """Konwersja PIL Image do OpenCV grayscale Mat."""
     if not HAS_CV2 or not HAS_PIL:
         return None
     try:
-        arr = np.array(image.convert("RGB"))  # type: ignore
-        return cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)  # type: ignore
+        import io as _io
+        buf = _io.BytesIO()
+        pil_rgb = image.convert("RGB")
+        pil_rgb.save(buf, format="PNG")
+        buf.seek(0)
+        file_bytes = buf.getvalue()
+        arr = cv2.imdecode(
+            cv2.Mat(1, len(file_bytes), cv2.CV_8UC1, file_bytes),
+            cv2.IMREAD_COLOR
+        )
+        return cv2.cvtColor(arr, cv2.COLOR_BGR2GRAY)
     except Exception:
         return None
 
 
-def _numpy_to_pil(arr: Any) -> Image.Image | None:
-    """Konwersja numpy array do PIL Image."""
+def _pil_from_cv(cv_img: Any) -> Image.Image | None:
+    """Konwersja OpenCV Mat do PIL Image."""
     if not HAS_PIL:
         return None
     try:
-        return Image.fromarray(arr)  # type: ignore
+        rgb = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
+        return Image.fromarray(rgb)
     except Exception:
         return None
 
@@ -202,8 +210,19 @@ def _resize_with_opencv(
         PIL Image po skalowaniu.
     """
     try:
-        arr = np.array(img)  # type: ignore
-        h, w = arr.shape[:2]
+        import io as _io
+        import cv2
+
+        # Konwersja PIL → OpenCV
+        buf = _io.BytesIO()
+        img.save(buf, format="PNG")
+        buf.seek(0)
+        file_bytes = buf.getvalue()
+        cv_img = cv2.imdecode(
+            cv2.Mat(1, len(file_bytes), cv2.CV_8UC1, file_bytes),
+            cv2.IMREAD_COLOR
+        )
+        h, w = cv_img.shape[:2]
         max_w, max_h = max_size
 
         # Oblicz proporcje
@@ -212,13 +231,15 @@ def _resize_with_opencv(
             return img
 
         new_w, new_h = int(w * scale), int(h * scale)
-        resized = cv2.resize(  # type: ignore
-            arr, (new_w, new_h), interpolation=cv2.INTER_LANCZOS4  # type: ignore
+        resized = cv2.resize(
+            cv_img, (new_w, new_h), interpolation=cv2.INTER_LANCZOS4
         )
-        return Image.fromarray(resized)  # type: ignore
+        # Konwersja z powrotem do PIL
+        rgb = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
+        return Image.fromarray(rgb)
     except Exception:
         # Fallback do Pillow
-        return ImageOps.contain(img, max_size)  # type: ignore
+        return ImageOps.contain(img, max_size)
 
 
 # ============================================================================
@@ -262,30 +283,37 @@ def assess_image_quality(image: Image.Image) -> dict[str, float]:
 
 def _assess_quality_opencv(image: Image.Image) -> dict[str, float]:
     """Ocena jakości przez OpenCV — Laplacian + Canny + meanStdDev."""
-    gray_np = _pil_to_grayscale_numpy(image)
+    import math
+
+    gray_cv = _pil_to_grayscale_cv(image)
+    if gray_cv is None:
+        return _assess_quality_pillow(image)
 
     # 1. Sharpness (Variance of Laplacian)
-    laplacian = cv2.Laplacian(gray_np, cv2.CV_64F)  # type: ignore
+    laplacian = cv2.Laplacian(gray_cv, cv2.CV_64F)
     lap_var = float(laplacian.var())
     sharpness = _clamp(lap_var / 500.0)
 
     # 2. Edge ratio (Canny)
-    edges = cv2.Canny(gray_np, 50, 150)  # type: ignore
-    edge_ratio = float(np.count_nonzero(edges) / edges.size)  # type: ignore
+    edges = cv2.Canny(gray_cv, 50, 150)
+    edge_ratio = float(cv2.countNonZero(edges) / edges.size)
     has_edges = edge_ratio > 0.01
 
     # 3. Contrast (RMS)
-    mean, stddev = cv2.meanStdDev(gray_np)  # type: ignore
+    mean, stddev = cv2.meanStdDev(gray_cv)
     contrast = _clamp(float(stddev[0][0]) / 128.0)
 
     # 4. Brightness
     brightness = _clamp(float(mean[0][0]) / 255.0)
 
     # 5. Entropy (OpenCV histogram)
-    hist = cv2.calcHist([gray_np], [0], None, [256], [0, 256])  # type: ignore
+    hist = cv2.calcHist([gray_cv], [0], None, [256], [0, 256])
     hist = hist / hist.sum()
-    hist_nonzero = hist[hist > 0]
-    entropy = float(-(hist_nonzero * np.log2(hist_nonzero)).sum() / 8.0)  # type: ignore
+    entropy_sum = 0.0
+    for val in hist.flatten():
+        if val > 0:
+            entropy_sum += val * math.log2(val)
+    entropy = float(-entropy_sum / 8.0)
 
     return {
         "sharpness": round(sharpness, 4),
@@ -428,40 +456,39 @@ def _preprocess_opencv(image: Image.Image) -> Image.Image:
     5. Morphology close (cv2.morphologyEx) — łączenie liter
     6. Sharpen (cv2.filter2D) — wyostrzenie krawędzi
     """
-    # 1. Konwersja do numpy grayscale
-    gray_np = _pil_to_grayscale_numpy(image)
+    # 1. Konwersja PIL → OpenCV grayscale
+    gray_cv = _pil_to_grayscale_cv(image)
+    if gray_cv is None:
+        return _preprocess_pillow(image)
 
     # 2. CLAHE — lokalny kontrast (lepszy niż globalny autocontrast)
-    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))  # type: ignore
-    enhanced = clahe.apply(gray_np)
+    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(gray_cv)
 
     # 3. Denoising NLM — najlepszy dla skanów
-    denoised = cv2.fastNlMeansDenoising(enhanced, h=10)  # type: ignore
+    denoised = cv2.fastNlMeansDenoising(enhanced, h=10)
 
     # 4. Adaptive Gaussian threshold — lepszy niż Otsu dla dokumentów
-    binary = cv2.adaptiveThreshold(  # type: ignore
+    binary = cv2.adaptiveThreshold(
         denoised,
         255,
-        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,  # type: ignore
-        cv2.THRESH_BINARY,  # type: ignore
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY,
         31,
         2,
     )
 
     # 5. Morphology close — łączenie fragmentów liter
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))  # type: ignore
-    cleaned = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)  # type: ignore
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    cleaned = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
 
     # 6. Sharpen — wyostrzenie krawędzi
     s = 1.0
-    sharpen_kernel = np.array(  # type: ignore
-        [[-s, -s, -s], [-s, 4 * s + 1, -s], [-s, -s, -s]],
-        dtype=np.float32,
-    )
-    sharpened = cv2.filter2D(cleaned, -1, sharpen_kernel)  # type: ignore
+    sharpen_kernel = [[-s, -s, -s], [-s, 4 * s + 1, -s], [-s, -s, -s]]
+    sharpened = cv2.filter2D(cleaned, -1, sharpen_kernel)
 
     # Konwersja z powrotem do PIL
-    return Image.fromarray(sharpened)  # type: ignore
+    return _pil_from_cv(cv2.cvtColor(sharpened, cv2.COLOR_GRAY2RGB))
 
 
 def _preprocess_pillow(image: Image.Image) -> Image.Image:
@@ -616,7 +643,8 @@ def compute_orb_fingerprint(
         _, des = compute_orb_features(image, nfeatures=nfeatures)
         if des is None:
             return None
-        return des.tobytes().hex()[:64]
+        # des is a cv2 mat; extract bytes safely
+        return bytes(des.flatten().tolist()).hex()[:64] if hasattr(des, 'flatten') else str(des).encode().hex()[:64]
     except Exception:
         return None
 

@@ -1,46 +1,57 @@
 # core/ipc_vision.py
+import struct
 import uuid
 from multiprocessing import shared_memory
-
-try:
-    import numpy as np
-except ImportError:
-    np = None  # type: ignore[assignment]
-
-
-class MissingNumpyError(RuntimeError):
-    """Rzucany gdy brak numpy, ale kod próbuje go użyć."""
-
-    def __init__(self) -> None:
-        super().__init__("numpy jest wymagane do ImageMemoryManager. Zainstaluj: pip install numpy")
+from typing import Any
 
 
 class ImageMemoryManager:
-    """Zarządza pamięcią współdzieloną dla bezstratnego przesyłania obrazów."""
+    """Zarządza pamięcią współdzieloną dla bezstratnego przesyłania obrazów.
+
+    Używa shared_memory z raw bytes zamiast numpy arrays.
+    Obrazy są przesyłane jako bajty z metadanymi o wymiarach.
+    """
 
     @staticmethod
-    def store_image(img_array: "np.ndarray") -> dict:
-        """Zapisuje obraz do pamięci współdzielonej i zwraca metadane."""
-        if np is None:
-            raise MissingNumpyError()
+    def store_image(image_bytes: bytes, width: int, height: int, channels: int = 3) -> dict:
+        """Zapisuje obraz (raw bytes) do pamięci współdzielonej.
+
+        Args:
+            image_bytes: Raw pixel data (RGB order).
+            width: Szerokość obrazu w pikselach.
+            height: Wysokość obrazu w pikselach.
+            channels: Liczba kanałów (domyślnie 3 = RGB).
+
+        Returns:
+            Metadane dla retrieve_image.
+        """
         shm_name = f"nexus_img_{uuid.uuid4().hex}"
+        size = len(image_bytes)
 
-        # Tworzymy blok pamięci o rozmiarze tablicy
-        shm = shared_memory.SharedMemory(create=True, size=img_array.nbytes, name=shm_name)
+        shm = shared_memory.SharedMemory(create=True, size=size, name=shm_name)
+        shm.buf[:size] = image_bytes
 
-        # Tworzymy tablicę NumPy zmapowaną na ten blok i kopiujemy dane
-        shared_array = np.ndarray(img_array.shape, dtype=img_array.dtype, buffer=shm.buf)
-        shared_array[:] = img_array[:]
-
-        return {"name": shm_name, "shape": img_array.shape, "dtype": str(img_array.dtype)}
+        return {
+            "name": shm_name,
+            "size": size,
+            "width": width,
+            "height": height,
+            "channels": channels,
+        }
 
     @staticmethod
-    def retrieve_image(metadata: dict) -> "np.ndarray":
-        """Odczytuje i podłącza pamięć na podstawie metadanych."""
-        if np is None:
-            raise MissingNumpyError()
+    def retrieve_image(metadata: dict) -> tuple[bytes, dict]:
+        """Odczytuje obraz z pamięci współdzielonej na podstawie metadanych.
+
+        Returns:
+            Tuple (raw_bytes, dimensions_dict).
+        """
         shm = shared_memory.SharedMemory(name=metadata["name"])
-        shared_array = np.ndarray(
-            metadata["shape"], dtype=np.dtype(metadata["dtype"]), buffer=shm.buf
-        )
-        return shared_array
+        size = metadata["size"]
+        data = bytes(shm.buf[:size])
+        dims = {
+            "width": metadata["width"],
+            "height": metadata["height"],
+            "channels": metadata.get("channels", 3),
+        }
+        return data, dims

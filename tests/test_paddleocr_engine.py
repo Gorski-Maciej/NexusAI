@@ -13,7 +13,6 @@ Testuje:
   - Auto-tuning det_db_thresh
   - Batch processing
   - 4-way consensus z PaddleOCR
-  - Numpy array input (zero I/O)
 """
 
 from __future__ import annotations
@@ -22,7 +21,6 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, patch
 
-import numpy as np
 import pytest
 
 from nexus_ai.pipeline.ocr_consensus import (
@@ -197,29 +195,6 @@ class TestPaddleOCREngine:
 
         result = anyio_run(engine.extract_text(Path("test.png")))
         assert result is None
-
-    @patch("paddleocr.PaddleOCR")
-    def test_extract_text_numpy_input(self, mock_paddleocr: MagicMock) -> None:
-        """extract_text akceptuje numpy array jako input (zero I/O)."""
-        mock_instance = MagicMock()
-        mock_paddleocr.return_value = mock_instance
-        # PaddleOCR output: list[list[tuple(bbox, tuple(text, conf))]]
-        bbox = [[0, 0], [10, 0], [10, 10], [0, 10]]
-        mock_instance.ocr.return_value = [
-            [(bbox, ("numpy text", 0.95))]
-        ]
-
-        engine = PaddleOCREngine(lang="pl", use_gpu=False)
-        engine._ocr = mock_instance
-        engine._available = True
-        engine._warmup_done = True
-
-        numpy_input = np.zeros((100, 100, 3), dtype=np.uint8)
-        result = anyio_run(engine.extract_text(numpy_input))
-        assert result == "numpy text"
-        # Verify numpy array input (not string path)
-        call_arg = mock_instance.ocr.call_args[0][0]
-        assert hasattr(call_arg, "shape")  # np.ndarray jest zmockowane
 
     # ════════════════════════════════════════════════════════════════════════
     # extract_text_with_confidence
@@ -400,12 +375,6 @@ class TestPaddleOCREngine:
     # ════════════════════════════════════════════════════════════════════════
     # Auto-tuning det_db_thresh
     # ════════════════════════════════════════════════════════════════════════
-
-    def test_auto_tune_threshold_no_cv2(self) -> None:
-        """_auto_tune_threshold zwraca domyślny próg gdy brak OpenCV."""
-        engine = PaddleOCREngine()
-        result = engine._auto_tune_threshold(np.zeros((100, 100, 3), dtype=np.uint8))
-        assert result == engine.det_db_thresh
 
     # ════════════════════════════════════════════════════════════════════════
     # PP-StructureV3: extract_layout (FAZA 3)

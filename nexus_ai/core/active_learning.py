@@ -8,8 +8,7 @@ Zgodnie z docs/SQLITE_VEC_AUDIT.md:
 
 Zgodnie z aa3fvcx.txt:
 - LanceDB → sqlite-vec (wektory w SQLite)
-- sentence-transformers → llama-cpp-python embedding
-- EmbeddingService używa istniejących modeli GGUF
+- EmbeddingService używa istniejących modeli GGUF przez llama-cpp-python
 """
 
 from __future__ import annotations

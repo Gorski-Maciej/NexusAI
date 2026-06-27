@@ -8,7 +8,7 @@ zerową szansę na identyczny błąd we wszystkich czterech:
 
 - Tesseract: klasyczny OCR (LSTM), mistrz ustrukturyzowanego druku
 - PaddleOCR: deep learning OCR, radzi sobie z nietypowymi czcionkami
-- docTR: modułowy OCR (PyTorch), detekcja DBNet + rozpoznawanie PARSeq, ekstrakcja tabel
+- docTR: modułowy OCR, detekcja DBNet + rozpoznawanie PARSeq, ekstrakcja tabel
 - EasyOCR: CNN + LSTM (CRAFT + CRNN), inna architektura niż pozostałe
 
 Optymalizacja pamięci (audyt mimalloc Faza 2):
@@ -623,8 +623,8 @@ class PaddleOCREngine:
 
     Architektura: PP-OCRv4 (DBNet + CRNN/Transformer). Fundamentalnie inny
     framework niż:
-    - docTR: PyTorch (DBNet + PARSeq)
-    - EasyOCR: PyTorch (CRAFT + CRNN)
+    - docTR: DBNet + PARSeq
+    - EasyOCR: CRAFT + CRNN
     - Tesseract: klasyczny C++ LSTM
 
     SUPERMOCE (audyt technologiczny v5):
@@ -826,8 +826,9 @@ class PaddleOCREngine:
         if self._warmup_done or not self._available or self._ocr is None:
             return
         try:
-            import numpy as np
-            warmup_img = np.zeros((100, 100, 3), dtype=np.uint8)
+            # Warmup z małym obrazem (PIL)
+            from PIL import Image as _PILImage
+            warmup_img = _PILImage.new('RGB', (100, 100), (0, 0, 0))
             self._ocr.ocr(warmup_img)
             self._warmup_done = True
             logger.debug("[OCR] PaddleOCR GPU warmup complete")
@@ -878,12 +879,7 @@ class PaddleOCREngine:
             return self.det_db_thresh
         try:
             import cv2 as _cv2
-            import numpy as np
-
-            if isinstance(image, np.ndarray):
-                gray = _cv2.cvtColor(image, _cv2.COLOR_RGB2GRAY) if image.ndim == 3 else image
-            else:
-                return self.det_db_thresh
+            gray = _cv2.cvtColor(image, _cv2.COLOR_RGB2GRAY) if len(image.shape) == 3 else image
 
             laplacian_var = _cv2.Laplacian(gray, _cv2.CV_64F).var()
             if laplacian_var > 200:
@@ -895,7 +891,7 @@ class PaddleOCREngine:
         except Exception:
             return self.det_db_thresh
 
-    # ── SUPERMOC: Ekstrakcja z numpy array (zero I/O) ────────────────────
+    # ── SUPERMOC: Ekstrakcja z obrazu (zero I/O) ────────────────────
 
     def _ocr_from_array(self, image_array: Any) -> Any:
         """Uruchom OCR na numpy array z auto-tuningiem progów.
@@ -1382,7 +1378,6 @@ class DocTREngine:
       - Wbudowana ekstrakcja tabel (TableEngine)
       - Detekcja orientacji strony (detect_orientation=True)
       - Eksport do ONNX dla 2-3× szybszej inferencji na CPU
-      - Łatwy fine-tuning przez PyTorch (doctr.trainer)
       - Więcej opcji modeli: DBNet, FAST, CRNN, PARSeq, ViTSTR
     """
 
@@ -1429,15 +1424,12 @@ class DocTREngine:
                     self._onnx_mode = True
                     logger.info("[OCR] docTR using ONNX backend (OnnxTR)")
                 except ImportError:
-                    logger.warning("[OCR] onnxtr not installed. Fallback to PyTorch doctr.")
+                    logger.warning("[OCR] onnxtr not installed.")
                     from doctr.models import ocr_predictor
                     self._onnx_mode = False
             else:
                 from doctr.models import ocr_predictor
                 self._onnx_mode = False
-
-            import torch
-            device = torch.device("cuda" if self.use_gpu and torch.cuda.is_available() else "cpu")
 
             # SUPERMOC: Główny predictor z pełnymi optymalizacjami
             # assume_straight_pages → 2-3× szybsza detekcja dla prostych dokumentów
@@ -1449,7 +1441,7 @@ class DocTREngine:
                 detect_orientation=self.detect_orientation,
                 assume_straight_pages=self.assume_straight_pages,
                 straighten_pages=self.straighten_pages,
-            ).to(device)
+            )
 
             # SUPERMOC: Strojenie progów detekcji per dokument
             if hasattr(self._predictor, "det_predictor") and hasattr(
@@ -2067,7 +2059,6 @@ def _assess_image_quality(image_path: Path) -> float:
         return 0.5
     try:
         import cv2 as _cv2
-        import numpy as np
 
         img = _cv2.imread(str(image_path), _cv2.IMREAD_GRAYSCALE)
         if img is None:
@@ -2078,15 +2069,16 @@ def _assess_image_quality(image_path: Path) -> float:
         sharpness = min(laplacian_var / 500.0, 1.0)
 
         # 2. Kontrast (RMS)
-        rms = img.std()
+        mean, stddev = _cv2.meanStdDev(img)
+        rms = float(stddev[0][0])
         contrast = min(rms / 80.0, 1.0)
 
         # 3. Jasność
-        mean_brightness = img.mean()
+        mean_brightness = float(mean[0][0])
         brightness = 1.0 - abs(mean_brightness - 127.0) / 127.0
 
         score = sharpness * 0.5 + contrast * 0.3 + brightness * 0.2
-        return round(float(np.clip(score, 0.0, 1.0)), 4)
+        return round(max(0.0, min(1.0, score)), 4)
     except Exception:
         return 0.5
 
@@ -2106,7 +2098,7 @@ def pdf_to_images(pdf_path: Path, dpi: int = 300) -> list[Path]:
     - Antyaliasing subpikselowy — lepsza jakość niż MuPDF
     - Licencja BSD-3-Clause
     - Lżejszy pakiet (~10 MB vs ~15-20 MB)
-    - Numpy/PIL natywnie — bitmap.to_pil(), bitmap.to_numpy()
+    - PIL natywnie — bitmap.to_pil()
     """
     try:
         import pypdfium2 as pdfium
@@ -2234,32 +2226,32 @@ async def run_ocr_pipeline(
     async with InvoiceOCRHeap(heap_id, label="ocr_pipeline") as _heap_ctx:
         # Krok 1: Konwersja PDF → obrazy (jeśli potrzeba)
         image_paths: list[Path] = []
-        numpy_pages: list[Any] = []
+        pil_pages: list[Any] = []
 
         if file_path.suffix.lower() == ".pdf":
-            # SUPERMOC: Renderuj do numpy arrays dla PaddleOCR (zero I/O)
+            # SUPERMOC: Renderuj do PIL images dla PaddleOCR (zero I/O)
             try:
-                from nexus_ai.core.pdfium import pdf_to_numpy_arrays
-                numpy_pages = pdf_to_numpy_arrays(file_path, dpi=300, max_pages=5)
-                if numpy_pages:
+                from nexus_ai.core.pdfium import pdf_to_pil_images
+                pil_pages = pdf_to_pil_images(file_path, dpi=300, max_pages=5)
+                if pil_pages:
                     logger.info(
-                        "[OCR] Rendered PDF to %d numpy arrays (zero I/O)", len(numpy_pages)
+                        "[OCR] Rendered PDF to %d PIL images (zero I/O)", len(pil_pages)
                     )
             except Exception as exc:
-                logger.warning("[OCR] Numpy render failed, falling back to disk: %s", exc)
+                logger.warning("[OCR] PIL render failed, falling back to disk: %s", exc)
 
             # ZAWSZE renderuj też do plików — Tesseract/EasyOCR potrzebują ścieżek
-            # Nawet jeśli numpy_pages succeeded, potrzebujemy plików dla innych silników
+            # Nawet jeśli pil_pages succeeded, potrzebujemy plików dla innych silników
             image_paths = pdf_to_images(file_path)
         else:
             image_paths = [file_path]
 
-        if not image_paths and not numpy_pages:
+        if not image_paths and not pil_pages:
             logger.error("[OCR] No images to process")
             return {}
 
-        # Użyj numpy array dla PaddleOCR (zero I/O), ścieżki pliku dla pozostałych
-        paddle_image = numpy_pages[0] if numpy_pages else (image_paths[0] if image_paths else None)
+        # Użyj PIL image dla PaddleOCR (zero I/O), ścieżki pliku dla pozostałych
+        paddle_image = pil_pages[0] if pil_pages else (image_paths[0] if image_paths else None)
         file_image = image_paths[0] if image_paths else None
 
         if file_image is None and paddle_image is None:
@@ -2287,19 +2279,18 @@ async def run_ocr_pipeline(
                 )
                 file_image = processed_path
 
-                # Dla PDF: przetwórz też numpy pages dla PaddleOCR
-                if numpy_pages:
-                    processed_np = []
-                    for np_page in numpy_pages[:1]:  # Only first page for now
-                        pil_page = _PILImage.fromarray(np_page)
+                # Dla PDF: przetwórz też PIL pages dla PaddleOCR
+                if pil_pages:
+                    processed_pil = []
+                    for pil_page in pil_pages[:1]:  # Only first page for now
                         proc_page = preprocessor.process(pil_page)
-                        processed_np.append(np.array(proc_page))
-                    if processed_np:
-                        numpy_pages = processed_np
-                        paddle_image = numpy_pages[0]
+                        processed_pil.append(proc_page)
+                    if processed_pil:
+                        pil_pages = processed_pil
+                        paddle_image = pil_pages[0]
                         logger.info(
-                            "[OCR] OpenCV preprocessing applied to %d numpy pages",
-                            len(processed_np),
+                            "[OCR] OpenCV preprocessing applied to %d PIL pages",
+                            len(processed_pil),
                         )
             except Exception as exc:
                 logger.warning("[OCR] OpenCV preprocessing failed, using raw: %s", exc)
@@ -2309,7 +2300,6 @@ async def run_ocr_pipeline(
         if use_tesseract:
             engines.append(("tesseract", TesseractEngine()))
         if use_paddle:
-            # SUPERMOC: PaddleOCR dostaje numpy array (zero I/O do OCR)
             engines.append(("paddle", PaddleOCREngine()))
         if use_doctr:
             engines.append(("doctr", DocTREngine(
@@ -2321,8 +2311,8 @@ async def run_ocr_pipeline(
             engines.append(("easyocr", EasyOCREngine(use_gpu=easyocr_gpu)))
 
         async def _run_engine(name: str, engine: Any) -> tuple[str, str | None]:
-            # PaddleOCR dostaje numpy array (zero I/O), reszta dostaje ścieżkę pliku
-            if name == "paddle" and numpy_pages:
+            # PaddleOCR dostaje PIL image (zero I/O), reszta dostaje ścieżkę pliku
+            if name == "paddle" and pil_pages:
                 text = await engine.extract_text(paddle_image)
             elif file_image is not None:
                 text = await engine.extract_text(file_image)
@@ -2379,29 +2369,29 @@ async def run_ocr_pipeline_with_confidence(
     async with InvoiceOCRHeap(heap_id, label="ocr_pipeline_conf") as _heap_ctx:
         # SUPERMOC: Renderuj do numpy arrays dla PaddleOCR (zero I/O)
         image_paths: list[Path] = []
-        numpy_pages: list[Any] = []
+        pil_pages: list[Any] = []
 
         if file_path.suffix.lower() == ".pdf":
             try:
-                from nexus_ai.core.pdfium import pdf_to_numpy_arrays
-                numpy_pages = pdf_to_numpy_arrays(file_path, dpi=300, max_pages=5)
-                if numpy_pages:
+                from nexus_ai.core.pdfium import pdf_to_pil_images
+                pil_pages = pdf_to_pil_images(file_path, dpi=300, max_pages=5)
+                if pil_pages:
                     logger.info(
-                        "[OCR] Conf pipeline rendered PDF to %d numpy arrays (zero I/O)", len(numpy_pages)
+                        "[OCR] Conf pipeline rendered PDF to %d PIL images (zero I/O)", len(pil_pages)
                     )
             except Exception as exc:
-                logger.warning("[OCR] Conf pipeline numpy render failed: %s", exc)
+                logger.warning("[OCR] Conf pipeline PIL render failed: %s", exc)
 
             # ZAWSZE renderuj też do plików — Tesseract/EasyOCR potrzebują ścieżek
             image_paths = pdf_to_images(file_path)
         else:
             image_paths = [file_path]
 
-        if not image_paths and not numpy_pages:
+        if not image_paths and not pil_pages:
             return {"texts": {}, "confidences": {}}
 
-        # PaddleOCR dostaje numpy array, reszta ścieżkę pliku
-        paddle_image = numpy_pages[0] if numpy_pages else (image_paths[0] if image_paths else None)
+        # PaddleOCR dostaje PIL image, reszta ścieżkę pliku
+        paddle_image = pil_pages[0] if pil_pages else (image_paths[0] if image_paths else None)
         file_image = image_paths[0] if image_paths else None
 
         # Krok 1.5: OpenCV preprocessing (identycznie jak w run_ocr_pipeline)
@@ -2424,15 +2414,14 @@ async def run_ocr_pipeline_with_confidence(
                 )
                 file_image = processed_path
 
-                if numpy_pages:
-                    processed_np = []
-                    for np_page in numpy_pages[:1]:
-                        pil_page = _PILImage.fromarray(np_page)
+                if pil_pages:
+                    processed_pil = []
+                    for pil_page in pil_pages[:1]:
                         proc_page = preprocessor.process(pil_page)
-                        processed_np.append(np.array(proc_page))
-                    if processed_np:
-                        numpy_pages = processed_np
-                        paddle_image = numpy_pages[0]
+                        processed_pil.append(proc_page)
+                    if processed_pil:
+                        pil_pages = processed_pil
+                        paddle_image = pil_pages[0]
             except Exception as exc:
                 logger.warning("[OCR] Conf pipeline OpenCV preprocessing failed: %s", exc)
 

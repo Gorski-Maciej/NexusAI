@@ -167,8 +167,7 @@ dependencies = [
     # ═══════════════════════════════════════════════════════════════════════
     "psutil>=5.9.0",
     "pendulum>=3.0.0",
-    "numpy>=2.0.0",
-]
+    ]
 
 
 [project.optional-dependencies]
@@ -533,7 +532,7 @@ file-description = "NexusAI — AI-Powered Accounting System"
 # Plugins — wszystkie niezbędne dla stacku NexusAI
 # ═══════════════════════════════════════════════════════════════════════════
 enable-plugin = [
-    "numpy",                     # Obsługa NumPy
+
     "anti-bloat",                # Usuwa zbędny kod z bibliotek
     "mimalloc",                  # Microsoft mimalloc — 5-15% mniej RAM
     "multiprocessing",           # Obsługa procesów potomnych

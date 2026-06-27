@@ -1,47 +1,49 @@
 # core/ipc/shm_manager.py
+"""Shared memory buffer for zero-copy IPC using raw bytes.
+
+Replaces previous numpy-based implementation with raw memoryview/bytes
+operations for compatibility with PIL Images.
+"""
+from __future__ import annotations
+
 from multiprocessing import shared_memory
-
-try:
-    import numpy as np
-except ImportError:
-    np = None  # type: ignore[assignment]
-
-
-class MissingNumpyError(RuntimeError):
-    """Rzucany gdy brak numpy, ale kod próbuje go użyć."""
-
-    def __init__(self) -> None:
-        super().__init__("numpy jest wymagane do SharedImageBuffer. Zainstaluj: pip install numpy")
+from typing import Any
 
 
 class SharedImageBuffer:
-    """Klasa do obsługi Zero-Copy IPC dla dużych obrazów."""
+    """Klasa do obsługi Zero-Copy IPC dla obrazów (raw bytes)."""
 
     @staticmethod
-    def create(image: "np.ndarray") -> dict:
-        """Tworzy blok w pamięci RAM i kopiuje do niego obraz."""
-        if np is None:
-            raise MissingNumpyError()
-        # Alokacja pamięci o konkretnym rozmiarze
-        shm = shared_memory.SharedMemory(create=True, size=image.nbytes)
+    def create(data: bytes) -> dict:
+        """Tworzy blok w pamięci RAM i kopiuje do niego dane obrazu.
 
-        # Tworzymy 'widok' NumPy na tę pamięć
-        shared_array = np.ndarray(image.shape, dtype=image.dtype, buffer=shm.buf)
+        Args:
+            data: Raw bytes obrazu (np. z PIL Image.tobytes()).
 
-        # Kopiujemy dane do współdzielonego bloku
-        shared_array[:] = image[:]
+        Returns:
+            Dict z metadanymi do późniejszego odtworzenia.
+        """
+        shm = shared_memory.SharedMemory(create=True, size=len(data))
+
+        # Kopiujemy dane do współdzielonego bloku przez memoryview
+        buf = memoryview(shm.buf)
+        buf[:len(data)] = data
 
         return {
             "shm_name": shm.name,
-            "shape": image.shape,
-            "dtype": str(image.dtype),
-            "nbytes": image.nbytes,
+            "size": len(data),
         }
 
     @staticmethod
-    def attach(metadata: dict) -> "np.ndarray":
-        """Podłącza się do istniejącego bloku pamięci."""
-        if np is None:
-            raise MissingNumpyError()
+    def attach(metadata: dict) -> bytes:
+        """Podłącza się do istniejącego bloku pamięci i zwraca dane.
+
+        Args:
+            metadata: Dict z poprzedniego wywołania create().
+
+        Returns:
+            bytes — dane obrazu.
+        """
         shm = shared_memory.SharedMemory(name=metadata["shm_name"])
-        return np.ndarray(metadata["shape"], dtype=np.dtype(metadata["dtype"]), buffer=shm.buf)
+        buf = memoryview(shm.buf)
+        return bytes(buf[:metadata["size"]])

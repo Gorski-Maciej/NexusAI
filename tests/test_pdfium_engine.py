@@ -3,7 +3,7 @@ test_pdfium_engine.py — Kompleksowe testy dla pydfium2.
 
 Zgodnie z planem migracji do pypdfium2:
 - FAZA 1: Core — otwieranie, renderowanie, zapis
-- FAZA 2: Async + numpy — warianty dla OCR i API
+- FAZA 2: Async — warianty dla OCR i API
 - FAZA 3: Progressive loading, ekstrakcja tekstu, metadane, msgspec
 - FAZA 4: Render cache
 - FAZA 5: msgspec.Struct, podpisy cyfrowe, formularze, cache
@@ -62,7 +62,6 @@ def mock_pdfium_module():
     # aby nie wchodzić w gałąź z image_utils.preprocess_for_ocr.
     mock_bitmap = MagicMock()
     mock_bitmap.to_pil.return_value = MagicMock()
-    mock_bitmap.to_numpy.return_value = MagicMock()
     mock_page.render.return_value = mock_bitmap
 
     # Mock text page
@@ -267,12 +266,6 @@ class TestCore:
         )
         assert image is not None
 
-    def test_render_page_to_numpy_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import render_page_to_numpy
-
-        array = render_page_to_numpy(sample_pdf_path, page_num=0, dpi=300)
-        assert array is not None
-
     def test_render_page_to_png_bytes_mocked(self, mock_pdfium_module, sample_pdf_path):
         from nexus_ai.core.pdfium import render_page_to_png_bytes
 
@@ -305,16 +298,6 @@ class TestCore:
         )
         assert image is not None
 
-    def test_render_page_to_numpy_enhanced_mocked(self, mock_pdfium_module, sample_pdf_path):
-        """FAZA 1: render_page_to_numpy_enhanced() z mockiem (bez preprocessing)."""
-        from nexus_ai.core.pdfium import render_page_to_numpy_enhanced
-
-        array = render_page_to_numpy_enhanced(
-            sample_pdf_path, page_num=0, dpi=300,
-            drop_alpha=True, preprocess_for_ocr=False,
-        )
-        assert array is not None
-
     def test_open_pdf_with_bytes(self, mock_pdfium_module):
         """open_pdf() z bytes."""
         from nexus_ai.core.pdfium import open_pdf
@@ -325,22 +308,15 @@ class TestCore:
     def test_render_all_pages_mocked(self, mock_pdfium_module, sample_pdf_path):
         from nexus_ai.core.pdfium import render_all_pages
 
-        images = render_all_pages(sample_pdf_path, dpi=300, as_numpy=False)
+        images = render_all_pages(sample_pdf_path, dpi=300)
         assert len(images) == 3
-
-    def test_render_all_pages_as_numpy(self, mock_pdfium_module, sample_pdf_path):
-        """render_all_pages() jako numpy."""
-        from nexus_ai.core.pdfium import render_all_pages
-
-        arrays = render_all_pages(sample_pdf_path, dpi=300, as_numpy=True)
-        assert len(arrays) == 3
 
     def test_render_all_pages_with_page_range(self, mock_pdfium_module, sample_pdf_path):
         """render_all_pages() z zakresem stron."""
         from nexus_ai.core.pdfium import render_all_pages
 
         images = render_all_pages(
-            sample_pdf_path, dpi=300, as_numpy=False,
+            sample_pdf_path, dpi=300,
             page_range=(0, 2),
         )
         assert len(images) == 2
@@ -355,7 +331,7 @@ class TestCore:
             progress_updates.append(info)
 
         images = render_all_pages(
-            sample_pdf_path, dpi=300, as_numpy=False,
+            sample_pdf_path, dpi=300,
             progress_callback=on_progress,
         )
         assert len(images) == 3
@@ -1256,40 +1232,36 @@ class TestAttachmentCount:
 
 
 # ===================================================================
-# Testy integracyjne (wymagają rzeczywistego PDF-a)
+# Testy konfiguracji i zależności
 # ===================================================================
 
 
-@pytest.mark.skipif(
-    not any(
-        Path(p).joinpath("pypdfium2").exists()
-        for p in sys.path
-        if Path(p).exists()
-    ),
-    reason="pypdfium2 not installed (integration test)",
-)
-class TestIntegrationWithRealPDF:
-    """Testy integracyjne z prawdziwym plikiem PDF."""
+class TestConfiguration:
+    """Testy zmian konfiguracyjnych."""
 
-    @pytest.mark.integration
-    def test_render_real_pdf(self, sample_pdf_path):
-        from nexus_ai.core.pdfium import render_page_to_pil
+    def test_pyproject_has_pypdfium2(self):
+        pyproject = Path(__file__).parents[1] / "pyproject.toml"
+        content = pyproject.read_text()
+        assert "pypdfium2" in content, "pyproject.toml: brak pypdfium2"
+        assert "pymupdf" not in content, "pyproject.toml: wciąż jest pymupdf!"
 
-        try:
-            image = render_page_to_pil(sample_pdf_path, dpi=72)
-            assert image is not None
-        except Exception as exc:
-            pytest.skip(f"Real PDF rendering failed: {exc}")
+    def test_pixi_toml_has_pypdfium2(self):
+        pixi_toml = Path(__file__).parents[1] / "pixi.toml"
+        content = pixi_toml.read_text()
+        assert "pypdfium2" in content, "pixi.toml: brak pypdfium2"
+        assert "pymupdf" not in content, "pixi.toml: wciąż jest pymupdf!"
 
-    @pytest.mark.integration
-    def test_pdf_to_images_memory_real(self, sample_pdf_path):
-        from nexus_ai.core.pdfium import pdf_to_images_memory
+    def test_conftest_mocks_pypdfium2(self):
+        conftest = Path(__file__).parents[1] / "tests" / "conftest.py"
+        content = conftest.read_text()
+        assert "pypdfium2" in content, "conftest.py: brak pypdfium2"
+        assert "fitz" not in content, "conftest.py: wciąż jest fitz!"
 
-        try:
-            images = pdf_to_images_memory(sample_pdf_path, dpi=72)
-            assert len(images) >= 1
-        except Exception as exc:
-            pytest.skip(f"Real PDF memory conversion failed: {exc}")
+    def test_ocr_consensus_no_fitz(self):
+        ocr_file = Path(__file__).parents[1] / "nexus_ai" / "pipeline" / "ocr_consensus.py"
+        content = ocr_file.read_text()
+        assert "fitz" not in content, "ocr_consensus.py: wciąż importuje fitz!"
+        assert "pypdfium2" in content, "ocr_consensus.py: brak pypdfium2!"
 
     @pytest.mark.integration
     def test_render_all_pages_to_memory_real(self, sample_pdf_path):
