@@ -3,14 +3,12 @@ import re
 from msgspec import Struct
 from decimal import Decimal, InvalidOperation
 
-from nexus_ai.services.currency_converter import Money
-
 
 class ParsedInvoice(Struct, kw_only=True):
     number: str | None = None
     nip: str | None = None
-    amount_net: Money = Money.zero("PLN")
-    amount_gross: Money = Money.zero("PLN")
+    amount_net: Decimal | None = None
+    amount_gross: Decimal | None = None
     iban: str | None = None
     currency: str = "PLN"
 
@@ -66,8 +64,8 @@ class InvoiceParser:
         # 4. Kwoty (Heurystyka)
         gross_decimal = self._find_amount_near_keywords(lines, self.gross_keywords)
         net_decimal = self._find_amount_near_keywords(lines, self.net_keywords)
-        result.amount_gross = Money.from_string(str(gross_decimal), result.currency)
-        result.amount_net = Money.from_string(str(net_decimal), result.currency)
+        result.amount_gross = gross_decimal
+        result.amount_net = net_decimal
 
         return result
 
@@ -149,9 +147,7 @@ class InvoiceParser:
                 [footer_text], self.gross_keywords
             )
             if footer_amount and footer_amount > 0:
-                result.amount_gross = Money.from_string(
-                    str(footer_amount), result.currency
-                )
+                result.amount_gross = footer_amount
 
         return result
 

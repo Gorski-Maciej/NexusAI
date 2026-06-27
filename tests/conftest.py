@@ -273,7 +273,6 @@ INTERNAL_MOCK_MODULES: list[str] = [
     # Przecięcie pre-existing import chain:
     # test → pipeline/ocr_consensus → pipeline/__init__ → parser → services → broker → ERROR
     "nexus_ai.pipeline.parser",
-    "nexus_ai.services.currency_converter",
     "nexus_ai.services.audit_service",
     "nexus_ai.core.broker",
     "nexus_ai.core.taskiq_middleware",

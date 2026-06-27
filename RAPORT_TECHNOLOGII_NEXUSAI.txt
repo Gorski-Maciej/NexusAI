@@ -37,285 +37,274 @@ STATYSTYKI OGÓLNE
   3. pixi (prefix.dev)                                    [A]  — Menedżer środowiska (Rust, deklaratywny)
   4. hatchling ≥1.21                                      [A]  — Backend budowania pakietów (PEP 621)
   5. hatch-vcs ≥0.4                                       [A]  — Wersjonowanie z VCS
-  6. CPython 3.13t (free-threaded)                        [A]  — Wariant Pythona bez GIL
-  7. OPA (Open Policy Agent) ≥0.6x                        [A]  — Silnik reguł (sidecar, Rego)
+  6. OPA (Open Policy Agent) ≥0.6x                        [A]  — Silnik reguł (sidecar, Rego)
 
 ────────────────────────────────────────────────────────────────────────────────
 2. API / SERWER ASGI
 ────────────────────────────────────────────────────────────────────────────────
 
-  8. Litestar ≥2.8.0 [jwt]                                [A]  — Framework ASGI (zastąpił FastAPI)
-  9. Granian ≥1.0.0 [dotenv,pname,reload]                 [A]  — Serwer ASGI w Rust (zastąpił Uvicorn)
+  7. Litestar ≥2.8.0 [jwt]                                [A]  — Framework ASGI (zastąpił FastAPI)
+  8. Granian ≥1.0.0 [dotenv,pname,reload]                 [A]  — Serwer ASGI w Rust (zastąpił Uvicorn)
 
 ────────────────────────────────────────────────────────────────────────────────
 3. BAZY DANYCH (Databases & Storage)
 ────────────────────────────────────────────────────────────────────────────────
 
- 10. SQLite (przez SQLCipher, AES-256)                    [A]  — Transakcyjna baza danych (jednoplikowa)
- 11. SQLCipher                                            [A]  — Szyfrowanie AES-256 każdej strony SQLite
- 12. sqlite-vec ≥0.1.0                                    [A]  — Rozszerzenie wektorowe dla SQLite
- 13. SQLModel ≥0.0.16                                     [A]  — ORM (SQLAlchemy + Pydantic, jedna definicja)
- 14. DuckDB ≥1.0.0                                        [A]  — Analityczna baza OLAP (wbudowana)
- 15. TigerBeetle ≥0.16.0                                  [A]  — Silnik double-entry accounting (księga główna)
- 16. FTS5 (SQLite Full-Text Search)                       [A]  — Wyszukiwanie pełnotekstowe (wbudowane w SQLite)
+  9. SQLite (przez SQLCipher, AES-256)                    [A]  — Transakcyjna baza danych (jednoplikowa)
+ 10. SQLCipher                                            [A]  — Szyfrowanie AES-256 każdej strony SQLite
+ 11. sqlite-vec ≥0.1.0                                    [A]  — Rozszerzenie wektorowe dla SQLite
+ 12. SQLModel ≥0.0.16                                     [A]  — ORM (SQLAlchemy + Pydantic, jedna definicja)
+ 13. DuckDB ≥1.0.0                                        [A]  — Analityczna baza OLAP (wbudowana)
+ 14. TigerBeetle ≥0.16.0                                  [A]  — Silnik double-entry accounting (księga główna)
+ 15. FTS5 (SQLite Full-Text Search)                       [A]  — Wyszukiwanie pełnotekstowe (wbudowane w SQLite)
 
 ────────────────────────────────────────────────────────────────────────────────
 4. WALIDACJA DANYCH I SERIALIZACJA (Validation & Serialization)
 ────────────────────────────────────────────────────────────────────────────────
 
- 17. msgspec ≥0.18.0                                      [A]  — Serializacja JSON/MessagePack/TOML (ultraszybka)
- 18. Pydantic (przez SQLModel)                            [Z]  — Tylko jako fundament SQLModel
+ 16. msgspec ≥0.18.0                                      [A]  — Serializacja JSON/MessagePack/TOML (ultraszybka)
 
 ────────────────────────────────────────────────────────────────────────────────
 5. KOLEJKI ZADAŃ I KOMUNIKACJA (Task Queue & Messaging)
 ────────────────────────────────────────────────────────────────────────────────
 
- 19. Taskiq ≥0.11.0                                       [A]  — Kolejka zadań (async)
- 20. taskiq-nats ≥0.5.0                                   [A]  — Broker NATS dla Taskiq
- 21. NATS Server ≥2.10 (JetStream)                        [A]  — Broker wiadomości (wbudowane KV Store/Object Store)
- 22. nats-py ≥2.6.0                                       [A]  — Python client dla NATS
+ 17. Taskiq ≥0.11.0                                       [A]  — Kolejka zadań (async)
+ 18. taskiq-nats ≥0.5.0                                   [A]  — Broker NATS dla Taskiq
+ 19. NATS Server ≥2.10 (JetStream)                        [A]  — Broker wiadomości (wbudowane KV Store/Object Store)
+ 20. nats-py ≥2.6.0                                       [A]  — Python client dla NATS
 
 ────────────────────────────────────────────────────────────────────────────────
 6. HTTP / SIEC (HTTP & Networking)
 ────────────────────────────────────────────────────────────────────────────────
 
- 23. httpx ≥0.27.0                                        [A]  — Klient HTTP (async)
- 24. hishel ≥0.1.0                                        [A]  — Inteligentny cache HTTP
- 25. fsspec ≥2024.3.0                                     [A]  — Abstrakcja systemów plików
+ 21. httpx ≥0.27.0                                        [A]  — Klient HTTP (async)
+ 22. hishel ≥0.1.0                                        [A]  — Inteligentny cache HTTP
+ 23. fsspec ≥2024.3.0                                     [A]  — Abstrakcja systemów plików
 
 ────────────────────────────────────────────────────────────────────────────────
 7. ODPORNOŚĆ NA BŁĘDY (Resilience)
 ────────────────────────────────────────────────────────────────────────────────
 
- 26. stamina ≥0.1.0                                       [A]  — Retry + circuit breaker (async-native)
+ 24. stamina ≥0.1.0                                       [A]  — Retry + circuit breaker (async-native)
 
 ────────────────────────────────────────────────────────────────────────────────
 8. KRYYPTOGRAFIA I BEZPIECZEŃSTWO (Cryptography & Security)
 ────────────────────────────────────────────────────────────────────────────────
 
- 27. nexus-crypto ≥0.1.0                                  [A]  — Własny moduł kryptograficzny (Rust + PyO3)
- 28. nexus_crypto._core                                   [A]  — Natywne rozszerzenie Rust (maturin/PyO3)
- 29. Litestar JWT                                          [A]  — Uwierzytelnianie JWT (wbudowane w Litestar)
- 30. RBAC (własny system ról)                             [A]  — System kontroli dostępu (nexus_ai/api/rbac.py)
+ 25. nexus-crypto ≥0.1.0                                  [A]  — Własny moduł kryptograficzny (Rust + PyO3)
+ 26. Litestar JWT                                          [A]  — Uwierzytelnianie JWT (wbudowane w Litestar)
+ 27. RBAC (własny system ról)                             [A]  — System kontroli dostępu (nexus_ai/api/rbac.py)
 
 ────────────────────────────────────────────────────────────────────────────────
-9. FINANSE / WALUTY (Finance & Currency)
+9. PRZETWARZANIE DOKUMENTÓW (Document Processing / OCR / XML)
 ────────────────────────────────────────────────────────────────────────────────
 
- 31. TigerBeetle ≥0.16.0 (double-entry)                   [A]  — Księga główna (już w sekcji 3)
- 32. Silnik kursów walut (currency_converter.py)          [A]  — Własny konwerter walut
- 33. Tax Math Engine (tax/math_engine.py)                 [A]  — Matematyka podatkowa
+ 29. lxml ≥5.1.0                                          [A]  — XML/HTML processing
+ 30. xsdata ≥24.0.0                                       [A]  — XSD → Python code generation (KSeF)
+ 31. Pillow ≥10.0.0                                       [A]  — Przetwarzanie obrazów
+ 32. pypdfium2 ≥4.0.0                                     [A]  — PDF → image (silnik PDFium)
+ 33. PaddleOCR ≥2.8.0                                     [A]  — Silnik OCR #1
+ 34. python-doctr ≥0.9.0                                  [A]  — Silnik OCR #2
+ 35. EasyOCR ≥1.7.0                                       [A]  — Silnik OCR #3
+ 36. Tesseract ≥5.3.0                                     [A]  — Silnik OCR #4 (systemowy)
 
 ────────────────────────────────────────────────────────────────────────────────
-10. PRZETWARZANIE DOKUMENTÓW (Document Processing / OCR / XML)
+10. LOGOWANIE I OBSERWOWALNOŚĆ (Logging & Observability)
 ────────────────────────────────────────────────────────────────────────────────
 
- 34. lxml ≥5.1.0                                          [A]  — XML/HTML processing
- 35. xsdata ≥24.0.0                                       [A]  — XSD → Python code generation (KSeF)
- 36. Pillow ≥10.0.0                                       [A]  — Przetwarzanie obrazów
- 37. pypdfium2 ≥4.0.0                                     [A]  — PDF → image (silnik PDFium)
- 38. PaddleOCR ≥2.8.0                                     [A]  — Silnik OCR #1
- 39. python-doctr ≥0.9.0                                  [A]  — Silnik OCR #2
- 40. EasyOCR ≥1.7.0                                       [A]  — Silnik OCR #3
- 41. Tesseract ≥5.3.0                                     [A]  — Silnik OCR #4 (systemowy)
+ 37. Loguru ≥0.7.0                                        [A]  — Logowanie
+ 38. structlog ≥24.0.0                                    [A]  — Logowanie strukturalne
+ 39. OpenTelemetry API ≥1.25.0                            [A]  — Observability API
+ 40. OpenTelemetry SDK ≥1.25.0                            [A]  — Observability SDK
+ 41. OpenTelemetry Exporter Prometheus ≥0.46b0            [A]  — Eksporter metryk do Prometheus
+ 42. Sentry SDK ≥2.0.0                                    [A]  — Śledzenie błędów (error tracking)
 
 ────────────────────────────────────────────────────────────────────────────────
-11. LOGOWANIE I OBSERWOWALNOŚĆ (Logging & Observability)
+11. METRYKI I MONITORING (Metrics & Monitoring)
 ────────────────────────────────────────────────────────────────────────────────
 
- 42. Loguru ≥0.7.0                                        [A]  — Logowanie
- 43. structlog ≥24.0.0                                    [A]  — Logowanie strukturalne
- 44. OpenTelemetry API ≥1.25.0                            [A]  — Observability API
- 45. OpenTelemetry SDK ≥1.25.0                            [A]  — Observability SDK
- 46. OpenTelemetry Exporter Prometheus ≥0.46b0            [A]  — Eksporter metryk do Prometheus
- 47. Sentry SDK ≥2.0.0                                    [A]  — Śledzenie błędów (error tracking)
+ 43. Prometheus Exporter (przez OTel)                     [A]  — Metryki Prometheus
+ 44. Granian Metrics                                       [A]  — Metryki serwera (wbudowane w Granian)
 
 ────────────────────────────────────────────────────────────────────────────────
-12. METRYKI I MONITORING (Metrics & Monitoring)
+12. CACHE
 ────────────────────────────────────────────────────────────────────────────────
 
- 48. Prometheus Exporter (przez OTel)                     [A]  — Metryki Prometheus
- 49. Granian Metrics                                       [A]  — Metryki serwera (wbudowane w Granian)
+ 45. diskcache ≥5.6.0                                     [A]  — SQLite-backed cache (zastąpił własne backendy)
+ 46. hishel (cache HTTP)                                   [A]  — Już w sekcji 6
+ 47. Redis (opcjonalny backend)                            [S]  — backends_redis.py (do skalowania w przyszłości)
 
 ────────────────────────────────────────────────────────────────────────────────
-13. CACHE
+13. NARZEDZIA (Utilities)
 ────────────────────────────────────────────────────────────────────────────────
 
- 50. diskcache ≥5.6.0                                     [A]  — SQLite-backed cache (zastąpił własne backendy)
- 51. hishel (cache HTTP)                                   [A]  — Już w sekcji 6
- 52. Redis (opcjonalny backend)                            [S]  — backends_redis.py (do skalowania w przyszłości)
+ 48. psutil ≥5.9.0                                        [A]  — Monitorowanie zasobów systemowych
+ 49. pendulum ≥3.0.0                                      [A]  — Daty i czas (nowej generacji)
+ 50. mimalloc ≥2.1.0                                      [A]  — Microsoft memory allocator (5-15% mniej RAM)
+ 51. TOML + msgspec                                        [A]  — Konfiguracja (parsowanie TOML przez msgspec)
+ 52. libopencv ≥4.9.0                                     [A]  — OpenCV (przetwarzanie obrazów, systemowy dep)
 
 ────────────────────────────────────────────────────────────────────────────────
-14. NARZEDZIA (Utilities)
+14. TESTY I JAKOŚĆ KODU (Testing & Code Quality)
 ────────────────────────────────────────────────────────────────────────────────
 
- 53. psutil ≥5.9.0                                        [A]  — Monitorowanie zasobów systemowych
- 54. pendulum ≥3.0.0                                      [A]  — Daty i czas (nowej generacji)
- 55. mimalloc ≥2.1.0                                      [A]  — Microsoft memory allocator (5-15% mniej RAM)
- 56. TOML + msgspec                                        [A]  — Konfiguracja (parsowanie TOML przez msgspec)
- 57. libopencv ≥4.9.0                                     [A]  — OpenCV (przetwarzanie obrazów, systemowy dep)
+ 53. pytest ≥8.0.0                                        [D]  — Framework testowy
+ 54. pytest-cov ≥5.0.0                                    [D]  — Pomiar pokrycia kodu
+ 55. crosshair ≥0.1.0.dev0                                [D]  — SMT-driven property-based testing (zastąpił hypothesis)
+ 56. ruff ≥0.3.0                                          [D]  — Linter + formatter
+ 57. mypy ≥1.8.0                                          [D]  — Type checker
+ 58. schemathesis ≥3.30.0                                 [D]  — Automatyczny fuzz testing API (OpenAPI)
+ 59. locust ≥2.29.0                                       [D]  — Testy wydajności (Python)
+ 60. py-spy ≥0.3.14                                       [D]  — Sampling profiler (Rust, <1% narzutu)
+ 61. pytest-benchmark ≥4.0.0                              [D]  — Benchmarki wydajności
+ 62. pytest-xdist ≥3.5.0                                  [D]  — Równoległe testowanie
+ 63. pytest-timeout ≥2.2.0                                [D]  — Timeout testów
+ 64. pytest-sugar ≥1.0.0                                  [D]  — Kolorowe raporty
+ 65. pytest-watch ≥4.2.0                                  [D]  — Auto-retest przy zmianach
 
 ────────────────────────────────────────────────────────────────────────────────
-15. TESTY I JAKOŚĆ KODU (Testing & Code Quality)
+15. INTERFEJS DESKTOPOWY (Desktop UI)
 ────────────────────────────────────────────────────────────────────────────────
 
- 58. pytest ≥8.0.0                                        [D]  — Framework testowy
- 59. pytest-cov ≥5.0.0                                    [D]  — Pomiar pokrycia kodu
- 60. crosshair ≥0.1.0.dev0                                [D]  — SMT-driven property-based testing (zastąpił hypothesis)
- 61. ruff ≥0.3.0                                          [D]  — Linter + formatter
- 62. mypy ≥1.8.0                                          [D]  — Type checker
- 63. schemathesis ≥3.30.0                                 [D]  — Automatyczny fuzz testing API (OpenAPI)
- 64. locust ≥2.29.0                                       [D]  — Testy wydajności (Python)
- 65. py-spy ≥0.3.14                                       [D]  — Sampling profiler (Rust, <1% narzutu)
- 66. pytest-benchmark ≥4.0.0                              [D]  — Benchmarki wydajności
- 67. pytest-xdist ≥3.5.0                                  [D]  — Równoległe testowanie
- 68. pytest-timeout ≥2.2.0                                [D]  — Timeout testów
- 69. pytest-sugar ≥1.0.0                                  [D]  — Kolorowe raporty
- 70. pytest-watch ≥4.2.0                                  [D]  — Auto-retest przy zmianach
+ 66. Flet ≥0.28.0                                         [A]  — Framework GUI (silnik Flutter, Material Design 3)
+ 67. Flet Router                                           [A]  — Nawigacja (opcjonalne rozszerzenie Flet)
+ 68. matplotlib <usunięty>                                [S]  — Zastąpiony przez natywne Flet Charts
 
 ────────────────────────────────────────────────────────────────────────────────
-16. INTERFEJS DESKTOPOWY (Desktop UI)
+16. AI / AGENT AI (AI & Machine Learning)
 ────────────────────────────────────────────────────────────────────────────────
 
- 71. Flet ≥0.28.0                                         [A]  — Framework GUI (silnik Flutter, Material Design 3)
- 72. Flet Router                                           [A]  — Nawigacja (opcjonalne rozszerzenie Flet)
- 73. matplotlib <usunięty>                                [S]  — Zastąpiony przez natywne Flet Charts
+ 69. llama-cpp-python ≥0.2.0                              [A]  — Inferencja LLM (GGUF, CPU/GPU)
+ 70. Modele GGUF (pobierane przez download_models.py)      [A]  — Modele AI (kwantyzowane)
+ 71. Silnik embeddingów (embeddings.py)                    [A]  — Embeddingi wektorowe
+ 72. Vision Agent (vision/agent.py)                       [A]  — Agent wizyjny (OCR + AI)
+ 73. Decision Engine (decision_engine.py)                  [A]  — Silnik decyzyjny AI
+ 74. Active Learning (active_learning.py)                  [A]  — Aktywne uczenie
 
 ────────────────────────────────────────────────────────────────────────────────
-17. AI / AGENT AI (AI & Machine Learning)
+17. BUDOWANIE / KOMPILACJA (Build & Compilation)
 ────────────────────────────────────────────────────────────────────────────────
 
- 74. llama-cpp-python ≥0.2.0                              [A]  — Inferencja LLM (GGUF, CPU/GPU)
- 75. Modele GGUF (pobierane przez download_models.py)      [A]  — Modele AI (kwantyzowane)
- 76. Silnik embeddingów (embeddings.py)                    [A]  — Embeddingi wektorowe
- 77. Vision Agent (vision/agent.py)                       [A]  — Agent wizyjny (OCR + AI)
- 78. Decision Engine (decision_engine.py)                  [A]  — Silnik decyzyjny AI
- 79. Active Learning (active_learning.py)                  [A]  — Aktywne uczenie
+ 75. maturin ≥1.5                                          [A]  — Rust/PyO3 builder (.whl)
+ 76. mypyc ≥1.8.0                                         [A]  — Kompilacja typowanego Pythona → C (2-5×)
+ 77. Nuitka ≥1.8                                          [A]  — Kompilacja Python → standalone .exe
+ 78. cmake ≥3.28.0                                        [D]  — Budowanie natywnych rozszerzeń
+ 79. pkg-config ≥0.29.2                                   [Z]  — Wykrywanie bibliotek systemowych
 
 ────────────────────────────────────────────────────────────────────────────────
-18. BUDOWANIE / KOMPILACJA (Build & Compilation)
+18. INFRASTRUKTURA / CI/CD (Infrastructure & CI/CD)
 ────────────────────────────────────────────────────────────────────────────────
 
- 80. maturin ≥1.5                                          [A]  — Rust/PyO3 builder (.whl)
- 81. mypyc ≥1.8.0                                         [A]  — Kompilacja typowanego Pythona → C (2-5×)
- 82. Nuitka ≥1.8                                          [A]  — Kompilacja Python → standalone .exe
- 83. cmake ≥3.28.0                                        [D]  — Budowanie natywnych rozszerzeń
- 84. pkg-config ≥0.29.2                                   [Z]  — Wykrywanie bibliotek systemowych
+ 80. GitHub Actions                                        [A]  — CI/CD pipeline
+ 81. Dependabot                                            [A]  — Automatyczne aktualizacje zależności
+ 82. OpenSSF Scorecard                                     [A]  — Audyt bezpieczeństwa łańcucha dostaw
+ 83. CodeQL                                                [A]  — SAST (Static Application Security Testing)
+ 84. SBOM (Software Bill of Materials)                     [A]  — Lista składników oprogramowania
+ 85. SLSA (Supply-chain Levels)                            [A]  — Poziom bezpieczeństwa łańcucha dostaw
+ 86. OIDC (OpenID Connect)                                 [A]  — Uwierzytelnianie bez sekretów
+ 87. systemd                                               [S]  — Menedżer usług Linux (usunięty z listy tech.)
 
 ────────────────────────────────────────────────────────────────────────────────
-19. INFRASTRUKTURA / CI/CD (Infrastructure & CI/CD)
+19. ZALEŻNOŚCI SYSTEMOWE (System Dependencies)
 ────────────────────────────────────────────────────────────────────────────────
 
- 85. GitHub Actions                                        [A]  — CI/CD pipeline
- 86. Dependabot                                            [A]  — Automatyczne aktualizacje zależności
- 87. OpenSSF Scorecard                                     [A]  — Audyt bezpieczeństwa łańcucha dostaw
- 88. CodeQL                                                [A]  — SAST (Static Application Security Testing)
- 89. SBOM (Software Bill of Materials)                     [A]  — Lista składników oprogramowania
- 90. SLSA (Supply-chain Levels)                            [A]  — Poziom bezpieczeństwa łańcucha dostaw
- 91. OIDC (OpenID Connect)                                 [A]  — Uwierzytelnianie bez sekretów
- 92. systemd                                               [S]  — Menedżer usług Linux (usunięty z listy tech.)
+ 88. tesseract ≥5.3.0                                     [A]  — OCR (już w sekcji 9)
+ 89. libopencv ≥4.9.0                                     [A]  — OpenCV (już w sekcji 13)
+ 90. mimalloc ≥2.1.0                                      [A]  — Alokator pamięci (już w sekcji 13)
+ 91. Rust toolchain ≥1.78.0                                [A]  — Kompilator Rust (już w sekcji 1)
+ 92. pkg-config ≥0.29.2                                   [Z]  — Już w sekcji 17
 
 ────────────────────────────────────────────────────────────────────────────────
-20. ZALEŻNOŚCI SYSTEMOWE (System Dependencies)
-────────────────────────────────────────────────────────────────────────────────
-
- 93. tesseract ≥5.3.0                                     [A]  — OCR (już w sekcji 10)
- 94. libopencv ≥4.9.0                                     [A]  — OpenCV (już w sekcji 14)
- 95. mimalloc ≥2.1.0                                      [A]  — Alokator pamięci (już w sekcji 14)
- 96. Rust toolchain ≥1.78.0                                [A]  — Kompilator Rust (już w sekcji 1)
- 97. pkg-config ≥0.29.2                                   [Z]  — Już w sekcji 18
-
-────────────────────────────────────────────────────────────────────────────────
-21. TECHNOLOGIE USUNIETE / SZCZATKOWE / HISTORYCZNE
+20. TECHNOLOGIE USUNIETE / SZCZATKOWE / HISTORYCZNE
 ────────────────────────────────────────────────────────────────────────────────
 
   ## Usunięte pakiety PyPI (zastąpione lub nieużywane):
- 98.  scipy                                                [S]  — Obliczenia naukowe (usunięty, nieużywany)
- 99.  Jinja2                                               [S]  — Templating (usunięty, nieużywany)
- 100. Rich                                                 [S]  — Terminal UI (usunięty, nieużywany)
- 101. tqdm                                                 [S]  — Progress bar (usunięty, nieużywany)
- 102. requests                                             [S]  — HTTP (usunięty, zastąpiony przez httpx)
- 103. python-dotenv                                        [S]  — Zmienne środowiskowe (usunięty, zast. msgspec TOML)
- 104. scikit-image                                         [S]  — Przetwarzanie obrazów (usunięty, nieużywany)
- 105. Shapely                                              [S]  — Geometria (usunięty, nieużywany)
- 106. Albumentations                                       [S]  — Augmentacja obrazów (usunięty, nieużywany)
- 107. regex                                                [S]  — Wyrażenia regularne (usunięty, nieużywany)
- 108. hypothesis                                           [S]  — Property-based testing (usunięty, zast. crosshair)
- 109. uv                                                   [S]  — Package manager (usunięty, zast. pixi)
- 110. huggingface-hub                                      [S]  — API HuggingFace (usunięty, zast. HTTP download)
+ 93.  scipy                                                [S]  — Obliczenia naukowe (usunięty, nieużywany)
+ 94.  Jinja2                                               [S]  — Templating (usunięty, nieużywany)
+ 95.  Rich                                                 [S]  — Terminal UI (usunięty, nieużywany)
+ 96.  tqdm                                                 [S]  — Progress bar (usunięty, nieużywany)
+ 97.  requests                                             [S]  — HTTP (usunięty, zastąpiony przez httpx)
+ 98.  python-dotenv                                        [S]  — Zmienne środowiskowe (usunięty, zast. msgspec TOML)
+ 99.  scikit-image                                         [S]  — Przetwarzanie obrazów (usunięty, nieużywany)
+ 100. Shapely                                              [S]  — Geometria (usunięty, nieużywany)
+ 101. Albumentations                                       [S]  — Augmentacja obrazów (usunięty, nieużywany)
+ 102. regex                                                [S]  — Wyrażenia regularne (usunięty, nieużywany)
+ 103. hypothesis                                           [S]  — Property-based testing (usunięty, zast. crosshair)
+ 104. uv                                                   [S]  — Package manager (usunięty, zast. pixi)
+ 105. huggingface-hub                                      [S]  — API HuggingFace (usunięty, zast. HTTP download)
 
   ## Frameworki i biblioteki zastąpione:
- 111. FastAPI                                               [S]  — Zastąpiony przez Litestar
- 112. Starlette                                             [Z]  — Transitive dep Litestar (usunięty z listy tech.)
- 113. SQLAlchemy                                            [S]  — Zastąpiony przez SQLModel (re-exporty)
- 114. Alembic                                               [S]  — Zastąpiony przez natywne migracje SQL
- 115. pydantic-core                                         [Z]  — Transitive dep SQLModel
- 116. aiohttp                                               [Z]  — Transitive dep (paddleocr, opentelemetry)
- 117. Uvicorn                                               [S]  — Zastąpiony przez Granian
- 118. orjson                                                [S]  — Zastąpiony przez msgspec
+ 106. FastAPI                                               [S]  — Zastąpiony przez Litestar
+ 107. Starlette                                             [Z]  — Transitive dep Litestar (usunięty z listy tech.)
+ 108. SQLAlchemy                                            [S]  — Zastąpiony przez SQLModel (re-exporty)
+ 109. Alembic                                               [S]  — Zastąpiony przez natywne migracje SQL
+ 110. pydantic-core                                         [Z]  — Transitive dep SQLModel
+ 111. aiohttp                                               [Z]  — Transitive dep (paddleocr, opentelemetry)
+ 112. Uvicorn                                               [S]  — Zastąpiony przez Granian
+ 113. orjson                                                [S]  — Zastąpiony przez msgspec
 
   ## Bazy danych zastąpione:
- 119. Limbo                                                 [S]  — Zastąpiony przez SQLite + SQLCipher
- 120. LanceDB                                               [S]  — Zastąpiony przez sqlite-vec
+ 114. Limbo                                                 [S]  — Zastąpiony przez SQLite + SQLCipher
+ 115. LanceDB                                               [S]  — Zastąpiony przez sqlite-vec
 
   ## Zależności pośrednie systemowe usunięte z listy:
- 121. Leptonica                                             [Z]  — Transitive dep Tesseract OCR
- 122. PaddlePaddle                                          [Z]  — Transitive dep PaddleOCR
- 123. libxml2                                               [Z]  — Transitive dep lxml
- 124. libxslt                                               [Z]  — Transitive dep lxml
+ 116. Leptonica                                             [Z]  — Transitive dep Tesseract OCR
+ 117. PaddlePaddle                                          [Z]  — Transitive dep PaddleOCR
+ 118. libxml2                                               [Z]  — Transitive dep lxml
+ 119. libxslt                                               [Z]  — Transitive dep lxml
 
   ## Pakiety NVIDIA (niezainstalowane, tylko transitivne):
- 125. CUDA Toolkit (v13.0.2)                                [Z]  — Niezainstalowany, tylko transitive
- 126. nvidia-cuda-runtime (cu12)                            [Z]  — Niezainstalowany, tylko transitive
- 127. nvidia-cudnn (cu13)                                   [Z]  — Niezainstalowany, tylko transitive
- 128. nvidia-nccl                                           [Z]  — Niezainstalowany, tylko transitive
- 129. nvidia-cublas                                         [Z]  — Niezainstalowany, tylko transitive
+ 120. CUDA Toolkit (v13.0.2)                                [Z]  — Niezainstalowany, tylko transitive
+ 121. nvidia-cuda-runtime (cu12)                            [Z]  — Niezainstalowany, tylko transitive
+ 122. nvidia-cudnn (cu13)                                   [Z]  — Niezainstalowany, tylko transitive
+ 123. nvidia-nccl                                           [Z]  — Niezainstalowany, tylko transitive
+ 124. nvidia-cublas                                         [Z]  — Niezainstalowany, tylko transitive
 
   ## Funkcjonalności NATS skonsolidowane:
- 130. NATS KV Store                                         [S]  — Wbudowana funkcja NATS (skonsolidowana)
- 131. NATS Object Store                                     [S]  — Wbudowana funkcja NATS (skonsolidowana)
+ 125. NATS KV Store                                         [S]  — Wbudowana funkcja NATS (skonsolidowana)
+ 126. NATS Object Store                                     [S]  — Wbudowana funkcja NATS (skonsolidowana)
 
   ## Własne moduły usunięte (zastąpione przez Rust/OPA):
- 132. Własny moduł resilience (async_retry)                 [S]  — Zastąpiony przez stamina
- 133. forex_engine.py                                       [S]  — Usunięty
- 134. rule_store.py                                         [S]  — Usunięty, zast. OPA + DuckDB
- 135. context_interpreter.py                                [S]  — Usunięty, zast. Rust + tax/__init__.py
- 136. temporal_manager.py                                   [S]  — Usunięty, zast. Rust
- 137. priority_engine.py                                    [S]  — Usunięty, zast. Rust
- 138. fallback_handler.py                                   [S]  — Usunięty, zast. OPA
- 139. audit.py                                              [S]  — Usunięty, zast. Rust
- 140. rules.py                                              [S]  — Usunięty, zast. OPA + Rego
- 141. pipeline.py                                           [S]  — Usunięty, zast. Rust
- 142. outbox_relay.py                                       [S]  — Usunięty, zast. NATS JetStream
- 143. outbox_replay.py                                      [S]  — Usunięty, zast. NATS JetStream
- 144. dead_letter_queue.py                                  [S]  — Usunięty, zast. NATS + Taskiq DLQ
- 145. saga.py                                               [S]  — Usunięty (zbędny - aplikacja desktopowa)
- 146. audit_logger.py                                       [S]  — Usunięty, zast. Decision Logger + DuckDB
- 147. ledger_worker.py                                      [S]  — Usunięty, zast. NATS + Taskiq
- 148. reconciliation.py                                     [S]  — Usunięty, zast. Agent Analityczny
- 149. smart_approvals.py                                    [S]  — Usunięty, zast. Agent Orkiestrator
- 150. Własne backendy cache (L1/L2)                         [S]  — Zastąpione przez diskcache
+ 127. Własny moduł resilience (async_retry)                 [S]  — Zastąpiony przez stamina
+ 128. forex_engine.py                                       [S]  — Usunięty
+ 129. rule_store.py                                         [S]  — Usunięty, zast. OPA + DuckDB
+ 130. context_interpreter.py                                [S]  — Usunięty, zast. Rust + tax/__init__.py
+ 131. temporal_manager.py                                   [S]  — Usunięty, zast. Rust
+ 132. priority_engine.py                                    [S]  — Usunięty, zast. Rust
+ 133. fallback_handler.py                                   [S]  — Usunięty, zast. OPA
+ 134. audit.py                                              [S]  — Usunięty, zast. Rust
+ 135. rules.py                                              [S]  — Usunięty, zast. OPA + Rego
+ 136. pipeline.py                                           [S]  — Usunięty, zast. Rust
+ 137. outbox_relay.py                                       [S]  — Usunięty, zast. NATS JetStream
+ 138. outbox_replay.py                                      [S]  — Usunięty, zast. NATS JetStream
+ 139. dead_letter_queue.py                                  [S]  — Usunięty, zast. NATS + Taskiq DLQ
+ 140. saga.py                                               [S]  — Usunięty (zbędny - aplikacja desktopowa)
+ 141. audit_logger.py                                       [S]  — Usunięty, zast. Decision Logger + DuckDB
+ 142. ledger_worker.py                                      [S]  — Usunięty, zast. NATS + Taskiq
+ 143. reconciliation.py                                     [S]  — Usunięty, zast. Agent Analityczny
+ 144. smart_approvals.py                                    [S]  — Usunięty, zast. Agent Orkiestrator
+ 145. Własne backendy cache (L1/L2)                         [S]  — Zastąpione przez diskcache
 
   ## Rust crates usunięte z listy (pozostają w Cargo.toml jako transitivne):
- 151. serde / serde_json                                    [Z]  — Rust crate (transitive, wewnątrz nexus-crypto)
- 152. uuid (Rust)                                           [Z]  — Rust crate (transitive)
- 153. thiserror (Rust)                                      [Z]  — Rust crate (transitive)
- 154. hex (Rust)                                            [Z]  — Rust crate (transitive)
- 155. base64 (Rust)                                         [Z]  — Rust crate (transitive)
- 156. chrono (Rust)                                         [Z]  — Rust crate (transitive)
- 157. libc (Rust)                                           [Z]  — Rust crate (transitive)
- 158. log + pyo3-log (Rust)                                 [Z]  — Rust crate (transitive)
- 159. criterion (Rust)                                      [Z]  — Rust crate (transitive, benchmarking)
- 160. approx (Rust)                                         [Z]  — Rust crate (transitive, testing)
- 161. rust_decimal (Rust)                                   [Z]  — Rust crate (transitive)
+ 146. serde / serde_json                                    [Z]  — Rust crate (transitive, wewnątrz nexus-crypto)
+ 147. uuid (Rust)                                           [Z]  — Rust crate (transitive)
+ 148. thiserror (Rust)                                      [Z]  — Rust crate (transitive)
+ 149. hex (Rust)                                            [Z]  — Rust crate (transitive)
+ 150. base64 (Rust)                                         [Z]  — Rust crate (transitive)
+ 151. chrono (Rust)                                         [Z]  — Rust crate (transitive)
+ 152. libc (Rust)                                           [Z]  — Rust crate (transitive)
+ 153. log + pyo3-log (Rust)                                 [Z]  — Rust crate (transitive)
+ 154. criterion (Rust)                                      [Z]  — Rust crate (transitive, benchmarking)
+ 155. approx (Rust)                                         [Z]  — Rust crate (transitive, testing)
+ 156. rust_decimal (Rust)                                   [Z]  — Rust crate (transitive)
 
   ## Skrypty i narzędzia usunięte:
- 162. 27 skryptów deweloperskich                            [S]  — Usunięte, zastąpione przez pixi taski
- 163. 11 testów kontraktowych                               [S]  — Usunięte wraz ze skryptami
+ 157. 27 skryptów deweloperskich                            [S]  — Usunięte, zastąpione przez pixi taski
+ 158. 11 testów kontraktowych                               [S]  — Usunięte wraz ze skryptami
 
   ## Inne:
- 164. matplotlib                                            [S]  — Zastąpiony przez Flet Charts
- 165. Starlette (transitive Litestar)                        [Z]  — Usunięty z listy tech.
+ 159. matplotlib                                            [S]  — Zastąpiony przez Flet Charts
+ 160. Starlette (transitive Litestar)                        [Z]  — Usunięty z listy tech.
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║

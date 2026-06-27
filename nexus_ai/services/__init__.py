@@ -19,7 +19,6 @@ from nexus_ai.services.budget_control import BudgetControlService
 from nexus_ai.services.cfo_offline import CfoOfflineService
 from nexus_ai.services.compliance_analytics import ComplianceAnalytics
 from nexus_ai.services.context_enricher import ContextEnricher
-from nexus_ai.services.currency_converter import CurrencyConverter, Money
 from nexus_ai.services.daily_briefing import DailyBriefingService
 from nexus_ai.services.decision_logger import DecisionLogger
 from nexus_ai.services.decision_queue import DecisionQueue
@@ -81,7 +80,6 @@ __all__ = [
     "CfoOfflineService",
     "ComplianceAnalytics",
     "ContextEnricher",
-    "CurrencyConverter",
     "DailyBriefingService",
     "DecisionLogger",
     "DecisionQueue",
@@ -105,7 +103,6 @@ __all__ = [
     "LogPiiMonitor",
     "MailIngestionService",
     "MigrationSanityService",
-    "Money",
     "NotificationManager",
     "NotificationService",
     "ReplayEngine",

@@ -1,8 +1,8 @@
 """
-Tax Math API — endpoint kalkulacji VAT z Money (Fowler's Money).
+Tax Math API — endpoint kalkulacji VAT z Decimal.
 
-POST /api/v2/tax/calculate-money — przyjmuje listę kwot netto jako Money,
-oblicza VAT i brutto, zwraca wyniki jako Money.
+POST /api/v2/tax/calculate-money — przyjmuje listę kwot netto jako stringi,
+oblicza VAT i brutto, zwraca wyniki.
 
 Usage:
     curl -X POST http://localhost:8000/api/v2/tax/calculate-money \\
@@ -20,7 +20,7 @@ Usage:
 
 from __future__ import annotations
 
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from typing import Any
 
 import msgspec
@@ -33,20 +33,28 @@ from nexus_ai.api.dto import (
     TaxMathRequestDTO,
     TaxMathResponseDTO,
 )
-from nexus_ai.tax.math_engine import (
-    TaxMathEngine,
-    add_tax_money,
-    multiply_net_by_vat_money,
-)
 
 logger = get_logger("nexus.api.tax_math")
+
+
+# ── Helpers: VAT calculation (inline, zastępuje usunięty math_engine.py) ────
+
+
+def _round_money(value: Decimal) -> Decimal:
+    """Zaokrąglij kwotę do 2 miejsc po przecinku (ROUND_HALF_UP)."""
+    return value.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+
+def _calc_vat_per_position(net: Decimal, vat_rate: Decimal) -> Decimal:
+    """Oblicz VAT dla pojedynczej pozycji: net * vat_rate, zaokrąglone do 0.01."""
+    return _round_money(net * vat_rate)
 
 
 # ── Request / Response schemas ──────────────────────────────────────────────
 
 
 class MoneyAmount(msgspec.Struct):
-    """Pojedyncza kwota wyrażona jako Money.
+    """Pojedyncza kwota.
 
     Attributes:
         amount: Kwota jako string dziesiętny (np. ``"100.00"``).
@@ -77,7 +85,7 @@ class CalculateMoneyRequest(msgspec.Struct):
 
 
 class TaxMathController(Controller):
-    """Kontroler kalkulacji podatkowych z obsługą Fowler's Money."""
+    """Kontroler kalkulacji podatkowych."""
 
     path = "/tax"
     tags = [TAG_TAX]
@@ -87,27 +95,24 @@ class TaxMathController(Controller):
         sync_to_thread=False,
         dto=TaxMathRequestDTO,
         return_dto=TaxMathResponseDTO,
-        summary="Calculate VAT and gross amounts (Fowler's Money)",
+        summary="Calculate VAT and gross amounts",
         description=(
-            "Accepts a list of net amounts as Fowler's Money objects, "
-            "applies the specified VAT rate with configurable rounding strategy, "
-            "and returns total net, VAT, and gross as Money objects. "
+            "Accepts a list of net amounts, applies the specified VAT rate "
+            "with configurable rounding strategy, and returns total net, VAT, "
+            "and gross amounts. "
             "Supports ``position`` (per-item) and ``total`` (aggregate) rounding."
         ),
         operation_id="calculateTaxMoney",
     )
     def calculate_money(self, data: CalculateMoneyRequest) -> Response[dict[str, Any]]:
-        """Oblicz VAT i brutto dla listy kwot netto, zwracając wyniki jako Money.
+        """Oblicz VAT i brutto dla listy kwot netto.
 
         Args:
             data: Request body z listą kwot netto, stawką VAT i strategią zaokrąglania.
 
         Returns:
-            JSON z total_net, total_vat, total_gross (serializowane jako float
-            przez ``msgspec_money_enc_hook``), currency, oraz listą positions.
+            JSON z total_net, total_vat, total_gross, currency oraz listą positions.
         """
-        from services.currency_converter import Money
-
         # ── 0. Walidacja rounding_level ───────────────────────────────────
         if data.rounding_level not in ("position", "total"):
             return Response(
@@ -122,12 +127,13 @@ class TaxMathController(Controller):
             )
 
         vat_rate = Decimal(data.vat_rate)
+        currency = data.currency
 
-        # ── 1. Konwersja MoneyAmount → Money ──────────────────────────────
-        net_money_list: list[Money] = []
+        # ── 1. Konwersja string → Decimal ─────────────────────────────────
+        net_decimals: list[Decimal] = []
         for i, ma in enumerate(data.net_amounts):
             try:
-                money = Money(ma.amount, ma.currency)
+                amount = Decimal(ma.amount)
             except Exception as exc:
                 return Response(
                     {
@@ -136,66 +142,63 @@ class TaxMathController(Controller):
                     },
                     status_code=422,
                 )
-            net_money_list.append(money)
+            net_decimals.append(amount)
 
-        if not net_money_list:
+        if not net_decimals:
             return Response(
                 {
                     "status": "ok",
-                    "total_net": Money.zero(data.currency),
-                    "total_vat": Money.zero(data.currency),
-                    "total_gross": Money.zero(data.currency),
-                    "currency": data.currency,
+                    "total_net": "0.00",
+                    "total_vat": "0.00",
+                    "total_gross": "0.00",
+                    "currency": currency,
                     "positions": [],
                 }
             )
 
-        # ── 2. Walidacja waluty ───────────────────────────────────────────
-        first_currency = net_money_list[0].currency_code
-        for i, m in enumerate(net_money_list):
-            if m.currency_code != first_currency:
-                return Response(
-                    {
-                        "status": "error",
-                        "message": (
-                            f"Currency mismatch at index {i}: "
-                            f"expected {first_currency}, got {m.currency_code}"
-                        ),
-                    },
-                    status_code=422,
-                )
-
-        # ── 3. Obliczenia VAT ──────────────────────────────────────────────
-        total_vat_money, inv_positions = TaxMathEngine.calculate_positions_vat_money(
-            net_money_list,
-            vat_rate,
-            data.rounding_level,
-        )
-
-        total_net_money = TaxMathEngine.sum_positions_net_money(net_money_list)
-        total_gross_money = add_tax_money(total_net_money, total_vat_money)
-
-        # ── 4. Szczegóły pozycji ──────────────────────────────────────────
-        positions_result: list[dict[str, Any]] = []
-        for np_net, inv_pos in zip(net_money_list, inv_positions):
-            vat_money = multiply_net_by_vat_money(np_net, vat_rate)
-            gross_money = add_tax_money(np_net, vat_money)
-            positions_result.append(
-                {
-                    "net": np_net,
-                    "vat": vat_money,
-                    "gross": gross_money,
+        # ── 2. Obliczenia VAT ──────────────────────────────────────────────
+        if data.rounding_level == "position":
+            # Zaokrąglenie per-position: każda pozycja osobno
+            positions: list[dict[str, Any]] = []
+            for net in net_decimals:
+                vat = _calc_vat_per_position(net, vat_rate)
+                gross = _round_money(net + vat)
+                positions.append({
+                    "net": str(_round_money(net)),
+                    "vat": str(vat),
+                    "gross": str(gross),
                     "vat_rate": str(vat_rate),
-                }
-            )
+                })
+
+            total_net = sum(Decimal(p["net"]) for p in positions)
+            total_vat = sum(Decimal(p["vat"]) for p in positions)
+            total_gross = sum(Decimal(p["gross"]) for p in positions)
+
+        else:
+            # Zaokrąglenie total: suma netto × stawka, zaokrąglone raz
+            total_net = sum(net_decimals)
+            total_vat = _round_money(total_net * vat_rate)
+            total_gross = _round_money(total_net + total_vat)
+
+            positions = []
+            for net in net_decimals:
+                # W trybie "total" vat per-position wyliczamy proporcjonalnie
+                vat = _round_money(net * vat_rate)
+                gross = _round_money(net + vat)
+                positions.append({
+                    "net": str(_round_money(net)),
+                    "vat": str(vat),
+                    "gross": str(gross),
+                    "vat_rate": str(vat_rate),
+                })
 
         return Response(
             {
                 "status": "ok",
-                "total_net": total_net_money,
-                "total_vat": total_vat_money,
-                "total_gross": total_gross_money,
-                "currency": first_currency,
-                "positions": positions_result,
+                "total_net": str(_round_money(total_net)),
+                "total_vat": str(_round_money(total_vat)),
+                "total_gross": str(_round_money(total_gross)),
+                "currency": currency,
+                "positions": positions,
             }
         )

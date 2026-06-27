@@ -6,8 +6,6 @@ from sqlmodel import and_, select
 from sqlmodel import Session
 
 from nexus_ai.db.models import Invoice
-from nexus_ai.services.currency_converter import Money
-
 
 @final
 class ValidationService:
@@ -19,7 +17,7 @@ class ValidationService:
     """
 
     @staticmethod
-    def is_duplicate(session: Session, nip: str, number: str, amount_gross: Money) -> bool:
+    def is_duplicate(session: Session, nip: str, number: str, amount_gross: Decimal) -> bool:
         """Sprawdza, czy w bazie istnieje już taka faktura dla tego dostawcy.
 
         SUPERMOC: load_only() — ładuje tylko kolumny potrzebne do walidacji.

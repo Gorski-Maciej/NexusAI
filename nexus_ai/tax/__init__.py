@@ -40,22 +40,6 @@ class DecisionTraceIntegrityError(TaxEngineError):
     """Raised when the decision trace chain integrity check fails."""
     pass
 
-# ── Math — Python wrapper (Rust-backed gdy native dostępny) ─────────────────
-from .math_engine import (
-    InvalidRateError,
-    InvoicePositions,
-    InvoiceSummary,
-    RoundingPolicy,
-    TaxMathEngine,
-    ValidationResult,
-    calculate_vat_by_policy,
-    multiply_net_by_vat,
-    parse_rate,
-    to_grosze,
-    to_zlotowki,
-    validate_invariants,
-)
-
 # ── OPA components ──────────────────────────────────────────────────────────
 from nexus_ai.core.opa_client import (
     OpaClient,
@@ -250,7 +234,6 @@ __all__ = [
     "TaxEngineError",
     "NoMatchingRuleError",
     "DecisionTraceIntegrityError",
-    "InvalidRateError",
     "ContextInterpreterError",
     # OPA
     "OpaClient",
@@ -268,18 +251,6 @@ __all__ = [
     "DecisionTraceLogger",
     "verify_chain_integrity",
     "ensure_audit_schema",
-    # Math
-    "TaxMathEngine",
-    "RoundingPolicy",
-    "InvoicePositions",
-    "InvoiceSummary",
-    "ValidationResult",
-    "to_grosze",
-    "to_zlotowki",
-    "multiply_net_by_vat",
-    "calculate_vat_by_policy",
-    "parse_rate",
-    "validate_invariants",
     # Priority Engine (legacy)
     "PriorityEngine",
     "PrioritizedRule",

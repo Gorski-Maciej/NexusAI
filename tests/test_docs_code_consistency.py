@@ -147,9 +147,6 @@ COMPONENTS_IN_DOCS: list[tuple[str, str, str, str]] = [
     ("nexus_ai.services.decision_logger", "DecisionLogger", "class", "Section 7 COGNITIVE_ARCHITECTURE.md"),
     # WhiteListService
     ("nexus_ai.services.white_list_service", "WhiteListService", "class", "Section 18 TECHNOLOGIES.md"),
-    # CurrencyConverter
-    ("nexus_ai.services.currency_converter", "CurrencyConverter", "class", "Section 18 TECHNOLOGIES.md"),
-    ("nexus_ai.services.currency_converter", "Money", "class", "Section 18 TECHNOLOGIES.md / Section 10"),
     # ContextEnricher
     ("nexus_ai.services.context_enricher", "ContextEnricher", "class", "Section 18 TECHNOLOGIES.md / Appendix F"),
     # NexusCache — w __init__.py (get_cache i NexusCache zdefiniowane inline)
@@ -524,7 +521,6 @@ def test_get_cache_singleton_ast() -> None:
 # Serwisy z Appendix F i TECHNOLOGIES.md które powinny mieć async close()
 SERVICES_WITH_CLOSE: list[tuple[str, str, str]] = [
     ("nexus_ai.services.white_list_service", "WhiteListService", "Appendix F / Section 18"),
-    ("nexus_ai.services.currency_converter", "CurrencyConverter", "Appendix F / Section 18"),
     ("nexus_ai.services.context_enricher", "ContextEnricher", "Appendix F"),
     ("nexus_ai.core.cache.http_client", "CachedHttpClient", "Appendix F"),
 ]

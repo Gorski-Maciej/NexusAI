@@ -6,18 +6,11 @@ import pendulum
 
 import msgspec
 
-from nexus_ai.services.currency_converter import Money
-
 # -- msgspec Structs --
 
 
 class InvoiceCreate(msgspec.Struct, kw_only=True):
-    """Dane wymagane przy ręcznym tworzeniu lub uploadzie faktury.
-
-    Uwaga: ``amount_net`` i ``amount_gross`` to ``Decimal`` (typ natywny msgspec),
-    a nie ``Money`` — ponieważ to schema requestowa (dekodowana z JSON).
-    Konwersja ``Decimal → Money`` następuje w kontrolerze.
-    """
+    """Dane wymagane przy ręcznym tworzeniu lub uploadzie faktury."""
 
     number: str
     contractor_nip: str
@@ -59,20 +52,15 @@ def validate_invoice_create(payload: InvoiceCreate) -> None:
 
 
 class InvoiceResponse(msgspec.Struct, kw_only=True):
-    """Struktura zwracana do frontendu (response — ``Money`` serializowane przez enc_hook).
-
-    Pola odpowiadają modelowi DB ``Invoice`` z ``nexus_ai/db/models.py``.
-    ``amount_net`` i ``amount_gross`` to ``Money`` — serializowane przez
-    ``AppConfig.type_encoders`` w configu aplikacji.
-    """
+    """Struktura zwracana do frontendu."""
 
     id: str
     number: str | None
     contractor_nip: str | None = None
     file_path: str | None = None
     issue_date: str | None = None
-    amount_net: Money
-    amount_gross: Money
+    amount_net: Decimal
+    amount_gross: Decimal
     currency: str
     status: str  # NEW, PROCESSING, APPROVED
     retry_count: int = 0
@@ -90,11 +78,11 @@ class AnalyticsQuery(msgspec.Struct, kw_only=True):
 
 
 class VatSummary(msgspec.Struct, kw_only=True):
-    """Zagregowane dane analityczne z DuckDB (response — ``Money`` serializowane przez enc_hook)."""
+    """Zagregowane dane analityczne z DuckDB."""
 
     month: str
-    total_net: Money
-    total_gross: Money
+    total_net: Decimal
+    total_gross: Decimal
     currency: str
 
 

@@ -50,9 +50,6 @@ from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import create_oltp_engine, create_session_factory
 from nexus_ai.pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
 from nexus_ai.services.accounting import AccountingService
-from nexus_ai.services.currency_converter import (
-    Money,
-)
 from nexus_ai.services.finops_meter import estimate_runtime_cost
 from nexus_ai.services.log_pii_monitor import notify_dpo, scan_logs_for_pii
 from nexus_ai.services.migration_sanity import verify_migration_integrity, verify_schema_drift
@@ -501,15 +498,11 @@ async def process_invoice_ocr(
 
         ocr_results = [
             OCRAmountResult(
-                amount_gross=Money.from_string(str(primary_amount), "PLN")
-                if primary_amount is not None
-                else None,
+                amount_gross=float(primary_amount) if primary_amount is not None else None,
                 source="doctr",
             ),
             OCRAmountResult(
-                amount_gross=Money.from_string(str(secondary_amount), "PLN")
-                if secondary_amount is not None
-                else None,
+                amount_gross=float(secondary_amount) if secondary_amount is not None else None,
                 source="paddle",
             ),
         ]
@@ -517,7 +510,7 @@ async def process_invoice_ocr(
         if easyocr_amount is not None:
             ocr_results.append(
                 OCRAmountResult(
-                    amount_gross=Money.from_string(str(easyocr_amount), "PLN"),
+                    amount_gross=float(easyocr_amount),
                     source="easyocr",
                 )
             )

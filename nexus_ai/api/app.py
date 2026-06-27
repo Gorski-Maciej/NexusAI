@@ -70,8 +70,6 @@ from nexus_ai.api.security import jwt_auth, jwt_cookie_auth
 from nexus_ai.api.state import make_on_startup, on_shutdown
 from nexus_ai.api.static import get_static_config
 from nexus_ai.db.database import create_session_factory
-from nexus_ai.services.currency_converter import Money, msgspec_money_enc_hook
-
 
 # ── SUPERMOC Litestar: Per-role rate limiting identifier ──
 # Używany przez RateLimitConfig.identifier_for_request w create_app().
@@ -362,5 +360,5 @@ def create_app() -> Litestar:
         else None,
         static_files_config=get_static_config(config),
         debug=config.debug,
-        type_encoders={Money: msgspec_money_enc_hook},
+
     )
