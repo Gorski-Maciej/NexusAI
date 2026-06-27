@@ -1,0 +1,439 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║              RAPORT TECHNOLOGII — NEXUSAI                                  ║
+║              Data: 27 czerwca 2026                                         ║
+║              Generowany przez: Buffy AI Agent                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+═══════════════════════════════════════════════════════════════════════════════
+STATYSTYKI OGÓLNE
+═══════════════════════════════════════════════════════════════════════════════
+
+  Całkowita liczba plików:              10 983
+  Całkowita liczba linii kodu:          6 684 511
+  Liczba plików Python (.py):           5 828
+  Liczba plików testowych:              ~118
+  Liczba migracji SQL:                  4
+  Liczba plików konfiguracyjnych:       10
+  Liczba plików dokumentacji:           26
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║  LISTA TECHNOLOGII                                                          ║
+║                                                                              ║
+║  LEGENDA:                                                                    ║
+║    [A] = Aktywna — świadomie wybrana, używana w kodzie                      ║
+║    [S] = Szczątkowa — historyczna, usunięta/zastąpiona, pozostałości         ║
+║    [Z] = Zależność pośrednia — transitivna, nie bezpośrednio używana        ║
+║    [D] = Deweloperska — narzędzia programistyczne, testy, build             ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+────────────────────────────────────────────────────────────────────────────────
+1. JĘZYK I ŚRODOWISKO (Language & Runtime)
+────────────────────────────────────────────────────────────────────────────────
+
+  1. Python ≥3.13 (free-threaded, 3.13t, bez GIL)         [A]  — Główny interpreter
+  2. Rust ≥1.78.0                                         [A]  — Kompilacja natywnych modułów przez PyO3
+  3. pixi (prefix.dev)                                    [A]  — Menedżer środowiska (Rust, deklaratywny)
+  4. hatchling ≥1.21                                      [A]  — Backend budowania pakietów (PEP 621)
+  5. hatch-vcs ≥0.4                                       [A]  — Wersjonowanie z VCS
+  6. CPython 3.13t (free-threaded)                        [A]  — Wariant Pythona bez GIL
+  7. OPA (Open Policy Agent) ≥0.6x                        [A]  — Silnik reguł (sidecar, Rego)
+
+────────────────────────────────────────────────────────────────────────────────
+2. API / SERWER ASGI
+────────────────────────────────────────────────────────────────────────────────
+
+  8. Litestar ≥2.8.0 [jwt]                                [A]  — Framework ASGI (zastąpił FastAPI)
+  9. Granian ≥1.0.0 [dotenv,pname,reload]                 [A]  — Serwer ASGI w Rust (zastąpił Uvicorn)
+
+────────────────────────────────────────────────────────────────────────────────
+3. BAZY DANYCH (Databases & Storage)
+────────────────────────────────────────────────────────────────────────────────
+
+ 10. SQLite (przez SQLCipher, AES-256)                    [A]  — Transakcyjna baza danych (jednoplikowa)
+ 11. SQLCipher                                            [A]  — Szyfrowanie AES-256 każdej strony SQLite
+ 12. sqlite-vec ≥0.1.0                                    [A]  — Rozszerzenie wektorowe dla SQLite
+ 13. SQLModel ≥0.0.16                                     [A]  — ORM (SQLAlchemy + Pydantic, jedna definicja)
+ 14. DuckDB ≥1.0.0                                        [A]  — Analityczna baza OLAP (wbudowana)
+ 15. TigerBeetle ≥0.16.0                                  [A]  — Silnik double-entry accounting (księga główna)
+ 16. FTS5 (SQLite Full-Text Search)                       [A]  — Wyszukiwanie pełnotekstowe (wbudowane w SQLite)
+
+────────────────────────────────────────────────────────────────────────────────
+4. WALIDACJA DANYCH I SERIALIZACJA (Validation & Serialization)
+────────────────────────────────────────────────────────────────────────────────
+
+ 17. msgspec ≥0.18.0                                      [A]  — Serializacja JSON/MessagePack/TOML (ultraszybka)
+ 18. Pydantic (przez SQLModel)                            [Z]  — Tylko jako fundament SQLModel
+
+────────────────────────────────────────────────────────────────────────────────
+5. KOLEJKI ZADAŃ I KOMUNIKACJA (Task Queue & Messaging)
+────────────────────────────────────────────────────────────────────────────────
+
+ 19. Taskiq ≥0.11.0                                       [A]  — Kolejka zadań (async)
+ 20. taskiq-nats ≥0.5.0                                   [A]  — Broker NATS dla Taskiq
+ 21. NATS Server ≥2.10 (JetStream)                        [A]  — Broker wiadomości (wbudowane KV Store/Object Store)
+ 22. nats-py ≥2.6.0                                       [A]  — Python client dla NATS
+
+────────────────────────────────────────────────────────────────────────────────
+6. HTTP / SIEC (HTTP & Networking)
+────────────────────────────────────────────────────────────────────────────────
+
+ 23. httpx ≥0.27.0                                        [A]  — Klient HTTP (async)
+ 24. hishel ≥0.1.0                                        [A]  — Inteligentny cache HTTP
+ 25. fsspec ≥2024.3.0                                     [A]  — Abstrakcja systemów plików
+
+────────────────────────────────────────────────────────────────────────────────
+7. ODPORNOŚĆ NA BŁĘDY (Resilience)
+────────────────────────────────────────────────────────────────────────────────
+
+ 26. stamina ≥0.1.0                                       [A]  — Retry + circuit breaker (async-native)
+
+────────────────────────────────────────────────────────────────────────────────
+8. KRYYPTOGRAFIA I BEZPIECZEŃSTWO (Cryptography & Security)
+────────────────────────────────────────────────────────────────────────────────
+
+ 27. nexus-crypto ≥0.1.0                                  [A]  — Własny moduł kryptograficzny (Rust + PyO3)
+ 28. nexus_crypto._core                                   [A]  — Natywne rozszerzenie Rust (maturin/PyO3)
+ 29. Litestar JWT                                          [A]  — Uwierzytelnianie JWT (wbudowane w Litestar)
+ 30. RBAC (własny system ról)                             [A]  — System kontroli dostępu (nexus_ai/api/rbac.py)
+
+────────────────────────────────────────────────────────────────────────────────
+9. FINANSE / WALUTY (Finance & Currency)
+────────────────────────────────────────────────────────────────────────────────
+
+ 31. TigerBeetle ≥0.16.0 (double-entry)                   [A]  — Księga główna (już w sekcji 3)
+ 32. Silnik kursów walut (currency_converter.py)          [A]  — Własny konwerter walut
+ 33. Tax Math Engine (tax/math_engine.py)                 [A]  — Matematyka podatkowa
+
+────────────────────────────────────────────────────────────────────────────────
+10. PRZETWARZANIE DOKUMENTÓW (Document Processing / OCR / XML)
+────────────────────────────────────────────────────────────────────────────────
+
+ 34. lxml ≥5.1.0                                          [A]  — XML/HTML processing
+ 35. xsdata ≥24.0.0                                       [A]  — XSD → Python code generation (KSeF)
+ 36. Pillow ≥10.0.0                                       [A]  — Przetwarzanie obrazów
+ 37. pypdfium2 ≥4.0.0                                     [A]  — PDF → image (silnik PDFium)
+ 38. PaddleOCR ≥2.8.0                                     [A]  — Silnik OCR #1
+ 39. python-doctr ≥0.9.0                                  [A]  — Silnik OCR #2
+ 40. EasyOCR ≥1.7.0                                       [A]  — Silnik OCR #3
+ 41. Tesseract ≥5.3.0                                     [A]  — Silnik OCR #4 (systemowy)
+
+────────────────────────────────────────────────────────────────────────────────
+11. LOGOWANIE I OBSERWOWALNOŚĆ (Logging & Observability)
+────────────────────────────────────────────────────────────────────────────────
+
+ 42. Loguru ≥0.7.0                                        [A]  — Logowanie
+ 43. structlog ≥24.0.0                                    [A]  — Logowanie strukturalne
+ 44. OpenTelemetry API ≥1.25.0                            [A]  — Observability API
+ 45. OpenTelemetry SDK ≥1.25.0                            [A]  — Observability SDK
+ 46. OpenTelemetry Exporter Prometheus ≥0.46b0            [A]  — Eksporter metryk do Prometheus
+ 47. Sentry SDK ≥2.0.0                                    [A]  — Śledzenie błędów (error tracking)
+
+────────────────────────────────────────────────────────────────────────────────
+12. METRYKI I MONITORING (Metrics & Monitoring)
+────────────────────────────────────────────────────────────────────────────────
+
+ 48. Prometheus Exporter (przez OTel)                     [A]  — Metryki Prometheus
+ 49. Granian Metrics                                       [A]  — Metryki serwera (wbudowane w Granian)
+
+────────────────────────────────────────────────────────────────────────────────
+13. CACHE
+────────────────────────────────────────────────────────────────────────────────
+
+ 50. diskcache ≥5.6.0                                     [A]  — SQLite-backed cache (zastąpił własne backendy)
+ 51. hishel (cache HTTP)                                   [A]  — Już w sekcji 6
+ 52. Redis (opcjonalny backend)                            [S]  — backends_redis.py (do skalowania w przyszłości)
+
+────────────────────────────────────────────────────────────────────────────────
+14. NARZEDZIA (Utilities)
+────────────────────────────────────────────────────────────────────────────────
+
+ 53. psutil ≥5.9.0                                        [A]  — Monitorowanie zasobów systemowych
+ 54. pendulum ≥3.0.0                                      [A]  — Daty i czas (nowej generacji)
+ 55. mimalloc ≥2.1.0                                      [A]  — Microsoft memory allocator (5-15% mniej RAM)
+ 56. TOML + msgspec                                        [A]  — Konfiguracja (parsowanie TOML przez msgspec)
+ 57. libopencv ≥4.9.0                                     [A]  — OpenCV (przetwarzanie obrazów, systemowy dep)
+
+────────────────────────────────────────────────────────────────────────────────
+15. TESTY I JAKOŚĆ KODU (Testing & Code Quality)
+────────────────────────────────────────────────────────────────────────────────
+
+ 58. pytest ≥8.0.0                                        [D]  — Framework testowy
+ 59. pytest-cov ≥5.0.0                                    [D]  — Pomiar pokrycia kodu
+ 60. crosshair ≥0.1.0.dev0                                [D]  — SMT-driven property-based testing (zastąpił hypothesis)
+ 61. ruff ≥0.3.0                                          [D]  — Linter + formatter
+ 62. mypy ≥1.8.0                                          [D]  — Type checker
+ 63. schemathesis ≥3.30.0                                 [D]  — Automatyczny fuzz testing API (OpenAPI)
+ 64. locust ≥2.29.0                                       [D]  — Testy wydajności (Python)
+ 65. py-spy ≥0.3.14                                       [D]  — Sampling profiler (Rust, <1% narzutu)
+ 66. pytest-benchmark ≥4.0.0                              [D]  — Benchmarki wydajności
+ 67. pytest-xdist ≥3.5.0                                  [D]  — Równoległe testowanie
+ 68. pytest-timeout ≥2.2.0                                [D]  — Timeout testów
+ 69. pytest-sugar ≥1.0.0                                  [D]  — Kolorowe raporty
+ 70. pytest-watch ≥4.2.0                                  [D]  — Auto-retest przy zmianach
+
+────────────────────────────────────────────────────────────────────────────────
+16. INTERFEJS DESKTOPOWY (Desktop UI)
+────────────────────────────────────────────────────────────────────────────────
+
+ 71. Flet ≥0.28.0                                         [A]  — Framework GUI (silnik Flutter, Material Design 3)
+ 72. Flet Router                                           [A]  — Nawigacja (opcjonalne rozszerzenie Flet)
+ 73. matplotlib <usunięty>                                [S]  — Zastąpiony przez natywne Flet Charts
+
+────────────────────────────────────────────────────────────────────────────────
+17. AI / AGENT AI (AI & Machine Learning)
+────────────────────────────────────────────────────────────────────────────────
+
+ 74. llama-cpp-python ≥0.2.0                              [A]  — Inferencja LLM (GGUF, CPU/GPU)
+ 75. Modele GGUF (pobierane przez download_models.py)      [A]  — Modele AI (kwantyzowane)
+ 76. Silnik embeddingów (embeddings.py)                    [A]  — Embeddingi wektorowe
+ 77. Vision Agent (vision/agent.py)                       [A]  — Agent wizyjny (OCR + AI)
+ 78. Decision Engine (decision_engine.py)                  [A]  — Silnik decyzyjny AI
+ 79. Active Learning (active_learning.py)                  [A]  — Aktywne uczenie
+
+────────────────────────────────────────────────────────────────────────────────
+18. BUDOWANIE / KOMPILACJA (Build & Compilation)
+────────────────────────────────────────────────────────────────────────────────
+
+ 80. maturin ≥1.5                                          [A]  — Rust/PyO3 builder (.whl)
+ 81. mypyc ≥1.8.0                                         [A]  — Kompilacja typowanego Pythona → C (2-5×)
+ 82. Nuitka ≥1.8                                          [A]  — Kompilacja Python → standalone .exe
+ 83. cmake ≥3.28.0                                        [D]  — Budowanie natywnych rozszerzeń
+ 84. pkg-config ≥0.29.2                                   [Z]  — Wykrywanie bibliotek systemowych
+
+────────────────────────────────────────────────────────────────────────────────
+19. INFRASTRUKTURA / CI/CD (Infrastructure & CI/CD)
+────────────────────────────────────────────────────────────────────────────────
+
+ 85. GitHub Actions                                        [A]  — CI/CD pipeline
+ 86. Dependabot                                            [A]  — Automatyczne aktualizacje zależności
+ 87. OpenSSF Scorecard                                     [A]  — Audyt bezpieczeństwa łańcucha dostaw
+ 88. CodeQL                                                [A]  — SAST (Static Application Security Testing)
+ 89. SBOM (Software Bill of Materials)                     [A]  — Lista składników oprogramowania
+ 90. SLSA (Supply-chain Levels)                            [A]  — Poziom bezpieczeństwa łańcucha dostaw
+ 91. OIDC (OpenID Connect)                                 [A]  — Uwierzytelnianie bez sekretów
+ 92. systemd                                               [S]  — Menedżer usług Linux (usunięty z listy tech.)
+
+────────────────────────────────────────────────────────────────────────────────
+20. ZALEŻNOŚCI SYSTEMOWE (System Dependencies)
+────────────────────────────────────────────────────────────────────────────────
+
+ 93. tesseract ≥5.3.0                                     [A]  — OCR (już w sekcji 10)
+ 94. libopencv ≥4.9.0                                     [A]  — OpenCV (już w sekcji 14)
+ 95. mimalloc ≥2.1.0                                      [A]  — Alokator pamięci (już w sekcji 14)
+ 96. Rust toolchain ≥1.78.0                                [A]  — Kompilator Rust (już w sekcji 1)
+ 97. pkg-config ≥0.29.2                                   [Z]  — Już w sekcji 18
+
+────────────────────────────────────────────────────────────────────────────────
+21. TECHNOLOGIE USUNIETE / SZCZATKOWE / HISTORYCZNE
+────────────────────────────────────────────────────────────────────────────────
+
+  ## Usunięte pakiety PyPI (zastąpione lub nieużywane):
+ 98.  scipy                                                [S]  — Obliczenia naukowe (usunięty, nieużywany)
+ 99.  Jinja2                                               [S]  — Templating (usunięty, nieużywany)
+ 100. Rich                                                 [S]  — Terminal UI (usunięty, nieużywany)
+ 101. tqdm                                                 [S]  — Progress bar (usunięty, nieużywany)
+ 102. requests                                             [S]  — HTTP (usunięty, zastąpiony przez httpx)
+ 103. python-dotenv                                        [S]  — Zmienne środowiskowe (usunięty, zast. msgspec TOML)
+ 104. scikit-image                                         [S]  — Przetwarzanie obrazów (usunięty, nieużywany)
+ 105. Shapely                                              [S]  — Geometria (usunięty, nieużywany)
+ 106. Albumentations                                       [S]  — Augmentacja obrazów (usunięty, nieużywany)
+ 107. regex                                                [S]  — Wyrażenia regularne (usunięty, nieużywany)
+ 108. hypothesis                                           [S]  — Property-based testing (usunięty, zast. crosshair)
+ 109. uv                                                   [S]  — Package manager (usunięty, zast. pixi)
+ 110. huggingface-hub                                      [S]  — API HuggingFace (usunięty, zast. HTTP download)
+
+  ## Frameworki i biblioteki zastąpione:
+ 111. FastAPI                                               [S]  — Zastąpiony przez Litestar
+ 112. Starlette                                             [Z]  — Transitive dep Litestar (usunięty z listy tech.)
+ 113. SQLAlchemy                                            [S]  — Zastąpiony przez SQLModel (re-exporty)
+ 114. Alembic                                               [S]  — Zastąpiony przez natywne migracje SQL
+ 115. pydantic-core                                         [Z]  — Transitive dep SQLModel
+ 116. aiohttp                                               [Z]  — Transitive dep (paddleocr, opentelemetry)
+ 117. Uvicorn                                               [S]  — Zastąpiony przez Granian
+ 118. orjson                                                [S]  — Zastąpiony przez msgspec
+
+  ## Bazy danych zastąpione:
+ 119. Limbo                                                 [S]  — Zastąpiony przez SQLite + SQLCipher
+ 120. LanceDB                                               [S]  — Zastąpiony przez sqlite-vec
+
+  ## Zależności pośrednie systemowe usunięte z listy:
+ 121. Leptonica                                             [Z]  — Transitive dep Tesseract OCR
+ 122. PaddlePaddle                                          [Z]  — Transitive dep PaddleOCR
+ 123. libxml2                                               [Z]  — Transitive dep lxml
+ 124. libxslt                                               [Z]  — Transitive dep lxml
+
+  ## Pakiety NVIDIA (niezainstalowane, tylko transitivne):
+ 125. CUDA Toolkit (v13.0.2)                                [Z]  — Niezainstalowany, tylko transitive
+ 126. nvidia-cuda-runtime (cu12)                            [Z]  — Niezainstalowany, tylko transitive
+ 127. nvidia-cudnn (cu13)                                   [Z]  — Niezainstalowany, tylko transitive
+ 128. nvidia-nccl                                           [Z]  — Niezainstalowany, tylko transitive
+ 129. nvidia-cublas                                         [Z]  — Niezainstalowany, tylko transitive
+
+  ## Funkcjonalności NATS skonsolidowane:
+ 130. NATS KV Store                                         [S]  — Wbudowana funkcja NATS (skonsolidowana)
+ 131. NATS Object Store                                     [S]  — Wbudowana funkcja NATS (skonsolidowana)
+
+  ## Własne moduły usunięte (zastąpione przez Rust/OPA):
+ 132. Własny moduł resilience (async_retry)                 [S]  — Zastąpiony przez stamina
+ 133. forex_engine.py                                       [S]  — Usunięty
+ 134. rule_store.py                                         [S]  — Usunięty, zast. OPA + DuckDB
+ 135. context_interpreter.py                                [S]  — Usunięty, zast. Rust + tax/__init__.py
+ 136. temporal_manager.py                                   [S]  — Usunięty, zast. Rust
+ 137. priority_engine.py                                    [S]  — Usunięty, zast. Rust
+ 138. fallback_handler.py                                   [S]  — Usunięty, zast. OPA
+ 139. audit.py                                              [S]  — Usunięty, zast. Rust
+ 140. rules.py                                              [S]  — Usunięty, zast. OPA + Rego
+ 141. pipeline.py                                           [S]  — Usunięty, zast. Rust
+ 142. outbox_relay.py                                       [S]  — Usunięty, zast. NATS JetStream
+ 143. outbox_replay.py                                      [S]  — Usunięty, zast. NATS JetStream
+ 144. dead_letter_queue.py                                  [S]  — Usunięty, zast. NATS + Taskiq DLQ
+ 145. saga.py                                               [S]  — Usunięty (zbędny - aplikacja desktopowa)
+ 146. audit_logger.py                                       [S]  — Usunięty, zast. Decision Logger + DuckDB
+ 147. ledger_worker.py                                      [S]  — Usunięty, zast. NATS + Taskiq
+ 148. reconciliation.py                                     [S]  — Usunięty, zast. Agent Analityczny
+ 149. smart_approvals.py                                    [S]  — Usunięty, zast. Agent Orkiestrator
+ 150. Własne backendy cache (L1/L2)                         [S]  — Zastąpione przez diskcache
+
+  ## Rust crates usunięte z listy (pozostają w Cargo.toml jako transitivne):
+ 151. serde / serde_json                                    [Z]  — Rust crate (transitive, wewnątrz nexus-crypto)
+ 152. uuid (Rust)                                           [Z]  — Rust crate (transitive)
+ 153. thiserror (Rust)                                      [Z]  — Rust crate (transitive)
+ 154. hex (Rust)                                            [Z]  — Rust crate (transitive)
+ 155. base64 (Rust)                                         [Z]  — Rust crate (transitive)
+ 156. chrono (Rust)                                         [Z]  — Rust crate (transitive)
+ 157. libc (Rust)                                           [Z]  — Rust crate (transitive)
+ 158. log + pyo3-log (Rust)                                 [Z]  — Rust crate (transitive)
+ 159. criterion (Rust)                                      [Z]  — Rust crate (transitive, benchmarking)
+ 160. approx (Rust)                                         [Z]  — Rust crate (transitive, testing)
+ 161. rust_decimal (Rust)                                   [Z]  — Rust crate (transitive)
+
+  ## Skrypty i narzędzia usunięte:
+ 162. 27 skryptów deweloperskich                            [S]  — Usunięte, zastąpione przez pixi taski
+ 163. 11 testów kontraktowych                               [S]  — Usunięte wraz ze skryptami
+
+  ## Inne:
+ 164. matplotlib                                            [S]  — Zastąpiony przez Flet Charts
+ 165. Starlette (transitive Litestar)                        [Z]  — Usunięty z listy tech.
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║  LISTA BIBLIOTEK I ZALEŻNOŚCI (dependencies + devDependencies)             ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+────────────────────────────────────────────────────────────────────────────────
+A. ZALEŻNOŚCI PRODUKCYJNE (PyPI — runtime)
+────────────────────────────────────────────────────────────────────────────────
+
+  1. litestar >=2.8.0 [jwt]          — API framework ASGI
+  2. granian >=1.0.0                 — ASGI server Rust
+  3. sqlmodel >=0.0.16               — ORM (SQLAlchemy + Pydantic)
+  4. sqlite-vec >=0.1.0              — Rozszerzenie wektorowe SQLite
+  5. msgspec >=0.18.0                — Serializacja (JSON/MessagePack/TOML)
+  6. anyio >=4.4.0                   — Warstwa async I/O
+  7. taskiq >=0.11.0                 — Kolejka zadań
+  8. taskiq-nats >=0.5.0             — Broker NATS dla Taskiq
+  9. nats-py >=2.6.0                 — Klient NATS
+ 10. httpx >=0.27.0                  — Klient HTTP
+ 11. hishel >=0.1.0                  — Cache HTTP
+ 12. fsspec >=2024.3.0               — Abstrakcja systemów plików
+ 13. stamina >=0.1.0                 — Retry + circuit breaker
+ 14. nexus-crypto >=0.1.0            — Własna kryptografia (Rust+PyO3)
+ 15. tigerbeetle >=0.16.0            — Double-entry accounting engine
+ 16. lxml >=5.1.0                    — XML processing
+ 17. xsdata >=24.0.0                 — XSD → Python code gen
+ 18. pillow >=10.0.0                 — Image processing
+ 19. pypdfium2 >=4.0.0               — PDF → image
+ 20. paddleocr >=2.8.0               — OCR engine #1
+ 21. python-doctr >=0.9.0            — OCR engine #2
+ 22. easyocr >=1.7.0                 — OCR engine #3
+ 23. duckdb >=1.0.0                  — OLAP database
+ 24. pyarrow >=15.0.0                — In-memory columnar format
+ 25. polars >=1.0.0                  — DataFrame (zastąpił pandas)
+ 26. llama-cpp-python >=0.2.0        — LLM inference (GGUF)
+ 27. loguru >=0.7.0                  — Logging
+ 28. structlog >=24.0.0              — Structured logging
+ 29. opentelemetry-api >=1.25.0       — Observability API
+ 30. opentelemetry-sdk >=1.25.0       — Observability SDK
+ 31. opentelemetry-exporter-prometheus >=0.46b0 — Prometheus exporter
+ 32. psutil >=5.9.0                  — System resource monitor
+ 33. pendulum >=3.0.0                — DateTime (nowej generacji)
+ 34. diskcache >=5.6.0               — SQLite-backed cache
+ 35. sentry-sdk >=2.0.0              — Error tracking
+
+────────────────────────────────────────────────────────────────────────────────
+B. ZALEŻNOŚCI DEWELOPERSKIE (PyPI — dev)
+────────────────────────────────────────────────────────────────────────────────
+
+ 36. pytest >=8.0.0                  — Test runner
+ 37. pytest-cov >=5.0.0              — Coverage
+ 38. crosshair >=0.1.0.dev0          — SMT property-based testing
+ 39. ruff >=0.3.0                    — Linter/formatter
+ 40. mypy >=1.8.0                    — Type checker
+ 41. schemathesis >=3.30.0           — API fuzz testing
+ 42. locust >=2.29.0                 — Load testing
+ 43. py-spy >=0.3.14                 — Sampling profiler
+ 44. pytest-benchmark >=4.0.0        — Benchmarks
+ 45. pytest-xdist >=3.5.0            — Parallel testing
+ 46. pytest-timeout >=2.2.0          — Timeout
+ 47. pytest-sugar >=1.0.0            — Colorful reports
+ 48. pytest-watch >=4.2.0            — Auto-retest
+ 49. nuitka >=1.8                    — Python → standalone .exe
+
+────────────────────────────────────────────────────────────────────────────────
+C. ZALEŻNOŚCI SYSTEMOWE (conda-forge / system)
+────────────────────────────────────────────────────────────────────────────────
+
+ 50. python 3.13.* (free-threaded)    — Interpreter bez GIL
+ 51. tesseract >=5.3.0               — OCR engine
+ 52. libopencv >=4.9.0               — OpenCV (image processing)
+ 53. mimalloc >=2.1.0                — Memory allocator
+ 54. pkg-config >=0.29.2             — Library detection
+ 55. rust >=1.78.0                   — Rust toolchain
+ 56. cmake >=3.28.0                  — Build tool
+
+────────────────────────────────────────────────────────────────────────────────
+D. BIBLIOTEKI SYSTEMOWE (transitive deps — tylko informacyjnie)
+────────────────────────────────────────────────────────────────────────────────
+
+ 57. libxml2                         — Przez lxml
+ 58. libxslt                         — Przez lxml
+ 59. leptonica                       — Przez Tesseract
+ 60. PaddlePaddle                    — Przez PaddleOCR
+ 61. CUDA Toolkit                    — Nieużywany, tylko transitive
+ 62. libuuid / uuid                  — Przez system
+
+────────────────────────────────────────────────────────────────────────────────
+E. WEWNĘTRZNE BIBLIOTEKI PROJEKTU
+────────────────────────────────────────────────────────────────────────────────
+
+ 63. nexus-crypto (nexus_ai/rust/)     — Moduł Rust+PyO3 (maturin)
+ 64. nexus_ai.*                        — Główna aplikacja Python
+ 65. migrations/*.sql                  — Migracje SQL
+
+═══════════════════════════════════════════════════════════════════════════════
+PODSUMOWANIE
+═══════════════════════════════════════════════════════════════════════════════
+
+  Aktywne technologie [A]:              ~82
+  Szczątkowe/usunięte [S]:             ~45
+  Zależności pośrednie [Z]:            ~19
+  Deweloperskie [D]:                   ~16
+
+  Razem (wszystkie technologie):       ~162
+  Razem (aktywne + deweloperskie):     ~98
+
+  Liczba bibliotek PyPI (runtime):     35
+  Liczba bibliotek PyPI (dev):         14
+  Liczba zależności systemowych:       7
+  Liczba wewnętrznych modułów:         3
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║  GENEROWANY PRZEZ: Buffy AI Agent (Codebuff)                               ║
+║  Model: deepseek/deepseek-v4-flash                                         ║
+║  Data: 27 czerwca 2026                                                     ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
