@@ -1,10 +1,5 @@
 """
-NexusAI Cache — warstwa cache oparta na diskcache + hishel HTTP cache + NATS invalidation.
-
-Zgodnie z decyzją optymalizacyjną:
-- Własne backendy (backends.py, diskcache.py) usunięte — zastąpione przez bezpośrednie użycie diskcache
-- hishel — inteligentny cache HTTP przez CachedHttpClient
-- NATS distributed cache invalidation
+NexusAI Cache — warstwa cache oparta na diskcache + NATS invalidation.
 """
 
 from __future__ import annotations
@@ -21,8 +16,6 @@ from structlog import get_logger
 
 from nexus_ai.core.cache.http_client import (
     CachedHttpClient,
-    create_cached_client,
-    create_cached_transport,
     get_cache_stats,
     reset_cache_stats,
     warm_http_cache,
@@ -31,7 +24,6 @@ from nexus_ai.core.cache.invalidation import (
     invalidate_cache,
     subscribe_cache_invalidation,
 )
-from nexus_ai.core.cache.backends_redis import RedisBackend
 
 logger = get_logger("nexus.core.cache")
 
@@ -445,12 +437,8 @@ __all__ = [
     # NexusCache
     "NexusCache",
     "get_cache",
-    # RedisBackend
-    "RedisBackend",
-    # hishel HTTP cache (CachedHttpClient)
+    # HTTP cache (CachedHttpClient)
     "CachedHttpClient",
-    "create_cached_client",
-    "create_cached_transport",
     "warm_http_cache",
     "get_cache_stats",
     "reset_cache_stats",

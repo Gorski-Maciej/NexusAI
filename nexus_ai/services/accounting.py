@@ -16,23 +16,19 @@ class AccountingService:
 
     @staticmethod
     def validate_amounts(net: Decimal, gross: Decimal) -> bool:
-        """Sprawdza, czy kwoty są matematycznie poprawne pod kątem stawek VAT.
-        Zakłada, że VAT musi być jedną ze standardowych stawek (23%, 8%, 5%, 0%)."""
         if net <= 0 or gross <= 0 or gross < net:
             return False
 
         vat_amount = gross - net
         if vat_amount == 0:
-            return True  # Faktura zwolniona lub 0%
+            return True
 
-        # Obliczamy efektywną stawkę VAT
         effective_rate = (vat_amount / net).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
         valid_rates = [Decimal("0.23"), Decimal("0.08"), Decimal("0.05"), Decimal("0.00")]
 
         if effective_rate in valid_rates:
             return True
 
-        # Sprawdzanie najpopularniejszych stawek VAT w przypadku drobnych różnic
         calculated_rates = [
             round(net * Decimal("1.23"), 2),
             round(net * Decimal("1.08"), 2),
@@ -46,14 +42,7 @@ class AccountingService:
         return vat.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     async def verify_nip(self, nip: str) -> dict | None:
-        """DEPRECATED: Użyj WhiteListService zamiast AccountingService.verify_nip().
-
-        AccountingService.verify_nip() jest duplikatem WhiteListService.verify_bank_account().
-        WhiteListService używa CachedHttpClient (hishel) zamiast surowego httpx.AsyncClient.
-
-        Ta metoda jest zachowana dla kompatybilności wstecznej, ale deleguje
-        do WhiteListService z cache'em HTTP.
-        """
+        """DEPRECATED: Użyj WhiteListService zamiast AccountingService.verify_nip()."""
         warnings.warn(
             "AccountingService.verify_nip() is deprecated. "
             "Use WhiteListService.verify_bank_account() from nexus_ai.services.white_list_service instead.",

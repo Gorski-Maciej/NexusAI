@@ -45,7 +45,6 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "integration: Integration test (requires DB/NATS/TigerBeetle)")
     config.addinivalue_line("markers", "anyio: Async test using anyio backend (built-in)")
     config.addinivalue_line("markers", "slow: Slow test (>5s), skipped by default, use --run-slow to run")
-    config.addinivalue_line("markers", "benchmark: Performance benchmark (pytest-benchmark)")
     config.addinivalue_line("markers", "smoke: Quick smoke test — basic import and structure checks")
     config.addinivalue_line("markers", "schemathesis: Property-based API testing via schemathesis (uses OpenAPI spec)")
 
@@ -234,7 +233,6 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     "opentelemetry",
     "opentelemetry-api",
     "opentelemetry-sdk",
-    "opentelemetry-exporter-prometheus",
     # Filesystem — SUPERMOC fsspec: MemoryFileSystem dla testów bez I/O
     # fsspec jest realną zależnością, mockujemy tylko implementacje
     "fsspec.implementations.memory",
@@ -291,7 +289,6 @@ for m in [
     "kubernetes", "opentelemetry",
     "PIL._imaging", "PIL.ImageFilter", "PIL.ImageEnhance",
     "opentelemetry-api", "opentelemetry-sdk",
-    "opentelemetry-prometheus-exporter",
     # OpenCV is optional (HAS_CV2 pattern)
 
 ]:

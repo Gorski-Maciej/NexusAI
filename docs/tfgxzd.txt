@@ -201,7 +201,7 @@ kwota_w_groszach = round(kwota_wejściowa * 100)
 
 gdzie round jest jawnym zaokrągleniem do najbliższej liczby całkowitej z metodą HALF_UP (0.5 grosza zaokrągla się w górę).
 
-1.3. Implementacja: TaxMathEngine
+1.3. Implementacja: TaxMathEngine (zastąpiony przez nexus-tax-engine w Rust)
 
 Moduł Code/CORE/tax_math.py udostępnia następujące API:
 
@@ -232,7 +232,7 @@ Zero floatów, zero błędów zaokrągleń.
 
 1.5. Testowalność
 
-Dla każdej operacji w TaxMathEngine istnieje test property-based (Hypothesis), który dla 10 000 losowych kwot sprawdza, że:
+Dla każdej operacji matematycznej istnieje test property-based (Hypothesis), który dla 10 000 losowych kwot sprawdza, że:
 
 · to_zlotowki(to_grosze(x)) == x dla dowolnego Decimal z dwoma miejscami po przecinku.
 · multiply_net_by_vat(n, r) + n == add_tax(n, multiply_net_by_vat(n, r)) dla dowolnego n i r.
@@ -369,7 +369,7 @@ Niezmiennik 1: 3001 ≠ 3000 → NARUSZONY. Transakcja zablokowana.
 TaxInvariantGuard jest ostatnim etapem przed zapisem w księdze:
 
 ```
-[TaxMathEngine: obliczenia w groszach]
+[Silnik matematyczny: obliczenia w groszach]
     → [TaxInvariantGuard: sprawdzenie trzech równań]
         → [TigerBeetle: zapis transferu] (tylko jeśli walidacja przeszła)
 ```
@@ -391,7 +391,7 @@ Podsumowanie – jak te trzy filary współpracują
 W praktyce przepływ wygląda następująco:
 
 1. Zen-Engine wydaje werdykt: "dla tej faktury zastosuj stawkę 23%, metodę zaokrąglania HALF_UP, poziom zaokrąglania position".
-2. TaxMathEngine (Filar 1 i 2) wykonuje obliczenia na groszach, stosując jawną politykę zaokrągleń zdefiniowaną w werdykcie Zen-Engine.
+2. Silnik matematyczny (Filar 1 i 2) wykonuje obliczenia na groszach, stosując jawną politykę zaokrągleń zdefiniowaną w werdykcie Zen-Engine.
 3. TaxInvariantGuard (Filar 3) sprawdza trzy równania matematyczne. Jeśli wszystkie są spełnione, transakcja jest przekazywana do TigerBeetle. Jeśli nie – jest blokowana, a błąd jest szczegółowo logowany.
 4. DecisionTraceLogger zapisuje pełny ślad: ID reguły, kontekst, werdykt, wyniki obliczeń, wynik walidacji.
 
@@ -944,7 +944,7 @@ Elementy do wdrożenia:
 
 1. Rozszerzenie tabeli outbox_events – w SQLite dodajemy nowy typ zdarzenia: TAX_CALCULATED. W polu payload przechowujemy JSON z pełnym werdyktem i wynikami obliczeń.
 2. Modyfikacja zadania process_invoice_task
-   · Po ocenie Rady Agentów (council_decide) wywołaj TaxMathEngine i ZenEngine.
+   · Po ocenie Rady Agentów (council_decide) wywołaj silnik matematyczny i ZenEngine.
    · Zamiast bezpośredniego wysłania do TigerBeetle, zapisz zdarzenie TAX_CALCULATED do tabeli outbox_events w tej samej transakcji co faktura.
    · OutboxRelay (już istnieje) odczyta to zdarzenie i asynchronicznie wyśle transfer do TigerBeetle.
 3. Mechanizm ponawiania – jeśli TigerBeetle odrzuci transfer, OutboxRelay ponawia próbę z wykładniczym opóźnieniem, a po wyczerpaniu prób przenosi zdarzenie do Dead Letter Queue.
@@ -1300,7 +1300,7 @@ Klasyczny system sprawdzi tylko matematykę faktury. Nie wykryje, że kontrahent
 
 A. Wektoryzacja treści faktury
 
-Po ekstrakcji tekstu przez OCR (docTR), cała treść faktury (nie tylko pola strukturalne, ale też opisy pozycji) jest zamieniana na embedding przez model HerBERT / Sentence-Transformers. Masz już to w Code/CORE/active_learning.py – wystarczy rozszerzyć pipeline.
+Po ekstrakcji tekstu przez OCR (docTR), cała treść faktury (nie tylko pola strukturalne, ale też opisy pozycji) jest zamieniana na embedding przez model HerBERT / Sentence-Transformers, korzystając z wbudowanego wektoryzatora.
 
 B. Zapytanie do LanceDB
 

@@ -2,7 +2,7 @@
 SQLModel definitions for core OLTP tables — MAXIMUM SUPERPOWERS.
 
 Zgodnie z aa3fvcx.txt:
-- SQLModel łączy SQLAlchemy + Pydantic w jednej klasie
+- SQLModel łączy SQLAlchemy z walidacją modeli w jednej klasie
 - Zero duplikacji kodu między modelem DB a modelem API
 - Idealna integracja z Litestar i msgspec
 
@@ -42,7 +42,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.schema import Index, UniqueConstraint
 from sqlalchemy.sql.ddl import CreateTable
-from sqlmodel import JSON, String, case, and_, text
+from sqlmodel import JSON, String, and_, text
 from sqlmodel import Field, Relationship, SQLModel
 
 
@@ -72,7 +72,7 @@ class PendulumDateTime(SATypeDecorator):
 
 _STRICT_TABLES = {
     "invoices", "outbox_events", "contractors", "users",
-    "active_learning_patterns", "security_alerts", "refresh_tokens",
+    "security_alerts", "refresh_tokens",
     "failed_tasks", "roles", "permissions", "user_roles", "role_permissions",
     "company_profiles", "company_partners", "ledger_transfers",
     "financial_periods", "manual_cashflow_items", "dq_decisions",
@@ -138,7 +138,7 @@ class Invoice(SQLModel, table=True):
     - Partial indexes: tylko dla aktywnych statusów
     - Expression index: UPPER(contractor_nip)
     - Mapped[] annotations dla type safety
-    - ge=0 na kwotach (walidacja przez Pydantic/SQLModel)
+    - ge=0 na kwotach (walidacja przez SQLModel)
     - hybrid_property: amount_vat w Pythonie i SQL
     - TypeDecorator: PendulumDateTime dla pendulum.DateTime
     - tenant_id dla multi-tenant (with_loader_criteria ready)
@@ -171,8 +171,7 @@ class Invoice(SQLModel, table=True):
     # SUPERMOC: Mapped[] annotations dla full type safety
     # SUPERMOC: sa_column_kwargs z komentarzami dla dokumentacji schematu
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
-    number: Mapped[str | None] = Field(default=None, index=True,
-        sa_column_kwargs={"comment": "Numer faktury (np. FV/2026/001)"},
+    number: Mapped[str | None] = Field(default=None, index=True, sa_column_kwargs={"comment": "Numer faktury (np. FV/2026/001)"},
     )
     contractor_nip: Mapped[str | None] = Field(default=None, index=True,
         sa_column_kwargs={"comment": "NIP kontrahenta (10 cyfr)"},
@@ -182,7 +181,7 @@ class Invoice(SQLModel, table=True):
     )
     amount_net: Mapped[Decimal | None] = Field(
         default=None, max_digits=18, decimal_places=2,
-        ge=Decimal("0.00"),  # SUPERMOC: Pydantic validation
+        ge=Decimal("0.00"),  # Walidacja przez SQLModel
         sa_column_kwargs={
             "comment": "Kwota netto w PLN",
             "check": "amount_net >= 0",
@@ -269,29 +268,6 @@ class Invoice(SQLModel, table=True):
         )
 
     # Cross-field validation moved to hooks.py (before_flush listener)
-
-
-class ActiveLearningPattern(SQLModel, table=True):
-    """Wzorce aktywnego uczenia — korekty użytkownika dla AI."""
-
-    __tablename__ = "active_learning_patterns"  # type: ignore[assignment]
-    model_config: ClassVar[dict] = {
-        "arbitrary_types_allowed": True,
-        "validate_assignment": True,
-        "extra": "forbid",
-    }
-
-    id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
-    contractor_id: Mapped[str] = Field(nullable=False, index=True)
-    # SUPERMOC: JSON column zamiast gołego stringa
-    correction_payload: Mapped[dict] = Field(
-        default_factory=dict,
-        sa_type=JSON,
-    )
-    created_at: Mapped[pendulum.DateTime] = Field(
-        default_factory=lambda: pendulum.now("UTC"),
-        sa_type=PendulumDateTime,
-    )
 
 
 class Contractor(SQLModel, table=True):

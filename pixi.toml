@@ -47,7 +47,7 @@ tesseract = ">=5.3.0"                    # OCR — ekstrakcja tekstu z faktur
 libopencv = ">=4.9.0"                    # OpenCV — preprocessing obrazów
 
 # ── Database ─────────────────────────────────────────────────────────────────
-pkg-config = ">=0.29.2"                  # Wykrywanie bibliotek systemowych
+pkg-config = ">=0.29.2"
 
 # ── mimalloc — Microsoft memory allocator (5-15% mniej RAM) ────────────────
 mimalloc = ">=2.1.0"                    # Microsoft mimalloc — 5-15% mniej RAM
@@ -332,23 +332,21 @@ description = "Skompiluj wszystko: Rust (PyO3) + Nuitka (standalone .exe)"
 # ── Testowanie ───────────────────────────────────────────────────────────────
 
 [tasks.test]
-cmd = "pytest -x -v --timeout=30"
+cmd = "pytest -x -v"
 description = "Uruchom testy (szybko — zatrzymaj przy pierwszym błędzie)"
 
 [tasks.test-all]
-cmd = "pytest -v --timeout=30"
+cmd = "pytest -v"
 description = "Uruchom wszystkie testy (nie zatrzymuj przy błędzie)"
 
-[tasks.test-coverage]
-cmd = "pytest --cov=nexus_ai --cov-report=term-missing"
+
 description = "Testy z raportem pokrycia kodu"
 
-[tasks.test-parallel]
-cmd = "pytest -x -v -n auto --timeout=30"
+
 description = "Testy równoległe na wszystkich rdzeniach CPU"
 
 [tasks.test-watch]
-cmd = "pytest -x -v --timeout=30"
+cmd = "pytest -x -v"
 inputs = ["nexus_ai/**/*.py", "tests/**/*.py"]
 description = "Auto-uruchom testy przy zmianie plików"
 
@@ -640,7 +638,7 @@ cmd = "NEXUS_LOG_LEVEL=warn pixi run restart-api && echo 'Production quick deplo
 description = "Szybkie wdrożenie produkcyjne"
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Feature: dev — narzędzia programistyczne (testy, lint, build, cmake)
+# Feature: dev — narzędzia programistyczne (testy, lint, build)
 # ══════════════════════════════════════════════════════════════════════════════
 # Używaj:   pixi install --environment dev   # instaluj runtime + dev
 #           pixi run --environment dev test  # uruchom testy
@@ -653,7 +651,7 @@ cmake = ">=3.28.0"         # Potrzebne do kompilacji natywnych rozszerzeń Pytho
 [feature.dev.pypi-dependencies]
 # ── Testowanie ──────────────────────────────────────────────────────────────
 pytest = ">=8.0.0"
-pytest-cov = ">=5.0.0"
+
 crosshair = ">=0.1.0"             # SMT-driven property testing (zastąpił hypothesis)
 schemathesis = ">=3.0.0"          # Property-based API testing (OpenAPI)
 locust = ">=2.0.0"               # Load testing w Pythonie

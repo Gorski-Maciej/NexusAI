@@ -76,11 +76,10 @@ class TimedModelCache:
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.analytics import DuckDBManager
-from nexus_ai.db.models import ActiveLearningPattern, Invoice, InvoiceStatus, OutboxEvent, OutboxStatus
+from nexus_ai.db.models import Invoice, InvoiceStatus, OutboxEvent, OutboxStatus
 from nexus_ai.pipeline.ocr import DocumentProcessor, ReviewStatus
 from nexus_ai.services.dunning_engine import DunningEngine
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
-from nexus_ai.services.vision.agent import VisionAgent
 from nexus_ai.services.fixed_assets import FixedAssetsService
 
 
@@ -106,8 +105,7 @@ async def _load_document_processor() -> DocumentProcessor:
     return await anyio.to_thread.run_sync(DocumentProcessor)
 
 
-async def _load_vision_agent() -> VisionAgent:
-    return await anyio.to_thread.run_sync(VisionAgent)
+
 
 
 class InvoiceEventPayload(Struct):
@@ -290,25 +288,10 @@ async def process_invoice_task(
     try:
         async with OCR_INFERENCE_LIMITER:
             processor = await _MODEL_CACHE.get("document_processor", _load_document_processor)
-            vision_agent = await _MODEL_CACHE.get("vision_agent", _load_vision_agent)
-            # SUPERMOC: Timeout jest ustawiony na dekoratorze @broker.task(timeout=300.0)
-            # anyio.fail_after jest redundantny — taskiq sam anuluje zadanie po timeout
             processed = await anyio.to_thread.run_sync(
                 processor.process, Path(payload.image_path)
             )
-            vision = await vision_agent.analyze(
-                Path(payload.image_path), processed.primary.raw_text
-            )
-        vision_payload = {
-            "vendor_nip": vision.vendor_nip,
-            "total_gross": vision.total_gross,
-            "vat_rate": vision.vat_rate,
-            "payment_status": vision.payment_status,
-            "visual_anomalies_detected": vision.visual_anomalies_detected,
-            "handwritten_notes_summary": vision.handwritten_notes_summary,
-            "source": vision.source,
-        }
-        enriched_text = f"{processed.primary.raw_text}\n[vision]{msgspec_dumps(vision_payload, ensure_ascii=False)}"
+        enriched_text = processed.primary.raw_text
         vector = _simple_features(enriched_text)
         store = _get_vector_store()
         conn = store._get_conn()
@@ -327,12 +310,6 @@ async def process_invoice_task(
             ),
         )
         conn.commit()
-        logger.info(
-            "VisionAgent(%s) processed invoice_id=%s anomalies=%s",
-            vision.source,
-            payload.invoice_id,
-            vision.visual_anomalies_detected,
-        )
 
         if processed.status == ReviewStatus.MANUAL_REVIEW:
             machine.request_review()
@@ -354,7 +331,6 @@ async def process_invoice_task(
         event.payload = msgspec_dumps({"error": str(exc), "original_payload": event.payload})
         _update_invoice_status(db, payload.invoice_id, machine.current_state.id)
 
-    # SUPERMOC: DI auto-commituje sesję — engine jest cache'owany
     return {"result": "OK"}
 
 
@@ -556,4 +532,4 @@ async def execute_monthly_depreciation_task() -> dict[str, int]:
 async def _shutdown(_state: Any) -> None:
     _MODEL_CACHE.evict_expired()
     _MODEL_CACHE.release("document_processor")
-    _MODEL_CACHE.release("vision_agent")
+

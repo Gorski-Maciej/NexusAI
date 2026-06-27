@@ -142,28 +142,6 @@ async def get_duckdb_manager(config: AppConfig | None = None) -> AsyncGenerator[
 
 
 
-async def get_decision_engine(config: AppConfig | None = None) -> AsyncGenerator[Any, None]:
-    """Zwraca DecisionEngine (lazy init, scoped per task).
-
-    Usage:
-        @broker.task(task_name="decide")
-        async def decide(
-            engine: DecisionEngine = TaskiqDepends(get_decision_engine),
-        ):
-            ...
-    """
-    from nexus_ai.core.decision_engine import DecisionEngine
-    from nexus_ai.db.analytics import DuckDBManager
-
-    if config is None:
-        config = AppConfig()
-    duckdb = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
-    try:
-        yield DecisionEngine(duckdb=duckdb)
-    finally:
-        duckdb.close()
-
-
 # =========================================================================
 # Helper — czyszczenie cache engine przy shutdown
 # =========================================================================

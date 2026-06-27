@@ -159,16 +159,16 @@ def register_db_hooks(config: AppConfig):
 
     # ── SUPERMOC: before_flush dla walidacji modeli ────────────────────
     # Uruchamia się PRZED zapisem do DB — błąd walidacji = brak zapisu.
-    # To bezpieczniejszy wzorzec niż dekoratory pydantic, bo:
+    # To bezpieczniejszy wzorzec niż dekoratory walidacji na modelach, bo:
     #   - Walidacja jest jawna i scentralizowana
     #   - Łatwiej debugować (stack trace wskazuje na hooks.py)
-    #   - Zero zależności od pydantic w modelach
+    #   - Zero zależności od zewnętrznych walidatorów w modelach
 
     @event.listens_for(_SASession, "before_flush")
     def before_flush_validate(session, flush_context, instances):
         """Waliduj wszystkie nowe/zmiienione obiekty przed zapisem do DB.
 
-        Zastępuje pydantic @field_validator i @model_validator z models.py.
+    Zastępuje walidację inline w models.py (przeniesiona do scentralizowanego listenera).
         Walidacja uruchamiana PRZED flush — w razie błędu transakcja jest
         przerywana, a obiekty nie trafiają do DB.
         """

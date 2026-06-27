@@ -37,7 +37,7 @@ from nexus_ai.api.dto import (
 logger = get_logger("nexus.api.tax_math")
 
 
-# ── Helpers: VAT calculation (inline, zastępuje usunięty math_engine.py) ────
+# ── Helpers: VAT calculation (inline, zastępuje usunięty stary moduł matematyczny) ────
 
 
 def _round_money(value: Decimal) -> Decimal:

@@ -7,7 +7,7 @@ Full Granian superpower activation:
   - HTTP/2 auto-negotiation with flow control
   - Built-in Prometheus metrics exporter
   - UNIX socket with permissions for desktop mode
-  - PID file + process name for systemd integration
+  - PID file + custom process name
   - Worker respawn, max RSS, lifetime management
   - Proxy headers via granian.utils.proxies
   - Static file serving in Rust (zero Python overhead)

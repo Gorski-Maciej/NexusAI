@@ -1,14 +1,5 @@
 """
 ContextEnricher — wzbogaca kontekst faktury o dane z zewnętrznych API.
-
-SUPERMOCE:
-- GUS BIR (SOAP API) — status VAT, REGON, PKD
-- Biała Lista MF — weryfikacja rachunków bankowych
-- Cache w NexusCache (TTL 30 dni)
-- hishel + stamina dla odporności
-- async close() dla czystego zamykania
-
-Zgodnie z docs/tfgxzd.txt — Dynamiczny kontekst z GUS BIR i Białej Listy.
 """
 
 from __future__ import annotations

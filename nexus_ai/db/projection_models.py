@@ -187,7 +187,7 @@ class UserPreferences(SQLModel, table=True):
         sa_type=PendulumDateTime,
     )
 
-    # SUPERMOC: Serializacja przez Pydantic v2
+    # SUPERMOC: Serializacja przez SQLModel (model_dump)
     def to_dict(self) -> dict[str, Any]:
         """Serialize to dict using model_dump()."""
         return self.model_dump(mode="json")

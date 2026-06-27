@@ -301,33 +301,10 @@ class TaskTracingMiddleware(TaskiqMiddleware):
 
 
 class HttpCacheMiddleware(TaskiqMiddleware):
-    """SUPERMOC HISHEL: Wstrzykuje CachedHttpClient do kontekstu zadań.
+    """Wstrzykuje CachedHttpClient do kontekstu zadań.
 
     Każde zadanie Taskiq ma dostęp do CachedHttpClient przez
-    ``context.get_local("http_client")`` — bez tworzenia nowego klienta.
-
-    SUPERMOC:
-      - Wszystkie taski mają dostęp do cache HTTP (hishel)
-      - Leniwe tworzenie — CachedHttpClient tworzony przy pierwszym pre_execute
-      - Automatyczne zamykanie przez broker.on_event(WORKER_SHUTDOWN)
-      - Monitoring statystyk cache
-
-    Usage:
-        from nexus_ai.core.broker import broker
-        from nexus_ai.core.taskiq_middleware import HttpCacheMiddleware
-
-        http_cache_mw = HttpCacheMiddleware(record_stats=True)
-        broker.add_middleware(http_cache_mw)
-
-        # Rejestracja cleanup przy shutdown
-        @broker.on_event(TaskiqEvents.WORKER_SHUTDOWN)
-        async def _on_shutdown(state):
-            await http_cache_mw.shutdown()
-
-        # W zadaniu:
-        from taskiq import context
-        http = context.get_local("http_client")
-        response = await http.get("https://api.example.com/data")
+    ``context.get_local("http_client")``.
     """
 
     def __init__(self, record_stats: bool = True) -> None:
@@ -335,43 +312,22 @@ class HttpCacheMiddleware(TaskiqMiddleware):
         self._record_stats = record_stats
 
     async def pre_execute(self, message: TaskiqMessage) -> None:
-        """Przed wykonaniem: wstrzyknij CachedHttpClient do kontekstu taska.
-
-        Leniwe tworzenie — CachedHttpClient tworzony przy pierwszym zadaniu.
-        """
         if self._http is None:
             from nexus_ai.core.cache.http_client import CachedHttpClient
-
-            self._http = CachedHttpClient(record_stats=self._record_stats)
+            self._http = CachedHttpClient()
 
         from taskiq import context
-
         context.set_local("http_client", self._http)
 
     async def on_error(self, message: TaskiqMessage, result: TaskiqResult) -> None:
-        """Przy błędzie: zaloguj statystyki cache."""
         from nexus_ai.core.cache.http_client import get_cache_stats
-
         stats = get_cache_stats()
-        logger.debug(
-            "[HTTP-CACHE] Task %s error — cache stats: hits=%d misses=%d stale=%d errors=%d",
-            message.task_name,
-            stats.get("hits", 0),
-            stats.get("misses", 0),
-            stats.get("stale_hits", 0),
-            stats.get("errors", 0),
-        )
+        logger.debug("[HTTP-CACHE] Task %s error — cache stats: hits=%d misses=%d", message.task_name, stats.get("hits", 0), stats.get("misses", 0))
 
     async def shutdown(self) -> None:
-        """Zamknij CachedHttpClient przy shutdown workera.
-
-        Wywoływane przez @broker.on_event(TaskiqEvents.WORKER_SHUTDOWN).
-        """
         if self._http is not None:
             await self._http.close()
             self._http = None
-            logger.info("[HTTP-CACHE-MW] CachedHttpClient closed at worker shutdown")
-
 
 # =========================================================================
 # DynamicConcurrencyMiddleware — dynamiczne limitowanie współbieżności

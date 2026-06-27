@@ -104,7 +104,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **httpx** — klient HTTP (async) | — (httpx natywnie) | ✅ | `nexus_ai/services/currency_converter.py` |
+| **httpx** — klient HTTP (async) | — (httpx natywnie) | ✅ | Używany w całym projekcie |
 | **hishel** — inteligentny cache HTTP | — | ✅ | W `pixi.toml` |
 | **fsspec** — abstrakcja systemów plików | — | ✅ | W `pixi.toml` |
 
@@ -129,7 +129,7 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
 | **TigerBeetle** — silnik księgowy (double-entry) | — | ✅ | `pixi.toml` → `task start-tigerbeetle`, `nexus_ai/roboton_reflekton/ledger_client.py` |
-| **Nexus-Money** (msgspec.Struct) | — (własna implementacja) | ✅ | `nexus_ai/services/currency_converter.py` → `class Money` |
+| **Nexus-Money** (msgspec.Struct) | — (własna implementacja) | ✅ | `nexus_ai/services/money.py` → `class Money` |
 
 | **TigerBeetle Client (Python)** | — | ✅ | `nexus_ai/roboton_reflekton/ledger_client.py` |
 
@@ -575,7 +575,7 @@ pixi run test-property
 
 | Test file | What it covers |
 |---|---|
-| `tests/test_tax_math_engine.py` | Tax math engine (Rust-backed) |
+| `tests/test_tax_rules.py` | Tax rules engine (Rust-backed) |
 | `tests/test_fixed_assets_depreciation.py` | Fixed assets depreciation |
 | `tests/test_inventory_fifo.py` | FIFO inventory accounting |
 | `tests/test_fraud_graph_scanner.py` | Fraud detection graph scanning |

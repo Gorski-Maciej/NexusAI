@@ -1,10 +1,5 @@
 """
-KSeF Auth Service — z cache'em HTTP (hishel).
-
-SUPERMOC HISHEL:
-  - AuthorisationChallenge może być cache'owany (przez krótki czas)
-  - Sesja token jest przechowywana w pamięci (SID)
-  - async close() — czyste zamykanie połączeń
+KSeF Auth Service.
 """
 
 from __future__ import annotations
@@ -18,12 +13,7 @@ logger = get_logger("nexus.ksef")
 
 
 class KsefAuthService:
-    """Serwis autoryzacji KSeF z cache'em HTTP (hishel).
-
-    SUPERMOC HISHEL:
-      - CachedHttpClient zamiast surowego httpx.AsyncClient
-      - async close() dla czystego zamykania
-    """
+    """Serwis autoryzacji KSeF."""
 
     def __init__(self, nip: str, is_demo: bool = True) -> None:
         self.nip = nip
@@ -32,21 +22,10 @@ class KsefAuthService:
             if is_demo
             else "https://ksef.mf.gov.pl/api/online/"
         )
-        # SUPERMOC: CachedHttpClient zamiast surowego httpx.AsyncClient
-        self._http = CachedHttpClient(record_stats=True)
+        self._http = CachedHttpClient()
 
     async def login(self, user_token: str) -> str:
-        """Zaloguj do KSeF i pobierz SessionToken.
-
-        AuthorisationChallenge jest cache'owany przez hishel.
-        Sesja token (wynik) jest przechowywana w pamięci.
-
-        Args:
-            user_token: Token użytkownika KSeF.
-
-        Returns:
-            Challenge string z KSeF.
-        """
+        """Zaloguj do KSeF i pobierz SessionToken."""
         resp = await self._http.post(
             f"{self.base_url}Session/AuthorisationChallenge",
             json={"contextIdentifier": {"type": "onip", "identifier": self.nip}},
@@ -56,5 +35,4 @@ class KsefAuthService:
         return data.get("challenge")
 
     async def close(self) -> None:
-        """Zamknij CachedHttpClient."""
         await self._http.close()

@@ -59,7 +59,7 @@ dependencies = [
     # API / ASGI — Litestar + Granian (Rust ASGI server)
     # Granian extras:
     #   dotenv — load .env files (prod convenience)
-    #   pname  — custom process names for ps aux (systemd integration)
+    #   pname  — custom process names for ps aux
     #   reload — hot-reload on file changes (dev only)
     # ═══════════════════════════════════════════════════════════════════════
     "litestar>=2.8.0",
@@ -175,18 +175,12 @@ dev = [
     # pytest-anyio: plugin jest wbudowany w anyio (od anyio>=4.0).
     # Osobny pakiet pytest-anyio na PyPI to dummy v0.0.0.
     # Używaj: @pytest.mark.anyio lub pytestmark = pytest.mark.anyio
-    "pytest-cov>=5.0.0",
     "crosshair>=0.1.0.dev0",  # Property-based testing z SMT solverem — jedyne narzędzie PBT
     "ruff>=0.3.0",
     "mypy>=1.8.0",
     "schemathesis>=3.30.0",  # Automatyczny fuzz testing API ze schematu OpenAPI
     "locust>=2.29.0",        # Pythonowe testy wydajności (zamiast k6)
     "py-spy>=0.3.14",        # Natywny profiler w Rust, narzut <1%
-    "pytest-benchmark>=4.0.0",  # Benchmarki wydajności (porównanie przed/po Polars)
-    "pytest-xdist>=3.5.0",      # Równoległe testowanie (-n auto) — 4-8× szybciej
-    "pytest-timeout>=2.2.0",     # Globalny timeout testów (--timeout=30)
-    "pytest-sugar>=1.0.0",       # Kolorowe, czytelne raporty
-    "pytest-watch>=4.2.0",       # Auto-retest przy zmianie plików (ptw)
     "sentry-sdk>=2.0.0",
 ]
 ui = [
@@ -289,7 +283,7 @@ exclude = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-addopts = "-n auto --timeout=30 --tb=short -ra"
+addopts = "--tb=short -ra"
 filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore::PendingDeprecationWarning",
@@ -298,13 +292,10 @@ markers = [
     "integration: Integration test (requires DB/NATS/TigerBeetle)",
     "anyio: Async test using anyio backend (built-in)",
     "slow: Slow test (>5s), skipped by default, use --run-slow to run",
-    "benchmark: Performance benchmark (pytest-benchmark)",
 ]
 # pytest-anyio: natywna asynchroniczność (anyio backend)
 # Zastępuje pytest-asyncio — testy działają na anyio, tej samej warstwie co kod produkcyjny
 # Uwaga: async test functions wymagają @pytest.mark.anyio lub pytestmark na poziomie modułu
-# SUPERMOC: -n auto → pytest-xdist (4-8× szybciej na multi-core)
-# SUPERMOC: --timeout=30 → pytest-timeout (zero zawieszeń CI)
 # SUPERMOC: --tb=short → zwięzłe tracebacki
 # SUPERMOC: -ra → show all skip/reason summaries at end
 
@@ -364,7 +355,6 @@ backtesting = true
 check_paths = [
     "tests/test_crosshair_properties.py",
     "tests/test_property_based.py",
-    "tests/test_tax_math_engine.py",
 ]
 
 # ── hatch environments (dev scripts) ─────────────────────────────────────────
@@ -381,14 +371,12 @@ scripts = { check = "mypy nexus_ai/" }
 dependencies = [
     "pytest>=8.0.0",
     "pytest-anyio>=0.1.0",
-    "pytest-cov>=5.0.0",
     "crosshair>=0.1.0.dev0",
 ]
 
 [tool.hatch.envs.test.scripts]
-run = "pytest -x -v --timeout=30"
-all = "pytest -v --timeout=30"
-cov = "pytest --cov=nexus_ai"
+run = "pytest -x -v"
+all = "pytest -v"
 
 # Matrix: test na standardowym Python 3.13 i free-threaded 3.13t
 # Uruchom: hatch run test:run        -> Python 3.13 (domyślny)

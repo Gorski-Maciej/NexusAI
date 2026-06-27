@@ -1,16 +1,5 @@
 """
 GUS BIR Client — SOAP-based client for GUS BIR (Baza Internetowa REGON).
-
-SUPERMOC HISHEL:
-  - Używa CachedHttpClient zamiast surowego httpx.AsyncClient
-  - SOAP odpowiedzi (search_by_nip, get_full_report) są cache'owane przez hishel
-  - Chociaż SOAP używa POST, odpowiedzi są idempotentne dla tych samych parametrów
-  - Controller cacheable_methods=["POST"] — świadomie włączamy cache dla POST
-  - Oszczędność: 3-4x mniej zapytań do GUS BIR dla powtarzalnych NIPów
-
-Env vars:
-  GUS_BIR_API_KEY - klucz API
-  GUS_BIR_ENV - "production" (domyslnie) lub "test"
 """
 
 from __future__ import annotations
@@ -46,12 +35,6 @@ SOAP_ENVELOPE = """<?xml version="1.0" encoding="UTF-8"?>
     </soap:Body>
 </soap:Envelope>"""
 
-# ── Cache key prefixy dla deduplikacji SOAP ─────────────────────────────
-# hishel cache'uje odpowiedzi POST na podstawie URL + body.
-# To jest bezpieczne dla GUS BIR: search_by_nip dla tego samego NIP
-# zawsze zwraca ten sam wynik (status VAT zmienia się rzadko).
-
-
 class GusBirResult(Struct):
     """Wynik wyszukiwania pojedynczej firmy w GUS BIR."""
 
@@ -73,19 +56,7 @@ class GusBirResult(Struct):
 
 @final
 class GusBirClient:
-    """SOAP client for GUS BIR (Baza Internetowa REGON).
-
-    SUPERMOC HISHEL:
-      - Używa CachedHttpClient z cacheable_methods=["GET", "POST"]
-      - SOAP POST dla search_by_nip/get_full_report są cache'owane
-      - Działa offline (cache'owane odpowiedzi przy braku sieci)
-      - async close() — czyste zamykanie połączeń
-
-    Args:
-        api_key: Klucz API (jesli None, pobiera z env GUS_BIR_API_KEY).
-        environment: "production" lub "test".
-        timeout: Timeout dla zapytan HTTP w sekundach.
-    """
+    """SOAP client for GUS BIR (Baza Internetowa REGON)."""
 
     def __init__(
         self,
@@ -97,10 +68,7 @@ class GusBirClient:
         self._endpoint = BIR_ENDPOINTS.get(environment, BIR_ENDPOINTS["production"])
         self._timeout = timeout
         self._sid: str = ""
-        # SUPERMOC: CachedHttpClient zamiast surowego httpx.AsyncClient
-        # SOAP POST jest cache'owany przez hishel — to bezpieczne dla search_by_nip
-        # i get_full_report (dane idempotentne dla tego samego NIP/REGON).
-        self._http = CachedHttpClient(record_stats=True)
+        self._http = CachedHttpClient()
 
     async def __aenter__(self) -> GusBirClient:
         return self
@@ -122,18 +90,7 @@ class GusBirClient:
         return bool(self._sid)
 
     async def login(self) -> bool:
-        """Zaloguj sie do API GUS BIR i pobierz session ID (sid).
-
-        SUPERMOC HISHEL: Login NIE jest cache'owany (każde logowanie
-        wymaga świeżej sesji). Tylko search_by_nip i get_full_report.
-
-        Returns:
-            True jesli logowanie sie powiodlo.
-
-        Raises:
-            ValueError: Jesli brak klucza API.
-            ConnectionError: Jesli API niedostepne.
-        """
+        """Zaloguj sie do API GUS BIR i pobierz session ID (sid)."""
         if not self._api_key:
             raise ValueError(
                 "GUS BIR API key not configured. Set GUS_BIR_API_KEY env var "
@@ -155,17 +112,7 @@ class GusBirClient:
             raise ConnectionError(f"GUS BIR login failed: {exc}") from exc
 
     async def search_by_nip(self, nip: str) -> list[GusBirResult]:
-        """Wyszukaj firmy po NIP.
-
-        SUPERMOC HISHEL: Wynik jest cache'owany przez hishel — przy kolejnym
-        wyszukaniu tego samego NIP odpowiedź SOAP jest zwracana z cache SQLite.
-
-        Args:
-            nip: 10-cyfrowy NIP.
-
-        Returns:
-            Lista GusBirResult (zazwyczaj 0 lub 1 wynik).
-        """
+        """Wyszukaj firmy po NIP."""
         nip_clean = "".join(c for c in nip if c.isdigit())
         if len(nip_clean) != 10:
             raise ValueError(f"Invalid NIP: {nip}")
@@ -189,17 +136,7 @@ class GusBirClient:
             return []
 
     async def get_full_report(self, regon: str) -> GusBirResult | None:
-        """Pobierz pelny raport dla REGON.
-
-        SUPERMOC HISHEL: Wynik cache'owany przez hishel — przy kolejnym
-        pobraniu tego samego REGON, odpowiedź SOAP jest zwracana z cache.
-
-        Args:
-            regon: 9-cyfrowy REGON.
-
-        Returns:
-            GusBirResult z pelnymi danymi lub None jesli blad.
-        """
+        """Pobierz pelny raport dla REGON."""
         regon_clean = "".join(c for c in regon if c.isdigit())
         if len(regon_clean) not in (9, 14):
             logger.warning("[GUS-BIR] Invalid REGON: %s", regon)
@@ -243,20 +180,7 @@ class GusBirClient:
             self._sid = ""
 
     async def enrich_from_nip(self, nip: str) -> dict[str, Any]:
-        """Kompletne wzbogacenie danych z GUS BIR dla NIP-u.
-
-        SUPERMOC HISHEL:
-          - search_by_nip cache'owany — przy kolejnym sprawdzeniu tego samego NIP
-            hishel zwraca odpowiedź z SQLite (nie wykonuje zapytania SOAP)
-          - get_full_report cache'owany — j.w.
-          - Tylko login wymaga świeżego zapytania
-
-        Args:
-            nip: 10-cyfrowy NIP do sprawdzenia.
-
-        Returns:
-            Slownik z polami: vat_status, pkd, company_name, city, street, legal_form.
-        """
+        """Kompletne wzbogacenie danych z GUS BIR dla NIP-u."""
         result: dict[str, Any] = {
             "vat_status": "unknown",
             "pkd": "",
@@ -291,11 +215,7 @@ class GusBirClient:
     # --- SOAP internals ---
 
     async def _soap_call(self, method: str, body_xml: str) -> str:
-        """Wykonaj wywolanie SOAP i zwroc surowy XML odpowiedzi.
-
-        SUPERMOC HISHEL: Używa CachedHttpClient.post() zamiast surowego httpx.
-        Dla search_by_nip i get_full_report odpowiedzi są cache'owane.
-        """
+        """Wykonaj wywolanie SOAP i zwroc surowy XML odpowiedzi."""
         envelope = SOAP_ENVELOPE.format(body=body_xml)
         headers: dict[str, str] = {
             "Content-Type": "application/soap+xml; charset=utf-8",

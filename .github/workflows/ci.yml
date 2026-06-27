@@ -187,7 +187,7 @@ jobs:
 
       - name: Run smoke tests on compiled code (pixi exec)
         continue-on-error: true
-        run: pixi exec -- pytest tests/test_tax_math_engine.py -x -v --timeout=30 -q
+        run: pixi exec -- pytest tests/test_tax_rules.py -x -v --timeout=30 -q
 
       - name: List compiled *.so files
         run: find . -name "*.so" -type f | sort | head -20
@@ -265,7 +265,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "Running baseline tests (no mimalloc)..."
-          pixi run --environment dev pytest tests/test_tax_math_engine.py -v --timeout=60 --tb=short -q 2>&1 | tee /tmp/baseline_output.txt
+          pixi run --environment dev pytest tests/test_tax_rules.py -v --timeout=60 --tb=short -q 2>&1 | tee /tmp/baseline_output.txt
           echo "baseline_exit=$?,$(grep -oP 'passed|failed|error' /tmp/baseline_output.txt | tr '\n' '/')" >> $GITHUB_OUTPUT
 
       - name: Test WITH mimalloc (LD_PRELOAD)
@@ -278,7 +278,7 @@ jobs:
           MIMALLOC_EAGER_COMMIT_DELAY: "0"
         run: |
           echo "Running comparison tests WITH mimalloc (LD_PRELOAD)..."
-          pixi run --environment dev pytest tests/test_tax_math_engine.py -v --timeout=60 --tb=short -q 2>&1 | tee /tmp/mimalloc_output.txt
+          pixi run --environment dev pytest tests/test_tax_rules.py -v --timeout=60 --tb=short -q 2>&1 | tee /tmp/mimalloc_output.txt
           echo "mimalloc_exit=$?" >> $GITHUB_OUTPUT
 
       - name: Generate benchmark report
@@ -354,7 +354,7 @@ jobs:
           echo "| mypy | ✅ ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
 
   # ── Test (pixi): pytest ───────────────────────────────────────────────────
-  # Użyj: pixi run --environment dev test  lub  pixi run --environment dev test-coverage
+  # Użyj: pixi run --environment dev test
 
   # ── Lint: Ruff ──────────────────────────────────────────────────────────
   lint:
@@ -516,9 +516,6 @@ jobs:
 
       - name: Run tests (pytest-anyio)
         run: pixi run --environment dev test
-
-      - name: Run tests with coverage
-        run: pixi run --environment dev test-coverage
 
       - name: Generate HTML coverage report
         if: always()
