@@ -1,34 +1,4 @@
-╔══════════════════════════════════════════════════════════════════════════════╗
-║              RAPORT TECHNOLOGII — NEXUSAI                                  ║
-║              Data: 27 czerwca 2026                                         ║
-║              Generowany przez: Buffy AI Agent                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-═══════════════════════════════════════════════════════════════════════════════
-STATYSTYKI OGÓLNE
-═══════════════════════════════════════════════════════════════════════════════
-
-  Całkowita liczba plików:              10 983
-  Całkowita liczba linii kodu:          6 684 511
-  Liczba plików Python (.py):           5 828
-  Liczba plików testowych:              ~118
-  Liczba migracji SQL:                  4
-  Liczba plików konfiguracyjnych:       10
-  Liczba plików dokumentacji:           26
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                                                                              ║
-║  LISTA TECHNOLOGII                                                          ║
-║                                                                              ║
-║  LEGENDA:                                                                    ║
-║    [A] = Aktywna — świadomie wybrana, używana w kodzie                      ║
-║    [S] = Szczątkowa — historyczna, usunięta/zastąpiona, pozostałości         ║
-║    [Z] = Zależność pośrednia — transitivna, nie bezpośrednio używana        ║
-║    [D] = Deweloperska — narzędzia programistyczne, testy, build             ║
-║                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────
 1. JĘZYK I ŚRODOWISKO (Language & Runtime)
 ────────────────────────────────────────────────────────────────────────────────
 
@@ -186,99 +156,8 @@ STATYSTYKI OGÓLNE
  83. SLSA (Supply-chain Levels)                            [A]  — Poziom bezpieczeństwa łańcucha dostaw
  84. OIDC (OpenID Connect)                                 [A]  — Uwierzytelnianie bez sekretów
 
-────────────────────────────────────────────────────────────────────────────────
-19. TECHNOLOGIE USUNIETE / SZCZATKOWE / HISTORYCZNE
-────────────────────────────────────────────────────────────────────────────────
 
-  ## Usunięte pakiety PyPI (zastąpione lub nieużywane):
- 93.  scipy                                                [S]  — Obliczenia naukowe (usunięty, nieużywany)
- 94.  Jinja2                                               [S]  — Templating (usunięty, nieużywany)
- 95.  Rich                                                 [S]  — Terminal UI (usunięty, nieużywany)
- 96.  tqdm                                                 [S]  — Progress bar (usunięty, nieużywany)
- 97.  requests                                             [S]  — HTTP (usunięty, zastąpiony przez httpx)
- 98.  python-dotenv                                        [S]  — Zmienne środowiskowe (usunięty, zast. msgspec TOML)
- 99.  scikit-image                                         [S]  — Przetwarzanie obrazów (usunięty, nieużywany)
- 100. Shapely                                              [S]  — Geometria (usunięty, nieużywany)
- 101. Albumentations                                       [S]  — Augmentacja obrazów (usunięty, nieużywany)
- 102. regex                                                [S]  — Wyrażenia regularne (usunięty, nieużywany)
- 103. hypothesis                                           [S]  — Property-based testing (usunięty, zast. crosshair)
- 104. uv                                                   [S]  — Package manager (usunięty, zast. pixi)
- 105. huggingface-hub                                      [S]  — API HuggingFace (usunięty, zast. HTTP download)
-
-  ## Frameworki i biblioteki zastąpione:
- 106. FastAPI                                               [S]  — Zastąpiony przez Litestar
- 107. Starlette                                             [Z]  — Transitive dep Litestar (usunięty z listy tech.)
- 108. SQLAlchemy                                            [S]  — Zastąpiony przez SQLModel (re-exporty)
- 109. Alembic                                               [S]  — Zastąpiony przez natywne migracje SQL
- 110. pydantic-core                                         [Z]  — Transitive dep SQLModel
- 111. aiohttp                                               [Z]  — Transitive dep (paddleocr, opentelemetry)
- 112. Uvicorn                                               [S]  — Zastąpiony przez Granian
- 113. orjson                                                [S]  — Zastąpiony przez msgspec
-
-  ## Bazy danych zastąpione:
- 114. Limbo                                                 [S]  — Zastąpiony przez SQLite + SQLCipher
- 115. LanceDB                                               [S]  — Zastąpiony przez sqlite-vec
-
-  ## Zależności pośrednie systemowe usunięte z listy:
- 116. Leptonica                                             [Z]  — Transitive dep Tesseract OCR
- 117. PaddlePaddle                                          [Z]  — Transitive dep PaddleOCR
- 118. libxml2                                               [Z]  — Transitive dep lxml
- 119. libxslt                                               [Z]  — Transitive dep lxml
-
-  ## Pakiety NVIDIA (niezainstalowane, tylko transitivne):
- 120. CUDA Toolkit (v13.0.2)                                [Z]  — Niezainstalowany, tylko transitive
- 121. nvidia-cuda-runtime (cu12)                            [Z]  — Niezainstalowany, tylko transitive
- 122. nvidia-cudnn (cu13)                                   [Z]  — Niezainstalowany, tylko transitive
- 123. nvidia-nccl                                           [Z]  — Niezainstalowany, tylko transitive
- 124. nvidia-cublas                                         [Z]  — Niezainstalowany, tylko transitive
-
-  ## Funkcjonalności NATS skonsolidowane:
- 125. NATS KV Store                                         [S]  — Wbudowana funkcja NATS (skonsolidowana)
- 126. NATS Object Store                                     [S]  — Wbudowana funkcja NATS (skonsolidowana)
-
-  ## Własne moduły usunięte (zastąpione przez Rust/OPA):
- 127. Własny moduł resilience (async_retry)                 [S]  — Zastąpiony przez stamina
- 128. forex_engine.py                                       [S]  — Usunięty
- 129. rule_store.py                                         [S]  — Usunięty, zast. OPA + DuckDB
- 130. context_interpreter.py                                [S]  — Usunięty, zast. Rust + tax/__init__.py
- 131. temporal_manager.py                                   [S]  — Usunięty, zast. Rust
- 132. priority_engine.py                                    [S]  — Usunięty, zast. Rust
- 133. fallback_handler.py                                   [S]  — Usunięty, zast. OPA
- 134. audit.py                                              [S]  — Usunięty, zast. Rust
- 135. rules.py                                              [S]  — Usunięty, zast. OPA + Rego
- 136. pipeline.py                                           [S]  — Usunięty, zast. Rust
- 137. outbox_relay.py                                       [S]  — Usunięty, zast. NATS JetStream
- 138. outbox_replay.py                                      [S]  — Usunięty, zast. NATS JetStream
- 139. dead_letter_queue.py                                  [S]  — Usunięty, zast. NATS + Taskiq DLQ
- 140. saga.py                                               [S]  — Usunięty (zbędny - aplikacja desktopowa)
- 141. audit_logger.py                                       [S]  — Usunięty, zast. Decision Logger + DuckDB
- 142. ledger_worker.py                                      [S]  — Usunięty, zast. NATS + Taskiq
- 143. reconciliation.py                                     [S]  — Usunięty, zast. Agent Analityczny
- 144. smart_approvals.py                                    [S]  — Usunięty, zast. Agent Orkiestrator
- 145. Własne backendy cache (L1/L2)                         [S]  — Zastąpione przez diskcache
-
-  ## Rust crates usunięte z listy (pozostają w Cargo.toml jako transitivne):
- 146. serde / serde_json                                    [Z]  — Rust crate (transitive, wewnątrz nexus-crypto)
- 147. uuid (Rust)                                           [Z]  — Rust crate (transitive)
- 148. thiserror (Rust)                                      [Z]  — Rust crate (transitive)
- 149. hex (Rust)                                            [Z]  — Rust crate (transitive)
- 150. base64 (Rust)                                         [Z]  — Rust crate (transitive)
- 151. chrono (Rust)                                         [Z]  — Rust crate (transitive)
- 152. libc (Rust)                                           [Z]  — Rust crate (transitive)
- 153. log + pyo3-log (Rust)                                 [Z]  — Rust crate (transitive)
- 154. criterion (Rust)                                      [Z]  — Rust crate (transitive, benchmarking)
- 155. approx (Rust)                                         [Z]  — Rust crate (transitive, testing)
- 156. rust_decimal (Rust)                                   [Z]  — Rust crate (transitive)
-
-  ## Skrypty i narzędzia usunięte:
- 157. 27 skryptów deweloperskich                            [S]  — Usunięte, zastąpione przez pixi taski
- 158. 11 testów kontraktowych                               [S]  — Usunięte wraz ze skryptami
-
-  ## Inne:
- 159. matplotlib                                            [S]  — Zastąpiony przez Flet Charts
- 160. Starlette (transitive Litestar)                        [Z]  — Usunięty z listy tech.
-
-╔══════════════════════════════════════════════════════════════════════════════╗
+══════════════════════════╗
 ║                                                                              ║
 ║  LISTA BIBLIOTEK I ZALEŻNOŚCI (dependencies + devDependencies)             ║
 ║                                                                              ║
@@ -365,28 +244,3 @@ E. WEWNĘTRZNE BIBLIOTEKI PROJEKTU
  61. nexus-crypto (nexus_ai/rust/)     — Moduł Rust+PyO3 (maturin)
  62. nexus_ai.*                        — Główna aplikacja Python
  63. migrations/*.sql                  — Migracje SQL
-
-═══════════════════════════════════════════════════════════════════════════════
-PODSUMOWANIE
-═══════════════════════════════════════════════════════════════════════════════
-
-  Aktywne technologie [A]:              ~75
-  Szczątkowe/usunięte [S]:             ~43
-  Zależności pośrednie [Z]:            ~19
-  Deweloperskie [D]:                   ~10
-
-  Razem (wszystkie technologie):       ~147
-  Razem (aktywne + deweloperskie):     ~85
-
-  Liczba bibliotek PyPI (runtime):     35
-  Liczba bibliotek PyPI (dev):         8
-  Liczba zależności systemowych:       5
-  Liczba wewnętrznych modułów:         3
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                                                                              ║
-║  GENEROWANY PRZEZ: Buffy AI Agent (Codebuff)                               ║
-║  Model: deepseek/deepseek-v4-flash                                         ║
-║  Data: 27 czerwca 2026                                                     ║
-║                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
