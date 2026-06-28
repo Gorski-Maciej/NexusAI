@@ -22,6 +22,7 @@ Architektura:
 
 from __future__ import annotations
 
+import random
 import threading
 import time
 from msgspec import Struct, field

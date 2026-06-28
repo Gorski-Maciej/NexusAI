@@ -43,9 +43,17 @@ from nexus_ai.api.dto import (
     TAG_ADMIN,
 )
 from nexus_ai.api.rbac import admin_only_guard, requires_permission
-from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_dumps_bytes
-from nexus_ai.core.nats_utils import publish_event as _publish_nats_event
+from nexus_ai.services.admin_services import (
+    BillingRuleAdminService,
+    FailedTaskAdminService,
+    FallbackEventAdminService,
+    IntegrityAdminService,
+    LedgerRuleAdminService,
+    ReplayAdminService,
+    RiskThresholdAdminService,
+    TaxRuleAdminService,
+)
 
 
 class ChangeRoleRequest(msgspec.Struct):
@@ -81,62 +89,17 @@ class AdminController(Controller):
         operation_id="listFailedTasks",
     )
     async def list_failed_tasks(self, request: Request, db_engine: AsyncEngine) -> dict:
-        resolved_filter = request.query_params.get("resolved")
-        task_name_filter = request.query_params.get("task_name")
-        limit = int(request.query_params.get("limit", "50"))
-        offset = int(request.query_params.get("offset", "0"))
-
-        where_clauses = ["1=1"]
-        params: dict = {}
-
-        if resolved_filter is not None:
-            where_clauses.append("ft.resolved = :resolved")
-            params["resolved"] = resolved_filter.lower() in ("true", "1", "yes")
-
-        if task_name_filter:
-            where_clauses.append("ft.task_name LIKE :task_name")
-            params["task_name"] = f"%{task_name_filter}%"
-
-        where_sql = " AND ".join(where_clauses)
-
-        async with db_engine.connect() as conn:
-            # Count total
-            count_row = (
-                await conn.execute(
-                    text(f"SELECT COUNT(*) FROM failed_tasks ft WHERE {where_sql}"),
-                    params,
-                )
-            ).scalar()
-            total = count_row or 0
-
-            # Fetch rows
-            rows = (
-                (
-                    await conn.execute(
-                        text(
-                            f"""SELECT ft.id, ft.task_name, ft.task_id, ft.error_type,
-                                  ft.error_message, ft.retry_count, ft.max_retries,
-                                  ft.resolved, ft.resolved_at, ft.resolved_by,
-                                  ft.resolution_note, ft.failed_at, ft.created_at
-                           FROM failed_tasks ft
-                           WHERE {where_sql}
-                           ORDER BY ft.failed_at DESC
-                           LIMIT :limit OFFSET :offset"""
-                        ),
-                        {**params, "limit": limit, "offset": offset},
-                    )
-                )
-                .mappings()
-                .all()
-            )
-
-        tasks = [dict(r) for r in rows]
-        return {
-            "tasks": tasks,
-            "total": total,
-            "limit": limit,
-            "offset": offset,
-        }
+        resolved_raw = request.query_params.get("resolved")
+        resolved_filter: bool | None = (
+            resolved_raw.lower() in ("true", "1", "yes") if resolved_raw is not None else None
+        )
+        return await FailedTaskAdminService.list_failed_tasks(
+            db_engine=db_engine,
+            resolved_filter=resolved_filter,
+            task_name_filter=request.query_params.get("task_name"),
+            limit=int(request.query_params.get("limit", "50")),
+            offset=int(request.query_params.get("offset", "0")),
+        )
 
     @post(
         "/failed-tasks/{task_id:str}/retry",
@@ -149,51 +112,14 @@ class AdminController(Controller):
     async def retry_failed_task(
         self, task_id: str, request: Request, db_engine: AsyncEngine
     ) -> Response[dict]:
-        async with db_engine.connect() as conn:
-            row = (
-                (
-                    await conn.execute(
-                        text(
-                            "SELECT id, task_name, payload, retry_count FROM failed_tasks WHERE id = :id AND resolved = 0"
-                        ),
-                        {"id": task_id},
-                    )
-                )
-                .mappings()
-                .first()
+        user = getattr(request, "user", None)
+        username = getattr(user, "username", "system") if user else "system"
+        ok = await FailedTaskAdminService.retry_task(db_engine, task_id, username=username)
+        if not ok:
+            raise NotFoundException(
+                detail=f"Failed task not found or already resolved: {task_id}"
             )
-
-            if not row:
-                raise NotFoundException(
-                    detail=f"Failed task not found or already resolved: {task_id}"
-                )
-
-            # Reset the task - mark as resolved so it can be re-queued
-            user = getattr(request, "user", None)
-            username = getattr(user, "username", "system") if user else "system"
-            now = pendulum.now("UTC").isoformat()
-
-            await conn.execute(
-                text(
-                    """UPDATE failed_tasks
-                       SET resolved = 1, resolved_at = :now, resolved_by = :by,
-                           resolution_note = 'Queued for retry'
-                       WHERE id = :id"""
-                ),
-                {"id": task_id, "now": now, "by": username},
-            )
-
-            # Re-publish the task to the message queue if it was a known task type
-            task_name = row["task_name"]
-            payload = row["payload"]
-            try:
-                await _republish_task(db_engine, task_name, payload)
-                logger.info("Task %s (%s) re-queued for retry by %s", task_id, task_name, username)
-            except Exception as exc:
-                logger.warning("Could not republish task %s: %s", task_id, exc)
-
-            await conn.commit()
-
+        logger.info("Task %s re-queued for retry by %s", task_id, username)
         return Response(
             content={"status": "ok", "message": f"Task {task_id} queued for retry"},
             status_code=200,
@@ -211,23 +137,9 @@ class AdminController(Controller):
     async def delete_failed_task(
         self, task_id: str, request: Request, db_engine: AsyncEngine
     ) -> Response[dict]:
-        async with db_engine.connect() as conn:
-            row = (
-                await conn.execute(
-                    text("SELECT id FROM failed_tasks WHERE id = :id"),
-                    {"id": task_id},
-                )
-            ).scalar()
-
-            if not row:
-                raise NotFoundException(detail=f"Failed task not found: {task_id}")
-
-            await conn.execute(
-                text("DELETE FROM failed_tasks WHERE id = :id"),
-                {"id": task_id},
-            )
-            await conn.commit()
-
+        ok = await FailedTaskAdminService.delete_task(db_engine, task_id)
+        if not ok:
+            raise NotFoundException(detail=f"Failed task not found: {task_id}")
         logger.info("Failed task %s deleted by admin", task_id)
         return Response(
             content={"status": "ok", "message": f"Task {task_id} deleted"},
@@ -243,45 +155,9 @@ class AdminController(Controller):
         operation_id="retryAllFailedTasks",
     )
     async def retry_all_failed_tasks(self, request: Request, db_engine: AsyncEngine) -> dict:
-        async with db_engine.connect() as conn:
-            rows = (
-                (
-                    await conn.execute(
-                        text("SELECT id, task_name, payload FROM failed_tasks WHERE resolved = 0")
-                    )
-                )
-                .mappings()
-                .all()
-            )
-
-            user = getattr(request, "user", None)
-            username = getattr(user, "username", "system") if user else "system"
-            now = pendulum.now("UTC").isoformat()
-            retried = 0
-
-            for row in rows:
-                task_id = row["id"]
-                task_name = row["task_name"]
-                payload = row["payload"]
-
-                await conn.execute(
-                    text(
-                        """UPDATE failed_tasks
-                           SET resolved = 1, resolved_at = :now, resolved_by = :by,
-                               resolution_note = 'Queued for retry (bulk)'
-                           WHERE id = :id"""
-                    ),
-                    {"id": task_id, "now": now, "by": username},
-                )
-
-                try:
-                    await _republish_task(db_engine, task_name, payload)
-                    retried += 1
-                except Exception:
-                    logger.warning("Could not republish task %s during bulk retry", task_id)
-
-            await conn.commit()
-
+        user = getattr(request, "user", None)
+        username = getattr(user, "username", "system") if user else "system"
+        retried = await FailedTaskAdminService.retry_all(db_engine, username=username)
         logger.info("Bulk retry: %d tasks re-queued by %s", retried, username)
         return {"status": "ok", "retried": retried}
 
@@ -395,7 +271,7 @@ class AdminController(Controller):
             status_code=200,
         )
 
-    # ── Risk Thresholds admin endpoints (Part V) ────────────────────────
+    # ── Risk Thresholds admin endpoints ────────────────────────────────
 
     @get(
         "/risk-thresholds",
@@ -407,18 +283,8 @@ class AdminController(Controller):
     )
     async def list_risk_thresholds(self, request: Request) -> dict:
         """List all active risk threshold rules."""
-        import duckdb
-
-        from services.risk_guard import RiskGuard
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            guard = RiskGuard(conn)
-            rules = guard.list_thresholds()
-            return {"rules": rules, "total": len(rules)}
-        finally:
-            conn.close()
+        rules = RiskThresholdAdminService.list_thresholds()
+        return {"rules": rules, "total": len(rules)}
 
     @post(
         "/risk-thresholds",
@@ -430,39 +296,18 @@ class AdminController(Controller):
         operation_id="createRiskThreshold",
     )
     async def create_risk_threshold(self, data: RiskThresholdCreate, request: Request) -> dict:
-        import duckdb
-
-        from services.risk_guard import RiskGuard
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            guard = RiskGuard(conn)
-            rule_id = guard.add_threshold(
-                condition=data.condition,
-                output=data.output,
-                valid_from=data.valid_from,
-                valid_to=data.valid_to,
-                priority=data.priority,
-                created_by=getattr(request.user, "username", "admin")
-                if hasattr(request, "user")
-                else "admin",
-            )
-            logger.info(
-                "[ADMIN] Risk threshold created id=%s by=%s",
-                rule_id,
-                getattr(request.user, "username", "admin"),
-            )
-
-            # Publish NATS event risk.thresholds.updated for hot-reload
-            await _publish_nats_event(
-                "risk.thresholds.updated",
-                {"rule_id": rule_id, "action": "created"},
-            )
-
-            return {"status": "ok", "rule_id": rule_id}
-        finally:
-            conn.close()
+        username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+        rule_id = RiskThresholdAdminService.create_threshold(
+            condition=data.condition,
+            output=data.output,
+            valid_from=data.valid_from,
+            valid_to=data.valid_to,
+            priority=data.priority,
+            created_by=username,
+        )
+        logger.info("[ADMIN] Risk threshold created id=%s by=%s", rule_id, username)
+        RiskThresholdAdminService.publish_event(rule_id, "created")
+        return {"status": "ok", "rule_id": rule_id}
 
     @get(
         "/system/health",
@@ -508,38 +353,15 @@ class AdminController(Controller):
         operation_id="deprecateRiskThreshold",
     )
     async def deprecate_risk_threshold(self, rule_id: str, request: Request) -> dict:
-        """Deactivate a risk threshold rule by setting valid_to = today."
-
-        This is a soft-delete: the rule remains in the database but
-        is no longer active.
-        """
-        import duckdb
-
-        from services.risk_guard import RiskGuard
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            guard = RiskGuard(conn)
-            username = (
-                getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+        username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+        ok = RiskThresholdAdminService.deprecate_threshold(rule_id, created_by=username)
+        if not ok:
+            raise NotFoundException(
+                detail=f"Risk threshold rule not found or already deprecated: {rule_id}"
             )
-            ok = guard.deprecate_threshold(rule_id, created_by=username)
-            if not ok:
-                raise NotFoundException(
-                    detail=f"Risk threshold rule not found or already deprecated: {rule_id}"
-                )
-            logger.info("[ADMIN] Risk threshold deprecated id=%s by=%s", rule_id, username)
-
-            # Publish NATS event for hot-reload
-            await _publish_nats_event(
-                "risk.thresholds.updated",
-                {"rule_id": rule_id, "action": "deprecated"},
-            )
-
-            return {"status": "ok", "rule_id": rule_id, "action": "deprecated"}
-        finally:
-            conn.close()
+        logger.info("[ADMIN] Risk threshold deprecated id=%s by=%s", rule_id, username)
+        RiskThresholdAdminService.publish_event(rule_id, "deprecated")
+        return {"status": "ok", "rule_id": rule_id, "action": "deprecated"}
 
     @get(
         "/risk-thresholds/history",
@@ -550,23 +372,8 @@ class AdminController(Controller):
         operation_id="listRiskThresholdsHistory",
     )
     async def list_risk_thresholds_history(self, request: Request) -> dict:
-        """History of all risk threshold rules (append-only — full version history)."
-
-        Since the table is append-only, all entries represent the full
-        history of changes. The response includes active and deprecated rules.
-        """
-        import duckdb
-
-        from services.risk_guard import RiskGuard
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            guard = RiskGuard(conn)
-            rules = guard.list_thresholds_history()
-            return {"rules": rules, "total": len(rules)}
-        finally:
-            conn.close()
+        rules = RiskThresholdAdminService.list_history()
+        return {"rules": rules, "total": len(rules)}
 
     # ── Billing Rules admin endpoints ───────────────────────────────────
 
@@ -579,19 +386,8 @@ class AdminController(Controller):
         operation_id="listBillingRules",
     )
     async def list_billing_rules(self, request: Request) -> dict:
-        """List all active billing rules."""
-        import duckdb
-
-        from services.billing_estimator import BillingEstimator
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            estimator = BillingEstimator(conn)
-            rules = estimator.list_rules(active_only=True)
-            return {"rules": rules, "total": len(rules)}
-        finally:
-            conn.close()
+        rules = BillingRuleAdminService.list_rules(active_only=True)
+        return {"rules": rules, "total": len(rules)}
 
     @post(
         "/billing-rules",
@@ -602,40 +398,17 @@ class AdminController(Controller):
         operation_id="createBillingRule",
     )
     async def create_billing_rule(self, request: Request) -> dict:
-        """Create a new billing rule (append-only, never update)."""
-        import duckdb
-
-        from services.billing_estimator import BillingEstimator
-
         body = await request.json()
-        condition = body.get("condition", {})
-        price = body.get("price", {})
-        valid_from = body.get("valid_from", "2024-01-01")
-        valid_to = body.get("valid_to")
-        priority = body.get("priority", 100)
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            estimator = BillingEstimator(conn)
-            rule_id = estimator.add_rule(
-                condition=condition,
-                price=price,
-                valid_from=valid_from,
-                valid_to=valid_to,
-                priority=priority,
-            )
-            logger.info("[ADMIN] Billing rule created id=%s", rule_id)
-
-            # NATS hot-reload
-            await _publish_nats_event(
-                "billing.rules.updated",
-                {"rule_id": rule_id, "action": "created"},
-            )
-
-            return {"status": "ok", "rule_id": rule_id}
-        finally:
-            conn.close()
+        rule_id = BillingRuleAdminService.create_rule(
+            condition=body.get("condition", {}),
+            price=body.get("price", {}),
+            valid_from=body.get("valid_from", "2024-01-01"),
+            valid_to=body.get("valid_to"),
+            priority=body.get("priority", 100),
+        )
+        logger.info("[ADMIN] Billing rule created id=%s", rule_id)
+        BillingRuleAdminService.publish_event(rule_id, "created")
+        return {"status": "ok", "rule_id": rule_id}
 
     @post(
         "/billing-rules/{rule_id:str}/deprecate",
@@ -646,29 +419,12 @@ class AdminController(Controller):
         operation_id="deprecateBillingRule",
     )
     async def deprecate_billing_rule(self, rule_id: str, request: Request) -> dict:
-        """Deactivate a billing rule."""
-        import duckdb
-
-        from services.billing_estimator import BillingEstimator
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            estimator = BillingEstimator(conn)
-            ok = estimator.deprecate_rule(rule_id)
-            if not ok:
-                raise NotFoundException(detail=f"Billing rule not found: {rule_id}")
-            logger.info("[ADMIN] Billing rule deprecated id=%s", rule_id)
-
-            # NATS hot-reload event
-            await _publish_nats_event(
-                "billing.rules.updated",
-                {"rule_id": rule_id, "action": "deprecated"},
-            )
-
-            return {"status": "ok", "rule_id": rule_id, "action": "deprecated"}
-        finally:
-            conn.close()
+        ok = BillingRuleAdminService.deprecate_rule(rule_id)
+        if not ok:
+            raise NotFoundException(detail=f"Billing rule not found: {rule_id}")
+        logger.info("[ADMIN] Billing rule deprecated id=%s", rule_id)
+        BillingRuleAdminService.publish_event(rule_id, "deprecated")
+        return {"status": "ok", "rule_id": rule_id, "action": "deprecated"}
 
     @get(
         "/billing-rules/history",
@@ -679,19 +435,8 @@ class AdminController(Controller):
         operation_id="listBillingRulesHistory",
     )
     async def list_billing_rules_history(self, request: Request) -> dict:
-        """History of all billing rules (append-only, full version history)."""
-        import duckdb
-
-        from services.billing_estimator import BillingEstimator
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            estimator = BillingEstimator(conn)
-            rules = estimator.list_rules(active_only=False)
-            return {"rules": rules, "total": len(rules)}
-        finally:
-            conn.close()
+        rules = BillingRuleAdminService.list_rules(active_only=False)
+        return {"rules": rules, "total": len(rules)}
 
     # ── Replay Engine admin endpoint ────────────────────────────────────
 
@@ -704,29 +449,7 @@ class AdminController(Controller):
         operation_id="replayDecision",
     )
     async def replay_decision(self, transaction_id: str, request: Request) -> dict:
-        """Replay a historical tax decision and compare verdicts."
-
-        Returns the original verdict, replayed verdict, and match status.
-        """
-        import duckdb
-
-        from services.replay_engine import ReplayEngine
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            engine = ReplayEngine(conn)
-            result = engine.replay(transaction_id)
-            return {
-                "transaction_id": result.transaction_id,
-                "match": result.match,
-                "original_verdict": result.original_verdict,
-                "replayed_verdict": result.replayed_verdict,
-                "differences": result.differences,
-                "error": result.error or None,
-            }
-        finally:
-            conn.close()
+        return ReplayAdminService.replay(transaction_id)
 
     @post(
         "/audit/replay-batch",
@@ -737,50 +460,12 @@ class AdminController(Controller):
         operation_id="replayBatch",
     )
     async def replay_batch(self, request: Request) -> dict:
-        """Replay all decisions in a date range."
-
-        Body:
-            period_start: str (YYYY-MM-DD)
-            period_end: str (YYYY-MM-DD)
-            limit: int (default 1000)
-        """
-        import duckdb
-
-        from services.replay_engine import ReplayEngine
-
         body = await request.json()
-        period_start = body.get("period_start", "2024-01-01")
-        period_end = body.get("period_end", pendulum.now("UTC").format("YYYY-MM-DD"))
-        limit = body.get("limit", 1000)
-
-        try:
-            start = pendulum.Date.fromisoformat(period_start)
-            end = pendulum.Date.fromisoformat(period_end)
-        except (ValueError, TypeError):
-            return {"error": "Invalid date format. Use YYYY-MM-DD."}
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            engine = ReplayEngine(conn)
-            results = engine.replay_batch(start, end, limit=int(limit))
-            matches = sum(1 for r in results if r.match)
-            return {
-                "total": len(results),
-                "matches": matches,
-                "mismatches": len(results) - matches,
-                "results": [
-                    {
-                        "transaction_id": r.transaction_id,
-                        "match": r.match,
-                        "error": r.error or None,
-                        "differences": r.differences,
-                    }
-                    for r in results
-                ],
-            }
-        finally:
-            conn.close()
+        return ReplayAdminService.replay_batch(
+            period_start=body.get("period_start", "2024-01-01"),
+            period_end=body.get("period_end", pendulum.now("UTC").format("YYYY-MM-DD")),
+            limit=int(body.get("limit", 1000)),
+        )
 
     # ── Rules admin endpoints ───────────────────────────────────────────
 
@@ -793,31 +478,16 @@ class AdminController(Controller):
         operation_id="listTaxRules",
     )
     async def list_rules(self, request: Request) -> dict:
-        """List all tax rules with optional filtering."""
-        import duckdb
-
-        from services.rule_store import RuleStore
-
         active_only = request.query_params.get("active_only", "false").lower() in ("true", "1")
         limit = int(request.query_params.get("limit", "100"))
         offset = int(request.query_params.get("offset", "0"))
-        date_filter = request.query_params.get("date")
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            store = RuleStore(conn)
-            store.ensure_schema()
-            rules = store.list_rules(
-                active_only=active_only,
-                limit=limit,
-                offset=offset,
-                date_filter=date_filter,
-            )
-            total = store.count_rules(active_only=active_only)
-            return {"rules": rules, "total": total, "limit": limit, "offset": offset}
-        finally:
-            conn.close()
+        rules, total = TaxRuleAdminService.list_rules(
+            active_only=active_only,
+            limit=limit,
+            offset=offset,
+            date_filter=request.query_params.get("date"),
+        )
+        return {"rules": rules, "total": total, "limit": limit, "offset": offset}
 
     @post(
         "/rules",
@@ -828,44 +498,24 @@ class AdminController(Controller):
         operation_id="createTaxRule",
     )
     async def create_rule(self, request: Request) -> dict:
-        """Create a new tax rule (append-only, never update)."""
-        import duckdb
-
-        from services.rule_store import RuleStore
-
         body = await request.json()
         condition_sql = body.get("condition_sql")
         if not condition_sql:
             raise ValidationException(detail="condition_sql is required")
 
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            store = RuleStore(conn)
-            store.ensure_schema()
-            username = (
-                getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
-            )
-            rule_id = store.add_rule(
-                condition_sql=condition_sql,
-                action=body.get("action", {}),
-                valid_from=body.get("valid_from", "2024-01-01"),
-                valid_to=body.get("valid_to"),
-                priority=body.get("priority", 100),
-                description_template=body.get("description_template"),
-                created_by=username,
-            )
-            logger.info("[ADMIN] Tax rule created id=%s by=%s", rule_id, username)
-
-            # NATS hot-reload event
-            await _publish_nats_event(
-                "tax.rules.updated",
-                {"rule_id": rule_id, "action": "created"},
-            )
-
-            return {"status": "ok", "rule_id": rule_id}
-        finally:
-            conn.close()
+        username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+        rule_id = TaxRuleAdminService.create_rule(
+            condition_sql=condition_sql,
+            action=body.get("action", {}),
+            valid_from=body.get("valid_from", "2024-01-01"),
+            valid_to=body.get("valid_to"),
+            priority=body.get("priority", 100),
+            description_template=body.get("description_template"),
+            created_by=username,
+        )
+        logger.info("[ADMIN] Tax rule created id=%s by=%s", rule_id, username)
+        TaxRuleAdminService.publish_event(rule_id, "created")
+        return {"status": "ok", "rule_id": rule_id}
 
     @post(
         "/rules/{rule_id:str}/close",
@@ -876,36 +526,18 @@ class AdminController(Controller):
         operation_id="closeTaxRule",
     )
     async def close_rule(self, rule_id: str, request: Request) -> dict:
-        """Close a tax rule (set valid_to to today)."""
-        import duckdb
-
-        from services.rule_store import RuleStore
-
         body = await request.json() if request.content_length else {}
-        valid_to = body.get("valid_to")
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            store = RuleStore(conn)
-            store.ensure_schema()
-            username = (
-                getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
-            )
-            ok = store.close_rule(rule_id, valid_to=valid_to, closed_by=username)
-            if not ok:
-                raise NotFoundException(detail=f"Rule not found or already closed: {rule_id}")
-            logger.info("[ADMIN] Tax rule closed id=%s by=%s", rule_id, username)
-
-            # NATS hot-reload event
-            await _publish_nats_event(
-                "tax.rules.updated",
-                {"rule_id": rule_id, "action": "closed"},
-            )
-
-            return {"status": "ok", "rule_id": rule_id, "action": "closed"}
-        finally:
-            conn.close()
+        username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+        ok = TaxRuleAdminService.close_rule(
+            rule_id,
+            valid_to=body.get("valid_to"),
+            closed_by=username,
+        )
+        if not ok:
+            raise NotFoundException(detail=f"Rule not found or already closed: {rule_id}")
+        logger.info("[ADMIN] Tax rule closed id=%s by=%s", rule_id, username)
+        TaxRuleAdminService.publish_event(rule_id, "closed")
+        return {"status": "ok", "rule_id": rule_id, "action": "closed"}
 
     @get(
         "/rules/{rule_id:str}",
@@ -916,22 +548,10 @@ class AdminController(Controller):
         operation_id="getTaxRule",
     )
     async def get_rule(self, rule_id: str, request: Request) -> dict:
-        """Get a single tax rule by ID."""
-        import duckdb
-
-        from services.rule_store import RuleStore
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            store = RuleStore(conn)
-            store.ensure_schema()
-            rule = store.get_rule(rule_id)
-            if not rule:
-                raise NotFoundException(detail=f"Rule not found: {rule_id}")
-            return rule
-        finally:
-            conn.close()
+        rule = TaxRuleAdminService.get_rule(rule_id)
+        if not rule:
+            raise NotFoundException(detail=f"Rule not found: {rule_id}")
+        return rule
 
     @get(
         "/rules/changelog",
@@ -942,23 +562,11 @@ class AdminController(Controller):
         operation_id="listRuleChanges",
     )
     async def list_rule_changes(self, request: Request) -> dict:
-        """Get rule change log."""
-        import duckdb
-
-        from services.rule_store import RuleStore
-
-        rule_id = request.query_params.get("rule_id")
-        limit = int(request.query_params.get("limit", "50"))
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            store = RuleStore(conn)
-            store.ensure_schema()
-            changes = store.get_change_log(rule_id=rule_id, limit=limit)
-            return {"changes": changes, "total": len(changes)}
-        finally:
-            conn.close()
+        changes = TaxRuleAdminService.get_changelog(
+            rule_id=request.query_params.get("rule_id"),
+            limit=int(request.query_params.get("limit", "50")),
+        )
+        return {"changes": changes, "total": len(changes)}
 
     # ── Ledger Validation Rules admin endpoints ────────────────────────
 
@@ -971,52 +579,9 @@ class AdminController(Controller):
         operation_id="listLedgerRules",
     )
     async def list_ledger_rules(self, request: Request) -> dict:
-        """List all ledger validation rules — inline DuckDB ops."""
-        import duckdb
-        import uuid as _uuid
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            # Create table if not exists (idempotent)
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS ledger_validation_rules (
-                    rule_id            VARCHAR PRIMARY KEY,
-                    transaction_type   VARCHAR NOT NULL,
-                    debit_account_id   INTEGER NOT NULL,
-                    credit_account_id  INTEGER NOT NULL,
-                    amount_sign        VARCHAR NOT NULL DEFAULT 'POSITIVE',
-                    priority           INTEGER NOT NULL DEFAULT 100,
-                    valid_from         DATE NOT NULL DEFAULT '2024-01-01',
-                    valid_to           DATE,
-                    created_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    created_by         VARCHAR DEFAULT 'system'
-                )
-            """)
-            rows = conn.execute(
-                """SELECT rule_id, transaction_type, debit_account_id, credit_account_id,
-                          amount_sign, priority, valid_from, valid_to, created_at, created_by
-                   FROM ledger_validation_rules
-                   ORDER BY priority ASC, rule_id ASC"""
-            ).fetchall()
-            rules = [
-                {
-                    "rule_id": str(r[0]),
-                    "transaction_type": str(r[1]),
-                    "debit_account_id": int(r[2]),
-                    "credit_account_id": int(r[3]),
-                    "amount_sign": str(r[4]),
-                    "priority": int(r[5]),
-                    "valid_from": str(r[6]),
-                    "valid_to": str(r[7]) if r[7] else None,
-                    "created_at": str(r[8]),
-                    "created_by": str(r[9]),
-                }
-                for r in rows
-            ]
-            return {"rules": rules, "total": len(rules)}
-        finally:
-            conn.close()
+        """List all ledger validation rules."""
+        rules = LedgerRuleAdminService.list_rules()
+        return {"rules": rules, "total": len(rules)}
 
     @post(
         "/ledger-rules",
@@ -1027,77 +592,23 @@ class AdminController(Controller):
         operation_id="createLedgerRule",
     )
     async def create_ledger_rule(self, request: Request) -> dict:
-        """Create a new ledger validation rule (append-only).
-
-        Body:
-            transaction_type: str (EXPENSE, REVENUE, CORRECTION)
-            debit_account_id: int
-            credit_account_id: int
-            amount_sign: str (POSITIVE, NEGATIVE, ANY) — default POSITIVE
-            priority: int — default 100
-        """
-        import duckdb
-        import uuid as _uuid
-
+        """Create a new ledger validation rule (append-only)."""
         body = await request.json()
-        transaction_type = body.get("transaction_type", "EXPENSE").upper()
-        debit_account_id = int(body["debit_account_id"])
-        credit_account_id = int(body["credit_account_id"])
+        username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
 
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS ledger_validation_rules (
-                    rule_id            VARCHAR PRIMARY KEY,
-                    transaction_type   VARCHAR NOT NULL,
-                    debit_account_id   INTEGER NOT NULL,
-                    credit_account_id  INTEGER NOT NULL,
-                    amount_sign        VARCHAR NOT NULL DEFAULT 'POSITIVE',
-                    priority           INTEGER NOT NULL DEFAULT 100,
-                    valid_from         DATE NOT NULL DEFAULT '2024-01-01',
-                    valid_to           DATE,
-                    created_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    created_by         VARCHAR DEFAULT 'system'
-                )
-            """)
-            rule_id = f"ledger_{_uuid.uuid4().hex[:12]}"
-            username = (
-                getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
-            )
-            conn.execute(
-                """INSERT INTO ledger_validation_rules
-                   (rule_id, transaction_type, debit_account_id, credit_account_id,
-                    amount_sign, priority, valid_from, valid_to, created_by)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                (
-                    rule_id,
-                    transaction_type,
-                    debit_account_id,
-                    credit_account_id,
-                    body.get("amount_sign", "POSITIVE"),
-                    body.get("priority", 100),
-                    body.get("valid_from", "2024-01-01"),
-                    body.get("valid_to"),
-                    username,
-                ),
-            )
-            logger.info(
-                "[ADMIN] Ledger rule created id=%s type=%s by=%s",
-                rule_id,
-                transaction_type,
-                username,
-            )
-
-            # NATS hot-reload event
-            await _publish_nats_event(
-                "ledger.rules.updated",
-                {"rule_id": rule_id, "action": "created"},
-            )
-
-            return {"status": "ok", "rule_id": rule_id}
-        finally:
-            conn.close()
+        rule_id = LedgerRuleAdminService.create_rule(
+            transaction_type=body.get("transaction_type", "EXPENSE"),
+            debit_account_id=int(body["debit_account_id"]),
+            credit_account_id=int(body["credit_account_id"]),
+            amount_sign=body.get("amount_sign", "POSITIVE"),
+            priority=body.get("priority", 100),
+            valid_from=body.get("valid_from", "2024-01-01"),
+            valid_to=body.get("valid_to"),
+            created_by=username,
+        )
+        logger.info("[ADMIN] Ledger rule created id=%s by=%s", rule_id, username)
+        LedgerRuleAdminService.publish_event(rule_id, "created")
+        return {"status": "ok", "rule_id": rule_id}
 
     @delete(
         "/ledger-rules/{rule_id:str}",
@@ -1109,27 +620,9 @@ class AdminController(Controller):
     )
     async def delete_ledger_rule(self, rule_id: str, request: Request) -> dict:
         """Deactivate a ledger validation rule (soft-delete via valid_to)."""
-        import duckdb
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            conn.execute(
-                """UPDATE ledger_validation_rules
-                   SET valid_to = CURRENT_DATE - INTERVAL '1 day'
-                   WHERE rule_id = ? AND valid_to IS NULL""",
-                (rule_id,),
-            )
-
-            # NATS hot-reload event
-            await _publish_nats_event(
-                "ledger.rules.updated",
-                {"rule_id": rule_id, "action": "deprecated"},
-            )
-
-            return {"status": "ok", "rule_id": rule_id, "action": "deprecated"}
-        finally:
-            conn.close()
+        LedgerRuleAdminService.delete_rule(rule_id)
+        LedgerRuleAdminService.publish_event(rule_id, "deprecated")
+        return {"status": "ok", "rule_id": rule_id, "action": "deprecated"}
 
     # ── Fallback Events admin endpoints ─────────────────────────────────
 
@@ -1143,27 +636,15 @@ class AdminController(Controller):
     )
     async def list_fallback_events(self, request: Request) -> dict:
         """List fallback events (no-matching-rule incidents)."""
-        import duckdb
-
-        from services.fallback_handler import FallbackHandler
-
         status_filter = request.query_params.get("status")
         limit = int(request.query_params.get("limit", "50"))
         offset = int(request.query_params.get("offset", "0"))
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            handler = FallbackHandler(conn)
-            events = handler.list_events(
-                status_filter=status_filter if status_filter else None,
-                limit=limit,
-                offset=offset,
-            )
-            pending = handler.count_pending()
-            return {"events": events, "total": len(events), "pending": pending}
-        finally:
-            conn.close()
+        events, pending = FallbackEventAdminService.list_events(
+            status_filter=status_filter or None,
+            limit=limit,
+            offset=offset,
+        )
+        return {"events": events, "total": len(events), "pending": pending}
 
     @post(
         "/fallback-events/{event_id:str}/resolve",
@@ -1175,28 +656,19 @@ class AdminController(Controller):
     )
     async def resolve_fallback_event(self, event_id: str, request: Request) -> dict:
         """Resolve a fallback event."""
-        import duckdb
-
-        from services.fallback_handler import FallbackHandler
-
         body = await request.json() if request.content_length else {}
-        resolution_note = body.get("resolution_note", "Resolved via admin panel")
+        username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
 
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            handler = FallbackHandler(conn)
-            username = (
-                getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
+        ok = FallbackEventAdminService.resolve_event(
+            event_id,
+            resolution_note=body.get("resolution_note", "Resolved via admin panel"),
+            assigned_to=username,
+        )
+        if not ok:
+            raise NotFoundException(
+                detail=f"Fallback event not found or already resolved: {event_id}"
             )
-            ok = handler.resolve(event_id, resolution_note=resolution_note, assigned_to=username)
-            if not ok:
-                raise NotFoundException(
-                    detail=f"Fallback event not found or already resolved: {event_id}"
-                )
-            return {"status": "ok", "event_id": event_id, "action": "resolved"}
-        finally:
-            conn.close()
+        return {"status": "ok", "event_id": event_id, "action": "resolved"}
 
     # ── Integrity Verification admin endpoint ─────────────────────────
 
@@ -1220,61 +692,22 @@ class AdminController(Controller):
             system_lock: bool (default False) — lock system on violation
             incremental: bool (default False) — incremental verification
         """
-        import duckdb
-
-        from services.integrity_verifier import IntegrityVerifier
-
         body = await request.json() if request.content_length else {}
-        handle_violation = body.get("handle_violation", True)
-        system_lock = body.get("system_lock", False)
-        incremental = body.get("incremental", False)
 
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            verifier = IntegrityVerifier(conn)
+        result = IntegrityAdminService.verify(
+            handle_violation=body.get("handle_violation", True),
+            system_lock=body.get("system_lock", False),
+            incremental=body.get("incremental", False),
+        )
 
-            if incremental:
-                report = verifier.verify_incremental()
-            else:
-                report = verifier.verify_all()
+        if result.get("violations"):
+            logger.critical(
+                "[ADMIN] Integrity violation detected id=%s trace=%s",
+                result.get("violation_id"),
+                result.get("first_inconsistent_trace"),
+            )
 
-            result = {
-                "status": report.status,
-                "total_records": report.total_records,
-                "verified_at": report.verified_at,
-                "violations": [],
-                "violation_id": None,
-                "system_locked": False,
-                "checkpoint": None,
-            }
-
-            if report.status == "violation" and report.violations:
-                # Limit violations in response to first 10
-                result["violations"] = report.violations[:10]
-                result["first_inconsistent_trace"] = report.first_inconsistent_trace
-
-                if handle_violation:
-                    violation_id = verifier.handle_violation(report)
-                    result["violation_id"] = violation_id
-                    logger.critical(
-                        "[ADMIN] Integrity violation detected id=%s trace=%s",
-                        violation_id,
-                        report.first_inconsistent_trace,
-                    )
-
-                    if system_lock:
-                        verifier.system_lock(lock=True)
-                        result["system_locked"] = True
-
-            # Include checkpoint info
-            cp = verifier.get_latest_checkpoint()
-            if cp:
-                result["checkpoint"] = cp
-
-            return result
-        finally:
-            conn.close()
+        return result
 
     @post(
         "/fallback-events/{event_id:str}/ignore",
@@ -1286,22 +719,12 @@ class AdminController(Controller):
     )
     async def ignore_fallback_event(self, event_id: str, request: Request) -> dict:
         """Ignore a fallback event."""
-        import duckdb
-
-        from services.fallback_handler import FallbackHandler
-
-        config = AppConfig()
-        conn = duckdb.connect(str(config.duckdb_path))
-        try:
-            handler = FallbackHandler(conn)
-            ok = handler.ignore(event_id)
-            if not ok:
-                raise NotFoundException(
-                    detail=f"Fallback event not found or already resolved: {event_id}"
-                )
-            return {"status": "ok", "event_id": event_id, "action": "ignored"}
-        finally:
-            conn.close()
+        ok = FallbackEventAdminService.ignore_event(event_id)
+        if not ok:
+            raise NotFoundException(
+                detail=f"Fallback event not found or already resolved: {event_id}"
+            )
+        return {"status": "ok", "event_id": event_id, "action": "ignored"}
 
     # ── Hot-Reload Health endpoint ───────────────────────────────────────
 

@@ -63,12 +63,12 @@ from nexus_ai.events.projections import (
 
 from nexus_ai.events.projection_worker import ProjectionWorker
 
-from nexus_ai.events.event_schema import (
+from nexus_ai.events.domain_events import (
     DomainEventSchemaRegistry,
-    get_all_event_schemas,
-    get_event_schema_by_type,
+    get_all_schemas as get_all_event_schemas,
+    get_schema as get_event_schema_by_type,
     get_event_type_map,
-    get_event_schema_summary,
+    get_schema_summary as get_event_schema_summary,
 )
 
 __all__ = [

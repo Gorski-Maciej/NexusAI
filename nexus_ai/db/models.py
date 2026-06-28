@@ -549,14 +549,9 @@ _PARTIAL_INDEXES: dict[str, list[str]] = {
 }
 
 
-def create_partial_indexes(engine) -> None:
-    """Utwórz partial indexes dla tabel z _PARTIAL_INDEXES.
+def create_partial_indexes(_engine) -> None:
+    """[DEPRECATED] Partial indexes przeniesione do migracji 0004.
 
-    DEPRECATED: Partial indexes przeniesione do migracji 0004 (native SQL).
-    Ta funkcja jest pusta (safety-net dla świeżych baz).
+    Ta funkcja jest pusta i zostanie usunięta w następnej wersji.
+    Wszystkie partial indexes są tworzone przez native SQL migration 0004.
     """
-    from structlog import get_logger as _get_log
-
-    _log = _get_log("nexus.db.indexes")
-    _log.debug("[DB] create_partial_indexes is deprecated — indexes in migration 0004")
-    # Partial indexes are now created by native SQL migration 0004

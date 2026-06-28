@@ -50,7 +50,6 @@ class FixedAssetsService:
         )
         self.duckdb.execute(
             """
-            INSERT INTO depreciation_schedule (;
             INSERT INTO depreciation_schedule (
                 asset_id, planned_date, amount, is_posted, status, ledger_id, transfer_code
             )

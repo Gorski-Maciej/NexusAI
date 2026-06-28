@@ -60,7 +60,10 @@ class DunningEngine:
         )""")
 
     def ensure_collectible_view(self) -> None:
-        self.duckdb.execute(f"""CREATE OR REPLACE VIEW v_collectible_invoices AS
+        min_amount = self.guardrails.min_amount_pln
+        cooldown = self.guardrails.cooldown_days
+        self.duckdb.execute(
+            """CREATE OR REPLACE VIEW v_collectible_invoices AS
             WITH last_dunning AS (
                 SELECT invoice_id, MAX(sent_at) AS last_dunning_date FROM dunning_history GROUP BY 1
             )
@@ -71,11 +74,13 @@ class DunningEngine:
                    date_diff('day', i.due_date, current_date) AS days_overdue
             FROM invoices_replica i
             LEFT JOIN last_dunning ld ON ld.invoice_id = i.id
-            WHERE COALESCE(i.balance_due, i.amount_gross) >= {self.guardrails.min_amount_pln}
+            WHERE COALESCE(i.balance_due, i.amount_gross) >= ?
               AND COALESCE(i.balance_due, i.amount_gross) > 0
               AND i.due_date < current_date
-              AND (ld.last_dunning_date IS NULL OR ld.last_dunning_date < current_date - INTERVAL {self.guardrails.cooldown_days} DAY)
-        """)
+              AND (ld.last_dunning_date IS NULL OR ld.last_dunning_date < current_date - INTERVAL ? DAY)
+        """,
+            (min_amount, cooldown),
+        )
 
     @staticmethod
     def determine_level(days_overdue: int) -> int | None:

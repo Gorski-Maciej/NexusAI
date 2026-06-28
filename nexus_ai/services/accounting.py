@@ -1,19 +1,12 @@
 from __future__ import annotations
 
-import warnings
 from typing import final
 
 from decimal import ROUND_HALF_UP, Decimal
 
-import httpx
-import pendulum
-
 
 @final
 class AccountingService:
-    def __init__(self):
-        self.base_url = "https://wl-api.mf.gov.pl/api/search/nip/"
-
     @staticmethod
     def validate_amounts(net: Decimal, gross: Decimal) -> bool:
         if net <= 0 or gross <= 0 or gross < net:
@@ -40,23 +33,3 @@ class AccountingService:
     def calculate_vat(net: Decimal, rate: float = 0.23) -> Decimal:
         vat = net * Decimal(str(rate))
         return vat.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-
-    async def verify_nip(self, nip: str) -> dict | None:
-        """DEPRECATED: Użyj WhiteListService zamiast AccountingService.verify_nip()."""
-        warnings.warn(
-            "AccountingService.verify_nip() is deprecated. "
-            "Use WhiteListService.verify_bank_account() from nexus_ai.services.white_list_service instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-        from nexus_ai.services.white_list_service import WhiteListService
-
-        service = WhiteListService()
-        try:
-            result = await service.verify_bank_account(nip, "")
-            return {"nip": nip, "valid": result}
-        except Exception:
-            return None
-        finally:
-            await service.close()

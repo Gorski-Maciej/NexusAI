@@ -154,19 +154,12 @@ class AsyncEventStore:
     async def close(self) -> None:
         """Zamknij połączenie."""
         if self._conn is not None:
-            try:
-
-                def _optimize() -> None:
-                    try:
-                        self._conn.execute("PRAGMA optimize;")
-                    except sqlite3.OperationalError as exc:
-                        logger.debug("[EVENT-STORE] optimize failed: %s", exc)
-                    except Exception as exc:
-                        logger.warning("[EVENT-STORE] Unexpected error during optimize: %s", exc)
-
-                await anyio.to_thread.run_sync(_optimize)
-            except (OSError, sqlite3.Error) as exc:
-                logger.warning("[EVENT-STORE] Close error: %s", exc)
+            def _optimize() -> None:
+                try:
+                    self._conn.execute("PRAGMA optimize;")
+                except (sqlite3.OperationalError, OSError) as exc:
+                    logger.debug("[EVENT-STORE] optimize failed: %s", exc)
+            await anyio.to_thread.run_sync(_optimize)
             await anyio.to_thread.run_sync(self._pool.close_conn, str(self._db_path))
             self._conn = None
 
@@ -269,7 +262,8 @@ class AsyncEventStore:
             return event_ids
 
         # SUPERMOC: Prawdziwy OTel span dla operacji append z Span Events
-        await self._trace_append(aggregate_type, aggregate_id, events)
+        # _trace_append was removed — method didn't exist and was never awaited
+        # Use _get_tracer() to create spans if OTel tracing is needed
 
         t0 = _time.perf_counter()
         result = await anyio.to_thread.run_sync(_sync_append)
@@ -674,15 +668,6 @@ class AsyncEventStore:
                     row_group_size=65536,
                     write_statistics=True,
                 )
-
-            pq.write_table(
-                table,
-                str(archive_file),
-                compression="ZSTD",
-                compression_level=7,
-                row_group_size=65536,
-                write_statistics=True,
-            )
 
             # Usuń zarchiwizowane eventy z SQLite
             placeholders = ",".join("?" for _ in event_ids)

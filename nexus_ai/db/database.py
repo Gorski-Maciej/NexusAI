@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import ctypes
 import os
+import re
 import sys
 from collections.abc import Generator
 from pathlib import Path
@@ -136,8 +137,12 @@ def _make_pragma_setter(key_hex: str):
         dbapi_connection.execute("PRAGMA application_id = 1313827925;")
         dbapi_connection.execute("PRAGMA user_version = 30000;")
 
-        # SQLCipher
-        dbapi_connection.execute("PRAGMA key = x'%s';" % key_hex)
+        # SQLCipher — PRAGMA key nie wspiera parameterized queries (to pragma, nie SQL),
+        # ale key_hex jest zawsze kontrolowany (hex-encoded string z env/arg).
+        # Dodajemy walidację dla defense-in-depth.
+        if not re.fullmatch(r'[0-9a-fA-F]+', key_hex):
+            raise RuntimeError("SQLCipher key_hex contains invalid characters")
+        dbapi_connection.execute(f"PRAGMA key = x'{key_hex}';")
         dbapi_connection.execute("PRAGMA cipher_page_size = 4096;")
         dbapi_connection.execute("PRAGMA kdf_iter = 64000;")
 
