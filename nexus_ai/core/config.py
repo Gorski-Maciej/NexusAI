@@ -812,239 +812,89 @@ class AppConfig(Struct, kw_only=True):
     # SUPERMOC: Zastępuje ręczny _TOML_FIELD_MAP (34 linie) auto-mapowaniem
     # przez msgspec.inspect. Każda nowa sekcja → dodajesz tylko wpis tutaj.
     # Klucz: nazwa sekcji w TOML, Wartość: klasa Struct + prefix env var.
-    _TOML_SECTIONS: ClassVar[dict[str, tuple[type[Struct], str]]] = {
-        "app": (_AppSection, "NEXUS_"),
-        "nats": (_NatsSection, "NEXUS_NATS_"),
-        "stamina": (_StaminaSection, "NEXUS_STAMINA_"),
-        "storage": (_StorageSection, "NEXUS_STORAGE_"),
-        "security": (_SecuritySection, "NEXUS_SECURITY_"),
-        "integrations": (_IntegrationsSection, "NEXUS_INTEGRATIONS_"),
-        "tax": (_TaxSection, "NEXUS_TAX_"),
-        "ai": (_AiSection, "NEXUS_AI_"),
-        "tigerbeetle": (_TigerbeetleSection, "NEXUS_TB_"),
-        "opa": (_OpaSection, "NEXUS_OPA_"),
-    }
-
-    # ── Auto-generowane mapowanie Struct field → (toml_section, toml_field) ──
-    # SUPERMOC: Wygenerowane z _TOML_SECTIONS przez _build_field_map().
-    # Zastępuje ręczny _TOML_FIELD_MAP (34+ linii) auto-mapowaniem.
-    # Każda nowa sekcja w TOML → dodaj do _TOML_SECTIONS → reszta auto.
-    _TOML_FIELD_MAP: ClassVar[dict[str, tuple[str, str]]] = {}
-
-    # Manualne nadpisania dla pól gdzie AppConfig nazwa ≠ TOML Struct nazwa
-    # SUPERMOC: Auto-map generuje wpisy z _TOML_SECTIONS, ten dict nadpisuje
-    # tylko te pola, gdzie nazwy się różnią (np. sqlite_file_name → sqlite_file).
-    _TOML_OVERRIDES: ClassVar[dict[str, tuple[str, str]]] = {
-        "sqlite_file_name": ("app", "sqlite_file"),
-        "duckdb_file_name": ("app", "duckdb_file"),
-        "storage_dir_name": ("app", "storage_dir"),
-        "idempotency_db_name": ("app", "idempotency_db"),
-        "cors_origins_raw": ("app", "cors_origins"),
-        "migration_baseline_name": ("app", "migration_baseline_file"),
+    _TOML_FIELD_MAP: ClassVar[dict[str, tuple[str, str]]] = {
+        "sqlite_file_name": ("app", "sqlite_file"), "duckdb_file_name": ("app", "duckdb_file"),
+        "storage_dir_name": ("app", "storage_dir"), "idempotency_db_name": ("app", "idempotency_db"),
+        "cors_origins_raw": ("app", "cors_origins"), "migration_baseline_name": ("app", "migration_baseline_file"),
         "migration_checksum_baseline_name": ("app", "migration_checksum_baseline_file"),
-        "nats_url": ("nats", "url"),
-        "stamina_retry_attempts": ("stamina", "retry_attempts"),
-        "stamina_retry_timeout": ("stamina", "retry_timeout"),
-        "stamina_circuit_breaker_enabled": ("stamina", "circuit_breaker_enabled"),
+        "nats_url": ("nats", "url"), "stamina_retry_attempts": ("stamina", "retry_attempts"),
+        "stamina_retry_timeout": ("stamina", "retry_timeout"), "stamina_circuit_breaker_enabled": ("stamina", "circuit_breaker_enabled"),
         "stamina_circuit_breaker_cooldown": ("stamina", "circuit_breaker_cooldown"),
-        "storage_protocol": ("storage", "protocol"),
-        "storage_root": ("storage", "root"),
-        "storage_auto_mkdir": ("storage", "auto_mkdir"),
-        "storage_cache_size_mb": ("storage", "cache_size_mb"),
-        "storage_transactional": ("storage", "transactional"),
-        "storage_chain_enabled": ("storage", "chain_enabled"),
+        "storage_protocol": ("storage", "protocol"), "storage_root": ("storage", "root"),
+        "storage_auto_mkdir": ("storage", "auto_mkdir"), "storage_cache_size_mb": ("storage", "cache_size_mb"),
+        "storage_transactional": ("storage", "transactional"), "storage_chain_enabled": ("storage", "chain_enabled"),
         "storage_chain_cache_storage": ("storage", "chain_cache_storage"),
+        "max_invoice_upload_mb": ("app", "max_invoice_upload_mb"), "max_attachment_upload_mb": ("app", "max_attachment_upload_mb"),
+        "jwt_expiration_seconds": ("app", "jwt_expiration_seconds"), "refresh_token_days": ("app", "refresh_token_days"),
+        "db_pool_size": ("app", "db_pool_size"), "db_pool_overflow": ("app", "db_pool_overflow"),
+        "max_task_retries": ("app", "max_task_retries"), "retry_backoff_base_seconds": ("app", "retry_backoff_base_seconds"),
+        "retry_backoff_max_seconds": ("app", "retry_backoff_max_seconds"),
+        "debug": ("app", "debug"), "environment": ("app", "environment"),
+        "csrf_enabled": ("app", "csrf_enabled"), "duckdb_memory_limit": ("app", "duckdb_memory_limit"),
+        "duckdb_threads": ("app", "duckdb_threads"),
+        "autopilot_auto_post_threshold": ("app", "autopilot_auto_post_threshold"),
+        "autopilot_suggest_threshold": ("app", "autopilot_suggest_threshold"),
+        "autopilot_ask_threshold": ("app", "autopilot_ask_threshold"),
+        "rules_max_invoice_amount": ("app", "rules_max_invoice_amount"),
+        "analytics_anomaly_threshold": ("app", "analytics_anomaly_threshold"),
+        "decision_timeout_seconds": ("app", "decision_timeout_seconds"),
+        "opa_enabled": ("opa", "enabled"), "opa_url": ("opa", "url"),
+        "opa_timeout_seconds": ("opa", "timeout_seconds"),
     }
-
-    @classmethod
-    def _build_field_map(cls) -> dict[str, tuple[str, str]]:
-        """SUPERMOC TOML: Auto-generuj mapowanie Struct→TOML z __struct_fields__.
-
-        Zamiast ręcznego _TOML_FIELD_MAP (34 linii), przeglądamy wszystkie
-        zarejestrowane sekcje i ich pola Struct, generując mapowanie
-        (field_name → (section_name, field_name)).
-
-        Returns:
-            Słownik {field_name: (section_name, field_name)}.
-        """
-        result: dict[str, tuple[str, str]] = {}
-        for section_name, (section_cls, _) in cls._TOML_SECTIONS.items():
-            try:
-                for field in msgspec.inspect(section_cls).fields:
-                    result[field.name] = (section_name, field.name)
-            except Exception:
-                continue
-        return result
 
     @classmethod
     def _load_toml_file(cls, env: str | None = None) -> _TomlConfigRoot:
-        """Wczytaj plik TOML dla danego środowiska z typowaną walidacją (msgspec schema).
-
-        Fazа 2: Używa ``msgspec.toml.decode(..., type=_TomlConfigRoot)`` do
-        typowanej walidacji całego pliku TOML. Błędy walidacji (DecodeError,
-        ValidationError) są logowane i nie przerywają startu — aplikacja używa
-        defaultów z AppConfig.
-
-        Args:
-            env: Nazwa środowiska ("dev", "stage", "prod").
-                 Domyślnie z NEXUS_ENV lub "dev".
-
-        Returns:
-            Ztypowany obiekt _TomlConfigRoot z danymi TOML (puste sekcje = None).
-        """
         if env is None:
             env = os.getenv("NEXUS_ENV", "dev").lower().strip()
         toml_path = ENV_CONFIG_DIR / f"{env}.toml"
         if not toml_path.exists():
-            logger.warning("[Config] TOML file not found: %s — using defaults", toml_path)
             return _TomlConfigRoot()
         try:
             with open(toml_path, "rb") as f:
-                config_root = toml.decode(f.read(), type=_TomlConfigRoot)
-            logger.info(
-                "[Config] Loaded + validated TOML: %s (app=%s, nats=%s, integrations=%s)",
-                toml_path.name,
-                "present" if config_root.app else "defaults",
-                "present" if config_root.nats else "defaults",
-                "present" if config_root.integrations else "defaults",
-            )
-            return config_root
-        except msgspec.DecodeError as exc:
-            logger.warning("[Config] TOML decode error in %s: %s — using defaults", toml_path, exc)
-            return _TomlConfigRoot()
-        except msgspec.ValidationError as exc:
-            logger.warning(
-                "[Config] TOML validation error in %s: %s — using defaults", toml_path, exc
-            )
-            return _TomlConfigRoot()
+                return toml.decode(f.read(), type=_TomlConfigRoot)
         except Exception as exc:
-            logger.warning("[Config] Failed to load %s: %s — using defaults", toml_path, exc)
+            logger.warning("[Config] TOML error in %s: %s — using defaults", toml_path, exc)
             return _TomlConfigRoot()
 
     @classmethod
-    def _resolve_field_value(
-        cls,
-        field_name: str,
-        toml_root: _TomlConfigRoot,
-    ) -> Any | None:
-        """Rozwiąż wartość pola: env var > TOML (msgspec schema) > None (użyj defaultu).
-
-        Fazа 2: TOML jest sparsowany przez ``msgspec.toml.decode(..., type=_TomlConfigRoot)``,
-        więc wartości mają już poprawne typy (int, float, bool, str).
-        Nie potrzebujemy już ``_cast()`` ani ``_get_field_type()``.
-
-        Args:
-            field_name: Nazwa pola w AppConfig.
-            toml_root: Ztypowany obiekt _TomlConfigRoot.
-
-        Returns:
-            Wartość lub None (oznacza "użyj defaultu z klasy").
-        """
-        # 1. Sprawdź zmienną środowiskową (env var > TOML)
+    def _resolve_field_value(cls, field_name: str, toml_root: _TomlConfigRoot) -> Any | None:
         env_key = cls._ENV_MAP.get(field_name)
         if env_key and env_key in os.environ:
-            raw = os.environ[env_key]
-            # Rzutowanie typów dla env vars (string → właściwy typ)
-            field_type = cls._get_field_type(field_name)
-            return cls._cast(raw, field_type)
-
-        # 2. Sprawdź TOML przez msgspec schema (używa cls._TOML_FIELD_MAP — stała klasowa)
+            return cls._cast(os.environ[env_key], cls._get_field_type(field_name))
         mapping = cls._TOML_FIELD_MAP.get(field_name)
         if mapping:
-            section_name, field_in_section = mapping
-            section = getattr(toml_root, section_name, None)
-            if section is not None:
-                value = getattr(section, field_in_section, None)
-                if value is not None:
-                    return value
-
-        # 3. Ani env, ani TOML — użyj defaultu zdefiniowanego w klasie
+            section = getattr(toml_root, mapping[0], None)
+            if section is not None and (value := getattr(section, mapping[1], None)) is not None:
+                return value
         return None
 
     @classmethod
-    def _get_field_type(cls, field_name: str) -> type:
-        """Pobierz typ pola Struct po nazwie.
-
-        msgspec.Struct.__struct_fields__ to krotka ``msgspec.inspect.Field``,
-        indeksowana pozycyjnie — używamy pętli zamiast ``__struct_fields__[name]``.
-
-        Args:
-            field_name: Nazwa pola.
-
-        Returns:
-            Typ pola (domyślnie ``str`` jeśli nie znaleziono).
-        """
-        for f in cls.__struct_fields__:
-            if f.name == field_name:
-                return f.type
-        return str
-
-    @staticmethod
-    def _cast(raw: str, target_type: type) -> Any:
-        """Rzutuj string na docelowy typ.
-
-        Obsługuje: bool, int, float, Path, str (domyślnie).
-        """
-        if target_type is bool:
-            return raw.lower() in ("1", "true", "yes")
-        if target_type is int:
-            return int(raw)
-        if target_type is float:
-            return float(raw)
-        if target_type is str:
-            return raw
-        if target_type is Path:
-            return Path(raw)
-        return raw
-
-    @classmethod
     def from_toml(cls, env: str | None = None) -> AppConfig:
-        """Utwórz AppConfig z bezpośrednim parsowaniem TOML (msgspec schema).
-
-        Fazа 2: Używa ``msgspec.toml.decode(..., type=_TomlConfigRoot)`` do
-        typowanej walidacji całego pliku TOML. Błędy walidacji (DecodeError,
-        ValidationError) są logowane i nie przerywają startu.
-
-        Priority: env var > TOML value (msgspec schema) > hardcoded Struct default.
-
-        Args:
-            env: Nazwa środowiska ("dev", "stage", "prod").
-
-        Returns:
-            Zwalidowana instancja AppConfig.
-        """
+        """Utwórz AppConfig z typowanego TOML — preferuje TOML nad env vars."""
         if env is None:
             env = os.getenv("NEXUS_ENV", "dev").lower().strip()
-
         toml_root = cls._load_toml_file(env)
-        # Auto-generuj _TOML_FIELD_MAP jeśli pusty (pierwsze wywołanie)
-        if not cls._TOML_FIELD_MAP:
-            cls._TOML_FIELD_MAP.update(cls._build_field_map())
-            # Nadpisz manualnymi override'ami (pola z różnymi nazwami)
-            cls._TOML_FIELD_MAP.update(cls._TOML_OVERRIDES)
-
         kwargs: dict[str, Any] = {}
-
         for field_name in cls.__struct_fields__:
-            value = cls._resolve_field_value(field_name, toml_root)
-            if value is not None:
+            if (value := cls._resolve_field_value(field_name, toml_root)) is not None:
                 kwargs[field_name] = value
-
-        # env i base_dir wymagają specjalnego traktowania
-        if "environment" not in kwargs:
-            kwargs["environment"] = env
-
+        kwargs.setdefault("environment", env)
         instance = cls(**kwargs)
         instance.validate()
         return instance
 
     @classmethod
-    def create(cls) -> AppConfig:
-        """Create AppConfig instance and run post-init validation.
+    def _resolve_field_value(cls, field_name: str, toml_root: _TomlConfigRoot) -> Any | None:
+        """Resolve field from typed TOML section. Env vars loaded at import time by _load_toml_profile."""
+        mapping = cls._TOML_FIELD_MAP.get(field_name)
+        if mapping:
+            section = getattr(toml_root, mapping[0], None)
+            if section is not None and (value := getattr(section, mapping[1], None)) is not None:
+                return value
+        return None
 
-        Od Fazy 2: używa ``from_toml()`` zamiast ``os.environ``.
-        Zachowane dla kompatybilności wstecznej.
-        """
+    @classmethod
+    def create(cls) -> AppConfig:
         return cls.from_toml()
 
     def validate(self) -> None:

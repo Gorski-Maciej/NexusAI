@@ -1,14 +1,5 @@
 # pipeline/ocr_consensus.py
-"""4-way OCR Consensus Engine with BaseOCREngine.
-
-Zgodnie z aa3fvcx.txt (Punkt 10): cztery niezależne silniki OCR
-o fundamentalnie różnych architekturach zapewniają statystycznie
-zerową szansę na identyczny błąd we wszystkich czterech:
-- Tesseract: klasyczny OCR (LSTM), mistrz ustrukturyzowanego druku
-- PaddleOCR: deep learning OCR, radzi sobie z nietypowymi czcionkami
-- docTR: modułowy OCR, detekcja DBNet + rozpoznawanie PARSeq
-- EasyOCR: CNN + LSTM (CRAFT + CRNN), inna architektura niż pozostałe
-"""
+"""4-way OCR Consensus Engine (Tesseract, PaddleOCR, docTR, EasyOCR)."""
 
 from __future__ import annotations
 
@@ -124,7 +115,6 @@ def decide_amount_consensus_legacy(primary: OCRAmountResult, secondary: OCRAmoun
 
 
 class TesseractEngine(BaseOCREngine):
-    """Tesseract OCR — klasyczny silnik dla drukowanego tekstu."""
     name = "tesseract"
 
     VALID_PSM: set[int] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
@@ -272,7 +262,6 @@ class TesseractEngine(BaseOCREngine):
 
 
 class PaddleOCREngine(BaseOCREngine):
-    """PaddleOCR — deep learning OCR (PP-OCRv4)."""
     name = "paddle"
 
     def __init__(self, lang: str = "pl", *, use_gpu: bool = True, gpu_mem: int = 8000,
@@ -529,7 +518,6 @@ class PaddleOCREngine(BaseOCREngine):
 
 
 class DocTREngine(BaseOCREngine):
-    """docTR — modułowy OCR engine (DBNet + PARSeq)."""
     name = "doctr"
 
     def __init__(self, det_arch: str = "db_resnet50", reco_arch: str = "parseq",
@@ -665,7 +653,6 @@ class DocTREngine(BaseOCREngine):
 
 
 class EasyOCREngine(BaseOCREngine):
-    """EasyOCR — CNN + LSTM (CRAFT + CRNN)."""
     name = "easyocr"
 
     VALID_DECODERS = {"greedy", "beamsearch", "wordbeamsearch"}
@@ -834,36 +821,61 @@ def _parse_ocr_engines() -> dict[str, bool]:
     engines = [e.strip().lower() for e in env.split(",") if e.strip()]
     return {k: k in engines for k in ("tesseract", "paddleocr", "doctr", "easyocr")}
 
-
 _DEFAULT_OCR_ENGINES = _parse_ocr_engines()
 
 
 def _apply_opencv(file_image: Path, pil_pages: list[Any], file_path: Path) -> tuple[Path | None, list[Any], Any | None]:
     try:
         from PIL import Image as _PILImage
-        pil_img = _PILImage.open(str(file_image))
         preprocessor = OpenCVPreprocessor()
-        processed = preprocessor.process(pil_img)
-        cv_output_dir = file_image.parent / f"{file_path.stem}_cv"
-        cv_output_dir.mkdir(parents=True, exist_ok=True)
-        processed_path = cv_output_dir / file_image.name
-        processed.save(str(processed_path))
-        logger.info("[OCR] OpenCV preprocessing: %s → %s", file_image.name, processed_path.name)
-        processed_pil = [preprocessor.process(p) for p in pil_pages[:1]] if pil_pages else []
-        return processed_path, processed_pil, processed_pil[0] if processed_pil else pil_pages[0] if pil_pages else None
+        processed = preprocessor.process(_PILImage.open(str(file_image)))
+        cv_dir = file_image.parent / f"{file_path.stem}_cv"; cv_dir.mkdir(parents=True, exist_ok=True)
+        proc_path = cv_dir / file_image.name; processed.save(str(proc_path))
+        proc_pil = [preprocessor.process(p) for p in pil_pages[:1]] if pil_pages else []
+        return proc_path, proc_pil, proc_pil[0] if proc_pil else (pil_pages[0] if pil_pages else None)
     except Exception as exc:
         logger.warning("[OCR] OpenCV preprocessing failed: %s", exc)
         return file_image, pil_pages, pil_pages[0] if pil_pages else None
 
 
 async def _run_engine(name: str, engine: Any, file_image: Path | None, paddle_image: Any) -> tuple[str, str | None]:
-    if name == "paddle" and paddle_image is not None:
-        text = await engine.extract_text(paddle_image)
-    elif file_image is not None:
-        text = await engine.extract_text(file_image)
+    img = paddle_image if name == "paddle" and paddle_image is not None else file_image
+    return name, await engine.extract_text(img) if img is not None else None
+
+
+async def _run_engine_full(name: str, engine: Any, file_image: Path | None, paddle_image: Any) -> tuple[str, dict]:
+    img = paddle_image if name == "paddle" and paddle_image is not None else file_image
+    text = await engine.extract_text(img) if img is not None else None
+    conf = None
+    if img is not None and hasattr(engine, "extract_text_with_confidence"):
+        try: conf = await engine.extract_text_with_confidence(img)
+        except Exception: pass
+    return name, {"text": text, "confidence": conf}
+
+
+async def _prepare_images(file_path: Path) -> tuple[list[Path], list[Any]]:
+    image_paths: list[Path] = []
+    pil_pages: list[Any] = []
+    if file_path.suffix.lower() == ".pdf":
+        try:
+            from nexus_ai.core.pdfium import pdf_to_pil_images
+            pil_pages = pdf_to_pil_images(file_path, dpi=300, max_pages=5)
+        except Exception as exc: logger.warning("[OCR] PIL render failed: %s", exc)
+        image_paths = pdf_to_images(file_path)
     else:
-        text = None
-    return name, text
+        image_paths = [file_path]
+    return image_paths, pil_pages
+
+
+async def _build_engines(use_tesseract: bool, use_paddle: bool, use_doctr: bool, use_easyocr: bool,
+                          doctr_det_arch: str, doctr_reco_arch: str, doctr_orientation: bool,
+                          easyocr_gpu: bool) -> list[tuple[str, Any]]:
+    engines = []
+    if use_tesseract: engines.append(("tesseract", TesseractEngine()))
+    if use_paddle: engines.append(("paddle", PaddleOCREngine()))
+    if use_doctr: engines.append(("doctr", DocTREngine(det_arch=doctr_det_arch, reco_arch=doctr_reco_arch, detect_orientation=doctr_orientation)))
+    if use_easyocr: engines.append(("easyocr", EasyOCREngine(use_gpu=easyocr_gpu)))
+    return engines
 
 
 async def run_ocr_pipeline(file_path: Path, *, use_tesseract: bool | None = None,
@@ -876,71 +888,18 @@ async def run_ocr_pipeline(file_path: Path, *, use_tesseract: bool | None = None
     use_paddle = use_paddle if use_paddle is not None else _DEFAULT_OCR_ENGINES["paddleocr"]
     use_doctr = use_doctr if use_doctr is not None else _DEFAULT_OCR_ENGINES["doctr"]
     use_easyocr = use_easyocr if use_easyocr is not None else _DEFAULT_OCR_ENGINES["easyocr"]
-
-    heap_id = invoice_id or file_path.stem
     from nexus_ai.core.mimalloc_bridge import InvoiceOCRHeap
-
-    async with InvoiceOCRHeap(heap_id, label="ocr_pipeline"):
-        image_paths: list[Path] = []
-        pil_pages: list[Any] = []
-
-        if file_path.suffix.lower() == ".pdf":
-            try:
-                from nexus_ai.core.pdfium import pdf_to_pil_images
-                pil_pages = pdf_to_pil_images(file_path, dpi=300, max_pages=5)
-            except Exception as exc:
-                logger.warning("[OCR] PIL render failed: %s", exc)
-            image_paths = pdf_to_images(file_path)
-        else:
-            image_paths = [file_path]
-
-        if not image_paths and not pil_pages:
-            return {}
-
-        paddle_image = pil_pages[0] if pil_pages else (image_paths[0] if image_paths else None)
-        file_image = image_paths[0] if image_paths else None
-
-        if file_image is None and paddle_image is None:
-            return {}
-
-        # OpenCV preprocessing
-        if use_opencv_preprocessing and HAS_CV2 and file_image is not None:
-            file_image, pil_pages, paddle_image = _apply_opencv(file_image, pil_pages, file_path)
-
-        # Build engines
-        engines = []
-        if use_tesseract:
-            engines.append(("tesseract", TesseractEngine()))
-        if use_paddle:
-            engines.append(("paddle", PaddleOCREngine()))
-        if use_doctr:
-            engines.append(("doctr", DocTREngine(det_arch=doctr_det_arch, reco_arch=doctr_reco_arch, detect_orientation=doctr_orientation)))
-        if use_easyocr:
-            engines.append(("easyocr", EasyOCREngine(use_gpu=easyocr_gpu)))
-
-        results = await anyio.gather(*[_run_engine(name, engine, file_image, paddle_image) for name, engine in engines])
-        texts = dict(results)
-        logger.info("[OCR] Engines completed: %s", {k: len(v or "") for k, v in texts.items()})
+    async with InvoiceOCRHeap(invoice_id or file_path.stem, "ocr_pipeline"):
+        image_paths, pil_pages = await _prepare_images(file_path)
+        if not image_paths and not pil_pages: return {}
+        paddle_img = pil_pages[0] if pil_pages else (image_paths[0] if image_paths else None)
+        file_img = image_paths[0] if image_paths else None
+        if file_img is None and paddle_img is None: return {}
+        if use_opencv_preprocessing and HAS_CV2 and file_img is not None:
+            file_img, pil_pages, paddle_img = _apply_opencv(file_img, pil_pages, file_path)
+        engines = await _build_engines(use_tesseract, use_paddle, use_doctr, use_easyocr, doctr_det_arch, doctr_reco_arch, doctr_orientation, easyocr_gpu)
+        texts = dict(await anyio.gather(*[_run_engine(n, e, file_img, paddle_img) for n, e in engines]))
         return texts
-
-
-async def _run_engine_full(name: str, engine: Any, file_image: Path | None, paddle_image: Any) -> tuple[str, dict]:
-    if name == "paddle" and paddle_image is not None:
-        text = await engine.extract_text(paddle_image)
-    elif file_image is not None:
-        text = await engine.extract_text(file_image)
-    else:
-        text = None
-    conf = None
-    if hasattr(engine, "extract_text_with_confidence"):
-        try:
-            if name == "paddle" and paddle_image is not None:
-                conf = await engine.extract_text_with_confidence(paddle_image)
-            elif file_image is not None:
-                conf = await engine.extract_text_with_confidence(file_image)
-        except Exception:
-            pass
-    return name, {"text": text, "confidence": conf}
 
 
 async def run_ocr_pipeline_with_confidence(file_path: Path, *, use_tesseract: bool = True,
@@ -949,45 +908,16 @@ async def run_ocr_pipeline_with_confidence(file_path: Path, *, use_tesseract: bo
                                            easyocr_gpu: bool = True, doctr_det_arch: str = "db_resnet50",
                                            doctr_reco_arch: str = "parseq", doctr_orientation: bool = True,
                                            use_opencv_preprocessing: bool = True) -> dict[str, Any]:
-    heap_id = invoice_id or file_path.stem
     from nexus_ai.core.mimalloc_bridge import InvoiceOCRHeap
-
-    async with InvoiceOCRHeap(heap_id, label="ocr_pipeline_conf"):
-        image_paths: list[Path] = []
-        pil_pages: list[Any] = []
-
-        if file_path.suffix.lower() == ".pdf":
-            try:
-                from nexus_ai.core.pdfium import pdf_to_pil_images
-                pil_pages = pdf_to_pil_images(file_path, dpi=300, max_pages=5)
-            except Exception as exc:
-                logger.warning("[OCR] Conf PIL render failed: %s", exc)
-            image_paths = pdf_to_images(file_path)
-        else:
-            image_paths = [file_path]
-
-        if not image_paths and not pil_pages:
-            return {"texts": {}, "confidences": {}}
-
-        paddle_image = pil_pages[0] if pil_pages else (image_paths[0] if image_paths else None)
-        file_image = image_paths[0] if image_paths else None
-
-        if use_opencv_preprocessing and HAS_CV2 and file_image is not None:
-            file_image, pil_pages, paddle_image = _apply_opencv(file_image, pil_pages, file_path)
-
-        engines = []
-        if use_tesseract:
-            engines.append(("tesseract", TesseractEngine()))
-        if use_paddle:
-            engines.append(("paddle", PaddleOCREngine()))
-        if use_doctr:
-            engines.append(("doctr", DocTREngine(det_arch=doctr_det_arch, reco_arch=doctr_reco_arch, detect_orientation=doctr_orientation)))
-        if use_easyocr:
-            engines.append(("easyocr", EasyOCREngine(use_gpu=easyocr_gpu)))
-
-        results = await anyio.gather(*[_run_engine_full(name, engine, file_image, paddle_image) for name, engine in engines])
+    async with InvoiceOCRHeap(invoice_id or file_path.stem, "ocr_pipeline_conf"):
+        image_paths, pil_pages = await _prepare_images(file_path)
+        if not image_paths and not pil_pages: return {"texts": {}, "confidences": {}}
+        paddle_img = pil_pages[0] if pil_pages else (image_paths[0] if image_paths else None)
+        file_img = image_paths[0] if image_paths else None
+        if use_opencv_preprocessing and HAS_CV2 and file_img is not None:
+            file_img, pil_pages, paddle_img = _apply_opencv(file_img, pil_pages, file_path)
+        engines = await _build_engines(use_tesseract, use_paddle, use_doctr, use_easyocr, doctr_det_arch, doctr_reco_arch, doctr_orientation, easyocr_gpu)
         texts, confidences = {}, {}
-        for name, data in results:
-            texts[name] = data["text"]
-            confidences[name] = data["confidence"]
+        for name, data in dict(await anyio.gather(*[_run_engine_full(n, e, file_img, paddle_img) for n, e in engines])).items():
+            texts[name] = data["text"]; confidences[name] = data.get("confidence")
         return {"texts": texts, "confidences": confidences}

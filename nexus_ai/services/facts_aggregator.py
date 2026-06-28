@@ -1,27 +1,4 @@
-"""
-FactsAggregator — dedykowana warstwa RAG (Retrieval-Augmented Generation).
-
-Przed każdą decyzją (DecisionEngine) FactsAggregator zbiera dane ze wszystkich
-trzech źródeł danych w systemie i pakuje je w jeden, ustrukturyzowany
-"arkusz faktów" (FactSheet), który jest dołączany do promptu modelu decyzyjnego.
-
-Źródła danych:
-  1. SQLite (OLTP) — faktury, kontrahenci, wzorce korekt użytkownika
-  2. DuckDB (OLAP) — reguły podatkowe, trust score trends, vendor intelligence
-  3. sqlite-vec — podobne faktury na podstawie embeddingów semantycznych
-
-Usage:
-    aggregator = FactsAggregator(
-        duckdb=duckdb_manager,
-        vector_store=vector_store,
-        embedding_service=embedding_service,
-        db_session_factory=session_factory,
-        decision_logger=decision_logger,
-        rule_store=rule_store,
-        vendor_analyst=vendor_analyst,
-    )
-    fact_sheet = await aggregator.build(invoice_data)
-"""
+"""FactsAggregator — RAG layer collecting data from SQLite, DuckDB, and sqlite-vec for decision prompts."""
 
 from __future__ import annotations
 
@@ -63,11 +40,7 @@ logger = get_logger(__name__)
 
 @final
 class FactSheet(Struct):
-    """Ustrukturyzowany arkusz faktów zebranych przed decyzją.
-
-    Zawiera dane ze wszystkich trzech baz, gotowe do wstrzyknięcia
-    do promptu modelu decyzyjnego (Jamba 3B, Granite 3.2 3B).
-    """
+    """Structured fact sheet with data from all databases, ready for decision prompt injection."""
 
     # ── SQLite (OLTP) ──────────────────────────────────────────────
 
@@ -140,394 +113,100 @@ class FactSheet(Struct):
     ledger_recent_transfers: list[dict[str, Any]] = field(default_factory=list)
 
     # ── Metadane ─────────────────────────────────────────────────
-
-    # Które źródła danych były dostępne
     sources_available: dict[str, bool] = field(default_factory=dict)
-
-    # Czas budowania w ms
     build_duration_ms: float = 0.0
 
-    # (Cache przeniesiony do NexusCache — _few_shot_nexus na poziomie modułu)
-    # Klucz: few_shot:{data_hash}:{max_examples}, TTL: 300s, L1 RAM + L2 SQLite
-
     def to_dict(self) -> dict[str, Any]:
-        """Konwertuj FactSheet na słownik (do wstrzyknięcia w prompt)."""
-        return {
-            "invoice": {
-                "id": self.invoice_id,
-                "contractor_nip": self.contractor_nip,
-                "contractor_name": self.contractor_name,
-                "amount_net": self.amount_net,
-                "amount_gross": self.amount_gross,
-                "category": self.category,
-                "issue_date": self.issue_date,
-            },
-            "contractor": {
-                "known": self.contractor_known,
-                "invoice_count": self.contractor_invoice_count,
-                "trust_score": self.contractor_trust_score,
-                "vat_status": self.contractor_vat_status,
-            },
-            "history": {
-                "recent_invoices": self.recent_invoices[:5],
-                "trust_score_trend": self.trust_score_trend,
-                "user_correction_patterns": self.user_correction_patterns[:3],
-            },
-            "rules": {
-                "active_tax_rules": self.active_tax_rules[:10],
-                "vendor_intelligence": self.vendor_intelligence,
-            },
-            "similar": {
-                "invoices": self.similar_invoices[:3],
-            },
-            "ledger": {
-                "available": self.ledger_available,
-                "accounts": self.ledger_accounts,
-                "total_turnover": self.ledger_total_turnover,
-                "recent_transfers": self.ledger_recent_transfers[:3],
-            },
-            "sources": self.sources_available,
-        }
+        return {"invoice": {"id": self.invoice_id, "contractor_nip": self.contractor_nip, "contractor_name": self.contractor_name,
+                            "amount_net": self.amount_net, "amount_gross": self.amount_gross, "category": self.category, "issue_date": self.issue_date},
+                "contractor": {"known": self.contractor_known, "invoice_count": self.contractor_invoice_count, "trust_score": self.contractor_trust_score, "vat_status": self.contractor_vat_status},
+                "history": {"recent_invoices": self.recent_invoices[:5], "trust_score_trend": self.trust_score_trend, "user_correction_patterns": self.user_correction_patterns[:3]},
+                "rules": {"active_tax_rules": self.active_tax_rules[:10], "vendor_intelligence": self.vendor_intelligence},
+                "similar": {"invoices": self.similar_invoices[:3]},
+                "ledger": {"available": self.ledger_available, "accounts": self.ledger_accounts, "total_turnover": self.ledger_total_turnover, "recent_transfers": self.ledger_recent_transfers[:3]},
+                "sources": self.sources_available}
 
     def to_prompt_section(self) -> str:
-        """Konwertuj FactSheet na sekcję promptu dla modelu.
-
-        Returns:
-            String gotowy do wklejenia w prompt jako sekcja === ARKUSZ FAKTÓW ===.
-        """
-        lines = ["=== ARKUSZ FAKTÓW (FactsAggregator) ==="]
-        lines.append("")
-
-        # Źródła danych
+        """Convert FactSheet to a prompt section string."""
+        lines = ["=== ARKUSZ FAKTÓW (FactsAggregator) ===", ""]
         src = self.sources_available
-        lines.append(
-            f"Źródła danych: SQLite={'✓' if src.get('sqlite') else '✗'}, "
-            f"DuckDB={'✓' if src.get('duckdb') else '✗'}, "
-            f"sqlite-vec={'✓' if src.get('vector_store') else '✗'}"
-        )
+        lines.append(f"Źródła danych: SQLite={'✓' if src.get('sqlite') else '✗'}, DuckDB={'✓' if src.get('duckdb') else '✗'}, sqlite-vec={'✓' if src.get('vector_store') else '✗'}")
         lines.append("")
-
-        # Podstawowe dane
         lines.append(f"Faktura #{self.invoice_id}")
         lines.append(f"  Kontrahent: {self.contractor_name} (NIP: {self.contractor_nip})")
         lines.append(f"  Kwota netto: {self.amount_net:.2f} PLN")
         lines.append(f"  Kwota brutto: {self.amount_gross:.2f} PLN")
         lines.append(f"  Kategoria: {self.category}")
-        lines.append(f"  Data wystawienia: {self.issue_date}")
-        lines.append("")
-
-        # Kontrahent
+        lines.append(f"  Data wystawienia: {self.issue_date}\n")
         known = "znany" if self.contractor_known else "nowy"
         lines.append(f"Kontrahent: {known}")
-        lines.append(f"  Liczba faktur w historii: {self.contractor_invoice_count}")
-        lines.append(f"  Trust score: {self.contractor_trust_score:.2f}")
-        lines.append(f"  Status VAT: {self.contractor_vat_status}")
-        lines.append("")
-
-        # Trend trust score
-        trend = self.trust_score_trend
-        if trend.known:
-            lines.append("Trend trust score (ostatnie 30 dni):")
-            lines.append(f"  Średnia: {trend.avg_trust:.4f}")
-            lines.append(f"  Trend: {trend.trend}")
-            lines.append(f"  Liczba decyzji: {trend.records}")
-            lines.append("")
-
-        # Podobne faktury (z embeddingów)
-        similar = self.similar_invoices[:3]
-        if similar:
-            lines.append("Podobne faktury (semantycznie):")
-            for i, inv in enumerate(similar, 1):
-                dist = inv.get("_distance", 0)
-                lines.append(
-                    f"  {i}. ID={inv.get('id', '?')} "
-                    f"kwota={inv.get('amount_gross', '?')} "
-                    f"kategoria={inv.get('category', '?')} "
-                    f"(odległość: {dist:.4f})"
-                )
-            lines.append("")
-
-        # TigerBeetle (secure ledger)
+        lines.append(f"  Liczba faktur: {self.contractor_invoice_count}, Trust score: {self.contractor_trust_score:.2f}, VAT: {self.contractor_vat_status}\n")
+        if self.trust_score_trend.known:
+            t = self.trust_score_trend
+            lines.append(f"Trend trust score (30d): avg={t.avg_trust:.4f}, trend={t.trend}, records={t.records}\n")
+        for inv in self.similar_invoices[:3]:
+            lines.append(f"Podobna: ID={inv.get('id', '?')} kwota={inv.get('amount_gross', '?')} (dist={inv.get('_distance', 0):.4f})")
         if self.ledger_available:
-            lines.append("TigerBeetle (secure ledger):")
-
-            # Mapa symboli księgowych na opisy — zgodna z _fetch_ledger_history()
-            # Zdefiniowana przed blokami warunkowymi, żeby była dostępna zarówno
-            # dla sekcji sald kont jak i dla sekcji transferów (obie mogą wystąpić
-            # niezależnie — ledger_accounts może być puste ale transfers nie i odwrotnie).
-            ACCOUNT_LABELS = {
-                "401-01": "Usługi obce (expense)",
-                "202": "Rozrachunki z dostawcami (payables)",
-                "221-01": "VAT naliczony (input VAT)",
-            }
-
-            if self.ledger_accounts:
-                lines.append("  Salda kont (zaksięgowane):")
-
-                for sym, bal in sorted(self.ledger_accounts.items()):
-                    label = ACCOUNT_LABELS.get(sym, f"Konto {sym}")
-                    lines.append(f"    {label}")
-                    lines.append(f"      → {bal:.2f} PLN")
-
-                # Podsumowanie kont — które z bilansem dodatnim, które zerowe
-                active = {sym: bal for sym, bal in self.ledger_accounts.items() if bal > 0}
-                zero = {sym: bal for sym, bal in self.ledger_accounts.items() if bal == 0}
-                if active:
-                    lines.append(f"  Aktywne konta: {len(active)}")
-                if zero:
-                    lines.append(f"  Konta zerowe: {len(zero)}")
-
-            lines.append(f"  Łączny obrót: {self.ledger_total_turnover:.2f} PLN")
-
-            transfers = self.ledger_recent_transfers[:3]
-            if transfers:
-                lines.append("  Ostatnie transfery:")
-                for i, t in enumerate(transfers, 1):
-                    account = t.get("account", "?")
-                    label = ACCOUNT_LABELS.get(account, f"Konto {account}")
-                    lines.append(f"    {i}. {label}")
-                    lines.append(f"        kwota: {t.get('balance_pln', t.get('amount', '?'))} PLN")
-                    if t.get("note"):
-                        lines.append(f"        ({t['note']})")
-            lines.append("")
-
-        # Aktywne reguły podatkowe
-        rules = self.active_tax_rules[:5]
-        if rules:
-            lines.append("Aktywne reguły podatkowe:")
-            for i, rule in enumerate(rules, 1):
-                lines.append(
-                    f"  {i}. {rule.get('description_template', rule.get('condition_sql', '?'))}"
-                )
-            lines.append("")
-
-        # Korekty użytkownika
-        corrections = self.user_correction_patterns[:3]
-        if corrections:
-            lines.append("Ostatnie korekty użytkownika:")
-            for c in corrections:
-                lines.append(f"  - {c.get('description', '')}")
-            lines.append("")
-
+            lines.append(f"Ledger: {len(self.ledger_accounts)} accounts, turnover={self.ledger_total_turnover:.2f} PLN")
+        for rule in self.active_tax_rules[:5]:
+            lines.append(f"Reguła: {rule.get('description_template', rule.get('condition_sql', '?'))}")
+        for c in self.user_correction_patterns[:3]:
+            lines.append(f"Korekta: {c.get('description', '')}")
         return "\n".join(lines)
 
     def build_few_shot_examples(self, max_examples: int = 3) -> str:
-        """Zbuduj dynamiczne przykłady few-shot z historycznych decyzji.
-
-        Wykorzystuje dane zebrane w FactSheet:
-          - recent_invoices (ostatnie faktury tego kontrahenta)
-          - trust_score_trend.decisions_breakdown (statystyki decyzji)
-          - user_correction_patterns (korekty użytkownika)
-          - similar_invoices (semantycznie podobne faktury)
-          - global_recent_decisions (ostatnie decyzje wszystkich kontrahentów
-            z globalnej bazy DuckDB, poszerzające perspektywę poza jednego
-            kontrahenta)
-
-        Wynik jest cache'owany: jeśli dane źródłowe się nie zmieniły,
-        metoda zwraca zapamiętany string bez przeliczania.
-
-        Args:
-            max_examples: Maksymalna liczba przykładów (domyślnie 3).
-
-        Returns:
-            String z przykładami few-shot gotowymi do wstrzyknięcia w prompt.
-            Pusty string jeśli brak danych.
-        """
-        # Sprawdź NexusCache (L1 RAM + L2 SQLite) — jeśli dane źródłowe
-        # się nie zmieniły, zwróć cache bez przeliczania.
-        # Klucz uwzględnia hash danych źródłowych i max_examples.
-        data_hash = hash(
-            (
-                str(self.recent_invoices),
-                str(self.similar_invoices),
-                str(self.globally_similar_cases),
-                str(self.global_recent_decisions),
-                str(self.trust_score_trend.decisions_breakdown),
-                str(self.user_correction_patterns),
-            )
-        )
+        """Build dynamic few-shot examples from historical decisions with NexusCache support."""
+        data_hash = hash((str(self.recent_invoices), str(self.similar_invoices), str(self.globally_similar_cases),
+                          str(self.global_recent_decisions), str(self.trust_score_trend.decisions_breakdown),
+                          str(self.user_correction_patterns)))
         cache_key = f"few_shot:{data_hash}:{max_examples}"
         cached = _few_shot_nexus.get_sync(cache_key)
         if cached is not None:
-            logger.debug(
-                "[FactSheet] few-shot cache HIT: %d chars (key=%s)", len(cached), cache_key
-            )
             return cached
 
         examples: list[str] = []
-
-        # 1. Przykłady z podobnych faktur semantycznie (najlepsze dla few-shot)
-        #    Podobne faktury mają wyższy priorytet niż historyczne, bo są
-        #    semantycznie bliższe bieżącej fakturze — lepsze przykłady dla modelu.
-        #    Dzięki _enrich_similar_with_decision() mają:
-        #      - 'status' z SQLite (Invoice.status)
-        #      - 'decision' z DuckDB (decisions) z pełną decyzją DecisionEngine
-        #    Gdy decision jest dostępny, preferujemy final_decision z DecisionEngine
-        #    nad prostym mapowaniem statusu z SQLite.
         similar_count = min(len(self.similar_invoices), max_examples)
         remaining = max_examples - similar_count
 
+        decision_map = {InvoiceStatus.PAID.value: "AUTO_POST", InvoiceStatus.APPROVED.value: "AUTO_POST",
+                        InvoiceStatus.SUGGESTED.value: "SUGGEST", InvoiceStatus.PENDING_REVIEW.value: "ASK_USER",
+                        InvoiceStatus.BLOCKED.value: "BLOCK"}
+
         for inv in self.similar_invoices[:similar_count]:
-            amount = inv.get("amount_gross", "?")
-            category = inv.get("category", "?")
-            distance = inv.get("_distance", 0)
-
-            # Status z SQLite (wzbogacony przez _enrich_similar_with_decision)
-            raw_status = inv.get("status")
-            status = str(raw_status).upper() if raw_status is not None else "?"
-
-            # Pełna decyzja z DuckDB — jeśli dostępna, preferujemy ją
-            decision_data = inv.get("decision")
-            if decision_data and decision_data.get("final_decision"):
-                decision = str(decision_data["final_decision"])
-                trust = float(decision_data.get("trust_score", 0.0))
-                level = str(decision_data.get("decision_level", ""))
-                pattern = str(decision_data.get("decision_pattern", ""))
-                correction = (
-                    str(decision_data.get("user_correction", ""))
-                    if decision_data.get("user_correction")
-                    else ""
-                )
-
-                entry = (
-                    f"[Podobna faktura (semantycznie, odległość: {distance:.4f})]\n"
-                    f"  Kwota brutto: {amount}\n"
-                    f"  Kategoria: {category}\n"
-                    f"  Decyzja: {decision}\n"
-                    f"  Trust score: {trust:.2f}\n"
-                    f"  Status w systemie: {status}"
-                )
-                if level:
-                    entry += f"\n  Poziom decyzyjny: {level}"
-                if pattern:
-                    entry += f"\n  Wzorzec: {pattern}"
-                if correction:
-                    entry += f"\n  Korekta użytkownika: {correction}"
-
+            d = inv.get("decision")
+            if d and d.get("final_decision"):
+                entry = (f"[Podobna faktura (dist={inv.get('_distance', 0):.4f})]\n"
+                         f"  Kwota: {inv.get('amount_gross', '?')}, Kategoria: {inv.get('category', '?')}\n"
+                         f"  Decyzja: {d['final_decision']}, Trust: {float(d.get('trust_score', 0)):.2f}")
+                if d.get("decision_level"): entry += f"\n  Level: {d['decision_level']}"
+                if d.get("decision_pattern"): entry += f"\n  Pattern: {d['decision_pattern']}"
+                if d.get("user_correction"): entry += f"\n  Korekta: {d['user_correction']}"
                 examples.append(entry)
             else:
-                # Fallback: mapuj status z SQLite na decyzję
-                decision_map = {
-                    InvoiceStatus.PAID.value: "AUTO_POST",
-                    InvoiceStatus.APPROVED.value: "AUTO_POST",
-                    InvoiceStatus.SUGGESTED.value: "SUGGEST",
-                    InvoiceStatus.PENDING_REVIEW.value: "ASK_USER",
-                    InvoiceStatus.BLOCKED.value: "BLOCK",
-                }
-                decision = decision_map.get(status, "SUGGEST")
+                status = str(inv.get("status", "?")).upper()
+                examples.append(f"[Podobna faktura (dist={inv.get('_distance', 0):.4f})]\n  Kwota: {inv.get('amount_gross', '?')}\n  Decyzja: {decision_map.get(status, 'SUGGEST')}, Status: {status}")
 
-                examples.append(
-                    f"[Podobna faktura (semantycznie, odległość: {distance:.4f})]\n"
-                    f"  Kwota brutto: {amount}\n"
-                    f"  Kategoria: {category}\n"
-                    f"  Podjęta decyzja: {decision}\n"
-                    f"  Status: {status}"
-                )
+        for inv in self.globally_similar_cases[:remaining]:
+            examples.append(f"[Globalny przypadek] NIP={inv.contractor_nip}, Kat={inv.category}, Decyzja={inv.decision}, Trust={inv.trust_score:.2f}")
+            remaining -= 1
+        for inv in self.global_recent_decisions[:remaining]:
+            examples.append(f"[Globalny] NIP={inv.contractor_nip}, Kat={inv.category}, Decyzja={inv.decision}, Trust={inv.trust_score:.2f}")
+            remaining -= 1
+        for inv in self.recent_invoices[:remaining]:
+            status = str(inv.get("status", "?")).upper()
+            examples.append(f"[Historyczna] Kwota={inv.get('amount_gross', 0):.2f}, Kat={inv.get('category', '?')}, Decyzja={decision_map.get(status, 'SUGGEST')}, Status={status}")
 
-        # 2. Globalnie podobne przypadki — dopasowane po kategorii i priorytetyzowane
-        #    po trust_score (z DuckDB). Lepsze dla few-shot niż surowe ostatnie decyzje,
-        #    bo są rzeczywiście podobne do bieżącej faktury.
-        global_sim_count = min(len(self.globally_similar_cases), remaining)
-        remaining -= global_sim_count
-
-        for inv in self.globally_similar_cases[:global_sim_count]:
-            nip = inv.contractor_nip or "?"
-            cat = inv.category or "?"
-            decision = inv.decision or "SUGGEST"
-            trust = inv.trust_score
-            ai_conf = inv.ai_confidence
-
-            examples.append(
-                f"[Globalnie podobny przypadek (inny kontrahent, kategoria: {cat})]\n"
-                f"  NIP: {nip}\n"
-                f"  Kategoria: {cat}\n"
-                f"  Podjęta decyzja: {decision}\n"
-                f"  Trust score: {trust:.2f}"
-            )
-
-        # 3. Globalne decyzje — ostatnie decyzje wszystkich kontrahentów z DuckDB
-        #    (dopełnienie do max_examples po podobnych fakturach i globalnie podobnych)
-        global_count = min(len(self.global_recent_decisions), remaining)
-        remaining -= global_count
-
-        for inv in self.global_recent_decisions[:global_count]:
-            nip = inv.contractor_nip or "?"
-            cat = inv.category or "?"
-            decision = inv.decision or "SUGGEST"
-            trust = inv.trust_score
-
-            examples.append(
-                f"[Globalna decyzja (inny kontrahent)]\n"
-                f"  NIP: {nip}\n"
-                f"  Kategoria: {cat}\n"
-                f"  Podjęta decyzja: {decision}\n"
-                f"  Trust score: {trust:.2f}"
-            )
-
-        # 4. Dodaj ostatnie faktury tego samego kontrahenta (dopełnienie)
-        recent_count = min(len(self.recent_invoices), remaining)
-
-        for inv in self.recent_invoices[:recent_count]:
-            amount = inv.get("amount_gross", 0)
-            category = inv.get("category", "?")
-
-            # Status może być None lub nie-string — bezpieczna konwersja
-            raw_status = inv.get("status")
-            status = str(raw_status).upper() if raw_status is not None else "?"
-
-            # Mapuj status na decyzję
-            decision_map = {
-                InvoiceStatus.PAID.value: "AUTO_POST",
-                InvoiceStatus.APPROVED.value: "AUTO_POST",
-                InvoiceStatus.SUGGESTED.value: "SUGGEST",
-                InvoiceStatus.PENDING_REVIEW.value: "ASK_USER",
-                InvoiceStatus.BLOCKED.value: "BLOCK",
-            }
-            decision = decision_map.get(status, "SUGGEST")
-
-            examples.append(
-                f"[Historyczna faktura]\n"
-                f"  Kwota brutto: {amount:.2f} PLN\n"
-                f"  Kategoria: {category}\n"
-                f"  Podjęta decyzja: {decision}\n"
-                f"  Status: {status}"
-            )
-
-        # 5. Dodaj kontekst z trendu decyzji
-        trend = self.trust_score_trend
-        decisions_bd = trend.decisions_breakdown if trend.known else {}
-        if decisions_bd:
-            breakdown = ", ".join(
-                f"{k}: {v}" for k, v in sorted(decisions_bd.items(), key=lambda x: -x[1])
-            )
-            context = (
-                f"\n[Wzorzec decyzyjny dla tego kontrahenta]\n"
-                f"  Liczba decyzji: {trend.records} w ostatnich 30 dniach\n"
-                f"  Rozkład decyzji: {breakdown}\n"
-                f"  Trend trust score: {trend.trend} (śr. {trend.avg_trust:.2f})"
-            )
-            examples.append(context)
-
-        # 6. Dodaj korekty użytkownika jeśli dostępne
-        corrections = self.user_correction_patterns[:2]
-        if corrections:
-            corrections_text = "\n[Ostatnie korekty użytkownika]\n"
-            for c in corrections:
-                corrections_text += f"  - {c.get('description', 'brak opisu')}\n"
-            examples.append(corrections_text.strip())
+        if self.trust_score_trend.known and self.trust_score_trend.decisions_breakdown:
+            bd = self.trust_score_trend.decisions_breakdown
+            examples.append(f"[Wzorzec decyzyjny] Liczba={self.trust_score_trend.records}, Rozkład={', '.join(f'{k}: {v}' for k, v in sorted(bd.items(), key=lambda x: -x[1]))}")
+        if self.user_correction_patterns[:2]:
+            examples.append("[Korekty]\n" + "\n".join(f"  - {c.get('description', '')}" for c in self.user_correction_patterns[:2]))
 
         if not examples:
             _few_shot_nexus.set_sync(cache_key, "", ttl=300)
             return ""
-
-        result = "=== PRZYKŁADY FEW-SHOT (historyczne decyzje) ==="
-        for i, example in enumerate(examples, 1):
-            result += f"\n\nPrzykład {i}:\n{example}"
-
-        # Zapisz do NexusCache (L1 RAM + L2 SQLite) z TTL 300s
+        result = "=== PRZYKŁADY FEW-SHOT ===" + "".join(f"\n\nPrzykład {i}:\n{e}" for i, e in enumerate(examples, 1))
         _few_shot_nexus.set_sync(cache_key, result, ttl=300)
-        logger.debug("[FactSheet] few-shot cached: %d chars (key=%s)", len(result), cache_key)
-
         return result
 
 

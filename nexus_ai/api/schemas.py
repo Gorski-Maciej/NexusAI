@@ -228,54 +228,13 @@ class ChangeRoleResponse(msgspec.Struct, kw_only=True):
     new_role: str
 
 
-class FailedTaskItem(msgspec.Struct, kw_only=True):
-    """Single failed task entry."""
-
-    id: str
-    task_name: str
-    task_id: str
-    error_type: str
-    error_message: str
-    retry_count: int
-    max_retries: int
-    resolved: bool
-    resolved_at: str | None = None
-    resolved_by: str | None = None
-    resolution_note: str | None = None
-    failed_at: str
-    created_at: str
-
-
-class FailedTaskListResponse(msgspec.Struct, kw_only=True):
-    """Paginated failed tasks response."""
-
-    tasks: list[FailedTaskItem]
-    total: int
-    limit: int
-    offset: int
-
-
-class RiskThresholdRuleItem(msgspec.Struct, kw_only=True):
-    """Single risk threshold rule."""
-
-    # DuckDB returns dynamic fields — use dict
-    pass
-
-
 class RuleListResponse(msgspec.Struct, kw_only=True):
-    """Generic rule list response."""
+    """Generic rule list response (replaces FailedTaskItem/FailedTaskListResponse/RiskThresholdRuleItem/PaginatedRuleListResponse)."""
 
     rules: list[dict]
     total: int
-
-
-class PaginatedRuleListResponse(msgspec.Struct, kw_only=True):
-    """Paginated rule list with limit/offset."""
-
-    rules: list[dict]
-    total: int
-    limit: int
-    offset: int
+    limit: int = 50
+    offset: int = 0
 
 
 class HealthResponse(msgspec.Struct, kw_only=True):
@@ -328,14 +287,8 @@ class IntegrityVerifyResponse(msgspec.Struct, kw_only=True):
     checkpoint: dict | None = None
 
 
-class FallbackEventItem(msgspec.Struct, kw_only=True):
-    """Single fallback event."""
-
-    pass  # DuckDB returns dynamic fields
-
-
 class FallbackListResponse(msgspec.Struct, kw_only=True):
-    """Fallback events list."""
+    """Fallback events list (replaces FallbackEventItem)."""
 
     events: list[dict]
     total: int
@@ -360,6 +313,8 @@ class RuleChangelogResponse(msgspec.Struct, kw_only=True):
 
     changes: list[dict]
     total: int
+    limit: int = 50
+    offset: int = 0
 
 
 # ═══════════════════════════════════════════════════════════════════════════
