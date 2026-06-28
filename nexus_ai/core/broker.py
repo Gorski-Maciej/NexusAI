@@ -33,13 +33,14 @@ from taskiq import TaskiqEvents
 from taskiq_nats import PullBasedJetStreamBroker
 
 from nexus_ai.core.config import AppConfig
-from nexus_ai.core.taskiq_middleware import (
+from nexus_ai.core.taskiq import (
     DynamicConcurrencyMiddleware,
+    HybridResultBackend,
     PiiScanMiddleware,
+    SqliteResultBackend,
     TaskMetricsMiddleware,
     TaskTracingMiddleware,
 )
-from nexus_ai.core.taskiq_result_backend import HybridResultBackend, SqliteResultBackend
 
 logger = get_logger("nexus.broker")
 config = AppConfig()

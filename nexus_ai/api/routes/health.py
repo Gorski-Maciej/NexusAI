@@ -434,7 +434,7 @@ class HealthController(Controller):
     async def _nats_check(self) -> bool:
         nats_url = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
         try:
-            from nexus_ai.core.nats_health import NatsSupervisor
+            from nexus_ai.core.nats_utils import NatsSupervisor
 
             supervisor = NatsSupervisor(nats_servers=[nats_url])
             await supervisor.start()
@@ -468,7 +468,7 @@ class HealthController(Controller):
     )
     async def nats_health(self) -> dict[str, Any]:
         try:
-            from nexus_ai.core.nats_health import NatsSupervisor
+            from nexus_ai.core.nats_utils import NatsSupervisor
 
             nats_url = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
             supervisor = NatsSupervisor(nats_servers=[nats_url])

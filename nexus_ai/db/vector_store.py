@@ -285,14 +285,15 @@ class AsyncVectorStore(AsyncBaseService):
     ) -> list[dict[str, Any]]:
         conn = await self.get_conn()
 
-        if distance_metric == "l2":
-            distance_fn = "vec_distance_l2"
-        elif distance_metric == "inner_product":
-            distance_fn = "vec_distance_inner_product"
-        elif distance_metric == "manhattan":
-            distance_fn = "vec_distance_manhattan"
-        else:
-            distance_fn = "vec_distance_cosine"
+        match distance_metric:
+            case "l2":
+                distance_fn = "vec_distance_l2"
+            case "inner_product":
+                distance_fn = "vec_distance_inner_product"
+            case "manhattan":
+                distance_fn = "vec_distance_manhattan"
+            case _:
+                distance_fn = "vec_distance_cosine"
 
         query_blob = self._vector_to_blob(query_vector)
         params: list[Any] = [query_blob, query_blob]

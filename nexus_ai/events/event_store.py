@@ -168,7 +168,7 @@ class AsyncEventStore:
     # SUPERMOC: Prawdziwy OTel tracer zamiast buffer_span
     # Używa prawdziwych spanów OTel z kontekstem, a nie fallback buffer
     def _get_tracer(self):
-        from nexus_ai.core.otel_tracing import get_tracer
+        from nexus_ai.core.otel import get_tracer
 
         return get_tracer("nexus.event_store")
 

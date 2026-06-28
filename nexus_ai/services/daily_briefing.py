@@ -246,15 +246,16 @@ class DailyBriefingService:
         """
         Wyślij briefing przez pojedynczy kanał.
         """
-        if channel == "in_app":
-            return await self._send_in_app(briefing)
-        elif channel == "push":
-            return await self._send_push(briefing)
-        elif channel == "email":
-            return await self._send_email(briefing)
-        else:
-            logger.warning("[DailyBriefing] unknown channel=%s", channel)
-            return {"status": "error", "error": f"Unknown channel: {channel}"}
+        match channel:
+            case "in_app":
+                return await self._send_in_app(briefing)
+            case "push":
+                return await self._send_push(briefing)
+            case "email":
+                return await self._send_email(briefing)
+            case _:
+                logger.warning("[DailyBriefing] unknown channel=%s", channel)
+                return {"status": "error", "error": f"Unknown channel: {channel}"}
 
     async def _send_in_app(self, briefing: DailyBriefing) -> dict[str, Any]:
         """

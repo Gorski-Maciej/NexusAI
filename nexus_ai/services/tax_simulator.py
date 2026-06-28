@@ -282,17 +282,18 @@ class TaxSimulator:
         expense = float(metrics["expense_net"])
         taxable_income = max(revenue - expense, 0.0)
 
-        if tax_form == TaxForm.LUMP_SUM:
-            rate = float(policy.get("revenue_rates", [0.12])[4])
-            income_tax_due = revenue * rate
-        elif tax_form == TaxForm.LINEAR:
-            income_tax_due = taxable_income * float(policy.get("pit_rate", 0.19))
-        elif tax_form == TaxForm.CIT_STANDARD:
-            income_tax_due = taxable_income * float(policy.get("cit_rates", {}).get("small", 0.09))
-        elif tax_form == TaxForm.CIT_ESTONIAN:
-            income_tax_due = taxable_income * float(policy.get("distribution_tax_rate", 0.2))
-        else:
-            income_tax_due = 0.0
+        match tax_form:
+            case TaxForm.LUMP_SUM:
+                rate = float(policy.get("revenue_rates", [0.12])[4])
+                income_tax_due = revenue * rate
+            case TaxForm.LINEAR:
+                income_tax_due = taxable_income * float(policy.get("pit_rate", 0.19))
+            case TaxForm.CIT_STANDARD:
+                income_tax_due = taxable_income * float(policy.get("cit_rates", {}).get("small", 0.09))
+            case TaxForm.CIT_ESTONIAN:
+                income_tax_due = taxable_income * float(policy.get("distribution_tax_rate", 0.2))
+            case _:
+                income_tax_due = 0.0
 
         vat_due = max(float(metrics["output_vat"]) - float(metrics["input_vat"]), 0.0)
         total_tax = income_tax_due + vat_due

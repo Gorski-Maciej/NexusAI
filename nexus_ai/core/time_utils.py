@@ -16,10 +16,10 @@ Zastępuje: datetime, pytz, dateutil — wszystkie przez pendulum.
 from __future__ import annotations
 
 import contextlib
-from dataclasses import dataclass
 from typing import Any, Iterator
 
 import pendulum
+from msgspec import Struct
 
 # ── Inicjalizacja polskiej lokalizacji ─────────────────────────────────────
 # Domyślna lokalizacja dla całego projektu (jeśli nie ustawiona w startupie).
@@ -34,8 +34,7 @@ except Exception:
 # ═════════════════════════════════════════════════════════════════════════════
 
 
-@dataclass(frozen=True)
-class PendulumPeriod:
+class PendulumPeriod(Struct, frozen=True):
     """SUPERMOC pendulum: Zakres dat z iteracją.
 
     Reprezentuje zamknięty przedział [start, end].

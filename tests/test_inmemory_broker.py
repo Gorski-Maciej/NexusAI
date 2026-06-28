@@ -50,7 +50,7 @@ def broker_with_middleware(broker):
 
     SUPERMOC: Testy mogą weryfikować działanie middleware bez NATS.
     """
-    from nexus_ai.core.taskiq_middleware import TaskMetricsMiddleware
+    from nexus_ai.core.taskiq import TaskMetricsMiddleware
 
     broker.add_middleware(TaskMetricsMiddleware())
     return broker

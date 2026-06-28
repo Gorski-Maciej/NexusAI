@@ -473,14 +473,14 @@ def invalidate_pdf_cache(path: str | Path | None = None) -> None:
 
 def _get_otel_tracer():
     """Lazy import — unika circular importu między core a api."""
-    from nexus_ai.core.otel_tracing import get_tracer
+    from nexus_ai.core.otel import get_tracer
 
     return get_tracer("nexus.core.pdfium")
 
 
 def _start_span(name, tracer_name="nexus.core.pdfium", attributes=None):
     """Lazy import start_span — unika circular importu."""
-    from nexus_ai.core.otel_tracing import start_span as _ss
+    from nexus_ai.core.otel import start_span as _ss
 
     return _ss(name=name, tracer_name=tracer_name, attributes=attributes)
 

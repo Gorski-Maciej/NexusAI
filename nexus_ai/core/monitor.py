@@ -25,10 +25,10 @@ from __future__ import annotations
 
 import os
 import time
-from dataclasses import dataclass, field
 from typing import Any
 
 import psutil
+from msgspec import Struct
 from structlog import get_logger
 
 logger = get_logger("nexus.core.monitor")
@@ -37,8 +37,7 @@ logger = get_logger("nexus.core.monitor")
 # ── Typy danych ──────────────────────────────────────────────────────────────
 
 
-@dataclass
-class ProcessMetrics:
+class ProcessMetrics(Struct, frozen=True):
     """Kompletne metryki procesu zebrane przez oneshot()."""
 
     pid: int
@@ -62,8 +61,7 @@ class ProcessMetrics:
     connections_count: int  # liczba otwartych połączeń sieciowych
 
 
-@dataclass
-class SystemMetrics:
+class SystemMetrics(Struct, frozen=True):
     """Kompletne metryki systemowe."""
 
     # CPU

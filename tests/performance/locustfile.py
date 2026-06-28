@@ -114,7 +114,7 @@ def on_test_start(environment: Any, **kwargs: Any) -> None:
     # SUPERMOC: OTel integration — inicjalizacja metryk
     try:
         from opentelemetry import metrics
-        from nexus_ai.core.otel_config import setup_meter
+        from nexus_ai.core.otel import setup_meter
 
         meter = metrics.get_meter("nexusai.locust")
         globals()["_locust_meter"] = meter

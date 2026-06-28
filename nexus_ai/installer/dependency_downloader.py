@@ -45,26 +45,28 @@ class DependencyProgressCallback(Protocol):
 
 def _get_platform() -> str:
     """Return platform key: windows, linux, darwin."""
-    system = platform.system().lower()
-    if system == "windows":
-        return "windows"
-    elif system == "linux":
-        return "linux"
-    elif system == "darwin":
-        return "darwin"
-    return system
+    match platform.system().lower():
+        case "windows":
+            return "windows"
+        case "linux":
+            return "linux"
+        case "darwin":
+            return "darwin"
+        case other:
+            return other
 
 
 def _get_arch() -> str:
     """Return architecture: amd64, arm64, 386."""
-    machine = platform.machine().lower()
-    if machine in ("amd64", "x86_64", "x64"):
-        return "amd64"
-    elif machine in ("arm64", "aarch64"):
-        return "arm64"
-    elif machine in ("i386", "i686", "x86"):
-        return "386"
-    return "amd64"  # Default to amd64
+    match platform.machine().lower():
+        case "amd64" | "x86_64" | "x64":
+            return "amd64"
+        case "arm64" | "aarch64":
+            return "arm64"
+        case "i386" | "i686" | "x86":
+            return "386"
+        case _:
+            return "amd64"  # Default to amd64
 
 
 # ── Binary definitions ──────────────────────────────────────────────────────

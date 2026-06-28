@@ -21,10 +21,10 @@ from litestar import Controller, get
 from litestar.response import Response
 
 from nexus_ai.api.dto import TAG_EVENTS, GenericDictDTO
-from nexus_ai.events.event_schema import (
-    get_all_event_schemas,
-    get_event_schema_by_type,
-    get_event_schema_summary,
+from nexus_ai.events.domain_events import (
+    get_all_schemas as get_all_event_schemas,
+    get_schema as get_event_schema_by_type,
+    get_schema_summary as get_event_schema_summary,
 )
 
 

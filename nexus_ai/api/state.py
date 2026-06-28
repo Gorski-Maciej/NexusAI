@@ -40,7 +40,7 @@ def _ensure_otel_shutdown_registered() -> None:
     if _OTEL_SHUTDOWN_REGISTERED:
         return
     try:
-        from nexus_ai.core.otel_config import register_otel_shutdown
+        from nexus_ai.core.otel import register_otel_shutdown
         from opentelemetry import trace, metrics
 
         tracer_provider = trace.get_tracer_provider()

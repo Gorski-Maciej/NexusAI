@@ -697,9 +697,6 @@ class JetStreamEventBus:
 class ConsumerConfig(Struct):
     """Konfiguracja konsumera JetStream dla projekcji.
 
-    SUPERMOC: Pełna walidacja wszystkich pól przez msgspec.
-    SUPERMOC: Automatyczne domyślne wartości dla bezpieczeństwa.
-
     Args:
         stream_name: Nazwa strumienia (np. "nexus-invoice").
         consumer_name: Nazwa konsumera (np. "invoice-projection").
@@ -711,32 +708,39 @@ class ConsumerConfig(Struct):
         idle_heartbeat: Czas w sekundach między heartbeatami (0 = wyłączone).
         backoff_delays: Lista opóźnień między retry (sekundy).
         description: Opis konsumera (dla diagnostyki).
+        headers_only: Tylko nagłówki, bez body.
+        flow_control: Ordered push consumer z flow control.
+        replay_policy: "instant" lub "original".
+        num_replicas: HA repliki (0-3).
     """
 
     stream_name: str
     consumer_name: str
-    deliver_policy: str = "all"  # "all" | "last" | "new" | "by_start_sequence"
+    deliver_policy: str = "all"
     filter_subject: str = ""
-    max_deliver: int = field(default=3, metadata={"ge": 1, "le": 100})
-    ack_wait: int = field(default=30, metadata={"ge": 1, "le": 300})
-    max_ack_pending: int = field(default=100, metadata={"ge": 1, "le": 1000})
-    idle_heartbeat: int = field(default=10, metadata={"ge": 0, "le": 60})
+    max_deliver: int = 3
+    ack_wait: int = 30
+    max_ack_pending: int = 100
+    idle_heartbeat: int = 10
     backoff_delays: list[int] = field(default_factory=list)
     description: str = ""
-    # SUPERMOC JETSTREAM: headers_only — tylko nagłówki, bez body (lekki konsument)
-    headers_only: bool = field(
-        default=False, metadata={"description": "Only fetch headers, not message body"}
-    )
-    # SUPERMOC JETSTREAM: flow_control — ordered push consumer z flow control
-    flow_control: bool = field(
-        default=False, metadata={"description": "Enable flow control for push consumer"}
-    )
-    # SUPERMOC JETSTREAM: replay_policy — "instant" vs "original"
-    replay_policy: str = field(
-        default="instant", metadata={"description": "instant or original replay speed"}
-    )
-    # SUPERMOC JETSTREAM: num_replicas — HA dla konsumera
-    num_replicas: int = field(default=0, metadata={"ge": 0, "le": 3})
+    headers_only: bool = False
+    flow_control: bool = False
+    replay_policy: str = "instant"
+    num_replicas: int = 0
+
+    def __post_init__(self) -> None:
+        """Walidacja zakresów pól konfiguracyjnych."""
+        if not (1 <= self.max_deliver <= 100):
+            raise ValueError(f"max_deliver must be 1-100, got {self.max_deliver}")
+        if not (1 <= self.ack_wait <= 300):
+            raise ValueError(f"ack_wait must be 1-300, got {self.ack_wait}")
+        if not (1 <= self.max_ack_pending <= 1000):
+            raise ValueError(f"max_ack_pending must be 1-1000, got {self.max_ack_pending}")
+        if not (0 <= self.idle_heartbeat <= 60):
+            raise ValueError(f"idle_heartbeat must be 0-60, got {self.idle_heartbeat}")
+        if not (0 <= self.num_replicas <= 3):
+            raise ValueError(f"num_replicas must be 0-3, got {self.num_replicas}")
 
 
 class JetStreamConsumer:
