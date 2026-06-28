@@ -32,6 +32,7 @@ logger = get_logger("nexus.ui.router")
 
 # ── TransitionConfig — centralna konfiguracja animacji ────────────────────
 
+
 class TransitionConfig:
     """Centralna konfiguracja animacji przejść między widokami.
 
@@ -140,13 +141,16 @@ def SlideFadeContent(page: ft.Page, content: ft.Control, direction: str = "left"
             animate=ft.Animation(300, ft.AnimationCurve.EASE_OUT),
             margin=ft.Margin(
                 left=slide_margin.value,
-                top=0, right=0, bottom=0,
+                top=0,
+                right=0,
+                bottom=0,
             ),
         ),
     )
 
 
 # ── AnimatedScale Hover Card ──────────────────────────────────────────────
+
 
 def animated_card(
     content: ft.Control,
@@ -164,15 +168,16 @@ def animated_card(
     return ft.Container(
         content=content,
         animate_scale=ft.Animation(duration, ft.AnimationCurve.EASE_OUT),
-        on_hover=lambda e: setattr(
-            e.control, "scale",
-            scale_hover if e.data == "true" else 1.0
-        ) or e.control.update(),
+        on_hover=lambda e: (
+            setattr(e.control, "scale", scale_hover if e.data == "true" else 1.0)
+            or e.control.update()
+        ),
         **kwargs,
     )
 
 
 # ── Page transition helpers ──────────────────────────────────────────────
+
 
 def get_view_transition(is_push: bool, is_pop: bool = False) -> ft.PageTransitionTheme:
     """Wybierz transition type dla widoku.
@@ -191,6 +196,7 @@ def get_view_transition(is_push: bool, is_pop: bool = False) -> ft.PageTransitio
 
 
 # ── RouteGuard ────────────────────────────────────────────────────────────
+
 
 class RouteGuard:
     """Centralny guard dla tras (auth, permisje, loading state).
@@ -227,7 +233,7 @@ class RouteGuard:
         if await self.check_route(route):
             try:
                 result = builder_func(*args, **kwargs)
-                if hasattr(result, '__await__'):
+                if hasattr(result, "__await__"):
                     return await result
                 return result
             except Exception as exc:
@@ -237,46 +243,80 @@ class RouteGuard:
         return self._build_login_redirect(route)
 
     def _build_login_redirect(self, original_route: str) -> ft.Column:
-        return ft.Column([
-            ft.Container(
-                content=ft.Column([
-                    ft.Icon(ft.icons.LOCK_OUTLINE, size=80, color=ft.colors.RED_400),
-                    ft.Container(height=16),
-                    ft.Text("Wymagane logowanie", size=24, weight=ft.FontWeight.BOLD,
-                            color=ft.colors.RED_400),
-                    ft.Container(height=8),
-                    ft.Text(f"Zaloguj się, aby uzyskać dostęp do: {original_route}",
-                            size=13, color=ft.colors.GREY_400),
-                    ft.Container(height=24),
-                    ft.ElevatedButton("Zaloguj się", icon=ft.icons.LOGIN,
-                                      on_click=lambda _: self.page.go("/login")),
-                ], alignment=ft.MainAxisAlignment.CENTER,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                alignment=ft.alignment.center, expand=True,
-            )
-        ], expand=True)
+        return ft.Column(
+            [
+                ft.Container(
+                    content=ft.Column(
+                        [
+                            ft.Icon(ft.icons.LOCK_OUTLINE, size=80, color=ft.colors.RED_400),
+                            ft.Container(height=16),
+                            ft.Text(
+                                "Wymagane logowanie",
+                                size=24,
+                                weight=ft.FontWeight.BOLD,
+                                color=ft.colors.RED_400,
+                            ),
+                            ft.Container(height=8),
+                            ft.Text(
+                                f"Zaloguj się, aby uzyskać dostęp do: {original_route}",
+                                size=13,
+                                color=ft.colors.GREY_400,
+                            ),
+                            ft.Container(height=24),
+                            ft.ElevatedButton(
+                                "Zaloguj się",
+                                icon=ft.icons.LOGIN,
+                                on_click=lambda _: self.page.go("/login"),
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    ),
+                    alignment=ft.alignment.center,
+                    expand=True,
+                )
+            ],
+            expand=True,
+        )
 
     def _build_error(self, route: str, error: str) -> ft.Column:
-        return ft.Column([
-            ft.Container(
-                content=ft.Column([
-                    ft.Icon(ft.icons.ERROR_OUTLINE, size=80, color=ft.colors.RED_400),
-                    ft.Container(height=16),
-                    ft.Text("Błąd routingu", size=24, weight=ft.FontWeight.BOLD,
-                            color=ft.colors.RED_400),
-                    ft.Container(height=8),
-                    ft.Text(f"Nie udało się załadować widoku dla: {route}",
-                            size=13, color=ft.colors.GREY_400),
-                    ft.Container(height=8),
-                    ft.Text(error, size=12, color=ft.colors.RED_600),
-                    ft.Container(height=24),
-                    ft.ElevatedButton("Powrót do Dashboardu", icon=ft.icons.HOME,
-                                      on_click=lambda _: self.page.go("/")),
-                ], alignment=ft.MainAxisAlignment.CENTER,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                alignment=ft.alignment.center, expand=True,
-            )
-        ], expand=True)
+        return ft.Column(
+            [
+                ft.Container(
+                    content=ft.Column(
+                        [
+                            ft.Icon(ft.icons.ERROR_OUTLINE, size=80, color=ft.colors.RED_400),
+                            ft.Container(height=16),
+                            ft.Text(
+                                "Błąd routingu",
+                                size=24,
+                                weight=ft.FontWeight.BOLD,
+                                color=ft.colors.RED_400,
+                            ),
+                            ft.Container(height=8),
+                            ft.Text(
+                                f"Nie udało się załadować widoku dla: {route}",
+                                size=13,
+                                color=ft.colors.GREY_400,
+                            ),
+                            ft.Container(height=8),
+                            ft.Text(error, size=12, color=ft.colors.RED_600),
+                            ft.Container(height=24),
+                            ft.ElevatedButton(
+                                "Powrót do Dashboardu",
+                                icon=ft.icons.HOME,
+                                on_click=lambda _: self.page.go("/"),
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    ),
+                    alignment=ft.alignment.center,
+                    expand=True,
+                )
+            ],
+            expand=True,
+        )
 
 
 # ── Breadcrumb navigation ────────────────────────────────────────────────
@@ -311,32 +351,41 @@ def build_breadcrumb(page: ft.Page) -> ft.Container:
 
         if is_last:
             crumbs.append(
-                ft.Text(label, size=13, weight=ft.FontWeight.BOLD,
-                        color=ft.colors.GREY_300)
+                ft.Text(label, size=13, weight=ft.FontWeight.BOLD, color=ft.colors.GREY_300)
             )
         else:
             crumbs.append(
                 ft.TextButton(
-                    content=ft.Row([
-                        ft.Icon(ft.icons.HOME_OUTLINED if route == "/"
+                    content=ft.Row(
+                        [
+                            ft.Icon(
+                                ft.icons.HOME_OUTLINED
+                                if route == "/"
                                 else ft.icons.CHEVRON_RIGHT_OUTLINED,
-                                size=14, color=ft.colors.BLUE_300) if i == 0
-                        else ft.Container(width=0),
-                        ft.Text(label, size=13, color=ft.colors.BLUE_300),
-                    ], spacing=4),
+                                size=14,
+                                color=ft.colors.BLUE_300,
+                            )
+                            if i == 0
+                            else ft.Container(width=0),
+                            ft.Text(label, size=13, color=ft.colors.BLUE_300),
+                        ],
+                        spacing=4,
+                    ),
                     on_click=lambda _, r=route: page.go(r),
                     style=ft.ButtonStyle(padding=ft.padding.all(4)),
                 )
             )
 
         if not is_last:
-            crumbs.append(
-                ft.Icon(ft.icons.CHEVRON_RIGHT, size=14, color=ft.colors.GREY_600)
-            )
+            crumbs.append(ft.Icon(ft.icons.CHEVRON_RIGHT, size=14, color=ft.colors.GREY_600))
 
     return ft.Container(
-        content=ft.Row(crumbs, spacing=2, alignment=ft.MainAxisAlignment.START,
-                       vertical_alignment=ft.CrossAxisAlignment.CENTER),
+        content=ft.Row(
+            crumbs,
+            spacing=2,
+            alignment=ft.MainAxisAlignment.START,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
         padding=ft.padding.symmetric(horizontal=16, vertical=6),
         bgcolor=ft.colors.with_opacity(0.03, ft.colors.WHITE),
         border=ft.border.only(bottom=ft.BorderSide(1, ft.colors.GREY_800)),
@@ -362,6 +411,7 @@ def _breadcrumb_label(route: str) -> str:
 
 
 # ── URL = State helper ────────────────────────────────────────────────────
+
 
 def update_url_with_filters(page: ft.Page, base_path: str, filters: dict) -> None:
     """Zaktualizuj URL z filtrami — URL = State.
@@ -399,6 +449,7 @@ def parse_query_context(route: str) -> dict:
 
 
 # ── NexusRouter — Navigator 2.0 ──────────────────────────────────────────
+
 
 class NexusRouter:
     """Declarative router z TemplateRoute — Navigator 2.0, RouteGuard, Query params.
@@ -589,7 +640,8 @@ class NexusRouter:
             modal=True,
             title=ft.Text("Potwierdź zamknięcie"),
             content=ft.Text(
-                "Czy na pewno chcesz zamknąć aplikację? Niezapisane dane mogą zostać utracone."),
+                "Czy na pewno chcesz zamknąć aplikację? Niezapisane dane mogą zostać utracone."
+            ),
             actions=[
                 ft.TextButton("Anuluj", on_click=lambda _: self._close_dialog(dialog)),
                 ft.TextButton("Zamknij", on_click=lambda _: self._force_close(dialog)),
@@ -612,21 +664,25 @@ class NexusRouter:
 
     async def _open_edit_modal(self, invoice_id: str) -> None:
         from nexus_ai.frontend.views.invoice_detail_view import InvoiceDetailView
+
         dv = InvoiceDetailView(self.page, self.api, invoice_id)
         self.page.run_task(dv.load_data)
 
         modal = ft.Container(
-            content=ft.Column([
-                ft.AppBar(
-                    title=ft.Text(f"Edytuj fakturę #{invoice_id[:8]}"),
-                    bgcolor=ft.colors.SURFACE_CONTAINER_HIGHEST,
-                    actions=[
-                        ft.IconButton(icon=ft.icons.CLOSE,
-                                      on_click=lambda _: self._close_modal()),
-                    ],
-                ),
-                ft.Container(content=dv.build(), expand=True, padding=ft.padding.all(16)),
-            ]),
+            content=ft.Column(
+                [
+                    ft.AppBar(
+                        title=ft.Text(f"Edytuj fakturę #{invoice_id[:8]}"),
+                        bgcolor=ft.colors.SURFACE_CONTAINER_HIGHEST,
+                        actions=[
+                            ft.IconButton(
+                                icon=ft.icons.CLOSE, on_click=lambda _: self._close_modal()
+                            ),
+                        ],
+                    ),
+                    ft.Container(content=dv.build(), expand=True, padding=ft.padding.all(16)),
+                ]
+            ),
             width=self.page.window_width * 0.8 if self.page.window_width else 800,
             height=self.page.window_height * 0.85 if self.page.window_height else 700,
             border_radius=12,
@@ -653,18 +709,21 @@ class NexusRouter:
         """
         return ft.Column(
             [build_breadcrumb(self.page), content],
-            expand=True, spacing=0,
+            expand=True,
+            spacing=0,
             # NIE scroll — widoki mają własny scroll, unikamy zagnieżdżenia
         )
 
     def _build_dashboard(self, query: dict | None = None) -> ft.Control:
         from nexus_ai.frontend.views.dashboard import DashboardView
+
         dv = DashboardView(self.page, self.api, query_context=query)
         self.page.run_task(dv.load_data)
         return self._build_with_breadcrumb(dv.build())
 
     def _build_invoices(self, query: dict | None = None) -> ft.Control:
         from nexus_ai.frontend.views.invoice_list_view import InvoiceListView
+
         # SUPERMOC: URL = State — query params przekazane do widoku
         iv = InvoiceListView(self.page, self.api, query_context=query)
         return self._build_with_breadcrumb(
@@ -673,6 +732,7 @@ class NexusRouter:
 
     async def _build_invoice_detail(self, invoice_id: str, query: dict | None = None) -> ft.Control:
         from nexus_ai.frontend.views.invoice_detail_view import InvoiceDetailView
+
         dv = InvoiceDetailView(self.page, self.api, invoice_id)
         self.page.run_task(dv.load_data)
         return self._build_with_breadcrumb(
@@ -681,6 +741,7 @@ class NexusRouter:
 
     def _build_briefing(self) -> ft.Control:
         from nexus_ai.frontend.views.daily_briefing import DailyBriefingView
+
         bv = DailyBriefingView(self.page, self.api)
         self.page.run_task(bv.load_data)
         return self._build_with_breadcrumb(
@@ -689,6 +750,7 @@ class NexusRouter:
 
     def _build_partner(self) -> ft.Control:
         from nexus_ai.frontend.views.partner_hub import PartnerHubView
+
         pv = PartnerHubView(self.page, self.api, query_context=query)
         return self._build_with_breadcrumb(
             ft.Container(content=pv.build(), expand=True, padding=ft.padding.all(16))
@@ -696,6 +758,7 @@ class NexusRouter:
 
     def _build_tasks(self) -> ft.Control:
         from nexus_ai.frontend.views.task_monitor import TaskMonitorPanel
+
         tm = TaskMonitorPanel(self.page, self.api)
         self.page.run_task(tm.refresh)
         return self._build_with_breadcrumb(
@@ -705,18 +768,29 @@ class NexusRouter:
     def _build_not_found(self) -> ft.Control:
         return self._build_with_breadcrumb(
             ft.Container(
-                content=ft.Column([
-                    ft.Icon(ft.icons.SEARCH_OFF, size=80, color=ft.colors.GREY_600),
-                    ft.Container(height=20),
-                    ft.Text("404 — Strona nie znaleziona", size=24,
-                            weight=ft.FontWeight.BOLD, color=ft.colors.GREY_400),
-                    ft.Container(height=8),
-                    ft.Text(f"Ścieżka: {self.page.route}", size=14, color=ft.colors.GREY_600),
-                    ft.Container(height=24),
-                    ft.ElevatedButton("Powrót do Dashboardu", icon=ft.icons.HOME,
-                                      on_click=lambda _: self.page.go("/")),
-                ], alignment=ft.MainAxisAlignment.CENTER,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                alignment=ft.alignment.center, expand=True,
+                content=ft.Column(
+                    [
+                        ft.Icon(ft.icons.SEARCH_OFF, size=80, color=ft.colors.GREY_600),
+                        ft.Container(height=20),
+                        ft.Text(
+                            "404 — Strona nie znaleziona",
+                            size=24,
+                            weight=ft.FontWeight.BOLD,
+                            color=ft.colors.GREY_400,
+                        ),
+                        ft.Container(height=8),
+                        ft.Text(f"Ścieżka: {self.page.route}", size=14, color=ft.colors.GREY_600),
+                        ft.Container(height=24),
+                        ft.ElevatedButton(
+                            "Powrót do Dashboardu",
+                            icon=ft.icons.HOME,
+                            on_click=lambda _: self.page.go("/"),
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                ),
+                alignment=ft.alignment.center,
+                expand=True,
             )
         )

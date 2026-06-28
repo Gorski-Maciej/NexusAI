@@ -129,6 +129,7 @@ else:
         stats_as_dict,
     )
     from nexus_ai.core.crypto import Vault  # noqa: E402
+
     SecretsManager = None
     SystemMonitor = None
     PromptTemplate = None

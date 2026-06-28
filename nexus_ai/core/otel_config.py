@@ -65,6 +65,7 @@ def create_otel_resource() -> Any:
 
 # ── SUPERMOC: Head-based Sampling ─────────────────────────────────────────
 
+
 def _resolve_sampler() -> Any:
     from opentelemetry.sdk.trace import sampling
 
@@ -73,9 +74,7 @@ def _resolve_sampler() -> Any:
         "always_off": sampling.ALWAYS_OFF,
         "parentbased_always_on": sampling.ParentBased(sampling.ALWAYS_ON),
         "parentbased_always_off": sampling.ParentBased(sampling.ALWAYS_OFF),
-        "traceidratio": sampling.TraceIdRatioBased(
-            float(OTEL_TRACES_SAMPLER_ARG)
-        ),
+        "traceidratio": sampling.TraceIdRatioBased(float(OTEL_TRACES_SAMPLER_ARG)),
         "parentbased_traceidratio": sampling.ParentBased(
             sampling.TraceIdRatioBased(float(OTEL_TRACES_SAMPLER_ARG))
         ),
@@ -90,6 +89,7 @@ def _resolve_sampler() -> Any:
 
 
 # ── SUPERMOC: TracerProvider z BatchSpanProcessor ────────────────────────
+
 
 def create_tracer_provider(resource: Any | None = None) -> Any | None:
     try:
@@ -106,28 +106,39 @@ def create_tracer_provider(resource: Any | None = None) -> Any | None:
         if OTEL_EXPORTER_OTLP_ENDPOINT:
             try:
                 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-                otlp_exporter = OTLPSpanExporter(endpoint=OTEL_EXPORTER_OTLP_ENDPOINT, insecure=True, timeout=5)
+
+                otlp_exporter = OTLPSpanExporter(
+                    endpoint=OTEL_EXPORTER_OTLP_ENDPOINT, insecure=True, timeout=5
+                )
                 provider.add_span_processor(
-                    BatchSpanProcessor(otlp_exporter,
+                    BatchSpanProcessor(
+                        otlp_exporter,
                         max_queue_size=OTEL_BSP_MAX_QUEUE_SIZE,
                         scheduled_delay_millis=OTEL_BSP_SCHEDULE_DELAY,
                         max_export_batch_size=OTEL_BSP_MAX_EXPORT_BATCH_SIZE,
                         export_timeout_millis=OTEL_BSP_EXPORT_TIMEOUT,
                     )
                 )
-                logger.info("[OTEL-CONFIG] OTLP exporter configured: %s", OTEL_EXPORTER_OTLP_ENDPOINT)
+                logger.info(
+                    "[OTEL-CONFIG] OTLP exporter configured: %s", OTEL_EXPORTER_OTLP_ENDPOINT
+                )
             except Exception as exc:
                 logger.warning("[OTEL-CONFIG] Failed to configure OTLP exporter: %s", exc)
 
         if os.getenv("NEXUS_ENV", "dev") == "dev":
             try:
                 from opentelemetry.sdk.trace.export import ConsoleSpanExporter
+
                 provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
             except Exception:
                 pass
 
         trace.set_tracer_provider(provider)
-        logger.info("[OTEL-CONFIG] Tracing initialized: service=%s env=%s", OTEL_SERVICE_NAME, os.getenv("NEXUS_ENV", "dev"))
+        logger.info(
+            "[OTEL-CONFIG] Tracing initialized: service=%s env=%s",
+            OTEL_SERVICE_NAME,
+            os.getenv("NEXUS_ENV", "dev"),
+        )
         return provider
 
     except ImportError as exc:
@@ -137,7 +148,10 @@ def create_tracer_provider(resource: Any | None = None) -> Any | None:
 
 # ── MeterProvider ──
 
-def create_meter_provider(resource: Any | None = None, views: list[Any] | None = None) -> Any | None:
+
+def create_meter_provider(
+    resource: Any | None = None, views: list[Any] | None = None
+) -> Any | None:
     try:
         from opentelemetry import metrics
         from opentelemetry.sdk.metrics import MeterProvider
@@ -150,9 +164,16 @@ def create_meter_provider(resource: Any | None = None, views: list[Any] | None =
 
         if OTEL_EXPORTER_OTLP_ENDPOINT:
             try:
-                from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
-                otlp_metric_exporter = OTLPMetricExporter(endpoint=OTEL_EXPORTER_OTLP_ENDPOINT, insecure=True, timeout=10)
-                otlp_reader = PeriodicExportingMetricReader(otlp_metric_exporter, export_interval_ms=30000)
+                from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import (
+                    OTLPMetricExporter,
+                )
+
+                otlp_metric_exporter = OTLPMetricExporter(
+                    endpoint=OTEL_EXPORTER_OTLP_ENDPOINT, insecure=True, timeout=10
+                )
+                otlp_reader = PeriodicExportingMetricReader(
+                    otlp_metric_exporter, export_interval_ms=30000
+                )
                 readers.append(otlp_reader)
             except Exception as exc:
                 logger.warning("[OTEL-CONFIG] OTLP metrics reader failed: %s", exc)
@@ -192,7 +213,11 @@ def _otel_atexit_shutdown() -> None:
             pass
 
 
-def register_otel_shutdown(tracer_provider: Any | None = None, meter_provider: Any | None = None, logger_provider: Any | None = None) -> None:
+def register_otel_shutdown(
+    tracer_provider: Any | None = None,
+    meter_provider: Any | None = None,
+    logger_provider: Any | None = None,
+) -> None:
     global _tracer_provider_ref, _meter_provider_ref, _logger_provider_ref
     if tracer_provider is not None:
         _tracer_provider_ref = tracer_provider

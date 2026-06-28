@@ -149,16 +149,19 @@ def uninstrument_all() -> None:
     """Wyłącz wszystkie instrumentacje (dla cleanup)."""
     try:
         from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
+
         SQLAlchemyInstrumentor().uninstrument()
     except Exception:
         pass
     try:
         from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
+
         HTTPXClientInstrumentor().uninstrument()
     except Exception:
         pass
     try:
         from opentelemetry.instrumentation.logging import LoggingInstrumentor
+
         LoggingInstrumentor().uninstrument()
     except Exception:
         pass

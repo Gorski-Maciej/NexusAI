@@ -22,6 +22,7 @@ from nexus_ai.core.broker import broker
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.decision_engine import classify_invoice
 from nexus_ai.core.di import get_config, get_db_session, get_engine
+
 # Niepotrzebne importy usunięte — DecodeError i msgspec_loads nie są używane w tym module
 from nexus_ai.pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
 from nexus_ai.services.accounting import AccountingService
@@ -158,7 +159,8 @@ async def process_invoice_ocr(
         if consensus.confidence_conflict:
             await _mark_invoice_pending_review(invoice_id, reason="CONFIDENCE_CONFLICT", db=db)
             logger.warning(
-                "[OCR] confidence conflict for invoice_id=%s", invoice_id,
+                "[OCR] confidence conflict for invoice_id=%s",
+                invoice_id,
             )
 
         # --- Walidacja NIP i IBAN ---
@@ -166,7 +168,9 @@ async def process_invoice_ocr(
             accounting = AccountingService()
             contractor_nip = payload.get("contractor_nip", "")
             bank_account = payload.get("bank_account", "")
-            nip_verification = await accounting.verify_nip(contractor_nip) if contractor_nip else None
+            nip_verification = (
+                await accounting.verify_nip(contractor_nip) if contractor_nip else None
+            )
             nip_valid = nip_verification is not None
             iban_valid = accounting.validate_iban(bank_account) if bank_account else True
             payload["nip_valid"] = nip_valid
@@ -179,31 +183,45 @@ async def process_invoice_ocr(
         # --- Context Enrichment ---
         try:
             import duckdb
+
             conn = duckdb.connect(str(AppConfig().duckdb_path))
             from nexus_ai.services.context_enricher import ContextEnricher, ensure_cache_schema
+
             ensure_cache_schema(conn)
             enricher = ContextEnricher(conn)
             enriched = await enricher.enrich(payload)
             conn.close()
         except Exception as enrich_err:
             logger.warning("[OCR] ContextEnrichment failed for %s: %s", invoice_id, enrich_err)
-            enriched = {"vendor_vat_status": "unknown", "vendor_pkd": "",
-                        "vendor_account_on_whitelist": False, "vendor_trust": "unknown",
-                        "vendor_company_name": ""}
+            enriched = {
+                "vendor_vat_status": "unknown",
+                "vendor_pkd": "",
+                "vendor_account_on_whitelist": False,
+                "vendor_trust": "unknown",
+                "vendor_company_name": "",
+            }
 
         # --- Semantic Anomaly Detection ---
         try:
             from nexus_ai.services.semantic_guard import SemanticGuard
+
             semantic_guard = SemanticGuard()
             full_text = payload.get("ocr_full_text", "")
             amount_net_val = _safe_float(payload.get("amount_net")) or 0.0
             anomaly = semantic_guard.evaluate(
-                invoice_text=full_text, vendor_nip=payload.get("contractor_nip", ""),
+                invoice_text=full_text,
+                vendor_nip=payload.get("contractor_nip", ""),
                 amount_net=amount_net_val,
             )
             if anomaly.get("action") == "BLOCK_DECREE":
-                logger.warning("[OCR] Semantic anomaly BLOCK %s score=%.4f", invoice_id, anomaly.get("anomaly_score", 0))
-                await _mark_invoice_blocked(invoice_id, anomaly.get("alert", "Semantic anomaly detected"), db)
+                logger.warning(
+                    "[OCR] Semantic anomaly BLOCK %s score=%.4f",
+                    invoice_id,
+                    anomaly.get("anomaly_score", 0),
+                )
+                await _mark_invoice_blocked(
+                    invoice_id, anomaly.get("alert", "Semantic anomaly detected"), db
+                )
                 return
         except Exception as sem_err:
             logger.warning("[OCR] SemanticGuard failed for %s: %s", invoice_id, sem_err)
@@ -237,21 +255,26 @@ async def process_invoice_ocr(
                 "trust_score": float(payload.get("vendor_trust_score", 0.5)),
                 "category_consistent": bool(payload.get("vendor_category_consistent", True)),
                 "auto_approve": bool(payload.get("vendor_auto_approve", False)),
-                "category_preference_match": bool(payload.get("vendor_category_preference_match", True)),
+                "category_preference_match": bool(
+                    payload.get("vendor_category_preference_match", True)
+                ),
             },
         }
 
         # --- Field Confidence: Zen-Engine Rules ---
         try:
             import duckdb
+
             ze_conn = duckdb.connect(str(AppConfig().duckdb_path))
             from nexus_ai.core.context_interpreter import ContextInterpreter as CtxInterpreter
             from nexus_ai.tax.rules import RuleEngine, ensure_tax_schemas, seed_default_rules
+
             ensure_tax_schemas(ze_conn)
             seed_default_rules(ze_conn)
             ctx_data: dict[str, Any] = {
                 "category_code": (payload.get("category") or "").upper(),
-                "transaction_date": payload.get("issue_date", "") or pendulum.now().date().isoformat(),
+                "transaction_date": payload.get("issue_date", "")
+                or pendulum.now().date().isoformat(),
                 "company_tax_form": payload.get("company_tax_form", "CIT_STANDARD"),
                 "vendor_country": payload.get("vendor_country", "PL"),
                 "vendor_nip": payload.get("contractor_nip", ""),
@@ -273,7 +296,9 @@ async def process_invoice_ocr(
                         ze_conn.close()
                         return
                     elif routing == "TRIAGE_QUEUE":
-                        await _mark_invoice_pending_review(invoice_id, reason=f"FIELD_CONFIDENCE: {routing_reason}", db=db)
+                        await _mark_invoice_pending_review(
+                            invoice_id, reason=f"FIELD_CONFIDENCE: {routing_reason}", db=db
+                        )
             except NoMatchingRuleError:
                 extracted_data["field_confidence_status"] = "ALL_CONFIDENCE_OK"
             ze_conn.close()
@@ -283,11 +308,16 @@ async def process_invoice_ocr(
 
     # Trigger decision via NATS (poza semaforem)
     from nexus_ai.core.nats_utils import publish_event
-    await publish_event("invoice.extracted", {"invoice_id": invoice_id, "extracted_data": extracted_data})
+
+    await publish_event(
+        "invoice.extracted", {"invoice_id": invoice_id, "extracted_data": extracted_data}
+    )
 
     # Trigger decision task
     try:
-        workflow_type = classify_invoice(invoice_data=extracted_data, vendor_profile=extracted_data.get("vendor_profile", {}))
+        workflow_type = classify_invoice(
+            invoice_data=extracted_data, vendor_profile=extracted_data.get("vendor_profile", {})
+        )
         await broker.kick("decision_evaluate", invoice_id=invoice_id, extracted_data=extracted_data)
         logger.info("[OCR] workflow=%s for invoice_id=%s", workflow_type, invoice_id)
     except Exception as trigger_err:
@@ -309,7 +339,9 @@ async def process_large_attachment(attachment_id: str, payload: dict | None = No
 async def _mark_invoice_blocked(invoice_id: str, reason: str, db: Session) -> None:
     """Mark invoice as BLOCKED_FRAUD_SUSPICION."""
     await db.execute(
-        text("UPDATE invoices SET status = 'BLOCKED_FRAUD_SUSPICION', updated_at = CURRENT_TIMESTAMP WHERE id = :invoice_id"),
+        text(
+            "UPDATE invoices SET status = 'BLOCKED_FRAUD_SUSPICION', updated_at = CURRENT_TIMESTAMP WHERE id = :invoice_id"
+        ),
         {"invoice_id": invoice_id},
     )
     logger.warning("[FRAUD] Invoice %s blocked: %s", invoice_id, reason)

@@ -27,18 +27,25 @@ try:
 except NameError:
     _NUITKA_COMPILED: bool = False
 
+
 # ── Exceptions — inline (zastępują usunięte tax/exceptions.py) ─────────────
 class TaxEngineError(Exception):
     """Base exception for all tax engine errors."""
+
     pass
+
 
 class NoMatchingRuleError(TaxEngineError):
     """Raised when no rule matches the given context."""
+
     pass
+
 
 class DecisionTraceIntegrityError(TaxEngineError):
     """Raised when the decision trace chain integrity check fails."""
+
     pass
+
 
 # ── OPA components ──────────────────────────────────────────────────────────
 from nexus_ai.core.opa_client import (
@@ -62,6 +69,7 @@ from nexus_ai.rust import (
 def ensure_audit_schema(conn) -> None:
     """Create decision_traces table (zastępuje ensure_schema z tax/audit.py)."""
     from nexus_ai.core.msgspec_utils import msgspec_dumps as _d
+
     conn.execute("""
         CREATE TABLE IF NOT EXISTS decision_traces (
             trace_id VARCHAR PRIMARY KEY,
@@ -86,11 +94,13 @@ def ensure_audit_schema(conn) -> None:
         except Exception:
             pass
 
+
 # ── Legacy: Rust-native PriorityEngine i TemporalManager z nexus_crypto ─────
 from nexus_crypto import (
     PriorityEngine as _RustPriorityEngine,
     TemporalManager as _RustTemporalManager,
 )
+
 PriorityEngine = _RustPriorityEngine  # type: ignore[misc]
 TemporalManager = _RustTemporalManager  # type: ignore[misc]
 
@@ -100,6 +110,7 @@ from msgspec import Struct
 
 class MatchResult(Struct):
     """Match result from rule evaluation (legacy, kept for backward compat)."""
+
     matched: bool = False
     rule_id: str = ""
     priority: int = 0
@@ -109,6 +120,7 @@ class MatchResult(Struct):
 
 class PrioritizedRule(Struct):
     """Prioritized rule definition (legacy, kept for backward compat)."""
+
     rule_id: str = ""
     condition_sql: str = ""
     action_json: str = ""
@@ -119,6 +131,7 @@ class PrioritizedRule(Struct):
 
 class TemporalRule(Struct):
     """Temporal rule definition (legacy, kept for backward compat)."""
+
     rule_id: str = ""
     condition_sql: str = ""
     action_json: str = ""
@@ -129,16 +142,27 @@ class TemporalRule(Struct):
 
 # ── Context Interpreter — inline (zastępuje usunięte core/context_interpreter.py) ──
 
-ALLOWED_KEYS: frozenset[str] = frozenset({
-    "category_code", "transaction_date", "vendor_country", "company_tax_form",
-    "vendor_nip", "amount_net", "amount_net_grosze", "vendor_vat_status",
-    "vendor_pkd", "vendor_account_on_whitelist", "expense_type",
-    "confidence_vat_rate",
-})
+ALLOWED_KEYS: frozenset[str] = frozenset(
+    {
+        "category_code",
+        "transaction_date",
+        "vendor_country",
+        "company_tax_form",
+        "vendor_nip",
+        "amount_net",
+        "amount_net_grosze",
+        "vendor_vat_status",
+        "vendor_pkd",
+        "vendor_account_on_whitelist",
+        "expense_type",
+        "confidence_vat_rate",
+    }
+)
 
 
 class ContextInterpreterError(ValueError):
     """Błąd interpretacji kontekstu."""
+
     pass
 
 
@@ -172,6 +196,7 @@ class ContextInterpreter:
 
 # ── Rule Store — inline (zastępuje usunięte services/rule_store.py) ─────────
 
+
 class RuleStore:
     """RuleStore — trwały magazyn reguł w DuckDB.
 
@@ -197,17 +222,34 @@ class RuleStore:
             )
         """)
 
-    def add_rule(self, condition_sql: str, action: dict, valid_from: str = "2024-01-01",
-                 valid_to: str | None = None, priority: int = 100,
-                 rule_set_id: str = "", created_by: str = "system") -> str:
+    def add_rule(
+        self,
+        condition_sql: str,
+        action: dict,
+        valid_from: str = "2024-01-01",
+        valid_to: str | None = None,
+        priority: int = 100,
+        rule_set_id: str = "",
+        created_by: str = "system",
+    ) -> str:
         import uuid
+
         rule_id = uuid.uuid4().hex
         from nexus_ai.core.msgspec_utils import msgspec_dumps
+
         self._conn.execute(
             "INSERT INTO tax_rules (rule_id, condition_sql, action_json, valid_from, valid_to, priority, rule_set_id, created_by) "
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            (rule_id, condition_sql, msgspec_dumps(action, ensure_ascii=False),
-             valid_from, valid_to, priority, rule_set_id, created_by),
+            (
+                rule_id,
+                condition_sql,
+                msgspec_dumps(action, ensure_ascii=False),
+                valid_from,
+                valid_to,
+                priority,
+                rule_set_id,
+                created_by,
+            ),
         )
         return rule_id
 
@@ -220,9 +262,15 @@ class RuleStore:
             "FROM tax_rules ORDER BY priority ASC"
         ).fetchall()
         return [
-            {"rule_id": str(r[0]), "condition_sql": str(r[1]), "action_json": str(r[2]),
-             "priority": int(r[3]), "valid_from": str(r[4]), "valid_to": str(r[5]) if r[5] else None,
-             "rule_set_id": str(r[6])}
+            {
+                "rule_id": str(r[0]),
+                "condition_sql": str(r[1]),
+                "action_json": str(r[2]),
+                "priority": int(r[3]),
+                "valid_from": str(r[4]),
+                "valid_to": str(r[5]) if r[5] else None,
+                "rule_set_id": str(r[6]),
+            }
             for r in rows
         ]
 

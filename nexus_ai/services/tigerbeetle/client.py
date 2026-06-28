@@ -33,32 +33,32 @@ logger = get_logger("nexus.services.tigerbeetle")
 # ── Typy transferów (code field) ──────────────────────────────────────────
 # TB używa numeric code do kategoryzacji typów transakcji
 TRANSFER_CODE = {
-    "EXPENSE_NET": 1001,        # Netto wydatku (koszt)
-    "EXPENSE_VAT": 1002,        # VAT naliczony
-    "REVENUE_NET": 2001,        # Netto przychodu
-    "REVENUE_VAT": 2002,        # VAT należny
-    "PAYMENT_IN": 3001,         # Wpływ płatności
-    "PAYMENT_OUT": 3002,        # Wypływ płatności
-    "FX_GAIN": 4001,            # Różnica kursowa dodatnia
-    "FX_LOSS": 4002,            # Różnica kursowa ujemna
-    "DEPRECIATION": 5001,       # Amortyzacja
-    "COGS": 6001,               # Koszt własny sprzedaży (FIFO)
-    "STORN": 7001,              # Storno (odwrócenie)
-    "BANK_FEE": 8001,           # Opłata bankowa
+    "EXPENSE_NET": 1001,  # Netto wydatku (koszt)
+    "EXPENSE_VAT": 1002,  # VAT naliczony
+    "REVENUE_NET": 2001,  # Netto przychodu
+    "REVENUE_VAT": 2002,  # VAT należny
+    "PAYMENT_IN": 3001,  # Wpływ płatności
+    "PAYMENT_OUT": 3002,  # Wypływ płatności
+    "FX_GAIN": 4001,  # Różnica kursowa dodatnia
+    "FX_LOSS": 4002,  # Różnica kursowa ujemna
+    "DEPRECIATION": 5001,  # Amortyzacja
+    "COGS": 6001,  # Koszt własny sprzedaży (FIFO)
+    "STORN": 7001,  # Storno (odwrócenie)
+    "BANK_FEE": 8001,  # Opłata bankowa
     "TRANSFER_INTERNAL": 9001,  # Przelew wewnętrzny
-    "ROUNDING": 10001,          # Zaokrąglenie
+    "ROUNDING": 10001,  # Zaokrąglenie
 }
 
 # ── Ledgery dla izolacji walut/aktywów ────────────────────────────────────
 LEDGER = {
-    "PLN": 700,          # Główny ledger PLN (polski plan kont)
-    "EUR": 701,          # Ledger EUR
-    "USD": 702,          # Ledger USD
-    "VAT_INPUT": 711,    # VAT naliczony (oddzielny ledger)
-    "VAT_OUTPUT": 712,   # VAT należny (oddzielny ledger)
-    "FX": 720,           # Różnice kursowe
-    "ASSETS": 730,       # Środki trwałe
-    "INVENTORY": 740,    # Zapasy (FIFO)
+    "PLN": 700,  # Główny ledger PLN (polski plan kont)
+    "EUR": 701,  # Ledger EUR
+    "USD": 702,  # Ledger USD
+    "VAT_INPUT": 711,  # VAT naliczony (oddzielny ledger)
+    "VAT_OUTPUT": 712,  # VAT należny (oddzielny ledger)
+    "FX": 720,  # Różnice kursowe
+    "ASSETS": 730,  # Środki trwałe
+    "INVENTORY": 740,  # Zapasy (FIFO)
 }
 
 # ── Domyślny ledger dla PLN ───────────────────────────────────────────────
@@ -67,6 +67,7 @@ DEFAULT_LEDGER = LEDGER["PLN"]
 # ── Monotonic sequence dla TB ID (zapobiega kolizjom) ────────────────
 _tb_id_counter: int = 0
 _tb_id_lock = threading.Lock()
+
 
 def _generate_tb_id() -> int:
     """Generuj time-based ID z monotonic sequence — zgodny z TB.
@@ -166,9 +167,7 @@ class TigerBeetleClient:
         if unix_socket:
             self.replica_addresses = unix_socket
         else:
-            raw = replica_addresses or os.getenv(
-                "TB_REPLICA_ADDRESSES", "3000"
-            )
+            raw = replica_addresses or os.getenv("TB_REPLICA_ADDRESSES", "3000")
             if isinstance(raw, str):
                 # TB ClientSync oczekuje pojedynczego stringa z comma-separated adresami
                 self.replica_addresses = raw
@@ -480,10 +479,7 @@ class TigerBeetleClient:
         if not account_ids:
             return {}
         accounts = self.lookup_accounts(account_ids)
-        return {
-            acct.id: acct.credits_posted - acct.debits_posted
-            for acct in accounts
-        }
+        return {acct.id: acct.credits_posted - acct.debits_posted for acct in accounts}
 
     def get_account_transfers(
         self,
@@ -605,7 +601,7 @@ class TigerBeetleClient:
         transfers = []
         for i, spec in enumerate(specs):
             transfer_id = _generate_tb_id()
-            is_last = (i == len(specs) - 1)
+            is_last = i == len(specs) - 1
 
             transfer = tb.Transfer(
                 id=transfer_id,

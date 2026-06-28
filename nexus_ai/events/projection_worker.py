@@ -208,6 +208,7 @@ class ProjectionWorker:
         # Zamknij połączenie NATS (z flush przed drain)
         if self._nc is not None:
             from nexus_ai.core.nats_utils import safe_close
+
             await safe_close(self._nc)
             self._nc = None
             self._js = None
@@ -333,15 +334,16 @@ class ProjectionWorker:
             sub = await self._js.pull_subscribe(
                 subject=filter_subject or ">",
                 stream=stream_name,
-                durable=f"{projection.name}-worker",                    config={
-                        "max_deliver": 3,
-                        "ack_wait": 30,
-                        "max_ack_pending": 100,
-                        "idle_heartbeat": 10,
-                        "flow_control": True,
-                        "ordered": True,
-                        "headers_only": False,
-                    },
+                durable=f"{projection.name}-worker",
+                config={
+                    "max_deliver": 3,
+                    "ack_wait": 30,
+                    "max_ack_pending": 100,
+                    "idle_heartbeat": 10,
+                    "flow_control": True,
+                    "ordered": True,
+                    "headers_only": False,
+                },
             )
             logger.info(
                 "[PROJECTION-WORKER] Pull subscriber ready: %s/%s",

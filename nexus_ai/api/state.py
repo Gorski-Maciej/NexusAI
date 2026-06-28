@@ -117,6 +117,7 @@ async def _start_metrics_background_task(app: Litestar) -> None:
 
                     # Loguj co 5 minut dla AUDIT
                     import time as _time
+
                     if int(_time.time()) % 300 < 30:  # co ~5min
                         logger.bind(level="AUDIT").info(
                             "[SYSTEM-METRICS] RSS=%.1fMB USS=%.1fMB CPU=%.1f%% "
@@ -238,14 +239,14 @@ def make_on_startup(engine, session_factory):
     async def _on_startup(app: Litestar) -> None:
         """Inicjalizacja ciężkich zasobów przy starcie API.
 
-        Fazowanie startu:
-          0. Config + ML cache + pendulum locale
-          1. Metryki OTel (sync + background task)
-          2. Database engine + core services (pre-created przez SQLAlchemyPlugin)      3. Native SQLite migrations + seed danych
-      4. Broker, DuckDB warm-up, auto-seed
-      5. HotReloadListener
+          Fazowanie startu:
+            0. Config + ML cache + pendulum locale
+            1. Metryki OTel (sync + background task)
+            2. Database engine + core services (pre-created przez SQLAlchemyPlugin)      3. Native SQLite migrations + seed danych
+        4. Broker, DuckDB warm-up, auto-seed
+        5. HotReloadListener
 
-        Engine i session_factory są współdzielone z SQLAlchemyPlugin.
+          Engine i session_factory są współdzielone z SQLAlchemyPlugin.
         """
 
         config = app.dependencies["config"]()
@@ -262,15 +263,19 @@ def make_on_startup(engine, session_factory):
 
         # ── Phase 0.5: mimalloc bridge + metrics ──────────────────────
         try:
-            from nexus_ai.core.mimalloc_bridge import MIOption, is_active as _mi_active, option_set as _mi_set
+            from nexus_ai.core.mimalloc_bridge import (
+                MIOption,
+                is_active as _mi_active,
+                option_set as _mi_set,
+            )
 
             if _mi_active():
                 logger.info("[MIMALLOC] mimalloc ACTIVE — Microsoft allocator engaged")
                 # Ustaw optymalne opcje w runtime (nadpisanie env varów)
-                _mi_set(MIOption.LARGE_OS_PAGES, 1)        # Huge OS pages
-                _mi_set(MIOption.ALLOW_LARGE_OS_PAGES, 1)   # Allow large pages
-                _mi_set(MIOption.SHOW_STATS, 0)             # Stats off by default
-                _mi_set(MIOption.EAGER_COMMIT, 1)           # Eager commit
+                _mi_set(MIOption.LARGE_OS_PAGES, 1)  # Huge OS pages
+                _mi_set(MIOption.ALLOW_LARGE_OS_PAGES, 1)  # Allow large pages
+                _mi_set(MIOption.SHOW_STATS, 0)  # Stats off by default
+                _mi_set(MIOption.EAGER_COMMIT, 1)  # Eager commit
             else:
                 logger.warning("[MIMALLOC] mimalloc NOT active — using system allocator")
         except Exception as exc:

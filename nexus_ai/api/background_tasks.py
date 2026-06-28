@@ -48,7 +48,8 @@ async def emit_decision_overridden_bg(
         metadata: Dodatkowe metadane.
     """
     try:
-        await broker.kick("event_emit_decision_overridden",
+        await broker.kick(
+            "event_emit_decision_overridden",
             invoice_id=invoice_id,
             original_decision=original_decision,
             user_decision=user_decision,
@@ -84,7 +85,8 @@ async def emit_invoice_created_bg(
         metadata: Dodatkowe metadane.
     """
     try:
-        await broker.kick("event_emit_invoice_created",
+        await broker.kick(
+            "event_emit_invoice_created",
             invoice_id=invoice_id,
             number=filename,
             file_path=file_path,

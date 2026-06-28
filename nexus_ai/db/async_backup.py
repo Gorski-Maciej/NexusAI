@@ -65,7 +65,7 @@ class AsyncBackup:
     ) -> None:
         self._databases = databases or dict(DEFAULT_DATABASES)
         self._sqlcipher_key = sqlcipher_key or os.environ.get("NEXUS_SQLCIPHER_KEY", "")
-        
+
         # SUPERMOC fsspec: FSSpecFactory — centralna fabryka
         if config is not None:
             factory = FSSpecFactory.get_instance()
@@ -161,6 +161,7 @@ class AsyncBackup:
 
                 # SUPERMOC: Backup do tymczasowego pliku, potem przenieś przez fsspec
                 import tempfile
+
                 tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
                 tmp_path = tmp.name
                 tmp.close()
@@ -185,6 +186,7 @@ class AsyncBackup:
                     # Auto-commit po wyjściu z transaction()
                 finally:
                     import os
+
                     os.unlink(tmp_path)
             finally:
                 src.close()
@@ -230,6 +232,7 @@ class AsyncBackup:
         Args:
             source_path: Ścieżka źródłowej bazy danych.
         """
+
         def _sync_backup() -> None:
             # SUPERMOC: Backup do tymczasowego pliku, potem do MemoryFileSystem
             tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
@@ -260,6 +263,7 @@ class AsyncBackup:
                 # Używamy bezpośrednio MemoryFileSystem zamiast FSSpecFactory
                 # (factory może być skonfigurowany na inny protokół)
                 from fsspec.implementations.memory import MemoryFileSystem as _MemFS
+
                 mem_fs = _MemFS()
                 mem_path = f"memory://backups/{Path(source_path).name}"
                 with mem_fs.open(mem_path, "wb") as f:

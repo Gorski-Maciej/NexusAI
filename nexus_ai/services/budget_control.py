@@ -81,6 +81,7 @@ class BudgetaryControlEngine:
             )
 
         import polars as pl
+
         budget_df = pl.from_arrow(arrow_table)
 
         limit_amount = float(budget_df["limit_amount"][0])
@@ -97,14 +98,20 @@ class BudgetaryControlEngine:
         current_amount = float(current_minor) / 100.0
         projected_amount = current_amount + float(new_invoice_amount)
 
-        usage_df = pl.DataFrame({
-            "current_amount": [current_amount],
-            "projected_amount": [projected_amount],
-            "limit_amount": [limit_amount],
-        }).with_columns([
-            (pl.col("current_amount") / pl.col("limit_amount") * 100.0).alias("current_pct"),
-            (pl.col("projected_amount") / pl.col("limit_amount") * 100.0).alias("projected_pct"),
-        ])
+        usage_df = pl.DataFrame(
+            {
+                "current_amount": [current_amount],
+                "projected_amount": [projected_amount],
+                "limit_amount": [limit_amount],
+            }
+        ).with_columns(
+            [
+                (pl.col("current_amount") / pl.col("limit_amount") * 100.0).alias("current_pct"),
+                (pl.col("projected_amount") / pl.col("limit_amount") * 100.0).alias(
+                    "projected_pct"
+                ),
+            ]
+        )
 
         current_usage_percent = float(usage_df["current_pct"][0])
         projected_usage_percent = float(usage_df["projected_pct"][0])
@@ -112,16 +119,22 @@ class BudgetaryControlEngine:
         if projected_usage_percent >= 100.0:
             over_amount = projected_amount - limit_amount
             status = "CRITICAL"
-            message = (f"Budget exceeded for {account_code}: +{over_amount:.2f} PLN "
-                       f"over limit ({projected_usage_percent:.1f}% of plan).")
+            message = (
+                f"Budget exceeded for {account_code}: +{over_amount:.2f} PLN "
+                f"over limit ({projected_usage_percent:.1f}% of plan)."
+            )
         elif projected_usage_percent >= alert_at_percent * 100.0:
             status = "WARN"
-            message = (f"Budget warning for {account_code}: "
-                       f"projected usage {projected_usage_percent:.1f}% of plan.")
+            message = (
+                f"Budget warning for {account_code}: "
+                f"projected usage {projected_usage_percent:.1f}% of plan."
+            )
         else:
             status = "OK"
-            message = (f"Budget healthy for {account_code}: "
-                       f"projected usage {projected_usage_percent:.1f}% of plan.")
+            message = (
+                f"Budget healthy for {account_code}: "
+                f"projected usage {projected_usage_percent:.1f}% of plan."
+            )
 
         return BudgetStatus(
             status=status,

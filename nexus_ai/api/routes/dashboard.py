@@ -137,7 +137,10 @@ class DashboardController(Controller):
                     summary["pending_approval"] = int(row[0][0])
 
                 # Pending review
-                review_statuses = (InvoiceStatus.MANUAL_REVIEW.value, InvoiceStatus.PENDING_REVIEW.value)
+                review_statuses = (
+                    InvoiceStatus.MANUAL_REVIEW.value,
+                    InvoiceStatus.PENDING_REVIEW.value,
+                )
                 row = mgr.execute(
                     f"""
                     SELECT COUNT(*) FROM oltp.invoices

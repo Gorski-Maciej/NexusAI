@@ -27,7 +27,7 @@ class Debouncer:
             # Anuluj poprzednie oczekujące wywołanie
             if self._cancel_event is not None:
                 self._cancel_event.set()
-            
+
             cancel_event = anyio.Event()
             self._cancel_event = cancel_event
 
@@ -38,12 +38,12 @@ class Debouncer:
                     async def _wait_for_cancel():
                         await cancel_event.wait()
                         scope.cancel()
-                    
+
                     # Uruchom równolegle czekanie na anulowanie i timeout
                     async with anyio.create_task_group() as tg:
                         tg.start_soon(_wait_for_cancel)
                         await anyio.sleep(self.wait_ms)
-                    
+
                     # Jeśli doszliśmy tutaj, timeout minął bez anulowania
                     await coroutine_func(*args, **kwargs)
             except anyio.get_cancelled_exc_class():

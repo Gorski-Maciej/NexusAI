@@ -113,6 +113,7 @@ class TenantContextMiddleware(AbstractMiddleware):
         # SUPERMOC Loguru: logger.contextualize() dla automatycznego kontekstu w scope
         # Każdy log w tym with bloku automatycznie ma correlation_id, request_id, tenant_id
         from loguru import logger as _loguru_logger
+
         with _loguru_logger.contextualize(
             correlation_id=correlation_id,
             request_id=request_id,
@@ -121,9 +122,11 @@ class TenantContextMiddleware(AbstractMiddleware):
         ):
             try:
                 # SUPERMOC structlog: merge_contextvars automatycznie doda correlation_id
-                logger.debug("Handling request: method=%s path=%s",
-                             scope.get("method", "?"),
-                             scope.get("path", "?"))
+                logger.debug(
+                    "Handling request: method=%s path=%s",
+                    scope.get("method", "?"),
+                    scope.get("path", "?"),
+                )
                 await self.app(scope, receive, send_wrapper)
             finally:
                 reset_current_tenant_id(tenant_token)

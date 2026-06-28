@@ -93,9 +93,7 @@ class NatsConfigStore:
         self._connected = False
 
         # Lokalny fallback cache (RAM)
-        self._local_cache: dict[str, dict[str, Any]] = {
-            bucket: {} for bucket in self._buckets
-        }
+        self._local_cache: dict[str, dict[str, Any]] = {bucket: {} for bucket in self._buckets}
 
     async def start(self) -> None:
         """Połącz z NATS i utwórz buckety KV."""

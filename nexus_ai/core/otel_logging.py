@@ -42,6 +42,7 @@ def setup_otel_logging(resource: Any | None = None) -> Any | None:
 
         if resource is None:
             from nexus_ai.core.otel_config import create_otel_resource
+
             resource = create_otel_resource()
 
         # SUPERMOC: LoggerProvider z BatchLogRecordProcessor
@@ -58,9 +59,7 @@ def setup_otel_logging(resource: Any | None = None) -> Any | None:
                     insecure=True,
                     timeout=5,
                 )
-                log_provider.add_log_record_processor(
-                    BatchLogRecordProcessor(otlp_exporter)
-                )
+                log_provider.add_log_record_processor(BatchLogRecordProcessor(otlp_exporter))
                 logger.info("[OTEL-LOGGING] OTLP log exporter configured: %s", otlp_endpoint)
             except Exception as exc:
                 logger.debug("[OTEL-LOGGING] OTLP log exporter failed: %s", exc)
@@ -70,9 +69,7 @@ def setup_otel_logging(resource: Any | None = None) -> Any | None:
             try:
                 from opentelemetry.sdk._logs.export import ConsoleLogExporter
 
-                log_provider.add_log_record_processor(
-                    BatchLogRecordProcessor(ConsoleLogExporter())
-                )
+                log_provider.add_log_record_processor(BatchLogRecordProcessor(ConsoleLogExporter()))
             except Exception:
                 pass
 
@@ -86,9 +83,7 @@ def setup_otel_logging(resource: Any | None = None) -> Any | None:
         root_logger = logging.getLogger()
         root_logger.addHandler(handler)
 
-        logger.info(
-            "[OTEL-LOGGING] OTel LoggingHandler added to root logger (level=WARNING+)"
-        )
+        logger.info("[OTEL-LOGGING] OTel LoggingHandler added to root logger (level=WARNING+)")
         return log_provider
 
     except ImportError as exc:

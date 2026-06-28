@@ -120,6 +120,7 @@ async def get_connection(
     callbacks: dict[str, Any] = {}
 
     if enable_callbacks:
+
         async def _on_disconnect() -> None:
             logger.warning("[NATS:CALLBACK] Disconnected from %s", servers)
 

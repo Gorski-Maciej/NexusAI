@@ -111,6 +111,7 @@ class NexusApiClient:
 
     def _cache_get(self, key: str) -> Any | None:
         import time
+
         if key in self._cache:
             value, timestamp = self._cache[key]
             if time.time() - timestamp < self._cache_ttl:
@@ -120,6 +121,7 @@ class NexusApiClient:
 
     def _cache_set(self, key: str, value: Any) -> None:
         import time
+
         self._cache[key] = (value, time.time())
 
     def _cache_invalidate(self, pattern: str) -> None:
@@ -309,6 +311,7 @@ class NexusApiClient:
     async def upload_file(self, endpoint: str, file_path: str) -> dict:
         import os
         import anyio
+
         async with await anyio.open_file(file_path, "rb") as f:
             content = await f.read()
         files = {"file": (os.path.basename(file_path), content, "application/pdf")}
@@ -316,7 +319,9 @@ class NexusApiClient:
         response.raise_for_status()
         return response.json()
 
-    async def get(self, endpoint: str, params: dict | None = None, api_version: str = "v1") -> dict | list:
+    async def get(
+        self, endpoint: str, params: dict | None = None, api_version: str = "v1"
+    ) -> dict | list:
         """Generic async GET."""
         base = self.base_url
         if api_version != "v1":

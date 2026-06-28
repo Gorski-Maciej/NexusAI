@@ -147,7 +147,8 @@ def generate_ksef_xml(
                     xml_str = xml_bytes.decode("utf-8")
                     logger.debug(
                         "[KSeF] xsdata XML generated for invoice %s (%d bytes)",
-                        invoice_id, len(xml_str),
+                        invoice_id,
+                        len(xml_str),
                     )
                     return xml_str
         except Exception as exc:

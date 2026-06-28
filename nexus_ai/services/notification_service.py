@@ -226,7 +226,6 @@ class AsyncNotificationService(AsyncBaseService):
         db_path: Path | str,
         config: AppConfig | None = None,
         channel_config: MultiChannelConfig | None = None,
-
     ) -> None:
         super().__init__(db_path)
         self._db_path = Path(db_path)
@@ -239,6 +238,7 @@ class AsyncNotificationService(AsyncBaseService):
 
     async def _on_connect(self, conn: sqlite3.Connection) -> None:
         """Hook tworzący schemat przy pierwszym połączeniu (async)."""
+
         def _sync() -> None:
             conn.execute(
                 "CREATE TABLE IF NOT EXISTS notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL, title TEXT NOT NULL, message TEXT NOT NULL, notification_type TEXT NOT NULL DEFAULT 'info', reference_type TEXT, reference_id TEXT, is_read INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL)"
@@ -247,6 +247,7 @@ class AsyncNotificationService(AsyncBaseService):
                 "CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, is_read, created_at DESC)"
             )
             conn.commit()
+
         await anyio.to_thread.run_sync(_sync)
 
     async def send_daily_briefing(self, user_id: str) -> dict[str, Any]:
@@ -354,7 +355,8 @@ class AsyncNotificationService(AsyncBaseService):
         )
 
         try:
-            await broker.kick("event_emit_notification_sent",
+            await broker.kick(
+                "event_emit_notification_sent",
                 user_id=user_id,
                 notification_type=notification_type,
                 title=title,

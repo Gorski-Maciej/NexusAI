@@ -51,6 +51,7 @@ class OCRFieldResult(Struct):
 
 class OCRAmountResult(Struct):
     """Wynik OCR dla kwoty — używany przez decide_amount_consensus."""
+
     amount_gross: Any | None = None  # Money or float
     source: str = "unknown"
 
@@ -355,9 +356,12 @@ class TesseractEngine:
                 "tesseract",
                 "-",  # stdin
                 "stdout",
-                "-l", self.lang,
-                "--psm", str(self.psm),
-                "--oem", str(self.oem),
+                "-l",
+                self.lang,
+                "--psm",
+                str(self.psm),
+                "--oem",
+                str(self.oem),
             ]
 
             if self.dpi is not None:
@@ -402,7 +406,9 @@ class TesseractEngine:
         """
         return await self._run_tesseract(image_path)
 
-    @_loguru_logger.catch(default=None, message="[OCR] Tesseract extract_text_with_confidence failed")
+    @_loguru_logger.catch(
+        default=None, message="[OCR] Tesseract extract_text_with_confidence failed"
+    )
     async def extract_text_with_confidence(self, image_path: Path) -> list[dict] | None:
         """SUPERMOC: Ekstrakcja tekstu z per-block confidence.
 
@@ -426,9 +432,12 @@ class TesseractEngine:
                 "tesseract",
                 "-",
                 "stdout",
-                "-l", self.lang,
-                "--psm", str(self.psm),
-                "--oem", str(self.oem),
+                "-l",
+                self.lang,
+                "--psm",
+                str(self.psm),
+                "--oem",
+                str(self.oem),
                 "tsv",  # Output format: TSV (Tab-Separated Values)
             ]
 
@@ -510,11 +519,13 @@ class TesseractEngine:
                     except (ValueError, IndexError):
                         pass
 
-                    words.append({
-                        "text": text.strip(),
-                        "confidence": round(max(conf / 100.0, 0.0), 4),
-                        "bbox": bbox,
-                    })
+                    words.append(
+                        {
+                            "text": text.strip(),
+                            "confidence": round(max(conf / 100.0, 0.0), 4),
+                            "bbox": bbox,
+                        }
+                    )
 
             return words if words else None
         except Exception as exc:
@@ -542,10 +553,14 @@ class TesseractEngine:
                 "tesseract",
                 "-",  # stdin
                 "stdout",
-                "-l", self.lang,
-                "--psm", "6",
-                "--oem", str(self.oem),
-                "-c", "tessedit_char_whitelist=0123456789.,-",
+                "-l",
+                self.lang,
+                "--psm",
+                "6",
+                "--oem",
+                str(self.oem),
+                "-c",
+                "tessedit_char_whitelist=0123456789.,-",
             ]
 
             result = await anyio.run_process(
@@ -556,6 +571,7 @@ class TesseractEngine:
 
             if result.returncode == 0 and result.stdout.strip():
                 import re
+
                 match = re.search(r"[\d\s,.-]+", result.stdout)
                 if match:
                     try:
@@ -593,10 +609,14 @@ class TesseractEngine:
                 "tesseract",
                 "-",
                 "stdout",
-                "-l", self.lang,
-                "--psm", "7",
-                "--oem", str(self.oem),
-                "-c", "tessedit_char_whitelist=0123456789",
+                "-l",
+                self.lang,
+                "--psm",
+                "7",
+                "--oem",
+                str(self.oem),
+                "-c",
+                "tessedit_char_whitelist=0123456789",
             ]
 
             result = await anyio.run_process(
@@ -607,6 +627,7 @@ class TesseractEngine:
 
             if result.returncode == 0 and result.stdout.strip():
                 import re
+
                 digits = re.sub(r"\D", "", result.stdout)
                 if expected_length and len(digits) >= expected_length:
                     return digits[:expected_length]
@@ -803,10 +824,16 @@ class PaddleOCREngine:
                 "[OCR] PaddleOCR initialized (lang=%s, gpu=%s, version=%s, "
                 "det_thresh=%.2f, box_thresh=%.2f, rec_batch=%d, onnx=%s, "
                 "dilation=%s, cpu_threads=%d, gpu_mem=%d, structure=%s)",
-                self.lang, self.use_gpu, self.ocr_version,
-                self.det_db_thresh, self.det_db_box_thresh,
-                self.rec_batch_num, self.use_onnx,
-                self.use_dilation, self.cpu_threads, self.gpu_mem,
+                self.lang,
+                self.use_gpu,
+                self.ocr_version,
+                self.det_db_thresh,
+                self.det_db_box_thresh,
+                self.rec_batch_num,
+                self.use_onnx,
+                self.use_dilation,
+                self.cpu_threads,
+                self.gpu_mem,
                 self._structure_engine is not None,
             )
         except ImportError:
@@ -828,7 +855,8 @@ class PaddleOCREngine:
         try:
             # Warmup z małym obrazem (PIL)
             from PIL import Image as _PILImage
-            warmup_img = _PILImage.new('RGB', (100, 100), (0, 0, 0))
+
+            warmup_img = _PILImage.new("RGB", (100, 100), (0, 0, 0))
             self._ocr.ocr(warmup_img)
             self._warmup_done = True
             logger.debug("[OCR] PaddleOCR GPU warmup complete")
@@ -849,6 +877,7 @@ class PaddleOCREngine:
         """
         try:
             from paddleocr import PPStructure
+
             self._structure_engine = PPStructure(
                 lang=self.lang,
                 use_gpu=self.use_gpu,
@@ -879,6 +908,7 @@ class PaddleOCREngine:
             return self.det_db_thresh
         try:
             import cv2 as _cv2
+
             gray = _cv2.cvtColor(image, _cv2.COLOR_RGB2GRAY) if len(image.shape) == 3 else image
 
             laplacian_var = _cv2.Laplacian(gray, _cv2.CV_64F).var()
@@ -958,7 +988,9 @@ class PaddleOCREngine:
             logger.error("[OCR] PaddleOCR failed: %s", exc)
             return None
 
-    @_loguru_logger.catch(default=None, message="[OCR] PaddleOCR extract_text_with_confidence failed")
+    @_loguru_logger.catch(
+        default=None, message="[OCR] PaddleOCR extract_text_with_confidence failed"
+    )
     async def extract_text_with_confidence(self, image: str | Path | Any) -> list[dict] | None:
         """SUPERMOC: Ekstrakcja tekstu z per-word confidence scores.
 
@@ -988,11 +1020,13 @@ class PaddleOCREngine:
                             continue
                         bbox, (text, conf) = item
                         if text and conf >= self.drop_score:
-                            words.append({
-                                "text": text.strip(),
-                                "confidence": round(float(conf), 4),
-                                "bbox": bbox,  # [[x1,y1], [x2,y2], [x3,y3], [x4,y4]]
-                            })
+                            words.append(
+                                {
+                                    "text": text.strip(),
+                                    "confidence": round(float(conf), 4),
+                                    "bbox": bbox,  # [[x1,y1], [x2,y2], [x3,y3], [x4,y4]]
+                                }
+                            )
                 return words if words else None
 
             result = await anyio.to_thread.run_sync(_run_confidence)
@@ -1024,6 +1058,7 @@ class PaddleOCREngine:
                 if not result or not result[0] or result[0] == [None]:
                     return None
                 import re
+
                 amounts = []
                 for line_group in result:
                     if not line_group or line_group == [None]:
@@ -1062,7 +1097,9 @@ class PaddleOCREngine:
             return None
 
     @_loguru_logger.catch(default=None, message="[OCR] PaddleOCR extract_digits failed")
-    async def extract_digits(self, image: str | Path | Any, expected_length: int = 10) -> str | None:
+    async def extract_digits(
+        self, image: str | Path | Any, expected_length: int = 10
+    ) -> str | None:
         """SUPERMOC: Ekstrakcja cyfr (NIP/IBAN/REGON) z filtracją regex.
 
         Ekstrahuje tylko cyfry z wyniku OCR, odfiltrowując litery.
@@ -1086,6 +1123,7 @@ class PaddleOCREngine:
                 if not result or not result[0] or result[0] == [None]:
                     return None
                 import re
+
                 all_text = ""
                 for line_group in result:
                     if not line_group or line_group == [None]:
@@ -1144,11 +1182,13 @@ class PaddleOCREngine:
                             continue
                         bbox, (text, conf) = item
                         if text and conf >= self.drop_score:
-                            blocks.append({
-                                "bbox": bbox,
-                                "text": text.strip(),
-                                "confidence": round(float(conf), 4),
-                            })
+                            blocks.append(
+                                {
+                                    "bbox": bbox,
+                                    "text": text.strip(),
+                                    "confidence": round(float(conf), 4),
+                                }
+                            )
                 return {
                     "blocks": blocks,
                     "block_count": len(blocks),
@@ -1170,17 +1210,17 @@ class PaddleOCREngine:
     async def extract_layout(self, image: str | Path | Any) -> list[dict] | None:
         """SUPERMOC: Analiza layoutu dokumentu przez PP-StructureV3.
 
-            PP-StructureV3 analizuje dokument i zwraca bloki z typami:
-            - "text" — zwykły tekst
-            - "title" — nagłówek
-            - "table" — tabela
-            - "figure" — obraz/grafika
-            - "seal" — pieczątka/stempel
-            - "formula" — formuła matematyczna
+        PP-StructureV3 analizuje dokument i zwraca bloki z typami:
+        - "text" — zwykły tekst
+        - "title" — nagłówek
+        - "table" — tabela
+        - "figure" — obraz/grafika
+        - "seal" — pieczątka/stempel
+        - "formula" — formuła matematyczna
 
-            Returns:
-                List[dict]: [{type, bbox, confidence}, ...] or None.
-            """
+        Returns:
+            List[dict]: [{type, bbox, confidence}, ...] or None.
+        """
         if not self._available or self._structure_engine is None:
             return None
         try:
@@ -1192,13 +1232,15 @@ class PaddleOCREngine:
                     return None
                 blocks = []
                 for block in result:
-                    blocks.append({
-                        "type": block.get("type", "text"),
-                        "bbox": block.get("bbox", []),
-                        "confidence": round(float(block.get("confidence", 0.0)), 4),
-                        "text": block.get("text", ""),
-                        "html": block.get("html", block.get("res", "")),
-                    })
+                    blocks.append(
+                        {
+                            "type": block.get("type", "text"),
+                            "bbox": block.get("bbox", []),
+                            "confidence": round(float(block.get("confidence", 0.0)), 4),
+                            "text": block.get("text", ""),
+                            "html": block.get("html", block.get("res", "")),
+                        }
+                    )
                 return blocks if blocks else None
 
             result = await anyio.to_thread.run_sync(_run_layout)
@@ -1211,13 +1253,13 @@ class PaddleOCREngine:
     async def extract_tables(self, image: str | Path | Any) -> list[dict] | None:
         """SUPERMOC: Ekstrakcja tabel przez PP-StructureV3.
 
-            Używa PP-StructureV3 z table=True do wyciągnięcia tabel
-            ze strukturą wierszy i kolumn. To niezależny silnik tabel,
-            który zapewnia krzyżową walidację z docTR TableEngine.
+        Używa PP-StructureV3 z table=True do wyciągnięcia tabel
+        ze strukturą wierszy i kolumn. To niezależny silnik tabel,
+        który zapewnia krzyżową walidację z docTR TableEngine.
 
-            Returns:
-                List[dict]: [{headers, rows, bbox, confidence}, ...] or None.
-            """
+        Returns:
+            List[dict]: [{headers, rows, bbox, confidence}, ...] or None.
+        """
         if not self._available or self._structure_engine is None:
             return None
         try:
@@ -1231,13 +1273,15 @@ class PaddleOCREngine:
                 for block in result:
                     if block.get("type") == "table":
                         html = block.get("html", "")
-                        tables.append({
-                            "type": "table",
-                            "bbox": block.get("bbox", []),
-                            "confidence": round(float(block.get("confidence", 0.0)), 4),
-                            "html": html,
-                            "cell_count": html.count("<td>"),
-                        })
+                        tables.append(
+                            {
+                                "type": "table",
+                                "bbox": block.get("bbox", []),
+                                "confidence": round(float(block.get("confidence", 0.0)), 4),
+                                "html": html,
+                                "cell_count": html.count("<td>"),
+                            }
+                        )
                 return tables if tables else None
 
             result = await anyio.to_thread.run_sync(_run_tables)
@@ -1254,13 +1298,13 @@ class PaddleOCREngine:
     async def detect_seals(self, image: str | Path | Any) -> list[dict] | None:
         """SUPERMOC: Detekcja pieczątek i stempli na dokumencie.
 
-            Używa PP-StructureV3 (seal_recognition=True) do wykrywania
-            okrągłych i prostokątnych pieczęci na fakturach. To kluczowe
-            dla weryfikacji autentyczności dokumentów.
+        Używa PP-StructureV3 (seal_recognition=True) do wykrywania
+        okrągłych i prostokątnych pieczęci na fakturach. To kluczowe
+        dla weryfikacji autentyczności dokumentów.
 
-            Returns:
-                List[dict]: [{bbox, confidence, type}, ...] or None.
-            """
+        Returns:
+            List[dict]: [{bbox, confidence, type}, ...] or None.
+        """
         if not self._available or self._structure_engine is None:
             return None
         try:
@@ -1274,11 +1318,13 @@ class PaddleOCREngine:
                 for block in result:
                     btype = block.get("type", "")
                     if btype == "seal":
-                        seals.append({
-                            "type": "seal",
-                            "bbox": block.get("bbox", []),
-                            "confidence": round(float(block.get("confidence", 0.0)), 4),
-                        })
+                        seals.append(
+                            {
+                                "type": "seal",
+                                "bbox": block.get("bbox", []),
+                                "confidence": round(float(block.get("confidence", 0.0)), 4),
+                            }
+                        )
                 return seals if seals else None
 
             result = await anyio.to_thread.run_sync(_run_seals)
@@ -1308,7 +1354,7 @@ class PaddleOCREngine:
 
             Returns:
                 List[str | None]: Tekst z każdego obrazu.
-            """
+        """
         if not self._available or self._ocr is None:
             return [None] * len(images)
 
@@ -1350,10 +1396,12 @@ class PaddleOCREngine:
                 del old_ocr
 
                 import gc
+
                 gc.collect()  # Wymuś zwolnienie pamięci GPU
 
                 # Re-inicjalizuj OCR z TensorRT
                 from paddleocr import PaddleOCR
+
                 self._ocr = PaddleOCR(
                     **{**self._build_ocr_kwargs(), "use_tensorrt": True},
                 )
@@ -1421,14 +1469,17 @@ class DocTREngine:
             if self.use_onnx:
                 try:
                     from onnxtr.models import ocr_predictor
+
                     self._onnx_mode = True
                     logger.info("[OCR] docTR using ONNX backend (OnnxTR)")
                 except ImportError:
                     logger.warning("[OCR] onnxtr not installed.")
                     from doctr.models import ocr_predictor
+
                     self._onnx_mode = False
             else:
                 from doctr.models import ocr_predictor
+
                 self._onnx_mode = False
 
             # SUPERMOC: Główny predictor z pełnymi optymalizacjami
@@ -1451,7 +1502,8 @@ class DocTREngine:
                 self._predictor.det_predictor.model.postprocessor.bin_thresh = self.bin_thresh
                 logger.debug(
                     "[OCR] docTR detection thresholds: box_thresh=%.2f, bin_thresh=%.2f",
-                    self.box_thresh, self.bin_thresh,
+                    self.box_thresh,
+                    self.bin_thresh,
                 )
 
             # SUPERMOC: Batch processing na GPU — 4-8× szybsze
@@ -1499,8 +1551,12 @@ class DocTREngine:
             logger.info(
                 "[OCR] docTR initialized (det=%s, reco=%s, orientation=%s, "
                 "assume_straight=%s, det_bs=%d, reco_bs=%d, onnx=%s)",
-                self.det_arch, self.reco_arch, self.detect_orientation,
-                self.assume_straight_pages, self.det_bs, self.reco_bs,
+                self.det_arch,
+                self.reco_arch,
+                self.detect_orientation,
+                self.assume_straight_pages,
+                self.det_bs,
+                self.reco_bs,
                 self.use_onnx,
             )
         except ImportError:
@@ -1664,12 +1720,14 @@ class DocTREngine:
                     for block in page.get("blocks", []):
                         for line in block.get("lines", []):
                             for word in line.get("words", []):
-                                words.append({
-                                    "text": word.get("value", ""),
-                                    "confidence": round(float(word.get("confidence", 0.0)), 4),
-                                    "bbox": word.get("geometry", []),
-                                    "block_type": block.get("type", "text"),
-                                })
+                                words.append(
+                                    {
+                                        "text": word.get("value", ""),
+                                        "confidence": round(float(word.get("confidence", 0.0)), 4),
+                                        "bbox": word.get("geometry", []),
+                                        "block_type": block.get("type", "text"),
+                                    }
+                                )
                 return words if words else None
 
             result = await anyio.to_thread.run_sync(_run_confidence)
@@ -1707,15 +1765,15 @@ class DocTREngine:
                 blocks = []
                 for page in export.get("pages", []):
                     for block in page.get("blocks", []):
-                        blocks.append({
-                            "type": block.get("type", "text"),
-                            "geometry": block.get("geometry", []),
-                            "reading_order": block.get("reading_order", 0),
-                            "lines": len(block.get("lines", [])),
-                            "confidence": round(float(
-                                block.get("confidence", 0.0)
-                            ), 4),
-                        })
+                        blocks.append(
+                            {
+                                "type": block.get("type", "text"),
+                                "geometry": block.get("geometry", []),
+                                "reading_order": block.get("reading_order", 0),
+                                "lines": len(block.get("lines", [])),
+                                "confidence": round(float(block.get("confidence", 0.0)), 4),
+                            }
+                        )
                 # Sortuj według kolejności czytania
                 blocks.sort(key=lambda b: b["reading_order"])
                 return blocks if blocks else None
@@ -1837,7 +1895,10 @@ class EasyOCREngine:
             logger.info(
                 "[OCR] EasyOCR initialized (lang=%s, gpu=%s, batch=%d, workers=%d, "
                 "threshold=%.2f, rotation=%s, decoder=%s)",
-                self.lang, self.use_gpu, self.batch_size, self.workers,
+                self.lang,
+                self.use_gpu,
+                self.batch_size,
+                self.workers,
                 self.text_threshold,
                 str(self.rotation_info) if self.rotation_info else "none",
                 self.decoder,
@@ -1940,6 +2001,7 @@ class EasyOCREngine:
             result = await anyio.to_thread.run_sync(_run)
             if result:
                 import re
+
                 match = re.search(r"[\d\s,.]+", result)
                 if match:
                     try:
@@ -1985,6 +2047,7 @@ class EasyOCREngine:
             result = await anyio.to_thread.run_sync(_run)
             if result:
                 import re
+
                 digits = re.sub(r"\D", "", result)
                 if expected_length and len(digits) >= expected_length:
                     return digits[:expected_length]
@@ -2036,7 +2099,10 @@ class EasyOCREngine:
             result = await anyio.to_thread.run_sync(_run)
             logger.debug(
                 "[OCR] EasyOCR adaptive: quality=%.2f threshold=%.2f low=%.2f len=%d",
-                quality, tt, lt, len(result or ""),
+                quality,
+                tt,
+                lt,
+                len(result or ""),
             )
             return result
         except Exception as exc:
@@ -2128,7 +2194,9 @@ def pdf_to_images(pdf_path: Path, dpi: int = 300) -> list[Path]:
         pdf.close()
         logger.info(
             "[OCR] Converted %d PDF pages to images (dpi=%d, scale=%.2f, engine=PDFium)",
-            len(image_paths), dpi, scale,
+            len(image_paths),
+            dpi,
+            scale,
         )
     except Exception as exc:
         logger.error("[OCR] PDFium conversion failed: %s", exc)
@@ -2232,11 +2300,10 @@ async def run_ocr_pipeline(
             # SUPERMOC: Renderuj do PIL images dla PaddleOCR (zero I/O)
             try:
                 from nexus_ai.core.pdfium import pdf_to_pil_images
+
                 pil_pages = pdf_to_pil_images(file_path, dpi=300, max_pages=5)
                 if pil_pages:
-                    logger.info(
-                        "[OCR] Rendered PDF to %d PIL images (zero I/O)", len(pil_pages)
-                    )
+                    logger.info("[OCR] Rendered PDF to %d PIL images (zero I/O)", len(pil_pages))
             except Exception as exc:
                 logger.warning("[OCR] PIL render failed, falling back to disk: %s", exc)
 
@@ -2275,7 +2342,8 @@ async def run_ocr_pipeline(
 
                 logger.info(
                     "[OCR] OpenCV preprocessing applied: %s → %s",
-                    file_image.name, processed_path.name,
+                    file_image.name,
+                    processed_path.name,
                 )
                 file_image = processed_path
 
@@ -2302,11 +2370,16 @@ async def run_ocr_pipeline(
         if use_paddle:
             engines.append(("paddle", PaddleOCREngine()))
         if use_doctr:
-            engines.append(("doctr", DocTREngine(
-                det_arch=doctr_det_arch,
-                reco_arch=doctr_reco_arch,
-                detect_orientation=doctr_orientation,
-            )))
+            engines.append(
+                (
+                    "doctr",
+                    DocTREngine(
+                        det_arch=doctr_det_arch,
+                        reco_arch=doctr_reco_arch,
+                        detect_orientation=doctr_orientation,
+                    ),
+                )
+            )
         if use_easyocr:
             engines.append(("easyocr", EasyOCREngine(use_gpu=easyocr_gpu)))
 
@@ -2320,9 +2393,7 @@ async def run_ocr_pipeline(
                 text = None
             return name, text
 
-        results = await anyio.gather(
-            *[_run_engine(name, engine) for name, engine in engines]
-        )
+        results = await anyio.gather(*[_run_engine(name, engine) for name, engine in engines])
 
         # Krok 3: Zbierz wyniki
         texts: dict[str, str | None] = dict(results)
@@ -2374,10 +2445,12 @@ async def run_ocr_pipeline_with_confidence(
         if file_path.suffix.lower() == ".pdf":
             try:
                 from nexus_ai.core.pdfium import pdf_to_pil_images
+
                 pil_pages = pdf_to_pil_images(file_path, dpi=300, max_pages=5)
                 if pil_pages:
                     logger.info(
-                        "[OCR] Conf pipeline rendered PDF to %d PIL images (zero I/O)", len(pil_pages)
+                        "[OCR] Conf pipeline rendered PDF to %d PIL images (zero I/O)",
+                        len(pil_pages),
                     )
             except Exception as exc:
                 logger.warning("[OCR] Conf pipeline PIL render failed: %s", exc)
@@ -2410,7 +2483,8 @@ async def run_ocr_pipeline_with_confidence(
 
                 logger.info(
                     "[OCR] Conf pipeline OpenCV preprocessing: %s → %s",
-                    file_image.name, processed_path.name,
+                    file_image.name,
+                    processed_path.name,
                 )
                 file_image = processed_path
 
@@ -2436,7 +2510,7 @@ async def run_ocr_pipeline_with_confidence(
                 text = await engine.extract_text(file_image)
             else:
                 text = None
-                
+
             conf = None
             if hasattr(engine, "extract_text_with_confidence"):
                 try:
@@ -2454,17 +2528,20 @@ async def run_ocr_pipeline_with_confidence(
         if use_paddle:
             engines.append(("paddle", PaddleOCREngine()))
         if use_doctr:
-            engines.append(("doctr", DocTREngine(
-                det_arch=doctr_det_arch,
-                reco_arch=doctr_reco_arch,
-                detect_orientation=doctr_orientation,
-            )))
+            engines.append(
+                (
+                    "doctr",
+                    DocTREngine(
+                        det_arch=doctr_det_arch,
+                        reco_arch=doctr_reco_arch,
+                        detect_orientation=doctr_orientation,
+                    ),
+                )
+            )
         if use_easyocr:
             engines.append(("easyocr", EasyOCREngine(use_gpu=easyocr_gpu)))
 
-        results = await anyio.gather(
-            *[_run_engine_full(name, engine) for name, engine in engines]
-        )
+        results = await anyio.gather(*[_run_engine_full(name, engine) for name, engine in engines])
 
         for name, data in results:
             texts[name] = data["text"]

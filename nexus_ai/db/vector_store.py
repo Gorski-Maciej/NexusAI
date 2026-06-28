@@ -111,7 +111,7 @@ def _build_vec0_ddl(
 
     return f"""
         CREATE VIRTUAL TABLE IF NOT EXISTS {table}
-        USING vec0({', '.join(columns)});
+        USING vec0({", ".join(columns)});
     """
 
 
@@ -135,9 +135,11 @@ class AsyncVectorStore(AsyncBaseService):
 
     async def _on_connect(self, conn: sqlite3.Connection) -> None:
         """Hook ładujący sqlite-vec extension przy nowym połączeniu."""
+
         def _sync() -> None:
             sqlite_vec.load(conn)
             conn.execute(f"PRAGMA application_id = {VECTOR_DB_APP_ID};")
+
         await anyio.to_thread.run_sync(_sync)
 
     # ── [FAZA 2] Unified Schema Registry ────────────────────────────────
@@ -201,7 +203,7 @@ class AsyncVectorStore(AsyncBaseService):
     @staticmethod
     def _rowid_to_int(string_id: str) -> int:
         digest = hashlib.sha256(string_id.encode()).digest()[:8]
-        return (int.from_bytes(digest, 'big', signed=False) >> 1) + 1
+        return (int.from_bytes(digest, "big", signed=False) >> 1) + 1
 
     # ── Podstawowe metody serializacji ─────────────────────────────────
 
@@ -325,7 +327,9 @@ class AsyncVectorStore(AsyncBaseService):
         try:
             return await anyio.to_thread.run_sync(_sync_search)
         except Exception:
-            return await self._fallback_search(query_blob, query_vector, limit, distance_threshold, distance_fn)
+            return await self._fallback_search(
+                query_blob, query_vector, limit, distance_threshold, distance_fn
+            )
 
     async def _fallback_search(
         self,
@@ -377,9 +381,7 @@ class AsyncVectorStore(AsyncBaseService):
         params = list(partition.values())
 
         def _sync() -> int:
-            cursor = conn.execute(
-                f"DELETE FROM {table_name} WHERE {where_str}", params
-            )
+            cursor = conn.execute(f"DELETE FROM {table_name} WHERE {where_str}", params)
             deleted = cursor.rowcount
             conn.commit()
             return deleted

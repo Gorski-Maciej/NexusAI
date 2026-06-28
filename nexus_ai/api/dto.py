@@ -1091,7 +1091,6 @@ class KoreClosureDTO(NexusDTO):
     pass
 
 
-
 # ── Audit DTOs ─────────────────────────────────────────────────────────-
 
 

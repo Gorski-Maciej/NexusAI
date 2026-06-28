@@ -210,8 +210,8 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
         enqueue=True,
         colorize=True,
         level=log_level,
-        diagnose=False,   # BEZPIECZEŃSTWO: brak wycieku zmiennych lokalnych (RODO)
-        backtrace=True,   # DIAGNOSTYKA: pełny chain wywołań przy wyjątkach
+        diagnose=False,  # BEZPIECZEŃSTWO: brak wycieku zmiennych lokalnych (RODO)
+        backtrace=True,  # DIAGNOSTYKA: pełny chain wywołań przy wyjątkach
         format=(
             "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
             "<level>{level: <8}</level> | "
@@ -283,6 +283,7 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
 
     _INITIALIZED = True
 
+
 # ── SUPERMOC: DuckDB sink dla analityki logów ──────────────────────────────
 
 
@@ -350,7 +351,6 @@ def _setup_duckdb_sink(log_dir: Path, app_name: str) -> None:
         logger.debug("[LOGGER] DuckDB sink init failed: %s", exc)
 
 
-
 def _setup_stamina_logging() -> None:
     """SUPERMOC: Konfiguruje logging dla stamina retry + circuit breaker.
 
@@ -373,7 +373,8 @@ def _setup_stamina_logging() -> None:
             except ValueError:
                 level = record.levelno
             logger.opt(depth=6, exception=record.exc_info).log(
-                level, f"[STAMINA] {record.getMessage()}",
+                level,
+                f"[STAMINA] {record.getMessage()}",
             )
 
     stamina_logger.handlers.clear()

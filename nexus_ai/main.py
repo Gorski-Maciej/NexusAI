@@ -39,11 +39,21 @@ async def main(argv: list[str] | None = None) -> int:
     if "--watch" in args:
         os.environ["NEXUS_WATCH_MODE"] = "1"
 
-    MODES = {"api": "api", "worker": "worker", "all": "dev",
-             "bootstrap": "bootstrap", "doctor": "doctor"}
-    FLAGS = {"--migrate": "migrate", "--load-fixtures": "seed",
-             "--fetch-models": "download-models", "--check-models": "check-models",
-             "--check-updates": "check-updates", "--compute-checksums": "compute-checksums"}
+    MODES = {
+        "api": "api",
+        "worker": "worker",
+        "all": "dev",
+        "bootstrap": "bootstrap",
+        "doctor": "doctor",
+    }
+    FLAGS = {
+        "--migrate": "migrate",
+        "--load-fixtures": "seed",
+        "--fetch-models": "download-models",
+        "--check-models": "check-models",
+        "--check-updates": "check-updates",
+        "--compute-checksums": "compute-checksums",
+    }
 
     for flag, task in FLAGS.items():
         if flag in args:
@@ -52,7 +62,7 @@ async def main(argv: list[str] | None = None) -> int:
         if a == "--mode" and i + 1 < len(args) and args[i + 1] in MODES:
             return await _run_pixi(MODES[args[i + 1]])
         if a == "--mode" and i + 1 < len(args):
-            print(f"Unknown mode: {args[i+1]}, available: {', '.join(MODES)}")
+            print(f"Unknown mode: {args[i + 1]}, available: {', '.join(MODES)}")
             return 1
     return await _run_pixi("api")
 
@@ -65,7 +75,10 @@ async def _run_pixi(task: str) -> int:
         result = await anyio.run_process(cmd, cwd=project_root)
         return result.returncode
     except FileNotFoundError:
-        print("❌ pixi not found. Install: curl -fsSL https://pixi.sh/install.sh | sh", file=sys.stderr)
+        print(
+            "❌ pixi not found. Install: curl -fsSL https://pixi.sh/install.sh | sh",
+            file=sys.stderr,
+        )
         print("   Then run: pixi install", file=sys.stderr)
         return 1
 

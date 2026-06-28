@@ -149,7 +149,12 @@ async def _emit_event(
 
 @broker.task(
     task_name="event_emit_decision_made",
-    labels={"service": "events", "operation": "emit", "event_type": "decision.made", "criticality": "high"},
+    labels={
+        "service": "events",
+        "operation": "emit",
+        "event_type": "decision.made",
+        "criticality": "high",
+    },
     timeout=30.0,
 )
 async def emit_decision_made_task(
@@ -185,7 +190,12 @@ async def emit_decision_made_task(
 
 @broker.task(
     task_name="event_emit_decision_overridden",
-    labels={"service": "events", "operation": "emit", "event_type": "decision.overridden", "criticality": "high"},
+    labels={
+        "service": "events",
+        "operation": "emit",
+        "event_type": "decision.overridden",
+        "criticality": "high",
+    },
     timeout=30.0,
 )
 async def emit_decision_overridden_task(
@@ -211,7 +221,12 @@ async def emit_decision_overridden_task(
 
 @broker.task(
     task_name="event_emit_invoice_created",
-    labels={"service": "events", "operation": "emit", "event_type": "invoice.created", "criticality": "high"},
+    labels={
+        "service": "events",
+        "operation": "emit",
+        "event_type": "invoice.created",
+        "criticality": "high",
+    },
     timeout=30.0,
 )
 async def emit_invoice_created_task(
@@ -248,7 +263,12 @@ async def emit_invoice_created_task(
 
 @broker.task(
     task_name="event_emit_invoice_submitted",
-    labels={"service": "events", "operation": "emit", "event_type": "invoice.submitted", "criticality": "medium"},
+    labels={
+        "service": "events",
+        "operation": "emit",
+        "event_type": "invoice.submitted",
+        "criticality": "medium",
+    },
     timeout=30.0,
 )
 async def emit_invoice_submitted_task(
@@ -271,7 +291,12 @@ async def emit_invoice_submitted_task(
 
 @broker.task(
     task_name="event_emit_invoice_approved",
-    labels={"service": "events", "operation": "emit", "event_type": "invoice.approved", "criticality": "high"},
+    labels={
+        "service": "events",
+        "operation": "emit",
+        "event_type": "invoice.approved",
+        "criticality": "high",
+    },
     timeout=30.0,
 )
 async def emit_invoice_approved_task(
@@ -296,7 +321,12 @@ async def emit_invoice_approved_task(
 
 @broker.task(
     task_name="event_emit_invoice_rejected",
-    labels={"service": "events", "operation": "emit", "event_type": "invoice.rejected", "criticality": "medium"},
+    labels={
+        "service": "events",
+        "operation": "emit",
+        "event_type": "invoice.rejected",
+        "criticality": "medium",
+    },
     timeout=30.0,
 )
 async def emit_invoice_rejected_task(
@@ -319,7 +349,12 @@ async def emit_invoice_rejected_task(
 
 @broker.task(
     task_name="event_emit_invoice_blocked",
-    labels={"service": "events", "operation": "emit", "event_type": "invoice.blocked", "criticality": "high"},
+    labels={
+        "service": "events",
+        "operation": "emit",
+        "event_type": "invoice.blocked",
+        "criticality": "high",
+    },
     timeout=30.0,
 )
 async def emit_invoice_blocked_task(
@@ -344,7 +379,12 @@ async def emit_invoice_blocked_task(
 
 @broker.task(
     task_name="event_emit_invoice_paid",
-    labels={"service": "events", "operation": "emit", "event_type": "invoice.paid", "criticality": "medium"},
+    labels={
+        "service": "events",
+        "operation": "emit",
+        "event_type": "invoice.paid",
+        "criticality": "medium",
+    },
     timeout=30.0,
 )
 async def emit_invoice_paid_task(
@@ -369,7 +409,12 @@ async def emit_invoice_paid_task(
 
 @broker.task(
     task_name="event_emit_notification_sent",
-    labels={"service": "events", "operation": "emit", "event_type": "notification.sent", "criticality": "low"},
+    labels={
+        "service": "events",
+        "operation": "emit",
+        "event_type": "notification.sent",
+        "criticality": "low",
+    },
     timeout=30.0,
 )
 async def emit_notification_sent_task(
@@ -396,7 +441,12 @@ async def emit_notification_sent_task(
 
 @broker.task(
     task_name="event_emit_outbox_emitted",
-    labels={"service": "events", "operation": "emit", "event_type": "outbox.emitted", "criticality": "high"},
+    labels={
+        "service": "events",
+        "operation": "emit",
+        "event_type": "outbox.emitted",
+        "criticality": "high",
+    },
     timeout=30.0,
 )
 async def emit_outbox_emitted_task(

@@ -22,12 +22,15 @@ def get_current_migration_version(db_path: str | Path) -> str | None:
     """
     try:
         from migrations.run_migrations import get_current_version
+
         return get_current_version(db_path)
     except Exception:
         return None
 
 
-def run_migration_sanity_checks(engine: Engine, db_path: str | Path | None = None) -> dict[str, int | str | None]:
+def run_migration_sanity_checks(
+    engine: Engine, db_path: str | Path | None = None
+) -> dict[str, int | str | None]:
     """
     Lightweight post-migration sanity checks.
     Returns key counters useful for alerting / observability.

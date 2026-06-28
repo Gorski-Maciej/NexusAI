@@ -144,54 +144,85 @@ class FileValidator:
             raise ValueError(f"Invalid image file: {e}")
 
 
+class _LocalFS:
+    """Local filesystem adapter — zero external dependencies."""
+
+    @staticmethod
+    def makedirs(path: _SyncPath) -> None:
+        path.mkdir(parents=True, exist_ok=True)
+
+    @staticmethod
+    def exists(path: _SyncPath) -> bool:
+        return path.exists()
+
+    @staticmethod
+    def write_bytes(path: _SyncPath, data: bytes) -> None:
+        path.write_bytes(data)
+
+    @staticmethod
+    def move(src: _SyncPath, dst: _SyncPath) -> None:
+        src.replace(dst)
+
+    @staticmethod
+    def remove(path: _SyncPath) -> None:
+        path.unlink(missing_ok=True)
+
+
+class _FsspecFS:
+    """fsspec filesystem adapter — dla S3, GCS, memory, itp."""
+
+    def __init__(self, root: _SyncPath, protocol: str) -> None:
+        import fsspec
+
+        self.fs = fsspec.filesystem(protocol)
+        self._root = str(root)
+        self.fs.makedirs(self._root, exist_ok=True)
+
+    def makedirs(self, path: _SyncPath) -> None:
+        self.fs.makedirs(str(path), exist_ok=True)
+
+    def exists(self, path: _SyncPath) -> bool:
+        return self.fs.exists(str(path))
+
+    def write_bytes(self, path: _SyncPath, data: bytes) -> None:
+        with self.fs.open(str(path), "wb") as f:
+            f.write(data)
+
+    def move(self, src: _SyncPath, dst: _SyncPath) -> None:
+        self.fs.mv(str(src), str(dst))
+
+    def remove(self, path: _SyncPath) -> None:
+        try:
+            self.fs.rm(str(path))
+        except Exception:
+            pass
+
+
 class ContentAddressableStorage:
     """File storage using SHA-256 as canonical key (dedupe-friendly).
 
-    SUPERMOC fsspec: Używa konfigurowalnego protokołu ("file", "s3", "memory")
-    z config TOML — deduplikacja przez SHA-256 działa w każdym backendzie.
+    Używa strategii _LocalFS lub _FsspecFS — eliminuje if/else w każdej metodzie.
     """
 
     def __init__(self, root: _SyncPath, protocol: str = "file") -> None:
-        self.root = root
-        self._protocol = protocol
-        if fsspec is not None:
-            self.fs = fsspec.filesystem(protocol)
-            self.fs.makedirs(str(self.root), exist_ok=True)
-        else:
-            self.fs = None
-            self.root.mkdir(parents=True, exist_ok=True)
+        self.root = _SyncPath(root)
+        self._fs: _LocalFS | _FsspecFS = (
+            _FsspecFS(self.root, protocol) if fsspec and protocol != "file" else _LocalFS()
+        )
 
     @staticmethod
     def _sha256(payload: bytes) -> str:
         return _sha256(payload)
 
-    def _resolve_path(self, digest: str, suffix: str) -> str:
-        """Zwraca pełną ścieżkę dla digest w aktywnym protokole."""
-        dir_name = Path(str(self.root)) / digest[:2] / digest[2:4]
-        file_path = dir_name / f"{digest}{suffix}"
-        if self._protocol != "file" and self.fs is not None:
-            return f"{self._protocol}://{file_path}"
-        return str(file_path)
+    def _resolve_path(self, digest: str, suffix: str) -> _SyncPath:
+        return self.root / digest[:2] / digest[2:4] / f"{digest}{suffix}"
 
     def put(self, payload: bytes, suffix: str = ".pdf") -> StoredUpload:
         digest = self._sha256(payload)
-        dir_path = self.root / digest[:2] / digest[2:4]
-        (
-            self.fs.makedirs(str(dir_path), exist_ok=True)
-            if self.fs is not None
-            else dir_path.mkdir(parents=True, exist_ok=True)
-        )
-        file_path = dir_path / f"{digest}{suffix}"
-
-        if self.fs is not None:
-            if not self.fs.exists(str(file_path)):
-                with self.fs.open(str(file_path), "wb") as f:
-                    f.write(payload)
-        else:
-            if not file_path.exists():
-                file_path.parent.mkdir(parents=True, exist_ok=True)
-                file_path.write_bytes(payload)
-
+        file_path = self._resolve_path(digest, suffix)
+        self._fs.makedirs(file_path.parent)
+        if not self._fs.exists(file_path):
+            self._fs.write_bytes(file_path, payload)
         return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=len(payload))
 
     def create_temp_upload_file(self) -> str:
@@ -203,37 +234,24 @@ class ContentAddressableStorage:
     async def finalize_temp_upload(
         self, temp_path: str, digest: str, size_bytes: int, suffix: str = ".pdf"
     ) -> StoredUpload:
-        dir_path = self.root / digest[:2] / digest[2:4]
-        (
-            self.fs.makedirs(str(dir_path), exist_ok=True)
-            if self.fs is not None
-            else dir_path.mkdir(parents=True, exist_ok=True)
-        )
-        file_path = dir_path / f"{digest}{suffix}"
-        if self.fs.exists(str(file_path)) if self.fs is not None else file_path.exists():
+        file_path = self._resolve_path(digest, suffix)
+        self._fs.makedirs(file_path.parent)
+        if self._fs.exists(file_path):
             with suppress(FileNotFoundError):
                 await anyio.to_thread.run_sync(os.unlink, temp_path)
             return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=size_bytes)
-        if self.fs is not None:
-            # SUPERMOC fsspec: mv działa między lokalnymi i zdalnymi FS
-            self.fs.mv(temp_path, str(file_path))
-        else:
-            _SyncPath(temp_path).replace(file_path)
-        self._save_archive_variant(file_path=file_path, suffix=suffix)
+        self._fs.move(_SyncPath(temp_path), file_path)
+        self._save_archive_variant(file_path, suffix)
         return StoredUpload(file_hash=digest, file_path=str(file_path), size_bytes=size_bytes)
 
     def _save_archive_variant(self, file_path: _SyncPath, suffix: str) -> None:
-        """Best-effort archival compression for image uploads (non-destructive sidecar)."""
-        ext = suffix.lower()
-        if ext not in {".png", ".tif", ".tiff", ".bmp"}:
+        if suffix.lower() not in {".png", ".tif", ".tiff", ".bmp"}:
             return
         if file_path.with_suffix(".jpg").exists():
             return
         try:
             from nexus_ai.core.image_utils import normalize_image_to_jpeg
-        except Exception:
-            return
-        try:
+
             content = file_path.read_bytes()
             jpeg_bytes = normalize_image_to_jpeg(
                 content, max_size=(2048, 2048), quality=80, apply_autocontrast=False

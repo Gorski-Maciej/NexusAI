@@ -83,26 +83,38 @@ class ThemeManager:
             # SUPERMOC: Text theme z hierarchią typografii
             text_theme=ft.TextTheme(
                 headline_large=ft.TextStyle(
-                    size=32, weight=ft.FontWeight.BOLD, color="#FFFFFF",
+                    size=32,
+                    weight=ft.FontWeight.BOLD,
+                    color="#FFFFFF",
                     letter_spacing=-0.5,
                 ),
                 headline_medium=ft.TextStyle(
-                    size=28, weight=ft.FontWeight.BOLD, color="#FFFFFF",
+                    size=28,
+                    weight=ft.FontWeight.BOLD,
+                    color="#FFFFFF",
                 ),
                 headline_small=ft.TextStyle(
-                    size=22, weight=ft.FontWeight.SEMI_BOLD, color="#E0E0E0",
+                    size=22,
+                    weight=ft.FontWeight.SEMI_BOLD,
+                    color="#E0E0E0",
                 ),
                 title_large=ft.TextStyle(
-                    size=18, weight=ft.FontWeight.SEMI_BOLD, color="#E0E0E0",
+                    size=18,
+                    weight=ft.FontWeight.SEMI_BOLD,
+                    color="#E0E0E0",
                 ),
                 title_medium=ft.TextStyle(
-                    size=16, weight=ft.FontWeight.MEDIUM, color="#D0D0D0",
+                    size=16,
+                    weight=ft.FontWeight.MEDIUM,
+                    color="#D0D0D0",
                 ),
                 body_large=ft.TextStyle(size=16, color="#C0C0C0"),
                 body_medium=ft.TextStyle(size=14, color="#B0B0B0"),
                 body_small=ft.TextStyle(size=12, color="#909090"),
                 label_large=ft.TextStyle(
-                    size=14, weight=ft.FontWeight.MEDIUM, color="#A0A0A0",
+                    size=14,
+                    weight=ft.FontWeight.MEDIUM,
+                    color="#A0A0A0",
                 ),
             ),
             font_family="Segoe UI, -apple-system, sans-serif",
@@ -144,10 +156,14 @@ class ThemeManager:
             ),
             text_theme=ft.TextTheme(
                 headline_large=ft.TextStyle(
-                    size=32, weight=ft.FontWeight.BOLD, color="#1A1A1A",
+                    size=32,
+                    weight=ft.FontWeight.BOLD,
+                    color="#1A1A1A",
                 ),
                 title_large=ft.TextStyle(
-                    size=18, weight=ft.FontWeight.SEMI_BOLD, color="#333333",
+                    size=18,
+                    weight=ft.FontWeight.SEMI_BOLD,
+                    color="#333333",
                 ),
                 body_medium=ft.TextStyle(size=14, color="#555555"),
             ),

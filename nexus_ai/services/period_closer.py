@@ -82,18 +82,16 @@ class PeriodCloser:
         if not expense_accounts:
             return True
 
-        doc_id = source_document_id or uuid.uuid5(
-            uuid.NAMESPACE_URL, f"period-close:{period_id}"
-        )
+        doc_id = source_document_id or uuid.uuid5(uuid.NAMESPACE_URL, f"period-close:{period_id}")
 
         transfers = []
         for i, acct in enumerate(expense_accounts):
-            is_last = (i == len(expense_accounts) - 1)
+            is_last = i == len(expense_accounts) - 1
             transfer_id = _generate_tb_id()
 
             transfer = tb.Transfer(
                 id=transfer_id,
-                debit_account_id=acct["account_id"],       # Konto kosztowe (debet)
+                debit_account_id=acct["account_id"],  # Konto kosztowe (debet)
                 credit_account_id=self._retained_earnings,  # Wynik finansowy
                 amount=tb.AMOUNT_MAX,  # Całe saldo
                 pending_id=0,
@@ -143,13 +141,13 @@ class PeriodCloser:
 
         transfers = []
         for i, acct in enumerate(revenue_accounts):
-            is_last = (i == len(revenue_accounts) - 1)
+            is_last = i == len(revenue_accounts) - 1
             transfer_id = _generate_tb_id()
 
             transfer = tb.Transfer(
                 id=transfer_id,
                 debit_account_id=self._retained_earnings,  # Wynik finansowy
-                credit_account_id=acct["account_id"],       # Konto przychodowe (kredyt)
+                credit_account_id=acct["account_id"],  # Konto przychodowe (kredyt)
                 amount=tb.AMOUNT_MAX,  # Całe saldo
                 pending_id=0,
                 user_data_128=doc_id.int,

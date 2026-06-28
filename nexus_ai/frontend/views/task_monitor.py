@@ -43,12 +43,19 @@ TASK_ICONS = {
 }
 
 _STAGE_TO_STATUS = {
-    "initializing": "PROCESSING", "downloading": "PROCESSING",
-    "extracting": "PROCESSING", "processing": "PROCESSING",
-    "analysing": "PROCESSING", "analyzing": "PROCESSING",
-    "classifying": "PROCESSING", "evaluating": "PROCESSING",
-    "completed": "COMPLETED", "done": "COMPLETED",
-    "error": "FAILED", "failed": "FAILED", "cancelled": "CANCELLED",
+    "initializing": "PROCESSING",
+    "downloading": "PROCESSING",
+    "extracting": "PROCESSING",
+    "processing": "PROCESSING",
+    "analysing": "PROCESSING",
+    "analyzing": "PROCESSING",
+    "classifying": "PROCESSING",
+    "evaluating": "PROCESSING",
+    "completed": "COMPLETED",
+    "done": "COMPLETED",
+    "error": "FAILED",
+    "failed": "FAILED",
+    "cancelled": "CANCELLED",
 }
 
 
@@ -74,38 +81,74 @@ def TaskItem(page: ft.Page, task_data: dict):
     display_name = _format_task_name(task_name)
 
     # Progress value
-    prog_val = max(0.05, progress.value) if status.value in ("PROCESSING", "QUEUED") else (
-        1.0 if status.value == "COMPLETED" else 0.0)
-    prog_text = f"{int(progress.value * 100)}%" if status.value in ("PROCESSING", "QUEUED") else (
-        "100%" if status.value == "COMPLETED" else "✗")
+    prog_val = (
+        max(0.05, progress.value)
+        if status.value in ("PROCESSING", "QUEUED")
+        else (1.0 if status.value == "COMPLETED" else 0.0)
+    )
+    prog_text = (
+        f"{int(progress.value * 100)}%"
+        if status.value in ("PROCESSING", "QUEUED")
+        else ("100%" if status.value == "COMPLETED" else "✗")
+    )
     status_label = _status_label(status.value)
     time_str = _format_time(created_at)
 
     return ft.Container(
-        content=ft.Column([
-            ft.Row([
-                ft.Icon(icon_name, size=20, color=status_color),
-                ft.Column([
-                    ft.Tooltip(
-                        message=display_name,
-                        wait_duration=300,
-                        content=ft.Text(display_name, size=13,
-                                        weight=ft.FontWeight.BOLD, color=ft.colors.GREY_100),
-                    ),
-                    ft.Row([
-                        ft.ProgressBar(value=prog_val, width=200, bar_height=4,
-                                       color=status_color, bgcolor=ft.colors.GREY_800),
-                        ft.Container(width=8),
-                        ft.Text(prog_text, size=11, color=ft.colors.GREY_400),
-                    ], alignment=ft.MainAxisAlignment.START),
-                ], expand=True, spacing=4),
-                ft.Column([
-                    ft.Text(status_label, size=11, color=status_color,
-                            weight=ft.FontWeight.BOLD),
-                    ft.Text(time_str, size=10, color=ft.colors.GREY_600),
-                ], horizontal_alignment=ft.CrossAxisAlignment.END, spacing=2),
-            ], alignment=ft.MainAxisAlignment.START, spacing=12),
-        ]),
+        content=ft.Column(
+            [
+                ft.Row(
+                    [
+                        ft.Icon(icon_name, size=20, color=status_color),
+                        ft.Column(
+                            [
+                                ft.Tooltip(
+                                    message=display_name,
+                                    wait_duration=300,
+                                    content=ft.Text(
+                                        display_name,
+                                        size=13,
+                                        weight=ft.FontWeight.BOLD,
+                                        color=ft.colors.GREY_100,
+                                    ),
+                                ),
+                                ft.Row(
+                                    [
+                                        ft.ProgressBar(
+                                            value=prog_val,
+                                            width=200,
+                                            bar_height=4,
+                                            color=status_color,
+                                            bgcolor=ft.colors.GREY_800,
+                                        ),
+                                        ft.Container(width=8),
+                                        ft.Text(prog_text, size=11, color=ft.colors.GREY_400),
+                                    ],
+                                    alignment=ft.MainAxisAlignment.START,
+                                ),
+                            ],
+                            expand=True,
+                            spacing=4,
+                        ),
+                        ft.Column(
+                            [
+                                ft.Text(
+                                    status_label,
+                                    size=11,
+                                    color=status_color,
+                                    weight=ft.FontWeight.BOLD,
+                                ),
+                                ft.Text(time_str, size=10, color=ft.colors.GREY_600),
+                            ],
+                            horizontal_alignment=ft.CrossAxisAlignment.END,
+                            spacing=2,
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.START,
+                    spacing=12,
+                ),
+            ]
+        ),
         padding=ft.padding.all(12),
         bgcolor=ft.colors.with_opacity(0.05, ft.colors.WHITE),
         border_radius=8,
@@ -220,10 +263,12 @@ def TaskMonitorPanel(page: ft.Page, api_client=None):
 
     async def _start_auto_refresh():
         nonlocal _refresh_task
+
         async def _loop():
             while auto_refresh.value:
                 await anyio.sleep(5)
                 await fetch_tasks()
+
         _refresh_task = page.run_task(_loop())
 
     def _stop_auto_refresh():
@@ -247,17 +292,23 @@ def TaskMonitorPanel(page: ft.Page, api_client=None):
             ft.Tab(
                 text="Active",
                 icon=ft.icons.PLAY_CIRCLE_OUTLINE,
-                badge=ft.NumberBadge(text=str(ac), size=14, bgcolor=ft.colors.BLUE_400) if ac > 0 else None,
+                badge=ft.NumberBadge(text=str(ac), size=14, bgcolor=ft.colors.BLUE_400)
+                if ac > 0
+                else None,
             ),
             ft.Tab(
                 text="Completed",
                 icon=ft.icons.CHECK_CIRCLE_OUTLINE,
-                badge=ft.NumberBadge(text=str(cc), size=14, bgcolor=ft.colors.GREEN_400) if cc > 0 else None,
+                badge=ft.NumberBadge(text=str(cc), size=14, bgcolor=ft.colors.GREEN_400)
+                if cc > 0
+                else None,
             ),
             ft.Tab(
                 text="Failed",
                 icon=ft.icons.ERROR_OUTLINE,
-                badge=ft.NumberBadge(text=str(fc), size=14, bgcolor=ft.colors.RED_400) if fc > 0 else None,
+                badge=ft.NumberBadge(text=str(fc), size=14, bgcolor=ft.colors.RED_400)
+                if fc > 0
+                else None,
             ),
             ft.Tab(text="All", icon=ft.icons.LIST_ALT),
         ],
@@ -266,20 +317,25 @@ def TaskMonitorPanel(page: ft.Page, api_client=None):
 
     # SUPERMOC: Summary bar
     summary = ft.Container(
-        content=ft.Row([
-            _summary_item("Active", str(ac), ft.colors.BLUE_400),
-            ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
-            _summary_item("Completed", str(cc), ft.colors.GREEN_400),
-            ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
-            _summary_item("Failed", str(fc), ft.colors.RED_400),
-        ], alignment=ft.MainAxisAlignment.SPACE_EVENLY),
+        content=ft.Row(
+            [
+                _summary_item("Active", str(ac), ft.colors.BLUE_400),
+                ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
+                _summary_item("Completed", str(cc), ft.colors.GREEN_400),
+                ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
+                _summary_item("Failed", str(fc), ft.colors.RED_400),
+            ],
+            alignment=ft.MainAxisAlignment.SPACE_EVENLY,
+        ),
         bgcolor=ft.colors.with_opacity(0.03, ft.colors.WHITE),
-        padding=ft.padding.all(16), border_radius=8,
+        padding=ft.padding.all(16),
+        border_radius=8,
     )
 
     # SUPERMOC: Empty state / Task list
-    task_list = ft.ListView(ref=task_list_ref, expand=True, spacing=8,
-                            padding=ft.padding.all(16), auto_scroll=False)
+    task_list = ft.ListView(
+        ref=task_list_ref, expand=True, spacing=8, padding=ft.padding.all(16), auto_scroll=False
+    )
 
     # Fill task list based on filter
     for task_data in active_tasks.value.values():
@@ -295,46 +351,76 @@ def TaskMonitorPanel(page: ft.Page, api_client=None):
         task_list.controls.append(task_item)
 
     empty_state = ft.Container(
-        content=ft.Column([
-            ft.Icon(ft.icons.TASK_ALT, size=64, color=ft.colors.GREY_700),
-            ft.Container(height=12),
-            ft.Text("No Tasks", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREY_500),
-            ft.Text("Background tasks will appear here when processing starts.",
-                    size=13, color=ft.colors.GREY_600, text_align=ft.TextAlign.CENTER),
-        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-        alignment=ft.alignment.center, expand=True,
+        content=ft.Column(
+            [
+                ft.Icon(ft.icons.TASK_ALT, size=64, color=ft.colors.GREY_700),
+                ft.Container(height=12),
+                ft.Text("No Tasks", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREY_500),
+                ft.Text(
+                    "Background tasks will appear here when processing starts.",
+                    size=13,
+                    color=ft.colors.GREY_600,
+                    text_align=ft.TextAlign.CENTER,
+                ),
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
+        alignment=ft.alignment.center,
+        expand=True,
     )
 
     return ft.Container(
-        content=ft.Column([
-            ft.Row([
-                ft.Text("Background Tasks", size=20, weight=ft.FontWeight.BOLD,
-                        color=ft.colors.GREY_100),
-                ft.Container(expand=True),
-                ft.IconButton(icon=ft.icons.REFRESH, tooltip="Refresh",
-                              on_click=lambda _: page.run_task(refresh()), icon_size=20),
-                ft.Switch(value=False, label="Auto-refresh",
-                          on_change=on_auto_refresh),
-            ], alignment=ft.MainAxisAlignment.START),
-            ft.Container(height=8),
-            summary,
-            ft.Container(height=8),
-            tabs,
-            ft.Stack([
-                task_list,
-                empty_state,
-            ], expand=True),
-        ]), expand=True, padding=ft.padding.all(20),
+        content=ft.Column(
+            [
+                ft.Row(
+                    [
+                        ft.Text(
+                            "Background Tasks",
+                            size=20,
+                            weight=ft.FontWeight.BOLD,
+                            color=ft.colors.GREY_100,
+                        ),
+                        ft.Container(expand=True),
+                        ft.IconButton(
+                            icon=ft.icons.REFRESH,
+                            tooltip="Refresh",
+                            on_click=lambda _: page.run_task(refresh()),
+                            icon_size=20,
+                        ),
+                        ft.Switch(value=False, label="Auto-refresh", on_change=on_auto_refresh),
+                    ],
+                    alignment=ft.MainAxisAlignment.START,
+                ),
+                ft.Container(height=8),
+                summary,
+                ft.Container(height=8),
+                tabs,
+                ft.Stack(
+                    [
+                        task_list,
+                        empty_state,
+                    ],
+                    expand=True,
+                ),
+            ]
+        ),
+        expand=True,
+        padding=ft.padding.all(20),
     )
 
 
 # ── Helper functions ──────────────────────────────────────────────────────
 
+
 def _summary_item(label: str, value: str, color: str) -> ft.Column:
-    return ft.Column([
-        ft.Text(value, size=20, weight=ft.FontWeight.BOLD, color=color),
-        ft.Text(label, size=12, color=ft.colors.GREY_500),
-    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=2)
+    return ft.Column(
+        [
+            ft.Text(value, size=20, weight=ft.FontWeight.BOLD, color=color),
+            ft.Text(label, size=12, color=ft.colors.GREY_500),
+        ],
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        spacing=2,
+    )
 
 
 def _format_task_name(name: str) -> str:
@@ -354,10 +440,14 @@ def _format_task_name(name: str) -> str:
 
 def _status_label(status: str) -> str:
     labels = {
-        "QUEUED": "Queued", "PROCESSING": "Processing",
-        "COMPLETED": "Completed", "FAILED": "Failed",
-        "CANCELLED": "Cancelled", "APPROVED": "Approved",
-        "REJECTED": "Rejected", "PENDING_REVIEW": "Pending Review",
+        "QUEUED": "Queued",
+        "PROCESSING": "Processing",
+        "COMPLETED": "Completed",
+        "FAILED": "Failed",
+        "CANCELLED": "Cancelled",
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected",
+        "PENDING_REVIEW": "Pending Review",
     }
     return labels.get(status, "Unknown")
 

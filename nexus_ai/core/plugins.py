@@ -36,7 +36,7 @@ import inspect
 import pkgutil
 import threading
 from collections.abc import Awaitable, Callable
-from typing import final,  Any, Protocol, runtime_checkable
+from typing import final, Any, Protocol, runtime_checkable
 
 from structlog import get_logger
 
@@ -60,6 +60,7 @@ class PluginProtocol(Protocol):
         version: Optional version string.
         description: Optional human-readable description.
     """
+
     name: str
     version: str = ""
     description: str = ""
@@ -122,6 +123,8 @@ class PluginInfo:
 
 
 final
+
+
 class PluginManager:
     """Lifecycle-aware plugin system with typed hooks and event subscription.
 
@@ -307,9 +310,7 @@ class PluginManager:
                                 self.register(instance)
                                 count += 1
                         except Exception as exc:
-                            logger.warning(
-                                "[PLUGIN] Failed to register %s: %s", obj_name, exc
-                            )
+                            logger.warning("[PLUGIN] Failed to register %s: %s", obj_name, exc)
 
         except ImportError as exc:
             logger.warning("[PLUGIN] Package %s not found: %s", package_path, exc)

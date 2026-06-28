@@ -30,7 +30,12 @@ SHORTCUT_ACTIONS = {
     "close": {"ctrl": True, "key": "Q", "icon": ft.icons.CLOSE, "label": "Zamknij"},
     "refresh": {"ctrl": False, "key": "F5", "icon": ft.icons.REFRESH, "label": "Odśwież"},
     "help": {"ctrl": False, "key": "F1", "icon": ft.icons.HELP, "label": "Pomoc"},
-    "fullscreen": {"ctrl": False, "key": "F11", "icon": ft.icons.FULLSCREEN, "label": "Pełny ekran"},
+    "fullscreen": {
+        "ctrl": False,
+        "key": "F11",
+        "icon": ft.icons.FULLSCREEN,
+        "label": "Pełny ekran",
+    },
 }
 
 SHORTCUT_FEEDBACK = {

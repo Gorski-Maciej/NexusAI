@@ -34,6 +34,7 @@ class Technology(msgspec.Struct, frozen=True, kw_only=True):
     - frozen=True → immutabilna (to samo co @dataclass(frozen=True))
     - kw_only=True → jawne nazwy pól przy konstrukcji
     """
+
     name: str
     role: str
 
@@ -42,6 +43,7 @@ class Component(msgspec.Struct, frozen=True, kw_only=True):
     """Zastępuje @dataclass(frozen=True).
 
     Używa tuple dla responsibilitie i technologii — immutable i hashable."""
+
     name: str
     layer: Layer
     responsibilities: tuple[str, ...]
@@ -52,6 +54,7 @@ class PipelineStage(msgspec.Struct, frozen=True, kw_only=True):
     """Zastępuje @dataclass(frozen=True).
 
     validator i controls mają domyślne wartości None/() dla kompatybilności."""
+
     name: str
     primary: str
     validator: str | None = None
@@ -63,6 +66,7 @@ class ArchitectureBlueprint(msgspec.Struct, kw_only=True):
 
     mutable (kw_only=True, frozen=False) — bo components/ocr_pipeline/ml_pipeline
     mogą być modyfikowane po konstrukcji przez build_blueprint()."""
+
     name: str = "NexusAI Accounting Platform"
     components: list[Component] = msgspec.field(default_factory=list)
     ocr_pipeline: list[PipelineStage] = msgspec.field(default_factory=list)
@@ -87,7 +91,8 @@ REQUIRED_TECHNOLOGIES = {
     "fsspec",
     "docTR",
     "PaddleOCR V4 Server",
-    "scikit-learn","Python-Statemachine",
+    "scikit-learn",
+    "Python-Statemachine",
     "Taskiq",
     "FastStream",
     "Nuitka",
@@ -286,7 +291,11 @@ def build_blueprint() -> ArchitectureBlueprint:
     ]
 
     ocr_pipeline = [
-        PipelineStage(name="Preprocessing", primary="docTR", controls=("deskew", "denoise", "binarization", "orientation")),
+        PipelineStage(
+            name="Preprocessing",
+            primary="docTR",
+            controls=("deskew", "denoise", "binarization", "orientation"),
+        ),
         PipelineStage(
             name="Cross Validation",
             primary="docTR",
@@ -303,7 +312,6 @@ def build_blueprint() -> ArchitectureBlueprint:
 
     ml_pipeline = [
         PipelineStage(name="Layout NLP", primary="LiLT + HerBERT + LayoutLMv1"),
-
     ]
 
     return ArchitectureBlueprint(

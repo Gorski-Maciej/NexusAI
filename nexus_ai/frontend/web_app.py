@@ -49,10 +49,12 @@ async def init_web_app(page: ft.Page) -> None:
     page.scroll = ft.ScrollMode.ADAPTIVE
 
     # SUPERMOC: SafeArea dla mobile
-    page.add(ft.SafeArea(
-        content=ft.Container(expand=True),
-        minimum=ft.Padding(left=8, top=8, right=8, bottom=8),
-    ))
+    page.add(
+        ft.SafeArea(
+            content=ft.Container(expand=True),
+            minimum=ft.Padding(left=8, top=8, right=8, bottom=8),
+        )
+    )
 
     # ── Inicjalizacja API ───────────────────────────────────────────────
     api_client = NexusApiClient(
@@ -68,20 +70,41 @@ async def init_web_app(page: ft.Page) -> None:
     # ── Pokaż loading screen z Shimmer podczas inicjalizacji ─────────────
     loading = ft.Shimmer(
         content=ft.Container(
-            content=ft.Column([
-                ft.Container(height=40, bgcolor=ft.colors.GREY_800, border_radius=8),
-                ft.Container(height=16),
-                ft.Container(height=200, bgcolor=ft.colors.GREY_800, border_radius=12),
-                ft.Container(height=16),
-                ft.Row([
-                    ft.Container(height=100, bgcolor=ft.colors.GREY_800, border_radius=12, expand=True),
-                    ft.Container(width=16),
-                    ft.Container(height=100, bgcolor=ft.colors.GREY_800, border_radius=12, expand=True),
-                    ft.Container(width=16),
-                    ft.Container(height=100, bgcolor=ft.colors.GREY_800, border_radius=12, expand=True),
-                ]),
-            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-            alignment=ft.alignment.center, expand=True,
+            content=ft.Column(
+                [
+                    ft.Container(height=40, bgcolor=ft.colors.GREY_800, border_radius=8),
+                    ft.Container(height=16),
+                    ft.Container(height=200, bgcolor=ft.colors.GREY_800, border_radius=12),
+                    ft.Container(height=16),
+                    ft.Row(
+                        [
+                            ft.Container(
+                                height=100,
+                                bgcolor=ft.colors.GREY_800,
+                                border_radius=12,
+                                expand=True,
+                            ),
+                            ft.Container(width=16),
+                            ft.Container(
+                                height=100,
+                                bgcolor=ft.colors.GREY_800,
+                                border_radius=12,
+                                expand=True,
+                            ),
+                            ft.Container(width=16),
+                            ft.Container(
+                                height=100,
+                                bgcolor=ft.colors.GREY_800,
+                                border_radius=12,
+                                expand=True,
+                            ),
+                        ]
+                    ),
+                ],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            ),
+            alignment=ft.alignment.center,
+            expand=True,
         ),
     )
     await page.add_async(loading)
@@ -151,6 +174,7 @@ def run_web_app(
 
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser(description="NexusAI Flet Web App")
     parser.add_argument("--port", type=int, default=DEFAULT_WEB_PORT)
     parser.add_argument("--api-port", type=int, default=DEFAULT_API_PORT)

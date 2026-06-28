@@ -185,9 +185,11 @@ class AuditService:
         Używa ``anyio.ensure_backend().create_task()`` jeśli event loop
         jest dostępny — w przeciwnym razie cicho pomija emisję.
         """
+
         async def _safe_kick() -> None:
             try:
-                await broker.kick("event_emit_domain_event",
+                await broker.kick(
+                    "event_emit_domain_event",
                     event_type="audit.change_logged",
                     aggregate_id=target_id,
                     data={

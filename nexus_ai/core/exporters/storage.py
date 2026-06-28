@@ -25,7 +25,6 @@ from pathlib import Path
 from typing import Any
 
 import fsspec
-import fsspec
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.fsspec_compat import (
     AsyncFsWrapper,
@@ -93,7 +92,8 @@ class FSSpecStorageProvider(StorageProvider):
 
         logger.info(
             "[FSSpecStorageProvider] Initialized: protocol=%s root=%s cache=%dMB async=%s",
-            self._protocol, self._base_path,
+            self._protocol,
+            self._base_path,
             self._cache_size,
             type(self._async_fs).__name__,
         )

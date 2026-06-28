@@ -189,7 +189,9 @@ async def download_file(
         # SUPERMOC HTTPX: http2=True dla szybszych połączeń + Limits
         async with httpx.AsyncClient(
             timeout=httpx.Timeout(connect=15.0, read=120.0, write=30.0, pool=300.0),
-            limits=httpx.Limits(max_connections=10, max_keepalive_connections=5, keepalive_expiry=60.0),
+            limits=httpx.Limits(
+                max_connections=10, max_keepalive_connections=5, keepalive_expiry=60.0
+            ),
             http2=True,
             follow_redirects=True,
         ) as client:
@@ -287,7 +289,9 @@ async def download_all_models(
         List of DownloadResult for each model.
     """
     models_dir = Path(models_dir)
-    models_dir.mkdir(parents=True, exist_ok=True)        # SUPERMOC fsspec: CachingFileSystem dla przezroczystego cache modeli
+    models_dir.mkdir(
+        parents=True, exist_ok=True
+    )  # SUPERMOC fsspec: CachingFileSystem dla przezroczystego cache modeli
     # CachingFileSystem owija bazowy filesystem ("file") i cache'uje odczyty.
     # Następne uruchomienie: jeśli plik jest w cache, nie wymaga ponownego I/O.
     cache_storage = models_dir / ".fsspec_cache"

@@ -90,9 +90,7 @@ class FixedAssetsService:
             (DEFAULT_LEDGER_ID, DEFAULT_TRANSFER_CODE, asset_id),
         )
         # DuckDB: wykonaj SELECT change_count() dla liczby wstawionych wierszy
-        count = self.duckdb.execute(
-            "SELECT changes()"
-        ).fetchone()
+        count = self.duckdb.execute("SELECT changes()").fetchone()
         return count[0] if count else 0
 
     async def execute_monthly_depreciation(self, as_of: date | None = None) -> int:

@@ -75,7 +75,9 @@ class EventsSchemaController(Controller):
         ),
         operation_id="getEventSchemaByType",
     )
-    async def get_schema_by_type(self, event_type: str) -> dict[str, Any] | Response[dict[str, Any]]:
+    async def get_schema_by_type(
+        self, event_type: str
+    ) -> dict[str, Any] | Response[dict[str, Any]]:
         """Zwraca JSON Schema dla konkretnego eventu po jego tagu.
 
         Args:

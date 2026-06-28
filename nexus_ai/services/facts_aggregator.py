@@ -227,7 +227,7 @@ class FactSheet(Struct):
         # Trend trust score
         trend = self.trust_score_trend
         if trend.known:
-            lines.append(f"Trend trust score (ostatnie 30 dni):")
+            lines.append("Trend trust score (ostatnie 30 dni):")
             lines.append(f"  Średnia: {trend.avg_trust:.4f}")
             lines.append(f"  Trend: {trend.trend}")
             lines.append(f"  Liczba decyzji: {trend.records}")
@@ -976,7 +976,8 @@ class FactsAggregator:
             return None
         try:
             return self._decision_logger.get_trust_score_trend(
-                contractor_nip=contractor_nip, days=30,
+                contractor_nip=contractor_nip,
+                days=30,
             )
         except Exception as exc:
             logger.warning("[FactsAggregator] trust score trend fetch failed: %s", exc)

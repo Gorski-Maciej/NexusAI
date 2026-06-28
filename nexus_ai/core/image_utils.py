@@ -87,6 +87,7 @@ def normalize_image_to_jpeg(
 # SUPERMOC: Ocena jakosci obrazu
 # ============================================================================
 
+
 def _clamp(v: float, lo: float = 0.0, hi: float = 1.0) -> float:
     return max(lo, min(hi, v))
 
@@ -110,9 +111,7 @@ def assess_image_quality(image: Image.Image) -> dict[str, float]:
 
     hist = gray.histogram()
     total = sum(hist) or 1
-    entropy = -sum(
-        (h / total) * math.log2(h / total) for h in hist if h > 0
-    ) / 8.0
+    entropy = -sum((h / total) * math.log2(h / total) for h in hist if h > 0) / 8.0
 
     return {
         "sharpness": round(sharpness, 4),

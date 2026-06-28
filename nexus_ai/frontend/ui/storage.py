@@ -20,6 +20,7 @@ logger = get_logger("nexus.ui.storage")
 
 class UserPreferences(Struct):
     """Type-safe user preferences stored in client_storage."""
+
     theme: str = "dark"
     compact_mode: bool = False
     language: str = "pl"

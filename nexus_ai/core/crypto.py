@@ -45,7 +45,9 @@ class Vault:
                 if len(raw) == 32:
                     self._key = bytearray(raw)
             except (ValueError, base64.binascii.Error) as exc:
-                logger.warning("Invalid encryption_key base64 format: %s; trying as raw password", exc)
+                logger.warning(
+                    "Invalid encryption_key base64 format: %s; trying as raw password", exc
+                )
             except Exception as exc:
                 logger.warning("Unexpected error parsing encryption_key: %s", exc)
 

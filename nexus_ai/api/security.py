@@ -119,7 +119,9 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> Use
                         _user_cache[token.sub] = None
                         return None
                 except (ValueError, TypeError) as exc:
-                    logger.warning("[AUTH] Invalid jwt_version format for user %s: %s", token.sub, exc)
+                    logger.warning(
+                        "[AUTH] Invalid jwt_version format for user %s: %s", token.sub, exc
+                    )
 
             user = User(
                 id=str(row["id"]),
@@ -169,6 +171,7 @@ def _get_jwt_exclude() -> list[str]:
     """
     try:
         from nexus_ai.core.config import AppConfig
+
         config = AppConfig.from_toml()
         exclude = config.effective_jwt_exclude
         if exclude:
@@ -178,11 +181,17 @@ def _get_jwt_exclude() -> list[str]:
     except Exception as exc:
         logger.warning("[AUTH] Unexpected error loading JWT exclude config: %s", exc)
     return [
-        "/api/auth/login", "/api/auth/register", "/api/auth/refresh",
-        "/api/auth/csrf-token", "/api/auth/reset-password",
-        "/api/auth/reset-password/confirm", "/api/auth/confirm",
-        "/api/v1/health", "/api/v2/health",
-        "/schema/openapi.yml", "/schema/swagger",
+        "/api/auth/login",
+        "/api/auth/register",
+        "/api/auth/refresh",
+        "/api/auth/csrf-token",
+        "/api/auth/reset-password",
+        "/api/auth/reset-password/confirm",
+        "/api/auth/confirm",
+        "/api/v1/health",
+        "/api/v2/health",
+        "/schema/openapi.yml",
+        "/schema/swagger",
     ]
 
 

@@ -136,7 +136,9 @@ class NexusCache:
                 logger.error("[CACHE] Serialization failed for %s: %s", key, exc)
         if serialized:
             await anyio.to_thread.run_sync(
-                self._cache.set_many, serialized, expire=effective_ttl,
+                self._cache.set_many,
+                serialized,
+                expire=effective_ttl,
             )
 
     async def delete(self, key: str) -> None:
@@ -276,7 +278,7 @@ class NexusCache:
         with self._compute_locks_lock:
             if key not in self._compute_locks:
                 if len(self._compute_locks) >= max_locks:
-                    for old_key in list(self._compute_locks.keys())[:max_locks // 10]:
+                    for old_key in list(self._compute_locks.keys())[: max_locks // 10]:
                         del self._compute_locks[old_key]
                 self._compute_locks[key] = anyio.Lock()
             return self._compute_locks[key]
@@ -287,7 +289,7 @@ class NexusCache:
         with self._sync_compute_locks_lock:
             if key not in self._sync_compute_locks:
                 if len(self._sync_compute_locks) >= max_locks:
-                    for old_key in list(self._sync_compute_locks.keys())[:max_locks // 10]:
+                    for old_key in list(self._sync_compute_locks.keys())[: max_locks // 10]:
                         del self._sync_compute_locks[old_key]
                 self._sync_compute_locks[key] = threading.Lock()
             return self._sync_compute_locks[key]

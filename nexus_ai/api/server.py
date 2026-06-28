@@ -84,9 +84,7 @@ def _build_granian_config() -> dict:
         socket_path = os.getenv("NEXUS_UNIX_SOCKET", "/tmp/nexus-api.sock")
         config["unix_socket"] = socket_path
         try:
-            config["uds_permissions"] = int(
-                os.getenv("NEXUS_UNIX_SOCKET_PERMS", "0o660"), 8
-            )
+            config["uds_permissions"] = int(os.getenv("NEXUS_UNIX_SOCKET_PERMS", "0o660"), 8)
         except ValueError:
             pass  # Graceful fallback if perms parsing fails
     else:
@@ -114,9 +112,7 @@ def _build_granian_config() -> dict:
     config["http2_max_concurrent_streams"] = int(
         os.getenv("NEXUS_GRANIAN_HTTP2_MAX_STREAMS", "256")
     )
-    config["http2_keep_alive_interval"] = int(
-        os.getenv("NEXUS_GRANIAN_HTTP2_KEEPALIVE", "30000")
-    )
+    config["http2_keep_alive_interval"] = int(os.getenv("NEXUS_GRANIAN_HTTP2_KEEPALIVE", "30000"))
     config["http2_keep_alive_timeout"] = int(
         os.getenv("NEXUS_GRANIAN_HTTP2_KEEPALIVE_TIMEOUT", "20")
     )
@@ -132,9 +128,7 @@ def _build_granian_config() -> dict:
     else:
         _default_workers = max(1, (os.cpu_count() or 2) - 1)
     config["workers"] = _default_workers
-    config["runtime_threads"] = int(
-        os.getenv("NEXUS_GRANIAN_RUNTIME_THREADS", "2")
-    )
+    config["runtime_threads"] = int(os.getenv("NEXUS_GRANIAN_RUNTIME_THREADS", "2"))
     config["runtime_blocking_threads"] = int(
         os.getenv("NEXUS_GRANIAN_RUNTIME_BLOCKING_THREADS", "4")
     )
@@ -167,41 +161,27 @@ def _build_granian_config() -> dict:
 
     # ── Prometheus metrics (Granian built-in) ────────────────────────
     config["metrics"] = os.getenv("NEXUS_GRANIAN_METRICS", "true").lower() == "true"
-    config["metrics_address"] = os.getenv(
-        "NEXUS_GRANIAN_METRICS_ADDRESS", "127.0.0.1"
-    )
+    config["metrics_address"] = os.getenv("NEXUS_GRANIAN_METRICS_ADDRESS", "127.0.0.1")
     config["metrics_port"] = int(os.getenv("NEXUS_GRANIAN_METRICS_PORT", "9090"))
-    config["metrics_scrape_interval"] = int(
-        os.getenv("NEXUS_GRANIAN_METRICS_INTERVAL", "15")
-    )
+    config["metrics_scrape_interval"] = int(os.getenv("NEXUS_GRANIAN_METRICS_INTERVAL", "15"))
 
     # ── Worker lifecycle management ─────────────────────────────────
-    config["respawn_failed_workers"] = (
-        os.getenv("NEXUS_GRANIAN_RESPAWN", "true").lower() == "true"
-    )
+    config["respawn_failed_workers"] = os.getenv("NEXUS_GRANIAN_RESPAWN", "true").lower() == "true"
     _max_rss = os.getenv("NEXUS_GRANIAN_WORKER_MAX_RSS", "").strip()
     if _max_rss:
         config["workers_max_rss"] = int(_max_rss)  # MiB
     _lifetime = os.getenv("NEXUS_GRANIAN_WORKER_LIFETIME", "").strip()
     if _lifetime:
         config["workers_lifetime"] = int(_lifetime)  # seconds
-    config["workers_kill_timeout"] = int(
-        os.getenv("NEXUS_GRANIAN_WORKER_KILL_TIMEOUT", "30")
-    )
-    config["respawn_interval"] = float(
-        os.getenv("NEXUS_GRANIAN_RESPAWN_INTERVAL", "3.5")
-    )
+    config["workers_kill_timeout"] = int(os.getenv("NEXUS_GRANIAN_WORKER_KILL_TIMEOUT", "30"))
+    config["respawn_interval"] = float(os.getenv("NEXUS_GRANIAN_RESPAWN_INTERVAL", "3.5"))
 
     # ── RSS monitoring ───────────────────────────────────────────────
-    config["rss_sample_interval"] = int(
-        os.getenv("NEXUS_GRANIAN_RSS_INTERVAL", "30")
-    )
+    config["rss_sample_interval"] = int(os.getenv("NEXUS_GRANIAN_RSS_INTERVAL", "30"))
     config["rss_samples"] = int(os.getenv("NEXUS_GRANIAN_RSS_SAMPLES", "3"))
 
     # ── Graceful shutdown ────────────────────────────────────────────
-    config["graceful_shutdown_timeout"] = int(
-        os.getenv("NEXUS_GRANIAN_GRACEFUL_SHUTDOWN", "30")
-    )
+    config["graceful_shutdown_timeout"] = int(os.getenv("NEXUS_GRANIAN_GRACEFUL_SHUTDOWN", "30"))
 
     # ── PID file ─────────────────────────────────────────────────────
     _pid_file = os.getenv("NEXUS_GRANIAN_PID_FILE", "").strip()
@@ -217,9 +197,7 @@ def _build_granian_config() -> dict:
     if _STATIC_ROUTES and _STATIC_MOUNTS:
         config["static_path_route"] = _STATIC_ROUTES
         config["static_path_mount"] = _STATIC_MOUNTS
-        config["static_path_expires"] = int(
-            os.getenv("NEXUS_GRANIAN_STATIC_EXPIRES", "86400")
-        )
+        config["static_path_expires"] = int(os.getenv("NEXUS_GRANIAN_STATIC_EXPIRES", "86400"))
 
     return config
 
@@ -237,6 +215,7 @@ def run_backend() -> None:
         # Fallback: jeśli Granian nie wspiera któregoś z superpower params,
         # spróbuj z podstawową konfiguracją
         import logging
+
         logging.warning(
             "[GRANIAN] TypeError podczas inicjalizacji z superpowers: %s\n"
             "  Próba fallback do podstawowej konfiguracji...",

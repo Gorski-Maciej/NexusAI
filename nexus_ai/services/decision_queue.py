@@ -257,15 +257,11 @@ class AsyncDecisionQueue:
                 "start": f"{today}T00:00:00",
                 "end": f"{today}T23:59:59",
             }
-            resolved_where = (
-                "FROM dq_decisions WHERE resolved_at >= :start AND resolved_at < :end"
-            )
+            resolved_where = "FROM dq_decisions WHERE resolved_at >= :start AND resolved_at < :end"
             if user_id:
                 resolved_where += " AND user_id = :user_id"
                 resolved_params["user_id"] = user_id
-            result = await conn.execute(
-                text(f"SELECT COUNT(*) {resolved_where}"), resolved_params
-            )
+            result = await conn.execute(text(f"SELECT COUNT(*) {resolved_where}"), resolved_params)
             resolved_today = int(result.scalar() or 0)
 
             return {

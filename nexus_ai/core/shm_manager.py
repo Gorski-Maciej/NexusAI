@@ -4,6 +4,7 @@
 Replaces previous numpy-based implementation with raw memoryview/bytes
 operations for compatibility with PIL Images.
 """
+
 from __future__ import annotations
 
 from multiprocessing import shared_memory
@@ -27,7 +28,7 @@ class SharedImageBuffer:
 
         # Kopiujemy dane do współdzielonego bloku przez memoryview
         buf = memoryview(shm.buf)
-        buf[:len(data)] = data
+        buf[: len(data)] = data
 
         return {
             "shm_name": shm.name,
@@ -46,4 +47,4 @@ class SharedImageBuffer:
         """
         shm = shared_memory.SharedMemory(name=metadata["shm_name"])
         buf = memoryview(shm.buf)
-        return bytes(buf[:metadata["size"]])
+        return bytes(buf[: metadata["size"]])

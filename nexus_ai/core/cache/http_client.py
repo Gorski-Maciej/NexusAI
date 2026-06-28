@@ -110,7 +110,9 @@ def create_cached_client(
         http2=http2,
         trust_env=trust_env,
         limits=f"{limits.max_connections} conn, {limits.max_keepalive_connections} keepalive",
-        timeout=f"connect={timeout.connect}s, read={timeout.read}s, write={timeout.write}s" if isinstance(timeout, Timeout) else str(timeout),
+        timeout=f"connect={timeout.connect}s, read={timeout.read}s, write={timeout.write}s"
+        if isinstance(timeout, Timeout)
+        else str(timeout),
     )
 
     return httpx.AsyncClient(
@@ -165,6 +167,7 @@ class CachedHttpClient:
         self._semaphore: anyio.Semaphore | None = None
         if concurrency_limit > 0:
             import anyio as _anyio
+
             self._semaphore = _anyio.Semaphore(concurrency_limit)
 
     async def _acquire(self) -> None:
@@ -178,12 +181,8 @@ class CachedHttpClient:
     async def _cb_check(self) -> None:
         """Sprawdza stan Circuit Breakera przed wysłaniem żądania."""
         if not stamina.is_active():
-            logger.warning(
-                "[CB] Circuit breaker OPEN — bypassing HTTP request"
-            )
-            raise stamina.RetryingError(
-                "Circuit breaker is open — request skipped"
-            ) from None
+            logger.warning("[CB] Circuit breaker OPEN — bypassing HTTP request")
+            raise stamina.RetryingError("Circuit breaker is open — request skipped") from None
 
     async def get(self, url: str, **kwargs: Any) -> httpx.Response:
         await self._acquire()

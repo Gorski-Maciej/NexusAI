@@ -68,9 +68,9 @@ class OpaPolicyGenerator:
 
         timestamp = datetime.now(timezone.utc).isoformat()
         rule_count = len(rules)
-        rule_sets = sorted(set(
-            r.get("rule_set_id", "") for r in rules if r.get("rule_set_id")
-        )) or ["default"]
+        rule_sets = sorted(
+            set(r.get("rule_set_id", "") for r in rules if r.get("rule_set_id"))
+        ) or ["default"]
 
         lines: list[str] = []
 
@@ -115,7 +115,7 @@ class OpaPolicyGenerator:
 
                 # Build the verdict as a proper Rego object
                 verdict_parts = [
-                    f'"matched": true',
+                    '"matched": true',
                     f'"rule_id": "{rule_id}"',
                     f'"priority": {priority}',
                     f'"vat_rate": "{vat_rate}"',
@@ -135,7 +135,7 @@ class OpaPolicyGenerator:
                 verdict_body = ",\n        ".join(verdict_parts)
                 condition_line = f"    {rego_condition}" if rego_condition != "true" else "    true"
 
-                is_first = (pi == 0 and ri == 0)
+                is_first = pi == 0 and ri == 0
 
                 if is_first:
                     # First rule in chain: decide = <value> { <condition> }
@@ -191,9 +191,7 @@ class OpaPolicyGenerator:
                 entry["rule_set_id"] = rule_set
             rule_list.append(entry)
 
-        rule_sets = sorted(set(
-            r.get("rule_set_id", "") for r in rules if r.get("rule_set_id")
-        ))
+        rule_sets = sorted(set(r.get("rule_set_id", "") for r in rules if r.get("rule_set_id")))
 
         return {
             "rules": {
@@ -242,8 +240,8 @@ class OpaPolicyGenerator:
         # Split on OR first (these become separate rule bodies)
         # For Rego, OR is expressed by multiple rules with same head,
         # but we can also use ; within a rule body for soft OR
-        
-        # Handle IN clauses first: "field IN ('a', 'b')" 
+
+        # Handle IN clauses first: "field IN ('a', 'b')"
         # Convert to: input.field == "a"; input.field == "b" (OR)
         def _replace_in(m: re.Match) -> str:
             field = m.group(1).strip()
@@ -252,9 +250,9 @@ class OpaPolicyGenerator:
             # IN becomes multiple == conditions joined by ;
             alternatives = [f'{_field_ref(field)} == "{v}"' for v in values]
             return "; ".join(alternatives)
-        
+
         expr = re.sub(
-            r'(\w+(?:\.\w+)?)\s+IN\s*\(([^)]+)\)',
+            r"(\w+(?:\.\w+)?)\s+IN\s*\(([^)]+)\)",
             _replace_in,
             expr,
             flags=re.IGNORECASE,
@@ -268,9 +266,9 @@ class OpaPolicyGenerator:
             # NOT IN becomes multiple != conditions joined by ;
             alternatives = [f'{_field_ref(field)} != "{v}"' for v in values]
             return "; ".join(alternatives)
-        
+
         expr = re.sub(
-            r'(\w+(?:\.\w+)?)\s+NOT\s+IN\s*\(([^)]+)\)',
+            r"(\w+(?:\.\w+)?)\s+NOT\s+IN\s*\(([^)]+)\)",
             _replace_not_in,
             expr,
             flags=re.IGNORECASE,
@@ -278,16 +276,16 @@ class OpaPolicyGenerator:
 
         # Handle IS NULL
         expr = re.sub(
-            r'(\w+(?:\.\w+)?)\s+IS\s+NULL',
-            r'not has(\1)',
+            r"(\w+(?:\.\w+)?)\s+IS\s+NULL",
+            r"not has(\1)",
             expr,
             flags=re.IGNORECASE,
         )
 
         # Handle IS NOT NULL
         expr = re.sub(
-            r'(\w+(?:\.\w+)?)\s+IS\s+NOT\s+NULL',
-            r'has(\1)',
+            r"(\w+(?:\.\w+)?)\s+IS\s+NOT\s+NULL",
+            r"has(\1)",
             expr,
             flags=re.IGNORECASE,
         )
@@ -317,8 +315,17 @@ class OpaPolicyGenerator:
         def _replace_field_ref(m: re.Match) -> str:
             word = m.group(1)
             if word.upper() in (
-                "AND", "OR", "NOT", "IN", "IS", "NULL", "TRUE", "FALSE",
-                "LIKE", "BETWEEN", "HAS",
+                "AND",
+                "OR",
+                "NOT",
+                "IN",
+                "IS",
+                "NULL",
+                "TRUE",
+                "FALSE",
+                "LIKE",
+                "BETWEEN",
+                "HAS",
             ):
                 return word
             return _field_ref(word)
@@ -331,20 +338,20 @@ class OpaPolicyGenerator:
         )
 
         # Replace = with == (for Rego comparison), but not <=, >=, !=
-        expr = re.sub(r'(?<![!<>])=(?!=)', ' == ', expr)
+        expr = re.sub(r"(?<![!<>])=(?!=)", " == ", expr)
 
         # Replace AND with , (Rego conjunction in rule body)
         # But don't replace AND inside strings
-        expr = re.sub(r'\s+AND\s+', ', ', expr, flags=re.IGNORECASE)
+        expr = re.sub(r"\s+AND\s+", ", ", expr, flags=re.IGNORECASE)
 
         # Replace OR with ; (Rego soft disjunction)
-        expr = re.sub(r'\s+OR\s+', '; ', expr, flags=re.IGNORECASE)
+        expr = re.sub(r"\s+OR\s+", "; ", expr, flags=re.IGNORECASE)
 
         # Replace SQL string delimiters: 'value' → "value"
         expr = re.sub(r"'([^']*)'", r'"\1"', expr)
 
         # Clean up extra spaces
-        expr = re.sub(r'\s+', ' ', expr).strip()
+        expr = re.sub(r"\s+", " ", expr).strip()
 
         return expr
 

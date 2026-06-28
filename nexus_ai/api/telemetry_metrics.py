@@ -122,20 +122,24 @@ def record_http_request(method: str, endpoint: str, status: int, duration: float
     if http_request_duration_seconds is not None:
         http_request_duration_seconds.record(duration, {"method": method, "endpoint": endpoint})
 
+
 def record_invoice_processed(status: str = "success") -> None:
     """Record an invoice processing result."""
     if invoices_processed_total is not None:
         invoices_processed_total.add(1, {"status": status})
+
 
 def record_ai_inference(duration_seconds: float, model: str = "unknown") -> None:
     """Record AI inference duration for a specific model."""
     if ai_inference_duration_seconds is not None:
         ai_inference_duration_seconds.record(duration_seconds, {"model_name": model})
 
+
 def record_ocr_duration(duration_seconds: float, engine: str = "unknown") -> None:
     """Record OCR processing duration."""
     if ocr_duration_seconds is not None:
         ocr_duration_seconds.record(duration_seconds, {"engine": engine})
+
 
 def record_task_execution(task_name: str, duration_ms: float, status: str = "SUCCESS") -> None:
     """Record a task execution metric."""
@@ -147,47 +151,62 @@ def record_task_execution(task_name: str, duration_ms: float, status: str = "SUC
             {"task_name": task_name},
         )
 
+
 def set_active_tasks(count: int) -> None:
     if active_tasks is not None:
         active_tasks.set(count)
 
-def record_event_store_append(aggregate_type: str, event_count: int, duration_seconds: float) -> None:
+
+def record_event_store_append(
+    aggregate_type: str, event_count: int, duration_seconds: float
+) -> None:
     if event_store_events_appended_total is not None:
         event_store_events_appended_total.add(event_count, {"aggregate_type": aggregate_type})
     if event_store_append_duration_seconds is not None:
-        event_store_append_duration_seconds.record(duration_seconds, {"aggregate_type": aggregate_type})
+        event_store_append_duration_seconds.record(
+            duration_seconds, {"aggregate_type": aggregate_type}
+        )
+
 
 def record_event_store_read(operation: str, duration_seconds: float) -> None:
     if event_store_read_latency_seconds is not None:
         event_store_read_latency_seconds.record(duration_seconds, {"operation": operation})
 
+
 def record_nats_event(event_type: str, status: str = "processed") -> None:
     if nats_events_processed_total is not None:
         nats_events_processed_total.add(1, {"event_type": event_type, "status": status})
+
 
 def set_db_pool_size(size: int) -> None:
     if db_connection_pool_size is not None:
         db_connection_pool_size.set(size)
 
+
 def set_queue_depth(depth: int) -> None:
     if queue_depth is not None:
         queue_depth.set(depth)
+
 
 def set_worker_up(up: bool) -> None:
     if worker_up is not None:
         worker_up.set(1 if up else 0)
 
+
 def set_nats_up(up: bool) -> None:
     if nats_up is not None:
         nats_up.set(1 if up else 0)
 
+
 def set_memory_usage(mb: float) -> None:
     if memory_usage_mb is not None:
         memory_usage_mb.set(mb)
+
 
 def record_hot_reload_event(subject: str) -> None:
     if hot_reload_events_total is not None:
         hot_reload_events_total.add(1, {"subject": subject})
     if hot_reload_last_event_seconds is not None:
         import time as _time
+
         hot_reload_last_event_seconds.set(_time.time(), {"subject": subject})

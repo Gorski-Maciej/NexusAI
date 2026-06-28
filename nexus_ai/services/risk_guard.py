@@ -26,6 +26,7 @@ logger = get_logger("nexus.services.risk_guard")
 
 class RiskAction(StrEnum):
     """Akcja podejmowana gdy pewność AI jest poniżej progu."""
+
     BLOCK_AND_ALERT = "BLOCK_AND_ALERT"
     TRIAGE_QUEUE = "TRIAGE_QUEUE"
     ALLOW = "ALLOW"

@@ -32,7 +32,7 @@ from __future__ import annotations
 
 import time as _time
 from collections.abc import Awaitable, Callable
-from typing import final,  Any, Generic, TypeVar
+from typing import final, Any, Generic, TypeVar
 
 import anyio
 import msgspec
@@ -59,6 +59,7 @@ class EventEnvelope(msgspec.Struct, kw_only=True, frozen=True):
         timestamp: Monotonic timestamp when the event was emitted.
         correlation_id: Optional correlation ID for tracing.
     """
+
     event_type: str = ""
     payload_bytes: bytes = b""
     timestamp: float = 0.0
@@ -107,6 +108,8 @@ class Subscription(Generic[EventT]):
 
 
 final
+
+
 class EventBus:
     """Typed, msgspec-backed in-process event bus with structured concurrency.
 
@@ -177,7 +180,9 @@ class EventBus:
         subs = self._subscriptions.get(subscription.event_type, [])
         if subscription in subs:
             subs.remove(subscription)
-            logger.debug("[BUS] Unsubscribed %s from %s", subscription.name, subscription.event_type.__name__)
+            logger.debug(
+                "[BUS] Unsubscribed %s from %s", subscription.name, subscription.event_type.__name__
+            )
 
     async def emit(
         self,
@@ -259,10 +264,7 @@ class EventBus:
             return list(self._history[-limit:]) if self._history else []
 
         type_name = f"{event_type.__module__}.{event_type.__qualname__}"
-        return [
-            env for env in self._history[-limit:]
-            if env.event_type == type_name
-        ]
+        return [env for env in self._history[-limit:] if env.event_type == type_name]
 
     def clear_history(self) -> None:
         """Clear the event history buffer."""

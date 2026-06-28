@@ -33,13 +33,17 @@ def estimate_runtime_cost(
     # ── SUPERMOC: Polars expressions dla kalkulacji kosztów ──────
     # Zamiast ręcznych mnożeń, używamy DataFrame z wyrażeniami.
     # Łatwe do rozszerzenia o nowe komponenty kosztów.
-    cost_df = pl.DataFrame({
-        "cpu_cost": [cpu_cores * runtime_hours * rates.cpu_core_hour_usd],
-        "ram_cost": [ram_gb * runtime_hours * rates.ram_gb_hour_usd],
-        "network_cost": [network_gb * rates.net_gb_transfer_usd],
-        "gpu_cost": [gpu_hours * rates.gpu_hour_usd],
-    }).with_columns(
-        (pl.col("cpu_cost") + pl.col("ram_cost") + pl.col("network_cost") + pl.col("gpu_cost")).alias("total")
+    cost_df = pl.DataFrame(
+        {
+            "cpu_cost": [cpu_cores * runtime_hours * rates.cpu_core_hour_usd],
+            "ram_cost": [ram_gb * runtime_hours * rates.ram_gb_hour_usd],
+            "network_cost": [network_gb * rates.net_gb_transfer_usd],
+            "gpu_cost": [gpu_hours * rates.gpu_hour_usd],
+        }
+    ).with_columns(
+        (
+            pl.col("cpu_cost") + pl.col("ram_cost") + pl.col("network_cost") + pl.col("gpu_cost")
+        ).alias("total")
     )
     return round(float(cost_df["total"][0]), 6)
 

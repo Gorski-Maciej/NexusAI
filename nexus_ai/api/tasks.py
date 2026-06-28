@@ -156,24 +156,31 @@ async def decision_evaluate(
         )
 
         try:
-            await broker.kick("event_emit_decision_made",
-                    invoice_id=invoice_id,
-                    decision=verdict.decision,
-                    trust_score=extracted_data.get("trust_score", 0.0),
-                    ai_confidence=verdict.confidence,
-                    alpha_vote=extracted_data.get("alpha_vote", ""),
-                    beta_vote=extracted_data.get("beta_vote", ""),
-                    gamma_vote=extracted_data.get("gamma_vote", ""),
-                    decision_pattern=verdict.matched_rule[:64] if verdict.matched_rule else "",
-                    reasoning=verdict.reasoning,
-                    metadata={
-                        "extracted_data_snapshot": {
-                            k: extracted_data[k]
-                            for k in ("amount_gross", "amount_net", "category", "contractor_nip", "ocr_confidence")
-                            if k in extracted_data
-                        },
+            await broker.kick(
+                "event_emit_decision_made",
+                invoice_id=invoice_id,
+                decision=verdict.decision,
+                trust_score=extracted_data.get("trust_score", 0.0),
+                ai_confidence=verdict.confidence,
+                alpha_vote=extracted_data.get("alpha_vote", ""),
+                beta_vote=extracted_data.get("beta_vote", ""),
+                gamma_vote=extracted_data.get("gamma_vote", ""),
+                decision_pattern=verdict.matched_rule[:64] if verdict.matched_rule else "",
+                reasoning=verdict.reasoning,
+                metadata={
+                    "extracted_data_snapshot": {
+                        k: extracted_data[k]
+                        for k in (
+                            "amount_gross",
+                            "amount_net",
+                            "category",
+                            "contractor_nip",
+                            "ocr_confidence",
+                        )
+                        if k in extracted_data
                     },
-                )
+                },
+            )
         except Exception as emit_err:
             logger.warning("[DECISION-EVENT] Failed to emit: %s", emit_err)
 
@@ -182,7 +189,9 @@ async def decision_evaluate(
         elif verdict.decision == "SUGGEST":
             await _mark_for_review(invoice_id, verdict, db)
         elif verdict.decision in ("ASK_USER", "BLOCK", "ESCALATE"):
-            await _escalate_to_human(invoice_id, verdict, db, reason=f"decision: {verdict.decision}")
+            await _escalate_to_human(
+                invoice_id, verdict, db, reason=f"decision: {verdict.decision}"
+            )
 
         return {
             "result": "OK",
@@ -223,23 +232,31 @@ async def council_decide(invoice_id: str, extracted_data: dict) -> dict:
             vendor_profile=extracted_data.get("vendor_profile", {}),
         )
         try:
-            await broker.kick("event_emit_decision_made",
-                    invoice_id=invoice_id, decision=verdict.decision,
-                    trust_score=extracted_data.get("trust_score", 0.0),
-                    ai_confidence=verdict.confidence,
-                    alpha_vote=extracted_data.get("alpha_vote", ""),
-                    beta_vote=extracted_data.get("beta_vote", ""),
-                    gamma_vote=extracted_data.get("gamma_vote", ""),
-                    decision_pattern=verdict.matched_rule[:64] if verdict.matched_rule else "",
-                    reasoning=verdict.reasoning,
-                    metadata={
-                        "extracted_data_snapshot": {
-                            k: extracted_data[k]
-                            for k in ("amount_gross", "amount_net", "category", "contractor_nip", "ocr_confidence")
-                            if k in extracted_data
-                        },
+            await broker.kick(
+                "event_emit_decision_made",
+                invoice_id=invoice_id,
+                decision=verdict.decision,
+                trust_score=extracted_data.get("trust_score", 0.0),
+                ai_confidence=verdict.confidence,
+                alpha_vote=extracted_data.get("alpha_vote", ""),
+                beta_vote=extracted_data.get("beta_vote", ""),
+                gamma_vote=extracted_data.get("gamma_vote", ""),
+                decision_pattern=verdict.matched_rule[:64] if verdict.matched_rule else "",
+                reasoning=verdict.reasoning,
+                metadata={
+                    "extracted_data_snapshot": {
+                        k: extracted_data[k]
+                        for k in (
+                            "amount_gross",
+                            "amount_net",
+                            "category",
+                            "contractor_nip",
+                            "ocr_confidence",
+                        )
+                        if k in extracted_data
                     },
-                )
+                },
+            )
         except (ConnectionError, TimeoutError, OSError) as exc:
             logger.warning("[COUNCIL] Failed to emit event for %s: %s", invoice_id, exc)
         except Exception as exc:
@@ -263,7 +280,9 @@ async def council_decide(invoice_id: str, extracted_data: dict) -> dict:
             eng = _make_engine(config_temp)
             sess_fac = create_session_factory(eng)
             async with sess_fac() as sess:
-                await _escalate_to_human(invoice_id, verdict, sess, reason=f"decision: {verdict.decision}")
+                await _escalate_to_human(
+                    invoice_id, verdict, sess, reason=f"decision: {verdict.decision}"
+                )
             await eng.dispose()
 
         return {
@@ -339,7 +358,9 @@ async def _mark_for_review(invoice_id: str, verdict: DecisionVerdict, db: Sessio
         )
 
 
-async def _escalate_to_human(invoice_id: str, verdict: DecisionVerdict, db: Session, reason: str = "") -> None:
+async def _escalate_to_human(
+    invoice_id: str, verdict: DecisionVerdict, db: Session, reason: str = ""
+) -> None:
     """Escalate invoice to human for review.
 
     SUPERMOC: Przyjmuje Session z DI zamiast tworzyć własny engine.
@@ -366,10 +387,16 @@ async def _dispatch_outbox_event(row: dict) -> None:
     try:
         payload = msgspec_loads(payload_raw)
     except (ValueError, TypeError, DecodeError) as exc:
-        logger.warning("[OUTBOX] Failed to parse payload for event %s: %s", row.get("id", "unknown"), exc)
+        logger.warning(
+            "[OUTBOX] Failed to parse payload for event %s: %s", row.get("id", "unknown"), exc
+        )
         payload = {}
     except Exception as exc:
-        logger.error("[OUTBOX] Unexpected error parsing payload for event %s: %s", row.get("id", "unknown"), exc)
+        logger.error(
+            "[OUTBOX] Unexpected error parsing payload for event %s: %s",
+            row.get("id", "unknown"),
+            exc,
+        )
         payload = {}
 
     # SUPERMOC TASKIQ: Kicker.with_task_id() dla deterministycznego ID
@@ -792,9 +819,7 @@ async def process_invoice_ocr(
         logger.warning("[OLAP] cashflow refresh failed after retries: %s", olap_err)
 
     # Wyczyść bufor ramek OCR dla tego dokumentu (Rozwiązanie 12)
-    logger.info(
-        "[OCR] processing complete for invoice_id=%s, buffer can be cleared", invoice_id
-    )
+    logger.info("[OCR] processing complete for invoice_id=%s, buffer can be cleared", invoice_id)
 
     return
 
@@ -815,7 +840,12 @@ async def process_large_attachment(attachment_id: str, payload: dict | None = No
 @broker.task(
     schedule=[{"cron": "0 * * * *"}],
     task_name="refresh_materialized_cashflow",
-    labels={"service": "api", "operation": "analytics", "criticality": "medium", "schedule": "hourly"},
+    labels={
+        "service": "api",
+        "operation": "analytics",
+        "criticality": "medium",
+        "schedule": "hourly",
+    },
     timeout=120.0,
 )
 @stamina.retry(on=Exception, attempts=3)
@@ -990,9 +1020,7 @@ async def cleanup_archived_invoices_task(
     """
     from nexus_ai.services.security_service import SecurityService
 
-    result = await SecurityService.archive_old_invoices(
-        db, archive_table="archived_invoices"
-    )
+    result = await SecurityService.archive_old_invoices(db, archive_table="archived_invoices")
     logger.info(
         "[RETENTION] Archived old invoices: %s",
         result,
@@ -1148,7 +1176,9 @@ async def relay_outbox_events(
                         },
                     )
                 except (ConnectionError, OSError) as dle:
-                    logger.warning("[OUTBOX] Failed to write dead_letter_event (connection): %s", dle)
+                    logger.warning(
+                        "[OUTBOX] Failed to write dead_letter_event (connection): %s", dle
+                    )
                 except Exception as dle:
                     logger.warning("[OUTBOX] Failed to write dead_letter_event: %s", dle)
 
@@ -1228,6 +1258,7 @@ async def finops_hourly_estimate_task() -> None:
 #    ConsumerConfig.max_deliver=5 automatycznie retryuje
 #    Po 5 failed deliveries → JetStream DLQ ($JS.EVENT.ADVISORY.CONSUMER.MAX_DELIVERIES)
 #    dead_letter_processor_task zapisuje DLQ do failed_tasks
+
 
 def _safe_float(value: object) -> float | None:
     if value is None:
@@ -1443,9 +1474,7 @@ async def migration_integrity_daily_check_task(
     elif status == "baseline_created":
         logger.info("[MIGRATION-INTEGRITY] baseline created tables=%s", result.get("tables"))
     else:
-        logger.warning(
-            "[MIGRATION-INTEGRITY] status=%s issues=%s", status, result.get("issues")
-        )
+        logger.warning("[MIGRATION-INTEGRITY] status=%s issues=%s", status, result.get("issues"))
 
 
 @broker.task(
@@ -1537,7 +1566,12 @@ async def cleanup_temp_upload_files_task() -> None:
 @broker.task(
     schedule=[{"cron": "30 6 * * *"}],
     task_name="daily_briefing_send",
-    labels={"service": "api", "operation": "briefing", "criticality": "medium", "schedule": "daily"},
+    labels={
+        "service": "api",
+        "operation": "briefing",
+        "criticality": "medium",
+        "schedule": "daily",
+    },
     timeout=120.0,
 )
 async def daily_briefing_send(user_id: str | None = None) -> dict:
@@ -1626,7 +1660,12 @@ async def cleanup_old_reports_task() -> None:
 @broker.task(
     schedule=[{"cron": "0 * * * *"}],
     task_name="check_hanging_transactions",
-    labels={"service": "api", "operation": "monitoring", "criticality": "medium", "schedule": "hourly"},
+    labels={
+        "service": "api",
+        "operation": "monitoring",
+        "criticality": "medium",
+        "schedule": "hourly",
+    },
     timeout=30.0,
 )
 async def check_hanging_transactions_task(
@@ -1675,7 +1714,12 @@ async def check_hanging_transactions_task(
 @broker.task(
     schedule=[{"cron": "0 6 * * 1"}],
     task_name="weekly_nip_reverification",
-    labels={"service": "api", "operation": "verification", "criticality": "medium", "schedule": "weekly"},
+    labels={
+        "service": "api",
+        "operation": "verification",
+        "criticality": "medium",
+        "schedule": "weekly",
+    },
     timeout=600.0,
 )
 async def weekly_nip_reverification_task(
@@ -1731,7 +1775,12 @@ async def weekly_nip_reverification_task(
 @broker.task(
     schedule=[{"cron": "30 4 * * 0"}],
     task_name="sqlite_weekly_vacuum",
-    labels={"service": "api", "operation": "maintenance", "criticality": "medium", "schedule": "weekly"},
+    labels={
+        "service": "api",
+        "operation": "maintenance",
+        "criticality": "medium",
+        "schedule": "weekly",
+    },
     timeout=600.0,
 )
 async def sqlite_weekly_vacuum_task(
@@ -1766,8 +1815,6 @@ async def cleanup_duckdb_temp_task() -> None:
         except FileNotFoundError:
             continue
     logger.info("[DUCKDB] temp files removed=%s", removed)
-
-
 
 
 @broker.task(

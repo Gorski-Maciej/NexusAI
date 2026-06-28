@@ -33,8 +33,6 @@ _CHART_HEIGHT = 280
 _CHART_WIDTH = 500
 
 
-
-
 def _axis_text_style() -> ft.TextStyle:
     return ft.TextStyle(color=_TEXT_COLOR, size=10)
 
@@ -113,10 +111,13 @@ def revenue_expense_chart(
             )
         )
 
-    max_val = max(
-        (abs(float(r.get("revenue", 0))) for r in monthly_data),
-        default=1,
-    ) * 1.2
+    max_val = (
+        max(
+            (abs(float(r.get("revenue", 0))) for r in monthly_data),
+            default=1,
+        )
+        * 1.2
+    )
 
     chart = ft.BarChart(
         bar_groups=bar_groups,
@@ -131,7 +132,10 @@ def revenue_expense_chart(
             labels_style=_axis_text_style(),
         ),
         bottom_axis=ft.ChartAxis(
-            labels=[ft.ChartAxisLabel(value=i, label=ft.Text(m, style=_axis_text_style())) for i, m in enumerate(months)],
+            labels=[
+                ft.ChartAxisLabel(value=i, label=ft.Text(m, style=_axis_text_style()))
+                for i, m in enumerate(months)
+            ],
             labels_style=_axis_text_style(),
         ),
     )
@@ -197,17 +201,17 @@ def cashflow_line_chart(
             labels_style=_axis_text_style(),
         ),
         bottom_axis=ft.ChartAxis(
-            labels=[ft.ChartAxisLabel(value=i, label=ft.Text(p, style=_axis_text_style())) for i, p in enumerate(periods)],
+            labels=[
+                ft.ChartAxisLabel(value=i, label=ft.Text(p, style=_axis_text_style()))
+                for i, p in enumerate(periods)
+            ],
             labels_style=_axis_text_style(),
         ),
     )
 
     # Line chart overlay for cumulative
     line_data = ft.LineChartData(
-        data_points=[
-            ft.LineChartDataPoint(x=i, y=cumulatives[i])
-            for i in range(len(cumulatives))
-        ],
+        data_points=[ft.LineChartDataPoint(x=i, y=cumulatives[i]) for i in range(len(cumulatives))],
         stroke_width=2.5,
         color=ft.colors.with_opacity(0.9, _GREEN),
         curved=True,
@@ -229,7 +233,10 @@ def cashflow_line_chart(
             labels_style=_axis_text_style(),
         ),
         bottom_axis=ft.ChartAxis(
-            labels=[ft.ChartAxisLabel(value=i, label=ft.Text(p, style=_axis_text_style())) for i, p in enumerate(periods)],
+            labels=[
+                ft.ChartAxisLabel(value=i, label=ft.Text(p, style=_axis_text_style()))
+                for i, p in enumerate(periods)
+            ],
             labels_style=_axis_text_style(),
         ),
     )
@@ -310,7 +317,13 @@ def vat_pie_chart(
     center_text = ft.Container(
         content=ft.Column(
             [
-                ft.Text(f"{total:,.0f}", color=_TEXT_COLOR, size=16, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
+                ft.Text(
+                    f"{total:,.0f}",
+                    color=_TEXT_COLOR,
+                    size=16,
+                    weight=ft.FontWeight.BOLD,
+                    text_align=ft.TextAlign.CENTER,
+                ),
                 ft.Text("Razem VAT", color=_TEXT_COLOR, size=10, text_align=ft.TextAlign.CENTER),
             ],
             spacing=0,
@@ -354,10 +367,7 @@ def monthly_trend_line_chart(
     min_val = min(0, min(totals, default=0)) * 1.2
 
     line_data = ft.LineChartData(
-        data_points=[
-            ft.LineChartDataPoint(x=i, y=totals[i])
-            for i in range(len(totals))
-        ],
+        data_points=[ft.LineChartDataPoint(x=i, y=totals[i]) for i in range(len(totals))],
         stroke_width=2.5,
         color=ft.colors.with_opacity(0.9, _BLUE),
         curved=True,
@@ -379,7 +389,10 @@ def monthly_trend_line_chart(
             labels_style=_axis_text_style(),
         ),
         bottom_axis=ft.ChartAxis(
-            labels=[ft.ChartAxisLabel(value=i, label=ft.Text(m, style=_axis_text_style())) for i, m in enumerate(months)],
+            labels=[
+                ft.ChartAxisLabel(value=i, label=ft.Text(m, style=_axis_text_style()))
+                for i, m in enumerate(months)
+            ],
             labels_style=_axis_text_style(),
         ),
     )
@@ -437,7 +450,10 @@ def top_suppliers_bar_chart(
             bottom=ft.BorderSide(color=_SURFACE, width=0.5),
         ),
         left_axis=ft.ChartAxis(
-            labels=[ft.ChartAxisLabel(value=i, label=ft.Text(n, style=_axis_text_style())) for i, n in enumerate(names)],
+            labels=[
+                ft.ChartAxisLabel(value=i, label=ft.Text(n, style=_axis_text_style()))
+                for i, n in enumerate(names)
+            ],
             labels_style=_axis_text_style(),
         ),
         bottom_axis=ft.ChartAxis(

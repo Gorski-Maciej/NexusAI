@@ -16,7 +16,11 @@ Usage:
 
 from __future__ import annotations
 
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads as _msgspec_loads, msgspec_dumps_bytes
+from nexus_ai.core.msgspec_utils import (
+    msgspec_dumps,
+    msgspec_loads as _msgspec_loads,
+    msgspec_dumps_bytes,
+)
 import json as _json
 import sqlite3
 import threading
@@ -103,8 +107,14 @@ class SqliteResultBackend(TaskiqResultBackend):
                     (
                         task_id,
                         result.task_name or "",
-                        "SUCCESS" if result.is_err is False else "FAILED" if result.is_err else "UNKNOWN",
-                        msgspec_dumps(result.return_value) if result.return_value is not None else None,
+                        "SUCCESS"
+                        if result.is_err is False
+                        else "FAILED"
+                        if result.is_err
+                        else "UNKNOWN",
+                        msgspec_dumps(result.return_value)
+                        if result.return_value is not None
+                        else None,
                         str(result.error) if result.error else None,
                         result.execution_time,
                         result.started_at.isoformat() if result.started_at else None,
@@ -116,7 +126,8 @@ class SqliteResultBackend(TaskiqResultBackend):
             except Exception as exc:
                 logger.warning(
                     "[RESULT-BACKEND] Failed to save result for task_id=%s: %s",
-                    task_id, exc,
+                    task_id,
+                    exc,
                 )
 
     async def is_result_exists(self, task_id: str) -> bool:
@@ -249,6 +260,7 @@ class HybridResultBackend(TaskiqResultBackend):
                 self._obj_store = None
         try:
             import nats
+
             self._nc = await nats.connect(servers=self._nats_servers, connect_timeout=2.0)
             self._js = self._nc.jetstream()
             try:
@@ -267,17 +279,21 @@ class HybridResultBackend(TaskiqResultBackend):
 
         try:
             if await self._ensure_nats():
-                data = json.dumps({
-                    "task_id": task_id,
-                    "task_name": result.task_name or "",
-                    "is_err": result.is_err,
-                    "return_value": result.return_value,
-                    "error": str(result.error) if result.error else None,
-                    "execution_time": result.execution_time,
-                    "started_at": result.started_at.isoformat() if result.started_at else None,
-                    "finished_at": result.finished_at.isoformat() if result.finished_at else None,
-                    "labels": result.labels,
-                }).encode()
+                data = json.dumps(
+                    {
+                        "task_id": task_id,
+                        "task_name": result.task_name or "",
+                        "is_err": result.is_err,
+                        "return_value": result.return_value,
+                        "error": str(result.error) if result.error else None,
+                        "execution_time": result.execution_time,
+                        "started_at": result.started_at.isoformat() if result.started_at else None,
+                        "finished_at": result.finished_at.isoformat()
+                        if result.finished_at
+                        else None,
+                        "labels": result.labels,
+                    }
+                ).encode()
                 await self._obj_store.put(task_id, data)
                 return
         except Exception:

@@ -246,6 +246,7 @@ except (ImportError, Exception):
 # 13. Chaining FS helper — SUPERMOC: simplecache::file, cached::memory
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 def create_chain(chain_url: str, **kwargs: Any) -> fsspec.AbstractFileSystem:
     """SUPERMOC: Utwórz chaining FS przez URL z :: separator.
 
@@ -267,6 +268,7 @@ def create_chain(chain_url: str, **kwargs: Any) -> fsspec.AbstractFileSystem:
 # ═══════════════════════════════════════════════════════════════════════════
 # 14. Detect protocol and pick optimal cache strategy
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 def create_optimal_filesystem(
     protocol: str = "file",
@@ -310,6 +312,7 @@ def create_optimal_filesystem(
     # Bez chainingu — ręczne owijanie w cache
     if cache_storage is None:
         import tempfile
+
         cache_storage = tempfile.mkdtemp(prefix="fsspec_cache_")
 
     maxsize = cache_size_mb * 1024 * 1024
@@ -341,6 +344,7 @@ def create_optimal_filesystem(
 # 15. fsspec.config helper — SUPERMOC: centralna konfiguracja
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 def configure_fsspec_global(**kwargs: Any) -> None:
     """SUPERMOC: Skonfiguruj globalne ustawienia fsspec.
 
@@ -353,6 +357,7 @@ def configure_fsspec_global(**kwargs: Any) -> None:
         **kwargs: Dowolne ustawienia dla fsspec.config.conf.
     """
     from fsspec.config import conf
+
     for key, value in kwargs.items():
         conf[key] = value
 
@@ -434,14 +439,10 @@ class AsyncFsWrapper:
     async def cat_file(self, path: str) -> bytes:
         return await self._run(self._fs.cat_file, path)
 
-    async def get(
-        self, rpath: str, lpath: str, **kwargs: Any
-    ) -> None:
+    async def get(self, rpath: str, lpath: str, **kwargs: Any) -> None:
         return await self._run(self._fs.get, rpath, lpath, **kwargs)
 
-    async def put(
-        self, lpath: str, rpath: str, **kwargs: Any
-    ) -> None:
+    async def put(self, lpath: str, rpath: str, **kwargs: Any) -> None:
         return await self._run(self._fs.put, lpath, rpath, **kwargs)
 
     async def du(self, path: str, total: bool = True) -> int | dict:
@@ -586,7 +587,10 @@ class FSSpecFactory:
 
         logger.info(
             "[FSSpecFactory] Configured: protocol=%s cache=%dMB tx=%s chain=%s",
-            protocol, cache_size_mb, transactional, chain_enabled,
+            protocol,
+            cache_size_mb,
+            transactional,
+            chain_enabled,
         )
         return self
 
@@ -601,7 +605,9 @@ class FSSpecFactory:
         """
         return self.configure(
             protocol=getattr(config, "storage_protocol", "file"),
-            base_path=str(getattr(config, "base_dir", ".") / getattr(config, "storage_root", "uploads")),
+            base_path=str(
+                getattr(config, "base_dir", ".") / getattr(config, "storage_root", "uploads")
+            ),
             cache_size_mb=getattr(config, "storage_cache_size_mb", 0),
             auto_mkdir=getattr(config, "storage_auto_mkdir", True),
             transactional=getattr(config, "storage_transactional", False),
@@ -628,6 +634,7 @@ class FSSpecFactory:
             # CachingFileSystem wrapper
             if self._cache_size_mb > 0 and HAS_CACHE_FS and CachingFileSystem is not None:
                 import os as _os
+
                 cache_storage = self._cache_storage
                 _os.makedirs(cache_storage, exist_ok=True)
                 self._fs = CachingFileSystem(
@@ -686,6 +693,7 @@ class FSSpecFactory:
             FSMap — MutableMapping dla dict-like dostępu.
         """
         import os as _os
+
         if self._protocol == "file":
             url = _os.path.join(self._base_path, prefix) if prefix else self._base_path
         else:

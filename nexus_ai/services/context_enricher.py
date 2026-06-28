@@ -104,14 +104,18 @@ class ContextEnricher:
             if context.get("vendor_pkd"):
                 trust_levels.append("medium")
 
-            context["vendor_trust"] = "high" if "high" in trust_levels else (
-                "medium" if trust_levels else "low"
+            context["vendor_trust"] = (
+                "high" if "high" in trust_levels else ("medium" if trust_levels else "low")
             )
 
             # Zapisz w cache na 30 dni
             await self._cache.set(cache_key, context, ttl=2592000)
-            logger.info("[CONTEXT-ENRICHER] Enriched context for NIP=%s: trust=%s, vat_status=%s",
-                        nip, context.get("vendor_trust"), context.get("vendor_vat_status"))
+            logger.info(
+                "[CONTEXT-ENRICHER] Enriched context for NIP=%s: trust=%s, vat_status=%s",
+                nip,
+                context.get("vendor_trust"),
+                context.get("vendor_vat_status"),
+            )
 
         except Exception as exc:
             logger.error("[CONTEXT-ENRICHER] Failed to enrich NIP=%s: %s", nip, exc)

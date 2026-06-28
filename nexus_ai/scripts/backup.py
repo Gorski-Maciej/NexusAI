@@ -91,7 +91,11 @@ def create_backup():
     with fs.transaction():
         if config.storage_protocol == "file":
             with zipfile.ZipFile(target_url, "w", zipfile.ZIP_DEFLATED) as zipf:
-                cb = TqdmCallback(desc="Compressing backup") if HAS_TQDM_CB and TqdmCallback is not None else None
+                cb = (
+                    TqdmCallback(desc="Compressing backup")
+                    if HAS_TQDM_CB and TqdmCallback is not None
+                    else None
+                )
                 if cb:
                     cb.__enter__()
                 try:
@@ -121,7 +125,11 @@ def create_backup():
             buf = io.BytesIO()
 
             with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zipf:
-                cb = TqdmCallback(desc="Compressing backup (remote)") if HAS_TQDM_CB and TqdmCallback is not None else None
+                cb = (
+                    TqdmCallback(desc="Compressing backup (remote)")
+                    if HAS_TQDM_CB and TqdmCallback is not None
+                    else None
+                )
                 if cb:
                     cb.__enter__()
                 try:
@@ -149,7 +157,11 @@ def create_backup():
 
             # SUPERMOC: fsspec.open() — zapisz przez protokół (s3://, sftp://)
             with fsspec.open(target_url, "wb") as f:
-                cb2 = TqdmCallback(desc="Uploading backup") if HAS_TQDM_CB and TqdmCallback is not None else None
+                cb2 = (
+                    TqdmCallback(desc="Uploading backup")
+                    if HAS_TQDM_CB and TqdmCallback is not None
+                    else None
+                )
                 if cb2:
                     cb2.__enter__()
                     cb2.set_size(buf.tell())
@@ -170,7 +182,9 @@ def create_backup():
     meta[backup_name] = {
         "timestamp": timestamp,
         "size": Path(target_url).stat().st_size if config.storage_protocol == "file" else 0,
-        "files_count": len(fs.find(str(config.base_dir / "app_data"))) if (config.base_dir / "app_data").exists() else 0,
+        "files_count": len(fs.find(str(config.base_dir / "app_data")))
+        if (config.base_dir / "app_data").exists()
+        else 0,
         "protocol": config.storage_protocol,
     }
 

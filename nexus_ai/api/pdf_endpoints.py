@@ -252,6 +252,7 @@ class PDFController(Controller):
         )
 
         import io
+
         buf = io.BytesIO()
         pil_image.save(buf, format="PNG", optimize=True)
 
@@ -313,6 +314,7 @@ class PDFController(Controller):
         )
 
         import base64
+
         result = {
             "document_id": document_id,
             "page_count": len(images),
@@ -402,26 +404,34 @@ class PDFController(Controller):
 
         if with_positions:
             ranges = await anyio.to_thread.run_sync(
-                extract_text_ranges, pdf_path, page_num,
+                extract_text_ranges,
+                pdf_path,
+                page_num,
             )
             return Response(
-                content=msgspec.json.encode({
-                    "page": page_num,
-                    "text_ranges": ranges,
-                    "engine": "PDFium",
-                }),
+                content=msgspec.json.encode(
+                    {
+                        "page": page_num,
+                        "text_ranges": ranges,
+                        "engine": "PDFium",
+                    }
+                ),
                 media_type="application/json",
             )
 
         text = await anyio.to_thread.run_sync(
-            extract_text_from_page, pdf_path, page_num,
+            extract_text_from_page,
+            pdf_path,
+            page_num,
         )
         return Response(
-            content=msgspec.json.encode({
-                "page": page_num,
-                "text": text,
-                "engine": "PDFium",
-            }),
+            content=msgspec.json.encode(
+                {
+                    "page": page_num,
+                    "text": text,
+                    "engine": "PDFium",
+                }
+            ),
             media_type="application/json",
         )
 
@@ -449,16 +459,20 @@ class PDFController(Controller):
         pdf_path = _resolve_document_path(document_id)
 
         tables = await anyio.to_thread.run_sync(
-            detect_table_regions, pdf_path, page_num,
+            detect_table_regions,
+            pdf_path,
+            page_num,
         )
 
         return Response(
-            content=msgspec.json.encode({
-                "page": page_num,
-                "tables": tables,
-                "table_count": len(tables),
-                "engine": "PDFium",
-            }),
+            content=msgspec.json.encode(
+                {
+                    "page": page_num,
+                    "tables": tables,
+                    "table_count": len(tables),
+                    "engine": "PDFium",
+                }
+            ),
             media_type="application/json",
         )
 
@@ -486,27 +500,30 @@ class PDFController(Controller):
         pdf_path = _resolve_document_path(document_id)
 
         signatures = await anyio.to_thread.run_sync(
-            verify_pdf_signatures, pdf_path,
+            verify_pdf_signatures,
+            pdf_path,
         )
 
         return Response(
-            content=msgspec.json.encode({
-                "document_id": document_id,
-                "signature_count": len(signatures),
-                "signatures": [
-                    {
-                        "author": sig.author,
-                        "reason": sig.reason,
-                        "location": sig.location,
-                        "is_verified": sig.is_verified,
-                        "signed_at": sig.signed_at,
-                        "field_name": sig.field_name,
-                        "page_num": sig.page_num,
-                    }
-                    for sig in signatures
-                ],
-                "engine": "PDFium (native)",
-            }),
+            content=msgspec.json.encode(
+                {
+                    "document_id": document_id,
+                    "signature_count": len(signatures),
+                    "signatures": [
+                        {
+                            "author": sig.author,
+                            "reason": sig.reason,
+                            "location": sig.location,
+                            "is_verified": sig.is_verified,
+                            "signed_at": sig.signed_at,
+                            "field_name": sig.field_name,
+                            "page_num": sig.page_num,
+                        }
+                        for sig in signatures
+                    ],
+                    "engine": "PDFium (native)",
+                }
+            ),
             media_type="application/json",
         )
 
@@ -534,28 +551,31 @@ class PDFController(Controller):
         pdf_path = _resolve_document_path(document_id)
 
         fields = await anyio.to_thread.run_sync(
-            get_pdf_form_fields, pdf_path,
+            get_pdf_form_fields,
+            pdf_path,
         )
 
         return Response(
-            content=msgspec.json.encode({
-                "document_id": document_id,
-                "field_count": len(fields),
-                "fields": [
-                    {
-                        "name": f.name,
-                        "type": f.type,
-                        "value": f.value,
-                        "is_readonly": f.is_readonly,
-                        "is_required": f.is_required,
-                        "max_length": f.max_length,
-                        "options": f.options,
-                        "page_num": f.page_num,
-                    }
-                    for f in fields
-                ],
-                "engine": "PDFium (AcroForm)",
-            }),
+            content=msgspec.json.encode(
+                {
+                    "document_id": document_id,
+                    "field_count": len(fields),
+                    "fields": [
+                        {
+                            "name": f.name,
+                            "type": f.type,
+                            "value": f.value,
+                            "is_readonly": f.is_readonly,
+                            "is_required": f.is_required,
+                            "max_length": f.max_length,
+                            "options": f.options,
+                            "page_num": f.page_num,
+                        }
+                        for f in fields
+                    ],
+                    "engine": "PDFium (AcroForm)",
+                }
+            ),
             media_type="application/json",
         )
 

@@ -22,40 +22,41 @@ def StatCard(page: ft.Page, title: str, value: str, icon: str, color: str = ft.c
     """
     is_hovered = ft.use_state(False)
 
+    card_content = ft.Container(
+        padding=15,
+        animate=ft.animation.Animation(200, ft.AnimationCurve.EASE_OUT),
+        scale=1.03 if is_hovered.value else 1.0,
+        gradient=ft.LinearGradient(
+            begin=ft.alignment.top_left,
+            end=ft.alignment.bottom_right,
+            colors=[color + "20", color + "05"],
+        ),
+        border_radius=ft.border_radius.all(12),
+        shadow=ft.BoxShadow(
+            blur_radius=10 if is_hovered.value else 0,
+            color=color + "20",
+            offset=ft.Offset(0, 4),
+        ),
+        on_hover=lambda e: is_hovered.set(e.data == "true"),
+        content=ft.Row(
+            [
+                ft.Icon(icon, size=40, color=color),
+                ft.Column(
+                    [
+                        ft.Text(title, size=14, color=ft.colors.GREY_400),
+                        ft.Text(value, size=20, weight=ft.FontWeight.BOLD),
+                    ]
+                ),
+            ]
+        ),
+    )
     return ft.Card(
         content=ft.Tooltip(
             message=f"{title}: {value}",
             wait_duration=500,
             padding=12,
             border_radius=8,
-        ),
-        content=ft.Container(
-            padding=15,
-            animate=ft.animation.Animation(200, ft.AnimationCurve.EASE_OUT),
-            scale=1.03 if is_hovered.value else 1.0,
-            gradient=ft.LinearGradient(
-                begin=ft.alignment.top_left,
-                end=ft.alignment.bottom_right,
-                colors=[color + "20", color + "05"],
-            ),
-            border_radius=ft.border_radius.all(12),
-            shadow=ft.BoxShadow(
-                blur_radius=10 if is_hovered.value else 0,
-                color=color + "20",
-                offset=ft.Offset(0, 4),
-            ),
-            on_hover=lambda e: is_hovered.set(e.data == "true"),
-            content=ft.Row(
-                [
-                    ft.Icon(icon, size=40, color=color),
-                    ft.Column(
-                        [
-                            ft.Text(title, size=14, color=ft.colors.GREY_400),
-                            ft.Text(value, size=20, weight=ft.FontWeight.BOLD),
-                        ]
-                    ),
-                ]
-            ),
+            content=card_content,
         ),
     )
 
@@ -67,20 +68,36 @@ def ShimmerCard(page: ft.Page):
         content=ft.Container(
             content=ft.Row(
                 [
-                    ft.Container(width=40, height=40,
+                    ft.Container(
+                        width=40,
+                        height=40,
+                        bgcolor=ft.colors.GREY_800,
+                        border_radius=ft.border_radius.all(8),
+                    ),
+                    ft.Column(
+                        [
+                            ft.Container(
+                                width=120,
+                                height=14,
                                 bgcolor=ft.colors.GREY_800,
-                                border_radius=ft.border_radius.all(8)),
-                    ft.Column([
-                        ft.Container(width=120, height=14, bgcolor=ft.colors.GREY_800,
-                                    border_radius=ft.border_radius.all(4)),
-                        ft.Container(height=6),
-                        ft.Container(width=80, height=20, bgcolor=ft.colors.GREY_800,
-                                    border_radius=ft.border_radius.all(4)),
-                    ]),
-                ], spacing=12),
+                                border_radius=ft.border_radius.all(4),
+                            ),
+                            ft.Container(height=6),
+                            ft.Container(
+                                width=80,
+                                height=20,
+                                bgcolor=ft.colors.GREY_800,
+                                border_radius=ft.border_radius.all(4),
+                            ),
+                        ]
+                    ),
+                ],
+                spacing=12,
+            ),
             padding=15,
         ),
-        trim=0.3, period=1.5,
+        trim=0.3,
+        period=1.5,
     )
 
 
@@ -97,9 +114,11 @@ def ShimmerRow(page: ft.Page, count: int = 4):
 def ShimmerChart(page: ft.Page, height: float = 200.0):
     """Shimmer skeleton for chart placeholder."""
     return ft.Shimmer(
-        content=ft.Container(height=height, bgcolor=ft.colors.GREY_900,
-                            border_radius=ft.border_radius.all(12)),
-        trim=0.3, period=1.5,
+        content=ft.Container(
+            height=height, bgcolor=ft.colors.GREY_900, border_radius=ft.border_radius.all(12)
+        ),
+        trim=0.3,
+        period=1.5,
     )
 
 
@@ -126,15 +145,19 @@ def ErrorView(page: ft.Page, message: str, detail: str = "", on_retry=None):
         ft.Text(message, size=18, color=ft.colors.RED_400),
     ]
     if detail:
-        controls.extend([
-            ft.Container(height=8),
-            ft.Text(detail, size=13, color=ft.colors.GREY_500),
-        ])
+        controls.extend(
+            [
+                ft.Container(height=8),
+                ft.Text(detail, size=13, color=ft.colors.GREY_500),
+            ]
+        )
     if on_retry:
-        controls.extend([
-            ft.Container(height=24),
-            ft.ElevatedButton("Spróbuj ponownie", icon=ft.icons.REFRESH, on_click=on_retry),
-        ])
+        controls.extend(
+            [
+                ft.Container(height=24),
+                ft.ElevatedButton("Spróbuj ponownie", icon=ft.icons.REFRESH, on_click=on_retry),
+            ]
+        )
     return ft.Column(
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,

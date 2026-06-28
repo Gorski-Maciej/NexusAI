@@ -7,7 +7,6 @@ import sys
 import anyio
 from pathlib import Path as _SyncPath
 
-import anyio
 
 import flet as ft
 import pendulum
@@ -113,18 +112,24 @@ class NexusOrchestrator:
     async def start_worker(self):
         logger.info("Uruchamianie Workera AI...")
         cmd = [
-    sys.executable, "-m", "taskiq", "worker",
-    "worker:broker",
-    "--fs-startup",
-    "--workers", os.getenv("NEXUS_WORKER_PROCESSES", "2"),
-    "--max-async-tasks", os.getenv("NEXUS_WORKER_MAX_ASYNC", "10"),
-    "--max-prefetch", os.getenv("NEXUS_WORKER_PREFETCH", "3"),
-    "--ack-type", "when_executed",
-    "--log-level", os.getenv("NEXUS_LOG_LEVEL", "info"),
-]
-        self.worker_process = await anyio.Process(
-            cmd, env=self._subprocess_env
-        ).__aenter__()
+            sys.executable,
+            "-m",
+            "taskiq",
+            "worker",
+            "worker:broker",
+            "--fs-startup",
+            "--workers",
+            os.getenv("NEXUS_WORKER_PROCESSES", "2"),
+            "--max-async-tasks",
+            os.getenv("NEXUS_WORKER_MAX_ASYNC", "10"),
+            "--max-prefetch",
+            os.getenv("NEXUS_WORKER_PREFETCH", "3"),
+            "--ack-type",
+            "when_executed",
+            "--log-level",
+            os.getenv("NEXUS_LOG_LEVEL", "info"),
+        ]
+        self.worker_process = await anyio.Process(cmd, env=self._subprocess_env).__aenter__()
 
     async def start_backend_api(self, port: int):
         backend_env = os.environ.copy()
@@ -157,6 +162,7 @@ class NexusOrchestrator:
                 logger.debug("Wysyłanie SIGTERM do procesu PID=%d", proc.pid)
                 proc.terminate()
         import time as _sync_time
+
         _sync_time.sleep(0.5)
         for proc in [self.api_process, self.worker_process, self.nats_process]:
             if proc is not None and proc.returncode is None:
@@ -234,6 +240,7 @@ async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
 async def _check_system_dependencies() -> bool:
     try:
         from installer.dependency_ui import run_dependency_ui
+
         return run_dependency_ui()
     except Exception:
         return True
@@ -242,6 +249,7 @@ async def _check_system_dependencies() -> bool:
 async def _check_models_on_startup() -> bool:
     try:
         from installer.download_progress_ui import check_and_download_if_needed
+
         models_dir = _SyncPath("models")
         return check_and_download_if_needed(models_dir)
     except Exception:
@@ -251,6 +259,7 @@ async def _check_models_on_startup() -> bool:
 async def _check_updates_on_startup(page: ft.Page | None = None):
     try:
         from installer.updater import check_for_updates
+
         result = await check_for_updates()
         if result.update_available and result.info:
             logger.info("[Updater] Update available: v%s", result.latest_version)
@@ -275,6 +284,7 @@ async def start_app():
         logger.critical(f"BŁĄD KRYTYCZNY STARTU: {e}")
     finally:
         from loguru import logger as _loguru_logger
+
         _loguru_logger.complete()
         orchestrator.cleanup()
 

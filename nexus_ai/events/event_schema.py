@@ -56,16 +56,28 @@ EventRegistryEntry = tuple[str, type[DomainEvent], str]
 EVENT_REGISTRY: list[EventRegistryEntry] = [
     # Invoice events
     ("invoice.created", InvoiceCreated, "Faktura została utworzona w systemie (po OCR)"),
-    ("invoice.submitted", InvoiceSubmitted, "Faktura została przesłana do decyzji (DecisionEngine)"),
+    (
+        "invoice.submitted",
+        InvoiceSubmitted,
+        "Faktura została przesłana do decyzji (DecisionEngine)",
+    ),
     ("invoice.approved", InvoiceApproved, "Faktura została zatwierdzona (auto-post lub manualnie)"),
     ("invoice.rejected", InvoiceRejected, "Faktura została odrzucona (manualnie)"),
     ("invoice.blocked", InvoiceBlocked, "Faktura została zablokowana (RiskGuard / anomalia)"),
     ("invoice.paid", InvoicePaid, "Faktura została opłacona (przez TigerBeetle)"),
     # Decision events
     ("decision.made", DecisionMade, "Decyzja została podjęta przez system (DecisionEngine)"),
-    ("decision.overridden", DecisionOverridden, "Decyzja systemowa została nadpisana przez użytkownika"),
+    (
+        "decision.overridden",
+        DecisionOverridden,
+        "Decyzja systemowa została nadpisana przez użytkownika",
+    ),
     # Outbox events
-    ("outbox.emitted", OutboxEventEmitted, "Zdarzenie outbox zostało wyemitowane (Transactional Outbox)"),
+    (
+        "outbox.emitted",
+        OutboxEventEmitted,
+        "Zdarzenie outbox zostało wyemitowane (Transactional Outbox)",
+    ),
     # Notification events
     ("notification.sent", NotificationSent, "Powiadomienie zostało wysłane do użytkownika"),
 ]

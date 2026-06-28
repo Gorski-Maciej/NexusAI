@@ -41,6 +41,7 @@ def deep_merge(base: dict[str, Any], override: dict[str, Any]) -> None:
         else:
             base[key] = value
 
+
 logger = get_logger(__name__)
 
 ENV_CONFIG_DIR: Path = Path(__file__).resolve().parent.parent / "config"
@@ -436,6 +437,7 @@ class _IntegrationsSection(Struct, kw_only=True):
 
 # ── NOWE SEKCJE TOML (FAZA 1 AUDYTU) ─────────────────────────────────
 
+
 class _TaxSection(Struct, kw_only=True):
     """msgspec schema dla sekcji [tax] w config/{env}.toml.
 
@@ -443,6 +445,7 @@ class _TaxSection(Struct, kw_only=True):
     Sekcja [tax] istnieje w dev.toml i prod.toml, ale była
     wcześniej ignorowana przez typed schema — parsowana tylko jako dict.
     """
+
     default_vat_rate: Annotated[int | None, Meta(ge=0, le=100)] = None
     cit_rate: Annotated[float | None, Meta(ge=0, le=100)] = None
     linear_rate: Annotated[float | None, Meta(ge=0, le=100)] = None
@@ -457,6 +460,7 @@ class _AiSection(Struct, kw_only=True):
     Zgodnie z audytem: ścieżki modeli AI zdefiniowane w TOML zamiast
     w kodzie. Walidacja przez msgspec przy starcie.
     """
+
     council_alpha_model: str | None = None
     council_beta_model: str | None = None
     council_gamma_model: str | None = None
@@ -472,6 +476,7 @@ class _AiSection(Struct, kw_only=True):
 
 class _TigerbeetleSection(Struct, kw_only=True):
     """msgspec schema dla sekcji [tigerbeetle] w config/{env}.toml."""
+
     cluster_id: int | None = None
     replica_addresses: str | None = None
 
@@ -487,6 +492,7 @@ class _OpaSection(Struct, kw_only=True):
     - REST API na localhost:8181
     - Rego policies generowane dynamicznie z DuckDB
     """
+
     enabled: bool | None = None
     url: str | None = None
     timeout_seconds: Annotated[float | None, Meta(ge=1.0, le=60.0)] = None
@@ -1147,11 +1153,17 @@ class AppConfig(Struct, kw_only=True):
         if self.jwt_exclude_paths:
             return self.jwt_exclude_paths
         return [
-            "/api/auth/login", "/api/auth/register", "/api/auth/refresh",
-            "/api/auth/csrf-token", "/api/auth/reset-password",
-            "/api/auth/reset-password/confirm", "/api/auth/confirm",
-            "/api/v1/health", "/api/v2/health",
-            "/schema/openapi.yml", "/schema/swagger",
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/auth/refresh",
+            "/api/auth/csrf-token",
+            "/api/auth/reset-password",
+            "/api/auth/reset-password/confirm",
+            "/api/auth/confirm",
+            "/api/v1/health",
+            "/api/v2/health",
+            "/schema/openapi.yml",
+            "/schema/swagger",
         ]
 
     @property

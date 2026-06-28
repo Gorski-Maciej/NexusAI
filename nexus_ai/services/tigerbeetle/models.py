@@ -23,6 +23,7 @@ from sqlmodel import Field, SQLModel
 
 class StrEnum(BaseStrEnum):
     """String enum base class używając Python 3.11+ enum.StrEnum."""
+
     pass
 
 
@@ -43,6 +44,7 @@ class TaxForm(StrEnum):
 
 class TransferStatus(StrEnum):
     """Status transferu — TB jest source of truth, SQLite to cache."""
+
     PENDING = "pending"
     POSTED = "posted"
     REJECTED = "rejected"

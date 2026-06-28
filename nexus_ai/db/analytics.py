@@ -193,6 +193,7 @@ class DuckDBManager:
             elapsed_ms = (time.monotonic() - t0) * 1000
             if elapsed_ms > self._slow_query_threshold_ms:
                 import logging
+
                 logger = logging.getLogger("nexus.duckdb.profiler")
                 logger.warning(
                     "[SLOW QUERY] %.1f ms — %s...",
@@ -255,6 +256,7 @@ class DuckDBManager:
             elapsed_ms = (time.monotonic() - t0) * 1000
             if elapsed_ms > self._slow_query_threshold_ms:
                 import logging
+
                 logger = logging.getLogger("nexus.duckdb.profiler")
                 logger.warning(
                     "[SLOW ARROW QUERY] %.1f ms — %s...",
@@ -327,9 +329,7 @@ class DuckDBManager:
         """
         conn = self.get_connection_for_query()
         try:
-            result = conn.execute(
-                f"SELECT * FROM parquet_metadata('{parquet_path}')"
-            ).fetchdf()
+            result = conn.execute(f"SELECT * FROM parquet_metadata('{parquet_path}')").fetchdf()
             if result is None or result.empty:
                 return []
             return result.to_dict(orient="records")
@@ -410,7 +410,8 @@ class DuckDBManager:
 
         result: dict[str, Any] = {}
         targets = columns or [
-            col.name for col in table.schema
+            col.name
+            for col in table.schema
             if (
                 pa_types.is_integer(col.type)
                 or pa_types.is_floating(col.type)

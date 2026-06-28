@@ -376,13 +376,19 @@ class SystemMonitor:
                 ram_available_gb=ram.available / (1024**3),
                 ram_used_gb=(ram.total - ram.available) / (1024**3),
                 ram_percent=ram.percent,
-                ram_buffers_gb=ram.buffers / (1024**3) if hasattr(ram, "buffers") and ram.buffers else None,  # fmt: skip  # noqa: E501
-                ram_cached_gb=ram.cached / (1024**3) if hasattr(ram, "cached") and ram.cached else None,  # fmt: skip  # noqa: E501
+                ram_buffers_gb=ram.buffers / (1024**3)
+                if hasattr(ram, "buffers") and ram.buffers
+                else None,  # fmt: skip  # noqa: E501
+                ram_cached_gb=ram.cached / (1024**3)
+                if hasattr(ram, "cached") and ram.cached
+                else None,  # fmt: skip  # noqa: E501
                 swap_total_gb=swap.total / (1024**3),
                 swap_used_gb=swap.used / (1024**3),
                 swap_percent=swap.percent,
                 swap_sin_gb=swap.sin / (1024**3) if hasattr(swap, "sin") and swap.sin else None,
-                swap_sout_gb=swap.sout / (1024**3) if hasattr(swap, "sout") and swap.sout else None,  # fmt: skip  # noqa: E501
+                swap_sout_gb=swap.sout / (1024**3)
+                if hasattr(swap, "sout") and swap.sout
+                else None,  # fmt: skip  # noqa: E501
                 disk_total_gb=disk.total / (1024**3),
                 disk_used_gb=disk.used / (1024**3),
                 disk_free_gb=disk.free / (1024**3),
@@ -391,7 +397,9 @@ class SystemMonitor:
                 disk_write_mb=disk_io.write_bytes / (1024**2) if disk_io else 0,
                 disk_read_count=disk_io.read_count if disk_io else 0,
                 disk_write_count=disk_io.write_count if disk_io else 0,
-                disk_io_time_ms=disk_io.read_time if disk_io and hasattr(disk_io, "read_time") else None,  # fmt: skip  # noqa: E501
+                disk_io_time_ms=disk_io.read_time
+                if disk_io and hasattr(disk_io, "read_time")
+                else None,  # fmt: skip  # noqa: E501
                 net_bytes_sent_mb=net_io.bytes_sent / (1024**2) if net_io else 0,
                 net_bytes_recv_mb=net_io.bytes_recv / (1024**2) if net_io else 0,
                 net_packets_sent=net_io.packets_sent if net_io else 0,
@@ -436,19 +444,13 @@ class SystemMonitor:
         if metrics.ram_percent > ram_threshold_pct:
             alerts.append(f"RAM at {metrics.ram_percent:.1f}% (threshold: {ram_threshold_pct}%)")
         if metrics.disk_percent > disk_threshold_pct:
-            alerts.append(
-                f"Disk at {metrics.disk_percent:.1f}% (threshold: {disk_threshold_pct}%)"
-            )
+            alerts.append(f"Disk at {metrics.disk_percent:.1f}% (threshold: {disk_threshold_pct}%)")
         if metrics.swap_percent > swap_threshold_pct:
-            alerts.append(
-                f"Swap at {metrics.swap_percent:.1f}% (threshold: {swap_threshold_pct}%)"
-            )
+            alerts.append(f"Swap at {metrics.swap_percent:.1f}% (threshold: {swap_threshold_pct}%)")
         if metrics.cpu_percent > cpu_threshold_pct:
             alerts.append(f"CPU at {metrics.cpu_percent:.1f}% (threshold: {cpu_threshold_pct}%)")
         if metrics.cpu_temp_celsius is not None and metrics.cpu_temp_celsius > 85:
-            alerts.append(
-                f"CPU temperature at {metrics.cpu_temp_celsius:.1f}°C (threshold: 85°C)"
-            )
+            alerts.append(f"CPU temperature at {metrics.cpu_temp_celsius:.1f}°C (threshold: 85°C)")
         if metrics.swap_percent > 50 and metrics.ram_percent > 80:
             alerts.append(f"SWAP pressure: {metrics.swap_percent:.1f}% + RAM at {metrics.ram_percent:.1f}% — possible OOM risk")  # fmt: skip  # noqa: E501
 

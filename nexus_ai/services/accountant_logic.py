@@ -29,7 +29,9 @@ class AccountantLogic:
     def zpk(self) -> ZPKEngine | None:
         return self._zpk
 
-    def suggest(self, invoice_data: dict[str, Any], company_profile: dict[str, Any]) -> AccountSuggestion:
+    def suggest(
+        self, invoice_data: dict[str, Any], company_profile: dict[str, Any]
+    ) -> AccountSuggestion:
         """Sugeruj konta księgowe dla faktury na podstawie reguł ZPK."""
         if self._zpk is None:
             return AccountSuggestion(account_wn="409", account_ma="202", reason="no_engine")

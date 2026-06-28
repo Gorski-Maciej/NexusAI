@@ -94,14 +94,16 @@ def TriageSplitScreen(
         if on_confirm:
             await on_confirm(page)
         page.show_snack_bar(
-            ft.SnackBar(ft.Text("✅ Dokument zatwierdzony"), bgcolor=ft.colors.GREEN_700))
+            ft.SnackBar(ft.Text("✅ Dokument zatwierdzony"), bgcolor=ft.colors.GREEN_700)
+        )
 
     async def handle_reject(e=None):
         """Handle reject action."""
         if on_reject:
             await on_reject(page)
         page.show_snack_bar(
-            ft.SnackBar(ft.Text("❌ Dokument odrzucony"), bgcolor=ft.colors.RED_700))
+            ft.SnackBar(ft.Text("❌ Dokument odrzucony"), bgcolor=ft.colors.RED_700)
+        )
 
     # SUPERMOC: Keyboard shortcuts
     async def on_keyboard(e: ft.KeyboardEvent):
@@ -118,15 +120,17 @@ def TriageSplitScreen(
     image_panel = ft.Container(
         expand=2,
         padding=12,
-        content=ft.Stack([
-            ft.Image(src=image_path, fit=ft.ImageFit.CONTAIN, expand=True),
-            # SUPERMOC: Canvas dla rysowania bbox
-            ft.Canvas(
-                ref=canvas_ref,
-                on_draw=draw_bboxes,
-                expand=True,
-            ),
-        ]),
+        content=ft.Stack(
+            [
+                ft.Image(src=image_path, fit=ft.ImageFit.CONTAIN, expand=True),
+                # SUPERMOC: Canvas dla rysowania bbox
+                ft.Canvas(
+                    ref=canvas_ref,
+                    on_draw=draw_bboxes,
+                    expand=True,
+                ),
+            ]
+        ),
     )
 
     # Form fields z kolorowaniem pól o niskiej pewności
@@ -150,35 +154,44 @@ def TriageSplitScreen(
             )
         )
 
-    action_bar = ft.Row([
-        ft.FilledButton(
-            "Confirm & Post Ledger",
-            icon=ft.icons.CHECK_CIRCLE,
-            on_click=handle_confirm,
-            style=ft.ButtonStyle(bgcolor=ft.colors.GREEN_700),
-        ),
-        ft.OutlinedButton(
-            "Void / Reject",
-            icon=ft.icons.CANCEL,
-            on_click=handle_reject,
-            style=ft.ButtonStyle(color=ft.colors.RED_400),
-        ),
-    ], spacing=12)
+    action_bar = ft.Row(
+        [
+            ft.FilledButton(
+                "Confirm & Post Ledger",
+                icon=ft.icons.CHECK_CIRCLE,
+                on_click=handle_confirm,
+                style=ft.ButtonStyle(bgcolor=ft.colors.GREEN_700),
+            ),
+            ft.OutlinedButton(
+                "Void / Reject",
+                icon=ft.icons.CANCEL,
+                on_click=handle_reject,
+                style=ft.ButtonStyle(color=ft.colors.RED_400),
+            ),
+        ],
+        spacing=12,
+    )
 
     form_panel = ft.Container(
         expand=3,
         padding=12,
-        content=ft.Column([
-            ft.Text("Review Queue / Triage", size=22, weight=ft.FontWeight.BOLD),
-            ft.Text("AI flagged this document for review. Verify highlighted fields.",
-                    size=13, color=ft.colors.GREY_400),
-            ft.Container(height=8),
-            *form_controls,
-            ft.Container(height=12),
-            action_bar,
-            ft.Container(height=8),
-            ft.Text("💡 Enter = Confirm | Esc = Reject", size=11, color=ft.colors.GREY_500),
-        ], scroll=ft.ScrollMode.AUTO),
+        content=ft.Column(
+            [
+                ft.Text("Review Queue / Triage", size=22, weight=ft.FontWeight.BOLD),
+                ft.Text(
+                    "AI flagged this document for review. Verify highlighted fields.",
+                    size=13,
+                    color=ft.colors.GREY_400,
+                ),
+                ft.Container(height=8),
+                *form_controls,
+                ft.Container(height=12),
+                action_bar,
+                ft.Container(height=8),
+                ft.Text("💡 Enter = Confirm | Esc = Reject", size=11, color=ft.colors.GREY_500),
+            ],
+            scroll=ft.ScrollMode.AUTO,
+        ),
     )
 
     return ft.Row(

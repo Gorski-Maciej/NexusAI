@@ -187,6 +187,7 @@ class HotReloadListener:
 
         if self._nc is not None:
             from nexus_ai.core.nats_utils import safe_close
+
             await safe_close(self._nc)
             self._nc = None
             self._js = None

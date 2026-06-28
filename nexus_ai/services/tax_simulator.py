@@ -240,7 +240,7 @@ class TaxSimulator:
         # Zamiast DataFrame.select(), używamy .lazy() dla optymalizacji
         # grafu zapytań przez Polars optimizer.
         # ``collect(streaming=True)`` dla dużych miesięcznych zbiorów.
-        lazy = frame.lazy() if hasattr(frame, 'lazy') else pl.LazyFrame(frame)
+        lazy = frame.lazy() if hasattr(frame, "lazy") else pl.LazyFrame(frame)
 
         aggregated = lazy.select(
             [
@@ -271,7 +271,7 @@ class TaxSimulator:
         # Dla małych miesięcznych agregacji streaming dodaje narzut.
         # Sprawdzamy height DataFrame — LazyFrame nie ma materializowanych
         # danych, ale jeśli frame ma 'height', to jest DataFrame.
-        needs_streaming = hasattr(frame, 'height') and frame.height > 1_000_000
+        needs_streaming = hasattr(frame, "height") and frame.height > 1_000_000
         return aggregated.collect(streaming=needs_streaming).to_dicts()[0]
 
     @staticmethod

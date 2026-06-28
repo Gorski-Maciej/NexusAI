@@ -51,9 +51,7 @@ def _load_bindings() -> Any | None:
     try:
         import importlib
 
-        _BINDINGS_MODULE = importlib.import_module(
-            "nexus_ai.core.integrations.ksef.bindings"
-        )
+        _BINDINGS_MODULE = importlib.import_module("nexus_ai.core.integrations.ksef.bindings")
         logger.info("[KSeF] xsdata bindings loaded successfully")
     except Exception as exc:
         logger.warning(
@@ -112,6 +110,7 @@ def _get_parser() -> Any | None:
 
 # ── Helper: Faktura dict → xsdata Faktura object ───────────────────────────
 
+
 def faktura_from_dict(
     invoice_data: dict[str, Any],
     verdict: dict[str, Any],
@@ -151,7 +150,9 @@ def faktura_from_dict(
 
     # --- Rozpoznaj pola KSeF z werdyktu ---
     gtu_code = _resolve_gtu(verdict)
-    procedure_code = verdict.get("procedure") or (verdict.get("ksef_fields") or {}).get("procedure_code")
+    procedure_code = verdict.get("procedure") or (verdict.get("ksef_fields") or {}).get(
+        "procedure_code"
+    )
     transaction_mark = verdict.get("transaction_mark")
     split_payment = verdict.get("split_payment")
 
@@ -204,9 +205,10 @@ def faktura_from_dict(
         # Podmiot2 (Nabywca)
         podmiot2 = Faktura.Podmiot2(
             dane_identyfikacyjne=Tpodmiot2(nip=buyer_nip or None, nazwa=buyer_name or None),
-            adres=None, adres_koresp=None,
+            adres=None,
+            adres_koresp=None,
             jst=Podmiot2Jst.VALUE_2 if Podmiot2Jst else None,  # 2 = Nie
-            gv=Podmiot2Gv.VALUE_2 if Podmiot2Gv else None,      # 2 = Nie
+            gv=Podmiot2Gv.VALUE_2 if Podmiot2Gv else None,  # 2 = Nie
         )
 
         # Domyślne adnotacje — pola obowiązkowe w XSD
@@ -214,28 +216,32 @@ def faktura_from_dict(
         # Twybor1 ma VALUE_1 (=1) — pojedyncze pole wyboru
         t12_2 = Twybor12.VALUE_2 if Twybor12 else None  # "Nie"
         t12_1 = Twybor12.VALUE_1 if Twybor12 else None  # "Tak"
-        t1_1 = Twybor1.VALUE_1 if Twybor1 else None     # "Tak" (pole pojedyncze)
+        t1_1 = Twybor1.VALUE_1 if Twybor1 else None  # "Tak" (pole pojedyncze)
 
         adnotacje = Faktura.Fa.Adnotacje(
-            p_16=t12_2,   # metoda kasowa: Nie
-            p_17=t12_2,   # samofakturowanie: Nie
-            p_18=t12_2,   # odwrotne obciążenie: Nie
-            p_18_a=t12_2, # MPP: Nie
-            p_23=t12_2,   # procedura uproszczona: Nie
+            p_16=t12_2,  # metoda kasowa: Nie
+            p_17=t12_2,  # samofakturowanie: Nie
+            p_18=t12_2,  # odwrotne obciążenie: Nie
+            p_18_a=t12_2,  # MPP: Nie
+            p_23=t12_2,  # procedura uproszczona: Nie
             zwolnienie=Faktura.Fa.Adnotacje.Zwolnienie(
-                p_19=None, p_19_a=None, p_19_b=None, p_19_c=None,
+                p_19=None,
+                p_19_a=None,
+                p_19_b=None,
+                p_19_c=None,
                 p_19_n=t1_1,  # brak zwolnienia: Tak
             ),
             nowe_srodki_transportu=Faktura.Fa.Adnotacje.NoweSrodkiTransportu(
-                p_22=None, p_42_5=None,
+                p_22=None,
+                p_42_5=None,
                 p_22_n=t1_1,  # brak NST: Tak
             ),
             pmarzy=Faktura.Fa.Adnotacje.Pmarzy(
-                p_pmarzy=t12_2,      # brak procedury marży
-                p_pmarzy_2=t12_2,    # brak usług turystyki
-                p_pmarzy_3_1=t1_1,   # brak towarów używanych
-                p_pmarzy_3_2=t1_1,   # brak dzieł sztuki
-                p_pmarzy_3_3=t1_1,   # brak kolekcjonerskich/antyków
+                p_pmarzy=t12_2,  # brak procedury marży
+                p_pmarzy_2=t12_2,  # brak usług turystyki
+                p_pmarzy_3_1=t1_1,  # brak towarów używanych
+                p_pmarzy_3_2=t1_1,  # brak dzieł sztuki
+                p_pmarzy_3_3=t1_1,  # brak kolekcjonerskich/antyków
             ),
         )
 
@@ -283,6 +289,7 @@ def _resolve_gtu(verdict: dict[str, Any]) -> str | None:
     if isinstance(ksef, str):
         try:
             from nexus_ai.core.msgspec_utils import msgspec_loads
+
             ksef = msgspec_loads(ksef)
         except Exception:
             ksef = {}
@@ -313,6 +320,7 @@ def _resolve_gtu(verdict: dict[str, Any]) -> str | None:
 
 # ── Helper: Faktura object → XML bytes ──────────────────────────────────────
 
+
 def faktura_to_xml(faktura: Any) -> bytes | None:
     """Serialize an xsdata ``Faktura`` object to pretty-printed XML bytes.
 
@@ -339,6 +347,7 @@ def faktura_to_xml(faktura: Any) -> bytes | None:
 
 # ── Helper: XML → Faktura object ─────────────────────────────────────────────
 
+
 def parse_ksef_invoice(xml_bytes: bytes) -> dict[str, Any] | None:
     """Parse KSeF invoice XML using xsdata-generated bindings.
 
@@ -363,6 +372,7 @@ def parse_ksef_invoice(xml_bytes: bytes) -> dict[str, Any] | None:
 
 
 # ── Helper: Faktura → dict ────────────────────────────────────────────────────
+
 
 def _invoice_to_dict(invoice: Any) -> dict[str, Any]:
     """Convert xsdata invoice object to dictionary.
@@ -407,6 +417,7 @@ def _fallback_parse_xml(xml_bytes: bytes) -> dict[str, Any] | None:
 
 
 # ── Walidacja XSD (xsdata XmlValidator) ──────────────────────────────────────
+
 
 def validate_with_xsdata(xml_bytes: bytes, xsd_path: str | None = None) -> tuple[bool, str]:
     """Validate XML against XSD using xsdata's ``XmlValidator``.
@@ -454,9 +465,7 @@ def build_init_session_request(nip: str, encrypted_token: str) -> bytes:
             if all([context_cls, doc_type_cls, form_code_cls]):
                 request = InitSessionToken(
                     context=context_cls(
-                        document_type=doc_type_cls(
-                            form_code=form_code_cls(value="FA")
-                        ),
+                        document_type=doc_type_cls(form_code=form_code_cls(value="FA")),
                         token=encrypted_token,
                     )
                 )

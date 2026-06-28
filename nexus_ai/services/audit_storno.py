@@ -37,6 +37,7 @@ class DuckDBWriter(Protocol):
 
 class LedgerTransferRecord(Struct, frozen=True):
     """Record oryginalnego transferu z TB do storna."""
+
     tb_transfer_id: int
     debit_account: int
     credit_account: int
@@ -165,14 +166,16 @@ async def create_storno_linked_chain(
     # SUPERMOC: Build linked chain dla wszystkich storn
     linked_specs = []
     for original in original_transfers:
-        linked_specs.append({
-            "debit": original.credit_account,  # Odwrócone konta
-            "credit": original.debit_account,   # Odwrócone konta
-            "amount": int(original.amount_minor),
-            "code": TRANSFER_CODE["STORN"],
-            "ledger": original.ledger,
-            "user_data_64": original.tb_transfer_id,
-        })
+        linked_specs.append(
+            {
+                "debit": original.credit_account,  # Odwrócone konta
+                "credit": original.debit_account,  # Odwrócone konta
+                "amount": int(original.amount_minor),
+                "code": TRANSFER_CODE["STORN"],
+                "ledger": original.ledger,
+                "user_data_64": original.tb_transfer_id,
+            }
+        )
 
     if linked_specs:
         source_uuid = uuid_module.uuid5(
@@ -189,14 +192,16 @@ async def create_storno_linked_chain(
         tb_results = tb_client.create_transfers(transfers)
 
         for i, (spec, result) in enumerate(zip(linked_specs, tb_results)):
-            results.append({
-                "index": i,
-                "original_transfer_id": spec["user_data_64"],
-                "debit": spec["credit"],
-                "credit": spec["debit"],
-                "amount": spec["amount"],
-                "status": str(result),
-            })
+            results.append(
+                {
+                    "index": i,
+                    "original_transfer_id": spec["user_data_64"],
+                    "debit": spec["credit"],
+                    "credit": spec["debit"],
+                    "amount": spec["amount"],
+                    "status": str(result),
+                }
+            )
 
     return results
 

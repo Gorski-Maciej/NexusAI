@@ -151,12 +151,14 @@ class VATReconciliationEngine:
         vat_diff_expr = (pl.col("expected_vat") - pl.col("vat")).abs().alias("vat_diff")
         math_diff_expr = (pl.col("net") + pl.col("vat") - pl.col("gross")).abs().alias("math_diff")
 
-        checked = lazy.with_columns([
-            rate_col,
-            expected_vat,
-            vat_diff_expr,
-            math_diff_expr,
-        ]).collect()
+        checked = lazy.with_columns(
+            [
+                rate_col,
+                expected_vat,
+                vat_diff_expr,
+                math_diff_expr,
+            ]
+        ).collect()
 
         # ── SUPERMOC: .filter() zamiast pc.indices_nonzero() ─────
         # Polars ``.filter(pl.col("vat_diff") > 0.01)`` — czytelniejsze.

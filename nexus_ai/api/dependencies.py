@@ -63,6 +63,3 @@ def provide_duckdb() -> DuckDBManager:
 
 def provide_shared_image_buffer(request: Request) -> SharedImageBuffer:
     return request.app.state.shared_image_buffer
-
-
-

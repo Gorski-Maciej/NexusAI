@@ -166,7 +166,8 @@ class WorkerGuard:
                 "swap_percent": round(sys_metrics.swap_percent, 1),
                 "disk_percent": round(sys_metrics.disk_percent, 1),
                 "cpu_temp_celsius": round(sys_metrics.cpu_temp_celsius, 1)
-                if sys_metrics.cpu_temp_celsius else None,
+                if sys_metrics.cpu_temp_celsius
+                else None,
                 "load_avg": f"{sys_metrics.load_avg_1min:.2f} / {sys_metrics.load_avg_5min:.2f} / {sys_metrics.load_avg_15min:.2f}",
                 "uptime_days": round(sys_metrics.uptime_days, 1),
             }

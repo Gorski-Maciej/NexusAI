@@ -186,7 +186,8 @@ class DecisionLogger:
                 self._duckdb.execute(f"ALTER TABLE {old_name} RENAME TO {new_name}")
             except Exception:
                 logger.debug(
-                    "[DecisionLogger] migration skipped: table %s does not exist", old_name,
+                    "[DecisionLogger] migration skipped: table %s does not exist",
+                    old_name,
                 )
 
         # Główna tabela decyzji
@@ -232,9 +233,7 @@ class DecisionLogger:
                 # DuckDB < 0.10 może nie wspierać IF NOT EXISTS w ALTER TABLE
                 # Fallback: spróbuj bez IF NOT EXISTS, złap błąd jeśli kolumna istnieje
                 try:
-                    self._duckdb.execute(
-                        f"ALTER TABLE decisions ADD COLUMN {col_name} {col_type}"
-                    )
+                    self._duckdb.execute(f"ALTER TABLE decisions ADD COLUMN {col_name} {col_type}")
                 except Exception:
                     pass  # kolumna już istnieje — ignoruj
 
@@ -290,8 +289,7 @@ class DecisionLogger:
         # jest ~70% mniejszy niż pełny indeks.
         # Indeks na current_hash dla szybkiej weryfikacji łańcucha
         self._duckdb.execute(
-            "CREATE INDEX IF NOT EXISTS idx_decisions_hash "
-            "ON decisions(current_hash)"
+            "CREATE INDEX IF NOT EXISTS idx_decisions_hash ON decisions(current_hash)"
         )
         self._duckdb.execute(
             "CREATE INDEX IF NOT EXISTS idx_decisions_corrected "
@@ -416,7 +414,8 @@ class DecisionLogger:
 
             # Emituj event przez Taskiq broker.kick
             try:
-                await broker.kick("event_emit_decision_made",
+                await broker.kick(
+                    "event_emit_decision_made",
                     invoice_id=invoice_id,
                     decision=final_decision,
                     trust_score=trust_score,
@@ -429,7 +428,8 @@ class DecisionLogger:
                 )
             except Exception as event_err:
                 logger.warning(
-                    "[DecisionLogger] Failed to emit DecisionMade: %s", event_err,
+                    "[DecisionLogger] Failed to emit DecisionMade: %s",
+                    event_err,
                 )
 
         except Exception as exc:
@@ -512,7 +512,8 @@ class DecisionLogger:
 
             # Emituj event przez Taskiq broker.kick
             try:
-                await broker.kick("event_emit_decision_overridden",
+                await broker.kick(
+                    "event_emit_decision_overridden",
                     invoice_id=invoice_id,
                     original_decision="SYSTEM",
                     user_decision=correction,
@@ -521,7 +522,8 @@ class DecisionLogger:
                 )
             except Exception as event_err:
                 logger.warning(
-                    "[DecisionLogger] Failed to emit DecisionOverridden: %s", event_err,
+                    "[DecisionLogger] Failed to emit DecisionOverridden: %s",
+                    event_err,
                 )
 
         except Exception as exc:

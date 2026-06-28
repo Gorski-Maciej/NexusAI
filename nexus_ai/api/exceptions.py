@@ -244,6 +244,7 @@ def global_exception_handler(request: Request, exc: Exception) -> Response:
     # SUPERMOC: Wyślij do Sentry z kontekstem requestu
     try:
         from nexus_ai.core.sentry import capture_exception
+
         capture_exception(
             exc,
             method=str(request.method),

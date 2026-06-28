@@ -35,6 +35,7 @@ SOAP_ENVELOPE = """<?xml version="1.0" encoding="UTF-8"?>
     </soap:Body>
 </soap:Envelope>"""
 
+
 class GusBirResult(Struct):
     """Wynik wyszukiwania pojedynczej firmy w GUS BIR."""
 

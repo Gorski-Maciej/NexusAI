@@ -119,12 +119,16 @@ def calculate_unrealized_fx_deltas(
 
     # ── SUPERMOC: Polars DataFrame z wyrażeniami ─────────────────
     # ``pl.col().sub().round(2)`` zamiast SQL ROUND().
-    df = pl.from_arrow(arrow_table).with_columns([
-        (
-            pl.col("amount_foreign") * pl.col("month_end_rate")
-            - pl.col("amount_foreign") * pl.col("exchange_rate_at_issue")
-        ).round(2).alias("unrealized_delta")
-    ])
+    df = pl.from_arrow(arrow_table).with_columns(
+        [
+            (
+                pl.col("amount_foreign") * pl.col("month_end_rate")
+                - pl.col("amount_foreign") * pl.col("exchange_rate_at_issue")
+            )
+            .round(2)
+            .alias("unrealized_delta")
+        ]
+    )
 
     # ── SUPERMOC: shrink_dtype() dla redukcji RAM ────────────────
     df = df.shrink_dtype()

@@ -486,5 +486,3 @@ class AutopilotController(Controller):
                 "invoice_id": invoice_id,
                 "error": str(exc),
             }
-
-

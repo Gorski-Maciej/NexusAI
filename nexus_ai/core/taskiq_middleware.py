@@ -31,10 +31,10 @@ logger = get_logger("nexus.taskiq.middleware")
 
 # ── Wrażliwe wzorce PII ───────────────────────────────────────────────────
 PII_PATTERNS = [
-    (r"\b\d{11}\b", "NIP"),           # 11-cyfrowy NIP
-    (r"\b\d{10}\b", "PESEL"),         # 10-cyfrowy PESEL
-    (r"\b\d{9}\b", "REGON"),          # 9-cyfrowy REGON
-    (r"\b\d{26}\b", "IBAN_PL"),       # 26-cyfrowy IBAN PL
+    (r"\b\d{11}\b", "NIP"),  # 11-cyfrowy NIP
+    (r"\b\d{10}\b", "PESEL"),  # 10-cyfrowy PESEL
+    (r"\b\d{9}\b", "REGON"),  # 9-cyfrowy REGON
+    (r"\b\d{26}\b", "IBAN_PL"),  # 26-cyfrowy IBAN PL
     (r"\b[A-Z]{2}\d{22}\b", "IBAN"),  # Międzynarodowy IBAN
     (r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", "EMAIL"),
     (r"\b\d{3}-\d{3}-\d{3}\b", "PHONE"),
@@ -45,8 +45,7 @@ import re as _re
 
 # SUPERMOC: Prekompilowane regexy — kompilacja raz przy starcie, nie przy każdym skanowaniu
 _PII_COMPILED: list[tuple[_re.Pattern, str]] = [
-    (_re.compile(pattern, _re.IGNORECASE), pii_type)
-    for pattern, pii_type in PII_PATTERNS
+    (_re.compile(pattern, _re.IGNORECASE), pii_type) for pattern, pii_type in PII_PATTERNS
 ]
 
 
@@ -154,7 +153,9 @@ def _record_task_metrics(task_name: str, duration_ms: float, status: str) -> Non
         pass
     logger.debug(
         "[METRICS] task=%s duration=%.1fms status=%s",
-        task_name, duration_ms, status,
+        task_name,
+        duration_ms,
+        status,
     )
 
 
@@ -240,6 +241,7 @@ class TaskTracingMiddleware(TaskiqMiddleware):
     def _get_tracer(self):
         if self._tracer is None:
             from nexus_ai.core.otel_tracing import get_tracer
+
             self._tracer = get_tracer("nexus.taskiq")
         return self._tracer
 
@@ -268,11 +270,13 @@ class TaskTracingMiddleware(TaskiqMiddleware):
 
             # SUPERMOC: W3C Baggage — propagacja kontekstu przez NATS
             from opentelemetry import baggage
+
             ctx = baggage.set_baggage("task_name", message.task_name)
             ctx = baggage.set_baggage("environment", os.getenv("NEXUS_ENV", "dev"), context=ctx)
 
             # SUPERMOC structlog: clear before bind
             import structlog as _structlog
+
             _structlog.contextvars.clear_contextvars()
             _structlog.contextvars.bind_contextvars(
                 task_id=trace_id,
@@ -314,20 +318,29 @@ class HttpCacheMiddleware(TaskiqMiddleware):
     async def pre_execute(self, message: TaskiqMessage) -> None:
         if self._http is None:
             from nexus_ai.core.cache.http_client import CachedHttpClient
+
             self._http = CachedHttpClient()
 
         from taskiq import context
+
         context.set_local("http_client", self._http)
 
     async def on_error(self, message: TaskiqMessage, result: TaskiqResult) -> None:
         from nexus_ai.core.cache.http_client import get_cache_stats
+
         stats = get_cache_stats()
-        logger.debug("[HTTP-CACHE] Task %s error — cache stats: hits=%d misses=%d", message.task_name, stats.get("hits", 0), stats.get("misses", 0))
+        logger.debug(
+            "[HTTP-CACHE] Task %s error — cache stats: hits=%d misses=%d",
+            message.task_name,
+            stats.get("hits", 0),
+            stats.get("misses", 0),
+        )
 
     async def shutdown(self) -> None:
         if self._http is not None:
             await self._http.close()
             self._http = None
+
 
 # =========================================================================
 # DynamicConcurrencyMiddleware — dynamiczne limitowanie współbieżności
@@ -405,6 +418,7 @@ class SentryTaskMiddleware(TaskiqMiddleware):
         # Sprawdź czy Sentry jest dostępne
         try:
             import sentry_sdk  # noqa: F401
+
             self._sentry_available = True
         except ImportError:
             pass
@@ -436,9 +450,9 @@ class SentryTaskMiddleware(TaskiqMiddleware):
 
         # Set context from kwargs
         if message.kwargs:
-            sentry_sdk.set_context("task_args", {
-                k: str(v)[:200] for k, v in message.kwargs.items()
-            })
+            sentry_sdk.set_context(
+                "task_args", {k: str(v)[:200] for k, v in message.kwargs.items()}
+            )
 
         # Breadcrumb na start zadania
         sentry_sdk.add_breadcrumb(
@@ -470,10 +484,13 @@ class SentryTaskMiddleware(TaskiqMiddleware):
             scope.set_tag("task_name", message.task_name)
             scope.set_tag("task_id", trace_id)
             scope.set_tag("error_type", "task_failure")
-            scope.set_context("task_error", {
-                "task_name": message.task_name,
-                "error": str(result.error)[:500] if result.error else "unknown",
-            })
+            scope.set_context(
+                "task_error",
+                {
+                    "task_name": message.task_name,
+                    "error": str(result.error)[:500] if result.error else "unknown",
+                },
+            )
 
             # Breadcrumb na błąd
             sentry_sdk.add_breadcrumb(

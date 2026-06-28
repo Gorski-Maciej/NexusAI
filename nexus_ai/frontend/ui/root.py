@@ -76,19 +76,23 @@ def NexusRootUI(page: ft.Page, process_manager=None):
             ft.NavigationRailDestination(
                 icon=ft.icons.TASK_ALT_OUTLINED,
                 selected_icon=ft.icons.TASK_ALT,
-                label_content=ft.Row([
-                    ft.Text("Tasks"),
-                    # SUPERMOC: NumberBadge dla notyfikacji
-                    ft.Container(
-                        content=ft.NumberBadge(
-                            value=ft.Ref(),
-                            text=f"{task_count.value}",
-                            size=16,
-                            bgcolor=ft.colors.RED_500 if task_count.value > 0 else ft.colors.TRANSPARENT,
+                label_content=ft.Row(
+                    [
+                        ft.Text("Tasks"),
+                        # SUPERMOC: NumberBadge dla notyfikacji
+                        ft.Container(
+                            content=ft.NumberBadge(
+                                value=ft.Ref(),
+                                text=f"{task_count.value}",
+                                size=16,
+                                bgcolor=ft.colors.RED_500
+                                if task_count.value > 0
+                                else ft.colors.TRANSPARENT,
+                            ),
+                            visible=task_count.value > 0,
                         ),
-                        visible=task_count.value > 0,
-                    ),
-                ]),
+                    ]
+                ),
             ),
         ],
         on_change=lambda e: _on_nav_change(e),
@@ -141,9 +145,11 @@ def NexusRootUI(page: ft.Page, process_manager=None):
 
     async def _load_invoices():
         main_content.current.content = ft.Column(
-            [ft.Text("Invoices", size=28, weight=ft.FontWeight.BOLD),
-             ft.Container(height=16),
-             ft.Text("Invoice management view.", color=ft.colors.GREY_400)]
+            [
+                ft.Text("Invoices", size=28, weight=ft.FontWeight.BOLD),
+                ft.Container(height=16),
+                ft.Text("Invoice management view.", color=ft.colors.GREY_400),
+            ]
         )
         page.update()
 
@@ -155,27 +161,42 @@ def NexusRootUI(page: ft.Page, process_manager=None):
 
     def _summary_cards(summary: dict):
         cards = ft.Row(
-            [ft.Card(
-                content=ft.Container(
-                    padding=20,
-                    content=ft.Column([
-                        ft.Text(title, size=14, color=ft.colors.GREY_400),
-                        ft.Text(value, size=24, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
-                    ]),
-                ), expand=True,
-            ) for title, value in [
-                ("Net Total", f"{summary.get('total_net', 0)} PLN"),
-                ("Gross Total", f"{summary.get('total_gross', 0)} PLN"),
-                ("Analyzed", str(summary.get("count", 0))),
-                ("Status", "Active"),
-            ]]
+            [
+                ft.Card(
+                    content=ft.Container(
+                        padding=20,
+                        content=ft.Column(
+                            [
+                                ft.Text(title, size=14, color=ft.colors.GREY_400),
+                                ft.Text(
+                                    value, size=24, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE
+                                ),
+                            ]
+                        ),
+                    ),
+                    expand=True,
+                )
+                for title, value in [
+                    ("Net Total", f"{summary.get('total_net', 0)} PLN"),
+                    ("Gross Total", f"{summary.get('total_gross', 0)} PLN"),
+                    ("Analyzed", str(summary.get("count", 0))),
+                    ("Status", "Active"),
+                ]
+            ]
         )
         main_content.current.content = ft.Column(
-            [ft.Text("Financial Dashboard", size=28, weight=ft.FontWeight.BOLD),
-             ft.Container(height=16), cards,
-             ft.Container(height=24),
-             ft.Row([ft.ElevatedButton("Upload Invoice", icon=ft.icons.UPLOAD_FILE),
-                     ft.ElevatedButton("View Reports", icon=ft.icons.ASSESSMENT)])],
+            [
+                ft.Text("Financial Dashboard", size=28, weight=ft.FontWeight.BOLD),
+                ft.Container(height=16),
+                cards,
+                ft.Container(height=24),
+                ft.Row(
+                    [
+                        ft.ElevatedButton("Upload Invoice", icon=ft.icons.UPLOAD_FILE),
+                        ft.ElevatedButton("View Reports", icon=ft.icons.ASSESSMENT),
+                    ]
+                ),
+            ],
             scroll=ft.ScrollMode.AUTO,
         )
         page.update()
@@ -185,10 +206,13 @@ def NexusRootUI(page: ft.Page, process_manager=None):
     return ft.Stack(
         controls=[
             ft.Row(
-                [nav_rail,
-                 ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
-                 ft.Container(ref=main_content, expand=True, padding=20)],
-                expand=True, spacing=0,
+                [
+                    nav_rail,
+                    ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
+                    ft.Container(ref=main_content, expand=True, padding=20),
+                ],
+                expand=True,
+                spacing=0,
             ),
             # SUPERMOC: FAB pozycjonowany absolutnie
             ft.Container(

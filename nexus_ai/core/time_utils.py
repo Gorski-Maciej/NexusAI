@@ -332,7 +332,9 @@ def freeze_today(frozen_date: pendulum.Date | None = None) -> Iterator[pendulum.
     if frozen_date is None:
         frozen_date = pendulum.Date(2026, 6, 16)
     dt = pendulum.DateTime(
-        frozen_date.year, frozen_date.month, frozen_date.day,
+        frozen_date.year,
+        frozen_date.month,
+        frozen_date.day,
         tzinfo=pendulum.UTC,
     )
     pendulum.set_test_now(dt)

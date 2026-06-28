@@ -91,9 +91,7 @@ class FileSpanBuffer:
         part_path.mkdir(parents=True, exist_ok=True)
         return part_path / f"spans_{dt.format('YYYYMMDD')}.parquet"
 
-    def _get_or_create_writer(
-        self, table_schema: Any, dt: pendulum.DateTime | None = None
-    ) -> Any:
+    def _get_or_create_writer(self, table_schema: Any, dt: pendulum.DateTime | None = None) -> Any:
         """SUPERMOC ParquetWriter: Zwróć istniejący writer dla dnia lub stwórz nowy.
 
         ``ParquetWriter`` z ``write_table()`` zamiast tworzenia osobnego pliku
@@ -140,9 +138,7 @@ class FileSpanBuffer:
     # ``pa.dataset.dataset()`` z ``pyarrow.fs.LocalFileSystem`` czyta
     # wszystkie pliki *.parquet z filter/predicate pushdown.
 
-    def _append_parquet(
-        self, records: list[dict[str, Any]], batch_id: str = ""
-    ) -> None:
+    def _append_parquet(self, records: list[dict[str, Any]], batch_id: str = "") -> None:
         """SUPERMOC PyArrow: Zapisz batch spanów do Parquet przez ParquetWriter.
 
         ``ParquetWriter`` z ``write_table()`` — append do dziennego pliku
@@ -213,11 +209,13 @@ class FileSpanBuffer:
                 format="parquet",
                 filesystem=pa_fs.LocalFileSystem(),
                 partitioning=ds.HivePartitioning(
-                    pa.schema([
-                        pa.field("year", pa.int16()),
-                        pa.field("month", pa.int8()),
-                        pa.field("day", pa.int8()),
-                    ])
+                    pa.schema(
+                        [
+                            pa.field("year", pa.int16()),
+                            pa.field("month", pa.int8()),
+                            pa.field("day", pa.int8()),
+                        ]
+                    )
                 ),
             )
 
@@ -235,15 +233,14 @@ class FileSpanBuffer:
 
         except Exception as exc:
             import logging
+
             logging.getLogger("nexus.otel").warning(
                 "[OTEL] Failed to read Parquet via PyArrow: %s", exc
             )
             return []
 
     def _read_all_unlocked(self) -> list[dict[str, Any]]:
-        if not self.file_path.exists() and not list(
-            self.parquet_dir.rglob("*.parquet")
-        ):
+        if not self.file_path.exists() and not list(self.parquet_dir.rglob("*.parquet")):
             return []
 
         records: list[dict[str, Any]] = []
@@ -298,6 +295,7 @@ class FileSpanBuffer:
             self.file_path.unlink(missing_ok=True)
             # Wyczyść wszystkie katalogi partycjonowane
             import shutil
+
             if self.parquet_dir.exists():
                 shutil.rmtree(self.parquet_dir)
                 self.parquet_dir.mkdir(parents=True, exist_ok=True)
@@ -442,8 +440,12 @@ class FileSpanBuffer:
                         col_info = {
                             "name": col.path_in_schema,
                             "null_count": col.statistics.null_count if col.statistics else None,
-                            "min": str(col.statistics.min) if col.statistics and col.statistics.has_min_max else None,
-                            "max": str(col.statistics.max) if col.statistics and col.statistics.has_min_max else None,
+                            "min": str(col.statistics.min)
+                            if col.statistics and col.statistics.has_min_max
+                            else None,
+                            "max": str(col.statistics.max)
+                            if col.statistics and col.statistics.has_min_max
+                            else None,
                         }
                         columns.append(col_info)
                     rg_info["columns"] = columns

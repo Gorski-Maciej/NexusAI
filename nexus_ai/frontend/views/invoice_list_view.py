@@ -65,8 +65,7 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
             ft.Segment(value="MANUAL_REVIEW", label=ft.Text("Do weryfikacji")),
             ft.Segment(value="FAILED", label=ft.Text("Błędy")),
         ],
-        on_change=lambda e: _on_filter_change(
-            list(e.selected)[0] if e.selected else None),
+        on_change=lambda e: _on_filter_change(list(e.selected)[0] if e.selected else None),
     )
 
     # ── URL = State: synchronizacja ────────────────────────────────────
@@ -75,10 +74,14 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
         """Zmiana filtra → aktualizacja URL."""
         selected_filter.set(new_filter)
         # SUPERMOC: URL = State — zapisz filtr w URL
-        update_url_with_filters(page, "/invoices", {
-            "q": search_query.value or None if search_query.value != initial_q else None,
-            "status": new_filter,
-        })
+        update_url_with_filters(
+            page,
+            "/invoices",
+            {
+                "q": search_query.value or None if search_query.value != initial_q else None,
+                "status": new_filter,
+            },
+        )
 
     def _on_search_submit(value: str):
         """Zatwierdzenie wyszukiwania → aktualizacja URL.
@@ -122,16 +125,13 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
 
         if query:
             result = [
-                inv for inv in result
-                if query in (inv.number or "").lower()
-                or query in (inv.customer_id or "").lower()
+                inv
+                for inv in result
+                if query in (inv.number or "").lower() or query in (inv.customer_id or "").lower()
             ]
 
         if sf and sf != "ALL":
-            result = [
-                inv for inv in result
-                if getattr(inv, "status", "NEW") == sf
-            ]
+            result = [inv for inv in result if getattr(inv, "status", "NEW") == sf]
 
         return result
 
@@ -139,26 +139,33 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
 
     if loading.value and not invoices.value:
         return ft.Container(
-            content=ft.Column([
-                ft.Container(height=40, bgcolor=ft.colors.GREY_800, border_radius=8),
-                ft.Container(height=12),
-                ft.Container(height=60, bgcolor=ft.colors.GREY_800, border_radius=8),
-                ft.Container(height=8),
-                ft.Container(height=60, bgcolor=ft.colors.GREY_800, border_radius=8),
-                ft.Container(height=8),
-                ft.Container(height=60, bgcolor=ft.colors.GREY_800, border_radius=8),
-            ]),
-            padding=20, expand=True,
+            content=ft.Column(
+                [
+                    ft.Container(height=40, bgcolor=ft.colors.GREY_800, border_radius=8),
+                    ft.Container(height=12),
+                    ft.Container(height=60, bgcolor=ft.colors.GREY_800, border_radius=8),
+                    ft.Container(height=8),
+                    ft.Container(height=60, bgcolor=ft.colors.GREY_800, border_radius=8),
+                    ft.Container(height=8),
+                    ft.Container(height=60, bgcolor=ft.colors.GREY_800, border_radius=8),
+                ]
+            ),
+            padding=20,
+            expand=True,
         )
 
     if error.value:
         return ft.Container(
-            content=ft.Column([
-                ft.Icon(ft.icons.ERROR_OUTLINE, size=64, color=ft.colors.RED_400),
-                ft.Container(height=12),
-                ft.Text(f"Błąd: {error.value}", color=ft.colors.RED_400),
-                ft.ElevatedButton("Odśwież", on_click=lambda _: page.run_task(load_data())),
-            ], alignment=ft.MainAxisAlignment.CENTER), expand=True,
+            content=ft.Column(
+                [
+                    ft.Icon(ft.icons.ERROR_OUTLINE, size=64, color=ft.colors.RED_400),
+                    ft.Container(height=12),
+                    ft.Text(f"Błąd: {error.value}", color=ft.colors.RED_400),
+                    ft.ElevatedButton("Odśwież", on_click=lambda _: page.run_task(load_data())),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+            ),
+            expand=True,
         )
 
     filtered = filtered_invoices()
@@ -169,61 +176,77 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
         status = getattr(inv, "status", "NEW")
         status_color = INVOICE_STATUS_COLORS.get(status, ft.colors.GREY)
 
-        rows.append(ft.DataRow(
-            cells=[
-                ft.DataCell(ft.Text(inv.number or "W trakcie...")),
-                ft.DataCell(ft.Text(inv.customer_id or "-")),
-                ft.DataCell(ft.Text(f"{inv.amount_gross:.2f} {inv.currency}")),
-                ft.DataCell(ft.Text(status, color=status_color, weight=ft.FontWeight.BOLD)),
-                ft.DataCell(ft.Text(
-                    inv.created_at.format("YYYY-MM-DD HH:mm") if hasattr(inv.created_at, "format")
-                    else str(inv.created_at))),
-            ],
-        ))
+        rows.append(
+            ft.DataRow(
+                cells=[
+                    ft.DataCell(ft.Text(inv.number or "W trakcie...")),
+                    ft.DataCell(ft.Text(inv.customer_id or "-")),
+                    ft.DataCell(ft.Text(f"{inv.amount_gross:.2f} {inv.currency}")),
+                    ft.DataCell(ft.Text(status, color=status_color, weight=ft.FontWeight.BOLD)),
+                    ft.DataCell(
+                        ft.Text(
+                            inv.created_at.format("YYYY-MM-DD HH:mm")
+                            if hasattr(inv.created_at, "format")
+                            else str(inv.created_at)
+                        )
+                    ),
+                ],
+            )
+        )
 
     return ft.Container(
-        content=ft.Column([
-            ft.Row([
-                ft.Text("Lista Faktur", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
-                ft.Container(expand=True),
-                ft.NumberBadge(text=str(len(invoices.value)), size=16,
-                               bgcolor=ft.colors.BLUE_400) if invoices.value else ft.Container(),
-                ft.Container(width=8),
-                ft.ElevatedButton("Odśwież", on_click=lambda _: page.run_task(load_data())),
-            ]),
-            ft.Container(height=8),
-            # SUPERMOC: SearchBar z URL = State
-            ft.SearchBar(
-                ref=search_ref,
-                bar_hint_text="Szukaj faktury po numerze lub NIP...",
-                view_hint_text="Wybierz fakturę...",
-                value=search_query.value,
-                # SUPERMOC URL = State: onChange tylko lokalny stan, onSubmit → URL
-                on_change=lambda e: search_query.set(e.control.value or ""),
-                on_submit=lambda e: _on_search_submit(e.control.value or ""),
-                height=44,
-            ),
-            ft.Container(height=8),
-            # SUPERMOC: SegmentedButton dla filtrów
-            filter_segments,
-            ft.Container(height=4),
-            ft.Text(f"Znaleziono: {len(filtered)} faktur", size=12, color=ft.colors.GREY_500),
-            ft.Divider(),
-            # SUPERMOC: DataTable
-            ft.Container(
-                content=ft.DataTable(
-                    columns=[
-                        ft.DataColumn(ft.Text("Numer")),
-                        ft.DataColumn(ft.Text("NIP")),
-                        ft.DataColumn(ft.Text("Kwota")),
-                        ft.DataColumn(ft.Text("Status")),
-                        ft.DataColumn(ft.Text("Data")),
-                    ],
-                    rows=rows,
+        content=ft.Column(
+            [
+                ft.Row(
+                    [
+                        ft.Text("Lista Faktur", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
+                        ft.Container(expand=True),
+                        ft.NumberBadge(
+                            text=str(len(invoices.value)), size=16, bgcolor=ft.colors.BLUE_400
+                        )
+                        if invoices.value
+                        else ft.Container(),
+                        ft.Container(width=8),
+                        ft.ElevatedButton("Odśwież", on_click=lambda _: page.run_task(load_data())),
+                    ]
                 ),
-                expand=True,
-                scroll=ft.ScrollMode.ADAPTIVE,
-            ),
-        ], scroll=ft.ScrollMode.ALWAYS, expand=True),
-        padding=20, expand=True,
+                ft.Container(height=8),
+                # SUPERMOC: SearchBar z URL = State
+                ft.SearchBar(
+                    ref=search_ref,
+                    bar_hint_text="Szukaj faktury po numerze lub NIP...",
+                    view_hint_text="Wybierz fakturę...",
+                    value=search_query.value,
+                    # SUPERMOC URL = State: onChange tylko lokalny stan, onSubmit → URL
+                    on_change=lambda e: search_query.set(e.control.value or ""),
+                    on_submit=lambda e: _on_search_submit(e.control.value or ""),
+                    height=44,
+                ),
+                ft.Container(height=8),
+                # SUPERMOC: SegmentedButton dla filtrów
+                filter_segments,
+                ft.Container(height=4),
+                ft.Text(f"Znaleziono: {len(filtered)} faktur", size=12, color=ft.colors.GREY_500),
+                ft.Divider(),
+                # SUPERMOC: DataTable
+                ft.Container(
+                    content=ft.DataTable(
+                        columns=[
+                            ft.DataColumn(ft.Text("Numer")),
+                            ft.DataColumn(ft.Text("NIP")),
+                            ft.DataColumn(ft.Text("Kwota")),
+                            ft.DataColumn(ft.Text("Status")),
+                            ft.DataColumn(ft.Text("Data")),
+                        ],
+                        rows=rows,
+                    ),
+                    expand=True,
+                    scroll=ft.ScrollMode.ADAPTIVE,
+                ),
+            ],
+            scroll=ft.ScrollMode.ALWAYS,
+            expand=True,
+        ),
+        padding=20,
+        expand=True,
     )

@@ -96,7 +96,9 @@ class DLQController(Controller):
             # Dead-letter outbox events
             dl_outbox = (
                 await conn.execute(
-                    select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.DEAD_LETTER)
+                    select(func.count())
+                    .select_from(OutboxEvent)
+                    .where(OutboxEvent.status == OutboxStatus.DEAD_LETTER)
                 )
             ).scalar()
             dead_letter_outbox = int(dl_outbox or 0)
@@ -104,7 +106,9 @@ class DLQController(Controller):
             # Failed outbox events
             failed_outbox = (
                 await conn.execute(
-                    select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.FAILED)
+                    select(func.count())
+                    .select_from(OutboxEvent)
+                    .where(OutboxEvent.status == OutboxStatus.FAILED)
                 )
             ).scalar()
             failed_outbox_count = int(failed_outbox or 0)

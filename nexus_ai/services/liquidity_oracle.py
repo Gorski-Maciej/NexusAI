@@ -188,11 +188,13 @@ def calculate_liquidity_timeline(
 
     # ── SUPERMOC: cast + shrink_dtype ──────────────────────────────
     # Jawny schemat + redukcja typów dla oszczędności RAM.
-    lazy_df = lazy_df.with_columns([
-        pl.col("opt").cast(pl.Float64),
-        pl.col("likely").cast(pl.Float64),
-        pl.col("pess").cast(pl.Float64),
-    ])
+    lazy_df = lazy_df.with_columns(
+        [
+            pl.col("opt").cast(pl.Float64),
+            pl.col("likely").cast(pl.Float64),
+            pl.col("pess").cast(pl.Float64),
+        ]
+    )
 
     # ── SUPERMOC: collect(streaming=True) — OOM safety ────────────
     df = lazy_df.collect(streaming=True)

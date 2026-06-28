@@ -283,6 +283,7 @@ def msgspec_inspect_fields(struct_type: type) -> list[dict[str, Any]]:
     """
     try:
         from msgspec import inspect
+
         fields = []
         for field_info in inspect.info(struct_type).fields:
             field_dict = {

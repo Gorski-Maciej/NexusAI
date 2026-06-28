@@ -89,6 +89,7 @@ def _filter_sentry_event(event: dict[str, Any], hint: dict[str, Any]) -> dict[st
         if "data" in request:
             try:
                 import json
+
                 data = json.loads(request["data"])
                 # Zachowaj tylko typ danych, nie treść
                 if isinstance(data, dict):
@@ -105,7 +106,13 @@ def _filter_sentry_event(event: dict[str, Any], hint: dict[str, Any]) -> dict[st
         # Anonymizuj headers
         if "headers" in request:
             filtered_headers = {}
-            sensitive_headers = {"authorization", "cookie", "set-cookie", "x-api-key", "x-auth-token"}
+            sensitive_headers = {
+                "authorization",
+                "cookie",
+                "set-cookie",
+                "x-api-key",
+                "x-auth-token",
+            }
             for key, val in request["headers"].items():
                 if key.lower() in sensitive_headers:
                     filtered_headers[key] = "[FILTERED]"
@@ -241,6 +248,7 @@ def init_sentry(config: AppConfig | None = None) -> bool:
         # Wymusza wysyłkę wszystkich bufforowanych eventów przed
         # zamknięciem aplikacji — zapobiega utracie eventów.
         import atexit
+
         atexit.register(lambda: sentry_sdk.flush(timeout=2))
 
         # ── SUPERMOC: Ustaw globalne tagi ────────────────────────────
@@ -334,6 +342,7 @@ def set_tag(key: str, value: str) -> None:
         return
     try:
         import sentry_sdk
+
         sentry_sdk.set_tag(key, value)
     except Exception as e:
         logger.warning("[Sentry] set_tag(%s) failed: %s", key, e)
@@ -356,6 +365,7 @@ def set_context(key: str, context: dict[str, Any]) -> None:
         return
     try:
         import sentry_sdk
+
         sentry_sdk.set_context(key, context)
     except Exception as e:
         logger.warning("[Sentry] set_context(%s) failed: %s", key, e)
@@ -375,6 +385,7 @@ def set_user_context(user_id: str | None = None, **kwargs: str) -> None:
         return
     try:
         import sentry_sdk
+
         sentry_sdk.set_user({"id": user_id, **kwargs})
     except Exception as e:
         logger.warning("[Sentry] set_user_context failed: %s", e)
@@ -458,6 +469,7 @@ class _NoopTransaction:
     Pozwala na bezpieczne używanie ``with start_transaction(...) as t:`` bez
     sprawdzania czy Sentry jest dostępne.
     """
+
     def __enter__(self) -> _NoopTransaction:
         return self
 
@@ -489,6 +501,7 @@ def flush(timeout: float = 2.0) -> None:
         return
     try:
         import sentry_sdk
+
         sentry_sdk.flush(timeout=timeout)
     except Exception as e:
         logger.warning("[Sentry] flush failed: %s", e)
@@ -521,6 +534,7 @@ def start_transaction(name: str, op: str = "task") -> Any:
         return _NoopTransaction()
     try:
         import sentry_sdk
+
         return sentry_sdk.start_transaction(name=name, op=op)
     except Exception as e:
         logger.warning("[Sentry] start_transaction failed: %s", e)

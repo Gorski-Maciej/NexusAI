@@ -71,20 +71,18 @@ class Money(Struct, frozen=True, kw_only=True):
         if not re.match(r"^[A-Z]{3}$", self.currency):
             raise ValueError(f"Invalid currency code: {self.currency}")
         # Zaokrąglenie do groszy (2 miejsca po przecinku)
-        object.__setattr__(self, "amount", self.amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+        object.__setattr__(
+            self, "amount", self.amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        )
 
     def __add__(self, other: Money) -> Money:
         if self.currency != other.currency:
-            raise CurrencyMismatchError(
-                f"Cannot add {self.currency} and {other.currency}"
-            )
+            raise CurrencyMismatchError(f"Cannot add {self.currency} and {other.currency}")
         return Money(amount=self.amount + other.amount, currency=self.currency)
 
     def __sub__(self, other: Money) -> Money:
         if self.currency != other.currency:
-            raise CurrencyMismatchError(
-                f"Cannot subtract {self.currency} and {other.currency}"
-            )
+            raise CurrencyMismatchError(f"Cannot subtract {self.currency} and {other.currency}")
         result = self.amount - other.amount
         # W księgowości korekty (storna) mogą dać ujemne saldo przejściowo
         # Dopuszczamy do -0.01 (błąd zaokrąglenia)

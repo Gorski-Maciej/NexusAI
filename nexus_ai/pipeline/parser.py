@@ -27,10 +27,10 @@ class InvoiceParser:
 
     # Stałe pozycyjne dla typowych pól faktury (% wysokości strony)
     HEADER_TOP = 0.30  # Górne 30% — nagłówek, NIP
-    BODY_START = 0.30   # Środkowe 30-60% — pozycje
+    BODY_START = 0.30  # Środkowe 30-60% — pozycje
     BODY_END = 0.60
-    FOOTER_TOP = 0.60   # Dolne >60% — kwoty
-    IBAN_TOP = 0.80     # >80% — stopka, IBAN
+    FOOTER_TOP = 0.60  # Dolne >60% — kwoty
+    IBAN_TOP = 0.80  # >80% — stopka, IBAN
 
     def __init__(self):
         # Wzorce dla danych strukturalnych
@@ -143,9 +143,7 @@ class InvoiceParser:
                 result.iban = re.sub(r"\s", "", footer_iban.group(1))
 
             # Kwoty w footerze
-            footer_amount = self._find_amount_near_keywords(
-                [footer_text], self.gross_keywords
-            )
+            footer_amount = self._find_amount_near_keywords([footer_text], self.gross_keywords)
             if footer_amount and footer_amount > 0:
                 result.amount_gross = footer_amount
 

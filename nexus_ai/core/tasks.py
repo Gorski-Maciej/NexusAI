@@ -105,9 +105,6 @@ async def _load_document_processor() -> DocumentProcessor:
     return await anyio.to_thread.run_sync(DocumentProcessor)
 
 
-
-
-
 class InvoiceEventPayload(Struct):
     """Canonical payload embedded in Outbox events."""
 
@@ -192,7 +189,9 @@ def pin_worker_cpu_affinity(reserve_core0: bool = True) -> list[int]:
             process.cpu_affinity(target)
         logger.info(
             "[CPU-AFFINITY] Pinned from %s to %s (reserve_core0=%s)",
-            current, target, reserve_core0,
+            current,
+            target,
+            reserve_core0,
         )
     except (psutil.AccessDenied, psutil.NoSuchProcess) as exc:
         logger.warning("[CPU-AFFINITY] Cannot set affinity: %s", exc)
@@ -288,9 +287,7 @@ async def process_invoice_task(
     try:
         async with OCR_INFERENCE_LIMITER:
             processor = await _MODEL_CACHE.get("document_processor", _load_document_processor)
-            processed = await anyio.to_thread.run_sync(
-                processor.process, Path(payload.image_path)
-            )
+            processed = await anyio.to_thread.run_sync(processor.process, Path(payload.image_path))
         enriched_text = processed.primary.raw_text
         vector = _simple_features(enriched_text)
         store = _get_vector_store()
@@ -399,7 +396,12 @@ async def scheduled_backup_task(
 @broker.task(
     schedule=[{"cron": "55 23 28-31 * *"}],
     task_name="cron_post_depreciation",
-    labels={"service": "core", "operation": "depreciation", "criticality": "high", "schedule": "monthly"},
+    labels={
+        "service": "core",
+        "operation": "depreciation",
+        "criticality": "high",
+        "schedule": "monthly",
+    },
     timeout=120.0,
 )
 async def cron_post_depreciation(
@@ -498,7 +500,12 @@ class _DefaultEmailProvider:
 @broker.task(
     task_name="run_daily_dunning_check",
     schedule=[{"cron": "0 9 * * *"}],
-    labels={"service": "core", "operation": "dunning", "criticality": "medium", "schedule": "daily"},
+    labels={
+        "service": "core",
+        "operation": "dunning",
+        "criticality": "medium",
+        "schedule": "daily",
+    },
     timeout=300.0,
 )
 async def run_daily_dunning_check() -> dict[str, int]:
@@ -516,7 +523,12 @@ async def run_daily_dunning_check() -> dict[str, int]:
 @broker.task(
     task_name="execute_monthly_depreciation",
     schedule=[{"cron": "0 0 1 * *"}],
-    labels={"service": "core", "operation": "depreciation", "criticality": "high", "schedule": "monthly"},
+    labels={
+        "service": "core",
+        "operation": "depreciation",
+        "criticality": "high",
+        "schedule": "monthly",
+    },
     timeout=120.0,
 )
 async def execute_monthly_depreciation_task() -> dict[str, int]:
@@ -532,4 +544,3 @@ async def execute_monthly_depreciation_task() -> dict[str, int]:
 async def _shutdown(_state: Any) -> None:
     _MODEL_CACHE.evict_expired()
     _MODEL_CACHE.release("document_processor")
-

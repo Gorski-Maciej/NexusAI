@@ -98,6 +98,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
     async def _on_connect(self, conn: sqlite3.Connection) -> None:
         """Hook tworzący schemat kolejki przy pierwszym połączeniu."""
         if not getattr(self, "_schema_checked", False):
+
             def _sync() -> None:
                 cursor = conn.execute(
                     "SELECT name FROM sqlite_master WHERE type='table' AND name='mq_messages'"
@@ -107,6 +108,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
                     # Need to call _ensure_schema which uses self methods
                     return False
                 return True
+
             exists = await anyio.to_thread.run_sync(_sync)
             if not exists:
                 await self._ensure_schema()
@@ -318,9 +320,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
         conn = await self.get_conn()
 
         def _sync() -> dict[str, int]:
-            cursor = conn.execute(
-                "SELECT status, COUNT(*) as cnt FROM mq_messages GROUP BY status"
-            )
+            cursor = conn.execute("SELECT status, COUNT(*) as cnt FROM mq_messages GROUP BY status")
             rows = cursor.fetchall()
             dlq_cursor = conn.execute("SELECT COUNT(*) FROM mq_dead_letter")
             dlq_row = dlq_cursor.fetchone()

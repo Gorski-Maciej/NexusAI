@@ -46,7 +46,6 @@ EVENT_INVOICE_UPLOADED = "invoice_uploaded"
 EVENT_ATTACHMENT_LARGE_UPLOADED = "attachment_large_uploaded"
 
 
-
 def _validate_content_length(headers: dict[str, str], max_bytes: int) -> None:
     value = headers.get("content-length")
     if not value:
@@ -207,7 +206,7 @@ class InvoiceController(Controller):
         try:
             import duckdb
             from nexus_ai.tax import DecisionTraceLogger
-            
+
             conn = duckdb.connect(str(config.duckdb_path))
             try:
                 logger_audit = DecisionTraceLogger(conn)
@@ -229,8 +228,8 @@ class InvoiceController(Controller):
             pass
 
         response_data = TaskResponse(
-            task_id=task_id,status="QUEUED"
-,
+            task_id=task_id,
+            status="QUEUED",
             message=(
                 f"Invoice accepted: hash={saved.file_hash}, size={saved.size_bytes}, "
                 f"workflow=UPLOADED->OUTBOX_PENDING ({pendulum.now('UTC').to_iso8601_string()})"
@@ -384,8 +383,8 @@ class InvoiceController(Controller):
         )
         db_session.commit()
         response = TaskResponse(
-            task_id=task_id,status="QUEUED"
-,
+            task_id=task_id,
+            status="QUEUED",
             message="Large attachment accepted for dedicated processing queue",
         )
         if idempotency_key:

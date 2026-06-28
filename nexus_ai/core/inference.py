@@ -121,7 +121,9 @@ class InferenceService:
             if elapsed > self._ttl:
                 logger.info(
                     "[InferenceService] TTL expired for %s (%.1fs > %ds) — unloading",
-                    self._model_path.name, elapsed, self._ttl,
+                    self._model_path.name,
+                    elapsed,
+                    self._ttl,
                 )
                 self.unload()
 

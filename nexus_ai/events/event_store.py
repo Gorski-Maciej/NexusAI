@@ -50,6 +50,7 @@ def _get_record_append():
     if _otel_record_append is None:
         try:
             from nexus_ai.api.telemetry_metrics import record_event_store_append
+
             _otel_record_append = record_event_store_append
         except ImportError as exc:
             logger.debug("[EVENT-STORE] telemetry_metrics not available: %s", exc)
@@ -154,6 +155,7 @@ class AsyncEventStore:
         """Zamknij połączenie."""
         if self._conn is not None:
             try:
+
                 def _optimize() -> None:
                     try:
                         self._conn.execute("PRAGMA optimize;")
@@ -161,6 +163,7 @@ class AsyncEventStore:
                         logger.debug("[EVENT-STORE] optimize failed: %s", exc)
                     except Exception as exc:
                         logger.warning("[EVENT-STORE] Unexpected error during optimize: %s", exc)
+
                 await anyio.to_thread.run_sync(_optimize)
             except (OSError, sqlite3.Error) as exc:
                 logger.warning("[EVENT-STORE] Close error: %s", exc)
@@ -171,34 +174,10 @@ class AsyncEventStore:
 
     # SUPERMOC: Prawdziwy OTel tracer zamiast buffer_span
     # Używa prawdziwych spanów OTel z kontekstem, a nie fallback buffer
-    @staticmethod
-    def _get_tracer():
+    def _get_tracer(self):
         from nexus_ai.core.otel_tracing import get_tracer
+
         return get_tracer("nexus.event_store")
-
-    async def _trace_append(
-        self, aggregate_type: str, aggregate_id: str, events: list,
-    ) -> None:
-        """SUPERMOC: OTel span + Span Events dla każdego eventu.
-
-        Tworzy span dla append_events i dodaje Span Events dla każdego
-        eventu biznesowego — umożliwia korelowanie transakcji z trace'ami.
-        """
-        tracer = self._get_tracer()
-        span_name = f"event_store.append.{aggregate_type}"
-        with tracer.start_as_current_span(span_name) as span:
-            span.set_attribute("aggregate_type", aggregate_type)
-            span.set_attribute("aggregate_id", aggregate_id)
-            span.set_attribute("event_count", len(events))
-            for event in events:
-                # SUPERMOC: Span Events dla business events
-                span.add_event(
-                    name=f"event.{event.event_type}",
-                    attributes={
-                        "version": event.version,
-                        "event_id": event.event_id,
-                    },
-                )
 
     async def append_events(
         self,
@@ -684,7 +663,9 @@ class AsyncEventStore:
                 table = pa.Table.from_pylist(date_records)
                 part_path = archive_dir / date_key
                 part_path.mkdir(parents=True, exist_ok=True)
-                archive_file = part_path / f"events_{pendulum.now().format('YYYYMMDD_HHmmss')}.parquet"
+                archive_file = (
+                    part_path / f"events_{pendulum.now().format('YYYYMMDD_HHmmss')}.parquet"
+                )
                 pq.write_table(
                     table,
                     str(archive_file),
@@ -761,6 +742,7 @@ class AsyncEventStore:
 
         try:
             import duckdb
+
             conn = duckdb.connect()
             try:
                 conditions = []

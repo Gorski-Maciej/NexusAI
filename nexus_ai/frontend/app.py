@@ -9,9 +9,7 @@ def main_ui(page: ft.Page):
 
     async def on_update_click_async(e):
         """Async handler — nie blokuje UI bo używa page.run_task wewnątrz."""
-        page.snack_bar = ft.SnackBar(
-            ft.Text("Pobieranie i instalowanie aktualizacji...")
-        )
+        page.snack_bar = ft.SnackBar(ft.Text("Pobieranie i instalowanie aktualizacji..."))
         page.snack_bar.open = True
         page.update()
 

@@ -69,15 +69,16 @@ async def invalidate_cache(
             "version": 1,
         }
         # Próbuj opublikować przez NATS broker
-        publish = getattr(broker, 'publish', None)
+        publish = getattr(broker, "publish", None)
         if callable(publish):
             await publish("cache.invalidate", payload)
         else:
-            kick = getattr(broker, 'kick', None)
+            kick = getattr(broker, "kick", None)
             if callable(kick):
                 # Taskiq broker — użyj taska z cache'owaniem referencji
                 if _inval_task is None:
                     from nexus_ai.core.cache.invalidation_task import invalidate_cache_task  # noqa: E402
+
                     _inval_task = invalidate_cache_task
                 await _inval_task.kiq(prefix=prefix)
             else:
@@ -102,7 +103,7 @@ async def subscribe_cache_invalidation(
         nexus_cache: Globalna instancja NexusCache.
     """
     try:
-        subscribe = getattr(broker, 'subscribe', None)
+        subscribe = getattr(broker, "subscribe", None)
         if callable(subscribe):
 
             async def _on_invalidation(message: dict) -> None:

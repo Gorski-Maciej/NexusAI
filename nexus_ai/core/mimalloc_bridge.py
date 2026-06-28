@@ -373,9 +373,7 @@ class InvoiceOCRHeap:
         """Create the mimalloc heap and return self."""
         self._heap = heap_new()
         if self._heap is not None:
-            _log.debug(
-                "ocr_heap_created", invoice_id=self.invoice_id, label=self.label
-            )
+            _log.debug("ocr_heap_created", invoice_id=self.invoice_id, label=self.label)
         return self
 
     async def __aexit__(
@@ -389,9 +387,7 @@ class InvoiceOCRHeap:
             if self._collect_on_exit:
                 heap_collect(self._heap, force=False)
             heap_destroy(self._heap)
-            _log.debug(
-                "ocr_heap_destroyed", invoice_id=self.invoice_id, label=self.label
-            )
+            _log.debug("ocr_heap_destroyed", invoice_id=self.invoice_id, label=self.label)
             self._heap = None
 
 

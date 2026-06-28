@@ -64,15 +64,16 @@ class RenderFlags(IntEnum):
     Zgodne z FPDF_GetRenderFlags/FPDF_RenderPageConstants.
     Używane przez page.render(flags=...) dla optymalizacji.
     """
+
     NONE = 0
-    LCD_TEXT = 1 << 0         # FPDF_LCD_TEXT — subpikselowy antyaliasing
-    NO_SMOOTHTEXT = 1 << 1    # FPDF_NO_SMOOTHTEXT — wyłącz wygładzanie tekstu
-    NO_SMOOTHIMAGE = 1 << 2   # FPDF_NO_SMOOTHIMAGE — wyłącz wygładzanie obrazów
-    NO_SMOOTHPATH = 1 << 3    # FPDF_NO_SMOOTHPATH — wyłącz wygładzanie ścieżek
-    GRAYSCALE = 1 << 4        # FPDF_GRAYSCALE — renderuj w skali szarości
-    FORCE_HALFTONE = 1 << 5   # FPDF_RENDER_FORCE_HALFTONE
-    RENDER_TO_BITMAP = 1 << 6 # FPDF_RENDER_TO_BITMAP
-    ANNOTATIONS = 1 << 7      # FPDF_ANNOT — renderuj adnotacje
+    LCD_TEXT = 1 << 0  # FPDF_LCD_TEXT — subpikselowy antyaliasing
+    NO_SMOOTHTEXT = 1 << 1  # FPDF_NO_SMOOTHTEXT — wyłącz wygładzanie tekstu
+    NO_SMOOTHIMAGE = 1 << 2  # FPDF_NO_SMOOTHIMAGE — wyłącz wygładzanie obrazów
+    NO_SMOOTHPATH = 1 << 3  # FPDF_NO_SMOOTHPATH — wyłącz wygładzanie ścieżek
+    GRAYSCALE = 1 << 4  # FPDF_GRAYSCALE — renderuj w skali szarości
+    FORCE_HALFTONE = 1 << 5  # FPDF_RENDER_FORCE_HALFTONE
+    RENDER_TO_BITMAP = 1 << 6  # FPDF_RENDER_TO_BITMAP
+    ANNOTATIONS = 1 << 7  # FPDF_ANNOT — renderuj adnotacje
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -82,6 +83,7 @@ class RenderFlags(IntEnum):
 
 try:
     import msgspec
+
     HAS_MSGPEC = True
 except ImportError:
     HAS_MSGPEC = False
@@ -145,6 +147,7 @@ if HAS_MSGPEC:
 
     class PDFTextRange(msgspec.Struct):
         """Reprezentacja pojedynczego zakresu tekstu z pozycją."""
+
         text: str
         left: float
         top: float
@@ -164,6 +167,7 @@ if HAS_MSGPEC:
 
     class PDFPageInfo(msgspec.Struct):
         """Informacja o pojedynczej stronie PDF z zakresami tekstu."""
+
         page_num: int
         width: float
         height: float
@@ -184,6 +188,7 @@ if HAS_MSGPEC:
 
     class PDFSignature(msgspec.Struct):
         """Reprezentacja podpisu cyfrowego w dokumencie PDF."""
+
         author: str = ""
         reason: str = ""
         location: str = ""
@@ -194,6 +199,7 @@ if HAS_MSGPEC:
 
     class PDFFormField(msgspec.Struct):
         """Reprezentacja pola formularza AcroForm."""
+
         name: str = ""
         type: str = ""
         value: str = ""
@@ -206,11 +212,13 @@ if HAS_MSGPEC:
 
     class PDFRenderCacheEntry(msgspec.Struct):
         """Wpis w cache'u renderowanych stron."""
+
         png_bytes: bytes
         cached_at: float = 0.0
 
     class PDFProgressInfo(msgspec.Struct):
         """Informacja o postępie renderowania."""
+
         current_page: int = 0
         total_pages: int = 0
         percent: float = 0.0
@@ -219,6 +227,7 @@ if HAS_MSGPEC:
     # ── NOWE FAZA 2: struktury dla adnotacji, załączników, zakładek ─────
     class PDFAnnotation(msgspec.Struct):
         """Adnotacja na stronie PDF."""
+
         type: str = ""
         rect: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 0.0)
         content: str = ""
@@ -230,6 +239,7 @@ if HAS_MSGPEC:
 
     class PDFAttachment(msgspec.Struct):
         """Załącznik osadzony w dokumencie PDF."""
+
         name: str = ""
         data: bytes = b""
         size: int = 0
@@ -237,6 +247,7 @@ if HAS_MSGPEC:
 
     class PDFBookmark(msgspec.Struct):
         """Zakładka (bookmark/outline) w dokumencie PDF."""
+
         title: str = ""
         page_index: int = 0
         level: int = 0
@@ -244,6 +255,7 @@ if HAS_MSGPEC:
 
     class PDFSearchResult(msgspec.Struct):
         """Wynik wyszukiwania tekstu w PDF."""
+
         text: str = ""
         left: float = 0.0
         top: float = 0.0
@@ -254,17 +266,20 @@ if HAS_MSGPEC:
 
     class PDFACompliance(msgspec.Struct):
         """Wynik sprawdzenia zgodności z PDF/A."""
+
         is_pdfa: bool = False
         pdfa_version: int = 0
         pdfa_version_str: str = "none"
 
     class PDFFormFillData(msgspec.Struct):
         """DTO dla wypełniania formularza — walidacja przez msgspec."""
+
         field_name: str
         value: str
 
     class PDFFormFillBatch(msgspec.Struct):
         """DTO dla wsadowego wypełniania formularza."""
+
         fields: list[PDFFormFillData]
 
 else:
@@ -459,12 +474,14 @@ def invalidate_pdf_cache(path: str | Path | None = None) -> None:
 def _get_otel_tracer():
     """Lazy import — unika circular importu między core a api."""
     from nexus_ai.core.otel_tracing import get_tracer
+
     return get_tracer("nexus.core.pdfium")
 
 
 def _start_span(name, tracer_name="nexus.core.pdfium", attributes=None):
     """Lazy import start_span — unika circular importu."""
     from nexus_ai.core.otel_tracing import start_span as _ss
+
     return _ss(name=name, tracer_name=tracer_name, attributes=attributes)
 
 
@@ -475,6 +492,7 @@ def _record_pdf_metric(name: str, value: float, attributes: dict | None = None) 
     """
     try:
         from nexus_ai.api.telemetry_metrics import record_ocr_duration as _r
+
         _r(value / 1000.0)
     except Exception:
         pass
@@ -507,7 +525,8 @@ def _timed(func: Callable) -> Callable:
                 raise
             finally:
                 duration = (time.time() - start) * 1000
-                logger.opt(lazy=True).debug("[PDFium] {} took {:.2f}ms",
+                logger.opt(lazy=True).debug(
+                    "[PDFium] {} took {:.2f}ms",
                     lambda: func.__name__,
                     lambda: duration,
                 )
@@ -543,6 +562,7 @@ class PdfDocumentSession:
 
     def __init__(self, source: str | Path | bytes, *, init_forms: bool = True):
         import pypdfium2 as pdfium
+
         if isinstance(source, bytes):
             self._pdf = pdfium.PdfDocument(source)
         else:
@@ -617,6 +637,7 @@ def render_page_to_pil_enhanced(
     pil_image = render_page_to_pil(pdf_path, page_num, dpi, rotation)
     if preprocess_for_ocr:
         from nexus_ai.core.image_utils import preprocess_for_ocr as _preprocess
+
         result = _preprocess(pil_image)
         return result if result is not None else pil_image
     return pil_image
@@ -633,7 +654,10 @@ def render_page_enhanced(
 ) -> Image.Image:
     """Renderuj stronę PDF z preprocessingiem, zwraca PIL Image."""
     return render_page_to_pil_enhanced(
-        pdf_path, page_num, dpi, rotation,
+        pdf_path,
+        page_num,
+        dpi,
+        rotation,
         preprocess_for_ocr=preprocess_for_ocr,
     )
 
@@ -679,6 +703,7 @@ def _open_pdf_fsspec(path: str | Path) -> Any:
     - Zwraca pypdfium2.PdfDocument z bajtów
     """
     import pypdfium2 as pdfium
+
     data = get_pdf_bytes(path)  # SUPERMOC: CachingFileSystem
     return pdfium.PdfDocument(data)
 
@@ -808,12 +833,14 @@ def render_all_pages(
             bitmap = page.render(scale=scale, rotation=rotation, flags=flags)
 
             if progress_callback is not None:
-                progress_callback(PDFProgressInfo(
-                    current_page=i - start + 1,
-                    total_pages=end - start,
-                    percent=round((i - start + 1) / (end - start) * 100, 1),
-                    page_dpi=dpi,
-                ))
+                progress_callback(
+                    PDFProgressInfo(
+                        current_page=i - start + 1,
+                        total_pages=end - start,
+                        percent=round((i - start + 1) / (end - start) * 100, 1),
+                        page_dpi=dpi,
+                    )
+                )
 
             results.append(bitmap.to_pil())
     finally:
@@ -920,12 +947,14 @@ def render_all_pages_to_memory(
             results.append(img_bytes)
 
             if progress_callback is not None:
-                progress_callback(PDFProgressInfo(
-                    current_page=i - start + 1,
-                    total_pages=end - start,
-                    percent=round((i - start + 1) / (end - start) * 100, 1),
-                    page_dpi=dpi,
-                ))
+                progress_callback(
+                    PDFProgressInfo(
+                        current_page=i - start + 1,
+                        total_pages=end - start,
+                        percent=round((i - start + 1) / (end - start) * 100, 1),
+                        page_dpi=dpi,
+                    )
+                )
     finally:
         pdf.close()
 
@@ -1055,12 +1084,14 @@ class ProgressivePDFLoader:
             yield buf.getvalue()
 
             if cb is not None:
-                cb(PDFProgressInfo(
-                    current_page=i + 1,
-                    total_pages=total,
-                    percent=round((i + 1) / total * 100, 1),
-                    page_dpi=dpi,
-                ))
+                cb(
+                    PDFProgressInfo(
+                        current_page=i + 1,
+                        total_pages=total,
+                        percent=round((i + 1) / total * 100, 1),
+                        page_dpi=dpi,
+                    )
+                )
 
     def get_page_size(self, page_num: int = 0) -> tuple[float, float]:
         self._ensure_loaded()
@@ -1097,6 +1128,7 @@ def extract_text_from_page(
 
     try:
         import pypdfium2.raw as pdfium_raw
+
         layout_flag = pdfium_raw.FPDF_TEXTPAGE_TEXT_FLAGS.PDFTEXT_PRESERVE_LAYOUT
     except (ImportError, AttributeError):
         layout_flag = 2
@@ -1231,15 +1263,17 @@ def search_in_pdf(
         try:
             search = text_page.search(query, flags=flags)
             for match in search:
-                results.append(PDFSearchResult(
-                    text=match.text,
-                    left=float(match.left),
-                    top=float(match.top),
-                    right=float(match.right),
-                    bottom=float(match.bottom),
-                    char_index=getattr(match, "char_index", 0),
-                    count=1,
-                ))
+                results.append(
+                    PDFSearchResult(
+                        text=match.text,
+                        left=float(match.left),
+                        top=float(match.top),
+                        right=float(match.right),
+                        bottom=float(match.bottom),
+                        char_index=getattr(match, "char_index", 0),
+                        count=1,
+                    )
+                )
         except (AttributeError, Exception) as exc:
             # Fallback: search przez text_ranges
             logger.debug("[PDFium] Search API not available, using range search: %s", exc)
@@ -1247,14 +1281,18 @@ def search_in_pdf(
             query_lower = query.lower()
             for r in ranges:
                 text = r.get("text", "")
-                if (match_case and query in text) or (not match_case and query_lower in text.lower()):
-                    results.append(PDFSearchResult(
-                        text=text,
-                        left=r.get("left", 0),
-                        top=r.get("top", 0),
-                        right=r.get("right", 0),
-                        bottom=r.get("bottom", 0),
-                    ))
+                if (match_case and query in text) or (
+                    not match_case and query_lower in text.lower()
+                ):
+                    results.append(
+                        PDFSearchResult(
+                            text=text,
+                            left=r.get("left", 0),
+                            top=r.get("top", 0),
+                            right=r.get("right", 0),
+                            bottom=r.get("bottom", 0),
+                        )
+                    )
 
         return results
     finally:
@@ -1282,14 +1320,15 @@ def detect_table_regions(
     for y, items in sorted(rows.items()):
         if len(items) >= 3:
             sorted_items = sorted(items, key=lambda x: x["left"])
-            tables.append({
-                "row_y": y,
-                "columns": [
-                    {"text": item["text"], "x": round(item["left"], 1)}
-                    for item in sorted_items
-                ],
-                "column_count": len(sorted_items),
-            })
+            tables.append(
+                {
+                    "row_y": y,
+                    "columns": [
+                        {"text": item["text"], "x": round(item["left"], 1)} for item in sorted_items
+                    ],
+                    "column_count": len(sorted_items),
+                }
+            )
 
     return tables
 
@@ -1356,7 +1395,9 @@ def get_pdf_info(pdf_path: str | Path) -> dict[str, Any]:
             "first_page_size": {
                 "width": round(first_page_size[0], 1) if first_page_size else None,
                 "height": round(first_page_size[1], 1) if first_page_size else None,
-            } if first_page_size else None,
+            }
+            if first_page_size
+            else None,
             "signatures": signatures if signatures else None,
             "has_signatures": len(signatures) > 0 if signatures else False,
             "bookmarks": bookmarks if bookmarks else None,
@@ -1386,15 +1427,17 @@ def _get_signatures_internal(pdf: Any) -> list[dict[str, Any]]:
             return []
         results = []
         for sig in sigs:
-            results.append({
-                "author": sig.get("author", ""),
-                "reason": sig.get("reason", ""),
-                "location": sig.get("location", ""),
-                "is_verified": sig.get("is_verified", False),
-                "signed_at": sig.get("signed_at", ""),
-                "field_name": sig.get("field_name", ""),
-                "page_num": sig.get("page_num", 0),
-            })
+            results.append(
+                {
+                    "author": sig.get("author", ""),
+                    "reason": sig.get("reason", ""),
+                    "location": sig.get("location", ""),
+                    "is_verified": sig.get("is_verified", False),
+                    "signed_at": sig.get("signed_at", ""),
+                    "field_name": sig.get("field_name", ""),
+                    "page_num": sig.get("page_num", 0),
+                }
+            )
         return results
     except Exception as exc:
         logger.debug("[PDFium] Signatures not available: %s", exc)
@@ -1482,21 +1525,28 @@ def get_pdf_form_fields(pdf_path: str | Path) -> list[PDFFormField]:
                     rect = field.get("rect", (0.0, 0.0, 0.0, 0.0))
 
                     if isinstance(rect, (list, tuple)) and len(rect) == 4:
-                        rect_tuple = (float(rect[0]), float(rect[1]), float(rect[2]), float(rect[3]))
+                        rect_tuple = (
+                            float(rect[0]),
+                            float(rect[1]),
+                            float(rect[2]),
+                            float(rect[3]),
+                        )
                     else:
                         rect_tuple = (0.0, 0.0, 0.0, 0.0)
 
-                    result.append(PDFFormField(
-                        name=str(name),
-                        type=str(field_type),
-                        value=str(value),
-                        is_readonly=bool(is_readonly),
-                        is_required=bool(is_required),
-                        max_length=int(max_length),
-                        options=[str(o) for o in (options or [])],
-                        page_num=int(page_num),
-                        rect=rect_tuple,
-                    ))
+                    result.append(
+                        PDFFormField(
+                            name=str(name),
+                            type=str(field_type),
+                            value=str(value),
+                            is_readonly=bool(is_readonly),
+                            is_required=bool(is_required),
+                            max_length=int(max_length),
+                            options=[str(o) for o in (options or [])],
+                            page_num=int(page_num),
+                            rect=rect_tuple,
+                        )
+                    )
                 except Exception as exc:
                     logger.debug("[PDFium] Error parsing form field: %s", exc)
                     continue
@@ -1620,13 +1670,34 @@ def save_pdf_with_filled_fields(
 
 
 _ANNOTATION_TYPE_MAP = {
-    0: "text", 1: "link", 2: "freetext", 3: "line", 4: "square",
-    5: "circle", 6: "polygon", 7: "polyline", 8: "highlight",
-    9: "underline", 10: "squiggly", 11: "strikeout", 12: "stamp",
-    13: "caret", 14: "ink", 15: "popup", 16: "file_attachment",
-    17: "sound", 18: "movie", 19: "widget", 20: "screen",
-    21: "printermark", 22: "trap_net", 23: "watermark", 24: "3d",
-    25: "rich_media", 26: "web_media", 27: "unknown",
+    0: "text",
+    1: "link",
+    2: "freetext",
+    3: "line",
+    4: "square",
+    5: "circle",
+    6: "polygon",
+    7: "polyline",
+    8: "highlight",
+    9: "underline",
+    10: "squiggly",
+    11: "strikeout",
+    12: "stamp",
+    13: "caret",
+    14: "ink",
+    15: "popup",
+    16: "file_attachment",
+    17: "sound",
+    18: "movie",
+    19: "widget",
+    20: "screen",
+    21: "printermark",
+    22: "trap_net",
+    23: "watermark",
+    24: "3d",
+    25: "rich_media",
+    26: "web_media",
+    27: "unknown",
 }
 
 
@@ -1667,16 +1738,20 @@ def get_page_annotations(
             try:
                 annot = page.get_annotation(i)
                 annot_type = annot.get_type()
-                results.append(PDFAnnotation(
-                    type=_get_annotation_type_str(annot_type),
-                    rect=annot.get_rect() if hasattr(annot, "get_rect") else (0.0, 0.0, 0.0, 0.0),
-                    content=annot.get_content() if hasattr(annot, "get_content") else "",
-                    color=(255, 255, 0),
-                    author="",
-                    modified_at="",
-                    flags=annot.get_flags() if hasattr(annot, "get_flags") else 0,
-                    page_num=page_num,
-                ))
+                results.append(
+                    PDFAnnotation(
+                        type=_get_annotation_type_str(annot_type),
+                        rect=annot.get_rect()
+                        if hasattr(annot, "get_rect")
+                        else (0.0, 0.0, 0.0, 0.0),
+                        content=annot.get_content() if hasattr(annot, "get_content") else "",
+                        color=(255, 255, 0),
+                        author="",
+                        modified_at="",
+                        flags=annot.get_flags() if hasattr(annot, "get_flags") else 0,
+                        page_num=page_num,
+                    )
+                )
             except Exception as exc:
                 logger.debug("[PDFium] Error reading annotation %d: %s", i, exc)
                 continue
@@ -1736,12 +1811,14 @@ def get_pdf_attachments(pdf_path: str | Path) -> list[PDFAttachment]:
         for i in range(count):
             try:
                 name, data = pdf.get_attachment(i)
-                results.append(PDFAttachment(
-                    name=name,
-                    data=data,
-                    size=len(data),
-                    index=i,
-                ))
+                results.append(
+                    PDFAttachment(
+                        name=name,
+                        data=data,
+                        size=len(data),
+                        index=i,
+                    )
+                )
             except Exception as exc:
                 logger.debug("[PDFium] Error reading attachment %d: %s", i, exc)
                 continue
@@ -1799,7 +1876,9 @@ def _extract_bookmarks_recursive(bookmarks: list, level: int = 0) -> list[PDFBoo
     for bm in bookmarks:
         try:
             title = bm.title if hasattr(bm, "title") else str(bm.get("title", ""))
-            page_index = bm.page_index if hasattr(bm, "page_index") else int(bm.get("page_index", 0))
+            page_index = (
+                bm.page_index if hasattr(bm, "page_index") else int(bm.get("page_index", 0))
+            )
             children = bm.children if hasattr(bm, "children") else bm.get("children", [])
 
             bookmark = PDFBookmark(
@@ -1835,7 +1914,9 @@ def _get_bookmarks_internal(pdf: Any) -> list[dict[str, Any]]:
 def _bookmark_to_dict(bm: Any) -> dict[str, Any]:
     """Konwertuj bookmark PDFium na słownik."""
     result = {
-        "title": bm.title if hasattr(bm, "title") else str(getattr(bm, "get", lambda k: "").get("title", "")),
+        "title": bm.title
+        if hasattr(bm, "title")
+        else str(getattr(bm, "get", lambda k: "").get("title", "")),
         "page_index": bm.page_index if hasattr(bm, "page_index") else 0,
         "level": 0,
     }
@@ -2055,7 +2136,9 @@ def pdfa_check(pdf_path: str | Path) -> PDFACompliance:
     pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         version = pdf.get_pdfa_pdf_version() if hasattr(pdf, "get_pdfa_pdf_version") else 0
-        version_str = {0: "none", 1: "PDF/A-1", 2: "PDF/A-2", 3: "PDF/A-3"}.get(version, f"unknown_{version}")
+        version_str = {0: "none", 1: "PDF/A-1", 2: "PDF/A-2", 3: "PDF/A-3"}.get(
+            version, f"unknown_{version}"
+        )
         return PDFACompliance(
             is_pdfa=version > 0,
             pdfa_version=version,
@@ -2072,8 +2155,12 @@ def _get_pdfa_compliance_internal(pdf: Any) -> PDFACompliance:
     """Wewnętrzne sprawdzenie PDF/A na otwartym dokumencie."""
     try:
         version = pdf.get_pdfa_pdf_version() if hasattr(pdf, "get_pdfa_pdf_version") else 0
-        version_str = {0: "none", 1: "PDF/A-1", 2: "PDF/A-2", 3: "PDF/A-3"}.get(version, f"unknown_{version}")
-        return PDFACompliance(is_pdfa=version > 0, pdfa_version=version, pdfa_version_str=version_str)
+        version_str = {0: "none", 1: "PDF/A-1", 2: "PDF/A-2", 3: "PDF/A-3"}.get(
+            version, f"unknown_{version}"
+        )
+        return PDFACompliance(
+            is_pdfa=version > 0, pdfa_version=version, pdfa_version_str=version_str
+        )
     except (AttributeError, Exception):
         return PDFACompliance(is_pdfa=False, pdfa_version=0, pdfa_version_str="unavailable")
 
@@ -2107,6 +2194,7 @@ def _get_page_rotation_internal(pdf: Any) -> list[dict[str, Any]]:
 def verify_pdfium_available() -> bool:
     try:
         import pypdfium2 as pdfium  # noqa: F401
+
         return True
     except ImportError:
         return False
@@ -2115,58 +2203,88 @@ def verify_pdfium_available() -> bool:
 def verify_pdfium_version() -> str:
     try:
         import pypdfium2 as pdfium
+
         return getattr(pdfium, "__version__", "unknown")
     except ImportError:
         return "not installed"
 
 
 __all__ = [
-    "PDFIUM_BASE_DPI", "DEFAULT_DPI", "DEFAULT_SCALE",
+    "PDFIUM_BASE_DPI",
+    "DEFAULT_DPI",
+    "DEFAULT_SCALE",
     "RenderFlags",
     # Struktury
-    "PDFTextRange", "PDFPageInfo", "PDFSignature", "PDFFormField",
-    "PDFRenderCacheEntry", "PDFProgressInfo",
-    "PDFAnnotation", "PDFAttachment", "PDFBookmark",
-    "PDFSearchResult", "PDFACompliance", "PDFFormFillData", "PDFFormFillBatch",
+    "PDFTextRange",
+    "PDFPageInfo",
+    "PDFSignature",
+    "PDFFormField",
+    "PDFRenderCacheEntry",
+    "PDFProgressInfo",
+    "PDFAnnotation",
+    "PDFAttachment",
+    "PDFBookmark",
+    "PDFSearchResult",
+    "PDFACompliance",
+    "PDFFormFillData",
+    "PDFFormFillBatch",
     # Cache (fsspec)
-    "get_pdf_bytes", "get_pdf_render_cache", "invalidate_pdf_cache",
+    "get_pdf_bytes",
+    "get_pdf_render_cache",
+    "invalidate_pdf_cache",
     # Session
     "PdfDocumentSession",
     # Core
-    "open_pdf", "render_page_to_pil", "render_page_to_pil_enhanced",
-    "render_page", "render_page_enhanced",
-    "render_page_to_jpeg_bytes", "render_page_to_png_bytes",
+    "open_pdf",
+    "render_page_to_pil",
+    "render_page_to_pil_enhanced",
+    "render_page",
+    "render_page_enhanced",
+    "render_page_to_jpeg_bytes",
+    "render_page_to_png_bytes",
     "render_page_to_png_grayscale",
-    "render_all_pages", "pdf_page_count",
+    "render_all_pages",
+    "pdf_page_count",
     # Async
-    "pdf_to_images_memory", "pdf_to_pil_images",
+    "pdf_to_images_memory",
+    "pdf_to_pil_images",
     # Streaming
     "render_all_pages_to_memory",
     # Progressive
     "ProgressivePDFLoader",
     # Tekst + tabele
-    "extract_text_from_page", "extract_text_simple",
-    "extract_text_ranges", "extract_text_ranges_typed",
-    "search_in_pdf", "detect_table_regions",
+    "extract_text_from_page",
+    "extract_text_simple",
+    "extract_text_ranges",
+    "extract_text_ranges_typed",
+    "search_in_pdf",
+    "detect_table_regions",
     # Metadane
-    "get_pdf_metadata", "get_pdf_info",
+    "get_pdf_metadata",
+    "get_pdf_info",
     # Podpisy
     "verify_pdf_signatures",
     # Formularze
-    "get_pdf_form_fields", "fill_pdf_form_field",
+    "get_pdf_form_fields",
+    "fill_pdf_form_field",
     "save_pdf_with_filled_fields",
     # NOWE: Adnotacje (FAZA 2)
-    "get_page_annotations", "count_page_annotations",
+    "get_page_annotations",
+    "count_page_annotations",
     # NOWE: Załączniki (FAZA 2)
-    "get_pdf_attachments", "add_pdf_attachment",
+    "get_pdf_attachments",
+    "add_pdf_attachment",
     # NOWE: Zakładki (FAZA 2)
     "get_pdf_bookmarks",
     # NOWE: Zapis przyrostowy (FAZA 2)
     "save_incremental",
     # NOWE: Manipulacja stronami (FAZA 3)
-    "merge_pdfs", "delete_pages_from_pdf", "extract_pages_from_pdf",
+    "merge_pdfs",
+    "delete_pages_from_pdf",
+    "extract_pages_from_pdf",
     # NOWE: PDF/A compliance (FAZA 3)
     "pdfa_check",
     # Weryfikacja
-    "verify_pdfium_available", "verify_pdfium_version",
+    "verify_pdfium_available",
+    "verify_pdfium_version",
 ]

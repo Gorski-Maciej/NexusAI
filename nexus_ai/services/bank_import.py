@@ -84,10 +84,10 @@ class CSVStatementParser:
         # SUPERMOC PyArrow: PyArrow natywnie wspiera fsspec filesystem,
         # ale dla prostoty używamy fsspec.open() + BytesIO.
         from io import BytesIO
-        
+
         with fsspec.open(file_path, "rb") as f:
             csv_content = f.read()
-        
+
         # ── SUPERMOC: PyArrow CSV reader z ConvertOptions ─────────────
         convert_opts = pa_csv.ConvertOptions(
             column_types={
@@ -101,8 +101,13 @@ class CSVStatementParser:
             },
             null_values=["", "NULL", "null", "NaN"],
             include_columns=[
-                "booking_date", "amount", "title", "counterparty_account",
-                "balance_after", "source_account_id", "destination_account_id"
+                "booking_date",
+                "amount",
+                "title",
+                "counterparty_account",
+                "balance_after",
+                "source_account_id",
+                "destination_account_id",
             ],
         )
         table = pa_csv.read_csv(
@@ -254,8 +259,11 @@ class IdempotentBankImporter:
                 # SUPERMOC: Użyj realnego API TB z batch transferem
                 import tigerbeetle as tb
                 from nexus_ai.services.tigerbeetle.client import (
-                    LEDGER, TRANSFER_CODE, _generate_tb_id,
+                    LEDGER,
+                    TRANSFER_CODE,
+                    _generate_tb_id,
                 )
+
                 transfer = tb.Transfer(
                     id=_generate_tb_id(),
                     debit_account_id=tx.source_account_id,
@@ -263,7 +271,7 @@ class IdempotentBankImporter:
                     amount=tx.amount_cents,
                     pending_id=0,
                     user_data_128=tx_uuid.int,
-                    user_data_64=int(tx.booking_date.isoformat().replace('-', '')),
+                    user_data_64=int(tx.booking_date.isoformat().replace("-", "")),
                     user_data_32=0,
                     timeout=0,
                     ledger=LEDGER["PLN"],

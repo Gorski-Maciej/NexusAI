@@ -34,6 +34,7 @@ from enum import StrEnum
 from typing import Any, ClassVar
 
 import pendulum
+
 # Validation moved to nexus_ai/db/hooks.py (before_flush listener).
 # No direct pydantic imports remain.
 from sqlalchemy import TypeDecorator as SATypeDecorator, Enum as SAEnum
@@ -71,12 +72,27 @@ class PendulumDateTime(SATypeDecorator):
 # ── SUPERMOC: SQLite STRICT tables przez @compiles extension ────────────
 
 _STRICT_TABLES = {
-    "invoices", "outbox_events", "contractors", "users",
-    "security_alerts", "refresh_tokens",
-    "failed_tasks", "roles", "permissions", "user_roles", "role_permissions",
-    "company_profiles", "company_partners", "ledger_transfers",
-    "financial_periods", "manual_cashflow_items", "dq_decisions",
-    "scheduled_tasks", "reminders", "workflow_saga_state", "workflow_saga_history",
+    "invoices",
+    "outbox_events",
+    "contractors",
+    "users",
+    "security_alerts",
+    "refresh_tokens",
+    "failed_tasks",
+    "roles",
+    "permissions",
+    "user_roles",
+    "role_permissions",
+    "company_profiles",
+    "company_partners",
+    "ledger_transfers",
+    "financial_periods",
+    "manual_cashflow_items",
+    "dq_decisions",
+    "scheduled_tasks",
+    "reminders",
+    "workflow_saga_state",
+    "workflow_saga_history",
 }
 
 
@@ -106,6 +122,7 @@ class InvoiceStatus(StrEnum):
     na "ERROR_TIMEOUT" (bez dwukropka i spacji). Backward compatibility
     jest zapewniona przez _missing_ hook poniżej.
     """
+
     NEW = "NEW"
     PROCESSING = "PROCESSING"
     PENDING_REVIEW = "PENDING_REVIEW"
@@ -136,6 +153,7 @@ class InvoiceStatus(StrEnum):
 
 class OutboxStatus(StrEnum):
     """Statusy zdarzeń outbox."""
+
     PENDING = "PENDING"
     PROCESSING = "PROCESSING"
     PROCESSED = "PROCESSED"
@@ -146,6 +164,7 @@ class OutboxStatus(StrEnum):
 
 class UserRole(StrEnum):
     """Role użytkowników."""
+
     ADMIN = "admin"
     OWNER = "owner"
     ACCOUNTANT = "accountant"
@@ -178,11 +197,17 @@ class Invoice(SQLModel, table=True):
         # SUPERMOC: Composite index
         Index("idx_invoices_contractor_date", "contractor_nip", "issue_date"),
         # SUPERMOC: Partial index — tylko aktywne statusy
-        Index("idx_invoices_active_status", "status",
-              sqlite_where=text("status IN ('PAID', 'APPROVED', 'PENDING_REVIEW')")),
+        Index(
+            "idx_invoices_active_status",
+            "status",
+            sqlite_where=text("status IN ('PAID', 'APPROVED', 'PENDING_REVIEW')"),
+        ),
         # SUPERMOC: Partial index na created_at
-        Index("idx_invoices_active_created", "created_at",
-              sqlite_where=text("status NOT IN ('NEW', 'REJECTED')")),
+        Index(
+            "idx_invoices_active_created",
+            "created_at",
+            sqlite_where=text("status NOT IN ('NEW', 'REJECTED')"),
+        ),
         # SUPERMOC: Expression index dla case-insensitive search
         Index("idx_invoices_nip_upper", text("UPPER(contractor_nip)")),
         # SUPERMOC: Unique constraint na tenant + number
@@ -199,16 +224,24 @@ class Invoice(SQLModel, table=True):
     # SUPERMOC: Mapped[] annotations dla full type safety
     # SUPERMOC: sa_column_kwargs z komentarzami dla dokumentacji schematu
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
-    number: Mapped[str | None] = Field(default=None, index=True, sa_column_kwargs={"comment": "Numer faktury (np. FV/2026/001)"},
+    number: Mapped[str | None] = Field(
+        default=None,
+        index=True,
+        sa_column_kwargs={"comment": "Numer faktury (np. FV/2026/001)"},
     )
-    contractor_nip: Mapped[str | None] = Field(default=None, index=True,
+    contractor_nip: Mapped[str | None] = Field(
+        default=None,
+        index=True,
         sa_column_kwargs={"comment": "NIP kontrahenta (10 cyfr)"},
     )
-    file_path: Mapped[str | None] = Field(default=None,
+    file_path: Mapped[str | None] = Field(
+        default=None,
         sa_column_kwargs={"comment": "Ścieżka do pliku PDF/obrazu faktury"},
     )
     amount_net: Mapped[Decimal | None] = Field(
-        default=None, max_digits=18, decimal_places=2,
+        default=None,
+        max_digits=18,
+        decimal_places=2,
         ge=Decimal("0.00"),  # Walidacja przez SQLModel
         sa_column_kwargs={
             "comment": "Kwota netto w PLN",
@@ -216,7 +249,9 @@ class Invoice(SQLModel, table=True):
         },
     )
     amount_gross: Mapped[Decimal | None] = Field(
-        default=None, max_digits=18, decimal_places=2,
+        default=None,
+        max_digits=18,
+        decimal_places=2,
         ge=Decimal("0.00"),
         sa_column_kwargs={
             "comment": "Kwota brutto w PLN (netto + VAT)",
@@ -224,7 +259,9 @@ class Invoice(SQLModel, table=True):
         },
     )
     currency: Mapped[str] = Field(
-        default="PLN", max_length=3, regex=r"^[A-Z]{3}$",
+        default="PLN",
+        max_length=3,
+        regex=r"^[A-Z]{3}$",
         sa_column_kwargs={
             "comment": "Kod waluty ISO 4217 (3 litery)",
             "check": "length(currency) = 3",
@@ -237,13 +274,17 @@ class Invoice(SQLModel, table=True):
         sa_type=SAEnum(InvoiceStatus),
         sa_column_kwargs={"comment": "Status faktury (InvoiceStatus enum)"},
     )
-    retry_count: Mapped[int] = Field(default=0, ge=0,
+    retry_count: Mapped[int] = Field(
+        default=0,
+        ge=0,
         sa_column_kwargs={"comment": "Liczba ponownych prób przetwarzania"},
     )
-    processing_status: Mapped[str | None] = Field(default=None,
+    processing_status: Mapped[str | None] = Field(
+        default=None,
         sa_column_kwargs={"comment": "Status przetwarzania (OCR, AI, walidacja)"},
     )
-    issue_date: Mapped[str | None] = Field(default=None,
+    issue_date: Mapped[str | None] = Field(
+        default=None,
         sa_column_kwargs={"comment": "Data wystawienia faktury (ISO format)"},
     )
     created_at: Mapped[pendulum.DateTime] = Field(
@@ -259,10 +300,13 @@ class Invoice(SQLModel, table=True):
         },
         sa_type=PendulumDateTime,
     )
-    tenant_id: Mapped[str] = Field(default="default", index=True,
+    tenant_id: Mapped[str] = Field(
+        default="default",
+        index=True,
         sa_column_kwargs={"comment": "Tenant ID dla multi-tenant isolation"},
     )
-    updated_by: Mapped[str | None] = Field(default=None,
+    updated_by: Mapped[str | None] = Field(
+        default=None,
         sa_column_kwargs={"comment": "Kto ostatnio modyfikował rekord"},
     )
 
@@ -290,9 +334,11 @@ class Invoice(SQLModel, table=True):
     def _amount_vat_expr(cls):
         """VAT = amount_gross - amount_net (SQL level, CASE dla NULL-safe)."""
         return case(
-            (and_(cls.amount_gross.isnot(None), cls.amount_net.isnot(None)),
-             cls.amount_gross - cls.amount_net),
-            else_=None
+            (
+                and_(cls.amount_gross.isnot(None), cls.amount_net.isnot(None)),
+                cls.amount_gross - cls.amount_net,
+            ),
+            else_=None,
         )
 
     # Cross-field validation moved to hooks.py (before_flush listener)
@@ -302,9 +348,7 @@ class Contractor(SQLModel, table=True):
     """Kontrahenci z walidacją NIP."""
 
     __tablename__ = "contractors"  # type: ignore[assignment]
-    __table_args__ = (
-        Index("idx_contractors_nip_upper", text("UPPER(nip)")),
-    )
+    __table_args__ = (Index("idx_contractors_nip_upper", text("UPPER(nip)")),)
     model_config: ClassVar[dict] = {
         "arbitrary_types_allowed": True,
         "validate_assignment": True,
@@ -383,8 +427,9 @@ class OutboxEvent(SQLModel, table=True):
     __tablename__ = "outbox_events"  # type: ignore[assignment]
     __table_args__ = (
         # SUPERMOC: Partial index — tylko nieprzetworzone eventy
-        Index("idx_outbox_pending", "status", "created_at",
-              sqlite_where=text("status = 'PENDING'")),
+        Index(
+            "idx_outbox_pending", "status", "created_at", sqlite_where=text("status = 'PENDING'")
+        ),
         # SUPERMOC: Composite index na aggregate
         Index("idx_outbox_aggregate", "aggregate_id", "event_type"),
         {"sqlite_autoincrement": False},
@@ -410,7 +455,9 @@ class OutboxEvent(SQLModel, table=True):
         sa_type=SAEnum(OutboxStatus),
     )
     processed: Mapped[bool] = Field(default=False)
-    processing_started_at: Mapped[pendulum.DateTime | None] = Field(default=None, sa_type=PendulumDateTime)
+    processing_started_at: Mapped[pendulum.DateTime | None] = Field(
+        default=None, sa_type=PendulumDateTime
+    )
     processed_at: Mapped[pendulum.DateTime | None] = Field(default=None, sa_type=PendulumDateTime)
     retry_count: Mapped[int] = Field(default=0, ge=0)
     created_at: Mapped[pendulum.DateTime] = Field(
@@ -433,9 +480,7 @@ class SecurityAlert(SQLModel, table=True):
     """Security events (RBAC violations, suspicious access)."""
 
     __tablename__ = "security_alerts"  # type: ignore[assignment]
-    __table_args__ = (
-        Index("idx_security_alerts_actor", "actor", "created_at"),
-    )
+    __table_args__ = (Index("idx_security_alerts_actor", "actor", "created_at"),)
     model_config: ClassVar[dict] = {
         "arbitrary_types_allowed": True,
         "validate_assignment": True,

@@ -25,26 +25,26 @@ from nexus_ai.services.tigerbeetle.models import LegalForm, TaxForm
 # ── Polskie konta księgowe z kodami TB ──────────────────────────────────────
 # code: 10=aktywa, 20=pasywa, 30=przychody, 40=koszty, 50=VAT, 60=rozrachunki
 _ACCOUNT_CODES: dict[str, int] = {
-    "100": 10,    # Kasa
-    "130": 10,    # Rachunek bankowy
-    "201": 60,    # Rozrachunki z odbiorcami
-    "202": 60,    # Rozrachunki z dostawcami
-    "221": 50,    # VAT naliczony
-    "222": 50,    # VAT należny
-    "225": 50,    # Rozrachunki z US (VAT)
-    "401-01": 40, # Usługi obce
-    "401-02": 40, # Usługi obce (leasing)
-    "490": 40,    # Amortyzacja
-    "700": 30,    # Sprzedaż towarów
-    "720": 30,    # Przychody finansowe
-    "730": 10,    # Środki trwałe
-    "731": 40,    # Umorzenie środków trwałych
-    "740": 10,    # Zapasy
-    "741": 40,    # Koszty zapasów (COGS)
-    "750": 30,    # Przychody finansowe (FX)
-    "751": 40,    # Koszty finansowe (FX)
-    "820": 30,    # Przychody CIT estoński
-    "821": 40,    # Koszty CIT estoński
+    "100": 10,  # Kasa
+    "130": 10,  # Rachunek bankowy
+    "201": 60,  # Rozrachunki z odbiorcami
+    "202": 60,  # Rozrachunki z dostawcami
+    "221": 50,  # VAT naliczony
+    "222": 50,  # VAT należny
+    "225": 50,  # Rozrachunki z US (VAT)
+    "401-01": 40,  # Usługi obce
+    "401-02": 40,  # Usługi obce (leasing)
+    "490": 40,  # Amortyzacja
+    "700": 30,  # Sprzedaż towarów
+    "720": 30,  # Przychody finansowe
+    "730": 10,  # Środki trwałe
+    "731": 40,  # Umorzenie środków trwałych
+    "740": 10,  # Zapasy
+    "741": 40,  # Koszty zapasów (COGS)
+    "750": 30,  # Przychody finansowe (FX)
+    "751": 40,  # Koszty finansowe (FX)
+    "820": 30,  # Przychody CIT estoński
+    "821": 40,  # Koszty CIT estoński
 }
 
 # ── Account flags dla limitów ──────────────────────────────────────────────
@@ -74,8 +74,24 @@ class LedgerInitializer:
     def _chart_of_accounts(self, *, legal_form: LegalForm, tax_form: TaxForm) -> list[str]:
         """Zwróć listę symboli kont dla formy prawnej i podatkowej."""
         if legal_form in {LegalForm.SP_ZOO, LegalForm.PSA}:
-            base = ["100", "130", "201", "202", "221", "222", "225", "401-01", "490", "700",
-                    "730", "731", "740", "741", "750", "751"]
+            base = [
+                "100",
+                "130",
+                "201",
+                "202",
+                "221",
+                "222",
+                "225",
+                "401-01",
+                "490",
+                "700",
+                "730",
+                "731",
+                "740",
+                "741",
+                "750",
+                "751",
+            ]
             if tax_form is TaxForm.CIT_ESTONIAN:
                 base.extend(["820", "821"])
             return base
@@ -145,7 +161,7 @@ class LedgerInitializer:
             account_id_map[symbol] = account_id
 
             # SUPERMOC: linked dla wszystkich oprócz ostatniego (atomic chain)
-            is_last = (i == len(account_symbols) - 1)
+            is_last = i == len(account_symbols) - 1
             linked_flag = 0 if is_last else tb.AccountFlags.LINKED
 
             ledger_for_acct = self._get_ledger_for_symbol(symbol)
@@ -177,12 +193,15 @@ class LedgerInitializer:
         for i, result in enumerate(results):
             if result.status != 0:
                 symbol = account_symbols[i] if i < len(account_symbols) else f"index={i}"
-                print(f"[LEDGER-INIT] Account {symbol} (id={account_id_map.get(symbol, '?')}): "
-                      f"status={result.status}")
+                print(
+                    f"[LEDGER-INIT] Account {symbol} (id={account_id_map.get(symbol, '?')}): "
+                    f"status={result.status}"
+                )
 
         return account_id_map
 
     def configure_ledger_sync(self, *, legal_form: LegalForm, tax_form: TaxForm) -> dict[str, int]:
         """Synchroniczna wersja configure_ledger."""
         import anyio
+
         return anyio.run(self.configure_ledger, legal_form=legal_form, tax_form=tax_form)

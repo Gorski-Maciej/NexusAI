@@ -45,7 +45,10 @@ class KoreClosureController(Controller):
                 return {"status": "error", "detail": str(exc)}
 
         # kore_delivery_audit.py removed — legacy, functionality absorbed by Integrity Verifier
-        kore_audit = {"status": "removed", "detail": "kore_delivery_audit.py removed — replaced by Integrity Verifier"}
+        kore_audit = {
+            "status": "removed",
+            "detail": "kore_delivery_audit.py removed — replaced by Integrity Verifier",
+        }
         summary_path = _root_prj / "reports" / "security_scan_summary.json"
         if summary_path.exists():
             security_summary = msgspec_loads(summary_path.read_bytes())

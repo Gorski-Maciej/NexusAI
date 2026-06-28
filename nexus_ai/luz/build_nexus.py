@@ -28,6 +28,7 @@ async def build_executable(
     version = "2.0.0"
     if version_path.exists():
         from nexus_ai.core.msgspec_utils import msgspec_loads as _msgspec_loads
+
         version = _msgspec_loads(version_path.read_text()).get("version", version)
 
     project_root = Path(__file__).parent.parent
@@ -69,7 +70,7 @@ async def build_executable(
         # ── Wykluczenia ──
         "--nofollow-import-to=tkinter,unittest,distutils,setuptools,pip,pdb,test,ensurepip,lib2to3,idlelib,turtle,venv,http.server,socketserver,xmlrpc,cgi,dbm,msilib,smtpd,telnetlib,uu,xdrlib",
         # ── Metadata ──
-        f"--product-name=NexusAI",
+        "--product-name=NexusAI",
         f"--file-version={version}",
         "--copyright=© 2026 NexusAI Team",
         "--file-description=NexusAI — AI-Powered Accounting System",
@@ -108,7 +109,7 @@ async def build_executable(
 
     print()
     print("=" * 70)
-    print(f"  Build zakończony!")
+    print("  Build zakończony!")
     print(f"  Wynik: {dist_dir}")
     print("=" * 70)
 

@@ -61,7 +61,9 @@ if _use_nats and _nats_url:
         sqlite_path=_sqlite_path,
         nats_servers=[_nats_url],
     )
-    logger.info("[BROKER] HybridResultBackend active — wbudowany w NATS Object Store + SQLite fallback")
+    logger.info(
+        "[BROKER] HybridResultBackend active — wbudowany w NATS Object Store + SQLite fallback"
+    )
 else:
     _result_backend = SqliteResultBackend(db_path=_sqlite_path)
     if os.getenv("NEXUS_USE_NATS_RESULT_BACKEND", "") and not _nats_url:
@@ -69,6 +71,7 @@ else:
             "[BROKER] NEXUS_USE_NATS_RESULT_BACKEND=true but no NEXUS_NATS_URL set — "
             "falling back to SQLite"
         )
+
 
 # ── Unified PullBasedJetStreamBroker z supermocami ───────────────────────
 # SUPERMOC: Middleware — metryki, PII scan, tracing
@@ -117,11 +120,13 @@ broker = PullBasedJetStreamBroker(
 broker.add_middleware(TaskMetricsMiddleware())
 broker.add_middleware(PiiScanMiddleware())
 broker.add_middleware(TaskTracingMiddleware())
-broker.add_middleware(DynamicConcurrencyMiddleware(
-    max_concurrent=int(os.getenv("NEXUS_MAX_CONCURRENT", "10")),
-    cpu_threshold=80.0,
-    ram_threshold=80.0,
-))
+broker.add_middleware(
+    DynamicConcurrencyMiddleware(
+        max_concurrent=int(os.getenv("NEXUS_MAX_CONCURRENT", "10")),
+        cpu_threshold=80.0,
+        ram_threshold=80.0,
+    )
+)
 
 
 @broker.on_event(TaskiqEvents.WORKER_STARTUP)
@@ -133,7 +138,7 @@ async def startup(state):
         "[BROKER] Middleware active: metrics, pi-scan, tracing | "
         "Result backend: SQLite | DLQ: %s | max_ack_pending: %d",
         DEAD_LETTER_SUBJECT,
-        broker.max_ack_pending if hasattr(broker, 'max_ack_pending') else 'default',
+        broker.max_ack_pending if hasattr(broker, "max_ack_pending") else "default",
     )
 
 
@@ -153,6 +158,7 @@ def result_backend(self) -> SqliteResultBackend | None:
     """Zwraca result backend brokera (public property)."""
     return _result_backend
 
+
 broker.result_backend = result_backend.__get__(broker, type(broker))
 
 
@@ -160,7 +166,8 @@ broker.result_backend = result_backend.__get__(broker, type(broker))
 @property
 def jetstream_prop(self) -> Any | None:
     """Zwraca JetStream context brokera (public property)."""
-    return getattr(self, '_jetstream', None)
+    return getattr(self, "_jetstream", None)
+
 
 broker.jetstream = jetstream_prop.__get__(broker, type(broker))
 

@@ -351,7 +351,9 @@ async def download_binary(
             # SUPERMOC HTTPX: własny klient z HTTP/2, Limits, Timeout
             async with httpx.AsyncClient(
                 timeout=httpx.Timeout(connect=15.0, read=120.0, write=30.0, pool=300.0),
-                limits=httpx.Limits(max_connections=10, max_keepalive_connections=5, keepalive_expiry=60.0),
+                limits=httpx.Limits(
+                    max_connections=10, max_keepalive_connections=5, keepalive_expiry=60.0
+                ),
                 http2=True,
                 follow_redirects=True,
                 trust_env=True,

@@ -92,8 +92,11 @@ def AsyncInvoiceTable(page: ft.Page, api_client):
     has_results = len(visible_items) > 0
 
     list_view = ft.ListView(
-        ref=list_ref, expand=True, spacing=8,
-        padding=20, auto_scroll=False,
+        ref=list_ref,
+        expand=True,
+        spacing=8,
+        padding=20,
+        auto_scroll=False,
     )
 
     for inv in visible_items:
@@ -107,72 +110,115 @@ def AsyncInvoiceTable(page: ft.Page, api_client):
         list_view.controls.append(
             ft.Container(
                 data=inv_id,
-                content=ft.Row([
-                    ft.Column([
-                        ft.Tooltip(
-                            message=number,
-                            content=ft.Text(number, size=15, weight=ft.FontWeight.BOLD),
+                content=ft.Row(
+                    [
+                        ft.Column(
+                            [
+                                ft.Tooltip(
+                                    message=number,
+                                    content=ft.Text(number, size=15, weight=ft.FontWeight.BOLD),
+                                ),
+                                ft.Tooltip(
+                                    message=f"NIP: {nip}",
+                                    content=ft.Text(
+                                        f"NIP: {nip}", size=12, color=ft.colors.GREY_400
+                                    ),
+                                ),
+                            ],
+                            expand=True,
                         ),
-                        ft.Tooltip(
-                            message=f"NIP: {nip}",
-                            content=ft.Text(f"NIP: {nip}", size=12, color=ft.colors.GREY_400),
+                        ft.Chip(
+                            label=ft.Text(status, size=11, color=ft.colors.WHITE),
+                            bgcolor=status_color,
                         ),
-                    ], expand=True),
-                    ft.Chip(label=ft.Text(status, size=11, color=ft.colors.WHITE),
-                            bgcolor=status_color),
-                    ft.Text(amount, size=15, weight=ft.FontWeight.BOLD, color=ft.colors.AMBER_300),
-                    ft.IconButton(icon=ft.icons.VISIBILITY, tooltip="Zobacz PDF",
-                                  on_click=lambda _, iid=inv_id: (
-                                      page.go(f"/invoices/{iid}") if page else None)),
-                ]),
-                padding=16, border_radius=8,
+                        ft.Text(
+                            amount, size=15, weight=ft.FontWeight.BOLD, color=ft.colors.AMBER_300
+                        ),
+                        ft.IconButton(
+                            icon=ft.icons.VISIBILITY,
+                            tooltip="Zobacz PDF",
+                            on_click=lambda _, iid=inv_id: (
+                                page.go(f"/invoices/{iid}") if page else None
+                            ),
+                        ),
+                    ]
+                ),
+                padding=16,
+                border_radius=8,
                 bgcolor=ft.colors.SURFACE_CONTAINER_HIGHEST,
                 ink=True,
                 animate=ft.animation.Animation(200, ft.AnimationCurve.EASE_OUT),
-                on_hover=lambda e: setattr(e.control, "scale",
-                                           1.01 if e.data == "true" else 1.0) or e.control.update(),
+                on_hover=lambda e: (
+                    setattr(e.control, "scale", 1.01 if e.data == "true" else 1.0)
+                    or e.control.update()
+                ),
             )
         )
 
     # SUPERMOC: Empty state
     empty_state = ft.Container(
         ref=empty_ref,
-        content=ft.Column([
-            ft.Icon(ft.icons.INVENTORY_2_OUTLINED, size=64, color=ft.colors.GREY_700),
-            ft.Container(height=12),
-            ft.Text("Brak faktur", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREY_500),
-            ft.Text("Dodaj pierwszą fakturę przez OCR.", size=13, color=ft.colors.GREY_600),
-        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-        alignment=ft.alignment.center, expand=True,
+        content=ft.Column(
+            [
+                ft.Icon(ft.icons.INVENTORY_2_OUTLINED, size=64, color=ft.colors.GREY_700),
+                ft.Container(height=12),
+                ft.Text(
+                    "Brak faktur", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREY_500
+                ),
+                ft.Text("Dodaj pierwszą fakturę przez OCR.", size=13, color=ft.colors.GREY_600),
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
+        alignment=ft.alignment.center,
+        expand=True,
     )
 
     # SUPERMOC: Loading indicator
-    loading_row = ft.Row([
-        ft.ProgressRing(width=24, height=24),
-        ft.ElevatedButton("Załaduj więcej", icon=ft.icons.DOWNLOAD,
-                          on_click=lambda _: page.run_task(load_more()),
-                          visible=has_more.value),
-    ], alignment=ft.MainAxisAlignment.CENTER, spacing=10)
+    loading_row = ft.Row(
+        [
+            ft.ProgressRing(width=24, height=24),
+            ft.ElevatedButton(
+                "Załaduj więcej",
+                icon=ft.icons.DOWNLOAD,
+                on_click=lambda _: page.run_task(load_more()),
+                visible=has_more.value,
+            ),
+        ],
+        alignment=ft.MainAxisAlignment.CENTER,
+        spacing=10,
+    )
 
     # SUPERMOC: Render
-    return ft.Column([
-        # SUPERMOC: SearchBar z wyszukiwarką
-        ft.Row([
-            ft.SearchBar(
-                ref=search_ref,
-                bar_hint_text="Szukaj faktury po numerze lub NIP...",
-                view_hint_text="Wybierz wynik...",
-                on_submit=on_search,
-                on_change=on_search,
-                height=44,
+    return ft.Column(
+        [
+            # SUPERMOC: SearchBar z wyszukiwarką
+            ft.Row(
+                [
+                    ft.SearchBar(
+                        ref=search_ref,
+                        bar_hint_text="Szukaj faktury po numerze lub NIP...",
+                        view_hint_text="Wybierz wynik...",
+                        on_submit=on_search,
+                        on_change=on_search,
+                        height=44,
+                        expand=True,
+                    ),
+                    ft.NumberBadge(
+                        text=str(len(visible_items)), size=16, bgcolor=ft.colors.BLUE_400
+                    )
+                    if has_results
+                    else ft.Container(),
+                ],
+                spacing=8,
+            ),
+            ft.Container(height=12),
+            ft.Stack(
+                [
+                    ft.Column([list_view, loading_row], expand=True),
+                    empty_state,
+                ],
                 expand=True,
             ),
-            ft.NumberBadge(text=str(len(visible_items)), size=16,
-                           bgcolor=ft.colors.BLUE_400) if has_results else ft.Container(),
-        ], spacing=8),
-        ft.Container(height=12),
-        ft.Stack([
-            ft.Column([list_view, loading_row], expand=True),
-            empty_state,
-        ], expand=True),
-    ], expand=True)
+        ],
+        expand=True,
+    )

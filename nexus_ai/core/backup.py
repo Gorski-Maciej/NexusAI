@@ -28,6 +28,7 @@ _HAS_CRYPTOGRAPHY = False
 # ── DuckDB import for EXPORT DATABASE ────────────────────────────────────────
 try:
     import duckdb as _duckdb
+
     _HAS_DUCKDB = True
 except ImportError:
     _HAS_DUCKDB = False
@@ -40,6 +41,7 @@ except ImportError:
 # - Zysk: backup z gwarancją ACID, bez ryzyka partial write
 try:
     import deltalake as _delta
+
     _HAS_DELTA = True
 except ImportError:
     _HAS_DELTA = False
@@ -113,12 +115,8 @@ class BackupManager:
 
         conn = _duckdb.connect(str(path), read_only=True)
         try:
-            conn.execute(
-                f"EXPORT DATABASE '{export_dir.as_posix()}' (FORMAT PARQUET)"
-            )
-            logger.info(
-                "[BACKUP] DuckDB EXPORT DATABASE atomyczny: %s", export_dir
-            )
+            conn.execute(f"EXPORT DATABASE '{export_dir.as_posix()}' (FORMAT PARQUET)")
+            logger.info("[BACKUP] DuckDB EXPORT DATABASE atomyczny: %s", export_dir)
             return str(export_dir)
         finally:
             conn.close()
@@ -228,12 +226,14 @@ class BackupManager:
         backups = []
         for f in self.fs.glob(str(self.backup_dir / "backup_*")):
             info = self.fs.info(f)
-            backups.append({
-                "path": f,
-                "size_mb": info.get("size", 0) / (1024 * 1024),
-                "modified": pendulum.from_timestamp(info.get("mtime", 0)).to_iso8601_string(),
-                "name": Path(f).name,
-            })
+            backups.append(
+                {
+                    "path": f,
+                    "size_mb": info.get("size", 0) / (1024 * 1024),
+                    "modified": pendulum.from_timestamp(info.get("mtime", 0)).to_iso8601_string(),
+                    "name": Path(f).name,
+                }
+            )
         return sorted(backups, key=lambda x: x["modified"], reverse=True)
 
     def decrypt_backup(self, backup_path: Path | str, password: str) -> bytes:

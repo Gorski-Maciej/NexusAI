@@ -81,8 +81,7 @@ class ProofChain:
 
         # Pobierz ostatni hash do łańcucha
         last_row = self._conn.execute(
-            "SELECT current_hash FROM tax_decision_audits "
-            "ORDER BY created_at DESC LIMIT 1"
+            "SELECT current_hash FROM tax_decision_audits ORDER BY created_at DESC LIMIT 1"
         ).fetchone()
         previous_hash = str(last_row[0]) if last_row else "0" * 64
 
@@ -113,8 +112,12 @@ class ProofChain:
             ),
         )
 
-        logger.info("[PROOF-CHAIN] Logged decision %s for tx=%s (hash=%s...)",
-                     audit_id, transaction_id, current_hash[:16])
+        logger.info(
+            "[PROOF-CHAIN] Logged decision %s for tx=%s (hash=%s...)",
+            audit_id,
+            transaction_id,
+            current_hash[:16],
+        )
         return audit_id
 
     def get_decision(self, transaction_id: str) -> dict[str, Any] | None:
@@ -188,7 +191,9 @@ class ProofChain:
             "valid": invalid_count == 0,
             "total_decisions": len(rows),
             "invalid_links": invalid_count,
-            "message": "Chain is intact" if invalid_count == 0 else f"Broken at {invalid_count} link(s)",
+            "message": "Chain is intact"
+            if invalid_count == 0
+            else f"Broken at {invalid_count} link(s)",
         }
 
     def explain_decision(self, transaction_id: str) -> dict[str, Any]:

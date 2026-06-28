@@ -288,9 +288,7 @@ def create_app() -> Litestar:
             # OpenTelemetryPlugin — automatyczne tracing spanów dla każdego requestu
             OpenTelemetryPlugin(),
             # ProblemDetailsPlugin — RFC 9457 dla wszystkich błędów HTTP (w tym własnych DomainError)
-            ProblemDetailsPlugin(
-                ProblemDetailsConfig(enable_for_all_http_exceptions=True)
-            ),
+            ProblemDetailsPlugin(ProblemDetailsConfig(enable_for_all_http_exceptions=True)),
         ],
         on_app_init=[jwt_auth.on_app_init, jwt_cookie_auth.on_app_init],
         on_startup=[on_startup],
@@ -301,7 +299,6 @@ def create_app() -> Litestar:
             "db_engine": provide_db_engine,
             "duckdb": provide_duckdb,
             "buffer": provide_shared_image_buffer,
-
         },
         exception_handlers=EXCEPTION_HANDLERS,
         middleware=[
@@ -311,8 +308,10 @@ def create_app() -> Litestar:
                 rate_limit=("minute", config.rate_limit_general),
                 identifier_for_request=_role_aware_identifier,
                 exclude=[
-                    "/api/v1/health", "/api/v2/health",
-                    "/schema/openapi.yml", "/schema/swagger",
+                    "/api/v1/health",
+                    "/api/v2/health",
+                    "/schema/openapi.yml",
+                    "/schema/swagger",
                 ],
                 exclude_opt_key="no_rate_limit",
             ).middleware,
@@ -360,5 +359,4 @@ def create_app() -> Litestar:
         else None,
         static_files_config=get_static_config(config),
         debug=config.debug,
-
     )

@@ -182,8 +182,7 @@ class OpaClient:
 
         if response.status_code == 404:
             raise OpaPolicyNotFound(
-                f"Policy not found at path={path}. "
-                f"Ensure the Rego policy is loaded into OPA.",
+                f"Policy not found at path={path}. Ensure the Rego policy is loaded into OPA.",
             )
 
         if response.status_code != 200:

@@ -293,7 +293,13 @@ class JetStreamEventBus:
             if stream_name in _stream_cache:
                 return
         try:
-            from nats.js.api import CompressionOption, DiscardPolicy, ReplayPolicy, RetentionPolicy, StorageType
+            from nats.js.api import (
+                CompressionOption,
+                DiscardPolicy,
+                ReplayPolicy,
+                RetentionPolicy,
+                StorageType,
+            )
 
             # Mapowanie retention policy string → enum
             _RETENTION_MAP = {
@@ -311,7 +317,9 @@ class JetStreamEventBus:
                     "max_age": cfg["max_age_days"] * 24 * 3600,
                     "storage": StorageType.FILE,
                     "replicas": cfg.get("replicas", 1),
-                    "retention": _RETENTION_MAP.get(cfg.get("retention", "limits"), RetentionPolicy.LIMITS),
+                    "retention": _RETENTION_MAP.get(
+                        cfg.get("retention", "limits"), RetentionPolicy.LIMITS
+                    ),
                     "max_msg_size": cfg.get("max_msg_size", 64 * 1024 * 1024),
                     "max_msgs_per_subject": 10_000,
                     "duplicate_window": 2 * 60 * 1_000_000_000,
@@ -363,8 +371,10 @@ class JetStreamEventBus:
                 _stream_cache[stream_name] = True
         except Exception as exc:
             logger.warning(
-                "[JETSTREAM] Failed to ensure stream %s: %s", stream_name, exc,
-            )    # ── Key-Value Store (wbudowany w NATS) ───────────────────────────────
+                "[JETSTREAM] Failed to ensure stream %s: %s",
+                stream_name,
+                exc,
+            )  # ── Key-Value Store (wbudowany w NATS) ───────────────────────────────
 
     async def get_kv_store(self, bucket_name: str) -> Any | None:
         """Pobierz lub utwórz Key-Value Store bucket (wbudowany w NATS JetStream).
@@ -403,9 +413,10 @@ class JetStreamEventBus:
         except Exception as exc:
             logger.warning(
                 "[JETSTREAM:KV] Failed to get bucket %s: %s",
-                bucket_name, exc,
+                bucket_name,
+                exc,
             )
-            return None    # ── Object Store (wbudowany w NATS) ──────────────────────────────────
+            return None  # ── Object Store (wbudowany w NATS) ──────────────────────────────────
 
     async def get_object_store(self, bucket_name: str) -> Any | None:
         """Pobierz lub utwórz Object Store bucket (wbudowany w NATS JetStream).
@@ -444,7 +455,8 @@ class JetStreamEventBus:
         except Exception as exc:
             logger.warning(
                 "[JETSTREAM:OBJECT] Failed to get bucket %s: %s",
-                bucket_name, exc,
+                bucket_name,
+                exc,
             )
             return None
 
@@ -711,11 +723,17 @@ class ConsumerConfig(Struct):
     backoff_delays: list[int] = field(default_factory=list)
     description: str = ""
     # SUPERMOC JETSTREAM: headers_only — tylko nagłówki, bez body (lekki konsument)
-    headers_only: bool = field(default=False, metadata={"description": "Only fetch headers, not message body"})
+    headers_only: bool = field(
+        default=False, metadata={"description": "Only fetch headers, not message body"}
+    )
     # SUPERMOC JETSTREAM: flow_control — ordered push consumer z flow control
-    flow_control: bool = field(default=False, metadata={"description": "Enable flow control for push consumer"})
+    flow_control: bool = field(
+        default=False, metadata={"description": "Enable flow control for push consumer"}
+    )
     # SUPERMOC JETSTREAM: replay_policy — "instant" vs "original"
-    replay_policy: str = field(default="instant", metadata={"description": "instant or original replay speed"})
+    replay_policy: str = field(
+        default="instant", metadata={"description": "instant or original replay speed"}
+    )
     # SUPERMOC JETSTREAM: num_replicas — HA dla konsumera
     num_replicas: int = field(default=0, metadata={"ge": 0, "le": 3})
 
@@ -893,7 +911,8 @@ class JetStreamConsumer:
                     break
                 except Exception as exc:
                     logger.warning(
-                        "[JETSTREAM:CONSUMER] Fetch error: %s", exc,
+                        "[JETSTREAM:CONSUMER] Fetch error: %s",
+                        exc,
                     )
                     await anyio.sleep(1)
 
@@ -901,7 +920,9 @@ class JetStreamConsumer:
             logger.info("[JETSTREAM:CONSUMER] Cancelled: %s", cfg.consumer_name)
         except Exception as exc:
             logger.error(
-                "[JETSTREAM:CONSUMER] %s failed: %s", cfg.consumer_name, exc,
+                "[JETSTREAM:CONSUMER] %s failed: %s",
+                cfg.consumer_name,
+                exc,
             )
 
     async def stop(self) -> None:

@@ -101,7 +101,11 @@ class NatsSupervisor:
 
         try:
             await self._nc.ping()
-            server_info = self._nc.connected_url if hasattr(self._nc, "connected_url") else str(self._nats_servers)
+            server_info = (
+                self._nc.connected_url
+                if hasattr(self._nc, "connected_url")
+                else str(self._nats_servers)
+            )
             return {
                 "status": "CONNECTED",
                 "server": server_info,
@@ -136,18 +140,20 @@ class NatsSupervisor:
             else:
                 # Pobierz wszystkie strumienie
                 streams_list = await self._js.streams_info()
-                names = [s.name for s in streams_list] if hasattr(streams_list, '__iter__') else []
+                names = [s.name for s in streams_list] if hasattr(streams_list, "__iter__") else []
 
             for name in names:
                 try:
                     info = await self._js.stream_info(name)
                     results.append(self._stream_to_dict(info))
                 except Exception as exc:
-                    results.append({
-                        "name": name,
-                        "status": "ERROR",
-                        "error": str(exc),
-                    })
+                    results.append(
+                        {
+                            "name": name,
+                            "status": "ERROR",
+                            "error": str(exc),
+                        }
+                    )
         except Exception as exc:
             logger.warning("[NATS:SUPERVISOR] Failed to list streams: %s", exc)
 
@@ -220,7 +226,8 @@ class NatsSupervisor:
         except Exception as exc:
             logger.warning(
                 "[NATS:SUPERVISOR] Failed to get consumers for %s: %s",
-                stream_name, exc,
+                stream_name,
+                exc,
             )
         return results
 
@@ -244,8 +251,12 @@ class NatsSupervisor:
         if hasattr(info, "state"):
             state = info.state
             result["state"] = {
-                "delivered": getattr(state, "delivered", {}).get("consumer_seq", 0) if hasattr(state, "delivered") else 0,
-                "acked": getattr(state, "ack_floor", {}).get("consumer_seq", 0) if hasattr(state, "ack_floor") else 0,
+                "delivered": getattr(state, "delivered", {}).get("consumer_seq", 0)
+                if hasattr(state, "delivered")
+                else 0,
+                "acked": getattr(state, "ack_floor", {}).get("consumer_seq", 0)
+                if hasattr(state, "ack_floor")
+                else 0,
                 "pending": getattr(state, "num_pending", 0),
                 "ack_pending": getattr(state, "num_ack_pending", 0),
                 "redeliveries": getattr(state, "num_redeliveries", 0),
@@ -312,7 +323,7 @@ class NatsSupervisor:
 
         try:
             streams = await self._js.streams_info() if self._js else []
-            stream_count = len(list(streams)) if hasattr(streams, '__iter__') else 0
+            stream_count = len(list(streams)) if hasattr(streams, "__iter__") else 0
             return {
                 "nats": "OK",
                 "streams": stream_count,

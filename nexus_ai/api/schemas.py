@@ -191,18 +191,21 @@ class SagaStateResponse(msgspec.Struct, kw_only=True):
 
 class StatusResponse(msgspec.Struct, kw_only=True):
     """Generic status+message response."""
+
     status: str
     message: str
 
 
 class IdResponse(msgspec.Struct, kw_only=True):
     """Response with status + rule_id."""
+
     status: str
     rule_id: str
 
 
 class ActionResponse(msgspec.Struct, kw_only=True):
     """Response with status + id + action."""
+
     status: str
     rule_id: str
     action: str
@@ -210,12 +213,14 @@ class ActionResponse(msgspec.Struct, kw_only=True):
 
 class RetryAllResponse(msgspec.Struct, kw_only=True):
     """Response for bulk retry."""
+
     status: str
     retried: int
 
 
 class ChangeRoleResponse(msgspec.Struct, kw_only=True):
     """Response for role change."""
+
     status: str
     message: str
     user_id: str
@@ -225,6 +230,7 @@ class ChangeRoleResponse(msgspec.Struct, kw_only=True):
 
 class FailedTaskItem(msgspec.Struct, kw_only=True):
     """Single failed task entry."""
+
     id: str
     task_name: str
     task_id: str
@@ -242,6 +248,7 @@ class FailedTaskItem(msgspec.Struct, kw_only=True):
 
 class FailedTaskListResponse(msgspec.Struct, kw_only=True):
     """Paginated failed tasks response."""
+
     tasks: list[FailedTaskItem]
     total: int
     limit: int
@@ -250,18 +257,21 @@ class FailedTaskListResponse(msgspec.Struct, kw_only=True):
 
 class RiskThresholdRuleItem(msgspec.Struct, kw_only=True):
     """Single risk threshold rule."""
+
     # DuckDB returns dynamic fields — use dict
     pass
 
 
 class RuleListResponse(msgspec.Struct, kw_only=True):
     """Generic rule list response."""
+
     rules: list[dict]
     total: int
 
 
 class PaginatedRuleListResponse(msgspec.Struct, kw_only=True):
     """Paginated rule list with limit/offset."""
+
     rules: list[dict]
     total: int
     limit: int
@@ -270,6 +280,7 @@ class PaginatedRuleListResponse(msgspec.Struct, kw_only=True):
 
 class HealthResponse(msgspec.Struct, kw_only=True):
     """System health check response."""
+
     status: str
     timestamp: str
     database: str | None = None
@@ -278,6 +289,7 @@ class HealthResponse(msgspec.Struct, kw_only=True):
 
 class ReplayDecisionResponse(msgspec.Struct, kw_only=True):
     """Replay decision result."""
+
     transaction_id: str
     match: bool
     original_verdict: str
@@ -288,6 +300,7 @@ class ReplayDecisionResponse(msgspec.Struct, kw_only=True):
 
 class ReplayBatchItem(msgspec.Struct, kw_only=True):
     """Single replay batch result item."""
+
     transaction_id: str
     match: bool
     error: str | None = None
@@ -296,6 +309,7 @@ class ReplayBatchItem(msgspec.Struct, kw_only=True):
 
 class ReplayBatchResponse(msgspec.Struct, kw_only=True):
     """Batch replay results."""
+
     total: int
     matches: int
     mismatches: int
@@ -304,6 +318,7 @@ class ReplayBatchResponse(msgspec.Struct, kw_only=True):
 
 class IntegrityVerifyResponse(msgspec.Struct, kw_only=True):
     """Integrity verification result."""
+
     status: str
     total_records: int
     verified_at: str
@@ -315,11 +330,13 @@ class IntegrityVerifyResponse(msgspec.Struct, kw_only=True):
 
 class FallbackEventItem(msgspec.Struct, kw_only=True):
     """Single fallback event."""
+
     pass  # DuckDB returns dynamic fields
 
 
 class FallbackListResponse(msgspec.Struct, kw_only=True):
     """Fallback events list."""
+
     events: list[dict]
     total: int
     pending: int
@@ -327,6 +344,7 @@ class FallbackListResponse(msgspec.Struct, kw_only=True):
 
 class HotReloadHealthResponse(msgspec.Struct, kw_only=True):
     """Hot-reload listener health."""
+
     status: str
     nats_url: str
     subscriptions: list[dict]
@@ -339,6 +357,7 @@ class HotReloadHealthResponse(msgspec.Struct, kw_only=True):
 
 class RuleChangelogResponse(msgspec.Struct, kw_only=True):
     """Rule change log."""
+
     changes: list[dict]
     total: int
 
@@ -350,6 +369,7 @@ class RuleChangelogResponse(msgspec.Struct, kw_only=True):
 
 class RegisterResponse(msgspec.Struct, kw_only=True):
     """Registration response."""
+
     status: str
     message: str
     user_id: str
@@ -357,6 +377,7 @@ class RegisterResponse(msgspec.Struct, kw_only=True):
 
 class LoginResponse(msgspec.Struct, kw_only=True):
     """Login response with tokens."""
+
     access_token: str
     refresh_token: str
     token_type: str = "Bearer"
@@ -366,41 +387,48 @@ class LoginResponse(msgspec.Struct, kw_only=True):
 
 class LogoutResponse(msgspec.Struct, kw_only=True):
     """Logout response."""
+
     status: str
     message: str
 
 
 class ConfirmEmailResponse(msgspec.Struct, kw_only=True):
     """Email confirmation response."""
+
     status: str
     message: str
 
 
 class PasswordResetResponse(msgspec.Struct, kw_only=True):
     """Password reset email sent response."""
+
     status: str
     message: str
 
 
 class PasswordResetConfirmResponse(msgspec.Struct, kw_only=True):
     """Password reset confirm response."""
+
     status: str
     message: str
 
 
 class ChangePasswordResponse(msgspec.Struct, kw_only=True):
     """Password change response."""
+
     status: str
     message: str
 
 
 class CsrfTokenResponse(msgspec.Struct, kw_only=True):
     """CSRF token response."""
+
     csrf_token: str
 
 
 class UserProfileResponse(msgspec.Struct, kw_only=True):
     """Current user profile."""
+
     id: str
     username: str
     email: str | None = None
@@ -420,6 +448,7 @@ class UserProfileResponse(msgspec.Struct, kw_only=True):
 
 class ExportStatusResponse(msgspec.Struct, kw_only=True):
     """Export status."""
+
     export_id: str
     status: str
     format: str
@@ -428,12 +457,14 @@ class ExportStatusResponse(msgspec.Struct, kw_only=True):
 
 class ExportDownloadResponse(msgspec.Struct, kw_only=True):
     """Export download response."""
+
     message: str
     format: str
 
 
 class FinOpsResponse(msgspec.Struct, kw_only=True):
     """FinOps cost per invoice."""
+
     hourly_cost_usd: float
     invoice_count: int
     cost_per_invoice_usd: float
@@ -443,6 +474,7 @@ class FinOpsResponse(msgspec.Struct, kw_only=True):
 
 class I18nStatusResponse(msgspec.Struct, kw_only=True):
     """I18n status."""
+
     api_languages: list[str]
     prompt_languages: list[str]
     api_locale_dir: str
@@ -451,6 +483,7 @@ class I18nStatusResponse(msgspec.Struct, kw_only=True):
 
 class PiiScanResponse(msgspec.Struct, kw_only=True):
     """PII scan results."""
+
     status: str
     findings: dict[str, int]
     total_matches: int
@@ -459,6 +492,7 @@ class PiiScanResponse(msgspec.Struct, kw_only=True):
 
 class SecurityPostureResponse(msgspec.Struct, kw_only=True):
     """Security posture summary."""
+
     summary_available: bool
     zap_baseline_available: bool
     zap_full_available: bool
@@ -478,6 +512,7 @@ class LocustSummaryResponse(msgspec.Struct, kw_only=True):
       - Status summary_available
       - Raw payload z locust stats
     """
+
     status: str
     summary_available: bool = True
     p95_ms: float | None = None
@@ -492,6 +527,7 @@ class LocustSummaryResponse(msgspec.Struct, kw_only=True):
 
 class StatsProcessingResponse(msgspec.Struct, kw_only=True):
     """Processing statistics."""
+
     total_processed: int
     avg_processing_time_ms: int
     success_rate: float
@@ -500,6 +536,7 @@ class StatsProcessingResponse(msgspec.Struct, kw_only=True):
 
 class WorkerStatusResponse(msgspec.Struct, kw_only=True):
     """Worker status."""
+
     status: str
     uptime_seconds: int = 0
     ram_mb: float = 0.0
@@ -513,6 +550,7 @@ class WorkerStatusResponse(msgspec.Struct, kw_only=True):
 
 class CircuitBreakerStatusResponse(msgspec.Struct, kw_only=True):
     """Circuit breaker status."""
+
     provider: str = "stamina"
     status: str = "active"
     details: str = ""
@@ -521,6 +559,7 @@ class CircuitBreakerStatusResponse(msgspec.Struct, kw_only=True):
 
 class TelemetryFallbackStatusResponse(msgspec.Struct, kw_only=True):
     """Telemetry fallback status."""
+
     buffer_file: str
     buffer_exists: bool
     queued_spans: int
@@ -529,6 +568,7 @@ class TelemetryFallbackStatusResponse(msgspec.Struct, kw_only=True):
 
 class AutopilotActionResponse(msgspec.Struct, kw_only=True):
     """Autopilot accept/reject response."""
+
     result: str
     invoice_id: str
     action: str
@@ -536,6 +576,7 @@ class AutopilotActionResponse(msgspec.Struct, kw_only=True):
 
 class AutopilotEvalTriggerResponse(msgspec.Struct, kw_only=True):
     """Autopilot trigger evaluation response."""
+
     result: str
     invoice_id: str
     message: str
@@ -543,6 +584,7 @@ class AutopilotEvalTriggerResponse(msgspec.Struct, kw_only=True):
 
 class PartnerClientItem(msgspec.Struct, kw_only=True):
     """Partner client summary."""
+
     id: str
     name: str
     nip: str
@@ -553,6 +595,7 @@ class PartnerClientItem(msgspec.Struct, kw_only=True):
 
 class PartnerClientListResponse(msgspec.Struct, kw_only=True):
     """Partner client list with cursor pagination."""
+
     items: list[PartnerClientItem]
     next_cursor: str | None = None
     has_more: bool = False
@@ -560,6 +603,7 @@ class PartnerClientListResponse(msgspec.Struct, kw_only=True):
 
 class PartnerInvoiceItem(msgspec.Struct, kw_only=True):
     """Partner client invoice summary."""
+
     invoice_id: str
     number: str
     contractor: str
@@ -573,10 +617,12 @@ class PartnerInvoiceItem(msgspec.Struct, kw_only=True):
 
 class SaveDraftResponse(msgspec.Struct, kw_only=True):
     """Response for saving a UI draft."""
+
     status: str
     draft_key: str
 
 
 class RuleSetsResponse(msgspec.Struct, kw_only=True):
     """Available tax simulation rule sets."""
+
     rule_sets: list[str]

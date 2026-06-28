@@ -154,10 +154,18 @@ async def calculate_and_post_cogs(
     # SUPERMOC: Użyj realnego API TB z batch transferem
     import tigerbeetle as tb
     from nexus_ai.services.tigerbeetle.client import (
-        LEDGER, TRANSFER_CODE, _generate_tb_id, _uuid_to_u128,
+        LEDGER,
+        TRANSFER_CODE,
+        _generate_tb_id,
+        _uuid_to_u128,
     )
-    source_u128 = source_document_id.int if hasattr(source_document_id, 'int') else _uuid_to_u128(uuid.UUID(str(source_document_id)))
-    
+
+    source_u128 = (
+        source_document_id.int
+        if hasattr(source_document_id, "int")
+        else _uuid_to_u128(uuid.UUID(str(source_document_id)))
+    )
+
     transfer = tb.Transfer(
         id=_generate_tb_id(),
         debit_account_id=debit_account_731_cogs,

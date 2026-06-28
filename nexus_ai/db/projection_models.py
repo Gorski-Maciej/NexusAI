@@ -16,6 +16,7 @@ from enum import StrEnum
 from typing import Any, ClassVar
 
 import pendulum
+
 # Note: ConfigDict replaced with plain dict (no direct pydantic import)
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped
@@ -31,6 +32,7 @@ from nexus_ai.db.models import PendulumDateTime
 
 class ProjectionInvoiceStatus(StrEnum):
     """Statusy faktury w projekcji — zgodne z głównym InvoiceStatus."""
+
     CREATED = "created"
     SUBMITTED = "submitted"
     APPROVED = "approved"
@@ -41,6 +43,7 @@ class ProjectionInvoiceStatus(StrEnum):
 
 class DecisionResult(StrEnum):
     """Wyniki decyzji."""
+
     AUTO_POST = "AUTO_POST"
     SUGGEST = "SUGGEST"
     ASK_USER = "ASK_USER"
@@ -67,12 +70,13 @@ class InvoiceReadModel(SQLModel, table=True):
         Index("idx_invoice_rm_status", "status"),
         Index("idx_invoice_rm_contractor", "contractor_nip"),
         # SUPERMOC: Partial indexes
-        Index("idx_invoice_rm_blocked", "updated_at",
-              sqlite_where=text("status = 'blocked'")),
-        Index("idx_invoice_rm_approved", "updated_at",
-              sqlite_where=text("status = 'approved'")),
-        Index("idx_invoice_rm_pending", "updated_at",
-              sqlite_where=text("status IN ('created', 'submitted')")),
+        Index("idx_invoice_rm_blocked", "updated_at", sqlite_where=text("status = 'blocked'")),
+        Index("idx_invoice_rm_approved", "updated_at", sqlite_where=text("status = 'approved'")),
+        Index(
+            "idx_invoice_rm_pending",
+            "updated_at",
+            sqlite_where=text("status IN ('created', 'submitted')"),
+        ),
         # SUPERMOC: Expression index
         Index("idx_invoice_rm_contractor_upper", text("UPPER(contractor_nip)")),
     )
@@ -125,10 +129,16 @@ class DecisionAnalytics(SQLModel, table=True):
     __table_args__ = (
         Index("idx_decision_analytics_invoice", "invoice_id"),
         Index("idx_decision_analytics_type", "event_type"),
-        Index("idx_decision_analytics_decision_notnull", "timestamp",
-              sqlite_where=text("decision IS NOT NULL")),
-        Index("idx_decision_analytics_overridden", "timestamp",
-              sqlite_where=text("event_type = 'decision.overridden'")),
+        Index(
+            "idx_decision_analytics_decision_notnull",
+            "timestamp",
+            sqlite_where=text("decision IS NOT NULL"),
+        ),
+        Index(
+            "idx_decision_analytics_overridden",
+            "timestamp",
+            sqlite_where=text("event_type = 'decision.overridden'"),
+        ),
     )
     model_config: ClassVar[dict] = {
         "arbitrary_types_allowed": True,

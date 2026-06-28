@@ -106,9 +106,7 @@ class UnixProgressClient:
 
                     # SUPERMOC: page.pubsub dla dystrybucji zdarzeń
                     if self._page:
-                        self._page.pubsub.send_all_on_topic(
-                            "progress_update", data
-                        )
+                        self._page.pubsub.send_all_on_topic("progress_update", data)
 
                 self._connected = False
                 writer.close()

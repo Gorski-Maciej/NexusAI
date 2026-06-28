@@ -31,7 +31,7 @@ Usage (NOWY SPOSÓB — Taskiq):
 from __future__ import annotations
 
 import threading
-from typing import final,  Any, Callable, Coroutine
+from typing import final, Any, Callable, Coroutine
 
 import anyio
 import msgspec
@@ -52,6 +52,7 @@ class TaskMetadata(msgspec.Struct, kw_only=True):
         owner: Optional owner identifier (e.g., "controller:invoices").
         interval_seconds: Optional expected interval for periodic tasks.
     """
+
     description: str = ""
     started_at: float = 0.0
     owner: str = ""
@@ -68,6 +69,7 @@ class TaskInfo(msgspec.Struct, kw_only=True):
         description: Human-readable description.
         owner: Task owner identifier.
     """
+
     name: str = ""
     running: bool = False
     uptime_seconds: float = 0.0
@@ -76,6 +78,8 @@ class TaskInfo(msgspec.Struct, kw_only=True):
 
 
 final
+
+
 class BackgroundTaskManager:
     """Central manager for long-running background tasks — TaskGroup-based.
 
@@ -237,9 +241,7 @@ class BackgroundTaskManager:
                 name: TaskInfo(
                     name=name,
                     running=not scope.cancel_called,
-                    uptime_seconds=round(
-                        now - meta.started_at, 1
-                    ) if meta.started_at else 0.0,
+                    uptime_seconds=round(now - meta.started_at, 1) if meta.started_at else 0.0,
                     description=meta.description,
                     owner=meta.owner,
                 )

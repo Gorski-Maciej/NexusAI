@@ -49,9 +49,11 @@ from nexus_ai.services.otel_fallback import FileSpanBuffer
 # Zastępują ręczne stringi ("error", "component", itd.) standaryzowanymi.
 try:
     from opentelemetry.semconv.trace import SpanAttributes
+
     HAS_SEMCONV = True
 except ImportError:
     HAS_SEMCONV = False
+
     # Fallback: stałe stringi gdy semconv nie jest zainstalowane
     class SpanAttributes:  # type: ignore
         HTTP_REQUEST_METHOD = "http.request.method"
@@ -321,6 +323,7 @@ def start_span(
     # SUPERMOC: Baggage — propagacja kontekstu między spanami
     if baggage:
         from opentelemetry import baggage as otel_baggage
+
         ctx = otel_baggage.set_baggage("span.name", name)
         for bk, bv in baggage.items():
             ctx = otel_baggage.set_baggage(bk, bv, context=ctx)

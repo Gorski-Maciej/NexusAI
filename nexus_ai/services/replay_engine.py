@@ -234,18 +234,19 @@ def _compare_verdicts(
     for comp_field in _COMPARISON_FIELDS:
         orig_val = original.get(comp_field)
         replay_val = replayed.get(comp_field)
-        diff_data.append({
-            "field": comp_field,
-            "original": str(orig_val) if orig_val is not None else None,
-            "replayed": str(replay_val) if replay_val is not None else None,
-        })
+        diff_data.append(
+            {
+                "field": comp_field,
+                "original": str(orig_val) if orig_val is not None else None,
+                "replayed": str(replay_val) if replay_val is not None else None,
+            }
+        )
 
     # ── SUPERMOC: Polars expressions dla porównania ──────────────
     df = pl.DataFrame(diff_data)
     mismatches = df.filter(
-        ~(
-            pl.col("original").is_null() & pl.col("replayed").is_null()
-        ) & (
+        ~(pl.col("original").is_null() & pl.col("replayed").is_null())
+        & (
             pl.col("original").is_null()
             | pl.col("replayed").is_null()
             | (pl.col("original") != pl.col("replayed"))

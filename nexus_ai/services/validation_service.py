@@ -7,6 +7,7 @@ from sqlmodel import Session
 
 from nexus_ai.db.models import Invoice
 
+
 @final
 class ValidationService:
     """Zaawansowana walidacja biznesowa zapobiegająca duplikatom i błędom.

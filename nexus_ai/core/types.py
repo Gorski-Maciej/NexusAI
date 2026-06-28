@@ -258,8 +258,10 @@ MoneyRO = Money
 OperationIdRO = OperationId
 NipRO = Nip
 
-# For paginated_adapter, provide a function that works differently    # (returns the class instead of a msgspec.TypeAdapter)
-    def paginated_adapter(item_type: type[T]) -> type[PaginatedResponse[T]]:
+
+# For paginated_adapter, provide a function that works differently
+# (returns the class instead of a msgspec.TypeAdapter)
+def paginated_adapter(item_type: type[T]) -> type[PaginatedResponse[T]]:
     """Get PaginatedResponse class parameterized with item_type.
 
     Args:

@@ -107,7 +107,9 @@ class LocalSecretsCache:
             )
             return None
         except (ValueError, TypeError, base64.binascii.Error) as exc:
-            logger.warning("Invalid NEXUS_SECRETS_CACHE_KEY format: %s; falling back to plaintext cache", exc)
+            logger.warning(
+                "Invalid NEXUS_SECRETS_CACHE_KEY format: %s; falling back to plaintext cache", exc
+            )
             return None
 
     def _encrypt(self, value: str) -> tuple[str, bool]:

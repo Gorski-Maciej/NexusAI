@@ -44,7 +44,8 @@ def InvoiceRegistryView(page: ft.Page, api: NexusApiClient):
 
     # Filter by search
     filtered = [
-        inv for inv in invoices.value
+        inv
+        for inv in invoices.value
         if not search_query.value.lower()
         or search_query.value.lower() in (inv.number or "").lower()
         or search_query.value.lower() in (inv.customer_id or "").lower()
@@ -57,8 +58,10 @@ def InvoiceRegistryView(page: ft.Page, api: NexusApiClient):
         tiles.append(
             ft.Container(
                 data=invoice.id,
-                padding=12, border_radius=8,
-                bgcolor=ft.colors.SURFACE_CONTAINER_HIGHEST if invoice.pending
+                padding=12,
+                border_radius=8,
+                bgcolor=ft.colors.SURFACE_CONTAINER_HIGHEST
+                if invoice.pending
                 else ft.colors.SURFACE,
                 content=ft.Row(
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -70,21 +73,27 @@ def InvoiceRegistryView(page: ft.Page, api: NexusApiClient):
             )
         )
 
-    return ft.Column([
-        ft.SearchBar(
-            ref=search_ref,
-            bar_hint_text="Szukaj faktury...",
-            view_hint_text="Wybierz...",
-            on_change=lambda e: search_query.set(e.control.value or ""),
-            height=40,
-        ),
-        ft.Container(height=8),
-        ft.ListView(
-            ref=list_ref,
-            expand=True, spacing=10, auto_scroll=True,
-            controls=tiles,
-        ),
-    ], expand=True, spacing=12)
+    return ft.Column(
+        [
+            ft.SearchBar(
+                ref=search_ref,
+                bar_hint_text="Szukaj faktury...",
+                view_hint_text="Wybierz...",
+                on_change=lambda e: search_query.set(e.control.value or ""),
+                height=40,
+            ),
+            ft.Container(height=8),
+            ft.ListView(
+                ref=list_ref,
+                expand=True,
+                spacing=10,
+                auto_scroll=True,
+                controls=tiles,
+            ),
+        ],
+        expand=True,
+        spacing=12,
+    )
 
 
 @ft.component
@@ -165,23 +174,47 @@ def NexusApp(page: ft.Page, api: NexusApiClient):
             ),
             ft.Divider(),
             # Stats row
-            ft.ResponsiveRow(spacing=20, controls=[
-                StatCard("Suma Brutto", f"{stats.value.get('total_gross', 0):.2f} PLN",
-                         ft.icons.MONEY, ft.colors.GREEN_400),
-                StatCard("Liczba Faktur", str(stats.value.get("count", 0)),
-                         ft.icons.COPY, ft.colors.BLUE_400),
-                StatCard("Średnia Wartość", f"{stats.value.get('avg_amount', 0):.2f} PLN",
-                         ft.icons.ANALYTICS, ft.colors.PURPLE_400),
-            ]),
+            ft.ResponsiveRow(
+                spacing=20,
+                controls=[
+                    StatCard(
+                        "Suma Brutto",
+                        f"{stats.value.get('total_gross', 0):.2f} PLN",
+                        ft.icons.MONEY,
+                        ft.colors.GREEN_400,
+                    ),
+                    StatCard(
+                        "Liczba Faktur",
+                        str(stats.value.get("count", 0)),
+                        ft.icons.COPY,
+                        ft.colors.BLUE_400,
+                    ),
+                    StatCard(
+                        "Średnia Wartość",
+                        f"{stats.value.get('avg_amount', 0):.2f} PLN",
+                        ft.icons.ANALYTICS,
+                        ft.colors.PURPLE_400,
+                    ),
+                ],
+            ),
             ft.Divider(),
             # Action row
-            ft.Row(controls=[
-                ft.ElevatedButton("Dodaj Fakturę (OCR)", icon=ft.icons.UPLOAD_FILE,
-                                  on_click=lambda _: file_picker_ref.current.pick_files()
-                                  if file_picker_ref.current else None),
-                ft.IconButton(ft.icons.REFRESH, tooltip="Odśwież",
-                              on_click=lambda _: schedule_refresh()),
-            ]),
+            ft.Row(
+                controls=[
+                    ft.ElevatedButton(
+                        "Dodaj Fakturę (OCR)",
+                        icon=ft.icons.UPLOAD_FILE,
+                        on_click=lambda _: (
+                            file_picker_ref.current.pick_files()
+                            if file_picker_ref.current
+                            else None
+                        ),
+                    ),
+                    ft.IconButton(
+                        ft.icons.REFRESH, tooltip="Odśwież", on_click=lambda _: schedule_refresh()
+                    ),
+                ]
+            ),
             # Loader
             ft.ProgressBar(ref=loader_ref, visible=loading.value, color="blue"),
             # SUPERMOC: Invoice registry with search

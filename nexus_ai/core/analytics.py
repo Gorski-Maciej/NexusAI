@@ -293,30 +293,32 @@ def financial_analysis_with_polars_sql(
     #   - Obliczeń warunkowych (pl.when)
     #   - Zaawansowanych transformacji
     #   - Czytelniejszej składni niż SQL CASE
-    result = lazy.with_columns([
-        # Cast na Float64 dla spójności
-        pl.col("total_gross").cast(pl.Float64),
-        pl.col("total_collected").cast(pl.Float64).fill_null(0.0),
-        pl.col("outstanding").cast(pl.Float64).fill_null(0.0),
-        pl.col("total_vat").cast(pl.Float64).fill_null(0.0),
-        # Kategoryzacja windykacyjna przez Polars expressions
-        pl.when(pl.col("outstanding") <= 0)
-        .then(pl.lit("PAID_IN_FULL"))
-        .when(pl.col("outstanding") < pl.col("total_gross") * 0.3)
-        .then(pl.lit("PARTIAL"))
-        .otherwise(pl.lit("HIGH_RISK"))
-        .alias("collection_status"),
-        # Wskaźnik ściągalności
-        (pl.col("total_collected") / pl.col("total_gross") * 100.0)
-        .round(1)
-        .fill_null(0.0)
-        .alias("collection_rate_pct"),
-        # Udział VAT w wartości brutto
-        (pl.col("total_vat") / pl.col("total_gross") * 100.0)
-        .round(1)
-        .fill_null(0.0)
-        .alias("vat_share_pct"),
-    ])
+    result = lazy.with_columns(
+        [
+            # Cast na Float64 dla spójności
+            pl.col("total_gross").cast(pl.Float64),
+            pl.col("total_collected").cast(pl.Float64).fill_null(0.0),
+            pl.col("outstanding").cast(pl.Float64).fill_null(0.0),
+            pl.col("total_vat").cast(pl.Float64).fill_null(0.0),
+            # Kategoryzacja windykacyjna przez Polars expressions
+            pl.when(pl.col("outstanding") <= 0)
+            .then(pl.lit("PAID_IN_FULL"))
+            .when(pl.col("outstanding") < pl.col("total_gross") * 0.3)
+            .then(pl.lit("PARTIAL"))
+            .otherwise(pl.lit("HIGH_RISK"))
+            .alias("collection_status"),
+            # Wskaźnik ściągalności
+            (pl.col("total_collected") / pl.col("total_gross") * 100.0)
+            .round(1)
+            .fill_null(0.0)
+            .alias("collection_rate_pct"),
+            # Udział VAT w wartości brutto
+            (pl.col("total_vat") / pl.col("total_gross") * 100.0)
+            .round(1)
+            .fill_null(0.0)
+            .alias("vat_share_pct"),
+        ]
+    )
 
     # ── KROK 3: Streaming collect + shrink_dtype ──────────────────
     return result.collect(streaming=streaming).shrink_dtype()

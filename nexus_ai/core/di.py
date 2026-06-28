@@ -139,9 +139,6 @@ async def get_duckdb_manager(config: AppConfig | None = None) -> AsyncGenerator[
         manager.close()
 
 
-
-
-
 # =========================================================================
 # Helper — czyszczenie cache engine przy shutdown
 # =========================================================================

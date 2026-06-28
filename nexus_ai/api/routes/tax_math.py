@@ -163,12 +163,14 @@ class TaxMathController(Controller):
             for net in net_decimals:
                 vat = _calc_vat_per_position(net, vat_rate)
                 gross = _round_money(net + vat)
-                positions.append({
-                    "net": str(_round_money(net)),
-                    "vat": str(vat),
-                    "gross": str(gross),
-                    "vat_rate": str(vat_rate),
-                })
+                positions.append(
+                    {
+                        "net": str(_round_money(net)),
+                        "vat": str(vat),
+                        "gross": str(gross),
+                        "vat_rate": str(vat_rate),
+                    }
+                )
 
             total_net = sum(Decimal(p["net"]) for p in positions)
             total_vat = sum(Decimal(p["vat"]) for p in positions)
@@ -185,12 +187,14 @@ class TaxMathController(Controller):
                 # W trybie "total" vat per-position wyliczamy proporcjonalnie
                 vat = _round_money(net * vat_rate)
                 gross = _round_money(net + vat)
-                positions.append({
-                    "net": str(_round_money(net)),
-                    "vat": str(vat),
-                    "gross": str(gross),
-                    "vat_rate": str(vat_rate),
-                })
+                positions.append(
+                    {
+                        "net": str(_round_money(net)),
+                        "vat": str(vat),
+                        "gross": str(gross),
+                        "vat_rate": str(vat_rate),
+                    }
+                )
 
         return Response(
             {

@@ -357,15 +357,17 @@ class EventLog:
 
                 # ── SUPERMOC: group_by() zamiast GROUP BY SQL ─────
                 total = df.height
-                by_type = df.group_by("event_type").agg(
-                    pl.len().alias("cnt")
-                ).sort("cnt", descending=True)
-                by_severity = df.group_by("severity").agg(
-                    pl.len().alias("cnt")
-                ).sort("cnt", descending=True)
-                by_source = df.group_by("source").agg(
-                    pl.len().alias("cnt")
-                ).sort("cnt", descending=True)
+                by_type = (
+                    df.group_by("event_type")
+                    .agg(pl.len().alias("cnt"))
+                    .sort("cnt", descending=True)
+                )
+                by_severity = (
+                    df.group_by("severity").agg(pl.len().alias("cnt")).sort("cnt", descending=True)
+                )
+                by_source = (
+                    df.group_by("source").agg(pl.len().alias("cnt")).sort("cnt", descending=True)
+                )
 
                 # ── SUPERMOC: shrink_dtype() — redukcja RAM ──────
                 by_type = by_type.shrink_dtype()

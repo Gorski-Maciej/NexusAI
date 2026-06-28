@@ -209,6 +209,7 @@ class FileSystemService:
             return self._fs.transaction()
         # Fallback: no-op transaction
         from contextlib import nullcontext
+
         return nullcontext()
 
     # ── SUPERMOC: MemoryFileSystem ─────────────────────────────────────

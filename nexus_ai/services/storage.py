@@ -441,7 +441,7 @@ class StorageService:
         service._tx_fs = TransactionalFileSystem(fs=service._fs)
 
         # TOTALNA REWOLUCJA: AsyncFsWrapper dla memory FS
-        from nexus_ai.core.fsspec_compat import AsyncFsWrapper
+
         service._async_fs = AsyncFsWrapper(fs=service._fs)
 
         service._meta_mapper = fsspec.get_mapper("memory://test/.meta/")

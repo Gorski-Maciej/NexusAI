@@ -23,11 +23,13 @@ from nexus_ai.services.tigerbeetle.client import LEDGER, TRANSFER_CODE, TigerBee
 
 class TigerBeetleSecurityException(PermissionError):  # noqa: N818
     """Raised when a user without proper RBAC role attempts a restricted operation."""
+
     pass
 
 
 class SecureTransferSpec(Struct):
     """Specyfikacja transferu dla SecureTigerBeetleClient."""
+
     debit_account: int
     credit_account: int
     amount_minor: int
@@ -125,9 +127,7 @@ class SecureTigerBeetleClient:
                 operation="post_pending_transfer",
                 details={"pending_id": pending_id, "role": str(role_ctx.role)},
             )
-            raise TigerBeetleSecurityException(
-                "WORKER cannot execute posted TigerBeetle transfers"
-            )
+            raise TigerBeetleSecurityException("WORKER cannot execute posted TigerBeetle transfers")
 
         return self._inner.post_pending_transfer(
             pending_id,
@@ -153,9 +153,7 @@ class SecureTigerBeetleClient:
                 operation="void_pending_transfer",
                 details={"pending_id": pending_id, "role": str(role_ctx.role)},
             )
-            raise TigerBeetleSecurityException(
-                "WORKER cannot void TigerBeetle transfers"
-            )
+            raise TigerBeetleSecurityException("WORKER cannot void TigerBeetle transfers")
 
         return self._inner.void_pending_transfer(
             pending_id,
@@ -214,15 +212,17 @@ class SecureTigerBeetleClient:
 
         output = []
         for i, (spec, result) in enumerate(zip(specs, results)):
-            output.append({
-                "index": i,
-                "code": spec.code,
-                "debit": spec.debit_account,
-                "credit": spec.credit_account,
-                "amount": spec.amount_minor,
-                "status": str(result),
-                "pending_id": result.timestamp if spec.is_pending else None,
-            })
+            output.append(
+                {
+                    "index": i,
+                    "code": spec.code,
+                    "debit": spec.debit_account,
+                    "credit": spec.credit_account,
+                    "amount": spec.amount_minor,
+                    "status": str(result),
+                    "pending_id": result.timestamp if spec.is_pending else None,
+                }
+            )
 
         return output
 

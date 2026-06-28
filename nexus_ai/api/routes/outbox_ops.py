@@ -68,21 +68,27 @@ class OutboxOpsController(Controller):
                 pending = int(
                     (
                         await session.execute(
-                            select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.PENDING)
+                            select(func.count())
+                            .select_from(OutboxEvent)
+                            .where(OutboxEvent.status == OutboxStatus.PENDING)
                         )
                     ).scalar_one()
                 )
                 failed = int(
                     (
                         await session.execute(
-                            select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.FAILED)
+                            select(func.count())
+                            .select_from(OutboxEvent)
+                            .where(OutboxEvent.status == OutboxStatus.FAILED)
                         )
                     ).scalar_one()
                 )
                 dead = int(
                     (
                         await session.execute(
-                            select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.DEAD_LETTER)
+                            select(func.count())
+                            .select_from(OutboxEvent)
+                            .where(OutboxEvent.status == OutboxStatus.DEAD_LETTER)
                         )
                     ).scalar_one()
                 )

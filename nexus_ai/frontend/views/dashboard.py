@@ -22,8 +22,11 @@ import pendulum
 from structlog import get_logger
 
 from nexus_ai.frontend.charts import (
-    cashflow_line_chart, monthly_trend_line_chart,
-    revenue_expense_chart, top_suppliers_bar_chart, vat_pie_chart,
+    cashflow_line_chart,
+    monthly_trend_line_chart,
+    revenue_expense_chart,
+    top_suppliers_bar_chart,
+    vat_pie_chart,
 )
 from nexus_ai.frontend.components.stat_card import ShimmerCard, ShimmerChart, ShimmerRow
 from nexus_ai.frontend.api_client import NexusApiClient
@@ -131,79 +134,123 @@ def DashboardView(page: ft.Page, api_client: NexusApiClient, query_context: dict
 
     if loading.value and not summary_data.value:
         return ft.Container(
-            content=ft.Column([
-                ft.Container(height=20),
-                ShimmerRow(count=4),
-                ft.Container(height=24),
-                ShimmerChart(height=200),
-            ], scroll=ft.ScrollMode.AUTO, expand=True),
-            padding=ft.padding.all(24), expand=True,
+            content=ft.Column(
+                [
+                    ft.Container(height=20),
+                    ShimmerRow(count=4),
+                    ft.Container(height=24),
+                    ShimmerChart(height=200),
+                ],
+                scroll=ft.ScrollMode.AUTO,
+                expand=True,
+            ),
+            padding=ft.padding.all(24),
+            expand=True,
         )
 
     # ── Error state ─────────────────────────────────────────────────────
 
     if error.value and not summary_data.value:
         return ft.Container(
-            content=ft.Column([
-                ft.Icon(ft.icons.ERROR_OUTLINE, size=64, color=ft.colors.RED_400),
-                ft.Container(height=16),
-                ft.Text("Błąd ładowania danych", size=20, weight=ft.FontWeight.BOLD,
-                        color=ft.colors.RED_400),
-                ft.Container(height=8),
-                ft.Text(error.value, size=13, color=ft.colors.GREY_400,
-                        text_align=ft.TextAlign.CENTER),
-                ft.Container(height=24),
-                ft.ElevatedButton("Spróbuj ponownie", icon=ft.icons.REFRESH,
-                                  on_click=lambda _: schedule_load()),
-            ], alignment=ft.MainAxisAlignment.CENTER,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            content=ft.Column(
+                [
+                    ft.Icon(ft.icons.ERROR_OUTLINE, size=64, color=ft.colors.RED_400),
+                    ft.Container(height=16),
+                    ft.Text(
+                        "Błąd ładowania danych",
+                        size=20,
+                        weight=ft.FontWeight.BOLD,
+                        color=ft.colors.RED_400,
+                    ),
+                    ft.Container(height=8),
+                    ft.Text(
+                        error.value,
+                        size=13,
+                        color=ft.colors.GREY_400,
+                        text_align=ft.TextAlign.CENTER,
+                    ),
+                    ft.Container(height=24),
+                    ft.ElevatedButton(
+                        "Spróbuj ponownie",
+                        icon=ft.icons.REFRESH,
+                        on_click=lambda _: schedule_load(),
+                    ),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            ),
             expand=True,
         )
 
     # ── Build dashboard ─────────────────────────────────────────────────
 
     return ft.Container(
-        content=ft.Column([
-            _build_header(schedule_load, booked_today.value),
-            ft.Container(height=16),
-            _build_summary(booked_today.value, pending.value, auto_rate.value, total.value),
-            ft.Container(height=20),
-            ft.Divider(height=1, color=ft.colors.GREY_800),
-            ft.Container(height=16),
-            # SUPERMOC: Tabs dla przełączania widoków
-            ft.Tabs(
-                selected_index=tab_index.value,
-                animation_duration=300,
-                tabs=[
-                    ft.Tab(text="Finanse", icon=ft.icons.ACCOUNT_BALANCE),
-                    ft.Tab(text="VAT", icon=ft.icons.PERCENT),
-                    ft.Tab(text="Dostawcy", icon=ft.icons.SUPPLIER),
-                ],
-                on_change=lambda e: tab_index.set(e.control.selected_index),
-            ),
-            ft.Container(height=16),
-            # SUPERMOC: Chart content based on tab
-            _build_charts(tab_index.value, monthly_data.value, cashflow_data.value,
-                          vat_data.value, suppliers_data.value),
-        ], scroll=ft.ScrollMode.AUTO, expand=True),
-        padding=ft.padding.all(24), expand=True,
+        content=ft.Column(
+            [
+                _build_header(schedule_load, booked_today.value),
+                ft.Container(height=16),
+                _build_summary(booked_today.value, pending.value, auto_rate.value, total.value),
+                ft.Container(height=20),
+                ft.Divider(height=1, color=ft.colors.GREY_800),
+                ft.Container(height=16),
+                # SUPERMOC: Tabs dla przełączania widoków
+                ft.Tabs(
+                    selected_index=tab_index.value,
+                    animation_duration=300,
+                    tabs=[
+                        ft.Tab(text="Finanse", icon=ft.icons.ACCOUNT_BALANCE),
+                        ft.Tab(text="VAT", icon=ft.icons.PERCENT),
+                        ft.Tab(text="Dostawcy", icon=ft.icons.SUPPLIER),
+                    ],
+                    on_change=lambda e: tab_index.set(e.control.selected_index),
+                ),
+                ft.Container(height=16),
+                # SUPERMOC: Chart content based on tab
+                _build_charts(
+                    tab_index.value,
+                    monthly_data.value,
+                    cashflow_data.value,
+                    vat_data.value,
+                    suppliers_data.value,
+                ),
+            ],
+            scroll=ft.ScrollMode.AUTO,
+            expand=True,
+        ),
+        padding=ft.padding.all(24),
+        expand=True,
     )
 
 
 @ft.component
 def _build_header(on_refresh, last_update: str):
     """Dashboard header with refresh button."""
-    return ft.Row([
-        ft.Column([
-            ft.Text("Financial Dashboard", size=28, weight=ft.FontWeight.BOLD,
-                    color=ft.colors.GREY_100),
-            ft.Text(f"Aktualizacja: {pendulum.now().format('DD.MM.YYYY HH:mm')}",
-                    size=12, color=ft.colors.GREY_500),
-        ]),
-        ft.Container(expand=True),
-        ft.IconButton(icon=ft.icons.REFRESH, tooltip="Odśwież dane",
-                      on_click=lambda _: on_refresh(), icon_size=22),
-    ])
+    return ft.Row(
+        [
+            ft.Column(
+                [
+                    ft.Text(
+                        "Financial Dashboard",
+                        size=28,
+                        weight=ft.FontWeight.BOLD,
+                        color=ft.colors.GREY_100,
+                    ),
+                    ft.Text(
+                        f"Aktualizacja: {pendulum.now().format('DD.MM.YYYY HH:mm')}",
+                        size=12,
+                        color=ft.colors.GREY_500,
+                    ),
+                ]
+            ),
+            ft.Container(expand=True),
+            ft.IconButton(
+                icon=ft.icons.REFRESH,
+                tooltip="Odśwież dane",
+                on_click=lambda _: on_refresh(),
+                icon_size=22,
+            ),
+        ]
+    )
 
 
 @ft.component
@@ -216,34 +263,45 @@ def _build_summary(booked: str, pend: str, rate: str, tot: str):
         ("Razem faktur", tot, ft.icons.ACCOUNT_BALANCE, ft.colors.PURPLE_800),
     ]
 
-    return ft.ResponsiveRow([
-        ft.Container(
-            col={"xs": 6, "sm": 3},
-            content=ft.Card(
-                content=ft.Container(
-                    padding=ft.padding.all(16),
-                    gradient=ft.LinearGradient(
-                        begin=ft.alignment.top_left,
-                        end=ft.alignment.bottom_right,
-                        colors=[color + "20", color + "05"],
+    return ft.ResponsiveRow(
+        [
+            ft.Container(
+                col={"xs": 6, "sm": 3},
+                content=ft.Card(
+                    content=ft.Container(
+                        padding=ft.padding.all(16),
+                        gradient=ft.LinearGradient(
+                            begin=ft.alignment.top_left,
+                            end=ft.alignment.bottom_right,
+                            colors=[color + "20", color + "05"],
+                        ),
+                        animate=ft.animation.Animation(200, ft.AnimationCurve.EASE_OUT),
+                        on_hover=lambda e: (
+                            setattr(e.control, "scale", 1.02 if e.data == "true" else 1.0)
+                            or e.control.update()
+                        ),
+                        content=ft.Column(
+                            [
+                                ft.Row(
+                                    [
+                                        ft.Icon(icon, size=28, color=color),
+                                        ft.Container(expand=True),
+                                    ]
+                                ),
+                                ft.Container(height=12),
+                                ft.Text(value, size=24, weight=ft.FontWeight.BOLD),
+                                ft.Container(height=4),
+                                ft.Text(title, size=13, color=ft.colors.GREY_400),
+                            ]
+                        ),
                     ),
-                    animate=ft.animation.Animation(200, ft.AnimationCurve.EASE_OUT),
-                    on_hover=lambda e: setattr(e.control, "scale",
-                                               1.02 if e.data == "true" else 1.0) or e.control.update(),
-                    content=ft.Column([
-                        ft.Row([
-                            ft.Icon(icon, size=28, color=color),
-                            ft.Container(expand=True),
-                        ]),
-                        ft.Container(height=12),
-                        ft.Text(value, size=24, weight=ft.FontWeight.BOLD),
-                        ft.Container(height=4),
-                        ft.Text(title, size=13, color=ft.colors.GREY_400),
-                    ]),
-                ), expand=True,
-            ),
-        ) for title, value, icon, color in cards
-    ], spacing=12)
+                    expand=True,
+                ),
+            )
+            for title, value, icon, color in cards
+        ],
+        spacing=12,
+    )
 
 
 @ft.component
@@ -252,24 +310,35 @@ def _build_charts(tab: int, monthly, cashflow, vat_data, suppliers):
     if tab == 0:
         # Finanse tab
         chart1 = ft.Container(
-            content=revenue_expense_chart(monthly) if monthly else
-            ft.Text("Brak danych", color=ft.colors.GREY_500),
+            content=revenue_expense_chart(monthly)
+            if monthly
+            else ft.Text("Brak danych", color=ft.colors.GREY_500),
             padding=10,
         )
         chart2 = ft.Container(
-            content=cashflow_line_chart(cashflow) if cashflow else
-            ft.Text("Brak danych", color=ft.colors.GREY_500),
+            content=cashflow_line_chart(cashflow)
+            if cashflow
+            else ft.Text("Brak danych", color=ft.colors.GREY_500),
             padding=10,
         )
-        return ft.Column([
-            ft.Text("Analiza finansowa", size=18, weight=ft.FontWeight.BOLD,
-                    color=ft.colors.GREY_100),
-            ft.Container(height=8),
-            ft.ResponsiveRow([
-                ft.Container(col={"xs": 12, "md": 6}, content=chart1),
-                ft.Container(col={"xs": 12, "md": 6}, content=chart2),
-            ], spacing=16),
-        ])
+        return ft.Column(
+            [
+                ft.Text(
+                    "Analiza finansowa",
+                    size=18,
+                    weight=ft.FontWeight.BOLD,
+                    color=ft.colors.GREY_100,
+                ),
+                ft.Container(height=8),
+                ft.ResponsiveRow(
+                    [
+                        ft.Container(col={"xs": 12, "md": 6}, content=chart1),
+                        ft.Container(col={"xs": 12, "md": 6}, content=chart2),
+                    ],
+                    spacing=16,
+                ),
+            ]
+        )
     elif tab == 1:
         # VAT tab
         recent_vat = vat_data[-6:] if len(vat_data) > 6 else vat_data
@@ -289,29 +358,46 @@ def _build_charts(tab: int, monthly, cashflow, vat_data, suppliers):
                 {"label": "VAT 0%", "value": 8900},
             ]
 
-        trend_chart = monthly_trend_line_chart(monthly) if monthly else \
-            ft.Text("Brak danych trendu", color=ft.colors.GREY_500)
+        trend_chart = (
+            monthly_trend_line_chart(monthly)
+            if monthly
+            else ft.Text("Brak danych trendu", color=ft.colors.GREY_500)
+        )
 
-        return ft.Column([
-            ft.Text("VAT i trendy", size=18, weight=ft.FontWeight.BOLD,
-                    color=ft.colors.GREY_100),
-            ft.Container(height=8),
-            ft.ResponsiveRow([
-                ft.Container(col={"xs": 12, "md": 6},
-                             content=ft.Container(content=vat_pie_chart(pie_entries), padding=10)),
-                ft.Container(col={"xs": 12, "md": 6},
-                             content=ft.Container(content=trend_chart, padding=10)),
-            ], spacing=16),
-        ])
+        return ft.Column(
+            [
+                ft.Text(
+                    "VAT i trendy", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREY_100
+                ),
+                ft.Container(height=8),
+                ft.ResponsiveRow(
+                    [
+                        ft.Container(
+                            col={"xs": 12, "md": 6},
+                            content=ft.Container(content=vat_pie_chart(pie_entries), padding=10),
+                        ),
+                        ft.Container(
+                            col={"xs": 12, "md": 6},
+                            content=ft.Container(content=trend_chart, padding=10),
+                        ),
+                    ],
+                    spacing=16,
+                ),
+            ]
+        )
     else:
         # Dostawcy tab
-        return ft.Column([
-            ft.Text("Top dostawcy", size=18, weight=ft.FontWeight.BOLD,
-                    color=ft.colors.GREY_100),
-            ft.Container(height=8),
-            ft.Container(
-                content=top_suppliers_bar_chart(suppliers) if suppliers else
-                ft.Text("Brak danych dostawców", color=ft.colors.GREY_500),
-                padding=10,
-            ),
-        ])
+        return ft.Column(
+            [
+                ft.Text(
+                    "Top dostawcy", size=18, weight=ft.FontWeight.BOLD, color=ft.colors.GREY_100
+                ),
+                ft.Container(height=8),
+                ft.Container(
+                    content=top_suppliers_bar_chart(suppliers)
+                    if suppliers
+                    else ft.Text("Brak danych dostawców", color=ft.colors.GREY_500),
+                    padding=10,
+                ),
+            ]
+        )

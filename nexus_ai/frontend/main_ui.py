@@ -1,4 +1,5 @@
 """frontend/main_ui.py — Flet entrypoint z dynamicznym portem i tokenem."""
+
 from __future__ import annotations
 
 import flet as ft

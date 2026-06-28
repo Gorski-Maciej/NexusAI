@@ -1,10 +1,18 @@
-"""Database layer packages (OLTP and OLAP)."""
+"""
+Database layer packages (OLTP and OLAP).
+
+Skonsolidowane moduły (FAZA 7):
+  - queries.py:  pagination + FTS5 + analytics views (dawniej pagination.py, fts.py, views.py)
+  - transactions.py: outbox + transaction patterns (dawniej outbox.py, transaction.py)
+  - security.py: SQLCipher config + key rotation (dawniej sqlcipher_config.py, sqlcipher_key_rotation.py)
+  - models.py: SQLModel definitions
+  - hooks.py: DB hooks + walidacja
+  - analytics.py: DuckDB manager
+"""
 
 from nexus_ai.core.logger import get_logger as _get_logger
 
 _log = _get_logger("nexus.db")
-
-# ── Safe imports — non-critical modules may fail in constrained envs ──
 
 
 def _safe_import(qualname: str, names: list[str]):
@@ -16,41 +24,42 @@ def _safe_import(qualname: str, names: list[str]):
         return [None] * len(names)
 
 
-(
-    Base,
-    create_oltp_engine,
-    create_session_factory,
-    get_session,
-    SQLCIPHER_AVAILABLE,
-) = _safe_import(
-    "db.database",
-    [
-        "Base",
-        "create_oltp_engine",
-        "create_session_factory",
-        "get_session",
-        "SQLCIPHER_AVAILABLE",
-    ],
+# ── Core DB ──────────────────────────────────────────────────────────
+(Base, create_oltp_engine, create_session_factory, get_session, SQLCIPHER_AVAILABLE) = _safe_import(
+    "nexus_ai.db.database",
+    ["Base", "create_oltp_engine", "create_session_factory", "get_session", "SQLCIPHER_AVAILABLE"],
 )
 
-DuckDBLimits, DuckDBManager = _safe_import("db.analytics", ["DuckDBLimits", "DuckDBManager"])
+# ── Analytics (DuckDB) ──────────────────────────────────────────────
+DuckDBLimits, DuckDBManager = _safe_import(
+    "nexus_ai.db.analytics", ["DuckDBLimits", "DuckDBManager"]
+)
 
-[OutboxManager] = _safe_import("db.outbox", ["OutboxManager"])
+# ── Transactions (dawniej outbox.py + transaction.py) ────────────────
+OutboxManager, process_events = _safe_import(
+    "nexus_ai.db.transactions", ["OutboxManager", "process_events"]
+)
 
-[atomic_transaction] = _safe_import("db.transaction", ["atomic_transaction"])
+# ── Queries (dawniej pagination.py + fts.py + views.py) ─────────────
+CursorPagination, FTSManager, AnalyticsViews = _safe_import(
+    "nexus_ai.db.queries",
+    ["CursorPagination", "FTSManager", "AnalyticsViews"],
+)
+AnalyticsViewsSetup = AnalyticsViews  # backward compat
 
-[AnalyticsViewsSetup] = _safe_import("db.views", ["AnalyticsViewsSetup"])
+# ── Hooks ────────────────────────────────────────────────────────────
+[register_db_hooks] = _safe_import("nexus_ai.db.hooks", ["register_db_hooks"])
 
-[register_db_hooks] = _safe_import("db.hooks", ["register_db_hooks"])
-
-[FTSManager] = _safe_import("db.fts", ["FTSManager"])
+# ── Security (dawniej sqlcipher_config.py + sqlcipher_key_rotation.py) ─
+SQLCipherConfig, KeyRotation = _safe_import(
+    "nexus_ai.db.security", ["SQLCipherConfig", "KeyRotation"]
+)
 
 
 def get_fts_manager(db_path=None):
-    """Lazy import dla FTSManager — unikamy cyrkularnych importów."""
-    from nexus_ai.db.fts import get_fts_manager as _get_fts
+    from nexus_ai.db.queries import FTSManager as _FTSManager
 
-    return _get_fts(db_path)
+    return _FTSManager(db_path) if db_path else FTSManager
 
 
 __all__ = [
@@ -62,9 +71,12 @@ __all__ = [
     "get_session",
     "SQLCIPHER_AVAILABLE",
     "OutboxManager",
-    "atomic_transaction",
+    "CursorPagination",
+    "FTSManager",
+    "AnalyticsViews",
     "AnalyticsViewsSetup",
     "register_db_hooks",
-    "FTSManager",
+    "SQLCipherConfig",
+    "KeyRotation",
     "get_fts_manager",
 ]

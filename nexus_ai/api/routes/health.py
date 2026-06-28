@@ -42,6 +42,7 @@ class HealthController(Controller):
     async def health_check(self) -> dict[str, str]:
         """Basic health check."""
         import stamina
+
         cb_active = stamina.is_active()
         status = "OK" if cb_active else "OK_BUT_CIRCUIT_OPEN"
         return {
@@ -91,17 +92,23 @@ class HealthController(Controller):
             users_count = int(db_session.execute(text("SELECT COUNT(*) FROM users")).scalar_one())
             pending_outbox = int(
                 db_session.execute(
-                    select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.PENDING)
+                    select(func.count())
+                    .select_from(OutboxEvent)
+                    .where(OutboxEvent.status == OutboxStatus.PENDING)
                 ).scalar_one()
             )
             failed_outbox = int(
                 db_session.execute(
-                    select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.FAILED)
+                    select(func.count())
+                    .select_from(OutboxEvent)
+                    .where(OutboxEvent.status == OutboxStatus.FAILED)
                 ).scalar_one()
             )
             dead_letter_outbox = int(
                 db_session.execute(
-                    select(func.count()).select_from(OutboxEvent).where(OutboxEvent.status == OutboxStatus.DEAD_LETTER)
+                    select(func.count())
+                    .select_from(OutboxEvent)
+                    .where(OutboxEvent.status == OutboxStatus.DEAD_LETTER)
                 ).scalar_one()
             )
         except Exception:
@@ -177,6 +184,7 @@ class HealthController(Controller):
     async def _pending_tasks(self) -> int | None:
         try:
             from api.tasks import broker
+
             queue_size = getattr(broker, "queue_size", None)
             if queue_size is None:
                 return None
@@ -215,8 +223,14 @@ class HealthController(Controller):
             return {
                 "cpu_percent": round(sys.cpu_percent, 1),
                 "cpu_percent_per_core": [round(c, 1) for c in sys.cpu_percent_per_core],
-                "cpu_freq_mhz": round(sys.cpu_freq_current_mhz, 0) if sys.cpu_freq_current_mhz else None,
-                "load_avg": [round(sys.load_avg_1min, 2), round(sys.load_avg_5min, 2), round(sys.load_avg_15min, 2)],
+                "cpu_freq_mhz": round(sys.cpu_freq_current_mhz, 0)
+                if sys.cpu_freq_current_mhz
+                else None,
+                "load_avg": [
+                    round(sys.load_avg_1min, 2),
+                    round(sys.load_avg_5min, 2),
+                    round(sys.load_avg_15min, 2),
+                ],
                 "ram_percent": round(sys.ram_percent, 1),
                 "ram_used_gb": round(sys.ram_used_gb, 1),
                 "ram_available_gb": round(sys.ram_available_gb, 1),
@@ -229,7 +243,9 @@ class HealthController(Controller):
                 "disk_write_mb": round(sys.disk_write_mb, 1),
                 "net_recv_mb": round(sys.net_bytes_recv_mb, 1),
                 "net_sent_mb": round(sys.net_bytes_sent_mb, 1),
-                "cpu_temp_celsius": round(sys.cpu_temp_celsius, 1) if sys.cpu_temp_celsius else None,
+                "cpu_temp_celsius": round(sys.cpu_temp_celsius, 1)
+                if sys.cpu_temp_celsius
+                else None,
                 "uptime_days": round(sys.uptime_days, 1),
                 "process_status": proc.status,
                 "process_cpu": round(proc.cpu_percent, 1),
@@ -259,6 +275,7 @@ class HealthController(Controller):
         if HealthController._tb_client is None:
             try:
                 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
+
                 HealthController._tb_client = TigerBeetleClient()
                 HealthController._tb_client.connect()
             except ImportError:
@@ -418,6 +435,7 @@ class HealthController(Controller):
         nats_url = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
         try:
             from nexus_ai.core.nats_health import NatsSupervisor
+
             supervisor = NatsSupervisor(nats_servers=[nats_url])
             await supervisor.start()
             try:
@@ -429,6 +447,7 @@ class HealthController(Controller):
             pass
         try:
             from nats.aio.client import Client as NatsClient
+
             nc = NatsClient()
             try:
                 with anyio.fail_after(5):
@@ -450,6 +469,7 @@ class HealthController(Controller):
     async def nats_health(self) -> dict[str, Any]:
         try:
             from nexus_ai.core.nats_health import NatsSupervisor
+
             nats_url = os.getenv("NEXUS_NATS_URL", "nats://localhost:4222")
             supervisor = NatsSupervisor(nats_servers=[nats_url])
             await supervisor.start()
@@ -465,5 +485,6 @@ class HealthController(Controller):
 
 class HealthControllerV2(HealthController):
     """Health endpoints in v2 namespace."""
+
     path = "/health"
     tags = [TAG_HEALTH]
