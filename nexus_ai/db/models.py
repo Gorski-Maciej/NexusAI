@@ -93,7 +93,19 @@ def _strict_create_table(create_table, compiler, **kw):
 
 
 class InvoiceStatus(StrEnum):
-    """Statusy faktury — typowany enum zamiast gołego str."""
+    """Statusy faktury — typowany enum zamiast gołego str.
+
+    Wszystkie możliwe stany w cyklu życia faktury:
+      NEW → PROCESSING → (APPROVED | REJECTED | BLOCKED | PAID)
+      PROCESSING → PENDING_REVIEW → MANUAL_REVIEW
+      PROCESSING → ERROR_TIMEOUT → FAILED
+      PROCESSING → ERROR_OCR → FAILED
+      PROCESSING → ERROR_VALIDATION → FAILED
+
+    UWAGA: Wartość ERROR_TIMEOUT została zmieniona z "ERROR: TIMEOUT"
+    na "ERROR_TIMEOUT" (bez dwukropka i spacji). Backward compatibility
+    jest zapewniona przez _missing_ hook poniżej.
+    """
     NEW = "NEW"
     PROCESSING = "PROCESSING"
     PENDING_REVIEW = "PENDING_REVIEW"
@@ -103,7 +115,23 @@ class InvoiceStatus(StrEnum):
     PAID = "PAID"
     MANUAL_REVIEW = "MANUAL_REVIEW"
     FAILED = "FAILED"
-    ERROR_TIMEOUT = "ERROR: TIMEOUT"
+    ERROR_TIMEOUT = "ERROR_TIMEOUT"
+    ERROR_OCR = "ERROR_OCR"
+    ERROR_VALIDATION = "ERROR_VALIDATION"
+    BLOCKED_FRAUD_SUSPICION = "BLOCKED_FRAUD_SUSPICION"
+
+    @classmethod
+    def _missing_(cls, value: object) -> "InvoiceStatus | None":
+        """Backward compatibility dla starych wartości w DB.
+
+        Stara wartość ERROR: TIMEOUT → nowa ERROR_TIMEOUT.
+        """
+        if isinstance(value, str):
+            normalized = value.replace(": ", "_").replace(" ", "_")
+            for member in cls:
+                if member.value == normalized:
+                    return member
+        return None
 
 
 class OutboxStatus(StrEnum):

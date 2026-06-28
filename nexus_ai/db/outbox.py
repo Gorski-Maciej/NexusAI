@@ -94,7 +94,14 @@ async def process_outbox_events(
                 event.processed_at = pendulum.now("UTC")
                 event.status = OutboxStatus.PROCESSED
                 processed_count += 1
-            except Exception:
+            except (ConnectionError, TimeoutError, OSError) as exc:
+                logger.warning("[OUTBOX] Transient error processing event %s: %s", event.id, exc)
+                event.retry_count = event.retry_count + 1
+                event.status = OutboxStatus.FAILED
+                if event.retry_count >= 5:
+                    event.status = OutboxStatus.DEAD_LETTER
+            except Exception as exc:
+                logger.error("[OUTBOX] Unexpected error processing event %s: %s", event.id, exc)
                 event.retry_count = event.retry_count + 1
                 event.status = OutboxStatus.FAILED
                 if event.retry_count >= 5:
@@ -124,7 +131,11 @@ def _outbox_processor(session_factory, nats_client):
                     nats_client.publish(subject, event.payload.encode())
                     event.processed = True
                     session.commit()
-                except Exception:
+                except (ConnectionError, TimeoutError, OSError) as exc:
+                    logger.warning("[OUTBOX-LEGACY] Publish failed for event %s: %s", event.id, exc)
+                    session.rollback()
+                except Exception as exc:
+                    logger.error("[OUTBOX-LEGACY] Unexpected error for event %s: %s", event.id, exc)
                     session.rollback()
 
         time.sleep(1)  # Oddech dla bazy

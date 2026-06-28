@@ -44,8 +44,10 @@ class Vault:
                 raw = base64.urlsafe_b64decode(configured_key.encode("utf-8"))
                 if len(raw) == 32:
                     self._key = bytearray(raw)
-            except Exception:
-                logger.warning("Invalid encryption_key format; trying as raw password")
+            except (ValueError, base64.binascii.Error) as exc:
+                logger.warning("Invalid encryption_key base64 format: %s; trying as raw password", exc)
+            except Exception as exc:
+                logger.warning("Unexpected error parsing encryption_key: %s", exc)
 
         if self._key is None:
             password = configured_key or os.getenv(config.sqlcipher_key_env, "")
@@ -62,8 +64,10 @@ class Vault:
                     raw = base64.urlsafe_b64decode(env_key.encode("utf-8"))
                     if len(raw) == 32:
                         self._key = bytearray(raw)
-                except Exception:
-                    pass
+                except (ValueError, base64.binascii.Error) as exc:
+                    logger.warning("Invalid NEXUS_ENCRYPTION_KEY base64: %s", exc)
+                except Exception as exc:
+                    logger.warning("Unexpected error parsing NEXUS_ENCRYPTION_KEY: %s", exc)
 
         if self._key is None:
             logger.warning(
@@ -93,11 +97,13 @@ class Vault:
             buf = (ctypes.c_char * len(self._key)).from_buffer(self._key)
             result = libc.mlock(buf, len(self._key))
             if result != 0:
-                logger.debug("[VAULT] mlock failed — key can be swapped to disk")
+                logger.debug("[VAULT] mlock failed — key can be swapped to disk (errno=%d)", result)
             else:
                 logger.debug("[VAULT] encryption key locked in RAM (mlock)")
-        except Exception:
-            logger.debug("[VAULT] mlock not available — key can be swapped")
+        except (OSError, ctypes.CDLLLoadError) as exc:
+            logger.debug("[VAULT] mlock not available: %s — key can be swapped", exc)
+        except Exception as exc:
+            logger.debug("[VAULT] mlock unexpected error: %s", exc)
 
     def _zeroize_key(self) -> None:
         """Bezpiecznie wyzeruj klucz szyfrowania w pamięci.
@@ -132,8 +138,11 @@ class Vault:
         try:
             data = base64.urlsafe_b64decode(encrypted_text.encode("utf-8"))
             return _decrypt(self._key, data).decode("utf-8")
+        except (ValueError, base64.binascii.Error) as exc:
+            logger.error("[VAULT] Decryption failed: invalid base64 format — %s", exc)
+            return encrypted_text
         except Exception as exc:
-            logger.error("Decryption failed: %s", exc)
+            logger.error("[VAULT] Decryption failed: %s — returning original ciphertext", exc)
             return encrypted_text
 
     # Cleanup on garbage collection — zeroize key when Vault is destroyed

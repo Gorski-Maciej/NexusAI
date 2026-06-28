@@ -52,7 +52,8 @@ def probe_sqlcipher() -> bool:
             logger.info("[DB] SQLCipher detected: %s", ver)
             SQLCIPHER_AVAILABLE = True
             return True
-    except Exception:
+    except (sqlite3.OperationalError, sqlite3.DatabaseError) as exc:
+        logger.warning("[DB] SQLCipher probe failed: %s", exc)
         pass
 
     if sys.platform == "linux":
@@ -69,7 +70,8 @@ def probe_sqlcipher() -> bool:
                     logger.info("[DB] SQLCipher loaded via ctypes: %s", ver)
                     SQLCIPHER_AVAILABLE = True
                     return True
-            except Exception:
+            except (OSError, ctypes.CDLLLoadError) as exc:
+                logger.debug("[DB] SQLCipher ctypes load failed for %s: %s", lib_name, exc)
                 continue
 
     SQLCIPHER_AVAILABLE = False
@@ -143,28 +145,28 @@ def _make_pragma_setter(key_hex: str):
             dbapi_connection.execute("PRAGMA cipher_hmac_algorithm = HMAC_SHA512;")
             dbapi_connection.execute("PRAGMA cipher_kdf_algorithm = PBKDF2_HMAC_SHA512;")
             dbapi_connection.execute("PRAGMA cipher_use_hmac = ON;")
-        except Exception:
-            pass
+        except sqlite3.OperationalError as exc:
+            logger.debug("[DB] SQLCipher HMAC pragmas not supported: %s", exc)
 
         try:
             dbapi_connection.execute("PRAGMA cipher_memory_security = ON;")
-        except Exception:
-            pass
+        except sqlite3.OperationalError as exc:
+            logger.debug("[DB] cipher_memory_security not supported: %s", exc)
 
         try:
             dbapi_connection.execute("PRAGMA cipher_default_plaintext_header = ON;")
-        except Exception:
-            pass
+        except sqlite3.OperationalError as exc:
+            logger.debug("[DB] cipher_default_plaintext_header not supported: %s", exc)
 
         try:
             dbapi_connection.execute("PRAGMA cipher_plaintext_header_size = 0;")
-        except Exception:
-            pass
+        except sqlite3.OperationalError as exc:
+            logger.debug("[DB] cipher_plaintext_header_size not supported: %s", exc)
 
         try:
             dbapi_connection.execute("PRAGMA cipher_hmac_pgno = ON;")
-        except Exception:
-            pass
+        except sqlite3.OperationalError as exc:
+            logger.debug("[DB] cipher_hmac_pgno not supported: %s", exc)
 
     return _set_pragmas
 

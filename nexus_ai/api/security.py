@@ -2,16 +2,21 @@ from __future__ import annotations
 
 import os
 import secrets
+from collections.abc import AsyncGenerator
 from functools import lru_cache
 from msgspec import Struct
 
 import pendulum
+from cachetools import TTLCache
 from litestar.connection import ASGIConnection
 from litestar.security.jwt import JWTAuth, JWTCookieAuth, Token
 from sqlmodel import text
 from structlog import get_logger
 
 logger = get_logger("nexus.api.security")
+
+# Cache for user lookups: max 1024 users, TTL 300s (5 min)
+_user_cache: TTLCache[str, User | None] = TTLCache(maxsize=1024, ttl=300)
 
 
 def _resolve_jwt_secret() -> str:
@@ -65,6 +70,10 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> Use
     if not token.sub:
         return None
 
+    # --- TTLCache: fast path ---
+    if token.sub in _user_cache:
+        return _user_cache[token.sub]
+
     extras = getattr(token, "extras", None) or {}
     token_jwt_version = extras.get("jwt_version")
 
@@ -77,7 +86,7 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> Use
                     await conn.execute(
                         text(
                             "SELECT id, username, role, tenant_id, is_active, jwt_version "
-                            "FROM users WHERE id = :id OR username = :id LIMIT 1"
+                            "FROM users WHERE id = :id LIMIT 1"
                         ),
                         {"id": str(token.sub)},
                     )
@@ -87,10 +96,12 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> Use
             )
 
             if not row:
+                _user_cache[token.sub] = None
                 return None
 
             # Check if user is active
             if not row.get("is_active"):
+                _user_cache[token.sub] = None
                 return None
 
             # jwt_version check: if token has a jwt_version, verify it matches the database
@@ -105,26 +116,39 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> Use
                             token_jwt_version,
                             db_jwt_version,
                         )
+                        _user_cache[token.sub] = None
                         return None
-                except (ValueError, TypeError):
-                    pass
+                except (ValueError, TypeError) as exc:
+                    logger.warning("[AUTH] Invalid jwt_version format for user %s: %s", token.sub, exc)
 
-            return User(
+            user = User(
                 id=str(row["id"]),
                 username=str(row["username"]),
                 role=str(row["role"]),
                 tenant_id=str(row["tenant_id"]),
             )
+            _user_cache[token.sub] = user
+            return user
 
-    # Fallback: if no DB engine, rely on token extras
-    if extras.get("username") and extras.get("role"):
-        return User(
+    # Fallback: DEV-ONLY — rely on token extras without DB verification
+    # Ostrzeżenie: ten fallback omija weryfikację użytkownika w bazie danych!
+    # Powinien być używany TYLKO w środowiskach deweloperskich/testowych.
+    dev_mode = os.getenv("NEXUS_DEV_MODE", "").lower() in ("1", "true", "yes")
+    if dev_mode and extras.get("username") and extras.get("role"):
+        logger.warning(
+            "[AUTH] DEV MODE: Authenticating %s from token extras without DB verification",
+            extras["username"],
+        )
+        user = User(
             id=str(token.sub),
             username=str(extras["username"]),
             role=str(extras["role"]),
             tenant_id=str(extras.get("tenant_id")) if extras.get("tenant_id") is not None else None,
         )
+        _user_cache[token.sub] = user
+        return user
 
+    _user_cache[token.sub] = None
     return None
 
 
@@ -149,8 +173,10 @@ def _get_jwt_exclude() -> list[str]:
         exclude = config.effective_jwt_exclude
         if exclude:
             return exclude
-    except Exception:
-        pass
+    except (ImportError, FileNotFoundError, KeyError) as exc:
+        logger.debug("[AUTH] Config not available for JWT exclude, using defaults: %s", exc)
+    except Exception as exc:
+        logger.warning("[AUTH] Unexpected error loading JWT exclude config: %s", exc)
     return [
         "/api/auth/login", "/api/auth/register", "/api/auth/refresh",
         "/api/auth/csrf-token", "/api/auth/reset-password",

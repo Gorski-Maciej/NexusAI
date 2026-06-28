@@ -24,8 +24,11 @@ import time as time_module
 from typing import final
 
 import tigerbeetle as tb
+from structlog import get_logger
 
 from nexus_crypto import blake2b as _blake2b
+
+logger = get_logger("nexus.services.tigerbeetle")
 
 # ── Typy transferów (code field) ──────────────────────────────────────────
 # TB używa numeric code do kategoryzacji typów transakcji
@@ -210,8 +213,10 @@ class TigerBeetleClient:
         if self._client_sync is not None:
             try:
                 self._client_sync.close()
-            except Exception:
-                pass
+            except (ConnectionError, OSError) as exc:
+                logger.warning("[TB] Error closing sync client: %s", exc)
+            except Exception as exc:
+                logger.error("[TB] Unexpected error closing sync client: %s", exc)
             self._client_sync = None
 
     async def close_async(self) -> None:
@@ -219,8 +224,10 @@ class TigerBeetleClient:
         if self._client_async is not None:
             try:
                 await self._client_async.close()
-            except Exception:
-                pass
+            except (ConnectionError, OSError) as exc:
+                logger.warning("[TB] Error closing async client: %s", exc)
+            except Exception as exc:
+                logger.error("[TB] Unexpected error closing async client: %s", exc)
             self._client_async = None
 
     # ── Account operations ───────────────────────────────────────────────

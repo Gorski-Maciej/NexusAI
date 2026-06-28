@@ -51,7 +51,11 @@ def _get_record_append():
         try:
             from nexus_ai.api.telemetry_metrics import record_event_store_append
             _otel_record_append = record_event_store_append
-        except Exception:
+        except ImportError as exc:
+            logger.debug("[EVENT-STORE] telemetry_metrics not available: %s", exc)
+            _otel_record_append = lambda **kw: None
+        except Exception as exc:
+            logger.warning("[EVENT-STORE] Unexpected error loading telemetry: %s", exc)
             _otel_record_append = lambda **kw: None
     return _otel_record_append
 
@@ -153,11 +157,13 @@ class AsyncEventStore:
                 def _optimize() -> None:
                     try:
                         self._conn.execute("PRAGMA optimize;")
-                    except Exception:
-                        pass
+                    except sqlite3.OperationalError as exc:
+                        logger.debug("[EVENT-STORE] optimize failed: %s", exc)
+                    except Exception as exc:
+                        logger.warning("[EVENT-STORE] Unexpected error during optimize: %s", exc)
                 await anyio.to_thread.run_sync(_optimize)
-            except Exception:
-                pass
+            except (OSError, sqlite3.Error) as exc:
+                logger.warning("[EVENT-STORE] Close error: %s", exc)
             await anyio.to_thread.run_sync(self._pool.close_conn, str(self._db_path))
             self._conn = None
 
@@ -782,10 +788,11 @@ class AsyncEventStore:
                 return result.to_dict(orient="records")
             finally:
                 conn.close()
+        except (duckdb.Error, pyarrow.lib.ArrowException) as exc:
+            logger.warning("[EVENT-STORE] Failed to query archived Parquet: %s", exc)
+            return []
         except Exception as exc:
-            logger.warning(
-                "[EVENT-STORE] Failed to query archived Parquet: %s", exc
-            )
+            logger.error("[EVENT-STORE] Unexpected error querying archived Parquet: %s", exc)
             return []
 
     async def get_stats(self) -> dict[str, Any]:

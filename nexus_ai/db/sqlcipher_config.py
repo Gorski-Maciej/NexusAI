@@ -132,23 +132,23 @@ class SQLCipherConfig(Struct, kw_only=True):
             conn.execute("PRAGMA cipher_use_hmac = %s;" % ("ON" if self.hmac_use else "OFF"))
             if self.hmac_pgno:
                 conn.execute("PRAGMA cipher_hmac_pgno = ON;")
-        except Exception:
-            pass  # Starsze wersje SQLCipher
+        except sqlite3.OperationalError as exc:
+            logger.warning("[SQLCIPHER] HMAC pragmas not supported (older SQLCipher version): %s", exc)
 
         # Krok 4: Memory security (mlock)
         if self.memory_security:
             try:
                 conn.execute("PRAGMA cipher_memory_security = ON;")
-            except Exception:
-                pass
+            except sqlite3.OperationalError as exc:
+                logger.debug("[SQLCIPHER] cipher_memory_security not supported: %s", exc)
 
         # Krok 5: Plaintext header (ukryj sygnaturę)
         if not self.plaintext_header:
             try:
                 conn.execute("PRAGMA cipher_default_plaintext_header = ON;")
                 conn.execute("PRAGMA cipher_plaintext_header_size = 0;")
-            except Exception:
-                pass
+            except sqlite3.OperationalError as exc:
+                logger.debug("[SQLCIPHER] plaintext header pragmas not supported: %s", exc)
 
     @classmethod
     def from_env(cls) -> SQLCipherConfig:

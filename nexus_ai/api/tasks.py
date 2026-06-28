@@ -45,7 +45,8 @@ from nexus_ai.core.decision_engine import (
     classify_invoice,
 )
 from nexus_ai.core.di import get_config, get_db_session, get_duckdb_manager, get_engine
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+from sqlalchemy import exc as sa_exc
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import create_oltp_engine, create_session_factory
 from nexus_ai.pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
@@ -109,8 +110,10 @@ def _close_all_components() -> None:
     if _DUCKDB is not None:
         try:
             _DUCKDB.close()
-        except Exception:
-            pass
+        except (ConnectionError, OSError) as exc:
+            logger.warning("[TASKS] Error closing DuckDB: %s", exc)
+        except Exception as exc:
+            logger.error("[TASKS] Unexpected error closing DuckDB: %s", exc)
         _DUCKDB = None
 
 
@@ -237,10 +240,10 @@ async def council_decide(invoice_id: str, extracted_data: dict) -> dict:
                         },
                     },
                 )
-        except Exception:
-            pass
-
-        # council_decide nie ma Session z DI — używa tymczasowego engine
+        except (ConnectionError, TimeoutError, OSError) as exc:
+            logger.warning("[COUNCIL] Failed to emit event for %s: %s", invoice_id, exc)
+        except Exception as exc:
+            logger.error("[COUNCIL] Unexpected error emitting event for %s: %s", invoice_id, exc)
         if verdict.decision == "AUTO_POST":
             config_temp = AppConfig()
             eng = _make_engine(config_temp)
@@ -362,7 +365,11 @@ async def _dispatch_outbox_event(row: dict) -> None:
 
     try:
         payload = msgspec_loads(payload_raw)
-    except Exception:
+    except (ValueError, TypeError, DecodeError) as exc:
+        logger.warning("[OUTBOX] Failed to parse payload for event %s: %s", row.get("id", "unknown"), exc)
+        payload = {}
+    except Exception as exc:
+        logger.error("[OUTBOX] Unexpected error parsing payload for event %s: %s", row.get("id", "unknown"), exc)
         payload = {}
 
     # SUPERMOC TASKIQ: Kicker.with_task_id() dla deterministycznego ID
@@ -785,14 +792,9 @@ async def process_invoice_ocr(
         logger.warning("[OLAP] cashflow refresh failed after retries: %s", olap_err)
 
     # Wyczyść bufor ramek OCR dla tego dokumentu (Rozwiązanie 12)
-    try:
-        # Użyj globalnego bufora - w środowisku workers nie ma dostępu do app.state
-        # Dlatego czyszczenie jest opcjonalne i best-effort
-        logger.info(
-            "[OCR] processing complete for invoice_id=%s, buffer can be cleared", invoice_id
-        )
-    except Exception:
-        pass
+    logger.info(
+        "[OCR] processing complete for invoice_id=%s, buffer can be cleared", invoice_id
+    )
 
     return
 
@@ -1145,6 +1147,8 @@ async def relay_outbox_events(
                             "retry_count": new_retry_count,
                         },
                     )
+                except (ConnectionError, OSError) as dle:
+                    logger.warning("[OUTBOX] Failed to write dead_letter_event (connection): %s", dle)
                 except Exception as dle:
                     logger.warning("[OUTBOX] Failed to write dead_letter_event: %s", dle)
 
@@ -1169,8 +1173,10 @@ async def relay_outbox_events(
         await db.execute(
             text("DELETE FROM processed_events WHERE processed_at < datetime('now', '-1 day')")
         )
-    except Exception:
-        pass  # Tabela może nie istnieć — bezpieczne ignorowanie
+    except (sa_exc.OperationalError, sa_exc.ProgrammingError) as exc:
+        logger.debug("[OUTBOX] processed_events table may not exist: %s", exc)
+    except Exception as exc:
+        logger.warning("[OUTBOX] Error cleaning processed_events: %s", exc)
 
     # SUPERMOC: DI auto-commituje sesję — engine jest cache'owany
 
