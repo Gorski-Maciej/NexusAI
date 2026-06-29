@@ -56,7 +56,7 @@ from nexus_ai.events.event_store import EventStore
 from nexus_ai.events.jetstream_bus import JetStreamEventBus, JetStreamConsumer
 
 from nexus_ai.events.projections import (
-    Projection,
+    BaseProjection as Projection,
     InvoiceProjection,
     DecisionProjection,
 )

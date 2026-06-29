@@ -45,14 +45,14 @@ from nexus_ai.api.dto import (
 from nexus_ai.api.rbac import admin_only_guard, requires_permission
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_dumps_bytes
 from nexus_ai.services.admin_services import (
-    BillingRuleAdminService,
-    FailedTaskAdminService,
-    FallbackEventAdminService,
-    IntegrityAdminService,
-    LedgerRuleAdminService,
-    ReplayAdminService,
-    RiskThresholdAdminService,
-    TaxRuleAdminService,
+    BillingRuleService as BillingRuleAdminSvc,
+    FailedTaskService as FailedTaskAdminSvc,
+    FallbackEventService as FallbackEventAdminSvc,
+    IntegrityService as IntegrityAdminSvc,
+    LedgerRuleService as LedgerRuleAdminSvc,
+    ReplayService as ReplayAdminSvc,
+    RiskThresholdService as RiskThresholdAdminSvc,
+    TaxRuleService as TaxRuleAdminSvc,
 )
 
 
@@ -93,7 +93,7 @@ class AdminController(Controller):
         resolved_filter: bool | None = (
             resolved_raw.lower() in ("true", "1", "yes") if resolved_raw is not None else None
         )
-        return await FailedTaskAdminService.list_failed_tasks(
+        return await FailedTaskAdminSvc.list_failed_tasks(
             db_engine=db_engine,
             resolved_filter=resolved_filter,
             task_name_filter=request.query_params.get("task_name"),
@@ -114,7 +114,7 @@ class AdminController(Controller):
     ) -> Response[dict]:
         user = getattr(request, "user", None)
         username = getattr(user, "username", "system") if user else "system"
-        ok = await FailedTaskAdminService.retry_task(db_engine, task_id, username=username)
+        ok = await FailedTaskAdminSvc.retry_task(db_engine, task_id, username=username)
         if not ok:
             raise NotFoundException(
                 detail=f"Failed task not found or already resolved: {task_id}"
@@ -137,7 +137,7 @@ class AdminController(Controller):
     async def delete_failed_task(
         self, task_id: str, request: Request, db_engine: AsyncEngine
     ) -> Response[dict]:
-        ok = await FailedTaskAdminService.delete_task(db_engine, task_id)
+        ok = await FailedTaskAdminSvc.delete_task(db_engine, task_id)
         if not ok:
             raise NotFoundException(detail=f"Failed task not found: {task_id}")
         logger.info("Failed task %s deleted by admin", task_id)
@@ -157,7 +157,7 @@ class AdminController(Controller):
     async def retry_all_failed_tasks(self, request: Request, db_engine: AsyncEngine) -> dict:
         user = getattr(request, "user", None)
         username = getattr(user, "username", "system") if user else "system"
-        retried = await FailedTaskAdminService.retry_all(db_engine, username=username)
+        retried = await FailedTaskAdminSvc.retry_all(db_engine, username=username)
         logger.info("Bulk retry: %d tasks re-queued by %s", retried, username)
         return {"status": "ok", "retried": retried}
 
@@ -283,7 +283,7 @@ class AdminController(Controller):
     )
     async def list_risk_thresholds(self, request: Request) -> dict:
         """List all active risk threshold rules."""
-        rules = RiskThresholdAdminService.list_thresholds()
+        rules = RiskThresholdAdminSvc.list()
         return {"rules": rules, "total": len(rules)}
 
     @post(
@@ -297,7 +297,7 @@ class AdminController(Controller):
     )
     async def create_risk_threshold(self, data: RiskThresholdCreate, request: Request) -> dict:
         username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
-        rule_id = RiskThresholdAdminService.create_threshold(
+        rule_id = RiskThresholdAdminSvc.create(
             condition=data.condition,
             output=data.output,
             valid_from=data.valid_from,
@@ -306,7 +306,7 @@ class AdminController(Controller):
             created_by=username,
         )
         logger.info("[ADMIN] Risk threshold created id=%s by=%s", rule_id, username)
-        RiskThresholdAdminService.publish_event(rule_id, "created")
+        RiskThresholdAdminSvc.publish(rule_id, "created")
         return {"status": "ok", "rule_id": rule_id}
 
     @get(
@@ -354,13 +354,13 @@ class AdminController(Controller):
     )
     async def deprecate_risk_threshold(self, rule_id: str, request: Request) -> dict:
         username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
-        ok = RiskThresholdAdminService.deprecate_threshold(rule_id, created_by=username)
+        ok = RiskThresholdAdminSvc.deprecate(rule_id, created_by=username)
         if not ok:
             raise NotFoundException(
                 detail=f"Risk threshold rule not found or already deprecated: {rule_id}"
             )
         logger.info("[ADMIN] Risk threshold deprecated id=%s by=%s", rule_id, username)
-        RiskThresholdAdminService.publish_event(rule_id, "deprecated")
+        RiskThresholdAdminSvc.publish(rule_id, "deprecated")
         return {"status": "ok", "rule_id": rule_id, "action": "deprecated"}
 
     @get(
@@ -372,7 +372,7 @@ class AdminController(Controller):
         operation_id="listRiskThresholdsHistory",
     )
     async def list_risk_thresholds_history(self, request: Request) -> dict:
-        rules = RiskThresholdAdminService.list_history()
+        rules = RiskThresholdAdminSvc.history()
         return {"rules": rules, "total": len(rules)}
 
     # ── Billing Rules admin endpoints ───────────────────────────────────
@@ -386,7 +386,7 @@ class AdminController(Controller):
         operation_id="listBillingRules",
     )
     async def list_billing_rules(self, request: Request) -> dict:
-        rules = BillingRuleAdminService.list_rules(active_only=True)
+        rules = BillingRuleAdminSvc.list(active_only=True)
         return {"rules": rules, "total": len(rules)}
 
     @post(
@@ -399,7 +399,7 @@ class AdminController(Controller):
     )
     async def create_billing_rule(self, request: Request) -> dict:
         body = await request.json()
-        rule_id = BillingRuleAdminService.create_rule(
+        rule_id = BillingRuleAdminSvc.create(
             condition=body.get("condition", {}),
             price=body.get("price", {}),
             valid_from=body.get("valid_from", "2024-01-01"),
@@ -407,7 +407,7 @@ class AdminController(Controller):
             priority=body.get("priority", 100),
         )
         logger.info("[ADMIN] Billing rule created id=%s", rule_id)
-        BillingRuleAdminService.publish_event(rule_id, "created")
+        BillingRuleAdminSvc.publish(rule_id, "created")
         return {"status": "ok", "rule_id": rule_id}
 
     @post(
@@ -419,11 +419,11 @@ class AdminController(Controller):
         operation_id="deprecateBillingRule",
     )
     async def deprecate_billing_rule(self, rule_id: str, request: Request) -> dict:
-        ok = BillingRuleAdminService.deprecate_rule(rule_id)
+        ok = BillingRuleAdminSvc.deprecate(rule_id)
         if not ok:
             raise NotFoundException(detail=f"Billing rule not found: {rule_id}")
         logger.info("[ADMIN] Billing rule deprecated id=%s", rule_id)
-        BillingRuleAdminService.publish_event(rule_id, "deprecated")
+        BillingRuleAdminSvc.publish(rule_id, "deprecated")
         return {"status": "ok", "rule_id": rule_id, "action": "deprecated"}
 
     @get(
@@ -435,7 +435,7 @@ class AdminController(Controller):
         operation_id="listBillingRulesHistory",
     )
     async def list_billing_rules_history(self, request: Request) -> dict:
-        rules = BillingRuleAdminService.list_rules(active_only=False)
+        rules = BillingRuleAdminSvc.list(active_only=False)
         return {"rules": rules, "total": len(rules)}
 
     # ── Replay Engine admin endpoint ────────────────────────────────────
@@ -449,7 +449,7 @@ class AdminController(Controller):
         operation_id="replayDecision",
     )
     async def replay_decision(self, transaction_id: str, request: Request) -> dict:
-        return ReplayAdminService.replay(transaction_id)
+        return ReplayAdminSvc.replay(transaction_id)
 
     @post(
         "/audit/replay-batch",
@@ -461,7 +461,7 @@ class AdminController(Controller):
     )
     async def replay_batch(self, request: Request) -> dict:
         body = await request.json()
-        return ReplayAdminService.replay_batch(
+        return ReplayAdminSvc.replay_batch(
             period_start=body.get("period_start", "2024-01-01"),
             period_end=body.get("period_end", pendulum.now("UTC").format("YYYY-MM-DD")),
             limit=int(body.get("limit", 1000)),
@@ -481,7 +481,7 @@ class AdminController(Controller):
         active_only = request.query_params.get("active_only", "false").lower() in ("true", "1")
         limit = int(request.query_params.get("limit", "100"))
         offset = int(request.query_params.get("offset", "0"))
-        rules, total = TaxRuleAdminService.list_rules(
+        rules, total = TaxRuleAdminSvc.list(
             active_only=active_only,
             limit=limit,
             offset=offset,
@@ -504,7 +504,7 @@ class AdminController(Controller):
             raise ValidationException(detail="condition_sql is required")
 
         username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
-        rule_id = TaxRuleAdminService.create_rule(
+        rule_id = TaxRuleAdminSvc.create(
             condition_sql=condition_sql,
             action=body.get("action", {}),
             valid_from=body.get("valid_from", "2024-01-01"),
@@ -514,7 +514,7 @@ class AdminController(Controller):
             created_by=username,
         )
         logger.info("[ADMIN] Tax rule created id=%s by=%s", rule_id, username)
-        TaxRuleAdminService.publish_event(rule_id, "created")
+        TaxRuleAdminSvc.publish(rule_id, "created")
         return {"status": "ok", "rule_id": rule_id}
 
     @post(
@@ -528,7 +528,7 @@ class AdminController(Controller):
     async def close_rule(self, rule_id: str, request: Request) -> dict:
         body = await request.json() if request.content_length else {}
         username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
-        ok = TaxRuleAdminService.close_rule(
+        ok = TaxRuleAdminSvc.close(
             rule_id,
             valid_to=body.get("valid_to"),
             closed_by=username,
@@ -536,7 +536,7 @@ class AdminController(Controller):
         if not ok:
             raise NotFoundException(detail=f"Rule not found or already closed: {rule_id}")
         logger.info("[ADMIN] Tax rule closed id=%s by=%s", rule_id, username)
-        TaxRuleAdminService.publish_event(rule_id, "closed")
+        TaxRuleAdminSvc.publish(rule_id, "closed")
         return {"status": "ok", "rule_id": rule_id, "action": "closed"}
 
     @get(
@@ -548,7 +548,7 @@ class AdminController(Controller):
         operation_id="getTaxRule",
     )
     async def get_rule(self, rule_id: str, request: Request) -> dict:
-        rule = TaxRuleAdminService.get_rule(rule_id)
+        rule = TaxRuleAdminSvc.get(rule_id)
         if not rule:
             raise NotFoundException(detail=f"Rule not found: {rule_id}")
         return rule
@@ -562,7 +562,7 @@ class AdminController(Controller):
         operation_id="listRuleChanges",
     )
     async def list_rule_changes(self, request: Request) -> dict:
-        changes = TaxRuleAdminService.get_changelog(
+        changes = TaxRuleAdminSvc.changelog(
             rule_id=request.query_params.get("rule_id"),
             limit=int(request.query_params.get("limit", "50")),
         )
@@ -580,7 +580,7 @@ class AdminController(Controller):
     )
     async def list_ledger_rules(self, request: Request) -> dict:
         """List all ledger validation rules."""
-        rules = LedgerRuleAdminService.list_rules()
+        rules = LedgerRuleAdminSvc.list()
         return {"rules": rules, "total": len(rules)}
 
     @post(
@@ -596,7 +596,7 @@ class AdminController(Controller):
         body = await request.json()
         username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
 
-        rule_id = LedgerRuleAdminService.create_rule(
+        rule_id = LedgerRuleAdminSvc.create(
             transaction_type=body.get("transaction_type", "EXPENSE"),
             debit_account_id=int(body["debit_account_id"]),
             credit_account_id=int(body["credit_account_id"]),
@@ -607,7 +607,7 @@ class AdminController(Controller):
             created_by=username,
         )
         logger.info("[ADMIN] Ledger rule created id=%s by=%s", rule_id, username)
-        LedgerRuleAdminService.publish_event(rule_id, "created")
+        LedgerRuleAdminSvc.publish(rule_id, "created")
         return {"status": "ok", "rule_id": rule_id}
 
     @delete(
@@ -620,8 +620,8 @@ class AdminController(Controller):
     )
     async def delete_ledger_rule(self, rule_id: str, request: Request) -> dict:
         """Deactivate a ledger validation rule (soft-delete via valid_to)."""
-        LedgerRuleAdminService.delete_rule(rule_id)
-        LedgerRuleAdminService.publish_event(rule_id, "deprecated")
+        LedgerRuleAdminSvc.delete(rule_id)
+        LedgerRuleAdminSvc.publish(rule_id, "deprecated")
         return {"status": "ok", "rule_id": rule_id, "action": "deprecated"}
 
     # ── Fallback Events admin endpoints ─────────────────────────────────
@@ -639,7 +639,7 @@ class AdminController(Controller):
         status_filter = request.query_params.get("status")
         limit = int(request.query_params.get("limit", "50"))
         offset = int(request.query_params.get("offset", "0"))
-        events, pending = FallbackEventAdminService.list_events(
+        events, pending = FallbackEventAdminSvc.list(
             status_filter=status_filter or None,
             limit=limit,
             offset=offset,
@@ -659,7 +659,7 @@ class AdminController(Controller):
         body = await request.json() if request.content_length else {}
         username = getattr(request.user, "username", "admin") if hasattr(request, "user") else "admin"
 
-        ok = FallbackEventAdminService.resolve_event(
+        ok = FallbackEventAdminSvc.resolve(
             event_id,
             resolution_note=body.get("resolution_note", "Resolved via admin panel"),
             assigned_to=username,
@@ -694,7 +694,7 @@ class AdminController(Controller):
         """
         body = await request.json() if request.content_length else {}
 
-        result = IntegrityAdminService.verify(
+        result = IntegrityAdminSvc.verify(
             handle_violation=body.get("handle_violation", True),
             system_lock=body.get("system_lock", False),
             incremental=body.get("incremental", False),
@@ -719,7 +719,7 @@ class AdminController(Controller):
     )
     async def ignore_fallback_event(self, event_id: str, request: Request) -> dict:
         """Ignore a fallback event."""
-        ok = FallbackEventAdminService.ignore_event(event_id)
+        ok = FallbackEventAdminSvc.ignore(event_id)
         if not ok:
             raise NotFoundException(
                 detail=f"Fallback event not found or already resolved: {event_id}"

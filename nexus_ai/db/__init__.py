@@ -47,8 +47,6 @@ CursorPagination, FTSManager, AnalyticsViews = _safe_import(
     "nexus_ai.db.queries",
     ["CursorPagination", "FTSManager", "AnalyticsViews"],
 )
-AnalyticsViewsSetup = AnalyticsViews  # backward compat
-
 # ── Hooks ────────────────────────────────────────────────────────────
 [register_db_hooks] = _safe_import("nexus_ai.db.hooks", ["register_db_hooks"])
 
@@ -76,7 +74,6 @@ __all__ = [
     "CursorPagination",
     "FTSManager",
     "AnalyticsViews",
-    "AnalyticsViewsSetup",
     "register_db_hooks",
     "SQLCipherConfig",
     "KeyRotation",

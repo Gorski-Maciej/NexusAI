@@ -48,7 +48,3 @@ class PaginatedResponse(Struct, Generic[T]):
         return cls(root=items, total=total, page=page, page_size=page_size)
 
 
-def paginated_adapter(item_type: type[T]) -> type[PaginatedResponse[T]]:
-    """Get PaginatedResponse class parameterized with item_type."""
-    return PaginatedResponse[item_type]  # type: ignore[valid-type]
-

@@ -1,7 +1,10 @@
-"""taskiq_events.py — Taskiq handlers for domain event emission.
+"""taskiq_events.py — Generic Taskiq handlers for domain event emission.
 
-All original functionality is preserved in this file.
-Import through nexus_ai.events or directly from this module.
+Consolidated from 11 separate @broker.task handlers into 2 generic handlers:
+  1. emit_event — generic event emitter using DomainEvent._registry + match/case
+  2. emit_domain_event — fallback for custom event types
+
+Uses DomainEvent._registry (auto-populated by __init_subclass__) for type dispatch.
 """
 
 from __future__ import annotations
@@ -14,10 +17,21 @@ from structlog import get_logger
 
 from nexus_ai.core.broker import broker
 from nexus_ai.events import (
-    DecisionMade, DecisionOverridden, DomainEvent, EventStore,
-    InvoiceApproved, InvoiceBlocked, InvoiceCreated, InvoicePaid,
-    InvoiceRejected, InvoiceSubmitted, JetStreamEventBus,
-    NotificationSent, OutboxEventEmitted,
+    DomainEvent,
+    EventStore,
+    InvoiceApproved,
+    InvoiceBlocked,
+    InvoiceCreated,
+    InvoicePaid,
+    InvoiceRejected,
+    InvoiceSubmitted,
+    JetStreamEventBus,
+)
+from nexus_ai.events.domain_events import (
+    DecisionMade,
+    DecisionOverridden,
+    NotificationSent,
+    OutboxEventEmitted,
 )
 
 logger = get_logger("nexus.events.tasks")
@@ -54,8 +68,7 @@ async def _get_jetstream() -> JetStreamEventBus | None:
 
 async def _next_version(aggregate_type: str, aggregate_id: str) -> int:
     store = _get_event_store()
-    current = await store.get_version(aggregate_type=aggregate_type, aggregate_id=aggregate_id)
-    return current + 1
+    return (await store.get_version(aggregate_type=aggregate_type, aggregate_id=aggregate_id)) + 1
 
 
 async def _emit_event(aggregate_type: str, aggregate_id: str, event: DomainEvent) -> str:
@@ -63,10 +76,8 @@ async def _emit_event(aggregate_type: str, aggregate_id: str, event: DomainEvent
         store = _get_event_store()
         await store.append_events(aggregate_type=aggregate_type, aggregate_id=aggregate_id, events=[event])
         logger.info("[EVENT-TASKS] Appended %s:%s version=%d", event.event_type, event.aggregate_id, event.version)
-        jetstream = await _get_jetstream()
-        if jetstream is not None:
-            published = await jetstream.publish(event)
-            if not published:
+        if (jetstream := await _get_jetstream()) is not None:
+            if not await jetstream.publish(event):
                 logger.warning("[EVENT-TASKS] JetStream publish failed for %s:%s", event.event_type, event.aggregate_id)
         else:
             logger.debug("[EVENT-TASKS] No JetStream — event %s:%s stored locally", event.event_type, event.aggregate_id)
@@ -76,85 +87,59 @@ async def _emit_event(aggregate_type: str, aggregate_id: str, event: DomainEvent
         raise
 
 
-@broker.task(task_name="event_emit_decision_made", labels=dict(service="events", operation="emit", event_type="decision.made", criticality="high"), timeout=30.0)
-async def emit_decision_made_task(invoice_id: str, decision: str, trust_score: float = 0.0, ai_confidence: float = 0.0, alpha_vote: str = "", beta_vote: str = "", gamma_vote: str = "", decision_pattern: str = "", reasoning: str = "", metadata: dict[str, Any] | None = None) -> str:
-    version = await _next_version("decision", invoice_id)
-    event = DecisionMade(aggregate_id=f"decision:{invoice_id}", version=version, invoice_id=invoice_id, decision=decision, trust_score=trust_score, ai_confidence=ai_confidence, alpha_vote=alpha_vote, beta_vote=beta_vote, gamma_vote=gamma_vote, decision_pattern=decision_pattern, reasoning=reasoning, metadata=metadata or {})
-    return await _emit_event("decision", f"decision:{invoice_id}", event)
+# ── Event constructors registry — maps event_type -> (aggregate_type, constructor) ──
+
+_EVENT_BUILDERS: dict[str, tuple[str, type[DomainEvent], set[str]]] = {
+    "decision.made": ("decision", DecisionMade, {"invoice_id", "decision", "trust_score", "ai_confidence", "alpha_vote", "beta_vote", "gamma_vote", "decision_pattern", "reasoning"}),
+    "decision.overridden": ("decision", DecisionOverridden, {"invoice_id", "original_decision", "user_decision", "user_id"}),
+    "invoice.created": ("invoice", InvoiceCreated, {"number", "contractor_nip", "contractor_name", "amount_net", "amount_gross", "currency", "category", "issue_date", "file_path"}),
+    "invoice.submitted": ("invoice", InvoiceSubmitted, {"amount_gross", "contractor_nip"}),
+    "invoice.approved": ("invoice", InvoiceApproved, {"approved_by", "trust_score", "decision_level"}),
+    "invoice.rejected": ("invoice", InvoiceRejected, {"rejected_by", "reason"}),
+    "invoice.blocked": ("invoice", InvoiceBlocked, {"blocked_by", "reason", "risk_score"}),
+    "invoice.paid": ("invoice", InvoicePaid, {"amount_gross", "paid_at", "transaction_id"}),
+    "notification.sent": ("notification", NotificationSent, {"user_id", "notification_type", "title", "channels"}),
+    "outbox.emitted": ("outbox", OutboxEventEmitted, {"outbox_event_type", "payload_json"}),
+}
 
 
-@broker.task(task_name="event_emit_decision_overridden", labels=dict(service="events", operation="emit", event_type="decision.overridden", criticality="high"), timeout=30.0)
-async def emit_decision_overridden_task(invoice_id: str, original_decision: str, user_decision: str, user_id: str, metadata: dict[str, Any] | None = None) -> str:
-    version = await _next_version("decision", invoice_id)
-    event = DecisionOverridden(aggregate_id=f"decision:{invoice_id}", version=version, invoice_id=invoice_id, original_decision=original_decision, user_decision=user_decision, user_id=user_id, metadata=metadata or {})
-    return await _emit_event("decision", f"decision:{invoice_id}", event)
+@broker.task(
+    task_name="event_emit",
+    labels=dict(service="events", operation="emit", criticality="high"),
+    timeout=30.0,
+)
+async def emit_event_task(event_type: str, aggregate_id: str, **fields: Any) -> str:
+    """Generic event emitter — dispatches via _EVENT_BUILDERS registry.
+
+    Usage:
+        await emit_event_task("invoice.created", invoice_id, number="FV/001", ...)
+        await emit_event_task("decision.made", f"decision:{invoice_id}", decision="APPROVE", ...)
+    """
+    builder = _EVENT_BUILDERS.get(event_type)
+    if builder is None:
+        raise ValueError(f"Unknown event type: {event_type}. Available: {list(_EVENT_BUILDERS.keys())}")
+
+    agg_type, event_cls, _ = builder
+    version = await _next_version(agg_type, aggregate_id)
+    # Filter fields to only what the event class accepts
+    event_fields = {k: v for k, v in fields.items() if k in event_cls.__struct_fields__}
+    event = event_cls(aggregate_id=aggregate_id, version=version, metadata=fields.get("metadata", {}), **event_fields)
+    return await _emit_event(agg_type, aggregate_id, event)
 
 
-@broker.task(task_name="event_emit_invoice_created", labels=dict(service="events", operation="emit", event_type="invoice.created", criticality="high"), timeout=30.0)
-async def emit_invoice_created_task(invoice_id: str, number: str = "", contractor_nip: str = "", contractor_name: str = "", amount_net: float = 0.0, amount_gross: float = 0.0, currency: str = "PLN", category: str = "", issue_date: str = "", file_path: str = "", metadata: dict[str, Any] | None = None) -> str:
-    version = await _next_version("invoice", invoice_id)
-    event = InvoiceCreated(aggregate_id=invoice_id, version=version, number=number, contractor_nip=contractor_nip, contractor_name=contractor_name, amount_net=amount_net, amount_gross=amount_gross, currency=currency, category=category, issue_date=issue_date, file_path=file_path, metadata=metadata or {})
-    return await _emit_event("invoice", invoice_id, event)
-
-
-@broker.task(task_name="event_emit_invoice_submitted", labels=dict(service="events", operation="emit", event_type="invoice.submitted", criticality="medium"), timeout=30.0)
-async def emit_invoice_submitted_task(invoice_id: str, amount_gross: float = 0.0, contractor_nip: str = "", metadata: dict[str, Any] | None = None) -> str:
-    version = await _next_version("invoice", invoice_id)
-    event = InvoiceSubmitted(aggregate_id=invoice_id, version=version, amount_gross=amount_gross, contractor_nip=contractor_nip, metadata=metadata or {})
-    return await _emit_event("invoice", invoice_id, event)
-
-
-@broker.task(task_name="event_emit_invoice_approved", labels=dict(service="events", operation="emit", event_type="invoice.approved", criticality="high"), timeout=30.0)
-async def emit_invoice_approved_task(invoice_id: str, approved_by: str = "system", trust_score: float = 0.0, decision_level: str = "auto", metadata: dict[str, Any] | None = None) -> str:
-    version = await _next_version("invoice", invoice_id)
-    event = InvoiceApproved(aggregate_id=invoice_id, version=version, approved_by=approved_by, trust_score=trust_score, decision_level=decision_level, metadata=metadata or {})
-    return await _emit_event("invoice", invoice_id, event)
-
-
-@broker.task(task_name="event_emit_invoice_rejected", labels=dict(service="events", operation="emit", event_type="invoice.rejected", criticality="medium"), timeout=30.0)
-async def emit_invoice_rejected_task(invoice_id: str, rejected_by: str = "system", reason: str = "", metadata: dict[str, Any] | None = None) -> str:
-    version = await _next_version("invoice", invoice_id)
-    event = InvoiceRejected(aggregate_id=invoice_id, version=version, rejected_by=rejected_by, reason=reason, metadata=metadata or {})
-    return await _emit_event("invoice", invoice_id, event)
-
-
-@broker.task(task_name="event_emit_invoice_blocked", labels=dict(service="events", operation="emit", event_type="invoice.blocked", criticality="high"), timeout=30.0)
-async def emit_invoice_blocked_task(invoice_id: str, blocked_by: str = "risk_guard", reason: str = "", risk_score: float = 0.0, metadata: dict[str, Any] | None = None) -> str:
-    version = await _next_version("invoice", invoice_id)
-    event = InvoiceBlocked(aggregate_id=invoice_id, version=version, blocked_by=blocked_by, reason=reason, risk_score=risk_score, metadata=metadata or {})
-    return await _emit_event("invoice", invoice_id, event)
-
-
-@broker.task(task_name="event_emit_invoice_paid", labels=dict(service="events", operation="emit", event_type="invoice.paid", criticality="medium"), timeout=30.0)
-async def emit_invoice_paid_task(invoice_id: str, amount_gross: float = 0.0, paid_at: str = "", transaction_id: str = "", metadata: dict[str, Any] | None = None) -> str:
-    version = await _next_version("invoice", invoice_id)
-    event = InvoicePaid(aggregate_id=invoice_id, version=version, amount_gross=amount_gross, paid_at=paid_at or pendulum.now("UTC").isoformat(), transaction_id=transaction_id, metadata=metadata or {})
-    return await _emit_event("invoice", invoice_id, event)
-
-
-@broker.task(task_name="event_emit_notification_sent", labels=dict(service="events", operation="emit", event_type="notification.sent", criticality="low"), timeout=30.0)
-async def emit_notification_sent_task(user_id: str, notification_type: str = "info", title: str = "", channels: list[str] | None = None, metadata: dict[str, Any] | None = None) -> str:
-    version = await _next_version("notification", user_id)
-    event = NotificationSent(aggregate_id=user_id, version=version, user_id=user_id, notification_type=notification_type, title=title, channels=channels or [], metadata=metadata or {})
-    return await _emit_event("notification", user_id, event)
-
-
-@broker.task(task_name="event_emit_outbox_emitted", labels=dict(service="events", operation="emit", event_type="outbox.emitted", criticality="high"), timeout=30.0)
-async def emit_outbox_emitted_task(aggregate_id: str, outbox_event_type: str, payload_json: str, metadata: dict[str, Any] | None = None) -> str:
-    version = await _next_version("outbox", aggregate_id)
-    event = OutboxEventEmitted(aggregate_id=aggregate_id, version=version, outbox_event_type=outbox_event_type, payload_json=payload_json, metadata=metadata or {})
-    return await _emit_event("outbox", aggregate_id, event)
-
-
-@broker.task(task_name="event_emit_domain_event", labels=dict(service="events", operation="emit", event_type="custom", criticality="low"), timeout=30.0)
+@broker.task(
+    task_name="event_emit_custom",
+    labels=dict(service="events", operation="emit", event_type="custom", criticality="low"),
+    timeout=30.0,
+)
 async def emit_domain_event_task(event_type: str, aggregate_id: str, aggregate_type: str = "custom", version: int = 1, data: dict[str, Any] | None = None, metadata: dict[str, Any] | None = None) -> str:
+    """Fallback for custom event types not in _EVENT_BUILDERS."""
     store = _get_event_store()
     current = await store.get_version(aggregate_type=aggregate_type, aggregate_id=aggregate_id)
-    actual_version = current + 1
-    combined_metadata = dict(metadata) if metadata else {}
+    combined = dict(metadata) if metadata else {}
     if data:
-        combined_metadata["data"] = data
-    event = DomainEvent(event_type=event_type, aggregate_id=aggregate_id, aggregate_type=aggregate_type, version=actual_version, metadata=combined_metadata)
+        combined["data"] = data
+    event = DomainEvent(event_type=event_type, aggregate_id=aggregate_id, aggregate_type=aggregate_type, version=current + 1, metadata=combined)
     return await _emit_event(aggregate_type, aggregate_id, event)
 
 

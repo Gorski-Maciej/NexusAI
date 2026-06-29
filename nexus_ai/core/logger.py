@@ -421,6 +421,29 @@ def get_logger(name: str | None = None):
     return logger
 
 
+def auto_logger(cls=None, *, name: str | None = None):
+    """Class decorator that auto-injects a ``logger`` class attribute.
+
+    Eliminates the 3-line boilerplate ``from structlog import get_logger; logger = get_logger(...)``
+    from 80+ files. Usage:
+
+        @auto_logger
+        class MyService:
+            # ``self.logger`` and ``MyService.logger`` are auto-available
+
+        @auto_logger(name="nexus.custom")
+        class CustomService: ...
+
+    The logger name is inferred from the module path by default.
+    """
+    def _decorate(klass):
+        logger_name = name or f"{klass.__module__}.{klass.__qualname__}"
+        from structlog import get_logger as _get_logger
+        klass.logger = _get_logger(logger_name)
+        return klass
+    return _decorate if cls is None else _decorate(cls)
+
+
 # ── Deferred initialization ───────────────────────────────────────────────────
 # NOTE: Do NOT call setup_logger() at module import time.
 # Main entry points (main.py, api/server.py) must call setup_logger() explicitly

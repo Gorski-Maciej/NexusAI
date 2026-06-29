@@ -15,8 +15,10 @@ from typing import Any
 
 import pendulum
 from nexus_ai.core.foundation.admin_registry import AdminServiceRegistry, rule_service
+from nexus_ai.core.logger import auto_logger
 
 
+@auto_logger
 class RiskThresholdService(AdminServiceRegistry):
     """Zarządzanie progami ryzyka (RiskGuard)."""
     _nats_subject = "risk.thresholds.updated"
@@ -50,24 +52,8 @@ class RiskThresholdService(AdminServiceRegistry):
         with cls.db() as conn:
             return RiskGuard(conn).list_thresholds_history()
 
-    # --- Backward-compat old method names ---
-    @classmethod
-    def list_thresholds(cls) -> list[dict[str, Any]]:
-        return cls.list()
 
-    @classmethod
-    def create_threshold(cls, *args, **kwargs) -> str:
-        return cls.create(*args, **kwargs)
-
-    @classmethod
-    def deprecate_threshold(cls, *args, **kwargs) -> bool:
-        return cls.deprecate(*args, **kwargs)
-
-    @classmethod
-    def list_history(cls) -> list[dict[str, Any]]:
-        return cls.history()
-
-
+@auto_logger
 class BillingRuleService(AdminServiceRegistry):
     """Zarządzanie regułami billingowymi."""
     _nats_subject = "billing.rules.updated"
@@ -93,20 +79,8 @@ class BillingRuleService(AdminServiceRegistry):
         with cls.db() as conn:
             return BillingEstimator(conn).deprecate_rule(rule_id)
 
-    # --- Backward-compat old method names ---
-    @classmethod
-    def list_rules(cls, *args, **kwargs) -> list[dict[str, Any]]:
-        return cls.list(*args, **kwargs)
 
-    @classmethod
-    def create_rule(cls, *args, **kwargs) -> str:
-        return cls.create(*args, **kwargs)
-
-    @classmethod
-    def deprecate_rule(cls, *args, **kwargs) -> bool:
-        return cls.deprecate(*args, **kwargs)
-
-
+@auto_logger
 class LedgerRuleService(AdminServiceRegistry):
     """Zarządzanie regułami walidacji księgi głównej."""
     _nats_subject = "ledger.rules.updated"
@@ -151,20 +125,8 @@ class LedgerRuleService(AdminServiceRegistry):
             conn.execute("UPDATE ledger_validation_rules SET valid_to = CURRENT_DATE - INTERVAL '1 day' WHERE rule_id = ? AND valid_to IS NULL", (rule_id,))
             return True
 
-    # --- Backward-compat old method names ---
-    @classmethod
-    def list_rules(cls) -> list[dict[str, Any]]:
-        return cls.list()
 
-    @classmethod
-    def create_rule(cls, *args, **kwargs) -> str:
-        return cls.create(*args, **kwargs)
-
-    @classmethod
-    def delete_rule(cls, *args, **kwargs) -> bool:
-        return cls.delete(*args, **kwargs)
-
-
+@auto_logger
 class TaxRuleService(AdminServiceRegistry):
     """Zarządzanie regułami podatkowymi."""
     _nats_subject = "tax.rules.updated"
@@ -207,28 +169,8 @@ class TaxRuleService(AdminServiceRegistry):
         with cls.db() as conn:
             return cls._store(conn).get_change_log(rule_id=rule_id, limit=limit)
 
-    # --- Backward-compat old method names ---
-    @classmethod
-    def list_rules(cls, *args, **kwargs):
-        return cls.list(*args, **kwargs)
 
-    @classmethod
-    def create_rule(cls, *args, **kwargs):
-        return cls.create(*args, **kwargs)
-
-    @classmethod
-    def close_rule(cls, *args, **kwargs):
-        return cls.close(*args, **kwargs)
-
-    @classmethod
-    def get_rule(cls, *args, **kwargs):
-        return cls.get(*args, **kwargs)
-
-    @classmethod
-    def get_changelog(cls, *args, **kwargs):
-        return cls.changelog(*args, **kwargs)
-
-
+@auto_logger
 class FallbackEventService(AdminServiceRegistry):
     """Zarządzanie zdarzeniami fallback."""
     _nats_subject = "fallback.events.updated"
@@ -252,20 +194,8 @@ class FallbackEventService(AdminServiceRegistry):
         with cls.db() as conn:
             return FallbackHandler(conn).ignore(event_id)
 
-    # --- Backward-compat old method names ---
-    @classmethod
-    def list_events(cls, *args, **kwargs):
-        return cls.list(*args, **kwargs)
 
-    @classmethod
-    def resolve_event(cls, *args, **kwargs):
-        return cls.resolve(*args, **kwargs)
-
-    @classmethod
-    def ignore_event(cls, *args, **kwargs):
-        return cls.ignore(*args, **kwargs)
-
-
+@auto_logger
 class ReplayService(AdminServiceRegistry):
     """Odtwarzanie decyzji podatkowych."""
 
@@ -294,6 +224,7 @@ class ReplayService(AdminServiceRegistry):
                                  "error": r.error or None, "differences": r.differences} for r in results]}
 
 
+@auto_logger
 class IntegrityService(AdminServiceRegistry):
     """Weryfikacja integralności łańcucha decyzji."""
 
@@ -328,20 +259,13 @@ class IntegrityService(AdminServiceRegistry):
         return cls.verify(*args, **kwargs, incremental=False)
 
 
+@auto_logger
 class FailedTaskService:
     """Zarządzanie failed tasks (DLQ) — operacje na outbox_events przez AsyncEngine.
 
     UWAGA: Nie używa DuckDB — operuje na głównej bazie OLTP przez AsyncEngine.
     Dlatego nie dziedziczy po AdminServiceRegistry.
     """
-
-    @staticmethod
-    async def list_tasks(db_engine: Any, resolved_filter: bool | None = None,
-                         task_name_filter: str | None = None, limit: int = 50,
-                         offset: int = 0) -> dict[str, Any]:
-        return await FailedTaskService.list_failed_tasks(
-            db_engine, resolved_filter=resolved_filter,
-            task_name_filter=task_name_filter, limit=limit, offset=offset)
 
     @staticmethod
     async def list_failed_tasks(db_engine: Any, resolved_filter: bool | None = None,
@@ -412,14 +336,3 @@ class FailedTaskService:
             await conn.commit()
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# Backward-compat aliases — stare nazwy klas nadal działają
-# ═══════════════════════════════════════════════════════════════════════════════
-RiskThresholdAdminService = RiskThresholdService
-BillingRuleAdminService = BillingRuleService
-LedgerRuleAdminService = LedgerRuleService
-TaxRuleAdminService = TaxRuleService
-FallbackEventAdminService = FallbackEventService
-ReplayAdminService = ReplayService
-IntegrityAdminService = IntegrityService
-FailedTaskAdminService = FailedTaskService

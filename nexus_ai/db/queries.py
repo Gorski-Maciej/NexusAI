@@ -307,6 +307,5 @@ class AnalyticsViews:
         logger.info("[VIEWS] Refreshed in %.1f ms", elapsed)
 
 
-# ── Aliases ─────────────────────────────────────────────────────────────
-FTSManager = FTSManager  # type: ignore
+# Legacy name kept for backwards compatibility (remove in next major version)
 AnalyticsViewsSetup = AnalyticsViews

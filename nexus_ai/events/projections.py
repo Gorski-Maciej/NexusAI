@@ -329,7 +329,17 @@ class DecisionProjection(BaseProjection[DecisionMade]):
         return await self.fetchall(sql + " ORDER BY timestamp DESC LIMIT ?", [*params, limit])
 
 
-# ── Aliases dla kompatybilności wstecznej ────────────────────────────────
-Projection = BaseProjection
-InvoiceProjection = InvoiceProjection
-DecisionProjection = DecisionProjection
+
+# ── Query builder helper ────────────────────────────────────────────────
+
+def _query_builder(params: dict[str, Any], base_sql: str = "WHERE 1=1", order: str = "updated_at DESC") -> tuple[str, list[Any]]:
+    """Generyczny builder WHERE dla zapytań projekcji."""
+    clauses: list[str] = []
+    values: list[Any] = []
+    for key, value in params.items():
+        if value is not None:
+            clauses.append(f"{key} = ?")
+            values.append(value)
+    where = " AND ".join(clauses) if clauses else "1=1"
+    return f"SELECT * FROM {base_sql} WHERE {where} ORDER BY {order}", values
+
