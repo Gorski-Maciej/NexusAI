@@ -1,7 +1,6 @@
 """
 Taskiq worker bootstrap and local connectivity smoke test.
 
-SUPERMOCE psutil w WorkerGuard:
   - Process.oneshot() — batch syscalls dla get_status(), adjust_concurrency_limit()
   - memory_full_info() → USS/PSS (rzeczywista pamięć zamiast gołego RSS)
   - memory_percent() → % całkowitego RAM
@@ -32,7 +31,7 @@ import nexus_ai.core.tasks  # noqa: F401  # required to register @broker.task ha
 from nexus_ai.core.broker import broker
 from nexus_ai.core.cache.http_client import warm_http_cache
 from nexus_ai.core.config import AppConfig
-from nexus_ai.core.monitor import process_monitor, system_monitor
+from nexus_ai.core.monitor import system_monitor
 from nexus_ai.services.vision.agent import VisionAgent
 
 if getattr(sys, "frozen", False):
@@ -65,7 +64,6 @@ shutdown_flag = anyio.Event()
 class WorkerGuard:
     """Watchdog dla procesu workera z dynamicznym limitowaniem współbieżności.
 
-    SUPERMOCE psutil:
       - Process.oneshot() — wszystkie atrybuty procesu w 1 syscallu
       - memory_full_info() → USS/PSS (rzeczywista alokacja pamięci)
       - cpu_times_percent() → podział user/system/iowait
@@ -81,7 +79,6 @@ class WorkerGuard:
         self.max_concurrent: int = 5
         self.cpu_percent_history: list[float] = []
 
-    # ── SUPERMOC: oneshot() — batch syscalls ───────────────────────────
 
     def _collect_process_stats(self) -> dict:
         """Zbierz wszystkie atrybuty procesu w jednym oneshot() bloku.
@@ -122,7 +119,6 @@ class WorkerGuard:
     def adjust_concurrency_limit(self) -> int:
         """Dynamicznie dostosuj limit współbieżności na podstawie obciążenia.
 
-        SUPERMOCE psutil:
           - cpu_percent() — z oneshot() cache (0 syscalli)
           - memory_full_info() → USS zamiast RSS dla dokładniejszego pomiaru
           - Jeśli CPU > 80% lub RAM > 80%, zmniejsz limit
@@ -148,7 +144,6 @@ class WorkerGuard:
     def get_status(self) -> dict:
         """Zwróć aktualny status workera z pełnymi metrykami.
 
-        SUPERMOCE:
           - oneshot() dla procesu
           - SystemMonitor.collect_all() dla metryk systemowych
           - USS/PSS z memory_full_info()
@@ -156,7 +151,6 @@ class WorkerGuard:
         proc_stats = self._collect_process_stats()
         uptime = pendulum.now("UTC") - self.start_time
 
-        # SUPERMOC: metryki systemowe (RAM%, swap, dysk, sieć, temperatura)
         try:
             sys_metrics = system_monitor.collect_all()
             sys_dict = {
@@ -213,7 +207,6 @@ class WorkerGuard:
     async def heartbeat(self) -> None:
         """Super-powered heartbeat z pełnymi metrykami co 60s.
 
-        SUPERMOCE:
           - oneshot() dla procesu (zero dodatkowych syscalli)
           - SystemMonitor dla RAM %, swap, dysk, sieć, temperatura
           - Logowanie na poziomie AUDIT (custom Loguru level)
@@ -222,7 +215,6 @@ class WorkerGuard:
             proc_stats = self._collect_process_stats()
             self.adjust_concurrency_limit()
 
-            # SUPERMOC: system-wide metrics co heartbeat
             try:
                 sys_m = system_monitor.collect_all()
                 logger.bind(level="AUDIT").info(

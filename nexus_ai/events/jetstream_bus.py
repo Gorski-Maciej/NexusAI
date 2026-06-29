@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import random
 import threading
-import time
 from msgspec import Struct, field
 from typing import Any
 
@@ -51,7 +50,6 @@ DEFAULT_CONNECT_TIMEOUT = 10.0
 class JetStreamEventBus:
     """Publikuje eventy domenowe do NATS JetStream.
 
-    SUPERMOCE:
       - Automatyczny reconnect z wykładniczym backoffem (max 5 prób, 1s-30s)
       - Graceful degradation gdy NATS niedostępny
       - Batch publish dla wysokiej przepustowości
@@ -320,7 +318,7 @@ class JetStreamConsumer:
                 self._nc = await nats.connect(servers=self._nats_servers, connect_timeout=self._connect_timeout, name="nexus-event-consumer")
                 self._js = self._nc.jetstream()
                 self._connected = True; return True
-            except Exception as exc:
+            except Exception:
                 if attempt >= self._reconnect_attempts: return False
                 await anyio.sleep(min(2 ** (attempt - 1), 10))
         return False
@@ -350,7 +348,7 @@ class JetStreamConsumer:
                             event = decode_event(msg.data)
                             if self._event_handler: await self._event_handler(event)
                             await msg.ack()
-                        except Exception as exc:
+                        except Exception:
                             await msg.nak(delay=min(5, cfg.ack_wait // 2))
                 except NatsErrors.TimeoutError:
                     logger.debug("[JETSTREAM:CONSUMER] fetch timeout on %s", cfg.consumer_name)

@@ -142,7 +142,6 @@ async def calculate_and_post_cogs(
     source_document_id: Any,
     duckdb_writer: Any | None = None,
 ) -> FIFOConsumptionResult:
-    """SUPERMOC: Post COGS to TigerBeetle with code/ledger/user_data.
 
     Używa code=TransferCode.COGS (5001), ledger=INVENTORY (706).
     """
@@ -151,7 +150,6 @@ async def calculate_and_post_cogs(
         (consumption.total_cogs_net * Decimal("100")).to_integral_value(rounding=ROUND_HALF_UP)
     )
 
-    # SUPERMOC: Użyj realnego API TB z batch transferem
     import tigerbeetle as tb
     from nexus_ai.services.tigerbeetle.client import (
         LEDGER,

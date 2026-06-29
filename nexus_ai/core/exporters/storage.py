@@ -5,7 +5,6 @@ TOTALNA REWOLUCJA: wszystkie operacje I/O przez AsyncFsWrapper.
 - ``await afs.pipe_file()`` zamiast ``await fsspec.open_async('wb')``
 - ``await afs.exists()`` + ``await afs.rm()`` zamiast ``to_thread.run_sync()``
 
-SUPERMOC fsspec:
 - ``fsspec.open()`` + ``fsspec.open_async()`` — uniwersalne I/O w każdym protokole
 - ``fsspec.filesystem()`` — konfigurowalny backend przez config TOML
 - ``TransactionalFileSystem`` — atomowe zapisy plików
@@ -84,7 +83,6 @@ class FSSpecStorageProvider(StorageProvider):
         # TOTALNA REWOLUCJA: AsyncFsWrapper dla async API
         self._async_fs: AsyncFsWrapper = factory.get_async_filesystem()
 
-        # SUPERMOC: TransactionalFileSystem dla atomowych zapisów
         self._tx_fs = TransactionalFileSystem(fs=self.fs)
 
         if self._protocol == "file":
@@ -124,7 +122,6 @@ class FSSpecStorageProvider(StorageProvider):
             return True
         return False
 
-    # ── SUPERMOC: TransactionalFileSystem — atomowe operacje ──────────────
 
     @property
     def tx_fs(self) -> TransactionalFileSystem:
@@ -134,14 +131,12 @@ class FSSpecStorageProvider(StorageProvider):
         """Context manager dla atomowych zapisów przez TransactionalFileSystem."""
         return self._tx_fs.transaction()
 
-    # ── SUPERMOC: fsspec.get_mapper() — dict-like metadata ────────────────
 
     def get_mapper(self, prefix: str = "") -> MutableMapping:
         """Dict-like interface do metadanych przez fsspec.get_mapper()."""
         path = self._resolve_path(prefix)
         return fsspec.get_mapper(path)
 
-    # ── SUPERMOC: MemoryFileSystem — RAM-only storage ────────────────────
 
     @staticmethod
     def create_memory() -> FSSpecStorageProvider:
@@ -156,7 +151,6 @@ class FSSpecStorageProvider(StorageProvider):
         provider.fs.makedirs("test_export", exist_ok=True)
         return provider
 
-    # ── SUPERMOC: get_file_info — metadane przez fsspec.info() ────────────
 
     async def get_file_info(self, file_path: str) -> dict[str, Any]:
         """Pobierz metadane pliku przez async fsspec I/O.

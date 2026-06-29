@@ -39,7 +39,7 @@ def list_pending_triage_items(session: Session, *, tenant_id: str) -> list[Invoi
         .order_by(Invoice.created_at.desc())
     )
     result = session.execute(stmt)
-    return list(result.scalars().all())
+    return list(result.scalars())  # generator → list
 
 
 def resolve_triage_item(
@@ -67,16 +67,16 @@ def resolve_triage_item(
         if amount_gross := corrected_data.get("amount_gross"):
             invoice.amount_gross = Decimal(str(amount_gross))
 
-        if action == "confirm_post":
-            invoice.status = InvoiceStatus.APPROVED
-        elif action == "void_reject":
-            invoice.status = InvoiceStatus.REJECTED
-        else:
-            raise ValueError("Unsupported triage action")
+        match action:
+            case "confirm_post":
+                invoice.status = InvoiceStatus.APPROVED
+            case "void_reject":
+                invoice.status = InvoiceStatus.REJECTED
+            case _:
+                raise ValueError("Unsupported triage action")
 
         invoice.updated_by = updated_by
 
-    # SUPERMOC: session.refresh() po with session.begin()
     # Po wyjściu z ``with session.begin()``, sesja jest otwarta
     # (``begin()`` nie zamyka sesji, tylko kończy transakcję).
     # ``refresh()`` odświeża obiekt z bazy — działa poprawnie,

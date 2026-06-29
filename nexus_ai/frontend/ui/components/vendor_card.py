@@ -1,6 +1,5 @@
 """Vendor Card — Karta dostawcy z wykresem trendów, animacjami i hover.
 
-SUPERMOCE:
   - AnimatedContainer zamiast statycznego Card
   - Trend chart z formatowaniem kwot
   - Kolorowane alerty według severity

@@ -296,7 +296,6 @@ async def download_binary(
         )
 
     try:
-        # SUPERMOC HTTPX: async with + http2=True + Limits
         _SCOPE = locals()  # For streaming
 
         async def _do_download(_client: httpx.AsyncClient) -> int | None:
@@ -350,7 +349,6 @@ async def download_binary(
             # Injected mock client - użyj bezpośrednio
             total_size = await _do_download(http_client)
         else:
-            # SUPERMOC HTTPX: własny klient z HTTP/2, Limits, Timeout
             async with httpx.AsyncClient(
                 timeout=httpx.Timeout(connect=15.0, read=120.0, write=30.0, pool=300.0),
                 limits=httpx.Limits(

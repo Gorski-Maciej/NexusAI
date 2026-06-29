@@ -2,7 +2,6 @@
 """
 Backup script using fsspec for unified file system access.
 
-SUPERMOC fsspec:
 - ``fsspec.open()`` zamiast ``zipfile`` — działa z protokołami file://, s3://, sftp://
 - ``fsspec.get_mapper()`` — dict-like interface do backupu
 - ``fsspec.implementations.zip.ZipFileSystem`` — dostęp do ZIP bez rozpakowywania
@@ -40,7 +39,6 @@ def _setup_fs(config: AppConfig):
     """Utwórz skonfigurowany fsspec filesystem z cache i transactional support."""
     raw_fs = fsspec.filesystem(config.storage_protocol, auto_mkdir=True)
 
-    # SUPERMOC: CachingFileSystem dla backupów — szybszy dostęp
     cache_fs = CachingFileSystem(
         target_protocol=config.storage_protocol,
         cache_storage="/tmp/.fsspec_backup_cache",
@@ -48,7 +46,6 @@ def _setup_fs(config: AppConfig):
         same_names=True,
     )
 
-    # SUPERMOC: TransactionalFileSystem dla atomowych backupów
     tx_fs = TransactionalFileSystem(fs=cache_fs)
 
     return tx_fs
@@ -64,7 +61,6 @@ def _get_backup_meta_mapper(config: AppConfig):
 def create_backup():
     """Create a backup using fsspec with configurable protocol.
 
-    SUPERMOC fsspec:
     - TransactionalFileSystem dla atomowości
     - TqdmCallback dla progress bara
     - fsspec.get_mapper() dla metadanych backupów
@@ -75,19 +71,16 @@ def create_backup():
     backup_name = f"nexus_backup_{timestamp}.zip"
     backup_path = config.base_dir / "backups"
 
-    # SUPERMOC: TransactionalFileSystem z CachingFileSystem
     fs = _setup_fs(config)
     fs.makedirs(str(backup_path), exist_ok=True)
 
     target_zip = backup_path / backup_name
     target_url = str(target_zip)
 
-    # SUPERMOC: fsspec.get_mapper() dla metadanych backupu
     meta = _get_backup_meta_mapper(config)
 
     print(f"📦 Tworzenie kopii zapasowej: {backup_name}...")
 
-    # SUPERMOC: TransactionalFileSystem — atomowy backup
     with fs.transaction():
         if config.storage_protocol == "file":
             with zipfile.ZipFile(target_url, "w", zipfile.ZIP_DEFLATED) as zipf:
@@ -155,7 +148,6 @@ def create_backup():
                     if cb:
                         cb.__exit__(None, None, None)
 
-            # SUPERMOC: fsspec.open() — zapisz przez protokół (s3://, sftp://)
             with fsspec.open(target_url, "wb") as f:
                 cb2 = (
                     TqdmCallback(desc="Uploading backup")
@@ -178,7 +170,6 @@ def create_backup():
                     if cb2:
                         cb2.__exit__(None, None, None)
 
-    # SUPERMOC: fsspec.get_mapper() — zapisz metadane backupu
     meta[backup_name] = {
         "timestamp": timestamp,
         "size": Path(target_url).stat().st_size if config.storage_protocol == "file" else 0,
@@ -188,7 +179,6 @@ def create_backup():
         "protocol": config.storage_protocol,
     }
 
-    # SUPERMOC: fsspec.implementations.zip.ZipFileSystem — weryfikacja backupu
     zfs = ZipFileSystem(target_url)
     file_count = len(zfs.find("/"))
 
@@ -199,7 +189,6 @@ def create_backup():
 def list_backup_contents(backup_path: str) -> list[dict[str, Any]]:
     """List contents of a backup ZIP with metadata using fsspec ZipFileSystem.
 
-    SUPERMOC fsspec: dostęp do plików w ZIP bez rozpakowywania + metadane.
 
     Args:
         backup_path: Ścieżka do pliku ZIP.
@@ -222,7 +211,6 @@ def list_backup_contents(backup_path: str) -> list[dict[str, Any]]:
 def list_backups() -> list[dict[str, Any]]:
     """List all backups with metadata from fsspec.get_mapper().
 
-    SUPERMOC fsspec: odczyt metadanych backupów przez dict-like interfejs.
     """
     config = AppConfig()
     backup_dir = config.base_dir / "backups"
@@ -251,7 +239,6 @@ def list_backups() -> list[dict[str, Any]]:
 def verify_backup(backup_path: str) -> bool:
     """Verify backup integrity using ZipFileSystem.
 
-    SUPERMOC fsspec: weryfikacja backupu przez ZipFileSystem —
     odczytuje wszystkie pliki z ZIP bez rozpakowywania.
     """
     try:

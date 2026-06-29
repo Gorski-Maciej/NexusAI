@@ -1,7 +1,6 @@
 """
 Dynamiczny Strażnik Ryzyka (RiskGuard) — dynamiczne progi pewności AI.
 
-SUPERMOCE:
 - Dynamiczne progi w zależności od formy opodatkowania i typu wydatku
 - First-match-wins przez reguły w DuckDB (risk_thresholds table)
 - Hot-reload przez NATS (risk.thresholds.updated)
@@ -158,7 +157,6 @@ class RiskGuard:
         expense_type: str = "inne",
         vendor_trust: str = "medium",
     ) -> RiskThreshold:
-        """SUPERMOC: Pobierz próg ryzyka dla combo tax_form + expense_type.
 
         First-match-wins przez DuckDB json_extract_string + ORDER BY priority.
         """
@@ -202,7 +200,6 @@ class RiskGuard:
         ai_confidence: float,
         vendor_trust: str = "medium",
     ) -> dict[str, Any]:
-        """SUPERMOC: Oceń ryzyko i zwróć decyzję.
 
         Args:
             tax_form: Forma opodatkowania.

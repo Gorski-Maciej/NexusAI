@@ -6,7 +6,6 @@ Zgodnie z aa3fvcx.txt:
 - Zero duplikacji kodu między modelem DB a modelem API
 - Idealna integracja z Litestar i msgspec
 
-SUPERMOCE (wszystkie):
 - STRICT tables (SQLite 3.45+) przez @compiles extension
 - Enum columns (OutboxStatus, InvoiceStatus) zamiast gołych str
 - JSON columns (payload, changes, details) zamiast gołych stringów
@@ -28,10 +27,9 @@ SUPERMOCE (wszystkie):
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
-from typing import Any, ClassVar
+from typing import ClassVar
 
 import pendulum
 
@@ -40,14 +38,13 @@ import pendulum
 from sqlalchemy import TypeDecorator as SATypeDecorator, Enum as SAEnum
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped
 from sqlalchemy.schema import Index, UniqueConstraint
 from sqlalchemy.sql.ddl import CreateTable
 from sqlmodel import JSON, String, and_, text
 from sqlmodel import Field, Relationship, SQLModel
 
 
-# ── SUPERMOC: TypeDecorator dla pendulum.DateTime ─────────────────────
 # Automatyczna konwersja str↔pendulum.DateTime przy zapisie/odczycie.
 # Zamiast gołych stringów ISO, ORM zwraca pendulum.DateTime.
 
@@ -69,7 +66,6 @@ class PendulumDateTime(SATypeDecorator):
         return None
 
 
-# ── SUPERMOC: SQLite STRICT tables przez @compiles extension ────────────
 
 _STRICT_TABLES = {
     "invoices",
@@ -178,7 +174,6 @@ class UserRole(StrEnum):
 class Invoice(SQLModel, table=True):
     """Faktura — główny model biznesowy z ALL SUPERPOWERS.
 
-    SUPERMOCE:
     - Enum column: InvoiceStatus zamiast gołego str
     - Relationship() → outbox_events, audit_logs
     - Composite index: (contractor_nip, issue_date)
@@ -194,23 +189,18 @@ class Invoice(SQLModel, table=True):
 
     __tablename__ = "invoices"  # type: ignore[assignment]
     __table_args__ = (
-        # SUPERMOC: Composite index
         Index("idx_invoices_contractor_date", "contractor_nip", "issue_date"),
-        # SUPERMOC: Partial index — tylko aktywne statusy
         Index(
             "idx_invoices_active_status",
             "status",
             sqlite_where=text("status IN ('PAID', 'APPROVED', 'PENDING_REVIEW')"),
         ),
-        # SUPERMOC: Partial index na created_at
         Index(
             "idx_invoices_active_created",
             "created_at",
             sqlite_where=text("status NOT IN ('NEW', 'REJECTED')"),
         ),
-        # SUPERMOC: Expression index dla case-insensitive search
         Index("idx_invoices_nip_upper", text("UPPER(contractor_nip)")),
-        # SUPERMOC: Unique constraint na tenant + number
         UniqueConstraint("tenant_id", "number", name="uq_tenant_invoice_number"),
         {"sqlite_autoincrement": False},
     )
@@ -221,8 +211,6 @@ class Invoice(SQLModel, table=True):
         "str_strip_whitespace": True,
     }
 
-    # SUPERMOC: Mapped[] annotations dla full type safety
-    # SUPERMOC: sa_column_kwargs z komentarzami dla dokumentacji schematu
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     number: Mapped[str | None] = Field(
         default=None,
@@ -267,7 +255,6 @@ class Invoice(SQLModel, table=True):
             "check": "length(currency) = 3",
         },
     )
-    # SUPERMOC: Enum column — InvoiceStatus zamiast gołego str
     status: Mapped[InvoiceStatus] = Field(
         default=InvoiceStatus.NEW,
         index=True,
@@ -310,7 +297,6 @@ class Invoice(SQLModel, table=True):
         sa_column_kwargs={"comment": "Kto ostatnio modyfikował rekord"},
     )
 
-    # SUPERMOC: Relationship() — dwukierunkowe relacje
     outbox_events: Mapped[list["OutboxEvent"]] = Relationship(back_populates="invoice")
     audit_logs: Mapped[list["AuditLog"]] = Relationship(back_populates="invoice")
 
@@ -321,7 +307,6 @@ class Invoice(SQLModel, table=True):
             return self.amount_gross - self.amount_net
         return None
 
-    # SUPERMOC: hybrid_property dla amount_vat (SQLAlchemy — SQL level)
     @hybrid_property
     def amount_vat_sql(self) -> Decimal | None:
         """VAT = amount_gross - amount_net (SQLAlchemy hybrid)."""
@@ -364,8 +349,6 @@ class Contractor(SQLModel, table=True):
         sa_type=PendulumDateTime,
     )
 
-    # SUPERMOC: Relationship() — kontrahent ma wiele faktur
-    # SUPERMOC: Relationship — loose join na contractor_nip (bez FK)
     # viewonly=True bo to join przez string NIP, nie przez FK
     invoices: Mapped[list["Invoice"]] = Relationship(
         sa_relationship_kwargs={
@@ -399,7 +382,6 @@ class AuditLog(SQLModel, table=True):
     field_changed: Mapped[str | None] = Field(default=None)
     old_value: Mapped[str | None] = Field(default=None)
     new_value: Mapped[str | None] = Field(default=None)
-    # SUPERMOC: JSON column zamiast gołego stringa
     changes: Mapped[dict | None] = Field(
         default=None,
         sa_type=JSON,
@@ -410,14 +392,12 @@ class AuditLog(SQLModel, table=True):
         sa_type=PendulumDateTime,
     )
 
-    # SUPERMOC: Relationship() — audyt należy do faktury
     invoice: Mapped["Invoice | None"] = Relationship(back_populates="audit_logs")
 
 
 class OutboxEvent(SQLModel, table=True):
     """Transactional outbox events — z Enum, JSON, Relationship, Partial Index.
 
-    SUPERMOCE:
     - Enum column: OutboxStatus zamiast gołego str
     - JSON column: payload zamiast gołego stringa
     - Relationship() → invoice
@@ -426,11 +406,9 @@ class OutboxEvent(SQLModel, table=True):
 
     __tablename__ = "outbox_events"  # type: ignore[assignment]
     __table_args__ = (
-        # SUPERMOC: Partial index — tylko nieprzetworzone eventy
         Index(
             "idx_outbox_pending", "status", "created_at", sqlite_where=text("status = 'PENDING'")
         ),
-        # SUPERMOC: Composite index na aggregate
         Index("idx_outbox_aggregate", "aggregate_id", "event_type"),
         {"sqlite_autoincrement": False},
     )
@@ -443,13 +421,11 @@ class OutboxEvent(SQLModel, table=True):
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     event_type: Mapped[str] = Field(nullable=False, min_length=3)
     aggregate_id: Mapped[str] = Field(nullable=False, min_length=1)
-    # SUPERMOC: JSON column zamiast gołego stringa
     payload: Mapped[dict] = Field(
         default_factory=dict,
         sa_type=JSON,
         description="JSON payload eventu",
     )
-    # SUPERMOC: Enum column — OutboxStatus zamiast gołego str
     status: Mapped[OutboxStatus] = Field(
         default=OutboxStatus.PENDING,
         sa_type=SAEnum(OutboxStatus),
@@ -465,7 +441,6 @@ class OutboxEvent(SQLModel, table=True):
         sa_type=PendulumDateTime,
     )
 
-    # SUPERMOC: ForeignKey + Relationship() — event należy do faktury
     invoice_id: Mapped[str | None] = Field(
         default=None,
         foreign_key="invoices.id",
@@ -490,7 +465,6 @@ class SecurityAlert(SQLModel, table=True):
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     actor: Mapped[str] = Field(nullable=False)
     operation: Mapped[str] = Field(nullable=False)
-    # SUPERMOC: JSON column zamiast gołego stringa
     details: Mapped[dict] = Field(
         default_factory=dict,
         sa_type=JSON,
@@ -515,7 +489,6 @@ class UserAccount(SQLModel, table=True):
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     username: Mapped[str] = Field(unique=True, nullable=False, index=True)
     password_hash: Mapped[str] = Field(nullable=False)
-    # SUPERMOC: Enum column — UserRole zamiast gołego str
     role: Mapped[UserRole] = Field(
         default=UserRole.WORKER,
         sa_type=SAEnum(UserRole),

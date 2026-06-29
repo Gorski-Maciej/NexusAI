@@ -35,7 +35,6 @@ _INITIALIZED = False
 
 @logger.patch
 def _patch_record(record):
-    """SUPERMOC: Dynamiczne wstrzykiwanie pól do każdego rekordu logu przez logger.patch().
 
     Zastępuje CorrelationIdFilter — wbudowany mechanizm Loguru jest
     szybszy i czystszy niż custom filter class.
@@ -112,7 +111,6 @@ class _LoguruFactory:
 def _setup_structlog() -> None:
     """Configure structlog to use loguru as its backend logging system.
 
-    SUPERMOCE structlog:
     - merge_contextvars: automatyczne wzbogacanie o correlation_id/tenant_id z contextvars
     - CallsiteParameterAdder: filename, lineno, func_name w każdym logu
     - format_exc_info: automatyczne formatowanie wyjątków
@@ -124,7 +122,6 @@ def _setup_structlog() -> None:
     """
     import structlog as _structlog
 
-    # SUPERMOC 1: Level styles dla ConsoleRenderer
     _level_styles = {
         "info": _structlog.dev.StructLogStyle(color="green", bold=False),
         "warning": _structlog.dev.StructLogStyle(color="yellow", bold=True),
@@ -135,17 +132,11 @@ def _setup_structlog() -> None:
 
     _structlog.configure(
         processors=[
-            # SUPERMOC 2: Łączy contextvars (correlation_id, tenant_id) z każdym logiem
             _structlog.contextvars.merge_contextvars,
-            # SUPERMOC 3: Filtrowanie po poziomie (szybkie odrzucanie)
             _structlog.stdlib.filter_by_level,
-            # SUPERMOC 4: Dodaje poziom logowania (info, warning, ...)
             _structlog.stdlib.add_log_level,
-            # SUPERMOC 5: Dodaje numeryczny poziom logowania
             _structlog.stdlib.add_log_level_number,
-            # SUPERMOC 6: Formatuje argumenty pozycyjne
             _structlog.stdlib.PositionalArgumentsFormatter(),
-            # SUPERMOC 7: Dodaje filename:lineno:func_name do każdego logu
             _structlog.processors.CallsiteParameterAdder(
                 [
                     _structlog.processors.CallsiteParameter.FILENAME,
@@ -153,13 +144,9 @@ def _setup_structlog() -> None:
                     _structlog.processors.CallsiteParameter.FUNC_NAME,
                 ]
             ),
-            # SUPERMOC 8: Dodaje timestamp ISO
             _structlog.processors.TimeStamper(fmt="iso"),
-            # SUPERMOC 9: Formatuje wyjątki (traceback)
             _structlog.processors.format_exc_info,
-            # SUPERMOC 10: Dodaje extra dane z stdlib logging
             _structlog.stdlib.ExtraAdder(),
-            # SUPERMOC 11: Renderowanie konsolowe z sortowaniem i kolorami
             _structlog.dev.ConsoleRenderer(
                 sort_keys=True,
                 pad_event=30,
@@ -195,7 +182,6 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
     if log_level not in {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}:
         log_level = "INFO"
 
-    # ── SUPERMOC: Custom levels dla semantycznego filtrowania ─────────────────
     logger.level("TRACE", no=5, color="<magenta>")
     logger.level("OCR", no=8, color="<blue>")
     logger.level("AUDIT", no=38, color="<yellow>")
@@ -263,7 +249,6 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
         format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {extra[correlation_id]} | {extra[request_id]} | {message}",
     )
 
-    # ── SUPERMOC: DuckDB sink dla WARNING+ logów ─────────────────────────────
     _setup_duckdb_sink(log_dir, app_name)
 
     # ── Konfiguracja structlog (output przez loguru) ─────────────────────────
@@ -278,17 +263,14 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
     # Przekieruj standardowe logging do Loguru
     _redirect_standard_logging()
 
-    # ── SUPERMOC: stamina retry + circuit breaker logging ────────────────────
     _setup_stamina_logging()
 
     _INITIALIZED = True
 
 
-# ── SUPERMOC: DuckDB sink dla analityki logów ──────────────────────────────
 
 
 def _setup_duckdb_sink(log_dir: Path, app_name: str) -> None:
-    """SUPERMOC: Custom Loguru sink → DuckDB dla WARNING+ logów.
 
     Logi WARNING i wyższe są automatycznie zapisywane do DuckDB
     dla łatwej analizy SQL. Tabela telemetry_logs jest tworzona
@@ -352,7 +334,6 @@ def _setup_duckdb_sink(log_dir: Path, app_name: str) -> None:
 
 
 def _setup_stamina_logging() -> None:
-    """SUPERMOC: Konfiguruje logging dla stamina retry + circuit breaker.
 
     stamina używa standardowego modułu logging. Przekierowujemy jego logi
     przez Loguru/structlog, aby każda retry i każde otwarcie Circuit Breakera

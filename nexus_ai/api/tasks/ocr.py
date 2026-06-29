@@ -291,12 +291,13 @@ async def process_invoice_ocr(
                 if routing:
                     extracted_data["field_confidence_routing"] = routing
                     extracted_data["field_confidence_reason"] = routing_reason
-                    if routing == "BLOCK_AND_ALERT":
-                        await _mark_invoice_blocked(invoice_id, routing_reason, db)
-                        ze_conn.close()
-                        return
-                    elif routing == "TRIAGE_QUEUE":
-                        await _mark_invoice_pending_review(
+                    match routing:
+                        case "BLOCK_AND_ALERT":
+                            await _mark_invoice_blocked(invoice_id, routing_reason, db)
+                            ze_conn.close()
+                            return
+                        case "TRIAGE_QUEUE":
+                            await _mark_invoice_pending_review(
                             invoice_id, reason=f"FIELD_CONFIDENCE: {routing_reason}", db=db
                         )
             except NoMatchingRuleError:

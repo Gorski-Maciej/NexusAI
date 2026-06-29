@@ -1,11 +1,9 @@
 """Partner Hub View — @ft.component + ReorderableListView + SegmentedButton + SearchBar."""
 
 from __future__ import annotations
-from typing import Any
 import flet as ft
 import pendulum
 from structlog import get_logger
-from nexus_ai.frontend.components.stat_card import ShimmerCard
 
 logger = get_logger("nexus.ui.partner")
 
@@ -18,7 +16,6 @@ def PartnerHubView(page: ft.Page, api_client, query_context: dict | None = None)
     selected_client_id = ft.use_state[str | None](None)
     loading = ft.use_state(True)
     error = ft.use_state[str | None](None)
-    # SUPERMOC: URL = State — inicjalizuj search z query params
     initial_q = (query_context or {}).get("q") or ""
     search_query = ft.use_state(initial_q)
 

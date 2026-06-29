@@ -97,7 +97,6 @@ def load_manifest(manifest_path: str | Path | None = None) -> list[ModelEntry]:
         logger.warning("Model manifest not found at any expected location")
         return []
 
-    # SUPERMOC fsspec: fsspec.open() zamiast open()
     # Działa z file://, s3://, http:// — manifest może być zdalny
     with fsspec.open(manifest_path, "rb") as f:
         data: dict[str, Any] = msgspec.json.decode(f.read())
@@ -136,11 +135,9 @@ def load_manifest(manifest_path: str | Path | None = None) -> list[ModelEntry]:
 def compute_sha256(filepath: Path) -> str:
     """Compute SHA-256 checksum of a file (streaming via Sha256Hasher).
 
-    SUPERMOC fsspec: Używa fsspec.open() zamiast open() — działa
     z każdym protokołem (file://, s3://, http://).
     """
     sha = Sha256Hasher()
-    # SUPERMOC fsspec: odczyt przez fsspec.open() zamiast open()
     with fsspec.open(filepath, "rb") as f:
         while True:
             chunk = f.read(65536)  # 64 KB
@@ -186,7 +183,6 @@ async def download_file(
     headers = {"Range": f"bytes={resume_bytes}-"} if resume_bytes > 0 else {}
 
     try:
-        # SUPERMOC HTTPX: http2=True dla szybszych połączeń + Limits
         async with httpx.AsyncClient(
             timeout=httpx.Timeout(connect=15.0, read=120.0, write=30.0, pool=300.0),
             limits=httpx.Limits(
@@ -291,7 +287,6 @@ async def download_all_models(
     models_dir = Path(models_dir)
     models_dir.mkdir(
         parents=True, exist_ok=True
-    )  # SUPERMOC fsspec: CachingFileSystem dla przezroczystego cache modeli
     # CachingFileSystem owija bazowy filesystem ("file") i cache'uje odczyty.
     # Następne uruchomienie: jeśli plik jest w cache, nie wymaga ponownego I/O.
     cache_storage = models_dir / ".fsspec_cache"
@@ -323,7 +318,6 @@ async def download_all_models(
 
         dest_path = models_dir / entry.key
 
-        # SUPERMOC fsspec: CachingFileSystem — przezroczyste cache
         # Używamy caching_fs.open() z prawdziwą ścieżką zamiast sztucznego URL
         dest_url = str(dest_path)
         if caching_fs.exists(dest_url):
@@ -418,7 +412,6 @@ async def download_all_models(
         )
 
         if success:
-            # SUPERMOC fsspec: odczyt przez CachingFileSystem wypełni cache
             # Przy następnym uruchomieniu, caching_fs.exists() zwróci True
             # bez dotykania dysku (jeśli plik jest w cache)
             try:

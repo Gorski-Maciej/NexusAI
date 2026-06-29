@@ -4,7 +4,6 @@ KSeF Client — HTTP client for KSeF API.
 
 from __future__ import annotations
 
-from typing import Any
 
 from nexus_ai.core.cache.http_client import CachedHttpClient
 

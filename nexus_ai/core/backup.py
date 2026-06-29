@@ -16,7 +16,6 @@ import nexus_crypto
 import pendulum
 from structlog import get_logger
 
-from nexus_ai.core.config import AppConfig
 from nexus_ai.core.fsspec_compat import FSSpecFactory
 
 logger = get_logger("nexus.core.backup")
@@ -34,7 +33,6 @@ except ImportError:
     _HAS_DUCKDB = False
 
 # ── Delta Lake import for ACID Parquet backups ───────────────────────────────
-# SUPERMOC: Delta Lake dodaje ACID transactions do Parquet:
 # - Atomic commits: write + metadata w jednej transakcji
 # - Time travel: dostęp do dowolnej wersji backupu
 # - Schema enforcement: dodawanie kolumn nie psuje istniejących danych
@@ -51,13 +49,11 @@ except ImportError:
 class BackupManager:
     """Zarządza pakowaniem i szyfrowaniem bazy danych.
 
-    SUPERMOC DuckDB:
     - ``EXPORT DATABASE`` — atomowy eksport całej bazy DuckDB do plików Parquet.
       Jedno zapytanie tworzy kompletny snapshot: schemat + dane + indeksy.
       Porównanie z ręcznym backupem ZIP: 1 komenda zamiast 20 linii kodu.
     - ``IMPORT DATABASE`` — atomowe przywracanie z backupu.
 
-    SUPERMOC PyArrow:
     - ``pyarrow.fs.LocalFileSystem`` — jednolity interfejs plików dla operacji
       backupowych. ``copy_file`` zamiast ``shutil.copy2``.
       Zysk: brak narzutu shutil, spójny interfejs z S3/GCS (przyszłościowo).
@@ -65,7 +61,6 @@ class BackupManager:
     Szyfrowanie AEAD (ChaCha20-Poly1305) backupów przy użyciu klucza z konfiguracji.
     """
 
-    # ── SUPERMOC fsspec: FSSpecFactory zamiast pyarrow.fs ────────────
     # ``pyarrow.fs.LocalFileSystem`` jest zastąpiony przez fsspec,
     # który zapewnia ten sam interfejs dla wszystkich protokołów
     # (file://, s3://, sftp://) bez zmiany kodu biznesowego.
@@ -83,15 +78,12 @@ class BackupManager:
         self.backup_dir = Path(config.base_dir) / "backups"
         self.backup_dir.mkdir(exist_ok=True)
 
-        # SUPERMOC: Skonfiguruj FSSpecFactory z AppConfig
         FSSpecFactory.get_instance().configure_from_app_config(config)
 
-    # ── SUPERMOC: DuckDB EXPORT / IMPORT DATABASE ──────────────────────
 
     def duckdb_export_database(self, duckdb_path: str | Path | None = None) -> str:
         """Atomowy eksport całej bazy DuckDB przez EXPORT DATABASE.
 
-        SUPERMOC DuckDB:
         ``EXPORT DATABASE 'path' (FORMAT PARQUET)`` — jeden SQL tworzy:
           - ``schema.sql`` — pełny schemat (CREATE TABLE, CREATE INDEX, VIEW)
           - ``load.sql`` — skrypt do załadowania
@@ -202,7 +194,6 @@ class BackupManager:
             if not password:
                 logger.warning("[BACKUP] No password provided; backup is NOT encrypted")
 
-        # SUPERMOC fsspec: TransactionalFileSystem dla atomowych backupów
         # fsspec.open() działa z każdym protokołem — file://, s3://, sftp://
         backup_url = str(self.backup_dir / f"backup_{timestamp}{ext}")
         with fsspec.open(backup_url, "wb") as f:
@@ -220,7 +211,6 @@ class BackupManager:
     def list_backups(self) -> list[dict]:
         """List all backups in the backup directory using fsspec.
 
-        SUPERMOC fsspec: ``fs.glob()`` zamiast ``Path.glob()`` — działa
         z protokołami file://, s3://, sftp:// bez zmiany kodu.
         """
         backups = []
@@ -264,7 +254,6 @@ class BackupManager:
             # Niezaszyfrowany ZIP
             return data
 
-    # ── SUPERMOC: Delta Lake dla ACID backups ─────────────────────────
     # Delta Lake dodaje ACID transactions do formatu Parquet:
     # - Atomic commits: write + metadata w jednej transakcji
     # - Time travel: dostęp do dowolnej wersji backupu
@@ -278,7 +267,6 @@ class BackupManager:
         mode: str = "append",
         partition_by: list[str] | None = None,
     ) -> str:
-        """SUPERMOC Delta Lake: Eksportuj dane z DuckDB do Delta Lake.
 
         Delta Lake dodaje warstwę ACID na Parquet:
         - Atomic commits: każdy zapis jest atomowy
@@ -314,7 +302,6 @@ class BackupManager:
             # Konwertuj Arrow Table → Pandas DataFrame dla deltalake
             pdf = arrow_table.to_pandas()
 
-            # ── SUPERMOC: Delta Lake write z ACID ────────────────────
             # ``write_deltalake()`` tworzy _delta_log/ z commitami
             # Każdy commit to atomowa transakcja JSON.
             _delta.write_deltalake(
@@ -336,7 +323,6 @@ class BackupManager:
             return ""
 
     def list_delta_versions(self, delta_path: str | Path | None = None) -> list[dict]:
-        """SUPERMOC Delta Lake: Wyświetl historię wersji Delta Table.
 
         Delta Lake przechowuje pełną historię commitów w ``_delta_log/``.
         ``DeltaTable.history()" zwraca każdą wersję z timestampem,
@@ -367,7 +353,6 @@ class BackupManager:
         version: int,
         delta_path: str | Path | None = None,
     ) -> Any:
-        """SUPERMOC Delta Lake: Wczytaj konkretną wersję backupu (time travel).
 
         ``DeltaTable.load_as_version(N)`` ładuje stan tabeli z wersji N.
         Zysk: pełny time travel — dostęp do backupu sprzed tygodnia.

@@ -1,39 +1,25 @@
-"""
-core/di.py — Centralne TaskiqDepends dla NexusAI.
-
-SUPERMOC TASKIQ:
-  - TaskiqDepends wstrzykuje zależności do zadań
-  - Zastępuje ręczne tworzenie engine/session w każdym tasku
-  - Lepsza wydajność (pool zamiast create/dispose)
-  - Mniej kodu (~400 LOC mniej w api/tasks.py i core/tasks.py)
-  - Wspiera factory, singleton, scoped
-
-Usage:
-    from nexus_ai.core.di import get_db_session, get_config
-
-    @broker.task(task_name="my_task")
-    async def my_task(
-        config: AppConfig = TaskiqDepends(get_config),
-        db: Session = TaskiqDepends(get_db_session),
-    ):
-        # config i db są gotowe — zero boilerplate!
-        ...
-"""
+"""core/di — Centralny DI container (TaskiqDepends + AppServices) dla NexusAI."""
 
 from __future__ import annotations
 
+import importlib
 import os
-from pathlib import Path
+import warnings
+from dataclasses import dataclass, field
 from typing import Any, AsyncGenerator
 
-import anyio
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import Session
 from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
+from nexus_ai.core.decision_engine import DecisionEngine
+from nexus_ai.core.broker import broker
+from nexus_ai.core.inference import ModelManager
+from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import create_oltp_engine, create_session_factory
+from nexus_ai.events import EventStore, JetStreamEventBus
 
 logger = get_logger("nexus.core.di")
 
@@ -46,7 +32,6 @@ _SESSION_FACTORY_CACHE: dict[str, sessionmaker] = {}
 def _get_or_create_engine(config: AppConfig | None = None) -> Engine:
     """Zwróć lub utwórz silnik bazy danych (cache'owany).
 
-    SUPERMOC: Engine jest tworzony raz i cache'owany - nie ma create/dispose
     przy każdym tasku. To daje znaczący zysk wydajności.
     """
     if config is None:
@@ -76,7 +61,6 @@ def _get_or_create_session_factory(config: AppConfig | None = None) -> sessionma
 async def get_config() -> AppConfig:
     """Zwraca konfigurację aplikacji (singleton).
 
-    SUPERMOC: TaskiqDepends tworzy config raz i cache'uje go.
     """
     return AppConfig()
 
@@ -84,7 +68,6 @@ async def get_config() -> AppConfig:
 async def get_engine(config: AppConfig | None = None) -> Engine:
     """Zwraca silnik bazy danych (cache'owany przez _get_or_create_engine).
 
-    SUPERMOC: Engine jest tworzony raz dla całego procesu workera.
     Nie ma create/dispose przy każdym tasku.
     """
     return _get_or_create_engine(config)
@@ -93,7 +76,6 @@ async def get_engine(config: AppConfig | None = None) -> Engine:
 async def get_db_session(engine: Engine | None = None) -> AsyncGenerator[Session, None]:
     """Zwraca sesję bazy danych (scoped per task).
 
-    SUPERMOC: TaskiqDepends tworzy sesję na czas jednego zadania.
     Sesja jest automatycznie zamykana po zakończeniu zadania.
 
     Usage:
@@ -128,8 +110,6 @@ async def get_duckdb_manager(config: AppConfig | None = None) -> AsyncGenerator[
         ):
             ...
     """
-    from nexus_ai.db.analytics import DuckDBManager
-
     if config is None:
         config = AppConfig()
     manager = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
@@ -158,3 +138,108 @@ async def dispose_all_engines() -> None:
     _ENGINE_CACHE.clear()
     _SESSION_FACTORY_CACHE.clear()
     logger.info("[DI] All engines disposed")
+
+
+# =========================================================================
+# AppServices — centralny DI container dla Litestar
+# =========================================================================
+
+class LazyImport:
+    """Lazy import z opóźnionym ładowaniem."""
+    __slots__ = ("_module", "_name", "_mod")
+
+    def __init__(self, module: str, name: str | None = None) -> None:
+        self._module = module
+        self._name = name
+        self._mod: Any = None
+
+    def __getattr__(self, attr: str) -> Any:
+        if self._mod is None:
+            self._mod = importlib.import_module(self._module)
+        if self._name:
+            return getattr(self._mod, self._name)
+        return getattr(self._mod, attr)
+
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        if self._mod is None:
+            self._mod = importlib.import_module(self._module)
+        if self._name:
+            return getattr(self._mod, self._name)(*args, **kwargs)
+        return self._mod(*args, **kwargs)
+
+
+@dataclass
+class AppServices:
+    """Centralny rejestr serwisów dla NexusaAI."""
+    config: AppConfig = field(default_factory=AppConfig)
+    engine: Any = None
+    session_factory: Any = None
+    _services: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if self.engine is None:
+            self.engine = create_oltp_engine(self.config)
+        if self.session_factory is None:
+            self.session_factory = create_session_factory(self.engine)
+
+    def get(self, name: str) -> Any:
+        if name not in self._services:
+            self._services[name] = self._create(name)
+        return self._services[name]
+
+    def _create(self, name: str) -> Any:
+        match name:
+            case "decision_engine":
+                return DecisionEngine(self.config)
+            case "duckdb_manager":
+                return DuckDBManager(db_path=self.config.duckdb_path, sqlite_path=self.config.sqlite_path)
+            case "event_store":
+                return EventStore(sqlite_path=self.config.sqlite_path)
+            case "jetstream_bus":
+                return JetStreamEventBus(nats_servers=self.config.nats_url)
+            case "model_manager":
+                return ModelManager(config=self.config)
+            case "broker":
+                return broker
+            case _:
+                raise KeyError(f"Unknown service: {name}")
+
+    @property
+    def decision_engine(self) -> Any:
+        return self.get("decision_engine")
+
+    @property
+    def duckdb_manager(self) -> Any:
+        return self.get("duckdb_manager")
+
+    @property
+    def event_store(self) -> Any:
+        return self.get("event_store")
+
+    @property
+    def jetstream_bus(self) -> Any:
+        return self.get("jetstream_bus")
+
+    @property
+    def model_manager(self) -> Any:
+        return self.get("model_manager")
+
+    @property
+    def broker(self) -> Any:
+        return self.get("broker")
+
+
+def create_app_services(config: AppConfig | None = None) -> AppServices:
+    cfg = config or AppConfig()
+    return AppServices(config=cfg)
+
+
+_default_services: AppServices | None = None
+
+
+def get_services() -> AppServices:
+    warnings.warn("get_services() is deprecated. Use create_app_services() with DI injection instead.", DeprecationWarning, stacklevel=2)
+    global _default_services
+    if _default_services is None:
+        _default_services = create_app_services()
+    return _default_services

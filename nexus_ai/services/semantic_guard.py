@@ -1,7 +1,6 @@
 """
 Semantyczny Wykrywacz Anomalii (SemanticGuard) — wykrywa kreatywną księgowość.
 
-SUPERMOCE:
 - Embeddingi faktur przez sqlite-vec (cosine distance)
 - Wykrywanie nagłych zmian profilu usług kontrahenta
 - First-match-wins przez DuckDB anomaly_rules
@@ -72,7 +71,6 @@ class SemanticGuard:
         amount_net: float = 0.0,
         category_code: str = "",
     ) -> AnomalyResult:
-        """SUPERMOC: Oceń czy faktura jest anomalią semantyczną.
 
         Args:
             invoice_text: Pełny tekst faktury z OCR.
@@ -146,7 +144,6 @@ class SemanticGuard:
 
     @staticmethod
     def _mock_embedding(text: str, dim: int = 768) -> list[float]:
-        """SUPERMOC: Symulacja embeddingu (w produkcji użyj modelu AI).
 
         W produkcji: llama-cpp-python embedding.
         """

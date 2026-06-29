@@ -7,7 +7,6 @@ Zachowuje pełną kompatybilność wsteczną przez shimy.
 
 from __future__ import annotations
 
-import hashlib
 import json as _json
 import os
 import re as _re
@@ -18,7 +17,6 @@ import uuid
 from pathlib import Path
 from typing import Any, final
 
-import pendulum
 import structlog as _structlog
 from taskiq.abc.middleware import TaskiqMiddleware
 from taskiq.message import TaskiqMessage

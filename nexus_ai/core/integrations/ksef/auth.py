@@ -4,7 +4,6 @@ KSeF Auth Service.
 
 from __future__ import annotations
 
-from typing import Any
 
 from nexus_ai.core.cache.http_client import CachedHttpClient
 from structlog import get_logger

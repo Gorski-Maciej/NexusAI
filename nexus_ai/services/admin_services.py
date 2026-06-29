@@ -14,7 +14,7 @@ from __future__ import annotations
 from typing import Any
 
 import pendulum
-from nexus_ai.core.foundation.admin_registry import AdminServiceRegistry, rule_service
+from nexus_ai.core.foundation.admin_registry import AdminServiceRegistry
 from nexus_ai.core.logger import auto_logger
 
 

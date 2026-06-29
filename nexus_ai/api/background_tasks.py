@@ -5,7 +5,6 @@ All helper functions defined here are designed to be used with Litestar's
 ``BackgroundTask`` (from ``litestar.background_tasks``) for fire-and-forget
 execution after the HTTP response has been sent to the client.
 
-SUPERMOC TASKIQ:
   - Zamiast EventEmitter.emit_*() używamy broker.kick("event_emit_*", ...)
   - Deterministic task_id przez broker._task_id_generator — JetStream deduplikacja
   - Mniej zależności: nie trzeba przekazywać event_emitter przez app.state
@@ -23,7 +22,6 @@ from typing import Any
 from structlog import get_logger
 
 from nexus_ai.core.broker import broker
-from nexus_ai.services.notification_service import NotificationService
 
 logger = get_logger("nexus.api.background_tasks")
 

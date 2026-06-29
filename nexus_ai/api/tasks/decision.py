@@ -9,7 +9,6 @@ Zawiera:
 
 from __future__ import annotations
 
-from typing import Any
 
 import anyio
 from sqlmodel import Session, text
@@ -95,14 +94,15 @@ async def decision_evaluate(
         except (ConnectionError, TimeoutError, OSError) as emit_err:
             logger.warning("[DECISION-EVENT] Failed to emit: %s", emit_err)
 
-        if verdict.decision == "AUTO_POST":
-            await _post_invoice(invoice_id, extracted_data, verdict, db)
-        elif verdict.decision == "SUGGEST":
-            await _mark_for_review(invoice_id, verdict, db)
-        elif verdict.decision in ("ASK_USER", "BLOCK", "ESCALATE"):
-            await _escalate_to_human(
-                invoice_id, verdict, db, reason=f"decision: {verdict.decision}"
-            )
+        match verdict.decision:
+            case "AUTO_POST":
+                await _post_invoice(invoice_id, extracted_data, verdict, db)
+            case "SUGGEST":
+                await _mark_for_review(invoice_id, verdict, db)
+            case "ASK_USER" | "BLOCK" | "ESCALATE":
+                await _escalate_to_human(
+                    invoice_id, verdict, db, reason=f"decision: {verdict.decision}"
+                )
 
         return {
             "result": "OK",

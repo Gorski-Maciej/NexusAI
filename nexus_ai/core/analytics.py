@@ -1,7 +1,6 @@
 # core/analytics.py
 """Core analytics — Polars SQLContext + financial analytics queries.
 
-SUPERMOCE Polars SQL:
 - ``pl.sql(query, tables={...})`` — natywny SQL w Polars 1.x
 - Rejestracja DataFrame/LazyFrame jako tabel wirtualnych
 - Mieszanie SQL z wyrażeniami Polars w jednym pipeline
@@ -10,7 +9,6 @@ SUPERMOCE Polars SQL:
 
 from __future__ import annotations
 
-from typing import Any
 
 import duckdb
 import polars as pl
@@ -97,7 +95,6 @@ class PolarsSQLContext:
             .shrink_dtype()
         )
 
-    SUPERMOCE:
     - ``pl.sql()`` — natywny SQL Polars bez zewnętrznego silnika
     - LazyFrame — brak materializacji do .collect()
     - Mieszanie SQL z wyrażeniami — pełna moc Polars
@@ -213,7 +210,6 @@ def financial_analysis_with_polars_sql(
     3. Kontynuacja przez Polars expressions (cast, with_columns, filter)
     4. Streaming collect + shrink_dtype dla wydajności
 
-    SUPERMOCE Polars SQL:
     - ``pl.sql()`` — SQL bez zewnętrznego silnika DuckDB
     - Mieszanie SQL z wyrażeniami — pełna swoboda
     - LazyFrame przez cały pipeline — optymalizacja przez Polars optimizer
@@ -374,7 +370,6 @@ def run_polars_sql_query(
 
 
 def get_cashflow_forecast(db_path: str = "data/nexus_analytics.duckdb") -> pl.LazyFrame:
-    """SUPERMOC Polars: Return LazyFrame zamiast DataFrame.
 
     LazyFrame pozwala na:
     - Optymalizację zapytań przez optimizer Polars (predicate/projection pushdown)
@@ -386,7 +381,6 @@ def get_cashflow_forecast(db_path: str = "data/nexus_analytics.duckdb") -> pl.La
     """
     conn = duckdb.connect(db_path)
     try:
-        # ── SUPERMOC: DuckDB pl() zwraca DataFrame, konwertujemy na LazyFrame ─
         query = """
         WITH DailyFlows AS (
             SELECT
@@ -408,11 +402,9 @@ def get_cashflow_forecast(db_path: str = "data/nexus_analytics.duckdb") -> pl.La
         """
         df = conn.execute(query).pl()  # DuckDB natywnie zwraca Polars DataFrame
 
-        # ── SUPERMOC: LazyFrame — dalsze transformacje przed collect ─
         # Konwertujemy DataFrame na LazyFrame dla optymalizacji.
         lazy = df.lazy()
 
-        # ── SUPERMOC: schemat jawny — gwarancja typów ─────────────
         # Castujemy kolumny na oczekiwane typy przed zwróceniem.
         # Dzięki temu caller ma gwarancję typów bez własnego cast().
         schema = {
@@ -429,7 +421,6 @@ def get_cashflow_forecast(db_path: str = "data/nexus_analytics.duckdb") -> pl.La
 
 
 def collect_with_streaming(lazy: pl.LazyFrame, streaming: bool = True) -> pl.DataFrame:
-    """SUPERMOC Polars: Collect z opcją streamingową + shrink_dtype.
 
     ``collect(streaming=True)`` wykonuje zapytanie w batchach,
     nie ładując wszystkich danych do RAM. Idealne dla prognoz

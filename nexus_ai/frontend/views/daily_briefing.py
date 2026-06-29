@@ -1,6 +1,5 @@
 """Daily Briefing View — @ft.component + AnimatedContainer + Shimmer.
 
-SUPERMOCE Flet 0.28+:
   - @ft.component + use_state() zamiast klasy
   - ft.AnimatedContainer dla płynnych przejść
   - ft.Shimmer dla loading skeleton (współdzielony z stat_card)
@@ -10,12 +9,11 @@ SUPERMOCE Flet 0.28+:
 
 from __future__ import annotations
 
-from typing import Any
 
 import flet as ft
 from structlog import get_logger
 
-from nexus_ai.frontend.components.stat_card import ShimmerCard, ErrorView as ErrorViewComponent
+from nexus_ai.frontend.components.stat_card import ShimmerCard
 
 logger = get_logger("nexus.ui.briefing")
 
@@ -24,12 +22,10 @@ logger = get_logger("nexus.ui.briefing")
 def DailyBriefingView(page: ft.Page, api_client):
     """Compact daily briefing showing 1–3 critical decisions.
 
-    SUPERMOC Flet 0.28+:
       - @ft.component + use_state() zamiast klasy
       - ft.AnimatedContainer dla płynnych przejść
       - ft.Shimmer dla loading skeleton
     """
-    # SUPERMOC: use_state zamiast self._variables
     briefing = ft.use_state[dict]({})
     loading = ft.use_state(True)
     error = ft.use_state[str | None](None)

@@ -1,6 +1,5 @@
 """dashboard.py — Deklaratywny widok dashboardu z @ft.component + Shimmer + Canvas charts.
 
-SUPERMOCE Flet 0.28+:
   - @ft.component + use_state() zamiast klasy imperatywnej
   - ft.Shimmer dla loading skeleton kart i wykresów
   - ft.NumberBadge dla metryk na kartach KPI
@@ -14,7 +13,6 @@ SUPERMOCE Flet 0.28+:
 
 from __future__ import annotations
 
-from typing import Any
 from collections import defaultdict
 
 import flet as ft
@@ -28,7 +26,7 @@ from nexus_ai.frontend.charts import (
     top_suppliers_bar_chart,
     vat_pie_chart,
 )
-from nexus_ai.frontend.components.stat_card import ShimmerCard, ShimmerChart, ShimmerRow
+from nexus_ai.frontend.components.stat_card import ShimmerChart, ShimmerRow
 from nexus_ai.frontend.api_client import NexusApiClient
 
 logger = get_logger("nexus.ui.dashboard")
@@ -38,14 +36,12 @@ logger = get_logger("nexus.ui.dashboard")
 def DashboardView(page: ft.Page, api_client: NexusApiClient, query_context: dict | None = None):
     """Główny widok dashboardu z @ft.component + Shimmer + NumberBadge.
 
-    SUPERMOCE:
       - @ft.component + use_state() zamiast klasy
       - ft.Shimmer dla loading skeleton
       - ft.NumberBadge dla metryk
       - ft.Container gradient dla kart KPI
       - ft.Tabs dla przełączania widoków
     """
-    # SUPERMOC: use_state zamiast self._variables
     loading = ft.use_state(True)
     error = ft.use_state[str | None](None)
     summary_data = ft.use_state[dict]({})
@@ -53,14 +49,12 @@ def DashboardView(page: ft.Page, api_client: NexusApiClient, query_context: dict
     cashflow_data = ft.use_state[list]([])
     vat_data = ft.use_state[list]([])
     suppliers_data = ft.use_state[list]([])
-    # SUPERMOC: URL = State — inicjalizuj tab z query params
     initial_tab = 0
     if query_context and query_context.get("tab"):
         tab_map = {"finance": 0, "vat": 1, "suppliers": 2}
         initial_tab = tab_map.get(query_context["tab"], 0)
     tab_index = ft.use_state(initial_tab)
 
-    # SUPERMOC: Metryki
     booked_today = ft.use_state("0")
     pending = ft.use_state("0")
     auto_rate = ft.use_state("0%")
@@ -193,7 +187,6 @@ def DashboardView(page: ft.Page, api_client: NexusApiClient, query_context: dict
                 ft.Container(height=20),
                 ft.Divider(height=1, color=ft.colors.GREY_800),
                 ft.Container(height=16),
-                # SUPERMOC: Tabs dla przełączania widoków
                 ft.Tabs(
                     selected_index=tab_index.value,
                     animation_duration=300,
@@ -205,7 +198,6 @@ def DashboardView(page: ft.Page, api_client: NexusApiClient, query_context: dict
                     on_change=lambda e: tab_index.set(e.control.selected_index),
                 ),
                 ft.Container(height=16),
-                # SUPERMOC: Chart content based on tab
                 _build_charts(
                     tab_index.value,
                     monthly_data.value,

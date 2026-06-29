@@ -3,7 +3,6 @@ from __future__ import annotations
 from litestar import Controller, get, post
 from litestar.connection import Request
 from litestar.exceptions import HTTPException
-from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_503_SERVICE_UNAVAILABLE
 from structlog import get_logger
 
 from nexus_ai.api.dto import (
@@ -54,7 +53,7 @@ class OutboxOpsController(Controller):
                 "dead_letter": 2
             }
         """
-        from sqlmodel import func, select, text
+        from sqlmodel import func, select
 
         from core.config import AppConfig
         from db.database import create_oltp_engine, create_session_factory

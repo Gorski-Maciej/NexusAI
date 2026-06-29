@@ -45,7 +45,6 @@ async def process_events(
 ) -> int:
     """Przetwarzaj partię zdarzeń outbox z pessimistic locking.
 
-    SUPERMOCE: with_for_update(skip_locked=True) — blokuje wiersze,
     pomija już zablokowane. order_by(created_at): FIFO.
     """
     async with async_session_factory() as session:

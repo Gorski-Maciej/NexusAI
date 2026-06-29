@@ -236,7 +236,6 @@ class TaxSimulator:
 
     @staticmethod
     def _aggregate_month_metrics(frame: Any, pl: Any) -> dict[str, float]:
-        # ── SUPERMOC: LazyFrame z wyrażeniami ─────────────────────
         # Zamiast DataFrame.select(), używamy .lazy() dla optymalizacji
         # grafu zapytań przez Polars optimizer.
         # ``collect(streaming=True)`` dla dużych miesięcznych zbiorów.
@@ -267,7 +266,6 @@ class TaxSimulator:
                 .alias("input_vat"),
             ]
         )
-        # ── SUPERMOC: streaming tylko dla dużych zbiorów (>1M rows) ──
         # Dla małych miesięcznych agregacji streaming dodaje narzut.
         # Sprawdzamy height DataFrame — LazyFrame nie ma materializowanych
         # danych, ale jeśli frame ma 'height', to jest DataFrame.

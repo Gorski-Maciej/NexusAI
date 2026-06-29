@@ -1,7 +1,6 @@
 """
 Hot-Reload Listener — odbiera zdarzenia NATS JetStream o zmianach reguł i czyści cache.
 
-SUPERMOC NATS: Migracja z core NATS subscribe na JetStream Pull Consumer.
 Zalety:
   - Durable consumer — checkpointy, retry, DLQ
   - At-least-once delivery — żadne zdarzenie nie ginie
@@ -48,7 +47,6 @@ SUBJECTS = tuple(SUBJECT_CONFIG.keys())
 class HotReloadListener:
     """NATS JetStream subscriber for rule/threshold change events.
 
-    SUPERMOCE:
       - Durable Pull Consumer z checkpointami (zamiast core NATS subscribe)
       - Queue group dla horizontal scaling (nexus-hot-reload)
       - At-least-once delivery — retry przy błędach
@@ -91,7 +89,6 @@ class HotReloadListener:
             "events_per_subject": dict(self._event_counts),
             "last_event_at": dict(self._last_event_at) if self._last_event_at else None,
             "uptime_seconds": round(uptime, 2),
-            # SUPERMOC: JetStream info
             "jetstream": True,
             "durable_name": "nexus-hot-reload",
         }
@@ -99,7 +96,6 @@ class HotReloadListener:
     async def _ensure_jetstream_stream(self) -> None:
         """Upewnij się, że strumień nexus-config istnieje.
 
-        SUPERMOC: Automatyczne tworzenie strumienia JetStream dla config eventów.
         """
         if self._js is None:
             return
@@ -123,7 +119,6 @@ class HotReloadListener:
     async def start(self) -> None:
         """Connect to NATS JetStream, subscribe to rule topics, and start listening.
 
-        SUPERMOC: Durable Pull Consumer zamiast core NATS subscribe.
         """
         from nexus_ai.core.nats_utils import NatsErrors, get_connection
 
@@ -139,7 +134,6 @@ class HotReloadListener:
         self._js = self._nc.jetstream()
         await self._ensure_jetstream_stream()
 
-        # SUPERMOC: Durable Pull Consumer dla każdego subjecta
         for subject in SUBJECTS:
             try:
                 sub = await self._js.pull_subscribe(
@@ -162,7 +156,6 @@ class HotReloadListener:
             except Exception as exc:
                 logger.warning("[HOT-RELOAD] Failed to subscribe to %s: %s", subject, exc)
 
-        # SUPERMOC: Uruchom listening loop jako background task
         self._task = anyio.create_task(self._run())
         self._started_at = pendulum.now("UTC")
         logger.info("[HOT-RELOAD] Listener started (JetStream durable consumers)")
@@ -219,7 +212,6 @@ class HotReloadListener:
             payload = msgspec_loads(msg.data)
         except (DecodeError, UnicodeDecodeError) as exc:
             logger.warning("[HOT-RELOAD] Invalid message on %s: %s", subject, exc)
-            await msg.ack()  # SUPERMOC: Ack even for invalid messages to avoid retry loop
             return
 
         rule_id = payload.get("rule_id", "unknown")
@@ -255,7 +247,6 @@ class HotReloadListener:
         except Exception as exc:
             logger.warning("[HOT-RELOAD] Cache clear failed: %s", exc)
 
-        # SUPERMOC: Ack after successful processing
         try:
             await msg.ack()
         except Exception as exc:

@@ -1,6 +1,5 @@
 """AsyncInvoiceTable — Virtual scrolling DataTable z SearchBar + AutoComplete.
 
-SUPERMOCE Flet 0.28+:
   - ft.SearchBar dla wyszukiwania faktur
   - ft.AutoComplete dla podpowiedzi przy wyszukiwaniu NIP/numeru
   - ft.NumberBadge dla liczników
@@ -31,7 +30,6 @@ INVOICE_STATUS_COLORS = {
 def AsyncInvoiceTable(page: ft.Page, api_client):
     """Asynchroniczna tabela z SearchBar + AutoComplete + infinite scroll.
 
-    SUPERMOCE Flet 0.28+:
       - ft.SearchBar dla wyszukiwania
       - ft.AutoComplete dla podpowiedzi NIP
       - ft.NumberBadge dla liczników
@@ -155,7 +153,6 @@ def AsyncInvoiceTable(page: ft.Page, api_client):
             )
         )
 
-    # SUPERMOC: Empty state
     empty_state = ft.Container(
         ref=empty_ref,
         content=ft.Column(
@@ -173,7 +170,6 @@ def AsyncInvoiceTable(page: ft.Page, api_client):
         expand=True,
     )
 
-    # SUPERMOC: Loading indicator
     loading_row = ft.Row(
         [
             ft.ProgressRing(width=24, height=24),
@@ -188,10 +184,8 @@ def AsyncInvoiceTable(page: ft.Page, api_client):
         spacing=10,
     )
 
-    # SUPERMOC: Render
     return ft.Column(
         [
-            # SUPERMOC: SearchBar z wyszukiwarką
             ft.Row(
                 [
                     ft.SearchBar(

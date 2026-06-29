@@ -1,6 +1,5 @@
 """Audit storno — odwracanie transakcji księgowych z TigerBeetle usando natywnych pending/void.
 
-SUPERMOCE:
 - Natywne pending/void zamiast osobnych transferów
 - Linked chain łączący oryginał ze stornem (atomic)
 - code: 7001 dla storno
@@ -22,8 +21,6 @@ from nexus_ai.services.tigerbeetle.client import (
     LEDGER,
     TRANSFER_CODE,
     TigerBeetleClient,
-    _generate_tb_id,
-    _uuid_to_u128,
 )
 
 
@@ -62,7 +59,6 @@ async def reverse_transaction(
 ) -> dict[str, Any]:
     """Odwraca transakcję księgową — native pending transfer.
 
-    SUPERMOCE:
     - Natywny pending/void zamiast 2 osobnych transferów
     - Odwrócone debit↔credit (expense → revenue)
     - code: 7001 dla storno
@@ -83,14 +79,12 @@ async def reverse_transaction(
     if original_transfer.amount_minor <= 0:
         raise StornoException("Original transfer amount must be positive")
 
-    # SUPERMOC: UUID deterministyczny dla storna (zawsze to samo ID dla tego samego storna)
     reverse_source_id = uuid_module.uuid5(
         uuid_module.NAMESPACE_URL,
         f"storno:{original_transfer.tb_transfer_id}:{invoice_id}",
     )
     timestamp_ns = user_data_64 or pendulum.now("UTC").int_timestamp * 1_000_000_000
 
-    # SUPERMOC: Natywny pending transfer z odwróconymi kontami
     # Debet ↔ Kredyt (odwrócenie kierunku)
     pending_id = None
     try:
@@ -111,7 +105,6 @@ async def reverse_transaction(
     if pending_id is None:
         raise StornoException("TigerBeetle storno pending creation returned no ID")
 
-    # SUPERMOC: Natywny post_pending_transfer
     posted = tb_client.post_pending_transfer(
         pending_id,
         ledger=original_transfer.ledger,
@@ -150,7 +143,6 @@ async def create_storno_linked_chain(
 ) -> list[dict[str, Any]]:
     """Utwórz linked chain storno transferów.
 
-    SUPERMOC: Linked transfers — atomowe odwrócenie wielu transferów.
     Wszystkie storna w jednym chainie: albo wszystkie się powiodą, albo żaden.
 
     Args:
@@ -163,7 +155,6 @@ async def create_storno_linked_chain(
     """
     results = []
 
-    # SUPERMOC: Build linked chain dla wszystkich storn
     linked_specs = []
     for original in original_transfers:
         linked_specs.append(

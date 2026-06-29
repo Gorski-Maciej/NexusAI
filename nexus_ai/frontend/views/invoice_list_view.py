@@ -1,6 +1,5 @@
 """Invoice List View — @ft.component + SearchBar + SegmentedButton + URL = State.
 
-SUPERMOCE Flet 0.28+:
   - @ft.component + use_state() zamiast klasy imperatywnej
   - ft.SearchBar dla wyszukiwania faktur
   - ft.SegmentedButton dla filtrów statusu
@@ -13,7 +12,6 @@ SUPERMOCE Flet 0.28+:
 
 from __future__ import annotations
 
-from typing import Any
 
 import flet as ft
 from structlog import get_logger
@@ -36,14 +34,12 @@ INVOICE_STATUS_COLORS = {
 def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None):
     """Modern invoice list view — URL = State synchronizacja filtrów.
 
-    SUPERMOCE:
       - @ft.component + use_state() zamiast klasy
       - ft.SearchBar z wyszukiwarką
       - ft.SegmentedButton dla filtrów statusu
       - URL = State: filtry zquery params aktualizują URL
       - ft.NumberBadge dla liczników
     """
-    # SUPERMOC: URL = State — inicjalizuj z query params
     initial_q = (query_context or {}).get("q") or ""
     initial_status = (query_context or {}).get("status") or None
 
@@ -55,7 +51,6 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
 
     search_ref = ft.use_ref[ft.SearchBar]()
 
-    # SUPERMOC: SegmentedButton dla filtrów
     filter_segments = ft.SegmentedButton(
         selected={initial_status} if initial_status else set(),
         segments=[
@@ -73,7 +68,6 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
     def _on_filter_change(new_filter: str | None):
         """Zmiana filtra → aktualizacja URL."""
         selected_filter.set(new_filter)
-        # SUPERMOC: URL = State — zapisz filtr w URL
         update_url_with_filters(
             page,
             "/invoices",
@@ -86,7 +80,6 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
     def _on_search_submit(value: str):
         """Zatwierdzenie wyszukiwania → aktualizacja URL.
 
-        SUPERMOC URL = State: synchronizacja TYLKO przy submit,
         nie przy każdym keystroke — zapobiega infinite re-render loop.
         """
         search_query.set(value)
@@ -101,7 +94,6 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
         loading.set(True)
         error.set(None)
         try:
-            # SUPERMOC: URL = State — użyj filtrów z URL do API
             params = {"limit": 50}
             if search_query.value:
                 params["q"] = search_query.value
@@ -170,7 +162,6 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
 
     filtered = filtered_invoices()
 
-    # SUPERMOC: DataTable rows
     rows = []
     for inv in filtered:
         status = getattr(inv, "status", "NEW")
@@ -211,24 +202,20 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
                     ]
                 ),
                 ft.Container(height=8),
-                # SUPERMOC: SearchBar z URL = State
                 ft.SearchBar(
                     ref=search_ref,
                     bar_hint_text="Szukaj faktury po numerze lub NIP...",
                     view_hint_text="Wybierz fakturę...",
                     value=search_query.value,
-                    # SUPERMOC URL = State: onChange tylko lokalny stan, onSubmit → URL
                     on_change=lambda e: search_query.set(e.control.value or ""),
                     on_submit=lambda e: _on_search_submit(e.control.value or ""),
                     height=44,
                 ),
                 ft.Container(height=8),
-                # SUPERMOC: SegmentedButton dla filtrów
                 filter_segments,
                 ft.Container(height=4),
                 ft.Text(f"Znaleziono: {len(filtered)} faktur", size=12, color=ft.colors.GREY_500),
                 ft.Divider(),
-                # SUPERMOC: DataTable
                 ft.Container(
                     content=ft.DataTable(
                         columns=[

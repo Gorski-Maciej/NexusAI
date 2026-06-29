@@ -14,7 +14,6 @@ from nexus_ai.db.models import AuditLog, Invoice
 
 logger = get_logger("nexus.services.audit_service")
 
-# ── SUPERMOC: Automatyczny audit trail przez before_flush ──────────────
 # Zamiast ręcznego ``AuditService.log_change()`` w każdym serwisie,
 # używamy ``SessionEvents.before_flush`` do automatycznego logowania
 # wszystkich zmian na modelach oznaczonych przez ``__auditable__``.
@@ -94,7 +93,6 @@ def register_audit_hooks() -> None:
 
     Wywołaj raz przy starcie aplikacji (np. w ``on_startup``).
 
-    SUPERMOC: ``SessionEvents.before_flush`` przechwytuje wszystkie
     zmiany przed zapisem do DB. Automatycznie tworzy AuditLog entries
     dla każdego zmodyfikowanego/usuniętego obiektu z ``_AUDITABLE_FIELDS``.
     """
@@ -120,7 +118,6 @@ class AuditService:
     Event emitter jest przekazywany jako parametr do ``log_change()``
     — nie przez konstruktor — aby zachować ``@staticmethod``.
 
-    SUPERMOC: Automatyczny audit przez ``before_flush`` hook.
     Zarejestruj przez ``register_audit_hooks()`` przy starcie aplikacji.
     Eliminuje potrzebę jawnego ``log_change()`` w serwisach.
     """

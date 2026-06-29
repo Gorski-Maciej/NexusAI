@@ -1,11 +1,9 @@
 """
-SUPERMOC: Performance operations endpoint — Locust edition.
 
 Zgodnie z aa3fvcx.txt: locust zastępuje k6.
 Ten kontroler udostępnia wyniki testów wydajnościowych locust
 przez REST API dla dashboardu i CI/CD.
 
-SUPERMOCE:
   - LocustSummaryDTO — camelCase JSON API
   - Parsowanie JSON/CSV z locust
   - Wsparcie dla p95, p99, RPS, error rate
@@ -26,7 +24,6 @@ from nexus_ai.core.msgspec_utils import msgspec_loads
 
 
 def _parse_locust_csv_summary(summary_prefix: Path) -> dict | None:
-    """SUPERMOC: Parsuj statystyki locust z pliku CSV.
 
     Locust generuje CSV z kolumnami:
       - Name, Request Count, Failure Count, Median Response Time,
@@ -53,7 +50,6 @@ def _parse_locust_csv_summary(summary_prefix: Path) -> dict | None:
             if not rows:
                 return None
 
-            # SUPERMOC: Agregacja statystyk
             p95_vals = []
             p99_vals = []
             avg_vals = []
@@ -97,7 +93,6 @@ def _parse_locust_csv_summary(summary_prefix: Path) -> dict | None:
 
 
 def _parse_locust_json_summary(json_path: Path) -> dict | None:
-    """SUPERMOC: Parsuj statystyki locust z pliku JSON.
 
     Locust --json generuje JSON z metrykami per-endpoint.
     """
@@ -113,7 +108,6 @@ def _parse_locust_json_summary(json_path: Path) -> dict | None:
         if not metrics:
             return payload
 
-        # SUPERMOC: Ekstrakcja metryk z JSON
         req_duration = (metrics.get("http_req_duration") or {}).get("values", {})
         checks = (metrics.get("checks") or {}).get("values", {})
         reqs = (metrics.get("http_reqs") or {}).get("values", {})
@@ -133,7 +127,6 @@ def _parse_locust_json_summary(json_path: Path) -> dict | None:
 
 
 class PerformanceOpsController(Controller):
-    """SUPERMOC: Operational performance engineering visibility.
 
     Udostępnia wyniki testów wydajnościowych locust przez REST API.
     Obsługuje zarówno format CSV (--csv) jak i JSON (--json) z locust.
@@ -155,7 +148,6 @@ class PerformanceOpsController(Controller):
         operation_id="getLocustSummary",
     )
     async def locust_summary(self) -> dict:
-        """SUPERMOC: Pobierz podsumowanie ostatniego testu locust.
 
         Przeszukuje katalog reports/performance/ w poszukiwaniu:
           1. locust_stats.html (JSON HTML — fallback)
@@ -167,7 +159,6 @@ class PerformanceOpsController(Controller):
         """
         reports_dir = Path("reports") / "performance"
 
-        # SUPERMOC: Próbuj różne formaty locust
         # 1. JSON (locust --json)
         json_path = reports_dir / "locust_stats.json"
         result = _parse_locust_json_summary(json_path)
@@ -233,7 +224,6 @@ class PerformanceOpsController(Controller):
         exclude_opt_key="no_rate_limit",
     )
     async def locust_config(self) -> dict:
-        """SUPERMOC: Zwróć domyślną konfigurację locust dla tego środowiska."""
         import os
 
         return {

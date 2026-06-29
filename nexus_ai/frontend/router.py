@@ -1,6 +1,5 @@
 """NexusAI Router — Navigator 2.0 + Breadcrumb + Query Params + URL = State.
 
-SUPERMOCE Flet Router 0.28+:
   - Navigator 2.0: ft.View push/pop/replace zamiast page.add() + clear
   - TemplateRoute dla URL pattern matching (/invoices/:id → id=...)
   - Query params: ?q=search&status=APPROVED&page=2 (URL = State)
@@ -18,7 +17,7 @@ SUPERMOCE Flet Router 0.28+:
 from __future__ import annotations
 
 import anyio
-from typing import Any, Callable
+from typing import Callable
 from urllib.parse import urlparse, parse_qs, urlencode
 
 import flet as ft
@@ -36,7 +35,6 @@ logger = get_logger("nexus.ui.router")
 class TransitionConfig:
     """Centralna konfiguracja animacji przejść między widokami.
 
-    SUPERMOCE Flet Router 0.28+:
       - FadeIn: AnimatedOpacity (0 → 1) przy montowaniu widoku
       - Slide: ft.PageTransitionType dla push (lewo) i pop (prawo)
       - Scale: AnimatedScale dla hover efektów na kartach
@@ -86,7 +84,6 @@ class TransitionConfig:
 def FadeInContent(page: ft.Page, content: ft.Control, duration: int = 300):
     """Wrap content w AnimatedOpacity z fade-in na mount.
 
-    SUPERMOC Flet 0.28+:
       - AnimatedOpacity animuje opacity 0 → 1 przy pierwszym renderze
       - use_state z guard (opacity==0) zapobiega infinite re-render
       - page.run_task(async) ustawia opacity=1 po 50ms (render + klatka)
@@ -114,7 +111,6 @@ def FadeInContent(page: ft.Page, content: ft.Control, duration: int = 300):
 def SlideFadeContent(page: ft.Page, content: ft.Control, direction: str = "left"):
     """Wrap content w slide + fade-in kombinację.
 
-    SUPERMOC: content wjeżdża z boku przy użyciu animowalnego margin:
       - "left" direction: margin_left = 30 → 0 (content wjeżdża z prawej)
       - "right" direction: margin_left = -30 → 0 (content wjeżdża z lewej)
       - Jednocześnie opacity 0 → 1 przez AnimatedOpacity
@@ -160,7 +156,6 @@ def animated_card(
 ) -> ft.Container:
     """Stwórz kartę z animacją scale na hover.
 
-    SUPERMOC Flet 0.28+:
       - AnimatedScale przy najechaniu myszą
       - Płynny powrót do oryginalnego rozmiaru
       - Wykorzystuje container.on_hover + animate_scale
@@ -182,7 +177,6 @@ def animated_card(
 def get_view_transition(is_push: bool, is_pop: bool = False) -> ft.PageTransitionTheme:
     """Wybierz transition type dla widoku.
 
-    SUPERMOC:
       - Push (nawigacja w przód) → SLIDE_LEFT (content wjeżdża z prawej)
       - Pop (powrót wstecz) → SLIDE_RIGHT (content wyjeżdża w prawo)
       - Replace → FADE_THROUGH (płynne zanikanie/przejawianie)
@@ -201,7 +195,6 @@ def get_view_transition(is_push: bool, is_pop: bool = False) -> ft.PageTransitio
 class RouteGuard:
     """Centralny guard dla tras (auth, permisje, loading state).
 
-    SUPERMOC Flet Router:
       - Sprawdza autoryzację PRZED renderem widoku
       - Może przekierować do loginu lub pokazać 403
       - Integracja z page.client_storage dla tokena
@@ -213,7 +206,6 @@ class RouteGuard:
     async def check_route(self, route: str) -> bool:
         """Sprawdź czy użytkownik ma dostęp do trasy.
 
-        SUPERMOC: Sprawdza token w client_storage przed każdym routingiem.
         """
         public_routes = ["/login", "/register", "/reset-password"]
         tr = TemplateRoute(route)
@@ -321,7 +313,6 @@ class RouteGuard:
 
 # ── Breadcrumb navigation ────────────────────────────────────────────────
 
-# SUPERMOC: Breadcrumb dynamiczny (NIE @ft.component!)
 # Budowany przy każdym push_view/replace_view aby odzwierciedlić
 # aktualny page.views. @ft.component byłby statyczny i nie widział
 # zmian stosu widoków.
@@ -330,7 +321,6 @@ class RouteGuard:
 def build_breadcrumb(page: ft.Page) -> ft.Container:
     """Zbuduj pasek breadcrumb z page.views.
 
-    SUPERMOC Flet Router 0.28+:
       - Budowany dynamicznie przy każdym wywołaniu handle_route
       - Odczytuje page.views PRZED dodaniem nowego widoku
       - Dzięki temu nowy widok pokazuje poprawną ścieżkę do siebie
@@ -416,7 +406,6 @@ def _breadcrumb_label(route: str) -> str:
 def update_url_with_filters(page: ft.Page, base_path: str, filters: dict) -> None:
     """Zaktualizuj URL z filtrami — URL = State.
 
-    SUPERMOC Flet Router 0.28+:
       - Dwukierunkowa synchronizacja: zmiana filtra → aktualizacja URL
       - Zachowuje historię nawigacji (można wrócić przyciskiem Wstecz)
       - page.go() automatycznie triggeruje on_route_change
@@ -436,7 +425,6 @@ def update_url_with_filters(page: ft.Page, base_path: str, filters: dict) -> Non
 def parse_query_context(route: str) -> dict:
     """Parsuj query params z URL — URL = State.
 
-    SUPERMOC: Jedno źródło prawdy — filtry pochodzą z URL.
     """
     parsed = urlparse(route)
     query_params = parse_qs(parsed.query)
@@ -454,7 +442,6 @@ def parse_query_context(route: str) -> dict:
 class NexusRouter:
     """Declarative router z TemplateRoute — Navigator 2.0, RouteGuard, Query params.
 
-    SUPERMOCE Flet Router 0.28+:
       - Navigator 2.0: ft.View push/pop/replace dla pełnej historii
       - TemplateRoute parsuje URL params: /invoices/:id → id=...
       - Query params: ?q=search&status=APPROVED dla filtrów (URL = State)
@@ -473,7 +460,6 @@ class NexusRouter:
         self.api = api_client
         self.guard = RouteGuard(page)
 
-        # SUPERMOC: Theme animation style dla płynnych przejść motywów
         page.theme_animation_style = TransitionConfig.theme_animation_style()
 
         # Window lifecycle
@@ -485,15 +471,12 @@ class NexusRouter:
     def push_view(self, route: str, content: ft.Control, title: str = "Nexus AI") -> None:
         """Navigator 2.0 — push nowego widoku na stos historii.
 
-        SUPERMOC Animacji:
           - ft.PageTransitionTheme.SLIDE_LEFT — content wjeżdża z prawej
           - FadeInContent — opacity 0 → 1 podczas wjazdu
           - ThemeAnimationStyle dla spójnego tempa
         """
-        # SUPERMOC: AnimatedOpacity fade-in wrapper
         animated = FadeInContent(self.page, content)
 
-        # SUPERMOC: Slide transition dla całego widoku
         new_view = ft.View(
             route=route,
             controls=[animated],
@@ -507,12 +490,10 @@ class NexusRouter:
     def pop_view(self) -> None:
         """Navigator 2.0 — pop bieżącego widoku ze stosu.
 
-        SUPERMOC Animacji:
           - ft.PageTransitionTheme.SLIDE_RIGHT — content wyjeżdża w prawo
           - Płynny powrót do poprzedniego widoku na stosie
         """
         if len(self.page.views) > 1:
-            # SUPERMOC: Slide right dla pop (cofanie się w historii)
             previous_view = self.page.views[-2]
             previous_view.transition = get_view_transition(is_push=False, is_pop=True)
 
@@ -523,12 +504,10 @@ class NexusRouter:
     def replace_view(self, route: str, content: ft.Control, title: str = "Nexus AI") -> None:
         """Navigator 2.0 — replace bieżącego widoku (bez historii).
 
-        SUPERMOC Animacji:
           - ft.PageTransitionTheme.FADE_THROUGH — płynne przejście
           - FadeInContent — opacity 0 → 1
           - Idealne dla: zmiana filtra, odświeżenie danych
         """
-        # SUPERMOC: Fade + AnimatedOpacity wrapper
         animated = FadeInContent(self.page, content)
 
         new_view = ft.View(
@@ -547,7 +526,6 @@ class NexusRouter:
     # ── Handle Route ───────────────────────────────────────────────────
 
     async def handle_route(self, route: str) -> None:
-        """Handle route change — SUPERMOC: URL = State.
 
         Parsuje query params i przekazuje do widoków jako query_context.
         Widoki mogą aktualizować URL (update_url_with_filters) co
@@ -597,7 +575,6 @@ class NexusRouter:
             self.push_view(route, content, title)
 
     async def _resolve_view(self, tr: TemplateRoute, query: dict) -> ft.Control:
-        """Resolve view — SUPERMOC: przekazuje query params do widoków."""
         if tr.match("/"):
             return self._build_dashboard(query)
         elif tr.match("/invoices"):
@@ -703,7 +680,6 @@ class NexusRouter:
     def _build_with_breadcrumb(self, content: ft.Control) -> ft.Column:
         """Wrap content z breadcrumb na górze.
 
-        SUPERMOC: build_breadcrumb() jest funkcją (NIE @ft.component),
         więc jest wywoływana za każdym razem gdy handle_route buduje widok.
         Dzięki temu breadcrumb zawsze odzwierciedla page.views.
         """
@@ -724,7 +700,6 @@ class NexusRouter:
     def _build_invoices(self, query: dict | None = None) -> ft.Control:
         from nexus_ai.frontend.views.invoice_list_view import InvoiceListView
 
-        # SUPERMOC: URL = State — query params przekazane do widoku
         iv = InvoiceListView(self.page, self.api, query_context=query)
         return self._build_with_breadcrumb(
             ft.Container(content=iv.build(), expand=True, padding=ft.padding.all(16))

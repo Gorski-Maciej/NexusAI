@@ -26,7 +26,6 @@ from nexus_ai.db.vector_store import AsyncVectorStore
 class AutoDecreeEngine:
     """Silnik automatycznego dekretowania faktur na ASYNC vec0.
 
-    FAZA 1+2 SUPERMOCE:
     - vec0 virtual table z ``partition_key=["contractor_nip"]``
     - Wyszukiwanie podobieństwa wektorowego OCR_TEXT → template faktury
     - Wszystkie operacje ASYNC — 0ms blokowania async loop
@@ -65,7 +64,6 @@ class AutoDecreeEngine:
     async def suggest_classification(self, contractor_nip: str, ocr_text: str) -> dict[str, Any]:
         """Sugeruje kategorię KPiR i konta księgowe na podstawie podobieństwa (ASYNC).
 
-        FAZA 1+2 SUPERMOCE:
         - Najpierw szuka dokładnego dopasowania NIP (twarde reguły)
         - Jeśli brak, szuka wektorowo po OCR_TEXT przez vec0 z partition_key
         - Pre-filtering przez contractor_nip — tylko wzorce tego kontrahenta

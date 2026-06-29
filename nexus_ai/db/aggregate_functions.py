@@ -1,7 +1,6 @@
 """
 SQLite custom aggregate functions via Python's create_aggregate API.
 
-SUPERMOC: ``sqlite3.Connection.create_aggregate()`` pozwala rejestrować
 własne funkcje agregujące napisane w Pythonie, które działają jak
 natywne funkcje SQLite (COUNT, SUM, AVG).
 
@@ -36,7 +35,6 @@ from typing import Any
 class MedianAggregate:
     """Funkcja agregująca MEDIAN — zwraca medianę zbioru liczbowego.
 
-    SUPERMOC: Implementacja przez sqlite3.Connection.create_aggregate().
     Działa jak natywna funkcja SQLite: SELECT median(amount_net) FROM invoices.
 
     Algorytm:
@@ -75,7 +73,6 @@ class MedianAggregate:
 class ModeAggregate:
     """Funkcja agregująca MODE — zwraca najczęściej występującą wartość.
 
-    SUPERMOC: Implementacja przez sqlite3.Connection.create_aggregate().
     SELECT mode(status) FROM invoices → zwraca najczęstszy status.
 
     Dla zbiorów wielomodalnych zwraca pierwszą najczęstszą wartość.
@@ -99,7 +96,6 @@ class ModeAggregate:
 class PercentileAggregate:
     """Funkcja agregująca PERCENTILE — zwraca percentyl zbioru.
 
-    SUPERMOC: SELECT percentile(amount_gross, 0.95) FROM invoices
     → zwraca 95. percentyl kwot brutto (próg, poniżej którego jest 95% faktur).
 
     UWAGA: Rejestracja z ``create_aggregate("percentile", 2, PercentileAggregate)``
@@ -124,7 +120,6 @@ class PercentileAggregate:
             Ponieważ p jest stałe dla wszystkich wierszy (parametr SQL),
             nadpisujemy self._p tą samą wartością przy każdym wierszu.
         """
-        self._p = p  # SUPERMOC: zapisz percentyl dla finalize()
         if value is not None:
             try:
                 self._values.append(float(value))
@@ -150,7 +145,6 @@ class PercentileAggregate:
 class ProductAggregate:
     """Funkcja agregująca PRODUCT — iloczyn wszystkich wartości.
 
-    SUPERMOC: SELECT product(rate) FROM tax_rates → iloczyn stawek podatkowych.
     Przydatne do kalkulacji złożonych stawek procentowych.
     """
 
@@ -178,7 +172,6 @@ class ProductAggregate:
 def register_aggregates(conn: Any) -> None:
     """Zarejestruj wszystkie custom aggregate functions w połączeniu SQLite.
 
-    SUPERMOC: Po wywołaniu tej funkcji, wszystkie połączenia sqlite3.Connection
     mają dostęp do: median(), mode(), percentile(), product().
 
     Args:

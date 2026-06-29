@@ -1,6 +1,5 @@
 """web_app.py — Web mode entry point for NexusAI Flet Navigator 2.0.
 
-SUPERMOCE Flet Router 0.28+:
   - ft.app_async z view=ft.AppView.WEB_BROWSER — SPA w przeglądarce
   - TemplateRoute dla URL pattern matching
   - Navigator 2.0: page.views.append(ft.View(...)) zamiast page.add()
@@ -30,7 +29,6 @@ DEFAULT_WEB_PORT = 8550
 async def init_web_app(page: ft.Page) -> None:
     """Initialize Flet app in web browser mode z Navigator 2.0.
 
-    SUPERMOC:
       - page.on_route_change JEDEN raz — deleguje do NexusRouter.handle_route()
       - page.on_view_pop dla przycisku Wstecz
       - page.window_prevent_close dla ochrony zamknięcia
@@ -48,7 +46,6 @@ async def init_web_app(page: ft.Page) -> None:
     page.window_min_height = 600
     page.scroll = ft.ScrollMode.ADAPTIVE
 
-    # SUPERMOC: SafeArea dla mobile
     page.add(
         ft.SafeArea(
             content=ft.Container(expand=True),
@@ -63,7 +60,6 @@ async def init_web_app(page: ft.Page) -> None:
     )
 
     # ── Router — JEDNO miejsce dla routingu ─────────────────────────────
-    # SUPERMOC: Router zarządza page.on_route_change, page.on_view_pop,
     # page.window_prevent_close, page.on_window_event przez konstruktor
     router = NexusRouter(page=page, api_client=api_client)
 
@@ -110,20 +106,16 @@ async def init_web_app(page: ft.Page) -> None:
     await page.add_async(loading)
 
     # ── Routing dla Web ─────────────────────────────────────────────────
-    # SUPERMOC: page.on_route_change — JEDNO miejsce, deleguje do routera
     async def on_route_change(route_event: ft.RouteChangeEvent) -> None:
         """Handle URL changes — deleguje do NexusRouter.handle_route()."""
         route = page.route
 
-        # SUPERMOC: Dynamiczny page.title z TemplateRoute
         _update_page_title(page, route)
 
-        # SUPERMOC: Navigator 2.0 — router zarządza page.views
         await router.handle_route(route)
 
     page.on_route_change = on_route_change
 
-    # SUPERMOC: page.on_view_pop dla przycisku Wstecz (Navigator 2.0 pop)
     async def on_view_pop(view_event: ft.ViewPopEvent) -> None:
         """Handle browser back button — Navigator 2.0 pop."""
         if len(page.views) > 1:
@@ -133,7 +125,6 @@ async def init_web_app(page: ft.Page) -> None:
 
     page.on_view_pop = on_view_pop
 
-    # SUPERMOC: Przywróć ostatnią ścieżkę z client_storage
     last_route = page.client_storage.get("nexus_last_route")
     initial_route = page.route if page.route and page.route != "/" else (last_route or "/")
     page.go(initial_route)

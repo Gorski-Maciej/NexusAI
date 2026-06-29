@@ -215,7 +215,6 @@ class InvoiceController(Controller):
         total_size = 0
 
         try:
-            # SUPERMOC fsspec: uniwersalne otwieranie plików — działa z file://, s3://, memory://
             async with await fsspec.open_async(temp_path, "ab") as temp_file:
                 while True:
                     chunk = await data.read(chunk_size)
@@ -272,7 +271,6 @@ class InvoiceController(Controller):
         total_size = 0
 
         try:
-            # SUPERMOC fsspec: uniwersalne otwieranie plików
             async with await fsspec.open_async(temp_path, "ab") as temp_file:
                 while True:
                     chunk = await data.read(chunk_size)

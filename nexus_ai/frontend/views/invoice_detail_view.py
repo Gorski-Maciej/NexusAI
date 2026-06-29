@@ -1,6 +1,5 @@
 """Invoice Detail View — @ft.component + DatePicker + Canvas + Clipboard.
 
-SUPERMOCE Flet 0.28+:
   - @ft.component + use_state() zamiast klasy imperatywnej
   - ft.DatePicker / ft.TimePicker dla daty faktury
   - ft.Canvas dla interaktywnego PDF preview z bbox
@@ -25,21 +24,18 @@ logger = get_logger("nexus.ui.invoice_detail")
 def InvoiceDetailView(page: ft.Page, api_client, invoice_id: str):
     """Invoice detail view with DatePicker, Canvas PDF, Clipboard.
 
-    SUPERMOC Flet 0.28+:
       - @ft.component + use_state() zamiast klasy
       - ft.DatePicker dla daty faktury
       - ft.Canvas dla PDF preview z bounding box
       - ft.Clipboard dla kopiowania NIP/numeru
       - ft.Ref<T> typowane referencje
     """
-    # SUPERMOC: use_state zamiast self._variables
     invoice_data = ft.use_state[dict]({})
     zoom_level = ft.use_state(1.0)
     loading = ft.use_state(True)
     error = ft.use_state[str | None](None)
     selected_date = ft.use_state[str | None](None)
 
-    # SUPERMOC: ft.Ref dla typowanych referencji
     txt_number = ft.use_ref[ft.TextField]()
     txt_nip = ft.use_ref[ft.TextField]()
     txt_net = ft.use_ref[ft.TextField]()
@@ -48,7 +44,6 @@ def InvoiceDetailView(page: ft.Page, api_client, invoice_id: str):
     canvas_ref = ft.use_ref[ft.Canvas]()
     save_btn = ft.use_ref[ft.FilledButton]()
 
-    # SUPERMOC: DatePicker
     date_picker = ft.DatePicker(
         on_change=lambda e: _on_date_change(e),
         first_date=pendulum.date(2020, 1, 1) if pendulum else None,
@@ -78,7 +73,6 @@ def InvoiceDetailView(page: ft.Page, api_client, invoice_id: str):
             invoice = await api_client.get_invoice(invoice_id)
             invoice_data.set(invoice)
 
-            # SUPERMOC: Użyj ft.Ref do ustawienia wartości pól
             if txt_number.current:
                 txt_number.current.value = invoice.get("number", "")
             if txt_nip.current:
@@ -139,7 +133,6 @@ def InvoiceDetailView(page: ft.Page, api_client, invoice_id: str):
 
     # ── Build ───────────────────────────────────────────────────────────
 
-    # SUPERMOC: Loading skeleton z Shimmer
     if loading.value:
         return ft.Container(
             content=ft.Shimmer(
@@ -155,7 +148,6 @@ def InvoiceDetailView(page: ft.Page, api_client, invoice_id: str):
             expand=True,
         )
 
-    # SUPERMOC: Error state
     if error.value:
         return ft.Container(
             content=ft.Column(
@@ -173,10 +165,8 @@ def InvoiceDetailView(page: ft.Page, api_client, invoice_id: str):
             expand=True,
         )
 
-    # SUPERMOC: Canvas dla PDF preview z zoom
     img_src = invoice_data.value.get("file_path", "https://via.placeholder.com/800x1200")
 
-    # SUPERMOC: Form fields z Clipboard
     left_column = ft.Column(
         [
             ft.Row(
@@ -187,7 +177,6 @@ def InvoiceDetailView(page: ft.Page, api_client, invoice_id: str):
                         border_color=ft.colors.BLUE_400,
                         expand=True,
                     ),
-                    # SUPERMOC: Clipboard button
                     ft.IconButton(
                         icon=ft.icons.CONTENT_COPY,
                         tooltip="Kopiuj numer",
@@ -229,7 +218,6 @@ def InvoiceDetailView(page: ft.Page, api_client, invoice_id: str):
                             ft.dropdown.Option("USD"),
                         ],
                     ),
-                    # SUPERMOC: DatePicker trigger
                     ft.TextField(
                         label="Data faktury",
                         read_only=True,
@@ -250,11 +238,9 @@ def InvoiceDetailView(page: ft.Page, api_client, invoice_id: str):
         scroll=ft.ScrollMode.AUTO,
     )
 
-    # SUPERMOC: Canvas dla obrazu z zoom
     right_column = ft.Column(
         [
             ft.Container(
-                # SUPERMOC: Canvas z obrazem i zoom
                 content=ft.Canvas(
                     ref=canvas_ref,
                     content=ft.Image(src=img_src, fit=ft.ImageFit.CONTAIN),
@@ -283,7 +269,6 @@ def InvoiceDetailView(page: ft.Page, api_client, invoice_id: str):
         expand=2,
     )
 
-    # SUPERMOC: Split layout z SafeArea
     return ft.SafeArea(
         content=ft.Container(
             content=ft.Row(

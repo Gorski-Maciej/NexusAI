@@ -5,7 +5,6 @@ Sentry SDK integration for production error tracking.
 Zgodnie z aa3fvcx.txt: Sentry SDK jest opcjonalny (sentry-sdk w zależnościach [dev]).
 Dostarcza maksymalnie bogaty kontekst dla błędów produkcyjnych.
 
-SUPERMOCE Sentry SDK (nowe):
 - ``before_send`` — filtrowanie i anonymizacja eventów przed wysyłką
 - ``before_breadcrumb`` — filtrowanie breadcrumbów (pomija DEBUG)
 - ``set_tag()`` — tagowanie eventów (service, component, version)
@@ -51,13 +50,10 @@ logger = get_logger("nexus.core.sentry")
 _sentry_initialized = False
 
 
-# ── SUPERMOC: before_send — filtrowanie i anonymizacja eventów ────────────
 
 
 def _filter_sentry_event(event: dict[str, Any], hint: dict[str, Any]) -> dict[str, Any] | None:
-    """SUPERMOC: Filtruj i anonymizuj eventy przed wysyłką do Sentry.
 
-    SUPERMOCE:
     - Ignoruje health checki (niepotrzebny szum)
     - Ignoruje ConnectionReset / BrokenPipe (normalne w async)
     - Anonymizuje request body (RODO)
@@ -128,13 +124,10 @@ def _filter_sentry_event(event: dict[str, Any], hint: dict[str, Any]) -> dict[st
     return event
 
 
-# ── SUPERMOC: before_breadcrumb — filtrowanie breadcrumbów ───────────────
 
 
 def _filter_breadcrumb(breadcrumb: dict[str, Any], hint: dict[str, Any]) -> dict[str, Any] | None:
-    """SUPERMOC: Filtruj breadcrumby — pomiń DEBUG level i zbędne logi.
 
-    SUPERMOCE:
     - Pomija DEBUG breadcrumby (redukcja szumu o ~70%)
     - Zachowuje tylko kategorie: log, http, task, user, invoice
     - Zachowuje ERROR i WARNING breadcrumby zawsze
@@ -166,13 +159,11 @@ def _filter_breadcrumb(breadcrumb: dict[str, Any], hint: dict[str, Any]) -> dict
     return breadcrumb
 
 
-# ── SUPERMOC: init_sentry z pełną konfiguracją ──────────────────────────
 
 
 def init_sentry(config: AppConfig | None = None) -> bool:
     """Initialize Sentry SDK with full configuration.
 
-    SUPERMOCE Sentry (nowe):
     - ``before_send`` — filtrowanie + anonymizacja
     - ``before_breadcrumb`` — pomija DEBUG i zbędne kategorie
     - ``HttpxIntegration`` — śledzenie requestów HTTP
@@ -224,18 +215,14 @@ def init_sentry(config: AppConfig | None = None) -> bool:
             send_default_pii=False,
             max_breadcrumbs=100,
             debug=False,
-            # ── SUPERMOC: Filtrowanie eventów ─────────────────────
             before_send=_filter_sentry_event,
             before_breadcrumb=_filter_breadcrumb,
-            # ── SUPERMOC: Ignoruj znane wyjątki ───────────────────
             ignore_errors=[
                 "ConnectionResetError",
                 "BrokenPipeError",
                 "KeyboardInterrupt",
             ],
-            # ── SUPERMOC: Czystsze stack trace ─────────────────────
             in_app_include=["nexus_ai"],
-            # ── SUPERMOC: Integracje ───────────────────────────────
             integrations=[
                 LoguruIntegration(level=None, event_level=None),  # Przekaż wszystkie logi
                 StructlogIntegration(),
@@ -244,14 +231,12 @@ def init_sentry(config: AppConfig | None = None) -> bool:
             ],
         )
 
-        # ── SUPERMOC: flush() przy shutdownie ────────────────────────
         # Wymusza wysyłkę wszystkich bufforowanych eventów przed
         # zamknięciem aplikacji — zapobiega utracie eventów.
         import atexit
 
         atexit.register(lambda: sentry_sdk.flush(timeout=2))
 
-        # ── SUPERMOC: Ustaw globalne tagi ────────────────────────────
         sentry_sdk.set_tag("runtime", "python")
         sentry_sdk.set_tag("python_version", os.getenv("PYTHON_VERSION", "3.13"))
 
@@ -267,11 +252,9 @@ def init_sentry(config: AppConfig | None = None) -> bool:
         return False
 
 
-# ── SUPERMOC: capture_exception z kontekstowymi tagami ───────────────────
 
 
 def capture_exception(exc: Exception, **context_tags: str) -> None:
-    """SUPERMOC: Capture an exception with optional context tags.
 
     Używa ``sentry_sdk.new_scope()`` do izolacji kontekstu — bezpieczne
     dla współbieżnych requestów. Dodaje tagi (service, component, invoice_id)
@@ -295,11 +278,9 @@ def capture_exception(exc: Exception, **context_tags: str) -> None:
         logger.warning("[Sentry] capture_exception failed: %s", e)
 
 
-# ── SUPERMOC: capture_message — ręczne logowanie błędów biznesowych ─────
 
 
 def capture_message(message: str, level: str = "warning", **context_tags: str) -> None:
-    """SUPERMOC: Capture a business-level message with Sentry.
 
     Używaj dla błędów biznesowych które nie są wyjątkami:
     - Naruszenie reguł podatkowych
@@ -325,11 +306,9 @@ def capture_message(message: str, level: str = "warning", **context_tags: str) -
         logger.warning("[Sentry] capture_message failed: %s", e)
 
 
-# ── SUPERMOC: set_tag — tagowanie eventów ───────────────────────────────
 
 
 def set_tag(key: str, value: str) -> None:
-    """SUPERMOC: Set a global tag for all subsequent Sentry events.
 
     Tagi są globalne (scope-less). Używaj dla stałych, długożyciowych
     wartości jak ``service``, ``component``, ``version``.
@@ -348,11 +327,9 @@ def set_tag(key: str, value: str) -> None:
         logger.warning("[Sentry] set_tag(%s) failed: %s", key, e)
 
 
-# ── SUPERMOC: set_context — dowolny słownik kontekstu ────────────────────
 
 
 def set_context(key: str, context: dict[str, Any]) -> None:
-    """SUPERMOC: Set a context dictionary for all subsequent Sentry events.
 
     Używaj dla kontekstu operacji (invoice, transaction, user).
     ``set_context(\"invoice\", {\"id\": \"123\", \"amount\": 1500})``
@@ -371,7 +348,6 @@ def set_context(key: str, context: dict[str, Any]) -> None:
         logger.warning("[Sentry] set_context(%s) failed: %s", key, e)
 
 
-# ── SUPERMOC: set_user_context z rozszerzonym kontekstem ──────────────────
 
 
 def set_user_context(user_id: str | None = None, **kwargs: str) -> None:
@@ -391,7 +367,6 @@ def set_user_context(user_id: str | None = None, **kwargs: str) -> None:
         logger.warning("[Sentry] set_user_context failed: %s", e)
 
 
-# ── SUPERMOC: add_breadcrumb — rozszerzony breadcrumb ────────────────────
 
 
 def add_breadcrumb(
@@ -402,7 +377,6 @@ def add_breadcrumb(
 ) -> None:
     """Add a breadcrumb to Sentry.
 
-    SUPERMOC: Dodano opcjonalny ``data`` słownik z dodatkowymi danymi.
 
     Args:
         message: Opis breadcrumba.
@@ -425,12 +399,10 @@ def add_breadcrumb(
         logger.warning("[Sentry] add_breadcrumb failed: %s", e)
 
 
-# ── SUPERMOC: sentry_scope — context manager dla Scope ───────────────────
 
 
 @contextmanager
 def sentry_scope(**context_tags: str) -> Any:
-    """SUPERMOC: Context manager for isolated Sentry scope.
 
     Tworzy NOWY scope dla operacji — wszystkie tagi i konteksty są
     izolowane od globalnego scope. Bezpieczne dla współbieżnych requestów.
@@ -459,7 +431,6 @@ def sentry_scope(**context_tags: str) -> Any:
         yield scope
 
 
-# ── SUPERMOC: No-op context manager dla fallback gdy Sentry nieaktywny ──
 
 
 class _NoopTransaction:
@@ -486,11 +457,9 @@ class _NoopTransaction:
         pass
 
 
-# ── SUPERMOC: flush — wymuszenie wysyłki ─────────────────────────────────
 
 
 def flush(timeout: float = 2.0) -> None:
-    """SUPERMOC: Force flush buffered events to Sentry.
 
     Używaj przed zamknięciem aplikacji lub w krytycznych momentach.
 
@@ -507,11 +476,9 @@ def flush(timeout: float = 2.0) -> None:
         logger.warning("[Sentry] flush failed: %s", e)
 
 
-# ── SUPERMOC: transaction — performance monitoring helper ─────────────────
 
 
 def start_transaction(name: str, op: str = "task") -> Any:
-    """SUPERMOC: Start a Sentry performance transaction.
 
     Używaj dla krytycznych ścieżek biznesowych:
     - Przetwarzanie faktury (process_invoice)

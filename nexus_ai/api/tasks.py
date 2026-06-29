@@ -134,7 +134,6 @@ async def decision_evaluate(
     """
     Final decision evaluation.
 
-    SUPERMOC TASKIQ:
     - TaskiqDepends wstrzykuje config i db — zero boilerplate
     - Helpery przyjmują Session zamiast tworzyć własny engine
     """
@@ -184,14 +183,15 @@ async def decision_evaluate(
         except Exception as emit_err:
             logger.warning("[DECISION-EVENT] Failed to emit: %s", emit_err)
 
-        if verdict.decision == "AUTO_POST":
-            await _post_invoice(invoice_id, extracted_data, verdict, db)
-        elif verdict.decision == "SUGGEST":
-            await _mark_for_review(invoice_id, verdict, db)
-        elif verdict.decision in ("ASK_USER", "BLOCK", "ESCALATE"):
-            await _escalate_to_human(
-                invoice_id, verdict, db, reason=f"decision: {verdict.decision}"
-            )
+        match verdict.decision:
+            case "AUTO_POST":
+                await _post_invoice(invoice_id, extracted_data, verdict, db)
+            case "SUGGEST":
+                await _mark_for_review(invoice_id, verdict, db)
+            case "ASK_USER" | "BLOCK" | "ESCALATE":
+                await _escalate_to_human(
+                    invoice_id, verdict, db, reason=f"decision: {verdict.decision}"
+                )
 
         return {
             "result": "OK",
@@ -261,29 +261,30 @@ async def council_decide(invoice_id: str, extracted_data: dict) -> dict:
             logger.warning("[COUNCIL] Failed to emit event for %s: %s", invoice_id, exc)
         except Exception as exc:
             logger.error("[COUNCIL] Unexpected error emitting event for %s: %s", invoice_id, exc)
-        if verdict.decision == "AUTO_POST":
-            config_temp = AppConfig()
-            eng = _make_engine(config_temp)
-            sess_fac = create_session_factory(eng)
-            async with sess_fac() as sess:
-                await _post_invoice(invoice_id, extracted_data, verdict, sess)
-            await eng.dispose()
-        elif verdict.decision == "SUGGEST":
-            config_temp = AppConfig()
-            eng = _make_engine(config_temp)
-            sess_fac = create_session_factory(eng)
-            async with sess_fac() as sess:
-                await _mark_for_review(invoice_id, verdict, sess)
-            await eng.dispose()
-        elif verdict.decision in ("ASK_USER", "BLOCK", "ESCALATE"):
-            config_temp = AppConfig()
-            eng = _make_engine(config_temp)
-            sess_fac = create_session_factory(eng)
-            async with sess_fac() as sess:
-                await _escalate_to_human(
-                    invoice_id, verdict, sess, reason=f"decision: {verdict.decision}"
-                )
-            await eng.dispose()
+        match verdict.decision:
+            case "AUTO_POST":
+                config_temp = AppConfig()
+                eng = _make_engine(config_temp)
+                sess_fac = create_session_factory(eng)
+                async with sess_fac() as sess:
+                    await _post_invoice(invoice_id, extracted_data, verdict, sess)
+                await eng.dispose()
+            case "SUGGEST":
+                config_temp = AppConfig()
+                eng = _make_engine(config_temp)
+                sess_fac = create_session_factory(eng)
+                async with sess_fac() as sess:
+                    await _mark_for_review(invoice_id, verdict, sess)
+                await eng.dispose()
+            case "ASK_USER" | "BLOCK" | "ESCALATE":
+                config_temp = AppConfig()
+                eng = _make_engine(config_temp)
+                sess_fac = create_session_factory(eng)
+                async with sess_fac() as sess:
+                    await _escalate_to_human(
+                        invoice_id, verdict, sess, reason=f"decision: {verdict.decision}"
+                    )
+                await eng.dispose()
 
         return {
             "result": "OK",
@@ -305,7 +306,6 @@ async def _post_invoice(
 ) -> None:
     """Auto-post the invoice: update status to APPROVED.
 
-    SUPERMOC: Przyjmuje Session z DI zamiast tworzyć własny engine.
     Uses CancelScope(shield=True) to protect the critical DB write.
     """
     with anyio.CancelScope(shield=True):
@@ -342,7 +342,6 @@ async def _post_invoice(
 async def _mark_for_review(invoice_id: str, verdict: DecisionVerdict, db: Session) -> None:
     """Mark invoice for manual review (SUGGEST).
 
-    SUPERMOC: Przyjmuje Session z DI zamiast tworzyć własny engine.
     """
     with anyio.CancelScope(shield=True):
         await db.execute(
@@ -363,7 +362,6 @@ async def _escalate_to_human(
 ) -> None:
     """Escalate invoice to human for review.
 
-    SUPERMOC: Przyjmuje Session z DI zamiast tworzyć własny engine.
     """
     with anyio.CancelScope(shield=True):
         await db.execute(
@@ -399,7 +397,6 @@ async def _dispatch_outbox_event(row: dict) -> None:
         )
         payload = {}
 
-    # SUPERMOC TASKIQ: Kicker.with_task_id() dla deterministycznego ID
     # JetStream deduplikuje na podstawie Nats-Msg-Id = task_id
     # Zastępuje ręczną tabelę processed_events dla idempotentności
 
@@ -517,7 +514,6 @@ async def process_invoice_ocr(
 ) -> None:
     """Dedicated OCR pipeline entrypoint triggered by outbox relay.
 
-    SUPERMOC TASKIQ:
     - TaskiqDepends wstrzykuje config i db — zero boilerplate
     - Helpery _mark_invoice_* przyjmują Session z DI
     """
@@ -852,7 +848,6 @@ async def process_large_attachment(attachment_id: str, payload: dict | None = No
 async def refresh_materialized_cashflow(
     duckdb: DuckDBManager = TaskiqDepends(get_duckdb_manager),
 ) -> None:
-    # SUPERMOC: TaskiqDepends wstrzykuje DuckDBManager
     with stamina.retry(on=Exception, attempts=3, timeout=30.0):
         _refresh_cashflow_materialized(duckdb)
     await clear_cache_async(prefix="api.routes.analytics")
@@ -895,7 +890,6 @@ async def dead_letter_processor_task(
     """
     Okresowe zadanie (co 5 minut) monitorujące Dead Letter Queue.
 
-    SUPERMOC TASKIQ:
     - TaskiqDepends wstrzykuje config i db — zero boilerplate
     """
     from nexus_ai.core.nats_utils import NatsErrors, get_connection, safe_close
@@ -924,7 +918,6 @@ async def dead_letter_processor_task(
                         stack_trace = data.get("stack_trace", "")
                         payload = data.get("payload", {})
 
-                        # SUPERMOC: używamy db z DI zamiast tworzyć osobny engine
                         await db.execute(
                             text(
                                 """
@@ -978,7 +971,6 @@ async def dead_letter_processor_task(
             logger.warning("[DLQ] Dead letter processor error: %s", dlq_err)
     finally:
         await safe_close(nc)
-        # SUPERMOC: DI auto-commituje sesję — engine cache'owany
 
 
 @broker.task(
@@ -993,7 +985,6 @@ async def cleanup_hard_deleted_invoices_task(
     """
     Miesięczne zadanie fizycznego usuwania faktur po okresie retencji.
 
-    SUPERMOC: TaskiqDepends wstrzykuje sesję DB — zero boilerplate.
     """
     from nexus_ai.services.security_service import SecurityService
 
@@ -1016,7 +1007,6 @@ async def cleanup_archived_invoices_task(
     """
     Tygodniowe zadanie archiwizacji REJECTED/FAILED invoices.
 
-    SUPERMOC: TaskiqDepends wstrzykuje sesję DB — zero boilerplate.
     """
     from nexus_ai.services.security_service import SecurityService
 
@@ -1040,7 +1030,6 @@ async def cleanup_outbox_events_task(
     Codzienne zadanie czyszczenia starych zdarzeń outbox (Rozwiązanie 27).
     Usuwa zdarzenia SENT i DEAD_LETTER starsze niż 30 dni.
 
-    SUPERMOC: TaskiqDepends wstrzykuje sesję DB — zero boilerplate.
     """
     result = await db.execute(
         text(
@@ -1053,7 +1042,6 @@ async def cleanup_outbox_events_task(
     )
     deleted = result.rowcount
     logger.info("[RETENTION] Cleaned old outbox events: deleted=%d", deleted)
-    # SUPERMOC: DI auto-commituje sesję
 
 
 # Semafory dla limitów współbieżności (Rozwiązanie 29)
@@ -1074,7 +1062,6 @@ async def relay_outbox_events(
     Uses two-step atomic UPDATE to prevent duplicate processing by concurrent workers.
     Detects stale PROCESSING tasks (>= 5 min) and reclaims them.
 
-    SUPERMOC TASKIQ:
     - TaskiqDepends wstrzykuje sesję DB — zero boilerplate
     - task_id_generator w broker.py zapewnia deduplikację przez JetStream Nats-Msg-Id
     - Tabela processed_events jest stopniowo wycofywana na rzecz deduplikacji JetStream
@@ -1137,12 +1124,10 @@ async def relay_outbox_events(
 
     for row in rows:
         try:
-            # SUPERMOC: Deduplikacja przez JetStream Nats-Msg-Id (task_id_generator)
             # task_id_generator tworzy deterministyczne ID na podstawie hash(argumentów)
             # Jeśli to samo zadanie zostanie wysłane ponownie, JetStream odrzuci duplikat
             await _dispatch_outbox_event(row)
 
-            # SUPERMOC: Pomijamy INSERT do processed_events — deduplikacja jest
             # obsługiwana przez JetStream Nats-Msg-Id (duplicate_window=2min)
             await db.execute(
                 text(
@@ -1208,7 +1193,6 @@ async def relay_outbox_events(
     except Exception as exc:
         logger.warning("[OUTBOX] Error cleaning processed_events: %s", exc)
 
-    # SUPERMOC: DI auto-commituje sesję — engine jest cache'owany
 
 
 @broker.task(
@@ -1222,7 +1206,6 @@ async def scan_logs_for_pii_task(
 ) -> None:
     """Daily proactive scan for accidental PII in log files.
 
-    SUPERMOC: TaskiqDepends wstrzykuje config — zero boilerplate.
     """
     findings = scan_logs_for_pii(config.base_dir / "app_data" / "logs")
     total = sum(findings.values())
@@ -1377,7 +1360,6 @@ def _build_field_confidence(
 async def _mark_invoice_blocked(invoice_id: str, reason: str, db: Session) -> None:
     """Mark invoice as BLOCKED_FRAUD_SUSPICION.
 
-    SUPERMOC: Przyjmuje Session z DI zamiast tworzyć własny engine.
     """
     await db.execute(
         text(
@@ -1417,7 +1399,6 @@ async def schema_drift_daily_check_task(
 ) -> None:
     """Daily schema drift verification against runtime baseline snapshot.
 
-    SUPERMOC: TaskiqDepends wstrzykuje config i engine — zero boilerplate.
     """
     baseline_path = config.base_dir / "app_data" / "schema_baseline.json"
     drift = await verify_schema_drift(engine, baseline_path=baseline_path)
@@ -1464,7 +1445,6 @@ async def migration_integrity_daily_check_task(
 ) -> None:
     """Daily data-integrity check against persisted row-count baseline.
 
-    SUPERMOC: TaskiqDepends wstrzykuje config i engine — zero boilerplate.
     """
     baseline_path = config.migration_baseline_path
     result = await verify_migration_integrity(engine, baseline_path=baseline_path)
@@ -1677,7 +1657,6 @@ async def check_hanging_transactions_task(
     Sprawdza dziennik WAL SQLite - jeśli plik WAL jest duży, może to wskazywać
     na otwartą transakcję. Loguje ostrzeżenie.
 
-    SUPERMOC: TaskiqDepends wstrzykuje config i engine — zero boilerplate.
     """
     wal_path = config.sqlite_path.with_suffix(".db-wal")
     if wal_path.exists():
@@ -1729,7 +1708,6 @@ async def weekly_nip_reverification_task(
     Cotygodniowe zadanie ponownej weryfikacji NIP-ów kontrahentów.
     Sprawdza NIP-y w Białej Liście MF i aktualizuje status w tabeli contractors.
 
-    SUPERMOC: TaskiqDepends wstrzykuje sesję DB — zero boilerplate.
     """
     accounting = AccountingService()
 
@@ -1769,7 +1747,6 @@ async def weekly_nip_reverification_task(
         failed_count,
         len(contractors),
     )
-    # SUPERMOC: DI auto-commituje sesję
 
 
 @broker.task(
@@ -1788,7 +1765,6 @@ async def sqlite_weekly_vacuum_task(
 ) -> None:
     """Weekly SQLite VACUUM for database maintenance.
 
-    SUPERMOC: TaskiqDepends wstrzykuje cache'owany engine — zero boilerplate.
     """
     async with engine.connect() as conn:
         await conn.execute(text("VACUUM;"))
@@ -1844,7 +1820,6 @@ async def cleanup_expired_refresh_tokens_task(
     Codzienne zadanie czyszczenia wygasłych i odwołanych refresh tokenów.
     Rozwiązanie 16: Usuwa tokeny starsze niż 7 dni od daty wygaśnięcia.
 
-    SUPERMOC: TaskiqDepends wstrzykuje sesję DB — zero boilerplate.
     """
     result = await db.execute(
         text(
@@ -1857,4 +1832,3 @@ async def cleanup_expired_refresh_tokens_task(
     )
     deleted = result.rowcount
     logger.info("[TOKEN-CLEANUP] Removed %d expired/revoked refresh tokens", deleted)
-    # SUPERMOC: DI auto-commituje sesję

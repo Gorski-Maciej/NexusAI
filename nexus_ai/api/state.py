@@ -15,7 +15,7 @@ from nexus_ai.core.broker import broker
 from nexus_ai.core.cache.http_client import warm_http_cache
 from nexus_ai.core.di import dispose_all_engines
 from nexus_ai.db.analytics import DuckDBManager
-from nexus_ai.db.database import consolidate_database, create_oltp_engine, create_session_factory
+from nexus_ai.db.database import consolidate_database, create_oltp_engine
 from nexus_ai.core.config import AppConfig
 from nexus_ai.api.routes.ws import start_unix_progress_server, stop_unix_progress_server
 from nexus_ai.services.hot_reload import HotReloadListener
@@ -25,13 +25,11 @@ from nexus_ai.services.migration_sanity import (
     verify_migration_integrity,
 )
 
-# ── SUPERMOC: OTel graceful shutdown przez otel_config ─────────────────────
 # Rejestruje atexit handler do flushowania pozostaych spanów/metryk/logów
 _OTEL_SHUTDOWN_REGISTERED = False
 
 
 def _ensure_otel_shutdown_registered() -> None:
-    """SUPERMOC: Rejestruje atexit shutdown dla OTel providerów.
 
     Zapewnia, że TracerProvider.shutdown() i MeterProvider.shutdown()
     są wywoływane przy wyjściu z aplikacji.
@@ -76,7 +74,6 @@ def _init_otel_metrics_sync() -> None:
 async def _start_metrics_background_task(app: Litestar) -> None:
     """Spawn background system metrics updater via BackgroundTaskManager.
 
-    SUPERMOCE psutil:
       - Process.oneshot() — batch syscalls dla procesu
       - SystemMonitor.collect_all() — pełne metryki systemowe co 30s
       - memory_full_info() → USS/PSS
@@ -105,13 +102,11 @@ async def _start_metrics_background_task(app: Litestar) -> None:
 
             while True:
                 try:
-                    # SUPERMOC: oneshot() — batch syscalls
                     # ObservableGauge w telemetry_metrics.py zastąpił ręczne set()
                     # CPU, RAM, DISK, TEMP są teraz odczytywane automatycznie przez SDK
                     proc_metrics = process_monitor.collect_metrics()
                     set_memory_usage(proc_metrics.rss_mb)
 
-                    # SUPERMOC: pełne metryki systemowe (logowane, nie gauge)
                     # gauge'e są obsługiwane przez ObservableGauge w init_metrics()
                     sys_metrics = system_monitor.collect_all()
 
@@ -251,7 +246,6 @@ def make_on_startup(engine, session_factory):
 
         config = app.dependencies["config"]()
 
-        # ── SUPERMOC pendulum: Ustaw polską lokalizację dla całej aplikacji ──
         # diff_for_humans(), format(), day_of_week itp. będą po polsku.
         try:
             pendulum.set_locale("pl")
@@ -388,7 +382,6 @@ def make_on_startup(engine, session_factory):
                     raise
 
         # ── Phase 4: Broker, warm-up, auto-seed ─────────────────────
-        # SUPERMOC HISHEL: Warm HTTP cache przy starcie API
         try:
             await warm_http_cache()
             logger.info("[HTTP-CACHE-WARM] Cache warmed at API startup")

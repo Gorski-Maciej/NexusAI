@@ -1,7 +1,6 @@
 """
 api/otel_views.py — OpenTelemetry Metrics Views dla NexusAI.
 
-SUPERMOCE:
   1. Views API — zmiana agregacji/filtrowania metryk bez zmiany kodu instrumentacji
   2. ExplicitBucketHistogramAggregation — dedykowane buckety dla histogramów
   3. ExponentialHistogramAggregation — szybszy, bardziej precyzyjny niż explicit
@@ -24,7 +23,6 @@ def get_metrics_views() -> list[Any]:
     Używane przez create_meter_provider() w otel_config.py.
     Views są dodawane do meter providera w init_metrics().
 
-    SUPERMOCE aktywne:
     - ExponentialHistogram dla AI inference (zamiast Explicit)
     - LastValueAggregation dla wszystkich gauge'ów
     - Pattern-based: *_total i *_duration_seconds
@@ -40,7 +38,6 @@ def get_metrics_views() -> list[Any]:
             View,
         )
 
-        # SUPERMOC: ExemplarReservoir dla korelacji metryk z trace'ami
         exemplar_filter = AlignedHistogramBucketExemplarReservoir()
 
         views = [
@@ -55,7 +52,6 @@ def get_metrics_views() -> list[Any]:
                 description="HTTP request duration (bucketed)",
             ),
             # ── AI inference duration (Exponential zamiast Explicit) ──
-            # SUPERMOC: ExponentialHistogram — szybszy O(log n), bardziej precyzyjny
             View(
                 instrument_name="ai_inference_duration_seconds",
                 attribute_keys={"model_name"},
@@ -110,7 +106,6 @@ def get_metrics_views() -> list[Any]:
                 ),
             ),
             # ── LastValueAggregation dla wszystkich gauge'ów ──────────
-            # SUPERMOC: Gauge'y używają LastValue — tylko ostatnia wartość
             View(
                 instrument_name="db_connection_pool_size",
                 aggregation=LastValueAggregation(),

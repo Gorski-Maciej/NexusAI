@@ -158,7 +158,6 @@ def generate_ksef_xml(
     # Wyciągnij dane
     invoice_id = str(invoice_data.get("invoice_id", uuid.uuid4().hex))
     invoice_number = str(invoice_data.get("number", invoice_id))
-    # SUPERMOC pendulum: from_format() — parsuj daty w formacie oczekiwanym przez KSeF
     raw_date = str(invoice_data.get("transaction_date", pendulum.today().to_iso8601_string()))
     try:
         issue_date = pendulum.from_format(raw_date, "YYYY-MM-DD").to_date_string()
@@ -191,7 +190,6 @@ def generate_ksef_xml(
     ET.SubElement(naglowek, "WariantFormularza").text = "4"
     ET.SubElement(naglowek, "SystemInfo").text = "NexusAI v1.0"
     ET.SubElement(naglowek, "CelZlozenia").text = "1"  # 1 = fakturowanie
-    # SUPERMOC pendulum: from_format() + format() — spójne formatowanie dat
     ET.SubElement(naglowek, "DataWytworzenia").text = pendulum.now("UTC").format(
         "YYYY-MM-DDTHH:mm:ss"
     )

@@ -3,7 +3,6 @@ SQLAlchemy + SQLModel setup for SQLCipher (encrypted SQLite) — sync engine onl
 
 Używamy natywnego sqlite3 w Pythonie 3.13t (free-threaded).
 
-SUPERMOCE SQLModel/SQLAlchemy:
 - SQLModel.metadata jako target_metadata (dla natywnych migracji SQL)
 - with_loader_criteria — automatyczny multi-tenant filtr (WHERE tenant_id = ?)
 - SessionEvents.before_flush dla automatycznego audytu
@@ -111,7 +110,6 @@ def _resolve_key(config: AppConfig, key: str | None = None) -> str:
 def _make_pragma_setter(key_hex: str):
     """Utwórz funkcję connect listenera ustawiającą PRAGMA key.
 
-    SUPERMOCE (wszystkie):
     - WAL mode dla współbieżności
     - Synchronous NORMAL dla wydajności
     - Foreign Keys ON dla integralności referencyjnej
@@ -191,7 +189,6 @@ def create_oltp_engine(
 ):
     """Create a sync SQLAlchemy engine with SQLCipher encryption.
 
-    SUPERMOCE:
     - Connection pool (QueuePool) zamiast NullPool
     - pool_size: maksymalna liczba połączeń w poolu
     - max_overflow: maksymalna liczba połączeń ponad pool_size
@@ -222,7 +219,6 @@ def create_oltp_engine(
     resolved_key = _resolve_key(config, sqlcipher_key)
     key_hex = resolved_key.encode("utf-8").hex()
 
-    # SUPERMOC: Connection pool zamiast NullPool
     poolclass = QueuePool if use_pool else NullPool
     engine = create_engine(
         url,
@@ -250,7 +246,6 @@ def create_session_factory(
 ):
     """Create a sync sessionmaker for the given engine.
 
-    SUPERMOC: Jeśli tenant_id jest podany, dodaje with_loader_criteria
     do KAŻDEJ sesji — automatyczny filtr WHERE tenant_id = ?
     dla modeli które mają atrybut tenant_id.
 
@@ -313,13 +308,9 @@ def init_schema(engine) -> None:
     """
     from nexus_ai.db.models import (
         Base,
-        ActiveLearningPattern,
-        Invoice,
-        OutboxEvent,
         create_partial_indexes,
     )
 
-    # SUPERMOC: SQLModel.metadata zamiast Base.metadata
     Base.metadata.create_all(engine)
     create_partial_indexes(engine)
 
@@ -362,7 +353,6 @@ def get_session(session_factory) -> Generator[Session, None, None]:
 def get_tenant_session(session_factory, tenant_id: str) -> Generator[Session, None, None]:
     """Context manager z automatycznym multi-tenant filtrem.
 
-    SUPERMOC: Używa with_loader_criteria do automatycznego dodawania
     WHERE tenant_id = ? do każdego zapytania.
     """
     factory = create_session_factory(session_factory.kw["bind"], tenant_id=tenant_id)

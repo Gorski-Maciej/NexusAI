@@ -49,7 +49,6 @@ def _tenant_from_bearer_auth(authorization_header: str | None) -> str | None:
 
 
 class TenantContextMiddleware(AbstractMiddleware):
-    """SUPERMOC structlog: Ustawia contextvars dla każdego requestu.
 
     Zamiast własnej ContextVar (correlation_id_ctx), używa:
       - structlog.contextvars.clear_contextvars() — czyszczenie przed nowym requestem
@@ -77,7 +76,6 @@ class TenantContextMiddleware(AbstractMiddleware):
         correlation_id = request_headers.get("x-correlation-id", uuid.uuid4().hex)
         request_id = uuid.uuid4().hex[:12]
 
-        # ── SUPERMOC structlog: clear + bind contextvars ────────────────
         # Wszystkie logi w całym projekcie automatycznie mają te pola
         structlog.contextvars.clear_contextvars()
         structlog.contextvars.bind_contextvars(
@@ -99,7 +97,6 @@ class TenantContextMiddleware(AbstractMiddleware):
         tenant_id = tenant_from_user or tenant_from_token or DEFAULT_TENANT_ID
         tenant_token = set_current_tenant_id(tenant_id)
 
-        # SUPERMOC structlog: bind tenant_id do contextvars
         structlog.contextvars.bind_contextvars(tenant_id=tenant_id)
 
         async def send_wrapper(message):
@@ -110,7 +107,6 @@ class TenantContextMiddleware(AbstractMiddleware):
                 headers.append((b"x-request-id", request_id.encode()))
             await send(message)
 
-        # SUPERMOC Loguru: logger.contextualize() dla automatycznego kontekstu w scope
         # Każdy log w tym with bloku automatycznie ma correlation_id, request_id, tenant_id
         from loguru import logger as _loguru_logger
 
@@ -121,7 +117,6 @@ class TenantContextMiddleware(AbstractMiddleware):
             path=scope.get("path", "/"),
         ):
             try:
-                # SUPERMOC structlog: merge_contextvars automatycznie doda correlation_id
                 logger.debug(
                     "Handling request: method=%s path=%s",
                     scope.get("method", "?"),

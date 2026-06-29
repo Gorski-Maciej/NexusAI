@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
 
 import anyio
 
@@ -28,13 +27,6 @@ logger = get_logger("nexus.api.triage")
 
 class TriageController(Controller):
     """Triage — przegląd i korekta faktur przed księgowaniem."""
-
-    path = "/triage"
-    tags = [TAG_TRIAGE]
-
-
-class TriageControllerV2(Controller):
-    """Triage controller for /api/v2/triage (Rozwiązanie 22: wersjonowanie API)."""
 
     path = "/triage"
     tags = [TAG_TRIAGE]

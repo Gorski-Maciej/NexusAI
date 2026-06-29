@@ -36,11 +36,9 @@ class FixedAssetsService:
     def generate_schedule(self, asset_id: str) -> int:
         """Generate/refresh straight-line depreciation schedule starting next month.
 
-        SUPERMOC DuckDB: ``GENERATE_SERIES`` zamiast pętli ``while`` w Pythonie.
         DuckDB generuje cały harmonogram w jednym SQL.
         Eliminacja: ~30 linii pętli Python.
         """
-        # ── SUPERMOC: DuckDB GENERATE_SERIES ───────────────────────────
         # Zamiast while loop w Pythonie na 50 lat miesięcznie,
         # DuckDB generuje serie od 1 do 600 miesięcy i oblicza
         # raty amortyzacji w jednym SQL.

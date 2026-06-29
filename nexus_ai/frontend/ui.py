@@ -1,6 +1,5 @@
 """Flet UI for Nexus Accounting OS — Deklaratywny wzorzec @ft.component + use_state().
 
-SUPERMOCE Flet 0.28+:
   - @ft.component + use_state() zamiast klas imperatywnych
   - ft.Shimmer dla loading skeleton zamiast ProgressBar
   - ft.Clipboard dla kopiowania
@@ -20,8 +19,8 @@ from typing import Final
 
 import flet as ft
 
-from nexus_ai.frontend.api_client import ApiConfig, InvoiceDTO, NexusApiClient
-from nexus_ai.frontend.components.stat_card import StatCard, ShimmerCard, ShimmerRow
+from nexus_ai.frontend.api_client import NexusApiClient
+from nexus_ai.frontend.components.stat_card import StatCard
 
 APP_NAME: Final[str] = "Nexus Accounting OS"
 
@@ -30,7 +29,6 @@ APP_NAME: Final[str] = "Nexus Accounting OS"
 def InvoiceRegistryView(page: ft.Page, api: NexusApiClient):
     """Virtualized invoice register with optimistic update and SearchBar.
 
-    SUPERMOCE Flet 0.28+:
       - @ft.component + use_state() zamiast klasy
       - ft.SearchBar dla filtrowania
       - ft.Ref<T> dla typowanych referencji
@@ -100,19 +98,16 @@ def InvoiceRegistryView(page: ft.Page, api: NexusApiClient):
 def NexusApp(page: ft.Page, api: NexusApiClient):
     """Composable app controller — @ft.component + use_state() zamiast klasy.
 
-    SUPERMOCE:
       - @ft.component + use_state() zamiast klasy imperatywnej
       - ft.Shimmer dla loading skeleton
       - ft.Ref<T> typowane referencje
       - page.pubsub dla event-driven odświeżeń
     """
-    # SUPERMOC: use_state zamiast self._variables
     invoices = ft.use_state[list]([])
     stats = ft.use_state[dict]({})
     loading = ft.use_state(False)
     error = ft.use_state[str | None](None)
 
-    # SUPERMOC: ft.Ref dla kontrolek
     table_ref = ft.use_ref[ft.DataTable]()
     loader_ref = ft.use_ref[ft.ProgressBar]()
     feedback_ref = ft.use_ref[ft.Text]()
@@ -139,7 +134,6 @@ def NexusApp(page: ft.Page, api: NexusApiClient):
     # ── Initial load ────────────────────────────────────────────────────
     page.run_task(refresh_data())
 
-    # SUPERMOC: page.pubsub dla odświeżeń
     page.pubsub.subscribe("trigger_refresh", lambda _: schedule_refresh())
 
     # ── Handlery ────────────────────────────────────────────────────────
@@ -217,7 +211,6 @@ def NexusApp(page: ft.Page, api: NexusApiClient):
             ),
             # Loader
             ft.ProgressBar(ref=loader_ref, visible=loading.value, color="blue"),
-            # SUPERMOC: Invoice registry with search
             InvoiceRegistryView(page=page, api=api),
             # FilePicker
             ft.FilePicker(ref=file_picker_ref, on_result=on_file_selected),

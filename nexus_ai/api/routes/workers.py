@@ -30,7 +30,6 @@ class WorkerStatusController(Controller):
     async def get_worker_status(self) -> dict[str, Any]:
         """Zwraca aktualny status workera: obciążenie, liczbę zadań, limit współbieżności.
 
-        SUPERMOCE psutil:
           - Process.oneshot() — batch syscalls (zamiast 3 osobnych)
           - memory_full_info() — USS/PSS (rzeczywista pamięć)
           - cpu_percent(interval=0.1) — CPU z krótkim pomiarem
@@ -55,7 +54,6 @@ class WorkerStatusController(Controller):
             proc_status = "running"
             proc_name = "unknown"
 
-            # SUPERMOC: oneshot() — wszystkie atrybuty w 1 syscallu
             try:
                 with process.oneshot():
                     mem_info = process.memory_info()

@@ -2,14 +2,15 @@ from __future__ import annotations
 
 import os
 import secrets
-from collections.abc import AsyncGenerator
 from functools import lru_cache
-from msgspec import Struct
 
 import pendulum
 from cachetools import TTLCache
 from litestar.connection import ASGIConnection
 from litestar.security.jwt import JWTAuth, JWTCookieAuth, Token
+from msgspec import Struct
+from nexus_crypto import hash_password as nexus_hash_password
+from nexus_crypto import verify_password as nexus_verify_password
 from sqlmodel import text
 from structlog import get_logger
 
@@ -163,11 +164,9 @@ class User(Struct):
 
 @lru_cache(maxsize=1)
 def _get_jwt_exclude() -> list[str]:
-    """Pobiera listę wykluczeń JWT z configu TOML (SUPERMOC Litestar).
+    """Pobiera liste wykluczen JWT z configu TOML.
 
-    Sekcja [security] w config/{env}.toml → AppConfig.effective_jwt_exclude.
-    Wynik cache'owany przez lru_cache (jedno parsowanie TOML na całe życie procesu).
-    Fallback: domyślna lista jeśli config nie jest dostępny.
+    Sekcja [security] w config/{env}.toml -> AppConfig.effective_jwt_exclude.
     """
     try:
         from nexus_ai.core.config import AppConfig
@@ -195,7 +194,6 @@ def _get_jwt_exclude() -> list[str]:
     ]
 
 
-# ── SUPERMOC Litestar: Dual Auth (JWTAuth dla API + JWTCookieAuth dla Web) ──
 # JWTAuth: Bearer token w nagłówku Authorization — dla API/CLI/mobilnych
 # JWTCookieAuth: Token w secure cookie — dla web (Flet UI, przeglądarki)
 # Oba używają tego samego retrieve_user_handler i token_secret.
@@ -220,3 +218,19 @@ jwt_cookie_auth = JWTCookieAuth[User](
     default_token_expiration=pendulum.duration(seconds=JWT_EXPIRATION_SECONDS),
     exclude=_get_jwt_exclude(),
 )
+
+
+# ── Password hashing (Argon2id via nexus-crypto, Rust+PyO3) ────────────────
+
+
+def hash_password(password: str) -> str:
+    """Hash password using Argon2id (nexus-crypto, Rust+PyO3)."""
+    return nexus_hash_password(password)
+
+
+def verify_password(password: str, encoded: str) -> bool:
+    """Verify password against Argon2id PHC hash (nexus-crypto)."""
+    try:
+        return nexus_verify_password(password, encoded)
+    except (ValueError, RuntimeError):
+        return False

@@ -45,7 +45,6 @@ class SharedImageBuffer:
     def push(self, frame: SharedFrame, compress_jpeg: bool = True) -> None:
         """Dodaje ramkę z opcjonalną kompresją JPEG i kontrolą globalnego limitu pamięci."""
         with self._lock:
-            # SUPERMOC: Kompresja JPEG przez normalize_image_to_jpeg()
             # EXIF transpose + progressive + optimize + LOAD_TRUNCATED_IMAGES
             if (
                 compress_jpeg

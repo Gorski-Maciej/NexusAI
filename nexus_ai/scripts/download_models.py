@@ -60,7 +60,6 @@ import fsspec
 
 def _compute_sha256(filepath: Path) -> str:
     h = Sha256Hasher()
-    # SUPERMOC fsspec: open() działa z każdym protokołem
     with fsspec.open(str(filepath), "rb") as f:
         while True:
             chunk = f.read(65536)
@@ -113,7 +112,6 @@ def download_doctr_models(
     2. Zweryfikować czy modele są dostępne w cache
     3. Wyeksportować modele do ONNX dla 2-3× szybszej inferencji na CPU
 
-    SUPERMOC (audyt technologiczny v2):
     - ONNX export: export_onnx() do plików .onnx
     - Weryfikacja przez próbną inferencję
     - Batch processing: det_bs=4, reco_bs=8
@@ -165,12 +163,9 @@ def download_doctr_models(
         print(f"    {model_key} will auto-download on first use")
         statuses[model_key] = "auto"
 
-        # SUPERMOC: ONNX export jeśli zażądano
         if export_onnx and statuses.get(model_key) in ("downloaded", "auto"):
             print(f"    >> Exporting {model_key} to ONNX...")
             try:
-                import doctr
-                import torch
                 from doctr.models import (
                     detection,
                     recognition,
@@ -211,7 +206,6 @@ def download_easyocr_models(
 ) -> dict[str, str]:
     """Pobierz/zweryfikuj modele EasyOCR.
 
-    SUPERMOC (audyt technologiczny v3):
     - Pobiera CRAFT detection model przez huggingface-hub
     - Sprawdza czy modele są w cache
     - Weryfikuje SHA-256 modeli

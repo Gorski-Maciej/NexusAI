@@ -77,7 +77,6 @@ def post_realized_fx_difference(
 def calculate_unrealized_fx_deltas(
     duckdb: DuckDBManager, month_end: pendulum.Date
 ) -> list[tuple[Any, ...]]:
-    """SUPERMOC Polars: Oblicz niezrealizowane różnice kursowe przez
     ``execute_arrow()`` + ``pl.from_arrow()`` + ``pl.DataFrame.with_columns()``
     zamiast czystego DuckDB SQL.
 
@@ -89,7 +88,6 @@ def calculate_unrealized_fx_deltas(
     """
     import polars as pl
 
-    # ── SUPERMOC: execute_arrow() + pl.from_arrow() zero-copy ────
     # DuckDB produkuje Arrow Table, Polars konsumuje bez kopiowania.
     arrow_table = duckdb.execute_arrow(
         """
@@ -117,7 +115,6 @@ def calculate_unrealized_fx_deltas(
     if arrow_table is None or arrow_table.num_rows == 0:
         return []
 
-    # ── SUPERMOC: Polars DataFrame z wyrażeniami ─────────────────
     # ``pl.col().sub().round(2)`` zamiast SQL ROUND().
     df = pl.from_arrow(arrow_table).with_columns(
         [
@@ -130,7 +127,6 @@ def calculate_unrealized_fx_deltas(
         ]
     )
 
-    # ── SUPERMOC: shrink_dtype() dla redukcji RAM ────────────────
     df = df.shrink_dtype()
 
     return df.select(["id", "invoice_type", "currency_code", "unrealized_delta"]).rows()

@@ -1,6 +1,5 @@
 """SecureTigerBeetleClient — RBAC-aware wrapper dla realnego TigerBeetle.
 
-SUPERMOCE:
 - RBAC na poziomie klienta (OWNER tylko może postować)
 - Natywne pending/void zamiast własnej implementacji
 - Linked transfers dla atomowości
@@ -45,7 +44,6 @@ class SecureTransferSpec(Struct):
 class SecureTigerBeetleClient:
     """RBAC-aware wrapper that blocks WORKER from posting committed transfers.
 
-    SUPERMOCE:
     - OWNER może tworzyć i postować transfery
     - WORKER może tylko tworzyć pending transfery
     - Naruszenia logowane do SecurityAlert

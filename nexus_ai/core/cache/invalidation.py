@@ -1,7 +1,5 @@
 """
-NATS distributed cache invalidation — SUPERMOC z audytu.
 
-SUPERMOC: Gdy zmieniamy dane w jednej instancji, pozostałe instancje
 automatycznie czyszczą cache przez NATS pub/sub.
 
 Usage:
@@ -15,7 +13,6 @@ Schemat:
     Topic: "cache.invalidate"
     Payload: {"prefix": "risk_threshold:", "version": 1}
 
-SUPERMOCE:
 - Wersjonowanie — ignoruj stare eventy
 - Batch invalidation — jeden event dla wielu prefixów
 - Rate limiting — max 10 eventów/sekundę
@@ -48,7 +45,6 @@ async def invalidate_cache(
     broker: Any,
     force: bool = False,
 ) -> None:
-    """SUPERMOC: Opublikuj event unieważnienia cache przez NATS.
 
     Args:
         prefix: Prefiks kluczy do unieważnienia (np. "risk_threshold:").
@@ -96,7 +92,6 @@ async def subscribe_cache_invalidation(
     broker: Any,
     nexus_cache: Any,
 ) -> None:
-    """SUPERMOC: Subskrybuj eventy unieważnienia cache.
 
     Args:
         broker: Instancja Taskiq/NATS brokera.

@@ -16,7 +16,6 @@ class DuckDBLimits(Struct):
 class DuckDBManager:
     """Thread-safe DuckDB manager with native SQLite Zero-ETL attach.
 
-    SUPERMOCE DuckDB (nowe w tej wersji):
     - Arrow zero-copy fetch: ``fetch_arrow_table()`` zamiast ``fetchall()``
       Transfer danych z DuckDB do Polars bez kopiowania w pamięci.
       Zysk: 2-5× szybszy transfer, mniejsze zużycie RAM.
@@ -64,7 +63,6 @@ class DuckDBManager:
     def _create_connection(self) -> duckdb.DuckDBPyConnection:
         """Tworzy nowe, skonfigurowane połączenie DuckDB i rejestruje w globalnym registry.
 
-        SUPERMOCE DuckDB:
         - memory_limit, threads, temp_directory — zarządzanie zasobami
         - perfect_ht_threshold — optymalizacja hash join dla małych tabel
         - enable_progress_bar — wizualizacja długich zapytań (CLI)
@@ -79,27 +77,20 @@ class DuckDBManager:
         temp_dir.mkdir(parents=True, exist_ok=True)
         conn.execute(f"SET temp_directory='{temp_dir.as_posix()}'")
 
-        # ── SUPERMOCE DuckDB ─────────────────────────────────────
         # Konfiguracja dla lepszej współbieżności
         conn.execute("SET perfect_ht_threshold=2;")
 
-        # SUPERMOC: Progress bar dla długich zapytań (w CLI)
         conn.execute("SET enable_progress_bar=true;")
         conn.execute("SET enable_progress_bar_print=true;")
 
-        # SUPERMOC: Szybsze agregacje (gdy nie potrzebujemy kolejności INSERT)
         conn.execute("SET preserve_insertion_order=false;")
 
-        # SUPERMOC: Spójne sortowanie NULLS LAST (zgodne z SQL standard)
         conn.execute("SET default_null_order='NULLS_LAST';")
 
-        # SUPERMOC: Włącz wsparcie JSON dla typu JSON
         conn.execute("SET json_execute_serialize=true;")
 
-        # SUPERMOC: Arrow large types dla dużych wyników
         conn.execute("SET arrow_large_buffer_size=true;")
 
-        # SUPERMOC: Włącz profilowanie zapytań
         conn.execute("SET enable_profiling='query_tree';")
 
         return conn
@@ -156,7 +147,6 @@ class DuckDBManager:
         Wykonuje zapytanie. Dla zapytań SELECT tworzy nowe połączenie,
         co zapobiega blokowaniu między współbieżnymi zapytaniami.
 
-        SUPERMOCE DuckDB:
         - Profilowanie: loguje wolne zapytania (>100ms) z EXPLAIN ANALYZE
         - Prepared statements: cache'uje często używane zapytania SELECT
         - Arrow fetch: używa fetch_arrow_table() gdy wynik jest duży (>1000 rows)
@@ -189,7 +179,6 @@ class DuckDBManager:
                         return conn.execute(query, parameters).fetchall()
                     return conn.execute(query).fetchall()
         finally:
-            # ── SUPERMOC: Auto-profilowanie wolnych zapytań ───────
             elapsed_ms = (time.monotonic() - t0) * 1000
             if elapsed_ms > self._slow_query_threshold_ms:
                 import logging
@@ -201,7 +190,6 @@ class DuckDBManager:
                     query[:120],
                 )
 
-    # ── SUPERMOC: Arrow zero-copy fetch ──────────────────────────────
     # Dla dużych wyników (>1000 rows), używaj fetch_arrow_table() zamiast fetchall().
     # Arrow format pozwala na zero-copy transfer do Polars bez pośredniego
     # słownika/listy krotek. Zysk: 2-5× szybszy, mniej pamięci.
@@ -213,7 +201,6 @@ class DuckDBManager:
     ) -> Any:
         """Execute query and return result as Apache Arrow table (zero-copy).
 
-        SUPERMOC DuckDB: ``fetch_arrow_table()`` zwraca dane w formacie
         Apache Arrow — zero-copy transfer do Polars.
 
         Usage:
@@ -264,14 +251,12 @@ class DuckDBManager:
                     query[:120],
                 )
 
-    # ── SUPERMOC: PyArrow Compute dla agregacji w pamięci ───────────
     # ``pyarrow.compute`` zawiera setki kernelów C++ do operacji
     # wektorowych: ``pc.sum()``, ``pc.mean()``, ``pc.count()``,
     # ``pc.min_max()``, ``pc.filter()``, ``pc.take()``, ``pc.cast()``.
     # Używane zamiast SQL dla małych/mikro-agregacji w pamięci.
     # Zysk: brak round-trip do DuckDB, operacje w C++ na Arrow data.
 
-    # ── SUPERMOC: DuckDB read_parquet() — SQL bezpośrednio na plikach ──
     # ``read_parquet('*.parquet')`` pozwala DuckDB czytać pliki Parquet
     # bezpośrednio, bez wczytywania ich do pamięci przez PyArrow.
     # Zysk: DuckDB robi predicate pushdown na statystykach Parquet,
@@ -283,7 +268,6 @@ class DuckDBManager:
         sql_where: str = "",
         columns: list[str] | None = None,
     ) -> Any:
-        """SUPERMOC DuckDB: Wykonaj SQL bezpośrednio na plikach Parquet.
 
         ``read_parquet('*.parquet')`` — DuckDB czyta Parquet z predicate
         pushdown, projection pushdown i filter pushdown — automatycznie.
@@ -307,13 +291,11 @@ class DuckDBManager:
 
         return self.execute_arrow(sql)
 
-    # ── SUPERMOC: DuckDB parquet_metadata() — diagnostyka Parquet ──────
     # Funkcja ``parquet_metadata()`` odczytuje statystyki pliku Parquet
     # bez wczytywania danych — row groups, kolumny, null count, min/max.
     # Zysk: diagnostyka bez alokacji RAM na dane.
 
     def get_parquet_metadata(self, parquet_path: str | Path) -> list[dict[str, Any]]:
-        """SUPERMOC DuckDB: Pobierz metadane pliku Parquet.
 
         ``parquet_metadata('file.parquet')`` zwraca:
         - file_name, row_group_id, row_group_num_rows
@@ -336,7 +318,6 @@ class DuckDBManager:
         finally:
             conn.close()
 
-    # ── SUPERMOC: COPY TO PARQUET — eksport wyników zapytań ───────────
     # ``COPY (query) TO 'file.parquet' (FORMAT PARQUET, CODEC 'ZSTD')``
     # Zamiast fetchall() + ręcznego zapisu, DuckDB zapisuje wynik
     # bezpośrednio do Parquet — zero pamięci na listę krotek.
@@ -349,7 +330,6 @@ class DuckDBManager:
         compression: str = "ZSTD",
         row_group_size: int = 100000,
     ) -> str:
-        """SUPERMOC DuckDB: Eksportuj wynik zapytania bezpośrednio do Parquet.
 
         ``COPY (query) TO 'file.parquet' (FORMAT PARQUET, CODEC 'ZSTD')``
         — DuckDB zapisuje wynik bezpośrednio do pliku Parquet bez
@@ -385,7 +365,6 @@ class DuckDBManager:
         parameters: tuple[Any, ...] | list[Any] | None = None,
         columns: list[str] | None = None,
     ) -> dict[str, Any]:
-        """SUPERMOC PyArrow: Wykonaj zapytanie i policz agregacje przez
         ``pyarrow.compute`` — bez narzutu SQL aggregations.
 
         Zamiast ``SELECT SUM(x), AVG(y), COUNT(*) FROM ...``, pobieramy
@@ -448,7 +427,6 @@ class DuckDBManager:
             return conn.execute(query).fetchall()
 
     def explain_analyze(self, query: str) -> str:
-        """SUPERMOC DuckDB: EXPLAIN ANALYZE — profilowanie zapytania.
 
         EXPLAIN ANALYZE to operacja READ-ONLY — używa nowego połączenia
         bez locka DDL.

@@ -1,6 +1,5 @@
 """Health check endpoints — z prawdziwym TigerBeetle health check.
 
-SUPERMOCE:
 - Real TigerBeetle connection check przez lookup_accounts
 - Sprawdzanie stanu cluster/time
 - Metryki liczby kont i transferów
@@ -203,12 +202,10 @@ class HealthController(Controller):
         except OSError:
             return 0
 
-    # ── SUPERMOC psutil: System resources in health check ──────────────
 
     async def _system_resources(self) -> dict[str, Any]:
         """Zwróć metryki systemowe z psutil dla /health/detailed.
 
-        SUPERMOCE psutil:
           - SystemMonitor.collect_all() — CPU, RAM, swap, dysk, sieć, sensory
           - ProcessMonitor.collect_metrics() — RSS, USS, CPU% procesu
           - boot_time() — uptime systemu
@@ -261,7 +258,6 @@ class HealthController(Controller):
     def _report_file_exists(self, path: str) -> bool:
         return Path(path).exists()
 
-    # ── SUPERMOC: Real TigerBeetle health check ─────────────────────────
 
     # Singleton TB client dla health checków — współdzielony przez DI
     _tb_client: Any = None
@@ -285,7 +281,6 @@ class HealthController(Controller):
     async def _tigerbeetle_check(self) -> dict[str, Any]:
         """Check TigerBeetle connection using singleton client.
 
-        SUPERMOCE:
         - Singleton TB client (thread-safe) — brak wycieku socketów
         - Real connection test przez lookup_accounts
         - Sprawdzanie liczby kont i stanu clustera
@@ -302,7 +297,6 @@ class HealthController(Controller):
                 }
 
             try:
-                # SUPERMOC: lookup_accounts test — sprawdza czy TB odpowiada
                 accounts = client.lookup_accounts([])
                 return {
                     "status": "OK",
@@ -483,8 +477,4 @@ class HealthController(Controller):
             return {"status": "ERROR", "message": str(exc)}
 
 
-class HealthControllerV2(HealthController):
-    """Health endpoints in v2 namespace."""
-
-    path = "/health"
-    tags = [TAG_HEALTH]
+# HealthControllerV2 removed — use HealthController directly in both v1 and v2 routers

@@ -3,7 +3,6 @@
 Zastępuje: ws_client.py (HTTP SSE → socket UNIX).
 Komunikacja przez AF_UNIX jest szybsza i lżejsza niż HTTP/SSE w trybie desktopowym.
 
-SUPERMOCE:
   - asyncio.open_unix_connection — natywne API Pythona, zero dodatkowych zależności
   - Exponential backoff z jitter przy reconnect
   - page.pubsub dla dystrybucji zdarzeń
@@ -104,7 +103,6 @@ class UnixProgressClient:
                     if not isinstance(data, dict):
                         continue
 
-                    # SUPERMOC: page.pubsub dla dystrybucji zdarzeń
                     if self._page:
                         self._page.pubsub.send_all_on_topic("progress_update", data)
 

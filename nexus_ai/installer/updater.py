@@ -155,7 +155,6 @@ async def check_for_updates(
     # Try remote endpoints
     urls = [custom_url] if custom_url else UPDATE_ENDPOINTS
 
-    # SUPERMOC HTTPX: http2=True + httpx.Limits dla ochrony przed rate limiting
     async with httpx.AsyncClient(
         timeout=httpx.Timeout(connect=10.0, read=timeout, write=10.0, pool=300.0),
         limits=httpx.Limits(max_connections=5, max_keepalive_connections=3),

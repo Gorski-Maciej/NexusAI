@@ -455,7 +455,6 @@ class SecurityPostureResponse(msgspec.Struct, kw_only=True):
 
 
 class LocustSummaryResponse(msgspec.Struct, kw_only=True):
-    """SUPERMOC: Locust performance summary.
 
     Zgodnie z aa3fvcx.txt: locust zastępuje k6.
     Zawiera pełne metryki wydajnościowe z testów locust:

@@ -14,8 +14,6 @@ from functools import wraps
 from pathlib import Path
 from typing import Any, Callable, TypeVar
 
-import anyio
-from loguru import logger as _loguru_logger
 from structlog import get_logger
 
 logger = get_logger("nexus.pipeline.ocr_base")

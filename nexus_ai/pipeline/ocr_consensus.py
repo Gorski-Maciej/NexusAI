@@ -18,7 +18,7 @@ from msgspec import Struct, field
 from structlog import get_logger
 
 from nexus_ai.core.opencv_pipeline import HAS_CV2, OpenCVPreprocessor
-from nexus_ai.pipeline.ocr_base import BaseOCREngine, catch_ocr_errors
+from nexus_ai.pipeline.ocr_base import BaseOCREngine
 
 logger = get_logger("nexus.pipeline.ocr_consensus")
 

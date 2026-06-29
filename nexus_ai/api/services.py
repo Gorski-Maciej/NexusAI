@@ -130,7 +130,6 @@ class FileValidator:
 
     @staticmethod
     def _normalize_image(content: bytes) -> bytes:
-        """SUPERMOC: Normalizacja obrazu przez Pillow z EXIF transpose + progressive JPEG."""
         try:
             from nexus_ai.core.image_utils import normalize_image_to_jpeg
 

@@ -1,6 +1,5 @@
 """HTTP communication layer for local Litestar backend.
 
-SUPERMOCE:
   - Cache warstwa przez in-memory cache z TTL
   - Tylko async API (sync wrappers usunięte — zapobiega crashom)
   - HTTP/2 multiplexing

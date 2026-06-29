@@ -1,7 +1,6 @@
 """
 NexusAI HTTP Client Layer — httpx integration with superpowers.
 
-SUPERMOCE HTTPX (v0.27+):
   - http2=True — HTTP/2 multiplexing (szybsze zapytania)
   - Limits(max_connections, max_keepalive, keepalive_expiry) — connection pool
   - Timeout(connect, read, write, pool) — precyzyjne timeouty
@@ -17,7 +16,6 @@ Usage:
 from __future__ import annotations
 
 import os
-import time
 from pathlib import Path
 from typing import Any
 
@@ -50,16 +48,13 @@ def reset_cache_stats() -> None:
     _CACHE_STATS["stale_hits"] = 0
 
 
-# ── Event hooks (SUPERMOC HTTPX: monitoring request/response) ────────────
 
 
 async def _log_request(request: httpx.Request) -> None:
-    """SUPERMOC HTTPX: Event hook — loguje każde żądanie HTTP."""
     logger.debug("[HTTP] → %s %s", request.method, request.url)
 
 
 async def _log_response(response: httpx.Response) -> None:
-    """SUPERMOC HTTPX: Event hook — loguje każdą odpowiedź HTTP."""
     elapsed = response.elapsed.total_seconds() * 1000 if response.elapsed else 0
     logger.debug(
         "[HTTP] ← %s %s (%d, %.1fms)",
@@ -93,13 +88,11 @@ def create_cached_client(
         timeout — Timeout class (domyślnie connect=10s, read=30s, write=30s, pool=300s)
         **kwargs — dla httpx.AsyncClient (headers itp.)
     """
-    # SUPERMOC HTTPX: Domyślne Timeout i Limits
     if timeout is None:
         timeout = Timeout(connect=10.0, read=30.0, write=30.0, pool=300.0)
     if limits is None:
         limits = Limits(max_connections=20, max_keepalive_connections=10, keepalive_expiry=30.0)
 
-    # SUPERMOC HTTPX: Event hooks dla logowania
     hooks: dict[str, list] = {"request": [], "response": []}
     if use_event_hooks:
         hooks["request"].append(_log_request)

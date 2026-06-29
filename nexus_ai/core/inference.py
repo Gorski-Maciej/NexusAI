@@ -111,10 +111,9 @@ class InferenceService:
             logger.info("[InferenceService] Unloaded model: %s", self._model_path.name)
 
     def check_ttl(self) -> None:
-        """SUPERMOC: Auto-unload jeśli TTL wygasł (TOP5 OPTYMALIZACJA #2).
+        """Sprawdza czy minąl czas TTL od ostatniego uzycia modelu.
 
-        Sprawdza czy minął czas TTL od ostatniego użycia modelu.
-        Jeśli tak — zwalnia pamięć. Oszczędność: 0.8-3.0 GB RAM.
+        Jesli tak - zwalnia pamiec. Oszczednosc: 0.8-3.0 GB RAM.
         """
         if self._loaded and self._ttl > 0:
             elapsed = time.time() - self._loaded_at
@@ -217,16 +216,10 @@ class InferenceService:
 
 
 class ModelManager:
-    """SUPERMOC: Manager modeli AI z TTL auto-unload (TOP5 OPTYMALIZACJA #2).
+    """Zarzadza modelami AI z TTL auto-unload.
 
-    Oszczędność RAM: 0.8-3.0 GB gdy modele nie są używane.
-    Automatycznie zwalnia modele po okresie bezczynności (domyślnie 5 min).
-    Można też ręcznie zwolnić modele po zakończeniu zadania.
-
-    Usage:
-        manager = ModelManager()
-        result = await manager.infer("path/to/model.gguf", "Hello")
-        # Po 5 minutach bezczynności model zostanie automatycznie zwolniony
+    Oszczednosc RAM: 0.8-3.0 GB gdy modele nie sa uzywane.
+    Automatycznie zwalnia modele po okresie bezczynnosci (domyslnie 5 min).
     """
 
     def __init__(self, default_ttl: int = 300) -> None:
@@ -283,15 +276,15 @@ class ModelManager:
         n_threads: int = 4,
         n_gpu_layers: int = 0,
     ) -> str:
-        """SUPERMOC: Wykonaj inferencję na modelu z auto-loading.
+        """Generuj tekst z modelu.
 
         Args:
-            model_path: Ścieżka do pliku GGUF.
-            prompt: Prompt wejściowy.
-            max_tokens: Maksymalna liczba tokenów.
+            model_path: Sciezka do pliku GGUF.
+            prompt: Prompt wejsciowy.
+            max_tokens: Maksymalna liczba tokenow.
             temperature: Temperatura sampling.
             n_ctx: Rozmiar kontekstu.
-            n_threads: Liczba wątków CPU.
+            n_threads: Liczba watkow CPU.
             n_gpu_layers: Liczba warstw GPU.
 
         Returns:
@@ -320,7 +313,6 @@ class ModelManager:
         n_threads: int = 4,
         n_gpu_layers: int = 0,
     ) -> str:
-        """SUPERMOC: Chat completion z auto-loading."""
         svc = self.get_or_create(
             model_path,
             n_ctx=n_ctx,
@@ -334,10 +326,7 @@ class ModelManager:
         )
 
     def unload_all(self) -> None:
-        """SUPERMOC: Zwolnij WSZYSTKIE modele.
-
-        Użyj po zakończeniu batcha OCR/AI.
-        """
+        """Zwolnij wszystkie modele - uzyj po zakonczeniu batcha OCR/AI."""
         for key, svc in list(self._models.items()):
             svc.unload()
         self._models.clear()
@@ -358,7 +347,7 @@ class ModelManager:
         return [k for k, v in self._models.items() if v.is_loaded]
 
     def cleanup_expired(self) -> int:
-        """SUPERMOC: Zwolnij wszystkie modele z wygasłym TTL.
+        """Zwolnij modele z wygaslym TTL.
 
         Returns:
             Liczba zwolnionych modeli.
@@ -371,13 +360,16 @@ class ModelManager:
         return count
 
 
-# Globalny singleton ModelManager dla całej aplikacji
-# Dzięki temu modele są współdzielone między komponentami
+# ModelManager powinien byc wstrzykiwany przez Litestar DI
+# zamiast uzywania globalnego singletona
 _model_manager: ModelManager | None = None
 
 
 def get_model_manager(default_ttl: int = 300) -> ModelManager:
-    """Zwraca globalny singleton ModelManager."""
+    """Zwraca globalny singleton ModelManager.
+
+    DEPRECATED: Uzyj Litestar DI z AppServices zamiast get_model_manager().
+    """
     global _model_manager
     if _model_manager is None:
         _model_manager = ModelManager(default_ttl=default_ttl)
@@ -385,11 +377,11 @@ def get_model_manager(default_ttl: int = 300) -> ModelManager:
 
 
 def cleanup_models() -> int:
-    """SUPERMOC: Zwolnij wszystkie modele z wygasłym TTL.
+    """Zwolnij modele z wygaslym TTL.
 
-    Wywołuj okresowo (np. co minutę) z background taska.
+    Wywoluj okresowo (np. co minute) z background taska.
     """
-    global _model_manager
-    if _model_manager is None:
+    manager = _model_manager
+    if manager is None:
         return 0
-    return _model_manager.cleanup_expired()
+    return manager.cleanup_expired()

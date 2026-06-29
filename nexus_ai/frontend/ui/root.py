@@ -1,6 +1,5 @@
 """root.py — Główna klasa orkiestrująca interfejsem graficznym.
 
-SUPERMOCE Flet 0.28+:
   - @ft.component + use_state() zamiast klas imperatywnych
   - ft.NavigationRail z ft.NumberBadge dla notyfikacji
   - ft.FloatingActionButton dla szybkich akcji
@@ -26,20 +25,17 @@ logger = get_logger("nexus.ui.root")
 def NexusRootUI(page: ft.Page, process_manager=None):
     """Główny komponent UI z NavigationRail, NumberBadge, FAB.
 
-    SUPERMOCE:
       - ft.NavigationRail z ft.NumberBadge dla liczników
       - ft.FloatingActionButton dla szybkiego dodawania faktury
       - ft.SearchBar w NavigationRail
       - Dispatch dict dla widoków (O(1))
       - page.pubsub dla event-driven state
     """
-    # SUPERMOC: use_state zamiast self._variables
     current_view = ft.use_state("dashboard")
     nav_index = ft.use_state(0)
     task_count = ft.use_state(0)
     unix_client = ft.use_ref[UnixProgressClient]()
 
-    # SUPERMOC: ft.Ref dla kontrolek
     main_content = ft.use_ref[ft.Container]()
     snackbar = ft.use_ref[ft.SnackBar]()
 
@@ -49,13 +45,11 @@ def NexusRootUI(page: ft.Page, process_manager=None):
     base_url = f"http://127.0.0.1:{port}/api/v1" if port else "http://127.0.0.1:8000/api/v1"
     api = NexusApiClient(base_url=base_url, token=token)
 
-    # SUPERMOC: Uruchom klienta socket UNIX dla postępu zadań
     if unix_client.current is None:
         client = UnixProgressClient(page=page)
         unix_client.current = client
         page.run_task(client.start_async())
 
-    # SUPERMOC: NavigationRail z NumberBadge
     nav_rail = ft.NavigationRail(
         ref=ft.Ref[ft.NavigationRail](),
         selected_index=nav_index.value,
@@ -79,7 +73,6 @@ def NexusRootUI(page: ft.Page, process_manager=None):
                 label_content=ft.Row(
                     [
                         ft.Text("Tasks"),
-                        # SUPERMOC: NumberBadge dla notyfikacji
                         ft.Container(
                             content=ft.NumberBadge(
                                 value=ft.Ref(),
@@ -98,7 +91,6 @@ def NexusRootUI(page: ft.Page, process_manager=None):
         on_change=lambda e: _on_nav_change(e),
     )
 
-    # SUPERMOC: FloatingActionButton dla szybkiego dodawania faktury
     fab = ft.FloatingActionButton(
         icon=ft.icons.ADD,
         text="Dodaj fakturę",
@@ -107,7 +99,6 @@ def NexusRootUI(page: ft.Page, process_manager=None):
         foreground_color=ft.colors.WHITE,
     )
 
-    # SUPERMOC: SearchBar w NavigationRail
     search_bar = ft.SearchBar(
         bar_hint_text="Szukaj faktury, kontrahenta...",
         view_hint_text="Wybierz wynik...",
@@ -127,7 +118,6 @@ def NexusRootUI(page: ft.Page, process_manager=None):
     async def _load_view(view_name: str) -> None:
         current_view.set(view_name)
 
-        # SUPERMOC: Dispatch dict O(1)
         _view_dispatch = {
             "tasks": _load_task_monitor,
             "dashboard": _load_dashboard,
@@ -202,7 +192,6 @@ def NexusRootUI(page: ft.Page, process_manager=None):
         page.update()
 
     # ── Render ──────────────────────────────────────────────────────────
-    # SUPERMOC: Layout z NavigationRail + FAB
     return ft.Stack(
         controls=[
             ft.Row(
@@ -214,7 +203,6 @@ def NexusRootUI(page: ft.Page, process_manager=None):
                 expand=True,
                 spacing=0,
             ),
-            # SUPERMOC: FAB pozycjonowany absolutnie
             ft.Container(
                 content=fab,
                 right=20,

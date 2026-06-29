@@ -35,7 +35,6 @@ import importlib
 import inspect
 import pkgutil
 import threading
-from collections.abc import Awaitable, Callable
 from typing import final, Any, Protocol, runtime_checkable
 
 from structlog import get_logger
@@ -336,7 +335,7 @@ class PluginManager:
         }
 
 
-# ── Global singleton ──────────────────────────────────────────────────────
+# ── Global singleton (DEPRECATED) ──────────────────────────────────────
 
 
 _default_manager: PluginManager | None = None
@@ -345,8 +344,7 @@ _default_manager: PluginManager | None = None
 def get_plugin_manager() -> PluginManager:
     """Return the global PluginManager singleton.
 
-    Returns:
-        Global PluginManager instance.
+    DEPRECATED: Uzyj Litestar DI z AppServices zamiast get_plugin_manager().
     """
     global _default_manager
     if _default_manager is None:

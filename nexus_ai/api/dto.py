@@ -4,24 +4,6 @@ from __future__ import annotations
 
 from litestar.dto import DTOConfig, MsgspecDTO
 
-from nexus_ai.api.schemas import (
-    ActionResponse, AnalyticsQuery, AutopilotActionResponse, AutopilotEvalTriggerResponse,
-    ChangePasswordResponse, ChangeRoleResponse, CircuitBreakerStatusResponse, ConfirmEmailResponse,
-    CsrfTokenResponse, DashboardSummaryResponse, ExportDownloadResponse, ExportStatusResponse,
-    FailedTaskListResponse, FallbackListResponse, FinOpsResponse, HealthResponse,
-    HotReloadHealthResponse, I18nStatusResponse, IdResponse, IntegrityVerifyResponse,
-    InvoiceCreate, InvoiceListResponse, InvoiceResponse, LocustSummaryResponse, LoginResponse,
-    LogoutResponse, PaginatedRuleListResponse, PartnerClientListResponse, PartnerInvoiceItem,
-    PasswordResetConfirmResponse, PasswordResetResponse, PiiScanResponse, ReplayBatchResponse,
-    ReplayDecisionResponse, RegisterResponse, RetryAllResponse, RuleChangelogResponse,
-    RuleSetsResponse, RuleListResponse, SagaStateResponse, SagaTransitionRequest, SaveDraftResponse,
-    SecurityPostureResponse, StatsProcessingResponse, StatusResponse, TaskResponse,
-    TelemetryFallbackStatusResponse, TriageItem, TriageResolutionRequest, TriageResolutionResponse,
-    UserProfileResponse, VatSummary, WorkerStatusResponse,
-)
-from nexus_ai.api.routes.admin import ChangeRoleRequest, RiskThresholdCreate
-from nexus_ai.api.routes.auth import ChangePasswordRequest, LoginRequest, RefreshRequest, RegisterRequest, ResetPasswordConfirmRequest, ResetPasswordRequest
-from nexus_ai.api.routes.tax_policy import SimulateRequest
 
 # ── OpenAPI Tag Constants ───────────────────────────────────────────────
 TAG_AUTH = "Auth"; TAG_INVOICES = "Invoices"; TAG_ADMIN = "Admin"; TAG_TRIAGE = "Triage"

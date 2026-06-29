@@ -3,7 +3,6 @@ AsyncSQLiteQueue — async SQLite Message Queue via sqlite3.
 
 Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync.
 
-SUPERMOCE:
 - Atomiczne enqueue/dequeue w jednej transakcji (async)
 - Priorytety (1-10, domyślnie 5)
 - Opóźnione wiadomości (delay_until)
@@ -21,7 +20,7 @@ Usage:
 from __future__ import annotations
 
 import anyio
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads as _msgspec_loads
+from nexus_ai.core.msgspec_utils import msgspec_dumps
 import sqlite3
 import time
 import uuid
@@ -34,7 +33,6 @@ from nexus_ai.db.async_base_service import AsyncBaseService
 class AsyncSQLiteQueue(AsyncBaseService):
     """Async lekka kolejka komunikatów w SQLite przez sqlite3 + anyio.to_thread.run_sync.
 
-    SUPERMOCE:
     - Atomiczne enqueue/dequeue w jednej transakcji (async)
     - Priorytety (1-10, domyślnie 5)
     - Opóźnione wiadomości (delay_until)

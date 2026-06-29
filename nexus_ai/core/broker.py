@@ -1,7 +1,6 @@
 """
 core/broker.py — Unified NATS JetStream Taskiq Broker (v2.0).
 
-SUPERMOCE TASKIQ:
   - PullBasedJetStreamBroker — jedyny broker w systemie
   - JetStream Dead Letter Queue dla nieudanych zadań
   - max_ack_pending = 5 — kontrola współbieżności konsumpcji
@@ -49,8 +48,6 @@ config = AppConfig()
 DEAD_LETTER_SUBJECT = "nexus.dlq.tasks"
 
 # ── Result Backend (SQLite albo Hybrid) ──────────────────────────────────
-# SUPERMOC: Taskiq przechowuje wyniki zadań
-# SUPERMOC: HybridResultBackend próbuje wbudowany w NATS Object Store, fallback do SQLite
 # Włącz przez ustawienie NEXUS_NATS_URL lub NEXUS_USE_NATS_RESULT_BACKEND=true
 # Domyślnie: SqliteResultBackend (kompatybilność wsteczna)
 _sqlite_path = str(config.base_dir / "app_data" / "task_results.db")
@@ -75,17 +72,12 @@ else:
 
 
 # ── Unified PullBasedJetStreamBroker z supermocami ───────────────────────
-# SUPERMOC: Middleware — metryki, PII scan, tracing
-# SUPERMOC: Result Backend — SQLite dla wyników zadań
-# SUPERMOC: max_ack_pending z konfiguracji (env var / TOML)
-# SUPERMOC: task_id_generator — deterministyczne ID zadań dla deduplikacji przez JetStream
 # Każde zadanie ma task_id oparty WYŁĄCZNIE na hash(kwargs), co pozwala NATS JetStream
 # na automatyczne odrzucanie duplikatów przez Nats-Msg-Id (duplicate_window=2min).
 # Dwa zadania z identycznymi argumentami OTRZYMUJĄ to samo task_id → JetStream odrzuca duplikat.
 def _task_id_generator(task_name: str, args: tuple, kwargs: dict) -> str:
     """Generuj deterministyczne task_id dla deduplikacji JetStream.
 
-    SUPERMOC JETSTREAM:
       - WYŁĄCZNIE na podstawie hash(task_name + sorted(kwargs))
       - Bez random suffixu — ten sam input = to samo task_id
       - JetStream automatycznie odrzuca duplikaty w oknie 2min (duplicate_window)
@@ -105,7 +97,6 @@ broker = PullBasedJetStreamBroker(
     connect_timeout=max(2.0, config.nats_reconnect_delay_seconds),
     result_backend=_result_backend,
     task_id_generator=_task_id_generator,
-    # SUPERMOC: Consumer config dla JetStream pull-based worker
     #   pull_consume_batch=1 — jeden task na raz (kontrola obciążenia)
     #   pull_consume_timeout=5.0 — timeout na fetch z JetStream
     pull_consume_batch=int(os.getenv("NEXUS_PULL_CONSUME_BATCH", "1")),
@@ -113,7 +104,6 @@ broker = PullBasedJetStreamBroker(
 )
 
 # ── Rejestracja middleware ───────────────────────────────────────────────
-# SUPERMOC: Wszystkie zadania przechodzą przez middleware:
 #   1. TaskMetricsMiddleware — zapisuje metryki OTel dla każdego zadania
 #   2. PiiScanMiddleware — skanuje payload w poszukiwaniu PII
 #   3. TaskTracingMiddleware — dodaje tracing (trace_id) do labels
@@ -153,7 +143,6 @@ async def shutdown(state):
 
 
 # ── Publiczny dostęp do result backend ────────────────────────────────────
-# SUPERMOC: Inne moduły mogą odczytywać wyniki zadań
 @property
 def result_backend(self) -> SqliteResultBackend | None:
     """Zwraca result backend brokera (public property)."""
@@ -163,7 +152,6 @@ def result_backend(self) -> SqliteResultBackend | None:
 broker.result_backend = result_backend.__get__(broker, type(broker))
 
 
-# SUPERMOC: Publiczny dostęp do JetStream context przez broker.jetstream
 @property
 def jetstream_prop(self) -> Any | None:
     """Zwraca JetStream context brokera (public property)."""

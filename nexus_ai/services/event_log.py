@@ -323,7 +323,6 @@ class EventLog:
     ) -> dict[str, Any]:
         """Zwróć statystyki zdarzeń z ostatnich N dni.
 
-        SUPERMOC Polars:
         - ``execute_arrow()`` + ``pl.from_arrow()" — zero-copy z DuckDB
         - ``pl.DataFrame.group_by()" zamiast ``GROUP BY`` w SQL
         - ``pl.col().count().sort()" — czytelniejsze niż ``ORDER BY cnt DESC``
@@ -331,12 +330,10 @@ class EventLog:
         """
         since = pendulum.now("UTC").subtract(days=days).isoformat()
 
-        # ── SUPERMOC: execute_arrow() + Polars zamiast raw DuckDB ──
         if self._duckdb:
             try:
                 import polars as pl
 
-                # ── SUPERMOC: execute_arrow() — zero-copy Arrow ────
                 arrow_table = self._duckdb.execute_arrow(
                     "SELECT event_type, source, severity, created_at "
                     "FROM event_log_analytics WHERE created_at >= ?::TIMESTAMP",
@@ -352,10 +349,8 @@ class EventLog:
                         "by_source": {},
                     }
 
-                # ── SUPERMOC: pl.from_arrow() zero-copy ───────────
                 df = pl.from_arrow(arrow_table)
 
-                # ── SUPERMOC: group_by() zamiast GROUP BY SQL ─────
                 total = df.height
                 by_type = (
                     df.group_by("event_type")
@@ -369,7 +364,6 @@ class EventLog:
                     df.group_by("source").agg(pl.len().alias("cnt")).sort("cnt", descending=True)
                 )
 
-                # ── SUPERMOC: shrink_dtype() — redukcja RAM ──────
                 by_type = by_type.shrink_dtype()
                 by_severity = by_severity.shrink_dtype()
 

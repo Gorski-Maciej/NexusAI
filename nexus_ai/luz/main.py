@@ -178,7 +178,6 @@ async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
     page.title = "Nexus AI - System Księgowy"
     page.theme_mode = ft.ThemeMode.DARK
 
-    # SUPERMOC: AlertDialog zamiast page.clean() — płynniejsze przejście
     splash = ft.AlertDialog(
         modal=True,
         content=ft.Column(
@@ -195,7 +194,6 @@ async def main_ui(page: ft.Page, orchestrator: NexusOrchestrator, port: int):
     splash.open = True
     page.update()
 
-    # SUPERMOC: SafeArea — obsługa notchy na urządzeniach mobilnych
     page.add(ft.SafeArea(ft.Container()))
 
     status_text = ft.Text("Przygotowywanie systemów...", size=14, italic=True)

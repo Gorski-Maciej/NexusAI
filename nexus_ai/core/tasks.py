@@ -1,6 +1,5 @@
 """Asynchronous workflow tasks powered by Taskiq + NATS JetStream.
 
-SUPERMOCE TASKIQ:
   - TaskiqDepends dla DI: config, db_session, duckdb_manager
   - Labels na wszystkich zadaniach (service, operation, criticality)
   - Timeout na dekoratorze zamiast anyio.fail_after
@@ -23,8 +22,8 @@ import pendulum
 import psutil
 from sqlmodel import select
 from sqlmodel import Session
-from taskiq import Context as TaskiqContext, TaskiqDepends, TaskiqEvents, Kicker
-from nexus_ai.core.di import get_db_session, get_config, get_engine, get_duckdb_manager
+from taskiq import TaskiqDepends, TaskiqEvents, Kicker
+from nexus_ai.core.di import get_db_session, get_config, get_duckdb_manager
 
 from nexus_ai.core.backup import BackupManager
 from nexus_ai.core.cache import get_cache
@@ -68,7 +67,6 @@ class TimedModelCache:
     def release(self, key: str) -> None:
         with self._lock:
             self._models.pop(key, None)
-        # SUPERMOC AUDYT: Użyj publicznego API clear_l1_sync zamiast _ram_cache.pop
         # - clear_l1_sync czyści klucz z L1 (RAM) bez naruszania enkapsulacji
         # - Działa z każdym CacheBackend (InMemoryBackend, SqliteBackend, RedisBackend)
         self._nexus.clear_l1_sync(f"_model_cache_ttl:{key}")
@@ -92,7 +90,6 @@ OCR_INFERENCE_LIMITER = anyio.CapacityLimiter(
 )
 OCR_TASK_TIMEOUT_SEC = int(os.getenv("NEXUS_OCR_TIMEOUT_SEC", "300"))
 
-# SUPERMOC NATS: Używamy jednego, skonfigurowanego brokera z broker.py
 # zamiast tworzyć osobnego PullBasedJetStreamBroker tutaj.
 from nexus_ai.core.broker import broker as _broker
 
@@ -116,7 +113,6 @@ class InvoiceEventPayload(Struct):
 class InvoiceProcessingMachine:
     """Invoice lifecycle state machine (no statemachine dependency).
 
-    SUPERMOC: Używa InvoiceStatus enum zamiast gołych stringów.
     """
 
     STATES = {
@@ -163,7 +159,6 @@ class _StateProxy:
 def pin_worker_cpu_affinity(reserve_core0: bool = True) -> list[int]:
     """Pin worker process to non-UI CPU cores to protect Flet responsiveness.
 
-    SUPERMOC psutil: oneshot() — cache'uje cpu_affinity w jednym syscallu
     zamiast osobnych wywołań.
 
     Args:
@@ -175,7 +170,6 @@ def pin_worker_cpu_affinity(reserve_core0: bool = True) -> list[int]:
     """
     process = psutil.Process()
 
-    # SUPERMOC: cpu_count(logical=False) = fizyczne rdzenie (bez hyperthreadingu)
     all_cores = list(range(psutil.cpu_count(logical=False) or psutil.cpu_count() or 1))
     if reserve_core0 and len(all_cores) > 1:
         target = [core for core in all_cores if core != 0] or all_cores
@@ -183,7 +177,6 @@ def pin_worker_cpu_affinity(reserve_core0: bool = True) -> list[int]:
         target = all_cores
 
     try:
-        # SUPERMOC: oneshot() — batch syscall: cpu_affinity odczyt + zapis w 1 bloku
         with process.oneshot():
             current = process.cpu_affinity()
             process.cpu_affinity(target)
@@ -271,7 +264,6 @@ async def process_invoice_task(
 ) -> dict[str, str]:
     """Consume pending outbox event and process invoice OCR + workflow update.
 
-    SUPERMOC: TaskiqDepends wstrzykuje config i db — zero boilerplate.
     Engine jest cache'owany przez DI — nie ma create/dispose per task.
     """
     event = _pick_pending_outbox(db)
@@ -343,7 +335,6 @@ async def store_active_learning_feedback(
 ) -> dict[str, str]:
     """Persist user corrections for active learning and preferred retrieval.
 
-    SUPERMOC: TaskiqDepends wstrzykuje sesję DB — zero boilerplate.
     """
     serialized = msgspec_dumps(corrected_payload, ensure_ascii=False)
     vector = _simple_features(serialized)
@@ -375,7 +366,6 @@ async def store_active_learning_feedback(
     )
     conn.commit()
 
-    # SUPERMOC: DI auto-commituje sesję — engine jest cache'owany
     return {"result": "LEARNING_SAVED"}
 
 
@@ -409,7 +399,6 @@ async def cron_post_depreciation(
 ) -> dict[str, int | str]:
     """Monthly fixed-assets depreciation posting. Runs on month-end window 23:55 UTC.
 
-    SUPERMOC: TaskiqDepends wstrzykuje DuckDBManager.
     """
     today = pendulum.now("UTC").date()
     if (today + pendulum.duration(days=1)).month == today.month:
@@ -430,7 +419,6 @@ async def invoice_reconciliation_loop(
 ):
     """Wyszukuje porzucone faktury i podejmuje akcje naprawcze.
 
-    SUPERMOC TASKIQ:
     - TaskiqDepends wstrzykuje sesję DB — zero boilerplate
     - Context.requeue() zamiast ręcznego publish do JetStream
     - Deterministic task_id przez Kicker.with_task_id()
@@ -457,7 +445,6 @@ async def invoice_reconciliation_loop(
             invoice.retry_count += 1
             invoice.updated_at = pendulum.now("UTC")
 
-            # SUPERMOC: Kicker.with_task_id() dla deterministycznego ID zadania
             # JetStream deduplikuje na podstawie Nats-Msg-Id = task_id
             task_id = f"watchdog_recover:{invoice.id}:{invoice.retry_count}"
             await (
@@ -474,7 +461,6 @@ async def invoice_reconciliation_loop(
             invoice.status = InvoiceStatus.ERROR_TIMEOUT
             invoice.updated_at = pendulum.now("UTC")
 
-    # SUPERMOC: DI auto-commituje sesję
 
 
 class _DefaultDunningAIAgent:

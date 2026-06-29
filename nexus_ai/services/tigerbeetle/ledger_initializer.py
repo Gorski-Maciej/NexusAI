@@ -1,6 +1,5 @@
 """Ledger initializer — konfiguracja planu kont w TigerBeetle.
 
-SUPERMOCE:
 - Full account creation z ledger, code, flags (HISTORY, DEBITS_MUST_NOT_EXCEED_CREDITS)
 - Multi-ledger isolation
 - Account limits natywnie przez TB flags
@@ -56,7 +55,6 @@ _ACCOUNT_CODES: dict[str, int] = {
 class LedgerInitializer:
     """Inicjalizuje plan kont w TigerBeetle na podstawie formy prawnej i opodatkowania.
 
-    SUPERMOCE:
     - Pełny model konta TB z ledger, code, flags
     - AccountFlags.HISTORY dla historii sald
     - AccountFlags.DEBITS_MUST_NOT_EXCEED_CREDITS dla kontroli budżetu
@@ -143,7 +141,6 @@ class LedgerInitializer:
         - code: typ konta (10=aktywa, 20=pasywa, ...)
         - flags: HISTORY + limity
 
-        SUPERMOC: Linked account creation — atomowa inauguracja planu kont.
 
         Returns:
             Mapa {symbol_konta: u128_id}.
@@ -160,7 +157,6 @@ class LedgerInitializer:
             )
             account_id_map[symbol] = account_id
 
-            # SUPERMOC: linked dla wszystkich oprócz ostatniego (atomic chain)
             is_last = i == len(account_symbols) - 1
             linked_flag = 0 if is_last else tb.AccountFlags.LINKED
 
@@ -186,7 +182,6 @@ class LedgerInitializer:
             tb_account.flags |= linked_flag
             tb_accounts.append(tb_account)
 
-        # SUPERMOC: Batch create accounts — jeden call do TB
         results = await self.tb_client.create_accounts_async(tb_accounts)
 
         # Sprawdź wyniki — status=0 oznacza OK

@@ -11,7 +11,6 @@ from nexus_ai.db.analytics import DuckDBManager
 class SmartAnomalyDetector:
     """Wykrywa podejrzane faktury przy użyciu Polars Expressions.
 
-    SUPERMOCE Polars (nowe, 2025/2026):
     - **LazyFrame API** — ``pl.SQL("").collect()`` zamiast PyArrow compute
     - **Expressions** — ``pl.col("amount_gross").std()``, ``.mean()``,
       ``.filter()``, ``.abs()`` — wszystko w Rust/C++
@@ -29,12 +28,10 @@ class SmartAnomalyDetector:
         Zwraca True, jeśli kwota faktury znacząco odbiega od
         historycznego profilu danego kontrahenta.
 
-        SUPERMOCE Polars:
         - ``execute_arrow()`` + ``pl.from_arrow()`` — zero-copy z DuckDB
         - LazyFrame z wyrażeniami ``pl.col().std().mean()``
         - ``.shrink_dtype()`` dla oszczędności RAM
         """
-        # ── SUPERMOC: execute_arrow() → pl.from_arrow() zero-copy ──
         # DuckDB produkuje pa.Table, Polars konsumuje bez kopiowania.
         try:
             arrow_table = self.db.execute_arrow(
@@ -52,15 +49,12 @@ class SmartAnomalyDetector:
             amounts = [float(r[0]) for r in rows if r[0] is not None]
             if len(amounts) < 10:
                 return False
-            # ── SUPERMOC: pl.Series z listy — wektoryzacja ──────────
             series = pl.Series("amount_gross", amounts)
         else:
             if arrow_table is None or arrow_table.num_rows < 10:
                 return False
-            # ── SUPERMOC: pl.from_arrow() zero-copy ────────────────
             series = pl.from_arrow(arrow_table["amount_gross"])
 
-        # ── SUPERMOC: Polars .mean() + .std() w Rust ─────────────────
         mean = series.mean()
         if mean is None or mean == 0.0:
             return False
@@ -69,7 +63,6 @@ class SmartAnomalyDetector:
         if stddev is None or stddev == 0.0:
             return False
 
-        # ── SUPERMOC: Z-Score przez Polars expression ───────────────
         z_score = abs(current_amount - mean) / stddev
 
         # Próg: Z-Score > 3 = anomalia (99.7% danych w 3σ)

@@ -9,7 +9,7 @@ Zgodnie z aa3fvcx.txt:
 from __future__ import annotations
 
 from msgspec import Struct
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import Decimal
 from typing import Any, final
 
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
@@ -75,7 +75,6 @@ class VATReconciliationEngine:
     def check_vat_integrity(
         self, invoice_id: str, ocr_results: dict[str, Any]
     ) -> VATIntegrityResult:
-        """SUPERMOC Polars: Weryfikacja integralności VAT przez
         Polars Expressions zamiast PyArrow compute.
 
         Polars ``pl.col().mul()``, ``pl.col().sub()``, ``pl.col().abs()``,
@@ -98,7 +97,6 @@ class VATReconciliationEngine:
                 invoice_id=invoice_id, status="FAILED", errors=["NO_BREAKDOWN_DATA"]
             )
 
-        # ── SUPERMOC: pl.DataFrame zamiast pa.Table ───────────────
         # Polars DataFrame z wyrażeniami zamiast PyArrow compute kernels.
         vat_data = [
             {
@@ -122,7 +120,6 @@ class VATReconciliationEngine:
                 invoice_id=invoice_id, status="FAILED", errors=errors or ["NO_VALID_RATES"]
             )
 
-        # ── SUPERMOC: Polars DataFrame z jawnym schematem ─────────
         df = pl.DataFrame(
             vat_data,
             schema={
@@ -133,12 +130,10 @@ class VATReconciliationEngine:
             },
         )
 
-        # ── SUPERMOC: LazyFrame + wyrażenia ────────────────────────
         # Zamiast pc.multiply(net_arr, rate_arr) — składniowe API.
         # LazyFrame pozwala optimizerowi Polars na optymalizację.
         lazy = df.lazy()
 
-        # ── SUPERMOC: Polars expressions dla weryfikacji VAT ───────
         # ``pl.when().then().otherwise()`` zamiast pc.filter + pc.greater.
         # ``pl.col().mul().sub().abs()`` — łańcuch wyrażeń.
         rate_col = (
@@ -160,18 +155,15 @@ class VATReconciliationEngine:
             ]
         ).collect()
 
-        # ── SUPERMOC: .filter() zamiast pc.indices_nonzero() ─────
         # Polars ``.filter(pl.col("vat_diff") > 0.01)`` — czytelniejsze.
         mismatch_rows = checked.filter(pl.col("vat_diff") > 0.01)
         math_error_rows = checked.filter(pl.col("math_diff") > 0.01)
 
-        # ── SUPERMOC: .to_series().to_list() zamiast pętli ───────
         for rate in mismatch_rows["rate"].to_list():
             errors.append(f"VAT_MISMATCH:{rate}")
         for rate in math_error_rows["rate"].to_list():
             errors.append(f"MATH_ERROR_LINE:{rate}")
 
-        # ── SUPERMOC: pl.col().sum() zamiast pc.sum() ────────────
         total_net = Decimal(str(checked["net"].sum()))
         total_vat = Decimal(str(checked["vat"].sum()))
         total_gross = Decimal(str(checked["gross"].sum()))
@@ -180,7 +172,6 @@ class VATReconciliationEngine:
         if abs((total_net + total_vat) - reported_total_gross) > Decimal("0.01"):
             errors.append("MATH_ERROR_TOTAL")
 
-        # ── SUPERMOC: shrink_dtype() dla oszczędności RAM ────────
         checked = checked.shrink_dtype()
 
         return VATIntegrityResult(

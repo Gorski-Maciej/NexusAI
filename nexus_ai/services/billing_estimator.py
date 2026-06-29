@@ -1,7 +1,6 @@
 """
 Automatyczny estymator kosztów i czasu przetwarzania.
 
-SUPERMOCE:
 - Reguły w DuckDB (billing_rules) z first-match-wins
 - Hot-reload przez NATS (billing.rules.updated)
 - Client-Driven Pricing: endpoint GET /api/v2/billing/estimate
@@ -20,7 +19,6 @@ import duckdb
 import pendulum
 from structlog import get_logger
 
-from nexus_ai.core.msgspec_utils import msgspec_dumps
 
 logger = get_logger("nexus.services.billing")
 
@@ -153,7 +151,6 @@ class BillingEstimator:
         vendor_region: str = "PL",
         extra_services: str = "",
     ) -> BillingResult:
-        """SUPERMOC: Estymuj koszt i czas przetwarzania.
 
         First-match-wins przez DuckDB json_extract + ORDER BY priority.
         """

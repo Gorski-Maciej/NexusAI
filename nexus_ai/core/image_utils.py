@@ -1,11 +1,11 @@
 """
-image_utils.py -- SUPERMOCE Pillow do normalizacji i przetwarzania obrazow.
 """
 
 from __future__ import annotations
 
 import io
 import math
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -22,7 +22,6 @@ except ImportError:
 
 
 # ============================================================================
-# SUPERMOC: Bezpieczne otwieranie obrazow z obsluga bledow
 # ============================================================================
 
 
@@ -43,7 +42,6 @@ def safe_open_image(content: bytes) -> Image.Image | None:
 
 
 # ============================================================================
-# SUPERMOC: Normalizacja obrazu do JPEG
 # ============================================================================
 
 
@@ -84,7 +82,6 @@ def normalize_image_to_jpeg(
 
 
 # ============================================================================
-# SUPERMOC: Ocena jakosci obrazu
 # ============================================================================
 
 
@@ -124,6 +121,7 @@ def assess_image_quality(image: Image.Image) -> dict[str, float]:
     }
 
 
+@lru_cache(maxsize=64)
 def assess_image_quality_from_bytes(content: bytes) -> dict[str, Any]:
     """Ocena jakosci obrazu z bajtow."""
     if not HAS_PIL:
@@ -136,7 +134,6 @@ def assess_image_quality_from_bytes(content: bytes) -> dict[str, Any]:
 
 
 # ============================================================================
-# SUPERMOC: Preprocessing obrazu dla OCR
 # ============================================================================
 
 

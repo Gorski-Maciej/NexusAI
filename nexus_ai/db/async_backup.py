@@ -1,7 +1,6 @@
 """
 AsyncBackup — async backup service using sqlite3.backup() API.
 
-SUPERMOC fsspec:
 - ``fsspec.open()`` zamiast ``open()`` dla uniwersalnego otwierania plików
 - ``fsspec.filesystem()`` z konfigurowalnym protokołem z TOML
 - ``fsspec.implementations.memory.MemoryFileSystem`` dla backupów do RAM
@@ -66,7 +65,6 @@ class AsyncBackup:
         self._databases = databases or dict(DEFAULT_DATABASES)
         self._sqlcipher_key = sqlcipher_key or os.environ.get("NEXUS_SQLCIPHER_KEY", "")
 
-        # SUPERMOC fsspec: FSSpecFactory — centralna fabryka
         if config is not None:
             factory = FSSpecFactory.get_instance()
             factory.configure_from_app_config(config)
@@ -129,7 +127,6 @@ class AsyncBackup:
     ) -> dict[str, Any]:
         """Wykonaj backup pojedynczej bazy danych (async, w wątku).
 
-        SUPERMOC fsspec:
         - TransactionalFileSystem — atomowy backup (auto-commit/rollback)
         - fsspec.open() dla targetu — działa z file://, s3://, memory://
         - fs.info() zamiast Path.stat() dla zdalnych protokołów
@@ -144,7 +141,6 @@ class AsyncBackup:
         Returns:
             Słownik z wynikiem: status, path, size_mb.
         """
-        # SUPERMOC fsspec: TransactionalFileSystem dla atomicznych backupów
         tx_fs = TransactionalFileSystem(self._fs)
 
         logger.info("[BACKUP] Starting backup: %s → %s", source_path, target_path)
@@ -159,7 +155,6 @@ class AsyncBackup:
                     key_hex = self._sqlcipher_key.encode("utf-8").hex()
                     src.execute(f"PRAGMA key = x'{key_hex}';")
 
-                # SUPERMOC: Backup do tymczasowego pliku, potem przenieś przez fsspec
                 import tempfile
 
                 tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
@@ -178,7 +173,6 @@ class AsyncBackup:
                     finally:
                         tgt.close()
 
-                    # SUPERMOC: TransactionalFileSystem — atomowy upload
                     with tx_fs.transaction():
                         with tx_fs.open(target_path, "wb") as f:
                             with open(tmp_path, "rb") as src_f:
@@ -195,7 +189,6 @@ class AsyncBackup:
 
         duration = time.time() - start_time
 
-        # SUPERMOC: fs.info() zamiast Path.stat() — działa ze zdalnymi protokołami
         try:
             info = self._fs.info(target_path)
             size_bytes = info.get("size", 0) if info else 0
@@ -224,7 +217,6 @@ class AsyncBackup:
     async def backup_to_memory(self, source_path: str) -> None:
         """Wykonaj backup do pamięci RAM (w wątku).
 
-        SUPERMOC: Backup do fsspec MemoryFileSystem — idealne do testów.
         Używa tymczasowego pliku przez sqlite3.backup(), a następnie
         zapisuje go do MemoryFileSystem przez fsspec.open().
         Dzięki temu backup jest poprawną binarną kopią bazy SQLite.
@@ -234,7 +226,6 @@ class AsyncBackup:
         """
 
         def _sync_backup() -> None:
-            # SUPERMOC: Backup do tymczasowego pliku, potem do MemoryFileSystem
             tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
             tmp_path = tmp.name
             tmp.close()
@@ -259,7 +250,6 @@ class AsyncBackup:
                 finally:
                     src.close()
 
-                # SUPERMOC fsspec: MemoryFileSystem — force RAM-only
                 # Używamy bezpośrednio MemoryFileSystem zamiast FSSpecFactory
                 # (factory może być skonfigurowany na inny protokół)
                 from fsspec.implementations.memory import MemoryFileSystem as _MemFS

@@ -23,7 +23,6 @@ def main_ui(page: ft.Page):
         page.update()
 
     def on_update_click(e):
-        # SUPERMOC: page.run_task zamiast anyio.run() — nie blokuje UI
         page.run_task(on_update_click_async(e))
 
     async def init_updater():

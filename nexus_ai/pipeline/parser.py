@@ -16,7 +16,6 @@ class ParsedInvoice(Struct, kw_only=True):
 class InvoiceParser:
     """Parser faktur z tekstu OCR z supermocami PaddleOCR bbox.
 
-    SUPERMOCE:
     - Bounding box analysis: używa pozycji tekstu z PaddleOCR do identyfikacji pól
     - PaddleOCR zwraca 4-rogowe bbox: [[x1,y1],[x2,y2],[x3,y3],[x4,y4]]
     - Można określić "co gdzie jest" na fakturze na podstawie Y-position
@@ -77,7 +76,6 @@ class InvoiceParser:
     ) -> ParsedInvoice:
         """Parsowanie faktury z uwzględnieniem bounding boxów z PaddleOCR.
 
-        SUPERMOC: Używa pozycji tekstu (Y-coordinate z bboxów) do
         inteligentniejszej ekstrakcji pól. NIP w górnej części strony
         to NIP sprzedawcy. Kwota w dolnej części to total.
 

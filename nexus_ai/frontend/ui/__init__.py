@@ -1,6 +1,5 @@
 """NexusAI Flet UI package — wszystkie supermoce Flet 0.28+.
 
-SUPERMOCE:
   - @ft.component + use_state() zamiast klas imperatywnych
   - page.pubsub zamiast AppState
   - page.run_task zamiast anyio.create_task_group

@@ -12,7 +12,6 @@ from nexus_ai.db.models import Invoice
 class ValidationService:
     """Zaawansowana walidacja biznesowa zapobiegająca duplikatom i błędom.
 
-    SUPERMOC: load_only() ładuje tylko potrzebne kolumny zamiast wszystkich.
     Dla duplikatów potrzebujemy tylko contractor_nip, number, amount_gross.
     Redukcja transferu danych z DB o ~70%.
     """
@@ -21,7 +20,6 @@ class ValidationService:
     def is_duplicate(session: Session, nip: str, number: str, amount_gross: Decimal) -> bool:
         """Sprawdza, czy w bazie istnieje już taka faktura dla tego dostawcy.
 
-        SUPERMOC: load_only() — ładuje tylko kolumny potrzebne do walidacji.
         Oszczędza ~70% transferu danych z SQLite (nie ładuje file_path,
         processing_status, itp.).
         """

@@ -574,7 +574,7 @@ async def seed_rbac(
     """
     from sqlmodel import text
 
-    from nexus_ai.api.auth_service import hash_password
+    from nexus_ai.api.security import hash_password
 
     admin_username = os.getenv("NEXUS_ADMIN_USERNAME", "admin")
     admin_password = os.getenv("NEXUS_ADMIN_PASSWORD", "admin")
@@ -714,7 +714,7 @@ async def seed_users(db_session: Any, config: Any) -> dict:
     """
     from sqlmodel import text
 
-    from nexus_ai.api.auth_service import hash_password
+    from nexus_ai.api.security import hash_password
 
     count = 0
     admin_password = None

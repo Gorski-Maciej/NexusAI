@@ -216,7 +216,6 @@ def _compare_verdicts(
     (like _rule_id, _priority) are excluded from comparison
     because rule IDs may differ between versions.
 
-    SUPERMOC Polars:
     - ``pl.DataFrame`` zamiast ręcznej pętli ``for comp_field in ...``
     - ``pl.when().then().otherwise()" dla logiki warunkowej
     - ``pl.col().is_not_null()" zamiast ``is None`` check
@@ -227,7 +226,6 @@ def _compare_verdicts(
     """
     import polars as pl
 
-    # ── SUPERMOC: Polars DataFrame zamiast pętli Python ─────────-
     # Budujemy DataFrame z polami do porównania i używamy
     # wyrażeń Polars do znajdowania różnic.
     diff_data = []
@@ -242,7 +240,6 @@ def _compare_verdicts(
             }
         )
 
-    # ── SUPERMOC: Polars expressions dla porównania ──────────────
     df = pl.DataFrame(diff_data)
     mismatches = df.filter(
         ~(pl.col("original").is_null() & pl.col("replayed").is_null())

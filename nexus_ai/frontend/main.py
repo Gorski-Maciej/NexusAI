@@ -1,6 +1,5 @@
 """frontend/main.py — Flet UI entry point (Desktop + Web).
 
-SUPERMOCE Flet 0.28+:
   - ft.app_async zamiast ft.app — spójność z resztą projektu
   - page.window_center() — wycentrowanie okna po starcie
   - page.client_storage — zapamiętanie ostatniej ścieżki między sesjami
@@ -16,7 +15,6 @@ SUPERMOCE Flet 0.28+:
 from __future__ import annotations
 
 import argparse
-import sys
 
 import flet as ft
 from structlog import get_logger
@@ -29,14 +27,12 @@ logger = get_logger("nexus.ui.main")
 async def main(page: ft.Page):
     """Desktop mode — standardowy tryb okienkowy Flet.
 
-    SUPERMOCE:
       - page.window_center() — okno pojawia się na środku ekranu
       - page.client_storage — ostatnia ścieżka zapamiętana między uruchomieniami
       - page.session — stan między widokami
       - page.theme_animation_style — płynne przejścia
       - ft.SafeArea — bezpieczny padding dla wszystkich platform
     """
-    # SUPERMOC: Konfiguracja strony dla Desktop
     page.title = "Nexus AI — System Księgowy"
     page.theme_mode = ft.ThemeMode.DARK
     page.padding = 0
@@ -47,13 +43,10 @@ async def main(page: ft.Page):
     page.window_min_width = 800
     page.window_min_height = 600
 
-    # SUPERMOC: Wycentruj okno na środku ekranu
     page.window_center()
 
-    # SUPERMOC: SafeArea dla bezpiecznego layoutu na różnych platformach
     page.add(ft.SafeArea(content=ft.Container(expand=True)))
 
-    # SUPERMOC: Routing przez NexusRouter z TemplateRoute
     from nexus_ai.frontend.api_client import NexusApiClient
     from nexus_ai.frontend.router import NexusRouter
 
@@ -62,16 +55,13 @@ async def main(page: ft.Page):
         token="",
     )
 
-    # SUPERMOC: Router automatycznie używa TemplateRoute i page.client_storage
     router = NexusRouter(page=page, api_client=api_client)
 
-    # SUPERMOC: page.on_route_change z routerem
     async def on_route_change(route_event: ft.RouteChangeEvent) -> None:
         await router.handle_route(page.route)
 
     page.on_route_change = on_route_change
 
-    # SUPERMOC: page.on_view_pop dla stosu widoków (Desktop)
     def on_view_pop(view_event: ft.ViewPopEvent) -> None:
         if len(page.views) > 1:
             page.views.pop()
@@ -80,7 +70,6 @@ async def main(page: ft.Page):
 
     page.on_view_pop = on_view_pop
 
-    # SUPERMOC: Przywróć ostatnią ścieżkę z client_storage
     last_route = page.client_storage.get("nexus_last_route")
     initial_route = last_route if last_route else "/"
     page.go(initial_route)

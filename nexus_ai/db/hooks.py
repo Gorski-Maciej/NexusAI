@@ -3,7 +3,6 @@ from __future__ import annotations
 import re
 from collections.abc import Callable
 from decimal import Decimal
-from enum import Enum as _EnumType
 from typing import Any
 
 from sqlalchemy import event
@@ -157,7 +156,6 @@ def register_db_hooks(config: AppConfig):
     def _build_data(target: Invoice) -> dict[str, str | None]:
         """Zbuduj słownik danych do DuckDB z bezpieczną konwersją Decimal.
 
-        SUPERMOC: Używa SQLModel.model_dump() zamiast ręcznego dict-building.
         ``mode="json"`` automatycznie konwertuje Decimal → string,
         DateTime → ISO string.
         """
@@ -207,7 +205,6 @@ def register_db_hooks(config: AppConfig):
         except Exception as e:
             logger.warning("Failed to replicate invoice %s to DuckDB: %s", target.id, e)
 
-    # ── SUPERMOC: after_flush dla spójności transakcyjnej ────────────
     # after_flush jest wywoływany PO flush ale PRZED commit.
     # Jeśli transakcja jest rollbackowana, duck_mgr.execute() też jest
     # odrzucane (ale DuckDB nie ma transakcji cross-db, więc to best-effort).
@@ -228,7 +225,6 @@ def register_db_hooks(config: AppConfig):
             if isinstance(obj, Invoice):
                 _replicate(obj)
 
-    # ── SUPERMOC: before_flush dla walidacji modeli ────────────────────
     # Uruchamia się PRZED zapisem do DB — błąd walidacji = brak zapisu.
     # To bezpieczniejszy wzorzec niż dekoratory walidacji na modelach, bo:
     #   - Walidacja jest jawna i scentralizowana

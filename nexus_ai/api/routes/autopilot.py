@@ -23,7 +23,6 @@ from nexus_ai.api.dto import (
 from nexus_ai.core.config import AppConfig
 from nexus_ai.db.models import InvoiceStatus
 from nexus_ai.services.decision_logger import DecisionLogger
-from nexus_ai.services.notification_service import NotificationService
 from structlog import get_logger as _get_logger
 
 logger = _get_logger("nexus.api.autopilot")

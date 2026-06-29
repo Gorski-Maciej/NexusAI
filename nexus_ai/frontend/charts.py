@@ -3,7 +3,6 @@
 Zastępuje: matplotlib + flet.matplotlib_chart.MatplotlibChart
 Nowy:     natywne komponenty Flet Charts (BarChart, LineChart, PieChart)
 
-SUPERMOCE:
   - Ciemny motyw zgodny z NexusAI dark theme (Catppuccin Mocha)
   - Wykresy w pełni interaktywne (Flutter — zoom, pan, tooltipy natywnie)
   - Zero zależności od matplotlib — oszczędność ~15 MB w finalnym .exe

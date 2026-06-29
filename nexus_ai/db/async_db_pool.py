@@ -22,7 +22,6 @@ Usage:
 from __future__ import annotations
 
 import sqlite3
-from typing import Any
 
 
 # ── AsyncDBPool ──────────────────────────────────────────────────────────
@@ -35,7 +34,6 @@ class AsyncDBPool:
     WSZYSTKIE metody są SYNCHRONICZNE — callery używają
     ``anyio.to_thread.run_sync()`` dla async wrappera (free-threaded safe).
 
-    SUPERMOCE:
     - Współdzielenie połączeń między serwisami
     - Automatyczne PRAGMY przy pierwszym połączeniu
     - Leniwe tworzenie — połączenie tworzone przy pierwszym użyciu
@@ -63,7 +61,6 @@ class AsyncDBPool:
         Python 3.13t (free-threaded): ``check_same_thread=False`` pozwala
         współdzielić połączenie między wątkami bez GIL.
 
-        SUPERMOC: SQLCipher PRAGMA key jest ustawiany PIERWSZY,
         zaraz po connect(), przed wszystkimi innymi PRAGMAMI.
 
         Args:
@@ -83,7 +80,6 @@ class AsyncDBPool:
         if db_path not in self._connections or self._is_closed(db_path):
             conn = sqlite3.connect(db_path, check_same_thread=False)
 
-            # ── 🔴 SUPERMOC: SQLCipher PRAGMA key FIRST! ─────────────
             # SQLCipher wymaga PRAGMA key jako PIERWSZEJ operacji po connect().
             if sqlcipher_key:
                 key_hex = sqlcipher_key.encode("utf-8").hex()
@@ -91,7 +87,6 @@ class AsyncDBPool:
                 conn.execute("PRAGMA cipher_page_size = 4096;")
                 conn.execute("PRAGMA kdf_iter = 64000;")
 
-            # SUPERMOC: Ładowanie rozszerzeń (sqlite-vec)
             if enable_extensions:
                 conn.execute("PRAGMA enable_load_extension = ON;")
 
@@ -101,11 +96,9 @@ class AsyncDBPool:
             else:
                 conn.row_factory = row_factory
 
-            # SUPERMOC: WAL mode dla współbieżności
             if wal_mode:
                 conn.execute("PRAGMA journal_mode=WAL;")
 
-            # SUPERMOC: Synchronous NORMAL
             conn.execute(f"PRAGMA synchronous={synchronous};")
 
             self._connections[db_path] = conn

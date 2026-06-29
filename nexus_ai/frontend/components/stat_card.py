@@ -1,6 +1,5 @@
 """stat_card.py — Reusable stat card component with full Flet 0.28+ superpowers.
 
-SUPERMOCE Flet 0.28+:
   - @ft.component + use_state() zamiast funkcji
   - ft.Shimmer dla loading skeleton
   - ft.NumberBadge dla metryk

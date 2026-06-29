@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps_bytes, msgspec_loads as _msgspec_loads
-import random
 from typing import Any, AsyncIterator, final
 
 import anyio

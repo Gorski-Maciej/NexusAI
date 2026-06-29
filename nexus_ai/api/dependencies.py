@@ -44,7 +44,6 @@ def provide_db_engine(request: Request):
     bezpośrednio (auth, admin, dlq, ui_state, itd.).
     Zastąpiony przez ``SQLAlchemyPlugin`` w docelowej architekturze.
 
-    SUPERMOC: Engine jest zwalniany przez ``on_shutdown`` (engine.dispose()).
     Zobacz ``state.on_shutdown`` — wywołuje ``engine.dispose()`` aby
     zamknąć wszystkie połączenia w pool przed zamknięciem aplikacji.
     """

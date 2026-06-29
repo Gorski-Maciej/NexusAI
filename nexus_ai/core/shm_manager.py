@@ -8,7 +8,6 @@ operations for compatibility with PIL Images.
 from __future__ import annotations
 
 from multiprocessing import shared_memory
-from typing import Any
 
 
 class SharedImageBuffer:

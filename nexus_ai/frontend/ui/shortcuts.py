@@ -1,6 +1,5 @@
 """shortcuts.py — Globalne skróty klawiszowe z full spectrum Flet 0.28+.
 
-SUPERMOCE:
   - page.on_keyboard_event dla globalnych skrótów
   - page.pubsub.send_all_on_topic dla event-driven shortcuts
   - page.show_snack_bar dla feedbacku po skrócie
@@ -55,7 +54,6 @@ SHORTCUT_FEEDBACK = {
 def init_keyboard_handler(page: ft.Page):
     """Mapowanie globalnych skrótów klawiszowych z dynamicznym kontekstem.
 
-    SUPERMOC Flet:
       - page.pubsub.send_all_on_topic dla dystrybucji zdarzeń
       - page.show_snack_bar dla feedbacku
       - page.go() dla nawigacji

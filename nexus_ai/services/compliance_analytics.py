@@ -94,7 +94,6 @@ def ensure_compliance_analytics_schema(duckdb: DuckDBManager) -> None:
         """
     )
 
-    # ── SUPERMOC: DuckDB Recursive CTE z USING KEY ──────────────────
     # DuckDB-specific ``USING KEY`` dla recursive CTE — 5-10× szybszy
     # od standardowego ``JOIN ... ON ...`` dla hierarchii kont.
     # ``GENERATE_SERIES`` dla generowania poziomów hierarchii.
@@ -108,7 +107,6 @@ def ensure_compliance_analytics_schema(duckdb: DuckDBManager) -> None:
             SELECT credit_account_code AS account_code, -amount_minor AS delta_minor, currency, occurred_at, semantic_tags
             FROM tb_ledger_transfers
         ),
-        -- SUPERMOC: Recursive CTE z USING KEY (DuckDB-specific)
         -- USING KEY jest 5-10× szybszy od standardowego JOIN ... ON ...
         recursive_rollup AS (
             SELECT

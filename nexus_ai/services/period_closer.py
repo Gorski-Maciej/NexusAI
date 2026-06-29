@@ -1,6 +1,5 @@
 """PeriodCloser — zamykanie okresów finansowych z CLOSING_DEBIT/CREDIT.
 
-SUPERMOCE TigerBeetle:
 - TransferFlags.CLOSING_DEBIT (64) — automatyczne zerowanie debetu na koncie
 - TransferFlags.CLOSING_CREDIT (128) — automatyczne zerowanie kredytu na koncie
 - Linked transfers — atomowe zamknięcie wielu kont
@@ -31,7 +30,6 @@ logger = get_logger("nexus.services.period_closer")
 class PeriodCloser:
     """Zamyka okres finansowy używając CLOSING_DEBIT/CREDIT.
 
-    SUPERMOCE:
     - CLOSING_DEBIT (64): zamyka konto debetowe — TB zeruje debits_posted
     - CLOSING_CREDIT (128): zamyka konto kredytowe — TB zeruje credits_posted
     - Linked chain: atomowe zamknięcie wszystkich kont okresu
@@ -44,14 +42,11 @@ class PeriodCloser:
         *,
         retained_earnings_account: int | None = None,
         default_ledger: int = LEDGER["PLN"],
-        period_id: str | None = None,  # SUPERMOC pendulum: okres z PendulumPeriod
     ) -> None:
         self._tb_client = tb_client
         self._retained_earnings = retained_earnings_account or 82000  # Wynik finansowy
         self._default_ledger = default_ledger
-        # SUPERMOC pendulum: użyj yesterday()/tomorrow() dla domyślnych zakresów
         if period_id is not None:
-            # SUPERMOC pendulum: yesterday() + start_of() — idiomatyczne przesunięcia
             logger.info(
                 "[PERIOD-CLOSER] Closing period=%s (based on %s)",
                 period_id,
@@ -67,7 +62,6 @@ class PeriodCloser:
     ) -> bool:
         """Zamknij konta kosztowe na koniec okresu.
 
-        SUPERMOC: CLOSING_DEBIT — TB automatycznie zeruje debets_posted
         na koncie kosztowym i przenosi saldo na retained_earnings.
 
         Args:
@@ -101,13 +95,11 @@ class PeriodCloser:
                 timeout=0,
                 ledger=acct.get("ledger", self._default_ledger),
                 code=acct.get("code", TRANSFER_CODE["TRANSFER_INTERNAL"]),
-                # SUPERMOC: CLOSING_DEBIT — automatycznie zeruje debet
                 flags=tb.TransferFlags.CLOSING_DEBIT | (0 if is_last else tb.TransferFlags.LINKED),
                 timestamp=0,
             )
             transfers.append(transfer)
 
-        # SUPERMOC: Batch create — jeden call do TB
         results = self._tb_client.create_transfers(transfers)
         all_ok = all(r.status == 0 for r in results)
 
@@ -129,7 +121,6 @@ class PeriodCloser:
     ) -> bool:
         """Zamknij konta przychodowe na koniec okresu.
 
-        SUPERMOC: CLOSING_CREDIT — TB automatycznie zeruje credits_posted
         na koncie przychodowym.
         """
         if not revenue_accounts:
@@ -156,7 +147,6 @@ class PeriodCloser:
                 timeout=0,
                 ledger=acct.get("ledger", self._default_ledger),
                 code=acct.get("code", TRANSFER_CODE["TRANSFER_INTERNAL"]),
-                # SUPERMOC: CLOSING_CREDIT — automatycznie zeruje kredyt
                 flags=tb.TransferFlags.CLOSING_CREDIT | (0 if is_last else tb.TransferFlags.LINKED),
                 timestamp=0,
             )

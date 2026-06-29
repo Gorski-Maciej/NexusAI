@@ -8,7 +8,6 @@ from structlog import get_logger
 
 from nexus_ai.api.dto import TAG_TASKS, TaskCancelResponseDTO, TaskStatusDTO
 from nexus_ai.api.routes.ws import signal_cancel
-from nexus_ai.core.msgspec_utils import msgspec_dumps
 
 logger = get_logger("nexus.api.tasks.routes")
 

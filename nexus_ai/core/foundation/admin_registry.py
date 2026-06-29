@@ -23,7 +23,6 @@ from contextlib import contextmanager
 from typing import Any, ClassVar, Iterator
 
 import duckdb
-import pendulum
 
 from nexus_ai.core.config import AppConfig
 

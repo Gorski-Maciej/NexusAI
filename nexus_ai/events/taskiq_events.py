@@ -12,7 +12,6 @@ from __future__ import annotations
 import hashlib
 from typing import Any
 
-import pendulum
 from structlog import get_logger
 
 from nexus_ai.core.broker import broker

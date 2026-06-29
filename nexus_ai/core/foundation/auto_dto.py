@@ -11,7 +11,7 @@ Usage:
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Any, get_type_hints
+from typing import Any
 
 from msgspec import Struct
 from sqlalchemy import String, Integer, Float, Boolean, Numeric

@@ -10,8 +10,6 @@ Zgodnie z audytem SQLModel:
 
 from __future__ import annotations
 
-import uuid
-from decimal import Decimal
 from enum import StrEnum
 from typing import Any, ClassVar
 
@@ -56,7 +54,6 @@ class DecisionResult(StrEnum):
 class InvoiceReadModel(SQLModel, table=True):
     """Denormalizowany widok faktur dla szybkich zapytań CQRS.
 
-    SUPERMOCE SQLModel:
     - Enum column: ProjectionInvoiceStatus zamiast gołego str
     - Composite indexes przez Index() w __table_args__
     - Partial indexes dla najczęstszych zapytań
@@ -69,7 +66,6 @@ class InvoiceReadModel(SQLModel, table=True):
     __table_args__ = (
         Index("idx_invoice_rm_status", "status"),
         Index("idx_invoice_rm_contractor", "contractor_nip"),
-        # SUPERMOC: Partial indexes
         Index("idx_invoice_rm_blocked", "updated_at", sqlite_where=text("status = 'blocked'")),
         Index("idx_invoice_rm_approved", "updated_at", sqlite_where=text("status = 'approved'")),
         Index(
@@ -77,7 +73,6 @@ class InvoiceReadModel(SQLModel, table=True):
             "updated_at",
             sqlite_where=text("status IN ('created', 'submitted')"),
         ),
-        # SUPERMOC: Expression index
         Index("idx_invoice_rm_contractor_upper", text("UPPER(contractor_nip)")),
     )
     model_config: ClassVar[dict] = {
@@ -96,7 +91,6 @@ class InvoiceReadModel(SQLModel, table=True):
     category: Mapped[str | None] = Field(default=None)
     issue_date: Mapped[str | None] = Field(default=None)
     file_path: Mapped[str | None] = Field(default=None)
-    # SUPERMOC: Enum column
     status: Mapped[ProjectionInvoiceStatus] = Field(
         default=ProjectionInvoiceStatus.CREATED,
         sa_type=SAEnum(ProjectionInvoiceStatus),
@@ -118,7 +112,6 @@ class InvoiceReadModel(SQLModel, table=True):
 class DecisionAnalytics(SQLModel, table=True):
     """Analityczny widok decyzji CQRS.
 
-    SUPERMOCE SQLModel:
     - Enum column: DecisionResult
     - Composite indexes
     - Partial indexes
@@ -170,7 +163,6 @@ class DecisionAnalytics(SQLModel, table=True):
 class UserPreferences(SQLModel, table=True):
     """Preferencje użytkownika — przechowywane jako SQLModel.
 
-    SUPERMOC: model_dump() + model_validate() dla łatwej serializacji.
     """
 
     __tablename__ = "user_preferences"  # type: ignore[assignment]
@@ -181,7 +173,6 @@ class UserPreferences(SQLModel, table=True):
     }
 
     user_id: Mapped[str] = Field(primary_key=True)
-    # SUPERMOC: JSON column dla elastycznych preferencji
     preferences: Mapped[dict] = Field(
         default_factory=dict,
         sa_type=JSON,
@@ -197,7 +188,6 @@ class UserPreferences(SQLModel, table=True):
         sa_type=PendulumDateTime,
     )
 
-    # SUPERMOC: Serializacja przez SQLModel (model_dump)
     def to_dict(self) -> dict[str, Any]:
         """Serialize to dict using model_dump()."""
         return self.model_dump(mode="json")

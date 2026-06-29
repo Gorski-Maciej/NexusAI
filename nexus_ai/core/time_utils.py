@@ -1,7 +1,6 @@
 """
 core/time_utils.py — TimeUtils: centralne narzędzia czasu z pendulum.
 
-SUPERMOCE pendulum zebrane w jednym module:
   - Polish locale — diff_for_humans, formatowanie dat po polsku
   - PendulumPeriod — reprezentacja zakresu dat (start/end) z iteracją
   - human_diff — czytelne różnice czasu po polsku
@@ -16,7 +15,7 @@ Zastępuje: datetime, pytz, dateutil — wszystkie przez pendulum.
 from __future__ import annotations
 
 import contextlib
-from typing import Any, Iterator
+from typing import Iterator
 
 import pendulum
 from msgspec import Struct
@@ -35,7 +34,6 @@ except Exception:
 
 
 class PendulumPeriod(Struct, frozen=True):
-    """SUPERMOC pendulum: Zakres dat z iteracją.
 
     Reprezentuje zamknięty przedział [start, end].
     Wspiera iterację dzienną, miesięczną i kwartalną.
@@ -130,7 +128,6 @@ def human_diff(
     locale: str = "pl",
     absolute: bool = False,
 ) -> str:
-    """SUPERMOC pendulum: Czytelna różnica czasu po polsku.
 
     Używa wbudowanego ``diff_for_humans()`` z ustawioną lokalizacją.
 
@@ -182,7 +179,6 @@ def format_date(
     dt: pendulum.Date | str | None,
     fmt: str = "DD.MM.YYYY",
 ) -> str:
-    """SUPERMOC pendulum: Sformatuj datę z polskimi nazwami miesięcy.
 
     Używa ``format()`` z pendulum zamiast ``strftime()`` — pendulum tokens
     są bardziej czytelne i wspierają lokalizację (np. ``dddd`` = pełna nazwa dnia).
@@ -217,7 +213,6 @@ def format_datetime(
     dt: pendulum.DateTime | str | None,
     fmt: str = "DD.MM.YYYY HH:mm:ss",
 ) -> str:
-    """SUPERMOC pendulum: Sformatuj datetime z polskimi nazwami.
 
     Args:
         dt: DateTime do sformatowania (DateTime, string ISO lub None).
@@ -237,7 +232,6 @@ def format_datetime(
 
 
 def format_iso(dt: pendulum.DateTime | None) -> str:
-    """SUPERMOC pendulum: ISO 8601 z to_iso8601_string().
 
     Args:
         dt: DateTime lub None.
@@ -294,7 +288,6 @@ def current_month() -> PendulumPeriod:
 
 @contextlib.contextmanager
 def freeze_time(frozen_time: pendulum.DateTime | None = None) -> Iterator[pendulum.DateTime]:
-    """SUPERMOC pendulum: Zamroź czas w bloku with.
 
     Używa ``pendulum.set_test_now()`` i ``pendulum.clear_test_now()``.
     Idealne do testów — deterministyczne timestampy.
@@ -320,7 +313,6 @@ def freeze_time(frozen_time: pendulum.DateTime | None = None) -> Iterator[pendul
 
 @contextlib.contextmanager
 def freeze_today(frozen_date: pendulum.Date | None = None) -> Iterator[pendulum.Date]:
-    """SUPERMOC pendulum: Zamroź bieżącą datę (bez czasu).
 
     Args:
         frozen_date: Data do zamrożenia (domyślnie 2026-06-16).

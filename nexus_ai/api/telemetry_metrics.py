@@ -5,7 +5,6 @@ OpenTelemetry metrics definitions for NexusAI.
 
 from __future__ import annotations
 
-from opentelemetry import metrics
 from opentelemetry.metrics import Counter, Gauge, Histogram, Meter
 
 # ── Lazy init flag ───────────────────────────────────────────────────────────

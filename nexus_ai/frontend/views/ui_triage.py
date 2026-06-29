@@ -1,6 +1,5 @@
 """Triage View — @ft.component + Canvas bbox + Keyboard shortcuts.
 
-SUPERMOCE Flet 0.28+:
   - @ft.component + use_state() zamiast statycznej funkcji
   - ft.Canvas z CanvasPath dla rysowania bounding boxów
   - ft.KeyboardEvent dla skrótów (Enter=Confirm, Esc=Reject)
@@ -33,7 +32,6 @@ def TriageSplitScreen(
 ):
     """Core split-screen triage view with Canvas bounding-box overlay.
 
-    SUPERMOCE Flet 0.28+:
       - @ft.component + use_state() zamiast funkcji
       - ft.Canvas z CanvasPath dla bbox
       - ft.KeyboardEvent dla Enter/Escape
@@ -42,7 +40,6 @@ def TriageSplitScreen(
     highlight = ft.use_state(highlighted_fields or set())
     form_data = ft.use_state(extracted_data)
 
-    # SUPERMOC: Canvas ref for bbox drawing
     canvas_ref = ft.use_ref[ft.Canvas]()
 
     # ── Canvas drawing ─────────────────────────────────────────────────
@@ -50,7 +47,6 @@ def TriageSplitScreen(
     def draw_bboxes(e: ft.CanvasDrawEvent):
         """Draw bounding boxes on the invoice image using CanvasPath.
 
-        SUPERMOC Flet 0.28+:
           - ft.Canvas.draw_path z CanvasPath
           - ft.Paint dla kolorów i stylów
         """
@@ -69,7 +65,6 @@ def TriageSplitScreen(
             color = ft.colors.RED_500 if is_low_confidence else ft.colors.GREEN_500
             alpha = 0.4 if is_low_confidence else 0.2
 
-            # SUPERMOC: CanvasPath.create_rect dla bbox
             canvas.draw_path(
                 ft.CanvasPath().create_rect(x, y, w, h),
                 paint=ft.Paint(
@@ -105,7 +100,6 @@ def TriageSplitScreen(
             ft.SnackBar(ft.Text("❌ Dokument odrzucony"), bgcolor=ft.colors.RED_700)
         )
 
-    # SUPERMOC: Keyboard shortcuts
     async def on_keyboard(e: ft.KeyboardEvent):
         if e.key == "Enter" and not e.ctrl:
             await handle_confirm()
@@ -116,14 +110,12 @@ def TriageSplitScreen(
 
     # ── Build ───────────────────────────────────────────────────────────
 
-    # SUPERMOC: Canvas with bbox overlay
     image_panel = ft.Container(
         expand=2,
         padding=12,
         content=ft.Stack(
             [
                 ft.Image(src=image_path, fit=ft.ImageFit.CONTAIN, expand=True),
-                # SUPERMOC: Canvas dla rysowania bbox
                 ft.Canvas(
                     ref=canvas_ref,
                     on_draw=draw_bboxes,

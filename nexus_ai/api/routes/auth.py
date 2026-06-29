@@ -42,9 +42,8 @@ from sqlmodel import text
 from sqlalchemy.ext.asyncio import AsyncEngine
 from structlog import get_logger
 
-from nexus_ai.api.auth_service import hash_password, verify_password
+from nexus_ai.api.security import hash_password, verify_password
 from nexus_ai.api.dto import (
-    AuthResponseDTO,
     ChangePasswordDTO,
     ChangePasswordResponseDTO,
     ConfirmEmailResponseDTO,

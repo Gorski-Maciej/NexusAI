@@ -8,9 +8,7 @@ in favor of nexus-crypto, which only supports symmetric AEAD).
 
 from __future__ import annotations
 
-import base64
 
-import pendulum
 
 
 class KsefCryptoProvider:

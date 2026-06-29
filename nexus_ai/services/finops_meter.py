@@ -30,7 +30,6 @@ def estimate_runtime_cost(
     network_gb: float = 0.0,
     gpu_hours: float = 0.0,
 ) -> float:
-    # ── SUPERMOC: Polars expressions dla kalkulacji kosztów ──────
     # Zamiast ręcznych mnożeń, używamy DataFrame z wyrażeniami.
     # Łatwe do rozszerzenia o nowe komponenty kosztów.
     cost_df = pl.DataFrame(
@@ -69,13 +68,11 @@ def detect_cost_anomaly(
 ) -> tuple[bool, float]:
     """Return (is_anomaly, z_score) for current cost per invoice against baseline series.
 
-    SUPERMOC Polars:
     - ``pl.Series.mean()`` / ``pl.Series.std()" zamiast ``statistics.mean/pstdev``
     - Wektoryzowane obliczenia w Rust zamiast czystego Pythona
     - ``pl.Series`` z listy — zero-copy interop z Python list
     - Zysk: 5-10× szybsze statystyki dla długich baseline'ów
     """
-    # ── SUPERMOC: Polars Series zamiast statistics ───────────────
     # ``pl.Series(baseline)`` tworzy wektor bez kopiowania danych.
     # ``.mean()`` i ``.std()" są zaimplementowane w Rust — 10× szybciej.
     series = pl.Series("cost", [float(x) for x in baseline if x is not None])

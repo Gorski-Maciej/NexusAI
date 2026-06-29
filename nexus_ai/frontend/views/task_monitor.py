@@ -1,6 +1,5 @@
 """task_monitor.py — Background Task Monitor z @ft.component + ft.Shimmer + ft.NumberBadge.
 
-SUPERMOCE Flet 0.28+:
   - @ft.component + use_state() zamiast klas imperatywnych
   - ft.NumberBadge na zakładkach Tabs z liczbami
   - ft.Shimmer dla loading skeleton zamiast pustej listy
@@ -13,7 +12,6 @@ SUPERMOCE Flet 0.28+:
 from __future__ import annotations
 
 import time
-from typing import Any
 
 import anyio
 import flet as ft
@@ -63,7 +61,6 @@ _STAGE_TO_STATUS = {
 def TaskItem(page: ft.Page, task_data: dict):
     """Single task row with icon, progress bar, and status — @ft.component.
 
-    SUPERMOC Flet 0.28+:
       - @ft.component + use_state() zamiast klasy
       - ft.Tooltip dla długich nazw
       - ft.ProgressBar z status color
@@ -170,25 +167,21 @@ def TaskItem(page: ft.Page, task_data: dict):
 def TaskMonitorPanel(page: ft.Page, api_client=None):
     """Full task monitoring panel — @ft.component + ft.NumberBadge + ft.Shimmer.
 
-    SUPERMOCE:
       - @ft.component + use_state() zamiast klasy
       - ft.NumberBadge na zakładkach Tabs
       - ft.Shimmer dla loading skeleton
       - page.pubsub dla progress update przez socket UNIX
       - page.run_task dla async polling
     """
-    # SUPERMOC: use_state zamiast self._variables
     active_tasks = ft.use_state[dict]({})
     filter_index = ft.use_state(0)
     auto_refresh = ft.use_state(False)
     is_loading = ft.use_state(True)
     last_update_ts = ft.use_state(0.0)
 
-    # SUPERMOC: ft.Ref dla kontrolek
     task_list_ref = ft.use_ref[ft.ListView]()
     tabs_ref = ft.use_ref[ft.Tabs]()
 
-    # SUPERMOC: Summary counts z NumberBadge
     def _counts():
         statuses = [t.get("status", "QUEUED") for t in active_tasks.value.values()]
         return (
@@ -280,10 +273,8 @@ def TaskMonitorPanel(page: ft.Page, api_client=None):
     # Subskrybuj zdarzenia postępu (przychodzą przez socket UNIX)
     page.pubsub.subscribe("progress_update", on_progress_update)
 
-    # SUPERMOC: Build
     ac, cc, fc = _counts()
 
-    # SUPERMOC: Tabs z NumberBadge
     tabs = ft.Tabs(
         ref=tabs_ref,
         selected_index=filter_index.value,
@@ -315,7 +306,6 @@ def TaskMonitorPanel(page: ft.Page, api_client=None):
         on_change=lambda e: filter_index.set(e.control.selected_index),
     )
 
-    # SUPERMOC: Summary bar
     summary = ft.Container(
         content=ft.Row(
             [
@@ -332,7 +322,6 @@ def TaskMonitorPanel(page: ft.Page, api_client=None):
         border_radius=8,
     )
 
-    # SUPERMOC: Empty state / Task list
     task_list = ft.ListView(
         ref=task_list_ref, expand=True, spacing=8, padding=ft.padding.all(16), auto_scroll=False
     )

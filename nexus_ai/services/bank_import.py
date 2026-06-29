@@ -1,7 +1,5 @@
 """
-Bank import parser — SUPERMOC: fsspec + PyArrow + TigerBeetle.
 
-SUPERMOCE fsspec:
 - ``fsspec.open()`` dla CSV — działa z file://, s3://, http://
 - ``fsspec.filesystem()`` dla konfigurowalnego backendu
 - Zmiana storage_protocol w config TOML zmienia backend bez zmiany kodu
@@ -31,7 +29,6 @@ from pathlib import Path
 from typing import Any, Protocol, final
 
 import fsspec
-import pendulum
 from structlog import get_logger
 
 from nexus_ai.db.analytics import DuckDBManager
@@ -66,7 +63,6 @@ class StatementParser(Protocol):
 class CSVStatementParser:
     """Reference parser for local CSV exports from banks.
 
-    SUPERMOC PyArrow:
     - ``pyarrow.csv.read_csv()`` z ``ConvertOptions`` — typowanie kolumn
       (date32, decimal128, int64) bez ręcznego mapowania w pętli.
     - ``pa.Table.to_pylist()`` — konwersja całej tabeli do listy słowników
@@ -79,16 +75,13 @@ class CSVStatementParser:
         import pyarrow.csv as pa_csv
         import pyarrow.compute as pc
 
-        # ── SUPERMOC fsspec: fsspec.open() dla CSV ────────────────────
         # Działa z file://, s3://, http:// — wyciągi bankowe z chmury.
-        # SUPERMOC PyArrow: PyArrow natywnie wspiera fsspec filesystem,
         # ale dla prostoty używamy fsspec.open() + BytesIO.
         from io import BytesIO
 
         with fsspec.open(file_path, "rb") as f:
             csv_content = f.read()
 
-        # ── SUPERMOC: PyArrow CSV reader z ConvertOptions ─────────────
         convert_opts = pa_csv.ConvertOptions(
             column_types={
                 "booking_date": pa.date32(),
@@ -115,7 +108,6 @@ class CSVStatementParser:
             convert_options=convert_opts,
         )
 
-        # ── SUPERMOC: Filtrowanie NULL przez pa.compute ──────────────
         # Zamiast ``if not raw.get("title")`` w pętli, używamy
         # ``pc.is_valid()`` + ``pc.filter()`` — operacja w C++.
         valid_mask = pc.is_valid(table.column("booking_date"))
@@ -180,7 +172,6 @@ class IdempotentBankImporter:
         self.transfer_code = transfer_code
         self._ensure_history_schema()
 
-        # SUPERMOC fsspec: fsspec.get_mapper() dla metadanych importów bankowych
         self._setup_meta_mapper(bank_storage_path or Path("data/bank_imports"))
 
     def _ensure_history_schema(self) -> None:
@@ -215,7 +206,6 @@ class IdempotentBankImporter:
             )
 
     def _setup_meta_mapper(self, storage_path: str | Path) -> None:
-        """SUPERMOC fsspec: dict-like interfejs do metadanych importów.
 
         fsspec.get_mapper() tworzy MutableMapping (dict-like),
         który automatycznie serializuje wartości do plików JSON.
@@ -230,7 +220,6 @@ class IdempotentBankImporter:
     def meta(self) -> Any:
         """Dict-like interfejs do metadanych importów bankowych.
 
-        SUPERMOC fsspec: ``fsspec.get_mapper()`` zwraca MutableMapping.
         Użycie:
             importer.meta["import_20260101"] = {"file": "statement.csv", "count": 42}
             print(importer.meta["import_20260101"])
@@ -256,7 +245,6 @@ class IdempotentBankImporter:
                 continue
 
             try:
-                # SUPERMOC: Użyj realnego API TB z batch transferem
                 import tigerbeetle as tb
                 from nexus_ai.services.tigerbeetle.client import (
                     LEDGER,
@@ -276,7 +264,6 @@ class IdempotentBankImporter:
                     timeout=0,
                     ledger=LEDGER["PLN"],
                     code=TRANSFER_CODE["PAYMENT_IN"],
-                    flags=tb.TransferFlags.IMPORTED,  # SUPERMOC: oznacz jako import bankowy
                     timestamp=0,
                 )
                 results = self.tb_client.create_transfers([transfer])

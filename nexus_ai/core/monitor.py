@@ -1,5 +1,4 @@
 # core/monitor.py
-"""SUPERMOCE psutil: SystemMonitor z pełnym wykorzystaniem potencjału psutil.
 
 Co zostało użyte:
   - Process.oneshot()        — batch syscalls (1 zamiast N)
@@ -134,7 +133,6 @@ class SystemMetrics(Struct, frozen=True):
 class ProcessMonitor:
     """Monitorowanie bieżącego procesu NexusAI z optymalizacją oneshot().
 
-    SUPERMOCE:
       - Process.oneshot() → 1 syscall zamiast N dla wielu atrybutów
       - memory_full_info() → USS/PSS zamiast gołego RSS
       - memory_info() → VMS + RSS
@@ -151,7 +149,6 @@ class ProcessMonitor:
         self._last_cpu_sample = 0.0
         self._last_metrics: ProcessMetrics | None = None
 
-    # ── SUPERMOC: oneshot() — batch syscalls ───────────────────────────
 
     def collect_metrics(self) -> ProcessMetrics:
         """Zbierz wszystkie metryki procesu w jednym oneshot() bloku.
@@ -280,7 +277,6 @@ class ProcessMonitor:
 class SystemMonitor:
     """Monitorowanie całego systemu — CPU, RAM, swap, dysk, sieć, sensory.
 
-    SUPERMOCE psutil użyte:
       - cpu_count(logical=False/True) — fizyczne/logiczne rdzenie
       - cpu_percent(percpu=True) — per-core utilization
       - cpu_times_percent(percpu=True) — per-core breakdown

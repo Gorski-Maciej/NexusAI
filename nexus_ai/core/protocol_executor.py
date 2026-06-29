@@ -22,7 +22,6 @@ Usage:
 from __future__ import annotations
 
 from collections.abc import Callable
-from pathlib import Path
 from typing import Any
 
 from nexus_ai.core.logger import get_logger

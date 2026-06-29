@@ -129,12 +129,8 @@ def generate_alert_rules_yaml() -> str:
         lines.append(f"      - alert: {d['alert']}")
         lines.append(f"        expr: {d['expr']}")
         lines.append(f"        for: {d['duration']}")
-        lines.append("        labels:")
-        for k, v in d["labels"].items():
-            lines.append(f"          {k}: {v}")
-        lines.append("        annotations:")
-        for k, v in d["annotations"].items():
-            lines.append(f"          {k}: {v}")
+        lines.extend(f"          {k}: {v}" for k, v in d["labels"].items())
+        lines.extend(f"          {k}: {v}" for k, v in d["annotations"].items())
     return "\n".join(lines)
 
 

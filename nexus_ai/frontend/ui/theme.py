@@ -1,6 +1,5 @@
 """Theme Manager — Dynamiczny dark/light mode z Material 3 i scrollbar theme.
 
-SUPERMOCE Flet 0.28+:
   - ft.Theme z pełnym ColorScheme (Material 3)
   - scrollbar_theme dla spójnego scrollbara
   - page.theme_animation_style dla płynnych przejść
@@ -20,7 +19,6 @@ import flet as ft
 class ThemeManager:
     """Zarządza paletą barw i stylem Nexus AI z dynamicznym przełączaniem.
 
-    SUPERMOC Flet 0.28+:
       - Pełny ColorScheme Material 3
       - Scrollbar theme dla spójnego wyglądu
       - page.theme_animation_style dla płynnych przejść między motywami
@@ -44,7 +42,6 @@ class ThemeManager:
     def get_dark_theme() -> ft.Theme:
         """Enterprise dark theme with Material 3 ColorScheme + Scrollbar.
 
-        SUPERMOCE:
           - scrollbar_theme — stylowanie scrollbara
           - use_material3=True — wymuszenie Material 3
           - ColorScheme seed dla dynamicznej palety
@@ -71,7 +68,6 @@ class ThemeManager:
                 inverse_surface="#E0E0E0",
                 inverse_on_surface="#121217",
             ),
-            # SUPERMOC: Scrollbar theme — spójny style na wszystkich platformach
             scrollbar_theme=ft.ScrollbarTheme(
                 thickness=6.0,
                 thumb_color=ft.colors.with_opacity(0.3, ft.colors.WHITE),
@@ -80,7 +76,6 @@ class ThemeManager:
                 track_visibility=True,
                 track_border_color=ft.colors.with_opacity(0.1, ft.colors.WHITE),
             ),
-            # SUPERMOC: Text theme z hierarchią typografii
             text_theme=ft.TextTheme(
                 headline_large=ft.TextStyle(
                     size=32,
@@ -178,7 +173,6 @@ class ThemeManager:
     def create_theme_switcher(page: ft.Page) -> ft.IconButton:
         """Create a theme switch button with persistence and animation.
 
-        SUPERMOC:
           - page.theme_animation_style dla płynnej animacji
           - page.client_storage dla zapisu preferencji
         """
@@ -193,7 +187,6 @@ class ThemeManager:
             ThemeManager.save_theme(page, new_mode)
             e.control.icon = ft.icons.DARK_MODE if is_dark else ft.icons.LIGHT_MODE
 
-            # SUPERMOC: Płynna animacja przejścia między motywami
             page.theme_animation_style = ft.ThemeAnimationStyle(
                 duration=400,
                 curve=ft.AnimationCurve.EASE_IN_OUT,

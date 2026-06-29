@@ -1,12 +1,10 @@
 """File-based fallback buffer for telemetry export failures — DuckDB + Parquet.
 
-SUPERMOCE DuckDB:
 - Zapis do Parquet zamiast JSONL — 10× mniejszy rozmiar na dysku
 - Możliwość odpytywania przez SQL (DuckDB czyta Parquet bezpośrednio)
 - Automatyczna kompresja kolumnowa (ZSTD)
 - Szybszy odczyt/zapis dla dużych wolumenów
 
-SUPERMOCE Parquet (nowe):
 - Predicate pushdown — odczytuje tylko pasujące wiersze
 - Projection pushdown — odczytuje tylko potrzebne kolumny
 - Hive partycjonowanie (year/month/day) — szybkie odcięcie partycji
@@ -16,9 +14,6 @@ SUPERMOCE Parquet (nowe):
 
 from __future__ import annotations
 
-import os
-from collections.abc import Iterator
-from contextlib import contextmanager
 from msgspec import Struct
 from msgspec.structs import asdict
 from pathlib import Path
@@ -26,7 +21,7 @@ from typing import Any, final
 
 import pendulum
 
-from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
+from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 
 
 class BufferedSpan(Struct):
@@ -41,13 +36,11 @@ class BufferedSpan(Struct):
 class FileSpanBuffer:
     """BUFFER telemetrii — DuckDB + Parquet zamiast JSONL.
 
-    SUPERMOCE DuckDB:
     - ``COPY table TO 'file.parquet' (FORMAT PARQUET)`` — zapis do Parquet
     - ``read_parquet('telemetry/*.parquet')`` — odczyt przez DuckDB SQL
     - Parquet jest 10× mniejszy od JSONL (kompresja kolumnowa ZSTD)
     - ``GENERATE_SERIES`` dla generowania timestampów
 
-    SUPERMOCE Parquet (nowe):
     - **Hive partycjonowanie**: katalogi ``year=2026/month=06/day=17/``
     - **Predicate pushdown**: ``ds.dataset().to_table(filter=...)``
     - **Projection pushdown**: ``ds.dataset().to_table(columns=[...])``
@@ -72,10 +65,8 @@ class FileSpanBuffer:
         self.file_path.parent.mkdir(parents=True, exist_ok=True)
         self.parquet_dir.mkdir(parents=True, exist_ok=True)
 
-        # ── SUPERMOC: ParquetWriter streaming — jeden writer na dzień ──
         self._daily_writer: dict[str, Any] = {}  # key="YYYY-MM-DD" → ParquetWriter
 
-    # ── SUPERMOC: Hive partycjonowanie ──────────────────────────────────
     # Partycjonowanie po dacie: year=2026/month=06/day=17/
     # Przy odczycie PyArrow Dataset automatycznie odcina partycje
     # które nie pasują do filtru — czyta tylko potrzebne katalogi.
@@ -92,7 +83,6 @@ class FileSpanBuffer:
         return part_path / f"spans_{dt.format('YYYYMMDD')}.parquet"
 
     def _get_or_create_writer(self, table_schema: Any, dt: pendulum.DateTime | None = None) -> Any:
-        """SUPERMOC ParquetWriter: Zwróć istniejący writer dla dnia lub stwórz nowy.
 
         ``ParquetWriter`` z ``write_table()`` zamiast tworzenia osobnego pliku
         dla każdego batcha. Jeden plik dzienny z wieloma row group.
@@ -109,7 +99,6 @@ class FileSpanBuffer:
 
         parquet_path = self._daily_parquet_path(dt)
 
-        # ── SUPERMOC: ParquetWriter z tą samą konfiguracją co write_table ──
         writer = pq.ParquetWriter(
             str(parquet_path),
             schema=table_schema,
@@ -131,7 +120,6 @@ class FileSpanBuffer:
             except Exception:
                 pass
 
-    # ── SUPERMOC: PyArrow Parquet (zamiast DuckDB) ─────────────────────
     # PyArrow ``parquet.write_table()`` i ``parquet.read_table()`` są
     # bezpośrednimi interfejsami do formatu Parquet — bez pośrednictwa
     # DuckDB SQL. Zysk: mniej pamięci, brak narzutu SQL engine.
@@ -139,7 +127,6 @@ class FileSpanBuffer:
     # wszystkie pliki *.parquet z filter/predicate pushdown.
 
     def _append_parquet(self, records: list[dict[str, Any]], batch_id: str = "") -> None:
-        """SUPERMOC PyArrow: Zapisz batch spanów do Parquet przez ParquetWriter.
 
         ``ParquetWriter`` z ``write_table()`` — append do dziennego pliku
         zamiast tworzenia osobnego pliku na każdy batch.
@@ -147,19 +134,16 @@ class FileSpanBuffer:
         Zysk: mniej plików, lepsza kompresja, szybsze odczyty.
         """
         import pyarrow as pa
-        import pyarrow.parquet as pq
 
         if not records:
             return
 
         dt = pendulum.now()
 
-        # ── SUPERMOC: Konwersja list[dict] → pa.Table ────────────────
         # PyArrow buduje tablicę kolumnową z listy słowników — bez JSON.
         # ``pa.Table.from_pylist()`` inferuje typy automatycznie.
         table = pa.Table.from_pylist(records)
 
-        # ── SUPERMOC: ParquetWriter streaming append ──────────────────
         # Użyj writer-a dla bieżącego dnia. Jeśli nie istnieje,
         # zostanie utworzony z odpowiednim schematem.
         writer = self._get_or_create_writer(table.schema, dt)
@@ -170,10 +154,8 @@ class FileSpanBuffer:
         filter_expr: Any = None,
         columns: list[str] | None = None,
     ) -> list[dict[str, Any]]:
-        """SUPERMOC PyArrow: Odczytaj pliki Parquet przez Dataset API
         z **predicate pushdown** i **projection pushdown**.
 
-        SUPERMOCE Parquet:
         - ``filter`` — predicate pushdown: DuckDB/PyArrow czyta tylko
           row groups które pasują do warunku (na podstawie statystyk)
         - ``columns`` — projection pushdown: czyta tylko potrzebne kolumny
@@ -200,7 +182,6 @@ class FileSpanBuffer:
             return []
 
         try:
-            # ── SUPERMOC: Dataset API z Hive partycjonowaniem ─────────
             # ``partitioning=ds.HivePartitioning(...)`` — PyArrow automatycznie
             # rozpoznaje katalogi year=/month=/day=/ jako partycje.
             # Przy odczycie partycje które nie pasują do filtru są pomijane.
@@ -219,7 +200,6 @@ class FileSpanBuffer:
                 ),
             )
 
-            # ── SUPERMOC: Predicate + Projection pushdown ────────────
             # ``filter`` — DuckDB/PyArrow czyta tylko row groups które
             # pasują do warunku (predicate pushdown na statystykach).
             # ``columns`` — czyta tylko wymienione kolumny.
@@ -257,7 +237,6 @@ class FileSpanBuffer:
                     except DecodeError:
                         continue
 
-        # SUPERMOC: Odczytaj Parquet przez PyArrow z predicate pushdown
         # Domyślnie czyta wszystkie kolumny i wszystkie wiersze.
         parquet_records = self._read_parquet_all()
         records.extend(parquet_records)
@@ -281,7 +260,6 @@ class FileSpanBuffer:
             attributes=attributes or {},
         )
         with self._file_lock():
-            # SUPERMOC: Zapis do Parquet przez ParquetWriter streaming
             span_dict = asdict(span)
             self._append_parquet([span_dict])
             self._enforce_retention_locked()
@@ -341,9 +319,7 @@ class FileSpanBuffer:
         since: str | None = None,
         columns: list[str] | None = None,
     ) -> list[dict[str, Any]]:
-        """SUPERMOC: Odczytaj spany z **predicate pushdown**.
 
-        SUPERMOCE Parquet:
         - ``filter`` — predicate pushdown: czyta tylko row groups pasujące
         - ``columns`` — projection pushdown: czyta tylko potrzebne kolumny
         - Hive partycjonowanie: ``since`` odcina stare partycje
@@ -365,7 +341,6 @@ class FileSpanBuffer:
         if trace_id:
             filters.append(ds.field("trace_id") == trace_id)
 
-        # ── SUPERMOC: Predicate pushdown przez Hive partycję ──────────
         # Jeśli podano since, odcinamy partycje starsze niż ta data.
         if since:
             try:
@@ -386,14 +361,11 @@ class FileSpanBuffer:
         with self._file_lock():
             return self._read_parquet_all(filter_expr=filter_expr, columns=columns)
 
-    # ── SUPERMOC: Row group metadata ────────────────────────────────────
     # ``pq.read_metadata()`` odczytuje statystyki row group — min/max/null_count
     # dla każdej kolumny. Używane do optymalizacji odczytu.
 
     def get_storage_stats(self) -> dict[str, Any]:
-        """SUPERMOC Parquet: Pobierz statystyki przechowywania Parquet.
 
-        SUPERMOCE:
         - Row group statistics: min/max/null_count dla każdej kolumny
         - Page index: szybkie skipowanie niepotrzebnych stron
         - Rozmiar każdego pliku Parquet

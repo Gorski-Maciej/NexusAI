@@ -1,7 +1,6 @@
 """
 Kryptograficzny Łańcuch Audytowy (Proof Chain) — SHA-256 hash chain.
 
-SUPERMOCE:
 - Append-only decision_traces z SHA-256 hash chain
 - previous_hash + current_hash dla nieprzerwanego łańcucha dowodowego
 - Integrity Verifier — cykliczne przeliczanie łańcucha
@@ -13,7 +12,6 @@ Zgodnie z docs/tfgxzd.txt — Kryptograficzny Ślad Audytowy Decyzji.
 from __future__ import annotations
 
 import hashlib
-import json
 import uuid
 from datetime import datetime, timezone
 from typing import Any
@@ -67,7 +65,6 @@ class ProofChain:
         trace: dict[str, Any],
         context: dict[str, Any],
     ) -> str:
-        """SUPERMOC: Zapisz decyzję z kryptograficznym hashem.
 
         Args:
             transaction_id: ID transakcji (faktury).
@@ -149,7 +146,6 @@ class ProofChain:
         }
 
     def _verify_hash(self, audit_id: str) -> bool:
-        """SUPERMOC: Zweryfikuj integralność hasha.
 
         Przelicza hash dla wpisu i porównuje z zapisanym.
         """
@@ -166,7 +162,6 @@ class ProofChain:
         return expected == str(row[2])
 
     def verify_chain(self) -> dict[str, Any]:
-        """SUPERMOC: Zweryfikuj cały łańcuch od początku do końca.
 
         Returns:
             Dict z wynikiem weryfikacji.
@@ -197,7 +192,6 @@ class ProofChain:
         }
 
     def explain_decision(self, transaction_id: str) -> dict[str, Any]:
-        """SUPERMOC: Wyjaśnij decyzję dla transakcji (czytelny raport).
 
         Args:
             transaction_id: ID transakcji.

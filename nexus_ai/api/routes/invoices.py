@@ -4,7 +4,6 @@ import os
 
 from nexus_crypto import Sha256Hasher
 import uuid
-from pathlib import Path
 
 import pendulum
 from litestar import Controller, post
@@ -23,7 +22,6 @@ from nexus_ai.api.cache import clear_cache_async
 from nexus_ai.api.i18n import resolve_language, t
 from nexus_ai.api.rbac import owner_or_worker_guard
 from nexus_ai.api.dto import (
-    InvoiceUploadResponseDTO,
     TAG_INVOICES,
     TaskResponseDTO,
 )
@@ -33,7 +31,6 @@ from nexus_ai.core.config import AppConfig
 import fsspec
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
-from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.models import OutboxStatus
 
 
@@ -105,7 +102,6 @@ class InvoiceController(Controller):
         temp_path = storage.create_temp_upload_file()
         first_chunk = b""
         try:
-            # SUPERMOC fsspec: uniwersalne otwieranie plików
             async with await fsspec.open_async(temp_path, "ab") as temp_file:
                 while True:
                     chunk = await file_obj.read(UPLOAD_CHUNK_SIZE)
@@ -295,7 +291,6 @@ class InvoiceController(Controller):
         temp_path = storage.create_temp_upload_file()
         first_chunk = b""
         try:
-            # SUPERMOC fsspec: uniwersalne otwieranie plików
             async with await fsspec.open_async(temp_path, "ab") as temp_file:
                 while True:
                     chunk = await file_obj.read(UPLOAD_CHUNK_SIZE)
@@ -337,7 +332,6 @@ class InvoiceController(Controller):
                 first_chunk, file_obj.filename or ""
             )
             if normalized_content != first_chunk:
-                # SUPERMOC fsspec: uniwersalne otwieranie plików
                 async with await fsspec.open_async(temp_path, "wb") as f:
                     await f.write(normalized_content)
         except ValueError as ve:
@@ -400,13 +394,4 @@ class InvoiceController(Controller):
         return response
 
 
-class InvoiceControllerV2(InvoiceController):
-    """Invoice APIs (v2) — upload i zarządzanie fakturami.
-
-    Endpoints:
-      - POST /api/v2/invoices/upload — upload faktury z outbox eventem i audit trail
-      - POST /api/v2/invoices/upload-large — upload dużego załącznika (do 500MB)
-    """
-
-    path = "/invoices"
-    tags = [TAG_INVOICES]
+# InvoiceControllerV2 removed — use InvoiceController directly in both v1 and v2 routers

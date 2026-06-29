@@ -24,7 +24,6 @@ from nexus_ai.core.logger import get_logger
 
 
 # ── Helper: deep merge dwóch słowników (base ← env-specific) ───────────────
-# SUPERMOC TOML: Łączy config/base.toml z config/{env}.toml.
 # env-specific wartości nadpisują base. Sekcje są mergowane rekurencyjnie.
 
 
@@ -57,19 +56,16 @@ zawiera {env}.toml, protocols.toml, models_manifest.json, version.json.
 
 
 class ConfigLoader:
-    """SUPERMOC TOML: Zaawansowany loader config z merge base.toml + {env}.toml.
+    """mtime-based auto-reload dla TOML config.
 
-    SUPERMOC TOML:
-    - Ładuje config/base.toml jako bazę (wspólne wartości)
-    - Nadpisuje config/{env}.toml (środowiskowe wartości)
-    - mtime-based auto-reload dla obu plików
-    - Aktualizuje os.environ po każdej zmianie
+    Laduje config/base.toml jako baze (wspolne wartosci)
+    i nadpisuje config/{env}.toml (srodowiskowe wartosci).
 
     Args:
-        path: Ścieżka do pliku TOML. Domyślnie config/{NEXUS_ENV}.toml.
-              UWAGA: base.toml jest ładowany automatycznie przed env-specific.
-        auto_reload: Jak często sprawdzać mtime.
-                     False (domyślnie) — nigdy, tylko przy pierwszym dostępie.
+        path: Sciezka do pliku TOML. Domyslnie config/{NEXUS_ENV}.toml.
+              UWAGA: base.toml jest ladowany automatycznie przed env-specific.
+        auto_reload: Jak czesto sprawdzac mtime.
+                     False (domyslnie) — nigdy, tylko przy pierwszym dostepie.
                      True — co 5 sekund.
                      int > 0 — custom poll interval w sekundach.
     """
@@ -302,7 +298,6 @@ from msgspec import Meta
 class _AppSection(Struct, kw_only=True):
     """msgspec schema dla sekcji [app] w config/{env}.toml.
 
-    SUPERMOC TOML: Wszystkie pola z ``Annotated[T, Meta(ge=..., le=...)]``
     są walidowane przy parsowaniu przez msgspec. Błędy zakresu → logowane,
     aplikacja używa bezpiecznych defaultów z AppConfig.
     """
@@ -380,7 +375,6 @@ class _NatsSection(Struct, kw_only=True):
 class _StorageSection(Struct, kw_only=True):
     """msgspec schema dla sekcji [storage].
 
-    SUPERMOC fsspec: Jednolita abstrakcja systemów plików.
     - protocol: "file", "s3", "sftp", "memory", "zip" — zmiana backendu bez zmiany kodu
     - root: ścieżka bazowa w wybranym protokole
     - auto_mkdir: automatyczne tworzenie katalogów
@@ -394,15 +388,12 @@ class _StorageSection(Struct, kw_only=True):
     root: str | None = None
     auto_mkdir: bool | None = None
     cache_size_mb: Annotated[int | None, Meta(ge=0, le=10240)] = None
-    transactional: bool | None = None  # SUPERMOC fsspec: atomowe operacje
-    chain_enabled: bool | None = None  # SUPERMOC fsspec: chaining FS (simplecache::file)
     chain_cache_storage: str | None = None  # Ścieżka cache dla chain FS
 
 
 class _StaminaSection(Struct, kw_only=True):
     """msgspec schema dla sekcji [stamina].
 
-    SUPERMOC: Globalne ustawienia stamina dla całego projektu.
     Globalne stamina settings dla resilience (retry, circuit breaker).
     """
 
@@ -415,7 +406,6 @@ class _StaminaSection(Struct, kw_only=True):
 class _SecuritySection(Struct, kw_only=True):
     """msgspec schema dla sekcji [security].
 
-    Litestar SUPERMOC:
     - jwt_exclude_paths: ścieżki publiczne (bez JWT auth)
     - csrf_exclude_paths: ścieżki bez CSRF (np. auth endpoints)
     - rate_limit_auth: limit dla /api/auth (brute-force protection)
@@ -441,7 +431,6 @@ class _IntegrationsSection(Struct, kw_only=True):
 class _TaxSection(Struct, kw_only=True):
     """msgspec schema dla sekcji [tax] w config/{env}.toml.
 
-    SUPERMOC: Walidacja typów i zakresów przez msgspec.
     Sekcja [tax] istnieje w dev.toml i prod.toml, ale była
     wcześniej ignorowana przez typed schema — parsowana tylko jako dict.
     """
@@ -504,7 +493,6 @@ class _OpaSection(Struct, kw_only=True):
 class _TomlConfigRoot(Struct, kw_only=True):
     """msgspec schema dla całego pliku config/{env}.toml.
 
-    SUPERMOC TOML: 11 sekcji z typowaną walidacją (msgspec.Struct),
     zakresami (Annotated[T, Meta(ge=..., le=...)]) i wartościami
     domyślnymi. Każdy błąd typu → logowany przy starcie.
 
@@ -544,7 +532,6 @@ def _load_toml_profile(environment: str) -> None:
        Ta funkcja jest zachowana dla kompatybilności wstecznej — ładuje config
        tylko raz przy imporcie, bez auto-reload.
 
-    SUPERMOC TOML: Ładuje config/base.toml jako bazę, potem nadpisuje
     config/{env}.toml.    Wspólne sekcje (tax, ai, tigerbeetle, security)
     są definiowane RAZ w base.toml zamiast duplikować w dev.toml i prod.toml.
 

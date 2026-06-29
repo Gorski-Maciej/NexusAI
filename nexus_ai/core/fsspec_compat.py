@@ -1,9 +1,7 @@
-"""fsspec_compat.py — SUPERMOC: Moduł kompatybilności fsspec dla NexusAI.
 
 Automatycznie wykrywa dostępne moduły fsspec i dostarcza fallbacki
 dla brakujących implementacji (np. TransactionalFileSystem).
 
-SUPERMOCE:
 - Auto-detection dostępnych modułów fsspec (15+ implementacji)
 - Uniwersalny TransactionWrapper jako fallback dla TransactionalFileSystem
 - Jeden import zamiast rozrzuconych po całym projekcie
@@ -41,7 +39,6 @@ except ImportError:
     HAS_TX_FS = False
 
     class TransactionalFileSystem:  # type: ignore[no-redef]
-        """SUPERMOC: Uniwersalny fallback dla TransactionalFileSystem.
 
         Gdy fsspec.implementations.transactional nie jest dostępny,
         ten wrapper zapewnia ten sam interfejs API:
@@ -56,7 +53,6 @@ except ImportError:
             logger.debug("[fsspec] Using TransactionalFileSystem fallback (no atomicity)")
 
         def transaction(self):
-            """SUPERMOC Context manager dla grupowych operacji.
 
             W wersji fallback — wykonuje operacje natychmiast (bez deferowania).
             Zachowuje ten sam interfejs API co prawdziwy TransactionalFileSystem.
@@ -113,7 +109,6 @@ except ImportError:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 3. TarFileSystem — SUPERMOC: dostęp do TAR/TAR.GZ bez rozpakowywania
 # ═══════════════════════════════════════════════════════════════════════════
 
 try:
@@ -126,7 +121,6 @@ except ImportError:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 4. HTTPFileSystem — SUPERMOC: zdalne pliki przez HTTP/HTTPS
 # ═══════════════════════════════════════════════════════════════════════════
 
 try:
@@ -152,7 +146,6 @@ except ImportError:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 6. WholeFileCache — SUPERMOC: cache całych plików (szybszy dla małych)
 # ═══════════════════════════════════════════════════════════════════════════
 
 try:
@@ -165,7 +158,6 @@ except ImportError:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 7. SimpleCache — SUPERMOC: prosty cache URL→bytes
 # ═══════════════════════════════════════════════════════════════════════════
 
 try:
@@ -178,7 +170,6 @@ except ImportError:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 8. BlockCache — SUPERMOC: cache bloków dla dużych plików
 # ═══════════════════════════════════════════════════════════════════════════
 
 try:
@@ -191,7 +182,6 @@ except ImportError:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 9. ReferenceFileSystem — SUPERMOC: wirtualny FS z referencjami (Kerchunk)
 # ═══════════════════════════════════════════════════════════════════════════
 
 try:
@@ -230,7 +220,6 @@ except ImportError:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 12. fsspec.compression — SUPERMOC: auto-kompresja .gz, .bz2, .xz, .zst
 # ═══════════════════════════════════════════════════════════════════════════
 
 try:
@@ -243,12 +232,10 @@ except (ImportError, Exception):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 13. Chaining FS helper — SUPERMOC: simplecache::file, cached::memory
 # ═══════════════════════════════════════════════════════════════════════════
 
 
 def create_chain(chain_url: str, **kwargs: Any) -> fsspec.AbstractFileSystem:
-    """SUPERMOC: Utwórz chaining FS przez URL z :: separator.
 
     fsspec wspiera komponowanie backendów przez :: w URL:
     - ``simplecache::file:///data`` — cache + local
@@ -279,7 +266,6 @@ def create_optimal_filesystem(
     use_chaining: bool = False,
     **kwargs: Any,
 ) -> fsspec.AbstractFileSystem:
-    """SUPERMOC: Utwórz optymalny filesystem z auto-doborem cache.
 
     Wybiera najlepszą strategię cache w zależności od dostępnych modułów:
     - cache_size_mb == 0: czysty filesystem (bez cache)
@@ -341,12 +327,10 @@ def create_optimal_filesystem(
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 15. fsspec.config helper — SUPERMOC: centralna konfiguracja
 # ═══════════════════════════════════════════════════════════════════════════
 
 
 def configure_fsspec_global(**kwargs: Any) -> None:
-    """SUPERMOC: Skonfiguruj globalne ustawienia fsspec.
 
     Używa fsspec.config.conf do ustawienia globalnych parametrów:
     - client_kwargs: domyślne kwargs dla HTTPFileSystem
@@ -363,7 +347,6 @@ def configure_fsspec_global(**kwargs: Any) -> None:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 16. FSSpecFactory — SUPERMOC: centralna fabryka dla całego projektu
 # ═══════════════════════════════════════════════════════════════════════════
 
 
@@ -485,7 +468,6 @@ class AsyncFsWrapper:
 
 
 class FSSpecFactory:
-    """SUPERMOC: Centralna fabryka filesystemów dla całego NexusAI.
 
     TOTALNA REWOLUCJA:
     - get_async_filesystem() → AsyncFsWrapper z czystym await API

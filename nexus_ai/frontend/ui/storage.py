@@ -1,6 +1,5 @@
 """LocalStorage — Type-safe client storage with msgspec validation.
 
-SUPERMOCE:
   - Typowane przez msgspec.Struct dla UserPreferences
   - Walidacja przy zapisie/odczycie
   - page.client_storage dla trwałości między sesjami
@@ -11,7 +10,6 @@ from __future__ import annotations
 import flet as ft
 from structlog import get_logger
 from msgspec import Struct
-from typing import Any
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 

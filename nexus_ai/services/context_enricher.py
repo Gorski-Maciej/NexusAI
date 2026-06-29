@@ -39,7 +39,6 @@ class ContextEnricher:
         self,
         invoice_data: dict[str, Any],
     ) -> dict[str, Any]:
-        """SUPERMOC: Wzbogać kontekst faktury o dane z API.
 
         1. Sprawdź NIP na Białej Liście MF (rachunek bankowy, status VAT)
         2. Pobierz dane firmy z GUS BIR (REGON, PKD, status)

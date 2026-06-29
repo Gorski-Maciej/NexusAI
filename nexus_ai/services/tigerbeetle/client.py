@@ -135,7 +135,6 @@ class TigerBeetleMapper:
 class TigerBeetleClient:
     """Real TigerBeetle client — komunikacja przez oficjalny klient Python.
 
-    SUPERMOCE:
     - Oficjalny klient tigerbeetle (tb.ClientSync / tb.ClientAsync)
     - Batch transferów (do 8190 w jednym wywołaniu)
     - Linked transfers (atomic chains)
@@ -280,9 +279,6 @@ class TigerBeetleClient:
     ) -> list[tb.CreateTransferResult]:
         """Utwórz transfery księgowe w TigerBeetle.
 
-        SUPERMOC: Batchowanie — do 8190 transferów w jednym wywołaniu.
-        SUPERMOC: Linked transfers — atomowe łańcuchy przez flags.linked.
-        SUPERMOC: Natywne two-phase — flags.pending + post/void.
 
         Args:
             transfers: Lista tb.Transfer z pełnymi parametrami.
@@ -322,7 +318,6 @@ class TigerBeetleClient:
     ) -> tb.CreateTransferResult:
         """Utwórz pending transfer (dwufazowy).
 
-        SUPERMOC: Natywny pending transfer TB z flags.pending.
         Zamiast własnej implementacji w dict — TB przechowuje stan.
 
         Args:
@@ -370,7 +365,6 @@ class TigerBeetleClient:
     ) -> bool:
         """Zatwierdź pending transfer (post).
 
-        SUPERMOC: Natywny post_pending_transfer TB.
         Używa tb.AMOUNT_MAX dla pełnej kwoty lub podanej kwoty dla częściowego posta.
 
         Args:
@@ -494,7 +488,6 @@ class TigerBeetleClient:
     ) -> list:
         """Pobierz historię transferów dla konta.
 
-        SUPERMOC: TB AccountFilter z filtrowaniem po dacie, limicie, kierunku.
 
         Args:
             account_id: ID konta.
@@ -577,7 +570,6 @@ class TigerBeetleClient:
     ) -> list[tb.Transfer]:
         """Zbuduj linked chain transferów z user_data_64 timestamp.
 
-        SUPERMOC: Linked transfers — atomowy łańcuch.
         Wszystkie transfery w chainie są wykonywane atomowo:
         albo wszystkie się powiodą, albo żaden.
 
@@ -609,15 +601,12 @@ class TigerBeetleClient:
                 credit_account_id=spec["credit"],
                 amount=spec["amount"],
                 pending_id=spec.get("pending_id", 0),
-                # SUPERMOC: user_data_128 = UUID dokumentu, user_data_64 = timestamp
                 user_data_128=_uuid_to_u128(source_document_id),
                 user_data_64=ts,
                 user_data_32=spec.get("user_data_32", 0),
                 timeout=spec.get("timeout", 0),
                 ledger=spec.get("ledger", ledger),
                 code=spec.get("code", 1001),
-                # SUPERMOC: Linked flag dla wszystkich oprócz ostatniego
-                # SUPERMOC: spec może zawierać BALANCING_DEBIT/CREDIT
                 flags=spec.get("flags", 0) | (0 if is_last else tb.TransferFlags.LINKED),
                 timestamp=0,
             )

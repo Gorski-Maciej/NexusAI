@@ -3,7 +3,6 @@ AsyncVectorStore — async sqlite-vec wrapper with ALL superpowers.
 
 Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync.
 
-SUPERMOCE (FAZA 2):
 - partition_key: partycjonowanie dla tenantów (tenant_id, vendor_nip)
 - metadata_columns: przechowywanie metadanych przy wektorze w vec0
 - int8 quantization: 4× oszczędność pamięci

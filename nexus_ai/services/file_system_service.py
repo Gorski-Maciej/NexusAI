@@ -5,7 +5,6 @@ TOTALNA REWOLUCJA: wszystkie async operacje przez AsyncFsWrapper.
 - ``await afs.pipe_file()`` zamiast ``await fsspec.open_async('wb')``
 - ``await afs.exists()`` zamiast ``self._fs.exists()``
 
-SUPERMOCE fsspec:
   - Jeden centralny serwis dla wszystkich operacji I/O
   - fsspec.open() — uniwersalne otwieranie (file://, s3://, http://, memory://)
   - CachingFileSystem — przezroczyste cache'owanie z TTL i LRU
@@ -26,7 +25,6 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import MutableMapping
-from io import BytesIO
 from pathlib import Path
 from typing import BinaryIO, Iterable
 
@@ -181,24 +179,20 @@ class FileSystemService:
         with fsspec.open(path, "wb") as f:
             f.write(data)
 
-    # ── SUPERMOC: fsspec.get_mapper() — dict-like interfejs ────────────
 
     def get_mapper(self, prefix: str = "") -> MutableMapping:
         """Zwraca fsspec.get_mapper() — dict-like interface do storage.
 
-        SUPERMOC fsspec:
         ``fsspec.get_mapper(url)`` tworzy ``MutableMapping`` (dict-like),
         idealny do przechowywania metadanych, małych plików, konfiguracji.
         """
         url = self._resolve_url(prefix)
         return fsspec.get_mapper(url)
 
-    # ── SUPERMOC: Transaction ──────────────────────────────────────────
 
     def transaction(self):
         """Context manager dla atomicznych operacji.
 
-        SUPERMOC: TransactionalFileSystem zapewnia atomiczne operacje.
         Użycie:
             with fs.transaction():
                 await fs.write_bytes("path1", data1)
@@ -212,13 +206,11 @@ class FileSystemService:
 
         return nullcontext()
 
-    # ── SUPERMOC: MemoryFileSystem ─────────────────────────────────────
 
     @staticmethod
     def memory_fs() -> fsspec.AbstractFileSystem:
         """Zwraca MemoryFileSystem dla testów i tmp danych.
 
-        SUPERMOC: fsspec.implementations.memory.MemoryFileSystem
         Użycie:
             mem_fs = FileSystemService.memory_fs()
             with mem_fs.open("memory://test.txt", "w") as f:
@@ -235,7 +227,6 @@ class FileSystemService:
     ) -> None:
         """Kopiuj plik między filesystemami.
 
-        SUPERMOC: fsspec.open() dla źródła i celu — różne protokoły.
         """
         src = src_fs or fsspec.filesystem("file")
         dst = dst_fs or fsspec.filesystem("file")

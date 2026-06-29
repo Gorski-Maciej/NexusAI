@@ -20,7 +20,6 @@ from typing import Any, final
 import pendulum
 from msgspec import Struct, field
 
-# ── SUPERMOC pendulum: diff_for_humans po polsku ─────────────────────────
 from nexus_ai.core.time_utils import human_diff
 
 from nexus_ai.core.broker import broker
@@ -282,7 +281,6 @@ class DecisionLogger:
             idx_name = f"idx_{table}_{col}"
             self._duckdb.execute(f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table}({col})")
 
-        # ── SUPERMOC: Partial indexes (DuckDB wspiera WHERE w indexach) ──
         # Indeksuje tylko wiersze spełniające warunek — mniejszy indeks,
         # szybsze zapytania dla najczęstszych wzorców.
         # Partial index na decisions WHERE user_correction IS NOT NULL
@@ -314,7 +312,6 @@ class DecisionLogger:
             "CREATE INDEX IF NOT EXISTS idx_tsc_corrected "
             "ON trust_score_cache(timestamp) WHERE user_correction IS NOT NULL"
         )
-        # ── SUPERMOC: Expression index — LOWER(contractor_nip) ──────────
         # Case-insensitive lookup dla NIP-ów.
         try:
             self._duckdb.execute(
@@ -341,7 +338,6 @@ class DecisionLogger:
     ) -> None:
         """Persist a decision with full PLE context.
 
-        SUPERMOC pendulum: human_diff() dla czytelnych komunikatów po polsku.
 
         Args:
             invoice_id: Invoice identifier.
@@ -400,7 +396,6 @@ class DecisionLogger:
                 final_decision=final_decision,
             )
 
-            # SUPERMOC pendulum: human_diff dla czytelnego czasu (start dnia → teraz)
             day_start = pendulum.now("UTC").start_of("day")
             since_midnight = human_diff(day_start, pendulum.now("UTC"), locale="pl", absolute=True)
             logger.debug(

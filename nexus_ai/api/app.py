@@ -43,9 +43,9 @@ from nexus_ai.api.routes.exports import ExportController
 from nexus_ai.api.routes.files import FileController
 from nexus_ai.api.routes.events_schema import EventsSchemaController
 from nexus_ai.api.routes.finops import FinOpsController
-from nexus_ai.api.routes.health import HealthController, HealthControllerV2
+from nexus_ai.api.routes.health import HealthController
 from nexus_ai.api.routes.i18n_ops import I18nOpsController
-from nexus_ai.api.routes.invoices import InvoiceController, InvoiceControllerV2
+from nexus_ai.api.routes.invoices import InvoiceController
 from nexus_ai.api.routes.kore_audit import KoreAuditController
 from nexus_ai.api.routes.kore_closure import KoreClosureController
 from nexus_ai.api.routes.live_preview import LivePreviewController
@@ -61,7 +61,7 @@ from nexus_ai.api.routes.tasks import TaskController
 from nexus_ai.api.routes.tax_math import TaxMathController
 from nexus_ai.api.routes.tax_policy import TaxPolicyController
 from nexus_ai.api.routes.telemetry_ops import TelemetryOpsController
-from nexus_ai.api.routes.triage import TriageController, TriageControllerV2
+from nexus_ai.api.routes.triage import TriageController
 from nexus_ai.api.routes.ui_state import UIStateController
 from nexus_ai.api.routes.version import VersionController
 from nexus_ai.api.routes.workers import WorkerStatusController
@@ -71,7 +71,6 @@ from nexus_ai.api.state import make_on_startup, on_shutdown
 from nexus_ai.api.static import get_static_config
 from nexus_ai.db.database import create_session_factory
 
-# ── SUPERMOC Litestar: Per-role rate limiting identifier ──
 # Używany przez RateLimitConfig.identifier_for_request w create_app().
 # Zdefiniowany na poziomie modułu dla testowalności.
 
@@ -223,9 +222,9 @@ def create_app() -> Litestar:
         tags=["v2"],
         after_request=_v2_after_request,
         route_handlers=[
-            HealthControllerV2,
-            InvoiceControllerV2,
-            TriageControllerV2,
+            HealthController,
+            InvoiceController,
+            TriageController,
             AnalyticsController,
             DashboardController,
             PartnerController,
@@ -247,7 +246,6 @@ def create_app() -> Litestar:
         ],
     )
 
-    # ── SUPERMOC Litestar: Per-role rate limiting identifier ──
     # Używa _role_aware_identifier zdefiniowanego na poziomie modułu.
     # Jeden RateLimitConfig z custom identifier dla wszystkich endpointów.
     # identifier_for_request zwraca role-aware klucz, co daje per-role limity.
@@ -302,7 +300,6 @@ def create_app() -> Litestar:
         },
         exception_handlers=EXCEPTION_HANDLERS,
         middleware=[
-            # SUPERMOC Litestar: RateLimitMiddleware z per-role identifier
             # Jeden middleware zamiast trzech — identifier zwraca role-aware klucz
             RateLimitConfig(
                 rate_limit=("minute", config.rate_limit_general),

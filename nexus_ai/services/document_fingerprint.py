@@ -46,11 +46,9 @@ def _sha256_file(file_path: Path) -> str:
 
 
 def _visual_fingerprint(file_path: Path) -> str:
-    """SUPERMOC: Multi-hash visual fingerprint z preprocessingiem Pillow + OpenCV.
 
     FAZA 2 (OpenCV audit): Dodatkowe ORB feature fingerprint gdy OpenCV dostępne.
 
-    SUPERMOCE:
     - ImageFilter.MedianFilter(3) — denoising przed hashowaniem
     - ImageOps.autocontrast() — lepszy kontrast dla stabilnego hasha
     - Multi-hash: phash + dhash + whash — 3 perspektywy
@@ -68,12 +66,10 @@ def _visual_fingerprint(file_path: Path) -> str:
                 denoised = gray.filter(ImageFilter.MedianFilter(size=3))
                 enhanced = ImageOps.autocontrast(denoised, cutoff=1)
 
-                # SUPERMOC: 3 niezależne hashe perceptualne
                 ph = str(imagehash.phash(enhanced))
                 dh = str(imagehash.dhash(enhanced))
                 wh = str(imagehash.whash(enhanced))
 
-                # SUPERMOC: OpenCV ORB feature fingerprint (Faza 2)
                 orb_fp = _compute_orb_fingerprint(img)
 
                 if orb_fp:
@@ -88,7 +84,6 @@ def _visual_fingerprint(file_path: Path) -> str:
 
 
 def _compute_orb_fingerprint(image: Image.Image) -> str | None:
-    """SUPERMOC: OpenCV ORB feature fingerprint dla identyfikacji dokumentów.
 
     FAZA 2 (OpenCV audit): Deleguje do compute_orb_features z opencv_pipeline.
     Oblicza ORB descriptors i konwertuje do string fingerprint.

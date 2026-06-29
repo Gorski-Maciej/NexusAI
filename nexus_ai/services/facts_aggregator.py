@@ -8,9 +8,7 @@ from typing import Any, Callable, final
 
 from nexus_ai.services.decision_logger import (
     CorrectionStats,
-    DecisionContext,
     GlobalDecision,
-    TrustComponents,
     TrustTrend,
 )
 
@@ -24,7 +22,7 @@ from nexus_ai.core.logger import get_logger
 # ── Globalny cache dla FactSheet (współdzielony między build() calls) ──
 _few_shot_nexus = get_cache(default_ttl=300)  # 5 min TTL dla przykładów few-shot
 from nexus_ai.db.analytics import DuckDBManager
-from nexus_ai.db.models import ActiveLearningPattern, Contractor, Invoice, InvoiceStatus
+from nexus_ai.db.models import Invoice, InvoiceStatus
 from nexus_ai.db.vector_store import VectorStore
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient, TigerBeetleMapper
 from nexus_ai.services.decision_logger import DecisionLogger
@@ -329,8 +327,8 @@ class FactsAggregator:
 
         for name, result in results.items():
             try:
-                if name == "sqlite_contractor":
-                    if result:
+                match name:
+                    case "sqlite_contractor" if result:
                         sheet.contractor_known = result.get("known", False)
                         sheet.contractor_invoice_count = result.get("invoice_count", 0)
                         sheet.contractor_trust_score = result.get("trust_score", 0.5)
@@ -338,59 +336,59 @@ class FactsAggregator:
                         sheet.contractor_name = result.get("name", sheet.contractor_name)
                         source_status["sqlite"] = True
 
-                elif name == "sqlite_recent":
-                    sheet.recent_invoices = result or []
-                    if result:
-                        source_status["sqlite"] = True
+                    case "sqlite_recent":
+                        if result:
+                            source_status["sqlite"] = True
+                        sheet.recent_invoices = result or []
 
-                elif name == "sqlite_corrections":
-                    sheet.user_correction_patterns = result or []
-                    if result:
-                        source_status["sqlite"] = True
+                    case "sqlite_corrections":
+                        if result:
+                            source_status["sqlite"] = True
+                        sheet.user_correction_patterns = result or []
 
-                elif name == "duckdb_trend":
-                    if result is not None:
-                        sheet.trust_score_trend = result
-                    if result and result.known:
-                        source_status["duckdb"] = True
+                    case "duckdb_trend":
+                        if result is not None:
+                            sheet.trust_score_trend = result
+                        if result and result.known:
+                            source_status["duckdb"] = True
 
-                elif name == "duckdb_correction_stats":
-                    if result is not None:
-                        sheet.correction_stats = result
+                    case "duckdb_correction_stats":
+                        if result is not None:
+                            sheet.correction_stats = result
 
-                elif name == "duckdb_rules":
-                    sheet.active_tax_rules = result or []
-                    if result:
-                        source_status["duckdb"] = True
+                    case "duckdb_rules":
+                        if result:
+                            source_status["duckdb"] = True
+                        sheet.active_tax_rules = result or []
 
-                elif name == "vendor_intel":
-                    sheet.vendor_intelligence = result or ""
-                    if result:
-                        source_status["duckdb"] = True
+                    case "vendor_intel":
+                        if result:
+                            source_status["duckdb"] = True
+                        sheet.vendor_intelligence = result or ""
 
-                elif name == "vector_similar":
-                    sheet.similar_invoices = result or []
-                    if result:
-                        source_status["vector_store"] = True
+                    case "vector_similar":
+                        if result:
+                            source_status["vector_store"] = True
+                        sheet.similar_invoices = result or []
 
-                elif name == "tigerbeetle":
-                    if result:
-                        sheet.ledger_available = result.get("available", False)
-                        sheet.ledger_accounts = result.get("accounts", {})
-                        sheet.ledger_total_turnover = result.get("total_turnover", 0.0)
-                        sheet.ledger_recent_transfers = result.get("recent_transfers", [])
-                        if result.get("available"):
-                            source_status.setdefault("tigerbeetle", True)
+                    case "tigerbeetle":
+                        if result:
+                            sheet.ledger_available = result.get("available", False)
+                            sheet.ledger_accounts = result.get("accounts", {})
+                            sheet.ledger_total_turnover = result.get("total_turnover", 0.0)
+                            sheet.ledger_recent_transfers = result.get("recent_transfers", [])
+                            if result.get("available"):
+                                source_status.setdefault("tigerbeetle", True)
 
-                elif name == "global_decisions":
-                    sheet.global_recent_decisions = result or []
-                    if result:
-                        source_status.setdefault("global", True)
+                    case "global_decisions":
+                        if result:
+                            source_status.setdefault("global", True)
+                        sheet.global_recent_decisions = result or []
 
-                elif name == "global_similar":
-                    sheet.globally_similar_cases = result or []
-                    if result:
-                        source_status.setdefault("global", True)
+                    case "global_similar":
+                        if result:
+                            source_status.setdefault("global", True)
+                        sheet.globally_similar_cases = result or []
 
             except Exception as exc:
                 logger.warning("[FactsAggregator] task %s failed: %s", name, exc)
@@ -422,7 +420,6 @@ class FactsAggregator:
     async def _fetch_contractor_data(self, nip: str) -> dict[str, Any] | None:
         """Pobierz dane kontrahenta z SQLite — pojedyncze CTE zamiast 2 ORM.
 
-        SUPERMOC: Pojedyncze zapytanie z CTE (Common Table Expression) zamiast
         2 oddzielnych zapytań ORM (Contractor SELECT + Invoice COUNT).
         Redukcja: 2 round-tripy → 1, bez narzutu ORM.
 
@@ -437,7 +434,6 @@ class FactsAggregator:
             return None
 
         try:
-            # ── SUPERMOC: CTE zamiast 2 ORM zapytań ─────────────────
             # Zamiast: select(Contractor) + select(func.count(Invoice))
             # Używamy: WITH contractor AS (...), stats AS (...)
             # SQLite wykonuje CTE w jednym przebiegu — brak narzutu ORM.
@@ -489,7 +485,6 @@ class FactsAggregator:
     ) -> list[dict[str, Any]]:
         """Pobierz ostatnie 5 faktur dla kontrahenta z SQLite — raw SQL z indeksem.
 
-        SUPERMOC: Raw SQL z indeksem idx_invoices_contractor_nip zamiast ORM.
         Redukcja narzutu ORM: ~2ms → <0.5ms na zapytanie.
 
         Args:
@@ -504,7 +499,6 @@ class FactsAggregator:
             return []
 
         try:
-            # SUPERMOC: Raw SQL z indeksem — pomija narzut ORM
             rows = await anyio.to_thread.run_sync(
                 lambda: session.execute(
                     text("""
@@ -540,7 +534,6 @@ class FactsAggregator:
     async def _fetch_user_corrections(self, nip: str) -> list[dict[str, Any]]:
         """Pobierz wzorce korekt użytkownika dla kontrahenta.
 
-        SUPERMOC: Raw SQL z indeksem — pomija narzut ORM.
 
         Args:
             nip: NIP kontrahenta.
@@ -604,42 +597,43 @@ class FactsAggregator:
         Wyjątki są łapane i logowane — nie przerywają innych workerów.
         """
         try:
-            if name == "sqlite_contractor":
-                result = await self._fetch_contractor_data(sheet.contractor_nip)
-            elif name == "sqlite_recent":
-                result = await self._fetch_recent_invoices(sheet.contractor_nip)
-            elif name == "sqlite_corrections":
-                result = await self._fetch_user_corrections(sheet.contractor_nip)
-            elif name == "duckdb_trend":
-                result = await self._fetch_trust_score_trend(sheet.contractor_nip)
-            elif name == "duckdb_correction_stats":
-                result = await self._fetch_correction_stats()
-            elif name == "duckdb_rules":
-                result = await self._fetch_active_rules(sheet.issue_date)
-            elif name == "vendor_intel":
-                result = await self._fetch_vendor_intelligence(sheet.contractor_nip)
-            elif name == "vector_similar":
-                result = await self._fetch_similar_invoices(
-                    {
-                        "contractor_nip": sheet.contractor_nip,
-                        "amount_gross": sheet.amount_gross,
-                        "category": sheet.category,
-                        "invoice_id": sheet.invoice_id,
-                    }
-                )
-            elif name == "tigerbeetle":
-                result = await self._fetch_ledger_history(sheet.contractor_nip, sheet.invoice_id)
-            elif name == "global_decisions":
-                result = await self._fetch_global_recent_decisions()
-            elif name == "global_similar":
-                result = await self._fetch_globally_similar_cases(
-                    category=sheet.category,
-                    amount_gross=sheet.amount_gross,
-                    limit=3,
-                )
-            else:
-                logger.warning("[FactsAggregator] unknown worker name: %s", name)
-                return
+            match name:
+                case "sqlite_contractor":
+                    result = await self._fetch_contractor_data(sheet.contractor_nip)
+                case "sqlite_recent":
+                    result = await self._fetch_recent_invoices(sheet.contractor_nip)
+                case "sqlite_corrections":
+                    result = await self._fetch_user_corrections(sheet.contractor_nip)
+                case "duckdb_trend":
+                    result = await self._fetch_trust_score_trend(sheet.contractor_nip)
+                case "duckdb_correction_stats":
+                    result = await self._fetch_correction_stats()
+                case "duckdb_rules":
+                    result = await self._fetch_active_rules(sheet.issue_date)
+                case "vendor_intel":
+                    result = await self._fetch_vendor_intelligence(sheet.contractor_nip)
+                case "vector_similar":
+                    result = await self._fetch_similar_invoices(
+                        {
+                            "contractor_nip": sheet.contractor_nip,
+                            "amount_gross": sheet.amount_gross,
+                            "category": sheet.category,
+                            "invoice_id": sheet.invoice_id,
+                        }
+                    )
+                case "tigerbeetle":
+                    result = await self._fetch_ledger_history(sheet.contractor_nip, sheet.invoice_id)
+                case "global_decisions":
+                    result = await self._fetch_global_recent_decisions()
+                case "global_similar":
+                    result = await self._fetch_globally_similar_cases(
+                        category=sheet.category,
+                        amount_gross=sheet.amount_gross,
+                        limit=3,
+                    )
+                case _:
+                    logger.warning("[FactsAggregator] unknown worker name: %s", name)
+                    return
 
             results[name] = result
 

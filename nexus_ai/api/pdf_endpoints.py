@@ -44,11 +44,9 @@ from nexus_ai.core.pdfium import (
     render_all_pages_to_memory,
     extract_text_from_page,
     extract_text_ranges,
-    extract_text_ranges_typed,
     detect_table_regions,
     verify_pdf_signatures,
     get_pdf_form_fields,
-    fill_pdf_form_field,
     save_pdf_with_filled_fields,
 )
 
@@ -110,7 +108,6 @@ class PDFController(Controller):
     ) -> Response:
         """Renderuj stronę PDF do obrazu PNG.
 
-        SUPERMOC PDFium:
         - Renderowanie przez silnik Chrome — najwyższa jakość
         - Streaming response — zero zapisu na dysk
         - Cache przez Cache-Control: public
@@ -165,9 +162,7 @@ class PDFController(Controller):
         rotation: int = 0,
         quality: int = 85,
     ) -> Response:
-        """SUPERMOC: Renderuj stronę PDF do JPEG (mniejszy rozmiar niż PNG).
 
-        SUPERMOCE:
         - JPEG z progressive=True dla lepszego UX w przeglądarce
         - Mniejszy rozmiar niż PNG (idealne dla fotografii i skanów)
         - EXIF transpose dla PDF z embedded rotation
@@ -222,9 +217,7 @@ class PDFController(Controller):
         dpi: int = 300,
         rotation: int = 0,
     ) -> Response:
-        """SUPERMOC: Renderuj stronę PDF z preprocessingiem Pillow.
 
-        SUPERMOCE Pillow:
         - ImageOps.autocontrast — automatyczne zwiększenie kontrastu
         - ImageFilter.MedianFilter — denoising (szumy skanera)
         - ImageFilter.UnsharpMask — wyostrzenie krawędzi znaków
@@ -285,9 +278,7 @@ class PDFController(Controller):
         max_pages: int | None = None,
         format: str = "PNG",
     ) -> Response:
-        """SUPERMOC: Renderuj wszystkie strony PDF do obrazów w pamięci.
 
-        SUPERMOCE:
         - Renderowanie wszystkich stron jednym wywołaniem
         - Cache'owanie z TTL — powtórne wywołanie jest błyskawiczne
         - Zwraca JSON z base64-encoded obrazami
@@ -354,7 +345,6 @@ class PDFController(Controller):
     ) -> Response:
         """Pobierz metadane i informacje o dokumencie PDF.
 
-        SUPERMOC:
         - Jedno wywołanie PDFium zwraca wszystko
         - Serializacja przez msgspec (10-100× szybciej niż json)
         - Zwraca: page_count, file_size, metadata, first_page_size, signatures
@@ -451,7 +441,6 @@ class PDFController(Controller):
     ) -> Response:
         """Wykrywaj tabele w stronie PDF przez analizę bounding boxów.
 
-        SUPERMOC:
         - Szybsze niż OCR (ms vs sekundy)
         - Analizuje struktury kolumn bez zewnętrznych modeli
         - PDFium daje precyzyjne pozycje tekstu
@@ -489,7 +478,6 @@ class PDFController(Controller):
         self,
         document_id: str,
     ) -> Response:
-        """SUPERMOC: Weryfikacja podpisów cyfrowych w dokumencie PDF.
 
         PDFium natywnie wspiera weryfikację podpisów cyfrowych — nie wymaga
         zewnętrznych bibliotek kryptograficznych.
@@ -540,7 +528,6 @@ class PDFController(Controller):
         self,
         document_id: str,
     ) -> Response:
-        """SUPERMOC: Pobierz wszystkie pola formularza AcroForm.
 
         PDFium natywnie wspiera AcroForms przez pdf.get_form().
         Zwraca typy pól: text, checkbox, radio, listbox, combobox, signature.
@@ -589,7 +576,6 @@ class PDFController(Controller):
         document_id: str,
         data: dict[str, str],
     ) -> Response:
-        """SUPERMOC: Wypełnij pola formularza AcroForm.
 
         Przyjmuje JSON z mapowaniem field_name → value.
         Zwraca zmodyfikowany PDF jako bytes.
@@ -652,7 +638,6 @@ class PDFController(Controller):
         description="Get statistics of the PDF page render cache",
     )
     async def pdfium_cache_stats(self) -> dict[str, Any]:
-        """SUPERMOC: Statystyki cache'a renderowanych stron PDF.
 
         Zwraca:
         - Rozmiar cache'a
@@ -677,7 +662,6 @@ class PDFController(Controller):
         self,
         document_id: str | None = None,
     ) -> dict[str, Any]:
-        """SUPERMOC: Unieważnij cache renderowanych stron.
 
         Args:
             document_id: Opcjonalnie — unieważnij tylko dla tego dokumentu.

@@ -1,5 +1,4 @@
 """
-pdfium.py — SUPERMOCE pypdfium2 dla NexusAI.
 
 Kompletny zestaw narzędzi do renderowania, ekstrakcji i manipulacji PDF-ami
 przez silnik PDFium (Google Chrome).
@@ -21,9 +20,7 @@ przez anyio.to_thread.run_sync() w kontekście asynchronicznym.
 
 from __future__ import annotations
 
-import threading
 import time
-from collections import OrderedDict
 from dataclasses import dataclass, field
 from io import BytesIO
 from pathlib import Path
@@ -414,7 +411,6 @@ else:
 # ═════════════════════════════════════════════════════════════════════════════
 
 
-# ── SUPERMOC fsspec: CachingFileSystem zamiast ręcznego PDFRenderCache
 # CachingFileSystem zapewnia przezroczyste cache'owanie z TTL, maxsize,
 # automatyczną ewiktacją LRU — bez ręcznego lockowania i OrderedDict.
 
@@ -429,7 +425,6 @@ _caching_fs = CachingFileSystem(
 def get_pdf_bytes(path: str | Path) -> bytes:
     """Odczytaj PDF przez fsspec CachingFileSystem.
 
-    SUPERMOC fsspec:
     - Przezroczyste cache'owanie PDF-ów
     - Działa z file://, s3://, http:// — PDF z każdego protokołu
     - Automatyczna ewiktacja LRU przy przekroczeniu maxsize
@@ -467,8 +462,6 @@ def invalidate_pdf_cache(path: str | Path | None = None) -> None:
 # ═════════════════════════════════════════════════════════════════════════════
 # OpenTelemetry tracing — timing i liczniki
 # ═════════════════════════════════════════════════════════════════════════════
-# SUPERMOC: Używa start_span() z otel_tracing zamiast ręcznego __enter__/__exit__
-# SUPERMOC: Używa lazy importów dla uniknięcia circular import (core → api)
 
 
 def _get_otel_tracer():
@@ -488,7 +481,6 @@ def _start_span(name, tracer_name="nexus.core.pdfium", attributes=None):
 def _record_pdf_metric(name: str, value: float, attributes: dict | None = None) -> None:
     """Zapisz metrykę PDF do OTel (lazy import — unika circular importu).
 
-    SUPERMOC: Używa istniejącej metryki OCR z telemetry_metrics zamiast tworzyć nowy counter.
     """
     try:
         from nexus_ai.api.telemetry_metrics import record_ocr_duration as _r
@@ -501,7 +493,6 @@ def _record_pdf_metric(name: str, value: float, attributes: dict | None = None) 
 def _timed(func: Callable) -> Callable:
     """Dekorator do mierzenia czasu wykonania z OTel tracingiem.
 
-    SUPERMOC: Używa start_span() context managera z otel_tracing.py
     zamiast ręcznego __enter__/__exit__ na span.
     FIX: Wyjątki są rejestrowane w span jako zdarzenia.
     """
@@ -544,7 +535,6 @@ def _timed(func: Callable) -> Callable:
 
 
 class PdfDocumentSession:
-    """SUPERMOC: Sesja PDF — utrzymuje otwarty dokument dla wielu operacji.
 
     Zamiast otwierać i zamykać PDF dla każdej operacji (co robią
     wszystkie funkcje w tym module), sesja utrzymuje dokument otwarty
@@ -566,7 +556,6 @@ class PdfDocumentSession:
         if isinstance(source, bytes):
             self._pdf = pdfium.PdfDocument(source)
         else:
-            # SUPERMOC fsspec: _open_pdf_fsspec zamiast str(source)
             self._pdf = _open_pdf_fsspec(str(source))
         self._forms_initialized = False
         if init_forms:
@@ -609,7 +598,6 @@ class PdfDocumentSession:
 def open_pdf(source: str | Path | bytes) -> Any:
     """Otwórz dokument PDF przez pypdfium2.
 
-    SUPERMOC fsspec:
     - Dla str/Path: odczyt przez fsspec.open() zamiast str()
     - Działa z file://, s3://, http://
     - Dla bytes: bez zmian (już w pamięci)
@@ -618,7 +606,6 @@ def open_pdf(source: str | Path | bytes) -> Any:
 
     if isinstance(source, bytes):
         return pdfium.PdfDocument(source)
-    # SUPERMOC fsspec: odczyt przez fsspec.open() zamiast str(source)
     with fsspec.open(str(source), "rb") as f:
         data = f.read()
     return pdfium.PdfDocument(data)
@@ -682,11 +669,8 @@ def render_page_to_jpeg_bytes(
 def pdf_page_count(pdf_path: str | Path) -> int:
     """Zwróć liczbę stron w dokumencie PDF.
 
-    SUPERMOC fsspec: otwierany przez CachingFileSystem.
     """
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     count = len(pdf)
     pdf.close()
     _record_pdf_metric("pdfium.page_count", count)
@@ -697,14 +681,12 @@ def pdf_page_count(pdf_path: str | Path) -> int:
 def _open_pdf_fsspec(path: str | Path) -> Any:
     """Otwórz PDF przez fsspec — działa z każdym protokołem.
 
-    SUPERMOC fsspec:
     - fsspec.open() zamiast str(path)
     - CachingFileSystem dla przezroczystego cache
     - Zwraca pypdfium2.PdfDocument z bajtów
     """
     import pypdfium2 as pdfium
 
-    data = get_pdf_bytes(path)  # SUPERMOC: CachingFileSystem
     return pdfium.PdfDocument(data)
 
 
@@ -718,7 +700,6 @@ def render_page_to_pil(
 ) -> Image.Image:
     """Renderuj pojedynczą stronę PDF do PIL Image.
 
-    SUPERMOC fsspec: pdf otwierany przez CachingFileSystem
     zamiast bezpośrednio przez str(pdf_path).
 
     Args:
@@ -728,10 +709,8 @@ def render_page_to_pil(
         rotation: Rotacja w stopniach.
         flags: Flagi renderowania PDFium (domyślnie LCD_TEXT dla subpikselowego AA).
     """
-    import pypdfium2 as pdfium
 
     scale = dpi / PDFIUM_BASE_DPI
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec + CachingFileSystem
     try:
         page = pdf[page_num]
         bitmap = page.render(scale=scale, rotation=rotation, flags=flags)
@@ -751,7 +730,6 @@ def render_page(
 ) -> Image.Image:
     """Renderuj stronę PDF do PIL Image.
 
-    SUPERMOC fsspec: otwierany przez CachingFileSystem.
     """
     return render_page_to_pil(pdf_path, page_num, dpi, rotation, flags=flags)
 
@@ -770,7 +748,6 @@ def render_page_to_png_bytes(
 ) -> bytes:
     """Renderuj stronę PDF do PNG bytes w pamięci (zero I/O).
 
-    SUPERMOC fsspec: pdf otwierany przez CachingFileSystem.
     """
     pil_image = render_page_to_pil(pdf_path, page_num, dpi, rotation, flags=flags)
     buf = BytesIO()
@@ -790,9 +767,7 @@ def render_page_to_png_grayscale(
     *,
     use_cache: bool = True,
 ) -> bytes:
-    """SUPERMOC: Renderuj stronę PDF w skali szarości.
 
-    SUPERMOC fsspec: pdf otwierany przez CachingFileSystem.
     """
     pil_image = render_page_to_pil(pdf_path, page_num, dpi, rotation, flags=RenderFlags.GRAYSCALE)
     buf = BytesIO()
@@ -813,12 +788,9 @@ def render_all_pages(
 ) -> list[Image.Image]:
     """Renderuj wszystkie strony PDF (lub zakres) z callbackiem postępu.
 
-    SUPERMOC fsspec: pdf otwierany przez CachingFileSystem
     """
-    import pypdfium2 as pdfium
 
     scale = dpi / PDFIUM_BASE_DPI
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     total = len(pdf)
 
     start = 0 if page_range is None else page_range[0]
@@ -857,10 +829,8 @@ def render_all_pages(
 @_timed
 def pdf_to_images_memory(pdf_path: str | Path, dpi: int = DEFAULT_DPI) -> list[bytes]:
     """Konwertuj strony PDF na PNG bytes w pamięci (zero I/O na dysk)."""
-    import pypdfium2 as pdfium
 
     scale = dpi / PDFIUM_BASE_DPI
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     images: list[bytes] = []
 
     try:
@@ -885,12 +855,9 @@ def pdf_to_pil_images(
 ) -> list[Image.Image]:
     """Renderuj strony PDF do PIL Images — zero I/O, idealne dla OCR.
 
-    SUPERMOC fsspec: pdf otwierany przez CachingFileSystem.
     """
-    import pypdfium2 as pdfium
 
     scale = dpi / PDFIUM_BASE_DPI
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     images: list[Image.Image] = []
 
     try:
@@ -924,10 +891,8 @@ def render_all_pages_to_memory(
     progress_callback: Callable[[PDFProgressInfo], None] | None = None,
 ) -> list[bytes]:
     """Renderuj wszystkie strony PDF do pamięci jako bytes."""
-    import pypdfium2 as pdfium
 
     scale = dpi / PDFIUM_BASE_DPI
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec + CachingFileSystem
     total = len(pdf)
 
     start = 0 if page_range is None else page_range[0]
@@ -970,7 +935,6 @@ def render_all_pages_to_memory(
 class ProgressivePDFLoader:
     """Progresywny ładowacz PDF — renderuj strony bez pełnego parsowania.
 
-    SUPERMOC fsspec: używa _open_pdf_fsspec() do otwierania PDF przez
     CachingFileSystem. Działa z file://, s3://, http://
     """
 
@@ -1015,7 +979,6 @@ class ProgressivePDFLoader:
         if self._data is not None:
             self._pdf = pdfium.PdfDocument(self._data)
         elif self._path is not None:
-            # SUPERMOC fsspec: otwórz przez _open_pdf_fsspec zamiast direct str
             self._pdf = _open_pdf_fsspec(self._path)
         else:
             raise ValueError("No path or data provided")
@@ -1122,9 +1085,7 @@ def extract_text_from_page(
 ) -> str:
     """Ekstrahuj czysty tekst ze strony PDF z layoutem.
 
-    SUPERMOC fsspec: pdf otwierany przez CachingFileSystem.
     """
-    import pypdfium2 as pdfium
 
     try:
         import pypdfium2.raw as pdfium_raw
@@ -1133,7 +1094,6 @@ def extract_text_from_page(
     except (ImportError, AttributeError):
         layout_flag = 2
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         page = pdf[page_num]
         text_page = page.get_textpage()
@@ -1149,9 +1109,7 @@ def extract_text_simple(
     page_num: int = 0,
 ) -> str:
     """Szybka ekstrakcja tekstu bez layoutu."""
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         page = pdf[page_num]
         text_page = page.get_textpage()
@@ -1167,11 +1125,8 @@ def extract_text_ranges(
 ) -> list[dict[str, Any]]:
     """Ekstrahuj tekst z pozycjami (bounding boxy).
 
-    SUPERMOC fsspec: pdf otwierany przez CachingFileSystem.
     """
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         page = pdf[page_num]
         text_page = page.get_textpage()
@@ -1202,9 +1157,7 @@ def extract_text_ranges_typed(
     page_num: int = 0,
 ) -> list[PDFTextRange]:
     """Ekstrahuj tekst jako listę PDFTextRange (msgspec.Struct)."""
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         page = pdf[page_num]
         text_page = page.get_textpage()
@@ -1241,11 +1194,8 @@ def search_in_pdf(
     match_case: bool = False,
     whole_words: bool = False,
 ) -> list[PDFSearchResult]:
-    """SUPERMOC: Wyszukaj tekst w PDF i zwróć pozycje.
 
-    SUPERMOC fsspec: pdf otwierany przez CachingFileSystem.
     """
-    import pypdfium2 as pdfium
 
     flags = 0
     if match_case:
@@ -1253,7 +1203,6 @@ def search_in_pdf(
     if whole_words:
         flags |= 2
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         page = pdf[page_num]
         text_page = page.get_textpage()
@@ -1342,11 +1291,8 @@ def detect_table_regions(
 def get_pdf_metadata(pdf_path: str | Path) -> dict[str, str]:
     """Pobierz metadane PDF.
 
-    SUPERMOC fsspec: pdf otwierany przez CachingFileSystem.
     """
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         meta = pdf.get_metadata()
         return {k: str(v) for k, v in meta.items() if v}
@@ -1358,12 +1304,9 @@ def get_pdf_metadata(pdf_path: str | Path) -> dict[str, str]:
 def get_pdf_info(pdf_path: str | Path) -> dict[str, Any]:
     """Kompletna informacja o PDF — jednowywołaniowe API.
 
-    SUPERMOC fsspec: pdf otwierany przez CachingFileSystem.
     file_size przez fsspec.info() zamiast Path.stat().
     """
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         metadata = pdf.get_metadata()
         page_count = len(pdf)
@@ -1372,7 +1315,6 @@ def get_pdf_info(pdf_path: str | Path) -> dict[str, Any]:
         if page_count > 0:
             first_page_size = pdf[0].get_size()
 
-        # SUPERMOC fsspec: fs.info() zamiast Path.stat() — działa z zdalnymi FS
         try:
             info = _caching_fs.info(str(pdf_path))
             file_size = info.get("size", 0) if info else Path(str(pdf_path)).stat().st_size
@@ -1446,13 +1388,9 @@ def _get_signatures_internal(pdf: Any) -> list[dict[str, Any]]:
 
 @_timed
 def verify_pdf_signatures(pdf_path: str | Path) -> list[PDFSignature]:
-    """SUPERMOC: Weryfikacja podpisów cyfrowych.
 
-    SUPERMOC fsspec: pdf otwierany przez CachingFileSystem.
     """
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         raw_sigs = _get_signatures_internal(pdf)
         return [
@@ -1487,13 +1425,9 @@ def _ensure_form_env(pdf: Any) -> Any:
 
 @_timed
 def get_pdf_form_fields(pdf_path: str | Path) -> list[PDFFormField]:
-    """SUPERMOC: Pobierz wszystkie pola formularza AcroForm.
 
-    SUPERMOC fsspec: pdf otwierany przez CachingFileSystem.
     """
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         # FIX: init_forms() — PDFium wymaga tego przed get_form()
         try:
@@ -1568,13 +1502,10 @@ def fill_pdf_form_field(
     *,
     output_path: str | Path | None = None,
 ) -> bytes:
-    """SUPERMOC: Wypełnij pole formularza AcroForm.
 
     FIX: init_forms() przed get_form(), zapis przyrostowy.
     """
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         try:
             pdf.init_forms()
@@ -1622,13 +1553,10 @@ def save_pdf_with_filled_fields(
     *,
     output_path: str | Path | None = None,
 ) -> bytes:
-    """SUPERMOC: Wypełnij wiele pól formularza naraz.
 
     FIX: init_forms() przed get_form().
     """
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         try:
             pdf.init_forms()
@@ -1711,7 +1639,6 @@ def get_page_annotations(
     pdf_path: str | Path,
     page_num: int = 0,
 ) -> list[PDFAnnotation]:
-    """SUPERMOC: Pobierz wszystkie adnotacje na stronie PDF.
 
     PDFium natywnie wspiera adnotacje przez page.count_annotations()
     i page.get_annotation(). Wspiera: text, highlight, underline,
@@ -1724,9 +1651,7 @@ def get_page_annotations(
     Returns:
         List[PDFAnnotation] — lista adnotacji z typem, pozycją, treścią.
     """
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         page = pdf[page_num]
         count = page.count_annotations()
@@ -1764,9 +1689,7 @@ def get_page_annotations(
 @_timed
 def count_page_annotations(pdf_path: str | Path, page_num: int = 0) -> int:
     """Policz adnotacje na stronie."""
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         return pdf[page_num].count_annotations()
     finally:
@@ -1788,7 +1711,6 @@ def _get_attachment_count_internal(pdf: Any) -> int:
 
 @_timed
 def get_pdf_attachments(pdf_path: str | Path) -> list[PDFAttachment]:
-    """SUPERMOC: Pobierz wszystkie załączniki osadzone w PDF.
 
     PDFium natywnie wspiera embedded files przez pdf.count_attachments()
     i pdf.get_attachment(). Można wyciągać osadzone XML, obrazy, PDF-y.
@@ -1799,9 +1721,7 @@ def get_pdf_attachments(pdf_path: str | Path) -> list[PDFAttachment]:
     Returns:
         List[PDFAttachment] — lista załączników z nazwą, danymi, rozmiarem.
     """
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         count = pdf.count_attachments()
         if count == 0:
@@ -1836,7 +1756,6 @@ def add_pdf_attachment(
     *,
     output_path: str | Path | None = None,
 ) -> bytes:
-    """SUPERMOC: Dodaj załącznik do dokumentu PDF.
 
     Args:
         pdf_path: Ścieżka do pliku PDF.
@@ -1847,9 +1766,7 @@ def add_pdf_attachment(
     Returns:
         bytes — zmodyfikowany PDF.
     """
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         pdf.new_attachment(name, data)
         logger.info("[PDFium] Added attachment: %s (%d bytes)", name, len(data))
@@ -1930,7 +1847,6 @@ def _bookmark_to_dict(bm: Any) -> dict[str, Any]:
 
 @_timed
 def get_pdf_bookmarks(pdf_path: str | Path) -> list[PDFBookmark]:
-    """SUPERMOC: Pobierz strukturę zakładek (spis treści) PDF.
 
     PDFium natywnie wspiera bookmarks/outline przez pdf.get_bookmarks().
     Zwraca hierarchiczną strukturę z poziomami zagnieżdżenia.
@@ -1941,9 +1857,7 @@ def get_pdf_bookmarks(pdf_path: str | Path) -> list[PDFBookmark]:
     Returns:
         List[PDFBookmark] — hierarchiczna lista zakładek.
     """
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         bms = pdf.get_bookmarks()
         if not bms:
@@ -1964,7 +1878,6 @@ def save_incremental(
     *,
     output_path: str | Path | None = None,
 ) -> bytes:
-    """SUPERMOC: Zapisz zmodyfikowany PDF przyrostowo.
 
     Zapis przyrostowy dodaje tylko zmiany na końcu pliku PDF,
     zamiast przepisywać cały dokument. Idealne dla:
@@ -1979,19 +1892,15 @@ def save_incremental(
     Returns:
         bytes — zmodyfikowany PDF (przyrostowo).
     """
-    import pypdfium2 as pdfium
 
-    # Użyj istniejącego PDF-a jako bazy — SUPERMOC fsspec: open przez CachingFileSystem
     if output_path:
         # Kopiuj plik przez fsspec, potem zapisz
-        data = get_pdf_bytes(pdf_path)  # SUPERMOC: CachingFileSystem
         dest = Path(str(output_path))
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(data)
         return data
     else:
         # Dla bytes: otwórz przez fsspec, zapisz do bytesIO
-        pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
         try:
             buf = BytesIO()
             pdf.save_to_bytesio(buf)
@@ -2011,7 +1920,6 @@ def merge_pdfs(
     *,
     output_path: str | Path | None = None,
 ) -> bytes:
-    """SUPERMOC: Scal wiele plików PDF w jeden dokument.
 
     Używa PdfDocument.new() do utworzenia pustego dokumentu,
     a następnie import_pages() do skopiowania stron z każdego źródła.
@@ -2028,7 +1936,6 @@ def merge_pdfs(
     merged = pdfium.PdfDocument.new()
     try:
         for path in pdf_paths:
-            src = _open_pdf_fsspec(path)  # SUPERMOC: fsspec
             try:
                 merged.import_pages(src, range(len(src)))
                 logger.debug("[PDFium] Merged %d pages from %s", len(src), path)
@@ -2054,7 +1961,6 @@ def delete_pages_from_pdf(
     *,
     output_path: str | Path | None = None,
 ) -> bytes:
-    """SUPERMOC: Usuń wybrane strony z PDF.
 
     Args:
         pdf_path: Ścieżka do pliku PDF.
@@ -2064,9 +1970,7 @@ def delete_pages_from_pdf(
     Returns:
         bytes — zmodyfikowany PDF.
     """
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         for page_num in sorted(pages, reverse=True):
             pdf.del_page(page_num)
@@ -2090,7 +1994,6 @@ def extract_pages_from_pdf(
     *,
     output_path: str | Path | None = None,
 ) -> bytes:
-    """SUPERMOC: Wyodrębnij wybrane strony do nowego PDF.
 
     Args:
         pdf_path: Ścieżka do pliku PDF.
@@ -2102,7 +2005,6 @@ def extract_pages_from_pdf(
     """
     import pypdfium2 as pdfium
 
-    src = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         extracted = pdfium.PdfDocument.new()
         try:
@@ -2123,7 +2025,6 @@ def extract_pages_from_pdf(
 
 @_timed
 def pdfa_check(pdf_path: str | Path) -> PDFACompliance:
-    """SUPERMOC: Sprawdź zgodność dokumentu z PDF/A.
 
     PDFium może zwrócić wersję PDF/A dokumentu:
     0 = brak zgodności, 1 = PDF/A-1, 2 = PDF/A-2, 3 = PDF/A-3
@@ -2131,9 +2032,7 @@ def pdfa_check(pdf_path: str | Path) -> PDFACompliance:
     Returns:
         PDFACompliance — wynik sprawdzenia.
     """
-    import pypdfium2 as pdfium
 
-    pdf = _open_pdf_fsspec(pdf_path)  # SUPERMOC: fsspec
     try:
         version = pdf.get_pdfa_pdf_version() if hasattr(pdf, "get_pdfa_pdf_version") else 0
         version_str = {0: "none", 1: "PDF/A-1", 2: "PDF/A-2", 3: "PDF/A-3"}.get(

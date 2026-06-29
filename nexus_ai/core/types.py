@@ -1,15 +1,13 @@
 """
 Core types — PaginatedResponse (Generic msgspec.Struct) and validation helpers.
 
-SUPERMOCE msgspec:
 - Struct z typami → zero narzutu walidacji
 - Generics przez Generic[T] na Struct
 """
 
 from __future__ import annotations
 
-from decimal import Decimal
-from typing import Any, Generic, TypeVar
+from typing import Generic, TypeVar
 
 from msgspec import Struct
 

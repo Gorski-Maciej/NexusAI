@@ -6,7 +6,6 @@
 #   python build_nexus.py --report           # Build z raportem XML
 #   python build_nexus.py --no-lto           # Build bez LTO (szybsza kompilacja)
 
-import os
 import sys
 from pathlib import Path
 

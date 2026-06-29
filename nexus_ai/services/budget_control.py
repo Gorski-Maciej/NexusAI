@@ -1,6 +1,4 @@
-"""Budgetary control engine — kontrola budżetu z SUPERMOCAMI TigerBeetle.
 
-SUPERMOCE:
 - TB account limits (debits_must_not_exceed_credits) natywnie
 - get_account_balances_batch() zamiast per-account loop
 - Multiple account balances w jednym zapytaniu
@@ -16,7 +14,7 @@ from typing import Any, final
 import anyio
 import pendulum
 
-from nexus_ai.services.tigerbeetle.client import TigerBeetleClient, LEDGER
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
 
 class BudgetStatus(Struct, frozen=True):
@@ -33,9 +31,7 @@ class BudgetStatus(Struct, frozen=True):
 
 @final
 class BudgetaryControlEngine:
-    """Kontrola budżetu z SUPERMOCAMI TigerBeetle.
 
-    SUPERMOCE TB:
     - get_account_balances_batch() — wiele kont w jednym zapytaniu
     - AccountFlags.DEBITS_MUST_NOT_EXCEED_CREDITS — TB egzekwuje limit natywnie
     """
@@ -93,7 +89,6 @@ class BudgetaryControlEngine:
         if account_id is None:
             raise ValueError(f"No TigerBeetle account mapping for account_code={account_code!r}")
 
-        # SUPERMOC: Pobierz saldo z TB (realne, nie z cache)
         current_minor = self.tb_client.get_account_balance(account_id)
         current_amount = float(current_minor) / 100.0
         projected_amount = current_amount + float(new_invoice_amount)
@@ -148,7 +143,6 @@ class BudgetaryControlEngine:
             projected_usage_percent=projected_usage_percent,
         )
 
-    # SUPERMOC: Batch budget check dla wielu kont
     async def get_budget_status_batch(
         self,
         account_codes: list[str],
@@ -157,7 +151,6 @@ class BudgetaryControlEngine:
     ) -> dict[str, BudgetStatus]:
         """Sprawdź budżet dla wielu kont w jednym zapytaniu.
 
-        SUPERMOC: get_account_balances_batch() — wiele kont w jednym round-trip.
         """
         if len(account_codes) != len(amounts):
             raise ValueError("account_codes and amounts must have same length")
@@ -178,7 +171,6 @@ class BudgetaryControlEngine:
         if not account_ids:
             return {}
 
-        # SUPERMOC: Batch balance query
         balances = await anyio.to_thread.run_sync(
             self.tb_client.get_account_balances_batch,
             account_ids,

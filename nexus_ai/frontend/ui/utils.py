@@ -10,7 +10,6 @@ import anyio
 class Debouncer:
     """Zapobiega spamowaniu API (np. przy pasku wyszukiwania).
 
-    SUPERMOC: Używa anyio.Event do anulowania poprzedniego zadania.
     """
 
     def __init__(self, wait_ms: int = 500):

@@ -179,7 +179,6 @@ def _error_envelope(
 def domain_error_handler(request: Request, exc: DomainError) -> Response:
     """Dedykowany handler dla DomainError.
 
-    SUPERMOC Litestar: Rzucamy HTTPException wewnątrz handlera, który jest
     automatycznie przechwytywany przez ProblemDetailsPlugin i formatowany
     jako RFC 9457 Problem Details (application/problem+json).
 
@@ -236,12 +235,10 @@ def global_exception_handler(request: Request, exc: Exception) -> Response:
     - ``HTTPException`` → standardowe kody HTTP
     - ``msgspec.ValidationError`` → 422
 
-    SUPERMOC Sentry: Wysyła każdy nieobsłużony wyjątek do Sentry
     z kontekstem requestu (method, path, correlation_id).
 
     Ten handler działa jako fallback — loguje i zwraca 500.
     """
-    # SUPERMOC: Wyślij do Sentry z kontekstem requestu
     try:
         from nexus_ai.core.sentry import capture_exception
 

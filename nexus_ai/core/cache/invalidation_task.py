@@ -1,7 +1,6 @@
 """
 Taskiq task for async cache invalidation.
 
-SUPERMOC: Używane przez NATS distributed cache invalidation
 gdy broker nie wspiera bezpośredniego publish/subscribe.
 
 Usage:
@@ -11,9 +10,7 @@ Usage:
 
 from __future__ import annotations
 
-from typing import Any
 
-from nexus_ai.core.broker import broker
 from nexus_ai.core.cache import get_cache
 
 # --- Nie używamy @broker.task, bo to powoduje circular import

@@ -43,7 +43,7 @@ from nexus_ai.api.dto import (
     TAG_ADMIN,
 )
 from nexus_ai.api.rbac import admin_only_guard, requires_permission
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_dumps_bytes
+from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.services.admin_services import (
     BillingRuleService as BillingRuleAdminSvc,
     FailedTaskService as FailedTaskAdminSvc,

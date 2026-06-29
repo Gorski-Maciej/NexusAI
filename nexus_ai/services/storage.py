@@ -6,7 +6,6 @@ TOTALNA REWOLUCJA: wszystkie operacje I/O przez AsyncFsWrapper.
 - ``await afs.pipe_file()`` zamiast ``await fsspec.open_async(..., 'wb')``
 - Gotowy na S3: zmiana storage_protocol → natywne async I/O
 
-SUPERMOC fsspec:
 - ``fsspec.open()`` — uniwersalne otwieranie plików w każdym protokole (file://, s3://, sftp://, memory://)
 - ``fsspec.filesystem()`` — konfigurowalny backend przez config TOML
 - ``auto_mkdir`` — automatyczne tworzenie katalogów (CachingFileSystem opcjonalnie)
@@ -63,10 +62,8 @@ class StorageService:
         # TOTALNA REWOLUCJA: AsyncFsWrapper dla async API
         self._async_fs = factory.get_async_filesystem()
 
-        # SUPERMOC: TransactionalFileSystem dla atomowych operacji
         self._tx_fs = TransactionalFileSystem(fs=self._fs)
 
-        # SUPERMOC: fsspec.get_mapper() dla metadanych
         self._meta_mapper = factory.get_mapper(".meta/")
 
         logger.info(
@@ -106,7 +103,6 @@ class StorageService:
     ) -> str:
         """Save file content using chunked streaming (sync, wątek roboczy).
 
-        SUPERMOC fsspec: ``fsspec.open()`` działa z każdym protokołem.
         """
         rel_path = self._local_path(original_name)
         url = self._resolve_url(rel_path)
@@ -131,7 +127,6 @@ class StorageService:
         rel_path = self._local_path(Path(source_path).name)
         url = self._resolve_url(rel_path)
 
-        # SUPERMOC: fsspec.open() dla źródła i celu
         with fsspec.open(source_path, "rb") as src:
             with fsspec.open(url, "wb") as dst:
                 while True:
@@ -146,7 +141,6 @@ class StorageService:
         """Compatibility helper for in-memory payloads (sync)."""
         return self.save_invoice_stream(io.BytesIO(payload), original_name=original_name)
 
-    # ── Async API (SUPERMOC: non-blocking file I/O) ─────────────────────────
 
     async def save_invoice_stream_async(
         self,
@@ -215,12 +209,10 @@ class StorageService:
         url = self._ensure_protocol_prefix(url)
         return await self._async_fs.exists(url)
 
-    # ── SUPERMOC: fsspec.get_mapper() — dict-like interface ─────────────────
 
     def get_mapper(self, prefix: str = "") -> MutableMapping:
         """Zwraca fsspec.get_mapper() — dict-like interface do storage.
 
-        SUPERMOC fsspec:
         ``fsspec.get_mapper(url)`` tworzy ``MutableMapping`` (dict-like),
         idealny do przechowywania metadanych, małych plików, konfiguracji.
         Zwraca ``fsspec.mapping.FSMap`` implementujący ``MutableMapping``.
@@ -233,7 +225,6 @@ class StorageService:
         """Bezpośredni dostęp do instancji fsspec filesystem."""
         return self._fs
 
-    # ── SUPERMOC: TransactionalFileSystem — atomowe operacje ────────────────
 
     @property
     def tx_fs(self) -> TransactionalFileSystem:
@@ -250,7 +241,6 @@ class StorageService:
     def transaction(self):
         """Context manager dla atomowych operacji na storage.
 
-        SUPERMOC fsspec: ``TransactionalFileSystem.transaction()`` —
         wszystkie operacje w bloku są deferowane i commitują się atomowo
         po wyjściu z context managera.
 
@@ -260,7 +250,6 @@ class StorageService:
         """
         return self._tx_fs.transaction()
 
-    # ── SUPERMOC: save_with_progress — TqdmCallback ────────────────────────
 
     def save_with_progress(
         self,
@@ -269,7 +258,6 @@ class StorageService:
         target_name: str | None = None,
         description: str = "Uploading...",
     ) -> str:
-        """SUPERMOC: Zapisz plik z progress barem przez fsspec TqdmCallback.
 
         Używa ``fsspec.callbacks.TqdmCallback()`` do wyświetlenia
         paska postępu podczas transferu pliku.
@@ -287,7 +275,6 @@ class StorageService:
         rel_path = self._local_path(target_name)
         url = self._resolve_url(rel_path)
 
-        # SUPERMOC: fsspec.get() z TqdmCallback — kopiuje plik z progress barem
         with TqdmCallback(desc=description) as cb:
             self._fs.get(source_path, url, callback=cb)
 
@@ -314,7 +301,6 @@ class StorageService:
 
         return url
 
-    # ── SUPERMOC: copy_between_fs — kopia między systemami plików ──────────
 
     @staticmethod
     def copy_between_fs(
@@ -325,7 +311,6 @@ class StorageService:
         dst_protocol: str = "file",
         callback: Any = None,
     ) -> None:
-        """SUPERMOC: Kopiuj plik między różnymi systemami plików fsspec.
 
         Używa ``fsspec.filesystem()`` dla źródła i celu, a następnie
         ``fs.get()`` / ``fs.put()`` do transferu.
@@ -341,7 +326,6 @@ class StorageService:
         src_fs = fsspec.filesystem(src_protocol)
         dst_fs = fsspec.filesystem(dst_protocol)
 
-        # SUPERMOC: fsspec get/put — transfer między FS
         with src_fs.open(src_url, "rb") as src:
             with dst_fs.open(dst_url, "wb") as dst:
                 if callback:
@@ -357,7 +341,6 @@ class StorageService:
                 else:
                     dst.write(src.read())
 
-    # ── SUPERMOC: get_file_info — metadane pliku przez fsspec ─────────────
 
     async def get_file_info(self, url: str) -> dict[str, Any]:
         """Pobierz metadane pliku przez async fsspec I/O.
@@ -378,14 +361,12 @@ class StorageService:
             "url": url,
         }
 
-    # ── SUPERMOC: stream_to_response — async streaming dla API ────────────
 
     async def stream_to_response(
         self,
         url: str,
         chunk_size: int = UPLOAD_CHUNK_SIZE,
     ) -> AsyncIterator[bytes]:
-        """SUPERMOC: Streamuj plik w async generatorze dla odpowiedzi API.
 
         TOTALNA REWOLUCJA: ``await self._async_fs.open()`` zamiast ``fsspec.open_async()``.
 
@@ -405,11 +386,9 @@ class StorageService:
                     break
                 yield chunk
 
-    # ── SUPERMOC: MemoryFileSystem — tymczasowy storage w RAM ─────────────
 
     @staticmethod
     def create_memory_storage() -> StorageService:
-        """SUPERMOC: Utwórz StorageService z MemoryFileSystem (RAM-only).
 
         Idealne dla:
         - Testów jednostkowych (szybkie, bez I/O na dysk)
@@ -424,7 +403,6 @@ class StorageService:
         from fsspec.implementations.memory import MemoryFileSystem
 
         # Tworzymy mock config z memory protocol
-        from nexus_ai.core.config import AppConfig
 
         class _MockConfig:
             storage_protocol = "memory"
@@ -449,19 +427,16 @@ class StorageService:
         service._fs.makedirs("test", exist_ok=True)
         return service
 
-    # ── SUPERMOC: meta_mapper — dict-like metadanych ───────────────────────
 
     @property
     def meta(self) -> MutableMapping:
         """Dict-like interfejs do metadanych storage.
 
-        SUPERMOC fsspec: ``fsspec.get_mapper()`` zwraca ``MutableMapping``,
         który automatycznie serializuje wartości do plików w katalogu .meta/.
         Każdy klucz to osobny plik, odczyt/zapis przez fsspec.
         """
         return self._meta_mapper
 
-    # ── SUPERMOC: list_files — lista plików przez fsspec ────────────────────
 
     async def list_files(self, prefix: str = "") -> list[dict[str, Any]]:
         """Listuj pliki w storage z metadanymi przez async fsspec I/O.

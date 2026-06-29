@@ -94,12 +94,10 @@ def calculate_liquidity_timeline(
 ) -> list[LiquidityPoint]:
     """Forecast timeline with optimistic/likely/pessimistic balances.
 
-    SUPERMOCE DuckDB:
     - ``GENERATE_SERIES`` zamiast pętli ``for step in range(days_ahead)`` w Pythonie
     - Window functions dla running totals zamiast ręcznego ``opt -= amt``
     - Wszystkie obliczenia w jednym SQL — zero pętli w Pythonie
 
-    SUPERMOCE Polars (nowe):
     - ``pl.from_arrow()`` — zero-copy z DuckDB Arrow do Polars
     - **LazyFrame z wyrażeniami** — ``pl.col().cast()`` zamiast pa.compute
     - ``pl.SQLContext`` — integracja SQL z expression API Polars
@@ -113,7 +111,6 @@ def calculate_liquidity_timeline(
     cleared = Decimal(tigerbeetle._account_credits_posted.get(account_bank_id, 0)) / Decimal(100)
     start_balance = cleared
 
-    # ── SUPERMOC: execute_arrow() → pl.from_arrow() zero-copy ──────
     # DuckDB produkuje pa.Table, Polars konsumuje bez kopiowania.
     result_table = duckdb.execute_arrow(
         """
@@ -181,12 +178,10 @@ def calculate_liquidity_timeline(
     if result_table is None:
         return []
 
-    # ── SUPERMOC: pl.from_arrow() zero-copy + LazyFrame ───────────
     # Polars przejmuje Arrow buffer bez kopiowania. LazyFrame
     # pozwala na dalsze transformacje przed kolekcją.
     lazy_df = pl.from_arrow(result_table).lazy()
 
-    # ── SUPERMOC: cast + shrink_dtype ──────────────────────────────
     # Jawny schemat + redukcja typów dla oszczędności RAM.
     lazy_df = lazy_df.with_columns(
         [
@@ -196,14 +191,10 @@ def calculate_liquidity_timeline(
         ]
     )
 
-    # ── SUPERMOC: collect(streaming=True) — OOM safety ────────────
     df = lazy_df.collect(streaming=True)
 
-    # ── SUPERMOC: shrink_dtype() — -50% RAM ───────────────────────
     df = df.shrink_dtype()
 
-    # ── SUPERMOC: sink_parquet() — zapis prognozy do Parquet z Hive partycjonowaniem ──
-    # SUPERMOCE Parquet:
     # - Partycjonowanie: year=/month=/day= — szybkie odcięcie partycji
     # - ``sink_parquet()`` — streaming zapis bez alokacji RAM
     # - ``scan_parquet()`` — leniwe odczytywanie historycznych prognoz
@@ -221,7 +212,6 @@ def calculate_liquidity_timeline(
     except Exception:
         pass  # Non-critical — prognoza działa dalej w RAM
 
-    # ── SUPERMOC: to_dicts() zamiast ręcznej pętli ─────────────────
     # Polars ``.to_dicts()" zwraca listę słowników w C++ — szybciej
     # niż pętla ``for row in df.iter_rows()`` w Pythonie.
     timeline: list[LiquidityPoint] = []
