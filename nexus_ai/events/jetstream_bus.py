@@ -352,10 +352,16 @@ class JetStreamConsumer:
                             await msg.ack()
                         except Exception as exc:
                             await msg.nak(delay=min(5, cfg.ack_wait // 2))
-                except NatsErrors.TimeoutError: pass
-                except NatsErrors.ConnectionClosedError: break
-                except Exception: await anyio.sleep(1)
-        except anyio.CancelledError: pass
+                except NatsErrors.TimeoutError:
+                    logger.debug("[JETSTREAM:CONSUMER] fetch timeout on %s", cfg.consumer_name)
+                except NatsErrors.ConnectionClosedError:
+                    logger.warning("[JETSTREAM:CONSUMER] connection closed on %s", cfg.consumer_name)
+                    break
+                except Exception as exc:
+                    logger.warning("[JETSTREAM:CONSUMER] fetch error on %s: %s", cfg.consumer_name, exc)
+                    await anyio.sleep(1)
+        except anyio.CancelledError:
+            logger.debug("[JETSTREAM:CONSUMER] consumer %s cancelled", cfg.consumer_name)
         except Exception as exc: logger.error("[JETSTREAM:CONSUMER] %s failed: %s", cfg.consumer_name, exc)
 
     async def stop(self) -> None:

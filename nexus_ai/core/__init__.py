@@ -38,10 +38,16 @@ from nexus_ai.core.logger import logger  # noqa: E402
 # ── Optional / gracefully-falling modules ───────────────────────────────────
 
 
+import importlib as _importlib
+
+
 def _safe_import(qualname: str, names: list[str]):
-    """Try to import *names* from *qualname*; return (module, imported_names) on success."""
+    """Try to import *names* from *qualname*; return (module, imported_names) on success.
+
+    Używa importlib.import_module zamiast __import__ (Enterprise TOP-6 fix).
+    """
     try:
-        mod = __import__(qualname, fromlist=names)
+        mod = _importlib.import_module(qualname)
         return mod, [getattr(mod, n) for n in names]
     except (ImportError, ModuleNotFoundError, AttributeError) as exc:
         _log.debug("Optional import %s.%s unavailable: %s", qualname, names, exc)

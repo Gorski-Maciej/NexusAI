@@ -76,8 +76,8 @@ class AsyncEventStore:
         if self._conn is not None:
             try:
                 await self._run_sync(lambda: self._conn.execute("PRAGMA optimize;"))
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning("[STORE] PRAGMA optimize failed: %s", exc)
             await self._run_sync(lambda: self._pool.close_conn(str(self._db_path)))
             self._conn = None
 

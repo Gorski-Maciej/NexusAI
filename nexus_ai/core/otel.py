@@ -369,10 +369,8 @@ def _otel_atexit_shutdown() -> None:
     for ref in (_tracer_provider_ref, _meter_provider_ref, _logger_provider_ref):
         if ref is not None:
             try:
-                ref.shutdown()
-            except Exception:
-                pass
-
+                ref.shutdown()            except Exception as exc:
+                logger.debug("[OTEL] Shutdown error for %s: %s", type(ref).__name__, exc)
 def register_otel_shutdown(tracer_provider: Any | None = None, meter_provider: Any | None = None, logger_provider: Any | None = None) -> None:
     global _tracer_provider_ref, _meter_provider_ref, _logger_provider_ref
     if tracer_provider is not None:
@@ -494,12 +492,19 @@ def _instrument_grpc() -> bool:
         return False
 
 def uninstrument_all() -> None:
-    """Wyłącz wszystkie instrumentacje."""
+    """Wyłącz wszystkie instrumentacje.
+
+    Używa importlib.import_module zamiast __import__ (Enterprise TOP-6 fix).
+    """
+    import importlib as _il
     for mod_name in ("sqlalchemy", "httpx", "logging"):
         try:
-            mod = __import__(f"opentelemetry.instrumentation.{mod_name}", fromlist=["SQLAlchemyInstrumentor" if mod_name == "sqlalchemy" else f"{mod_name.capitalize()}Instrumentor"])
-            if hasattr(mod, "uninstrument"):
-                mod.uninstrument()
-        except Exception:
-            pass
+            instr_name = "SQLAlchemyInstrumentor" if mod_name == "sqlalchemy" else f"{mod_name.capitalize()}Instrumentor"
+            mod = _il.import_module(f"opentelemetry.instrumentation.{mod_name}")
+            if hasattr(mod, instr_name):
+                instr_class = getattr(mod, instr_name)
+                if hasattr(instr_class, "uninstrument"):
+                    instr_class.uninstrument()
+        except Exception as exc:
+            logger.debug("[OTEL] Failed to uninstrument %s: %s", mod_name, exc)
     logger.debug("[OTEL] All instrumentations uninstrumented")

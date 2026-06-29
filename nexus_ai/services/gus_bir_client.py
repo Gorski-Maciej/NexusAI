@@ -11,6 +11,7 @@ from msgspec import Struct, field
 from typing import Any, final
 
 import httpx
+import stamina
 from structlog import get_logger
 
 from nexus_ai.core.cache.http_client import CachedHttpClient
@@ -81,8 +82,8 @@ class GusBirClient:
                     "Wyloguj",
                     f"<ns:Wyloguj><ns:pIdentyfikatorSesji>{self._sid}</ns:pIdentyfikatorSesji></ns:Wyloguj>",
                 )
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning("[GUS-BIR] Logout on exit failed: %s", exc)
         await self._http.close()
 
     @property
@@ -91,7 +92,10 @@ class GusBirClient:
         return bool(self._sid)
 
     async def login(self) -> bool:
-        """Zaloguj sie do API GUS BIR i pobierz session ID (sid)."""
+        """Zaloguj sie do API GUS BIR i pobierz session ID (sid).
+
+        SUPERPOWERS: stamina.retry z circuit breaker dla odpornej komunikacji z GUS.
+        """
         if not self._api_key:
             raise ValueError(
                 "GUS BIR API key not configured. Set GUS_BIR_API_KEY env var "
@@ -101,19 +105,30 @@ class GusBirClient:
         body = (
             f"<ns:Zaloguj><ns:pKluczUzytkownika>{self._api_key}</ns:pKluczUzytkownika></ns:Zaloguj>"
         )
-        try:
-            result = await self._soap_call("Zaloguj", body)
-            self._sid = result.strip()
-            logger.info(
-                "[GUS-BIR] Login successful, sid=%s...", self._sid[:10] if self._sid else "empty"
-            )
-            return bool(self._sid)
-        except Exception as exc:
-            logger.error("[GUS-BIR] Login failed: %s", exc)
-            raise ConnectionError(f"GUS BIR login failed: {exc}") from exc
+        for attempt in stamina.retry_context(
+            on=(httpx.HTTPStatusError, httpx.TimeoutException, httpx.RequestError, ConnectionError),
+            attempts=3,
+            timeout=15.0,
+            circuit_breaker=True,
+        ):
+            with attempt:
+                try:
+                    result = await self._soap_call("Zaloguj", body)
+                    self._sid = result.strip()
+                    logger.info(
+                        "[GUS-BIR] Login successful, sid=%s...", self._sid[:10] if self._sid else "empty"
+                    )
+                    return bool(self._sid)
+                except Exception as exc:
+                    logger.error("[GUS-BIR] Login failed: %s", exc)
+                    raise ConnectionError(f"GUS BIR login failed: {exc}") from exc
+        return False
 
     async def search_by_nip(self, nip: str) -> list[GusBirResult]:
-        """Wyszukaj firmy po NIP."""
+        """Wyszukaj firmy po NIP.
+
+        SUPERPOWERS: stamina.retry dla odpornej komunikacji z GUS BIR.
+        """
         nip_clean = "".join(c for c in nip if c.isdigit())
         if len(nip_clean) != 10:
             raise ValueError(f"Invalid NIP: {nip}")
@@ -127,17 +142,27 @@ class GusBirClient:
             "</ns:pParametryWyszukiwania>"
             "</ns:DaneSzukaj>"
         )
-        try:
-            raw_xml = await self._soap_call("DaneSzukaj", body)
-            results = self._parse_search_results(raw_xml)
-            logger.info("[GUS-BIR] search_by_nip nip=%s results=%d", nip_clean, len(results))
-            return results
-        except Exception as exc:
-            logger.warning("[GUS-BIR] search_by_nip failed nip=%s: %s", nip_clean, exc)
-            return []
+        for attempt in stamina.retry_context(
+            on=(httpx.HTTPStatusError, httpx.TimeoutException, httpx.RequestError, ConnectionError),
+            attempts=3,
+            timeout=15.0,
+        ):
+            with attempt:
+                try:
+                    raw_xml = await self._soap_call("DaneSzukaj", body)
+                    results = self._parse_search_results(raw_xml)
+                    logger.info("[GUS-BIR] search_by_nip nip=%s results=%d", nip_clean, len(results))
+                    return results
+                except Exception as exc:
+                    logger.warning("[GUS-BIR] search_by_nip failed nip=%s: %s", nip_clean, exc)
+                    raise
+        return []
 
     async def get_full_report(self, regon: str) -> GusBirResult | None:
-        """Pobierz pelny raport dla REGON."""
+        """Pobierz pelny raport dla REGON.
+
+        SUPERPOWERS: stamina.retry dla odpornej komunikacji z GUS BIR.
+        """
         regon_clean = "".join(c for c in regon if c.isdigit())
         if len(regon_clean) not in (9, 14):
             logger.warning("[GUS-BIR] Invalid REGON: %s", regon)
@@ -153,15 +178,22 @@ class GusBirClient:
             "PelnyRaport</ns:pNazwaRaportu>"
             "</ns:DanePobierzPelnyRaport>"
         )
-        try:
-            raw_xml = await self._soap_call("DanePobierzPelnyRaport", body)
-            result = self._parse_full_report(raw_xml)
-            if result:
-                result.regon = regon_clean
-            return result
-        except Exception as exc:
-            logger.warning("[GUS-BIR] get_full_report failed regon=%s: %s", regon_clean, exc)
-            return None
+        for attempt in stamina.retry_context(
+            on=(httpx.HTTPStatusError, httpx.TimeoutException, httpx.RequestError, ConnectionError),
+            attempts=3,
+            timeout=15.0,
+        ):
+            with attempt:
+                try:
+                    raw_xml = await self._soap_call("DanePobierzPelnyRaport", body)
+                    result = self._parse_full_report(raw_xml)
+                    if result:
+                        result.regon = regon_clean
+                    return result
+                except Exception as exc:
+                    logger.warning("[GUS-BIR] get_full_report failed regon=%s: %s", regon_clean, exc)
+                    raise
+        return None
 
     async def logout(self) -> None:
         """Wyloguj sie i zwolnij sesje."""
@@ -181,7 +213,10 @@ class GusBirClient:
             self._sid = ""
 
     async def enrich_from_nip(self, nip: str) -> dict[str, Any]:
-        """Kompletne wzbogacenie danych z GUS BIR dla NIP-u."""
+        """Kompletne wzbogacenie danych z GUS BIR dla NIP-u.
+
+        SUPERPOWERS: stamina.retry dla calego przeplywu GUS BIR.
+        """
         result: dict[str, Any] = {
             "vat_status": "unknown",
             "pkd": "",
@@ -209,8 +244,8 @@ class GusBirClient:
         finally:
             try:
                 await self.logout()
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning("[GUS-BIR] enrich_from_nip logout failed nip=%s: %s", nip, exc)
         return result
 
     # --- SOAP internals ---

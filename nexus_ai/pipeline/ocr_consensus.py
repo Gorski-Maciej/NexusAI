@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import gc
 import os
 import re
 import threading
@@ -20,6 +21,22 @@ from nexus_ai.core.opencv_pipeline import HAS_CV2, OpenCVPreprocessor
 from nexus_ai.pipeline.ocr_base import BaseOCREngine, catch_ocr_errors
 
 logger = get_logger("nexus.pipeline.ocr_consensus")
+
+
+def _cleanup_ai_model(model: Any, name: str = "model") -> None:
+    """Enterprise TOP-4: Explicit memory cleanup of AI model after use.
+
+    Python 3.13t (free-threaded) nie ma GIL, wiec jawny del + gc.collect()
+    jest krytyczny dla zwalniania pamieci GPU/CPU przez modele AI.
+    Modele OCR (PaddleOCR: ~800MB, docTR: ~500MB) musza byc czyszczone
+    po kazdym uzyciu, aby uniknac wyciekow pamieci.
+    """
+    if model is not None:
+        try:
+            del model
+        except Exception:
+            pass
+    gc.collect()
 
 
 class OCREngine(Enum):
@@ -320,6 +337,10 @@ class PaddleOCREngine(BaseOCREngine):
             logger.warning("[OCR] PaddleOCR not installed")
         except Exception as exc:
             logger.warning("[OCR] PaddleOCR init failed: %s", exc)
+            self._ocr = None
+            self._available = False
+            import gc
+            gc.collect()
 
     def _warmup(self) -> None:
         if self._warmup_done or not self._available or self._ocr is None:
@@ -437,6 +458,9 @@ class PaddleOCREngine(BaseOCREngine):
         except Exception as exc:
             logger.error("[OCR] PaddleOCR structured failed: %s", exc)
             return None
+        finally:
+            # Enterprise TOP-4: cleanup AI model memory after use
+            _cleanup_ai_model(self._ocr, "paddleocr_structured")
 
     async def extract_layout(self, image_path: Path) -> list[dict] | None:
         if not self._available or self._structure_engine is None:
@@ -452,6 +476,8 @@ class PaddleOCREngine(BaseOCREngine):
         except Exception as exc:
             logger.error("[OCR] PaddleOCR layout failed: %s", exc)
             return None
+        finally:
+            _cleanup_ai_model(self._structure_engine, "paddleocr_layout")
 
     async def extract_tables(self, image_path: Path) -> list[dict] | None:
         if not self._available or self._structure_engine is None:
@@ -469,6 +495,8 @@ class PaddleOCREngine(BaseOCREngine):
         except Exception as exc:
             logger.error("[OCR] PaddleOCR tables failed: %s", exc)
             return None
+        finally:
+            _cleanup_ai_model(self._structure_engine, "paddleocr_tables")
 
     async def detect_seals(self, image_path: Path) -> list[dict] | None:
         if not self._available or self._structure_engine is None:
@@ -484,6 +512,8 @@ class PaddleOCREngine(BaseOCREngine):
         except Exception as exc:
             logger.error("[OCR] PaddleOCR seal detection failed: %s", exc)
             return None
+        finally:
+            _cleanup_ai_model(self._structure_engine, "paddleocr_seals")
 
     async def extract_text_batch(self, images: list[str | Path | Any], max_workers: int = 1) -> list[str | None]:
         if not self._available or self._ocr is None:
@@ -504,7 +534,7 @@ class PaddleOCREngine(BaseOCREngine):
             with self._ocr_lock:
                 old_ocr, self._ocr = self._ocr, None
                 del old_ocr
-                import gc; gc.collect()
+                import gc; gc.collect()  # Enterprise TOP-4: explicit memory cleanup after model swap
                 from paddleocr import PaddleOCR as _PaddleOCR
                 self._ocr = _PaddleOCR(**{**self._build_ocr_kwargs(), "use_tensorrt": True})
                 logger.info("[OCR] PaddleOCR TensorRT enabled")
@@ -574,19 +604,25 @@ class DocTREngine(BaseOCREngine):
 
     async def _extract_text_impl(self, image_path: Path) -> str | None:
         from doctr.io import DocumentFile
-        result = await anyio.to_thread.run_sync(lambda: self._predictor(DocumentFile.from_images(str(image_path))).render())
-        return result.strip() if result else None
+        try:
+            result = await anyio.to_thread.run_sync(lambda: self._predictor(DocumentFile.from_images(str(image_path))).render())
+            return result.strip() if result else None
+        finally:
+            _cleanup_ai_model(self._predictor, "doctr_predictor")
 
     async def _extract_confidence_impl(self, image_path: Path) -> list[dict] | None:
         from doctr.io import DocumentFile
-        result = await anyio.to_thread.run_sync(lambda: self._predictor(DocumentFile.from_images(str(image_path))).export())
-        words = [{"text": w.get("value", ""), "confidence": round(float(w.get("confidence", 0.0)), 4),
-                  "bbox": w.get("geometry", []), "block_type": b.get("type", "text")}
-                 for page in result.get("pages", [])
-                 for b in page.get("blocks", [])
-                 for l in b.get("lines", [])
-                 for w in l.get("words", [])]
-        return words if words else None
+        try:
+            result = await anyio.to_thread.run_sync(lambda: self._predictor(DocumentFile.from_images(str(image_path))).export())
+            words = [{"text": w.get("value", ""), "confidence": round(float(w.get("confidence", 0.0)), 4),
+                      "bbox": w.get("geometry", []), "block_type": b.get("type", "text")}
+                     for page in result.get("pages", [])
+                     for b in page.get("blocks", [])
+                     for l in b.get("lines", [])
+                     for w in l.get("words", [])]
+            return words if words else None
+        finally:
+            _cleanup_ai_model(self._predictor, "doctr_confidence")
 
     async def extract_tables(self, image_path: Path) -> list[dict] | None:
         if not self._available or self._table_predictor is None:
@@ -598,6 +634,8 @@ class DocTREngine(BaseOCREngine):
         except Exception as exc:
             logger.error("[OCR] docTR tables failed: %s", exc)
             return None
+        finally:
+            _cleanup_ai_model(self._table_predictor, "doctr_tables")
 
     async def extract_structured(self, image_path: Path) -> dict:
         if not self._available or self._predictor is None:
@@ -608,6 +646,8 @@ class DocTREngine(BaseOCREngine):
         except Exception as exc:
             logger.error("[OCR] docTR structured failed: %s", exc)
             return {"status": "error", "message": str(exc)}
+        finally:
+            _cleanup_ai_model(self._predictor, "doctr_structured")
 
     async def extract_text_from_pdf(self, pdf_path: Path) -> str | None:
         if not self._available or self._predictor is None:
@@ -619,6 +659,8 @@ class DocTREngine(BaseOCREngine):
         except Exception as exc:
             logger.error("[OCR] docTR PDF failed: %s", exc)
             return None
+        finally:
+            _cleanup_ai_model(self._predictor, "doctr_pdf")
 
     async def extract_layout(self, image_path: Path) -> list[dict] | None:
         if not self._available or self._predictor is None:
@@ -636,6 +678,8 @@ class DocTREngine(BaseOCREngine):
         except Exception as exc:
             logger.error("[OCR] docTR layout failed: %s", exc)
             return None
+        finally:
+            _cleanup_ai_model(self._predictor, "doctr_layout")
 
     async def extract_key_fields(self, image_path: Path) -> dict | None:
         if not self._available or self._kie_predictor is None:
@@ -647,6 +691,8 @@ class DocTREngine(BaseOCREngine):
         except Exception as exc:
             logger.error("[OCR] docTR KiE failed: %s", exc)
             return None
+        finally:
+            _cleanup_ai_model(self._kie_predictor, "doctr_kie")
 
 
 # ── EasyOCR Engine ────────────────────────────────────────────────

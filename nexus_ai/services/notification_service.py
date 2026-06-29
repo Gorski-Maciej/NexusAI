@@ -56,8 +56,8 @@ class DailyBriefingGenerator:
             try:
                 stats = await self._get_trust_trend()
                 trust_trend = stats.get("trend", "stable")
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[DailyBriefing] trust trend error: %s", exc)
 
         ple_stats = {}
         alerts = self._generate_alerts(auto_posted, blocked, pending_review)

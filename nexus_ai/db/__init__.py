@@ -16,8 +16,10 @@ _log = _get_logger("nexus.db")
 
 
 def _safe_import(qualname: str, names: list[str]):
+    """Safe import using importlib.import_module (Enterprise TOP-6 fix)."""
     try:
-        mod = __import__(qualname, fromlist=names)
+        import importlib as _il
+        mod = _il.import_module(qualname)
         return [getattr(mod, n) for n in names]
     except (ImportError, ModuleNotFoundError, AttributeError) as exc:
         _log.debug("Optional import %s.%s unavailable: %s", qualname, names, exc)

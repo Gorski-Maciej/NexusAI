@@ -537,21 +537,4 @@ class UserAccount(SQLModel, table=True):
 Base = SQLModel
 
 
-# ── Partial indexes (DEPRECATED — przeniesione do migracji 0004) ─────────
-# SUPERMOC: Wszystkie partial indexes zostały przeniesione do migracji 0004.
-# Ta funkcja pozostaje jako fallback dla fresh databases bez migracji.
-# Docelowo: usuń w następnej wersji.
 
-_PARTIAL_INDEXES: dict[str, list[str]] = {
-    # SUPERMOC: Te indeksy są teraz tworzone przez migrację 0004
-    # jako idx_invoices_active_status_mig, idx_invoices_active_updated_mig,
-    # idx_outbox_pending_only_mig
-}
-
-
-def create_partial_indexes(_engine) -> None:
-    """[DEPRECATED] Partial indexes przeniesione do migracji 0004.
-
-    Ta funkcja jest pusta i zostanie usunięta w następnej wersji.
-    Wszystkie partial indexes są tworzone przez native SQL migration 0004.
-    """

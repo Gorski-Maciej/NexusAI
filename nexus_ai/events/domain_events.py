@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
 import uuid
 from typing import Any, ClassVar
 
@@ -34,7 +35,7 @@ class InvoiceCreated(DomainEvent, tag="invoice.created"):
     _event_description = "Faktura utworzona w systemie (po OCR)"
     aggregate_type: str = "invoice"
     number: str = ""; contractor_nip: str = ""; contractor_name: str = ""
-    amount_net: float = 0.0; amount_gross: float = 0.0; currency: str = "PLN"
+    amount_net: Decimal = Decimal("0.00"); amount_gross: Decimal = Decimal("0.00"); currency: str = "PLN"
     category: str = ""; issue_date: str = ""; file_path: str = ""
 
 
@@ -42,7 +43,7 @@ class InvoiceSubmitted(DomainEvent, tag="invoice.submitted"):
     _event_tag = "invoice.submitted"
     _event_description = "Faktura przesłana do decyzji (DecisionEngine)"
     aggregate_type: str = "invoice"
-    amount_gross: float = 0.0; contractor_nip: str = ""
+    amount_gross: Decimal = Decimal("0.00"); contractor_nip: str = ""
 
 
 class InvoiceApproved(DomainEvent, tag="invoice.approved"):
@@ -70,7 +71,7 @@ class InvoicePaid(DomainEvent, tag="invoice.paid"):
     _event_tag = "invoice.paid"
     _event_description = "Faktura opłacona (przez TigerBeetle)"
     aggregate_type: str = "invoice"
-    amount_gross: float = 0.0; paid_at: str = ""; transaction_id: str = ""
+    amount_gross: Decimal = Decimal("0.00"); paid_at: str = ""; transaction_id: str = ""
 
 
 class DecisionMade(DomainEvent, tag="decision.made"):

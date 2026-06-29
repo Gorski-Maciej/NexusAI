@@ -1,280 +1,345 @@
-"""
-Domain Value Objects for financial domain — msgspec.Struct with validation.
+"""Domain Value Objects — DDD dla NexusAI.
 
-Zgodnie z wymaganiami Enterprise (DDD, Value Objects):
-- Money: kwota w walucie z kontrolą precyzji (grosze)
-- NIP: polski NIP z walidacją sumy kontrolnej
-- IBAN: międzynarodowy numer rachunku bankowego
-- PESEL: polski PESEL z walidacją
+Zgodnie z wymaganiami Enterprise §1:
+- Wszystkie Value Object są msgspec.Struct z frozen=True (immutable)
+- Każdy VO ma własną walidację w __post_init__
+- Money używa Decimal (NIE float) dla bezpieczeństwa finansowego
+- NIP, IBAN mają pełną walidację (checksum, format)
 
-Wszystkie Value Objects są:
-- Niezmienne (frozen=True)
-- Typowane (msgspec.Struct z type hints)
-- Z walidacją w __post_init__
-- Z serializacją przez msgspec (zero-copy)
+Usage:
+    price = Money("1234.56", "PLN")
+    nip = NIP("1234567890")
+    price_net = MoneyNet(gross=Money("1230.00"), vat_rate=Decimal("0.23"))
 """
 
 from __future__ import annotations
 
 import re
 from decimal import ROUND_HALF_UP, Decimal
-from typing import final
+from typing import ClassVar
 
-from msgspec import Struct
-
-
-# ── Wyjątki domenowe ────────────────────────────────────────────────────────
+import msgspec
+import pendulum
 
 
-class DomainValidationError(ValueError):
-    """Base exception for domain validation errors."""
+# ═══════════════════════════════════════════════════════════════════════════
+# Money — Value Object dla kwot finansowych (NIE float!)
+# ═══════════════════════════════════════════════════════════════════════════
 
 
-class InvalidNIPError(DomainValidationError):
-    """NIP has invalid checksum or format."""
+class CurrencyMismatchError(ValueError):
+    """Rzucany gdy próbujemy operować na różnych walutach."""
+
+    def __init__(self, a: str, b: str) -> None:
+        super().__init__(f"Cannot operate on different currencies: {a} vs {b}")
+        self.code = "CURRENCY_MISMATCH"
 
 
-class InvalidIBANError(DomainValidationError):
-    """IBAN has invalid checksum or format."""
+class Money(msgspec.Struct, frozen=True, kw_only=True):
+    """Value Object: Pieniądze z walutą.
 
-
-class InvalidPESELError(DomainValidationError):
-    """PESEL has invalid checksum or format."""
-
-
-class CurrencyMismatchError(DomainValidationError):
-    """Cannot perform arithmetic on different currencies."""
-
-
-# ── Value Objects ───────────────────────────────────────────────────────────
-
-
-@final
-class Money(Struct, frozen=True, kw_only=True):
-    """Value Object: kwota w walucie z kontrolą precyzji (grosze).
-
-    Args:
-        amount: Kwota (zaokrąglana do 2 miejsc po przecinku).
+    Attributes:
+        amount: Kwota w Decimal (NIE float!).
         currency: Kod waluty ISO 4217 (domyślnie PLN).
 
-    Raises:
-        CurrencyMismatchError: Przy próbie dodania różnych walut.
-        ValueError: Gdy amount jest ujemne.
+    Usage:
+        price = Money(amount=Decimal("1234.56"), currency="PLN")
+        total = price + other_price  # TypeError jeśli różne waluty
+        vat = price * Decimal("0.23")  # VAT = 283.95
     """
 
     amount: Decimal
     currency: str = "PLN"
 
     def __post_init__(self) -> None:
-        if self.amount < 0:
-            raise ValueError(f"Amount cannot be negative: {self.amount}")
-        if not re.match(r"^[A-Z]{3}$", self.currency):
-            raise ValueError(f"Invalid currency code: {self.currency}")
-        # Zaokrąglenie do groszy (2 miejsca po przecinku)
-        object.__setattr__(
-            self, "amount", self.amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-        )
+        """Walidacja: kwota >= 0, waluta 3 litery."""
+        if self.amount < Decimal("0"):
+            raise ValueError(f"Money amount cannot be negative: {self.amount}")
+        if len(self.currency) != 3 or not self.currency.isalpha():
+            raise ValueError(f"Currency must be ISO 4217 (3 letters): {self.currency}")
 
     def __add__(self, other: Money) -> Money:
         if self.currency != other.currency:
-            raise CurrencyMismatchError(f"Cannot add {self.currency} and {other.currency}")
+            raise CurrencyMismatchError(self.currency, other.currency)
         return Money(amount=self.amount + other.amount, currency=self.currency)
 
     def __sub__(self, other: Money) -> Money:
         if self.currency != other.currency:
-            raise CurrencyMismatchError(f"Cannot subtract {self.currency} and {other.currency}")
-        result = self.amount - other.amount
-        # W księgowości korekty (storna) mogą dać ujemne saldo przejściowo
-        # Dopuszczamy do -0.01 (błąd zaokrąglenia)
-        if result < -Decimal("0.01"):
-            raise ValueError(f"Result would be negative: {result}")
-        return Money(amount=max(result, Decimal("0.00")), currency=self.currency)
+            raise CurrencyMismatchError(self.currency, other.currency)
+        return Money(amount=self.amount - other.amount, currency=self.currency)
 
-    def __mul__(self, factor: Decimal | int) -> Money:
-        """Pomnóż kwotę przez współczynnik.
-
-        Args:
-            factor: Mnożnik (Decimal lub int). Float nie jest akceptowany
-                    ze względu na utratę precyzji.
-
-        Raises:
-            TypeError: Gdy factor jest float.
-        """
-        if isinstance(factor, float):
-            raise TypeError(
-                "Use Decimal for multiplication to avoid precision loss. "
-                "Convert: factor = Decimal(str(factor))"
-            )
+    def __mul__(self, factor: Decimal | int | float) -> Money:
         return Money(
-            amount=self.amount * Decimal(str(factor)),
+            amount=(self.amount * Decimal(str(factor))).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
             currency=self.currency,
         )
 
     def __neg__(self) -> Money:
-        raise ValueError("Money cannot be negative")
+        return Money(amount=-self.amount, currency=self.currency)
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         return f"{self.amount:.2f} {self.currency}"
 
-    def to_grosze(self) -> int:
-        """Zwróć kwotę w groszach (int) dla TigerBeetle."""
-        return int(self.amount * 100)
+    def __repr__(self) -> str:
+        return f"Money({self.amount:.2f}, {self.currency})"
 
-    @classmethod
-    def from_grosze(cls, grosze: int, currency: str = "PLN") -> Money:
-        """Utwórz Money z kwoty w groszach."""
-        return cls(amount=Decimal(grosze) / 100, currency=currency)
+    @property
+    def is_zero(self) -> bool:
+        """Sprawdź czy kwota = 0."""
+        return self.amount == Decimal("0")
+
+    @property
+    def is_positive(self) -> bool:
+        """Sprawdź czy kwota > 0."""
+        return self.amount > Decimal("0")
+
+    def round(self, places: int = 2) -> Money:
+        """Zaokrąglij do podanej liczby miejsc po przecinku."""
+        return Money(
+            amount=self.amount.quantize(Decimal("0." + "0" * places), rounding=ROUND_HALF_UP),
+            currency=self.currency,
+        )
+
+    def to_dict(self) -> dict[str, str | Decimal]:
+        """Konwersja do dict dla serializacji przez msgspec enc_hook."""
+        return {"amount": self.amount, "currency": self.currency}
 
     @classmethod
     def zero(cls, currency: str = "PLN") -> Money:
-        """Zwróć zero dla danej waluty."""
+        """Zwróć zero w podanej walucie."""
         return cls(amount=Decimal("0.00"), currency=currency)
 
+    @classmethod
+    def from_float(cls, value: float, currency: str = "PLN") -> Money:
+        """Utwórz z float (z konwersją na Decimal). Uwaga: straty precyzji."""
+        return cls(amount=Decimal(str(value)), currency=currency)
 
-@final
-class NIP(Struct, frozen=True, kw_only=True):
-    """Value Object: polski NIP z walidacją sumy kontrolnej.
 
-    Format: 10 cyfr (XXX-XXX-XX-XX lub XXXXXXXXXX).
+# ═══════════════════════════════════════════════════════════════════════════
+# MoneyNet — kwota netto + VAT
+# ═══════════════════════════════════════════════════════════════════════════
 
-    Raises:
-        InvalidNIPError: Gdy NIP ma nieprawidłową sumę kontrolną.
+
+class MoneyNet(msgspec.Struct, frozen=True, kw_only=True):
+    """Value Object: Kwota netto + VAT = brutto.
+
+    Zapewnia niezmiennik: netto + VAT = brutto.
+
+    Usage:
+        inv = MoneyNet(amount_net=Money("1000.00"), vat_rate=Decimal("0.23"))
+        assert inv.amount_gross == Money("1230.00")
+    """
+
+    amount_net: Money
+    vat_rate: Decimal
+
+    def __post_init__(self) -> None:
+        if self.vat_rate < Decimal("0") or self.vat_rate > Decimal("1"):
+            raise ValueError(f"VAT rate must be between 0 and 1: {self.vat_rate}")
+
+    @property
+    def amount_vat(self) -> Money:
+        """Kwota VAT = netto * stawka."""
+        return self.amount_net * self.vat_rate
+
+    @property
+    def amount_gross(self) -> Money:
+        """Kwota brutto = netto + VAT."""
+        return self.amount_net + self.amount_vat
+
+    @classmethod
+    def from_gross(cls, amount_gross: Money, vat_rate: Decimal) -> MoneyNet:
+        """Utwórz z kwoty brutto i stawki VAT.
+
+        Netto = brutto / (1 + vat_rate)
+        """
+        if vat_rate >= Decimal("1"):
+            raise ValueError(f"VAT rate too high for gross calculation: {vat_rate}")
+        net = Money(
+            amount=(amount_gross.amount / (Decimal("1") + vat_rate)).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            ),
+            currency=amount_gross.currency,
+        )
+        return cls(amount_net=net, vat_rate=vat_rate)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# NIP — Value Object z walidacją checksum
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class NIP(msgspec.Struct, frozen=True, kw_only=True):
+    """Value Object: NIP (10 cyfr + suma kontrolna).
+
+    Usage:
+        nip = NIP(value="1234563218")
+        assert nip.is_valid
     """
 
     value: str
+    # Wagi dla sumy kontrolnej (stałe)
+    _WEIGHTS: ClassVar[tuple[int, ...]] = (6, 5, 7, 2, 3, 4, 5, 6, 7)
 
     def __post_init__(self) -> None:
-        # Normalizacja: usuń myślniki i spacje
-        normalized = re.sub(r"[\s-]", "", self.value)
-        if not self._validate(normalized):
-            raise InvalidNIPError(
-                f"Invalid NIP: {self.value}. Must be 10 digits with valid checksum."
-            )
-        object.__setattr__(self, "value", normalized)
-
-    @staticmethod
-    def _validate(nip: str) -> bool:
-        """Walidacja sumy kontrolnej NIP."""
-        if len(nip) != 10 or not nip.isdigit():
-            return False
-        weights = [6, 5, 7, 2, 3, 4, 5, 6, 7]
-        total = sum(int(d) * w for d, w in zip(nip, weights))
-        return total % 11 == int(nip[-1])
+        normalized = "".join(ch for ch in self.value if ch.isdigit())
+        if len(normalized) != 10:
+            raise ValueError(f"NIP must be exactly 10 digits, got {len(normalized)}: {self.value}")
+        # Suma kontrolna
+        checksum = sum(int(d) * w for d, w in zip(normalized[:9], self._WEIGHTS)) % 11
+        if checksum == 10 or checksum != int(normalized[9]):
+            raise ValueError(f"Invalid NIP checksum: {self.value}")
 
     def __str__(self) -> str:
-        return f"{self.value[:3]}-{self.value[3:6]}-{self.value[6:8]}-{self.value[8:]}"
+        return self.value
+
+    @property
+    def normalized(self) -> str:
+        """Zwróć NIP tylko jako cyfry."""
+        return "".join(ch for ch in self.value if ch.isdigit())
+
+    @property
+    def formatted(self) -> str:
+        """Sformatowany NIP: XXX-XXX-XX-XX."""
+        v = self.normalized
+        return f"{v[:3]}-{v[3:6]}-{v[6:8]}-{v[8:]}"
 
 
-@final
-class IBAN(Struct, frozen=True, kw_only=True):
-    """Value Object: międzynarodowy numer rachunku bankowego (IBAN).
+# ═══════════════════════════════════════════════════════════════════════════
+# InvoiceNumber — numer faktury
+# ═══════════════════════════════════════════════════════════════════════════
 
-    Format: 2 litery (kraj) + 2 cyfry (checksum) + do 30 cyfr/liter.
-    Dla Polski: PL + 2 cyfry + 26 cyfr (łącznie 28 znaków).
 
-    Raises:
-        InvalidIBANError: Gdy IBAN ma nieprawidłową sumę kontrolną.
+class InvoiceNumber(msgspec.Struct, frozen=True, kw_only=True):
+    """Value Object: Numer faktury z ekstrakcją roku/miesiąca/serii.
+
+    Usage:
+        num = InvoiceNumber(value="FV/2026/06/001")
+        assert num.year == "2026"
+        assert num.series == "FV"
+    """
+
+    value: str
+    _PATTERN: ClassVar[re.Pattern] = re.compile(
+        r"^(?P<series>[A-Za-z0-9]+)/(?P<year>\d{4})/(?P<month>\d{2})/(?P<seq>\d+)$"
+    )
+
+    def __post_init__(self) -> None:
+        if not self._PATTERN.match(self.value):
+            raise ValueError(
+                f"Invalid invoice number format: {self.value}. "
+                f"Expected: SERIES/YYYY/MM/SEQ (e.g., FV/2026/06/001)"
+            )
+
+    @property
+    def _match(self):
+        return self._PATTERN.match(self.value)
+
+    @property
+    def series(self) -> str:
+        return self._match.group("series")
+
+    @property
+    def year(self) -> str:
+        return self._match.group("year")
+
+    @property
+    def seq(self) -> str:
+        return self._match.group("seq")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# IBAN — walidacja numeru rachunku bankowego
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class IBAN(msgspec.Struct, frozen=True, kw_only=True):
+    """Value Object: IBAN z walidacją długości i checksum.
+
+    Usage:
+        iban = IBAN(value="PL61109010140000071219812874")
+        assert iban.country == "PL"
     """
 
     value: str
 
     def __post_init__(self) -> None:
-        # Normalizacja: usuń spacje, zamień na uppercase
-        normalized = re.sub(r"\s", "", self.value).upper()
-        if not self._validate(normalized):
-            raise InvalidIBANError(
-                f"Invalid IBAN: {self.value}. Must pass IBAN checksum validation."
-            )
-        object.__setattr__(self, "value", normalized)
+        normalized = self.value.replace(" ", "").upper()
+        if len(normalized) < 15 or len(normalized) > 34:
+            raise ValueError(f"IBAN length must be 15-34 chars: {len(normalized)}")
+        if not normalized[:2].isalpha():
+            raise ValueError(f"IBAN must start with country code: {normalized}")
+        # Prosta walidacja checksum IBAN
+        rearranged = normalized[4:] + normalized[:4]
+        numeric = "".join(str(ord(c) - 55) if c.isalpha() else c for c in rearranged)
+        if int(numeric) % 97 != 1:
+            raise ValueError(f"Invalid IBAN checksum: {self.value}")
 
-    @staticmethod
-    def _validate(iban: str) -> bool:
-        """Walidacja sumy kontrolnej IBAN (ISO 13616)."""
-        if len(iban) < 4 or len(iban) > 34:
-            return False
-        if not re.match(r"^[A-Z]{2}\d{2}[A-Z0-9]+$", iban):
-            return False
-        # Przesuń pierwsze 4 znaki na koniec i zamień litery na cyfry
-        rearranged = iban[4:] + iban[:4]
-        numeric = ""
-        for ch in rearranged:
-            if ch.isdigit():
-                numeric += ch
-            else:
-                numeric += str(ord(ch) - 55)
-        return int(numeric) % 97 == 1
-
-    def __str__(self) -> str:
-        """Zwróć IBAN w grupach po 4 znaki."""
-        groups = [self.value[i : i + 4] for i in range(0, len(self.value), 4)]
-        return " ".join(groups)
+    @property
+    def country(self) -> str:
+        return self.value.replace(" ", "").upper()[:2]
 
 
-@final
-class PESEL(Struct, frozen=True, kw_only=True):
-    """Value Object: polski PESEL z walidacją sumy kontrolnej.
+# ═══════════════════════════════════════════════════════════════════════════
+# TaxPeriod — okres rozliczeniowy
+# ═══════════════════════════════════════════════════════════════════════════
 
-    Format: 11 cyfr.
 
-    Raises:
-        InvalidPESELError: Gdy PESEL ma nieprawidłową sumę kontrolną.
+class TaxPeriod(msgspec.Struct, frozen=True, kw_only=True):
+    """Value Object: Okres rozliczeniowy (miesiąc/rok/kwartał).
+
+    Usage:
+        period = TaxPeriod(year=2026, month=6)
+        assert period.is_month
+        assert period.month_name == "June"
+
+        q = TaxPeriod(year=2026, quarter=2)
+        assert q.months == [4, 5, 6]
     """
 
-    value: str
+    year: int
+    month: int | None = None
+    quarter: int | None = None
 
     def __post_init__(self) -> None:
-        if not self._validate(self.value):
-            raise InvalidPESELError(
-                f"Invalid PESEL: {self.value}. Must be 11 digits with valid checksum."
-            )
+        if self.month is None and self.quarter is None:
+            raise ValueError("Either month or quarter must be specified")
+        if self.month is not None and not 1 <= self.month <= 12:
+            raise ValueError(f"Month must be 1-12: {self.month}")
+        if self.quarter is not None and not 1 <= self.quarter <= 4:
+            raise ValueError(f"Quarter must be 1-4: {self.quarter}")
 
-    @staticmethod
-    def _validate(pesel: str) -> bool:
-        """Walidacja sumy kontrolnej PESEL."""
-        if len(pesel) != 11 or not pesel.isdigit():
-            return False
-        weights = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3]
-        total = sum(int(d) * w for d, w in zip(pesel, weights))
-        checksum = (10 - (total % 10)) % 10
-        return checksum == int(pesel[-1])
+    @property
+    def is_month(self) -> bool:
+        return self.month is not None
 
-    def get_birth_date(self) -> str:
-        """Wyodrębnij datę urodzenia z PESEL (YYYY-MM-DD)."""
-        year = int(self.value[:2])
-        month = int(self.value[2:4])
-        day = int(self.value[4:6])
+    @property
+    def is_quarter(self) -> bool:
+        return self.quarter is not None
 
-        # Określenie wieku na podstawie miesiąca
-        if month > 80:
-            year += 1800
-            month -= 80
-        elif month > 60:
-            year += 2200
-            month -= 60
-        elif month > 40:
-            year += 2100
-            month -= 40
-        elif month > 20:
-            year += 2000
-            month -= 20
-        else:
-            year += 1900
+    @property
+    def months(self) -> list[int]:
+        if self.month is not None:
+            return [self.month]
+        return list(range((self.quarter - 1) * 3 + 1, self.quarter * 3 + 1))
 
-        return f"{year:04d}-{month:02d}-{day:02d}"
+    @property
+    def month_name(self) -> str | None:
+        if self.month is not None:
+            return pendulum.Date(self.year, self.month, 1).format("MMMM")
+        return None
 
-    def get_gender(self) -> str:
-        """Określ płeć na podstawie PESEL."""
-        return "male" if int(self.value[9]) % 2 == 1 else "female"
 
+# ═══════════════════════════════════════════════════════════════════════════
+# Eksport — wszystkie klasy dostępne z nexus_ai.domain
+# ═══════════════════════════════════════════════════════════════════════════
 
 __all__ = [
     "Money",
+    "MoneyNet",
     "NIP",
+    "InvoiceNumber",
     "IBAN",
-    "PESEL",
-    "DomainValidationError",
-    "InvalidNIPError",
-    "InvalidIBANError",
-    "InvalidPESELError",
+    "TaxPeriod",
     "CurrencyMismatchError",
 ]
