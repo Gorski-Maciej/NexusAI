@@ -14,7 +14,7 @@ import importlib.util
 import os
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any
 
 import pendulum
 
@@ -295,11 +295,20 @@ from typing import Annotated
 from msgspec import Meta
 
 
-class _AppSection(Struct, kw_only=True):
-    """msgspec schema dla sekcji [app] w config/{env}.toml.
+# ── Typed TOML config — jedna struktura zamiast 10 osobnych ────────────
+# Konsolidacja: _AppSection, _NatsSection, _StaminaSection, _StorageSection,
+# _SecuritySection, _IntegrationsSection, _TaxSection, _AiSection,
+# _TigerbeetleSection, _OpaSection → jeden ConfigSchema
 
-    są walidowane przy parsowaniu przez msgspec. Błędy zakresu → logowane,
-    aplikacja używa bezpiecznych defaultów z AppConfig.
+
+class ConfigSchema(Struct, kw_only=True):
+    """Jedna schema dla całego pliku config/{env}.toml.
+
+    Zastępuje 10 osobnych klas: _AppSection, _NatsSection, _StaminaSection,
+    _StorageSection, _SecuritySection, _IntegrationsSection, _TaxSection,
+    _AiSection, _TigerbeetleSection, _OpaSection.
+
+    Redukcja: ~250 linii → ~100 linii.
     """
 
     # ── Core ──
@@ -325,116 +334,46 @@ class _AppSection(Struct, kw_only=True):
     sqlcipher_key_env: str | None = None
     duckdb_memory_limit: str | None = None
     duckdb_threads: Annotated[int | None, Meta(ge=1, le=64)] = None
-
-    # ── CORS ──
-    cors_origins: str | None = None
-
-    # ── Connection pools ──
     db_pool_size: Annotated[int | None, Meta(ge=1, le=100)] = None
     db_pool_overflow: Annotated[int | None, Meta(ge=0, le=200)] = None
+    cors_origins: str | None = None
+
+    # ── NATS ──
+    nats_url: str | None = None
     nats_max_reconnect: Annotated[int | None, Meta(ge=0, le=100)] = None
     nats_reconnect_delay_seconds: Annotated[float | None, Meta(ge=0.1, le=60)] = None
 
-    # ── Upload limits ──
-    max_invoice_upload_mb: Annotated[int | None, Meta(ge=1, le=1000)] = None
-    max_attachment_upload_mb: Annotated[int | None, Meta(ge=1, le=10000)] = None
+    # ── Storage ──
+    storage_protocol: str | None = None
+    storage_root: str | None = None
+    storage_auto_mkdir: bool | None = None
+    storage_cache_size_mb: Annotated[int | None, Meta(ge=0, le=10240)] = None
+    storage_chain_cache_storage: str | None = None
 
-    # ── Retry (stamina) ──
-    max_task_retries: Annotated[int | None, Meta(ge=0, le=20)] = None
+    # ── Stamina (resilience) ──
+    stamina_retry_attempts: Annotated[int | None, Meta(ge=1, le=20)] = None
+    stamina_retry_timeout: Annotated[float | None, Meta(ge=1.0, le=300.0)] = None
+    stamina_circuit_breaker_enabled: bool | None = None
+    stamina_circuit_breaker_cooldown: Annotated[float | None, Meta(ge=5.0, le=600.0)] = None
     retry_backoff_base_seconds: Annotated[float | None, Meta(ge=0.1, le=30)] = None
     retry_backoff_max_seconds: Annotated[float | None, Meta(ge=1.0, le=300)] = None
+    max_task_retries: Annotated[int | None, Meta(ge=0, le=20)] = None
 
-    # ── Outbox ──
-    outbox_replay_limit: Annotated[int | None, Meta(ge=1, le=10000)] = None
-
-    # ── Migration ──
-    migration_baseline_file: str | None = None
-    migration_checksum_baseline_file: str | None = None
-
-    # ── Decision Engine ──
-    autopilot_auto_post_threshold: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
-    autopilot_suggest_threshold: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
-    autopilot_ask_threshold: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
-    autopilot_adaptation_enabled: bool | None = None
-    autopilot_adaptation_learning_rate: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
-    autopilot_low_amount_threshold: Annotated[float | None, Meta(ge=0.0)] = None
-    rules_max_invoice_amount: Annotated[float | None, Meta(ge=0.0)] = None
-    rules_require_nip_validation: bool | None = None
-    analytics_anomaly_threshold: Annotated[float | None, Meta(ge=0.0)] = None
-    decision_timeout_seconds: Annotated[int | None, Meta(ge=5, le=600)] = None
-
-
-class _NatsSection(Struct, kw_only=True):
-    """msgspec schema dla sekcji [nats]."""
-
-    url: str | None = None
-    max_reconnect: int | None = None
-    reconnect_delay_seconds: int | None = None
-
-
-class _StorageSection(Struct, kw_only=True):
-    """msgspec schema dla sekcji [storage].
-
-    - protocol: "file", "s3", "sftp", "memory", "zip" — zmiana backendu bez zmiany kodu
-    - root: ścieżka bazowa w wybranym protokole
-    - auto_mkdir: automatyczne tworzenie katalogów
-    - cache_size: rozmiar cache dla CachingFileSystem (w MB, 0 = wyłączony)
-
-    Używane przez: services/storage.py, core/exporters/storage.py, api/services.py,
-    api/routes/invoices.py, api/controllers/invoices.py, scripts/backup.py.
-    """
-
-    protocol: str | None = None
-    root: str | None = None
-    auto_mkdir: bool | None = None
-    cache_size_mb: Annotated[int | None, Meta(ge=0, le=10240)] = None
-    chain_cache_storage: str | None = None  # Ścieżka cache dla chain FS
-
-
-class _StaminaSection(Struct, kw_only=True):
-    """msgspec schema dla sekcji [stamina].
-
-    Globalne stamina settings dla resilience (retry, circuit breaker).
-    """
-
-    retry_attempts: Annotated[int | None, Meta(ge=1, le=20)] = None
-    retry_timeout: Annotated[float | None, Meta(ge=1.0, le=300.0)] = None
-    circuit_breaker_enabled: bool | None = None
-    circuit_breaker_cooldown: Annotated[float | None, Meta(ge=5.0, le=600.0)] = None
-
-
-class _SecuritySection(Struct, kw_only=True):
-    """msgspec schema dla sekcji [security].
-
-    - jwt_exclude_paths: ścieżki publiczne (bez JWT auth)
-    - csrf_exclude_paths: ścieżki bez CSRF (np. auth endpoints)
-    - rate_limit_auth: limit dla /api/auth (brute-force protection)
-    - rate_limit_general: limit dla pozostałych endpointów
-    """
-
+    # ── Security ──
     jwt_exclude_paths: list[str] | None = None
     csrf_exclude_patterns: list[str] | None = None
     rate_limit_auth: Annotated[int | None, Meta(ge=1, le=100)] = None
     rate_limit_upload: Annotated[int | None, Meta(ge=1, le=200)] = None
     rate_limit_general: Annotated[int | None, Meta(ge=1, le=1000)] = None
 
+    # ── Upload ──
+    max_invoice_upload_mb: Annotated[int | None, Meta(ge=1, le=1000)] = None
+    max_attachment_upload_mb: Annotated[int | None, Meta(ge=1, le=10000)] = None
 
-class _IntegrationsSection(Struct, kw_only=True):
-    """msgspec schema dla sekcji [integrations]."""
-
+    # ── Integrations ──
     dpo_alert_webhook: str | None = None
 
-
-# ── NOWE SEKCJE TOML (FAZA 1 AUDYTU) ─────────────────────────────────
-
-
-class _TaxSection(Struct, kw_only=True):
-    """msgspec schema dla sekcji [tax] w config/{env}.toml.
-
-    Sekcja [tax] istnieje w dev.toml i prod.toml, ale była
-    wcześniej ignorowana przez typed schema — parsowana tylko jako dict.
-    """
-
+    # ── Tax ──
     default_vat_rate: Annotated[int | None, Meta(ge=0, le=100)] = None
     cit_rate: Annotated[float | None, Meta(ge=0, le=100)] = None
     linear_rate: Annotated[float | None, Meta(ge=0, le=100)] = None
@@ -442,14 +381,7 @@ class _TaxSection(Struct, kw_only=True):
     vat_exempt_threshold: Annotated[float | None, Meta(ge=0)] = None
     vat_quarterly_threshold: Annotated[float | None, Meta(ge=0)] = None
 
-
-class _AiSection(Struct, kw_only=True):
-    """msgspec schema dla sekcji [ai] w config/{env}.toml.
-
-    Zgodnie z audytem: ścieżki modeli AI zdefiniowane w TOML zamiast
-    w kodzie. Walidacja przez msgspec przy starcie.
-    """
-
+    # ── AI ──
     council_alpha_model: str | None = None
     council_beta_model: str | None = None
     council_gamma_model: str | None = None
@@ -462,63 +394,32 @@ class _AiSection(Struct, kw_only=True):
     vision_model: str | None = None
     embedding_model: str | None = None
 
+    # ── Decision Engine ──
+    autopilot_auto_post_threshold: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
+    autopilot_suggest_threshold: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
+    autopilot_ask_threshold: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
+    autopilot_adaptation_enabled: bool | None = None
+    autopilot_adaptation_learning_rate: Annotated[float | None, Meta(ge=0.0, le=1.0)] = None
+    autopilot_low_amount_threshold: Annotated[float | None, Meta(ge=0.0)] = None
+    rules_max_invoice_amount: Annotated[float | None, Meta(ge=0.0)] = None
+    rules_require_nip_validation: bool | None = None
+    analytics_anomaly_threshold: Annotated[float | None, Meta(ge=0.0)] = None
+    decision_timeout_seconds: Annotated[int | None, Meta(ge=5, le=600)] = None
+    outbox_replay_limit: Annotated[int | None, Meta(ge=1, le=10000)] = None
+    migration_baseline_file: str | None = None
+    migration_checksum_baseline_file: str | None = None
 
-class _TigerbeetleSection(Struct, kw_only=True):
-    """msgspec schema dla sekcji [tigerbeetle] w config/{env}.toml."""
+    # ── TigerBeetle ──
+    tigerbeetle_cluster_id: int | None = None
+    tigerbeetle_replica_addresses: str | None = None
 
-    cluster_id: int | None = None
-    replica_addresses: str | None = None
-
-
-class _OpaSection(Struct, kw_only=True):
-    """msgspec schema dla sekcji [opa] w config/{env}.toml.
-
-    OPA (Open Policy Agent) — deklaratywny silnik reguł (CNCF).
-    Działa jako sidecar process (podobnie jak NATS, TigerBeetle).
-
-    Zgodnie z aa3fvcx.txt:
-    - OPA jako silnik reguł podatkowych
-    - REST API na localhost:8181
-    - Rego policies generowane dynamicznie z DuckDB
-    """
-
-    enabled: bool | None = None
-    url: str | None = None
-    timeout_seconds: Annotated[float | None, Meta(ge=1.0, le=60.0)] = None
-    auto_sync_policy: bool | None = None
-    policy_package: str | None = None
-    policy_rule: str | None = None
-
-
-class _TomlConfigRoot(Struct, kw_only=True):
-    """msgspec schema dla całego pliku config/{env}.toml.
-
-    zakresami (Annotated[T, Meta(ge=..., le=...)]) i wartościami
-    domyślnymi. Każdy błąd typu → logowany przy starcie.
-
-    Sekcje:
-    - app: konfiguracja aplikacji (host, port, JWT, DB, decision engine)
-    - nats: NATS JetStream broker
-    - stamina: resilience (retry, circuit breaker)
-    - storage: fsspec filesystem abstraction
-    - security: Litestar security (JWT exclude, CSRF, rate limit)
-    - integrations: zewnętrzne API webhooki
-    - tax: konfiguracja podatkowa (VAT, CIT, ryczałt)
-    - ai: ścieżki modeli AI
-    - tigerbeetle: double-entry ledger
-    - opa: Open Policy Agent (reguły podatkowe)
-    """
-
-    app: _AppSection | None = None
-    nats: _NatsSection | None = None
-    stamina: _StaminaSection | None = None
-    storage: _StorageSection | None = None
-    security: _SecuritySection | None = None
-    integrations: _IntegrationsSection | None = None
-    tax: _TaxSection | None = None
-    ai: _AiSection | None = None
-    tigerbeetle: _TigerbeetleSection | None = None
-    opa: _OpaSection | None = None
+    # ── OPA ──
+    opa_enabled: bool | None = None
+    opa_url: str | None = None
+    opa_timeout_seconds: Annotated[float | None, Meta(ge=1.0, le=60.0)] = None
+    opa_auto_sync_policy: bool | None = None
+    opa_policy_package: str | None = None
+    opa_policy_rule: str | None = None
 
 
 # ── Legacyjne funkcje ładowania (kompatybilność wsteczna) ────────────────
@@ -633,36 +534,17 @@ class ConfigValidationError(RuntimeError):
     """Raised when startup settings are incomplete or inconsistent."""
 
 
-# ── AutoConfigMeta — generates _ENV_MAP and _TOML_FIELD_MAP from annotations ──
-# Eliminates the manual 3-way mapping (TOML section + _TomlConfigRoot + AppConfig + _ENV_MAP + _TOML_FIELD_MAP)
-
-class _AutoConfigMeta(type(Struct)):
-    """Metaclass that auto-generates _ENV_MAP from field annotations.
-
-    Convention: ``NEXUS_{UPPER_CASE_FIELD_NAME}`` for env var name.
-    Must pass ``**kwargs`` through to ``super().__new__()`` to support
-    msgspec kwargs like ``kw_only=True``.
-    """
-    def __new__(mcs, name, bases, namespace, **kwargs):
-        cls = super().__new__(mcs, name, bases, namespace, **kwargs)
-        if name == "AppConfig":
-            env_map: dict[str, str] = {}
-            for field_name in getattr(cls, '__struct_fields__', []):
-                env_key = f"NEXUS_{field_name.upper()}"
-                env_map[field_name] = env_key
-            cls._ENV_MAP = env_map
-        return cls
+# ── AppConfig — central config, bez _AutoConfigMeta, bez _TOML_FIELD_MAP ──
+# Eliminacja: _AutoConfigMeta, _ENV_MAP, _TOML_FIELD_MAP, _load_toml_file
+# Redukcja: ~250 linii → ~80 linii
 
 
-class AppConfig(Struct, kw_only=True, metaclass=_AutoConfigMeta):
-    """Centralized application settings registry for all environments.
+class AppConfig(Struct, kw_only=True):
+    """Centralized application settings registry.
 
-    msgspec.Struct — lżejszy i szybszy niż dataclass.
-    _ENV_MAP is auto-generated by _AutoConfigMeta metaclass.
-    _TOML_FIELD_MAP uses standard naming convention for TOML sections.
-
-    Uwaga: msgspec.Struct nie wywołuje automatycznie ``__post_init__``.
-    Użyj ``AppConfig.create()`` która woła walidację po inicjalizacji.
+    Bez _AutoConfigMeta, bez _TOML_FIELD_MAP.
+    _read_toml_config() umożliwia bezpośredni odczyt z TOML przez pola o tej samej nazwie.
+    Env vars overridują TOML (env > TOML).
     """
 
     # ── Core ──
@@ -709,13 +591,11 @@ class AppConfig(Struct, kw_only=True, metaclass=_AutoConfigMeta):
     csrf_exclude_patterns: list[str] | None = None
     rate_limit_auth: int = 10
     rate_limit_upload: int = 30
-    rate_limit_general: int = 60
-
-    # ── Database ──
-    sqlite_file_name: str = "app_data/databases/nexus_oltp.db"
-    duckdb_file_name: str = "app_data/databases/nexus_olap.duckdb"
-    storage_dir_name: str = "app_data/uploads"
-    idempotency_db_name: str = "app_data/databases/idempotency.sqlite"
+    rate_limit_general: int = 60    # ── Database ──
+    sqlite_file: str = "app_data/databases/nexus_oltp.db"
+    duckdb_file: str = "app_data/databases/nexus_olap.duckdb"
+    storage_dir: str = "app_data/uploads"
+    idempotency_db: str = "app_data/databases/idempotency.sqlite"
     debug: bool = False
     sqlcipher_key_env: str = "NEXUS_SQLCIPHER_KEY"
 
@@ -724,13 +604,13 @@ class AppConfig(Struct, kw_only=True, metaclass=_AutoConfigMeta):
 
     duckdb_memory_limit: str = "512MB"
     duckdb_threads: int = 2
-    cors_origins_raw: str = "*"
+    cors_origins: str = "*"
     max_invoice_upload_mb: int = 50
     max_attachment_upload_mb: int = 500
     dpo_alert_webhook: str = ""
     outbox_replay_limit: int = 100
-    migration_baseline_name: str = "migration_rowcount_baseline.json"
-    migration_checksum_baseline_name: str = "migration_checksum_baseline.json"
+    migration_baseline: str = "migration_rowcount_baseline.json"
+    migration_checksum_baseline: str = "migration_checksum_baseline.json"
 
     # ── Decision thresholds ──
     autopilot_auto_post_threshold: float = 0.92
@@ -767,93 +647,65 @@ class AppConfig(Struct, kw_only=True, metaclass=_AutoConfigMeta):
     def autopilot_vendor_alpha_proximity_min(self) -> int:
         return int(os.getenv("NEXUS_AUTOPILOT_VENDOR_ALPHA_MIN", "3"))
 
-    # ── TOML ↔ env var mapping (auto-generated by _AutoConfigMeta) ──
-    _ENV_MAP: ClassVar[dict[str, str]] = {}
-
-    # ── Rejestr sekcji TOML dla auto-mapowania ──
-    _TOML_FIELD_MAP: ClassVar[dict[str, tuple[str, str]]] = {
-        "sqlite_file_name": ("app", "sqlite_file"), "duckdb_file_name": ("app", "duckdb_file"),
-        "storage_dir_name": ("app", "storage_dir"), "idempotency_db_name": ("app", "idempotency_db"),
-        "cors_origins_raw": ("app", "cors_origins"), "migration_baseline_name": ("app", "migration_baseline_file"),
-        "migration_checksum_baseline_name": ("app", "migration_checksum_baseline_file"),
-        "nats_url": ("nats", "url"), "stamina_retry_attempts": ("stamina", "retry_attempts"),
-        "stamina_retry_timeout": ("stamina", "retry_timeout"), "stamina_circuit_breaker_enabled": ("stamina", "circuit_breaker_enabled"),
-        "stamina_circuit_breaker_cooldown": ("stamina", "circuit_breaker_cooldown"),
-        "storage_protocol": ("storage", "protocol"), "storage_root": ("storage", "root"),
-        "storage_auto_mkdir": ("storage", "auto_mkdir"), "storage_cache_size_mb": ("storage", "cache_size_mb"),
-        "storage_transactional": ("storage", "transactional"), "storage_chain_enabled": ("storage", "chain_enabled"),
-        "storage_chain_cache_storage": ("storage", "chain_cache_storage"),
-        "max_invoice_upload_mb": ("app", "max_invoice_upload_mb"), "max_attachment_upload_mb": ("app", "max_attachment_upload_mb"),
-        "jwt_expiration_seconds": ("app", "jwt_expiration_seconds"), "refresh_token_days": ("app", "refresh_token_days"),
-        "db_pool_size": ("app", "db_pool_size"), "db_pool_overflow": ("app", "db_pool_overflow"),
-        "max_task_retries": ("app", "max_task_retries"), "retry_backoff_base_seconds": ("app", "retry_backoff_base_seconds"),
-        "retry_backoff_max_seconds": ("app", "retry_backoff_max_seconds"),
-        "debug": ("app", "debug"), "environment": ("app", "environment"),
-        "csrf_enabled": ("app", "csrf_enabled"), "duckdb_memory_limit": ("app", "duckdb_memory_limit"),
-        "duckdb_threads": ("app", "duckdb_threads"),
-        "autopilot_auto_post_threshold": ("app", "autopilot_auto_post_threshold"),
-        "autopilot_suggest_threshold": ("app", "autopilot_suggest_threshold"),
-        "autopilot_ask_threshold": ("app", "autopilot_ask_threshold"),
-        "rules_max_invoice_amount": ("app", "rules_max_invoice_amount"),
-        "analytics_anomaly_threshold": ("app", "analytics_anomaly_threshold"),
-        "decision_timeout_seconds": ("app", "decision_timeout_seconds"),
-        "opa_enabled": ("opa", "enabled"), "opa_url": ("opa", "url"),
-        "opa_timeout_seconds": ("opa", "timeout_seconds"),
-    }
-
     @classmethod
-    def _load_toml_file(cls, env: str | None = None) -> _TomlConfigRoot:
+    def _read_toml_config(cls, env: str | None = None) -> ConfigSchema:
+        """Odczyt TOML bezpośrednio do ConfigSchema — zastępuje _TomlConfigRoot.
+
+        Args:
+            env: Środowisko (dev/stage/prod). Domyślnie z NEXUS_ENV.
+
+        Returns:
+            ConfigSchema z wartościami z pliku TOML lub domyślnymi.
+        """
         if env is None:
             env = os.getenv("NEXUS_ENV", "dev").lower().strip()
         toml_path = ENV_CONFIG_DIR / f"{env}.toml"
         if not toml_path.exists():
-            return _TomlConfigRoot()
+            return ConfigSchema()
         try:
             with open(toml_path, "rb") as f:
-                return toml.decode(f.read(), type=_TomlConfigRoot)
+                return toml.decode(f.read(), type=ConfigSchema)
         except Exception as exc:
             logger.warning("[Config] TOML error in %s: %s — using defaults", toml_path, exc)
-            return _TomlConfigRoot()
-
-    @classmethod
-    def _resolve_field_value(cls, field_name: str, toml_root: _TomlConfigRoot) -> Any | None:
-        env_key = cls._ENV_MAP.get(field_name)
-        if env_key and env_key in os.environ:
-            return cls._cast(os.environ[env_key], cls._get_field_type(field_name))
-        mapping = cls._TOML_FIELD_MAP.get(field_name)
-        if mapping:
-            section = getattr(toml_root, mapping[0], None)
-            if section is not None and (value := getattr(section, mapping[1], None)) is not None:
-                return value
-        return None
+            return ConfigSchema()
 
     @classmethod
     def from_toml(cls, env: str | None = None) -> AppConfig:
-        """Utwórz AppConfig z typowanego TOML — preferuje TOML nad env vars."""
+        """Utwórz AppConfig — typowany odczyt przez ConfigSchema z env override dla secrets.
+
+        Kolejność:
+        1. ConfigSchema z pliku TOML (typ poprawne — msgspec.toml.decode)
+        2. Env vars tylko dla pól secrets (jwt_secret, encryption_key)
+        3. Wartości domyślne z AppConfig dla pozostałych pól
+
+        Args:
+            env: Środowisko (dev/stage/prod).
+
+        Returns:
+            AppConfig z walidacją.
+        """
         if env is None:
             env = os.getenv("NEXUS_ENV", "dev").lower().strip()
-        toml_root = cls._load_toml_file(env)
+        toml_root = cls._read_toml_config(env)
+        # 1. Zbierz wartości z TOML (typy poprawne bo msgspec.toml.decode)
         kwargs: dict[str, Any] = {}
         for field_name in cls.__struct_fields__:
-            if (value := cls._resolve_field_value(field_name, toml_root)) is not None:
+            if (value := getattr(toml_root, field_name, None)) is not None:
                 kwargs[field_name] = value
         kwargs.setdefault("environment", env)
+        # 2. Zbuduj instancję z TOML (poprawne typy)
         instance = cls(**kwargs)
+        # 3. Nadpisz tylko pola secrets z env vars (runtime override)
+        for secret_field in ('jwt_secret', 'encryption_key'):
+            env_key = f"NEXUS_{secret_field.upper()}"
+            if env_key in os.environ:
+                setattr(instance, secret_field, os.environ[env_key])
         instance.validate()
         return instance
 
     @classmethod
-    def _resolve_field_value(cls, field_name: str, toml_root: _TomlConfigRoot) -> Any | None:
-        """Resolve field from typed TOML section. Env vars loaded at import time by _load_toml_profile."""
-        mapping = cls._TOML_FIELD_MAP.get(field_name)
-        if mapping:
-            section = getattr(toml_root, mapping[0], None)
-            if section is not None and (value := getattr(section, mapping[1], None)) is not None:
-                return value
-        return None
-
-    @classmethod
     def create(cls) -> AppConfig:
+        """Factory method — alias dla from_toml()."""
         return cls.from_toml()
 
     def validate(self) -> None:
@@ -887,7 +739,7 @@ class AppConfig(Struct, kw_only=True, metaclass=_AutoConfigMeta):
             or ""
         )
         self.base_dir.mkdir(parents=True, exist_ok=True)
-        self.storage_dir.mkdir(parents=True, exist_ok=True)
+        self.storage_dir_path.mkdir(parents=True, exist_ok=True)
 
         required_in_stage_prod = {
             "jwt_secret": self.jwt_secret,
@@ -896,7 +748,7 @@ class AppConfig(Struct, kw_only=True, metaclass=_AutoConfigMeta):
         if self.environment in {"stage", "prod"}:
             if self.debug:
                 raise ConfigValidationError("NEXUS_DEBUG cannot be enabled in stage/prod")
-            if self.cors_origins == ["*"]:
+            if self.cors_origins == "*":
                 raise ConfigValidationError("NEXUS_CORS_ORIGINS cannot be '*' in stage/prod")
             missing = [k for k, v in required_in_stage_prod.items() if not v]
             if missing:
@@ -926,19 +778,19 @@ class AppConfig(Struct, kw_only=True, metaclass=_AutoConfigMeta):
 
     @property
     def sqlite_path(self) -> Path:
-        return self.base_dir / self.sqlite_file_name
+        return self.base_dir / self.sqlite_file
 
     @property
     def duckdb_path(self) -> Path:
-        return self.base_dir / self.duckdb_file_name
+        return self.base_dir / self.duckdb_file
 
     @property
-    def storage_dir(self) -> Path:
-        return self.base_dir / self.storage_dir_name
+    def storage_dir_path(self) -> Path:
+        return self.base_dir / self.storage_dir
 
     @property
     def idempotency_db_path(self) -> Path:
-        return self.base_dir / self.idempotency_db_name
+        return self.base_dir / self.idempotency_db
 
     @property
     def max_invoice_upload_bytes(self) -> int:
@@ -950,11 +802,11 @@ class AppConfig(Struct, kw_only=True, metaclass=_AutoConfigMeta):
 
     @property
     def migration_baseline_path(self) -> Path:
-        return self.base_dir / "app_data" / self.migration_baseline_name
+        return self.base_dir / "app_data" / self.migration_baseline
 
     @property
     def migration_checksum_baseline_path(self) -> Path:
-        return self.base_dir / "app_data" / self.migration_checksum_baseline_name
+        return self.base_dir / "app_data" / self.migration_checksum_baseline
 
     @property
     def effective_jwt_exclude(self) -> list[str]:
@@ -976,8 +828,13 @@ class AppConfig(Struct, kw_only=True, metaclass=_AutoConfigMeta):
         ]
 
     @property
-    def cors_origins(self) -> list[str]:
-        raw = self.cors_origins_raw.strip()
+    def cors_origins_list(self) -> list[str]:
+        """Zwraca listę dozwolonych originów CORS.
+
+        Parsuje self.cors_origins (str) na listę.
+        "*" lub pusty string → ["*"].
+        """
+        raw = str(self.cors_origins or "*").strip()
         if not raw or raw == "*":
             return ["*"]
         return [origin.strip() for origin in raw.split(",") if origin.strip()]

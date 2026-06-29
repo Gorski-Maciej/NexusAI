@@ -98,7 +98,7 @@ class InvoiceController(Controller):
 
         hasher = Sha256Hasher()
         total_size = 0
-        storage = ContentAddressableStorage(config.storage_dir)
+        storage = ContentAddressableStorage(str(config.storage_dir_path))
         temp_path = storage.create_temp_upload_file()
         first_chunk = b""
         try:
@@ -287,7 +287,7 @@ class InvoiceController(Controller):
 
         hasher = Sha256Hasher()
         total_size = 0
-        storage = ContentAddressableStorage(config.storage_dir)
+        storage = ContentAddressableStorage(str(config.storage_dir_path))
         temp_path = storage.create_temp_upload_file()
         first_chunk = b""
         try:

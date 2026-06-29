@@ -61,49 +61,47 @@ def init_keyboard_handler(page: ft.Page):
     """
 
     async def on_keyboard(e: ft.KeyboardEvent):
-        # Ctrl+Shift kombinacje (sprawdź najpierw, by nie konfliktować z Ctrl)
-        if e.ctrl and e.shift and e.key == "Z":
-            _show_feedback(page, "shortcut_redo")
-            page.pubsub.send_all_on_topic("shortcut_redo", True)
-            return
-
-        # Ctrl kombinacje
-        if e.ctrl and e.key == "S":
-            _show_feedback(page, "shortcut_save")
-            page.pubsub.send_all_on_topic("shortcut_save", True)
-        elif e.ctrl and e.key == "F":
-            _show_feedback(page, "shortcut_search")
-            page.pubsub.send_all_on_topic("shortcut_search", True)
-        elif e.ctrl and e.key == "N":
-            _show_feedback(page, "shortcut_new")
-            page.go("/upload")
-        elif e.ctrl and e.key == "E":
-            _show_feedback(page, "shortcut_export")
-            page.pubsub.send_all_on_topic("shortcut_export", True)
-        elif e.ctrl and e.key == "P":
-            _show_feedback(page, "shortcut_print")
-            page.pubsub.send_all_on_topic("shortcut_print", True)
-        elif e.ctrl and e.key == "Z":
-            _show_feedback(page, "shortcut_undo")
-            page.pubsub.send_all_on_topic("shortcut_undo", True)
-        elif e.ctrl and e.key == "D" and not e.shift:
-            _show_feedback(page, "shortcut_duplicate")
-            page.pubsub.send_all_on_topic("shortcut_duplicate", True)
-        elif e.ctrl and e.key == "Q":
-            page.window_close()
-        elif e.key in ("Delete", "Del"):
-            _show_feedback(page, "shortcut_delete")
-            page.pubsub.send_all_on_topic("shortcut_delete", True)
-        elif e.key == "Escape":
-            page.pubsub.send_all_on_topic("shortcut_escape", True)
-        elif e.key == "F5":
-            _show_feedback(page, "trigger_refresh")
-            page.pubsub.send_all_on_topic("trigger_refresh", True)
-        elif e.key == "F1":
-            page.go("/help")
-        elif e.key == "F11":
-            page.window_full_screen = not page.window_full_screen
-            page.update()
+        # Mapowanie skrótów klawiszowych z match/case zamiast elif chain
+        match (e.ctrl, e.shift, e.key):
+            case (True, True, "Z"):
+                _show_feedback(page, "shortcut_redo")
+                page.pubsub.send_all_on_topic("shortcut_redo", True)
+            case (True, _, "S"):
+                _show_feedback(page, "shortcut_save")
+                page.pubsub.send_all_on_topic("shortcut_save", True)
+            case (True, _, "F"):
+                _show_feedback(page, "shortcut_search")
+                page.pubsub.send_all_on_topic("shortcut_search", True)
+            case (True, _, "N"):
+                _show_feedback(page, "shortcut_new")
+                page.go("/upload")
+            case (True, _, "E"):
+                _show_feedback(page, "shortcut_export")
+                page.pubsub.send_all_on_topic("shortcut_export", True)
+            case (True, _, "P"):
+                _show_feedback(page, "shortcut_print")
+                page.pubsub.send_all_on_topic("shortcut_print", True)
+            case (True, _, "Z"):
+                _show_feedback(page, "shortcut_undo")
+                page.pubsub.send_all_on_topic("shortcut_undo", True)
+            case (True, False, "D"):
+                _show_feedback(page, "shortcut_duplicate")
+                page.pubsub.send_all_on_topic("shortcut_duplicate", True)
+            case (True, _, "Q"):
+                page.window_close()
+            case (_, _, "Delete" | "Del"):
+                _show_feedback(page, "shortcut_delete")
+                page.pubsub.send_all_on_topic("shortcut_delete", True)
+            case (_, _, "Escape"):
+                page.pubsub.send_all_on_topic("shortcut_escape", True)
+            case (_, _, "F5"):
+                _show_feedback(page, "trigger_refresh")
+                page.pubsub.send_all_on_topic("trigger_refresh", True)
+            case (_, _, "F1"):
+                page.go("/help")
+            case (_, _, "F11"):
+                page.window_full_screen = not page.window_full_screen
+                page.update()
 
     page.on_keyboard_event = on_keyboard
 

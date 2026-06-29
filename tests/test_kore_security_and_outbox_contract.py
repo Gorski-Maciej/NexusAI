@@ -24,7 +24,7 @@ def test_config_has_prod_cors_wildcard_guard() -> None:
             environment="prod",
             jwt_secret="jwt",
             encryption_key="enc",
-            cors_origins_raw="*",
+            cors_origins="*",
         )
 
 
@@ -32,9 +32,9 @@ def test_config_parses_cors_comma_list() -> None:
     config_mod = _load_module("kore_config_parse", "nexus_ai/core/config.py")
     config = config_mod.AppConfig(
         environment="dev",
-        cors_origins_raw="https://a.example, https://b.example",
+        cors_origins="https://a.example, https://b.example",
     )
-    assert config.cors_origins == ["https://a.example", "https://b.example"]
+    assert config.cors_origins_list == ["https://a.example", "https://b.example"]
 
 
 def test_outbox_dispatch_routes_to_ocr_task() -> None:

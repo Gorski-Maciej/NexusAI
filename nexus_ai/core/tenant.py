@@ -33,10 +33,10 @@ class TenantManager:
         return tenant_dir
 
     def sqlite_path(self, tenant_id: str | None = None) -> Path:
-        return self.resolve_tenant_dir(tenant_id) / self._config.sqlite_file_name
+        return self.resolve_tenant_dir(tenant_id) / self._config.sqlite_file
 
     def duckdb_path(self, tenant_id: str | None = None) -> Path:
-        return self.resolve_tenant_dir(tenant_id) / self._config.duckdb_file_name
+        return self.resolve_tenant_dir(tenant_id) / self._config.duckdb_file
 
 
 def set_current_tenant_id(tenant_id: str) -> object:

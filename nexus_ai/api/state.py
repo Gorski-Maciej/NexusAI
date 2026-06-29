@@ -10,7 +10,7 @@ from litestar import Litestar
 from structlog import get_logger
 
 from nexus_ai.api.shared_image_buffer import SharedImageBuffer
-from nexus_ai.core.background_task_manager import BackgroundTaskManager, TaskMetadata
+
 from nexus_ai.core.broker import broker
 from nexus_ai.core.cache.http_client import warm_http_cache
 from nexus_ai.core.di import dispose_all_engines
@@ -72,22 +72,15 @@ def _init_otel_metrics_sync() -> None:
 
 
 async def _start_metrics_background_task(app: Litestar) -> None:
-    """Spawn background system metrics updater via BackgroundTaskManager.
+    """Spawn background system metrics updater via anyio.TaskGroup.
 
-      - Process.oneshot() — batch syscalls dla procesu
-      - SystemMonitor.collect_all() — pełne metryki systemowe co 30s
-      - memory_full_info() → USS/PSS
-      - cpu_percent(percpu=True) — per-core gauge
-      - dysk I/O, sieć I/O, sensory temperatury
-
-    Rejestruje task w ``app.state.bg_tasks`` zamiast manualnego
-    ``anyio.ensure_backend().create_task()`` — task jest automatycznie
-    anulowany przez ``cancel_all()`` podczas shutdownu.
+    Uses a persistent TaskGroup for proper structured concurrency.
+    Cancelled automatically during shutdown via its CancelScope.
     """
     try:
         from nexus_ai.core.monitor import process_monitor, system_monitor
 
-        async def _update_system_metrics() -> None:
+        async def _update_system_metrics(scope: anyio.CancelScope) -> None:
             """Periodically update all system-level gauges via OTel.
 
             Co 30s kolekcjonuje:
@@ -100,52 +93,45 @@ async def _start_metrics_background_task(app: Litestar) -> None:
                 set_memory_usage,
             )
 
-            while True:
-                try:
-                    # ObservableGauge w telemetry_metrics.py zastąpił ręczne set()
-                    # CPU, RAM, DISK, TEMP są teraz odczytywane automatycznie przez SDK
-                    proc_metrics = process_monitor.collect_metrics()
-                    set_memory_usage(proc_metrics.rss_mb)
+            with scope:
+                while not scope.cancel_called:
+                    try:
+                        proc_metrics = process_monitor.collect_metrics()
+                        set_memory_usage(proc_metrics.rss_mb)
+                        sys_metrics = system_monitor.collect_all()
 
-                    # gauge'e są obsługiwane przez ObservableGauge w init_metrics()
-                    sys_metrics = system_monitor.collect_all()
+                        import time as _time
 
-                    # Loguj co 5 minut dla AUDIT
-                    import time as _time
+                        if int(_time.time()) % 300 < 30:
+                            logger.bind(level="AUDIT").info(
+                                "[SYSTEM-METRICS] RSS=%.1fMB USS=%.1fMB CPU=%.1f%% "
+                                "RAM=%.1f%% DISK=%.1f%% SWAP=%.1f%% TEMP=%.1f°C "
+                                "NET_IN=%.1fMB NET_OUT=%.1fMB",
+                                proc_metrics.rss_mb,
+                                proc_metrics.uss_mb or 0.0,
+                                proc_metrics.cpu_percent,
+                                sys_metrics.ram_percent,
+                                sys_metrics.disk_percent,
+                                sys_metrics.swap_percent,
+                                sys_metrics.cpu_temp_celsius or 0.0,
+                                sys_metrics.net_bytes_recv_mb,
+                                sys_metrics.net_bytes_sent_mb,
+                            )
+                    except Exception:
+                        pass
 
-                    if int(_time.time()) % 300 < 30:  # co ~5min
-                        logger.bind(level="AUDIT").info(
-                            "[SYSTEM-METRICS] RSS=%.1fMB USS=%.1fMB CPU=%.1f%% "
-                            "RAM=%.1f%% DISK=%.1f%% SWAP=%.1f%% TEMP=%.1f°C "
-                            "NET_IN=%.1fMB NET_OUT=%.1fMB",
-                            proc_metrics.rss_mb,
-                            proc_metrics.uss_mb or 0.0,
-                            proc_metrics.cpu_percent,
-                            sys_metrics.ram_percent,
-                            sys_metrics.disk_percent,
-                            sys_metrics.swap_percent,
-                            sys_metrics.cpu_temp_celsius or 0.0,
-                            sys_metrics.net_bytes_recv_mb,
-                            sys_metrics.net_bytes_sent_mb,
-                        )
-                except Exception:
-                    pass
+                    try:
+                        record_mimalloc_stats()
+                    except Exception:
+                        pass
 
-                # Co 30s sprawdź czy mimalloc nie ma wycieku
-                try:
-                    record_mimalloc_stats()
-                except Exception:
-                    pass
+                    await anyio.sleep(30)
 
-                await anyio.sleep(30)
-
-        await app.state.bg_tasks.start_task(
-            "metrics_updater",
-            _update_system_metrics,
-            metadata=TaskMetadata(
-                description="System metrics gauge + mimalloc leak detection (30s interval)",
-            ),
-        )
+        cancel_scope = anyio.CancelScope()
+        tg = await anyio.create_task_group().__aenter__()
+        tg.start_soon(_update_system_metrics, cancel_scope)
+        app.state._metrics_cancel_scope = cancel_scope
+        app.state._metrics_task_group = tg
         logger.info(
             "[METRICS] System metrics updater + mimalloc leak detection started (30s interval)"
         )
@@ -292,7 +278,8 @@ def make_on_startup(engine, session_factory):
             app.state.db_engine = engine
             app.state.db_session_factory = session_factory
             app.state.shared_image_buffer = SharedImageBuffer(max_items=128)
-            app.state.bg_tasks = BackgroundTaskManager()
+            app.state._metrics_cancel_scope = None
+            app.state._metrics_task_group = None
 
             # Taskiq event handlers są rejestrowane przez import nexus_ai.events.taskiq_events
             # Event emisja odbywa się przez broker.kick("event_emit_*", ...)
@@ -451,10 +438,16 @@ async def on_shutdown(app: Litestar) -> None:
     """Bezpieczne zamykanie i konsolidacja danych."""
     logger.info(">>> Nexus API: Rozpoczynanie procedury zamykania...")
 
-    # 0. Cancel all background tasks via BackgroundTaskManager
-    bg_tasks = getattr(app.state, "bg_tasks", None)
-    if bg_tasks is not None:
-        await bg_tasks.cancel_all()
+    # 0. Cancel background metrics task via CancelScope
+    _scope = getattr(app.state, "_metrics_cancel_scope", None)
+    _tg = getattr(app.state, "_metrics_task_group", None)
+    if _scope is not None and not _scope.cancel_called:
+        _scope.cancel()
+    if _tg is not None:
+        try:
+            await _tg.__aexit__(None, None, None)
+        except Exception:
+            pass
 
     engine = app.state.db_engine
 

@@ -181,7 +181,7 @@ def create_app() -> Litestar:
     # ── on_startup z pre-created engine ─────────────────────────────────
     on_startup = make_on_startup(engine, session_factory)
 
-    cors_allow_credentials = config.cors_origins != ["*"]
+    cors_allow_credentials = config.cors_origins_list != ["*"]
 
     # ── Layered Architecture: Routery wg wersji API ────────────────────
     # Każdy Router ma własne: tags, guards, after_request.
@@ -326,7 +326,7 @@ def create_app() -> Litestar:
         # 50MB dla największych uploadów
         request_max_body_size=50 * 1024 * 1024,
         cors_config=CORSConfig(
-            allow_origins=config.cors_origins,
+            allow_origins=config.cors_origins_list,
             allow_methods=["*"],
             allow_headers=["*"],
             allow_credentials=cors_allow_credentials,

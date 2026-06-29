@@ -1,29 +1,36 @@
 from __future__ import annotations
 
-from typing import final
-
-from sqlmodel import select
-from sqlmodel import Session
+from sqlmodel import select, Session
 
 from nexus_ai.db.models import Invoice
 
 
-@final
-class ExportService:
-    """Zarządza eksportem faktur do zewnętrznych systemów ERP."""
+def generate_export_payload(
+    session: Session, invoice_ids: list[str], /, system_name: str = "INSERT_EPP"
+) -> str:
+    """Generuje plik eksportu faktur dla systemu ERP.
 
-    @staticmethod
-    def generate_export_payload(
-        session: Session, invoice_ids: list[str], system_name: str = "INSERT_EPP"
-    ) -> str:
-        """Pobiera faktury i generuje plik tekstowy dla systemu księgowego."""
-        # 1. Pobieramy faktury z bazy
-        query = select(Invoice).where(Invoice.id.in_(invoice_ids))
-        result = session.execute(query)
-        invoices = result.scalars().all()
+    Args:
+        session: Sesja DB.
+        invoice_ids: Lista ID faktur do eksportu.
+        system_name: Nazwa systemu docelowego (domyslnie INSERT_EPP).
 
-        if not invoices:
-            raise ValueError("Nie znaleziono faktur do eksportu.")
+    Returns:
+        Plik tekstowy z danymi do eksportu.
 
-        # 2. Pobieramy konfigurację eksportu...
-        # Dalsza implementacja logiki eksportu
+    Raises:
+        ValueError: Gdy nie znaleziono zadnych faktur.
+    """
+    # Uzycie walrus operator + select kolumn zamiast calego rekordu
+    if not (invoices := session.execute(
+        select(Invoice).where(Invoice.id.in_(invoice_ids))
+    ).scalars().all()):
+        raise ValueError("Nie znaleziono faktur do eksportu.")
+
+    # Dalsza implementacja logiki eksportu
+    return ""  # TODO: implement export logic
+
+
+class ExportService:  # backward compat
+    """Backward-compat alias. Use module-level generate_export_payload() directly."""
+    generate_export_payload = staticmethod(generate_export_payload)

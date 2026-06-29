@@ -35,6 +35,7 @@ _INITIALIZED = False
 
 @logger.patch
 def _patch_record(record):
+    """Patch loguru record with default correlation fields.
 
     Zastępuje CorrelationIdFilter — wbudowany mechanizm Loguru jest
     szybszy i czystszy niż custom filter class.
@@ -271,6 +272,7 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
 
 
 def _setup_duckdb_sink(log_dir: Path, app_name: str) -> None:
+    """Set up DuckDB sink for WARNING+ logs.
 
     Logi WARNING i wyższe są automatycznie zapisywane do DuckDB
     dla łatwej analizy SQL. Tabela telemetry_logs jest tworzona
@@ -334,6 +336,7 @@ def _setup_duckdb_sink(log_dir: Path, app_name: str) -> None:
 
 
 def _setup_stamina_logging() -> None:
+    """Configure stamina (retry library) logging to route through Loguru/structlog.
 
     stamina używa standardowego modułu logging. Przekierowujemy jego logi
     przez Loguru/structlog, aby każda retry i każde otwarcie Circuit Breakera

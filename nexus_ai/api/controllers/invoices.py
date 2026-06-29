@@ -194,7 +194,7 @@ class InvoiceController(Controller):
         self, data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)
     ) -> InvoiceUploadResponse:
         """Strumieniowy zapis uploadu + CAS hash (SHA-256) bez blokowania event loop."""
-        config = AppConfig()
+        config = AppConfig.create()
         max_bytes = config.max_invoice_upload_bytes
         content_length = (
             getattr(data, "headers", {}).get("content-length")
@@ -208,7 +208,7 @@ class InvoiceController(Controller):
             except ValueError:
                 pass
 
-        storage = ContentAddressableStorage(config.storage_dir)
+        storage = ContentAddressableStorage(str(config.storage_dir_path))
         temp_path = storage.create_temp_upload_file()
         hasher = Sha256Hasher()
         chunk_size = 1024 * 1024
@@ -262,9 +262,9 @@ class InvoiceController(Controller):
         self, data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)
     ) -> InvoiceUploadResponseLarge:
         """Dedicated path for very large attachments isolated from regular invoice uploads."""
-        config = AppConfig()
+        config = AppConfig.create()
         max_bytes = config.max_attachment_upload_bytes
-        storage = ContentAddressableStorage(config.storage_dir)
+        storage = ContentAddressableStorage(str(config.storage_dir_path))
         temp_path = storage.create_temp_upload_file()
         hasher = Sha256Hasher()
         chunk_size = 1024 * 1024

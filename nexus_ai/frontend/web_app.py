@@ -135,21 +135,23 @@ async def init_web_app(page: ft.Page) -> None:
 def _update_page_title(page: ft.Page, route: str) -> None:
     """Update browser tab title based on current route with TemplateRoute."""
     tr = TemplateRoute(route)
-    if tr.match("/"):
-        page.title = "Nexus AI — Dashboard"
-    elif tr.match("/invoices"):
-        page.title = "Nexus AI — Faktury"
-    elif tr.match("/invoices/:id"):
-        invoice_id = tr.id[:8]
-        page.title = f"Nexus AI — Faktura #{invoice_id}"
-    elif tr.match("/briefing"):
-        page.title = "Nexus AI — Podsumowanie dnia"
-    elif tr.match("/partner"):
-        page.title = "Nexus AI — Partnerzy"
-    elif tr.match("/tasks"):
-        page.title = "Nexus AI — Monitor zadań"
-    else:
-        page.title = f"Nexus AI — {route.strip('/').title()}"
+    # Match route patterns — O(1) dispatch zamiast elif chain
+    match route:
+        case "/":
+            page.title = "Nexus AI — Dashboard"
+        case r if tr.match("/invoices/:id"):
+            invoice_id = tr.id[:8]
+            page.title = f"Nexus AI — Faktura #{invoice_id}"
+        case r if tr.match("/invoices"):
+            page.title = "Nexus AI — Faktury"
+        case r if tr.match("/briefing"):
+            page.title = "Nexus AI — Podsumowanie dnia"
+        case r if tr.match("/partner"):
+            page.title = "Nexus AI — Partnerzy"
+        case r if tr.match("/tasks"):
+            page.title = "Nexus AI — Monitor zadań"
+        case _:
+            page.title = f"Nexus AI — {route.strip('/').title()}"
 
 
 def run_web_app(

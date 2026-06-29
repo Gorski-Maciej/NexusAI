@@ -136,14 +136,15 @@ class AsyncEventStore:
     async def read_events_by_type(self, event_type: str | None = None, since: str | None = None, limit: int = 100) -> list[DomainEvent]:
         conn = await self._get_conn()
         def _sync():
-            if event_type and since:
-                cursor = conn.execute("SELECT data FROM event_stream WHERE event_type=? AND timestamp>=? ORDER BY timestamp ASC LIMIT ?", (event_type, since, limit))
-            elif event_type:
-                cursor = conn.execute("SELECT data FROM event_stream WHERE event_type=? ORDER BY timestamp ASC LIMIT ?", (event_type, limit))
-            elif since:
-                cursor = conn.execute("SELECT data FROM event_stream WHERE timestamp>=? ORDER BY timestamp ASC LIMIT ?", (since, limit))
-            else:
-                cursor = conn.execute("SELECT data FROM event_stream ORDER BY timestamp ASC LIMIT ?", (limit,))
+            match (event_type, since):
+                case (str() as et, str() as s):
+                    cursor = conn.execute("SELECT data FROM event_stream WHERE event_type=? AND timestamp>=? ORDER BY timestamp ASC LIMIT ?", (et, s, limit))
+                case (str() as et, None):
+                    cursor = conn.execute("SELECT data FROM event_stream WHERE event_type=? ORDER BY timestamp ASC LIMIT ?", (et, limit))
+                case (None, str() as s):
+                    cursor = conn.execute("SELECT data FROM event_stream WHERE timestamp>=? ORDER BY timestamp ASC LIMIT ?", (s, limit))
+                case _:
+                    cursor = conn.execute("SELECT data FROM event_stream ORDER BY timestamp ASC LIMIT ?", (limit,))
             return [decode_event(row[0]) for row in cursor.fetchall()]
         return await self._run_sync(_sync)
 
@@ -167,14 +168,15 @@ class AsyncEventStore:
     async def count_events(self, aggregate_type: str | None = None, event_type: str | None = None) -> int:
         conn = await self._get_conn()
         def _sync():
-            if aggregate_type and event_type:
-                cursor = conn.execute("SELECT COUNT(*) FROM event_stream WHERE aggregate_type=? AND event_type=?", (aggregate_type, event_type))
-            elif aggregate_type:
-                cursor = conn.execute("SELECT COUNT(*) FROM event_stream WHERE aggregate_type=?", (aggregate_type,))
-            elif event_type:
-                cursor = conn.execute("SELECT COUNT(*) FROM event_stream WHERE event_type=?", (event_type,))
-            else:
-                cursor = conn.execute("SELECT COUNT(*) FROM event_stream")
+            match (aggregate_type, event_type):
+                case (str() as at, str() as et):
+                    cursor = conn.execute("SELECT COUNT(*) FROM event_stream WHERE aggregate_type=? AND event_type=?", (at, et))
+                case (str() as at, None):
+                    cursor = conn.execute("SELECT COUNT(*) FROM event_stream WHERE aggregate_type=?", (at,))
+                case (None, str() as et):
+                    cursor = conn.execute("SELECT COUNT(*) FROM event_stream WHERE event_type=?", (et,))
+                case _:
+                    cursor = conn.execute("SELECT COUNT(*) FROM event_stream")
             return int(cursor.fetchone()[0]) if cursor.fetchone() else 0
         return await self._run_sync(_sync)
 

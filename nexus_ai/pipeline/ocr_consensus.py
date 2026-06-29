@@ -8,6 +8,7 @@ import os
 import re
 import threading
 from collections import Counter, defaultdict
+import functools
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -88,6 +89,7 @@ def decide_field_consensus(results: list[OCRFieldResult], *, min_confidence: flo
     return OCRConsensusDecision(accepted=best_conf, confidence_conflict=True, votes=results)
 
 
+@functools.cache
 def _to_float(val: Any) -> float:
     if hasattr(val, "amount"):
         return float(val.amount)
