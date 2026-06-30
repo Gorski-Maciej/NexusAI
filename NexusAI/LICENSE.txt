@@ -1,9 +1,0 @@
-NexusAI — AI-Powered Accounting System
-Copyright (c) 2026 NexusAI Team
-
-All rights reserved.
-
-This software is proprietary and confidential. Unauthorized copying,
-distribution, modification, or use of this software is strictly prohibited.
-
-For license inquiries, please contact: nexusai@example.com
