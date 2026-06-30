@@ -1,0 +1,295 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# config/protocols.toml — NexusAI Standard Operating Procedures (SOP)
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Zgodnie z aa3fvcx.txt Punkt 3 (SOP):
+# - Procedury decyzyjne w TOML, nie w Pythonie
+# - Ładowane przez ProtocolLoader (core/protocol_loader.py)
+# - Separacja SOP od kodu — zmiana reguł bez restartu aplikacji
+#
+# Struktura:
+#   [metadata]       — wersja i opis protokołów
+#   [schema.output_formats] — definicje typów JSON
+#   [protocols.validation] — konfiguracja walidacji
+#   [protocols.decision] — konfiguracja DecisionEngine
+#   [thresholds]     — progi decyzyjne, wagi trust_score
+#   [emergency]      — protokoły awaryjne
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[metadata]
+version = "2.4.0"
+description = "NexusAI Standard Operating Procedures — DecisionEngine v2.4 (4-way OCR)"
+last_modified = "2026-06-16"
+author = "NexusAI Team"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Schema — definicje formatów wyjściowych JSON
+# ══════════════════════════════════════════════════════════════════════════════
+
+[schema.output_formats]
+decision = { type = "string", enum = ["AUTO_POST", "SUGGEST", "ASK_USER", "BLOCK"] }
+confidence = { type = "float", minimum = 0.0, maximum = 1.0 }
+trust_components = [
+    { name = "ocr_conf", weight = 0.30, description = "OCR confidence score (4-way consensus)" },
+    { name = "vendor_score", weight = 0.25, description = "Vendor reliability score" },
+    { name = "data_consistency", weight = 0.20, description = "Data cross-validation score" },
+    { name = "context", weight = 0.10, description = "Contextual relevance score" },
+    { name = "risk", weight = 0.15, description = "Risk assessment score" },
+]
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Protocols — reguły walidacji
+# ══════════════════════════════════════════════════════════════════════════════
+
+[protocols.validation]
+# ── NIP validation ──
+nip_length = 10
+nip_weight_digits = [6, 5, 7, 2, 3, 4, 5, 6, 7]
+nip_checksum_mod = 11
+
+# ── REGON validation ──
+regon_9_weight = [8, 9, 2, 3, 4, 5, 6, 7]
+regon_14_weight = [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8]
+
+# ── Account number (NRB) ──
+nrb_length = 26
+nrb_checksum_mod = 97
+nrb_checksum_expected = 1
+
+# ── Invoice fields ──
+required_fields = [
+    "number",
+    "issue_date",
+    "seller_nip",
+    "buyer_nip",
+    "total_net",
+    "total_gross",
+    "vat_rate",
+    "currency",
+]
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Decision Engine — reguły first-match-wins
+# ══════════════════════════════════════════════════════════════════════════════
+
+[protocols.decision]
+# ── Trust score weights (suma = 1.0) ──
+trust_score_weights = { ocr = 0.30, vendor = 0.25, data_consistency = 0.20, context = 0.10, risk = 0.15 }
+
+# ── Klasyfikacja simple/complex ──
+classify_thresholds = { max_amount_simple = 5000, min_invoices_known = 3, min_ocr_simple = 0.85 }
+
+# ── Reguły first-match-wins (priorytet ASC) ──
+# Każda reguła: priority, conditions, decision, confidence
+# conditions → pole, operator (field / field__gte / field__lte / field__in), wartość
+# {} → pusta kondycja = zawsze pasuje (fallback)
+
+[[protocols.decision.rules]]
+priority = 10
+description = "Znany kontrahent, ≥10 faktur, wysoki trust, niska kwota"
+conditions = { vendor_known = true, vendor_count__gte = 10, trust_score__gte = 0.85, amount__lte = 5000, ocr_conf__gte = 0.92 }
+decision = "AUTO_POST"
+confidence = 0.95
+
+[[protocols.decision.rules]]
+priority = 20
+description = "Znany kontrahent, ≥3 faktury, średni trust, niska kwota"
+conditions = { vendor_known = true, vendor_count__gte = 3, trust_score__gte = 0.80, amount__lte = 3000, ocr_conf__gte = 0.90 }
+decision = "AUTO_POST"
+confidence = 0.90
+
+[[protocols.decision.rules]]
+priority = 30
+description = "Znany kontrahent, niska kwota, dobry OCR"
+conditions = { vendor_known = true, amount__lte = 10000, ocr_conf__gte = 0.85 }
+decision = "SUGGEST"
+confidence = 0.80
+
+[[protocols.decision.rules]]
+priority = 40
+description = "Nowy kontrahent, niska kwota, dobry OCR"
+conditions = { vendor_known = false, amount__lte = 5000, ocr_conf__gte = 0.90 }
+decision = "SUGGEST"
+confidence = 0.75
+
+[[protocols.decision.rules]]
+priority = 50
+description = "Średnia kwota, akceptowalny OCR"
+conditions = { amount__lte = 50000, ocr_conf__gte = 0.80 }
+decision = "ASK_USER"
+confidence = 0.60
+
+[[protocols.decision.rules]]
+priority = 100
+description = "Wysoka kwota — blokada"
+conditions = { amount__gte = 50000 }
+decision = "BLOCK"
+confidence = 0.40
+
+[[protocols.decision.rules]]
+priority = 999
+description = "Fallback — zawsze pasuje"
+conditions = {}
+decision = "ASK_USER"
+confidence = 0.50
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Thresholds — progi decyzyjne i wagi
+# ══════════════════════════════════════════════════════════════════════════════
+
+[thresholds]
+# ── RiskGuard progi ufności per field per forma opodatkowania ──
+# Dla 4-way OCR consensus (Tesseract + PaddleOCR + docTR + EasyOCR):
+# - Jeśli ≥3/4 silników zgodne → confidence boost +0.05
+# - Jeśli 4/4 zgodne → confidence boost +0.10
+# - Jeśli tylko 2/4 zgodne → standardowy próg
+risk_vat_confidence_required = 0.98
+risk_total_net_confidence_required = 0.95
+risk_invoice_date_confidence_required = 0.90
+risk_seller_name_confidence_required = 0.85
+
+# ── SemanticGuard ──
+anomaly_cosine_threshold = 0.30
+anomaly_min_samples = 3
+anomaly_required_similarity = 0.60
+
+# ── Cache TTL ──
+cache_few_shot_ttl = 300
+cache_enrich_ttl = 300
+cache_whitelist_ttl = 3600
+cache_fx_rate_ttl = 600
+cache_prompt_pack_ttl = 3600
+cache_model_ttl = 600
+
+# ── OCR consensus — 4-way (Tesseract + PaddleOCR + docTR + EasyOCR) ──
+# Waga docTR = 0.30 — modułowa architektura DBNet + PARSeq
+# jest skuteczna w analizie layoutu.
+[thresholds.ocr_consensus]
+# Minimalna liczba silników do konsensusu (4-way: 3 z 4 = supermajority)
+majority_threshold = 3
+# Minimalna liczba silników do uzyskania wiążącego wyniku
+min_valid_engines = 2
+# Maksymalna tolerancja różnicy kwot między silnikami
+amount_tolerance = 0.02
+# Priorytet silników przy braku konsensusu (pierwszy = najważniejszy)
+engine_priority = ["doctr", "easyocr", "paddle", "tesseract"]
+# Wagi per-engine dla weighted consensus (suma = 1.0)
+engine_weights = { tesseract = 0.15, paddle = 0.25, doctr = 0.30, easyocr = 0.30 }
+
+# ── docTR specific configuration (audyt technologiczny v2) ──
+[thresholds.doctr]
+# Model architecture
+det_arch = "db_resnet50"
+reco_arch = "parseq"
+# Performance tuning (2-3× szybsza detekcja)
+assume_straight_pages = true
+straighten_pages = true
+# Batch processing na GPU (4-8× szybsze)
+det_batch_size = 4
+reco_batch_size = 8
+# Detection thresholds (tune per document type)
+box_thresh = 0.3
+bin_thresh = 0.2
+# ONNX deployment (2-3× szybsza inferencja na CPU)
+use_onnx = false
+onnx_det_model = "models/doctr_det.onnx"
+onnx_reco_model = "models/doctr_reco.onnx"
+# Orientation
+detect_orientation = true
+
+# ── EasyOCR specific configuration (audyt technologiczny v3) ──
+[thresholds.easyocr]
+# Użycie GPU dla EasyOCR (PyTorch CUDA)
+use_gpu = true
+# Języki do rozpoznawania (pierwszy = główny)
+languages = ["pl", "en"]
+# Minimalny próg ufności dla pojedynczej linii tekstu
+min_confidence = 0.3
+# ── Performance superpowers (4-8× szybsze) ──
+# Batch size dla GPU — 4-8× szybsze przetwarzanie
+batch_size = 4
+# Liczba wątków do preprocessingu obrazów
+workers = 2
+# ── Detection thresholds (strojenie czułości) ──
+# Próg detekcji tekstu (niższy = więcej tekstu, ale więcej szumów)
+text_threshold = 0.5
+# Próg łączenia znaków w słowa
+link_threshold = 0.3
+# Próg niskiego score tekstu (dla słabych skanów)
+low_text = 0.3
+# Minimalny rozmiar tekstu w pikselach
+min_size = 5
+# Maksymalny rozmiar obrazu do przetwarzania
+canvas_size = 2560
+# Współczynnik powiększenia obrazu
+mag_ratio = 1.0
+# ── Accuracy superpowers ──
+# Automatyczna rotacja dla zeskanowanych dokumentów
+# [90, 180, 270] = obsługa wszystkich obrotów
+rotation_info = [90, 180, 270]
+# Dekoder: "greedy" (szybki) lub "wordbeamsearch" (dokładny)
+decoder = "greedy"
+# ── Model management ──
+# Custom ścieżka do cache modeli EasyOCR (domyślnie ~/.EasyOCR/)
+# model_storage_directory = "models/easyocr"
+# ── Paragraph mode ──
+# Łączenie linii w akapity
+paragraph_mode = true
+
+# ── Tesseract specific configuration (audyt technologiczny v4) ──
+[thresholds.tesseract]
+# Language (polski = domyślny)
+language = "pol"
+# Page Segmentation Mode (4 = single column — najlepszy dla faktur)
+psm = 4
+# OCR Engine Mode (1 = LSTM only — najwyższa dokładność)
+oem = 1
+# DPI override (opcjonalnie, dla konsystentnej jakości)
+# dpi = 300
+# Custom tessdata directory (dla offline deployment)
+# tessdata_dir = "models/tessdata"
+# User words file (słownik branżowy)
+# user_words_path = "models/tessdata/pol.user-words"
+# User patterns file (wzorce NIP, kwot)
+# user_patterns_path = "models/tessdata/pol.user-patterns"
+# Zachowanie spacji międzywyrazowych
+preserve_interword_spaces = false
+
+# ── Model management ──
+model_idle_ttl_minutes = 5
+model_concurrency_limit = 1
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Emergency — protokoły awaryjne
+# ══════════════════════════════════════════════════════════════════════════════
+
+[emergency]
+# ── Timeout ──
+[emergency.timeout]
+action = "ASK_USER"
+message = "Przekroczono czas oczekiwania na decyzję systemu. Proszę o ręczną weryfikację faktury."
+confidence = 0.30
+
+# ── DB failure ──
+[emergency.db_failure]
+action = "BLOCK"
+message = "Awaria bazy danych. Wszystkie faktury wstrzymane do czasu przywrócenia połączenia."
+confidence = 0.0
+
+# ── NATS failure ──
+[emergency.nats_failure]
+action = "DEGRADED"
+message = "System kolejek niedostępny. Przetwarzanie w trybie awaryjnym — żądania będą opóźnione."
+confidence = 0.10
+
+# ── AI model failure ──
+[emergency.ai_model_failure]
+action = "FALLBACK"
+message = "Model AI niedostępny. Używam reguł offline."
+confidence = 0.40
+
+# ── License expired ──
+[emergency.license_expired]
+action = "CRITICAL"
+message = "Licencja wygasła. Aplikacja zostanie zatrzymana. Proszę o odnowienie licencji."
+confidence = 0.0

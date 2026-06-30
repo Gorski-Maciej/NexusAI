@@ -1,0 +1,72 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI — Auto-Labeler Configuration
+# ═══════════════════════════════════════════════════════════════════════════════
+# Automatyczne etykietowanie PR na podstawie zmienionych plików.
+#
+# Używane przez: actions/labeler@v5
+# Trigger: pull_request_target (bezpieczne — działa na forki)
+# Przykład: zmiana w nexus_ai/tax/ → auto-label "tax-engine"
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── Komponenty główne ──────────────────────────────────────────────────────
+"area:api":
+  - changed-files:
+      - any-glob-to-any-file: "nexus_ai/api/**/*"
+
+"area:core":
+  - changed-files:
+      - any-glob-to-any-file: "nexus_ai/core/**/*"
+
+"area:db":
+  - changed-files:
+      - any-glob-to-any-file: "nexus_ai/db/**/*"
+
+"area:services":
+  - changed-files:
+      - any-glob-to-any-file: "nexus_ai/services/**/*"
+
+"area:events":
+  - changed-files:
+      - any-glob-to-any-file: "nexus_ai/events/**/*"
+
+"area:tax-engine":
+  - changed-files:
+      - any-glob-to-any-file: "nexus_ai/tax/**/*"
+
+"area:frontend":
+  - changed-files:
+      - any-glob-to-any-file: "nexus_ai/frontend/**/*"
+
+"area:rust":
+  - changed-files:
+      - any-glob-to-any-file: "nexus_ai/rust/**/*"
+
+"area:ci/cd":
+  - changed-files:
+      - any-glob-to-any-file: ".github/**/*"
+
+"area:docs":
+  - changed-files:
+      - any-glob-to-any-file: "docs/**/*"
+
+"area:config":
+  - changed-files:
+      - any-glob-to-any-file: ["*.toml", "*.yaml", "*.yml"]
+
+"area:tests":
+  - changed-files:
+      - any-glob-to-any-file: "tests/**/*"
+
+# ── Typy zmian ─────────────────────────────────────────────────────────────
+"type:security":
+  - changed-files:
+      - any-glob-to-any-file: "nexus_ai/core/crypto/**/*"
+
+"type:dependencies":
+  - changed-files:
+      - any-glob-to-any-file: ["pyproject.toml", "pixi.toml", "pixi.lock"]
+
+"type:build":
+  - changed-files:
+      - any-glob-to-any-file: ["user.nuitka-package-config.yml", "build_scripts/**/*"]

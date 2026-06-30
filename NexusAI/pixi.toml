@@ -1,0 +1,700 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# pixi.toml — NexusAI All-in-One Environment + Task Manager
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# pixi jako jedyny task runner, environment manager i menedżer
+# narzędzi w projekcie. Jeden plik definiuje wszystko:
+#   - Python ≥3.13 (free-threaded) — interpreter
+#   - Pakiety PyPI (Litestar, Taskiq, DuckDB, itd.)
+#   - Zależności systemowe (Tesseract, OpenCV, SQLCipher)
+#   - Wszystkie taski (dev, test, build, deploy, migracje, AI, profiling)
+#   - Zmienne środowiskowe (dev i prod)
+#
+# Instalacja pixi:
+#   curl -fsSL https://pixi.sh/install.sh | sh
+#
+# Szybki start:
+#   pixi install           # Stwórz środowisko (tylko runtime)
+#   pixi run api           # Uruchom serwer API
+#   pixi shell             # Aktywuj shell w środowisku
+#
+# Użycie tasków:
+#   pixi run dev            # Uruchom pełne środowisko deweloperskie
+#   pixi run test           # Uruchom testy
+#   pixi run prod:api       # API w trybie produkcyjnym
+#   pixi run prod:migrate   # Migracje w produkcji
+#
+# Dla skrótów (aliasy):
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[workspace]
+name = "nexus-ai"
+version = "2.0.0"
+description = "NexusAI — Ultralekki, autonomiczny system księgowy z AI"
+channels = ["conda-forge"]
+platforms = ["linux-64", "linux-aarch64", "win-64"]   # win-64 dla Nuitka + Inno Setup (aa3fvcx.txt)
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Zależności systemowe — tylko runtime
+# ══════════════════════════════════════════════════════════════════════════════
+
+[dependencies]
+python = { version = "3.13.*", build = "*_cp313t" }  # Free-threaded (3.13t, bez GIL) — -30-40% RAM, prawdziwa wielowątkowość
+
+# ── OCR i przetwarzanie obrazów ─────────────────────────────────────────────
+tesseract = ">=5.3.0"                    # OCR — ekstrakcja tekstu z faktur
+libopencv = ">=4.9.0"                    # OpenCV — preprocessing obrazów
+
+# ── Database ─────────────────────────────────────────────────────────────────
+pkg-config = ">=0.29.2"
+
+# ── mimalloc — Microsoft memory allocator (5-15% mniej RAM) ────────────────
+mimalloc = ">=2.1.0"                    # Microsoft mimalloc — 5-15% mniej RAM
+
+# ── Rust toolchain (dla Maturin / PyO3 / nexus-crypto) ──────────────────────
+rust = ">=1.78.0"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Zależności PyPI — tylko runtime
+# ══════════════════════════════════════════════════════════════════════════════
+
+[pypi-dependencies]
+
+# ── API / ASGI ──────────────────────────────────────────────────────────────
+litestar = { version = ">=2.8.0", extras = ["jwt"] }
+granian = { version = ">=1.0.0", extras = ["dotenv", "pname", "reload"] }
+
+# ── Database ────────────────────────────────────────────────────────────────
+sqlmodel = ">=0.0.16"
+sqlite-vec = ">=0.1.0"
+
+# ── Serialization & Async ───────────────────────────────────────────────────
+msgspec = ">=0.18.0"
+anyio = ">=4.4.0"
+
+# ── Task Queue / Messaging ──────────────────────────────────────────────────
+taskiq = ">=0.11.0"
+taskiq-nats = ">=0.5.0"
+nats-py = ">=2.6.0"
+
+# ── HTTP / Networking ───────────────────────────────────────────────────────
+httpx = ">=0.27.0"
+hishel = ">=0.1.0"
+fsspec = ">=2024.3.0"
+
+# ── Resilience ──────────────────────────────────────────────────────────────
+stamina = ">=0.1.0"
+
+# ── Nexus-Crypto (lokalny moduł Rust) ────────────────────────────────────────
+nexus-crypto = { path = "./nexus_ai/rust", editable = true }
+
+# ── TigerBeetle — oficjalny Python client (double-entry accounting engine) ──
+tigerbeetle = ">=0.16.0"
+
+# ── Document / Image processing ─────────────────────────────────────────────
+lxml = ">=5.1.0"
+xsdata = ">=24.0.0"           # XSD → Python code generation (KSeF)
+pillow = ">=10.0.0"
+pypdfium2 = ">=4.0.0"          # PDF → image conversion via PDFium engine
+paddleocr = ">=2.8.0"          # PaddleOCR — drugi silnik OCR
+python-doctr = ">=0.9.0"         # docTR — trzeci silnik OCR
+easyocr = ">=1.7.0"            # EasyOCR — czwarty silnik OCR
+
+# ── Analytics / OLAP ────────────────────────────────────────────────────────
+duckdb = ">=1.0.0"
+pyarrow = ">=15.0.0"
+polars = ">=1.0.0"
+
+# ── Model Downloader — własny system pobierania modeli.
+# Modele pobierane przez manifest config/models_manifest.json
+# i skrypt download_models.py, weryfikowane SHA-256.
+# huggingface-hub usunięty — zastąpiony przez bezpośrednie HTTP download
+
+# ── Logging ─────────────────────────────────────────────────────────────────
+loguru = ">=0.7.0"
+structlog = ">=24.0.0"
+
+# ── Monitoring ──────────────────────────────────────────────────────────────
+opentelemetry-api = ">=1.25.0"
+opentelemetry-sdk = ">=1.25.0"
+opentelemetry-exporter-prometheus = ">=0.46b0"
+
+# ── Utilities ───────────────────────────────────────────────────────────────
+psutil = ">=5.9.0"
+pendulum = ">=3.0.0"
+diskcache = ">=5.6.0"         # SQLite-backed cache (zastąpił własne backendy L1/L2)
+sentry-sdk = ">=2.0.0"        # Error tracking SDK
+
+# ══════════════════════════════════════════════════════════════════════════════
+# System requirements
+# ══════════════════════════════════════════════════════════════════════════════
+
+[system-requirements]
+linux = "2.27"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Activation — zmienne środowiskowe przy pixi run / pixi shell
+# ══════════════════════════════════════════════════════════════════════════════
+# Te zmienne są automatycznie ustawiane przy każdym `pixi run` lub `pixi shell`.
+# Zmienne środowiskowe dla pixi run / pixi shell.
+# {PIXI_PROJECT_ROOT} to zmienna pixi wskazująca na katalog projektu.
+# $CONDA_PREFIX jest ustawiane przez pixi przed zastosowaniem [activation.env].
+
+[activation.env]
+# ── Podstawowa konfiguracja aplikacji ──────────────────────────────────────
+NEXUS_LOG_LEVEL = "info"
+NEXUS_HOST = "127.0.0.1"
+NEXUS_PORT = "8000"
+NEXUS_DB_PATH = "${PIXI_PROJECT_ROOT}/app_data/nexus.db"
+NEXUS_UNIX_SOCKET = "/tmp/nexus-api.sock"
+NEXUS_WATCH_INTERVAL = "5"
+
+# ── Granian superpowers — pełna konfiguracja serwera ────────────────────────
+NEXUS_GRANIAN_BACKLOG = "2048"
+NEXUS_GRANIAN_BACKPRESSURE = "100"
+NEXUS_GRANIAN_HTTP = "auto"
+NEXUS_GRANIAN_HTTP2_MAX_STREAMS = "256"
+NEXUS_GRANIAN_METRICS = "true"
+NEXUS_GRANIAN_METRICS_ADDRESS = "127.0.0.1"
+NEXUS_GRANIAN_METRICS_PORT = "9090"
+NEXUS_GRANIAN_LOOP = "auto"
+NEXUS_GRANIAN_ACCESS_LOG = "true"
+NEXUS_GRANIAN_NO_SERVER_HEADER = "true"
+NEXUS_GRANIAN_RESPAWN = "true"
+NEXUS_GRANIAN_RUNTIME_THREADS = "2"
+NEXUS_GRANIAN_RUNTIME_BLOCKING_THREADS = "4"
+NEXUS_GRANIAN_GRACEFUL_SHUTDOWN = "30"
+NEXUS_GRANIAN_PID_FILE = "/tmp/nexus-api.pid"
+
+# ── mimalloc — dynamiczne przeładowanie alokatora przez LD_PRELOAD ───────────
+LD_PRELOAD = "$CONDA_PREFIX/lib/libmimalloc.so"
+MIMALLOC_LARGE_OS_PAGES = "1"
+MIMALLOC_RESERVE_HUGE_OS_PAGES = "1"
+MIMALLOC_EAGER_COMMIT_DELAY = "0"
+MIMALLOC_PAGE_RESET = "0"
+MIMALLOC_SHOW_STATS = "0"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Tasks — KOMPLETNA ORKIESTRACJA projektu
+# ══════════════════════════════════════════════════════════════════════════════
+#
+# Uruchamianie:  pixi run <task-name>
+# Z argumentami: pixi run test -- -k 'test_facts'   (argumenty po --)
+# Środowisko:    pixi run prod:api                  (wersja produkcyjna)
+#
+
+# ══════════════════════════════════════════════════════════════════════════════
+
+[tasks]
+
+# ── Uruchamianie serwisów ──────────────────────────────────────────────────
+
+[tasks.start-nats]
+cmd = "nats-server -p 4222 -js"
+description = "Uruchom NATS JetStream broker na porcie 4222"
+
+[tasks.start-tigerbeetle]
+cmd = "tigerbeetle start --addresses=/tmp/nexus-tb.sock --cluster=0 data/tigerbeetle.bin"
+description = "SUPERMOC: Uruchom TigerBeetle ledger na UNIX socket (szybszy niż TCP)"
+
+[tasks.start-opa]
+cmd = "opa run --server --addr=localhost:8181 --log-level=error"
+description = "Uruchom OPA (Open Policy Agent) jako sidecar na porcie 8181"
+
+[tasks.start-opa-dev]
+cmd = "opa run --server --addr=localhost:8181 --log-level=debug"
+description = "Uruchom OPA w trybie deweloperskim (debug log)"
+
+[tasks.start-tigerbeetle-tcp]
+cmd = "tigerbeetle start --addresses=3000 --cluster=0 data/tigerbeetle.bin"
+description = "Uruchom TigerBeetle na TCP (port 3000) — dla zdalnego dostępu"
+
+[tasks.format-tigerbeetle]
+cmd = "tigerbeetle format --cluster=0 --replica=0 --replica-count=1 --development data/tigerbeetle.bin"
+description = "Sformatuj plik danych TigerBeetle"
+
+# download-binaries — usunięty, zastąpiony przez pixi install (system dependencies)
+# setup_env.py został usunięty, a binarki NATS/TigerBeetle/OPA są zarządzane przez pixi
+
+# ── Środowisko deweloperskie ────────────────────────────────────────────────
+
+[tasks.dev]
+cmd = "python main.py --mode all"
+depends-on = ["start-nats", "start-tigerbeetle"]
+description = "Uruchom pełne środowisko: NATS + TigerBeetle + API + Worker"
+
+[tasks.api]
+cmd = "python main.py --mode api"
+description = "Uruchom tylko serwer API (Granian + Litestar)"
+
+[tasks.api-prod]
+cmd = """
+NEXUS_GRANIAN_WORKERS=4 \
+NEXUS_GRANIAN_WORKER_MAX_RSS=1024 \
+NEXUS_GRANIAN_WORKER_LIFETIME=86400 \
+NEXUS_GRANIAN_RESPAWN=true \
+NEXUS_GRANIAN_BACKPRESSURE=200 \
+NEXUS_GRANIAN_HTTP2_MAX_STREAMS=512 \
+NEXUS_GRANIAN_RUNTIME_THREADS=4 \
+NEXUS_GRANIAN_RUNTIME_BLOCKING_THREADS=8 \
+NEXUS_GRANIAN_METRICS=true \
+NEXUS_GRANIAN_PID_FILE=/tmp/nexus-api.pid \
+NEXUS_GRANIAN_PROCESS_NAME=nexus-api \
+python main.py --mode api
+"""
+description = "Uruchom API w trybie produkcyjnym (Granian — 4 workers, RSS limit, respawn)"
+
+[tasks.api-metrics]
+cmd = "curl -s http://127.0.0.1:9090/metrics | head -50"
+description = "Podgląd metryk Granian (Prometheus)"
+
+[tasks.api-dev]
+cmd = "granian --reload --host 127.0.0.1 --port 8000 --backlog 2048 --backpressure 100 --http auto --loop auto --access-log --access-log-fmt '%(addr)s - %(method)s %(path)s %(status)d %(dt_ms).3f' --no-header-server --metrics --metrics-address 127.0.0.1 --metrics-port 9091 --reload-ignore-dirs .git --reload-ignore-dirs __pycache__ --reload-ignore-dirs .pixi --reload-ignore-dirs node_modules --reload-ignore-patterns '*.pyc' --reload-ignore-patterns '*.so' --reload-tick 200 nexus_ai.api.app:create_app"
+description = "Uruchom serwer API z hot-reload (Granian — wszystkie supermoce)"
+
+[tasks.worker]
+cmd = "python main.py --mode worker"
+description = "Uruchom tylko worker Taskiq + NATS"
+
+[tasks.desktop]
+cmd = "python -m nexus_ai.luz.main"
+description = "Uruchom interfejs desktopowy (Flet)"
+
+# [tasks.nexus]
+# Zastąpione: nexus-cli (scripts/nexus_cli.py) został usunięty — funkcjonalność
+# rozproszona w dedykowanych taskach pixi:
+#   pixi run doctor      → nexus_ai.scripts.doctor
+#   pixi run migrate     → migrations.run_migrations
+#   pixi run seed        → main.py --load-fixtures
+#   pixi run bootstrap   → main.py --mode bootstrap
+#   pixi run api         → serwer API
+#   pixi run worker      → worker Taskiq
+#   pixi run desktop     → interfejs Flet
+#   pixi run build-*     → taski build
+
+[tasks.bootstrap]
+cmd = "python main.py --mode bootstrap"
+description = "Inicjalizacja środowiska (pierwsze uruchomienie)"
+
+[tasks.doctor]
+cmd = "python main.py --mode doctor"
+description = "Diagnostyka systemu — sprawdź wszystkie komponenty"
+
+
+# ── Build ────────────────────────────────────────────────────────────────────
+
+[tasks.build-rust]
+cmd = "cd nexus_ai/rust && maturin develop --release --strip"
+description = "Skompiluj nexus-crypto (Rust + PyO3) — tryb develop"
+
+[tasks.mypyc-optimize]
+cmd = "mypyc nexus_ai/tax nexus_ai/core nexus_ai/services nexus_ai/db nexus_ai/events"
+description = "Kompilacja mypyc — typowany Python → C (2-5× przyspieszenie)"
+
+[tasks.mypyc-optimize-tax]
+cmd = "mypyc --strict nexus_ai/tax"
+description = "Kompilacja mypyc --strict — tylko tax/ (krytyczna matematyka finansowa)"
+
+[tasks.mypyc-optimize-core]
+cmd = "mypyc nexus_ai/core"
+description = "Kompilacja mypyc — tylko core/"
+
+[tasks.mypyc-optimize-services]
+cmd = "mypyc nexus_ai/services/accountant_logic.py nexus_ai/services/accounting.py nexus_ai/services/analytics_service.py nexus_ai/services/anomaly_detector.py nexus_ai/services/audit_service.py nexus_ai/services/audit_storno.py nexus_ai/services/auto_decree.py nexus_ai/services/bank_import.py nexus_ai/services/billing_estimator.py nexus_ai/services/budget_control.py nexus_ai/services/cfo_offline.py nexus_ai/services/compliance_analytics.py nexus_ai/services/context_enricher.py nexus_ai/services/daily_briefing.py nexus_ai/services/decision_logger.py nexus_ai/services/decision_queue.py nexus_ai/services/document_fingerprint.py nexus_ai/services/dunning_engine.py nexus_ai/services/event_log.py nexus_ai/services/export_service.py nexus_ai/services/facts_aggregator.py nexus_ai/services/fallback_handler.py nexus_ai/services/finops_meter.py nexus_ai/services/fixed_assets.py nexus_ai/services/fraud_graph_scanner.py nexus_ai/services/fx_revaluation.py nexus_ai/services/gus_bir_client.py nexus_ai/services/hot_reload.py nexus_ai/services/integrity_verifier.py nexus_ai/services/inventory_fifo.py nexus_ai/services/ksef_generator.py nexus_ai/services/ksef_service.py nexus_ai/services/liquidity_oracle.py nexus_ai/services/log_pii_monitor.py nexus_ai/services/mail_fetcher.py nexus_ai/services/migration_sanity.py nexus_ai/services/notification_manager.py nexus_ai/services/notification_service.py nexus_ai/services/otel_fallback.py nexus_ai/services/pre_ledger_validator.py nexus_ai/services/priority_engine.py nexus_ai/services/replay_engine.py nexus_ai/services/replication.py nexus_ai/services/risk_guard.py nexus_ai/services/rmk_engine.py nexus_ai/services/rule_store.py nexus_ai/services/scheduler.py nexus_ai/services/security_service.py nexus_ai/services/semantic_guard.py nexus_ai/services/shadow_resource_correlation.py nexus_ai/services/signature_validator.py nexus_ai/services/storage.py nexus_ai/services/tax_api.py nexus_ai/services/tax_simulator.py nexus_ai/services/tax_strategies.py nexus_ai/services/temporal_manager.py nexus_ai/services/tigerbeetle/client.py nexus_ai/services/tigerbeetle/ledger_initializer.py nexus_ai/services/tigerbeetle/models.py nexus_ai/services/tigerbeetle_secure.py nexus_ai/services/trace_generator.py nexus_ai/services/triage_service.py nexus_ai/services/validation_service.py nexus_ai/services/vat_reconciliation.py nexus_ai/services/vendor_intelligence.py nexus_ai/services/vision/agent.py nexus_ai/services/white_list_service.py"
+description = "Kompilacja mypyc — tylko services/ (75 plików)"
+
+[tasks.mypyc-optimize-db]
+cmd = "mypyc nexus_ai/db"
+description = "Kompilacja mypyc — tylko db/"
+
+[tasks.mypyc-optimize-tax-strict]
+cmd = "mypyc --strict --disallow-untyped-defs nexus_ai/tax"
+description = "Kompilacja mypyc --strict z disallow_untyped_defs — tylko tax/"
+
+[tasks.build-rust-release]
+cmd = "cd nexus_ai/rust && maturin build --release --strip"
+description = "Skompiluj nexus-crypto (koło binarne .whl)"
+
+[tasks.build-nuitka]
+cmd = "python -m nuitka --project-name=nexus-ai main.py"
+description = "Skompiluj aplikację do samodzielnego .exe (Nuitka)"
+
+[tasks.build-nuitka-fast]
+cmd = "python -m nuitka --project-name=nexus-ai --mode=standalone --low-memory main.py"
+description = "Szybki build (standalone folder, niska pamięć)"
+
+[tasks.build-all]
+depends-on = ["build-rust", "build-nuitka"]
+cmd = "echo 'All builds complete'"
+description = "Skompiluj wszystko: Rust (PyO3) + Nuitka (standalone .exe)"
+
+# ── Testowanie ───────────────────────────────────────────────────────────────
+
+[tasks.test]
+cmd = "pytest -x -v"
+description = "Uruchom testy (szybko — zatrzymaj przy pierwszym błędzie)"
+
+[tasks.test-all]
+cmd = "pytest -v"
+description = "Uruchom wszystkie testy (nie zatrzymuj przy błędzie)"
+
+
+description = "Testy z raportem pokrycia kodu"
+
+
+description = "Testy równoległe na wszystkich rdzeniach CPU"
+
+[tasks.test-watch]
+cmd = "pytest -x -v"
+inputs = ["nexus_ai/**/*.py", "tests/**/*.py"]
+description = "Auto-uruchom testy przy zmianie plików"
+
+# ── Lint / Format / Typecheck ────────────────────────────────────────────────
+
+[tasks.lint]
+cmd = "ruff check nexus_ai/"
+description = "Sprawdź kod linterem Ruff"
+
+[tasks.format]
+cmd = "ruff format nexus_ai/"
+description = "Auto-formatuj kod Python przez Ruff"
+
+[tasks.format-check]
+cmd = "ruff format --check nexus_ai/"
+description = "Sprawdź formatowanie bez modyfikacji"
+
+[tasks.typecheck]
+cmd = "mypy nexus_ai/"
+description = "Sprawdź typy przez mypy"
+
+[tasks.security-scan]
+cmd = "ruff check nexus_ai/ --select S"
+description = "Skanowanie bezpieczeństwa (ruff S rules) — tryb łagodny"
+
+[tasks.security-scan-strict]
+cmd = "ruff check nexus_ai/ --select S"
+description = "Skanowanie bezpieczeństwa (ruff S rules)"
+
+# ── Migracje bazy danych — natywny system SQLite (zastępuje Alembic) ────────
+
+[tasks.migrate]
+cmd = "python -m migrations.run_migrations"
+description = "Wykonaj migracje bazy danych (natywny system SQL)"
+
+[tasks.migrate-check]
+cmd = "python -m migrations.run_migrations --current"
+description = "Sprawdź aktualną wersję migracji"
+
+[tasks.migrate-history]
+cmd = "python -m migrations.run_migrations --history"
+description = "Pokaż historię migracji"
+
+[tasks.migrate-dry]
+cmd = "python -m migrations.run_migrations --dry-run"
+description = "Suchy przebieg — wypisz co zostanie wykonane bez zmian"
+
+# ── Modele AI ────────────────────────────────────────────────────────────────
+
+[tasks.download-models]
+cmd = "python -m nexus_ai.scripts.download_models"
+description = "Pobierz wszystkie modele AI (GGUF)"
+
+[tasks.check-models]
+cmd = "python -m nexus_ai.scripts.download_models --check"
+description = "Sprawdź obecność modeli AI"
+
+[tasks.compute-checksums]
+cmd = "python -m nexus_ai.scripts.download_models --verify-only"
+description = "Oblicz sumy SHA-256 dla modeli"
+
+[tasks.check-updates]
+cmd = "python -m nexus_ai.scripts.download_models --check-updates"
+description = "Sprawdź dostępność aktualizacji"
+
+# ── Czyszczenie ──────────────────────────────────────────────────────────────
+
+[tasks.clean]
+cmd = "rm -rf build/ dist/ *.egg-info/ .pytest_cache/ .mypy_cache/ __pycache__/"
+description = "Wyczyść artefakty builda"
+
+[tasks.clean-all]
+cmd = "rm -rf build/ dist/ *.egg-info/ .pytest_cache/ .mypy_cache/ __pycache__/ app_data/"
+description = "Wyczyść wszystko (łącznie z danymi aplikacji)"
+
+# ── Seed data ────────────────────────────────────────────────────────────────
+
+[tasks.seed]
+cmd = "python main.py --load-fixtures"
+description = "Załaduj dane demo/seed"
+
+[tasks.shell]
+cmd = "$SHELL"
+description = "Aktywuj shell w środowisku pixi"
+
+# ── Profiling (py-spy) — diagnostyka wydajnościowa ──────────────────────────
+
+[tasks.profile]
+cmd = "py-spy record --pid $(pgrep -f 'python main.py' | head -1) --output /tmp/flamegraph.svg"
+description = "Profiluj proces API (py-spy record — flamegraph SVG)"
+
+[tasks.profile-top]
+cmd = "py-spy top --pid $(pgrep -f 'python main.py' | head -1)"
+description = "Top-like widok funkcji (py-spy top)"
+
+# ── Single-file Scripts (PEP 723) — kursy walut ─────────────────────────────
+
+# ── List dependencies ──────────────────────────────────────────────────
+
+[tasks.list-deps]
+cmd = "pixi list"
+description = "SUPERMOC: Wyświetl drzewo zależności zarządzane przez pixi"
+
+[tasks.list-deps-graph]
+cmd = """
+python -c "import pkg_resources; [print(f'{d.key} {d.version}') for d in sorted(pkg_resources.working_set, key=lambda x: x.key)]"
+"""
+description = "SUPERMOC: Wypisz wszystkie pakiety z wersjami"
+
+# ── Cache management ────────────────────────────────────────────────────
+
+[tasks.cache-clean]
+cmd = "pip cache purge && pixi clean-cache --yes 2>/dev/null; echo 'Cache cleaned'"
+description = "SUPERMOC: Wyczyść cache pip i pixi"
+
+[tasks.cache-info]
+cmd = "pip cache info 2>/dev/null; du -sh ~/.cache/pixi 2>/dev/null || echo 'No pixi cache found'"
+description = "SUPERMOC: Informacje o cache (wielkość)"
+
+# ── System info & diagnostics ─────────────────────────────────────────────
+
+[tasks.env-info]
+cmd = """
+echo '=== NexusAI Environment Info ==='
+echo "Python:    $(python --version 2>&1)"
+echo "Pixi:      $(pixi --version 2>&1)"
+echo "Project:   ${PIXI_PROJECT_ROOT:-$(pwd)}"
+echo "Platform:  $(uname -a)"
+echo "Shell:     $SHELL"
+echo "User:      $(whoami)"
+echo "CPU cores: $(nproc 2>/dev/null || echo N/A)"
+echo "RAM:       $(free -h 2>/dev/null | grep Mem | awk '{print $2}' || echo N/A)"
+echo "Disk:      $(df -h . 2>/dev/null | tail -1 | awk '{print $4}' || echo N/A)"
+"""
+description = "SUPERMOC: Wyświetl informacje o środowisku"
+
+[tasks.doctor-advanced]
+description = "SUPERMOC: Zaawansowana diagnostyka — sprawdź wszystkie komponenty"
+cmd = """
+echo '=== NexusAI Advanced Diagnostics ==='
+echo ''
+echo '--- Environment ---'
+python --version
+pixi --version
+echo ''
+echo '--- Python packages (top 20) ---'
+pip list --format=columns 2>/dev/null | head -20
+echo ''
+echo '--- Database files ---'
+ls -la app_data/ 2>/dev/null || echo 'No app_data/ directory'
+echo ''
+echo '--- AI Models ---'
+ls models/*.gguf 2>/dev/null | wc -l | xargs -I{} echo "{} GGUF models found"
+echo ''
+echo '--- System binaries ---'
+for bin in nats-server tigerbeetle; do
+  if command -v $bin &>/dev/null; then
+    echo "  $bin: $(which $bin) - OK"
+  else
+    echo "  $bin: NOT FOUND"
+  fi
+done
+echo ''
+echo '--- Git ---'
+git log --oneline -3 2>/dev/null || echo 'Not a git repository'
+echo ''
+echo 'Done.'
+"""
+
+# ── Self-update ─────────────────────────────────────────────────────
+
+[tasks.self-update]
+cmd = "pixi self-update"
+description = "SUPERMOC: Zaktualizuj pixi do najnowszej wersji"
+
+# ── Deploy / Release ────────────────────────────────────────────────────────
+
+[tasks.deploy]
+depends-on = ["test", "build-all", "migrate"]
+cmd = """
+echo 'All steps passed — restarting services...'
+pixi run restart-api
+pixi run restart-worker
+echo 'Deployment complete'
+"""
+description = "Wdrożenie produkcyjne: testy → build → migracje → restart"
+
+[tasks.deploy-quick]
+depends-on = ["build-rust-release", "migrate"]
+cmd = """
+echo 'Quick deploy — restarting services...'
+pixi run restart-api
+echo 'Quick deploy complete'
+"""
+description = "Szybkie wdrożenie (bez testów i Nuitka): build Rust → migracje → restart"
+
+[tasks.deploy-check]
+cmd = """
+echo 'Dry run: test -> build-all -> migrate -> restart-api + restart-worker'
+echo 'Run: pixi run deploy'
+echo 'Or:  pixi run deploy-quick'
+"""
+description = "Suchy przebieg wdrożenia — sprawdź co zostanie wykonane"
+
+[tasks.restart-api]
+cmd = """
+if systemctl is-active --quiet nexus-api 2>/dev/null; then
+  sudo systemctl restart nexus-api
+  echo 'API restarted (systemd)'
+elif [ -f /tmp/nexus-api.pid ]; then
+  kill "$(cat /tmp/nexus-api.pid)" 2>/dev/null || true
+  echo 'API process killed (PID file)'
+else
+  echo 'No running API process found — start with: pixi run api'
+fi
+"""
+description = "Restart serwera API (Granian)"
+
+[tasks.restart-worker]
+cmd = """
+if systemctl is-active --quiet nexus-worker 2>/dev/null; then
+  sudo systemctl restart nexus-worker
+  echo 'Worker restarted (systemd)'
+elif [ -f /tmp/nexus-worker.pid ]; then
+  kill "$(cat /tmp/nexus-worker.pid)" 2>/dev/null || true
+  echo 'Worker process killed (PID file)'
+else
+  echo 'No running worker process found — start with: pixi run worker'
+fi
+"""
+description = "Restart workera Taskiq"
+
+[tasks.status]
+cmd = """
+echo 'NexusAI Service Status'
+for svc in nexus-api nexus-worker nats-server tigerbeetle; do
+  if systemctl is-active --quiet "$svc" 2>/dev/null; then
+    echo "  $svc — active (systemd)"
+  elif pgrep -x "$svc" &>/dev/null; then
+    echo "  $svc — running (PID: $(pgrep -x "$svc" | head -1))"
+  else
+    echo "  $svc — not running"
+  fi
+done
+"""
+description = "Status serwisów produkcyjnych"
+
+[tasks.rollback]
+cmd = """
+echo 'Ostatnie 5 commitów:'
+git log --oneline -5
+echo ''
+read -p 'Cofnąć HEAD? [y/N] ' confirm
+if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
+  git revert HEAD --no-edit
+  echo 'Revert complete. Run: pixi run deploy'
+else
+  echo 'Rollback anulowany.'
+fi
+"""
+description = "Cofnij ostatnie wdrożenie (git revert HEAD) — z potwierdzeniem"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Środowiska produkcyjne
+# ══════════════════════════════════════════════════════════════════════════════
+# Taski z prefixem "prod:" używają zmiennych produkcyjnych.
+# ══════════════════════════════════════════════════════════════════════════════
+
+[tasks.prod-api]
+cmd = "NEXUS_HOST=0.0.0.0 NEXUS_LOG_LEVEL=warn NEXUS_WATCH_INTERVAL=0 python main.py --mode api"
+description = "Uruchom serwer API w produkcji (Granian + Litestar, bez reload)"
+
+[tasks.prod-api-dev]
+cmd = "echo 'api-dev is not available in production — use: pixi run prod:api'"
+description = "Niedostępne w produkcji"
+
+[tasks.prod-migrate]
+cmd = "NEXUS_LOG_LEVEL=warn python -m migrations.run_migrations"
+description = "Wykonaj migracje w środowisku produkcyjnym (natywny system)"
+
+[tasks.prod-deploy]
+depends-on = ["test", "build-all", "prod-migrate"]
+cmd = "NEXUS_LOG_LEVEL=warn pixi run restart-api && echo 'Production deploy complete'"
+description = "Wdrożenie produkcyjne z parametrami prod"
+
+[tasks.prod-deploy-quick]
+depends-on = ["build-rust-release", "prod-migrate"]
+cmd = "NEXUS_LOG_LEVEL=warn pixi run restart-api && echo 'Production quick deploy complete'"
+description = "Szybkie wdrożenie produkcyjne"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Feature: dev — narzędzia programistyczne (testy, lint, build)
+# ══════════════════════════════════════════════════════════════════════════════
+# Używaj:   pixi install --environment dev   # instaluj runtime + dev
+#           pixi run --environment dev test  # uruchom testy
+#           pixi run --environment dev lint  # sprawdź kod
+# ══════════════════════════════════════════════════════════════════════════════
+
+[feature.dev.dependencies]
+cmake = ">=3.28.0"         # Potrzebne do kompilacji natywnych rozszerzeń Pythona (llama-cpp-python, itp.)
+
+[feature.dev.pypi-dependencies]
+# ── Testowanie ──────────────────────────────────────────────────────────────
+pytest = ">=8.0.0"
+
+crosshair = ">=0.1.0"             # SMT-driven property testing (zastąpił hypothesis)
+schemathesis = ">=3.0.0"          # Property-based API testing (OpenAPI)
+locust = ">=2.0.0"               # Load testing w Pythonie
+py-spy = ">=0.3.0"               # Sampling profiler (bez GIL)
+
+# ── Linter / Formatter / Type checker ───────────────────────────────────────
+ruff = ">=0.3.0"
+mypy = ">=1.8.0"
+
+# ── Build tool — Nuitka (kompilacja Python → C → .exe) ────────────────────
+nuitka = ">=1.8"
+
+# ── Security scanning — ruff S rules ──────────────────────────────────────
+
+
+[feature.dev.tasks]
+# gen-requirements — zastąpione przez pixi.
+# pixi nie wspiera bezpośredniego eksportu do requirements.txt.
+# Użyj: pip freeze > requirements.txt  (w środowisku pixi)
+
+# ── Platform-specific: build-nuitka-win (tylko win-64) ───────────────────
+[feature.dev.tasks.build-nuitka-win]
+cmd = "python -m nuitka --project-name=nexus-ai main.py && iscc nexus_ai/installer/build_scripts/setup.iss"
+description = "Skompiluj .exe + stwórz instalator Windows (tylko win-64)"
+
+# ── Task caching: build-rust-release ────────────────────────────────────
+[feature.dev.tasks.build-rust-release]
+cmd = "cd nexus_ai/rust && maturin build --release --strip"
+description = "Skompiluj nexus-crypto (koło binarne .whl)"
+inputs = [
+    "nexus_ai/rust/src/**/*.rs",
+    "nexus_ai/rust/Cargo.toml",
+    "nexus_ai/rust/Cargo.lock",
+    "nexus_ai/rust/pyproject.toml",
+]
+outputs = ["nexus_ai/rust/target/wheels/nexus_crypto-*.whl"]
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Environments
+# ══════════════════════════════════════════════════════════════════════════════
+# pixi install              = środowisko prod (tylko runtime)
+# pixi run --environment dev test  = środowisko dev (runtime + testy + lint)
+
+[environments]
+dev = { features = ["dev"], solve-group = "default" }
+prod = { solve-group = "default" }

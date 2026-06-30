@@ -1,0 +1,639 @@
+[build-system]
+requires = ["hatchling>=1.21", "hatch-vcs>=0.4", "maturin>=1.5"]
+build-backend = "hatchling.build"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Hatchling Build Pipeline — nexus-ai jako centrum build orchestracji
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Wszystkie operacje build, test, deploy są dostępne przez `hatch run`:
+#
+#   hatch build              # Zbuduj koło (wheel) z maturin hook
+#   hatch run ci             # Lint → Typecheck → Test
+#   hatch run build-all      # Rust → Nuitka (onefile)
+#   hatch run deploy         # CI → Build → Migracje → Restart
+#
+# Nuitka build hook (hooks.py) został usunięty — build przez pixi tasks:
+#   pixi run build-nuitka
+#   pixi run build-rust
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+# ── pixi (prefix.dev) — all-in-one environment manager ──────────────────────
+# pixi replaces manual system-dependency scripts.
+# One pixi.toml defines: Python version (3.13t), PyPI packages, AND system deps.
+# Install: curl -fsSL https://pixi.sh/install.sh | sh
+#
+# Quick start:
+#   pixi install       # Create environment (Python 3.13t + all deps)
+#   pixi run python    # Run in the isolated environment
+#   pixi run pytest    # Run tests
+#   pixi shell         # Activate shell inside the environment
+
+
+[project]
+name = "nexus-ai"
+dynamic = ["version"]
+description = "NexusAI — Ultralekki, autonomiczny system księgowy z AI"
+readme = "README.md"
+requires-python = ">=3.13"
+license = { text = "Proprietary" }
+authors = [
+    { name = "NexusAI Team" },
+]
+
+keywords = ["accounting", "ai", "ocr", "invoice", "fintech", "poland"]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Rust",
+    "Topic :: Office/Business :: Financial :: Accounting",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    # ═══════════════════════════════════════════════════════════════════════
+    # API / ASGI — Litestar + Granian (Rust ASGI server)
+    # Granian extras:
+    #   dotenv — load .env files (prod convenience)
+    #   pname  — custom process names for ps aux
+    #   reload — hot-reload on file changes (dev only)
+    # ═══════════════════════════════════════════════════════════════════════
+    "litestar>=2.8.0",
+    "granian[dotenv,pname,reload]>=1.0.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Database — SQLModel, sqlite-vec
+    # ═══════════════════════════════════════════════════════════════════════
+    "sqlmodel>=0.0.16",
+    "sqlite-vec>=0.1.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Validation & Serialization — msgspec (ultraszybki, zastępuje json+orjson)
+    # ═══════════════════════════════════════════════════════════════════════
+    "msgspec>=0.18.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Async I/O — anyio (jednolita warstwa dla asyncio/trio)
+    # ═══════════════════════════════════════════════════════════════════════
+    "anyio>=4.4.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Task Queue / Messaging — Taskiq + NATS JetStream
+    # ═══════════════════════════════════════════════════════════════════════
+    "taskiq>=0.11.0",
+    "taskiq-nats>=0.5.0",
+    "nats-py>=2.6.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # HTTP / Networking — httpx + hishel (inteligentny cache HTTP)
+    # ═══════════════════════════════════════════════════════════════════════
+    "httpx>=0.27.0",
+    "hishel>=0.1.0",
+    "fsspec>=2024.3.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Resilience — stamina (async-native retry + circuit breaker)
+    # Async-native retry + circuit breaker
+    # ═══════════════════════════════════════════════════════════════════════
+    "stamina>=0.1.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Nexus-Crypto — własny moduł kryptograficzny (Rust + PyO3)
+    # ═══════════════════════════════════════════════════════════════════════
+    "nexus-crypto>=0.1.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Litestar JWT (wbudowane — zero dodatkowych zależności)
+    # ═══════════════════════════════════════════════════════════════════════
+    "litestar[jwt]>=2.8.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # TigerBeetle — oficjalny Python client (double-entry accounting engine)
+    # Zgodnie z audytem: zastępuje stuba rzeczywistym klientem
+    # ``tigerbeetle-client`` to oficjalny klient Python TigerBeetle
+    # Wersja 0.16.x — pobierana przez pixi task download-binaries
+    # ═══════════════════════════════════════════════════════════════════════
+    "tigerbeetle>=0.16.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Document / XML processing
+    # ═══════════════════════════════════════════════════════════════════════
+    "lxml>=5.1.0",
+    "xsdata>=24.0.0",
+    "pillow>=10.0.0",
+    "pypdfium2>=4.0.0",   # PDF → image conversion via PDFium engine
+    "paddleocr>=2.8.0",
+    "python-doctr>=0.9.0",
+    "easyocr>=1.7.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Analytics / OLAP — DuckDB + Polars (zastępuje pandas)
+    # ═══════════════════════════════════════════════════════════════════════
+    "duckdb>=1.0.0",
+    "pyarrow>=15.0.0",
+    "polars>=1.0.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # LLM Inference — llama-cpp-python (GGUF, CPU/GPU)
+    # ═══════════════════════════════════════════════════════════════════════
+    "llama-cpp-python>=0.2.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Model Downloader — własny system pobierania modeli.
+    # Modele pobierane przez manifest config/models_manifest.json
+    # i skrypt download_models.py, weryfikowane SHA-256.
+    # ═══════════════════════════════════════════════════════════════════════
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Logging — Loguru + structlog (ustrukturyzowane logowanie z kontekstem)
+    # ═══════════════════════════════════════════════════════════════════════
+    "loguru>=0.7.0",
+    "structlog>=24.0.0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Metrics / Monitoring — OpenTelemetry
+    # ═══════════════════════════════════════════════════════════════════════
+    "opentelemetry-api>=1.25.0",
+    "opentelemetry-sdk>=1.25.0",
+    "opentelemetry-exporter-prometheus>=0.46b0",
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Utilities
+    # ═══════════════════════════════════════════════════════════════════════
+    "psutil>=5.9.0",
+    "pendulum>=3.0.0",
+    ]
+
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    # pytest-anyio: plugin jest wbudowany w anyio (od anyio>=4.0).
+    # Osobny pakiet pytest-anyio na PyPI to dummy v0.0.0.
+    # Używaj: @pytest.mark.anyio lub pytestmark = pytest.mark.anyio
+    "crosshair>=0.1.0.dev0",  # Property-based testing z SMT solverem — jedyne narzędzie PBT
+    "ruff>=0.3.0",
+    "mypy>=1.8.0",
+    "schemathesis>=3.30.0",  # Automatyczny fuzz testing API ze schematu OpenAPI
+    "locust>=2.29.0",        # Pythonowe testy wydajności (zamiast k6)
+    "py-spy>=0.3.14",        # Natywny profiler w Rust, narzut <1%
+    "sentry-sdk>=2.0.0",
+]
+ui = [
+    "flet>=0.28.0",
+    # matplotlib usunięty — zastąpiony przez natywne Flet Charts (BarChart, LineChart, PieChart)
+]
+
+[project.urls]
+Homepage = "https://github.com/Gorski-Maciej/NexusAI"
+Documentation = "https://github.com/Gorski-Maciej/NexusAI/wiki"
+Repository = "https://github.com/Gorski-Maciej/NexusAI"
+
+[project.scripts]
+nexus-api = "nexus_ai.api.server:run_backend"
+nexus-worker = "nexus_ai.luz.worker:main"
+nexus-desktop = "nexus_ai.luz.main:main"
+# Zastąpione: nexus → pixi run nexus, nexus-build → pixi run build-*
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "nexus_ai/",
+    "nexus_crypto/",
+    "migrations/",
+]
+
+[tool.hatch.build.targets.sdist]
+packages = [
+    "nexus_ai/",
+    "migrations/",
+]
+exclude = [
+    "nexus_ai/rust/target/**",
+    "tests/**",
+    "*.so",
+    "*.pyd",
+]
+
+# ── Maturin — Rust/PyO3 native extensions ────────────────────────────────────
+[tool.hatch.build.hooks.maturin]
+
+[tool.hatch.build.hooks.maturin.metadata]
+# Automatyczna kompilacja Rust przy każdym wheel build
+
+# ── Nuitka — build przez pixi tasks ──────────────────────────────────────────
+# NuitkaBuildHook (hooks.py) usunięty — build przez:
+#   pixi run build-nuitka
+#   pixi run build-rust
+
+
+[tool.maturin]
+module-name = "nexus_crypto._core"
+manifest-path = "nexus_ai/rust/Cargo.toml"
+# ABI3 (stable ABI) — jeden wheel na Python ≥3.12
+# Strip — usuwa symbole debug, 30-40% mniejszy .whl
+features = ["pyo3/extension-module"]
+compatibility = "linux"
+strip = true
+
+# ── mypyc — compile typed Python to C (2-5× speedup) ─────────────────────────
+# Phase 1: rozszerzony zakres kompilacji — włączone services/, db/, events/
+# Wyłączone pliki z dynamicznymi importami (importlib, __import__) które mypyc
+# nie może skompilować do C. Te pliki pozostają w interpreterze.
+[tool.mypyc]
+packages = [
+    "nexus_ai/tax",
+    "nexus_ai/core",
+    "nexus_ai/services",
+    "nexus_ai/db",
+    "nexus_ai/events",
+]
+exclude = [
+    # ── core: dynamiczne importy (__import__, importlib) ─────────────────
+    "nexus_ai.core.__init__",
+    "nexus_ai.core.plugins",
+    "nexus_ai.core.tasks",
+    "nexus_ai.core.logger",
+    "nexus_ai.core.config",
+    "nexus_ai.core.exporters.base",
+    # ── db: dynamiczne importy (importlib) ────────────────────────────
+    "nexus_ai.db.__init__",
+    "nexus_ai.db.analytics_schema",
+    # nexus_ai.db.migrations.* removed — replaced by root-level migrations/
+    # ── services: dynamiczne importy ───────────────────────────────────
+    "nexus_ai.services.telemetry",
+    # ── events: dynamiczne importy ─────────────────────────────────────
+    "nexus_ai.events.__init__",
+]
+# mypyc compiles modules with strict type annotations to native C extensions.
+# This gives 2-5× speedup for domain models, tax calculations, and audit logic.
+
+# ── Strict mode dla krytycznych modułów ─────────────────────────────────────
+# Uwaga: per-modułowe opcje mypyc wymagają notacji kropkowej (nie ścieżkowej)
+# i są stosowane przez mypyc w trakcie kompilacji. Na razie strict mode
+# włączony globalnie przez CLI flagi w taskach pixi/hatch.
+
+# ── Pytest ───────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "--tb=short -ra"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+markers = [
+    "integration: Integration test (requires DB/NATS/TigerBeetle)",
+    "anyio: Async test using anyio backend (built-in)",
+    "slow: Slow test (>5s), skipped by default, use --run-slow to run",
+]
+# pytest-anyio: natywna asynchroniczność (anyio backend)
+# Zastępuje pytest-asyncio — testy działają na anyio, tej samej warstwie co kod produkcyjny
+# Uwaga: async test functions wymagają @pytest.mark.anyio lub pytestmark na poziomie modułu
+# SUPERMOC: --tb=short → zwięzłe tracebacki
+# SUPERMOC: -ra → show all skip/reason summaries at end
+
+# ── Ruff (linter + formatter) ────────────────────────────────────────────────
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+src = ["nexus_ai/"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "N", "UP", "S"]
+ignore = [
+    "E501",   # Long lines — intentional for readability
+    "N999",   # Invalid module name — project uses UPPERCASE dirs (API, DB, FRONTEND) deliberately
+]
+
+# ── Mypy (type checker) ─────────────────────────────────────────────────────
+[tool.mypy]
+python_version = "3.13"
+strict = false
+ignore_missing_imports = true
+warn_unused_ignores = false
+
+# Dev dependencies: [project.optional-dependencies].dev (PEP 621)
+# dla kompatybilności z PyPI. pixi ma własną sekcję
+# [feature.dev.pypi-dependencies] w pixi.toml.
+
+# ── crosshair (SMT-driven property-based testing) ────────────────────────────
+# Jedyne narzędzie do property-based testing w NexusAI (zastąpiło hypothesis).
+# crosshair uses SMT-based static analysis with Z3 solver to mathematically
+# prove correctness instead of random fuzzing. It's faster, more deterministic.
+#
+# SUPERMOCE:
+#   max_examples     — maksymalna liczba przykładów na test
+#   max_unfold       — maksymalna głębokość rozwinięcia pętli/rekurencji
+#   per_condition    — limit czasu na warunek (seconds)
+#   per_test_timeout — limit czasu na pojedynczy test
+#   verbosity        — 0=cicha, 1=normalna, 2=szczegółowa
+#   report_uses      — raportuj użycia obiektów zewnętrznych
+#   backtesting      — sprawdź znalezione wcześniej kontrprzykłady
+#
+# Uruchamianie:
+#   crosshair check tests/test_crosshair_properties.py  # Sprawdź plik
+#   crosshair watch tests/  # Ciągłe monitorowanie przy zmianach
+#
+[tool.crosshair]
+max_examples = 500
+max_unfold = 5
+per_condition = 10.0
+per_test_timeout = 30.0
+verbosity = 1
+report_uses = true
+backtesting = true
+
+# ── Pliki do sprawdzenia przez crosshair w CI ──────────────────────────────
+# crosshair check analizuje te pliki pod kątem kontrprzykładów
+check_paths = [
+    "tests/test_crosshair_properties.py",
+    "tests/test_property_based.py",
+]
+
+# ── hatch environments (dev scripts) ─────────────────────────────────────────
+[tool.hatch.envs.lint]
+dependencies = ["ruff>=0.3.0"]
+scripts = { check = "ruff check nexus_ai/", fix = "ruff check --fix nexus_ai/" }
+
+[tool.hatch.envs.typecheck]
+dependencies = ["mypy>=1.8.0"]
+scripts = { check = "mypy nexus_ai/" }
+
+# ── Matrix testing: Python 3.13 (standard) + 3.13t (free-threaded, bez GIL) ──
+[tool.hatch.envs.test]
+dependencies = [
+    "pytest>=8.0.0",
+    "pytest-anyio>=0.1.0",
+    "crosshair>=0.1.0.dev0",
+]
+
+[tool.hatch.envs.test.scripts]
+run = "pytest -x -v"
+all = "pytest -v"
+
+# Matrix: test na standardowym Python 3.13 i free-threaded 3.13t
+# Uruchom: hatch run test:run        -> Python 3.13 (domyślny)
+#          hatch run test.3.13t:run  -> Python 3.13t (free-threaded)
+[[tool.hatch.envs.test.matrix]]
+python = ["3.13", "3.13t"]
+
+# ── Build env — Rust + Nuitka + mypyc ───────────────────────────────────────
+# Zastąpione: nexus-build → pixi run build-*
+[tool.hatch.envs.build]
+dependencies = ["maturin>=1.5", "mypyc>=1.8.0", "nuitka>=1.8"]
+
+[tool.hatch.envs.build.scripts]
+# Legacy shell scripts (backward compat przez hatch)
+legacy-build-rust = "cd nexus_ai/rust && maturin build --release"
+legacy-build-rust-dev = "cd nexus_ai/rust && maturin develop --release"
+legacy-build-nuitka = "python -m nuitka --project-name=nexus-ai main.py"
+legacy-build-nuitka-fast = "python -m nuitka --project-name=nexus-ai --mode=standalone --low-memory main.py"
+# Optymalizacja przez mypyc
+optimize = "mypyc nexus_ai/tax nexus_ai/core"
+
+# ── Dev env — pełny stack deweloperski ───────────────────────────────────────
+[tool.hatch.envs.dev]
+
+[tool.hatch.envs.dev.scripts]
+api = "granian --reload --host 127.0.0.1 --port 8000 nexus_ai.api.app:create_app"
+worker = "python main.py --mode worker"
+desktop = "python -m nexus_ai.luz.main"
+migrate = "python -m migrations.run_migrations"
+seed = "python main.py --load-fixtures"
+doctor = "python -m nexus_ai.scripts.doctor"
+
+# ── Default env — unified build/CI/CD pipeline (dostępne przez `hatch run`) ────
+# Zastąpione: nexus-build → pixi run build-*
+[tool.hatch.envs.default]
+
+[tool.hatch.envs.default.scripts]
+# ── Dev ───────────────────────────────────────────────────────
+dev = "hatch run dev:api & hatch run dev:worker"
+api = "hatch run dev:api"
+worker = "hatch run dev:worker"
+desktop = "hatch run dev:desktop"
+# ── Test + Lint + Typecheck (CI pipeline) ────────────────────
+lint = "hatch run lint:check"
+typecheck = "hatch run typecheck:check"
+test = "hatch run test:run"
+test-all = "hatch run test:all"
+test-cov = "hatch run test:cov"
+# ── Database ──────────────────────────────────────────────────
+migrate = "hatch run dev:migrate"
+seed = "hatch run dev:seed"
+
+# ── Native SQLite migrations ────────────────────────────────
+# Migracje są zarządzane przez skrypt migrations/run_migrations.py
+# który odczytuje pliki SQL z katalogu migrations/
+
+# ── Release env — publikacja na PyPI + GitHub Releases ───────────────────────
+# Uruchom: hatch run release:dry-run     (suchy przebieg)
+#          hatch run release:build        (build + publish do PyPI)
+#          hatch run release:github       (build + GitHub Release)
+#
+# UWAGA: `hatchling` to biblioteka Python (build backend).
+# `hatch` to CLI narzędzie instalowane przez pipx — nie ma na PyPI jako dep.
+[tool.hatch.envs.release]
+dependencies = [
+    "hatchling>=1.21",
+    "hatch-vcs>=0.4",
+    "maturin>=1.5",
+    "nuitka>=1.8",
+]
+
+[tool.hatch.envs.release.scripts]
+dry-run = "echo '📋 Release dry-run: hatch build -> hatch publish -> git tag vX.Y.Z'"
+build = "hatch build"
+publish = "hatch publish"
+full = "hatch build && hatch publish && git tag v$(hatch version)"
+github = "hatch build && gh release create v$(hatch version) dist/*.whl dist/*.tar.gz --generate-notes"
+
+
+# ── Nuitka — compile Python to standalone .exe (single file) ─────────────────
+# Zgodnie z aa3fvcx.txt: Nuitka kompiluje całą aplikację z wszystkimi
+# zależnościami do pojedynczego pliku .exe z wkompilowanym mimalloc.
+#
+# Build command:
+#   nuitka --project-name=nexus-ai main.py
+#   # OR equivalently from pyproject.toml config:
+#   python -m nuitka --project-name=nexus-ai main.py
+#
+# For Windows installer build:
+#   python -m nuitka --project-name=nexus-ai main.py
+#   iscc build_scripts/setup.iss
+#
+[tool.nuitka]
+# ═══════════════════════════════════════════════════════════════════════════
+# Core build options
+# ═══════════════════════════════════════════════════════════════════════════
+onefile = true                  # Pojedynczy plik .exe (nie folder)
+standalone = true               # Samodzielny, bez zależności systemowych
+
+# ═══════════════════════════════════════════════════════════════════════════
+# OPTYMALIZACJE WYDAJNOŚCI
+# ═══════════════════════════════════════════════════════════════════════════
+# LTO (Link Time Optimization) — 5-15% szybszy kod, mniejszy binary
+lto = true
+
+# Python flags są zdefiniowane warunkowo w main.py (nuitka-project-if: NEXUS_DEBUG)
+# Tutaj NIE definiujemy python-flag, aby nie nadpisywać logiki warunkowej.
+# Główna konfiguracja: main.py → dyrektywy nuitka-project:
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ONEFILE CACHE — szybki start przy kolejnych uruchomieniach
+# ═══════════════════════════════════════════════════════════════════════════
+onefile-tempdir-spec = "{CACHE_DIR}/NexusAI/{PRODUCT}/{VERSION}"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# METADATA APLIKACJI — widoczne we właściwościach pliku na Windows
+# ═══════════════════════════════════════════════════════════════════════════
+product-name = "NexusAI"
+copyright = "© 2026 NexusAI Team"
+file-description = "NexusAI — AI-Powered Accounting System"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# UPX — kompresja finalnego binary (30-50% mniejszy plik)
+# UPX to zewnętrzne narzędzie, NIE plugin Nuitka.
+# Instalacja: apt install upx (Linux), choco install upx (Windows), brew install upx (macOS)
+# Użycie po buildzie:
+#   upx --best --lzma dist/NexusAI
+# Uwaga: UPX wydłuża start aplikacji o ~100-200ms (czas dekompresji)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Custom user plugin — zaawansowana kontrola nad kompilacją
+# ═══════════════════════════════════════════════════════════════════════════
+# user-plugin jest zdefiniowane w main.py (dyrektywa nuitka-project:)
+# Plik: nexus_ai/build/nuitka_plugins.py
+# Funkcje: force-compile modułów krytycznych, hidden imports, DLL handling,
+#          data file inclusion, build logging, post-build verification
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Plugins — wszystkie niezbędne dla stacku NexusAI
+# ═══════════════════════════════════════════════════════════════════════════
+enable-plugin = [
+
+    "anti-bloat",                # Usuwa zbędny kod z bibliotek
+    "mimalloc",                  # Microsoft mimalloc — 5-15% mniej RAM
+    "multiprocessing",           # Obsługa procesów potomnych
+    "trio",                      # Obsługa anyio/trio
+]
+
+# ── Data inclusion (wszystkie potrzebne pliki) ───────────────────────────
+include-package = [
+    "nexus_ai",                  # Cały pakiet aplikacji
+    "nexus_crypto",              # Natywny moduł Rust+PyO3 (budowany przez maturin z nexus_ai/rust/)
+    "granian",                   # ASGI server Rust
+    "litestar",                  # API framework
+    "sqlmodel",                  # ORM
+    "duckdb",                    # OLAP
+    "polars",                    # DataFrame
+    "pyarrow",                   # Arrow interop dla DuckDB
+    "llama_cpp",                 # LLM inference
+    # huggingface_hub — removed, replaced by internal Model Downloader
+    "msgspec",                   # Serializacja
+    "stamina",                   # Resilience
+    "httpx",                     # HTTP client
+    "hishel",                    # HTTP cache
+    "nats",                      # NATS client (import nats)
+    "taskiq",                    # Task queue
+    "taskiq_nats",               # Taskiq NATS broker
+    "loguru",                    # Logging
+    "structlog",                 # Structured logging
+    "pendulum",                  # DateTime
+    "opentelemetry",             # OpenTelemetry (API + SDK w jednym)
+    "fsspec",                    # Filesystem abstraction
+    "sqlite_vec",                # Vector extension dla SQLite
+
+    "anyio",                     # Async runtime
+    "lxml",                      # XML processing
+    "PIL",                       # Image processing (Pillow)
+]
+
+# ── Data directories (dołączane do .exe) ─────────────────────────────────
+include-data-dir = [
+    # Tylko katalogi z danymi NIE-Pythonowymi — kod źródłowy jest kompilowany przez Nuitka
+    "nexus_ai/config/=nexus_ai/config/",  # Pliki konfiguracyjne (TOML, JSON) wewnątrz pakietu
+    "app_data/=app_data/",               # Runtime data (puste na start)
+    "assets/=assets/",                   # Ikony i loga
+    "migrations/=migrations/",  # Natywne migracje SQL
+]
+
+# ── Include specific files ───────────────────────────────────────────────
+include-data-files = [
+    "pyproject.toml=pyproject.toml",
+
+    "README.md=README.md",
+]
+
+# ── Don't follow imports to unnecessary modules ─────────────────────────
+# nofollow-import-to is safer than exclude-module: modules can still be
+# dynamically imported if needed, but Nuitka won't waste time tracing them.
+# This reduces compile time by 15-30% and binary size by 5-10 MB.
+nofollow-import-to = [
+    "tkinter",
+    "unittest",
+    "distutils",
+    "pip",
+    "pdb",
+    "test",
+    "ensurepip",
+    "lib2to3",
+    "idlelib",
+    "turtle",
+    "venv",
+    "webbrowser",
+    "antigravity",
+    "http.server",
+    "socketserver",
+    "email.mime",
+    "email.mime.multipart",
+    "email.mime.text",
+    "email.mime.base",
+    "email.encoders",
+    "xmlrpc",
+    "cgi",
+    "cgitb",
+    "dbm",
+    "msilib",
+    "msvcrt",
+    "nis",
+    "ossaudiodev",
+    "smtpd",
+    "telnetlib",
+    "uu",
+    "xdrlib",
+]
+
+# ── Windows-specific ─────────────────────────────────────────────────────
+# windows-console-mode = "disable"  # Odkomentuj dla GUI bez konsoli
+windows-icon-from-ico = "assets/nexus.ico"
+
+# ── Advanced ─────────────────────────────────────────────────────────────
+# Report pomaga debugować, co zostało włączone do builda
+# report = "build/report.xml"  # Odkomentuj do debugowania
+
+# ── Inne opcje ───────────────────────────────────────────────────────────
+jobs = 0                # Wszystkie rdzenie CPU do kompilacji
+clang = false           # Użyj GCC (domyślnie na Linux)
+assume-yes-for-downloads = true  # Automatyczne pobieranie zależności
+
+# ── Build-time module configuration ──────────────────────────────────────
+# nofollow-imports=false: Nuitka normalnie podąża za importami (domyślnie)
+# prefer-source-code=false: Używa skompilowanych .so/.pyd zamiast źródła
+nofollow-imports = false
+prefer-source-code = false
+
+# ── macOS ════════════════════════════════════════════════════════════════
+# macos-create-app-bundle = false
+# macos-signed-app-name = "com.nexusai.app"
+
+# ── Linux ════════════════════════════════════════════════════════════════
+# linux-onefile-icon = "assets/nexus.png"

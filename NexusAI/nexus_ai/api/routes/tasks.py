@@ -1,0 +1,113 @@
+from __future__ import annotations
+
+import pendulum
+from litestar import Controller, get, post
+from litestar.connection import Request
+from sqlmodel import text
+from structlog import get_logger
+
+from nexus_ai.api.dto import TAG_TASKS, TaskCancelResponseDTO, TaskStatusDTO
+from nexus_ai.api.routes.ws import signal_cancel
+
+logger = get_logger("nexus.api.tasks.routes")
+
+
+class TaskController(Controller):
+    """Status i zarządzanie zadaniami asynchronicznymi."""
+
+    path = "/tasks"
+    tags = [TAG_TASKS]
+
+    @get(
+        "/{task_id:str}",
+        return_dto=TaskStatusDTO,
+        summary="Get task status",
+        description="Returns the status, progress, and result of an async task by its ID (Rozwiązanie 17).",
+        operation_id="getTaskStatus",
+    )
+    async def get_task_status(self, task_id: str, request: Request) -> dict:
+        """Zwraca status zadania z tabeli task_status (Rozwiązanie 17)."""
+        engine = getattr(request.app.state, "db_engine", None)
+        if not engine:
+            return {"task_id": task_id, "status": "UNKNOWN", "error": "Database not available"}
+
+        async with engine.connect() as conn:
+            row = (
+                (
+                    await conn.execute(
+                        text(
+                            """
+                        SELECT task_id, task_name, status, progress, result, error_message,
+                               created_at, updated_at
+                        FROM task_status
+                        WHERE task_id = :task_id
+                        LIMIT 1
+                        """
+                        ),
+                        {"task_id": task_id},
+                    )
+                )
+                .mappings()
+                .first()
+            )
+
+        if not row:
+            return {"task_id": task_id, "status": "UNKNOWN", "message": "Task not found"}
+
+        return {
+            "task_id": row["task_id"],
+            "task_name": row["task_name"],
+            "status": row["status"],
+            "progress": float(row["progress"] or 0.0),
+            "result": row["result"],
+            "error_message": row["error_message"],
+            "created_at": row["created_at"].isoformat()
+            if hasattr(row["created_at"], "isoformat")
+            else str(row["created_at"]),
+            "updated_at": row["updated_at"].isoformat()
+            if hasattr(row["updated_at"], "isoformat")
+            else str(row["updated_at"]),
+        }
+
+    @post(
+        "/{task_id:str}/cancel",
+        return_dto=TaskCancelResponseDTO,
+        summary="Cancel a task",
+        description="Sends a cancellation signal to a long-running task via in-process signal and NATS (Rozwiązanie 17).",
+        operation_id="cancelTask",
+    )
+    async def cancel_task(self, task_id: str, request: Request) -> dict:
+        """
+        Anuluje zadanie długotrwałe.
+        Rozwiązanie 17: Sygnalizuje anulowanie przez flagę in-process i NATS.
+        """
+        # Sygnalizuj anulowanie lokalnie (przez flagę in-process)
+        signal_cancel(task_id)
+
+        # Wyślij zdarzenie anulowania przez NATS (z nats_utils)
+        from nexus_ai.core import nats_utils
+        from nexus_ai.core.config import AppConfig
+
+        config = AppConfig()
+        await nats_utils.publish_event(
+            f"task.cancel.{task_id}",
+            {"task_id": task_id, "cancelled_at": pendulum.now("UTC").isoformat()},
+        )
+
+        # Zaktualizuj status w bazie
+        engine = getattr(request.app.state, "db_engine", None)
+        if engine:
+            async with engine.connect() as conn:
+                await conn.execute(
+                    text(
+                        """
+                        UPDATE task_status
+                        SET status = 'CANCELLED', updated_at = CURRENT_TIMESTAMP
+                        WHERE task_id = :task_id AND status NOT IN ('COMPLETED', 'CANCELLED', 'FAILED')
+                        """
+                    ),
+                    {"task_id": task_id},
+                )
+                await conn.commit()
+
+        return {"task_id": task_id, "status": "CANCELLED", "message": "Cancellation signal sent"}

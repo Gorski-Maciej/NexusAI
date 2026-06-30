@@ -1,0 +1,70 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# config/base.toml — NexusAI Shared Base Configuration
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# SUPERMOC TOML: Wspólna konfiguracja bazowa dla wszystkich środowisk.
+# Dev i prod nadpisują tylko to, co się różni (deduplikacja).
+#
+# Ładowane przez: ConfigLoader (core/config.py) — base.toml → {env}.toml
+# Kolejność: base.toml (bazowe) → dev.toml/prod.toml (nadpisania)
+#
+# Korzyści:
+# - [tax], [forex], [security] zdefiniowane RAZ, nie 2×
+# - Mniej duplikacji między dev a prod
+# - Zmiana stawki VAT → edytujesz jeden plik
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[tax]
+# ── Tax configuration (wspólne dla dev i prod) ──
+default_vat_rate = 23
+cit_rate = 19
+linear_rate = 12
+lump_sum_rates = [2.0, 3.0, 5.5, 8.5, 12.0, 15.0, 17.0]
+vat_exempt_threshold = 200000.0
+vat_quarterly_threshold = 2000000.0
+
+[security]
+# ── Litestar security (wspólne) ──
+jwt_exclude_paths = [
+    "/api/auth/login",
+    "/api/auth/register",
+    "/api/auth/refresh",
+    "/api/auth/csrf-token",
+    "/api/auth/reset-password",
+    "/api/auth/reset-password/confirm",
+    "/api/auth/confirm",
+    "/api/v1/health",
+    "/api/v2/health",
+    "/schema/openapi.yml",
+    "/schema/swagger",
+]
+csrf_exclude_patterns = ["/api/auth/", "/health"]
+rate_limit_auth = 10
+rate_limit_upload = 30
+rate_limit_general = 60
+
+[ai]
+# ── AI Models — nowa architektura (Punkt 17: agenci, Punkt 20: modele) ──
+# Modele Council (Alpha/Beta/Gamma), Rules, Analytics, Decision, Vision zastąpione.
+# Nowy mózg: Granite 3.2 3B (Orkiestrator) + modele wyspecjalizowane.
+orchestrator_model = "models/Granite-3.2-3B-Q4_K_M.gguf"
+granite_guardian_model = "models/Granite-Guardian-0.5B-Q4_0.gguf"
+fin_rwkv_model = "models/Fin-RWKV-169M-Q4_K_M.gguf"
+hrida_t2sql_model = "models/Hrida-T2SQL-128k.gguf"
+qwen3_nano_model = "models/Qwen3-Nano-0.5B-Q2_K.gguf"
+graphsage_model = "models/GraphSAGE-Encoder-0.1B-Q4_K_M.gguf"
+finbert_esg_model = "models/FinBERT-ESG-0.1B-Q4_K_M.gguf"
+lag_llama_model = "models/Lag-Llama-0.3B.gguf"
+
+[tigerbeetle]
+# ── TigerBeetle ledger (wspólne) ──
+cluster_id = 0
+replica_addresses = "3000"
+
+[integrations]
+# ── External API endpoints (wspólne) ──
+nbp_api_url = "https://api.nbp.pl/api/exchangerates/rates/a/"
+ksef_api_url = "https://ksef.mf.gov.pl/api/"
+gus_bir_api_url = "https://wyszukiwarka.ceidg.gov.pl/CEIDG"
+white_list_api_url = "https://wl-api.mf.gov.pl/api/"
+dpo_alert_webhook = ""

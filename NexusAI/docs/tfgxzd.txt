@@ -1,0 +1,1386 @@
+Oto szczegółowy opis, jak działa i funkcjonuje silnik reguł podatkowych (Twój Zen-Engine) w architekturze NexusAI. To właśnie ten komponent jest „wyrocznią prawną”, która podejmuje wszystkie wiążące decyzje o stawkach i kwalifikacji.
+
+---
+
+1. Filozofia działania – zero „zgadywania”
+
+Silnik reguł nie jest modelem AI ani LLM-em. To deterministyczna maszyna stanowa napędzana tabelami decyzyjnymi. Jego logika opiera się na zasadzie: jeśli warunki A, B i C są spełnione jednocześnie, wtedy zastosuj regułę R ze stawką S i metodą zaokrąglenia M.
+
+Silnik nie podejmuje decyzji na podstawie prawdopodobieństwa. On ją podejmuje na podstawie faktów:
+
+· Data operacji (dzień, miesiąc, rok)
+· Kategoria towaru/usługi (np. PKWiU, GTU)
+· Typ kontrahenta (krajowy B2B, zagraniczny, konsument)
+· Forma prawna i podatkowa przedsiębiorstwa (JDG na ryczałcie, sp. z o.o. na CIT)
+
+Dane te są już znormalizowane przez poprzedni etap (Wlot Danych), więc silnik nigdy nie musi zgadywać.
+
+---
+
+2. Architektura wewnętrzna – trzy komponenty
+
+A. Repozytorium Reguł (Rule Repository)
+
+To serce systemu. Reguły są przechowywane w tabelach SQLite (wiersze w bazie, a nie pliki YAML), co pozwala na ich wersjonowanie, audyt i temporalność.
+
+Każda reguła ma następującą strukturę:
+
+Pole Znaczenie
+rule_id Unikalny identyfikator (UUID)
+condition_sql Wyrażenie SQL zwracające TRUE/FALSE na podstawie kontekstu
+action_json Co zrobić, gdy warunek jest spełniony (np. {"vat_rate": 0.23, "rounding": "HALF_UP"})
+valid_from Data, od której reguła obowiązuje
+valid_to Data, do której reguła obowiązuje (NULL = nadal aktywna)
+priority Priorytet (im niższa liczba, tym ważniejsza reguła)
+
+Przykład: reguła dla stawki 23% VAT na paliwo od 2022-01-01 do 2023-12-31. Warunek SQL sprawdza, czy category_code = 'FUEL' i czy data faktury mieści się w okresie obowiązywania.
+
+B. Interpreter Kontekstu (Context Interpreter)
+
+Ten komponent przyjmuje paczkę danych faktury i buduje z niej kontekst decyzyjny – zestaw faktów, które są potrzebne do ewaluacji warunków SQL. Kontekst to płaska struktura klucz-wartość, np.:
+
+```json
+{
+  "category_code": "FUEL",
+  "vendor_country": "PL",
+  "transaction_date": "2023-06-15",
+  "company_tax_form": "lump_sum"
+}
+```
+
+Interpreter jest bezstanowy i nie wykonuje żadnych obliczeń – tylko mapuje dane.
+
+C. Maszyna Ewaluacyjna (Evaluation Engine)
+
+To właściwy „mózg” silnika. Działa w następującej sekwencji:
+
+1. Pobiera wszystkie reguły z Repozytorium, które są aktywne na datę transakcji (valid_from <= transaction_date <= valid_to).
+2. Sortuje je po priorytecie (od najważniejszej).
+3. Dla każdej reguły wykonuje jej condition_sql przeciwko kontekstowi.
+4. Pierwsza reguła, której warunek zwróci TRUE, wygrywa i jej action_json staje się obowiązującym werdyktem.
+5. Jeśli żadna reguła nie pasuje – silnik zwraca błąd NO_MATCHING_RULE i transakcja jest blokowana.
+
+To zachowanie typu pierwszy pasujący wygrywa (first-match wins) eliminuje niejednoznaczności.
+
+---
+
+3. Temporalność – wehikuł czasu prawniczego
+
+Silnik jest świadomy czasu. Każda reguła ma okres obowiązywania, co oznacza, że dla faktury z 2021 roku użyje stawek VAT z 2021, nawet jeśli dziś obowiązują już inne.
+
+Jak to działa:
+
+1. Zapytanie SQL pobiera reguły z warunkiem valid_from <= :transaction_date AND (valid_to IS NULL OR valid_to >= :transaction_date).
+2. Dzięki temu silnik automatycznie stosuje historyczne stawki bez żadnej dodatkowej logiki w kodzie.
+
+To jest właśnie przewaga nad człowiekiem – księgowy musi pamiętać o 30 zmianach przepisów rocznie. Silnik nie musi – on po prostu sprawdza w bazie.
+
+---
+
+4. Deterministyczny werdykt – co zwraca silnik
+
+Werdykt silnika to nie tylko sucha stawka. To kompletna instrukcja dla dalszych etapów:
+
+```json
+{
+  "rule_id": "reg-042",
+  "vat_rate": 0.23,
+  "rounding_method": "HALF_UP",
+  "rounding_level": "position",
+  "income_tax_qualification": "deductible_full",
+  "decision_trace": "Reguła reg-042: paliwo, stawka 23%, odliczenie pełne"
+}
+```
+
+· rounding_level mówi kalkulatorowi, czy zaokrąglać VAT per pozycja, czy od sumy.
+· income_tax_qualification mówi silnikowi podatku dochodowego, czy wydatek jest kosztem (KUP), czy nie.
+· rule_id i decision_trace są zapisywane w niezmiennym logu audytowym.
+
+---
+
+5. Współpraca z pozostałymi komponentami
+
+Silnik reguł nie oblicza kwot. On tylko wydaje werdykt. Reszta należy do:
+
+· Decimal Math Engine – dostaje werdykt (np. stawkę 0.23 i metodę zaokrąglania) i wykonuje obliczenia na groszach.
+· TaxInvariantGuard – sprawdza trzy równania matematyczne po obliczeniach.
+· DecisionTraceLogger – zapisuje pełny ślad decyzji jako dowód audytowy.
+
+---
+
+6. Audyt i niezmienność
+
+Każde wywołanie silnika generuje wpis w tabeli decision_traces z:
+
+· trace_id (UUID)
+· rule_id
+· transaction_id
+· context_json (pełny kontekst z dnia transakcji)
+· verdict_json (pełny werdykt)
+· timestamp
+
+Ten wpis jest append-only – nigdy nie jest modyfikowany ani usuwany. W razie kontroli skarbowej jedno zapytanie SQL odtwarza pełną historię decyzji.
+
+---
+
+Podsumowanie
+
+Silnik reguł w NexusAI to deterministyczna, temporalna, audytowalna wyrocznia prawna. Nie zgaduje, nie używa AI do decyzji podatkowych, nie wykonuje obliczeń. Jego jedynym zadaniem jest odpowiedzieć na pytanie: "jaka reguła obowiązuje dla tych konkretnych faktów w tym konkretnym dniu?".
+
+Dzięki temu to aplikacja staje się autorytetem matematycznym i prawnym, a nie tylko narzędziem do przepisywania faktur.
+
+
+Oto rozszerzony opis silnika reguł Zen-Engine, który teraz zawiera szczegółowe informacje o filarach i elementach tworzących ten moduł. To pomoże Ci dogłębnie zrozumieć, jak jest zbudowana ta wyrocznia prawna.
+
+---
+
+Architektura Silnika Reguł Zen-Engine – Struktura Filary i Elementy
+
+Silnik reguł Zen-Engine w architekturze NexusAI to nie pojedynczy blok kodu, lecz złożony, wielowarstwowy organizm zbudowany z trzech niezależnych filarów architektonicznych. Każdy filar pełni odrębną funkcję w procesie podejmowania decyzji podatkowej.
+
+Filar 1: System Repozytorium i Temporalności Reguł
+
+Ten filar odpowiada za przechowywanie, wersjonowanie i dostarczanie reguł w czasie. Jego elementy to:
+
+· Magazyn Reguł (Rule Store) – fizyczna tabela w SQLite o ściśle określonym schemacie: rule_id (UUID), condition_sql (warunek logiczny), action_json (werdykt), valid_from, valid_to, priority, created_at, created_by. Każda reguła jest niezmiennym rekordem – nigdy nie jest aktualizowana, tylko zastępowana nową wersją. To zapewnia pełną historię zmian.
+· Menedżer Temporalny (Temporal Manager) – komponent odpowiedzialny za filtrowanie reguł według daty transakcji. Wykonuje zapytanie SQL z warunkiem valid_from <= :transaction_date AND (valid_to IS NULL OR valid_to >= :transaction_date), gwarantując, że dla faktury z 2021 roku użyte zostaną stawki z 2021, nawet jeśli dziś obowiązują już nowe.
+· System Priorytetów (Priority Engine) – wbudowany mechanizm sortujący reguły według pola priority (im niższa wartość, tym wyższy priorytet). Zapewnia to deterministyczne rozstrzyganie konfliktów, gdy więcej niż jedna reguła pasuje do kontekstu. Zasada jest prosta: pierwsza pasująca reguła wygrywa.
+
+Filar 2: System Ewaluacji i Wnioskowania
+
+Ten filar odpowiada za interpretację danych wejściowych i wykonanie właściwego wnioskowania. Jego elementy to:
+
+· Interpreter Kontekstu (Context Interpreter) – bezstanowy transformator, który przyjmuje znormalizowaną paczkę danych faktury i buduje z niej płaską strukturę klucz-wartość (np. category_code, vendor_country, transaction_date). Nie wykonuje żadnych obliczeń – jedynie mapuje dane do formatu zrozumiałego dla silnika SQL.
+· Maszyna Ewaluacyjna (Evaluation Engine) – serce wnioskowania. Działa w ściśle określonej sekwencji: (1) pobiera aktywne reguły z Menedżera Temporalnego, (2) sortuje je według priorytetu, (3) dla każdej reguły wykonuje jej condition_sql przeciwko kontekstowi, (4) pierwsza reguła zwracająca TRUE wygrywa, (5) jej action_json staje się obowiązującym werdyktem.
+· System Fallback i Obsługi Błędów (Fallback Handler) – mechanizm bezpieczeństwa uruchamiany, gdy żadna reguła nie pasuje do kontekstu. Zamiast cichej awarii, system zwraca błąd NO_MATCHING_RULE, blokuje transakcję i wysyła alert do administratora. To celowe – lepiej zatrzymać przetwarzanie niż podjąć błędną decyzję.
+
+Filar 3: System Audytu i Niezmienności Decyzji
+
+Ten filar odpowiada za pozostawienie niepodważalnego śladu każdej decyzji podatkowej. Jego elementy to:
+
+· Logger Decyzji (Decision Trace Logger) – komponent zapisujący każdy werdykt w append-only tabeli decision_traces w DuckDB. Rekord zawiera: trace_id (UUID), rule_id, transaction_id, context_json (pełny kontekst z dnia transakcji), verdict_json (pełny werdykt), timestamp. Dane te nigdy nie są modyfikowane ani usuwane.
+· Generator Ścieżki Decyzyjnej (Trace Generator) – formatuje werdykt w czytelny dla człowieka sposób, tworząc pole decision_trace (np. "Reguła reg-042: paliwo, stawka 23%, odliczenie pełne"). Ta ścieżka jest dołączana do werdyktu i zapisywana w logu.
+· Mechanizm Odtwarzania (Replay Engine) – umożliwia ponowne wykonanie tych samych reguł na tym samym kontekście z przeszłości. Służy do audytu i weryfikacji – w razie kontroli skarbowej jedno zapytanie SQL odtwarza pełną historię decyzji dla konkretnej transakcji.
+
+---
+
+Determinizm i matematyczna niepodważalność
+
+Silnik reguł jest w pełni deterministyczny. Oznacza to, że dla identycznego kontekstu wejściowego zawsze zwróci identyczny werdykt – niezależnie od dnia tygodnia, obciążenia serwera czy kolejności wywołań. Jest to osiągnięte przez:
+
+· Eliminację wszelkich elementów losowych (brak AI/LLM w ścieżce decyzyjnej),
+· Jawne sortowanie reguł według priorytetu,
+· Wykonywanie warunków SQL w kontrolowanej kolejności,
+· Stosowanie zasady "pierwsza pasująca reguła wygrywa".
+
+Dzięki temu silnik reguł staje się matematycznym autorytetem podatkowym, który można poddać audytowi i któremu można w pełni zaufać.
+
+
+
+Oto szczegółowy, techniczny opis trzech filarów, które razem tworzą matematyczną fortecę wokół każdej transakcji finansowej w NexusAI. Każdy z tych filarów jest niezależnym, testowalnym komponentem, który można zweryfikować matematycznie.
+
+---
+
+Filar 1: Całkowity zakaz używania liczb zmiennoprzecinkowych (float / double)
+
+1.1. Problem, który rozwiązujemy
+
+W standardzie IEEE 754, na którym opiera się typ float w Pythonie (i double w innych językach), liczby dziesiętne są reprezentowane jako ułamki binarne. Większość liczb, które w systemie dziesiętnym wyglądają niewinnie, w zapisie binarnym staje się ułamkiem okresowym – podobnie jak 1/3 w dziesiętnym to 0.(3).
+
+Przykład: 0.1 + 0.2 w Pythonie daje 0.30000000000000004, a nie 0.3. W księgowości, gdzie operujemy na groszach, taki błąd narastający na tysiącach faktur prowadzi do rozjechania się sald.
+
+1.2. Rozwiązanie: architektura "Wszystko w groszach"
+
+W całym systemie NexusAI, od momentu opuszczenia pipeline'u OCR aż do zapisu w TigerBeetle, wszystkie kwoty są przechowywane i przetwarzane wyłącznie jako liczby całkowite reprezentujące grosze.
+
+Formuła konwersji:
+
+```
+kwota_w_groszach = round(kwota_wejściowa * 100)
+```
+
+gdzie round jest jawnym zaokrągleniem do najbliższej liczby całkowitej z metodą HALF_UP (0.5 grosza zaokrągla się w górę).
+
+1.3. Implementacja: TaxMathEngine (zastąpiony przez nexus-tax-engine w Rust)
+
+Moduł Code/CORE/tax_math.py udostępnia następujące API:
+
+Metoda Wejście Wyjście Opis
+to_grosze(amount: Decimal) -> int Kwota w złotych (Decimal) Kwota w groszach (int) Konwersja z jawnym zaokrągleniem
+to_zlotowki(grosze: int) -> Decimal Kwota w groszach (int) Kwota w złotych (Decimal) Konwersja odwrotna
+multiply_net_by_vat(net_grosze: int, vat_rate: Decimal) -> int Netto w groszach, stawka VAT VAT w groszach Mnożenie z zaokrągleniem
+add_tax(net_grosze: int, vat_grosze: int) -> int Netto i VAT w groszach Brutto w groszach Sumowanie
+
+Wszystkie operacje wewnętrzne używają Decimal z precyzyjnym kontekstem:
+
+```python
+from decimal import Decimal, ROUND_HALF_UP, getcontext
+
+getcontext().prec = 28  # wystarczająco dużo, by nie zgubić grosza
+getcontext().rounding = ROUND_HALF_UP
+```
+
+1.4. Przykład liczbowy
+
+Faktura na 123.45 PLN netto, stawka 23% VAT.
+
+Krok 1: Konwersja netto na grosze: 123.45 * 100 = 12345 (int)
+Krok 2: Obliczenie VAT: 12345 * 0.23 = 2839.35, po zaokrągleniu 2839 (int)
+Krok 3: Brutto: 12345 + 2839 = 15184 groszy = 151.84 PLN
+
+Zero floatów, zero błędów zaokrągleń.
+
+1.5. Testowalność
+
+Dla każdej operacji matematycznej istnieje test property-based (Hypothesis), który dla 10 000 losowych kwot sprawdza, że:
+
+· to_zlotowki(to_grosze(x)) == x dla dowolnego Decimal z dwoma miejscami po przecinku.
+· multiply_net_by_vat(n, r) + n == add_tax(n, multiply_net_by_vat(n, r)) dla dowolnego n i r.
+
+---
+
+Filar 2: Algorytmiczne i jawne zaokrąglanie na każdym etapie
+
+2.1. Problem, który rozwiązujemy
+
+Przepisy Ordynacji podatkowej jednoznacznie określają, że:
+
+· Podstawę opodatkowania (netto) zaokrągla się do pełnych groszy.
+· Podatek VAT zaokrągla się do pełnych groszy.
+· Końcówki poniżej 0.5 grosza się pomija, a od 0.5 grosza zaokrągla się w górę (metoda HALF_UP).
+
+Księgowy często zaokrągla "na oko" na różnych etapach – raz na poziomie pozycji, raz na poziomie sumy. To prowadzi do rozbieżności między sumą pozycji a podsumowaniem faktury o 1-2 grosze.
+
+2.2. Rozwiązanie: Jawna Polityka Zaokrągleń
+
+W NexusAI istnieje dedykowany komponent RoundingPolicy (w Code/CORE/tax_math.py), który jest wywoływany na każdym etapie obliczeń i nie pozwala na żadne niejawne zaokrąglenia.
+
+2.3. Poziomy zaokrąglania – decyzja Zen-Engine
+
+Zen-Engine w swoim werdykcie (action_json) przekazuje parametr rounding_level, który mówi kalkulatorowi, na którym poziomie zaokrąglać VAT:
+
+Wartość rounding_level Znaczenie
+"position" VAT liczony i zaokrąglany dla każdej pozycji faktury osobno
+"total" VAT liczony od sumy netto wszystkich pozycji, zaokrąglany raz
+
+Ta decyzja jest prawnie istotna i zależy od metody fakturowania wybranej przez przedsiębiorcę. Zen-Engine podejmuje ją na podstawie profilu podatkowego firmy.
+
+2.4. Sekwencja zaokrągleń dla faktury z 3 pozycjami (metoda position)
+
+Dla każdej pozycji i:
+
+1. net_i_grosze = round(net_i_zl * 100) – zaokrąglenie netto pozycji
+2. vat_i_grosze = round(net_i_grosze * vat_rate) – obliczenie i zaokrąglenie VAT
+3. brutto_i_grosze = net_i_grosze + vat_i_grosze
+
+Po przetworzeniu wszystkich pozycji:
+
+4. total_net = sum(net_i_grosze) – suma netto (już zaokrąglonych)
+5. total_vat = sum(vat_i_grosze) – suma VAT (już zaokrąglonych)
+6. total_brutto = total_net + total_vat – suma brutto
+
+2.5. Przykład liczbowy – dlaczego to jest ważne
+
+Faktura z 3 pozycjami, każda netto 10.00 PLN, stawka 23%.
+
+Metoda position (poprawna):
+
+· Pozycja 1: netto 1000 gr, VAT round(1000 * 0.23) = round(230.0) = 230 gr, brutto 1230 gr
+· Pozycja 2: j.w.
+· Pozycja 3: j.w.
+· Suma: netto 3000 gr, VAT 690 gr, brutto 3690 gr
+
+Metoda total (alternatywna):
+
+· Suma netto: 3000 gr
+· VAT: round(3000 * 0.23) = round(690.0) = 690 gr
+· Brutto: 3690 gr
+
+W tym przypadku obie metody dają ten sam wynik, ale dla nieparzystych kwot mogą dać różnicę 1 grosza. Dlatego Zen-Engine decyduje, którą metodę zastosować, a RoundingPolicy egzekwuje tę decyzję.
+
+2.6. Testowalność
+
+Dla każdej metody zaokrąglania istnieje test property-based, który dla 10 000 losowych zestawów pozycji sprawdza, że:
+
+· Każde zaokrąglenie jest zgodne z metodą HALF_UP.
+· Suma VAT dla metody position jest równa sumie zaokrąglonych VAT-ów poszczególnych pozycji.
+· Suma brutto jest zawsze równa sumie netto + sumie VAT.
+
+---
+
+Filar 3: Potrójna weryfikacja matematyczna (TaxInvariantGuard)
+
+3.1. Problem, który rozwiązujemy
+
+Nawet przy idealnej arytmetyce i poprawnym zaokrąglaniu, błędy mogą pojawić się na styku komponentów:
+
+· Agent AI mógł źle odczytać kwotę z OCR.
+· Zen-Engine mógł zwrócić stawkę, która nie pasuje do kontekstu.
+· Błąd w kodzie mógł spowodować zamianę kolejności pozycji.
+
+Żaden z tych błędów nie zostanie wykryty przez pojedynczy komponent – potrzebna jest niezależna, matematyczna weryfikacja całości.
+
+3.2. Rozwiązanie: Trzy niezmienniki matematyczne
+
+TaxInvariantGuard (Code/CORE/tax_invariants.py) to komponent, który otrzymuje pełną fakturę (wszystkie pozycje + podsumowanie) i sprawdza trzy równania:
+
+Niezmiennik 1 – Suma netto:
+
+\sum_{i=1}^{n} \text{NettoPozycji}_i = \text{NettoFaktury}
+
+Niezmiennik 2 – Suma VAT:
+
+\sum_{i=1}^{n} \text{VATPozycji}_i = \text{VATFaktury}
+
+Niezmiennik 3 – Równanie brutto:
+
+\text{NettoFaktury} + \text{VATFaktury} = \text{BruttoFaktury}
+
+Wszystkie wartości są w groszach (typ int).
+
+3.3. Zachowanie przy naruszeniu niezmiennika
+
+Jeśli którekolwiek z równań nie jest spełnione, TaxInvariantGuard:
+
+1. Nie rzuca wyjątku – zamiast tego zwraca obiekt ValidationResult z polem is_valid = False.
+2. Generuje precyzyjny komunikat błędu, np.: "Niezmiennik 1 naruszony: suma netto pozycji (10050 gr) ≠ netto faktury (10049 gr). Różnica: 1 gr. Sprawdź pozycję nr 3."
+3. Blokuje transakcję przed wysłaniem do TigerBeetle.
+4. Loguje incydent w DecisionTraceLogger z pełnym kontekstem.
+
+3.4. Przykład liczbowy – wykrycie błędu
+
+Faktura z 2 pozycjami:
+
+· Pozycja 1: netto 1000 gr, VAT 230 gr, brutto 1230 gr
+· Pozycja 2: netto 2000 gr, VAT 460 gr, brutto 2460 gr
+· Podsumowanie: netto 3000 gr, VAT 690 gr, brutto 3690 gr
+
+Wszystkie trzy niezmienniki są spełnione – transakcja przechodzi.
+
+Teraz ten sam przykład z błędem OCR na pozycji 2 (netto odczytane jako 2001 gr zamiast 2000 gr):
+
+· Pozycja 2: netto 2001 gr, VAT 460 gr (błędnie – powinno być 460.23 → 460 gr po zaokrągleniu, ale system tego nie wie)
+· Podsumowanie: netto 3001 gr (1000 + 2001), VAT 690 gr
+
+Niezmiennik 1: 3001 ≠ 3000 → NARUSZONY. Transakcja zablokowana.
+
+3.5. Współpraca z pozostałymi filarami
+
+TaxInvariantGuard jest ostatnim etapem przed zapisem w księdze:
+
+```
+[Silnik matematyczny: obliczenia w groszach]
+    → [TaxInvariantGuard: sprawdzenie trzech równań]
+        → [TigerBeetle: zapis transferu] (tylko jeśli walidacja przeszła)
+```
+
+Kolejność jest krytyczna: najpierw liczymy, potem sprawdzamy, na końcu zapisujemy.
+
+3.6. Testowalność
+
+Dla TaxInvariantGuard istnieją trzy zestawy testów:
+
+1. Testy pozytywne – 10 000 losowych faktur, które celowo spełniają wszystkie niezmienniki. Każda musi przejść walidację.
+2. Testy negatywne – 1 000 faktur z celowo wprowadzonym błędem (np. rozjechanie netto o 1 grosz). Każda musi zostać odrzucona.
+3. Testy brzegowe – faktury z kwotami 0, ujemnymi (korekty), z jedną pozycją, z 500 pozycjami. Wszystkie muszą być poprawnie zweryfikowane.
+
+---
+
+Podsumowanie – jak te trzy filary współpracują
+
+W praktyce przepływ wygląda następująco:
+
+1. Zen-Engine wydaje werdykt: "dla tej faktury zastosuj stawkę 23%, metodę zaokrąglania HALF_UP, poziom zaokrąglania position".
+2. Silnik matematyczny (Filar 1 i 2) wykonuje obliczenia na groszach, stosując jawną politykę zaokrągleń zdefiniowaną w werdykcie Zen-Engine.
+3. TaxInvariantGuard (Filar 3) sprawdza trzy równania matematyczne. Jeśli wszystkie są spełnione, transakcja jest przekazywana do TigerBeetle. Jeśli nie – jest blokowana, a błąd jest szczegółowo logowany.
+4. DecisionTraceLogger zapisuje pełny ślad: ID reguły, kontekst, werdykt, wyniki obliczeń, wynik walidacji.
+
+Dzięki tym trzem filarom żadna transakcja, która jest matematycznie błędna, nie zostanie zapisana w księgach NexusAI. To czyni system bardziej niezawodnym niż człowiek-księgowy.
+
+
+
+Oto szczegółowy, techniczny opis czterech komponentów, które razem tworzą system księgowy o niezawodności wyższej niż ludzki księgowy.
+
+---
+
+1. Komponent Dowodowy: "Audit Log & Proof Chain"
+
+1.1. Problem, który rozwiązujemy
+
+Księgowy może podjąć decyzję i nie być w stanie jej odtworzyć po dwóch latach. W systemie finansowym to niedopuszczalne. Każda decyzja — wybór stawki VAT, zastosowanie limitu, przypisanie konta — musi mieć swój niepodważalny, matematyczny dowód, który przetrwa kontrolę skarbową.
+
+1.2. Architektura komponentu
+
+Komponent dowodowy składa się z trzech warstw, które działają jak cyfrowy łańcuch dowodowy.
+
+Warstwa 1: Rejestrator Decyzji (Decision Recorder)
+
+To punkt wejścia. Za każdym razem, gdy Zen-Engine wydaje werdykt, Rejestrator przechwytuje go i tworzy wpis w append-only tabeli decision_traces w DuckDB. Wpis zawiera:
+
+· trace_id — unikalny identyfikator śladu (UUID)
+· rule_id — identyfikator reguły, która została zastosowana
+· transaction_id — powiązanie z konkretną fakturą
+· context_json — pełny kontekst decyzyjny (data, kategoria, NIP, forma prawna)
+· verdict_json — pełny werdykt (stawka, metoda zaokrąglenia, kwalifikacja KUP)
+· calculation_input — dane wejściowe do kalkulatora (netto w groszach przed obliczeniem)
+· calculation_output — dane wyjściowe (VAT w groszach po obliczeniu)
+· timestamp — dokładny czas decyzji
+
+Tabela decision_traces jest append-only — nie ma operacji UPDATE ani DELETE. Każdy wpis jest niezmienny.
+
+Warstwa 2: Łańcuch Haszujący (Hash Chain)
+
+Każdy wpis w tabeli decision_traces zawiera pole previous_hash, które przechowuje skrót kryptograficzny (SHA-256) poprzedniego wpisu. Nowy wpis oblicza swój własny skrót jako:
+
+```
+current_hash = SHA256(previous_hash + trace_id + transaction_id + context_json + verdict_json + timestamp)
+```
+
+Tworzy to nieprzerwany łańcuch dowodowy. Jeśli ktokolwiek spróbuje zmodyfikować choć jeden wpis w przeszłości, wszystkie kolejne hashe przestaną się zgadzać. System wykryje manipulację natychmiast.
+
+Warstwa 3: Weryfikator Integralności (Integrity Verifier)
+
+Cyfrowy audytor, który co godzinę (lub na żądanie) przelicza cały łańcuch hashy od pierwszego do ostatniego wpisu i porównuje z zapisanymi wartościami. Jeśli wykryje rozbieżność, generuje alarm krytyczny i blokuje system do czasu wyjaśnienia.
+
+1.3. Jak to działa w praktyce
+
+Dla faktury od kontrahenta X na paliwo z datą 2023-06-15:
+
+1. Zen-Engine wybiera regułę reg-042 (paliwo, 23% VAT).
+2. Decision Recorder tworzy wpis z pełnym kontekstem: "2023-06-15, kategoria FUEL, kontrahent PL, stawka 23%".
+3. Hash Chain dołącza ten wpis do łańcucha, obliczając skrót na podstawie poprzedniego.
+4. Integrity Verifier co godzinę sprawdza, czy łańcuch jest nienaruszony.
+
+Gdy za dwa lata przyjdzie kontrola, wystarczy jedno zapytanie SQL:
+
+```sql
+SELECT * FROM decision_traces WHERE transaction_id = 'inv-12345';
+```
+
+Wynik to kompletny, niepodważalny dowód: "Dlaczego naliczono 23% VAT? Bo reguła reg-042 obowiązywała w dniu 2023-06-15 dla kategorii FUEL."
+
+1.4. Dlaczego to daje przewagę nad księgowym
+
+Księgowy nie pamięta, dlaczego dwa lata temu zastosował taką a nie inną stawkę. Nawet jeśli zapisał to w notatce, notatka może zostać zgubiona lub zmodyfikowana. Proof Chain w NexusAI jest niezmienny matematycznie — nie można go zmodyfikować bez wykrycia, a każda decyzja jest odtwarzalna w dowolnym momencie.
+
+---
+
+2. Komponent Obliczeniowy: "Deterministic Math Engine"
+
+2.1. Problem, który rozwiązujemy
+
+Komputery domyślnie używają arytmetyki zmiennoprzecinkowej (float), która jest niedeterministyczna i generuje błędy zaokrągleń. W finansach to niedopuszczalne — każdy grosz musi być policzony dokładnie, a wynik musi być identyczny za każdym razem.
+
+2.2. Architektura komponentu
+
+Deterministic Math Engine to izolowany, testowalny moduł, który wykonuje wszystkie obliczenia podatkowe. Składa się z czterech elementów:
+
+Element 1: Konwerter Decimal → Integer
+
+Na wejściu wszystkie kwoty są konwertowane z Decimal (złotówki) na int (grosze). Formuła:
+
+```
+grosze = round(zlotowki * 100)
+```
+
+gdzie round jest jawnym zaokrągleniem HALF_UP. Od tego momentu wszystkie operacje wewnętrzne są wykonywane na liczbach całkowitych.
+
+Element 2: Kalkulator VAT
+
+Przyjmuje netto w groszach i stawkę VAT (Decimal) i zwraca VAT w groszach:
+
+```
+vat_grosze = round(net_grosze * vat_rate)
+```
+
+Wynik jest zaokrąglany zgodnie z metodą wskazaną przez Zen-Engine (zawsze HALF_UP).
+
+Element 3: Sumator Pozycji
+
+Dla metody position sumuje zaokrąglone już VAT-y poszczególnych pozycji. Dla metody total najpierw sumuje netto, potem oblicza VAT od sumy. Wybór metody pochodzi z werdyktu Zen-Engine.
+
+Element 4: Weryfikator Wyniku
+
+Po obliczeniach sprawdza, czy wynik jest spójny: czy suma netto + suma VAT daje sumę brutto. To wewnętrzna kontrola, która działa jeszcze przed TaxInvariantGuard.
+
+2.3. Dlaczego to jest deterministyczne
+
+· Wszystkie operacje są na liczbach całkowitych (grosze), a nie na float.
+· Kolejność operacji jest ściśle zdefiniowana.
+· Zaokrąglanie jest jawne i zawsze HALF_UP.
+· Nie ma żadnych efektów ubocznych ani zależności od stanu zewnętrznego.
+
+Dla identycznych danych wejściowych wynik jest zawsze identyczny — na każdym serwerze, w każdym środowisku, po każdej rekompilacji.
+
+2.4. Testowalność
+
+Deterministic Math Engine jest testowany za pomocą 10 000 losowych zestawów danych wejściowych. Dla każdego zestawu sprawdzane jest:
+
+· Czy to_grosze(to_zlotowki(x)) == x dla dowolnej kwoty z dwoma miejscami po przecinku.
+· Czy net + vat == brutto dla każdej pozycji.
+· Czy wyniki są identyczne przy wielokrotnym uruchomieniu.
+
+---
+
+3. Komponent Kontrolny: "Double-Entry Validator (TigerBeetle)"
+
+3.1. Problem, który rozwiązujemy
+
+W tradycyjnych systemach księgowych zapis jest pojedynczy — faktura trafia do bazy. Nie ma gwarancji, że salda kont są spójne. Błąd może pozostać niezauważony przez miesiące.
+
+3.2. Architektura komponentu
+
+Double-Entry Validator opiera się na silniku TigerBeetle, który z natury wymusza podwójny zapis. Każda transakcja w TigerBeetle musi mieć:
+
+· Konto debetowe (Wn) — skąd pieniądze wychodzą.
+· Konto kredytowe (Ma) — dokąd pieniądze wchodzą.
+· Kwotę w groszach (zawsze int).
+· Unikalny identyfikator źródłowy (powiązanie z fakturą).
+
+TigerBeetle nie przyjmie transakcji, która nie bilansuje się do zera. To jest jego fundamentalna właściwość.
+
+3.3. Warstwa walidacyjna przed TigerBeetle
+
+Zanim transakcja trafi do TigerBeetle, przechodzi przez dodatkową warstwę walidacji — PreLedgerValidator:
+
+1. Sprawdza, czy wszystkie trzy niezmienniki matematyczne są spełnione (netto, VAT, brutto).
+2. Sprawdza, czy konta debetowe i kredytowe są poprawne dla danego typu transakcji (np. faktura kosztowa: Wn "Koszty", Ma "Rozrachunki").
+3. Sprawdza, czy kwota w groszach jest zgodna z tą obliczoną przez Deterministic Math Engine.
+
+Jeśli którekolwiek sprawdzenie się nie powiedzie, transakcja nie jest wysyłana do TigerBeetle.
+
+3.4. Co się dzieje po wysłaniu do TigerBeetle
+
+TigerBeetle wykonuje atomową operację:
+
+· Debetuje konto kosztów.
+· Kredytuje konto rozrachunków.
+· Zapisuje operację w swoim niezmiennym logu.
+· Aktualizuje salda obu kont.
+
+Jeśli operacja się powiedzie, dane są "zabetonowane" — nie można ich zmodyfikować ani usunąć. Jeśli operacja się nie powiedzie (np. przekroczono limit debetowy), TigerBeetle zwraca błąd, a system cofa transakcję (rollback).
+
+3.5. Dlaczego to daje przewagę nad księgowym
+
+Księgowy może zapomnieć o zapisie przeciwstawnym. Może źle przypisać konto. Może wprowadzić transakcję, która nie bilansuje się. TigerBeetle uniemożliwia wszystkie te błędy na poziomie silnika bazy danych — transakcja, która nie bilansuje się do zera, po prostu nie zostanie przyjęta.
+
+---
+
+4. Automated Testing Suite (Property-Based Testing)
+
+4.1. Problem, który rozwiązujemy
+
+Tradycyjne testy jednostkowe sprawdzają konkretne przypadki: "dla netto 100 PLN i stawki 23% VAT wynosi 23 PLN". Ale nie sprawdzają, co się stanie dla 99.99 PLN, dla 0 PLN, dla 9999999.99 PLN, dla stawki 0%, dla stawki 100%.
+
+Księgowy może się pomylić, bo jest zmęczony i przeoczy jeden przypadek na tysiąc. System musi przejść miliony przypadków i nigdy się nie pomylić.
+
+4.2. Jak działa Property-Based Testing
+
+Zamiast definiować konkretne przypadki testowe, definiujemy właściwości (properties), które muszą być zawsze prawdziwe. Framework Hypothesis generuje dziesiątki tysięcy losowych danych wejściowych i sprawdza, czy właściwość jest zachowana.
+
+4.3. Zestaw właściwości dla systemu podatkowego
+
+Właściwość 1 — Zaokrąglenie w obie strony:
+Dla dowolnej kwoty z dwoma miejscami po przecinku, konwersja na grosze i z powrotem na złotówki daje tę samą kwotę.
+
+Właściwość 2 — Netto + VAT = Brutto:
+Dla dowolnego netto i dowolnej stawki VAT, suma netto i obliczonego VAT-u zawsze daje brutto.
+
+Właściwość 3 — Suma pozycji = Suma faktury:
+Dla dowolnej liczby pozycji i dowolnych kwot, suma netto pozycji jest równa netto faktury, a suma VAT pozycji jest równa VAT faktury.
+
+Właściwość 4 — Determinizm:
+Dla identycznych danych wejściowych, dwukrotne uruchomienie tego samego obliczenia daje identyczny wynik.
+
+Właściwość 5 — Odporność na złośliwe dane:
+Dla dowolnych danych wejściowych (w tym ujemnych, zerowych, ogromnych), system nie rzuca wyjątku i zwraca poprawny wynik lub błąd walidacji.
+
+4.4. Jak to działa w praktyce
+
+Framework Hypothesis generuje 10 000 losowych faktur:
+
+· Losowa liczba pozycji (1-50).
+· Losowe kwoty netto (0.01 - 999999.99).
+· Losowe stawki VAT (0%, 5%, 8%, 23%).
+· Losowe kategorie.
+· Losowe metody zaokrąglania.
+
+Każda faktura przechodzi przez pełny pipeline: Zen-Engine → Deterministic Math Engine → TaxInvariantGuard.
+
+Jeśli dla choć jednej faktury właściwość nie jest spełniona, Hypothesis zgłasza błąd i pokazuje minimalny przykład, który go wywołał. Programista może go natychmiast odtworzyć i naprawić.
+
+4.5. Dlaczego to daje przewagę nad księgowym
+
+Księgowy może przetestować kilka przypadków. Hypothesis testuje miliony przypadków w kilka sekund. Żaden człowiek nie jest w stanie osiągnąć takiego poziomu pokrycia testowego. To czyni system matematycznie udowodnionym — a nie tylko "sprawdzonym na kilku przykładach".
+
+---
+
+Podsumowanie
+
+Cztery komponenty tworzą zamknięty, nieprzenikniony system:
+
+1. Audit Log & Proof Chain — każda decyzja ma niepodważalny dowód.
+2. Deterministic Math Engine — obliczenia są zawsze poprawne i odtwarzalne.
+3. Double-Entry Validator — księga nie przyjmie niezbilansowanej transakcji.
+4. Property-Based Testing — miliony testów w sekundę gwarantują matematyczną poprawność.
+
+Razem sprawiają, że system jest bardziej niezawodny niż człowiek-księgowy. Błąd może popełnić zmęczony księgowy. Błąd może popełnić źle skonfigurowany arkusz Excela. Ale nie może go popełnić system, który został matematycznie udowodniony, kryptograficznie zabezpieczony i przetestowany na milionach przypadków.
+
+
+
+Oto szczegółowy opis każdego z czterech komponentów składających się na "Stos Nieomylności" w architekturze NexusAI. Każdy z nich jest niezależnym, testowalnym modułem, który razem z pozostałymi tworzy system finansowy o niezawodności przewyższającej ludzkiego księgowego.
+
+---
+
+1. Rozdział Ról: Zen-Engine (Decydent) + Python Decimal (Kalkulator)
+
+1.1. Problem, który rozwiązujemy
+
+Silniki reguł, takie jak Zen-Engine (GoRules), operują na formacie JSON. JSON nie posiada natywnego typu dla liczb dziesiętnych – wszystkie liczby są reprezentowane jako zmiennoprzecinkowe (float w standardzie IEEE 754). Oznacza to, że wartość 0.23 może być przechowywana jako 0.22999999999999998. Jeśli pozwolimy silnikowi reguł na wykonywanie obliczeń matematycznych na takich wartościach, system będzie gubił grosze.
+
+1.2. Zasada działania
+
+W architekturze NexusAI obowiązuje ścisły rozdział odpowiedzialności:
+
+· Zen-Engine pełni rolę wyłącznie decyzyjną. Jego zadaniem jest analiza kontekstu (data, kategoria, kontrahent, forma prawna) i zwrócenie parametrów jako stałych tekstowych. Nigdy nie wykonuje mnożenia ani dodawania kwot.
+· Python Decimal Math Engine pełni rolę obliczeniową. Otrzymuje parametry od Zen-Engine (np. "vat_rate": "0.23") i wykonuje na nich matematykę z użyciem typu Decimal oraz globalnego kontekstu zaokrągleń ROUND_HALF_UP.
+
+1.3. Przepływ danych
+
+1. Dane faktury (znormalizowane przez Wlot Danych) trafiają do Zen-Engine.
+2. Zen-Engine analizuje kontekst i zwraca werdykt w formacie:
+
+```json
+{
+  "rule_id": "reg-042",
+  "vat_rate_str": "0.23",
+  "kup_limit_str": "0.75",
+  "vat_deduction_str": "0.50",
+  "rounding_method": "HALF_UP",
+  "rounding_level": "position"
+}
+```
+
+3. Decimal Math Engine odbiera werdykt, konwertuje wszystkie wartości tekstowe na Decimal i wykonuje obliczenia na groszach (liczby całkowite).
+4. Wynik obliczeń jest przekazywany do TaxInvariantGuard i TigerBeetle.
+
+1.4. Dlaczego to jest kluczowe
+
+Eliminuje to dwie klasy błędów jednocześnie:
+
+· Błąd reprezentacji: tekst "0.23" nigdy nie zostanie zinterpretowany jako 0.22999999999999998.
+· Błąd odpowiedzialności: Zen-Engine (często napisany w Go) może mieć inną implementację zaokrągleń niż Python. Trzymanie całej matematyki w Pythonie z globalnym kontekstem ROUND_HALF_UP gwarantuje zgodność z polską Ordynacją Podatkową.
+
+1.5. Integracja z NexusAI
+
+· Zen-Engine działa jako osobny mikroserwis (kontener Podman), komunikujący się przez NATS.
+· Decimal Math Engine jest zaimplementowany jako moduł Code/CORE/tax_math.py, importowany przez Code/API/tasks.py.
+· Werdykt Zen-Engine jest zapisywany w decision_traces jako dowód audytowy.
+
+---2. Nexus-Money (msgspec) – Bezpieczna walutowo reprezentacja pieniędzy
+
+2.1. Problem, który rozwiązujemy
+
+W systemie finansowym operujemy na różnych walutach. Księgowy może przez pomyłkę dodać fakturę w EUR do faktury w PLN, co prowadzi do błędnych sald i niezgodności z przepisami. Tradycyjne systemy przechowują kwoty jako nagie liczby (Decimal), które nie niosą informacji o walucie.
+
+2.2. Zasada działania
+
+Nexus-Money to własna, lekka struktura danych oparta na msgspec.Struct. Reprezentuje pieniądze jako parę: amount_cents: int (kwota w groszach) i currency: str (kod waluty, np. "PLN"). Dzięki temu operacje są wykonywane na liczbach całkowitych, eliminując błędy zaokrągleń, a waluta jest integralną częścią obiektu.
+
+Kluczowe właściwości Nexus-Money:
+
+· Zawiera wartość w groszach (int) i kod waluty (str).
+· Nie można dodać dwóch kwot w różnych walutach bez jawnej konwersji.
+· Nie można porównać kwot w różnych walutach.
+· Konwersja między walutami wymaga podania kursu wymiany.
+
+2.3. Struktura Nexus-Money w NexusAI
+
+Każda kwota w systemie (netto, VAT, brutto) jest reprezentowana jako msgspec.Struct:
+
+```python
+from msgspec import Struct
+
+class Money(Struct, frozen=True):
+    amount_cents: int
+    currency: str
+
+    def __add__(self, other: "Money") -> "Money":
+        if self.currency != other.currency:
+            raise ValueError("Nie można dodawać różnych walut")
+        return Money(self.amount_cents + other.amount_cents, self.currency)
+
+netto = Money(125000, "PLN")  # 1250.00 PLN w groszach
+vat = Money(28750, "PLN")        # 287.50 PLN w groszach
+brutto = netto + vat                # Money(153750, "PLN")
+
+# Próba dodania różnych walut:
+faktura_pln = Money(100000, "PLN")
+faktura_eur = Money(30000, "EUR")
+suma = faktura_pln + faktura_eur  # RZUCA ValueError!
+```
+
+2.4. Konwersja walutowa
+
+Dla faktur zagranicznych system automatycznie pobiera kurs z API NBP na dzień roboczy poprzedzający dzień wystawienia faktury (zgodnie z polskimi przepisami). Konwersja jest jawna i zapisywana w audycie:
+
+```python
+kurs_nbp = fetch_nbp_rate("EUR", transaction_date)
+kwota_w_pln = round(kwota_w_eur * kurs_nbp)
+faktura_pln = Money(kwota_w_pln, "PLN")
+```
+
+2.5. Integracja z NexusAI
+
+· Wszystkie modele danych faktur (Invoice, InvoiceItem) używają Money zamiast nagich Decimal.
+· Dzięki msgspec.Struct, Money jest automatycznie serializowany przez Litestar bez dodatkowych konwersji.
+· TigerBeetle operuje na liczbach całkowitych – mapowanie 1:1 z amount_cents.
+· Decimal Math Engine operuje na Money, gwarantując bezpieczeństwo walutowe.
+
+2.6. Dlaczego to jest kluczowe
+
+To nie jest "dodatkowa funkcja" – to standard minimalny dla systemu, który ma być lepszy od księgowego. Księgowy może się pomylić i dodać euro do złotówek. Twój system nie może – zostanie to wychwycone na poziomie kodu, zanim trafi do księgi.
+
+---
+
+3. Property-Based Testing z Hypothesis
+
+3.1. Problem, który rozwiązujemy
+
+Tradycyjne testy jednostkowe sprawdzają konkretne przypadki, które programista ręcznie zdefiniuje. Problem polega na tym, że programista testuje tylko to, o czym pomyśli. Błędy czają się w przypadkach, o których nikt nie pomyślał – nietypowych kwotach, ekstremalnych kombinacjach stawek, granicznych wartościach zaokrągleń.
+
+3.2. Zasada działania
+
+Property-Based Testing odwraca logikę testowania. Zamiast definiować konkretne dane wejściowe i oczekiwane wyniki, definiujemy właściwości (properties), które muszą być zawsze prawdziwe. Framework Hypothesis generuje dziesiątki tysięcy losowych danych wejściowych i sprawdza, czy właściwość jest zachowana.
+
+3.3. Kluczowe właściwości dla systemu podatkowego
+
+Właściwość 1 – Integralność matematyczna:
+
+```python
+@given(
+    brutto=st.decimals(min_value=0.01, max_value=10000000.00, places=2),
+    vat_rate=st.sampled_from(["0.00", "0.05", "0.08", "0.23"])
+)
+def test_netto_plus_vat_equals_brutto(brutto, vat_rate):
+    netto, vat = tax_calculator(brutto, Decimal(vat_rate))
+    assert netto + vat == brutto  # Nigdy nie może być inaczej
+```
+
+Właściwość 2 – Idempotentność zaokrągleń:
+Dla dowolnej kwoty z dwoma miejscami po przecinku, konwersja na grosze i z powrotem daje tę samą kwotę.
+
+Właściwość 3 – Suma pozycji równa sumie faktury:
+Dla dowolnej liczby pozycji (1-50) i dowolnych kwot, suma netto pozycji jest równa netto faktury.
+
+Właściwość 4 – Odporność na złośliwe dane:
+Dla dowolnych danych wejściowych (w tym ujemnych, zerowych, astronomicznych), system nie rzuca wyjątku i zwraca poprawny wynik lub błąd walidacji.
+
+3.4. Jak działa Hypothesis
+
+1. Hypothesis generuje 10 000 losowych zestawów danych (kwoty, stawki, liczby pozycji).
+2. Każdy zestaw przechodzi przez pełny pipeline: Zen-Engine → Decimal Math Engine → TaxInvariantGuard.
+3. Jeśli dla któregoś zestawu właściwość nie jest spełniona, Hypothesis zgłasza błąd i zmniejsza dane wejściowe do minimalnego przykładu, który wywołuje błąd.
+4. Programista otrzymuje konkretną kwotę i stawkę, które powodują problem, i może go natychmiast naprawić.
+
+3.5. Integracja z NexusAI
+
+· Testy Hypothesis są uruchamiane w pipeline CI/CD przy każdym pushu.
+· Dodatkowo, raz dziennie (w nocy) uruchamiane są testy z większą liczbą iteracji (100 000+).
+· Wyniki testów są zapisywane w DuckDB, tworząc historię jakości systemu.
+
+3.6. Dlaczego to jest kluczowe
+
+Żaden człowiek nie przejdzie miliona testów w sekundę. Hypothesis tak. To właśnie czyni system matematycznie lepszym od księgowego – nie dlatego, że jest mądrzejszy, tylko dlatego, że został przetestowany na milionach przypadków, których żaden człowiek nie byłby w stanie sprawdzić.
+
+---
+
+4. TigerBeetle – Ostateczny Bezpiecznik (Double-Entry Bookkeeping)
+
+4.1. Problem, który rozwiązujemy
+
+W tradycyjnych systemach księgowych zapis jest pojedynczy – faktura trafia do bazy danych, a baza danych nie sprawdza, czy transakcja jest matematycznie poprawna. Można zapisać fakturę tylko na koncie kosztów, bez konta przeciwstawnego – baza danych to przyjmie. Księgowy zauważy błąd za miesiąc przy uzgadnianiu sald.
+
+4.2. Zasada działania
+
+TigerBeetle jest bazą danych zaprojektowaną specjalnie do księgowości podwójnego zapisu. Jego fundamentalna zasada brzmi: każda transakcja musi być zbilansowana do zera. Suma wszystkich debetów musi być równa sumie wszystkich kredytów. Jeśli nie jest – transakcja zostaje odrzucona na poziomie silnika bazy danych.
+
+4.3. Struktura transakcji w TigerBeetle
+
+Każda transakcja jest transferem wielostronnym (linked transfer), który składa się z co najmniej dwóch pojedynczych transferów:
+
+· Transfer 1: Konto kosztów (Wn) ← kwota netto
+· Transfer 2: Konto VAT naliczony (Wn) ← kwota VAT
+· Transfer 3: Konto rozrachunków (Ma) ← kwota brutto
+
+Suma Wn (netto + VAT) musi być idealnie równa sumie Ma (brutto). Jeśli nie – TigerBeetle odrzuca całą transakcję.
+
+4.4. Przepływ danych
+
+1. Decimal Math Engine oblicza kwoty netto, VAT i brutto w groszach.
+2. TaxInvariantGuard sprawdza trzy niezmienniki matematyczne.
+3. Jeśli walidacja przechodzi, kwoty są konwertowane na transfery TigerBeetle.
+4. TigerBeetle wykonuje atomową operację: zapisuje wszystkie transfery lub odrzuca całość.
+5. Jeśli operacja się powiedzie, dane są "zabetonowane" – nie można ich zmodyfikować ani usunąć.
+
+4.5. Co się dzieje przy błędzie
+
+Jeśli TigerBeetle odrzuci transakcję (np. z powodu przekroczenia limitu debetowego lub niezbilansowania):
+
+1. Transakcja nie jest zapisywana w księdze głównej.
+2. System loguje błąd krytyczny.
+3. Faktura wraca do kolejki wyjątków (strefa czerwona).
+4. Powiadomienie trafia do użytkownika i/lub biura rachunkowego.
+
+4.6. Integracja z NexusAI
+
+· TigerBeetle działa jako osobny proces (Podman), komunikujący się przez gRPC.
+· Klient TigerBeetleClient w Code/Roboton_Reflekton/ledger_client.py obsługuje dwufazowe transfery.
+· Przed wysłaniem transferu, PreLedgerValidator sprawdza wszystkie niezmienniki.
+· Każdy transfer zawiera source_document_id (UUID faktury), umożliwiający pełną identyfikowalność.
+
+4.7. Dlaczego to jest kluczowe
+
+TigerBeetle jest ostatnią linią obrony. Jeśli Zen-Engine się pomyli, jeśli Decimal Math Engine się pomyli, jeśli Hypothesis nie wykryło błędu – TigerBeetle i tak odrzuci niezbilansowaną transakcję. To jest prawdziwa "twierdza" na samym dole stosu.
+
+---
+
+Podsumowanie – Stos Nieomylności
+
+Warstwa Komponent Rola
+Wiedza DuckDB Przechowuje matryce stawek podatkowych
+Logika Zen-Engine Wybiera regułę: "dla kategorii X, w dniu Y, zastosuj stawkę Z"
+Matematyka Decimal Math Engine Liczy co do grosza, nigdy na float
+Bezpieczeństwo walutowe Nexus-Money (msgspec) Uniemożliwia mieszanie walut
+Weryfikacja TaxInvariantGuard Sprawdza trzy równania matematyczne
+Księga TigerBeetle Odrzuca niezbilansowane transakcje
+QA/Audyt Hypothesis Generuje miliony testów, szuka dziur
+
+W tej konfiguracji prawdopodobieństwo błędu matematycznego spada do absolutnego zera. Jedynym pozostałym ryzykiem jest błędny odczyt z OCR – ale to już nie jest problem matematyki, tylko jakości danych wejściowych. Sama matematyka jest nietykalna. 
+
+Oto szczegółowy plan wdrożenia pięciu zaawansowanych integracji, które wzbogacą Twój silnik reguł (Zen‑Engine) o dane rządowe, metadane AI, mapowanie KSeF, odporność transakcyjną oraz symulacje podatkowe w DuckDB.
+
+---
+
+1. Dynamiczny kontekst z GUS BIR i Białej Listy Podatników
+
+Cel: Wzbogacić dane wejściowe dla Zen‑Engine o zweryfikowane informacje z rejestrów państwowych, co umożliwi automatyczne blokowanie podejrzanych transakcji (np. rachunek spoza białej listy) i trafniejszą kwalifikację kosztów na podstawie PKD kontrahenta.
+
+Elementy do wdrożenia:
+
+1. Usługa wzbogacania kontekstu – nowy moduł Code/SERVICES/context_enricher.py
+   · Po pobraniu NIP z faktury (przez OCR) wysyła asynchroniczne zapytania do GUS BIR i Białej Listy KAS.
+   · Odpowiedzi zapisuje w lokalnym cache (SQLite, TTL 30 dni) i mapuje na słownik wejściowy dla DMN:
+     ```json
+     {
+       "vendor_vat_status": "active",
+       "vendor_pkd": "62.01.Z",
+       "vendor_account_on_whitelist": false
+     }
+     ```
+   · Jeśli API niedostępne, używa danych z cache i ustawia flagę vendor_trust: low.
+2. Rozbudowa reguł w Zen‑Engine
+      Do tabeli reguł (tax_rules w SQLite) dodajemy nowe reguły z warunkami odwołującymi się do pól vendor_vat_status, vendor_account_on_whitelist, vendor_pkd.
+      Przykład: gdy vendor_account_on_whitelist == false i kwota > 15 000 PLN → werdykt: BLOCK_PAYMENT.
+3. Wywołanie w pipeline
+      W Code/API/tasks.py przed uruchomieniem council_decide wywołaj ContextEnricher.enrich(invoice_data), a wzbogacony kontekst dołącz do danych faktury.
+
+Oczekiwany efekt: Zen‑Engine automatycznie blokuje płatności na niezweryfikowane rachunki i potrafi zakwestionować związek wydatku z przychodem na podstawie niezgodności PKD.
+
+---
+
+2. Metadane ufności z modeli AI (docTR / LiLT / HerBERT)
+
+Cel: Przekazać do silnika reguł informację o pewności odczytu każdego pola – Zen‑Engine może wtedy podejmować decyzję o eskalacji do weryfikacji ręcznej lub o dopuszczeniu do automatycznego księgowania.
+
+Elementy do wdrożenia:
+
+1. Struktura metadanych – na wyjściu z OCR (po VisionAgent lub LightweightExtractionAgent) dodajemy do obiektu faktury pole field_confidence:
+   ```json
+   {
+     "total_gross": {"value": 1230.00, "confidence": 0.88},
+     "vat_rate": {"value": 0.23, "confidence": 0.99},
+     "vendor_nip": {"value": "1234567890", "confidence": 0.95}
+   }
+   ```
+2. Nowe reguły w Zen‑Engine – dodajemy reguły sprawdzające progi ufności:
+   · Jeśli total_gross_confidence < 0.85 → routing = HUMAN_VERIFICATION
+   · Jeśli vat_rate_confidence < 0.98 → routing = HUMAN_VERIFICATION (wysokie ryzyko błędnej stawki)
+3. Integracja z Active Learning – gdy dokument trafi do weryfikacji ręcznej, jego wektor (z LanceDB) oraz ostateczna decyzja człowieka są zapisywane jako dane treningowe do przyszłego fine‑tuningu modeli.
+
+Oczekiwany efekt: Silnik reguł staje się strażnikiem jakości – nie dopuszcza do automatycznego przeliczenia podatku, gdy AI nie było pewne odczytu, i jednocześnie zasila pętlę uczenia.
+
+---
+
+3. Generowanie mapowania do struktury KSeF
+
+Cel: Zamiast zwykłych stawek, Zen‑Engine zwraca pełne informacje wymagane do wygenerowania pliku FA_VAT (KSeF) – kody GTU, procedury, oznaczenia transakcji.
+
+Elementy do wdrożenia:
+
+1. Rozszerzenie definicji reguł – w polu action_json reguły przechowujemy dodatkowe atrybuty KSeF:
+   ```json
+   {
+     "vat_rate": "0.23",
+     "ksef_fields": {
+       "gtu_code": "GTU_12",
+       "procedure_code": "MPP",
+       "transaction_mark": "TP"
+     }
+   }
+   ```
+2. Mapa kategorii → GTU – tworzymy słownik (lub tabelę) wiążący wewnętrzne kategorie wydatków z kodami GTU. Zen‑Engine może go odpytować przy podejmowaniu decyzji.
+3. Generator XML – nowy moduł Code/SERVICES/ksef_generator.py, który na podstawie werdyktu Zen‑Engine i danych z faktury buduje poprawny dokument FA_VAT przy użyciu biblioteki xsdata.
+
+Oczekiwany efekt: System automatycznie przygotowuje plik XML gotowy do wysyłki do KSeF, bez ręcznego przypisywania kodów GTU przez księgowego.
+
+---
+
+4. Transactional Outbox dla decyzji podatkowych
+
+Cel: Zapewnić atomowość i odporność na awarie – wynik przetwarzania przez Zen‑Engine i Decimal Math Engine jest zapisywany do Outbox razem z fakturą, a dopiero potem asynchronicznie wysyłany do TigerBeetle i DuckDB.
+
+Elementy do wdrożenia:
+
+1. Rozszerzenie tabeli outbox_events – w SQLite dodajemy nowy typ zdarzenia: TAX_CALCULATED. W polu payload przechowujemy JSON z pełnym werdyktem i wynikami obliczeń.
+2. Modyfikacja zadania process_invoice_task
+   · Po ocenie Rady Agentów (council_decide) wywołaj silnik matematyczny i ZenEngine.
+   · Zamiast bezpośredniego wysłania do TigerBeetle, zapisz zdarzenie TAX_CALCULATED do tabeli outbox_events w tej samej transakcji co faktura.
+   · OutboxRelay (już istnieje) odczyta to zdarzenie i asynchronicznie wyśle transfer do TigerBeetle.
+3. Mechanizm ponawiania – jeśli TigerBeetle odrzuci transfer, OutboxRelay ponawia próbę z wykładniczym opóźnieniem, a po wyczerpaniu prób przenosi zdarzenie do Dead Letter Queue.
+
+Oczekiwany efekt: Nawet przy chwilowej niedostępności TigerBeetle, żadne dane nie zostaną utracone, a spójność księgi jest gwarantowana.
+
+---
+
+5. Piaskownica symulacyjna (DuckDB + Zen‑Engine)
+
+Cel: Umożliwić właścicielowi firmy sprawdzenie, jak zmieniłoby się jego opodatkowanie przy wyborze innej formy (np. przejście z ryczałtu na CIT estoński) na podstawie rzeczywistych danych historycznych.
+
+Elementy do wdrożenia:
+
+1. Alternatywne zestawy reguł – w DuckDB przechowujemy osobne wersje matryc DMN dla każdej formy opodatkowania (ryczałt, liniowy, CIT standard, CIT estoński). Każdy zestaw ma własny rule_set_id.
+2. Silnik symulacji – rozszerzenie TaxSimulator (Roboton_Reflekton/shadow_ledger.py) o metodę run_simulation(history_data, rule_set_id).
+   · DuckDB ładuje historyczne faktury przez ATTACH (Zero‑ETL).
+   · Dla każdej faktury wywoływany jest Zen‑Engine z alternatywnym zestawem reguł.
+   · Wyniki są agregowane w Polars DataFrame i porównywane z faktycznie zapłaconym podatkiem.
+3. Endpoint API – POST /api/v2/tax-policy/simulate – przyjmuje okres i wybraną formę opodatkowania, uruchamia symulację i zwraca wynik w formie wykresu (JSON dla frontendu).
+
+Oczekiwany efekt: System staje się aktywnym doradcą podatkowym, który w kilka sekund pokazuje, ile firma mogłaby zaoszczędzić, zmieniając formę opodatkowania.
+
+---
+
+Podsumowanie: kolejność wdrożenia
+
+1. Dynamiczny kontekst z GUS/Białej Listy – bo dostarcza fundamentu dla bezpieczeństwa transakcji.
+2. Metadane ufności z AI – bo czynią silnik reguł świadomym jakości danych i zamykają pętlę Active Learning.
+3. Transactional Outbox – bo zapewnia niezawodność całej operacji.
+4. Generowanie map KSeF – bo automatyzuje przygotowanie e‑faktury.
+5. Piaskownica symulacyjna – bo daje wartość dodaną dla użytkownika końcowego i zmienia aplikację z pasywnej w aktywną doradczą. 
+
+
+
+Oba elementy, które opisałeś, są absolutnie warte wdrożenia i wnoszą ogromną wartość do systemu NexusAI. Oto szczegółowa analiza.
+
+---
+
+1. Automatyczny estymator kosztów i czasu przetwarzania
+
+Czy warto wdrożyć? Zdecydowanie tak.
+
+Jaką wartość wprowadza?
+
+· Oddzielenie logiki biznesowej od kodu: Cennik nie jest zahardcodowany w Pythonie, tylko przechowywany w tabelach decyzyjnych Zen-Engine. Zmiana stawek (np. faktura krajowa z 2.80 na 3.00 minuty) to podmiana jednego pliku JSON w bazie, bez redeployu aplikacji.
+· Transparentność dla klienta (Client-Driven Pricing): Klient w interfejsie może samodzielnie wybrać parametry (typ dokumentu, forma opodatkowania, dodatkowe usługi), a system w czasie rzeczywistym zwróci wycenę – bez angażowania księgowego.
+· Spójność z architekturą: Estymator działa równolegle z kalkulatorem podatków, co pozwala na rozdzielenie ścieżek: jedna tabela DMN dla podatków, druga dla wyceny. To czysta separacja odpowiedzialności.
+· Łatwość testowania: Każdą regułę wyceny można przetestować w izolacji, a Hypothesis może wygenerować tysiące kombinacji parametrów, by zweryfikować poprawność cennika.
+
+---
+
+2. Dynamiczny Strażnik Ryzyka dla PLEEngine
+
+Czy warto wdrożyć? Zdecydowanie tak – to kluczowy mechanizm dla bezpieczeństwa prawnego systemu.
+
+Jaką wartość wprowadza?
+
+· Przeniesienie zarządzania ryzykiem z kodu do konfiguracji: Decyzja o wymaganym progu pewności AI nie jest już zahardcodowana (np. if confidence > 0.85), tylko pobierana dynamicznie z silnika reguł na podstawie formy opodatkowania i typu kosztu.
+· Dostosowanie do zmian prawnych bez programisty: Jeśli ustawa karno-skarbowa się zaostrzy, Główny Księgowy (nie programista) może w panelu administracyjnym podnieść próg required_ml_confidence_score dla spółek kapitałowych – zmiana jest natychmiastowa, audytowalna i nie wymaga redeployu.
+· Optymalizacja automatyzacji: Dla firm na ryczałcie (gdzie błędy kategoryzacji nie wpływają na podatek) system może księgować automatycznie nawet przy niskiej pewności AI (np. 0.60), co zwiększa odsetek AUTO_POST i odciąża księgowego. Dla CIT – odwrotnie: bezpieczeństwo ponad automatyzację.
+· Pełna integracja z Trust Score: Strażnik Ryzyka staje się jednym z czterech filarów Trust Score (obok AI Confidence, Vendor Reliability i Data Consistency), co czyni cały system decyzyjny spójnym i audytowalnym.
+
+---
+
+Podsumowanie
+
+Element Wartość biznesowa Wartość techniczna
+Estymator kosztów Transparentny cennik, Client-Driven Pricing, łatwa aktualizacja stawek Separacja logiki od kodu, hot-reload reguł, testowalność
+Strażnik Ryzyka Zarządzanie ryzykiem przez księgowego, dostosowanie do zmian prawnych, optymalizacja automatyzacji Dynamiczne progi pewności, integracja z Trust Score, audytowalność
+
+Oba mechanizmy idealnie wpisują się w filozofię NexusAI: deterministyczny silnik reguł jako wyrocznia, Python jako kalkulator, a konfiguracja biznesowa dostępna dla człowieka bez umiejętności programistycznych. Wdrożenie ich nie tylko zwiększa niezawodność systemu, ale też czyni go elastycznym i gotowym na zmiany – czy to w przepisach, czy w cenniku.
+
+
+Szczegółowy plan wdrożenia Estymatora Kosztów i Dynamicznego Strażnika Ryzyka
+
+Oto kompletny plan implementacji dwóch mechanizmów, które przenoszą logikę biznesową z kodu Pythona do silnika reguł Zen-Engine, umożliwiając ich modyfikację bez redeployu aplikacji.
+
+---
+
+1. Automatyczny estymator kosztów i czasu przetwarzania
+
+1.1. Problem, który rozwiązujemy
+
+Obecnie cennik usług księgowych jest zahardcodowany w Pythonie. Każda zmiana stawki (np. faktura krajowa z 2.80 na 3.00 minuty) wymaga zmiany kodu, testów, redeployu i restartu systemu. Dla klienta końcowego oznacza to brak transparentności – nie może samodzielnie sprawdzić, ile będzie kosztować obsługa jego dokumentów.
+
+1.2. Elementy do wdrożenia
+
+A. Nowa tabela reguł w SQLite: billing_rules
+
+Struktura:
+
+Pole Typ Znaczenie
+rule_id TEXT PRIMARY KEY UUID reguły
+condition_json TEXT Warunki wejściowe (JSON)
+output_json TEXT Wynik wyceny (JSON)
+valid_from DATE Data rozpoczęcia obowiązywania
+valid_to DATE (NULL) Data zakończenia (NULL = aktywna)
+priority INTEGER Priorytet (0 = najwyższy)
+
+Przykładowy rekord:
+
+```json
+{
+  "rule_id": "bill-001",
+  "condition_json": "{\"doc_type\": \"faktura_zagraniczna\", \"tax_form\": \"CIT_ESTONIAN\"}",
+  "output_json": "{\"processing_time_minutes\": 4.50, \"compliance_surcharge_pln\": 200.00, \"requires_senior\": true}",
+  "valid_from": "2024-01-01",
+  "valid_to": null,
+  "priority": 0
+}
+```
+
+B. Nowy moduł: Code/SERVICES/billing_estimator.py
+
+Klasa BillingEstimator:
+
+· __init__: pobiera instancję DuckDBManager (do odczytu reguł przez Zero-ETL).
+· estimate(doc_type, tax_form, extra_services) -> BillingResult: odpytuje billing_rules, zwraca obiekt z polami processing_time_minutes, compliance_surcharge_pln, requires_senior, total_cost.
+· Mechanizm first-match wins – sortuje reguły po priorytecie, pierwsza pasująca wygrywa.
+· Jeśli żadna reguła nie pasuje – zwraca domyślną stawkę z konfiguracji (AppConfig).
+
+C. Endpoint API: GET /api/v2/billing/estimate
+
+W Code/API/routes/billing.py:
+
+```python
+@get("/api/v2/billing/estimate")
+async def estimate_billing(
+    doc_type: str,
+    tax_form: str,
+    extra_services: str = ""
+) -> BillingResult:
+    estimator = BillingEstimator(duckdb_manager)
+    return estimator.estimate(doc_type, tax_form, extra_services)
+```
+
+Ten endpoint jest publiczny – klient może go wywołać z poziomu interfejsu Flet, przesuwając suwaki i widząc natychmiastową wycenę.
+
+D. Hot-reload reguł przez NATS
+
+· Nowy temat: billing.rules.updated
+· Gdy administrator zmieni regułę w panelu, publikowane jest zdarzenie.
+· BillingEstimator subskrybuje ten temat i po otrzymaniu zdarzenia ponownie ładuje reguły z bazy (bez restartu aplikacji).
+
+1.3. Przepływ danych
+
+```
+[Klient w UI Flet] → wybiera typ dokumentu, formę podatkową, dodatkowe usługi
+    → GET /api/v2/billing/estimate?doc_type=faktura_zagraniczna&tax_form=CIT_ESTONIAN
+        → BillingEstimator odczytuje reguły z DuckDB (Zero-ETL z SQLite)
+        → Zen-Engine (lokalnie) ewaluuje warunki
+        → zwraca BillingResult do UI
+            → Klient widzi: "Czas: 4.50 min, Dopłata CIT: 200 PLN, Wymagany senior: TAK"
+```
+
+1.4. Wartość biznesowa
+
+· Client-Driven Pricing: Klient sam eksperymentuje z parametrami i widzi wycenę.
+· Hot-reload: Księgowy zmienia stawki w panelu administracyjnym – efekt natychmiastowy.
+· Audytowalność: Każda wycena jest zapisywana w decision_traces jako dowód.
+· Testowalność: Hypothesis może wygenerować 10 000 kombinacji parametrów i sprawdzić, czy wycena zawsze jest poprawna.
+
+---
+
+2. Dynamiczny Strażnik Ryzyka dla PLEEngine
+
+2.1. Problem, który rozwiązujemy
+
+Obecnie próg pewności AI wymagany do automatycznego księgowania jest stały i zahardcodowany (np. confidence > 0.85). To ignoruje fundamentalną różnicę między formami opodatkowania:
+
+· Dla ryczałtu błędna kategoryzacja kosztu nie wpływa na podatek → można księgować agresywnie, nawet przy niskiej pewności AI.
+· Dla CIT błędna kategoryzacja to ryzyko sankcji karno-skarbowych → trzeba księgować konserwatywnie, z wysokim progiem pewności.
+
+2.2. Elementy do wdrożenia
+
+A. Nowa tabela reguł w SQLite: risk_thresholds
+
+Struktura:
+
+Pole Typ Znaczenie
+rule_id TEXT PRIMARY KEY UUID reguły
+condition_json TEXT Warunki (tax_form, expense_type, vendor_trust)
+output_json TEXT Progi i akcje (JSON)
+valid_from DATE Data rozpoczęcia obowiązywania
+valid_to DATE (NULL) Data zakończenia
+priority INTEGER Priorytet
+
+Przykładowy rekord:
+
+```json
+{
+  "rule_id": "risk-001",
+  "condition_json": "{\"tax_form\": \"LUMP_SUM\", \"expense_type\": \"koszt_operacyjny\"}",
+  "output_json": "{\"required_ml_confidence\": 0.60, \"action_if_below\": \"TRIAGE_QUEUE\"}",
+  "valid_from": "2024-01-01"
+}
+```
+
+```json
+{
+  "rule_id": "risk-002",
+  "condition_json": "{\"tax_form\": \"CIT_STANDARD\", \"expense_type\": \"koszt_operacyjny\"}",
+  "output_json": "{\"required_ml_confidence\": 0.98, \"action_if_below\": \"BLOCK_AND_ALERT\"}",
+  "valid_from": "2024-01-01"
+}
+```
+
+B. Nowy moduł: Code/SERVICES/risk_guard.py
+
+Klasa RiskGuard:
+
+· get_threshold(tax_form, expense_type, vendor_trust) -> RiskThreshold: odpytuje risk_thresholds, zwraca obiekt z polami required_ml_confidence, action_if_below.
+· Mechanizm first-match wins.
+· Fallback: jeśli żadna reguła nie pasuje → domyślny próg 0.85 (bezpieczny konserwatyzm).
+
+C. Integracja z TrustScoreCalculator
+
+W Code/SERVICES/autopilot.py, w metodzie calculate():
+
+1. Pobiera tax_form z profilu firmy (przez TaxPolicyService.get_active_profile).
+2. Pobiera expense_type z kategoryzacji AutoGluon.
+3. Wywołuje RiskGuard.get_threshold(tax_form, expense_type).
+4. Otrzymany próg required_ml_confidence staje się czwartym filarem Trust Score (obok AI Confidence, Vendor Reliability, Data Consistency).
+5. Jeśli ai_confidence < required_ml_confidence – Trust Score jest drastycznie obniżany, a faktura trafia do TRIAGE_QUEUE lub BLOCK.
+
+D. Panel administracyjny dla księgowego
+
+W Code/API/routes/risk.py:
+
+```python
+@get("/api/v2/admin/risk-thresholds")
+async def list_thresholds() -> List[RiskThreshold]:
+    # zwraca wszystkie reguły
+    ...
+
+@post("/api/v2/admin/risk-thresholds")
+async def update_threshold(data: RiskThresholdUpdate) -> RiskThreshold:
+    # aktualizuje regułę, publikuje zdarzenie NATS "risk.thresholds.updated"
+    ...
+```
+
+Księgowy (rola OWNER) może w panelu Flet zmienić próg dla danej formy opodatkowania – zmiana jest natychmiastowa, audytowalna i nie wymaga programisty.
+
+2.3. Przepływ danych
+
+```
+[Faktura po OCR] → AutoGluon kategoryzuje wydatek → "koszt_operacyjny"
+    → TaxPolicyService.get_active_profile() → tax_form = "CIT_STANDARD"
+        → RiskGuard.get_threshold("CIT_STANDARD", "koszt_operacyjny") → required_ml_confidence = 0.98
+            → TrustScoreCalculator.calculate():
+                ai_confidence = 0.85
+                0.85 < 0.98 → Trust Score = 0.45 (poniżej progu 0.50)
+                    → decyzja: BLOCK
+                        → faktura trafia do kolejki wyjątków
+                        → alert do księgowego: "Dokument wymaga ręcznej weryfikacji – niska pewność AI dla CIT"
+```
+
+2.4. Wartość biznesowa
+
+· Zarządzanie ryzykiem przez księgowego, nie programistę: Zmiana progów to edycja rekordu w panelu, a nie zmiana kodu.
+· Optymalizacja automatyzacji: Dla ryczałtu system księguje automatycznie 90% dokumentów, dla CIT tylko 60% – to świadoma decyzja biznesowa, nie techniczna.
+· Odporność na zmiany prawne: Zaostrzenie ustawy karno-skarbowej → księgowy podnosi progi w panelu → system natychmiast staje się bardziej konserwatywny.
+· Pełna audytowalność: Każda decyzja Strażnika Ryzyka jest zapisywana w decision_traces z uzasadnieniem: "Odrzucono automatyczne księgowanie: ai_confidence 0.85 < required 0.98 dla CIT_STANDARD".
+
+---
+
+3. Podsumowanie wdrożenia – lista plików
+
+Plik Akcja Zawartość
+Code/SERVICES/billing_estimator.py Nowy Klasa BillingEstimator
+Code/API/routes/billing.py Nowy Endpoint GET /api/v2/billing/estimate
+Code/SERVICES/risk_guard.py Nowy Klasa RiskGuard
+Code/API/routes/risk.py Nowy Endpointy do zarządzania progami ryzyka
+Code/SERVICES/autopilot.py Modyfikacja Integracja RiskGuard z TrustScoreCalculator
+Code/API/state.py Modyfikacja Dodanie tabel billing_rules i risk_thresholds
+Code/API/tasks.py Modyfikacja Wywołanie RiskGuard w pipeline decyzyjnym
+
+Oba mechanizmy idealnie wpisują się w filozofię NexusAI: deterministyczny silnik reguł jako wyrocznia, Python jako kalkulator, a konfiguracja biznesowa dostępna dla człowieka bez umiejętności programistycznych.
+
+
+
+
+
+
+
+
+Obie koncepcje są absolutnie warte wdrożenia. To nie są już "funkcje", tylko fundamentalne filary bezpieczeństwa prawnego i finansowego, które przenoszą NexusAI z poziomu zaawansowanego narzędzia księgowego do rangi systemu klasy RegTech i Anti-Fraud. Oto szczegółowy plan ich implementacji.
+
+---
+
+1. Kryptograficzny Ślad Audytowy Decyzji (Explainable AI dla Urzędu Skarbowego)
+
+1.1. Problem, który rozwiązujemy
+
+Gdy za trzy lata Urząd Skarbowy zapyta „Dlaczego odliczono 100% VAT od tej faktury?”, odpowiedź nie może brzmieć „Tak zdecydował system”. Musi istnieć niepodważalny, opatrzony znacznikiem czasu i kryptograficznie zabezpieczony dowód, który wskaże dokładną regułę, dane wejściowe i kontekst decyzji.
+
+1.2. Elementy do wdrożenia
+
+A. Rozszerzenie tabeli audytowej w SQLite
+
+Nowa tabela tax_decision_audits:
+
+Kolumna Typ Opis
+audit_id UUID Klucz główny
+transaction_id UUID Powiązanie z fakturą
+trace_json JSON Pełna ścieżka decyzyjna z Zen-Engine (lista napotkanych reguł, ich warunki, wyniki)
+context_snapshot JSON Zrzut kontekstu z dnia transakcji (stawki, Biała Lista, progi)
+hash_sha256 VARCHAR(64) Kryptograficzny skrót całego śladu
+created_at TIMESTAMP Data i godzina decyzji
+
+B. Modyfikacja Code/SERVICES/tax_decision_logger.py
+
+Rozszerzenie istniejącego DecisionLogger o metodę:
+
+```python
+def log_tax_audit(transaction_id, trace, context):
+    payload = json.dumps({"trace": trace, "context": context}, sort_keys=True)
+    hash_value = hashlib.sha256(payload.encode()).hexdigest()
+    # INSERT do tax_decision_audits
+```
+
+C. Pobieranie śladu z Zen-Engine
+
+Jeśli Zen-Engine udostępnia tryb audit, wywołanie reguły powinno go zwracać. W przeciwnym razie implementujemy własny mechanizm śledzenia: każda ewaluacja reguły zapisuje jej ID i wynik do tymczasowego bufora, który po zakończeniu całego procesu jest zapisywany w trace_json.
+
+D. Endpoint API – „Wyjaśnij tę decyzję”
+
+GET /api/v2/audit/tax-decision/{transaction_id}
+
+Zwraca czytelny raport HTML/JSON zbudowany z trace_json i context_snapshot, np.:
+
+W dniu 12.04.2026 o 14:32 system przyznał 100% odliczenia VAT, ponieważ: (1) NIP kontrahenta był na Białej Liście, (2) Model ML rozpoznał wydatek jako 'Sprzęt IT' z pewnością 96%, (3) W dacie obowiązku podatkowego aktywna była reguła DMN reg-042...
+
+E. Bezpieczeństwo
+
+· Hash SHA-256 jest przeliczany przy każdym odczycie i porównywany z zapisanym – każda próba manipulacji danymi zostanie natychmiast wykryta.
+· context_snapshot jest zamrażany w momencie transakcji, więc późniejsza zmiana stawek nie wpłynie na historyczne dowody.
+
+1.3. Wartość
+
+Zdejmujesz z użytkownika i z siebie odpowiedzialność prawną, zastępując ją niepodważalnym, kryptograficznym dowodem. W razie kontroli skarbowej wystarczy jedno kliknięcie.
+
+---
+
+2. Semantyczny Wykrywacz „Kreatywnej Księgowości” (LanceDB + Zen-Engine)
+
+2.1. Problem, który rozwiązujemy
+
+Klasyczny system sprawdzi tylko matematykę faktury. Nie wykryje, że kontrahent od lat wystawiający faktury za catering nagle wystawia fakturę za „usługi IT” na 50 000 PLN. A to właśnie takie anomalie są najczęstszym źródłem „pustych faktur” i problemów z KAS.
+
+2.2. Elementy do wdrożenia
+
+A. Wektoryzacja treści faktury
+
+Po ekstrakcji tekstu przez OCR (docTR), cała treść faktury (nie tylko pola strukturalne, ale też opisy pozycji) jest zamieniana na embedding przez model HerBERT / Sentence-Transformers, korzystając z wbudowanego wektoryzatora.
+
+B. Zapytanie do LanceDB
+
+Dla każdego nowego dokumentu wykonujemy zapytanie:
+
+```python
+history_embeddings = lancedb_table.search(new_embedding) \
+    .where(f"vendor_nip = '{vendor_nip}'") \
+    .limit(5) \
+    .to_list()
+```
+
+Jeśli nie ma historii (nowy kontrahent), anomaly_score = 0. Jeśli jest, obliczamy średnią odległość kosinusową między nowym wektorem a historycznymi.
+
+C. Reguła w Zen-Engine
+
+Nowa tabela DMN anomaly_rules:
+
+```json
+{
+  "inputs": {
+    "semantic_anomaly_score": 0.89,
+    "amount_net": 50000
+  },
+  "outputs": {
+    "action": "BLOCK_DECREE",
+    "alert": "Drastyczna zmiana profilu usług kontrahenta. Wymagana weryfikacja ręczna i dowód wykonania usługi."
+  }
+}
+```
+
+Jeśli anomaly_score > 0.80 i kwota > 10 000 PLN → blokada i alert.
+
+D. Nowy moduł: Code/SERVICES/semantic_guard.py
+
+Klasa SemanticGuard:
+
+· evaluate(invoice_text, vendor_nip, amount) -> AnomalyResult
+· Odpytuje LanceDB, oblicza odległość, wywołuje Zen-Engine z regułami anomaly_rules.
+· Zwraca decyzję (ALLOW / BLOCK / WARN).
+
+E. Wpięcie w pipeline
+
+W Code/API/tasks.py, po ekstrakcji tekstu, przed council_decide:
+
+```python
+anomaly = await semantic_guard.evaluate(full_text, vendor_nip, amount)
+if anomaly.action == "BLOCK_DECREE":
+    invoice.status = "BLOCKED_FRAUD_SUSPICION"
+    await notify_accountant(invoice, anomaly.alert)
+    return
+```
+
+2.3. Wartość
+
+Twój system przestaje być narzędziem księgowym, a staje się systemem Anti-Fraud / AML. Biura rachunkowe i mikrofirmy otrzymują ochronę przed nieświadomym wprowadzaniem do obrotu pustych faktur, za które grożą dotkliwe sankcje. To realna wartość premium, wyróżniająca NexusAI na tle konkurencji.
+
+---
+
+Podsumowanie architektoniczne
+
+Wdrażając oba mechanizmy, ostateczny, w pełni zabezpieczony przepływ faktury w NexusAI wygląda tak:
+
+1. Percepcja: OCR czyta dokument, modele AI wyciągają dane i wektoryzują treść.
+2. Kontekst: GUS/Biała Lista weryfikuje kontrahenta, LanceDB sprawdza anomalie semantyczne.
+3. Decyzja: Zen-Engine wybiera stawki, progi ryzyka i reguły wyceny, generując kryptograficzny ślad.
+4. Matematyka: Decimal Math Engine przelicza kwoty, TaxInvariantGuard weryfikuje równania.
+5. Zapis: TigerBeetle zatwierdza podwójny zapis, Outbox gwarantuje niezawodność.
+6. Audyt: Każda decyzja jest udokumentowana w tax_decision_audits i dostępna na żądanie.
+
+To projekt kompletny, odporny na zmiany prawa, błędy ludzkie i awarie infrastruktury. System staje się matematycznym i prawnym autorytetem, a nie tylko narzędziem do przepisywania faktur. 
+ 
+
+
+
+
+
+ 
+
+
+
+
+ 

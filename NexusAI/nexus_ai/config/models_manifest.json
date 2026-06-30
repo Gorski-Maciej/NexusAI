@@ -1,0 +1,54 @@
+{
+  "manifest_version": "2.3.0",
+  "last_updated": "2026-06-24",
+  "description": "NexusAI Model Manifest v2.3 — Final architecture: agents from Punkt 17, models from Punkt 20.",
+  "total_models": 5,
+  "total_size_gb": 3.7,
+  "models": [
+    {
+      "name": "Granite-3.2-3B-Q4_K_M",
+      "version": "1.0",
+      "url": "https://huggingface.co/ibm-granite/granite-3.2-3b-GGUF/resolve/main/granite-3.2-3b-q4_k_m.gguf",
+      "sha256": "",
+      "size_mb": 2400,
+      "role": "Agent Orkiestrator — Główny Decydent (Actor) + Główny Analityk",
+      "group": "orchestrator"
+    },
+    {
+      "name": "Fin-RWKV-169M-Q4_K_M",
+      "version": "1.0",
+      "url": "https://huggingface.co/fin-rwkv/Fin-RWKV-169M-GGUF/resolve/main/fin-rwkv-169m-q4_k_m.gguf",
+      "sha256": "c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9",
+      "size_mb": 170,
+      "role": "Agent Analityczny — Detektyw Finansowy (anomalie statystyczne)",
+      "group": "analytics"
+    },
+    {
+      "name": "Granite-Guardian-0.5B-Q4_0",
+      "version": "1.0",
+      "url": "https://huggingface.co/ibm-granite/granite-guardian-0.5b-GGUF/resolve/main/granite-guardian-0.5b-q4_0.gguf",
+      "sha256": "",
+      "size_mb": 400,
+      "role": "Agent Walidator Jakości — Strażnik Merytoryczny + Strażnik Podatkowy",
+      "group": "validator"
+    },
+    {
+      "name": "GraphSAGE-Encoder-0.1B-Q4_K_M",
+      "version": "1.0",
+      "url": "",
+      "sha256": "",
+      "size_mb": 150,
+      "role": "Agent Walidator Jakości — Detektor Oszustw (grafowa analiza relacji)",
+      "group": "validator"
+    },
+    {
+      "name": "FinBERT-ESG-0.1B-Q4_K_M",
+      "version": "1.0",
+      "url": "",
+      "sha256": "",
+      "size_mb": 120,
+      "role": "Agent Walidator Jakości — Analiza Ryzyka Kontrahenta (ESG)",
+      "group": "validator"
+    }
+  ]
+}

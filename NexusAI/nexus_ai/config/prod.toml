@@ -1,0 +1,103 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# config/prod.toml — NexusAI Production Profile
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Zgodnie z aa3fvcx.txt:
+# - msgspec parsuje TOML → zero zależności od python-dotenv
+# - W produkcji: debug=false, OpenAPI/Swagger wyłączone
+# - Wymagane: NEXUS_JWT_SECRET, NEXUS_ENCRYPTION_KEY (env vars)
+#
+# Ładowane przez: ConfigLoader (core/config.py)
+# Użycie: NEXUS_ENV=prod
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[app]
+# ── Core ──
+environment = "prod"
+debug = false
+base_dir = "/opt/nexusai"
+
+# ── Database ──
+sqlite_file = "app_data/databases/nexus_oltp.db"
+duckdb_file = "app_data/databases/nexus_olap.duckdb"
+storage_dir = "app_data/uploads"
+idempotency_db = "app_data/databases/idempotency.sqlite"
+
+# ── DuckDB ──
+duckdb_memory_limit = "2GB"
+duckdb_threads = 4
+
+# ── Server ──
+host = "127.0.0.1"
+port = 8000
+log_level = "INFO"
+
+# ── CORS (prod: konkretne originy) ──
+cors_origins = "http://localhost:8501,http://127.0.0.1:8501"
+
+# ── Upload limits ──
+max_invoice_upload_mb = 50
+max_attachment_upload_mb = 500
+
+# ── JWT (wymagane z env vars) ──
+jwt_expiration_seconds = 900
+refresh_token_days = 30
+jwt_issuer = "nexus-ai"
+jwt_audience = "nexus-api"
+
+# ── CSRF ──
+csrf_enabled = true
+
+# ── Connection pools ──
+db_pool_size = 10
+db_pool_overflow = 20
+nats_max_reconnect = 30
+nats_reconnect_delay_seconds = 5
+
+[storage]
+# ── SUPERMOC fsspec: Jednolita abstrakcja systemów plików ──
+protocol = "file"
+root = "app_data/uploads"
+auto_mkdir = true
+cache_size_mb = 0
+
+# ── Retry (stamina) ──
+max_task_retries = 5
+retry_backoff_base_seconds = 2.0
+retry_backoff_max_seconds = 120.0
+
+# ── Decision Engine ──
+autopilot_auto_post_threshold = 0.95
+autopilot_suggest_threshold = 0.80
+autopilot_ask_threshold = 0.55
+autopilot_adaptation_enabled = true
+autopilot_adaptation_learning_rate = 0.03
+autopilot_low_amount_threshold = 500.0
+
+# ── Rules ──
+rules_max_invoice_amount = 100000.0
+rules_require_nip_validation = true
+analytics_anomaly_threshold = 1.5
+
+# ── Timeouts ──
+decision_timeout_seconds = 120
+
+# ── Outbox ──
+outbox_replay_limit = 100
+
+# ── Migration baselines ──
+migration_baseline_file = "migration_rowcount_baseline.json"
+migration_checksum_baseline_file = "migration_checksum_baseline.json"
+
+[nats]
+# ── NATS JetStream (prod) ──
+url = "nats://localhost:4222"
+max_reconnect = 30
+reconnect_delay_seconds = 5
+
+[stamina]
+# ── SUPERMOC: Globalne ustawienia stamina (prod) ──
+retry_attempts = 5
+retry_timeout = 15.0
+circuit_breaker_enabled = true
+circuit_breaker_cooldown = 60.0

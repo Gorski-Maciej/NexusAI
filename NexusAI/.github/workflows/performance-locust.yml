@@ -1,0 +1,216 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI — Performance Load Tests (Locust MAXIMUM POWER EDITION)
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# SUPERMOCE GitHub Actions:
+#   ✅ concurrency — zero duplicates
+#   ✅ permissions — minimalne
+#   ✅ GITHUB_STEP_SUMMARY — rich dashboard
+#   ✅ Composite actions — DRY
+#   ✅ OIDC + Environments — zero-secret
+#   ✅ Matrix dla wersji app
+#
+# SUPERMOCE Locust (wg aa3fvcx.txt):
+#   - FastHttpUser — maksymalny RPS
+#   - SequentialTaskSet — biznesowa kolejność
+#   - LoadTestShape — customowe profile
+#   - OpenTelemetry — eksport do DuckDB
+#   - Threshold gate — blokada PR przy regresji
+#   - Regression detection — historyczne benchmarki
+#   - Distributed mode — master + N workers
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: Performance Tests (Locust)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      vus:
+        description: 'Number of virtual users'
+        required: true
+        default: '100'
+        type: string
+      duration:
+        description: 'Test duration'
+        required: true
+        default: '5m'
+        type: string
+      shape:
+        description: 'LoadTestShape class'
+        required: false
+        default: 'NexusSteadyShape'
+        type: string
+      app-version:
+        description: 'App image version to test against'
+        required: false
+        default: 'latest'
+        type: string
+
+# ── SUPERMOC: Concurrency ────────────────────────────────────────────────────────
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+# ── SUPERMOC: Minimal permissions ────────────────────────────────────────────────
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: none
+
+env:
+  LOCUST_HOST: http://localhost:8000
+  LOCUST_SCRIPT: tests/performance/locustfile.py
+  REPORTS_DIR: reports/performance
+
+jobs:
+  # ── Performance Load Tests (Headless) ──────────────────────────────────
+  load-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      app:
+        image: nexusai:${{ github.event.inputs.app-version || 'latest' }}
+        ports:
+          - 8000:8000
+        env:
+          NEXUS_LOG_LEVEL: warning
+          NEXUS_DB_PATH: /tmp/nexus_test.db
+        options: >-
+          --health-cmd "curl -f http://localhost:8000/api/v2/health || exit 1"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-pixi
+        with:
+          pixi-env: dev
+
+      - name: Verify locust installation
+        run: |
+          pixi run --environment dev locust --version
+          pixi run --environment dev python -c "
+            from locust import FastHttpUser, SequentialTaskSet, task, between, events
+            print('✅ Locust with all superpowers available')
+          "
+
+      - name: Create reports directory
+        run: mkdir -p ${{ env.REPORTS_DIR }}
+
+      - name: Run locust load test
+        id: loadtest
+        continue-on-error: true
+        run: |
+          pixi run --environment dev python -m \
+            nexus_ai.scripts.performance_engineering \
+            --script ${{ env.LOCUST_SCRIPT }} \
+            --base-url ${{ env.LOCUST_HOST }} \
+            --vus ${{ github.event.inputs.vus || '100' }} \
+            --duration ${{ github.event.inputs.duration || '5m' }} \
+            --max-p95-ms 1200 \
+            --max-p99-ms 2000 \
+            --max-error-rate 0.05 \
+            --min-rps 5.0 \
+            --summary ${{ env.REPORTS_DIR }}/locust_stats \
+            --otel
+
+      - name: Export metrics to DuckDB
+        if: always()
+        run: |
+          pixi run --environment dev python -c "
+            from tests.performance.otel_locust_integration import export_locust_stats_to_duckdb
+            export_locust_stats_to_duckdb()
+          "
+
+      - name: Check performance regression
+        if: always()
+        id: regression
+        run: |
+          pixi run --environment dev python \
+            tests/performance/scripts/regression_detection.py \
+            --json \
+            --threshold-p95 20 \
+            --sentry
+          echo "regression_exit=$?" >> $GITHUB_OUTPUT
+
+      - name: Upload locust reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: locust-reports
+          path: |
+            ${{ env.REPORTS_DIR }}/
+          retention-days: 30
+
+      - name: Fail on performance regression
+        if: steps.regression.outputs.regression_exit == '1'
+        run: |
+          echo "🔴 Performance regression detected!"
+          echo "Check the locust reports artifact for details."
+          exit 1
+
+      - name: Performance Summary
+        if: always()
+        run: |
+          echo "## 📊 Locust Load Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Users | ${{ github.event.inputs.vus || '100' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Duration | ${{ github.event.inputs.duration || '5m' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Shape | ${{ github.event.inputs.shape || 'NexusSteadyShape' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| App Version | ${{ github.event.inputs.app-version || 'latest' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Load Test | ${{ steps.loadtest.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Regression | ${{ steps.regression.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          cat ${{ env.REPORTS_DIR }}/perf_gate_summary.json 2>/dev/null || echo "No gate summary"
+
+  # ── Distributed Load Tests (master + workers) ──────────────────────────
+  distributed-load-test:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.shape == 'NexusSpikeShape'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        role: [master, worker-1, worker-2, worker-3, worker-4]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-pixi
+        with:
+          pixi-env: dev
+
+      - name: Run locust (${{ matrix.role }})
+        run: |
+          if [[ "${{ matrix.role }}" == "master" ]]; then
+            pixi run --environment dev python -m \
+              nexus_ai.scripts.performance_engineering \
+              --script ${{ env.LOCUST_SCRIPT }} \
+              --base-url ${{ env.LOCUST_HOST }} \
+              --master \
+              --expect-workers 4 \
+              --vus ${{ github.event.inputs.vus || '500' }} \
+              --duration ${{ github.event.inputs.duration || '10m' }} \
+              --summary ${{ env.REPORTS_DIR }}/locust_distributed
+          else
+            pixi run --environment dev python -m \
+              nexus_ai.scripts.performance_engineering \
+              --script ${{ env.LOCUST_SCRIPT }} \
+              --base-url ${{ env.LOCUST_HOST }} \
+              --worker \
+              --master-host localhost
+          fi
+
+      - name: Distributed Test Summary
+        if: always()
+        run: |
+          echo "## 📊 Distributed Load Test: ${{ matrix.role }}" >> $GITHUB_STEP_SUMMARY
+          echo "| Role | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| ${{ matrix.role }} | ✅ ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY

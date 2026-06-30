@@ -1,0 +1,57 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI — Stale Issue & PR Manager
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Automatycznie zarządza starymi issue i PR:
+#   - Oznacza jako "stale" po 90 dniach bez aktywności
+#   - Zamyka po 14 dniach od oznaczenia
+#   - Wyłącza dla issue z etykietą "pinned" lub "security"
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: Stale Issue & PR Manager
+
+on:
+  schedule:
+    - cron: "0 8 * * 1"  # Każdy poniedziałek 8:00 UTC
+  workflow_dispatch:      # Ręczne uruchomienie
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/stale@v9
+        with:
+          # ── Issue settings ────────────────────────────────────────────
+          stale-issue-message: |
+            👋 To issue zostało oznaczone jako **stale** z powodu braku aktywności przez 90 dni.
+            
+            Jeśli problem nadal występuje, zostaw komentarz, aby utrzymać je otwarte.
+            W przeciwnym razie zostanie automatycznie zamknięte za 14 dni.
+          stale-issue-label: "status:stale"
+          exempt-issue-labels: "pinned,security,bug,enhancement,priority:high"
+          days-before-issue-stale: 90
+          days-before-issue-close: 14
+
+          # ── PR settings ───────────────────────────────────────────────
+          stale-pr-message: |
+            👋 Ten PR został oznaczony jako **stale** z powodu braku aktywności przez 30 dni.
+            
+            Jeśli prace są w toku, zostaw komentarz, aby utrzymać go otwarte.
+            W przeciwnym razie zostanie automatycznie zamknięty za 7 dni.
+          stale-pr-label: "status:stale"
+          exempt-pr-labels: "pinned,security,work-in-progress,dependencies"
+          days-before-pr-stale: 30
+          days-before-pr-close: 7
+
+          # ── Global settings ───────────────────────────────────────────
+          operations-per-run: 100
+          remove-stale-when-updated: true
+          delete-branch: true  # Usuń gałąź po zamknięciu PR
+          enable-statistics: true
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
