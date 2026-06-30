@@ -1,4 +1,4 @@
-# frontend/app.py — Flet updater z poprawnym async pattern
+# frontend/app.py -- Flet updater z poprawnym async pattern
 import flet as ft
 
 from nexus_ai.core.updater import check_for_updates, download_and_apply_update
@@ -8,7 +8,7 @@ def main_ui(page: ft.Page):
     """Inicjalizacja UI z updaterem używającym page.run_task()."""
 
     async def on_update_click_async(e):
-        """Async handler — nie blokuje UI bo używa page.run_task wewnątrz."""
+        """Async handler -- nie blokuje UI bo używa page.run_task wewnątrz."""
         page.snack_bar = ft.SnackBar(ft.Text("Pobieranie i instalowanie aktualizacji..."))
         page.snack_bar.open = True
         page.update()

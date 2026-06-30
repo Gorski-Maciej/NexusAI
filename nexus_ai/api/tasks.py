@@ -21,9 +21,9 @@ except ImportError:
         return _hashlib.sha256(data).hexdigest()
 
 
-# ── Legacy engine helper (kompatybilność wsteczna) — DEPRECATED ────────────
+# ── Legacy engine helper (kompatybilność wsteczna) -- DEPRECATED ────────────
 # UWAGA: Nowe zadania używają TaskiqDepends(get_db_session) zamiast _make_engine.
-# Ta funkcja pozostaje dla kompatybilności — używa DI engine cache.
+# Ta funkcja pozostaje dla kompatybilności -- używa DI engine cache.
 import warnings
 from pathlib import Path
 from typing import Any
@@ -31,6 +31,7 @@ from typing import Any
 import httpx
 import pendulum
 import stamina
+from sqlalchemy import exc as sa_exc
 from sqlmodel import Session, text
 from sqlmodel import text as sql_text
 from structlog import get_logger
@@ -45,7 +46,6 @@ from nexus_ai.core.decision_engine import (
     classify_invoice,
 )
 from nexus_ai.core.di import get_config, get_db_session, get_duckdb_manager, get_engine
-from sqlalchemy import exc as sa_exc
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import create_oltp_engine, create_session_factory
@@ -59,10 +59,10 @@ from nexus_ai.tax.exceptions import NoMatchingRuleError
 
 
 def _make_engine(config: AppConfig | None = None):
-    """[LEGACY] Utwórz SQLAlchemy engine — do migracji na TaskiqDepends.
+    """[LEGACY] Utwórz SQLAlchemy engine -- do migracji na TaskiqDepends.
 
     UWAGA: Nowe zadania używają TaskiqDepends(get_db_session) zamiast _make_engine.
-    Ta funkcja pozostaje dla kompatybilności — tworzy nowy engine (bez DI cache).
+    Ta funkcja pozostaje dla kompatybilności -- tworzy nowy engine (bez DI cache).
     Docelowo wszystkie zadania mają być przeniesione na DI.
 
     Deprecated: Użyj TaskiqDepends(get_db_session) zamiast tej funkcji.
@@ -134,7 +134,7 @@ async def decision_evaluate(
     """
     Final decision evaluation.
 
-    - TaskiqDepends wstrzykuje config i db — zero boilerplate
+    - TaskiqDepends wstrzykuje config i db -- zero boilerplate
     - Helpery przyjmują Session zamiast tworzyć własny engine
     """
     engine = _ensure_decision_engine(config)
@@ -213,13 +213,13 @@ async def decision_evaluate(
 )
 async def council_decide(invoice_id: str, extracted_data: dict) -> dict:
     """
-    [DEPRECATED] Decision task — use decision_evaluate instead.
+    [DEPRECATED] Decision task -- use decision_evaluate instead.
 
     Zachowany dla kompatybilności wstecznej. Deleguje do decision_evaluate.
     Używa tymczasowego engine zamiast TaskiqDepends (brak DI w deprecated task).
     """
     logger.warning(
-        "[DEPRECATED] council_decide task called for invoice_id=%s — use decision_evaluate",
+        "[DEPRECATED] council_decide task called for invoice_id=%s -- use decision_evaluate",
         invoice_id,
     )
     # council_decide nie używa TaskiqDepends (deprecated), więc tworzy engine ręcznie
@@ -514,7 +514,7 @@ async def process_invoice_ocr(
 ) -> None:
     """Dedicated OCR pipeline entrypoint triggered by outbox relay.
 
-    - TaskiqDepends wstrzykuje config i db — zero boilerplate
+    - TaskiqDepends wstrzykuje config i db -- zero boilerplate
     - Helpery _mark_invoice_* przyjmują Session z DI
     """
     logger.info("[OCR] processing invoice_id=%s", invoice_id)
@@ -674,7 +674,7 @@ async def process_invoice_ocr(
             "llm_validation": _safe_float(payload.get("llm_validation")) or 0.5,
             # Full OCR text for Active Learning & SemanticGuard
             "ocr_full_text": payload.get("ocr_full_text", ""),
-            # Field Confidence (per-field metadata — nowość)
+            # Field Confidence (per-field metadata -- nowość)
             "field_confidence": field_confidence,
             # Enriched vendor data (Part IV)
             "vendor_vat_status": enriched.get("vendor_vat_status", "unknown"),
@@ -755,7 +755,7 @@ async def process_invoice_ocr(
                         await _mark_invoice_pending_review(
                             invoice_id, reason=f"FIELD_CONFIDENCE: {routing_reason}", db=db
                         )
-                    # else: inne wartości routing (np. HUMAN_VERIFICATION) — kontynuuj
+                    # else: inne wartości routing (np. HUMAN_VERIFICATION) -- kontynuuj
             except NoMatchingRuleError:
                 # Brak matchującej reguły = wszystkie pola mają wystarczającą pewność
                 # To jest normalny przypadek dla faktur z wysokim confidence.
@@ -770,7 +770,7 @@ async def process_invoice_ocr(
             extracted_data["field_confidence_status"] = "CHECK_FAILED"
 
     # Trigger decision & rules check via NATS (poza semaforem - lekkie operacje NATS)
-    config = AppConfig()
+    AppConfig()
     from nexus_ai.core.nats_utils import publish_event
 
     await publish_event(
@@ -778,7 +778,7 @@ async def process_invoice_ocr(
         {"invoice_id": invoice_id, "extracted_data": extracted_data},
     )
 
-    # Dynamic workflow — decide which tasks to run (zgodnie z aa3fvcx.txt)
+    # Dynamic workflow -- decide which tasks to run (zgodnie z aa3fvcx.txt)
     try:
         workflow_type = classify_invoice(
             invoice_data=extracted_data,
@@ -890,7 +890,7 @@ async def dead_letter_processor_task(
     """
     Okresowe zadanie (co 5 minut) monitorujące Dead Letter Queue.
 
-    - TaskiqDepends wstrzykuje config i db — zero boilerplate
+    - TaskiqDepends wstrzykuje config i db -- zero boilerplate
     """
     from nexus_ai.core.nats_utils import NatsErrors, get_connection, safe_close
 
@@ -900,7 +900,7 @@ async def dead_letter_processor_task(
         name="nexus-dlq",
     )
     if nc is None:
-        logger.warning("[DLQ] NATS not available — skipping dead letter check")
+        logger.warning("[DLQ] NATS not available -- skipping dead letter check")
         return
 
     try:
@@ -1062,7 +1062,7 @@ async def relay_outbox_events(
     Uses two-step atomic UPDATE to prevent duplicate processing by concurrent workers.
     Detects stale PROCESSING tasks (>= 5 min) and reclaims them.
 
-    - TaskiqDepends wstrzykuje sesję DB — zero boilerplate
+    - TaskiqDepends wstrzykuje sesję DB -- zero boilerplate
     - task_id_generator w broker.py zapewnia deduplikację przez JetStream Nats-Msg-Id
     - Tabela processed_events jest stopniowo wycofywana na rzecz deduplikacji JetStream
     """
@@ -1183,7 +1183,7 @@ async def relay_outbox_events(
                 {"id": row["id"], "max_retries": MAX_OUTBOX_RETRIES},
             )
 
-    # 4. Cleanup starych wpisów processed_events (> 24h) — tylko jeśli tabela istnieje
+    # 4. Cleanup starych wpisów processed_events (> 24h) -- tylko jeśli tabela istnieje
     try:
         await db.execute(
             text("DELETE FROM processed_events WHERE processed_at < datetime('now', '-1 day')")
@@ -1237,9 +1237,9 @@ async def finops_hourly_estimate_task() -> None:
     )
 
 
-# ── replay_dead_letter_outbox_task usunięte — zastąpione przez NATS JetStream DLQ
+# ── replay_dead_letter_outbox_task usunięte -- zastąpione przez NATS JetStream DLQ
 #    ConsumerConfig.max_deliver=5 automatycznie retryuje
-#    Po 5 failed deliveries → JetStream DLQ ($JS.EVENT.ADVISORY.CONSUMER.MAX_DELIVERIES)
+#    Po 5 failed deliveries -> JetStream DLQ ($JS.EVENT.ADVISORY.CONSUMER.MAX_DELIVERIES)
 #    dead_letter_processor_task zapisuje DLQ do failed_tasks
 
 
@@ -1279,7 +1279,7 @@ def _build_field_confidence(
     )
     if gross_val is not None:
         base_conf = _safe_float(payload.get("ocr_confidence")) or 0.5
-        # Jeśli konflikt konsensusu — obniż confidence dla gross
+        # Jeśli konflikt konsensusu -- obniż confidence dla gross
         if consensus and consensus.confidence_conflict:
             gross_conf = base_conf * 0.7  # kara za konflikt
         else:
@@ -1299,7 +1299,7 @@ def _build_field_confidence(
             "source": "ocr",
         }
 
-    # Stawka VAT (z LLM — nie z OCR; opcjonalna, bo określana później przez Zen-Engine)
+    # Stawka VAT (z LLM -- nie z OCR; opcjonalna, bo określana później przez Zen-Engine)
     vat_rate_val = payload.get("vat_rate") or payload.get("vat_rate_from_llm")
     if vat_rate_val is not None:
         vat_conf = _safe_float(payload.get("llm_validation")) or 0.5
@@ -1802,9 +1802,9 @@ async def cleanup_duckdb_temp_task() -> None:
 async def log_resilience_states_task() -> None:
     """
     Co minutę monitoruj stan systemu pod kątem problemów z zewnętrznymi API.
-    Rozwiązanie 21: Monitorowanie — stamina zarządza retry + circuit breaker.
+    Rozwiązanie 21: Monitorowanie -- stamina zarządza retry + circuit breaker.
     """
-    logger.debug("[RESILIENCE] stamina active — retry + circuit breaker via decorators")
+    logger.debug("[RESILIENCE] stamina active -- retry + circuit breaker via decorators")
 
 
 @broker.task(

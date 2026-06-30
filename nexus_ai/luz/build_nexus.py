@@ -1,4 +1,4 @@
-# build_nexus.py — Zunifikowany build Nuitka dla NexusAI
+# build_nexus.py -- Zunifikowany build Nuitka dla NexusAI
 # Zgodnie z [tool.nuitka] w pyproject.toml oraz dyrektywami w main.py
 #
 # Usage:
@@ -72,7 +72,7 @@ async def build_executable(
         "--product-name=NexusAI",
         f"--file-version={version}",
         "--copyright=© 2026 NexusAI Team",
-        "--file-description=NexusAI — AI-Powered Accounting System",
+        "--file-description=NexusAI -- AI-Powered Accounting System",
         # ── Onefile cache ──
         "--onefile-tempdir-spec={CACHE_DIR}/NexusAI/{PRODUCT}/{VERSION}",
         # ── Infrastruktura ──
@@ -82,11 +82,11 @@ async def build_executable(
         "--output-dir=dist",
     ]
 
-    # ── LTO (Link Time Optimization) — warunkowo ──
+    # ── LTO (Link Time Optimization) -- warunkowo ──
     if enable_lto:
         command.append("--lto=yes")
 
-    # ── Raport kompilacji — warunkowo ──
+    # ── Raport kompilacji -- warunkowo ──
     if enable_report:
         command.append("--report=build/compilation-report.xml")
 
@@ -95,7 +95,7 @@ async def build_executable(
     command.append(str(source))
 
     print("=" * 70)
-    print("  NexusAI — Nuitka Build")
+    print("  NexusAI -- Nuitka Build")
     print(f"  Wersja: {version}")
     print(f"  LTO: {'włączone' if enable_lto else 'wyłączone'}")
     print(f"  Raport: {'tak' if enable_report else 'nie'}")
@@ -121,10 +121,10 @@ if __name__ == "__main__":
 
 # Sekwencja komend do CI/CD lub uruchamiania lokalnego
 
-# 1. Zablokowanie wersji — pixi zajmuje się lockowaniem zależności przez pixi.lock
+# 1. Zablokowanie wersji -- pixi zajmuje się lockowaniem zależności przez pixi.lock
 #    pixi lock  (regeneruje pixi.lock na podstawie pixi.toml)
 #
-# 2. Audyt bezpieczeństwa — pixi exec -- pip-audit .
+# 2. Audyt bezpieczeństwa -- pixi exec -- pip-audit .
 #
 # 3. Wygenerowanie SBOM w standardzie CycloneDX (używając narzędzia syft/trivy)
 #    trivy fs --format cyclonedx --output nexus_sbom.json .

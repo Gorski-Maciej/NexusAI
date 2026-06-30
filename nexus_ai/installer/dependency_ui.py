@@ -1,5 +1,5 @@
 """
-dependency_ui.py — Flet-based UI for downloading system dependencies (NATS, TigerBeetle).
+dependency_ui.py -- Flet-based UI for downloading system dependencies (NATS, TigerBeetle).
 
 Shows a splash window with overall progress, per-binary status, and error handling.
 """
@@ -8,10 +8,9 @@ from __future__ import annotations
 
 import os
 import sys
-
-import anyio
 from pathlib import Path
 
+import anyio
 import flet as ft
 from structlog import get_logger
 
@@ -50,7 +49,7 @@ class DependencyInstallApp:
 
     def build(self, page: ft.Page) -> None:
         self.page = page
-        page.title = "NexusAI — Environment Setup"
+        page.title = "NexusAI -- Environment Setup"
         page.theme_mode = ft.ThemeMode.DARK
         page.bgcolor = "#1a1a2e"
         page.padding = 40
@@ -67,7 +66,7 @@ class DependencyInstallApp:
             content=ft.Column(
                 [
                     ft.Text(
-                        "NexusAI — Environment Setup",
+                        "NexusAI -- Environment Setup",
                         size=24,
                         weight=ft.FontWeight.BOLD,
                         color="#00b4d8",
@@ -294,7 +293,7 @@ class DependencyInstallApp:
             self.status_log.value = "✓ All system components are ready"
             self.status_log.color = "#06d6a0"
             self.progress_bar.value = 1.0
-            self.progress_text.value = "100% — All ready"
+            self.progress_text.value = "100% -- All ready"
             self._update_binary_status("NATS Server", "done")
             self._update_binary_status("TigerBeetle", "done")
             self.state.is_complete = True
@@ -329,7 +328,7 @@ class DependencyInstallApp:
             self.status_log.value = "✓ All system components downloaded and ready!"
             self.status_log.color = "#06d6a0"
             self.progress_bar.value = 1.0
-            self.progress_text.value = "100% — Complete!"
+            self.progress_text.value = "100% -- Complete!"
             self.state.is_complete = True
             self.cancel_btn.visible = False
             self.continue_btn.visible = True
@@ -361,7 +360,7 @@ class DependencyInstallApp:
         # Update UI
         self.progress_bar.value = overall_progress
         pct = min(int(overall_progress * 100), 100)
-        self.progress_text.value = f"{pct}% — {current_binary}"
+        self.progress_text.value = f"{pct}% -- {current_binary}"
 
         self._update_binary_status(current_binary, status)
 

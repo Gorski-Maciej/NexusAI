@@ -1,5 +1,5 @@
 """
-Field Confidence — structured per-field confidence metadata from OCR/AI.
+Field Confidence -- structured per-field confidence metadata from OCR/AI.
 
 Zgodnie z dokumentacją, struktura ``field_confidence`` przechowuje
 poziom pewności odczytu każdego pola faktury przez OCR/AI.
@@ -52,7 +52,7 @@ class FieldConfidence(Struct, frozen=True):
         return self.confidence >= threshold
 
     def with_confidence(self, confidence: float) -> FieldConfidence:
-        """Zwróć nowy FieldConfidence z podmienionym confidence (frozen → replace).
+        """Zwróć nowy FieldConfidence z podmienionym confidence (frozen -> replace).
 
         Używa ``msgspec.structs.replace()`` zamiast ręcznego kopiowania pól.
         Dzięki ``frozen=True``, oryginalny obiekt pozostaje niezmieniony.
@@ -74,7 +74,7 @@ class FieldConfidence(Struct, frozen=True):
         return msgspec.structs.replace(self, confidence=confidence)
 
     def with_value(self, value: Any) -> FieldConfidence:
-        """Zwróć nowy FieldConfidence z podmienioną wartością (frozen → replace).
+        """Zwróć nowy FieldConfidence z podmienioną wartością (frozen -> replace).
 
         Args:
             value: Nowa wartość.
@@ -85,7 +85,7 @@ class FieldConfidence(Struct, frozen=True):
         return msgspec.structs.replace(self, value=value)
 
     def with_source(self, source: str) -> FieldConfidence:
-        """Zwróć nowy FieldConfidence z podmienionym źródłem (frozen → replace).
+        """Zwróć nowy FieldConfidence z podmienionym źródłem (frozen -> replace).
 
         Args:
             source: Nowa nazwa źródła (np. "doctr_ocr", "easyocr", "manual").
@@ -104,7 +104,7 @@ class FieldConfidence(Struct, frozen=True):
         }
 
     def _serialize_value(self) -> Any:
-        """Serialize value for JSON (Decimal → str)."""
+        """Serialize value for JSON (Decimal -> str)."""
         if isinstance(self.value, Decimal):
             return str(self.value)
         return self.value
@@ -116,16 +116,16 @@ FieldConfidenceDict = dict[str, FieldConfidence]
 """Słownik mapujący nazwę pola faktury na jego FieldConfidence.
 
 Typowe klucze:
-  - ``total_gross`` — kwota brutto
-  - ``total_net`` — kwota netto
-  - ``vat_rate`` — stawka VAT
-  - ``vat_amount`` — kwota VAT
-  - ``vendor_nip`` — NIP kontrahenta
-  - ``vendor_name`` — nazwa kontrahenta
-  - ``invoice_number`` — numer faktury
-  - ``issue_date`` — data wystawienia
-  - ``iban`` — numer konta bankowego
-  - ``category_code`` — kategoria wydatku
+  - ``total_gross`` -- kwota brutto
+  - ``total_net`` -- kwota netto
+  - ``vat_rate`` -- stawka VAT
+  - ``vat_amount`` -- kwota VAT
+  - ``vendor_nip`` -- NIP kontrahenta
+  - ``vendor_name`` -- nazwa kontrahenta
+  - ``invoice_number`` -- numer faktury
+  - ``issue_date`` -- data wystawienia
+  - ``iban`` -- numer konta bankowego
+  - ``category_code`` -- kategoria wydatku
 """
 
 # ── Factory functions ────────────────────────────────────────────────────────
@@ -134,7 +134,7 @@ Typowe klucze:
 def field_confidence_from_dict(data: dict[str, dict[str, Any]]) -> FieldConfidenceDict:
     """Utwórz FieldConfidenceDict z surowego słownika przez msgspec.convert.
 
-    Używa ``msgspec.convert(..., strict=True)`` zamiast ręcznej walidacji —
+    Używa ``msgspec.convert(..., strict=True)`` zamiast ręcznej walidacji --
     msgspec sam rzuca ValidationError jeśli brak wymaganych pól lub typy
     się nie zgadzają. Eliminuje ~10 linii ręcznej walidacji.
 

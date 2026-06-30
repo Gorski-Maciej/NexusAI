@@ -1,22 +1,22 @@
 """HTTP communication layer for local Litestar backend.
 
   - Cache warstwa przez in-memory cache z TTL
-  - Tylko async API (sync wrappers usunięte — zapobiega crashom)
+  - Tylko async API (sync wrappers usunięte -- zapobiega crashom)
   - HTTP/2 multiplexing
   - async close() cleanup
 """
 
 from __future__ import annotations
 
-from msgspec import Struct
 from decimal import Decimal
 from typing import Any
 from uuid import uuid4
 
 import httpx
-from httpx import Limits, Timeout
 import msgspec
 import pendulum
+from httpx import Limits, Timeout
+from msgspec import Struct
 from structlog import get_logger
 
 
@@ -94,7 +94,7 @@ class NexusApiClient:
     @staticmethod
     async def _log_request(request: httpx.Request) -> None:
         logger = get_logger("nexus.ui.api")
-        logger.debug("[HTTP] → %s %s", request.method, request.url)
+        logger.debug("[HTTP] -> %s %s", request.method, request.url)
 
     @staticmethod
     async def _log_response(response: httpx.Response) -> None:
@@ -129,7 +129,7 @@ class NexusApiClient:
         for k in keys_to_delete:
             self._cache.pop(k, None)
 
-    # ── Async API — preferowane ────────────────────────────────────────
+    # ── Async API -- preferowane ────────────────────────────────────────
 
     async def async_list_invoices(self) -> list[Any]:
         """Pobiera listę wszystkich faktur (async z cache)."""
@@ -186,7 +186,7 @@ class NexusApiClient:
         return data
 
     async def update_invoice(self, invoice_id: str, updated_data: dict[str, Any]) -> bool:
-        """Wysyła poprawki — czyści cache po zapisie."""
+        """Wysyła poprawki -- czyści cache po zapisie."""
         response = await self._async.patch(f"/invoices/{invoice_id}", json=updated_data)
         if response.status_code == 200:
             self._cache_invalidate(f"invoices:{invoice_id}")
@@ -309,6 +309,7 @@ class NexusApiClient:
 
     async def upload_file(self, endpoint: str, file_path: str) -> dict:
         import os
+
         import anyio
 
         async with await anyio.open_file(file_path, "rb") as f:

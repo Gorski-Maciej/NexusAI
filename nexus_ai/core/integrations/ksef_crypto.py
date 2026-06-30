@@ -1,5 +1,5 @@
 # core/integrations/ksef_crypto.py
-"""KSeF cryptographic provider — placeholder.
+"""KSeF cryptographic provider -- placeholder.
 
 RSA asymmetric cryptography required for KSeF is not available
 (the `cryptography` package has been removed from the project
@@ -9,12 +9,10 @@ in favor of nexus-crypto, which only supports symmetric AEAD).
 from __future__ import annotations
 
 
-
-
 class KsefCryptoProvider:
     """Implementacja standardu bezpieczeństwa KSeF (MF).
 
-    Uwaga: RSA encryption nie jest dostępne — pakiet ``cryptography``
+    Uwaga: RSA encryption nie jest dostępne -- pakiet ``cryptography``
     został usunięty z projektu. KSeF integration requires the
     ``cryptography`` package to be re-added.
     """

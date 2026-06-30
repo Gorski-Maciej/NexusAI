@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from msgspec import Struct
+import hashlib  # SHA-1, MD5 (non-cryptographic, not in nexus_crypto)
 from pathlib import Path
 from typing import Any
 
+from msgspec import Struct
 from nexus_crypto import Sha256Hasher
-
-import hashlib  # SHA-1, MD5 (non-cryptographic, not in nexus_crypto)
 
 # ── SHA-256 (non-streaming) przez nexus-crypto (Rust+PyO3) ────────────────
 try:
@@ -47,12 +46,14 @@ def _sha256_file(file_path: Path) -> str:
 
 def _visual_fingerprint(file_path: Path) -> str:
 
+    """Compute visual fingerprint for a file.
+
     FAZA 2 (OpenCV audit): Dodatkowe ORB feature fingerprint gdy OpenCV dostępne.
 
-    - ImageFilter.MedianFilter(3) — denoising przed hashowaniem
-    - ImageOps.autocontrast() — lepszy kontrast dla stabilnego hasha
-    - Multi-hash: phash + dhash + whash — 3 perspektywy
-    - OpenCV ORB features — odporny na rotację/skalowanie/cięcie
+    - ImageFilter.MedianFilter(3) -- denoising przed hashowaniem
+    - ImageOps.autocontrast() -- lepszy kontrast dla stabilnego hasha
+    - Multi-hash: phash + dhash + whash -- 3 perspektywy
+    - OpenCV ORB features -- odporny na rotację/skalowanie/cięcie
       Jeśli 2/3 się zgadzają, dokument to duplikat
     - Falls back do SHA-1 prefix gdy Pillow/imagehash niedostępne
     """
@@ -84,6 +85,7 @@ def _visual_fingerprint(file_path: Path) -> str:
 
 
 def _compute_orb_fingerprint(image: Image.Image) -> str | None:
+    """Compute ORB feature fingerprint.
 
     FAZA 2 (OpenCV audit): Deleguje do compute_orb_features z opencv_pipeline.
     Oblicza ORB descriptors i konwertuje do string fingerprint.

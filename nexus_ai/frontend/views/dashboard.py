@@ -1,4 +1,4 @@
-"""dashboard.py — Deklaratywny widok dashboardu z @ft.component + Shimmer + Canvas charts.
+"""dashboard.py -- Deklaratywny widok dashboardu z @ft.component + Shimmer + Canvas charts.
 
   - @ft.component + use_state() zamiast klasy imperatywnej
   - ft.Shimmer dla loading skeleton kart i wykresów
@@ -19,6 +19,7 @@ import flet as ft
 import pendulum
 from structlog import get_logger
 
+from nexus_ai.frontend.api_client import NexusApiClient
 from nexus_ai.frontend.charts import (
     cashflow_line_chart,
     monthly_trend_line_chart,
@@ -27,7 +28,6 @@ from nexus_ai.frontend.charts import (
     vat_pie_chart,
 )
 from nexus_ai.frontend.components.stat_card import ShimmerChart, ShimmerRow
-from nexus_ai.frontend.api_client import NexusApiClient
 
 logger = get_logger("nexus.ui.dashboard")
 

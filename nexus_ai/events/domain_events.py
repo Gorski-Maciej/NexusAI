@@ -1,9 +1,9 @@
-"""Domain events — msgspec-based with Tagged Unions and __init_subclass__ auto-registration."""
+"""Domain events -- msgspec-based with Tagged Unions and __init_subclass__ auto-registration."""
 
 from __future__ import annotations
 
-from decimal import Decimal
 import uuid
+from decimal import Decimal
 from typing import Any, ClassVar
 
 import msgspec
@@ -11,7 +11,7 @@ import pendulum
 
 
 class DomainEvent(msgspec.Struct, kw_only=True, frozen=True, tag_field="event_type"):
-    """Base domain event with Tagged Unions — explicit _event_tag + __init_subclass__ auto-registration."""
+    """Base domain event with Tagged Unions -- explicit _event_tag + __init_subclass__ auto-registration."""
 
     event_id: str = msgspec.field(default_factory=lambda: uuid.uuid4().hex)
     timestamp: str = msgspec.field(default_factory=lambda: pendulum.now("UTC").isoformat())
@@ -34,74 +34,101 @@ class InvoiceCreated(DomainEvent, tag="invoice.created"):
     _event_tag = "invoice.created"
     _event_description = "Faktura utworzona w systemie (po OCR)"
     aggregate_type: str = "invoice"
-    number: str = ""; contractor_nip: str = ""; contractor_name: str = ""
-    amount_net: Decimal = Decimal("0.00"); amount_gross: Decimal = Decimal("0.00"); currency: str = "PLN"
-    category: str = ""; issue_date: str = ""; file_path: str = ""
+    number: str = ""
+    contractor_nip: str = ""
+    contractor_name: str = ""
+    amount_net: Decimal = Decimal("0.00")
+    amount_gross: Decimal = Decimal("0.00")
+    currency: str = "PLN"
+    category: str = ""
+    issue_date: str = ""
+    file_path: str = ""
 
 
 class InvoiceSubmitted(DomainEvent, tag="invoice.submitted"):
     _event_tag = "invoice.submitted"
     _event_description = "Faktura przesłana do decyzji (DecisionEngine)"
     aggregate_type: str = "invoice"
-    amount_gross: Decimal = Decimal("0.00"); contractor_nip: str = ""
+    amount_gross: Decimal = Decimal("0.00")
+    contractor_nip: str = ""
 
 
 class InvoiceApproved(DomainEvent, tag="invoice.approved"):
     _event_tag = "invoice.approved"
     _event_description = "Faktura zatwierdzona (auto-post lub manualnie)"
     aggregate_type: str = "invoice"
-    approved_by: str = "system"; trust_score: float = 0.0; decision_level: str = "auto"
+    approved_by: str = "system"
+    trust_score: float = 0.0
+    decision_level: str = "auto"
 
 
 class InvoiceRejected(DomainEvent, tag="invoice.rejected"):
     _event_tag = "invoice.rejected"
     _event_description = "Faktura odrzucona (manualnie)"
     aggregate_type: str = "invoice"
-    rejected_by: str = ""; reason: str = ""
+    rejected_by: str = ""
+    reason: str = ""
 
 
 class InvoiceBlocked(DomainEvent, tag="invoice.blocked"):
     _event_tag = "invoice.blocked"
     _event_description = "Faktura zablokowana (RiskGuard / anomalia)"
     aggregate_type: str = "invoice"
-    blocked_by: str = "risk_guard"; reason: str = ""; risk_score: float = 0.0
+    blocked_by: str = "risk_guard"
+    reason: str = ""
+    risk_score: float = 0.0
 
 
 class InvoicePaid(DomainEvent, tag="invoice.paid"):
     _event_tag = "invoice.paid"
     _event_description = "Faktura opłacona (przez TigerBeetle)"
     aggregate_type: str = "invoice"
-    amount_gross: Decimal = Decimal("0.00"); paid_at: str = ""; transaction_id: str = ""
+    amount_gross: Decimal = Decimal("0.00")
+    paid_at: str = ""
+    transaction_id: str = ""
 
 
 class DecisionMade(DomainEvent, tag="decision.made"):
     _event_tag = "decision.made"
     _event_description = "Decyzja podjęta przez system (DecisionEngine)"
     aggregate_type: str = "decision"
-    invoice_id: str = ""; decision: str = ""; trust_score: float = 0.0
-    ai_confidence: float = 0.0; alpha_vote: str = ""; beta_vote: str = ""
-    gamma_vote: str = ""; decision_pattern: str = ""; reasoning: str = ""
+    invoice_id: str = ""
+    decision: str = ""
+    trust_score: float = 0.0
+    ai_confidence: float = 0.0
+    alpha_vote: str = ""
+    beta_vote: str = ""
+    gamma_vote: str = ""
+    decision_pattern: str = ""
+    reasoning: str = ""
 
 
 class DecisionOverridden(DomainEvent, tag="decision.overridden"):
     _event_tag = "decision.overridden"
     _event_description = "Decyzja nadpisana przez użytkownika"
     aggregate_type: str = "decision"
-    invoice_id: str = ""; original_decision: str = ""; user_decision: str = ""; user_id: str = ""
+    invoice_id: str = ""
+    original_decision: str = ""
+    user_decision: str = ""
+    user_id: str = ""
 
 
 class OutboxEventEmitted(DomainEvent, tag="outbox.emitted"):
     _event_tag = "outbox.emitted"
     _event_description = "Zdarzenie outbox wyemitowane"
     aggregate_type: str = "outbox"
-    outbox_event_type: str = ""; payload_json: str = ""
+    outbox_event_type: str = ""
+    payload_json: str = ""
 
 
 class NotificationSent(DomainEvent, tag="notification.sent"):
     _event_tag = "notification.sent"
     _event_description = "Powiadomienie wysłane do użytkownika"
     aggregate_type: str = "notification"
-    user_id: str = ""; notification_type: str = "info"; title: str = ""; channels: list[str] = []
+    user_id: str = ""
+    notification_type: str = "info"
+    title: str = ""
+    channels: list[str] = []
 
 
 # ── Serialization helpers ─────────────────────────────────────────────
@@ -109,8 +136,10 @@ class NotificationSent(DomainEvent, tag="notification.sent"):
 def domain_event_from_dict(data: dict[str, Any]) -> DomainEvent:
     return msgspec.convert(data, DomainEvent, strict=False)
 
+
 def encode_event(event: DomainEvent) -> bytes:
     return msgspec.msgpack.encode(event)
+
 
 def decode_event(data: bytes) -> DomainEvent:
     return msgspec.msgpack.decode(data, type=DomainEvent)
@@ -134,11 +163,13 @@ def _build_all_schemas() -> dict[str, dict[str, Any]]:
             schemas[event_type] = dict(title=event_class.__name__, type="object", description=str(exc))
     return schemas
 
+
 def get_schema(event_type: str) -> dict[str, Any] | None:
     global _SCHEMAS_CACHE
     if _SCHEMAS_CACHE is None:
         _SCHEMAS_CACHE = _build_all_schemas()
     return _SCHEMAS_CACHE.get(event_type)
+
 
 def get_all_schemas() -> dict[str, dict[str, Any]]:
     global _SCHEMAS_CACHE
@@ -146,25 +177,33 @@ def get_all_schemas() -> dict[str, dict[str, Any]]:
         _SCHEMAS_CACHE = _build_all_schemas()
     return dict(_SCHEMAS_CACHE)
 
+
 def get_event_type_map() -> dict[str, dict[str, Any]]:
     return {et: dict(title=cls.__name__, description=desc, event_type=et)
             for et, (cls, desc) in DomainEvent._registry.items()}
+
 
 def get_schema_summary() -> dict[str, Any]:
     schemas = get_all_schemas()
     base_schema = msgspec.json.schema(DomainEvent)
     base_schema.setdefault("title", "DomainEvent")
     base_schema["available_event_types"] = list(DomainEvent._registry.keys())
-    return {"total_events": len(schemas), "event_types": list(schemas.keys()),
-            "schemas": schemas, "base_schema": base_schema,
-            "generated_at": pendulum.now("UTC").isoformat()}
+    return {
+        "total_events": len(schemas),
+        "event_types": list(schemas.keys()),
+        "schemas": schemas,
+        "base_schema": base_schema,
+        "generated_at": pendulum.now("UTC").isoformat(),
+    }
 
 
 class DomainEventSchemaRegistry:
     def get_schema(self, event_type: str) -> dict[str, Any] | None:
         return get_schema(event_type)
+
     def get_all(self) -> dict[str, dict[str, Any]]:
         return get_all_schemas()
+
     def refresh(self) -> None:
         global _SCHEMAS_CACHE
         _SCHEMAS_CACHE = None

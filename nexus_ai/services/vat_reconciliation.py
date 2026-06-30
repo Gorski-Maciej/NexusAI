@@ -1,4 +1,4 @@
-"""VAT reconciliation — weryfikacja integralności VAT między OCR, DuckDB i TigerBeetle.
+"""VAT reconciliation -- weryfikacja integralności VAT między OCR, DuckDB i TigerBeetle.
 
 Zgodnie z aa3fvcx.txt:
 - DuckDB dla OLAP (agregacje VAT)
@@ -8,9 +8,10 @@ Zgodnie z aa3fvcx.txt:
 
 from __future__ import annotations
 
-from msgspec import Struct
 from decimal import Decimal
 from typing import Any, final
+
+from msgspec import Struct
 
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
@@ -75,16 +76,18 @@ class VATReconciliationEngine:
     def check_vat_integrity(
         self, invoice_id: str, ocr_results: dict[str, Any]
     ) -> VATIntegrityResult:
+        """Check VAT integrity across OCR/DuckDB/TigerBeetle.
+
         Polars Expressions zamiast PyArrow compute.
 
         Polars ``pl.col().mul()``, ``pl.col().sub()``, ``pl.col().abs()``,
-        ``pl.col().filter()``, ``pl.col().sum()`` — wszystko w Rust/C++.
+        ``pl.col().filter()``, ``pl.col().sum()`` -- wszystko w Rust/C++.
         Zaletami nad PyArrow:
         - Czystsze, składniowe API (expressions zamiast pc.func())
         - Pełny optimizer zapytań (predicate pushdown, projection pushdown)
-        - LazyFrame z collect(streaming=True) dla > 1M wierszy
+        - LazyFrame z collect(streaming=True) dla wiecej niz 1M wierszy
         - Wbudowane shink_dtype() dla redukcji RAM
-        Zysk: 5-10× szybsza weryfikacja, mniej kodu, lepsza czytelność.
+        Zysk: 5-10x szybsza weryfikacja, mniej kodu, lepsza czytelność.
         """
         import polars as pl
 
@@ -130,12 +133,12 @@ class VATReconciliationEngine:
             },
         )
 
-        # Zamiast pc.multiply(net_arr, rate_arr) — składniowe API.
+        # Zamiast pc.multiply(net_arr, rate_arr) -- składniowe API.
         # LazyFrame pozwala optimizerowi Polars na optymalizację.
         lazy = df.lazy()
 
         # ``pl.when().then().otherwise()`` zamiast pc.filter + pc.greater.
-        # ``pl.col().mul().sub().abs()`` — łańcuch wyrażeń.
+        # ``pl.col().mul().sub().abs()`` -- łańcuch wyrażeń.
         rate_col = (
             pl.when(pl.col("rate").is_in(["np", "zw"]))
             .then(pl.lit(0.0))
@@ -155,7 +158,7 @@ class VATReconciliationEngine:
             ]
         ).collect()
 
-        # Polars ``.filter(pl.col("vat_diff") > 0.01)`` — czytelniejsze.
+        # Polars ``.filter(pl.col("vat_diff") > 0.01)`` -- czytelniejsze.
         mismatch_rows = checked.filter(pl.col("vat_diff") > 0.01)
         math_error_rows = checked.filter(pl.col("math_diff") > 0.01)
 

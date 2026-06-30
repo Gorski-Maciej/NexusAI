@@ -1,17 +1,18 @@
-"""AsyncEventStore — append-only event store (sqlite3 + Parquet archiving)."""
+"""AsyncEventStore -- append-only event store (sqlite3 + Parquet archiving)."""
 
 from __future__ import annotations
 
-import anyio
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads as _msgspec_loads
 import os
 import sqlite3
 from pathlib import Path
 from typing import Any
 
+import anyio
 import pendulum
 from structlog import get_logger
 
+from nexus_ai.core.msgspec_utils import msgspec_dumps
+from nexus_ai.core.msgspec_utils import msgspec_loads as _msgspec_loads
 from nexus_ai.db.async_db_pool import get_async_db_pool
 from nexus_ai.events.domain_events import DomainEvent, decode_event, encode_event
 
@@ -26,12 +27,13 @@ def _get_record_append():
             from nexus_ai.api.telemetry_metrics import record_event_store_append
             _otel_record_append = record_event_store_append
         except Exception:
-            _otel_record_append = lambda **kw: None
+            def _otel_record_append(**kw):
+                return None
     return _otel_record_append
 
 
 class AsyncEventStore:
-    """Append-only event store — sqlite3 via anyio.to_thread.run_sync."""
+    """Append-only event store -- sqlite3 via anyio.to_thread.run_sync."""
 
     def __init__(self, db_path: str | Path) -> None:
         self._db_path = Path(db_path)
@@ -228,7 +230,8 @@ class AsyncEventStore:
         return archive_dir
 
     async def archive_events_to_parquet(self, before_days: int = 30, aggregate_type: str | None = None, batch_size: int = 10000) -> int:
-        import pyarrow as pa, pyarrow.parquet as pq
+        import pyarrow as pa
+        import pyarrow.parquet as pq
         conn = await self._get_conn()
         archive_dir = self._get_parquet_archive_dir()
         cutoff = pendulum.now().subtract(days=before_days).isoformat()

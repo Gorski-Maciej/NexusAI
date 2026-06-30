@@ -1,38 +1,34 @@
 from __future__ import annotations
 
 import os
-
-from nexus_crypto import Sha256Hasher
 import uuid
 
+import fsspec
 import pendulum
 from litestar import Controller, post
 from litestar.background_tasks import BackgroundTask
-from litestar.response import Response as LitestarResponse
-from structlog import get_logger
 from litestar.connection import Request
 from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import ClientException
-from sqlmodel import text
-from sqlmodel import Session
+from litestar.response import Response as LitestarResponse
+from nexus_crypto import Sha256Hasher
+from sqlmodel import Session, text
+from structlog import get_logger
 
 from nexus_ai.api.background_tasks import emit_invoice_created_bg
 from nexus_ai.api.cache import clear_cache_async
-from nexus_ai.api.i18n import resolve_language, t
-from nexus_ai.api.rbac import owner_or_worker_guard
 from nexus_ai.api.dto import (
     TAG_INVOICES,
     TaskResponseDTO,
 )
+from nexus_ai.api.i18n import resolve_language, t
+from nexus_ai.api.rbac import owner_or_worker_guard
 from nexus_ai.api.schemas import TaskResponse
 from nexus_ai.api.services import ContentAddressableStorage, FileValidator, IdempotencyStore
 from nexus_ai.core.config import AppConfig
-import fsspec
-
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.models import OutboxStatus
-
 
 logger = get_logger("nexus.api.invoices")
 
@@ -58,11 +54,11 @@ def _validate_content_length(headers: dict[str, str], max_bytes: int) -> None:
 
 
 class InvoiceController(Controller):
-    """Invoice APIs (v1) — upload i zarządzanie fakturami.
+    """Invoice APIs (v1) -- upload i zarządzanie fakturami.
 
     Endpoints:
-      - POST /api/v1/invoices/upload — upload faktury z outbox eventem i audit trail
-      - POST /api/v1/invoices/upload-large — upload dużego załącznika (do 500MB)
+      - POST /api/v1/invoices/upload -- upload faktury z outbox eventem i audit trail
+      - POST /api/v1/invoices/upload-large -- upload dużego załącznika (do 500MB)
     """
 
     path = "/invoices"
@@ -136,7 +132,7 @@ class InvoiceController(Controller):
             raise ClientException(detail=t("upload.empty_file", language=language), status_code=400)
 
         # Rozwiązanie 31: Walidacja MIME i sygnatur plików (tylko pierwsze 512 bajtów)
-        # Nie nadpisujemy pliku — normalize_image jest wywoływana tylko dla walidacji,
+        # Nie nadpisujemy pliku -- normalize_image jest wywoływana tylko dla walidacji,
         # a pełna normalizacja nastąpi w dalszym potoku przetwarzania.
         try:
             _, detected_mime = FileValidator.validate_file(first_chunk, file_obj.filename or "")
@@ -201,6 +197,7 @@ class InvoiceController(Controller):
         # Audit trail przez DecisionTraceLogger (hash chain w DuckDB decision_traces)
         try:
             import duckdb
+
             from nexus_ai.tax import DecisionTraceLogger
 
             conn = duckdb.connect(str(config.duckdb_path))
@@ -243,7 +240,7 @@ class InvoiceController(Controller):
                 },
             )
 
-        # Zwróć Response z BackgroundTask — InvoiceCreated event po wysłaniu odpowiedzi
+        # Zwróć Response z BackgroundTask -- InvoiceCreated event po wysłaniu odpowiedzi
         return LitestarResponse(
             content=response_data,
             background=BackgroundTask(
@@ -394,4 +391,4 @@ class InvoiceController(Controller):
         return response
 
 
-# InvoiceControllerV2 removed — use InvoiceController directly in both v1 and v2 routers
+# InvoiceControllerV2 removed -- use InvoiceController directly in both v1 and v2 routers

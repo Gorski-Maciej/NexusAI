@@ -1,5 +1,5 @@
 """
-AsyncBackup — async backup service using sqlite3.backup() API.
+AsyncBackup -- async backup service using sqlite3.backup() API.
 
 - ``fsspec.open()`` zamiast ``open()`` dla uniwersalnego otwierania plików
 - ``fsspec.filesystem()`` z konfigurowalnym protokołem z TOML
@@ -17,19 +17,19 @@ Usage:
 
 from __future__ import annotations
 
-import anyio
 import os
 import sqlite3
 import tempfile
 import time
-import pendulum
 from pathlib import Path
 from typing import Any
 
-from nexus_ai.core.fsspec_compat import FSSpecFactory, TransactionalFileSystem
+import anyio
+import pendulum
 from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
+from nexus_ai.core.fsspec_compat import FSSpecFactory, TransactionalFileSystem
 
 logger = get_logger("nexus.db.async_backup")
 
@@ -53,7 +53,7 @@ class AsyncBackup:
 
     Używa natywnego ``sqlite3.Connection.backup()`` (dostępne od Python 3.6).
     SQLCipher: backup działa między szyfrowanymi bazami (ten sam klucz).
-    Backup atomiczny — baza pozostaje czytelna/zapisywalna podczas backupu.
+    Backup atomiczny -- baza pozostaje czytelna/zapisywalna podczas backupu.
     """
 
     def __init__(
@@ -127,12 +127,12 @@ class AsyncBackup:
     ) -> dict[str, Any]:
         """Wykonaj backup pojedynczej bazy danych (async, w wątku).
 
-        - TransactionalFileSystem — atomowy backup (auto-commit/rollback)
-        - fsspec.open() dla targetu — działa z file://, s3://, memory://
+        - TransactionalFileSystem -- atomowy backup (auto-commit/rollback)
+        - fsspec.open() dla targetu -- działa z file://, s3://, memory://
         - fs.info() zamiast Path.stat() dla zdalnych protokołów
 
         Używa natywnego ``sqlite3.Connection.backup()`` w wątku.
-        Backup atomiczny — źródło pozostaje czytelne/zapisywalne.
+        Backup atomiczny -- źródło pozostaje czytelne/zapisywalne.
 
         Args:
             source_path: Ścieżka źródłowej bazy danych.
@@ -143,7 +143,7 @@ class AsyncBackup:
         """
         tx_fs = TransactionalFileSystem(self._fs)
 
-        logger.info("[BACKUP] Starting backup: %s → %s", source_path, target_path)
+        logger.info("[BACKUP] Starting backup: %s -> %s", source_path, target_path)
 
         start_time = time.time()
 
@@ -168,7 +168,7 @@ class AsyncBackup:
                             key_hex = self._sqlcipher_key.encode("utf-8").hex()
                             tgt.execute(f"PRAGMA key = x'{key_hex}';")
 
-                        # Natywny backup — deleguje do sqlite3_backup() w C
+                        # Natywny backup -- deleguje do sqlite3_backup() w C
                         src.backup(tgt, pages=-1)
                     finally:
                         tgt.close()
@@ -197,7 +197,7 @@ class AsyncBackup:
             size_mb = 0
 
         logger.info(
-            "[BACKUP] Complete: %s → %s (%.1f MB, %.1fs, atomic=%s)",
+            "[BACKUP] Complete: %s -> %s (%.1f MB, %.1fs, atomic=%s)",
             source_path,
             target_path,
             size_mb,
@@ -243,7 +243,7 @@ class AsyncBackup:
                             key_hex = self._sqlcipher_key.encode("utf-8").hex()
                             tgt.execute(f"PRAGMA key = x'{key_hex}';")
 
-                        # Natywny backup SQLite — binarna kopia
+                        # Natywny backup SQLite -- binarna kopia
                         src.backup(tgt, pages=-1)
                     finally:
                         tgt.close()
@@ -263,7 +263,7 @@ class AsyncBackup:
                 os.unlink(tmp_path)
 
         await anyio.to_thread.run_sync(_sync_backup)
-        logger.info("[BACKUP] In-memory backup complete: %s → memory://", source_path)
+        logger.info("[BACKUP] In-memory backup complete: %s -> memory://", source_path)
 
     def add_database(self, name: str, path: str) -> None:
         """Dodaj bazę danych do listy backupów."""
@@ -286,7 +286,7 @@ async def create_async_backup(
     Usage:
         results = await create_async_backup("backups/today")
         for name, result in results.items():
-            print(f"{name}: {result['status']} — {result.get('size_mb', 0)} MB")
+            print(f"{name}: {result['status']} -- {result.get('size_mb', 0)} MB")
     """
     backup = AsyncBackup(sqlcipher_key=sqlcipher_key)
     return await backup.backup_all(output_dir)

@@ -12,19 +12,19 @@ from nexus_ai.db.analytics import DuckDBLimits, DuckDBManager
 
 @lru_cache(maxsize=1)
 def _get_config() -> AppConfig:
-    """Lazy-loaded singleton — pierwsze wywołanie ładuje z TOML."""
+    """Lazy-loaded singleton -- pierwsze wywołanie ładuje z TOML."""
     return AppConfig.from_toml()
 
 
 @lru_cache(maxsize=1)
 def _get_tenant_manager() -> TenantManager:
-    """Lazy-loaded singleton — zależny od config."""
+    """Lazy-loaded singleton -- zależny od config."""
     return TenantManager(_get_config())
 
 
 @lru_cache(maxsize=1)
 def _get_duckdb_limits() -> DuckDBLimits:
-    """Lazy-loaded singleton — zależny od config."""
+    """Lazy-loaded singleton -- zależny od config."""
     config = _get_config()
     return DuckDBLimits(memory_limit=config.duckdb_memory_limit, threads=config.duckdb_threads)
 
@@ -44,7 +44,7 @@ def provide_db_engine(request: Request):
     bezpośrednio (auth, admin, dlq, ui_state, itd.).
     Zastąpiony przez ``SQLAlchemyPlugin`` w docelowej architekturze.
 
-    Zobacz ``state.on_shutdown`` — wywołuje ``engine.dispose()`` aby
+    Zobacz ``state.on_shutdown`` -- wywołuje ``engine.dispose()`` aby
     zamknąć wszystkie połączenia w pool przed zamknięciem aplikacji.
     """
     return request.app.state.db_engine

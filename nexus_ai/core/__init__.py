@@ -1,5 +1,5 @@
 # core/__init__.py
-"""NexusAI Core — safe lazy imports for constrained environments.
+"""NexusAI Core -- safe lazy imports for constrained environments.
 
 Nowy stack (zgodny z aa3fvcx.txt):
 - nexus-crypto (AEAD + Argon2id + SHA-256)
@@ -25,6 +25,9 @@ except NameError:
     _NUITKA_COMPILED: bool = False
 
 # ── Always-available modules ────────────────────────────────────────────────
+# ── Optional / gracefully-falling modules ───────────────────────────────────
+import importlib as _importlib
+
 from nexus_ai.core.config import AppConfig  # noqa: E402
 from nexus_ai.core.exceptions import (  # noqa: E402
     AIProcessingError,
@@ -34,11 +37,6 @@ from nexus_ai.core.exceptions import (  # noqa: E402
     VectorDBError,
 )
 from nexus_ai.core.logger import logger  # noqa: E402
-
-# ── Optional / gracefully-falling modules ───────────────────────────────────
-
-
-import importlib as _importlib
 
 
 def _safe_import(qualname: str, names: list[str]):
@@ -58,8 +56,10 @@ def _safe_import(qualname: str, names: list[str]):
 # When compiled by Nuitka, all modules are already resolved and bundled.
 # The _safe_import mechanism is only needed in interpreted mode.
 if not _NUITKA_COMPILED:
-    # core.mimalloc — Python ctypes bridge do mimalloc API (optional)
+    # core.mimalloc -- Python ctypes bridge do mimalloc API (optional)
     # Gdy mimalloc nie jest LD_PRELOAD'owany, wszystkie funkcje zwracają None/False.
+    # core.crypto -- Vault (uses nexus-crypto now, always available)
+    from nexus_ai.core.crypto import Vault  # noqa: E402
     from nexus_ai.core.mimalloc_bridge import (  # noqa: E402
         InvoiceOCRHeap,
         MemoryLeakDetector,
@@ -73,9 +73,6 @@ if not _NUITKA_COMPILED:
         save_stats_to_file,
         stats_as_dict,
     )
-
-    # core.crypto — Vault (uses nexus-crypto now, always available)
-    from nexus_ai.core.crypto import Vault  # noqa: E402
 
     # core.secrets (optional)
     _, [SecretsManager] = _safe_import("core.secrets", ["SecretsManager"])  # noqa: E402
@@ -121,6 +118,7 @@ if not _NUITKA_COMPILED:
     _init_globals()
 else:
     # ── Nuitka-compiled path: skip optional probing, import only known-safe modules.
+    from nexus_ai.core.crypto import Vault  # noqa: E402
     from nexus_ai.core.mimalloc_bridge import (  # noqa: E402
         InvoiceOCRHeap,
         MemoryLeakDetector,
@@ -134,7 +132,6 @@ else:
         save_stats_to_file,
         stats_as_dict,
     )
-    from nexus_ai.core.crypto import Vault  # noqa: E402
 
     SecretsManager = None
     SystemMonitor = None

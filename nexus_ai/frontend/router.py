@@ -1,11 +1,11 @@
-"""NexusAI Router — Navigator 2.0 + Breadcrumb + Query Params + URL = State.
+"""NexusAI Router -- Navigator 2.0 + Breadcrumb + Query Params + URL = State.
 
   - Navigator 2.0: ft.View push/pop/replace zamiast page.add() + clear
-  - TemplateRoute dla URL pattern matching (/invoices/:id → id=...)
+  - TemplateRoute dla URL pattern matching (/invoices/:id -> id=...)
   - Query params: ?q=search&status=APPROVED&page=2 (URL = State)
   - RouteGuard: centralna autoryzacja przed renderem widoku
   - Breadcrumb navigation: page.views jako klikalne okruszki
-  - URL = State: dwukierunkowa synchronizacja URL ↔ stan widoku
+  - URL = State: dwukierunkowa synchronizacja URL <-> stan widoku
   - Error boundary: try/except z fallback do 404 z TemplateRoute
   - Modal routing: /invoices/:id/edit otwiera modal overlay
   - page.window_prevent_close + on_window_event dla lifecycle
@@ -16,10 +16,10 @@
 
 from __future__ import annotations
 
-import anyio
-from typing import Callable
-from urllib.parse import urlparse, parse_qs, urlencode
+from collections.abc import Callable
+from urllib.parse import parse_qs, urlencode, urlparse
 
+import anyio
 import flet as ft
 from flet import TemplateRoute
 from structlog import get_logger
@@ -29,13 +29,13 @@ from nexus_ai.frontend.api_client import NexusApiClient
 logger = get_logger("nexus.ui.router")
 
 
-# ── TransitionConfig — centralna konfiguracja animacji ────────────────────
+# ── TransitionConfig -- centralna konfiguracja animacji ────────────────────
 
 
 class TransitionConfig:
     """Centralna konfiguracja animacji przejść między widokami.
 
-      - FadeIn: AnimatedOpacity (0 → 1) przy montowaniu widoku
+      - FadeIn: AnimatedOpacity (0 -> 1) przy montowaniu widoku
       - Slide: ft.PageTransitionType dla push (lewo) i pop (prawo)
       - Scale: AnimatedScale dla hover efektów na kartach
       - Switcher: AnimatedSwitcher dla płynnej zmiany contentu
@@ -84,7 +84,7 @@ class TransitionConfig:
 def FadeInContent(page: ft.Page, content: ft.Control, duration: int = 300):
     """Wrap content w AnimatedOpacity z fade-in na mount.
 
-      - AnimatedOpacity animuje opacity 0 → 1 przy pierwszym renderze
+      - AnimatedOpacity animuje opacity 0 -> 1 przy pierwszym renderze
       - use_state z guard (opacity==0) zapobiega infinite re-render
       - page.run_task(async) ustawia opacity=1 po 50ms (render + klatka)
       - Dzięki temu content "wpuszcza się" płynnie, nie pojawia się znikąd
@@ -111,9 +111,9 @@ def FadeInContent(page: ft.Page, content: ft.Control, duration: int = 300):
 def SlideFadeContent(page: ft.Page, content: ft.Control, direction: str = "left"):
     """Wrap content w slide + fade-in kombinację.
 
-      - "left" direction: margin_left = 30 → 0 (content wjeżdża z prawej)
-      - "right" direction: margin_left = -30 → 0 (content wjeżdża z lewej)
-      - Jednocześnie opacity 0 → 1 przez AnimatedOpacity
+      - "left" direction: margin_left = 30 -> 0 (content wjeżdża z prawej)
+      - "right" direction: margin_left = -30 -> 0 (content wjeżdża z lewej)
+      - Jednocześnie opacity 0 -> 1 przez AnimatedOpacity
     """
     opacity = ft.use_state(0.0)
     # Dla "left": margin zaczyna od +30, dla "right": od -30
@@ -177,9 +177,9 @@ def animated_card(
 def get_view_transition(is_push: bool, is_pop: bool = False) -> ft.PageTransitionTheme:
     """Wybierz transition type dla widoku.
 
-      - Push (nawigacja w przód) → SLIDE_LEFT (content wjeżdża z prawej)
-      - Pop (powrót wstecz) → SLIDE_RIGHT (content wyjeżdża w prawo)
-      - Replace → FADE_THROUGH (płynne zanikanie/przejawianie)
+      - Push (nawigacja w przód) -> SLIDE_LEFT (content wjeżdża z prawej)
+      - Pop (powrót wstecz) -> SLIDE_RIGHT (content wyjeżdża w prawo)
+      - Replace -> FADE_THROUGH (płynne zanikanie/przejawianie)
     """
     if is_pop:
         return TransitionConfig.POP_TRANSITION
@@ -221,7 +221,7 @@ class RouteGuard:
         return True
 
     async def guard(self, route: str, builder_func: Callable, *args, **kwargs) -> ft.Control:
-        """Wrap builder z guardem — auth przed renderem."""
+        """Wrap builder z guardem -- auth przed renderem."""
         if await self.check_route(route):
             try:
                 result = builder_func(*args, **kwargs)
@@ -324,9 +324,9 @@ def build_breadcrumb(page: ft.Page) -> ft.Container:
       - Budowany dynamicznie przy każdym wywołaniu handle_route
       - Odczytuje page.views PRZED dodaniem nowego widoku
       - Dzięki temu nowy widok pokazuje poprawną ścieżkę do siebie
-      - Każdy okruszek jest klikalny — nawiguje do poprzedniego widoku
+      - Każdy okruszek jest klikalny -- nawiguje do poprzedniego widoku
       - Ikona HOME dla korzenia, strzałki jako separatory
-      - NIE @ft.component — bo @ft.component tworzy statyczne drzewo!
+      - NIE @ft.component -- bo @ft.component tworzy statyczne drzewo!
     """
     views = page.views
 
@@ -404,9 +404,9 @@ def _breadcrumb_label(route: str) -> str:
 
 
 def update_url_with_filters(page: ft.Page, base_path: str, filters: dict) -> None:
-    """Zaktualizuj URL z filtrami — URL = State.
+    """Zaktualizuj URL z filtrami -- URL = State.
 
-      - Dwukierunkowa synchronizacja: zmiana filtra → aktualizacja URL
+      - Dwukierunkowa synchronizacja: zmiana filtra -> aktualizacja URL
       - Zachowuje historię nawigacji (można wrócić przyciskiem Wstecz)
       - page.go() automatycznie triggeruje on_route_change
     """
@@ -423,7 +423,7 @@ def update_url_with_filters(page: ft.Page, base_path: str, filters: dict) -> Non
 
 
 def parse_query_context(route: str) -> dict:
-    """Parsuj query params z URL — URL = State.
+    """Parsuj query params z URL -- URL = State.
 
     """
     parsed = urlparse(route)
@@ -436,19 +436,19 @@ def parse_query_context(route: str) -> dict:
     }
 
 
-# ── NexusRouter — Navigator 2.0 ──────────────────────────────────────────
+# ── NexusRouter -- Navigator 2.0 ──────────────────────────────────────────
 
 
 class NexusRouter:
-    """Declarative router z TemplateRoute — Navigator 2.0, RouteGuard, Query params.
+    """Declarative router z TemplateRoute -- Navigator 2.0, RouteGuard, Query params.
 
       - Navigator 2.0: ft.View push/pop/replace dla pełnej historii
-      - TemplateRoute parsuje URL params: /invoices/:id → id=...
+      - TemplateRoute parsuje URL params: /invoices/:id -> id=...
       - Query params: ?q=search&status=APPROVED dla filtrów (URL = State)
       - Breadcrumb navigation: klikalne okruszki z page.views
       - RouteGuard: centralna autoryzacja przed builderem
       - Error boundary: try/except z fallback do 404
-      - Modal routing: /invoices/:id/edit → page.overlay
+      - Modal routing: /invoices/:id/edit -> page.overlay
       - page.client_storage: ostatnia ścieżka między sesjami, zapis filtrów
       - Transition animations: fade/slide między widokami
       - page.on_window_event: lifecycle okna (resize, close)
@@ -469,10 +469,10 @@ class NexusRouter:
     # ── Navigator 2.0: push/pop/replace ────────────────────────────────
 
     def push_view(self, route: str, content: ft.Control, title: str = "Nexus AI") -> None:
-        """Navigator 2.0 — push nowego widoku na stos historii.
+        """Navigator 2.0 -- push nowego widoku na stos historii.
 
-          - ft.PageTransitionTheme.SLIDE_LEFT — content wjeżdża z prawej
-          - FadeInContent — opacity 0 → 1 podczas wjazdu
+          - ft.PageTransitionTheme.SLIDE_LEFT -- content wjeżdża z prawej
+          - FadeInContent -- opacity 0 -> 1 podczas wjazdu
           - ThemeAnimationStyle dla spójnego tempa
         """
         animated = FadeInContent(self.page, content)
@@ -488,9 +488,9 @@ class NexusRouter:
         self.page.go(route)
 
     def pop_view(self) -> None:
-        """Navigator 2.0 — pop bieżącego widoku ze stosu.
+        """Navigator 2.0 -- pop bieżącego widoku ze stosu.
 
-          - ft.PageTransitionTheme.SLIDE_RIGHT — content wyjeżdża w prawo
+          - ft.PageTransitionTheme.SLIDE_RIGHT -- content wyjeżdża w prawo
           - Płynny powrót do poprzedniego widoku na stosie
         """
         if len(self.page.views) > 1:
@@ -502,10 +502,10 @@ class NexusRouter:
             self.page.go(top_route)
 
     def replace_view(self, route: str, content: ft.Control, title: str = "Nexus AI") -> None:
-        """Navigator 2.0 — replace bieżącego widoku (bez historii).
+        """Navigator 2.0 -- replace bieżącego widoku (bez historii).
 
-          - ft.PageTransitionTheme.FADE_THROUGH — płynne przejście
-          - FadeInContent — opacity 0 → 1
+          - ft.PageTransitionTheme.FADE_THROUGH -- płynne przejście
+          - FadeInContent -- opacity 0 -> 1
           - Idealne dla: zmiana filtra, odświeżenie danych
         """
         animated = FadeInContent(self.page, content)
@@ -526,11 +526,12 @@ class NexusRouter:
     # ── Handle Route ───────────────────────────────────────────────────
 
     async def handle_route(self, route: str) -> None:
+        """Handle route changes.
 
         Parsuje query params i przekazuje do widoków jako query_context.
         Widoki mogą aktualizować URL (update_url_with_filters) co
-        powoduje ponowne wywołanie handle_route — to jest dwukierunkowa
-        synchronizacja URL ↔ State.
+        powoduje ponowne wywołanie handle_route -- to jest dwukierunkowa
+        synchronizacja URL <-> State.
         """
         # URL = State: parsuj query params
         parsed = urlparse(route)
@@ -550,14 +551,14 @@ class NexusRouter:
         # Głębokie linkowanie z modal routingiem /invoices/:id/edit
         if tr.match("/invoices/:id/edit"):
             invoice_id = tr.id
-            self.page.title = f"Nexus AI — Edycja faktury #{invoice_id[:8]}"
+            self.page.title = f"Nexus AI -- Edycja faktury #{invoice_id[:8]}"
             await self._open_edit_modal(invoice_id)
             return
 
         # Standardowe głębokie linkowanie
         if tr.match("/invoices/:id"):
             invoice_id = tr.id
-            self.page.title = f"Nexus AI — Faktura #{invoice_id[:8]}"
+            self.page.title = f"Nexus AI -- Faktura #{invoice_id[:8]}"
             content = await self.guard.guard(
                 route, self._build_invoice_detail, invoice_id, query_context
             )
@@ -568,7 +569,7 @@ class NexusRouter:
         content = await self.guard.guard(route, self._resolve_view, tr, query_context)
         title = self._get_title(tr)
 
-        # Navigator 2.0 — push lub replace
+        # Navigator 2.0 -- push lub replace
         if self.page.views and self.page.views[-1].route == route:
             self.replace_view(route, content, title)
         else:
@@ -600,7 +601,7 @@ class NexusRouter:
         elif tr.match("/tasks"):
             return "Monitor zadań"
         else:
-            return "404 — Nie znaleziono"
+            return "404 -- Nie znaleziono"
 
     # ── Window lifecycle ───────────────────────────────────────────────
 
@@ -608,9 +609,9 @@ class NexusRouter:
         if e.data == "close":
             await self._confirm_close()
         elif e.data == "focus":
-            logger.debug("Window focused — refreshing data")
+            logger.debug("Window focused -- refreshing data")
         elif e.data == "resize":
-            logger.debug("Window resized — adapting layout")
+            logger.debug("Window resized -- adapting layout")
 
     async def _confirm_close(self) -> None:
         dialog = ft.AlertDialog(
@@ -687,7 +688,7 @@ class NexusRouter:
             [build_breadcrumb(self.page), content],
             expand=True,
             spacing=0,
-            # NIE scroll — widoki mają własny scroll, unikamy zagnieżdżenia
+            # NIE scroll -- widoki mają własny scroll, unikamy zagnieżdżenia
         )
 
     def _build_dashboard(self, query: dict | None = None) -> ft.Control:
@@ -748,7 +749,7 @@ class NexusRouter:
                         ft.Icon(ft.icons.SEARCH_OFF, size=80, color=ft.colors.GREY_600),
                         ft.Container(height=20),
                         ft.Text(
-                            "404 — Strona nie znaleziona",
+                            "404 -- Strona nie znaleziona",
                             size=24,
                             weight=ft.FontWeight.BOLD,
                             color=ft.colors.GREY_400,

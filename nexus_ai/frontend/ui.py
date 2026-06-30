@@ -1,4 +1,4 @@
-"""Flet UI for Nexus Accounting OS — Deklaratywny wzorzec @ft.component + use_state().
+"""Flet UI for Nexus Accounting OS -- Deklaratywny wzorzec @ft.component + use_state().
 
   - @ft.component + use_state() zamiast klas imperatywnych
   - ft.Shimmer dla loading skeleton zamiast ProgressBar
@@ -34,7 +34,7 @@ def InvoiceRegistryView(page: ft.Page, api: NexusApiClient):
       - ft.Ref<T> dla typowanych referencji
     """
     invoices = ft.use_state[list]([])
-    loading = ft.use_state(False)
+    ft.use_state(False)
     search_query = ft.use_state("")
 
     list_ref = ft.use_ref[ft.ListView]()
@@ -96,7 +96,7 @@ def InvoiceRegistryView(page: ft.Page, api: NexusApiClient):
 
 @ft.component
 def NexusApp(page: ft.Page, api: NexusApiClient):
-    """Composable app controller — @ft.component + use_state() zamiast klasy.
+    """Composable app controller -- @ft.component + use_state() zamiast klasy.
 
       - @ft.component + use_state() zamiast klasy imperatywnej
       - ft.Shimmer dla loading skeleton
@@ -108,9 +108,9 @@ def NexusApp(page: ft.Page, api: NexusApiClient):
     loading = ft.use_state(False)
     error = ft.use_state[str | None](None)
 
-    table_ref = ft.use_ref[ft.DataTable]()
+    ft.use_ref[ft.DataTable]()
     loader_ref = ft.use_ref[ft.ProgressBar]()
-    feedback_ref = ft.use_ref[ft.Text]()
+    ft.use_ref[ft.Text]()
     file_picker_ref = ft.use_ref[ft.FilePicker]()
 
     # ── Data loading ────────────────────────────────────────────────────

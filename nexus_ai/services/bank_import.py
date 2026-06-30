@@ -1,6 +1,6 @@
 """
 
-- ``fsspec.open()`` dla CSV — działa z file://, s3://, http://
+- ``fsspec.open()`` dla CSV -- działa z file://, s3://, http://
 - ``fsspec.filesystem()`` dla konfigurowalnego backendu
 - Zmiana storage_protocol w config TOML zmienia backend bez zmiany kodu
 """
@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import uuid
+
 from msgspec import Struct
 
 # ── SHA-256 przez nexus-crypto (Rust+PyO3) zgodnie z aa3fvcx.txt ─────────
@@ -63,21 +64,21 @@ class StatementParser(Protocol):
 class CSVStatementParser:
     """Reference parser for local CSV exports from banks.
 
-    - ``pyarrow.csv.read_csv()`` z ``ConvertOptions`` — typowanie kolumn
+    - ``pyarrow.csv.read_csv()`` z ``ConvertOptions`` -- typowanie kolumn
       (date32, decimal128, int64) bez ręcznego mapowania w pętli.
-    - ``pa.Table.to_pylist()`` — konwersja całej tabeli do listy słowników
-      w C++ — 5-10× szybciej niż ``csv.DictReader`` + pętla Python.
+    - ``pa.Table.to_pylist()`` -- konwersja całej tabeli do listy słowników
+      w C++ -- 5-10x szybciej niż ``csv.DictReader`` + pętla Python.
     - Zysk: brak narzutu csv.DictReader, automatyczne typowanie dat.
     """
 
     def parse(self, file_path: Path) -> list[BankTransaction]:
-        import pyarrow as pa
-        import pyarrow.csv as pa_csv
-        import pyarrow.compute as pc
-
-        # Działa z file://, s3://, http:// — wyciągi bankowe z chmury.
+        # Działa z file://, s3://, http:// -- wyciągi bankowe z chmury.
         # ale dla prostoty używamy fsspec.open() + BytesIO.
         from io import BytesIO
+
+        import pyarrow as pa
+        import pyarrow.compute as pc
+        import pyarrow.csv as pa_csv
 
         with fsspec.open(file_path, "rb") as f:
             csv_content = f.read()
@@ -109,7 +110,7 @@ class CSVStatementParser:
         )
 
         # Zamiast ``if not raw.get("title")`` w pętli, używamy
-        # ``pc.is_valid()`` + ``pc.filter()`` — operacja w C++.
+        # ``pc.is_valid()`` + ``pc.filter()`` -- operacja w C++.
         valid_mask = pc.is_valid(table.column("booking_date"))
         valid_table = table.filter(valid_mask)
 
@@ -206,6 +207,7 @@ class IdempotentBankImporter:
             )
 
     def _setup_meta_mapper(self, storage_path: str | Path) -> None:
+        """Setup meta mapper for bank import metadata.
 
         fsspec.get_mapper() tworzy MutableMapping (dict-like),
         który automatycznie serializuje wartości do plików JSON.
@@ -246,6 +248,7 @@ class IdempotentBankImporter:
 
             try:
                 import tigerbeetle as tb
+
                 from nexus_ai.services.tigerbeetle.client import (
                     LEDGER,
                     TRANSFER_CODE,

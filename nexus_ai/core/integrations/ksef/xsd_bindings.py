@@ -1,15 +1,15 @@
 # core/integrations/ksef/xsd_bindings.py
 """
-xsdata — automatyczne mapowanie XSD → Python dla KSeF.
+xsdata -- automatyczne mapowanie XSD -> Python dla KSeF.
 
 Zgodnie z aa3fvcx.txt (Punkt 10): xsdata automatycznie generuje ściśle
 typowane klasy Pythona bezpośrednio z oficjalnych schematów XSD
 Ministerstwa Finansów dla KSeF.
 
 Supermoce xsdata wdrożone:
-  - Faktura → XML (XmlSerializer z pretty_print)
-  - XML → Faktura (XmlParser z typowaniem)
-  - Walidacja XSD (XmlValidator) — alternatywa dla lxml
+  - Faktura -> XML (XmlSerializer z pretty_print)
+  - XML -> Faktura (XmlParser z typowaniem)
+  - Walidacja XSD (XmlValidator) -- alternatywa dla lxml
   - Namespace-aware serializacja/parsowanie
   - Lazy-loading bindingów z graceful fallback
 
@@ -108,7 +108,7 @@ def _get_parser() -> Any | None:
         return None
 
 
-# ── Helper: Faktura dict → xsdata Faktura object ───────────────────────────
+# ── Helper: Faktura dict -> xsdata Faktura object ───────────────────────────
 
 
 def faktura_from_dict(
@@ -136,9 +136,9 @@ def faktura_from_dict(
     TnaglowekWariantFormularza = get_binding("TnaglowekWariantFormularza")
     TrodzajFaktury = get_binding("TrodzajFaktury")
     TkodWaluty = get_binding("TkodWaluty")
-    TstawkaPodatku = get_binding("TstawkaPodatku")
-    Tgtu = get_binding("Tgtu")
-    ToznaczenieProcedury = get_binding("ToznaczenieProcedury")
+    get_binding("TstawkaPodatku")
+    get_binding("Tgtu")
+    get_binding("ToznaczenieProcedury")
     Podmiot2Jst = get_binding("Podmiot2Jst")
     Podmiot2Gv = get_binding("Podmiot2Gv")
     Twybor12 = get_binding("Twybor12")
@@ -149,14 +149,14 @@ def faktura_from_dict(
         return None
 
     # --- Rozpoznaj pola KSeF z werdyktu ---
-    gtu_code = _resolve_gtu(verdict)
-    procedure_code = verdict.get("procedure") or (verdict.get("ksef_fields") or {}).get(
+    _resolve_gtu(verdict)
+    verdict.get("procedure") or (verdict.get("ksef_fields") or {}).get(
         "procedure_code"
     )
-    transaction_mark = verdict.get("transaction_mark")
-    split_payment = verdict.get("split_payment")
+    verdict.get("transaction_mark")
+    verdict.get("split_payment")
 
-    # --- Kwoty (grosze → string dla XSD) ---
+    # --- Kwoty (grosze -> string dla XSD) ---
     net_grosze = int(invoice_data.get("amount_net_grosze", 0))
     vat_grosze = int(invoice_data.get("amount_vat_grosze", 0))
     gross_grosze = net_grosze + vat_grosze
@@ -179,11 +179,11 @@ def faktura_from_dict(
 
     # --- Currency ---
     currency_str = str(invoice_data.get("currency", "PLN"))
-    currency_enum = getattr(TkodWaluty, currency_str, TkodWaluty.PLN) if TkodWaluty else None
+    getattr(TkodWaluty, currency_str, TkodWaluty.PLN) if TkodWaluty else None
 
     # --- Buduj obiekt Faktura ---
     try:
-        # Naglowek — używamy XmlDateTime z xsdata zamiast stringa
+        # Naglowek -- używamy XmlDateTime z xsdata zamiast stringa
         kod_formularza_cls = TkodFormularza.FA if TkodFormularza else None
         wariant_cls = TnaglowekWariantFormularza.VALUE_3 if TnaglowekWariantFormularza else None
         now = pendulum.now("UTC")
@@ -211,11 +211,10 @@ def faktura_from_dict(
             gv=Podmiot2Gv.VALUE_2 if Podmiot2Gv else None,  # 2 = Nie
         )
 
-        # Domyślne adnotacje — pola obowiązkowe w XSD
+        # Domyślne adnotacje -- pola obowiązkowe w XSD
         # Twybor12 ma VALUE_1 (=1) i VALUE_2 (=2)
-        # Twybor1 ma VALUE_1 (=1) — pojedyncze pole wyboru
+        # Twybor1 ma VALUE_1 (=1) -- pojedyncze pole wyboru
         t12_2 = Twybor12.VALUE_2 if Twybor12 else None  # "Nie"
-        t12_1 = Twybor12.VALUE_1 if Twybor12 else None  # "Tak"
         t1_1 = Twybor1.VALUE_1 if Twybor1 else None  # "Tak" (pole pojedyncze)
 
         adnotacje = Faktura.Fa.Adnotacje(
@@ -318,7 +317,7 @@ def _resolve_gtu(verdict: dict[str, Any]) -> str | None:
     return CATEGORY_GTU_MAP.get(category)
 
 
-# ── Helper: Faktura object → XML bytes ──────────────────────────────────────
+# ── Helper: Faktura object -> XML bytes ──────────────────────────────────────
 
 
 def faktura_to_xml(faktura: Any) -> bytes | None:
@@ -345,7 +344,7 @@ def faktura_to_xml(faktura: Any) -> bytes | None:
         return None
 
 
-# ── Helper: XML → Faktura object ─────────────────────────────────────────────
+# ── Helper: XML -> Faktura object ─────────────────────────────────────────────
 
 
 def parse_ksef_invoice(xml_bytes: bytes) -> dict[str, Any] | None:
@@ -371,7 +370,7 @@ def parse_ksef_invoice(xml_bytes: bytes) -> dict[str, Any] | None:
     return _fallback_parse_xml(xml_bytes)
 
 
-# ── Helper: Faktura → dict ────────────────────────────────────────────────────
+# ── Helper: Faktura -> dict ────────────────────────────────────────────────────
 
 
 def _invoice_to_dict(invoice: Any) -> dict[str, Any]:
@@ -430,7 +429,7 @@ def validate_with_xsdata(xml_bytes: bytes, xsd_path: str | None = None) -> tuple
         Tuple of (is_valid, message).
     """
     if not xsd_path:
-        return True, "No XSD provided — validation skipped"
+        return True, "No XSD provided -- validation skipped"
 
     try:
         from xsdata.formats.dataclass.parsers import XmlParser

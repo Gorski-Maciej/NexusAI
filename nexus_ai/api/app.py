@@ -7,13 +7,17 @@ from litestar import Litestar, Router
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
 from litestar.config.response_cache import ResponseCacheConfig
+from litestar.connection import ASGIConnection, Request
+from litestar.handlers.base import BaseRouteHandler
+from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.plugins import SwaggerRenderPlugin
+from litestar.plugins.opentelemetry import OpenTelemetryPlugin
 from litestar.plugins.problem_details import ProblemDetailsConfig, ProblemDetailsPlugin
 from litestar.plugins.prometheus import PrometheusConfig, PrometheusController
-from litestar.plugins.opentelemetry import OpenTelemetryPlugin
-from litestar.plugins.sqlalchemy import SQLAlchemyPlugin, SQLAlchemyConfig
+from litestar.plugins.sqlalchemy import SQLAlchemyConfig, SQLAlchemyPlugin
 from litestar.response import Response
+from structlog import get_logger as _get_logger
 
 from nexus_ai.api.dependencies import (
     provide_config,
@@ -23,15 +27,10 @@ from nexus_ai.api.dependencies import (
     provide_tenant_manager,
 )
 from nexus_ai.api.exceptions import EXCEPTION_HANDLERS
-from litestar.connection import ASGIConnection
-from litestar.connection import Request
-from litestar.handlers.base import BaseRouteHandler
-from litestar.middleware.rate_limit import RateLimitConfig
-from structlog import get_logger as _get_logger
-
 from nexus_ai.api.middleware import (
     TenantContextMiddleware,
 )
+from nexus_ai.api.pdf_endpoints import PDFController
 from nexus_ai.api.routes.admin import AdminController
 from nexus_ai.api.routes.analytics import AnalyticsController
 from nexus_ai.api.routes.auth import AuthController
@@ -39,9 +38,9 @@ from nexus_ai.api.routes.autopilot import AutopilotController
 from nexus_ai.api.routes.circuit_breakers import CircuitBreakerController
 from nexus_ai.api.routes.dashboard import DashboardController
 from nexus_ai.api.routes.dlq import DLQController
+from nexus_ai.api.routes.events_schema import EventsSchemaController
 from nexus_ai.api.routes.exports import ExportController
 from nexus_ai.api.routes.files import FileController
-from nexus_ai.api.routes.events_schema import EventsSchemaController
 from nexus_ai.api.routes.finops import FinOpsController
 from nexus_ai.api.routes.health import HealthController
 from nexus_ai.api.routes.i18n_ops import I18nOpsController
@@ -52,7 +51,6 @@ from nexus_ai.api.routes.live_preview import LivePreviewController
 from nexus_ai.api.routes.outbox_ops import OutboxOpsController
 from nexus_ai.api.routes.partner import PartnerController
 from nexus_ai.api.routes.performance_ops import PerformanceOpsController
-from nexus_ai.api.pdf_endpoints import PDFController
 from nexus_ai.api.routes.privacy import PrivacyController
 from nexus_ai.api.routes.risk import RiskController
 from nexus_ai.api.routes.security_posture import SecurityPostureController
@@ -79,15 +77,15 @@ def _role_aware_identifier(request: Request) -> str:
     """Per-role rate limiting identifier.
 
     Zwraca role-aware klucz dla RateLimitMiddleware:
-    - Zalogowani: ``user:{role}:{user.id}`` — admini mają wyższe limity
-    - Auth endpoints: ``auth:{ip}`` — brute-force protection per-IP
-    - Niezalogowani: ``anon:{ip}`` — standardowy limit
+    - Zalogowani: ``user:{role}:{user.id}`` -- admini mają wyższe limity
+    - Auth endpoints: ``auth:{ip}`` -- brute-force protection per-IP
+    - Niezalogowani: ``anon:{ip}`` -- standardowy limit
 
     Używa ``request.url.path`` zamiast    ``str(request.url)`` dla
     precyzyjnego dopasowania ścieżki bez fałszywych trafień z query string.
 
-    Uwaga: request.client to tuple (host, port) w ASGI — używamy [0] dla hosta.
-    Nie request.client.host — to nie jest obiekt, a tuple!
+    Uwaga: request.client to tuple (host, port) w ASGI -- używamy [0] dla hosta.
+    Nie request.client.host -- to nie jest obiekt, a tuple!
     """
     user = getattr(request, "user", None)
     if user:
@@ -105,8 +103,8 @@ SUPPORTED_HEALTH_ENDPOINTS = ("/api/v1/health", "/api/v2/health")
 
 
 # ── Router-level guards dla Layered Architecture ──────────────────────
-# V1 guard — ostrzeżenie o deprecation dla klientów
-# V2 guard — weryfikacja minimalnej wersji klienta (Accept-Version)
+# V1 guard -- ostrzeżenie o deprecation dla klientów
+# V2 guard -- weryfikacja minimalnej wersji klienta (Accept-Version)
 
 
 def _v1_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
@@ -169,7 +167,7 @@ def create_app() -> Litestar:
     engine = _make_engine(config)
     session_factory = create_session_factory(engine)
 
-    # ── SQLAlchemyPlugin — wstrzykuje db_session: Session do kontrolerów ─
+    # ── SQLAlchemyPlugin -- wstrzykuje db_session: Session do kontrolerów ─
     # Zastępuje manualny provide_db_session z dependencies.py
     sqlalchemy_plugin = SQLAlchemyPlugin(
         config=SQLAlchemyConfig(
@@ -249,7 +247,7 @@ def create_app() -> Litestar:
     # Używa _role_aware_identifier zdefiniowanego na poziomie modułu.
     # Jeden RateLimitConfig z custom identifier dla wszystkich endpointów.
     # identifier_for_request zwraca role-aware klucz, co daje per-role limity.
-    # Endpointy wykluczone: health, schema — nie wymagają rate limitingu.
+    # Endpointy wykluczone: health, schema -- nie wymagają rate limitingu.
 
     # ── CSRF exclude z configu ──
     csrf_exclude_patterns: list[Any] = []
@@ -277,15 +275,15 @@ def create_app() -> Litestar:
             v1_router,
             v2_router,
             unversioned_router,
-            PrometheusController,  # Zastępuje MetricsController — wbudowany /metrics
-            MetricsDebugController,  # /debug/metrics — debug endpoint
-            progress_sse,  # path="/api/v1/events/progress" — pełna ścieżka
+            PrometheusController,  # Zastępuje MetricsController -- wbudowany /metrics
+            MetricsDebugController,  # /debug/metrics -- debug endpoint
+            progress_sse,  # path="/api/v1/events/progress" -- pełna ścieżka
         ],
         plugins=[
             sqlalchemy_plugin,
-            # OpenTelemetryPlugin — automatyczne tracing spanów dla każdego requestu
+            # OpenTelemetryPlugin -- automatyczne tracing spanów dla każdego requestu
             OpenTelemetryPlugin(),
-            # ProblemDetailsPlugin — RFC 9457 dla wszystkich błędów HTTP (w tym własnych DomainError)
+            # ProblemDetailsPlugin -- RFC 9457 dla wszystkich błędów HTTP (w tym własnych DomainError)
             ProblemDetailsPlugin(ProblemDetailsConfig(enable_for_all_http_exceptions=True)),
         ],
         on_app_init=[jwt_auth.on_app_init, jwt_cookie_auth.on_app_init],
@@ -300,7 +298,7 @@ def create_app() -> Litestar:
         },
         exception_handlers=EXCEPTION_HANDLERS,
         middleware=[
-            # Jeden middleware zamiast trzech — identifier zwraca role-aware klucz
+            # Jeden middleware zamiast trzech -- identifier zwraca role-aware klucz
             RateLimitConfig(
                 rate_limit=("minute", config.rate_limit_general),
                 identifier_for_request=_role_aware_identifier,
@@ -312,17 +310,17 @@ def create_app() -> Litestar:
                 ],
                 exclude_opt_key="no_rate_limit",
             ).middleware,
-            # TenantContextMiddleware — ustawia ContextVar tenant_id dla każdego requestu
+            # TenantContextMiddleware -- ustawia ContextVar tenant_id dla każdego requestu
             # Zastępuje część CorrelationAndDeprecationMiddleware (tenant context + correlation-id)
             TenantContextMiddleware,
-            # Prometheus middleware — metryki HTTP (zastępuje MetricsMiddleware)
+            # Prometheus middleware -- metryki HTTP (zastępuje MetricsMiddleware)
             prometheus_config.middleware,
         ],
-        # ── ResponseCacheConfig — wbudowane cachowanie odpowiedzi ──────
+        # ── ResponseCacheConfig -- wbudowane cachowanie odpowiedzi ──────
         # Zastępuje własny @ttl_cache dekorator z cache.py
         # ``@get(cache=60)`` na endpointach = 60s TTL
         response_cache_config=ResponseCacheConfig(default_expiration=60),
-        # ── request_max_body_size — zastępuje UploadSizeGuardMiddleware ──
+        # ── request_max_body_size -- zastępuje UploadSizeGuardMiddleware ──
         # 50MB dla największych uploadów
         request_max_body_size=50 * 1024 * 1024,
         cors_config=CORSConfig(
@@ -341,7 +339,7 @@ def create_app() -> Litestar:
         if config.csrf_enabled
         else None,
         # OpenAPI/Swagger wyłączone w produkcji zgodnie z aa3fvcx.txt (Punkt 3).
-        # W trybie desktopowym (Flet) Swagger UI jest zbędny — oszczędza RAM i czas startu.
+        # W trybie desktopowym (Flet) Swagger UI jest zbędny -- oszczędza RAM i czas startu.
         # Import SwaggerRenderPlugin na górze pliku jest bezpieczny (import klasy = 0 kosztu).
         openapi_config=OpenAPIConfig(
             title="Nexus AI API",

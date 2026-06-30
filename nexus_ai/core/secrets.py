@@ -18,7 +18,7 @@ except ImportError:
     HAS_NEXUS_CRYPTO = False
     nexus_crypto = None  # type: ignore[assignment]
     logger.warning(
-        "nexus-crypto (Rust module) not available — secrets cache will use plaintext storage"
+        "nexus-crypto (Rust module) not available -- secrets cache will use plaintext storage"
     )
 
 # keyring is optional (system keychain)
@@ -68,7 +68,7 @@ class SecretsManager:
 class LocalSecretsCache:
     """Offline-first cache for secrets with TTL and AEAD at-rest encryption (nexus-crypto).
 
-    Zastępuje: Fernet (cryptography) → ChaCha20-Poly1305 (nexus-crypto)
+    Zastępuje: Fernet (cryptography) -> ChaCha20-Poly1305 (nexus-crypto)
     """
 
     def __init__(

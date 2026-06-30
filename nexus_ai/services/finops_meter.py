@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from msgspec import Struct
-
 import polars as pl
+from msgspec import Struct
 
 
 class FinOpsRates(Struct):
@@ -70,11 +69,11 @@ def detect_cost_anomaly(
 
     - ``pl.Series.mean()`` / ``pl.Series.std()" zamiast ``statistics.mean/pstdev``
     - Wektoryzowane obliczenia w Rust zamiast czystego Pythona
-    - ``pl.Series`` z listy — zero-copy interop z Python list
-    - Zysk: 5-10× szybsze statystyki dla długich baseline'ów
+    - ``pl.Series`` z listy -- zero-copy interop z Python list
+    - Zysk: 5-10x szybsze statystyki dla długich baseline'ów
     """
     # ``pl.Series(baseline)`` tworzy wektor bez kopiowania danych.
-    # ``.mean()`` i ``.std()" są zaimplementowane w Rust — 10× szybciej.
+    # ``.mean()`` i ``.std()" są zaimplementowane w Rust -- 10x szybciej.
     series = pl.Series("cost", [float(x) for x in baseline if x is not None])
     if len(series) < 5:
         return False, 0.0

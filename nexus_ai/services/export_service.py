@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlmodel import select, Session
+from sqlmodel import Session, select
 
 from nexus_ai.db.models import Invoice
 

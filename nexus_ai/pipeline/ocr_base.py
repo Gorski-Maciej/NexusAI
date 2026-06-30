@@ -1,5 +1,5 @@
 """
-BaseOCREngine — wspólna klasa bazowa dla wszystkich silników OCR.
+BaseOCREngine -- wspólna klasa bazowa dla wszystkich silników OCR.
 
 Eliminuje ~1,500 linii duplikacji między TesseractEngine, PaddleOCREngine,
 DocTREngine i EasyOCREngine. Każdy silnik definiuje tylko specyficzną logikę.
@@ -10,9 +10,10 @@ Wzorzec: Template Method + dekorator @catch_ocr_errors.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from functools import wraps
 from pathlib import Path
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 from structlog import get_logger
 
@@ -24,11 +25,11 @@ F = TypeVar("F", bound=Callable[..., Any])
 def catch_ocr_errors(default: Any = None):
     """Dekorator: łapie błędy OCR i loguje z nazwą silnika.
 
-    Zastępuje 8× @_loguru_logger.catch w każdym silniku.
+    Zastępuje 8x @_loguru_logger.catch w każdym silniku.
     """
     def decorator(func: F) -> F:
         @wraps(func)
-        async def wrapper(self: "BaseOCREngine", *args: Any, **kwargs: Any) -> Any:
+        async def wrapper(self: BaseOCREngine, *args: Any, **kwargs: Any) -> Any:
             if not getattr(self, "_available", False):
                 return None
             try:

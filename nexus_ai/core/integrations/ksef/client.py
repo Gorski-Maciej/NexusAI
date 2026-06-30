@@ -1,9 +1,8 @@
 """
-KSeF Client — HTTP client for KSeF API.
+KSeF Client -- HTTP client for KSeF API.
 """
 
 from __future__ import annotations
-
 
 from nexus_ai.core.cache.http_client import CachedHttpClient
 

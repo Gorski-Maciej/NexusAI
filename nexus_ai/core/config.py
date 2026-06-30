@@ -1,8 +1,8 @@
 """Central runtime configuration and startup validation.
 
-Zastępuje: .env + python-dotenv → msgspec TOML (ultraszybki, mniejszy narzut)
+Zastępuje: .env + python-dotenv -> msgspec TOML (ultraszybki, mniejszy narzut)
 Zgodnie z aa3fvcx.txt:
-- msgspec ma wbudowany parser TOML — nie potrzebuje python-dotenv
+- msgspec ma wbudowany parser TOML -- nie potrzebuje python-dotenv
 - Konfiguracja w czystym TOML zamiast .env
 """
 
@@ -17,18 +17,16 @@ from pathlib import Path
 from typing import Any
 
 import pendulum
-
 from msgspec import Struct, toml
 
 from nexus_ai.core.logger import get_logger
-
 
 # ── Helper: deep merge dwóch słowników (base ← env-specific) ───────────────
 # env-specific wartości nadpisują base. Sekcje są mergowane rekurencyjnie.
 
 
 def deep_merge(base: dict[str, Any], override: dict[str, Any]) -> None:
-    """Rekurencyjne scalanie słowników — override nadpisuje base.
+    """Rekurencyjne scalanie słowników -- override nadpisuje base.
 
     Args:
         base: Słownik bazowy (modyfikowany in-place).
@@ -52,7 +50,7 @@ zawiera {env}.toml, protocols.toml, models_manifest.json, version.json.
 """
 
 
-# ── ConfigLoader — mtime-based auto-reload dla TOML config ────────────────
+# ── ConfigLoader -- mtime-based auto-reload dla TOML config ────────────────
 
 
 class ConfigLoader:
@@ -65,9 +63,9 @@ class ConfigLoader:
         path: Sciezka do pliku TOML. Domyslnie config/{NEXUS_ENV}.toml.
               UWAGA: base.toml jest ladowany automatycznie przed env-specific.
         auto_reload: Jak czesto sprawdzac mtime.
-                     False (domyslnie) — nigdy, tylko przy pierwszym dostepie.
-                     True — co 5 sekund.
-                     int > 0 — custom poll interval w sekundach.
+                     False (domyslnie) -- nigdy, tylko przy pierwszym dostepie.
+                     True -- co 5 sekund.
+                     int > 0 -- custom poll interval w sekundach.
     """
 
     def __init__(
@@ -105,7 +103,7 @@ class ConfigLoader:
         return self._load()
 
     def get_config(self) -> dict[str, Any]:
-        """Alias dla load() — zwraca sparsowane dane TOML."""
+        """Alias dla load() -- zwraca sparsowane dane TOML."""
         data = self._load()
         return dict(data) if data else {}
 
@@ -164,7 +162,7 @@ class ConfigLoader:
         if current_mtime <= self._last_mtime and self._data is not None:
             return self._data
 
-        logger.info("[ConfigLoader] File changed: %s — reloading config", self._path.name)
+        logger.info("[ConfigLoader] File changed: %s -- reloading config", self._path.name)
         return self._read_file()
 
     def _read_file(self) -> dict[str, Any]:
@@ -214,11 +212,11 @@ class ConfigLoader:
     def _apply_to_environ(self, data: dict[str, Any]) -> None:
         """Zastosuj dane TOML do os.environ.
 
-        UWAGA: Nie nadpisuje istniejących zmiennych środowiskowych — env vars
+        UWAGA: Nie nadpisuje istniejących zmiennych środowiskowych -- env vars
         mają wyższy priorytet niż TOML. Pozwala to na
         wstrzykiwanie runtime overrides (np. NEXUS_JWT_SECRET).
 
-        Mapowanie: TOML {"core": {"debug": true}} → NEXUS_DEBUG=1
+        Mapowanie: TOML {"core": {"debug": true}} -> NEXUS_DEBUG=1
         """
         count = 0
         for _section, section_data in data.items():
@@ -227,7 +225,7 @@ class ConfigLoader:
                     env_key = key.upper()
                     if not env_key.startswith("NEXUS_"):
                         env_key = f"NEXUS_{env_key}"
-                    # Nie nadpisuj istniejących env vars — env > TOML
+                    # Nie nadpisuj istniejących env vars -- env > TOML
                     if env_key not in os.environ:
                         if isinstance(value, bool):
                             os.environ[env_key] = "1" if value else "0"
@@ -266,7 +264,7 @@ def get_config_loader(
 ) -> ConfigLoader:
     """Zwraca globalną instancję ConfigLoader (singleton).
 
-    Thread-safe — używa ``threading.Lock`` dla free-threaded Python 3.13t.
+    Thread-safe -- używa ``threading.Lock`` dla free-threaded Python 3.13t.
 
     Args:
         path: Opcjonalna ścieżka do config TOML (pierwsze wywołanie).
@@ -284,21 +282,21 @@ def get_config_loader(
 
 
 # ══════════════════════════════════════════════════════════════════════════
-# msgspec.toml typed schema — Fazа 2
+# msgspec.toml typed schema -- Fazа 2
 # Zgodnie z aa3fvcx.txt (Punkt 2): msgspec.toml.decode z type=... daje
 # typowaną walidację TOML z czytelnymi błędami (DecodeError + ValidationError).
-# Zastępuje ręczne mapowanie TOML→Struct przez _TOML_MAP i _resolve_field_value.
+# Zastępuje ręczne mapowanie TOML->Struct przez _TOML_MAP i _resolve_field_value.
 # ══════════════════════════════════════════════════════════════════════════
 
 
 from typing import Annotated
+
 from msgspec import Meta
 
-
-# ── Typed TOML config — jedna struktura zamiast 10 osobnych ────────────
+# ── Typed TOML config -- jedna struktura zamiast 10 osobnych ────────────
 # Konsolidacja: _AppSection, _NatsSection, _StaminaSection, _StorageSection,
 # _SecuritySection, _IntegrationsSection, _TaxSection, _AiSection,
-# _TigerbeetleSection, _OpaSection → jeden ConfigSchema
+# _TigerbeetleSection, _OpaSection -> jeden ConfigSchema
 
 
 class ConfigSchema(Struct, kw_only=True):
@@ -308,7 +306,7 @@ class ConfigSchema(Struct, kw_only=True):
     _StorageSection, _SecuritySection, _IntegrationsSection, _TaxSection,
     _AiSection, _TigerbeetleSection, _OpaSection.
 
-    Redukcja: ~250 linii → ~100 linii.
+    Redukcja: ~250 linii -> ~100 linii.
     """
 
     # ── Core ──
@@ -430,14 +428,14 @@ def _load_toml_profile(environment: str) -> None:
 
     .. deprecated::
        Użyj ConfigLoader.load() lub get_config_loader().load() zamiast tej funkcji.
-       Ta funkcja jest zachowana dla kompatybilności wstecznej — ładuje config
+       Ta funkcja jest zachowana dla kompatybilności wstecznej -- ładuje config
        tylko raz przy imporcie, bez auto-reload.
 
     config/{env}.toml.    Wspólne sekcje (tax, ai, tigerbeetle, security)
     są definiowane RAZ w base.toml zamiast duplikować w dev.toml i prod.toml.
 
     Ustawia zmienne w os.environ (kompatybilność wsteczna z kodem używającym os.getenv).
-    Mapowanie: TOML {"core": {"debug": true}} → NEXUS_DEBUG=1
+    Mapowanie: TOML {"core": {"debug": true}} -> NEXUS_DEBUG=1
     """
     profile_path = ENV_CONFIG_DIR / f"{environment}.toml"
     base_path = ENV_CONFIG_DIR / "base.toml"
@@ -534,9 +532,9 @@ class ConfigValidationError(RuntimeError):
     """Raised when startup settings are incomplete or inconsistent."""
 
 
-# ── AppConfig — central config, bez _AutoConfigMeta, bez _TOML_FIELD_MAP ──
+# ── AppConfig -- central config, bez _AutoConfigMeta, bez _TOML_FIELD_MAP ──
 # Eliminacja: _AutoConfigMeta, _ENV_MAP, _TOML_FIELD_MAP, _load_toml_file
-# Redukcja: ~250 linii → ~80 linii
+# Redukcja: ~250 linii -> ~80 linii
 
 
 class AppConfig(Struct, kw_only=True):
@@ -577,7 +575,7 @@ class AppConfig(Struct, kw_only=True):
     stamina_circuit_breaker_enabled: bool = True
     stamina_circuit_breaker_cooldown: float = 60.0
 
-    # ── fsspec — jednolita abstrakcja systemów plików ──
+    # ── fsspec -- jednolita abstrakcja systemów plików ──
     storage_protocol: str = "file"
     storage_root: str = "app_data/uploads"
     storage_auto_mkdir: bool = True
@@ -586,7 +584,7 @@ class AppConfig(Struct, kw_only=True):
     storage_chain_enabled: bool = False
     storage_chain_cache_storage: str = "app_data/fsspec_cache"
 
-    # ── Litestar Security — konfigurowalne z TOML ──
+    # ── Litestar Security -- konfigurowalne z TOML ──
     jwt_exclude_paths: list[str] | None = None
     csrf_exclude_patterns: list[str] | None = None
     rate_limit_auth: int = 10
@@ -649,7 +647,7 @@ class AppConfig(Struct, kw_only=True):
 
     @classmethod
     def _read_toml_config(cls, env: str | None = None) -> ConfigSchema:
-        """Odczyt TOML bezpośrednio do ConfigSchema — zastępuje _TomlConfigRoot.
+        """Odczyt TOML bezpośrednio do ConfigSchema -- zastępuje _TomlConfigRoot.
 
         Args:
             env: Środowisko (dev/stage/prod). Domyślnie z NEXUS_ENV.
@@ -666,15 +664,15 @@ class AppConfig(Struct, kw_only=True):
             with open(toml_path, "rb") as f:
                 return toml.decode(f.read(), type=ConfigSchema)
         except Exception as exc:
-            logger.warning("[Config] TOML error in %s: %s — using defaults", toml_path, exc)
+            logger.warning("[Config] TOML error in %s: %s -- using defaults", toml_path, exc)
             return ConfigSchema()
 
     @classmethod
     def from_toml(cls, env: str | None = None) -> AppConfig:
-        """Utwórz AppConfig — typowany odczyt przez ConfigSchema z env override dla secrets.
+        """Utwórz AppConfig -- typowany odczyt przez ConfigSchema z env override dla secrets.
 
         Kolejność:
-        1. ConfigSchema z pliku TOML (typ poprawne — msgspec.toml.decode)
+        1. ConfigSchema z pliku TOML (typ poprawne -- msgspec.toml.decode)
         2. Env vars tylko dla pól secrets (jwt_secret, encryption_key)
         3. Wartości domyślne z AppConfig dla pozostałych pól
 
@@ -705,7 +703,7 @@ class AppConfig(Struct, kw_only=True):
 
     @classmethod
     def create(cls) -> AppConfig:
-        """Factory method — alias dla from_toml()."""
+        """Factory method -- alias dla from_toml()."""
         return cls.from_toml()
 
     def validate(self) -> None:
@@ -832,7 +830,7 @@ class AppConfig(Struct, kw_only=True):
         """Zwraca listę dozwolonych originów CORS.
 
         Parsuje self.cors_origins (str) na listę.
-        "*" lub pusty string → ["*"].
+        "*" lub pusty string -> ["*"].
         """
         raw = str(self.cors_origins or "*").strip()
         if not raw or raw == "*":

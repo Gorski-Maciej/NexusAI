@@ -1,5 +1,5 @@
 # core/crypto.py
-"""Encryption vault — uses nexus-crypto (Rust+PyO3) with AEAD + Argon2id fallback.
+"""Encryption vault -- uses nexus-crypto (Rust+PyO3) with AEAD + Argon2id fallback.
 
 Zastępuje: cryptography.fernet (Fernet AES-128-CBC+HMAC, PBKDF2)
 Nowy:     ChaCha20-Poly1305 AEAD + Argon2id KDF (nexus-crypto)
@@ -28,7 +28,7 @@ class Vault:
     Bezpieczeństwo pamięci (audyt mimalloc Faza 3):
       - Klucz szyfrowania jest przechowywany w izolowanej stercie SecureHeap
       - Po zakończeniu operacji kryptograficznych, sterta jest niszczona
-        z force collect — dane są zerowane i zwalniane atomowo
+        z force collect -- dane są zerowane i zwalniane atomowo
       - Zapobiega wyciekom kluczy do swap/core dumps
     """
 
@@ -73,7 +73,7 @@ class Vault:
 
         if self._key is None:
             logger.warning(
-                "No encryption key configured — Vault will operate in plaintext mode. "
+                "No encryption key configured -- Vault will operate in plaintext mode. "
                 "Set NEXUS_ENCRYPTION_KEY or NEXUS_SQLCIPHER_KEY to enable encryption."
             )
 
@@ -95,29 +95,29 @@ class Vault:
             import ctypes.util
 
             libc = ctypes.CDLL(ctypes.util.find_library("c"))
-            # bytearray jest writable — from_buffer() tworzy widok na właściwą pamięć
+            # bytearray jest writable -- from_buffer() tworzy widok na właściwą pamięć
             buf = (ctypes.c_char * len(self._key)).from_buffer(self._key)
             result = libc.mlock(buf, len(self._key))
             if result != 0:
-                logger.debug("[VAULT] mlock failed — key can be swapped to disk (errno=%d)", result)
+                logger.debug("[VAULT] mlock failed -- key can be swapped to disk (errno=%d)", result)
             else:
                 logger.debug("[VAULT] encryption key locked in RAM (mlock)")
         except (OSError, ctypes.CDLLLoadError) as exc:
-            logger.debug("[VAULT] mlock not available: %s — key can be swapped", exc)
+            logger.debug("[VAULT] mlock not available: %s -- key can be swapped", exc)
         except Exception as exc:
             logger.debug("[VAULT] mlock unexpected error: %s", exc)
 
     def _zeroize_key(self) -> None:
         """Bezpiecznie wyzeruj klucz szyfrowania w pamięci.
 
-        Działa poprawnie na bytearray (mutable buffer) —
+        Działa poprawnie na bytearray (mutable buffer) --
         ``from_buffer()`` tworzy zapisywalny widok, a ``memset``
         zeruje rzeczywiste dane w pamięci.
         """
         if self._key is not None:
             import ctypes
 
-            # bytearray jest writable → from_buffer() działa bez TypeError
+            # bytearray jest writable -> from_buffer() działa bez TypeError
             buf = (ctypes.c_char * len(self._key)).from_buffer(self._key)
             ctypes.memset(buf, 0, len(self._key))
             self._key = None
@@ -141,12 +141,12 @@ class Vault:
             data = base64.urlsafe_b64decode(encrypted_text.encode("utf-8"))
             return _decrypt(self._key, data).decode("utf-8")
         except (ValueError, base64.binascii.Error) as exc:
-            logger.error("[VAULT] Decryption failed: invalid base64 format — %s", exc)
+            logger.error("[VAULT] Decryption failed: invalid base64 format -- %s", exc)
             return encrypted_text
         except Exception as exc:
-            logger.error("[VAULT] Decryption failed: %s — returning original ciphertext", exc)
+            logger.error("[VAULT] Decryption failed: %s -- returning original ciphertext", exc)
             return encrypted_text
 
-    # Cleanup on garbage collection — zeroize key when Vault is destroyed
+    # Cleanup on garbage collection -- zeroize key when Vault is destroyed
     def __del__(self) -> None:
         self._zeroize_key()

@@ -1,1 +1,1 @@
-# installer package — Windows installer helpers and first-run model downloader
+# installer package -- Windows installer helpers and first-run model downloader

@@ -1,5 +1,5 @@
 """
-updater.py — Automatic update system for NexusAI.
+updater.py -- Automatic update system for NexusAI.
 
 Checks a remote version.json endpoint, compares with local version,
 and if a newer version is available, prompts the user to download
@@ -8,24 +8,23 @@ and install the update.
 Flow:
   1. On startup, check version.json (async HTTP)
   2. Compare with local CURRENT_VERSION
-  3. If update available → show notification + Flet dialog
-  4. If user accepts → download new installer in background
-  5. After download → prompt to close and run installer
+  3. If update available -> show notification + Flet dialog
+  4. If user accepts -> download new installer in background
+  5. After download -> prompt to close and run installer
 """
 
 from __future__ import annotations
 
 import platform
 import tempfile
-
-import anyio
 from collections.abc import Callable
-from msgspec import Struct
 from pathlib import Path
 from typing import Any, Protocol
 
+import anyio
 import httpx
 import msgspec
+from msgspec import Struct
 from structlog import get_logger
 
 logger = get_logger("nexus.installer.updater")
@@ -338,7 +337,7 @@ async def install_update(installer_path: Path) -> None:
     logger.info("Launching installer: %s", installer_path)
 
     try:
-        # Launch the installer with silent flag (fire-and-forget — must outlive the app)
+        # Launch the installer with silent flag (fire-and-forget -- must outlive the app)
         # /S = silent install (NSIS), /VERYSILENT = silent (Inno Setup)
         proc = await anyio.run_process(
             [str(installer_path), "/S", "/CLOSEAPPLICATIONS"],
@@ -398,7 +397,7 @@ def build_update_dialog(
                     size=28,
                 ),
                 ft.Text(
-                    f"Update Available — v{update_info.version}",
+                    f"Update Available -- v{update_info.version}",
                     size=18,
                     weight=ft.FontWeight.BOLD,
                 ),

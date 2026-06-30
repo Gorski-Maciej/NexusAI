@@ -1,12 +1,12 @@
 """
-Replay Engine — mechanizm odtwarzania decyzji podatkowych.
+Replay Engine -- mechanizm odtwarzania decyzji podatkowych.
 
 Element 1 z dokumentu: pozwala ponownie uruchomić silnik reguł na tym
 samym kontekście z przeszłości i porównać wynik z zapisanym werdyktem.
 
 Wykorzystuje:
-  - DecisionTraceLogger — do odczytu historycznego kontekstu i werdyktu
-  - RuleEngine — do ponownej ewaluacji z regułami aktywnymi w dniu transakcji
+  - DecisionTraceLogger -- do odczytu historycznego kontekstu i werdyktu
+  - RuleEngine -- do ponownej ewaluacji z regułami aktywnymi w dniu transakcji
 
 Zastosowania:
   - Audyt i weryfikacja przed urzędem skarbowym
@@ -16,12 +16,11 @@ Zastosowania:
 
 from __future__ import annotations
 
-from msgspec import Struct, field
 from typing import Any, final
 
-import pendulum
-
 import duckdb
+import pendulum
+from msgspec import Struct, field
 from structlog import get_logger
 
 from nexus_ai.tax.audit import DecisionTraceLogger
@@ -121,7 +120,7 @@ class ReplayEngine:
             )
 
         # 2. Użyj RuleEngine.decide() do odtworzenia decyzji
-        #    To testuje rzeczywistą ścieżkę: TemporalManager → PriorityEngine → ewaluacja SQL
+        #    To testuje rzeczywistą ścieżkę: TemporalManager -> PriorityEngine -> ewaluacja SQL
         engine = RuleEngine(self._conn)
         try:
             replayed_verdict = engine.decide(original_context)

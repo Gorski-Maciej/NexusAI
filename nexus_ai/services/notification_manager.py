@@ -1,6 +1,6 @@
-"""AsyncNotificationManager — centralny system powiadomień (async).
+"""AsyncNotificationManager -- centralny system powiadomień (async).
 
-Wszystkie operacje są async — używa AsyncEngine.
+Wszystkie operacje są async -- używa AsyncEngine.
 """
 
 from __future__ import annotations
@@ -9,8 +9,8 @@ import enum
 from typing import Any, final
 
 import pendulum
-from sqlmodel import text
 from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlmodel import text
 from structlog import get_logger
 
 from nexus_ai.services.decision_queue import AsyncDecisionQueue
@@ -38,7 +38,7 @@ class NotificationCategory(enum.Enum):
 class AsyncNotificationManager:
     """Centralny async system zarządzania powiadomieniami.
 
-    Wszystkie operacje są async — używa AsyncEngine zamiast sync Engine.
+    Wszystkie operacje są async -- używa AsyncEngine zamiast sync Engine.
     """
 
     def __init__(self, engine: AsyncEngine) -> None:

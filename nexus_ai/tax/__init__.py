@@ -1,21 +1,21 @@
 """
-NexusAI Tax Processing Engine — OPA + Rust + DuckDB.
+NexusAI Tax Processing Engine -- OPA + Rust + DuckDB.
 
-Zgodne z aa3fvcx.txt — trzy warstwy:
-  - OPA (Open Policy Agent) — deklaratywny silnik reguł first-match-wins
-  - Nexus-TaxEngine (Rust) — natywny orkiestrator matematyki na groszach
-  - DuckDB — trwały magazyn reguł
+Zgodne z aa3fvcx.txt -- trzy warstwy:
+  - OPA (Open Policy Agent) -- deklaratywny silnik reguł first-match-wins
+  - Nexus-TaxEngine (Rust) -- natywny orkiestrator matematyki na groszach
+  - DuckDB -- trwały magazyn reguł
 
 Usunięte moduły legacy (zastąpione przez OPA/Rego + Rust):
-  - rule_store.py           → OPA + DuckDB bezpośrednio
-  - context_interpreter.py  → ContextBuilder w Rust (nexus_tax_engine)
-  - temporal_manager.py     → klauzula temporalna w Rego
-  - priority_engine.py      → first-match-wins w OPA
-  - fallback_handler.py     → default decide w Rego
-  - tax/audit.py            → SHA-256 chain przez nexus_crypto (Rust)
-  - tax/rules.py            → Rego policies + OpaClient
-  - tax/pipeline.py         → Nexus-TaxEngine (Rust)
-  - tax/exceptions.py       → Rego logic / standard Python exceptions
+  - rule_store.py           -> OPA + DuckDB bezpośrednio
+  - context_interpreter.py  -> ContextBuilder w Rust (nexus_tax_engine)
+  - temporal_manager.py     -> klauzula temporalna w Rego
+  - priority_engine.py      -> first-match-wins w OPA
+  - fallback_handler.py     -> default decide w Rego
+  - tax/audit.py            -> SHA-256 chain przez nexus_crypto (Rust)
+  - tax/rules.py            -> Rego policies + OpaClient
+  - tax/pipeline.py         -> Nexus-TaxEngine (Rust)
+  - tax/exceptions.py       -> Rego logic / standard Python exceptions
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ except NameError:
     _NUITKA_COMPILED: bool = False
 
 
-# ── Exceptions — inline (zastępują usunięte tax/exceptions.py) ─────────────
+# ── Exceptions -- inline (zastępują usunięte tax/exceptions.py) ─────────────
 class TaxEngineError(Exception):
     """Base exception for all tax engine errors."""
 
@@ -50,19 +50,19 @@ class DecisionTraceIntegrityError(TaxEngineError):
 # ── OPA components ──────────────────────────────────────────────────────────
 from nexus_ai.core.opa_client import (
     OpaClient,
-    OpaError,
     OpaConnectionError,
+    OpaError,
     OpaEvaluationError,
     OpaPolicyNotFound,
 )
-from nexus_ai.services.opa_policy_generator import (
-    OpaPolicyGenerator,
-)
 
-# ── Audit — Rust-native SHA-256 chain (zastępuje usunięte tax/audit.py) ─────
+# ── Audit -- Rust-native SHA-256 chain (zastępuje usunięte tax/audit.py) ─────
 from nexus_ai.rust import (
     DecisionTraceLogger,
     verify_chain_integrity,
+)
+from nexus_ai.services.opa_policy_generator import (
+    OpaPolicyGenerator,
 )
 
 
@@ -98,13 +98,15 @@ def ensure_audit_schema(conn) -> None:
 # ── Legacy: Rust-native PriorityEngine i TemporalManager z nexus_crypto ─────
 from nexus_crypto import (
     PriorityEngine as _RustPriorityEngine,
+)
+from nexus_crypto import (
     TemporalManager as _RustTemporalManager,
 )
 
 PriorityEngine = _RustPriorityEngine  # type: ignore[misc]
 TemporalManager = _RustTemporalManager  # type: ignore[misc]
 
-# ── Legacy data structs — inline (zastępują usunięte priority_engine/temporal_manager) ──
+# ── Legacy data structs -- inline (zastępują usunięte priority_engine/temporal_manager) ──
 from msgspec import Struct
 
 
@@ -140,7 +142,7 @@ class TemporalRule(Struct):
     priority: int = 100
 
 
-# ── Context Interpreter — inline (zastępuje usunięte core/context_interpreter.py) ──
+# ── Context Interpreter -- inline (zastępuje usunięte core/context_interpreter.py) ──
 
 ALLOWED_KEYS: frozenset[str] = frozenset(
     {
@@ -167,7 +169,7 @@ class ContextInterpreterError(ValueError):
 
 
 class ContextInterpreter:
-    """Interpreter Kontekstu — mapuje surowe dane faktury na płaski słownik.
+    """Interpreter Kontekstu -- mapuje surowe dane faktury na płaski słownik.
 
     Zastępuje usunięty nexus_ai/core/context_interpreter.py.
     Nowy kod powinien używać ContextBuilder w Rust (nexus_tax_engine).
@@ -194,11 +196,11 @@ class ContextInterpreter:
         return {k: v for k, v in ctx.items() if k in ALLOWED_KEYS}
 
 
-# ── Rule Store — inline (zastępuje usunięte services/rule_store.py) ─────────
+# ── Rule Store -- inline (zastępuje usunięte services/rule_store.py) ─────────
 
 
 class RuleStore:
-    """RuleStore — trwały magazyn reguł w DuckDB.
+    """RuleStore -- trwały magazyn reguł w DuckDB.
 
     Zastępuje usunięty nexus_ai/services/rule_store.py.
     Nowy kod powinien używać OPA + DuckDB bezpośrednio.
@@ -275,7 +277,7 @@ class RuleStore:
         ]
 
 
-# ── __all__ — wszystkie publiczne exporty ────────────────────────────────────
+# ── __all__ -- wszystkie publiczne exporty ────────────────────────────────────
 
 __all__ = [
     # Exceptions

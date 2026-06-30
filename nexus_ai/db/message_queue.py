@@ -1,5 +1,5 @@
 """
-AsyncSQLiteQueue — async SQLite Message Queue via sqlite3.
+AsyncSQLiteQueue -- async SQLite Message Queue via sqlite3.
 
 Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync.
 
@@ -19,14 +19,15 @@ Usage:
 
 from __future__ import annotations
 
-import anyio
-from nexus_ai.core.msgspec_utils import msgspec_dumps
 import sqlite3
 import time
 import uuid
 from pathlib import Path
 from typing import Any
 
+import anyio
+
+from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.async_base_service import AsyncBaseService
 
 
@@ -38,7 +39,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
     - Opóźnione wiadomości (delay_until)
     - Dead letter queue
     - Partial indexes
-    - async — nie blokuje pętli zdarzeń (przez anyio.to_thread.run_sync)
+    - async -- nie blokuje pętli zdarzeń (przez anyio.to_thread.run_sync)
     """
 
     def __init__(
@@ -145,7 +146,6 @@ class AsyncSQLiteQueue(AsyncBaseService):
     ) -> list[str]:
         """Dodaj wiele wiadomości w jednej transakcji (async batch enqueue)."""
         conn = await self.get_conn()
-        ids: list[str] = []
         now = time.time()
 
         def _sync_batch() -> list[str]:
@@ -269,7 +269,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
         msg_id: str,
         error: str | None = None,
     ) -> bool:
-        """Nie potwierdzaj — zwiększ retry_count lub przenieś do DLQ (ASYNC)."""
+        """Nie potwierdzaj -- zwiększ retry_count lub przenieś do DLQ (ASYNC)."""
         conn = await self.get_conn()
         now = time.time()
 

@@ -1,4 +1,4 @@
-"""AsyncInvoiceTable — Virtual scrolling DataTable z SearchBar + AutoComplete.
+"""AsyncInvoiceTable -- Virtual scrolling DataTable z SearchBar + AutoComplete.
 
   - ft.SearchBar dla wyszukiwania faktur
   - ft.AutoComplete dla podpowiedzi przy wyszukiwaniu NIP/numeru

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from msgspec import Struct
 from typing import TYPE_CHECKING, Any, final
 
 import pendulum
+from msgspec import Struct
 
 try:
     import networkx as nx

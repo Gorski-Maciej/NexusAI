@@ -1,4 +1,4 @@
-"""AdminServiceRegistry — samo-rejestrujące się serwisy administracyjne.
+"""AdminServiceRegistry -- samo-rejestrujące się serwisy administracyjne.
 
 Eliminuje ~1 030 linii powtarzalnego boilerplate'u DuckDB + NATS.
 Każdy serwis dziedziczy po AdminServiceRegistry i automatycznie
@@ -19,8 +19,9 @@ Usage:
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Any, ClassVar, Iterator
+from typing import Any, ClassVar
 
 import duckdb
 
@@ -46,7 +47,7 @@ def rule_service(nats_subject: str):
 
 
 class AdminServiceRegistry:
-    """Base class for admin services — auto-registration via __init_subclass__.
+    """Base class for admin services -- auto-registration via __init_subclass__.
 
     Provides:
     - DuckDB connection (context manager)
@@ -91,7 +92,7 @@ class AdminServiceRegistry:
     @classmethod
     @contextmanager
     def db(cls) -> Iterator[duckdb.DuckDBPyConnection]:
-        """Context manager dla DuckDB — auto-create i close."""
+        """Context manager dla DuckDB -- auto-create i close."""
         config = AppConfig()
         conn = duckdb.connect(str(config.duckdb_path))
         try:

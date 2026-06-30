@@ -19,17 +19,15 @@ import pendulum
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped
 from sqlalchemy.schema import Index
-from sqlmodel import JSON, text
-from sqlmodel import Field, SQLModel
+from sqlmodel import JSON, Field, SQLModel, text
 
 from nexus_ai.db.models import PendulumDateTime
-
 
 # ── Enums ──────────────────────────────────────────────────────────────────
 
 
 class ProjectionInvoiceStatus(StrEnum):
-    """Statusy faktury w projekcji — zgodne z głównym InvoiceStatus."""
+    """Statusy faktury w projekcji -- zgodne z głównym InvoiceStatus."""
 
     CREATED = "created"
     SUBMITTED = "submitted"
@@ -161,7 +159,7 @@ class DecisionAnalytics(SQLModel, table=True):
 
 
 class UserPreferences(SQLModel, table=True):
-    """Preferencje użytkownika — przechowywane jako SQLModel.
+    """Preferencje użytkownika -- przechowywane jako SQLModel.
 
     """
 

@@ -1,12 +1,12 @@
 """
-Dynamiczny Strażnik Ryzyka (RiskGuard) — dynamiczne progi pewności AI.
+Dynamiczny Strażnik Ryzyka (RiskGuard) -- dynamiczne progi pewności AI.
 
 - Dynamiczne progi w zależności od formy opodatkowania i typu wydatku
 - First-match-wins przez reguły w DuckDB (risk_thresholds table)
 - Hot-reload przez NATS (risk.thresholds.updated)
 - Fallback: domyślny próg 0.85 (bezpieczny konserwatyzm)
 
-Zgodnie z docs/tfgxzd.txt — Dynamiczny Strażnik Ryzyka dla PLEEngine.
+Zgodnie z docs/tfgxzd.txt -- Dynamiczny Strażnik Ryzyka dla PLEEngine.
 """
 
 from __future__ import annotations
@@ -85,7 +85,7 @@ class RiskGuard:
     def _seed_defaults(self) -> None:
         """Wstaw domyślne progi ryzyka."""
         defaults = [
-            # LUMP_SUM — niski próg, dużo AUTO_POST (błędy nie wpływają na podatek)
+            # LUMP_SUM -- niski próg, dużo AUTO_POST (błędy nie wpływają na podatek)
             {
                 "condition": '{"tax_form": "LUMP_SUM", "expense_type": "koszt_operacyjny"}',
                 "output": '{"required_ml_confidence": 0.60, "action_if_below": "TRIAGE_QUEUE"}',
@@ -101,7 +101,7 @@ class RiskGuard:
                 "output": '{"required_ml_confidence": 0.70, "action_if_below": "TRIAGE_QUEUE"}',
                 "priority": 100,
             },
-            # CIT_STANDARD — wysoki próg, bezpieczeństwo
+            # CIT_STANDARD -- wysoki próg, bezpieczeństwo
             {
                 "condition": '{"tax_form": "CIT_STANDARD", "expense_type": "koszt_operacyjny"}',
                 "output": '{"required_ml_confidence": 0.98, "action_if_below": "BLOCK_AND_ALERT"}',
@@ -117,7 +117,7 @@ class RiskGuard:
                 "output": '{"required_ml_confidence": 0.95, "action_if_below": "TRIAGE_QUEUE"}',
                 "priority": 100,
             },
-            # CIT_ESTONIAN — średni próg
+            # CIT_ESTONIAN -- średni próg
             {
                 "condition": '{"tax_form": "CIT_ESTONIAN", "expense_type": "koszt_operacyjny"}',
                 "output": '{"required_ml_confidence": 0.95, "action_if_below": "BLOCK_AND_ALERT"}',
@@ -157,6 +157,8 @@ class RiskGuard:
         expense_type: str = "inne",
         vendor_trust: str = "medium",
     ) -> RiskThreshold:
+
+        """Get risk threshold for given conditions.
 
         First-match-wins przez DuckDB json_extract_string + ORDER BY priority.
         """
@@ -200,6 +202,7 @@ class RiskGuard:
         ai_confidence: float,
         vendor_trust: str = "medium",
     ) -> dict[str, Any]:
+        """Evaluate risk for given conditions.
 
         Args:
             tax_form: Forma opodatkowania.

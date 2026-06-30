@@ -2,31 +2,29 @@
 
 from __future__ import annotations
 
-import anyio
-from msgspec import Struct, field
 from typing import Any, Callable, final
 
+import anyio
+from msgspec import Struct, field
+from sqlmodel import Session, select, text
+
+from nexus_ai.core.cache import get_cache
+from nexus_ai.core.embeddings import EmbeddingService, get_embedding_service
+from nexus_ai.core.logger import get_logger
 from nexus_ai.services.decision_logger import (
     CorrectionStats,
     GlobalDecision,
     TrustTrend,
 )
 
-from sqlmodel import select, text
-from sqlmodel import Session
-
-from nexus_ai.core.cache import get_cache
-from nexus_ai.core.embeddings import EmbeddingService, get_embedding_service
-from nexus_ai.core.logger import get_logger
-
 # ── Globalny cache dla FactSheet (współdzielony między build() calls) ──
 _few_shot_nexus = get_cache(default_ttl=300)  # 5 min TTL dla przykładów few-shot
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.models import Invoice, InvoiceStatus
 from nexus_ai.db.vector_store import VectorStore
-from nexus_ai.services.tigerbeetle.client import TigerBeetleClient, TigerBeetleMapper
 from nexus_ai.services.decision_logger import DecisionLogger
 from nexus_ai.services.rule_store import RuleStore
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient, TigerBeetleMapper
 from nexus_ai.services.vendor_intelligence import VendorAnalyst
 
 logger = get_logger(__name__)

@@ -13,12 +13,12 @@ Schemat:
     Topic: "cache.invalidate"
     Payload: {"prefix": "risk_threshold:", "version": 1}
 
-- Wersjonowanie — ignoruj stare eventy
-- Batch invalidation — jeden event dla wielu prefixów
-- Rate limiting — max 10 eventów/sekundę
+- Wersjonowanie -- ignoruj stare eventy
+- Batch invalidation -- jeden event dla wielu prefixów
+- Rate limiting -- max 10 eventów/sekundę
 - Retry z wykładniczym backoffem
-- getattr/callable zamiast hasattr — bezpieczniejszy pattern
-- Modułowa zmienna dla cached task reference — bez atrybutów funkcji
+- getattr/callable zamiast hasattr -- bezpieczniejszy pattern
+- Modułowa zmienna dla cached task reference -- bez atrybutów funkcji
 """
 
 from __future__ import annotations
@@ -45,6 +45,7 @@ async def invalidate_cache(
     broker: Any,
     force: bool = False,
 ) -> None:
+    """Invalidate cache entries by prefix.
 
     Args:
         prefix: Prefiks kluczy do unieważnienia (np. "risk_threshold:").
@@ -71,9 +72,11 @@ async def invalidate_cache(
         else:
             kick = getattr(broker, "kick", None)
             if callable(kick):
-                # Taskiq broker — użyj taska z cache'owaniem referencji
+                # Taskiq broker -- użyj taska z cache'owaniem referencji
                 if _inval_task is None:
-                    from nexus_ai.core.cache.invalidation_task import invalidate_cache_task  # noqa: E402
+                    from nexus_ai.core.cache.invalidation_task import (
+                        invalidate_cache_task,  # noqa: E402
+                    )
 
                     _inval_task = invalidate_cache_task
                 await _inval_task.kiq(prefix=prefix)
@@ -92,6 +95,7 @@ async def subscribe_cache_invalidation(
     broker: Any,
     nexus_cache: Any,
 ) -> None:
+    """Subscribe to cache invalidation events.
 
     Args:
         broker: Instancja Taskiq/NATS brokera.
@@ -111,7 +115,7 @@ async def subscribe_cache_invalidation(
             logger.info("[CACHE-INVAL] Subscribed to cache.invalidate")
         else:
             logger.info(
-                "[CACHE-INVAL] Broker %s does not support subscribe — skipping",
+                "[CACHE-INVAL] Broker %s does not support subscribe -- skipping",
                 type(broker).__name__,
             )
     except Exception as exc:

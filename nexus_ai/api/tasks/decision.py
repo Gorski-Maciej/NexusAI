@@ -1,5 +1,5 @@
 """
-Decision engine tasks — extracted from api/tasks.py.
+Decision engine tasks -- extracted from api/tasks.py.
 
 Zawiera:
 - decision_evaluate: główna ewaluacja decyzji
@@ -8,7 +8,6 @@ Zawiera:
 """
 
 from __future__ import annotations
-
 
 import anyio
 from sqlmodel import Session, text
@@ -124,7 +123,7 @@ async def decision_evaluate(
 async def council_decide(invoice_id: str, extracted_data: dict) -> dict:
     """[DEPRECATED] Deleguje do decision_evaluate."""
     logger.warning(
-        "[DEPRECATED] council_decide called for invoice_id=%s — use decision_evaluate", invoice_id
+        "[DEPRECATED] council_decide called for invoice_id=%s -- use decision_evaluate", invoice_id
     )
     config = AppConfig()
     engine = _ensure_decision_engine(config)

@@ -4,17 +4,17 @@ Kompletny zestaw narzędzi do renderowania, ekstrakcji i manipulacji PDF-ami
 przez silnik PDFium (Google Chrome).
 
 Zgodnie z audytem technologicznym:
-- Silnik Google Chrome — renderuje miliardy PDF-ów dziennie
+- Silnik Google Chrome - renderuje miliardy PDF-ów dziennie
 - Licencja BSD-3-Clause
-- Antyaliasing subpikselowy — lepsza jakość renderowania
-- PIL natywnie — bitmap.to_pil()
+- Antyaliasing subpikselowy - lepsza jakość renderowania
+- PIL natywnie - bitmap.to_pil()
 - Lżejszy pakiet (~10 MB)
 
 KLUCZOWA RÓŻNICA W SKALOWANIU:
   PDFium:  scale = dpi / 72.0  (bo PDFium domyślnie 72 DPI)
   Dla 300 DPI: scale = 300/72 ≈ 4.1667
 
-Wszystkie funkcje są synchroniczne (CPU-bound) — należy je uruchamiać
+Wszystkie funkcje są synchroniczne (CPU-bound) - należy je uruchamiać
 przez anyio.to_thread.run_sync() w kontekście asynchronicznym.
 """
 
@@ -22,10 +22,10 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
+from enum import IntEnum
 from io import BytesIO
 from pathlib import Path
 from typing import Any, Callable, Iterator
-from enum import IntEnum
 
 import fsspec
 from fsspec.implementations.cached import CachingFileSystem
@@ -51,7 +51,7 @@ DEFAULT_CACHE_MAX_SIZE = 100  # max 100 stron w cache
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# FAZA 1: Render Flags — stałe dla renderowania PDFium
+# FAZA 1: Render Flags - stałe dla renderowania PDFium
 # ═════════════════════════════════════════════════════════════════════════════
 
 
@@ -63,18 +63,18 @@ class RenderFlags(IntEnum):
     """
 
     NONE = 0
-    LCD_TEXT = 1 << 0  # FPDF_LCD_TEXT — subpikselowy antyaliasing
-    NO_SMOOTHTEXT = 1 << 1  # FPDF_NO_SMOOTHTEXT — wyłącz wygładzanie tekstu
-    NO_SMOOTHIMAGE = 1 << 2  # FPDF_NO_SMOOTHIMAGE — wyłącz wygładzanie obrazów
-    NO_SMOOTHPATH = 1 << 3  # FPDF_NO_SMOOTHPATH — wyłącz wygładzanie ścieżek
-    GRAYSCALE = 1 << 4  # FPDF_GRAYSCALE — renderuj w skali szarości
+    LCD_TEXT = 1 << 0  # FPDF_LCD_TEXT - subpikselowy antyaliasing
+    NO_SMOOTHTEXT = 1 << 1  # FPDF_NO_SMOOTHTEXT - wyłącz wygładzanie tekstu
+    NO_SMOOTHIMAGE = 1 << 2  # FPDF_NO_SMOOTHIMAGE - wyłącz wygładzanie obrazów
+    NO_SMOOTHPATH = 1 << 3  # FPDF_NO_SMOOTHPATH - wyłącz wygładzanie ścieżek
+    GRAYSCALE = 1 << 4  # FPDF_GRAYSCALE - renderuj w skali szarości
     FORCE_HALFTONE = 1 << 5  # FPDF_RENDER_FORCE_HALFTONE
     RENDER_TO_BITMAP = 1 << 6  # FPDF_RENDER_TO_BITMAP
-    ANNOTATIONS = 1 << 7  # FPDF_ANNOT — renderuj adnotacje
+    ANNOTATIONS = 1 << 7  # FPDF_ANNOT - renderuj adnotacje
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# msgspec.Struct — struktury danych dla PDF
+# msgspec.Struct - struktury danych dla PDF
 # ═════════════════════════════════════════════════════════════════════════════
 
 
@@ -269,7 +269,7 @@ if HAS_MSGPEC:
         pdfa_version_str: str = "none"
 
     class PDFFormFillData(msgspec.Struct):
-        """DTO dla wypełniania formularza — walidacja przez msgspec."""
+        """DTO dla wypełniania formularza - walidacja przez msgspec."""
 
         field_name: str
         value: str
@@ -407,12 +407,12 @@ else:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# PDFRenderCache — cache'owanie renderowanych stron z TTL
+# PDFRenderCache - cache'owanie renderowanych stron z TTL
 # ═════════════════════════════════════════════════════════════════════════════
 
 
 # CachingFileSystem zapewnia przezroczyste cache'owanie z TTL, maxsize,
-# automatyczną ewiktacją LRU — bez ręcznego lockowania i OrderedDict.
+# automatyczną ewiktacją LRU - bez ręcznego lockowania i OrderedDict.
 
 _caching_fs = CachingFileSystem(
     target_protocol="file",
@@ -426,7 +426,7 @@ def get_pdf_bytes(path: str | Path) -> bytes:
     """Odczytaj PDF przez fsspec CachingFileSystem.
 
     - Przezroczyste cache'owanie PDF-ów
-    - Działa z file://, s3://, http:// — PDF z każdego protokołu
+    - Działa z file://, s3://, http:// - PDF z każdego protokołu
     - Automatyczna ewiktacja LRU przy przekroczeniu maxsize
     """
     with _caching_fs.open(str(path), "rb") as f:
@@ -460,26 +460,26 @@ def invalidate_pdf_cache(path: str | Path | None = None) -> None:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# OpenTelemetry tracing — timing i liczniki
+# OpenTelemetry tracing - timing i liczniki
 # ═════════════════════════════════════════════════════════════════════════════
 
 
 def _get_otel_tracer():
-    """Lazy import — unika circular importu między core a api."""
+    """Lazy import - unika circular importu między core a api."""
     from nexus_ai.core.otel import get_tracer
 
     return get_tracer("nexus.core.pdfium")
 
 
 def _start_span(name, tracer_name="nexus.core.pdfium", attributes=None):
-    """Lazy import start_span — unika circular importu."""
+    """Lazy import start_span - unika circular importu."""
     from nexus_ai.core.otel import start_span as _ss
 
     return _ss(name=name, tracer_name=tracer_name, attributes=attributes)
 
 
 def _record_pdf_metric(name: str, value: float, attributes: dict | None = None) -> None:
-    """Zapisz metrykę PDF do OTel (lazy import — unika circular importu).
+    """Zapisz metrykę PDF do OTel (lazy import - unika circular importu).
 
     """
     try:
@@ -530,11 +530,12 @@ def _timed(func: Callable) -> Callable:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# FAZA 3: PdfDocumentSession — context manager dla wielu operacji
+# FAZA 3: PdfDocumentSession - context manager dla wielu operacji
 # ═════════════════════════════════════════════════════════════════════════════
 
 
 class PdfDocumentSession:
+    """Session for multiple PDF operations on a single open document.
 
     Zamiast otwierać i zamykać PDF dla każdej operacji (co robią
     wszystkie funkcje w tym module), sesja utrzymuje dokument otwarty
@@ -590,7 +591,7 @@ class PdfDocumentSession:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# FAZA 1: Core — otwieranie, renderowanie, zapis
+# FAZA 1: Core - otwieranie, renderowanie, zapis
 # ═════════════════════════════════════════════════════════════════════════════
 
 
@@ -667,10 +668,12 @@ def render_page_to_jpeg_bytes(
 
 @_timed
 def pdf_page_count(pdf_path: str | Path) -> int:
-    """Zwróć liczbę stron w dokumencie PDF.
-
-    """
-
+    """Zwróć liczbę stron w dokumencie PDF."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     count = len(pdf)
     pdf.close()
     _record_pdf_metric("pdfium.page_count", count)
@@ -679,14 +682,16 @@ def pdf_page_count(pdf_path: str | Path) -> int:
 
 @_timed
 def _open_pdf_fsspec(path: str | Path) -> Any:
-    """Otwórz PDF przez fsspec — działa z każdym protokołem.
+    """Otwórz PDF przez fsspec - działa z każdym protokołem.
 
     - fsspec.open() zamiast str(path)
     - CachingFileSystem dla przezroczystego cache
     - Zwraca pypdfium2.PdfDocument z bajtów
     """
+    import fsspec
     import pypdfium2 as pdfium
-
+    with fsspec.open(str(path), "rb") as f:
+        data = f.read()
     return pdfium.PdfDocument(data)
 
 
@@ -709,7 +714,11 @@ def render_page_to_pil(
         rotation: Rotacja w stopniach.
         flags: Flagi renderowania PDFium (domyślnie LCD_TEXT dla subpikselowego AA).
     """
-
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     scale = dpi / PDFIUM_BASE_DPI
     try:
         page = pdf[page_num]
@@ -767,8 +776,7 @@ def render_page_to_png_grayscale(
     *,
     use_cache: bool = True,
 ) -> bytes:
-
-    """
+    """Render page to grayscale PNG bytes."""
     pil_image = render_page_to_pil(pdf_path, page_num, dpi, rotation, flags=RenderFlags.GRAYSCALE)
     buf = BytesIO()
     pil_image.save(buf, format="PNG", optimize=True)
@@ -786,10 +794,12 @@ def render_all_pages(
     flags: int = RenderFlags.LCD_TEXT,
     progress_callback: Callable[[PDFProgressInfo], None] | None = None,
 ) -> list[Image.Image]:
-    """Renderuj wszystkie strony PDF (lub zakres) z callbackiem postępu.
-
-    """
-
+    """Renderuj wszystkie strony PDF (lub zakres) z callbackiem postępu."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     scale = dpi / PDFIUM_BASE_DPI
     total = len(pdf)
 
@@ -822,14 +832,18 @@ def render_all_pages(
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# FAZA 2: Async — warianty dla OCR i API
+# FAZA 2: Async - warianty dla OCR i API
 # ═════════════════════════════════════════════════════════════════════════════
 
 
 @_timed
 def pdf_to_images_memory(pdf_path: str | Path, dpi: int = DEFAULT_DPI) -> list[bytes]:
     """Konwertuj strony PDF na PNG bytes w pamięci (zero I/O na dysk)."""
-
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     scale = dpi / PDFIUM_BASE_DPI
     images: list[bytes] = []
 
@@ -853,10 +867,12 @@ def pdf_to_pil_images(
     *,
     max_pages: int | None = None,
 ) -> list[Image.Image]:
-    """Renderuj strony PDF do PIL Images — zero I/O, idealne dla OCR.
-
-    """
-
+    """Renderuj strony PDF do PIL Images - zero I/O, idealne dla OCR."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     scale = dpi / PDFIUM_BASE_DPI
     images: list[Image.Image] = []
 
@@ -873,7 +889,7 @@ def pdf_to_pil_images(
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# FAZA 5: render_all_pages_to_memory — streaming wielu stron
+# FAZA 5: render_all_pages_to_memory - streaming wielu stron
 # ═════════════════════════════════════════════════════════════════════════════
 
 
@@ -891,7 +907,11 @@ def render_all_pages_to_memory(
     progress_callback: Callable[[PDFProgressInfo], None] | None = None,
 ) -> list[bytes]:
     """Renderuj wszystkie strony PDF do pamięci jako bytes."""
-
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     scale = dpi / PDFIUM_BASE_DPI
     total = len(pdf)
 
@@ -933,7 +953,7 @@ def render_all_pages_to_memory(
 
 
 class ProgressivePDFLoader:
-    """Progresywny ładowacz PDF — renderuj strony bez pełnego parsowania.
+    """Progresywny ładowacz PDF - renderuj strony bez pełnego parsowania.
 
     CachingFileSystem. Działa z file://, s3://, http://
     """
@@ -1083,9 +1103,12 @@ def extract_text_from_page(
     pdf_path: str | Path,
     page_num: int = 0,
 ) -> str:
-    """Ekstrahuj czysty tekst ze strony PDF z layoutem.
-
-    """
+    """Ekstrahuj czysty tekst ze strony PDF z layoutem."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
 
     try:
         import pypdfium2.raw as pdfium_raw
@@ -1109,7 +1132,11 @@ def extract_text_simple(
     page_num: int = 0,
 ) -> str:
     """Szybka ekstrakcja tekstu bez layoutu."""
-
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
         page = pdf[page_num]
         text_page = page.get_textpage()
@@ -1123,10 +1150,12 @@ def extract_text_ranges(
     pdf_path: str | Path,
     page_num: int = 0,
 ) -> list[dict[str, Any]]:
-    """Ekstrahuj tekst z pozycjami (bounding boxy).
-
-    """
-
+    """Ekstrahuj tekst z pozycjami (bounding boxy)."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
         page = pdf[page_num]
         text_page = page.get_textpage()
@@ -1157,7 +1186,11 @@ def extract_text_ranges_typed(
     page_num: int = 0,
 ) -> list[PDFTextRange]:
     """Ekstrahuj tekst jako listę PDFTextRange (msgspec.Struct)."""
-
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
         page = pdf[page_num]
         text_page = page.get_textpage()
@@ -1194,9 +1227,12 @@ def search_in_pdf(
     match_case: bool = False,
     whole_words: bool = False,
 ) -> list[PDFSearchResult]:
-
-    """
-
+    """Search for text in a PDF page."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     flags = 0
     if match_case:
         flags |= 1
@@ -1289,10 +1325,12 @@ def detect_table_regions(
 
 @_timed
 def get_pdf_metadata(pdf_path: str | Path) -> dict[str, str]:
-    """Pobierz metadane PDF.
-
-    """
-
+    """Pobierz metadane PDF."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
         meta = pdf.get_metadata()
         return {k: str(v) for k, v in meta.items() if v}
@@ -1302,11 +1340,15 @@ def get_pdf_metadata(pdf_path: str | Path) -> dict[str, str]:
 
 @_timed
 def get_pdf_info(pdf_path: str | Path) -> dict[str, Any]:
-    """Kompletna informacja o PDF — jednowywołaniowe API.
+    """Kompletna informacja o PDF - jednowywołaniowe API.
 
     file_size przez fsspec.info() zamiast Path.stat().
     """
-
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
         metadata = pdf.get_metadata()
         page_count = len(pdf)
@@ -1388,9 +1430,12 @@ def _get_signatures_internal(pdf: Any) -> list[dict[str, Any]]:
 
 @_timed
 def verify_pdf_signatures(pdf_path: str | Path) -> list[PDFSignature]:
-
-    """
-
+    """Verify PDF digital signatures."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
         raw_sigs = _get_signatures_internal(pdf)
         return [
@@ -1425,11 +1470,14 @@ def _ensure_form_env(pdf: Any) -> Any:
 
 @_timed
 def get_pdf_form_fields(pdf_path: str | Path) -> list[PDFFormField]:
-
-    """
-
+    """Get PDF form fields."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
-        # FIX: init_forms() — PDFium wymaga tego przed get_form()
+        # FIX: init_forms() - PDFium wymaga tego przed get_form()
         try:
             pdf.init_forms()
         except (RuntimeError, Exception):
@@ -1502,10 +1550,12 @@ def fill_pdf_form_field(
     *,
     output_path: str | Path | None = None,
 ) -> bytes:
-
-    FIX: init_forms() przed get_form(), zapis przyrostowy.
-    """
-
+    """Fill a single PDF form field."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
         try:
             pdf.init_forms()
@@ -1553,10 +1603,12 @@ def save_pdf_with_filled_fields(
     *,
     output_path: str | Path | None = None,
 ) -> bytes:
-
-    FIX: init_forms() przed get_form().
-    """
-
+    """Save PDF with filled form fields."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
         try:
             pdf.init_forms()
@@ -1639,8 +1691,7 @@ def get_page_annotations(
     pdf_path: str | Path,
     page_num: int = 0,
 ) -> list[PDFAnnotation]:
-
-    PDFium natywnie wspiera adnotacje przez page.count_annotations()
+    """Get page annotations. PDFium natywnie wspiera adnotacje przez page.count_annotations()
     i page.get_annotation(). Wspiera: text, highlight, underline,
     strikeout, stamp, ink, freetext, circle, square, itd.
 
@@ -1649,9 +1700,13 @@ def get_page_annotations(
         page_num: Numer strony (0-indexed).
 
     Returns:
-        List[PDFAnnotation] — lista adnotacji z typem, pozycją, treścią.
+        List[PDFAnnotation] - lista adnotacji z typem, pozycją, treścią.
     """
-
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
         page = pdf[page_num]
         count = page.count_annotations()
@@ -1689,7 +1744,11 @@ def get_page_annotations(
 @_timed
 def count_page_annotations(pdf_path: str | Path, page_num: int = 0) -> int:
     """Policz adnotacje na stronie."""
-
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
         return pdf[page_num].count_annotations()
     finally:
@@ -1711,17 +1770,20 @@ def _get_attachment_count_internal(pdf: Any) -> int:
 
 @_timed
 def get_pdf_attachments(pdf_path: str | Path) -> list[PDFAttachment]:
-
-    PDFium natywnie wspiera embedded files przez pdf.count_attachments()
+    """Get PDF embedded files/attachments. PDFium natywnie wspiera embedded files przez pdf.count_attachments()
     i pdf.get_attachment(). Można wyciągać osadzone XML, obrazy, PDF-y.
 
     Args:
         pdf_path: Ścieżka do pliku PDF.
 
     Returns:
-        List[PDFAttachment] — lista załączników z nazwą, danymi, rozmiarem.
+        List[PDFAttachment] - lista załączników z nazwą, danymi, rozmiarem.
     """
-
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
         count = pdf.count_attachments()
         if count == 0:
@@ -1756,17 +1818,12 @@ def add_pdf_attachment(
     *,
     output_path: str | Path | None = None,
 ) -> bytes:
-
-    Args:
-        pdf_path: Ścieżka do pliku PDF.
-        name: Nazwa załącznika (np. "ksef.xml").
-        data: Zawartość załącznika.
-        output_path: Opcjonalna ścieżka wyjściowa.
-
-    Returns:
-        bytes — zmodyfikowany PDF.
-    """
-
+    """Add an attachment to a PDF document."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        pdf_bytes = f.read()
+    pdf = pdfium.PdfDocument(pdf_bytes)
     try:
         pdf.new_attachment(name, data)
         logger.info("[PDFium] Added attachment: %s (%d bytes)", name, len(data))
@@ -1847,17 +1904,20 @@ def _bookmark_to_dict(bm: Any) -> dict[str, Any]:
 
 @_timed
 def get_pdf_bookmarks(pdf_path: str | Path) -> list[PDFBookmark]:
-
-    PDFium natywnie wspiera bookmarks/outline przez pdf.get_bookmarks().
+    """Get PDF bookmarks/outline. PDFium natywnie wspiera bookmarks/outline przez pdf.get_bookmarks().
     Zwraca hierarchiczną strukturę z poziomami zagnieżdżenia.
 
     Args:
         pdf_path: Ścieżka do pliku PDF.
 
     Returns:
-        List[PDFBookmark] — hierarchiczna lista zakładek.
+        List[PDFBookmark] - hierarchiczna lista zakładek.
     """
-
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
         bms = pdf.get_bookmarks()
         if not bms:
@@ -1878,29 +1938,19 @@ def save_incremental(
     *,
     output_path: str | Path | None = None,
 ) -> bytes:
-
-    Zapis przyrostowy dodaje tylko zmiany na końcu pliku PDF,
-    zamiast przepisywać cały dokument. Idealne dla:
-    - Wypełniania formularzy (dodaje tylko zmienione pola)
-    - Dodawania adnotacji
-    - Małych modyfikacji
-
-    Args:
-        pdf_path: Ścieżka do pliku PDF.
-        output_path: Opcjonalna ścieżka wyjściowa.
-
-    Returns:
-        bytes — zmodyfikowany PDF (przyrostowo).
-    """
-
+    """Zapis przyrostowy - dodaje tylko zmiany na końcu pliku PDF."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    from io import BytesIO
+    pdf = pdfium.PdfDocument(data)
     if output_path:
-        # Kopiuj plik przez fsspec, potem zapisz
         dest = Path(str(output_path))
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(data)
         return data
     else:
-        # Dla bytes: otwórz przez fsspec, zapisz do bytesIO
         try:
             buf = BytesIO()
             pdf.save_to_bytesio(buf)
@@ -1920,22 +1970,13 @@ def merge_pdfs(
     *,
     output_path: str | Path | None = None,
 ) -> bytes:
-
-    Używa PdfDocument.new() do utworzenia pustego dokumentu,
-    a następnie import_pages() do skopiowania stron z każdego źródła.
-
-    Args:
-        pdf_paths: Lista ścieżek do plików PDF.
-        output_path: Opcjonalna ścieżka wyjściowa.
-
-    Returns:
-        bytes — scalony PDF.
-    """
+    """Merge multiple PDFs into one document."""
     import pypdfium2 as pdfium
 
     merged = pdfium.PdfDocument.new()
     try:
         for path in pdf_paths:
+            src = open_pdf(path)
             try:
                 merged.import_pages(src, range(len(src)))
                 logger.debug("[PDFium] Merged %d pages from %s", len(src), path)
@@ -1961,16 +2002,12 @@ def delete_pages_from_pdf(
     *,
     output_path: str | Path | None = None,
 ) -> bytes:
-
-    Args:
-        pdf_path: Ścieżka do pliku PDF.
-        pages: Lista numerów stron do usunięcia (0-indexed).
-        output_path: Opcjonalna ścieżka wyjściowa.
-
-    Returns:
-        bytes — zmodyfikowany PDF.
-    """
-
+    """Delete pages from a PDF document."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
         for page_num in sorted(pages, reverse=True):
             pdf.del_page(page_num)
@@ -1994,17 +2031,12 @@ def extract_pages_from_pdf(
     *,
     output_path: str | Path | None = None,
 ) -> bytes:
-
-    Args:
-        pdf_path: Ścieżka do pliku PDF.
-        pages: Lista numerów stron do wyodrębnienia (0-indexed).
-        output_path: Opcjonalna ścieżka wyjściowa.
-
-    Returns:
-        bytes — nowy PDF z wybranymi stronami.
-    """
+    """Extract specific pages from a PDF into a new document."""
+    import fsspec
     import pypdfium2 as pdfium
-
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    src = pdfium.PdfDocument(data)
     try:
         extracted = pdfium.PdfDocument.new()
         try:
@@ -2025,14 +2057,12 @@ def extract_pages_from_pdf(
 
 @_timed
 def pdfa_check(pdf_path: str | Path) -> PDFACompliance:
-
-    PDFium może zwrócić wersję PDF/A dokumentu:
-    0 = brak zgodności, 1 = PDF/A-1, 2 = PDF/A-2, 3 = PDF/A-3
-
-    Returns:
-        PDFACompliance — wynik sprawdzenia.
-    """
-
+    """Check PDF/A compliance of a document."""
+    import fsspec
+    import pypdfium2 as pdfium
+    with fsspec.open(str(pdf_path), "rb") as f:
+        data = f.read()
+    pdf = pdfium.PdfDocument(data)
     try:
         version = pdf.get_pdfa_pdf_version() if hasattr(pdf, "get_pdfa_pdf_version") else 0
         version_str = {0: "none", 1: "PDF/A-1", 2: "PDF/A-2", 3: "PDF/A-3"}.get(

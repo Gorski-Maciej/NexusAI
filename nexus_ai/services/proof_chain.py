@@ -1,19 +1,19 @@
 """
-Kryptograficzny Łańcuch Audytowy (Proof Chain) — SHA-256 hash chain.
+Kryptograficzny Łańcuch Audytowy (Proof Chain) -- SHA-256 hash chain.
 
 - Append-only decision_traces z SHA-256 hash chain
 - previous_hash + current_hash dla nieprzerwanego łańcucha dowodowego
-- Integrity Verifier — cykliczne przeliczanie łańcucha
-- Explainer API — GET /api/v2/audit/tax-decision/{transaction_id}
+- Integrity Verifier -- cykliczne przeliczanie łańcucha
+- Explainer API -- GET /api/v2/audit/tax-decision/{transaction_id}
 
-Zgodnie z docs/tfgxzd.txt — Kryptograficzny Ślad Audytowy Decyzji.
+Zgodnie z docs/tfgxzd.txt -- Kryptograficzny Ślad Audytowy Decyzji.
 """
 
 from __future__ import annotations
 
 import hashlib
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import duckdb
@@ -66,6 +66,8 @@ class ProofChain:
         context: dict[str, Any],
     ) -> str:
 
+        """Log a decision to the proof chain.
+
         Args:
             transaction_id: ID transakcji (faktury).
             trace: Pełny ślad decyzyjny (evaluated_rules, verdict).
@@ -90,7 +92,7 @@ class ProofChain:
         )
 
         # Oblicz SHA-256 hash
-        raw = (previous_hash + payload + datetime.now(timezone.utc).isoformat()).encode("utf-8")
+        raw = (previous_hash + payload + datetime.now(UTC).isoformat()).encode("utf-8")
         current_hash = hashlib.sha256(raw).hexdigest()
 
         # Zapisz w bazie (append-only)
@@ -147,7 +149,7 @@ class ProofChain:
 
     def _verify_hash(self, audit_id: str) -> bool:
 
-        Przelicza hash dla wpisu i porównuje z zapisanym.
+        """Przelicza hash dla wpisu i porównuje z zapisanym.
         """
         row = self._conn.execute(
             "SELECT previous_hash, trace_json, current_hash, created_at "
@@ -162,6 +164,7 @@ class ProofChain:
         return expected == str(row[2])
 
     def verify_chain(self) -> dict[str, Any]:
+        """Verify the proof chain integrity.
 
         Returns:
             Dict z wynikiem weryfikacji.
@@ -192,6 +195,7 @@ class ProofChain:
         }
 
     def explain_decision(self, transaction_id: str) -> dict[str, Any]:
+        """Explain a decision for a transaction.
 
         Args:
             transaction_id: ID transakcji.

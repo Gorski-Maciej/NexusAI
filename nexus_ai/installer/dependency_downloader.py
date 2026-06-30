@@ -1,12 +1,12 @@
 """
-dependency_downloader.py — Auto-download system dependencies (NATS, TigerBeetle).
+dependency_downloader.py -- Auto-download system dependencies (NATS, TigerBeetle).
 
 Downloads required binaries for the current platform, verifies them,
 and manages their lifecycle as background processes.
 
 Supported binaries:
-  - NATS Server (nats-server) — message broker with JetStream
-  - TigerBeetle — accounting ledger engine (standalone binary)
+  - NATS Server (nats-server) -- message broker with JetStream
+  - TigerBeetle -- accounting ledger engine (standalone binary)
 """
 
 from __future__ import annotations
@@ -14,12 +14,12 @@ from __future__ import annotations
 import os
 import platform
 import stat
-
-import anyio
-from msgspec import Struct
 from pathlib import Path
 from typing import Protocol
+
+import anyio
 import httpx
+from msgspec import Struct
 from structlog import get_logger
 
 logger = get_logger("nexus.installer.dependencies")
@@ -118,7 +118,7 @@ BINARY_MANIFEST: list[BinaryDefinition] = [
             "v{version}/opa_{platform}_{arch}.zip"
         ),
         filename_template="opa{ext}",
-        description="Open Policy Agent — declarative rule engine (CNCF)",
+        description="Open Policy Agent -- declarative rule engine (CNCF)",
         required=True,
     ),
 ]

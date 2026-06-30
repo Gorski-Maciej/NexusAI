@@ -1,17 +1,17 @@
 """
-Hot-Reload Listener — odbiera zdarzenia NATS JetStream o zmianach reguł i czyści cache.
+Hot-Reload Listener -- odbiera zdarzenia NATS JetStream o zmianach reguł i czyści cache.
 
 Zalety:
-  - Durable consumer — checkpointy, retry, DLQ
-  - At-least-once delivery — żadne zdarzenie nie ginie
-  - Queue group — horizontal scaling listenerów
-  - Retry z backoffem — automatyczne ponowienie przy błędach
+  - Durable consumer -- checkpointy, retry, DLQ
+  - At-least-once delivery -- żadne zdarzenie nie ginie
+  - Queue group -- horizontal scaling listenerów
+  - Retry z backoffem -- automatyczne ponowienie przy błędach
 
 Tematy (subjects):
-  - ``nexus-config.billing.rules.updated``   — po utworzeniu/deprecate reguły billingowej
-  - ``nexus-config.risk.thresholds.updated`` — po utworzeniu/deprecate progu ryzyka
-  - ``nexus-config.tax.rules.updated``       — po zmianie reguł podatkowych
-  - ``nexus-config.ledger.rules.updated``    — po zmianie reguł księgowych
+  - ``nexus-config.billing.rules.updated``   -- po utworzeniu/deprecate reguły billingowej
+  - ``nexus-config.risk.thresholds.updated`` -- po utworzeniu/deprecate progu ryzyka
+  - ``nexus-config.tax.rules.updated``       -- po zmianie reguł podatkowych
+  - ``nexus-config.ledger.rules.updated``    -- po zmianie reguł księgowych
 
 Usage:
     listener = HotReloadListener(nats_url=\"nats://localhost:4222\")
@@ -22,9 +22,9 @@ Usage:
 
 from __future__ import annotations
 
-import anyio
 from typing import Any, final
 
+import anyio
 import pendulum
 from structlog import get_logger
 
@@ -32,7 +32,7 @@ from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 
 logger = get_logger("nexus.hot_reload")
 
-# Mapowanie: subject JetStream → prefix cache do wyczyszczenia
+# Mapowanie: subject JetStream -> prefix cache do wyczyszczenia
 SUBJECT_CONFIG: dict[str, str] = {
     "nexus-config.billing.rules.updated": "api.routes.billing",
     "nexus-config.risk.thresholds.updated": "api.routes.admin",
@@ -49,7 +49,7 @@ class HotReloadListener:
 
       - Durable Pull Consumer z checkpointami (zamiast core NATS subscribe)
       - Queue group dla horizontal scaling (nexus-hot-reload)
-      - At-least-once delivery — retry przy błędach
+      - At-least-once delivery -- retry przy błędach
       - Metryki health dla każdego subjecta
       - Graceful shutdown
 

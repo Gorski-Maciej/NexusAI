@@ -1,4 +1,4 @@
-"""Domain Value Objects — DDD dla NexusAI.
+"""Domain Value Objects -- DDD dla NexusAI.
 
 Zgodnie z wymaganiami Enterprise §1:
 - Wszystkie Value Object są msgspec.Struct z frozen=True (immutable)
@@ -21,9 +21,8 @@ from typing import ClassVar
 import msgspec
 import pendulum
 
-
 # ═══════════════════════════════════════════════════════════════════════════
-# Money — Value Object dla kwot finansowych (NIE float!)
+# Money -- Value Object dla kwot finansowych (NIE float!)
 # ═══════════════════════════════════════════════════════════════════════════
 
 
@@ -116,7 +115,7 @@ class Money(msgspec.Struct, frozen=True, kw_only=True):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# MoneyNet — kwota netto + VAT
+# MoneyNet -- kwota netto + VAT
 # ═══════════════════════════════════════════════════════════════════════════
 
 
@@ -165,7 +164,7 @@ class MoneyNet(msgspec.Struct, frozen=True, kw_only=True):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# NIP — Value Object z walidacją checksum
+# NIP -- Value Object z walidacją checksum
 # ═══════════════════════════════════════════════════════════════════════════
 
 
@@ -206,7 +205,7 @@ class NIP(msgspec.Struct, frozen=True, kw_only=True):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# InvoiceNumber — numer faktury
+# InvoiceNumber -- numer faktury
 # ═══════════════════════════════════════════════════════════════════════════
 
 
@@ -249,7 +248,7 @@ class InvoiceNumber(msgspec.Struct, frozen=True, kw_only=True):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# IBAN — walidacja numeru rachunku bankowego
+# IBAN -- walidacja numeru rachunku bankowego
 # ═══════════════════════════════════════════════════════════════════════════
 
 
@@ -281,7 +280,7 @@ class IBAN(msgspec.Struct, frozen=True, kw_only=True):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# TaxPeriod — okres rozliczeniowy
+# TaxPeriod -- okres rozliczeniowy
 # ═══════════════════════════════════════════════════════════════════════════
 
 
@@ -331,7 +330,7 @@ class TaxPeriod(msgspec.Struct, frozen=True, kw_only=True):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# Eksport — wszystkie klasy dostępne z nexus_ai.domain
+# Eksport -- wszystkie klasy dostępne z nexus_ai.domain
 # ═══════════════════════════════════════════════════════════════════════════
 
 __all__ = [

@@ -1,5 +1,5 @@
 """
-download_progress_ui.py — Flet-based GUI for first-run model download.
+download_progress_ui.py -- Flet-based GUI for first-run model download.
 
 Shows a progress window with:
   - Overall progress bar
@@ -14,11 +14,10 @@ from __future__ import annotations
 
 import os
 import sys
-
-import anyio
 from pathlib import Path
 from typing import Any
 
+import anyio
 import flet as ft
 from structlog import get_logger
 
@@ -80,7 +79,7 @@ class DownloadProgressApp:
     def build(self, page: ft.Page) -> None:
         """Build the Flet UI layout."""
         self.page = page
-        page.title = "NexusAI — First-Time Setup"
+        page.title = "NexusAI -- First-Time Setup"
         page.theme_mode = ft.ThemeMode.DARK
         page.bgcolor = Colors.BG_DARK
         page.padding = 40
@@ -99,7 +98,7 @@ class DownloadProgressApp:
             content=ft.Column(
                 [
                     ft.Text(
-                        "NexusAI — First-Time Setup",
+                        "NexusAI -- First-Time Setup",
                         size=26,
                         weight=ft.FontWeight.BOLD,
                         color=Colors.ACCENT_BLUE,
@@ -124,7 +123,7 @@ class DownloadProgressApp:
             bgcolor=Colors.BG_PROGRESS_TRACK,
         )
         self.overall_progress_text = ft.Text(
-            "0% — Waiting to start...",
+            "0% -- Waiting to start...",
             size=14,
             color=Colors.TEXT_PRIMARY,
             weight=ft.FontWeight.BOLD,
@@ -277,7 +276,7 @@ class DownloadProgressApp:
         page.run_task(self._start_download)
 
     def _on_window_event(self, e: ft.WindowEvent) -> None:
-        """Handle window close event — prevent during download."""
+        """Handle window close event -- prevent during download."""
         if e.type == "close" and self.state.is_downloading:
             # Show confirmation dialog
             self.page.dialog = ft.AlertDialog(
@@ -334,7 +333,7 @@ class DownloadProgressApp:
         self.page.window_destroy()
 
     def _on_minimize(self, e: ft.ControlEvent) -> None:
-        """Minimize to background — continue download silently."""
+        """Minimize to background -- continue download silently."""
         self.page.window_minimized = True
         self.page.update()
 
@@ -369,7 +368,7 @@ class DownloadProgressApp:
                 speed_str = self._format_speed(s.speed_bps)
                 downloaded_str = self._format_size(s.downloaded_bytes)
                 total_str = self._format_size(s.total_bytes)
-                self.current_file_speed.value = f"{downloaded_str} / {total_str} — {speed_str}/s"
+                self.current_file_speed.value = f"{downloaded_str} / {total_str} -- {speed_str}/s"
             else:
                 downloaded_str = self._format_size(s.downloaded_bytes)
                 total_str = self._format_size(s.total_bytes)
@@ -386,7 +385,7 @@ class DownloadProgressApp:
             self.status_log.value = f"✓ {s.current_file} downloaded and verified"
             self.status_log.color = Colors.ACCENT_GREEN
         elif s.status == "hash_mismatch":
-            self.status_log.value = f"⚠ {s.current_file} checksum mismatch — may need re-download"
+            self.status_log.value = f"⚠ {s.current_file} checksum mismatch -- may need re-download"
             self.status_log.color = Colors.ACCENT_ORANGE
         elif s.status == "verified":
             self.status_log.value = f"✓ {s.current_file} already present, verified"
@@ -415,7 +414,7 @@ class DownloadProgressApp:
         if check["all_present"]:
             self.status_log.value = "✓ All models are already downloaded and verified!"
             self.status_log.color = Colors.ACCENT_GREEN
-            self.overall_progress_text.value = "100% — All models ready"
+            self.overall_progress_text.value = "100% -- All models ready"
             self.overall_progress_bar.value = 1.0
             self.state.is_complete = True
             self.cancel_button.visible = False
@@ -443,7 +442,7 @@ class DownloadProgressApp:
         self.state.results = results
         self.state.is_downloading = False
 
-        # Task group zakończona — kontynuuj
+        # Task group zakończona -- kontynuuj
         # Check results
         success_count = sum(1 for r in results if r.success)
         fail_count = sum(1 for r in results if not r.success)
@@ -469,7 +468,7 @@ class DownloadProgressApp:
                 f"✓ All {success_count} models downloaded and verified successfully!"
             )
             self.status_log.color = Colors.ACCENT_GREEN
-            self.overall_progress_text.value = "100% — Complete!"
+            self.overall_progress_text.value = "100% -- Complete!"
             self.overall_progress_bar.value = 1.0
             self.state.is_complete = True
             self.cancel_button.visible = False

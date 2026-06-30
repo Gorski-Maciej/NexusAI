@@ -1,5 +1,5 @@
 """
-Queries — consolidated query helpers: pagination + FTS5 search + analytics views.
+Queries -- consolidated query helpers: pagination + FTS5 search + analytics views.
 
 Łączy pagination.py, views.py, fts.py w jeden moduł.
 Eliminuje duplikację importów i boilerplate'u między tymi plikami.
@@ -7,12 +7,13 @@ Eliminuje duplikację importów i boilerplate'u między tymi plikami.
 
 from __future__ import annotations
 
+import sqlite3
 from pathlib import Path
 from typing import Any, TypeVar
 
 import anyio
-import sqlite3
-from sqlmodel import select, text as sa_text, Session
+from sqlmodel import Session, select
+from sqlmodel import text as sa_text
 from structlog import get_logger
 
 from nexus_ai.db.async_base_service import AsyncBaseService
@@ -230,7 +231,7 @@ class AnalyticsViews:
     """Inicjalizacja zmaterializowanych widoków biznesowych w DuckDB.
 
     Używa materialized tables (CREATE OR REPLACE TABLE) zamiast VIEW
-    — przeliczone raz, nie przy każdym SELECT.
+    -- przeliczone raz, nie przy każdym SELECT.
     Window functions: LAG, LEAD, ROW_NUMBER, SUM OVER, moving averages.
     """
 

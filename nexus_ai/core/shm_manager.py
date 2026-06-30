@@ -42,7 +42,7 @@ class SharedImageBuffer:
             metadata: Dict z poprzedniego wywołania create().
 
         Returns:
-            bytes — dane obrazu.
+            bytes -- dane obrazu.
         """
         shm = shared_memory.SharedMemory(name=metadata["shm_name"])
         buf = memoryview(shm.buf)

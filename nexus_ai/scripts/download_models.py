@@ -1,5 +1,5 @@
 """
-download_models.py — Download AI models for NexusAI with integrity validation.
+download_models.py -- Download AI models for NexusAI with integrity validation.
 
 Zgodnie z aa3fvcx.txt:
 - Żadne konkretne modele LLM nie są zdefiniowane (brak LFM2.5, Qwen3, LittleLamb, etc.)
@@ -7,7 +7,7 @@ Zgodnie z aa3fvcx.txt:
 - Użytkownik może dodać własne GGUF modele do katalogu models/
 
 Referencja architektoniczna:
-- docTR: db_resnet50 (~200 MB) + parseq (~300 MB) — łączny rozmiar ~500 MB
+- docTR: db_resnet50 (~200 MB) + parseq (~300 MB) -- łączny rozmiar ~500 MB
 - docTR wymaga 2 głównych modeli
 
 Usage:
@@ -19,10 +19,10 @@ from __future__ import annotations
 
 import argparse
 import os
-
-from nexus_crypto import Sha256Hasher
 import sys
 from pathlib import Path
+
+from nexus_crypto import Sha256Hasher
 
 # ── docTR models (Punkty 10 aa3fvcx.txt) ───────────
 # Modele docTR: Apache 2.0 license, wbudowana
@@ -31,18 +31,18 @@ DOCTR_MODELS: dict[str, dict[str, str]] = {
     "db_resnet50": {
         "repo": "mindee/db_resnet50",
         "sha256": "",
-        "description": "docTR — Text detection (DBNet ResNet-50, ~200 MB)",
+        "description": "docTR -- Text detection (DBNet ResNet-50, ~200 MB)",
     },
     "parseq": {
         "repo": "mindee/parseq",
         "sha256": "",
-        "description": "docTR — Text recognition (PARSeq Transformer, ~300 MB)",
+        "description": "docTR -- Text recognition (PARSeq Transformer, ~300 MB)",
     },
 }
 
-# ── EasyOCR — czwarty silnik OCR (CNN + LSTM) ─────────────────────────────
+# ── EasyOCR -- czwarty silnik OCR (CNN + LSTM) ─────────────────────────────
 # EasyOCR automatycznie pobiera modele przy pierwszym użyciu do ~/.EasyOCR/model/
-# Modele nie wymagają osobnego skryptu — uruchomienie easyocr.Reader() po raz
+# Modele nie wymagają osobnego skryptu -- uruchomienie easyocr.Reader() po raz
 # pierwszy automatycznie pobiera craft_mlt_25k.pth i rozpoznawanie znaków.
 # Lista poniżej to dokumentacja których modeli się spodziewać.
 EASYOCR_MODELS: dict[str, dict[str, str]] = {
@@ -110,7 +110,7 @@ def download_doctr_models(
     przez bibliotekę python-doctr. Ta funkcja pozwala:
     1. Pobrać modele z wyprzedzeniem dla środowisk offline
     2. Zweryfikować czy modele są dostępne w cache
-    3. Wyeksportować modele do ONNX dla 2-3× szybszej inferencji na CPU
+    3. Wyeksportować modele do ONNX dla 2-3x szybszej inferencji na CPU
 
     - ONNX export: export_onnx() do plików .onnx
     - Weryfikacja przez próbną inferencję
@@ -135,7 +135,7 @@ def download_doctr_models(
 
     if verify_only:
         print("=" * 60)
-        print("  docTR MODELS — VERIFICATION + ONNX EXPORT")
+        print("  docTR MODELS -- VERIFICATION + ONNX EXPORT")
         print("=" * 60)
 
     for model_key, info in DOCTR_MODELS.items():
@@ -148,10 +148,10 @@ def download_doctr_models(
         if verify_only:
             exists = local_path.exists()
             if exists:
-                print(f"  {model_key:40s} — {description} (present)")
+                print(f"  {model_key:40s} -- {description} (present)")
                 statuses[model_key] = "ok"
             else:
-                print(f"  X {model_key:40s} — NOT FOUND")
+                print(f"  X {model_key:40s} -- NOT FOUND")
                 statuses[model_key] = "missing"
             continue
 
@@ -169,6 +169,8 @@ def download_doctr_models(
                 from doctr.models import (
                     detection,
                     recognition,
+                )
+                from doctr.models import (
                     export_onnx as doctr_export_onnx,
                 )
 
@@ -238,10 +240,10 @@ def download_easyocr_models(
         if verify_only:
             exists = easyocr_cache.exists() or custom_path.exists()
             if exists:
-                print(f"  {model_key:40s} — {description} (present)")
+                print(f"  {model_key:40s} -- {description} (present)")
                 statuses[model_key] = "ok"
             else:
-                print(f"  X {model_key:40s} — NOT FOUND (will auto-download on first use)")
+                print(f"  X {model_key:40s} -- NOT FOUND (will auto-download on first use)")
                 statuses[model_key] = "missing"
             continue
 

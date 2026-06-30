@@ -1,12 +1,11 @@
 from __future__ import annotations
 
+import uuid
+from decimal import ROUND_HALF_UP, Decimal
 from typing import final
 
-import uuid
-from msgspec import Struct
-from decimal import ROUND_HALF_UP, Decimal
-
 import pendulum
+from msgspec import Struct
 
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient

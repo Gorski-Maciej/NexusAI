@@ -9,11 +9,12 @@ z kolejką asynchroniczną, cache i magazynem relacji.
 """
 
 from __future__ import annotations
+from datetime import date
 
-from msgspec import Struct, field
 from typing import Any, Protocol, final
 
 import pendulum
+from msgspec import Struct, field
 
 
 class TaskQueue(Protocol):

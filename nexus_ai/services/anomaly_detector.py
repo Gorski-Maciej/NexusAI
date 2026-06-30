@@ -11,12 +11,12 @@ from nexus_ai.db.analytics import DuckDBManager
 class SmartAnomalyDetector:
     """Wykrywa podejrzane faktury przy użyciu Polars Expressions.
 
-    - **LazyFrame API** — ``pl.SQL("").collect()`` zamiast PyArrow compute
-    - **Expressions** — ``pl.col("amount_gross").std()``, ``.mean()``,
-      ``.filter()``, ``.abs()`` — wszystko w Rust/C++
-    - **Streaming ready** — dla > 1M faktur, ``collect(streaming=True)``
-    - **Polars SQLContext** — łączy SQL DuckDB z expression API Polars
-    - **shrink_dtype()** — redukcja RAM dla historycznych danych
+    - **LazyFrame API** -- ``pl.SQL("").collect()`` zamiast PyArrow compute
+    - **Expressions** -- ``pl.col("amount_gross").std()``, ``.mean()``,
+      ``.filter()``, ``.abs()`` -- wszystko w Rust/C++
+    - **Streaming ready** -- dla > 1M faktur, ``collect(streaming=True)``
+    - **Polars SQLContext** -- łączy SQL DuckDB z expression API Polars
+    - **shrink_dtype()** -- redukcja RAM dla historycznych danych
     - Zysk: czystsze API niż PyArrow + dostęp do pełnego Polars query engine
     """
 
@@ -28,7 +28,7 @@ class SmartAnomalyDetector:
         Zwraca True, jeśli kwota faktury znacząco odbiega od
         historycznego profilu danego kontrahenta.
 
-        - ``execute_arrow()`` + ``pl.from_arrow()`` — zero-copy z DuckDB
+        - ``execute_arrow()`` + ``pl.from_arrow()`` -- zero-copy z DuckDB
         - LazyFrame z wyrażeniami ``pl.col().std().mean()``
         - ``.shrink_dtype()`` dla oszczędności RAM
         """

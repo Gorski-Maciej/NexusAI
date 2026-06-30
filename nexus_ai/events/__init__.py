@@ -1,5 +1,5 @@
 """
-NexusAI Event Sourcing — Event-Driven Architecture on NATS JetStream.
+NexusAI Event Sourcing -- Event-Driven Architecture on NATS JetStream.
 
 Pakiet implementuje pełny Event Sourcing zgodnie z Fazą 3 audytu:
   - Domenowe eventy (msgspec.Struct) z silnym typowaniem
@@ -37,38 +37,39 @@ Usage:
 from __future__ import annotations
 
 from nexus_ai.events.domain_events import (
-    DomainEvent,
-    InvoiceCreated,
-    InvoiceSubmitted,
-    InvoiceApproved,
-    InvoiceRejected,
-    InvoiceBlocked,
-    InvoicePaid,
     DecisionMade,
     DecisionOverridden,
+    DomainEvent,
+    DomainEventSchemaRegistry,
+    InvoiceApproved,
+    InvoiceBlocked,
+    InvoiceCreated,
+    InvoicePaid,
+    InvoiceRejected,
+    InvoiceSubmitted,
     NotificationSent,
     OutboxEventEmitted,
     domain_event_from_dict,
+    get_event_type_map,
 )
-
+from nexus_ai.events.domain_events import (
+    get_all_schemas as get_all_event_schemas,
+)
+from nexus_ai.events.domain_events import (
+    get_schema as get_event_schema_by_type,
+)
+from nexus_ai.events.domain_events import (
+    get_schema_summary as get_event_schema_summary,
+)
 from nexus_ai.events.event_store import EventStore
-
-from nexus_ai.events.jetstream_bus import JetStreamEventBus, JetStreamConsumer
-
+from nexus_ai.events.jetstream_bus import JetStreamConsumer, JetStreamEventBus
+from nexus_ai.events.projection_worker import ProjectionWorker
 from nexus_ai.events.projections import (
     BaseProjection as Projection,
-    InvoiceProjection,
-    DecisionProjection,
 )
-
-from nexus_ai.events.projection_worker import ProjectionWorker
-
-from nexus_ai.events.domain_events import (
-    DomainEventSchemaRegistry,
-    get_all_schemas as get_all_event_schemas,
-    get_schema as get_event_schema_by_type,
-    get_event_type_map,
-    get_schema_summary as get_event_schema_summary,
+from nexus_ai.events.projections import (
+    DecisionProjection,
+    InvoiceProjection,
 )
 
 __all__ = [

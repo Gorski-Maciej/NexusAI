@@ -1,5 +1,5 @@
 """
-Integrity Verifier — weryfikator integralności łańcucha hashy (Element 2).
+Integrity Verifier -- weryfikator integralności łańcucha hashy (Element 2).
 
 Cyfrowy audytor, który na żądanie lub cyklicznie weryfikuje,
 czy łańcuch kryptograficznych skrótów (SHA-256) w tabeli decision_traces
@@ -7,20 +7,20 @@ jest nienaruszony. Jeśli ktoś zmodyfikował wpis, weryfikator wykryje to,
 zgłosi alarm i może zablokować system.
 
 Funkcjonalności:
-  - verify_all() — pełna weryfikacja sekwencyjna
-  - verify_incremental() — przyrostowa od ostatniego checkpointu
-  - handle_violation() — zapis incydentu + opcjonalna blokada
-  - INTEGRITY_VIOLATIONS_SCHEMA — tabela naruszeń
+  - verify_all() -- pełna weryfikacja sekwencyjna
+  - verify_incremental() -- przyrostowa od ostatniego checkpointu
+  - handle_violation() -- zapis incydentu + opcjonalna blokada
+  - INTEGRITY_VIOLATIONS_SCHEMA -- tabela naruszeń
 """
 
 from __future__ import annotations
 
 import uuid
-from msgspec import Struct, field
 from typing import Any, final
 
 import duckdb
 import pendulum
+from msgspec import Struct, field
 from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
@@ -82,7 +82,7 @@ class IntegrityReport(Struct):
 
 @final
 class IntegrityVerifier:
-    """Weryfikator Integralności — sprawdza łańcuch hashy decision_traces.
+    """Weryfikator Integralności -- sprawdza łańcuch hashy decision_traces.
 
     Usage:
         verifier = IntegrityVerifier(conn)
@@ -143,7 +143,7 @@ class IntegrityVerifier:
         """Przyrostowa weryfikacja od ostatniego checkpointu.
 
         Sprawdza tylko wpisy dodane po ostatnim zweryfikowanym.
-        Uwaga: nie wykrywa manipulacji w starych wpisach —
+        Uwaga: nie wykrywa manipulacji w starych wpisach --
         do pełnej weryfikacji użyj verify_all().
 
         Delegates to :func:`verify_chain_integrity` filtered to new entries.
@@ -160,7 +160,7 @@ class IntegrityVerifier:
         ).fetchone()
 
         if not last_cp:
-            # Brak checkpointu — wykonaj pełną weryfikację
+            # Brak checkpointu -- wykonaj pełną weryfikację
             report = self.verify_all()
             self._save_checkpoint(report)
             return report
@@ -198,7 +198,7 @@ class IntegrityVerifier:
             report: Raport z verify_all() lub verify_incremental().
 
         Returns:
-            violation_id — UUID zapisanego incydentu.
+            violation_id -- UUID zapisanego incydentu.
         """
         if report.status != "violation" or not report.violations:
             raise ValueError("No violations to handle")
@@ -269,10 +269,10 @@ class IntegrityVerifier:
             self._conn.execute(
                 "INSERT OR REPLACE INTO system_flags VALUES ('integrity_verified', 'false')"
             )
-            logger.critical("[INTEGRITY] System LOCKED — read-only mode activated")
+            logger.critical("[INTEGRITY] System LOCKED -- read-only mode activated")
         else:
             self._conn.execute("DELETE FROM system_flags WHERE flag_key = 'integrity_verified'")
-            logger.info("[INTEGRITY] System UNLOCKED — write operations resumed")
+            logger.info("[INTEGRITY] System UNLOCKED -- write operations resumed")
 
     def list_violations(
         self,

@@ -5,17 +5,17 @@ Sentry SDK integration for production error tracking.
 Zgodnie z aa3fvcx.txt: Sentry SDK jest opcjonalny (sentry-sdk w zależnościach [dev]).
 Dostarcza maksymalnie bogaty kontekst dla błędów produkcyjnych.
 
-- ``before_send`` — filtrowanie i anonymizacja eventów przed wysyłką
-- ``before_breadcrumb`` — filtrowanie breadcrumbów (pomija DEBUG)
-- ``set_tag()`` — tagowanie eventów (service, component, version)
-- ``set_context()`` — dowolny słownik kontekstu (invoice_id, aggregate)
-- ``capture_message()`` — ręczne logowanie błędów biznesowych
-- ``sentry_scope()`` — context manager dla Scope (bezpieczny współbieżnie)
+- ``before_send`` -- filtrowanie i anonymizacja eventów przed wysyłką
+- ``before_breadcrumb`` -- filtrowanie breadcrumbów (pomija DEBUG)
+- ``set_tag()`` -- tagowanie eventów (service, component, version)
+- ``set_context()`` -- dowolny słownik kontekstu (invoice_id, aggregate)
+- ``capture_message()`` -- ręczne logowanie błędów biznesowych
+- ``sentry_scope()`` -- context manager dla Scope (bezpieczny współbieżnie)
 - ``capture_exception()`` z kontekstowymi tagami
-- ``HttpxIntegration`` — śledzenie requestów HTTP
-- ``AsyncioIntegration`` — śledzenie zadań asynchronicznych
-- ``flush()`` — wymuszenie wysyłki przy shutdownie
-- ``in_app_include`` — czystsze stack trace (tylko nexus_ai)
+- ``HttpxIntegration`` -- śledzenie requestów HTTP
+- ``AsyncioIntegration`` -- śledzenie zadań asynchronicznych
+- ``flush()`` -- wymuszenie wysyłki przy shutdownie
+- ``in_app_include`` -- czystsze stack trace (tylko nexus_ai)
 
 Użycie:
     from nexus_ai.core.sentry import init_sentry, capture_exception
@@ -53,6 +53,8 @@ _sentry_initialized = False
 
 
 def _filter_sentry_event(event: dict[str, Any], hint: dict[str, Any]) -> dict[str, Any] | None:
+
+    """Filter and anonymize Sentry events.
 
     - Ignoruje health checki (niepotrzebny szum)
     - Ignoruje ConnectionReset / BrokenPipe (normalne w async)
@@ -128,6 +130,8 @@ def _filter_sentry_event(event: dict[str, Any], hint: dict[str, Any]) -> dict[st
 
 def _filter_breadcrumb(breadcrumb: dict[str, Any], hint: dict[str, Any]) -> dict[str, Any] | None:
 
+    """Filter breadcrumbs for Sentry.
+
     - Pomija DEBUG breadcrumby (redukcja szumu o ~70%)
     - Zachowuje tylko kategorie: log, http, task, user, invoice
     - Zachowuje ERROR i WARNING breadcrumby zawsze
@@ -163,18 +167,16 @@ def _filter_breadcrumb(breadcrumb: dict[str, Any], hint: dict[str, Any]) -> dict
 
 def init_sentry(config: AppConfig | None = None) -> bool:
     """Initialize Sentry SDK with full configuration.
+    - ``before_breadcrumb`` -- pomija DEBUG i zbędne kategorie
+    - ``HttpxIntegration`` -- śledzenie requestów HTTP
+    - ``AsyncioIntegration`` -- śledzenie zadań asynchronicznych
+    - ``in_app_include=['nexus_ai']`` -- czystsze stack trace
+    - ``ignore_errors`` -- ciche ignorowanie znanych wyjątków
+    - ``release`` -- wersja z NEXUS_VERSION env
+    - ``max_breadcrumbs=100`` -- więcej kontekstu przed błędem
+    - ``flush()`` -- wymuszenie wysyłki przy shutdownie (atexit)
 
-    - ``before_send`` — filtrowanie + anonymizacja
-    - ``before_breadcrumb`` — pomija DEBUG i zbędne kategorie
-    - ``HttpxIntegration`` — śledzenie requestów HTTP
-    - ``AsyncioIntegration`` — śledzenie zadań asynchronicznych
-    - ``in_app_include=['nexus_ai']`` — czystsze stack trace
-    - ``ignore_errors`` — ciche ignorowanie znanych wyjątków
-    - ``release`` — wersja z NEXUS_VERSION env
-    - ``max_breadcrumbs=100`` — więcej kontekstu przed błędem
-    - ``flush()`` — wymuszenie wysyłki przy shutdownie (atexit)
-
-    Sentry jest opcjonalny — inicjalizowany tylko gdy skonfigurowano
+    Sentry jest opcjonalny -- inicjalizowany tylko gdy skonfigurowano
     NEXUS_SENTRY_DSN lub SENTRY_DSN.
 
     Returns:
@@ -188,7 +190,7 @@ def init_sentry(config: AppConfig | None = None) -> bool:
     dsn = os.getenv("NEXUS_SENTRY_DSN", "") or os.getenv("SENTRY_DSN", "")
 
     if not dsn:
-        logger.info("[Sentry] Not configured — skipping initialization")
+        logger.info("[Sentry] Not configured -- skipping initialization")
         return False
 
     environment = "dev"
@@ -232,7 +234,7 @@ def init_sentry(config: AppConfig | None = None) -> bool:
         )
 
         # Wymusza wysyłkę wszystkich bufforowanych eventów przed
-        # zamknięciem aplikacji — zapobiega utracie eventów.
+        # zamknięciem aplikacji -- zapobiega utracie eventów.
         import atexit
 
         atexit.register(lambda: sentry_sdk.flush(timeout=2))
@@ -256,7 +258,9 @@ def init_sentry(config: AppConfig | None = None) -> bool:
 
 def capture_exception(exc: Exception, **context_tags: str) -> None:
 
-    Używa ``sentry_sdk.new_scope()`` do izolacji kontekstu — bezpieczne
+    """Capture exception with context tags.
+
+    Używa ``sentry_sdk.new_scope()`` do izolacji kontekstu -- bezpieczne
     dla współbieżnych requestów. Dodaje tagi (service, component, invoice_id)
     do konkretnego eventu, bez wpływu na globalny kontekst.
 
@@ -281,6 +285,8 @@ def capture_exception(exc: Exception, **context_tags: str) -> None:
 
 
 def capture_message(message: str, level: str = "warning", **context_tags: str) -> None:
+
+    """Capture a business error message.
 
     Używaj dla błędów biznesowych które nie są wyjątkami:
     - Naruszenie reguł podatkowych
@@ -310,6 +316,8 @@ def capture_message(message: str, level: str = "warning", **context_tags: str) -
 
 def set_tag(key: str, value: str) -> None:
 
+    """Set a global Sentry tag.
+
     Tagi są globalne (scope-less). Używaj dla stałych, długożyciowych
     wartości jak ``service``, ``component``, ``version``.
 
@@ -330,6 +338,8 @@ def set_tag(key: str, value: str) -> None:
 
 
 def set_context(key: str, context: dict[str, Any]) -> None:
+
+    """Set context for Sentry events.
 
     Używaj dla kontekstu operacji (invoice, transaction, user).
     ``set_context(\"invoice\", {\"id\": \"123\", \"amount\": 1500})``
@@ -404,7 +414,9 @@ def add_breadcrumb(
 @contextmanager
 def sentry_scope(**context_tags: str) -> Any:
 
-    Tworzy NOWY scope dla operacji — wszystkie tagi i konteksty są
+    """Context manager for Sentry scope.
+
+    Tworzy NOWY scope dla operacji -- wszystkie tagi i konteksty są
     izolowane od globalnego scope. Bezpieczne dla współbieżnych requestów.
 
     Przykład:
@@ -461,6 +473,8 @@ class _NoopTransaction:
 
 def flush(timeout: float = 2.0) -> None:
 
+    """Flush Sentry events.
+
     Używaj przed zamknięciem aplikacji lub w krytycznych momentach.
 
     Args:
@@ -479,6 +493,8 @@ def flush(timeout: float = 2.0) -> None:
 
 
 def start_transaction(name: str, op: str = "task") -> Any:
+
+    """Start a Sentry transaction.
 
     Używaj dla krytycznych ścieżek biznesowych:
     - Przetwarzanie faktury (process_invoice)

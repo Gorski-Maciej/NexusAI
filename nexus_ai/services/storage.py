@@ -4,14 +4,14 @@ TOTALNA REWOLUCJA: wszystkie operacje I/O przez AsyncFsWrapper.
 - ``await afs.exists()`` zamiast ``await to_thread.run_sync(fs.exists)``
 - ``await afs.cat_file()`` zamiast ``await fsspec.open_async(..., 'rb')``
 - ``await afs.pipe_file()`` zamiast ``await fsspec.open_async(..., 'wb')``
-- Gotowy na S3: zmiana storage_protocol → natywne async I/O
+- Gotowy na S3: zmiana storage_protocol -> natywne async I/O
 
-- ``fsspec.open()`` — uniwersalne otwieranie plików w każdym protokole (file://, s3://, sftp://, memory://)
-- ``fsspec.filesystem()`` — konfigurowalny backend przez config TOML
-- ``auto_mkdir`` — automatyczne tworzenie katalogów (CachingFileSystem opcjonalnie)
-- ``TransactionalFileSystem`` — atomowe zapisy (rollback przy błędzie)
-- ``TqdmCallback`` — progress bary dla transferów plików
-- ``MemoryFileSystem`` — RAM-only FS dla testów i tymczasowych danych
+- ``fsspec.open()`` -- uniwersalne otwieranie plików w każdym protokole (file://, s3://, sftp://, memory://)
+- ``fsspec.filesystem()`` -- konfigurowalny backend przez config TOML
+- ``auto_mkdir`` -- automatyczne tworzenie katalogów (CachingFileSystem opcjonalnie)
+- ``TransactionalFileSystem`` -- atomowe zapisy (rollback przy błędzie)
+- ``TqdmCallback`` -- progress bary dla transferów plików
+- ``MemoryFileSystem`` -- RAM-only FS dla testów i tymczasowych danych
 
 Zgodnie z aa3fvcx.txt: jeden URL, nieskończenie wiele backendów.
 Zmiana storage_protocol w config TOML zmienia backend bez zmiany kodu.
@@ -21,9 +21,8 @@ from __future__ import annotations
 
 import io
 import uuid
-from collections.abc import Iterable
+from collections.abc import AsyncIterator, Iterable, MutableMapping
 from pathlib import Path
-from collections.abc import AsyncIterator, MutableMapping
 from typing import Any, BinaryIO, final
 
 import fsspec
@@ -42,9 +41,9 @@ class StorageService:
     """Unified file storage service with configurable fsspec backend.
 
     TOTALNA REWOLUCJA:
-    - ``self._async_fs`` — AsyncFsWrapper, czyste ``await fs.exists()`` API
+    - ``self._async_fs`` -- AsyncFsWrapper, czyste ``await fs.exists()`` API
     - Zero ``to_thread.run_sync()`` w serwisie
-    - Gotowy na S3: zmiana storage_protocol → natywne async I/O
+    - Gotowy na S3: zmiana storage_protocol -> natywne async I/O
     """
 
     def __init__(self, config: AppConfig) -> None:
@@ -148,14 +147,14 @@ class StorageService:
         original_name: str | None = None,
         chunk_size: int = UPLOAD_CHUNK_SIZE,
     ) -> str:
-        """Save file content using async fsspec I/O — nie blokuje event loop.
+        """Save file content using async fsspec I/O -- nie blokuje event loop.
 
         TOTALNA REWOLUCJA: ``await self._async_fs.open()`` zamiast ``fsspec.open_async()``.
         """
         rel_path = self._local_path(original_name)
         url = self._resolve_url(rel_path)
 
-        # TOTALNA REWOLUCJA: AsyncFsWrapper.open() — async context manager
+        # TOTALNA REWOLUCJA: AsyncFsWrapper.open() -- async context manager
         # UWAGA: fsspec.open() zwraca OpenFile. Wewnątrz async with,
         # read()/write() są synchroniczne (ale non-blocking przez OpenFile).
         async with await self._async_fs.open(url, "wb") as out:
@@ -211,7 +210,7 @@ class StorageService:
 
 
     def get_mapper(self, prefix: str = "") -> MutableMapping:
-        """Zwraca fsspec.get_mapper() — dict-like interface do storage.
+        """Zwraca fsspec.get_mapper() -- dict-like interface do storage.
 
         ``fsspec.get_mapper(url)`` tworzy ``MutableMapping`` (dict-like),
         idealny do przechowywania metadanych, małych plików, konfiguracji.
@@ -234,7 +233,7 @@ class StorageService:
             with storage.tx_fs.transaction():
                 await storage.save_invoice_bytes_async(b"...", "a.pdf")
                 await storage.save_invoice_bytes_async(b"...", "b.pdf")
-            # Oba pliki zapisane atomowo — jeśli któryś fail, oba są cofnięte
+            # Oba pliki zapisane atomowo -- jeśli któryś fail, oba są cofnięte
         """
         return self._tx_fs
 
@@ -258,6 +257,7 @@ class StorageService:
         target_name: str | None = None,
         description: str = "Uploading...",
     ) -> str:
+        """Save file with progress bar.
 
         Używa ``fsspec.callbacks.TqdmCallback()`` do wyświetlenia
         paska postępu podczas transferu pliku.
@@ -287,7 +287,7 @@ class StorageService:
         target_name: str | None = None,
         description: str = "Uploading...",
     ) -> str:
-        """Async wersja save_with_progress — przez AsyncFsWrapper.put().
+        """Async wersja save_with_progress -- przez AsyncFsWrapper.put().
 
         TOTALNA REWOLUCJA: ``await self._async_fs.put()`` zamiast ``to_thread.run_sync()``.
         """
@@ -311,10 +311,11 @@ class StorageService:
         dst_protocol: str = "file",
         callback: Any = None,
     ) -> None:
+        """Copy file between filesystems.
 
         Używa ``fsspec.filesystem()`` dla źródła i celu, a następnie
         ``fs.get()`` / ``fs.put()`` do transferu.
-        Działa między: file:// ↔ s3:// ↔ http:// ↔ memory://
+        Działa między: file:// <-> s3:// <-> http:// <-> memory://
 
         Args:
             src_url: Źródłowy URL.
@@ -367,6 +368,7 @@ class StorageService:
         url: str,
         chunk_size: int = UPLOAD_CHUNK_SIZE,
     ) -> AsyncIterator[bytes]:
+        """Stream file to response.
 
         TOTALNA REWOLUCJA: ``await self._async_fs.open()`` zamiast ``fsspec.open_async()``.
 
@@ -389,6 +391,7 @@ class StorageService:
 
     @staticmethod
     def create_memory_storage() -> StorageService:
+        """Create in-memory storage for testing.
 
         Idealne dla:
         - Testów jednostkowych (szybkie, bez I/O na dysk)

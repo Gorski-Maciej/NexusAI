@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from msgspec import Struct
 from functools import lru_cache
 from pathlib import Path
+
+from msgspec import Struct
 
 from nexus_ai.core.msgspec_utils import msgspec_loads
 

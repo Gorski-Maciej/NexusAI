@@ -1,5 +1,5 @@
 """
-ContextEnricher — wzbogaca kontekst faktury o dane z zewnętrznych API.
+ContextEnricher -- wzbogaca kontekst faktury o dane z zewnętrznych API.
 """
 
 from __future__ import annotations
@@ -9,8 +9,8 @@ from typing import Any
 from structlog import get_logger
 
 from nexus_ai.core.cache import get_cache
-from nexus_ai.services.white_list_service import WhiteListService
 from nexus_ai.services.gus_bir_client import GUSBIRClient
+from nexus_ai.services.white_list_service import WhiteListService
 
 logger = get_logger("nexus.services.context_enricher")
 
@@ -19,8 +19,8 @@ class ContextEnricher:
     """Wzbogaca kontekst faktury o dane z GUS BIR i Białej Listy.
 
     Używa istniejących serwisów:
-    - WhiteListService — weryfikacja rachunków VAT
-    - GUSBIRClient — dane firm (REGON, NIP, status VAT)
+    - WhiteListService -- weryfikacja rachunków VAT
+    - GUSBIRClient -- dane firm (REGON, NIP, status VAT)
 
     Cache: NexusCache (L1 RAM + L2 SQLite, TTL 30 dni)
     Resilience: stamina (retry + circuit breaker)
@@ -39,6 +39,7 @@ class ContextEnricher:
         self,
         invoice_data: dict[str, Any],
     ) -> dict[str, Any]:
+        """Enrich invoice context with external data.
 
         1. Sprawdź NIP na Białej Liście MF (rachunek bankowy, status VAT)
         2. Pobierz dane firmy z GUS BIR (REGON, PKD, status)
@@ -73,7 +74,7 @@ class ContextEnricher:
             return cached
 
         try:
-            # 1. Biała Lista MF — weryfikacja rachunku i status VAT
+            # 1. Biała Lista MF -- weryfikacja rachunku i status VAT
             if account:
                 whitelist_result = await self._white_list.verify_account(nip, account)
                 context["vendor_account_on_whitelist"] = whitelist_result.get("is_valid", False)
@@ -82,7 +83,7 @@ class ContextEnricher:
                 context["vendor_account_on_whitelist"] = False
                 context["vendor_vat_status"] = "unknown"
 
-            # 2. GUS BIR — dane firmy
+            # 2. GUS BIR -- dane firmy
             try:
                 gus_data = await self._gus.get_company_data(nip)
                 context["vendor_pkd"] = gus_data.get("pkd", "")

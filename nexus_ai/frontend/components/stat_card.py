@@ -1,4 +1,4 @@
-"""stat_card.py — Reusable stat card component with full Flet 0.28+ superpowers.
+"""stat_card.py -- Reusable stat card component with full Flet 0.28+ superpowers.
 
   - @ft.component + use_state() zamiast funkcji
   - ft.Shimmer dla loading skeleton
@@ -17,7 +17,7 @@ import flet as ft
 def StatCard(page: ft.Page, title: str, value: str, icon: str, color: str = ft.colors.BLUE_400):
     """Stat card with hover animation, gradient, and Tooltip.
 
-    page jest pierwszym parametrem — Flet 0.28+ automatycznie go wstrzykuje.
+    page jest pierwszym parametrem -- Flet 0.28+ automatycznie go wstrzykuje.
     """
     is_hovered = ft.use_state(False)
 

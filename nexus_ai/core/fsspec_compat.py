@@ -1,16 +1,16 @@
-
+"""
 Automatycznie wykrywa dostępne moduły fsspec i dostarcza fallbacki
-dla brakujących implementacji (np. TransactionalFileSystem).
+# dla brakujących implementacji (np. TransactionalFileSystem).
 
 - Auto-detection dostępnych modułów fsspec (15+ implementacji)
 - Uniwersalny TransactionWrapper jako fallback dla TransactionalFileSystem
 - Jeden import zamiast rozrzuconych po całym projekcie
 - HTTPFileSystem dla zdalnych zasobów
 - TarFileSystem dla archiwów TAR
-- WholeFileCache / SimpleCache / BlockCache — różne strategie cache
+- WholeFileCache / SimpleCache / BlockCache -- różne strategie cache
 - ReferenceFileSystem dla wirtualnych FS (Kerchunk-style)
-- fsspec.compression — automatyczna kompresja/dekompresja
-- fsspec.config — centralna konfiguracja backendów
+- fsspec.compression -- automatyczna kompresja/dekompresja
+- fsspec.config -- centralna konfiguracja backendów
 - Chaining FS przez :: (simplecache::file, cached::memory)
 """
 
@@ -39,10 +39,11 @@ except ImportError:
     HAS_TX_FS = False
 
     class TransactionalFileSystem:  # type: ignore[no-redef]
+        """Fallback TransactionalFileSystem.
 
         Gdy fsspec.implementations.transactional nie jest dostępny,
         ten wrapper zapewnia ten sam interfejs API:
-        - transaction() → context manager
+        - transaction() -> context manager
         - Wszystkie operacje delegowane do bazowego FS
         - Brak atomiczności (fallback), ale kompatybilny API
         """
@@ -53,15 +54,15 @@ except ImportError:
             logger.debug("[fsspec] Using TransactionalFileSystem fallback (no atomicity)")
 
         def transaction(self):
+            """Fallback transaction -- wykonuje operacje natychmiast (bez deferowania).
 
-            W wersji fallback — wykonuje operacje natychmiast (bez deferowania).
             Zachowuje ten sam interfejs API co prawdziwy TransactionalFileSystem.
             """
             return self._noop_transaction()
 
         @contextmanager
         def _noop_transaction(self):
-            """No-op transaction — wykonuje wszystko natychmiast."""
+            """No-op transaction -- wykonuje wszystko natychmiast."""
             try:
                 yield
             except Exception:
@@ -236,11 +237,12 @@ except (ImportError, Exception):
 
 
 def create_chain(chain_url: str, **kwargs: Any) -> fsspec.AbstractFileSystem:
+    """Create chained filesystem.
 
     fsspec wspiera komponowanie backendów przez :: w URL:
-    - ``simplecache::file:///data`` — cache + local
-    - ``cached::s3://bucket`` — cache + S3
-    - ``simplecache::http://server/data`` — cache + HTTP
+    - ``simplecache::file:///data`` -- cache + local
+    - ``cached::s3://bucket`` -- cache + S3
+    - ``simplecache::http://server/data`` -- cache + HTTP
 
     Args:
         chain_url: URL z chainingiem (np. "simplecache::file:///data").
@@ -266,6 +268,7 @@ def create_optimal_filesystem(
     use_chaining: bool = False,
     **kwargs: Any,
 ) -> fsspec.AbstractFileSystem:
+    """Create optimal filesystem with caching.
 
     Wybiera najlepszą strategię cache w zależności od dostępnych modułów:
     - cache_size_mb == 0: czysty filesystem (bez cache)
@@ -290,12 +293,12 @@ def create_optimal_filesystem(
     if cache_size_mb <= 0:
         return fsspec.filesystem(protocol, **kwargs)
 
-    # Z chainingiem — URL definiuje wszystko
+    # Z chainingiem -- URL definiuje wszystko
     if use_chaining and HAS_WHOLE_CACHE:
         chain = f"simplecache::{protocol}"
         return create_chain(chain, **kwargs)
 
-    # Bez chainingu — ręczne owijanie w cache
+    # Bez chainingu -- ręczne owijanie w cache
     if cache_storage is None:
         import tempfile
 
@@ -331,6 +334,7 @@ def create_optimal_filesystem(
 
 
 def configure_fsspec_global(**kwargs: Any) -> None:
+    """Configure global fsspec settings.
 
     Używa fsspec.config.conf do ustawienia globalnych parametrów:
     - client_kwargs: domyślne kwargs dla HTTPFileSystem
@@ -351,7 +355,7 @@ def configure_fsspec_global(**kwargs: Any) -> None:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 17. AsyncFsWrapper — TOTALNA REWOLUCJA: clean async API dla każdego protokołu
+# 17. AsyncFsWrapper -- TOTALNA REWOLUCJA: clean async API dla każdego protokołu
 # ═══════════════════════════════════════════════════════════════════════════
 
 
@@ -364,7 +368,7 @@ class AsyncFsWrapper:
     deleguje bezpośrednio do natywnych coroutines.
 
     Dzięki tej warstwie:
-    - Kod serwisów nie zawiera ``to_thread.run_sync()`` — jest czysty i czytelny
+    - Kod serwisów nie zawiera ``to_thread.run_sync()`` -- jest czysty i czytelny
     - Zmiana protokołu z ``file://`` na ``s3://`` nie wymaga zmiany kodu
     - Dla S3 metody stają się prawdziwie non-blocking bez modyfikacji API
 
@@ -381,7 +385,7 @@ class AsyncFsWrapper:
     # ── ZAWSZE przez anyio.to_thread.run_sync ─────────────────────────
     # Dla file:// protocol, fsspec.filesystem() zwraca sync FS.
     # Dla s3:///http://, sync metody (exists, info, ls, pipe_file, cat_file)
-    # wewnętrznie używają sync_wrapper → to_thread.
+    # wewnętrznie używają sync_wrapper -> to_thread.
     # Prawdziwe async metody to _exists, _info, _pipe_file (z underscorem)
     # ale nie są dostępne dla file://. Stąd ZAWSZE to_thread.run_sync().
     #
@@ -393,7 +397,7 @@ class AsyncFsWrapper:
     async def _run(self, func: Any, *args: Any, **kwargs: Any) -> Any:
         return await anyio.to_thread.run_sync(func, *args, **kwargs)
 
-    # ── PUBLIC API — czyste async metody ──────────────────────────────
+    # ── PUBLIC API -- czyste async metody ──────────────────────────────
 
     async def exists(self, path: str) -> bool:
         return await self._run(self._fs.exists, path)
@@ -446,7 +450,7 @@ class AsyncFsWrapper:
         return fsspec.open(path, mode)
 
     def get_mapper(self, prefix: str = "") -> Any:
-        """Sync — fsspec.get_mapper() nie ma async wersji."""
+        """Sync -- fsspec.get_mapper() nie ma async wersji."""
         return fsspec.get_mapper(prefix)
 
     @property
@@ -463,33 +467,34 @@ class AsyncFsWrapper:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 16. FSSpecFactory — TOTALNA REWOLUCJA: + get_async_filesystem()
+# 16. FSSpecFactory -- TOTALNA REWOLUCJA: + get_async_filesystem()
 # ═══════════════════════════════════════════════════════════════════════════
 
 
 class FSSpecFactory:
+    """FSSpec factory with async wrapper support.
 
     TOTALNA REWOLUCJA:
-    - get_async_filesystem() → AsyncFsWrapper z czystym await API
-    - Zerowy to_thread.run_sync() w serwisach — wszystko przez wrapper
+    - get_async_filesystem() -> AsyncFsWrapper z czystym await API
+    - Zerowy to_thread.run_sync() w serwisach -- wszystko przez wrapper
     - Gotowy na S3: zmiana storage_protocol w TOML zmienia backend bez kodu
 
     Zarządza:
     - Bazowym filesystemem (file://, s3://, memory://)
-    - AsyncFsWrapper — async API dla każdego protokołu
+    - AsyncFsWrapper -- async API dla każdego protokołu
     - CachingFileSystem (przezroczyste cache)
     - TransactionalFileSystem (atomowe operacje)
     - Chaining FS (simplecache::file, cached::s3)
     - HTTPFileSystem dla zdalnych zasobów
     - ReferenceFileSystem dla wirtualnych backupów
-    - fsspec.config.conf — globalna konfiguracja
+    - fsspec.config.conf -- globalna konfiguracja
 
     Usage:
         factory = FSSpecFactory.get_instance()
         factory.configure(protocol="file", cache_size_mb=100)
         fs = factory.get_filesystem()
-        afs = factory.get_async_filesystem()  # ← TOTALNA REWOLUCJA
-        exists = await afs.exists("/path")     # ← czyste await API
+        afs = factory.get_async_filesystem()
+        exists = await afs.exists("/path")
         tx_fs = factory.get_transactional()
         mapper = factory.get_mapper("metadata/")
     """
@@ -533,7 +538,7 @@ class FSSpecFactory:
         http_kwargs: dict[str, Any] | None = None,
         ref_kwargs: dict[str, Any] | None = None,
     ) -> FSSpecFactory:
-        """Skonfiguruj fabrykę — wszystkie parametry z jednego miejsca.
+        """Skonfiguruj fabrykę -- wszystkie parametry z jednego miejsca.
 
         Args:
             protocol: Protokół bazowy ("file", "s3", "memory").
@@ -562,7 +567,7 @@ class FSSpecFactory:
         if ref_kwargs:
             self._ref_kwargs = ref_kwargs
 
-        # Inwaliduj cache — następne get_filesystem() utworzy nowy
+        # Inwaliduj cache -- następne get_filesystem() utworzy nowy
         self._fs = None
         self._afs = None
         self._tx_fs = None
@@ -577,7 +582,7 @@ class FSSpecFactory:
         return self
 
     def configure_from_app_config(self, config: Any) -> FSSpecFactory:
-        """Skonfiguruj z AppConfig — jeden wywołanie dla całego projektu.
+        """Skonfiguruj z AppConfig -- jeden wywołanie dla całego projektu.
 
         Args:
             config: Instancja AppConfig z polami storage_*.
@@ -648,7 +653,7 @@ class FSSpecFactory:
 
         Dla file:// wewnętrznie używa to_thread.run_sync().
         Dla s3:// używa natywnych async coroutines.
-        API jest identyczne — zmiana protokołu nie wymaga zmiany kodu.
+        API jest identyczne -- zmiana protokołu nie wymaga zmiany kodu.
         """
         if self._afs is None or self._afs.fs is not self.get_filesystem():
             self._afs = AsyncFsWrapper(self.get_filesystem())
@@ -672,7 +677,7 @@ class FSSpecFactory:
             prefix: Opcjonalny prefix/ścieżka podrzędna.
 
         Returns:
-            FSMap — MutableMapping dla dict-like dostępu.
+            FSMap -- MutableMapping dla dict-like dostępu.
         """
         import os as _os
 
@@ -712,7 +717,7 @@ class FSSpecFactory:
         return self._transactional
 
     def reset(self) -> None:
-        """Zresetuj fabrykę — force-rebuild przy następnym get_filesystem()."""
+        """Zresetuj fabrykę."""
         self._fs = None
         self._afs = None
         self._tx_fs = None
@@ -727,27 +732,18 @@ class FSSpecFactory:
 
 
 __all__ = [
-    # Transactional
     "TransactionalFileSystem",
-    # Archiwa
     "ZipFileSystem",
     "TarFileSystem",
-    # Cache
     "CachingFileSystem",
     "WholeFileCacheFileSystem",
     "SimpleCacheFileSystem",
     "BlockCacheFileSystem",
-    # Zdalne
     "HTTPFileSystem",
-    # RAM
     "MemoryFileSystem",
-    # Referencyjne
     "ReferenceFileSystem",
-    # Callbacki
     "TqdmCallback",
-    # Kompresja
     "compr",
-    # Flag dostępności
     "HAS_TX_FS",
     "HAS_ZIP_FS",
     "HAS_TAR_FS",
@@ -760,12 +756,9 @@ __all__ = [
     "HAS_REF_FS",
     "HAS_TQDM_CB",
     "HAS_COMPRESSION",
-    # Helplery
     "create_chain",
     "create_optimal_filesystem",
     "configure_fsspec_global",
-    # Fabryka
     "FSSpecFactory",
-    # TOTALNA REWOLUCJA
     "AsyncFsWrapper",
 ]

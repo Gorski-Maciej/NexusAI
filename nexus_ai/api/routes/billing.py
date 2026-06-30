@@ -1,8 +1,8 @@
 """
 Billing estimation API endpoint.
 
-GET /api/v2/billing/estimate — publiczny endpoint do estymacji kosztów,
-zgodny z wzorcem DecisionEngine — reguły first-match-wins w DuckDB.
+GET /api/v2/billing/estimate -- publiczny endpoint do estymacji kosztów,
+zgodny z wzorcem DecisionEngine -- reguły first-match-wins w DuckDB.
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ import duckdb
 from litestar import Controller, get
 from litestar.response import Response
 
-from nexus_ai.api.dto import BillingEstimateResponseDTO, TAG_FINANCE
+from nexus_ai.api.dto import TAG_FINANCE, BillingEstimateResponseDTO
 from nexus_ai.services.billing_estimator import (
     BillingEstimator,
     ensure_schema,

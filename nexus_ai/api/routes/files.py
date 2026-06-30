@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from litestar import Controller, Response, delete, get
 
-from nexus_ai.api.dto import FileDeleteResponseDTO, FileInfoDTO, TAG_FILES
+from nexus_ai.api.dto import TAG_FILES, FileDeleteResponseDTO, FileInfoDTO
 
 
 class FileController(Controller):

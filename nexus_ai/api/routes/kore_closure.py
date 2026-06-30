@@ -7,7 +7,7 @@ from litestar import Controller, get
 from litestar.connection import Request
 from sqlmodel import text
 
-from nexus_ai.api.dto import KoreClosureDTO, TAG_AUDIT
+from nexus_ai.api.dto import TAG_AUDIT, KoreClosureDTO
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
@@ -44,10 +44,10 @@ class KoreClosureController(Controller):
             except Exception as exc:
                 return {"status": "error", "detail": str(exc)}
 
-        # kore_delivery_audit.py removed — legacy, functionality absorbed by Integrity Verifier
+        # kore_delivery_audit.py removed -- legacy, functionality absorbed by Integrity Verifier
         kore_audit = {
             "status": "removed",
-            "detail": "kore_delivery_audit.py removed — replaced by Integrity Verifier",
+            "detail": "kore_delivery_audit.py removed -- replaced by Integrity Verifier",
         }
         summary_path = _root_prj / "reports" / "security_scan_summary.json"
         if summary_path.exists():

@@ -1,21 +1,21 @@
 """
-pdf_endpoints.py — Endpointy Litestar do renderowania i ekstrakcji PDF przez PDFium.
+pdf_endpoints.py -- Endpointy Litestar do renderowania i ekstrakcji PDF przez PDFium.
 
 Zgodnie z audytem technologicznym:
-- Renderowanie stron PDF do PNG/JPEG na żądanie — zero zapisu na dysk
+- Renderowanie stron PDF do PNG/JPEG na żądanie -- zero zapisu na dysk
 - Streaming response przez Litestar + Granian
 - Ekstrakcja tekstu i metadanych
 - Integracja z msgspec dla szybkiej serializacji
 - Wszystkie operacje CPU-bound przez anyio.to_thread.run_sync()
 
 FAZA 5 (nowe endpointy):
-  GET /api/v1/documents/{id}/pages/render-all — streaming wszystkich stron
-  GET /api/v1/documents/{id}/signatures — podpisy cyfrowe
-  GET /api/v1/documents/{id}/form-fields — pola formularza
-  POST /api/v1/documents/{id}/form-fields/fill — wypełnianie formularza
-  GET /api/v1/documents/{id}/pages/{num}/render-enhanced — z preprocessingiem Pillow
-  GET /api/v1/documents/{id}/pages/{num}/render-jpeg — jako JPEG
-  GET /api/v1/health/pdfium/cache — statystyki cache'a
+  GET /api/v1/documents/{id}/pages/render-all -- streaming wszystkich stron
+  GET /api/v1/documents/{id}/signatures -- podpisy cyfrowe
+  GET /api/v1/documents/{id}/form-fields -- pola formularza
+  POST /api/v1/documents/{id}/form-fields/fill -- wypełnianie formularza
+  GET /api/v1/documents/{id}/pages/{num}/render-enhanced -- z preprocessingiem Pillow
+  GET /api/v1/documents/{id}/pages/{num}/render-jpeg -- jako JPEG
+  GET /api/v1/health/pdfium/cache -- statystyki cache'a
 
 Wszystkie endpointy są dostępne pod:
   GET /api/v1/documents/{document_id}/pages/{page_num}/render
@@ -36,18 +36,18 @@ from litestar.response import Response
 from structlog import get_logger
 
 from nexus_ai.core.pdfium import (
-    get_pdf_info,
-    get_pdf_render_cache,
-    render_page_to_png_bytes,
-    render_page_to_jpeg_bytes,
-    render_page_to_pil_enhanced,
-    render_all_pages_to_memory,
+    detect_table_regions,
     extract_text_from_page,
     extract_text_ranges,
-    detect_table_regions,
-    verify_pdf_signatures,
     get_pdf_form_fields,
+    get_pdf_info,
+    get_pdf_render_cache,
+    render_all_pages_to_memory,
+    render_page_to_jpeg_bytes,
+    render_page_to_pil_enhanced,
+    render_page_to_png_bytes,
     save_pdf_with_filled_fields,
+    verify_pdf_signatures,
 )
 
 logger = get_logger("nexus.api.pdf")
@@ -108,8 +108,8 @@ class PDFController(Controller):
     ) -> Response:
         """Renderuj stronę PDF do obrazu PNG.
 
-        - Renderowanie przez silnik Chrome — najwyższa jakość
-        - Streaming response — zero zapisu na dysk
+        - Renderowanie przez silnik Chrome -- najwyższa jakość
+        - Streaming response -- zero zapisu na dysk
         - Cache przez Cache-Control: public
         - Obsługa rotacji i DPI
         - Automatyczne cache'owanie z TTL (FAZA 4)
@@ -162,6 +162,7 @@ class PDFController(Controller):
         rotation: int = 0,
         quality: int = 85,
     ) -> Response:
+        """Render PDF page to JPEG image.
 
         - JPEG z progressive=True dla lepszego UX w przeglądarce
         - Mniejszy rozmiar niż PNG (idealne dla fotografii i skanów)
@@ -217,12 +218,13 @@ class PDFController(Controller):
         dpi: int = 300,
         rotation: int = 0,
     ) -> Response:
+        """Render PDF page with Pillow preprocessing.
 
-        - ImageOps.autocontrast — automatyczne zwiększenie kontrastu
-        - ImageFilter.MedianFilter — denoising (szumy skanera)
-        - ImageFilter.UnsharpMask — wyostrzenie krawędzi znaków
-        - EXIF transpose — korekcja orientacji
-        - Idealne dla OCR — obraz gotowy do Tesseract/PaddleOCR
+        - ImageOps.autocontrast -- automatyczne zwiększenie kontrastu
+        - ImageFilter.MedianFilter -- denoising (szumy skanera)
+        - ImageFilter.UnsharpMask -- wyostrzenie krawędzi znaków
+        - EXIF transpose -- korekcja orientacji
+        - Idealne dla OCR -- obraz gotowy do Tesseract/PaddleOCR
 
         Args:
             document_id: ID dokumentu.
@@ -278,9 +280,10 @@ class PDFController(Controller):
         max_pages: int | None = None,
         format: str = "PNG",
     ) -> Response:
+        """Render all pages as PNG images.
 
         - Renderowanie wszystkich stron jednym wywołaniem
-        - Cache'owanie z TTL — powtórne wywołanie jest błyskawiczne
+        - Cache'owanie z TTL -- powtórne wywołanie jest błyskawiczne
         - Zwraca JSON z base64-encoded obrazami
         - Idealne dla batch OCR i generowania miniaturek
 
@@ -346,7 +349,7 @@ class PDFController(Controller):
         """Pobierz metadane i informacje o dokumencie PDF.
 
         - Jedno wywołanie PDFium zwraca wszystko
-        - Serializacja przez msgspec (10-100× szybciej niż json)
+        - Serializacja przez msgspec (10-100x szybciej niż json)
         - Zwraca: page_count, file_size, metadata, first_page_size, signatures
 
         Returns:
@@ -478,8 +481,9 @@ class PDFController(Controller):
         self,
         document_id: str,
     ) -> Response:
+        """Verify PDF digital signatures.
 
-        PDFium natywnie wspiera weryfikację podpisów cyfrowych — nie wymaga
+        PDFium natywnie wspiera weryfikację podpisów cyfrowych -- nie wymaga
         zewnętrznych bibliotek kryptograficznych.
 
         Returns:
@@ -528,6 +532,7 @@ class PDFController(Controller):
         self,
         document_id: str,
     ) -> Response:
+        """Get PDF form fields.
 
         PDFium natywnie wspiera AcroForms przez pdf.get_form().
         Zwraca typy pól: text, checkbox, radio, listbox, combobox, signature.
@@ -576,8 +581,9 @@ class PDFController(Controller):
         document_id: str,
         data: dict[str, str],
     ) -> Response:
+        """Fill PDF form fields.
 
-        Przyjmuje JSON z mapowaniem field_name → value.
+        Przyjmuje JSON z mapowaniem field_name -> value.
         Zwraca zmodyfikowany PDF jako bytes.
 
         Args:
@@ -638,6 +644,7 @@ class PDFController(Controller):
         description="Get statistics of the PDF page render cache",
     )
     async def pdfium_cache_stats(self) -> dict[str, Any]:
+        """Get PDFium render cache stats.
 
         Zwraca:
         - Rozmiar cache'a
@@ -662,9 +669,10 @@ class PDFController(Controller):
         self,
         document_id: str | None = None,
     ) -> dict[str, Any]:
+        """Invalidate PDF render cache.
 
         Args:
-            document_id: Opcjonalnie — unieważnij tylko dla tego dokumentu.
+            document_id: Opcjonalnie -- unieważnij tylko dla tego dokumentu.
 
         Returns:
             JSON z potwierdzeniem unieważnienia.

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from msgspec import Struct
 from typing import Any, final
+
+from msgspec import Struct
 
 from nexus_ai.db.analytics import DuckDBManager
 
@@ -13,7 +14,7 @@ class AccountSuggestion(Struct):
 
 
 class AccountantLogic:
-    """Logika biznesowa księgowego — deleguje do ZPKEngine.
+    """Logika biznesowa księgowego -- deleguje do ZPKEngine.
 
     Zgodnie z aa3fvcx.txt: Decision Engine oparty na DuckDB/MS SQL,
     bez konkretnych modeli LLM ani agentów AI.

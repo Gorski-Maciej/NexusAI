@@ -1,8 +1,8 @@
 """
-OpenTelemetry — consolidated module for NexusAI observability.
+OpenTelemetry -- consolidated module for NexusAI observability.
 
 Zastępuje 4 osobne pliki: otel_tracing.py, otel_config.py, otel_logging.py, otel_instrument.py.
-Zachowuje pełną kompatybilność wsteczną — stare pliki są shimami importującymi z tego modułu.
+Zachowuje pełną kompatybilność wsteczną -- stare pliki są shimami importującymi z tego modułu.
 
 Usage:
     from nexus_ai.core.otel import (
@@ -18,11 +18,11 @@ from __future__ import annotations
 import atexit
 import logging
 import os
-import time
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
 from functools import wraps
-from typing import Any, Callable, Iterator, TypeVar
+from typing import Any, TypeVar
 
 from structlog import get_logger
 
@@ -30,7 +30,7 @@ from nexus_ai.services.otel_fallback import FileSpanBuffer
 
 logger = get_logger("nexus.core.otel")
 
-# ── Supermoc: Semantic Conventions — standardowe atrybuty OTel ────────────
+# ── Supermoc: Semantic Conventions -- standardowe atrybuty OTel ────────────
 try:
     from opentelemetry.semconv.trace import SpanAttributes
     HAS_SEMCONV = True
@@ -99,7 +99,7 @@ def _resolve_semconv_key(key: str) -> str:
 
 def create_otel_resource() -> Any:
     """Automatyczne wykrywanie zasobów OTel."""
-    from opentelemetry.sdk.resources import Resource, ProcessResourceDetector
+    from opentelemetry.sdk.resources import ProcessResourceDetector, Resource
     custom_attrs: dict[str, str] = {}
     if OTEL_RESOURCE_ATTRIBUTES:
         for pair in OTEL_RESOURCE_ATTRIBUTES.split(","):
@@ -350,7 +350,9 @@ def create_meter_provider(resource: Any | None = None, views: list[Any] | None =
         readers: list[Any] = []
         if OTEL_EXPORTER_OTLP_ENDPOINT:
             try:
-                from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
+                from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import (
+                    OTLPMetricExporter,
+                )
                 readers.append(PeriodicExportingMetricReader(
                     OTLPMetricExporter(endpoint=OTEL_EXPORTER_OTLP_ENDPOINT, insecure=True, timeout=10),
                     export_interval_ms=30000,
@@ -369,7 +371,8 @@ def _otel_atexit_shutdown() -> None:
     for ref in (_tracer_provider_ref, _meter_provider_ref, _logger_provider_ref):
         if ref is not None:
             try:
-                ref.shutdown()            except Exception as exc:
+                ref.shutdown()
+            except Exception as exc:
                 logger.debug("[OTEL] Shutdown error for %s: %s", type(ref).__name__, exc)
 def register_otel_shutdown(tracer_provider: Any | None = None, meter_provider: Any | None = None, logger_provider: Any | None = None) -> None:
     global _tracer_provider_ref, _meter_provider_ref, _logger_provider_ref

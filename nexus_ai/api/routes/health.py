@@ -1,4 +1,4 @@
-"""Health check endpoints — z prawdziwym TigerBeetle health check.
+"""Health check endpoints -- z prawdziwym TigerBeetle health check.
 
 - Real TigerBeetle connection check przez lookup_accounts
 - Sprawdzanie stanu cluster/time
@@ -8,17 +8,15 @@
 from __future__ import annotations
 
 import os
-
-import anyio
 from pathlib import Path
 from typing import Any
 
+import anyio
 import pendulum
 from litestar import Controller, get
-from sqlmodel import func, select, text
-from sqlmodel import Session
+from sqlmodel import Session, func, select, text
 
-from nexus_ai.api.dto import GenericDictDTO, HealthResponseDTO, TAG_HEALTH
+from nexus_ai.api.dto import TAG_HEALTH, GenericDictDTO, HealthResponseDTO
 from nexus_ai.db.models import OutboxEvent, OutboxStatus
 
 
@@ -206,10 +204,10 @@ class HealthController(Controller):
     async def _system_resources(self) -> dict[str, Any]:
         """Zwróć metryki systemowe z psutil dla /health/detailed.
 
-          - SystemMonitor.collect_all() — CPU, RAM, swap, dysk, sieć, sensory
-          - ProcessMonitor.collect_metrics() — RSS, USS, CPU% procesu
-          - boot_time() — uptime systemu
-          - getloadavg() — load average
+          - SystemMonitor.collect_all() -- CPU, RAM, swap, dysk, sieć, sensory
+          - ProcessMonitor.collect_metrics() -- RSS, USS, CPU% procesu
+          - boot_time() -- uptime systemu
+          - getloadavg() -- load average
         """
         try:
             from nexus_ai.core.monitor import process_monitor, system_monitor
@@ -259,7 +257,7 @@ class HealthController(Controller):
         return Path(path).exists()
 
 
-    # Singleton TB client dla health checków — współdzielony przez DI
+    # Singleton TB client dla health checków -- współdzielony przez DI
     _tb_client: Any = None
 
     def _get_tb_client(self) -> Any:
@@ -281,7 +279,7 @@ class HealthController(Controller):
     async def _tigerbeetle_check(self) -> dict[str, Any]:
         """Check TigerBeetle connection using singleton client.
 
-        - Singleton TB client (thread-safe) — brak wycieku socketów
+        - Singleton TB client (thread-safe) -- brak wycieku socketów
         - Real connection test przez lookup_accounts
         - Sprawdzanie liczby kont i stanu clustera
         - Fallback do "NOT_INSTALLED" gdy brak klienta
@@ -355,12 +353,13 @@ class HealthController(Controller):
     async def _audit_chain_check(self) -> bool:
         """Sprawdza integralność łańcucha decyzji w decision_traces.
 
-        Używa verify_chain_integrity() z tax/audit.py — Rust-native weryfikacja
+        Używa verify_chain_integrity() z tax/audit.py -- Rust-native weryfikacja
         SHA-256 hash chain dla wszystkich decyzji podatkowych.
         (Zastępuje dawny AuditLogger.verify_chain() na tabeli audit_log.)
         """
         try:
             import duckdb
+
             from core.config import AppConfig
             from nexus_ai.tax import verify_chain_integrity
 
@@ -477,4 +476,4 @@ class HealthController(Controller):
             return {"status": "ERROR", "message": str(exc)}
 
 
-# HealthControllerV2 removed — use HealthController directly in both v1 and v2 routers
+# HealthControllerV2 removed -- use HealthController directly in both v1 and v2 routers

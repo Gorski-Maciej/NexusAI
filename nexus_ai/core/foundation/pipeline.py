@@ -1,4 +1,4 @@
-"""Pipeline pattern — sekwencyjne przetwarzanie danych przez Step'y.
+"""Pipeline pattern -- sekwencyjne przetwarzanie danych przez Step'y.
 
 Eliminuje powtarzalne sekwencje wywołań funkcji.
 Zastępuje: osobną orkiestrację w OCR, walidacji, decyzjach.
@@ -15,13 +15,13 @@ Usage:
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Generic, TypeVar
+from typing import Any, TypeVar
 
 T = TypeVar("T")
 
 
-class PipelineContext(Generic[T]):
-    """Kontekst pipeline'u — przenosi dane między krokami.
+class PipelineContext[T]:
+    """Kontekst pipeline'u -- przenosi dane między krokami.
 
     Attributes:
         data: Główne dane przetwarzane w pipeline.
@@ -41,7 +41,7 @@ class PipelineContext(Generic[T]):
         self.errors.append(error)
 
 
-class Step(ABC, Generic[T]):
+class Step[T](ABC):
     """Pojedynczy krok w pipeline przetwarzania.
 
     Każdy krok implementuje metodę process() która otrzymuje
@@ -69,7 +69,7 @@ class Step(ABC, Generic[T]):
         return ctx
 
 
-class Pipeline(Generic[T]):
+class Pipeline[T]:
     """Sekwencyjny pipeline kroków przetwarzania.
 
     Wykonuje kroki po kolei, przekazując kontekst między nimi.

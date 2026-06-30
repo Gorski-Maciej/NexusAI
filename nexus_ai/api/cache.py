@@ -1,5 +1,5 @@
 """
-api/cache.py — API-level cache using core NexusCache.
+api/cache.py -- API-level cache using core NexusCache.
 
 Provides:
 - ``nexus_cache``: Global NexusCache singleton (via ``core.cache.get_cache()``)
@@ -9,7 +9,7 @@ Provides:
 
 Uses ``core.cache.NexusCache`` (diskcache-backed, msgspec serialization)
 zamiast osobnej implementacji ``_MemoryFallback``. Spójne z resztą stacku cache
-— ten sam singleton co ``DecisionEngine``, ``SemanticGuard`` itp.
+-- ten sam singleton co ``DecisionEngine``, ``SemanticGuard`` itp.
 
 Użycie:
     from nexus_ai.api.cache import nexus_cache
@@ -32,7 +32,7 @@ logger = get_logger("nexus.api.cache")
 
 # Global NexusCache singleton (core.cache singleton via get_cache())
 # Współdzielony z DecisionEngine, SemanticGuard itp.
-# Klucze API mają prefix "ttlcache:" — brak kolizji z innymi podsystemami.
+# Klucze API mają prefix "ttlcache:" -- brak kolizji z innymi podsystemami.
 nexus_cache = get_cache()
 
 

@@ -1,25 +1,25 @@
-"""File-based fallback buffer for telemetry export failures — DuckDB + Parquet.
+"""File-based fallback buffer for telemetry export failures -- DuckDB + Parquet.
 
-- Zapis do Parquet zamiast JSONL — 10× mniejszy rozmiar na dysku
+- Zapis do Parquet zamiast JSONL -- 10x mniejszy rozmiar na dysku
 - Możliwość odpytywania przez SQL (DuckDB czyta Parquet bezpośrednio)
 - Automatyczna kompresja kolumnowa (ZSTD)
 - Szybszy odczyt/zapis dla dużych wolumenów
 
-- Predicate pushdown — odczytuje tylko pasujące wiersze
-- Projection pushdown — odczytuje tylko potrzebne kolumny
-- Hive partycjonowanie (year/month/day) — szybkie odcięcie partycji
-- ParquetWriter streaming — append bez przebudowy całego pliku
-- Row group metadata — optymalizacja odczytu
+- Predicate pushdown -- odczytuje tylko pasujące wiersze
+- Projection pushdown -- odczytuje tylko potrzebne kolumny
+- Hive partycjonowanie (year/month/day) -- szybkie odcięcie partycji
+- ParquetWriter streaming -- append bez przebudowy całego pliku
+- Row group metadata -- optymalizacja odczytu
 """
 
 from __future__ import annotations
 
-from msgspec import Struct
-from msgspec.structs import asdict
 from pathlib import Path
 from typing import Any, final
 
 import pendulum
+from msgspec import Struct
+from msgspec.structs import asdict
 
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
 
@@ -34,14 +34,14 @@ class BufferedSpan(Struct):
 
 @final
 class FileSpanBuffer:
-    """BUFFER telemetrii — DuckDB + Parquet zamiast JSONL.
+    """BUFFER telemetrii -- DuckDB + Parquet zamiast JSONL.
 
-    - ``COPY table TO 'file.parquet' (FORMAT PARQUET)`` — zapis do Parquet
-    - ``read_parquet('telemetry/*.parquet')`` — odczyt przez DuckDB SQL
-    - Parquet jest 10× mniejszy od JSONL (kompresja kolumnowa ZSTD)
+    - ``COPY table TO 'file.parquet' (FORMAT PARQUET)`` -- zapis do Parquet
+    - ``read_parquet('telemetry/*.parquet')`` -- odczyt przez DuckDB SQL
+    - Parquet jest 10x mniejszy od JSONL (kompresja kolumnowa ZSTD)
     - ``GENERATE_SERIES`` dla generowania timestampów
 
-    - **Hive partycjonowanie**: katalogi ``year=2026/month=06/day=17/``
+    - **Hive partycjonowanie**: katalogi ``year=2026/month=6/day=17/``
     - **Predicate pushdown**: ``ds.dataset().to_table(filter=...)``
     - **Projection pushdown**: ``ds.dataset().to_table(columns=[...])``
     - **ParquetWriter streaming**: append do jednego pliku dziennego
@@ -65,11 +65,11 @@ class FileSpanBuffer:
         self.file_path.parent.mkdir(parents=True, exist_ok=True)
         self.parquet_dir.mkdir(parents=True, exist_ok=True)
 
-        self._daily_writer: dict[str, Any] = {}  # key="YYYY-MM-DD" → ParquetWriter
+        self._daily_writer: dict[str, Any] = {}  # key="YYYY-MM-DD" -> ParquetWriter
 
-    # Partycjonowanie po dacie: year=2026/month=06/day=17/
+    # Partycjonowanie po dacie: year=2026/month=6/day=17/
     # Przy odczycie PyArrow Dataset automatycznie odcina partycje
-    # które nie pasują do filtru — czyta tylko potrzebne katalogi.
+    # które nie pasują do filtru -- czyta tylko potrzebne katalogi.
 
     def _partition_path(self, dt: pendulum.DateTime) -> str:
         """Zwróć ścieżkę Hive partycjonowania dla daty."""
@@ -83,6 +83,7 @@ class FileSpanBuffer:
         return part_path / f"spans_{dt.format('YYYYMMDD')}.parquet"
 
     def _get_or_create_writer(self, table_schema: Any, dt: pendulum.DateTime | None = None) -> Any:
+        """Get or create ParquetWriter for a day.
 
         ``ParquetWriter`` z ``write_table()`` zamiast tworzenia osobnego pliku
         dla każdego batcha. Jeden plik dzienny z wieloma row group.
@@ -121,14 +122,15 @@ class FileSpanBuffer:
                 pass
 
     # PyArrow ``parquet.write_table()`` i ``parquet.read_table()`` są
-    # bezpośrednimi interfejsami do formatu Parquet — bez pośrednictwa
+    # bezpośrednimi interfejsami do formatu Parquet -- bez pośrednictwa
     # DuckDB SQL. Zysk: mniej pamięci, brak narzutu SQL engine.
     # ``pa.dataset.dataset()`` z ``pyarrow.fs.LocalFileSystem`` czyta
     # wszystkie pliki *.parquet z filter/predicate pushdown.
 
     def _append_parquet(self, records: list[dict[str, Any]], batch_id: str = "") -> None:
+        """Append records to Parquet file.
 
-        ``ParquetWriter`` z ``write_table()`` — append do dziennego pliku
+        ``ParquetWriter`` z ``write_table()`` -- append do dziennego pliku
         zamiast tworzenia osobnego pliku na każdy batch.
         Połączone z Hive partycjonowaniem (year/month/day).
         Zysk: mniej plików, lepsza kompresja, szybsze odczyty.
@@ -140,7 +142,7 @@ class FileSpanBuffer:
 
         dt = pendulum.now()
 
-        # PyArrow buduje tablicę kolumnową z listy słowników — bez JSON.
+        # PyArrow buduje tablicę kolumnową z listy słowników -- bez JSON.
         # ``pa.Table.from_pylist()`` inferuje typy automatycznie.
         table = pa.Table.from_pylist(records)
 
@@ -154,17 +156,19 @@ class FileSpanBuffer:
         filter_expr: Any = None,
         columns: list[str] | None = None,
     ) -> list[dict[str, Any]]:
+        """Read all Parquet files with predicate pushdown.
+
         z **predicate pushdown** i **projection pushdown**.
 
-        - ``filter`` — predicate pushdown: DuckDB/PyArrow czyta tylko
+        - ``filter`` -- predicate pushdown: DuckDB/PyArrow czyta tylko
           row groups które pasują do warunku (na podstawie statystyk)
-        - ``columns`` — projection pushdown: czyta tylko potrzebne kolumny
-        - Hive partycjonowanie: ``year=2026/month=06/`` — odcięcie partycji
+        - ``columns`` -- projection pushdown: czyta tylko potrzebne kolumny
+        - Hive partycjonowanie: ``year=2026/month=6/`` -- odcięcie partycji
 
         ``pyarrow.dataset.dataset()`` z ``pyarrow.fs.LocalFileSystem``
         czyta wszystkie pliki *.parquet z filtrem i rzutowaniem.
 
-        Zysk: 2-10× szybszy odczyt, 80% mniej RAM.
+        Zysk: 2-10x szybszy odczyt.
 
         Args:
             filter_expr: Wyrażenie filtru (np. ds.field("name").isin([...]))
@@ -182,7 +186,7 @@ class FileSpanBuffer:
             return []
 
         try:
-            # ``partitioning=ds.HivePartitioning(...)`` — PyArrow automatycznie
+            # ``partitioning=ds.HivePartitioning(...)`` -- PyArrow automatycznie
             # rozpoznaje katalogi year=/month=/day=/ jako partycje.
             # Przy odczycie partycje które nie pasują do filtru są pomijane.
             dataset = ds.dataset(
@@ -200,15 +204,15 @@ class FileSpanBuffer:
                 ),
             )
 
-            # ``filter`` — DuckDB/PyArrow czyta tylko row groups które
+            # ``filter`` -- DuckDB/PyArrow czyta tylko row groups które
             # pasują do warunku (predicate pushdown na statystykach).
-            # ``columns`` — czyta tylko wymienione kolumny.
+            # ``columns`` -- czyta tylko wymienione kolumny.
             table = dataset.to_table(
                 filter=filter_expr,
                 columns=columns,
             )
 
-            # Konwertuj pa.Table → list[dict]
+            # Konwertuj pa.Table -> list[dict]
             return table.to_pylist()
 
         except Exception as exc:
@@ -319,9 +323,10 @@ class FileSpanBuffer:
         since: str | None = None,
         columns: list[str] | None = None,
     ) -> list[dict[str, Any]]:
+        """Query spans with predicate pushdown.
 
-        - ``filter`` — predicate pushdown: czyta tylko row groups pasujące
-        - ``columns`` — projection pushdown: czyta tylko potrzebne kolumny
+        - ``filter`` -- predicate pushdown: czyta tylko row groups pasujące
+        - ``columns`` -- projection pushdown: czyta tylko potrzebne kolumny
         - Hive partycjonowanie: ``since`` odcina stare partycje
 
         Args:
@@ -361,10 +366,11 @@ class FileSpanBuffer:
         with self._file_lock():
             return self._read_parquet_all(filter_expr=filter_expr, columns=columns)
 
-    # ``pq.read_metadata()`` odczytuje statystyki row group — min/max/null_count
+    # ``pq.read_metadata()`` odczytuje statystyki row group -- min/max/null_count
     # dla każdej kolumny. Używane do optymalizacji odczytu.
 
     def get_storage_stats(self) -> dict[str, Any]:
+        """Get storage statistics.
 
         - Row group statistics: min/max/null_count dla każdej kolumny
         - Page index: szybkie skipowanie niepotrzebnych stron

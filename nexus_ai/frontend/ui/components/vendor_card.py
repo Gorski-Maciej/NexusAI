@@ -1,4 +1,4 @@
-"""Vendor Card — Karta dostawcy z wykresem trendów, animacjami i hover.
+"""Vendor Card -- Karta dostawcy z wykresem trendów, animacjami i hover.
 
   - AnimatedContainer zamiast statycznego Card
   - Trend chart z formatowaniem kwot

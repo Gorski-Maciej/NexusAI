@@ -1,4 +1,4 @@
-"""shortcuts.py — Globalne skróty klawiszowe z full spectrum Flet 0.28+.
+"""shortcuts.py -- Globalne skróty klawiszowe z full spectrum Flet 0.28+.
 
   - page.on_keyboard_event dla globalnych skrótów
   - page.pubsub.send_all_on_topic dla event-driven shortcuts

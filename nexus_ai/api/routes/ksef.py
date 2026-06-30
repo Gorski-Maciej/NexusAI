@@ -1,8 +1,8 @@
 """
-KSeF export endpoint — generowanie i pobieranie XML FA_VAT.
+KSeF export endpoint -- generowanie i pobieranie XML FA_VAT.
 
 Endpoint:
-- GET /api/v2/invoice/{id}/ksef  → XML FA_VAT do pobrania
+- GET /api/v2/invoice/{id}/ksef  -> XML FA_VAT do pobrania
 
 Zabezpieczenie: tylko rola accountant lub owner.
 """
@@ -134,7 +134,7 @@ def _load_invoice(conn, invoice_id: str) -> dict[str, Any] | None:
                 continue
 
     # Fallback: return minimal data for the generator (empty invoice)
-    logger.warning("Invoice %s not found in database — returning empty data", invoice_id)
+    logger.warning("Invoice %s not found in database -- returning empty data", invoice_id)
     return {
         "invoice_id": invoice_id,
         "number": f"FV/{invoice_id[:8]}",

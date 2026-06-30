@@ -1,12 +1,12 @@
 """
-Trace Generator — generator ścieżki decyzyjnej (Element 1).
+Trace Generator -- generator ścieżki decyzyjnej (Element 1).
 
 Komponent, który na podstawie werdyktu Zen‑Engine (oraz śladu ewaluacji)
 generuje czytelny dla człowieka opis decyzji podatkowej.
 
 Dwa podejścia:
-  A (szablony) — description_template z reguły z podmianą {placeholder}
-  B (domyślny) — automatyczny opis z werdyktu i kontekstu
+  A (szablony) -- description_template z reguły z podmianą {placeholder}
+  B (domyślny) -- automatyczny opis z werdyktu i kontekstu
 
 Usage:
     generator = TraceGenerator()
@@ -63,7 +63,7 @@ _TEMPLATE_PATTERN = re.compile(r"\{(\w+)\}")
 
 @final
 class TraceGenerator:
-    """Generator Ścieżki Decyzyjnej — tworzy czytelny opis decyzji.
+    """Generator Ścieżki Decyzyjnej -- tworzy czytelny opis decyzji.
 
     Usage:
         generator = TraceGenerator()
@@ -197,7 +197,7 @@ class TraceGenerator:
         if final_verdict:
             trace["final_verdict"] = final_verdict
         if context:
-            # Nie kopiuj całego kontekstu — tylko kluczowe pola
+            # Nie kopiuj całego kontekstu -- tylko kluczowe pola
             trace["context_snapshot"] = {
                 k: context[k]
                 for k in (

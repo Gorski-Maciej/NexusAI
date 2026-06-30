@@ -1,15 +1,15 @@
-"""AsyncNotificationService — async notification service backed by sqlite3.
+"""AsyncNotificationService -- async notification service backed by sqlite3.
 
 Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync.
 """
 
 from __future__ import annotations
 
-import anyio
 import sqlite3
 from pathlib import Path
 from typing import Any, final
 
+import anyio
 import pendulum
 from structlog import get_logger
 
@@ -167,7 +167,7 @@ class DailyBriefingGenerator:
                 {
                     "type": "no_activity",
                     "severity": "info",
-                    "message": "Brak aktywności — żadne faktury nie zostały dzisiaj przetworzone",
+                    "message": "Brak aktywności -- żadne faktury nie zostały dzisiaj przetworzone",
                 }
             )
         return alerts
@@ -262,7 +262,7 @@ class AsyncNotificationService(AsyncBaseService):
             if decisions:
                 await self._add_notification(
                     user_id=user_id,
-                    title=f"Codzienne podsumowanie — {len(decisions)} decyzji",
+                    title=f"Codzienne podsumowanie -- {len(decisions)} decyzji",
                     message=msgspec_dumps(briefing, ensure_ascii=False),
                     notification_type="daily_briefing",
                 )
@@ -286,7 +286,7 @@ class AsyncNotificationService(AsyncBaseService):
         if decisions:
             await self._add_notification(
                 user_id=user_id,
-                title=f"Codzienne podsumowanie — {len(decisions)} decyzji",
+                title=f"Codzienne podsumowanie -- {len(decisions)} decyzji",
                 message=msgspec_dumps(briefing, ensure_ascii=False),
                 notification_type="daily_briefing",
             )
@@ -478,7 +478,7 @@ class AsyncNotificationService(AsyncBaseService):
                 db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True
             )
             try:
-                # DuckDB execute() jest SYNC — wołamy w thread aby nie blokować async loop
+                # DuckDB execute() jest SYNC -- wołamy w thread aby nie blokować async loop
                 rows = await anyio.to_thread.run_sync(
                     mgr.execute,
                     """

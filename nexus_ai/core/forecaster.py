@@ -1,6 +1,7 @@
+from pathlib import Path
+
 import pendulum
 import polars as pl
-from pathlib import Path
 
 from nexus_ai.db.analytics import DuckDBManager
 
@@ -8,16 +9,16 @@ from nexus_ai.db.analytics import DuckDBManager
 class CashflowForecaster:
     """Przewiduje saldo firmy na podstawie trendów historycznych z DuckDB (Polars).
 
-    - LazyFrame API — ``pl.sql()`` zamiast ręcznego ``pl.DataFrame(rows, ...)``
-    - **Polars SQLContext** — ``PolarsSQLContext`` dla SQL + expressions pipeline
-    - Streaming — ``collect(streaming=True)`` dla danych > RAM
-    - ``sink_parquet()`` — zapis prognozy bezpośrednio do Parquet
-    - ``scan_parquet()`` — leniwe skanowanie Parquet (czyta tylko potrzebne kolumny)
-    - ``shrink_dtype()`` — automatyczne downcastowanie typów (-50% RAM)
-    - ``meta.optimize()`` — wgląd w plan zapytania
+    - LazyFrame API -- ``pl.sql()`` zamiast ręcznego ``pl.DataFrame(rows, ...)``
+    - **Polars SQLContext** -- ``PolarsSQLContext`` dla SQL + expressions pipeline
+    - Streaming -- ``collect(streaming=True)`` dla danych > RAM
+    - ``sink_parquet()`` -- zapis prognozy bezpośrednio do Parquet
+    - ``scan_parquet()`` -- leniwe skanowanie Parquet (czyta tylko potrzebne kolumny)
+    - ``shrink_dtype()`` -- automatyczne downcastowanie typów (-50% RAM)
+    - ``meta.optimize()`` -- wgląd w plan zapytania
 
-    - **pl.scan_parquet()** — leniwe skanowanie plików Parquet
-    - **pl.scan_parquet() + streaming** — przetwarzanie > RAM
+    - **pl.scan_parquet()** -- leniwe skanowanie plików Parquet
+    - **pl.scan_parquet() + streaming** -- przetwarzanie > RAM
     - **Zapis prognoz do Parquet** z partycjonowaniem
     - **Odczyt historycznych prognoz** przez scan_parquet
     """
@@ -29,8 +30,9 @@ class CashflowForecaster:
 
 
     def _save_forecast_to_parquet(self, df: pl.DataFrame) -> str:
+        """Save forecast to Parquet using sink_parquet().
 
-        Używa ``sink_parquet()`` z Polars — zapisuje wynik bezpośrednio
+        Używa ``sink_parquet()`` z Polars -- zapisuje wynik bezpośrednio
         do Parquet bez alokacji w RAM. Partycjonowanie po roku/miesiącu.
         Zysk: zero-copy zapis, szybkie odczyty historyczne.
         """
@@ -51,12 +53,7 @@ class CashflowForecaster:
         since: str | None = None,
         limit: int = 100,
     ) -> pl.DataFrame | None:
-
-        ``pl.scan_parquet()`` nie ładuje danych do RAM — buduje LazyFrame.
-        Dopiero ``collect()`` wykonuje zapytanie, i to z projection pushdown
-        (czyta tylko potrzebne kolumny z Parquet).
-        Zysk: 2-10× szybszy odczyt, 0 alokacji RAM na niepotrzebne dane.
-        """
+        """Load historical forecasts from Parquet files."""
         parquet_files = sorted(self.parquet_dir.rglob("*.parquet"))
         if not parquet_files:
             return None
@@ -69,11 +66,14 @@ class CashflowForecaster:
         return lazy.collect(streaming=True).head(limit)
 
     async def predict_liquidity_gap(self, days_ahead: int = 30) -> dict:
-        # Zamiast ``pl.DataFrame(rows, schema=..., orient="row")``
-        # używamy ``pl.from_arrow()`` dla zero-copy z DuckDB.
-        # Opcjonalnie można użyć ``PolarsSQLContext`` dla integracji
-        # SQL z wyrażeniami Polars (patrz: predict_with_sql_context).
-        query = """
+        """Predict liquidity gap using DuckDB + Polars.
+
+        # Zamiast ``pl.DataFrame(rows, schema=..., orient=...)``
+        # uzywamy ``pl.from_arrow()`` dla zero-copy z DuckDB.
+        # Opcjonalnie mozna uzyc ``PolarsSQLContext`` dla integracji
+        # SQL z wyrazeniami Polars.
+        """
+        query = '''
         WITH daily AS (
             SELECT
                 CAST(issue_date AS DATE) as date,
@@ -88,14 +88,14 @@ class CashflowForecaster:
             SUM(daily_delta) OVER (ORDER BY date) AS cumulative_delta
         FROM daily
         ORDER BY date
-        """
+        '''
 
         # DuckDB produkuje Arrow Table, Polars konsumuje bez kopiowania.
         arrow_table = self.db.execute_arrow(query)
         if arrow_table is None or arrow_table.num_rows < 5:
             return {"status": "INSUFFICIENT_DATA"}
 
-        # ``pl.from_arrow()`` nie kopiuje danych — Arrow buffer
+        # ``pl.from_arrow()`` nie kopiuje danych -- Arrow buffer
         # jest bezpośrednio interpretowany przez Polars.
         lazy_df = pl.from_arrow(arrow_table).lazy()
 
@@ -103,7 +103,7 @@ class CashflowForecaster:
         lookback = 30
 
         # Dla dużych zbiorów danych, streaming wykonuje zapytanie
-        # w batchach — nie ładuje wszystkiego do RAM.
+        # w batchach -- nie ładuje wszystkiego do RAM.
         eager = lazy_df.collect(streaming=True)
 
         optimized = eager.shrink_dtype()

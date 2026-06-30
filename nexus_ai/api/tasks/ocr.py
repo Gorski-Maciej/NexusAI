@@ -1,5 +1,5 @@
 """
-OCR pipeline tasks — extracted from api/tasks.py (FAZA V modularyzacji).
+OCR pipeline tasks -- extracted from api/tasks.py (FAZA V modularyzacji).
 
 Zawiera:
 - process_invoice_ocr: główny pipeline OCR
@@ -23,7 +23,7 @@ from nexus_ai.core.config import AppConfig
 from nexus_ai.core.decision_engine import classify_invoice
 from nexus_ai.core.di import get_config, get_db_session, get_engine
 
-# Niepotrzebne importy usunięte — DecodeError i msgspec_loads nie są używane w tym module
+# Niepotrzebne importy usunięte -- DecodeError i msgspec_loads nie są używane w tym module
 from nexus_ai.pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
 from nexus_ai.services.accounting import AccountingService
 from nexus_ai.tax.exceptions import NoMatchingRuleError

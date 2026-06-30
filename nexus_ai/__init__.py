@@ -1,5 +1,5 @@
 """
-NexusAI — Ultralekki, autonomiczny system księgowy z AI.
+NexusAI -- Ultralekki, autonomiczny system księgowy z AI.
 
 Główny pakiet aplikacji.
 """

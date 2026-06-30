@@ -88,7 +88,7 @@ class TaskController(Controller):
         from nexus_ai.core import nats_utils
         from nexus_ai.core.config import AppConfig
 
-        config = AppConfig()
+        AppConfig()
         await nats_utils.publish_event(
             f"task.cancel.{task_id}",
             {"task_id": task_id, "cancelled_at": pendulum.now("UTC").isoformat()},

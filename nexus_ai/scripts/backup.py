@@ -2,13 +2,13 @@
 """
 Backup script using fsspec for unified file system access.
 
-- ``fsspec.open()`` zamiast ``zipfile`` — działa z protokołami file://, s3://, sftp://
-- ``fsspec.get_mapper()`` — dict-like interface do backupu
-- ``fsspec.implementations.zip.ZipFileSystem`` — dostęp do ZIP bez rozpakowywania
-- ``TqdmCallback`` — progress bary podczas backupu
-- ``CachingFileSystem`` — cache dla szybkiego przeglądania backupów
-- ``TransactionalFileSystem`` — atomowe tworzenie backupów
-- ``MemoryFileSystem`` — tymczasowy bufor w RAM
+- ``fsspec.open()`` zamiast ``zipfile`` -- działa z protokołami file://, s3://, sftp://
+- ``fsspec.get_mapper()`` -- dict-like interface do backupu
+- ``fsspec.implementations.zip.ZipFileSystem`` -- dostęp do ZIP bez rozpakowywania
+- ``TqdmCallback`` -- progress bary podczas backupu
+- ``CachingFileSystem`` -- cache dla szybkiego przeglądania backupów
+- ``TransactionalFileSystem`` -- atomowe tworzenie backupów
+- ``MemoryFileSystem`` -- tymczasowy bufor w RAM
 - Zmiana storage_protocol w config TOML zmienia backend bez zmiany kodu
 """
 
@@ -21,23 +21,23 @@ from typing import Any
 
 import fsspec
 import pendulum
+
+from nexus_ai.core.config import AppConfig
 from nexus_ai.core.fsspec_compat import (
+    HAS_TQDM_CB,
     CachingFileSystem,
     MemoryFileSystem,
     TqdmCallback,
     TransactionalFileSystem,
     ZipFileSystem,
-    HAS_TQDM_CB,
 )
-
-from nexus_ai.core.config import AppConfig
 
 BACKUP_CACHE_SIZE_MB = 500
 
 
 def _setup_fs(config: AppConfig):
     """Utwórz skonfigurowany fsspec filesystem z cache i transactional support."""
-    raw_fs = fsspec.filesystem(config.storage_protocol, auto_mkdir=True)
+    fsspec.filesystem(config.storage_protocol, auto_mkdir=True)
 
     cache_fs = CachingFileSystem(
         target_protocol=config.storage_protocol,
@@ -114,7 +114,7 @@ def create_backup():
                     if cb:
                         cb.__exit__(None, None, None)
         else:
-            mem_fs = MemoryFileSystem()
+            MemoryFileSystem()
             buf = io.BytesIO()
 
             with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zipf:
@@ -217,7 +217,7 @@ def list_backups() -> list[dict[str, Any]]:
     if not backup_dir.exists():
         return []
 
-    fs = fsspec.filesystem(config.storage_protocol)
+    fsspec.filesystem(config.storage_protocol)
     backups = []
 
     meta = _get_backup_meta_mapper(config)

@@ -1,8 +1,8 @@
-"""taskiq_events.py — Generic Taskiq handlers for domain event emission.
+"""taskiq_events.py -- Generic Taskiq handlers for domain event emission.
 
 Consolidated from 11 separate @broker.task handlers into 2 generic handlers:
-  1. emit_event — generic event emitter using DomainEvent._registry + match/case
-  2. emit_domain_event — fallback for custom event types
+  1. emit_event -- generic event emitter using DomainEvent._registry + match/case
+  2. emit_domain_event -- fallback for custom event types
 
 Uses DomainEvent._registry (auto-populated by __init_subclass__) for type dispatch.
 """
@@ -79,14 +79,14 @@ async def _emit_event(aggregate_type: str, aggregate_id: str, event: DomainEvent
             if not await jetstream.publish(event):
                 logger.warning("[EVENT-TASKS] JetStream publish failed for %s:%s", event.event_type, event.aggregate_id)
         else:
-            logger.debug("[EVENT-TASKS] No JetStream — event %s:%s stored locally", event.event_type, event.aggregate_id)
+            logger.debug("[EVENT-TASKS] No JetStream -- event %s:%s stored locally", event.event_type, event.aggregate_id)
         return event.event_id
     except Exception as exc:
         logger.error("[EVENT-TASKS] Failed to emit %s:%s: %s", event.event_type, event.aggregate_id, exc)
         raise
 
 
-# ── Event constructors registry — maps event_type -> (aggregate_type, constructor) ──
+# ── Event constructors registry -- maps event_type -> (aggregate_type, constructor) ──
 
 _EVENT_BUILDERS: dict[str, tuple[str, type[DomainEvent], set[str]]] = {
     "decision.made": ("decision", DecisionMade, {"invoice_id", "decision", "trust_score", "ai_confidence", "alpha_vote", "beta_vote", "gamma_vote", "decision_pattern", "reasoning"}),
@@ -108,7 +108,7 @@ _EVENT_BUILDERS: dict[str, tuple[str, type[DomainEvent], set[str]]] = {
     timeout=30.0,
 )
 async def emit_event_task(event_type: str, aggregate_id: str, **fields: Any) -> str:
-    """Generic event emitter — dispatches via _EVENT_BUILDERS registry.
+    """Generic event emitter -- dispatches via _EVENT_BUILDERS registry.
 
     Usage:
         await emit_event_task("invoice.created", invoice_id, number="FV/001", ...)

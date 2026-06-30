@@ -1,7 +1,7 @@
-"""TigerBeetle client — REAL TigerBeetle integration using official Python client.
+"""TigerBeetle client -- REAL TigerBeetle integration using official Python client.
 
 Zgodnie z aa3fvcx.txt oraz audytem TigerBeetle 2026:
-- tigerbeetle 0.17+ — oficjalny klient Python
+- tigerbeetle 0.17+ -- oficjalny klient Python
 - Native double-entry na poziomie protokołu
 - Linked transfers (atomic chains) z flags.linked
 - Natywne two-phase transfers: flags.pending + post/void
@@ -12,21 +12,20 @@ Zgodnie z aa3fvcx.txt oraz audytem TigerBeetle 2026:
 - UNIX socket communication dla lokalnej komunikacji
 - Single client instance dla całej aplikacji
 - Account limits (debits_must_not_exceed_credits natywnie)
-- App-only immutability — TB jako source of truth
+- App-only immutability -- TB jako source of truth
 """
 
 from __future__ import annotations
 
 import os
 import threading
-import uuid
 import time as time_module
+import uuid
 from typing import final
 
 import tigerbeetle as tb
-from structlog import get_logger
-
 from nexus_crypto import blake2b as _blake2b
+from structlog import get_logger
 
 logger = get_logger("nexus.services.tigerbeetle")
 
@@ -70,7 +69,7 @@ _tb_id_lock = threading.Lock()
 
 
 def _generate_tb_id() -> int:
-    """Generuj time-based ID z monotonic sequence — zgodny z TB.
+    """Generuj time-based ID z monotonic sequence -- zgodny z TB.
 
     TB używa time-based ID (timestamp + sequence) dla lepszej wydajności
     i naturalnego sortowania. Używamy timestamp + monotonic counter
@@ -105,7 +104,7 @@ def _string_to_u128(value: str) -> int:
 class TigerBeetleMapper:
     """Konwertuje polskie symbole kont (np. 401-02) na uint128 dla TigerBeetle.
 
-    Używa sequential ID zamiast blake2b — czytelniejsze dla człowieka
+    Używa sequential ID zamiast blake2b -- czytelniejsze dla człowieka
     i łatwiejsze w debugowaniu. Mapowanie: (ledger * 1_000_000) + account_number.
     """
 
@@ -127,18 +126,18 @@ class TigerBeetleMapper:
         return prefix + suffix
 
     def build_map(self, accounts: list[str], *, ledger: int | None = None) -> dict[str, int]:
-        """Zbuduj mapę symbol → u128 ID."""
+        """Zbuduj mapę symbol -> u128 ID."""
         return {acc: self.account_to_uint128(acc, ledger=ledger) for acc in accounts}
 
 
 @final
 class TigerBeetleClient:
-    """Real TigerBeetle client — komunikacja przez oficjalny klient Python.
+    """Real TigerBeetle client -- komunikacja przez oficjalny klient Python.
 
     - Oficjalny klient tigerbeetle (tb.ClientSync / tb.ClientAsync)
     - Batch transferów (do 8190 w jednym wywołaniu)
     - Linked transfers (atomic chains)
-    - Natywne two-phase transfers (pending → post/void)
+    - Natywne two-phase transfers (pending -> post/void)
     - Multi-ledger isolation (PLN, EUR, VAT osobne ledgery)
     - code field dla kategoryzacji typów transakcji
     - user_data_128/64/32 dla bogatych metadanych
@@ -147,7 +146,7 @@ class TigerBeetleClient:
     - Single client instance (thread-safe)
 
     Zgodnie z aa3fvcx.txt:
-    - amount jako int (grosze) — bezpośrednie mapowanie z Nexus-Money
+    - amount jako int (grosze) -- bezpośrednie mapowanie z Nexus-Money
     - komunikacja przez gniazdo UNIX (localhost)
     - operacje asynchroniczne
     """
@@ -160,7 +159,7 @@ class TigerBeetleClient:
     ) -> None:
         self.cluster_id = cluster_id or int(os.getenv("TB_CLUSTER_ID", "0"))
 
-        # Obsługa UNIX socket — jeśli zmienna TB_UNIX_SOCKET ustawiona,
+        # Obsługa UNIX socket -- jeśli zmienna TB_UNIX_SOCKET ustawiona,
         # używamy UNIX socket zamiast TCP
         unix_socket = os.getenv("TB_UNIX_SOCKET", "")
         if unix_socket:
@@ -318,7 +317,7 @@ class TigerBeetleClient:
     ) -> tb.CreateTransferResult:
         """Utwórz pending transfer (dwufazowy).
 
-        Zamiast własnej implementacji w dict — TB przechowuje stan.
+        Zamiast własnej implementacji w dict -- TB przechowuje stan.
 
         Args:
             debit_account: Konto debetowe (Wn).
@@ -377,7 +376,7 @@ class TigerBeetleClient:
             True jeśli post succeeded.
         """
         post_id = _generate_tb_id()
-        timestamp_source = time_module.time_ns()
+        time_module.time_ns()
 
         transfer = tb.Transfer(
             id=post_id,

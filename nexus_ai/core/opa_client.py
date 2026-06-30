@@ -1,5 +1,5 @@
 """
-OPA Client — async Python client for Open Policy Agent REST API.
+OPA Client -- async Python client for Open Policy Agent REST API.
 
 Zgodnie z aa3fvcx.txt:
 - OPA (Open Policy Agent) jako deklaratywny silnik reguł (CNCF)
@@ -8,8 +8,8 @@ Zgodnie z aa3fvcx.txt:
 - Rego policies generowane dynamicznie z DuckDB
 
 Architektura:
-  OPA Sidecar (localhost:8181) ← httpx → OpaClient (Python)
-                                         → RuleEngine.decide()
+  OPA Sidecar (localhost:8181) ← httpx -> OpaClient (Python)
+                                         -> RuleEngine.decide()
 
 Usage:
     client = OpaClient(base_url="http://localhost:8181")
@@ -204,15 +204,15 @@ class OpaClient:
         # OPA returns {"result": ...} for successful evaluations
         result = body.get("result")
         if result is None:
-            # Undefined result (no rule matched) — OPA returns null result
-            logger.warning("[OPA] Undefined result for path=%s — no rule matched", path)
+            # Undefined result (no rule matched) -- OPA returns null result
+            logger.warning("[OPA] Undefined result for path=%s -- no rule matched", path)
             return {"matched": False, "verdict": {}}
 
         if not isinstance(result, dict):
-            # Scalar result — wrap for consistent API
+            # Scalar result -- wrap for consistent API
             return {"matched": True, "verdict": {"result": result}}
 
-        # Dict result — already structured verdict
+        # Dict result -- already structured verdict
         return result
 
     # ── Data management ──────────────────────────────────────────────────

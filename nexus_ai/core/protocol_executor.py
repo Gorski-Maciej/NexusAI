@@ -1,13 +1,13 @@
 """
-ProtocolExecutor — warstwa wykonawcza SOP (Standard Operating Procedures).
+ProtocolExecutor -- warstwa wykonawcza SOP (Standard Operating Procedures).
 
 Łączy ProtocolLoader (definicje protokołów z protocols.toml) z DecisionEngine
-(core/decision_engine.py) — deterministyczne reguły first-match-wins.
+(core/decision_engine.py) -- deterministyczne reguły first-match-wins.
 
 Odpowiedzialności:
-  1. Egzekwowanie protokołów decyzyjnych — weryfikacja czy decyzja modelu
+  1. Egzekwowanie protokołów decyzyjnych -- weryfikacja czy decyzja modelu
      jest zgodna z zdefiniowanymi protokołami
-  2. Budowanie promptów systemowych z protokołów — zastąpienie inline stałych
+  2. Budowanie promptów systemowych z protokołów -- zastąpienie inline stałych
   3. Walidacja decyzji względem matryc decyzyjnych
   4. Rekomendowanie akcji na podstawie protokołów awaryjnych
   5. Dostarczanie kontekstu SOP do raportowania i logowania
@@ -41,7 +41,7 @@ class ProtocolViolationError(Exception):
 
 
 class ProtocolExecutor:
-    """Warstwa wykonawcza SOP — egzekwuje protokoły z protocols.toml.
+    """Warstwa wykonawcza SOP -- egzekwuje protokoły z protocols.toml.
 
     Args:
         loader: Instancja ProtocolLoader. Jeśli None, używa globalnego
@@ -66,7 +66,7 @@ class ProtocolExecutor:
 
         Łączy:
           1. System prompt z protokołu (role + checks + task)
-          2. Protokoły decyzyjne (warunki → akcje)
+          2. Protokoły decyzyjne (warunki -> akcje)
           3. Format wyjściowy (schema.output_formats)
           4. Dodatkowy kontekst (jeśli podany)
 
@@ -181,7 +181,7 @@ class ProtocolExecutor:
                             lines.append(f"\n{name}:")
                             lines.append(f"  Warunek: {condition}")
                             for step in steps:
-                                lines.append(f"  → {step}")
+                                lines.append(f"  -> {step}")
                             fallback = proto.get("fallback", "")
                             if fallback:
                                 lines.append(f"  Fallback: {fallback}")
@@ -233,10 +233,10 @@ class ProtocolExecutor:
 
         Returns:
             dict z polami:
-              - valid: bool — czy decyzja jest zgodna z protokołem
-              - expected_actions: list[str] — oczekiwane akcje z protokołu
-              - violations: list[str] — naruszenia protokołu
-              - severity: str — waga naruszenia (warning/error/critical)
+              - valid: bool -- czy decyzja jest zgodna z protokołem
+              - expected_actions: list[str] -- oczekiwane akcje z protokołu
+              - violations: list[str] -- naruszenia protokołu
+              - severity: str -- waga naruszenia (warning/error/critical)
         """
         result = {
             "valid": True,
@@ -274,7 +274,7 @@ class ProtocolExecutor:
             result["violations"] = violations
             result["severity"] = "warning"
 
-            # Jeśli wszystkie protokoły odrzucają → krytyczne
+            # Jeśli wszystkie protokoły odrzucają -> krytyczne
             if len(violations) >= len(protocols_section):
                 result["severity"] = "error"
 
@@ -295,12 +295,12 @@ class ProtocolExecutor:
 
         Returns:
             dict z polami:
-              - pattern: str — nazwa kombinacji z matrycy
-              - action: str — akcja z matrycy
-              - level: str — poziom decyzyjny
-              - min_trust: float — minimalny trust dla tej kombinacji
-              - deliberation: str — opis deliberacji
-              - valid: bool — czy kombinacja jest znana
+              - pattern: str -- nazwa kombinacji z matrycy
+              - action: str -- akcja z matrycy
+              - level: str -- poziom decyzyjny
+              - min_trust: float -- minimalny trust dla tej kombinacji
+              - deliberation: str -- opis deliberacji
+              - valid: bool -- czy kombinacja jest znana
         """
         try:
             combinations = self._loader.get_decision_matrix_combinations()
@@ -331,13 +331,13 @@ class ProtocolExecutor:
                     "valid": True,
                 }
 
-        # Nieznana kombinacja → użyj protokołu awaryjnego
+        # Nieznana kombinacja -> użyj protokołu awaryjnego
         return {
             "pattern": "UNKNOWN",
             "action": "ASK_USER",
             "level": "LEVEL_3_ESCALATE",
             "min_trust": 0.0,
-            "deliberation": "Nieznana kombinacja głosów — bezpieczna eskalacja",
+            "deliberation": "Nieznana kombinacja głosów -- bezpieczna eskalacja",
             "valid": False,
         }
 
@@ -368,7 +368,7 @@ class ProtocolExecutor:
         except ProtocolNotFoundError:
             return {
                 "action": "SAFE_ESCALATE",
-                "fallback_strategy": "ASK_USER — bezpieczna eskalacja (brak protokołu)",
+                "fallback_strategy": "ASK_USER -- bezpieczna eskalacja (brak protokołu)",
                 "logging": "Emergency protocol not found, using safe default",
                 "notify_user": True,
                 "max_retries": 0,
@@ -467,7 +467,7 @@ class ProtocolExecutor:
         się na dysku, callback zostanie wywołany z nową wersją.
 
         Args:
-            callback: Funkcja (version: str | None) → None.
+            callback: Funkcja (version: str | None) -> None.
 
         Returns:
             Funkcja do wyrejestrowania subskrypcji.

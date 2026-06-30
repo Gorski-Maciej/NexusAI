@@ -1,21 +1,22 @@
-"""core/di — Centralny DI container (TaskiqDepends + AppServices) dla NexusAI."""
+"""core/di -- Centralny DI container (TaskiqDepends + AppServices) dla NexusAI."""
 
 from __future__ import annotations
 
 import importlib
 import os
 import warnings
+from collections.abc import AsyncGenerator
 from dataclasses import dataclass, field
-from typing import Any, AsyncGenerator
+from typing import Any
 
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import Session
 from structlog import get_logger
 
+from nexus_ai.core.broker import broker
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.decision_engine import DecisionEngine
-from nexus_ai.core.broker import broker
 from nexus_ai.core.inference import ModelManager
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import create_oltp_engine, create_session_factory
@@ -54,7 +55,7 @@ def _get_or_create_session_factory(config: AppConfig | None = None) -> sessionma
 
 
 # =========================================================================
-# TaskiqDepends — zależności dla zadań
+# TaskiqDepends -- zależności dla zadań
 # =========================================================================
 
 
@@ -73,7 +74,7 @@ async def get_engine(config: AppConfig | None = None) -> Engine:
     return _get_or_create_engine(config)
 
 
-async def get_db_session(engine: Engine | None = None) -> AsyncGenerator[Session, None]:
+async def get_db_session(engine: Engine | None = None) -> AsyncGenerator[Session]:
     """Zwraca sesję bazy danych (scoped per task).
 
     Sesja jest automatycznie zamykana po zakończeniu zadania.
@@ -100,7 +101,7 @@ async def get_db_session(engine: Engine | None = None) -> AsyncGenerator[Session
         session.close()
 
 
-async def get_duckdb_manager(config: AppConfig | None = None) -> AsyncGenerator[Any, None]:
+async def get_duckdb_manager(config: AppConfig | None = None) -> AsyncGenerator[Any]:
     """Zwraca DuckDBManager (scoped per task).
 
     Usage:
@@ -120,7 +121,7 @@ async def get_duckdb_manager(config: AppConfig | None = None) -> AsyncGenerator[
 
 
 # =========================================================================
-# Helper — czyszczenie cache engine przy shutdown
+# Helper -- czyszczenie cache engine przy shutdown
 # =========================================================================
 
 
@@ -141,7 +142,7 @@ async def dispose_all_engines() -> None:
 
 
 # =========================================================================
-# AppServices — centralny DI container dla Litestar
+# AppServices -- centralny DI container dla Litestar
 # =========================================================================
 
 class LazyImport:

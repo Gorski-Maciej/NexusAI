@@ -1,4 +1,4 @@
-"""SecureTigerBeetleClient — RBAC-aware wrapper dla realnego TigerBeetle.
+"""SecureTigerBeetleClient -- RBAC-aware wrapper dla realnego TigerBeetle.
 
 - RBAC na poziomie klienta (OWNER tylko może postować)
 - Natywne pending/void zamiast własnej implementacji

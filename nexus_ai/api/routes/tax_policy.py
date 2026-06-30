@@ -1,7 +1,7 @@
 """
-Tax Policy simulation API — symulacja zmiany formy opodatkowania.
+Tax Policy simulation API -- symulacja zmiany formy opodatkowania.
 
-POST /api/v2/tax-policy/simulate — symulacja na podstawie
+POST /api/v2/tax-policy/simulate -- symulacja na podstawie
 rzeczywistych, historycznych faktur z DuckDB/SQLite.
 
 Obsługuje:
@@ -22,7 +22,7 @@ from litestar import Controller, get, post
 from litestar.response import Response
 from structlog import get_logger
 
-from nexus_ai.api.dto import GenericDictDTO, TAG_TAX, TaxPolicySimulateDTO
+from nexus_ai.api.dto import TAG_TAX, GenericDictDTO, TaxPolicySimulateDTO
 from nexus_ai.tax.rules import (
     ensure_tax_schemas,
     get_simulation_rule_sets,
@@ -113,7 +113,7 @@ class TaxPolicyController(Controller):
                     }
                 )
 
-            # ── 3. Wykonaj symulację (jeden przebieg — current + sim) ──────
+            # ── 3. Wykonaj symulację (jeden przebieg -- current + sim) ──────
             from nexus_ai.services.tax_simulator import TaxSimulator
 
             simulator = TaxSimulator()

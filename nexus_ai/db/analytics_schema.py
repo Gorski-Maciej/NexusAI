@@ -76,7 +76,7 @@ class AnalyticsSchemaManager:
             ("services.shadow_resource_correlation", "ensure_shadow_resource_schema"),
             ("services.compliance_analytics", "ensure_compliance_analytics_schema"),
             ("services.fx_revaluation", "ensure_fx_schema"),
-            # ("services.smart_approvals", "ensure_smart_approval_schema") — USUNIĘTE
+            # ("services.smart_approvals", "ensure_smart_approval_schema") -- USUNIĘTE
             ("services.liquidity_oracle", "ensure_liquidity_schema"),
         )
         for module_name, function_name in optional_schema_hooks:

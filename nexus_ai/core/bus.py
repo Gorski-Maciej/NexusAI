@@ -1,5 +1,5 @@
 """
-Typed EventBus — fully typed, msgspec-based in-process event dispatcher.
+Typed EventBus -- fully typed, msgspec-based in-process event dispatcher.
 
 Replaces the legacy dict[str, list[Callable]] bus with a strongly-typed,
 msgspec-backed event system. Key improvements:
@@ -32,7 +32,7 @@ from __future__ import annotations
 
 import time as _time
 from collections.abc import Awaitable, Callable
-from typing import final, Any, Generic, TypeVar
+from typing import Any, TypeVar, final
 
 import anyio
 import msgspec
@@ -47,7 +47,7 @@ logger = get_logger("nexus.core.bus")
 EventT = TypeVar("EventT", bound=msgspec.Struct)
 
 
-# ── EventEnvelope — wraps every event with metadata ────────────────────────
+# ── EventEnvelope -- wraps every event with metadata ────────────────────────
 
 
 class EventEnvelope(msgspec.Struct, kw_only=True, frozen=True):
@@ -66,10 +66,10 @@ class EventEnvelope(msgspec.Struct, kw_only=True, frozen=True):
     correlation_id: str = ""
 
 
-# ── Subscription — holds a typed callback with optional filter ─────────────
+# ── Subscription -- holds a typed callback with optional filter ─────────────
 
 
-class Subscription(Generic[EventT]):
+class Subscription[EventT: msgspec.Struct]:
     """A registered subscription to a specific event type.
 
     Attributes:
@@ -205,8 +205,8 @@ class EventBus:
         """
         event_type = type(event)
 
-        # Encode payload once for all subscribers — używamy msgpack
-        # dla 2-5× szybszej serializacji wewnętrznej w porównaniu do JSON.
+        # Encode payload once for all subscribers -- używamy msgpack
+        # dla 2-5x szybszej serializacji wewnętrznej w porównaniu do JSON.
         try:
             payload_bytes = msgspec.msgpack.encode(event)
         except Exception as exc:

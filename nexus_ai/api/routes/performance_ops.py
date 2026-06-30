@@ -1,10 +1,10 @@
-"""
+"""Performance ops controller -- locust test results via REST API.
 
 Zgodnie z aa3fvcx.txt: locust zastępuje k6.
 Ten kontroler udostępnia wyniki testów wydajnościowych locust
 przez REST API dla dashboardu i CI/CD.
 
-  - LocustSummaryDTO — camelCase JSON API
+  - LocustSummaryDTO -- camelCase JSON API
   - Parsowanie JSON/CSV z locust
   - Wsparcie dla p95, p99, RPS, error rate
   - Integracja z health check
@@ -18,12 +18,14 @@ from pathlib import Path
 
 from litestar import Controller, get
 
-from nexus_ai.api.dto import LocustSummaryDTO, TAG_SYSTEM
+from nexus_ai.api.dto import TAG_SYSTEM, LocustSummaryDTO
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
 
 def _parse_locust_csv_summary(summary_prefix: Path) -> dict | None:
+
+    """Parse locust CSV summary.
 
     Locust generuje CSV z kolumnami:
       - Name, Request Count, Failure Count, Median Response Time,
@@ -93,6 +95,7 @@ def _parse_locust_csv_summary(summary_prefix: Path) -> dict | None:
 
 
 def _parse_locust_json_summary(json_path: Path) -> dict | None:
+    """Parse locust JSON summary.
 
     Locust --json generuje JSON z metrykami per-endpoint.
     """
@@ -127,6 +130,7 @@ def _parse_locust_json_summary(json_path: Path) -> dict | None:
 
 
 class PerformanceOpsController(Controller):
+    """Performance ops controller.
 
     Udostępnia wyniki testów wydajnościowych locust przez REST API.
     Obsługuje zarówno format CSV (--csv) jak i JSON (--json) z locust.
@@ -148,10 +152,11 @@ class PerformanceOpsController(Controller):
         operation_id="getLocustSummary",
     )
     async def locust_summary(self) -> dict:
+        """Get locust performance summary.
 
         Przeszukuje katalog reports/performance/ w poszukiwaniu:
-          1. locust_stats.html (JSON HTML — fallback)
-          2. locust_stats_stats.csv (CSV — preferowany)
+          1. locust_stats.html (JSON HTML -- fallback)
+          2. locust_stats_stats.csv (CSV -- preferowany)
           3. locust_metrics_*.json (OTel fallback)
 
         Returns:
@@ -241,11 +246,11 @@ class PerformanceOpsController(Controller):
             ],
             "user_classes": ["NexusAIUser", "NexusAILightUser"],
             "superpowers": [
-                "FastHttpUser (geventhttpclient) — 3-5× RPS boost",
-                "SequentialTaskSet — biznesowa kolejność operacji",
-                "catch_response — walidacja biznesowa odpowiedzi",
-                "LoadTestShape — customowe profile obciążenia",
-                "OTel integration — metryki do DuckDB/Parquet",
-                "Distributed mode — master/worker skalowanie",
+                "FastHttpUser (geventhttpclient) -- 3-5x RPS boost",
+                "SequentialTaskSet -- biznesowa kolejność operacji",
+                "catch_response -- walidacja biznesowa odpowiedzi",
+                "LoadTestShape -- customowe profile obciążenia",
+                "OTel integration -- metryki do DuckDB/Parquet",
+                "Distributed mode -- master/worker skalowanie",
             ],
         }

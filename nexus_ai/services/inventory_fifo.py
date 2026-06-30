@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from msgspec import Struct
-
-import pendulum
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
+
+import pendulum
+from msgspec import Struct
 
 MONEY_QUANT = Decimal("0.01")
 QTY_QUANT = Decimal("0.0001")
@@ -143,6 +143,7 @@ async def calculate_and_post_cogs(
     duckdb_writer: Any | None = None,
 ) -> FIFOConsumptionResult:
 
+    """"
     Używa code=TransferCode.COGS (5001), ledger=INVENTORY (706).
     """
     consumption = calculate_fifo_cogs(product_id, qty_sold, open_batches)
@@ -151,6 +152,7 @@ async def calculate_and_post_cogs(
     )
 
     import tigerbeetle as tb
+
     from nexus_ai.services.tigerbeetle.client import (
         LEDGER,
         TRANSFER_CODE,

@@ -4,15 +4,13 @@ from __future__ import annotations
 
 import random
 import threading
-from msgspec import Struct, field
 from typing import Any
 
 import anyio
-
+from msgspec import Struct, field
 from structlog import get_logger
 
 from nexus_ai.core.nats_utils import NatsErrors, safe_close
-
 from nexus_ai.events.domain_events import (
     DomainEvent,
     decode_event,

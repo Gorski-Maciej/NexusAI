@@ -1,21 +1,21 @@
 """
-Semantyczny Wykrywacz Anomalii (SemanticGuard) — wykrywa kreatywną księgowość.
+Semantyczny Wykrywacz Anomalii (SemanticGuard) -- wykrywa kreatywną księgowość.
 
 - Embeddingi faktur przez sqlite-vec (cosine distance)
 - Wykrywanie nagłych zmian profilu usług kontrahenta
 - First-match-wins przez DuckDB anomaly_rules
 - Integracja z DecisionEngine jako pre-filter
 
-Zgodnie z docs/tfgxzd.txt — Semantyczny Wykrywacz Kreatywnej Księgowości.
+Zgodnie z docs/tfgxzd.txt -- Semantyczny Wykrywacz Kreatywnej Księgowości.
 """
 
 from __future__ import annotations
 
+import hashlib
 import math
 from enum import StrEnum
 from typing import Any
 
-import hashlib
 from structlog import get_logger
 
 from nexus_ai.db.vector_store import AsyncVectorStore
@@ -72,6 +72,8 @@ class SemanticGuard:
         category_code: str = "",
     ) -> AnomalyResult:
 
+        """Evaluate invoice for semantic anomalies.
+
         Args:
             invoice_text: Pełny tekst faktury z OCR.
             vendor_nip: NIP kontrahenta.
@@ -85,10 +87,10 @@ class SemanticGuard:
             return AnomalyResult(action=AnomalyAction.ALLOW, anomaly_score=0.0)
 
         try:
-            # 1. Wektoryzacja treści (symulowana — w produkcji użylibyśmy modelu embedding)
+            # 1. Wektoryzacja treści (symulowana -- w produkcji użylibyśmy modelu embedding)
             embedding = self._mock_embedding(invoice_text)
 
-            # 2. Zapytanie do sqlite-vec — podobne faktury tego kontrahenta
+            # 2. Zapytanie do sqlite-vec -- podobne faktury tego kontrahenta
             similar = await self._store.search_similar(
                 query_vector=embedding,
                 limit=5,
@@ -102,7 +104,7 @@ class SemanticGuard:
                 avg_distance = sum(distances) / len(distances) if distances else 1.0
                 anomaly_score = min(1.0, avg_distance)
             else:
-                # Nowy kontrahent — brak historii = niskie ryzyko
+                # Nowy kontrahent -- brak historii = niskie ryzyko
                 anomaly_score = 0.0
 
             # 4. Decyzja na podstawie progu
@@ -144,6 +146,7 @@ class SemanticGuard:
 
     @staticmethod
     def _mock_embedding(text: str, dim: int = 768) -> list[float]:
+        """Generate mock embedding for testing.
 
         W produkcji: llama-cpp-python embedding.
         """

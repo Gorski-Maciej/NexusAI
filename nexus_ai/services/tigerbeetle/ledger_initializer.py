@@ -1,4 +1,4 @@
-"""Ledger initializer — konfiguracja planu kont w TigerBeetle.
+"""Ledger initializer -- konfiguracja planu kont w TigerBeetle.
 
 - Full account creation z ledger, code, flags (HISTORY, DEBITS_MUST_NOT_EXCEED_CREDITS)
 - Multi-ledger isolation
@@ -19,7 +19,6 @@ from nexus_ai.services.tigerbeetle.client import (
     TigerBeetleMapper,
 )
 from nexus_ai.services.tigerbeetle.models import LegalForm, TaxForm
-
 
 # ── Polskie konta księgowe z kodami TB ──────────────────────────────────────
 # code: 10=aktywa, 20=pasywa, 30=przychody, 40=koszty, 50=VAT, 60=rozrachunki
@@ -60,7 +59,7 @@ class LedgerInitializer:
     - AccountFlags.DEBITS_MUST_NOT_EXCEED_CREDITS dla kontroli budżetu
     - Linked account creation (atomic chains)
     - Multi-ledger: PLN=700, VAT_INPUT=711, VAT_OUTPUT=712
-    - Sequential IDs zamiast blake2b — czytelniejsze
+    - Sequential IDs zamiast blake2b -- czytelniejsze
     """
 
     def __init__(
@@ -184,7 +183,7 @@ class LedgerInitializer:
 
         results = await self.tb_client.create_accounts_async(tb_accounts)
 
-        # Sprawdź wyniki — status=0 oznacza OK
+        # Sprawdź wyniki -- status=0 oznacza OK
         for i, result in enumerate(results):
             if result.status != 0:
                 symbol = account_symbols[i] if i < len(account_symbols) else f"index={i}"

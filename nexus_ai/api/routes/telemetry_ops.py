@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from litestar import Controller, get, post
 
-from nexus_ai.api.dto import GenericDictDTO, TAG_SYSTEM, TelemetryFallbackStatusDTO
+from nexus_ai.api.dto import TAG_SYSTEM, GenericDictDTO, TelemetryFallbackStatusDTO
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.core.config import AppConfig
 from nexus_ai.db.analytics import DuckDBManager

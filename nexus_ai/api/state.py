@@ -1,23 +1,20 @@
 import os
-
-import anyio
 import shutil
 import threading
 from pathlib import Path
 
+import anyio
 import pendulum
 from litestar import Litestar
-from structlog import get_logger
 
+from nexus_ai.api.routes.ws import start_unix_progress_server, stop_unix_progress_server
 from nexus_ai.api.shared_image_buffer import SharedImageBuffer
-
 from nexus_ai.core.broker import broker
 from nexus_ai.core.cache.http_client import warm_http_cache
+from nexus_ai.core.config import AppConfig
 from nexus_ai.core.di import dispose_all_engines
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import consolidate_database, create_oltp_engine
-from nexus_ai.core.config import AppConfig
-from nexus_ai.api.routes.ws import start_unix_progress_server, stop_unix_progress_server
 from nexus_ai.services.hot_reload import HotReloadListener
 from nexus_ai.services.migration_sanity import (
     run_migration_sanity_checks,
@@ -26,11 +23,11 @@ from nexus_ai.services.migration_sanity import (
 )
 
 # Rejestruje atexit handler do flushowania pozostaych spanów/metryk/logów
-_OTEL_SHUTDOWN_REGISTERED = False
+# _OTEL_SHUTDOWN_REGISTERED = False
 
 
 def _ensure_otel_shutdown_registered() -> None:
-
+    """
     Zapewnia, że TracerProvider.shutdown() i MeterProvider.shutdown()
     są wywoływane przy wyjściu z aplikacji.
     """
@@ -38,8 +35,9 @@ def _ensure_otel_shutdown_registered() -> None:
     if _OTEL_SHUTDOWN_REGISTERED:
         return
     try:
+        from opentelemetry import metrics, trace
+
         from nexus_ai.core.otel import register_otel_shutdown
-        from opentelemetry import trace, metrics
 
         tracer_provider = trace.get_tracer_provider()
         meter_provider = metrics.get_meter_provider()
@@ -55,12 +53,12 @@ def _ensure_otel_shutdown_registered() -> None:
 
 
 # ── OpenTelemetry metrics initialization ───────────────────────────────────
-# Thread-safe dla free-threaded Python — używa threading.Event zamiast bool
+# Thread-safe dla free-threaded Python -- używa threading.Event zamiast bool
 _METRICS_INITIALIZED_EVENT = threading.Event()
 
 
 def _init_otel_metrics_sync() -> None:
-    """Initialize OpenTelemetry metrics (sync part — thread-safe)."""
+    """Initialize OpenTelemetry metrics (sync part -- thread-safe)."""
     if _METRICS_INITIALIZED_EVENT.is_set():
         return
 
@@ -136,7 +134,7 @@ async def _start_metrics_background_task(app: Litestar) -> None:
             "[METRICS] System metrics updater + mimalloc leak detection started (30s interval)"
         )
     except ImportError:
-        logger.debug("[METRICS] psutil not available — system metrics disabled")
+        logger.debug("[METRICS] psutil not available -- system metrics disabled")
     except Exception as exc:
         logger.debug("[METRICS] System metrics updater failed: %s", exc)
 
@@ -148,6 +146,7 @@ def _make_engine(config: AppConfig):
     return create_oltp_engine(config, sqlcipher_key=sqlcipher_key or None)
 
 
+from structlog import get_logger
 logger = get_logger("nexus.api.state")
 
 
@@ -190,7 +189,7 @@ async def _seed_data(engine, config: AppConfig) -> None:
     """
     from scripts.seed_data import seed_rbac
 
-    logger.info("[SEED] Tables created by native SQL migrations — seeding RBAC")
+    logger.info("[SEED] Tables created by native SQL migrations -- seeding RBAC")
 
     try:
         rbac_counts = await seed_rbac(engine)
@@ -245,19 +244,23 @@ def make_on_startup(engine, session_factory):
         try:
             from nexus_ai.core.mimalloc_bridge import (
                 MIOption,
+            )
+            from nexus_ai.core.mimalloc_bridge import (
                 is_active as _mi_active,
+            )
+            from nexus_ai.core.mimalloc_bridge import (
                 option_set as _mi_set,
             )
 
             if _mi_active():
-                logger.info("[MIMALLOC] mimalloc ACTIVE — Microsoft allocator engaged")
+                logger.info("[MIMALLOC] mimalloc ACTIVE -- Microsoft allocator engaged")
                 # Ustaw optymalne opcje w runtime (nadpisanie env varów)
                 _mi_set(MIOption.LARGE_OS_PAGES, 1)  # Huge OS pages
                 _mi_set(MIOption.ALLOW_LARGE_OS_PAGES, 1)  # Allow large pages
                 _mi_set(MIOption.SHOW_STATS, 0)  # Stats off by default
                 _mi_set(MIOption.EAGER_COMMIT, 1)  # Eager commit
             else:
-                logger.warning("[MIMALLOC] mimalloc NOT active — using system allocator")
+                logger.warning("[MIMALLOC] mimalloc NOT active -- using system allocator")
         except Exception as exc:
             logger.debug("[MIMALLOC] Bridge check failed: %s", exc)
 
@@ -384,7 +387,7 @@ def make_on_startup(engine, session_factory):
                     "Result backend: SQLite"
                 )
             except Exception as exc:
-                logger.warning("NATS broker unavailable — task queue disabled: %s", exc)
+                logger.warning("NATS broker unavailable -- task queue disabled: %s", exc)
 
         try:
             duckdb_manager = DuckDBManager(
@@ -397,7 +400,7 @@ def make_on_startup(engine, session_factory):
 
         seeded_file = config.base_dir / ".seeded"
         if not seeded_file.exists():
-            logger.info("No .seeded marker found — running seed_all...")
+            logger.info("No .seeded marker found -- running seed_all...")
             try:
                 from scripts.seed_data import seed_all
 
@@ -411,7 +414,7 @@ def make_on_startup(engine, session_factory):
             except Exception as exc:
                 logger.warning("Auto-seed failed (non-blocking): %s", exc)
         else:
-            logger.info(".seeded marker found — skipping auto-seed.")
+            logger.info(".seeded marker found -- skipping auto-seed.")
 
         # ── Phase 5: HotReloadListener ────────────────
         try:

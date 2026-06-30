@@ -6,10 +6,10 @@ from litestar.exceptions import HTTPException
 from structlog import get_logger
 
 from nexus_ai.api.dto import (
+    TAG_SYSTEM,
     OutboxProcessResponseDTO,
     OutboxReplayResponseDTO,
     OutboxStatsDTO,
-    TAG_SYSTEM,
 )
 from nexus_ai.api.rbac import owner_only_guard
 
@@ -17,12 +17,12 @@ logger = get_logger("nexus.api.outbox_ops")
 
 
 class OutboxOpsController(Controller):
-    """Operational outbox controls — stats, process trigger, and dead-letter replay.
+    """Operational outbox controls -- stats, process trigger, and dead-letter replay.
 
     **DEPRECATED**: Funkcjonalność zastąpiona przez NATS JetStream:
-      - Publikacja zdarzeń → NATS JetStream (nexus-outbox stream)
-      - Retry i DLQ → ConsumerConfig.max_deliver=5 + JetStream DLQ
-      - Monitorowanie → NatsSupervisor w nats_health.py
+      - Publikacja zdarzeń -> NATS JetStream (nexus-outbox stream)
+      - Retry i DLQ -> ConsumerConfig.max_deliver=5 + JetStream DLQ
+      - Monitorowanie -> NatsSupervisor w nats_health.py
 
     Endpointy pozostawione jako pasywne wrappery SQL (stats).
     Procesowanie i replay zlecone NATS JetStream.
@@ -32,7 +32,7 @@ class OutboxOpsController(Controller):
     guards = [owner_only_guard]
     tags = [TAG_SYSTEM]
 
-    # ── GET /stats — statystyki z SQL (pasywne, bez relaya) ───────────
+    # ── GET /stats -- statystyki z SQL (pasywne, bez relaya) ───────────
 
     @get(
         "/stats",
@@ -95,12 +95,12 @@ class OutboxOpsController(Controller):
         finally:
             await engine.dispose()
 
-    # ── POST /process — placeholder (zastąpione przez NATS JetStream) ──
+    # ── POST /process -- placeholder (zastąpione przez NATS JetStream) ──
 
     @post(
         "/process",
         return_dto=OutboxProcessResponseDTO,
-        summary="Trigger outbox processing — DEPRECATED",
+        summary="Trigger outbox processing -- DEPRECATED",
         description="DEPRECATED: Outbox processing is now handled by NATS JetStream. This endpoint is kept for compatibility.",
         operation_id="triggerOutboxProcessing",
     )
@@ -108,19 +108,19 @@ class OutboxOpsController(Controller):
         """DEPRECATED: Zastąpione przez NATS JetStream.
 
         **Kody błędów:**
-           - ``410`` — GONE, użyj NATS JetStream
+           - ``410`` -- GONE, użyj NATS JetStream
         """
         raise HTTPException(
             status_code=410,
             detail="Outbox relay processing is now handled by NATS JetStream. See docs for migration.",
         )
 
-    # ── POST /replay-dead-letter — placeholder ────────────────────────
+    # ── POST /replay-dead-letter -- placeholder ────────────────────────
 
     @post(
         "/replay-dead-letter",
         return_dto=OutboxReplayResponseDTO,
-        summary="Replay dead-letter events — DEPRECATED",
+        summary="Replay dead-letter events -- DEPRECATED",
         description="DEPRECATED: Dead-letter replay is now handled by NATS JetStream DLQ (ConsumerConfig.max_deliver).",
         operation_id="replayDeadLetterOutbox",
     )
@@ -128,7 +128,7 @@ class OutboxOpsController(Controller):
         """DEPRECATED: Zastąpione przez NATS JetStream DLQ.
 
         **Kody błędów:**
-           - ``410`` — GONE, użyj NATS JetStream
+           - ``410`` -- GONE, użyj NATS JetStream
         """
         raise HTTPException(
             status_code=410,

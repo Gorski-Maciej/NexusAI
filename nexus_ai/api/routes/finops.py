@@ -6,7 +6,7 @@ import resource
 from litestar import Controller, get
 from sqlmodel import text
 
-from nexus_ai.api.dto import FinOpsDTO, TAG_FINANCE
+from nexus_ai.api.dto import TAG_FINANCE, FinOpsDTO
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.core.config import AppConfig
 from nexus_ai.db.database import create_oltp_engine, create_session_factory

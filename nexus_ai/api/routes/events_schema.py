@@ -1,12 +1,12 @@
 """
-Events Schema API — JSON Schema dla DomainEvents (Faza 3).
+Events Schema API -- JSON Schema dla DomainEvents (Faza 3).
 
 Udostępnia JSON Schema Draft 2020-12 dla wszystkich 10 eventów domenowych
 przez REST API, zintegrowany z Litestar OpenAPI/Swagger.
 
 Endpoints:
-    GET /api/v2/events/schema          — JSON Schema summary wszystkich eventów
-    GET /api/v2/events/schema/{type}   — JSON Schema konkretnego eventu
+    GET /api/v2/events/schema          -- JSON Schema summary wszystkich eventów
+    GET /api/v2/events/schema/{type}   -- JSON Schema konkretnego eventu
 
 Usage:
     curl http://localhost:8000/api/v2/events/schema
@@ -23,7 +23,11 @@ from litestar.response import Response
 from nexus_ai.api.dto import TAG_EVENTS, GenericDictDTO
 from nexus_ai.events.domain_events import (
     get_all_schemas as get_all_event_schemas,
+)
+from nexus_ai.events.domain_events import (
     get_schema as get_event_schema_by_type,
+)
+from nexus_ai.events.domain_events import (
     get_schema_summary as get_event_schema_summary,
 )
 
@@ -31,7 +35,7 @@ from nexus_ai.events.domain_events import (
 class EventsSchemaController(Controller):
     """Kontroler udostępniający JSON Schema eventów domenowych.
 
-    Generowane przez ``msgspec.json.schema()`` — zawsze aktualne względem
+    Generowane przez ``msgspec.json.schema()`` -- zawsze aktualne względem
     definicji klas eventów w ``domain_events.py``.
     """
 

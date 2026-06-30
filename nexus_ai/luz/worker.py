@@ -1,13 +1,13 @@
 """
 Taskiq worker bootstrap and local connectivity smoke test.
 
-  - Process.oneshot() — batch syscalls dla get_status(), adjust_concurrency_limit()
-  - memory_full_info() → USS/PSS (rzeczywista pamięć zamiast gołego RSS)
-  - memory_percent() → % całkowitego RAM
-  - cpu_times_percent() → podział user/system/iowait
-  - num_threads() / num_fds() → liczba wątków i deskryptorów
-  - SystemMonitor z core/monitor.py → RAM, CPU, swap, dysk, sieć, temperatura
-  - psutil.NoSuchProcess / AccessDenied → bezpieczna obsługa błędów
+  - Process.oneshot() -- batch syscalls dla get_status(), adjust_concurrency_limit()
+  - memory_full_info() -> USS/PSS (rzeczywista pamięć zamiast gołego RSS)
+  - memory_percent() -> % całkowitego RAM
+  - cpu_times_percent() -> podział user/system/iowait
+  - num_threads() / num_fds() -> liczba wątków i deskryptorów
+  - SystemMonitor z core/monitor.py -> RAM, CPU, swap, dysk, sieć, temperatura
+  - psutil.NoSuchProcess / AccessDenied -> bezpieczna obsługa błędów
 """
 
 from __future__ import annotations
@@ -18,10 +18,9 @@ import os
 import platform
 import signal
 import sys
-
-import anyio
 from pathlib import Path as _SyncPath
 
+import anyio
 import pendulum
 import psutil
 from structlog import get_logger
@@ -64,11 +63,11 @@ shutdown_flag = anyio.Event()
 class WorkerGuard:
     """Watchdog dla procesu workera z dynamicznym limitowaniem współbieżności.
 
-      - Process.oneshot() — wszystkie atrybuty procesu w 1 syscallu
-      - memory_full_info() → USS/PSS (rzeczywista alokacja pamięci)
-      - cpu_times_percent() → podział user/system/iowait
-      - num_threads() / num_fds() → zasoby systemowe
-      - SystemMonitor → RAM %, swap, dysk, sieć, temperatura CPU
+      - Process.oneshot() -- wszystkie atrybuty procesu w 1 syscallu
+      - memory_full_info() -> USS/PSS (rzeczywista alokacja pamięci)
+      - cpu_times_percent() -> podział user/system/iowait
+      - num_threads() / num_fds() -> zasoby systemowe
+      - SystemMonitor -> RAM %, swap, dysk, sieć, temperatura CPU
     """
 
     def __init__(self, ram_limit_gb: float = 6.0) -> None:
@@ -112,15 +111,15 @@ class WorkerGuard:
                 "memory_percent": mem_pct,
             }
         except (psutil.NoSuchProcess, psutil.AccessDenied):
-            logger.warning("[WORKER-GUARD] Process inaccessible — re-initializing")
+            logger.warning("[WORKER-GUARD] Process inaccessible -- re-initializing")
             self.process = psutil.Process(os.getpid())
             return self._collect_process_stats()
 
     def adjust_concurrency_limit(self) -> int:
         """Dynamicznie dostosuj limit współbieżności na podstawie obciążenia.
 
-          - cpu_percent() — z oneshot() cache (0 syscalli)
-          - memory_full_info() → USS zamiast RSS dla dokładniejszego pomiaru
+          - cpu_percent() -- z oneshot() cache (0 syscalli)
+          - memory_full_info() -> USS zamiast RSS dla dokładniejszego pomiaru
           - Jeśli CPU > 80% lub RAM > 80%, zmniejsz limit
         """
         stats = self._collect_process_stats()
@@ -188,7 +187,7 @@ class WorkerGuard:
     def check_resources(self) -> bool:
         """Sprawdź zasoby i wyzwól GC jeśli potrzeba.
 
-        Uses oneshot() internally — niemierzalny narzut.
+        Uses oneshot() internally -- niemierzalny narzut.
         """
         proc_stats = self._collect_process_stats()
         rss_mb = proc_stats["rss_mb"]
@@ -282,7 +281,7 @@ async def on_worker_startup(state) -> None:
         logger.debug("[HTTP-CACHE-WARM] Cache warming skipped (non-fatal): %s", exc)
 
     gc.freeze()
-    logger.debug("[GC] gc.freeze() applied — %d frozen objects", gc.get_freeze_count())
+    logger.debug("[GC] gc.freeze() applied -- %d frozen objects", gc.get_freeze_count())
 
     logger.info(
         ">>> Worker ready. OS=%s, vision_agent=%s",

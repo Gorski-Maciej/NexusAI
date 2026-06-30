@@ -1,6 +1,6 @@
-"""NexusAI services package — business logic layer z lazy importami.
+"""NexusAI services package -- business logic layer z lazy importami.
 
-Ładowanie lazy przez __getattr__ — zero narzutu przy imporcie pakietu.
+Ładowanie lazy przez __getattr__ -- zero narzutu przy imporcie pakietu.
 Importowane serwisy są dostępne przez: from nexus_ai.services import InvoiceService
 """
 
@@ -13,7 +13,7 @@ from typing import Any
 _SERVICE_CACHE: dict[str, Any] = {}
 
 def __getattr__(name: str) -> Any:
-    """Auto-import przy pierwszym użyciu — eliminuje 50+ ręcznych importów."""
+    """Auto-import przy pierwszym użyciu -- eliminuje 50+ ręcznych importów."""
     if name in _SERVICE_CACHE:
         return _SERVICE_CACHE[name]
     # Szukaj w bezpośrednich plikach

@@ -1,23 +1,23 @@
-"""Tax simulator — predykcyjny symulator podatkowy (DuckDB + Polars).
+"""Tax simulator -- predykcyjny symulator podatkowy (DuckDB + Polars).
 
 Zgodnie z aa3fvcx.txt:
 - DuckDB dla OLAP (first-match-wins SQL dla reguł podatkowych)
-- Polars zamiast pandas (5-10× szybszy)
+- Polars zamiast pandas (5-10x szybszy)
 - amount jako int (grosze) w TigerBeetle, Decimal w kalkulacjach
 """
 
 from __future__ import annotations
 
-from msgspec import Struct
 from decimal import Decimal
 from typing import Any, final
 
 import duckdb
 import pendulum
+from msgspec import Struct
 
+from nexus_ai.services.rule_store import RuleStore
 from nexus_ai.services.tax_strategies import StrategyContext, StrategyRegistry
 from nexus_ai.services.tigerbeetle.models import LegalForm, TaxForm
-from nexus_ai.services.rule_store import RuleStore
 from nexus_ai.tax.exceptions import NoMatchingRuleError
 from nexus_ai.tax.rules import (
     ContextInterpreter,
@@ -37,7 +37,7 @@ class ShadowLedgerInput(Struct):
 
 @final
 class TaxSimulator:
-    """Predykcyjny symulator podatkowy — DuckDB + Polars shadow ledgers.
+    """Predykcyjny symulator podatkowy -- DuckDB + Polars shadow ledgers.
 
     Pozwala symulować "co by było gdyby" dla różnych form opodatkowania
     bez wpływu na główną bazę transakcyjną.
@@ -267,7 +267,7 @@ class TaxSimulator:
             ]
         )
         # Dla małych miesięcznych agregacji streaming dodaje narzut.
-        # Sprawdzamy height DataFrame — LazyFrame nie ma materializowanych
+        # Sprawdzamy height DataFrame -- LazyFrame nie ma materializowanych
         # danych, ale jeśli frame ma 'height', to jest DataFrame.
         needs_streaming = hasattr(frame, "height") and frame.height > 1_000_000
         return aggregated.collect(streaming=needs_streaming).to_dicts()[0]

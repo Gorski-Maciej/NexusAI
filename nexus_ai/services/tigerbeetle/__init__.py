@@ -1,4 +1,4 @@
-"""TigerBeetle — bezpieczny, lokalny silnik księgowy (podwójny zapis).
+"""TigerBeetle -- bezpieczny, lokalny silnik księgowy (podwójny zapis).
 
 Zgodnie z aa3fvcx.txt oraz audytem TigerBeetle 2026:
 - TigerBeetle: matematycznie gwarantowana integralność finansowa
@@ -18,7 +18,6 @@ from nexus_ai.services.tigerbeetle.client import (
     TigerBeetleClient,
     TigerBeetleMapper,
 )
-
 from nexus_ai.services.tigerbeetle.ledger_initializer import LedgerInitializer
 from nexus_ai.services.tigerbeetle.models import (
     Base,

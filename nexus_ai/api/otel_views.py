@@ -1,13 +1,13 @@
 """
-api/otel_views.py — OpenTelemetry Metrics Views dla NexusAI.
+api/otel_views.py -- OpenTelemetry Metrics Views dla NexusAI.
 
-  1. Views API — zmiana agregacji/filtrowania metryk bez zmiany kodu instrumentacji
-  2. ExplicitBucketHistogramAggregation — dedykowane buckety dla histogramów
-  3. ExponentialHistogramAggregation — szybszy, bardziej precyzyjny niż explicit
-  4. DropAggregation — usuwanie niechcianych metryk
-  5. LastValueAggregation — dla gauge'ów, tylko ostatnia wartość
-  6. Pattern-based Views — batch *total, *_duration_seconds
-  7. ExemplarReservoir — korelacja metryk z trace'ami
+  1. Views API -- zmiana agregacji/filtrowania metryk bez zmiany kodu instrumentacji
+  2. ExplicitBucketHistogramAggregation -- dedykowane buckety dla histogramów
+  3. ExponentialHistogramAggregation -- szybszy, bardziej precyzyjny niż explicit
+  4. DropAggregation -- usuwanie niechcianych metryk
+  5. LastValueAggregation -- dla gauge'ów, tylko ostatnia wartość
+  6. Pattern-based Views -- batch *total, *_duration_seconds
+  7. ExemplarReservoir -- korelacja metryk z trace'ami
 
 Zgodnie z aa3fvcx.txt: Views API to niedoceniana supermoc OTel Metrics.
 """
@@ -31,10 +31,10 @@ def get_metrics_views() -> list[Any]:
     try:
         from opentelemetry.sdk.metrics.view import (
             AlignedHistogramBucketExemplarReservoir,
+            DropAggregation,
             ExplicitBucketHistogramAggregation,
             ExponentialHistogramAggregation,
             LastValueAggregation,
-            DropAggregation,
             View,
         )
 
@@ -130,7 +130,7 @@ def get_metrics_views() -> list[Any]:
             View(
                 instrument_name="memory_usage_mb",
                 aggregation=DropAggregation(),
-                description="Dropped — use mimalloc metrics instead",
+                description="Dropped -- use mimalloc metrics instead",
             ),
         ]
 

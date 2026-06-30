@@ -1,15 +1,15 @@
 """
-OPA Policy Generator — konwertuje reguły z DuckDB na poprawne Rego policies dla OPA.
+OPA Policy Generator -- konwertuje reguły z DuckDB na poprawne Rego policies dla OPA.
 
 Zgodnie z aa3fvcx.txt:
 - OPA (Open Policy Agent) jako deklaratywny silnik reguł (CNCF)
 - DuckDB jako RuleStore (trwały magazyn parametrów i definicji reguł)
 
 Architektura:
-  DuckDB (RuleStore) → Policy Generator → Rego Policy → OPA → Verdict
+  DuckDB (RuleStore) -> Policy Generator -> Rego Policy -> OPA -> Verdict
 
 Poprawna składnia Rego:
-  - decide = <value> { <condition> }  — kompletna reguła
+  - decide = <value> { <condition> }  -- kompletna reguła
   - Brak łańcuchowania .field = value po zamknięciu nawiasu
   - OR przez wiele reguł z tą samą głową (nie przez ;)
   - Pierwsza pasująca reguła (first-match-wins) przez else chain
@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import json
 import re
+from datetime import UTC
 from typing import Any
 
 from structlog import get_logger
@@ -35,8 +36,8 @@ class OpaPolicyGenerator:
     """Generates poprawne Rego policies z DuckDB tax rules.
 
     Konwertuje temporalne reguły podatkowe z DuckDB na:
-    1. Rego policy (kod źródłowy) — poprawna składnia Rego z else chain
-    2. OPA data document (JSON) — konkretne reguły jako data.tax.rules
+    1. Rego policy (kod źródłowy) -- poprawna składnia Rego z else chain
+    2. OPA data document (JSON) -- konkretne reguły jako data.tax.rules
 
     First-match-wins: else chain w Rego zapewnia deterministyczne
     dopasowanie pierwszej reguły według priorytetu.
@@ -64,9 +65,9 @@ class OpaPolicyGenerator:
         Returns:
             Complete Rego source code ready to load into OPA.
         """
-        from datetime import datetime, timezone
+        from datetime import datetime
 
-        timestamp = datetime.now(timezone.utc).isoformat()
+        timestamp = datetime.now(UTC).isoformat()
         rule_count = len(rules)
         rule_sets = sorted(
             set(r.get("rule_set_id", "") for r in rules if r.get("rule_set_id"))
@@ -144,7 +145,7 @@ class OpaPolicyGenerator:
                     )
                 else:
                     # Subsequent rules: else = <value> { <condition> }
-                    # BRAK nowej linii przed else — musi być bezpośrednio po }
+                    # BRAK nowej linii przed else -- musi być bezpośrednio po }
                     chain_parts.append(
                         f"else = {{\n        {verdict_body}\n    }} {{\n        {condition_line}\n    }}"
                     )
@@ -217,13 +218,13 @@ class OpaPolicyGenerator:
         """Convert SQL condition to Rego expression.
 
         Poprawna konwersja:
-          - AND → , (Rego conjunction)
-          - OR → ; (Rego soft OR — działa jako OR w ciele reguły)
-          - = → ==
-          - IN → array membership with in keyword
-          - IS NULL → not has()/not object.keys()
-          - IS NOT NULL → has()/object.keys()
-          - 'value' → "value"
+          - AND -> , (Rego conjunction)
+          - OR -> ; (Rego soft OR -- działa jako OR w ciele reguły)
+          - = -> ==
+          - IN -> array membership with in keyword
+          - IS NULL -> not has()/not object.keys()
+          - IS NOT NULL -> has()/object.keys()
+          - 'value' -> "value"
 
         Args:
             sql: SQL condition string.
@@ -290,7 +291,7 @@ class OpaPolicyGenerator:
             flags=re.IGNORECASE,
         )
 
-        # Handle LIKE: 'value%' → startswith, '%value' → endswith, '%value%' → contains
+        # Handle LIKE: 'value%' -> startswith, '%value' -> endswith, '%value%' -> contains
         expr = re.sub(
             r"(\w+)\s+LIKE\s+'([^']*)%'",
             lambda m: f'startswith({_field_ref(m.group(1))}, "{m.group(2)}")',
@@ -347,7 +348,7 @@ class OpaPolicyGenerator:
         # Replace OR with ; (Rego soft disjunction)
         expr = re.sub(r"\s+OR\s+", "; ", expr, flags=re.IGNORECASE)
 
-        # Replace SQL string delimiters: 'value' → "value"
+        # Replace SQL string delimiters: 'value' -> "value"
         expr = re.sub(r"'([^']*)'", r'"\1"', expr)
 
         # Clean up extra spaces

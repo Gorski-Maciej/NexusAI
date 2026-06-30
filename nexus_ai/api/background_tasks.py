@@ -6,7 +6,7 @@ All helper functions defined here are designed to be used with Litestar's
 execution after the HTTP response has been sent to the client.
 
   - Zamiast EventEmitter.emit_*() używamy broker.kick("event_emit_*", ...)
-  - Deterministic task_id przez broker._task_id_generator — JetStream deduplikacja
+  - Deterministic task_id przez broker._task_id_generator -- JetStream deduplikacja
   - Mniej zależności: nie trzeba przekazywać event_emitter przez app.state
 
 Each function:

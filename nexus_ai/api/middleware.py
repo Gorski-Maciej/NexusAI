@@ -3,26 +3,24 @@ from __future__ import annotations
 import os
 import uuid
 
-from nexus_crypto import verify_jwt as _verify_jwt_rust
-
 import structlog
 from litestar.middleware import AbstractMiddleware
+from nexus_crypto import verify_jwt as _verify_jwt_rust
 
-from nexus_ai.core.logger import get_logger
 from nexus_ai.core.tenant import (
     DEFAULT_TENANT_ID,
     reset_current_tenant_id,
     set_current_tenant_id,
 )
 
-logger = get_logger()
+# logger = get_logger()
 
 
 def _tenant_from_bearer_auth(authorization_header: str | None) -> str | None:
     """Extract tenant_id from JWT bearer token using Rust verify_jwt.
 
     Delegates all JWT verification (HS256 signature, exp, nbf, iss, aud)
-    to the Rust jsonwebtoken module for 10-50× faster processing.
+    to the Rust jsonwebtoken module for 10-50x faster processing.
     """
     if not authorization_header:
         return None
@@ -49,20 +47,20 @@ def _tenant_from_bearer_auth(authorization_header: str | None) -> str | None:
 
 
 class TenantContextMiddleware(AbstractMiddleware):
-
+    """
     Zamiast własnej ContextVar (correlation_id_ctx), używa:
-      - structlog.contextvars.clear_contextvars() — czyszczenie przed nowym requestem
-      - structlog.contextvars.bind_contextvars() — wiązanie kontekstu
-      - structlog.contextvars.merge_contextvars — automatyczne wzbogacanie logów
+      - structlog.contextvars.clear_contextvars() -- czyszczenie przed nowym requestem
+      - structlog.contextvars.bind_contextvars() -- wiązanie kontekstu
+      - structlog.contextvars.merge_contextvars -- automatyczne wzbogacanie logów
 
     Dzięki temu każdy ``logger.info("msg")`` w całym projekcie automatycznie
     zawiera: correlation_id, tenant_id, request_id, path, method.
-    Żaden plik nie musi robić ``logger.bind()`` — contextvars robi to za nich.
+    Żaden plik nie musi robić ``logger.bind()`` -- contextvars robi to za nich.
 
     Zastępuje ``CorrelationAndDeprecationMiddleware`` po przeniesieniu:
-    - Nagłówki bezpieczeństwa → ``_app_after_request`` w app.py
-    - Nagłówki deprecation → ``_v1_after_request`` w app.py
-    - correlation-id response header → ``_app_after_request`` w app.py
+    - Nagłówki bezpieczeństwa -> ``_app_after_request`` w app.py
+    - Nagłówki deprecation -> ``_v1_after_request`` w app.py
+    - correlation-id response header -> ``_app_after_request`` w app.py
     """
 
     _tenant_from_bearer_auth = staticmethod(_tenant_from_bearer_auth)
@@ -125,6 +123,6 @@ class TenantContextMiddleware(AbstractMiddleware):
                 await self.app(scope, receive, send_wrapper)
             finally:
                 reset_current_tenant_id(tenant_token)
-                # Nie resetujemy structlog contextvars — one są czyszczone
+                # Nie resetujemy structlog contextvars -- one są czyszczone
                 # na początku next requestu przez clear_contextvars()
                 # logger.contextualize() automatycznie czyści kontekst po wyjściu z with

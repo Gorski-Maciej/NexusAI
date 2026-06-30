@@ -7,11 +7,11 @@ from typing import Any
 import pendulum
 from litestar import Controller, get
 
-from nexus_ai.api.dto import WorkerStatusDTO, TAG_SYSTEM
+from nexus_ai.api.dto import TAG_SYSTEM, WorkerStatusDTO
 
 
 class WorkerStatusController(Controller):
-    """Worker status monitoring — current load, concurrency, and resource usage.
+    """Worker status monitoring -- current load, concurrency, and resource usage.
 
     Provides:
       - GET /api/v1/system/workers/status: aktualne obciążenie workera
@@ -30,18 +30,19 @@ class WorkerStatusController(Controller):
     async def get_worker_status(self) -> dict[str, Any]:
         """Zwraca aktualny status workera: obciążenie, liczbę zadań, limit współbieżności.
 
-          - Process.oneshot() — batch syscalls (zamiast 3 osobnych)
-          - memory_full_info() — USS/PSS (rzeczywista pamięć)
-          - cpu_percent(interval=0.1) — CPU z krótkim pomiarem
-          - num_threads() — liczba wątków
-          - num_fds() — liczba deskryptorów
-          - status() — stan procesu
-          - memory_percent() — % całkowitego RAM
+          - Process.oneshot() -- batch syscalls (zamiast 3 osobnych)
+          - memory_full_info() -- USS/PSS (rzeczywista pamięć)
+          - cpu_percent(interval=0.1) -- CPU z krótkim pomiarem
+          - num_threads() -- liczba wątków
+          - num_fds() -- liczba deskryptorów
+          - status() -- stan procesu
+          - memory_percent() -- % całkowitego RAM
 
         Rozwiązanie 29: Monitorowanie stanu workera.
         """
         try:
             import os
+
             import psutil
 
             process = psutil.Process(os.getpid())

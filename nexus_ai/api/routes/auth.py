@@ -1,15 +1,15 @@
 """Full authentication routes for NexusAI.
 
 Provides:
-- POST /api/auth/register — register new user with password validation
-- POST /api/auth/login — login with email/username, returns access+refresh tokens
-- POST /api/auth/refresh — rotate refresh token (single-use)
-- POST /api/auth/logout — invalidate all user tokens (increment jwt_version)
-- GET  /api/auth/me — get current user profile
-- POST /api/auth/confirm/{token} — confirm email address
-- POST /api/auth/reset-password — request password reset email
-- POST /api/auth/reset-password/confirm — set new password
-- GET  /api/auth/csrf-token — get CSRF token
+- POST /api/auth/register -- register new user with password validation
+- POST /api/auth/login -- login with email/username, returns access+refresh tokens
+- POST /api/auth/refresh -- rotate refresh token (single-use)
+- POST /api/auth/logout -- invalidate all user tokens (increment jwt_version)
+- GET  /api/auth/me -- get current user profile
+- POST /api/auth/confirm/{token} -- confirm email address
+- POST /api/auth/reset-password -- request password reset email
+- POST /api/auth/reset-password/confirm -- set new password
+- GET  /api/auth/csrf-token -- get CSRF token
 """
 
 from __future__ import annotations
@@ -38,12 +38,12 @@ from litestar import Controller, get, post
 from litestar.connection import Request
 from litestar.exceptions import NotAuthorizedException, ValidationException
 from litestar.response import Response
-from sqlmodel import text
 from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlmodel import text
 from structlog import get_logger
 
-from nexus_ai.api.security import hash_password, verify_password
 from nexus_ai.api.dto import (
+    TAG_AUTH,
     ChangePasswordDTO,
     ChangePasswordResponseDTO,
     ConfirmEmailResponseDTO,
@@ -52,17 +52,21 @@ from nexus_ai.api.dto import (
     LoginResponseDTO,
     LogoutResponseDTO,
     PasswordResetConfirmDTO,
-    PasswordResetDTO,
     PasswordResetConfirmResponseDTO,
+    PasswordResetDTO,
     PasswordResetResponseDTO,
     RefreshDTO,
     RegisterDTO,
     RegisterResponseDTO,
-    TAG_AUTH,
     UserProfileResponseDTO,
 )
 from nexus_ai.api.exceptions import DuplicateResourceError
-from nexus_ai.api.security import REFRESH_TOKEN_EXPIRATION_DAYS, jwt_auth
+from nexus_ai.api.security import (
+    REFRESH_TOKEN_EXPIRATION_DAYS,
+    hash_password,
+    jwt_auth,
+    verify_password,
+)
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 logger = get_logger("nexus.api.auth")
@@ -831,7 +835,7 @@ class AuthController(Controller):
         csrf_token = request.cookies.get("csrf_token")
         if csrf_token:
             return {"csrf_token": csrf_token}
-        # Przy pierwszym wywołaniu ciasteczko nie istnieje — zwróć tymczasowy token
+        # Przy pierwszym wywołaniu ciasteczko nie istnieje -- zwróć tymczasowy token
         # CSRFConfig ustawi autorytatywne ciasteczko w odpowiedzi
         return {"csrf_token": secrets.token_urlsafe(32)}
 

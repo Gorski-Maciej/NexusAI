@@ -6,7 +6,7 @@ from typing import Any
 
 from litestar import Controller, get
 
-from nexus_ai.api.dto import StatsProcessingDTO, TAG_ANALYTICS
+from nexus_ai.api.dto import TAG_ANALYTICS, StatsProcessingDTO
 
 
 class StatsController(Controller):

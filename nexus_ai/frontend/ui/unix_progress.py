@@ -1,9 +1,9 @@
-"""unix_progress.py — Nasłuchuje zdarzeń postępu przez socket UNIX.
+"""unix_progress.py -- Nasłuchuje zdarzeń postępu przez socket UNIX.
 
-Zastępuje: ws_client.py (HTTP SSE → socket UNIX).
+Zastępuje: ws_client.py (HTTP SSE -> socket UNIX).
 Komunikacja przez AF_UNIX jest szybsza i lżejsza niż HTTP/SSE w trybie desktopowym.
 
-  - asyncio.open_unix_connection — natywne API Pythona, zero dodatkowych zależności
+  - asyncio.open_unix_connection -- natywne API Pythona, zero dodatkowych zależności
   - Exponential backoff z jitter przy reconnect
   - page.pubsub dla dystrybucji zdarzeń
   - Czyste zamknięcie przez asyncio.Event
@@ -30,7 +30,7 @@ HEARTBEAT_TIMEOUT = 30.0
 class UnixProgressClient:
     """Nasłuchuje zdarzeń postępu z backendu przez socket UNIX i aktualizuje Flet UI.
 
-    Zastępuje ProgressWebSocketClient — zamiast HTTP SSE łączy się bezpośrednio
+    Zastępuje ProgressWebSocketClient -- zamiast HTTP SSE łączy się bezpośrednio
     przez AF_UNIX socket, co eliminuje narzut HTTP i TCP loopback.
 
     Użycie:
@@ -54,7 +54,7 @@ class UnixProgressClient:
         self._page = page
 
     def start(self):
-        """Legacy sync start — używa page.run_task wewnętrznie."""
+        """Legacy sync start -- używa page.run_task wewnętrznie."""
         if self._page:
             self._page.run_task(self.start_async())
 
@@ -87,8 +87,8 @@ class UnixProgressClient:
                             reader.readline(),
                             timeout=HEARTBEAT_TIMEOUT,
                         )
-                    except asyncio.TimeoutError:
-                        # Heartbeat — brak danych nie jest błędem, kontynuujemy
+                    except TimeoutError:
+                        # Heartbeat -- brak danych nie jest błędem, kontynuujemy
                         continue
 
                     if not line:

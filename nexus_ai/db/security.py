@@ -1,5 +1,5 @@
 """
-Security — SQLCipher configuration + key rotation management.
+Security -- SQLCipher configuration + key rotation management.
 
 Łączy db/sqlcipher_config.py i db/sqlcipher_key_rotation.py w jeden moduł.
 Typowana konfiguracja przez msgspec.Struct z walidacją zakresów.
@@ -12,8 +12,9 @@ import base64
 import os
 import shutil
 import sqlite3
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import pendulum
 from msgspec import Struct

@@ -1,5 +1,5 @@
 """
-models_downloader.py — Download AI models with resume, progress reporting,
+models_downloader.py -- Download AI models with resume, progress reporting,
 and SHA-256 integrity verification.
 
 Designed for first-run experience in the Windows installer context.
@@ -13,18 +13,15 @@ Supports:
 from __future__ import annotations
 
 import sys
-
-from nexus_crypto import Sha256Hasher
-
-import anyio
-from msgspec import Struct
 from pathlib import Path
 from typing import Any, Protocol
 
+import anyio
 import msgspec
-from structlog import get_logger
-
 from fsspec.implementations.cached import CachingFileSystem
+from msgspec import Struct
+from nexus_crypto import Sha256Hasher
+from structlog import get_logger
 
 logger = get_logger("nexus.installer.models_downloader")
 
@@ -97,7 +94,7 @@ def load_manifest(manifest_path: str | Path | None = None) -> list[ModelEntry]:
         logger.warning("Model manifest not found at any expected location")
         return []
 
-    # Działa z file://, s3://, http:// — manifest może być zdalny
+    # Działa z file://, s3://, http:// -- manifest może być zdalny
     with fsspec.open(manifest_path, "rb") as f:
         data: dict[str, Any] = msgspec.json.decode(f.read())
 
@@ -150,7 +147,7 @@ def compute_sha256(filepath: Path) -> str:
 def verify_file(filepath: Path, expected_hash: str) -> bool:
     """Verify a file's SHA-256 checksum. Returns True if match or no hash provided."""
     if not expected_hash:
-        # No reference checksum — skip verification
+        # No reference checksum -- skip verification
         return True
     if not filepath.exists():
         return False
@@ -193,7 +190,7 @@ async def download_file(
         ) as client:
             response = await client.get(url, headers=headers)
 
-            if response.status_code == 416:  # Range Not Satisfiable — file is complete
+            if response.status_code == 416:  # Range Not Satisfiable -- file is complete
                 temp_path.rename(dest_path)
                 return True, None
 
@@ -286,7 +283,7 @@ async def download_all_models(
     """
     models_dir = Path(models_dir)
     models_dir.mkdir(
-        parents=True, exist_ok=True
+        parents=True, exist_ok=True)
     # CachingFileSystem owija bazowy filesystem ("file") i cache'uje odczyty.
     # Następne uruchomienie: jeśli plik jest w cache, nie wymaga ponownego I/O.
     cache_storage = models_dir / ".fsspec_cache"
@@ -301,7 +298,7 @@ async def download_all_models(
 
     entries = load_manifest(manifest_path)
     if not entries:
-        logger.warning("No models found in manifest — nothing to download")
+        logger.warning("No models found in manifest -- nothing to download")
         return []
 
     if only_required:
@@ -321,7 +318,7 @@ async def download_all_models(
         # Używamy caching_fs.open() z prawdziwą ścieżką zamiast sztucznego URL
         dest_url = str(dest_path)
         if caching_fs.exists(dest_url):
-            # CachingFileSystem zwrócił True — plik jest w cache lub na dysku
+            # CachingFileSystem zwrócił True -- plik jest w cache lub na dysku
             logger.info("[Models] Found in fsspec cache: %s", entry.key)
 
         # Check if already exists and is valid
@@ -348,8 +345,8 @@ async def download_all_models(
                     )
                 continue
             else:
-                # Hash mismatch — remove and re-download
-                logger.warning("SHA-256 mismatch for %s — re-downloading", entry.key)
+                # Hash mismatch -- remove and re-download
+                logger.warning("SHA-256 mismatch for %s -- re-downloading", entry.key)
                 dest_path.unlink(missing_ok=True)
 
         # Check for partial download
@@ -416,7 +413,7 @@ async def download_all_models(
             # bez dotykania dysku (jeśli plik jest w cache)
             try:
                 with caching_fs.open(dest_url, "rb") as _:
-                    pass  # Odczyta przez CachingFileSystem — wypełnia cache
+                    pass  # Odczyta przez CachingFileSystem -- wypełnia cache
                 logger.info("[Models] Cached in fsspec: %s", entry.key)
             except Exception as cache_err:
                 logger.warning("[Models] Failed to cache %s: %s", entry.key, cache_err)

@@ -1,5 +1,5 @@
 """
-mimalloc_bridge.py — Python ctypes bridge to Microsoft mimalloc allocator API.
+mimalloc_bridge.py -- Python ctypes bridge to Microsoft mimalloc allocator API.
 
 Zgodnie z aa3fvcx.txt: mimalloc jako domyślny alokator pamięci (5-15% mniej RAM).
 
@@ -7,7 +7,7 @@ Umożliwia:
   - Sprawdzenie czy mimalloc jest aktywnym alokatorem (is_active)
   - Odczyt statystyk alokatora (stats_as_dict)
   - Tworzenie i niszczenie izolowanych stert (heap_new / heap_destroy)
-    — idealne dla pipeline'u OCR: każda faktura dostaje własną stertę
+    -- idealne dla pipeline'u OCR: każda faktura dostaje własną stertę
   - Programmatyczne ustawianie opcji w runtime (option_set)
   - Ręczne czyszczenie i purgowanie stert (heap_collect)
 
@@ -28,23 +28,22 @@ Usage:
 
 Wymaga:
   - mimalloc jako LD_PRELOAD (lub statycznie wkompilowany przez Nuitka)
-  - Działa przez ctypes.CDLL(None) — szuka symboli w aktualnym procesie
+  - Działa przez ctypes.CDLL(None) -- szuka symboli w aktualnym procesie
 """
 
 from __future__ import annotations
 
 import ctypes
+import logging as _logging
 import os
 import threading
 from typing import Any
-
-import logging as _logging
 
 _log = _logging.getLogger("nexus.mimalloc")
 
 
 # ── Constants from mimalloc v3 (include/mimalloc.h) ────────────────────────
-# Zgodne z mimalloc v3.3.x — wartości stabilne między wersjami patchowymi
+# Zgodne z mimalloc v3.3.x -- wartości stabilne między wersjami patchowymi
 
 
 class MIOption:
@@ -192,7 +191,7 @@ def option_get(option: int) -> int | None:
 def heap_new() -> int | None:
     """Create a new mimalloc heap.
 
-    Heaps are isolated allocation arenas — all memory allocated on a heap
+    Heaps are isolated allocation arenas -- all memory allocated on a heap
     can be freed atomically with ``heap_destroy()``.
 
     Returns:
@@ -215,7 +214,7 @@ def heap_new() -> int | None:
 def heap_destroy(heap: int) -> bool:
     """Destroy a mimalloc heap, freeing all its allocated memory at once.
 
-    This is the key operation for isolated OCR processing — all memory
+    This is the key operation for isolated OCR processing -- all memory
     allocated on this heap (images, text buffers, OCR results) is freed
     in one O(1) operation, without needing to free each allocation individually.
 
@@ -260,7 +259,7 @@ def stats_hint() -> str:
 
     mimalloc statistics are collected on process exit when
     ``MIMALLOC_SHOW_STATS=1`` is set. This function returns
-    a hint about the current configuration — it does NOT
+    a hint about the current configuration -- it does NOT
     collect live allocator statistics.
 
     For live stats, enable the env var before starting the process.
@@ -269,7 +268,7 @@ def stats_hint() -> str:
         String describing the current stats configuration.
     """
     if os.environ.get("MIMALLOC_SHOW_STATS", "0") == "1":
-        return "MIMALLOC_SHOW_STATS=1 — stats will print on process exit"
+        return "MIMALLOC_SHOW_STATS=1 -- stats will print on process exit"
     return "Set MIMALLOC_SHOW_STATS=1 to see allocator statistics on exit"
 
 
@@ -278,7 +277,7 @@ def _get_rss_bytes() -> int | None:
 
     This provides a close approximation of mimalloc's committed memory
     for monitoring purposes. Falls back gracefully if /proc is not available
-    (e.g., macOS, Windows — returns None).
+    (e.g., macOS, Windows -- returns None).
 
     Returns:
         RSS in bytes, or None if not available.
@@ -287,7 +286,7 @@ def _get_rss_bytes() -> int | None:
         with open("/proc/self/statm") as f:
             parts = f.read().strip().split()
             if len(parts) >= 2:
-                # RSS in pages → bytes
+                # RSS in pages -> bytes
                 rss_pages = int(parts[1])
                 page_size = os.sysconf("SC_PAGE_SIZE")
                 return rss_pages * page_size
@@ -338,7 +337,7 @@ class InvoiceOCRHeap:
     mimalloc dla każdej faktury w pipeline OCR. Po zakończeniu przetwarzania
     cała pamięć jest zwalniana atomowo przez ``heap_destroy()``.
 
-    Jest to kluczowa optymalizacja pamięci — zamiast czekać na GC Pythona,
+    Jest to kluczowa optymalizacja pamięci -- zamiast czekać na GC Pythona,
     wszystkie alokacje dla faktury (obrazy, bufory OCR, struktury tymczasowe)
     są usuwane w jednej operacji O(1).
 
@@ -347,10 +346,10 @@ class InvoiceOCRHeap:
             # Wszystkie alokacje dla tej faktury
             text = await tesseract.extract_text(image_path)
             ...
-        # ← heap_destroy — pamięć zwolniona atomowo
+        # ← heap_destroy -- pamięć zwolniona atomowo
 
     Gdy mimalloc nie jest aktywny (fallback), context manager działa
-    przezroczysto — tworzy i niszczy tylko wtedy gdy mimalloc jest dostępny.
+    przezroczysto -- tworzy i niszczy tylko wtedy gdy mimalloc jest dostępny.
     """
 
     def __init__(self, invoice_id: str, label: str = "ocr") -> None:
@@ -410,7 +409,7 @@ class SecureHeap:
         async with SecureHeap("crypto_key") as heap:
             # Klucz kryptograficzny w izolowanej stercie
             derive_key(password, salt)
-        # ← heap_destroy z force collect — pamięć wyzerowana i zwolniona
+        # ← heap_destroy z force collect -- pamięć wyzerowana i zwolniona
     """
 
     def __init__(self, label: str, *, enable_guard_pages: bool = True) -> None:
@@ -440,7 +439,7 @@ class SecureHeap:
             # Zapamiętaj poprzednią wartość PAGE_CLEAR
             prev = option_get(MIOption.PAGE_CLEAR)
             self._prev_page_clear = prev if prev is not None else 0
-            # Włącz czyszczenie stron na free — zeruje pamięć przed zwolnieniem
+            # Włącz czyszczenie stron na free -- zeruje pamięć przed zwolnieniem
             option_set(MIOption.PAGE_CLEAR, 1)
             _log.info(
                 "secure_heap_created",
@@ -480,7 +479,7 @@ class MemoryLeakDetector:
     i wykrywa nienormalny wzrost (powyżej ``growth_threshold_pct``
     w ciągu ``window_size`` pomiarów).
 
-    Thread-safe dla Python 3.13t (free-threaded) — wszystkie operacje
+    Thread-safe dla Python 3.13t (free-threaded) -- wszystkie operacje
     na historii przez ``threading.Lock``.
 
     Usage:
@@ -501,7 +500,7 @@ class MemoryLeakDetector:
                                   a najnowszym pomiarem w oknie, który
                                   uznajemy za potencjalny wyciek.
             window_size: Liczba ostatnich pomiarów do porównania.
-            min_rss_mb: Minimalny RSS (MB) — pomiary poniżej są ignorowane
+            min_rss_mb: Minimalny RSS (MB) -- pomiary poniżej są ignorowane
                         (zapobiega fałszywym alarmom przy małych obciążeniach).
         """
         self.growth_threshold_pct = growth_threshold_pct
@@ -588,8 +587,9 @@ def save_stats_to_file(path: str | os.PathLike) -> str | None:
     if not stats.get("active", False):
         return None
 
-    from nexus_ai.core.msgspec_utils import msgspec_dumps as _msgspec_dumps
     import time as _time
+
+    from nexus_ai.core.msgspec_utils import msgspec_dumps as _msgspec_dumps
 
     stats["timestamp"] = _time.time()
     # ISO timestamp bez zewnętrznych zależności
@@ -611,7 +611,7 @@ def record_metrics() -> dict[str, int | float | bool]:
     """Collect current mimalloc metrics for external monitoring.
 
     Returns dict with keys: active, process_rss_bytes, options.
-    Safe to call anytime — returns empty dict if mimalloc not active.
+    Safe to call anytime -- returns empty dict if mimalloc not active.
 
     Returns:
         Dict of metric values (may be empty if mimalloc is not active).

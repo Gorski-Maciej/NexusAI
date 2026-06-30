@@ -1,6 +1,7 @@
-"""Partner Hub View — @ft.component + ReorderableListView + SegmentedButton + SearchBar."""
+"""Partner Hub View -- @ft.component + ReorderableListView + SegmentedButton + SearchBar."""
 
 from __future__ import annotations
+
 import flet as ft
 import pendulum
 from structlog import get_logger
@@ -107,7 +108,7 @@ def PartnerHubView(page: ft.Page, api_client, query_context: dict | None = None)
                         ),
                         ft.Container(width=8),
                         ft.Text(
-                            f"Faktury — {client_name}",
+                            f"Faktury -- {client_name}",
                             size=20,
                             weight=ft.FontWeight.BOLD,
                             color=ft.colors.WHITE,

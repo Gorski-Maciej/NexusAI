@@ -1,5 +1,5 @@
 """
-GUS BIR Client — SOAP-based client for GUS BIR (Baza Internetowa REGON).
+GUS BIR Client -- SOAP-based client for GUS BIR (Baza Internetowa REGON).
 """
 
 from __future__ import annotations
@@ -7,11 +7,11 @@ from __future__ import annotations
 import html
 import os
 import re
-from msgspec import Struct, field
 from typing import Any, final
 
 import httpx
 import stamina
+from msgspec import Struct, field
 from structlog import get_logger
 
 from nexus_ai.core.cache.http_client import CachedHttpClient

@@ -1,4 +1,4 @@
-"""auto_dto — fabryka generująca msgspec.Struct z modeli SQLModel.
+"""auto_dto -- fabryka generująca msgspec.Struct z modeli SQLModel.
 
 Eliminuje ~2 600 linii ręcznie pisanych DTO.
 Generuje Struct z kolumn modelu SQLModel przez __table__.columns.
@@ -14,7 +14,7 @@ from decimal import Decimal
 from typing import Any
 
 from msgspec import Struct
-from sqlalchemy import String, Integer, Float, Boolean, Numeric
+from sqlalchemy import Boolean, Float, Integer, Numeric, String
 from sqlmodel import SQLModel
 
 _DTO_CACHE: dict[str, type[Struct]] = {}

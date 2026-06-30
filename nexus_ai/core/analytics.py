@@ -1,29 +1,27 @@
 # core/analytics.py
-"""Core analytics — Polars SQLContext + financial analytics queries.
+"""Core analytics -- Polars SQLContext + financial analytics queries.
 
-- ``pl.sql(query, tables={...})`` — natywny SQL w Polars 1.x
+- ``pl.sql(query, tables={...})`` -- natywny SQL w Polars 1.x
 - Rejestracja DataFrame/LazyFrame jako tabel wirtualnych
 - Mieszanie SQL z wyrażeniami Polars w jednym pipeline
-- LazyFrame przez cały czas — brak materializacji do końca
+- LazyFrame przez cały czas -- brak materializacji do końca
 """
 
 from __future__ import annotations
 
-
 import duckdb
 import polars as pl
 
-
 # ═══════════════════════════════════════════════════════════════════════════════
-# Polars SQLContext — natywna integracja SQL z expression API
+# Polars SQLContext -- natywna integracja SQL z expression API
 # ═══════════════════════════════════════════════════════════════════════════════
 # Polars 1.x oferuje ``pl.sql(query, tables={...})`` zamiast osobnego obiektu
 # SQLContext. Ta klasa opakowuje to API w wygodny interfejs z rejestracją tabel
 # i możliwością kontynuacji przez Polars expressions po zapytaniu SQL.
 #
 # Różnica względem DuckDB SQL:
-#   DuckDB:  conn.execute(sql).pl() → DataFrame
-#   Polars:  pl.sql(sql, tables=...) → LazyFrame → expressions → collect()
+#   DuckDB:  conn.execute(sql).pl() -> DataFrame
+#   Polars:  pl.sql(sql, tables=...) -> LazyFrame -> expressions -> collect()
 #
 # Polars SQL jest lżejszy (bez zewnętrznego silnika), idealny dla analityki
 # która już operuje na DataFrame/LazyFrame w pamięci.
@@ -32,7 +30,7 @@ import polars as pl
 
 @pl.api.register_lazyframe_namespace("sql")
 class _SQLNamespace:
-    """Rozszerza LazyFrame o metodę .sql.query() — wygodny dostęp do SQL.
+    """Rozszerza LazyFrame o metodę .sql.query() -- wygodny dostęp do SQL.
 
     Umożliwia::
         lazy = pl.LazyFrame(data)
@@ -67,7 +65,7 @@ PolarsSQL = _SQLNamespace
 
 
 class PolarsSQLContext:
-    """Polars SQLContext — rejestruje wiele tabel i wykonuje zapytania SQL.
+    """Polars SQLContext -- rejestruje wiele tabel i wykonuje zapytania SQL.
 
     Umożliwia rejestrację DataFrame/LazyFrame jako tabel wirtualnych,
     a następnie wykonywanie na nich zapytań SQL z możliwością kontynuacji
@@ -95,10 +93,10 @@ class PolarsSQLContext:
             .shrink_dtype()
         )
 
-    - ``pl.sql()`` — natywny SQL Polars bez zewnętrznego silnika
-    - LazyFrame — brak materializacji do .collect()
-    - Mieszanie SQL z wyrażeniami — pełna moc Polars
-    - Streaming + shrink_dtype — wydajność dla dużych zbiorów
+    - ``pl.sql()`` -- natywny SQL Polars bez zewnętrznego silnika
+    - LazyFrame -- brak materializacji do .collect()
+    - Mieszanie SQL z wyrażeniami -- pełna moc Polars
+    - Streaming + shrink_dtype -- wydajność dla dużych zbiorów
     """
 
     def __init__(self) -> None:
@@ -124,14 +122,14 @@ class PolarsSQLContext:
             )
 
         Args:
-            **tables: Nazwa → DataFrame/LazyFrame.
+            **tables: Nazwa -> DataFrame/LazyFrame.
         """
         self._tables.update(tables)
 
     def sql(self, query: str) -> pl.LazyFrame:
         """Wykonaj zapytanie SQL na zarejestrowanych tabelach.
 
-        Zwraca LazyFrame — można kontynuować z wyrażeniami Polars.
+        Zwraca LazyFrame -- można kontynuować z wyrażeniami Polars.
 
         Args:
             query: Zapytanie SQL odnoszące się do zarejestrowanych tabel.
@@ -191,7 +189,7 @@ class PolarsSQLContext:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Financial analytics — Polars SQL + expressions pipeline
+# Financial analytics -- Polars SQL + expressions pipeline
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
@@ -210,9 +208,9 @@ def financial_analysis_with_polars_sql(
     3. Kontynuacja przez Polars expressions (cast, with_columns, filter)
     4. Streaming collect + shrink_dtype dla wydajności
 
-    - ``pl.sql()`` — SQL bez zewnętrznego silnika DuckDB
-    - Mieszanie SQL z wyrażeniami — pełna swoboda
-    - LazyFrame przez cały pipeline — optymalizacja przez Polars optimizer
+    - ``pl.sql()`` -- SQL bez zewnętrznego silnika DuckDB
+    - Mieszanie SQL z wyrażeniami -- pełna swoboda
+    - LazyFrame przez cały pipeline -- optymalizacja przez Polars optimizer
 
     Args:
         invoices: Polars DataFrame/LazyFrame z fakturami.
@@ -231,7 +229,7 @@ def financial_analysis_with_polars_sql(
     if contracts is not None:
         ctx.register("contracts", contracts)
 
-    # ── KROK 1: SQL — agregacje miesięczne z window function ─────
+    # ── KROK 1: SQL -- agregacje miesięczne z window function ─────
     # SQL jest naturalny dla:
     #   - Window functions (SUM OVER, ROW_NUMBER)
     #   - CTE (WITH)
@@ -284,7 +282,7 @@ def financial_analysis_with_polars_sql(
 
     lazy = ctx.sql(base_query)
 
-    # ── KROK 2: Polars expressions — transformacje po SQL ───────
+    # ── KROK 2: Polars expressions -- transformacje po SQL ───────
     # Po SQL używamy wyrażeń Polars dla:
     #   - Obliczeń warunkowych (pl.when)
     #   - Zaawansowanych transformacji
@@ -329,7 +327,7 @@ def run_polars_sql_query(
 ) -> pl.DataFrame:
     """Wykonaj dowolne zapytanie SQL przez Polars SQL engine.
 
-    Najprostszy interfejs: podaj SQL + słownik tabel → dostajesz DataFrame.
+    Najprostszy interfejs: podaj SQL + słownik tabel -> dostajesz DataFrame.
     Idealne dla ad-hoc analityki finansowej.
 
     Args:
@@ -365,11 +363,12 @@ def run_polars_sql_query(
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Legacy — DuckDB + Polars (zachowane dla kompatybilności)
+# Legacy -- DuckDB + Polars (zachowane dla kompatybilności)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
 def get_cashflow_forecast(db_path: str = "data/nexus_analytics.duckdb") -> pl.LazyFrame:
+    """Get cashflow forecast from DuckDB, returns LazyFrame.
 
     LazyFrame pozwala na:
     - Optymalizację zapytań przez optimizer Polars (predicate/projection pushdown)
@@ -377,7 +376,7 @@ def get_cashflow_forecast(db_path: str = "data/nexus_analytics.duckdb") -> pl.La
     - Łączenie z innymi LazyFrame przed kolekcją
     - explain(optimized=True) dla wglądu w plan
 
-    Zwraca pl.LazyFrame — caller decyduje kiedy .collect()
+    Zwraca pl.LazyFrame -- caller decyduje kiedy .collect()
     """
     conn = duckdb.connect(db_path)
     try:
@@ -421,10 +420,11 @@ def get_cashflow_forecast(db_path: str = "data/nexus_analytics.duckdb") -> pl.La
 
 
 def collect_with_streaming(lazy: pl.LazyFrame, streaming: bool = True) -> pl.DataFrame:
+    """Collect LazyFrame with optional streaming.
 
     ``collect(streaming=True)`` wykonuje zapytanie w batchach,
     nie ładując wszystkich danych do RAM. Idealne dla prognoz
-    > 1M wierszy.
+    ponad 1M wierszy.
 
     Po kolekcji automatycznie stosuje ``shrink_dtype()`` dla
     redukcji RAM o ~50% na typach liczbowych.
@@ -434,7 +434,7 @@ def collect_with_streaming(lazy: pl.LazyFrame, streaming: bool = True) -> pl.Dat
         streaming: Jeśli True, używa streaming engine.
 
     Returns:
-        DataFrame z shrink_dtype() — zminimalizowane typy.
+        DataFrame z shrink_dtype() -- zminimalizowane typy.
     """
     df = lazy.collect(streaming=streaming)
     return df.shrink_dtype()

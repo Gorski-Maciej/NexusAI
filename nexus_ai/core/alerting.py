@@ -17,9 +17,10 @@ Usage:
 from __future__ import annotations
 
 import shutil
-from msgspec import Struct, field
 from pathlib import Path
 from typing import Any
+
+from msgspec import Struct, field
 
 # ── Alert rule definitions ────────────────────────────────────────────────────
 

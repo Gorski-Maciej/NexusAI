@@ -1,5 +1,5 @@
 """
-Taskiq — consolidated module for NexusAI task queue.
+Taskiq -- consolidated module for NexusAI task queue.
 
 Zastępuje 2 osobne pliki: taskiq_middleware.py, taskiq_result_backend.py.
 Zachowuje pełną kompatybilność wsteczną przez shimy.
@@ -18,13 +18,13 @@ from pathlib import Path
 from typing import Any, final
 
 import structlog as _structlog
+from structlog import get_logger
 from taskiq.abc.middleware import TaskiqMiddleware
 from taskiq.message import TaskiqMessage
 from taskiq.result import TaskiqResult, TaskiqResultBackend
-from structlog import get_logger
 
-from pathlib import Path
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads as _msgspec_loads
+from nexus_ai.core.msgspec_utils import msgspec_dumps
+from nexus_ai.core.msgspec_utils import msgspec_loads as _msgspec_loads
 
 logger = get_logger("nexus.taskiq")
 
@@ -74,8 +74,9 @@ class TaskTracingMiddleware(TaskiqMiddleware):
 
     async def pre_send(self, message: TaskiqMessage) -> TaskiqMessage:
         try:
-            from nexus_ai.core.otel import get_tracer
             from opentelemetry import baggage
+
+            from nexus_ai.core.otel import get_tracer
             tracer = get_tracer("nexus.taskiq")
             with tracer.start_as_current_span(f"task.{message.task_name}") as span:
                 span.set_attribute("task_name", message.task_name)

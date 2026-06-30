@@ -1,11 +1,11 @@
 """
-KSeF Generator — generuje XML FA_VAT zgodny ze schematem KSeF.
+KSeF Generator -- generuje XML FA_VAT zgodny ze schematem KSeF.
 
 Dwie ścieżki generowania XML:
-  1. [PREFERRED] xsdata — używa wygenerowanych klas z FA_VAT XSD (type-safe)
-  2. [FALLBACK]  lxml.etree — ręczne budowanie drzewa XML (gdy bindingi xsdata niedostępne)
+  1. [PREFERRED] xsdata -- używa wygenerowanych klas z FA_VAT XSD (type-safe)
+  2. [FALLBACK]  lxml.etree -- ręczne budowanie drzewa XML (gdy bindingi xsdata niedostępne)
 
-Zintegrowany z DecisionEngine — na podstawie werdyktu reguł podatkowych
+Zintegrowany z DecisionEngine -- na podstawie werdyktu reguł podatkowych
 (GTU, procedury, stawki VAT) buduje poprawny dokument XML zgodny z XSD
 Ministerstwa Finansów.
 
@@ -35,9 +35,11 @@ logger = get_logger("nexus.ksef")
 
 try:
     from nexus_ai.core.integrations.ksef.xsd_bindings import (
-        faktura_to_xml,
-        faktura_from_dict,
         _load_bindings as _load_ksef_bindings,
+    )
+    from nexus_ai.core.integrations.ksef.xsd_bindings import (
+        faktura_from_dict,
+        faktura_to_xml,
         validate_with_xsdata,
     )
 
@@ -49,7 +51,7 @@ except ImportError:
     validate_with_xsdata = None  # type: ignore[assignment]
 
 
-# ── Category → GTU map ───────────────────────────────────────────────────────
+# ── Category -> GTU map ───────────────────────────────────────────────────────
 # Fallback map when verdict doesn't specify ksef_fields explicitly.
 # Based on Polish KSeF GTU classification (GTU_01 .. GTU_13).
 
@@ -76,8 +78,8 @@ def _resolve_ksef_fields(verdict: dict[str, Any]) -> dict[str, Any]:
     """Resolve KSeF fields from verdict and category map.
 
     Priority:
-      1. verdict["ksef_fields"] — explicit fields from rule
-      2. verdict["gtu_code"] + verdict["procedure"] — legacy fields
+      1. verdict["ksef_fields"] -- explicit fields from rule
+      2. verdict["gtu_code"] + verdict["procedure"] -- legacy fields
       3. CATEGORY_GTU_MAP lookup by category_code from verdict context
 
     Returns:
@@ -123,8 +125,8 @@ def generate_ksef_xml(
     """Generuje XML FA_VAT na podstawie danych faktury i werdyktu Zen-Engine.
 
     Dwie ścieżki:
-      1. [PREFERRED] xsdata — używa wygenerowanych klas z FA_VAT XSD (type-safe)
-      2. [FALLBACK]  lxml.etree — ręczne budowanie drzewa XML
+      1. [PREFERRED] xsdata -- używa wygenerowanych klas z FA_VAT XSD (type-safe)
+      2. [FALLBACK]  lxml.etree -- ręczne budowanie drzewa XML
 
     Args:
         invoice_data: Znormalizowana faktura (kwoty w groszach).
@@ -220,7 +222,7 @@ def generate_ksef_xml(
     ET.SubElement(fa, "P_14_1").text = vat_pln  # Razem VAT
     ET.SubElement(fa, "P_15").text = brutto_pln  # Razem brutto
 
-    # GTU (sekcja oznakowań — jeden lub więcej kodów)
+    # GTU (sekcja oznakowań -- jeden lub więcej kodów)
     if gtu_code:
         gtu = ET.SubElement(fa, "Gtu")
         code_elem = ET.SubElement(gtu, gtu_code)
@@ -282,7 +284,7 @@ def validate_ksef_xml(xml_str: str, xsd_path: str | None = None) -> tuple[bool, 
         Tuple of (is_valid, error_message).
     """
     if not xsd_path:
-        return True, "No XSD provided — validation skipped"
+        return True, "No XSD provided -- validation skipped"
 
     try:
         schema_root = ET.parse(xsd_path)

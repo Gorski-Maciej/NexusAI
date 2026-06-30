@@ -5,12 +5,12 @@ TOTALNA REWOLUCJA: wszystkie operacje I/O przez AsyncFsWrapper.
 - ``await afs.pipe_file()`` zamiast ``await fsspec.open_async('wb')``
 - ``await afs.exists()`` + ``await afs.rm()`` zamiast ``to_thread.run_sync()``
 
-- ``fsspec.open()`` + ``fsspec.open_async()`` — uniwersalne I/O w każdym protokole
-- ``fsspec.filesystem()`` — konfigurowalny backend przez config TOML
-- ``TransactionalFileSystem`` — atomowe zapisy plików
-- ``CachingFileSystem`` — przezroczyste cache'owanie dla zdalnych FS
-- ``fsspec.get_mapper()`` — dict-like interface dla metadanych
-- ``MemoryFileSystem`` — RAM-only dla testów
+- ``fsspec.open()`` + ``fsspec.open_async()`` -- uniwersalne I/O w każdym protokole
+- ``fsspec.filesystem()`` -- konfigurowalny backend przez config TOML
+- ``TransactionalFileSystem`` -- atomowe zapisy plików
+- ``CachingFileSystem`` -- przezroczyste cache'owanie dla zdalnych FS
+- ``fsspec.get_mapper()`` -- dict-like interface dla metadanych
+- ``MemoryFileSystem`` -- RAM-only dla testów
 
 Zgodnie z aa3fvcx.txt: jeden URL, nieskończenie wiele backendów.
 Zmiana storage_protocol w config TOML zmienia backend bez zmiany kodu.
@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any
 
 import fsspec
+
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.fsspec_compat import (
     AsyncFsWrapper,
@@ -56,9 +57,9 @@ class FSSpecStorageProvider(StorageProvider):
     """Provider oparty o fsspec z pełnią supermocy.
 
     TOTALNA REWOLUCJA:
-    - ``self._async_fs`` — AsyncFsWrapper, czyste ``await`` API
+    - ``self._async_fs`` -- AsyncFsWrapper, czyste ``await`` API
     - Zero ``to_thread.run_sync()`` w serwisie
-    - Gotowy na S3: zmiana storage_protocol → natywne async I/O
+    - Gotowy na S3: zmiana storage_protocol -> natywne async I/O
     """
 
     def __init__(self, config: AppConfig | None = None):

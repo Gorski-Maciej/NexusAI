@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-import pendulum
-
 import msgspec
+import pendulum
 
 # -- msgspec Structs --
 
@@ -455,7 +454,7 @@ class SecurityPostureResponse(msgspec.Struct, kw_only=True):
 
 
 class LocustSummaryResponse(msgspec.Struct, kw_only=True):
-
+    """
     Zgodnie z aa3fvcx.txt: locust zastępuje k6.
     Zawiera pełne metryki wydajnościowe z testów locust:
       - p95, p99 latencja

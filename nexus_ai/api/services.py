@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import base64
 import importlib.util
-
-from nexus_crypto import Sha256Hasher
 import os
 import tempfile
+
+from nexus_crypto import Sha256Hasher
 
 # ── SHA-256 (non-streaming) przez nexus-crypto (Rust+PyO3) ────────────────
 try:
@@ -24,12 +24,12 @@ except ImportError:
 
 from collections.abc import Iterable
 from contextlib import suppress
-from msgspec import Struct
 from pathlib import Path as _SyncPath
 from typing import Any
 
 import anyio
 import pendulum
+from msgspec import Struct
 from sqlmodel import text
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
@@ -144,7 +144,7 @@ class FileValidator:
 
 
 class _LocalFS:
-    """Local filesystem adapter — zero external dependencies."""
+    """Local filesystem adapter -- zero external dependencies."""
 
     @staticmethod
     def makedirs(path: _SyncPath) -> None:
@@ -168,7 +168,7 @@ class _LocalFS:
 
 
 class _FsspecFS:
-    """fsspec filesystem adapter — dla S3, GCS, memory, itp."""
+    """fsspec filesystem adapter -- dla S3, GCS, memory, itp."""
 
     def __init__(self, root: _SyncPath, protocol: str) -> None:
         import fsspec
@@ -200,7 +200,7 @@ class _FsspecFS:
 class ContentAddressableStorage:
     """File storage using SHA-256 as canonical key (dedupe-friendly).
 
-    Używa strategii _LocalFS lub _FsspecFS — eliminuje if/else w każdej metodzie.
+    Używa strategii _LocalFS lub _FsspecFS -- eliminuje if/else w każdej metodzie.
     """
 
     def __init__(self, root: _SyncPath, protocol: str = "file") -> None:

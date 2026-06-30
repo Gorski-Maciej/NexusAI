@@ -1,5 +1,5 @@
 """
-PluginManager v2 — lifecycle-aware plugin system with typed hooks.
+PluginManager v2 -- lifecycle-aware plugin system with typed hooks.
 
 Replaces the legacy PluginManager that only loaded exporter classes with a
 full lifecycle-aware plugin system. Key improvements:
@@ -35,7 +35,7 @@ import importlib
 import inspect
 import pkgutil
 import threading
-from typing import final, Any, Protocol, runtime_checkable
+from typing import Any, Protocol, final, runtime_checkable
 
 from structlog import get_logger
 
@@ -44,14 +44,14 @@ from nexus_ai.core.bus import EventBus, get_bus
 logger = get_logger("nexus.core.plugins")
 
 
-# ── Plugin protocol — structural subtyping (duck typing) ───────────────────
+# ── Plugin protocol -- structural subtyping (duck typing) ───────────────────
 
 
 @runtime_checkable
 class PluginProtocol(Protocol):
     """Protocol defining the plugin interface.
 
-    All methods are optional — plugins only need to implement what they use.
+    All methods are optional -- plugins only need to implement what they use.
     The 'name' attribute is required for registration.
 
     Attributes:
@@ -86,7 +86,7 @@ class PluginProtocol(Protocol):
         ...
 
 
-# ── PluginInfo — metadata about a registered plugin ────────────────────────
+# ── PluginInfo -- metadata about a registered plugin ────────────────────────
 
 
 class PluginInfo:
@@ -118,7 +118,7 @@ class PluginInfo:
         )
 
 
-# ── PluginManager v2 — core plugin system ─────────────────────────────────
+# ── PluginManager v2 -- core plugin system ─────────────────────────────────
 
 
 final
@@ -185,7 +185,7 @@ class PluginManager:
             self._infos[name] = info
 
         logger.info(
-            "[PLUGIN] Registered '%s' v%s — %s",
+            "[PLUGIN] Registered '%s' v%s -- %s",
             name,
             info.version,
             info.description,
@@ -254,7 +254,7 @@ class PluginManager:
                 except Exception:
                     logger.exception("[PLUGIN] Startup hook failed for '%s'", name)
 
-        logger.info("[PLUGIN] Startup complete — %d plugins active", len(self._plugins))
+        logger.info("[PLUGIN] Startup complete -- %d plugins active", len(self._plugins))
 
     async def run_shutdown(self) -> None:
         """Run on_shutdown for all registered plugins (reverse order)."""
@@ -322,7 +322,7 @@ class PluginManager:
 
     @property
     def exporters(self) -> dict[str, type]:
-        """Legacy property — returns registered exporter classes.
+        """Legacy property -- returns registered exporter classes.
 
         Returns:
             Dict mapping class name -> class for all registered plugins

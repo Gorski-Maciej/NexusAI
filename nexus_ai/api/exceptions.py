@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import msgspec
-
 from litestar.connection import Request
 from litestar.exceptions import HTTPException
 from litestar.response import Response
@@ -193,7 +192,7 @@ def domain_error_handler(request: Request, exc: DomainError) -> Response:
             "X-Error-Category": exc.category,
         },
     )
-    # Nie dochodzimy tu — HTTPException jest rzucany powyżej
+    # Nie dochodzimy tu -- HTTPException jest rzucany powyżej
 
 
 def http_exception_handler(request: Request, exc: HTTPException) -> Response:
@@ -231,13 +230,13 @@ def global_exception_handler(request: Request, exc: Exception) -> Response:
     """Catch-all handler dla wszystkich innych wyjątków (500).
 
     Fazа 2: Dedykowane handlery są rejestrowane dla:
-    - ``DomainError`` → 400-504 (zależnie od kodu)
-    - ``HTTPException`` → standardowe kody HTTP
-    - ``msgspec.ValidationError`` → 422
+    - ``DomainError`` -> 400-504 (zależnie od kodu)
+    - ``HTTPException`` -> standardowe kody HTTP
+    - ``msgspec.ValidationError`` -> 422
 
     z kontekstem requestu (method, path, correlation_id).
 
-    Ten handler działa jako fallback — loguje i zwraca 500.
+    Ten handler działa jako fallback -- loguje i zwraca 500.
     """
     try:
         from nexus_ai.core.sentry import capture_exception

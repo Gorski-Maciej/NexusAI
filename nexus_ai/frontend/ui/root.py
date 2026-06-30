@@ -1,4 +1,4 @@
-"""root.py — Główna klasa orkiestrująca interfejsem graficznym.
+"""root.py -- Główna klasa orkiestrująca interfejsem graficznym.
 
   - @ft.component + use_state() zamiast klas imperatywnych
   - ft.NavigationRail z ft.NumberBadge dla notyfikacji
@@ -37,7 +37,7 @@ def NexusRootUI(page: ft.Page, process_manager=None):
     unix_client = ft.use_ref[UnixProgressClient]()
 
     main_content = ft.use_ref[ft.Container]()
-    snackbar = ft.use_ref[ft.SnackBar]()
+    ft.use_ref[ft.SnackBar]()
 
     # Inicjalizacja API
     port = page.session.get("api_port") if hasattr(page, "session") else None
@@ -99,7 +99,7 @@ def NexusRootUI(page: ft.Page, process_manager=None):
         foreground_color=ft.colors.WHITE,
     )
 
-    search_bar = ft.SearchBar(
+    ft.SearchBar(
         bar_hint_text="Szukaj faktury, kontrahenta...",
         view_hint_text="Wybierz wynik...",
         on_submit=lambda e: page.go(f"/invoices?q={e.control.value}"),

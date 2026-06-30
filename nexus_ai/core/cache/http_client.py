@@ -1,12 +1,12 @@
 """
-NexusAI HTTP Client Layer — httpx integration with superpowers.
+NexusAI HTTP Client Layer -- httpx integration with superpowers.
 
-  - http2=True — HTTP/2 multiplexing (szybsze zapytania)
-  - Limits(max_connections, max_keepalive, keepalive_expiry) — connection pool
-  - Timeout(connect, read, write, pool) — precyzyjne timeouty
-  - event_hooks — logowanie request/response, monitoring OTel
-  - trust_env=True — obsługa proxy z HTTP_PROXY/HTTPS_PROXY env
-  - mounts — osobny transport per API z różnymi konfiguracjami
+  - http2=True -- HTTP/2 multiplexing (szybsze zapytania)
+  - Limits(max_connections, max_keepalive, keepalive_expiry) -- connection pool
+  - Timeout(connect, read, write, pool) -- precyzyjne timeouty
+  - event_hooks -- logowanie request/response, monitoring OTel
+  - trust_env=True -- obsługa proxy z HTTP_PROXY/HTTPS_PROXY env
+  - mounts -- osobny transport per API z różnymi konfiguracjami
 
 Usage:
     client = CachedHttpClient()
@@ -20,9 +20,9 @@ from pathlib import Path
 from typing import Any
 
 import httpx
+import stamina
 from httpx import Limits, Timeout
 from structlog import get_logger
-import stamina
 
 logger = get_logger("nexus.http.cache")
 
@@ -51,7 +51,7 @@ def reset_cache_stats() -> None:
 
 
 async def _log_request(request: httpx.Request) -> None:
-    logger.debug("[HTTP] → %s %s", request.method, request.url)
+    logger.debug("[HTTP] -> %s %s", request.method, request.url)
 
 
 async def _log_response(response: httpx.Response) -> None:
@@ -81,12 +81,12 @@ def create_cached_client(
     """Utwórz httpx.AsyncClient z supermocami HTTPX.
 
     Args:
-        http2 — HTTP/2 multiplexing (default True)
-        trust_env — proxy z env (default True)
-        use_event_hooks — event hooks (default True)
-        limits — Limits (domyślnie max_connections=20)
-        timeout — Timeout class (domyślnie connect=10s, read=30s, write=30s, pool=300s)
-        **kwargs — dla httpx.AsyncClient (headers itp.)
+        http2 -- HTTP/2 multiplexing (default True)
+        trust_env -- proxy z env (default True)
+        use_event_hooks -- event hooks (default True)
+        limits -- Limits (domyślnie max_connections=20)
+        timeout -- Timeout class (domyślnie connect=10s, read=30s, write=30s, pool=300s)
+        **kwargs -- dla httpx.AsyncClient (headers itp.)
     """
     if timeout is None:
         timeout = Timeout(connect=10.0, read=30.0, write=30.0, pool=300.0)
@@ -174,8 +174,8 @@ class CachedHttpClient:
     async def _cb_check(self) -> None:
         """Sprawdza stan Circuit Breakera przed wysłaniem żądania."""
         if not stamina.is_active():
-            logger.warning("[CB] Circuit breaker OPEN — bypassing HTTP request")
-            raise stamina.RetryingError("Circuit breaker is open — request skipped") from None
+            logger.warning("[CB] Circuit breaker OPEN -- bypassing HTTP request")
+            raise stamina.RetryingError("Circuit breaker is open -- request skipped") from None
 
     async def get(self, url: str, **kwargs: Any) -> httpx.Response:
         await self._acquire()

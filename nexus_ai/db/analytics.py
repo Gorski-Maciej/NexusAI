@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import threading
-from msgspec import Struct
 from pathlib import Path
 from typing import Any
 
 import duckdb
+from msgspec import Struct
 
 
 class DuckDBLimits(Struct):
@@ -18,13 +18,13 @@ class DuckDBManager:
 
     - Arrow zero-copy fetch: ``fetch_arrow_table()`` zamiast ``fetchall()``
       Transfer danych z DuckDB do Polars bez kopiowania w pamięci.
-      Zysk: 2-5× szybszy transfer, mniejsze zużycie RAM.
+      Zysk: 2-5x szybszy transfer, mniejsze zużycie RAM.
     - Prepared statements cache: wielokrotne użycie planów zapytań.
       Zysk: -30% CPU na powtarzalnych zapytaniach.
     - Auto-profilowanie EXPLAIN ANALYZE: logowanie kosztownych zapytań.
 
     Każdy wątek w free-threaded Python 3.13t ma własne połączenie DuckDB
-    przez ``threading.local()`` — DuckDB connections nie są thread-safe,
+    przez ``threading.local()`` -- DuckDB connections nie są thread-safe,
     więc współdzielenie ich między wątkami powoduje crashe.
 
     Dla zapytań SELECT tworzone są osobne, krótkożyciowe połączenia
@@ -50,12 +50,12 @@ class DuckDBManager:
         self._local = threading.local()
         # Lock tylko dla DDL (aby uniknąć konfliktów CREATE/DROP między wątkami)
         self._ddl_lock = threading.Lock()
-        # Rejestr WSZYSTKICH per-thread połączeń — umożliwia close() zamknięcie
+        # Rejestr WSZYSTKICH per-thread połączeń -- umożliwia close() zamknięcie
         # połączeń ze wszystkich wątków, nie tylko bieżącego.
         # To zapobiega memory leakom w free-threaded Python 3.13t.
         self._all_connections: set[duckdb.DuckDBPyConnection] = set()
         self._close_lock = threading.Lock()
-        # Flaga zamknięcia — zapobiega race condition między close() a connect()
+        # Flaga zamknięcia -- zapobiega race condition między close() a connect()
         self._closed = False
         # Profiler: logowanie wolnych zapytań (>100ms)
         self._slow_query_threshold_ms = 100.0
@@ -63,12 +63,12 @@ class DuckDBManager:
     def _create_connection(self) -> duckdb.DuckDBPyConnection:
         """Tworzy nowe, skonfigurowane połączenie DuckDB i rejestruje w globalnym registry.
 
-        - memory_limit, threads, temp_directory — zarządzanie zasobami
-        - perfect_ht_threshold — optymalizacja hash join dla małych tabel
-        - enable_progress_bar — wizualizacja długich zapytań (CLI)
-        - preserve_insertion_order — szybsze agregacje (gdy nie potrzebujemy order)
-        - default_null_order — spójność sortowania NULLS
-        - Arrow large types — obsługa dużych wyników w formacie Arrow
+        - memory_limit, threads, temp_directory -- zarządzanie zasobami
+        - perfect_ht_threshold -- optymalizacja hash join dla małych tabel
+        - enable_progress_bar -- wizualizacja długich zapytań (CLI)
+        - preserve_insertion_order -- szybsze agregacje (gdy nie potrzebujemy order)
+        - default_null_order -- spójność sortowania NULLS
+        - Arrow large types -- obsługa dużych wyników w formacie Arrow
         """
         conn = duckdb.connect(str(self._db_path), read_only=self._read_only)
         conn.execute(f"SET memory_limit='{self._limits.memory_limit}'")
@@ -104,20 +104,20 @@ class DuckDBManager:
         zamknąć połączenia ze wszystkich wątków.
 
         Jeśli menedżer został zamknięty (``_closed == True``), nowe połączenie
-        jest natychmiast zamykane i rzucany jest ``RuntimeError`` — zapobiega
+        jest natychmiast zamykane i rzucany jest ``RuntimeError`` -- zapobiega
         to race condition, gdzie ``connect()`` rejestruje połączenie, ale
         ``close()`` już je zamyka lub czyści rejestr (leak).
         """
         conn: duckdb.DuckDBPyConnection | None = getattr(self._local, "connection", None)
         if conn is None:
             conn = self._create_connection()
-            # Rejestruj w globalnym zbiorze — umożliwia close() zamknięcie
+            # Rejestruj w globalnym zbiorze -- umożliwia close() zamknięcie
             # połączeń ze wszystkich wątków (nie tylko bieżącego).
             with self._close_lock:
                 if self._closed:
                     conn.close()
                     raise RuntimeError(
-                        "DuckDBManager has been closed — cannot create new connections"
+                        "DuckDBManager has been closed -- cannot create new connections"
                     )
                 self._all_connections.add(conn)
             self.setup_zero_etl(conn)
@@ -150,7 +150,7 @@ class DuckDBManager:
         - Profilowanie: loguje wolne zapytania (>100ms) z EXPLAIN ANALYZE
         - Prepared statements: cache'uje często używane zapytania SELECT
         - Arrow fetch: używa fetch_arrow_table() gdy wynik jest duży (>1000 rows)
-          (przez execute_arrow() — szybszy transfer do Polars)
+          (przez execute_arrow() -- szybszy transfer do Polars)
 
         Dla DDL/INSERT/UPDATE używa per-thread połączenia z blokadą DDL.
         """
@@ -185,14 +185,14 @@ class DuckDBManager:
 
                 logger = logging.getLogger("nexus.duckdb.profiler")
                 logger.warning(
-                    "[SLOW QUERY] %.1f ms — %s...",
+                    "[SLOW QUERY] %.1f ms -- %s...",
                     elapsed_ms,
                     query[:120],
                 )
 
     # Dla dużych wyników (>1000 rows), używaj fetch_arrow_table() zamiast fetchall().
     # Arrow format pozwala na zero-copy transfer do Polars bez pośredniego
-    # słownika/listy krotek. Zysk: 2-5× szybszy, mniej pamięci.
+    # słownika/listy krotek. Zysk: 2-5x szybszy, mniej pamięci.
 
     def execute_arrow(
         self,
@@ -201,7 +201,7 @@ class DuckDBManager:
     ) -> Any:
         """Execute query and return result as Apache Arrow table (zero-copy).
 
-        Apache Arrow — zero-copy transfer do Polars.
+        Apache Arrow -- zero-copy transfer do Polars.
 
         Usage:
             table = duckdb.execute_arrow("SELECT * FROM invoices")
@@ -212,7 +212,7 @@ class DuckDBManager:
             parameters: Optional query parameters.
 
         Returns:
-            ``pyarrow.Table`` — gotowy do przekazania do Polars.
+            ``pyarrow.Table`` -- gotowy do przekazania do Polars.
         """
         import time
 
@@ -227,7 +227,7 @@ class DuckDBManager:
                         result = conn.execute(query, parameters)
                     else:
                         result = conn.execute(query)
-                    # Arrow zero-copy — brak fetchall(), brak listy krotek
+                    # Arrow zero-copy -- brak fetchall(), brak listy krotek
                     return result.fetch_arrow_table()
                 finally:
                     conn.close()
@@ -246,7 +246,7 @@ class DuckDBManager:
 
                 logger = logging.getLogger("nexus.duckdb.profiler")
                 logger.warning(
-                    "[SLOW ARROW QUERY] %.1f ms — %s...",
+                    "[SLOW ARROW QUERY] %.1f ms -- %s...",
                     elapsed_ms,
                     query[:120],
                 )
@@ -260,7 +260,7 @@ class DuckDBManager:
     # ``read_parquet('*.parquet')`` pozwala DuckDB czytać pliki Parquet
     # bezpośrednio, bez wczytywania ich do pamięci przez PyArrow.
     # Zysk: DuckDB robi predicate pushdown na statystykach Parquet,
-    # czyta tylko potrzebne row groups — szybciej niż PyArrow Dataset.
+    # czyta tylko potrzebne row groups -- szybciej niż PyArrow Dataset.
 
     def query_parquet(
         self,
@@ -269,8 +269,10 @@ class DuckDBManager:
         columns: list[str] | None = None,
     ) -> Any:
 
-        ``read_parquet('*.parquet')`` — DuckDB czyta Parquet z predicate
-        pushdown, projection pushdown i filter pushdown — automatycznie.
+        """Query Parquet files via DuckDB.
+
+        ``read_parquet('*.parquet')`` -- DuckDB czyta Parquet z predicate
+        pushdown, projection pushdown i filter pushdown -- automatycznie.
         Zysk: DuckDB optymalizuje zapytanie pod kątem statystyk Parquet.
 
         Args:
@@ -279,7 +281,7 @@ class DuckDBManager:
             columns: Opcjonalne kolumny do odczytu.
 
         Returns:
-            ``pyarrow.Table`` — gotowy do przekazania do Polars.
+            ``pyarrow.Table`` -- gotowy do przekazania do Polars.
         """
         cols_clause = "*"
         if columns:
@@ -292,16 +294,15 @@ class DuckDBManager:
         return self.execute_arrow(sql)
 
     # Funkcja ``parquet_metadata()`` odczytuje statystyki pliku Parquet
-    # bez wczytywania danych — row groups, kolumny, null count, min/max.
+    # bez wczytywania danych -- row groups, kolumny, null count, min/max.
     # Zysk: diagnostyka bez alokacji RAM na dane.
 
     def get_parquet_metadata(self, parquet_path: str | Path) -> list[dict[str, Any]]:
-
-        ``parquet_metadata('file.parquet')`` zwraca:
+        """Get Parquet metadata.\n\n        ``parquet_metadata('file.parquet')`` zwraca:
         - file_name, row_group_id, row_group_num_rows
         - column_id, path_in_schema, type, stats_min, stats_max, stats_null_count
 
-        Zysk: diagnostyka bez wczytywania danych — 0 RAM na payload.
+        Zysk: diagnostyka bez wczytywania danych -- 0 RAM na payload.
 
         Args:
             parquet_path: Ścieżka do pliku Parquet.
@@ -320,7 +321,7 @@ class DuckDBManager:
 
     # ``COPY (query) TO 'file.parquet' (FORMAT PARQUET, CODEC 'ZSTD')``
     # Zamiast fetchall() + ręcznego zapisu, DuckDB zapisuje wynik
-    # bezpośrednio do Parquet — zero pamięci na listę krotek.
+    # bezpośrednio do Parquet -- zero pamięci na listę krotek.
     # Zysk: eksport dużych zbiorów bez narzutu RAM.
 
     def export_to_parquet(
@@ -331,8 +332,9 @@ class DuckDBManager:
         row_group_size: int = 100000,
     ) -> str:
 
-        ``COPY (query) TO 'file.parquet' (FORMAT PARQUET, CODEC 'ZSTD')``
-        — DuckDB zapisuje wynik bezpośrednio do pliku Parquet bez
+        """Export query result to Parquet file.
+
+        DuckDB zapisuje wynik bezpośrednio do pliku Parquet bez
         pośredniej alokacji w Pythonie.
 
         Args:
@@ -365,7 +367,9 @@ class DuckDBManager:
         parameters: tuple[Any, ...] | list[Any] | None = None,
         columns: list[str] | None = None,
     ) -> dict[str, Any]:
-        ``pyarrow.compute`` — bez narzutu SQL aggregations.
+        """Aggregate using pyarrow.compute.
+
+        ``pyarrow.compute`` -- bez narzutu SQL aggregations.
 
         Zamiast ``SELECT SUM(x), AVG(y), COUNT(*) FROM ...``, pobieramy
         ``pa.Table`` przez ``execute_arrow()`` i używamy ``pc.sum()``,
@@ -378,7 +382,7 @@ class DuckDBManager:
             columns: Kolumny do agregacji (domyślnie wszystkie numeryczne).
 
         Returns:
-            Słownik z nazwami kolumn → wartościami agregacji.
+            Słownik z nazwami kolumn -> wartościami agregacji.
         """
         import pyarrow.compute as pc
         import pyarrow.types as pa_types
@@ -427,8 +431,9 @@ class DuckDBManager:
             return conn.execute(query).fetchall()
 
     def explain_analyze(self, query: str) -> str:
+        """EXPLAIN ANALYZE a query.
 
-        EXPLAIN ANALYZE to operacja READ-ONLY — używa nowego połączenia
+        EXPLAIN ANALYZE to operacja READ-ONLY -- używa nowego połączenia
         bez locka DDL.
 
         Returns:
@@ -498,7 +503,7 @@ class DuckDBManager:
     def _execute_unsafe(
         self, query: str, parameters: tuple[Any, ...] | list[Any] | None = None
     ) -> list[tuple[Any, ...]]:
-        """Wykonaj zapytanie DDL/DML bez locka — lock musi być już przejęty na zewnątrz."""
+        """Wykonaj zapytanie DDL/DML bez locka -- lock musi być już przejęty na zewnątrz."""
         conn = self.connect()
         if parameters:
             return conn.execute(query, parameters).fetchall()
@@ -524,7 +529,7 @@ class DuckDBManager:
         - Czyści globalny rejestr ``_all_connections``
         - Resetuje thread-local storage bieżącego wątku
           (połączenia innych wątków są już fizycznie zamknięte;
-           ich thread-local referencje staną się stale — po shutdownie
+           ich thread-local referencje staną się stale -- po shutdownie
            menedżer i tak nie jest używany)
         """
         with self._close_lock:

@@ -17,7 +17,8 @@ from __future__ import annotations
 import asyncio
 import json
 import os
-from typing import Any, AsyncGenerator
+from collections.abc import AsyncGenerator
+from typing import Any
 
 import anyio
 from litestar import get
@@ -33,7 +34,7 @@ logger = get_logger("nexus.api.ws")
 # Rejestr aktywnych subskrybentów SSE: task_id -> list[anyio.MemoryObjectSendStream]
 _active_connections: dict[str, list[anyio.MemoryObjectSendStream[str]]] = {}
 
-# Rejestr subskrybentów wildcard ("*" — wszystkie zadania)
+# Rejestr subskrybentów wildcard ("*" -- wszystkie zadania)
 _wildcard_senders: list[anyio.MemoryObjectSendStream[str]] = []
 
 # Rejestr flag anulowania: task_id -> anyio.Event
@@ -54,7 +55,7 @@ _unix_server: asyncio.AbstractServer | None = None
 def register_connection(task_id: str, sender: anyio.MemoryObjectSendStream[str]) -> None:
     """Rejestruje subskrybenta SSE dla danego task_id.
 
-    Gdy task_id=="*", rejestruje jako wildcard — otrzymuje postęp WSZYSTKICH zadań.
+    Gdy task_id=="*", rejestruje jako wildcard -- otrzymuje postęp WSZYSTKICH zadań.
     """
     if task_id == "*":
         if sender not in _wildcard_senders:
@@ -206,7 +207,7 @@ async def broadcast_progress(task_id: str, progress: dict) -> None:
         for sender in dead:
             unregister_connection(task_id, sender)
 
-    # Wyślij do wildcard subskrybentów SSE ("*" — wszystkie zadania)
+    # Wyślij do wildcard subskrybentów SSE ("*" -- wszystkie zadania)
     if _wildcard_senders:
         dead_wildcards: list[anyio.MemoryObjectSendStream[str]] = []
         for sender in _wildcard_senders:
@@ -261,7 +262,7 @@ async def progress_sse(request: Any) -> Any:
     (lub konkretnym task_id) i otrzymuje zdarzenia SSE z postępem.
 
     Dla klientów lokalnych (Flet desktop) zalecane jest użycie socket UNIX
-    (UnixProgressClient) zamiast SSE — szybsza komunikacja bez narzutu HTTP.
+    (UnixProgressClient) zamiast SSE -- szybsza komunikacja bez narzutu HTTP.
 
     Format zdarzenia:
         data: {"type": "progress", "task_id": "...", "percent": 50, ...}
@@ -272,7 +273,7 @@ async def progress_sse(request: Any) -> Any:
     send, receive = anyio.create_memory_object_stream[str](max_buffer_size=256)
     register_connection(task_id, send)
 
-    async def event_generator() -> AsyncGenerator[SSEEvent, None]:
+    async def event_generator() -> AsyncGenerator[SSEEvent]:
         try:
             # Wyślij zdarzenie connected
             yield SSEEvent(

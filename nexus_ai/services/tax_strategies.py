@@ -1,4 +1,4 @@
-"""Tax strategies — strategie podatkowe dla różnych form opodatkowania.
+"""Tax strategies -- strategie podatkowe dla różnych form opodatkowania.
 
 Zgodnie z aa3fvcx.txt: używane przez TaxSimulator do symulacji "co by było gdyby".
 """
@@ -6,8 +6,9 @@ Zgodnie z aa3fvcx.txt: używane przez TaxSimulator do symulacji "co by było gdy
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from msgspec import Struct
 from typing import Protocol, final
+
+from msgspec import Struct
 
 from nexus_ai.services.tigerbeetle.models import LegalForm, TaxForm
 
@@ -99,7 +100,7 @@ class CitEstonianStrategy(TaxStrategy):
 
 @final
 class StrategyRegistry:
-    """Rejestr strategii podatkowych — używany przez TaxSimulator."""
+    """Rejestr strategii podatkowych -- używany przez TaxSimulator."""
 
     def __init__(self) -> None:
         self._strategies: dict[TaxForm, TaxStrategy] = {

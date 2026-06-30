@@ -1,5 +1,5 @@
 """
-core/updater.py — Automatic update system.
+core/updater.py -- Automatic update system.
 """
 
 from __future__ import annotations

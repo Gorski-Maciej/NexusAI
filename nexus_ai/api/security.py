@@ -133,7 +133,7 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> Use
             _user_cache[token.sub] = user
             return user
 
-    # Fallback: DEV-ONLY — rely on token extras without DB verification
+    # Fallback: DEV-ONLY -- rely on token extras without DB verification
     # Ostrzeżenie: ten fallback omija weryfikację użytkownika w bazie danych!
     # Powinien być używany TYLKO w środowiskach deweloperskich/testowych.
     dev_mode = os.getenv("NEXUS_DEV_MODE", "").lower() in ("1", "true", "yes")
@@ -194,8 +194,8 @@ def _get_jwt_exclude() -> list[str]:
     ]
 
 
-# JWTAuth: Bearer token w nagłówku Authorization — dla API/CLI/mobilnych
-# JWTCookieAuth: Token w secure cookie — dla web (Flet UI, przeglądarki)
+# JWTAuth: Bearer token w nagłówku Authorization -- dla API/CLI/mobilnych
+# JWTCookieAuth: Token w secure cookie -- dla web (Flet UI, przeglądarki)
 # Oba używają tego samego retrieve_user_handler i token_secret.
 
 jwt_auth = JWTAuth[User](

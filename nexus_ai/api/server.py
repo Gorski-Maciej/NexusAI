@@ -1,5 +1,5 @@
 """
-NexusAI — Granian ASGI Server Entrypoint
+NexusAI -- Granian ASGI Server Entrypoint
 ==========================================
 
 Full Granian superpower activation:
@@ -91,13 +91,13 @@ def _build_granian_config() -> dict:
         config["host"] = host
         config["port"] = port
 
-    # ── Backpressure & backlog — production stability ─────────────────
+    # ── Backpressure & backlog -- production stability ─────────────────
     # Backpressure protects the Python interpreter from being overwhelmed
     # by too many concurrent requests. Default: 100 req/worker.
     config["backlog"] = int(os.getenv("NEXUS_GRANIAN_BACKLOG", "2048"))
     config["backpressure"] = int(os.getenv("NEXUS_GRANIAN_BACKPRESSURE", "100"))
 
-    # ── HTTP version — enable HTTP/2 auto-negotiation ─────────────────
+    # ── HTTP version -- enable HTTP/2 auto-negotiation ─────────────────
     # Granian supports HTTP/1.1 and HTTP/2. 'auto' negotiates per-connection.
     config["http"] = os.getenv("NEXUS_GRANIAN_HTTP", "auto")
 
@@ -193,7 +193,7 @@ def _build_granian_config() -> dict:
     if _proc_name:
         config["process_name"] = _proc_name
 
-    # ── Static file serving — Rust layer (zero Python overhead) ──────
+    # ── Static file serving -- Rust layer (zero Python overhead) ──────
     if _STATIC_ROUTES and _STATIC_MOUNTS:
         config["static_path_route"] = _STATIC_ROUTES
         config["static_path_mount"] = _STATIC_MOUNTS
@@ -205,7 +205,7 @@ def _build_granian_config() -> dict:
 def run_backend() -> None:
     """Entrypoint used by launcher/containers.
 
-    Uses Granian — Rust ASGI server with full superpower configuration.
+    Uses Granian -- Rust ASGI server with full superpower configuration.
     W trybie desktopowym nasłuchuje na gnieździe UNIX.
     """
     config = _build_granian_config()
@@ -221,7 +221,7 @@ def run_backend() -> None:
             "  Próba fallback do podstawowej konfiguracji...",
             exc,
         )
-        # Podstawowa konfiguracja — zawsze działa
+        # Podstawowa konfiguracja -- zawsze działa
         fallback = {
             "target": config.get("target", "api.app:create_app"),
             "interface": "asgi",

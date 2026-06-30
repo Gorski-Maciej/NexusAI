@@ -1,5 +1,5 @@
 """
-AsyncDecisionQueue — trwała kolejka decyzji (async).
+AsyncDecisionQueue -- trwała kolejka decyzji (async).
 
 Każda decyzja ma:
   - Priorytet (LOW, NORMAL, HIGH, CRITICAL)
@@ -16,8 +16,8 @@ import enum
 from typing import Any, final
 
 import pendulum
-from sqlmodel import text
 from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlmodel import text
 from structlog import get_logger
 
 from nexus_ai.services.event_log import AsyncEventLog
@@ -43,7 +43,7 @@ class DecisionPriority(enum.IntEnum):
 class AsyncDecisionQueue:
     """Async trwała kolejka decyzji z priorytetami i terminami ważności.
 
-    Wszystkie operacje są async — używa AsyncEngine zamiast sync Engine.
+    Wszystkie operacje są async -- używa AsyncEngine zamiast sync Engine.
     """
 
     def __init__(

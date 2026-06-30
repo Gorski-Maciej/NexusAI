@@ -1,9 +1,9 @@
 """
-core/broker.py — Unified NATS JetStream Taskiq Broker (v2.0).
+core/broker.py -- Unified NATS JetStream Taskiq Broker (v2.0).
 
-  - PullBasedJetStreamBroker — jedyny broker w systemie
+  - PullBasedJetStreamBroker -- jedyny broker w systemie
   - JetStream Dead Letter Queue dla nieudanych zadań
-  - max_ack_pending = 5 — kontrola współbieżności konsumpcji
+  - max_ack_pending = 5 -- kontrola współbieżności konsumpcji
   - Reconnect z wykładniczym backoffem (max_reconnect_attempts=-1)
   - Konfiguracja przez AppConfig (TOML + env vars)
   - Centralny punkt dla wszystkich zadań Taskiq
@@ -60,13 +60,13 @@ if _use_nats and _nats_url:
         nats_servers=[_nats_url],
     )
     logger.info(
-        "[BROKER] HybridResultBackend active — wbudowany w NATS Object Store + SQLite fallback"
+        "[BROKER] HybridResultBackend active -- wbudowany w NATS Object Store + SQLite fallback"
     )
 else:
     _result_backend = SqliteResultBackend(db_path=_sqlite_path)
     if os.getenv("NEXUS_USE_NATS_RESULT_BACKEND", "") and not _nats_url:
         logger.warning(
-            "[BROKER] NEXUS_USE_NATS_RESULT_BACKEND=true but no NEXUS_NATS_URL set — "
+            "[BROKER] NEXUS_USE_NATS_RESULT_BACKEND=true but no NEXUS_NATS_URL set -- "
             "falling back to SQLite"
         )
 
@@ -74,12 +74,12 @@ else:
 # ── Unified PullBasedJetStreamBroker z supermocami ───────────────────────
 # Każde zadanie ma task_id oparty WYŁĄCZNIE na hash(kwargs), co pozwala NATS JetStream
 # na automatyczne odrzucanie duplikatów przez Nats-Msg-Id (duplicate_window=2min).
-# Dwa zadania z identycznymi argumentami OTRZYMUJĄ to samo task_id → JetStream odrzuca duplikat.
+# Dwa zadania z identycznymi argumentami OTRZYMUJĄ to samo task_id -> JetStream odrzuca duplikat.
 def _task_id_generator(task_name: str, args: tuple, kwargs: dict) -> str:
     """Generuj deterministyczne task_id dla deduplikacji JetStream.
 
       - WYŁĄCZNIE na podstawie hash(task_name + sorted(kwargs))
-      - Bez random suffixu — ten sam input = to samo task_id
+      - Bez random suffixu -- ten sam input = to samo task_id
       - JetStream automatycznie odrzuca duplikaty w oknie 2min (duplicate_window)
       - Zastępuje ręczną tabelę processed_events dla idempotentności
     """
@@ -97,17 +97,17 @@ broker = PullBasedJetStreamBroker(
     connect_timeout=max(2.0, config.nats_reconnect_delay_seconds),
     result_backend=_result_backend,
     task_id_generator=_task_id_generator,
-    #   pull_consume_batch=1 — jeden task na raz (kontrola obciążenia)
-    #   pull_consume_timeout=5.0 — timeout na fetch z JetStream
+    #   pull_consume_batch=1 -- jeden task na raz (kontrola obciążenia)
+    #   pull_consume_timeout=5.0 -- timeout na fetch z JetStream
     pull_consume_batch=int(os.getenv("NEXUS_PULL_CONSUME_BATCH", "1")),
     pull_consume_timeout=float(os.getenv("NEXUS_PULL_CONSUME_TIMEOUT", "5.0")),
 )
 
 # ── Rejestracja middleware ───────────────────────────────────────────────
-#   1. TaskMetricsMiddleware — zapisuje metryki OTel dla każdego zadania
-#   2. PiiScanMiddleware — skanuje payload w poszukiwaniu PII
-#   3. TaskTracingMiddleware — dodaje tracing (trace_id) do labels
-#   4. DynamicConcurrencyMiddleware — dynamiczne limitowanie współbieżności
+#   1. TaskMetricsMiddleware -- zapisuje metryki OTel dla każdego zadania
+#   2. PiiScanMiddleware -- skanuje payload w poszukiwaniu PII
+#   3. TaskTracingMiddleware -- dodaje tracing (trace_id) do labels
+#   4. DynamicConcurrencyMiddleware -- dynamiczne limitowanie współbieżności
 broker.add_middleware(TaskMetricsMiddleware())
 broker.add_middleware(PiiScanMiddleware())
 broker.add_middleware(TaskTracingMiddleware())
@@ -123,7 +123,7 @@ broker.add_middleware(
 @broker.on_event(TaskiqEvents.WORKER_STARTUP)
 async def startup(state):
     """Logika uruchamiana przy starcie workera."""
-    logger.info("[BROKER] Worker startup — connecting to NATS JetStream")
+    logger.info("[BROKER] Worker startup -- connecting to NATS JetStream")
     state.ocr_processor = None
     logger.info(
         "[BROKER] Middleware active: metrics, pi-scan, tracing | "
@@ -136,7 +136,7 @@ async def startup(state):
 @broker.on_event(TaskiqEvents.WORKER_SHUTDOWN)
 async def shutdown(state):
     """Sprzątanie przy wyłączaniu."""
-    logger.info("[BROKER] Worker shutdown — closing NATS connection")
+    logger.info("[BROKER] Worker shutdown -- closing NATS connection")
     # Zamknij result backend
     if _result_backend:
         await _result_backend.close()

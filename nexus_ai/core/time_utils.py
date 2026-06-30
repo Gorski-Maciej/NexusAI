@@ -1,21 +1,21 @@
 """
-core/time_utils.py — TimeUtils: centralne narzędzia czasu z pendulum.
+core/time_utils.py -- TimeUtils: centralne narzędzia czasu z pendulum.
 
-  - Polish locale — diff_for_humans, formatowanie dat po polsku
-  - PendulumPeriod — reprezentacja zakresu dat (start/end) z iteracją
-  - human_diff — czytelne różnice czasu po polsku
-  - format_date / format_datetime — spójne formatowanie w całym projekcie
-  - TestNow — context manager do pendulum.set_test_now() w testach
-  - month_range, quarter_range, year_range — generatory zakresów
+  - Polish locale -- diff_for_humans, formatowanie dat po polsku
+  - PendulumPeriod -- reprezentacja zakresu dat (start/end) z iteracją
+  - human_diff -- czytelne różnice czasu po polsku
+  - format_date / format_datetime -- spójne formatowanie w całym projekcie
+  - TestNow -- context manager do pendulum.set_test_now() w testach
+  - month_range, quarter_range, year_range -- generatory zakresów
 
 Zgodnie z aa3fvcx.txt: pendulum jako jedyna biblioteka do zarządzania czasem.
-Zastępuje: datetime, pytz, dateutil — wszystkie przez pendulum.
+Zastępuje: datetime, pytz, dateutil -- wszystkie przez pendulum.
 """
 
 from __future__ import annotations
 
 import contextlib
-from typing import Iterator
+from collections.abc import Iterator
 
 import pendulum
 from msgspec import Struct
@@ -29,13 +29,13 @@ except Exception:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# PendulumPeriod — zakres dat z iteracją
+# PendulumPeriod -- zakres dat z iteracją
 # ═════════════════════════════════════════════════════════════════════════════
 
 
 class PendulumPeriod(Struct, frozen=True):
+    """Reprezentuje zamknięty przedział [start, end].
 
-    Reprezentuje zamknięty przedział [start, end].
     Wspiera iterację dzienną, miesięczną i kwartalną.
 
     Usage:
@@ -117,7 +117,7 @@ class PendulumPeriod(Struct, frozen=True):
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# human_diff — czytelne różnice czasu po polsku
+# human_diff -- czytelne różnice czasu po polsku
 # ═════════════════════════════════════════════════════════════════════════════
 
 
@@ -128,6 +128,7 @@ def human_diff(
     locale: str = "pl",
     absolute: bool = False,
 ) -> str:
+    """Human-readable time difference in Polish.
 
     Używa wbudowanego ``diff_for_humans()`` z ustawioną lokalizacją.
 
@@ -142,10 +143,10 @@ def human_diff(
 
     Usage:
         human_diff(pendulum.now("UTC").subtract(hours=2))
-        # → "2 godziny temu"
+        # -> "2 godziny temu"
 
         human_diff(pendulum.now("UTC").add(days=5))
-        # → "za 5 dni"
+        # -> "za 5 dni"
     """
     if other is None:
         other = pendulum.now("UTC")
@@ -157,7 +158,7 @@ def time_ago(
     *,
     locale: str = "pl",
 ) -> str:
-    """Alias: różnica między dt a teraz (absolute=False → 'temu')."""
+    """Alias: różnica między dt a teraz (absolute=False -> 'temu')."""
     return human_diff(dt, pendulum.now("UTC"), locale=locale, absolute=False)
 
 
@@ -166,7 +167,7 @@ def time_until(
     *,
     locale: str = "pl",
 ) -> str:
-    """Alias: czas do dt (absolute=False → 'za ...')."""
+    """Alias: czas do dt (absolute=False -> 'za ...')."""
     return human_diff(pendulum.now("UTC"), dt, locale=locale, absolute=False)
 
 
@@ -179,8 +180,9 @@ def format_date(
     dt: pendulum.Date | str | None,
     fmt: str = "DD.MM.YYYY",
 ) -> str:
+    """Format date consistently.
 
-    Używa ``format()`` z pendulum zamiast ``strftime()`` — pendulum tokens
+    Używa ``format()`` z pendulum zamiast ``strftime()`` -- pendulum tokens
     są bardziej czytelne i wspierają lokalizację (np. ``dddd`` = pełna nazwa dnia).
 
     Args:
@@ -192,10 +194,10 @@ def format_date(
 
     Usage:
         format_date(pendulum.Date(2026, 6, 16))
-        # → "16.06.2026"
+        # -> "16.06.2026"
 
         format_date(pendulum.now("UTC"), "dddd, DD MMMM YYYY")
-        # → "wtorek, 16 czerwca 2026" (dzięki set_locale("pl"))
+        # -> "wtorek, 16 czerwca 2026" (dzięki set_locale("pl"))
     """
     if dt is None:
         return ""
@@ -213,6 +215,7 @@ def format_datetime(
     dt: pendulum.DateTime | str | None,
     fmt: str = "DD.MM.YYYY HH:mm:ss",
 ) -> str:
+    """Format datetime consistently.
 
     Args:
         dt: DateTime do sformatowania (DateTime, string ISO lub None).
@@ -232,6 +235,7 @@ def format_datetime(
 
 
 def format_iso(dt: pendulum.DateTime | None) -> str:
+    """Format datetime as ISO 8601.
 
     Args:
         dt: DateTime lub None.
@@ -282,15 +286,16 @@ def current_month() -> PendulumPeriod:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# TestNow — context manager do pendulum.set_test_now()
+# TestNow -- context manager do pendulum.set_test_now()
 # ═════════════════════════════════════════════════════════════════════════════
 
 
 @contextlib.contextmanager
 def freeze_time(frozen_time: pendulum.DateTime | None = None) -> Iterator[pendulum.DateTime]:
+    """Freeze time for testing.
 
     Używa ``pendulum.set_test_now()`` i ``pendulum.clear_test_now()``.
-    Idealne do testów — deterministyczne timestampy.
+    Idealne do testów -- deterministyczne timestampy.
 
     Args:
         frozen_time: Czas do zamrożenia (domyślnie początek epoki Unix).
@@ -313,12 +318,13 @@ def freeze_time(frozen_time: pendulum.DateTime | None = None) -> Iterator[pendul
 
 @contextlib.contextmanager
 def freeze_today(frozen_date: pendulum.Date | None = None) -> Iterator[pendulum.Date]:
+    """Freeze today's date for testing.
 
     Args:
-        frozen_date: Data do zamrożenia (domyślnie 2026-06-16).
+        frozen_date: Data do zamrozenia (domyslnie 2026-06-16).
 
     Yields:
-        Zamrożona data (jako Date).
+        Zamrozona data (jako Date).
     """
     if frozen_date is None:
         frozen_date = pendulum.Date(2026, 6, 16)
@@ -336,7 +342,7 @@ def freeze_today(frozen_date: pendulum.Date | None = None) -> Iterator[pendulum.
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# Helper — detected unused datetime imports
+# Helper -- detected unused datetime imports
 # ═════════════════════════════════════════════════════════════════════════════
 
 

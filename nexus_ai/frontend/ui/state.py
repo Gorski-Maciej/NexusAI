@@ -1,4 +1,4 @@
-"""ui/state.py — State management przez natywny page.pubsub Flet.
+"""ui/state.py -- State management przez natywny page.pubsub Flet.
 
   - page.pubsub.subscribe / send_all_on_topic zamiast AppState
   - Zero dodatkowych zależności
@@ -13,9 +13,8 @@ Usage:
 
 from __future__ import annotations
 
-from typing import Any
 from collections.abc import Callable
-
+from typing import Any
 
 _page_ref = None
 

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from msgspec import Struct
 from decimal import Decimal
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pendulum
+from msgspec import Struct
 
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
@@ -96,13 +96,13 @@ def calculate_liquidity_timeline(
 
     - ``GENERATE_SERIES`` zamiast pętli ``for step in range(days_ahead)`` w Pythonie
     - Window functions dla running totals zamiast ręcznego ``opt -= amt``
-    - Wszystkie obliczenia w jednym SQL — zero pętli w Pythonie
+    - Wszystkie obliczenia w jednym SQL -- zero pętli w Pythonie
 
-    - ``pl.from_arrow()`` — zero-copy z DuckDB Arrow do Polars
-    - **LazyFrame z wyrażeniami** — ``pl.col().cast()`` zamiast pa.compute
-    - ``pl.SQLContext`` — integracja SQL z expression API Polars
-    - ``sink_parquet()`` — zapis prognozy bezpośrednio do Parquet bez RAM
-    - ``shrink_dtype()`` — redukcja RAM o 50% na typach liczbowych
+    - ``pl.from_arrow()`` -- zero-copy z DuckDB Arrow do Polars
+    - **LazyFrame z wyrażeniami** -- ``pl.col().cast()`` zamiast pa.compute
+    - ``pl.SQLContext`` -- integracja SQL z expression API Polars
+    - ``sink_parquet()`` -- zapis prognozy bezpośrednio do Parquet bez RAM
+    - ``shrink_dtype()`` -- redukcja RAM o 50% na typach liczbowych
     - Zysk: czystsze API, pełna moc Polars query engine
     """
 
@@ -195,9 +195,9 @@ def calculate_liquidity_timeline(
 
     df = df.shrink_dtype()
 
-    # - Partycjonowanie: year=/month=/day= — szybkie odcięcie partycji
-    # - ``sink_parquet()`` — streaming zapis bez alokacji RAM
-    # - ``scan_parquet()`` — leniwe odczytywanie historycznych prognoz
+    # - Partycjonowanie: year=/month=/day= -- szybkie odcięcie partycji
+    # - ``sink_parquet()`` -- streaming zapis bez alokacji RAM
+    # - ``scan_parquet()`` -- leniwe odczytywanie historycznych prognoz
     try:
         now = pendulum.now()
         parquet_dir = Path("/tmp/liquidity_forecasts")
@@ -210,9 +210,9 @@ def calculate_liquidity_timeline(
             compression="zstd",
         )
     except Exception:
-        pass  # Non-critical — prognoza działa dalej w RAM
+        pass  # Non-critical -- prognoza działa dalej w RAM
 
-    # Polars ``.to_dicts()" zwraca listę słowników w C++ — szybciej
+    # Polars ``.to_dicts()" zwraca listę słowników w C++ -- szybciej
     # niż pętla ``for row in df.iter_rows()`` w Pythonie.
     timeline: list[LiquidityPoint] = []
     for row_dict in df.to_dicts():

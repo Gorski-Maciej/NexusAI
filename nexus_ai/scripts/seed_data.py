@@ -1,5 +1,5 @@
 """
-seed_data.py — Fixtures & Demo Data Loader for NexusAI.
+seed_data.py -- Fixtures & Demo Data Loader for NexusAI.
 
 Usage:
     python -m nexus_ai.scripts.seed_data
@@ -180,7 +180,7 @@ SEED_CONTRACTORS: list[dict[str, Any]] = [
     {
         "id": uuid.uuid4().hex,
         "name": "Biuro Rachunkowe 'Liczydełko'",
-        "nip": "1234567890",  # Placeholder — not real but passes validation
+        "nip": "1234567890",  # Placeholder -- not real but passes validation
         "address": "ul. Krótka 5, 80-001 Gdańsk",
         "bank_account": "PL75105000997603123456789125",
     },
@@ -446,10 +446,10 @@ SEED_TAX_POLICIES: list[dict[str, Any]] = [
 # ── RBAC seed: roles, permissions, admin user (from _ensure_schema_tables) ──
 
 SEED_ROLES: list[tuple[str, str]] = [
-    ("admin", "System administrator — full access"),
-    ("accountant", "Accountant — financial operations"),
-    ("auditor", "Auditor — read-only audit access"),
-    ("viewer", "Viewer — read-only basic access"),
+    ("admin", "System administrator -- full access"),
+    ("accountant", "Accountant -- financial operations"),
+    ("auditor", "Auditor -- read-only audit access"),
+    ("viewer", "Viewer -- read-only basic access"),
 ]
 
 SEED_PERMISSIONS: dict[str, dict[str, str]] = {
@@ -567,7 +567,7 @@ async def seed_rbac(
 ) -> dict[str, int]:
     """Seed RBAC: roles, permissions, admin user, role-permission mappings.
 
-    Idempotent — uses ON CONFLICT DO NOTHING for all inserts.
+    Idempotent -- uses ON CONFLICT DO NOTHING for all inserts.
 
     Returns:
         Dict with counts: roles, permissions, role_permissions, admin_user.
@@ -1368,7 +1368,7 @@ async def seed_all(config: Any | None = None) -> dict[str, int]:
     cfg = config or AppConfig()
 
     logger.info("=" * 60)
-    logger.info("  NEXUSAI — SEED DATA LOADER")
+    logger.info("  NEXUSAI -- SEED DATA LOADER")
     logger.info("=" * 60)
     logger.info("")
 

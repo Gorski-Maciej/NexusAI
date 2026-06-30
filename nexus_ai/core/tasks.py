@@ -10,24 +10,23 @@
 from __future__ import annotations
 
 import os
-import uuid
 import threading
-import anyio
-from msgspec import Struct
+import uuid
 from pathlib import Path
 from typing import Any
 
+import anyio
 import msgspec
 import pendulum
 import psutil
-from sqlmodel import select
-from sqlmodel import Session
-from taskiq import TaskiqDepends, TaskiqEvents, Kicker
-from nexus_ai.core.di import get_db_session, get_config, get_duckdb_manager
+from msgspec import Struct
+from sqlmodel import Session, select
+from taskiq import Kicker, TaskiqDepends, TaskiqEvents
 
 from nexus_ai.core.backup import BackupManager
 from nexus_ai.core.cache import get_cache
 from nexus_ai.core.config import AppConfig
+from nexus_ai.core.di import get_config, get_db_session, get_duckdb_manager
 from nexus_ai.core.logger import get_logger
 
 
@@ -77,9 +76,8 @@ from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.models import Invoice, InvoiceStatus, OutboxEvent, OutboxStatus
 from nexus_ai.pipeline.ocr import DocumentProcessor, ReviewStatus
 from nexus_ai.services.dunning_engine import DunningEngine
-from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 from nexus_ai.services.fixed_assets import FixedAssetsService
-
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
 logger = get_logger()
 # Python 3.13t (free-threaded): zamiast 1 OCR na raz, wykorzystaj wszystkie wolne rdzenie.
@@ -197,7 +195,7 @@ def pin_worker_cpu_affinity(reserve_core0: bool = True) -> list[int]:
 def _get_vector_store() -> Any:
     """Get or create vector store (sqlite-vec).
 
-    Zastępuje: LanceDB + Polars → sqlite-vec VectorStore.
+    Zastępuje: LanceDB + Polars -> sqlite-vec VectorStore.
     """
     from db.vector_store import VectorStore
 
@@ -264,7 +262,7 @@ async def process_invoice_task(
 ) -> dict[str, str]:
     """Consume pending outbox event and process invoice OCR + workflow update.
 
-    Engine jest cache'owany przez DI — nie ma create/dispose per task.
+    Engine jest cache'owany przez DI -- nie ma create/dispose per task.
     """
     event = _pick_pending_outbox(db)
     if event is None:
@@ -419,7 +417,7 @@ async def invoice_reconciliation_loop(
 ):
     """Wyszukuje porzucone faktury i podejmuje akcje naprawcze.
 
-    - TaskiqDepends wstrzykuje sesję DB — zero boilerplate
+    - TaskiqDepends wstrzykuje sesję DB -- zero boilerplate
     - Context.requeue() zamiast ręcznego publish do JetStream
     - Deterministic task_id przez Kicker.with_task_id()
     """

@@ -14,7 +14,7 @@ class DataParser:
         if value is None:
             return Decimal("0.00")
 
-        # Usuwanie spacji, walut i zamiana przecinka na kropkę — walrus operator
+        # Usuwanie spacji, walut i zamiana przecinka na kropkę -- walrus operator
         clean_val = re.sub(r"[^\d.,-]", "", str(value)).replace(",", ".")
         try:
             return Decimal(clean_val)

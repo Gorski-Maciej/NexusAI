@@ -10,12 +10,12 @@ Provides:
 
 from __future__ import annotations
 
-from msgspec import Struct
 from enum import StrEnum
 
 from litestar.connection import ASGIConnection
 from litestar.exceptions import NotAuthorizedException
 from litestar.handlers.base import BaseRouteHandler
+from msgspec import Struct
 
 
 class NexusRole(StrEnum):

@@ -4,9 +4,9 @@ KSeF Auth Service.
 
 from __future__ import annotations
 
+from structlog import get_logger
 
 from nexus_ai.core.cache.http_client import CachedHttpClient
-from structlog import get_logger
 
 logger = get_logger("nexus.ksef")
 

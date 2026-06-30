@@ -1,4 +1,4 @@
-"""Audit storno — odwracanie transakcji księgowych z TigerBeetle usando natywnych pending/void.
+"""Audit storno -- odwracanie transakcji księgowych z TigerBeetle usando natywnych pending/void.
 
 - Natywne pending/void zamiast osobnych transferów
 - Linked chain łączący oryginał ze stornem (atomic)
@@ -11,11 +11,11 @@
 from __future__ import annotations
 
 import uuid as uuid_module
-from msgspec import Struct
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any, Protocol
 
 import pendulum
+from msgspec import Struct
 
 from nexus_ai.services.tigerbeetle.client import (
     LEDGER,
@@ -57,10 +57,10 @@ async def reverse_transaction(
     invoice_id: str,
     user_data_64: int | None = None,
 ) -> dict[str, Any]:
-    """Odwraca transakcję księgową — native pending transfer.
+    """Odwraca transakcję księgową -- native pending transfer.
 
     - Natywny pending/void zamiast 2 osobnych transferów
-    - Odwrócone debit↔credit (expense → revenue)
+    - Odwrócone debit<->credit (expense -> revenue)
     - code: 7001 dla storno
     - user_data_128: UUID storna
     - user_data_64: timestamp (Unix ns)
@@ -85,7 +85,7 @@ async def reverse_transaction(
     )
     timestamp_ns = user_data_64 or pendulum.now("UTC").int_timestamp * 1_000_000_000
 
-    # Debet ↔ Kredyt (odwrócenie kierunku)
+    # Debet <-> Kredyt (odwrócenie kierunku)
     pending_id = None
     try:
         pending_id = tb_client.create_pending_transfer(
@@ -113,7 +113,7 @@ async def reverse_transaction(
     if not posted:
         raise StornoException("TigerBeetle storno post failed")
 
-    # DuckDB — oznaczenie faktury jako unieważniona
+    # DuckDB -- oznaczenie faktury jako unieważniona
     draft_id = ""
     try:
         duckdb_writer.begin()
@@ -198,7 +198,7 @@ async def create_storno_linked_chain(
 
 
 def decimal_to_minor_units(amount: Decimal, scale: int = 2) -> int:
-    """Konwertuje Decimal na grosze (int) — dla TigerBeetle."""
+    """Konwertuje Decimal na grosze (int) -- dla TigerBeetle."""
     quant = Decimal("1").scaleb(-scale)
     normalized = amount.quantize(quant, rounding=ROUND_HALF_UP)
     factor = Decimal(10) ** scale

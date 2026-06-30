@@ -1,10 +1,10 @@
 """
-SQLAlchemy + SQLModel setup for SQLCipher (encrypted SQLite) — sync engine only.
+SQLAlchemy + SQLModel setup for SQLCipher (encrypted SQLite) -- sync engine only.
 
 Używamy natywnego sqlite3 w Pythonie 3.13t (free-threaded).
 
 - SQLModel.metadata jako target_metadata (dla natywnych migracji SQL)
-- with_loader_criteria — automatyczny multi-tenant filtr (WHERE tenant_id = ?)
+- with_loader_criteria -- automatyczny multi-tenant filtr (WHERE tenant_id = ?)
 - SessionEvents.before_flush dla automatycznego audytu
 - Connection pool tuning (pool_size, max_overflow, pool_recycle)
 - SQLCipher AES-256 encryption przez PRAGMA key
@@ -76,7 +76,7 @@ def probe_sqlcipher() -> bool:
 
     SQLCIPHER_AVAILABLE = False
     logger.warning(
-        "[DB] SQLCipher NOT available — database will be unencrypted! "
+        "[DB] SQLCipher NOT available -- database will be unencrypted! "
         "Set LD_PRELOAD=/usr/lib/.../libsqlcipher.so or install libsqlcipher."
     )
     return False
@@ -121,6 +121,7 @@ def _make_pragma_setter(key_hex: str):
     - Memory-Mapped I/O (mmap_size = 4GB)
     - SQLCipher AES-256 z najsilniejszym HMAC i KDF
     """
+    import sqlite3
 
     def _set_pragmas(dbapi_connection, _connection_record):
         dbapi_connection.execute("PRAGMA journal_mode=WAL;")
@@ -135,7 +136,7 @@ def _make_pragma_setter(key_hex: str):
         dbapi_connection.execute("PRAGMA application_id = 1313827925;")
         dbapi_connection.execute("PRAGMA user_version = 30000;")
 
-        # SQLCipher — PRAGMA key nie wspiera parameterized queries (to pragma, nie SQL),
+        # SQLCipher -- PRAGMA key nie wspiera parameterized queries (to pragma, nie SQL),
         # ale key_hex jest zawsze kontrolowany (hex-encoded string z env/arg).
         # Dodajemy walidację dla defense-in-depth.
         if not re.fullmatch(r'[0-9a-fA-F]+', key_hex):
@@ -195,7 +196,7 @@ def create_oltp_engine(
     - pool_recycle: recycle połączeń po N sekundach
     - with_loader_criteria ready dla multi-tenant
 
-    Python 3.13t (free-threaded): brak GIL — synchroniczne wywołania sqlite3
+    Python 3.13t (free-threaded): brak GIL -- synchroniczne wywołania sqlite3
     z wielu wątków są bezpieczne.
 
     Args:
@@ -246,7 +247,7 @@ def create_session_factory(
 ):
     """Create a sync sessionmaker for the given engine.
 
-    do KAŻDEJ sesji — automatyczny filtr WHERE tenant_id = ?
+    do KAŻDEJ sesji -- automatyczny filtr WHERE tenant_id = ?
     dla modeli które mają atrybut tenant_id.
 
     Args:
@@ -259,12 +260,11 @@ def create_session_factory(
     factory = sessionmaker(bind=engine, class_=Session, expire_on_commit=False)
 
     if tenant_id:
-        original_get_bind = factory.get_bind
 
         def _with_tenant_filter():
             """Zwraca sessionmaker z automatycznym filtrem tenant_id.
 
-            Używa with_loader_criteria() — dodaje WHERE tenant_id = ?
+            Używa with_loader_criteria() -- dodaje WHERE tenant_id = ?
             do KAŻDEGO zapytania, w tym JOIN-ów i podzapytań.
             """
             session = factory()
@@ -341,7 +341,7 @@ def consolidate_database(engine) -> None:
 # ── Session helpers ───────────────────────────────────────────────────────
 
 
-def get_session(session_factory) -> Generator[Session, None, None]:
+def get_session(session_factory) -> Generator[Session]:
     """Context manager yielding a sync Session from the given factory."""
     session = session_factory()
     try:
@@ -350,7 +350,7 @@ def get_session(session_factory) -> Generator[Session, None, None]:
         session.close()
 
 
-def get_tenant_session(session_factory, tenant_id: str) -> Generator[Session, None, None]:
+def get_tenant_session(session_factory, tenant_id: str) -> Generator[Session]:
     """Context manager z automatycznym multi-tenant filtrem.
 
     WHERE tenant_id = ? do każdego zapytania.

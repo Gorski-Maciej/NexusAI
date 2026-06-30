@@ -1,5 +1,5 @@
 """
-Outbox relay tasks — extracted from api/tasks.py.
+Outbox relay tasks -- extracted from api/tasks.py.
 
 Zawiera:
 - relay_outbox_events: główne zadanie przekazywania eventów outbox
@@ -9,11 +9,10 @@ Zawiera:
 
 from __future__ import annotations
 
-
 import duckdb
 import stamina
-from sqlmodel import Session, text
 from sqlalchemy import exc as sa_exc
+from sqlmodel import Session, text
 from structlog import get_logger
 from taskiq import Kicker, TaskiqDepends
 
@@ -175,9 +174,9 @@ async def _dispatch_outbox_event(row: dict) -> None:
         return
 
     if event_type == "tax_calculated":
+        from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
         from nexus_ai.tax.audit import ensure_schema as ensure_tax_schema
         from nexus_ai.tax.pipeline import TaxPipeline
-        from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
         transaction_id = payload.get("transaction_id", "")
         if not transaction_id:

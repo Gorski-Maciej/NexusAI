@@ -1,4 +1,4 @@
-"""Invoice List View — @ft.component + SearchBar + SegmentedButton + URL = State.
+"""Invoice List View -- @ft.component + SearchBar + SegmentedButton + URL = State.
 
   - @ft.component + use_state() zamiast klasy imperatywnej
   - ft.SearchBar dla wyszukiwania faktur
@@ -11,7 +11,6 @@
 """
 
 from __future__ import annotations
-
 
 import flet as ft
 from structlog import get_logger
@@ -32,7 +31,7 @@ INVOICE_STATUS_COLORS = {
 
 @ft.component
 def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None):
-    """Modern invoice list view — URL = State synchronizacja filtrów.
+    """Modern invoice list view -- URL = State synchronizacja filtrów.
 
       - @ft.component + use_state() zamiast klasy
       - ft.SearchBar z wyszukiwarką
@@ -66,7 +65,7 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
     # ── URL = State: synchronizacja ────────────────────────────────────
 
     def _on_filter_change(new_filter: str | None):
-        """Zmiana filtra → aktualizacja URL."""
+        """Zmiana filtra -> aktualizacja URL."""
         selected_filter.set(new_filter)
         update_url_with_filters(
             page,
@@ -78,9 +77,9 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
         )
 
     def _on_search_submit(value: str):
-        """Zatwierdzenie wyszukiwania → aktualizacja URL.
+        """Zatwierdzenie wyszukiwania -> aktualizacja URL.
 
-        nie przy każdym keystroke — zapobiega infinite re-render loop.
+        nie przy każdym keystroke -- zapobiega infinite re-render loop.
         """
         search_query.set(value)
         filters = {"q": value or None}

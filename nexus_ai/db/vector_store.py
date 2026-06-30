@@ -1,11 +1,11 @@
 """
-AsyncVectorStore — async sqlite-vec wrapper with ALL superpowers.
+AsyncVectorStore -- async sqlite-vec wrapper with ALL superpowers.
 
 Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_sync.
 
 - partition_key: partycjonowanie dla tenantów (tenant_id, vendor_nip)
 - metadata_columns: przechowywanie metadanych przy wektorze w vec0
-- int8 quantization: 4× oszczędność pamięci
+- int8 quantization: 4x oszczędność pamięci
 - Unified schema registry: jeden interfejs dla wszystkich vec0 tabel
 - vec0 virtual table z indeksem IVF
 - vec_distance_cosine / vec_distance_l2 / vec_distance_manhattan
@@ -15,11 +15,11 @@ Python 3.13t (free-threaded): używamy natywnego sqlite3 + anyio.to_thread.run_s
 
 from __future__ import annotations
 
-import anyio
 import hashlib
 import sqlite3
 from typing import Any, Literal
 
+import anyio
 import sqlite_vec
 
 from nexus_ai.db.async_base_service import AsyncBaseService
@@ -33,7 +33,7 @@ DistanceMetric = Literal["cosine", "l2", "inner_product", "manhattan"]
 VECTOR_DB_APP_ID = 1313827925  # NEXU
 
 
-# ── Unified schema registry — standardowe definicje vec0 tabel ────────────
+# ── Unified schema registry -- standardowe definicje vec0 tabel ────────────
 
 VEC0_SCHEMAS: dict[str, dict[str, Any]] = {
     "invoice_vectors": {
@@ -114,7 +114,7 @@ def _build_vec0_ddl(
     """
 
 
-# ── AsyncVectorStore — enhanced core ────────────────────────────────────────
+# ── AsyncVectorStore -- enhanced core ────────────────────────────────────────
 
 
 class AsyncVectorStore(AsyncBaseService):
@@ -219,7 +219,7 @@ class AsyncVectorStore(AsyncBaseService):
             int8_values.append(int8_val & 0xFF)
         return bytes(int8_values)
 
-    # ── Batch insert dla vec0 — [FAZA 2] z metadata/partition ──────────
+    # ── Batch insert dla vec0 -- [FAZA 2] z metadata/partition ──────────
 
     async def insert_vectors_batch(
         self,

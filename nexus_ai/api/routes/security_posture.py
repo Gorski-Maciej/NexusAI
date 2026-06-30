@@ -4,7 +4,7 @@ from pathlib import Path
 
 from litestar import Controller, get
 
-from nexus_ai.api.dto import SecurityPostureDTO, TAG_SECURITY
+from nexus_ai.api.dto import TAG_SECURITY, SecurityPostureDTO
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.core.msgspec_utils import msgspec_loads
 

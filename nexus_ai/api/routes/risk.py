@@ -1,15 +1,15 @@
 """
-Risk Guard API — zarządzanie dynamicznymi progami ryzyka (Strażnik Ryzyka).
+Risk Guard API -- zarządzanie dynamicznymi progami ryzyka (Strażnik Ryzyka).
 
-Endpointy administracyjne dla RiskGuard — zintegrowane z DecisionEngine
+Endpointy administracyjne dla RiskGuard -- zintegrowane z DecisionEngine
 (DuckDB/SQL) i NexusCache z event-based invalidation.
 
 Endpointy:
-  GET    /api/v2/admin/risk-thresholds           — lista reguł
-  POST   /api/v2/admin/risk-thresholds           — dodaj nową regułę progu ryzyka
-  DELETE /api/v2/admin/risk-thresholds/{rule_id} — dezaktywuj regułę (append-only)
-  GET    /api/v2/admin/risk-thresholds/evaluate  — ewaluacja progu dla zadanych parametrów
-  GET    /api/v2/admin/risk-thresholds/evaluate-batch — ewaluacja wielu pól
+  GET    /api/v2/admin/risk-thresholds           -- lista reguł
+  POST   /api/v2/admin/risk-thresholds           -- dodaj nową regułę progu ryzyka
+  DELETE /api/v2/admin/risk-thresholds/{rule_id} -- dezaktywuj regułę (append-only)
+  GET    /api/v2/admin/risk-thresholds/evaluate  -- ewaluacja progu dla zadanych parametrów
+  GET    /api/v2/admin/risk-thresholds/evaluate-batch -- ewaluacja wielu pól
 
 Wszystkie endpointy wymagają uprawnienia ``admin:risk``.
 """
@@ -66,7 +66,7 @@ class RiskController(Controller):
     async def list_thresholds(self) -> Response[list[dict[str, Any]]]:
         """Lista wszystkich reguł progów ryzyka.
 
-        Tabela risk_thresholds jest append-only — każda reguła pojawia się
+        Tabela risk_thresholds jest append-only -- każda reguła pojawia się
         raz z polem ``valid_to`` (NULL = wciąż aktywna).
         """
         try:
@@ -93,12 +93,12 @@ class RiskController(Controller):
         """Dodaj nową regułę progu ryzyka (append-only).
 
         Request body (JSON):
-            condition: dict — warunki reguły (np. {"tax_form": "CIT_STANDARD", "field": "vat_rate"}).
-            output: dict — wynik reguły (np. {"required_ml_confidence": 0.98, "action_if_below": "BLOCK_AND_ALERT"}).
-            valid_from: str (opcjonalnie) — data rozpoczęcia, domyślnie dzisiaj.
-            valid_to: str | null (opcjonalnie) — data zakończenia, domyślnie null (bezterminowo).
-            priority: int (opcjonalnie) — priorytet, domyślnie 100.
-            created_by: str (opcjonalnie) — identyfikator twórcy, domyślnie "admin".
+            condition: dict -- warunki reguły (np. {"tax_form": "CIT_STANDARD", "field": "vat_rate"}).
+            output: dict -- wynik reguły (np. {"required_ml_confidence": 0.98, "action_if_below": "BLOCK_AND_ALERT"}).
+            valid_from: str (opcjonalnie) -- data rozpoczęcia, domyślnie dzisiaj.
+            valid_to: str | null (opcjonalnie) -- data zakończenia, domyślnie null (bezterminowo).
+            priority: int (opcjonalnie) -- priorytet, domyślnie 100.
+            created_by: str (opcjonalnie) -- identyfikator twórcy, domyślnie "admin".
         """
         condition = data.get("condition")
         output = data.get("output")
@@ -106,12 +106,12 @@ class RiskController(Controller):
         if not condition or not isinstance(condition, dict):
             raise HTTPException(
                 status_code=422,
-                detail="Missing or invalid 'condition' field — must be a dict",
+                detail="Missing or invalid 'condition' field -- must be a dict",
             )
         if not output or not isinstance(output, dict):
             raise HTTPException(
                 status_code=422,
-                detail="Missing or invalid 'output' field — must be a dict",
+                detail="Missing or invalid 'output' field -- must be a dict",
             )
 
         valid_from = data.get("valid_from", pendulum.now().date().isoformat())
@@ -161,7 +161,7 @@ class RiskController(Controller):
         self,
         rule_id: str,
     ) -> Response[dict[str, Any]]:
-        """Dezaktywuj regułę progu ryzyka (append-only — ustawia valid_to = dzisiaj).
+        """Dezaktywuj regułę progu ryzyka (append-only -- ustawia valid_to = dzisiaj).
 
         Args:
             rule_id: UUID reguły do dezaktywacji.
@@ -257,7 +257,7 @@ class RiskController(Controller):
         if not fields_json:
             raise HTTPException(
                 status_code=422,
-                detail="Missing required query param 'fields_json' — JSON dict of {field: confidence}",
+                detail="Missing required query param 'fields_json' -- JSON dict of {field: confidence}",
             )
 
         try:

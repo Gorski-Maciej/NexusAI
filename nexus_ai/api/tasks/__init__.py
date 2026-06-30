@@ -1,5 +1,5 @@
 """
-Modular task system — re-exportuje wszystkie zadania z podmodułów.
+Modular task system -- re-exportuje wszystkie zadania z podmodułów.
 
 FAZA V: Podział api/tasks.py na moduły:
 - ocr.py: process_invoice_ocr, process_large_attachment
@@ -12,31 +12,12 @@ Wszystkie dekoratory @broker.task są definiowane w podmodułach.
 Ten plik re-exportuje tylko funkcje pomocnicze dla kompatybilności.
 """
 
-from nexus_ai.api.tasks.ocr import (
-    _build_field_confidence,
-    _mark_invoice_blocked,
-    _mark_invoice_pending_review,
-    _safe_float,
-    process_invoice_ocr,
-    process_large_attachment,
+from nexus_ai.api.tasks.cleanup import (
+    cleanup_archived_invoices_task,
+    cleanup_expired_refresh_tokens_task,
+    cleanup_hard_deleted_invoices_task,
+    cleanup_outbox_events_task,
 )
-
-from nexus_ai.api.tasks.decision import (
-    _DECISION_ENGINE,
-    _DUCKDB,
-    _ensure_decision_engine,
-    _escalate_to_human,
-    _mark_for_review,
-    _post_invoice,
-    council_decide,
-    decision_evaluate,
-)
-
-from nexus_ai.api.tasks.outbox import (
-    _dispatch_outbox_event,
-    relay_outbox_events,
-)
-
 from nexus_ai.api.tasks.cron import (
     check_hanging_transactions_task,
     cleanup_duckdb_temp_task,
@@ -55,14 +36,28 @@ from nexus_ai.api.tasks.cron import (
     sqlite_weekly_vacuum_task,
     weekly_nip_reverification_task,
 )
-
-from nexus_ai.api.tasks.cleanup import (
-    cleanup_archived_invoices_task,
-    cleanup_expired_refresh_tokens_task,
-    cleanup_hard_deleted_invoices_task,
-    cleanup_outbox_events_task,
+from nexus_ai.api.tasks.decision import (
+    _DECISION_ENGINE,
+    _DUCKDB,
+    _ensure_decision_engine,
+    _escalate_to_human,
+    _mark_for_review,
+    _post_invoice,
+    council_decide,
+    decision_evaluate,
 )
-
+from nexus_ai.api.tasks.ocr import (
+    _build_field_confidence,
+    _mark_invoice_blocked,
+    _mark_invoice_pending_review,
+    _safe_float,
+    process_invoice_ocr,
+    process_large_attachment,
+)
+from nexus_ai.api.tasks.outbox import (
+    _dispatch_outbox_event,
+    relay_outbox_events,
+)
 from nexus_ai.core.broker import broker
 
 __all__ = [

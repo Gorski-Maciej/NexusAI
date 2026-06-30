@@ -1,4 +1,4 @@
-"""auto_crud — generacja kontrolerów CRUD z modelu SQLModel.
+"""auto_crud -- generacja kontrolerów CRUD z modelu SQLModel.
 
 Eliminuje ~3 730 linii powtarzalnych definicji endpointów REST.
 Generuje GET list, POST create, GET by id, PUT update, DELETE by id.
@@ -21,8 +21,8 @@ from litestar import Controller, delete, get, post, put
 from msgspec import Struct, to_builtins
 from sqlmodel import SQLModel
 
-from nexus_ai.core.foundation.base_service import BaseService
 from nexus_ai.core.foundation.auto_dto import auto_dto_from_model
+from nexus_ai.core.foundation.base_service import BaseService
 
 _ENDPOINT_CACHE: dict[str, type[Controller]] = {}
 
@@ -61,7 +61,7 @@ def auto_crud(
     resolved_create = create_dto or auto_dto_from_model(model, "Create", exclude={"id", "created_at", "updated_at"})
     resolved_update = update_dto or resolved_create
 
-    # Serwis — closure
+    # Serwis -- closure
     def _get_service(self, session: Any) -> BaseService:
         svc = service_class or BaseService
         return svc(session, model)

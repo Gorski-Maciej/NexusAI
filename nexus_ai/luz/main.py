@@ -3,11 +3,9 @@ import os
 import secrets
 import socket
 import sys
-
-import anyio
 from pathlib import Path as _SyncPath
 
-
+import anyio
 import flet as ft
 import pendulum
 from structlog import get_logger

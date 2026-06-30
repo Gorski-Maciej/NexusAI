@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from msgspec import Struct
 from decimal import Decimal
 from typing import Any
 
-from sqlmodel import select
-from sqlmodel import Session
+from msgspec import Struct
+from sqlmodel import Session, select
 
 from nexus_ai.db.models import Invoice, InvoiceStatus
 
@@ -39,7 +38,7 @@ def list_pending_triage_items(session: Session, *, tenant_id: str) -> list[Invoi
         .order_by(Invoice.created_at.desc())
     )
     result = session.execute(stmt)
-    return list(result.scalars())  # generator → list
+    return list(result.scalars())  # generator -> list
 
 
 def resolve_triage_item(
@@ -79,7 +78,7 @@ def resolve_triage_item(
 
     # Po wyjściu z ``with session.begin()``, sesja jest otwarta
     # (``begin()`` nie zamyka sesji, tylko kończy transakcję).
-    # ``refresh()`` odświeża obiekt z bazy — działa poprawnie,
+    # ``refresh()`` odświeża obiekt z bazy -- działa poprawnie,
     # bo sesja nie jest zamknięta.
     # Jeśli sesja jest zamknięta (np. przez context manager),
     # użyj ``session.expire_all()`` przed odczytem.

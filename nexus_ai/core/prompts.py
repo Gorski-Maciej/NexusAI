@@ -7,7 +7,6 @@ from pathlib import Path
 from nexus_ai.core.cache import get_cache
 from nexus_ai.core.msgspec_utils import msgspec_loads
 
-
 _prompt_cache = get_cache(default_ttl=3600)  # 1h TTL dla promptów
 
 

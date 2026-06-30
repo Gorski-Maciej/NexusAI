@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import anyio
 import importlib.util
 import os
 import time
@@ -9,6 +8,7 @@ from contextvars import ContextVar
 from functools import wraps
 from typing import Any, TypeVar
 
+import anyio
 import pendulum
 
 from nexus_ai.db.analytics import DuckDBManager

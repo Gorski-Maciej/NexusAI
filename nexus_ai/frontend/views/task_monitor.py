@@ -1,4 +1,4 @@
-"""task_monitor.py — Background Task Monitor z @ft.component + ft.Shimmer + ft.NumberBadge.
+"""task_monitor.py -- Background Task Monitor z @ft.component + ft.Shimmer + ft.NumberBadge.
 
   - @ft.component + use_state() zamiast klas imperatywnych
   - ft.NumberBadge na zakładkach Tabs z liczbami
@@ -59,7 +59,7 @@ _STAGE_TO_STATUS = {
 
 @ft.component
 def TaskItem(page: ft.Page, task_data: dict):
-    """Single task row with icon, progress bar, and status — @ft.component.
+    """Single task row with icon, progress bar, and status -- @ft.component.
 
       - @ft.component + use_state() zamiast klasy
       - ft.Tooltip dla długich nazw
@@ -67,9 +67,9 @@ def TaskItem(page: ft.Page, task_data: dict):
     """
     status = ft.use_state(task_data.get("status", "QUEUED"))
     progress = ft.use_state(float(task_data.get("progress", 0.0)))
-    error_msg = ft.use_state(task_data.get("error_message", ""))
+    ft.use_state(task_data.get("error_message", ""))
 
-    task_id = task_data.get("task_id", "")
+    task_data.get("task_id", "")
     task_name = task_data.get("task_name", "unknown")
     created_at = task_data.get("created_at", "")
 
@@ -155,7 +155,7 @@ def TaskItem(page: ft.Page, task_data: dict):
 
     # ── Helper functions ────────────────────────────────────────────────
     def _update(new_progress: float, new_status: str):
-        """Update task state — to be called externally."""
+        """Update task state -- to be called externally."""
         progress.set(new_progress)
         status.set(new_status)
 
@@ -165,7 +165,7 @@ def TaskItem(page: ft.Page, task_data: dict):
 
 @ft.component
 def TaskMonitorPanel(page: ft.Page, api_client=None):
-    """Full task monitoring panel — @ft.component + ft.NumberBadge + ft.Shimmer.
+    """Full task monitoring panel -- @ft.component + ft.NumberBadge + ft.Shimmer.
 
       - @ft.component + use_state() zamiast klasy
       - ft.NumberBadge na zakładkach Tabs

@@ -6,11 +6,11 @@ natywne funkcje SQLite (COUNT, SUM, AVG).
 
 Zgodnie z aa3fvcx.txt:
 - SQLite wzbogacony o custom aggregate functions
-- Zero zewnętrznych zależności — czysty Python C-API
+- Zero zewnętrznych zależności -- czysty Python C-API
 - Funkcje działają w zapytaniach SQL: SELECT median(amount) FROM ...
 
 Korzyści:
-- MEDIAN, MODE, PERCENTILE — brak w standardowym SQLite
+- MEDIAN, MODE, PERCENTILE -- brak w standardowym SQLite
 - Działają w każdym zapytaniu SQL (GROUP BY, window functions, CTE)
 - Wydajność: Python C-API, minimalny narzut na wiersz
 
@@ -33,19 +33,19 @@ from typing import Any
 
 
 class MedianAggregate:
-    """Funkcja agregująca MEDIAN — zwraca medianę zbioru liczbowego.
+    """Funkcja agregująca MEDIAN -- zwraca medianę zbioru liczbowego.
 
     Działa jak natywna funkcja SQLite: SELECT median(amount_net) FROM invoices.
 
     Algorytm:
     - Zbiera wszystkie wartości w liście podczas step()
     - Sortuje i zwraca środkową wartość w final()
-    - Pamięć: O(n) — wszystkie wartości w pamięci
+    - Pamięć: O(n) -- wszystkie wartości w pamięci
     - Dla dużych zbiorów (>1M) użyj approx_median z DuckDB
 
     SQL:
         SELECT median(amount_net) FROM invoices WHERE contractor_nip = '1234567890'
-        → zwraca medianę kwot netto dla kontrahenta
+        -> zwraca medianę kwot netto dla kontrahenta
     """
 
     def __init__(self) -> None:
@@ -71,9 +71,9 @@ class MedianAggregate:
 
 
 class ModeAggregate:
-    """Funkcja agregująca MODE — zwraca najczęściej występującą wartość.
+    """Funkcja agregująca MODE -- zwraca najczęściej występującą wartość.
 
-    SELECT mode(status) FROM invoices → zwraca najczęstszy status.
+    SELECT mode(status) FROM invoices -> zwraca najczęstszy status.
 
     Dla zbiorów wielomodalnych zwraca pierwszą najczęstszą wartość.
     """
@@ -94,18 +94,18 @@ class ModeAggregate:
 
 
 class PercentileAggregate:
-    """Funkcja agregująca PERCENTILE — zwraca percentyl zbioru.
+    """Funkcja agregująca PERCENTILE -- zwraca percentyl zbioru.
 
-    → zwraca 95. percentyl kwot brutto (próg, poniżej którego jest 95% faktur).
+    -> zwraca 95. percentyl kwot brutto (próg, poniżej którego jest 95% faktur).
 
     UWAGA: Rejestracja z ``create_aggregate("percentile", 2, PercentileAggregate)``
     oznacza 2 parametry: ``percentile(column, p)`` gdzie:
       - column: kolumna do agregacji
-      - p: percentyl (0.0–1.0) — stały dla całej agregacji
+      - p: percentyl (0.0–1.0) -- stały dla całej agregacji
 
     SQL:
         SELECT percentile(amount_gross, 0.95) FROM invoices
-        → 95% faktur ma kwotę <= wynik
+        -> 95% faktur ma kwotę <= wynik
     """
 
     def __init__(self) -> None:
@@ -116,7 +116,7 @@ class PercentileAggregate:
 
         Args:
             value: Wartość do agregacji.
-            p: Percentyl (0.0–1.0) — SQLite przekazuje go jako drugi argument.
+            p: Percentyl (0.0–1.0) -- SQLite przekazuje go jako drugi argument.
             Ponieważ p jest stałe dla wszystkich wierszy (parametr SQL),
             nadpisujemy self._p tą samą wartością przy każdym wierszu.
         """
@@ -143,7 +143,7 @@ class PercentileAggregate:
 
 
 class ProductAggregate:
-    """Funkcja agregująca PRODUCT — iloczyn wszystkich wartości.
+    """Funkcja agregująca PRODUCT -- iloczyn wszystkich wartości.
 
     Przydatne do kalkulacji złożonych stawek procentowych.
     """

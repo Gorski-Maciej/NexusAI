@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from nexus_crypto import Sha256Hasher
-
 from sqlalchemy import Engine
 from sqlmodel import text
 

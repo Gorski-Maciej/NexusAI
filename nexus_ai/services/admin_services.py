@@ -1,4 +1,4 @@
-"""Admin services — z AdminServiceRegistry eliminującym boilerplate DuckDB.
+"""Admin services -- z AdminServiceRegistry eliminującym boilerplate DuckDB.
 
 Każdy serwis dziedziczy po AdminServiceRegistry, zyskując:
 - Współdzielone połączenie DuckDB (context manager)
@@ -14,6 +14,7 @@ from __future__ import annotations
 from typing import Any
 
 import pendulum
+
 from nexus_ai.core.foundation.admin_registry import AdminServiceRegistry
 from nexus_ai.core.logger import auto_logger
 
@@ -211,6 +212,7 @@ class ReplayService(AdminServiceRegistry):
     @classmethod
     def replay_batch(cls, period_start: str, period_end: str, limit: int = 1000) -> dict[str, Any]:
         import pendulum
+
         from nexus_ai.services.replay_engine import ReplayEngine
         try:
             start, end = pendulum.Date.fromisoformat(period_start), pendulum.Date.fromisoformat(period_end)
@@ -261,9 +263,9 @@ class IntegrityService(AdminServiceRegistry):
 
 @auto_logger
 class FailedTaskService:
-    """Zarządzanie failed tasks (DLQ) — operacje na outbox_events przez AsyncEngine.
+    """Zarządzanie failed tasks (DLQ) -- operacje na outbox_events przez AsyncEngine.
 
-    UWAGA: Nie używa DuckDB — operuje na głównej bazie OLTP przez AsyncEngine.
+    UWAGA: Nie używa DuckDB -- operuje na głównej bazie OLTP przez AsyncEngine.
     Dlatego nie dziedziczy po AdminServiceRegistry.
     """
 
@@ -327,8 +329,9 @@ class FailedTaskService:
 
     @staticmethod
     async def _republish(db_engine: Any, task_name: str, payload: str) -> None:
-        from sqlmodel import text
         import uuid
+
+        from sqlmodel import text
         async with db_engine.connect() as conn:
             await conn.execute(text("""INSERT INTO outbox_events (id, event_type, aggregate_id, payload, status, processed, created_at)
                 VALUES (:id, :event_type, :aggregate_id, :payload, 'PENDING', 0, :created_at)"""),

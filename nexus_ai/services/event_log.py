@@ -1,4 +1,4 @@
-"""EventLog — historia wszystkich zdarzeń i podjętych decyzji.
+"""EventLog -- historia wszystkich zdarzeń i podjętych decyzji.
 
 Zgodnie z aa3fvcx.txt (Punkt 26): historia wszystkich zdarzeń i podjętych
 decyzji, przeszukiwalna dla systemu analitycznego (DuckDB).
@@ -39,8 +39,8 @@ class EventLog:
     Dostępna dla systemu analitycznego (DuckDB) do generowania raportów i trendów.
 
     Storage:
-      - SQLite (główna baza, migracja 0003): event_log — fallback dla zapytań
-      - DuckDB: event_log_analytics — wydajne zapytania OLAP
+      - SQLite (główna baza, migracja 0003): event_log -- fallback dla zapytań
+      - DuckDB: event_log_analytics -- wydajne zapytania OLAP
     """
 
     def __init__(
@@ -50,7 +50,7 @@ class EventLog:
     ) -> None:
         self._engine = engine
         self._duckdb = duckdb_manager
-        # DuckDB schema (analytics) — pozostaje jako DDL w kodzie
+        # DuckDB schema (analytics) -- pozostaje jako DDL w kodzie
         self._init_duckdb()
 
     def _init_duckdb(self) -> None:
@@ -323,9 +323,9 @@ class EventLog:
     ) -> dict[str, Any]:
         """Zwróć statystyki zdarzeń z ostatnich N dni.
 
-        - ``execute_arrow()`` + ``pl.from_arrow()" — zero-copy z DuckDB
+        - ``execute_arrow()`` + ``pl.from_arrow()" -- zero-copy z DuckDB
         - ``pl.DataFrame.group_by()" zamiast ``GROUP BY`` w SQL
-        - ``pl.col().count().sort()" — czytelniejsze niż ``ORDER BY cnt DESC``
+        - ``pl.col().count().sort()" -- czytelniejsze niż ``ORDER BY cnt DESC``
         - ``shrink_dtype()" dla oszczędności RAM
         """
         since = pendulum.now("UTC").subtract(days=days).isoformat()

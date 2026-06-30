@@ -1,4 +1,4 @@
-"""Daily Briefing View — @ft.component + AnimatedContainer + Shimmer.
+"""Daily Briefing View -- @ft.component + AnimatedContainer + Shimmer.
 
   - @ft.component + use_state() zamiast klasy
   - ft.AnimatedContainer dla płynnych przejść
@@ -8,7 +8,6 @@
 """
 
 from __future__ import annotations
-
 
 import flet as ft
 from structlog import get_logger

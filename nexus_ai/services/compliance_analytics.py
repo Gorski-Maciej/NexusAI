@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from msgspec import Struct
 from decimal import Decimal
 from enum import StrEnum
 from typing import TYPE_CHECKING, Any, Literal
+
+from msgspec import Struct
 
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
@@ -94,7 +95,7 @@ def ensure_compliance_analytics_schema(duckdb: DuckDBManager) -> None:
         """
     )
 
-    # DuckDB-specific ``USING KEY`` dla recursive CTE — 5-10× szybszy
+    # DuckDB-specific ``USING KEY`` dla recursive CTE -- 5-10x szybszy
     # od standardowego ``JOIN ... ON ...`` dla hierarchii kont.
     # ``GENERATE_SERIES`` dla generowania poziomów hierarchii.
     duckdb.execute(
@@ -107,7 +108,7 @@ def ensure_compliance_analytics_schema(duckdb: DuckDBManager) -> None:
             SELECT credit_account_code AS account_code, -amount_minor AS delta_minor, currency, occurred_at, semantic_tags
             FROM tb_ledger_transfers
         ),
-        -- USING KEY jest 5-10× szybszy od standardowego JOIN ... ON ...
+        -- USING KEY jest 5-10x szybszy od standardowego JOIN ... ON ...
         recursive_rollup AS (
             SELECT
                 a.account_code,

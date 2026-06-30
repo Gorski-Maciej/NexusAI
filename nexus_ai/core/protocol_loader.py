@@ -1,5 +1,5 @@
 """
-ProtocolLoader — parser protocols.toml dla scentralizowanych SOP.
+ProtocolLoader -- parser protocols.toml dla scentralizowanych SOP.
 
 Ładuje protokoły z nexus_ai/config/protocols.toml i udostępnia je
 w formie słowników i obiektów dla wszystkich komponentów systemu.
@@ -52,7 +52,7 @@ class ProtocolLoader:
               nexus_ai/config/protocols.toml.
         auto_reload: Czy i jak często przeładowywać plik na podstawie
                      mtime (st_mtime).
-                     - False (domyślnie): nigdy — standardowy cache.
+                     - False (domyślnie): nigdy -- standardowy cache.
                      - True: co 5 sekund sprawdza mtime, przeładowuje
                              jeśli plik zmieniony na dysku.
                      - int > 0: custom poll interval w sekundach.
@@ -131,23 +131,23 @@ class ProtocolLoader:
 
         Gdy auto_reload jest włączone:
           1. Sprawdź st_mtime pliku (max co poll_interval)
-          2. Jeśli mtime się zmieniło → przeładuj dane
-          3. Jeśli plik zniknął → wyczyść cache i zwróć {}
-          4. Jeśli plik wrócił → załaduj ponownie
+          2. Jeśli mtime się zmieniło -> przeładuj dane
+          3. Jeśli plik zniknął -> wyczyść cache i zwróć {}
+          4. Jeśli plik wrócił -> załaduj ponownie
 
         Gdy auto_reload jest wyłączone:
           - Użyj cache (standardowe zachowanie)
         """
         now = time.time()
 
-        # ── Auto-reload wyłączony → zwykły cache ────────────────────────
+        # ── Auto-reload wyłączony -> zwykły cache ────────────────────────
         if not self._auto_reload_enabled:
             if self._data is not None:
                 return self._data
             # Pierwsze ładowanie
             return self._read_file()
 
-        # ── Auto-reload włączony → mtime-based ──────────────────────────
+        # ── Auto-reload włączony -> mtime-based ──────────────────────────
 
         # Rate-limiting: nie sprawdzaj pliku częściej niż poll_interval
         if now - self._last_checked < self._poll_interval and self._data is not None:
@@ -159,7 +159,7 @@ class ProtocolLoader:
         if not self._path.exists():
             if self._data is not None:
                 logger.warning(
-                    "[ProtocolLoader] File disappeared: %s — clearing cache",
+                    "[ProtocolLoader] File disappeared: %s -- clearing cache",
                     self._path,
                 )
                 self._data = None
@@ -170,18 +170,18 @@ class ProtocolLoader:
             current_mtime = self._path.stat().st_mtime
         except OSError:
             logger.warning(
-                "[ProtocolLoader] Cannot stat %s — using cached data",
+                "[ProtocolLoader] Cannot stat %s -- using cached data",
                 self._path,
             )
             return self._data if self._data is not None else {}
 
-        # Jeśli mtime się nie zmieniło → użyj cache
+        # Jeśli mtime się nie zmieniło -> użyj cache
         if current_mtime <= self._last_mtime and self._data is not None:
             return self._data
 
-        # mtime się zmieniło → przeładuj
+        # mtime się zmieniło -> przeładuj
         logger.info(
-            "[ProtocolLoader] File changed on disk: %s — reloading protocols",
+            "[ProtocolLoader] File changed on disk: %s -- reloading protocols",
             self._path.name,
         )
         return self._read_file()
@@ -190,7 +190,7 @@ class ProtocolLoader:
         """Wczytaj protocols.toml z dysku i zaktualizuj mtime cache."""
         if not self._path.exists():
             logger.warning(
-                "[ProtocolLoader] File not found: %s — using empty protocols",
+                "[ProtocolLoader] File not found: %s -- using empty protocols",
                 self._path,
             )
             self._data = {}
@@ -230,7 +230,7 @@ class ProtocolLoader:
     def get_protocol(self, protocol_path: str) -> dict[str, Any]:
         """Pobierz protokół po kropkowej ścieżce (np. 'validation.alpha').
 
-        Zawsze szuka pod [protocols.*] — nigdy poza tą sekcją,
+        Zawsze szuka pod [protocols.*] -- nigdy poza tą sekcją,
         co zapobiega przypadkowym dopasowaniom.
 
         Args:
@@ -504,7 +504,7 @@ class ProtocolLoader:
         if case is None:
             return {
                 "condition": "unknown",
-                "expected_behavior": "ESCALATE — nieznany scenariusz brzegowy",
+                "expected_behavior": "ESCALATE -- nieznany scenariusz brzegowy",
                 "override": "",
             }
         return dict(case)
@@ -522,9 +522,9 @@ class ProtocolLoader:
             return self.get_protocol(f"rag.{section_name}")
         except ProtocolNotFoundError:
             return {
-                "steps": ["FactsAggregator.build(invoice_data) — domyślny przepływ"],
+                "steps": ["FactsAggregator.build(invoice_data) -- domyślny przepływ"],
                 "timeout": "5000ms",
-                "error_handling": "Izolacja błędów — każde źródło osobno",
+                "error_handling": "Izolacja błędów -- każde źródło osobno",
             }
 
     def get_sop_section(self, sop_name: str = "orchestrator_protocols") -> dict[str, Any]:
@@ -580,7 +580,7 @@ class ProtocolLoader:
                 for name, cfg in decisions.items():
                     cond = cfg.get("condition", "")
                     action = cfg.get("action", "")
-                    lines.append(f"- {name}: Jeśli {cond} → {action}")
+                    lines.append(f"- {name}: Jeśli {cond} -> {action}")
 
         return "\n".join(lines)
 
@@ -599,9 +599,9 @@ def get_protocol_loader(
     Args:
         path: Opcjonalna ścieżka do protocols.toml (pierwsze wywołanie).
         auto_reload: Czy i jak często przeładowywać plik.
-                      False — nigdy (domyślnie).
-                      True — co 5 sekund na podstawie mtime.
-                      int > 0 — custom poll interval w sekundach.
+                      False -- nigdy (domyślnie).
+                      True -- co 5 sekund na podstawie mtime.
+                      int > 0 -- custom poll interval w sekundach.
 
     Returns:
         Globalna instancja ProtocolLoader.

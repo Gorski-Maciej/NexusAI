@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import final
-
 import imaplib
 from pathlib import Path
+from typing import final
 
 
 @final

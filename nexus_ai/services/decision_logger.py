@@ -1,5 +1,5 @@
 """
-Decision Logger — rozbudowany logger decyzji z tabelą trust_score_cache i pełnym śledzeniem.
+Decision Logger -- rozbudowany logger decyzji z tabelą trust_score_cache i pełnym śledzeniem.
 
 Nowe funkcjonalności:
   - trust_score_cache: tabela przechowująca historyczne trust score dla adaptacji wag
@@ -13,25 +13,24 @@ brak try/except pass, @final na klasie głównej.
 
 from __future__ import annotations
 
-import anyio
 import uuid
 from typing import Any, final
 
+import anyio
 import pendulum
 from msgspec import Struct, field
-
-from nexus_ai.core.time_utils import human_diff
 
 from nexus_ai.core.broker import broker
 from nexus_ai.core.logger import get_logger
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
+from nexus_ai.core.time_utils import human_diff
 from nexus_ai.db.analytics import DuckDBManager
 
 logger = get_logger(__name__)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Data structures — konkretne Struct zamiast dict[str, Any]
+# Data structures -- konkretne Struct zamiast dict[str, Any]
 # mypyc: kompilowalne do C, zdevirtualizowane metody, brak Any
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -234,9 +233,9 @@ class DecisionLogger:
                 try:
                     self._duckdb.execute(f"ALTER TABLE decisions ADD COLUMN {col_name} {col_type}")
                 except Exception:
-                    pass  # kolumna już istnieje — ignoruj
+                    pass  # kolumna już istnieje -- ignoruj
 
-        # Trust Score Cache — do adaptacyjnego strojenia wag
+        # Trust Score Cache -- do adaptacyjnego strojenia wag
         self._duckdb.execute(
             """
             CREATE TABLE IF NOT EXISTS trust_score_cache (
@@ -281,7 +280,7 @@ class DecisionLogger:
             idx_name = f"idx_{table}_{col}"
             self._duckdb.execute(f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table}({col})")
 
-        # Indeksuje tylko wiersze spełniające warunek — mniejszy indeks,
+        # Indeksuje tylko wiersze spełniające warunek -- mniejszy indeks,
         # szybsze zapytania dla najczęstszych wzorców.
         # Partial index na decisions WHERE user_correction IS NOT NULL
         # jest ~70% mniejszy niż pełny indeks.
@@ -297,12 +296,12 @@ class DecisionLogger:
             "CREATE INDEX IF NOT EXISTS idx_decisions_not_corrected "
             "ON decisions(timestamp) WHERE user_correction IS NULL"
         )
-        # Partial index dla wysokich trust score (>= 0.8) — często filtrowane
+        # Partial index dla wysokich trust score (>= 0.8) -- często filtrowane
         self._duckdb.execute(
             "CREATE INDEX IF NOT EXISTS idx_decisions_high_trust "
             "ON decisions(timestamp) WHERE trust_score >= 0.8"
         )
-        # Partial index dla niskiego trust score (< 0.5) — alarmy
+        # Partial index dla niskiego trust score (< 0.5) -- alarmy
         self._duckdb.execute(
             "CREATE INDEX IF NOT EXISTS idx_decisions_low_trust "
             "ON decisions(timestamp) WHERE trust_score < 0.5"
@@ -376,7 +375,7 @@ class DecisionLogger:
                     msgspec_dumps(msgspec.structs.asdict(trust_components), ensure_ascii=False),
                     msgspec_dumps(msgspec.structs.asdict(context), ensure_ascii=False),
                     pendulum.now("UTC"),
-                    None,  # user_correction — populated later
+                    None,  # user_correction -- populated later
                     decision_level,
                     decision_pattern,
                     msgspec_dumps(ple_stm_snapshot, ensure_ascii=False)
@@ -751,7 +750,7 @@ class DecisionLogger:
     ) -> list[GlobalDecision]:
         """Pobierz ostatnie decyzje ze wszystkich kontrahentów (globalne).
 
-        Przydatne do few-shot learning — podobne przypadki z globalnej bazy,
+        Przydatne do few-shot learning -- podobne przypadki z globalnej bazy,
         nie tylko od konkretnego kontrahenta.
 
         Args:

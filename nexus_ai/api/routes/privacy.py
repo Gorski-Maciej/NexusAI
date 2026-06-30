@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from litestar import Controller, get
 
-from nexus_ai.api.dto import PiiScanDTO, TAG_PRIVACY
+from nexus_ai.api.dto import TAG_PRIVACY, PiiScanDTO
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.core.config import AppConfig
 from nexus_ai.services.log_pii_monitor import notify_dpo, scan_logs_for_pii

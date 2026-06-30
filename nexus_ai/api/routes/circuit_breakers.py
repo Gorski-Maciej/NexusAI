@@ -1,4 +1,4 @@
-"""Resilience monitoring endpoint — managed by stamina.
+"""Resilience monitoring endpoint -- managed by stamina.
 
 Zgodnie z aa3fvcx.txt: stamina zastępuje custom CircuitBreaker.
 stamina zarządza retry + circuit breaker przez dekoratory, nie przez
@@ -12,11 +12,11 @@ from typing import Any
 from litestar import Controller, get
 from litestar.connection import Request
 
-from nexus_ai.api.dto import CircuitBreakerStatusDTO, TAG_SYSTEM
+from nexus_ai.api.dto import TAG_SYSTEM, CircuitBreakerStatusDTO
 
 
 class CircuitBreakerController(Controller):
-    """Resilience monitoring — stamina zastępuje custom CircuitBreaker."""
+    """Resilience monitoring -- stamina zastępuje custom CircuitBreaker."""
 
     path = "/system/circuit-breakers"
     tags = [TAG_SYSTEM]
@@ -34,7 +34,7 @@ class CircuitBreakerController(Controller):
 
         Obecnie wszystkie operacje retry + circuit breaker są zarządzane przez
         ``stamina`` (async-native, anyio). stamina nie udostępnia centralnego
-        rejestru breakerów — każdy @stamina.retry zarządza własnym stanem.
+        rejestru breakerów -- każdy @stamina.retry zarządza własnym stanem.
         """
         return {
             "provider": "stamina",

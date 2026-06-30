@@ -1,5 +1,5 @@
 """
-Transactions — transactional outbox pattern + async worker.
+Transactions -- transactional outbox pattern + async worker.
 
 Łączy db/outbox.py i db/transaction.py w jeden moduł.
 Transactional Outbox: gwarantowana dostawa zdarzeń przez tę samą transakcję co dane.
@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 import pendulum
-from sqlmodel import select, Session
+from sqlmodel import Session, select
 from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
@@ -22,7 +22,7 @@ BATCH_SIZE = 100
 
 
 class OutboxManager:
-    """Transactional Outbox — gwarantowana dostawa zdarzeń."""
+    """Transactional Outbox -- gwarantowana dostawa zdarzeń."""
 
     @staticmethod
     def publish(

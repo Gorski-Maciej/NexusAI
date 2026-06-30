@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import time
 from collections import deque
-from msgspec import Struct, field
 from threading import Lock
+
+from msgspec import Struct, field
 
 from nexus_ai.core.image_utils import HAS_PIL, normalize_image_to_jpeg
 

@@ -1,4 +1,4 @@
-"""FileSystemService — Unified fsspec I/O dla całego projektu NexusAI.
+"""FileSystemService -- Unified fsspec I/O dla całego projektu NexusAI.
 
 TOTALNA REWOLUCJA: wszystkie async operacje przez AsyncFsWrapper.
 - ``await afs.cat_file()`` zamiast ``await fsspec.open_async('rb')``
@@ -6,12 +6,12 @@ TOTALNA REWOLUCJA: wszystkie async operacje przez AsyncFsWrapper.
 - ``await afs.exists()`` zamiast ``self._fs.exists()``
 
   - Jeden centralny serwis dla wszystkich operacji I/O
-  - fsspec.open() — uniwersalne otwieranie (file://, s3://, http://, memory://)
-  - CachingFileSystem — przezroczyste cache'owanie z TTL i LRU
-  - TransactionalFileSystem — atomowe operacje zapisu
-  - fsspec.get_mapper() — dict-like interfejs dla metadanych
-  - AsyncFsWrapper — czyste await API bez to_thread.run_sync()
-  - fsspec.implementations.memory.MemoryFileSystem — RAM-only storage
+  - fsspec.open() -- uniwersalne otwieranie (file://, s3://, http://, memory://)
+  - CachingFileSystem -- przezroczyste cache'owanie z TTL i LRU
+  - TransactionalFileSystem -- atomowe operacje zapisu
+  - fsspec.get_mapper() -- dict-like interfejs dla metadanych
+  - AsyncFsWrapper -- czyste await API bez to_thread.run_sync()
+  - fsspec.implementations.memory.MemoryFileSystem -- RAM-only storage
 
 Usage:
     fs = FileSystemService(config=app_config)
@@ -24,15 +24,15 @@ Usage:
 from __future__ import annotations
 
 import uuid
-from collections.abc import MutableMapping
+from collections.abc import Iterable, MutableMapping
 from pathlib import Path
-from typing import BinaryIO, Iterable
+from typing import BinaryIO
 
 import fsspec
-from nexus_ai.core.fsspec_compat import AsyncFsWrapper, FSSpecFactory, TransactionalFileSystem
 from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
+from nexus_ai.core.fsspec_compat import AsyncFsWrapper, FSSpecFactory, TransactionalFileSystem
 
 logger = get_logger("nexus.services.file_system")
 
@@ -40,10 +40,10 @@ UPLOAD_CHUNK_SIZE = 1024 * 1024  # 1 MB
 
 
 class FileSystemService:
-    """Unified filesystem service — centralne I/O dla całego projektu.
+    """Unified filesystem service -- centralne I/O dla całego projektu.
 
     TOTALNA REWOLUCJA:
-    - ``self._async_fs`` — AsyncFsWrapper, czyste ``await`` API
+    - ``self._async_fs`` -- AsyncFsWrapper, czyste ``await`` API
     - zero ``fsspec.open_async()`` (nie istnieje w fsspec 2026.4.0)
     - ``await self._async_fs.cat_file()`` / ``await self._async_fs.pipe_file()``
     """
@@ -181,7 +181,7 @@ class FileSystemService:
 
 
     def get_mapper(self, prefix: str = "") -> MutableMapping:
-        """Zwraca fsspec.get_mapper() — dict-like interface do storage.
+        """Zwraca fsspec.get_mapper() -- dict-like interface do storage.
 
         ``fsspec.get_mapper(url)`` tworzy ``MutableMapping`` (dict-like),
         idealny do przechowywania metadanych, małych plików, konfiguracji.

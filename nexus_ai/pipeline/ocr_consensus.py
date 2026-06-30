@@ -3,12 +3,12 @@
 
 from __future__ import annotations
 
+import functools
 import gc
 import os
 import re
 import threading
 from collections import Counter, defaultdict
-import functools
 from enum import Enum
 from pathlib import Path
 from typing import Any

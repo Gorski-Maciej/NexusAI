@@ -1,13 +1,13 @@
-"""SQLModel definitions dla TigerBeetle — podsystem księgowy.
+"""SQLModel definitions dla TigerBeetle -- podsystem księgowy.
 
 TRANSFORMACJA:
-- LedgerTransfer → LedgerTransferCache (TB jako source of truth)
+- LedgerTransfer -> LedgerTransferCache (TB jako source of truth)
 - Cache tylko dla szybkich odczytów, TTL 5 min
 - TB jest jedynym źródłem prawdy dla stanu księgi
 
 Zgodnie z aa3fvcx.txt:
 - SQLModel łączy SQLAlchemy + Pydantic w jednej klasie
-- SQLite+SQLCipher — UUID i JSON jako TEXT
+- SQLite+SQLCipher -- UUID i JSON jako TEXT
 - amount jako int (grosze)
 """
 
@@ -43,7 +43,7 @@ class TaxForm(StrEnum):
 
 
 class TransferStatus(StrEnum):
-    """Status transferu — TB jest source of truth, SQLite to cache."""
+    """Status transferu -- TB jest source of truth, SQLite to cache."""
 
     PENDING = "pending"
     POSTED = "posted"
@@ -88,13 +88,13 @@ class LedgerTransferCache(SQLModel, table=True):
     )
 
 
-# Backward compatibility alias — LedgerTransfer → LedgerTransferCache
+# Backward compatibility alias -- LedgerTransfer -> LedgerTransferCache
 # TB jest source of truth dla księgi, SQLite to tylko cache
 LedgerTransfer = LedgerTransferCache
 
 
 class CompanyProfile(SQLModel, table=True):
-    """Profil firmy — dane rejestrowe, polityka KSeF, mapowanie księgowe.
+    """Profil firmy -- dane rejestrowe, polityka KSeF, mapowanie księgowe.
 
     Zgodnie z aa3fvcx.txt: SQLite+SQLCipher, UUID i JSON jako TEXT.
     """
@@ -145,7 +145,7 @@ class TaxPolicy(SQLModel, table=True):
 
 
 class FinancialPeriod(SQLModel, table=True):
-    """Okres finansowy — otwarty, miękko zamknięty, twardo zamknięty."""
+    """Okres finansowy -- otwarty, miękko zamknięty, twardo zamknięty."""
 
     __tablename__ = "financial_periods"  # type: ignore[assignment]
 

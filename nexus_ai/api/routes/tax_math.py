@@ -1,7 +1,7 @@
 """
-Tax Math API — endpoint kalkulacji VAT z Decimal.
+Tax Math API -- endpoint kalkulacji VAT z Decimal.
 
-POST /api/v2/tax/calculate-money — przyjmuje listę kwot netto jako stringi,
+POST /api/v2/tax/calculate-money -- przyjmuje listę kwot netto jako stringi,
 oblicza VAT i brutto, zwraca wyniki.
 
 Usage:
@@ -20,7 +20,7 @@ Usage:
 
 from __future__ import annotations
 
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
 import msgspec
@@ -71,7 +71,7 @@ class CalculateMoneyRequest(msgspec.Struct):
     Attributes:
         net_amounts: Lista kwot netto jako MoneyAmount.
         vat_rate: Stawka VAT jako string (np. ``"0.23"``).
-        rounding_level: Strategia zaokrąglania — ``"position"`` lub ``"total"``.
+        rounding_level: Strategia zaokrąglania -- ``"position"`` lub ``"total"``.
         currency: Waluta dla wyników (domyślnie ``"PLN"``).
     """
 
@@ -129,7 +129,7 @@ class TaxMathController(Controller):
         vat_rate = Decimal(data.vat_rate)
         currency = data.currency
 
-        # ── 1. Konwersja string → Decimal ─────────────────────────────────
+        # ── 1. Konwersja string -> Decimal ─────────────────────────────────
         net_decimals: list[Decimal] = []
         for i, ma in enumerate(data.net_amounts):
             try:
@@ -177,7 +177,7 @@ class TaxMathController(Controller):
             total_gross = sum(Decimal(p["gross"]) for p in positions)
 
         else:
-            # Zaokrąglenie total: suma netto × stawka, zaokrąglone raz
+            # Zaokrąglenie total: suma netto x stawka, zaokrąglone raz
             total_net = sum(net_decimals)
             total_vat = _round_money(total_net * vat_rate)
             total_gross = _round_money(total_net + total_vat)

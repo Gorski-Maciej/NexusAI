@@ -1,9 +1,9 @@
 """
-InferenceService + ModelManager — generic GGUF inference with TTL-based auto-unload.
+InferenceService + ModelManager -- generic GGUF inference with TTL-based auto-unload.
 
 Zgodnie z aa3fvcx.txt:
 - Używa llama-cpp-python (jedyna technologia AI/ML wymieniona w stacku)
-- Nie definiuje konkretnych modeli — ładuje dowolny GGUF podany w konfiguracji
+- Nie definiuje konkretnych modeli -- ładuje dowolny GGUF podany w konfiguracji
 - ModelManager z TTL auto-unload (TOP5 OPTYMALIZACJA #2)
 - Lazy loading: model ładowany dopiero przy pierwszym generate()/chat()
 - Auto-unload po 5 minutach bezczynności
@@ -27,7 +27,7 @@ logger = get_logger("nexus.core.inference")
 class InferenceService:
     """Generic GGUF inference engine using llama-cpp-python.
 
-    Ładuje dowolny model GGUF. Nie definiuje konkretnych modeli —
+    Ładuje dowolny model GGUF. Nie definiuje konkretnych modeli --
     ścieżka do modelu jest parametrem.
 
     Args:
@@ -119,7 +119,7 @@ class InferenceService:
             elapsed = time.time() - self._loaded_at
             if elapsed > self._ttl:
                 logger.info(
-                    "[InferenceService] TTL expired for %s (%.1fs > %ds) — unloading",
+                    "[InferenceService] TTL expired for %s (%.1fs > %ds) -- unloading",
                     self._model_path.name,
                     elapsed,
                     self._ttl,

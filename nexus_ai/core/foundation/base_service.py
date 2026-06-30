@@ -1,4 +1,4 @@
-"""BaseService[T, CreateDTO] — generyczny CRUD dla wszystkich modeli SQLModel.
+"""BaseService[T, CreateDTO] -- generyczny CRUD dla wszystkich modeli SQLModel.
 
 Eliminuje ~4 700 linii powtarzalnego kodu CRUD w serwisach.
 Wystarczy: class InvoiceService(BaseService[Invoice, InvoiceCreate]): pass
@@ -7,11 +7,11 @@ Zyskuje create(), get(), update(), delete(), list(), count(), exists(), paginate
 
 from __future__ import annotations
 
-from typing import Any, Generic, TypeVar
+from typing import Any, TypeVar
 
 from msgspec import Struct, to_builtins
 from sqlalchemy import func
-from sqlmodel import select, Session, SQLModel
+from sqlmodel import Session, SQLModel, select
 
 from nexus_ai.core.types import PaginatedResponse
 
@@ -20,8 +20,8 @@ CreateDTO = TypeVar("CreateDTO", bound=Struct)
 UpdateDTO = TypeVar("UpdateDTO", bound=Struct)
 
 
-class BaseService(Generic[T, CreateDTO, UpdateDTO]):
-    """Generyczny serwis CRUD — sync (dopasowany do istniejącego kodu SQLModel).
+class BaseService[T: SQLModel, CreateDTO: Struct, UpdateDTO: Struct]:
+    """Generyczny serwis CRUD -- sync (dopasowany do istniejącego kodu SQLModel).
 
     Zastępuje 15+ osobnych implementacji. Używa sync Session (nie AsyncSession)
     bo tak działa istniejący kod: ``db/repository.py`` używa ``session.flush()``.

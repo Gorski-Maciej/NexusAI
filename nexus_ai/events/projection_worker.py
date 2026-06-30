@@ -1,4 +1,4 @@
-"""ProjectionWorker — standalone process consuming domain events from NATS JetStream.
+"""ProjectionWorker -- standalone process consuming domain events from NATS JetStream.
 
 Merged into projections.py for module consolidation.
 This is a backward-compatible re-export shim.
@@ -13,9 +13,9 @@ import anyio
 from structlog import get_logger
 
 from nexus_ai.events.domain_events import decode_event
-from nexus_ai.events.projections import DecisionProjection, InvoiceProjection, Projection
 from nexus_ai.events.event_store import EventStore
 from nexus_ai.events.jetstream_bus import STREAM_CONFIG
+from nexus_ai.events.projections import DecisionProjection, InvoiceProjection, Projection
 
 logger = get_logger("nexus.events.projection_worker")
 
@@ -44,7 +44,7 @@ class ProjectionWorker:
         if stream_name is None:
             stream_name = "nexus-invoice" if isinstance(projection, InvoiceProjection) else "nexus-decision"
         self._projections.append((projection, stream_name, filter_subject))
-        logger.info("[PROJECTION-WORKER] Registered %s → %s", projection.name, stream_name)
+        logger.info("[PROJECTION-WORKER] Registered %s -> %s", projection.name, stream_name)
 
     async def start(self) -> None:
         logger.info("[PROJECTION-WORKER] Starting with %d projections", len(self._projections))

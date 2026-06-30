@@ -1,4 +1,4 @@
-"""Partner Hub API endpoints — accounting office multi-tenant view."""
+"""Partner Hub API endpoints -- accounting office multi-tenant view."""
 
 from __future__ import annotations
 
@@ -6,12 +6,12 @@ from typing import Any
 
 from litestar import Controller, get
 
-from nexus_ai.api.dto import GenericListDTO, PartnerClientListDTO, TAG_FINANCE
+from nexus_ai.api.dto import TAG_FINANCE, GenericListDTO, PartnerClientListDTO
 from nexus_ai.core.config import AppConfig
 
 
 class PartnerController(Controller):
-    """Partner Hub — multi-tenant view for accounting offices."""
+    """Partner Hub -- multi-tenant view for accounting offices."""
 
     path = "/partner"
     tags = [TAG_FINANCE]

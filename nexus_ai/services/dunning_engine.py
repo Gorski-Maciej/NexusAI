@@ -1,4 +1,4 @@
-"""Dunning engine — automatyczne windykacje z guardrails.
+"""Dunning engine -- automatyczne windykacje z guardrails.
 
 Zgodnie z aa3fvcx.txt: DuckDB dla analityki, Taskiq dla harmonogramu cron.
 """
@@ -6,12 +6,11 @@ Zgodnie z aa3fvcx.txt: DuckDB dla analityki, Taskiq dla harmonogramu cron.
 from __future__ import annotations
 
 import uuid
-from msgspec import Struct
+from enum import StrEnum
 from typing import Any, Protocol, final
 
 import pendulum
-
-from enum import StrEnum
+from msgspec import Struct
 
 
 class DunningStatus(StrEnum):
@@ -36,7 +35,7 @@ class DunningGuardrails(Struct, frozen=True):
 
 @final
 class DunningEngine:
-    """Automatyczny silnik windykacji — wysyła przypomnienia o płatnościach."""
+    """Automatyczny silnik windykacji -- wysyła przypomnienia o płatnościach."""
 
     def __init__(
         self,

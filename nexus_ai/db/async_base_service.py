@@ -1,18 +1,18 @@
 """
-AsyncBaseService — bazowa klasa dla serwisów DB (sync sqlite3 + async wrapper).
+AsyncBaseService -- bazowa klasa dla serwisów DB (sync sqlite3 + async wrapper).
 
 Python 3.13t (free-threaded): synchroniczne sqlite3 bezpieczne z wielu wątków.
 Używa jednej generycznej metody ``sql()`` zamiast 8 osobnych (execute, executescript,
-executemany, fetchone, fetchall) — match/case dispatch na typie zapytania.
+executemany, fetchone, fetchall) -- match/case dispatch na typie zapytania.
 """
 
 from __future__ import annotations
 
+import sqlite3
 from pathlib import Path
 from typing import Any
 
 import anyio
-import sqlite3
 from structlog import get_logger
 
 from nexus_ai.db.async_db_pool import get_async_db_pool
@@ -61,7 +61,7 @@ class AsyncBaseService:
         pass
 
     async def sql(self, sql: str, params: Any = None, mode: str = "auto") -> Any:
-        """Generyczna metoda SQL — match/case dispatch.
+        """Generyczna metoda SQL -- match/case dispatch.
 
         Args:
             sql: Zapytanie SQL.

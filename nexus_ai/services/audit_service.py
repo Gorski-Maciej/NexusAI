@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any, final
 
 import anyio
-
 from sqlalchemy import event
 from sqlmodel import Session
 from structlog import get_logger
@@ -113,10 +112,10 @@ class AuditService:
 
     Umożliwia przekazanie ``EventEmitter`` do emitowania eventów
     domenowych po każdej zarejestrowanej zmianie audytowej.
-    Backward compatible — ``@staticmethod`` zachowany dla istniejących callerów.
+    Backward compatible -- ``@staticmethod`` zachowany dla istniejących callerów.
 
     Event emitter jest przekazywany jako parametr do ``log_change()``
-    — nie przez konstruktor — aby zachować ``@staticmethod``.
+    -- nie przez konstruktor -- aby zachować ``@staticmethod``.
 
     Zarejestruj przez ``register_audit_hooks()`` przy starcie aplikacji.
     Eliminuje potrzebę jawnego ``log_change()`` w serwisach.
@@ -180,7 +179,7 @@ class AuditService:
         """Próbuje wyemitować event audytowy fire-and-forget przez Taskiq.
 
         Używa ``anyio.ensure_backend().create_task()`` jeśli event loop
-        jest dostępny — w przeciwnym razie cicho pomija emisję.
+        jest dostępny -- w przeciwnym razie cicho pomija emisję.
         """
 
         async def _safe_kick() -> None:
@@ -201,5 +200,5 @@ class AuditService:
         try:
             anyio.ensure_backend().create_task(_safe_kick())
         except RuntimeError:
-            # Brak running event loop — ciche pominięcie emisji
+            # Brak running event loop -- ciche pominięcie emisji
             logger.debug("[AUDIT] No running event loop, skipping audit event emission")

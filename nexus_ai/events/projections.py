@@ -1,20 +1,20 @@
 """
-AsyncProjections — CQRS read-side z BaseProjection[T] generic + match/case.
+AsyncProjections -- CQRS read-side z BaseProjection[T] generic + match/case.
 
 Python 3.13t (free-threaded): sqlite3 + anyio.to_thread.run_sync.
 
-Używa BaseProjection[T] jako generycznej klasy bazowej — każda projekcja
+Używa BaseProjection[T] jako generycznej klasy bazowej -- każda projekcja
 definiuje tylko: schema_sql, aggregate_type, event_handler.
 Reszta (checkpointy, paginacja, PRAGMY, FTS5) jest współdzielona.
 """
 
 from __future__ import annotations
 
+import sqlite3
 from pathlib import Path
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 import anyio
-import sqlite3
 from structlog import get_logger
 
 from nexus_ai.db.async_base_service import AsyncBaseService
@@ -36,13 +36,13 @@ logger = get_logger("nexus.events.projections")
 T = TypeVar("T", bound=DomainEvent)
 
 
-class BaseProjection(AsyncBaseService, Generic[T]):
-    """Generyczna projekcja CQRS — współdzielona logika dla wszystkich widoków.
+class BaseProjection[T: DomainEvent](AsyncBaseService):
+    """Generyczna projekcja CQRS -- współdzielona logika dla wszystkich widoków.
 
     Każda konkretna projekcja definiuje tylko:
       - schema_sql: DDL dla tabeli widoku
       - aggregate_type: typ agregatu w EventStore
-      - _apply_event(): logika mapowania event → SQL
+      - _apply_event(): logika mapowania event -> SQL
 
     Współdzielone: checkpointy, PRAGMY, FTS5, paginacja, truncate, stats.
     """
@@ -137,7 +137,7 @@ class BaseProjection(AsyncBaseService, Generic[T]):
 
 
 class InvoiceProjection(BaseProjection[InvoiceCreated]):
-    """Projekcja faktur — denormalizowany widok dla szybkich zapytań."""
+    """Projekcja faktur -- denormalizowany widok dla szybkich zapytań."""
 
     aggregate_type = "invoice"
     schema_sql = """
@@ -256,7 +256,7 @@ class InvoiceProjection(BaseProjection[InvoiceCreated]):
 
 
 class DecisionProjection(BaseProjection[DecisionMade]):
-    """Projekcja decyzji — analityczny widok."""
+    """Projekcja decyzji -- analityczny widok."""
 
     aggregate_type = "decision"
     schema_sql = """

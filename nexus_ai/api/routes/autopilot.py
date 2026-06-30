@@ -1,4 +1,4 @@
-"""Autopilot API endpoints — decision history, trust scores, and user actions."""
+"""Autopilot API endpoints -- decision history, trust scores, and user actions."""
 
 from __future__ import annotations
 
@@ -8,28 +8,30 @@ from litestar import Controller, get, post
 from litestar.background_tasks import BackgroundTask
 from litestar.connection import Request
 from litestar.response import Response as LitestarResponse
+from structlog import get_logger as _get_logger
 
 from nexus_ai.api.background_tasks import emit_decision_and_notification_bg
 from nexus_ai.api.dto import (
+    TAG_SYSTEM,
     AutopilotActionDTO,
     AutopilotDecisionDTO,
     AutopilotDecisionsDTO,
-    AutopilotEvalTriggerDTO as AutopilotEvalTriggerResponseDTO,
     AutopilotStatsDTO,
     AutopilotTriggerDTO,
     AutopilotTrustScoreDTO,
-    TAG_SYSTEM,
+)
+from nexus_ai.api.dto import (
+    AutopilotEvalTriggerDTO as AutopilotEvalTriggerResponseDTO,
 )
 from nexus_ai.core.config import AppConfig
 from nexus_ai.db.models import InvoiceStatus
 from nexus_ai.services.decision_logger import DecisionLogger
-from structlog import get_logger as _get_logger
 
 logger = _get_logger("nexus.api.autopilot")
 
 
 class AutopilotController(Controller):
-    """Autopilot — endpoints for viewing and managing AI decisions.
+    """Autopilot -- endpoints for viewing and managing AI decisions.
 
     Provides:
       - Decision history and details

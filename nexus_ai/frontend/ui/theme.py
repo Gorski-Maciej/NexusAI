@@ -1,4 +1,4 @@
-"""Theme Manager — Dynamiczny dark/light mode z Material 3 i scrollbar theme.
+"""Theme Manager -- Dynamiczny dark/light mode z Material 3 i scrollbar theme.
 
   - ft.Theme z pełnym ColorScheme (Material 3)
   - scrollbar_theme dla spójnego scrollbara
@@ -42,8 +42,8 @@ class ThemeManager:
     def get_dark_theme() -> ft.Theme:
         """Enterprise dark theme with Material 3 ColorScheme + Scrollbar.
 
-          - scrollbar_theme — stylowanie scrollbara
-          - use_material3=True — wymuszenie Material 3
+          - scrollbar_theme -- stylowanie scrollbara
+          - use_material3=True -- wymuszenie Material 3
           - ColorScheme seed dla dynamicznej palety
           - TextThemeStyle dla spójnej typografii
         """

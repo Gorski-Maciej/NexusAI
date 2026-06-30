@@ -1,7 +1,8 @@
 # pipeline/parser.py
 import re
-from msgspec import Struct
 from decimal import Decimal, InvalidOperation
+
+from msgspec import Struct
 
 
 class ParsedInvoice(Struct, kw_only=True):
@@ -25,11 +26,11 @@ class InvoiceParser:
     """
 
     # Stałe pozycyjne dla typowych pól faktury (% wysokości strony)
-    HEADER_TOP = 0.30  # Górne 30% — nagłówek, NIP
-    BODY_START = 0.30  # Środkowe 30-60% — pozycje
+    HEADER_TOP = 0.30  # Górne 30% -- nagłówek, NIP
+    BODY_START = 0.30  # Środkowe 30-60% -- pozycje
     BODY_END = 0.60
-    FOOTER_TOP = 0.60  # Dolne >60% — kwoty
-    IBAN_TOP = 0.80  # >80% — stopka, IBAN
+    FOOTER_TOP = 0.60  # Dolne >60% -- kwoty
+    IBAN_TOP = 0.80  # >80% -- stopka, IBAN
 
     def __init__(self):
         # Wzorce dla danych strukturalnych

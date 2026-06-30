@@ -1,5 +1,5 @@
 """
-version_utils.py — Simple version comparison utilities.
+version_utils.py -- Simple version comparison utilities.
 """
 
 from __future__ import annotations

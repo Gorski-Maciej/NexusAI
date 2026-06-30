@@ -1,4 +1,4 @@
-"""Triage View — @ft.component + Canvas bbox + Keyboard shortcuts.
+"""Triage View -- @ft.component + Canvas bbox + Keyboard shortcuts.
 
   - @ft.component + use_state() zamiast statycznej funkcji
   - ft.Canvas z CanvasPath dla rysowania bounding boxów
@@ -11,8 +11,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable
 from collections.abc import Callable
+from typing import Any
 
 import flet as ft
 from structlog import get_logger

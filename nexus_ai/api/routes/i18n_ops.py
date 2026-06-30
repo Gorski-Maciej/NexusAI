@@ -4,7 +4,7 @@ from pathlib import Path
 
 from litestar import Controller, get
 
-from nexus_ai.api.dto import I18nStatusDTO, TAG_I18N
+from nexus_ai.api.dto import TAG_I18N, I18nStatusDTO
 from nexus_ai.api.rbac import owner_only_guard
 
 

@@ -1,5 +1,5 @@
 """
-NexusAI — CLI entry point (thin wrapper, delegates to pixi)
+NexusAI -- CLI entry point (thin wrapper, delegates to pixi)
 ==============================================================
 
 Backwards-compatibility shim. All CLI commands are delegated to ``pixi run``.

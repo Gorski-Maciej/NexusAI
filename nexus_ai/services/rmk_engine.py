@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from typing import final
-
 import calendar
 import uuid
-from msgspec import Struct
 from decimal import ROUND_HALF_UP, Decimal
+from typing import final
 
 import pendulum
+from msgspec import Struct
 
 from nexus_ai.db.analytics import DuckDBManager
 

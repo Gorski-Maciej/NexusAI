@@ -1,3 +1,4 @@
+"""Budgetary Control Engine.
 
 - TB account limits (debits_must_not_exceed_credits) natywnie
 - get_account_balances_batch() zamiast per-account loop
@@ -7,12 +8,11 @@
 from __future__ import annotations
 
 from datetime import date
-
-from msgspec import Struct
 from typing import Any, final
 
 import anyio
 import pendulum
+from msgspec import Struct
 
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
@@ -31,9 +31,10 @@ class BudgetStatus(Struct, frozen=True):
 
 @final
 class BudgetaryControlEngine:
+    """Budgetary Control Engine.
 
-    - get_account_balances_batch() — wiele kont w jednym zapytaniu
-    - AccountFlags.DEBITS_MUST_NOT_EXCEED_CREDITS — TB egzekwuje limit natywnie
+    - get_account_balances_batch() -- wiele kont w jednym zapytaniu
+    - AccountFlags.DEBITS_MUST_NOT_EXCEED_CREDITS -- TB egzekwuje limit natywnie
     """
 
     def __init__(

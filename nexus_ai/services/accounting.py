@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from typing import final
-
 from decimal import ROUND_HALF_UP, Decimal
+from typing import final
 
 
 @final

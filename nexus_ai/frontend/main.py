@@ -1,13 +1,13 @@
-"""frontend/main.py — Flet UI entry point (Desktop + Web).
+"""frontend/main.py -- Flet UI entry point (Desktop + Web).
 
-  - ft.app_async zamiast ft.app — spójność z resztą projektu
-  - page.window_center() — wycentrowanie okna po starcie
-  - page.client_storage — zapamiętanie ostatniej ścieżki między sesjami
-  - page.pubsub — event-driven state management
-  - page.run_task — async listenery bez blokowania UI
-  - page.on_route_change z TemplateRoute — natywny URL routing
-  - ft.SafeArea — mobile-safe layout
-  - page.theme_animation_style — płynne przejścia między widokami
+  - ft.app_async zamiast ft.app -- spójność z resztą projektu
+  - page.window_center() -- wycentrowanie okna po starcie
+  - page.client_storage -- zapamiętanie ostatniej ścieżki między sesjami
+  - page.pubsub -- event-driven state management
+  - page.run_task -- async listenery bez blokowania UI
+  - page.on_route_change z TemplateRoute -- natywny URL routing
+  - ft.SafeArea -- mobile-safe layout
+  - page.theme_animation_style -- płynne przejścia między widokami
   - Obsługa trybu Web (WEB_BROWSER) przez --web flag
   - Głębokie linkowanie przez TemplateRoute
 """
@@ -25,15 +25,15 @@ logger = get_logger("nexus.ui.main")
 
 
 async def main(page: ft.Page):
-    """Desktop mode — standardowy tryb okienkowy Flet.
+    """Desktop mode -- standardowy tryb okienkowy Flet.
 
-      - page.window_center() — okno pojawia się na środku ekranu
-      - page.client_storage — ostatnia ścieżka zapamiętana między uruchomieniami
-      - page.session — stan między widokami
-      - page.theme_animation_style — płynne przejścia
-      - ft.SafeArea — bezpieczny padding dla wszystkich platform
+      - page.window_center() -- okno pojawia się na środku ekranu
+      - page.client_storage -- ostatnia ścieżka zapamiętana między uruchomieniami
+      - page.session -- stan między widokami
+      - page.theme_animation_style -- płynne przejścia
+      - ft.SafeArea -- bezpieczny padding dla wszystkich platform
     """
-    page.title = "Nexus AI — System Księgowy"
+    page.title = "Nexus AI -- System Księgowy"
     page.theme_mode = ft.ThemeMode.DARK
     page.padding = 0
     page.bgcolor = "#121212"

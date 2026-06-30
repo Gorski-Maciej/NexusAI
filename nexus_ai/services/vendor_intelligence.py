@@ -24,10 +24,10 @@ class VendorAnalyst:
 
     Zgodnie z aa3fvcx.txt:
     - Używa NexusCache (L1 RAM + L2 SQLite) dla wyników vendor context.
-    - Cache TTL: 3600s (1h) — dane kontrahentów zmieniają się powoli.
+    - Cache TTL: 3600s (1h) -- dane kontrahentów zmieniają się powoli.
     """
 
-    _CACHE_TTL = 3600  # 1h — dane kontrahentów zmieniają się powoli
+    _CACHE_TTL = 3600  # 1h -- dane kontrahentów zmieniają się powoli
 
     def __init__(self, duckdb: DuckDBManager, refresh_seconds: int = 3600) -> None:
         self.duckdb = duckdb
@@ -144,7 +144,7 @@ class VendorAnalyst:
         """Pobierz kontekst kontrahenta z cache'em (NexusCache L1 RAM).
 
         Wynik jest cache'owany przez 1h w NexusCache RAM.
-        Metoda pozostaje synchroniczna — używa get_sync/set_sync.
+        Metoda pozostaje synchroniczna -- używa get_sync/set_sync.
         """
         cache_key = f"vendor_context:{nip}"
 

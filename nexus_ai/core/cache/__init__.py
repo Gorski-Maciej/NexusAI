@@ -1,12 +1,13 @@
-"""NexusAI Cache — diskcache + NATS invalidation. Sync/async consolidated."""
+"""NexusAI Cache -- diskcache + NATS invalidation. Sync/async consolidated."""
 
 from __future__ import annotations
 
 import os
 import threading
+from collections.abc import Callable
 from functools import wraps
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import anyio
 import diskcache
@@ -14,7 +15,10 @@ import msgspec
 from structlog import get_logger
 
 from nexus_ai.core.cache.http_client import (
-    CachedHttpClient, get_cache_stats, reset_cache_stats, warm_http_cache,
+    CachedHttpClient,
+    get_cache_stats,
+    reset_cache_stats,
+    warm_http_cache,
 )
 from nexus_ai.core.cache.invalidation import invalidate_cache, subscribe_cache_invalidation
 

@@ -1,5 +1,5 @@
 # core/integrations/ksef/crypto.py
-"""KSeF cryptographic operations — placeholder.
+"""KSeF cryptographic operations -- placeholder.
 
 RSA asymmetric cryptography required for KSeF is not available
 (the `cryptography` package has been removed).
@@ -8,11 +8,10 @@ RSA asymmetric cryptography required for KSeF is not available
 from __future__ import annotations
 
 
-
 class KsefCrypto:
     """Obsługa operacji kryptograficznych zgodnych ze specyfikacją MF.
 
-    Uwaga: RSA encryption nie jest dostępne — pakiet ``cryptography``
+    Uwaga: RSA encryption nie jest dostępne -- pakiet ``cryptography``
     został usunięty z projektu.
     """
 

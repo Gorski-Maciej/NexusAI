@@ -6,7 +6,7 @@ Automatyczny estymator kosztów i czasu przetwarzania.
 - Client-Driven Pricing: endpoint GET /api/v2/billing/estimate
 - Wycena w czasie rzeczywistym z interfejsu Flet
 
-Zgodnie z docs/tfgxzd.txt — Automatyczny estymator kosztów.
+Zgodnie z docs/tfgxzd.txt -- Automatyczny estymator kosztów.
 """
 
 from __future__ import annotations
@@ -18,7 +18,6 @@ from typing import Any
 import duckdb
 import pendulum
 from structlog import get_logger
-
 
 logger = get_logger("nexus.services.billing")
 
@@ -151,6 +150,7 @@ class BillingEstimator:
         vendor_region: str = "PL",
         extra_services: str = "",
     ) -> BillingResult:
+        """Estimate billing cost.
 
         First-match-wins przez DuckDB json_extract + ORDER BY priority.
         """

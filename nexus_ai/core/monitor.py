@@ -1,20 +1,21 @@
-# core/monitor.py
+"""
+core/monitor.py -- System monitoring with psutil.
 
 Co zostało użyte:
-  - Process.oneshot()        — batch syscalls (1 zamiast N)
-  - memory_full_info()       — USS/PSS zamiast gołego RSS
-  - cpu_percent()            — obciążenie CPU
-  - cpu_times_percent()      — podział: user/system/iowait
-  - cpu_freq()               — częstotliwość CPU
-  - getloadavg()             — load average (1/5/15 min)
-  - virtual_memory()         — szczegóły RAM (available, buffers, cached)
-  - swap_memory()            — swap usage
-  - disk_usage()             — użycie dysku
-  - disk_io_counters()       — I/O per disk
-  - net_io_counters()        — I/O sieciowe
-  - sensors_temperatures()   — temperatury CPU/GPU
-  - boot_time()              — czas od boota
-  - NoSuchProcess/AccessDenied — bezpieczna obsługa błędów
+  - Process.oneshot()        -- batch syscalls (1 zamiast N)
+  - memory_full_info()       -- USS/PSS zamiast gołego RSS
+  - cpu_percent()            -- obciążenie CPU
+  - cpu_times_percent()      -- podział: user/system/iowait
+  - cpu_freq()               -- częstotliwość CPU
+  - getloadavg()             -- load average (1/5/15 min)
+  - virtual_memory()         -- szczegóły RAM (available, buffers, cached)
+  - swap_memory()            -- swap usage
+  - disk_usage()             -- użycie dysku
+  - disk_io_counters()       -- I/O per disk
+  - net_io_counters()        -- I/O sieciowe
+  - sensors_temperatures()   -- temperatury CPU/GPU
+  - boot_time()              -- czas od boota
+  - NoSuchProcess/AccessDenied -- bezpieczna obsługa błędów
 
 Zgodnie z aa3fvcx.txt: psutil jako jedyne narzędzie do monitoringu zasobów.
 Zastępuje: ręczne os.popen('ps'), subprocess do nvidia-smi w monitoringu.
@@ -126,20 +127,20 @@ class SystemMetrics(Struct, frozen=True):
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# ProcessMonitor — monitoring bieżącego procesu z oneshot()
+# ProcessMonitor -- monitoring bieżącego procesu z oneshot()
 # ═════════════════════════════════════════════════════════════════════════════
 
 
 class ProcessMonitor:
     """Monitorowanie bieżącego procesu NexusAI z optymalizacją oneshot().
 
-      - Process.oneshot() → 1 syscall zamiast N dla wielu atrybutów
-      - memory_full_info() → USS/PSS zamiast gołego RSS
-      - memory_info() → VMS + RSS
-      - cpu_percent() → obciążenie CPU
-      - num_threads() → liczba wątków
-      - num_fds() → liczba deskryptorów
-      - connections() → połączenia sieciowe
+      - Process.oneshot() -> 1 syscall zamiast N dla wielu atrybutów
+      - memory_full_info() -> USS/PSS zamiast gołego RSS
+      - memory_info() -> VMS + RSS
+      - cpu_percent() -> obciążenie CPU
+      - num_threads() -> liczba wątków
+      - num_fds() -> liczba deskryptorów
+      - connections() -> połączenia sieciowe
       - Własne poziomy Loguru: AUDIT dla raportów okresowych
     """
 
@@ -199,7 +200,7 @@ class ProcessMonitor:
                 connections_count=len(conns) if conns else 0,
             )
         except psutil.NoSuchProcess:
-            logger.warning("[MONITOR] Process vanished — re-initializing")
+            logger.warning("[MONITOR] Process vanished -- re-initializing")
             self._process = psutil.Process()
             return self.collect_metrics()
         except psutil.AccessDenied:
@@ -217,7 +218,7 @@ class ProcessMonitor:
         """Sprawdź czy proces nie przekracza limitu pamięci.
 
         Returns:
-            (is_healthy, metrics) — metrics zawsze zwrócone dla diagnostyki.
+            (is_healthy, metrics) -- metrics zawsze zwrócone dla diagnostyki.
         """
         metrics = self.collect_metrics()
         is_healthy = metrics.rss_mb <= threshold_mb
@@ -237,7 +238,7 @@ class ProcessMonitor:
 
     @staticmethod
     def _safe_memory_full_info(proc: psutil.Process) -> Any:
-        """memory_full_info() — zwraca USS/PSS/swap.
+        """memory_full_info() -- zwraca USS/PSS/swap.
 
         Może rzucić AccessDenied bez root na niektórych OS.
         """
@@ -270,30 +271,30 @@ class ProcessMonitor:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# SystemMonitor — monitoring całego systemu
+# SystemMonitor -- monitoring całego systemu
 # ═════════════════════════════════════════════════════════════════════════════
 
 
 class SystemMonitor:
-    """Monitorowanie całego systemu — CPU, RAM, swap, dysk, sieć, sensory.
+    """Monitorowanie całego systemu -- CPU, RAM, swap, dysk, sieć, sensory.
 
-      - cpu_count(logical=False/True) — fizyczne/logiczne rdzenie
-      - cpu_percent(percpu=True) — per-core utilization
-      - cpu_times_percent(percpu=True) — per-core breakdown
-      - cpu_freq(percpu=False) — częstotliwość CPU
-      - cpu_stats() — ctx_switches, interrupts
-      - getloadavg() — load average
-      - virtual_memory() — RAM z podziałem na available/buffers/cached
-      - swap_memory() — swap usage + sin/sout
-      - disk_usage('/') — użycie dysku
-      - disk_io_counters(perdisk=False) — sumaryczne I/O
-      - net_io_counters(pernic=False) — sumaryczne I/O sieci
-      - sensors_temperatures() — temperatury CPU/GPU
-      - sensors_fans() — prędkość wentylatorów
-      - sensors_battery() — bateria (laptopy)
-      - boot_time() — czas od startu systemu
-      - users() — aktywni użytkownicy
-      - pids() — liczba procesów
+      - cpu_count(logical=False/True) -- fizyczne/logiczne rdzenie
+      - cpu_percent(percpu=True) -- per-core utilization
+      - cpu_times_percent(percpu=True) -- per-core breakdown
+      - cpu_freq(percpu=False) -- częstotliwość CPU
+      - cpu_stats() -- ctx_switches, interrupts
+      - getloadavg() -- load average
+      - virtual_memory() -- RAM z podziałem na available/buffers/cached
+      - swap_memory() -- swap usage + sin/sout
+      - disk_usage('/') -- użycie dysku
+      - disk_io_counters(perdisk=False) -- sumaryczne I/O
+      - net_io_counters(pernic=False) -- sumaryczne I/O sieci
+      - sensors_temperatures() -- temperatury CPU/GPU
+      - sensors_fans() -- prędkość wentylatorów
+      - sensors_battery() -- bateria (laptopy)
+      - boot_time() -- czas od startu systemu
+      - users() -- aktywni użytkownicy
+      - pids() -- liczba procesów
     """
 
     @staticmethod
@@ -307,7 +308,7 @@ class SystemMonitor:
             cpu_count_phys = psutil.cpu_count(logical=False) or psutil.cpu_count() or 1
             cpu_count_log = psutil.cpu_count() or cpu_count_phys
 
-            # CPU — percent z interval=0 (ostatnia próbka)
+            # CPU -- percent z interval=0 (ostatnia próbka)
             cpu_pct = psutil.cpu_percent(interval=0.0)
             cpu_pct_per_core = psutil.cpu_percent(interval=0.0, percpu=True)
             cpu_freq_data = psutil.cpu_freq(percpu=False)
@@ -325,7 +326,7 @@ class SystemMonitor:
             # Network
             net_io = psutil.net_io_counters(pernic=False)
 
-            # Sensors (Linux tylko — bezpiecznie)
+            # Sensors (Linux tylko -- bezpiecznie)
             temps = SystemMonitor._safe_sensors_temperatures()
             fans = SystemMonitor._safe_sensors_fans()
 
@@ -334,7 +335,7 @@ class SystemMonitor:
             users = psutil.users()
             pids = psutil.pids()
 
-            # Temperatury — wyciągnij CPU i GPU z sensorów
+            # Temperatury -- wyciągnij CPU i GPU z sensorów
             cpu_temp = None
             gpu_temp = None
             if temps:
@@ -430,7 +431,7 @@ class SystemMonitor:
             cpu_threshold_pct: Maksymalny % CPU (default 95%)
 
         Returns:
-            (is_healthy, metrics, alerts) — alerts to lista ostrzeżeń.
+            (is_healthy, metrics, alerts) -- alerts to lista ostrzeżeń.
         """
         metrics = SystemMonitor.collect_all()
         alerts: list[str] = []
@@ -446,7 +447,7 @@ class SystemMonitor:
         if metrics.cpu_temp_celsius is not None and metrics.cpu_temp_celsius > 85:
             alerts.append(f"CPU temperature at {metrics.cpu_temp_celsius:.1f}°C (threshold: 85°C)")
         if metrics.swap_percent > 50 and metrics.ram_percent > 80:
-            alerts.append(f"SWAP pressure: {metrics.swap_percent:.1f}% + RAM at {metrics.ram_percent:.1f}% — possible OOM risk")  # fmt: skip  # noqa: E501
+            alerts.append(f"SWAP pressure: {metrics.swap_percent:.1f}% + RAM at {metrics.ram_percent:.1f}% -- possible OOM risk")  # fmt: skip  # noqa: E501
 
         is_healthy = len(alerts) == 0
         return is_healthy, metrics, alerts
@@ -470,6 +471,6 @@ class SystemMonitor:
 
 # ── Singleton export ─────────────────────────────────────────────────────────
 
-# Singleton — współdzielony przez całą aplikację
+# Singleton -- współdzielony przez całą aplikację
 process_monitor: ProcessMonitor = ProcessMonitor()
 system_monitor: type[SystemMonitor] = SystemMonitor

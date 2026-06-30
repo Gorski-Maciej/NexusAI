@@ -1,24 +1,23 @@
 import os
-
-from nexus_crypto import Sha256Hasher
 import uuid
 from pathlib import Path
 
+import fsspec
 from anyio import to_thread
 from litestar import Body, Controller, get, post
 from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import ClientException
 from litestar.status_codes import HTTP_201_CREATED
-from sqlmodel import select
-from sqlmodel import Session
+from nexus_crypto import Sha256Hasher
+from sqlmodel import Session, select
 
 from nexus_ai.api.dto import (
+    TAG_INVOICES,
     InvoiceCreateDTO,
     InvoiceListResponseDTO,
     InvoiceResponseDTO,
     InvoiceUploadResponseDTO,
-    TAG_INVOICES,
 )
 from nexus_ai.api.schemas import (
     InvoiceCreate,
@@ -28,8 +27,6 @@ from nexus_ai.api.schemas import (
     InvoiceUploadResponseLarge,
     validate_invoice_create,
 )
-import fsspec
-
 from nexus_ai.api.services import ContentAddressableStorage
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps
@@ -37,7 +34,7 @@ from nexus_ai.db.models import Invoice, InvoiceStatus, OutboxEvent, OutboxStatus
 
 
 class InvoiceController(Controller):
-    """REST API dla faktur — CRUD + upload."""
+    """REST API dla faktur -- CRUD + upload."""
 
     path = "/invoices"
     tags = [TAG_INVOICES]

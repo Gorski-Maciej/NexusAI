@@ -17,7 +17,7 @@ logger = get_logger("nexus.db.hooks")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # VALIDATION FUNCTIONS
-# Validation functions — run during before_flush, ensuring validation at the DB layer.
+# Validation functions -- run during before_flush, ensuring validation at the DB layer.
 # ═══════════════════════════════════════════════════════════════════════════════
 
 _EVENT_TYPE_REGEX = re.compile(r"^[a-zA-Z0-9.]+$")
@@ -135,8 +135,8 @@ def _validate_user_account(obj: Any, _model_id: str) -> None:
             _validate_role(obj.role.value if hasattr(obj.role, "value") else str(obj.role), obj.id)
 
 
-# _decimal_to_duckdb usunięty — model_dump(mode="json") automatycznie
-# konwertuje Decimal → str (SQLModel)
+# _decimal_to_duckdb usunięty -- model_dump(mode="json") automatycznie
+# konwertuje Decimal -> str (SQLModel)
 
 
 def register_db_hooks(config: AppConfig):
@@ -156,8 +156,8 @@ def register_db_hooks(config: AppConfig):
     def _build_data(target: Invoice) -> dict[str, str | None]:
         """Zbuduj słownik danych do DuckDB z bezpieczną konwersją Decimal.
 
-        ``mode="json"`` automatycznie konwertuje Decimal → string,
-        DateTime → ISO string.
+        ``mode="json"`` automatycznie konwertuje Decimal -> string,
+        DateTime -> ISO string.
         """
         data = target.model_dump(
             include={
@@ -171,7 +171,7 @@ def register_db_hooks(config: AppConfig):
             },
             mode="json",
         )
-        # Konwersja Enum → str dla DuckDB
+        # Konwersja Enum -> str dla DuckDB
         if isinstance(data.get("status"), Enum):
             data["status"] = data["status"].value
         return data
@@ -225,7 +225,7 @@ def register_db_hooks(config: AppConfig):
             if isinstance(obj, Invoice):
                 _replicate(obj)
 
-    # Uruchamia się PRZED zapisem do DB — błąd walidacji = brak zapisu.
+    # Uruchamia się PRZED zapisem do DB -- błąd walidacji = brak zapisu.
     # To bezpieczniejszy wzorzec niż dekoratory walidacji na modelach, bo:
     #   - Walidacja jest jawna i scentralizowana
     #   - Łatwiej debugować (stack trace wskazuje na hooks.py)

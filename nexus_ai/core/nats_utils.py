@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from nexus_ai.core.msgspec_utils import msgspec_dumps_bytes, msgspec_loads as _msgspec_loads
+from pathlib import Path
 from typing import Any, AsyncIterator, final
 
 import anyio
@@ -10,6 +10,8 @@ import pendulum
 from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
+from nexus_ai.core.msgspec_utils import msgspec_dumps_bytes
+from nexus_ai.core.msgspec_utils import msgspec_loads as _msgspec_loads
 
 logger = get_logger("nexus.nats.utils")
 
@@ -31,6 +33,7 @@ class NatsErrors:
             cls.ConnectionClosedError = ne.ConnectionClosedError
             cls.NoRespondersError = ne.NoRespondersError
         except (ImportError, AttributeError):
+            logger.debug("[NATS] Error types import failed")
             pass
 
 
@@ -77,11 +80,15 @@ async def safe_close(nc: Any | None, flush: bool = True) -> None:
     try:
         if flush:
             try: await nc.flush()
-            except Exception: pass
+            except Exception:
+                logger.debug("[NATS] Flush failed during close")
+                pass
         await nc.drain()
     except Exception:
         try: await nc.close()
-        except Exception: pass
+        except Exception:
+            logger.debug("[NATS] Close failed during drain fallback")
+            pass
 
 
 # ── One-off publish ──────────────────────────────────────────────────────
@@ -121,7 +128,9 @@ class NatsRpcClient:
     async def _ensure_connected(self) -> bool:
         if self._nc is not None and not self._nc.is_closed:
             try: await self._nc.ping(); return True
-            except Exception: pass
+            except Exception:
+                logger.debug("[NATS:RPC] Ping failed, reconnecting")
+                pass
         self._nc = await get_connection(nats_url=self._nats_url, name=self._name)
         return self._nc is not None
 
@@ -135,8 +144,12 @@ class NatsRpcClient:
             msg = await self._nc.request(subject, payload, timeout=timeout)
             try: return msgspec.json.decode(msg.data)
             except Exception:
+                logger.debug("[NATS:RPC] msgspec.json.decode failed, trying fallback")
+                pass
                 try: return _msgspec_loads(msg.data)
-                except Exception: return msg.data
+                except Exception:
+                    logger.debug("[NATS:RPC] Both decoders failed, returning raw data")
+                    return msg.data
         except NatsErrors.NoRespondersError:
             raise
         except NatsErrors.TimeoutError:
@@ -177,7 +190,9 @@ class NatsSubscription:
     async def _disconnect(self) -> None:
         if self._sub is not None:
             try: await self._sub.unsubscribe()
-            except Exception: pass
+            except Exception:
+                logger.debug("[NATS:SUB] Unsubscribe failed")
+                pass
             self._sub = None
         await safe_close(self._nc); self._nc = None
 
@@ -236,6 +251,7 @@ class NatsConfigStore:
                 try:
                     self._kv_stores[name] = await self._js.create_key_value(bucket=name, description=desc, history=5, max_value_size=1024*1024)
                 except Exception:
+                    logger.debug("[KV] Create bucket '%s' failed", name)
                     pass
         except Exception as exc:
             logger.warning("[KV] NATS unavailable at %s: %s", self._nats_servers, exc)
@@ -244,13 +260,17 @@ class NatsConfigStore:
     async def stop(self) -> None:
         if self._nc is not None:
             try: await self._nc.drain()
-            except Exception: pass
+            except Exception:
+                logger.debug("[KV] Drain failed during stop")
+                pass
             self._nc = self._js = None; self._kv_stores.clear(); self._connected = False
 
     async def put(self, key: str, value: Any, bucket: str = "nexus-config") -> bool:
         if (kv := self._kv_stores.get(bucket)) is not None:
             try: await kv.put(key, msgspec_dumps_bytes(value)); return True
-            except Exception: pass
+            except Exception:
+                logger.debug("[KV] Put '%s' failed", key)
+                pass
         if self._local_fallback:
             self._local_cache[bucket][key] = value; return True
         return False
@@ -260,13 +280,17 @@ class NatsConfigStore:
             try:
                 if (entry := await kv.get(key)) is not None:
                     return _msgspec_loads(entry.value)
-            except Exception: pass
+            except Exception:
+                logger.debug("[KV] Get '%s' failed", key)
+                pass
         return self._local_cache[bucket].get(key, default) if self._local_fallback else default
 
     async def delete(self, key: str, bucket: str = "nexus-config") -> bool:
         if (kv := self._kv_stores.get(bucket)) is not None:
             try: await kv.delete(key); return True
-            except Exception: pass
+            except Exception:
+                logger.debug("[KV] Delete '%s' failed", key)
+                pass
         if self._local_fallback:
             self._local_cache[bucket].pop(key, None); return True
         return False
@@ -327,14 +351,18 @@ class NatsFileStore:
             self._connected = True
             for name, desc in self._buckets.items():
                 try: self._object_stores[name] = await self._js.create_object_store(bucket=name, description=desc, max_age=365*86400, storage="file")
-                except Exception: pass
+                except Exception:
+                    logger.debug("[OBJECT] Create bucket '%s' failed", name)
+                    pass
         except Exception as exc:
             logger.warning("[OBJECT] NATS unavailable: %s", exc); self._connected = False
 
     async def stop(self) -> None:
         if self._nc is not None:
             try: await self._nc.drain()
-            except Exception: pass
+            except Exception:
+                logger.debug("[KV] Drain failed during stop")
+                pass
             self._nc = self._js = None; self._object_stores.clear(); self._connected = False
 
     async def put(self, key: str, data: bytes, bucket: str = "nexus-files", **kw) -> dict[str, Any] | None:
@@ -342,7 +370,9 @@ class NatsFileStore:
             try:
                 import io; await obj.put(key, io.BytesIO(data))
                 return {"name": key, "size": len(data), "bucket": bucket}
-            except Exception: pass
+            except Exception:
+                logger.debug("[OBJECT] Put '%s' failed", key)
+                pass
         cache_path = self._cache_dir / bucket / key; cache_path.parent.mkdir(parents=True, exist_ok=True)
         async with await anyio.open_file(cache_path, "wb") as f: await f.write(data)
         return {"name": key, "size": len(data), "bucket": bucket, "cached": True}
@@ -354,7 +384,9 @@ class NatsFileStore:
                 if result is not None:
                     data = result.data if hasattr(result, "data") else result
                     return (data if isinstance(data, bytes) else data.read()), {"name": key, "bucket": bucket}
-            except Exception: pass
+            except Exception:
+                logger.debug("[OBJECT] Get '%s' failed", key)
+                pass
         cache_path = self._cache_dir / bucket / key
         if cache_path.exists():
             async with await anyio.open_file(cache_path, "rb") as f:
@@ -364,7 +396,9 @@ class NatsFileStore:
     async def delete(self, key: str, bucket: str = "nexus-files") -> bool:
         if (obj := self._object_stores.get(bucket)) is not None:
             try: await obj.delete(key); return True
-            except Exception: pass
+            except Exception:
+                logger.debug("[OBJECT] Delete '%s' failed", key)
+                pass
         cache_path = self._cache_dir / bucket / key
         if cache_path.exists(): cache_path.unlink(); return True
         return False
@@ -376,7 +410,9 @@ class NatsFileStore:
                     name = getattr(entry, "name", "")
                     if not prefix or name.startswith(prefix):
                         yield {"name": name, "size": getattr(entry, "size", 0), "bucket": bucket}
-            except Exception: pass
+            except Exception:
+                logger.debug("[NATS:SUPERVISOR] get_streams failed")
+            pass
 
     def is_connected(self) -> bool: return self._connected
     def get_status(self) -> dict[str, Any]:
@@ -421,7 +457,9 @@ class NatsSupervisor:
     async def stop(self) -> None:
         if self._nc is not None:
             try: await self._nc.drain()
-            except Exception: pass
+            except Exception:
+                logger.debug("[KV] Drain failed during stop")
+                pass
             self._nc = self._js = None; self._connected = False
 
     async def check_connection(self) -> dict[str, Any]:
@@ -445,7 +483,9 @@ class NatsSupervisor:
                         d["config"] = {"subjects": list(getattr(info.config, "subjects", [])), "storage": str(getattr(info.config, "storage", ""))}
                     results.append(d)
                 except Exception as exc: results.append({"name": name, "status": "ERROR", "error": str(exc)})
-        except Exception: pass
+        except Exception:
+            logger.debug("[NATS:SUPERVISOR] get_streams failed")
+            pass
         return results
 
     async def get_full_status(self) -> dict[str, Any]:

@@ -10,7 +10,6 @@ Usage:
 
 from __future__ import annotations
 
-
 from nexus_ai.core.cache import get_cache
 
 # --- Nie używamy @broker.task, bo to powoduje circular import

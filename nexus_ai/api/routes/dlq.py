@@ -6,12 +6,12 @@ Provides administrative endpoints for managing tasks that have been
 moved to the Dead Letter Queue after exhausting their retry attempts.
 
 Endpoints:
-    GET    /api/v1/system/dlq           — List dead letter items (paginated)
-    GET    /api/v1/system/dlq/stats     — DLQ statistics summary
-    GET    /api/v1/system/dlq/{id}      — View details of a specific DLQ item
-    POST   /api/v1/system/dlq/{id}/retry   — Retry a specific DLQ item
-    POST   /api/v1/system/dlq/retry-all    — Retry all unresolved DLQ items
-    DELETE /api/v1/system/dlq/{id}         — Delete/resolve a DLQ item
+    GET    /api/v1/system/dlq           -- List dead letter items (paginated)
+    GET    /api/v1/system/dlq/stats     -- DLQ statistics summary
+    GET    /api/v1/system/dlq/{id}      -- View details of a specific DLQ item
+    POST   /api/v1/system/dlq/{id}/retry   -- Retry a specific DLQ item
+    POST   /api/v1/system/dlq/retry-all    -- Retry all unresolved DLQ items
+    DELETE /api/v1/system/dlq/{id}         -- Delete/resolve a DLQ item
 
 Usage:
     Registered in app.py under the DLQController class.
@@ -30,19 +30,18 @@ from litestar.response import Response
 from sqlmodel import func, select, text
 from structlog import get_logger
 
-from nexus_ai.db.models import OutboxEvent, OutboxStatus
-
 from nexus_ai.api.dto import (
+    TAG_ADMIN,
     DLQBulkRetryResponseDTO,
     DLQDeleteResponseDTO,
     DLQItemDTO,
     DLQListDTO,
     DLQRetryResponseDTO,
     DLQStatsDTO,
-    TAG_ADMIN,
 )
 from nexus_ai.api.rbac import admin_only_guard, requires_permission
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
+from nexus_ai.db.models import OutboxEvent, OutboxStatus
 
 logger = get_logger("nexus.api.dlq")
 
@@ -263,7 +262,7 @@ class DLQController(Controller):
         operation_id="retryDlqItem",
     )
     async def retry_dlq_item(self, item_id: str, request: Request) -> Response[dict]:
-        """Retry a specific DLQ item — resets it and re-queues for processing."""
+        """Retry a specific DLQ item -- resets it and re-queues for processing."""
         async with request.app.state.db_engine.connect() as conn:
             row = (
                 (

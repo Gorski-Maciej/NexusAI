@@ -14,7 +14,7 @@ from typing import final
 class SignatureValidator:
     """Weryfikacja podpisów elektronicznych w oparciu o listę zaufaną.
 
-    Uwaga: X.509 certificate validation is not available — the ``cryptography``
+    Uwaga: X.509 certificate validation is not available -- the ``cryptography``
     package has been removed. This class is a placeholder for future implementation.
     """
 

@@ -1,23 +1,23 @@
 """
-Daily Briefing Service — generator codziennych podsumowań finansowych.
+Daily Briefing Service -- generator codziennych podsumowań finansowych.
 
 Zgodnie z aa3fvcx.txt:
 - Używa DuckDB + SQLite (Punkt 3) do analizy danych
 - Nie używa PLE ani agentów AI
 
 Współpracuje z:
-  - DailyBriefingGenerator (w notification_service.py) — agregacja danych
-  - NotificationService — wysyłka powiadomień
-  - DecisionLogger — trend trust score
+  - DailyBriefingGenerator (w notification_service.py) -- agregacja danych
+  - NotificationService -- wysyłka powiadomień
+  - DecisionLogger -- trend trust score
 """
 
 from __future__ import annotations
 
-import anyio
-from msgspec import Struct, field
 from typing import Any, final
 
+import anyio
 import pendulum
+from msgspec import Struct, field
 from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
@@ -74,8 +74,8 @@ class DailyBriefingService:
 
     Obsługuje 3 kanały wysyłki:
       - in_app: powiadomienie w aplikacji (SQLite)
-      - push:   (placeholder — przyszła implementacja)
-      - email:  (placeholder — przyszła implementacja)
+      - push:   (placeholder -- przyszła implementacja)
+      - email:  (placeholder -- przyszła implementacja)
     """
 
     def __init__(
@@ -269,11 +269,11 @@ class DailyBriefingService:
 
         # Zbuduj tytuł z podsumowaniem
         if pending_count > 0:
-            title = f"📋 Codzienne podsumowanie — {pending_count} decyzji"
+            title = f"📋 Codzienne podsumowanie -- {pending_count} decyzji"
         elif blocked_count > 0:
-            title = f"⚠️ Codzienne podsumowanie — {blocked_count} zablokowanych"
+            title = f"⚠️ Codzienne podsumowanie -- {blocked_count} zablokowanych"
         else:
-            title = f"✅ Codzienne podsumowanie — {auto_count} zaksięgowanych"
+            title = f"✅ Codzienne podsumowanie -- {auto_count} zaksięgowanych"
 
         message = msgspec_dumps(briefing.to_dict(), ensure_ascii=False, default=str)
 
@@ -300,7 +300,7 @@ class DailyBriefingService:
 
     async def _send_push(self, briefing: DailyBriefing) -> dict[str, Any]:
         """
-        Wyślij push notification (placeholder — wymaga integracji z FCM/APNs).
+        Wyślij push notification (placeholder -- wymaga integracji z FCM/APNs).
         """
         logger.info(
             "[DailyBriefing] push placeholder user=%s date=%s",
@@ -315,7 +315,7 @@ class DailyBriefingService:
 
     async def _send_email(self, briefing: DailyBriefing) -> dict[str, Any]:
         """
-        Wyślij email z podsumowaniem (placeholder — wymaga konfiguracji SMTP).
+        Wyślij email z podsumowaniem (placeholder -- wymaga konfiguracji SMTP).
         """
         logger.info(
             "[DailyBriefing] email placeholder user=%s date=%s",
@@ -392,7 +392,7 @@ class DailyBriefingService:
                     "type": "high_correction_rate",
                     "severity": "medium",
                     "message": (
-                        f"Wysoki wskaźnik korekt ({briefing.correction_rate:.1%}) — "
+                        f"Wysoki wskaźnik korekt ({briefing.correction_rate:.1%}) -- "
                         f"rozważ dostrojenie progów decyzyjnych"
                     ),
                 }
@@ -403,7 +403,7 @@ class DailyBriefingService:
                 {
                     "type": "no_activity",
                     "severity": "info",
-                    "message": "Brak aktywności — żadne faktury nie zostały dzisiaj przetworzone",
+                    "message": "Brak aktywności -- żadne faktury nie zostały dzisiaj przetworzone",
                 }
             )
 

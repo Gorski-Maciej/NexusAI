@@ -1,4 +1,4 @@
-"""Scheduler — zarządzanie terminami przypomnień i cyklicznych zadań.
+"""Scheduler -- zarządzanie terminami przypomnień i cyklicznych zadań.
 
 Zgodnie z aa3fvcx.txt (Punkt 26): zarządzanie terminami przypomnień
 (deadline ZUS, upływające licencje, cykliczne raporty).
@@ -13,7 +13,8 @@ DDL w migracji 0003_consolidate_service_tables.
 from __future__ import annotations
 
 import enum
-from typing import Any, Callable, final
+from collections.abc import Callable
+from typing import Any, final
 
 import pendulum
 from sqlalchemy import Engine
@@ -140,7 +141,7 @@ class Scheduler:
 
         return self.add_reminder(
             user_id=user_id,
-            title=f"Termin składki ZUS — {deadline.format('DD.MM.YYYY')}",
+            title=f"Termin składki ZUS -- {deadline.format('DD.MM.YYYY')}",
             message=f"Zbliża się termin opłacenia składki ZUS ({deadline.format('DD.MM.YYYY')}). "
             f"Pozostało {days_before} dni.",
             remind_at=remind_at.isoformat(),
@@ -184,7 +185,7 @@ class Scheduler:
 
         return self.add_reminder(
             user_id=user_id,
-            title=f"Raport {report_name} — termin {due.format('DD.MM.YYYY')}",
+            title=f"Raport {report_name} -- termin {due.format('DD.MM.YYYY')}",
             message=f"Zbliża się termin złożenia raportu '{report_name}'. "
             f"Termin: {due.format('DD.MM.YYYY')}.",
             remind_at=remind_at.isoformat(),

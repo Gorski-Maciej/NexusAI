@@ -1,5 +1,5 @@
 """
-msgspec_utils — helpers zastępujące json.dumps / json.loads przez msgspec.
+msgspec_utils -- helpers zastępujące json.dumps / json.loads przez msgspec.
 
 Zgodnie z aa3fvcx.txt: msgspec zastępuje json, orjson, python-dotenv.
 msgspec.json.encode/decode jest 10-100x szybsze od json.dumps/loads.
@@ -35,13 +35,13 @@ import msgspec
 import pendulum
 
 
-# ── DecodeError — zastępuje json.JSONDecodeError ────────────────────────────
+# ── DecodeError -- zastępuje json.JSONDecodeError ────────────────────────────
 class DecodeError(msgspec.DecodeError):
-    """Dziedziczy po msgspec.DecodeError — pełna kompatybilność.
+    """Dziedziczy po msgspec.DecodeError -- pełna kompatybilność.
 
     Podnoszony przez msgspec_loads gdy dane nie są poprawnym JSON-em.
     Dziedziczenie po msgspec.DecodeError (zamiast ValueError) zapewnia
-    zgodność z ekosystemem msgspec — można łapać zarówno DecodeError
+    zgodność z ekosystemem msgspec -- można łapać zarówno DecodeError
     jak i msgspec.DecodeError.
 
     Użycie:
@@ -52,21 +52,21 @@ class DecodeError(msgspec.DecodeError):
     """
 
 
-# ── EncodeError — zastępuje błędy serializacji (jeśli potrzebne) ─────────────
+# ── EncodeError -- zastępuje błędy serializacji (jeśli potrzebne) ─────────────
 class EncodeError(TypeError):
     """Zastępuje TypeError przy serializacji (gdy obiekt nie jest serializowalny)."""
 
 
 def _default_enc_hook(obj: Any) -> Any:
-    """enc_hook dla msgspec.json.Encoder — serializuje typy niestandardowe.
+    """enc_hook dla msgspec.json.Encoder -- serializuje typy niestandardowe.
 
     Obsługuje:
-    - Decimal → str (zachowuje precyzję)
-    - datetime / date → isoformat
-    - UUID → str
-    - Decimal → str (zachowuje precyzję)
-    - datetime / date → isoformat
-    - UUID → str
+    - Decimal -> str (zachowuje precyzję)
+    - datetime / date -> isoformat
+    - UUID -> str
+    - Decimal -> str (zachowuje precyzję)
+    - datetime / date -> isoformat
+    - UUID -> str
     """
     if isinstance(obj, Decimal):
         return str(obj)
@@ -86,7 +86,7 @@ _MSGPACK_ENCODER = msgspec.msgpack.Encoder(enc_hook=_default_enc_hook)
 
 
 def msgspec_msgpack_dumps(obj: Any) -> bytes:
-    """Zastępuje msgpack.dumps(obj) — serializacja binarna MessagePack.
+    """Zastępuje msgpack.dumps(obj) -- serializacja binarna MessagePack.
 
     MessagePack jest ~20% mniejszy i ~30% szybszy od JSON dla danych
     binarnych i numerycznych. Używaj gdy:
@@ -104,7 +104,7 @@ def msgspec_msgpack_dumps(obj: Any) -> bytes:
 
 
 def msgspec_msgpack_loads(data: bytes | bytearray) -> Any:
-    """Zastępuje msgpack.loads(data) — deserializacja binarna MessagePack."""
+    """Zastępuje msgpack.loads(data) -- deserializacja binarna MessagePack."""
     try:
         return msgspec.msgpack.decode(data)
     except msgspec.ValidationError as exc:
@@ -117,10 +117,10 @@ def msgspec_dumps(obj: Any, **kwargs: Any) -> str:
     Używa msgspec.json.Encoder z enc_hook dla Decimal, datetime, UUID, Money.
 
     Akceptuje kwargs dla kompatybilności:
-    - ensure_ascii=False — ignorowane (msgspec domyślnie UTF-8)
-    - default=str — ignorowane (enc_hook robi to lepiej)
-    - sort_keys=True — wspierane przez msgspec.sort_keys
-    - indent=N — wspierane (formatowanie)
+    - ensure_ascii=False -- ignorowane (msgspec domyślnie UTF-8)
+    - default=str -- ignorowane (enc_hook robi to lepiej)
+    - sort_keys=True -- wspierane przez msgspec.sort_keys
+    - indent=N -- wspierane (formatowanie)
 
     Args:
         obj: Obiekt do serializacji.
@@ -142,7 +142,7 @@ def msgspec_dumps(obj: Any, **kwargs: Any) -> str:
 
 
 def msgspec_dumps_bytes(obj: Any) -> bytes:
-    """Zastępuje json.dumps(obj).encode() — zwraca bytes.
+    """Zastępuje json.dumps(obj).encode() -- zwraca bytes.
 
     Args:
         obj: Obiekt do serializacji.
@@ -159,7 +159,7 @@ def msgspec_dumps_bytes(obj: Any) -> bytes:
         raise EncodeError(str(exc)) from exc
 
 
-# ── msgspec.structs.replace — bezpieczna modyfikacja Structów (Faza 3) ────
+# ── msgspec.structs.replace -- bezpieczna modyfikacja Structów (Faza 3) ────
 
 
 def msgspec_struct_replace(
@@ -172,7 +172,7 @@ def msgspec_struct_replace(
     Tworzy kopię Structa z podmienionymi polami. Działa zarówno dla
     ``frozen=True`` jak i ``frozen=False`` Structów.
 
-    Używa ``msgspec.structs.replace()`` — natywnej funkcji msgspec
+    Używa ``msgspec.structs.replace()`` -- natywnej funkcji msgspec
     napisanej w C, szybszej niż ``Struct(**old.__dict__, field=new)``.
 
     Args:
@@ -195,15 +195,15 @@ def msgspec_struct_replace(
         ValueError: Gdy Struct ma ``forbid_unknown=True``.
 
     Note:
-        ``msgspec.structs.replace()`` jest napisane w C i działa ~10× szybciej
+        ``msgspec.structs.replace()`` jest napisane w C i działa ~10x szybciej
         niż ``type(obj)(**asdict(obj), field=new)``. Preferuj tę funkcję
         zamiast ręcznego tworzenia kopii Structów.
 
     Kiedy używać:
-        - ``Struct(**data)`` — konstrukcja od zera (OK, nie zmieniaj)
-        - ``msgspec.structs.replace(existing, field=new)`` — modyfikacja
+        - ``Struct(**data)`` -- konstrukcja od zera (OK, nie zmieniaj)
+        - ``msgspec.structs.replace(existing, field=new)`` -- modyfikacja
           istniejącego frozen Structa (użyj replace zamiast ręcznej kopii)
-        - ``existing.field = new`` — tylko dla non-frozen Structów
+        - ``existing.field = new`` -- tylko dla non-frozen Structów
           (nie używaj replace, modyfikacja in-place jest szybsza)
     """
     return msgspec.structs.replace(struct_obj, **changes)
@@ -212,12 +212,12 @@ def msgspec_struct_replace(
 # Zamiast ręcznego kopiowania Structów:
 # old = DecisionVerdict(decision="ASK_USER", confidence=0.5, reasoning="")
 # new = msgspec_struct_replace(old, confidence=0.95, reasoning="Nowy reason")
-# new.decision → "ASK_USER" (bez zmian), new.confidence → 0.95
+# new.decision -> "ASK_USER" (bez zmian), new.confidence -> 0.95
 
 
 # ── JSON Schema generation (Faza 3) ──────────────────────────────────────
 
-# Cache dla wygenerowanych schematów (Struct → JSON Schema)
+# Cache dla wygenerowanych schematów (Struct -> JSON Schema)
 _SCHEMA_CACHE: dict[type, dict[str, Any]] = {}
 
 
@@ -225,7 +225,7 @@ def msgspec_json_schema(struct_type: type) -> dict[str, Any]:
     """Generuj JSON Schema dla msgspec Struct.
 
     Używa ``msgspec.json.schema()`` do wygenerowania JSON Schema Draft 2020-12
-    dla danego typu Struct. Wynik jest cachowany — to samo Struct generuje
+    dla danego typu Struct. Wynik jest cachowany -- to samo Struct generuje
     ten sam schemat.
 
     Normalizacja: Jeśli schema ma ``$ref`` na najwyższym poziomie (np. dla
@@ -265,7 +265,7 @@ def msgspec_json_schema(struct_type: type) -> dict[str, Any]:
 
 
 def msgspec_inspect_fields(struct_type: type) -> list[dict[str, Any]]:
-    """Introspekcja pól Struct — używa ``msgspec.inspect``.
+    """Introspekcja pól Struct -- używa ``msgspec.inspect``.
 
     Zwraca listę pól z metadanymi (typ, domyślny, walidacja Meta).
     Przydatne do generowania dokumentacji, formularzy, automatycznych testów.
@@ -305,7 +305,7 @@ def msgspec_struct_asdict_deep(struct_obj) -> dict[str, Any]:
 
     Używa ``msgspec.structs.asdict()`` (napisane w C, rekurencyjne przez
     definicje pól Struct), a następnie serializuje przez JSON tylko po to
-    by obsłużyć typy niestandardowe (DateTime, Decimal, UUID) — enc_hook
+    by obsłużyć typy niestandardowe (DateTime, Decimal, UUID) -- enc_hook
     w msgspec.json.encode.
 
     Args:
@@ -325,7 +325,7 @@ def msgspec_loads(data: str | bytes | bytearray) -> Any:
     """Zastępuje json.loads(data).
 
     Przyjmuje str, bytes lub bytearray.
-    Jeśli str → konwertuje na bytes przed dekodowaniem (msgspec wymaga bytes).
+    Jeśli str -> konwertuje na bytes przed dekodowaniem (msgspec wymaga bytes).
 
     Args:
         data: String lub bajty JSON.

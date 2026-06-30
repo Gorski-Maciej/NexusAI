@@ -1,5 +1,5 @@
 """
-TaxApiService — DEPRECATED.
+TaxApiService -- DEPRECATED.
 
 ZASTĄPIONY PRZEZ: services.white_list_service.WhiteListService
 

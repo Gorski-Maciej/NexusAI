@@ -1,4 +1,4 @@
-"""Business validation — duplicate detection, cross-field checks.
+"""Business validation -- duplicate detection, cross-field checks.
 
 Migrated to BaseService pattern: leaner, using walrus operator + pattern matching.
 """
@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from sqlmodel import and_, select, Session
+from sqlmodel import Session, and_, select
 
 from nexus_ai.db.models import Invoice
 
@@ -15,7 +15,7 @@ from nexus_ai.db.models import Invoice
 def is_duplicate(session: Session, nip: str, number: str, amount_gross: Decimal) -> bool:
     """Sprawdza, czy faktura juz istnieje (walrus + select kolumny zamiast calego rekordu).
 
-    Oszczedza ~70% transferu danych —  laduje tylko `id`, nie `file_path` itp.
+    Oszczedza ~70% transferu danych --  laduje tylko `id`, nie `file_path` itp.
     """
     return (
         session.execute(

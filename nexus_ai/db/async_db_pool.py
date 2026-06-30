@@ -1,5 +1,5 @@
 """
-AsyncDBPool — centralny pool synchronicznych połączeń sqlite3 (free-threaded).
+AsyncDBPool -- centralny pool synchronicznych połączeń sqlite3 (free-threaded).
 
 Python 3.13t (free-threaded, brak GIL) pozwala bezpiecznie używać
 synchronicznego sqlite3 z wielu wątków. Pool zarządza jednym połączeniem
@@ -23,7 +23,6 @@ from __future__ import annotations
 
 import sqlite3
 
-
 # ── AsyncDBPool ──────────────────────────────────────────────────────────
 
 
@@ -31,12 +30,12 @@ class AsyncDBPool:
     """Centralny pool sync połączeń sqlite3.
 
     Zarządza jednym połączeniem na ścieżkę pliku DB.
-    WSZYSTKIE metody są SYNCHRONICZNE — callery używają
+    WSZYSTKIE metody są SYNCHRONICZNE -- callery używają
     ``anyio.to_thread.run_sync()`` dla async wrappera (free-threaded safe).
 
     - Współdzielenie połączeń między serwisami
     - Automatyczne PRAGMY przy pierwszym połączeniu
-    - Leniwe tworzenie — połączenie tworzone przy pierwszym użyciu
+    - Leniwe tworzenie -- połączenie tworzone przy pierwszym użyciu
     - Bezpieczne zamykanie wszystkich połączeń
     - Wsparcie dla SQLCipher (PRAGMA key FIRST!)
     - check_same_thread=False dla free-threaded Python 3.13t
@@ -90,7 +89,7 @@ class AsyncDBPool:
             if enable_extensions:
                 conn.execute("PRAGMA enable_load_extension = ON;")
 
-            # Row factory — domyślnie sqlite3.Row (dict-like dostęp)
+            # Row factory -- domyślnie sqlite3.Row (dict-like dostęp)
             if row_factory is None:
                 conn.row_factory = sqlite3.Row
             else:

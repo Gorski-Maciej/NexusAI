@@ -20,7 +20,7 @@ from nexus_ai.core.fsspec_compat import FSSpecFactory
 
 logger = get_logger("nexus.core.backup")
 
-# Legacy NEXUSENC1 (AES-256-CBC) support has been removed — cryptography package
+# Legacy NEXUSENC1 (AES-256-CBC) support has been removed -- cryptography package
 # has been removed from the project. Only NEXUSAENC (ChaCha20-Poly1305) is supported.
 _HAS_CRYPTOGRAPHY = False
 
@@ -49,12 +49,12 @@ except ImportError:
 class BackupManager:
     """Zarządza pakowaniem i szyfrowaniem bazy danych.
 
-    - ``EXPORT DATABASE`` — atomowy eksport całej bazy DuckDB do plików Parquet.
+    - ``EXPORT DATABASE`` -- atomowy eksport całej bazy DuckDB do plików Parquet.
       Jedno zapytanie tworzy kompletny snapshot: schemat + dane + indeksy.
       Porównanie z ręcznym backupem ZIP: 1 komenda zamiast 20 linii kodu.
-    - ``IMPORT DATABASE`` — atomowe przywracanie z backupu.
+    - ``IMPORT DATABASE`` -- atomowe przywracanie z backupu.
 
-    - ``pyarrow.fs.LocalFileSystem`` — jednolity interfejs plików dla operacji
+    - ``pyarrow.fs.LocalFileSystem`` -- jednolity interfejs plików dla operacji
       backupowych. ``copy_file`` zamiast ``shutil.copy2``.
       Zysk: brak narzutu shutil, spójny interfejs z S3/GCS (przyszłościowo).
 
@@ -84,17 +84,17 @@ class BackupManager:
     def duckdb_export_database(self, duckdb_path: str | Path | None = None) -> str:
         """Atomowy eksport całej bazy DuckDB przez EXPORT DATABASE.
 
-        ``EXPORT DATABASE 'path' (FORMAT PARQUET)`` — jeden SQL tworzy:
-          - ``schema.sql`` — pełny schemat (CREATE TABLE, CREATE INDEX, VIEW)
-          - ``load.sql`` — skrypt do załadowania
+        ``EXPORT DATABASE 'path' (FORMAT PARQUET)`` -- jeden SQL tworzy:
+          - ``schema.sql`` -- pełny schemat (CREATE TABLE, CREATE INDEX, VIEW)
+          - ``load.sql`` -- skrypt do załadowania
           - Pliki Parquet z danymi
-          - Backup jest atomowy — spójny snapshot bez blokowania
+          - Backup jest atomowy -- spójny snapshot bez blokowania
 
         Returns:
             Ścieżka do katalogu z eksportem.
         """
         if not _HAS_DUCKDB:
-            logger.warning("[BACKUP] DuckDB not available — falling back to ZIP backup")
+            logger.warning("[BACKUP] DuckDB not available -- falling back to ZIP backup")
             return self.create_encrypted_zip()
 
         path = Path(duckdb_path or getattr(self.config, "duckdb_path", "nexus.duckdb"))
@@ -126,7 +126,7 @@ class BackupManager:
             True jeśli przywracanie się powiodło.
         """
         if not _HAS_DUCKDB:
-            logger.warning("[BACKUP] DuckDB not available — cannot import database")
+            logger.warning("[BACKUP] DuckDB not available -- cannot import database")
             return False
 
         target = Path(target_db_path or getattr(self.config, "duckdb_path", "nexus.duckdb"))
@@ -194,7 +194,7 @@ class BackupManager:
             if not password:
                 logger.warning("[BACKUP] No password provided; backup is NOT encrypted")
 
-        # fsspec.open() działa z każdym protokołem — file://, s3://, sftp://
+        # fsspec.open() działa z każdym protokołem -- file://, s3://, sftp://
         backup_url = str(self.backup_dir / f"backup_{timestamp}{ext}")
         with fsspec.open(backup_url, "wb") as f:
             f.write(final_data)
@@ -246,7 +246,7 @@ class BackupManager:
 
         elif data.startswith(b"NEXUSENC1"):
             raise ValueError(
-                "Legacy NEXUSENC1 backups cannot be decrypted — the `cryptography` "
+                "Legacy NEXUSENC1 backups cannot be decrypted -- the `cryptography` "
                 "package has been removed from the project."
             )
 
@@ -267,6 +267,7 @@ class BackupManager:
         mode: str = "append",
         partition_by: list[str] | None = None,
     ) -> str:
+        """Export query result to Delta Lake.
 
         Delta Lake dodaje warstwę ACID na Parquet:
         - Atomic commits: każdy zapis jest atomowy
@@ -284,7 +285,7 @@ class BackupManager:
         """
         if not _HAS_DELTA:
             logger.warning(
-                "[BACKUP] Delta Lake not available — install with: pip install deltalake"
+                "[BACKUP] Delta Lake not available -- install with: pip install deltalake"
             )
             return self.create_encrypted_zip()
 
@@ -299,7 +300,7 @@ class BackupManager:
             finally:
                 conn.close()
 
-            # Konwertuj Arrow Table → Pandas DataFrame dla deltalake
+            # Konwertuj Arrow Table -> Pandas DataFrame dla deltalake
             pdf = arrow_table.to_pandas()
 
             # ``write_deltalake()`` tworzy _delta_log/ z commitami
@@ -323,11 +324,12 @@ class BackupManager:
             return ""
 
     def list_delta_versions(self, delta_path: str | Path | None = None) -> list[dict]:
+        """List Delta Lake versions.
 
         Delta Lake przechowuje pełną historię commitów w ``_delta_log/``.
-        ``DeltaTable.history()" zwraca każdą wersję z timestampem,
+        ``DeltaTable.history()`` zwraca każdą wersję z timestampem,
         operacją i metadanymi.
-        Zysk: time travel — dostęp do każdej wersji backupu.
+        Zysk: time travel -- dostęp do każdej wersji backupu.
 
         Args:
             delta_path: Ścieżka do Delta Table.
@@ -353,9 +355,10 @@ class BackupManager:
         version: int,
         delta_path: str | Path | None = None,
     ) -> Any:
+        """Load Delta Lake version.
 
         ``DeltaTable.load_as_version(N)`` ładuje stan tabeli z wersji N.
-        Zysk: pełny time travel — dostęp do backupu sprzed tygodnia.
+        Zysk: pełny time travel -- dostęp do backupu sprzed tygodnia.
 
         Args:
             version: Numer wersji (0 = pierwszy backup).

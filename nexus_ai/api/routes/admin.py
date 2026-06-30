@@ -1,10 +1,10 @@
 """Admin endpoints for managing failed tasks (DLQ) and system configuration.
 
 Endpoints:
-- GET    /api/admin/failed-tasks          — List failed tasks (paginated, filterable)
-- POST   /api/admin/failed-tasks/{id}/retry  — Retry a specific failed task
-- DELETE /api/admin/failed-tasks/{id}        — Delete a failed task entry
-- POST   /api/admin/failed-tasks/retry-all   — Retry all unresolved failed tasks
+- GET    /api/admin/failed-tasks          -- List failed tasks (paginated, filterable)
+- POST   /api/admin/failed-tasks/{id}/retry  -- Retry a specific failed task
+- DELETE /api/admin/failed-tasks/{id}        -- Delete a failed task entry
+- POST   /api/admin/failed-tasks/retry-all   -- Retry all unresolved failed tasks
 """
 
 from __future__ import annotations
@@ -17,11 +17,12 @@ from litestar import Controller, delete, get, post, put
 from litestar.connection import Request
 from litestar.exceptions import NotFoundException, ValidationException
 from litestar.response import Response
-from sqlmodel import text
 from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlmodel import text
 from structlog import get_logger
 
 from nexus_ai.api.dto import (
+    TAG_ADMIN,
     ActionResponseDTO,
     ChangeRoleDTO,
     ChangeRoleResponseDTO,
@@ -40,18 +41,31 @@ from nexus_ai.api.dto import (
     RuleChangelogDTO,
     RuleListResponseDTO,
     StatusResponseDTO,
-    TAG_ADMIN,
 )
 from nexus_ai.api.rbac import admin_only_guard, requires_permission
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.services.admin_services import (
     BillingRuleService as BillingRuleAdminSvc,
+)
+from nexus_ai.services.admin_services import (
     FailedTaskService as FailedTaskAdminSvc,
+)
+from nexus_ai.services.admin_services import (
     FallbackEventService as FallbackEventAdminSvc,
+)
+from nexus_ai.services.admin_services import (
     IntegrityService as IntegrityAdminSvc,
+)
+from nexus_ai.services.admin_services import (
     LedgerRuleService as LedgerRuleAdminSvc,
+)
+from nexus_ai.services.admin_services import (
     ReplayService as ReplayAdminSvc,
+)
+from nexus_ai.services.admin_services import (
     RiskThresholdService as RiskThresholdAdminSvc,
+)
+from nexus_ai.services.admin_services import (
     TaxRuleService as TaxRuleAdminSvc,
 )
 
@@ -74,7 +88,7 @@ logger = get_logger("nexus.api.admin")
 
 
 class AdminController(Controller):
-    """Panel administracyjny — zarządzanie użytkownikami, regułami, DLQ."""
+    """Panel administracyjny -- zarządzanie użytkownikami, regułami, DLQ."""
 
     path = "/admin"
     guards = [admin_only_guard]
@@ -688,9 +702,9 @@ class AdminController(Controller):
         and the system may be locked.
 
         Body (optional):
-            handle_violation: bool (default True) — auto-persist violation
-            system_lock: bool (default False) — lock system on violation
-            incremental: bool (default False) — incremental verification
+            handle_violation: bool (default True) -- auto-persist violation
+            system_lock: bool (default False) -- lock system on violation
+            incremental: bool (default False) -- incremental verification
         """
         body = await request.json() if request.content_length else {}
 

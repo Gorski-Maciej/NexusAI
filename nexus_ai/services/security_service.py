@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from typing import final
-
 from pathlib import Path
+from typing import final
 
 import pendulum
 from sqlmodel import Session

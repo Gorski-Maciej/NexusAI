@@ -31,8 +31,8 @@ class Technology(msgspec.Struct, frozen=True, kw_only=True):
     Zalety msgspec.Struct:
     - 10-100x szybsza serializacja (json_encode)
     - Wbudowana walidacja typów
-    - frozen=True → immutabilna (to samo co @dataclass(frozen=True))
-    - kw_only=True → jawne nazwy pól przy konstrukcji
+    - frozen=True -> immutabilna (to samo co @dataclass(frozen=True))
+    - kw_only=True -> jawne nazwy pól przy konstrukcji
     """
 
     name: str
@@ -42,7 +42,7 @@ class Technology(msgspec.Struct, frozen=True, kw_only=True):
 class Component(msgspec.Struct, frozen=True, kw_only=True):
     """Zastępuje @dataclass(frozen=True).
 
-    Używa tuple dla responsibilitie i technologii — immutable i hashable."""
+    Używa tuple dla responsibilitie i technologii -- immutable i hashable."""
 
     name: str
     layer: Layer
@@ -64,7 +64,7 @@ class PipelineStage(msgspec.Struct, frozen=True, kw_only=True):
 class ArchitectureBlueprint(msgspec.Struct, kw_only=True):
     """Zastępuje @dataclass.
 
-    mutable (kw_only=True, frozen=False) — bo components/ocr_pipeline/ml_pipeline
+    mutable (kw_only=True, frozen=False) -- bo components/ocr_pipeline/ml_pipeline
     mogą być modyfikowane po konstrukcji przez build_blueprint()."""
 
     name: str = "NexusAI Accounting Platform"

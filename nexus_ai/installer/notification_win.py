@@ -1,5 +1,5 @@
 """
-notification_win.py — Windows native toast notifications.
+notification_win.py -- Windows native toast notifications.
 
 Uses winrt (Python for Windows Runtime) to show native Windows 10/11
 toast notifications. Falls back to ctypes if winrt is not available.
@@ -28,7 +28,7 @@ def _show_toast_fallback(title: str, message: str, app_name: str = "NexusAI") ->
         ctypes.windll.user32.MessageBoxW(
             0,
             f"{message}\n\n(Click OK to dismiss)",
-            f"{app_name} — {title}",
+            f"{app_name} -- {title}",
             0x40 | 0x1000,  # MB_ICONASTERISK | MB_SYSTEMMODAL
         )
     except Exception as e:
@@ -94,13 +94,13 @@ def show_notification(
 
     # Try winrt first
     if _show_toast_winrt(title, message, app_name):
-        logger.info("Notification shown via winrt: %s — %s", title, message)
+        logger.info("Notification shown via winrt: %s -- %s", title, message)
         return True
 
     # Fallback to ctypes/MessageBox
     try:
         _show_toast_fallback(title, message, app_name)
-        logger.info("Notification shown via fallback: %s — %s", title, message)
+        logger.info("Notification shown via fallback: %s -- %s", title, message)
         return True
     except Exception as e:
         logger.warning("Failed to show notification: %s", e)

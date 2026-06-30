@@ -1,10 +1,10 @@
-"""PeriodCloser — zamykanie okresów finansowych z CLOSING_DEBIT/CREDIT.
+"""PeriodCloser -- zamykanie okresów finansowych z CLOSING_DEBIT/CREDIT.
 
-- TransferFlags.CLOSING_DEBIT (64) — automatyczne zerowanie debetu na koncie
-- TransferFlags.CLOSING_CREDIT (128) — automatyczne zerowanie kredytu na koncie
-- Linked transfers — atomowe zamknięcie wielu kont
-- Batch — wszystkie closing transfery w jednym wywołaniu
-- Append-only — zamknięcie to nowe transfery, nie DELETE
+- TransferFlags.CLOSING_DEBIT (64) -- automatyczne zerowanie debetu na koncie
+- TransferFlags.CLOSING_CREDIT (128) -- automatyczne zerowanie kredytu na koncie
+- Linked transfers -- atomowe zamknięcie wielu kont
+- Batch -- wszystkie closing transfery w jednym wywołaniu
+- Append-only -- zamknięcie to nowe transfery, nie DELETE
 """
 
 from __future__ import annotations
@@ -30,8 +30,8 @@ logger = get_logger("nexus.services.period_closer")
 class PeriodCloser:
     """Zamyka okres finansowy używając CLOSING_DEBIT/CREDIT.
 
-    - CLOSING_DEBIT (64): zamyka konto debetowe — TB zeruje debits_posted
-    - CLOSING_CREDIT (128): zamyka konto kredytowe — TB zeruje credits_posted
+    - CLOSING_DEBIT (64): zamyka konto debetowe -- TB zeruje debits_posted
+    - CLOSING_CREDIT (128): zamyka konto kredytowe -- TB zeruje credits_posted
     - Linked chain: atomowe zamknięcie wszystkich kont okresu
     - Batch: jeden create_transfers() dla całego closingu
     """
@@ -171,7 +171,7 @@ class PeriodCloser:
         revenue_accounts: list[dict[str, Any]],
         period_id: str,
     ) -> dict[str, Any]:
-        """Zamknij pełny okres — expense + revenue w dwóch batchach.
+        """Zamknij pełny okres -- expense + revenue w dwóch batchach.
 
         Args:
             expense_accounts: Lista kont kosztowych.

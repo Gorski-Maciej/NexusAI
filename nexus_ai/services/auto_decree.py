@@ -1,4 +1,4 @@
-"""AutoDecreeEngine — automatyczne dekretowanie na ASYNC vec0.
+"""AutoDecreeEngine -- automatyczne dekretowanie na ASYNC vec0.
 
 Zgodnie z docs/SQLITE_VEC_AUDIT.md:
 - FAZA 1: Konwersja z sync SQL na ASYNC AsyncVectorStore z vec0 virtual table
@@ -7,15 +7,15 @@ Zgodnie z docs/SQLITE_VEC_AUDIT.md:
 
 Zgodnie z aa3fvcx.txt:
 - sqlite-vec zamiast LanceDB (Punkt 3)
-- Wszystkie operacje ASYNC — 0ms blokowania
+- Wszystkie operacje ASYNC -- 0ms blokowania
 """
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, final
 
 import anyio
-from pathlib import Path
 
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.embeddings import get_embedding_service
@@ -27,8 +27,8 @@ class AutoDecreeEngine:
     """Silnik automatycznego dekretowania faktur na ASYNC vec0.
 
     - vec0 virtual table z ``partition_key=["contractor_nip"]``
-    - Wyszukiwanie podobieństwa wektorowego OCR_TEXT → template faktury
-    - Wszystkie operacje ASYNC — 0ms blokowania async loop
+    - Wyszukiwanie podobieństwa wektorowego OCR_TEXT -> template faktury
+    - Wszystkie operacje ASYNC -- 0ms blokowania async loop
     """
 
     def __init__(self, config: AppConfig):
@@ -66,7 +66,7 @@ class AutoDecreeEngine:
 
         - Najpierw szuka dokładnego dopasowania NIP (twarde reguły)
         - Jeśli brak, szuka wektorowo po OCR_TEXT przez vec0 z partition_key
-        - Pre-filtering przez contractor_nip — tylko wzorce tego kontrahenta
+        - Pre-filtering przez contractor_nip -- tylko wzorce tego kontrahenta
 
         Args:
             contractor_nip: NIP kontrahenta.

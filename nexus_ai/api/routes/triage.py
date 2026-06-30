@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-
 import anyio
-
 from litestar import Controller, get, post
 from litestar.background_tasks import BackgroundTask
 from litestar.connection import Request
@@ -11,6 +9,7 @@ from litestar.response import Response as LitestarResponse
 from sqlmodel import Session
 from structlog import get_logger
 
+from nexus_ai.api.background_tasks import emit_decision_overridden_bg
 from nexus_ai.api.dto import (
     TAG_TRIAGE,
     TriageItemDTO,
@@ -20,13 +19,12 @@ from nexus_ai.api.dto import (
 from nexus_ai.api.rbac import get_current_role, owner_only_guard
 from nexus_ai.api.schemas import TriageItem, TriageResolutionRequest, TriageResolutionResponse
 from nexus_ai.services.triage_service import list_pending_triage_items, resolve_triage_item
-from nexus_ai.api.background_tasks import emit_decision_overridden_bg
 
 logger = get_logger("nexus.api.triage")
 
 
 class TriageController(Controller):
-    """Triage — przegląd i korekta faktur przed księgowaniem."""
+    """Triage -- przegląd i korekta faktur przed księgowaniem."""
 
     path = "/triage"
     tags = [TAG_TRIAGE]

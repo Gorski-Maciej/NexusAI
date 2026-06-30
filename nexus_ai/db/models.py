@@ -1,5 +1,5 @@
 """
-SQLModel definitions for core OLTP tables — MAXIMUM SUPERPOWERS.
+SQLModel definitions for core OLTP tables -- MAXIMUM SUPERPOWERS.
 
 Zgodnie z aa3fvcx.txt:
 - SQLModel łączy SQLAlchemy z walidacją modeli w jednej klasie
@@ -32,20 +32,19 @@ from enum import StrEnum
 from typing import ClassVar
 
 import pendulum
+from sqlalchemy import Enum as SAEnum
 
 # Validation moved to nexus_ai/db/hooks.py (before_flush listener).
 # No direct pydantic imports remain.
-from sqlalchemy import TypeDecorator as SATypeDecorator, Enum as SAEnum
+from sqlalchemy import TypeDecorator as SATypeDecorator
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped
 from sqlalchemy.schema import Index, UniqueConstraint
 from sqlalchemy.sql.ddl import CreateTable
-from sqlmodel import JSON, String, and_, text
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import JSON, Field, Relationship, SQLModel, String, and_, text
 
-
-# Automatyczna konwersja str↔pendulum.DateTime przy zapisie/odczycie.
+# Automatyczna konwersja str<->pendulum.DateTime przy zapisie/odczycie.
 # Zamiast gołych stringów ISO, ORM zwraca pendulum.DateTime.
 
 
@@ -105,14 +104,14 @@ def _strict_create_table(create_table, compiler, **kw):
 
 
 class InvoiceStatus(StrEnum):
-    """Statusy faktury — typowany enum zamiast gołego str.
+    """Statusy faktury -- typowany enum zamiast gołego str.
 
     Wszystkie możliwe stany w cyklu życia faktury:
-      NEW → PROCESSING → (APPROVED | REJECTED | BLOCKED | PAID)
-      PROCESSING → PENDING_REVIEW → MANUAL_REVIEW
-      PROCESSING → ERROR_TIMEOUT → FAILED
-      PROCESSING → ERROR_OCR → FAILED
-      PROCESSING → ERROR_VALIDATION → FAILED
+      NEW -> PROCESSING -> (APPROVED | REJECTED | BLOCKED | PAID)
+      PROCESSING -> PENDING_REVIEW -> MANUAL_REVIEW
+      PROCESSING -> ERROR_TIMEOUT -> FAILED
+      PROCESSING -> ERROR_OCR -> FAILED
+      PROCESSING -> ERROR_VALIDATION -> FAILED
 
     UWAGA: Wartość ERROR_TIMEOUT została zmieniona z "ERROR: TIMEOUT"
     na "ERROR_TIMEOUT" (bez dwukropka i spacji). Backward compatibility
@@ -134,10 +133,10 @@ class InvoiceStatus(StrEnum):
     BLOCKED_FRAUD_SUSPICION = "BLOCKED_FRAUD_SUSPICION"
 
     @classmethod
-    def _missing_(cls, value: object) -> "InvoiceStatus | None":
+    def _missing_(cls, value: object) -> InvoiceStatus | None:
         """Backward compatibility dla starych wartości w DB.
 
-        Stara wartość ERROR: TIMEOUT → nowa ERROR_TIMEOUT.
+        Stara wartość ERROR: TIMEOUT -> nowa ERROR_TIMEOUT.
         """
         if isinstance(value, str):
             normalized = value.replace(": ", "_").replace(" ", "_")
@@ -172,10 +171,10 @@ class UserRole(StrEnum):
 
 
 class Invoice(SQLModel, table=True):
-    """Faktura — główny model biznesowy z ALL SUPERPOWERS.
+    """Faktura -- główny model biznesowy z ALL SUPERPOWERS.
 
     - Enum column: InvoiceStatus zamiast gołego str
-    - Relationship() → outbox_events, audit_logs
+    - Relationship() -> outbox_events, audit_logs
     - Composite index: (contractor_nip, issue_date)
     - Partial indexes: tylko dla aktywnych statusów
     - Expression index: UPPER(contractor_nip)
@@ -297,8 +296,8 @@ class Invoice(SQLModel, table=True):
         sa_column_kwargs={"comment": "Kto ostatnio modyfikował rekord"},
     )
 
-    outbox_events: Mapped[list["OutboxEvent"]] = Relationship(back_populates="invoice")
-    audit_logs: Mapped[list["AuditLog"]] = Relationship(back_populates="invoice")
+    outbox_events: Mapped[list[OutboxEvent]] = Relationship(back_populates="invoice")
+    audit_logs: Mapped[list[AuditLog]] = Relationship(back_populates="invoice")
 
     @property
     def amount_vat(self) -> Decimal | None:
@@ -350,7 +349,7 @@ class Contractor(SQLModel, table=True):
     )
 
     # viewonly=True bo to join przez string NIP, nie przez FK
-    invoices: Mapped[list["Invoice"]] = Relationship(
+    invoices: Mapped[list[Invoice]] = Relationship(
         sa_relationship_kwargs={
             "primaryjoin": "Contractor.nip == Invoice.contractor_nip",
             "foreign_keys": "Invoice.contractor_nip",
@@ -362,7 +361,7 @@ class Contractor(SQLModel, table=True):
 
 
 class AuditLog(SQLModel, table=True):
-    """Audit trail for all changes — z JSON i Relationship."""
+    """Audit trail for all changes -- z JSON i Relationship."""
 
     __tablename__ = "audit_logs"  # type: ignore[assignment]
     __table_args__ = (
@@ -392,15 +391,15 @@ class AuditLog(SQLModel, table=True):
         sa_type=PendulumDateTime,
     )
 
-    invoice: Mapped["Invoice | None"] = Relationship(back_populates="audit_logs")
+    invoice: Mapped[Invoice | None] = Relationship(back_populates="audit_logs")
 
 
 class OutboxEvent(SQLModel, table=True):
-    """Transactional outbox events — z Enum, JSON, Relationship, Partial Index.
+    """Transactional outbox events -- z Enum, JSON, Relationship, Partial Index.
 
     - Enum column: OutboxStatus zamiast gołego str
     - JSON column: payload zamiast gołego stringa
-    - Relationship() → invoice
+    - Relationship() -> invoice
     - Partial index: tylko nieprzetworzone eventy
     """
 
@@ -446,7 +445,7 @@ class OutboxEvent(SQLModel, table=True):
         foreign_key="invoices.id",
         index=True,
     )
-    invoice: Mapped["Invoice | None"] = Relationship(back_populates="outbox_events")
+    invoice: Mapped[Invoice | None] = Relationship(back_populates="outbox_events")
 
     # event_type validation moved to hooks.py (before_flush listener)
 
@@ -477,7 +476,7 @@ class SecurityAlert(SQLModel, table=True):
 
 
 class UserAccount(SQLModel, table=True):
-    """User accounts — z Enum role i walidacją username."""
+    """User accounts -- z Enum role i walidacją username."""
 
     __tablename__ = "users"  # type: ignore[assignment]
     model_config: ClassVar[dict] = {

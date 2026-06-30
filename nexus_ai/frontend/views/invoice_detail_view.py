@@ -1,4 +1,4 @@
-"""Invoice Detail View — @ft.component + DatePicker + Canvas + Clipboard.
+"""Invoice Detail View -- @ft.component + DatePicker + Canvas + Clipboard.
 
   - @ft.component + use_state() zamiast klasy imperatywnej
   - ft.DatePicker / ft.TimePicker dla daty faktury

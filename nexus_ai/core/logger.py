@@ -5,13 +5,13 @@ Ujednolicony system logowania oparty na Loguru + structlog.
 Loguru zarządza outputem (konsola, pliki, rotacja, kompresja).
 structlog zapewnia ustrukturyzowane, kontekstowe logowanie z bound loggerami.
 
-Usage (Loguru — prosty, bezpośredni):
+Usage (Loguru -- prosty, bezpośredni):
     from core.logger import logger, setup_logger, set_log_level
 
     setup_logger(app_name="NexusAI", log_level="INFO")
     logger.info("Hello from Loguru")
 
-Usage (structlog — kontekstowy, z bound contextem):
+Usage (structlog -- kontekstowy, z bound contextem):
     from structlog import get_logger
 
     log = get_logger(__name__)
@@ -37,7 +37,7 @@ _INITIALIZED = False
 def _patch_record(record):
     """Patch loguru record with default correlation fields.
 
-    Zastępuje CorrelationIdFilter — wbudowany mechanizm Loguru jest
+    Zastępuje CorrelationIdFilter -- wbudowany mechanizm Loguru jest
     szybszy i czystszy niż custom filter class.
     """
     record["extra"].setdefault("correlation_id", "system")
@@ -83,7 +83,7 @@ def set_log_level(level: str) -> None:
 
 # ── structlog ────────────────────────────────────────────────────────────────
 # structlog zapewnia ustrukturyzowane, kontekstowe logowanie z bound loggerami.
-# Jego backend to loguru — wszystkie skonfigurowane sinki (konsola, pliki, rotacja)
+# Jego backend to loguru -- wszystkie skonfigurowane sinki (konsola, pliki, rotacja)
 # działają bez zmian, a structlog dodaje: merge_contextvars, TimeStamper, JSON.
 #
 # Użycie w module:
@@ -188,7 +188,7 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
     logger.level("AUDIT", no=38, color="<yellow>")
     logger.level("TAX", no=12, color="<green>")
 
-    # ── logger.patch() — dynamiczne wstrzykiwanie pól zamiast CorrelationIdFilter ─
+    # ── logger.patch() -- dynamiczne wstrzykiwanie pól zamiast CorrelationIdFilter ─
     # _patch_record jest zarejestrowane przez @logger.patch na górze pliku
 
     # ── Konsola (kolorowa, z czytelnym formatem) ──────────────────────────────
@@ -233,7 +233,7 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
         enqueue=True,
         level=log_level,
         diagnose=False,
-        backtrace=False,  # Tekstowy plik — bez backtrace dla czytelności
+        backtrace=False,  # Tekstowy plik -- bez backtrace dla czytelności
         format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {extra[correlation_id]:.12} | {message}",
     )
 
@@ -246,7 +246,7 @@ def setup_logger(app_name: str = "NexusAI", log_level: str | None = None) -> Non
         enqueue=True,
         level="ERROR",
         diagnose=False,
-        backtrace=True,  # ERROR log — pełny backtrace dla debugowania
+        backtrace=True,  # ERROR log -- pełny backtrace dla debugowania
         format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {extra[correlation_id]} | {extra[request_id]} | {message}",
     )
 
@@ -280,6 +280,7 @@ def _setup_duckdb_sink(log_dir: Path, app_name: str) -> None:
     """
     try:
         import duckdb
+
         from nexus_ai.core.msgspec_utils import msgspec_dumps as _msgspec_dumps_logger
 
         db_path = log_dir / f"{app_name.lower()}_logs.duckdb"
@@ -320,7 +321,7 @@ def _setup_duckdb_sink(log_dir: Path, app_name: str) -> None:
                     ),
                 )
             except Exception:
-                pass  # Ignoruj błędy DuckDB — nie blokuj logowania
+                pass  # Ignoruj błędy DuckDB -- nie blokuj logowania
 
         logger.add(
             _duckdb_sink,
@@ -330,7 +331,7 @@ def _setup_duckdb_sink(log_dir: Path, app_name: str) -> None:
         )
         logger.debug("[LOGGER] DuckDB sink initialized: %s", db_path)
     except ImportError:
-        logger.debug("[LOGGER] DuckDB not available — skipping DuckDB sink")
+        logger.debug("[LOGGER] DuckDB not available -- skipping DuckDB sink")
     except Exception as exc:
         logger.debug("[LOGGER] DuckDB sink init failed: %s", exc)
 
@@ -364,7 +365,7 @@ def _setup_stamina_logging() -> None:
     stamina_logger.handlers.clear()
     stamina_logger.addHandler(_StaminaInterceptHandler())
     stamina_logger.propagate = False
-    logger.debug("[STAMINA] Retry logger configured — stamina events visible in structlog")
+    logger.debug("[STAMINA] Retry logger configured -- stamina events visible in structlog")
 
 
 def _redirect_standard_logging() -> None:
@@ -400,7 +401,7 @@ def get_logger(name: str | None = None):
 
     The optional *name* argument is accepted for compatibility with
     the standard ``logging.getLogger(name)`` idiom but is not used
-    — Loguru captures the caller's module automatically.
+    -- Loguru captures the caller's module automatically.
     """
     return logger
 

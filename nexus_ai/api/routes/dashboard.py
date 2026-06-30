@@ -1,4 +1,4 @@
-"""Dashboard API endpoints — daily briefing and summary statistics."""
+"""Dashboard API endpoints -- daily briefing and summary statistics."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from typing import Any
 from litestar import Controller, get
 from litestar.connection import Request
 
-from nexus_ai.api.dto import DashboardBriefingDTO, DashboardSummaryDTO, TAG_DASHBOARD
+from nexus_ai.api.dto import TAG_DASHBOARD, DashboardBriefingDTO, DashboardSummaryDTO
 from nexus_ai.core.config import AppConfig
 from nexus_ai.db.models import InvoiceStatus
 from nexus_ai.services.notification_service import NotificationService

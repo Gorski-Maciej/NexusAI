@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from litestar import Controller, get
 
-from nexus_ai.api.dto import KoreAuditDTO, TAG_AUDIT
+from nexus_ai.api.dto import TAG_AUDIT, KoreAuditDTO
 from nexus_ai.api.rbac import owner_only_guard
 
 
@@ -21,10 +21,10 @@ class KoreAuditController(Controller):
         operation_id="getKoreAudit",
     )
     async def get_kore_audit(self) -> dict:
-        # kore_delivery_audit.py removed — legacy audit script.
+        # kore_delivery_audit.py removed -- legacy audit script.
         # Functionality absorbed by Integrity Verifier.
         return {
             "status": "ok",
             "kore_version": "legacy_removed",
-            "detail": "kore_delivery_audit.py removed — replaced by Integrity Verifier",
+            "detail": "kore_delivery_audit.py removed -- replaced by Integrity Verifier",
         }
