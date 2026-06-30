@@ -21,13 +21,14 @@ przez anyio.to_thread.run_sync() w kontekście asynchronicznym.
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass, field
+from collections.abc import Callable, Iterator
 from enum import IntEnum
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Callable, Iterator
+from typing import Any
 
 import fsspec
+import msgspec
 from fsspec.implementations.cached import CachingFileSystem
 from PIL import Image
 from structlog import get_logger
@@ -36,60 +37,113 @@ logger = get_logger("nexus.core.pdfium")
 
 # ── Stałe ──────────────────────────────────────────────────────────────────
 
-# PDFium domyślnie renderuje w 72 DPI
 PDFIUM_BASE_DPI = 72.0
-
 DEFAULT_DPI = 300
 DEFAULT_SCALE = DEFAULT_DPI / PDFIUM_BASE_DPI  # ≈ 4.1667
-
-# Stałe dla progresywnego ładowania
 DEFAULT_CHUNK_SIZE = 1024 * 1024  # 1 MB
-
-# Stałe cache
 DEFAULT_CACHE_TTL = 300  # 5 minut
 DEFAULT_CACHE_MAX_SIZE = 100  # max 100 stron w cache
 
 
-# ═════════════════════════════════════════════════════════════════════════════
-# FAZA 1: Render Flags - stałe dla renderowania PDFium
-# ═════════════════════════════════════════════════════════════════════════════
-
-
 class RenderFlags(IntEnum):
-    """Flagi renderowania PDFium.
-
-    Zgodne z FPDF_GetRenderFlags/FPDF_RenderPageConstants.
-    Używane przez page.render(flags=...) dla optymalizacji.
-    """
-
+    """Flagi renderowania PDFium."""
     NONE = 0
-    LCD_TEXT = 1 << 0  # FPDF_LCD_TEXT - subpikselowy antyaliasing
-    NO_SMOOTHTEXT = 1 << 1  # FPDF_NO_SMOOTHTEXT - wyłącz wygładzanie tekstu
-    NO_SMOOTHIMAGE = 1 << 2  # FPDF_NO_SMOOTHIMAGE - wyłącz wygładzanie obrazów
-    NO_SMOOTHPATH = 1 << 3  # FPDF_NO_SMOOTHPATH - wyłącz wygładzanie ścieżek
-    GRAYSCALE = 1 << 4  # FPDF_GRAYSCALE - renderuj w skali szarości
-    FORCE_HALFTONE = 1 << 5  # FPDF_RENDER_FORCE_HALFTONE
-    RENDER_TO_BITMAP = 1 << 6  # FPDF_RENDER_TO_BITMAP
-    ANNOTATIONS = 1 << 7  # FPDF_ANNOT - renderuj adnotacje
+    LCD_TEXT = 1 << 0
+    NO_SMOOTHTEXT = 1 << 1
+    NO_SMOOTHIMAGE = 1 << 2
+    NO_SMOOTHPATH = 1 << 3
+    GRAYSCALE = 1 << 4
+    FORCE_HALFTONE = 1 << 5
+    RENDER_TO_BITMAP = 1 << 6
+    ANNOTATIONS = 1 << 7
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# msgspec.Struct - struktury danych dla PDF
+# msgspec.Struct - struktury danych dla PDF (bez fallbacka @dataclass)
 # ═════════════════════════════════════════════════════════════════════════════
 
 
-try:
-    import msgspec
+class PDFTextRange(msgspec.Struct):
+    """Reprezentacja pojedynczego zakresu tekstu z pozycją."""
+    text: str
+    left: float
+    top: float
+    right: float
+    bottom: float
+    font_size: float = 0.0
 
-    HAS_MSGPEC = True
-except ImportError:
-    HAS_MSGPEC = False
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "text": self.text,
+            "left": round(self.left, 2),
+            "top": round(self.top, 2),
+            "right": round(self.right, 2),
+            "bottom": round(self.bottom, 2),
+            "font_size": round(self.font_size, 2),
+        }
 
-# ── Nowe struktury (przed if/else aby były dostępne w obu wariantach) ──────
+
+class PDFPageInfo(msgspec.Struct):
+    """Informacja o pojedynczej stronie PDF z zakresami tekstu."""
+    page_num: int
+    width: float
+    height: float
+    text_ranges: list[PDFTextRange]
+
+    @property
+    def text_count(self) -> int:
+        return len(self.text_ranges)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "page_num": self.page_num,
+            "width": round(self.width, 2),
+            "height": round(self.height, 2),
+            "text_count": len(self.text_ranges),
+            "text_ranges": [t.to_dict() for t in self.text_ranges],
+        }
 
 
-@dataclass
-class _AnnotationInfo:
+class PDFSignature(msgspec.Struct):
+    """Reprezentacja podpisu cyfrowego w dokumencie PDF."""
+    author: str = ""
+    reason: str = ""
+    location: str = ""
+    is_verified: bool = False
+    signed_at: str = ""
+    field_name: str = ""
+    page_num: int = 0
+
+
+class PDFFormField(msgspec.Struct):
+    """Reprezentacja pola formularza AcroForm."""
+    name: str = ""
+    type: str = ""
+    value: str = ""
+    is_readonly: bool = False
+    is_required: bool = False
+    max_length: int = 0
+    options: list[str] = []
+    page_num: int = 0
+    rect: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 0.0)
+
+
+class PDFRenderCacheEntry(msgspec.Struct):
+    """Wpis w cache'u renderowanych stron."""
+    png_bytes: bytes
+    cached_at: float = 0.0
+
+
+class PDFProgressInfo(msgspec.Struct):
+    """Informacja o postępie renderowania."""
+    current_page: int = 0
+    total_pages: int = 0
+    percent: float = 0.0
+    page_dpi: int = 0
+
+
+class PDFAnnotation(msgspec.Struct):
+    """Adnotacja na stronie PDF."""
     type: str = ""
     rect: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 0.0)
     content: str = ""
@@ -100,24 +154,24 @@ class _AnnotationInfo:
     page_num: int = 0
 
 
-@dataclass
-class _AttachmentInfo:
+class PDFAttachment(msgspec.Struct):
+    """Załącznik osadzony w dokumencie PDF."""
     name: str = ""
     data: bytes = b""
     size: int = 0
     index: int = 0
 
 
-@dataclass
-class _BookmarkInfo:
+class PDFBookmark(msgspec.Struct):
+    """Zakładka (bookmark/outline) w dokumencie PDF."""
     title: str = ""
     page_index: int = 0
     level: int = 0
-    children: list = field(default_factory=list)
+    children: list[PDFBookmark] = []
 
 
-@dataclass
-class _SearchResult:
+class PDFSearchResult(msgspec.Struct):
+    """Wynik wyszukiwania tekstu w PDF."""
     text: str = ""
     left: float = 0.0
     top: float = 0.0
@@ -127,283 +181,22 @@ class _SearchResult:
     count: int = 1
 
 
-@dataclass
-class _PDFACompliance:
+class PDFACompliance(msgspec.Struct):
+    """Wynik sprawdzenia zgodności z PDF/A."""
     is_pdfa: bool = False
     pdfa_version: int = 0
     pdfa_version_str: str = "none"
 
 
-@dataclass
-class _FormFillData:
-    field_name: str = ""
-    value: str = ""
+class PDFFormFillData(msgspec.Struct):
+    """DTO dla wypełniania formularza - walidacja przez msgspec."""
+    field_name: str
+    value: str
 
 
-if HAS_MSGPEC:
-
-    class PDFTextRange(msgspec.Struct):
-        """Reprezentacja pojedynczego zakresu tekstu z pozycją."""
-
-        text: str
-        left: float
-        top: float
-        right: float
-        bottom: float
-        font_size: float = 0.0
-
-        def to_dict(self) -> dict[str, Any]:
-            return {
-                "text": self.text,
-                "left": round(self.left, 2),
-                "top": round(self.top, 2),
-                "right": round(self.right, 2),
-                "bottom": round(self.bottom, 2),
-                "font_size": round(self.font_size, 2),
-            }
-
-    class PDFPageInfo(msgspec.Struct):
-        """Informacja o pojedynczej stronie PDF z zakresami tekstu."""
-
-        page_num: int
-        width: float
-        height: float
-        text_ranges: list[PDFTextRange]
-
-        @property
-        def text_count(self) -> int:
-            return len(self.text_ranges)
-
-        def to_dict(self) -> dict[str, Any]:
-            return {
-                "page_num": self.page_num,
-                "width": round(self.width, 2),
-                "height": round(self.height, 2),
-                "text_count": len(self.text_ranges),
-                "text_ranges": [t.to_dict() for t in self.text_ranges],
-            }
-
-    class PDFSignature(msgspec.Struct):
-        """Reprezentacja podpisu cyfrowego w dokumencie PDF."""
-
-        author: str = ""
-        reason: str = ""
-        location: str = ""
-        is_verified: bool = False
-        signed_at: str = ""
-        field_name: str = ""
-        page_num: int = 0
-
-    class PDFFormField(msgspec.Struct):
-        """Reprezentacja pola formularza AcroForm."""
-
-        name: str = ""
-        type: str = ""
-        value: str = ""
-        is_readonly: bool = False
-        is_required: bool = False
-        max_length: int = 0
-        options: list[str] = []
-        page_num: int = 0
-        rect: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 0.0)
-
-    class PDFRenderCacheEntry(msgspec.Struct):
-        """Wpis w cache'u renderowanych stron."""
-
-        png_bytes: bytes
-        cached_at: float = 0.0
-
-    class PDFProgressInfo(msgspec.Struct):
-        """Informacja o postępie renderowania."""
-
-        current_page: int = 0
-        total_pages: int = 0
-        percent: float = 0.0
-        page_dpi: int = 0
-
-    # ── NOWE FAZA 2: struktury dla adnotacji, załączników, zakładek ─────
-    class PDFAnnotation(msgspec.Struct):
-        """Adnotacja na stronie PDF."""
-
-        type: str = ""
-        rect: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 0.0)
-        content: str = ""
-        color: tuple[int, int, int] = (255, 255, 0)
-        author: str = ""
-        modified_at: str = ""
-        flags: int = 0
-        page_num: int = 0
-
-    class PDFAttachment(msgspec.Struct):
-        """Załącznik osadzony w dokumencie PDF."""
-
-        name: str = ""
-        data: bytes = b""
-        size: int = 0
-        index: int = 0
-
-    class PDFBookmark(msgspec.Struct):
-        """Zakładka (bookmark/outline) w dokumencie PDF."""
-
-        title: str = ""
-        page_index: int = 0
-        level: int = 0
-        children: list[PDFBookmark] = []
-
-    class PDFSearchResult(msgspec.Struct):
-        """Wynik wyszukiwania tekstu w PDF."""
-
-        text: str = ""
-        left: float = 0.0
-        top: float = 0.0
-        right: float = 0.0
-        bottom: float = 0.0
-        char_index: int = 0
-        count: int = 1
-
-    class PDFACompliance(msgspec.Struct):
-        """Wynik sprawdzenia zgodności z PDF/A."""
-
-        is_pdfa: bool = False
-        pdfa_version: int = 0
-        pdfa_version_str: str = "none"
-
-    class PDFFormFillData(msgspec.Struct):
-        """DTO dla wypełniania formularza - walidacja przez msgspec."""
-
-        field_name: str
-        value: str
-
-    class PDFFormFillBatch(msgspec.Struct):
-        """DTO dla wsadowego wypełniania formularza."""
-
-        fields: list[PDFFormFillData]
-
-else:
-    # Fallback: @dataclass
-
-    @dataclass
-    class PDFTextRange:  # type: ignore
-        text: str
-        left: float
-        top: float
-        right: float
-        bottom: float
-        font_size: float = 0.0
-
-        def to_dict(self) -> dict[str, Any]:
-            return {
-                "text": self.text,
-                "left": round(self.left, 2),
-                "top": round(self.top, 2),
-                "right": round(self.right, 2),
-                "bottom": round(self.bottom, 2),
-                "font_size": round(self.font_size, 2),
-            }
-
-    @dataclass
-    class PDFPageInfo:  # type: ignore
-        page_num: int
-        width: float
-        height: float
-        text_ranges: list[PDFTextRange]
-
-        @property
-        def text_count(self) -> int:
-            return len(self.text_ranges)
-
-        def to_dict(self) -> dict[str, Any]:
-            return {
-                "page_num": self.page_num,
-                "width": round(self.width, 2),
-                "height": round(self.height, 2),
-                "text_count": len(self.text_ranges),
-                "text_ranges": [t.to_dict() for t in self.text_ranges],
-            }
-
-    @dataclass
-    class PDFSignature:  # type: ignore
-        author: str = ""
-        reason: str = ""
-        location: str = ""
-        is_verified: bool = False
-        signed_at: str = ""
-        field_name: str = ""
-        page_num: int = 0
-
-    @dataclass
-    class PDFFormField:  # type: ignore
-        name: str = ""
-        type: str = ""
-        value: str = ""
-        is_readonly: bool = False
-        is_required: bool = False
-        max_length: int = 0
-        options: list[str] = field(default_factory=list)
-        page_num: int = 0
-        rect: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 0.0)
-
-    @dataclass
-    class PDFRenderCacheEntry:  # type: ignore
-        png_bytes: bytes
-        cached_at: float = 0.0
-
-    @dataclass
-    class PDFProgressInfo:  # type: ignore
-        current_page: int = 0
-        total_pages: int = 0
-        percent: float = 0.0
-        page_dpi: int = 0
-
-    @dataclass
-    class PDFAnnotation:  # type: ignore
-        type: str = ""
-        rect: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 0.0)
-        content: str = ""
-        color: tuple[int, int, int] = (255, 255, 0)
-        author: str = ""
-        modified_at: str = ""
-        flags: int = 0
-        page_num: int = 0
-
-    @dataclass
-    class PDFAttachment:  # type: ignore
-        name: str = ""
-        data: bytes = b""
-        size: int = 0
-        index: int = 0
-
-    @dataclass
-    class PDFBookmark:  # type: ignore
-        title: str = ""
-        page_index: int = 0
-        level: int = 0
-        children: list = field(default_factory=list)
-
-    @dataclass
-    class PDFSearchResult:  # type: ignore
-        text: str = ""
-        left: float = 0.0
-        top: float = 0.0
-        right: float = 0.0
-        bottom: float = 0.0
-        char_index: int = 0
-        count: int = 1
-
-    @dataclass
-    class PDFACompliance:  # type: ignore
-        is_pdfa: bool = False
-        pdfa_version: int = 0
-        pdfa_version_str: str = "none"
-
-    @dataclass
-    class PDFFormFillData:  # type: ignore
-        field_name: str = ""
-        value: str = ""
-
-    @dataclass
-    class PDFFormFillBatch:  # type: ignore
-        fields: list[PDFFormFillData] = field(default_factory=list)
+class PDFFormFillBatch(msgspec.Struct):
+    """DTO dla wsadowego wypełniania formularza."""
+    fields: list[PDFFormFillData]
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -486,8 +279,10 @@ def _record_pdf_metric(name: str, value: float, attributes: dict | None = None) 
         from nexus_ai.api.telemetry_metrics import record_ocr_duration as _r
 
         _r(value / 1000.0)
-    except Exception:
-        pass
+    except ImportError:
+        logger.debug("[PDFIUM] Telemetry metrics not available, skipping")
+    except Exception as exc:
+        logger.warning("[PDFIUM] Failed to record metric: %s", exc)
 
 
 def _timed(func: Callable) -> Callable:
@@ -523,8 +318,8 @@ def _timed(func: Callable) -> Callable:
                 )
                 try:
                     _record_pdf_metric(f"pdfium.{func.__name__}.duration", duration)
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.warning("[PDFIUM] Failed to record metric: %s", exc)
 
     return wrapper
 

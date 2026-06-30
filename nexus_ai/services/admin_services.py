@@ -312,8 +312,8 @@ class FailedTaskService:
                 try:
                     await FailedTaskService._republish(db_engine, row["task_name"], row["payload"])
                     retried += 1
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.warning("[ADMIN] Retry task failed: %s", exc)
             await conn.commit()
         return retried
 

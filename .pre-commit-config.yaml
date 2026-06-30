@@ -1,0 +1,55 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# Pre-commit hooks — NexusAI Enterprise Quality Gates
+# ═══════════════════════════════════════════════════════════════════════════════
+# Install:  pip install pre-commit && pre-commit install
+# Run all:  pre-commit run --all-files
+# ═══════════════════════════════════════════════════════════════════════════════
+
+repos:
+  # ── Ruff: linter + auto-fix ──────────────────────────────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.0
+    hooks:
+      - id: ruff
+        name: ruff-lint
+        args: [--fix, --exit-non-zero-on-fix]
+        files: ^nexus_ai/
+        types_or: [python, pyi]
+      - id: ruff-format
+        name: ruff-format
+        files: ^nexus_ai/
+        types_or: [python, pyi]
+
+  # ── mypy: static type checking ─────────────────────────────────────────
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        name: mypy-typecheck
+        files: ^nexus_ai/
+        args: [--strict, --ignore-missing-imports]
+        additional_dependencies:
+          - msgspec>=0.18.0
+          - types-setuptools
+
+  # ── General hooks ──────────────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        name: trim-trailing-whitespace
+        files: ^nexus_ai/
+      - id: end-of-file-fixer
+        name: fix-end-of-file
+        files: ^nexus_ai/
+      - id: check-yaml
+        name: check-yaml
+        files: \.(yaml|yml)$
+      - id: check-added-large-files
+        name: check-large-files
+        args: [--maxkb=2048]
+      - id: check-merge-conflict
+        name: check-merge-conflict
+      - id: check-toml
+        name: check-toml
+        files: \.toml$

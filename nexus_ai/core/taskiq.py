@@ -86,7 +86,8 @@ class TaskTracingMiddleware(TaskiqMiddleware):
                 baggage.set_baggage("task_name", message.task_name)
                 _structlog.contextvars.clear_contextvars()
                 _structlog.contextvars.bind_contextvars(task_id=trace_id, task_name=message.task_name)
-        except Exception:
+        except Exception as exc:
+            logger.warning("[TASKIQ] Tracing middleware failed: %s", exc)
             message.labels["trace_id"] = uuid.uuid4().hex[:16]
             message.labels["span_id"] = ""
         return message
@@ -102,7 +103,7 @@ class SentryTaskMiddleware(TaskiqMiddleware):
             sentry_sdk.set_tag("task_id", message.labels.get("trace_id", ""))
             sentry_sdk.add_breadcrumb(message=f"task.{message.task_name}.started", category="task", level="info")
         except ImportError:
-            pass
+            logger.debug("[TASKIQ] Sentry not available")
 
     async def on_error(self, message: TaskiqMessage, result: TaskiqResult) -> None:
         try:
@@ -110,7 +111,7 @@ class SentryTaskMiddleware(TaskiqMiddleware):
             if result.error:
                 sentry_sdk.capture_exception(result.error)
         except ImportError:
-            pass
+            logger.debug("[TASKIQ] Sentry not available")
 
 
 def _record_task_metrics(task_name: str, duration_ms: float, status: str) -> None:
@@ -258,6 +259,6 @@ class HybridResultBackend(TaskiqResultBackend):
         if self._nc is not None:
             try:
                 await self._nc.drain()
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[TASKIQ] NATS drain failed: %s", exc)
         await self._sqlite.close()

@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from pathlib import Path
-from typing import Any, AsyncIterator, final
+from typing import Any, final
 
 import anyio
 import pendulum
@@ -32,9 +33,8 @@ class NatsErrors:
             cls.TimeoutError = ne.TimeoutError
             cls.ConnectionClosedError = ne.ConnectionClosedError
             cls.NoRespondersError = ne.NoRespondersError
-        except (ImportError, AttributeError):
-            logger.debug("[NATS] Error types import failed")
-            pass
+        except Exception as exc:
+            logger.debug("[NATS] Error types import failed: %s", exc)
 
 
 # ── Connection helpers ────────────────────────────────────────────────────

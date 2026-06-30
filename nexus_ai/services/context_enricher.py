@@ -132,9 +132,9 @@ class ContextEnricher:
         """Zamknij połączenia HTTP."""
         try:
             await self._white_list.close()
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning("[ENRICHER] Failed to close white_list: %s", exc)
         try:
             await self._gus.close()
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning("[ENRICHER] Failed to close GUS client: %s", exc)

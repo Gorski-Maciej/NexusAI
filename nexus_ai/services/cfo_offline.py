@@ -9,8 +9,8 @@ z kolejką asynchroniczną, cache i magazynem relacji.
 """
 
 from __future__ import annotations
-from datetime import date
 
+from datetime import date
 from typing import Any, Protocol, final
 
 import pendulum

@@ -147,8 +147,8 @@ class KeyRotation:
         if self._conn:
             try:
                 self._conn.execute("PRAGMA optimize")
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[DB:Security] PRAGMA optimize failed: %s", exc)
             self._conn.close()
             self._conn = None
 

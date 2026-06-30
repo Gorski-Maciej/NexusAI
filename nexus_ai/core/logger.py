@@ -322,8 +322,6 @@ def _setup_duckdb_sink(log_dir: Path, app_name: str) -> None:
                 )
             except Exception:
                 pass  # Ignoruj błędy DuckDB -- nie blokuj logowania
-
-        logger.add(
             _duckdb_sink,
             level="WARNING",
             enqueue=True,

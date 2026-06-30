@@ -167,8 +167,8 @@ def init_tracing(
         if environment == "dev":
             try:
                 provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[OTEL] ConsoleSpanExporter failed: %s", exc)
         trace.set_tracer_provider(provider)
         _tracer_provider = provider
         _OTEL_AVAILABLE = True
@@ -331,8 +331,8 @@ def create_tracer_provider(resource: Any | None = None) -> Any | None:
         if os.getenv("NEXUS_ENV", "dev") == "dev":
             try:
                 provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[OTEL] ConsoleSpanExporter failed: %s", exc)
         trace.set_tracer_provider(provider)
         logger.info("[OTEL] TracerProvider init: service=%s env=%s", OTEL_SERVICE_NAME, os.getenv("NEXUS_ENV", "dev"))
         return provider

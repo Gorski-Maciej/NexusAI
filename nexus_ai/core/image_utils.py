@@ -41,10 +41,6 @@ def safe_open_image(content: bytes) -> Image.Image | None:
         return None
 
 
-# ============================================================================
-# ============================================================================
-
-
 def normalize_image_to_jpeg(
     content: bytes,
     max_size: tuple[int, int] | None = (2048, 2048),

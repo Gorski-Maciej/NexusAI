@@ -115,8 +115,8 @@ class ProtocolLoader:
         try:
             if self._data and "metadata" in self._data:
                 version = str(self._data["metadata"].get("version", "")) or None
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.error("[ProtocolLoader] Failed to read version: %s", exc)
 
         for callback in self._on_change_callbacks:
             try:

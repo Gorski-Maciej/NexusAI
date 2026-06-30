@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import logging
 import threading
 from pathlib import Path
 from typing import Any
 
 import duckdb
 from msgspec import Struct
+
+# Logger dla wolnych zapytań
+_slow_logger = logging.getLogger("nexus.duckdb.profiler")
 
 
 class DuckDBLimits(Struct):
@@ -537,8 +541,9 @@ class DuckDBManager:
             for conn in list(self._all_connections):
                 try:
                     conn.close()
-                except Exception:
-                    pass
+                except Exception as exc:
+                    import logging
+                    logging.getLogger("nexus.duckdb").debug("Close error: %s", exc)
             self._all_connections.clear()
         # Wyczyść thread-local bieżącego wątku
         self._local.connection = None

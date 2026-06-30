@@ -305,19 +305,39 @@ target-version = "py313"
 line-length = 100
 src = ["nexus_ai/"]
 
+# ── Ruff ENTERPRISE — quality gates ──────────────────────────────────
+# RULES THAT MUST NEVER BE VIOLATED:
+# - S110 (try-except-pass): catching Exception and silently discarding it
+#   is strictly forbidden in a financial system. Always log or re-raise.
+# - S608 (hardcoded-sql-expression): SQL injection risk.
+# - S101 (assert): assertions can be stripped in optimized mode.
+# - E402 (module-import-not-at-top-of-file): blocks static analysis.
 [tool.ruff.lint]
-select = ["E", "F", "I", "W", "N", "UP", "S"]
+select = ["E", "F", "I", "W", "N", "UP", "S", "B", "RUF"]
 ignore = [
     "E501",   # Long lines — intentional for readability
     "N999",   # Invalid module name — project uses UPPERCASE dirs (API, DB, FRONTEND) deliberately
 ]
 
-# ── Mypy (type checker) ─────────────────────────────────────────────────────
+[tool.ruff.lint.per-file-ignores]
+# Testy mogą używać assertów i mniej restrykcyjnych zasad
+"tests/**" = ["S101", "S110", "S608"]
+
+# ── Mypy STRICT MODE — quality gates ────────────────────────────────────
 [tool.mypy]
 python_version = "3.13"
-strict = false
+strict = true
 ignore_missing_imports = true
 warn_unused_ignores = false
+# Disallow untyped defs for new code (gradual adoption)
+disallow_untyped_defs = true
+disallow_any_unimported = false  # Allow Any for 3rd-party libs
+
+[tool.mypy.per-module-options]
+# Relax for modules with heavy dynamic imports
+"nexus_ai.core.plugins.*" = { disallow_untyped_defs = false }
+"nexus_ai.core.logger.*" = { disallow_untyped_defs = false }
+"nexus_ai.core.config.*" = { disallow_untyped_defs = false }
 
 # Dev dependencies: [project.optional-dependencies].dev (PEP 621)
 # dla kompatybilności z PyPI. pixi ma własną sekcję

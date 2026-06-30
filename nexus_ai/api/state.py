@@ -147,6 +147,7 @@ def _make_engine(config: AppConfig):
 
 
 from structlog import get_logger
+
 logger = get_logger("nexus.api.state")
 
 

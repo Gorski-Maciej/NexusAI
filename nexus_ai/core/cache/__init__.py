@@ -227,8 +227,8 @@ class NexusCache:
     def close(self) -> None:
         try:
             self._cache.close()
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("[CACHE] Close failed: %s", exc)
 
     def __del__(self) -> None:
         self.close()

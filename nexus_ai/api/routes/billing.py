@@ -1,22 +1,16 @@
-"""
-Billing estimation API endpoint.
+"""Billing estimation API endpoint.
 
-GET /api/v2/billing/estimate -- publiczny endpoint do estymacji kosztów,
-zgodny z wzorcem DecisionEngine -- reguły first-match-wins w DuckDB.
+GET /api/v2/billing/estimate -- uzywa współdzielonego SQLite store.
 """
 
 from __future__ import annotations
 
-import duckdb
 from litestar import Controller, get
 from litestar.response import Response
 
-from nexus_ai.api.dto import TAG_FINANCE, BillingEstimateResponseDTO
-from nexus_ai.services.billing_estimator import (
-    BillingEstimator,
-    ensure_schema,
-    seed_default_billing_rules,
-)
+from nexus_ai.services.billing_estimator import BillingEstimator
+
+TAG_FINANCE = "finance"
 
 
 class BillingController(Controller):
@@ -25,54 +19,52 @@ class BillingController(Controller):
     path = "/api/v2/billing"
     tags = [TAG_FINANCE]
 
+    _estimator: BillingEstimator | None = None
+
+    @property
+    def estimator(self) -> BillingEstimator:
+        if self._estimator is None:
+            self._estimator = BillingEstimator()
+        return self._estimator
+
     @get(
         "/estimate",
-        return_dto=BillingEstimateResponseDTO,
         summary="Estimate billing cost",
         description="Estimates document processing cost and time based on document type, tax form, and additional services.",
         operation_id="estimateBilling",
     )
     async def estimate(
         self,
-        document_type: str = "invoice_national",
+        document_type: str = "faktura_krajowa",
         tax_form: str = "CIT_STANDARD",
         additional_services: str = "",
     ) -> Response[dict]:
         """Estymacja kosztu i czasu przetwarzania dokumentu.
 
         Query params:
-            document_type: invoice_national | invoice_foreign
+            document_type: invoice_national | invoice_foreign | korekta | rachunek
             tax_form: CIT_STANDARD | LUMP_SUM | LINEAR | CIT_ESTONIAN
-            additional_services: comma-separated (e.g. ksef,semantic_guard)
+            additional_services: comma-separated (e.g. ekspres,audyt)
         """
-        conn = duckdb.connect(":memory:")
-        try:
-            ensure_schema(conn)
-            seed_default_billing_rules(conn)
-            estimator = BillingEstimator(conn)
+        estimate = self.estimator.estimate(
+            doc_type=document_type,
+            tax_form=tax_form,
+            extra_services=additional_services if additional_services else None,
+        )
 
-            services = (
-                [s.strip() for s in additional_services.split(",") if s.strip()]
-                if additional_services
-                else None
-            )
-            estimate = estimator.estimate(
-                document_type=document_type,
-                tax_form=tax_form,
-                additional_services=services,
-            )
-
-            return Response(
-                {
-                    "total_price_pln": estimate.total_price_pln,
-                    "total_time_hours": estimate.total_time_hours,
-                    "breakdown": estimate.breakdown or [],
-                    "params": {
-                        "document_type": document_type,
-                        "tax_form": tax_form,
-                        "additional_services": services or [],
-                    },
-                }
-            )
-        finally:
-            conn.close()
+        return Response(
+            {
+                "total_price_pln": estimate.total_price_pln,
+                "total_time_hours": estimate.total_time_hours,
+                "breakdown": estimate.breakdown or [],
+                "params": {
+                    "document_type": document_type,
+                    "tax_form": tax_form,
+                    "additional_services": (
+                        [s.strip() for s in additional_services.split(",") if s.strip()]
+                        if additional_services
+                        else []
+                    ),
+                },
+            }
+        )

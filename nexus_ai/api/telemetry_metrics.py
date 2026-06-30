@@ -4,6 +4,7 @@ OpenTelemetry metrics definitions for NexusAI.
 """
 
 from __future__ import annotations
+
 from typing import Any
 
 from opentelemetry.metrics import Counter, Gauge, Histogram, Meter

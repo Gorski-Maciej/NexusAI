@@ -25,7 +25,8 @@ from msgspec import Struct
 try:
     pendulum.set_locale("pl")
 except Exception:
-    pass  # locale 'pl' może nie być dostępna w niektórych środowiskach
+    logger = __import__('structlog').get_logger(__name__)
+    logger.debug("[TIME] Polish locale not available, using default")
 
 
 # ═════════════════════════════════════════════════════════════════════════════

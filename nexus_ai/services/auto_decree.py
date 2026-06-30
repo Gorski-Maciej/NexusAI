@@ -119,8 +119,8 @@ class AutoDecreeEngine:
                             "vat_deduction": float(row[2] or 0.0),
                             "source": "vec0_similarity",
                         }
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning("[AUTO-DECREE] Vector search failed: %s", exc)
 
         return {}
 
