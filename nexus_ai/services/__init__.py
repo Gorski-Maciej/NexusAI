@@ -37,7 +37,9 @@ def __getattr__(name: str) -> Any:
     raise AttributeError(f"module 'nexus_ai.services' has no attribute '{name}'")
 
 
-__all__ = [  # type: ignore[has-type]
+# Auto-generated __all__ from .py files in this package
+_SERVICE_MODULES = [
     p.stem for p in Path(__file__).parent.glob("*.py")
     if p.stem != "__init__"
 ]
+__all__: list[str] = _SERVICE_MODULES

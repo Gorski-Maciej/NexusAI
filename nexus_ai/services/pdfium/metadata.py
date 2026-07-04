@@ -11,8 +11,8 @@ from typing import Any
 import fsspec
 from structlog import get_logger
 
-from nexus_ai.core.pdfium.cache import _caching_fs
-from nexus_ai.core.pdfium.structs import PDFACompliance, PDFSignature
+from nexus_ai.services.pdfium.cache import _caching_fs
+from nexus_ai.services.pdfium.structs import PDFACompliance, PDFSignature
 
 logger = get_logger("nexus.core.pdfium")
 

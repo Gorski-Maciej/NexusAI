@@ -35,7 +35,7 @@ from litestar import Controller, get, post
 from litestar.response import Response
 from structlog import get_logger
 
-from nexus_ai.core.pdfium import (
+from nexus_ai.services.pdfium import (
     detect_table_regions,
     extract_text_from_page,
     extract_text_ranges,
@@ -625,7 +625,7 @@ class PDFController(Controller):
 
         Sprawdza czy pypdfium2 jest zainstalowane i działa.
         """
-        from nexus_ai.core.pdfium import verify_pdfium_available, verify_pdfium_version
+        from nexus_ai.services.pdfium import verify_pdfium_available, verify_pdfium_version
 
         available = verify_pdfium_available()
         version = verify_pdfium_version()

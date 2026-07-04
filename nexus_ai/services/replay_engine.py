@@ -33,6 +33,7 @@ logger = get_logger("nexus.replay")
 
 
 class ReplayResult(Struct):
+    __slots__ = ()
     """Result of a single replay operation.
 
     Attributes:

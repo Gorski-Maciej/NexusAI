@@ -18,7 +18,7 @@ try:
     ImageFile.LOAD_TRUNCATED_IMAGES = True
 except ImportError:
     HAS_PIL = False
-    Image = None  # type: ignore
+    Image = None  # type: ignore[assignment]
 
 
 # ============================================================================
@@ -170,7 +170,6 @@ __all__ = [
     "normalize_image_to_jpeg",
     "assess_image_quality",
     "assess_image_quality_from_bytes",
-    "stream_load_image",
     "preprocess_for_ocr",
     "preprocess_pil_or_none",
 ]

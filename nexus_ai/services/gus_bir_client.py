@@ -38,6 +38,7 @@ SOAP_ENVELOPE = """<?xml version="1.0" encoding="UTF-8"?>
 
 
 class GusBirResult(Struct):
+    __slots__ = ()
     """Wynik wyszukiwania pojedynczej firmy w GUS BIR."""
 
     regon: str = ""

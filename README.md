@@ -128,10 +128,10 @@ NexusAI jest zbudowany według architektury określonej w pliku [`aa3fvcx.txt`](
 
 | Technologia (aa3fvcx.txt) | Zastępuje | Status | Implementacja |
 |---|---|---|---|
-| **TigerBeetle** — silnik księgowy (double-entry) | — | ✅ | `pixi.toml` → `task start-tigerbeetle`, `nexus_ai/roboton_reflekton/ledger_client.py` |
-| **Nexus-Money** (msgspec.Struct) | — (własna implementacja) | ✅ | `nexus_ai/services/money.py` → `class Money` |
+| **TigerBeetle** — silnik księgowy (double-entry) | — | ✅ | `pixi.toml` → `task start-tigerbeetle`, `nexus_ai/services/tigerbeetle/client.py` |
+| **Nexus-Money** (msgspec.Struct) | — (własna implementacja) | ✅ | `nexus_ai/domain/values.py` → `class Money` |
 
-| **TigerBeetle Client (Python)** | — | ✅ | `nexus_ai/roboton_reflekton/ledger_client.py` |
+| **TigerBeetle Client (Python)** | — | ✅ | `nexus_ai/services/tigerbeetle/client.py` |
 
 ### Punkt 10 — Przetwarzanie dokumentów (OCR)
 
@@ -653,14 +653,10 @@ NexusAI/
 │   │   ├── ocr_consensus.py       # OCR consensus engine
 │   │   └── parser.py              # Document parser
 │   │
-│   ├── roboton_reflekton/         # Accounting engine module
-│   │   ├── ledger_client.py       # TigerBeetle client (stub)
+│   ├── services/tigerbeetle/       # TigerBeetle ledger integration
+│   │   ├── client.py
 │   │   ├── ledger_initializer.py
-│   │   ├── reconciliation_engine.py
-│   │   ├── dunning_engine.py
-│   │   ├── shadow_ledger.py       # Tax simulation
-│   │   ├── vat_reconciliation.py
-│   │   └── models.py              # Domain models
+│   │   └── models.py
 │   │
 │   ├── luz/                       # Desktop application (Flet)
 │   │   ├── main.py                # Flet UI orchestrator
@@ -727,14 +723,14 @@ Document processing pipeline with stages:
 6. **QA Engine** — Quality assurance checks
 7. **Consensus** — Multi-engine OCR consensus voting
 
-### 🔒 Ledger System (`nexus_ai/roboton_reflekton/`)
+### 🔒 Ledger System (`nexus_ai/services/tigerbeetle/`)
 
 Double-entry accounting with:
 - Polish chart of accounts (symbole kont)
 - TigerBeetle two-phase commit transfers
 - Financial period locking (HARD_CLOSED)
-- Shadow ledger for "what-if" tax simulations
-- VAT reconciliation engine
+- Shadow ledger for "what-if" tax simulations (via `nexus_ai/services/tax_simulator.py`)
+- VAT reconciliation (via `nexus_ai/services/vat_reconciliation.py`)
 
 ### 🔄 Event System
 

@@ -109,8 +109,10 @@ class PluginInfo:
         self.description = getattr(plugin, "description", "")
         self.class_name = f"{type(plugin).__module__}.{type(plugin).__qualname__}"
         self.module = type(plugin).__module__
-        self.has_startup = hasattr(plugin, "on_startup") and callable(plugin.on_startup)  # type: ignore[arg-type]
-        self.has_shutdown = hasattr(plugin, "on_shutdown") and callable(plugin.on_shutdown)  # type: ignore[arg-type]
+        startup_fn = getattr(plugin, "on_startup", None)
+        shutdown_fn = getattr(plugin, "on_shutdown", None)
+        self.has_startup = callable(startup_fn)
+        self.has_shutdown = callable(shutdown_fn)
 
     def __repr__(self) -> str:
         return (
@@ -122,9 +124,7 @@ class PluginInfo:
 # ── PluginManager v2 -- core plugin system ─────────────────────────────────
 
 
-final
-
-
+@final
 class PluginManager:
     """Lifecycle-aware plugin system with typed hooks and event subscription.
 
@@ -249,9 +249,10 @@ class PluginManager:
         sorted_plugins = sorted(self._plugins.items())
 
         for name, plugin in sorted_plugins:
-            if hasattr(plugin, "on_startup") and callable(plugin.on_startup):  # type: ignore[arg-type]
+            startup_fn = getattr(plugin, "on_startup", None)
+            if callable(startup_fn):
                 try:
-                    await plugin.on_startup(bus)  # type: ignore[misc]
+                    await startup_fn(bus)
                     logger.info("[PLUGIN] Startup hook completed for '%s'", name)
                 except Exception:
                     logger.exception("[PLUGIN] Startup hook failed for '%s'", name)
@@ -263,9 +264,10 @@ class PluginManager:
         sorted_plugins = sorted(self._plugins.items(), reverse=True)
 
         for name, plugin in sorted_plugins:
-            if hasattr(plugin, "on_shutdown") and callable(plugin.on_shutdown):  # type: ignore[arg-type]
+            shutdown_fn = getattr(plugin, "on_shutdown", None)
+            if callable(shutdown_fn):
                 try:
-                    await plugin.on_shutdown()  # type: ignore[misc]
+                    await shutdown_fn()
                     logger.info("[PLUGIN] Shutdown hook completed for '%s'", name)
                 except Exception:
                     logger.exception("[PLUGIN] Shutdown hook failed for '%s'", name)
@@ -289,7 +291,7 @@ class PluginManager:
         count = 0
         try:
             package = importlib.import_module(package_path)
-            for _, name, is_pkg in pkgutil.iter_modules(package.__path__):  # type: ignore[arg-type]
+            for _, name, is_pkg in pkgutil.iter_modules(package.__path__):  # type: ignore[arg-type]  # pkgutil lacks stubs
                 full_module_name = f"{package_path}.{name}"
                 try:
                     module = importlib.import_module(full_module_name)

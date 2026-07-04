@@ -12,6 +12,7 @@ from msgspec import Struct
 
 
 class FieldConfidence(Struct, frozen=True):
+    __slots__ = ()
     """Per-field OCR confidence (value + confidence + source)."""
 
     value: Any

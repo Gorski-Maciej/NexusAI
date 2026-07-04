@@ -27,6 +27,7 @@ logger = get_logger(__name__)
 
 @final
 class FactSheet(Struct):
+    __slots__ = ()
     """Structured fact sheet with data from all databases, ready for decision prompt injection."""
 
     invoice_id: str = ""

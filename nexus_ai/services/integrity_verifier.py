@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS integrity_checkpoints (
 
 
 class IntegrityReport(Struct):
+    __slots__ = ()
     """Raport z weryfikacji integralności.
 
     Attributes:

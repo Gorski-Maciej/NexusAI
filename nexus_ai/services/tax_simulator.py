@@ -31,6 +31,7 @@ from nexus_ai.tax.rules import (
 
 
 class ShadowLedgerInput(Struct):
+    __slots__ = ()
     company_id: str
     legal_form: LegalForm
     vat_proportion: float

@@ -1,4 +1,4 @@
-"""System operational endpoints -- consolidated from 7 files.
+"""System operational endpoints -- consolidated from 8 files.
 
 Zawiera:
   - /system/i18n         -- I18nOpsController
@@ -8,6 +8,7 @@ Zawiera:
   - /system/finops       -- FinOpsController
   - /system/privacy      -- PrivacyController
   - /system/kore         -- KoreAuditController
+  - /version             -- VersionController
 """
 
 from __future__ import annotations
@@ -35,6 +36,7 @@ from nexus_ai.api.dto import (
     PiiScanDTO,
     SecurityPostureDTO,
     TelemetryFallbackStatusDTO,
+    VersionInfoDTO,
 )
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.core.config import AppConfig
@@ -165,3 +167,61 @@ class KoreAuditController(Controller):
     @get("/audit", return_dto=KoreAuditDTO, summary="Get KORE audit report", description="Returns KORE 1-11 compliance audit report from Integrity Verifier.", operation_id="getKoreAudit")
     async def get_kore_audit(self) -> dict:
         return {"status": "ok", "kore_version": "legacy_removed", "detail": "kore_delivery_audit.py removed -- replaced by Integrity Verifier"}
+
+
+# ── /version ────────────────────────────────────────────────────────────
+class VersionController(Controller):
+    """API version information endpoint."""
+
+    path = "/version"
+    tags = (TAG_SYSTEM,)
+
+    @get(
+        "/",
+        return_dto=VersionInfoDTO,
+        summary="Get API version info",
+        description="Returns current API version, deprecated versions, and migration paths.",
+        operation_id="getApiVersion",
+        cache=3600,
+    )
+    async def get_version(self) -> dict[str, Any]:
+        """Return current API version and deprecation info."""
+        return {
+            "current_version": "v2",
+            "current_version_path": "/api/v2",
+            "deprecated_versions": [
+                {
+                    "version": "v1",
+                    "path": "/api/v1",
+                    "deprecated": True,
+                    "sunset": "2026-12-31T23:59:59Z",
+                    "migration_url": "/api/v2",
+                }
+            ],
+            "unversioned_endpoints": [
+                {
+                    "path": "/api/triage",
+                    "migrated_to": "/api/v2/triage",
+                    "deprecated": True,
+                    "sunset": "2026-12-31T23:59:59Z",
+                },
+                {
+                    "path": "/api/analytics",
+                    "migrated_to": "/api/v2/analytics",
+                    "deprecated": True,
+                    "sunset": "2026-12-31T23:59:59Z",
+                },
+            ],
+            "supported_versions": {
+                "v1": {
+                    "status": "deprecated",
+                    "sunset": "2026-12-31T23:59:59Z",
+                    "successor": "/api/v2",
+                },
+                "v2": {
+                    "status": "current",
+                    "sunset": None,
+                    "successor": None,
+                },
+            },
+        }

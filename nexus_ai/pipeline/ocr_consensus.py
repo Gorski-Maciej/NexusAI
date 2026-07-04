@@ -731,7 +731,7 @@ async def _prepare_images(file_path: Path) -> tuple[list[Path], list[Any]]:
     pil_pages: list[Any] = []
     if file_path.suffix.lower() == ".pdf":
         try:
-            from nexus_ai.core.pdfium import pdf_to_pil_images
+            from nexus_ai.services.pdfium import pdf_to_pil_images
             pil_pages = pdf_to_pil_images(file_path, dpi=300, max_pages=5)
         except Exception as exc:
             logger.warning("[OCR] PIL render failed: %s", exc)

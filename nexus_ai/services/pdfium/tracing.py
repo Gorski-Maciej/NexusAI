@@ -5,7 +5,7 @@ Restores the _timed decorator that was present in the original monolithic pdfium
 but was not carried over during the package refactoring.
 
 Usage:
-    from nexus_ai.core.pdfium.tracing import _timed
+    from nexus_ai.services.pdfium.tracing import _timed
 
     @_timed("PDF.render")
     def my_function():

@@ -45,6 +45,7 @@ class DuplicateTransferError(RuntimeError):
 
 
 class BankTransaction(Struct):
+    __slots__ = ()
     booking_date: date
     amount: Decimal
     title: str

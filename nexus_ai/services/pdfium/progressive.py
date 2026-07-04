@@ -13,7 +13,7 @@ from typing import Any
 import fsspec
 from structlog import get_logger
 
-from nexus_ai.core.pdfium.structs import PDFProgressInfo
+from nexus_ai.services.pdfium.structs import PDFProgressInfo
 
 logger = get_logger("nexus.core.pdfium")
 

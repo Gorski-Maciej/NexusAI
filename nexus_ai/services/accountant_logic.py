@@ -8,6 +8,7 @@ from nexus_ai.db.analytics import DuckDBManager
 
 
 class AccountSuggestion(Struct):
+    __slots__ = ()
     account_wn: str
     account_ma: str
     reason: str

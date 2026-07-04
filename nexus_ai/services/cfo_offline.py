@@ -42,6 +42,7 @@ class RelationStore(Protocol):
 
 
 class InvoiceRecord(Struct):
+    __slots__ = ()
     invoice_id: str
     supplier_nip: str
     amount_gross: float
@@ -54,6 +55,7 @@ class InvoiceRecord(Struct):
 
 
 class RAGAnswer(Struct):
+    __slots__ = ()
     answer: str
     evidence_chunks: list[str]
     chart_spec: dict[str, Any]

@@ -190,7 +190,7 @@ class TestRenderFlags:
     """Testy dla RenderFlags enum."""
 
     def test_render_flags_values(self):
-        from nexus_ai.core.pdfium import RenderFlags
+        from nexus_ai.services.pdfium import RenderFlags
 
         assert RenderFlags.NONE.value == 0
         assert RenderFlags.LCD_TEXT.value == 1
@@ -203,13 +203,13 @@ class TestRenderFlags:
         assert RenderFlags.ANNOTATIONS.value == 128
 
     def test_render_flags_int_enum(self):
-        from nexus_ai.core.pdfium import RenderFlags
+        from nexus_ai.services.pdfium import RenderFlags
 
         assert int(RenderFlags.LCD_TEXT) == 1
         assert int(RenderFlags.GRAYSCALE) == 16
 
     def test_render_flags_combination(self):
-        from nexus_ai.core.pdfium import RenderFlags
+        from nexus_ai.services.pdfium import RenderFlags
 
         combined = RenderFlags.LCD_TEXT | RenderFlags.ANNOTATIONS
         assert combined == 129  # 1 + 128
@@ -226,39 +226,39 @@ class TestCore:
             pytest.skip("pypdfium2 not installed")
 
     def test_constants(self):
-        from nexus_ai.core.pdfium import PDFIUM_BASE_DPI, DEFAULT_DPI, DEFAULT_SCALE
+        from nexus_ai.services.pdfium import PDFIUM_BASE_DPI, DEFAULT_DPI, DEFAULT_SCALE
 
         assert PDFIUM_BASE_DPI == 72.0
         assert DEFAULT_DPI == 300
         assert DEFAULT_SCALE == 300.0 / 72.0
 
     def test_verify_pdfium_available(self):
-        from nexus_ai.core.pdfium import verify_pdfium_available
+        from nexus_ai.services.pdfium import verify_pdfium_available
 
         result = verify_pdfium_available()
         assert isinstance(result, bool)
 
     def test_verify_pdfium_version(self):
-        from nexus_ai.core.pdfium import verify_pdfium_version
+        from nexus_ai.services.pdfium import verify_pdfium_version
 
         version = verify_pdfium_version()
         assert isinstance(version, str)
 
     def test_pdf_page_count_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import pdf_page_count
+        from nexus_ai.services.pdfium import pdf_page_count
 
         count = pdf_page_count(sample_pdf_path)
         assert count == 3
 
     def test_render_page_to_pil_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import render_page_to_pil
+        from nexus_ai.services.pdfium import render_page_to_pil
 
         image = render_page_to_pil(sample_pdf_path, page_num=0, dpi=300)
         assert image is not None
 
     def test_render_page_to_pil_with_flags(self, mock_pdfium_module, sample_pdf_path):
         """render_page_to_pil() z flagami renderowania."""
-        from nexus_ai.core.pdfium import render_page_to_pil, RenderFlags
+        from nexus_ai.services.pdfium import render_page_to_pil, RenderFlags
 
         image = render_page_to_pil(
             sample_pdf_path, page_num=0, dpi=300,
@@ -267,14 +267,14 @@ class TestCore:
         assert image is not None
 
     def test_render_page_to_png_bytes_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import render_page_to_png_bytes
+        from nexus_ai.services.pdfium import render_page_to_png_bytes
 
         png_bytes = render_page_to_png_bytes(sample_pdf_path, page_num=0, dpi=300)
         assert isinstance(png_bytes, bytes)
 
     def test_render_page_to_jpeg_bytes_mocked(self, mock_pdfium_module, sample_pdf_path):
         """FAZA 1: render_page_to_jpeg_bytes() z mockiem."""
-        from nexus_ai.core.pdfium import render_page_to_jpeg_bytes
+        from nexus_ai.services.pdfium import render_page_to_jpeg_bytes
 
         jpeg_bytes = render_page_to_jpeg_bytes(
             sample_pdf_path, page_num=0, dpi=300, quality=80,
@@ -283,14 +283,14 @@ class TestCore:
 
     def test_render_page_to_png_grayscale_mocked(self, mock_pdfium_module, sample_pdf_path):
         """FAZA 1: render_page_to_png_grayscale() z flagą GRAYSCALE."""
-        from nexus_ai.core.pdfium import render_page_to_png_grayscale
+        from nexus_ai.services.pdfium import render_page_to_png_grayscale
 
         png_bytes = render_page_to_png_grayscale(sample_pdf_path, page_num=0, dpi=300)
         assert isinstance(png_bytes, bytes)
 
     def test_render_page_to_pil_enhanced_mocked(self, mock_pdfium_module, sample_pdf_path):
         """FAZA 1: render_page_to_pil_enhanced() z preprocessingiem."""
-        from nexus_ai.core.pdfium import render_page_to_pil_enhanced
+        from nexus_ai.services.pdfium import render_page_to_pil_enhanced
 
         image = render_page_to_pil_enhanced(
             sample_pdf_path, page_num=0, dpi=300,
@@ -300,20 +300,20 @@ class TestCore:
 
     def test_open_pdf_with_bytes(self, mock_pdfium_module):
         """open_pdf() z bytes."""
-        from nexus_ai.core.pdfium import open_pdf
+        from nexus_ai.services.pdfium import open_pdf
 
         pdf = open_pdf(b"%PDF-1.4 fake content")
         assert pdf is not None
 
     def test_render_all_pages_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import render_all_pages
+        from nexus_ai.services.pdfium import render_all_pages
 
         images = render_all_pages(sample_pdf_path, dpi=300)
         assert len(images) == 3
 
     def test_render_all_pages_with_page_range(self, mock_pdfium_module, sample_pdf_path):
         """render_all_pages() z zakresem stron."""
-        from nexus_ai.core.pdfium import render_all_pages
+        from nexus_ai.services.pdfium import render_all_pages
 
         images = render_all_pages(
             sample_pdf_path, dpi=300,
@@ -323,7 +323,7 @@ class TestCore:
 
     def test_render_all_pages_with_progress(self, mock_pdfium_module, sample_pdf_path):
         """render_all_pages() z callbackiem postępu."""
-        from nexus_ai.core.pdfium import render_all_pages, PDFProgressInfo
+        from nexus_ai.services.pdfium import render_all_pages, PDFProgressInfo
 
         progress_updates = []
 
@@ -343,7 +343,7 @@ class TestPdfDocumentSession:
     """FAZA 3: Testy dla PdfDocumentSession."""
 
     def test_session_init_with_path(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import PdfDocumentSession
+        from nexus_ai.services.pdfium import PdfDocumentSession
 
         session = PdfDocumentSession(sample_pdf_path)
         assert session.pdf is not None
@@ -351,13 +351,13 @@ class TestPdfDocumentSession:
         session.close()
 
     def test_session_context_manager(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import PdfDocumentSession
+        from nexus_ai.services.pdfium import PdfDocumentSession
 
         with PdfDocumentSession(sample_pdf_path) as pdf:
             assert len(pdf) == 3
 
     def test_session_init_with_bytes(self, mock_pdfium_module):
-        from nexus_ai.core.pdfium import PdfDocumentSession
+        from nexus_ai.services.pdfium import PdfDocumentSession
 
         session = PdfDocumentSession(b"%PDF-1.4 fake content")
         assert session.pdf is not None
@@ -365,7 +365,7 @@ class TestPdfDocumentSession:
 
     def test_session_init_forms(self, mock_pdfium_module, sample_pdf_path):
         """Sprawdź, że init_forms() jest wywołane."""
-        from nexus_ai.core.pdfium import PdfDocumentSession
+        from nexus_ai.services.pdfium import PdfDocumentSession
 
         session = PdfDocumentSession(sample_pdf_path, init_forms=True)
         assert session.forms_initialized is True or session.forms_initialized is False
@@ -373,7 +373,7 @@ class TestPdfDocumentSession:
 
     def test_session_no_init_forms(self, mock_pdfium_module, sample_pdf_path):
         """Sprawdź, że init_forms=False nie wywołuje init_forms()."""
-        from nexus_ai.core.pdfium import PdfDocumentSession
+        from nexus_ai.services.pdfium import PdfDocumentSession
 
         session = PdfDocumentSession(sample_pdf_path, init_forms=False)
         assert session.forms_initialized is False
@@ -389,7 +389,7 @@ class TestAsyncAndNumpy:
     """Testy wariantów async i numpy dla OCR."""
 
     def test_pdf_to_images_memory_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import pdf_to_images_memory
+        from nexus_ai.services.pdfium import pdf_to_images_memory
 
         images = pdf_to_images_memory(sample_pdf_path, dpi=300)
         assert len(images) == 3
@@ -397,7 +397,7 @@ class TestAsyncAndNumpy:
             assert isinstance(img_bytes, bytes)
 
     def test_pdf_to_numpy_arrays_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import pdf_to_numpy_arrays
+        from nexus_ai.services.pdfium import pdf_to_numpy_arrays
 
         arrays = pdf_to_numpy_arrays(sample_pdf_path, dpi=300, max_pages=2)
         assert len(arrays) == 2
@@ -412,7 +412,7 @@ class TestProgressiveLoader:
     """Testy ProgressivePDFLoader."""
 
     def test_progressive_loader_init(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import ProgressivePDFLoader
+        from nexus_ai.services.pdfium import ProgressivePDFLoader
 
         loader = ProgressivePDFLoader(sample_pdf_path, lazy=False)
         assert loader is not None
@@ -420,27 +420,27 @@ class TestProgressiveLoader:
         loader.close()
 
     def test_progressive_loader_context_manager(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import ProgressivePDFLoader
+        from nexus_ai.services.pdfium import ProgressivePDFLoader
 
         with ProgressivePDFLoader(sample_pdf_path, lazy=False) as loader:
             assert loader.page_count == 3
 
     def test_progressive_loader_render_first_page(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import ProgressivePDFLoader
+        from nexus_ai.services.pdfium import ProgressivePDFLoader
 
         with ProgressivePDFLoader(sample_pdf_path, lazy=False) as loader:
             first_page = loader.render_first_page(dpi=150)
             assert isinstance(first_page, bytes)
 
     def test_progressive_loader_render_page(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import ProgressivePDFLoader
+        from nexus_ai.services.pdfium import ProgressivePDFLoader
 
         with ProgressivePDFLoader(sample_pdf_path, lazy=False) as loader:
             page_data = loader.render_page(page_num=1, dpi=150)
             assert isinstance(page_data, bytes)
 
     def test_progressive_loader_get_page_size(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import ProgressivePDFLoader
+        from nexus_ai.services.pdfium import ProgressivePDFLoader
 
         with ProgressivePDFLoader(sample_pdf_path, lazy=False) as loader:
             size = loader.get_page_size(0)
@@ -450,7 +450,7 @@ class TestProgressiveLoader:
     # FAZA 7: Rozszerzony ProgressivePDFLoader
 
     def test_progressive_loader_from_bytes(self, mock_pdfium_module):
-        from nexus_ai.core.pdfium import ProgressivePDFLoader
+        from nexus_ai.services.pdfium import ProgressivePDFLoader
 
         loader = ProgressivePDFLoader.from_bytes(b"%PDF-1.4 fake data", lazy=False)
         assert loader is not None
@@ -458,7 +458,7 @@ class TestProgressiveLoader:
         loader.close()
 
     def test_progressive_loader_cancel(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import ProgressivePDFLoader
+        from nexus_ai.services.pdfium import ProgressivePDFLoader
 
         with ProgressivePDFLoader(sample_pdf_path, lazy=False) as loader:
             assert loader.is_cancelled is False
@@ -466,7 +466,7 @@ class TestProgressiveLoader:
             assert loader.is_cancelled is True
 
     def test_progressive_loader_render_all_iterator(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import ProgressivePDFLoader
+        from nexus_ai.services.pdfium import ProgressivePDFLoader
 
         with ProgressivePDFLoader(sample_pdf_path, lazy=False) as loader:
             pages = list(loader.render_all(dpi=150))
@@ -475,7 +475,7 @@ class TestProgressiveLoader:
                 assert isinstance(page_bytes, bytes)
 
     def test_progressive_loader_render_all_with_progress(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import ProgressivePDFLoader, PDFProgressInfo
+        from nexus_ai.services.pdfium import ProgressivePDFLoader, PDFProgressInfo
 
         progress_updates = []
 
@@ -491,7 +491,7 @@ class TestProgressiveLoader:
             assert progress_updates[-1].percent == 100.0
 
     def test_progressive_loader_render_all_cancelled(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import ProgressivePDFLoader
+        from nexus_ai.services.pdfium import ProgressivePDFLoader
 
         with ProgressivePDFLoader(sample_pdf_path, lazy=False) as loader:
             loader.cancel()
@@ -508,26 +508,26 @@ class TestTextExtraction:
     """Testy ekstrakcji tekstu z PDF."""
 
     def test_extract_text_from_page_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import extract_text_from_page
+        from nexus_ai.services.pdfium import extract_text_from_page
 
         text = extract_text_from_page(sample_pdf_path, page_num=0)
         assert isinstance(text, str)
         assert "Test text" in text
 
     def test_extract_text_simple_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import extract_text_simple
+        from nexus_ai.services.pdfium import extract_text_simple
 
         text = extract_text_simple(sample_pdf_path, page_num=0)
         assert isinstance(text, str)
 
     def test_extract_text_ranges_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import extract_text_ranges
+        from nexus_ai.services.pdfium import extract_text_ranges
 
         ranges = extract_text_ranges(sample_pdf_path, page_num=0)
         assert isinstance(ranges, list)
 
     def test_extract_text_ranges_typed_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import extract_text_ranges_typed, PDFTextRange
+        from nexus_ai.services.pdfium import extract_text_ranges_typed, PDFTextRange
         import pypdfium2 as pdfium
 
         ranges = extract_text_ranges_typed(sample_pdf_path, page_num=0)
@@ -536,14 +536,14 @@ class TestTextExtraction:
             assert isinstance(r, PDFTextRange) or isinstance(r, dict)
 
     def test_detect_table_regions_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import detect_table_regions
+        from nexus_ai.services.pdfium import detect_table_regions
 
         tables = detect_table_regions(sample_pdf_path, page_num=0)
         assert isinstance(tables, list)
 
     def test_search_in_pdf_mocked(self, mock_pdfium_module, sample_pdf_path):
         """FAZA 1: search_in_pdf() z mockiem."""
-        from nexus_ai.core.pdfium import search_in_pdf, PDFSearchResult
+        from nexus_ai.services.pdfium import search_in_pdf, PDFSearchResult
 
         results = search_in_pdf(sample_pdf_path, "test", page_num=0, match_case=False)
         assert isinstance(results, list)
@@ -552,14 +552,14 @@ class TestTextExtraction:
 
     def test_search_in_pdf_match_case(self, mock_pdfium_module, sample_pdf_path):
         """FAZA 1: search_in_pdf() z match_case=True."""
-        from nexus_ai.core.pdfium import search_in_pdf
+        from nexus_ai.services.pdfium import search_in_pdf
 
         results = search_in_pdf(sample_pdf_path, "TEST", page_num=0, match_case=True)
         assert isinstance(results, list)
 
     def test_search_in_pdf_whole_words(self, mock_pdfium_module, sample_pdf_path):
         """FAZA 1: search_in_pdf() z whole_words=True."""
-        from nexus_ai.core.pdfium import search_in_pdf
+        from nexus_ai.services.pdfium import search_in_pdf
 
         results = search_in_pdf(sample_pdf_path, "test", page_num=0, whole_words=True)
         assert isinstance(results, list)
@@ -574,14 +574,14 @@ class TestMetadata:
     """Testy odczytu metadanych PDF."""
 
     def test_get_pdf_metadata_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import get_pdf_metadata
+        from nexus_ai.services.pdfium import get_pdf_metadata
 
         metadata = get_pdf_metadata(sample_pdf_path)
         assert isinstance(metadata, dict)
         assert metadata.get("Title") == "Test Invoice"
 
     def test_get_pdf_info_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import get_pdf_info
+        from nexus_ai.services.pdfium import get_pdf_info
 
         info = get_pdf_info(sample_pdf_path)
         assert isinstance(info, dict)
@@ -602,7 +602,7 @@ class TestPDFStructures:
     """Testy dla struktur danych PDF (msgspec.Struct)."""
 
     def test_pdf_text_range_creation(self):
-        from nexus_ai.core.pdfium import PDFTextRange
+        from nexus_ai.services.pdfium import PDFTextRange
 
         tr = PDFTextRange(text="Hello", left=10.0, top=20.0, right=100.0, bottom=30.0, font_size=12.0)
         assert tr.text == "Hello"
@@ -610,7 +610,7 @@ class TestPDFStructures:
         assert tr.font_size == 12.0
 
     def test_pdf_text_range_to_dict(self):
-        from nexus_ai.core.pdfium import PDFTextRange
+        from nexus_ai.services.pdfium import PDFTextRange
 
         tr = PDFTextRange(text="Hello", left=10.0, top=20.0, right=100.0, bottom=30.0)
         d = tr.to_dict()
@@ -618,7 +618,7 @@ class TestPDFStructures:
         assert d["left"] == 10.0
 
     def test_pdf_page_info_creation(self):
-        from nexus_ai.core.pdfium import PDFPageInfo, PDFTextRange
+        from nexus_ai.services.pdfium import PDFPageInfo, PDFTextRange
 
         ranges = [PDFTextRange(text="Hello", left=0.0, top=0.0, right=100.0, bottom=20.0)]
         info = PDFPageInfo(page_num=0, width=612.0, height=792.0, text_ranges=ranges)
@@ -627,7 +627,7 @@ class TestPDFStructures:
         assert info.text_count == len(ranges)
 
     def test_pdf_page_info_to_dict(self):
-        from nexus_ai.core.pdfium import PDFPageInfo, PDFTextRange
+        from nexus_ai.services.pdfium import PDFPageInfo, PDFTextRange
 
         ranges = [PDFTextRange(text="Hello", left=0.0, top=0.0, right=100.0, bottom=20.0)]
         info = PDFPageInfo(page_num=0, width=612.0, height=792.0, text_ranges=ranges)
@@ -636,7 +636,7 @@ class TestPDFStructures:
         assert len(d["text_ranges"]) == 1
 
     def test_pdf_signature_creation(self):
-        from nexus_ai.core.pdfium import PDFSignature
+        from nexus_ai.services.pdfium import PDFSignature
 
         sig = PDFSignature(
             author="John Doe",
@@ -649,7 +649,7 @@ class TestPDFStructures:
         assert sig.is_verified is True
 
     def test_pdf_form_field_creation(self):
-        from nexus_ai.core.pdfium import PDFFormField
+        from nexus_ai.services.pdfium import PDFFormField
 
         field = PDFFormField(
             name="InvoiceNumber",
@@ -663,13 +663,13 @@ class TestPDFStructures:
         assert field.is_required is True
 
     def test_pdf_render_cache_entry_creation(self):
-        from nexus_ai.core.pdfium import PDFRenderCacheEntry
+        from nexus_ai.services.pdfium import PDFRenderCacheEntry
 
         entry = PDFRenderCacheEntry(png_bytes=b"fake_png", cached_at=time.time())
         assert isinstance(entry.png_bytes, bytes)
 
     def test_pdf_progress_info_creation(self):
-        from nexus_ai.core.pdfium import PDFProgressInfo
+        from nexus_ai.services.pdfium import PDFProgressInfo
 
         info = PDFProgressInfo(current_page=1, total_pages=10, percent=10.0, page_dpi=300)
         assert info.current_page == 1
@@ -677,7 +677,7 @@ class TestPDFStructures:
 
     def test_pdf_annotation_creation(self):
         """FAZA 2: PDFAnnotation jako msgspec.Struct."""
-        from nexus_ai.core.pdfium import PDFAnnotation
+        from nexus_ai.services.pdfium import PDFAnnotation
 
         annot = PDFAnnotation(
             type="highlight",
@@ -690,7 +690,7 @@ class TestPDFStructures:
 
     def test_pdf_attachment_creation(self):
         """FAZA 2: PDFAttachment jako msgspec.Struct."""
-        from nexus_ai.core.pdfium import PDFAttachment
+        from nexus_ai.services.pdfium import PDFAttachment
 
         att = PDFAttachment(name="ksef.xml", data=b"<xml/>", size=6, index=0)
         assert att.name == "ksef.xml"
@@ -698,7 +698,7 @@ class TestPDFStructures:
 
     def test_pdf_bookmark_creation(self):
         """FAZA 2: PDFBookmark jako msgspec.Struct."""
-        from nexus_ai.core.pdfium import PDFBookmark
+        from nexus_ai.services.pdfium import PDFBookmark
 
         bm = PDFBookmark(title="Chapter 1", page_index=0, level=0, children=[])
         assert bm.title == "Chapter 1"
@@ -706,7 +706,7 @@ class TestPDFStructures:
 
     def test_pdf_bookmark_with_children(self):
         """FAZA 2: PDFBookmark z dziećmi."""
-        from nexus_ai.core.pdfium import PDFBookmark
+        from nexus_ai.services.pdfium import PDFBookmark
 
         child = PDFBookmark(title="Section 1.1", page_index=0, level=1)
         parent = PDFBookmark(title="Chapter 1", page_index=0, level=0, children=[child])
@@ -715,7 +715,7 @@ class TestPDFStructures:
 
     def test_pdf_search_result_creation(self):
         """FAZA 2: PDFSearchResult jako msgspec.Struct."""
-        from nexus_ai.core.pdfium import PDFSearchResult
+        from nexus_ai.services.pdfium import PDFSearchResult
 
         sr = PDFSearchResult(text="hello", left=10, top=20, right=50, bottom=30, char_index=5, count=1)
         assert sr.text == "hello"
@@ -723,7 +723,7 @@ class TestPDFStructures:
 
     def test_pdfa_compliance_creation(self):
         """FAZA 3: PDFACompliance jako msgspec.Struct."""
-        from nexus_ai.core.pdfium import PDFACompliance
+        from nexus_ai.services.pdfium import PDFACompliance
 
         c = PDFACompliance(is_pdfa=True, pdfa_version=2, pdfa_version_str="PDF/A-2")
         assert c.is_pdfa is True
@@ -731,7 +731,7 @@ class TestPDFStructures:
 
     def test_pdf_form_fill_data_creation(self):
         """FAZA 3: PDFFormFillData jako msgspec.Struct."""
-        from nexus_ai.core.pdfium import PDFFormFillData
+        from nexus_ai.services.pdfium import PDFFormFillData
 
         d = PDFFormFillData(field_name="InvoiceNumber", value="INV-999")
         assert d.field_name == "InvoiceNumber"
@@ -739,7 +739,7 @@ class TestPDFStructures:
 
     def test_pdf_form_fill_batch_creation(self):
         """FAZA 3: PDFFormFillBatch jako msgspec.Struct."""
-        from nexus_ai.core.pdfium import PDFFormFillBatch, PDFFormFillData
+        from nexus_ai.services.pdfium import PDFFormFillBatch, PDFFormFillData
 
         batch = PDFFormFillBatch(fields=[
             PDFFormFillData(field_name="name", value="Alice"),
@@ -758,7 +758,7 @@ class TestSignatures:
     """Testy dla podpisów cyfrowych PDF."""
 
     def test_verify_pdf_signatures_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import verify_pdf_signatures, PDFSignature
+        from nexus_ai.services.pdfium import verify_pdf_signatures, PDFSignature
 
         signatures = verify_pdf_signatures(sample_pdf_path)
         assert isinstance(signatures, list)
@@ -769,7 +769,7 @@ class TestSignatures:
             assert sig.is_verified is True
 
     def test_verify_pdf_signatures_return_type(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import verify_pdf_signatures
+        from nexus_ai.services.pdfium import verify_pdf_signatures
 
         signatures = verify_pdf_signatures(sample_pdf_path)
         assert isinstance(signatures, list)
@@ -792,7 +792,7 @@ class TestFormFields:
     """Testy dla formularzy AcroForms."""
 
     def test_get_pdf_form_fields_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import get_pdf_form_fields, PDFFormField
+        from nexus_ai.services.pdfium import get_pdf_form_fields, PDFFormField
 
         fields = get_pdf_form_fields(sample_pdf_path)
         assert isinstance(fields, list)
@@ -802,7 +802,7 @@ class TestFormFields:
             assert field.name == "InvoiceNumber"
 
     def test_get_pdf_form_fields_structure(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import get_pdf_form_fields
+        from nexus_ai.services.pdfium import get_pdf_form_fields
 
         fields = get_pdf_form_fields(sample_pdf_path)
         for f in fields:
@@ -813,14 +813,14 @@ class TestFormFields:
             assert hasattr(f, "is_required")
 
     def test_fill_pdf_form_field_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import fill_pdf_form_field
+        from nexus_ai.services.pdfium import fill_pdf_form_field
 
         result = fill_pdf_form_field(sample_pdf_path, "InvoiceNumber", "INV-999")
         assert isinstance(result, bytes)
 
     def test_fill_pdf_form_field_no_output(self, mock_pdfium_module, sample_pdf_path):
         """fill_pdf_form_field() bez output_path — testuje ścieżkę BytesIO."""
-        from nexus_ai.core.pdfium import fill_pdf_form_field
+        from nexus_ai.services.pdfium import fill_pdf_form_field
 
         result = fill_pdf_form_field(
             sample_pdf_path, "InvoiceNumber", "INV-999",
@@ -828,7 +828,7 @@ class TestFormFields:
         assert isinstance(result, bytes)
 
     def test_save_pdf_with_filled_fields_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import save_pdf_with_filled_fields
+        from nexus_ai.services.pdfium import save_pdf_with_filled_fields
 
         result = save_pdf_with_filled_fields(
             sample_pdf_path,
@@ -838,7 +838,7 @@ class TestFormFields:
 
     def test_save_pdf_with_filled_fields_no_output(self, mock_pdfium_module, sample_pdf_path):
         """save_pdf_with_filled_fields() bez output_path — testuje ścieżkę BytesIO."""
-        from nexus_ai.core.pdfium import save_pdf_with_filled_fields
+        from nexus_ai.services.pdfium import save_pdf_with_filled_fields
 
         result = save_pdf_with_filled_fields(
             sample_pdf_path,
@@ -856,7 +856,7 @@ class TestRenderCache:
     """Testy dla PDFRenderCache."""
 
     def test_cache_init(self):
-        from nexus_ai.core.pdfium import PDFRenderCache
+        from nexus_ai.services.pdfium import PDFRenderCache
 
         cache = PDFRenderCache(ttl=60, max_size=10)
         assert cache.stats["ttl_seconds"] == 60
@@ -864,7 +864,7 @@ class TestRenderCache:
         assert cache.stats["size"] == 0
 
     def test_cache_set_and_get(self, tmp_path):
-        from nexus_ai.core.pdfium import PDFRenderCache
+        from nexus_ai.services.pdfium import PDFRenderCache
 
         cache = PDFRenderCache(ttl=60, max_size=10)
         pdf_path = tmp_path / "test.pdf"
@@ -878,7 +878,7 @@ class TestRenderCache:
         assert cache.stats["size"] == 2
 
     def test_cache_miss(self, tmp_path):
-        from nexus_ai.core.pdfium import PDFRenderCache
+        from nexus_ai.services.pdfium import PDFRenderCache
 
         cache = PDFRenderCache(ttl=60, max_size=10)
         pdf_path = tmp_path / "test.pdf"
@@ -888,7 +888,7 @@ class TestRenderCache:
         assert cache.stats["misses"] == 1
 
     def test_cache_hit_ratio(self, tmp_path):
-        from nexus_ai.core.pdfium import PDFRenderCache
+        from nexus_ai.services.pdfium import PDFRenderCache
 
         cache = PDFRenderCache(ttl=60, max_size=10)
         pdf_path = tmp_path / "test.pdf"
@@ -904,7 +904,7 @@ class TestRenderCache:
         assert stats["hit_ratio"] == 0.5
 
     def test_cache_invalidate_all(self, tmp_path):
-        from nexus_ai.core.pdfium import PDFRenderCache
+        from nexus_ai.services.pdfium import PDFRenderCache
 
         cache = PDFRenderCache(ttl=60, max_size=10)
         pdf_path = tmp_path / "test.pdf"
@@ -916,7 +916,7 @@ class TestRenderCache:
         assert cache.stats["size"] == 0
 
     def test_cache_invalidate_specific(self, tmp_path):
-        from nexus_ai.core.pdfium import PDFRenderCache
+        from nexus_ai.services.pdfium import PDFRenderCache
 
         cache = PDFRenderCache(ttl=60, max_size=10)
         pdf1 = tmp_path / "doc1.pdf"
@@ -933,7 +933,7 @@ class TestRenderCache:
         assert cache.get(pdf2, 0, 150) == b"data2"
 
     def test_cache_lru_eviction(self, tmp_path):
-        from nexus_ai.core.pdfium import PDFRenderCache
+        from nexus_ai.services.pdfium import PDFRenderCache
 
         cache = PDFRenderCache(ttl=60, max_size=3)
         for i in range(5):
@@ -944,7 +944,7 @@ class TestRenderCache:
         assert cache.stats["size"] == 3  # max_size
 
     def test_cache_ttl_expiry(self, tmp_path):
-        from nexus_ai.core.pdfium import PDFRenderCache
+        from nexus_ai.services.pdfium import PDFRenderCache
 
         cache = PDFRenderCache(ttl=1, max_size=10)
         pdf_path = tmp_path / "test.pdf"
@@ -968,7 +968,7 @@ class TestRenderAllToMemory:
     """Testy dla render_all_pages_to_memory()."""
 
     def test_render_all_to_memory_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import render_all_pages_to_memory
+        from nexus_ai.services.pdfium import render_all_pages_to_memory
 
         images = render_all_pages_to_memory(sample_pdf_path, dpi=150, use_cache=False)
         assert isinstance(images, list)
@@ -977,14 +977,14 @@ class TestRenderAllToMemory:
             assert isinstance(img, bytes)
 
     def test_render_all_to_memory_with_max_pages(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import render_all_pages_to_memory
+        from nexus_ai.services.pdfium import render_all_pages_to_memory
 
         images = render_all_pages_to_memory(sample_pdf_path, dpi=150, max_pages=2)
         assert len(images) == 2
 
     def test_render_all_to_memory_page_range(self, mock_pdfium_module, sample_pdf_path):
         """render_all_pages_to_memory() z zakresem stron."""
-        from nexus_ai.core.pdfium import render_all_pages_to_memory
+        from nexus_ai.services.pdfium import render_all_pages_to_memory
 
         images = render_all_pages_to_memory(
             sample_pdf_path, dpi=150,
@@ -993,13 +993,13 @@ class TestRenderAllToMemory:
         assert len(images) == 2
 
     def test_render_all_to_memory_jpeg_format(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import render_all_pages_to_memory
+        from nexus_ai.services.pdfium import render_all_pages_to_memory
 
         images = render_all_pages_to_memory(sample_pdf_path, dpi=150, format="JPEG")
         assert len(images) == 3
 
     def test_render_all_to_memory_with_progress(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import render_all_pages_to_memory, PDFProgressInfo
+        from nexus_ai.services.pdfium import render_all_pages_to_memory, PDFProgressInfo
 
         progress_updates = []
 
@@ -1024,13 +1024,13 @@ class TestOTelTracing:
     """Testy dla OpenTelemetry tracingu."""
 
     def test_get_otel_tracer(self):
-        from nexus_ai.core.pdfium import _get_otel_tracer
+        from nexus_ai.services.pdfium import _get_otel_tracer
 
         tracer = _get_otel_tracer()
         assert tracer is None or tracer is not None
 
     def test_record_pdf_metric(self):
-        from nexus_ai.core.pdfium import _record_pdf_metric
+        from nexus_ai.services.pdfium import _record_pdf_metric
 
         _record_pdf_metric("test.metric", 1.0, {"test": "true"})
 
@@ -1044,7 +1044,7 @@ class TestAnnotations:
     """FAZA 2: Testy dla adnotacji PDF."""
 
     def test_get_page_annotations_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import get_page_annotations, PDFAnnotation
+        from nexus_ai.services.pdfium import get_page_annotations, PDFAnnotation
 
         annotations = get_page_annotations(sample_pdf_path, page_num=0)
         assert isinstance(annotations, list)
@@ -1054,7 +1054,7 @@ class TestAnnotations:
             assert annot.type == "highlight"
 
     def test_count_page_annotations_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import count_page_annotations
+        from nexus_ai.services.pdfium import count_page_annotations
 
         count = count_page_annotations(sample_pdf_path, page_num=0)
         assert count >= 0
@@ -1069,7 +1069,7 @@ class TestAttachments:
     """FAZA 2: Testy dla załączników PDF."""
 
     def test_get_pdf_attachments_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import get_pdf_attachments, PDFAttachment
+        from nexus_ai.services.pdfium import get_pdf_attachments, PDFAttachment
 
         attachments = get_pdf_attachments(sample_pdf_path)
         assert isinstance(attachments, list)
@@ -1079,7 +1079,7 @@ class TestAttachments:
             assert att.name == "ksef.xml"
 
     def test_add_pdf_attachment_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import add_pdf_attachment
+        from nexus_ai.services.pdfium import add_pdf_attachment
 
         result = add_pdf_attachment(
             sample_pdf_path, "test.txt", b"hello world",
@@ -1096,7 +1096,7 @@ class TestBookmarks:
     """FAZA 2: Testy dla zakładek PDF."""
 
     def test_get_pdf_bookmarks_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import get_pdf_bookmarks, PDFBookmark
+        from nexus_ai.services.pdfium import get_pdf_bookmarks, PDFBookmark
 
         bookmarks = get_pdf_bookmarks(sample_pdf_path)
         assert isinstance(bookmarks, list)
@@ -1107,7 +1107,7 @@ class TestBookmarks:
 
     def test_pdf_info_includes_bookmarks(self, mock_pdfium_module, sample_pdf_path):
         """get_pdf_info() powinno zawierać bookmarki."""
-        from nexus_ai.core.pdfium import get_pdf_info
+        from nexus_ai.services.pdfium import get_pdf_info
 
         info = get_pdf_info(sample_pdf_path)
         assert "bookmarks" in info
@@ -1123,7 +1123,7 @@ class TestIncrementalSave:
     """FAZA 2: Testy dla zapisu przyrostowego."""
 
     def test_save_incremental(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import save_incremental
+        from nexus_ai.services.pdfium import save_incremental
 
         result = save_incremental(sample_pdf_path)
         assert isinstance(result, bytes)
@@ -1138,33 +1138,33 @@ class TestPageManipulation:
     """FAZA 3: Testy dla manipulacji stronami PDF."""
 
     def test_merge_pdfs(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import merge_pdfs
+        from nexus_ai.services.pdfium import merge_pdfs
 
         result = merge_pdfs([sample_pdf_path, sample_pdf_path])
         assert isinstance(result, bytes)
 
     def test_delete_pages_from_pdf(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import delete_pages_from_pdf
+        from nexus_ai.services.pdfium import delete_pages_from_pdf
 
         result = delete_pages_from_pdf(sample_pdf_path, [0])
         assert isinstance(result, bytes)
 
     def test_extract_pages_from_pdf(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import extract_pages_from_pdf
+        from nexus_ai.services.pdfium import extract_pages_from_pdf
 
         result = extract_pages_from_pdf(sample_pdf_path, [0, 1])
         assert isinstance(result, bytes)
 
     def test_merge_pdfs_no_output(self, mock_pdfium_module, sample_pdf_path):
         """merge_pdfs() bez output_path — testuje ścieżkę BytesIO."""
-        from nexus_ai.core.pdfium import merge_pdfs
+        from nexus_ai.services.pdfium import merge_pdfs
 
         result = merge_pdfs([sample_pdf_path])
         assert isinstance(result, bytes)
 
     def test_delete_pages_from_pdf_no_output(self, mock_pdfium_module, sample_pdf_path):
         """delete_pages_from_pdf() bez output_path — testuje ścieżkę BytesIO."""
-        from nexus_ai.core.pdfium import delete_pages_from_pdf
+        from nexus_ai.services.pdfium import delete_pages_from_pdf
 
         result = delete_pages_from_pdf(sample_pdf_path, [0])
         assert isinstance(result, bytes)
@@ -1179,7 +1179,7 @@ class TestPDFACompliance:
     """FAZA 3: Testy dla zgodności z PDF/A."""
 
     def test_pdfa_check_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import pdfa_check, PDFACompliance
+        from nexus_ai.services.pdfium import pdfa_check, PDFACompliance
 
         result = pdfa_check(sample_pdf_path)
         assert isinstance(result, PDFACompliance) or hasattr(result, "is_pdfa")
@@ -1187,7 +1187,7 @@ class TestPDFACompliance:
 
     def test_pdfa_check_metadata_in_info(self, mock_pdfium_module, sample_pdf_path):
         """get_pdf_info() powinno zawierać pdfa_compliance."""
-        from nexus_ai.core.pdfium import get_pdf_info
+        from nexus_ai.services.pdfium import get_pdf_info
 
         info = get_pdf_info(sample_pdf_path)
         assert "pdfa_compliance" in info
@@ -1202,14 +1202,14 @@ class TestAnnotationTypeMap:
     """Testy dla mapowania typów adnotacji."""
 
     def test_known_types(self):
-        from nexus_ai.core.pdfium import _ANNOTATION_TYPE_MAP
+        from nexus_ai.services.pdfium import _ANNOTATION_TYPE_MAP
 
         assert _ANNOTATION_TYPE_MAP[0] == "text"
         assert _ANNOTATION_TYPE_MAP[8] == "highlight"
         assert _ANNOTATION_TYPE_MAP[23] == "watermark"
 
     def test_unknown_type_default(self):
-        from nexus_ai.core.pdfium import _get_annotation_type_str
+        from nexus_ai.services.pdfium import _get_annotation_type_str
 
         result = _get_annotation_type_str(99)
         assert result == "unknown_99"
@@ -1224,7 +1224,7 @@ class TestAttachmentCount:
     """Testy dla wewnętrznego liczenia załączników."""
 
     def test_attachment_count_mocked(self, mock_pdfium_module, sample_pdf_path):
-        from nexus_ai.core.pdfium import get_pdf_info
+        from nexus_ai.services.pdfium import get_pdf_info
 
         info = get_pdf_info(sample_pdf_path)
         assert "attachment_count" in info
@@ -1261,7 +1261,7 @@ class TestConfiguration:
 
     @pytest.mark.integration
     def test_render_all_pages_to_memory_real(self, sample_pdf_path):
-        from nexus_ai.core.pdfium import render_all_pages_to_memory
+        from nexus_ai.services.pdfium import render_all_pages_to_memory
 
         try:
             images = render_all_pages_to_memory(sample_pdf_path, dpi=72, use_cache=False)
@@ -1273,7 +1273,7 @@ class TestConfiguration:
 
     @pytest.mark.integration
     def test_cache_with_real_pdf(self, sample_pdf_path):
-        from nexus_ai.core.pdfium import PDFRenderCache
+        from nexus_ai.services.pdfium import PDFRenderCache
 
         try:
             cache = PDFRenderCache(ttl=60, max_size=10)
@@ -1285,7 +1285,7 @@ class TestConfiguration:
 
     @pytest.mark.integration
     def test_progressive_loader_real(self, sample_pdf_path):
-        from nexus_ai.core.pdfium import ProgressivePDFLoader
+        from nexus_ai.services.pdfium import ProgressivePDFLoader
 
         try:
             with ProgressivePDFLoader(sample_pdf_path) as loader:
@@ -1300,7 +1300,7 @@ class TestConfiguration:
     @pytest.mark.integration
     def test_get_page_annotations_real(self, sample_pdf_path):
         """FAZA 2: Adnotacje z prawdziwym PDF."""
-        from nexus_ai.core.pdfium import get_page_annotations
+        from nexus_ai.services.pdfium import get_page_annotations
 
         try:
             annotations = get_page_annotations(sample_pdf_path, page_num=0)
@@ -1311,7 +1311,7 @@ class TestConfiguration:
     @pytest.mark.integration
     def test_get_pdf_bookmarks_real(self, sample_pdf_path):
         """FAZA 2: Bookmarki z prawdziwym PDF."""
-        from nexus_ai.core.pdfium import get_pdf_bookmarks
+        from nexus_ai.services.pdfium import get_pdf_bookmarks
 
         try:
             bookmarks = get_pdf_bookmarks(sample_pdf_path)

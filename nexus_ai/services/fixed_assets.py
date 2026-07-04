@@ -17,6 +17,7 @@ DEFAULT_TRANSFER_CODE = 1001
 
 
 class FixedAsset(Struct):
+    __slots__ = ()
     id: str
     asset_name: str
     initial_value: Decimal

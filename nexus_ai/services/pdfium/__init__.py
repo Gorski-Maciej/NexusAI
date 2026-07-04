@@ -20,8 +20,8 @@ Wszystkie symbole są re-eksportowane dla kompatybilności wstecznej.
 
 from __future__ import annotations
 
-from nexus_ai.core.pdfium.cache import get_pdf_bytes, get_pdf_render_cache, invalidate_pdf_cache
-from nexus_ai.core.pdfium.render import (
+from nexus_ai.services.pdfium.cache import get_pdf_bytes, get_pdf_render_cache, invalidate_pdf_cache
+from nexus_ai.services.pdfium.render import (
     DEFAULT_DPI,
     DEFAULT_SCALE,
     PDFIUM_BASE_DPI,
@@ -40,7 +40,7 @@ from nexus_ai.core.pdfium.render import (
     pdf_to_images_memory,
     pdf_to_pil_images,
 )
-from nexus_ai.core.pdfium.text import (
+from nexus_ai.services.pdfium.text import (
     detect_table_regions,
     extract_text_from_page,
     extract_text_ranges,
@@ -48,34 +48,34 @@ from nexus_ai.core.pdfium.text import (
     extract_text_simple,
     search_in_pdf,
 )
-from nexus_ai.core.pdfium.forms import (
+from nexus_ai.services.pdfium.forms import (
     fill_pdf_form_field,
     get_pdf_form_fields,
     save_pdf_with_filled_fields,
 )
-from nexus_ai.core.pdfium.metadata import (
+from nexus_ai.services.pdfium.metadata import (
     get_pdf_info,
     get_pdf_metadata,
     pdfa_check,
     verify_pdf_signatures,
 )
-from nexus_ai.core.pdfium.annotations import (
+from nexus_ai.services.pdfium.annotations import (
     add_pdf_attachment,
     count_page_annotations,
     get_page_annotations,
     get_pdf_attachments,
     get_pdf_bookmarks,
 )
-from nexus_ai.core.pdfium.session import PdfDocumentSession
-from nexus_ai.core.pdfium.manipulation import (
+from nexus_ai.services.pdfium.session import PdfDocumentSession
+from nexus_ai.services.pdfium.manipulation import (
     delete_pages_from_pdf,
     extract_pages_from_pdf,
     merge_pdfs,
     save_incremental,
 )
-from nexus_ai.core.pdfium.progressive import ProgressivePDFLoader
-from nexus_ai.core.pdfium.verification import verify_pdfium_available, verify_pdfium_version
-from nexus_ai.core.pdfium.structs import (
+from nexus_ai.services.pdfium.progressive import ProgressivePDFLoader
+from nexus_ai.services.pdfium.verification import verify_pdfium_available, verify_pdfium_version
+from nexus_ai.services.pdfium.structs import (
     PDFACompliance,
     PDFAnnotation,
     PDFAttachment,

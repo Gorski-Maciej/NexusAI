@@ -22,6 +22,7 @@ class LedgerInitializer(Protocol):
 
 
 class StrategyContext(Struct):
+    __slots__ = ()
     legal_form: LegalForm
     ksef_active: bool
     vat_proportion: float

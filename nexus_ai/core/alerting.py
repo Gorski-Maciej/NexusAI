@@ -27,6 +27,7 @@ from msgspec import Struct, field
 
 class PrometheusAlertRule(Struct):
     """A single Prometheus alerting rule."""
+    __slots__ = ()
 
     name: str
     expr: str

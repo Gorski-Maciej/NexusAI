@@ -1,13 +1,11 @@
 """
-PDFium — kompletny zestaw narzędzi do renderowania, ekstrakcji i manipulacji PDF.
+PDFium — compatibility shim, delegates to services/pdfium/.
 
-UWAGA: Ten plik jest teraz cienką warstwą re-eksportu z pakietu ``pdfium/``.
-Nowy kod powinien importować z ``nexus_ai.core.pdfium`` bezpośrednio.
-
-Redukcja: 2016 LOC → ~50 LOC (shim) + ~1200 LOC w 9 modułach = ~1250 LOC (zapis ~766 LOC).
+Enterprise refactoring: core/ → services/ for better modularity.
+New code should import from ``nexus_ai.services.pdfium`` directly.
 """
 
 from __future__ import annotations
 
-# Re-eksport wszystkich symboli z pakietu pdfium/ dla kompatybilności wstecznej
-from nexus_ai.core.pdfium import *  # noqa: F401, F403
+# Re-export all symbols from the new services/pdfium/ package
+from nexus_ai.services.pdfium import *  # noqa: F401, F403

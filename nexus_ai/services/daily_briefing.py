@@ -32,6 +32,7 @@ logger = get_logger("nexus.services.daily_briefing")
 
 
 class DailyBriefing(Struct):
+    __slots__ = ()
     """Struktura codziennego podsumowania finansowego."""
 
     user_id: str

@@ -33,6 +33,7 @@ except Exception:  # pragma: no cover
 
 
 class DocumentFingerprint(Struct):
+    __slots__ = ()
     binary_hash: str
     visual_hash: str
     semantic_hash: str

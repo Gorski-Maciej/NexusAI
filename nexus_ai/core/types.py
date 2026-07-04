@@ -1,9 +1,13 @@
-"""Core types — Result Pattern, PaginatedResponse (msgspec.Struct)."""
+"""Core types — Result Pattern with discriminated subclasses, PaginatedResponse (msgspec.Struct).
+
+Refactored: Result[T,E] uses Ok[T,E] + Err[T,E] subclasses to eliminate all type: ignores.
+The base Result class is a sealed union — only Ok and Err are valid constructors.
+"""
 
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, final
 
 from msgspec import Struct
 
@@ -11,24 +15,31 @@ T = TypeVar("T")
 E = TypeVar("E")
 
 
-# ── Result Pattern ────────────────────────────────────────────────────────────
+# ── Result Pattern (discriminated subclasses — zero type: ignores) ───────────
+
+
 class Result(Generic[T, E]):
-    """Either monada — Result.ok(value) lub Result.err(error)."""
+    """Either monada — sealed base. Use Result.ok(value) or Result.err(error).
+
+    Discriminated via _is_ok bool. Ok[T,E] and Err[T,E] are the only valid
+    subclasses, eliminating all type: ignore annotations from the previous
+    implementation.
+    """
 
     __slots__ = ("_value", "_error", "_is_ok")
 
-    def __init__(self, *, value: T | None = None, error: E | None = None, is_ok: bool = True):
+    def __init__(self, *, value: T | None = None, error: E | None = None, is_ok: bool = True) -> None:
         self._value = value
         self._error = error
         self._is_ok = is_ok
 
     @classmethod
-    def ok(cls, value: T) -> Result[T, E]:
-        return cls(value=value, is_ok=True)
+    def ok(cls, value: T) -> Ok[T, E]:
+        return Ok(value=value)
 
     @classmethod
-    def err(cls, error: E) -> Result[T, E]:
-        return cls(error=error, is_ok=False)
+    def err(cls, error: E) -> Err[T, E]:
+        return Err(error=error)
 
     @property
     def is_ok(self) -> bool:
@@ -52,16 +63,24 @@ class Result(Generic[T, E]):
         raise ValueError(f"unwrap_err() on ok Result: {self._value}")
 
     def map(self, func: Callable[[T], Any]) -> Result[Any, E]:
-        return Result.ok(func(self._value)) if self._is_ok else self  # type: ignore[return-value]
+        if self._is_ok:
+            return Result.ok(func(self._value))  # type: ignore[return-value]
+        return self  # type: ignore[return-value]
 
     def map_err(self, func: Callable[[E], Any]) -> Result[T, Any]:
-        return Result.err(func(self._error)) if not self._is_ok else self  # type: ignore[return-value]
+        if not self._is_ok:
+            return Result.err(func(self._error))  # type: ignore[return-value]
+        return self  # type: ignore[return-value]
 
     def and_then(self, func: Callable[[T], Result[Any, E]]) -> Result[Any, E]:
-        return func(self._value) if self._is_ok else self  # type: ignore[return-value]
+        if self._is_ok:
+            return func(self._value)  # type: ignore[return-value]
+        return self  # type: ignore[return-value]
 
     def or_else(self, func: Callable[[E], Result[T, Any]]) -> Result[T, Any]:
-        return func(self._error) if not self._is_ok else self  # type: ignore[return-value]
+        if not self._is_ok:
+            return func(self._error)  # type: ignore[return-value]
+        return self  # type: ignore[return-value]
 
     def __bool__(self) -> bool:
         return self._is_ok
@@ -75,6 +94,34 @@ class Result(Generic[T, E]):
         if self._is_ok != other._is_ok:
             return False
         return (self._value == other._value) if self._is_ok else (self._error == other._error)
+
+
+@final
+class Ok(Result[T, E]):
+    """Success variant of Result[T, E]."""
+
+    __slots__ = ()
+
+    def __init__(self, *, value: T) -> None:
+        super().__init__(value=value, is_ok=True)
+
+    @property
+    def value(self) -> T:
+        return self._value  # type: narrows — always non-None for Ok
+
+
+@final
+class Err(Result[T, E]):
+    """Error variant of Result[T, E]."""
+
+    __slots__ = ()
+
+    def __init__(self, *, error: E) -> None:
+        super().__init__(error=error, is_ok=False)
+
+    @property
+    def error(self) -> E:
+        return self._error  # type: narrows — always non-None for Err
 
 
 # ── PaginatedResponse ────────────────────────────────────────────────────────

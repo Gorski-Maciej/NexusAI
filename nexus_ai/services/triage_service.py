@@ -15,6 +15,7 @@ TRIAGE_CONFIDENCE_THRESHOLD = 0.85
 
 
 class TriageDecision(Struct):
+    __slots__ = ()
     send_to_review: bool
     reason: str | None = None
 

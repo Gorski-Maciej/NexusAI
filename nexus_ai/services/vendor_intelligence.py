@@ -10,6 +10,7 @@ from nexus_ai.db.analytics import DuckDBManager
 
 
 class VendorMetric(Struct):
+    __slots__ = ()
     nip: str
     vendor_name: str
     avg_payment_delay: float

@@ -39,6 +39,7 @@ logger = get_logger("nexus.core.monitor")
 
 class ProcessMetrics(Struct, frozen=True):
     """Kompletne metryki procesu zebrane przez oneshot()."""
+    __slots__ = ()
 
     pid: int
     rss_mb: float
@@ -63,6 +64,7 @@ class ProcessMetrics(Struct, frozen=True):
 
 class SystemMetrics(Struct, frozen=True):
     """Kompletne metryki systemowe."""
+    __slots__ = ()
 
     # CPU
     cpu_count_physical: int

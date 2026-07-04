@@ -5,6 +5,7 @@ from msgspec import Struct
 
 
 class FinOpsRates(Struct):
+    __slots__ = ()
     cpu_core_hour_usd: float = 0.035
     ram_gb_hour_usd: float = 0.005
     net_gb_transfer_usd: float = 0.02
@@ -12,6 +13,7 @@ class FinOpsRates(Struct):
 
 
 class FinOpsSnapshot(Struct):
+    __slots__ = ()
     cpu_cores: float
     ram_gb: float
     runtime_hours: float

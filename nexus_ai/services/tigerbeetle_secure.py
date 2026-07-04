@@ -27,6 +27,7 @@ class TigerBeetleSecurityException(PermissionError):  # noqa: N818
 
 
 class SecureTransferSpec(Struct):
+    __slots__ = ()
     """Specyfikacja transferu dla SecureTigerBeetleClient."""
     __slots__ = ()
 

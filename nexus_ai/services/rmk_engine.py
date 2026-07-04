@@ -16,6 +16,7 @@ RMK_TRANSFER_CODE = 2001
 
 
 class RMKInvoiceData(Struct):
+    __slots__ = ()
     invoice_id: str
     description: str
     total_net_amount: Decimal

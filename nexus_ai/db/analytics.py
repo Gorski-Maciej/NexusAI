@@ -13,6 +13,7 @@ _slow_logger = logging.getLogger("nexus.duckdb.profiler")
 
 
 class DuckDBLimits(Struct):
+    __slots__ = ()
     memory_limit: str = "512MB"
     threads: int = 2
 

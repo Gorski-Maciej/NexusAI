@@ -15,8 +15,8 @@ import fsspec
 from PIL import Image
 from structlog import get_logger
 
-from nexus_ai.core.pdfium.cache import _caching_fs
-from nexus_ai.core.pdfium.structs import PDFProgressInfo
+from nexus_ai.services.pdfium.cache import _caching_fs
+from nexus_ai.services.pdfium.structs import PDFProgressInfo
 
 logger = get_logger("nexus.core.pdfium")
 

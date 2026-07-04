@@ -11,7 +11,7 @@ from typing import Any
 import fsspec
 from structlog import get_logger
 
-from nexus_ai.core.pdfium.structs import PDFSearchResult, PDFTextRange
+from nexus_ai.services.pdfium.structs import PDFSearchResult, PDFTextRange
 
 logger = get_logger("nexus.core.pdfium")
 

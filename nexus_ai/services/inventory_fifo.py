@@ -33,6 +33,7 @@ def _to_decimal(value: Any, quant: Decimal) -> Decimal:
 
 
 class InventoryBatch(Struct):
+    __slots__ = ()
     batch_id: str
     product_id: str
     received_date: pendulum.Date
@@ -42,6 +43,7 @@ class InventoryBatch(Struct):
 
 
 class FIFOConsumptionLine(Struct):
+    __slots__ = ()
     batch_id: str
     product_id: str
     qty_taken: Decimal
@@ -50,6 +52,7 @@ class FIFOConsumptionLine(Struct):
 
 
 class FIFOConsumptionResult(Struct):
+    __slots__ = ()
     product_id: str
     requested_qty: Decimal
     fulfilled_qty: Decimal

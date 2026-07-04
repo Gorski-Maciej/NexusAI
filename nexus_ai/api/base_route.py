@@ -91,13 +91,15 @@ def parse_pagination(
         Pagination object with limit, offset, page.
     """
     try:
-        limit = int(query_params.get("limit", str(default_limit)))  # type: ignore[union-attr]
+        raw_limit = query_params.get("limit", str(default_limit))
+        limit = int(str(raw_limit))
     except (ValueError, TypeError, AttributeError):
         limit = default_limit
     limit = max(1, min(limit, max_limit))
 
     try:
-        offset = int(query_params.get("offset", "0"))  # type: ignore[union-attr]
+        raw_offset = query_params.get("offset", "0")
+        offset = int(str(raw_offset))
     except (ValueError, TypeError, AttributeError):
         offset = 0
     offset = max(0, offset)

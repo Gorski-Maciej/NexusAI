@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 from msgspec import Struct
 
@@ -171,7 +171,7 @@ def infer_ledger_entries(
     debit_account, credit_account, tax_impact_code = rows[0]
 
     return LedgerEntryPacket(
-        transaction_type=transaction_type,  # type: ignore[arg-type]
+        transaction_type=cast(TransactionType, transaction_type),
         debit_account_code=str(debit_account),
         credit_account_code=str(credit_account),
         tax_impact_code=str(tax_impact_code),

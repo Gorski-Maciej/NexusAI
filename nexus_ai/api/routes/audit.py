@@ -291,7 +291,7 @@ def _build_report_dict(
 def _safe_int(val: object) -> int:
     """Safely convert a value to int, returning 0 on failure."""
     try:
-        return int(val)  # type: ignore[arg-type]
+        return int(val)  # int() accepts object, mypy flags as arg-type
     except (TypeError, ValueError):
         return 0
 
