@@ -53,6 +53,8 @@ from nexus_ai.api.routes.partner import PartnerController
 from nexus_ai.api.routes.performance_ops import PerformanceOpsController
 from nexus_ai.api.routes.privacy import PrivacyController
 from nexus_ai.api.routes.risk import RiskController
+from nexus_ai.api.routes.contractor import ContractorController
+from nexus_ai.api.routes.security_alert import SecurityAlertController
 from nexus_ai.api.routes.security_posture import SecurityPostureController
 from nexus_ai.api.routes.system_integrity import SystemIntegrityController
 from nexus_ai.api.routes.tasks import TaskController
@@ -240,6 +242,8 @@ def create_app() -> Litestar:
         route_handlers=[
             AuthController,
             AdminController,
+            ContractorController,
+            SecurityAlertController,
             VersionController,
         ],
     )

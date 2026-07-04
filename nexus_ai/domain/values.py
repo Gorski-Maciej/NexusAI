@@ -34,7 +34,7 @@ import pendulum
 # ═══════════════════════════════════════════════════════════════════════════
 
 
-class CurrencyMismatchError(ValueError):
+class CurrencyMismatchError(DomainError):
     """Rzucany gdy próbujemy operować na różnych walutach."""
 
     def __init__(self, a: str, b: str) -> None:
@@ -42,16 +42,20 @@ class CurrencyMismatchError(ValueError):
         self.code = "CURRENCY_MISMATCH"
 
 
-# ── Backward-compat error aliases (zachowane z poprzedniej wersji) ───────
-class InvalidIBANError(ValueError):
+# ── Domain error hierarchy ────────────────────────────────────────────
+class DomainError(ValueError):
+    """Base dla wszystkich błędów domenowych (zamiast 4 osobnych klas)."""
+
+
+class InvalidIBANError(DomainError):
     """Rzucany gdy IBAN jest nieprawidłowy."""
 
 
-class InvalidNIPError(ValueError):
+class InvalidNIPError(DomainError):
     """Rzucany gdy NIP jest nieprawidłowy."""
 
 
-class InvalidPESELError(ValueError):
+class InvalidPESELError(DomainError):
     """Rzucany gdy PESEL jest nieprawidłowy."""
 
 

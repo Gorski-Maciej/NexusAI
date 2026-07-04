@@ -340,9 +340,12 @@ cmd = "pytest -v"
 description = "Uruchom wszystkie testy (nie zatrzymuj przy błędzie)"
 
 
+[tasks.test-cov]
+cmd = "pytest --cov=nexus_ai --cov-report=term-missing"
 description = "Testy z raportem pokrycia kodu"
 
-
+[tasks.test-parallel]
+cmd = "pytest -x -v -n auto"
 description = "Testy równoległe na wszystkich rdzeniach CPU"
 
 [tasks.test-watch]

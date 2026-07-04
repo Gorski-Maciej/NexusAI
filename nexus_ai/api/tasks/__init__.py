@@ -9,8 +9,52 @@ FAZA V: Podział api/tasks.py na moduły:
 - cleanup.py: zadania czyszczenia (cleanup_*)
 
 Wszystkie dekoratory @broker.task są definiowane w podmodułach.
-Ten plik re-exportuje tylko funkcje pomocnicze dla kompatybilności.
+Ten plik re-exportuje + zawiera unikalny kod (sha256, _make_engine, atexit cleanup).
 """
+
+from __future__ import annotations
+
+import atexit
+import os
+import warnings
+
+from structlog import get_logger
+
+from nexus_ai.core.config import AppConfig
+from nexus_ai.db.database import create_oltp_engine
+
+logger = get_logger("nexus.api.tasks")
+
+# ── SHA-256 przez nexus-crypto (Rust+PyO3) ─────────────────────────────────
+try:
+    from nexus_crypto import sha256 as _sha256
+    HAS_NEXUS_CRYPTO = True
+except ImportError:
+    import hashlib as _hashlib
+    HAS_NEXUS_CRYPTO = False
+
+    def _sha256(data: bytes) -> str:
+        return _hashlib.sha256(data).hexdigest()
+
+
+# ── Legacy engine helper ────────────────────────────────────────────────────
+def _make_engine(config: AppConfig | None = None):
+    """[LEGACY] Utworz SQLAlchemy engine -- do migracji na TaskiqDepends.
+
+    Deprecated: Uzyj TaskiqDepends(get_db_session) zamiast recznego tworzenia engine.
+    """
+    warnings.warn(
+        "_make_engine jest deprecated. Uzyj TaskiqDepends(get_db_session).",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    if config is None:
+        config = AppConfig()
+    sqlcipher_key = os.getenv(config.sqlcipher_key_env, "").strip()
+    return create_oltp_engine(config, sqlcipher_key=sqlcipher_key or None)
+
+
+# ── Re-exporty z podmodułów ────────────────────────────────────────────────
 
 from nexus_ai.api.tasks.cleanup import (
     cleanup_archived_invoices_task,
@@ -58,7 +102,21 @@ from nexus_ai.api.tasks.outbox import (
     _dispatch_outbox_event,
     relay_outbox_events,
 )
-from nexus_ai.core.broker import broker
+
+
+def _close_all_components() -> None:
+    """Cleanup all singleton components on shutdown."""
+    if _DUCKDB is not None:
+        try:
+            _DUCKDB.close()
+        except (ConnectionError, OSError) as exc:
+            logger.warning("[TASKS] Error closing DuckDB: %s", exc)
+        except Exception as exc:
+            logger.error("[TASKS] Unexpected error closing DuckDB: %s", exc)
+
+
+atexit.register(_close_all_components)
+
 
 __all__ = [
     "process_invoice_ocr",
@@ -97,4 +155,7 @@ __all__ = [
     "_dispatch_outbox_event",
     "_DECISION_ENGINE",
     "_DUCKDB",
+    "_make_engine",
+    "_sha256",
+    "HAS_NEXUS_CRYPTO",
 ]

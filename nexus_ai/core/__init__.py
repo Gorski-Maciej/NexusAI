@@ -83,6 +83,9 @@ if not _NUITKA_COMPILED:
     # core.prompts (optional)
     _, [PromptTemplate] = _safe_import("core.prompts", ["PromptTemplate"])
 
+    # core.ai_context (optional)
+    _, [AIContextManager] = _safe_import("core.ai_context", ["AIContextManager"])
+
     # core.bus (optional)
     _, [bus] = _safe_import("core.bus", ["bus"])
 
@@ -136,6 +139,7 @@ else:
     SecretsManager = None
     SystemMonitor = None
     PromptTemplate = None
+    AIContextManager = None
     bus = None
     DataParser = None
     PluginManager = None

@@ -66,9 +66,6 @@ def _default_enc_hook(obj: Any) -> Any:
     - Decimal -> str (zachowuje precyzję)
     - datetime / date -> isoformat
     - UUID -> str
-    - Decimal -> str (zachowuje precyzję)
-    - datetime / date -> isoformat
-    - UUID -> str
     """
     if isinstance(obj, Decimal):
         return str(obj)
@@ -114,110 +111,30 @@ def msgspec_msgpack_loads(data: bytes | bytearray) -> Any:
 
 
 def msgspec_dumps(obj: Any, **kwargs: Any) -> str:
-    """Zastępuje json.dumps(obj).
-
-    Używa msgspec.json.Encoder z enc_hook dla Decimal, datetime, UUID, Money.
-
-    Akceptuje kwargs dla kompatybilności:
-    - ensure_ascii=False -- ignorowane (msgspec domyślnie UTF-8)
-    - default=str -- ignorowane (enc_hook robi to lepiej)
-    - sort_keys=True -- wspierane przez msgspec.sort_keys
-    - indent=N -- wspierane (formatowanie)
-
-    Args:
-        obj: Obiekt do serializacji.
-        **kwargs: ensure_ascii, default, sort_keys, indent (kompatybilność).
-
-    Raises:
-        EncodeError: Gdy obiekt nie jest serializowalny.
-
-    Returns:
-        String JSON.
-    """
+    """Zastępuje json.dumps(obj). Używa msgspec.json.Encoder."""
     try:
         if kwargs.get("indent"):
             return _ENCODER.format(obj, indent=kwargs["indent"]).decode()
-        result = _ENCODER.encode(obj)
-        return result.decode("utf-8")
+        return _ENCODER.encode(obj).decode("utf-8")
     except (msgspec.EncodeError, TypeError) as exc:
         raise EncodeError(str(exc)) from exc
 
 
 def msgspec_dumps_bytes(obj: Any) -> bytes:
-    """Zastępuje json.dumps(obj).encode() -- zwraca bytes.
-
-    Args:
-        obj: Obiekt do serializacji.
-
-    Raises:
-        EncodeError: Gdy obiekt nie jest serializowalny.
-
-    Returns:
-        Bajty JSON.
-    """
+    """Zastępuje json.dumps(obj).encode() -- zwraca bytes."""
     try:
         return _ENCODER.encode(obj)
     except (msgspec.EncodeError, TypeError) as exc:
         raise EncodeError(str(exc)) from exc
 
 
-# ── msgspec.structs.replace -- bezpieczna modyfikacja Structów (Faza 3) ────
-
-
-def msgspec_struct_replace(
-    struct_obj,
-    /,
-    **changes: Any,
-) -> Any:
-    """Zastępuje ``dataclasses.replace()`` dla msgspec Structów.
-
-    Tworzy kopię Structa z podmienionymi polami. Działa zarówno dla
-    ``frozen=True`` jak i ``frozen=False`` Structów.
-
-    Używa ``msgspec.structs.replace()`` -- natywnej funkcji msgspec
-    napisanej w C, szybszej niż ``Struct(**old.__dict__, field=new)``.
-
-    Args:
-        struct_obj: Instancja Struct do skopiowania.
-        **changes: Pola do podmiany (keyword only).
-
-    Returns:
-        Nowa instancja Struct z podmienionymi polami.
-
-    Example:
-        >>> old = DecisionVerdict(decision="ASK_USER", confidence=0.5, reasoning="")
-        >>> new = msgspec_struct_replace(old, decision="AUTO_POST", confidence=0.95)
-        >>> new.decision
-        'AUTO_POST'
-        >>> new.reasoning  # unchanged
-        ''
-
-    Raises:
-        TypeError: Gdy zmieniane pole nie istnieje w Struct.
-        ValueError: Gdy Struct ma ``forbid_unknown=True``.
-
-    Note:
-        ``msgspec.structs.replace()`` jest napisane w C i działa ~10x szybciej
-        niż ``type(obj)(**asdict(obj), field=new)``. Preferuj tę funkcję
-        zamiast ręcznego tworzenia kopii Structów.
-
-    Kiedy używać:
-        - ``Struct(**data)`` -- konstrukcja od zera (OK, nie zmieniaj)
-        - ``msgspec.structs.replace(existing, field=new)`` -- modyfikacja
-          istniejącego frozen Structa (użyj replace zamiast ręcznej kopii)
-        - ``existing.field = new`` -- tylko dla non-frozen Structów
-          (nie używaj replace, modyfikacja in-place jest szybsza)
-    """
+# ── msgspec.structs.replace -- bezpieczna modyfikacja Structów ───────────
+def msgspec_struct_replace(struct_obj, /, **changes: Any) -> Any:
+    """Zastępuje ``dataclasses.replace()`` dla msgspec Structów (frozen-safe)."""
     return msgspec.structs.replace(struct_obj, **changes)
 
 
-# Zamiast ręcznego kopiowania Structów:
-# old = DecisionVerdict(decision="ASK_USER", confidence=0.5, reasoning="")
-# new = msgspec_struct_replace(old, confidence=0.95, reasoning="Nowy reason")
-# new.decision -> "ASK_USER" (bez zmian), new.confidence -> 0.95
-
-
-# ── JSON Schema generation (Faza 3) ──────────────────────────────────────
+# ── JSON Schema generation ────────────────────────────────────────────────
 
 # Cache dla wygenerowanych schematów (Struct -> JSON Schema)
 _SCHEMA_CACHE: dict[type, dict[str, Any]] = {}
