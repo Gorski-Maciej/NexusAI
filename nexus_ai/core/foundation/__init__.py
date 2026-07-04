@@ -12,20 +12,24 @@ Dostarcza:
 from __future__ import annotations
 
 from nexus_ai.core.foundation.admin_registry import AdminServiceRegistry, rule_service
-from nexus_ai.core.foundation.auto_crud import auto_crud, endpoint_generator
+from nexus_ai.core.foundation.auto_crud import auto_crud
 from nexus_ai.core.foundation.auto_dto import auto_dto, auto_dto_from_model
+from nexus_ai.core.foundation.base_repository import BaseRepository
 from nexus_ai.core.foundation.base_service import BaseService
 from nexus_ai.core.foundation.pipeline import Pipeline, PipelineContext, Step
+from nexus_ai.core.foundation.unit_of_work import UnitOfWork, uow_context
 
 __all__ = [
+    "AdminServiceRegistry",
+    "BaseRepository",
     "BaseService",
+    "Pipeline",
+    "PipelineContext",
+    "Step",
+    "UnitOfWork",
+    "auto_crud",
     "auto_dto",
     "auto_dto_from_model",
-    "auto_crud",
-    "endpoint_generator",
-    "AdminServiceRegistry",
     "rule_service",
-    "Pipeline",
-    "Step",
-    "PipelineContext",
+    "uow_context",
 ]

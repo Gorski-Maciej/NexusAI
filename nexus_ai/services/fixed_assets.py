@@ -28,6 +28,8 @@ class FixedAsset(Struct):
 
 @final
 class FixedAssetsService:
+    __slots__ = ('duckdb', 'tigerbeetle')
+
     def __init__(self, duckdb: DuckDBManager, tigerbeetle: TigerBeetleClient) -> None:
         self.duckdb = duckdb
         self.tigerbeetle = tigerbeetle

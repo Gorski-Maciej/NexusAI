@@ -30,6 +30,8 @@ class AutoDecreeEngine:
     - Wyszukiwanie podobieństwa wektorowego OCR_TEXT -> template faktury
     - Wszystkie operacje ASYNC -- 0ms blokowania async loop
     """
+    __slots__ = ('_embedding_service', '_store', '_templates_initialized')
+
 
     def __init__(self, config: AppConfig):
         store_path = Path(config.base_dir) / "app_data" / "vector_store" / "auto_decree.db"

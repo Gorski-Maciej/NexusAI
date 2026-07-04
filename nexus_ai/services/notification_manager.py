@@ -19,6 +19,8 @@ logger = get_logger("nexus.services.notification_manager")
 
 
 class NotificationPriority(enum.IntEnum):
+    __slots__ = ()
+
     LOW = 0
     NORMAL = 1
     HIGH = 2

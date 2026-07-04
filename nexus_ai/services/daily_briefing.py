@@ -77,6 +77,8 @@ class DailyBriefingService:
       - push:   (placeholder -- przyszła implementacja)
       - email:  (placeholder -- przyszła implementacja)
     """
+    __slots__ = ('_config', '_duckdb', '_logger', '_notification')
+
 
     def __init__(
         self,

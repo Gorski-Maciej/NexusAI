@@ -78,6 +78,8 @@ class ReplayEngine:
     Args:
         conn: DuckDB connection z tabelami tax_rules i decision_traces.
     """
+    __slots__ = ('_conn',)
+
 
     def __init__(self, conn: duckdb.DuckDBPyConnection) -> None:
         self._conn = conn

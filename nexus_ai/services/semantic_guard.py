@@ -30,6 +30,8 @@ class AnomalyAction(StrEnum):
 
 
 class AnomalyResult:
+    __slots__ = ('action', 'alert', 'anomaly_score', 'similar_invoices')
+
     def __init__(
         self,
         action: AnomalyAction = AnomalyAction.ALLOW,

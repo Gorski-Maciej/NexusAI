@@ -160,6 +160,8 @@ class DecisionLogger:
 
     @final: mypyc devirtualises all method calls on this class.
     """
+    __slots__ = ('_duckdb',)
+
 
     def __init__(
         self,

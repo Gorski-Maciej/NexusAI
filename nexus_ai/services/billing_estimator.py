@@ -7,8 +7,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from structlog import get_logger
 
 from nexus_ai.services._billing_store import get_rules_connection, query_billing_rule
@@ -18,6 +16,11 @@ logger = get_logger("nexus.services.billing")
 
 class BillingResult:
     """Wynik estymacji kosztów."""
+    __slots__ = (
+        "base_rate_per_minute", "breakdown", "compliance_surcharge_pln",
+        "processing_time_minutes", "requires_senior", "rule_id",
+        "total_cost", "total_price_pln", "total_time_hours",
+    )
 
     def __init__(
         self,
@@ -44,6 +47,7 @@ class BillingResult:
 
 class BillingEstimator:
     """Estymator kosztów używający współdzielonego SQLite store."""
+    __slots__ = ()
 
     def estimate(
         self,

@@ -69,6 +69,8 @@ class TraceGenerator:
         generator = TraceGenerator()
         text = generator.generate(rule, context, verdict)
     """
+    __slots__ = ()
+
 
     @staticmethod
     def generate(

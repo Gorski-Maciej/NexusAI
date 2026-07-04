@@ -19,6 +19,8 @@ class SmartAnomalyDetector:
     - **shrink_dtype()** -- redukcja RAM dla historycznych danych
     - Zysk: czystsze API niż PyArrow + dostęp do pełnego Polars query engine
     """
+    __slots__ = ('db',)
+
 
     def __init__(self, db_manager: DuckDBManager):
         self.db = db_manager

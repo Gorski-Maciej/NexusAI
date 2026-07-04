@@ -42,6 +42,8 @@ class EventLog:
       - SQLite (główna baza, migracja 0003): event_log -- fallback dla zapytań
       - DuckDB: event_log_analytics -- wydajne zapytania OLAP
     """
+    __slots__ = ('_duckdb', '_engine')
+
 
     def __init__(
         self,

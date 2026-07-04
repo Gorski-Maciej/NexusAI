@@ -90,6 +90,8 @@ class IntegrityVerifier:
         if report.status == 'violation':
             verifier.handle_violation(report)
     """
+    __slots__ = ('_conn',)
+
 
     def __init__(self, conn: duckdb.DuckDBPyConnection) -> None:
         self._conn = conn

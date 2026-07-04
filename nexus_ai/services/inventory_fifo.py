@@ -11,6 +11,8 @@ QTY_QUANT = Decimal("0.0001")
 
 
 class InventoryMismatch(Exception):  # noqa: N818
+    __slots__ = ()
+
     pass
 
 

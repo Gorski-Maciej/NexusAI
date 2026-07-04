@@ -45,3 +45,5 @@ class TaxApiService:
 
     async def close(self) -> None:
         await self._white_list.close()
+
+    __slots__ = ('_white_list', 'config')

@@ -7,6 +7,8 @@ from nexus_ai.db.analytics import DuckDBManager
 
 @final
 class AnalyticsService:
+    __slots__ = ('duckdb',)
+
     def __init__(self, duckdb: DuckDBManager):
         self.duckdb = duckdb
 

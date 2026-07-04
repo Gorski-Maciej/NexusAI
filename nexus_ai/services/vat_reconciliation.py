@@ -77,6 +77,8 @@ class VATReconciliationEngine:
         self, invoice_id: str, ocr_results: dict[str, Any]
     ) -> VATIntegrityResult:
         """Check VAT integrity across OCR/DuckDB/TigerBeetle.
+    __slots__ = ('account_vat_in', 'account_vat_out', 'duckdb', 'tb_client')
+
 
         Polars Expressions zamiast PyArrow compute.
 

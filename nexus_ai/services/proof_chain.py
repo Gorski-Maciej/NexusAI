@@ -32,6 +32,8 @@ class ProofChain:
     - current_hash: SHA-256(previous_hash + payload + timestamp)
     - context_snapshot: zamrożony kontekst z dnia decyzji
     """
+    __slots__ = ('_conn',)
+
 
     def __init__(self, conn: duckdb.DuckDBPyConnection) -> None:
         self._conn = conn

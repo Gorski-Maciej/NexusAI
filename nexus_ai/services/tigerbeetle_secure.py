@@ -28,6 +28,8 @@ class TigerBeetleSecurityException(PermissionError):  # noqa: N818
 
 class SecureTransferSpec(Struct):
     """Specyfikacja transferu dla SecureTigerBeetleClient."""
+    __slots__ = ()
+
 
     debit_account: int
     credit_account: int

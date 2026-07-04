@@ -39,6 +39,8 @@ class ReminderType(enum.Enum):
 
 class ReminderStatus(enum.Enum):
     """Status przypomnienia."""
+    __slots__ = ()
+
 
     ACTIVE = "active"
     SENT = "sent"

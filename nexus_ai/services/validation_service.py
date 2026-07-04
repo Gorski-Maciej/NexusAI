@@ -37,3 +37,5 @@ def is_duplicate(session: Session, nip: str, number: str, amount_gross: Decimal)
 class ValidationService:  # backward compat
     """Backward-compat alias. Use module-level is_duplicate() directly."""
     is_duplicate = staticmethod(is_duplicate)
+
+    __slots__ = ()

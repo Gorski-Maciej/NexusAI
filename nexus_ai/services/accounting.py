@@ -12,6 +12,8 @@ class AccountingService:
 
     Używa Money (msgspec.Struct) zamiast gołych Decimal.
     """
+    __slots__ = ()
+
 
     @staticmethod
     def validate_amounts(net: Decimal, gross: Decimal) -> bool:

@@ -57,6 +57,8 @@ class RiskThresholdService(AdminServiceRegistry):
 @auto_logger
 class BillingRuleService(AdminServiceRegistry):
     """Zarządzanie regułami billingowymi."""
+    __slots__ = ()
+
     _nats_subject = "billing.rules.updated"
 
     @classmethod

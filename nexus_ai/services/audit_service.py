@@ -120,6 +120,8 @@ class AuditService:
     Zarejestruj przez ``register_audit_hooks()`` przy starcie aplikacji.
     Eliminuje potrzebę jawnego ``log_change()`` w serwisach.
     """
+    __slots__ = ()
+
 
     @staticmethod
     def log_change(

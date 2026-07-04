@@ -36,6 +36,8 @@ class BudgetaryControlEngine:
     - get_account_balances_batch() -- wiele kont w jednym zapytaniu
     - AccountFlags.DEBITS_MUST_NOT_EXCEED_CREDITS -- TB egzekwuje limit natywnie
     """
+    __slots__ = ('account_map', 'duckdb', 'tb_client')
+
 
     def __init__(
         self, duckdb_manager: Any, tb_client: TigerBeetleClient, account_map: dict[str, int]

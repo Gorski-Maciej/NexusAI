@@ -47,6 +47,8 @@ class FileSystemService:
     - zero ``fsspec.open_async()`` (nie istnieje w fsspec 2026.4.0)
     - ``await self._async_fs.cat_file()`` / ``await self._async_fs.pipe_file()``
     """
+    __slots__ = ('_base_path', '_config', '_fs', '_protocol')
+
 
     def __init__(self, config: AppConfig) -> None:
         self._config = config

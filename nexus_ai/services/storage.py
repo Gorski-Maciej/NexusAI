@@ -45,6 +45,8 @@ class StorageService:
     - Zero ``to_thread.run_sync()`` w serwisie
     - Gotowy na S3: zmiana storage_protocol -> natywne async I/O
     """
+    __slots__ = ('_async_fs', '_base_path', '_config', '_fs', '_meta_mapper', '_protocol', '_tx_fs')
+
 
     def __init__(self, config: AppConfig) -> None:
         self._config = config

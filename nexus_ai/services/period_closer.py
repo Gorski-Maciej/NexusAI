@@ -35,6 +35,8 @@ class PeriodCloser:
     - Linked chain: atomowe zamknięcie wszystkich kont okresu
     - Batch: jeden create_transfers() dla całego closingu
     """
+    __slots__ = ('_default_ledger', '_retained_earnings', '_tb_client')
+
 
     def __init__(
         self,

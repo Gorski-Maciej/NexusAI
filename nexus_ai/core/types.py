@@ -9,7 +9,7 @@ Core types -- Result Pattern, PaginatedResponse (Generic msgspec.Struct).
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, TypeVar
+from typing import Any, Generic, TypeVar
 
 from msgspec import Struct
 

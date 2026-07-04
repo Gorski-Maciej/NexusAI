@@ -39,6 +39,8 @@ logger = get_logger("nexus.services.bank_import")
 
 
 class DuplicateTransferError(RuntimeError):
+    __slots__ = ()
+
     pass
 
 

@@ -13,6 +13,8 @@ class ReplicationBridge:
     Legacy row-by-row OLTP->OLAP replication is intentionally disabled.
     DuckDB reads SQLite directly through ATTACH (TYPE SQLITE).
     """
+    __slots__ = ('olap',)
+
 
     def __init__(self, duckdb_manager: DuckDBManager):
         self.olap = duckdb_manager

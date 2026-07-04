@@ -26,6 +26,8 @@ class VendorAnalyst:
     - Używa NexusCache (L1 RAM + L2 SQLite) dla wyników vendor context.
     - Cache TTL: 3600s (1h) -- dane kontrahentów zmieniają się powoli.
     """
+    __slots__ = ('_cache', '_running', 'duckdb', 'refresh_seconds')
+
 
     _CACHE_TTL = 3600  # 1h -- dane kontrahentów zmieniają się powoli
 

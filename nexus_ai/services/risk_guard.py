@@ -41,6 +41,8 @@ class RiskThreshold:
 
 class RiskGuard:
     """Dynamiczny strażnik ryzyka z regułami w SQLite."""
+    __slots__ = ('action_if_below', 'required_ml_confidence', 'rule_id')
+
 
     def get_threshold(
         self,

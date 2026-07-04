@@ -24,6 +24,8 @@ class KsefService:
 
     async def _init_session(self, nip: str, authorization_token: str) -> bool:
         """Krok 1: Inicjalizacja sesji z KSeF (Authorisation Challenge).
+    __slots__ = ('_http', 'base_url')
+
 
         Wymaga podpisania wyzwania tokenem wygenerowanym w aplikacji KSeF.
         SUPERPOWERS: stamina.retry z circuit breaker dla odpornej komunikacji z API MF.

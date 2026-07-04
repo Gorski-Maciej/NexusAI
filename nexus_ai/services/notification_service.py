@@ -176,6 +176,8 @@ class DailyBriefingGenerator:
 @final
 class MultiChannelConfig:
     """Configuration dla wielokanałowych powiadomień."""
+    __slots__ = ('_config', '_duckdb', '_logger', '_ple')
+
 
     def __init__(self) -> None:
         self.push_enabled: bool = False

@@ -59,6 +59,8 @@ class HotReloadListener:
         ...
         await listener.stop()    # graceful shutdown
     """
+    __slots__ = ('_nats_url', '_stop_event')
+
 
     def __init__(self, nats_url: str = "nats://localhost:4222") -> None:
         self._nats_url = nats_url

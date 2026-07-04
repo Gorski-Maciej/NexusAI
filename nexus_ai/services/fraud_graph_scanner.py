@@ -48,6 +48,8 @@ class FraudAlert(Struct, frozen=True):
 
 @final
 class FraudGraphScanner:
+    __slots__ = ('duckdb',)
+
     def __init__(self, duckdb: DuckDBManager):
         self.duckdb = duckdb
 

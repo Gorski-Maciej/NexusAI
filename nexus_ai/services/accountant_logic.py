@@ -22,6 +22,8 @@ class AccountantLogic:
     Używany przez services/__init__.py do eksportu jako AccountantLogic.
     Deleguje logikę mapowania kont do ZPKEngine.
     """
+    __slots__ = ('_zpk',)
+
 
     def __init__(self, db: DuckDBManager | None = None):
         self._zpk = ZPKEngine(db) if db else None

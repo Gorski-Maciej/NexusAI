@@ -226,6 +226,8 @@ class FactsAggregator:
     === ARKUSZ FAKTÓW ===, dzięki czemu model nie musi samodzielnie
     szukać danych — dostaje je gotowe.
     """
+    __slots__ = ('_cache', '_decision_logger', '_duckdb', '_embedding_service', '_rule_store', '_session_factory', '_tigerbeetle', '_vector_store', '_vendor_analyst')
+
 
     def __init__(
         self,

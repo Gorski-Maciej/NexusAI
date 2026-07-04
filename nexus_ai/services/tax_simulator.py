@@ -42,6 +42,8 @@ class TaxSimulator:
     Pozwala symulować "co by było gdyby" dla różnych form opodatkowania
     bez wpływu na główną bazę transakcyjną.
     """
+    __slots__ = ('duckdb_path', 'strategy_registry')
+
 
     def __init__(
         self,

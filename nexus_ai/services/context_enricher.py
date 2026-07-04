@@ -25,6 +25,8 @@ class ContextEnricher:
     Cache: NexusCache (L1 RAM + L2 SQLite, TTL 30 dni)
     Resilience: stamina (retry + circuit breaker)
     """
+    __slots__ = ('_cache', '_gus', '_white_list')
+
 
     def __init__(
         self,

@@ -86,6 +86,8 @@ class GusBirClient:
                 logger.warning("[GUS-BIR] Logout on exit failed: %s", exc)
         await self._http.close()
 
+    __slots__ = ("_api_key", "_endpoint", "_http", "_sid", "_timeout")
+
     @property
     def is_authenticated(self) -> bool:
         """Czy klient ma aktywna sesje."""

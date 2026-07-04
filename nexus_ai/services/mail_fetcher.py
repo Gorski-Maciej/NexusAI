@@ -9,6 +9,8 @@ from typing import final
 class MailIngestionService:
     """Automatyczne pobieranie faktur PDF ze zdefiniowanej skrzynki mailowej (IMAP)."""
 
+    __slots__ = ("download_dir", "email_pass", "email_user", "imap_server")
+
     def __init__(self, imap_server: str, email_user: str, email_pass: str, download_dir: str):
         self.imap_server = imap_server
         self.email_user = email_user

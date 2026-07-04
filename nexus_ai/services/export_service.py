@@ -34,3 +34,5 @@ def generate_export_payload(
 class ExportService:  # backward compat
     """Backward-compat alias. Use module-level generate_export_payload() directly."""
     generate_export_payload = staticmethod(generate_export_payload)
+
+    __slots__ = ()

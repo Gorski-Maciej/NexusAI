@@ -94,6 +94,8 @@ class LocalRAGService:
 @final
 class KSEFDefenderService:
     """Detekcja anomalii faktur na podstawie historii i cech aktualnej faktury."""
+    __slots__ = ('embedder', 'llm_client', 'vector_store')
+
 
     def __init__(self, model: Any, feature_pipeline: Any) -> None:
         self.model = model

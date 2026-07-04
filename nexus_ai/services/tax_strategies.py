@@ -101,6 +101,8 @@ class CitEstonianStrategy(TaxStrategy):
 @final
 class StrategyRegistry:
     """Rejestr strategii podatkowych -- używany przez TaxSimulator."""
+    __slots__ = ()
+
 
     def __init__(self) -> None:
         self._strategies: dict[TaxForm, TaxStrategy] = {

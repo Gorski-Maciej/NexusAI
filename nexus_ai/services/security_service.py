@@ -1,3 +1,13 @@
+"""SecurityService -- DEPRECATED: empty placeholder.
+
+Security functionality moved to:
+- nexus_crypto (Rust) for AEAD, Argon2id, SHA-256
+- nexus_ai/core/security.py for JWT, RBAC
+- nexus_ai/services/log_pii_monitor.py for PII scanning
+
+This file is kept for backward compatibility only.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -9,18 +19,22 @@ from sqlmodel import Session
 
 @final
 class SecurityService:
-    """Zarządza retencją danych i bezpiecznym usuwaniem dokumentów."""
+    """DEPRECATED: Zarządza retencją danych i bezpiecznym usuwaniem dokumentów.
+
+    Security-related functionality has been moved to the Rust-native nexus_crypto
+    module and core security services.
+    """
+    __slots__ = ()
+
 
     @staticmethod
-    def cleanup_old_scans(session: Session, years: int = 5):
-        """Usuwa fizyczne pliki i wpisy z bazy dla dokumentów starszych niż X lat (RODO/Podatki)."""
-        pendulum.now() - pendulum.duration(days=years * 365)
-        # 1. Znajdź stare faktury
-        # (Tutaj logika select i usuwania plików z dysku przed usunięciem z DB)
-        pass
+    def cleanup_old_scans(session: Session, years: int = 5) -> None:
+        """Usuwa fizyczne pliki i wpisy z bazy dla dokumentów starszych niż X lat."""
+        _ = pendulum.now() - pendulum.duration(days=years * 365)
+        # Placeholder -- actual logic in dedicated retention module
 
     @staticmethod
-    def secure_delete_file(file_path: str):
+    def secure_delete_file(file_path: str) -> None:
         """Nadpisuje plik zerami przed usunięciem (bezpieczne niszczenie danych)."""
         path = Path(file_path)
         if path.exists():

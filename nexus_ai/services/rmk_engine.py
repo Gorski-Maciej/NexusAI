@@ -53,6 +53,8 @@ class RMKEngine:
 
         self.duckdb.execute(
             """
+    __slots__ = ('duckdb',)
+
             INSERT INTO deferred_expenses (
                 id, invoice_id, description, total_net_amount, start_date, end_date,
                 total_days, daily_rate, status, cost_account_id

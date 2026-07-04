@@ -42,6 +42,8 @@ class OpaPolicyGenerator:
     First-match-wins: else chain w Rego zapewnia deterministyczne
     dopasowanie pierwszej reguły według priorytetu.
     """
+    __slots__ = ()
+
 
     @staticmethod
     def generate_policy(

@@ -49,6 +49,8 @@ class FileSpanBuffer:
 
     Zachowuje kompatybilność wsteczną z JSONL (odczytuje stare pliki).
     """
+    __slots__ = ('file_path', 'lock_path', 'max_bytes', 'max_records', 'parquet_dir')
+
 
     def __init__(
         self,

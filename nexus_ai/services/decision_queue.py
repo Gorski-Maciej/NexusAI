@@ -26,6 +26,8 @@ logger = get_logger("nexus.services.decision_queue")
 
 
 class DecisionStatus(enum.Enum):
+    __slots__ = ()
+
     PENDING = "pending"
     APPROVED = "approved"
     REJECTED = "rejected"

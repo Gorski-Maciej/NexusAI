@@ -15,6 +15,7 @@ class WhiteListService:
 
     BASE_URL = "https://wl-api.mf.gov.pl/api/search/nip/"
     _CACHE_TTL = 3600
+    __slots__ = ("_cache", "_http")
 
     def __init__(self) -> None:
         self._cache = get_cache()

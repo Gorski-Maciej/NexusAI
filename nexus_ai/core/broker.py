@@ -83,8 +83,8 @@ def _task_id_generator(task_name: str, args: tuple, kwargs: dict) -> str:
       - JetStream automatycznie odrzuca duplikaty w oknie 2min (duplicate_window)
       - Zastępuje ręczną tabelę processed_events dla idempotentności
     """
-    content = f"{task_name}:{sorted(kwargs.items())}:{repr(args)}"
-    return hashlib.sha256(content.encode()).hexdigest()[:32]
+    content = f"{task_name}:{sorted(kwargs.items())}:{args!r}"
+    return hashlib.blake2b(content.encode(), digest_size=16).hexdigest()
 
 
 broker = PullBasedJetStreamBroker(
@@ -181,9 +181,9 @@ async def emit_event(event_type: str, **kwargs: Any) -> str:
 
 
 __all__ = [
-    "broker",
     "DEAD_LETTER_SUBJECT",
     "_result_backend",
-    "result_backend",
+    "broker",
     "emit_event",
+    "result_backend",
 ]

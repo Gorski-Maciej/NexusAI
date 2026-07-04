@@ -46,6 +46,8 @@ class LedgerTransferRecord(Struct, frozen=True):
 
 
 class StornoException(Exception):
+    __slots__ = ()
+
     pass
 
 

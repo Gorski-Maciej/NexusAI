@@ -51,6 +51,8 @@ class DunningEngine:
 
     def ensure_schema(self) -> None:
         self.duckdb.execute("""CREATE TABLE IF NOT EXISTS dunning_policy (
+    __slots__ = ('ai_agent', 'duckdb', 'email_provider', 'guardrails')
+
             id UUID, level INTEGER, days_after_due INTEGER, template_id VARCHAR, channel VARCHAR
         )""")
         self.duckdb.execute("""CREATE TABLE IF NOT EXISTS dunning_history (
