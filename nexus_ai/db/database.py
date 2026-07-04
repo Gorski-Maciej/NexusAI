@@ -368,6 +368,7 @@ def get_tenant_session(session_factory, tenant_id: str) -> Generator[Session]:
 
 class Base(DeclarativeBase):
     """Declarative base for OLTP database models."""
+    __slots__ = ()
 
 
 # ── Lazy default session factory ──────────────────────────────────────────

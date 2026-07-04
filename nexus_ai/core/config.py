@@ -50,6 +50,7 @@ class ConfigLoader:
     Ładuje config/base.toml + config/{env}.toml.
     Auto-reload sprawdza mtime co poll_interval sekund.
     """
+    __slots__ = ('_auto_reload_enabled', '_base_path', '_path', '_poll_interval')
 
     def __init__(
         self,
@@ -200,6 +201,7 @@ def get_config_loader(
 
 class ConfigValidationError(RuntimeError):
     """Raised when startup settings are incomplete or inconsistent."""
+    __slots__ = ()
 
 
 # ── Lazy secrets loader ──────────────────────────────────────────────────

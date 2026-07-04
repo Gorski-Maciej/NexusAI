@@ -36,6 +36,7 @@ DEFAULT_POLL_INTERVAL = 5.0
 
 class ProtocolNotFoundError(KeyError):
     """Podany protokół nie istnieje w protocols.toml."""
+    __slots__ = ()
 
     pass
 
@@ -57,6 +58,7 @@ class ProtocolLoader:
                              jeśli plik zmieniony na dysku.
                      - int > 0: custom poll interval w sekundach.
     """
+    __slots__ = ('_auto_reload_enabled', '_path', '_poll_interval')
 
     def __init__(
         self,

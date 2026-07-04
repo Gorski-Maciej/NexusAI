@@ -18,8 +18,10 @@ class TidentyfikatorOsobyFizycznej:
     :ivar data_urodzenia: Data urodzenia
     :ivar pesel: Identyfikator podatkowy numer PESEL
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TIdentyfikatorOsobyFizycznej"
 
     nip: str = field(
@@ -81,8 +83,10 @@ class TidentyfikatorOsobyFizycznej1:
     :ivar nazwisko: Nazwisko
     :ivar data_urodzenia: Data urodzenia
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TIdentyfikatorOsobyFizycznej1"
 
     nip: None | str = field(
@@ -144,8 +148,10 @@ class TidentyfikatorOsobyFizycznej2:
     :ivar nazwisko: Nazwisko
     :ivar data_urodzenia: Data urodzenia
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TIdentyfikatorOsobyFizycznej2"
 
     nip: str = field(
@@ -199,8 +205,10 @@ class TidentyfikatorOsobyFizycznejPelny:
     :ivar imie_matki: Imię matki
     :ivar pesel: Identyfikator podatkowy numer PESEL
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TIdentyfikatorOsobyFizycznejPelny"
 
     nip: None | str = field(
@@ -282,8 +290,10 @@ class TidentyfikatorOsobyFizycznejZagranicznej:
     :ivar nip: Identyfikator podatkowy NIP [Tax Identification Number
         (NIP)]
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TIdentyfikatorOsobyFizycznejZagranicznej"
 
     imie_pierwsze: str = field(
@@ -363,8 +373,10 @@ class TidentyfikatorOsobyNiefizycznej:
     :ivar pelna_nazwa: Pełna nazwa
     :ivar regon: Numer REGON
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TIdentyfikatorOsobyNiefizycznej"
 
     nip: str = field(
@@ -404,8 +416,10 @@ class TidentyfikatorOsobyNiefizycznej1:
     :ivar nip: Identyfikator podatkowy NIP
     :ivar pelna_nazwa: Pełna nazwa
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TIdentyfikatorOsobyNiefizycznej1"
 
     nip: str = field(
@@ -437,8 +451,10 @@ class TidentyfikatorOsobyNiefizycznejPelny:
     :ivar skrocona_nazwa: Skrócona nazwa
     :ivar regon: Numer REGON
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TIdentyfikatorOsobyNiefizycznejPelny"
 
     nip: None | str = field(
@@ -488,8 +504,10 @@ class TidentyfikatorOsobyNiefizycznejZagranicznej:
     :ivar nip: Identyfikator podatkowy NIP [Tax Identification Number
         (NIP)]
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TIdentyfikatorOsobyNiefizycznejZagranicznej"
 
     pelna_nazwa: str = field(
@@ -538,8 +556,10 @@ class TadresPolski:
     :ivar kod_pocztowy: Kod pocztowy
     :ivar poczta: Nazwa urzędu pocztowego
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TAdresPolski"
 
     kod_kraju: TkodKraju = field(
@@ -651,8 +671,10 @@ class TadresPolski1:
     :ivar miejscowosc: Nazwa miejscowości
     :ivar kod_pocztowy: Kod pocztowy
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TAdresPolski1"
 
     kod_kraju: TkodKraju = field(
@@ -752,8 +774,10 @@ class TadresZagraniczny:
     :ivar nr_domu: Numer budynku [Building number]
     :ivar nr_lokalu: Numer lokalu [Flat number]
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TAdresZagraniczny"
 
     kod_kraju: TkodKraju = field(
@@ -820,8 +844,10 @@ class TpodmiotDowolnyBezAdresu:
     """
     Skrócony zestaw danych o osobie fizycznej lub niefizycznej.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TPodmiotDowolnyBezAdresu"
 
     osoba_fizyczna: None | TidentyfikatorOsobyFizycznej = field(
@@ -848,8 +874,10 @@ class TpodmiotDowolnyBezAdresu1:
     Skrócony zestaw danych o osobie fizycznej lub niefizycznej z
     identyfikatorem NIP albo PESEL.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TPodmiotDowolnyBezAdresu1"
 
     osoba_fizyczna: None | TidentyfikatorOsobyFizycznej1 = field(
@@ -876,8 +904,10 @@ class TpodmiotDowolnyBezAdresu2:
     Skrócony zestaw danych o osobie fizycznej lub niefizycznej z
     identyfikatorem NIP.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TPodmiotDowolnyBezAdresu2"
 
     osoba_fizyczna: None | TidentyfikatorOsobyFizycznej2 = field(
@@ -904,8 +934,10 @@ class TpodmiotDowolnyBezAdresu3:
     Skrócony zestaw danych o osobie fizycznej lub niefizycznej z
     identyfikatorem NIP - bez elementu numer REGON dla osoby niefizycznej.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TPodmiotDowolnyBezAdresu3"
 
     osoba_fizyczna: None | TidentyfikatorOsobyFizycznej2 = field(
@@ -931,8 +963,10 @@ class Tadres:
     """
     Dane określające adres.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TAdres"
 
     adres_pol: None | TadresPolski = field(
@@ -958,8 +992,10 @@ class Tadres1:
     """
     Dane określające adres - bez elementu Poczta w adresie polskim.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TAdres1"
 
     adres_pol: None | TadresPolski1 = field(
@@ -985,8 +1021,10 @@ class TosobaFizyczna:
     """
     Podstawowy zestaw danych o osobie fizycznej.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TOsobaFizyczna"
 
     osoba_fizyczna: TidentyfikatorOsobyFizycznej = field(
@@ -1006,6 +1044,7 @@ class TosobaFizyczna:
 
     @dataclass(kw_only=True)
     class AdresZamieszkania(Tadres):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1023,8 +1062,10 @@ class TosobaFizyczna1:
     Podstawowy zestaw danych o osobie fizycznej z identyfikatorem NIP albo
     PESEL.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TOsobaFizyczna1"
 
     osoba_fizyczna: TidentyfikatorOsobyFizycznej1 = field(
@@ -1044,6 +1085,7 @@ class TosobaFizyczna1:
 
     @dataclass(kw_only=True)
     class AdresZamieszkania(Tadres):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1060,8 +1102,10 @@ class TosobaFizyczna2:
     """
     Podstawowy zestaw danych o osobie fizycznej z identyfikatorem NIP.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TOsobaFizyczna2"
 
     osoba_fizyczna: TidentyfikatorOsobyFizycznej2 = field(
@@ -1081,6 +1125,7 @@ class TosobaFizyczna2:
 
     @dataclass(kw_only=True)
     class AdresZamieszkania(Tadres):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1098,8 +1143,10 @@ class TosobaFizyczna3:
     Podstawowy zestaw danych o osobie fizycznej z identyfikatorem NIP albo
     PESEL - bez elementu Poczta w adresie polskim.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TOsobaFizyczna3"
 
     osoba_fizyczna: TidentyfikatorOsobyFizycznej1 = field(
@@ -1119,6 +1166,7 @@ class TosobaFizyczna3:
 
     @dataclass(kw_only=True)
     class AdresZamieszkania(Tadres1):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1136,8 +1184,10 @@ class TosobaFizyczna4:
     Podstawowy zestaw danych o osobie fizycznej z identyfikatorem NIP - bez
     elementu Poczta w adresie polskim.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TOsobaFizyczna4"
 
     osoba_fizyczna: TidentyfikatorOsobyFizycznej2 = field(
@@ -1157,6 +1207,7 @@ class TosobaFizyczna4:
 
     @dataclass(kw_only=True)
     class AdresZamieszkania(Tadres1):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1174,8 +1225,10 @@ class TosobaFizyczna5:
     Podstawowy zestaw danych o osobie fizycznej - bez elementu Poczta w
     adresie polskim.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TOsobaFizyczna5"
 
     osoba_fizyczna: TidentyfikatorOsobyFizycznej = field(
@@ -1195,6 +1248,7 @@ class TosobaFizyczna5:
 
     @dataclass(kw_only=True)
     class AdresZamieszkania(Tadres1):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1211,8 +1265,10 @@ class TosobaFizycznaPelna:
     """
     Pełny zestaw danych o osobie fizycznej.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TOsobaFizycznaPelna"
 
     osoba_fizyczna: TidentyfikatorOsobyFizycznejPelny = field(
@@ -1232,6 +1288,7 @@ class TosobaFizycznaPelna:
 
     @dataclass(kw_only=True)
     class AdresZamieszkania(Tadres):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1249,8 +1306,10 @@ class TosobaFizycznaPelna1:
     Pełny zestaw danych o osobie fizycznej - bez elementu Poczta w adresie
     polskim.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TOsobaFizycznaPelna1"
 
     osoba_fizyczna: TidentyfikatorOsobyFizycznejPelny = field(
@@ -1270,6 +1329,7 @@ class TosobaFizycznaPelna1:
 
     @dataclass(kw_only=True)
     class AdresZamieszkania(Tadres1):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1286,8 +1346,10 @@ class TosobaNiefizyczna:
     """
     Podstawowy zestaw danych o osobie niefizycznej.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TOsobaNiefizyczna"
 
     osoba_niefizyczna: TidentyfikatorOsobyNiefizycznej = field(
@@ -1307,6 +1369,7 @@ class TosobaNiefizyczna:
 
     @dataclass(kw_only=True)
     class AdresSiedziby(Tadres):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1324,8 +1387,10 @@ class TosobaNiefizyczna1:
     Podstawowy zestaw danych o osobie niefizycznej - bez elementu Poczta w
     adresie polskim.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TOsobaNiefizyczna1"
 
     osoba_niefizyczna: TidentyfikatorOsobyNiefizycznej = field(
@@ -1345,6 +1410,7 @@ class TosobaNiefizyczna1:
 
     @dataclass(kw_only=True)
     class AdresSiedziby(Tadres1):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1362,8 +1428,10 @@ class TosobaNiefizyczna2:
     Podstawowy zestaw danych o osobie niefizycznej - bez elementu Numer
     REGON oraz bez elementu Poczta w adresie polskim.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TOsobaNiefizyczna2"
 
     osoba_niefizyczna: TidentyfikatorOsobyNiefizycznej1 = field(
@@ -1383,6 +1451,7 @@ class TosobaNiefizyczna2:
 
     @dataclass(kw_only=True)
     class AdresSiedziby(Tadres1):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1399,8 +1468,10 @@ class TosobaNiefizycznaPelna:
     """
     Pełny zestaw danych o niefizycznej.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TOsobaNiefizycznaPelna"
 
     osoba_niefizyczna: TidentyfikatorOsobyNiefizycznejPelny = field(
@@ -1420,6 +1491,7 @@ class TosobaNiefizycznaPelna:
 
     @dataclass(kw_only=True)
     class AdresSiedziby(Tadres):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1437,8 +1509,10 @@ class TosobaNiefizycznaPelna1:
     Pełny zestaw danych o osobie niefizycznej - bez elementu Poczta w
     adresie polskim.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TOsobaNiefizycznaPelna1"
 
     osoba_niefizyczna: TidentyfikatorOsobyNiefizycznejPelny = field(
@@ -1458,6 +1532,7 @@ class TosobaNiefizycznaPelna1:
 
     @dataclass(kw_only=True)
     class AdresSiedziby(Tadres1):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1474,8 +1549,10 @@ class TpodmiotDowolny(TpodmiotDowolnyBezAdresu):
     """
     Podstawowy zestaw danych o osobie fizycznej lub niefizycznej.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TPodmiotDowolny"
 
     adres_zamieszkania_siedziby: TpodmiotDowolny.AdresZamieszkaniaSiedziby = field(
@@ -1488,6 +1565,7 @@ class TpodmiotDowolny(TpodmiotDowolnyBezAdresu):
 
     @dataclass(kw_only=True)
     class AdresZamieszkaniaSiedziby(Tadres):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1505,8 +1583,10 @@ class TpodmiotDowolny1(TpodmiotDowolnyBezAdresu):
     Podstawowy zestaw danych o osobie fizycznej lub niefizycznej - bez
     elementu Poczta w adresie polskim.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TPodmiotDowolny1"
 
     adres_zamieszkania_siedziby: TpodmiotDowolny1.AdresZamieszkaniaSiedziby = field(
@@ -1519,6 +1599,7 @@ class TpodmiotDowolny1(TpodmiotDowolnyBezAdresu):
 
     @dataclass(kw_only=True)
     class AdresZamieszkaniaSiedziby(Tadres1):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1536,8 +1617,10 @@ class TpodmiotDowolny2(TpodmiotDowolnyBezAdresu3):
     Podstawowy zestaw danych o osobie fizycznej lub niefizycznej - bez
     elementu Numer REGON oraz bez elementu Poczta w adresie polskim.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TPodmiotDowolny2"
 
     adres_zamieszkania_siedziby: TpodmiotDowolny2.AdresZamieszkaniaSiedziby = field(
@@ -1550,6 +1633,7 @@ class TpodmiotDowolny2(TpodmiotDowolnyBezAdresu3):
 
     @dataclass(kw_only=True)
     class AdresZamieszkaniaSiedziby(Tadres1):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1566,8 +1650,10 @@ class TpodmiotDowolnyPelny:
     """
     Pełny zestaw danych o osobie fizycznej lub niefizycznej.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TPodmiotDowolnyPelny"
 
     osoba_fizyczna: None | TidentyfikatorOsobyFizycznejPelny = field(
@@ -1596,6 +1682,7 @@ class TpodmiotDowolnyPelny:
 
     @dataclass(kw_only=True)
     class AdresZamieszkaniaSiedziby(Tadres):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",
@@ -1613,8 +1700,10 @@ class TpodmiotDowolnyPelny1:
     Pełny zestaw danych o osobie fizycznej lub niefizycznej - bez elementu
     Poczta w adresie polskim.
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TPodmiotDowolnyPelny1"
 
     osoba_fizyczna: None | TidentyfikatorOsobyFizycznejPelny = field(
@@ -1643,6 +1732,7 @@ class TpodmiotDowolnyPelny1:
 
     @dataclass(kw_only=True)
     class AdresZamieszkaniaSiedziby(Tadres1):
+        __slots__ = ()
         rodzaj_adresu: str = field(
             init=False,
             default="RAD",

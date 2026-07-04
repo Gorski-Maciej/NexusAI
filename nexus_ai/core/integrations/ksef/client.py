@@ -9,6 +9,7 @@ from nexus_ai.core.cache.http_client import CachedHttpClient
 
 class KsefClient:
     """Klient API KSeF."""
+    __slots__ = ('_http', 'base_url', 'headers')
 
     def __init__(self, session_token: str, base_url: str) -> None:
         self.headers = {"SessionToken": session_token, "Accept": "application/json"}

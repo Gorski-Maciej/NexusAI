@@ -16,6 +16,7 @@ class KsefCryptoProvider:
     został usunięty z projektu. KSeF integration requires the
     ``cryptography`` package to be re-added.
     """
+    __slots__ = ()
 
     def __init__(self, public_key_path: str):
         raise ImportError(

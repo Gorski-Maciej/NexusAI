@@ -31,6 +31,7 @@ class DomainEvent(msgspec.Struct, kw_only=True, frozen=True, tag_field="event_ty
 
 
 class InvoiceCreated(DomainEvent, tag="invoice.created"):
+    __slots__ = ()
     _event_tag = "invoice.created"
     _event_description = "Faktura utworzona w systemie (po OCR)"
     aggregate_type: str = "invoice"
@@ -46,6 +47,7 @@ class InvoiceCreated(DomainEvent, tag="invoice.created"):
 
 
 class InvoiceSubmitted(DomainEvent, tag="invoice.submitted"):
+    __slots__ = ()
     _event_tag = "invoice.submitted"
     _event_description = "Faktura przesłana do decyzji (DecisionEngine)"
     aggregate_type: str = "invoice"
@@ -54,6 +56,7 @@ class InvoiceSubmitted(DomainEvent, tag="invoice.submitted"):
 
 
 class InvoiceApproved(DomainEvent, tag="invoice.approved"):
+    __slots__ = ()
     _event_tag = "invoice.approved"
     _event_description = "Faktura zatwierdzona (auto-post lub manualnie)"
     aggregate_type: str = "invoice"
@@ -63,6 +66,7 @@ class InvoiceApproved(DomainEvent, tag="invoice.approved"):
 
 
 class InvoiceRejected(DomainEvent, tag="invoice.rejected"):
+    __slots__ = ()
     _event_tag = "invoice.rejected"
     _event_description = "Faktura odrzucona (manualnie)"
     aggregate_type: str = "invoice"
@@ -71,6 +75,7 @@ class InvoiceRejected(DomainEvent, tag="invoice.rejected"):
 
 
 class InvoiceBlocked(DomainEvent, tag="invoice.blocked"):
+    __slots__ = ()
     _event_tag = "invoice.blocked"
     _event_description = "Faktura zablokowana (RiskGuard / anomalia)"
     aggregate_type: str = "invoice"
@@ -80,6 +85,7 @@ class InvoiceBlocked(DomainEvent, tag="invoice.blocked"):
 
 
 class InvoicePaid(DomainEvent, tag="invoice.paid"):
+    __slots__ = ()
     _event_tag = "invoice.paid"
     _event_description = "Faktura opłacona (przez TigerBeetle)"
     aggregate_type: str = "invoice"
@@ -89,6 +95,7 @@ class InvoicePaid(DomainEvent, tag="invoice.paid"):
 
 
 class DecisionMade(DomainEvent, tag="decision.made"):
+    __slots__ = ()
     _event_tag = "decision.made"
     _event_description = "Decyzja podjęta przez system (DecisionEngine)"
     aggregate_type: str = "decision"
@@ -104,6 +111,7 @@ class DecisionMade(DomainEvent, tag="decision.made"):
 
 
 class DecisionOverridden(DomainEvent, tag="decision.overridden"):
+    __slots__ = ()
     _event_tag = "decision.overridden"
     _event_description = "Decyzja nadpisana przez użytkownika"
     aggregate_type: str = "decision"
@@ -114,6 +122,7 @@ class DecisionOverridden(DomainEvent, tag="decision.overridden"):
 
 
 class OutboxEventEmitted(DomainEvent, tag="outbox.emitted"):
+    __slots__ = ()
     _event_tag = "outbox.emitted"
     _event_description = "Zdarzenie outbox wyemitowane"
     aggregate_type: str = "outbox"
@@ -122,6 +131,7 @@ class OutboxEventEmitted(DomainEvent, tag="outbox.emitted"):
 
 
 class NotificationSent(DomainEvent, tag="notification.sent"):
+    __slots__ = ()
     _event_tag = "notification.sent"
     _event_description = "Powiadomienie wysłane do użytkownika"
     aggregate_type: str = "notification"
@@ -198,6 +208,7 @@ def get_schema_summary() -> dict[str, Any]:
 
 
 class DomainEventSchemaRegistry:
+    __slots__ = ()
     def get_schema(self, event_type: str) -> dict[str, Any] | None:
         return get_schema(event_type)
 

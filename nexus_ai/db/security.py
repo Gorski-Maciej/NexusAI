@@ -86,6 +86,7 @@ class SQLCipherConfig(Struct, kw_only=True):
 
 class KeyRotationError(RuntimeError):
     """Błąd podczas rotacji klucza SQLCipher."""
+    __slots__ = ()
 
 
 class KeyRotation:
@@ -94,6 +95,7 @@ class KeyRotation:
     PRAGMA rekey zmienia klucz bez dump/restore.
     Automatyczny backup przed rekey. Walidacja integralności po rekey.
     """
+    __slots__ = ('_db_path', '_key_provider')
 
     def __init__(self, db_path: str | Path, key_provider: Callable[[], str] | None = None) -> None:
         self._db_path = Path(db_path)

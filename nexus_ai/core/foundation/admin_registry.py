@@ -64,6 +64,7 @@ class AdminServiceRegistry:
                 with cls.db() as conn:
                     return cls._read_rows(...)
     """
+    __slots__ = ()
 
     _registry: ClassVar[dict[str, type[AdminServiceRegistry]]] = {}
     _nats_subject: ClassVar[str] = ""

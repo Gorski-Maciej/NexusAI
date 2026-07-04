@@ -345,6 +345,7 @@ class PdfDocumentSession:
             sigs = pdf.get_signatures()
             form = pdf.get_form()  # init_forms() już wywołane
     """
+    __slots__ = ('_forms_initialized', '_pdf')
 
     def __init__(self, source: str | Path | bytes, *, init_forms: bool = True):
         import pypdfium2 as pdfium
@@ -752,6 +753,7 @@ class ProgressivePDFLoader:
 
     CachingFileSystem. Działa z file://, s3://, http://
     """
+    __slots__ = ('_cancelled', '_chunk_size', '_lazy', '_path', '_pdf', '_progress_callback')
 
     def __init__(
         self,

@@ -47,6 +47,7 @@ except ImportError:
         - Wszystkie operacje delegowane do bazowego FS
         - Brak atomiczności (fallback), ale kompatybilny API
         """
+        __slots__ = ('_kwargs', 'fs')
 
         def __init__(self, fs: Any, **kwargs: Any):
             self.fs = fs
@@ -378,6 +379,7 @@ class AsyncFsWrapper:
         exists = await afs.exists("/path")
         data = await afs.cat_file("/path")
     """
+    __slots__ = ('_fs',)
 
     def __init__(self, fs: fsspec.AbstractFileSystem):
         self._fs = fs
@@ -498,6 +500,7 @@ class FSSpecFactory:
         tx_fs = factory.get_transactional()
         mapper = factory.get_mapper("metadata/")
     """
+    __slots__ = ()
 
     _instance: FSSpecFactory | None = None
     _lock: threading.Lock = threading.Lock()

@@ -37,6 +37,7 @@ try:
 except ImportError:
     HAS_SEMCONV = False
     class SpanAttributes:  # type: ignore
+        __slots__ = ()
         HTTP_REQUEST_METHOD = "http.request.method"
         HTTP_RESPONSE_STATUS_CODE = "http.response.status_code"
         URL_PATH = "url.path"
@@ -280,10 +281,12 @@ def buffer_span(trace_id: str, name: str, duration_ms: float, attributes: dict[s
                         attributes={"duration_ms": duration_ms, **(attributes or {})})
 
 class _NoopTracer:
+    __slots__ = ()
     def start_as_current_span(self, name: str, **kwargs: Any) -> _NoopSpan:
         return _NoopSpan(name)
 
 class _NoopSpan:
+    __slots__ = ('_name',)
     def __init__(self, name: str) -> None:
         self._name = name
     def __enter__(self) -> _NoopSpan:

@@ -8,6 +8,7 @@ from nexus_ai.core.logger import logger
 
 class AdaptiveBatcher:
     """Grupowanie zadań AI dla optymalnego wykorzystania przepustowości GPU."""
+    __slots__ = ('_worker_task', 'batch_size', 'process_func', 'timeout')
 
     def __init__(self, process_func, batch_size: int = 8, timeout: float = 0.2):
         self.process_func = process_func

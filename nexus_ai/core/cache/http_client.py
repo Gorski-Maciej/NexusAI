@@ -129,6 +129,7 @@ class CachedHttpClient:
         resp = await client.get("https://api.example.com/data")
         await client.close()
     """
+    __slots__ = ('_client', '_semaphore')
 
     def __init__(
         self,

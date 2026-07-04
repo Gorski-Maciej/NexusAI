@@ -41,6 +41,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
     - Partial indexes
     - async -- nie blokuje pętli zdarzeń (przez anyio.to_thread.run_sync)
     """
+    __slots__ = ('_max_retries', '_poll_interval', '_schema_checked')
 
     def __init__(
         self,

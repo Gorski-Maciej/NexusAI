@@ -4,6 +4,7 @@ from nexus_ai.core.logger import logger
 
 class AIContextManager:
     """Zarządza oknem kontekstowym dla lokalnych modeli LLM."""
+    __slots__ = ('chars_per_token', 'max_tokens')
 
     def __init__(self, max_tokens: int = 4096):
         self.max_tokens = max_tokens

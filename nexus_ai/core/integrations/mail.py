@@ -9,6 +9,7 @@ from nexus_ai.core.logger import logger
 
 
 class MailIngestionService:
+    __slots__ = ('config', 'download_path')
     def __init__(self, config):
         self.config = config
         self.download_path = Path(config.base_dir) / "app_data" / "mailbox_ingest"

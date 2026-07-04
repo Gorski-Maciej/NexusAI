@@ -104,6 +104,7 @@ class _LoguruFactory:
       - ERROR-only file
     without any duplication.
     """
+    __slots__ = ()
 
     def __call__(self) -> logger:
         return logger  # type: ignore[return-value]
@@ -352,6 +353,7 @@ def _setup_stamina_logging() -> None:
     stamina_logger.setLevel(logging.DEBUG)
 
     class _StaminaInterceptHandler(logging.Handler):
+        __slots__ = ()
         def emit(self, record: logging.LogRecord) -> None:
             try:
                 level = logger.level(record.levelname).name
@@ -373,6 +375,7 @@ def _redirect_standard_logging() -> None:
     (np. httpx) trafiały do ujednoliconego systemu."""
 
     class _InterceptHandler(logging.Handler):
+        __slots__ = ()
         def emit(self, record: logging.LogRecord) -> None:
             try:
                 level = logger.level(record.levelname).name

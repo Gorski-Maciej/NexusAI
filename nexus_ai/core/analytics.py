@@ -37,6 +37,7 @@ class _SQLNamespace:
         result = lazy.sql.query("SELECT * FROM self WHERE amount > 100")
         # 'self' to alias na bieżący LazyFrame
     """
+    __slots__ = ('_lazy',)
 
     def __init__(self, lazy_frame: pl.LazyFrame):
         self._lazy = lazy_frame
@@ -78,6 +79,7 @@ class PolarsSQLContext:
 
         # Zapytanie SQL łączące tabele
         result = ctx.sql('''
+    __slots__ = ()
             SELECT i.id, i.amount_gross, p.payment_date
             FROM invoices i
             LEFT JOIN payments p ON i.id = p.invoice_id

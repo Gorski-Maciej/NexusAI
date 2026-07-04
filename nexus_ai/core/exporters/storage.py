@@ -39,6 +39,7 @@ logger = get_logger(__name__)
 
 class StorageProvider(ABC):
     """Interfejs dla magazynów danych (Lokalny, S3, FTP)."""
+    __slots__ = ()
 
     @abstractmethod
     async def save_file(self, filename: str, content: bytes) -> str:
@@ -61,6 +62,7 @@ class FSSpecStorageProvider(StorageProvider):
     - Zero ``to_thread.run_sync()`` w serwisie
     - Gotowy na S3: zmiana storage_protocol -> natywne async I/O
     """
+    __slots__ = ('_base_path', '_cache_size', '_config', '_protocol', '_tx_fs', 'fs')
 
     def __init__(self, config: AppConfig | None = None):
         factory = FSSpecFactory.get_instance()

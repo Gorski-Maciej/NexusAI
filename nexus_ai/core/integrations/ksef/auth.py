@@ -13,6 +13,7 @@ logger = get_logger("nexus.ksef")
 
 class KsefAuthService:
     """Serwis autoryzacji KSeF."""
+    __slots__ = ('_http', 'base_url', 'nip')
 
     def __init__(self, nip: str, is_demo: bool = True) -> None:
         self.nip = nip

@@ -22,6 +22,7 @@ class CashflowForecaster:
     - **Zapis prognoz do Parquet** z partycjonowaniem
     - **Odczyt historycznych prognoz** przez scan_parquet
     """
+    __slots__ = ('db', 'parquet_dir')
 
     def __init__(self, db_manager: DuckDBManager, parquet_dir: str | Path = "data/forecasts"):
         self.db = db_manager

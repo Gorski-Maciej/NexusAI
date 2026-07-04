@@ -4,13 +4,14 @@ Zgodnie z wymaganiami Enterprise §1:
 - Wszystkie Value Object są msgspec.Struct z frozen=True (immutable)
 - Każdy VO ma własną walidację w __post_init__
 - Money używa Decimal (NIE float) dla bezpieczeństwa finansowego
-- NIP, IBAN mają pełną walidację (checksum, format)
+- NIP, IBAN, PESEL mają pełną walidację (checksum, format)
 
 Value Objects:
     Money          -- kwota + waluta (ISO 4217)
     MoneyNet       -- netto + VAT = brutto (niezmiennik)
     NIP            -- identyfikator podatkowy z sumą kontrolną
     IBAN           -- numer rachunku bankowego
+    PESEL          -- identyfikator PESEL z sumą kontrolną
     InvoiceNumber  -- numer faktury (seria/rok/miesiąc/seq)
     TaxPeriod      -- okres rozliczeniowy
     VatRate        -- stawka VAT z walidacją
@@ -41,6 +42,19 @@ class CurrencyMismatchError(ValueError):
         self.code = "CURRENCY_MISMATCH"
 
 
+# ── Backward-compat error aliases (zachowane z poprzedniej wersji) ───────
+class InvalidIBANError(ValueError):
+    """Rzucany gdy IBAN jest nieprawidłowy."""
+
+
+class InvalidNIPError(ValueError):
+    """Rzucany gdy NIP jest nieprawidłowy."""
+
+
+class InvalidPESELError(ValueError):
+    """Rzucany gdy PESEL jest nieprawidłowy."""
+
+
 class Money(msgspec.Struct, frozen=True, kw_only=True):
     """Value Object: Pieniądze z walutą.
 
@@ -69,6 +83,8 @@ class Money(msgspec.Struct, frozen=True, kw_only=True):
         return Money(amount=self.amount - other.amount, currency=self.currency)
 
     def __mul__(self, factor: Decimal | int | float) -> Money:
+        if isinstance(factor, float):
+            raise TypeError("Cannot multiply Money by float, use Decimal")
         return Money(
             amount=(self.amount * Decimal(str(factor))).quantize(
                 Decimal("0.01"), rounding=ROUND_HALF_UP
@@ -83,7 +99,16 @@ class Money(msgspec.Struct, frozen=True, kw_only=True):
         return f"{self.amount:.2f} {self.currency}"
 
     def __repr__(self) -> str:
-        return f"Money({self.amount:.2f}, {self.currency})"
+        return f"{self.amount:.2f} {self.currency}"
+
+    def to_grosze(self) -> int:
+        """Konwertuj kwotę na grosze (int)."""
+        return int(self.amount * Decimal("100"))
+
+    @classmethod
+    def from_grosze(cls, grosze: int, currency: str = "PLN") -> Money:
+        """Utwórz Money z liczby groszy."""
+        return cls(amount=Decimal(str(grosze)) / Decimal("100"), currency=currency)
 
     @property
     def is_zero(self) -> bool:
@@ -172,7 +197,7 @@ class NIP(msgspec.Struct, frozen=True, kw_only=True):
             raise ValueError(f"Invalid NIP checksum: {self.value}")
 
     def __str__(self) -> str:
-        return self.value
+        return self.formatted
 
     @property
     def normalized(self) -> str:
@@ -242,9 +267,66 @@ class IBAN(msgspec.Struct, frozen=True, kw_only=True):
         if int(numeric) % 97 != 1:
             raise ValueError(f"Invalid IBAN checksum: {self.value}")
 
+    def __str__(self) -> str:
+        v = self.value.replace(" ", "").upper()
+        return " ".join(v[i:i+4] for i in range(0, len(v), 4))
+
     @property
     def country(self) -> str:
         return self.value.replace(" ", "").upper()[:2]
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PESEL -- identyfikator PESEL z walidacją
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class PESEL(msgspec.Struct, frozen=True, kw_only=True):
+    """Value Object: PESEL (11 cyfr + suma kontrolna)."""
+
+    value: str
+    _WEIGHTS: ClassVar[tuple[int, ...]] = (1, 3, 7, 9, 1, 3, 7, 9, 1, 3)
+
+    def __post_init__(self) -> None:
+        normalized = "".join(ch for ch in self.value if ch.isdigit())
+        if len(normalized) != 11:
+            raise InvalidPESELError(f"PESEL must be exactly 11 digits, got {len(normalized)}")
+        checksum = sum(int(d) * w for d, w in zip(normalized[:10], self._WEIGHTS, strict=True))
+        expected = (10 - (checksum % 10)) % 10
+        if expected != int(normalized[10]):
+            raise InvalidPESELError(f"Invalid PESEL checksum: {self.value}")
+
+    def get_gender(self) -> str:
+        """Zwróć płeć ('male' lub 'female') na podstawie 10. cyfry."""
+        digit = int(self.value[-2]) if len(self.value) >= 10 else 0
+        return "male" if digit % 2 != 0 else "female"
+
+    def get_birth_date(self) -> str:
+        """Zwróć datę urodzenia jako YYYY-MM-DD."""
+        normalized = "".join(ch for ch in self.value if ch.isdigit())
+        if len(normalized) < 6:
+            return ""
+        yy = int(normalized[0:2])
+        mm = int(normalized[2:4])
+        dd = int(normalized[4:6])
+        if 1 <= mm <= 12:
+            century = 1900
+        elif 21 <= mm <= 32:
+            century = 2000
+            mm -= 20
+        elif 41 <= mm <= 52:
+            century = 2100
+            mm -= 40
+        elif 61 <= mm <= 72:
+            century = 2200
+            mm -= 60
+        elif 81 <= mm <= 92:
+            century = 1800
+            mm -= 80
+        else:
+            century = 1900
+        year = century + yy
+        return f"{year}-{mm:02d}-{dd:02d}"
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -488,15 +570,19 @@ class KSeFMetadata(msgspec.Struct, frozen=True, kw_only=True):
 # ═══════════════════════════════════════════════════════════════════════════
 
 __all__ = [
-    "IBAN",
-    "NIP",
     "AccountCode",
     "BusinessKind",
     "CurrencyMismatchError",
+    "IBAN",
+    "InvalidIBANError",
+    "InvalidNIPError",
+    "InvalidPESELError",
     "InvoiceNumber",
     "KSeFMetadata",
     "Money",
     "MoneyNet",
+    "NIP",
+    "PESEL",
     "TaxPeriod",
     "VatRate",
 ]

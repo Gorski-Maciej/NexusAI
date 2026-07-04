@@ -22,6 +22,7 @@ logger = get_logger("nexus.events.projection_worker")
 
 class ProjectionWorker:
     """Konsumuje eventy z JetStream i aktualizuje projekcje CQRS."""
+    __slots__ = ('_batch_size', '_connected', '_enable_fallback', '_event_store', '_fallback_poll_seconds', '_nats_servers', '_poll_interval', '_shutdown_event')
 
     def __init__(self, event_store: EventStore | None = None, nats_servers: list[str] | str | None = None,
                  poll_interval_seconds: float = 1.0, batch_size: int = 10,

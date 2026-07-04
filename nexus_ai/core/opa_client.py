@@ -43,6 +43,7 @@ OPA_POLICY_RULE = "decide"
 
 class OpaError(Exception):
     """Base exception for OPA-related errors."""
+    __slots__ = ('details', 'status_code')
 
     def __init__(self, message: str, status_code: int = 0, details: str = "") -> None:
         super().__init__(message)
@@ -52,18 +53,21 @@ class OpaError(Exception):
 
 class OpaConnectionError(OpaError):
     """OPA server is unreachable."""
+    __slots__ = ()
 
     pass
 
 
 class OpaEvaluationError(OpaError):
     """OPA policy evaluation failed."""
+    __slots__ = ()
 
     pass
 
 
 class OpaPolicyNotFound(OpaError):
     """Requested policy/rule not found in OPA."""
+    __slots__ = ()
 
     pass
 
@@ -81,6 +85,7 @@ class OpaClient:
         base_url: OPA server URL (default: http://localhost:8181).
         timeout: HTTP request timeout in seconds.
     """
+    __slots__ = ('_base_url', '_timeout')
 
     def __init__(
         self,

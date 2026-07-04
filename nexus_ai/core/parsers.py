@@ -7,6 +7,7 @@ from typing import Any
 
 class DataParser:
     """Narzędzia do czyszczenia danych wyjściowych z AI."""
+    __slots__ = ()
 
     @staticmethod
     def to_decimal(value: Any) -> Decimal:

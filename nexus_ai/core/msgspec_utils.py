@@ -50,11 +50,13 @@ class DecodeError(msgspec.DecodeError):
         except DecodeError:
             ...
     """
+    __slots__ = ()
 
 
 # ── EncodeError -- zastępuje błędy serializacji (jeśli potrzebne) ─────────────
 class EncodeError(TypeError):
     """Zastępuje TypeError przy serializacji (gdy obiekt nie jest serializowalny)."""
+    __slots__ = ()
 
 
 def _default_enc_hook(obj: Any) -> Any:

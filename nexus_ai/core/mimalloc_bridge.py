@@ -48,6 +48,7 @@ _log = _logging.getLogger("nexus.mimalloc")
 
 class MIOption:
     """mimalloc option constants (from ``mi_option_e`` enum)."""
+    __slots__ = ()
 
     SHOW_STATS = 0
     SHOW_ERRORS = 1
@@ -67,6 +68,7 @@ class MIOption:
 
 class MIStatKind:
     """mimalloc statistic kind constants (from ``mi_stat_kind_t``)."""
+    __slots__ = ()
 
     COMMITTED = 0
     RESERVED = 1
@@ -351,6 +353,7 @@ class InvoiceOCRHeap:
     Gdy mimalloc nie jest aktywny (fallback), context manager działa
     przezroczysto -- tworzy i niszczy tylko wtedy gdy mimalloc jest dostępny.
     """
+    __slots__ = ('_collect_on_exit', 'invoice_id', 'label')
 
     def __init__(self, invoice_id: str, label: str = "ocr") -> None:
         self.invoice_id = invoice_id
@@ -411,6 +414,7 @@ class SecureHeap:
             derive_key(password, salt)
         # ← heap_destroy z force collect -- pamięć wyzerowana i zwolniona
     """
+    __slots__ = ('_enable_guard_pages', 'label')
 
     def __init__(self, label: str, *, enable_guard_pages: bool = True) -> None:
         self.label = label
@@ -487,6 +491,7 @@ class MemoryLeakDetector:
         if detector.check_growth(stats_as_dict()):
             logger.warning("Potential memory leak detected!")
     """
+    __slots__ = ('_lock', 'growth_threshold_pct', 'min_rss_mb', 'window_size')
 
     def __init__(
         self,

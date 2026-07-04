@@ -143,6 +143,7 @@ class ProcessMonitor:
       - connections() -> połączenia sieciowe
       - Własne poziomy Loguru: AUDIT dla raportów okresowych
     """
+    __slots__ = ('_last_cpu_sample', '_pid', '_process')
 
     def __init__(self) -> None:
         self._process = psutil.Process()
@@ -296,6 +297,7 @@ class SystemMonitor:
       - users() -- aktywni użytkownicy
       - pids() -- liczba procesów
     """
+    __slots__ = ()
 
     @staticmethod
     def collect_all() -> SystemMetrics:

@@ -150,8 +150,10 @@ class TkluczWartosc:
     :ivar klucz: Klucz
     :ivar wartosc: Wartość
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TKluczWartosc"
 
     nr_wiersza: None | int = field(
@@ -779,8 +781,10 @@ class Tpodmiot1:
     :ivar nip: Identyfikator podatkowy NIP
     :ivar nazwa: Imię i nazwisko lub nazwa
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TPodmiot1"
 
     nip: str = field(
@@ -1025,8 +1029,10 @@ class Tadres:
     :ivar adres_l2: Adres [Address]
     :ivar gln: Globalny Numer Lokalizacyjny [Global Location Number]
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TAdres"
 
     kod_kraju: TkodKraju = field(
@@ -1078,8 +1084,10 @@ class Tnaglowek:
     :ivar system_info: Nazwa systemu teleinformatycznego, z którego
         korzysta podatnik
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TNaglowek"
 
     kod_formularza: Tnaglowek.KodFormularza = field(
@@ -1119,6 +1127,7 @@ class Tnaglowek:
 
     @dataclass(kw_only=True)
     class KodFormularza:
+        __slots__ = ()
         value: TkodFormularza = field()
         kod_systemowy: str = field(
             init=False,
@@ -1156,8 +1165,10 @@ class Tpodmiot2:
         identyfikator nie występuje na fakturze: 1- tak
     :ivar nazwa: Imię i nazwisko lub nazwa
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TPodmiot2"
 
     nip: None | str = field(
@@ -1243,8 +1254,10 @@ class Tpodmiot3:
         identyfikator nie występuje na fakturze: 1- tak
     :ivar nazwa: Imię i nazwisko lub nazwa
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TPodmiot3"
 
     nip: None | str = field(
@@ -1334,8 +1347,10 @@ class TrachunekBankowy:
     :ivar nazwa_banku: Nazwa
     :ivar opis_rachunku: Opis rachunku
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         name = "TRachunekBankowy"
 
     nr_rb: str = field(
@@ -1411,8 +1426,10 @@ class Faktura:
     :ivar stopka: Pozostałe dane na fakturze
     :ivar zalacznik: Załącznik do faktury VAT
     """
+    __slots__ = ()
 
     class Meta:
+        __slots__ = ()
         namespace = "http://crd.gov.pl/wzor/2025/06/25/13775/"
 
     naglowek: Tnaglowek = field(
@@ -1483,6 +1500,7 @@ class Faktura:
         :ivar dane_kontaktowe: Dane kontaktowe podatnika
         :ivar status_info_podatnika: Status podatnika
         """
+        __slots__ = ()
 
         prefiks_podatnika: None | TkodyKrajowUe = field(
             default=None,
@@ -1541,6 +1559,7 @@ class Faktura:
             :ivar email: Adres e-mail podatnika
             :ivar telefon: Numer telefonu podatnika
             """
+            __slots__ = ()
 
             email: None | str = field(
                 default=None,
@@ -1590,6 +1609,7 @@ class Faktura:
             lub ID-Wew i określić rolę jako 10. Wartość "2" oznacza, że
             faktura nie dotyczy członka grupy VAT
         """
+        __slots__ = ()
 
         nr_eori: None | str = field(
             default=None,
@@ -1665,6 +1685,7 @@ class Faktura:
             :ivar email: Adres e-mail nabywcy
             :ivar telefon: Numer telefonu nabywcy
             """
+            __slots__ = ()
 
             email: None | str = field(
                 default=None,
@@ -1711,6 +1732,7 @@ class Faktura:
             podmiot wymieniony jako podmiot trzeci posługuje się nim w
             umowie lub zamówieniu
         """
+        __slots__ = ()
 
         idnabywcy: None | str = field(
             default=None,
@@ -1809,6 +1831,7 @@ class Faktura:
             :ivar email: Adres e-mail podmiotu trzeciego
             :ivar telefon: Numer telefonu podmiotu trzeciego
             """
+            __slots__ = ()
 
             email: None | str = field(
                 default=None,
@@ -1842,6 +1865,7 @@ class Faktura:
         :ivar dane_kontaktowe: Dane kontaktowe podmiotu upoważnionego
         :ivar rola_pu: Rola podmiotu upoważnionego
         """
+        __slots__ = ()
 
         nr_eori: None | str = field(
             default=None,
@@ -1892,6 +1916,7 @@ class Faktura:
             :ivar email_pu: Adres e-mail podmiotu upoważnionego
             :ivar telefon_pu: Numer telefonu podmiotu upoważnionego
             """
+            __slots__ = ()
 
             email_pu: None | str = field(
                 default=None,
@@ -2174,6 +2199,7 @@ class Faktura:
             korekcie w celu potwierdzenia braku zmiany wartości danej
             pozycji
         """
+        __slots__ = ()
 
         kod_waluty: TkodWaluty = field(
             metadata={
@@ -2682,6 +2708,7 @@ class Faktura:
                 w przeciwnym przypadku - wartość "2"
             :ivar pmarzy:
             """
+            __slots__ = ()
 
             p_16: Twybor12 = field(
                 metadata={
@@ -2758,6 +2785,7 @@ class Faktura:
                     ustawy albo przepisów wydanych na podstawie art. 82
                     ust. 3 ustawy lub na podstawie innych przepisów
                 """
+                __slots__ = ()
 
                 p_19: None | Twybor1 = field(
                     default=None,
@@ -2813,6 +2841,7 @@ class Faktura:
                 :ivar p_22_n: Znacznik braku wewnątrzwspólnotowej
                     dostawy nowych środków transportu
                 """
+                __slots__ = ()
 
                 p_22: None | Twybor1 = field(
                     default=None,
@@ -2895,6 +2924,7 @@ class Faktura:
                         lit. c ustawy, można podać numer fabryczny
                         nowego środka transportu
                     """
+                    __slots__ = ()
 
                     p_22_a: str = field(
                         metadata={
@@ -3079,6 +3109,7 @@ class Faktura:
                 :ivar p_pmarzy_n: Znacznik braku wystąpienia procedur
                     marży, o których mowa w art. 119 lub art. 120 ustawy
                 """
+                __slots__ = ()
 
                 p_pmarzy: None | Twybor1 = field(
                     default=None,
@@ -3136,6 +3167,7 @@ class Faktura:
                 kwoty podatku w przypadkach, o których mowa w dziale VI
                 ustawy
             """
+            __slots__ = ()
 
             p_6_z: str = field(
                 metadata={
@@ -3180,6 +3212,7 @@ class Faktura:
                 zaliczkową w KSeF. Pole obowiązkowe w przypadku, gdy
                 faktura zaliczkowa była wystawiona za pomocą KSeF
             """
+            __slots__ = ()
 
             nr_kse_fzn: None | Twybor1 = field(
                 default=None,
@@ -3281,6 +3314,7 @@ class Faktura:
                 osobnych wierszy z odrębną numeracją oraz w przypadku
                 potwierdzania braku zmiany wartości danej pozycji
             """
+            __slots__ = ()
 
             nr_wiersza_fa: int = field(
                 metadata={
@@ -3523,6 +3557,7 @@ class Faktura:
                 Odliczenia
             :ivar do_rozliczenia: Kwota nadpłacona do rozliczenia/zwrotu
             """
+            __slots__ = ()
 
             obciazenia: list[Faktura.Fa.Rozliczenie.Obciazenia] = field(
                 default_factory=list,
@@ -3588,6 +3623,7 @@ class Faktura:
                     P_15
                 :ivar powod: Powód obciążenia
                 """
+                __slots__ = ()
 
                 kwota: str = field(
                     metadata={
@@ -3614,6 +3650,7 @@ class Faktura:
                     P_15
                 :ivar powod: Powód odliczenia
                 """
+                __slots__ = ()
 
                 kwota: str = field(
                     metadata={
@@ -3660,6 +3697,7 @@ class Faktura:
             :ivar ipkse_f: Identyfikator płatności Krajowego Systemu
                 e-Faktur
             """
+            __slots__ = ()
 
             zaplacono: None | Twybor1 = field(
                 default=None,
@@ -3774,6 +3812,7 @@ class Faktura:
                 :ivar termin: Termin płatności
                 :ivar termin_opis: Opis terminu płatności
                 """
+                __slots__ = ()
 
                 termin: None | str = field(
                     default=None,
@@ -3795,6 +3834,7 @@ class Faktura:
 
                 @dataclass(kw_only=True)
                 class TerminOpis:
+                    __slots__ = ()
                     ilosc: int = field(
                         metadata={
                             "name": "Ilosc",
@@ -3825,6 +3865,7 @@ class Faktura:
                     spełnić, aby skorzystać ze skonta
                 :ivar wysokosc_skonta: Wysokość skonta
                 """
+                __slots__ = ()
 
                 warunki_skonta: str = field(
                     metadata={
@@ -3856,6 +3897,7 @@ class Faktura:
                 :ivar opis_platnosci: Uszczegółowienie innej formy
                     płatności
                 """
+                __slots__ = ()
 
                 kwota_zaplaty_czesciowej: str = field(
                     metadata={
@@ -3926,6 +3968,7 @@ class Faktura:
                 trójstronna uproszczona, o której mowa w art. 135 ust. 1
                 pkt 4 ustawy
             """
+            __slots__ = ()
 
             umowy: list[Faktura.Fa.WarunkiTransakcji.Umowy] = field(
                 default_factory=list,
@@ -4001,6 +4044,7 @@ class Faktura:
                 :ivar data_umowy: Data umowy
                 :ivar nr_umowy: Numer umowy
                 """
+                __slots__ = ()
 
                 data_umowy: None | str = field(
                     default=None,
@@ -4028,6 +4072,7 @@ class Faktura:
                 :ivar data_zamowienia: Data zamówienia
                 :ivar nr_zamowienia: Numer zamówienia
                 """
+                __slots__ = ()
 
                 data_zamowienia: None | str = field(
                     default=None,
@@ -4075,6 +4120,7 @@ class Faktura:
                 :ivar wysylka_do: Adres miejsca docelowego, do którego
                     został zlecony transport
                 """
+                __slots__ = ()
 
                 rodzaj_transportu: None | TrodzajTransportu = field(
                     default=None,
@@ -4197,6 +4243,7 @@ class Faktura:
                         przewoźnika
                     :ivar adres_przewoznika: Adres przewoźnika
                     """
+                    __slots__ = ()
 
                     dane_identyfikacyjne: Tpodmiot2 = field(
                         metadata={
@@ -4219,6 +4266,7 @@ class Faktura:
             :ivar zamowienie_wiersz: Szczegółowe pozycje zamówienia lub
                 umowy w walucie, w której wystawiono fakturę zaliczkową
             """
+            __slots__ = ()
 
             wartosc_zamowienia: str = field(
                 metadata={
@@ -4287,6 +4335,7 @@ class Faktura:
                     odrębną numeracją oraz w przypadku potwierdzania
                     braku zmiany wartości danej pozycji
                 """
+                __slots__ = ()
 
                 nr_wiersza_zam: int = field(
                     metadata={
@@ -4476,6 +4525,7 @@ class Faktura:
                 data dokonania lub zakończenia dostawy towarów lub
                 wykonania usługi
             """
+            __slots__ = ()
 
             p_6_od: str = field(
                 metadata={
@@ -4508,6 +4558,7 @@ class Faktura:
             :ivar nr_kse_fn: Znacznik faktury korygowanej wystawionej
                 poza KSeF
             """
+            __slots__ = ()
 
             data_wyst_fa_korygowanej: str = field(
                 metadata={
@@ -4559,6 +4610,7 @@ class Faktura:
             :ivar dane_identyfikacyjne: Dane identyfikujące podatnika
             :ivar adres: Adres podatnika
             """
+            __slots__ = ()
 
             prefiks_podatnika: None | TkodyKrajowUe = field(
                 default=None,
@@ -4591,6 +4643,7 @@ class Faktura:
                 fakturze korygującej zmieniły się w stosunku do danych
                 na fakturze korygowanej
             """
+            __slots__ = ()
 
             dane_identyfikacyjne: Tpodmiot2 = field(
                 metadata={
@@ -4622,6 +4675,7 @@ class Faktura:
         :ivar rejestry: Numery podmiotu lub grupy podmiotów w innych
             rejestrach i bazach danych
         """
+        __slots__ = ()
 
         informacje: list[Faktura.Stopka.Informacje] = field(
             default_factory=list,
@@ -4645,6 +4699,7 @@ class Faktura:
             """
             :ivar stopka_faktury: Stopka faktury
             """
+            __slots__ = ()
 
             stopka_faktury: None | str = field(
                 default=None,
@@ -4664,6 +4719,7 @@ class Faktura:
             :ivar regon: REGON
             :ivar bdo: BDO
             """
+            __slots__ = ()
 
             pelna_nazwa: None | str = field(
                 default=None,
@@ -4705,6 +4761,7 @@ class Faktura:
         """
         :ivar blok_danych: Szczegółowe dane załącznika
         """
+        __slots__ = ()
 
         blok_danych: list[Faktura.Zalacznik.BlokDanych] = field(
             default_factory=list,
@@ -4724,6 +4781,7 @@ class Faktura:
             :ivar tekst: Część tekstowa bloku danych
             :ivar tabela: Tabele
             """
+            __slots__ = ()
 
             znaglowek: None | str = field(
                 default=None,
@@ -4765,6 +4823,7 @@ class Faktura:
                 :ivar zklucz: Klucz
                 :ivar zwartosc: Wartość
                 """
+                __slots__ = ()
 
                 zklucz: str = field(
                     metadata={
@@ -4788,6 +4847,7 @@ class Faktura:
                 """
                 :ivar akapit: Opis
                 """
+                __slots__ = ()
 
                 akapit: list[str] = field(
                     default_factory=list,
@@ -4810,6 +4870,7 @@ class Faktura:
                 :ivar wiersz: Wiersze tabeli
                 :ivar suma: Podsumowania tabeli
                 """
+                __slots__ = ()
 
                 tmeta_dane: list[Faktura.Zalacznik.BlokDanych.Tabela.TmetaDane] = field(
                     default_factory=list,
@@ -4857,6 +4918,7 @@ class Faktura:
                     :ivar tklucz: Klucz
                     :ivar twartosc: Wartość
                     """
+                    __slots__ = ()
 
                     tklucz: str = field(
                         metadata={
@@ -4877,6 +4939,7 @@ class Faktura:
 
                 @dataclass(kw_only=True)
                 class Tnaglowek:
+                    __slots__ = ()
                     kol: list[Faktura.Zalacznik.BlokDanych.Tabela.Tnaglowek.Kol] = field(
                         default_factory=list,
                         metadata={
@@ -4893,6 +4956,7 @@ class Faktura:
                         :ivar nkom: Zawartość pola
                         :ivar typ:
                         """
+                        __slots__ = ()
 
                         nkom: str = field(
                             metadata={
@@ -4914,6 +4978,7 @@ class Faktura:
                     """
                     :ivar wkom: Zawartość pola
                     """
+                    __slots__ = ()
 
                     wkom: list[str] = field(
                         default_factory=list,
@@ -4932,6 +4997,7 @@ class Faktura:
                     """
                     :ivar skom: Zawartość pola
                     """
+                    __slots__ = ()
 
                     skom: list[str] = field(
                         default_factory=list,

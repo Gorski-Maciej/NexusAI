@@ -55,6 +55,7 @@ class AsyncBackup:
     SQLCipher: backup działa między szyfrowanymi bazami (ten sam klucz).
     Backup atomiczny -- baza pozostaje czytelna/zapisywalna podczas backupu.
     """
+    __slots__ = ('_databases', '_fs', '_fs_protocol', '_sqlcipher_key')
 
     def __init__(
         self,

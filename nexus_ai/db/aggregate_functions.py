@@ -47,6 +47,7 @@ class MedianAggregate:
         SELECT median(amount_net) FROM invoices WHERE contractor_nip = '1234567890'
         -> zwraca medianę kwot netto dla kontrahenta
     """
+    __slots__ = ()
 
     def __init__(self) -> None:
         self._values: list[float] = []
@@ -77,6 +78,7 @@ class ModeAggregate:
 
     Dla zbiorów wielomodalnych zwraca pierwszą najczęstszą wartość.
     """
+    __slots__ = ()
 
     def __init__(self) -> None:
         self._counts: dict[Any, int] = {}
@@ -107,6 +109,7 @@ class PercentileAggregate:
         SELECT percentile(amount_gross, 0.95) FROM invoices
         -> 95% faktur ma kwotę <= wynik
     """
+    __slots__ = ()
 
     def __init__(self) -> None:
         self._values: list[float] = []
@@ -147,6 +150,7 @@ class ProductAggregate:
 
     Przydatne do kalkulacji złożonych stawek procentowych.
     """
+    __slots__ = ()
 
     def __init__(self) -> None:
         self._product: float = 1.0

@@ -38,6 +38,7 @@ class InferenceService:
         verbose: Czy pokazywać logi llama_cpp.
         ttl: Czas życia modelu w sekundach (0 = bez auto-unload).
     """
+    __slots__ = ('_loaded', '_model_path', '_n_ctx', '_n_gpu_layers', '_n_threads', '_ttl', '_verbose')
 
     def __init__(
         self,
@@ -221,6 +222,7 @@ class ModelManager:
     Oszczednosc RAM: 0.8-3.0 GB gdy modele nie sa uzywane.
     Automatycznie zwalnia modele po okresie bezczynnosci (domyslnie 5 min).
     """
+    __slots__ = ('_default_ttl',)
 
     def __init__(self, default_ttl: int = 300) -> None:
         self._models: dict[str, InferenceService] = {}

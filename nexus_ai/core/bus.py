@@ -79,6 +79,7 @@ class Subscription[EventT: msgspec.Struct]:
         filter_pred: Optional sync predicate; if provided, the callback
             is only invoked when predicate(event) returns True.
     """
+    __slots__ = ('callback', 'event_type', 'filter_pred', 'name')
 
     def __init__(
         self,
@@ -127,6 +128,7 @@ class EventBus:
       - Replayable: event history enables late subscribers to catch up
       - Traceable: correlation_id propagates through the event chain
     """
+    __slots__ = ('_history_size', '_lock')
 
     def __init__(self, history_size: int = 100) -> None:
         self._subscriptions: dict[type[msgspec.Struct], list[Subscription]] = {}

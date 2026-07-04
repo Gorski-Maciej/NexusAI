@@ -60,6 +60,7 @@ class BackupManager:
 
     Szyfrowanie AEAD (ChaCha20-Poly1305) backupów przy użyciu klucza z konfiguracji.
     """
+    __slots__ = ('backup_dir', 'config')
 
     # ``pyarrow.fs.LocalFileSystem`` jest zastąpiony przez fsspec,
     # który zapewnia ten sam interfejs dla wszystkich protokołów

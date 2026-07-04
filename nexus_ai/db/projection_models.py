@@ -59,6 +59,7 @@ class InvoiceReadModel(SQLModel, table=True):
     - PendulumDateTime dla timestampów
     - STRICT table
     """
+    __slots__ = ()
 
     __tablename__ = "invoice_read_model"  # type: ignore[assignment]
     __table_args__ = (
@@ -115,6 +116,7 @@ class DecisionAnalytics(SQLModel, table=True):
     - Partial indexes
     - STRICT table
     """
+    __slots__ = ()
 
     __tablename__ = "decision_analytics"  # type: ignore[assignment]
     __table_args__ = (
@@ -162,6 +164,7 @@ class UserPreferences(SQLModel, table=True):
     """Preferencje użytkownika -- przechowywane jako SQLModel.
 
     """
+    __slots__ = ()
 
     __tablename__ = "user_preferences"  # type: ignore[assignment]
     model_config: ClassVar[dict] = {

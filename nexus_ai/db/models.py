@@ -50,6 +50,7 @@ from sqlmodel import JSON, Field, Relationship, SQLModel, String, and_, text
 
 class PendulumDateTime(SATypeDecorator):
     """TypeDecorator: zapisuje ISO string w DB, zwraca pendulum.DateTime."""
+    __slots__ = ()
 
     impl = String(32)
     cache_ok = True
@@ -185,6 +186,7 @@ class Invoice(SQLModel, table=True):
     - tenant_id dla multi-tenant (with_loader_criteria ready)
     - STRICT table
     """
+    __slots__ = ()
 
     __tablename__ = "invoices"  # type: ignore[assignment]
     __table_args__ = (
@@ -330,6 +332,7 @@ class Invoice(SQLModel, table=True):
 
 class Contractor(SQLModel, table=True):
     """Kontrahenci z walidacją NIP."""
+    __slots__ = ()
 
     __tablename__ = "contractors"  # type: ignore[assignment]
     __table_args__ = (Index("idx_contractors_nip_upper", text("UPPER(nip)")),)
@@ -362,6 +365,7 @@ class Contractor(SQLModel, table=True):
 
 class AuditLog(SQLModel, table=True):
     """Audit trail for all changes -- z JSON i Relationship."""
+    __slots__ = ()
 
     __tablename__ = "audit_logs"  # type: ignore[assignment]
     __table_args__ = (
@@ -402,6 +406,7 @@ class OutboxEvent(SQLModel, table=True):
     - Relationship() -> invoice
     - Partial index: tylko nieprzetworzone eventy
     """
+    __slots__ = ()
 
     __tablename__ = "outbox_events"  # type: ignore[assignment]
     __table_args__ = (
@@ -452,6 +457,7 @@ class OutboxEvent(SQLModel, table=True):
 
 class SecurityAlert(SQLModel, table=True):
     """Security events (RBAC violations, suspicious access)."""
+    __slots__ = ()
 
     __tablename__ = "security_alerts"  # type: ignore[assignment]
     __table_args__ = (Index("idx_security_alerts_actor", "actor", "created_at"),)
@@ -477,6 +483,7 @@ class SecurityAlert(SQLModel, table=True):
 
 class UserAccount(SQLModel, table=True):
     """User accounts -- z Enum role i walidacją username."""
+    __slots__ = ()
 
     __tablename__ = "users"  # type: ignore[assignment]
     model_config: ClassVar[dict] = {

@@ -101,6 +101,7 @@ class PluginInfo:
         has_startup: Whether the plugin implements on_startup.
         has_shutdown: Whether the plugin implements on_shutdown.
     """
+    __slots__ = ('class_name', 'description', 'has_shutdown', 'has_startup', 'module', 'name', 'version')
 
     def __init__(self, plugin: PluginProtocol) -> None:
         self.name = plugin.name
@@ -151,6 +152,7 @@ class PluginManager:
 
         await manager.run_shutdown()
     """
+    __slots__ = ('_lock',)
 
     def __init__(self) -> None:
         self._plugins: dict[str, PluginProtocol] = {}

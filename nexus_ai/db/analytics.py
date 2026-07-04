@@ -38,6 +38,7 @@ class DuckDBManager:
     Dla operacji DDL/DML używane jest per-thread połączenie z blokadą
     ``_ddl_lock``, aby uniknąć konfliktów DDL między wątkami.
     """
+    __slots__ = ('_close_lock', '_closed', '_db_path', '_ddl_lock', '_limits', '_local', '_read_only', '_slow_query_threshold_ms', '_sqlite_path')
 
     def __init__(
         self,

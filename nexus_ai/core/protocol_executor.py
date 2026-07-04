@@ -36,6 +36,7 @@ logger = get_logger(__name__)
 
 class ProtocolViolationError(Exception):
     """Decyzja modelu narusza zdefiniowany protokół SOP."""
+    __slots__ = ()
 
     pass
 
@@ -47,6 +48,7 @@ class ProtocolExecutor:
         loader: Instancja ProtocolLoader. Jeśli None, używa globalnego
                 singletona.
     """
+    __slots__ = ('_loader',)
 
     def __init__(
         self,

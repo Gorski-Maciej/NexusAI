@@ -12,6 +12,7 @@ from multiprocessing import shared_memory
 
 class SharedImageBuffer:
     """Klasa do obsługi Zero-Copy IPC dla obrazów (raw bytes)."""
+    __slots__ = ()
 
     @staticmethod
     def create(data: bytes) -> dict:

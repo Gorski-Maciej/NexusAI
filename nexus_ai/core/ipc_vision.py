@@ -9,6 +9,7 @@ class ImageMemoryManager:
     Używa shared_memory z raw bytes zamiast numpy arrays.
     Obrazy są przesyłane jako bajty z metadanymi o wymiarach.
     """
+    __slots__ = ()
 
     @staticmethod
     def store_image(image_bytes: bytes, width: int, height: int, channels: int = 3) -> dict:

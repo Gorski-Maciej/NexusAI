@@ -40,6 +40,7 @@ def _ensure_column(
 
 class AnalyticsSchemaManager:
     """Zarządza wersjonowaniem schematu DuckDB (odpowiednik migracji)."""
+    __slots__ = ()
 
     @staticmethod
     def ensure_latest_schema(duck_mgr: DuckDBManager):

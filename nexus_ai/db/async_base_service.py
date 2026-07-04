@@ -30,6 +30,7 @@ class AsyncBaseService:
     Args:
         db_path: Ścieżka do pliku SQLite.
     """
+    __slots__ = ('_db_path', '_enable_extensions', '_pool', '_sqlcipher_key', '_wal_mode')
 
     def __init__(
         self,

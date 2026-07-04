@@ -58,6 +58,7 @@ class NexusCache:
         default_ttl: Domyślny TTL w sekundach.
         size_limit: Maksymalny rozmiar cache w bajtach.
     """
+    __slots__ = ('_cache', '_cache_dir', '_compute_locks_lock', '_default_ttl', '_sync_compute_locks_lock')
 
     def __init__(
         self,

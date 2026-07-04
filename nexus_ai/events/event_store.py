@@ -34,6 +34,7 @@ def _get_record_append():
 
 class AsyncEventStore:
     """Append-only event store -- sqlite3 via anyio.to_thread.run_sync."""
+    __slots__ = ('_db_path', '_pool')
 
     def __init__(self, db_path: str | Path) -> None:
         self._db_path = Path(db_path)

@@ -46,6 +46,7 @@ class BaseProjection[T: DomainEvent](AsyncBaseService):
 
     Współdzielone: checkpointy, PRAGMY, FTS5, paginacja, truncate, stats.
     """
+    __slots__ = ('_event_store', '_name')
 
     schema_sql: ClassVar[str] = ""
     aggregate_type: ClassVar[str] = ""
@@ -138,6 +139,7 @@ class BaseProjection[T: DomainEvent](AsyncBaseService):
 
 class InvoiceProjection(BaseProjection[InvoiceCreated]):
     """Projekcja faktur -- denormalizowany widok dla szybkich zapytań."""
+    __slots__ = ()
 
     aggregate_type = "invoice"
     schema_sql = """
@@ -257,6 +259,7 @@ class InvoiceProjection(BaseProjection[InvoiceCreated]):
 
 class DecisionProjection(BaseProjection[DecisionMade]):
     """Projekcja decyzji -- analityczny widok."""
+    __slots__ = ()
 
     aggregate_type = "decision"
     schema_sql = """

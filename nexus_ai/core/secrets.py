@@ -32,6 +32,7 @@ except ImportError:
 
 class SecretsManager:
     """Ochrona kluczy API i haseł przy użyciu natywnego magazynu systemu operacyjnego."""
+    __slots__ = ()
 
     SERVICE_NAME = "NexusAI_System"
 
@@ -70,6 +71,7 @@ class LocalSecretsCache:
 
     Zastępuje: Fernet (cryptography) -> ChaCha20-Poly1305 (nexus-crypto)
     """
+    __slots__ = ('_key', 'cache_path', 'ttl_hours')
 
     def __init__(
         self, cache_path: Path | str = "app_data/secrets_cache.json", ttl_hours: int = 24
@@ -183,6 +185,7 @@ class LocalSecretsCache:
 
 class OfflineFirstSecretResolver:
     """Prefer live secret provider, fallback to encrypted/system cache for offline-first startup."""
+    __slots__ = ('cache',)
 
     def __init__(self, cache: LocalSecretsCache) -> None:
         self.cache = cache

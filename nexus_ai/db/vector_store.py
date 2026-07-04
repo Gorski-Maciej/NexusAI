@@ -122,6 +122,7 @@ class AsyncVectorStore(AsyncBaseService):
 
     Python 3.13t (free-threaded): synchroniczne sqlite3 + anyio.to_thread.run_sync.
     """
+    __slots__ = ()
 
     def __init__(
         self,

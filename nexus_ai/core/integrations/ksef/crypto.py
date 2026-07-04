@@ -14,6 +14,7 @@ class KsefCrypto:
     Uwaga: RSA encryption nie jest dostępne -- pakiet ``cryptography``
     został usunięty z projektu.
     """
+    __slots__ = ()
 
     @staticmethod
     def encrypt_challenge(challenge: str, timestamp: str, public_key_pem: bytes) -> str:

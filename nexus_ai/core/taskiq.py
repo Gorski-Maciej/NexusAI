@@ -42,6 +42,7 @@ PII_PATTERNS = [
 
 class TaskMetricsMiddleware(TaskiqMiddleware):
     """Metryki OTel dla każdego zadania."""
+    __slots__ = ()
 
     async def pre_execute(self, message: TaskiqMessage) -> None:
         message.labels["_started_at"] = str(time.time())
@@ -57,6 +58,7 @@ class TaskMetricsMiddleware(TaskiqMiddleware):
 
 class PiiScanMiddleware(TaskiqMiddleware):
     """Skanowanie PII w payloadach zadań."""
+    __slots__ = ('_block_on_pii',)
 
     def __init__(self, block_on_pii: bool = False) -> None:
         self._block_on_pii = block_on_pii
@@ -71,6 +73,7 @@ class PiiScanMiddleware(TaskiqMiddleware):
 
 class TaskTracingMiddleware(TaskiqMiddleware):
     """OTel tracing dla zadań."""
+    __slots__ = ()
 
     async def pre_send(self, message: TaskiqMessage) -> TaskiqMessage:
         try:
@@ -95,6 +98,7 @@ class TaskTracingMiddleware(TaskiqMiddleware):
 
 class SentryTaskMiddleware(TaskiqMiddleware):
     """Sentry scope dla zadań Taskiq."""
+    __slots__ = ()
 
     async def pre_execute(self, message: TaskiqMessage) -> None:
         try:
@@ -129,6 +133,7 @@ def _record_task_metrics(task_name: str, duration_ms: float, status: str) -> Non
 @final
 class SqliteResultBackend(TaskiqResultBackend):
     """Taskiq Result Backend w SQLite."""
+    __slots__ = ('_db_path', '_lock')
 
     def __init__(self, db_path: str | Path) -> None:
         self._db_path = Path(db_path)
@@ -193,6 +198,7 @@ class SqliteResultBackend(TaskiqResultBackend):
 @final
 class HybridResultBackend(TaskiqResultBackend):
     """Hybrid backend: NATS Object Store + SQLite fallback."""
+    __slots__ = ('_bucket_name', '_nats_servers', '_sqlite')
 
     def __init__(self, sqlite_path: str | Path, nats_servers: list[str] | None = None, bucket_name: str = "nexus-task-results") -> None:
         self._sqlite = SqliteResultBackend(sqlite_path)

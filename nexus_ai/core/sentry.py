@@ -452,6 +452,7 @@ class _NoopTransaction:
     Pozwala na bezpieczne używanie ``with start_transaction(...) as t:`` bez
     sprawdzania czy Sentry jest dostępne.
     """
+    __slots__ = ()
 
     def __enter__(self) -> _NoopTransaction:
         return self

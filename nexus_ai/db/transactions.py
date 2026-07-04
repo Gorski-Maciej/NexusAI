@@ -23,6 +23,7 @@ BATCH_SIZE = 100
 
 class OutboxManager:
     """Transactional Outbox -- gwarantowana dostawa zdarzeń."""
+    __slots__ = ()
 
     @staticmethod
     def publish(

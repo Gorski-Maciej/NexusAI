@@ -34,6 +34,7 @@ class CursorPagination:
     Dla tabel z 1M rekordów: OFFSET 50000 skanuje 50k wierszy,
     keyset skanuje tylko 50 wierszy (przez indeks PRIMARY KEY).
     """
+    __slots__ = ()
 
     @staticmethod
     def get_page(
@@ -91,6 +92,7 @@ class FTSManager(AsyncBaseService):
     Tabele: invoices_fts, contractors_fts, audit_logs_fts, events_fts.
     Wspiera: BM25 ranking, highlight/snippet, hybrydowe FTS5+vec0, prefix indexing.
     """
+    __slots__ = ()
 
     FTS_SCHEMAS: dict[str, str] = {
         "invoices_fts": """
@@ -234,6 +236,7 @@ class AnalyticsViews:
     -- przeliczone raz, nie przy każdym SELECT.
     Window functions: LAG, LEAD, ROW_NUMBER, SUM OVER, moving averages.
     """
+    __slots__ = ()
 
     @staticmethod
     def create_all(duckdb_mgr) -> None:

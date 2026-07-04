@@ -172,6 +172,7 @@ class LazyImport:
 @dataclass
 class AppServices:
     """Centralny rejestr serwisów dla NexusaAI."""
+    __slots__ = ()
     config: AppConfig = field(default_factory=AppConfig)
     engine: Any = None
     session_factory: Any = None

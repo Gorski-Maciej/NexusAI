@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 
 class BaseExporter(ABC):
     """Base class for all exporters."""
+    __slots__ = ()
 
     @abstractmethod
     def export(self, invoices: list[Invoice]) -> str:
@@ -34,6 +35,7 @@ class OptimaExporter(BaseExporter):
 
     Używa lxml.etree z pretty_print=True dla czytelnego wyjścia.
     """
+    __slots__ = ()
 
     def export(self, invoices: list[Invoice]) -> str:
         root = etree.Element("ROOT", xmlns="http://www.comarch.pl/optima/dokumenty")

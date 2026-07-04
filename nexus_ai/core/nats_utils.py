@@ -22,6 +22,7 @@ logger = get_logger("nexus.nats.utils")
 
 class NatsErrors:
     """Container for nats-py error types with graceful fallback."""
+    __slots__ = ()
     TimeoutError: type[BaseException] = TimeoutError
     ConnectionClosedError: type[BaseException] = ConnectionError
     NoRespondersError: type[BaseException] = ConnectionError
@@ -120,6 +121,7 @@ async def publish_event(subject: str, data: Any, nats_url: str | list[str] | Non
 @final
 class NatsRpcClient:
     """NATS Request-Reply client with auto-reconnect."""
+    __slots__ = ()
 
     def __init__(self, nats_url: str | list[str] | None = None, name: str = "nexus-rpc-client", request_timeout: float = 5.0) -> None:
         NatsErrors.init()
@@ -169,6 +171,7 @@ class NatsRpcClient:
 @final
 class NatsSubscription:
     """NATS subscription with async iterator."""
+    __slots__ = ()
 
     def __init__(self, subject: str, queue: str = "", nats_url: str | list[str] | None = None, name: str = "nexus-subscriber") -> None:
         NatsErrors.init()
@@ -229,6 +232,7 @@ DEFAULT_KV_BUCKETS: dict[str, str] = {"nexus-config": "Global configuration stor
 @final
 class NatsConfigStore:
     """Key-Value Store on NATS JetStream with local fallback cache."""
+    __slots__ = ('_buckets', '_connected', '_js', '_local_fallback', '_nats_servers', '_nc')
 
     def __init__(self, nats_servers: list[str] | str | None = None, buckets: dict[str, str] | None = None, local_fallback: bool = True) -> None:
         from nexus_ai.core.config import AppConfig
@@ -330,6 +334,7 @@ DEFAULT_OBJECT_BUCKETS: dict[str, str] = {"nexus-files": "Invoice PDFs and attac
 
 class NatsFileStore:
     """Object Store on NATS JetStream for files with local cache fallback."""
+    __slots__ = ('_buckets', '_cache_dir', '_connected', '_js', '_nats_servers', '_nc')
 
     def __init__(self, nats_servers: list[str] | str | None = None, buckets: dict[str, str] | None = None,
                  local_cache_dir: str | Path | None = None) -> None:
@@ -436,6 +441,7 @@ def get_file_store(nats_servers: list[str] | str | None = None) -> NatsFileStore
 
 class NatsSupervisor:
     """Monitor NATS JetStream streams and consumers."""
+    __slots__ = ('_connect_timeout', '_connected', '_js', '_nats_servers', '_nc')
 
     def __init__(self, nats_servers: list[str] | str | None = None, connect_timeout: float = 10.0) -> None:
         from nexus_ai.core.config import AppConfig

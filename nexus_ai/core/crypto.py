@@ -31,6 +31,7 @@ class Vault:
         z force collect -- dane są zerowane i zwalniane atomowo
       - Zapobiega wyciekom kluczy do swap/core dumps
     """
+    __slots__ = ('_key',)
 
     def __init__(self, config: AppConfig):
         self._key: bytearray | None = None

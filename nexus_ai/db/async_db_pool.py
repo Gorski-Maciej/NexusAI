@@ -40,6 +40,7 @@ class AsyncDBPool:
     - Wsparcie dla SQLCipher (PRAGMA key FIRST!)
     - check_same_thread=False dla free-threaded Python 3.13t
     """
+    __slots__ = ('_closed',)
 
     def __init__(self) -> None:
         self._connections: dict[str, sqlite3.Connection] = {}

@@ -12,6 +12,7 @@ _tenant_id_ctx: ContextVar[str] = ContextVar("tenant_id", default=DEFAULT_TENANT
 
 class TenantManager:
     """Resolves and creates per-tenant local storage layout."""
+    __slots__ = ('_config', '_root')
 
     _allowed_tenant_pattern = re.compile(r"^[a-zA-Z0-9_-]+$")
 

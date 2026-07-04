@@ -3,6 +3,7 @@ import pendulum
 
 
 class InsertEppExporter:
+    __slots__ = ('invoices',)
     def __init__(self, invoices: list):
         self.invoices = invoices
 
