@@ -10,9 +10,12 @@ from typing import Any, TypeVar
 
 import anyio
 import pendulum
+from structlog import get_logger
 
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.services.otel_fallback import FileSpanBuffer
+
+logger = get_logger("nexus.telemetry")
 
 
 def _load_gputil_module():
@@ -125,7 +128,8 @@ def track_performance(
                             span_payload["attributes"]["vram_usage_mb"],
                         ),
                     )
-                except Exception:
+                except Exception as exc:
+                    logger.debug("[Telemetry] DuckDB insert failed, buffering to file: %s", exc)
                     FileSpanBuffer().append(
                         trace_id=span_payload["trace_id"],
                         name=span_payload["name"],
@@ -211,8 +215,9 @@ async def flush_fallback_spans(
                     "queue_before": int(queue_before),
                     "attempts": int(attempt + 1),
                 }
-            except Exception:
+            except Exception as exc:
                 if attempt >= retries - 1:
+                    logger.debug("[Telemetry] flush_fallback failed after %d attempts: %s", retries, exc)
                     break
                 await anyio.sleep(base_delay * (2**attempt))
 
@@ -225,5 +230,5 @@ async def flush_fallback_spans(
     finally:
         try:
             db.close()
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("[Telemetry] db.close() failed: %s", exc)

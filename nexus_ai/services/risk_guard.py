@@ -25,6 +25,7 @@ class RiskAction(StrEnum):
     ALLOW = "ALLOW"
 
 
+@final
 class RiskThreshold:
     """Prog ryzyka dla kombinacji tax_form + expense_type."""
     __slots__ = ('action_if_below', 'required_ml_confidence', 'rule_id')
@@ -40,6 +41,7 @@ class RiskThreshold:
         self.rule_id = rule_id
 
 
+@final
 class RiskGuard:
     """Dynamiczny straznik ryzyka z regulami w SQLite."""
     __slots__ = ()

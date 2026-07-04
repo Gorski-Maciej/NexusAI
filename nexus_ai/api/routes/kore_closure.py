@@ -16,8 +16,8 @@ class KoreClosureController(Controller):
     """Single endpoint with executable closure summary for KORE 1-11."""
 
     path = "/system/kore"
-    guards = [owner_only_guard]
-    tags = [TAG_AUDIT]
+    guards = (owner_only_guard,)
+    tags = (TAG_AUDIT,)
 
     @get(
         "/closure",

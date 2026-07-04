@@ -106,7 +106,8 @@ class HotReloadListener:
 
             try:
                 await self._js.stream_info("nexus-config")
-            except Exception:
+            except Exception as exc:
+                logger.debug("[HOT-RELOAD] nexus-config stream not found, creating: %s", exc)
                 await self._js.add_stream(
                     name="nexus-config",
                     subjects=["nexus-config.>"],
@@ -176,8 +177,8 @@ class HotReloadListener:
         for sub in self._subs:
             try:
                 await sub.unsubscribe()
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[HOT-RELOAD] Unsubscribe error: %s", exc)
         self._subs.clear()
 
         if self._nc is not None:
@@ -235,8 +236,8 @@ class HotReloadListener:
             from api.telemetry_metrics import record_hot_reload_event
 
             record_hot_reload_event(subject)
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("[HOT-RELOAD] Prometheus metrics unavailable: %s", exc)
 
         # Clear relevant API caches based on subject
         try:

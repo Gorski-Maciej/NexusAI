@@ -35,6 +35,7 @@ class TaxStrategy(ABC):
         raise NotImplementedError
 
 
+@final
 class JdgLumpSumStrategy(TaxStrategy):
     tax_form = TaxForm.LUMP_SUM
 
@@ -51,6 +52,7 @@ class JdgLumpSumStrategy(TaxStrategy):
         }
 
 
+@final
 class JdgLinearStrategy(TaxStrategy):
     tax_form = TaxForm.LINEAR
 
@@ -67,6 +69,7 @@ class JdgLinearStrategy(TaxStrategy):
         }
 
 
+@final
 class CorpFullLedgerStrategy(TaxStrategy):
     tax_form = TaxForm.CIT_STANDARD
 
@@ -82,6 +85,7 @@ class CorpFullLedgerStrategy(TaxStrategy):
         }
 
 
+@final
 class CitEstonianStrategy(TaxStrategy):
     tax_form = TaxForm.CIT_ESTONIAN
 

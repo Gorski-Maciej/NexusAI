@@ -37,7 +37,7 @@ class InvoiceController(Controller):
     """REST API dla faktur -- CRUD + upload."""
 
     path = "/invoices"
-    tags = [TAG_INVOICES]
+    tags = (TAG_INVOICES,)
 
     @get(
         summary="List invoices with cursor pagination",

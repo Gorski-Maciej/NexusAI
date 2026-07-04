@@ -62,8 +62,8 @@ class InvoiceController(Controller):
     """
 
     path = "/invoices"
-    guards = [owner_or_worker_guard]
-    tags = [TAG_INVOICES]
+    guards = (owner_or_worker_guard,)
+    tags = (TAG_INVOICES,)
 
     @post(
         "/upload",

@@ -13,7 +13,7 @@ class FileController(Controller):
     """
 
     path = "/files"
-    tags = [TAG_FILES]
+    tags = (TAG_FILES,)
 
     @get(
         "/{file_id:str}",

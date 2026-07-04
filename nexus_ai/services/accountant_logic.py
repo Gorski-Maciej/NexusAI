@@ -13,6 +13,7 @@ class AccountSuggestion(Struct):
     reason: str
 
 
+@final
 class AccountantLogic:
     """Logika biznesowa księgowego -- deleguje do ZPKEngine.
 

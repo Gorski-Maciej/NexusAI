@@ -87,7 +87,7 @@ class PDFController(Controller):
     CPU-bound operacji PDFium do wątku roboczego, nie blokując pętli zdarzeń.
     """
 
-    tags = ["pdf"]
+    tags = ("pdf",)
 
     # ═══════════════════════════════════════════════════════════════════════
     # Renderowanie strony do PNG (podstawowe)

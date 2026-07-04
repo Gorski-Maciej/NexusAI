@@ -171,7 +171,7 @@ class AuthController(Controller):
     """Autoryzacja i zarządzanie kontem użytkownika."""
 
     path = "/auth"
-    tags = [TAG_AUTH]
+    tags = (TAG_AUTH,)
 
     @post(
         "/register",
@@ -360,8 +360,8 @@ class AuthController(Controller):
         # Log audit event
         try:
             await _log_auth_event(db_engine, user_id, "LOGIN", {"username": user["username"]})
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("Audit log failed for LOGIN: %s", exc)
 
         return Response(content=body, status_code=200)
 

@@ -20,8 +20,11 @@ from typing import Any, final
 import pendulum
 from msgspec import Struct
 from msgspec.structs import asdict
+from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_loads
+
+logger = get_logger("nexus.otel")
 
 
 class BufferedSpan(Struct):
@@ -120,8 +123,8 @@ class FileSpanBuffer:
         if writer is not None:
             try:
                 writer.close()
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[OTEL] Failed to close ParquetWriter: %s", exc)
 
     # PyArrow ``parquet.write_table()`` i ``parquet.read_table()`` są
     # bezpośrednimi interfejsami do formatu Parquet -- bez pośrednictwa
@@ -218,9 +221,7 @@ class FileSpanBuffer:
             return table.to_pylist()
 
         except Exception as exc:
-            import logging
-
-            logging.getLogger("nexus.otel").warning(
+            logger.warning(
                 "[OTEL] Failed to read Parquet via PyArrow: %s", exc
             )
             return []
@@ -306,7 +307,8 @@ class FileSpanBuffer:
             for record in records:
                 try:
                     ok = bool(sender(record))
-                except Exception:
+                except Exception as exc:
+                    logger.debug("[OTEL] sender failed for record, skipping: %s", exc)
                     ok = False
                 if ok:
                     sent += 1
@@ -354,8 +356,8 @@ class FileSpanBuffer:
                 dt = pendulum.parse(since)
                 filters.append(ds.field("year") >= dt.year)
                 filters.append(ds.field("month") >= dt.month)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[OTEL] Failed to parse since date for filter: %s", exc)
 
         filter_expr = None
         if len(filters) == 1:
@@ -438,7 +440,8 @@ class FileSpanBuffer:
                 result["total_size_bytes"] += file_size
                 result["total_row_groups"] += meta.num_row_groups
                 result["total_rows"] += meta.num_rows
-            except Exception:
+            except Exception as exc:
+                logger.debug("[OTEL] Failed to read Parquet metadata for %s: %s", f.name, exc)
                 continue
 
         return result

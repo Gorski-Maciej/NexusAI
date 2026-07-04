@@ -29,8 +29,8 @@ class OutboxOpsController(Controller):
     """
 
     path = "/system/outbox"
-    guards = [owner_only_guard]
-    tags = [TAG_SYSTEM]
+    guards = (owner_only_guard,)
+    tags = (TAG_SYSTEM,)
 
     # ── GET /stats -- statystyki z SQL (pasywne, bez relaya) ───────────
 

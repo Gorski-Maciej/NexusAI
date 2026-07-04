@@ -41,7 +41,7 @@ class AutopilotController(Controller):
     """
 
     path = "/autopilot"
-    tags = [TAG_SYSTEM]
+    tags = (TAG_SYSTEM,)
 
     @get(
         "/decisions",
@@ -459,8 +459,8 @@ class AutopilotController(Controller):
         body: dict[str, Any] | None = None
         try:
             body = await request.json()
-        except Exception:
-            raise ClientException("Invalid JSON body")
+        except Exception as exc:
+            raise ClientException("Invalid JSON body") from exc
 
         if not body or "invoice_id" not in body:
             raise ClientException("Missing invoice_id in request body")

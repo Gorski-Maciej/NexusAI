@@ -16,7 +16,7 @@ class TaskController(Controller):
     """Status i zarządzanie zadaniami asynchronicznymi."""
 
     path = "/tasks"
-    tags = [TAG_TASKS]
+    tags = (TAG_TASKS,)
 
     @get(
         "/{task_id:str}",

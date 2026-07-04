@@ -233,7 +233,7 @@ class JetStreamEventBus:
         if not await self._ensure_connected() or self._js is None:
             return False
         try:
-            ack = await self._js.publish(f"nexus-{event.aggregate_type}.{event.event_type}", encode_event(event))
+            _ = await self._js.publish(f"nexus-{event.aggregate_type}.{event.event_type}", encode_event(event))
             return True
         except Exception as exc:
             logger.warning("[JETSTREAM] Failed to publish %s: %s", event.event_type, exc); return False
@@ -242,8 +242,11 @@ class JetStreamEventBus:
         if not await self._ensure_connected() or self._js is None: return 0
         published = 0
         for event in events:
-            try: await self._js.publish(f"nexus-{event.aggregate_type}.{event.event_type}", encode_event(event)); published += 1
-            except Exception: pass
+            try:
+                await self._js.publish(f"nexus-{event.aggregate_type}.{event.event_type}", encode_event(event))
+                published += 1
+            except Exception as exc:
+                logger.warning("[JETSTREAM] Batch publish failed for %s: %s", event.event_type, exc)
         return published
 
     async def close(self) -> None:

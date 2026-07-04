@@ -184,7 +184,7 @@ async def create_storno_linked_chain(
         # Batch create
         tb_results = tb_client.create_transfers(transfers)
 
-        for i, (spec, result) in enumerate(zip(linked_specs, tb_results)):
+        for i, (spec, result) in enumerate(zip(linked_specs, tb_results, strict=True)):
             results.append(
                 {
                     "index": i,

@@ -13,7 +13,7 @@ class StatsController(Controller):
     """Statistics and metrics API."""
 
     path = "/api/v1/stats"
-    tags = [TAG_ANALYTICS]
+    tags = (TAG_ANALYTICS,)
 
     @get(
         "/processing",

@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from decimal import Decimal
+
 from litestar import Controller, get
 from litestar.exceptions import ClientException
 
@@ -11,8 +15,8 @@ class AnalyticsController(Controller):
     """Analityka i raportowanie danych księgowych."""
 
     path = "/analytics"
-    guards = [owner_only_guard]
-    tags = [TAG_ANALYTICS]
+    guards = (owner_only_guard,)
+    tags = (TAG_ANALYTICS,)
 
     @get(
         "/dashboard/summary",
@@ -50,11 +54,11 @@ class AnalyticsController(Controller):
         """
         result = duckdb.execute(query)
         if not result:
-            return DashboardSummaryResponse(total_net=0.0, total_gross=0.0, total_documents=0)
+            return DashboardSummaryResponse(total_net=Decimal("0.0"), total_gross=Decimal("0.0"), total_documents=0)
 
         row = result[0]
         return DashboardSummaryResponse(
-            total_net=float(row[0]), total_gross=float(row[1]), total_documents=int(row[2])
+            total_net=Decimal(str(row[0])), total_gross=Decimal(str(row[1])), total_documents=int(row[2])
         )
 
     @get(

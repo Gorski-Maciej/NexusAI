@@ -25,13 +25,14 @@ from __future__ import annotations
 import json
 import re
 from datetime import UTC
-from typing import Any
+from typing import Any, final
 
 from structlog import get_logger
 
 logger = get_logger("nexus.opa.policy_generator")
 
 
+@final
 class OpaPolicyGenerator:
     """Generates poprawne Rego policies z DuckDB tax rules.
 

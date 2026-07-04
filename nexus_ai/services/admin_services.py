@@ -11,7 +11,7 @@ Redukcja: 395 -> 180 linii (-54%)
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, final
 
 import pendulum
 
@@ -20,6 +20,7 @@ from nexus_ai.core.logger import auto_logger
 
 
 @auto_logger
+@final
 class RiskThresholdService(AdminServiceRegistry):
     """Zarządzanie progami ryzyka (RiskGuard)."""
     __slots__ = ()
@@ -56,6 +57,7 @@ class RiskThresholdService(AdminServiceRegistry):
 
 
 @auto_logger
+@final
 class BillingRuleService(AdminServiceRegistry):
     """Zarządzanie regułami billingowymi."""
     __slots__ = ()
@@ -85,6 +87,7 @@ class BillingRuleService(AdminServiceRegistry):
 
 
 @auto_logger
+@final
 class LedgerRuleService(AdminServiceRegistry):
     """Zarządzanie regułami walidacji księgi głównej."""
     __slots__ = ()
@@ -132,6 +135,7 @@ class LedgerRuleService(AdminServiceRegistry):
 
 
 @auto_logger
+@final
 class TaxRuleService(AdminServiceRegistry):
     """Zarządzanie regułami podatkowymi."""
     __slots__ = ()
@@ -177,6 +181,7 @@ class TaxRuleService(AdminServiceRegistry):
 
 
 @auto_logger
+@final
 class FallbackEventService(AdminServiceRegistry):
     """Zarządzanie zdarzeniami fallback."""
     __slots__ = ()
@@ -203,6 +208,7 @@ class FallbackEventService(AdminServiceRegistry):
 
 
 @auto_logger
+@final
 class ReplayService(AdminServiceRegistry):
     """Odtwarzanie decyzji podatkowych."""
     __slots__ = ()
@@ -234,6 +240,7 @@ class ReplayService(AdminServiceRegistry):
 
 
 @auto_logger
+@final
 class IntegrityService(AdminServiceRegistry):
     """Weryfikacja integralności łańcucha decyzji."""
     __slots__ = ()
@@ -270,6 +277,7 @@ class IntegrityService(AdminServiceRegistry):
 
 
 @auto_logger
+@final
 class FailedTaskService:
     """Zarządzanie failed tasks (DLQ) -- operacje na outbox_events przez AsyncEngine.
 

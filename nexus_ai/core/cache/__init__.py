@@ -5,7 +5,6 @@ from __future__ import annotations
 import os
 import threading
 from collections.abc import Callable
-from functools import wraps
 from pathlib import Path
 from typing import Any
 
@@ -250,7 +249,12 @@ def get_cache(cache_dir: str | Path | None = None, default_ttl: int = 300,
 
 
 __all__ = [
-    "NexusCache", "get_cache",
-    "CachedHttpClient", "warm_http_cache", "get_cache_stats", "reset_cache_stats",
-    "invalidate_cache", "subscribe_cache_invalidation",
+    "CachedHttpClient",
+    "NexusCache",
+    "get_cache",
+    "get_cache_stats",
+    "invalidate_cache",
+    "reset_cache_stats",
+    "subscribe_cache_invalidation",
+    "warm_http_cache",
 ]

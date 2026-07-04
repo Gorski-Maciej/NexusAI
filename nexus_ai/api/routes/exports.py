@@ -23,7 +23,7 @@ class ExportController(Controller):
     """Handle invoice data export."""
 
     path = "/exports"
-    tags = [TAG_FILES, TAG_SYSTEM]
+    tags = (TAG_FILES, TAG_SYSTEM,)
 
     @get(
         "/{export_id:str}/status",

@@ -5,8 +5,11 @@ from typing import Any
 
 from msgspec import Struct
 from sqlmodel import Session, select
+from structlog import get_logger
 
 from nexus_ai.db.models import Invoice, InvoiceStatus
+
+logger = get_logger("nexus.services.triage")
 
 TRIAGE_CONFIDENCE_THRESHOLD = 0.85
 
@@ -84,7 +87,7 @@ def resolve_triage_item(
     # użyj ``session.expire_all()`` przed odczytem.
     try:
         session.refresh(invoice)
-    except Exception:
-        # Jeśli sesja zamknięta, użyj expire_all jako fallback
+    except Exception as exc:
+        logger.debug("[TriageService] refresh failed, using expire_all: %s", exc)
         session.expire_all()
     return invoice

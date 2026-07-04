@@ -17,13 +17,24 @@ import resource
 from pathlib import Path
 from typing import Any
 
-from litestar import Controller, Response, get, post
+from litestar import Controller, get, post
 from sqlmodel import text
 
 from nexus_ai.api.dto import (
-    TAG_FINANCE, TAG_I18N, TAG_PRIVACY, TAG_SECURITY, TAG_SYSTEM, TAG_AUDIT,
-    CircuitBreakerStatusDTO, FinOpsDTO, GenericDictDTO, I18nStatusDTO,
-    KoreAuditDTO, PiiScanDTO, SecurityPostureDTO, TelemetryFallbackStatusDTO,
+    TAG_AUDIT,
+    TAG_FINANCE,
+    TAG_I18N,
+    TAG_PRIVACY,
+    TAG_SECURITY,
+    TAG_SYSTEM,
+    CircuitBreakerStatusDTO,
+    FinOpsDTO,
+    GenericDictDTO,
+    I18nStatusDTO,
+    KoreAuditDTO,
+    PiiScanDTO,
+    SecurityPostureDTO,
+    TelemetryFallbackStatusDTO,
 )
 from nexus_ai.api.rbac import owner_only_guard
 from nexus_ai.core.config import AppConfig
@@ -39,8 +50,8 @@ from nexus_ai.services.telemetry import flush_fallback_spans
 # ── /system/i18n ────────────────────────────────────────────────────────
 class I18nOpsController(Controller):
     path = "/system/i18n"
-    guards = [owner_only_guard]
-    tags = [TAG_I18N]
+    guards = (owner_only_guard,)
+    tags = (TAG_I18N,)
 
     @get("/status", return_dto=I18nStatusDTO, summary="Get i18n status", description="Returns available API and prompt language translations.", operation_id="getI18nStatus")
     async def status(self) -> dict:
@@ -57,8 +68,8 @@ class I18nOpsController(Controller):
 # ── /system/security ────────────────────────────────────────────────────
 class SecurityPostureController(Controller):
     path = "/system/security"
-    guards = [owner_only_guard]
-    tags = [TAG_SECURITY]
+    guards = (owner_only_guard,)
+    tags = (TAG_SECURITY,)
 
     @get("/summary", return_dto=SecurityPostureDTO, summary="Get security posture summary", description="Returns the security scan summary including ZAP baseline and full scan results.", operation_id="getSecurityPosture")
     async def summary(self) -> dict:
@@ -77,7 +88,7 @@ class SecurityPostureController(Controller):
 # ── /system/circuit-breakers ────────────────────────────────────────────
 class CircuitBreakerController(Controller):
     path = "/system/circuit-breakers"
-    tags = [TAG_SYSTEM]
+    tags = (TAG_SYSTEM,)
 
     @get("/", return_dto=CircuitBreakerStatusDTO, summary="List circuit breakers", description="Returns resilience status managed by stamina (async-native, anyio).", operation_id="listCircuitBreakers")
     async def list_breakers(self) -> dict[str, Any]:
@@ -92,8 +103,8 @@ class CircuitBreakerController(Controller):
 # ── /system/telemetry ───────────────────────────────────────────────────
 class TelemetryOpsController(Controller):
     path = "/system/telemetry"
-    guards = [owner_only_guard]
-    tags = [TAG_SYSTEM]
+    guards = (owner_only_guard,)
+    tags = (TAG_SYSTEM,)
 
     @get("/fallback-status", return_dto=TelemetryFallbackStatusDTO, summary="Get telemetry fallback status", description="Returns the status of the OpenTelemetry fallback buffer.", operation_id="getTelemetryFallbackStatus")
     async def fallback_status(self) -> dict:
@@ -111,8 +122,8 @@ class TelemetryOpsController(Controller):
 # ── /system/finops ──────────────────────────────────────────────────────
 class FinOpsController(Controller):
     path = "/system/finops"
-    guards = [owner_only_guard]
-    tags = [TAG_FINANCE]
+    guards = (owner_only_guard,)
+    tags = (TAG_FINANCE,)
 
     @get("/cost-per-invoice", return_dto=FinOpsDTO, summary="Get cost per invoice", description="Returns FinOps metrics: hourly cost, invoice count, and cost per invoice in USD.", operation_id="getCostPerInvoice")
     async def cost_per_invoice(self) -> dict:
@@ -133,8 +144,8 @@ class FinOpsController(Controller):
 # ── /system/privacy ─────────────────────────────────────────────────────
 class PrivacyController(Controller):
     path = "/system/privacy"
-    guards = [owner_only_guard]
-    tags = [TAG_PRIVACY]
+    guards = (owner_only_guard,)
+    tags = (TAG_PRIVACY,)
 
     @get("/pii-scan", return_dto=PiiScanDTO, summary="Scan logs for PII", description="Scans application logs for potential PII leaks and notifies the DPO if findings are detected.", operation_id="scanPiiLogs")
     async def scan_pii_logs(self) -> dict:
@@ -148,8 +159,8 @@ class PrivacyController(Controller):
 # ── /system/kore ────────────────────────────────────────────────────────
 class KoreAuditController(Controller):
     path = "/system/kore"
-    guards = [owner_only_guard]
-    tags = [TAG_AUDIT]
+    guards = (owner_only_guard,)
+    tags = (TAG_AUDIT,)
 
     @get("/audit", return_dto=KoreAuditDTO, summary="Get KORE audit report", description="Returns KORE 1-11 compliance audit report from Integrity Verifier.", operation_id="getKoreAudit")
     async def get_kore_audit(self) -> dict:

@@ -110,7 +110,8 @@ class DailyBriefingGenerator:
                 "SELECT COUNT(*) FROM oltp.invoices WHERE status IN ('MANUAL_REVIEW', 'PENDING_REVIEW')",
             )
             return int(rows[0][0]) if rows and rows[0] and rows[0][0] else 0
-        except Exception:
+        except Exception as exc:
+            logger.debug("[DailyBriefing] count_pending error: %s", exc)
             return 0
 
     async def _get_top_contractors(self, day: str) -> list[dict[str, Any]]:
@@ -127,7 +128,8 @@ class DailyBriefingGenerator:
                 if rows
                 else []
             )
-        except Exception:
+        except Exception as exc:
+            logger.debug("[DailyBriefing] top_contractors error: %s", exc)
             return []
 
     async def _get_trust_trend(self) -> dict[str, Any]:
@@ -141,7 +143,8 @@ class DailyBriefingGenerator:
             if cr > 0.2:
                 return {"trend": "down", "correction_rate": cr}
             return {"trend": "stable", "correction_rate": cr}
-        except Exception:
+        except Exception as exc:
+            logger.debug("[DailyBriefing] trust_trend error: %s", exc)
             return {"trend": "stable"}
 
     @staticmethod
@@ -512,8 +515,8 @@ class AsyncNotificationService(AsyncBaseService):
                 return decisions
             finally:
                 await anyio.to_thread.run_sync(mgr.close)
-        except Exception:
-            logger.debug("Could not query pending decisions (DuckDB may be unavailable)")
+        except Exception as exc:
+            logger.debug("[DailyBriefing] pending decisions unavailable: %s", exc)
             return []
 
     async def _count_today_auto_posted(self, user_id: str, today: str) -> int:
@@ -543,7 +546,8 @@ class AsyncNotificationService(AsyncBaseService):
                 return int(row[0][0]) if row and row[0] and row[0][0] else 0
             finally:
                 await anyio.to_thread.run_sync(mgr.close)
-        except Exception:
+        except Exception as exc:
+            logger.debug("[DailyBriefing] count_today error: %s", exc)
             return 0
 
     async def _add_notification(

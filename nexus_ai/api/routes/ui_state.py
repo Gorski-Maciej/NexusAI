@@ -37,8 +37,8 @@ class UIStateController(Controller):
     """Offline-resilient UI draft persistence for server-driven clients (e.g. Flet desktop UI)."""
 
     path = "/ui"
-    guards = [owner_or_worker_guard]
-    tags = [TAG_UI_STATE]
+    guards = (owner_or_worker_guard,)
+    tags = (TAG_UI_STATE,)
 
     @post(
         "/drafts/{draft_key:str}",

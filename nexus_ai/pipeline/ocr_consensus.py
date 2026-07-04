@@ -18,7 +18,7 @@ from collections import Counter, defaultdict
 from enum import Enum
 from functools import cache
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 import anyio
 import fsspec
@@ -140,8 +140,8 @@ def decide_amount_consensus_legacy(
 
 class TesseractEngine(BaseOCREngine):
     name = "tesseract"
-    VALID_PSM: set[int] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
-    VALID_OEM: set[int] = {0, 1, 2, 3}
+    VALID_PSM: ClassVar[set[int]] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
+    VALID_OEM: ClassVar[set[int]] = {0, 1, 2, 3}
 
     def __init__(self, lang: str = "pol", *, psm: int = 4, oem: int = 1, **kwargs):
         if psm not in self.VALID_PSM:
@@ -566,7 +566,7 @@ class DocTREngine(BaseOCREngine):
 
 class EasyOCREngine(BaseOCREngine):
     name = "easyocr"
-    VALID_DECODERS = {"greedy", "beamsearch", "wordbeamsearch"}
+    VALID_DECODERS: ClassVar[set[str]] = {"greedy", "beamsearch", "wordbeamsearch"}
 
     def __init__(
         self, lang: str = "pl", use_gpu: bool = True,

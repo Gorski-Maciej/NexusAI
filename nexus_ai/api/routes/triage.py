@@ -27,7 +27,7 @@ class TriageController(Controller):
     """Triage -- przegląd i korekta faktur przed księgowaniem."""
 
     path = "/triage"
-    tags = [TAG_TRIAGE]
+    tags = (TAG_TRIAGE,)
 
     @get(
         "/pending",

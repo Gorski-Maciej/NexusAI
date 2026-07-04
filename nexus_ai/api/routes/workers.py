@@ -18,7 +18,7 @@ class WorkerStatusController(Controller):
     """
 
     path = "/system/workers"
-    tags = [TAG_SYSTEM]
+    tags = (TAG_SYSTEM,)
 
     @get(
         "/status",

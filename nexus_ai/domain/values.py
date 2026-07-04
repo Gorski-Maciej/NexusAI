@@ -4,13 +4,14 @@ Zgodnie z wymaganiami Enterprise §1:
 - Wszystkie Value Object są msgspec.Struct z frozen=True (immutable)
 - Każdy VO ma własną walidację w __post_init__
 - Money używa Decimal (NIE float) dla bezpieczeństwa finansowego
-- NIP, IBAN, PESEL mają pełną walidację (checksum, format)
+- NIP, IBAN, PESEL, SWIFT mają pełną walidację (checksum, format)
 
 Value Objects:
     Money          -- kwota + waluta (ISO 4217)
     MoneyNet       -- netto + VAT = brutto (niezmiennik)
     NIP            -- identyfikator podatkowy z sumą kontrolną
     IBAN           -- numer rachunku bankowego
+    SWIFT          -- kod SWIFT/BIC banku (8 lub 11 znaków)
     PESEL          -- identyfikator PESEL z sumą kontrolną
     InvoiceNumber  -- numer faktury (seria/rok/miesiąc/seq)
     TaxPeriod      -- okres rozliczeniowy
@@ -34,17 +35,17 @@ import pendulum
 # ═══════════════════════════════════════════════════════════════════════════
 
 
+# ── Domain error hierarchy ────────────────────────────────────────────
+class DomainError(ValueError):
+    """Base dla wszystkich błędów domenowych (zamiast 4 osobnych klas)."""
+
+
 class CurrencyMismatchError(DomainError):
     """Rzucany gdy próbujemy operować na różnych walutach."""
 
     def __init__(self, a: str, b: str) -> None:
         super().__init__(f"Cannot operate on different currencies: {a} vs {b}")
         self.code = "CURRENCY_MISMATCH"
-
-
-# ── Domain error hierarchy ────────────────────────────────────────────
-class DomainError(ValueError):
-    """Base dla wszystkich błędów domenowych (zamiast 4 osobnych klas)."""
 
 
 class InvalidIBANError(DomainError):
@@ -297,6 +298,52 @@ class IBAN(msgspec.Struct, frozen=True, kw_only=True):
     @property
     def country(self) -> str:
         return self.value.replace(" ", "").upper()[:2]
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# SWIFT/BIC -- kod identyfikacyjny banku
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class SWIFT(msgspec.Struct, frozen=True, kw_only=True):
+    """Value Object: SWIFT/BIC (8 lub 11 znaków).
+
+    Format: BBBBCCLLXXX gdzie:
+        BBBB - kod banku (4 litery)
+        CC - kod kraju ISO (2 litery)
+        LL - kod lokalizacji (2 znaki alfanumeryczne)
+        XXX - kod oddziału (3 znaki, opcjonalne)
+    """
+
+    value: str
+    _PATTERN: ClassVar[re.Pattern] = re.compile(r"^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$")
+
+    def __post_init__(self) -> None:
+        normalized = self.value.replace(" ", "").upper()
+        if len(normalized) not in (8, 11):
+            raise ValueError(f"SWIFT must be 8 or 11 characters: {len(normalized)}")
+        if not self._PATTERN.match(normalized):
+            raise ValueError(f"Invalid SWIFT format: {self.value}")
+        object.__setattr__(self, "value", normalized)
+
+    @property
+    def bank_code(self) -> str:
+        return self.value[:4]
+
+    @property
+    def country_code(self) -> str:
+        return self.value[4:6]
+
+    @property
+    def location_code(self) -> str:
+        return self.value[6:8]
+
+    @property
+    def branch_code(self) -> str | None:
+        return self.value[8:] if len(self.value) == 11 else None
+
+    def __str__(self) -> str:
+        return self.value
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -593,10 +640,13 @@ class KSeFMetadata(msgspec.Struct, frozen=True, kw_only=True):
 # ═══════════════════════════════════════════════════════════════════════════
 
 __all__ = [
+    "IBAN",
+    "NIP",
+    "PESEL",
+    "SWIFT",
     "AccountCode",
     "BusinessKind",
     "CurrencyMismatchError",
-    "IBAN",
     "InvalidIBANError",
     "InvalidNIPError",
     "InvalidPESELError",
@@ -604,8 +654,6 @@ __all__ = [
     "KSeFMetadata",
     "Money",
     "MoneyNet",
-    "NIP",
-    "PESEL",
     "TaxPeriod",
     "VatRate",
 ]

@@ -14,7 +14,7 @@ from __future__ import annotations
 import hashlib
 import math
 from enum import StrEnum
-from typing import Any
+from typing import Any, final
 
 from structlog import get_logger
 
@@ -29,6 +29,7 @@ class AnomalyAction(StrEnum):
     BLOCK_DECREE = "BLOCK_DECREE"
 
 
+@final
 class AnomalyResult:
     __slots__ = ('action', 'alert', 'anomaly_score', 'similar_invoices')
 
@@ -53,6 +54,7 @@ class AnomalyResult:
         }
 
 
+@final
 class SemanticGuard:
     """Wykrywa anomalie semantyczne w fakturach.
 

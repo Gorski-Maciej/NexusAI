@@ -14,7 +14,7 @@ class PartnerController(Controller):
     """Partner Hub -- multi-tenant view for accounting offices."""
 
     path = "/partner"
-    tags = [TAG_FINANCE]
+    tags = (TAG_FINANCE,)
 
     @get(
         "/clients",

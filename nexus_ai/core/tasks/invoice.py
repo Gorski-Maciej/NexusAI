@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import uuid
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 import anyio
 import msgspec
@@ -46,7 +46,7 @@ class InvoiceEventPayload(Struct):
 class InvoiceProcessingMachine:
     """Invoice lifecycle state machine."""
 
-    STATES = {
+    STATES: ClassVar[dict[str, InvoiceStatus]] = {
         "new": InvoiceStatus.NEW,
         "processing": InvoiceStatus.PROCESSING,
         "approved": InvoiceStatus.APPROVED,

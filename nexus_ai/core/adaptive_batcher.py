@@ -59,6 +59,6 @@ class AdaptiveBatcher:
                     logger.debug(f"Wysyłanie batcha {len(batch)} elementów do GPU...")
                     results = await self.process_func([it for it, _, _ in batch])
 
-                    for (_, ev, rc), res in zip(futures_batch, results):
+                    for (_, ev, rc), res in zip(futures_batch, results, strict=True):
                         rc.append(res)
                         ev.set()

@@ -88,7 +88,7 @@ class TaxMathController(Controller):
     """Kontroler kalkulacji podatkowych."""
 
     path = "/tax"
-    tags = [TAG_TAX]
+    tags = (TAG_TAX,)
 
     @post(
         "/calculate-money",

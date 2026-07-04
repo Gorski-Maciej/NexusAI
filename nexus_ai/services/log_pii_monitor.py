@@ -4,7 +4,11 @@ import re
 from pathlib import Path
 from urllib import request
 
+from structlog import get_logger
+
 from nexus_ai.core.msgspec_utils import msgspec_dumps_bytes
+
+logger = get_logger("nexus.pii_monitor")
 
 PII_PATTERNS: dict[str, re.Pattern[str]] = {
     "pesel": re.compile(r"\b\d{11}\b"),
@@ -25,7 +29,8 @@ def scan_logs_for_pii(log_dir: Path, max_files: int = 200) -> dict[str, int]:
     for file_path in files:
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
-        except Exception:
+        except Exception as exc:
+            logger.debug("[PII Monitor] failed to read log file %s: %s", file_path, exc)
             continue
         for name, pattern in PII_PATTERNS.items():
             findings[name] += len(pattern.findall(content))
@@ -44,6 +49,7 @@ def notify_dpo(webhook_url: str, findings: dict[str, int], retries: int = 3) -> 
             with request.urlopen(req, timeout=5) as response:
                 if 200 <= response.status < 300:
                     return True
-        except Exception:
+        except Exception as exc:
+            logger.debug("[PII Monitor] webhook attempt failed: %s", exc)
             continue
     return False

@@ -22,7 +22,10 @@ _log = _logging.getLogger("nexus.mimalloc")
 class MIOption:
     """mimalloc option constants (mi_option_e enum)."""
     __slots__ = ()
-    SHOW_STATS = 0; SHOW_ERRORS = 1; EAGER_COMMIT = 2; EAGER_DECOMMIT = 3
+    SHOW_STATS = 0
+    SHOW_ERRORS = 1
+    EAGER_COMMIT = 2
+    EAGER_DECOMMIT = 3
     PAGE_RESET = 5; SEGMENT_CACHE = 7; PAGE_CLEAR = 8; LARGE_OS_PAGES = 14
     RESERVE_HUGE_OS_PAGES = 15; PURGE_DELAY = 16; USE_NUMA_NODES = 17
     DISABLE_OSX_ALLOC = 20; ALLOW_LARGE_OS_PAGES = 24; MINIMAL_PURGE_SIZE = 25

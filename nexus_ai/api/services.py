@@ -25,7 +25,7 @@ except ImportError:
 from collections.abc import Iterable
 from contextlib import suppress
 from pathlib import Path as _SyncPath
-from typing import Any
+from typing import Any, ClassVar
 
 import anyio
 import pendulum
@@ -55,7 +55,7 @@ class StoredUpload(Struct):
 class FileValidator:
     """Validator plików na podstawie sygnatur MIME i magic bytes (Rozwiązanie 31)."""
 
-    ALLOWED_MIME_TYPES = {
+    ALLOWED_MIME_TYPES: ClassVar[dict[str, list[str]]] = {
         "application/pdf": [".pdf"],
         "image/jpeg": [".jpg", ".jpeg"],
         "image/png": [".png"],

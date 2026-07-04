@@ -4,7 +4,7 @@ ContextEnricher -- wzbogaca kontekst faktury o dane z zewnętrznych API.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, final
 
 from structlog import get_logger
 
@@ -15,6 +15,7 @@ from nexus_ai.services.white_list_service import WhiteListService
 logger = get_logger("nexus.services.context_enricher")
 
 
+@final
 class ContextEnricher:
     """Wzbogaca kontekst faktury o dane z GUS BIR i Białej Listy.
 

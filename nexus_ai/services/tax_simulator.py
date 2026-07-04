@@ -14,10 +14,13 @@ from typing import Any, final
 import duckdb
 import pendulum
 from msgspec import Struct
+from structlog import get_logger
 
 from nexus_ai.services.rule_store import RuleStore
 from nexus_ai.services.tax_strategies import StrategyContext, StrategyRegistry
 from nexus_ai.services.tigerbeetle.models import LegalForm, TaxForm
+
+logger = get_logger("nexus.tax_simulator")
 from nexus_ai.tax.exceptions import NoMatchingRuleError
 from nexus_ai.tax.rules import (
     ContextInterpreter,
@@ -125,7 +128,8 @@ class TaxSimulator:
                 except NoMatchingRuleError:
                     current_ctx["vendor_country"] = "PL"
                     current_verdict = engine.decide(current_ctx)
-                except Exception:
+                except Exception as exc:
+                    logger.debug("[TaxSimulator] current rule decide failed: %s", exc)
                     current_verdict = {"vat_rate": "0.23"}
 
                 vat_rate_cur = Decimal(current_verdict.get("vat_rate", "0.23"))
@@ -171,7 +175,8 @@ class TaxSimulator:
                 except NoMatchingRuleError:
                     sim_ctx["vendor_country"] = "PL"
                     sim_verdict = engine.decide(sim_ctx)
-                except Exception:
+                except Exception as exc:
+                    logger.debug("[TaxSimulator] simulated rule decide failed: %s", exc)
                     sim_verdict = {"vat_rate": "0.23"}
 
                 vat_rate_sim = Decimal(sim_verdict.get("vat_rate", "0.23"))

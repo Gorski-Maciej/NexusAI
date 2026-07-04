@@ -1,13 +1,18 @@
 from __future__ import annotations
 
+import importlib.util
 from typing import TYPE_CHECKING, Any, final
 
 import pendulum
 from msgspec import Struct
 
-try:
+if importlib.util.find_spec("networkx") is not None:
     import networkx as nx
-except Exception:  # pragma: no cover - optional fallback when networkx is unavailable
+else:  # pragma: no cover - optional fallback when networkx is unavailable
+    import logging
+    logging.getLogger("nexus.fraud").debug(
+        "[FraudGraphScanner] networkx unavailable, using fallback graph"
+    )
 
     class _FallbackGraph:
         __slots__ = ('_adj', '_nodes')

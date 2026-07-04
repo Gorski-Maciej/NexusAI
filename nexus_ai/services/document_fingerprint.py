@@ -6,6 +6,9 @@ from typing import Any
 
 from msgspec import Struct
 from nexus_crypto import Sha256Hasher
+from structlog import get_logger
+
+logger = get_logger("nexus.doc_fingerprint")
 
 # ── SHA-256 (non-streaming) przez nexus-crypto (Rust+PyO3) ────────────────
 try:
@@ -76,8 +79,8 @@ def _visual_fingerprint(file_path: Path) -> str:
                 if orb_fp:
                     return f"{ph}_{dh}_{wh}_orb:{orb_fp}"
                 return f"{ph}_{dh}_{wh}"
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("[Fingerprint] visual hashing failed, falling back to SHA-1: %s", exc)
 
     with file_path.open("rb") as handle:
         sample = handle.read(4096)
@@ -103,7 +106,8 @@ def _compute_orb_fingerprint(image: Image.Image) -> str | None:
 
         # Konwertuj pierwsze 32 bytes descriptors do hex fingerprint
         return des.tobytes()[:32].hex()
-    except Exception:
+    except Exception as exc:
+        logger.debug("[Fingerprint] ORB feature extraction failed: %s", exc)
         return None
 
 

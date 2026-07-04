@@ -6,7 +6,6 @@ Wyodrębniony z pdfium.py (~40 LOC).
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
 from fsspec.implementations.cached import CachingFileSystem
 
@@ -36,7 +35,7 @@ def get_pdf_render_cache() -> dict:
 def invalidate_pdf_cache(path: str | Path | None = None) -> None:
     """Unieważnij cache dla konkretnego PDF lub całości."""
     if path is None:
-        global _caching_fs  # noqa: PLW0603
+        global _caching_fs
         _caching_fs = CachingFileSystem(
             target_protocol="file",
             cache_storage="/tmp/.fsspec_pdf_cache",

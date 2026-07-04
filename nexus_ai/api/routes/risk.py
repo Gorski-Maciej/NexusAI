@@ -40,7 +40,7 @@ class RiskController(Controller):
     """Zarządzanie progami ryzyka dla RiskGuard."""
 
     path = "/admin/risk-thresholds"
-    tags = [TAG_RISK]
+    tags = (TAG_RISK,)
 
     @staticmethod
     def _with_guard(action):

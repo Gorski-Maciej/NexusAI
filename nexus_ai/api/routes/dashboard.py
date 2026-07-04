@@ -17,7 +17,7 @@ class DashboardController(Controller):
     """Dashboard endpoints for the daily briefing and summary stats."""
 
     path = "/dashboard"
-    tags = [TAG_DASHBOARD]
+    tags = (TAG_DASHBOARD,)
 
     @get(
         "/briefing",

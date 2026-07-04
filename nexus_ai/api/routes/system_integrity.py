@@ -43,8 +43,8 @@ class SystemIntegrityController(Controller):
     """On-demand production integrity checks for migrations and schema."""
 
     path = "/system/integrity"
-    guards = [owner_only_guard]
-    tags = [TAG_SYSTEM]
+    guards = (owner_only_guard,)
+    tags = (TAG_SYSTEM,)
 
     @get(
         "/migration",

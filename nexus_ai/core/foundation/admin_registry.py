@@ -129,6 +129,6 @@ class AdminServiceRegistry:
     ) -> list[dict[str, Any]]:
         """Convert DuckDB rows to list of dicts."""
         return [
-            {key_overrides.get(col, col): val for col, val in zip(columns, row)}
+            {key_overrides.get(col, col): val for col, val in zip(columns, row, strict=True)}
             for row in rows
         ]

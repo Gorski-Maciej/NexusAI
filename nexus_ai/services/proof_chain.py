@@ -14,7 +14,7 @@ from __future__ import annotations
 import hashlib
 import uuid
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, final
 
 import duckdb
 from structlog import get_logger
@@ -24,6 +24,7 @@ from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 logger = get_logger("nexus.audit.proof_chain")
 
 
+@final
 class ProofChain:
     """Kryptograficzny łańcuch audytowy dla decyzji podatkowych.
 

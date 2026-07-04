@@ -28,7 +28,7 @@ def _validate_nip(nip: str) -> str:
         raise ValueError("NIP musi składać się z 10 cyfr.")
 
     weights = (6, 5, 7, 2, 3, 4, 5, 6, 7)
-    checksum = sum(int(d) * w for d, w in zip(normalized[:9], weights)) % 11
+    checksum = sum(int(d) * w for d, w in zip(normalized[:9], weights, strict=True)) % 11
     if checksum == 10 or checksum != int(normalized[9]):
         raise ValueError("Nieprawidłowy NIP (błąd sumy kontrolnej).")
 
@@ -94,22 +94,9 @@ class TaskResponse(msgspec.Struct, kw_only=True):
     message: str
 
 
-class LegacyInvoiceResponse(msgspec.Struct, kw_only=True):
-    id: str
-    number: str | None
-    contractor_nip: str | None
-    amount_net: float | None
-    amount_gross: float | None
-    currency: str | None
-    status: str
-    created_at: pendulum.DateTime
-    updated_at: pendulum.DateTime
-    version_id: int = 1  # Optimistic locking (Rozwiązanie 23)
-
-
 class DashboardSummaryResponse(msgspec.Struct, kw_only=True):
-    total_net: float
-    total_gross: float
+    total_net: Decimal
+    total_gross: Decimal
     total_documents: int
 
 
@@ -334,7 +321,7 @@ class LoginResponse(msgspec.Struct, kw_only=True):
 
     access_token: str
     refresh_token: str
-    token_type: str = "Bearer"
+    token_type: str = "Bearer"  # noqa: S105
     expires_in: int = 3600
     refresh_token_expires_in_days: int = 7
 
@@ -552,20 +539,6 @@ class PartnerClientListResponse(msgspec.Struct, kw_only=True):
     items: list[PartnerClientItem]
     next_cursor: str | None = None
     has_more: bool = False
-
-
-class PartnerInvoiceItem(msgspec.Struct, kw_only=True):
-    """Partner client invoice summary."""
-
-    invoice_id: str
-    number: str
-    contractor: str
-    amount_gross: float = 0.0
-    currency: str = "PLN"
-    status: str = ""
-    issue_date: str = ""
-    created_at: str = ""
-    confidence: float = 0.0
 
 
 class SaveDraftResponse(msgspec.Struct, kw_only=True):

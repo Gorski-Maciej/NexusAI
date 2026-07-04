@@ -6,7 +6,9 @@ from nexus_crypto import Sha256Hasher
 from sqlalchemy import Engine
 from sqlmodel import text
 
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+from structlog import get_logger
+
+logger = get_logger("nexus.migration_sanity")
 
 
 def _quote_ident(identifier: str) -> str:
@@ -23,7 +25,8 @@ def get_current_migration_version(db_path: str | Path) -> str | None:
         from migrations.run_migrations import get_current_version
 
         return get_current_version(db_path)
-    except Exception:
+    except Exception as exc:
+        logger.debug("[MigrationSanity] failed to get migration version: %s", exc)
         return None
 
 

@@ -16,6 +16,7 @@ from __future__ import annotations
 from typing import Any, final
 
 import anyio
+import msgspec
 import pendulum
 from msgspec import Struct, field
 from structlog import get_logger
@@ -193,16 +194,16 @@ class DailyBriefingService:
                 )
                 briefing.decisions = decisions
                 briefing.pending_review = len(decisions)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[DailyBriefing] decisions fetch skipped: %s", exc)
 
         # Wzbogać o correction rate z DecisionLogger
         if self._logger:
             try:
                 stats = await anyio.to_thread.run_sync(self._logger.get_user_correction_stats)
                 briefing.correction_rate = stats.get("correction_rate", 0.0)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[DailyBriefing] correction stats skipped: %s", exc)
 
         # Generuj alerty jeśli brak
         if not briefing.alerts:
@@ -341,8 +342,8 @@ class DailyBriefingService:
         if self._notification:
             try:
                 pending = self._notification.get_unread_count(user_id)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[DailyBriefing] unread count skipped: %s", exc)
 
         alerts = []
         if pending > 5:

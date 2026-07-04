@@ -40,7 +40,7 @@ class EventsSchemaController(Controller):
     """
 
     path = "/events/schema"
-    tags = [TAG_EVENTS]
+    tags = (TAG_EVENTS,)
 
     @get(
         "",

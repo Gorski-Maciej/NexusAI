@@ -24,7 +24,7 @@ class HealthController(Controller):
     """Health check and status endpoints."""
 
     path = "/health"
-    tags = [TAG_HEALTH]
+    tags = (TAG_HEALTH,)
 
     @get(
         "",

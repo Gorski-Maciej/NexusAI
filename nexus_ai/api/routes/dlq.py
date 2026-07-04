@@ -50,8 +50,8 @@ class DLQController(Controller):
     """Dead Letter Queue management endpoints."""
 
     path = "/system/dlq"
-    guards = [admin_only_guard]
-    tags = [TAG_ADMIN]
+    guards = (admin_only_guard,)
+    tags = (TAG_ADMIN,)
 
     @get(
         "/stats",

@@ -91,8 +91,8 @@ class AdminController(Controller):
     """Panel administracyjny -- zarządzanie użytkownikami, regułami, DLQ."""
 
     path = "/admin"
-    guards = [admin_only_guard]
-    tags = [TAG_ADMIN]
+    guards = (admin_only_guard,)
+    tags = (TAG_ADMIN,)
 
     @get(
         "/failed-tasks",
@@ -353,8 +353,8 @@ class AdminController(Controller):
                     await conn.execute(text("SELECT COUNT(*) FROM failed_tasks WHERE resolved = 0"))
                 ).scalar()
             health["failed_tasks_unresolved"] = count or 0
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("Failed to query failed_tasks count: %s", exc)
 
         return health
 

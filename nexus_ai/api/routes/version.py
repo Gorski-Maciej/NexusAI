@@ -13,7 +13,7 @@ class VersionController(Controller):
     """API version information endpoint."""
 
     path = "/version"
-    tags = [TAG_SYSTEM]
+    tags = (TAG_SYSTEM,)
 
     @get(
         "/",

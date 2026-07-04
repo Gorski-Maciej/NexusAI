@@ -5,7 +5,7 @@ Używa Structów zamiast dict[str, Any] dla type safety (mypyc-compatible).
 from __future__ import annotations
 
 import uuid
-from typing import Any, final
+from typing import final
 
 import anyio
 import pendulum
@@ -16,12 +16,19 @@ from nexus_ai.core.logger import get_logger
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
 from nexus_ai.core.time_utils import human_diff
 from nexus_ai.db.analytics import DuckDBManager
+from nexus_ai.services.decision_structs import (
+    CorrectionStats,
+    GlobalDecision,
+    TrustTrend,
+    _safe_loads,
+)
 
 logger = get_logger(__name__)
 
 
 class TrustComponents(Struct, frozen=True):
     """Trust score components: ai_confidence, vendor_reliability, data_consistency, context_trust (0.0–1.0)."""
+    __slots__ = ()
     ai_confidence: float = 0.0
     vendor_reliability: float = 0.0
     data_consistency: float = 0.0
@@ -29,7 +36,8 @@ class TrustComponents(Struct, frozen=True):
 
 
 class DecisionContext(Struct, frozen=True):
-    """Context snapshot: contractor_nip, category, transaction_date, vendor_country, company_tax_form, vendor_vat_status."""
+    """Context snapshot."""
+    __slots__ = ()
     contractor_nip: str = ""
     category: str = ""
     transaction_date: str = ""
@@ -39,7 +47,8 @@ class DecisionContext(Struct, frozen=True):
 
 
 class DecisionRecord(Struct, kw_only=True):
-    """Single decision record returned from queries. Verdict fields stored as JSON in DuckDB."""
+    """Single decision record returned from queries."""
+    __slots__ = ()
     id: str = ""
     invoice_id: str = ""
     alpha_vote: dict[str, float | str | int] = field(default_factory=dict)
@@ -57,6 +66,7 @@ class DecisionRecord(Struct, kw_only=True):
 
 class DecisionSummary(Struct, kw_only=True):
     """Summary of a single decision for listing."""
+    __slots__ = ()
     invoice_id: str = ""
     decision: str = ""
     trust_score: float = 0.0
@@ -65,40 +75,8 @@ class DecisionSummary(Struct, kw_only=True):
     timestamp: str = ""
 
 
-class GlobalDecision(Struct, kw_only=True):
-    """Global decision from trust_score_cache (cross-contractor)."""
-    contractor_nip: str = ""
-    category: str = ""
-    decision: str = ""
-    trust_score: float = 0.0
-    ai_confidence: float = 0.0
-    timestamp: str = ""
-
-
-class TrustTrend(Struct, kw_only=True):
-    """Trend analysis result for a contractor's trust score."""
-    known: bool = False
-    records: int = 0
-    avg_trust: float = 0.0
-    min_trust: float = 0.0
-    max_trust: float = 0.0
-    trend: str = "stable"
-    decisions_breakdown: dict[str, int] = field(default_factory=dict)
-    component_averages: dict[str, float] = field(default_factory=dict)
-
-
-class CorrectionStats(Struct, kw_only=True):
-    """Aggregated correction statistics for adaptive weight tuning."""
-    total_decisions: int = 0
-    total_corrected: int = 0
-    correction_rate: float = 0.0
-    decision_breakdown: dict[str, int] = field(default_factory=dict)
-    level_breakdown: dict[str, int] = field(default_factory=dict)
-    correction_breakdown: list[dict[str, str | int]] = field(default_factory=list)
-    ai_confidence_correction_rate: float = 0.0
-    vendor_reliability_correction_rate: float = 0.0
-    data_consistency_correction_rate: float = 0.0
-    context_trust_correction_rate: float = 0.0
+# TrustTrend, GlobalDecision, CorrectionStats, _safe_loads
+# are imported from nexus_ai.services.decision_structs
 
 
 @final
@@ -131,9 +109,11 @@ class DecisionLogger:
 
         for col_name, col_type in [("event_type", "VARCHAR"), ("previous_hash", "VARCHAR(64)"), ("current_hash", "VARCHAR(64)")]:
             try: self._duckdb.execute(f"ALTER TABLE decisions ADD COLUMN IF NOT EXISTS {col_name} {col_type}")
-            except Exception:
+            except Exception as exc:
+                logger.debug("[DecisionLogger] IF NOT EXISTS failed for %s (err=%s), trying without", col_name, exc)
                 try: self._duckdb.execute(f"ALTER TABLE decisions ADD COLUMN {col_name} {col_type}")
-                except Exception: pass
+                except Exception as exc:
+                    logger.debug("[DecisionLogger] Could not add column %s: %s", col_name, exc)
 
         self._duckdb.execute("""
             CREATE TABLE IF NOT EXISTS trust_score_cache (
@@ -148,8 +128,10 @@ class DecisionLogger:
                 deliberation_duration_ms INTEGER, levels_used JSON,
                 model_swap_count INTEGER, timestamp TIMESTAMP)""")
 
-        for table, col in [("decisions", "invoice_id"), ("decisions", "timestamp"), ("decisions", "final_decision"),
-                           ("trust_score_cache", "contractor_nip"), ("trust_score_cache", "timestamp"), ("decisions_meta", "invoice_id")]:
+        for table, col in [
+            ("decisions", "invoice_id"), ("decisions", "timestamp"), ("decisions", "final_decision"),
+            ("trust_score_cache", "contractor_nip"), ("trust_score_cache", "timestamp"), ("decisions_meta", "invoice_id")
+        ]:
             self._duckdb.execute(f"CREATE INDEX IF NOT EXISTS idx_{table}_{col} ON {table}({col})")
 
         for idx, sql in [
@@ -162,7 +144,7 @@ class DecisionLogger:
         ]:
             self._duckdb.execute(sql)
         try: self._duckdb.execute("CREATE INDEX IF NOT EXISTS idx_tsc_contractor_lower ON trust_score_cache(LOWER(contractor_nip))")
-        except Exception: pass
+        except Exception as exc: logger.debug("[DecisionLogger] Lower-case index not supported: %s", exc)
 
     async def log_decision(self, invoice_id: str, alpha_verdict: dict[str, float | str | int],
                            beta_verdict: dict[str, float | str | int], gamma_verdict: dict[str, float | str | int],
@@ -324,7 +306,7 @@ class DecisionLogger:
         return "up" if diff > 0.05 else ("down" if diff < -0.05 else "stable")
 
     def _compute_component_correction_rates(self) -> dict[str, float]:
-        """Estimate per-component correction rates z decisions WHERE user_correction IS NOT NULL."""
+        """Estimate per-component correction rates from decisions WHERE user_correction IS NOT NULL."""
         try:
             rows = self._duckdb.execute("SELECT trust_components, user_correction FROM decisions WHERE user_correction IS NOT NULL")
             if not rows: return {f"{k}_correction_rate": 0.0 for k in ("ai_confidence", "vendor_reliability", "data_consistency", "context_trust")}
@@ -338,13 +320,9 @@ class DecisionLogger:
                     min_comp = min(components, key=lambda k: components.get(k, 1.0))
                     if isinstance(min_comp, str) and min_comp in counts: counts[min_comp] += 1
             return {f"{k}_correction_rate": round(v / max(total_corrected, 1), 4) for k, v in counts.items()}
-        except Exception: return {f"{k}_correction_rate": 0.0 for k in ("ai_confidence", "vendor_reliability", "data_consistency", "context_trust")}
+        except Exception as exc:
+            logger.debug("[DecisionLogger] component correction rates failed: %s", exc)
+            return {f"{k}_correction_rate": 0.0 for k in ("ai_confidence", "vendor_reliability", "data_consistency", "context_trust")}
 
 
-def _safe_loads(raw: object, default: object = None) -> Any:
-    """Bezpiecznie deserializuj JSON string lub zwróć domyślny."""
-    if isinstance(raw, str):
-        try: return msgspec_loads(raw)
-        except (DecodeError, TypeError): return default
-    if isinstance(raw, dict): return raw
-    return default
+

@@ -244,8 +244,8 @@ class EventLog:
                 if isinstance(row_dict.get("metadata"), str):
                     try:
                         row_dict["metadata"] = msgspec_loads(row_dict["metadata"])
-                    except Exception:
-                        pass
+                    except Exception as exc:
+                        logger.debug("[EventLog] metadata decode failed: %s", exc)
                 result.append(row_dict)
             return result
 
@@ -376,8 +376,8 @@ class EventLog:
                     "by_severity": dict(by_severity.rows()),
                     "by_source": dict(by_source.rows()),
                 }
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[EventLog] DuckDB stats query failed: %s", exc)
 
         # Fallback do SQLAlchemy
         with self._engine.connect() as conn:

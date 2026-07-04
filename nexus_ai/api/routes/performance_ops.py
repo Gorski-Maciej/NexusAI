@@ -137,8 +137,8 @@ class PerformanceOpsController(Controller):
     """
 
     path = "/system/performance"
-    guards = [owner_only_guard]
-    tags = [TAG_SYSTEM]
+    guards = (owner_only_guard,)
+    tags = (TAG_SYSTEM,)
 
     @get(
         "/locust-summary",

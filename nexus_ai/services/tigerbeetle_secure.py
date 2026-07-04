@@ -211,7 +211,7 @@ class SecureTigerBeetleClient:
         results = await self._inner.create_transfers_async(tb_transfers)
 
         output = []
-        for i, (spec, result) in enumerate(zip(specs, results)):
+        for i, (spec, result) in enumerate(zip(specs, results, strict=True)):
             output.append(
                 {
                     "index": i,

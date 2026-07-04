@@ -6,8 +6,11 @@ from typing import TYPE_CHECKING
 
 import pendulum
 from msgspec import Struct
+from structlog import get_logger
 
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
+
+logger = get_logger("nexus.liquidity")
 
 if TYPE_CHECKING:
     from db.analytics import DuckDBManager
@@ -209,8 +212,8 @@ def calculate_liquidity_timeline(
             str(forecast_path),
             compression="zstd",
         )
-    except Exception:
-        pass  # Non-critical -- prognoza działa dalej w RAM
+    except Exception as exc:
+        logger.debug("[LiquidityOracle] Parquet sinking failed (non-critical): %s", exc)
 
     # Polars ``.to_dicts()" zwraca listę słowników w C++ -- szybciej
     # niż pętla ``for row in df.iter_rows()`` w Pythonie.

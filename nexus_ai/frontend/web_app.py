@@ -139,16 +139,16 @@ def _update_page_title(page: ft.Page, route: str) -> None:
     match route:
         case "/":
             page.title = "Nexus AI -- Dashboard"
-        case r if tr.match("/invoices/:id"):
-            invoice_id = tr.id[:8]
+        case _ if tr.match("/invoices/:id"):
+            invoice_id = tr.id[:8] if tr.id else "unknown"
             page.title = f"Nexus AI -- Faktura #{invoice_id}"
-        case r if tr.match("/invoices"):
+        case _ if tr.match("/invoices"):
             page.title = "Nexus AI -- Faktury"
-        case r if tr.match("/briefing"):
+        case _ if tr.match("/briefing"):
             page.title = "Nexus AI -- Podsumowanie dnia"
-        case r if tr.match("/partner"):
+        case _ if tr.match("/partner"):
             page.title = "Nexus AI -- Partnerzy"
-        case r if tr.match("/tasks"):
+        case _ if tr.match("/tasks"):
             page.title = "Nexus AI -- Monitor zadań"
         case _:
             page.title = f"Nexus AI -- {route.strip('/').title()}"

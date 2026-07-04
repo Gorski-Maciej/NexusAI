@@ -27,7 +27,7 @@ class KsefExportController(Controller):
     """KSeF XML export endpoints."""
 
     path = "/api/v2/invoice"
-    tags = [TAG_INVOICES]
+    tags = (TAG_INVOICES,)
 
     @get(
         "/{invoice_id:str}/ksef",

@@ -230,12 +230,15 @@ class FSSpecFactory:
         self._protocol = protocol
         self._base_path = base_path
         self._cache_size_mb = cache_size_mb
-        if cache_storage: self._cache_storage = cache_storage
+        if cache_storage:
+            self._cache_storage = cache_storage
         self._auto_mkdir = auto_mkdir
         self._transactional = transactional
         self._chain_enabled = chain_enabled
-        if http_kwargs: self._http_kwargs = http_kwargs
-        if ref_kwargs: self._ref_kwargs = ref_kwargs
+        if http_kwargs:
+            self._http_kwargs = http_kwargs
+        if ref_kwargs:
+            self._ref_kwargs = ref_kwargs
         self._fs = self._afs = self._tx_fs = None
         logger.info("FSSpecFactory configured: protocol=%s cache=%dMB", protocol, cache_size_mb)
         return self

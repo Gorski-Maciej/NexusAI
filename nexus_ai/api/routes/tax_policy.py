@@ -44,7 +44,7 @@ class TaxPolicyController(Controller):
     """Symulacja polityki podatkowej i zmiany formy opodatkowania."""
 
     path = "/tax-policy"
-    tags = [TAG_TAX]
+    tags = (TAG_TAX,)
 
     @post(
         "/simulate",

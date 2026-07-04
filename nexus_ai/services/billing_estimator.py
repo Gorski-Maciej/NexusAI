@@ -14,6 +14,7 @@ from nexus_ai.services._billing_store import get_rules_connection, query_billing
 logger = get_logger("nexus.services.billing")
 
 
+@final
 class BillingResult:
     """Wynik estymacji kosztów."""
     __slots__ = (
@@ -45,6 +46,7 @@ class BillingResult:
         self.total_time_hours = total_time_hours or (processing_time_minutes / 60.0)
 
 
+@final
 class BillingEstimator:
     """Estymator kosztów używający współdzielonego SQLite store."""
     __slots__ = ()

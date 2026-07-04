@@ -186,7 +186,8 @@ class ReplayEngine:
                    LIMIT ?""",
                 (period_start.isoformat(), period_end.isoformat(), limit),
             ).fetchall()
-        except Exception:
+        except Exception as exc:
+            logger.debug("[ReplayEngine] batch query failed: %s", exc)
             return []
 
         results: list[ReplayResult] = []

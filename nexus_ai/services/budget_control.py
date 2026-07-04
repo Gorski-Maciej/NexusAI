@@ -164,7 +164,7 @@ class BudgetaryControlEngine:
         account_ids = []
         valid_codes = []
         valid_amounts = []
-        for code, amt in zip(account_codes, amounts):
+        for code, amt in zip(account_codes, amounts, strict=True):
             acct_id = self.account_map.get(code)
             if acct_id is not None:
                 account_ids.append(acct_id)
@@ -180,7 +180,7 @@ class BudgetaryControlEngine:
         )
 
         results = {}
-        for code, acct_id, amt in zip(valid_codes, account_ids, valid_amounts):
+        for code, acct_id, amt in zip(valid_codes, account_ids, valid_amounts, strict=True):
             balance_minor = balances.get(acct_id, 0)
             current_amount = balance_minor / 100.0
             projected = current_amount + amt

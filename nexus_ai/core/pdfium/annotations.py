@@ -7,7 +7,6 @@ from __future__ import annotations
 
 from io import BytesIO
 from pathlib import Path
-from typing import Any
 
 import fsspec
 from structlog import get_logger
@@ -145,7 +144,9 @@ def get_pdf_bookmarks(pdf_path: str | Path) -> list[PDFBookmark]:
 
 
 __all__ = [
-    "get_page_annotations", "count_page_annotations",
-    "get_pdf_attachments", "add_pdf_attachment",
+    "add_pdf_attachment",
+    "count_page_annotations",
+    "get_page_annotations",
+    "get_pdf_attachments",
     "get_pdf_bookmarks",
 ]

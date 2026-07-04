@@ -17,7 +17,7 @@ class BillingController(Controller):
     """Estymacja kosztów i czasu przetwarzania dokumentów."""
 
     path = "/api/v2/billing"
-    tags = [TAG_FINANCE]
+    tags = (TAG_FINANCE,)
 
     _estimator: BillingEstimator | None = None
 

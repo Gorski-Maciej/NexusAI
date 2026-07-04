@@ -7,7 +7,6 @@ from __future__ import annotations
 
 from io import BytesIO
 from pathlib import Path
-from typing import Any
 
 import fsspec
 from structlog import get_logger
@@ -92,4 +91,4 @@ def save_incremental(pdf_path: str | Path, *, output_path: str | Path | None = N
         pdf.close()
 
 
-__all__ = ["merge_pdfs", "delete_pages_from_pdf", "extract_pages_from_pdf", "save_incremental"]
+__all__ = ["delete_pages_from_pdf", "extract_pages_from_pdf", "merge_pdfs", "save_incremental"]

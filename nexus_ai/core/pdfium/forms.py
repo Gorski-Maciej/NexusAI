@@ -7,7 +7,6 @@ from __future__ import annotations
 
 from io import BytesIO
 from pathlib import Path
-from typing import Any
 
 import fsspec
 from structlog import get_logger
@@ -137,4 +136,4 @@ def save_pdf_with_filled_fields(
         pdf.close()
 
 
-__all__ = ["get_pdf_form_fields", "fill_pdf_form_field", "save_pdf_with_filled_fields"]
+__all__ = ["fill_pdf_form_field", "get_pdf_form_fields", "save_pdf_with_filled_fields"]

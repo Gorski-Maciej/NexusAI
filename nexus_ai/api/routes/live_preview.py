@@ -12,7 +12,7 @@ class LivePreviewController(Controller):
     """Live preview dokumentów (OCR podgląd)."""
 
     path = "/live-preview"
-    tags = [TAG_INVOICES]
+    tags = (TAG_INVOICES,)
 
     @get(
         "/{doc_id:str}",

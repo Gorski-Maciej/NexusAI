@@ -11,7 +11,7 @@ from sqlmodel import Session, select, text
 from nexus_ai.core.cache import get_cache
 from nexus_ai.core.embeddings import EmbeddingService, get_embedding_service
 from nexus_ai.core.logger import get_logger
-from nexus_ai.services.decision_logger import CorrectionStats, GlobalDecision, TrustTrend
+from nexus_ai.services.decision_structs import CorrectionStats, GlobalDecision, TrustTrend
 
 _few_shot_nexus = get_cache(default_ttl=300)
 from nexus_ai.db.analytics import DuckDBManager
@@ -318,7 +318,9 @@ class FactsAggregator:
             corrections = []
             for r in rows:
                 try: payload = msgspec_loads(str(r[1]))
-                except Exception: payload = {"raw": str(r[1])}
+                except Exception as exc:
+                    logger.debug("[FactsAggregator] correction payload decode failed: %s", exc)
+                    payload = {"raw": str(r[1])}
                 corrections.append({"id": str(r[0]), "description": payload.get("description", payload.get("reasoning", "")), "timestamp": str(r[2])})
             return corrections
         except Exception as exc:

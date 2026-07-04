@@ -247,8 +247,8 @@ def global_exception_handler(request: Request, exc: Exception) -> Response:
             path=request.url.path,
             correlation_id=request.headers.get("x-correlation-id", "unknown"),
         )
-    except Exception:
-        pass
+    except Exception as sentry_exc:
+        logger.debug("Sentry capture failed: %s", sentry_exc)
 
     # Log unhandled exceptions internally, but don't expose details to client
     logger.error("Unhandled exception: %s: %s", type(exc).__name__, str(exc), exc_info=True)

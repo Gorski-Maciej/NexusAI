@@ -31,7 +31,7 @@ class AuditController(Controller):
     """Audit explainability endpoints -- cryptographic decision trail."""
 
     path = "/api/v2/audit"
-    tags = [TAG_AUDIT]
+    tags = (TAG_AUDIT,)
 
     @get(
         "/tax-decision/{transaction_id:str}",

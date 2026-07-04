@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import sqlite3
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 import anyio
 from sqlmodel import Session, select
@@ -94,7 +94,7 @@ class FTSManager(AsyncBaseService):
     """
     __slots__ = ()
 
-    FTS_SCHEMAS: dict[str, str] = {
+    FTS_SCHEMAS: ClassVar[dict[str, str]] = {
         "invoices_fts": """
             CREATE VIRTUAL TABLE IF NOT EXISTS invoices_fts USING fts5(
                 invoice_id UNINDEXED, number, contractor_nip UNINDEXED, contractor_name,
@@ -118,7 +118,7 @@ class FTSManager(AsyncBaseService):
             );""",
     }
 
-    FTS_TRIGGERS: list[str] = [
+    FTS_TRIGGERS: ClassVar[list[str]] = [
         """
         CREATE TRIGGER IF NOT EXISTS trg_invoices_fts_insert AFTER INSERT ON invoices BEGIN
             INSERT INTO invoices_fts(invoice_id, number, contractor_nip, status)
