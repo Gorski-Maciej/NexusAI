@@ -3,7 +3,6 @@
 Re-exports from flat service files for backward compatibility.
 """
 
-from nexus_ai.services.export_service import ExportService, generate_export_payload  # noqa: F401
 from nexus_ai.services.hot_reload import HotReloadListener, SUBJECTS  # noqa: F401
 from nexus_ai.services.otel_fallback import FileSpanBuffer  # noqa: F401
 from nexus_ai.services.replay_engine import ReplayEngine  # noqa: F401

@@ -62,6 +62,7 @@ class RAGAnswer(Struct):
 @final
 class LocalRAGService:
     """Lokalny pipeline RAG z OCR->embeddings->vector search->LLM."""
+    __slots__ = ('embedder', 'llm_client', 'vector_store')
 
     def __init__(self, vector_store: Any, llm_client: Any, embedder: Any) -> None:
         self.vector_store = vector_store
@@ -94,7 +95,7 @@ class LocalRAGService:
 @final
 class KSEFDefenderService:
     """Detekcja anomalii faktur na podstawie historii i cech aktualnej faktury."""
-    __slots__ = ('embedder', 'llm_client', 'vector_store')
+    __slots__ = ('feature_pipeline', 'model')
 
 
     def __init__(self, model: Any, feature_pipeline: Any) -> None:
@@ -122,7 +123,8 @@ class KSEFDefenderService:
 
 @final
 class CashflowForecastService:
-    """Analiza DuckDB: przyszłe zobowiązania i alerty niedoboru płynności."""
+    """Analiza DuckDB: przyszle zobowiazania i alerty niedoboru plynnosci."""
+    __slots__ = ('duckdb',)
 
     def __init__(self, duckdb_conn: Any) -> None:
         self.duckdb = duckdb_conn
@@ -209,7 +211,8 @@ class CashflowForecastService:
 
 @final
 class PaymentPriorityService:
-    """Silnik priorytetyzacji płatności dla zobowiązań zakupowych."""
+    """Silnik priorytetyzacji platnosci dla zobowiazan zakupowych."""
+    __slots__ = ('duckdb',)
 
     def __init__(self, duckdb_conn: Any) -> None:
         self.duckdb = duckdb_conn
@@ -341,7 +344,8 @@ class PaymentPriorityService:
 
 @final
 class AutoDecreeService:
-    """Klasyfikacja pozycji faktury do kont księgowych."""
+    """Klasyfikacja pozycji faktury do kont ksiegowych."""
+    __slots__ = ('classifier', 'feature_builder', 'threshold')
 
     def __init__(self, classifier: Any, feature_builder: Any, threshold: float = 0.82) -> None:
         self.classifier = classifier
@@ -369,7 +373,8 @@ class AutoDecreeService:
 
 @final
 class CFOOrchestrator:
-    """Orkiestruje przepływ danych między modułami offline-first."""
+    """Orkiestruje przeplyw danych miedzy modulami offline-first."""
+    __slots__ = ('autodecree', 'cache', 'defender', 'forecast', 'queue', 'rag', 'relations')
 
     def __init__(
         self,

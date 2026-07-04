@@ -66,6 +66,8 @@ PolarsSQL = _SQLNamespace
 
 
 class PolarsSQLContext:
+    __slots__ = ('_tables',)
+
     """Polars SQLContext -- rejestruje wiele tabel i wykonuje zapytania SQL.
 
     Umożliwia rejestrację DataFrame/LazyFrame jako tabel wirtualnych,

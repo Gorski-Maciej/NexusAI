@@ -43,10 +43,11 @@ class DecisionPriority(enum.IntEnum):
 
 @final
 class AsyncDecisionQueue:
-    """Async trwała kolejka decyzji z priorytetami i terminami ważności.
+    """Async trwala kolejka decyzji z priorytetami i terminami waznosci.
 
-    Wszystkie operacje są async -- używa AsyncEngine zamiast sync Engine.
+    Wszystkie operacje sa async -- uzywa AsyncEngine zamiast sync Engine.
     """
+    __slots__ = ('_engine', '_tracker')
 
     def __init__(
         self,

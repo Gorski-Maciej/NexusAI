@@ -15,6 +15,8 @@ class ParsedInvoice(Struct, kw_only=True):
 
 
 class InvoiceParser:
+    __slots__ = ('gross_keywords', 'net_keywords', 're_currency', 're_iban', 're_nip')
+
     """Parser faktur z tekstu OCR z supermocami PaddleOCR bbox.
 
     - Bounding box analysis: używa pozycji tekstu z PaddleOCR do identyfikacji pól

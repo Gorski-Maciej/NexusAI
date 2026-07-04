@@ -63,6 +63,7 @@ class AccountantLogic:
 @final
 class ZPKEngine:
     """Semantic Chart of Accounts engine backed by DuckDB."""
+    __slots__ = ('db',)
 
     def __init__(self, db: DuckDBManager):
         self.db = db

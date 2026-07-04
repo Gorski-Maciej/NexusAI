@@ -13,7 +13,8 @@ logger = get_logger("nexus.services.ksef")
 
 @final
 class KsefService:
-    """Obsługa Krajowego Systemu e-Faktur (API Ministerstwa Finansów)."""
+    """Obsluga Krajowego Systemu e-Faktur (API Ministerstwa Finansow)."""
+    __slots__ = ('_http', 'base_url', 'session_token')
 
     def __init__(self, is_production: bool = False):
         self.base_url = (
@@ -24,8 +25,6 @@ class KsefService:
 
     async def _init_session(self, nip: str, authorization_token: str) -> bool:
         """Krok 1: Inicjalizacja sesji z KSeF (Authorisation Challenge).
-    __slots__ = ('_http', 'base_url')
-
 
         Wymaga podpisania wyzwania tokenem wygenerowanym w aplikacji KSeF.
         SUPERPOWERS: stamina.retry z circuit breaker dla odpornej komunikacji z API MF.

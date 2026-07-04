@@ -56,12 +56,13 @@ class AnomalyResult:
 class SemanticGuard:
     """Wykrywa anomalie semantyczne w fakturach.
 
-    Dla każdego nowego dokumentu:
-    1. Wektoryzacja treści przez embedding model
+    Dla kazdego nowego dokumentu:
+    1. Wektoryzacja tresci przez embedding model
     2. Zapytanie do sqlite-vec (podobne faktury tego kontrahenta)
-    3. Obliczenie anomaly_score (odległość kosinusowa)
+    3. Obliczenie anomaly_score (odleglosc kosinusowa)
     4. Decyzja: ALLOW / WARN / BLOCK_DECREE
     """
+    __slots__ = ('_store',)
 
     def __init__(self, vector_store: AsyncVectorStore | None = None) -> None:
         self._store = vector_store or AsyncVectorStore()

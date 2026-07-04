@@ -50,7 +50,8 @@ class ReminderStatus(enum.Enum):
 
 @final
 class Scheduler:
-    """Zarządzanie terminami i cyklicznymi zadaniami.
+    """Zarzadzanie terminami i cyklicznymi zadaniami.
+    __slots__ = ('_callbacks', '_engine', '_event_log', '_notification_manager')
 
     Obsługuje:
       - Przypomnienia o deadline ZUS

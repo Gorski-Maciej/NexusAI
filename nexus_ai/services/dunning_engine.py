@@ -35,7 +35,8 @@ class DunningGuardrails(Struct, frozen=True):
 
 @final
 class DunningEngine:
-    """Automatyczny silnik windykacji -- wysyła przypomnienia o płatnościach."""
+    """Automatyczny silnik windykacji -- wysyla przypomnienia o platnosciach."""
+    __slots__ = ('ai_agent', 'duckdb', 'email_provider', 'guardrails')
 
     def __init__(
         self,
@@ -51,8 +52,6 @@ class DunningEngine:
 
     def ensure_schema(self) -> None:
         self.duckdb.execute("""CREATE TABLE IF NOT EXISTS dunning_policy (
-    __slots__ = ('ai_agent', 'duckdb', 'email_provider', 'guardrails')
-
             id UUID, level INTEGER, days_after_due INTEGER, template_id VARCHAR, channel VARCHAR
         )""")
         self.duckdb.execute("""CREATE TABLE IF NOT EXISTS dunning_history (

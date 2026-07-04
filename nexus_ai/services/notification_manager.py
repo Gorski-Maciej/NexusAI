@@ -38,10 +38,11 @@ class NotificationCategory(enum.Enum):
 
 @final
 class AsyncNotificationManager:
-    """Centralny async system zarządzania powiadomieniami.
+    """Centralny async system zarzadzania powiadomieniami.
 
-    Wszystkie operacje są async -- używa AsyncEngine zamiast sync Engine.
+    Wszystkie operacje sa async -- uzywa AsyncEngine zamiast sync Engine.
     """
+    __slots__ = ('_engine',)
 
     def __init__(self, engine: AsyncEngine) -> None:
         self._engine = engine

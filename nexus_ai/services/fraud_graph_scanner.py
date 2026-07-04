@@ -10,6 +10,8 @@ try:
 except Exception:  # pragma: no cover - optional fallback when networkx is unavailable
 
     class _FallbackGraph:
+        __slots__ = ('_adj', '_nodes')
+
         def __init__(self):
             self._nodes: dict[str, dict[str, str]] = {}
             self._adj: dict[str, set[str]] = {}
@@ -29,6 +31,7 @@ except Exception:  # pragma: no cover - optional fallback when networkx is unava
             return list(self._nodes.items()) if data else list(self._nodes.keys())
 
     class _NX:  # minimal shim for APIs used by this scanner
+        __slots__ = ()
         Graph = _FallbackGraph
 
     nx = _NX()

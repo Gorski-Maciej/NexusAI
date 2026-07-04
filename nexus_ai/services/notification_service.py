@@ -28,7 +28,8 @@ logger = get_logger("nexus.services.notification")
 
 @final
 class DailyBriefingGenerator:
-    """Generator codziennych podsumowań finansowych (Daily Briefing)."""
+    """Generator codziennych podsumowan finansowych (Daily Briefing)."""
+    __slots__ = ('_config', '_duckdb', '_logger', '_ple')
 
     def __init__(
         self,
@@ -222,6 +223,7 @@ class MultiChannelConfig:
 @final
 class AsyncNotificationService(AsyncBaseService):
     """Async notification service backed by sqlite3 + anyio.to_thread.run_sync."""
+    __slots__ = ('_briefing_generator', '_channel_config', '_config', '_db_path')
 
     def __init__(
         self,

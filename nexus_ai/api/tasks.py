@@ -50,7 +50,8 @@ from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_load
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.db.database import create_oltp_engine, create_session_factory
 from nexus_ai.pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
-from nexus_ai.services.accounting import AccountingService
+from nexus_ai.services.white_list_service import WhiteListService
+from nexus_ai.domain.values import IBAN
 from nexus_ai.services.finops_meter import estimate_runtime_cost
 from nexus_ai.services.log_pii_monitor import notify_dpo, scan_logs_for_pii
 from nexus_ai.services.migration_sanity import verify_migration_integrity, verify_schema_drift
@@ -562,23 +563,24 @@ async def process_invoice_ocr(
 
         # --- Walidacja NIP i IBAN (asynchroniczna, nie blokuje głównego przepływu) ---
         try:
-            accounting = AccountingService()
+            whitelist = WhiteListService()
             contractor_nip = payload.get("contractor_nip", "")
             bank_account = payload.get("bank_account", "")
 
-            nip_verification = (
-                await accounting.verify_nip(contractor_nip) if contractor_nip else None
+            nip_valid = (
+                await whitelist.verify_bank_account(contractor_nip, "") if contractor_nip else False
             )
-            nip_valid = nip_verification is not None
-            iban_valid = (
-                accounting.validate_iban(bank_account) if bank_account else True
-            )  # IBAN nie jest wymagany
+            try:
+                IBAN(value=bank_account)
+                iban_valid = True
+            except Exception:
+                iban_valid = False if bank_account else True
 
-            if nip_verification:
+            if nip_valid:
                 logger.info(
-                    "[OCR] NIP verified invoice_id=%s name=%s",
+                    "[OCR] NIP verified invoice_id=%s nip=%s",
                     invoice_id,
-                    nip_verification.get("name", "unknown"),
+                    contractor_nip,
                 )
             else:
                 logger.warning(
@@ -1709,7 +1711,7 @@ async def weekly_nip_reverification_task(
     Sprawdza NIP-y w Białej Liście MF i aktualizuje status w tabeli contractors.
 
     """
-    accounting = AccountingService()
+    whitelist = WhiteListService()
 
     # Pobierz wszystkich kontrahentów
     from sqlmodel import select as sa_select
@@ -1723,7 +1725,7 @@ async def weekly_nip_reverification_task(
     failed_count = 0
     for contractor in contractors:
         try:
-            verification = await accounting.verify_nip(contractor.nip)
+            verification = await whitelist.check_nip(contractor.nip)
             if verification:
                 verified_count += 1
                 logger.info(

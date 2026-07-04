@@ -24,6 +24,32 @@ class WhiteListService:
     async def close(self) -> None:
         await self._http.close()
 
+    async def _fetch_nip_data(self, nip: str) -> dict | None:
+        """Pobiera dane podmiotu z API MF dla danego NIP (z cache)."""
+        cache_key = f"whitelist:nip_data:{nip}"
+        cached = await self._cache.get(cache_key)
+        if cached is not None:
+            return cached if cached else None
+
+        target_date = pendulum.now().date().isoformat()
+        try:
+            response = await self._http.get(f"{self.BASE_URL}{nip}?date={target_date}")
+            if response.status_code == 200:
+                data = response.json()
+                subject = data.get("result", {}).get("subject", {})
+                if subject:
+                    await self._cache.set(cache_key, subject, ttl=self._CACHE_TTL)
+                    return subject
+            await self._cache.set(cache_key, {}, ttl=300)
+            return None
+        except Exception as e:
+            logger.error("[WhiteList] Błąd API MF dla NIP=%s: %s", nip, e)
+            return None
+
+    async def check_nip(self, nip: str) -> dict | None:
+        """Weryfikuje NIP w Białej Liście MF i zwraca dane podmiotu."""
+        return await self._fetch_nip_data(nip)
+
     async def verify_bank_account(self, nip: str, account_to_check: str) -> bool:
         """Sprawdza czy konto bankowe jest na białej liście MF."""
         clean_account = "".join(filter(str.isdigit, account_to_check))
@@ -34,20 +60,12 @@ class WhiteListService:
             logger.debug("[WhiteList] Cache HIT for NIP=%s account=%s", nip, clean_account)
             return bool(cached)
 
-        target_date = pendulum.now().date().isoformat()
-
-        try:
-            response = await self._http.get(f"{self.BASE_URL}{nip}?date={target_date}")
-
-            if response.status_code == 200:
-                data = response.json()
-                accounts = data.get("result", {}).get("subject", {}).get("accountNumbers", [])
-                result = clean_account in accounts
-                await self._cache.set(cache_key, result, ttl=self._CACHE_TTL)
-                return result
-
+        subject = await self._fetch_nip_data(nip)
+        if subject is None:
             await self._cache.set(cache_key, False, ttl=300)
             return False
-        except Exception as e:
-            logger.error(f"[WhiteList] Błąd Białej Listy: {e}")
-            return False
+
+        accounts = subject.get("accountNumbers", [])
+        result = clean_account in accounts
+        await self._cache.set(cache_key, result, ttl=self._CACHE_TTL)
+        return result

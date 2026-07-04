@@ -25,7 +25,8 @@ from nexus_ai.core.di import get_config, get_db_session, get_engine
 
 # Niepotrzebne importy usunięte -- DecodeError i msgspec_loads nie są używane w tym module
 from nexus_ai.pipeline.ocr_consensus import OCRAmountResult, decide_amount_consensus
-from nexus_ai.services.accounting import AccountingService
+from nexus_ai.services.white_list_service import WhiteListService
+from nexus_ai.domain.values import IBAN
 from nexus_ai.tax.exceptions import NoMatchingRuleError
 
 logger = get_logger("nexus.api.tasks.ocr")
@@ -165,14 +166,17 @@ async def process_invoice_ocr(
 
         # --- Walidacja NIP i IBAN ---
         try:
-            accounting = AccountingService()
+            whitelist = WhiteListService()
             contractor_nip = payload.get("contractor_nip", "")
             bank_account = payload.get("bank_account", "")
-            nip_verification = (
-                await accounting.verify_nip(contractor_nip) if contractor_nip else None
+            nip_valid = (
+                await whitelist.verify_bank_account(contractor_nip, "") if contractor_nip else False
             )
-            nip_valid = nip_verification is not None
-            iban_valid = accounting.validate_iban(bank_account) if bank_account else True
+            try:
+                IBAN(value=bank_account)
+                iban_valid = True
+            except Exception:
+                iban_valid = False if bank_account else True
             payload["nip_valid"] = nip_valid
             payload["iban_valid"] = iban_valid
         except Exception as ve:

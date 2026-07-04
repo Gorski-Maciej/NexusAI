@@ -1,0 +1,456 @@
+# NexusAI Seed Data Fixtures (TOML)
+# Zastępuje zahardcodowane definicje w seed_data.py
+
+[nips]
+valid = [
+    "5213456789",  # Warszawa, duża firma
+    "5262845678",  # Warszawa, średnia firma
+    "7261456789",  # Gdańsk, spółka z o.o.
+    "8961456789",  # Wrocław, jednoosobowa
+    "9463456789",  # Kraków, spółka komandytowa
+]
+placeholder = ["1234567890", "2345678901", "3456789012"]
+
+[[users]]
+username = "admin"
+role = "owner"
+
+[[users]]
+username = "ksiegowa"
+role = "accountant"
+
+[[companies]]
+name = "NexusAI Sp. z o.o."
+nip_idx = 0
+legal_form = "sp_z_o_o"
+ksef_active = true
+vat_active = true
+vat_proportion = "1.0000"
+ledger_map = { revenue = 100, vat_input = 200, vat_output = 300, expenses = 400 }
+policy = { auto_post_enabled = true, auto_post_threshold = 0.92, require_double_approval = false, retention_years = 5 }
+
+[[companies]]
+name = "Jan Kowalski – Działalność Gospodarcza"
+nip_idx = 1
+legal_form = "jednoosobowa"
+ksef_active = true
+vat_active = true
+vat_proportion = "1.0000"
+ledger_map = { revenue = 101, vat_input = 201, vat_output = 301, expenses = 401 }
+policy = { auto_post_enabled = true, auto_post_threshold = 0.85, require_double_approval = false, retention_years = 5 }
+
+[[companies]]
+name = "Polski Eksport S.A."
+nip_idx = 2
+legal_form = "sa"
+ksef_active = true
+vat_active = true
+vat_proportion = "0.5000"
+ledger_map = { revenue = 102, vat_input = 202, vat_output = 302, expenses = 402 }
+policy = { auto_post_enabled = false, auto_post_threshold = 0.95, require_double_approval = true, retention_years = 10 }
+
+[[contractors]]
+name = "Firma Handlowa 'Omega' Sp. z o.o."
+nip_idx = 3
+address = "ul. Marszałkowska 100, 00-001 Warszawa"
+bank_account = "PL10105000997603123456789123"
+
+[[contractors]]
+name = "TechSolutions Polska Sp. z o.o."
+nip_idx = 4
+address = "ul. Długa 50, 31-147 Kraków"
+bank_account = "PL60105000997603123456789124"
+
+[[contractors]]
+name = "Biuro Rachunkowe 'Liczydełko'"
+nip_idx = 5
+address = "ul. Krótka 5, 80-001 Gdańsk"
+bank_account = "PL75105000997603123456789125"
+
+[[contractors]]
+name = "Zakład Produkcyjny 'MetalPlast'"
+nip_idx = 6
+address = "ul. Przemysłowa 20, 50-001 Wrocław"
+bank_account = "PL25105000997603123456789126"
+
+[[contractors]]
+name = "Dostawca IT Systemy Sp. z o.o."
+nip_idx = 7
+address = "ul. Nowa 15, 60-001 Poznań"
+bank_account = "PL88105000997603123456789127"
+
+[[invoices]]
+number = "FV/2026/001"
+amount_net = "10000.00"
+amount_gross = "12300.00"
+currency = "PLN"
+status = "APPROVED"
+issue_date = "2026-05-15"
+contractor_nip_idx = 3
+file_path = "seed_data/fv_2026_001.pdf"
+
+[[invoices]]
+number = "FV/2026/002"
+amount_net = "2500.00"
+amount_gross = "2700.00"
+currency = "PLN"
+status = "APPROVED"
+issue_date = "2026-05-16"
+contractor_nip_idx = 4
+file_path = "seed_data/fv_2026_002.pdf"
+
+[[invoices]]
+number = "FV/2026/003"
+amount_net = "15000.00"
+amount_gross = "18450.00"
+currency = "PLN"
+status = "PROCESSING"
+issue_date = "2026-05-18"
+contractor_nip_idx = 3
+file_path = "seed_data/fv_2026_003.pdf"
+
+[[invoices]]
+number = "FV/2026/004"
+amount_net = "800.00"
+amount_gross = "984.00"
+currency = "PLN"
+status = "NEW"
+issue_date = "2026-05-20"
+contractor_nip_idx = 5
+file_path = "seed_data/fv_2026_004.pdf"
+
+[[invoices]]
+number = "FV/2026/005"
+amount_net = "4500.00"
+amount_gross = "5535.00"
+currency = "PLN"
+status = "NEW"
+issue_date = "2026-05-22"
+contractor_nip_idx = 6
+file_path = "seed_data/fv_2026_005.pdf"
+
+[[invoices]]
+number = "FV/2026/006"
+amount_net = "23000.00"
+amount_gross = "28290.00"
+currency = "PLN"
+status = "ERROR"
+issue_date = "2026-05-10"
+contractor_nip_idx = 7
+file_path = "seed_data/fv_2026_006.pdf"
+
+[[invoices]]
+number = "FV/2026/007"
+amount_net = "1200.00"
+amount_gross = "1296.00"
+currency = "EUR"
+status = "APPROVED"
+issue_date = "2026-05-12"
+contractor_nip_idx = 3
+file_path = "seed_data/fv_2026_007.pdf"
+
+[[invoices]]
+number = "FV/2026/008"
+amount_net = "750.00"
+amount_gross = "922.50"
+currency = "PLN"
+status = "PROCESSING"
+issue_date = "2026-05-25"
+contractor_nip_idx = 4
+file_path = "seed_data/fv_2026_008.pdf"
+
+[[invoices]]
+number = "FV/2026/009"
+amount_net = "3200.00"
+amount_gross = "3936.00"
+currency = "PLN"
+status = "NEW"
+issue_date = "2026-05-26"
+contractor_nip_idx = 5
+file_path = "seed_data/fv_2026_009.pdf"
+
+[[invoices]]
+number = "FV/2026/010"
+amount_net = "8900.00"
+amount_gross = "10947.00"
+currency = "PLN"
+status = "APPROVED"
+issue_date = "2026-05-08"
+contractor_nip_idx = 6
+file_path = "seed_data/fv_2026_010.pdf"
+
+[[invoices]]
+number = "FV/2026/011"
+amount_net = "550.00"
+amount_gross = "550.00"
+currency = "PLN"
+status = "NEW"
+issue_date = "2026-05-28"
+contractor_nip_idx = 3
+file_path = "seed_data/fv_2026_011.pdf"
+
+[[invoices]]
+number = "FV/2026/012"
+amount_net = "18500.00"
+amount_gross = "22755.00"
+currency = "PLN"
+status = "PROCESSING"
+issue_date = "2026-05-05"
+contractor_nip_idx = 7
+file_path = "seed_data/fv_2026_012.pdf"
+
+[[invoices]]
+number = "FV/2026/013"
+amount_net = "4300.00"
+amount_gross = "5289.00"
+currency = "PLN"
+status = "ERROR"
+issue_date = "2026-05-03"
+contractor_nip_idx = 4
+file_path = "seed_data/fv_2026_013.pdf"
+
+[[invoices]]
+number = "FV/2026/014"
+amount_net = "6700.00"
+amount_gross = "8241.00"
+currency = "PLN"
+status = "NEW"
+issue_date = "2026-04-30"
+contractor_nip_idx = 5
+file_path = "seed_data/fv_2026_014.pdf"
+
+[[invoices]]
+number = "FV/2026/015"
+amount_net = "11200.00"
+amount_gross = "13776.00"
+currency = "PLN"
+status = "APPROVED"
+issue_date = "2026-04-28"
+contractor_nip_idx = 3
+file_path = "seed_data/fv_2026_015.pdf"
+
+[[fx_rates]]
+currency = "EUR"
+rate_to_pln = 4.35
+source = "nbp"
+
+[[fx_rates]]
+currency = "USD"
+rate_to_pln = 3.95
+source = "nbp"
+
+[[fx_rates]]
+currency = "GBP"
+rate_to_pln = 5.12
+source = "nbp"
+
+[[fx_rates]]
+currency = "CHF"
+rate_to_pln = 4.45
+source = "nbp"
+
+[[fx_rates]]
+currency = "CZK"
+rate_to_pln = 0.18
+source = "nbp"
+
+[[financial_periods]]
+period_id = "2026-01"
+period_year = 2026
+status = "closed"
+
+[[financial_periods]]
+period_id = "2026-02"
+period_year = 2026
+status = "closed"
+
+[[financial_periods]]
+period_id = "2026-03"
+period_year = 2026
+status = "closed"
+
+[[financial_periods]]
+period_id = "2026-04"
+period_year = 2026
+status = "closed"
+
+[[financial_periods]]
+period_id = "2026-05"
+period_year = 2026
+status = "open"
+
+[[vat_rates]]
+code = "23"
+rate = 23.0
+description = "Stawka podstawowa"
+
+[[vat_rates]]
+code = "8"
+rate = 8.0
+description = "Stawka obniżona"
+
+[[vat_rates]]
+code = "5"
+rate = 5.0
+description = "Stawka obniżona"
+
+[[vat_rates]]
+code = "0"
+rate = 0.0
+description = "Stawka 0%"
+
+[[vat_rates]]
+code = "ZW"
+rate = 0.0
+description = "Zwolnienie z VAT"
+
+[[vat_rates]]
+code = "NP"
+rate = 0.0
+description = "Nie podlega VAT"
+
+[[currencies]]
+code = "PLN"
+name = "Polski złoty"
+symbol = "zł"
+
+[[currencies]]
+code = "EUR"
+name = "Euro"
+symbol = "€"
+
+[[currencies]]
+code = "USD"
+name = "Dolar amerykański"
+symbol = "$"
+
+[[currencies]]
+code = "GBP"
+name = "Funt szterling"
+symbol = "£"
+
+[[currencies]]
+code = "CHF"
+name = "Frank szwajcarski"
+symbol = "CHF"
+
+[[currencies]]
+code = "CZK"
+name = "Korona czeska"
+symbol = "Kč"
+
+[[invoice_statuses]]
+code = "DRAFT"
+name = "Robocza"
+description = "Faktura w trakcie tworzenia"
+
+[[invoice_statuses]]
+code = "NEW"
+name = "Nowa"
+description = "Nowa faktura oczekująca na weryfikację"
+
+[[invoice_statuses]]
+code = "APPROVED"
+name = "Zatwierdzona"
+description = "Faktura zatwierdzona do wysyłki"
+
+[[invoice_statuses]]
+code = "PROCESSING"
+name = "Przetwarzana"
+description = "Trwa przetwarzanie przez AI"
+
+[[invoice_statuses]]
+code = "SUBMITTED_KSEF"
+name = "Wysłana do KSeF"
+description = "Faktura wysłana do Krajowego Systemu e-Faktur"
+
+[[invoice_statuses]]
+code = "KSEF_ACCEPTED"
+name = "Zaakceptowana przez KSeF"
+description = "Faktura zaakceptowana przez KSeF"
+
+[[invoice_statuses]]
+code = "KSEF_REJECTED"
+name = "Odrzucona przez KSeF"
+description = "Faktura odrzucona przez KSeF"
+
+[[invoice_statuses]]
+code = "ERROR"
+name = "Błąd"
+description = "Wystąpił błąd podczas przetwarzania"
+
+[[tax_forms]]
+code = "ryczalt"
+name = "Ryczałt od przychodów ewidencjonowanych"
+
+[[tax_forms]]
+code = "skala_podatkowa"
+name = "Skala podatkowa (zasady ogólne)"
+
+[[tax_forms]]
+code = "liniowy"
+name = "Podatek liniowy 19%"
+
+[[tax_forms]]
+code = "vat"
+name = "VAT (podatek od towarów i usług)"
+
+[[tax_forms]]
+code = "karta_podatkowa"
+name = "Karta podatkowa"
+
+[[tax_policies]]
+tax_form = "vat_23"
+pit_costs_enabled = true
+requires_full_ledger = true
+vat_settlement_cycle = "monthly"
+
+[[tax_policies]]
+tax_form = "vat_8"
+pit_costs_enabled = true
+requires_full_ledger = false
+vat_settlement_cycle = "quarterly"
+
+[[tax_policies]]
+tax_form = "ryczalt"
+pit_costs_enabled = false
+requires_full_ledger = false
+vat_settlement_cycle = "monthly"
+
+[roles]
+admin = "System administrator -- full access"
+accountant = "Accountant -- financial operations"
+auditor = "Auditor -- read-only audit access"
+viewer = "Viewer -- read-only basic access"
+
+[permissions]
+"invoice:create" = { resource = "invoice", action = "create", description = "Create invoices" }
+"invoice:view" = { resource = "invoice", action = "view", description = "View invoices" }
+"invoice:edit" = { resource = "invoice", action = "edit", description = "Edit invoices" }
+"invoice:delete" = { resource = "invoice", action = "delete", description = "Delete invoices" }
+"invoice:approve" = { resource = "invoice", action = "approve", description = "Approve invoices" }
+"invoice:submit-ksef" = { resource = "invoice", action = "submit-ksef", description = "Submit invoices to KSeF" }
+"company:view" = { resource = "company", action = "view", description = "View company profiles" }
+"company:edit" = { resource = "company", action = "edit", description = "Edit company profiles" }
+"company:delete" = { resource = "company", action = "delete", description = "Delete companies" }
+"audit:view" = { resource = "audit", action = "view", description = "View audit logs" }
+"audit:export" = { resource = "audit", action = "export", description = "Export audit logs" }
+"user:view" = { resource = "user", action = "view", description = "View users" }
+"user:create" = { resource = "user", action = "create", description = "Create users" }
+"user:edit" = { resource = "user", action = "edit", description = "Edit users" }
+"user:delete" = { resource = "user", action = "delete", description = "Delete users" }
+"admin:access" = { resource = "admin", action = "access", description = "Access admin panel" }
+"admin:settings" = { resource = "admin", action = "settings", description = "Modify system settings" }
+"admin:failed-tasks" = { resource = "admin", action = "failed-tasks", description = "Manage failed tasks / DLQ" }
+"admin:hot-reload" = { resource = "admin", action = "hot-reload", description = "View hot-reload health status" }
+"finance:view" = { resource = "finance", action = "view", description = "View financial data" }
+"finance:reconcile" = { resource = "finance", action = "reconcile", description = "Reconcile accounts" }
+"finance:export" = { resource = "finance", action = "export", description = "Export financial reports" }
+"contractor:view" = { resource = "contractor", action = "view", description = "View contractors" }
+"contractor:edit" = { resource = "contractor", action = "edit", description = "Edit contractors" }
+
+[role_permissions]
+admin = "all"
+accountant = ["invoice:create", "invoice:view", "invoice:edit", "invoice:approve", "invoice:submit-ksef", "company:view", "company:edit", "audit:view", "finance:view", "finance:reconcile", "finance:export", "contractor:view", "contractor:edit"]
+auditor = ["invoice:view", "company:view", "audit:view", "audit:export", "finance:view", "contractor:view"]
+viewer = ["invoice:view", "company:view", "audit:view", "finance:view", "contractor:view"]

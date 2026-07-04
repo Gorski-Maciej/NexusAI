@@ -64,6 +64,8 @@ class StatementParser(Protocol):
 
 @final
 class CSVStatementParser:
+    __slots__ = ()
+
     """Reference parser for local CSV exports from banks.
 
     - ``pyarrow.csv.read_csv()`` z ``ConvertOptions`` -- typowanie kolumn
@@ -141,6 +143,8 @@ class CSVStatementParser:
 
 @final
 class ParserFactory:
+    __slots__ = ()
+
     @staticmethod
     def get_parser(file_path: Path) -> StatementParser:
         if file_path.suffix.lower() == ".csv":
@@ -160,6 +164,7 @@ class StatementContinuityError(RuntimeError):
 
 @final
 class IdempotentBankImporter:
+    __slots__ = ('_meta_mapper', 'duckdb', 'ledger_id', 'tb_client', 'transfer_code')
     def __init__(
         self,
         *,

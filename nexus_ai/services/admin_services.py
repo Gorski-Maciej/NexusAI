@@ -22,6 +22,7 @@ from nexus_ai.core.logger import auto_logger
 @auto_logger
 class RiskThresholdService(AdminServiceRegistry):
     """Zarządzanie progami ryzyka (RiskGuard)."""
+    __slots__ = ()
     _nats_subject = "risk.thresholds.updated"
 
     # --- New concise names ---
@@ -86,6 +87,7 @@ class BillingRuleService(AdminServiceRegistry):
 @auto_logger
 class LedgerRuleService(AdminServiceRegistry):
     """Zarządzanie regułami walidacji księgi głównej."""
+    __slots__ = ()
     _nats_subject = "ledger.rules.updated"
 
     _DDL = """CREATE TABLE IF NOT EXISTS ledger_validation_rules (
@@ -132,6 +134,7 @@ class LedgerRuleService(AdminServiceRegistry):
 @auto_logger
 class TaxRuleService(AdminServiceRegistry):
     """Zarządzanie regułami podatkowymi."""
+    __slots__ = ()
     _nats_subject = "tax.rules.updated"
 
     @classmethod
@@ -176,6 +179,7 @@ class TaxRuleService(AdminServiceRegistry):
 @auto_logger
 class FallbackEventService(AdminServiceRegistry):
     """Zarządzanie zdarzeniami fallback."""
+    __slots__ = ()
     _nats_subject = "fallback.events.updated"
 
     @classmethod
@@ -201,6 +205,7 @@ class FallbackEventService(AdminServiceRegistry):
 @auto_logger
 class ReplayService(AdminServiceRegistry):
     """Odtwarzanie decyzji podatkowych."""
+    __slots__ = ()
 
     @classmethod
     def replay(cls, transaction_id: str) -> dict[str, Any]:
@@ -231,6 +236,7 @@ class ReplayService(AdminServiceRegistry):
 @auto_logger
 class IntegrityService(AdminServiceRegistry):
     """Weryfikacja integralności łańcucha decyzji."""
+    __slots__ = ()
 
     @classmethod
     def verify(cls, handle_violation: bool = True, system_lock: bool = False,
@@ -270,6 +276,7 @@ class FailedTaskService:
     UWAGA: Nie używa DuckDB -- operuje na głównej bazie OLTP przez AsyncEngine.
     Dlatego nie dziedziczy po AdminServiceRegistry.
     """
+    __slots__ = ()
 
     @staticmethod
     async def list_failed_tasks(db_engine: Any, resolved_filter: bool | None = None,

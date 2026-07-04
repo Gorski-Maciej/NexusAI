@@ -37,6 +37,7 @@ def _first_of_next_month(input_date: pendulum.Date) -> pendulum.Date:
 @final
 class RMKEngine:
     """Accruals & Deferrals generator (RMK) with day-level pro-rata precision."""
+    __slots__ = ('duckdb',)
 
     def __init__(self, duckdb: DuckDBManager) -> None:
         self.duckdb = duckdb
@@ -53,8 +54,6 @@ class RMKEngine:
 
         self.duckdb.execute(
             """
-    __slots__ = ('duckdb',)
-
             INSERT INTO deferred_expenses (
                 id, invoice_id, description, total_net_amount, start_date, end_date,
                 total_days, daily_rate, status, cost_account_id
@@ -64,18 +63,18 @@ class RMKEngine:
                 deferred_id,
                 invoice_data.invoice_id,
                 invoice_data.description,
-                float(invoice_data.total_net_amount),
+                invoice_data.total_net_amount,
                 invoice_data.start_date,
                 invoice_data.end_date,
                 total_days,
-                float(daily_rate),
+                daily_rate,
                 invoice_data.cost_account_id,
             ),
         )
 
-        month_cursor = date(invoice_data.start_date.year, invoice_data.start_date.month, 1)
-        last_month_start = date(invoice_data.end_date.year, invoice_data.end_date.month, 1)
-        allocations: list[tuple[date, Decimal]] = []
+        month_cursor: pendulum.Date = pendulum.Date(invoice_data.start_date.year, invoice_data.start_date.month, 1)
+        last_month_start: pendulum.Date = pendulum.Date(invoice_data.end_date.year, invoice_data.end_date.month, 1)
+        allocations: list[tuple[pendulum.Date, Decimal]] = []
 
         while month_cursor <= last_month_start:
             month_start = month_cursor
@@ -111,7 +110,7 @@ class RMKEngine:
                     uuid.uuid4().hex,
                     deferred_id,
                     posting_date,
-                    float(amount),
+                    amount,
                     RMK_LEDGER_ID,
                     RMK_TRANSFER_CODE,
                     RMK_ASSET_ACCOUNT_ID,

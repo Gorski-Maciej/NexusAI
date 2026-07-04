@@ -17,10 +17,14 @@ class InventoryMismatch(Exception):  # noqa: N818
 
 
 class DualWriteConsistencyError(InventoryMismatch):
+    __slots__ = ()
+
     pass
 
 
 class InsufficientStockError(InventoryMismatch):
+    __slots__ = ()
+
     pass
 
 

@@ -26,7 +26,8 @@ class RiskAction(StrEnum):
 
 
 class RiskThreshold:
-    """Próg ryzyka dla kombinacji tax_form + expense_type."""
+    """Prog ryzyka dla kombinacji tax_form + expense_type."""
+    __slots__ = ('action_if_below', 'required_ml_confidence', 'rule_id')
 
     def __init__(
         self,
@@ -40,8 +41,8 @@ class RiskThreshold:
 
 
 class RiskGuard:
-    """Dynamiczny strażnik ryzyka z regułami w SQLite."""
-    __slots__ = ('action_if_below', 'required_ml_confidence', 'rule_id')
+    """Dynamiczny straznik ryzyka z regulami w SQLite."""
+    __slots__ = ()
 
 
     def get_threshold(
