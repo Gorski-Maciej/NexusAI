@@ -23,7 +23,7 @@ NexusAI/
 │   ├── frontend/                # Flet UI (komponenty Material Design 3)
 │   ├── rust/                    # 🔧 nexus-crypto (Rust + PyO3, kompilowane maturin)
 │   ├── architecture/            # ADR / schematy architektoniczne
-│   ├── config/                  # TOML/JSON: base/dev/prod, models_manifest
+│   ├── config/                  # TOML/JSON: base/dev/prod
 │   └── tax/                     # Rego policies (OPA) dla reguł podatkowych
 ├── migrations/                  # Surowe pliki SQL (001_init.sql, 002_…, 003_…, 004_…)
 ├── tests/                       # ~120 plików testów (unit + integration + schemathesis + locust)
@@ -250,7 +250,6 @@ nexus_ai/
 │   ├── dev.toml                 # Dev overrides
 │   ├── prod.toml                # Prod overrides
 │   ├── protocols.toml           # Decyzje protokoły
-│   ├── models_manifest.json     # ⭐ Definicja 5 modeli GGUF
 │   └── version.json             # ⭐ Wersja + komponenty
 │
 └── tax/                         # 📐 Rego (OPA)
@@ -336,7 +335,7 @@ Pełna instrukcja: [`CONTRIBUTING.md`](CONTRIBUTING.md#konwencje-commitów).
 | **Migracje SQL** | `migrations/0*.sql` |
 | **Pipeline OCR** | `nexus_ai/pipeline/ocr_consensus.py` |
 | **Silniki OCR** | `nexus_ai/services/pdfium/`, `tests/test_tesseract_engine.py` (test jako żywy przykład) |
-| **5 agentów AI** | `nexus_ai/services/{orchestrator,extraction,…}.py` + `nexus_ai/services/cfo_offline.py` |
+| **Agenci AI** | `nexus_ai/core/inference.py` + `nexus_ai/core/protocol_executor.py` + `nexus_ai/config/protocols.toml` |
 | **Crypto (Rust)** | `nexus_ai/rust/src/*.rs` |
 | **Decision protocols** | `nexus_ai/core/protocol_executor.py` + `nexus_ai/config/protocols.toml` |
 | **Event Sourcing** | `nexus_ai/events/{domain_events,event_store,projections}.py` |
@@ -362,4 +361,13 @@ Pełna instrukcja: [`CONTRIBUTING.md`](CONTRIBUTING.md#konwencje-commitów).
 
 ---
 
+## 🔗 Zobacz również
+
+- [Architektura](ARCHITECTURE.md) — warstwy, wzorce, ADR
+- [Proces rozwoju](CONTRIBUTING.md) — konwencje nazewnicze, standardy kodu
+- [Słownik pojęć](GLOSSARY.md) — terminy techniczne
+
+---
+
 > **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team

@@ -138,7 +138,7 @@ sequenceDiagram
     API-->>U: ✅ Zaksięgowano
 ```
 
-Więcej sekwencji: [`ARCHITECTURE.md`](ARCHITECTURE.md#diagramy-sekwencji).
+Więcej sekwencji: [`ARCHITECTURE.md`](ARCHITECTURE.md#4-diagramy-sekwencji).
 
 ---
 
@@ -183,4 +183,14 @@ Pełny glosariusz: [`GLOSSARY.md`](GLOSSARY.md).
 
 ---
 
+## 🔗 Zobacz również
+
+- [Szybki start](QUICKSTART.md) — uruchom NexusAI w 15 minut
+- [Architektura](ARCHITECTURE.md) — diagramy C4, ADR, wzorce projektowe
+- [Moduły i logika](MODULES.md) — agenci AI, pipeline OCR, serwisy
+- [Słownik pojęć](GLOSSARY.md) — terminy księgowe i techniczne
+
+---
+
 > **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team

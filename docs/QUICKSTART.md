@@ -278,4 +278,14 @@ Pełna sekcja: [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md).
 
 ---
 
+## 🔗 Zobacz również
+
+- [Wprowadzenie](INTRODUCTION.md) — misja, propozycja wartości, użytkownicy
+- [Instalacja i konfiguracja](INSTALLATION.md) — szczegółowy setup i zmienne środowiskowe
+- [Architektura](ARCHITECTURE.md) — diagramy C4, ADR, wzorce
+- [Rozwiązywanie problemów](TROUBLESHOOTING.md) — najczęstsze błędy i rozwiązania
+
+---
+
 > **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team
