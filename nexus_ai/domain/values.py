@@ -71,6 +71,9 @@ class Money(msgspec.Struct, frozen=True, kw_only=True):
             raise ValueError(f"Money amount cannot be negative: {self.amount}")
         if len(self.currency) != 3 or not self.currency.isalpha():
             raise ValueError(f"Currency must be ISO 4217 (3 letters): {self.currency}")
+        # Auto-round to 2 decimal places (financial precision)
+        rounded = self.amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        object.__setattr__(self, "amount", rounded)
 
     def __add__(self, other: Money) -> Money:
         if self.currency != other.currency:
@@ -87,6 +90,18 @@ class Money(msgspec.Struct, frozen=True, kw_only=True):
             raise TypeError("Cannot multiply Money by float, use Decimal")
         return Money(
             amount=(self.amount * Decimal(str(factor))).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            ),
+            currency=self.currency,
+        )
+
+    def __truediv__(self, divisor: Decimal | int) -> Money:
+        if isinstance(divisor, float):
+            raise TypeError("Cannot divide Money by float, use Decimal")
+        if Decimal(str(divisor)) == Decimal("0"):
+            raise ZeroDivisionError("Cannot divide Money by zero")
+        return Money(
+            amount=(self.amount / Decimal(str(divisor))).quantize(
                 Decimal("0.01"), rounding=ROUND_HALF_UP
             ),
             currency=self.currency,
@@ -191,10 +206,12 @@ class NIP(msgspec.Struct, frozen=True, kw_only=True):
     def __post_init__(self) -> None:
         normalized = "".join(ch for ch in self.value if ch.isdigit())
         if len(normalized) != 10:
-            raise ValueError(f"NIP must be exactly 10 digits, got {len(normalized)}: {self.value}")
+            raise InvalidNIPError(f"NIP must be exactly 10 digits, got {len(normalized)}: {self.value}")
         checksum = sum(int(d) * w for d, w in zip(normalized[:9], self._WEIGHTS, strict=True)) % 11
         if checksum == 10 or checksum != int(normalized[9]):
-            raise ValueError(f"Invalid NIP checksum: {self.value}")
+            raise InvalidNIPError(f"Invalid NIP checksum: {self.value}")
+        # Normalize value (remove non-digits)
+        object.__setattr__(self, "value", normalized)
 
     def __str__(self) -> str:
         return self.formatted
@@ -259,13 +276,15 @@ class IBAN(msgspec.Struct, frozen=True, kw_only=True):
     def __post_init__(self) -> None:
         normalized = self.value.replace(" ", "").upper()
         if len(normalized) < 15 or len(normalized) > 34:
-            raise ValueError(f"IBAN length must be 15-34 chars: {len(normalized)}")
+            raise InvalidIBANError(f"IBAN length must be 15-34 chars: {len(normalized)}")
         if not normalized[:2].isalpha():
-            raise ValueError(f"IBAN must start with country code: {normalized}")
+            raise InvalidIBANError(f"IBAN must start with country code: {normalized}")
         rearranged = normalized[4:] + normalized[:4]
         numeric = "".join(str(ord(c) - 55) if c.isalpha() else c for c in rearranged)
         if int(numeric) % 97 != 1:
-            raise ValueError(f"Invalid IBAN checksum: {self.value}")
+            raise InvalidIBANError(f"Invalid IBAN checksum: {self.value}")
+        # Normalize value (uppercase, no spaces)
+        object.__setattr__(self, "value", normalized)
 
     def __str__(self) -> str:
         v = self.value.replace(" ", "").upper()
