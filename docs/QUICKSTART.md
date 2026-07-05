@@ -275,6 +275,9 @@ Pełna sekcja: [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md).
 | Pisać testy | [`TESTING.md`](TESTING.md) |
 | Zbudować binarkę | [`DEPLOYMENT.md`](DEPLOYMENT.md) |
 | Zrozumieć poszczególne serwisy | [`MODULES.md`](MODULES.md) |
+| Uruchomić skrypty CLI | [`SCRIPTS.md`](SCRIPTS.md) — bootstrap, backup, seed danych |
+| Zainstalować system | [`INSTALLER.md`](INSTALLER.md) — instalator Windows, OTA updater |
+| Uruchomić UI desktopowe | [`FRONTEND.md`](FRONTEND.md) — Flet UI, widoki, nawigacja |
 
 ---
 
@@ -283,6 +286,8 @@ Pełna sekcja: [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md).
 - [Wprowadzenie](INTRODUCTION.md) — misja, propozycja wartości, użytkownicy
 - [Instalacja i konfiguracja](INSTALLATION.md) — szczegółowy setup i zmienne środowiskowe
 - [Architektura](ARCHITECTURE.md) — diagramy C4, ADR, wzorce
+- [Skrypty CLI](SCRIPTS.md) — narzędzia administracyjne
+- [Instalator](INSTALLER.md) — instalacja Windows, OTA updater
 - [Rozwiązywanie problemów](TROUBLESHOOTING.md) — najczęstsze błędy i rozwiązania
 
 ---

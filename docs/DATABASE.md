@@ -376,6 +376,201 @@ Rejestruje zdarzenia SQLAlchemy:
 
 ---
 
+## 3a. sqlite-vec — wyszukiwanie wektorowe
+
+<!-- UZUPEŁNIONE: dodano sekcję o sqlite-vec i AsyncVectorStore -->
+
+### 3a.1 AsyncVectorStore
+
+**Plik:** `nexus_ai/db/vector_store.py`
+
+Asynchroniczny wrapper dla **sqlite-vec** — rozszerzenia SQLite dodającego typ wektorowy i funkcje odległości.
+
+```python
+from nexus_ai.db.vector_store import AsyncVectorStore
+
+store = AsyncVectorStore(db_path="app_data/vectors.db")
+
+# Inicjalizacja tabeli vec0
+await store.ensure_vec0_table(
+    table_name="invoice_vectors",
+    use_int8=False,  # True = kwantyzacja int8 (4x mniej RAM)
+)
+
+# Batch insert
+await store.insert_vectors_batch(
+    vectors=[
+        ("inv-123", [0.1, 0.2, ...]),  # (rowid, embedding)
+        ("inv-124", [0.3, 0.4, ...]),
+    ],
+    table_name="invoice_vectors",
+    metadata=[
+        {"category_code": "IT", "amount_net": "1000.00"},
+        {"category_code": "FUEL", "amount_net": "500.00"},
+    ],
+)
+
+# Wyszukiwanie podobieństwa
+results = await store.search_similar(
+    query_vector=[0.1, 0.2, ...],
+    limit=10,
+    distance_metric="cosine",  # cosine, l2, inner_product, manhattan
+    table_name="invoice_vectors",
+    partition={"category_code": "IT"},  # Partycjonowanie
+)
+# → [{rowid, embedding, _distance, category_code, amount_net}, ...]
+```
+
+### 3a.2 Unified Schema Registry
+
+Cztery predefiniowane tabele vec0:
+
+| Tabela | Dymen. | Partycja | Metadane | Opis |
+|---|---|---|---|---|
+| `invoice_vectors` | 384 | — | — | Główne embeddingi faktur dla wyszukiwania semantycznego |
+| `vendor_invoices` | 768 | `vendor_nip` | `category_code`, `amount_net`, `id` | Faktury per-kontrahent dla detekcji anomalii |
+| `ocr_corrections` | 768 | `tenant_id`, `contractor_nip` | `contractor_nip`, `tenant_id`, `id` | Korekty OCR użytkownika dla aktywnego uczenia |
+| `invoice_templates` | 768 | `contractor_nip` | `contractor_nip`, `layout_features` | Wzorce faktur dla automatycznego dekretowania |
+
+### 3a.3 Funkcje odległości
+
+| Funkcja SQL | Nazwa w API | Zastosowanie |
+|---|---|---|
+| `vec_distance_cosine` | `cosine` | Podobieństwo semantyczne (domyślna) |
+| `vec_distance_l2` | `l2` | Odległość euklidesowa |
+| `vec_distance_inner_product` | `inner_product` | Iloczyn skalarny |
+| `vec_distance_manhattan` | `manhattan` | Odległość Manhattan |
+
+### 3a.4 Kwantyzacja int8
+
+```python
+# 4x mniej pamięci, ~2% spadek dokładności
+await store.ensure_vec0_table(table_name="invoice_vectors", use_int8=True)
+await store.insert_vectors_batch(vectors, table_name="invoice_vectors", use_int8=True)
+```
+
+---
+
+## 3b. CQRS Projection Models
+
+<!-- UZUPEŁNIONE: dodano sekcję o CQRS read models -->
+
+**Plik:** `nexus_ai/db/projection_models.py`
+
+Modele SQLModel dla CQRS read-side — projekcje zdenormalizowane dla szybkich zapytań.
+
+### 3b.1 InvoiceReadModel
+
+Denormalizowany widok faktur z indeksami warunkowymi:
+
+```python
+class InvoiceReadModel(SQLModel, table=True):
+    __tablename__ = "invoice_read_model"
+    
+    invoice_id: str = Field(primary_key=True)
+    number: str | None
+    contractor_nip: str | None
+    contractor_name: str | None
+    amount_net: float | None
+    amount_gross: float | None
+    currency: str = "PLN"
+    status: ProjectionInvoiceStatus  # Enum
+    current_version: int = 0
+    approved_by: str | None
+    blocked_reason: str | None
+    trust_score: float = 0.0
+```
+
+**Indeksy:**
+- `idx_invoice_rm_status` — na statusie
+- `idx_invoice_rm_contractor` — na contractor_nip
+- `idx_invoice_rm_blocked` — WHERE status = 'blocked' (warunkowy)
+- `idx_invoice_rm_approved` — WHERE status = 'approved' (warunkowy)
+- `idx_invoice_rm_pending` — WHERE status IN ('created', 'submitted') (warunkowy)
+- `idx_invoice_rm_contractor_upper` — UPPER(contractor_nip) (expression index)
+
+### 3b.2 DecisionAnalytics
+
+Analityczny widok decyzji:
+
+```python
+class DecisionAnalytics(SQLModel, table=True):
+    __tablename__ = "decision_analytics"
+    
+    decision_id: str = Field(primary_key=True)
+    invoice_id: str
+    event_type: str
+    decision: str | None
+    trust_score: float = 0.0
+    ai_confidence: float = 0.0
+    alpha_vote: str | None
+    beta_vote: str | None
+    gamma_vote: str | None
+    decision_pattern: str | None
+    reasoning: str | None
+    original_decision: str | None
+    user_decision: str | None
+    user_id: str | None
+    version: int = 0
+    timestamp: str | None
+```
+
+### 3b.3 UserPreferences
+
+Preferencje użytkownika jako SQLModel z JSON-em:
+
+```python
+def to_dict(self) -> dict:
+    return self.model_dump(mode="json")
+
+@classmethod
+def from_dict(cls, data) -> UserPreferences:
+    return cls.model_validate(data)
+```
+
+---
+
+## 3c. AsyncBackup — asynchroniczny backup
+
+**Plik:** `nexus_ai/db/async_backup.py`
+
+Asynchroniczny backup wszystkich baz danych z użyciem `sqlite3.backup()` i fsspec:
+
+```python
+from nexus_ai.db.async_backup import AsyncBackup, create_async_backup
+
+backup = AsyncBackup()
+
+# Backup wszystkich baz
+results = await backup.backup_all(
+    output_dir="backups/2026-07-05",
+    suffix="daily",
+)
+# → {"oltp": {"status": "ok", "size_mb": 12.5}, ...}
+
+# Backup pojedynczej bazy
+result = await backup.backup_single(
+    source_path="app_data/nexus.db",
+    target_path="backups/nexus_20260705.db",
+)
+# → {"status": "ok", "size_mb": 12.5, "duration_s": 0.45, "atomic": True}
+
+# Backup do RAM
+await backup.backup_to_memory("app_data/nexus.db")
+
+# Convenience function
+results = await create_async_backup("backups/today")
+```
+
+**Cechy:**
+- Natywny `sqlite3.Connection.backup()` — atomiczny, online, non-blocking
+- fsspec — działa z file://, s3://, memory://
+- SQLCipher — backup między szyfrowanymi bazami
+- `TransactionalFileSystem` — atomowość backupu
+- 4 domyślne bazy: oltp, event_store, projections_invoices, projections_decisions
+
+---
+
 ### 3.5 Serwisy (migracja 003)
 
 #### `dq_decisions` — Kolejka decyzji
@@ -589,6 +784,57 @@ WHERE status = 'APPROVED'
 GROUP BY month
 ORDER BY month;
 ```
+
+---
+
+### 3.10 AsyncSQLiteQueue — kolejka komunikatów
+
+**Plik:** `nexus_ai/db/message_queue.py`
+
+Lekka, atomowa kolejka komunikatów w SQLite z priorytetami i DLQ:
+
+```python
+from nexus_ai.db.message_queue import AsyncSQLiteQueue
+
+queue = AsyncSQLiteQueue(
+    db_path="app_data/queue.db",
+    max_retries=3,
+    poll_interval=0.1,
+)
+
+# Enqueue
+msg_id = await queue.enqueue(
+    queue="invoice.process",
+    payload={"invoice_id": "inv-123"},
+    priority=5,                # 1-10, domyślnie 5
+    delay_seconds=60,          # Opóźnienie
+)
+
+# Batch enqueue (jedna transakcja)
+ids = await queue.enqueue_batch([
+    {"queue": "ocr", "payload": {...}, "priority": 3},
+    {"queue": "ocr", "payload": {...}, "priority": 4},
+])
+
+# Dequeue (atomicznie)
+msg = await queue.dequeue(queue="invoice.process")
+if msg:
+    await queue.ack(msg["id"])        # Potwierdź
+    # lub
+    await queue.nack(msg["id"], error="timeout")  # Nie potwierdzaj
+
+# Przywrócenie z DLQ
+replayed = await queue.replay_dlq()  # → liczba przywróconych
+
+# Statystyki
+stats = await queue.get_stats()
+# → {"pending": 10, "processing": 2, "dlq": 1, "dead_letter": 1}
+```
+
+**Indeksy cząstkowe (partial indexes):**
+- `idx_mq_dequeue` — WHERE status = 'pending' (priorytet DESC, czas ASC)
+- `idx_mq_delayed` — WHERE status = 'pending' AND delay_until IS NOT NULL
+- `idx_mq_dlq` — WHERE status = 'dlq'
 
 ---
 

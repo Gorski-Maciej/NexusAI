@@ -639,15 +639,128 @@ stateDiagram-v2
 | API → KSeF/GUS/NBP | HTTPS | Sieć | TLS 1.3 |
 
 ---
+## 9. Non-Functional Requirements (NFR)
 
-## 9. Strategia backupu
+<!-- UZUPEŁNIONE: dodano sekcję NFR -->
+
+### 9.1 Wydajność (Performance)
+
+| Metryka | Cel | Metoda pomiaru | SLA |
+|---|---|---|---|
+| Czas OCR (1 strona A4) | ≤ 10s | `run_ocr_pipeline()` timer | 99% < 15s |
+| Czas decyzji AI (Rada Agentów) | ≤ 30s | `decision_logger` timestamp | 95% < 30s |
+| API response (p95) | ≤ 500ms | OpenTelemetry trace | 99% < 1s |
+| API response (p99) | ≤ 2s | OpenTelemetry trace | 99.9% < 3s |
+| Liczba faktur/miesiąc | ≤ 3 000 | `FactsAggregator` | — |
+| Concurrent workers | ≤ 4 | Taskiq config | — |
+| Batch OCR (10 stron PDF) | ≤ 60s | `InvoiceOCRHeap` metrics | — |
+
+### 9.2 Skalowalność (Scalability)
+
+| Aspekt | Limit | Uwagi |
+|---|---|---|
+| Maksymalna liczba firm (multi-tenant) | 50 | Jedna instancja NATS/TigerBeetle |
+| Maksymalna liczba użytkowników | 10 concurrent | Per instancja |
+| Maksymalny rozmiar bazy SQLite | 10 GB | Po tym → archiwizacja Parquet |
+| Maksymalny rozmiar TigerBeetle | 100 GB | Osobny plik, append-only |
+| Maksymalny rozmiar pliku PDF | 50 MB | Upload guard |
+
+### 9.3 Dostępność (Availability)
+
+| Komponent | Architektura | RPO | RTO |
+|---|---|---|---|
+| SQLite (OLTP) | Pojedynczy plik | 24h (backup dzienny) | 15 min |
+| TigerBeetle | Pojedynczy plik (cluster mode available) | 24h | 30 min |
+| DuckDB (OLAP) | Pojedynczy plik | 24h | 15 min |
+| NATS Server | Pojedynczy proces | 24h | 5 min |
+| API + Worker | Pojedynczy proces | N/A (stateless) | 2 min |
+
+### 9.4 Bezpieczeństwo (Security)
+
+| Aspekt | Wymóg | Implementacja |
+|---|---|---|
+| **Szyfrowanie danych w spoczynku** | AES-256 | SQLCipher na SQLite |
+| **Szyfrowanie danych w transmisji** | TLS 1.3 | Dla KSeF/GUS/NBP API |
+| **Hashowanie haseł** | Argon2id | nexus-crypto (Rust) |
+| **Tokeny JWT** | RS256 | `nexus_ai/api/security.py` |
+| **RBAC** | Role + Permissiony | `nexus_ai/api/rbac.py` |
+| **Audit trail** | SHA-256 proof chain | `services/decision_logger.py` |
+| **Ochrona przed brute-force** | Rate limiting | `api/middleware.py` |
+
+### 9.5 Niezawodność (Reliability)
+
+| Mechanizm | Opis | Lokalizacja |
+|---|---|---|
+| **Retry z backoffem** | Exponential backoff 1s→2s→4s, max 3 próby | stamina + NATS JetStream |
+| **Circuit breaker** | Po 5 błędach → open circuit na 30s | stamina |
+| **Dead Letter Queue** | Po wyczerpaniu retry → osobny stream DLQ | NATS JetStream |
+| **Graceful degradation** | Gdy NATS niedostępny → fallback poll EventStore | ProjectionWorker |
+| **Health checks** | /health, /ready, /live | Granian API |
+| **Supervisor** | WorkerGuard monitoruje CPU/RAM → ogranicza współbieżność | luz/worker.py |
+
+### 9.6 Obsługa błędów (Error Budget)
+
+| Kategoria | Budżet błędów | Konsekwencja przekroczenia |
+|---|---|---|
+| OCR failure rate | < 5% | Przejście na tryb manualny |
+| API 5xx rate | < 0.1% | Alert Sentry |
+| Decision inconsistency | < 0.5% | Audyt + rollback |
+| NATS delivery failure | < 0.01% | Eskalacja do admina |
+
+---
+
+## 10. Strategia backupu i Disaster Recovery
+
+<!-- UZUPEŁNIONE: rozszerzono sekcję backupu o DR -->
+
+### 10.1 Backed-up data
 
 Wszystkie dane są w jednym katalogu `app_data/`:
-- `nexus.db` — SQLite (OLTP, szyfrowany AES-256)
-- `tigerbeetle.bin` — TigerBeetle ledger
-- `*.duckdb` — pliki DuckDB
+- `nexus.db` — SQLite (OLTP, szyfrowany AES-256 przez SQLCipher)
+- `tigerbeetle.bin` — TigerBeetle ledger (append-only, kryptograficzne dowody)
+- `events.db` — Event Store (append-only, Parquet archive)
+- `*.duckdb` — pliki DuckDB (analityka, projekcje)
+- `projections/*.db` — CQRS read models
 
-Backup = skopiowanie `app_data/` z szyfrowaniem AEAD (nexus-crypto) i weryfikacją SHA-256.
+### 10.2 Strategia backupu
+
+| Typ | Okres | Retention | Metoda |
+|---|---|---|---|
+| **Full backup** | Codziennie o 2:00 | 30 dni | `scripts/backup.py` → AEAD encrypted ZIP |
+| **Event archiving** | Automatycznie (zdarzenia >30 dni) | 5 lat | Parquet + ZSTD → przeszukiwalne przez DuckDB |
+| **TigerBeetle checkpoint** | Co 10 000 transferów | — | Wbudowany snapshot TigerBeetle |
+| **Config backup** | Przy każdej zmianie | 10 wersji | Wersjonowanie w `pixi.toml` |
+
+### 10.3 Disaster Recovery Plan
+
+| Scenariusz | RTO | RPO | Procedura |
+|---|---|---|---|
+| Uszkodzenie SQLite | 15 min | 24h | `backup.py restore` + replay eventów z EventStore |
+| Uszkodzenie TigerBeetle | 30 min | 24h | Przywróć `tigerbeetle.bin` z backupu |
+| Uszkodzenie systemu operacyjnego | 2h | 24h | `pixi install` + `pixi run migrate` + restore backup |
+| Utrata całego `app_data/` | 4h | 24h | Przywróć backup + pobierz modele AI ponownie |
+| Awaria NATS | 5 min | — | Restart procesu (stateless) |
+| Awaria dysku | 24h | 24h | Backup na osobnym dysku/lokalizacji |
+
+### 10.4 Procedura przywracania
+
+```bash
+# 1. Zatrzymaj aplikację
+pixi run stop
+
+# 2. Przywróć backup
+python -m nexus_ai.scripts.backup --restore backups/nexus_backup_20260705_020000.zip
+
+# 3. Zweryfikuj integralność
+python -m nexus_ai.scripts.backup --verify backups/nexus_backup_20260705_020000.zip
+
+# 4. Uruchom ponownie
+pixi run api
+pixi run worker
+
+# 5. Sprawdź health
+curl http://127.0.0.1:8000/health
+```
 
 ---
 
@@ -656,6 +769,7 @@ Backup = skopiowanie `app_data/` z szyfrowaniem AEAD (nexus-crypto) i weryfikacj
 - [00_META](00_META.md) — strona tytułowa, zespół
 - [Rust Module](RUST_MODULE.md) — szczegóły implementacji `nexus-crypto`
 - [Models Manifest](MODELS_MANIFEST.md) — 13 modeli GGUF w tabeli
+- [Foundation Layer](FOUNDATION.md) — UnitOfWork, Pipeline, BaseService, Repository, Result pattern
 - [Baza danych](DATABASE.md) — schematy ERD, migracje, backup
 - [Bezpieczeństwo](SECURITY.md) — threat model, szyfrowanie, OWASP
 - [Moduły i logika](MODULES.md) — agenci AI, pipeline OCR, serwisy

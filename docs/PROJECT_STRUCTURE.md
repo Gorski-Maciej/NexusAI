@@ -11,8 +11,7 @@ NexusAI/
 ├── nexus_ai/                    # ⭐ Główny pakiet aplikacji (Python + Rust)
 │   ├── api/                     # Litestar REST API (controllers, routes, DTOs)
 │   ├── core/                    # Fundament: config, crypto, mimalloc, brokers, plugins
-│   ├── db/                      # SQLModel + SQLAlchemy (OLTP) — modele, sesje
-│   ├── services/                # 60+ serwisów biznesowych (accounting, OCR, KSeF, …)
+│   ├── db/                      # SQLModel + SQLAlchemy (OLTP) — modele, sesje│   ├── services/                    # 70+ serwisów biznesowych (accounting, OCR, KSeF, RMK, FinOps, …)
 │   ├── events/                  # Event bus: domain events, projections, JetStream
 │   ├── domain/                  # Value Objects, agregaty DDD (Money, NIP, IBAN)
 │   ├── pipeline/                # Potoki przetwarzania (OCR consensus parser)
@@ -137,12 +136,18 @@ nexus_ai/
 │   ├── async_*.py               # async pool, async_backup (asyncio-friendly)
 │   └── zpk_schema.py            # JPK schema helpers
 │
-├── services/                    # 🏗️ Logika biznesowa (60+ serwisów)
+├── services/                    # 🏗️ Logika biznesowa (70+ serwisów)
 │   ├── accountant_logic.py      # ⭐ ZPKEngine (plan kont, dekretacja)
 │   ├── services.py              # Re-eksport (fasada)
 │   ├── core_services.py         # ValidationService, AnalyticsService
 │   ├── admin_services.py        # RiskThreshold, BillingRule, LDAP rules, Tax rules
 │   ├── triage_service.py        # Centrum decyzji (ASK_USER) — logika
+│   ├── period_closer.py         # ⭐ Zamknięcie okresu finansowego (KORE) [NOWY]
+│   ├── rmk_engine.py            # ⭐ Silnik RMK (rozliczenia międzyokresowe) [NOWY]
+│   ├── finops_meter.py          # ⭐ FinOps — zużycie zasobów/billing [NOWY]
+│   ├── document_fingerprint.py  # ⭐ Odciski dokumentów (SHA-256 + sig) [NOWY]
+│   ├── tigerbeetle_secure.py    # ⭐ Secure TigerBeetle client [NOWY]
+│   ├── opa_policy_generator.py  # ⭐ Generowanie reguł Rego [NOWY]
 │   ├── decision_structs.py      # Structy decyzyjne (TriageDecision, DecisionMode)
 │   ├── decision_queue.py        # Decision Queue (persistence + wyświetlanie)
 │   ├── decision_logger.py       # Proof Chain (SHA-256) dla każdej decyzji
@@ -195,7 +200,9 @@ nexus_ai/
 │   │   ├── client.py
 │   │   ├── ledger_initializer.py
 │   │   └── models.py
-│   └── … (~60 plików serwisów)
+│   ├── architecture/                # 🏛️ Architectural helpers
+│   │   └── perfect_accounting_architecture.py # DDD Aggregate, VO base classes
+│   └── … (~70 plików serwisów)
 │
 ├── events/                      # 📡 Event Sourcing & CQRS
 │   ├── domain_events.py         # ⭐ Definicje zdarzeń (InvoiceCreated, …)
@@ -274,6 +281,97 @@ nexus_ai/
     ├── __init__.py
     └── rules.rego               # Zasady podatkowe (reguły)
 ```
+
+---
+
+## 2.1 Diagram zależności między modułami
+
+<!-- UZUPEŁNIONE: zmieniono z 2a na 2.1 dla zgodności z narzędziami automatycznymi -->
+
+<!-- UZUPEŁNIONE: dodano diagram zależności -->
+
+```mermaid
+flowchart TD
+    subgraph Prezentacja
+        FRONTEND[frontend/ - Flet UI]
+    end
+    
+    subgraph API
+        API[api/ - Litestar REST]
+        ROUTES[api/routes/ - 27 kontrolerów]
+    end
+    
+    subgraph Aplikacja
+        SCRIPTS[scripts/ - CLI]
+        WORKER[luz/ - Taskiq Worker]
+        SERVICES[services/ - logika biznesowa]
+        EVENTS[events/ - Event Sourcing]
+        PIPELINE[pipeline/ - OCR]
+    end
+    
+    subgraph Domena
+        DOMAIN[domain/ - Value Objects]
+        DB[db/ - SQLModel + SQLAlchemy]
+    end
+    
+    subgraph Infrastruktura
+        CORE[core/ - config, crypto, otel]
+        INTEGRATIONS[integrations/ - KSeF, GUS]
+        INSTALLER[installer/ - setup, OTA]
+        TAX[tax/ - Rego policies]
+        RUST[rust/ - nexus-crypto]
+    end
+    
+    subgraph Dane
+        SQLITE[(SQLite + SQLCipher)]
+        DUCKDB[(DuckDB)]
+        TB[(TigerBeetle)]
+        NATS[(NATS JetStream)]
+    end
+    
+    FRONTEND -->|REST/WS| API
+    API --> ROUTES
+    
+    ROUTES -->|Zapytania| DB
+    ROUTES -->|Publikuj zadania| NATS
+    
+    NATS -->|Dostarcz| WORKER
+    WORKER --> SERVICES
+    
+    SERVICES --> DB
+    SERVICES -->|Double-entry| TB
+    SERVICES -->|Analityka| DUCKDB
+    SERVICES -->|Eventy| EVENTS
+    SERVICES -->|OCR| PIPELINE
+    
+    EVENTS -->|Append| DB
+    EVENTS -->|Pub/Sub| NATS
+    
+    PIPELINE --> DOMAIN
+    
+    DOMAIN --> DB
+    
+    CORE -->|Kryptografia| RUST
+    CORE -->|Config| INTEGRATIONS
+    CORE -->|Rego| TAX
+    
+    SCRIPTS -->|Bootstrap| CORE
+    SCRIPTS -->|Seed| DB
+    
+    INSTALLER -->|Dependencies| CORE
+    
+    DB --> SQLITE
+    SERVICES -->|OLAP| DUCKDB
+    SERVICES -->|Ledger| TB
+    EVENTS -->|Archiving| DUCKDB
+```
+
+**Zależności między modułami:**
+1. `frontend/` → `api/` → `services/` → `db/` → `SQLite`
+2. `services/` → `events/` → `NATS JetStream`
+3. `services/` → `pipeline/` → `domain/`
+4. `core/` → `rust/`, `tax/`, `integrations/`
+5. Wszystkie moduły → `core/config.py` (centralna konfiguracja)
 
 ---
 

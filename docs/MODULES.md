@@ -389,6 +389,38 @@ def cross_validate_invoice(
 
 Pełna lista serwisów (70+): `nexus_ai/services/` (katalog).
 
+### 4.7 Zarządzanie okresami, RMK i operacje finansowe
+
+| Plik | Klasa | Odpowiedzialność |
+|---|---|---|
+| `period_closer.py` | `PeriodCloser` | Zamykanie okresów finansowych — atomowe zerowanie kont kosztowych i przychodowych przez TigerBeetle CLOSING_DEBIT/CREDIT z linked transfers |
+| `rmk_engine.py` | `RMKEngine` | Rozliczenia Międzyokresowe Kosztów (RMK) — generowanie harmonogramów memoriałowych z dzienną precyzją pro-rata, zapis w DuckDB |
+| `accountant_logic.py` | `AccountantLogic` | Logika księgowa — sugestie kont, dopasowanie wzorców księgowań |
+| `tax_strategies.py` | `StrategyRegistry` | Rejestr strategii podatkowych — JDG ryczałt/liniowy, CIT pełna księgowość, CIT estoński |
+| `finops_meter.py` | `FinOpsRates`, `FinOpsSnapshot` | Monitoring kosztów operacyjnych (FinOps) — koszt CPU/RAM/GPU na fakturę, detekcja anomalii kosztowych (Z-score, Polars) |
+| `tigerbeetle_secure.py` | `SecureTigerBeetleClient` | RBAC-aware wrapper TigerBeetle — OWNER może postować, WORKER tylko pending; naruszenia → SecurityAlert |
+| `document_fingerprint.py` | `DocumentFingerprint` | Trójwarstwowy odcisk dokumentu: SHA-256 (binary) + multi-hash wizualny (phash/dhash/whash + ORB) + semantyczny (MD5 z danych) + Merkle root miesięczny |
+
+### 4.8 Orkiestracja CFO, Eventy i Analityka
+
+| Plik | Klasa | Odpowiedzialność |
+|---|---|---|
+| `cfo_offline.py` | `CFOOrchestrator` | Główny orkiestrator CFO — koordynuje LocalRAG, KSEFDefender, CashflowForecast, PaymentPriority, AutoDecree w trybie offline-first |
+| `facts_aggregator.py` | `FactsAggregator` | Agregator faktów księgowych — zbiera miary finansowe, generuje FactSheet dla Rady Agentów |
+| `event_log.py` | `EventLog` | Historia wszystkich zdarzeń i decyzji — dual storage (SQLite + DuckDB), przeszukiwalna dla systemu analitycznego, statystyki przez Polars |
+| `trace_generator.py` | `TraceGenerator` | Generator ścieżki decyzyjnej — tworzy czytelny dla człowieka opis decyzji podatkowej z szablonów lub automatycznie z werdyktu |
+| `daily_briefing.py` | `DailyBriefingService` | Codzienne podsumowanie — top decyzje wymagające akcji, statystyki dnia |
+
+### 4.9 Infrastruktura i powiadomienia
+
+| Plik | Klasa | Odpowiedzialność |
+|---|---|---|
+| `notification_manager.py` | `AsyncNotificationManager` | Centralny async system powiadomień — 6 kategorii, 4 priorytety, integracja z DecisionQueue, auto-czyszczenie wygasłych |
+| `notification_service.py` | `AsyncNotificationService(AsyncBaseService)` | Wielokanałowe powiadomienia (app, email, push) — integracja z DailyBriefingGenerator + MultiChannelConfig |
+| `hot_reload.py` | `HotReloadListener` | NATS JetStream subscriber — nasłuchuje zmian reguł (billing, risk, tax, ledger), czyści cache API przez JetStream durable consumer z checkpointami |
+| `opa_policy_generator.py` | `OpaPolicyGenerator` | Generator polityk Rego — konwertuje reguły podatkowe z DuckDB na poprawny kod Rego (else-chain, first-match-wins), generuje OPA data documents |
+| `otel_fallback.py` | `BufferedSpan`, `FileSpanBuffer` | Fallback OpenTelemetry — buforuje spany na dysku gdy collector niedostępny, replay przy ponownym połączeniu |
+
 ---
 
 ## 5. Silnik reguł podatkowych (OPA / Rego)
@@ -593,7 +625,345 @@ PDF/JPEG → parser.py (pypdfium2) → obraz 300 DPI
 
 ---
 
-## 11. Core / Fundament Systemu (22 komponenty)
+## 11. Core / Fundament Systemu (28 komponentów)
+
+### 11a. DI — Wstrzykiwanie zależności
+
+**Plik:** `nexus_ai/core/di.py`
+
+System zawiera dwa mechanizmy DI:
+
+#### TaskiqDepends (dla zadań Taskiq)
+
+```python
+from taskiq import TaskiqDepends
+from nexus_ai.core.di import get_db_session, get_config
+
+@broker.task(task_name="my_task")
+async def my_task(
+    config: AppConfig = TaskiqDepends(get_config),
+    db: Session = TaskiqDepends(get_db_session),
+):
+    # db.query(...) — gotowe!
+```
+
+**Dostępne zależności:**
+| Funkcja | Zwraca | Opis |
+|---|---|---|
+| `get_config()` | `AppConfig` | Konfiguracja aplikacji (singleton) |
+| `get_engine()` | `Engine` | Silnik SQLAlchemy (cache'owany) |
+| `get_db_session()` | `Session` | Sesja DB (auto-commit/rollback) |
+| `get_duckdb_manager()` | `DuckDBManager` | Manager DuckDB (scoped per task) |
+
+**Cache engine:**
+```python
+_ENGINE_CACHE: dict[str, Engine] = {}  # Thread-safe dla 3.13t
+
+# Przy shutdown:
+await dispose_all_engines()  # Zamyka wszystkie cache'owane engine
+```
+
+#### AppServices (dla Litestar)
+
+```python
+from nexus_ai.core.di import AppServices, create_app_services
+
+services = create_app_services(config)
+
+services.decision_engine   # DecisionEngine
+services.duckdb_manager    # DuckDBManager
+services.event_store       # EventStore
+services.jetstream_bus     # JetStreamEventBus
+services.model_manager     # ModelManager
+services.broker            # Broker (Taskiq)
+```
+
+#### LazyImport
+
+```python
+from nexus_ai.core.di import LazyImport
+
+# Opóźniony import — rozwiązuje circular dependency
+llm = LazyImport("nexus_ai.core.inference", "InferenceService")
+svc = llm(model_path="models/model.gguf")  # Import dopiero tutaj
+```
+
+---
+
+### 11b. NATS Utilities — komunikacja przez NATS
+
+**Plik:** `nexus_ai/core/nats_utils.py`
+
+Kompletny zestaw narzędzi do komunikacji przez NATS:
+
+#### Connection helpers
+
+```python
+from nexus_ai.core.nats_utils import get_connection, safe_close
+
+# Połączenie z callbackami
+nc = await get_connection(
+    nats_url="nats://127.0.0.1:4222",
+    name="nexus-nats",
+    connect_timeout=10.0,
+    enable_callbacks=True,  # disconnect/reconnect/close/error callbacki
+)
+
+# Bezpieczne zamknięcie
+await safe_close(nc, flush=True)
+```
+
+#### NatsRpcClient — Request-Reply (RPC)
+
+```python
+from nexus_ai.core.nats_utils import NatsRpcClient
+
+client = NatsRpcClient(request_timeout=5.0)
+
+try:
+    response = await client.request(
+        subject="model.inference",
+        data={"prompt": "Zaksięguj fakturę..."},
+    )
+except NoRespondersError:
+    logger.warning("No worker available")
+
+await client.close()
+```
+
+#### NatsSubscription — Async Iterator
+
+```python
+from nexus_ai.core.nats_utils import NatsSubscription
+
+async with NatsSubscription(subject="invoice.>") as sub:
+    async for msg in sub:
+        metadata = await sub.get_metadata(msg)
+        print(f"Seq: {metadata['stream_seq']}")
+```
+
+#### NatsConfigStore — Key-Value Store
+
+```python
+from nexus_ai.core.nats_utils import NatsConfigStore
+
+config_store = NatsConfigStore(local_fallback=True)
+await config_store.start()
+
+await config_store.put("key", {"value": 123})
+value = await config_store.get("key", default=None)
+await config_store.delete("key")
+
+# Watch dla zmian
+async for update in config_store.watch():
+    print(f"Key changed: {update.key}")
+
+await config_store.stop()
+```
+
+**Domyślne buckety KV:**
+| Bucket | Opis |
+|---|---|
+| `nexus-config` | Globalna konfiguracja |
+| `nexus-rules` | Reguły podatkowe i ryzyka |
+| `nexus-features` | Feature flagi |
+| `nexus-workers` | Status i heartbeat workerów |
+| `nexus-cache` | Cache odpowiedzi API |
+
+#### NatsFileStore — Object Store
+
+```python
+from nexus_ai.core.nats_utils import NatsFileStore
+
+file_store = NatsFileStore(local_cache_dir="app_data/nats_cache")
+await file_store.start()
+
+await file_store.put("invoice.pdf", pdf_bytes, bucket="nexus-files")
+data, meta = await file_store.get("invoice.pdf", bucket="nexus-files")
+await file_store.delete("invoice.pdf", bucket="nexus-files")
+
+async for entry in file_store.list(prefix="2026-"):
+    print(entry)
+
+await file_store.stop()
+```
+
+**Domyślne buckety Object Store:**
+| Bucket | Opis |
+|---|---|
+| `nexus-files` | Faktury PDF i załączniki |
+| `nexus-backups` | Backupy baz danych |
+| `nexus-ocr` | Obrazy i wyniki OCR |
+| `nexus-reports` | Wygenerowane raporty |
+
+#### NatsSupervisor — Health Check
+
+```python
+from nexus_ai.core.nats_utils import NatsSupervisor
+
+supervisor = NatsSupervisor()
+await supervisor.start()
+
+# Szybki health check
+health = await supervisor.quick_health()
+# → {"nats": "OK", "streams": 5}
+
+# Pełny status
+status = await supervisor.get_full_status()
+# → {"connection": {...}, "streams": [...], "stream_count": 5}
+
+await supervisor.stop()
+```
+
+---
+
+### 11c. SecretsManager — Zarządzanie sekretami
+
+**Plik:** `nexus_ai/core/secrets.py`
+
+Trzy warstwy zarządzania sekretami:
+
+#### SecretsManager — system keyring
+
+```python
+from nexus_ai.core.secrets import SecretsManager
+
+# Zapis do systemowego keyring
+SecretsManager.save_secret("ksef_token", "abc123")
+
+# Odczyt
+token = SecretsManager.get_secret("ksef_token")
+
+# Usunięcie
+SecretsManager.delete_secret("ksef_token")
+```
+
+#### LocalSecretsCache — szyfrowany cache z TTL
+
+```python
+from nexus_ai.core.secrets import LocalSecretsCache
+
+cache = LocalSecretsCache(
+    cache_path="app_data/secrets_cache.json",
+    ttl_hours=24,
+)
+
+cache.save("ksef_token", "abc123")
+value = cache.get("ksef_token")  # → "abc123" lub None (TTL wygasł)
+```
+
+#### OfflineFirstSecretResolver
+
+```python
+from nexus_ai.core.secrets import OfflineFirstSecretResolver
+
+resolver = OfflineFirstSecretResolver(cache)
+
+# Najpierw live provider, potem fallback do cache
+value = resolver.resolve(
+    key="ksef_token",
+    provider=lambda: fetch_from_vault("ksef_token"),
+)
+```
+
+---
+
+### 11d. PluginManager v2 — System wtyczek
+
+**Plik:** `nexus_ai/core/plugins.py`
+
+Lifecycle-aware system wtyczek z typowanymi hookami:
+
+```python
+from nexus_ai.core.plugins import PluginManager, PluginProtocol
+from nexus_ai.core.bus import EventBus
+
+class MyPlugin:
+    name = "my_plugin"
+    version = "1.0.0"
+    description = "Does something useful"
+
+    async def on_startup(self, bus: EventBus) -> None:
+        await bus.subscribe(SomeEvent, self.handle_event)
+
+    async def on_shutdown(self) -> None:
+        await self.cleanup()
+
+# Rejestracja
+manager = PluginManager()
+manager.register(MyPlugin())
+
+# Lifecycle
+await manager.run_startup(event_bus)
+# ... aplikacja działa ...
+await manager.run_shutdown()
+
+# Auto-discovery z pakietu
+manager.discover_plugins("core.exporters")
+
+# Lista pluginów
+for name, info in manager.list_plugins().items():
+    print(f"{info.name} v{info.version}: {info.description}")
+```
+
+---
+
+### 11e. Taskiq — Middleware i Result Backendy
+
+**Plik:** `nexus_ai/core/taskiq.py`
+
+#### Middleware
+
+| Middleware | Opis |
+|---|---|
+| **TaskMetricsMiddleware** | Metryki OTel dla zadań (czas, status) |
+| **PiiScanMiddleware** | Skanowanie PII w payloadach zadań (NIP, PESEL, REGON, e-mail) |
+| **TaskTracingMiddleware** | OTel tracing z baggage context |
+| **SentryTaskMiddleware** | Sentry scope dla zadań + breadcrumbs |
+
+```python
+# Rejestracja w brokerze:
+from nexus_ai.core.taskiq import (
+    TaskMetricsMiddleware,
+    PiiScanMiddleware,
+    TaskTracingMiddleware,
+)
+
+broker = Broker().with_middlewares(
+    TaskMetricsMiddleware(),
+    PiiScanMiddleware(block_on_pii=False),
+    TaskTracingMiddleware(),
+)
+```
+
+#### SqliteResultBackend
+
+```python
+from nexus_ai.core.taskiq import SqliteResultBackend
+
+backend = SqliteResultBackend(db_path="app_data/taskiq_results.db")
+
+await backend.set_result(task_id, result)
+result = await backend.get_result(task_id)
+await backend.close()
+```
+
+#### HybridResultBackend
+
+```python
+from nexus_ai.core.taskiq import HybridResultBackend
+
+backend = HybridResultBackend(
+    sqlite_path="app_data/taskiq_results.db",
+    nats_servers=["nats://localhost:4222"],
+    bucket_name="nexus-task-results",
+)
+# NATS Object Store → SQLite fallback
+```
+
+---
+
+### 11.1 Komunikacja i broker
 
 ### 11.1 Komunikacja i broker
 

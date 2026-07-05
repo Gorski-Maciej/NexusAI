@@ -10,8 +10,8 @@
 |---|---|
 | **Nazwa** | NexusAI |
 | **Slug** | `nexus-ai` |
-| **Wersja** | **2.3.0** — „Free-Threaded Phoenix" |
-| **Data wydania** | 2026-06-10 |
+| **Wersja** | **2.3.1-dev** — „Enterprise Documentation" |
+| **Data wydania** | 2026-07-05 |
 | **Status deweloperski** | Beta (klasa 4) — patrz `pyproject.toml` classifiers |
 | **Język** | Python ≥3.13 (free-threaded, `cp313t`) + Rust ≥1.78 |
 | **Architektura** | Modularny Monolit z komunikacją przez NATS JetStream; CQRS + Event Sourcing |

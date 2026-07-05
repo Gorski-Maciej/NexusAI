@@ -144,30 +144,18 @@ Więcej sekwencji: [`ARCHITECTURE.md`](ARCHITECTURE.md#4-diagramy-sekwencji).
 
 ## 6. Słownik kluczowych pojęć (krótki)
 
-Pełny glosariusz: [`GLOSSARY.md`](GLOSSARY.md).
+<!-- UZUPEŁNIONE: skrócono słownik, pełny glosariusz w osobnym pliku -->
 
-| Termin | Znaczenie |
-|---|---|
-| **AUTO_POST** | Decyzja automatyczna — system sam zaksięguje dekret. |
-| **ASK_USER** | Decyzja wymagająca użytkownika — system wyświetla 2–5 opcji. |
-| **KSeF** | Krajowy System e-Faktur (Ministerstwo Finansów PL). |
-| **JPK** | Jednolity Plik Kontrolny — cyfrowe deklaracje podatkowe. |
-| **NIP** | Numer Identyfikacji Podatkowej (10 cyfr). |
-| **Biała Lista MF** | Rejestr podatników VAT czynnych — weryfikacja rachunków bankowych. |
-| **UoR** | Ustawa o rachunkowości (Dz.U. 1994 nr 121 poz. 591 z późn. zm.). |
-| **IFRS** | Międzynarodowe Standardy Sprawozdawczości Finansowej. |
-| **CIT** | Podatek dochodowy od osób prawnych (19% standardowy, 9% maly podatnik). |
-| **PIT** | Podatek dochodowy od osób fizycznych (skala podatkowa, ryczałt, liniówka). |
-| **VAT** | Podatek od towarów i usług (23%, 8%, 5%, 0%, zw.). |
-| **CQRS** | Command Query Responsibility Segregation (rozdzielenie zapisu i odczytu). |
-| **Event Sourcing** | Wzorzec: zamiast mutacji, zapisujemy zdarzenia jako źródło prawdy. |
-| **GGUF** | Format kwantyzowanych modeli LLM (Q4_K_M, Q5_0 — mniejsze, ale wciąż dokładne). |
-| **NATS JetStream** | Lekki broker wiadomości z wbudowanym KV Store i Object Store. |
-| **TigerBeetle** | Silnik double-entry accounting (open-source, napisany w Zig). |
-| **SQLCipher** | Szyfrowanie AES-256 każdej strony SQLite. |
-| **AEAD** | Authenticated Encryption with Associated Data (ChaCha20-Poly1305). |
-| **Argon2id** | Algorytm KDF (Key Derivation Function) — odporny na GPU/ASIC. |
-| **Rego** | Język polityk OPA (Open Policy Agent). |
+Pełny glosariusz ze 100+ terminami: [`GLOSSARY.md`](GLOSSARY.md).
+
+| Termin | Znaczenie | Pełny opis |
+|---|---|---|
+| **AUTO_POST** | Decyzja automatyczna — system sam księguje | [`GLOSSARY.md#auto_post`](GLOSSARY.md) |
+| **ASK_USER** | Decyzja wymagająca użytkownika | [`GLOSSARY.md#ask_user`](GLOSSARY.md) |
+| **KSeF** | Krajowy System e-Faktur (MF) | [`GLOSSARY.md#ksef`](GLOSSARY.md) |
+| **JPK** | Jednolity Plik Kontrolny | [`GLOSSARY.md#jpk`](GLOSSARY.md) |
+| **CQRS** | Command Query Responsibility Segregation | [`GLOSSARY.md#cqrs`](GLOSSARY.md) |
+| **Event Sourcing** | Zdarzenia jako źródło prawdy | [`GLOSSARY.md#event-sourcing`](GLOSSARY.md) |
 
 ---
 

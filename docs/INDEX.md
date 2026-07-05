@@ -10,7 +10,8 @@ Dokumentacja podzielona jest na **6 logicznych bloków** (modułów iteracyjnych
 
 ```
 M1 Fundament        → README, 00_META, INTRODUCTION, QUICKSTART, PROJECT_STRUCTURE
-M2 Architektura     → ARCHITECTURE, DATABASE, MODULES, RUST_MODULE, MODELS_MANIFEST
+M1b Rozszerzenia    → SCRIPTS, INSTALLER, FRONTEND, EVENTS, PIPELINE, INFERENCE, MONITORING, HTTP_CLIENT, CONFIG
+M2 Architektura     → ARCHITECTURE, FOUNDATION, DOMAIN, PDFIUM, WORKFLOWS, DECISIONS, DATABASE, MODULES, BUILD_CONFIG, RUST_MODULE, MODELS_MANIFEST
 M3 API              → API
 M4 Operacje         → INSTALLATION, TESTING, DEPLOYMENT, TROUBLESHOOTING
 M5 Bezpieczeństwo   → SECURITY, COMPLIANCE
@@ -31,7 +32,7 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 
 ### Sekcja 2 — Spis treści
 - Plik: **ten plik** [`docs/INDEX.md`](INDEX.md)
-- Zawartość: Nawigacja po wszystkich 21 sekcjach + tagowy indeks A–W.
+- Zawartość: Nawigacja po wszystkich sekcjach + tagowy indeks A–W.
 
 ### Sekcja 3 — Wprowadzenie
 - Plik: [`docs/INTRODUCTION.md`](INTRODUCTION.md)
@@ -45,9 +46,65 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 - Plik: [`docs/ARCHITECTURE.md`](ARCHITECTURE.md)
 - Zawartość: **3 diagramy C4** (Context, Container, Component), warstwy DDD, **14 wzorców**, 3 diagramy sekwencji (faktura, Rada Agentów, **NATS JetStream między agentami** — NOWE), **8 ADR**, model domeny (agregaty + VOs), maszyna stanów faktury, stack z uzasadnieniem.
 
+### Sekcja 5a — Warstwa Foundation
+- Plik: [`docs/FOUNDATION.md`](FOUNDATION.md) (NOWY)
+- Zawartość: Generyczne komponenty infrastrukturalne — UnitOfWork, Pipeline, BaseRepository, BaseService, AdminServiceRegistry, Result[T,E] pattern, auto_crud. Oszczędza ~10 300 linii boilerplate'u w całym systemie.
+
 ### Sekcja 6 — Struktura projektu
 - Plik: [`docs/PROJECT_STRUCTURE.md`](PROJECT_STRUCTURE.md)
-- Zawartość: Drzewo `nexus_ai/`, konwencje nazewnicze, lokalizacja kluczowych plików.
+- Zawartość: Drzewo `nexus_ai/` z 70+ serwisami, konwencje nazewnicze, lokalizacja kluczowych plików.
+
+### Sekcja 6a — Skrypty CLI
+- Plik: [`docs/SCRIPTS.md`](SCRIPTS.md) (NOWY)
+- Zawartość: Narzędzia CLI: bootstrap, download modeli, seed danych, backup, reset DB, build Nuitka, Taskiq worker z WorkerGuard, NexusOrchestrator z 4-etapowym splash screen.
+
+### Sekcja 6b — Instalator Windows / OTA
+- Plik: [`docs/INSTALLER.md`](INSTALLER.md) (NOWY)
+- Zawartość: Dependency downloader (NATS, TB, OPA), model downloader (SHA-256, resume), OTA updater z Flet UI dialogami, Windows native toasty.
+
+### Sekcja 6c — Frontend (Flet UI)
+- Plik: [`docs/FRONTEND.md`](FRONTEND.md) (NOWY)
+- Zawartość: Navigator 2.0, TemplateRoute routing, RouteGuard, BareChartLineChart/PieChart (0 zależności od matplotlib), ThemeManager (Material 3), NexusApiClient z cache.
+
+### Sekcja 6d — Event Sourcing / CQRS
+- Plik: [`docs/EVENTS.md`](EVENTS.md) (NOWY)
+- Zawartość: 10 zdarzeń domenowych, AsyncEventStore (SQLite + Parquet archiving), JetStreamEventBus (NATS), CQRS Projections (InvoiceProjection, DecisionProjection), ProjectionWorker, DomainEventSchemaRegistry, JSON Schema auto-generacja.
+
+### Sekcja 6e — Pipeline OCR
+- Plik: [`docs/PIPELINE.md`](PIPELINE.md) (NOWY)
+- Zawartość: 4 silniki OCR (Tesseract, PaddleOCR, docTR, EasyOCR), BaseOCREngine Template Method, OCR Consensus (voting), InvoiceParser (regex + bbox), image preprocessing, memory management.
+
+### Sekcja 6f — AI Inference
+- Plik: [`docs/INFERENCE.md`](INFERENCE.md) (NOWY)
+- Zawartość: InferenceService (lazy loading, TTL auto-unload), ModelManager (cache, cleanup_expired), AdaptiveBatcher (dynamiczne batchowanie GPU z timeoutem).
+
+### Sekcja 6g — Monitorowanie systemu
+- Plik: [`docs/MONITORING.md`](MONITORING.md) (NOWY)
+- Zawartość: ProcessMonitor (oneshot, USS/PSS), SystemMonitor (CPU/RAM/disk/net), WorkerGuard, health check thresholds, integracja z OpenTelemetry.
+
+### Sekcja 6h — HTTP Client
+- Plik: [`docs/HTTP_CLIENT.md`](HTTP_CLIENT.md) (NOWY)
+- Zawartość: CachedHttpClient (HTTP/2, connection pool, circuit breaker), Exporters (Optima XML, Insert EPP), FSSpecStorageProvider, NBP API cache warming.
+
+### Sekcja 6i — Konfiguracja systemu
+- Plik: [`docs/CONFIG.md`](CONFIG.md) (NOWY)
+- Zawartość: Konfiguracja TOML, profile base/dev/prod, zmienne środowiskowe (50+), protocols.toml.
+
+### Sekcja 6j — Warstwa Domenowa (DDD)
+- Plik: [`docs/DOMAIN.md`](DOMAIN.md) (NOWY)
+- Zawartość: Agregaty (InvoiceAggregate, ContractorAggregate, TaxDecisionAggregate), Value Objects (Money, NIP, IBAN, PESEL, VatRate, AccountCode), Domain Events (wersja bazowa), maszyna stanów domenowa.
+
+### Sekcja 6l — Engine PDF (PDFium)
+- Plik: [`docs/PDFIUM.md`](PDFIUM.md) (NOWY)
+- Zawartość: PdfDocumentSession, RenderFlags (8 flag), renderowanie stron (PIL/JPEG/PNG), ProgressivePDFLoader, 14 DTO (PDFTextRange, PDFSignature, PDFAnnotation, PDFFormField, PDFACompliance), wydajność i ograniczenia.
+
+### Sekcja 6m — System Decyzyjny
+- Plik: [`docs/DECISIONS.md`](DECISIONS.md) (NOWY)
+- Zawartość: DecisionLogger (3 tabele DuckDB: decisions, trust_score_cache, decisions_meta), AsyncDecisionQueue (4 priorytety, 4 statusy, auto-expire), TrustScore (4 komponenty), CorrectionStats, Autopilot API (7 endpointów), integracja z ProofChain.
+
+### Sekcja 6n — Konfiguracja Build i Środowiska
+- Plik: [`docs/BUILD_CONFIG.md`](BUILD_CONFIG.md) (NOWY)
+- Zawartość: pixi.toml (30+ tasków, env vars, dependencje systemowe), pyproject.toml (maturin, mypyc, Nuitka, hatch), pre-commit hooks, user.nuitka-package-config.yml, start.sh.
 
 ### Sekcja 7 — Instalacja i konfiguracja
 - Plik: [`docs/INSTALLATION.md`](INSTALLATION.md)
@@ -136,7 +193,12 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 | Jak działa weryfikacja SHA-256 modeli? | [`RUST_MODULE.md`](RUST_MODULE.md#33-sha-256) |
 | Jakie modele AI są używane? | [`MODELS_MANIFEST.md`](MODELS_MANIFEST.md#2-5-głównych-agentów) |
 | Jak działa konsensus OCR? | [`MODULES.md`](MODULES.md#32-mechanizm-walidacji-krzyżowej) — kod produkcyjny z algorytmem Levenshtein |
-| Co nowego w 2.3.0? | [`CHANGELOG.md`](CHANGELOG.md) |
+| Jak działa pipeline OCR? | [`PIPELINE.md`](PIPELINE.md) — 4 silniki, consensus, parser |
+| Jak działają zdarzenia domenowe? | [`EVENTS.md`](EVENTS.md#2-domain-events) — 10 typów, EventStore, CQRS |
+| Gdzie jest definiowany EventStore? | [`EVENTS.md`](EVENTS.md#3-asynceventstore) — append-only SQLite + Parquet |
+| Gdzie są udokumentowane widoki UI? | [`FRONTEND.md`](FRONTEND.md#8-widoki) — 7 widoków, nawigacja, diagram przepływu |
+| Jak działa instalator Windows? | [`INSTALLER.md`](INSTALLER.md#2-dependency-downloader) — binarki, modele, OTA updater |
+| Co nowego w 2.3.1-dev? | [`CHANGELOG.md`](CHANGELOG.md) |
 | Dokumentacja prawna? | [`BIBLIOGRAPHY.md`](BIBLIOGRAPHY.md) |
 | Rynek i konkurencja? | [`RELATED.md`](RELATED.md#1-podobneporównywalne-systemy) |
 
@@ -228,7 +290,7 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 
 ---
 
-## 📋 Lista wszystkich plików dokumentacji (25)
+## 📋 Lista wszystkich plików dokumentacji (37)
 
 | # | Plik | Sekcja | Typ | Status |
 |---|---|---|---|---|
@@ -238,27 +300,61 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 | 4 | `docs/INTRODUCTION.md` | 3. Wprowadzenie | Istniejący | ✅ |
 | 5 | `docs/QUICKSTART.md` | 4. Szybki start | Istniejący | ✅ |
 | 6 | `docs/ARCHITECTURE.md` | 5. Architektura | Zaktualizowany | ✅ |
-| 7 | `docs/PROJECT_STRUCTURE.md` | 6. Struktura projektu | Zaktualizowany | ✅ |
-| 8 | `docs/INSTALLATION.md` | 7. Instalacja | Istniejący | ✅ |
-| 9 | `docs/DATABASE.md` | 8. Baza danych | Zaktualizowany | ✅ |
-| 10 | `docs/API.md` | 9. API / Komunikacja | Zaktualizowany | ✅ |
-| 11 | `docs/MODULES.md` | 10. Moduły / Logika | Zaktualizowany | ✅ |
-| 12 | `docs/TESTING.md` | 11. Testowanie | Istniejący | ✅ |
-| 13 | `docs/DEPLOYMENT.md` | 12. Wdrożenie | Istniejący | ✅ |
-| 14 | `docs/TROUBLESHOOTING.md` | 13. Rozwiązywanie problemów | Istniejący | ✅ |
-| 15 | `docs/SECURITY.md` | 14. Bezpieczeństwo | Zaktualizowany | ✅ |
-| 16 | `docs/COMPLIANCE.md` | 15. Zgodność z przepisami | Istniejący | ✅ |
-| 17 | `docs/CONTRIBUTING.md` | 16. Proces rozwoju | Istniejący | ✅ |
-| 18 | `docs/USER_GUIDE.md` | 17. Podręcznik użytkownika | Istniejący | ✅ |
-| 19 | `docs/GLOSSARY.md` | 18. Słownik pojęć | Istniejący | ✅ |
-| 20 | `docs/FAQ.md` | 19. FAQ | Istniejący | ✅ |
-| 21 | `docs/BIBLIOGRAPHY.md` | 20a. Bibliografia | NOWY | ✅ |
-| 22 | `docs/RELATED.md` | 20b. Powiązane | NOWY | ✅ |
-| 23 | `docs/RUST_MODULE.md` | 20c. Moduł Rust | NOWY | ✅ |
-| 24 | `docs/MODELS_MANIFEST.md` | 20d. Manifest AI | NOWY | ✅ |
-| 25 | `docs/CHANGELOG.md` | 20e. Changelog | Istniejący | ✅ |
+| 7 | **`docs/FOUNDATION.md`** | **5a. Foundation** | **NOWY** | ✅ |
+| 8 | `docs/PROJECT_STRUCTURE.md` | 6. Struktura projektu | Zaktualizowany | ✅ |
+| 9 | `docs/INSTALLATION.md` | 7. Instalacja | Istniejący | ✅ |
+| 10 | `docs/DATABASE.md` | 8. Baza danych | Zaktualizowany | ✅ |
+| 11 | `docs/API.md` | 9. API / Komunikacja | Zaktualizowany | ✅ |
+| 12 | `docs/MODULES.md` | 10. Moduły / Logika | Zaktualizowany | ✅ |
+| 13 | `docs/TESTING.md` | 11. Testowanie | Istniejący | ✅ |
+| 14 | `docs/DEPLOYMENT.md` | 12. Wdrożenie | Istniejący | ✅ |
+| 15 | `docs/TROUBLESHOOTING.md` | 13. Rozwiązywanie problemów | Istniejący | ✅ |
+| 16 | `docs/SECURITY.md` | 14. Bezpieczeństwo | Zaktualizowany | ✅ |
+| 17 | `docs/COMPLIANCE.md` | 15. Zgodność z przepisami | Istniejący | ✅ |
+| 18 | `docs/CONTRIBUTING.md` | 16. Proces rozwoju | Istniejący | ✅ |
+| 19 | `docs/USER_GUIDE.md` | 17. Podręcznik użytkownika | Istniejący | ✅ |
+| 20 | `docs/GLOSSARY.md` | 18. Słownik pojęć | Istniejący | ✅ |
+| 21 | `docs/FAQ.md` | 19. FAQ | Istniejący | ✅ |
+| 22 | `docs/BIBLIOGRAPHY.md` | 20a. Bibliografia | NOWY | ✅ |
+| 23 | `docs/RELATED.md` | 20b. Powiązane | NOWY | ✅ |
+| 24 | `docs/RUST_MODULE.md` | 20c. Moduł Rust | NOWY | ✅ |
+| 25 | `docs/MODELS_MANIFEST.md` | 20d. Manifest AI | NOWY | ✅ |
+| 26 | `docs/CHANGELOG.md` | 20e. Changelog | Istniejący | ✅ |
+| 27 | **`docs/EVENTS.md`** | **6d. Event Sourcing** | **NOWY** | ✅ |
+| 28 | **`docs/PIPELINE.md`** | **6e. Pipeline OCR** | **NOWY** | ✅ |
+| 29 | **`docs/INFERENCE.md`** | **6f. AI Inference** | **NOWY** | ✅ |
+| 30 | **`docs/MONITORING.md`** | **6g. Monitoring** | **NOWY** | ✅ |
+| 31 | **`docs/HTTP_CLIENT.md`** | **6h. HTTP Client** | **NOWY** | ✅ |
+| 32 | **`docs/CONFIG.md`** | **6i. Konfiguracja** | **NOWY** | ✅ |
+| 33 | **`docs/DOMAIN.md`** | **6j. Warstwa Domenowa** | **NOWY** | ✅ |
+| 34 | **`docs/WORKFLOWS.md`** | **6k. CI/CD Workflows** | **NOWY** | ✅ |
+| 35 | **`docs/PDFIUM.md`** | **6l. Engine PDF** | **NOWY** | ✅ |
+| 36 | **`docs/DECISIONS.md`** | **6m. System Decyzyjny** | **NOWY** | ✅ |
+| 37 | **`docs/BUILD_CONFIG.md`** | **6n. Build Config** | **NOWY** | ✅ |
 
-**Razem: 25 plików dokumentacji (5 nowych, 5 zaktualizowanych w tej sesji).**
+**Razem: 37 plików dokumentacji.**
+
+---
+
+## 🔥 Indeks nowych sekcji
+
+| Sekcja | Plik | Opis |
+|---|---|---|
+| 5a. Foundation | [`FOUNDATION.md`](FOUNDATION.md) | UnitOfWork, Pipeline, BaseService, Result[T,E] |
+| 6a. Skrypty CLI | [`SCRIPTS.md`](SCRIPTS.md) | Bootstrap, download modeli, seed danych, backup |
+| 6b. Instalator Windows | [`INSTALLER.md`](INSTALLER.md) | Dependency downloader, OTA updater, modele AI |
+| 6c. Frontend | [`FRONTEND.md`](FRONTEND.md) | Flet UI, NexusRouter, ThemeManager, Chart widgets |
+| 6d. Event Sourcing | [`EVENTS.md`](EVENTS.md) | DomainEvents, EventStore, JetStream, CQRS |
+| 6e. Pipeline OCR | [`PIPELINE.md`](PIPELINE.md) | 4 silniki OCR, Consensus, InvoiceParser |
+| 6f. AI Inference | [`INFERENCE.md`](INFERENCE.md) | InferenceService, ModelManager, AdaptiveBatcher |
+| 6g. Monitoring | [`MONITORING.md`](MONITORING.md) | ProcessMonitor, SystemMonitor, health checks |
+| 6h. HTTP Client | [`HTTP_CLIENT.md`](HTTP_CLIENT.md) | CachedHttpClient, Exporters, NBP cache |
+| 6i. Konfiguracja | [`CONFIG.md`](CONFIG.md) | TOML profile, env vars, protocols |
+| 6j. Warstwa Domenowa | [`DOMAIN.md`](DOMAIN.md) | Agregaty DDD, Value Objects, domena |
+| 6k. CI/CD Workflows | [`WORKFLOWS.md`](WORKFLOWS.md) | GitHub Actions, CI/CD pipelines |
+| 6l. Engine PDF | [`PDFIUM.md`](PDFIUM.md) | PDFium, renderowanie, ProgressivePDFLoader |
+| 6m. System Decyzyjny | [`DECISIONS.md`](DECISIONS.md) | DecisionLogger, DecisionQueue, TrustScore |
+| 6n. Build Config | [`BUILD_CONFIG.md`](BUILD_CONFIG.md) | pixi.toml, pyproject.toml, pre-commit |
 
 ---
 
@@ -270,5 +366,5 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 2.3.1-dev
 > **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead

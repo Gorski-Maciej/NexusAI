@@ -35,11 +35,27 @@ MERMAID_LOCAL = DOCS_DIR / "mermaid.min.js"
 MERMAID_CDN = "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"
 
 CHAPTERS = [
-    ("Strona tytułowa", "../README.md"),
+    ("Strona tytułowa", "00_META.md"),
+    ("README", "../README.md"),
     ("Wprowadzenie", "INTRODUCTION.md"),
     ("Szybki start", "QUICKSTART.md"),
     ("Struktura projektu", "PROJECT_STRUCTURE.md"),
+    ("Skrypty CLI", "SCRIPTS.md"),
+    ("Instalator Windows / OTA", "INSTALLER.md"),
+    ("Frontend (Flet UI)", "FRONTEND.md"),
+    ("Event Sourcing / CQRS", "EVENTS.md"),
+    ("Pipeline OCR", "PIPELINE.md"),
+    ("AI Inference", "INFERENCE.md"),
+    ("Monitoring systemu", "MONITORING.md"),
+    ("HTTP Client", "HTTP_CLIENT.md"),
+    ("Konfiguracja systemu", "CONFIG.md"),
+    ("Warstwa Domenowa (DDD)", "DOMAIN.md"),
+    ("CI/CD Workflows", "WORKFLOWS.md"),
+    ("Engine PDF (PDFium)", "PDFIUM.md"),
+    ("System Decyzyjny", "DECISIONS.md"),
+    ("Konfiguracja Build", "BUILD_CONFIG.md"),
     ("Architektura systemu", "ARCHITECTURE.md"),
+    ("Warstwa Foundation", "FOUNDATION.md"),
     ("Baza danych", "DATABASE.md"),
     ("API / Komunikacja", "API.md"),
     ("Moduły / Logika biznesowa", "MODULES.md"),
@@ -53,6 +69,10 @@ CHAPTERS = [
     ("Podręcznik użytkownika", "USER_GUIDE.md"),
     ("Słownik pojęć", "GLOSSARY.md"),
     ("FAQ", "FAQ.md"),
+    ("Moduł Rust", "RUST_MODULE.md"),
+    ("Manifest modeli AI", "MODELS_MANIFEST.md"),
+    ("Bibliografia", "BIBLIOGRAPHY.md"),
+    ("Powiązane zasoby", "RELATED.md"),
     ("Changelog", "CHANGELOG.md"),
     ("Spis treści / Indeks", "INDEX.md"),
 ]
@@ -377,7 +397,7 @@ def _build_html_content(
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://github.com/Gorski-Maciej/NexusAI">
-    <meta property="og:title" content="NexusAI{dark_badge} — Kompletna dokumentacja techniczna v2.3.0">
+    <meta property="og:title" content="NexusAI{dark_badge} — Kompletna dokumentacja techniczna v2.3.1-dev">
     <meta property="og:description" content="Wirtualny księgowy dla MŚP w Polsce. Architektura offline-first, 5 agentów AI, double-entry ledger, zgodność z KSeF i UoR.">
     <meta property="og:site_name" content="NexusAI Docs">
     <meta property="og:locale" content="pl_PL">
