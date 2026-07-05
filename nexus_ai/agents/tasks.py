@@ -23,6 +23,11 @@ from nexus_ai.agents.orchestrator import AgentOrchestrator
 from nexus_ai.agents.extraction import AgentDataExtraction
 from nexus_ai.agents.analytics import AgentAnalytics
 from nexus_ai.agents.quality_validator import AgentQualityValidator
+from nexus_ai.agents.proactive_workflow import (
+    ProactiveWorkflowScheduler,
+    WorkflowExecution,
+    WorkflowType,
+)
 from nexus_ai.core.broker import broker
 from nexus_ai.core.di import get_config
 
@@ -226,6 +231,147 @@ async def workflow_process_and_validate(
     }
 
 
+# ═════════════════════════════════════════════════════════════════════════
+# Proactive Workflow — zadania cronowe (GENIALNY POMYSŁ v5.0)
+# ═════════════════════════════════════════════════════════════════════════
+
+
+@broker.task(
+    task_name="proactive_workflow.execute_daily_briefing",
+    schedule=[{"cron": "0 6 * * *"}],
+    labels={"agent": "orchestrator", "operation": "proactive", "workflow": "daily_briefing"},
+    timeout=120.0,
+)
+async def proactive_daily_briefing(
+    config: Any = TaskiqDepends(get_config),
+) -> dict[str, Any]:
+    agents = await ensure_agents(broker, config)
+    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    result = await orchestrator.execute_proactive_workflow(WorkflowType.DAILY_BRIEFING)
+    return result
+
+
+@broker.task(
+    task_name="proactive_workflow.execute_evening_summary",
+    schedule=[{"cron": "0 18 * * *"}],
+    labels={"agent": "orchestrator", "operation": "proactive", "workflow": "evening_summary"},
+    timeout=120.0,
+)
+async def proactive_evening_summary(
+    config: Any = TaskiqDepends(get_config),
+) -> dict[str, Any]:
+    agents = await ensure_agents(broker, config)
+    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    result = await orchestrator.execute_proactive_workflow(WorkflowType.EVENING_SUMMARY)
+    return result
+
+
+@broker.task(
+    task_name="proactive_workflow.execute_health_check",
+    schedule=[{"cron": "*/30 * * * *"}],
+    labels={"agent": "system", "operation": "proactive", "workflow": "health_check"},
+    timeout=60.0,
+)
+async def proactive_health_check(
+    config: Any = TaskiqDepends(get_config),
+) -> dict[str, Any]:
+    agents = await ensure_agents(broker, config)
+    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    result = await orchestrator.execute_proactive_workflow(WorkflowType.HEALTH_CHECK)
+    return result
+
+
+@broker.task(
+    task_name="proactive_workflow.execute_resource_optimizer",
+    schedule=[{"cron": "0 22 * * *"}],
+    labels={"agent": "system", "operation": "proactive", "workflow": "resource_optimizer"},
+    timeout=60.0,
+)
+async def proactive_resource_optimizer(
+    config: Any = TaskiqDepends(get_config),
+) -> dict[str, Any]:
+    agents = await ensure_agents(broker, config)
+    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    result = await orchestrator.execute_proactive_workflow(WorkflowType.RESOURCE_OPTIMIZER)
+    return result
+
+
+@broker.task(
+    task_name="proactive_workflow.execute_tax_deadline_alert",
+    schedule=[{"cron": "0 14 * * *"}],
+    labels={"agent": "orchestrator", "operation": "proactive", "workflow": "tax_deadline"},
+    timeout=60.0,
+)
+async def proactive_tax_deadline_alert(
+    config: Any = TaskiqDepends(get_config),
+) -> dict[str, Any]:
+    agents = await ensure_agents(broker, config)
+    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    result = await orchestrator.execute_proactive_workflow(WorkflowType.TAX_DEADLINE_ALERT)
+    return result
+
+
+@broker.task(
+    task_name="proactive_workflow.execute_weekly_report",
+    schedule=[{"cron": "0 7 * * 1"}],
+    labels={"agent": "analytics", "operation": "proactive", "workflow": "weekly_report"},
+    timeout=180.0,
+)
+async def proactive_weekly_report(
+    config: Any = TaskiqDepends(get_config),
+) -> dict[str, Any]:
+    agents = await ensure_agents(broker, config)
+    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    result = await orchestrator.execute_proactive_workflow(WorkflowType.WEEKLY_REPORT)
+    return result
+
+
+@broker.task(
+    task_name="proactive_workflow.execute_tax_calendar",
+    schedule=[{"cron": "0 8 10,20,25 * *"}],
+    labels={"agent": "quality", "operation": "proactive", "workflow": "tax_calendar"},
+    timeout=60.0,
+)
+async def proactive_tax_calendar(
+    config: Any = TaskiqDepends(get_config),
+) -> dict[str, Any]:
+    agents = await ensure_agents(broker, config)
+    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    result = await orchestrator.execute_proactive_workflow(WorkflowType.TAX_CALENDAR)
+    return result
+
+
+@broker.task(
+    task_name="proactive_workflow.execute_monthly_closing",
+    schedule=[{"cron": "0 8 1 * *"}],
+    labels={"agent": "orchestrator", "operation": "proactive", "workflow": "monthly_closing"},
+    timeout=300.0,
+)
+async def proactive_monthly_closing(
+    config: Any = TaskiqDepends(get_config),
+) -> dict[str, Any]:
+    agents = await ensure_agents(broker, config)
+    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    result = await orchestrator.execute_proactive_workflow(WorkflowType.MONTHLY_CLOSING)
+    return result
+
+
+@broker.task(
+    task_name="proactive_workflow.execute_decision_feed_refresh",
+    schedule=[{"cron": "*/30 * * * *"}],
+    labels={"agent": "orchestrator", "operation": "proactive", "workflow": "decision_feed_refresh"},
+    timeout=60.0,
+)
+async def proactive_decision_feed_refresh(
+    config: Any = TaskiqDepends(get_config),
+) -> dict[str, Any]:
+    """Co 30 minut: buduje ActionCardFeed i publikuje na ui.feed.pending."""
+    agents = await ensure_agents(broker, config)
+    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    result = await orchestrator.execute_proactive_workflow(WorkflowType.DECISION_FEED_REFRESH)
+    return result
+
+
 __all__ = [
     "ensure_agents",
     "orchestrator_process_invoice",
@@ -233,4 +379,14 @@ __all__ = [
     "analytics_query",
     "quality_validate",
     "workflow_process_and_validate",
+    # Proactive Workflow (GENIALNY POMYSŁ v5.0)
+    "proactive_daily_briefing",
+    "proactive_evening_summary",
+    "proactive_health_check",
+    "proactive_resource_optimizer",
+    "proactive_tax_deadline_alert",
+    "proactive_weekly_report",
+    "proactive_tax_calendar",
+    "proactive_monthly_closing",
+    "proactive_decision_feed_refresh",
 ]

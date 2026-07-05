@@ -34,6 +34,8 @@ from structlog import get_logger
 from nexus_ai.agents.base import BaseAgent, DecisionCache
 from nexus_ai.agents.error_handbook import DynamicErrorHandbook, HandbookQuery
 from nexus_ai.agents.models import (
+    ActionCardFeed,
+    ActionCardResponse,
     AgentDecision,
     AnalyticsQuery,
     AnalyticsResult,
@@ -47,6 +49,15 @@ from nexus_ai.agents.models import (
     TrustScore,
     VotingResult,
     make_context,
+)
+from nexus_ai.agents.proactive_workflow import (
+    ActionCardGenerator,
+    ProactiveWorkflowScheduler,
+    WorkflowType,
+)
+from nexus_ai.agents.user_decision_profile import (
+    UserDecisionProfile,
+    WeeklyAutonomyReport,
 )
 from nexus_ai.agents.topics import AgentTopic
 from nexus_ai.core.inference import ModelManager
@@ -100,6 +111,15 @@ class AgentOrchestrator(BaseAgent):
         self._voting_weights: dict[str, float] = dict(DEFAULT_VOTING_WEIGHTS)
         # ── GENIALNY POMYSŁ: Dynamiczny Podręcznik Błędów ──
         self._error_handbook = DynamicErrorHandbook()
+        # ── GENIALNY POMYSŁ v5.0: Proaktywny Silnik Workflow ──
+        self._proactive_scheduler = ProactiveWorkflowScheduler(
+            orchestrator=self,
+            config=self._config,
+        )
+        # ── GENIALNY POMYSŁ v5.1: ActionCardGenerator ("1-Click CFO") ──
+        self._card_generator = ActionCardGenerator(orchestrator=self)
+        # ── GENIALNY POMYSŁ v5.2: Progressive Autonomy Engine ──
+        self._decision_profile = UserDecisionProfile()
 
     def register_agent(self, name: str, agent: BaseAgent) -> None:
         """Zarejestruj podległego agenta."""
@@ -107,16 +127,24 @@ class AgentOrchestrator(BaseAgent):
         logger.info("[ORCH] Registered sub-agent: %s", name)
 
     async def start(self) -> None:
-        """Inicjalizuj modele Orkiestratora i Podręcznik Błędów."""
+        """Inicjalizuj modele Orkiestratora, Podręcznik Błędów i ProactiveWorkflowScheduler."""
         await super().start()
         self._init_models()
         await self._error_handbook.initialize()
+        await self._proactive_scheduler.start()
         logger.info(
-            "[ORCH] Orchestrator ready | models: %s | agents: %s | handbook: %d examples",
+            "[ORCH] Orchestrator ready | models: %s | agents: %s | handbook: %d examples | proactive workflows: %d",
             self._models,
             list(self._sub_agents.keys()),
             self._error_handbook.count,
+            len(self._proactive_scheduler.WORKFLOW_SCHEDULE),
         )
+
+    async def stop(self) -> None:
+        """Zatrzymaj Orchestrator — zatrzymaj ProactiveWorkflowScheduler i zwolnij zasoby."""
+        await self._proactive_scheduler.stop()
+        await super().stop()
+        logger.info("[ORCH] Orchestrator stopped")
 
     def _init_models(self) -> None:
         """Inicjalizuj ścieżki modeli z konfiguracji."""
@@ -125,6 +153,37 @@ class AgentOrchestrator(BaseAgent):
             "guardian": self._config.get("orchestrator_guardian_model", ""),
             "communicator": self._config.get("orchestrator_communicator_model", ""),
         }
+
+    # ── GENIALNY POMYSŁ v5.2: Progressive Autonomy Engine ──────────
+
+    @property
+    def decision_profile(self) -> UserDecisionProfile:
+        """Profil decyzyjny przedsiębiorcy — Progressive Autonomy Engine.
+
+        GENIALNY POMYSŁ v5.2:
+        Agent obserwuje wzorce decyzyjne i stopniowo przejmuje
+        rutynowe decyzje. Cel: Decision Autonomy Score ≥ 90%.
+        """
+        return self._decision_profile
+
+    def get_autonomy_score(self) -> float:
+        """Pobierz aktualny Decision Autonomy Score (0-100%).
+
+        AUTO_POST / (AUTO_POST + ASK_USER) × 100%
+        """
+        return self._decision_profile.get_autonomy_score()
+
+    def get_decision_profile_summary(self) -> dict[str, Any]:
+        """Pobierz podsumowanie profilu decyzyjnego."""
+        return self._decision_profile.get_summary()
+
+    def generate_weekly_autonomy_report(self) -> WeeklyAutonomyReport:
+        """Generuj cotygodniowy raport autonomii.
+
+        GENIALNY POMYSŁ v5.2:
+        Przedsiębiorca widzi: "Przejąłem 73% decyzji, zaoszczędziłem 45 kliknięć"
+        """
+        return self._decision_profile.generate_weekly_report()
 
     # ── Główny proces decyzyjny ─────────────────────────────────────
 
@@ -169,7 +228,11 @@ class AgentOrchestrator(BaseAgent):
 
         # ── 3. Określenie adaptacyjnych progów ─────────────────────
         vendor_nip = extraction_result.extracted_data.get("nip", "unknown")
-        auto_post_threshold = self.get_threshold(vendor_nip, base=0.92)
+
+        # GENIALNY POMYSŁ v5.2: Progressive Autonomy — blend Bayesian + Profile
+        # Bayesian: uczy się z poprawności AI. Profile: uczy się z preferencji usera.
+        profile_threshold = self._decision_profile.get_adaptive_threshold(vendor_nip)
+        auto_post_threshold = self.get_threshold(vendor_nip, base=profile_threshold)
         review_threshold = auto_post_threshold - 0.17  # REVIEW zawsze 0.17 poniżej AUTO_POST
 
         # ── 4. Ocena przez Actor + Guardian ────────────────────────
@@ -260,13 +323,34 @@ class AgentOrchestrator(BaseAgent):
         # ── 12. Zachowaj dla eskalacji ─────────────────────────────
         self._pending_decisions[decision_id] = decision
 
-        # ── 15. Continuous Learning: jeśli SUGGEST/ASK_USER → czekamy na feedback
+        # ── 15. GENIALNY POMYSŁ v5.2: Obserwuj decyzję — Progressive Autonomy ──
+        # AUTO_POST: od razu uczymy się (brak interakcji użytkownika)
+        # SUGGEST/ASK_USER: uczymy się dopiero po odpowiedzi w handle_user_card_response
+        vendor_name = extraction_result.extracted_data.get("vendor_name", "")
+        gross_amount_num = gross_amount if isinstance(gross_amount, (int, float)) else 0.0
+        category = extraction_result.extracted_data.get("category", "")
+
+        if status == "AUTO_POST":
+            self._decision_profile.observe_decision(
+                vendor_nip=vendor_nip,
+                vendor_name=vendor_name,
+                amount_gross=gross_amount_num,
+                category=category,
+                status=status,
+                decision_mode=decision_mode.value,
+                user_action="confirm",
+                user_option="",
+            )
+
+        # ── 16. Continuous Learning: jeśli SUGGEST/ASK_USER → czekamy na feedback
         if decision_mode in (DecisionMode.SUGGEST, DecisionMode.ASK_USER):
-            logger.info("[ORCH] Decision %s requires user feedback | mode=%s", decision_id, decision_mode.value)
+            logger.info("[ORCH] Decision %s requires user feedback | mode=%s | autonomy=%.1f%%",
+                        decision_id, decision_mode.value, self._decision_profile.get_autonomy_score())
 
         logger.info(
-            "[ORCH] Decision %s | status=%s | trust=%.2f | auto_threshold=%.2f | 4eyes=%s",
+            "[ORCH] Decision %s | status=%s | trust=%.2f | adaptive_threshold=%.2f | 4eyes=%s | autonomy=%.1f%%",
             decision_id, status, final_trust_score, auto_post_threshold, four_eyes_needed,
+            self._decision_profile.get_autonomy_score(),
         )
 
         return decision
@@ -809,6 +893,227 @@ Czy ta decyzja jest poprawna? Odpowiedz TAK lub NIE i uzasadnij."""
 
         # Usuń z pending
         self._pending_decisions.pop(decision_id, None)
+
+    # ── GENIALNY POMYSŁ v5.0: Proactive Workflow Engine ──────────
+
+    @property
+    def proactive_scheduler(self) -> ProactiveWorkflowScheduler:
+        """Dostęp do ProactiveWorkflowScheduler."""
+        return self._proactive_scheduler
+
+    async def execute_proactive_workflow(self, workflow_type: str) -> dict[str, Any]:
+        """Wykonaj proaktywny workflow.
+
+        GENIALNY POMYSŁ v5.0:
+        Agenci sami inicjują zadania — nie czekają na użytkownika.
+
+        Args:
+            workflow_type: Typ workflow (WorkflowType).
+
+        Returns:
+            Wynik wykonania.
+        """
+        execution = await self._proactive_scheduler.execute_workflow(workflow_type)
+        return {
+            "workflow_id": execution.workflow_id,
+            "type": execution.workflow_type,
+            "status": execution.status,
+            "duration_ms": execution.duration_ms,
+            "result": execution.result,
+            "error": execution.error,
+        }
+
+    def get_proactive_schedule(self) -> list[dict[str, Any]]:
+        """Pobierz harmonogram proaktywnych workflow."""
+        return self._proactive_scheduler.get_schedule_summary()
+
+    def get_proactive_stats(self) -> dict[str, Any]:
+        """Pobierz statystyki proaktywnego silnika."""
+        return self._proactive_scheduler.get_stats()
+
+    # ── GENIALNY POMYSŁ v5.1: "Zasada 1-Click CFO" — Action Cards ──
+
+    @property
+    def card_generator(self) -> ActionCardGenerator:
+        """Dostęp do generatora kart decyzyjnych."""
+        return self._card_generator
+
+    async def generate_action_card(
+        self,
+        decision: AgentDecision,
+        document_type: str = "INVOICE",
+    ) -> Any:
+        """Generuj kartę decyzyjną z AgentDecision.
+
+        GENIALNY POMYSŁ v5.1:
+        Tłumaczy techniczną decyzję na 2-4 proste przyciski.
+        Przedsiębiorca NIE widzi stawek VAT, kont, reguł OPA.
+
+        Args:
+            decision: Pełna decyzja agenta.
+            document_type: Typ dokumentu (INVOICE, ASSET, TAX_ALERT, PAYMENT).
+
+        Returns:
+            ActionCard z prostymi opcjami.
+        """
+        return await self._card_generator.generate_card_from_decision(decision)
+
+    async def build_daily_decision_feed(self) -> ActionCardFeed:
+        """Zbuduj codzienny feed kart decyzyjnych.
+
+        GENIALNY POMYSŁ v5.1:
+        Przedsiębiorca po zalogowaniu widzi "skrzynkę decyzyjną"
+        z kartami. Zero tabel, zero formularzy.
+
+        Publikuje ActionCardFeed na ui.feed.pending.
+
+        Returns:
+            ActionCardFeed gotowy do konsumpcji przez UI.
+        """
+        pending = [
+            d for d in self._pending_decisions.values()
+            if d.decision_mode in (DecisionMode.SUGGEST, DecisionMode.ASK_USER)
+        ]
+        feed = self._card_generator.build_daily_feed(pending)
+
+        # Publikuj na NATS dla UI
+        ctx = make_context(
+            task_id=f"feed-{uuid.uuid4().hex[:8]}",
+            source=self.name,
+            target="ui",
+            priority=3,
+        )
+        await self.publish(AgentTopic.UI_FEED_PENDING, feed, ctx)
+
+        logger.info(
+            "[ORCH] Decision feed published | %d cards (%d urgent)",
+            feed.total_pending, feed.urgent_count,
+        )
+        return feed
+
+    async def handle_user_card_response(
+        self,
+        card_id: str,
+        decision_id: str,
+        selected_option_id: str,
+        selected_label: str = "",
+        action_type: str = "confirm",
+        user_comment: str = "",
+    ) -> dict[str, Any]:
+        """Obsłuż odpowiedź użytkownika na kartę decyzyjną.
+
+        GENIALNY POMYSŁ v5.1:
+        Przedsiębiorca kliknął 1 przycisk → wykonaj ukryty payload.
+        Agent robi resztę: księgowanie, KSeF, TigerBeetle, OPA.
+
+        Args:
+            card_id: ID karty.
+            decision_id: ID decyzji.
+            selected_option_id: Którą opcję wybrał użytkownik.
+            selected_label: Etykieta wybranej opcji.
+            action_type: Typ akcji (confirm, alternative, reject, escalate)
+                         przekazany bezpośrednio z ActionCardOption.
+            user_comment: Opcjonalny komentarz.
+
+        Returns:
+            Wynik wykonania.
+        """
+        decision = self._pending_decisions.get(decision_id)
+        if not decision:
+            logger.warning("[ORCH] Card response for unknown decision: %s", decision_id)
+            return {"status": "error", "message": "Decision not found"}
+
+        # Zbuduj odpowiedź
+        response = ActionCardResponse(
+            card_id=card_id,
+            decision_id=decision_id,
+            selected_option_id=selected_option_id,
+            selected_label=selected_label,
+            user_comment=user_comment,
+            responded_at=pendulum.now("UTC").isoformat(),
+        )
+
+        # Publikuj odpowiedź
+        ctx = make_context(
+            task_id=f"card-response-{uuid.uuid4().hex[:8]}",
+            source="ui",
+            target=self.name,
+            priority=2,
+        )
+        await self.publish(AgentTopic.UI_FEED_ACTION, response, ctx)
+
+        # Określ typ akcji (przekazany bezpośrednio z ActionCardOption.action_type)
+        # NIE inferujemy z labela — frontend ma dostęp do pełnego ActionCardOption
+
+        # Zapisz feedback do Continuous Learning + Progressive Autonomy
+        # GENIALNY POMYSŁ v5.2: Każda odpowiedź użytkownika to punkt danych
+        details = decision.verdict.details if hasattr(decision.verdict, 'details') else {}
+        extracted = details.get("extracted_data", {}) if isinstance(details, dict) else {}
+        vendor_nip = extracted.get("nip", "unknown")
+        vendor_name = extracted.get("vendor_name", "")
+        gross_amount = float(extracted.get("amount_gross", 0)) if extracted.get("amount_gross") else 0.0
+        category = extracted.get("category", "")
+
+        if action_type == "confirm":
+            await self.record_user_feedback(
+                decision_id=decision_id,
+                corrected_status=decision.verdict.status,
+                corrected_reason=f"User accepted via ActionCard: {selected_label}",
+            )
+            self._decision_profile.observe_decision(
+                vendor_nip=vendor_nip,
+                vendor_name=vendor_name,
+                amount_gross=gross_amount,
+                category=category,
+                status=decision.verdict.status,
+                decision_mode=decision.decision_mode.value if decision.decision_mode else "ask_user",
+                user_action="confirm",
+                user_option=selected_label,
+            )
+        elif action_type == "reject":
+            await self.record_user_feedback(
+                decision_id=decision_id,
+                corrected_status="BLOCK",
+                corrected_reason=f"User rejected via ActionCard: {selected_label}",
+            )
+            self._decision_profile.observe_decision(
+                vendor_nip=vendor_nip,
+                vendor_name=vendor_name,
+                amount_gross=gross_amount,
+                category=category,
+                status="BLOCK",
+                decision_mode=decision.decision_mode.value if decision.decision_mode else "ask_user",
+                user_action="reject",
+                user_option=selected_label,
+            )
+        else:
+            # alternative/escalate: nie usuwaj z pending — użytkownik może wrócić
+            logger.info(
+                "[ORCH] Card response deferred | card=%s action=%s",
+                card_id, action_type,
+            )
+            return {
+                "status": "ok",
+                "action": action_type,
+                "decision_id": decision_id,
+                "card_id": card_id,
+                "message": "Decision deferred — card remains pending",
+            }
+
+        # Usuń z pending
+        self._pending_decisions.pop(decision_id, None)
+
+        logger.info(
+            "[ORCH] Card response processed | card=%s decision=%s action=%s",
+            card_id, decision_id, action_type,
+        )
+
+        return {
+            "status": "ok",
+            "action": action_type,
+            "decision_id": decision_id,
+            "card_id": card_id,
+        }
 
     async def communicate_with_user(
         self,

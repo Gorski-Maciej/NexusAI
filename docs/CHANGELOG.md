@@ -5,6 +5,104 @@
 
 ---
 
+## [5.2.0] — 2026-07-05 — "Progressive Autonomy + DecisionFeedView"
+
+### 🧠 GENIALNY POMYSŁ v5.2: Progressive Autonomy Engine
+
+#### ➕ Dodane
+- **`nexus_ai/agents/user_decision_profile.py`** (~400 linii) — Progressive Autonomy Engine
+  - `UserDecisionProfile` — agent obserwuje wzorce decyzyjne i przejmuje rutynowe decyzje
+  - `VendorTrustProfile` — 4 poziomy zaufania (new→learning→trusted→fully_trusted), adaptacyjne progi AUTO_POST
+  - `CategoryPreference` — preferencje kategorii (preferred_action, preferred_option)
+  - `AmountThreshold` — 5 przedziałów kwotowych z should_auto_post
+  - `DecisionPattern` — pojedynczy wzorzec (vendor_trust, category_preference, amount_threshold)
+  - `WeeklyAutonomyReport` — cotygodniowy raport z message NL
+  - `observe_decision()` — 4 wymiary uczenia (vendor, category, amount, autonomy)
+  - `_derive_patterns()` — wyprowadzanie wzorców z profili po każdej decyzji
+  - `get_adaptive_threshold()` — adaptacyjny próg per kontrahent
+  - `should_auto_post()` — pełna decyzja (vip, amount, trust) → (bool, reason)
+  - `generate_weekly_report()` — "Przejąłem 73% decyzji, zaoszczędziłem 45 kliknięć"
+  - Decision Autonomy Score: AUTO_POST/(AUTO_POST+ASK_USER)×100%, cel 90%+ w 3 miesiące
+- **Integracja w `orchestrator.py`**:
+  - `_decision_profile` — `UserDecisionProfile()` w `__init__`
+  - Blended threshold: `get_threshold(nip, base=profile.get_adaptive_threshold(nip))`
+  - `observe_decision()`: AUTO_POST w `process_invoice`, SUGGEST/ASK_USER w `handle_user_card_response`
+  - Nowe metody: `get_autonomy_score()`, `get_decision_profile_summary()`, `generate_weekly_autonomy_report()`
+- **Eksport w `__init__.py`**: AmountThreshold, CategoryPreference, DecisionPattern, UserDecisionProfile, VendorTrustProfile, WeeklyAutonomyReport
+
+### 📱 GENIALNY POMYSŁ v5.1: DecisionFeedView — Flet UI "1-Click CFO"
+
+#### ➕ Dodane
+- **`nexus_ai/frontend/views/decision_feed.py`** (~340 linii) — widok Flet Decision Feed
+  - `DecisionFeedView` — `@ft.component` + `use_state()`, deklaratywny
+  - Card stack: jedna karta na raz, `AnimatedSwitcher` (scale transition 350ms)
+  - 3 kolory przycisków: zielony (#1B5E20) rekomendacja AI ⭐, szary (#37474F) alternatywy, czerwony (#4A1414) odrzuć
+  - Trust Score bar: `ft.ProgressBar` (zielony ≥0.92, pomarańczowy ≥0.75, czerwony <0.75)
+  - Urgency banner: "⚠️ PILNE" / "⚡ Wysoki priorytet"
+  - Document badge: Faktura / Podatki / Środek trwały / Przelew
+  - NATS subscriber: nasłuch `ui.feed.pending` → `msgspec.json.decode` → karty
+  - NATS publish: kliknięcie → `ActionCardResponse` na `ui.feed.action`
+  - Guard `initialized` ref: tylko 1 połączenie NATS (zapobiega duplikacji przy re-renderach)
+  - Cleanup: `page.on_close` → `nats_sub.unsubscribe()` + `nats_nc.drain()`
+  - Snackbar potwierdzenia z kolorem akcji
+  - 3 karty demo (NATS offline fallback)
+  - Stany UI: loading skeleton, empty state ("Wszystko zaksięgowane! 🎉")
+- **Eksport**: `frontend/views/__init__.py` — `DecisionFeedView`
+
+### 🃏 Action Cards — "Zasada 1-Click CFO" (v5.1)
+
+#### ➕ Dodane
+- **Struktury danych w `models.py`**:
+  - `ActionCardOption` — przycisk z `hidden_payload` (pełne parametry księgowe)
+  - `ActionCard` — karta: title, summary, 2-4 opcje, trust_score, urgency
+  - `ActionCardFeed` — "skrzynka decyzyjna" z greeting NL
+  - `ActionCardResponse` — odpowiedź użytkownika
+- **`ActionCardGenerator` w `proactive_workflow.py`** (~300 linii):
+  - 6 szablonów: INVOICE_STANDARD, INVOICE_HIGH_AMOUNT, INVOICE_NEW_VENDOR, TAX_ALERT, ASSET_CLASSIFICATION, PAYMENT_BATCH
+  - `generate_action_card()` — tłumaczenie technicznego `AgentDecision` na prostą kartę
+  - `generate_card_from_decision()` — async z opcjonalnym ulepszeniem Qwen3-Nano
+  - `build_daily_feed()` — feed na dziś, sortowanie wg urgency, powitanie NL
+  - Prompt Qwen3-Nano zabrania żargonu (WN, MA, PKWiU, MPP, JPK)
+- **`ui.feed.pending` / `ui.feed.action`** w `topics.py` — nowe topiki NATS
+- **Integracja w `orchestrator.py`**:
+  - `card_generator` property, `generate_action_card()`, `build_daily_decision_feed()`, `handle_user_card_response()`
+  - `handle_user_card_response`: confirm/reject → `record_user_feedback` + Cognitive Audit Trail
+
+### ⚙️ ProactiveWorkflowScheduler — rozszerzenia (v5.0)
+
+#### ➕ Dodane
+- **`DECISION_FEED_REFRESH`** — nowy workflow (co 30 min) odświeżający feed kart decyzyjnych
+  - Handler `_handle_decision_feed_refresh` w `proactive_workflow.py`
+  - Cron task `proactive_decision_feed_refresh` w `tasks.py`
+
+### 🐛 Poprawione
+- **Deduplikacja workflow**: `was_executed_today` → `was_executed_recently` z `_cooldown_from_cron()`
+  - Dla `*/30` → 30 min cooldown, dla `0 6` → 1440 min cooldown
+  - Naprawia bug blokujący powtarzalne wykonania (DECISION_FEED_REFRESH tylko raz dziennie)
+- **`loaded` variable w `_handle_resource_optimizer`**: dodano konstrukcję `loaded` przed użyciem
+- **`stop()` w Orchestratorze**: wywołanie `_proactive_scheduler.stop()` przed `super().stop()`
+- **Podwójne zliczanie w Progressive Autonomy**: `observe_decision` tylko dla AUTO_POST w `process_invoice`, SUGGEST/ASK_USER tylko w `handle_user_card_response`
+- **Blended Bayesian + Profile thresholds**: `get_threshold(nip, base=profile_threshold)` zamiast zastępowania Bayesian
+- **`_patterns` teraz wypełniane**: `_derive_patterns()` z profili vendor/category/amount
+- **`msgspec` import** w `decision_feed.py` — dodany na poziomie modułu
+- **NATS cleanup**: `page.on_close` → unsubscribe + drain
+- **Guard inicjalizacji NATS**: `initialized` ref zapobiega duplikacji połączeń
+- **Martwy error state usunięty** z DecisionFeedView
+
+### 📚 Dokumentacja
+- **`docs/AGENTS.md`**: v5.1 → v5.2, dodane sekcje 1.2c (Progressive Autonomy), 1.2d (DecisionFeedView), zaktualizowane progi adaptacyjne, stopka
+- **`docs/AGENT_SYSTEM_ENTERPRISE.txt`**: v5.1 → v5.2, dodane sekcje 0b (Progressive Autonomy), 0c (DecisionFeedView), SPIS TREŚCI, PODSUMOWANIE 16→19 innowacji
+- **`docs/CHANGELOG.md`**: ten wpis
+
+### 📊 Statystyki
+- **2 nowe pliki**: `user_decision_profile.py`, `decision_feed.py`
+- **7 zmodyfikowanych**: `orchestrator.py`, `proactive_workflow.py`, `tasks.py`, `models.py`, `topics.py`, `agents/__init__.py`, `frontend/views/__init__.py`
+- **2 zmodyfikowane docs**: `AGENTS.md`, `AGENT_SYSTEM_ENTERPRISE.txt`
+- **19 kluczowych innowacji** Enterprise v5.2 (z 16 w v5.0)
+- **~1200 linii nowego kodu** (user_decision_profile 400 + decision_feed 340 + ActionCardGenerator 300 + rozszerzenia)
+
+---
+
 ## [3.0.0-dev] — 2026-07-05 — "Agentic Architecture"
 
 ### 📋 Audyt dokumentacji — kompleksowy przegląd 40 plików
@@ -31,25 +129,25 @@
 ### 🤖 System Agentów AI (v3.0 Enterprise)
 
 #### ➕ Dodane
-- **`docs/AGENTS.md`** — kompletna specyfikacja 10 agentów AI: Orchestrator, Extraction, Analytics, QualityValidator, TaxEngine, CashManager, Compliance, KSeF, VendorIntelligence, FixedAssets
+- **`docs/AGENTS.md`** — kompletna specyfikacja 5 agentów AI: Orchestrator, Extraction, Analytics, QualityValidator, FixedAssets (zgodnie z aa3fvcx.txt)
 - **Decision Engine** — wielowarstwowy silnik decyzyjny: strefy decyzyjne (Dynamic Thresholds), konsensus między agentami (weighted voting), eskalacja do człowieka, Proof Chain SHA-256
 - **Continuous Learning Framework** — Active Learning Loop, Bayesian Trust Score, Online OCR Learning, propagacja korekt (bezpośrednia/pośrednia/globalna/strukturalna)
 - **Memory Systems** — 4 typy pamięci: Episodic (DuckDB), Semantic (sqlite-vec), Procedural (OPA/Rego), Working (NATS KV Store)
-- **4 poziomy autonomii** — od Manualnego (Level 0) do W Pełni Autonomicznego (Level 3)
+- **JEDEN poziom automatyzacji** — DecisionMode (AUTO_POST / SUGGEST / ASK_USER) zgodnie z aa3fvcx.txt
 - **4-Eyes Principle** — obowiązkowa weryfikacja przez 2 niezależne modele dla kwot > 50,000 PLN
-- **ADR-009** — architektura 10 wyspecjalizowanych agentów AI zamiast monolitycznego LLM
+- **ADR-009** — architektura 5 wyspecjalizowanych agentów AI zamiast monolitycznego LLM (zgodnie z aa3fvcx.txt)
 
 #### 🔄 Zaktualizowane
-- **`docs/MODULES.md`** — rozszerzona tabela agentów z 5 do 10, odwołanie do AGENTS.md
+- **`docs/MODULES.md`** — zaktualizowana tabela 5 agentów (zgodnie z aa3fvcx.txt), odwołanie do AGENTS.md
 - **`docs/ARCHITECTURE.md`** — dodano ADR-009 (architektura agentów), cross-reference do AGENTS.md
 - **`docs/SECURITY.md`** — rozszerzono sekcję "Bezpieczeństwo AI" o 4-Eyes Principle, agent-level RBAC, audit log, Proof Chain
 - **`docs/GLOSSARY.md`** — dodano 8 nowych terminów (Active Learning, Adaptive Thresholds, Agent AI, Bayesian Trust Score, Confidence Calibration, Continuous Learning, Decision Engine, Memory Systems, Trust Score)
-- **`docs/FAQ.md`** — dodano pytania o 10 agentów, Trust Score, 4-Eyes Principle, zużycie RAM
+- **`docs/FAQ.md`** — dodano pytania o 5 agentów, Trust Score, 4-Eyes Principle, zużycie RAM
 - **`docs/INDEX.md`** — dodano AGENTS.md do nawigacji (M2b), listy plików (38), indeksu tagów
 
 ### 📊 Statystyki
 - **38 plików .md** — +1 nowy (AGENTS.md)
-- **10 agentów AI** — udokumentowanych z modelami, RAM, mechanizmami
+- **5 agentów AI** — udokumentowanych z modelami, RAM, mechanizmami (zgodnie z aa3fvcx.txt)
 - **9 ADR** — w tym nowy ADR-009
 
 ---

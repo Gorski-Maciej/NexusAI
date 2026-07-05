@@ -79,6 +79,14 @@ class AgentTopic(StrEnum):
     SYSTEM_ERROR = "system.error"
     SYSTEM_CONFIG_UPDATED = "system.config.updated"
 
+    # ══════════════════════════════════════════════════════════════════
+    # UI Feed — GENIALNY POMYSŁ v5.1: Action Cards ("1-Click CFO")
+    # ══════════════════════════════════════════════════════════════════
+    UI_FEED_PENDING = "ui.feed.pending"
+    """Feed kart decyzyjnych oczekujących na akcję użytkownika."""
+    UI_FEED_ACTION = "ui.feed.action"
+    """Odpowiedź użytkownika na kartę decyzyjną."""
+
 
 # ── Strumienie JetStream ────────────────────────────────────────────────
 

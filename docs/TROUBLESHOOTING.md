@@ -334,7 +334,7 @@ pixi run dev
 pixi run download-models
 ```
 
-> Pełna lista modeli: [MODELS_MANIFEST.md](MODELS_MANIFEST.md). Specyfikacja 10 agentów: [AGENTS.md](AGENTS.md).
+> Pełna lista modeli: [MODELS_MANIFEST.md](MODELS_MANIFEST.md). Specyfikacja 5 agentów: [AGENTS.md](AGENTS.md).
 
 ### 6.2 OCR zwraca bardzo niską pewność (< 0.3)
 

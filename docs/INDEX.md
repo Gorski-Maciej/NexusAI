@@ -121,7 +121,7 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 
 ### Sekcja 10 — Moduły / Logika biznesowa
 - Plik: [`docs/MODULES.md`](MODULES.md)
-- | 10 agentów AI (w tym 5 głównych + 5 domenowych), 70+ serwisów
+- | 5 agentów AI, 13 modeli, 70+ serwisów (zgodnie z aa3fvcx.txt)
 
 ### Sekcja 10a — System Agentów AI (NOWY)
 - Plik: [`docs/AGENTS.md`](AGENTS.md) (NOWY)

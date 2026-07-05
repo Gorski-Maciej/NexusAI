@@ -760,6 +760,114 @@ class AssetClassification(Struct, kw_only=True):
 
 
 # ═════════════════════════════════════════════════════════════════════════
+# ActionCard — GENIALNY POMYSŁ v5.1: "Zasada 1-Click CFO"
+# ═════════════════════════════════════════════════════════════════════════
+
+
+class ActionCardOption(Struct, kw_only=True):
+    """Pojedyncza opcja na karcie decyzyjnej.
+
+    Przedsiębiorca widzi tylko label i description.
+    hidden_payload zawiera wszystkie techniczne parametry księgowe
+    (konta, stawki VAT, reguły OPA) — niewidoczne dla użytkownika.
+    """
+
+    option_id: str
+    """Unikalne ID opcji (uuid hex 8)."""
+    label: str
+    """Tekst przycisku — max 40 znaków, zrozumiały dla laika."""
+    description: str = ""
+    """Krótki opis pod przyciskiem — co się stanie po kliknięciu."""
+    is_recommended: bool = False
+    """Czy to rekomendacja AI (zielony przycisk)."""
+    action_type: str = "confirm"
+    """Typ akcji: confirm, alternative, reject, escalate."""
+    hidden_payload: dict[str, Any] = field(default_factory=dict)
+    """Ukryty payload z pełnymi parametrami księgowymi (JSON)."""
+    trust_impact: float = 0.0
+    """Wpływ na Trust Score przy wyborze tej opcji (+/-)."""
+
+
+class ActionCard(Struct, kw_only=True):
+    """Karta decyzyjna — JEDNA decyzja dla przedsiębiorcy.
+
+    GENIALNY POMYSŁ v5.1 — "Zasada 1-Click CFO":
+    Przedsiębiorca widzi kartę z 2-4 prostymi przyciskami.
+    Agent wykonał 95% pracy — użytkownik tylko klika.
+
+    Architektura:
+    - AgentDecision (skomplikowany, techniczny) → ActionCard (prosty, ludzki)
+    - Qwen3-Nano tłumaczy JSON na zrozumiałe opcje
+    - Każdy przycisk ma ukryty payload z pełnymi parametrami księgowymi
+    """
+
+    card_id: str
+    """Unikalne ID karty."""
+    decision_id: str
+    """Referencja do oryginalnej AgentDecision."""
+    title: str
+    """Nagłówek karty — 1 zdanie, co się dzieje."""
+    summary: str
+    """TL;DR — 2-3 zdania wyjaśnienia dla przedsiębiorcy (NIE księgowego)."""
+    agent_name: str = "orchestrator"
+    """Który agent wygenerował kartę."""
+    document_type: str = ""
+    """Typ dokumentu: INVOICE, RECEIPT, ASSET, TAX_ALERT, PAYMENT."""
+    options: list[ActionCardOption] = field(default_factory=list)
+    """2-4 opcje do wyboru (przyciski)."""
+    trust_score: float = 0.0
+    """Trust Score decyzji (0.0-1.0)."""
+    decision_mode: DecisionMode = DecisionMode.ASK_USER
+    """Tryb decyzyjny."""
+    urgency: str = "normal"
+    """Priorytet: critical, high, normal, low."""
+    context: dict[str, Any] = field(default_factory=dict)
+    """Dodatkowy kontekst: kwota, kontrahent, data."""
+    created_at: str = ""
+    """ISO timestamp utworzenia."""
+    expires_at: str = ""
+    """ISO timestamp wygaśnięcia (np. termin płatności)."""
+
+
+class ActionCardFeed(Struct, kw_only=True):
+    """Feed kart decyzyjnych — "skrzynka odbiorcza" przedsiębiorcy.
+
+    Publikowany na ui.feed.pending przez ProactiveWorkflowScheduler.
+    """
+
+    cards: list[ActionCard] = field(default_factory=list)
+    """Lista kart oczekujących na decyzję."""
+    total_pending: int = 0
+    """Łączna liczba oczekujących decyzji."""
+    urgent_count: int = 0
+    """Liczba pilnych (urgency=critical/high)."""
+    generated_at: str = ""
+    """ISO timestamp wygenerowania feedu."""
+    greeting: str = ""
+    """Powitanie od agenta (np. "Dzień dobry! Oto 3 decyzje na dziś")."""
+
+
+class ActionCardResponse(Struct, kw_only=True):
+    """Odpowiedź użytkownika na kartę decyzyjną.
+
+    Publikowana na ui.feed.action po kliknięciu przycisku.
+    """
+
+    card_id: str
+    """ID karty."""
+    decision_id: str
+    """ID decyzji."""
+    selected_option_id: str
+    """Którą opcję wybrał użytkownik."""
+    selected_label: str = ""
+    """Etykieta wybranej opcji."""
+    user_comment: str = ""
+    """Opcjonalny komentarz użytkownika."""
+    responded_at: str = ""
+    """ISO timestamp odpowiedzi."""
+
+
+# ═════════════════════════════════════════════════════════════════════════
 # Health & Monitoring
 # ═════════════════════════════════════════════════════════════════════════
 

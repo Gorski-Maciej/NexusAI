@@ -897,7 +897,7 @@ curl -X POST http://127.0.0.1:8000/api/v1/triage/1/resolve \
 - [Bezpieczeństwo](SECURITY.md) — JWT flow, RBAC, rate limiting
 - [Baza danych](DATABASE.md) — schematy tabel dla endpointów
 - [Moduły i logika](MODULES.md) — serwisy stojące za endpointami
-- [Agenci AI](AGENTS.md) — 10 agentów, Decision Engine, Trust Score
+- [Agenci AI](AGENTS.md) — 5 agentów, Decision Engine, Trust Score
 - [Architektura](ARCHITECTURE.md) — CQRS, komunikacja przez NATS
 
 ---

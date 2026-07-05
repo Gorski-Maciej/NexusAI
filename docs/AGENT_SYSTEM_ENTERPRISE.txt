@@ -1,18 +1,34 @@
 ================================================================================
-  NEXUSAI — SYSTEM AGENTÓW AI WERSJI ENTERPRISE (v4.0)
-  "Autonomiczne Biuro Księgowe — 5 Agentów, 13 Modeli, Dwie Warstwy Uczenia"
+  NEXUSAI — SYSTEM AGENTÓW AI WERSJI ENTERPRISE (v5.2)
+  "Autonomiczne Biuro Księgowe — 5 Agentów, 13 Modeli, Progressive Autonomy"
 ================================================================================
   Data:        Lipiec 2026
   Status:      Specyfikacja techniczna — wersja rozszerzona
-  Podstawa:    SPECYFIKACJA_AGENTOW_ENTERPRISE.txt (v4.0),
+  Podstawa:    SPECYFIKACJA_AGENTOW_ENTERPRISE.txt (v5.2),
                RAPORT_TECHNOLOGII_NEXUSAI.txt (wyłączne technologie),
                aa3fvcx.txt (blueprint agentów)
-  Zgodność:    docs/AGENTS.md, nexus_ai/agents/*.py
+  Zgodność:    docs/AGENTS.md, nexus_ai/agents/*.py, nexus_ai/frontend/views/decision_feed.py
 ================================================================================
 
 
 SPIS TREŚCI
 ===========
+
+0. GENIALNY POMYSŁ v5.0: ProactiveWorkflowScheduler
+   0.1. Transformacja: od reaktywnego do proaktywnego
+   0.2. Architektura silnika workflow
+   0.3. Harmonogram proaktywny (16 workflow)
+   0.4. ResourceOptimizer — samooptymalizujące się zasoby
+
+0b. GENIALNY POMYSŁ v5.2: Progressive Autonomy
+   0b.1. Agent, który rośnie z przedsiębiorcą
+   0b.2. Cztery wymiary uczenia
+   0b.3. Decision Autonomy Score
+   0b.4. UserDecisionProfile — implementacja
+
+0c. GENIALNY POMYSŁ: DecisionFeedView — Flet UI
+   0c.1. Architektura karty decyzyjnej
+   0c.2. Integracja z NATS i Orchestratorem
 
 1. WIZJA SYSTEMU — Autonomiczne Biuro Księgowe
    1.1. Filozofia architektury agentowej
@@ -71,6 +87,262 @@ SPIS TREŚCI
    8.3. Sentry error tracking
    8.4. Health checks i heartbeat (co 30s)
    8.5. Performance budget (SLA agentów)
+
+
+================================================================================
+0. GENIALNY POMYSŁ v5.0: ProactiveWorkflowScheduler
+================================================================================
+
+0.1. Transformacja: od reaktywnego do proaktywnego
+---------------------------------------------------
+
+PRZED (reaktywny, v4.0):
+  Użytkownik wrzuca fakturę → Agent przetwarza → Koniec
+  Agenci czekają na zdarzenia zewnętrzne.
+
+PO (proaktywny ENTERPRISE, v5.0):
+  Agenci NIE czekają — sami inicjują zadania, znajdują faktury,
+  monitorują terminy i przedstawiają przedsiębiorcy gotowe decyzje.
+
+  06:00 — Daily Briefing: "Dzień dobry. Wpłynęły 3 faktury na 12 450 PLN..."
+  07:00 — KSeF Fetch: automatyczne pobranie nowych faktur
+  08:00 — Bank Sync: wykrycie nowych transakcji
+  09:00 — Dunning: windykacja należności
+  10:00 — Vendor Monitor: Biała Lista MF, zmiany kont
+  14:00 — Tax Alert: "Jutro mija termin ZUS — 4 200 PLN"
+  16:00 — Payment Batch: przygotowanie paczki przelewów
+  18:00 — Evening Summary: "Dziś zaksięgowano 5 faktur..."
+  22:00 — Resource Optimizer: auto-unload nieużywanych modeli
+
+Człowiek ZAWSZE jest decydentem. Agent wykonuje CAŁĄ pracę
+przygotowawczą, analizuje i przedstawia opcje.
+
+0.2. Architektura silnika workflow
+------------------------------------
+
+  AgentOrchestrator (CFO)
+    └── ProactiveWorkflowScheduler (nexus_ai/agents/proactive_workflow.py)
+          ├── WorkflowManager      — cykl życia, historia, statystyki, deduplikacja
+          ├── ResourceOptimizer    — auto-unload modeli, dynamiczne skalowanie
+          ├── TaxDeadlineMonitor   — alerty ZUS, VAT, PIT/CIT (konfigurowalne dni)
+          ├── PaymentScheduler     — przygotowanie paczek przelewów
+          ├── VendorMonitor        — monitoring kontrahentów
+          └── HealthGuardian       — monitoring agentów, auto-restart
+
+  Klasy:
+    - ProactiveWorkflowScheduler  — główny silnik (16 workflow, handler registry)
+    - WorkflowManager             — historia, statystyki, was_executed_today()
+    - ResourceOptimizer           — psutil, auto-unload, RAM/CPU thresholds
+    - WorkflowExecution           — rekord wykonania (id, status, duration, error)
+    - WorkflowType                — stałe typów workflow
+    - WorkflowStatus              — stałe statusów
+
+0.3. Harmonogram proaktywny (16 workflow)
+-------------------------------------------
+
+  DZIENNE:
+    06:00 — DAILY_BRIEFING       (priority 3, orchestrator)
+    07:00 — KSEF_FETCH           (priority 2, extraction)
+    08:00 — BANK_SYNC            (priority 2, analytics)
+    09:00 — DUNNING_CHECK        (priority 4, orchestrator)
+    10:00 — VENDOR_MONITOR       (priority 4, analytics)
+    12:00 — COMPLIANCE_SCAN      (priority 4, quality)
+    14:00 — TAX_DEADLINE_ALERT   (priority 3, quality)
+    16:00 — PAYMENT_BATCH        (priority 3, orchestrator)
+    18:00 — EVENING_SUMMARY      (priority 5, orchestrator)
+    22:00 — RESOURCE_OPTIMIZER   (priority 6, system)
+    03:00 — AUTO_BACKUP          (priority 5, system)
+    */30   — HEALTH_CHECK         (priority 1, system)
+
+  TYGODNIOWE:
+    Pon. 07:00 — WEEKLY_REPORT   (priority 5, analytics)
+
+  MIESIĘCZNE:
+    1. dzień 08:00  — MONTHLY_CLOSING     (priority 3, orchestrator)
+    10,20,25 08:00  — TAX_CALENDAR        (priority 3, quality)
+    Ostatnie dni   — MONTH_END_CLOSING    (priority 2, orchestrator)
+
+  Priorytety (1 = najwyższy):
+    P1 — Health Check (system)
+    P2 — KSeF, Bank Sync, Month-End
+    P3 — Briefing, Tax Alert, Payment, Monthly
+    P4 — Dunning, Vendor, Compliance
+    P5 — Evening, Weekly, Backup
+    P6 — Resource Optimizer
+
+0.4. ResourceOptimizer — samooptymalizujące się zasoby
+--------------------------------------------------------
+
+  Monitorowanie przez psutil (z RAPORT_TECHNOLOGII):
+    - RAM % (próg: 80%)
+    - CPU % (próg: 70%)
+    - Wolne miejsce na dysku
+    - Liczba rdzeni CPU
+
+  Auto-unload modeli:
+    - Warunek 1: RAM > 80% → odładuj najmniej używane modele
+    - Warunek 2: model idle > 30 min → odładuj
+    - Faktyczne odładowanie przez ModelManager.unload(model_path)
+
+  Dynamiczne skalowanie workerów:
+    - Niskie obciążenie (< 40% RAM, < 30% CPU) → +1 worker (max 4)
+    - Wysokie obciążenie (> 80% RAM lub > 70% CPU) → -1 worker (min 1)
+
+  Implementacja:
+    - ResourceOptimizer.should_unload_models(loaded_models) → list[str]
+    - ResourceOptimizer.optimal_worker_count(current) → int
+    - ResourceOptimizer.mark_model_used(model_name) → odświeża timestamp
+
+  Integracja z Orchestratorem:
+    orchestrator = AgentOrchestrator(...)
+    await orchestrator.start()  # uruchamia ProactiveWorkflowScheduler
+    await orchestrator.stop()   # zatrzymuje ProactiveWorkflowScheduler
+    result = await orchestrator.execute_proactive_workflow("daily_briefing")
+    schedule = orchestrator.get_proactive_schedule()
+    stats = orchestrator.get_proactive_stats()
+
+
+================================================================================
+0b. GENIALNY POMYSŁ v5.2: Progressive Autonomy — Agent, Który Rośnie
+================================================================================
+
+0b.1. Agent, który rośnie z przedsiębiorcą
+---------------------------------------------
+
+Problem: Nawet z Action Cards, użytkownik wciąż klika to samo co tydzień.
+Standardowa faktura od znanego kontrahenta → "Zaksięguj". Kolejny laptop
+→ "Amortyzacja liniowa". Agent jest mądry, ale się NIE ADAPTUJE.
+
+Rozwiązanie: Progressive Autonomy — agent obserwuje wzorce decyzyjne
+konkretnego przedsiębiorcy i stopniowo przejmuje rutynowe decyzje.
+
+  TYDZIEŃ 1:  0% autonomii — wszystkie decyzje przez Action Cards
+  TYDZIEŃ 2: 40% — rutynowe faktury od znanych kontrahentów → AUTO_POST
+  TYDZIEŃ 4: 70% — większość decyzji automatyczna
+  MIESIĄC 3: 90%+ — przedsiębiorca widzi tylko podsumowanie
+
+Cel: Decision Autonomy Score ≥ 90% w ciągu 3 miesięcy.
+
+0b.2. Cztery wymiary uczenia
+-------------------------------
+
+  Vendor Trust:
+    "Zawsze akceptujesz faktury od XYZ" → obniżony próg AUTO_POST
+    - fully_trusted (≥20 faktur, ≥95% akceptacji) → threshold = 0.75
+    - trusted (≥10 faktur, ≥90%) → threshold = 0.82
+    - learning (≥3 faktury) → threshold = 0.88
+    - new (<3) → threshold = 0.92 (domyślny)
+
+  Category Preference:
+    "Zawsze wybierasz amortyzację liniową dla IT"
+    - Każda kategoria ma preferowaną akcję i opcję
+    - Confidence rośnie z liczbą decyzji
+
+  Amount Threshold:
+    "Sprawdzasz ręcznie wszystko > 20k PLN"
+    - 5 przedziałów kwotowych (micro, small, medium, large, xlarge)
+    - Każdy z własnym should_auto_post
+
+  Time Pattern:
+    "W piątki odrzucasz wszystko"
+    - Autonomy history śledzone codziennie
+    - Trend: up / down / stable
+
+0b.3. Decision Autonomy Score
+-------------------------------
+
+  AUTO_POST / (AUTO_POST + ASK_USER) × 100%
+
+  Obliczany z ostatnich 7 dni (sliding window).
+  Maksymalny poziom: 95% (zawsze 5% rezerwy dla wyjątków).
+
+  Cotygodniowy raport:
+    "📈 Autonomia: 73% (+2% od zeszłego tygodnia).
+    Przejąłem 45 decyzji, Ty podjąłeś tylko 12.
+    8 dojrzałych wzorców decyzyjnych."
+
+0b.4. UserDecisionProfile — implementacja
+--------------------------------------------
+
+  Plik: nexus_ai/agents/user_decision_profile.py (~400 linii)
+
+  Klasy msgspec:
+    - DecisionPattern     — pojedynczy wzorzec (vendor_trust, category, amount)
+    - VendorTrustProfile  — profil zaufania kontrahenta (trust_level, adaptive_threshold)
+    - CategoryPreference  — preferencja kategorii (preferred_action, preferred_option)
+    - AmountThreshold     — próg kwotowy (range_label, should_auto_post)
+    - WeeklyAutonomyReport — raport z autonomii (message NL)
+
+  Główne metody UserDecisionProfile:
+    - observe_decision(vendor_nip, amount, category, status, mode, action)
+      → aktualizuje vendor trust, category, amount, autonomy score
+    - get_adaptive_threshold(nip) → adaptacyjny próg per kontrahent
+    - should_auto_post(nip, amount, trust) → (bool, reason) — pełna decyzja
+    - _derive_patterns() → wyprowadza wzorce z profili vendor/category/amount
+    - generate_weekly_report() → WeeklyAutonomyReport z message NL
+    - get_autonomy_score() → Decision Autonomy Score 0-100%
+    - get_autonomy_trend() → up | down | stable
+
+  Integracja z Orchestratorem (orchestrator.py):
+    - Blended threshold: get_threshold(nip, base=profile.get_adaptive_threshold(nip))
+      Bayesian (AI correctness) + Profile (user preference) — łączony próg
+    - observe_decision() w process_invoice (tylko dla AUTO_POST)
+      i w handle_user_card_response (dla SUGGEST/ASK_USER — brak podwójnego zliczania)
+    - Nowe metody: get_autonomy_score(), get_decision_profile_summary(),
+      generate_weekly_autonomy_report()
+
+  Eksport w __init__.py:
+    - AmountThreshold, CategoryPreference, DecisionPattern,
+      UserDecisionProfile, VendorTrustProfile, WeeklyAutonomyReport
+
+
+================================================================================
+0c. GENIALNY POMYSŁ v5.1: DecisionFeedView — Flet UI "1-Click CFO"
+================================================================================
+
+0c.1. Architektura karty decyzyjnej
+--------------------------------------
+
+  Plik: nexus_ai/frontend/views/decision_feed.py (~340 linii)
+
+  Komponent: DecisionFeedView — @ft.component + use_state()
+
+  Cechy UI:
+    - Card stack: jedna karta na raz, AnimatedSwitcher (scale transition 350ms)
+    - Przyciski: 3 kolory Material
+        • Zielony (#1B5E20) — rekomendacja AI (⭐ confirm)
+        • Szary (#37474F) — alternatywa (alternative)
+        • Czerwony (#4A1414) — odrzuć (reject)
+        • Brązowy (#3E2723) — odłóż (escalate)
+    - Trust Score bar: ft.ProgressBar z kolorowaniem
+        • Zielony ≥ 0.92, pomarańczowy ≥ 0.75, czerwony < 0.75
+    - Urgency banner: "⚠️ PILNE" (critical), "⚡ Wysoki priorytet" (high)
+    - Document badge: Faktura / Podatki / Środek trwały / Przelew
+    - Nawigacja: strzałki + kropki postępu
+    - Demo cards: 3 karty gdy NATS offline
+    - Stany: loading skeleton, empty state ("Wszystko zaksięgowane! 🎉")
+
+0c.2. Integracja z NATS i Orchestratorem
+-------------------------------------------
+
+  NATS subscriber:
+    - Nasłuchuje ui.feed.pending (ActionCardFeed)
+    - msgspec.json.decode → karty
+    - Deduplikacja po card_id
+    - Sortowanie wg urgency: critical → high → normal → low
+    - Guard initialized ref: tylko 1 połączenie NATS (zapobiega duplikacji przy re-renderach)
+
+  NATS publish:
+    - Po kliknięciu przycisku → ActionCardResponse na ui.feed.action
+    - response = {card_id, decision_id, selected_option_id, selected_label, responded_at}
+    - Snackbar potwierdzenia z kolorem akcji
+
+  Cleanup:
+    - page.on_close → nats_sub.unsubscribe() + nats_nc.drain()
+
+  Integracja z widokami:
+    - Eksportowany przez frontend/views/__init__.py
+    - Do podłączenia w NavigationRail jako zakładka "Decisions"
 
 
 ================================================================================
@@ -1198,24 +1470,28 @@ Modyfikacja → wszystkie kolejne bloki unieważnione.
 
 
 ================================================================================
-PODSUMOWANIE — 15 kluczowych innowacji Enterprise v4.0
+PODSUMOWANIE — 19 kluczowych innowacji Enterprise v5.2
 ================================================================================
 
-  1.  COGNITIVE AUDIT TRAIL — samouzdrawiające się reguły OPA
-  2.  DYNAMICZNY PODRĘCZNIK BŁĘDÓW — few-shot learning z DuckDB
-  3.  Bayesian Trust Score — aktualizowany po każdej decyzji
-  4.  Adaptive Thresholds — dynamiczne progi per kontrahent
-  5.  DecisionMode — JEDEN poziom automatyzacji (AUTO_POST/SUGGEST/ASK_USER)
-  6.  5 wyspecjalizowanych agentów — 13 modeli GGUF
-  7.  Weighted Voting — Orchestrator 0.40 + QualityValidator 0.60
-  8.  4-Eyes Principle — obowiązkowy dla > 50k PLN
-  9.  Proof Chain SHA-256 — niepodważalny audyt (nexus-crypto)
-  10. Decision Cache — 80% decyzji bez inferencji LLM
-  11. OCR Online Learning — korekty → embeddingi → preferuj
-  12. Invoice Template Matching — wzorce per kontrahent
-  13. Fraud Graph Scanner — grafy powiązań (GraphSAGE)
-  14. Cash Flow Forecast — 90 dni, 3 scenariusze
-  15. Tax Optimization — DuckDB shadow ledger symulacje
+  1.  PROACTIVE WORKFLOW SCHEDULER — agenci NIE czekają, sami inicjują zadania
+  2.  PROGRESSIVE AUTONOMY — agent uczy się preferencji i przejmuje rutynowe decyzje
+  3.  DECISION FEED VIEW (Flet UI) — karty decyzyjne 1-Click CFO z NATS
+  4.  UserDecisionProfile — 4 wymiary uczenia (vendor, category, amount, time)
+  5.  Decision Autonomy Score — od 0% do 90%+ w 3 miesiące
+  6.  ACTION CARDS — "Zasada 1-Click CFO" z ukrytym payloadem księgowym
+  7.  16 autonomicznych workflow — codzienne, tygodniowe, miesięczne
+  8.  COGNITIVE AUDIT TRAIL — samouzdrawiające się reguły OPA
+  9.  DYNAMICZNY PODRĘCZNIK BŁĘDÓW — few-shot learning z DuckDB
+  10. ResourceOptimizer — auto-unload modeli, dynamiczne skalowanie workerów
+  11. WorkflowManager — historia, statystyki, deduplikacja (was_executed_recently)
+  12. Decision Feed Refresh — automatyczne odświeżanie co 30 min
+  13. Bayesian Trust Score — aktualizowany po każdej decyzji
+  14. Adaptive Thresholds — blended Bayesian + UserDecisionProfile
+  15. DecisionMode — JEDEN poziom automatyzacji (AUTO_POST/SUGGEST/ASK_USER)
+  16. 5 wyspecjalizowanych agentów — 13 modeli GGUF
+  17. Weighted Voting — Orchestrator 0.40 + QualityValidator 0.60
+  18. 4-Eyes Principle — obowiązkowy dla > 50k PLN
+  19. Proof Chain SHA-256 — niepodważalny audyt (nexus-crypto)
 
 Technologie: wyłącznie z RAPORT_TECHNOLOGII_NEXUSAI.txt
   - llama-cpp-python, NATS JetStream, Taskiq, DuckDB, SQLite+SQLCipher,
@@ -1226,5 +1502,120 @@ Technologie: wyłącznie z RAPORT_TECHNOLOGII_NEXUSAI.txt
     xsdata, lxml, Prometheus
 
 ================================================================================
-  KONIEC DOKUMENTU — AGENT_SYSTEM_ENTERPRISE.txt v4.0
+================================================================================
+9. GENIALNY POMYSŁ v5.1: Action Cards — "Zasada 1-Click CFO"
+================================================================================
+
+9.1. Filozofia: Agent = Ekspert, Człowiek = Decydent
+-------------------------------------------------------
+
+Problem: Tradycyjne aplikacje księgowe przypominają Excela — 80 parametrów,
+listy rozwijane, formularze. Przedsiębiorca nie jest księgowym.
+
+Rozwiązanie: Action Cards — jedna decyzja = jedna karta = jeden klik.
+
+  Agent wykonuje 95% pracy:
+  - OCR + walidacja krzyżowa (4 silniki)
+  - Weryfikacja kontrahenta (Biała Lista MF, GUS BIR)
+  - Kalkulacja podatków (OPA/Rego)
+  - Przygotowanie księgowań (TigerBeetle double-entry)
+  - Spakowanie wszystkiego w hidden_payload każdego przycisku
+
+  Człowiek widzi:
+  - 1-2 zdania podsumowania (bez żargonu)
+  - 2-4 przyciski z prostymi etykietami
+  - Trust Score (zielony/żółty/czerwony)
+
+  Człowiek klika 1 przycisk → Agent wykonuje resztę.
+
+9.2. Struktury danych (msgspec.Struct)
+-----------------------------------------
+
+  ActionCardOption:
+    - option_id: str
+    - label: str                   # Tekst przycisku (max 40 znaków)
+    - description: str             # Opis dla laika
+    - is_recommended: bool         # Zielony przycisk = rekomendacja AI
+    - action_type: str             # confirm | alternative | reject | escalate
+    - hidden_payload: dict         # PEŁNE parametry księgowe (ukryte)
+    - trust_impact: float          # Wpływ na Trust Score
+
+  ActionCard:
+    - card_id: str
+    - decision_id: str             # Referencja do AgentDecision
+    - title: str                   # Nagłówek — 1 zdanie
+    - summary: str                 # TL;DR — 2-3 zdania dla laika
+    - options: list[ActionCardOption]  # 2-4 przyciski
+    - trust_score: float           # 0.0-1.0
+    - urgency: str                 # critical | high | normal | low
+    - context: dict                # Kwota, kontrahent, data (do UI)
+
+  ActionCardFeed:
+    - cards: list[ActionCard]      # "Skrzynka decyzyjna"
+    - total_pending: int
+    - urgent_count: int
+    - greeting: str                # Powitanie NL
+
+  ActionCardResponse:
+    - card_id: str
+    - decision_id: str
+    - selected_option_id: str      # Który przycisk kliknięto
+    - action_type: str             # Przekazane z ActionCardOption
+    - user_comment: str
+
+9.3. ActionCardGenerator
+--------------------------
+
+  Klasa w nexus_ai/agents/proactive_workflow.py (~300 linii).
+
+  Metody:
+    generate_action_card(decision, document_type, urgency) → ActionCard
+      - Wybiera szablon (6 typów)
+      - Buduje podsumowanie NL (bez żargonu)
+      - Pakuje pełne dane księgowe w hidden_payload każdego przycisku
+
+    generate_card_from_decision(decision) → ActionCard (async)
+      - Wersja asynchroniczna z opcjonalnym ulepszeniem przez Qwen3-Nano
+      - Model tłumaczy surowe dane na język laika
+      - Prompt zabrania żargonu (WN, MA, PKWiU, MPP, JPK)
+
+    build_daily_feed(pending_decisions) → ActionCardFeed
+      - Buduje "skrzynkę decyzyjną" na dziś
+      - Sortuje wg priorytetu (critical → high → normal)
+      - Generuje spersonalizowane powitanie
+
+  Szablony decyzji (6):
+    INVOICE_STANDARD, INVOICE_HIGH_AMOUNT, INVOICE_NEW_VENDOR,
+    TAX_ALERT, ASSET_CLASSIFICATION, PAYMENT_BATCH
+
+  Każdy szablon definiuje 2-4 opcje z action_type:
+    confirm (rekomendowane), alternative, reject, escalate
+
+9.4. Integracja z AgentOrchestrator
+-------------------------------------
+
+  Nowe metody w orchestrator.py:
+
+    card_generator: ActionCardGenerator          # Property
+    generate_action_card(decision, doc_type)      # 1 karta z decyzji
+    build_daily_decision_feed() → ActionCardFeed  # Feed na dziś
+    handle_user_card_response(card_id, ...)       # Obsługa kliknięcia
+
+  Flow:
+    1. process_invoice() → AgentDecision (SUGGEST/ASK_USER)
+    2. generate_action_card(decision) → ActionCard
+    3. build_daily_decision_feed() → ActionCardFeed → NATS ui.feed.pending
+    4. UI (Flet) wyświetla karty jedna po drugiej
+    5. Użytkownik klika przycisk → handle_user_card_response()
+       - confirm → record_user_feedback (Cognitive Audit Trail)
+       - reject  → record_user_feedback (BLOCK)
+       - alternative → karta zostaje w pending (użytkownik może wrócić)
+    6. Agent wykonuje hidden_payload
+
+  Topiki NATS:
+    ui.feed.pending  — publikacja feedu kart
+    ui.feed.action   — odpowiedź użytkownika
+
+================================================================================
+  KONIEC DOKUMENTU — AGENT_SYSTEM_ENTERPRISE.txt v5.2
 ================================================================================

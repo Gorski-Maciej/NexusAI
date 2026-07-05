@@ -12,6 +12,7 @@ Zgodnie z aa3fvcx.txt:
 - Adaptive Thresholds (Bayesian)
 - 4-Eyes Principle
 - Decision Cache (diskcache + sqlite-vec)
+- GENIALNY POMYSŁ v5.2: Progressive Autonomy — agent rośnie z przedsiębiorcą
 
 Architektura "zero zaufania do pojedynczego modelu":
 - Agent Orkiestrator (Granite 3.2 3B + Guardian 0.5B + Qwen3-Nano 0.5B)
@@ -26,6 +27,10 @@ Technologie — wyłącznie z RAPORT_TECHNOLOGII_NEXUSAI.txt:
 """
 
 from nexus_ai.agents.models import (
+    ActionCard,
+    ActionCardFeed,
+    ActionCardOption,
+    ActionCardResponse,
     AgentCommand,
     AgentContext,
     AgentDecision,
@@ -65,6 +70,23 @@ from nexus_ai.agents.extraction import AgentDataExtraction
 from nexus_ai.agents.analytics import AgentAnalytics
 from nexus_ai.agents.quality_validator import AgentQualityValidator
 from nexus_ai.agents.error_handbook import DynamicErrorHandbook, HandbookExample, HandbookQuery
+from nexus_ai.agents.proactive_workflow import (
+    ActionCardGenerator,
+    ProactiveWorkflowScheduler,
+    ResourceOptimizer,
+    WorkflowExecution,
+    WorkflowManager,
+    WorkflowStatus,
+    WorkflowType,
+)
+from nexus_ai.agents.user_decision_profile import (
+    AmountThreshold,
+    CategoryPreference,
+    DecisionPattern,
+    UserDecisionProfile,
+    VendorTrustProfile,
+    WeeklyAutonomyReport,
+)
 from nexus_ai.agents.topics import AgentTopic, JETSTREAM_STREAMS
 from nexus_ai.agents.base import (
     BaseAgent,
@@ -75,6 +97,10 @@ from nexus_ai.agents.base import (
 
 __all__ = [
     # Struktury danych
+    "ActionCard",
+    "ActionCardFeed",
+    "ActionCardOption",
+    "ActionCardResponse",
     "AgentCommand",
     "AgentContext",
     "AgentDecision",
@@ -117,6 +143,22 @@ __all__ = [
     "DynamicErrorHandbook",
     "HandbookExample",
     "HandbookQuery",
+    # GENIALNY POMYSŁ v5.1: ActionCardGenerator ("1-Click CFO")
+    "ActionCardGenerator",
+    # GENIALNY POMYSŁ v5.2: Progressive Autonomy Engine
+    "AmountThreshold",
+    "CategoryPreference",
+    "DecisionPattern",
+    "UserDecisionProfile",
+    "VendorTrustProfile",
+    "WeeklyAutonomyReport",
+    # GENIALNY POMYSŁ v5.0: Proactive Workflow Engine
+    "ProactiveWorkflowScheduler",
+    "ResourceOptimizer",
+    "WorkflowExecution",
+    "WorkflowManager",
+    "WorkflowStatus",
+    "WorkflowType",
     # Agenci (5 — zgodnie z aa3fvcx.txt)
     "AgentOrchestrator",         # 1. Centralny Mózg i CFO
     "AgentDataExtraction",       # 2. Forteca Precyzji (OCR + KSeF)

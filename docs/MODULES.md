@@ -60,14 +60,15 @@ flowchart TD
     DEC -->|confidence < 0.92| ASK[ASK_USER<br/>Centrum decyzji]
 ```
 
-### 2.2 Poziomy decyzji (Trust Score)
+### 2.2 Tryby decyzyjne (DecisionMode) — JEDEN poziom automatyzacji
 
-| Poziom | Próg | Akcja |
+| Tryb | Próg | Akcja |
 |---|---|---|
-| **AUTO_POST** | confidence >= 0.92 | Automatyczne księgowanie |
-| **SUGGEST** | 0.75 <= confidence < 0.92 | Sugestia dla użytkownika (1 klik) |
-| **ASK_USER** | 0.50 <= confidence < 0.75 | Pytanie z 2-5 opcjami |
-| **BLOCK** | confidence < 0.50 | Blokada — wymagana weryfikacja ręczna |
+| **AUTO_POST** | Trust Score >= 0.92 | Agent samodzielnie księguje, użytkownik informowany |
+| **SUGGEST** | Trust Score >= 0.75 | Agent proponuje decyzję z ostrzeżeniem, użytkownik zatwierdza |
+| **ASK_USER** | Trust Score < 0.75 | Agent pyta użytkownika o decyzję |
+
+> **Uwaga:** BLOCK (blokada) jest werdyktem w ramach trybu ASK_USER, a nie osobnym poziomem automatyzacji. Zgodnie z `aa3fvcx.txt` — JEDEN poziom automatyzacji. Człowiek ZAWSZE jest decydentem.
 
 ---
 
