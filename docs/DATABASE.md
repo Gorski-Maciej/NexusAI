@@ -55,6 +55,7 @@ erDiagram
     company_profiles ||--o{ ledger_transfers : owns
     company_profiles ||--o{ financial_periods : defines
     
+    users ||--o{ ui_drafts : saves
     outbox_events ||--o{ dead_letter_events : failed_to
     
     users {
@@ -305,7 +306,77 @@ erDiagram
 | `source_document_id` | TEXT(36) | ID dokumentu źródłowego (faktura) |
 | `status` | TEXT(32) | pending / committed / failed |
 
-### 3.4 Serwisy (migracja 003)
+### 3.4 Warstwa dostępu do danych (15 modułów)
+
+NexusAI zawiera rozbudowaną warstwę dostępu do danych z 23 modułami. Poniżej kluczowe:
+
+#### Silnik i sesje (`db/database.py`)
+Centralna inicjalizacja SQLAlchemy Engine dla SQLCipher:
+- **`create_oltp_engine()`** — tworzy silnik z poolem połączeń (`QueuePool`, pool_size=5, max_overflow=10), PRAGMAMI (WAL, synchronous=NORMAL, cache_size=50MB, mmap_size=4GB, auto_vacuum=FULL) i SQLCipher AES-256 (PRAGMA key, cipher_page_size=4096, kdf_iter=64000, HMAC_SHA512, PBKDF2)
+- **`create_session_factory()`** — fabryka sesji z automatycznym multi-tenant filtrem (`with_loader_criteria WHERE tenant_id = ?`)
+- **`create_session_factory(tenant_id=...)`** — dedykowana fabryka dla konkretnego tenanta
+- **`init_schema()`** — utworzenie wszystkich tabel przy pierwszym starcie
+- **`consolidate_database()`** — WAL checkpoint TRUNCATE + VACUUM + ANALYZE
+- **`probe_sqlcipher()`** — detekcja SQLCipher (przez PRAGMA cipher_version lub ctypes.CDLL)
+
+#### Modele (`db/models.py`)
+Definiuje wszystkie modele SQLModel (Invoice, Contractor, User, OutboxEvent, itp.) z `__slots__` dla oszczędności RAM.
+
+#### Lifecycle hooks (`db/hooks.py`)
+Rejestruje zdarzenia SQLAlchemy:
+- **`register_db_hooks(config)`** — rejestruje 2 hooki:
+  - `after_flush_replicate` — automatyczna replikacja faktur do DuckDB (`invoices_replica`) po każdym flush
+  - `before_flush_validate` — walidacja danych przed zapisem (NIP 10 cyfr, waluta 3 znaki, event_type alfanumeryczny, username 3+ znaki, role z dozwolonych)
+- **Validator registry**: `_VALIDATORS[Invoice]`, `_VALIDATORS[Contractor]`, itp. — zamiast if/elif/elif
+
+#### Kolejka wiadomości (`db/message_queue.py`)
+`AsyncSQLiteQueue` — lekka, atomowa kolejka komunikatów:
+- **enqueue/dequeue/ack/nack** — atomiczne operacje w jednej transakcji SQLite
+- **Priorytety** (1-10, domyślnie 5)
+- **Opóźnione wiadomości** (delay_until)
+- **Dead Letter Queue** — automatyczne przenoszenie po max_retries (domyślnie 3)
+- **enqueue_batch()** — wiele wiadomości w jednej transakcji
+- **replay_dlq()** — przywrócenie DLQ do kolejki
+- Partial indexes dla dequeue/delayed/DLQ
+
+#### Zapytania i FTS (`db/queries.py`)
+Łączy paginację, FTS5 i widoki analityczne:
+- **`CursorPagination`** — keyset/cursor pagination (zamiast OFFSET — wydajniejsza dla 1M+ rekordów)
+- **`FTSManager`** — pełnotekstowe wyszukiwanie przez FTS5 z trigram tokenizerem (tabele: `invoices_fts`, `contractors_fts`, `audit_logs_fts`, `events_fts`), hybrydowe FTS5+vec0, automatyczne triggery po INSERT/UPDATE/DELETE
+- **`AnalyticsViews`** — zmaterializowane widoki biznesowe w DuckDB: `m_monthly_summary` (statystyki per miesiąc z LAG, moving average), `m_top_contractors` (ranking kontrahentów z share%), `m_cashflow_projection` (prognoza przepływów z window functions)
+
+#### Bezpieczeństwo DB (`db/security.py`)
+- **`SQLCipherConfig(Struct)`** — typowana konfiguracja z walidacją zakresów (cipher_page_size, kdf_iter, HMAC, KDF)
+- **`KeyRotation`** — rotacja kluczy SQLCipher przez `PRAGMA rekey` (bez dump/restore), szyfrowany backup z innym kluczem, harmonogram rotacji (domyślnie co 90 dni)
+- **`SQLCipherConfig.generate_key()`** — generowanie 256-bitowego klucza przez `os.urandom(32)` + base64
+
+#### Transakcje i Outbox (`db/transactions.py`)
+- **`OutboxManager.publish()`** — zapis zdarzenia w tej samej transakcji co dane biznesowe (Transactional Outbox)
+- **`process_events()`** — przetwarzanie partii zdarzeń z pessimistic locking (`with_for_update(skip_locked=True)`), order_by FIFO, maksymalnie 5 retry zanim trafi do DLQ
+
+#### Pozostałe moduły DB
+
+| Moduł | Odpowiedzialność |
+|---|---|
+| `db/database.py` | Init silnika SQLCipher + sesji + multi-tenant filtr |
+| `db/models.py` | Wszystkie modele SQLModel (Invoice, Contractor, User, OutboxEvent itp.) |
+| `db/hooks.py` | Lifecycle hooks: walidacja przed flush, replikacja do DuckDB po flush |
+| `db/message_queue.py` | AsyncSQLiteQueue — atomowa kolejka komunikatów z priorytetami, DLQ, batch |
+| `db/queries.py` | CursorPagination + FTS5 full-text search + AnalyticsViews (materialized DuckDB views) |
+| `db/security.py` | SQLCipherConfig + KeyRotation (PRAGMA rekey) + harmonogram 90 dni |
+| `db/transactions.py` | OutboxManager (Transactional Outbox) + pessimistic locking worker |
+| `db/async_db_pool.py` | Asynchroniczny pool połączeń SQLite (asyncio-friendly) |
+| `db/async_backup.py` | Backup asynchroniczny (online, non-blocking, fsspec) |
+| `db/async_base_service.py` | Klasa bazowa dla serwisów asynchronicznych DB |
+| `db/projection_models.py` | Modele projekcji CQRS (read models) |
+| `db/analytics_schema.py` | Schemat dla zapytań analitycznych (OLAP) |
+| `db/aggregate_functions.py` | Niestandardowe funkcje agregujące SQL (MEDIAN, MODE, PERCENTILE, PRODUCT) |
+| `db/analytics.py` | Helpery analityczne (DuckDBManager, PolarsSQLContext) |
+| `db/vector_store.py` | Integracja sqlite-vec dla embeddingów i wyszukiwania semantycznego |
+
+---
+
+### 3.5 Serwisy (migracja 003)
 
 #### `dq_decisions` — Kolejka decyzji
 
@@ -345,6 +416,29 @@ erDiagram
 | `stack_trace` | TEXT | Stack trace |
 | `retry_count` | INTEGER | Liczba prób |
 | `resolved` | INTEGER | Czy naprawione |
+
+#### `task_status` — Status zadań asynchronicznych
+
+| Pole | Typ | Opis |
+|---|---|---|
+| `task_id` | TEXT PK | UUID zadania |
+| `task_name` | TEXT | Nazwa zadania |
+| `status` | TEXT | PENDING / PROCESSING / COMPLETED / FAILED / CANCELLED |
+| `progress` | REAL | Postęp 0.0–1.0 |
+| `result` | TEXT | JSON z wynikiem |
+| `error_message` | TEXT | Komunikat błędu |
+| `created_at` | TEXT | Czas utworzenia |
+| `updated_at` | TEXT | Czas aktualizacji |
+
+#### `ui_drafts` — Drafty UI
+
+| Pole | Typ | Opis |
+|---|---|---|
+| `tenant_id` | TEXT | ID najemcy (PK) |
+| `actor_id` | TEXT | ID użytkownika (PK) |
+| `draft_key` | TEXT | Klucz draftu (PK) |
+| `payload_json` | TEXT | JSON z danymi draftu |
+| `updated_at` | TEXT | Czas ostatniej aktualizacji |
 
 #### `scheduled_tasks` — Harmonogram
 

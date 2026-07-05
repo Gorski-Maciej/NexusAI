@@ -35,6 +35,36 @@ sudo apt install build-essential gcc cmake curl git unzip
 sudo dnf install gcc make cmake curl git unzip
 ```
 
+### 1.4 Pre-commit hooks (dla developerów)
+
+Po sklonowaniu repozytorium zainstaluj pre-commit:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+Pre-commit automatycznie uruchamia przy każdym `git commit`:
+- **Ruff** — linter + auto-fix (`ruff-lint`, `ruff-format`)
+- **mypy** — strict type checking (`--strict`, `--ignore-missing-imports`)
+- **Hooks ogólne** — trailing whitespace, end-of-file, YAML/TOML validity, merge conflicts, large files (>2 MB)
+
+Konfiguracja w `.pre-commit-config.yaml`:
+```yaml
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.0
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        args: [--strict, --ignore-missing-imports]
+```
+
 ---
 
 ## 2. Instalacja krok po kroku

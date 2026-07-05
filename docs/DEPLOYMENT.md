@@ -268,7 +268,18 @@ jobs:
           generate_release_notes: true
 ```
 
-### 8.2 Wyzwalacze
+### 8.2 Pre-commit (lokalne quality gates)
+
+Przed każdym `git commit` uruchamiane są automatyczne kontrole:
+- **Ruff** — lint + auto-fix (`ruff-lint`, `ruff-format`)
+- **mypy** — strict type checking (`--strict`)
+- **Hooks ogólne** — trailing whitespace, end-of-file, YAML/TOML validity, merge conflicts, large files (>2 MB)
+
+```bash
+pip install pre-commit && pre-commit install
+```
+
+### 8.3 Wyzwalacze
 
 | Zdarzenie | Akcja |
 |---|---|
@@ -278,6 +289,16 @@ jobs:
 | Tag `v*` | Build + GitHub Release |
 | `schedule` (codziennie 3:00) | Testy wydajnościowe + crosshair 100k iteracji |
 | `workflow_dispatch` | Ręczne wyzwolenie |
+
+### 8.4 CI/CD Security (GitHub Actions)
+
+Workflow `.github/workflows/ci.yml` zawiera:
+- **Dependabot** — automatyczne PR dla aktualizacji zależności (weekly)
+- **OpenSSF Scorecard** — ocena bezpieczeństwa repozytorium
+- **CodeQL** — statyczna analiza bezpieczeństwa kodu
+- **Labeler** — automatyczne etykietowanie PR
+- **Stale** — oznaczanie nieaktywnych PR/issues
+- **Workflow reużywalne** — `setup-pixi.yml` (instalacja pixi dla wszystkich jobów)
 
 ---
 

@@ -58,18 +58,36 @@ nexus_ai/
 │   │   ├── auth.py                  # JWT, refresh, password reset
 │   │   ├── invoices.py              # CRUD faktur + upload
 │   │   ├── contractor.py            # CRUD kontrahentów
-│   │   ├── ksef.py                  # Generowanie + wysyłka KSeF
-│   │   ├── billing.py               # Rozliczenia
-│   │   ├── analytics.py             # Zapytania analityczne (DuckDB)
-│   │   ├── dashboard.py             # Dashboardy
+│   │   ├── ksef.py                  # KSeF XML export (FA_VAT)
+│   │   ├── billing.py               # Estymacja kosztów
+│   │   ├── analytics.py             # Zapytania analityczne (DuckDB, AS-OF JOIN)
+│   │   ├── dashboard.py             # Dashboard + daily briefing
 │   │   ├── triage.py                # Centrum decyzji (ASK_USER)
-│   │   ├── autopilot.py             # Decyzje automatyczne (Rada Agentów)
-│   │   ├── admin.py                 # Admin panel
+│   │   ├── autopilot.py             # Decyzje AI (accept/reject/trust score)
+│   │   ├── admin.py                 # Panel admin (DLQ, rules, users, replay)
+│   │   ├── audit.py                 # Kryptograficzny ślad audytowy
+│   │   ├── risk.py                  # Risk Guard API (progi ryzyka)
 │   │   ├── health.py                # Health/readiness/liveness
 │   │   ├── workers.py               # Status workera (Taskiq)
-│   │   ├── events_schema.py         # Schemat zdarzeń
+│   │   ├── events_schema.py         # JSON Schema DomainEvents
 │   │   ├── ws.py                    # WebSocket (SSE-like progress)
-│   │   └── …                        # (16 innych controllers)
+│   │   ├── ui_state.py              # UI Draft persistence
+│   │   ├── system_ops.py            # 8 kontrolerów (i18n, security, circuit-breakers, telemetry, finops, privacy, kore, version)
+│   │   ├── system_integrity.py      # Integralność migracji + cleanup UI drafts
+│   │   ├── performance_ops.py       # Locust performance summary
+│   │   ├── partner.py               # Partner Hub (biura rachunkowe)
+│   │   ├── exports.py               # Eksport danych (CSV/Excel/JSON/PDF)
+│   │   ├── tax_policy.py            # Symulacja polityki podatkowej
+│   │   ├── tax_math.py              # Kalkulacja VAT (Decimal)
+│   │   ├── kore_closure.py          # KORE closure summary
+│   │   ├── tasks.py                 # Status + anulowanie zadań async
+│   │   ├── outbox_ops.py            # Outbox stats (deprecated, NATS)
+│   │   ├── dlq.py                   # Dead Letter Queue management
+│   │   ├── security_alert.py        # SecurityAlert auto-CRUD
+│   │   ├── files.py                 # File management (CSP sandbox)
+│   │   ├── live_preview.py          # Live preview OCR
+│   │   ├── stats.py                 # Podstawowe statystyki
+│   │   └── dev/                     # Development-only routes
 │   ├── dto.py                   # MsgspecDTO + DTOConfig (request/response)
 │   ├── schemas.py               # Raw schemas (Litestar-generated)
 │   ├── security.py              # JWT config + hasła (Argon2id przez nexus-crypto)

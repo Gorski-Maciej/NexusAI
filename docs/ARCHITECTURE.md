@@ -112,7 +112,7 @@ C4Container
 >                              └─────────────┘      └─────────────┘
 > 
 > ZEWNĘTRZNE: KSeF API | GUS BIR | NBP API
-> AI/ML: llama-cpp-python (agenci przez protokoły) | Pipeline OCR (4 silniki)
+> AI/ML: llama-cpp-python (5 agentów przez protokoły) | Pipeline OCR (4 silniki)
 > ```
 
 ### 1.3 Component (Poziom 3) — Pipeline OCR
@@ -242,7 +242,7 @@ NexusAI stosuje architekturę **Modularnego Monolitu** z wyraźnym podziałem na
 
 ---
 
-## 4. Diagramy sekwencji
+## 4. Diagramy sekwencji (3 krytyczne procesy)
 
 ### 4.1 Przetwarzanie faktury od wpływu do decyzji
 
@@ -285,36 +285,7 @@ sequenceDiagram
     end
 ```
 
-> **📝 Wersja tekstowa (ASCII fallback):**
-> ```
-> PRZETWARZANIE FAKTURY — od wpływu do decyzji:
-> 
-> Użytkownik        API              Worker             TigerBeetle
->    │                │                  │                    │
->    │─Upload PDF────▶│                  │                    │
->    │                │─INSERT invoice─▶│ (SQLite: NEW)      │
->    │                │─NATS publish──▶│                    │
->    │                │                  │─OCR (4 silniki)──│
->    │                │                  │─UPDATE PROCESSING│
->    │                │                  │─Rada Agentów─────│
->    │                │                  │─Decyzja──────────│
->    │                │                  │                    │
->    │          ┌─────┴─────┐            │                    │
->    │          │ AUTO_POST?│            │                    │
->    │          └─────┬─────┘            │                    │
->    │                │                  │                    │
->    │  [TAK: >0.92]  │                  │───Księguj────────▶│
->    │  ◀──✅ Gotowe──│◀─Potwierdzenie───│◀──OK──────────────│
->    │                │                  │                    │
->    │  [NIE: <0.92]  │                  │                    │
->    │  ◀──⚠️ 3 dec.──│◀─INSERT decisions│                    │
->    │  ──Wybór──────▶│─NATS publish───▶│───Księguj────────▶│
->    │  ◀──✅ Gotowe──│◀────────────────│◀──OK──────────────│
-> ```
-
 ### 4.2 Rada Agentów — proces decyzyjny
-
-> **Uwaga:** Nazwy modeli w diagramie to rekomendacje referencyjne. System używa generycznego silnika GGUF (`InferenceService`), który ładuje dowolne modele z konfiguracji — nie ma zharkodowanych nazw modeli.
 
 ```mermaid
 sequenceDiagram
@@ -345,39 +316,74 @@ sequenceDiagram
     end
 ```
 
-> **📝 Wersja tekstowa (ASCII fallback):**
-> ```
-> RADA AGENTÓW — architektura "zero zaufania":
-> 
->                     ┌──────────────────────┐
->                     │    ORKIESTRATOR      │
->                     │  Granite 3.2 3B      │
->                     └──┬───┬───┬───┬───┬──┘
->                        │   │   │   │   │
->            ┌───────────┘   │   │   │   └──────────┐
->            ▼               ▼   ▼   ▼              ▼
->     ┌────────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
->     │ Ekstrakcji │ │Analitycz.│ │Walidator │ │ Strażnik │
->     │ (Vision)   │ │(Fin-RWKV)│ │Jakości   │ │(Guardian)│
->     └────────────┘ └──────────┘ └──────────┘ └──────────┘
->            │              │           │            │
->            └──────────────┴───────────┴────────────┘
->                           │
->                           ▼
->                 ┌──────────────────────┐
->                 │   DECYZJA KOŃCOWA   │
->                 │ AUTO_POST/ASK_USER  │
->                 │ BLOCK/TRIAGE_QUEUE  │
->                 └──────────────────────┘
-> 
-> Zasada: Każda decyzja Orkiestratora jest weryfikowana
-> przez Strażnika Merytorycznego (Guardian 0.5B) przed
-> wykonaniem. Jeśli Strażnik odrzuci → BLOCK.
-> ```
+### 4.3 Komunikacja między agentami przez NATS JetStream (NOWE)
+
+Ten diagram pokazuje, jak agenci AI komunikują się przez NATS JetStream z użyciem gwarancji at-least-once delivery i DLQ. To jest uzupełnienie 2 poprzednich diagramów — krytyczne dla zrozumienia przepływu kontroli między usługami.
+
+```mermaid
+sequenceDiagram
+    participant API as Litestar API
+    participant JS as NATS JetStream
+    participant W1 as Worker (OCR)
+    participant W2 as Worker (AI)
+    participant O as Orkiestrator
+    participant K as KSeF API
+
+    %% Faza 1: Odebranie faktury
+    Note over API,K: Temat: invoice.received (Stream: invoices)
+    API->>JS: Publikuj invoice.received
+    
+    JS->>JS: Zapisz w strumieniu (persistent)
+    JS->>W1: Dostarcz invoice.received
+    
+    %% Faza 2: OCR → dane
+    W1->>W1: OCR: 4 silniki → konsensus
+    W1->>JS: Publikuj invoice.extracted
+    Note over W1,JS: Temat: invoice.extracted (Stream: invoices)
+    
+    %% Faza 3: Przekazanie do Rady Agentów
+    JS->>W2: Dostarcz invoice.extracted
+    W2->>O: Preprocesuj dane (build prompt)
+    O->>JS: Żądaj council.task.request
+    Note over O,JS: Temat: council.task.request (Stream: council)
+    
+    %% Faza 4: Decyzja
+    O->>JS: Publikuj council.decision.final
+    Note over O,JS: Temat: council.decision.final (Stream: council)
+    
+    %% Obsługa błędów / DLQ
+    Note over JS,W1: Retry policy: max 3 próby, exponential backoff 1s→2s→4s
+    Note over JS,W1: Po 3 nieudanych → Dead Letter Queue (temat: council.dlq)
+    
+    %% Faza 5: Delegacja do Outbox/TigerBeetle
+    W2->>JS: Publikuj outbox.relay
+    Note over W2,JS: Temat: outbox.relay (Stream: outbox)
+    JS->>K: Wyślij do KSeF (HTTPS async)
+    K-->>JS: ✅ Potwierdzenie
+    JS->>JS: Aktualizacja outbox_event.status=SENT
+    
+    %% Hot-reload dla konfiguracji
+    Note over JS,API: Hot-reload kanaly: billing.rules.updated, risk.thresholds.updated, tax.rule.updated
+    API->>JS: Opcjonalnie: aktualizuj BillingEstimator przez billing.rules.updated
+```
+
+**Topologia JetStream — tematy i strumienie:**
+
+| Strumień (Stream) | Tematy | Retention | Max delivery | Ack |
+|---|---|---|---|---|
+| `invoices` | `invoice.received`, `invoice.extracted` | 7 dni | 3 | Explicit |
+| `council` | `council.task.request`, `council.decision.final` | 90 dni | 5 | Explicit |
+| `outbox` | `outbox.relay` | Do ack | 10 | Explicit |
+| `billing` | `billing.rules.updated` | 1h | 1 | Auto |
+| `risk` | `risk.thresholds.updated` | 1h | 1 | Auto |
+| `tax` | `tax.rule.updated` | 1h | 1 | Auto |
+| `config` | `backup.started`, `backup.completed` | 30 dni | 2 | Explicit |
+
+> **Kluczowa zasada:** JetStorage gwarantuje at-least-once delivery. Każda wiadomość jest trwale zapisana na dysku przed dostarczeniem. Po wyczerpaniu prób → Dead Letter Queue (osobny strumień `dlq`).
 
 ---
 
-## 5. Kluczowe decyzje architektoniczne (ADR)
+## 5. Kluczowe decyzje architektoniczne (ADR) — 8 decyzji
 
 ### ADR-001: SQLite zamiast PostgreSQL
 
@@ -395,14 +401,12 @@ sequenceDiagram
 - ❌ Mniejsza przepustowość zapisu vs PostgreSQL (ale niewidoczna przy <1000 transakcji/dzień)
 - ✅ Brak zewnętrznego serwera DB
 
----
-
 ### ADR-002: TigerBeetle do księgi głównej
 
 **Data:** 2025-03-15  
 **Status:** Zaakceptowane
 
-**Kontekst:** Potrzebujemy matematycznie gwarantowanego double-entry accounting.
+**Kontekst:** Potrzebujemy matematycznie gwarantowanego double-entry.
 
 **Decyzja:** TigerBeetle jako osobny silnik księgowy.
 
@@ -412,8 +416,6 @@ sequenceDiagram
 - ✅ Kryptograficzne dowody dla każdej transakcji
 - ✅ Gotowość na skalowanie (cluster mode)
 - ❌ Dodatkowy proces (~50-100 MB RAM)
-
----
 
 ### ADR-003: NATS zamiast RabbitMQ
 
@@ -432,8 +434,6 @@ sequenceDiagram
 - ✅ ~15-25 MB RAM w spoczynku
 - ✅ UNIX socket dla komunikacji lokalnej (bezpieczeństwo + szybkość)
 
----
-
 ### ADR-004: 4 silniki OCR zamiast jednego VLM
 
 **Data:** 2025-04-20  
@@ -449,8 +449,6 @@ sequenceDiagram
 - ❌ Wyższe zużycie CPU i RAM przy przetwarzaniu
 - ✅ Offline — wszystkie modele lokalne
 - ✅ Statystycznie niemożliwe, by 4 różne algorytmy popełniły ten sam błąd
-
----
 
 ### ADR-005: Python 3.13 free-threaded (bez GIL)
 
@@ -468,8 +466,6 @@ sequenceDiagram
 - ❌ Wymaga kół binarnych `cp313t` dla bibliotek natywnych
 - ✅ DuckDB, Polars, llama-cpp-python dostępne jako cp313t
 
----
-
 ### ADR-006: Modularny Monolit zamiast mikrousług
 
 **Data:** 2025-02-15  
@@ -484,8 +480,6 @@ sequenceDiagram
 - ✅ Łatwiejsze debugowanie
 - ✅ NATS jako przygotowanie do rozproszenia (wymiana UNIX socket → TCP)
 - ❌ Trudniejsze testowanie izolowanych modułów (ale modularny podział to ułatwia)
-
----
 
 ### ADR-007: Własny moduł kryptograficzny w Rust (nexus-crypto)
 
@@ -502,32 +496,23 @@ sequenceDiagram
 - ✅ Pełna kontrola nad łańcuchem dostaw
 - ❌ Wymaga kompilacji Rust przy buildzie
 
----
-
 ### ADR-008: Flet (Flutter) zamiast Electron/React dla interfejsu desktopowego
 
 **Data:** 2025-07-15  
 **Status:** Zaakceptowane
 
-**Kontekst:** Potrzebujemy interfejsu desktopowego, który działa natywnie (nie w przeglądarce), jest wydajny, lekki, i może być rozwijany przez zespół Python.
-
-**Alternatywy rozważane:**
-- **Electron:** Ciężki (~200 MB RAM na pustą aplikację), wymaga znajomości JavaScript/TypeScript, podatny na XSS.
-- **React/Next.js + Tauri:** Lepszy niż Electron (Rust backend), ale wciąż wymaga osobnego frontendowego stacka JS.
-- **PyQt/PySide:** Dojrzałe, ale przestarzałe API, trudne do osiągnięcia nowoczesnego designu, licencja GPL/LGPL.
-- **NiceGUI:** Python-first, ale renderuje UI w przeglądarce — nie jest natywne, gorzej z wydajnością.
+**Kontekst:** Potrzebujemy interfejsu desktopowego, który działa natywnie, jest wydajny, lekki, i może być rozwijany przez zespół Python.
 
 **Decyzja:** Flet — framework Python używający silnika Flutter (Skia) do renderowania natywnych interfejsów.
 
 **Konsekwencje:**
-- ✅ **Natywna wydajność** — silnik Skia renderuje każdy piksel bezpośrednio, 60 FPS, brak przeglądarki
-- ✅ **Jeden język (Python)** — frontend i backend w tym samym języku, zero kontekstowego przełączania
-- ✅ **Material Design 3** — gotowy, profesjonalny design bez potrzeby zatrudniania designerów
-- ✅ **Małe zużycie RAM** — ~50-80 MB (vs 200+ MB Electron/Tauri)
-- ✅ **Multi-platform z jednego kodu** — ta sama baza działa jako desktop (Windows/Linux/macOS), aplikacja mobilna (iOS/Android) i web (SPA)
-- ✅ **Bezpieczeństwo** — brak DOM, brak XSS, komunikacja z backendem przez UNIX socket
-- ❌ Mniejszy ekosystem niż React — ale wystarczający dla aplikacji biznesowej
-- ❌ Nietypowy model programowania (reaktywny, deklaratywny) — krzywa uczenia dla nowych developerów
+- ✅ **Natywna wydajność** — silnik Skia renderuje każdy piksel bezpośrednio, 60 FPS
+- ✅ **Jeden język (Python)** — frontend i backend w tym samym języku
+- ✅ **Material Design 3** — gotowy, profesjonalny design
+- ✅ **Małe zużycie RAM** — ~50-80 MB (vs 200+ MB Electron)
+- ✅ **Multi-platform z jednego kodu** — desktop, web, mobile
+- ✅ **Bezpieczeństwo** — brak DOM, brak XSS
+- ❌ Mniejszy ekosystem niż React
 
 ---
 
@@ -545,8 +530,7 @@ sequenceDiagram
 
 | VO | Typ | Walidacja |
 |---|---|---|
-| `Money` | `Decimal amount` + `str currency` | Kwota >= 0, kod ISO 4217 (3 litery), auto-round do 2 miejsc |
-| `MoneyNet` | `Money netto` + `Decimal vat_rate` | Niezmiennik: netto + VAT = brutto |
+| `Money` | `int amount_cents` + `str currency` | Kwota >= 0, kod ISO 4217, auto-round do 2 miejsc |
 | `NIP` | `str value` (10 cyfr) | Suma kontrolna (wagi: 6,5,7,2,3,4,5,6,7) |
 | `IBAN` | `str value` (15-34 znaków) | Checksum MOD-97, kod kraju |
 | `PESEL` | `str value` (11 cyfr) | Suma kontrolna, data urodzenia, płeć |
@@ -555,7 +539,6 @@ sequenceDiagram
 | `VatRate` | `Decimal value` + `str code` | Dozwolone: 0.23, 0.08, 0.05, 0.00 |
 | `TaxPeriod` | `int year` + `int? month` + `int? quarter` | Miesiąc 1-12 lub kwartał 1-4 |
 | `AccountCode` | `str value` | Format: X-YY-Z |
-| `BusinessKind` | `str value` | Dozwolone rodzaje działalności |
 | `KSeFMetadata` | `str? ksef_id` + `str? qr_code_url` | ID >= 10 znaków |
 
 ### 6.3 Maszyna stanów faktury
@@ -589,39 +572,6 @@ stateDiagram-v2
     PAID --> [*]
 ```
 
-> **📝 Wersja tekstowa (ASCII fallback):**
-> ```
-> MASZYNA STANÓW FAKTURY:
-> 
->                        ┌─────────┐
->                        │   NEW   │──────────────┐
->                        └────┬────┘              │
->                             │                   │
->                             ▼                   ▼
->                        ┌──────────┐        ┌────────┐
->               ┌───────│PROCESSING│        │ FAILED │
->               │       └──┬───┬───┘        └───┬────┘
->               │          │   │                │
->         ┌─────┤  ┌───────┘   └───────┬────────┘
->         │     │  │                   │         │
->         ▼     ▼  ▼                   ▼         │
->    ┌────────┐ ┌──────────┐  ┌───────────┐     │
->    │BLOCKED │ │PENDING   │  │ APPROVED  │◄────┘
->    │        │ │REVIEW    │  └─────┬─────┘
->    └───┬────┘ └────┬─────┘        │
->        │           │              ▼
->        │     ┌─────┴──────┐  ┌────────┐
->        │     │MANUAL      │  │  PAID  │ (terminalny)
->        │     │REVIEW      │  └────────┘
->        │     └─────┬──────┘
->        │           │
->        └──┬────────┘
->           ▼
->      ┌──────────┐
->      │ REJECTED │
->      └──────────┘
-> ```
-
 ---
 
 ## 7. Stos technologiczny — pełne uzasadnienie
@@ -642,7 +592,7 @@ stateDiagram-v2
 | **Flet ≥0.28** | Desktop UI | Silnik Flutter, Material Design 3, Python-only |
 | **Nuitka ≥1.8** | Kompilacja | Python → standalone .exe, mimalloc wkompilowany |
 | **mimalloc ≥2.1** | Alokator pamięci | 5-15% mniej RAM, statycznie wkompilowany |
-| **nexus-crypto** | Kryptografia | Rust+PyO3: AEAD+Argon2id+SHA-256, minimalny kod |
+| **nexus-crypto (Rust)** | Kryptografia | AEAD + Argon2id + SHA-256, minimalny kod, statycznie kompilowany |
 | **OPA ≥0.6x** | Silnik reguł | Rego — deklaratywne polityki podatkowe |
 | **stamina ≥0.1** | Resilience | Async-native retry + circuit breaker |
 | **hishel ≥0.1** | HTTP cache | Inteligentny cache respektujący Cache-Control |
@@ -675,15 +625,18 @@ stateDiagram-v2
                            └──────────┘            └──────────┘
 ```
 
-**Protokoły komunikacji:**
-- **Flet ↔ API:** REST + WebSocket przez UNIX socket (`/tmp/nexus-api.sock`) lub `localhost:8000`
-- **API ↔ Worker:** NATS JetStream (at-least-once, persistent)
-- **Worker ↔ TigerBeetle:** gRPC przez UNIX socket (`/tmp/nexus-tb.sock`)
-- **Worker ↔ SQLite:** Bezpośrednio (SQLModel/SQLAlchemy)
-- **Worker ↔ DuckDB:** Bezpośrednio (wbudowany)
-- **Worker ↔ LLM:** Bezpośrednio przez llama-cpp-python C-API
-- **Worker ↔ OPA:** REST `localhost:8181`
-- **Zewnętrzne API (KSeF, GUS, NBP, Biała Lista):** HTTPS przez httpx + hishel cache
+### Protokoły komunikacji
+
+| Kanał | Protokół | Lokalizacja | Bezpieczeństwo |
+|---|---|---|---|
+| Flet ↔ API | REST + WebSocket | UNIX socket | Brak (lokalna maszyna) |
+| API ↔ Worker | NATS JetStream | UNIX socket | TLS opcjonalnie |
+| Worker ↔ TigerBeetle | gRPC | UNIX socket | Brak (lokalna) |
+| Worker ↔ SQLite | SQLModel (bezpośrednio) | W pamięci | SQLCipher AES-256 |
+| Worker ↔ DuckDB | SQL (wbudowany) | W pamięci | Brak |
+| Worker ↔ LLM | llama-cpp-python C-API | W pamięci | Brak |
+| Worker ↔ OPA | REST | localhost:8181 | Brak (lokalna) |
+| API → KSeF/GUS/NBP | HTTPS | Sieć | TLS 1.3 |
 
 ---
 
@@ -700,6 +653,9 @@ Backup = skopiowanie `app_data/` z szyfrowaniem AEAD (nexus-crypto) i weryfikacj
 
 ## 🔗 Zobacz również
 
+- [00_META](00_META.md) — strona tytułowa, zespół
+- [Rust Module](RUST_MODULE.md) — szczegóły implementacji `nexus-crypto`
+- [Models Manifest](MODELS_MANIFEST.md) — 13 modeli GGUF w tabeli
 - [Baza danych](DATABASE.md) — schematy ERD, migracje, backup
 - [Bezpieczeństwo](SECURITY.md) — threat model, szyfrowanie, OWASP
 - [Moduły i logika](MODULES.md) — agenci AI, pipeline OCR, serwisy
@@ -708,5 +664,5 @@ Backup = skopiowanie `app_data/` z szyfrowaniem AEAD (nexus-crypto) i weryfikacj
 
 ---
 
-> **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead

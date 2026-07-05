@@ -5,7 +5,34 @@
 
 ---
 
-## [2.3.0] — 2026-06-10 — "Free-Threaded Phoenix"
+## [2.3.1-dev] — 2026-07-05 — „Enterprise Documentation"
+
+### 📚 Dokumentacja (pełna przebudowa)
+
+#### ➕ Dodane (5 nowych plików)
+- **`docs/00_META.md`** — strona tytułowa: identyfikacja projektu, PWE, zespół (10 ról), licencja, compliance matrix
+- **`docs/BIBLIOGRAPHY.md`** — formalna bibliografia (10 kategorii): akty prawne (UoR, KSeF, RODO), standardy IFRS, dokumentacja stacku, white papers, konferencje
+- **`docs/RELATED.md`** — konkurencja rynkowa (7 systemów), materiały konferencyjne, RFC (JWT, Argon2, ChaCha20), zasoby polskie (e-Urząd Skarbowy, Biała Lista, NBP)
+- **`docs/RUST_MODULE.md`** — moduł `nexus-crypto` (Rust+PyO3): struktura plików, 3 algorytmy (AEAD, Argon2id, SHA-256), Vault (mlock), benchmarki, error types
+- **`docs/MODELS_MANIFEST.md`** — 13 modeli GGUF w tabelach: 5 agentów + 8 specjalistycznych, parametry RAM/czas/dokładność, kwantyzacja (Q2_K→Q8_0), procedura SHA-256 download, manifest JSON
+
+#### 🔄 Zaktualizowane (3 pliki)
+- **`docs/ARCHITECTURE.md`** — dodano trzeci (brakujący) diagram sekwencji: komunikacja między agentami przez NATS JetStream z topologią strumieni i gwarancjami
+- **`docs/MODULES.md`** — dodano produkcyjny kod konsensusu OCR (Levenshtein), tabelę porównawczą 4 silników OCR (RAM/czas/dokładnoć/mocne/słabe strony), przepływ z metrykami czasowymi
+- **`docs/SECURITY.md`** — dodano konkretne parametry Argon2id (memory=64MB, iterations=3, parallelism=4) z uzasadnieniem, skrypt rotacji kluczy w Pythonie, security checklist 10 punktów
+- **`docs/INDEX.md`** — pełny przegląd wszystkich 25 plików dokumentacji z tabelami i rozszerzonym indeksem tagów
+
+#### 🐛 Poprawione
+- **`docs/MODULES.md`** — kod konsensusu OCR używa `difflib.SequenceMatcher` (standardowa biblioteka) zamiast `python-Levenshtein` (zależność zewnętrzna)
+
+### ➕ Dodane (ogólne)
+- `pixi run rotate-keys` — nowy task do rotacji kluczy (JWT, SQLCipher, backup)
+- `pixi run docs-html` — regeneracja dokumentacji HTML
+- `pixi run docs-check` — walidacja kotwic w dokumentacji
+
+---
+
+## [2.3.0] — 2026-06-10 — „Free-Threaded Phoenix"
 
 ### 🔄 Zmienione
 - **Python 3.13.2 free-threaded (3.13t)** — prawdziwa wielowątkowość, -30-40% RAM
@@ -80,6 +107,7 @@
 - 🗑️ **Usunięte** (Removed) — usunięta funkcja
 - 🐛 **Naprawione** (Fixed) — poprawka błędu
 - 🔒 **Bezpieczeństwo** (Security) — poprawka bezpieczeństwa
+- 📚 **Dokumentacja** (Documentation) — zmiany w dokumentacji
 
 ---
 
@@ -87,6 +115,7 @@
 
 | Wersja | Autor |
 |---|---|
+| 2.3.1-dev | NexusAI Team (dokumentacja: przebudowa docs/) |
 | 2.3.0 | NexusAI Team |
 | 2.2.0 | NexusAI Team |
 | 2.1.0 | NexusAI Team |
@@ -97,11 +126,13 @@
 
 ## 🔗 Zobacz również
 
+- [00_META](00_META.md) — strona tytułowa dokumentacji z zespołem
+- [INDEX](INDEX.md) — spis treści z listą wszystkich 25 plików
 - [Architektura](ARCHITECTURE.md) — lista ADR z datami decyzji
 - [Proces rozwoju](CONTRIBUTING.md) — zasady wersjonowania SemVer
 - [Zgodność z przepisami](COMPLIANCE.md) — zmiany prawne wpływające na kolejne wersje
 
 ---
 
-> **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 2.3.1-dev
+> **Status dokumentu:** Aktywny (dokumentacja w przebudowie) · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead

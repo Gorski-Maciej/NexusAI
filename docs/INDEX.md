@@ -9,12 +9,12 @@
 Dokumentacja podzielona jest na **6 logicznych bloków** (modułów iteracyjnych):
 
 ```
-M1 Fundament        → README, INTRODUCTION, QUICKSTART, PROJECT_STRUCTURE
-M2 Architektura     → ARCHITECTURE, DATABASE, MODULES
+M1 Fundament        → README, 00_META, INTRODUCTION, QUICKSTART, PROJECT_STRUCTURE
+M2 Architektura     → ARCHITECTURE, DATABASE, MODULES, RUST_MODULE, MODELS_MANIFEST
 M3 API              → API
 M4 Operacje         → INSTALLATION, TESTING, DEPLOYMENT, TROUBLESHOOTING
 M5 Bezpieczeństwo   → SECURITY, COMPLIANCE
-M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, CHANGELOG
+M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, RELATED, CHANGELOG
 ```
 
 ---
@@ -22,102 +22,104 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, CHANGELOG
 ## 📋 Kompletna lista sekcji
 
 ### Sekcja 0 — Strona tytułowa / Meta
+- Plik: [`docs/00_META.md`](00_META.md) (NOWY)
+- Zawartość: Identyfikacja projektu, misja PWE, zespół (10 ról), licencja, compliance matrix, mapa dokumentacji.
+
+### Sekcja 1 — README (strona główna)
 - Plik: [`README.md`](../README.md)
-- Zawartość: Misja, status (Beta), kluczowe funkcje, szybki start, licencja, zespół.
+- Zawartość: Logo, misja, status (Beta), kluczowe funkcje, szybki start, wymagania systemowe, licencja.
 
 ### Sekcja 2 — Spis treści
 - Plik: **ten plik** [`docs/INDEX.md`](INDEX.md)
-- Zawartość: Nawigacja po wszystkich 20 sekcjach.
+- Zawartość: Nawigacja po wszystkich 21 sekcjach + tagowy indeks A–W.
 
 ### Sekcja 3 — Wprowadzenie
 - Plik: [`docs/INTRODUCTION.md`](INTRODUCTION.md)
-- Zawartość: Cel, problem (PWE), propozycja wartości, użytkownicy, scenariusze użycia, słownik.
-- **Kiedy czytać:** Zanim zaczniesz pracę z NexusAI — aby zrozumieć *dlaczego* tak, a nie inaczej.
+- Zawartość: Cel, problem (PWE), propozycja wartości, użytkownicy (4 persony), scenariusze użycia.
 
 ### Sekcja 4 — Szybki start (Quick Start)
 - Plik: [`docs/QUICKSTART.md`](QUICKSTART.md)
-- Zawartość: 15-minutowa instrukcja pierwszego uruchomienia, komendy do skopiowania.
-- **Kiedy czytać:** Przed pierwszym uruchomieniem projektu lokalnie.
+- Zawartość: 15-minutowa instrukcja pierwszego uruchomienia, komendy do skopiowania, najczęstsze problemy.
 
 ### Sekcja 5 — Architektura systemu
 - Plik: [`docs/ARCHITECTURE.md`](ARCHITECTURE.md)
-- Zawartość: Diagramy C4 (Context, Container, Component), warstwy (DDD), wzorce (CQRS, ES), ADRs (8 decyzji — patrz [lista poniżej](#lista-decyzji-architektonicznych-adr)), sekwencje dla kluczowych procesów, model domeny (agregaty, value objects), racjonalne uzasadnienie tech-stacku.
-- **Kiedy czytać:** Przed jakąkolwiek poważną zmianą w kodzie; przed review'ami.
+- Zawartość: **3 diagramy C4** (Context, Container, Component), warstwy DDD, **14 wzorców**, 3 diagramy sekwencji (faktura, Rada Agentów, **NATS JetStream między agentami** — NOWE), **8 ADR**, model domeny (agregaty + VOs), maszyna stanów faktury, stack z uzasadnieniem.
 
 ### Sekcja 6 — Struktura projektu
 - Plik: [`docs/PROJECT_STRUCTURE.md`](PROJECT_STRUCTURE.md)
 - Zawartość: Drzewo `nexus_ai/`, konwencje nazewnicze, lokalizacja kluczowych plików.
-- **Kiedy czytać:** Gdy szukasz *gdzie* coś jest w kodzie.
 
 ### Sekcja 7 — Instalacja i konfiguracja
 - Plik: [`docs/INSTALLATION.md`](INSTALLATION.md)
-- Zawartość: Szczegółowa instalacja (klonowanie, pixi, env vars, profile), `.env.example`, różnice dev/staging/prod.
-- **Kiedy czytać:** Przy konfiguracji nowego środowiska (developer/serwer/CI).
+- Zawartość: Szczegółowa instalacja, `.env.example`, profile dev/staging/prod.
 
 ### Sekcja 8 — Baza danych
 - Plik: [`docs/DATABASE.md`](DATABASE.md)
-- Zawartość: Diagram ERD, opis każdej tabeli/kolekcji (pola, typy, indeksy), strategia migracji i seedowania, backup i odtwarzanie.
-- **Kiedy czytać:** Przed pracą ze schematem DB; przed migracjami.
+- Zawartość: Diagram ERD, opis 14 tabel, migracje SQL (001–004), backup i przywracanie.
 
 ### Sekcja 9 — API / Komunikacja
 - Plik: [`docs/API.md`](API.md)
-- Zawartość: Pełna specyfikacja REST (autentykacja JWT, endpointy pogrupowane tematycznie, kody błędów, rate limiting, wersjonowanie).
-- **Kiedy czytać:** Przed integracją z NexusAI z zewnątrz; przed testami E2E.
+- Zawartość: Pełna specyfikacja REST (JWT, endpointy, rate limiting, kody błędów, curl).
 
 ### Sekcja 10 — Moduły / Logika biznesowa
 - Plik: [`docs/MODULES.md`](MODULES.md)
-- Zawartość: Opis 60+ serwisów, agenci AI (konfigurowalne modele GGUF), pipeline OCR (4 silniki), sekwencje dla księgowania i Rady Agentów.
-- **Kiedy czytać:** Gdy pracujesz na konkretnym serwisie lub planujesz nowy.
+- Zawartość: 5 agentów AI, 70+ serwisów (w tym LiquidityOracle, FraudGraphScanner, BudgetaryControlEngine, IdempotentBankImporter, DunningEngine), pipeline OCR z **kodem konsensusu Levenshteina**, tabela porównawcza 4 silników, silnik reguł OPA/Rego, trzy filary nieomylności finansowej, **22 komponenty rdzenia Core** (NATS utils, taskiq middleware, PluginManager, mimalloc heaps, Result monad, OPA client, SecretsManager, FSSpecFactory i inne).
 
 ### Sekcja 11 — Testowanie
 - Plik: [`docs/TESTING.md`](TESTING.md)
-- Zawartość: Strategia (jednostkowe, integracyjne, property-based, fuzz, wydajnościowe), szablon testów, specyfika księgowa.
-- **Kiedy czytać:** Przed pisaniem pierwszego testu; przed wdrożeniem.
+- Zawartość: Strategia (6 poziomów), pytest, crosshair SMT, schemathesis, locust, py-spy, szablon testów.
 
 ### Sekcja 12 — Wdrożenie / Deployment
 - Plik: [`docs/DEPLOYMENT.md`](DEPLOYMENT.md)
-- Zawartość: Środowiska (dev/staging/prod), budowanie binarki (Nuitka+Inno Setup), instalator Windows, aktualizacje OTA, CI/CD.
-- **Kiedy czytać:** Przed release'em; przy konfiguracji CI/CD.
+- Zawartość: Budowanie binarki (Nuitka), instalator Windows (Inno Setup), aktualizacje OTA (LiteServ), backup, CI/CD.
 
 ### Sekcja 13 — Rozwiązywanie problemów
 - Plik: [`docs/TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
-- Zawartość: Lista częstych błędów + rozwiązania, poradnik debugowania.
-- **Kiedy czytać:** Gdy coś nie działa — przed otwarciem issue.
+- Zawartość: Drzewo decyzyjne diagnostyki, 9 kategorii błędów, logi i debugowanie.
 
 ### Sekcja 14 — Bezpieczeństwo
 - Plik: [`docs/SECURITY.md`](SECURITY.md)
-- Zawartość: Threat model, szyfrowanie (AEAD, Argon2id), RBAC, JWT, OWASP Top 10, RODO, zależności (Dependabot, Scorecard, CodeQL, SBOM, SLSA).
-- **Kiedy czytać:** Przed audytem bezpieczeństwa; przed zgłoszeniem podatności.
+- Zawartość: Threat model, szyfrowanie (AEAD, Argon2id z konkretnymi parametrami), RBAC, JWT, OWASP Top 10, RODO, **skrypt rotacji kluczy** (NOWY), security checklist.
 
 ### Sekcja 15 — Zgodność z przepisami
 - Plik: [`docs/COMPLIANCE.md`](COMPLIANCE.md)
-- Zawartość: Zgodność z UoR/IFRS/GAAP, KSeF, JPK, deklaracje VAT/CIT/PIT, ścieżka audytu, retencja.
-- **Kiedy czytać:** Przed audytem księgowym; przed wdrożeniem produkcyjnym.
+- Zawartość: Zgodność z UoR/IFRS/GAAP, KSeF FA_VAT(2), JPK_V7, deklaracje VAT/CIT/PIT, ścieżka audytu, retencja.
 
 ### Sekcja 16 — Proces rozwoju / Contributing
 - Plik: [`docs/CONTRIBUTING.md`](CONTRIBUTING.md)
-- Zawartość: Setup dev, standardy kodowania (ruff, mypy strict), konwencje commitów, code review, jak dodać agenta/regułę.
-- **Kiedy czytać:** Przed pierwszym PR; przy onboardingu do zespołu.
+- Zawartość: Standardy kodowania (ruff, mypy strict), konwencje commitów, PR checklista, jak dodać agenta/regułę/migrację.
 
 ### Sekcja 17 — Podręcznik użytkownika
 - Plik: [`docs/USER_GUIDE.md`](USER_GUIDE.md)
-- Zawartość: Pierwsze uruchomienie, role, codzienny workflow, centrum decyzji, raporty, konfiguracja, integracje, backup.
-- **Kiedy czytać:** Jako instrukcja dla przedsiębiorcy-końcowego użytkownika.
+- Zawartość: Pierwsze uruchomienie (kreator 5 kroków), role, codzienny workflow (3 minuty), Centrum Decyzji, raporty, konfiguracja, backup.
 
 ### Sekcja 18 — Słownik pojęć
 - Plik: [`docs/GLOSSARY.md`](GLOSSARY.md)
-- Zawartość: Terminy księgowe (UoR, KSeF, JPK, NIP, IBAN, BIL, RMK) + techniczne (CQRS, ES, GGUF, NATS, JetStream, JetStream KV, OPA, Rego).
-- **Kiedy czytać:** W razie wątpliwości co do terminu.
+- Zawartość: Terminy księgowe (UoR, KSeF, NIP, IBAN, FIFO) + techniczne (CQRS, GGUF, NATS, SQLCipher).
 
 ### Sekcja 19 — FAQ
 - Plik: [`docs/FAQ.md`](FAQ.md)
-- Zawartość: Najczęściej zadawane pytania wstępne, techniczne i biznesowe.
-- **Kiedy czytać:** Przed zadaniem pytania maintainerom.
+- Zawartość: 30+ pytań w 6 kategoriach (ogólne, techniczne, AI, bezpieczeństwo, biznesowe, rozwój).
 
-### Sekcja 20 — Dodatki
+### Sekcja 20a — Dodatki: Bibliografia
+- Plik: [`docs/BIBLIOGRAPHY.md`](BIBLIOGRAPHY.md) (NOWY)
+- Zawartość: 10 kategorii: akty prawne (UoR, KSeF, RODO, Ordynacja), IFRS/MSSF, dokumentacja stacku (Python, Rust, NATS, TigerBeetle), white papers, konferencje, źródła danych, narzędzia.
+
+### Sekcja 20b — Dodatki: Powiązane dokumenty
+- Plik: [`docs/RELATED.md`](RELATED.md) (NOWY)
+- Zawartość: Konkurencja rynkowa, materiały konferencyjne, specyfikacje RFC, zasoby polskie, grupy społeczności, narzędzia deweloperskie, identyfikatory standardów.
+
+### Sekcja 20c — Moduł Rust (nexus-crypto)
+- Plik: [`docs/RUST_MODULE.md`](RUST_MODULE.md) (NOWY)
+- Zawartość: Struktura wewnętrzna `nexus_ai/rust/`, 3 algorytmy (AEAD, Argon2id, SHA-256), Vault (mlock), benchmarki, testy Rust (`cargo test`).
+
+### Sekcja 20d — Manifest modeli AI
+- Plik: [`docs/MODELS_MANIFEST.md`](MODELS_MANIFEST.md) (NOWY)
+- Zawartość: 13 modeli GGUF, 5 agentów + 8 specjalistycznych, tabela porównawcza RAM/czas/dokładność, źródła pobierania, procedura weryfikacji SHA-256.
+
+### Sekcja 20e — Changelog
 - Plik: [`docs/CHANGELOG.md`](CHANGELOG.md)
-- Zawartość: Wersje, daty, autorzy, linki do GitHub Releases.
-- **Kiedy czytać:** Przed aktualizacją; przy ocenie wpływu zmiany.
+- Zawartość: Historia wersji (1.0.0 → 2.3.0), daty, autorzy.
 
 ---
 
@@ -126,170 +128,86 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, CHANGELOG
 | Szukam… | Idź do… |
 |---|---|
 | Jak uruchomić? | [`QUICKSTART.md`](QUICKSTART.md) |
+| Jak skonfigurować env vars? | [`INSTALLATION.md`](INSTALLATION.md#3-zmienne-środowiskowe) |
 | Jakie mamy endpointy? | [`API.md`](API.md) |
-| Jak działa księgowanie? | [`MODULES.md`](MODULES.md#moduł-księgowania) |
-| Gdzie jest model Invoice? | `nexus_ai/db/models.py` — patrz [`PROJECT_STRUCTURE.md`](PROJECT_STRUCTURE.md) |
-| Jak rotować klucze? | [`SECURITY.md`](SECURITY.md#rotacja-kluczy) |
+| Jak działa księgowanie? | [`MODULES.md`](MODULES.md#7-diagram-sekwencji--księgowanie-faktury) | [`ARCHITECTURE.md`](ARCHITECTURE.md#4-diagramy-sekwencji-3-krytyczne-procesy)<br>sekwencja faktura→NATS→decyzja |
+| Gdzie jest model Invoice? | `nexus_ai/db/models.py` — patrz [`PROJECT_STRUCTURE.md`](PROJECT_STRUCTURE.md#4-gdzie-znaleźć-konkretne-rzeczy) |
+| Jak rotować klucze? | [`SECURITY.md`](SECURITY.md#6-rotacja-kluczy) — skrypt `rotate_keys.py` w Pythonie |
+| Jak działa weryfikacja SHA-256 modeli? | [`RUST_MODULE.md`](RUST_MODULE.md#33-sha-256) |
+| Jakie modele AI są używane? | [`MODELS_MANIFEST.md`](MODELS_MANIFEST.md#2-5-głównych-agentów) |
+| Jak działa konsensus OCR? | [`MODULES.md`](MODULES.md#32-mechanizm-walidacji-krzyżowej) — kod produkcyjny z algorytmem Levenshtein |
 | Co nowego w 2.3.0? | [`CHANGELOG.md`](CHANGELOG.md) |
+| Dokumentacja prawna? | [`BIBLIOGRAPHY.md`](BIBLIOGRAPHY.md) |
+| Rynek i konkurencja? | [`RELATED.md`](RELATED.md#1-podobneporównywalne-systemy) |
 
 ---
 
 ## 🏷️ Indeks tagów / słów kluczowych (Ctrl+F friendly)
 
-> Kliknij dowolny tag, aby przejść do odpowiedniej sekcji. Używaj Ctrl+F w przeglądarce.
+> Używaj Ctrl+F w przeglądarce. Tagi są w formacie `#TAG` z odnośnikiem do pliku i sekcji.
 
-### #A
-
-| Tag | Sekcja | Plik |
+| Tag | Plik | Sekcja |
 |---|---|---|
-| `#ADR` `#decyzje-architektoniczne` | [Lista ADR](#lista-decyzji-architektonicznych-adr), [ADR-001–008](ARCHITECTURE.md#5-kluczowe-decyzje-architektoniczne-adr) | INDEX, ARCHITECTURE |
-| `#AEAD` `#szyfrowanie` `#ChaCha20` | [Szyfrowanie danych w spoczynku](SECURITY.md#21-dane-w-spoczynku-data-at-rest), [Backup AEAD](DEPLOYMENT.md#62-proces-backupu) | SECURITY, DEPLOYMENT |
-| `#AES-256` `#SQLCipher` | [SQLCipher](DATABASE.md#1-architektura-wielobazowa), [Szyfrowanie bazy](SECURITY.md#21-dane-w-spoczynku-data-at-rest) | DATABASE, SECURITY |
-| `#agenci-AI` `#modele-GGUF` | [Przegląd agentów](MODULES.md#1-przegląd-agentów-ai-konfigurowalne-modele-gguf), [Bezpieczeństwo AI](SECURITY.md#6-bezpieczeństwo-ai) | MODULES, SECURITY |
-| `#amortyzacja` `#środki-trwałe` | [Środki trwałe](MODULES.md#41-księgowość-accounting), [Amortyzacja liniowa](TESTING.md#55-amortyzacja-liniowa) | MODULES, TESTING |
-| `#API` `#REST` `#endpointy` | [Pełna specyfikacja API](API.md), [Autentykacja JWT](API.md#1-autentykacja) | API |
-| `#Argon2id` `#hash-haseł` | [nexus-crypto](SECURITY.md#23-własny-moduł-kryptograficzny-nexus-crypto), [Autentykacja](SECURITY.md#3-autentykacja) | SECURITY |
-| `#ASK_USER` `#centrum-decyzji` | [Poziomy decyzji](MODULES.md#22-poziomy-decyzji-trust-score), [Codzienny workflow](USER_GUIDE.md#3-codzienny-workflow) | MODULES, USER_GUIDE |
-| `#audyt` `#ścieżka-audytu` | [Ścieżka audytu](COMPLIANCE.md#5-ścieżka-audytu), [Audit Logs](SECURITY.md#52-audit-logs) | COMPLIANCE, SECURITY |
-| `#AUTO_POST` `#automatyczne-księgowanie` | [Poziomy decyzji](MODULES.md#22-poziomy-decyzji-trust-score), [Codzienny workflow](USER_GUIDE.md#3-codzienny-workflow) | MODULES, USER_GUIDE |
-
-### #B
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#backup` `#przywracanie` | [Backup i przywracanie](DATABASE.md#6-backup-i-przywracanie), [BackupManager](DEPLOYMENT.md#6-backup-i-przywracanie), [Backup użytkownika](USER_GUIDE.md#8-backup) | DATABASE, DEPLOYMENT, USER_GUIDE |
-| `#Biała-Lista-MF` `#white-list` | [White List](COMPLIANCE.md#7-white-list--biała-lista-mf), [Integracje](USER_GUIDE.md#72-biała-lista-mf) | COMPLIANCE, USER_GUIDE |
-| `#build` `#Nuitka` `#kompilacja` | [Budowanie binarki](DEPLOYMENT.md#2-budowanie-finalnej-binarki), [CI/CD](DEPLOYMENT.md#8-proces-cicd) | DEPLOYMENT |
-
-### #C
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#CI/CD` `#GitHub-Actions` | [Pipeline CI/CD](DEPLOYMENT.md#8-proces-cicd), [Testy w CI](TESTING.md#7-cicd--testy-w-pipeline) | DEPLOYMENT, TESTING |
-| `#CIT` `#CIT-8` | [CIT-8](COMPLIANCE.md#42-cit-8), [Deklaracje podatkowe](USER_GUIDE.md#5-raporty) | COMPLIANCE, USER_GUIDE |
-| `#CQRS` `#Event-Sourcing` | [Wzorce projektowe](ARCHITECTURE.md#3-wzorce-projektowe), [Warstwy DDD](ARCHITECTURE.md#2-warstwy-architektoniczne-ddd) | ARCHITECTURE |
-| `#crosshair` `#property-based-testing` | [Property-based testing](TESTING.md#32-crosshair-property-based-testing-z-smt-solverem) | TESTING |
-
-### #D
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#debug` `#logi` | [Logi i debugowanie](TROUBLESHOOTING.md#8-logi-i-debugowanie), [Gdzie są logi](DEPLOYMENT.md#91-gdzie-są-logi) | TROUBLESHOOTING, DEPLOYMENT |
-| `#DuckDB` `#OLAP` | [Architektura wielobazowa](DATABASE.md#1-architektura-wielobazowa), [Stos technologiczny](ARCHITECTURE.md#7-stos-technologiczny--pełne-uzasadnienie) | DATABASE, ARCHITECTURE |
-| `#domena` `#DDD` `#agregaty` | [Model domeny](ARCHITECTURE.md#6-model-domeny), [Value Objects](ARCHITECTURE.md#62-value-objects-wszystkie-immutable--frozentrue) | ARCHITECTURE |
-
-### #F
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#FIFO` `#zapasy` | [Inventory FIFO](MODULES.md#41-księgowość-accounting), [IAS 2](COMPLIANCE.md#12-miedzynarodowe-standardy-ifrs--mssf) | MODULES, COMPLIANCE |
-| `#Flet` `#UI` `#Flutter` | [ADR-008](ARCHITECTURE.md#adr-008-flet-flutter-zamiast-electronreact-dla-interfejsu-desktopowego), [Presentation Layer](ARCHITECTURE.md#24-presentation-layer-nexus_aifrontend) | ARCHITECTURE |
-
-### #G
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#GGUF` `#kwantyzacja` | [Modele GGUF](MODULES.md#1-przegląd-agentów-ai-5-modeli-gguf), [Słownik](GLOSSARY.md#b-terminy-techniczne) | MODULES, GLOSSARY |
-| `#Granian` `#ASGI` | [Stos technologiczny](ARCHITECTURE.md#7-stos-technologiczny--pełne-uzasadnienie), [Konfiguracja](INSTALLATION.md#31-plik-env-opcjonalny-pixi-ustawia-własne) | ARCHITECTURE, INSTALLATION |
-
-### #I
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#IFRS` `#MSSF` | [Zgodność IFRS/MSSF](COMPLIANCE.md#12-miedzynarodowe-standardy-ifrs--mssf) | COMPLIANCE |
-| `#instalacja` `#setup` | [Instrukcja 6 kroków](INSTALLATION.md#2-instalacja-krok-po-kroku), [Szybki start](QUICKSTART.md) | INSTALLATION, QUICKSTART |
-
-### #J
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#JPK` `#JPK_V7` | [Struktury JPK](COMPLIANCE.md#3-jpk-jednolity-plik-kontrolny), [Eksport JPK](API.md#32-faktury-apiv1invoices) | COMPLIANCE, API |
-| `#JWT` `#autentykacja` | [JWT Token Flow](API.md#1-autentykacja), [JWT w bezpieczeństwie](SECURITY.md#31-jwt-json-web-tokens) | API, SECURITY |
-
-### #K
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#KSeF` `#e-faktury` | [KSeF — pełna dokumentacja](COMPLIANCE.md#2-ksef-krajowy-system-e-faktur), [Endpointy KSeF](API.md#36-ksef-apiv1ksef), [Integracja KSeF](USER_GUIDE.md#71-ksef-krajowy-system-e-faktur) | COMPLIANCE, API, USER_GUIDE |
-| `#konfiguracja` `#env` | [Zmienne środowiskowe](INSTALLATION.md#3-zmienne-środowiskowe), [Profile konfiguracyjne](INSTALLATION.md#32-profile-konfiguracyjne) | INSTALLATION |
-| `#konwencje` `#nazewnictwo` | [Konwencje nazewnicze](PROJECT_STRUCTURE.md#3-konwencje-nazewnicze), [Standardy kodu](CONTRIBUTING.md#2-standardy-kodowania) | PROJECT_STRUCTURE, CONTRIBUTING |
-
-### #M
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#migracje` `#SQL` | [Strategia migracji](DATABASE.md#4-strategia-migracji), [Migracje w kodzie](CONTRIBUTING.md#64-nowa-migracja-bazy-danych) | DATABASE, CONTRIBUTING |
-| `#mimalloc` `#pamięć` | [Stos technologiczny](ARCHITECTURE.md#7-stos-technologiczny--pełne-uzasadnienie), [Budżet RAM](DEPLOYMENT.md#4-wymagania-systemowe-produkcja) | ARCHITECTURE, DEPLOYMENT |
-| `#monitoring` `#OTel` | [Monitorowanie produkcyjne](DEPLOYMENT.md#9-monitorowanie-i-logowanie-produkcja), [OpenTelemetry](ARCHITECTURE.md#7-stos-technologiczny--pełne-uzasadnienie) | DEPLOYMENT, ARCHITECTURE |
-
-### #N
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#NATS` `#JetStream` | [ADR-003](ARCHITECTURE.md#adr-003-nats-zamiast-rabbitmq), [Komunikacja NATS](MODULES.md#8-komunikacja-wewnętrzna-nats-jetstream) | ARCHITECTURE, MODULES |
-| `#NBP` `#kursy-walut` | [Integracja NBP](USER_GUIDE.md#73-nbp-kursy-walut), [Rewaluacja FX](MODULES.md#41-księgowość-accounting) | USER_GUIDE, MODULES |
-| `#NIP` `#walidacja` | [Value Object NIP](ARCHITECTURE.md#62-value-objects-wszystkie-immutable--frozentrue), [Weryfikacja kontrahenta](API.md#33-kontrahenci-apiv1contractors) | ARCHITECTURE, API |
-
-### #O
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#OCR` `#pipeline` | [Pipeline OCR](MODULES.md#3-pipeline-ocr--architektura-warstwowa), [Component OCR](ARCHITECTURE.md#13-component-poziom-3--pipeline-ocr) | MODULES, ARCHITECTURE |
-| `#OPA` `#Rego` | [Reguły Rego](MODULES.md#54-reguły-rego-opa), [Dodawanie reguły](CONTRIBUTING.md#61-nowa-reguła-podatkowa-oparego) | MODULES, CONTRIBUTING |
-| `#OWASP` `#bezpieczeństwo-aplikacji` | [OWASP Top 10](SECURITY.md#7-owasp-top-10) | SECURITY |
-
-### #P
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#PIT` `#PIT-36` `#PIT-36L` | [PIT-36/PIT-36L](COMPLIANCE.md#43-pit-36--pit-36l), [Symulacje podatkowe](MODULES.md#43-podatki-tax) | COMPLIANCE, MODULES |
-| `#pixi` `#środowisko` | [Instalacja pixi](INSTALLATION.md#krok-1-instalacja-pixi), [Cheat-sheet](QUICKSTART.md#4-skrócony-cheat-sheet) | INSTALLATION, QUICKSTART |
-| `#Proof-Chain` `#SHA-256` | [Proof Chain](COMPLIANCE.md#5-ścieżka-audytu), [Integrity Verifier](MODULES.md#42-decyzje-i-triage) | COMPLIANCE, MODULES |
-
-### #R
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#RBAC` `#role` | [Role i uprawnienia](SECURITY.md#4-rbac-role-based-access-control), [Role użytkowników](USER_GUIDE.md#2-role-użytkowników-rbac) | SECURITY, USER_GUIDE |
-| `#REST-API` `#endpointy` | [Pełna specyfikacja](API.md#3-endpointy--pogrupowane-tematycznie) | API |
-| `#RODO` `#GDPR` | [RODO/GDPR](SECURITY.md#9-rodo--gdpr), [Retencja](COMPLIANCE.md#6-przechowywanie-danych) | SECURITY, COMPLIANCE |
-| `#Rust` `#PyO3` `#nexus-crypto` | [ADR-007](ARCHITECTURE.md#adr-007-własny-moduł-kryptograficzny-w-rust-nexus-crypto), [Moduł Rust](SECURITY.md#23-własny-moduł-kryptograficzny-nexus-crypto) | ARCHITECTURE, SECURITY |
-
-### #S
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#Split-Payment` `#MPP` | [Split Payment](COMPLIANCE.md#8-split-payment-mpp) | COMPLIANCE |
-| `#SQLite` `#OLTP` | [ADR-001](ARCHITECTURE.md#adr-001-sqlite-zamiast-postgresql), [Architektura DB](DATABASE.md#1-architektura-wielobazowa) | ARCHITECTURE, DATABASE |
-| `#struktura-projektu` `#katalogi` | [Drzewo katalogów](PROJECT_STRUCTURE.md#1-top-level--widok-z-lotu-ptaka), [Szczegółowe drzewo](PROJECT_STRUCTURE.md#2-szczegółowe-drzewo-nexus_ai) | PROJECT_STRUCTURE |
-
-### #T
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#TigerBeetle` `#ledger` | [ADR-002](ARCHITECTURE.md#adr-002-tigerbeetle-do-księgi-głównej), [TigerBeetle secure](ARCHITECTURE.md#7-stos-technologiczny--pełne-uzasadnienie) | ARCHITECTURE |
-| `#testy` `#testowanie` | [Strategia testów](TESTING.md#1-strategia-testów), [Jak pisać testy](TESTING.md#4-szablon-testu--jak-pisać-nowe-testy) | TESTING |
-| `#triage` `#decyzje` | [Centrum Decyzji](USER_GUIDE.md#4-centrum-decyzji), [Endpointy triage](API.md#34-decyzje--triage-apiv1triage) | USER_GUIDE, API |
-
-### #U
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#UoR` `#ustawa-o-rachunkowości` | [Zgodność z UoR](COMPLIANCE.md#11-ustawa-o-rachunkowości-uor) | COMPLIANCE |
-| `#uruchomienie` `#quickstart` | [Szybki start](QUICKSTART.md) | QUICKSTART |
-
-### #V
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#VAT` `#stawki` | [Deklaracje VAT](COMPLIANCE.md#41-vat-7--vat-7k), [Stawki VAT](USER_GUIDE.md#61-stawki-vat), [VAT Reconciliation](MODULES.md#41-księgowość-accounting) | COMPLIANCE, USER_GUIDE, MODULES |
-
-### #W
-
-| Tag | Sekcja | Plik |
-|---|---|---|
-| `#wdrożenie` `#deploy` | [Deployment](DEPLOYMENT.md), [Środowiska](DEPLOYMENT.md#1-środowiska) | DEPLOYMENT |
-| `#wzorce-projektowe` `#design-patterns` | [14 wzorców](ARCHITECTURE.md#3-wzorce-projektowe) | ARCHITECTURE |
+| `#ADR` | ARCHITECTURE.md | 5. Kluczowe decyzje architektoniczne |
+| `#AEAD` `#ChaCha20` | SECURITY.md, RUST_MODULE.md | 2.1, 3.1 |
+| `#AES-256` | SECURITY.md, DATABASE.md | 2.1 |
+| `#agenci-AI` | MODULES.md, MODELS_MANIFEST.md | 1., 2. |
+| `#amortyzacja` | MODULES.md | 4.1 |
+| `#API` | API.md | 1.–7. |
+| `#Argon2id` | SECURITY.md, RUST_MODULE.md | 2.3, 3.2 |
+| `#ASK_USER` | MODULES.md | 2.2 |
+| `#audyt` | COMPLIANCE.md | 5. |
+| `#AUTO_POST` | MODULES.md | 2.2 |
+| `#backup` | DATABASE.md, DEPLOYMENT.md | 6., 6. |
+| `#Biała-Lista-MF` | COMPLIANCE.md | 7. |
+| `#bibliografia` | BIBLIOGRAPHY.md | 1.–10. |
+| `#build` `#Nuitka` | DEPLOYMENT.md | 2. |
+| `#C4` | ARCHITECTURE.md | 1. |
+| `#CI/CD` | DEPLOYMENT.md | 8. |
+| `#CIT` | COMPLIANCE.md | 4.2 |
+| `#CQRS` `#Event-Sourcing` | ARCHITECTURE.md | 3. |
+| `#crosshair` | TESTING.md | 3.2 |
+| `#DuckDB` | DATABASE.md | 1. |
+| `#DDD` | ARCHITECTURE.md | 2. |
+| `#FIFO` | MODULES.md | 4.1 |
+| `#Flet` | ARCHITECTURE.md | ADR-008 |
+| `#GGUF` | MODELS_MANIFEST.md | 2. |
+| `#Granian` | INSTALLATION.md | 3. |
+| `#IFRS` | COMPLIANCE.md | 1.2 |
+| `#JPK` | COMPLIANCE.md | 3. |
+| `#JWT` | API.md, SECURITY.md | 1., 3. |
+| `#KSeF` | COMPLIANCE.md | 2. |
+| `#konfiguracja` | INSTALLATION.md | 3. |
+| `#konwencje` | PROJECT_STRUCTURE.md | 3. |
+| `#konsensus-ocr` | MODULES.md | 3.2 |
+| `#licencja` | 00_META.md | Licencja |
+| `#migracje` | DATABASE.md | 4. |
+| `#mimalloc` | ARCHITECTURE.md | 7. |
+| `#model-domeny` | ARCHITECTURE.md | 6. |
+| `#monitoring` | DEPLOYMENT.md | 9. |
+| `#NATS` `#JetStream` | ARCHITECTURE.md | ADR-003, 4.3 |
+| `#nexus-crypto` | RUST_MODULE.md | 1.–10. |
+| `#NIP` | ARCHITECTURE.md | 6.2 |
+| `#OCR` | MODULES.md | 3. |
+| `#OPA` `#Rego` | MODULES.md | 5.4 |
+| `#OWASP` | SECURITY.md | 8. |
+| `#pixi` | INSTALLATION.md | 2. |
+| `#Proof-Chain` | SECURITY.md | 5. |
+| `#RBAC` | SECURITY.md | 4. |
+| `#researcher-nbp` | USER_GUIDE.md | 7.3 |
+| `#RODO` | SECURITY.md | 11. |
+| `#Rust` `#PyO3` | RUST_MODULE.md | 1., 2. |
+| `#SBOM` | DEPLOYMENT.md | 8. |
+| `#silniki-OCR` | MODULES.md | 3.3 |
+| `#Solution` | COMPLIANCE.md | 1.1 |
+| `#SQLite` | DATABASE.md | 1. |
+| `#stos-technologiczny` | ARCHITECTURE.md | 7. |
+| `#testy` | TESTING.md | 1.–7. |
+| `#TigerBeetle` | ARCHITECTURE.md | ADR-002 |
+| `#UoR` | COMPLIANCE.md | 1.1 |
+| `#VAT` | COMPLIANCE.md | 4.1 |
+| `#wdrożenie` | DEPLOYMENT.md | 1.–9. |
+| `#wzorce-projektowe` | ARCHITECTURE.md | 3. |
 
 ---
 
@@ -310,5 +228,47 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 
 ---
 
-> **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team
+## 📋 Lista wszystkich plików dokumentacji (25)
+
+| # | Plik | Sekcja | Typ | Status |
+|---|---|---|---|---|
+| 1 | `docs/00_META.md` | 0. Meta | NOWY | ✅ |
+| 2 | `README.md` (root) | 1. Strona główna | Istniejący | ✅ |
+| 3 | `docs/INDEX.md` | 2. Spis treści | Istniejący | ✅ |
+| 4 | `docs/INTRODUCTION.md` | 3. Wprowadzenie | Istniejący | ✅ |
+| 5 | `docs/QUICKSTART.md` | 4. Szybki start | Istniejący | ✅ |
+| 6 | `docs/ARCHITECTURE.md` | 5. Architektura | Zaktualizowany | ✅ |
+| 7 | `docs/PROJECT_STRUCTURE.md` | 6. Struktura projektu | Zaktualizowany | ✅ |
+| 8 | `docs/INSTALLATION.md` | 7. Instalacja | Istniejący | ✅ |
+| 9 | `docs/DATABASE.md` | 8. Baza danych | Zaktualizowany | ✅ |
+| 10 | `docs/API.md` | 9. API / Komunikacja | Zaktualizowany | ✅ |
+| 11 | `docs/MODULES.md` | 10. Moduły / Logika | Zaktualizowany | ✅ |
+| 12 | `docs/TESTING.md` | 11. Testowanie | Istniejący | ✅ |
+| 13 | `docs/DEPLOYMENT.md` | 12. Wdrożenie | Istniejący | ✅ |
+| 14 | `docs/TROUBLESHOOTING.md` | 13. Rozwiązywanie problemów | Istniejący | ✅ |
+| 15 | `docs/SECURITY.md` | 14. Bezpieczeństwo | Zaktualizowany | ✅ |
+| 16 | `docs/COMPLIANCE.md` | 15. Zgodność z przepisami | Istniejący | ✅ |
+| 17 | `docs/CONTRIBUTING.md` | 16. Proces rozwoju | Istniejący | ✅ |
+| 18 | `docs/USER_GUIDE.md` | 17. Podręcznik użytkownika | Istniejący | ✅ |
+| 19 | `docs/GLOSSARY.md` | 18. Słownik pojęć | Istniejący | ✅ |
+| 20 | `docs/FAQ.md` | 19. FAQ | Istniejący | ✅ |
+| 21 | `docs/BIBLIOGRAPHY.md` | 20a. Bibliografia | NOWY | ✅ |
+| 22 | `docs/RELATED.md` | 20b. Powiązane | NOWY | ✅ |
+| 23 | `docs/RUST_MODULE.md` | 20c. Moduł Rust | NOWY | ✅ |
+| 24 | `docs/MODELS_MANIFEST.md` | 20d. Manifest AI | NOWY | ✅ |
+| 25 | `docs/CHANGELOG.md` | 20e. Changelog | Istniejący | ✅ |
+
+**Razem: 25 plików dokumentacji (5 nowych, 5 zaktualizowanych w tej sesji).**
+
+---
+
+## 🔗 Zobacz również
+
+- [00_META](00_META.md) — strona tytułowa z PWE i zespołem
+- [Bibliografia](BIBLIOGRAPHY.md) — formalna bibliografia (akta prawne, stack, white papers)
+- [Powiązane](RELATED.md) — konkurencja, konferencje, RFC, zasoby polskie
+
+---
+
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead
