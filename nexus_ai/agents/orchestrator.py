@@ -1,21 +1,22 @@
 """AgentOrchestrator — Centralny Mózg i Wirtualny Dyrektor Finansowy.
 
-Zgodnie z AGENT_SYSTEM_ENTERPRISE.txt:
+Zgodnie z aa3fvcx.txt (5 agentów, JEDEN poziom automatyzacji):
 - Granite 3.2 3B — Główny Decydent (Actor)
 - Granite Guardian 0.5B — Strażnik Merytoryczny
 - Qwen3-Nano 0.5B — Komunikator (kontakt z użytkownikiem)
 
-Strefy Decyzyjne (adaptive):
-- Zielona: AUTO_POST — adaptacyjny próg per kontrahent
-- Żółta: REVIEW — adaptacyjny próg per kontrahent
-- Czerwona: BLOCK / ESCALATION
+JEDEN poziom automatyzacji:
+- AUTO_POST (>=0.92): Agent księguje, użytkownik informowany.
+- SUGGEST  (>=0.75): Agent proponuje, użytkownik zatwierdza.
+- ASK_USER (<0.75): Agent pyta użytkownika.
 
 Enterprise features:
+- Cognitive Audit Trail: samouzdrawiający się łańcuch dowodowy
+- Dynamiczny Podręcznik Błędów: few-shot learning z DuckDB
 - Adaptive Thresholds: Bayesian per-vendor
 - Decision Cache: diskcache + sqlite-vec k-NN
 - 4-Eyes Principle: obowiązkowy dla kwot > 50k PLN
 - Weighted Voting: konsensus między agentami
-- Escalation Matrix: inteligentna eskalacja
 - Proof Chain: SHA-256 każda decyzja
 - Continuous Learning: pętla korekta → nauka
 """
@@ -31,14 +32,16 @@ from msgspec import json as msgspec_json
 from structlog import get_logger
 
 from nexus_ai.agents.base import BaseAgent, DecisionCache
+from nexus_ai.agents.error_handbook import DynamicErrorHandbook, HandbookQuery
 from nexus_ai.agents.models import (
     AgentDecision,
     AnalyticsQuery,
     AnalyticsResult,
-    AutonomyLevel,
     ConfidenceVote,
     DataExtractionRequest,
     DataExtractionResult,
+    DecisionMode,
+    FeedbackType,
     QualityCheckRequest,
     QualityCheckResult,
     TrustScore,
@@ -55,9 +58,8 @@ logger = get_logger("nexus.agents.orchestrator")
 
 
 DEFAULT_VOTING_WEIGHTS: dict[str, float] = {
-    "orchestrator": 0.35,
-    "tax_engine": 0.25,
-    "quality_validator": 0.40,  # Niezależny audytor — najwyższa waga
+    "orchestrator": 0.40,
+    "quality_validator": 0.60,  # Niezależny audytor — najwyższa waga
 }
 
 FOUR_EYES_THRESHOLD: float = 50_000.0  # PLN
@@ -76,6 +78,7 @@ class AgentOrchestrator(BaseAgent):
     Enterprise:
     - Adaptive thresholds per vendor
     - Decision cache (diskcache + sqlite-vec)
+    - Dynamiczny Podręcznik Błędów (few-shot learning)
     - 4-Eyes principle
     - Weighted voting
     - Escalation matrix
@@ -95,6 +98,8 @@ class AgentOrchestrator(BaseAgent):
         self._pending_decisions: dict[str, AgentDecision] = {}
         self._sub_agents: dict[str, BaseAgent] = {}
         self._voting_weights: dict[str, float] = dict(DEFAULT_VOTING_WEIGHTS)
+        # ── GENIALNY POMYSŁ: Dynamiczny Podręcznik Błędów ──
+        self._error_handbook = DynamicErrorHandbook()
 
     def register_agent(self, name: str, agent: BaseAgent) -> None:
         """Zarejestruj podległego agenta."""
@@ -102,14 +107,15 @@ class AgentOrchestrator(BaseAgent):
         logger.info("[ORCH] Registered sub-agent: %s", name)
 
     async def start(self) -> None:
-        """Inicjalizuj modele Orkiestratora."""
+        """Inicjalizuj modele Orkiestratora i Podręcznik Błędów."""
         await super().start()
         self._init_models()
+        await self._error_handbook.initialize()
         logger.info(
-            "[ORCH] Orchestrator ready | models: %s | agents: %s | autonomy=%s",
+            "[ORCH] Orchestrator ready | models: %s | agents: %s | handbook: %d examples",
             self._models,
             list(self._sub_agents.keys()),
-            self._autonomy_config.level.name,
+            self._error_handbook.count,
         )
 
     def _init_models(self) -> None:
@@ -202,6 +208,16 @@ class AgentOrchestrator(BaseAgent):
             gross_amount,
         )
 
+        # ── 8a. Mapuj strefę na DecisionMode ─────────────────────────
+        zone_to_mode = {
+            "AUTO_POST": DecisionMode.AUTO_POST,
+            "REVIEW": DecisionMode.SUGGEST,
+            "BLOCK": DecisionMode.ASK_USER,
+            "ESCALATED": DecisionMode.ASK_USER,
+            "4EYES_REQUIRED": DecisionMode.SUGGEST,
+        }
+        decision_mode = zone_to_mode.get(status, DecisionMode.ASK_USER)
+
         # ── 9. Zbierz weryfikatorów ───────────────────────────────
         verified_by = [self.name]
         if quality_result:
@@ -211,6 +227,7 @@ class AgentOrchestrator(BaseAgent):
 
         # ── 10. Utwórz decyzję z Proof Chain ──────────────────────
         decision = self.make_decision(
+            decision_mode=decision_mode,
             decision_id=decision_id,
             status=status,
             trust_score=final_trust_score,
@@ -243,9 +260,9 @@ class AgentOrchestrator(BaseAgent):
         # ── 12. Zachowaj dla eskalacji ─────────────────────────────
         self._pending_decisions[decision_id] = decision
 
-        # ── 13. Continuous Learning: jeśli REVIEW → czekamy na feedback
-        if status in ("REVIEW", "BLOCK"):
-            logger.info("[ORCH] Decision %s requires user feedback | status=%s", decision_id, status)
+        # ── 15. Continuous Learning: jeśli SUGGEST/ASK_USER → czekamy na feedback
+        if decision_mode in (DecisionMode.SUGGEST, DecisionMode.ASK_USER):
+            logger.info("[ORCH] Decision %s requires user feedback | mode=%s", decision_id, decision_mode.value)
 
         logger.info(
             "[ORCH] Decision %s | status=%s | trust=%.2f | auto_threshold=%.2f | 4eyes=%s",
@@ -326,7 +343,7 @@ class AgentOrchestrator(BaseAgent):
     ) -> VotingResult:
         """Przeprowadź ważone głosowanie między modelami.
 
-        Wagi: Orchestrator=0.35, TaxEngine=0.25, QualityValidator=0.40
+        Wagi: Orchestrator=0.40, QualityValidator=0.60 (niezależny audytor)
         """
         votes: list[ConfidenceVote] = []
         trust_val = trust_score.overall
@@ -334,10 +351,10 @@ class AgentOrchestrator(BaseAgent):
         # Głos Orkiestratora
         votes.append(ConfidenceVote(
             model_name="granite-3.2-3b",
-            model_weight=self._voting_weights.get("orchestrator", 0.35),
+            model_weight=self._voting_weights.get("orchestrator", 0.40),
             vote="AUTO_POST" if trust_val >= 0.92 else "REVIEW" if trust_val >= 0.75 else "BLOCK",
             confidence=trust_val,
-            weighted_vote=trust_val * self._voting_weights.get("orchestrator", 0.35),
+            weighted_vote=trust_val * self._voting_weights.get("orchestrator", 0.40),
         ))
 
         # Głos Walidatora
@@ -345,11 +362,11 @@ class AgentOrchestrator(BaseAgent):
             quality_confidence = 1.0 - quality.overall_risk_score
             votes.append(ConfidenceVote(
                 model_name="quality-validator",
-                model_weight=self._voting_weights.get("quality_validator", 0.40),
+                model_weight=self._voting_weights.get("quality_validator", 0.60),
                 vote="BLOCK" if quality.overall_verdict == "ERROR" else
                      "REVIEW" if quality.overall_verdict == "WARNING" else "AUTO_POST",
                 confidence=quality_confidence,
-                weighted_vote=quality_confidence * self._voting_weights.get("quality_validator", 0.40),
+                weighted_vote=quality_confidence * self._voting_weights.get("quality_validator", 0.60),
             ))
 
         # Oblicz wynik
@@ -462,12 +479,29 @@ class AgentOrchestrator(BaseAgent):
         self,
         extraction: DataExtractionResult,
     ) -> AgentDecision:
-        """Ocena faktury przez Głównego Decydenta (Granite 3.2)."""
+        """Ocena faktury przez Głównego Decydenta (Granite 3.2).
+
+        GENIALNY POMYSŁ: Dynamiczny Podręcznik Błędów —
+        wstrzykiwanie przykładów few-shot z przeszłych korekt do promptu.
+        """
         model_path = self._models.get("actor")
         if not model_path:
             return self._rule_based_evaluate(extraction)
 
         data = extraction.extracted_data
+
+        # ── GENIALNY POMYSŁ: Pobierz przykłady few-shot z Podręcznika Błędów ──
+        handbook_query = HandbookQuery(
+            vendor_nip=data.get("nip", ""),
+            category=data.get("category", ""),
+            amount_gross=float(data.get("amount_gross", 0)),
+            document_type=extraction.document_type,
+            k=3,
+        )
+        few_shot_section = await self._error_handbook.build_few_shot_prompt(
+            handbook_query
+        )
+
         prompt = f"""Jesteś głównym decydentem księgowym. Oceń fakturę i podejmij decyzję.
 
 Dane faktury:
@@ -479,7 +513,7 @@ Dane faktury:
 
 Pewność ekstrakcji: {extraction.confidence:.2f}
 Problemy walidacji: {extraction.validation_issues or 'Brak'}
-
+{few_shot_section}
 Oceń zaufanie do tej faktury (0.0-1.0) i uzasadnij.
 Format: TRUST: X.XX, STATUS: AUTO_POST|REVIEW|BLOCK, REASON: ..."""
 
@@ -722,6 +756,60 @@ Czy ta decyzja jest poprawna? Odpowiedz TAK lub NIE i uzasadnij."""
 
     # ── Komunikacja z użytkownikiem ─────────────────────────────────
 
+    async def record_user_feedback(
+        self,
+        decision_id: str,
+        corrected_status: str,
+        corrected_reason: str = "",
+    ) -> None:
+        """Zapisz korektę użytkownika w Podręczniku Błędów (GENIALNY POMYSŁ).
+
+        Gdy użytkownik poprawia decyzję AI → zapisz jako przykład few-shot.
+        Im więcej korekt, tym mądrzejszy model Granite 3.2.
+        """
+        decision = self._pending_decisions.get(decision_id)
+        if not decision:
+            logger.debug("[ORCH] No pending decision found for feedback: %s", decision_id)
+            return
+
+        # Wyciągnij dane z decyzji
+        details = decision.verdict.details if hasattr(decision.verdict, 'details') else {}
+        extracted = details.get("extracted_data", {}) if isinstance(details, dict) else {}
+
+        await self._error_handbook.record_correction(
+            invoice_id=decision.decision_id,
+            vendor_nip=extracted.get("nip", "unknown"),
+            category=extracted.get("category", ""),
+            amount_gross=float(extracted.get("amount_gross", 0)),
+            ai_decision=decision.verdict.status,
+            ai_trust_score=decision.verdict.trust_score,
+            ai_reason=decision.verdict.reason,
+            user_correction=corrected_status,
+            correction_reason=corrected_reason,
+        )
+
+        # Równolegle zapisz w Continuous Learning Provider (Cognitive Audit Trail)
+        correction_embedding = self._vectorize_invoice(
+            extracted if extracted else {"decision_id": decision.decision_id}
+        ) if extracted else None
+        await self.record_feedback(
+            decision=decision,
+            corrected={"status": corrected_status, "reason": corrected_reason},
+            feedback_type=FeedbackType.CORRECT if corrected_status != decision.verdict.status else FeedbackType.ACCEPT,
+            correction_embedding=correction_embedding,
+        )
+
+        logger.info(
+            "[ORCH] 📘 User feedback recorded | %s: %s → %s | handbook: %d examples",
+            decision_id,
+            decision.verdict.status,
+            corrected_status,
+            self._error_handbook.count,
+        )
+
+        # Usuń z pending
+        self._pending_decisions.pop(decision_id, None)
+
     async def communicate_with_user(
         self,
         decision: AgentDecision,
@@ -729,11 +817,12 @@ Czy ta decyzja jest poprawna? Odpowiedz TAK lub NIE i uzasadnij."""
     ) -> str | None:
         """Komunikacja z użytkownikiem przez Qwen3-Nano.
 
-        Enterprise: używa adaptacyjnego poziomu autonomii —
-        jeśli FULL_AUTONOMOUS, nie pyta użytkownika.
+        Zawsze pyta użytkownika przy SUGGEST i ASK_USER.
+        Przy AUTO_POST — tylko informuje (opcjonalnie).
         """
-        if self._autonomy_config.level >= AutonomyLevel.FULL_AUTONOMOUS:
-            return None  # Nie pytaj — agent decyduje sam
+        # Przy AUTO_POST nie przeszkadzamy użytkownikowi
+        if decision.decision_mode == DecisionMode.AUTO_POST:
+            return None
 
         model_path = self._models.get("communicator")
         if not model_path:

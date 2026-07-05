@@ -1,11 +1,13 @@
 ================================================================================
-  NEXUSAI — ULEPSZONY SYSTEM AGENTÓW AI WERSJI ENTERPRISE (v3.0)
-  "Autonomiczne Biuro Księgowe — Architektura Agentów AI v2"
+  NEXUSAI — SYSTEM AGENTÓW AI WERSJI ENTERPRISE (v4.0)
+  "Autonomiczne Biuro Księgowe — 5 Agentów, 13 Modeli, Dwie Warstwy Uczenia"
 ================================================================================
   Data:        Lipiec 2026
   Status:      Specyfikacja techniczna — wersja rozszerzona
-  Podstawa:    SPECYFIKACJA_AGENTOW_ENTERPRISE.txt,
-               RAPORT_TECHNOLOGII_NEXUSAI.txt (wyłączne technologie)
+  Podstawa:    SPECYFIKACJA_AGENTOW_ENTERPRISE.txt (v4.0),
+               RAPORT_TECHNOLOGII_NEXUSAI.txt (wyłączne technologie),
+               aa3fvcx.txt (blueprint agentów)
+  Zgodność:    docs/AGENTS.md, nexus_ai/agents/*.py
 ================================================================================
 
 
@@ -14,60 +16,54 @@ SPIS TREŚCI
 
 1. WIZJA SYSTEMU — Autonomiczne Biuro Księgowe
    1.1. Filozofia architektury agentowej
-   1.2. Cztery filary systemu agentów
-   1.3. Poziomy autonomii (L0-L3)
-   1.4. Mapa interakcji: człowiek ↔ agent ↔ aplikacja
+   1.2. JEDEN poziom automatyzacji (DecisionMode)
+   1.3. GENIALNY POMYSŁ #1: Cognitive Audit Trail
+   1.4. GENIALNY POMYSŁ #2: Dynamiczny Podręcznik Błędów
+   1.5. Mapa interakcji: człowiek ↔ agent ↔ aplikacja
 
 2. ARCHITEKTURA KOMUNIKACJI — NATS JetStream Enterprise
-   2.1. Topologia topiców (10 agentów + system)
-   2.2. Gwarancje dostarczenia: Exactly-once + DLQ
+   2.1. Topologia topiców (5 agentów + system)
+   2.2. Gwarancje dostarczenia: At-least-once + DLQ
    2.3. Priority Queue z QoS
    2.4. Circuit Breaker (stamina) i retry z backoffem
    2.5. OpenTelemetry tracing na każdej wiadomości
 
-3. DZIESIĘCIU AGENTÓW AI — Specyfikacja Enterprise
-   3.1. AgentOrchestrator — Centralny Mózg i CFO
-   3.2. AgentDataExtraction — Forteca Precyzji
-   3.3. AgentAnalytics — Sztab Analityczny
-   3.4. AgentQualityValidator — Strażnik Integralności
-   3.5. AgentTaxEngine — Automatyczny Doradca Podatkowy
-   3.6. AgentCashManager — Zarządca Płynności
-   3.7. AgentCompliance — Strażnik Regulacyjny
-   3.8. AgentKSeF — Łącznik z Ministerstwem Finansów
-   3.9. AgentVendorIntelligence — Wywiad Gospodarczy
-   3.10. AgentFixedAssets — Zarządca Środków Trwałych
+3. PIĘCIU AGENTÓW AI — Specyfikacja Enterprise
+   3.1. AgentOrchestrator — Centralny Mózg i Wirtualny CFO
+   3.2. AgentDataExtraction — Forteca Precyzji (wchłonął KSeF)
+   3.3. AgentAnalytics — Sztab Analityczny (wchłonął Cash + Vendor)
+   3.4. AgentQualityValidator — Trójwarstwowa Tarcza (wchłonął Tax + Compliance)
+   3.5. AgentFixedAssets — Zarządca Majątku
 
 4. DECISION ENGINE — Wielowarstwowy Silnik Decyzyjny
-   4.1. Dynamiczne strefy decyzyjne (Bayesian thresholds)
-   4.2. Konsensus między agentami (weighted voting)
+   4.1. Strefy decyzyjne (Dynamic Thresholds)
+   4.2. Konsensus między agentami (Weighted Voting)
    4.3. Eskalacja do człowieka (inteligentna matryca)
    4.4. Proof Chain SHA-256 (niepodważalny audyt)
-   4.5. Confidence Voting między modelami
 
-5. CONTINUOUS LEARNING FRAMEWORK — System Uczenia Się
+5. CONTINUOUS LEARNING FRAMEWORK — Dwie Warstwy Uczenia Się
    5.1. Active Learning Loop (pętla zamknięta)
-   5.2. Bayesian Trust Score z propagacją
-   5.3. Korekta decyzji — propagacja zwrotna (4 poziomy)
-   5.4. OCR Online Learning (korekty → embeddingi)
-   5.5. Wzorce faktur (InvoiceTemplate Learner)
-   5.6. Reguły podatkowe z korekt (OPA semi-automatic)
+   5.2. Warstwa #1: Cognitive Audit Trail (samouzdrawiające się OPA)
+   5.3. Warstwa #2: Dynamiczny Podręcznik Błędów (few-shot learning)
+   5.4. Bayesian Trust Score z propagacją
+   5.5. Confidence Calibration przez DuckDB
+   5.6. OCR Online Learning (korekty → embeddingi)
    5.7. Adaptive Thresholds (Bayesian Inference)
 
 6. MEMORY SYSTEMS — Pamięć Agentów
    6.1. Episodic Memory (DuckDB event store)
    6.2. Semantic Memory (sqlite-vec embeddings)
-   6.3. Procedural Memory (OPA/Rego)
+   6.3. Procedural Memory (OPA/Rego — auto-naprawiane)
    6.4. Working Memory (NATS KV Store)
-   6.5. Decision Cache (diskcache + sqlite-vec)
+   6.5. Decision Cache (diskcache + sqlite-vec k-NN)
 
 7. BEZPIECZEŃSTWO I COMPLIANCE
    7.1. RBAC na poziomie agentów
-   7.2. Audit log każdej decyzji (niezmienny)
+   7.2. Audit log każdej decyzji (Proof Chain SHA-256)
    7.3. 4-Eyes Principle (obowiązkowy > 50k PLN)
    7.4. Split Payment Verification
    7.5. RODO / GDPR compliance
    7.6. KSeF compliance
-   7.7. Proof Chain kryptograficzny (SHA-256)
 
 8. MONITORING I OBSERWOWALNOŚĆ
    8.1. OpenTelemetry tracing — każda decyzja = trace
@@ -85,39 +81,37 @@ SPIS TREŚCI
 ---------------------------------------
 
 System agentów AI NexusAI został zaprojektowany jako AUTONOMICZNE BIURO
-KSIĘGOWE — 10 wyspecjalizowanych agentów, które:
+KSIĘGOWE — zestaw 5 wyspecjalizowanych agentów, które:
 
-  a) DZIAŁAJĄ W TLE — użytkownik nie wie i nie musi wiedzieć, który agent
-     przetwarza jego fakturę. System działa jak niewidzialny, perfekcyjny
-     księgowy dostępny 24/7.
+  a) DZIAŁAJĄ W TLE — użytkownik nie musi wiedzieć, który agent przetwarza
+     jego fakturę. System działa jak niewidzialny, perfekcyjny księgowy
+     dostępny 24/7.
 
-  b) PODEJMUJĄ DECYZJE — w zielonej strefie (Trust Score ≥ 0.92) agenci
-     samodzielnie: księgują faktury, wysyłają do KSeF, planują płatności,
-     generują deklaracje podatkowe, monitorują terminy.
+  b) PODEJMUJĄ DECYZJE — w zielonej strefie (Trust Score ≥ 0.92 adaptive)
+     agenci samodzielnie księgują (AUTO_POST). W żółtej (0.75-0.92) proponują
+     i pytają (SUGGEST). W czerwonej (<0.75) pytają użytkownika (ASK_USER).
 
-  c) UCZĄ SIĘ W PĘTLI — każda korekta użytkownika jest natychmiast
-     wykorzystywana do poprawy przyszłych decyzji. 4 poziomy propagacji:
-     bezpośrednia (Bayesian update), pośrednia (k-NN w sqlite-vec),
-     globalna (OPA semi-automatic), strukturalna (task dev).
+  c) UCZĄ SIĘ NA DWÓCH NIEZALEŻNYCH WARSTWACH:
+     - WARSTWA DETERMINISTYCZNA: Cognitive Audit Trail — korekty → embeddingi
+       w sqlite-vec → auto-naprawa reguł OPA/Rego po 10 korektach
+     - WARSTWA PROBABILISTYCZNA: Dynamiczny Podręcznik Błędów — korekty →
+       DuckDB error_handbook → few-shot w prompcie Granite 3.2 przed inferencją
 
-  d) KOORDYNUJĄ APLIKACJĘ — agenci nie tylko analizują dane, ale STERUJĄ
-     interfejsem (Flet UI), kolejką zadań (Taskiq), komunikacją (NATS),
-     bazami danych (SQLite + DuckDB + TigerBeetle) i księgą główną.
-     Człowiek jest decydentem — agent wykonawcą i doradcą.
+  d) KOORDYNUJĄ APLIKACJĘ — agenci sterują UI (Flet), kolejką (Taskiq),
+     komunikacją (NATS), bazami danych i księgą główną (TigerBeetle).
 
-  e) SĄ ODPORNE — architektura "zero trust to a single model":
-     każda decyzja przechodzi przez minimum 2 niezależne modele.
-     Jeśli modele są rozbieżne → eskalacja do człowieka.
+  e) SĄ ODPORNE — architektura "zero trust to a single model": każda decyzja
+     przechodzi przez minimum 2 niezależne modele. Jeśli modele rozbieżne →
+     eskalacja do człowieka.
 
 TECHNOLOGIE (wyłącznie z RAPORT_TECHNOLOGII):
-  - Python ≥3.13 (free-threaded, 3.13t) — interpreter bez GIL
-  - llama-cpp-python ≥0.2.0 — inferencja modeli GGUF (CPU/GPU)
-  - NATS Server ≥2.10 (JetStream) — broker wiadomości
-  - nats-py ≥2.6.0 — Python client dla NATS
+  - Python ≥3.13 (free-threaded) — interpreter bez GIL
+  - llama-cpp-python ≥0.2.0 — inferencja modeli GGUF
+  - NATS Server ≥2.10 (JetStream) + nats-py ≥2.6.0 — broker wiadomości
   - Taskiq ≥0.11.0 + taskiq-nats ≥0.5.0 — kolejka zadań
   - DuckDB ≥1.0.0 — pamięć episodyczna i analityka OLAP
   - SQLite + SQLCipher — OLTP z szyfrowaniem AES-256
-  - sqlite-vec ≥0.1.0 — pamięć semantyczna (wektory)
+  - sqlite-vec ≥0.1.0 — pamięć semantyczna (wektory 768d)
   - TigerBeetle ≥0.16.0 — księga główna (double-entry)
   - msgspec ≥0.18.0 — wszystkie struktury danych
   - stamina ≥0.1.0 — circuit breaker i retry
@@ -130,188 +124,225 @@ TECHNOLOGIE (wyłącznie z RAPORT_TECHNOLOGII):
   - diskcache ≥5.6.0 — cache decyzji
   - pendulum ≥3.0.0 — daty i czas
   - Granian ≥1.0.0 — serwer ASGI z metrykami Prometheus
+  - Litestar ≥2.0.0 — framework ASGI
+  - httpx + hishel — komunikacja z API (KSeF, Biała Lista, GUS)
+  - xsdata + lxml — XML KSeF (FA_VAT)
+  - Pillow + OpenCV — preprocessing obrazów
+  - Tesseract 5.3 + PaddleOCR 2.8 + python-docTR 0.9 — OCR
+  - fsspec — dostęp do plików (lokalny/S3/SFTP)
+  - pypdfium2 — renderowanie PDF
 
-1.2. Cztery filary systemu agentów
-------------------------------------
+1.2. JEDEN poziom automatyzacji (DecisionMode)
+-----------------------------------------------
 
-  FILAR 1 — DECYZJA (Decision Engine)
-  AgentOrchestrator koordynuje 10 agentów w procesie decyzyjnym.
-  Każda decyzja przechodzi przez: ekstrakcję → ocenę → walidację → audyt.
-  Wynik: AUTO_POST (≥0.92), REVIEW (≥0.75), BLOCK (<0.75).
+System używa JEDNEGO poziomu automatyzacji zamiast czterech (L0-L3):
 
-  FILAR 2 — NAUKA (Continuous Learning Framework)
-  Każda korekta użytkownika to nowy przykład treningowy.
-  Bayesian update Trust Score po każdej decyzji.
-  sqlite-vec: k-NN dla podobnych przypadków.
-  OPA: semi-automatic rule generation po N korektach.
+  DecisionMode.AUTO_POST (Trust ≥ 0.92 adaptive):
+    Agent samodzielnie księguje, wysyła do KSeF, planuje płatności.
+    Użytkownik tylko informowany (dashboard, powiadomienie).
 
-  FILAR 3 — PAMIĘĆ (Memory Systems)
-  Cztery typy pamięci: episodyczna (DuckDB), semantyczna (sqlite-vec),
-  proceduralna (OPA), robocza (NATS KV Store).
-  Decision Cache: diskcache + sqlite-vec k-NN (80% decyzji bez inferencji).
+  DecisionMode.SUGGEST (Trust ≥ 0.75 adaptive):
+    Agent proponuje decyzję z uzasadnieniem (2-5 opcji).
+    Użytkownik zatwierdza jednym kliknięciem lub modyfikuje.
 
-  FILAR 4 — ODPORNOŚĆ (Resilience)
-  Zero trust to a single model — każda decyzja ≥2 modele.
-  4-Eyes Principle dla kwot > 50,000 PLN.
-  Circuit breaker (stamina) — otwarcie po 5 błędach/30s.
-  DLQ — Dead Letter Queue dla nieudanych wiadomości.
+  DecisionMode.ASK_USER (Trust < 0.75):
+    Agent przedstawia problem z kontekstem i rekomendacjami.
+    Użytkownik podejmuje ostateczną decyzję.
 
-1.3. Poziomy autonomii (L0-L3)
---------------------------------
+Człowiek ZAWSZE jest decydentem. Agent wykonuje pracę i przedstawia opcje.
+To agent steruje aplikacją — człowiek podejmuje kluczowe decyzje.
 
-  LEVEL 0 — MANUALNY
-  Agent tylko proponuje decyzje. Użytkownik zatwierdza KAŻDĄ.
-  Idealny dla okresu nauki (pierwsze 100 faktur).
-  Trust Score wymagany: 0.0 (nie ma auto-decyzji).
+IMPLEMENTACJA (msgspec.StrEnum, zgodnie z kodem):
 
-  LEVEL 1 — ASYSTENT
-  Agent podejmuje decyzje w zielonej strefie (≥0.92).
-  Pyta użytkownika w żółtej strefie (0.75-0.92).
-  Blokuje w czerwonej strefie (<0.75).
-  Trust Score wymagany: ≥0.75 dla auto.
+  class DecisionMode(enum.StrEnum):
+      AUTO_POST = "auto_post"
+      SUGGEST   = "suggest"
+      ASK_USER  = "ask_user"
 
-  LEVEL 2 — AUTONOMICZNY (domyślny)
-  Agent podejmuje decyzje w zielonej i żółtej strefie.
-  Pyta użytkownika TYLKO w czerwonej strefie.
-  Standardowy poziom dla znanych kontrahentów.
-  Trust Score wymagany: ≥0.92 dla full auto.
+Próg AUTO_POST jest adaptacyjny (Bayesian per kontrahent):
+  auto_post_threshold = 0.92 - (α-β)/(α+β) × 0.1
 
-  LEVEL 3 — W PEŁNI AUTONOMICZNY
-  Agent podejmuje WSZYSTKIE decyzje samodzielnie.
-  Informuje użytkownika raportem dziennym/tygodniowym.
-  Wymaga Trust Score > 0.95 przez ostatnie 1000 decyzji.
-  Osiągalny po ~6 miesiącach współpracy.
+  Gdzie: α = poprawne decyzje, β = błędne decyzje.
 
-  Przełączanie poziomów:
-  - Automatyczne: po osiągnięciu progu zaufania (Bayesian)
-  - Ręczne: użytkownik może wymusić wyższy/niższy poziom
-  - Awaryjne: przy wykryciu anomalii → automatyczne obniżenie
+Przykład:
+  Znany kontrahent (100 faktur, 98 OK): auto_post = 0.824
+  Nowy kontrahent (5 faktur, 4 OK):     auto_post = 0.86
+  Podejrzany (10 faktur, 6 OK):         auto_post = 0.90
 
-  Implementacja (msgspec.Struct — zgodnie z RAPORT_TECHNOLOGII):
+1.3. GENIALNY POMYSŁ #1: Cognitive Audit Trail (warstwa deterministyczna)
+---------------------------------------------------------------------------
 
-  class AutonomyLevel(enum.IntEnum):
-      MANUAL = 0
-      ASSISTANT = 1
-      AUTONOMOUS = 2
-      FULL_AUTONOMOUS = 3
+Każda korekta użytkownika tworzy blok poznawczy (CognitiveProofBlock)
+w łańcuchu dowodowym. Łańcuch SHA-256 staje się AKTYWNYM systemem
+uczącym się, nie tylko pasywnym rejestrem:
 
-  class AutonomyConfig(Struct, kw_only=True):
-      level: AutonomyLevel = AutonomyLevel.AUTONOMOUS
-      min_trust_for_level: dict[AutonomyLevel, float] = {
-          AutonomyLevel.MANUAL: 0.0,
-          AutonomyLevel.ASSISTANT: 0.75,
-          AutonomyLevel.AUTONOMOUS: 0.92,
-          AutonomyLevel.FULL_AUTONOMOUS: 0.98,
-      }
-      min_decisions_for_promotion: int = 1000
-      auto_demote_on_anomaly: bool = True
+  DECYZJA → KOREKTA → EMBEDDING 768d (sqlite-vec) → k-NN →
+  → PO 10 KOREKTACH TEGO SAMEGO TYPU → AUTO-NAPRAWA REGUŁ OPA
 
-1.4. Mapa interakcji: człowiek ↔ agent ↔ aplikacja
+Implementacja w ContinuousLearningProvider (base.py):
+
+  class CognitiveProofBlock(Struct, kw_only=True):
+      correction_id: str
+      decision_id: str
+      agent: str
+      predicted: dict[str, Any]
+      corrected: dict[str, Any]
+      embedding: list[float]       # 768d w sqlite-vec
+      similar_count: int = 1       # liczba podobnych korekt
+      auto_patched: bool = False   # czy auto-naprawiono OPA
+
+  # Metody:
+  - record_feedback(correction_embedding=...) → dodaje CognitiveProofBlock
+  - find_similar_corrections() → k-NN (cosine) w sqlite-vec
+  - should_auto_patch_opa() → True po min_samples_for_opa_update (10)
+
+Przykład:
+  1. User koryguje stawkę VAT z 23% na 8% dla kategorii "spożywcze"
+  2. Embedding faktury (768d) zapisany w CognitiveProofBlock
+  3. Kolejna faktura "spożywcza" → k-NN → podobny embedding
+  4. System automatycznie proponuje 8% VAT
+  5. Po 10 korektach → reguła OPA w tax/rules.rego auto-aktualizowana
+
+1.4. GENIALNY POMYSŁ #2: Dynamiczny Podręcznik Błędów (warstwa probabilistyczna)
+---------------------------------------------------------------------------------
+
+Online few-shot learning — model Granite 3.2 uczy się z każdej korekty
+BEZ fine-tuningu, BEZ trenowania, tylko przez smart prompt engineering:
+
+  KOREKTA → DuckDB error_handbook → kwerenda przed inferencją →
+  → "Podręcznik Błędów z Przeszłości" w prompcie →
+  → Granite 3.2 widzi: ❌ błędna decyzja → ✅ poprawna decyzja
+
+Priorytetyzacja przykładów:
+  Level 1: Ten sam NIP + kategoria (exact match) — vendor-specific learning
+  Level 2: Ten sam NIP (ogólny kontekst kontrahenta)
+  Level 3: Ta sama kategoria + podobna kwota (±50%)
+  Level 4: Najczęściej korygowane globalnie (top-N)
+
+Implementacja w DynamicErrorHandbook (error_handbook.py):
+
+  class HandbookExample(Struct, kw_only=True):
+      id: str
+      decision_id: str
+      agent: str
+      vendor_nip: str
+      category: str
+      amount_gross: int           # w groszach
+      decision_snapshot: str      # JSON: co agent zdecydował
+      correct_decision: str       # JSON: co było poprawne
+      reason: str                 # dlaczego user skorygował
+      timestamp: str              # ISO 8601
+      embedding: list[float]      # 768d — opcjonalnie
+
+  class HandbookQuery(Struct, kw_only=True):
+      vendor_nip: str | None = None
+      category: str | None = None
+      amount_gross: int = 0
+      max_examples: int = 3       # max przykładów do promptu
+
+  # DuckDB: CREATE TABLE error_handbook (... FLOAT[768])
+  # Metody:
+  - record_correction() → INSERT do DuckDB
+  - query_relevant() → priorytetyzowane SELECT z DuckDB
+  - build_few_shot_prompt() → formatowanie "Podręcznik Błędów"
+
+Im więcej korekt, tym mądrzejszy model — bez żadnego fine-tuningu.
+
+1.5. Mapa interakcji: człowiek ↔ agent ↔ aplikacja
 -----------------------------------------------------
 
-  Użytkownik (przedsiębiorca) wchodzi w interakcję przez:
-    A) Dashboard (Flet UI) — podsumowania, alerty, decyzje
-    B) Panel decyzyjny — lista decyzji oczekujących (2-5 opcji)
-    C) Czat z Komunikatorem (Qwen3-Nano) — pytania NL
-    D) Raporty — dzienne/tygodniowe/miesięczne (AgentAnalytics)
+Użytkownik (przedsiębiorca) wchodzi w interakcję przez:
+  A) Dashboard (Flet UI) — podsumowania, alerty, decyzje
+  B) Panel decyzyjny — decyzje oczekujące (SUGGEST/ASK_USER)
+  C) Czat z Komunikatorem (Qwen3-Nano) — pytania NL
+  D) Raporty automatyczne (AgentAnalytics) — dzienne/tyg./mies.
 
-  System (agenci) samodzielnie:
-    a) Pobiera faktury (email, upload, KSeF API, folder)
-    b) Ekstrahuje dane (4 silniki OCR + walidacja krzyżowa)
-    c) Klasyfikuje wydatki (konta księgowe, stawki VAT, PKWiU)
-    d) Sprawdza kontrahentów (Biała Lista MF, GUS BIR, KRD)
-    e) Wysyła do KSeF (FA(1), FA(2) — obowiązkowy e-spis)
-    f) Planuje płatności (priorytety, skonta, terminy, MPP)
-    g) Uzgodnia salda (DuckDB reconciliation + TigerBeetle)
-    h) Generuje deklaracje (JPK_V7, VAT-7, PIT/CIT)
-    i) Monitoruje terminy (ZUS, US, KSeF, skonta)
-    j) Wykrywa anomalie (oszustwa, błędy, ryzyko, karuzele VAT)
-    k) Prognozuje cash flow (90 dni, 3 scenariusze)
-    l) Optymalizuje podatki (symulacje "co by było, gdyby")
-    m) Uczy się z każdej korekty użytkownika
+System (agenci) samodzielnie:
+  a) Pobiera faktury (email, upload, KSeF API, folder sieciowy)
+  b) Ekstrahuje dane (4 silniki OCR + walidacja krzyżowa)
+  c) Klasyfikuje wydatki (konta księgowe, stawki VAT, PKWiU)
+  d) Sprawdza kontrahentów (Biała Lista MF, GUS BIR)
+  e) Wysyła do KSeF (FA(1), FA(2) — obowiązkowy e-spis)
+  f) Księguje w TigerBeetle (double-entry)
+  g) Planuje płatności (priorytety, skonta, terminy, MPP)
+  h) Uzgodnia salda (DuckDB reconciliation)
+  i) Generuje deklaracje (JPK_V7, VAT-7, PIT/CIT)
+  j) Monitoruje terminy (ZUS, US, KSeF, skonta)
+  k) Wykrywa anomalie (oszustwa, błędy, ryzyko, karuzele VAT)
+  l) Prognozuje cash flow (90 dni, 3 scenariusze)
+  m) Optymalizuje podatki (symulacje "co by było, gdyby")
+  n) Amortyzuje środki trwałe
+  o) Uczy się z każdej korekty na DWÓCH WARSTWACH jednocześnie
 
 
 ================================================================================
 2. ARCHITEKTURA KOMUNIKACJI — NATS JetStream Enterprise
 ================================================================================
 
-2.1. Topologia topiców (10 agentów + system)
+2.1. Topologia topiców (5 agentów + system)
 -----------------------------------------------
 
   nexus.agents.                          # Prefiks główny
   │
-  ├── orchestrator.                      # AgentOrchestrator
+  ├── council.*                          # AgentOrchestrator
   │   ├── task.request                   # Wejście: nowe zadanie
   │   ├── decision.final                 # Wyjście: ostateczna decyzja
   │   ├── decision.review                # Wyjście: do przeglądu
   │   ├── decision.learn                 # Wejście: korekta/feedback
   │   ├── escalation                     # Wyjście: eskalacja do człowieka
-  │   └── heartbeat                      # Heartbeat (co 30s)
+  │   └── heartbeat                      # Heartbeat agenta (co 30s)
   │
-  ├── extraction.                        # AgentDataExtraction
-  │   ├── invoice.received               # Wejście: nowa faktura
-  │   ├── invoice.extracted              # Wyjście: dane po ekstrakcji
-  │   └── invoice.failed                 # Wyjście: błąd ekstrakcji
+  ├── invoice.*                          # AgentDataExtraction
+  │   ├── received                       # Wejście: nowa faktura
+  │   ├── extracted                      # Wyjście: dane po ekstrakcji
+  │   └── failed                         # Wyjście: błąd ekstrakcji
   │
-  ├── analytics.                         # AgentAnalytics
-  │   ├── query                          # Wejście: zapytanie
-  │   ├── result                         # Wyjście: wynik analizy
-  │   └── alert                          # Wyjście: proaktywny alert
-  │
-  ├── quality.                           # AgentQualityValidator
-  │   ├── check.request                  # Wejście: prośba o walidację
-  │   └── check.result                   # Wyjście: wynik walidacji
-  │
-  ├── tax.                               # AgentTaxEngine
-  │   ├── calculate                      # Wejście: kalkulacja podatku
-  │   ├── result                         # Wyjście: wynik
-  │   ├── deadline                       # Wyjście: alert terminu
-  │   └── rule.updated                   # Wyjście: zmiana reguł
-  │
-  ├── cash.                              # AgentCashManager
-  │   ├── forecast                       # Wyjście: prognoza
-  │   ├── payment.suggest                # Wyjście: sugestia płatności
-  │   └── payment.executed               # Wejście: płatność wykonana
-  │
-  ├── compliance.                        # AgentCompliance
-  │   ├── check                          # Wejście: sprawdzenie
-  │   ├── report                         # Wyjście: raport
-  │   └── regulation.update              # Wejście: zmiana przepisów
-  │
-  ├── ksef.                              # AgentKSeF
+  ├── ksef.*                             # KSeF (wchłonięty przez Extraction)
   │   ├── send                           # Wejście: wyślij do KSeF
-  │   ├── status                         # Wyjście: status
+  │   ├── status                         # Wyjście: status wysyłki
   │   └── receive                        # Wyjście: odbiór z KSeF
   │
-  ├── vendor.                            # AgentVendorIntelligence
-  │   ├── check                          # Wejście: sprawdź
-  │   └── result                         # Wyjście: wynik
+  ├── analytics.*                        # AgentAnalytics
+  │   ├── query                          # Wejście: zapytanie
+  │   ├── result                         # Wyjście: wynik analizy
+  │   ├── alert                          # Wyjście: proaktywny alert
+  │   ├── cash.forecast                  # CashManager (wchłonięty)
+  │   ├── cash.payment.suggest           # Sugestia płatności
+  │   ├── vendor.check                   # VendorIntelligence (wchłonięty)
+  │   └── vendor.result                  # Wynik weryfikacji
   │
-  ├── assets.                            # AgentFixedAssets
-  │   ├── classify                       # Wejście: klasyfikacja
-  │   └── depreciate                     # Wyjście: amortyzacja
+  ├── quality.*                          # AgentQualityValidator
+  │   ├── check.request                  # Wejście: prośba o walidację
+  │   ├── check.result                   # Wyjście: wynik walidacji
+  │   ├── tax.calculate                  # TaxEngine (wchłonięty)
+  │   ├── tax.result                     # Wynik kalkulacji
+  │   ├── tax.deadline                   # Alert terminu podatkowego
+  │   ├── compliance.check               # Compliance (wchłonięty)
+  │   └── compliance.report              # Raport compliance
   │
-  └── system.                            # System
+  ├── assets.*                           # AgentFixedAssets
+  │   ├── classify                       # Wejście: klasyfikacja ŚT
+  │   ├── depreciate                     # Wyjście: amortyzacja
+  │   └── result                         # Wynik operacji
+  │
+  └── system.*                           # System
       ├── heartbeat                      # Heartbeat systemowy
       ├── health                         # Health check
       ├── error                          # Błąd systemowy
       └── config.updated                 # Zmiana konfiguracji
 
-
   STRUMIENIE JETSTREAM:
 
-  invoices        → invoice.received, invoice.extracted    (retention: 7d, max_delivery: 3)
-  council         → council.*                              (retention: 90d, max_delivery: 5)
-  outbox          → outbox.relay                           (retention: do ack, max_delivery: 10)
-  billing         → billing.rules.updated                  (retention: 1h, max_delivery: 1)
-  risk            → risk.thresholds.updated                (retention: 1h, max_delivery: 1)
-  tax             → tax.rule.updated                       (retention: 1h, max_delivery: 1)
-  config          → config.*                               (retention: 30d, max_delivery: 2)
-  audit           → audit.*                                (retention: 365d, max_delivery: 5)
-  analytics       → analytics.*                            (retention: 7d, max_delivery: 3)
+  council     → council.*               (retention: 90d,  max_delivery: 5)
+  invoices    → invoice.*, ksef.*        (retention: 7d,   max_delivery: 3)
+  analytics   → analytics.*              (retention: 7d,   max_delivery: 3)
+  quality     → quality.*                (retention: 7d,   max_delivery: 3)
+  assets      → assets.*                 (retention: 30d,  max_delivery: 3)
+  audit       → audit.*                  (retention: 365d, max_delivery: 5)
+  config      → config.*                 (retention: 30d,  max_delivery: 2)
 
-2.2. Gwarancje dostarczenia: Exactly-once + DLQ
--------------------------------------------------
+2.2. Gwarancje dostarczenia: At-least-once + DLQ
+--------------------------------------------------
 
   AT-LEAST-ONCE DELIVERY:
     Każda wiadomość trwale zapisana w JetStream przed dostarczeniem.
@@ -384,689 +415,547 @@ TECHNOLOGIE (wyłącznie z RAPORT_TECHNOLOGII):
 
 
 ================================================================================
-3. DZIESIĘCIU AGENTÓW AI — Specyfikacja Enterprise
+3. PIĘCIU AGENTÓW AI — Specyfikacja Enterprise
 ================================================================================
 
-3.1. AgentOrchestrator — Centralny Mózg i CFO
-===============================================
+3.1. AgentOrchestrator — Centralny Mózg i Wirtualny CFO
+=========================================================
 
-  ROLA:
-    Naczelny dyrektor finansowy (CFO). Koordynuje 10 agentów,
+ROLA:
+    Naczelny dyrektor finansowy (CFO). Koordynuje 4 agentów wykonawczych,
     podejmuje ostateczne decyzje, komunikuje się z użytkownikiem.
 
-  MODELE (GGUF przez llama-cpp-python, zgodnie z RAPORT_TECHNOLOGII):
-    - Granite 3.2 3B (GGUF, IQ4_XS) — Główny Decydent (Actor) ~2.4 GB RAM
-    - Granite Guardian 0.5B (GGUF, Q4_K_M) — Strażnik Merytoryczny ~300 MB
-    - Qwen3-Nano 0.5B (GGUF, Q4_K_M) — Komunikator (NL→user) ~400 MB
+MODELE (13 modeli GGUF łącznie, ładowane leniwie przez llama-cpp-python):
+  - Granite 3.2 3B (GGUF, IQ4_XS) — Główny Decydent (Actor) ~2.4 GB RAM
+  - Granite Guardian 0.5B (GGUF, Q4_K_M) — Strażnik Merytoryczny ~300 MB
+  - Qwen3-Nano 0.5B (GGUF, Q4_K_M) — Komunikator (NL→user) ~400 MB
 
-  KLUCZOWE MECHANIZMY ENTERPRISE:
+  RAM stały: ~2.98 GB
 
-    1. DYNAMICZNY TRUST SCORE
-       - Bayesian update po każdej decyzji: P(θ|D) ∝ P(D|θ) × P(θ)
-       - Prior: Beta(α, β), posterior mean = α / (α + β)
-       - Automatyczne dostosowanie dla nowych kontrahentów
+KLUCZOWE MECHANIZMY ENTERPRISE:
 
-    2. DECISION CACHE (diskcache + sqlite-vec k-NN)
-       - Każda decyzja wektoryzowana w sqlite-vec (768d)
-       - Podobna faktura → podobna decyzja (k-NN, k=5)
-       - Oszczędność: 80% decyzji bez inferencji modelu
+  1. DYNAMICZNY TRUST SCORE (Bayesian Update)
+     - Trust Score = E[θ|D] = α / (α + β)
+     - Prior: Beta(α₀=1, β₀=1), Posterior: Beta(α₀+Σy, β₀+n-Σy)
+     - Aktualizowany po każdej decyzji i każdej korekcie
 
-    3. ADAPTIVE THRESHOLDS
-       - auto_post = 0.92 - (α-β)/(α+β) × 0.1
-       - Dla znanych kontrahentów (α>>β) → niższy próg
-       - Dla nowych → wyższy próg (conservative)
+  2. COGNITIVE AUDIT TRAIL
+     - Każda korekta → embedding 768d w sqlite-vec
+     - k-NN (cosine) → podobne korekty z przeszłości
+     - Po 10 korektach tego samego typu → auto-naprawa reguł OPA
 
-    4. PROOF CHAIN SHA-256
-       - Każda decyzja → block w łańcuchu kryptograficznym
-       - hash = SHA256(previous + decision + timestamp)
-       - Niepodważalny dowód dla US (przez nexus-crypto)
+  3. DYNAMICZNY PODRĘCZNIK BŁĘDÓW (few-shot learning)
+     - DuckDB error_handbook → 3 najlepsze przykłady przed inferencją
+     - "Podręcznik Błędów z Przeszłości" wstrzyknięty w prompt Granite 3.2
+     - Model uczy się z każdej korekty BEZ fine-tuningu
 
-    5. ESCALATION MATRIX
-       - Inteligentna eskalacja: pora dnia, kanał, priorytet
-       - Krytyczne: SMS push, ważne: powiadomienie, info: email
-       - Opóźnienie do 24h dla niskiego priorytetu
+  4. DECISION CACHE (diskcache + sqlite-vec k-NN)
+     - Każda decyzja wektoryzowana w sqlite-vec (768d)
+     - Podobna faktura → podobna decyzja (k-NN, k=5)
+     - max_distance < 0.1 → użyj cache
+     - Oszczędność: ~80% decyzji bez inferencji LLM
 
-  PROCES DECYZYJNY (5 kroków):
-    Krok 1: Odbierz zadanie (council.task.request)
-    Krok 2: Deleguj do AgentDataExtraction (invoice.received)
-    Krok 3: Oceń przez Granite 3.2 Actor + Guardian 0.5B
-    Krok 4: Wyślij do walidacji (quality.check.request)
-    Krok 5: Finalna decyzja (council.decision.final)
+  5. ADAPTIVE THRESHOLDS
+     - auto_post = 0.92 - (α-β)/(α+β) × 0.1
+     - Dla znanych kontrahentów (α>>β) → niższy próg
+     - Dla nowych → wyższy próg (conservative)
+     - Dynamiczne per kontrahent
 
-  STREFA DECYZYJNA:
-    AUTO_POST (≥0.92)  → automatyczne księgowanie
-    REVIEW    (≥0.75)  → wymagana weryfikacja
-    BLOCK     (<0.75)  → blokada + eskalacja
+  6. PROOF CHAIN SHA-256 (nexus-crypto)
+     - Każda decyzja → block w łańcuchu kryptograficznym
+     - hash = SHA256(previous + decision + timestamp)
+     - Niepodważalny dowód dla US
 
-  UCZENIE SIĘ:
-    - Korekty użytkownika → Bayesian update Trust Score
-    - Podobne faktury → k-NN z sqlite-vec (decision_patterns)
-    - Wzorce decyzyjne → DuckDB analiza historyczna
-    - Thresholds → adaptacyjna kalibracja per kontrahent
+  7. 4-EYES PRINCIPLE
+     - Obowiązkowy dla kwot > 50,000 PLN
+     - Dwie niezależne weryfikacje (Guardian + QualityValidator)
+
+PROCES DECYZYJNY (7 kroków):
+  Krok 1: Decision Cache — k-NN w podobnych decyzjach (80% pomija dalsze kroki)
+  Krok 2: AgentDataExtraction → ekstrakcja danych (4 silniki OCR)
+  Krok 3: Dynamiczny Podręcznik Błędów → pobierz 3 podobne korekty z DuckDB
+  Krok 4: Actor (Granite 3.2) + Guardian (Granite Guardian) → ocena z few-shot
+  Krok 5: AgentQualityValidator → walidacja (tax + fraud + ESG + liquidity)
+  Krok 6: Weighted Voting → konsensus (Orchestrator 0.40 + QualityValidator 0.60)
+  Krok 7: Ostateczna decyzja: AUTO_POST / SUGGEST / ASK_USER
+
+KOMUNIKACJA NATS:
+  council.task.request       → wejście zadania
+  council.decision.final     → wyjście decyzji
+  council.decision.review    → decyzja do przeglądu
+  council.decision.learn     → korekta/feedback
+  council.escalation         → eskalacja
+  council.heartbeat          → heartbeat (co 30s)
+
+UCZENIE SIĘ (dwie warstwy jednocześnie):
+  - Cognitive Audit Trail: embedding → k-NN → auto-naprawa OPA
+  - Dynamiczny Podręcznik Błędów: DuckDB → few-shot w prompcie
+  - Bayesian update: α/β po każdej korekcie
 
 
-3.2. AgentDataExtraction — Forteca Precyzji
-=============================================
+3.2. AgentDataExtraction — Forteca Precyzji (wchłonął KSeF)
+=============================================================
 
-  ROLA:
+ROLA:
     Ekstrakcja danych z dokumentów z precyzją > 99.9%.
     Zero błędów w polach krytycznych (NIP, kwoty, IBAN).
+    Obsługa KSeF (wysyłka/odbiór FA(1)/FA(2)).
 
-  MODELE I SILNIKI (zgodnie z RAPORT_TECHNOLOGII):
-    - ParagonDetect (lekkie CNN, ONNX) — klasyfikacja ~50 MB RAM
-    - Tesseract 5.3 — systemowy, druk klasyczny ~0 MB
-    - PaddleOCR 2.8 — DL, różne czcionki ~250 MB
-    - python-docTR 0.9 — układ strony (DBNet+PARSeq) ~350 MB
-    - EasyOCR 1.7 — rezerwowy, różne języki ~300 MB
-    - Granite Vision Guardian 0.3B — walidacja wizyjna ~250 MB
-    - ModernBERT-NER-Finance 0.3B — walidacja semantyczna ~200 MB
+MODELE I SILNIKI (zgodnie z RAPORT_TECHNOLOGII):
+  - Tesseract 5.3 — systemowy, druk klasyczny
+  - PaddleOCR 2.8 — DL, różne czcionki ~250 MB
+  - python-docTR 0.9 — układ strony (DBNet+PARSeq) ~350 MB
+  - Granite Vision Guardian 0.3B — walidacja wizyjna ~250 MB
+  - ModernBERT-NER-Finance 0.3B — walidacja semantyczna ~200 MB
+  - ParagonDetect 0.1B (ONNX) — klasyfikacja dokumentu ~50 MB
 
-  KLUCZOWE MECHANIZMY ENTERPRISE:
+  RAM stały: ~100 MB | RAM doraźny: ~500 MB (OCR)
 
-    1. CROSS-VALIDATION MATRIX (4×4)
-       - Każde pole ekstrahowane przez 4 silniki niezależnie
-       - 3/4 zgoda → akceptuj | 2/4 → Vision Guardian | <2/4 → ręczna
-       - Statystycznie niemożliwe: 4 algorytmy ≠ ten sam błąd
+FUNKCJONALNOŚCI WCHŁONIĘTE:
+  - AgentKSeF (dawniej osobny) → wysyłka/odbiór FA(1)/FA(2)
+  - ksef_service.py, ksef_generator.py — zachowane jako serwisy
 
-    2. ACTIVE LEARNING OCR (Online Learning)
-       - Każda korekta → wektor w sqlite-vec (ocr_corrections)
-       - Przy kolejnej fakturze: k-NN → preferuj skorygowaną wartość
-       - System uczy się układów faktur per-kontrahent
+KLUCZOWE MECHANIZMY ENTERPRISE:
 
-    3. INVOICE TEMPLATE MATCHING
-       - Wzorce faktur per kontrahent (embeddingi 768d)
-       - Pozycje pól (bounding boxy), formaty danych
-       - sqlite-vec: k-NN dla szybkiego dopasowania wzorca
+  1. CROSS-VALIDATION MATRIX (4×4)
+     - Każde pole ekstrahowane przez 4 silniki niezależnie
+     - 3/4 zgoda → akceptuj | 2/4 → Vision Guardian | <2/4 → ręczna
+     - Statystycznie niemożliwe: 4 algorytmy ≠ ten sam błąd
 
-    4. SEMANTYCZNA WALIDACJA
-       - NIP: suma kontrolna (wagi 6,5,7,2,3,4,5,6,7) + Biała Lista MF
-       - IBAN: MOD-97 checksum + lista zastrzeżonych
-       - Kwoty: netto + VAT = brutto (tolerancja 0.01 PLN)
-       - Daty: nie w przyszłości, nie starsze niż 5 lat
+  2. ACTIVE LEARNING OCR (Online Learning)
+     - Każda korekta → wektor w sqlite-vec (ocr_corrections, 768d)
+     - Przy kolejnej fakturze: k-NN → preferuj skorygowaną wartość
+     - System uczy się układów faktur per kontrahent
 
-    5. CONFIDENCE CALIBRATION
-       - Każde pole: indywidualny confidence (0.0-1.0)
-       - Weighted average: wagi = historyczna precyzja silnika
-       - Jeśli < 0.7 → oznacz do weryfikacji
+  3. INVOICE TEMPLATE MATCHING
+     - Wzorce faktur per kontrahent (embeddingi 768d)
+     - Pozycje pól (bounding boxy), formaty danych
+     - sqlite-vec: k-NN dla szybkiego dopasowania wzorca
 
-  PIPELINE OCR (5 warstw):
-    Warstwa 0: Preprocessing (Pillow + OpenCV)
-    Warstwa 1: Klasyfikacja dokumentu (faktura vs paragon)
-    Warstwa 2: 4 silniki OCR równolegle (threading)
-    Warstwa 3: Walidacja krzyżowa (Levenshtein consensus)
-    Warstwa 4: AI Supervisor (Vision Guardian)
-    Warstwa 5: Walidator Semantyczny (ModernBERT-NER)
+  4. SEMANTYCZNA WALIDACJA
+     - NIP: suma kontrolna (wagi 6,5,7,2,3,4,5,6,7) + Biała Lista MF
+     - IBAN: MOD-97 checksum + lista zastrzeżonych
+     - Kwoty: netto + VAT = brutto (tolerancja 0.01 PLN)
+     - Daty: nie w przyszłości, nie starsze niż 5 lat
 
-  UCZENIE SIĘ:
-    - Korekty OCR → sqlite-vec (online learning)
-    - Wzorce faktur → unsupervised clustering
-    - Precyzja silników → Bayesian update per-field
-    - Nowe formaty → automatyczne wykrywanie
+  5. KSeF INTEGRATION
+     - Automatyczna wysyłka/odbiór FA(1)/FA(2)
+     - xsdata + lxml — struktury XML KSeF zgodne z XSD MF
+     - SHA-256 podpis + certyfikat (nexus-crypto)
+     - stamina: max 5 prób, backoff 1s-60s
 
-
-3.3. AgentAnalytics — Sztab Analityczny
-=========================================
-
-  ROLA:
-    Nieustanna analiza kondycji finansowej. Wykrywa trendy, anomalie
-    i ryzyka proaktywnie. Generuje raporty automatyczne.
-
-  MODELE (zgodnie z RAPORT_TECHNOLOGII):
-    - Hrida-T2SQL-128k (GGUF, IQ3_M) — Natural Language → SQL ~1.0 GB
-    - Granite 3.2 3B (GGUF, IQ4_XS) — Główny Analityk ~2.4 GB
-    - Fin-RWKV-169M (GGUF, Q4_K_M) — Detektyw Finansowy ~100 MB
-    - Lag-Llama 0.3B (GGUF, Q4_K_M) — Prognoza szeregów czasowych ~200 MB
-
-  KLUCZOWE MECHANIZMY ENTERPRISE:
-
-    1. PROAKTYWNE MONITOROWANIE (24/7)
-       - Cash flow: prognoza 90 dni, daily update
-       - Należności: DSO, przeterminowania, ryzyko windykacji
-       - Zobowiązania: terminy, skonta, priorytety płatności
-       - VAT: należny/naliczony, split payment, JPK
-       - Wynik: P&L, marża, koszty, przychody, trendy
-       - Anomalie: Z-score > 2σ, IQR, Mahalanobis
-
-    2. NATURAL LANGUAGE INSIGHTS
-       - Codzienny brief: "Wczoraj wpłynęło 5 faktur na 12,450 PLN"
-       - Alerty: "Kontrahent X zmienił konto bankowe"
-       - Rekomendacje: "Skonto 2% traci ważność za 3 dni"
-       - Generowane przez Granite 3.2 + DuckDB + szablony
-
-    3. RAPORTY AUTOMATYCZNE (DuckDB SQL + Granite 3.2)
-       - Dzienne: cash position, nowe faktury, alerty
-       - Tygodniowe: P&L, DSO, overdue, top kontrahenci
-       - Miesięczne: VAT, PIT/CIT, koszty, inwestycje
-       - Kwartalne: analiza porównawcza, trendy, prognozy
-
-    4. ANOMALY DETECTION (Fin-RWKV + statystyka)
-       - Univariate: Z-score, IQR, moving average
-       - Multivariate: Mahalanobis distance, Isolation Forest
-       - Temporal: change point detection (PELT)
-       - Grafowa: sieć powiązań (karuzele VAT)
-
-  UCZENIE SIĘ:
-    - Wzorce sezonowe → automatyczne wykrywanie
-    - Korekty prognoz → Bayesian update parametrów
-    - Nowe anomalie → clustering + etykietowanie
-    - Preferencje raportowe → personalizacja
+PIPELINE OCR (5 warstw):
+  Warstwa 0: Preprocessing (Pillow + OpenCV)
+  Warstwa 1: Klasyfikacja dokumentu (ParagonDetect)
+  Warstwa 2: 4 silniki OCR (Tesseract + PaddleOCR + docTR + EasyOCR)
+  Warstwa 3: Walidacja krzyżowa (Levenshtein consensus)
+  Warstwa 4: AI Supervisor (Vision Guardian)
 
 
-3.4. AgentQualityValidator — Strażnik Integralności
-=====================================================
+3.3. AgentAnalytics — Sztab Analityczny (wchłonął Cash + Vendor)
+=================================================================
 
-  ROLA:
+ROLA:
+    Nieustanna analiza kondycji finansowej. Prognozy cash flow,
+    wywiad gospodarczy, wykrywanie trendów i anomalii.
+
+MODELE (zgodnie z RAPORT_TECHNOLOGII):
+  - Hrida-T2SQL-128k (GGUF, IQ3_M) — Natural Language → SQL ~1.0 GB
+  - Granite 3.2 3B (GGUF, IQ4_XS) — Główny Analityk ~2.4 GB
+  - Fin-RWKV-169M (GGUF, Q4_K_M) — Detektyw Finansowy ~100 MB
+  - Lag-Llama 0.3B (GGUF, Q4_K_M) — Prognoza szeregów czasowych ~200 MB
+
+  RAM stały: ~100 MB | RAM doraźny: ~1.0 GB
+
+FUNKCJONALNOŚCI WCHŁONIĘTE:
+  - AgentCashManager (dawniej osobny) → prognozy płynności, priorytetyzacja
+  - AgentVendorIntelligence (dawniej osobny) → Biała Lista, GUS BIR, risk score
+  - liquidity_oracle.py, priority_engine.py — zachowane jako serwisy
+  - vendor_intelligence.py, gus_bir_client.py — zachowane jako serwisy
+
+KLUCZOWE MECHANIZMY ENTERPRISE:
+
+  1. PROAKTYWNE MONITOROWANIE (24/7)
+     - Cash flow: prognoza 90 dni, daily update, 3 scenariusze
+     - Należności: DSO, przeterminowania, ryzyko windykacji
+     - Zobowiązania: terminy, skonta, priorytety płatności
+     - VAT: należny/naliczony, split payment, JPK
+     - Wynik: P&L, marża, koszty, przychody, trendy
+     - Anomalie: Z-score > 2σ, IQR, Mahalanobis distance
+
+  2. VENDOR INTELLIGENCE
+     - Biała Lista MF (status VAT, lista rachunków)
+     - GUS BIR (weryfikacja danych CEIDG)
+     - Vendor Risk Score 0-100 (historia płatności, zmiany kont, branża)
+     - Alert: zmiana statusu VAT, zmiana konta bankowego
+
+  3. NATURAL LANGUAGE INSIGHTS
+     - Codzienny brief: "Wczoraj wpłynęło 5 faktur na 12,450 PLN"
+     - Alerty: "Kontrahent X zmienił konto bankowe"
+     - Rekomendacje: "Skonto 2% traci ważność za 3 dni"
+     - Generowane przez Granite 3.2 + DuckDB + szablony
+
+  4. RAPORTY AUTOMATYCZNE (DuckDB SQL + Granite 3.2)
+     - Dzienne: cash position, nowe faktury, alerty
+     - Tygodniowe: P&L, DSO, overdue, top kontrahenci
+     - Miesięczne: VAT, PIT/CIT, koszty, inwestycje
+     - Kwartalne: analiza porównawcza, trendy, prognozy
+
+
+3.4. AgentQualityValidator — Trójwarstwowa Tarcza (wchłonął Tax + Compliance)
+===============================================================================
+
+ROLA:
     Niezależny audytor. Weryfikuje KAŻDĄ decyzję przed wykonaniem.
-    Architektura "zero trust" — żaden model nie decyduje sam.
+    Architektura "zero trust" — trzy niezależne warstwy weryfikacji.
 
-  MODELE (zgodnie z RAPORT_TECHNOLOGII):
-    - Granite Guardian 0.5B (GGUF, Q4_K_M) — Strażnik Podatkowy ~300 MB
-    - GraphSAGE-Encoder 0.1B (ONNX) — Detektor Oszustw ~100 MB
-    - FinBERT-ESG 0.1B (GGUF, Q4_K_M) — Analityk Ryzyka ~80 MB
-    - Lag-Llama 0.3B (GGUF, Q4_K_M) — Prognoza Płynności ~200 MB
+MODELE (zgodnie z RAPORT_TECHNOLOGII):
+  - Granite Guardian 0.5B (GGUF, Q4_K_M) — Strażnik Podatkowy ~300 MB
+  - GraphSAGE-Encoder 0.1B (ONNX) — Detektor Oszustw ~100 MB
+  - FinBERT-ESG 0.1B (GGUF, Q4_K_M) — Analityk Ryzyka ~80 MB
+  - Lag-Llama 0.3B (GGUF, Q4_K_M) — Prognoza Płynności ~200 MB
 
-  KLUCZOWE MECHANIZMY ENTERPRISE:
+  RAM stały: ~670 MB | RAM doraźny: ~350 MB
 
-    1. 4-EYES PRINCIPLE (obowiązkowy dla kwot > 50,000 PLN)
-       - Dwie niezależne weryfikacje każdej krytycznej decyzji
-       - Pierwsza: Granite Guardian (kontrola podatkowa)
-       - Druga: GraphSAGE + FinBERT (oszustwa + ryzyko)
-       - Jeśli rozbieżne → wyższy próg (75,000 PLN)
+FUNKCJONALNOŚCI WCHŁONIĘTE:
+  - AgentTaxEngine (dawniej osobny) → VAT/PIT/CIT, JPK, optymalizacja
+  - AgentCompliance (dawniej osobny) → monitorowanie przepisów, audyt
+  - tax_simulator.py, tax_strategies.py, tax/rules.rego — zachowane
+  - compliance_analytics.py — zachowany
 
-    2. TAX COMPLIANCE ENGINE (OPA + Rego)
-       - Sprawdza: stawki VAT, split payment, JPK, PKWiU
-       - Deterministyczny silnik reguł (OPA/Rego — z RAPORT_TECHNOLOGII)
-       - Reguły aktualizowane z MF przez hishel cache
+KLUCZOWE MECHANIZMY ENTERPRISE:
 
-    3. FRAUD GRAPH SCANNER (GraphSAGE)
-       - Buduje graf powiązań: NIP → konto → kwota
-       - Wykrywa: karuzele VAT, słupy, zmiany kont, duplikaty
-       - Embedding węzłów + klasyfikacja anomalii
+  1. TAX COMPLIANCE (OPA/Rego — auto-naprawiany przez Cognitive Audit Trail)
+     - Stawki VAT (23%/8%/5%/0%/ZW) — sprawdzane przez OPA
+     - Split payment (≥15,000 PLN → MPP)
+     - JPK_V7 generowanie (miesięczne/kwartalne)
+     - PIT/CIT kalkulacje (skala/liniowa/ryczałt/estoński)
+     - Tax optimization (DuckDB shadow ledger symulacje)
+     - Deadline management (ZUS, US, KSeF, skonta)
 
-    4. LIQUIDITY STRESS TEST (Monte Carlo 1000 scenariuszy)
-       - Dla każdej decyzji > 10,000 PLN: wpływ na płynność
-       - Ryzyko niedoboru > 5% → WARNING
-       - Ryzyko niedoboru > 20% → BLOCK
+  2. FRAUD GRAPH SCANNER (GraphSAGE)
+     - Graf powiązań: NIP → konto → kwota
+     - Wykrywa: karuzele VAT, słupy, zmiany kont, duplikaty
+     - Embedding węzłów + klasyfikacja anomalii
 
-    5. VOTE WEIGHTING (Bayesian weights)
-       - Wag: Tax=0.35, Fraud=0.30, ESG=0.20, Lag-Llama=0.15
-       - Aktualizacja: Bayesian per-domain precision
+  3. ESG RISK ANALYSIS (FinBERT-ESG)
+     - Ocena ryzyka kontrahenta
+     - Compliance monitoring (RODO, UoR, KSeF)
+     - Semi-automatic aktualizacja reguł OPA z przepisów
 
-  WERDIKT:
-    OK      → wszystkie kontrole przeszły
-    WARNING → jedna kontrola wykryła ryzyko (REVIEW)
-    ERROR   → krytyczna kontrola (BLOCK)
+  4. 4-EYES PRINCIPLE (obowiązkowy dla kwot > 50,000 PLN)
+     - Dwie niezależne weryfikacje każdej krytycznej decyzji
+     - Pierwsza: Granite Guardian (kontrola podatkowa)
+     - Druga: GraphSAGE + FinBERT (oszustwa + ryzyko)
+     - Jeśli rozbieżne → wyższy próg (75,000 PLN)
 
-  UCZENIE SIĘ:
-    - Potwierdzone oszustwa → retraining GraphSAGE
-    - Nowe ryzyka → reguły OPA (hot-reload)
-    - Precyzja modeli → Bayesian update per-domain
-    - Thresholds → adaptacyjne z historii
+  5. LIQUIDITY STRESS TEST (Monte Carlo 1000 scenariuszy)
+     - Dla każdej decyzji > 10,000 PLN: wpływ na płynność
+     - Ryzyko niedoboru > 5% → WARNING
+     - Ryzyko niedoboru > 20% → BLOCK
 
+  6. WEIGHTED VOTING (wewnątrz agencji)
+     - Tax: 0.35 | Fraud: 0.30 | ESG: 0.20 | Forecast: 0.15
+     - Aktualizacja: Bayesian per-domain precision
 
-3.5. AgentTaxEngine — Automatyczny Doradca Podatkowy
-======================================================
-
-  ROLA:
-    Automatyczne wyliczanie podatków VAT/PIT/CIT.
-    Optymalizacja podatkowa w ramach prawa.
-
-  TECHNOLOGIE (z RAPORT_TECHNOLOGII):
-    - DuckDB ≥1.0.0 — kalkulacje, agregacje, symulacje
-    - OPA ≥0.6x + Rego — reguły podatkowe (first-match-wins)
-    - TigerBeetle ≥0.16.0 — księga główna (double-entry)
-    - stamina ≥0.1.0 — retry dla API MF
-
-  KLUCZOWE MECHANIZMY:
-
-    1. VAT ENGINE
-       - Automatyczne stawki (23%/8%/5%/0%/ZW)
-       - Split payment (≥15,000 PLN → MPP)
-       - JPK_V7 generowanie (miesięczne/kwartalne)
-       - VAT-UE (WDT, WNT, eksport, import)
-
-    2. PIT/CIT ENGINE
-       - Forma opodatkowania (skala/liniowa/ryczałt/estoński)
-       - Zaliczki miesięczne/kwartalne
-       - KUP (koszty uzyskania przychodu)
-       - Amortyzacja (środki trwałe, wartości niematerialne)
-       - Ulgi: B+R, IP Box, darowizny, termomodernizacja
-
-    3. TAX OPTIMIZATION (DuckDB shadow ledger)
-       - Symulacje "co by było, gdyby"
-       - Rekomendacje zmiany formy opodatkowania
-       - Estoński CIT vs liniowy vs skala
-       - Ryzyko: klauzula GAAR, interpretacje
-
-    4. DEADLINE MANAGEMENT
-       - Monitoring wszystkich terminów podatkowych
-       - Priorytety: US > ZUS > KSeF > inne
-       - Alerty: 7, 3, 1 dzień przed terminem
-       - Push, email, powiadomienie w UI
+WERDIKT:
+  OK      → wszystkie kontrole przeszły
+  WARNING → jedna kontrola wykryła ryzyko (REVIEW)
+  ERROR   → krytyczna kontrola (BLOCK)
 
 
-3.6. AgentCashManager — Zarządca Płynności
-=============================================
+3.5. AgentFixedAssets — Zarządca Majątku
+==========================================
 
-  ROLA:
-    Zarządzanie przepływami pieniężnymi. Planowanie płatności,
-    optymalizacja salda, minimalizacja kosztów finansowych.
+ROLA:
+    Automatyczna klasyfikacja, amortyzacja i ewidencja środków trwałych.
 
-  TECHNOLOGIE (z RAPORT_TECHNOLOGII):
-    - DuckDB — prognozy, analizy, scenariusze
-    - TigerBeetle — księgowanie transferów
-    - Lag-Llama — prognoza szeregów czasowych
-    - Fin-RWKV — wykrywanie anomalii płatności
+MODEL:
+  - Amortyzator-KŚT 0.2B — klasyfikacja deterministyczna + AI
 
-  KLUCZOWE MECHANIZMY:
+  RAM doraźny: ~200 MB
 
-    1. CASH FLOW FORECAST (90 dni)
-       - 3 scenariusze: optymistyczny (p25), bazowy (p50), pesymistyczny (p75)
-       - Uwzględnia: faktury, VAT, ZUS, US, wynagrodzenia
-       - Lag-Llama: predykcja z daily update
+KLUCZOWE MECHANIZMY ENTERPRISE:
 
-    2. PAYMENT OPTIMIZER
-       - Priorytety: krytyczne > skonta > strategiczni > elastyczni
-       - Batchowanie płatności tego samego dnia
-       - Delayed payment bez ryzyka windykacji
+  1. AUTO-CLASSIFICATION
+     - ŚT vs materiał vs usługa (>10k PLN, >1 rok)
+     - Klasyfikacja: budynki, maszyny, pojazdy, IT, WNiP
 
-    3. LIQUIDITY BUFFER
-       - Minimalny: 30 dni kosztów stałych
-       - Docelowy: 90 dni (zalecany dla MŚP)
-       - Alert: gdy < 30 dni → ograniczenie wydatków
-
-    4. WORKING CAPITAL OPTIMIZATION
-       - DSO < 30 dni | DPO > 45 dni | CCC < 0
-       - Monitoring należności i zobowiązań
-
-
-3.7. AgentCompliance — Strażnik Regulacyjny
-=============================================
-
-  ROLA:
-    Ciągłe monitorowanie zgodności z przepisami.
-    Automatyczna aktualizacja reguł. Raportowanie.
-
-  TECHNOLOGIE (z RAPORT_TECHNOLOGII):
-    - OPA + Rego — reguły compliance
-    - DuckDB — analiza zgodności
-    - hishel — cache przepisów (TTL 24h)
-    - nexus-crypto — proof chain dla audytu
-
-  KLUCZOWE MECHANIZMY:
-
-    1. REGULATORY WATCH
-       - Monitorowanie Dz.U., MF, KAS
-       - Automatyczne parsowanie struktur prawnych
-       - Semi-automatic aktualizacja reguł OPA
-
-    2. COMPLIANCE AUDIT
-       - RODO: anonimizacja po 5 latach
-       - UoR: zasady rachunkowości (art. 4-20)
-       - KSeF: FA(1), FA(2) compliance
-       - JPK: struktury JPK_V7, JPK_FA, JPK_PKPIR
-
-    3. DATA RETENTION
-       - Faktury: 5 lat (UoR art. 74)
-       - Księgi: 10 lat (UoR art. 74)
-       - RODO: 5 lat, potem anonimizacja
-       - Backup: SQLCipher + SHA-256
-
-
-3.8. AgentKSeF — Łącznik z Ministerstwem Finansów
-====================================================
-
-  ROLA:
-    Automatyczna wymiana z Krajowym Systemem e-Faktur.
-
-  TECHNOLOGIE (z RAPORT_TECHNOLOGII):
-    - httpx + hishel — komunikacja API
-    - xsdata + lxml — XML KSeF (FA_VAT)
-    - stamina — retry z backoffem
-    - nexus-crypto — podpisywanie
-
-  KLUCZOWE MECHANIZMY:
-
-    1. AUTO-SEND TO KSeF
-       - FA(1), FA(2) zgodne ze schematem XSD MF
-       - SHA-256 podpis + certyfikat (nexus-crypto)
-       - stamina: max 5 prób, backoff 1s-60s
-
-    2. KSeF STATUS MONITOR
-       - Cykliczne sprawdzanie statusu wysłanych
-       - UPO pobieranie i archiwizacja
-       - Auto-korekta przy odrzuceniu
-
-    3. KSeF INBOX
-       - Pobieranie faktur przychodzących
-       - Automatyczne przetwarzanie (AgentDataExtraction)
-       - Dopasowanie do zamówień/umów
-
-
-3.9. AgentVendorIntelligence — Wywiad Gospodarczy
-===================================================
-
-  ROLA:
-    Ocena wiarygodności kontrahentów. Monitoring
-    Białej Listy MF, GUS, KRD.
-
-  TECHNOLOGIE (z RAPORT_TECHNOLOGII):
-    - httpx + hishel — API Biała Lista, GUS BIR
-    - DuckDB — analiza historyczna
-    - sqlite-vec — embeddingi kontrahentów
-    - stamina — retry dla API
-
-  KLUCZOWE MECHANIZMY:
-
-    1. WHITE LIST MF
-       - Automatyczne sprawdzanie NIP
-       - Status VAT, lista rachunków
-       - Alert: zmiana statusu VAT
-
-    2. GUS BIR VERIFICATION
-       - Weryfikacja: nazwa, adres, PKD
-       - Zgodność faktury vs GUS
-       - Alert: rozbieżności danych
-
-    3. VENDOR RISK SCORE (0-100)
-       - Historia płatności, opóźnienia
-       - Zmiany kont bankowych
-       - Branża + powiązania (grafy)
-       - Rekomendacja: współpracuj/ostrożnie/omijaj
-
-
-3.10. AgentFixedAssets — Zarządca Środków Trwałych
-====================================================
-
-  ROLA:
-    Automatyczna klasyfikacja, amortyzacja i ewidencja ŚT.
-
-  TECHNOLOGIE (z RAPORT_TECHNOLOGII):
-    - DuckDB — kalkulacje amortyzacji
-    - TigerBeetle — księgowanie
-    - Granite 3.2 — klasyfikacja (współdzielony)
-
-  KLUCZOWE MECHANIZMY:
-
-    1. AUTO-CLASSIFICATION
-       - ŚT vs materiał vs usługa (>10k PLN, >1 rok)
-       - Klasyfikacja: budynki, maszyny, pojazdy, IT, WNiP
-       - Granite 3.2: klasyfikacja z opisu faktury
-
-    2. DEPRECIATION ENGINE
-       - Metody: liniowa, degresywna, jednorazowa
-       - Stawki: Ustawa PIT/CIT (Wykaz stawek)
-       - Miesięczne odpisy → TigerBeetle
+  2. DEPRECIATION ENGINE
+     - Metody: liniowa, degresywna, jednorazowa
+     - Stawki: Ustawa PIT/CIT (Wykaz stawek amortyzacyjnych)
+     - Miesięczne odpisy → TigerBeetle (double-entry)
 
 
 ================================================================================
 4. DECISION ENGINE — Wielowarstwowy Silnik Decyzyjny
 ================================================================================
 
-4.1. Dynamiczne strefy decyzyjne (Bayesian thresholds)
---------------------------------------------------------
+4.1. Strefy decyzyjne (Dynamic Thresholds)
+--------------------------------------------
 
-  Thresholds NIE są stałe — adaptują się Bayesian:
+Thresholds NIE są stałe — adaptują się Bayesian per kontrahent:
 
-    auto_post = 0.92 - adjustment
-    review    = 0.75 - adjustment
-    adjustment = (α_vendor - β_vendor) / (α_vendor + β_vendor) × 0.1
+  auto_post = 0.92 - adjustment
+  review    = 0.75 - adjustment
+  adjustment = (α_vendor - β_vendor) / (α_vendor + β_vendor) × 0.1
 
-    Gdzie:
-      α_vendor = poprawne decyzje dla tego kontrahenta
-      β_vendor = błędne decyzje dla tego kontrahenta
+Gdzie:
+  α_vendor = poprawne decyzje dla tego kontrahenta
+  β_vendor = błędne decyzje dla tego kontrahenta
 
-    Przykład:
-      Znany kontrahent (100 faktur, 98 poprawnych):
-      α=98, β=2 → adjustment = 0.096
-      auto_post = 0.92 - 0.096 = 0.824 ← niższy próg (łatwiej)
+Przykład:
+  Znany kontrahent (100 faktur, 98 poprawnych):
+  α=98, β=2 → adjustment = 0.096, auto_post = 0.92 - 0.096 = 0.824
 
-      Nowy kontrahent (5 faktur, 4 poprawne):
-      α=4, β=1 → adjustment = 0.06
-      auto_post = 0.92 - 0.06 = 0.86 ← wyższy próg (ostrożnie)
+  Nowy kontrahent (5 faktur, 4 poprawne):
+  α=4, β=1 → adjustment = 0.06, auto_post = 0.92 - 0.06 = 0.86
 
-      Podejrzany kontrahent (10 faktur, 6 poprawnych):
-      α=6, β=4 → adjustment = 0.02
-      auto_post = 0.92 - 0.02 = 0.90 ← bardzo wysoki próg
+  Podejrzany kontrahent (10 faktur, 6 poprawnych):
+  α=6, β=4 → adjustment = 0.02, auto_post = 0.92 - 0.02 = 0.90
 
-4.2. Konsensus między agentami (weighted voting)
+Mapowanie strefy na DecisionMode (implementacja w orchestrator.py):
+
+  AUTO_POST (Trust ≥ auto_post)    → DecisionMode.AUTO_POST
+  REVIEW    (Trust ≥ review)        → DecisionMode.SUGGEST
+  BLOCK     (Trust < review)        → DecisionMode.ASK_USER
+  ESCALATED (manualna eskalacja)   → DecisionMode.ASK_USER
+
+4.2. Konsensus między agentami (Weighted Voting)
 --------------------------------------------------
 
-  Ostateczna decyzja = ważony głos agentów:
+Ostateczna decyzja = ważony głos dwóch niezależnych głosów:
 
-    AgentOrchestrator:     waga = 0.35
-    AgentTaxEngine:        waga = 0.25
-    AgentQualityValidator: waga = 0.40 (niezależny audytor)
+  AgentOrchestrator:     waga = 0.40  (decyzja wykonawcza)
+  AgentQualityValidator: waga = 0.60  (niezależny audytor)
 
-    Jeśli split:
-      2/3 zgoda → akceptuj decyzję większości
-      1/3 zgoda → REVIEW (eskalacja)
-      0/3 zgoda → BLOCK (błąd systemu)
+Jeśli consensus > 0.66 → akceptuj.
+Jeśli uncertainty > 0.3 → eskalacja do człowieka.
 
-4.3. Eskalacja do człowieka (inteligentna matryca)
-----------------------------------------------------
-
-  Eskalacja gdy:
-    a) Trust Score < review_threshold
-    b) QualityValidator zwróci ERROR
-    c) Konsensus < 2/3
-    d) Kwota > max_auto_post (100,000 PLN)
-    e) Nowy kontrahent > 50,000 PLN
-    f) Zmiana konta bankowego kontrahenta
-
-  Komunikator (Qwen3-Nano) generuje wiadomość NL:
-    "Dzień dobry, faktura FV/2026/12345 od 'Nowy Kontrahent Sp. z o.o.'
-    na kwotę 75,000 PLN wymaga decyzji. Opcje: 1) Zatwierdź 2) Prześlij
-    do weryfikacji 3) Odrzuć"
-
-4.4. Proof Chain SHA-256 (niepodważalny audyt)
-------------------------------------------------
-
-  Implementacja przez nexus-crypto (z RAPORT_TECHNOLOGII):
-
-    from nexus_crypto import Sha256Hasher
-
-    class ProofChain:
-        def __init__(self):
-            self.chain = []
-            self.load_from_db()  # DuckDB: proof_chain
-
-        def add_block(self, decision: AgentDecision) -> str:
-            previous_hash = self.chain[-1].hash if self.chain else "0"*64
-            block_data = {
-                "index": len(self.chain),
-                "decision_id": decision.decision_id,
-                "decision": msgspec.json.encode(decision),
-                "timestamp": pendulum.now("UTC").isoformat(),
-                "previous_hash": previous_hash,
-            }
-            hasher = Sha256Hasher()
-            hasher.update(msgspec.json.encode(block_data))
-            return hasher.hexdigest()
-
-4.5. Confidence Voting między modelami
-----------------------------------------
+Implementacja (zgodnie z msgspec.Struct w models.py):
 
   class ConfidenceVote(Struct, kw_only=True):
-      model_name: str
-      model_weight: float = 0.0      # historyczna precyzja
-      vote: str                       # POST | REVIEW | BLOCK
-      confidence: float = 0.0        # confidence tej decyzji
-      weighted_vote: float = 0.0     # model_weight × confidence
+      agent: str
+      weight: float = 0.0        # historyczna precyzja agenta
+      vote: str                   # POST | REVIEW | BLOCK
+      confidence: float = 0.0
+      weighted_vote: float = 0.0  # weight × confidence
 
   class VotingResult(Struct, kw_only=True):
       votes: list[ConfidenceVote]
       total_weight: float
-      winner: str                     # POST | REVIEW | BLOCK
-      consensus: bool = False         # True jeśli > 0.66 majority
+      winner: str
+      consensus: bool = False     # True jeśli > 0.66 majority
       uncertainty: float = 0.0
 
-  Jeśli uncertainty > 0.3 → eskalacja do człowieka.
+4.3. Eskalacja do człowieka (inteligentna matryca)
+-----------------------------------------------------
+
+Eskalacja gdy:
+  a) Trust Score < review_threshold (DecisionMode.ASK_USER)
+  b) QualityValidator → ERROR
+  c) Konsensus < 0.66
+  d) Kwota > max_auto_post (100,000 PLN)
+  e) Nowy kontrahent > 50,000 PLN
+  f) Zmiana konta bankowego kontrahenta
+
+Komunikator (Qwen3-Nano) generuje wiadomość NL z opcjami:
+  "Dzień dobry, faktura FV/2026/12345 od 'Nowy Kontrahent Sp. z o.o.'
+  na kwotę 75,000 PLN wymaga decyzji. Opcje:
+  1) Zatwierdź i księguj
+  2) Prześlij do weryfikacji
+  3) Odrzuć z komentarzem"
+
+4.4. Proof Chain SHA-256 (niepodważalny audyt)
+------------------------------------------------
+
+Implementacja przez nexus-crypto (z RAPORT_TECHNOLOGII):
+
+  from nexus_crypto import Sha256Hasher
+
+  class ProofChain:
+      def __init__(self):
+          self.chain: list[ProofBlock] = []
+          self.load_from_db()  # DuckDB: proof_chain
+
+      def add_block(self, decision: AgentDecision) -> str:
+          previous_hash = self.chain[-1].hash if self.chain else "0"*64
+          block_data = {
+              "index": len(self.chain),
+              "decision_id": decision.decision_id,
+              "decision": msgspec.json.encode(decision),
+              "timestamp": pendulum.now("UTC").isoformat(),
+              "previous_hash": previous_hash,
+          }
+          hasher = Sha256Hasher()
+          hasher.update(msgspec.json.encode(block_data))
+          return hasher.hexdigest()
 
 
 ================================================================================
-5. CONTINUOUS LEARNING FRAMEWORK — System Uczenia Się
+5. CONTINUOUS LEARNING FRAMEWORK — Dwie Warstwy Uczenia Się
 ================================================================================
 
 5.1. Active Learning Loop (pętla zamknięta)
 ---------------------------------------------
 
-  DECYZJA Agenta → KOREKTA Usera → NAUKA Systemu → POPRAWA Threshold
-       ↑                                                    │
-       └────────────────────────────────────────────────────┘
+DECYZJA Agenta → KOREKTA Usera → DWIE WARSTWY UCZENIA RÓWNOLEGLE:
 
-  Algorytm (5 kroków):
-    1. Agent podejmuje decyzję (z Trust Score)
-    2. Jeśli Trust Score < threshold → pytamy użytkownika
-    3. Użytkownik: zatwierdza / koryguje / odrzuca
-    4. Δ = |decision_agent - decision_user|
-    5. Bayesian update Trust Score z Δ
-    6. Jeśli Δ > 0.1 → dodaj do Active Learning Dataset
-    7. Jeśli dataset ≥ 100 → trigger fine-tuningu
-    8. Adjust thresholds (adaptive calibration)
+    ├─→ WARSTWA #1 (deterministyczna): Cognitive Audit Trail
+    │     embedding 768d → sqlite-vec → k-NN → auto-naprawa OPA
+    │
+    └─→ WARSTWA #2 (probabilistyczna): Dynamiczny Podręcznik Błędów
+          DuckDB → few-shot w prompcie → Granite 3.2 uczy się BEZ fine-tuningu
 
-  Implementacja (DuckDB — z RAPORT_TECHNOLOGII):
+Algorytm (5 kroków):
+  1. Agent podejmuje decyzję (z Trust Score i DecisionMode)
+  2. Jeśli DecisionMode = ASK_USER → pytamy użytkownika
+  3. Użytkownik: zatwierdza (ACCEPT) / koryguje (CORRECT) / odrzuca (REJECT)
+  4. Dwie warstwy uczą się równolegle:
+     a) Cognitive Audit Trail: embedding → CognitiveProofBlock → sqlite-vec
+     b) Dynamiczny Podręcznik Błędów: przykład do DuckDB error_handbook
+  5. Bayesian update Trust Score z Δ
 
-    CREATE TABLE agent_learning_log (
-        id UUID PRIMARY KEY,
-        decision_id UUID,
-        agent_name TEXT NOT NULL,
-        predicted_value JSONB,
-        corrected_value JSONB,
-        delta FLOAT NOT NULL,
-        timestamp TIMESTAMP DEFAULT NOW(),
-        feedback_type TEXT CHECK (feedback_type IN ('accept','correct','reject')),
-        model_version TEXT
-    );
+Implementacja (DuckDB — z RAPORT_TECHNOLOGII):
 
-5.2. Bayesian Trust Score z propagacją
+  CREATE TABLE agent_learning_log (
+      id UUID PRIMARY KEY,
+      decision_id UUID,
+      agent_name TEXT NOT NULL,
+      predicted_value JSONB,
+      corrected_value JSONB,
+      delta FLOAT NOT NULL,
+      timestamp TIMESTAMP DEFAULT NOW(),
+      feedback_type TEXT CHECK (feedback_type IN ('accept','correct','reject'))
+  );
+
+5.2. Warstwa #1: Cognitive Audit Trail (samouzdrawiające się reguły OPA)
+--------------------------------------------------------------------------
+
+Każda korekta tworzy CognitiveProofBlock (zgodnie z kodem w base.py):
+
+  class CognitiveProofBlock(Struct, kw_only=True):
+      correction_id: str
+      decision_id: str
+      agent: str
+      predicted: dict[str, Any]
+      corrected: dict[str, Any]
+      embedding: list[float]       # 768d w sqlite-vec
+      similar_count: int = 1
+      auto_patched: bool = False
+
+Algorytm:
+  1. User koryguje decyzję → embedding faktury 768d (przez _vectorize_invoice)
+  2. CognitiveProofBlock zapisany w sqlite-vec
+  3. find_similar_corrections() → k-NN (cosine, distance < 0.2)
+  4. Po 10 korektach tego samego typu → should_auto_patch_opa() = True
+  5. Auto-naprawa reguł OPA/Rego w tax/rules.rego
+  6. Hot-reload: zmiany reguł nie wymagają restartu
+
+5.3. Warstwa #2: Dynamiczny Podręcznik Błędów (few-shot learning)
+-------------------------------------------------------------------
+
+Przed każdą inferencją Granite 3.2 (implementacja w error_handbook.py):
+
+  Krok 1: DuckDB query — SELECT ... WHERE vendor_nip = ? ORDER BY timestamp DESC
+  Krok 2: Priorytetyzacja: NIP → kategoria → kwota → globalne
+  Krok 3: Formatowanie jako "Podręcznik Błędów z Przeszłości"
+  Krok 4: Wstrzyknięcie do promptu przed główną treścią
+  Krok 5: Model widzi: ❌ co AI zdecydowało → ✅ co było poprawne
+
+Przykładowy prompt z Podręcznikiem:
+
+  --- Podręcznik Błędów z Przeszłości (3 podobne korekty) ---
+
+  📋 Przykład #1 (NIP: 1234567890, 2026-06-28)
+  ❌ AI zdecydowało: VAT 23%
+  ✅ Poprawna decyzja: VAT 8% (kategoria: spożywcze)
+  💡 Nauczka: Dla kategorii "spożywcze" stosuj 8% VAT
+
+  📋 Przykład #2 (NIP: 1234567890, 2026-07-01)
+  ❌ AI zdecydowało: Koszt 100% w miesiącu
+  ✅ Poprawna decyzja: Amortyzacja liniowa 36 miesięcy
+  💡 Nauczka: Kwoty > 10,000 PLN kwalifikują się jako ŚT
+
+  Teraz oceń nową fakturę:
+  [invoice_data]
+
+5.4. Bayesian Trust Score z propagacją
 ----------------------------------------
 
-  Trust Score = posterior Beta distribution:
+Trust Score = posterior Beta distribution:
 
-    Prior:       Beta(α₀=1, β₀=1)          # uniform
-    Likelihood:  Bern(y|θ)                 # y ∈ {0,1}
-    Posterior:   Beta(α₀+Σy, β₀+n-Σy)
+  Prior:       Beta(α₀=1, β₀=1)          # uniform
+  Likelihood:  Bern(y|θ)                 # y ∈ {0,1}
+  Posterior:   Beta(α₀+Σy, β₀+n-Σy)
 
-    Trust Score = E[θ|D] = α / (α + β)
-    Confidence  = 1 - Var[θ|D]
+  Trust Score = E[θ|D] = α / (α + β)
+  Confidence  = 1 - Var[θ|D]
 
-    Gdzie:
-      α = 1 + poprawne decyzje
-      β = 1 + błędne decyzje
+Gdzie: α = poprawne decyzje, β = błędne decyzje.
 
-  Implementacja (czysty Python, żadnych zależności):
+Implementacja (czysty Python, brak zależności):
 
-    class BayesianTrustScore:
-        def __init__(self, alpha: float = 1.0, beta: float = 1.0):
-            self.alpha = alpha
-            self.beta = beta
+  class BayesianTrustScore:
+      def __init__(self, alpha: float = 1.0, beta: float = 1.0):
+          self.alpha = alpha
+          self.beta = beta
 
-        def update(self, correct: bool) -> None:
-            if correct: self.alpha += 1
-            else: self.beta += 1
+      def update(self, correct: bool) -> None:
+          if correct: self.alpha += 1
+          else: self.beta += 1
 
-        @property
-        def trust_score(self) -> float:
-            return self.alpha / (self.alpha + self.beta)
+      @property
+      def trust_score(self) -> float:
+          return self.alpha / (self.alpha + self.beta)
 
-        @property
-        def confidence(self) -> float:
-            total = self.alpha + self.beta
-            variance = (self.alpha * self.beta) / (total**2 * (total + 1))
-            return max(0.0, 1.0 - variance * 12)
+      @property
+      def confidence(self) -> float:
+          total = self.alpha + self.beta
+          variance = (self.alpha * self.beta) / (total**2 * (total + 1))
+          return max(0.0, 1.0 - variance * 12)
 
-5.3. Korekta decyzji — propagacja zwrotna (4 poziomy)
--------------------------------------------------------
+5.5. Confidence Calibration przez DuckDB
+------------------------------------------
 
-  Poziom A — BEZPOŚREDNIA:
-    Agent otrzymuje feedback → Bayesian update alpha/beta.
-    Każda korekta zmienia Trust Score dla tego agenta.
+  CREATE TABLE model_calibration (
+      model_name TEXT NOT NULL,
+      predicted_confidence FLOAT NOT NULL,
+      actual_accuracy FLOAT NOT NULL,
+      sample_count INT DEFAULT 0
+  );
 
-  Poziom B — POŚREDNIA (k-NN w sqlite-vec):
-    Podobne przypadki (distance < 0.15, k=10) oznaczane do re-evaluacji.
-    Embedding faktury → wektor 768d → sqlite-vec search.
+  Calibrated Score = Trust Score × (accuracy / confidence)
 
-  Poziom C — GLOBALNA (OPA semi-automatic):
-    Ten sam typ błędu > 5 razy → aktualizacja reguł OPA.
-    AI proponuje regułę → administrator zatwierdza.
-
-  Poziom D — STRUKTURALNA:
-    Błąd wskazuje brak funkcjonalności → tworzenie taska dev.
-    Automatyczne zgłoszenie w systemie.
-
-5.4. OCR Online Learning (korekty → embeddingi)
+5.6. OCR Online Learning (korekty → embeddingi)
 --------------------------------------------------
 
-  Każda ręczna korekta OCR to nowy przykład treningowy:
+Każda ręczna korekta OCR to nowy przykład treningowy:
 
-    CREATE TABLE ocr_corrections (
-        id UUID PRIMARY KEY,
-        contractor_nip TEXT NOT NULL,
-        field_name TEXT NOT NULL,
-        ocr_value TEXT,
-        corrected_value TEXT NOT NULL,
-        layout_hash TEXT,
-        embedding FLOAT[768],            -- sqlite-vec
-        created_at TIMESTAMP DEFAULT NOW(),
-        applied_count INT DEFAULT 0
-    );
+  CREATE TABLE ocr_corrections (
+      id UUID PRIMARY KEY,
+      contractor_nip TEXT NOT NULL,
+      field_name TEXT NOT NULL,
+      ocr_value TEXT,
+      corrected_value TEXT NOT NULL,
+      embedding FLOAT[768],            -- sqlite-vec
+      created_at TIMESTAMP DEFAULT NOW()
+  );
 
-  Algorytm:
-    1. OCR → nowa wartość z confidence < 0.9
-    2. k-NN w ocr_corrections (podobny layout)
-    3. Jeśli dopasowanie → preferuj wartość z korekty
-    4. Jeśli brak → standardowy OCR
-    5. Increment applied_count
-
-5.5. Wzorce faktur (InvoiceTemplate Learner)
-----------------------------------------------
-
-  System buduje wzorce dla każdego kontrahenta:
-
-    CREATE TABLE invoice_templates (
-        contractor_nip TEXT PRIMARY KEY,
-        template_embedding FLOAT[768],   -- sqlite-vec
-        field_positions JSONB,           -- bounding boxy
-        common_patterns TEXT[],
-        sample_count INT DEFAULT 1
-    );
-
-  Algorytm:
-    1. Po ekstrakcji → wektoryzacja układu
-    2. k-NN w sqlite-vec (szukaj podobnych wzorców)
-    3. Distance < 0.1 → dopasuj wzorzec
-    4. Distance > 0.3 → nowy wzorzec
-    5. Moving average pozycji pól
-
-5.6. Reguły podatkowe z korekt (OPA semi-automatic)
-------------------------------------------------------
-
-    CREATE TABLE tax_rule_corrections (
-        id UUID PRIMARY KEY,
-        rule_name TEXT NOT NULL,
-        original_decision JSONB,
-        corrected_decision JSONB NOT NULL,
-        context JSONB,
-        applied_count INT DEFAULT 0
-    );
-
-  Algorytm:
-    1. User koryguje decyzję podatkową
-    2. k-NN w podobnych przypadkach (embedding faktury)
-    3. Distance < 0.2 → auto zastosuj korektę
-    4. 0.2 < dist < 0.5 → zaproponuj korektę
-    5. > 0.5 → ignoruj (zbyt różny)
-    6. Po 10 korektach → aktualizacja reguł OPA
+Algorytm:
+  1. OCR → nowa wartość z confidence < 0.9
+  2. k-NN w ocr_corrections (podobny layout)
+  3. Jeśli dopasowanie → preferuj wartość z korekty
+  4. Jeśli brak → standardowy OCR (4 silniki)
 
 5.7. Adaptive Thresholds (Bayesian Inference)
 -----------------------------------------------
 
-    agent_threshold = base_threshold - correction
-    correction = (α - β) / (α + β) × max_correction
+  agent_threshold = base_threshold - correction
+  correction = (α - β) / (α + β) × max_correction
 
-    Dla nowych (α+β < 30):     correction *= (α+β)/30  (conservative)
-    Dla znanych (α+β ≥ 100):   full correction
+  Dla nowych (α+β < 30):     correction *= (α+β)/30  (conservative)
+  Dla znanych (α+β ≥ 100):   full correction
 
 
 ================================================================================
@@ -1076,16 +965,25 @@ TECHNOLOGIE (wyłącznie z RAPORT_TECHNOLOGII):
 6.1. Episodic Memory (DuckDB event store)
 -------------------------------------------
 
-  Wszystkie zdarzenia i decyzje:
+  CREATE TABLE events (
+      id UUID PRIMARY KEY,
+      event_type TEXT NOT NULL,    -- 'decision', 'correction', 'alert'
+      agent TEXT NOT NULL,
+      payload JSONB NOT NULL,
+      timestamp TIMESTAMP DEFAULT NOW(),
+      trace_id TEXT
+  );
 
-    CREATE TABLE events (
-        id UUID PRIMARY KEY,
-        event_type TEXT NOT NULL,    -- 'decision', 'correction', 'alert'
-        agent TEXT NOT NULL,
-        payload JSONB NOT NULL,
-        timestamp TIMESTAMP DEFAULT NOW(),
-        trace_id TEXT
-    );
+  CREATE TABLE agent_learning_log (
+      id UUID PRIMARY KEY,
+      decision_id UUID,
+      agent_name TEXT NOT NULL,
+      predicted_value JSONB,
+      corrected_value JSONB,
+      delta FLOAT NOT NULL,
+      timestamp TIMESTAMP DEFAULT NOW(),
+      feedback_type TEXT CHECK (feedback_type IN ('accept','correct','reject'))
+  );
 
   Indeksy: agent, event_type, timestamp DESC.
   Partycjonowanie: miesięczne (timestamp).
@@ -1099,45 +997,47 @@ TECHNOLOGIE (wyłącznie z RAPORT_TECHNOLOGII):
     vendor_invoices     (768d, cosine)  — per kontrahent
     ocr_corrections     (768d, cosine)  — korekty OCR
     invoice_templates   (768d, cosine)  — wzorce faktur
-    decision_patterns   (768d, cosine)  — wzorce decyzyjne
+    decision_patterns   (768d, cosine)  — wzorce decyzyjne (Decision Cache)
+    cognitive_audit     (768d, cosine)  — Cognitive Audit Trail korekty
 
   Funkcje odległości: cosine, l2, inner_product, manhattan.
   Kwantyzacja int8: 4× mniej RAM, ~2% spadek dokładności.
 
-6.3. Procedural Memory (OPA/Rego)
------------------------------------
+6.3. Procedural Memory (OPA/Rego — auto-naprawiane)
+------------------------------------------------------
 
-  Reguły podatkowe i compliance w OPA:
+Reguły podatkowe i compliance w OPA:
 
-    package tax.rules
+  package tax.rules
 
-    split_payment_required[invoice_id] {
-        invoice := input.invoices[_]
-        invoice.amount_gross > 1500000   # w groszach, > 15k PLN
-        invoice.currency == "PLN"
-    }
+  split_payment_required[invoice_id] {
+      invoice := input.invoices[_]
+      invoice.amount_gross > 1500000   # w groszach, > 15k PLN
+      invoice.currency == "PLN"
+  }
 
-  Hot-reload: zmiany reguł nie wymagają restartu.
+Auto-naprawa przez Cognitive Audit Trail po 10 korektach.
+Hot-reload: zmiany reguł nie wymagają restartu.
 
 6.4. Working Memory (NATS KV Store)
 --------------------------------------
 
-  Krótkoterminowa pamięć (TTL 1h):
-    - Bieżący stan agenta (loaded_models, active_tasks)
-    - Cache decyzji (diskcache zapasowy)
-    - Blokady (mutex dla operacji krytycznych)
-    - Sesje użytkowników
+Krótkoterminowa pamięć (TTL 1h):
+  - Bieżący stan agenta (loaded_models, active_tasks)
+  - Cache decyzji (diskcache zapasowy)
+  - Blokady (mutex dla operacji krytycznych)
+  - Sesje użytkowników
 
-  Buckety: nexus-config, nexus-rules, nexus-features, nexus-workers
+Buckety: nexus-config, nexus-rules, nexus-features, nexus-workers
 
-6.5. Decision Cache (diskcache + sqlite-vec)
-----------------------------------------------
+6.5. Decision Cache (diskcache + sqlite-vec k-NN)
+----------------------------------------------------
 
-    1. Każda decyzja → embedding 768d w sqlite-vec
-    2. Nowa faktura → k-NN (k=5) w decision_patterns
-    3. Jeśli max_distance < 0.1 → użyj cache decyzji
-    4. Oszczędność: ~80% decyzji bez inferencji LLM
-    5. diskcache: zapasowy cache dla szybkiego dostępu
+  1. Każda decyzja → embedding 768d w sqlite-vec (decision_patterns)
+  2. Nowa faktura → k-NN (k=5) w decision_patterns
+  3. Jeśli max_distance < 0.1 → użyj cache decyzji (diskcache)
+  4. Oszczędność: ~80% decyzji bez inferencji LLM
+  5. diskcache: zapasowy cache dla szybkiego dostępu
 
 
 ================================================================================
@@ -1147,7 +1047,7 @@ TECHNOLOGIE (wyłącznie z RAPORT_TECHNOLOGII):
 7.1. RBAC na poziomie agentów
 -------------------------------
 
-  Role (z RAPORT_TECHNOLOGII — własny system RBAC):
+  Role (zgodnie z RAPORT_TECHNOLOGII — własny system RBAC):
 
     admin       → pełny dostęp do wszystkich agentów i konfiguracji
     accountant  → dostęp do decyzji, raportów, korekt
@@ -1159,64 +1059,58 @@ TECHNOLOGIE (wyłącznie z RAPORT_TECHNOLOGII):
     - Blokada kontrahenta
     - Limit kwotowy użytkownika
 
-7.2. Audit log każdej decyzji
--------------------------------
+7.2. Audit log każdej decyzji (Proof Chain SHA-256)
+------------------------------------------------------
 
-    CREATE TABLE audit_log (
-        id UUID PRIMARY KEY,
-        user_id UUID REFERENCES users(id),
-        agent TEXT NOT NULL,
-        action TEXT NOT NULL,           -- 'decision', 'correction', 'view'
-        resource TEXT NOT NULL,         -- 'invoice:123', 'report:monthly'
-        details JSONB,
-        ip_address TEXT,
-        timestamp TIMESTAMP DEFAULT NOW(),
-        proof_hash TEXT                 -- SHA-256 w proof chain
-    );
+  CREATE TABLE audit_log (
+      id UUID PRIMARY KEY,
+      user_id UUID REFERENCES users(id),
+      agent TEXT NOT NULL,
+      action TEXT NOT NULL,           -- 'decision', 'correction', 'view'
+      resource TEXT NOT NULL,         -- 'invoice:123', 'report:monthly'
+      details JSONB,
+      ip_address TEXT,
+      timestamp TIMESTAMP DEFAULT NOW(),
+      proof_hash TEXT                 -- SHA-256 w proof chain
+  );
+
+Każda decyzja → Proof Chain SHA-256 przez nexus-crypto.
+Modyfikacja → wszystkie kolejne bloki unieważnione.
 
 7.3. 4-Eyes Principle (obowiązkowy > 50k PLN)
 -----------------------------------------------
 
-    Dla każdej decyzji > 50,000 PLN:
-    - Pierwsza weryfikacja: Granite Guardian (kontrola podatkowa)
-    - Druga weryfikacja: GraphSAGE + FinBERT (oszustwa + ryzyko)
-    - Jeśli rozbieżne → próg podniesiony do 75,000 PLN
+  Dla każdej decyzji > 50,000 PLN:
+  - Pierwsza weryfikacja: Granite Guardian (kontrola podatkowa)
+  - Druga weryfikacja: GraphSAGE + FinBERT (oszustwa + ryzyko)
+  - Jeśli rozbieżne → próg podniesiony do 75,000 PLN
 
 7.4. Split Payment Verification
 ---------------------------------
 
-    Zgodnie z polskim prawem:
-    - Obowiązkowy dla kwot > 15,000 PLN brutto
-    - AgentTaxEngine: sprawdź kwotę → oznacz do MPP
-    - AgentOrchestrator: 2 transfery (netto + VAT)
-    - AgentQualityValidator: weryfikacja poprawności
+  Zgodnie z polskim prawem:
+  - Obowiązkowy dla kwot > 15,000 PLN brutto
+  - AgentQualityValidator: sprawdź kwotę → oznacz do MPP
+  - AgentOrchestrator: 2 transfery (netto + VAT)
+  - Weryfikacja poprawności przez OPA
 
 7.5. RODO / GDPR compliance
------------------------------
+------------------------------
 
-    - Dane w SQLCipher (AES-256, z RAPORT_TECHNOLOGII)
-    - Anonimizacja po 5 latach (automatyczna)
-    - Backup szyfrowany (AEAD ChaCha20-Poly1305, nexus-crypto)
-    - Eksport wszystkich danych na żądanie
-    - Pełne usunięcie danych (prawo do bycia zapomnianym)
+  - Dane w SQLCipher (AES-256, z RAPORT_TECHNOLOGII)
+  - Anonimizacja po 5 latach (automatyczna)
+  - Backup szyfrowany (AEAD ChaCha20-Poly1305, nexus-crypto)
+  - Eksport wszystkich danych na żądanie
+  - Pełne usunięcie danych (prawo do bycia zapomnianym)
 
 7.6. KSeF compliance
 ----------------------
 
-    - Struktury FA(1), FA(2) zgodne z XSD MF
-    - xsdata + lxml (z RAPORT_TECHNOLOGII) — generowanie XML
-    - Podpis SHA-256 + certyfikat (nexus-crypto)
-    - Wysyłka w 1h od zatwierdzenia
-    - Backup offline faktur
-
-7.7. Proof Chain kryptograficzny (SHA-256)
--------------------------------------------
-
-    Łańcuch skrótów SHA-256 przez nexus-crypto:
-    - Każda decyzja → block
-    - Każdy block zawiera hash poprzedniego
-    - Modyfikacja → wszystkie kolejne unieważnione
-    - Eksport dla US w formacie PDF/JSON
+  - Struktury FA(1), FA(2) zgodne z XSD MF
+  - xsdata + lxml (z RAPORT_TECHNOLOGII) — generowanie XML
+  - Podpis SHA-256 + certyfikat (nexus-crypto)
+  - Wysyłka w 1h od zatwierdzenia
+  - Backup offline faktur
 
 
 ================================================================================
@@ -1232,7 +1126,8 @@ TECHNOLOGIE (wyłącznie z RAPORT_TECHNOLOGII):
   │   ├── Event: ocr_completed
   │   └── Span: validate_fields
   ├── Span: evaluate_decision (AgentOrchestrator)
-  │   ├── Span: llm_inference (Granite 3.2)
+  │   ├── Span: handbook_query (Dynamic Error Handbook)
+  │   ├── Span: llm_inference (Granite 3.2 Actor)
   │   └── Span: guardian_check (Granite Guardian)
   ├── Span: quality_validation (AgentQualityValidator)
   │   ├── Span: tax_check
@@ -1247,29 +1142,27 @@ TECHNOLOGIE (wyłącznie z RAPORT_TECHNOLOGII):
 8.2. Prometheus metrics dla agentów i modeli
 ----------------------------------------------
 
-  (Eksportowane przez Granian Metrics lub OpenTelemetry Prometheus Exporter)
+  # Agent metrics
+  nexus_agent_decisions_total{agent="orchestrator",status="auto_post"} 1234
+  nexus_agent_latency_seconds{agent="extraction",engine="tesseract"} 2.3
+  nexus_agent_errors_total{agent="quality",check="fraud"} 5
 
-    # Agent metrics
-    nexus_agent_decisions_total{agent="orchestrator",status="auto_post"} 1234
-    nexus_agent_latency_seconds{agent="extraction",engine="tesseract"} 2.3
-    nexus_agent_errors_total{agent="quality",check="fraud"} 5
+  # Model metrics
+  nexus_model_inference_count{model="granite-3.2-3b"} 5678
+  nexus_model_inference_latency_ms{model="granite-3.2-3b",quantile="0.99"} 1200
+  nexus_model_memory_mb{model="granite-3.2-3b"} 2400
 
-    # Model metrics
-    nexus_model_inference_count{model="granite-3.2-3b"} 5678
-    nexus_model_inference_latency_ms{model="granite-3.2-3b",quantile="0.99"} 1200
-    nexus_model_memory_mb{model="granite-3.2-3b"} 2400
-
-    # Decision quality
-    nexus_trust_score{agent="orchestrator",vendor="known"} 0.94
-    nexus_correction_rate{agent="extraction"} 0.03
+  # Decision quality
+  nexus_trust_score{agent="orchestrator",vendor="known"} 0.94
+  nexus_correction_rate{agent="extraction"} 0.03
 
 8.3. Sentry error tracking
 ----------------------------
 
-  FATAL:  system nie może działać (błąd modelu, NATS down)
-  ERROR:  wymagana interwencja (KSeF API error, Proof Chain mismatch)
+  FATAL:   system nie może działać (błąd modelu, NATS down)
+  ERROR:   wymagana interwencja (KSeF API error, Proof Chain mismatch)
   WARNING: system działa dalej (błąd inferencji, wysoki latency)
-  INFO:   zmiana konfiguracji, heartbeat
+  INFO:    zmiana konfiguracji, heartbeat
 
 8.4. Health checks i heartbeat (co 30s)
 -----------------------------------------
@@ -1281,13 +1174,14 @@ TECHNOLOGIE (wyłącznie z RAPORT_TECHNOLOGII):
         "orchestrator": "healthy",
         "extraction": "healthy",
         "analytics": "healthy",
-        "quality": "healthy"
+        "quality": "healthy",
+        "fixed_assets": "healthy"
       },
       "nats": "connected",
       "duckdb": "connected",
       "sqlite": "connected",
       "tigerbeetle": "connected",
-      "models": {"loaded": 2, "available": 8},
+      "models": {"loaded": 2, "available": 13},
       "uptime_hours": 12.5
     }
 
@@ -1298,45 +1192,39 @@ TECHNOLOGIE (wyłącznie z RAPORT_TECHNOLOGII):
   AgentDataExtraction:    prosty obraz <10s, PDF+4OCR <60s
   AgentAnalytics:         SQL <1s, NL→SQL <5s, raport miesięczny <30s
   AgentQualityValidator:  tax <3s, fraud <5s, full <15s
-  AgentTaxEngine:         VAT <2s, JPK <30s
-  AgentCashManager:       forecast <5s, optymalizacja <10s
+  AgentFixedAssets:       klasyfikacja <2s, amortyzacja <5s
 
   > 2× SLA → WARNING, > 5× → ERROR, > 10× → KRYTYCZNY
 
 
 ================================================================================
-PODSUMOWANIE — 20 kluczowych innowacji Enterprise
+PODSUMOWANIE — 15 kluczowych innowacji Enterprise v4.0
 ================================================================================
 
-  1. Bayesian Trust Score — aktualizowany po każdej decyzji
-  2. Adaptive Thresholds — dynamiczne progi per kontrahent
-  3. Active Learning Loop — zamknięta pętla korekta→nauka
-  4. 4-Eyes Principle — obowiązkowy dla > 50k PLN
-  5. Proof Chain — niepodważalny audyt SHA-256
-  6. Confidence Calibration — rzeczywista vs deklarowana precyzja
-  7. 4 poziomy autonomii — od manualnego do full auto
-  8. 10 wyspecjalizowanych agentów
-  9. sqlite-vec memory — k-NN dla podobnych przypadków
-  10. OpenTelemetry + Prometheus — pełna obserwowalność
-  11. OCR Online Learning — korekty → embeddingi
+  1.  COGNITIVE AUDIT TRAIL — samouzdrawiające się reguły OPA
+  2.  DYNAMICZNY PODRĘCZNIK BŁĘDÓW — few-shot learning z DuckDB
+  3.  Bayesian Trust Score — aktualizowany po każdej decyzji
+  4.  Adaptive Thresholds — dynamiczne progi per kontrahent
+  5.  DecisionMode — JEDEN poziom automatyzacji (AUTO_POST/SUGGEST/ASK_USER)
+  6.  5 wyspecjalizowanych agentów — 13 modeli GGUF
+  7.  Weighted Voting — Orchestrator 0.40 + QualityValidator 0.60
+  8.  4-Eyes Principle — obowiązkowy dla > 50k PLN
+  9.  Proof Chain SHA-256 — niepodważalny audyt (nexus-crypto)
+  10. Decision Cache — 80% decyzji bez inferencji LLM
+  11. OCR Online Learning — korekty → embeddingi → preferuj
   12. Invoice Template Matching — wzorce per kontrahent
   13. Fraud Graph Scanner — grafy powiązań (GraphSAGE)
-  14. Liquidity Stress Test — Monte Carlo 1000 scenariuszy
+  14. Cash Flow Forecast — 90 dni, 3 scenariusze
   15. Tax Optimization — DuckDB shadow ledger symulacje
-  16. Cash Flow Forecast — 90 dni, 3 scenariusze
-  17. Regulatory Watch — automatyczne monitorowanie przepisów
-  18. WorkerGuard — dynamiczne zarządzanie współbieżnością
-  19. DECISION CACHE — 80% decyzji bez inferencji LLM
-  20. Priority Queue z QoS — dedykowane wątki dla P0-P1
 
 Technologie: wyłącznie z RAPORT_TECHNOLOGII_NEXUSAI.txt
-- llama-cpp-python, NATS JetStream, Taskiq, DuckDB, SQLite+SQLCipher,
-  sqlite-vec, TigerBeetle, msgspec, stamina, nexus-crypto, OPA+Rego,
-  Flet (Flutter), OpenTelemetry, Sentry, structlog, loguru, diskcache,
-  pendulum, Granian, Litestar, httpx, hishel, fsspec, psutil,
-  Tesseract, PaddleOCR, python-docTR, EasyOCR, Pillow, pypdfium2,
-  xsdata, lxml, Prometheus
+  - llama-cpp-python, NATS JetStream, Taskiq, DuckDB, SQLite+SQLCipher,
+    sqlite-vec, TigerBeetle, msgspec, stamina, nexus-crypto, OPA+Rego,
+    Flet (Flutter), OpenTelemetry, Sentry, structlog, loguru, diskcache,
+    pendulum, Granian, Litestar, httpx, hishel, fsspec, psutil,
+    Tesseract, PaddleOCR, python-docTR, Pillow, pypdfium2,
+    xsdata, lxml, Prometheus
 
 ================================================================================
-  KONIEC DOKUMENTU — AGENT_SYSTEM_ENTERPRISE.txt
+  KONIEC DOKUMENTU — AGENT_SYSTEM_ENTERPRISE.txt v4.0
 ================================================================================

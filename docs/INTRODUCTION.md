@@ -47,7 +47,7 @@ Ten dokument odpowiada na pytanie **dlaczego** NexusAI istnieje i **komu** ma s�
 
 | Cecha | Korzyść |
 |---|---|
-| **Autonomia (AUTO_POST)** | Rada 10 Agentów AI podejmuje decyzję księgową w 95% przypadków. |
+| **Autonomia (AUTO_POST)** | 5 Agentów AI podejmuje decyzję księgową w 95% przypadków. |
 | **Pełna prywatność (offline-first)** | Wszystkie modele AI i baza lokalna; dane nigdy nie opuszczają komputera. |
 | **Zgodność polska z pudełka** | KSeF, NIP, Biała Lista MF, NBP, GUS/BIR — gotowe integracje. |
 | **Zgodność księgowa** | UoR (Ustawa o rachunkowości), IFRS, GAAP — pełna dekretacja i ścieżka audytu. |
@@ -175,7 +175,7 @@ Pełny glosariusz ze 100+ terminami: [`GLOSSARY.md`](GLOSSARY.md).
 
 - [Szybki start](QUICKSTART.md) — uruchom NexusAI w 15 minut
 - [Architektura](ARCHITECTURE.md) — diagramy C4, ADR, wzorce projektowe
-- [Agenci AI](AGENTS.md) — pełna specyfikacja 10 agentów, Decision Engine
+- [Agenci AI](AGENTS.md) — pełna specyfikacja 5 agentów, Decision Engine, Cognitive Audit Trail
 - [Słownik pojęć](GLOSSARY.md) — terminy księgowe i techniczne
 
 ---

@@ -12,7 +12,7 @@ Dokumentacja podzielona jest na **6 logicznych bloków** (modułów iteracyjnych
 M1 Fundament        → README, 00_META, INTRODUCTION, QUICKSTART, PROJECT_STRUCTURE
 M1b Rozszerzenia    → SCRIPTS, INSTALLER, FRONTEND, EVENTS, PIPELINE, INFERENCE, MONITORING, HTTP_CLIENT, CONFIG
 M2 Architektura     → ARCHITECTURE, FOUNDATION, DOMAIN, PDFIUM, WORKFLOWS, DECISIONS, DATABASE, MODULES, BUILD_CONFIG, RUST_MODULE, MODELS_MANIFEST
-M2b Agenci AI       → AGENTS (NOWY — 10 agentów, Decision Engine, Memory Systems)
+M2b Agenci AI       → AGENTS (5 agentów, Decision Engine, Cognitive Audit Trail)
 M3 API              → API
 M4 Operacje         → INSTALLATION, TESTING, DEPLOYMENT, TROUBLESHOOTING
 M5 Bezpieczeństwo   → SECURITY, COMPLIANCE
@@ -121,11 +121,11 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 
 ### Sekcja 10 — Moduły / Logika biznesowa
 - Plik: [`docs/MODULES.md`](MODULES.md)
-- Zawartość: 10 agentów AI (w tym 5 głównych + 5 domenowych), 70+ serwisów (w tym LiquidityOracle, FraudGraphScanner, BudgetaryControlEngine, IdempotentBankImporter, DunningEngine), pipeline OCR z **kodem konsensusu Levenshteina**, tabela porównawcza 4 silników, silnik reguł OPA/Rego, trzy filary nieomylności finansowej, **22 komponenty rdzenia Core** (NATS utils, taskiq middleware, PluginManager, mimalloc heaps, Result monad, OPA client, SecretsManager, FSSpecFactory i inne).
+- | 10 agentów AI (w tym 5 głównych + 5 domenowych), 70+ serwisów
 
 ### Sekcja 10a — System Agentów AI (NOWY)
 - Plik: [`docs/AGENTS.md`](AGENTS.md) (NOWY)
-- Zawartość: Kompletna specyfikacja 10 agentów AI (Orchestrator, Extraction, Analytics, QualityValidator, TaxEngine, CashManager, Compliance, KSeF, VendorIntelligence, FixedAssets), Decision Engine (strefy, konsensus, eskalacja, Proof Chain), Continuous Learning Framework (Active Learning, Bayesian Trust Score, Online OCR Learning), Memory Systems (4 typy), Protokół NATS JetStream (topologia, gwarancje), Bezpieczeństwo AI (RBAC, audit log), Monitoring (OTel, Prometheus, SLA).
+- Zawartość: Kompletna specyfikacja 5 agentów AI (Orchestrator, Extraction, Analytics, QualityValidator, FixedAssets), Decision Engine (strefy, konsensus, eskalacja, Proof Chain), Cognitive Audit Trail (korekty → embeddingi → auto-naprawa OPA), Continuous Learning Framework (Active Learning, Bayesian Trust Score), Memory Systems (4 typy), Protokół NATS JetStream (topologia, gwarancje), Bezpieczeństwo AI (RBAC, audit log), Monitoring (OTel, Prometheus, SLA).
 
 ### Sekcja 11 — Testowanie
 - Plik: [`docs/TESTING.md`](TESTING.md)
@@ -294,7 +294,7 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 | [ADR-006](ARCHITECTURE.md#adr-006-modularny-monolit-zamiast-mikrousług) | Modularny Monolit zamiast mikrousług | 2025-02-15 |
 | [ADR-007](ARCHITECTURE.md#adr-007-własny-moduł-kryptograficzny-w-rust-nexus-crypto) | Własny moduł kryptograficzny w Rust (nexus-crypto) | 2025-03-01 |
 | [ADR-008](ARCHITECTURE.md#adr-008-flet-flutter-zamiast-electronreact-dla-interfejsu-desktopowego) | Flet (Flutter) zamiast Electron/React dla interfejsu desktopowego | 2025-07-15 |
-| [ADR-009](ARCHITECTURE.md#adr-009-architektura-10-wyspecjalizowanych-agentów-ai-zamiast-monolitycznego-llm) | Architektura 10 agentów AI zamiast monolitycznego LLM | 2025-11-01 |
+| [ADR-009](ARCHITECTURE.md#adr-009-architektura-5-wyspecjalizowanych-agentów-ai-zamiast-monolitycznego-llm) | Architektura 5 agentów AI zamiast monolitycznego LLM | 2025-11-01 (akt. 2026-07-05) |
 
 ---
 
@@ -348,7 +348,7 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 
 | Sekcja | Plik | Opis |
 |---|---|---|
-| **🆕 10a. Agenci AI** | **[`AGENTS.md`](AGENTS.md)** | **10 agentów, Decision Engine, Memory Systems, Learning** |
+| **🆕 10a. Agenci AI** | **[`AGENTS.md`](AGENTS.md)** | **5 agentów, 13 modeli, Cognitive Audit Trail** |
 | 5a. Foundation | [`FOUNDATION.md`](FOUNDATION.md) | UnitOfWork, Pipeline, BaseService, Result[T,E] |
 | 6a. Skrypty CLI | [`SCRIPTS.md`](SCRIPTS.md) | Bootstrap, download modeli, seed danych, backup |
 | 6b. Instalator Windows | [`INSTALLER.md`](INSTALLER.md) | Dependency downloader, OTA updater, modele AI |
@@ -364,7 +364,7 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 | 6l. Engine PDF | [`PDFIUM.md`](PDFIUM.md) | PDFium, renderowanie, ProgressivePDFLoader |
 | 6m. System Decyzyjny | [`DECISIONS.md`](DECISIONS.md) | DecisionLogger, DecisionQueue, TrustScore |
 | 6n. Build Config | [`BUILD_CONFIG.md`](BUILD_CONFIG.md) | pixi.toml, pyproject.toml, pre-commit |
-| **🆕 10a. Agenci AI** | **[`AGENTS.md`](AGENTS.md)** | **10 agentów, Decision Engine, Memory Systems, Learning** |
+| **🆕 10a. Agenci AI** | **[`AGENTS.md`](AGENTS.md)** | **5 agentów, 13 modeli, Cognitive Audit Trail** |
 
 ---
 

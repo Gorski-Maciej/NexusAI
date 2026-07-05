@@ -10,7 +10,7 @@
 - **Active Learning** — Metoda uczenia maszynowego, gdzie model aktywnie wybiera przypadki do nauki na podstawie korekt użytkownika. W NexusAI: każda korekta decyzji → Bayesian update Trust Score.
 - **Adaptive Thresholds** — Dynamiczne progi decyzyjne (AUTO_POST/REVIEW/BLOCK), które dostosowują się Bayesiańsko per kontrahent: `threshold = base - (α-β)/(α+β) × 0.1`.
 - **AEAD** — Authenticated Encryption with Associated Data. Szyfrowanie, które jednocześnie szyfruje i uwierzytelnia dane (ChaCha20-Poly1305).
-- **Agent AI** — Wyspecjalizowany model AI (GGUF) odpowiedzialny za konkretną domenę (np. ekstrakcja danych, analityka, walidacja). NexusAI ma 10 agentów.
+- **Agent AI** — Wyspecjalizowany model AI (GGUF) odpowiedzialny za konkretną domenę (np. ekstrakcja danych, analityka, walidacja). NexusAI ma 5 agentów.
 - **AgentOrchestrator** — Centralny agent koordynujący pracę wszystkich pozostałych agentów. Odpowiednik wirtualnego CFO.
 - **Amortyzacja** — Stopniowe odpisywanie wartości środka trwałego w koszty. Metody: liniowa (równe odpisy), degresywna (malejące).
 - **Argon2id** — Algorytm KDF (Key Derivation Function), zwycięzca Password Hashing Competition. Odporny na ataki GPU i side-channel.
@@ -200,7 +200,7 @@
 ## 🔗 Zobacz również
 
 - [Architektura](ARCHITECTURE.md) — szczegółowe wyjaśnienie wzorców i ADR
-- [Agenci AI](AGENTS.md) — pełna specyfikacja 10 agentów, Decision Engine, Trust Score
+- [Agenci AI](AGENTS.md) — pełna specyfikacja 5 agentów, Decision Engine, Cognitive Audit Trail
 - [Moduły i logika](MODULES.md) — techniczna implementacja agentów i OCR
 - [Zgodność z przepisami](COMPLIANCE.md) — kontekst prawny terminów księgowych
 

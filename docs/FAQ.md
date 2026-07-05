@@ -51,7 +51,7 @@ Tak. Automatycznie oznacza faktury wymagające MPP (>15 000 PLN brutto, towary z
 ## Pytania o AI
 
 ### Jakie modele AI są używane?
-10 wyspecjalizowanych agentów AI: 5 głównych (Orkiestrator, Ekstrakcji Danych, Analityczny, Walidator Jakości, Środków Trwałych) i 5 domenowych (TaxEngine, CashManager, Compliance, KSeF, VendorIntelligence). Łącznie ~13 modeli GGUF. Wszystkie działają lokalnie.
+5 wyspecjalizowanych agentów AI: Orkiestrator (Centralny Mózg), Ekstrakcji Danych (Forteca Precyzji), Analityczny (Sztab Analityczny), Walidator Jakości (Trójwarstwowa Tarcza), Środków Trwałych (Zarządca Majątku). Łącznie ~13 modeli GGUF. Wszystkie działają lokalnie.
 
 Pełna specyfikacja: [`docs/AGENTS.md`](AGENTS.md).
 
@@ -120,7 +120,7 @@ Tak. Pobierz model GGUF, dodaj konfigurację w `config/base.toml`, utwórz klas�
 ## 🔗 Zobacz również
 
 - [Słownik pojęć](GLOSSARY.md) — wyjaśnienie terminów technicznych i księgowych
-- [Agenci AI](AGENTS.md) — kompletna specyfikacja 10 agentów, Decision Engine
+- [Agenci AI](AGENTS.md) — kompletna specyfikacja 5 agentów, Decision Engine, Cognitive Audit Trail
 - [Podręcznik użytkownika](USER_GUIDE.md) — instrukcja codziennej pracy
 - [Zgodność z przepisami](COMPLIANCE.md) — KSeF, JPK, deklaracje
 

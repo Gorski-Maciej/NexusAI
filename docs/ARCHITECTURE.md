@@ -514,23 +514,24 @@ sequenceDiagram
 - ✅ **Bezpieczeństwo** — brak DOM, brak XSS
 - ❌ Mniejszy ekosystem niż React
 
-### ADR-009: Architektura 10 wyspecjalizowanych agentów AI zamiast monolitycznego LLM
+### ADR-009: Architektura 5 wyspecjalizowanych agentów AI zamiast monolitycznego LLM
 
-**Data:** 2025-11-01  
+**Data:** 2025-11-01 (aktualizacja 2026-07-05)
 **Status:** Zaakceptowane
 
 **Kontekst:** Pojedynczy duży LLM nie gwarantuje precyzji księgowej. Potrzebujemy architektury "zero trust to a single model".
 
-**Decyzja:** 10 wyspecjalizowanych agentów (5 głównych + 5 domenowych), każdy z dedykowanym modelem GGUF, komunikujących się przez NATS JetStream.
+**Decyzja:** 5 wyspecjalizowanych agentów, każdy z dedykowanymi modelami GGUF, komunikujących się przez NATS JetStream. JEDEN poziom automatyzacji (DecisionMode: AUTO_POST / SUGGEST / ASK_USER).
 
 **Konsekwencje:**
 - ✅ **Wyższa precyzja** — każdy agent specjalizuje się w jednej domenie
+- ✅ **Cognitive Audit Trail** — korekty → embeddingi → auto-naprawa reguł OPA
 - ✅ **4-Eyes Principle** — krytyczne decyzje weryfikowane przez minimum 2 niezależne modele
 - ✅ **Bayesian Trust Score** — dynamiczne progi decyzyjne, adaptujące się per kontrahent
 - ✅ **Offline-first** — wszystkie modele lokalne, brak zależności od chmury
 - ✅ **Deterministyczny fallback** — silnik OPA/Rego dla decyzji podatkowych
-- ❌ Wyższe zużycie RAM (~6-7 GB dla wszystkich modeli, ładowane leniwie)
-- ❌ Większa złożoność komunikacji (NATS JetStream między 10 agentami)
+- ❌ Wyższe zużycie RAM (~4-6 GB dla wszystkich modeli, ładowane leniwie)
+- ❌ Złożoność komunikacji (NATS JetStream między 5 agentami)
 
 Pełna specyfikacja: [`docs/AGENTS.md`](AGENTS.md)
 
@@ -787,7 +788,7 @@ curl http://127.0.0.1:8000/health
 ## 🔗 Zobacz również
 
 - [00_META](00_META.md) — strona tytułowa, zespół
-- [Agenci AI](AGENTS.md) — kompletna specyfikacja 10 agentów, Decision Engine, Memory Systems
+- [Agenci AI](AGENTS.md) — kompletna specyfikacja 5 agentów, Decision Engine, Cognitive Audit Trail
 - [Rust Module](RUST_MODULE.md) — szczegóły implementacji `nexus-crypto`
 - [Models Manifest](MODELS_MANIFEST.md) — 13 modeli GGUF w tabeli
 - [Foundation Layer](FOUNDATION.md) — UnitOfWork, Pipeline, BaseService, Repository, Result pattern

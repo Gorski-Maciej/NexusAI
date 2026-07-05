@@ -1,16 +1,16 @@
 """BaseAgent — klasa bazowa dla wszystkich agentów AI w NexusAI.
 
-Zgodnie z AGENT_SYSTEM_ENTERPRISE.txt:
+Zgodnie z aa3fvcx.txt (5 agentów, JEDEN poziom automatyzacji):
 - Komunikacja przez NATS JetStream
 - Taskiq do asynchronicznych zadań
 - msgspec do serializacji
 - TTL auto-unload dla modeli (ModelManager)
 - Współdzielony ModelManager z InferenceService
-- Rozszerzone o Enterprise:
-  - ContinuousLearningFramework — pętla uczenia się
+- Enterprise:
+  - ContinuousLearningFramework — pętla uczenia się (jeden poziom)
+  - CognitiveAuditTrail — samouzdrawiający się łańcuch dowodowy
   - DecisionCache — cache decyzji (diskcache + sqlite-vec)
   - ProofChain — SHA-256 łańcuch dowodowy
-  - AdaptiveThresholds — bayesiańskie progi per kontrahent
   - BayesianTrustScore — aktualizacja po każdej decyzji
   - AgentHealth — monitorowanie stanu agenta
 """
@@ -32,22 +32,15 @@ from nexus_ai.agents.models import (
     AgentDecision,
     AgentHealth,
     AgentMessage,
-    AutonomyConfig,
-    AutonomyLevel,
     BayesianTrustScore,
+    CognitiveProofBlock,
+    DecisionMode,
     DecisionVerdict,
     FeedbackType,
     LearningConfig,
     LearningRecord,
-    MemoryQuery,
-    MemoryRecord,
-    MemoryResult,
-    MemoryType,
     ProofBlock,
-    ProofChain,
-    PropagationLevel,
     TrustScore,
-    VotingResult,
     make_context,
 )
 from nexus_ai.agents.topics import AgentTopic
@@ -337,10 +330,10 @@ class ProofChainManager:
 class ContinuousLearningProvider:
     """Dostawca Continuous Learning Framework dla agentów.
 
-    Zgodnie z AGENT_SYSTEM_ENTERPRISE.txt §5:
+    Zgodnie z aa3fvcx.txt — JEDEN poziom uczenia:
     - Active Learning Loop: decyzja → korekta → nauka → poprawa
     - Bayesian Trust Score: aktualizacja po każdej decyzji
-    - Propagacja korekt: 4 poziomy (DIRECT, INDIRECT, GLOBAL, STRUCTURAL)
+    - Cognitive Audit Trail: korekty → embeddingi → auto-naprawa reguł OPA
     - Adaptive Thresholds: dynamiczne progi per kontrahent/vendor
     """
 
@@ -350,16 +343,10 @@ class ContinuousLearningProvider:
         self._max_records = max_records
         self._config = LearningConfig()
         self._logger = get_logger("nexus.agents.learning")
+        # ── GENIALNY POMYSŁ: Cognitive Audit Trail ──
+        self._correction_embeddings: dict[str, list[CognitiveProofBlock]] = {}
 
     def get_trust_score(self, key: str) -> BayesianTrustScore:
-        """Pobierz (lub utwórz) Trust Score dla danego klucza.
-
-        Args:
-            key: Klucz (np. agent_name, vendor_nip, kontrahent).
-
-        Returns:
-            BayesianTrustScore dla danego klucza.
-        """
         if key not in self._trust_scores:
             self._trust_scores[key] = BayesianTrustScore()
         return self._trust_scores[key]
@@ -371,20 +358,8 @@ class ContinuousLearningProvider:
         predicted: dict[str, Any],
         corrected: dict[str, Any],
         feedback_type: FeedbackType,
+        correction_embedding: list[float] | None = None,
     ) -> LearningRecord:
-        """Zapisz feedback użytkownika i zaktualizuj Trust Score.
-
-        Args:
-            decision_id: ID decyzji.
-            agent_name: Nazwa agenta.
-            predicted: Wartość przewidziana przez agenta.
-            corrected: Wartość poprawiona przez użytkownika.
-            feedback_type: Typ feedbacku.
-
-        Returns:
-            LearningRecord z zapisanymi danymi i deltą.
-        """
-        # Oblicz deltę
         delta = self._calculate_delta(predicted, corrected)
 
         record = LearningRecord(
@@ -398,12 +373,26 @@ class ContinuousLearningProvider:
             timestamp=pendulum.now("UTC").isoformat(),
         )
 
-        # Aktualizuj Trust Score (jeśli to accept lub correct)
         if feedback_type in (FeedbackType.ACCEPT, FeedbackType.CORRECT):
             trust = self.get_trust_score(agent_name)
             trust.update(correct=(feedback_type == FeedbackType.ACCEPT))
 
-        # Zapisz rekord (z limitem)
+        # ── GENIALNY POMYSŁ: Cognitive Audit Trail ──
+        # Przy korekcie: zapisz embedding, aby przy podobnych przypadkach auto-naprawić
+        if feedback_type == FeedbackType.CORRECT and correction_embedding:
+            block = CognitiveProofBlock(
+                index=len(self._correction_embeddings.get(agent_name, [])),
+                decision_id=decision_id,
+                decision_json=json.dumps(corrected),
+                timestamp=pendulum.now("UTC").isoformat(),
+                correction_embedding=correction_embedding,
+                correction_count=1,
+                auto_patched=False,
+            )
+            if agent_name not in self._correction_embeddings:
+                self._correction_embeddings[agent_name] = []
+            self._correction_embeddings[agent_name].append(block)
+
         self._learning_records.append(record)
         if len(self._learning_records) > self._max_records:
             self._learning_records = self._learning_records[-self._max_records:]
@@ -414,35 +403,41 @@ class ContinuousLearningProvider:
 
         return record
 
-    def should_trigger_propagation(
+    async def find_similar_corrections(
         self,
         agent_name: str,
-        level: PropagationLevel,
-    ) -> bool:
-        """Sprawdź czy powinna nastąpić propagacja na danym poziomie.
+        embedding: list[float],
+        k: int = 5,
+    ) -> list[CognitiveProofBlock]:
+        """GENIALNY POMYSŁ: Znajdź podobne korekty przez k-NN.
 
-        DIRECT: zawsze po korekcie
-        INDIRECT: po każdej korekcie (k-NN)
-        GLOBAL: ten sam błąd > min_samples_for_opa_update
-        STRUCTURAL: ten sam błąd > min_samples_for_opa_update * 2
+        Gdy nowa decyzja jest podobna do wcześniej skorygowanej →
+        automatycznie zastosuj poprzednią korektę.
         """
-        if level == PropagationLevel.DIRECT:
-            return True
+        blocks = self._correction_embeddings.get(agent_name, [])
+        if not blocks or not embedding:
+            return []
+        # Prosty cosine similarity (w produkcji: sqlite-vec)
+        scored = []
+        for block in blocks:
+            if block.correction_embedding:
+                dot = sum(a * b for a, b in zip(embedding, block.correction_embedding))
+                norm_a = sum(a * a for a in embedding) ** 0.5
+                norm_b = sum(b * b for b in block.correction_embedding) ** 0.5
+                sim = dot / (norm_a * norm_b + 1e-9)
+                scored.append((block, sim))
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return [b for b, s in scored[:k] if s > 0.85]
 
-        records = [r for r in self._learning_records if r.agent_name == agent_name]
-        correction_count = sum(
-            1 for r in records if r.feedback_type == FeedbackType.CORRECT
-        )
+    def should_auto_patch_opa(self, agent_name: str) -> bool:
+        """GENIALNY POMYSŁ: Sprawdź czy należy auto-naprawić reguły OPA.
 
-        if level == PropagationLevel.GLOBAL:
-            return correction_count >= self._config.min_samples_for_opa_update
-        if level == PropagationLevel.STRUCTURAL:
-            return correction_count >= self._config.min_samples_for_opa_update * 2
-        if level == PropagationLevel.INDIRECT:
-            # Indirect zawsze gdy są korekty
-            return correction_count > 0
-
-        return False
+        Gdy ta sama korekta powtarza się > min_samples_for_opa_update razy →
+        automatyczna aktualizacja reguł OPA.
+        """
+        records = [r for r in self._learning_records
+                   if r.agent_name == agent_name and r.feedback_type == FeedbackType.CORRECT]
+        return len(records) >= self._config.min_samples_for_opa_update
 
     def get_adaptive_threshold(
         self,
@@ -518,7 +513,7 @@ class BaseAgent:
       - ContinuousLearningProvider — pętla uczenia się
       - DecisionCache — cache decyzji
       - ProofChainManager — łańcuch dowodowy SHA-256
-      - AutonomyConfig — poziomy autonomii
+      - DecisionMode — tryb decyzyjny (AUTO_POST / SUGGEST / ASK_USER)
       - AgentHealth — monitorowanie stanu
       - Adaptive thresholds — bayesiańskie progi
     """
@@ -536,15 +531,13 @@ class BaseAgent:
         self._tasks: list[anyio.CancelScope] = []
         self._logger = get_logger(f"nexus.agents.{name}")
 
-        # ── Enterprise: Continuous Learning ──────────────────────
+        # ── Enterprise: Continuous Learning + Cognitive Audit Trail ──
         self._learning_provider = ContinuousLearningProvider()
         self._decision_cache = DecisionCache(
             cache_dir=self._config.get("cache_dir", f"/tmp/nexus-cache-{name}"),
         )
         self._proof_chain = ProofChainManager()
-        self._autonomy_config = AutonomyConfig(
-            level=AutonomyLevel(self._config.get("autonomy_level", 2)),
-        )
+        self._decision_mode = DecisionMode(self._config.get("decision_mode", "auto_post"))
 
         # ── Enterprise: Health ───────────────────────────────────
         self._health = AgentHealth(
@@ -562,7 +555,7 @@ class BaseAgent:
         await self._decision_cache.initialize()
 
         self._health.status = "healthy"
-        self._logger.info("[AGENT] %s started | autonomy=%s", self.name, self._autonomy_config.level.name)
+        self._logger.info("[AGENT] %s started | mode=%s", self.name, self._decision_mode.value)
 
     async def stop(self) -> None:
         """Zatrzymaj agenta — zwolnij zasoby."""
@@ -595,8 +588,6 @@ class BaseAgent:
         await emit_event(topic_str, message=msgspec_json.encode(message).decode())
         self._logger.debug("[PUBLISH] %s -> %s | task=%s", self.name, topic_str, ctx.task_id)
 
-    # ── Enterprise: Continuous Learning ───────────────────────────
-
     @property
     def learning(self) -> ContinuousLearningProvider:
         """Dostęp do Continuous Learning Provider."""
@@ -613,15 +604,16 @@ class BaseAgent:
         return self._proof_chain
 
     @property
-    def autonomy(self) -> AutonomyConfig:
-        """Dostęp do konfiguracji autonomii."""
-        return self._autonomy_config
+    def mode(self) -> DecisionMode:
+        """Dostęp do trybu decyzyjnego (AUTO_POST / SUGGEST / ASK_USER)."""
+        return self._decision_mode
 
     async def record_feedback(
         self,
         decision: AgentDecision,
         corrected: dict[str, Any] | None = None,
         feedback_type: FeedbackType = FeedbackType.ACCEPT,
+        correction_embedding: list[float] | None = None,
     ) -> LearningRecord:
         """Zapisz feedback użytkownika i uruchom propagację.
 
@@ -629,6 +621,7 @@ class BaseAgent:
             decision: Oryginalna decyzja agenta.
             corrected: Poprawione wartości (jeśli CORRECT).
             feedback_type: Typ feedbacku.
+            correction_embedding: Embedding korekty (dla Cognitive Audit Trail).
 
         Returns:
             LearningRecord z zapisanymi danymi.
@@ -642,6 +635,7 @@ class BaseAgent:
             predicted=predicted,
             corrected=corrected or predicted,
             feedback_type=feedback_type,
+            correction_embedding=correction_embedding,
         )
         self._logger.info(
             "[LEARN] Feedback recorded for %s | type=%s | delta=%.3f",
@@ -661,6 +655,7 @@ class BaseAgent:
         status: str,
         trust_score: float = 0.0,
         reason: str = "",
+        decision_mode: DecisionMode | None = None,
         **kwargs: Any,
     ) -> AgentDecision:
         """Utwórz decyzję agenta z Proof Chain.
@@ -670,10 +665,12 @@ class BaseAgent:
             status: Status: AUTO_POST, REVIEW, BLOCK, ESCALATED.
             trust_score: Trust Score (0.0-1.0).
             reason: Przyczyna decyzji.
+            decision_mode: Tryb decyzyjny (None = użyj domyślnego).
 
         Returns:
             AgentDecision z ProofBlock.
         """
+        mode = decision_mode or self._decision_mode
         ts = TrustScore(
             ai_confidence=kwargs.get("ai_confidence", trust_score),
             vendor_reliability=kwargs.get("vendor_reliability", 0.0),
@@ -692,13 +689,13 @@ class BaseAgent:
                 details=kwargs.get("details", {}),
                 verified_by=[self.name],
                 voting_result=kwargs.get("voting_result"),
-                autonomy_used=self._autonomy_config.level,
+                decision_mode=mode,
             ),
             trust_score=ts,
             explanation=kwargs.get("explanation", ""),
             supporting_data=kwargs.get("supporting_data", {}),
             created_at=pendulum.now("UTC").isoformat(),
-            autonomy_level=self._autonomy_config.level,
+            decision_mode=mode,
         )
 
         # Dodaj do Proof Chain
@@ -809,4 +806,4 @@ class BaseAgent:
         return self._errors_count
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}: {self.name} [autonomy={self._autonomy_config.level.name}]>"
+        return f"<{self.__class__.__name__}: {self.name} [mode={self._decision_mode.value}]>"

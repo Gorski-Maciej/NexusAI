@@ -1,10 +1,11 @@
 """msgspec Struct definitions for agent communication.
 
-Zgodnie z AGENT_SYSTEM_ENTERPRISE.txt:
+Zgodnie z aa3fvcx.txt (5 agentów, 13 modeli):
 - Wszystkie struktury danych to msgspec.Struct (ultraszybka serializacja)
 - Komunikacja przez NATS JetStream w formacie JSON/MessagePack
 - Zero Pydantic — lżejsze i szybsze
-- Rozszerzone o Enterprise: AutonomyLevel, BayesianTrustScore,
+- JEDEN poziom automatyzacji: DecisionMode (AUTO_POST / SUGGEST / ASK_USER)
+- Enterprise: CognitiveAuditTrail, BayesianTrustScore,
   ConfidenceVote, VotingResult, ProofChain, MemorySystem,
   ContinuousLearningFramework
 """
@@ -19,41 +20,24 @@ from msgspec import Struct, field
 
 
 # ═════════════════════════════════════════════════════════════════════════
-# AutonomyLevel — Poziomy autonomii agentów (L0-L3)
+# DecisionMode — Jeden poziom automatyzacji (zgodnie z aa3fvcx.txt)
 # ═════════════════════════════════════════════════════════════════════════
 
 
-class AutonomyLevel(enum.IntEnum):
-    """Poziomy autonomii agenta — od manualnego do w pełni autonomicznego.
+class DecisionMode(enum.StrEnum):
+    """Tryb decyzyjny agenta — JEDEN poziom automatyzacji.
 
-    LEVEL 0 — MANUALNY:    Agent tylko proponuje, użytkownik zatwierdza KAŻDĄ decyzję.
-    LEVEL 1 — ASYSTENT:    Agent decyduje w zielonej strefie (>=0.92), pyta w żółtej.
-    LEVEL 2 — AUTONOMICZNY: Agent decyduje w zielonej i żółtej, pyta tylko w czerwonej.
-    LEVEL 3 — FULL_AUTO:   Agent podejmuje WSZYSTKIE decyzje, informuje raportem.
+    Zgodnie z aa3fvcx.txt:
+    - AUTO_POST (≥0.92): Agent samodzielnie księguje, użytkownik tylko informowany.
+    - SUGGEST  (≥0.75): Agent proponuje decyzję z ostrzeżeniem, użytkownik zatwierdza.
+    - ASK_USER (<0.75): Agent pyta użytkownika o decyzję.
+
+    Człowiek ZAWSZE jest decydentem. Agent wykonuje pracę i przedstawia opcje.
     """
 
-    MANUAL = 0
-    ASSISTANT = 1
-    AUTONOMOUS = 2
-    FULL_AUTONOMOUS = 3
-
-
-class AutonomyConfig(Struct, kw_only=True):
-    """Konfiguracja poziomu autonomii dla agenta."""
-
-    level: AutonomyLevel = AutonomyLevel.AUTONOMOUS
-    """Aktualny poziom autonomii."""
-    min_trust_for_level: dict[AutonomyLevel, float] = {
-        AutonomyLevel.MANUAL: 0.0,
-        AutonomyLevel.ASSISTANT: 0.75,
-        AutonomyLevel.AUTONOMOUS: 0.92,
-        AutonomyLevel.FULL_AUTONOMOUS: 0.98,
-    }
-    """Minimalny Trust Score wymagany dla każdego poziomu."""
-    min_decisions_for_promotion: int = 1000
-    """Minimalna liczba decyzji przed awansem na wyższy poziom."""
-    auto_demote_on_anomaly: bool = True
-    """Czy automatycznie obniżać poziom przy wykryciu anomalii."""
+    AUTO_POST = "auto_post"
+    SUGGEST = "suggest"
+    ASK_USER = "ask_user"
 
 
 # ═════════════════════════════════════════════════════════════════════════
@@ -300,38 +284,47 @@ class LearningRecord(Struct, kw_only=True):
     """Wersja modelu w momencie decyzji."""
 
 
-class PropagationLevel(enum.StrEnum):
-    """Poziomy propagacji korekty (z AGENT_SYSTEM_ENTERPRISE §5.3).
+class CognitiveProofBlock(Struct, kw_only=True):
+    """Rozszerzony blok Proof Chain z uczeniem kognitywnym.
 
-    DIRECT:      Agent otrzymuje feedback → Bayesian update alpha/beta
-    INDIRECT:    Podobne przypadki (k-NN w sqlite-vec) → re-evaluacja
-    GLOBAL:      Ten sam błąd >5 razy → aktualizacja reguł OPA
-    STRUCTURAL:  Brak funkcjonalności → zadanie dev
+    GENIALNY POMYSŁ ENTERPRISE — Cognitive Audit Trail:
+    Każdy blok łańcucha dowodowego zawiera nie tylko hash decyzji,
+    ale też embedding korekty i referencję do reguły OPA.
+    Gdy korekta się powtarza → reguła jest auto-naprawiana.
     """
 
-    DIRECT = "direct"
-    INDIRECT = "indirect"
-    GLOBAL = "global"
-    STRUCTURAL = "structural"
+    index: int
+    decision_id: str
+    decision_json: str
+    timestamp: str
+    previous_hash: str = "0" * 64
+    hash: str = ""
+    # ── Cognitive Extension ──
+    correction_embedding: list[float] = field(default_factory=list)
+    """Embedding korekty (768d) — do k-NN w sqlite-vec."""
+    correction_count: int = 0
+    """Ile razy ta sama korekta została zastosowana."""
+    opa_rule_ref: str = ""
+    """Referencja do reguły OPA, która została zaktualizowana."""
+    auto_patched: bool = False
+    """Czy reguła została automatycznie poprawiona."""
 
 
 class LearningConfig(Struct, kw_only=True):
-    """Konfiguracja Continuous Learning Framework."""
+    """Konfiguracja Continuous Learning Framework.
+
+    Uproszczona — jeden poziom uczenia.
+    """
 
     enabled: bool = True
-    """Czy uczenie się jest włączone."""
     min_delta_for_learning: float = 0.1
-    """Minimalna delta do zapisania rekordu nauki."""
     min_samples_for_finetune: int = 100
-    """Minimalna liczba próbek przed fine-tuningiem."""
     min_samples_for_opa_update: int = 10
-    """Minimalna liczba korekt przed aktualizacją OPA."""
-    k_nn_for_indirect: int = 10
-    """k dla k-NN w propagacji pośredniej."""
-    distance_threshold_direct: float = 0.15
-    """Próg odległości dla propagacji bezpośredniej."""
-    distance_threshold_indirect: float = 0.2
-    """Próg odległości dla propagacji pośredniej."""
+    """Minimalna liczba korekt przed auto-naprawą reguł OPA."""
+    k_nn_for_corrections: int = 10
+    """k dla k-NN w Cognitive Audit Trail."""
+    distance_threshold: float = 0.15
+    """Próg odległości dla podobnych przypadków."""
 
 
 # ═════════════════════════════════════════════════════════════════════════
@@ -361,8 +354,8 @@ class AgentContext(Struct, kw_only=True):
     """Liczba ponowień."""
     priority: int = 5
     """Priorytet (1-10, 1=najwyższy)."""
-    autonomy_level: AutonomyLevel = AutonomyLevel.AUTONOMOUS
-    """Poziom autonomii dla tej decyzji."""
+    decision_mode: DecisionMode = DecisionMode.AUTO_POST
+    """Tryb decyzyjny (AUTO_POST / SUGGEST / ASK_USER)."""
     trace_id: str = ""
     """OpenTelemetry trace ID."""
 
@@ -428,8 +421,8 @@ class DecisionVerdict(Struct, kw_only=True):
     """Wynik ważonego głosowania (jeśli wykonane)."""
     proof_hash: str = ""
     """SHA-256 hash w Proof Chain."""
-    autonomy_used: AutonomyLevel = AutonomyLevel.AUTONOMOUS
-    """Poziom autonomii użyty do podjęcia decyzji."""
+    decision_mode: DecisionMode = DecisionMode.AUTO_POST
+    """Tryb decyzyjny użyty do podjęcia decyzji."""
 
 
 class TrustScore(Struct, kw_only=True):
@@ -482,10 +475,12 @@ class AgentDecision(Struct, kw_only=True):
     """Wynik ważonego głosowania (Enterprise)."""
     proof_block: ProofBlock | None = None
     """Blok w Proof Chain (Enterprise)."""
-    autonomy_level: AutonomyLevel = AutonomyLevel.AUTONOMOUS
-    """Poziom autonomii użyty (Enterprise)."""
+    decision_mode: DecisionMode = DecisionMode.AUTO_POST
+    """Tryb decyzyjny (Enterprise)."""
     learning_record: LearningRecord | None = None
     """Rekord uczenia się dla Continuous Learning (Enterprise)."""
+    cognitive_block: CognitiveProofBlock | None = None
+    """Cognitive Audit Trail block (Enterprise — genialny pomysł)."""
 
 
 # ═════════════════════════════════════════════════════════════════════════
