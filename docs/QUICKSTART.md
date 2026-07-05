@@ -95,7 +95,7 @@ pixi run api
 
 ```bash
 curl http://127.0.0.1:8000/health
-# → {"status": "healthy", "version": "2.3.0", ...}
+# → {"status": "healthy", "version": "3.0.0-dev", ...}
 ```
 
 Lub otwórz w przeglądarce:
@@ -292,5 +292,5 @@ Pełna sekcja: [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md).
 
 ---
 
-> **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team

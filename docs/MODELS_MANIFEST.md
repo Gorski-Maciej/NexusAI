@@ -250,7 +250,7 @@ pixi run check-updates
 
 ```json
 {
-  "version": "2.3.0",
+  "version": "3.0.0-dev",
   "generated_at": "2026-07-05T00:00:00Z",
   "models": {
     "orchestrator": {
@@ -371,7 +371,7 @@ Operacja:
 
 | NexusAI wersja | Wymagana wersja manifestu | Minimalny Granite |
 |---|---|---|
-| 2.3.x | 2.3.0 | 3.2 3B |
+| 2.3.x | 3.0.0-dev | 3.2 3B |
 | 2.2.x | 2.2.0 | 3.0 3B |
 | 2.1.x | 2.1.0 | 2.0 3B |
 | 2.0.x | 2.0.0 | 2.0 2B |
@@ -434,5 +434,5 @@ Rekomendowane podejście: **lazy loading**, z opcją `--all-models-on-start` dla
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
 > **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** AI/OCR Team

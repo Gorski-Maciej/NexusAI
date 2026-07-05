@@ -175,7 +175,7 @@ sequenceDiagram
     U->>HTTP: GET /version.json
     HTTP-->>U: {"version": "2.4.0", "download_url": "...", ...}
     
-    U->>U: _is_newer("2.4.0", "2.3.0") → True
+    U->>U: _is_newer("2.4.0", "3.0.0-dev") → True
     
     U->>User: build_update_dialog("v2.4.0 available")
     
@@ -303,5 +303,5 @@ flowchart TD
 
 ---
 
-> **Data utworzenia:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 2.3.1-dev
+> **Data utworzenia:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
 > **Status dokumentu:** Nowy · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead

@@ -138,9 +138,9 @@ liteserv --dir ./releases/ --port 8080
 
 # Struktura katalogu releases/
 releases/
-├── version.json           # {"version": "2.3.1", "url": "/nexus-ai-2.3.1.exe", "sha256": "..."}
-├── nexus-ai-2.3.1.exe
-├── nexus-ai-2.3.0.exe
+├── version.json           # {"version": "3.0.0-dev", "url": "/nexus-ai-3.0.0.exe", "sha256": "..."}
+├── nexus-ai-3.0.0.exe
+├── nexus-ai-3.0.0-dev.exe
 └── ...
 ```
 
@@ -339,5 +339,5 @@ done
 
 ---
 
-> **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team

@@ -1,7 +1,7 @@
 # 🌐 HTTP Client — Warstwa komunikacji zewnętrznej
 
 > **Plik:** `nexus_ai/core/cache/http_client.py`, `nexus_ai/core/exporters/`
-> **Status:** Stabilny · **Wersja:** 2.3.1-dev
+> **Status:** Stabilny · **Wersja:** 3.0.0-dev
 > **Ostatnia aktualizacja:** 2026-07-05
 
 ---

@@ -1,7 +1,7 @@
 # ⚙️ Konfiguracja systemu — TOML profile i zmienne środowiskowe
 
 > **Plik:** `nexus_ai/config/`
-> **Status:** Stabilny · **Wersja:** 2.3.1-dev
+> **Status:** Stabilny · **Wersja:** 3.0.0-dev
 > **Ostatnia aktualizacja:** 2026-07-05
 
 ---
@@ -40,7 +40,7 @@ Zmienne środowiskowe (override — najwyższy priorytet)
 ```toml
 [app]
 name = "NexusAI"
-version = "2.3.1-dev"
+version = "3.0.0-dev"
 debug = false
 environment = "production"
 
@@ -209,7 +209,7 @@ require_2fa = false
 
 ```json
 {
-  "version": "2.3.1-dev",
+  "version": "3.0.0-dev",
   "release_date": "2026-07-05",
   "components": {
     "python": "3.13.2 (free-threaded)",

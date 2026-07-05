@@ -709,7 +709,7 @@ INSERT OR IGNORE INTO roles (id, name, description, is_system) VALUES
 ```bash
 # Backup wszystkich danych
 pixi run backup
-# → app_data/backups/nexus_backup_2026-07-04T12:00:00.enc
+# → app_data/backups/nexus_backup_2026-07-05T12:00:00.enc
 ```
 
 Co jest backupowane:
@@ -726,7 +726,7 @@ Co jest backupowane:
 ### 6.3 Przywracanie
 
 ```bash
-pixi run restore --file app_data/backups/nexus_backup_2026-07-04.enc
+pixi run restore --file app_data/backups/nexus_backup_2026-07-05.enc
 ```
 
 Proces:
@@ -847,5 +847,5 @@ stats = await queue.get_stats()
 
 ---
 
-> **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team

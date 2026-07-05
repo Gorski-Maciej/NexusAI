@@ -7,23 +7,33 @@
 ## A. Terminy księgowe
 
 ### A
+- **Active Learning** — Metoda uczenia maszynowego, gdzie model aktywnie wybiera przypadki do nauki na podstawie korekt użytkownika. W NexusAI: każda korekta decyzji → Bayesian update Trust Score.
+- **Adaptive Thresholds** — Dynamiczne progi decyzyjne (AUTO_POST/REVIEW/BLOCK), które dostosowują się Bayesiańsko per kontrahent: `threshold = base - (α-β)/(α+β) × 0.1`.
 - **AEAD** — Authenticated Encryption with Associated Data. Szyfrowanie, które jednocześnie szyfruje i uwierzytelnia dane (ChaCha20-Poly1305).
+- **Agent AI** — Wyspecjalizowany model AI (GGUF) odpowiedzialny za konkretną domenę (np. ekstrakcja danych, analityka, walidacja). NexusAI ma 10 agentów.
+- **AgentOrchestrator** — Centralny agent koordynujący pracę wszystkich pozostałych agentów. Odpowiednik wirtualnego CFO.
 - **Amortyzacja** — Stopniowe odpisywanie wartości środka trwałego w koszty. Metody: liniowa (równe odpisy), degresywna (malejące).
 - **Argon2id** — Algorytm KDF (Key Derivation Function), zwycięzca Password Hashing Competition. Odporny na ataki GPU i side-channel.
 - **ASK_USER** — Decyzja wymagająca użytkownika. System wyświetla 2-5 opcji do wyboru.
 - **AUTO_POST** — Automatyczne księgowanie. System samodzielnie podejmuje decyzję i księguje fakturę.
 
 ### B
-- **Biała Lista MF** — Rejestr podatników VAT czynnych, prowadzony przez Ministerstwo Finansów. Służy do weryfikacji rachunków bankowych kontrahentów.
+- **Bayesian Trust Score** — Dynamiczny wskaźnik zaufania aktualizowany po każdej decyzji: posterior Beta(α+poprawne, β+błędne). Używany przez AgentOrchestrator.
+- **Biała Lista MF** — Rejestr podatników VAT czynnych, prowadzony przez Ministerstwo Finansów. Weryfikacja przez AgentVendorIntelligence.
 
 ### C
 - **CIT** — Podatek dochodowy od osób prawnych. Stawka 19% (lub 9% dla małego podatnika).
 - **CIT estoński** — Forma opodatkowania CIT — podatek płacony tylko od wypłaconych zysków.
+- **Confidence Calibration** — Mechanizm kalibracji pewności modelu: porównanie deklarowanej pewności z rzeczywistą precyzją. Przechowywane w DuckDB (`model_calibration`).
+- **Continuous Learning** — Zamknięta pętla uczenia: Decyzja → Korekta użytkownika → Bayesian update → Poprawa threshold. Aktywne uczenie (Active Learning).
 - **CQRS** — Command Query Responsibility Segregation. Wzorzec architektoniczny: osobno zapis (command), osobno odczyt (query).
+- **Cztery oczy (4-Eyes Principle)** — Zasada wymagająca weryfikacji krytycznych decyzji (>50k PLN) przez 2 niezależne modele AI. Obowiązkowa w NexusAI. Patrz: [`AGENTS.md#24-agentqualityvalidator`](AGENTS.md#24-agentqualityvalidator--strażnik-integralności).
 
 ### D
 - **DDD** — Domain-Driven Design. Metodyka projektowania: najpierw model biznesowy (domena), potem kod.
+- **Decision Engine** — Wielowarstwowy silnik decyzyjny: strefy decyzyjne (dynamiczne progi) → konsensus między agentami → eskalacja do człowieka → audit trail (Proof Chain).
 - **Dekretacja** — Przypisanie operacji księgowej do konkretnych kont księgowych (np. Wn 401 "Koszty", Ma 201 "Rozrachunki").
+- **DLQ (Dead Letter Queue)** — Kolejka na wiadomości, których nie udało się przetworzyć po 3 próbach. W NATS JetStream.
 - **Double-entry (podwójny zapis)** — Fundamentalna zasada księgowości: każda operacja ma dwie strony — Winien (Wn/Debet) i Ma (Ma/Credit). Suma debetów = suma kredytów.
 
 ### E
@@ -51,6 +61,7 @@
 - **KUP** — Koszty Uzyskania Przychodów. Wydatki, które można odliczyć od przychodu.
 
 ### M
+- **Memory Systems** — Cztery typy pamięci w systemie agentów: Episodic (DuckDB), Semantic (sqlite-vec), Procedural (OPA/Rego), Working (NATS KV Store).
 - **MPP** — Mechanizm Podzielonej Płatności (Split Payment). Płatność za fakturę w dwóch strumieniach: netto i VAT.
 - **MSSF** — Międzynarodowe Standardy Sprawozdawczości Finansowej (IFRS).
 
@@ -67,6 +78,7 @@
 - **PIT** — Podatek dochodowy od osób fizycznych. Skala: 12% do 120 000 PLN, 32% powyżej; lub liniowy 19%; lub ryczałt.
 - **PKWiU** — Polska Klasyfikacja Wyrobów i Usług. Kod określający rodzaj towaru/usługi.
 - **Plan kont** — Zakładowy Plan Kont (ZPK). Struktura kont księgowych firmy.
+- **Proof Chain** — Łańcuch skrótów SHA-256 gwarantujący niezmienność decyzji. Każdy wpis zawiera hash poprzedniego — modyfikacja psuje cały łańcuch. Używany jako dowód dla organów skarbowych.
 
 ### R
 - **Rego** — Język polityk OPA. Deklaratywny, używany do definiowania reguł podatkowych.
@@ -80,6 +92,7 @@
 
 ### T
 - **TigerBeetle** — Silnik double-entry accounting. Matematycznie gwarantuje, że każda transakcja bilansuje się do zera.
+- **Trust Score** — Wskaźnik zaufania (0.0-1.0) dla decyzji agenta. 4 komponenty: ai_confidence, vendor_reliability, data_consistency, context_trust. Aktualizowany Bayesiańsko po każdej korekcie.
 
 ### U
 - **UoR** — Ustawa o rachunkowości (Dz.U. 1994 nr 121 poz. 591 z późn. zm.).
@@ -187,10 +200,11 @@
 ## 🔗 Zobacz również
 
 - [Architektura](ARCHITECTURE.md) — szczegółowe wyjaśnienie wzorców i ADR
+- [Agenci AI](AGENTS.md) — pełna specyfikacja 10 agentów, Decision Engine, Trust Score
 - [Moduły i logika](MODULES.md) — techniczna implementacja agentów i OCR
 - [Zgodność z przepisami](COMPLIANCE.md) — kontekst prawny terminów księgowych
 
 ---
 
-> **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team

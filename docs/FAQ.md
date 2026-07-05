@@ -51,16 +51,24 @@ Tak. Automatycznie oznacza faktury wymagające MPP (>15 000 PLN brutto, towary z
 ## Pytania o AI
 
 ### Jakie modele AI są używane?
-5 głównych agentów: Orkiestrator (Granite 3.2 3B), Ekstrakcji Danych, Analityczny (Fin-RWKV-169M), Walidator Jakości, Środków Trwałych. + 8 modeli specjalistycznych. Wszystkie działają lokalnie.
+10 wyspecjalizowanych agentów AI: 5 głównych (Orkiestrator, Ekstrakcji Danych, Analityczny, Walidator Jakości, Środków Trwałych) i 5 domenowych (TaxEngine, CashManager, Compliance, KSeF, VendorIntelligence). Łącznie ~13 modeli GGUF. Wszystkie działają lokalnie.
+
+Pełna specyfikacja: [`docs/AGENTS.md`](AGENTS.md).
 
 ### Czy AI może popełnić błąd księgowy?
-**Decyzje podatkowe NIE są podejmowane przez AI.** AI tylko klasyfikuje dokumenty i sugeruje decyzje. Ostateczna decyzja podatkowa pochodzi z deterministycznego silnika reguł (OPA/Rego).
+**Decyzje podatkowe NIE są podejmowane przez AI.** AI tylko klasyfikuje dokumenty i sugeruje decyzje. Ostateczna decyzja podatkowa pochodzi z deterministycznego silnika reguł (OPA/Rego). Każda decyzja jest weryfikowana przez minimum 2 niezależne modele (architektura "zero trust").
 
 ### Dlaczego 4 silniki OCR zamiast jednego?
 Pojedynczy OCR ma 95-98% dokładności. Ensemble 4 silników z konsensusem ma >99.9%. Statystycznie niemożliwe, by 4 różne algorytmy popełniły ten sam błąd.
 
 ### Ile RAM-u zajmują modele AI?
-Łącznie ~4 GB (przy kwantyzacji Q4_K_M). Największy model (Orkiestrator) ~2 GB. Modele są ładowane leniwie — tylko gdy potrzebne.
+Łącznie ~6-7 GB (przy kwantyzacji Q4_K_M). Modele są ładowane leniwie (TTL auto-unload po 300s bez użycia). Największy model (Granite 3.2 3B) ~2.4 GB. W trybie idle system używa ~1-2 GB.
+
+### Jak działa Trust Score?
+Trust Score (0.0-1.0) jest aktualizowany Bayesiańsko po każdej decyzji: `P(θ|D) ∝ P(D|θ) × P(θ)`. 4 komponenty: pewność AI, wiarygodność kontrahenta, spójność danych, zaufanie kontekstowe. Im więcej poprawnych decyzji, tym niższy próg AUTO_POST dla danego kontrahenta.
+
+### Co to jest 4-Eyes Principle?
+Dla kwot > 50,000 PLN każda decyzja musi być zweryfikowana przez 2 niezależne modele AI (Granite Guardian + GraphSAGE/FinBERT). Jeśli weryfikacje są rozbieżne — wyższy próg (75,000 PLN). Zapewnia architekturę "zero trust to a single model".
 
 ---
 
@@ -112,10 +120,11 @@ Tak. Pobierz model GGUF, dodaj konfigurację w `config/base.toml`, utwórz klas�
 ## 🔗 Zobacz również
 
 - [Słownik pojęć](GLOSSARY.md) — wyjaśnienie terminów technicznych i księgowych
+- [Agenci AI](AGENTS.md) — kompletna specyfikacja 10 agentów, Decision Engine
 - [Podręcznik użytkownika](USER_GUIDE.md) — instrukcja codziennej pracy
 - [Zgodność z przepisami](COMPLIANCE.md) — KSeF, JPK, deklaracje
 
 ---
 
-> **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team

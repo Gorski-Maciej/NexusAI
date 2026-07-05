@@ -1,7 +1,7 @@
 # 🧠 AI Inference — System inferencji modeli GGUF
 
 > **Plik:** `nexus_ai/core/inference.py`, `nexus_ai/core/adaptive_batcher.py`
-> **Status:** Stabilny · **Wersja:** 2.3.1-dev
+> **Status:** Stabilny · **Wersja:** 3.0.0-dev
 > **Ostatnia aktualizacja:** 2026-07-05
 
 ---

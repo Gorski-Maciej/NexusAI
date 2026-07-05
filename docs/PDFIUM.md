@@ -1,7 +1,7 @@
 # 📄 PDFium Engine — Przetwarzanie dokumentów PDF
 
 > **Plik:** `nexus_ai/services/pdfium/`
-> **Status:** Stabilny · **Wersja:** 2.3.1-dev
+> **Status:** Stabilny · **Wersja:** 3.0.0-dev
 > **Ostatnia aktualizacja:** 2026-07-05
 
 ---

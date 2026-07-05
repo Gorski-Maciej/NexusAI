@@ -5,19 +5,33 @@
 
 ---
 
-## 1. Przegląd agentów AI (konfigurowalne modele GGUF)
+## 1. Przegląd agentów AI (10 agentów — Enterprise v3.0)
 
-NexusAI używa wyspecjalizowanych agentów AI — każdy ładowany jako model GGUF z konfiguracji. Poniższe nazwy to **rekomendowane modele referencyjne** (system nie ma zharkodowanych modeli — `InferenceService` ładuje dowolny plik GGUF podany w konfiguracji):
+NexusAI używa 10 wyspecjalizowanych agentów AI — każdy ładowany jako model GGUF z konfiguracji. Poniższe nazwy to **rekomendowane modele referencyjne** (system nie ma zharkodowanych modeli — `InferenceService` ładuje dowolny plik GGUF podany w konfiguracji):
 
 > ⚠️ **Uwaga:** Nazwy modeli poniżej NIE są zharkodowane w kodzie. `nexus_ai/core/inference.py` to generyczny silnik GGUF — ładuje dowolny model wskazany w konfiguracji.
+>
+> **📘 Pełna specyfikacja:** [`docs/AGENTS.md`](AGENTS.md) — 10 agentów, Decision Engine, Memory Systems, Continuous Learning Framework, protokół NATS, bezpieczeństwo AI, monitoring agentów.
 
-| Agent | Model GGUF (rekomendacja) | RAM | Rola |
-|---|---|---|---|
-| **Orkiestrator** | Granite-3.2-3B-Q4_K_M | ~2 GB | Centralny mózg — przyjmuje zadania, deleguje, podejmuje decyzje |
-| **Ekstrakcji Danych** | Vision Guardian 0.3B + ParagonDetect 0.1B | ~400 MB | Nadzoruje OCR, weryfikuje JSON vs obraz, odrzuca paragony |
-| **Analityczny** | Fin-RWKV-169M-Q4_K_M | ~100 MB | Analizuje kondycję finansową, wykrywa trendy, anomalie |
-| **Walidator Jakości** | Granite-Guardian-0.5B-Q4_0 | ~300 MB | Strażnik merytoryczny — weryfikuje KAŻDĄ decyzję Orkiestratora |
-| **Środków Trwałych** | Hrida-T2SQL-128k | ~500 MB | Amortyzacja, ewidencja, plany amortyzacyjne |
+### 1.1 Pięciu głównych agentów (Rada Agentów)
+
+| Agent | Model GGUF (rekomendacja) | RAM | Rola | Plik |
+|---|---|---|---|---|
+| **Orkiestrator** | Granite-3.2-3B-Q4_K_M + Guardian 0.5B + Qwen3-Nano 0.5B | ~3.1 GB | Centralny mózg — przyjmuje zadania, deleguje, podejmuje decyzje, komunikuje się z użytkownikiem | `nexus_ai/agents/orchestrator.py` |
+| **Ekstrakcji Danych** | Vision Guardian 0.3B + ModernBERT-NER-Finance 0.3B + ParagonDetect 0.1B | ~500 MB | Nadzoruje 4 silniki OCR, walidacja krzyżowa, weryfikacja semantyczna, odrzuca paragony | `nexus_ai/agents/extraction.py` |
+| **Analityczny** | Hrida-T2SQL-128k + Granite 3.2 3B + Fin-RWKV-169M + Lag-Llama 0.3B | ~3.7 GB | Analizuje kondycję finansową, NL→SQL, wykrywa trendy, anomalie, prognozuje | `nexus_ai/agents/analytics.py` |
+| **Walidator Jakości** | Granite Guardian 0.5B + GraphSAGE 0.1B + FinBERT-ESG 0.1B + Lag-Llama 0.3B | ~700 MB | Niezależny audytor — weryfikuje KAŻDĄ decyzję (4-Eyes Principle dla >50k PLN) | `nexus_ai/agents/quality_validator.py` |
+| **Środków Trwałych** | Granite 3.2 3B (współdzielony) | ~2.4 GB | Klasyfikacja, amortyzacja liniowa/degresywna, ewidencja | `nexus_ai/services/fixed_assets.py` |
+
+### 1.2 Pięciu agentów domenowych (specjalistycznych)
+
+| Agent | Technologia | RAM | Rola | Plik(i) |
+|---|---|---|---|---|
+| **AgentTaxEngine** | DuckDB + OPA/Rego + TigerBeetle | ~0 MB (regułowy) | Automatyczne wyliczanie VAT/PIT/CIT, JPK, optymalizacja podatkowa, terminy | `tax_simulator.py`, `tax_strategies.py`, `tax/rules.rego` |
+| **AgentCashManager** | Lag-Llama + Fin-RWKV + DuckDB | ~300 MB | Prognoza płynności 90 dni, priorytetyzacja płatności, optymalizacja kapitału obrotowego | `liquidity_oracle.py`, `priority_engine.py` |
+| **AgentCompliance** | OPA/Rego + DuckDB + hishel | ~0 MB (regułowy) | Monitorowanie zmian przepisów (Dz.U.), audyt zgodności, retencja danych | `compliance_analytics.py` |
+| **AgentKSeF** | httpx + hishel + xsdata + lxml | ~0 MB (API) | Automatyczna wysyłka/odbiór faktur do/z KSeF, FA(1)/FA(2), status monitor | `ksef_service.py`, `ksef_generator.py` |
+| **AgentVendorIntelligence** | httpx + hishel + DuckDB + sqlite-vec | ~0 MB (API) | Ocena wiarygodności kontrahentów (Biała Lista, GUS BIR), Vendor Risk Score 0-100 | `vendor_intelligence.py`, `white_list_service.py`, `gus_bir_client.py` |
 
 **Dodatkowe modele specjalistyczne:** Pełna lista i parametry w [`docs/MODELS_MANIFEST.md`](MODELS_MANIFEST.md).
 
@@ -1078,5 +1092,5 @@ class NewAgent:
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
 > **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead

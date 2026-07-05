@@ -227,14 +227,14 @@ async def utworz(data: NoweDto) -> NoweDto: ...
 ## 7. Zasady wersjonowania (SemVer)
 
 ```
-v2.3.0  →  vMAJOR.MINOR.PATCH
+v3.0.0-dev  →  vMAJOR.MINOR.PATCH
 
 MAJOR: przełomowe zmiany (API breaking, nowy silnik DB)
 MINOR: nowe funkcje (nowy agent, nowy endpoint)
 PATCH: poprawki błędów, aktualizacje zależności
 ```
 
-Aktualna wersja: **2.3.0** "Free-Threaded Phoenix"
+Aktualna wersja: **3.0.0-dev** "Agentic Architecture"
 
 ---
 
@@ -246,7 +246,7 @@ Użyj [GitHub Issues](https://github.com/Gorski-Maciej/NexusAI/issues):
 **Tytuł:** [BUG] OCR nie rozpoznaje polskich znaków w PaddleOCR
 
 **Środowisko:**
-- NexusAI: 2.3.0
+- NexusAI: 3.0.0-dev
 - OS: Ubuntu 22.04
 - Python: 3.13.2 (free-threaded)
 
@@ -275,10 +275,11 @@ Po każdej zmianie:
 ## 🔗 Zobacz również
 
 - [Testowanie](TESTING.md) — jak pisać testy, szablony, narzędzia
+- [Agenci AI](AGENTS.md) — jak dodać nowego agenta, modele GGUF
 - [Architektura](ARCHITECTURE.md) — wzorce projektowe, ADR, model domeny
 - [Słownik pojęć](GLOSSARY.md) — terminy techniczne i księgowe
 
 ---
 
-> **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team

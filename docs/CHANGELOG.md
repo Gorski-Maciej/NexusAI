@@ -5,6 +5,55 @@
 
 ---
 
+## [3.0.0-dev] — 2026-07-05 — "Agentic Architecture"
+
+### 📋 Audyt dokumentacji — kompleksowy przegląd 40 plików
+
+#### 🔧 Naprawione
+- **`docs/DATABASE.md`** — naprawiono zduplikowany footer (3 linie zamiast 2), ujednolicono separator `⸱`→`·`
+- **`docs/PROJECT_STRUCTURE.md`** — naprawiono zduplikowany footer (3 linie zamiast 2), ujednolicono separator `⸱`→`·`
+
+#### ✅ Zweryfikowane
+- **Wszystkie 40 plików** — footery spójne z `3.0.0-dev`
+- **Wszystkie linki wewnętrzne** — 0 uszkodzonych
+- **Stare referencje 2.3.0/2.3.1** — 0 pozostałych
+- **Kod źródłowy** — 4 klasy agentów w `nexus_ai/agents/` + 23+ serwisów w `nexus_ai/services/` — zgodne z dokumentacją
+
+#### 🆕 Zaktualizowane
+- `.env.example` — utworzono plik z 50+ zmiennymi i komentarzami
+- `docs/nexusai_dokumentacja.html` — zregenerowana (40 rozdziałów, 789 KB)
+- `docs/nexusai_dokumentacja_dark.html` — zregenerowana (40 rozdziałów, 789 KB)
+
+---
+
+### 🤖 System Agentów AI (v3.0 Enterprise)
+
+### 🤖 System Agentów AI (v3.0 Enterprise)
+
+#### ➕ Dodane
+- **`docs/AGENTS.md`** — kompletna specyfikacja 10 agentów AI: Orchestrator, Extraction, Analytics, QualityValidator, TaxEngine, CashManager, Compliance, KSeF, VendorIntelligence, FixedAssets
+- **Decision Engine** — wielowarstwowy silnik decyzyjny: strefy decyzyjne (Dynamic Thresholds), konsensus między agentami (weighted voting), eskalacja do człowieka, Proof Chain SHA-256
+- **Continuous Learning Framework** — Active Learning Loop, Bayesian Trust Score, Online OCR Learning, propagacja korekt (bezpośrednia/pośrednia/globalna/strukturalna)
+- **Memory Systems** — 4 typy pamięci: Episodic (DuckDB), Semantic (sqlite-vec), Procedural (OPA/Rego), Working (NATS KV Store)
+- **4 poziomy autonomii** — od Manualnego (Level 0) do W Pełni Autonomicznego (Level 3)
+- **4-Eyes Principle** — obowiązkowa weryfikacja przez 2 niezależne modele dla kwot > 50,000 PLN
+- **ADR-009** — architektura 10 wyspecjalizowanych agentów AI zamiast monolitycznego LLM
+
+#### 🔄 Zaktualizowane
+- **`docs/MODULES.md`** — rozszerzona tabela agentów z 5 do 10, odwołanie do AGENTS.md
+- **`docs/ARCHITECTURE.md`** — dodano ADR-009 (architektura agentów), cross-reference do AGENTS.md
+- **`docs/SECURITY.md`** — rozszerzono sekcję "Bezpieczeństwo AI" o 4-Eyes Principle, agent-level RBAC, audit log, Proof Chain
+- **`docs/GLOSSARY.md`** — dodano 8 nowych terminów (Active Learning, Adaptive Thresholds, Agent AI, Bayesian Trust Score, Confidence Calibration, Continuous Learning, Decision Engine, Memory Systems, Trust Score)
+- **`docs/FAQ.md`** — dodano pytania o 10 agentów, Trust Score, 4-Eyes Principle, zużycie RAM
+- **`docs/INDEX.md`** — dodano AGENTS.md do nawigacji (M2b), listy plików (38), indeksu tagów
+
+### 📊 Statystyki
+- **38 plików .md** — +1 nowy (AGENTS.md)
+- **10 agentów AI** — udokumentowanych z modelami, RAM, mechanizmami
+- **9 ADR** — w tym nowy ADR-009
+
+---
+
 ## [2.3.1-dev] — 2026-07-05 — „Enterprise Documentation"
 
 ### 📚 Dokumentacja (pełna przebudowa)
@@ -233,5 +282,5 @@
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 2.3.1-dev
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
 > **Status dokumentu:** Aktywny (dokumentacja w przebudowie) · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead

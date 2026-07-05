@@ -334,6 +334,8 @@ pixi run dev
 pixi run download-models
 ```
 
+> Pełna lista modeli: [MODELS_MANIFEST.md](MODELS_MANIFEST.md). Specyfikacja 10 agentów: [AGENTS.md](AGENTS.md).
+
 ### 6.2 OCR zwraca bardzo niską pewność (< 0.3)
 
 **Przyczyna:** Słaba jakość obrazu faktury.
@@ -450,8 +452,9 @@ pixi run dev
 - [Instalacja i konfiguracja](INSTALLATION.md) — poprawny setup środowiska
 - [Wdrożenie](DEPLOYMENT.md) — backup i przywracanie
 - [Baza danych](DATABASE.md) — integralność bazy, migracje
+- [Agenci AI](AGENTS.md) — modele, problemy z OCR/AI
 
 ---
 
-> **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team

@@ -299,7 +299,7 @@ nexus_crypto.VaultKey.from_random() -> VaultKey
 ```python
 # Sprawdzamy czy moduł jest załadowany poprawnie
 python -c "import nexus_crypto; print(nexus_crypto.__version__)"
-# Oczekiwane: "2.3.0"
+# Oczekiwane: "3.0.0-dev"
 ```
 
 ---
@@ -486,5 +486,5 @@ cd nexus_ai/rust && cargo bench
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
 > **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Security Officer

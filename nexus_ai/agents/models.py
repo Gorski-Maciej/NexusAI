@@ -1,19 +1,342 @@
 """msgspec Struct definitions for agent communication.
 
-Zgodnie z blueprintem aa3fvcx.txt:
+Zgodnie z AGENT_SYSTEM_ENTERPRISE.txt:
 - Wszystkie struktury danych to msgspec.Struct (ultraszybka serializacja)
 - Komunikacja przez NATS JetStream w formacie JSON/MessagePack
 - Zero Pydantic — lżejsze i szybsze
+- Rozszerzone o Enterprise: AutonomyLevel, BayesianTrustScore,
+  ConfidenceVote, VotingResult, ProofChain, MemorySystem,
+  ContinuousLearningFramework
 """
 
 from __future__ import annotations
 
+import enum
+import uuid
 from typing import Any
 
 from msgspec import Struct, field
 
 
-# ── AgentContext — kontekst wykonania ─────────────────────────────────────
+# ═════════════════════════════════════════════════════════════════════════
+# AutonomyLevel — Poziomy autonomii agentów (L0-L3)
+# ═════════════════════════════════════════════════════════════════════════
+
+
+class AutonomyLevel(enum.IntEnum):
+    """Poziomy autonomii agenta — od manualnego do w pełni autonomicznego.
+
+    LEVEL 0 — MANUALNY:    Agent tylko proponuje, użytkownik zatwierdza KAŻDĄ decyzję.
+    LEVEL 1 — ASYSTENT:    Agent decyduje w zielonej strefie (>=0.92), pyta w żółtej.
+    LEVEL 2 — AUTONOMICZNY: Agent decyduje w zielonej i żółtej, pyta tylko w czerwonej.
+    LEVEL 3 — FULL_AUTO:   Agent podejmuje WSZYSTKIE decyzje, informuje raportem.
+    """
+
+    MANUAL = 0
+    ASSISTANT = 1
+    AUTONOMOUS = 2
+    FULL_AUTONOMOUS = 3
+
+
+class AutonomyConfig(Struct, kw_only=True):
+    """Konfiguracja poziomu autonomii dla agenta."""
+
+    level: AutonomyLevel = AutonomyLevel.AUTONOMOUS
+    """Aktualny poziom autonomii."""
+    min_trust_for_level: dict[AutonomyLevel, float] = {
+        AutonomyLevel.MANUAL: 0.0,
+        AutonomyLevel.ASSISTANT: 0.75,
+        AutonomyLevel.AUTONOMOUS: 0.92,
+        AutonomyLevel.FULL_AUTONOMOUS: 0.98,
+    }
+    """Minimalny Trust Score wymagany dla każdego poziomu."""
+    min_decisions_for_promotion: int = 1000
+    """Minimalna liczba decyzji przed awansem na wyższy poziom."""
+    auto_demote_on_anomaly: bool = True
+    """Czy automatycznie obniżać poziom przy wykryciu anomalii."""
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# Confidentiality & Voting — Mechanizmy decyzyjne
+# ═════════════════════════════════════════════════════════════════════════
+
+
+class BayesianTrustScore(Struct, kw_only=True):
+    """Bayesian Trust Score z aktualizacją po każdej decyzji.
+
+    Posterior Beta distribution:
+      Prior:       Beta(α₀=1, β₀=1)
+      Likelihood:  Bern(y|θ)
+      Posterior:   Beta(α₀+Σy, β₀+n-Σy)
+
+    Trust Score = E[θ|D] = α / (α + β)
+    Confidence  = 1 - Var[θ|D] (skalowane)
+    """
+
+    alpha: float = 1.0
+    """Liczba poprawnych decyzji + 1 (prior)."""
+    beta: float = 1.0
+    """Liczba błędnych decyzji + 1 (prior)."""
+
+    @property
+    def trust_score(self) -> float:
+        """Trust Score = E[θ|D] = α / (α + β)."""
+        return self.alpha / (self.alpha + self.beta)
+
+    @property
+    def confidence(self) -> float:
+        """Pewność Trust Score = 1 - skalowana wariancja."""
+        total = self.alpha + self.beta
+        variance = (self.alpha * self.beta) / (total**2 * (total + 1))
+        return max(0.0, min(1.0, 1.0 - variance * 12))
+
+    def update(self, correct: bool) -> None:
+        """Bayesian update po decyzji: zwiększ α (OK) lub β (błąd)."""
+        if correct:
+            self.alpha += 1.0
+        else:
+            self.beta += 1.0
+
+    def adaptive_threshold(self, base: float = 0.92, max_correction: float = 0.1) -> float:
+        """Adaptacyjny próg decyzyjny dla danego kontrahenta.
+
+        Dla znanych (α+β >= 100): pełna korekta.
+        Dla nowych (α+β < 30): conservative (mniejsza korekta).
+        """
+        total = self.alpha + self.beta
+        correction = ((self.alpha - self.beta) / total) * max_correction
+        if total < 30:
+            correction *= total / 30.0  # conservative dla nowych
+        return max(0.0, min(1.0, base - correction))
+
+    def __repr__(self) -> str:
+        return (
+            f"BayesianTrustScore(α={self.alpha:.0f}, β={self.beta:.0f}, "
+            f"trust={self.trust_score:.3f}, conf={self.confidence:.3f})"
+        )
+
+
+class ConfidenceVote(Struct, kw_only=True):
+    """Głos modelu w procesie decyzyjnym z ważeniem bayesiańskim."""
+
+    model_name: str
+    """Nazwa modelu."""
+    model_weight: float = 0.0
+    """Historyczna precyzja modelu (Bayesian waga)."""
+    vote: str = ""
+    """Głos: POST | REVIEW | BLOCK."""
+    confidence: float = 0.0
+    """Pewność tej konkretnej decyzji (0.0-1.0)."""
+    weighted_vote: float = 0.0
+    """Ważony głos = model_weight × confidence."""
+    details: str = ""
+    """Szczegóły głosu."""
+
+
+class VotingResult(Struct, kw_only=True):
+    """Wynik ważonego głosowania między modelami/agentami."""
+
+    votes: list[ConfidenceVote] = field(default_factory=list)
+    """Lista głosów wszystkich modeli."""
+    total_weight: float = 0.0
+    """Suma wag wszystkich modeli."""
+    winner: str = ""
+    """Zwycięski werdykt: POST | REVIEW | BLOCK."""
+    consensus: bool = False
+    """Czy osiągnięto konsensus (> 0.66 majority)."""
+    uncertainty: float = 0.0
+    """Poziom niepewności (0.0-1.0). > 0.3 → eskalacja."""
+
+    @property
+    def consensus_ratio(self) -> float:
+        """Stosunek zgody między modelami."""
+        if not self.votes:
+            return 0.0
+        winner_votes = sum(
+            1 for v in self.votes if v.vote == self.winner
+        )
+        return winner_votes / len(self.votes)
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# Proof Chain — Niepodważalny łańcuch audytowy (SHA-256)
+# ═════════════════════════════════════════════════════════════════════════
+
+
+class ProofBlock(Struct, kw_only=True):
+    """Pojedynczy blok w łańcuchu dowodowym (Proof Chain)."""
+
+    index: int
+    """Indeks bloku w łańcuchu."""
+    decision_id: str
+    """ID decyzji."""
+    decision_json: str
+    """Decyzja w formacie JSON."""
+    timestamp: str
+    """ISO timestamp utworzenia."""
+    previous_hash: str = "0" * 64
+    """Hash poprzedniego bloku."""
+    hash: str = ""
+    """SHA-256 hash tego bloku."""
+
+
+class ProofChain(Struct, kw_only=True):
+    """Łańcuch dowodowy SHA-256 dla niepodważalnego audytu.
+
+    Każda decyzja tworzy blok z hashem poprzedniego.
+    Modyfikacja dowolnego bloku → wszystkie kolejne unieważnione.
+    Zgodne z RAPORT_TECHNOLOGII: nexus-crypto SHA-256.
+    """
+
+    blocks: list[ProofBlock] = field(default_factory=list)
+    """Bloki w łańcuchu."""
+    decision_id: str = ""
+    """ID decyzji (korzeń łańcucha)."""
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# Memory Systems — Typy pamięci agentów
+# ═════════════════════════════════════════════════════════════════════════
+
+
+class MemoryType(enum.StrEnum):
+    """Typy pamięci w systemie agentów AI.
+
+    Zgodnie z AGENT_SYSTEM_ENTERPRISE.txt §6:
+    - EPISODIC: DuckDB event store — wszystkie zdarzenia i decyzje
+    - SEMANTIC: sqlite-vec embeddings — wektorowa pamięć semantyczna
+    - PROCEDURAL: OPA/Rego — reguły podatkowe i compliance
+    - WORKING: NATS KV Store — krótkoterminowa pamięć (TTL 1h)
+    - DECISION_CACHE: diskcache + sqlite-vec k-NN — cache decyzji
+    """
+
+    EPISODIC = "episodic"
+    SEMANTIC = "semantic"
+    PROCEDURAL = "procedural"
+    WORKING = "working"
+    DECISION_CACHE = "decision_cache"
+
+
+class MemoryRecord(Struct, kw_only=True):
+    """Pojedynczy rekord w pamięci agenta."""
+
+    memory_type: MemoryType
+    """Typ pamięci."""
+    key: str
+    """Klucz rekordu."""
+    value: Any = None
+    """Wartość rekordu."""
+    embedding: list[float] = field(default_factory=list)
+    """Embedding wektorowy (dla SEMANTIC)."""
+    ttl_seconds: int = 0
+    """TTL w sekundach (0 = bez TTL)."""
+    created_at: str = ""
+    """ISO timestamp utworzenia."""
+    metadata: dict[str, Any] = field(default_factory=dict)
+    """Dodatkowe metadane."""
+
+
+class MemoryQuery(Struct, kw_only=True):
+    """Zapytanie do pamięci agenta."""
+
+    memory_type: MemoryType
+    """Typ pamięci do przeszukania."""
+    query: str
+    """Zapytanie tekstowe."""
+    embedding: list[float] = field(default_factory=list)
+    """Embedding do wyszukiwania (k-NN)."""
+    k: int = 5
+    """Liczba wyników k-NN."""
+    threshold: float = 0.7
+    """Próg podobieństwa (0.0-1.0)."""
+    filters: dict[str, Any] = field(default_factory=dict)
+    """Filtry dodatkowe."""
+
+
+class MemoryResult(Struct, kw_only=True):
+    """Wynik zapytania do pamięci."""
+
+    records: list[MemoryRecord] = field(default_factory=list)
+    """Znalezione rekordy."""
+    total: int = 0
+    """Całkowita liczba wyników."""
+    query_time_ms: float = 0.0
+    """Czas zapytania w milisekundach."""
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# Continuous Learning Framework — System uczenia się
+# ═════════════════════════════════════════════════════════════════════════
+
+
+class FeedbackType(enum.StrEnum):
+    """Typ feedbacku od użytkownika."""
+
+    ACCEPT = "accept"
+    CORRECT = "correct"
+    REJECT = "reject"
+
+
+class LearningRecord(Struct, kw_only=True):
+    """Rekord uczenia się — każda korekta użytkownika to nowy przykład."""
+
+    id: str = ""
+    """UUID rekordu."""
+    decision_id: str
+    """ID decyzji."""
+    agent_name: str
+    """Nazwa agenta."""
+    predicted_value: dict[str, Any] = field(default_factory=dict)
+    """Wartość przewidziana przez agenta."""
+    corrected_value: dict[str, Any] = field(default_factory=dict)
+    """Wartość poprawiona przez użytkownika."""
+    delta: float = 0.0
+    """Różnica między predicted a corrected (0.0-1.0)."""
+    feedback_type: FeedbackType = FeedbackType.ACCEPT
+    """Typ feedbacku."""
+    timestamp: str = ""
+    """ISO timestamp."""
+    model_version: str = ""
+    """Wersja modelu w momencie decyzji."""
+
+
+class PropagationLevel(enum.StrEnum):
+    """Poziomy propagacji korekty (z AGENT_SYSTEM_ENTERPRISE §5.3).
+
+    DIRECT:      Agent otrzymuje feedback → Bayesian update alpha/beta
+    INDIRECT:    Podobne przypadki (k-NN w sqlite-vec) → re-evaluacja
+    GLOBAL:      Ten sam błąd >5 razy → aktualizacja reguł OPA
+    STRUCTURAL:  Brak funkcjonalności → zadanie dev
+    """
+
+    DIRECT = "direct"
+    INDIRECT = "indirect"
+    GLOBAL = "global"
+    STRUCTURAL = "structural"
+
+
+class LearningConfig(Struct, kw_only=True):
+    """Konfiguracja Continuous Learning Framework."""
+
+    enabled: bool = True
+    """Czy uczenie się jest włączone."""
+    min_delta_for_learning: float = 0.1
+    """Minimalna delta do zapisania rekordu nauki."""
+    min_samples_for_finetune: int = 100
+    """Minimalna liczba próbek przed fine-tuningiem."""
+    min_samples_for_opa_update: int = 10
+    """Minimalna liczba korekt przed aktualizacją OPA."""
+    k_nn_for_indirect: int = 10
+    """k dla k-NN w propagacji pośredniej."""
+    distance_threshold_direct: float = 0.15
+    """Próg odległości dla propagacji bezpośredniej."""
+    distance_threshold_indirect: float = 0.2
+    """Próg odległości dla propagacji pośredniej."""
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# AgentContext — kontekst wykonania
+# ═════════════════════════════════════════════════════════════════════════
 
 
 class AgentContext(Struct, kw_only=True):
@@ -38,9 +361,15 @@ class AgentContext(Struct, kw_only=True):
     """Liczba ponowień."""
     priority: int = 5
     """Priorytet (1-10, 1=najwyższy)."""
+    autonomy_level: AutonomyLevel = AutonomyLevel.AUTONOMOUS
+    """Poziom autonomii dla tej decyzji."""
+    trace_id: str = ""
+    """OpenTelemetry trace ID."""
 
 
-# ── AgentMessage — podstawowa jednostka komunikacji ──────────────────────
+# ═════════════════════════════════════════════════════════════════════════
+# AgentMessage — podstawowa jednostka komunikacji
+# ═════════════════════════════════════════════════════════════════════════
 
 
 class AgentMessage(Struct, kw_only=True):
@@ -54,7 +383,9 @@ class AgentMessage(Struct, kw_only=True):
     """Dodatkowe metadane (np. wersja modelu, czas wykonania)."""
 
 
-# ── AgentCommand — polecenie wykonania ───────────────────────────────────
+# ═════════════════════════════════════════════════════════════════════════
+# AgentCommand — polecenie wykonania
+# ═════════════════════════════════════════════════════════════════════════
 
 
 class AgentCommand(Struct, kw_only=True):
@@ -68,20 +399,23 @@ class AgentCommand(Struct, kw_only=True):
     """Kontekst wykonania."""
 
 
-# ── DecisionVerdict — werdykt decyzyjny ─────────────────────────────────
+# ═════════════════════════════════════════════════════════════════════════
+# DecisionVerdict — werdykt decyzyjny
+# ═════════════════════════════════════════════════════════════════════════
 
 
 class DecisionVerdict(Struct, kw_only=True):
     """Werdykt decyzyjny dla faktury.
 
-    Zgodnie z blueprintem:
+    Zgodnie z AGENT_SYSTEM_ENTERPRISE.txt:
     - Zielony (Trust Score >= 0.92): AUTO_POST
     - Żółty (0.75 <= Trust Score < 0.92): REVIEW
     - Czerwony (Trust Score < 0.75): BLOCK
+    - Dodatkowo: ESCALATED, 4EYES_REQUIRED
     """
 
     status: str
-    """Status decyzji: AUTO_POST, REVIEW, BLOCK, ESCALATED."""
+    """Status decyzji: AUTO_POST, REVIEW, BLOCK, ESCALATED, 4EYES_REQUIRED."""
     trust_score: float = 0.0
     """Trust Score (0.0 - 1.0)."""
     reason: str = ""
@@ -90,10 +424,16 @@ class DecisionVerdict(Struct, kw_only=True):
     """Szczegóły decyzji."""
     verified_by: list[str] = field(default_factory=list)
     """Lista agentów, które zweryfikowały decyzję."""
+    voting_result: VotingResult | None = None
+    """Wynik ważonego głosowania (jeśli wykonane)."""
+    proof_hash: str = ""
+    """SHA-256 hash w Proof Chain."""
+    autonomy_used: AutonomyLevel = AutonomyLevel.AUTONOMOUS
+    """Poziom autonomii użyty do podjęcia decyzji."""
 
 
 class TrustScore(Struct, kw_only=True):
-    """Trust Score dla decyzji - zgodnie z blueprintem aa3fvcx.txt.
+    """Trust Score dla decyzji - zgodny z AGENT_SYSTEM_ENTERPRISE.txt.
 
     Składa się z 4 komponentów:
     - ai_confidence: Zaufanie modelu do swojej decyzji
@@ -115,7 +455,14 @@ class TrustScore(Struct, kw_only=True):
 
 
 class AgentDecision(Struct, kw_only=True):
-    """Pełna decyzja agenta z uzasadnieniem."""
+    """Pełna decyzja agenta z uzasadnieniem.
+
+    Rozszerzona o Enterprise:
+    - voting_result: Wynik ważonego głosowania
+    - proof_chain: Łańcuch dowodowy SHA-256
+    - autonomy_level: Poziom autonomii
+    - learning_record: Rekord uczenia się
+    """
 
     decision_id: str
     """Unikalne ID decyzji."""
@@ -131,9 +478,19 @@ class AgentDecision(Struct, kw_only=True):
     """Dane wspierające decyzję."""
     created_at: str = ""
     """ISO timestamp."""
+    voting_result: VotingResult | None = None
+    """Wynik ważonego głosowania (Enterprise)."""
+    proof_block: ProofBlock | None = None
+    """Blok w Proof Chain (Enterprise)."""
+    autonomy_level: AutonomyLevel = AutonomyLevel.AUTONOMOUS
+    """Poziom autonomii użyty (Enterprise)."""
+    learning_record: LearningRecord | None = None
+    """Rekord uczenia się dla Continuous Learning (Enterprise)."""
 
 
-# ── AgentDataExtraction ──────────────────────────────────────────────────
+# ═════════════════════════════════════════════════════════════════════════
+# AgentDataExtraction — Rozszerzone struktury
+# ═════════════════════════════════════════════════════════════════════════
 
 
 class DataExtractionRequest(Struct, kw_only=True):
@@ -151,8 +508,31 @@ class DataExtractionRequest(Struct, kw_only=True):
     """Opcje ekstrakcji (np. języki OCR, użyte silniki)."""
 
 
+class CrossValidationResult(Struct, kw_only=True):
+    """Wynik walidacji krzyżowej 4×4 — każde pole z 4 silników."""
+
+    field_name: str
+    """Nazwa pola."""
+    values: dict[str, str] = field(default_factory=dict)
+    """Wartości per silnik: {engine_name: value}."""
+    consensus: str = ""
+    """Wartość z konsensusu (3/4 lub 2/4 + Vision Guardian)."""
+    consensus_ratio: float = 0.0
+    """Stosunek zgody: 0.75 (3/4) lub 0.5 (2/4)."""
+    confidence: float = 0.0
+    """Pewność dla tego pola (0.0-1.0)."""
+    issues: list[str] = field(default_factory=list)
+    """Problemy walidacji dla tego pola."""
+
+
 class DataExtractionResult(Struct, kw_only=True):
-    """Wynik ekstrakcji danych z dokumentu."""
+    """Wynik ekstrakcji danych z dokumentu.
+
+    Rozszerzony o Enterprise:
+    - cross_validation: Wyniki walidacji krzyżowej 4×4
+    - template_match: Dopasowanie do wzorca faktury
+    - learning_suggestions: Sugestie do Continuous Learning
+    """
 
     invoice_id: str
     """ID faktury."""
@@ -172,9 +552,17 @@ class DataExtractionResult(Struct, kw_only=True):
     """Problemy walidacji (np. NIP nie przechodzi sumy kontrolnej)."""
     error: str = ""
     """Błąd (jeśli niepowodzenie)."""
+    cross_validation: list[CrossValidationResult] = field(default_factory=list)
+    """Wyniki walidacji krzyżowej 4×4 (Enterprise)."""
+    template_match: dict[str, Any] = field(default_factory=dict)
+    """Dopasowanie do wzorca faktury (Enterprise)."""
+    field_confidences: dict[str, float] = field(default_factory=dict)
+    """Indywidualne confidence per pole (Enterprise)."""
 
 
-# ── AgentAnalytics ────────────────────────────────────────────────────────
+# ═════════════════════════════════════════════════════════════════════════
+# AgentAnalytics — Rozszerzone struktury
+# ═════════════════════════════════════════════════════════════════════════
 
 
 class AnalyticsQuery(Struct, kw_only=True):
@@ -183,7 +571,7 @@ class AnalyticsQuery(Struct, kw_only=True):
     query_id: str
     """ID zapytania."""
     query_type: str
-    """Typ zapytania: sql, trend, anomaly, forecast, custom."""
+    """Typ zapytania: sql, trend, anomaly, forecast, custom, daily_brief."""
     natural_language: str = ""
     """Pytanie w języku naturalnym."""
     sql_query: str = ""
@@ -197,7 +585,13 @@ class AnalyticsQuery(Struct, kw_only=True):
 
 
 class AnalyticsResult(Struct, kw_only=True):
-    """Wynik analizy."""
+    """Wynik analizy.
+
+    Rozszerzony o Enterprise:
+    - anomalies: Lista wykrytych anomalii z szczegółami
+    - forecast: Prognoza (dla typu forecast)
+    - daily_brief: Codzienny brief (dla typu daily_brief)
+    """
 
     query_id: str
     """ID zapytania."""
@@ -208,20 +602,33 @@ class AnalyticsResult(Struct, kw_only=True):
     data: list[dict[str, Any]] = field(default_factory=list)
     """Dane wynikowe."""
     anomalies: list[dict[str, Any]] = field(default_factory=list)
-    """Wykryte anomalie."""
+    """Wykryte anomalie z typem i severity."""
     sql_executed: str = ""
     """SQL który został wykonany."""
     model_used: str = ""
     """Model użyty do analizy."""
     error: str = ""
     """Błąd (jeśli niepowodzenie)."""
+    forecast: dict[str, Any] = field(default_factory=dict)
+    """Prognoza cash flow (Enterprise)."""
+    daily_brief: str = ""
+    """Codzienny brief finansowy NL (Enterprise)."""
+    risk_flags: list[dict[str, Any]] = field(default_factory=list)
+    """Flagi ryzyka wykryte proaktywnie (Enterprise)."""
 
 
-# ── AgentQualityValidator ────────────────────────────────────────────────
+# ═════════════════════════════════════════════════════════════════════════
+# AgentQualityValidator — Rozszerzone struktury
+# ═════════════════════════════════════════════════════════════════════════
 
 
 class QualityCheckRequest(Struct, kw_only=True):
-    """Żądanie walidacji jakości decyzji."""
+    """Żądanie walidacji jakości decyzji.
+
+    Rozszerzone o Enterprise:
+    - four_eyes_check: Czy wymagana jest 4-Eyes weryfikacja
+    - liquidity_stress_test: Czy wykonać stress test płynności
+    """
 
     decision_id: str
     """ID decyzji do walidacji."""
@@ -232,11 +639,21 @@ class QualityCheckRequest(Struct, kw_only=True):
     context: dict[str, Any] = field(default_factory=dict)
     """Dodatkowy kontekst."""
     checks: list[str] = field(default_factory=list)
-    """Lista wymaganych kontroli (tax, fraud, esg, forecast)."""
+    """Lista wymaganych kontroli (tax, fraud, esg, forecast, four_eyes)."""
+    four_eyes_required: bool = False
+    """Czy wymagana 4-Eyes weryfikacja (kwota > 50k PLN) (Enterprise)."""
+    liquidity_stress_test: bool = False
+    """Czy wykonać stress test płynności (Enterprise)."""
 
 
 class QualityCheckResult(Struct, kw_only=True):
-    """Wynik walidacji jakości."""
+    """Wynik walidacji jakości.
+
+    Rozszerzony o Enterprise:
+    - four_eyes_verdict: Wynik 4-Eyes weryfikacji
+    - liquidity_verdict: Wynik stress testu płynności
+    - voting_result: Ważone głosowanie modeli
+    """
 
     decision_id: str
     """ID decyzji."""
@@ -258,9 +675,124 @@ class QualityCheckResult(Struct, kw_only=True):
     """Modele użyte do walidacji."""
     error: str = ""
     """Błąd (jeśli niepowodzenie)."""
+    four_eyes_verdict: dict[str, Any] = field(default_factory=dict)
+    """Wynik 4-Eyes weryfikacji (Enterprise)."""
+    liquidity_verdict: dict[str, Any] = field(default_factory=dict)
+    """Wynik stress testu płynności (Enterprise)."""
+    voting_result: dict[str, Any] = field(default_factory=dict)
+    """Ważone głosowanie modeli walidacyjnych (Enterprise)."""
 
 
-# ── Helpers ──────────────────────────────────────────────────────────────
+# ═════════════════════════════════════════════════════════════════════════
+# Cash Manager & Tax Engine — Struktury dla nowych agentów
+# ═════════════════════════════════════════════════════════════════════════
+
+
+class CashFlowForecast(Struct, kw_only=True):
+    """Prognoza przepływów pieniężnych (AgentCashManager)."""
+
+    horizon_days: int = 90
+    """Horyzont prognozy w dniach."""
+    scenario: str = "baseline"
+    """Scenariusz: optimistic, baseline, pessimistic."""
+    daily_balance: list[dict[str, Any]] = field(default_factory=list)
+    """Dzienny stan konta."""
+    min_balance: float = 0.0
+    """Minimalny prognozowany stan konta."""
+    alerts: list[dict[str, Any]] = field(default_factory=list)
+    """Alerty (ryzyko niedoboru, przekroczenie limitu)."""
+    confidence_interval: dict[str, float] = field(default_factory=dict)
+    """Przedział ufności (p25, p50, p75)."""
+
+
+class TaxCalculation(Struct, kw_only=True):
+    """Wynik kalkulacji podatkowej (AgentTaxEngine)."""
+
+    calculation_id: str
+    """ID kalkulacji."""
+    tax_type: str
+    """Typ podatku: VAT, PIT, CIT."""
+    amount: float = 0.0
+    """Kwota podatku."""
+    base_amount: float = 0.0
+    """Podstawa opodatkowania."""
+    rate: float = 0.0
+    """Stawka podatkowa."""
+    split_payment: bool = False
+    """Czy wymagany split payment."""
+    deadline: str = ""
+    """Termin płatności."""
+    details: dict[str, Any] = field(default_factory=dict)
+    """Szczegóły kalkulacji."""
+
+
+class VendorRiskScore(Struct, kw_only=True):
+    """Ocena wiarygodności kontrahenta (AgentVendorIntelligence)."""
+
+    nip: str
+    """NIP kontrahenta."""
+    score: float = 0.0
+    """Ogólny risk score (0-100, 0 = brak ryzyka)."""
+    vat_status: str = ""
+    """Status VAT: active, suspended, removed."""
+    white_list_verified: bool = False
+    """Czy zweryfikowany na Białej Liście MF."""
+    bank_accounts: list[str] = field(default_factory=list)
+    """Lista rachunków bankowych."""
+    gus_verified: bool = False
+    """Czy dane zgodne z GUS BIR."""
+    payment_history: dict[str, Any] = field(default_factory=dict)
+    """Historia płatności."""
+    flags: list[str] = field(default_factory=list)
+    """Flagi ryzyka."""
+
+
+class AssetClassification(Struct, kw_only=True):
+    """Klasyfikacja środka trwałego (AgentFixedAssets)."""
+
+    asset_id: str
+    """ID środka trwałego."""
+    classification: str = ""
+    """Klasyfikacja: building, machinery, vehicle, it, intangible."""
+    depreciation_method: str = "linear"
+    """Metoda amortyzacji: linear, degressive, one_time."""
+    depreciation_rate: float = 0.0
+    """Roczna stawka amortyzacji."""
+    useful_life_years: int = 0
+    """Okres użytkowania w latach."""
+    monthly_depreciation: float = 0.0
+    """Miesięczny odpis amortyzacyjny."""
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# Health & Monitoring
+# ═════════════════════════════════════════════════════════════════════════
+
+
+class AgentHealth(Struct, kw_only=True):
+    """Status zdrowia agenta."""
+
+    agent_name: str
+    """Nazwa agenta."""
+    status: str
+    """Status: healthy, degraded, unhealthy."""
+    models_loaded: int = 0
+    """Liczba załadowanych modeli."""
+    memory_mb: float = 0.0
+    """Zużycie RAM w MB."""
+    uptime_seconds: float = 0.0
+    """Czas działania w sekundach."""
+    last_heartbeat: str = ""
+    """Ostatni heartbeat ISO timestamp."""
+    error_count: int = 0
+    """Liczba błędów od ostatniego restartu."""
+    decisions_total: int = 0
+    """Liczba decyzji od ostatniego restartu."""
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# Helpers
+# ═════════════════════════════════════════════════════════════════════════
 
 
 def make_context(
@@ -279,3 +811,8 @@ def make_context(
         timestamp=pendulum.now("UTC").isoformat(),
         **kwargs,
     )
+
+
+def generate_decision_id() -> str:
+    """Generuj unikalne ID decyzji."""
+    return uuid.uuid4().hex[:16]

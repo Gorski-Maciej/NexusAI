@@ -20,8 +20,8 @@ Ten dokument odpowiada na pytanie **dlaczego** NexusAI istnieje i **komu** ma s�
 
 | Parametr | Wartość |
 |---|---|
-| Wersja | **2.3.0** „Free-Threaded Phoenix" |
-| Data wydania | 2026-06-10 |
+| Wersja | **3.0.0-dev** „Agentic Architecture" |
+| Data wydania | 2026-07-05 |
 | Python | 3.13.2 (free-threaded, bez GIL) |
 | Status deweloperski | **Beta (klasa 4)** — patrz `pyproject.toml` classifiers |
 | Licencja | Proprietary |
@@ -47,7 +47,7 @@ Ten dokument odpowiada na pytanie **dlaczego** NexusAI istnieje i **komu** ma s�
 
 | Cecha | Korzyść |
 |---|---|
-| **Autonomia (AUTO_POST)** | Rada 5 Agentów podejmuje decyzję księgową w 95% przypadków. |
+| **Autonomia (AUTO_POST)** | Rada 10 Agentów AI podejmuje decyzję księgową w 95% przypadków. |
 | **Pełna prywatność (offline-first)** | Wszystkie modele AI i baza lokalna; dane nigdy nie opuszczają komputera. |
 | **Zgodność polska z pudełka** | KSeF, NIP, Biała Lista MF, NBP, GUS/BIR — gotowe integracje. |
 | **Zgodność księgowa** | UoR (Ustawa o rachunkowości), IFRS, GAAP — pełna dekretacja i ścieżka audytu. |
@@ -175,10 +175,10 @@ Pełny glosariusz ze 100+ terminami: [`GLOSSARY.md`](GLOSSARY.md).
 
 - [Szybki start](QUICKSTART.md) — uruchom NexusAI w 15 minut
 - [Architektura](ARCHITECTURE.md) — diagramy C4, ADR, wzorce projektowe
-- [Moduły i logika](MODULES.md) — agenci AI, pipeline OCR, serwisy
+- [Agenci AI](AGENTS.md) — pełna specyfikacja 10 agentów, Decision Engine
 - [Słownik pojęć](GLOSSARY.md) — terminy księgowe i techniczne
 
 ---
 
-> **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team

@@ -35,9 +35,9 @@ Pełna instrukcja krok po kroku: [`docs/QUICKSTART.md`](docs/QUICKSTART.md).
 
 | Funkcja | Opis |
 |---|---|
-| 🧾 **Księgowanie autonomiczne** | Rada Agentów (5 wyspecjalizowanych LLM GGUF) analizuje fakturę i podejmuje decyzję: **AUTO_POST** albo **ASK_USER** (z 2–5 opcjami). |
+| 🧾 **Księgowanie autonomiczne** | Rada 10 Agentów AI analizuje fakturę i podejmuje decyzję: **AUTO_POST** albo **ASK_USER** (z 2–5 opcjami). 4 poziomy autonomii. |
 | 🔍 **OCR ensemble (4 silniki)** | Tesseract + PaddleOCR + docTR + EasyOCR z konsensusem głosowania i Nadzorcą AI. Wyższe **recall** niż pojedynczy VLM. |
-| 🤖 **5 Agentów AI (lokalnych)** | Orkiestrator (Granite-3.2-3B), Ekstrakcji, Analityczny (Fin-RWKV-169M), Walidator Jakości (Guardian + GraphSAGE + FinBERT), Środków Trwałych. Offline-first. |
+| 🤖 **10 Agentów AI (lokalnych)** | Orkiestrator (Granite 3.2 3B), Ekstrakcji, Analityczny, Walidator Jakości + 6 domenowych (Tax, Cash, Compliance, KSeF, Vendor, Assets). Offline-first, 4-Eyes Principle, Bayesian Trust Score. [Pełna specyfikacja →](docs/AGENTS.md) |
 | 📜 **Pełna zgodność KSeF** | Generowanie XML wg schematu `FA_VAT(2)`, walidacja XSD, wysyłka do API KSeF MF. |
 | 🔐 **Własny moduł kryptograficzny (Rust)** | AEAD ChaCha20-Poly1305, Argon2id KDF, SHA-256, mlock sekretów — w pakiecie `nexus-crypto` (PyO3). |
 | 🗄️ **4 silniki danych** | SQLite+SQLCipher (OLTP zaszyfrowany), DuckDB (OLAP), TigerBeetle (double-entry ledger), NATS JetStream (event bus + KV/Object Store). |
@@ -60,6 +60,7 @@ Cała dokumentacja znajduje się w katalogu [`docs/`](docs/INDEX.md):
 | 7 | [Instalacja i konfiguracja](docs/INSTALLATION.md) | Zmienne środowiskowe, profile |
 | 8 | [Baza danych](docs/DATABASE.md) | ERD, migracje, backup |
 | 9 | [API / Komunikacja](docs/API.md) | Pełna specyfikacja REST/JWT |
+| 10a | [Agenci AI](docs/AGENTS.md) | 10 agentów, Decision Engine, Trust Score, Learning |
 | 10 | [Moduły / Logika](docs/MODULES.md) | Serwisy, agenci, pipeline OCR |
 | 11 | [Testowanie](docs/TESTING.md) | pytest, crosshair, locust |
 | 12 | [Wdrożenie](docs/DEPLOYMENT.md) | Build, binarka, CI/CD |
@@ -70,7 +71,6 @@ Cała dokumentacja znajduje się w katalogu [`docs/`](docs/INDEX.md):
 | 17 | [Podręcznik użytkownika](docs/USER_GUIDE.md) | Instrukcja dla przedsiębiorcy |
 | 18 | [Słownik pojęć](docs/GLOSSARY.md) | Terminy księgowe i techniczne |
 | 19 | [FAQ](docs/FAQ.md) | Najczęstsze pytania |
-| 20 | [Changelog](docs/CHANGELOG.md) | Historia wersji |
 
 ---
 

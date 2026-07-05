@@ -227,7 +227,7 @@ pixi run build-nuitka
 # 2. Tworzenie instalatora
 pixi run build-nuitka-win    # Tylko na Windows
 
-# Wynik: dist/NexusAI_Setup_2.3.0.exe
+# Wynik: dist/NexusAI_Setup_3.0.0.exe
 ```
 
 Instalator Inno Setup zawiera:
@@ -250,7 +250,7 @@ pixi run doctor
 
 # Sprawdź API
 curl http://127.0.0.1:8000/health
-# → {"status": "healthy", "version": "2.3.0"}
+# → {"status": "healthy", "version": "3.0.0-dev"}
 
 # Sprawdź metryki
 curl http://127.0.0.1:9090/metrics | head
@@ -266,5 +266,5 @@ curl http://127.0.0.1:9090/metrics | head
 
 ---
 
-> **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team

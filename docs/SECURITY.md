@@ -286,7 +286,7 @@ def check_key_health() -> list[dict]:
 
 ---
 
-## 7. Bezpieczeństwo AI
+## 7. Bezpieczeństwo AI (rozszerzone — Enterprise v3.0)
 
 ### 7.1 Modele lokalne (offline-first)
 
@@ -306,6 +306,65 @@ pixi run check-models      # Sprawdza obecność i integralność
 - **Orkiestrator** (Granite 3.2 3B) podejmuje decyzję
 - **Strażnik Merytoryczny** (Granite Guardian 0.5B) weryfikuje KAŻDĄ decyzję
 - Decyzja podatkowa NIGDY nie jest podejmowana przez AI — tylko przez deterministyczny silnik reguł (OPA/Rego)
+
+### 7.4 4-Eyes Principle (obowiązkowy dla kwot > 50,000 PLN)
+
+- Każda decyzja na kwotę > 50k PLN wymaga 2 niezależnych weryfikacji:
+  - **Pierwsza:** Granite Guardian (kontrola podatkowa)
+  - **Druga:** GraphSAGE + FinBERT (oszustwa + ryzyko)
+- Jeśli weryfikacje są rozbieżne → wyższy próg (75,000 PLN)
+
+### 7.5 RBAC na poziomie agentów
+
+| Rola | Uprawnienia agentów |
+|---|---|
+| **admin** | Pełny dostęp do wszystkich agentów i konfiguracji modeli |
+| **accountant** | Dostęp do decyzji, raportów, korekt — nie może zmieniać modeli |
+| **auditor** | Tylko odczyt — dostęp do audit logu i proof chain |
+| **user** | Dostęp do dashboardu i własnych decyzji |
+
+### 7.6 Audit log każdej decyzji agenta
+
+```sql
+CREATE TABLE audit_log (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    agent TEXT NOT NULL,
+    action TEXT NOT NULL,        -- 'decision', 'correction', 'view', 'export'
+    resource TEXT NOT NULL,      -- 'invoice:123', 'report:monthly'
+    details JSONB,
+    ip_address TEXT,
+    timestamp TIMESTAMP DEFAULT NOW(),
+    proof_hash TEXT              -- SHA-256 w proof chain
+);
+```
+
+### 7.7 Proof Chain na poziomie agentów (SHA-256)
+
+> **Ogólny mechanizm Proof Chain opisany jest w [sekcji 5.1](#51-proof-chain-sha-256).** Ta sekcja rozszerza go o specyficzne dla agentów AI aspekty.
+
+Każda decyzja agenta tworzy niepodważalny dowód w łańcuchu SHA-256 (współdzielonym z ogólnym mechanizmem audytu):
+
+```python
+# nexus_ai/services/proof_chain.py
+class ProofChain:
+    def add_block(self, decision: AgentDecision) -> str:
+        previous_hash = self.chain[-1].hash if self.chain else "0" * 64
+        block_data = {
+            "index": len(self.chain),
+            "decision_id": decision.decision_id,
+            "decision": msgspec.json.encode(decision).decode(),
+            "timestamp": pendulum.now("UTC").isoformat(),
+            "previous_hash": previous_hash,
+        }
+        hasher = Sha256Hasher()
+        hasher.update(msgspec.json.encode(block_data))
+        return hasher.hexdigest()
+```
+
+Efekt: Nieprzerwany łańcuch skrótów — modyfikacja jednego wpisu psuje wszystkie kolejne. Wykrywane przez `IntegrityVerifier`.
+
+> Pełna specyfikacja bezpieczeństwa agentów: [`docs/AGENTS.md#7-bezpieczeństwo-agentów-ai`](AGENTS.md#7-bezpieczeństwo-agentów-ai)
 
 ---
 
@@ -386,12 +445,13 @@ WHERE issue_date < datetime('now', '-5 years') AND is_deleted = 0;
 ## 🔗 Zobacz również
 
 - [Rust Module](RUST_MODULE.md) — implementacja nexus-crypto (AEAD, Argon2id, SHA-256)
+- [Agenci AI](AGENTS.md) — bezpieczeństwo agentów, RBAC, Proof Chain, audit log
 - [Zgodność z przepisami](COMPLIANCE.md) — RODO, retencja, KSeF
-- [Architektura](ARCHITECTURE.md) — ADR-007 (nexus-crypto)
+- [Architektura](ARCHITECTURE.md) — ADR-007 (nexus-crypto), ADR-009 (architektura agentów)
 - [Models Manifest](MODELS_MANIFEST.md) — weryfikacja SHA-256 modeli
 - [Wdrożenie](DEPLOYMENT.md) — security checklist produkcyjna
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
 > **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Security Officer

@@ -383,7 +383,7 @@ sequenceDiagram
 
 ---
 
-## 5. Kluczowe decyzje architektoniczne (ADR) — 8 decyzji
+## 5. Kluczowe decyzje architektoniczne (ADR) — 9 decyzji
 
 ### ADR-001: SQLite zamiast PostgreSQL
 
@@ -513,6 +513,26 @@ sequenceDiagram
 - ✅ **Multi-platform z jednego kodu** — desktop, web, mobile
 - ✅ **Bezpieczeństwo** — brak DOM, brak XSS
 - ❌ Mniejszy ekosystem niż React
+
+### ADR-009: Architektura 10 wyspecjalizowanych agentów AI zamiast monolitycznego LLM
+
+**Data:** 2025-11-01  
+**Status:** Zaakceptowane
+
+**Kontekst:** Pojedynczy duży LLM nie gwarantuje precyzji księgowej. Potrzebujemy architektury "zero trust to a single model".
+
+**Decyzja:** 10 wyspecjalizowanych agentów (5 głównych + 5 domenowych), każdy z dedykowanym modelem GGUF, komunikujących się przez NATS JetStream.
+
+**Konsekwencje:**
+- ✅ **Wyższa precyzja** — każdy agent specjalizuje się w jednej domenie
+- ✅ **4-Eyes Principle** — krytyczne decyzje weryfikowane przez minimum 2 niezależne modele
+- ✅ **Bayesian Trust Score** — dynamiczne progi decyzyjne, adaptujące się per kontrahent
+- ✅ **Offline-first** — wszystkie modele lokalne, brak zależności od chmury
+- ✅ **Deterministyczny fallback** — silnik OPA/Rego dla decyzji podatkowych
+- ❌ Wyższe zużycie RAM (~6-7 GB dla wszystkich modeli, ładowane leniwie)
+- ❌ Większa złożoność komunikacji (NATS JetStream między 10 agentami)
+
+Pełna specyfikacja: [`docs/AGENTS.md`](AGENTS.md)
 
 ---
 
@@ -767,6 +787,7 @@ curl http://127.0.0.1:8000/health
 ## 🔗 Zobacz również
 
 - [00_META](00_META.md) — strona tytułowa, zespół
+- [Agenci AI](AGENTS.md) — kompletna specyfikacja 10 agentów, Decision Engine, Memory Systems
 - [Rust Module](RUST_MODULE.md) — szczegóły implementacji `nexus-crypto`
 - [Models Manifest](MODELS_MANIFEST.md) — 13 modeli GGUF w tabeli
 - [Foundation Layer](FOUNDATION.md) — UnitOfWork, Pipeline, BaseService, Repository, Result pattern
@@ -778,5 +799,5 @@ curl http://127.0.0.1:8000/health
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
 > **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead

@@ -141,7 +141,7 @@
         <div class="title-meta">
             <p><strong>Wersja:</strong> 2.3.0 „Free-Threaded Phoenix"</p>
             <p><strong>Wariant:</strong> Dark Mode</p>
-            <p><strong>Data generacji:</strong> 2026-07-05 05:07</p>
+            <p><strong>Data generacji:</strong> 2026-07-05 15:43</p>
             <p><strong>Język:</strong> Polski · <strong>Licencja:</strong> Proprietary</p>
             <p><strong>Zespół:</strong> NexusAI Team</p>
             <p><strong>Repozytorium:</strong> github.com/Gorski-Maciej/NexusAI</p>
@@ -218,7 +218,7 @@
 <thead><tr><th>Pole</th><th>Wartość</th></tr></thead><tbody>
 <tr><td><strong>Nazwa</strong></td><td>NexusAI</td></tr>
 <tr><td><strong>Slug</strong></td><td><code>nexus-ai</code></td></tr>
-<tr><td><strong>Wersja</strong></td><td><strong>2.3.1-dev</strong> — „Enterprise Documentation"</td></tr>
+<tr><td><strong>Wersja</strong></td><td><strong>3.0.0-dev</strong> — „Agentic Architecture"</td></tr>
 <tr><td><strong>Data wydania</strong></td><td>2026-07-05</td></tr>
 <tr><td><strong>Status deweloperski</strong></td><td>Beta (klasa 4) — patrz <code>pyproject.toml</code> classifiers</td></tr>
 <tr><td><strong>Język</strong></td><td>Python ≥3.13 (free-threaded, <code>cp313t</code>) + Rust ≥1.78</td></tr>
@@ -414,9 +414,9 @@ pixi run api
 
 <table class="table">
 <thead><tr><th>Funkcja</th><th>Opis</th></tr></thead><tbody>
-<tr><td>🧾 <strong>Księgowanie autonomiczne</strong></td><td>Rada Agentów (5 wyspecjalizowanych LLM GGUF) analizuje fakturę i podejmuje decyzję: <strong>AUTO_POST</strong> albo <strong>ASK_USER</strong> (z 2–5 opcjami).</td></tr>
+<tr><td>🧾 <strong>Księgowanie autonomiczne</strong></td><td>Rada 10 Agentów AI analizuje fakturę i podejmuje decyzję: <strong>AUTO_POST</strong> albo <strong>ASK_USER</strong> (z 2–5 opcjami). 4 poziomy autonomii.</td></tr>
 <tr><td>🔍 <strong>OCR ensemble (4 silniki)</strong></td><td>Tesseract + PaddleOCR + docTR + EasyOCR z konsensusem głosowania i Nadzorcą AI. Wyższe <strong>recall</strong> niż pojedynczy VLM.</td></tr>
-<tr><td>🤖 <strong>5 Agentów AI (lokalnych)</strong></td><td>Orkiestrator (Granite-3.2-3B), Ekstrakcji, Analityczny (Fin-RWKV-169M), Walidator Jakości (Guardian + GraphSAGE + FinBERT), Środków Trwałych. Offline-first.</td></tr>
+<tr><td>🤖 <strong>10 Agentów AI (lokalnych)</strong></td><td>Orkiestrator (Granite 3.2 3B), Ekstrakcji, Analityczny, Walidator Jakości + 6 domenowych (Tax, Cash, Compliance, KSeF, Vendor, Assets). Offline-first, 4-Eyes Principle, Bayesian Trust Score. <a href="docs/AGENTS.md">Pełna specyfikacja →</a></td></tr>
 <tr><td>📜 <strong>Pełna zgodność KSeF</strong></td><td>Generowanie XML wg schematu <code>FA_VAT(2)</code>, walidacja XSD, wysyłka do API KSeF MF.</td></tr>
 <tr><td>🔐 <strong>Własny moduł kryptograficzny (Rust)</strong></td><td>AEAD ChaCha20-Poly1305, Argon2id KDF, SHA-256, mlock sekretów — w pakiecie <code>nexus-crypto</code> (PyO3).</td></tr>
 <tr><td>🗄️ <strong>4 silniki danych</strong></td><td>SQLite+SQLCipher (OLTP zaszyfrowany), DuckDB (OLAP), TigerBeetle (double-entry ledger), NATS JetStream (event bus + KV/Object Store).</td></tr>
@@ -440,6 +440,7 @@ pixi run api
 <tr><td>7</td><td><a href="docs/INSTALLATION.md">Instalacja i konfiguracja</a></td><td>Zmienne środowiskowe, profile</td></tr>
 <tr><td>8</td><td><a href="docs/DATABASE.md">Baza danych</a></td><td>ERD, migracje, backup</td></tr>
 <tr><td>9</td><td><a href="docs/API.md">API / Komunikacja</a></td><td>Pełna specyfikacja REST/JWT</td></tr>
+<tr><td>10a</td><td><a href="docs/AGENTS.md">Agenci AI</a></td><td>10 agentów, Decision Engine, Trust Score, Learning</td></tr>
 <tr><td>10</td><td><a href="docs/MODULES.md">Moduły / Logika</a></td><td>Serwisy, agenci, pipeline OCR</td></tr>
 <tr><td>11</td><td><a href="docs/TESTING.md">Testowanie</a></td><td>pytest, crosshair, locust</td></tr>
 <tr><td>12</td><td><a href="docs/DEPLOYMENT.md">Wdrożenie</a></td><td>Build, binarka, CI/CD</td></tr>
@@ -450,7 +451,6 @@ pixi run api
 <tr><td>17</td><td><a href="docs/USER_GUIDE.md">Podręcznik użytkownika</a></td><td>Instrukcja dla przedsiębiorcy</td></tr>
 <tr><td>18</td><td><a href="docs/GLOSSARY.md">Słownik pojęć</a></td><td>Terminy księgowe i techniczne</td></tr>
 <tr><td>19</td><td><a href="docs/FAQ.md">FAQ</a></td><td>Najczęstsze pytania</td></tr>
-<tr><td>20</td><td><a href="docs/CHANGELOG.md">Changelog</a></td><td>Historia wersji</td></tr>
 </tbody></table>
 
 <hr>
@@ -570,8 +570,8 @@ graph LR
 
 <table class="table">
 <thead><tr><th>Parametr</th><th>Wartość</th></tr></thead><tbody>
-<tr><td>Wersja</td><td><strong>2.3.0</strong> „Free-Threaded Phoenix"</td></tr>
-<tr><td>Data wydania</td><td>2026-06-10</td></tr>
+<tr><td>Wersja</td><td><strong>3.0.0-dev</strong> „Agentic Architecture"</td></tr>
+<tr><td>Data wydania</td><td>2026-07-05</td></tr>
 <tr><td>Python</td><td>3.13.2 (free-threaded, bez GIL)</td></tr>
 <tr><td>Status deweloperski</td><td><strong>Beta (klasa 4)</strong> — patrz <code>pyproject.toml</code> classifiers</td></tr>
 <tr><td>Licencja</td><td>Proprietary</td></tr>
@@ -599,7 +599,7 @@ graph LR
 
 <table class="table">
 <thead><tr><th>Cecha</th><th>Korzyść</th></tr></thead><tbody>
-<tr><td><strong>Autonomia (AUTO_POST)</strong></td><td>Rada 5 Agentów podejmuje decyzję księgową w 95% przypadków.</td></tr>
+<tr><td><strong>Autonomia (AUTO_POST)</strong></td><td>Rada 10 Agentów AI podejmuje decyzję księgową w 95% przypadków.</td></tr>
 <tr><td><strong>Pełna prywatność (offline-first)</strong></td><td>Wszystkie modele AI i baza lokalna; dane nigdy nie opuszczają komputera.</td></tr>
 <tr><td><strong>Zgodność polska z pudełka</strong></td><td>KSeF, NIP, Biała Lista MF, NBP, GUS/BIR — gotowe integracje.</td></tr>
 <tr><td><strong>Zgodność księgowa</strong></td><td>UoR (Ustawa o rachunkowości), IFRS, GAAP — pełna dekretacja i ścieżka audytu.</td></tr>
@@ -736,7 +736,7 @@ sequenceDiagram
 <ul>
 <li><a href="QUICKSTART.md">Szybki start</a> — uruchom NexusAI w 15 minut</li>
 <li><a href="ARCHITECTURE.md">Architektura</a> — diagramy C4, ADR, wzorce projektowe</li>
-<li><a href="MODULES.md">Moduły i logika</a> — agenci AI, pipeline OCR, serwisy</li>
+<li><a href="AGENTS.md">Agenci AI</a> — pełna specyfikacja 10 agentów, Decision Engine</li>
 <li><a href="GLOSSARY.md">Słownik pojęć</a> — terminy księgowe i techniczne</li>
 </ul>
 
@@ -849,7 +849,7 @@ pixi run api
 
 <pre><code class="language-bash">
 curl http://127.0.0.1:8000/health
-# → {"status": "healthy", "version": "2.3.0", ...}
+# → {"status": "healthy", "version": "3.0.0-dev", ...}
 </code></pre>
 
 <p>Lub otwórz w przeglądarce:</p>
@@ -1870,7 +1870,7 @@ python -m nexus_ai.scripts.download_models --easyocr --verify-only
 </ul>
 <hr>
 
-<blockquote><strong>Data utworzenia:</strong> 2026-07-05 · <strong>Autor:</strong> NexusAI Team · <strong>Wersja:</strong> 2.3.1-dev<br><strong>Status dokumentu:</strong> Nowy · <strong>Ostatnia weryfikacja:</strong> 2026-07-05 · <strong>Weryfikator:</strong> Technical Lead</blockquote>
+<blockquote><strong>Data utworzenia:</strong> 2026-07-05 · <strong>Autor:</strong> NexusAI Team · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Status dokumentu:</strong> Nowy · <strong>Ostatnia weryfikacja:</strong> 2026-07-05 · <strong>Weryfikator:</strong> Technical Lead</blockquote>
 
         </section>
         
@@ -2061,7 +2061,7 @@ sequenceDiagram
     U-&gt;&gt;HTTP: GET /version.json
     HTTP--&gt;&gt;U: {"version": "2.4.0", "download_url": "...", ...}
     
-    U-&gt;&gt;U: _is_newer("2.4.0", "2.3.0") → True
+    U-&gt;&gt;U: _is_newer("2.4.0", "3.0.0-dev") → True
     
     U-&gt;&gt;User: build_update_dialog("v2.4.0 available")
     
@@ -2192,7 +2192,7 @@ flowchart TD
 </ul>
 <hr>
 
-<blockquote><strong>Data utworzenia:</strong> 2026-07-05 · <strong>Autor:</strong> NexusAI Team · <strong>Wersja:</strong> 2.3.1-dev<br><strong>Status dokumentu:</strong> Nowy · <strong>Ostatnia weryfikacja:</strong> 2026-07-05 · <strong>Weryfikator:</strong> Technical Lead</blockquote>
+<blockquote><strong>Data utworzenia:</strong> 2026-07-05 · <strong>Autor:</strong> NexusAI Team · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Status dokumentu:</strong> Nowy · <strong>Ostatnia weryfikacja:</strong> 2026-07-05 · <strong>Weryfikator:</strong> Technical Lead</blockquote>
 
         </section>
         
@@ -2708,7 +2708,7 @@ WS /ws/progress/{task_id}
 </ul>
 <hr>
 
-<blockquote><strong>Data utworzenia:</strong> 2026-07-05 · <strong>Autor:</strong> NexusAI Team · <strong>Wersja:</strong> 2.3.1-dev<br><strong>Status dokumentu:</strong> Nowy · <strong>Ostatnia weryfikacja:</strong> 2026-07-06 · <strong>Weryfikator:</strong> Technical Lead</blockquote>
+<blockquote><strong>Data utworzenia:</strong> 2026-07-05 · <strong>Autor:</strong> NexusAI Team · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Status dokumentu:</strong> Nowy · <strong>Ostatnia weryfikacja:</strong> 2026-07-06 · <strong>Weryfikator:</strong> Technical Lead</blockquote>
 <p><!-- UZUPEŁNIONE: dodano sekcje a11y, wydajność, testowanie, diagram nawigacji i RouteGuard --></p>
 
         </section>
@@ -2722,7 +2722,7 @@ WS /ws/progress/{task_id}
             </div>
             <h1 id="event-sourcing--system-zdarzeń-domenowych">Event Sourcing — System zdarzeń domenowych</h1>
 
-<blockquote><strong>Plik:</strong> <code>nexus_ai/events/</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 2.3.0<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
+<blockquote><strong>Plik:</strong> <code>nexus_ai/events/</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
 
 <hr>
 
@@ -3346,7 +3346,7 @@ def upgrade_v1_to_v2(event: InvoiceCreated) -&gt; InvoiceCreated:
             </div>
             <h1 id="ocr-pipeline--system-rozpoznawania-dokumentów">OCR Pipeline — System rozpoznawania dokumentów</h1>
 
-<blockquote><strong>Plik:</strong> <code>nexus_ai/pipeline/</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 2.3.0<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
+<blockquote><strong>Plik:</strong> <code>nexus_ai/pipeline/</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
 
 <hr>
 
@@ -3937,7 +3937,7 @@ async def process_large_attachment(attachment_id: str, payload: dict | None = No
             </div>
             <h1 id="-ai-inference--system-inferencji-modeli-gguf">🧠 AI Inference — System inferencji modeli GGUF</h1>
 
-<blockquote><strong>Plik:</strong> <code>nexus_ai/core/inference.py</code>, <code>nexus_ai/core/adaptive_batcher.py</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 2.3.1-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
+<blockquote><strong>Plik:</strong> <code>nexus_ai/core/inference.py</code>, <code>nexus_ai/core/adaptive_batcher.py</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
 
 <hr>
 
@@ -4221,7 +4221,7 @@ sequenceDiagram
             </div>
             <h1 id="-monitoring-systemu--processmonitor-i-systemmonitor">📊 Monitoring systemu — ProcessMonitor i SystemMonitor</h1>
 
-<blockquote><strong>Plik:</strong> <code>nexus_ai/core/monitor.py</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 2.3.1-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
+<blockquote><strong>Plik:</strong> <code>nexus_ai/core/monitor.py</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
 
 <hr>
 
@@ -4514,7 +4514,7 @@ if not is_healthy:
             </div>
             <h1 id="-http-client--warstwa-komunikacji-zewnętrznej">🌐 HTTP Client — Warstwa komunikacji zewnętrznej</h1>
 
-<blockquote><strong>Plik:</strong> <code>nexus_ai/core/cache/http_client.py</code>, <code>nexus_ai/core/exporters/</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 2.3.1-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
+<blockquote><strong>Plik:</strong> <code>nexus_ai/core/cache/http_client.py</code>, <code>nexus_ai/core/exporters/</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
 
 <hr>
 
@@ -4795,7 +4795,7 @@ files = provider.list_files("*.xml")
             </div>
             <h1 id="-konfiguracja-systemu--toml-profile-i-zmienne-środowiskowe">⚙️ Konfiguracja systemu — TOML profile i zmienne środowiskowe</h1>
 
-<blockquote><strong>Plik:</strong> <code>nexus_ai/config/</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 2.3.1-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
+<blockquote><strong>Plik:</strong> <code>nexus_ai/config/</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
 
 <hr>
 
@@ -4833,7 +4833,7 @@ Zmienne środowiskowe (override — najwyższy priorytet)
 <pre><code class="language-toml">
 [app]
 name = "NexusAI"
-version = "2.3.1-dev"
+version = "3.0.0-dev"
 debug = false
 environment = "production"
 
@@ -5004,7 +5004,7 @@ require_2fa = false
 
 <pre><code class="language-json">
 {
-  "version": "2.3.1-dev",
+  "version": "3.0.0-dev",
   "release_date": "2026-07-05",
   "components": {
     "python": "3.13.2 (free-threaded)",
@@ -5045,7 +5045,7 @@ require_2fa = false
             </div>
             <h1 id="-warstwa-domenowa--aggregates-i-value-objects-ddd">🧩 Warstwa Domenowa — Aggregates i Value Objects (DDD)</h1>
 
-<blockquote><strong>Plik:</strong> <code>nexus_ai/domain/</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 2.3.1-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
+<blockquote><strong>Plik:</strong> <code>nexus_ai/domain/</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
 
 <hr>
 
@@ -5664,7 +5664,7 @@ assert not kind.is_trade
             </div>
             <h1 id="-cicd--pipeliney-github-actions">🔄 CI/CD — Pipeline'y GitHub Actions</h1>
 
-<blockquote><strong>Plik:</strong> <code>.github/workflows/</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 2.3.1-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
+<blockquote><strong>Plik:</strong> <code>.github/workflows/</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
 
 <hr>
 
@@ -5978,7 +5978,7 @@ on:
             </div>
             <h1 id="-pdfium-engine--przetwarzanie-dokumentów-pdf">📄 PDFium Engine — Przetwarzanie dokumentów PDF</h1>
 
-<blockquote><strong>Plik:</strong> <code>nexus_ai/services/pdfium/</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 2.3.1-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
+<blockquote><strong>Plik:</strong> <code>nexus_ai/services/pdfium/</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
 
 <hr>
 
@@ -6275,7 +6275,7 @@ for page_img in images:
             </div>
             <h1 id="-system-decyzyjny--decisionlogger-decisionqueue-trustscore">🧠 System Decyzyjny — DecisionLogger, DecisionQueue, TrustScore</h1>
 
-<blockquote><strong>Plik:</strong> <code>nexus_ai/services/decision_*.py</code>, <code>nexus_ai/api/routes/autopilot.py</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 2.3.1-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
+<blockquote><strong>Plik:</strong> <code>nexus_ai/services/decision_*.py</code>, <code>nexus_ai/api/routes/autopilot.py</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
 
 <hr>
 
@@ -6642,7 +6642,7 @@ POST /api/v1/autopilot/decisions/inv-123/accept
             </div>
             <h1 id="-konfiguracja-builda-i-środowiska">🔧 Konfiguracja Builda i Środowiska</h1>
 
-<blockquote><strong>Pliki:</strong> <code>pixi.toml</code>, <code>pyproject.toml</code>, <code>.pre-commit-config.yaml</code>, <code>user.nuitka-package-config.yml</code>, <code>start.sh</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 2.3.1-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
+<blockquote><strong>Pliki:</strong> <code>pixi.toml</code>, <code>pyproject.toml</code>, <code>.pre-commit-config.yaml</code>, <code>user.nuitka-package-config.yml</code>, <code>start.sh</code><br><strong>Status:</strong> Stabilny · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Ostatnia aktualizacja:</strong> 2026-07-05</blockquote>
 
 <hr>
 
@@ -7339,7 +7339,7 @@ sequenceDiagram
 
 <hr>
 
-<h2 id="5-kluczowe-decyzje-architektoniczne-adr--8-decyzji">5. Kluczowe decyzje architektoniczne (ADR) — 8 decyzji</h2>
+<h2 id="5-kluczowe-decyzje-architektoniczne-adr--9-decyzji">5. Kluczowe decyzje architektoniczne (ADR) — 9 decyzji</h2>
 
 <h3 id="adr-001-sqlite-zamiast-postgresql">ADR-001: SQLite zamiast PostgreSQL</h3>
 
@@ -7478,6 +7478,27 @@ sequenceDiagram
 <li>✅ <strong>Bezpieczeństwo</strong> — brak DOM, brak XSS</li>
 <li>❌ Mniejszy ekosystem niż React</li>
 </ul>
+<h3 id="adr-009-architektura-10-wyspecjalizowanych-agentów-ai-zamiast-monolitycznego-llm">ADR-009: Architektura 10 wyspecjalizowanych agentów AI zamiast monolitycznego LLM</h3>
+
+<p><strong>Data:</strong> 2025-11-01  </p>
+<p><strong>Status:</strong> Zaakceptowane</p>
+
+<p><strong>Kontekst:</strong> Pojedynczy duży LLM nie gwarantuje precyzji księgowej. Potrzebujemy architektury "zero trust to a single model".</p>
+
+<p><strong>Decyzja:</strong> 10 wyspecjalizowanych agentów (5 głównych + 5 domenowych), każdy z dedykowanym modelem GGUF, komunikujących się przez NATS JetStream.</p>
+
+<p><strong>Konsekwencje:</strong></p>
+<ul>
+<li>✅ <strong>Wyższa precyzja</strong> — każdy agent specjalizuje się w jednej domenie</li>
+<li>✅ <strong>4-Eyes Principle</strong> — krytyczne decyzje weryfikowane przez minimum 2 niezależne modele</li>
+<li>✅ <strong>Bayesian Trust Score</strong> — dynamiczne progi decyzyjne, adaptujące się per kontrahent</li>
+<li>✅ <strong>Offline-first</strong> — wszystkie modele lokalne, brak zależności od chmury</li>
+<li>✅ <strong>Deterministyczny fallback</strong> — silnik OPA/Rego dla decyzji podatkowych</li>
+<li>❌ Wyższe zużycie RAM (~6-7 GB dla wszystkich modeli, ładowane leniwie)</li>
+<li>❌ Większa złożoność komunikacji (NATS JetStream między 10 agentami)</li>
+</ul>
+<p>Pełna specyfikacja: <a href="AGENTS.md"><code>docs/AGENTS.md</code></a></p>
+
 <hr>
 
 <h2 id="6-model-domeny">6. Model domeny</h2>
@@ -7745,6 +7766,7 @@ curl http://127.0.0.1:8000/health
 
 <ul>
 <li><a href="00_META.md">00_META</a> — strona tytułowa, zespół</li>
+<li><a href="AGENTS.md">Agenci AI</a> — kompletna specyfikacja 10 agentów, Decision Engine, Memory Systems</li>
 <li><a href="RUST_MODULE.md">Rust Module</a> — szczegóły implementacji <code>nexus-crypto</code></li>
 <li><a href="MODELS_MANIFEST.md">Models Manifest</a> — 13 modeli GGUF w tabeli</li>
 <li><a href="FOUNDATION.md">Foundation Layer</a> — UnitOfWork, Pipeline, BaseService, Repository, Result pattern</li>
@@ -8208,7 +8230,7 @@ flowchart TD
 </ul>
 <hr>
 
-<blockquote><strong>Data utworzenia:</strong> 2026-07-05 · <strong>Autor:</strong> NexusAI Team · <strong>Wersja:</strong> 2.3.1-dev<br><strong>Status dokumentu:</strong> Nowy · <strong>Ostatnia weryfikacja:</strong> 2026-07-05 · <strong>Weryfikator:</strong> Technical Lead</blockquote>
+<blockquote><strong>Data utworzenia:</strong> 2026-07-05 · <strong>Autor:</strong> NexusAI Team · <strong>Wersja:</strong> 3.0.0-dev<br><strong>Status dokumentu:</strong> Nowy · <strong>Ostatnia weryfikacja:</strong> 2026-07-05 · <strong>Weryfikator:</strong> Technical Lead</blockquote>
 
         </section>
         
@@ -8930,7 +8952,7 @@ INSERT OR IGNORE INTO roles (id, name, description, is_system) VALUES
 <pre><code class="language-bash">
 # Backup wszystkich danych
 pixi run backup
-# → app_data/backups/nexus_backup_2026-07-04T12:00:00.enc
+# → app_data/backups/nexus_backup_2026-07-05T12:00:00.enc
 </code></pre>
 
 <p>Co jest backupowane:</p>
@@ -8949,7 +8971,7 @@ pixi run backup
 <h3 id="63-przywracanie">6.3 Przywracanie</h3>
 
 <pre><code class="language-bash">
-pixi run restore --file app_data/backups/nexus_backup_2026-07-04.enc
+pixi run restore --file app_data/backups/nexus_backup_2026-07-05.enc
 </code></pre>
 
 <p>Proces:</p>
@@ -9379,7 +9401,7 @@ curl -X GET http://127.0.0.1:8000/api/v2/invoice/abc123/ksef \
 
 <h4 id="get-health">GET <code>/health</code></h4>
 <ul>
-<li><strong>Odpowiedź 200:</strong> <code>{"status": "healthy", "version": "2.3.0", "uptime": 3600}</code></li>
+<li><strong>Odpowiedź 200:</strong> <code>{"status": "healthy", "version": "3.0.0-dev", "uptime": 3600}</code></li>
 </ul>
 <h4 id="get-apiv1health">GET <code>/api/v1/health</code></h4>
 <ul>
@@ -10073,6 +10095,7 @@ curl -X POST http://127.0.0.1:8000/api/v1/triage/1/resolve \
 <li><a href="SECURITY.md">Bezpieczeństwo</a> — JWT flow, RBAC, rate limiting</li>
 <li><a href="DATABASE.md">Baza danych</a> — schematy tabel dla endpointów</li>
 <li><a href="MODULES.md">Moduły i logika</a> — serwisy stojące za endpointami</li>
+<li><a href="AGENTS.md">Agenci AI</a> — 10 agentów, Decision Engine, Trust Score</li>
 <li><a href="ARCHITECTURE.md">Architektura</a> — CQRS, komunikacja przez NATS</li>
 </ul>
 
@@ -10091,19 +10114,34 @@ curl -X POST http://127.0.0.1:8000/api/v1/triage/1/resolve \
 
 <hr>
 
-<h2 id="1-przegląd-agentów-ai-konfigurowalne-modele-gguf">1. Przegląd agentów AI (konfigurowalne modele GGUF)</h2>
+<h2 id="1-przegląd-agentów-ai-10-agentów--enterprise-v30">1. Przegląd agentów AI (10 agentów — Enterprise v3.0)</h2>
 
-<p>NexusAI używa wyspecjalizowanych agentów AI — każdy ładowany jako model GGUF z konfiguracji. Poniższe nazwy to <strong>rekomendowane modele referencyjne</strong> (system nie ma zharkodowanych modeli — <code>InferenceService</code> ładuje dowolny plik GGUF podany w konfiguracji):</p>
+<p>NexusAI używa 10 wyspecjalizowanych agentów AI — każdy ładowany jako model GGUF z konfiguracji. Poniższe nazwy to <strong>rekomendowane modele referencyjne</strong> (system nie ma zharkodowanych modeli — <code>InferenceService</code> ładuje dowolny plik GGUF podany w konfiguracji):</p>
 
 <blockquote>⚠️ <strong>Uwaga:</strong> Nazwy modeli poniżej NIE są zharkodowane w kodzie. <code>nexus_ai/core/inference.py</code> to generyczny silnik GGUF — ładuje dowolny model wskazany w konfiguracji.</blockquote>
+<p>></p>
+<blockquote><strong>📘 Pełna specyfikacja:</strong> <a href="AGENTS.md"><code>docs/AGENTS.md</code></a> — 10 agentów, Decision Engine, Memory Systems, Continuous Learning Framework, protokół NATS, bezpieczeństwo AI, monitoring agentów.</blockquote>
+
+<h3 id="11-pięciu-głównych-agentów-rada-agentów">1.1 Pięciu głównych agentów (Rada Agentów)</h3>
 
 <table class="table">
-<thead><tr><th>Agent</th><th>Model GGUF (rekomendacja)</th><th>RAM</th><th>Rola</th></tr></thead><tbody>
-<tr><td><strong>Orkiestrator</strong></td><td>Granite-3.2-3B-Q4_K_M</td><td>~2 GB</td><td>Centralny mózg — przyjmuje zadania, deleguje, podejmuje decyzje</td></tr>
-<tr><td><strong>Ekstrakcji Danych</strong></td><td>Vision Guardian 0.3B + ParagonDetect 0.1B</td><td>~400 MB</td><td>Nadzoruje OCR, weryfikuje JSON vs obraz, odrzuca paragony</td></tr>
-<tr><td><strong>Analityczny</strong></td><td>Fin-RWKV-169M-Q4_K_M</td><td>~100 MB</td><td>Analizuje kondycję finansową, wykrywa trendy, anomalie</td></tr>
-<tr><td><strong>Walidator Jakości</strong></td><td>Granite-Guardian-0.5B-Q4_0</td><td>~300 MB</td><td>Strażnik merytoryczny — weryfikuje KAŻDĄ decyzję Orkiestratora</td></tr>
-<tr><td><strong>Środków Trwałych</strong></td><td>Hrida-T2SQL-128k</td><td>~500 MB</td><td>Amortyzacja, ewidencja, plany amortyzacyjne</td></tr>
+<thead><tr><th>Agent</th><th>Model GGUF (rekomendacja)</th><th>RAM</th><th>Rola</th><th>Plik</th></tr></thead><tbody>
+<tr><td><strong>Orkiestrator</strong></td><td>Granite-3.2-3B-Q4_K_M + Guardian 0.5B + Qwen3-Nano 0.5B</td><td>~3.1 GB</td><td>Centralny mózg — przyjmuje zadania, deleguje, podejmuje decyzje, komunikuje się z użytkownikiem</td><td><code>nexus_ai/agents/orchestrator.py</code></td></tr>
+<tr><td><strong>Ekstrakcji Danych</strong></td><td>Vision Guardian 0.3B + ModernBERT-NER-Finance 0.3B + ParagonDetect 0.1B</td><td>~500 MB</td><td>Nadzoruje 4 silniki OCR, walidacja krzyżowa, weryfikacja semantyczna, odrzuca paragony</td><td><code>nexus_ai/agents/extraction.py</code></td></tr>
+<tr><td><strong>Analityczny</strong></td><td>Hrida-T2SQL-128k + Granite 3.2 3B + Fin-RWKV-169M + Lag-Llama 0.3B</td><td>~3.7 GB</td><td>Analizuje kondycję finansową, NL→SQL, wykrywa trendy, anomalie, prognozuje</td><td><code>nexus_ai/agents/analytics.py</code></td></tr>
+<tr><td><strong>Walidator Jakości</strong></td><td>Granite Guardian 0.5B + GraphSAGE 0.1B + FinBERT-ESG 0.1B + Lag-Llama 0.3B</td><td>~700 MB</td><td>Niezależny audytor — weryfikuje KAŻDĄ decyzję (4-Eyes Principle dla >50k PLN)</td><td><code>nexus_ai/agents/quality_validator.py</code></td></tr>
+<tr><td><strong>Środków Trwałych</strong></td><td>Granite 3.2 3B (współdzielony)</td><td>~2.4 GB</td><td>Klasyfikacja, amortyzacja liniowa/degresywna, ewidencja</td><td><code>nexus_ai/services/fixed_assets.py</code></td></tr>
+</tbody></table>
+
+<h3 id="12-pięciu-agentów-domenowych-specjalistycznych">1.2 Pięciu agentów domenowych (specjalistycznych)</h3>
+
+<table class="table">
+<thead><tr><th>Agent</th><th>Technologia</th><th>RAM</th><th>Rola</th><th>Plik(i)</th></tr></thead><tbody>
+<tr><td><strong>AgentTaxEngine</strong></td><td>DuckDB + OPA/Rego + TigerBeetle</td><td>~0 MB (regułowy)</td><td>Automatyczne wyliczanie VAT/PIT/CIT, JPK, optymalizacja podatkowa, terminy</td><td><code>tax_simulator.py</code>, <code>tax_strategies.py</code>, <code>tax/rules.rego</code></td></tr>
+<tr><td><strong>AgentCashManager</strong></td><td>Lag-Llama + Fin-RWKV + DuckDB</td><td>~300 MB</td><td>Prognoza płynności 90 dni, priorytetyzacja płatności, optymalizacja kapitału obrotowego</td><td><code>liquidity_oracle.py</code>, <code>priority_engine.py</code></td></tr>
+<tr><td><strong>AgentCompliance</strong></td><td>OPA/Rego + DuckDB + hishel</td><td>~0 MB (regułowy)</td><td>Monitorowanie zmian przepisów (Dz.U.), audyt zgodności, retencja danych</td><td><code>compliance_analytics.py</code></td></tr>
+<tr><td><strong>AgentKSeF</strong></td><td>httpx + hishel + xsdata + lxml</td><td>~0 MB (API)</td><td>Automatyczna wysyłka/odbiór faktur do/z KSeF, FA(1)/FA(2), status monitor</td><td><code>ksef_service.py</code>, <code>ksef_generator.py</code></td></tr>
+<tr><td><strong>AgentVendorIntelligence</strong></td><td>httpx + hishel + DuckDB + sqlite-vec</td><td>~0 MB (API)</td><td>Ocena wiarygodności kontrahentów (Biała Lista, GUS BIR), Vendor Risk Score 0-100</td><td><code>vendor_intelligence.py</code>, <code>white_list_service.py</code>, <code>gus_bir_client.py</code></td></tr>
 </tbody></table>
 
 <p><strong>Dodatkowe modele specjalistyczne:</strong> Pełna lista i parametry w <a href="MODELS_MANIFEST.md"><code>docs/MODELS_MANIFEST.md</code></a>.</p>
@@ -11771,7 +11809,7 @@ pixi run build-nuitka
 # 2. Tworzenie instalatora
 pixi run build-nuitka-win    # Tylko na Windows
 
-# Wynik: dist/NexusAI_Setup_2.3.0.exe
+# Wynik: dist/NexusAI_Setup_3.0.0.exe
 </code></pre>
 
 <p>Instalator Inno Setup zawiera:</p>
@@ -11795,7 +11833,7 @@ pixi run doctor
 
 # Sprawdź API
 curl http://127.0.0.1:8000/health
-# → {"status": "healthy", "version": "2.3.0"}
+# → {"status": "healthy", "version": "3.0.0-dev"}
 
 # Sprawdź metryki
 curl http://127.0.0.1:9090/metrics | head
@@ -11966,9 +12004,9 @@ liteserv --dir ./releases/ --port 8080
 
 # Struktura katalogu releases/
 releases/
-├── version.json           # {"version": "2.3.1", "url": "/nexus-ai-2.3.1.exe", "sha256": "..."}
-├── nexus-ai-2.3.1.exe
-├── nexus-ai-2.3.0.exe
+├── version.json           # {"version": "3.0.0-dev", "url": "/nexus-ai-3.0.0.exe", "sha256": "..."}
+├── nexus-ai-3.0.0.exe
+├── nexus-ai-3.0.0-dev.exe
 └── ...
 </code></pre>
 
@@ -12496,6 +12534,8 @@ pixi run dev
 pixi run download-models
 </code></pre>
 
+<blockquote>Pełna lista modeli: <a href="MODELS_MANIFEST.md">MODELS_MANIFEST.md</a>. Specyfikacja 10 agentów: <a href="AGENTS.md">AGENTS.md</a>.</blockquote>
+
 <h3 id="62-ocr-zwraca-bardzo-niską-pewność--03">6.2 OCR zwraca bardzo niską pewność (< 0.3)</h3>
 
 <p><strong>Przyczyna:</strong> Słaba jakość obrazu faktury.</p>
@@ -12616,6 +12656,7 @@ pixi run dev
 <li><a href="INSTALLATION.md">Instalacja i konfiguracja</a> — poprawny setup środowiska</li>
 <li><a href="DEPLOYMENT.md">Wdrożenie</a> — backup i przywracanie</li>
 <li><a href="DATABASE.md">Baza danych</a> — integralność bazy, migracje</li>
+<li><a href="AGENTS.md">Agenci AI</a> — modele, problemy z OCR/AI</li>
 </ul>
 
         </section>
@@ -12922,7 +12963,7 @@ def check_key_health() -&gt; list[dict]:
 
 <hr>
 
-<h2 id="7-bezpieczeństwo-ai">7. Bezpieczeństwo AI</h2>
+<h2 id="7-bezpieczeństwo-ai-rozszerzone--enterprise-v30">7. Bezpieczeństwo AI (rozszerzone — Enterprise v3.0)</h2>
 
 <h3 id="71-modele-lokalne-offline-first">7.1 Modele lokalne (offline-first)</h3>
 
@@ -12945,6 +12986,67 @@ pixi run check-models      # Sprawdza obecność i integralność
 <li><strong>Strażnik Merytoryczny</strong> (Granite Guardian 0.5B) weryfikuje KAŻDĄ decyzję</li>
 <li>Decyzja podatkowa NIGDY nie jest podejmowana przez AI — tylko przez deterministyczny silnik reguł (OPA/Rego)</li>
 </ul>
+<h3 id="74-4-eyes-principle-obowiązkowy-dla-kwot--50000-pln">7.4 4-Eyes Principle (obowiązkowy dla kwot > 50,000 PLN)</h3>
+
+<ul>
+<li>Każda decyzja na kwotę > 50k PLN wymaga 2 niezależnych weryfikacji:</li>
+<li><strong>Pierwsza:</strong> Granite Guardian (kontrola podatkowa)</li>
+<li><strong>Druga:</strong> GraphSAGE + FinBERT (oszustwa + ryzyko)</li>
+<li>Jeśli weryfikacje są rozbieżne → wyższy próg (75,000 PLN)</li>
+</ul>
+<h3 id="75-rbac-na-poziomie-agentów">7.5 RBAC na poziomie agentów</h3>
+
+<table class="table">
+<thead><tr><th>Rola</th><th>Uprawnienia agentów</th></tr></thead><tbody>
+<tr><td><strong>admin</strong></td><td>Pełny dostęp do wszystkich agentów i konfiguracji modeli</td></tr>
+<tr><td><strong>accountant</strong></td><td>Dostęp do decyzji, raportów, korekt — nie może zmieniać modeli</td></tr>
+<tr><td><strong>auditor</strong></td><td>Tylko odczyt — dostęp do audit logu i proof chain</td></tr>
+<tr><td><strong>user</strong></td><td>Dostęp do dashboardu i własnych decyzji</td></tr>
+</tbody></table>
+
+<h3 id="76-audit-log-każdej-decyzji-agenta">7.6 Audit log każdej decyzji agenta</h3>
+
+<pre><code class="language-sql">
+CREATE TABLE audit_log (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    agent TEXT NOT NULL,
+    action TEXT NOT NULL,        -- 'decision', 'correction', 'view', 'export'
+    resource TEXT NOT NULL,      -- 'invoice:123', 'report:monthly'
+    details JSONB,
+    ip_address TEXT,
+    timestamp TIMESTAMP DEFAULT NOW(),
+    proof_hash TEXT              -- SHA-256 w proof chain
+);
+</code></pre>
+
+<h3 id="77-proof-chain-na-poziomie-agentów-sha-256">7.7 Proof Chain na poziomie agentów (SHA-256)</h3>
+
+<blockquote><strong>Ogólny mechanizm Proof Chain opisany jest w <a href="#51-proof-chain-sha-256">sekcji 5.1</a>.</strong> Ta sekcja rozszerza go o specyficzne dla agentów AI aspekty.</blockquote>
+
+<p>Każda decyzja agenta tworzy niepodważalny dowód w łańcuchu SHA-256 (współdzielonym z ogólnym mechanizmem audytu):</p>
+
+<pre><code class="language-python">
+# nexus_ai/services/proof_chain.py
+class ProofChain:
+    def add_block(self, decision: AgentDecision) -&gt; str:
+        previous_hash = self.chain[-1].hash if self.chain else "0" * 64
+        block_data = {
+            "index": len(self.chain),
+            "decision_id": decision.decision_id,
+            "decision": msgspec.json.encode(decision).decode(),
+            "timestamp": pendulum.now("UTC").isoformat(),
+            "previous_hash": previous_hash,
+        }
+        hasher = Sha256Hasher()
+        hasher.update(msgspec.json.encode(block_data))
+        return hasher.hexdigest()
+</code></pre>
+
+<p>Efekt: Nieprzerwany łańcuch skrótów — modyfikacja jednego wpisu psuje wszystkie kolejne. Wykrywane przez <code>IntegrityVerifier</code>.</p>
+
+<blockquote>Pełna specyfikacja bezpieczeństwa agentów: <a href="AGENTS.md#7-bezpieczeństwo-agentów-ai"><code>docs/AGENTS.md#7-bezpieczeństwo-agentów-ai</code></a></blockquote>
+
 <hr>
 
 <h2 id="8-owasp-top-10-2021">8. OWASP Top 10 (2021)</h2>
@@ -13030,8 +13132,9 @@ WHERE issue_date &lt; datetime('now', '-5 years') AND is_deleted = 0;
 
 <ul>
 <li><a href="RUST_MODULE.md">Rust Module</a> — implementacja nexus-crypto (AEAD, Argon2id, SHA-256)</li>
+<li><a href="AGENTS.md">Agenci AI</a> — bezpieczeństwo agentów, RBAC, Proof Chain, audit log</li>
 <li><a href="COMPLIANCE.md">Zgodność z przepisami</a> — RODO, retencja, KSeF</li>
-<li><a href="ARCHITECTURE.md">Architektura</a> — ADR-007 (nexus-crypto)</li>
+<li><a href="ARCHITECTURE.md">Architektura</a> — ADR-007 (nexus-crypto), ADR-009 (architektura agentów)</li>
 <li><a href="MODELS_MANIFEST.md">Models Manifest</a> — weryfikacja SHA-256 modeli</li>
 <li><a href="DEPLOYMENT.md">Wdrożenie</a> — security checklist produkcyjna</li>
 </ul>
@@ -13637,14 +13740,14 @@ async def utworz(data: NoweDto) -&gt; NoweDto: ...
 <h2 id="7-zasady-wersjonowania-semver">7. Zasady wersjonowania (SemVer)</h2>
 
 <pre><code>
-v2.3.0  →  vMAJOR.MINOR.PATCH
+v3.0.0-dev  →  vMAJOR.MINOR.PATCH
 
 MAJOR: przełomowe zmiany (API breaking, nowy silnik DB)
 MINOR: nowe funkcje (nowy agent, nowy endpoint)
 PATCH: poprawki błędów, aktualizacje zależności
 </code></pre>
 
-<p>Aktualna wersja: <strong>2.3.0</strong> "Free-Threaded Phoenix"</p>
+<p>Aktualna wersja: <strong>3.0.0-dev</strong> "Agentic Architecture"</p>
 
 <hr>
 
@@ -13656,7 +13759,7 @@ PATCH: poprawki błędów, aktualizacje zależności
 **Tytuł:** [BUG] OCR nie rozpoznaje polskich znaków w PaddleOCR
 
 **Środowisko:**
-- NexusAI: 2.3.0
+- NexusAI: 3.0.0-dev
 - OS: Ubuntu 22.04
 - Python: 3.13.2 (free-threaded)
 
@@ -13687,6 +13790,7 @@ PATCH: poprawki błędów, aktualizacje zależności
 
 <ul>
 <li><a href="TESTING.md">Testowanie</a> — jak pisać testy, szablony, narzędzia</li>
+<li><a href="AGENTS.md">Agenci AI</a> — jak dodać nowego agenta, modele GGUF</li>
 <li><a href="ARCHITECTURE.md">Architektura</a> — wzorce projektowe, ADR, model domeny</li>
 <li><a href="GLOSSARY.md">Słownik pojęć</a> — terminy techniczne i księgowe</li>
 </ul>
@@ -14027,7 +14131,11 @@ Rano otwierasz NexusAI → widzisz dashboard:
 
 <h3 id="a">A</h3>
 <ul>
+<li><strong>Active Learning</strong> — Metoda uczenia maszynowego, gdzie model aktywnie wybiera przypadki do nauki na podstawie korekt użytkownika. W NexusAI: każda korekta decyzji → Bayesian update Trust Score.</li>
+<li><strong>Adaptive Thresholds</strong> — Dynamiczne progi decyzyjne (AUTO_POST/REVIEW/BLOCK), które dostosowują się Bayesiańsko per kontrahent: <code>threshold = base - (α-β)/(α+β) × 0.1</code>.</li>
 <li><strong>AEAD</strong> — Authenticated Encryption with Associated Data. Szyfrowanie, które jednocześnie szyfruje i uwierzytelnia dane (ChaCha20-Poly1305).</li>
+<li><strong>Agent AI</strong> — Wyspecjalizowany model AI (GGUF) odpowiedzialny za konkretną domenę (np. ekstrakcja danych, analityka, walidacja). NexusAI ma 10 agentów.</li>
+<li><strong>AgentOrchestrator</strong> — Centralny agent koordynujący pracę wszystkich pozostałych agentów. Odpowiednik wirtualnego CFO.</li>
 <li><strong>Amortyzacja</strong> — Stopniowe odpisywanie wartości środka trwałego w koszty. Metody: liniowa (równe odpisy), degresywna (malejące).</li>
 <li><strong>Argon2id</strong> — Algorytm KDF (Key Derivation Function), zwycięzca Password Hashing Competition. Odporny na ataki GPU i side-channel.</li>
 <li><strong>ASK_USER</strong> — Decyzja wymagająca użytkownika. System wyświetla 2-5 opcji do wyboru.</li>
@@ -14035,18 +14143,24 @@ Rano otwierasz NexusAI → widzisz dashboard:
 </ul>
 <h3 id="b">B</h3>
 <ul>
-<li><strong>Biała Lista MF</strong> — Rejestr podatników VAT czynnych, prowadzony przez Ministerstwo Finansów. Służy do weryfikacji rachunków bankowych kontrahentów.</li>
+<li><strong>Bayesian Trust Score</strong> — Dynamiczny wskaźnik zaufania aktualizowany po każdej decyzji: posterior Beta(α+poprawne, β+błędne). Używany przez AgentOrchestrator.</li>
+<li><strong>Biała Lista MF</strong> — Rejestr podatników VAT czynnych, prowadzony przez Ministerstwo Finansów. Weryfikacja przez AgentVendorIntelligence.</li>
 </ul>
 <h3 id="c">C</h3>
 <ul>
 <li><strong>CIT</strong> — Podatek dochodowy od osób prawnych. Stawka 19% (lub 9% dla małego podatnika).</li>
 <li><strong>CIT estoński</strong> — Forma opodatkowania CIT — podatek płacony tylko od wypłaconych zysków.</li>
+<li><strong>Confidence Calibration</strong> — Mechanizm kalibracji pewności modelu: porównanie deklarowanej pewności z rzeczywistą precyzją. Przechowywane w DuckDB (<code>model_calibration</code>).</li>
+<li><strong>Continuous Learning</strong> — Zamknięta pętla uczenia: Decyzja → Korekta użytkownika → Bayesian update → Poprawa threshold. Aktywne uczenie (Active Learning).</li>
 <li><strong>CQRS</strong> — Command Query Responsibility Segregation. Wzorzec architektoniczny: osobno zapis (command), osobno odczyt (query).</li>
+<li><strong>Cztery oczy (4-Eyes Principle)</strong> — Zasada wymagająca weryfikacji krytycznych decyzji (>50k PLN) przez 2 niezależne modele AI. Obowiązkowa w NexusAI. Patrz: <a href="AGENTS.md#24-agentqualityvalidator--strażnik-integralności"><code>AGENTS.md#24-agentqualityvalidator</code></a>.</li>
 </ul>
 <h3 id="d">D</h3>
 <ul>
 <li><strong>DDD</strong> — Domain-Driven Design. Metodyka projektowania: najpierw model biznesowy (domena), potem kod.</li>
+<li><strong>Decision Engine</strong> — Wielowarstwowy silnik decyzyjny: strefy decyzyjne (dynamiczne progi) → konsensus między agentami → eskalacja do człowieka → audit trail (Proof Chain).</li>
 <li><strong>Dekretacja</strong> — Przypisanie operacji księgowej do konkretnych kont księgowych (np. Wn 401 "Koszty", Ma 201 "Rozrachunki").</li>
+<li><strong>DLQ (Dead Letter Queue)</strong> — Kolejka na wiadomości, których nie udało się przetworzyć po 3 próbach. W NATS JetStream.</li>
 <li><strong>Double-entry (podwójny zapis)</strong> — Fundamentalna zasada księgowości: każda operacja ma dwie strony — Winien (Wn/Debet) i Ma (Ma/Credit). Suma debetów = suma kredytów.</li>
 </ul>
 <h3 id="e">E</h3>
@@ -14081,6 +14195,7 @@ Rano otwierasz NexusAI → widzisz dashboard:
 </ul>
 <h3 id="m">M</h3>
 <ul>
+<li><strong>Memory Systems</strong> — Cztery typy pamięci w systemie agentów: Episodic (DuckDB), Semantic (sqlite-vec), Procedural (OPA/Rego), Working (NATS KV Store).</li>
 <li><strong>MPP</strong> — Mechanizm Podzielonej Płatności (Split Payment). Płatność za fakturę w dwóch strumieniach: netto i VAT.</li>
 <li><strong>MSSF</strong> — Międzynarodowe Standardy Sprawozdawczości Finansowej (IFRS).</li>
 </ul>
@@ -14100,6 +14215,7 @@ Rano otwierasz NexusAI → widzisz dashboard:
 <li><strong>PIT</strong> — Podatek dochodowy od osób fizycznych. Skala: 12% do 120 000 PLN, 32% powyżej; lub liniowy 19%; lub ryczałt.</li>
 <li><strong>PKWiU</strong> — Polska Klasyfikacja Wyrobów i Usług. Kod określający rodzaj towaru/usługi.</li>
 <li><strong>Plan kont</strong> — Zakładowy Plan Kont (ZPK). Struktura kont księgowych firmy.</li>
+<li><strong>Proof Chain</strong> — Łańcuch skrótów SHA-256 gwarantujący niezmienność decyzji. Każdy wpis zawiera hash poprzedniego — modyfikacja psuje cały łańcuch. Używany jako dowód dla organów skarbowych.</li>
 </ul>
 <h3 id="r">R</h3>
 <ul>
@@ -14116,6 +14232,7 @@ Rano otwierasz NexusAI → widzisz dashboard:
 <h3 id="t">T</h3>
 <ul>
 <li><strong>TigerBeetle</strong> — Silnik double-entry accounting. Matematycznie gwarantuje, że każda transakcja bilansuje się do zera.</li>
+<li><strong>Trust Score</strong> — Wskaźnik zaufania (0.0-1.0) dla decyzji agenta. 4 komponenty: ai_confidence, vendor_reliability, data_consistency, context_trust. Aktualizowany Bayesiańsko po każdej korekcie.</li>
 </ul>
 <h3 id="u">U</h3>
 <ul>
@@ -14245,6 +14362,7 @@ Rano otwierasz NexusAI → widzisz dashboard:
 
 <ul>
 <li><a href="ARCHITECTURE.md">Architektura</a> — szczegółowe wyjaśnienie wzorców i ADR</li>
+<li><a href="AGENTS.md">Agenci AI</a> — pełna specyfikacja 10 agentów, Decision Engine, Trust Score</li>
 <li><a href="MODULES.md">Moduły i logika</a> — techniczna implementacja agentów i OCR</li>
 <li><a href="COMPLIANCE.md">Zgodność z przepisami</a> — kontekst prawny terminów księgowych</li>
 </ul>
@@ -14312,16 +14430,24 @@ Rano otwierasz NexusAI → widzisz dashboard:
 <h2 id="pytania-o-ai">Pytania o AI</h2>
 
 <h3 id="jakie-modele-ai-są-używane">Jakie modele AI są używane?</h3>
-<p>5 głównych agentów: Orkiestrator (Granite 3.2 3B), Ekstrakcji Danych, Analityczny (Fin-RWKV-169M), Walidator Jakości, Środków Trwałych. + 8 modeli specjalistycznych. Wszystkie działają lokalnie.</p>
+<p>10 wyspecjalizowanych agentów AI: 5 głównych (Orkiestrator, Ekstrakcji Danych, Analityczny, Walidator Jakości, Środków Trwałych) i 5 domenowych (TaxEngine, CashManager, Compliance, KSeF, VendorIntelligence). Łącznie ~13 modeli GGUF. Wszystkie działają lokalnie.</p>
+
+<p>Pełna specyfikacja: <a href="AGENTS.md"><code>docs/AGENTS.md</code></a>.</p>
 
 <h3 id="czy-ai-może-popełnić-błąd-księgowy">Czy AI może popełnić błąd księgowy?</h3>
-<p><strong>Decyzje podatkowe NIE są podejmowane przez AI.</strong> AI tylko klasyfikuje dokumenty i sugeruje decyzje. Ostateczna decyzja podatkowa pochodzi z deterministycznego silnika reguł (OPA/Rego).</p>
+<p><strong>Decyzje podatkowe NIE są podejmowane przez AI.</strong> AI tylko klasyfikuje dokumenty i sugeruje decyzje. Ostateczna decyzja podatkowa pochodzi z deterministycznego silnika reguł (OPA/Rego). Każda decyzja jest weryfikowana przez minimum 2 niezależne modele (architektura "zero trust").</p>
 
 <h3 id="dlaczego-4-silniki-ocr-zamiast-jednego">Dlaczego 4 silniki OCR zamiast jednego?</h3>
 <p>Pojedynczy OCR ma 95-98% dokładności. Ensemble 4 silników z konsensusem ma >99.9%. Statystycznie niemożliwe, by 4 różne algorytmy popełniły ten sam błąd.</p>
 
 <h3 id="ile-ram-u-zajmują-modele-ai">Ile RAM-u zajmują modele AI?</h3>
-<p>Łącznie ~4 GB (przy kwantyzacji Q4_K_M). Największy model (Orkiestrator) ~2 GB. Modele są ładowane leniwie — tylko gdy potrzebne.</p>
+<p>Łącznie ~6-7 GB (przy kwantyzacji Q4_K_M). Modele są ładowane leniwie (TTL auto-unload po 300s bez użycia). Największy model (Granite 3.2 3B) ~2.4 GB. W trybie idle system używa ~1-2 GB.</p>
+
+<h3 id="jak-działa-trust-score">Jak działa Trust Score?</h3>
+<p>Trust Score (0.0-1.0) jest aktualizowany Bayesiańsko po każdej decyzji: <code>P(θ|D) ∝ P(D|θ) × P(θ)</code>. 4 komponenty: pewność AI, wiarygodność kontrahenta, spójność danych, zaufanie kontekstowe. Im więcej poprawnych decyzji, tym niższy próg AUTO_POST dla danego kontrahenta.</p>
+
+<h3 id="co-to-jest-4-eyes-principle">Co to jest 4-Eyes Principle?</h3>
+<p>Dla kwot > 50,000 PLN każda decyzja musi być zweryfikowana przez 2 niezależne modele AI (Granite Guardian + GraphSAGE/FinBERT). Jeśli weryfikacje są rozbieżne — wyższy próg (75,000 PLN). Zapewnia architekturę "zero trust to a single model".</p>
 
 <hr>
 
@@ -14375,6 +14501,7 @@ Rano otwierasz NexusAI → widzisz dashboard:
 
 <ul>
 <li><a href="GLOSSARY.md">Słownik pojęć</a> — wyjaśnienie terminów technicznych i księgowych</li>
+<li><a href="AGENTS.md">Agenci AI</a> — kompletna specyfikacja 10 agentów, Decision Engine</li>
 <li><a href="USER_GUIDE.md">Podręcznik użytkownika</a> — instrukcja codziennej pracy</li>
 <li><a href="COMPLIANCE.md">Zgodność z przepisami</a> — KSeF, JPK, deklaracje</li>
 </ul>
@@ -14698,7 +14825,7 @@ nexus_crypto.VaultKey.from_random() -&gt; VaultKey
 <pre><code class="language-python">
 # Sprawdzamy czy moduł jest załadowany poprawnie
 python -c "import nexus_crypto; print(nexus_crypto.__version__)"
-# Oczekiwane: "2.3.0"
+# Oczekiwane: "3.0.0-dev"
 </code></pre>
 
 <hr>
@@ -15167,7 +15294,7 @@ pixi run check-updates
 
 <pre><code class="language-json">
 {
-  "version": "2.3.0",
+  "version": "3.0.0-dev",
   "generated_at": "2026-07-05T00:00:00Z",
   "models": {
     "orchestrator": {
@@ -15292,7 +15419,7 @@ curl -X POST http://127.0.0.1:8000/api/v1/admin/reload-models \
 
 <table class="table">
 <thead><tr><th>NexusAI wersja</th><th>Wymagana wersja manifestu</th><th>Minimalny Granite</th></tr></thead><tbody>
-<tr><td>2.3.x</td><td>2.3.0</td><td>3.2 3B</td></tr>
+<tr><td>2.3.x</td><td>3.0.0-dev</td><td>3.2 3B</td></tr>
 <tr><td>2.2.x</td><td>2.2.0</td><td>3.0 3B</td></tr>
 <tr><td>2.1.x</td><td>2.1.0</td><td>2.0 3B</td></tr>
 <tr><td>2.0.x</td><td>2.0.0</td><td>2.0 2B</td></tr>
@@ -15814,6 +15941,37 @@ gpg --verify models/manifest.json.asc
 
 <hr>
 
+<h2 id="300-dev--2026-07-05--agentic-architecture">[3.0.0-dev] — 2026-07-05 — "Agentic Architecture"</h2>
+
+<h3 id="-system-agentów-ai-v30-enterprise">🤖 System Agentów AI (v3.0 Enterprise)</h3>
+
+<h4 id="-dodane">➕ Dodane</h4>
+<ul>
+<li><strong><code>docs/AGENTS.md</code></strong> — kompletna specyfikacja 10 agentów AI: Orchestrator, Extraction, Analytics, QualityValidator, TaxEngine, CashManager, Compliance, KSeF, VendorIntelligence, FixedAssets</li>
+<li><strong>Decision Engine</strong> — wielowarstwowy silnik decyzyjny: strefy decyzyjne (Dynamic Thresholds), konsensus między agentami (weighted voting), eskalacja do człowieka, Proof Chain SHA-256</li>
+<li><strong>Continuous Learning Framework</strong> — Active Learning Loop, Bayesian Trust Score, Online OCR Learning, propagacja korekt (bezpośrednia/pośrednia/globalna/strukturalna)</li>
+<li><strong>Memory Systems</strong> — 4 typy pamięci: Episodic (DuckDB), Semantic (sqlite-vec), Procedural (OPA/Rego), Working (NATS KV Store)</li>
+<li><strong>4 poziomy autonomii</strong> — od Manualnego (Level 0) do W Pełni Autonomicznego (Level 3)</li>
+<li><strong>4-Eyes Principle</strong> — obowiązkowa weryfikacja przez 2 niezależne modele dla kwot > 50,000 PLN</li>
+<li><strong>ADR-009</strong> — architektura 10 wyspecjalizowanych agentów AI zamiast monolitycznego LLM</li>
+</ul>
+<h4 id="-zaktualizowane">🔄 Zaktualizowane</h4>
+<ul>
+<li><strong><code>docs/MODULES.md</code></strong> — rozszerzona tabela agentów z 5 do 10, odwołanie do AGENTS.md</li>
+<li><strong><code>docs/ARCHITECTURE.md</code></strong> — dodano ADR-009 (architektura agentów), cross-reference do AGENTS.md</li>
+<li><strong><code>docs/SECURITY.md</code></strong> — rozszerzono sekcję "Bezpieczeństwo AI" o 4-Eyes Principle, agent-level RBAC, audit log, Proof Chain</li>
+<li><strong><code>docs/GLOSSARY.md</code></strong> — dodano 8 nowych terminów (Active Learning, Adaptive Thresholds, Agent AI, Bayesian Trust Score, Confidence Calibration, Continuous Learning, Decision Engine, Memory Systems, Trust Score)</li>
+<li><strong><code>docs/FAQ.md</code></strong> — dodano pytania o 10 agentów, Trust Score, 4-Eyes Principle, zużycie RAM</li>
+<li><strong><code>docs/INDEX.md</code></strong> — dodano AGENTS.md do nawigacji (M2b), listy plików (38), indeksu tagów</li>
+</ul>
+<h3 id="-statystyki">📊 Statystyki</h3>
+<ul>
+<li><strong>38 plików .md</strong> — +1 nowy (AGENTS.md)</li>
+<li><strong>10 agentów AI</strong> — udokumentowanych z modelami, RAM, mechanizmami</li>
+<li><strong>9 ADR</strong> — w tym nowy ADR-009</li>
+</ul>
+<hr>
+
 <h2 id="231-dev--2026-07-05--enterprise-documentation">[2.3.1-dev] — 2026-07-05 — „Enterprise Documentation"</h2>
 
 <h3 id="-dokumentacja-pełna-przebudowa">📚 Dokumentacja (pełna przebudowa)</h3>
@@ -16088,6 +16246,7 @@ gpg --verify models/manifest.json.asc
 M1 Fundament        → README, 00_META, INTRODUCTION, QUICKSTART, PROJECT_STRUCTURE
 M1b Rozszerzenia    → SCRIPTS, INSTALLER, FRONTEND, EVENTS, PIPELINE, INFERENCE, MONITORING, HTTP_CLIENT, CONFIG
 M2 Architektura     → ARCHITECTURE, FOUNDATION, DOMAIN, PDFIUM, WORKFLOWS, DECISIONS, DATABASE, MODULES, BUILD_CONFIG, RUST_MODULE, MODELS_MANIFEST
+M2b Agenci AI       → AGENTS (NOWY — 10 agentów, Decision Engine, Memory Systems)
 M3 API              → API
 M4 Operacje         → INSTALLATION, TESTING, DEPLOYMENT, TROUBLESHOOTING
 M5 Bezpieczeństwo   → SECURITY, COMPLIANCE
@@ -16126,7 +16285,7 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 <h3 id="sekcja-5--architektura-systemu">Sekcja 5 — Architektura systemu</h3>
 <ul>
 <li>Plik: <a href="ARCHITECTURE.md"><code>docs/ARCHITECTURE.md</code></a></li>
-<li>Zawartość: <strong>3 diagramy C4</strong> (Context, Container, Component), warstwy DDD, <strong>14 wzorców</strong>, 3 diagramy sekwencji (faktura, Rada Agentów, <strong>NATS JetStream między agentami</strong> — NOWE), <strong>8 ADR</strong>, model domeny (agregaty + VOs), maszyna stanów faktury, stack z uzasadnieniem.</li>
+<li>Zawartość: <strong>3 diagramy C4</strong> (Context, Container, Component), warstwy DDD, <strong>14 wzorców</strong>, 3 diagramy sekwencji (faktura, Rada Agentów, <strong>NATS JetStream między agentami</strong> — NOWE), <strong>9 ADR</strong>, model domeny (agregaty + VOs), maszyna stanów faktury, stack z uzasadnieniem.</li>
 </ul>
 <h3 id="sekcja-5a--warstwa-foundation">Sekcja 5a — Warstwa Foundation</h3>
 <ul>
@@ -16221,7 +16380,12 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 <h3 id="sekcja-10--moduły--logika-biznesowa">Sekcja 10 — Moduły / Logika biznesowa</h3>
 <ul>
 <li>Plik: <a href="MODULES.md"><code>docs/MODULES.md</code></a></li>
-<li>Zawartość: 5 agentów AI, 70+ serwisów (w tym LiquidityOracle, FraudGraphScanner, BudgetaryControlEngine, IdempotentBankImporter, DunningEngine), pipeline OCR z <strong>kodem konsensusu Levenshteina</strong>, tabela porównawcza 4 silników, silnik reguł OPA/Rego, trzy filary nieomylności finansowej, <strong>22 komponenty rdzenia Core</strong> (NATS utils, taskiq middleware, PluginManager, mimalloc heaps, Result monad, OPA client, SecretsManager, FSSpecFactory i inne).</li>
+<li>Zawartość: 10 agentów AI (w tym 5 głównych + 5 domenowych), 70+ serwisów (w tym LiquidityOracle, FraudGraphScanner, BudgetaryControlEngine, IdempotentBankImporter, DunningEngine), pipeline OCR z <strong>kodem konsensusu Levenshteina</strong>, tabela porównawcza 4 silników, silnik reguł OPA/Rego, trzy filary nieomylności finansowej, <strong>22 komponenty rdzenia Core</strong> (NATS utils, taskiq middleware, PluginManager, mimalloc heaps, Result monad, OPA client, SecretsManager, FSSpecFactory i inne).</li>
+</ul>
+<h3 id="sekcja-10a--system-agentów-ai-nowy">Sekcja 10a — System Agentów AI (NOWY)</h3>
+<ul>
+<li>Plik: <a href="AGENTS.md"><code>docs/AGENTS.md</code></a> (NOWY)</li>
+<li>Zawartość: Kompletna specyfikacja 10 agentów AI (Orchestrator, Extraction, Analytics, QualityValidator, TaxEngine, CashManager, Compliance, KSeF, VendorIntelligence, FixedAssets), Decision Engine (strefy, konsensus, eskalacja, Proof Chain), Continuous Learning Framework (Active Learning, Bayesian Trust Score, Online OCR Learning), Memory Systems (4 typy), Protokół NATS JetStream (topologia, gwarancje), Bezpieczeństwo AI (RBAC, audit log), Monitoring (OTel, Prometheus, SLA).</li>
 </ul>
 <h3 id="sekcja-11--testowanie">Sekcja 11 — Testowanie</h3>
 <ul>
@@ -16291,7 +16455,7 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 <h3 id="sekcja-20e--changelog">Sekcja 20e — Changelog</h3>
 <ul>
 <li>Plik: <a href="CHANGELOG.md"><code>docs/CHANGELOG.md</code></a></li>
-<li>Zawartość: Historia wersji (1.0.0 → 2.3.0), daty, autorzy.</li>
+<li>Zawartość: Historia wersji (1.0.0 → 3.0.0-dev), daty, autorzy.</li>
 </ul>
 <hr>
 
@@ -16300,6 +16464,7 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 <table class="table">
 <thead><tr><th>Szukam…</th><th>Idź do…</th></tr></thead><tbody>
 <tr><td>Jak uruchomić?</td><td><a href="QUICKSTART.md"><code>QUICKSTART.md</code></a></td></tr>
+<tr><td>Jak działają agenci AI?</td><td><a href="AGENTS.md"><code>AGENTS.md</code></a></td></tr>
 <tr><td>Jak skonfigurować env vars?</td><td><a href="INSTALLATION.md#3-zmienne-środowiskowe"><code>INSTALLATION.md</code></a></td></tr>
 <tr><td>Jakie mamy endpointy?</td><td><a href="API.md"><code>API.md</code></a></td></tr>
 <tr><td>Jak działa księgowanie?</td><td><a href="MODULES.md#7-diagram-sekwencji--księgowanie-faktury"><code>MODULES.md</code></a></td><td><a href="ARCHITECTURE.md#4-diagramy-sekwencji-3-krytyczne-procesy"><code>ARCHITECTURE.md</code></a><br>sekwencja faktura→NATS→decyzja</td></tr>
@@ -16327,6 +16492,7 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 <table class="table">
 <thead><tr><th>Tag</th><th>Plik</th><th>Sekcja</th></tr></thead><tbody>
 <tr><td><code>#ADR</code></td><td>ARCHITECTURE.md</td><td>5. Kluczowe decyzje architektoniczne</td></tr>
+<tr><td><code>#ADR-009</code> <code>#agenci</code></td><td>ARCHITECTURE.md, AGENTS.md</td><td>ADR-009, 1-10.</td></tr>
 <tr><td><code>#AEAD</code> <code>#ChaCha20</code></td><td>SECURITY.md, RUST_MODULE.md</td><td>2.1, 3.1</td></tr>
 <tr><td><code>#AES-256</code></td><td>SECURITY.md, DATABASE.md</td><td>2.1</td></tr>
 <tr><td><code>#agenci-AI</code></td><td>MODULES.md, MODELS_MANIFEST.md</td><td>1., 2.</td></tr>
@@ -16404,14 +16570,14 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 <tr><td><a href="ARCHITECTURE.md#adr-006-modularny-monolit-zamiast-mikrousług">ADR-006</a></td><td>Modularny Monolit zamiast mikrousług</td><td>2025-02-15</td></tr>
 <tr><td><a href="ARCHITECTURE.md#adr-007-własny-moduł-kryptograficzny-w-rust-nexus-crypto">ADR-007</a></td><td>Własny moduł kryptograficzny w Rust (nexus-crypto)</td><td>2025-03-01</td></tr>
 <tr><td><a href="ARCHITECTURE.md#adr-008-flet-flutter-zamiast-electronreact-dla-interfejsu-desktopowego">ADR-008</a></td><td>Flet (Flutter) zamiast Electron/React dla interfejsu desktopowego</td><td>2025-07-15</td></tr>
+<tr><td><a href="ARCHITECTURE.md#adr-009-architektura-10-wyspecjalizowanych-agentów-ai-zamiast-monolitycznego-llm">ADR-009</a></td><td>Architektura 10 agentów AI zamiast monolitycznego LLM</td><td>2025-11-01</td></tr>
 </tbody></table>
 
 <hr>
 
-<h2 id="-lista-wszystkich-plików-dokumentacji-37">📋 Lista wszystkich plików dokumentacji (37)</h2>
-
+<h2 id="-lista-wszystkich-plików-dokumentacji-38">📋 Lista wszystkich plików dokumentacji (38)</h2>
 <table class="table">
-<thead><tr><th>#</th><th>Plik</th><th>Sekcja</th><th>Typ</th><th>Status</th></tr></thead><tbody>
+<thead><tr><th>---</th><th>---</th><th>---</th><th>---</th><th>---</th></tr></thead><tbody>
 <tr><td>1</td><td><code>docs/00_META.md</code></td><td>0. Meta</td><td>NOWY</td><td>✅</td></tr>
 <tr><td>2</td><td><code>README.md</code> (root)</td><td>1. Strona główna</td><td>Istniejący</td><td>✅</td></tr>
 <tr><td>3</td><td><code>docs/INDEX.md</code></td><td>2. Spis treści</td><td>Istniejący</td><td>✅</td></tr>
@@ -16451,7 +16617,11 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 <tr><td>37</td><td><strong><code>docs/BUILD_CONFIG.md</code></strong></td><td><strong>6n. Build Config</strong></td><td><strong>NOWY</strong></td><td>✅</td></tr>
 </tbody></table>
 
-<p><strong>Razem: 37 plików dokumentacji.</strong></p>
+<table class="table">
+<thead><tr><th>38</th><th>**`docs/AGENTS.md`**</th><th>**10a. Agenci AI**</th><th>**NOWY — v3.0**</th><th>✅</th></tr></thead><tbody>
+</tbody></table>
+
+<p><strong>Razem: 38 plików dokumentacji.</strong></p>
 
 <hr>
 
@@ -16459,6 +16629,7 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 
 <table class="table">
 <thead><tr><th>Sekcja</th><th>Plik</th><th>Opis</th></tr></thead><tbody>
+<tr><td><strong>🆕 10a. Agenci AI</strong></td><td><strong><a href="AGENTS.md"><code>AGENTS.md</code></a></strong></td><td><strong>10 agentów, Decision Engine, Memory Systems, Learning</strong></td></tr>
 <tr><td>5a. Foundation</td><td><a href="FOUNDATION.md"><code>FOUNDATION.md</code></a></td><td>UnitOfWork, Pipeline, BaseService, Result[T,E]</td></tr>
 <tr><td>6a. Skrypty CLI</td><td><a href="SCRIPTS.md"><code>SCRIPTS.md</code></a></td><td>Bootstrap, download modeli, seed danych, backup</td></tr>
 <tr><td>6b. Instalator Windows</td><td><a href="INSTALLER.md"><code>INSTALLER.md</code></a></td><td>Dependency downloader, OTA updater, modele AI</td></tr>
@@ -16474,6 +16645,7 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 <tr><td>6l. Engine PDF</td><td><a href="PDFIUM.md"><code>PDFIUM.md</code></a></td><td>PDFium, renderowanie, ProgressivePDFLoader</td></tr>
 <tr><td>6m. System Decyzyjny</td><td><a href="DECISIONS.md"><code>DECISIONS.md</code></a></td><td>DecisionLogger, DecisionQueue, TrustScore</td></tr>
 <tr><td>6n. Build Config</td><td><a href="BUILD_CONFIG.md"><code>BUILD_CONFIG.md</code></a></td><td>pixi.toml, pyproject.toml, pre-commit</td></tr>
+<tr><td><strong>🆕 10a. Agenci AI</strong></td><td><strong><a href="AGENTS.md"><code>AGENTS.md</code></a></strong></td><td><strong>10 agentów, Decision Engine, Memory Systems, Learning</strong></td></tr>
 </tbody></table>
 
 <hr>

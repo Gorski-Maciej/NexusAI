@@ -295,5 +295,5 @@ python -m nexus_ai.scripts.download_models --easyocr --verify-only
 
 ---
 
-> **Data utworzenia:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 2.3.1-dev
+> **Data utworzenia:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
 > **Status dokumentu:** Nowy · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead

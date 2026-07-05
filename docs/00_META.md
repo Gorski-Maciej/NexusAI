@@ -10,7 +10,7 @@
 |---|---|
 | **Nazwa** | NexusAI |
 | **Slug** | `nexus-ai` |
-| **Wersja** | **2.3.1-dev** — „Enterprise Documentation" |
+| **Wersja** | **3.0.0-dev** — „Agentic Architecture" |
 | **Data wydania** | 2026-07-05 |
 | **Status deweloperski** | Beta (klasa 4) — patrz `pyproject.toml` classifiers |
 | **Język** | Python ≥3.13 (free-threaded, `cp313t`) + Rust ≥1.78 |
@@ -154,5 +154,5 @@ M6 Ludzie/proces→ CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, RELAT
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
 > **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead

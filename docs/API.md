@@ -261,7 +261,7 @@ curl -X GET http://127.0.0.1:8000/api/v2/invoice/abc123/ksef \
 ### 3.9 System / Health (`/health`, `/api/v1/health`)
 
 #### GET `/health`
-- **Odpowiedź 200:** `{"status": "healthy", "version": "2.3.0", "uptime": 3600}`
+- **Odpowiedź 200:** `{"status": "healthy", "version": "3.0.0-dev", "uptime": 3600}`
 
 #### GET `/api/v1/health`
 - **Odpowiedź 200:** `{"status": "healthy", "components": {"db": "ok", "nats": "ok", "tigerbeetle": "ok"}}`
@@ -897,9 +897,10 @@ curl -X POST http://127.0.0.1:8000/api/v1/triage/1/resolve \
 - [Bezpieczeństwo](SECURITY.md) — JWT flow, RBAC, rate limiting
 - [Baza danych](DATABASE.md) — schematy tabel dla endpointów
 - [Moduły i logika](MODULES.md) — serwisy stojące za endpointami
+- [Agenci AI](AGENTS.md) — 10 agentów, Decision Engine, Trust Score
 - [Architektura](ARCHITECTURE.md) — CQRS, komunikacja przez NATS
 
 ---
 
-> **Data aktualizacji:** 2026-07-04 · **Autor:** NexusAI Team · **Wersja:** 2.3.0
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-04 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team
