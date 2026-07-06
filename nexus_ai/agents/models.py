@@ -962,6 +962,53 @@ class ActionCardOption(Struct, kw_only=True):
     """Wpływ na Trust Score przy wyborze tej opcji (+/-)."""
 
 
+class FinancialImpactOption(Struct, kw_only=True):
+    """Opcja na Financial Impact Card — GENIALNY POMYSŁ v7.0.
+
+    Różnica od ActionCardOption:
+    - Label pokazuje KWOTĘ wpływu na portfel, nie metodę księgową
+    - Ma indykator wizualny: zielona/czerwona strzałka
+    - Wszystkie parametry księgowe w hidden_payload — nigdy nie widoczne
+    """
+
+    option_id: str
+    """Unikalne ID opcji."""
+
+    business_label: str
+    """Etykieta biznesowa: "ZACHOWAJ 2 400 PLN w kasie w tym miesiącu"."""
+
+    business_subtitle: str = ""
+    """Podtytuł: "(niższy PIT teraz)" lub "(lepsza zdolność kredytowa)"."""
+
+    impact_highlight: str = ""
+    """Highlight: "── VAT: +920 PLN ──" lub "── PIT: -340 PLN ──"."""
+
+    cash_flow_impact: float = 0.0
+    """Wpływ na cash flow w tym miesiącu (PLN)."""
+
+    is_positive: bool = True
+    """Czy wpływ jest pozytywny (zielona strzałka ↑) czy negatywny (czerwona ↓)."""
+
+    strategy: str = "BALANCED"
+    """Strategia biznesowa: CASH_PROTECT, TAX_MINIMIZE, GROWTH, BALANCED."""
+
+    # ── Standardowe pola ActionCardOption ─────────────────────────
+    is_recommended: bool = False
+    """Czy to rekomendacja AI (⭐)."""
+
+    action_type: str = "confirm"
+    """Typ akcji: confirm, alternative, reject, escalate."""
+
+    hidden_payload: dict[str, Any] = field(default_factory=dict)
+    """Ukryty payload z pełnymi parametrami księgowymi."""
+
+    trust_impact: float = 0.0
+    """Wpływ na Trust Score przy wyborze tej opcji."""
+
+    description: str = ""
+    """Opis (kompatybilność wsteczna z ActionCardOption)."""
+
+
 class ActionCard(Struct, kw_only=True):
     """Karta decyzyjna — JEDNA decyzja dla przedsiębiorcy.
 

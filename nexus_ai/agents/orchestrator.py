@@ -70,11 +70,48 @@ from nexus_ai.agents.proactive_workflow import (
     WorkflowType,
 )
 from nexus_ai.agents.user_decision_profile import (
+    BusinessStrategy,
     UserDecisionProfile,
     WeeklyAutonomyReport,
 )
 from nexus_ai.agents.topics import AgentTopic
 from nexus_ai.core.inference import ModelManager
+from nexus_ai.services.shadow_simulator import (
+    ShadowSimulator,
+    ShadowSimulationReport,
+    build_accounting_variants,
+)
+
+
+# ── Helper: extract strategy from decision's hidden payload ──────────
+
+def _extract_strategy_from_decision(
+    decision: AgentDecision,
+    selected_option_id: str,
+) -> str:
+    """Wyciągnij strategię biznesową z hidden_payload wybranej opcji.
+
+    GENIALNY POMYSŁ v7.0:
+    Gdy użytkownik wybiera opcję na Financial Impact Card,
+    zapisujemy którą STRATEGIĘ wybrał (CASH_PROTECT, TAX_MINIMIZE, itp.).
+    """
+    details = decision.verdict.details if hasattr(decision.verdict, 'details') else {}
+    if not isinstance(details, dict):
+        return ""
+
+    # Sprawdź w hidden_payload wybranej opcji
+    # (hidden_payload nie jest bezpośrednio dostępny z AgentDecision,
+    #  więc próbujemy znaleźć strategię w simulation_result)
+    extracted = details.get("extracted_data", {})
+    if isinstance(extracted, dict):
+        # Próbuj wyciągnąć z simulation_result
+        sim_result = extracted.get("simulation_result", {})
+        if isinstance(sim_result, dict):
+            strategy = sim_result.get("strategy", "")
+            if strategy:
+                return strategy
+
+    return "BALANCED"
 
 logger = get_logger("nexus.agents.orchestrator")
 
@@ -145,6 +182,8 @@ class AgentOrchestrator(BaseAgent):
         self._card_generator = ActionCardGenerator(orchestrator=self)
         # ── GENIALNY POMYSŁ v5.2: Progressive Autonomy Engine ──
         self._decision_profile = UserDecisionProfile()
+        # ── GENIALNY POMYSŁ v7.0: Shadow Simulation Engine ──
+        self._shadow_simulator = ShadowSimulator(max_workers=4)
         # ── GENIALNY POMYSŁ v5.3: Agent Knowledge Mesh (współdzielony) ──
         self._mesh_last_route: RouteDecision | None = None
         # ── GENIALNY POMYSŁ v5.4: Decision Protocol ──
@@ -270,6 +309,135 @@ class AgentOrchestrator(BaseAgent):
     async def get_telemetry_stats(self, days: int = 30) -> dict[str, Any]:
         """Pobierz statystyki telemetryczne."""
         return await self._telemetry.get_aggregate_stats(days)
+
+    # ── GENIALNY POMYSŁ v7.0: Shadow Simulator ──────────────────
+
+    @property
+    def shadow_simulator(self) -> ShadowSimulator:
+        """Dostęp do Shadow Simulation Engine.
+
+        GENIALNY POMYSŁ v7.0:
+        DuckDB Shadow Ledger do symulacji skutków finansowych.
+        """
+        return self._shadow_simulator
+
+    async def simulate_financial_impact(
+        self,
+        invoice_data: dict[str, Any],
+        vendor_is_trusted: bool = False,
+    ) -> ShadowSimulationReport:
+        """Symuluj skutki finansowe wariantów księgowania.
+
+        GENIALNY POMYSŁ v7.0:
+        Przed zbudowaniem karty, uruchom ShadowSimulator by znaleźć
+        wszystkie prawnie dopuszczalne warianty i ich skutki finansowe.
+
+        Args:
+            invoice_data: Dane faktury.
+            vendor_is_trusted: Czy kontrahent jest zaufany.
+
+        Returns:
+            ShadowSimulationReport z wynikami dla każdego wariantu.
+        """
+        # Pobierz aktualną strategię
+        strategy = self._decision_profile.strategy_profile.get_strategy_for_quarter()
+        current_strategy = strategy.value if strategy else "BALANCED"
+
+        # Zbuduj warianty księgowania
+        variants = build_accounting_variants(
+            invoice_data,
+            vendor_is_trusted=vendor_is_trusted,
+            current_strategy=current_strategy,
+        )
+
+        # Uruchom symulacje (w tle, DuckDB :memory:)
+        # Używamy ThreadPoolExecutor wewnątrz ShadowSimulator
+        import concurrent.futures
+        loop = None
+        try:
+            import asyncio
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            pass
+
+        if loop:
+            report = await loop.run_in_executor(
+                None,
+                self._shadow_simulator.simulate,
+                invoice_data,
+                variants,
+            )
+        else:
+            report = self._shadow_simulator.simulate(invoice_data, variants)
+
+        logger.info(
+            "[ORCH] Shadow simulation complete | %d variants | best: +%.0f PLN cash",
+            len(report.results),
+            report.results[0].cash_flow_impact if report.results else 0,
+        )
+
+        return report
+
+    def simulation_to_financial_options(
+        self,
+        report: ShadowSimulationReport,
+        decision: AgentDecision,
+    ) -> list[FinancialImpactOption]:
+        """Konwertuj wyniki symulacji na FinancialImpactOption.
+
+        GENIALNY POMYSŁ v7.0:
+        Wyniki ShadowSimulator → FinancialImpactOption → ActionCard.
+        Każda opcja pokazuje KWOTĘ, nie metodę księgową.
+        """
+        import uuid
+
+        details = decision.verdict.details if hasattr(decision.verdict, 'details') else {}
+        extracted = details.get("extracted_data", {}) if isinstance(details, dict) else {}
+
+        options: list[FinancialImpactOption] = []
+        for result in report.results:
+            variant = result.variant
+
+            # Zbuduj hidden_payload z pełnymi parametrami księgowymi
+            hidden_payload = {
+                "decision_id": decision.decision_id,
+                "action": "confirm" if variant.is_recommended else "alternative",
+                "original_status": decision.verdict.status,
+                "original_trust_score": decision.verdict.trust_score,
+                "extracted_data": extracted,
+                "accounting_params": variant.accounting_params,
+                "simulation_result": {
+                    "cash_flow_impact": result.cash_flow_impact,
+                    "vat_impact": result.vat_impact,
+                    "pit_impact": result.pit_impact,
+                    "strategy": variant.strategy,
+                },
+            }
+
+            # Określ typ akcji
+            if variant.is_recommended:
+                action_type = "confirm"
+            elif "reject" in variant.business_label.lower():
+                action_type = "reject"
+            else:
+                action_type = "alternative"
+
+            options.append(FinancialImpactOption(
+                option_id=uuid.uuid4().hex[:8],
+                business_label=variant.business_label,
+                business_subtitle=variant.business_subtitle,
+                impact_highlight=variant.impact_highlight,
+                cash_flow_impact=result.cash_flow_impact,
+                is_positive=result.cash_flow_impact > 0,
+                strategy=variant.strategy,
+                is_recommended=variant.is_recommended,
+                action_type=action_type,
+                hidden_payload=hidden_payload,
+                trust_impact=0.05 if variant.is_recommended else -0.02,
+                description="",
+            ))
+
+        return options
 
     # ── GENIALNY POMYSŁ v5.2: Progressive Autonomy Engine ──────────
 
@@ -1500,6 +1668,7 @@ Czy ta decyzja jest poprawna? Odpowiedz TAK lub NIE i uzasadnij."""
                 decision_mode=decision.decision_mode.value if decision.decision_mode else "ask_user",
                 user_action="confirm",
                 user_option=selected_label,
+                chosen_strategy=_extract_strategy_from_decision(decision, selected_option_id),
             )
         elif action_type == "reject":
             await self.record_user_feedback(

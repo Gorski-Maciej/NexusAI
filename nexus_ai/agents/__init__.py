@@ -55,6 +55,7 @@ from nexus_ai.agents.models import (
     ExecutiveSummaryItem,
     ExperienceRule,
     FeedbackType,
+    FinancialImpactOption,
     LearningConfig,
     LearningRecord,
     MemoryQuery,
@@ -92,8 +93,10 @@ from nexus_ai.agents.proactive_workflow import (
 )
 from nexus_ai.agents.user_decision_profile import (
     AmountThreshold,
+    BusinessStrategy,
     CategoryPreference,
     DecisionPattern,
+    StrategyProfile,
     UserDecisionProfile,
     VendorTrustProfile,
     WeeklyAutonomyReport,
@@ -126,6 +129,14 @@ from nexus_ai.agents.telemetry_store import AgentTelemetryStore
 # GENIALNY POMYSŁ v6.0: Silent Partner
 from nexus_ai.agents.strategy_engine import StrategyEngine
 from nexus_ai.agents.executive_summary import ExecutiveSummaryGenerator
+# GENIALNY POMYSŁ v7.0: Business Impact Decisions
+from nexus_ai.services.shadow_simulator import (
+    AccountingVariant,
+    ShadowSimulator,
+    ShadowSimulationReport,
+    SimulationResult,
+    build_accounting_variants,
+)
 
 __all__ = [
     # Struktury danych
@@ -201,6 +212,15 @@ __all__ = [
     "StrategicMode",
     "StrategicRecommendation",
     "StrategyEngine",
+    # GENIALNY POMYSŁ v7.0: Business Impact Decisions
+    "AccountingVariant",
+    "BusinessStrategy",
+    "FinancialImpactOption",
+    "ShadowSimulator",
+    "ShadowSimulationReport",
+    "SimulationResult",
+    "StrategyProfile",
+    "build_accounting_variants",
     # GENIALNY POMYSŁ: Dynamiczny Podręcznik Błędów
     "DynamicErrorHandbook",
     "HandbookExample",

@@ -364,8 +364,32 @@ def DecisionFeedView(page: ft.Page, api_client=None):
         colors = BUTTON_COLORS.get(action_type, BUTTON_COLORS["alternative"])
         is_rec = opt.get("is_recommended", False)
         label = opt.get("label", "?")
-        if is_rec:
+
+        # ── GENIALNY POMYSŁ v7.0: Financial Impact Indicator ──
+        # Sprawdź czy karta zawiera dane finansowe (FinancialImpactCard)
+        context = current_card.get("context", {})
+        agent_hint = context.get("agent_hint", "")
+        has_financial_data = bool(agent_hint) or "financial_options_count" in context
+
+        if is_rec and not label.startswith("⭐ "):
             label = f"⭐ {label}"
+
+        # Dla Financial Impact Cards: zbuduj wieloliniową etykietę
+        description = opt.get("description", "")
+        if has_financial_data and description:
+            # description zawiera subtitle + impact_highlight
+            # Wyświetl jako wieloliniowy przycisk
+            btn_content = ft.Column(
+                [
+                    ft.Text(label.replace("⭐ ", ""), size=15, weight=ft.FontWeight.BOLD, color=colors["text"]),
+                    ft.Container(height=2),
+                    ft.Text(description.replace("        ", ""), size=12, color=ft.colors.with_opacity(0.7, colors["text"])),
+                ],
+                spacing=0,
+                tight=True,
+            )
+        else:
+            btn_content = None
 
         handler = _make_card_action_handler(
             current_card.get("card_id", ""),
@@ -374,8 +398,9 @@ def DecisionFeedView(page: ft.Page, api_client=None):
         )
 
         btn = ft.ElevatedButton(
-            text=label,
-            icon=colors["icon"],
+            content=btn_content,
+            text=label if not btn_content else None,
+            icon=colors["icon"] if not btn_content else None,
             on_click=handler,
             style=ft.ButtonStyle(
                 bgcolor=colors["bg"],
@@ -490,6 +515,18 @@ def DecisionFeedView(page: ft.Page, api_client=None):
                             ]),
                             ft.Container(height=20),
                             ft.Column([b for b in option_buttons], spacing=8),
+                            # ── GENIALNY POMYSŁ v7.0: Agent Hint ──
+                            ft.Container(
+                                content=ft.Row([
+                                    ft.Icon(ft.icons.PSYCHOLOGY_OUTLINED, size=14, color=ft.colors.GREY_500),
+                                    ft.Text(
+                                        agent_hint if agent_hint else "",
+                                        size=12, color=ft.colors.GREY_500, italic=True,
+                                    ),
+                                ], spacing=6),
+                                padding=ft.padding.only(top=8),
+                                visible=bool(agent_hint),
+                            ),
                             ft.Container(height=12),
                             ft.Row([
                                 ft.Text(f"ID: {current_card.get('decision_id', '')[:12]}...", size=10, color=ft.colors.GREY_700),

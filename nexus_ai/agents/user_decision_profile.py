@@ -1,4 +1,4 @@
-"""UserDecisionProfile — Progressive Autonomy Engine (GENIALNY POMYSŁ v5.2).
+"""UserDecisionProfile — Progressive Autonomy Engine (GENIALNY POMYSŁ v5.2 + v7.0).
 
 "Agent, Który Rośnie z Przedsiębiorcą"
 
@@ -10,6 +10,12 @@ TYDZIEŃ 2: 40% — rutynowe faktury od znanych kontrahentów → AUTO_POST
 TYDZIEŃ 4: 70% — większość decyzji automatyczna
 MIESIĄC 3: 90%+ — przedsiębiorca widzi tylko wyjątki i podsumowania
 
+GENIALNY POMYSŁ v7.0 — Uczenie się Strategii zamiast Nawyków:
+Zamiast 4 wymiarów uczenia (vendor, category, amount, time) →
+dodajemy 5. wymiar: Business Strategy (CASH_PROTECT, TAX_MINIMIZE, GROWTH, BALANCED).
+Agent uczy się nie CO przedsiębiorca klika, ale DLACZEGO —
+czyli jaką strategię biznesową realizuje.
+
 Zgodnie z aa3fvcx.txt, AGENT_SYSTEM_ENTERPRISE.txt:
 - Tylko technologie z RAPORT_TECHNOLOGII_NEXUSAI.txt
 - SQLite + sqlite-vec dla pamięci wzorców
@@ -20,6 +26,7 @@ Zgodnie z aa3fvcx.txt, AGENT_SYSTEM_ENTERPRISE.txt:
 
 from __future__ import annotations
 
+import enum
 import uuid
 from dataclasses import dataclass, field
 from typing import Any
@@ -29,6 +36,178 @@ from msgspec import Struct, field as msgspec_field
 from structlog import get_logger
 
 logger = get_logger("nexus.agents.profile")
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# Business Strategy — GENIALNY POMYSŁ v7.0
+# ═════════════════════════════════════════════════════════════════════════
+
+
+class BusinessStrategy(enum.StrEnum):
+    """Strategia biznesowa przedsiębiorcy — 5. wymiar uczenia.
+
+    GENIALNY POMYSŁ v7.0 — Business Impact Decisions:
+    Agent uczy się nie CO przedsiębiorca klika, ale DLACZEGO —
+    czyli jaką strategię biznesową realizuje.
+
+    - CASH_PROTECT: Chroń płynność — wybieraj opcje maksymalizujące
+      gotówkę w kasie (jednorazowe koszty, odroczone płatności).
+    - TAX_MINIMIZE: Minimalizuj podatek — wybieraj opcje obniżające
+      PIT/CIT w bieżącym okresie (maksymalizacja kosztów).
+    - GROWTH: Inwestuj w rozwój — rozkładaj koszty w czasie,
+      buduj wartość firmy (amortyzacja, aktywa).
+    - BALANCED: Wyważone podejście — domyślna strategia.
+    """
+
+    CASH_PROTECT = "cash_protect"
+    TAX_MINIMIZE = "tax_minimize"
+    GROWTH = "growth"
+    BALANCED = "balanced"
+
+
+class StrategyProfile(Struct, kw_only=True):
+    """Profil strategiczny przedsiębiorcy — uczenie się DLACZEGO.
+
+    GENIALNY POMYSŁ v7.0:
+    Zamiast uczyć się nawyków ("zawsze klika VAT 23%"),
+    agent uczy się strategii ("w Q4 zawsze maksymalizuje koszty" → TAX_MINIMIZE).
+
+    Obserwuje wybory użytkownika i wykrywa wzorzec strategiczny:
+    - Jeśli użytkownik zawsze wybiera opcję z najlepszym cash-flow → CASH_PROTECT
+    - Jeśli zawsze wybiera opcję z najniższym PIT → TAX_MINIMIZE
+    - Jeśli zawsze wybiera amortyzację → GROWTH
+    """
+
+    strategy: BusinessStrategy = BusinessStrategy.BALANCED
+    """Wykryta strategia biznesowa."""
+
+    confidence: float = 0.0
+    """Pewność wykrycia strategii (0.0-1.0). Rośnie z każdą zgodną decyzją."""
+
+    total_decisions: int = 0
+    """Liczba decyzji zgodnych z tą strategią."""
+
+    # ── Rozkład wyborów strategicznych ──────────────────────────
+    cash_protect_count: int = 0
+    """Ile razy wybrano opcję CASH_PROTECT."""
+
+    tax_minimize_count: int = 0
+    """Ile razy wybrano opcję TAX_MINIMIZE."""
+
+    growth_count: int = 0
+    """Ile razy wybrano opcję GROWTH."""
+
+    balanced_count: int = 0
+    """Ile razy wybrano opcję BALANCED."""
+
+    # ── Sezonowość strategiczna ─────────────────────────────────
+    quarterly_patterns: dict[str, str] = msgspec_field(default_factory=dict)
+    """Strategia per kwartał: {"Q1": "GROWTH", "Q4": "TAX_MINIMIZE", ...}."""
+
+    last_updated: str = ""
+    """ISO timestamp ostatniej aktualizacji."""
+
+    def observe_strategy_choice(self, chosen_strategy: str) -> None:
+        """Obserwuj wybór strategiczny użytkownika.
+
+        Args:
+            chosen_strategy: Którą strategię wybrał użytkownik
+                             (cash_protect, tax_minimize, growth, balanced).
+        """
+        now = pendulum.now("UTC")
+        self.total_decisions += 1
+        self.last_updated = now.isoformat()
+
+        # Aktualizuj liczniki
+        strategy_map = {
+            "CASH_PROTECT": "cash_protect_count",
+            "cash_protect": "cash_protect_count",
+            "TAX_MINIMIZE": "tax_minimize_count",
+            "tax_minimize": "tax_minimize_count",
+            "GROWTH": "growth_count",
+            "growth": "growth_count",
+            "BALANCED": "balanced_count",
+            "balanced": "balanced_count",
+        }
+        counter_attr = strategy_map.get(chosen_strategy, "balanced_count")
+        current = getattr(self, counter_attr, 0)
+        setattr(self, counter_attr, current + 1)
+
+        # Znajdź dominującą strategię
+        counts = {
+            BusinessStrategy.CASH_PROTECT: self.cash_protect_count,
+            BusinessStrategy.TAX_MINIMIZE: self.tax_minimize_count,
+            BusinessStrategy.GROWTH: self.growth_count,
+            BusinessStrategy.BALANCED: self.balanced_count,
+        }
+        dominant = max(counts, key=lambda k: counts[k])
+        dominant_count = counts[dominant]
+
+        if dominant_count >= 3 and self.total_decisions >= 5:
+            self.strategy = dominant
+            self.confidence = min(1.0, dominant_count / self.total_decisions)
+
+        # Zapisz wzorzec kwartalny
+        quarter = f"Q{(now.month - 1) // 3 + 1}"
+        self.quarterly_patterns[quarter] = dominant.value
+
+    def get_strategy_for_quarter(self, quarter: str | None = None) -> BusinessStrategy:
+        """Pobierz strategię dla danego kwartału.
+
+        Jeśli dla tego kwartału jest znany wzorzec, użyj go.
+        W przeciwnym razie zwróć ogólną strategię.
+
+        Args:
+            quarter: Kwartał ("Q1", "Q2", "Q3", "Q4"). Jeśli None, bieżący.
+
+        Returns:
+            BusinessStrategy dla danego kwartału.
+        """
+        if quarter is None:
+            quarter = f"Q{(pendulum.now('UTC').month - 1) // 3 + 1}"
+
+        if quarter in self.quarterly_patterns:
+            try:
+                return BusinessStrategy(self.quarterly_patterns[quarter])
+            except ValueError:
+                pass
+
+        return self.strategy
+
+    @property
+    def is_mature(self) -> bool:
+        """Czy strategia jest wystarczająco dojrzała do auto-decyzji."""
+        return self.confidence >= 0.7 and self.total_decisions >= 5
+
+    @property
+    def dominant_strategy_label(self) -> str:
+        """Etykieta dominującej strategii dla UI."""
+        labels = {
+            BusinessStrategy.CASH_PROTECT: "💰 Chronisz gotówkę",
+            BusinessStrategy.TAX_MINIMIZE: "⚖️ Minimalizujesz podatek",
+            BusinessStrategy.GROWTH: "📈 Inwestujesz w rozwój",
+            BusinessStrategy.BALANCED: "🎯 Wyważone podejście",
+        }
+        return labels.get(self.strategy, "🎯 Wyważone podejście")
+
+    @property
+    def agent_hint(self) -> str:
+        """Podpowiedź agenta budująca zaufanie.
+
+        GENIALNY POMYSŁ v7.0:
+        Pod kartą: podpowiedź agenta budująca zaufanie.
+        "W tym kwartale zwykle chronisz gotówkę"
+        """
+        quarter = f"Q{(pendulum.now('UTC').month - 1) // 3 + 1}"
+        strategy = self.get_strategy_for_quarter(quarter)
+
+        hints = {
+            BusinessStrategy.CASH_PROTECT: f"W {quarter} zwykle chronisz gotówkę",
+            BusinessStrategy.TAX_MINIMIZE: f"W {quarter} zwykle minimalizujesz podatek",
+            BusinessStrategy.GROWTH: f"W {quarter} zwykle inwestujesz w rozwój",
+            BusinessStrategy.BALANCED: "Uczę się Twoich preferencji strategicznych",
+        }
+        return hints.get(strategy, hints[BusinessStrategy.BALANCED])
 
 
 # ═════════════════════════════════════════════════════════════════════════
@@ -157,15 +336,16 @@ class WeeklyAutonomyReport(Struct, kw_only=True):
 class UserDecisionProfile:
     """Profil decyzyjny przedsiębiorcy — Progressive Autonomy Engine.
 
-    GENIALNY POMYSŁ v5.2:
+    GENIALNY POMYSŁ v5.2 + v7.0:
     Agent NIE tylko reaguje na faktury — OBSERWUJE jak przedsiębiorca
     podejmuje decyzje i ADAPTUJE się do jego stylu.
 
-    Cztery wymiary uczenia:
+    Pięć wymiarów uczenia:
     1. Vendor Trust — "Zawsze akceptujesz faktury od XYZ" → niższy próg
     2. Category Preference — "Zawsze wybierasz amortyzację liniową dla IT"
     3. Amount Threshold — "Sprawdzasz ręcznie wszystko > 20k PLN"
     4. Time Pattern — "W piątki odrzucasz wszystko"
+    5. Business Strategy (v7.0) — "W Q4 zawsze maksymalizujesz koszty" → TAX_MINIMIZE
 
     Metryka: Decision Autonomy Score = AUTO_POST / (AUTO_POST + ASK_USER) × 100%
 
@@ -211,7 +391,72 @@ class UserDecisionProfile:
         self._patterns: list[DecisionPattern] = []
         self._decision_history: list[dict[str, Any]] = []
         self._autonomy_history: list[dict[str, Any]] = []  # {date, score, total}
+        # ── GENIALNY POMYSŁ v7.0: 5. wymiar — Business Strategy ──
+        self._strategy_profile: StrategyProfile = StrategyProfile()
         self._logger = get_logger("nexus.agents.profile")
+
+    # ── GENIALNY POMYSŁ v7.0: Strategy Profile ───────────────────
+
+    @property
+    def strategy_profile(self) -> StrategyProfile:
+        """Profil strategiczny przedsiębiorcy — 5. wymiar uczenia.
+
+        GENIALNY POMYSŁ v7.0:
+        Agent uczy się DLACZEGO przedsiębiorca podejmuje decyzje.
+        """
+        return self._strategy_profile
+
+    def observe_strategy_choice(self, chosen_strategy: str) -> None:
+        """Obserwuj wybór strategiczny użytkownika.
+
+        Wywoływane gdy użytkownik wybiera opcję na karcie
+        Financial Impact Card — zapisuje którą STRATEGIĘ wybrał.
+
+        Args:
+            chosen_strategy: CASH_PROTECT, TAX_MINIMIZE, GROWTH, BALANCED.
+        """
+        self._strategy_profile.observe_strategy_choice(chosen_strategy)
+
+    def get_strategy_based_decision(
+        self,
+        trust_score: float,
+        amount: float,
+    ) -> tuple[bool, str]:
+        """Podejmij decyzję AUTO_POST na podstawie strategii.
+
+        GENIALNY POMYSŁ v7.0:
+        Jeśli strategia jest dojrzała (confidence >= 0.7),
+        agent AUTO_POST wybiera opcję zgodną ze strategią — bez pytania.
+
+        Returns:
+            (should_auto_post: bool, reason: str)
+        """
+        if not self._strategy_profile.is_mature:
+            return False, "Strategia jeszcze niedojrzała — potrzebuję więcej danych"
+
+        strategy = self._strategy_profile.get_strategy_for_quarter()
+
+        # W trybie CASH_PROTECT: niższy próg dla rutynowych faktur
+        if strategy == BusinessStrategy.CASH_PROTECT:
+            if trust_score >= 0.85 and amount < 50000:
+                return True, f"Strategia {strategy.value}: ochrona płynności — auto-księgowanie"
+
+        # W trybie TAX_MINIMIZE: auto-księgowanie dla kosztów
+        elif strategy == BusinessStrategy.TAX_MINIMIZE:
+            if trust_score >= 0.80 and amount < 100000:
+                return True, f"Strategia {strategy.value}: optymalizacja podatkowa — auto-księgowanie"
+
+        # W trybie GROWTH: auto-księgowanie dla inwestycji
+        elif strategy == BusinessStrategy.GROWTH:
+            if trust_score >= 0.82 and amount < 75000:
+                return True, f"Strategia {strategy.value}: inwestycje — auto-księgowanie"
+
+        # BALANCED: standardowy próg
+        else:
+            if trust_score >= 0.88 and amount < 30000:
+                return True, f"Strategia {strategy.value}: standardowe auto-księgowanie"
+
+        return False, f"Strategia {strategy.value}: wymaga weryfikacji (trust={trust_score:.2f})"
 
     # ── Obserwacja decyzji ────────────────────────────────────────
 
@@ -225,6 +470,7 @@ class UserDecisionProfile:
         decision_mode: str = "auto_post",
         user_action: str = "confirm",
         user_option: str = "",
+        chosen_strategy: str = "",
     ) -> None:
         """Obserwuj decyzję i aktualizuj profile.
 
@@ -240,6 +486,7 @@ class UserDecisionProfile:
             decision_mode: Tryb: auto_post, suggest, ask_user.
             user_action: Akcja użytkownika: confirm, reject, alternative.
             user_option: Wybrana opcja (np. "amortyzacja_liniowa").
+            chosen_strategy: Strategia wybrana przez użytkownika (v7.0).
         """
         now = pendulum.now("UTC").isoformat()
 
@@ -268,7 +515,11 @@ class UserDecisionProfile:
         # 5. Autonomy Score
         self._update_autonomy_score(status, decision_mode, now)
 
-        # 6. Derive patterns from accumulated data
+        # 6. GENIALNY POMYSŁ v7.0: Strategy observation
+        if chosen_strategy:
+            self._strategy_profile.observe_strategy_choice(chosen_strategy)
+
+        # 7. Derive patterns from accumulated data
         self._derive_patterns()
 
         # Trim history
@@ -632,6 +883,7 @@ class UserDecisionProfile:
 
     def get_summary(self) -> dict[str, Any]:
         """Pobierz podsumowanie profilu."""
+        sp = self._strategy_profile
         return {
             "autonomy_score": self.get_autonomy_score(),
             "autonomy_trend": self.get_autonomy_trend(),
@@ -644,4 +896,11 @@ class UserDecisionProfile:
             "category_count": len(self._category_preferences),
             "patterns_discovered": self.patterns_discovered,
             "latest_autonomy": self._autonomy_history[-7:] if self._autonomy_history else [],
+            # ── GENIALNY POMYSŁ v7.0: Strategy Profile ──
+            "business_strategy": sp.strategy.value,
+            "strategy_confidence": sp.confidence,
+            "strategy_label": sp.dominant_strategy_label,
+            "strategy_agent_hint": sp.agent_hint,
+            "quarterly_patterns": dict(sp.quarterly_patterns),
+            "strategy_mature": sp.is_mature,
         }

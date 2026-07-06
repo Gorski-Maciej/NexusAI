@@ -60,6 +60,7 @@ from nexus_ai.agents.models import (
     AgentHealth,
     AnalyticsQuery,
     DecisionMode,
+    FinancialImpactOption,
     make_context,
 )
 from nexus_ai.agents.topics import AgentTopic
@@ -436,12 +437,118 @@ class ActionCardGenerator:
         self._orchestrator = orchestrator
         self._logger = get_logger("nexus.agents.cards")
 
-    def generate_action_card(
+    def generate_financial_impact_card(
         self,
         decision: AgentDecision,
+        financial_options: list[FinancialImpactOption],
         document_type: str = "INVOICE",
         urgency: str = "normal",
+        agent_hint: str = "",
     ) -> ActionCard:
+        """Generuj kartę z opcjami wyrażonymi w kwotach i strategii.
+
+        GENIALNY POMYSŁ v7.0 — Business Impact Decisions:
+        Przyciski pokazują nie metody księgowe, ale ich realny wpływ
+        na portfel przedsiębiorcy. Każdy przycisk pokazuje kwotę wpływu
+        na cash flow + mały indykator wizualny (zielona/czerwona strzałka).
+
+        Args:
+            decision: Pełna decyzja agenta.
+            financial_options: Opcje z kwotami i strategią (z ShadowSimulator).
+            document_type: Typ dokumentu.
+            urgency: Priorytet.
+            agent_hint: Podpowiedź agenta (np. "W tym kwartale zwykle chronisz gotówkę").
+
+        Returns:
+            ActionCard z opcjami wyrażonymi w PLN i strategii.
+        """
+        import uuid
+
+        card_id = uuid.uuid4().hex[:12]
+        trust = decision.verdict.trust_score
+        details = decision.verdict.details if hasattr(decision.verdict, 'details') else {}
+        extracted = details.get("extracted_data", {}) if isinstance(details, dict) else {}
+
+        # Określ priorytet
+        gross_raw = extracted.get("amount_gross", 0)
+        if isinstance(gross_raw, str):
+            try:
+                gross_raw = float(gross_raw)
+            except (ValueError, TypeError):
+                gross_raw = 0
+        gross = gross_raw
+        if urgency == "normal":
+            if isinstance(gross, (int, float)) and gross > 50000:
+                urgency = "high"
+            elif trust < 0.5:
+                urgency = "critical"
+
+        # Zbuduj podsumowanie
+        vendor = extracted.get("vendor_name", extracted.get("nip", "nieznany"))
+        inv_num = extracted.get("invoice_number", "")
+        summary = f"Faktura {inv_num} od {vendor} na kwotę {gross:,.0f} PLN. Jak chcesz to rozliczyć?"
+
+        # Dodaj agent hint do summary
+        if agent_hint:
+            summary += f"\n\nAgent: \"{agent_hint}\""
+
+        # Przekonwertuj FinancialImpactOption → ActionCardOption
+        # (zachowując biznesowe etykiety)
+        card_options: list[ActionCardOption] = []
+        for fo in financial_options:
+            # Użyj biznesowej etykiety z FinancialImpactOption
+            label = fo.business_label
+            if fo.is_recommended and not label.startswith("⭐ "):
+                label = f"⭐ {label}"
+
+            # Zbuduj description z subtitle i highlight
+            desc_parts = []
+            if fo.business_subtitle:
+                desc_parts.append(fo.business_subtitle)
+            if fo.impact_highlight:
+                desc_parts.append(f"        {fo.impact_highlight}")
+            description = "\n".join(desc_parts) if desc_parts else fo.business_label
+
+            card_options.append(ActionCardOption(
+                option_id=fo.option_id,
+                label=label,
+                description=description or fo.description,
+                is_recommended=fo.is_recommended,
+                action_type=fo.action_type,
+                hidden_payload=fo.hidden_payload,
+                trust_impact=fo.trust_impact,
+            ))
+
+        return ActionCard(
+            card_id=card_id,
+            decision_id=decision.decision_id,
+            title="Jak chcesz to rozliczyć?",
+            summary=summary,
+            agent_name=decision.agent_name,
+            document_type=document_type,
+            options=card_options,
+            trust_score=trust,
+            decision_mode=decision.decision_mode,
+            urgency=urgency,
+            context={
+                "invoice_number": extracted.get("invoice_number", ""),
+                "vendor_nip": extracted.get("nip", ""),
+                "vendor_name": extracted.get("vendor_name", ""),
+                "amount_gross": extracted.get("amount_gross", 0),
+                "currency": extracted.get("currency", "PLN"),
+                "date": extracted.get("date", ""),
+                "status": decision.verdict.status,
+                # ── GENIALNY POMYSŁ v7.0 ──
+                "agent_hint": agent_hint,
+                "financial_options_count": len(financial_options),
+            },
+            created_at=pendulum.now("UTC").isoformat(),
+            expires_at=(
+                pendulum.now("UTC").add(days=7).isoformat()
+                if urgency == "normal"
+                else pendulum.now("UTC").add(hours=24).isoformat()
+            ),
+        )
         """Generuj kartę decyzyjną z AgentDecision.
 
         GENIALNY POMYSŁ v5.1:
