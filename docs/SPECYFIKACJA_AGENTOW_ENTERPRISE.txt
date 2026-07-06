@@ -1,11 +1,13 @@
 ================================================================================
-  NEXUSAI — SPECYFIKACJA SYSTEMU AGENTÓW AI WERSJI ENTERPRISE (v4.0)
+  NEXUSAI — SPECYFIKACJA SYSTEMU AGENTÓW AI WERSJI ENTERPRISE (v4.0 — ZARCHIWIZOWANA)
+  ⚠️  Ten dokument został zastąpiony przez AGENT_SYSTEM_ENTERPRISE.txt (v5.4) ⚠️
   "Autonomiczne Biuro Księgowe — 5 Agentów, 13 Modeli, Zero Błędów"
 ================================================================================
   Data:        Lipiec 2026
-  Status:      Specyfikacja techniczna
+  Status:      ZARCHIWIZOWANA — patrz AGENT_SYSTEM_ENTERPRISE.txt (v5.4)
   Zgodność:    RAPORT_TECHNOLOGII_NEXUSAI.txt (wyłącznie dozwolone technologie)
   Podstawa:    aa3fvcx.txt (blueprint agentów), docs/AGENTS.md
+  Następca:    docs/AGENT_SYSTEM_ENTERPRISE.txt (v5.4) — Knowledge Mesh + Decision Protocol + ULP
 ================================================================================
 
 

@@ -45,11 +45,13 @@ class AgentAnalytics(BaseAgent):
         self,
         model_manager: ModelManager | None = None,
         config: dict[str, Any] | None = None,
+        knowledge_mesh: Any = None,
     ) -> None:
         super().__init__(
             name="analytics",
             model_manager=model_manager,
             config=config or {},
+            knowledge_mesh=knowledge_mesh,
         )
         self._duckdb: Any = None
         self._facts_aggregator: Any = None
@@ -184,6 +186,9 @@ class AgentAnalytics(BaseAgent):
 
         # 5. Risk flags
         risk_flags = await self._detect_risk_flags(result_data, query)
+
+        # 5a. 🆕 KnowledgeMesh Integration — publikuj eventy przy anomaliach
+        await self._publish_mesh_events(query, anomalies, risk_flags, vendor_nip=query.context.get("vendor_nip", "") if query.context else "")
 
         return AnalyticsResult(
             query_id=query.query_id, success=True,
@@ -348,6 +353,162 @@ Brief:"""
                 })
 
         return flags
+
+    # ── 🆕 KnowledgeMesh Integration ─────────────────────────────────
+
+    async def _publish_mesh_events(
+        self,
+        query: AnalyticsQuery,
+        anomalies: list[dict[str, Any]],
+        risk_flags: list[dict[str, Any]],
+        vendor_nip: str = "",
+    ) -> None:
+        """Aktualizuj KnowledgeMesh gdy Analytics wykryje anomalie.
+
+        GENIALNY POMYSŁ v5.4:
+        Analytics dzieli się informacją o ryzyku finansowym z innymi agentami.
+        - Z-score anomaly → QualityValidator TRIGGER_DEEP_CHECK + Orchestrator LOWER_THRESHOLD
+        - Risk flag (overdue, high_amount) → QualityValidator INCREASE_SCRUTINY + Orchestrator LOWER_THRESHOLD
+        - Cashflow anomaly → Wszyscy agenci dostają alert
+
+        CROSS_AGENT_RULES w knowledge_mesh.py:
+          analytics.anomaly_detected → QualityValidator TRIGGER_DEEP_CHECK
+          analytics.anomaly_detected → Orchestrator LOWER_THRESHOLD
+        """
+        if not self._knowledge_mesh or not self._knowledge_mesh.is_initialized:
+            return
+
+        mesh = self._knowledge_mesh
+        category = query.context.get("category", "") if query.context else ""
+        amount = float(query.context.get("amount_gross", 0)) if query.context else 0.0
+
+        # ── 1. Poważne anomalie Z-score (> 3σ) → QualityValidator TRIGGER_DEEP_CHECK ──
+        high_severity_anomalies = [a for a in anomalies if a.get("severity") == "high"]
+        if high_severity_anomalies:
+            fields = list({a.get("field", "unknown") for a in high_severity_anomalies})
+            max_z = max(a.get("z_score", 0) for a in high_severity_anomalies)
+            logger.warning(
+                "[MESH] %d high-severity anomalies | fields=%s | max_z_score=%.1f",
+                len(high_severity_anomalies), fields, max_z,
+            )
+            # Jeden event zbiorczy zamiast N pojedynczych
+            await mesh.share_experience(
+                event_type="analytics.anomaly_detected",
+                source_agent=self.name,
+                vendor_nip=vendor_nip or "unknown",
+                category=category,
+                amount=amount,
+                details={
+                    "query_id": query.query_id,
+                    "query_type": query.query_type,
+                    "severity": "high",
+                    "fields": fields,
+                    "max_z_score": max_z,
+                    "anomaly_count": len(high_severity_anomalies),
+                    "detection_method": "z_score",
+                    "anomalies": [
+                        {"field": a.get("field", ""), "z_score": a.get("z_score", 0)}
+                        for a in high_severity_anomalies[:20]
+                    ],
+                },
+            )
+            # Jedna aktualizacja Trust na vendor (nie na anomalię)
+            await mesh.update_trust(
+                vendor_nip=vendor_nip or "unknown",
+                correct=False,
+                agent_name=self.name,
+                category=category,
+                amount=amount,
+            )
+            logger.info(
+                "[MESH] 📡 analytics.anomaly_detected (high) → QualityValidator TRIGGER_DEEP_CHECK | %d anomalies | fields=%s",
+                len(high_severity_anomalies), fields,
+            )
+
+        # ── 2. Średnie anomalie Z-score (2-3σ) → QualityValidator INCREASE_SCRUTINY ──
+        medium_anomalies = [a for a in anomalies if a.get("severity") == "medium" and a.get("type") == "z_score"]
+        if medium_anomalies:
+            fields = list({a.get("field", "?") for a in medium_anomalies})
+            logger.info(
+                "[MESH] Medium anomalies | fields=%s | count=%d",
+                fields, len(medium_anomalies),
+            )
+            await mesh.share_experience(
+                event_type="analytics.anomaly_detected",
+                source_agent=self.name,
+                vendor_nip=vendor_nip or "unknown",
+                category=category,
+                amount=amount,
+                details={
+                    "query_id": query.query_id,
+                    "query_type": query.query_type,
+                    "severity": "medium",
+                    "fields": fields,
+                    "anomaly_count": len(medium_anomalies),
+                    "detection_method": "z_score",
+                },
+            )
+
+        # ── 3. Risk flags (overdue, high_amount) → QualityValidator + Orchestrator ──
+        high_risk_flags = [f for f in risk_flags if f.get("severity") in ("high", "critical")]
+        if high_risk_flags:
+            flag_types = list({f.get("type", "?") for f in high_risk_flags})
+            logger.warning(
+                "[MESH] High-risk flags detected | types=%s | count=%d",
+                flag_types, len(high_risk_flags),
+            )
+            await mesh.share_experience(
+                event_type="analytics.anomaly_detected",
+                source_agent=self.name,
+                vendor_nip=vendor_nip or "unknown",
+                category=category,
+                amount=amount,
+                details={
+                    "query_id": query.query_id,
+                    "query_type": query.query_type,
+                    "severity": "high",
+                    "flag_types": flag_types,
+                    "flag_count": len(high_risk_flags),
+                    "detection_method": "risk_flag",
+                    "flags": [
+                        {"type": f.get("type", ""), "description": f.get("description", "")[:200]}
+                        for f in high_risk_flags[:10]
+                    ],
+                },
+            )
+            # Obniż Trust Score przy poważnych flagach ryzyka
+            for flag in high_risk_flags:
+                if flag.get("type") == "overdue":
+                    await mesh.update_trust(
+                        vendor_nip=vendor_nip or "unknown",
+                        correct=False,
+                        agent_name=self.name,
+                        category=category,
+                        amount=amount,
+                    )
+                    break  # jedna aktualizacja wystarczy na vendor
+
+        # ── 4. Cashflow anomaly (query type = cashflow) ──
+        if query.query_type in ("cashflow", "forecast") and (anomalies or risk_flags):
+            logger.info(
+                "[MESH] Cashflow anomaly | query=%s | anomalies=%d | flags=%d",
+                query.query_id, len(anomalies), len(risk_flags),
+            )
+            await mesh.share_experience(
+                event_type="analytics.anomaly_detected",
+                source_agent=self.name,
+                vendor_nip=vendor_nip or "unknown",
+                category="cashflow",
+                amount=amount,
+                details={
+                    "query_id": query.query_id,
+                    "query_type": query.query_type,
+                    "severity": "high" if high_severity_anomalies else "medium",
+                    "anomaly_count": len(anomalies),
+                    "flag_count": len(risk_flags),
+                    "detection_method": "cashflow_analysis",
+                },
+            )
 
     # ── NL → SQL ─────────────────────────────────────────────────
 

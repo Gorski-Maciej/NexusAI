@@ -285,34 +285,45 @@ sequenceDiagram
     end
 ```
 
-### 4.2 Rada Agentów — proces decyzyjny
+### 4.2 Rada Agentów — proces decyzyjny (Decision Protocol v5.4)
 
 ```mermaid
 sequenceDiagram
     participant O as Orkiestrator (Granite 3.2 3B)
+    participant M as KnowledgeMesh
     participant E as Ekstrakcji Danych
-    participant A as Analityczny (Fin-RWKV-169M)
+    participant H as Error Handbook
+    participant A as MultiModelEnsemble
     participant Q as Walidator Jakości (Guardian)
-    participant S as Strażnik (Granite Guardian 0.5B)
+    participant C as ConfidenceCalibrator
+    participant T as TelemetryStore
 
+    O->>M: Predykcyjny routing
+    M-->>O: RouteDecision (target_agents, skip, thresholds)
+    
     O->>E: Wyciągnij dane z OCR
+    E-->>M: Mesh events (consensus)
     E-->>O: Dane + confidence
     
-    O->>A: Przeanalizuj kontekst finansowy
-    A-->>O: Analiza + rekomendacja
+    O->>H: Podobne korekty (k-NN)
+    H-->>O: Few-shot examples
     
-    O->>Q: Zweryfikuj jakość danych
-    Q-->>O: Trust Score (0.0-1.0)
+    O->>A: Ensemble (Actor + Guardian + Handbook)
+    A-->>O: EnsembleResult + diversity check
     
-    O->>O: Podejmij decyzję wstępną
+    O->>Q: Zweryfikuj (tax + fraud + ESG)
+    Q-->>M: Mesh events (tax_error, fraud_detected)
+    Q-->>O: Trust Score
     
-    O->>S: Zweryfikuj decyzję
-    S-->>O: Zatwierdzono / Odrzucono
+    O->>C: Kalibruj Trust Score (Platt Scaling)
+    C-->>O: Calibrated Score
     
-    alt Decyzja zatwierdzona
-        O-->>O: AUTO_POST / ASK_USER
-    else Decyzja odrzucona
-        O-->>O: BLOCK / TRIAGE_QUEUE
+    O->>T: Zapisz decyzję, trace, routing
+    
+    alt AUTO_POST
+        O-->>O: Księguj automatycznie
+    else SUGGEST / ASK_USER
+        O-->>O: Action Card dla użytkownika
     end
 ```
 
@@ -516,12 +527,12 @@ sequenceDiagram
 
 ### ADR-009: Architektura 5 wyspecjalizowanych agentów AI zamiast monolitycznego LLM
 
-**Data:** 2025-11-01 (aktualizacja 2026-07-05)
+**Data:** 2025-11-01 (aktualizacja 2026-07-06)
 **Status:** Zaakceptowane
 
 **Kontekst:** Pojedynczy duży LLM nie gwarantuje precyzji księgowej. Potrzebujemy architektury "zero trust to a single model".
 
-**Decyzja:** 5 wyspecjalizowanych agentów, każdy z dedykowanymi modelami GGUF, komunikujących się przez NATS JetStream. JEDEN poziom automatyzacji (DecisionMode: AUTO_POST / SUGGEST / ASK_USER).
+**Decyzja:** 5 wyspecjalizowanych agentów, każdy z dedykowanymi modelami GGUF, komunikujących się przez NATS JetStream + Agent Knowledge Mesh (EASP). JEDEN poziom automatyzacji (DecisionMode: AUTO_POST / SUGGEST / ASK_USER). Decision Protocol v5.4 z pełnym tracingiem OTel, MultiModelEnsemble i Platt Scaling kalibracją.
 
 **Konsekwencje:**
 - ✅ **Wyższa precyzja** — każdy agent specjalizuje się w jednej domenie
@@ -530,6 +541,9 @@ sequenceDiagram
 - ✅ **Bayesian Trust Score** — dynamiczne progi decyzyjne, adaptujące się per kontrahent
 - ✅ **Offline-first** — wszystkie modele lokalne, brak zależności od chmury
 - ✅ **Deterministyczny fallback** — silnik OPA/Rego dla decyzji podatkowych
+- ✅ **🆕 KnowledgeMesh (v5.3)** — agenci dzielą się doświadczeniem przez Cross-Agent Experience Replay
+- ✅ **🆕 Decision Protocol (v5.4)** — pełny OTel tracing + MultiModelEnsemble + ConfidenceCalibrator + AgentTelemetryStore
+- ✅ **🆕 UnifiedLearningProtocol (v5.4)** — kaskada 5 systemów po każdej korekcie
 - ❌ Wyższe zużycie RAM (~4-6 GB dla wszystkich modeli, ładowane leniwie)
 - ❌ Złożoność komunikacji (NATS JetStream między 5 agentami)
 
@@ -800,5 +814,5 @@ curl http://127.0.0.1:8000/health
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead
+> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-06 · **Weryfikator:** Technical Lead

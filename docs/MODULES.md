@@ -5,13 +5,13 @@
 
 ---
 
-## 1. Przegląd agentów AI (5 agentów — Enterprise v4.0)
+## 1. Przegląd agentów AI (5 agentów — Enterprise v5.4)
 
 NexusAI używa 5 wyspecjalizowanych agentów AI — każdy ładowany jako model GGUF z konfiguracji. Poniższe nazwy to **rekomendowane modele referencyjne** (system nie ma zharkodowanych modeli — `InferenceService` ładuje dowolny plik GGUF podany w konfiguracji):
 
 > ⚠️ **Uwaga:** Nazwy modeli poniżej NIE są zharkodowane w kodzie. `nexus_ai/core/inference.py` to generyczny silnik GGUF — ładuje dowolny model wskazany w konfiguracji.
 >
-> **📘 Pełna specyfikacja:** [`docs/AGENTS.md`](AGENTS.md) — 5 agentów, 13 modeli, Decision Engine, Cognitive Audit Trail, protokół NATS, bezpieczeństwo AI, monitoring agentów.
+> **📘 Pełna specyfikacja:** [`docs/AGENTS.md`](AGENTS.md) — 5 agentów, 13 modeli, Decision Engine, Cognitive Audit Trail, Knowledge Mesh, Decision Protocol v5.4, protokół NATS, bezpieczeństwo AI, monitoring agentów.
 
 ### 1.1 Pięciu agentów (Architektura Cognitive Audit Trail)
 
@@ -22,6 +22,20 @@ NexusAI używa 5 wyspecjalizowanych agentów AI — każdy ładowany jako model 
 | **Analityczny** | Hrida-T2SQL-128k + Granite 3.2 3B + Fin-RWKV-169M + Lag-Llama 0.3B | ~3.7 GB | Sztab analityczny — cashflow forecast, vendor intelligence, anomalie, daily brief NL | `nexus_ai/agents/analytics.py` |
 | **Walidator Jakości** | Granite Guardian 0.5B + GraphSAGE 0.1B + FinBERT-ESG 0.1B + Lag-Llama 0.3B | ~670 MB | Trójwarstwowa tarcza — tax compliance, fraud detection, ESG risk, 4-Eyes Principle | `nexus_ai/agents/quality_validator.py` |
 | **Środków Trwałych** | Amortyzator-KŚT 0.2B | ~200 MB | Zarządca majątku — klasyfikacja, amortyzacja liniowa/degresywna, ewidencja | `nexus_ai/services/fixed_assets.py` |
+
+**Moduły wspierające ENTERPRISE v5.4:**
+
+| Moduł | Opis | Plik |
+|---|---|---|
+| **DecisionTracer** | OTel tracing każdej decyzji (10 spanów), DecisionTrace/DecisionSpan msgspec.Struct | `nexus_ai/agents/decision_trace.py` |
+| **MultiModelEnsemble** | Głosowanie ≥2 modeli (Actor + Guardian + Handbook), diversity check, fallback requires_human | `nexus_ai/agents/decision_trace.py` |
+| **ConfidenceCalibrator** | Platt Scaling online (SGD), kalibracja Trust Score, reliability diagram 10-bin | `nexus_ai/agents/decision_trace.py` |
+| **FeedbackLoop** | Metryki: time-to-decision, correction_rate, avg_quality_score, avg_feedback_latency_ms | `nexus_ai/agents/decision_trace.py` |
+| **AgentTelemetryStore** | DuckDB + Parquet, 5 tabel (decisions, corrections, routes, traces, feedback), eksport Parquet ZSTD | `nexus_ai/agents/telemetry_store.py` |
+| **KnowledgeMesh** | CollectiveBayesianField + PredictiveTaskRouter + CrossAgentExperienceReplay, CROSS_AGENT_RULES | `nexus_ai/agents/knowledge_mesh.py` |
+| **UnifiedLearningProtocol** | Kaskada 5 systemów po korekcie: Handbook → LearningProvider → KnowledgeMesh → DecisionProfile → TelemetryStore | `nexus_ai/agents/orchestrator.py` |
+| **DysCache** | Dwupoziomowy cache L1 (RAM OrderedDict) + L2 (SQLite) z async API, TTL, LRU eviction. Zastąpił diskcache w DecisionCache. | `nexus_ai/core/dyscache.py` |
+| **stamina Circuit Breaker** | `stamina.retry_context` z circuit_breaker=True dla Białej Listy MF, KSeF, GUS BIR, NBP. Retry tylko dla OPA (lokalny sidecar). | `white_list_service.py`, `ksef/client.py`, `ksef/auth.py`, `gus_bir_client.py`, `opa_client.py`, `core/cache/http_client.py` |
 
 > **GENIALNY POMYSŁ ENTERPRISE — Cognitive Audit Trail:** Każda korekta użytkownika tworzy blok poznawczy (embedding 768d w sqlite-vec). Przy podobnej fakturze → k-NN → automatyczna korekta. Po 10 korektach → auto-naprawa reguł OPA/Rego. Łańcuch SHA-256 staje się AKTYWNYM systemem uczącym się.
 
@@ -59,6 +73,39 @@ flowchart TD
     DEC -->|confidence >= 0.92| AP[AUTO_POST<br/>Księguj w TigerBeetle]
     DEC -->|confidence < 0.92| ASK[ASK_USER<br/>Centrum decyzji]
 ```
+
+### 2.1a Decision Cache — dyscache L1 (RAM) + L2 (SQLite)
+
+**Plik:** `nexus_ai/agents/base.py` (klasa `DecisionCache`) + `nexus_ai/core/dyscache.py`
+
+**Architektura (zgodnie z aa3fvcx.txt Punkt 13):**
+
+```
+DecisionCache.get(key)
+  ├── L1 (RAM OrderedDict): sprawdź w pamięci (ns)
+  │   ├── hit → return (przesuń na koniec LRU)
+  │   └── miss → sprawdź L2
+  │
+  └── L2 (SQLite): sprawdź na dysku (ms)
+      ├── hit → promuj do L1, zwróć wartość
+      └── miss → return None
+```
+
+**Parametry:**
+| Parametr | Wartość | Opis |
+|---|---|---|
+| `l1_maxsize` | 4096 | Maks. liczba wpisów w RAM-ie (LRU eviction) |
+| `l2_path` | `{cache_dir}/dyscache.db` | SQLite z WAL mode, busy_timeout 5000ms |
+| `default_ttl` | 86400s (24h) | Domyślny czas życia wpisu |
+
+**Zalety względem diskcache:**
+- L1 RAM: dostęp nanosekundowy dla często używanych decyzji
+- L2 SQLite: trwałość, współdzielenie między procesami
+- Async-native: `anyio.to_thread.run_sync` dla wszystkich operacji SQLite
+- Thread-safe: `threading.Lock` dla L1, `check_same_thread=False` dla L2
+- JSON serializacja: bezpieczniejsza niż pickle
+
+**sqlite-vec k-NN pozostaje bez zmian** — osobny kanał dla embeddingów 768d (decision_patterns, decision_map).
 
 ### 2.2 Tryby decyzyjne (DecisionMode) — JEDEN poziom automatyzacji
 
@@ -1097,5 +1144,5 @@ class NewAgent:
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead
+> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 5.5.0 — zaktualizowana o dyscache, stamina CB, KnowledgeMesh Analytics
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-06 · **Weryfikator:** Technical Lead

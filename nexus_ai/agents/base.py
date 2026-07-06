@@ -50,38 +50,48 @@ logger = get_logger("nexus.agents")
 
 
 # ═════════════════════════════════════════════════════════════════════════
-# DecisionCache — Cache decyzji (diskcache + embeddingi)
+# DecisionCache — Cache decyzji (dyscache L1+L2 + embeddingi)
 # ═════════════════════════════════════════════════════════════════════════
 
 
 class DecisionCache:
-    """Cache decyzji agentów — diskcache + sqlite-vec k-NN.
+    """Cache decyzji agentów — dyscache L1 (RAM) + L2 (SQLite) + sqlite-vec k-NN.
 
-    Zgodnie z AGENT_SYSTEM_ENTERPRISE.txt §5.5:
+    Zgodnie z aa3fvcx.txt (Punkt 13) i AGENT_SYSTEM_ENTERPRISE.txt §5.5:
+    - dyscache: dwupoziomowy cache L1 (RAM) + L2 (SQLite) z TTL
     - Każda decyzja → embedding 768d w sqlite-vec
     - Nowa faktura → k-NN (k=5) w decision_patterns
     - max_distance < 0.1 → użyj cache decyzji
     - Oszczędność: ~80% decyzji bez inferencji LLM
-    - diskcache: zapasowy cache dla szybkiego dostępu
     """
 
     def __init__(self, cache_dir: str = "/tmp/nexus-decision-cache") -> None:
         self._cache_dir = cache_dir
-        self._diskcache: Any = None
+        self._dyscache: Any = None
         self._sqlite_vec: Any = None
         self._initialized = False
         self._logger = get_logger("nexus.agents.cache")
 
     async def initialize(self) -> None:
-        """Inicjalizuj cache (diskcache + sqlite-vec)."""
+        """Inicjalizuj cache (dyscache L1+L2 + sqlite-vec)."""
         if self._initialized:
             return
+
+        # dyscache — L1 (RAM) + L2 (SQLite) zgodnie z aa3fvcx.txt Punkt 13
         try:
-            import diskcache as dc
-            self._diskcache = dc.Cache(self._cache_dir)
-            self._logger.info("[CACHE] diskcache initialized at %s", self._cache_dir)
+            from nexus_ai.core.dyscache import DysCache
+            self._dyscache = DysCache(
+                l1_maxsize=4096,
+                l2_path=f"{self._cache_dir}/dyscache.db",
+                default_ttl=86400,  # 24h domyślnie
+            )
+            await self._dyscache.initialize()
+            self._logger.info(
+                "[CACHE] dyscache L1+L2 initialized at %s/dyscache.db",
+                self._cache_dir,
+            )
         except Exception as exc:
-            self._logger.warning("[CACHE] diskcache init failed: %s", exc)
+            self._logger.warning("[CACHE] dyscache init failed: %s", exc)
 
         # sqlite-vec dla embeddingów
         try:
@@ -96,23 +106,19 @@ class DecisionCache:
         self._initialized = True
 
     async def get(self, key: str) -> Any | None:
-        """Pobierz decyzję z cache."""
-        if self._diskcache:
+        """Pobierz decyzję z cache (L1 RAM → L2 SQLite)."""
+        if self._dyscache:
             try:
-                return await anyio.to_thread.run_sync(
-                    lambda: self._diskcache.get(key)
-                )
+                return await self._dyscache.get(key)
             except Exception:
                 pass
         return None
 
     async def set(self, key: str, value: Any, expire: int = 86400) -> None:
-        """Zapisz decyzję w cache (domyślnie 24h)."""
-        if self._diskcache:
+        """Zapisz decyzję w cache (L1 RAM + L2 SQLite, domyślnie 24h)."""
+        if self._dyscache:
             try:
-                await anyio.to_thread.run_sync(
-                    lambda: self._diskcache.set(key, value, expire=expire)
-                )
+                await self._dyscache.set(key, value, ttl=expire)
             except Exception:
                 pass
 
@@ -182,8 +188,8 @@ class DecisionCache:
 
     async def close(self) -> None:
         """Zamknij cache."""
-        if self._diskcache:
-            self._diskcache.close()
+        if self._dyscache:
+            await self._dyscache.close()
         if self._sqlite_vec:
             self._sqlite_vec.close()
 
@@ -516,6 +522,7 @@ class BaseAgent:
       - DecisionMode — tryb decyzyjny (AUTO_POST / SUGGEST / ASK_USER)
       - AgentHealth — monitorowanie stanu
       - Adaptive thresholds — bayesiańskie progi
+      - KnowledgeMesh — GENIALNY POMYSŁ v5.3 (siatka wiedzy agentów)
     """
 
     def __init__(
@@ -523,6 +530,7 @@ class BaseAgent:
         name: str,
         model_manager: Any = None,
         config: dict[str, Any] | None = None,
+        knowledge_mesh: Any = None,
     ) -> None:
         self.name = name
         self._model_manager = model_manager
@@ -538,6 +546,9 @@ class BaseAgent:
         )
         self._proof_chain = ProofChainManager()
         self._decision_mode = DecisionMode(self._config.get("decision_mode", "auto_post"))
+
+        # ── GENIALNY POMYSŁ v5.3: Agent Knowledge Mesh ──
+        self._knowledge_mesh = knowledge_mesh  # współdzielony między agentami
 
         # ── Enterprise: Health ───────────────────────────────────
         self._health = AgentHealth(
@@ -607,6 +618,22 @@ class BaseAgent:
     def mode(self) -> DecisionMode:
         """Dostęp do trybu decyzyjnego (AUTO_POST / SUGGEST / ASK_USER)."""
         return self._decision_mode
+
+    @property
+    def mesh(self) -> Any:
+        """Dostęp do Agent Knowledge Mesh (GENIALNY POMYSŁ v5.3).
+
+        Współdzielony między wszystkimi agentami.
+        Używany do:
+        - Dynamicznego routingu zadań (PredictiveTaskRouter)
+        - Aktualizacji Trust Score (CollectiveBayesianField)
+        - Współdzielenia doświadczeń (CrossAgentExperienceReplay)
+        """
+        return self._knowledge_mesh
+
+    def set_mesh(self, mesh: Any) -> None:
+        """Ustaw współdzielony Knowledge Mesh dla agenta."""
+        self._knowledge_mesh = mesh
 
     async def record_feedback(
         self,

@@ -55,11 +55,13 @@ class AgentQualityValidator(BaseAgent):
         self,
         model_manager: ModelManager | None = None,
         config: dict[str, Any] | None = None,
+        knowledge_mesh: Any = None,
     ) -> None:
         super().__init__(
             name="quality-validator",
             model_manager=model_manager,
             config=config or {},
+            knowledge_mesh=knowledge_mesh,
         )
         self._models: dict[str, str] = {}
         self._fraud_detector: Any = None
@@ -151,10 +153,14 @@ class AgentQualityValidator(BaseAgent):
         # 4. Weighted Voting
         voting_result = self._run_weighted_voting(results)
 
-        # 5. Agregacja
+        # 4a. GENIALNY POMYSŁ v5.4: KnowledgeMesh Integration ──
+        # Aktualizuj Trust Score i publikuj Cross-Agent eventy
         tax_verdict = results.get("tax", {})
         fraud_verdict = results.get("fraud", {})
         esg_verdict = results.get("esg", {})
+        await self._publish_mesh_events(request, tax_verdict, fraud_verdict, esg_verdict)
+
+        # 5. Agregacja
         forecast = results.get("forecast", {})
 
         overall_risk_score = self._calculate_risk_score(
@@ -466,6 +472,133 @@ Format: WERDYKT: OK|WARNING|ERROR, UZASADNIENIE: ..."""
         except Exception as exc:
             logger.debug("[VALIDATOR] Forecast unavailable: %s", exc)
             return {"verdict": "OK", "min_balance": 0.0, "alerts": [], "model": "unavailable"}
+
+    # ── Knowledge Mesh Integration (v5.4) ───────────────────────────
+
+    async def _publish_mesh_events(
+        self,
+        request: QualityCheckRequest,
+        tax_verdict: dict[str, Any],
+        fraud_verdict: dict[str, Any],
+        esg_verdict: dict[str, Any],
+    ) -> None:
+        """Aktualizuj KnowledgeMesh i publikuj Cross-Agent eventy.
+
+        GENIALNY POMYSŁ v5.4:
+        QualityValidator NIE tylko waliduje — DZIELI SIĘ wiedzą z innymi agentami.
+        Gdy wykryje błąd podatkowy → Extraction dostaje HIGH_SCRUTINY.
+        Gdy wykryje fraud → Orchestrator obniża próg AUTO_POST.
+        """
+        if not self._knowledge_mesh or not self._knowledge_mesh.is_initialized:
+            return
+
+        invoice = request.invoice_data
+        vendor_nip = invoice.get("nip", "unknown")
+        category = invoice.get("category", "")
+        gross = invoice.get("amount_gross", 0)
+        amount = gross if isinstance(gross, (int, float)) else 0.0
+        mesh = self._knowledge_mesh
+
+        # ── 1. Tax Error → aktualizuj Trust + Cross-Agent event ──
+        if tax_verdict.get("verdict") in ("ERROR", "WARNING"):
+            # Obniż Trust Score vendora (correct=False)
+            await mesh.update_trust(
+                vendor_nip=vendor_nip,
+                correct=False,
+                agent_name=self.name,
+                category=category,
+                amount=amount,
+            )
+            # Publikuj event Cross-Agent: Extraction + Orchestrator
+            await mesh.share_experience(
+                event_type="quality.tax_error",
+                source_agent=self.name,
+                vendor_nip=vendor_nip,
+                category=category,
+                amount=amount,
+                details={
+                    "tax_reason": tax_verdict.get("reason", ""),
+                    "tax_model": tax_verdict.get("model", "unknown"),
+                    "decision_id": request.decision_id,
+                },
+            )
+            logger.info(
+                "[MESH] 📡 quality.tax_error → Extraction HIGH_SCRUTINY + Orchestrator LOWER_THRESHOLD | NIP=%s",
+                vendor_nip[:8],
+            )
+
+        # ── 2. Fraud Detected → Cross-Agent event ──
+        if fraud_verdict.get("verdict") == "ERROR":
+            # Obniż Trust Score vendora (correct=False)
+            await mesh.update_trust(
+                vendor_nip=vendor_nip,
+                correct=False,
+                agent_name=self.name,
+                category=category,
+                amount=amount,
+            )
+            # Publikuj event Cross-Agent: Extraction + Orchestrator + Analytics
+            await mesh.share_experience(
+                event_type="quality.fraud_detected",
+                source_agent=self.name,
+                vendor_nip=vendor_nip,
+                category=category,
+                amount=amount,
+                details={
+                    "fraud_reason": fraud_verdict.get("reason", ""),
+                    "risk_score": fraud_verdict.get("risk_score", 0.0),
+                    "decision_id": request.decision_id,
+                },
+            )
+            logger.warning(
+                "[MESH] 🚨 quality.fraud_detected → ALL agents on HIGH ALERT | NIP=%s | risk=%.2f",
+                vendor_nip[:8], fraud_verdict.get("risk_score", 0.0),
+            )
+
+        # ── 3. ESG/Risk Warning → Cross-Agent event ──
+        if esg_verdict.get("verdict") in ("ERROR", "WARNING"):
+            await mesh.share_experience(
+                event_type="analytics.anomaly_detected",
+                source_agent=self.name,
+                vendor_nip=vendor_nip,
+                category=category,
+                amount=amount,
+                details={
+                    "esg_reason": esg_verdict.get("reason", ""),
+                    "risk_score": esg_verdict.get("risk_score", 0.0),
+                    "decision_id": request.decision_id,
+                },
+            )
+            logger.info(
+                "[MESH] 📡 analytics.anomaly_detected → QualityValidator + Orchestrator | NIP=%s",
+                vendor_nip[:8],
+            )
+
+        # ── 4. All OK → podnieś Trust Score (tylko dla wykonanych kontroli) ──
+        requested_checks = set(request.checks or ["tax", "fraud", "esg"])
+        performed_verdicts = []
+        if "tax" in requested_checks:
+            performed_verdicts.append(tax_verdict)
+        if "fraud" in requested_checks:
+            performed_verdicts.append(fraud_verdict)
+        if "esg" in requested_checks:
+            performed_verdicts.append(esg_verdict)
+        all_ok = all(
+            v.get("verdict") == "OK"
+            for v in performed_verdicts
+        ) if performed_verdicts else True
+        if all_ok:
+            await mesh.update_trust(
+                vendor_nip=vendor_nip,
+                correct=True,
+                agent_name=self.name,
+                category=category,
+                amount=amount,
+            )
+            logger.debug(
+                "[MESH] ✅ All checks OK for NIP=%s → trust boosted",
+                vendor_nip[:8],
+            )
 
     # ── Agregacja ───────────────────────────────────────────────────
 

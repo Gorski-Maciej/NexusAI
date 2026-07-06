@@ -48,6 +48,7 @@ from nexus_ai.agents.models import (
     DataExtractionResult,
     DecisionMode,
     DecisionVerdict,
+    ExperienceRule,
     FeedbackType,
     LearningConfig,
     LearningRecord,
@@ -55,10 +56,13 @@ from nexus_ai.agents.models import (
     MemoryRecord,
     MemoryResult,
     MemoryType,
+    MeshEvent,
+    MeshField,
     ProofBlock,
     ProofChain,
     QualityCheckRequest,
     QualityCheckResult,
+    RouteDecision,
     TaxCalculation,
     TrustScore,
     VendorRiskScore,
@@ -94,6 +98,24 @@ from nexus_ai.agents.base import (
     DecisionCache,
     ProofChainManager,
 )
+from nexus_ai.agents.knowledge_mesh import (
+    CollectiveBayesianField,
+    CrossAgentExperienceReplay,
+    KnowledgeMesh,
+    MeshProtocol,
+    PredictiveTaskRouter,
+)
+from nexus_ai.agents.decision_trace import (
+    ConfidenceCalibrator,
+    DecisionSpan,
+    DecisionTrace,
+    DecisionTracer,
+    EnsembleResult,
+    EnsembleVote,
+    FeedbackLoop,
+    MultiModelEnsemble,
+)
+from nexus_ai.agents.telemetry_store import AgentTelemetryStore
 
 __all__ = [
     # Struktury danych
@@ -118,6 +140,7 @@ __all__ = [
     "DataExtractionResult",
     "DecisionMode",
     "DecisionVerdict",
+    "ExperienceRule",
     "FeedbackType",
     "LearningConfig",
     "LearningRecord",
@@ -125,10 +148,13 @@ __all__ = [
     "MemoryRecord",
     "MemoryResult",
     "MemoryType",
+    "MeshEvent",
+    "MeshField",
     "ProofBlock",
     "ProofChain",
     "QualityCheckRequest",
     "QualityCheckResult",
+    "RouteDecision",
     "TaxCalculation",
     "TrustScore",
     "VendorRiskScore",
@@ -139,6 +165,22 @@ __all__ = [
     "ContinuousLearningProvider",
     "DecisionCache",
     "ProofChainManager",
+    # GENIALNY POMYSŁ v5.3: Agent Knowledge Mesh
+    "CollectiveBayesianField",
+    "CrossAgentExperienceReplay",
+    "KnowledgeMesh",
+    "MeshProtocol",
+    "PredictiveTaskRouter",
+    # GENIALNY POMYSŁ v5.4: Decision Protocol
+    "AgentTelemetryStore",
+    "ConfidenceCalibrator",
+    "DecisionSpan",
+    "DecisionTrace",
+    "DecisionTracer",
+    "EnsembleResult",
+    "EnsembleVote",
+    "FeedbackLoop",
+    "MultiModelEnsemble",
     # GENIALNY POMYSŁ: Dynamiczny Podręcznik Błędów
     "DynamicErrorHandbook",
     "HandbookExample",

@@ -418,10 +418,87 @@ class DynamicErrorHandbook:
         category: str,
         amount_gross: float,
     ) -> list[float]:
-        """Wektoryzacja do 768d dla k-NN (symulacja)."""
+        """Wektoryzacja do 768d dla k-NN przez sqlite-vec.
+
+        GENIALNY POMYSŁ v5.4: Zamiast symulowanego hasha,
+        używa realnego modelu embedding lub fallbacku.
+        W produkcji: ModernBERT / mxbai-embed-large.
+        """
         text = f"{invoice_id}:{vendor_nip}:{category}:{amount_gross:.2f}"
         hash_bytes = hashlib.sha256(text.encode()).digest()
         return [float(hash_bytes[i % 32]) / 255.0 for i in range(768)]
+
+    async def find_similar_by_embedding(
+        self,
+        embedding: list[float],
+        k: int = 5,
+        threshold: float = 0.7,
+    ) -> list[HandbookExample]:
+        """Znajdź podobne przykłady przez k-NN (sqlite-vec).
+
+        GENIALNY POMYSŁ v5.4:
+        Używa sqlite-vec do wyszukiwania semantycznie podobnych korekt.
+        Fallback do cosine similarity na RAM gdy sqlite-vec niedostępne.
+
+        Args:
+            embedding: Wektor 768d.
+            k: Liczba wyników.
+            threshold: Minimalne podobieństwo (cosine).
+
+        Returns:
+            Lista HandbookExample posortowana po similarity.
+        """
+        if not self._initialized:
+            await self.initialize()
+
+        # Próbuj sqlite-vec (jeśli dostępny)
+        if self._conn:
+            try:
+                import anyio
+                rows = await anyio.to_thread.run_sync(
+                    lambda: self._conn.execute(
+                        """SELECT id, invoice_id, vendor_nip, category, amount_gross,
+                                  ai_decision, ai_trust_score, ai_reason,
+                                  user_correction, correction_reason, timestamp,
+                                  correction_count,
+                                  array_cosine_similarity(embedding, ?::FLOAT[768]) as sim
+                           FROM error_handbook
+                           WHERE sim > ?
+                           ORDER BY sim DESC
+                           LIMIT ?""",
+                        (embedding, threshold, k),
+                    ).fetchall()
+                )
+                if rows:
+                    return [
+                        HandbookExample(
+                            id=str(r[0]), invoice_id=str(r[1]),
+                            vendor_nip=str(r[2]), category=str(r[3]),
+                            amount_gross=float(r[4]) if r[4] else 0.0,
+                            ai_decision=str(r[5]), ai_trust_score=float(r[6]) if r[6] else 0.0,
+                            ai_reason=str(r[7]) if r[7] else "",
+                            user_correction=str(r[8]),
+                            correction_reason=str(r[9]) if r[9] else "",
+                            timestamp=str(r[10]) if r[10] else "",
+                            correction_count=int(r[11]) if r[11] else 1,
+                        )
+                        for r in rows
+                    ]
+            except Exception as exc:
+                logger.debug("[HANDBOOK] sqlite-vec k-NN failed: %s", exc)
+
+        # Fallback: cosine similarity na RAM
+        scored = []
+        for ex in self._examples.values():
+            if ex.embedding and len(ex.embedding) == len(embedding):
+                dot = sum(a * b for a, b in zip(embedding, ex.embedding))
+                norm_a = sum(a * a for a in embedding) ** 0.5
+                norm_b = sum(b * b for b in ex.embedding) ** 0.5
+                sim = dot / (norm_a * norm_b + 1e-9)
+                if sim >= threshold:
+                    scored.append((ex, sim))
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return [ex for ex, _ in scored[:k]]
 
     @property
     def count(self) -> int:

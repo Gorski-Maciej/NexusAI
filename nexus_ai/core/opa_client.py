@@ -7,6 +7,11 @@ Zgodnie z aa3fvcx.txt:
 - OPA uruchomiony jako sidecar (natywny binary ~15MB, jak NATS/TigerBeetle)
 - Rego policies generowane dynamicznie z DuckDB
 
+SUPERPOWERY: stamina.retry (retry bez circuit breaker) dla odpornej
+komunikacji z lokalnym OPA sidecarem. Circuit breaker wyłączony, ponieważ
+OPA to lokalny proces — retry wystarczy do ochrony przed chwilowymi
+restartami sidecara.
+
 Architektura:
   OPA Sidecar (localhost:8181) ← httpx -> OpaClient (Python)
                                          -> RuleEngine.decide()
@@ -22,6 +27,7 @@ from __future__ import annotations
 from typing import Any
 
 import httpx
+import stamina
 from structlog import get_logger
 
 logger = get_logger("nexus.opa")
@@ -79,7 +85,9 @@ class OpaClient:
     """Async HTTP client for Open Policy Agent REST API.
 
     Manages a connection to a local OPA sidecar process.
-    All methods are async and use httpx for HTTP/2 support.
+    All methods are async and use stamina for retry (bez circuit breaker —
+    OPA to lokalny proces, który może być restartowany, ale nie wymaga
+    globalnego odcinania ruchu).
 
     Args:
         base_url: OPA server URL (default: http://localhost:8181).
@@ -127,16 +135,25 @@ class OpaClient:
     async def health(self) -> bool:
         """Check if OPA server is healthy.
 
+        SUPERPOWERY: stamina.retry (3 próby, 5s timeout, bez circuit breaker).
+
         Returns:
             True if OPA responds with HTTP 200.
         """
-        try:
-            client = await self._get_client()
-            response = await client.get("/health")
-            return response.status_code == 200
-        except httpx.ConnectError as exc:
-            logger.warning("[OPA] Health check failed: %s", exc)
-            return False
+        for attempt in stamina.retry_context(
+            on=(httpx.ConnectError, httpx.TimeoutException, httpx.RequestError),
+            attempts=3,
+            timeout=5.0,
+        ):
+            with attempt:
+                try:
+                    client = await self._get_client()
+                    response = await client.get("/health")
+                    return response.status_code == 200
+                except (httpx.ConnectError, httpx.TimeoutException, httpx.RequestError) as exc:
+                    logger.warning("[OPA] Health check attempt failed: %s", exc)
+                    raise  # re-raise dla stamina.retry_context
+        return False
 
     # ── Policy evaluation ────────────────────────────────────────────────
 
@@ -149,6 +166,8 @@ class OpaClient:
 
         POST /v1/data/{path} with JSON body {"input": input_data}.
 
+        SUPERPOWERY: stamina.retry (3 próby, 10s timeout, bez circuit breaker).
+
         Args:
             path: Policy path in OPA (e.g. "tax/rules/decide").
             input_data: Input context for policy evaluation.
@@ -157,7 +176,7 @@ class OpaClient:
             Policy decision result dict (OPA's "result" field).
 
         Raises:
-            OpaConnectionError: If OPA is unreachable.
+            OpaConnectionError: If OPA is unreachable after retries.
             OpaEvaluationError: If evaluation fails.
             OpaPolicyNotFound: If policy/rule not found.
         """
@@ -167,23 +186,22 @@ class OpaClient:
         if input_data is not None:
             payload["input"] = input_data
 
-        try:
-            logger.debug(
-                "[OPA] Evaluating path=%s input_keys=%s",
-                path,
-                list(input_data.keys()) if input_data else [],
-            )
-            response = await client.post(url, json=payload)
-        except httpx.ConnectError as exc:
-            raise OpaConnectionError(
-                f"OPA server unreachable at {self._base_url}: {exc}",
-                details=str(exc),
-            ) from exc
-        except httpx.TimeoutException as exc:
-            raise OpaConnectionError(
-                f"OPA request timed out at {self._base_url}: {exc}",
-                details=str(exc),
-            ) from exc
+        for attempt in stamina.retry_context(
+            on=(httpx.ConnectError, httpx.TimeoutException, httpx.RequestError),
+            attempts=3,
+            timeout=self._timeout,
+        ):
+            with attempt:
+                try:
+                    logger.debug(
+                        "[OPA] Evaluating path=%s input_keys=%s",
+                        path,
+                        list(input_data.keys()) if input_data else [],
+                    )
+                    response = await client.post(url, json=payload)
+                except (httpx.ConnectError, httpx.TimeoutException, httpx.RequestError) as exc:
+                    logger.warning("[OPA] Evaluate attempt failed path=%s: %s", path, exc)
+                    raise  # re-raise dla stamina.retry_context
 
         if response.status_code == 404:
             raise OpaPolicyNotFound(
@@ -231,6 +249,8 @@ class OpaClient:
 
         PUT /v1/data/{path} with JSON body.
 
+        SUPERPOWERY: stamina.retry (2 próby, 10s timeout, bez circuit breaker).
+
         Used to load tax rules from DuckDB into OPA as data documents.
         OPA merges data at different paths, so multiple calls are additive.
 
@@ -248,12 +268,17 @@ class OpaClient:
         client = await self._get_client()
         url = f"/v1/data/{path.lstrip('/')}"
 
-        try:
-            response = await client.put(url, json=data)
-        except httpx.ConnectError as exc:
-            raise OpaConnectionError(
-                f"OPA server unreachable: {exc}",
-            ) from exc
+        for attempt in stamina.retry_context(
+            on=(httpx.ConnectError, httpx.TimeoutException, httpx.RequestError),
+            attempts=2,
+            timeout=self._timeout,
+        ):
+            with attempt:
+                try:
+                    response = await client.put(url, json=data)
+                except (httpx.ConnectError, httpx.TimeoutException, httpx.RequestError) as exc:
+                    logger.warning("[OPA] Load data attempt failed path=%s: %s", path, exc)
+                    raise  # re-raise dla stamina.retry_context
 
         if response.status_code not in (200, 204):
             raise OpaError(

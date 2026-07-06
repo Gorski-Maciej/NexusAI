@@ -93,11 +93,13 @@ class AgentDataExtraction(BaseAgent):
         self,
         model_manager: ModelManager | None = None,
         config: dict[str, Any] | None = None,
+        knowledge_mesh: Any = None,
     ) -> None:
         super().__init__(
             name="data-extraction",
             model_manager=model_manager,
             config=config or {},
+            knowledge_mesh=knowledge_mesh,
         )
         self._ocr_engines: dict[str, Any] = {}
         self._ocr_config = self._config.get("ocr", {})
@@ -246,6 +248,11 @@ class AgentDataExtraction(BaseAgent):
         # 12. Ogólna pewność
         confidence = self._calculate_confidence(ocr_results, extracted, validation_issues, field_confidences)
 
+        # 12a. GENIALNY POMYSŁ v5.4: KnowledgeMesh Integration ──
+        await self._publish_mesh_events(
+            request.invoice_id, extracted, cross_validation, confidence,
+        )
+
         result = DataExtractionResult(
             invoice_id=request.invoice_id,
             success=True,
@@ -384,7 +391,138 @@ class AgentDataExtraction(BaseAgent):
             # W produkcji: sqlite-vec k-NN w invoice_templates
         }
 
-    # ── Field Confidence Calibration ────────────────────────────────
+    # ── Knowledge Mesh Integration (v5.4) ───────────────────────────
+
+    async def _publish_mesh_events(
+        self,
+        invoice_id: str,
+        extracted: dict[str, Any],
+        cross_validation: list[CrossValidationResult],
+        confidence: float,
+    ) -> None:
+        """Aktualizuj KnowledgeMesh gdy konsensus OCR jest niski.
+
+        GENIALNY POMYSŁ v5.4:
+        Extraction dzieli się informacją o niskiej jakości OCR z innymi agentami.
+        Gdy konsensus < 50% → QualityValidator dostaje INCREASE_SCRUTINY.
+        Gdy confidence < 0.5 → obniżamy Trust Score vendora.
+        """
+        if not self._knowledge_mesh or not self._knowledge_mesh.is_initialized:
+            return
+
+        vendor_nip = extracted.get("nip", "unknown")
+        category = extracted.get("category", "")
+        gross = extracted.get("amount_gross", 0)
+        amount = gross if isinstance(gross, (int, float)) else 0.0
+        mesh = self._knowledge_mesh
+
+        # Sprawdź konsensus OCR — szukaj pól z niskim consensus_ratio
+        low_consensus_fields = [
+            cv for cv in cross_validation
+            if cv.consensus_ratio < 0.5
+        ]
+        medium_consensus_fields = [
+            cv for cv in cross_validation
+            if 0.5 <= cv.consensus_ratio < 0.75
+        ]
+
+        # ── Niski konsensus (<50%) → obniż Trust + Cross-Agent event ──
+        if low_consensus_fields:
+            field_names = [cv.field_name for cv in low_consensus_fields]
+            logger.warning(
+                "[MESH] Low OCR consensus | NIP=%s | fields=%s | ratio=%.0f%%",
+                vendor_nip[:8], field_names,
+                min(cv.consensus_ratio for cv in low_consensus_fields) * 100,
+            )
+            # Obniż Trust Score
+            await mesh.update_trust(
+                vendor_nip=vendor_nip,
+                correct=False,
+                agent_name=self.name,
+                category=category,
+                amount=amount,
+            )
+            # Publikuj Cross-Agent event → QualityValidator INCREASE_SCRUTINY
+            await mesh.share_experience(
+                event_type="extraction.low_consensus",
+                source_agent=self.name,
+                vendor_nip=vendor_nip,
+                category=category,
+                amount=amount,
+                details={
+                    "invoice_id": invoice_id,
+                    "low_fields": field_names,
+                    "consensus_ratios": {cv.field_name: cv.consensus_ratio for cv in low_consensus_fields},
+                    "overall_confidence": confidence,
+                },
+            )
+            logger.info(
+                "[MESH] 📡 extraction.low_consensus → QualityValidator INCREASE_SCRUTINY | fields=%s",
+                field_names,
+            )
+
+        # ── Średni konsensus (50-75%) → tylko Cross-Agent event (bez obniżania Trust) ──
+        # Zawsze publikuj 'extraction.low_consensus' przy konsensusie < 75% -
+        # QualityValidator dostaje INCREASE_SCRUTINY niezależnie od ogólnej confidence
+        elif medium_consensus_fields:
+            field_names = [cv.field_name for cv in medium_consensus_fields]
+            await mesh.share_experience(
+                event_type="extraction.low_consensus",
+                source_agent=self.name,
+                vendor_nip=vendor_nip,
+                category=category,
+                amount=amount,
+                details={
+                    "invoice_id": invoice_id,
+                    "medium_fields": field_names,
+                    "overall_confidence": confidence,
+                    "severity": "medium",
+                },
+            )
+            logger.info(
+                "[MESH] 📡 extraction.low_consensus (medium) | fields=%s | conf=%.2f",
+                field_names, confidence,
+            )
+
+        # ── Confidence < 0.5 (bardzo niska) → obniż Trust + event ──
+        elif confidence < 0.5:
+            await mesh.update_trust(
+                vendor_nip=vendor_nip,
+                correct=False,
+                agent_name=self.name,
+                category=category,
+                amount=amount,
+            )
+            await mesh.share_experience(
+                event_type="extraction.low_consensus",
+                source_agent=self.name,
+                vendor_nip=vendor_nip,
+                category=category,
+                amount=amount,
+                details={
+                    "invoice_id": invoice_id,
+                    "reason": "overall_confidence_very_low",
+                    "confidence": confidence,
+                },
+            )
+            logger.warning(
+                "[MESH] Very low OCR confidence | NIP=%s | conf=%.2f",
+                vendor_nip[:8], confidence,
+            )
+
+        # ── Wysoki konsensus + wysoka confidence → podnieś Trust ──
+        if confidence >= 0.85 and not low_consensus_fields:
+            await mesh.update_trust(
+                vendor_nip=vendor_nip,
+                correct=True,
+                agent_name=self.name,
+                category=category,
+                amount=amount,
+            )
+            logger.debug(
+                "[MESH] ✅ High OCR confidence | NIP=%s | conf=%.2f → trust boosted",
+                vendor_nip[:8], confidence,
+            )
 
     def _calibrate_field_confidences(
         self,

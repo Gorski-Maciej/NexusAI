@@ -919,3 +919,80 @@ def make_context(
 def generate_decision_id() -> str:
     """Generuj unikalne ID decyzji."""
     return uuid.uuid4().hex[:16]
+
+
+# ═════════════════════════════════════════════════════════════════════════
+# Agent Knowledge Mesh v5.3 — Struktury EASP (Emergent Agent Swarm Protocol)
+# ═════════════════════════════════════════════════════════════════════════
+
+
+class MeshField(Struct, kw_only=True):
+    """Pole w Collective Bayesian Field — współdzielone przez wszystkie agenty."""
+
+    vendor_nip: str
+    category: str = ""
+    amount_range: str = ""
+    alpha: float = 1.0
+    beta: float = 1.0
+    last_updated: str = ""
+    updated_by_agent: str = ""
+    total_decisions: int = 0
+    auto_post_count: int = 0
+    correction_count: int = 0
+
+    @property
+    def trust_score(self) -> float:
+        total = self.alpha + self.beta
+        return self.alpha / total if total > 0 else 0.5
+
+    @property
+    def confidence(self) -> float:
+        total = self.alpha + self.beta
+        if total <= 1:
+            return 0.0
+        variance = (self.alpha * self.beta) / (total**2 * (total + 1))
+        return max(0.0, 1.0 - variance * 12)
+
+
+class ExperienceRule(Struct, kw_only=True):
+    """Reguła Cross-Agent Experience Replay — agent A uczy agenta B."""
+
+    rule_id: str
+    source_agent: str
+    target_agent: str
+    trigger_condition: str
+    action: str
+    params: dict[str, Any] = field(default_factory=dict)
+    priority: int = 5
+    created_at: str = ""
+    hit_count: int = 0
+    last_hit: str = ""
+    embedding: list[float] = field(default_factory=list)
+    active: bool = True
+
+
+class RouteDecision(Struct, kw_only=True):
+    """Decyzja Predictive Task Routera — optymalna ścieżka agentów."""
+
+    vendor_nip: str
+    trust_score: float = 0.5
+    confidence: float = 0.0
+    route: list[str] = field(default_factory=list)
+    skip_agents: list[str] = field(default_factory=list)
+    force_agents: list[str] = field(default_factory=list)
+    circuit_breaker_open: bool = False
+    threshold_adjustments: dict[str, float] = field(default_factory=dict)
+    mesh_field: MeshField | None = None
+    applied_rules: list[str] = field(default_factory=list)
+    estimated_time_ms: float = 0.0
+
+
+class MeshEvent(Struct, kw_only=True):
+    """Zdarzenie w Knowledge Mesh — publikowane przez NATS JetStream."""
+
+    event_id: str
+    event_type: str
+    source_agent: str
+    payload: dict[str, Any] = field(default_factory=dict)
+    timestamp: str = ""
+    trace_id: str = ""

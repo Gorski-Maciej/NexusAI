@@ -1,6 +1,6 @@
-# 🤖 System Agentów AI NexusAI — Specyfikacja Enterprise (v5.2)
+# 🤖 System Agentów AI NexusAI — Specyfikacja Enterprise (v5.5)
 
-> **"Autonomiczne Biuro Księgowe — 5 Agentów, 13 Modeli, Progressive Autonomy"**
+> **"Autonomiczne Biuro Księgowe — 5 Agentów, 13 Modeli, Decision Protocol v5.4"**
 >
 > **Cel:** Umożliwić developerowi zrozumienie pełnego systemu agentów AI w 15 minut.
 > **Kiedy czytać:** Przed implementacją nowego agenta, debugowaniem decyzji, lub dodawaniem modelu AI.
@@ -223,13 +223,139 @@ Online few-shot learning — model Granite 3.2 uczy się z każdej korekty BEZ f
 - Przykłady wstrzykiwane do promptu jako "Podręcznik Błędów z Przeszłości"
 - Model widzi: ❌ co AI zdecydowało błędnie → ✅ co było poprawne
 - Im więcej korekt, tym mądrzejszy model — incremental learning
+- **v5.4**: dodane `find_similar_by_embedding()` — prawdziwe k-NN przez DuckDB z RAM fallback
 
 ```
 KOREKTA UŻYTKOWNIKA → DuckDB error_handbook → kwerenda przed inferencją →
 → "Podręcznik Błędów" w prompcie → Granite 3.2 uczy się z przykładów
 ```
 
-### 1.6 Architektura komunikacji
+### 1.5e GENIALNY POMYSŁ v5.3: Agent Knowledge Mesh (EASP)
+
+**Przełom:** Agenci przestają działać w izolacji — tworzą SIATKĘ WIEDZY (Knowledge Mesh) z Collective Bayesian Field, Predictive Task Router i Cross-Agent Experience Replay.
+
+```
+❌ PRZED (izolowani agenci):
+   Każdy agent uczy się osobno, nie dzieli się doświadczeniem
+
+✅ PO (Knowledge Mesh EASP v5.3):
+   Agent DataExtraction wykrywa niski konsensus OCR →
+   Mesh obniża Trust Score vendora →
+   Orchestrator widzi obniżony Trust → podnosi próg AUTO_POST →
+   QualityValidator dostaje INCREASE_SCRUTINY →
+   Wszyscy agenci wiedzą, że ten vendor jest problematyczny
+```
+
+**Cztery komponenty KnowledgeMesh:**
+
+| Komponent | Plik | Opis |
+|---|---|---|
+| **CollectiveBayesianField** | `knowledge_mesh.py` | Współdzielony Trust Score Beta(α,β) per vendor, aktualizowany przez wszystkie agenty |
+| **PredictiveTaskRouter** | `knowledge_mesh.py` | Dynamiczny DAG agentów — wybiera które agenty uruchomić na podstawie Trust Score |
+| **CrossAgentExperienceReplay** | `knowledge_mesh.py` | Agenci publikują eventy (`extraction.low_consensus`, `quality.tax_error`, `quality.fraud_detected`) → inne agenty reagują przez CROSS_AGENT_RULES |
+| **MeshProtocol** | `knowledge_mesh.py` | Protokół komunikacji mesha: `route()`, `update_trust()`, `share_experience()`, `get_threshold_adjustments()` |
+
+**CROSS_AGENT_RULES — reguły propagacji doświadczeń:**
+```
+extraction.low_consensus    → QualityValidator: INCREASE_SCRUTINY
+quality.tax_error           → Extraction: HIGH_SCRUTINY
+quality.tax_error           → Orchestrator: LOWER_AUTO_POST_THRESHOLD
+quality.fraud_detected      → ALL: HIGH_ALERT
+analytics.anomaly_detected  → QualityValidator: INCREASE_SCRUTINY
+analytics.anomaly_detected  → Orchestrator: REVIEW_REQUIRED
+```
+
+**Predykcyjny routing (Circuit Breaker):**
+- Trust < 0.30 → BLOCK — pomiń wszystkich agentów, wymagaj ręcznej weryfikacji
+- Trust ≥ 0.92 → SKIP — pomiń QualityValidator (vendor doskonale znany)
+- Trust 0.30-0.92 → standardowy pipeline
+
+**Integracje z agentami (5/5 — pełna siatka):**
+- **AgentDataExtraction**: publikuje `extraction.low_consensus` gdy konsensus OCR < 75%, aktualizuje CollectiveBayesianField
+- **AgentAnalytics**: publikuje `analytics.anomaly_detected` w 4 tierach (Z-score >3σ, 2-3σ, risk flags, cashflow anomalies), aktualizuje Trust Score
+- **AgentQualityValidator**: publikuje `quality.tax_error`, `quality.fraud_detected`, `analytics.anomaly_detected`; aktualizuje Trust Score po każdej walidacji
+- **AgentOrchestrator**: używa `PredictiveTaskRouter` do dynamicznego DAG, `get_threshold_adjustments()` do adaptacyjnych progów
+- **AgentFixedAssets**: deterministyczny — nie wymaga integracji Mesh
+
+### 1.5f GENIALNY POMYSŁ v5.4: Decision Protocol + Unified Learning Protocol
+
+**Przełom:** Każda decyzja jest w pełni śledzona (DecisionTrace z OTel spanami), walidowana przez MultiModelEnsemble (≥2 modele), kalibrowana (Platt Scaling), a każda korekta uruchamia kaskadę 5 systemów uczących się jednocześnie.
+
+**DecisionTrace — pełny tracing decyzji (OTel):**
+```
+DecisionTrace
+├── Span: cache_check          — sprawdzenie Decision Cache
+├── Span: mesh_route           — predykcyjny routing KnowledgeMesh
+├── Span: extraction           — OCR + ekstrakcja
+├── Span: handbook_query       — Dynamiczny Podręcznik Błędów
+├── Span: actor_inference      — Granite 3.2 Actor
+├── Span: guardian_check       — Granite Guardian
+├── Span: ensemble             — MultiModelEnsemble (Actor + Guardian + Handbook)
+├── Span: quality_validation   — QualityValidator (tax + fraud + ESG)
+├── Span: calibration          — ConfidenceCalibrator (Platt Scaling)
+└── Span: final_decision       — AUTO_POST / SUGGEST / ASK_USER
+```
+
+**MultiModelEnsemble (≥2 modele):**
+- Actor (Granite 3.2 3B) — główny decydent
+- Guardian (Granite Guardian 0.5B) — strażnik merytoryczny
+- Handbook (DynamicErrorHandbook) — few-shot examples
+- Diversity check: jeśli wszystkie modele dają ten sam werdykt → ostrzeżenie o braku dywersyfikacji
+- Fallback: jeśli <2 modele dostępne → requires_human=True
+
+**ConfidenceCalibrator (Platt Scaling):**
+- Kalibruje surowy Trust Score przez online Platt Scaling (SGD, decay rate 0.99)
+- Eliminuje overconfidence modeli ("model mówi 95% ale w rzeczywistości ma 80%")
+- Reliability diagram: 10-binowy wykres kalibracji
+
+**AgentTelemetryStore (DuckDB + Parquet):**
+- 5 tabel: decisions, corrections, routes, traces, feedback
+- Eksport do Parquet dla długoterminowej analityki
+- Metryki: time-to-decision, correction_rate, decision_quality_score
+
+### 1.6 Kaskada 5 Systemów — Unified Learning Protocol v5.4
+
+**Problem:** W v5.2 każdy z 5 mechanizmów uczenia działa w izolacji. Korekta użytkownika aktualizuje Handbooka, ale NIE aktualizuje Bayesian Field mesha.
+
+**Rozwiązanie: KASKADA 5 systemów po każdej korekcie:**
+```
+KOREKTA UŻYTKOWNIKA
+  │
+  ├─→ 1. DynamicErrorHandbook.record_correction()
+  │     Zapisz przykład few-shot w DuckDB + embedding sqlite-vec
+  │
+  ├─→ 2. ContinuousLearningProvider.record_feedback()
+  │     Aktualizuj BayesianTrustScore per agent
+  │     Utwórz CognitiveProofBlock z embeddingiem
+  │
+  ├─→ 3. KnowledgeMesh.update_trust()
+  │     Aktualizuj CollectiveBayesianField per vendor
+  │     Utwórz Cross-Agent Experience Rules
+  │
+  ├─→ 4. UserDecisionProfile.observe_decision()
+  │     Aktualizuj 4 wymiary (vendor trust, category, amount, time)
+  │     Wyprowadź nowe wzorce decyzyjne
+  │
+  └─→ 5. AgentTelemetryStore.record_correction()
+        Zapisz do DuckDB/Parquet dla analityki
+```
+
+**Architektura komunikacji (zaktualizowana):**
+```
+U[Użytkownik / Flet UI] -->|REST| API[Litestar API]
+API -->|NATS JetStream| O[AgentOrchestrator]
+O -->|NATS| E[AgentDataExtraction — OCR + KSeF + Mesh]
+O -->|NATS| A[AgentAnalytics — cashflow + vendor intel]
+O -->|NATS| Q[AgentQualityValidator — tax + fraud + ESG + Mesh]
+O -->|NATS| FA[AgentFixedAssets — amortyzacja]
+O -->|KnowledgeMesh| MESH[CollectiveBayesianField + PredictiveTaskRouter]
+E -->|DuckDB + SQLite| DB[(Bazy danych)]
+Q -->|OPA/Rego| OPA[Silnik reguł]
+O -->|DecisionTrace| TRACE[OTel Tracing]
+O -->|TelemetryStore| TELEM[(DuckDB + Parquet)]
+```
+
+### 1.7 Stos technologiczny agentów
 
 ```
 U[Użytkownik / Flet UI] -->|REST| API[Litestar API]
@@ -253,9 +379,12 @@ O -->|TigerBeetle| TB[Księga główna]
 | **SQLite + sqlite-vec** | Pamięć semantyczna (wektory) + Cognitive Audit Trail |
 | **TigerBeetle** | Księga główna (double-entry) |
 | **msgspec** | Wszystkie struktury danych |
-| **stamina** | Circuit breaker i retry |
+| **stamina** | Circuit breaker i retry — chroni KSeF, Białą Listę, GUS BIR, NBP, OPA |
 | **nexus-crypto** | Proof chain kryptograficzny (SHA-256) |
 | **OPA + Rego** | Deterministyczny silnik reguł (auto-naprawiany) |
+| **DuckDB + Parquet** | Telemetria agentów (AgentTelemetryStore v5.4) |
+| **Platt Scaling** | Kalibracja Trust Score (ConfidenceCalibrator v5.4) |
+| **dyscache** | Dwupoziomowy cache L1 (RAM) + L2 (SQLite) — zastąpił diskcache w DecisionCache |
 
 ---
 
@@ -281,14 +410,18 @@ O -->|TigerBeetle| TB[Księga główna]
 - **Proof Chain SHA-256** — niepodważalny dowód dla organów skarbowych
 - **4-Eyes Principle** — obowiązkowy dla kwot > 50k PLN
 
-**Proces decyzyjny (7 kroków):**
-1. Decision Cache: k-NN w podobnych decyzjach
-2. AgentDataExtraction → ekstrakcja (4 silniki OCR)
-3. Actor (Granite 3.2) + Guardian (Granite Guardian) → ocena
-4. AgentQualityValidator → walidacja (tax + fraud + ESG + forecast)
-5. Weighted Voting → konsensus
-6. Cognitive Audit Trail → sprawdź podobne korekty
-7. Ostateczna decyzja: AUTO_POST / SUGGEST / ASK_USER
+**Proces decyzyjny (10+ kroków — Decision Protocol v5.4):**
+1. DecisionTrace: rozpocznij OTel trace dla decyzji
+2. KnowledgeMesh: predykcyjny routing (Circuit Breaker, SKIP/BLOCK agentów)
+3. Decision Cache: k-NN w podobnych decyzjach
+4. AgentDataExtraction → ekstrakcja (4 silniki OCR) + `_publish_mesh_events()`
+5. Dynamiczny Podręcznik Błędów → pobierz podobne korekty z DuckDB
+6. MultiModelEnsemble: Actor (Granite 3.2) + Guardian + Handbook few-shot
+7. AgentQualityValidator → walidacja (tax + fraud + ESG + forecast) + `_publish_mesh_events()`
+8. ConfidenceCalibrator: Platt Scaling kalibracja Trust Score
+9. Cognitive Audit Trail → sprawdź podobne korekty
+10. AgentTelemetryStore → zapisz decyzję do DuckDB/Parquet
+11. Ostateczna decyzja: AUTO_POST / SUGGEST / ASK_USER
 
 ### 2.2 AgentDataExtraction — Forteca Precyzji
 
@@ -309,6 +442,7 @@ O -->|TigerBeetle| TB[Księga główna]
 - **Invoice Template Matching** — wzorce per kontrahent
 - **KSeF Integration** — automatyczna wysyłka/odbiór FA(1)/FA(2)
 - **Semantyczna walidacja** — NIP, IBAN, kwoty, daty
+- **🆕 KnowledgeMesh Integration (v5.3 → v5.5)** — publikuje `extraction.low_consensus` gdy konsensus OCR < **75%** (poprawiony próg: usunięto `and confidence < 0.7`), aktualizuje CollectiveBayesianField
 
 ### 2.3 AgentAnalytics — Sztab Analityczny
 
@@ -330,6 +464,11 @@ O -->|TigerBeetle| TB[Księga główna]
 - **Anomaly Detection** — Z-score, IQR, Mahalanobis, Isolation Forest
 - **Daily Brief** — codzienne podsumowanie NL
 - **Automatyczne raporty** — dzienne/tygodniowe/miesięczne
+- **🆕 KnowledgeMesh Integration (v5.5)** — publikuje `analytics.anomaly_detected` w 4 tierach:
+  1. 🔴 Z-score > 3σ → QV TRIGGER_DEEP_CHECK + Orch LOWER_THRESHOLD + update_trust
+  2. 🟡 Z-score 2-3σ → event (bez obniżania Trust)
+  3. ⚠️ Risk flags (overdue/high_amount) → event + update_trust
+  4. 💰 Cashflow/forecast → event z detection_method="cashflow_analysis"
 
 ### 2.4 AgentQualityValidator — Trójwarstwowa Tarcza
 
@@ -352,6 +491,7 @@ O -->|TigerBeetle| TB[Księga główna]
 - **Liquidity Stress Test** — Monte Carlo 1000 scenariuszy
 - **4-Eyes Principle** — obowiązkowy dla kwot > 50k PLN
 - **Weighted Voting** — Tax: 0.35, Fraud: 0.30, ESG: 0.20, Forecast: 0.15
+- **🆕 KnowledgeMesh Integration (v5.3)** — publikuje `quality.tax_error`, `quality.fraud_detected`, `analytics.anomaly_detected`; aktualizuje Trust Score po każdej walidacji
 
 ### 2.5 AgentFixedAssets — Zarządca Majątku
 
@@ -425,5 +565,5 @@ Po 10 korektach tego samego typu → automatyczna aktualizacja reguł OPA/Rego.
 
 ---
 
-> **Ostatnia aktualizacja:** 2026-07-05 · **Wersja:** 5.2.0 — "Progressive Autonomy + DecisionFeedView"
+> **Ostatnia aktualizacja:** 2026-07-06 · **Wersja:** 5.5.0 — "dyscache L1+L2 + stamina Circuit Breaker + Full Mesh"
 > **Podstawa:** `docs/aa3fvcx.txt` + `RAPORT_TECHNOLOGII_NEXUSAI.txt`

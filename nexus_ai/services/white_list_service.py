@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import final
 
 import pendulum
+import stamina
+from httpx import HTTPStatusError, RequestError, TimeoutException
 
 from nexus_ai.core.cache import get_cache
 from nexus_ai.core.cache.http_client import CachedHttpClient
@@ -11,7 +13,11 @@ from nexus_ai.core.logger import logger
 
 @final
 class WhiteListService:
-    """Serwis weryfikacji białej listy podatników VAT."""
+    """Serwis weryfikacji białej listy podatników VAT.
+
+    SUPERPOWERY: stamina.retry z circuit breaker dla odpornej komunikacji
+    z API Białej Listy MF (wl-api.mf.gov.pl).
+    """
 
     BASE_URL = "https://wl-api.mf.gov.pl/api/search/nip/"
     _CACHE_TTL = 3600
@@ -25,7 +31,11 @@ class WhiteListService:
         await self._http.close()
 
     async def _fetch_nip_data(self, nip: str) -> dict | None:
-        """Pobiera dane podmiotu z API MF dla danego NIP (z cache)."""
+        """Pobiera dane podmiotu z API MF dla danego NIP (z cache).
+
+        SUPERPOWERY: stamina.retry z circuit breaker — 3 próby, timeout 10s.
+        Automatyczny wykładniczy backoff + jitter po każdej nieudanej próbie.
+        """
         cache_key = f"whitelist:nip_data:{nip}"
         cached = await self._cache.get(cache_key)
         if cached is not None:
@@ -33,18 +43,29 @@ class WhiteListService:
 
         target_date = pendulum.now().date().isoformat()
         try:
-            response = await self._http.get(f"{self.BASE_URL}{nip}?date={target_date}")
-            if response.status_code == 200:
-                data = response.json()
-                subject = data.get("result", {}).get("subject", {})
-                if subject:
-                    await self._cache.set(cache_key, subject, ttl=self._CACHE_TTL)
-                    return subject
-            await self._cache.set(cache_key, {}, ttl=300)
-            return None
-        except Exception as e:
-            logger.error("[WhiteList] Błąd API MF dla NIP=%s: %s", nip, e)
-            return None
+            for attempt in stamina.retry_context(
+                on=(HTTPStatusError, RequestError, TimeoutException, ConnectionError),
+                attempts=3,
+                timeout=10.0,
+                circuit_breaker=True,
+            ):
+                with attempt:
+                    try:
+                        response = await self._http.get(f"{self.BASE_URL}{nip}?date={target_date}")
+                        if response.status_code == 200:
+                            data = response.json()
+                            subject = data.get("result", {}).get("subject", {})
+                            if subject:
+                                await self._cache.set(cache_key, subject, ttl=self._CACHE_TTL)
+                                return subject
+                        await self._cache.set(cache_key, {}, ttl=300)
+                        return None
+                    except (HTTPStatusError, RequestError, TimeoutException, ConnectionError) as exc:
+                        logger.warning("[WhiteList] API MF attempt failed NIP=%s: %s", nip, exc)
+                        raise  # re-raise dla stamina.retry_context
+        except stamina.RetryingError:
+            logger.warning("[WhiteList] Circuit breaker OPEN for NIP=%s — graceful degradation", nip)
+        return None
 
     async def check_nip(self, nip: str) -> dict | None:
         """Weryfikuje NIP w Białej Liście MF i zwraca dane podmiotu."""

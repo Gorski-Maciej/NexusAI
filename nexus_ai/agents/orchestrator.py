@@ -33,6 +33,16 @@ from structlog import get_logger
 
 from nexus_ai.agents.base import BaseAgent, DecisionCache
 from nexus_ai.agents.error_handbook import DynamicErrorHandbook, HandbookQuery
+from nexus_ai.agents.knowledge_mesh import KnowledgeMesh
+from nexus_ai.agents.models import RouteDecision
+from nexus_ai.agents.decision_trace import (
+    ConfidenceCalibrator,
+    DecisionTracer,
+    EnsembleVote,
+    FeedbackLoop,
+    MultiModelEnsemble,
+)
+from nexus_ai.agents.telemetry_store import AgentTelemetryStore
 from nexus_ai.agents.models import (
     ActionCardFeed,
     ActionCardResponse,
@@ -99,11 +109,13 @@ class AgentOrchestrator(BaseAgent):
         self,
         model_manager: ModelManager | None = None,
         config: dict[str, Any] | None = None,
+        knowledge_mesh: KnowledgeMesh | None = None,
     ) -> None:
         super().__init__(
             name="orchestrator",
             model_manager=model_manager,
             config=config or {},
+            knowledge_mesh=knowledge_mesh,
         )
         self._models: dict[str, str] = {}
         self._pending_decisions: dict[str, AgentDecision] = {}
@@ -120,29 +132,50 @@ class AgentOrchestrator(BaseAgent):
         self._card_generator = ActionCardGenerator(orchestrator=self)
         # ── GENIALNY POMYSŁ v5.2: Progressive Autonomy Engine ──
         self._decision_profile = UserDecisionProfile()
+        # ── GENIALNY POMYSŁ v5.3: Agent Knowledge Mesh (współdzielony) ──
+        self._mesh_last_route: RouteDecision | None = None
+        # ── GENIALNY POMYSŁ v5.4: Decision Protocol ──
+        self._tracer = DecisionTracer()
+        self._ensemble = MultiModelEnsemble()
+        self._calibrator = ConfidenceCalibrator()
+        self._feedback = FeedbackLoop()
+        self._telemetry = AgentTelemetryStore()
 
     def register_agent(self, name: str, agent: BaseAgent) -> None:
-        """Zarejestruj podległego agenta."""
+        """Zarejestruj podległego agenta i propaguj KnowledgeMesh."""
         self._sub_agents[name] = agent
-        logger.info("[ORCH] Registered sub-agent: %s", name)
+        # Propagate KnowledgeMesh (v5.4) — all agents share the mesh
+        if self._knowledge_mesh and hasattr(agent, 'set_mesh'):
+            agent.set_mesh(self._knowledge_mesh)
+        logger.info("[ORCH] Registered sub-agent: %s (mesh=%s)",
+                    name, bool(agent.mesh))
 
     async def start(self) -> None:
-        """Inicjalizuj modele Orkiestratora, Podręcznik Błędów i ProactiveWorkflowScheduler."""
+        """Inicjalizuj modele Orkiestratora, Podręcznik Błędów, KnowledgeMesh i ProactiveWorkflowScheduler."""
         await super().start()
         self._init_models()
         await self._error_handbook.initialize()
+        # ── GENIALNY POMYSŁ v5.3: Knowledge Mesh ──
+        if self._knowledge_mesh and not self._knowledge_mesh.is_initialized:
+            await self._knowledge_mesh.initialize()
+        await self._telemetry.initialize()
         await self._proactive_scheduler.start()
+        mesh_stats = self._knowledge_mesh.get_stats() if self._knowledge_mesh else {"initialized": False}
         logger.info(
-            "[ORCH] Orchestrator ready | models: %s | agents: %s | handbook: %d examples | proactive workflows: %d",
+            "[ORCH] Orchestrator ready | models: %s | agents: %s | handbook: %d examples | mesh: %s | proactive workflows: %d",
             self._models,
             list(self._sub_agents.keys()),
             self._error_handbook.count,
+            mesh_stats,
             len(self._proactive_scheduler.WORKFLOW_SCHEDULE),
         )
 
     async def stop(self) -> None:
-        """Zatrzymaj Orchestrator — zatrzymaj ProactiveWorkflowScheduler i zwolnij zasoby."""
+        """Zatrzymaj Orchestrator — zatrzymaj ProactiveWorkflowScheduler, KnowledgeMesh i zwolnij zasoby."""
         await self._proactive_scheduler.stop()
+        if self._knowledge_mesh:
+            await self._knowledge_mesh.close()
+        await self._telemetry.close()
         await super().stop()
         logger.info("[ORCH] Orchestrator stopped")
 
@@ -153,6 +186,36 @@ class AgentOrchestrator(BaseAgent):
             "guardian": self._config.get("orchestrator_guardian_model", ""),
             "communicator": self._config.get("orchestrator_communicator_model", ""),
         }
+
+    # ── GENIALNY POMYSŁ v5.4: Decision Protocol Properties ─────
+
+    @property
+    def tracer(self) -> DecisionTracer:
+        return self._tracer
+
+    @property
+    def ensemble(self) -> MultiModelEnsemble:
+        return self._ensemble
+
+    @property
+    def calibrator(self) -> ConfidenceCalibrator:
+        return self._calibrator
+
+    @property
+    def feedback(self) -> FeedbackLoop:
+        return self._feedback
+
+    @property
+    def telemetry(self) -> AgentTelemetryStore:
+        return self._telemetry
+
+    def get_feedback_summary(self) -> dict[str, Any]:
+        """Pobierz podsumowanie pętli feedbacku."""
+        return self._feedback.get_summary()
+
+    async def get_telemetry_stats(self, days: int = 30) -> dict[str, Any]:
+        """Pobierz statystyki telemetryczne."""
+        return await self._telemetry.get_aggregate_stats(days)
 
     # ── GENIALNY POMYSŁ v5.2: Progressive Autonomy Engine ──────────
 
@@ -190,34 +253,100 @@ class AgentOrchestrator(BaseAgent):
     async def process_invoice(self, invoice_data: dict[str, Any]) -> AgentDecision:
         """Przetwórz fakturę przez pełny pipeline agentów.
 
-        Enterprise:
-        1. Decision Cache: k-NN w podobnych decyzjach
-        2. AgentDataExtraction → ekstrakcja
-        3. Actor (Granite 3.2) + Guardian (Granite Guardian) → ocena
-        4. Weighted Voting: konsensus między modelami
-        5. 4-Eyes: dla kwot > 50k PLN
-        6. Decision Cache: zapisz embedding decyzji
-        7. Proof Chain: dodaj blok SHA-256
-
-        Args:
-            invoice_data: Dane faktury.
-
-        Returns:
-            AgentDecision z ostateczną decyzją.
+        Enterprise v5.4:
+        1. DecisionTrace — OTel tracing całej decyzji
+        2. KnowledgeMesh Predictive Routing
+        3. AgentDataExtraction
+        4. MultiModelEnsemble (≥3 modele + diversity check)
+        5. ConfidenceCalibrator (Platt Scaling)
+        6. QualityValidator (4-Eyes + Analytics)
+        7. FeedbackLoop metryki
+        8. AgentTelemetryStore
         """
         decision_id = uuid.uuid4().hex[:16]
         logger.info("[ORCH] Processing invoice %s", decision_id)
+
+        # ── Decision Trace (v5.4) ────────────────────────────────
+        vendor_nip_raw = invoice_data.get("nip", "unknown")
+        gross_raw = invoice_data.get("amount_gross", 0)
+        amount_raw = gross_raw if isinstance(gross_raw, (int, float)) else 0.0
+        trace = self._tracer.start_trace(
+            decision_id=decision_id,
+            vendor_nip=vendor_nip_raw,
+            amount_gross=amount_raw,
+            category=invoice_data.get("category", ""),
+            document_type=invoice_data.get("document_type", "INVOICE"),
+        )
+        trace_span = self._tracer.start_span(decision_id, "orchestrator.pipeline", self.name)
 
         # ── 1. Decision Cache: k-NN ────────────────────────────────
         cached_decision = await self._check_decision_cache(invoice_data)
         if cached_decision:
             logger.info("[ORCH] Decision cache HIT for %s | trust=%.2f",
                         decision_id, cached_decision.verdict.trust_score)
+            self._tracer.end_span(decision_id, trace_span, {"cache": "HIT"})
+            self._tracer.end_trace(decision_id, cached_decision.verdict.status,
+                                    cached_decision.verdict.trust_score,
+                                    cached_decision.decision_mode.value if cached_decision.decision_mode else "auto_post")
             return cached_decision
 
+        # ── 1a. GENIALNY POMYSŁ v5.3: Predictive Task Routing ────
+        vendor_nip = invoice_data.get("nip", "")
+        gross_amount = invoice_data.get("amount_gross", 0)
+        gross_amount_num = gross_amount if isinstance(gross_amount, (int, float)) else 0.0
+        mesh_route = None
+        if self._knowledge_mesh and self._knowledge_mesh.is_initialized:
+            mesh_span = self._tracer.start_span(decision_id, "mesh.route", "knowledge-mesh")
+            mesh_route = await self._knowledge_mesh.route(
+                vendor_nip=vendor_nip or "unknown",
+                amount=gross_amount_num,
+                category=invoice_data.get("category", ""),
+            )
+            self._mesh_last_route = mesh_route
+            self._tracer.end_span(decision_id, mesh_span,
+                                   {"route": mesh_route.route, "trust": mesh_route.trust_score})
+            # Record route telemetry
+            await self._telemetry.record_route(
+                decision_id=decision_id,
+                vendor_nip=vendor_nip or "unknown",
+                trust_score=mesh_route.trust_score,
+                confidence=mesh_route.confidence,
+                route=mesh_route.route,
+                skip_agents=mesh_route.skip_agents,
+                force_agents=mesh_route.force_agents,
+                circuit_breaker_open=mesh_route.circuit_breaker_open,
+                threshold_adjustments=mesh_route.threshold_adjustments,
+                applied_rules_count=len(mesh_route.applied_rules),
+                estimated_time_ms=mesh_route.estimated_time_ms,
+            )
+            logger.info(
+                "[MESH] Route decided | NIP=%s | trust=%.2f | route=%s | skip=%s | cb=%s | est=%.0fms",
+                (vendor_nip or "?" )[:8], mesh_route.trust_score,
+                mesh_route.route, mesh_route.skip_agents,
+                mesh_route.circuit_breaker_open, mesh_route.estimated_time_ms,
+            )
+            if mesh_route.circuit_breaker_open:
+                self._tracer.end_span(decision_id, trace_span, {"circuit_breaker": "OPEN"})
+                self._tracer.end_trace(decision_id, "BLOCK", mesh_route.trust_score, "ask_user")
+                return self.make_decision(
+                    decision_id=decision_id,
+                    status="BLOCK",
+                    trust_score=mesh_route.trust_score,
+                    reason=f"Circuit Breaker otwarty dla NIP {vendor_nip} (trust={mesh_route.trust_score:.2f})",
+                    explanation="Automatyczne księgowanie zablokowane — niski Trust Score dla tego kontrahenta.",
+                    decision_mode=DecisionMode.ASK_USER,
+                )
+
         # ── 2. Ekstrakcja danych ───────────────────────────────────
+        extract_span = self._tracer.start_span(decision_id, "extraction", "extraction")
         extraction_result = await self._run_extraction(invoice_data, decision_id)
+        self._tracer.end_span(decision_id, extract_span,
+                               {"confidence": extraction_result.confidence},
+                               "OK" if extraction_result.success else "ERROR",
+                               extraction_result.error)
         if not extraction_result.success:
+            self._tracer.end_span(decision_id, trace_span, {"error": "extraction_failed"})
+            self._tracer.end_trace(decision_id, "BLOCK", 0.0, "ask_user")
             return self.make_decision(
                 decision_id=decision_id,
                 status="BLOCK",
@@ -229,19 +358,77 @@ class AgentOrchestrator(BaseAgent):
         # ── 3. Określenie adaptacyjnych progów ─────────────────────
         vendor_nip = extraction_result.extracted_data.get("nip", "unknown")
 
+        # GENIALNY POMYSŁ v5.3: Użyj routingu z KnowledgeMesh (jeśli nie było wcześniej)
+        if mesh_route is None and self._knowledge_mesh and self._knowledge_mesh.is_initialized:
+            mesh_route = await self._knowledge_mesh.route(
+                vendor_nip=vendor_nip,
+                amount=gross_amount,
+                category=extraction_result.extracted_data.get("category", ""),
+            )
+            self._mesh_last_route = mesh_route
+
         # GENIALNY POMYSŁ v5.2: Progressive Autonomy — blend Bayesian + Profile
         # Bayesian: uczy się z poprawności AI. Profile: uczy się z preferencji usera.
         profile_threshold = self._decision_profile.get_adaptive_threshold(vendor_nip)
         auto_post_threshold = self.get_threshold(vendor_nip, base=profile_threshold)
         review_threshold = auto_post_threshold - 0.17  # REVIEW zawsze 0.17 poniżej AUTO_POST
 
-        # ── 4. Ocena przez Actor + Guardian ────────────────────────
+        # ── 4. MultiModelEnsemble (v5.4) — ≥3 modele + diversity ──
+        ensemble_span = self._tracer.start_span(decision_id, "ensemble", self.name)
+
+        ensemble_votes = []
+
+        # Głos 1: Actor (Granite 3.2)
         actor_decision = await self._actor_evaluate(extraction_result)
         trust_score_obj = actor_decision.trust_score or TrustScore(overall=0.0)
+        raw_trust = trust_score_obj.overall
+        ensemble_votes.append(EnsembleVote(
+            model_name="granite-3.2-3b",
+            model_weight=0.33,
+            vote=actor_decision.verdict.status,
+            confidence=raw_trust,
+            reasoning=actor_decision.verdict.reason[:100],
+        ))
 
+        # Głos 2: Guardian (Granite Guardian)
         guardian_decision = await self._guardian_verify(extraction_result, actor_decision)
         if guardian_decision and guardian_decision.trust_score:
             trust_score_obj = self._merge_trust_scores(trust_score_obj, guardian_decision.trust_score)
+            ensemble_votes.append(EnsembleVote(
+                model_name="granite-guardian-0.5b",
+                model_weight=0.33,
+                vote=guardian_decision.verdict.status,
+                confidence=guardian_decision.verdict.trust_score,
+                reasoning=guardian_decision.verdict.reason[:100],
+            ))
+
+        # Głos 3: DynamicErrorHandbook (few-shot) — opcjonalny
+        handbook_query = HandbookQuery(
+            vendor_nip=extraction_result.extracted_data.get("nip", ""),
+            category=extraction_result.extracted_data.get("category", ""),
+            amount_gross=float(extraction_result.extracted_data.get("amount_gross", 0)),
+            document_type=extraction_result.document_type,
+            k=2,
+        )
+        handbook_examples = await self._error_handbook.query_relevant(handbook_query)
+        if handbook_examples:
+            handbook_vote = "BLOCK" if any("BLOCK" in ex.user_correction for ex in handbook_examples) else "REVIEW"
+            ensemble_votes.append(EnsembleVote(
+                model_name="handbook-few-shot",
+                model_weight=0.20,
+                vote=handbook_vote,
+                confidence=0.6,
+                reasoning=f"{len(handbook_examples)} similar past corrections",
+            ))
+
+        # Rozstrzygnij ensemble
+        ensemble_result = self._ensemble.resolve(ensemble_votes)
+        self._tracer.end_span(decision_id, ensemble_span, {
+            "winner": ensemble_result.winner,
+            "consensus": ensemble_result.consensus,
+            "diversity": ensemble_result.diversity_score,
+            "trust": ensemble_result.final_trust,
+        })
 
         # ── 5. Walidacja przez QualityValidator ────────────────────
         quality_result = await self._run_quality_check(
@@ -250,6 +437,19 @@ class AgentOrchestrator(BaseAgent):
         if quality_result:
             trust_score_obj.overall *= (1.0 - quality_result.overall_risk_score * 0.3)
 
+        # ── 5a. GENIALNY POMYSŁ v5.3: Pomijanie agentów według Mesh ──
+        # Jeśli Trust ≥ 0.92 → pomiń QualityValidator + Analytics
+        if mesh_route and "quality-validator" in mesh_route.skip_agents:
+            quality_result = None  # pomiń QualityValidator
+            logger.info("[MESH] Skipping QualityValidator for NIP %s (trust=%.2f)",
+                        vendor_nip[:8], mesh_route.trust_score)
+        if mesh_route and "analytics" in mesh_route.skip_agents:
+            logger.info("[MESH] Skipping Analytics for NIP %s (trust=%.2f)",
+                        vendor_nip[:8], mesh_route.trust_score)
+        # Jeśli mesh każe wymusić agentów
+        if mesh_route and "analytics" in mesh_route.force_agents and "analytics" not in self._sub_agents:
+            logger.info("[MESH] Analytics forced but not registered")
+
         # ── 6. Weighted Voting ─────────────────────────────────────
         voting_result = await self._run_weighted_voting(
             extraction_result, trust_score_obj, quality_result,
@@ -257,13 +457,20 @@ class AgentOrchestrator(BaseAgent):
 
         # ── 7. 4-Eyes Check ────────────────────────────────────────
         gross_amount = extraction_result.extracted_data.get("amount_gross", 0)
+        # Recompute gross_amount_num from extraction result (not raw invoice_data)
+        gross_amount_num = gross_amount if isinstance(gross_amount, (int, float)) else 0.0
         four_eyes_needed = (
             isinstance(gross_amount, (int, float))
             and gross_amount > FOUR_EYES_THRESHOLD
         )
 
-        # ── 8. Określenie strefy decyzyjnej ────────────────────────
+        # ── 8. Skalibruj Trust Score (v5.4) ──────────────────────
         final_trust_score = trust_score_obj.overall
+        calibrated_cs = self._calibrator.calibrate(final_trust_score)
+        logger.info("[CALIBRATE] trust=%.2f → calibrated=%.2f",
+                    final_trust_score, calibrated_cs)
+        # Użyj skalibrowanego trustu do decyzji
+        final_trust_score = calibrated_cs
         status, reason = self._determine_zone(
             final_trust_score,
             quality_result,
@@ -342,15 +549,58 @@ class AgentOrchestrator(BaseAgent):
                 user_option="",
             )
 
-        # ── 16. Continuous Learning: jeśli SUGGEST/ASK_USER → czekamy na feedback
+        # ── 16. GENIALNY POMYSŁ v5.3: Aktualizuj Knowledge Mesh ──
+        if self._knowledge_mesh and self._knowledge_mesh.is_initialized:
+            correct = (status == "AUTO_POST")
+            await self._knowledge_mesh.update_trust(
+                vendor_nip=vendor_nip,
+                correct=correct,
+                agent_name=self.name,
+                category=extraction_result.extracted_data.get("category", ""),
+                amount=gross_amount_num,
+            )
+            if not correct and mesh_route:
+                await self._knowledge_mesh.share_experience(
+                    event_type="orchestrator.decision_corrected",
+                    source_agent=self.name,
+                    vendor_nip=vendor_nip,
+                    category=extraction_result.extracted_data.get("category", ""),
+                    amount=gross_amount_num,
+                )
+
+        # ── 16a. GENIALNY POMYSŁ v5.4: Record Telemetry ──
+        self._tracer.end_span(decision_id, trace_span, {
+            "status": status, "trust": final_trust_score, "mode": decision_mode.value,
+        })
+        self._tracer.end_trace(decision_id, status, final_trust_score, decision_mode.value)
+        await self._telemetry.record_decision(
+            decision_id=decision_id,
+            vendor_nip=vendor_nip,
+            amount_gross=gross_amount_num,
+            category=extraction_result.extracted_data.get("category", ""),
+            document_type=extraction_result.document_type,
+            agent_name=self.name,
+            status=status,
+            trust_score=final_trust_score,
+            decision_mode=decision_mode.value,
+            trace_id=trace.trace_id if trace else "",
+            spans_count=len(trace.spans) if trace else 0,
+            total_duration_ms=trace.total_duration_ms if trace else 0.0,
+            quality_score=trace.quality_score if trace else 0.0,
+        )
+        # Kalibracja: jeśli AUTO_POST → feedback pozytywny (na razie)
+        self._calibrator.update(raw_trust, correct=(status == "AUTO_POST"))
+
+        # ── 17. Continuous Learning: jeśli SUGGEST/ASK_USER → czekamy na feedback
         if decision_mode in (DecisionMode.SUGGEST, DecisionMode.ASK_USER):
             logger.info("[ORCH] Decision %s requires user feedback | mode=%s | autonomy=%.1f%%",
                         decision_id, decision_mode.value, self._decision_profile.get_autonomy_score())
 
         logger.info(
-            "[ORCH] Decision %s | status=%s | trust=%.2f | adaptive_threshold=%.2f | 4eyes=%s | autonomy=%.1f%%",
+            "[ORCH] Decision %s | status=%s | trust=%.2f | adaptive_threshold=%.2f | 4eyes=%s | autonomy=%.1f%% | mesh=%s",
             decision_id, status, final_trust_score, auto_post_threshold, four_eyes_needed,
             self._decision_profile.get_autonomy_score(),
+            f"{mesh_route.route if mesh_route else 'default'}",
         )
 
         return decision
@@ -846,25 +1096,33 @@ Czy ta decyzja jest poprawna? Odpowiedz TAK lub NIE i uzasadnij."""
         corrected_status: str,
         corrected_reason: str = "",
     ) -> None:
-        """Zapisz korektę użytkownika w Podręczniku Błędów (GENIALNY POMYSŁ).
+        """Zapisz korektę użytkownika — GENIALNY POMYSŁ v5.4 Unified Learning Protocol.
 
-        Gdy użytkownik poprawia decyzję AI → zapisz jako przykład few-shot.
-        Im więcej korekt, tym mądrzejszy model Granite 3.2.
+        KASKADA 5 systemów uczenia po każdej korekcie:
+        1. DynamicErrorHandbook → few-shot example
+        2. ContinuousLearningProvider → Cognitive Proof Block
+        3. KnowledgeMesh → Bayesian Field + Cross-Agent Rules
+        4. UserDecisionProfile → Progressive Autonomy
+        5. AgentTelemetryStore → korekta w DuckDB
         """
         decision = self._pending_decisions.get(decision_id)
         if not decision:
             logger.debug("[ORCH] No pending decision found for feedback: %s", decision_id)
             return
 
-        # Wyciągnij dane z decyzji
         details = decision.verdict.details if hasattr(decision.verdict, 'details') else {}
         extracted = details.get("extracted_data", {}) if isinstance(details, dict) else {}
+        vendor_nip = extracted.get("nip", "unknown")
+        category = extracted.get("category", "")
+        amount = float(extracted.get("amount_gross", 0))
+        was_corrected = corrected_status != decision.verdict.status
 
+        # ── 1. DynamicErrorHandbook ──
         await self._error_handbook.record_correction(
             invoice_id=decision.decision_id,
-            vendor_nip=extracted.get("nip", "unknown"),
-            category=extracted.get("category", ""),
-            amount_gross=float(extracted.get("amount_gross", 0)),
+            vendor_nip=vendor_nip,
+            category=category,
+            amount_gross=amount,
             ai_decision=decision.verdict.status,
             ai_trust_score=decision.verdict.trust_score,
             ai_reason=decision.verdict.reason,
@@ -872,26 +1130,77 @@ Czy ta decyzja jest poprawna? Odpowiedz TAK lub NIE i uzasadnij."""
             correction_reason=corrected_reason,
         )
 
-        # Równolegle zapisz w Continuous Learning Provider (Cognitive Audit Trail)
+        # ── 2. ContinuousLearningProvider ──
         correction_embedding = self._vectorize_invoice(
             extracted if extracted else {"decision_id": decision.decision_id}
         ) if extracted else None
         await self.record_feedback(
             decision=decision,
             corrected={"status": corrected_status, "reason": corrected_reason},
-            feedback_type=FeedbackType.CORRECT if corrected_status != decision.verdict.status else FeedbackType.ACCEPT,
+            feedback_type=FeedbackType.CORRECT if was_corrected else FeedbackType.ACCEPT,
             correction_embedding=correction_embedding,
         )
 
+        # ── 3. KnowledgeMesh — update Bayesian Field + Cross-Agent Rules ──
+        if self._knowledge_mesh and self._knowledge_mesh.is_initialized:
+            await self._knowledge_mesh.update_trust(
+                vendor_nip=vendor_nip,
+                correct=not was_corrected,
+                agent_name=self.name,
+                category=category,
+                amount=amount,
+            )
+            if was_corrected:
+                await self._knowledge_mesh.share_experience(
+                    event_type="orchestrator.decision_corrected",
+                    source_agent=self.name,
+                    vendor_nip=vendor_nip,
+                    category=category,
+                    amount=amount,
+                )
+
+        # ── 4. UserDecisionProfile — Progressive Autonomy ──
+        self._decision_profile.observe_decision(
+            vendor_nip=vendor_nip,
+            vendor_name=extracted.get("vendor_name", ""),
+            amount_gross=amount,
+            category=category,
+            status=corrected_status,
+            decision_mode=decision.decision_mode.value if decision.decision_mode else "ask_user",
+            user_action="reject" if was_corrected else "confirm",
+            user_option=corrected_status,
+        )
+
+        # ── 5. AgentTelemetryStore — record correction ──
+        await self._telemetry.record_correction(
+            correction_id=uuid.uuid4().hex[:16],
+            decision_id=decision_id,
+            agent_name=self.name,
+            ai_decision=decision.verdict.status,
+            user_correction=corrected_status,
+            correction_reason=corrected_reason,
+            vendor_nip=vendor_nip,
+            category=category,
+            amount_gross=amount,
+            delta=1.0 if was_corrected else 0.0,
+            feedback_type="correct" if was_corrected else "accept",
+        )
+
+        # ── 6. ConfidenceCalibrator — update Platt Scaling ──
+        self._calibrator.update(decision.verdict.trust_score, not was_corrected)
+
+        # ── 7. FeedbackLoop — record metrics ──
+        self._feedback.record_decision(
+            status=decision.verdict.status,
+            user_accepted=not was_corrected,
+        )
+
         logger.info(
-            "[ORCH] 📘 User feedback recorded | %s: %s → %s | handbook: %d examples",
-            decision_id,
-            decision.verdict.status,
-            corrected_status,
+            "[ORCH] 📘 Unified Learning Protocol | %s: %s → %s | handbook: %d | mesh | profile | telemetry | calibrator",
+            decision_id, decision.verdict.status, corrected_status,
             self._error_handbook.count,
         )
 
-        # Usuń z pending
         self._pending_decisions.pop(decision_id, None)
 
     # ── GENIALNY POMYSŁ v5.0: Proactive Workflow Engine ──────────

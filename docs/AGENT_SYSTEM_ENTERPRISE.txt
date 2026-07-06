@@ -1,10 +1,10 @@
 ================================================================================
-  NEXUSAI — SYSTEM AGENTÓW AI WERSJI ENTERPRISE (v5.2)
-  "Autonomiczne Biuro Księgowe — 5 Agentów, 13 Modeli, Progressive Autonomy"
+  NEXUSAI — SYSTEM AGENTÓW AI WERSJI ENTERPRISE (v5.5)
+  "Autonomiczne Biuro Księgowe — 5 Agentów, 13 Modeli, Decision Protocol v5.4"
 ================================================================================
   Data:        Lipiec 2026
   Status:      Specyfikacja techniczna — wersja rozszerzona
-  Podstawa:    SPECYFIKACJA_AGENTOW_ENTERPRISE.txt (v5.2),
+  Podstawa:    SPECYFIKACJA_AGENTOW_ENTERPRISE.txt (v5.5),
                RAPORT_TECHNOLOGII_NEXUSAI.txt (wyłączne technologie),
                aa3fvcx.txt (blueprint agentów)
   Zgodność:    docs/AGENTS.md, nexus_ai/agents/*.py, nexus_ai/frontend/views/decision_feed.py
@@ -29,6 +29,20 @@ SPIS TREŚCI
 0c. GENIALNY POMYSŁ: DecisionFeedView — Flet UI
    0c.1. Architektura karty decyzyjnej
    0c.2. Integracja z NATS i Orchestratorem
+
+0d. GENIALNY POMYSŁ v5.3: Agent Knowledge Mesh (EASP)
+   0d.1. Cztery komponenty: CollectiveBayesianField, PredictiveTaskRouter,
+         CrossAgentExperienceReplay, MeshProtocol
+   0d.2. Predykcyjny routing z Circuit Breaker
+   0d.3. CROSS_AGENT_RULES — reguły propagacji doświadczeń
+   0d.4. Integracje: Extraction + QualityValidator
+
+0e. GENIALNY POMYSŁ v5.4: Decision Protocol + Unified Learning Protocol
+   0e.1. DecisionTrace — OTel tracing każdej decyzji (10 spanów)
+   0e.2. MultiModelEnsemble — ≥2 modele + diversity check
+   0e.3. ConfidenceCalibrator — Platt Scaling
+   0e.4. AgentTelemetryStore — DuckDB + Parquet
+   0e.5. UnifiedLearningProtocol — kaskada 5 systemów po korekcie
 
 1. WIZJA SYSTEMU — Autonomiczne Biuro Księgowe
    1.1. Filozofia architektury agentowej
@@ -346,6 +360,223 @@ Cel: Decision Autonomy Score ≥ 90% w ciągu 3 miesięcy.
 
 
 ================================================================================
+0d. GENIALNY POMYSŁ v5.3: Agent Knowledge Mesh (EASP)
+================================================================================
+
+0d.1. Cztery komponenty KnowledgeMesh
+----------------------------------------
+
+Agenci przestają działać w izolacji — tworzą SIATKĘ WIEDZY z Collective
+Bayesian Field, Predictive Task Router i Cross-Agent Experience Replay.
+
+  KnowledgeMesh (nexus_ai/agents/knowledge_mesh.py)
+  ├── CollectiveBayesianField      — współdzielony Trust Score Beta(α,β)
+  │                                   per vendor, aktualizowany przez
+  │                                   wszystkie agenty
+  ├── PredictiveTaskRouter         — dynamiczny DAG agentów
+  │   ├── Trust < 0.30 → BLOCK (Circuit Breaker)
+  │   ├── Trust ≥ 0.92 → SKIP QualityValidator
+  │   └── Trust 0.30-0.92 → standardowy pipeline
+  ├── CrossAgentExperienceReplay   — agenci publikują eventy,
+  │                                   inne agenty reagują przez
+  │                                   CROSS_AGENT_RULES
+  └── MeshProtocol                 — route(), update_trust(),
+                                      share_experience(),
+                                      get_threshold_adjustments()
+
+0d.2. Predykcyjny routing z Circuit Breaker
+----------------------------------------------
+
+  KnowledgeMesh.route(vendor_nip, amount) → RouteDecision:
+    {
+      target_agents: ["extraction", "quality", "analytics"],
+      skip_agents: [],               # lub ["quality"] dla trusted
+      threshold_adjustments: {"orchestrator": +0.05, "quality": +0.08},
+      circuit_breaker_active: false  # true gdy Trust < 0.30
+    }
+
+  Circuit Breaker (Trust < 0.30):
+    → Anuluj przetwarzanie
+    → Wymagaj ręcznej weryfikacji
+    → Wyślij alert do administratora
+
+  SKIP (Trust ≥ 0.92):
+    → Pomiń QualityValidator
+    → Pomiń Cognitive Audit Trail (vendor doskonale znany)
+    → Obniżone progi dla Extraction
+
+0d.3. CROSS_AGENT_RULES — reguły propagacji doświadczeń
+----------------------------------------------------------
+
+  CrossAgentExperienceReplay definiuje reguły:
+
+    extraction.low_consensus → QualityValidator: INCREASE_SCRUTINY
+      → "OCR nie zgadza się dla tego vendora — sprawdź dokładniej"
+
+    quality.tax_error → Extraction: HIGH_SCRUTINY
+      → "Wykryto błąd podatkowy — zwiększ precyzję OCR dla tego NIP"
+
+    quality.tax_error → Orchestrator: LOWER_AUTO_POST_THRESHOLD
+      → "Ten vendor ma błędy — podnieś próg AUTO_POST"
+
+    quality.fraud_detected → ALL: HIGH_ALERT
+      → "Wykryto fraud! Wszystkie agenty na najwyższą czujność"
+
+    analytics.anomaly_detected → QualityValidator: INCREASE_SCRUTINY
+      → "Anomalia finansowa — sprawdź dokładniej"
+
+    analytics.anomaly_detected → Orchestrator: REVIEW_REQUIRED
+      → "Anomalia wymaga przeglądu"
+
+0d.4. Integracje: Extraction + QualityValidator + Analytics (5/5 agentów)
+---------------------------------------------------------------------------
+
+  AgentDataExtraction (v5.3 → v5.5):
+    - _publish_mesh_events() po każdej ekstrakcji
+    - Analizuje macierz walidacji krzyżowej 4×4
+    - Konsensus < 75% → obniża Trust + 'extraction.low_consensus' (v5.5: usunięto and confidence < 0.7)
+    - Confidence ≥ 85% → podnosi Trust Score
+
+  AgentQualityValidator (v5.3):
+    - _publish_mesh_events() po każdej walidacji
+    - Tax ERROR → obniża Trust + 'quality.tax_error'
+    - Fraud ERROR → obniża Trust + 'quality.fraud_detected'
+    - ESG ERROR → 'analytics.anomaly_detected'
+    - All OK → podnosi Trust Score
+
+  AgentAnalytics (v5.5 — NOWY):
+    - _publish_mesh_events() na końcu analyze()
+    - 4 tiery publikacji:
+      1. 🔴 Z-score > 3σ (high) → 'analytics.anomaly_detected' → QV TRIGGER_DEEP_CHECK + Orch LOWER_THRESHOLD + 1× update_trust(correct=False)
+      2. 🟡 Z-score 2-3σ (medium) → event bez obniżania Trust
+      3. ⚠️ Risk flags (overdue, high_amount) → event + update_trust dla overdue
+      4. 💰 Cashflow/forecast → event z detection_method="cashflow_analysis"
+    - Aggregated update_trust: 1 aktualizacja per vendor (nie per anomaly)
+    - Zgodność z CROSS_AGENT_RULES w knowledge_mesh.py
+
+================================================================================
+0e. GENIALNY POMYSŁ v5.4: Decision Protocol + Unified Learning Protocol
+================================================================================
+
+0e.1. DecisionTrace — OTel tracing każdej decyzji (10 spanów)
+---------------------------------------------------------------
+
+  DecisionTracer (nexus_ai/agents/decision_trace.py):
+
+    DecisionTrace (root)
+    ├── Span: cache_check          — Decision Cache k-NN
+    ├── Span: mesh_route           — KnowledgeMesh predicive routing
+    ├── Span: extraction           — OCR + ekstrakcja + Mesh events
+    ├── Span: handbook_query       — Dynamiczny Podręcznik Błędów
+    ├── Span: actor_inference      — Granite 3.2 Actor
+    ├── Span: guardian_check       — Granite Guardian
+    ├── Span: ensemble             — MultiModelEnsemble
+    ├── Span: quality_validation   — QualityValidator + Mesh events
+    ├── Span: calibration          — ConfidenceCalibrator (Platt Scaling)
+    └── Span: final_decision       — AUTO_POST / SUGGEST / ASK_USER
+
+  Każdy span:
+    - agent, model, latency_ms, confidence, decision
+    - trace_id, span_id (format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+    - parent_span_id (dla hierarchii)
+    - Decision Quality Score = f(cache_hit, consensus, correction)
+
+0e.2. MultiModelEnsemble — ≥2 modele + diversity check
+---------------------------------------------------------
+
+  Implementacja w MultiModelEnsemble (decision_trace.py):
+
+    Głosy:
+    - Actor (Granite 3.2 3B) — główny decydent
+    - Guardian (Granite Guardian 0.5B) — strażnik merytoryczny
+    - Handbook (DynamicErrorHandbook) — few-shot examples
+
+    Diversity check:
+    - Jeśli wszystkie modele dają ten sam werdykt → ostrzeżenie
+      o braku dywersyfikacji (all_same_verdict = true)
+    - Shannon entropy: 0.0 = brak dywersyfikacji
+    - Wymagane ≥2 modele (MIN_MODELS = 2)
+
+    Fallback:
+    - Jeśli <2 modele dostępne → requires_human = true
+    - Weighted voting: wagi per model (historyczna precyzja)
+
+0e.3. ConfidenceCalibrator — Platt Scaling
+---------------------------------------------
+
+  Implementacja w ConfidenceCalibrator (decision_trace.py):
+
+    Problem: Model mówi 95% confidence, ale w rzeczywistości ma 80%
+    Rozwiązanie: Platt Scaling online (SGD z decay rate 0.99)
+
+    calibrated = sigmoid(a × raw + b)
+    a, b — parametry uczone online po każdej decyzji
+
+    Reliability diagram:
+    - 10-binowy wykres kalibracji
+    - predicted vs actual accuracy per bin
+    - Perfect calibration: diagonal line
+
+    Metoda update(raw_trust, actual_outcome):
+    - Aktualizuje a, b przez SGD
+    - decay_rate = 0.99 (starsze próbki mają mniejszą wagę)
+
+0e.4. AgentTelemetryStore — DuckDB + Parquet
+-----------------------------------------------
+
+  AgentTelemetryStore (nexus_ai/agents/telemetry_store.py):
+
+    5 tabel DuckDB:
+    - decisions    — każda decyzja (id, vendor, amount, mode, trust, ...)
+    - corrections  — każda korekta (id, decision_id, reason, ...)
+    - routes       — każdy routing (id, decision_id, target_agents, ...)
+    - traces       — każdy trace (id, decision_id, span_count, ...)
+    - feedback     — każdy feedback (id, correction_rate, quality_score, ...)
+
+    Eksport:
+    - Parquet z kompresją ZSTD
+    - Hive-style partycjonowanie: year=/month=/
+    - Przeszukiwalne przez DuckDB
+
+    Metryki (przez FeedbackLoop w decision_trace.py):
+    - time_to_decision_ms — czas od wpływu do decyzji
+    - correction_rate — % decyzji skorygowanych
+    - decision_quality_score — 0-100%
+    - avg_feedback_latency_ms — czas do uzyskania feedbacku
+
+0e.5. UnifiedLearningProtocol — kaskada 5 systemów po korekcie
+----------------------------------------------------------------
+
+  Problem: W v5.2, 5 mechanizmów uczenia działa w izolacji.
+  Korekta aktualizuje Handbooka, ale NIE aktualizuje Bayesian Field.
+
+  Rozwiązanie: KASKADA 5 systemów po każdej KOREKCIE:
+
+    KOREKTA UŻYTKOWNIKA
+      │
+      ├─→ 1. DynamicErrorHandbook.record_correction()
+      │     Zapisz przykład few-shot w DuckDB + embedding w sqlite-vec
+      │     (find_similar_by_embedding przez DuckDB k-NN)
+      │
+      ├─→ 2. ContinuousLearningProvider.record_feedback()
+      │     Aktualizuj BayesianTrustScore per agent
+      │     Utwórz CognitiveProofBlock z embeddingiem 768d
+      │
+      ├─→ 3. KnowledgeMesh.update_trust()
+      │     Aktualizuj CollectiveBayesianField per vendor
+      │     Utwórz Cross-Agent Experience Rules
+      │
+      ├─→ 4. UserDecisionProfile.observe_decision()
+      │     Aktualizuj 4 wymiary (vendor trust, category, amount, time)
+      │     Wyprowadź nowe wzorce decyzyjne
+      │
+      └─→ 5. AgentTelemetryStore.record_correction()
+            Zapisz do DuckDB/Parquet dla długoterminowej analityki
+
+    Implementacja w AgentOrchestrator.record_user_feedback()
+    (nexus_ai/agents/orchestrator.py)
+
+================================================================================
 1. WIZJA SYSTEMU — Autonomiczne Biuro Księgowe
 ================================================================================
 
@@ -393,7 +624,7 @@ TECHNOLOGIE (wyłącznie z RAPORT_TECHNOLOGII):
   - OpenTelemetry API/SDK ≥1.25.0 — monitoring i tracing
   - Sentry SDK ≥2.0.0 — error tracking
   - structlog + Loguru — logowanie strukturalne
-  - diskcache ≥5.6.0 — cache decyzji
+  - **dyscache** — dwupoziomowy cache L1 (RAM) + L2 (SQLite) — zastąpił diskcache w DecisionCache (aa3fvcx.txt Punkt 13)
   - pendulum ≥3.0.0 — daty i czas
   - Granian ≥1.0.0 — serwer ASGI z metrykami Prometheus
   - Litestar ≥2.0.0 — framework ASGI
@@ -742,14 +973,18 @@ KLUCZOWE MECHANIZMY ENTERPRISE:
      - Obowiązkowy dla kwot > 50,000 PLN
      - Dwie niezależne weryfikacje (Guardian + QualityValidator)
 
-PROCES DECYZYJNY (7 kroków):
-  Krok 1: Decision Cache — k-NN w podobnych decyzjach (80% pomija dalsze kroki)
-  Krok 2: AgentDataExtraction → ekstrakcja danych (4 silniki OCR)
-  Krok 3: Dynamiczny Podręcznik Błędów → pobierz 3 podobne korekty z DuckDB
-  Krok 4: Actor (Granite 3.2) + Guardian (Granite Guardian) → ocena z few-shot
-  Krok 5: AgentQualityValidator → walidacja (tax + fraud + ESG + liquidity)
-  Krok 6: Weighted Voting → konsensus (Orchestrator 0.40 + QualityValidator 0.60)
-  Krok 7: Ostateczna decyzja: AUTO_POST / SUGGEST / ASK_USER
+PROCES DECYZYJNY (11 kroków — Decision Protocol v5.4):
+  Krok 1:  DecisionTrace — rozpocznij OTel trace dla decyzji
+  Krok 2:  KnowledgeMesh — predykcyjny routing (Circuit Breaker, SKIP/BLOCK)
+  Krok 3:  Decision Cache — k-NN w podobnych decyzjach (80% pomija dalsze kroki)
+  Krok 4:  AgentDataExtraction → ekstrakcja danych (4 silniki OCR) + Mesh events
+  Krok 5:  Dynamiczny Podręcznik Błędów → pobierz 3 podobne korekty z DuckDB
+  Krok 6:  MultiModelEnsemble (Actor + Guardian + Handbook few-shot) z diversity check
+  Krok 7:  AgentQualityValidator → walidacja (tax + fraud + ESG + liquidity) + Mesh events
+  Krok 8:  ConfidenceCalibrator → Platt Scaling kalibracja Trust Score
+  Krok 9:  Cognitive Audit Trail → sprawdź podobne korekty
+  Krok 10: AgentTelemetryStore → zapisz decyzję, routing, trace do DuckDB/Parquet
+  Krok 11: Ostateczna decyzja: AUTO_POST / SUGGEST / ASK_USER
 
 KOMUNIKACJA NATS:
   council.task.request       → wejście zadania
@@ -759,10 +994,26 @@ KOMUNIKACJA NATS:
   council.escalation         → eskalacja
   council.heartbeat          → heartbeat (co 30s)
 
-UCZENIE SIĘ (dwie warstwy jednocześnie):
-  - Cognitive Audit Trail: embedding → k-NN → auto-naprawa OPA
-  - Dynamiczny Podręcznik Błędów: DuckDB → few-shot w prompcie
-  - Bayesian update: α/β po każdej korekcie
+UCZENIE SIĘ (Unified Learning Protocol v5.4 — kaskada 5 systemów):
+  Każda KOREKTA użytkownika uruchamia KASKADĘ 5 akcji:
+  
+  1. DynamicErrorHandbook.record_correction()
+     → Zapisz przykład few-shot w DuckDB + embedding w sqlite-vec
+
+  2. ContinuousLearningProvider.record_feedback()
+     → Aktualizuj BayesianTrustScore per agent
+     → Utwórz CognitiveProofBlock z embeddingiem
+
+  3. KnowledgeMesh.update_trust()
+     → Aktualizuj CollectiveBayesianField per vendor
+     → Utwórz Cross-Agent Experience Rules
+
+  4. UserDecisionProfile.observe_decision()
+     → Aktualizuj 4 wymiary (vendor trust, category, amount, time)
+     → Wyprowadź nowe wzorce decyzyjne
+
+  5. AgentTelemetryStore.record_correction()
+     → Zapisz do DuckDB/Parquet dla długoterminowej analityki
 
 
 3.2. AgentDataExtraction — Forteca Precyzji (wchłonął KSeF)
@@ -925,6 +1176,15 @@ KLUCZOWE MECHANIZMY ENTERPRISE:
      - Dla każdej decyzji > 10,000 PLN: wpływ na płynność
      - Ryzyko niedoboru > 5% → WARNING
      - Ryzyko niedoboru > 20% → BLOCK
+
+  6b. KNOWLEDGE MESH INTEGRATION (v5.3)
+     - Publikuje eventy Cross-Agent po każdej walidacji
+     - Tax ERROR/WARNING → obniża Trust Score + publikuje 'quality.tax_error'
+       → Extraction dostaje HIGH_SCRUTINY, Orchestrator obniża próg AUTO_POST
+     - Fraud ERROR → obniża Trust Score + publikuje 'quality.fraud_detected'
+       → wszyscy agenci na HIGH ALERT
+     - ESG ERROR/WARNING → publikuje 'analytics.anomaly_detected'
+     - All OK → podnosi Trust Score vendora
 
   6. WEIGHTED VOTING (wewnątrz agencji)
      - Tax: 0.35 | Fraud: 0.30 | ESG: 0.20 | Forecast: 0.15
@@ -1302,14 +1562,19 @@ Krótkoterminowa pamięć (TTL 1h):
 
 Buckety: nexus-config, nexus-rules, nexus-features, nexus-workers
 
-6.5. Decision Cache (diskcache + sqlite-vec k-NN)
-----------------------------------------------------
+6.5. Decision Cache (dyscache L1+L2 + sqlite-vec k-NN)
+---------------------------------------------------------
 
-  1. Każda decyzja → embedding 768d w sqlite-vec (decision_patterns)
-  2. Nowa faktura → k-NN (k=5) w decision_patterns
-  3. Jeśli max_distance < 0.1 → użyj cache decyzji (diskcache)
-  4. Oszczędność: ~80% decyzji bez inferencji LLM
-  5. diskcache: zapasowy cache dla szybkiego dostępu
+  1. **dyscache** — dwupoziomowy cache (L1 RAM + L2 SQLite) zgodnie z aa3fvcx.txt Punkt 13
+     - L1: RAM OrderedDict z LRU eviction (maxsize=4096), dostęp w nanosekundach
+     - L2: SQLite z WAL mode, trwałość między restartami aplikacji
+     - Async-native: anyio.to_thread.run_sync dla wszystkich operacji
+     - Domyślny TTL: 24h
+  2. Każda decyzja → embedding 768d w sqlite-vec (decision_patterns)
+  3. Nowa faktura → k-NN (k=5) w decision_patterns
+  4. Jeśli max_distance < 0.1 → użyj cache decyzji
+  5. Oszczędność: ~80% decyzji bez inferencji LLM
+  6. diskcache zastąpiony — usunięty z zależności
 
 
 ================================================================================
@@ -1392,20 +1657,16 @@ Modyfikacja → wszystkie kolejne bloki unieważnione.
 8.1. OpenTelemetry tracing — każda decyzja = trace
 -----------------------------------------------------
 
-  Trace: process_invoice (root)
-  ├── Span: extract_data (AgentDataExtraction)
-  │   ├── Event: ocr_started
-  │   ├── Event: ocr_completed
-  │   └── Span: validate_fields
-  ├── Span: evaluate_decision (AgentOrchestrator)
-  │   ├── Span: handbook_query (Dynamic Error Handbook)
-  │   ├── Span: llm_inference (Granite 3.2 Actor)
-  │   └── Span: guardian_check (Granite Guardian)
-  ├── Span: quality_validation (AgentQualityValidator)
-  │   ├── Span: tax_check
-  │   ├── Span: fraud_check
-  │   ├── Span: esg_check
-  │   └── Span: forecast
+  Trace: process_invoice (Decision Protocol v5.4)
+  ├── Span: cache_check (Decision Cache k-NN)
+  ├── Span: mesh_route (KnowledgeMesh predictive routing)
+  ├── Span: extraction (AgentDataExtraction + Mesh events)
+  ├── Span: handbook_query (Dynamic Error Handbook)
+  ├── Span: actor_inference (Granite 3.2 Actor)
+  ├── Span: guardian_check (Granite Guardian)
+  ├── Span: ensemble (MultiModelEnsemble)
+  ├── Span: quality_validation (AgentQualityValidator + Mesh events)
+  ├── Span: calibration (ConfidenceCalibrator — Platt Scaling)
   └── Span: final_decision
       └── Event: decision_made
 
@@ -1470,40 +1731,44 @@ Modyfikacja → wszystkie kolejne bloki unieważnione.
 
 
 ================================================================================
-PODSUMOWANIE — 19 kluczowych innowacji Enterprise v5.2
+PODSUMOWANIE — 19 kluczowych innowacji Enterprise v5.5
 ================================================================================
 
-  1.  PROACTIVE WORKFLOW SCHEDULER — agenci NIE czekają, sami inicjują zadania
-  2.  PROGRESSIVE AUTONOMY — agent uczy się preferencji i przejmuje rutynowe decyzje
-  3.  DECISION FEED VIEW (Flet UI) — karty decyzyjne 1-Click CFO z NATS
-  4.  UserDecisionProfile — 4 wymiary uczenia (vendor, category, amount, time)
-  5.  Decision Autonomy Score — od 0% do 90%+ w 3 miesiące
-  6.  ACTION CARDS — "Zasada 1-Click CFO" z ukrytym payloadem księgowym
-  7.  16 autonomicznych workflow — codzienne, tygodniowe, miesięczne
-  8.  COGNITIVE AUDIT TRAIL — samouzdrawiające się reguły OPA
-  9.  DYNAMICZNY PODRĘCZNIK BŁĘDÓW — few-shot learning z DuckDB
-  10. ResourceOptimizer — auto-unload modeli, dynamiczne skalowanie workerów
-  11. WorkflowManager — historia, statystyki, deduplikacja (was_executed_recently)
-  12. Decision Feed Refresh — automatyczne odświeżanie co 30 min
-  13. Bayesian Trust Score — aktualizowany po każdej decyzji
-  14. Adaptive Thresholds — blended Bayesian + UserDecisionProfile
-  15. DecisionMode — JEDEN poziom automatyzacji (AUTO_POST/SUGGEST/ASK_USER)
-  16. 5 wyspecjalizowanych agentów — 13 modeli GGUF
-  17. Weighted Voting — Orchestrator 0.40 + QualityValidator 0.60
-  18. 4-Eyes Principle — obowiązkowy dla > 50k PLN
+  1.  AGENT KNOWLEDGE MESH (EASP) — CollectiveBayesianField + PredictiveTaskRouter + Cross-Agent Experience Replay
+  2.  DECISION PROTOCOL v5.4 — DecisionTrace OTel + MultiModelEnsemble + ConfidenceCalibrator
+  3.  UNIFIED LEARNING PROTOCOL — kaskada 5 systemów po każdej korekcie
+  4.  AGENT TELEMETRY STORE — DuckDB + Parquet dla wszystkich decyzji/korekt/routingów
+  5.  FEEDBACK LOOP — metryki time-to-decision, correction_rate, decision_quality_score
+  6.  KNOWLEDGE MESH INTEGRATIONS (FULL) — Extraction + QualityValidator + **Analytics** publikują Cross-Agent eventy (5/5 agentów)
+  7.  PROACTIVE WORKFLOW SCHEDULER — agenci NIE czekają, sami inicjują zadania
+  8.  PROGRESSIVE AUTONOMY — agent uczy się preferencji i przejmuje rutynowe decyzje
+  9.  DECISION FEED VIEW (Flet UI) — karty decyzyjne 1-Click CFO z NATS
+  10. COGNITIVE AUDIT TRAIL — samouzdrawiające się reguły OPA
+  11. DYNAMICZNY PODRĘCZNIK BŁĘDÓW — few-shot learning z DuckDB + sqlite-vec k-NN
+  12. Bayesian Trust Score — aktualizowany po każdej decyzji
+  13. Adaptive Thresholds — blended Bayesian + UserDecisionProfile
+  14. DecisionMode — JEDEN poziom automatyzacji (AUTO_POST/SUGGEST/ASK_USER)
+  15. 5 wyspecjalizowanych agentów — 13 modeli GGUF
+  16. dyscache L1+L2 — dwupoziomowy cache (RAM + SQLite) zastępujący diskcache w DecisionCache
+  17. stamina Circuit Breaker — ochrona KSeF, Białej Listy MF, GUS BIR, NBP (4/4 API chronione)
+  18. Full KnowledgeMesh — 5/5 agentów zintegrowanych z siatką wiedzy
   19. Proof Chain SHA-256 — niepodważalny audyt (nexus-crypto)
 
 Technologie: wyłącznie z RAPORT_TECHNOLOGII_NEXUSAI.txt
   - llama-cpp-python, NATS JetStream, Taskiq, DuckDB, SQLite+SQLCipher,
     sqlite-vec, TigerBeetle, msgspec, stamina, nexus-crypto, OPA+Rego,
-    Flet (Flutter), OpenTelemetry, Sentry, structlog, loguru, diskcache,
+    Flet (Flutter), OpenTelemetry, Sentry, structlog, loguru,
+    **dyscache** (L1 RAM + L2 SQLite — zastąpił diskcache),
     pendulum, Granian, Litestar, httpx, hishel, fsspec, psutil,
     Tesseract, PaddleOCR, python-docTR, Pillow, pypdfium2,
     xsdata, lxml, Prometheus
 
 ================================================================================
+  KONIEC DOKUMENTU — AGENT_SYSTEM_ENTERPRISE.txt v5.5
 ================================================================================
-9. GENIALNY POMYSŁ v5.1: Action Cards — "Zasada 1-Click CFO"
+
+================================================================================
+DODATEK A: GENIALNY POMYSŁ v5.1: Action Cards — "Zasada 1-Click CFO"
 ================================================================================
 
 9.1. Filozofia: Agent = Ekspert, Człowiek = Decydent
@@ -1617,5 +1882,5 @@ Rozwiązanie: Action Cards — jedna decyzja = jedna karta = jeden klik.
     ui.feed.action   — odpowiedź użytkownika
 
 ================================================================================
-  KONIEC DOKUMENTU — AGENT_SYSTEM_ENTERPRISE.txt v5.2
+  KONIEC DOKUMENTU — AGENT_SYSTEM_ENTERPRISE.txt v5.5
 ================================================================================

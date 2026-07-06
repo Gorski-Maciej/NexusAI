@@ -5,6 +5,197 @@
 
 ---
 
+## [5.5.0] — 2026-07-06 — "dyscache L1+L2 + stamina Circuit Breaker + Full Mesh"
+
+### 🚀 Usprawnienia infrastruktury
+
+#### ➕ Wdrożono: dyscache — Dwupoziomowy cache L1 (RAM) + L2 (SQLite)
+
+- **`nexus_ai/core/dyscache.py`** — NOWY plik (~260 linii)
+  - `DysCache` — dwupoziomowy cache: L1 (RAM `OrderedDict` z LRU eviction, maxsize=4096, `threading.Lock`), L2 (SQLite z WAL mode, busy_timeout, TTL)
+  - W pełni async przez `anyio.to_thread.run_sync` dla wszystkich operacji SQLite
+  - `AsyncDysCache` — alias z lazy initialize()
+  - JSON serializacja (bezpieczniejsza niż pickle), TTL per wpis, cleanup_expired()
+  - Zgodny z aa3fvcx.txt Punkt 13 (dyscache — nowoczesny, wielopoziomowy cache)
+
+#### ➕ `DecisionCache` w `base.py` — dyscache zamiast diskcache
+
+- **`nexus_ai/agents/base.py`**: `self._diskcache` (diskcache.Cache) → `self._dyscache` (DysCache)
+  - `DysCache(l1_maxsize=4096, l2_path=..., default_ttl=86400)` — 24h domyślnie
+  - `get()`: L1 RAM (ns) → L2 SQLite (ms) → fallback None
+  - `set()`: L1 + L2 równolegle, TTL wspólny
+  - `close()`: opróżnienie L1 + zamknięcie SQLite
+  - sqlite-vec k-NN dla embeddingów pozostaje bez zmian
+  - Zgodny z AGENT_SYSTEM_ENTERPRISE.txt §5.5 + aa3fvcx.txt Punkt 13
+
+#### ➕ stamina Circuit Breaker — ochrona API zewnętrznych
+
+- **`nexus_ai/services/white_list_service.py`** — Biała Lista MF:
+  - `_fetch_nip_data()`: `stamina.retry_context(on=(HTTPStatusError, RequestError, ...), attempts=3, timeout=10.0, circuit_breaker=True)`
+  - Graceful degradation: `except stamina.RetryingError → return None` z logowaniem
+
+- **`nexus_ai/core/integrations/ksef/client.py`** — KSeF Client:
+  - `fetch_invoice()`: stamina retry 3× z CB, `ConnectionError` po wyczerpaniu
+
+- **`nexus_ai/core/integrations/ksef/auth.py`** — KSeF Auth:
+  - `login()`: stamina retry 3× z CB, `ConnectionError` po wyczerpaniu
+
+- **`nexus_ai/core/opa_client.py`** — OPA local sidecar:
+  - `health()`, `evaluate()`, `load_data()`: stamina retry (bez CB — lokalny proces)
+
+- **Już chronione (bez zmian):** `gus_bir_client.py`, `ksef_service.py`, `core/cache/http_client.py`
+
+### 🔗 KnowledgeMesh — pełna integracja z 5 agentami
+
+#### ➕ AgentAnalytics — ostatni agent zintegrowany z Meshem
+
+- **`nexus_ai/agents/analytics.py`**:
+  - `knowledge_mesh: Any = None` w `__init__`, przekazany do `BaseAgent`
+  - `_publish_mesh_events()` — nowa metoda z 4 tierami publikacji:
+    1. 🔴 Z-score > 3σ (high): `analytics.anomaly_detected` → QV TRIGGER_DEEP_CHECK + Orch LOWER_THRESHOLD + 1× `update_trust(correct=False)`
+    2. 🟡 Z-score 2-3σ (medium): event bez obniżania Trust
+    3. ⚠️ Risk flags (overdue, high_amount): event + `update_trust` dla overdue
+    4. 💰 Cashflow/forecast: event z `detection_method=cashflow_analysis`
+  - Wywołanie na końcu `analyze()` (krok 5a) po detekcji anomalii i flag ryzyka
+  - Bugfix z code review: `update_trust` zeskalowany z pętli (N× per anomaly) na agregację (1× per call)
+
+#### 🔄 AgentAnalytics — poprawiony warunek publikacji (v5.3 fix)
+
+- **`nexus_ai/agents/extraction.py`**:
+  - `medium_consensus_fields and confidence < 0.7` → `elif medium_consensus_fields:`
+  - Event `extraction.low_consensus` publikowany TERAZ zawsze gdy konsensus OCR 50-75% (nie tylko gdy ogólna pewność < 70%)
+  - QualityValidator dostaje INCREASE_SCRUTINY niezależnie od ogólnej confidence
+
+#### ✅ Stan integracji KnowledgeMesh (5 agentów)
+
+| Agent | Integracja | Eventy |
+|---|---|---|
+| AgentDataExtraction (extraction.py) | ✅ v5.3 | `extraction.low_consensus` |
+| AgentQualityValidator (quality_validator.py) | ✅ v5.3 | `quality.tax_error`, `quality.fraud_detected`, `analytics.anomaly_detected` |
+| AgentOrchestrator (orchestrator.py) | ✅ v5.3 | PredictiveTaskRouter + get_threshold_adjustments() |
+| AgentAnalytics (analytics.py) | ✅ **v5.5 NOWY** | `analytics.anomaly_detected` (4 tiery) |
+| AgentFixedAssets (fixed_assets.py / services/) | ❌ nie wymaga (deterministyczny) | — |
+
+### 🐛 Poprawione
+
+- **`extraction.py`**: Usunięty zbędny warunek `and confidence < 0.7` dla eventu medium-consensus
+- **`analytics.py`**: Agregacja `update_trust` z pętli na pojedyncze wywołanie (uniknięcie nadmiernego karania Trust Score)
+- **`white_list_service.py`**: Dodana obsługa `stamina.RetryingError` z graceful degradation (`return None` zamiast propagacji wyjątku)
+- **`core/dyscache.py`**: Poprawiony `cleanup_expired()` — `cursor.rowcount` zamiast `total_changes`, przywrócony `anyio.to_thread.run_sync` po code review
+
+### 📚 Dokumentacja
+
+- **`docs/CHANGELOG.md`**: ten wpis
+- **`docs/AGENTS.md`**: zaktualizowane sekcje KnowledgeMesh (Analytics + Extraction fix), stamina CB, dyscache
+- **`docs/MODULES.md`**: dodany moduł dyscache, zaktualizowany DecisionCache opis
+- **`docs/AGENT_SYSTEM_ENTERPRISE.txt`**: zaktualizowany spis technologii, Decision Cache, PODSUMOWANIE
+
+### 📊 Statystyki
+- **1 nowy plik**: `core/dyscache.py` (~260 linii)
+- **5 zmodyfikowanych**: `base.py`, `analytics.py`, `extraction.py`, `white_list_service.py`, `ksef/client.py`, `ksef/auth.py`, `opa_client.py`
+- **3 zmodyfikowane docs**: `AGENTS.md`, `MODULES.md`, `AGENT_SYSTEM_ENTERPRISE.txt`
+- **~450 linii nowego kodu** (w tym dyscache 260 + stamina 80 + Analytics Mesh 110)
+
+---
+
+## [5.4.0] — 2026-07-06 — "Decision Protocol + Unified Learning Protocol"
+
+### 🧠 GENIALNY POMYSŁ v5.4: Decision Protocol + Unified Learning Protocol
+
+#### ➕ Dodane
+- **`nexus_ai/agents/decision_trace.py`** (~620 linii) — Decision Protocol v5.4
+  - `DecisionTracer` — OTel tracing każdej decyzji z 10 spanami (cache→mesh→extraction→handbook→actor→guardian→ensemble→quality→calibration→final)
+  - `MultiModelEnsemble` — ≥2 modele (Actor + Guardian + Handbook few-shot), diversity check, fallback requires_human
+  - `ConfidenceCalibrator` — Platt Scaling online (SGD, decay rate 0.99), reliability diagram, eliminacja overconfidence
+  - `FeedbackLoop` — metryki: time-to-decision, correction_rate, avg_quality_score, avg_feedback_latency_ms
+  - `DecisionSpan` / `DecisionTrace` — struktury msgspec.Struct dla OTel spanów
+  - `EnsembleVote` / `EnsembleResult` — struktury dla głosowania ensemble
+- **`nexus_ai/agents/telemetry_store.py`** (~600 linii) — AgentTelemetryStore
+  - DuckDB + Parquet dla wszystkich decyzji, korekt, routingów, trace'ów i feedbacku
+  - 5 tabel: decisions, corrections, routes, traces, feedback
+  - Eksport do Parquet z kompresją ZSTD
+  - Metody: record_decision(), record_correction(), record_route(), record_trace(), record_feedback()
+- **Integracja w `orchestrator.py`**:
+  - DecisionTrace z OTel spanami w każdym kroku pipeline'u decision protocol
+  - MultiModelEnsemble (Actor + Guardian + Handbook) z diversity check
+  - ConfidenceCalibrator kalibrujący Trust Score przed finalną decyzją
+  - AgentTelemetryStore rejestrujący każdą decyzję, routing i trace
+  - **UnifiedLearningProtocol** — kaskada 5 systemów po każdej korekcie: Handbook → LearningProvider → KnowledgeMesh → DecisionProfile → TelemetryStore
+
+### 🐛 Poprawione
+- **`error_handbook.py`**: dodane `find_similar_by_embedding()` z prawdziwym k-NN przez DuckDB + RAM fallback (zamiast symulowanych wektorów hash)
+- **`decision_trace.py`**: `MIN_MODELS` obniżone z 3 → 2 (poprawka z code review)
+- **`orchestrator.py`**: `gross_amount_num` używa wartości post-ekstrakcyjnej zamiast sprzed OCR (poprawka z code review)
+
+### 📚 Dokumentacja
+- **`docs/AGENTS.md`**: v5.2 → v5.4, dodane sekcje 1.5e (KnowledgeMesh), 1.5f (Decision Protocol), zaktualizowany decision flow
+- **`docs/AGENT_SYSTEM_ENTERPRISE.txt`**: v5.2 → v5.4, dodane sekcje 0d/0e, zaktualizowany TOC, Unified Learning Protocol
+- **`docs/CHANGELOG.md`**: ten wpis
+
+### 📊 Statystyki
+- **2 nowe pliki**: `decision_trace.py`, `telemetry_store.py`
+- **4 zmodyfikowane**: `orchestrator.py`, `error_handbook.py`, `__init__.py`, `base.py`
+- **5 zmodyfikowanych docs**: `AGENTS.md`, `AGENT_SYSTEM_ENTERPRISE.txt`, `MODULES.md`, `ARCHITECTURE.md`, `SPECYFIKACJA_AGENTOW_ENTERPRISE.txt`
+- **~1300 linii nowego kodu**
+
+---
+
+## [5.3.0] — 2026-07-06 — "Agent Knowledge Mesh (EASP)"
+
+### 🧠 GENIALNY POMYSŁ v5.3: Agent Knowledge Mesh (EASP)
+
+#### ➕ Dodane
+- **`nexus_ai/agents/knowledge_mesh.py`** — Agent Knowledge Mesh v5.3 (EASP)
+  - `KnowledgeMesh` — główna klasa: CollectiveBayesianField + PredictiveTaskRouter + CrossAgentExperienceReplay
+  - `CollectiveBayesianField` — współdzielony Trust Score Beta(α,β) per vendor, aktualizowany przez wszystkie agenty
+  - `PredictiveTaskRouter` — dynamiczny DAG agentów: Circuit Breaker (trust < 0.30 → BLOCK), SKIP (trust ≥ 0.92)
+  - `CrossAgentExperienceReplay` — CROSS_AGENT_RULES: extraction.low_consensus → QualityValidator INCREASE_SCRUTINY, quality.tax_error → Orchestrator LOWER_AUTO_POST_THRESHOLD, quality.fraud_detected → ALL HIGH_ALERT
+  - `MeshProtocol` — protokół komunikacji: route(), update_trust(), share_experience(), get_threshold_adjustments()
+- **Struktury EASP w `models.py`**:
+  - `MeshField` — pole siatki wiedzy (vendor_nip, category, alpha, beta, trust_score)
+  - `ExperienceRule` — reguła doświadczenia Cross-Agent (source, target, action, priority)
+  - `RouteDecision` — decyzja routingu (target_agents, skip_agents, threshold_adjustments, circuit_breaker_active)
+  - `MeshEvent` — event w siatce wiedzy (event_type, severity, source_agent, vendor_nip)
+
+### 🔗 Integracje KnowledgeMesh z agentami
+
+#### ➕ AgentDataExtraction (`extraction.py`)
+- Dodany parametr `knowledge_mesh` do `__init__`
+- `_publish_mesh_events()` — analizuje macierz walidacji krzyżowej 4×4:
+  - Konsensus < 50% → obniża Trust Score + publikuje `extraction.low_consensus`
+  - Konsensus 50-75% + confidence < 0.7 → publikuje event z severity="medium"
+  - Confidence < 0.5 → obniża Trust + publikuje z reason="overall_confidence_very_low"
+  - Confidence ≥ 85% → podnosi Trust Score
+
+#### ➕ AgentQualityValidator (`quality_validator.py`)
+- Dodany parametr `knowledge_mesh` do `__init__`
+- `_publish_mesh_events()` — po każdej walidacji:
+  - Tax ERROR/WARNING → obniża Trust Score + publikuje `quality.tax_error` (Extraction HIGH_SCRUTINY, Orchestrator LOWER_AUTO_POST_THRESHOLD)
+  - Fraud ERROR → obniża Trust + publikuje `quality.fraud_detected` (wszyscy agenci HIGH ALERT)
+  - ESG ERROR/WARNING → publikuje `analytics.anomaly_detected`
+  - All OK → podnosi Trust Score
+
+#### 🔄 Zaktualizowane
+- **`base.py`**: `BaseAgent` przyjmuje opcjonalny `knowledge_mesh` parametr, dodane `mesh` property i `set_mesh()`
+- **`orchestrator.py`**: zintegrowany predykcyjny routing KnowledgeMesh w `process_invoice`, `register_agent()` propaguje mesh do podległych agentów
+- **`__init__.py`**: wyeksportowane KnowledgeMesh, CollectiveBayesianField, CrossAgentExperienceReplay, PredictiveTaskRouter, MeshProtocol + struktury EASP
+
+### 🐛 Poprawione
+- **`knowledge_mesh.py`**: usunięte zduplikowane definicje MeshField/ExperienceRule/RouteDecision/MeshEvent (importowane z models.py)
+- **`quality_validator.py`**: naprawiony `all_ok` dla pominiętych kontroli, usunięte duplikaty przypisań
+- **`extraction.py`**: dodany brakujący event dla skrajnie niskiej confidence
+
+### 📚 Dokumentacja
+- **`docs/AGENTS.md`**: dodana sekcja 1.5e (KnowledgeMesh), zaktualizowane opisy Extraction i QualityValidator
+- **`docs/AGENT_SYSTEM_ENTERPRISE.txt`**: dodana sekcja SPIS TREŚCI dla 0d
+
+### 📊 Statystyki
+- **4 zmodyfikowane pliki agentów**: `knowledge_mesh.py`, `extraction.py`, `quality_validator.py`, `orchestrator.py`
+- **3 zmodyfikowane**: `models.py`, `base.py`, `__init__.py`
+- **~600 linii zmian** (głównie usunięcie duplikatów + integracje)
+
+---
+
 ## [5.2.0] — 2026-07-05 — "Progressive Autonomy + DecisionFeedView"
 
 ### 🧠 GENIALNY POMYSŁ v5.2: Progressive Autonomy Engine
