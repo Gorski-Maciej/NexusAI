@@ -3,7 +3,7 @@ Transactions -- transactional outbox pattern + async worker.
 
 Łączy db/outbox.py i db/transaction.py w jeden moduł.
 Transactional Outbox: gwarantowana dostawa zdarzeń przez tę samą transakcję co dane.
-Używa with_for_update(skip_locked=True) dla pessimistic locking.
+SQLite does NOT support SKIP LOCKED; we use atomic UPDATE ... RETURNING for optimistic claim.
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 import pendulum
-from sqlmodel import Session, select
+from sqlmodel import Session, select, update
 from structlog import get_logger
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps
@@ -34,7 +34,7 @@ class OutboxManager:
             OutboxEvent(
                 event_type=event_type,
                 aggregate_id=aggregate_id,
-                payload=msgspec_dumps(payload, ensure_ascii=False),
+                payload=payload,  # msgspec.Struct or dict — JSON column handles it
                 status=OutboxStatus.PENDING,
                 created_at=pendulum.now("UTC"),
             )
@@ -44,30 +44,41 @@ class OutboxManager:
 async def process_events(
     async_session_factory, nats_client, *, batch_size: int = BATCH_SIZE
 ) -> int:
-    """Przetwarzaj partię zdarzeń outbox z pessimistic locking.
+    """Przetwarzaj partię zdarzeń outbox z atomic optimistic claim.
 
-    pomija już zablokowane. order_by(created_at): FIFO.
+    SQLite does not support SKIP LOCKED; we use UPDATE ... RETURNING
+    to atomically claim a batch of pending events (FIFO by created_at).
     """
+    now = pendulum.now("UTC")
     async with async_session_factory() as session:
-        stmt = (
-            select(OutboxEvent)
-            .where(OutboxEvent.processed == False)  # noqa: E712
+        # Atomic claim via UPDATE ... RETURNING (SQLite 3.35+)
+        claim_stmt = (
+            update(OutboxEvent)
+            .where(
+                OutboxEvent.processed == False,  # noqa: E712
+                OutboxEvent.status == OutboxStatus.PENDING,
+            )
             .order_by(OutboxEvent.created_at.asc())
             .limit(batch_size)
-            .with_for_update(skip_locked=True)
-            .execution_options(populate_existing=True)
+            .values(status=OutboxStatus.PROCESSING, processing_started_at=now)
+            .returning(OutboxEvent.id)
         )
-        events = (await session.execute(stmt)).scalars().all()
-        if not events:
+        claimed_ids = (await session.execute(claim_stmt)).scalars().all()
+        if not claimed_ids:
             return 0
+
+        # Fetch full rows for the claimed IDs
+        events = (
+            await session.execute(
+                select(OutboxEvent).where(OutboxEvent.id.in_(claimed_ids))
+            )
+        ).scalars().all()
 
         processed = 0
         for event in events:
             try:
-                event.status = OutboxStatus.PROCESSING
-                event.processing_started_at = pendulum.now("UTC")
-                await session.flush()
-                await nats_client.publish(f"outbox.{event.event_type}", event.payload.encode())
+                payload_bytes = msgspec_dumps(event.payload).encode("utf-8")
+                await nats_client.publish(f"outbox.{event.event_type}", payload_bytes)
                 event.processed = True
                 event.processed_at = pendulum.now("UTC")
                 event.status = OutboxStatus.PROCESSED

@@ -121,14 +121,20 @@ class Money(msgspec.Struct, frozen=True, kw_only=True):
     def __repr__(self) -> str:
         return f"{self.amount:.2f} {self.currency}"
 
-    def to_grosze(self) -> int:
-        """Konwertuj kwotę na grosze (int)."""
+    def to_minor(self) -> int:
+        """Konwertuj kwotę na minor units (grosze/centy) jako int."""
         return int(self.amount * Decimal("100"))
 
+    # Alias zgodny z polską terminologią
+    to_grosze = to_minor
+
     @classmethod
-    def from_grosze(cls, grosze: int, currency: str = "PLN") -> Money:
-        """Utwórz Money z liczby groszy."""
-        return cls(amount=Decimal(str(grosze)) / Decimal("100"), currency=currency)
+    def from_minor(cls, minor: int, currency: str = "PLN") -> Money:
+        """Utwórz Money z liczby minor units (groszy/centów)."""
+        return cls(amount=Decimal(str(minor)) / Decimal("100"), currency=currency)
+
+    # Alias zgodny z polską terminologią
+    from_grosze = from_minor
 
     @property
     def is_zero(self) -> bool:
@@ -167,29 +173,33 @@ class MoneyNet(msgspec.Struct, frozen=True, kw_only=True):
     """Value Object: Kwota netto + VAT = brutto.
 
     Zapewnia niezmiennik: netto + VAT = brutto.
+    Używa VatRate (basis points) dla zero-drift precision.
     """
 
     amount_net: Money
-    vat_rate: Decimal
+    vat_rate: VatRate
 
     def __post_init__(self) -> None:
-        if self.vat_rate < Decimal("0") or self.vat_rate > Decimal("1"):
-            raise ValueError(f"VAT rate must be between 0 and 1: {self.vat_rate}")
+        # Validation delegated to VatRate.__post_init__
+        pass
 
     @property
     def amount_vat(self) -> Money:
-        return self.amount_net * self.vat_rate
+        # Multiply by basis points / 10000 using Decimal for exactness
+        factor = Decimal(self.vat_rate.value_bp) / Decimal("10000")
+        return self.amount_net * factor
 
     @property
     def amount_gross(self) -> Money:
         return self.amount_net + self.amount_vat
 
     @classmethod
-    def from_gross(cls, amount_gross: Money, vat_rate: Decimal) -> MoneyNet:
-        if vat_rate >= Decimal("1"):
-            raise ValueError(f"VAT rate too high for gross calculation: {vat_rate}")
+    def from_gross(cls, amount_gross: Money, vat_rate: VatRate) -> MoneyNet:
+        factor = Decimal(vat_rate.value_bp) / Decimal("10000")
+        if factor >= Decimal("1"):
+            raise ValueError(f"VAT rate too high for gross calculation: {vat_rate.value_bp} bp")
         net = Money(
-            amount=(amount_gross.amount / (Decimal("1") + vat_rate)).quantize(
+            amount=(amount_gross.amount / (Decimal("1") + factor)).quantize(
                 Decimal("0.01"), rounding=ROUND_HALF_UP
             ),
             currency=amount_gross.currency,
@@ -446,62 +456,72 @@ class TaxPeriod(msgspec.Struct, frozen=True, kw_only=True):
 
 
 class VatRate(msgspec.Struct, frozen=True, kw_only=True):
-    """Value Object: Stawka VAT z nazwą i kodem.
+    """Value Object: Stawka VAT w basis points (int) — eliminuje Decimal drift.
 
     Usage:
-        vat = VatRate(value=Decimal("0.23"), code="23")
+        vat = VatRate(value_bp=2300, code="23")
         assert vat.label == "23%"
         assert vat.rate_23
+        assert vat.as_decimal == Decimal("0.23")
     """
 
-    value: Decimal
+    value_bp: int  # basis points: 2300 = 23.00%, 500 = 5.00%
     code: str = ""
 
-    # Standardowe stawki VAT
-    STANDARD_23: ClassVar[Decimal] = Decimal("0.23")
-    REDUCED_8: ClassVar[Decimal] = Decimal("0.08")
-    REDUCED_5: ClassVar[Decimal] = Decimal("0.05")
-    ZERO: ClassVar[Decimal] = Decimal("0.00")
-    EXEMPT: ClassVar[Decimal] = Decimal("0.00")
-    _ALLOWED: ClassVar[frozenset[Decimal]] = frozenset({
+    # Standardowe stawki VAT (basis points)
+    STANDARD_23: ClassVar[int] = 2300
+    REDUCED_8: ClassVar[int] = 800
+    REDUCED_5: ClassVar[int] = 500
+    ZERO: ClassVar[int] = 0
+    EXEMPT: ClassVar[int] = 0
+    _ALLOWED: ClassVar[frozenset[int]] = frozenset({
         STANDARD_23, REDUCED_8, REDUCED_5, ZERO, EXEMPT,
     })
 
     def __post_init__(self) -> None:
-        if self.value < Decimal("0") or self.value > Decimal("1"):
-            raise ValueError(f"VAT rate must be 0-1: {self.value}")
-        if self.value not in self._ALLOWED:
+        if self.value_bp < 0 or self.value_bp > 10000:
+            raise ValueError(f"VAT rate basis points must be 0-10000: {self.value_bp}")
+        if self.value_bp not in self._ALLOWED:
             raise ValueError(
-                f"VAT rate {self.value} not in standard rates: "
-                f"{[str(r) for r in self._ALLOWED]}"
+                f"VAT rate {self.value_bp} bp not in standard rates: "
+                f"{sorted(self._ALLOWED)}"
             )
 
     @property
     def label(self) -> str:
-        return f"{int(self.value * 100)}%"
+        return f"{self.value_bp / 100:.0f}%" if self.value_bp % 100 == 0 else f"{self.value_bp / 100:.2f}%"
+
+    @property
+    def as_decimal(self) -> Decimal:
+        return Decimal(self.value_bp) / Decimal("10000")
+
+    @property
+    def value(self) -> Decimal:
+        """Backward-compatible alias for as_decimal."""
+        return self.as_decimal
 
     @property
     def rate_23(self) -> bool:
-        return self.value == self.STANDARD_23
+        return self.value_bp == self.STANDARD_23
 
     @property
     def rate_8(self) -> bool:
-        return self.value == self.REDUCED_8
+        return self.value_bp == self.REDUCED_8
 
     @property
     def rate_5(self) -> bool:
-        return self.value == self.REDUCED_5
+        return self.value_bp == self.REDUCED_5
 
     @property
     def rate_0(self) -> bool:
-        return self.value == self.ZERO
+        return self.value_bp == self.ZERO
 
     @classmethod
     def from_percent(cls, percent: int) -> VatRate:
         mapping = {23: cls.STANDARD_23, 8: cls.REDUCED_8, 5: cls.REDUCED_5, 0: cls.ZERO}
         if percent not in mapping:
             raise ValueError(f"Unknown VAT percent: {percent}")
-        return cls(value=mapping[percent], code=str(percent))
+        return cls(value_bp=mapping[percent], code=str(percent))
 
 
 # ═══════════════════════════════════════════════════════════════════════════

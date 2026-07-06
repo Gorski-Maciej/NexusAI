@@ -48,12 +48,6 @@ class PeriodCloser:
         self._tb_client = tb_client
         self._retained_earnings = retained_earnings_account or 82000  # Wynik finansowy
         self._default_ledger = default_ledger
-        if period_id is not None:
-            logger.info(
-                "[PERIOD-CLOSER] Closing period=%s (based on %s)",
-                period_id,
-                pendulum.yesterday().start_of("month").format("YYYY-MM-DD"),
-            )
 
     def close_expense_accounts(
         self,

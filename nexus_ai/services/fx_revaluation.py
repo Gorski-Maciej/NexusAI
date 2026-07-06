@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date
 from decimal import ROUND_HALF_UP, Decimal
 from typing import TYPE_CHECKING, Any
 
@@ -7,7 +8,7 @@ import pendulum
 from msgspec import Struct
 
 if TYPE_CHECKING:
-    from db.analytics import DuckDBManager
+    from nexus_ai.db.analytics import DuckDBManager
 
 
 class FXPostingDecision(Struct, frozen=True):
@@ -77,20 +78,16 @@ def post_realized_fx_difference(
 def calculate_unrealized_fx_deltas(
     duckdb: DuckDBManager, month_end: pendulum.Date
 ) -> list[tuple[Any, ...]]:
-    """"
-    ``execute_arrow()`` + ``pl.from_arrow()`` + ``pl.DataFrame.with_columns()``
-    zamiast czystego DuckDB SQL.
+    """Calculate unrealized FX deltas entirely in DuckDB SQL (native DECIMAL).
 
-    Polars pozwala na:
-    - Łatwiejsze rozszerzanie o dodatkowe obliczenia (np. weighted deltas)
-    - ``shrink_dtype()`` dla redukcji RAM
-    - ``filter()`` z wyrażeniami dla dalszego przetwarzania
-        - `sink_parquet()`` jeśli wynik ma być zapisany
+    Uses DuckDB's native DECIMAL arithmetic (no Float64 drift) for
+    enterprise-grade financial precision. Eliminates Polars Decimal
+    experimental API and zero-copy Arrow overhead.
     """
     import polars as pl
 
-    # DuckDB produkuje Arrow Table, Polars konsumuje bez kopiowania.
-    arrow_table = duckdb.execute_arrow(
+    # Compute unrealized deltas entirely in DuckDB SQL (native DECIMAL, no Float64 drift)
+    result_set = duckdb.execute(
         """
         WITH open_fx AS (
             SELECT id, type AS invoice_type, currency_code,
@@ -104,30 +101,21 @@ def calculate_unrealized_fx_deltas(
             o.id,
             o.invoice_type,
             o.currency_code,
-            o.amount_foreign,
-            o.exchange_rate_at_issue,
-            r.rate AS month_end_rate
+            CAST(
+                ROUND(
+                    (o.amount_foreign * r.rate)
+                    - (o.amount_foreign * o.exchange_rate_at_issue),
+                    2
+                ) AS DECIMAL(18, 2)
+            ) AS unrealized_delta
         FROM open_fx o
         JOIN fx_rates r ON r.currency_code = o.currency_code AND r.rate_date = ?
         """,
         (month_end,),
     )
 
-    if arrow_table is None or arrow_table.num_rows == 0:
+    rows = result_set.fetchall() if hasattr(result_set, "fetchall") else list(result_set)
+    if not rows:
         return []
 
-    # ``pl.col().sub().round(2)`` zamiast SQL ROUND().
-    df = pl.from_arrow(arrow_table).with_columns(
-        [
-            (
-                pl.col("amount_foreign") * pl.col("month_end_rate")
-                - pl.col("amount_foreign") * pl.col("exchange_rate_at_issue")
-            )
-            .round(2)
-            .alias("unrealized_delta")
-        ]
-    )
-
-    df = df.shrink_dtype()
-
-    return df.select(["id", "invoice_type", "currency_code", "unrealized_delta"]).rows()
+    return [(r[0], r[1], r[2], Decimal(str(r[3]))) for r in rows]

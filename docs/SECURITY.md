@@ -160,10 +160,11 @@ db.execute("UPDATE users SET jwt_version = jwt_version + 1 WHERE id = ?", user_i
 
 | Rola | Uprawnienia |
 |---|---|
-| **admin** | Pełny dostęp — zarządzanie użytkownikami, konfiguracja systemu |
+| **admin** | Pełny dostęp — zarządzanie użytkownikami, konfiguracja systemu, **wszystkie TigerBeetle permissions (post, void, create-pending)** |
 | **owner** | Pełny dostęp do własnych danych firmy |
-| **accountant** | Zarządzanie fakturami, raportami, eksport JPK/KSeF |
-| **worker** | Podstawowe przetwarzanie dokumentów |
+| **accountant** | Zarządzanie fakturami, raportami, eksport JPK/KSeF, **`tigerbeetle:create-pending`** (może tworzyć pending transfers) |
+| **auditor** | Tylko odczyt — audit log, proof chain, **NIE MA TigerBeetle permissions** |
+| **worker** | Podstawowe przetwarzanie dokumentów (nie może postować/voidować TigerBeetle) |
 | **viewer** | Tylko odczyt |
 
 ### 4.2 Permission guard functions
@@ -176,7 +177,29 @@ async def get_invoice(invoice_id: str) -> InvoiceDTO: ...
 async def create_invoice(data: InvoiceCreateDTO) -> InvoiceDTO: ...
 ```
 
-### 4.3 Separacja obowiązków (SoD)
+### 4.3 Separacja obowiązków (SoD) — TigerBeetle
+
+System używa **dynamicznych permissions** z `ROLE_PERMISSIONS_MAP` zamiast hardcoded `NexusRole.OWNER`:
+
+| Permission | Opis | Kto ma |
+|---|---|---|
+| `tigerbeetle:create-pending` | Tworzenie pending transferów | **admin**, **accountant** |
+| `tigerbeetle:post` | Zatwierdzanie pending → committed | **admin** |
+| `tigerbeetle:void` | Anulowanie pending transferów | **admin** |
+
+**Zasady SoD:**
+- Accountant MOŻE tworzyć pending transfers, ale NIE MOŻE ich zatwierdzać (post) ani anulować (void)
+- Tylko **admin** ma pełne uprawnienia TigerBeetle (post, void, create-pending)
+- Auditor ma DOSTĘP TYLKO DO ODCZYTU — nie może tworzyć/zmieniać/usuwać transferów
+- Każde naruszenie permission → `SecurityAlert` w SQLite + `TigerBeetleSecurityException`
+
+### 4.4 Legacy guards (backward compatibility)
+
+Dla kompatybilności wstecznej zachowane są legacy guard functions:
+- `owner_only_guard` — mapuje na `admin` w nowym systemie RBAC
+- `owner_or_worker_guard` — mapuje na `admin`/`accountant`/`worker`
+
+### 4.5 Separacja obowiązków (SoD)
 
 - **Owner** nie może być jednocześnie **accountant** (wymagane 2 osoby dla spółek)
 - **Worker** nie może modyfikować stawek podatkowych
@@ -318,9 +341,9 @@ pixi run check-models      # Sprawdza obecność i integralność
 
 | Rola | Uprawnienia agentów |
 |---|---|
-| **admin** | Pełny dostęp do wszystkich agentów i konfiguracji modeli |
-| **accountant** | Dostęp do decyzji, raportów, korekt — nie może zmieniać modeli |
-| **auditor** | Tylko odczyt — dostęp do audit logu i proof chain |
+| **admin** | Pełny dostęp do wszystkich agentów i konfiguracji modeli; **może postować i voidować TigerBeetle transfers** |
+| **accountant** | Dostęp do decyzji, raportów, korekt — **może tworzyć pending transfers** (przez `tigerbeetle:create-pending`), ale NIE postować/voidować |
+| **auditor** | Tylko odczyt — dostęp do audit logu i proof chain; **NIE MA TigerBeetle permissions** |
 | **user** | Dostęp do dashboardu i własnych decyzji |
 
 ### 7.6 Audit log każdej decyzji agenta
@@ -453,5 +476,5 @@ WHERE issue_date < datetime('now', '-5 years') AND is_deleted = 0;
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Security Officer
+> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 7.1.0
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-06 · **Weryfikator:** Security Officer

@@ -42,6 +42,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped
 from sqlalchemy.schema import Index, UniqueConstraint
 from sqlalchemy.sql.ddl import CreateTable
+from sqlalchemy.sql import case
 from sqlmodel import JSON, Field, Relationship, SQLModel, String, and_, text
 
 # Automatyczna konwersja str<->pendulum.DateTime przy zapisie/odczycie.
@@ -231,9 +232,9 @@ class Invoice(SQLModel, table=True):
         default=None,
         max_digits=18,
         decimal_places=2,
-        ge=Decimal("0.00"),  # Walidacja przez SQLModel
+        ge=Decimal("0.00"),
         sa_column_kwargs={
-            "comment": "Kwota netto w PLN",
+            "comment": "[DEPRECATED] Kwota netto w PLN — użyj amount_net_minor",
             "check": "amount_net >= 0",
         },
     )
@@ -243,9 +244,19 @@ class Invoice(SQLModel, table=True):
         decimal_places=2,
         ge=Decimal("0.00"),
         sa_column_kwargs={
-            "comment": "Kwota brutto w PLN (netto + VAT)",
+            "comment": "[DEPRECATED] Kwota brutto w PLN — użyj amount_gross_minor",
             "check": "amount_gross >= 0",
         },
+    )
+    amount_net_minor: Mapped[int | None] = Field(
+        default=None,
+        ge=0,
+        sa_column_kwargs={"comment": "Kwota netto w groszach (minor units) — source of truth"},
+    )
+    amount_gross_minor: Mapped[int | None] = Field(
+        default=None,
+        ge=0,
+        sa_column_kwargs={"comment": "Kwota brutto w groszach (minor units) — source of truth"},
     )
     currency: Mapped[str] = Field(
         default="PLN",
@@ -303,9 +314,40 @@ class Invoice(SQLModel, table=True):
 
     @property
     def amount_vat(self) -> Decimal | None:
-        """VAT = amount_gross - amount_net (Python-level computed property)."""
+        """VAT = amount_gross - amount_net (Python-level computed property).
+
+        Uses minor units (source of truth) if available, falls back to
+        deprecated Decimal columns for legacy rows.
+        """
+        if self.amount_gross_minor is not None and self.amount_net_minor is not None:
+            return Decimal(self.amount_gross_minor - self.amount_net_minor) / Decimal("100")
         if self.amount_gross is not None and self.amount_net is not None:
             return self.amount_gross - self.amount_net
+        return None
+
+    @property
+    def amount_net_money(self) -> Decimal | None:
+        """Return amount_net as Decimal from minor units (source of truth)."""
+        if self.amount_net_minor is not None:
+            return Decimal(self.amount_net_minor) / Decimal("100")
+        if self.amount_net is not None:
+            return self.amount_net
+        return None
+
+    @property
+    def amount_gross_money(self) -> Decimal | None:
+        """Return amount_gross as Decimal from minor units (source of truth)."""
+        if self.amount_gross_minor is not None:
+            return Decimal(self.amount_gross_minor) / Decimal("100")
+        if self.amount_gross is not None:
+            return self.amount_gross
+        return None
+
+    @property
+    def amount_vat_minor(self) -> int | None:
+        """VAT in minor units derived from gross - net."""
+        if self.amount_gross_minor is not None and self.amount_net_minor is not None:
+            return self.amount_gross_minor - self.amount_net_minor
         return None
 
     @hybrid_property

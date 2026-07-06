@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date
 import uuid
 from decimal import ROUND_HALF_UP, Decimal
 from typing import final
@@ -8,7 +9,7 @@ import pendulum
 from msgspec import Struct
 
 from nexus_ai.db.analytics import DuckDBManager
-from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
+from nexus_ai.services.tigerbeetle.client import TigerBeetleClient, _generate_tb_id
 
 DEFAULT_ASSET_ACCOUNT = 10
 DEFAULT_DEPRECIATION_ACCOUNT = 400
@@ -108,25 +109,76 @@ class FixedAssetsService:
             (today,),
         )
 
-        posted = 0
-        for (
-            asset_id,
-            planned_date,
-            amount,
-            debit,
-            credit,
-            initial_value,
-            residual_value,
-        ) in due_rows:
-            transfer = await self.tigerbeetle.create_two_phase_transfer(
-                debit_account=int(debit),
-                credit_account=int(credit),
-                amount_minor=int(Decimal(str(amount)) * 100),
-                source_document_id=uuid.uuid5(uuid.NAMESPACE_DNS, f"{asset_id}:{planned_date}"),
+        # Collect all rows first to enable batching
+        rows = list(due_rows)
+        if not rows:
+            return 0
+
+        # ── Batch create pending transfers (independent, NOT linked) ───
+        import tigerbeetle as tb
+
+        pending_transfers: list[tb.Transfer] = []
+        pending_meta = []  # (row, asset_id, planned_date, initial_value, residual_value)
+        for row in rows:
+            asset_id, planned_date, amount, debit, credit, initial_value, residual_value = row
+            doc_id = uuid.uuid5(uuid.NAMESPACE_DNS, f"{asset_id}:{planned_date}")
+            transfer = tb.Transfer(
+                id=_generate_tb_id(),
+                debit_account_id=int(debit),
+                credit_account_id=int(credit),
+                amount=int(Decimal(str(amount)) * 100),
+                pending_id=0,
                 user_data_128=uuid.UUID(str(asset_id)).int,
+                user_data_64=int(pendulum.instance(planned_date).format("YYYYMMDD")),
+                user_data_32=0,
+                timeout=0,
+                ledger=DEFAULT_LEDGER_ID,
+                code=DEFAULT_TRANSFER_CODE,
+                flags=tb.TransferFlags.PENDING,
+                timestamp=0,
             )
-            ok = await self.tigerbeetle.post_pending_transfer(transfer.pending_id)
-            if not ok:
+            pending_transfers.append(transfer)
+            pending_meta.append((row, asset_id, planned_date, initial_value, residual_value))
+
+        pending_results = await self.tigerbeetle.create_transfers_async(pending_transfers)
+
+        # ── Batch post successful pending transfers ────────────────────
+        post_transfers = []
+        post_meta = []  # (asset_id, planned_date, initial_value, residual_value)
+        for i, (result, transfer) in enumerate(zip(pending_results, pending_transfers, strict=True)):
+            if result.status != 0:
+                continue
+            row, asset_id, planned_date, initial_value, residual_value = pending_meta[i]
+            post_transfers.append(
+                tb.Transfer(
+                    id=_generate_tb_id(),
+                    debit_account_id=0,
+                    credit_account_id=0,
+                    amount=tb.AMOUNT_MAX,
+                    pending_id=transfer.id,
+                    user_data_128=0,
+                    user_data_64=0,
+                    user_data_32=0,
+                    timeout=0,
+                    ledger=DEFAULT_LEDGER_ID,
+                    code=DEFAULT_TRANSFER_CODE,
+                    flags=tb.TransferFlags.POST_PENDING_TRANSFER,
+                    timestamp=0,
+                )
+            )
+            post_meta.append((asset_id, planned_date, initial_value, residual_value))
+
+        if not post_transfers:
+            return 0
+
+        post_results = await self.tigerbeetle.create_transfers_async(post_transfers)
+
+        # ── Update DuckDB for successfully posted transfers ────────────
+        posted = 0
+        for (_, asset_id, planned_date, initial_value, residual_value), result in zip(
+            post_meta, post_results, strict=True
+        ):
+            if result.status != 0:
                 continue
 
             self.duckdb.execute(

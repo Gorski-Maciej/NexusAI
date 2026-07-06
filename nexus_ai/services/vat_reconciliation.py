@@ -18,13 +18,6 @@ from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 _ALLOWED_RATES = {"23", "8", "5", "0", "np", "zw"}
 
 
-class VATBreakdown(Struct, frozen=True):
-    rate: str
-    net_amount: Decimal
-    vat_amount: Decimal
-    gross_amount: Decimal
-
-
 class VATIntegrityResult(Struct, frozen=True):
     invoice_id: str
     status: str
@@ -62,36 +55,15 @@ class VATReconciliationEngine:
         for rate in ["23", "8", "5", "0", "np", "zw"]:
             self.duckdb.execute("INSERT OR IGNORE INTO tax_rates(rate) VALUES (?)", (rate,))
 
-    def _to_breakdown(self, row: dict[str, Any]) -> VATBreakdown:
-        rate = str(row.get("rate", "")).lower()
-        if rate not in _ALLOWED_RATES:
-            raise ValueError(f"Unsupported VAT rate: {rate}")
-        return VATBreakdown(
-            rate=rate,
-            net_amount=Decimal(str(row["net_amount"])),
-            vat_amount=Decimal(str(row["vat_amount"])),
-            gross_amount=Decimal(str(row["gross_amount"])),
-        )
-
     def check_vat_integrity(
         self, invoice_id: str, ocr_results: dict[str, Any]
     ) -> VATIntegrityResult:
         """Check VAT integrity across OCR/DuckDB/TigerBeetle.
-    __slots__ = ('account_vat_in', 'account_vat_out', 'duckdb', 'tb_client')
 
-
-        Polars Expressions zamiast PyArrow compute.
-
-        Polars ``pl.col().mul()``, ``pl.col().sub()``, ``pl.col().abs()``,
-        ``pl.col().filter()``, ``pl.col().sum()`` -- wszystko w Rust/C++.
-        Zaletami nad PyArrow:
-        - Czystsze, składniowe API (expressions zamiast pc.func())
-        - Pełny optimizer zapytań (predicate pushdown, projection pushdown)
-        - LazyFrame z collect(streaming=True) dla wiecej niz 1M wierszy
-        - Wbudowane shink_dtype() dla redukcji RAM
-        Zysk: 5-10x szybsza weryfikacja, mniej kodu, lepsza czytelność.
+        Uses pure Python Decimal math (no Float64) for 100% financial precision.
+        Basis-point integer rates eliminate float drift entirely.
         """
-        import polars as pl
+        from decimal import ROUND_HALF_UP
 
         self.ensure_tax_rates_schema()
         errors: list[str] = []
@@ -102,82 +74,45 @@ class VATReconciliationEngine:
                 invoice_id=invoice_id, status="FAILED", errors=["NO_BREAKDOWN_DATA"]
             )
 
-        # Polars DataFrame z wyrażeniami zamiast PyArrow compute kernels.
-        vat_data = [
-            {
-                "rate": str(row.get("rate", "")).lower(),
-                "net": float(str(row.get("net_amount", "0"))),
-                "vat": float(str(row.get("vat_amount", "0"))),
-                "gross": float(str(row.get("gross_amount", "0"))),
-            }
-            for row in breakdown_rows
-            if str(row.get("rate", "")).lower() in _ALLOWED_RATES
-        ]
+        # ── Validate with Decimal (no Float64) ──────────────────────────
+        total_net = Decimal("0")
+        total_vat = Decimal("0")
+        total_gross = Decimal("0")
 
-        # Dodaj błędy dla nieobsługiwanych stawek
         for row in breakdown_rows:
-            rate = str(row.get("rate", "")).lower()
-            if rate not in _ALLOWED_RATES:
-                errors.append(f"UNSUPPORTED_RATE:{rate}")
+            rate_str = str(row.get("rate", "")).lower()
+            if rate_str not in _ALLOWED_RATES:
+                errors.append(f"UNSUPPORTED_RATE:{rate_str}")
+                continue
 
-        if not vat_data:
-            return VATIntegrityResult(
-                invoice_id=invoice_id, status="FAILED", errors=errors or ["NO_VALID_RATES"]
+            net = Decimal(str(row.get("net_amount", "0")))
+            vat = Decimal(str(row.get("vat_amount", "0")))
+            gross = Decimal(str(row.get("gross_amount", "0")))
+
+            # Rate as basis points: 23 -> 2300, 8 -> 800, np/zw -> 0
+            if rate_str in ("np", "zw"):
+                rate_bp = 0
+            else:
+                rate_bp = int(rate_str) * 100
+
+            # Expected VAT = round(net * rate_bp / 10000, 2)
+            expected_vat = (net * Decimal(rate_bp) / Decimal("10000")).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
             )
 
-        df = pl.DataFrame(
-            vat_data,
-            schema={
-                "rate": pl.Utf8,
-                "net": pl.Float64,
-                "vat": pl.Float64,
-                "gross": pl.Float64,
-            },
-        )
+            if abs(expected_vat - vat) > Decimal("0.01"):
+                errors.append(f"VAT_MISMATCH:{rate_str}")
 
-        # Zamiast pc.multiply(net_arr, rate_arr) -- składniowe API.
-        # LazyFrame pozwala optimizerowi Polars na optymalizację.
-        lazy = df.lazy()
+            if abs((net + vat) - gross) > Decimal("0.01"):
+                errors.append(f"MATH_ERROR_LINE:{rate_str}")
 
-        # ``pl.when().then().otherwise()`` zamiast pc.filter + pc.greater.
-        # ``pl.col().mul().sub().abs()`` -- łańcuch wyrażeń.
-        rate_col = (
-            pl.when(pl.col("rate").is_in(["np", "zw"]))
-            .then(pl.lit(0.0))
-            .otherwise(pl.col("rate").cast(pl.Float64) / 100.0)
-            .alias("rate_decimal")
-        )
-        expected_vat = (pl.col("net") * rate_col).alias("expected_vat")
-        vat_diff_expr = (pl.col("expected_vat") - pl.col("vat")).abs().alias("vat_diff")
-        math_diff_expr = (pl.col("net") + pl.col("vat") - pl.col("gross")).abs().alias("math_diff")
-
-        checked = lazy.with_columns(
-            [
-                rate_col,
-                expected_vat,
-                vat_diff_expr,
-                math_diff_expr,
-            ]
-        ).collect()
-
-        # Polars ``.filter(pl.col("vat_diff") > 0.01)`` -- czytelniejsze.
-        mismatch_rows = checked.filter(pl.col("vat_diff") > 0.01)
-        math_error_rows = checked.filter(pl.col("math_diff") > 0.01)
-
-        for rate in mismatch_rows["rate"].to_list():
-            errors.append(f"VAT_MISMATCH:{rate}")
-        for rate in math_error_rows["rate"].to_list():
-            errors.append(f"MATH_ERROR_LINE:{rate}")
-
-        total_net = Decimal(str(checked["net"].sum()))
-        total_vat = Decimal(str(checked["vat"].sum()))
-        total_gross = Decimal(str(checked["gross"].sum()))
+            total_net += net
+            total_vat += vat
+            total_gross += gross
 
         reported_total_gross = Decimal(str(ocr_results.get("total_gross", total_gross)))
         if abs((total_net + total_vat) - reported_total_gross) > Decimal("0.01"):
             errors.append("MATH_ERROR_TOTAL")
-
-        checked = checked.shrink_dtype()
 
         return VATIntegrityResult(
             invoice_id=invoice_id, status="OK" if not errors else "FAILED", errors=errors

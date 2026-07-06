@@ -29,22 +29,21 @@ from nexus_ai.services.budget_control import BudgetControlService, BudgetStatus
 # vat_reconciliation.py
 from nexus_ai.services.vat_reconciliation import (
     ReconciliationAlert,
-    VATBreakdown,
     VATIntegrityResult,
-    VatReconciliationService,
+    VATReconciliationEngine,
 )
 
 # fx_revaluation.py
-from nexus_ai.services.fx_revaluation import FXPostingDecision, FXRevaluationService
+from nexus_ai.services.fx_revaluation import FXPostingDecision, ensure_fx_schema, post_realized_fx_difference, calculate_unrealized_fx_deltas
 
 # period_closer.py
-from nexus_ai.services.period_closer import PeriodCloserService
+from nexus_ai.services.period_closer import PeriodCloser
 
 # billing_estimator.py
 from nexus_ai.services.billing_estimator import BillingEstimator
 
 # bank_import.py
-from nexus_ai.services.bank_import import BankImportService, BankTransaction
+from nexus_ai.services.bank_import import BankTransaction, IdempotentBankImporter
 
 # liquidity_oracle.py
 from nexus_ai.services.liquidity_oracle import LiquidityOracleService, LiquidityPoint
@@ -52,27 +51,25 @@ from nexus_ai.services.liquidity_oracle import LiquidityOracleService, Liquidity
 __all__ = [
     "AccountantLogic",
     "AccountSuggestion",
-    "BankImportService",
-    "BankTransaction",
     "BillingEstimator",
     "BudgetControlService",
     "BudgetStatus",
     "DualWriteConsistencyError",
     "FIFOConsumptionLine",
     "FIFOConsumptionResult",
-    "FXPostingDecision",
-    "FXRevaluationService",
+    "BankTransaction",
     "FixedAsset",
     "FixedAssetsService",
+    "FXPostingDecision",
+    "IdempotentBankImporter",
     "InsufficientStockError",
     "InventoryBatch",
     "InventoryMismatch",
     "LiquidityOracleService",
     "LiquidityPoint",
-    "PeriodCloserService",
+    "PeriodCloser",
     "ReconciliationAlert",
-    "VATBreakdown",
     "VATIntegrityResult",
-    "VatReconciliationService",
+    "VATReconciliationEngine",
     "ZPKEngine",
 ]

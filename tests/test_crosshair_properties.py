@@ -30,7 +30,7 @@ from nexus_ai.domain.aggregates import (
     InvoiceStatus,
     TaxDecisionAggregate,
 )
-from nexus_ai.domain.values import Money
+from nexus_ai.domain.values import Money, MoneyNet, VatRate
 
 # Skip in normal pytest runs — only crosshair or --run-slow
 pytestmark = [pytest.mark.slow]
@@ -45,8 +45,8 @@ def test_invoice_aggregate_initial_state_is_new() -> None:
     """Property: every freshly created invoice starts in NEW status."""
     inv = InvoiceAggregate.create(
         number="FV/2026/06/001",
-        amount_net=Decimal("100.00"),
-        amount_gross=Decimal("123.00"),
+        amount_net=Money(amount=Decimal("100.00")),
+        amount_gross=Money(amount=Decimal("123.00")),
     )
     assert inv.status == InvoiceStatus.NEW
     assert inv.version == 1
@@ -58,8 +58,8 @@ def test_invoice_aggregate_collect_events_clears_queue() -> None:
     """Property: collect_events() returns events and clears internal queue."""
     inv = InvoiceAggregate.create(
         number="FV/2026/06/001",
-        amount_net=Decimal("100.00"),
-        amount_gross=Decimal("123.00"),
+        amount_net=Money(amount=Decimal("100.00")),
+        amount_gross=Money(amount=Decimal("123.00")),
     )
     events = inv.collect_events()
     assert len(events) == 1
@@ -69,8 +69,8 @@ def test_invoice_aggregate_collect_events_clears_queue() -> None:
 def test_invoice_aggregate_approve_from_processing() -> None:
     """Property: NEW -> PROCESSING -> APPROVED is a legal transition chain."""
     inv = InvoiceAggregate.create(
-        amount_net=Decimal("100.00"),
-        amount_gross=Decimal("123.00"),
+        amount_net=Money(amount=Decimal("100.00")),
+        amount_gross=Money(amount=Decimal("123.00")),
     )
     inv.mark_processing()
     assert inv.status == InvoiceStatus.PROCESSING
@@ -82,7 +82,7 @@ def test_invoice_aggregate_approve_from_processing() -> None:
 
 def test_invoice_aggregate_reject_from_processing() -> None:
     """Property: NEW -> PROCESSING -> REJECTED is legal."""
-    inv = InvoiceAggregate.create(amount_net=Decimal("50.00"))
+    inv = InvoiceAggregate.create(amount_net=Money(amount=Decimal("50.00")))
     inv.mark_processing()
     inv.reject(reason="Invalid NIP", rejected_by="accountant")
     assert inv.status == InvoiceStatus.REJECTED
@@ -91,14 +91,14 @@ def test_invoice_aggregate_reject_from_processing() -> None:
 
 def test_invoice_aggregate_paid_requires_approved() -> None:
     """Property: you cannot pay a non-approved invoice."""
-    inv = InvoiceAggregate.create(amount_net=Decimal("100.00"))
+    inv = InvoiceAggregate.create(amount_net=Money(amount=Decimal("100.00")))
     with pytest.raises(ValueError, match="Illegal status transition"):
-        inv.mark_paid(Decimal("100.00"))
+        inv.mark_paid(Money(amount=Decimal("100.00")))
 
 
 def test_invoice_aggregate_send_to_review() -> None:
     """Property: PROCESSING -> PENDING_REVIEW is legal."""
-    inv = InvoiceAggregate.create(amount_net=Decimal("100.00"))
+    inv = InvoiceAggregate.create(amount_net=Money(amount=Decimal("100.00")))
     inv.mark_processing()
     inv.send_to_review(reason="Low confidence", confidence=0.45)
     assert inv.status == InvoiceStatus.PENDING_REVIEW
@@ -107,7 +107,7 @@ def test_invoice_aggregate_send_to_review() -> None:
 
 def test_invoice_aggregate_block_fraud() -> None:
     """Property: PROCESSING -> BLOCKED_FRAUD_SUSPICION is legal."""
-    inv = InvoiceAggregate.create(amount_net=Decimal("100.00"))
+    inv = InvoiceAggregate.create(amount_net=Money(amount=Decimal("100.00")))
     inv.mark_processing()
     inv.block_fraud(reason="Suspicious NIP pattern", fraud_score=0.88)
     assert inv.status == InvoiceStatus.BLOCKED_FRAUD_SUSPICION
@@ -115,7 +115,7 @@ def test_invoice_aggregate_block_fraud() -> None:
 
 def test_invoice_aggregate_block() -> None:
     """Property: PROCESSING -> BLOCKED is legal."""
-    inv = InvoiceAggregate.create(amount_net=Decimal("100.00"))
+    inv = InvoiceAggregate.create(amount_net=Money(amount=Decimal("100.00")))
     inv.mark_processing()
     inv.block(reason="Manual block", fraud_score=0.3)
     assert inv.status == InvoiceStatus.BLOCKED
@@ -123,10 +123,10 @@ def test_invoice_aggregate_block() -> None:
 
 def test_invoice_aggregate_paid_is_terminal() -> None:
     """Property: PAID is a terminal state — no transitions allowed."""
-    inv = InvoiceAggregate.create(amount_net=Decimal("100.00"))
+    inv = InvoiceAggregate.create(amount_net=Money(amount=Decimal("100.00")))
     inv.mark_processing()
     inv.approve(confidence=0.95)
-    inv.mark_paid(Decimal("123.00"))
+    inv.mark_paid(Money(amount=Decimal("123.00")))
     assert inv.is_terminal()
 
     # No transition allowed from PAID
@@ -136,14 +136,14 @@ def test_invoice_aggregate_paid_is_terminal() -> None:
 
 def test_invoice_aggregate_illegal_transition_raises() -> None:
     """Property: jumping from NEW directly to PAID raises ValueError."""
-    inv = InvoiceAggregate.create(amount_net=Decimal("100.00"))
+    inv = InvoiceAggregate.create(amount_net=Money(amount=Decimal("100.00")))
     with pytest.raises(ValueError, match="Illegal status transition"):
         inv.mark_paid()
 
 
 def test_invoice_aggregate_version_increments() -> None:
     """Property: every state transition increments version by exactly 1."""
-    inv = InvoiceAggregate.create(amount_net=Decimal("100.00"))
+    inv = InvoiceAggregate.create(amount_net=Money(amount=Decimal("100.00")))
     assert inv.version == 1
     inv.mark_processing()
     assert inv.version == 2
@@ -154,18 +154,18 @@ def test_invoice_aggregate_version_increments() -> None:
 def test_invoice_aggregate_negative_amount_raises() -> None:
     """Property: creating an invoice with negative amount raises ValueError."""
     with pytest.raises(ValueError, match="cannot be negative"):
-        InvoiceAggregate.create(amount_net=Decimal("-100.00"))
+        InvoiceAggregate.create(amount_net=Money(amount=Decimal("-100.00")))
 
 
 def test_invoice_aggregate_invalid_currency_raises() -> None:
     """Property: currency must be 3-letter ISO 4217 code."""
     with pytest.raises(ValueError, match="ISO 4217"):
-        InvoiceAggregate.create(amount_net=Decimal("100.00"), currency="PL")
+        InvoiceAggregate.create(amount_net=Money(amount=Decimal("100.00")), currency="PL")
 
 
 def test_invoice_aggregate_can_be_modified_only_in_certain_states() -> None:
     """Property: can_be_modified() only returns True for NEW and PENDING_REVIEW."""
-    inv = InvoiceAggregate.create(amount_net=Decimal("100.00"))
+    inv = InvoiceAggregate.create(amount_net=Money(amount=Decimal("100.00")))
     assert inv.can_be_modified()
 
     inv.mark_processing()
@@ -180,7 +180,7 @@ def test_invoice_aggregate_can_be_modified_only_in_certain_states() -> None:
 
 def test_invoice_aggregate_auto_approve_eligibility() -> None:
     """Property: can_be_auto_approved() is True for PROCESSING and PENDING_REVIEW."""
-    inv = InvoiceAggregate.create(amount_net=Decimal("100.00"))
+    inv = InvoiceAggregate.create(amount_net=Money(amount=Decimal("100.00")))
     assert not inv.can_be_auto_approved()  # NEW
 
     inv.mark_processing()
@@ -196,10 +196,10 @@ def test_invoice_aggregate_auto_approve_eligibility() -> None:
 def test_invoice_aggregate_amount_vat_computation() -> None:
     """Property: amount_vat = amount_gross - amount_net."""
     inv = InvoiceAggregate.create(
-        amount_net=Decimal("100.00"),
-        amount_gross=Decimal("123.00"),
+        amount_net=Money(amount=Decimal("100.00")),
+        amount_gross=Money(amount=Decimal("123.00")),
     )
-    assert inv.amount_vat == Decimal("23.00")
+    assert inv.amount_vat == Money(amount=Decimal("23.00"))
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -371,8 +371,8 @@ def test_invoice_aggregate_reconstitute_preserves_state() -> None:
         id="inv-123",
         number="FV/2026/06/001",
         contractor_nip="1234567890",
-        amount_net=Decimal("100.00"),
-        amount_gross=Decimal("123.00"),
+        amount_net=Money(amount=Decimal("100.00")),
+        amount_gross=Money(amount=Decimal("123.00")),
         currency="PLN",
         status="APPROVED",
         version=3,
@@ -382,7 +382,7 @@ def test_invoice_aggregate_reconstitute_preserves_state() -> None:
     assert inv.id == "inv-123"
     assert inv.status == InvoiceStatus.APPROVED
     assert inv.version == 3
-    assert inv.amount_vat == Decimal("23.00")
+    assert inv.amount_vat == Money(amount=Decimal("23.00"))
     assert not inv.has_pending_events()  # Reconstituted aggregates start clean
 
 

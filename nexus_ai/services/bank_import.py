@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 import uuid
 
 from msgspec import Struct
@@ -242,52 +243,65 @@ class IdempotentBankImporter:
         transactions.sort(key=lambda t: t.booking_date)
         self.validate_balance_continuity(transactions)
 
-        imported = 0
-        duplicates = 0
-        for tx in transactions:
-            tx_uuid = generate_idempotency_id(tx)
-            tx_id = str(tx_uuid)
-            exists = self.duckdb.execute(
-                "SELECT 1 FROM bank_history WHERE tx_id = ? LIMIT 1", (tx_id,)
+        # ── Batch idempotency check via DuckDB ──────────────────────────
+        tx_meta = [(tx, str(uid), uid) for tx in transactions for uid in [generate_idempotency_id(tx)]]
+        tx_ids = [m[1] for m in tx_meta]
+        placeholders = ",".join(["?"] * len(tx_ids))
+        existing_rows = self.duckdb.execute(
+            f"SELECT tx_id FROM bank_history WHERE tx_id IN ({placeholders})",
+            tuple(tx_ids),
+        )
+        existing_set = {row[0] for row in existing_rows} if existing_rows else set()
+
+        new_meta = [
+            (tx, tx_id, tx_uuid)
+            for tx, tx_id, tx_uuid in tx_meta
+            if tx_id not in existing_set
+        ]
+        duplicates = len(transactions) - len(new_meta)
+
+        if not new_meta:
+            return {"imported": 0, "duplicates": duplicates, "total": len(transactions)}
+
+        # ── Batch TigerBeetle transfer creation ─────────────────────────
+        import tigerbeetle as tb
+
+        from nexus_ai.services.tigerbeetle.client import (
+            LEDGER,
+            TRANSFER_CODE,
+            _generate_tb_id,
+        )
+
+        transfers: list[tb.Transfer] = []
+        transfer_meta: list[tuple[BankTransaction, str, uuid.UUID, tb.Transfer]] = []
+        for tx, tx_id, tx_uuid in new_meta:
+            transfer = tb.Transfer(
+                id=_generate_tb_id(),
+                debit_account_id=tx.source_account_id,
+                credit_account_id=tx.destination_account_id,
+                amount=tx.amount_cents,
+                pending_id=0,
+                user_data_128=tx_uuid.int,
+                user_data_64=int(tx.booking_date.isoformat().replace("-", "")),
+                user_data_32=0,
+                timeout=0,
+                ledger=LEDGER["PLN"],
+                code=TRANSFER_CODE["PAYMENT_IN"],
+                timestamp=0,
             )
-            if exists:
-                duplicates += 1
-                continue
+            transfers.append(transfer)
+            transfer_meta.append((tx, tx_id, tx_uuid, transfer))
 
-            try:
-                import tigerbeetle as tb
+        results = self.tb_client.create_transfers(transfers)
 
-                from nexus_ai.services.tigerbeetle.client import (
-                    LEDGER,
-                    TRANSFER_CODE,
-                    _generate_tb_id,
-                )
-
-                transfer = tb.Transfer(
-                    id=_generate_tb_id(),
-                    debit_account_id=tx.source_account_id,
-                    credit_account_id=tx.destination_account_id,
-                    amount=tx.amount_cents,
-                    pending_id=0,
-                    user_data_128=tx_uuid.int,
-                    user_data_64=int(tx.booking_date.isoformat().replace("-", "")),
-                    user_data_32=0,
-                    timeout=0,
-                    ledger=LEDGER["PLN"],
-                    code=TRANSFER_CODE["PAYMENT_IN"],
-                    timestamp=0,
-                )
-                results = self.tb_client.create_transfers([transfer])
-                if not all(r.status == 0 for r in results):
-                    if any("exists" in str(r.status) for r in results):
-                        duplicates += 1
-                        continue
-                    raise RuntimeError(f"TB posting failed: {results}")
-            except Exception as exc:
-                if "exists" in str(exc).lower():
+        # ── Process results and insert successful ones ──────────────────
+        imported = 0
+        for (tx, tx_id, _tx_uuid, transfer), result in zip(transfer_meta, results, strict=True):
+            if result.status != 0:
+                if "exists" in str(result.status):
                     duplicates += 1
                     continue
-                raise
+                raise RuntimeError(f"TB posting failed for tx {tx_id}: {result.status}")
 
             self.duckdb.execute(
                 """

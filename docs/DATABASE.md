@@ -168,8 +168,10 @@ erDiagram
 |---|---|---|
 | `id` | TEXT PK | UUID faktury |
 | `number` | TEXT | Numer faktury (FV/2026/06/001) |
-| `amount_net` | DECIMAL(12,2) | Kwota netto |
-| `amount_gross` | DECIMAL(12,2) | Kwota brutto |
+| `amount_net` | DECIMAL(12,2) | **[DEPRECATED]** Kwota netto — użyj `amount_net_minor` |
+| `amount_gross` | DECIMAL(12,2) | **[DEPRECATED]** Kwota brutto — użyj `amount_gross_minor` |
+| `amount_net_minor` | INTEGER | **Source of truth** — kwota netto w groszach (minor units), BEZ float driftu |
+| `amount_gross_minor` | INTEGER | **Source of truth** — kwota brutto w groszach (minor units), BEZ float driftu |
 | `currency` | TEXT(3) | Kod waluty ISO 4217 (domyślnie PLN) |
 | `issue_date` | TEXT | Data wystawienia (ISO 8601) |
 | `contractor_nip` | TEXT(10) | NIP kontrahenta |
@@ -301,7 +303,7 @@ erDiagram
 | `company_id` | TEXT(36) FK | FK → company_profiles |
 | `source_account` | BIGINT | Konto źródłowe (Wn) |
 | `target_account` | BIGINT | Konto docelowe (Ma) |
-| `amount_minor` | BIGINT | Kwota w jednostkach (grosze) |
+| `amount_minor` | INTEGER | **Kwota w groszach** (minor units) — zero float driftu |
 | `currency` | TEXT(3) | Waluta (PLN) |
 | `source_document_id` | TEXT(36) | ID dokumentu źródłowego (faktura) |
 | `status` | TEXT(32) | pending / committed / failed |
@@ -352,7 +354,7 @@ Rejestruje zdarzenia SQLAlchemy:
 
 #### Transakcje i Outbox (`db/transactions.py`)
 - **`OutboxManager.publish()`** — zapis zdarzenia w tej samej transakcji co dane biznesowe (Transactional Outbox)
-- **`process_events()`** — przetwarzanie partii zdarzeń z pessimistic locking (`with_for_update(skip_locked=True)`), order_by FIFO, maksymalnie 5 retry zanim trafi do DLQ
+- **`process_events()`** — przetwarzanie partii zdarzeń z **optimistic locking** (`UPDATE ... ORDER BY ... LIMIT ... RETURNING` zamiast `SELECT ... FOR UPDATE SKIP LOCKED` — SQLite nie wspiera SKIP LOCKED). Atomiczne claimowanie batcha FIFO, maksymalnie 5 retry zanim trafi do DLQ
 
 #### Pozostałe moduły DB
 
@@ -661,6 +663,7 @@ migrations/
 ├── 002_missing_tables.sql # RBAC, DLQ, brakujące kolumny
 ├── 003_service_tables.sql # Tabele serwisowe
 ├── 004_supermoces.sql     # Indeksy, constraints, seed
+├── 005_amount_minor.sql   # INTEGER minor units (grosze) — eliminacja float driftu
 └── run_migrations.py      # Runner
 ```
 
@@ -847,5 +850,5 @@ stats = await queue.get_stats()
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 7.1.0
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-06 · **Weryfikator:** NexusAI Team

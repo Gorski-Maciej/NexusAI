@@ -1,6 +1,6 @@
 """SecureTigerBeetleClient -- RBAC-aware wrapper dla realnego TigerBeetle.
 
-- RBAC na poziomie klienta (OWNER tylko może postować)
+- Dynamiczne permissions z ROLE_PERMISSIONS_MAP (nie hardcoded OWNER)
 - Natywne pending/void zamiast własnej implementacji
 - Linked transfers dla atomowości
 - Security audit trail przez TigerBeetle user_data
@@ -14,24 +14,20 @@ import tigerbeetle as tb
 from msgspec import Struct
 from sqlmodel import Session
 
-from nexus_ai.api.rbac import NexusRole, RoleContext
+from nexus_ai.api.rbac import ROLE_PERMISSIONS_MAP, RoleContext
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.db.models import SecurityAlert
 from nexus_ai.services.tigerbeetle.client import LEDGER, TRANSFER_CODE, TigerBeetleClient
 
 
 class TigerBeetleSecurityException(PermissionError):  # noqa: N818
-    """Raised when a user without proper RBAC role attempts a restricted operation."""
-
+    """Raised when user lacks required permission for a restricted operation."""
     pass
 
 
 class SecureTransferSpec(Struct):
-    __slots__ = ()
     """Specyfikacja transferu dla SecureTigerBeetleClient."""
     __slots__ = ()
-
-
     debit_account: int
     credit_account: int
     amount_minor: int
@@ -45,16 +41,28 @@ class SecureTransferSpec(Struct):
 
 @final
 class SecureTigerBeetleClient:
-    """RBAC-aware wrapper that blocks WORKER from posting committed transfers.
+    """RBAC-aware wrapper — permissions z ROLE_PERMISSIONS_MAP (bez hardcoded OWNER).
 
-    - OWNER może tworzyć i postować transfery
-    - WORKER może tylko tworzyć pending transfery
-    - Naruszenia logowane do SecurityAlert
-    - Natywne TB flags dla pending/post
+    - ``tigerbeetle:create-pending``: każdy accountant/auditor może tworzyć pending
+    - ``tigerbeetle:post``: tylko admin może postować committed (logowane do SecurityAlert)
+    - ``tigerbeetle:void``: tylko admin może voidować (logowane do SecurityAlert)
     """
 
     def __init__(self, inner: TigerBeetleClient) -> None:
         self._inner = inner
+
+    @staticmethod
+    def _has_permission(role: str, permission: str) -> bool:
+        """Sprawdź czy rola ma dane permission z ROLE_PERMISSIONS_MAP."""
+        perms = ROLE_PERMISSIONS_MAP.get(role, [])
+        return permission in perms
+
+    @staticmethod
+    def _check_permission(role_ctx: RoleContext, permission: str) -> bool:
+        """Sprawdź permission, najpierw z contextu, potem z mapy."""
+        if role_ctx.permissions is not None:
+            return permission in role_ctx.permissions
+        return SecureTigerBeetleClient._has_permission(role_ctx.role, permission)
 
     async def create_pending_transfer(
         self,
@@ -63,27 +71,31 @@ class SecureTigerBeetleClient:
         credit_account: int,
         amount_minor: int,
         source_document_id: Any,
+        role_ctx: RoleContext | None = None,
+        session: Session | None = None,
         ledger: int = LEDGER["PLN"],
         code: int = TRANSFER_CODE["EXPENSE_NET"],
         user_data_64: int = 0,
         user_data_32: int = 0,
         timeout: int = 0,
     ) -> int | None:
-        """Utwórz pending transfer (RBAC: każdy może).
+        """Utwórz pending transfer (opcjonalnie sprawdza ``tigerbeetle:create-pending``).
 
-        Args:
-            debit_account: Konto debetowe.
-            credit_account: Konto kredytowe.
-            amount_minor: Kwota w groszach.
-            source_document_id: UUID dokumentu źródłowego.
-            ledger: ID ledgera.
-            code: Kod transferu.
-            user_data_64/32: Metadane.
-            timeout: Timeout w sekundach.
-
-        Returns:
-            pending_id (int) lub None przy błędzie.
+        Jeśli ``role_ctx`` i ``session`` są podane, sprawdzane jest permission.
+        W przeciwnym razie transfer jest tworzony bez sprawdzenia (backward compat).
         """
+        if role_ctx is not None and session is not None:
+            if not self._check_permission(role_ctx, "tigerbeetle:create-pending"):
+                self._log_security_alert(
+                    session,
+                    actor=role_ctx.actor,
+                    operation="create_pending_transfer",
+                    details={"role": role_ctx.role, "lack": "tigerbeetle:create-pending"},
+                )
+                raise TigerBeetleSecurityException(
+                    f"Role {role_ctx.role} lacks tigerbeetle:create-pending permission"
+                )
+
         pending_id = self._inner.create_pending_transfer(
             debit_account=debit_account,
             credit_account=credit_account,
@@ -95,7 +107,6 @@ class SecureTigerBeetleClient:
             user_data_32=user_data_32,
             timeout=timeout,
         )
-        # TB zwraca klient-generowany transfer_id jako pending_id
         return pending_id
 
     async def post_pending_transfer(
@@ -108,27 +119,17 @@ class SecureTigerBeetleClient:
         code: int = TRANSFER_CODE["EXPENSE_NET"],
         amount_minor: int | None = None,
     ) -> bool:
-        """Zatwierdź pending transfer (RBAC: OWNER tylko).
-
-        Args:
-            pending_id: ID pending transferu.
-            role_ctx: Kontekst RBAC.
-            session: Sesja SQLAlchemy dla SecurityAlert.
-            ledger: ID ledgera.
-            code: Kod transferu.
-            amount_minor: Kwota (None = całość).
-
-        Returns:
-            True jeśli zatwierdzono.
-        """
-        if role_ctx.role != NexusRole.OWNER:
+        """Zatwierdź pending transfer (wymaga ``tigerbeetle:post``)."""
+        if not self._check_permission(role_ctx, "tigerbeetle:post"):
             self._log_security_alert(
                 session,
                 actor=role_ctx.actor,
                 operation="post_pending_transfer",
-                details={"pending_id": pending_id, "role": str(role_ctx.role)},
+                details={"pending_id": pending_id, "role": role_ctx.role, "lack": "tigerbeetle:post"},
             )
-            raise TigerBeetleSecurityException("WORKER cannot execute posted TigerBeetle transfers")
+            raise TigerBeetleSecurityException(
+                f"Role {role_ctx.role} lacks tigerbeetle:post permission"
+            )
 
         return self._inner.post_pending_transfer(
             pending_id,
@@ -146,15 +147,17 @@ class SecureTigerBeetleClient:
         ledger: int = LEDGER["PLN"],
         code: int = TRANSFER_CODE["STORN"],
     ) -> bool:
-        """Anuluj pending transfer (RBAC: OWNER tylko)."""
-        if role_ctx.role != NexusRole.OWNER:
+        """Anuluj pending transfer (wymaga ``tigerbeetle:void``)."""
+        if not self._check_permission(role_ctx, "tigerbeetle:void"):
             self._log_security_alert(
                 session,
                 actor=role_ctx.actor,
                 operation="void_pending_transfer",
-                details={"pending_id": pending_id, "role": str(role_ctx.role)},
+                details={"pending_id": pending_id, "role": role_ctx.role, "lack": "tigerbeetle:void"},
             )
-            raise TigerBeetleSecurityException("WORKER cannot void TigerBeetle transfers")
+            raise TigerBeetleSecurityException(
+                f"Role {role_ctx.role} lacks tigerbeetle:void permission"
+            )
 
         return self._inner.void_pending_transfer(
             pending_id,
@@ -170,17 +173,18 @@ class SecureTigerBeetleClient:
         role_ctx: RoleContext,
         session: Session,
     ) -> list[dict[str, Any]]:
-        """Utwórz linked chain transferów (RBAC: każdy może, ale do pending).
+        """Utwórz linked chain transferów (wymaga ``tigerbeetle:create-pending``)."""
+        if not self._check_permission(role_ctx, "tigerbeetle:create-pending"):
+            self._log_security_alert(
+                session,
+                actor=role_ctx.actor,
+                operation="create_linked_transfers_batch",
+                details={"specs_count": len(specs), "role": role_ctx.role, "lack": "tigerbeetle:create-pending"},
+            )
+            raise TigerBeetleSecurityException(
+                f"Role {role_ctx.role} lacks tigerbeetle:create-pending permission"
+            )
 
-        Args:
-            specs: Lista specyfikacji transferów.
-            source_document_id: UUID dokumentu źródłowego.
-            role_ctx: Kontekst RBAC.
-            session: Sesja SQLAlchemy.
-
-        Returns:
-            Lista wyników.
-        """
         import uuid as uuid_module
 
         source_uuid = (
@@ -189,7 +193,6 @@ class SecureTigerBeetleClient:
             else source_document_id
         )
 
-        # Buduj linked chain
         tb_transfers = self._inner.build_linked_transfers(
             [
                 {
@@ -213,17 +216,15 @@ class SecureTigerBeetleClient:
 
         output = []
         for i, (spec, result) in enumerate(zip(specs, results, strict=True)):
-            output.append(
-                {
-                    "index": i,
-                    "code": spec.code,
-                    "debit": spec.debit_account,
-                    "credit": spec.credit_account,
-                    "amount": spec.amount_minor,
-                    "status": str(result),
-                    "pending_id": result.timestamp if spec.is_pending else None,
-                }
-            )
+            output.append({
+                "index": i,
+                "code": spec.code,
+                "debit": spec.debit_account,
+                "credit": spec.credit_account,
+                "amount": spec.amount_minor,
+                "status": str(result),
+                "pending_id": result.timestamp if spec.is_pending else None,
+            })
 
         return output
 

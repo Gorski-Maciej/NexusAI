@@ -153,42 +153,49 @@ def register_db_hooks(config: AppConfig):
     duck_mgr = DuckDBManager(db_path=config.duckdb_path, sqlite_path=config.sqlite_path)
     duck_mgr.connect()
 
-    def _build_data(target: Invoice) -> dict[str, str | None]:
-        """Zbuduj słownik danych do DuckDB z bezpieczną konwersją Decimal.
+    def _build_data(target: Invoice) -> dict[str, str | int | None]:
+        """Zbuduj słownik danych do DuckDB używając INTEGER minor units.
 
-        ``mode="json"`` automatycznie konwertuje Decimal -> string,
-        DateTime -> ISO string.
+        amount_net_minor / amount_gross_minor (int) są source of truth.
+        Dla legacy rows (przed migracją) fallback na Decimal * 100.
         """
-        data = target.model_dump(
-            include={
-                "id",
-                "number",
-                "contractor_nip",
-                "amount_net",
-                "amount_gross",
-                "currency",
-                "status",
-            },
-            mode="json",
-        )
-        # Konwersja Enum -> str dla DuckDB
-        if isinstance(data.get("status"), Enum):
-            data["status"] = data["status"].value
+        from decimal import ROUND_HALF_UP, Decimal
+
+        def _to_minor(minor: int | None, decimal_val: Decimal | None) -> int | None:
+            if minor is not None:
+                return minor
+            if decimal_val is not None:
+                return int(
+                    (decimal_val * Decimal("100")).quantize(
+                        Decimal("1"), rounding=ROUND_HALF_UP
+                    )
+                )
+            return None
+
+        data = {
+            "id": target.id,
+            "number": target.number,
+            "contractor_nip": target.contractor_nip,
+            "amount_net": _to_minor(target.amount_net_minor, target.amount_net),
+            "amount_gross": _to_minor(target.amount_gross_minor, target.amount_gross),
+            "currency": target.currency,
+            "status": target.status.value if hasattr(target.status, "value") else target.status,
+        }
         return data
 
     def _replicate(target: Invoice) -> None:
-        """Wykonaj upsert do DuckDB dla pojedynczej faktury."""
+        """Wykonaj upsert do DuckDB dla pojedynczej faktury (INTEGER minor units)."""
         data = _build_data(target)
         try:
             duck_mgr.execute(
                 """
                 INSERT INTO invoices_replica (id, number, contractor_nip, amount_net, amount_gross, currency, status)
-                VALUES (?, ?, ?, CAST(? AS DECIMAL(18,2)), CAST(? AS DECIMAL(18,2)), ?, ?)
+                VALUES (?, ?, ?, ? / 100.0, ? / 100.0, ?, ?)
                 ON CONFLICT (id) DO UPDATE SET
                     number = EXCLUDED.number,
                     contractor_nip = EXCLUDED.contractor_nip,
-                    amount_net = CAST(EXCLUDED.amount_net AS DECIMAL(18,2)),
-                    amount_gross = CAST(EXCLUDED.amount_gross AS DECIMAL(18,2)),
+                    amount_net = EXCLUDED.amount_net,
+                    amount_gross = EXCLUDED.amount_gross,
                     currency = EXCLUDED.currency,
                     status = EXCLUDED.status
                 """,

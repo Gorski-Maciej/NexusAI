@@ -463,7 +463,7 @@ Pełna lista serwisów (70+): `nexus_ai/services/` (katalog).
 | `accountant_logic.py` | `AccountantLogic` | Logika księgowa — sugestie kont, dopasowanie wzorców księgowań |
 | `tax_strategies.py` | `StrategyRegistry` | Rejestr strategii podatkowych — JDG ryczałt/liniowy, CIT pełna księgowość, CIT estoński |
 | `finops_meter.py` | `FinOpsRates`, `FinOpsSnapshot` | Monitoring kosztów operacyjnych (FinOps) — koszt CPU/RAM/GPU na fakturę, detekcja anomalii kosztowych (Z-score, Polars) |
-| `tigerbeetle_secure.py` | `SecureTigerBeetleClient` | RBAC-aware wrapper TigerBeetle — OWNER może postować, WORKER tylko pending; naruszenia → SecurityAlert |
+| `tigerbeetle_secure.py` | `SecureTigerBeetleClient` | RBAC-aware wrapper TigerBeetle — **dynamiczne permissions** z `ROLE_PERMISSIONS_MAP` zamiast hardcoded OWNER; `tigerbeetle:post` (committed), `tigerbeetle:void` (anulowanie), `tigerbeetle:create-pending` (tworzenie pending); naruszenia → SecurityAlert + TigerBeetleSecurityException |
 | `document_fingerprint.py` | `DocumentFingerprint` | Trójwarstwowy odcisk dokumentu: SHA-256 (binary) + multi-hash wizualny (phash/dhash/whash + ORB) + semantyczny (MD5 z danych) + Merkle root miesięczny |
 
 ### 4.8 Orkiestracja CFO, Eventy i Analityka
@@ -549,6 +549,8 @@ Wszystkie kwoty są w **groszach (int)**, nigdy `float`:
 # NIE: amount = 123.45  (float!)
 # TAK: amount_cents = 12345  (int)
 ```
+
+Od wersji 7.1.0, źródłem prawdy są **INTEGER minor units** (kolumny `amount_net_minor`/`amount_gross_minor` w tabeli `invoices`). Legacy kolumny DECIMAL są oznaczone jako `[DEPRECATED]` i służą jako fallback dla istniejących danych przed migracją.
 
 ### Filar 2: Jawne zaokrąglanie HALF_UP
 
@@ -1143,5 +1145,5 @@ class NewAgent:
 
 ---
 
-> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 6.0.0-draft — Silent Partner + moduły v6.0
+> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 7.1.0 — Enterprise Optimization (minor units, batching, RBAC)
 > **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-06 · **Weryfikator:** Technical Lead

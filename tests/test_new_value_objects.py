@@ -18,15 +18,15 @@ class TestVatRate:
     """Testy dla VatRate Value Object."""
 
     def test_standard_rates(self):
-        assert VatRate(value=Decimal("0.23")).rate_23
-        assert VatRate(value=Decimal("0.08")).rate_8
-        assert VatRate(value=Decimal("0.05")).rate_5
-        assert VatRate(value=Decimal("0.00")).rate_0
+        assert VatRate(value_bp=2300).rate_23
+        assert VatRate(value_bp=800).rate_8
+        assert VatRate(value_bp=500).rate_5
+        assert VatRate(value_bp=0).rate_0
 
     def test_label(self):
-        assert VatRate(value=Decimal("0.23")).label == "23%"
-        assert VatRate(value=Decimal("0.08")).label == "8%"
-        assert VatRate(value=Decimal("0.00")).label == "0%"
+        assert VatRate(value_bp=2300).label == "23%"
+        assert VatRate(value_bp=800).label == "8%"
+        assert VatRate(value_bp=0).label == "0%"
 
     def test_from_percent(self):
         assert VatRate.from_percent(23).rate_23
@@ -34,9 +34,15 @@ class TestVatRate:
         assert VatRate.from_percent(5).rate_5
         assert VatRate.from_percent(0).rate_0
 
+    def test_backward_compatible_value_property(self):
+        """VatRate.value property returns Decimal for backward compatibility."""
+        vat = VatRate(value_bp=2300)
+        assert vat.value == Decimal("0.23")
+        assert vat.as_decimal == Decimal("0.23")
+
     def test_invalid_rate_raises(self):
         try:
-            VatRate(value=Decimal("0.15"))
+            VatRate(value_bp=1500)
             raise AssertionError("Should have raised ValueError")
         except ValueError:
             pass
@@ -49,9 +55,9 @@ class TestVatRate:
             pass
 
     def test_immutable(self):
-        vat = VatRate(value=Decimal("0.23"))
+        vat = VatRate(value_bp=2300)
         try:
-            vat.value = Decimal("0.08")  # type: ignore
+            vat.value_bp = 800  # type: ignore
             raise AssertionError("Should be frozen")
         except (AttributeError, msgspec.ValidationError):
             pass

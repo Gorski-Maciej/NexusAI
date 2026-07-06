@@ -60,6 +60,10 @@ PERMISSIONS = {
     # Contractor
     "contractor:view": "View contractors",
     "contractor:edit": "Edit contractors",
+    # TigerBeetle
+    "tigerbeetle:post": "Post pending transfers to ledger",
+    "tigerbeetle:void": "Void pending transfers",
+    "tigerbeetle:create-pending": "Create pending transfers",
 }
 
 # ── Role-to-permission mapping ───────────────────────────────────────────────
@@ -80,6 +84,7 @@ ROLE_PERMISSIONS_MAP: dict[str, list[str]] = {
         "finance:export",
         "contractor:view",
         "contractor:edit",
+        "tigerbeetle:create-pending",
     ],
     "auditor": [
         "invoice:view",

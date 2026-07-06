@@ -3,7 +3,7 @@
 Zgodnie z Enterprise DDD:
 - Każdy Aggregate Root egzekwuje niezmienniki biznesowe
 - Stan zmienia się tylko przez metody agregatu (nie settery)
-- Zdarzenia domenowe rejestrowane jako Event[]
+- Zdarzenia domenowe rejestrowane jako msgspec.Struct (immutable facts)
 - Każda operacja biznesowa = jedna transakcja na jednym agregacie
 
 Aggregates:
@@ -14,53 +14,57 @@ Aggregates:
 
 from __future__ import annotations
 
-import pendulum
+import os
+import time
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime  # noqa: F401  # kept for reconstitute compatibility
-import uuid
-from decimal import Decimal
-from enum import StrEnum
 from typing import ClassVar
 
+import msgspec
+import pendulum
+
+from nexus_ai.db.models import InvoiceStatus
 from nexus_ai.domain.values import AccountCode, Money, MoneyNet, NIP, TaxPeriod, VatRate
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# Domain Events -- fakty, które się wydarzyły w agregacie
+# UUIDv7 generator -- sortowalne, chronologiczne ID (lepsze niż uuid4)
 # ═══════════════════════════════════════════════════════════════════════════
 
 
-class InvoiceStatus(StrEnum):
-    """Status faktury -- typowany enum dla agregatu."""
-    NEW = "NEW"
-    PROCESSING = "PROCESSING"
-    PENDING_REVIEW = "PENDING_REVIEW"
-    APPROVED = "APPROVED"
-    REJECTED = "REJECTED"
-    BLOCKED = "BLOCKED"
-    PAID = "PAID"
-    MANUAL_REVIEW = "MANUAL_REVIEW"
-    FAILED = "FAILED"
-    BLOCKED_FRAUD_SUSPICION = "BLOCKED_FRAUD_SUSPICION"
+def uuid7() -> uuid.UUID:
+    """Generate a UUIDv7 (timestamp-based, sortable, 48-bit timestamp + random)."""
+    timestamp_ms = int(time.time_ns() // 1_000_000)
+    random_bytes = os.urandom(10)
+    uuid_bytes = bytearray(16)
+    uuid_bytes[0:6] = timestamp_ms.to_bytes(6, byteorder="big")
+    uuid_bytes[6] = (random_bytes[0] & 0x0F) | 0x70  # version 7
+    uuid_bytes[7] = random_bytes[1]
+    uuid_bytes[8] = (random_bytes[2] & 0x3F) | 0x80  # variant 10
+    uuid_bytes[9:16] = random_bytes[3:10]
+    return uuid.UUID(bytes=bytes(uuid_bytes))
 
 
-@dataclass(frozen=True, slots=True)
-class DomainEvent:
+# ═══════════════════════════════════════════════════════════════════════════
+# Domain Events -- immutable facts as msgspec.Struct (faster, lighter)
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class DomainEvent(msgspec.Struct, frozen=True, tag=True):
     """Base domain event -- niezmienny fakt biznesowy."""
-    event_id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    timestamp: pendulum.DateTime = field(default_factory=lambda: pendulum.now("UTC"))
+    event_id: str
+    timestamp: str  # ISO 8601 UTC
     aggregate_id: str = ""
 
 
-@dataclass(frozen=True, slots=True)
 class InvoiceCreated(DomainEvent):
     """Faktura utworzona w systemie."""
     invoice_number: str | None = None
     contractor_nip: str | None = None
-    amount_net: Decimal | None = None
+    amount_net_minor: int | None = None
 
 
-@dataclass(frozen=True, slots=True)
 class InvoiceApproved(DomainEvent):
     """Faktura zatwierdzona przez autopilota lub księgowego."""
     decision_id: str = ""
@@ -68,28 +72,24 @@ class InvoiceApproved(DomainEvent):
     confidence: float = 0.0
 
 
-@dataclass(frozen=True, slots=True)
 class InvoiceRejected(DomainEvent):
     """Faktura odrzucona."""
     reason: str = ""
     rejected_by: str = "system"
 
 
-@dataclass(frozen=True, slots=True)
 class InvoiceMarkedPaid(DomainEvent):
     """Faktura oznaczona jako opłacona."""
-    payment_date: pendulum.DateTime | None = None
-    payment_amount: Decimal | None = None
+    payment_date: str = ""  # ISO 8601 UTC
+    payment_amount_minor: int | None = None
 
 
-@dataclass(frozen=True, slots=True)
 class InvoiceSentToReview(DomainEvent):
     """Faktura przekazana do manualnej weryfikacji."""
     reason: str = ""
     confidence: float = 0.0
 
 
-@dataclass(frozen=True, slots=True)
 class InvoiceBlocked(DomainEvent):
     """Faktura zablokowana (np. fraud suspicion)."""
     reason: str = ""
@@ -127,8 +127,8 @@ class InvoiceAggregate:
     id: str
     number: str | None
     contractor_nip: str | None
-    amount_net: Decimal | None
-    amount_gross: Decimal | None
+    amount_net: Money | None
+    amount_gross: Money | None
     currency: str
     status: InvoiceStatus
     version: int
@@ -173,21 +173,26 @@ class InvoiceAggregate:
         cls,
         number: str | None = None,
         contractor_nip: str | None = None,
-        amount_net: Decimal | None = None,
-        amount_gross: Decimal | None = None,
+        amount_net: Money | None = None,
+        amount_gross: Money | None = None,
         currency: str = "PLN",
     ) -> InvoiceAggregate:
         """Factory: utwórz nową fakturę w stanie NEW."""
-        if amount_net is not None and amount_net < Decimal("0"):
+        if amount_net is not None and not amount_net.is_positive and not amount_net.is_zero:
             raise ValueError(f"amount_net cannot be negative: {amount_net}")
-        if amount_gross is not None and amount_gross < Decimal("0"):
+        if amount_gross is not None and not amount_gross.is_positive and not amount_gross.is_zero:
             raise ValueError(f"amount_gross cannot be negative: {amount_gross}")
+        if amount_net is not None and amount_gross is not None and amount_net.amount > amount_gross.amount:
+            raise ValueError(
+                f"amount_net ({amount_net}) cannot exceed amount_gross ({amount_gross})"
+            )
         if len(currency) != 3 or not currency.isalpha():
             raise ValueError(f"Currency must be ISO 4217 (3 letters): {currency}")
 
         now = pendulum.now("UTC")
+        now_iso = now.isoformat()
         agg = cls(
-            id=uuid.uuid4().hex,
+            id=uuid7().hex,
             number=number,
             contractor_nip=contractor_nip,
             amount_net=amount_net,
@@ -199,11 +204,12 @@ class InvoiceAggregate:
             updated_at=now,
         )
         agg._events.append(InvoiceCreated(
+            event_id=uuid7().hex,
+            timestamp=now_iso,
             aggregate_id=agg.id,
             invoice_number=number,
             contractor_nip=contractor_nip,
-            amount_net=amount_net,
-            timestamp=now,
+            amount_net_minor=amount_net.to_minor() if amount_net is not None else None,
         ))
         return agg
 
@@ -213,8 +219,8 @@ class InvoiceAggregate:
         id: str,
         number: str | None,
         contractor_nip: str | None,
-        amount_net: Decimal | None,
-        amount_gross: Decimal | None,
+        amount_net: Money | None,
+        amount_gross: Money | None,
         currency: str,
         status: str,
         version: int,
@@ -255,6 +261,8 @@ class InvoiceAggregate:
         """Zatwierdź fakturę."""
         self._transition(InvoiceStatus.APPROVED)
         self._events.append(InvoiceApproved(
+            event_id=uuid7().hex,
+            timestamp=pendulum.now("UTC").isoformat(),
             aggregate_id=self.id,
             decision_id=decision_id,
             auto_approved=auto_approved,
@@ -265,6 +273,8 @@ class InvoiceAggregate:
         """Odrzuć fakturę."""
         self._transition(InvoiceStatus.REJECTED)
         self._events.append(InvoiceRejected(
+            event_id=uuid7().hex,
+            timestamp=pendulum.now("UTC").isoformat(),
             aggregate_id=self.id,
             reason=reason,
             rejected_by=rejected_by,
@@ -274,24 +284,30 @@ class InvoiceAggregate:
         """Przekaż do manualnej weryfikacji."""
         self._transition(InvoiceStatus.PENDING_REVIEW)
         self._events.append(InvoiceSentToReview(
+            event_id=uuid7().hex,
+            timestamp=pendulum.now("UTC").isoformat(),
             aggregate_id=self.id,
             reason=reason,
             confidence=confidence,
         ))
 
-    def mark_paid(self, payment_amount: Decimal | None = None) -> None:
+    def mark_paid(self, payment_amount: Money | None = None) -> None:
         """Oznacz jako opłaconą."""
         self._transition(InvoiceStatus.PAID)
         self._events.append(InvoiceMarkedPaid(
+            event_id=uuid7().hex,
+            timestamp=pendulum.now("UTC").isoformat(),
             aggregate_id=self.id,
-            payment_date=pendulum.now("UTC"),
-            payment_amount=payment_amount,
+            payment_date=pendulum.now("UTC").isoformat(),
+            payment_amount_minor=payment_amount.to_minor() if payment_amount is not None else None,
         ))
 
     def block(self, reason: str = "", fraud_score: float = 0.0) -> None:
         """Zablokuj fakturę."""
         self._transition(InvoiceStatus.BLOCKED)
         self._events.append(InvoiceBlocked(
+            event_id=uuid7().hex,
+            timestamp=pendulum.now("UTC").isoformat(),
             aggregate_id=self.id,
             reason=reason,
             fraud_score=fraud_score,
@@ -301,6 +317,8 @@ class InvoiceAggregate:
         """Zablokuj z podejrzeniem fraudu."""
         self._transition(InvoiceStatus.BLOCKED_FRAUD_SUSPICION)
         self._events.append(InvoiceBlocked(
+            event_id=uuid7().hex,
+            timestamp=pendulum.now("UTC").isoformat(),
             aggregate_id=self.id,
             reason=reason,
             fraud_score=fraud_score,
@@ -329,7 +347,7 @@ class InvoiceAggregate:
         return self.status in {InvoiceStatus.PAID, InvoiceStatus.REJECTED}
 
     @property
-    def amount_vat(self) -> Decimal | None:
+    def amount_vat(self) -> Money | None:
         """VAT = amount_gross - amount_net."""
         if self.amount_gross is not None and self.amount_net is not None:
             return self.amount_gross - self.amount_net
@@ -476,7 +494,7 @@ class TaxDecisionAggregate:
         needs_review = confidence < cls.SUGGEST_THRESHOLD
 
         return cls(
-            id=uuid.uuid4().hex,
+            id=uuid7().hex,
             invoice_id=invoice_id,
             tax_period=tax_period,
             vat_rate=vat_rate,

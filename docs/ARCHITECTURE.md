@@ -396,36 +396,39 @@ sequenceDiagram
 
 ## 5. Kluczowe decyzje architektoniczne (ADR) — 9 decyzji
 
-### ADR-001: SQLite zamiast PostgreSQL
+### ADR-001: SQLite zamiast PostgreSQL + INTEGER minor units
 
-**Data:** 2025-02-01  
+**Data:** 2025-02-01 (zaktualizowane 2026-07-06)  
 **Status:** Zaakceptowane
 
-**Kontekst:** Aplikacja desktopowa, offline-first, jeden użytkownik na instancję.
+**Kontekst:** Aplikacja desktopowa, offline-first, jeden użytkownik na instancję. Float64/REAL w SQLite powodował dryf groszowy przy kalkulacjach VAT.
 
-**Decyzja:** Używamy SQLite przez SQLCipher (AES-256).
+**Decyzja:** Używamy SQLite przez SQLCipher (AES-256). Kwoty finansowe przechowywane jako **INTEGER minor units** (grosze) — BEZ Float64/REAL.
 
 **Konsekwencje:**
 - ✅ Zero administracji — baza to jeden plik
 - ✅ Szyfrowanie transparentne (RODO)
 - ✅ Pełne ACID, WAL mode dla współbieżności
+- ✅ **0% dryfu groszowego** — INTEGER minor units zamiast DECIMAL/REAL
+- ✅ Legacy kolumny DECIMAL zachowane dla backward compatibility
 - ❌ Mniejsza przepustowość zapisu vs PostgreSQL (ale niewidoczna przy <1000 transakcji/dzień)
-- ✅ Brak zewnętrznego serwera DB
+- ❌ SQLite **nie wspiera SKIP LOCKED** — Optimistic locking przez `UPDATE ... RETURNING`
 
-### ADR-002: TigerBeetle do księgi głównej
+### ADR-002: TigerBeetle do księgi głównej + Batching
 
-**Data:** 2025-03-15  
+**Data:** 2025-03-15 (zaktualizowane 2026-07-06)  
 **Status:** Zaakceptowane
 
-**Kontekst:** Potrzebujemy matematycznie gwarantowanego double-entry.
+**Kontekst:** Potrzebujemy matematycznie gwarantowanego double-entry. Import bankowy ~10 tx/s był bottleneckiem.
 
-**Decyzja:** TigerBeetle jako osobny silnik księgowy.
+**Decyzja:** TigerBeetle jako osobny silnik księgowy. **Batch `create_transfers()`** dla bulk operacji. **Independent batching** (NOT linked) dla amortyzacji środków trwałych.
 
 **Konsekwencje:**
 - ✅ Każda transakcja MUSI bilansować się do zera (gwarancja na poziomie protokołu)
 - ✅ Append-only — brak UPDATE, pełna niezmienność
-- ✅ Kryptograficzne dowody dla każdej transakcji
-- ✅ Gotowość na skalowanie (cluster mode)
+- ✅ **Throughput: ~10 tx/s → ~8000 tx/s** (+80 000%) przez batch `create_transfers()`
+- ✅ Per-asset failure zamiast all-or-nothing (NOT linked)
+- ✅ RBAC-aware wrapper z dynamicznymi permissions (`tigerbeetle:post`, `tigerbeetle:void`, `tigerbeetle:create-pending`)
 - ❌ Dodatkowy proces (~50-100 MB RAM)
 
 ### ADR-003: NATS zamiast RabbitMQ
@@ -541,9 +544,10 @@ sequenceDiagram
 - ✅ **Bayesian Trust Score** — dynamiczne progi decyzyjne, adaptujące się per kontrahent
 - ✅ **Offline-first** — wszystkie modele lokalne, brak zależności od chmury
 - ✅ **Deterministyczny fallback** — silnik OPA/Rego dla decyzji podatkowych
-- ✅ **🆕 KnowledgeMesh (v5.3)** — agenci dzielą się doświadczeniem przez Cross-Agent Experience Replay
-- ✅ **🆕 Decision Protocol (v5.4)** — pełny OTel tracing + MultiModelEnsemble + ConfidenceCalibrator + AgentTelemetryStore
-- ✅ **🆕 UnifiedLearningProtocol (v5.4)** — kaskada 5 systemów po każdej korekcie
+- ✅ **KnowledgeMesh (v5.3)** — agenci dzielą się doświadczeniem przez Cross-Agent Experience Replay
+- ✅ **Decision Protocol (v5.4)** — pełny OTel tracing + MultiModelEnsemble + ConfidenceCalibrator + AgentTelemetryStore
+- ✅ **UnifiedLearningProtocol (v5.4)** — kaskada 5 systemów po każdej korekcie
+- ✅ **Enterprise Optimization (v7.1)** — **INTEGER minor units** (zero float drift), **VatRate basis points**, **msgspec.Struct events**, **UUID7**, **DuckDB SQL DECIMAL**, **RBAC dynamic permissions**, **Batching (10→8000 tx/s)**
 - ❌ Wyższe zużycie RAM (~4-6 GB dla wszystkich modeli, ładowane leniwie)
 - ❌ Złożoność komunikacji (NATS JetStream między 5 agentami)
 
@@ -565,13 +569,13 @@ Pełna specyfikacja: [`docs/AGENTS.md`](AGENTS.md)
 
 | VO | Typ | Walidacja |
 |---|---|---|
-| `Money` | `int amount_cents` + `str currency` | Kwota >= 0, kod ISO 4217, auto-round do 2 miejsc |
+| `Money` | `Decimal amount` + `str currency` | Kwota >= 0, kod ISO 4217, auto-round do 2 miejsc (`to_minor()` → int minor units, `from_minor()` → Decimal) |
 | `NIP` | `str value` (10 cyfr) | Suma kontrolna (wagi: 6,5,7,2,3,4,5,6,7) |
 | `IBAN` | `str value` (15-34 znaków) | Checksum MOD-97, kod kraju |
 | `PESEL` | `str value` (11 cyfr) | Suma kontrolna, data urodzenia, płeć |
 | `SWIFT` | `str value` (8 lub 11 znaków) | Format BBBBCCLLXXX |
 | `InvoiceNumber` | `str value` | Format: SERIA/RRRR/MM/SEQ |
-| `VatRate` | `Decimal value` + `str code` | Dozwolone: 0.23, 0.08, 0.05, 0.00 |
+| `VatRate` | **`int value_bp`** (basis points, np. 2300) + `str code` | Dozwolone: 2300, 800, 500, 0 (`as_decimal` → Decimal), backward-compat `value` property |
 | `TaxPeriod` | `int year` + `int? month` + `int? quarter` | Miesiąc 1-12 lub kwartał 1-4 |
 | `AccountCode` | `str value` | Format: X-YY-Z |
 | `KSeFMetadata` | `str? ksef_id` + `str? qr_code_url` | ID >= 10 znaków |
@@ -672,6 +676,79 @@ stateDiagram-v2
 | Worker ↔ LLM | llama-cpp-python C-API | W pamięci | Brak |
 | Worker ↔ OPA | REST | localhost:8181 | Brak (lokalna) |
 | API → KSeF/GUS/NBP | HTTPS | Sieć | TLS 1.3 |
+
+---
+## 8a. Architektura finansowa — Precyzja groszowa
+
+### 8a.1 INTEGER minor units — Source of Truth
+
+Od wersji 7.1.0 wszystkie kwoty finansowe są przechowywane jako **INTEGER minor units** (grosze):
+
+```python
+# models.py
+class Invoice(SQLModel, table=True):
+    amount_net_minor: int | None  # Source of truth — grosze
+    amount_gross_minor: int | None  # Source of truth — grosze
+    amount_net: Decimal | None  # [DEPRECATED] Legacy fallback
+    amount_gross: Decimal | None  # [DEPRECATED] Legacy fallback
+
+    @property
+    def amount_vat(self) -> Decimal | None:
+        """VAT = gross - net — z minor units, fallback do legacy."""
+        if self.amount_gross_minor is not None and self.amount_net_minor is not None:
+            return Decimal(self.amount_gross_minor - self.amount_net_minor) / Decimal("100")
+```
+
+### 8a.2 DuckDB replikacja — `/ 100.0`
+
+W hooks.py, DuckDB replikacja konwertuje minor units na DECIMAL dzieląc przez 100:
+```sql
+INSERT INTO invoices_replica (id, amount_net, amount_gross)
+VALUES (?, ? / 100.0, ? / 100.0)
+```
+
+### 8a.3 Optimistic locking — UPDATE ... RETURNING
+
+SQLite nie wspiera `SKIP LOCKED`. Zastosowano atomiczne `UPDATE ... ORDER BY ... LIMIT ... RETURNING`:
+```python
+# transactions.py
+claim_stmt = (
+    update(OutboxEvent)
+    .where(OutboxEvent.processed == False, OutboxEvent.status == OutboxStatus.PENDING)
+    .order_by(OutboxEvent.created_at.asc())
+    .limit(batch_size)
+    .values(status=OutboxStatus.PROCESSING, processing_started_at=now)
+    .returning(OutboxEvent.id)
+)
+claimed_ids = (await session.execute(claim_stmt)).scalars().all()
+```
+
+### 8a.4 DuckDB SQL DECIMAL (zamiast Polars experimental)
+
+W fx_revaluation.py, wszystkie kalkulacje FX używają **natywnego DuckDB DECIMAL**:
+```sql
+SELECT CAST(ROUND(
+    (o.amount_foreign * r.rate) - (o.amount_foreign * o.exchange_rate_at_issue),
+    2
+) AS DECIMAL(18, 2)) AS unrealized_delta
+```
+
+### 8a.5 VatRate w basis points (int)
+
+```python
+# values.py
+class VatRate(msgspec.Struct, frozen=True, kw_only=True):
+    value_bp: int  # 2300 = 23.00%
+    
+    @property
+    def as_decimal(self) -> Decimal:
+        return Decimal(self.value_bp) / Decimal("10000")
+    
+    @property
+    def value(self) -> Decimal:
+        """Backward-compatible alias."""
+        return self.as_decimal
+```
 
 ---
 ## 9. Non-Functional Requirements (NFR)
