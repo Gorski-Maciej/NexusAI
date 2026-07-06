@@ -233,7 +233,8 @@ class NexusApiClient:
             data = response.json()
             self._cache_set(cache_key, data)
             return data if isinstance(data, list) else []
-        except Exception:
+        except Exception as exc:
+            logger.debug("[API] monthly trend failed: %s", exc)
             return []
 
     async def get_cashflow_report(
@@ -277,7 +278,8 @@ class NexusApiClient:
             data = response.json()
             self._cache_set(cache_key, data)
             return data if isinstance(data, dict) else {"rows": []}
-        except Exception:
+        except Exception as exc:
+            logger.debug("[API] cashflow report failed: %s", exc)
             return {"rows": []}
 
     async def get_dashboard_summary(self) -> dict[str, Any]:
@@ -297,14 +299,16 @@ class NexusApiClient:
             data = response.json()
             self._cache_set(cache_key, data)
             return data if isinstance(data, dict) else {}
-        except Exception:
+        except Exception as exc:
+            logger.debug("[API] dashboard summary failed: %s", exc)
             return {}
 
     async def get_pending_count(self) -> int:
         try:
             response = await self._async.get("/invoices/stats/pending")
             return response.json().get("count", 0)
-        except Exception:
+        except Exception as exc:
+            logger.debug("[API] pending count failed: %s", exc)
             return 0
 
     async def upload_file(self, endpoint: str, file_path: str) -> dict:

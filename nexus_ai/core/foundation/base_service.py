@@ -3,6 +3,9 @@
 Eliminuje ~4 700 linii powtarzalnego kodu CRUD w serwisach.
 Wystarczy: class InvoiceService(BaseService[Invoice, InvoiceCreate]): pass
 Zyskuje create(), get(), update(), delete(), list(), count(), exists(), paginate().
+
+BaseService deleguje count/exists/paginate do BaseRepository aby wyeliminować
+duplikację tych samych implementacji w obu klasach.
 """
 
 from __future__ import annotations
@@ -10,9 +13,9 @@ from __future__ import annotations
 from typing import Any, TypeVar
 
 from msgspec import Struct, to_builtins
-from sqlalchemy import func
 from sqlmodel import Session, SQLModel, select
 
+from nexus_ai.core.foundation.base_repository import BaseRepository
 from nexus_ai.core.types import PaginatedResponse
 
 T = TypeVar("T", bound=SQLModel)
@@ -25,13 +28,24 @@ class BaseService[T: SQLModel, CreateDTO: Struct, UpdateDTO: Struct]:
 
     Zastępuje 15+ osobnych implementacji. Używa sync Session (nie AsyncSession)
     bo tak działa istniejący kod: ``db/repository.py`` używa ``session.flush()``.
+
+    Metody count(), exists(), paginate() delegują do wewnętrznego BaseRepository
+    eliminując ~35 linii zduplikowanego kodu.
     """
 
-    __slots__ = ("_session", "_model")
+    __slots__ = ("_session", "_model", "_repo")
 
     def __init__(self, session: Session, model: type[T] | None = None) -> None:
         self._session = session
         self._model = model or self._infer_model()
+        self._repo: BaseRepository[T] | None = None
+
+    @property
+    def _repository(self) -> BaseRepository[T]:
+        """Lazy-inicjalizowany BaseRepository do metod współdzielonych."""
+        if self._repo is None:
+            self._repo = BaseRepository(self._session, self._model)
+        return self._repo
 
     @classmethod
     def _infer_model(cls) -> type[T]:
@@ -81,20 +95,24 @@ class BaseService[T: SQLModel, CreateDTO: Struct, UpdateDTO: Struct]:
         self._session.flush()
         return True
 
+    # ── Delegowane do BaseRepository (współdzielona implementacja) ──
+
     def count(self, **filters: Any) -> int:
-        """Policz rekordy spełniające filtry."""
-        stmt = select(func.count()).select_from(self._model)
-        for key, value in filters.items():
-            if hasattr(self._model, key) and value is not None:
-                stmt = stmt.where(getattr(self._model, key) == value)
-        return self._session.execute(stmt).scalar() or 0
+        """Policz rekordy spełniające filtry. Deleguje do BaseRepository."""
+        return self._repository.count(**filters)
 
     def exists(self, id_: str) -> bool:
-        """Sprawdź czy rekord istnieje."""
-        return self._session.execute(select(self._model).where(self._model.id == id_).limit(1)).scalar_one_or_none() is not None
+        """Sprawdź czy rekord istnieje. Deleguje do BaseRepository."""
+        return self._repository.exists(id_)
 
     def paginate(self, page: int = 1, page_size: int = 20, order_by: str = "id", **filters: Any) -> PaginatedResponse[T]:
-        """Paginated list z PaginatedResponse."""
-        total = self.count(**filters)
-        items = self.list(limit=page_size, offset=(page - 1) * page_size, order_by=order_by, **filters)
-        return PaginatedResponse.create(items, total, page=page, page_size=page_size)
+        """Paginated list z PaginatedResponse. Deleguje do BaseRepository."""
+        return self._repository.paginate(page=page, page_size=page_size, order_by=order_by, **filters)
+
+    def find_one(self, **filters: Any) -> T | None:
+        """Znajdź pierwszy rekord spełniający filtry. Deleguje do BaseRepository."""
+        return self._repository.find_one(**filters)
+
+    def find_all(self, **filters: Any) -> list[T]:
+        """Znajdź wszystkie rekordy spełniające filtry. Deleguje do BaseRepository."""
+        return self._repository.find_all(**filters)

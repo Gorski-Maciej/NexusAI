@@ -115,13 +115,13 @@ async def _start_metrics_background_task(app: Litestar) -> None:
                                 sys_metrics.net_bytes_recv_mb,
                                 sys_metrics.net_bytes_sent_mb,
                             )
-                    except Exception:
-                        pass
+                    except Exception as exc:
+                        logger.debug("[METRICS] System metrics collection failed: %s", exc)
 
                     try:
                         record_mimalloc_stats()
-                    except Exception:
-                        pass
+                    except Exception as exc:
+                        logger.debug("[METRICS] mimalloc stats collection failed: %s", exc)
 
                     await anyio.sleep(30)
 
@@ -160,8 +160,8 @@ def _configure_ml_cache_directories(base_dir: Path) -> dict[str, str]:
     ml_cache_root.mkdir(parents=True, exist_ok=True)
     try:
         os.chmod(ml_cache_root, 0o700)
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("[STARTUP] chmod ml_cache_root failed: %s", exc)
 
     env_map = {
         "HF_HOME": str(ml_cache_root / "hf"),
@@ -171,8 +171,8 @@ def _configure_ml_cache_directories(base_dir: Path) -> dict[str, str]:
         path.mkdir(parents=True, exist_ok=True)
         try:
             os.chmod(path, 0o700)
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("[STARTUP] chmod path %s failed: %s", path, exc)
     for key, value in env_map.items():
         os.environ.setdefault(key, value)
     return env_map
@@ -235,8 +235,8 @@ def make_on_startup(engine, session_factory):
         # diff_for_humans(), format(), day_of_week itp. będą po polsku.
         try:
             pendulum.set_locale("pl")
-        except Exception:
-            pass  # locale 'pl' może nie być zainstalowana w niektórych środowiskach
+        except Exception as exc:
+            logger.debug("[STARTUP] Locale 'pl' not available: %s", exc)
 
         # ── Phase 0: Config + ML cache ───────────────────────────────
         app.state.ml_cache_env = _configure_ml_cache_directories(config.base_dir)
@@ -450,8 +450,8 @@ async def on_shutdown(app: Litestar) -> None:
     if _tg is not None:
         try:
             await _tg.__aexit__(None, None, None)
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("[SHUTDOWN] TaskGroup cleanup error: %s", exc)
 
     engine = app.state.db_engine
 
@@ -459,8 +459,8 @@ async def on_shutdown(app: Litestar) -> None:
     if not broker.is_worker_process:
         try:
             await broker.shutdown()
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("[SHUTDOWN] Broker shutdown error: %s", exc)
 
     # 2. Zamknij Hot-Reload Listener
     try:
@@ -493,5 +493,5 @@ async def on_shutdown(app: Litestar) -> None:
     for cache_dir in (app.state.ml_cache_env or {}).values():
         try:
             shutil.rmtree(cache_dir, ignore_errors=True)
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("[SHUTDOWN] ML cache cleanup error for %s: %s", cache_dir, exc)

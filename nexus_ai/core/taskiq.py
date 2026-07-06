@@ -122,8 +122,8 @@ def _record_task_metrics(task_name: str, duration_ms: float, status: str) -> Non
     try:
         from nexus_ai.api.telemetry_metrics import record_task_execution
         record_task_execution(task_name=task_name, duration_ms=duration_ms, status=status)
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("[TASKIQ] Metrics recording failed: %s", exc)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -212,7 +212,8 @@ class HybridResultBackend(TaskiqResultBackend):
             try:
                 await self._nc.ping()
                 return True
-            except Exception:
+            except Exception as exc:
+                logger.debug("[TASKIQ] NATS ping failed, resetting: %s", exc)
                 self._obj_store = None
         try:
             import nats
@@ -232,7 +233,8 @@ class HybridResultBackend(TaskiqResultBackend):
                 data = _json.dumps({"task_id": task_id, "task_name": result.task_name, "is_err": result.is_err, "return_value": result.return_value, "error": str(result.error) if result.error else None, "execution_time": result.execution_time, "labels": result.labels}).encode()
                 await self._obj_store.put(task_id, data)
                 return
-        except Exception:
+        except Exception as exc:
+            logger.debug("[TASKIQ] NATS set_result failed, falling back to SQLite: %s", exc)
             pass
         await self._sqlite.set_result(task_id, result)
 
@@ -242,9 +244,11 @@ class HybridResultBackend(TaskiqResultBackend):
                 try:
                     await self._obj_store.get(task_id)
                     return True
-                except Exception:
+                except Exception as exc:
+                    logger.debug("[TASKIQ] NATS get for exists check failed: %s", exc)
                     pass
-        except Exception:
+        except Exception as exc:
+            logger.debug("[TASKIQ] NATS exists check failed: %s", exc)
             pass
         return await self._sqlite.is_result_exists(task_id)
 
@@ -255,9 +259,11 @@ class HybridResultBackend(TaskiqResultBackend):
                     entry = await self._obj_store.get(task_id)
                     data = _msgspec_loads(entry.data)
                     return TaskiqResult(task_id=data["task_id"], task_name=data.get("task_name", ""), is_err=data.get("is_err", False), return_value=data.get("return_value"), error=Exception(data["error"]) if data.get("error") else None, execution_time=data.get("execution_time", 0.0), labels=data.get("labels", {}))
-                except Exception:
+                except Exception as exc:
+                    logger.debug("[TASKIQ] NATS get_result failed: %s", exc)
                     pass
-        except Exception:
+        except Exception as exc:
+            logger.debug("[TASKIQ] NATS get_result outer failed: %s", exc)
             pass
         return await self._sqlite.get_result(task_id)
 

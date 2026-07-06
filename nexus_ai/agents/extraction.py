@@ -27,7 +27,8 @@ import pendulum
 from msgspec import json as msgspec_json
 from structlog import get_logger
 
-from nexus_ai.agents.base import BaseAgent
+from nexus_ai.agents.base import BaseAgent, _SupportsKnowledgeMesh
+
 from nexus_ai.agents.models import (
     CrossValidationResult,
     DataExtractionRequest,
@@ -72,7 +73,7 @@ def _parse_date(date_str: str | None) -> str | None:
         return None
     try:
         return pendulum.parse(date_str, strict=False).to_date_string()
-    except Exception:
+    except Exception as exc:
         return None
 
 
@@ -93,7 +94,7 @@ class AgentDataExtraction(BaseAgent):
         self,
         model_manager: ModelManager | None = None,
         config: dict[str, Any] | None = None,
-        knowledge_mesh: Any = None,
+        knowledge_mesh: _SupportsKnowledgeMesh | None = None,
     ) -> None:
         super().__init__(
             name="data-extraction",

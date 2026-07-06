@@ -21,6 +21,7 @@ from sqlalchemy import Engine
 from sqlmodel import text
 from structlog import get_logger
 
+from nexus_ai.agents.base import _SupportsEventLog, _SupportsNotificationManager
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 logger = get_logger("nexus.services.scheduler")
@@ -72,8 +73,8 @@ class Scheduler:
     def __init__(
         self,
         engine: Engine,
-        notification_manager: Any = None,
-        event_log: Any = None,
+        notification_manager: _SupportsNotificationManager | None = None,
+        event_log: _SupportsEventLog | None = None,
     ) -> None:
         self._engine = engine
         self._notification_manager = notification_manager

@@ -13,6 +13,7 @@ from typing import Any, final
 
 from msgspec import Struct
 
+from nexus_ai.agents.base import _SupportsDuckDB
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
 _ALLOWED_RATES = {"23", "8", "5", "0", "np", "zw"}
@@ -40,7 +41,7 @@ class VATReconciliationEngine:
 
     def __init__(
         self,
-        duckdb_manager: Any,
+        duckdb_manager: _SupportsDuckDB,
         tb_client: TigerBeetleClient,
         account_vat_in: int,
         account_vat_out: int,

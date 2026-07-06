@@ -12,6 +12,8 @@ from typing import Any, Protocol, final
 import pendulum
 from msgspec import Struct
 
+from nexus_ai.agents.base import _SupportsDuckDB
+
 
 class DunningStatus(StrEnum):
     SENT = "SENT"
@@ -40,7 +42,7 @@ class DunningEngine:
 
     def __init__(
         self,
-        duckdb_manager: Any,
+        duckdb_manager: _SupportsDuckDB,
         ai_agent: DunningAIAgent,
         email_provider: DunningEmailProvider,
         guardrails: DunningGuardrails = DunningGuardrails(),

@@ -23,7 +23,7 @@ import anyio
 import pendulum
 from structlog import get_logger
 
-from nexus_ai.agents.base import BaseAgent
+from nexus_ai.agents.base import BaseAgent, _SupportsKnowledgeMesh
 from nexus_ai.agents.models import QualityCheckRequest, QualityCheckResult, make_context
 from nexus_ai.agents.topics import AgentTopic
 from nexus_ai.core.inference import ModelManager
@@ -55,7 +55,7 @@ class AgentQualityValidator(BaseAgent):
         self,
         model_manager: ModelManager | None = None,
         config: dict[str, Any] | None = None,
-        knowledge_mesh: Any = None,
+        knowledge_mesh: _SupportsKnowledgeMesh | None = None,
     ) -> None:
         super().__init__(
             name="quality-validator",
@@ -412,8 +412,8 @@ Format: WERDYKT: OK|WARNING|ERROR, UZASADNIENIE: ..."""
                 if not wl.is_verified(nip):
                     risk_score += 0.3
                     reasons.append("Kontrahent niezweryfikowany na Białej Liście MF")
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[VALIDATOR] WhiteList check failed: %s", exc)
 
         gross = invoice.get("amount_gross", 0)
         if isinstance(gross, (int, float)) and gross > 100000:

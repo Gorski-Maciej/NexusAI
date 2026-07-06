@@ -173,7 +173,8 @@ class ResourceOptimizer:
             self._psutil = psutil
             self._process = psutil.Process()
             self._psutil_available = True
-        except Exception:
+        except Exception as exc:
+            self._logger.debug("[RESOURCE] psutil not available: %s", exc)
             self._psutil = None
             self._process = None
 
@@ -324,8 +325,8 @@ class WorkflowManager:
                     exec_time = pendulum.parse(execution.started_at)
                     if exec_time > cutoff and execution.status == WorkflowStatus.COMPLETED:
                         return True
-                except Exception:
-                    pass
+                except Exception as exc:
+                    self._logger.debug("[WORKFLOW] Parse execution time failed: %s", exc)
         return False
 
     def get_stats(self) -> dict[str, Any]:
@@ -920,8 +921,8 @@ OPTION3: [etykieta przycisku 3 - max 30 znaków]"""
             )
             if result:
                 return self._parse_nl_result(result, card)
-        except Exception:
-            pass
+        except Exception as exc:
+            self._logger.debug("[CARDS] NL enhancement failed: %s", exc)
 
         return None
 
@@ -1590,7 +1591,8 @@ class ProactiveWorkflowScheduler:
                         "decisions": health.decisions_total,
                         "uptime_s": health.uptime_seconds,
                     }
-                except Exception:
+                except Exception as exc:
+                    self._logger.debug("[PROACTIVE] Health check for %s failed: %s", name, exc)
                     agents_status[name] = {"status": "unknown"}
 
         # Wykryj potencjalne problemy
@@ -1939,7 +1941,8 @@ class ProactiveWorkflowScheduler:
                             corrected_reason="Silent Auto-Post (v6.0)",
                         )
                         auto_posted_now += 1
-                    except Exception:
+                    except Exception as exc:
+                        self._logger.debug("[PROACTIVE] Silent auto-post for %s failed: %s", decision_id, exc)
                         skipped += 1
 
             return {

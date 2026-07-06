@@ -1,29 +1,30 @@
-"""Core types — Result Pattern with discriminated subclasses, PaginatedResponse (msgspec.Struct).
+"""Core types — Result Pattern with proper type narrowing via cast(), PaginatedResponse.
 
-Refactored: Result[T,E] uses Ok[T,E] + Err[T,E] subclasses to eliminate all type: ignores.
-The base Result class is a sealed union — only Ok and Err are valid constructors.
+Result[T,E] uses Ok[T,E] + Err[T,E] subclasses with cast()-based type narrowing,
+eliminating all type: ignore annotations while keeping mypy strict-mode compliant.
 """
 
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, Generic, TypeVar, final
+from typing import Any, Generic, TypeVar, cast, final
 
 from msgspec import Struct
 
 T = TypeVar("T")
 E = TypeVar("E")
+U = TypeVar("U")
+F = TypeVar("F")
 
 
-# ── Result Pattern (discriminated subclasses — zero type: ignores) ───────────
+# ── Result Pattern (cast-based type narrowing — zero type: ignores) ──────────
 
 
 class Result(Generic[T, E]):
     """Either monada — sealed base. Use Result.ok(value) or Result.err(error).
 
-    Discriminated via _is_ok bool. Ok[T,E] and Err[T,E] are the only valid
-    subclasses, eliminating all type: ignore annotations from the previous
-    implementation.
+    Uses typing.cast() for type narrowing instead of type: ignore.
+    Ok[T,E] and Err[T,E] are the only valid subclasses.
     """
 
     __slots__ = ("_value", "_error", "_is_ok")
@@ -51,36 +52,36 @@ class Result(Generic[T, E]):
 
     def unwrap(self) -> T:
         if self._is_ok:
-            return self._value  # type: ignore[return-value]
+            return cast(T, self._value)
         raise ValueError(f"unwrap() on error Result: {self._error}")
 
     def unwrap_or(self, default: T) -> T:
-        return self._value if self._is_ok else default  # type: ignore[return-value]
+        return cast(T, self._value) if self._is_ok else default
 
     def unwrap_err(self) -> E:
         if not self._is_ok:
-            return self._error  # type: ignore[return-value]
+            return cast(E, self._error)
         raise ValueError(f"unwrap_err() on ok Result: {self._value}")
 
-    def map(self, func: Callable[[T], Any]) -> Result[Any, E]:
+    def map(self, func: Callable[[T], U]) -> Result[U, E]:
         if self._is_ok:
-            return Result.ok(func(self._value))  # type: ignore[return-value]
-        return self  # type: ignore[return-value]
+            return Result.ok(func(cast(T, self._value)))
+        return cast(Result[U, E], self)
 
-    def map_err(self, func: Callable[[E], Any]) -> Result[T, Any]:
+    def map_err(self, func: Callable[[E], F]) -> Result[T, F]:
         if not self._is_ok:
-            return Result.err(func(self._error))  # type: ignore[return-value]
-        return self  # type: ignore[return-value]
+            return Result.err(func(cast(E, self._error)))
+        return cast(Result[T, F], self)
 
-    def and_then(self, func: Callable[[T], Result[Any, E]]) -> Result[Any, E]:
+    def and_then(self, func: Callable[[T], Result[U, E]]) -> Result[U, E]:
         if self._is_ok:
-            return func(self._value)  # type: ignore[return-value]
-        return self  # type: ignore[return-value]
+            return func(cast(T, self._value))
+        return cast(Result[U, E], self)
 
-    def or_else(self, func: Callable[[E], Result[T, Any]]) -> Result[T, Any]:
+    def or_else(self, func: Callable[[E], Result[T, F]]) -> Result[T, F]:
         if not self._is_ok:
-            return func(self._error)  # type: ignore[return-value]
-        return self  # type: ignore[return-value]
+            return func(cast(E, self._error))
+        return cast(Result[T, F], self)
 
     def __bool__(self) -> bool:
         return self._is_ok
@@ -107,7 +108,7 @@ class Ok(Result[T, E]):
 
     @property
     def value(self) -> T:
-        return self._value  # type: narrows — always non-None for Ok
+        return cast(T, self._value)
 
 
 @final
@@ -121,7 +122,7 @@ class Err(Result[T, E]):
 
     @property
     def error(self) -> E:
-        return self._error  # type: narrows — always non-None for Err
+        return cast(E, self._error)
 
 
 # ── PaginatedResponse ────────────────────────────────────────────────────────

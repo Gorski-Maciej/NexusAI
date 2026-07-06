@@ -22,7 +22,7 @@ import anyio
 import pendulum
 from structlog import get_logger
 
-from nexus_ai.agents.base import BaseAgent
+from nexus_ai.agents.base import BaseAgent, _SupportsKnowledgeMesh
 from nexus_ai.agents.models import AnalyticsQuery, AnalyticsResult, make_context
 from nexus_ai.agents.topics import AgentTopic
 from nexus_ai.core.inference import ModelManager
@@ -45,7 +45,7 @@ class AgentAnalytics(BaseAgent):
         self,
         model_manager: ModelManager | None = None,
         config: dict[str, Any] | None = None,
-        knowledge_mesh: Any = None,
+        knowledge_mesh: _SupportsKnowledgeMesh | None = None,
     ) -> None:
         super().__init__(
             name="analytics",
@@ -254,7 +254,8 @@ Dane: {data_str}
 Brief:"""
         try:
             return await self.infer(model_path, prompt, max_tokens=200, temperature=0.2)
-        except Exception:
+        except Exception as exc:
+            logger.debug("[ANALYTICS] NL brief generation failed: %s", exc)
             return f"Dane: {data_str}"
 
     # ── Anomaly Detection (Enterprise) ────────────────────────────
@@ -531,7 +532,8 @@ Brief:"""
                     col_str = ", ".join(f"{c[0]} {c[1]}" for c in cols[:20])
                     schema_parts.append(f"{tname}({col_str})")
                 schema_context = "Schemat bazy:\n" + "\n".join(schema_parts)
-            except Exception:
+            except Exception as exc:
+                logger.debug("[ANALYTICS] Schema fetch failed: %s", exc)
                 pass
 
         prompt = f"""Jesteś ekspertem SQL. Na podstawie schematu bazy danych i pytania, wygeneruj zapytanie SQL.
@@ -560,7 +562,7 @@ Zwróć WYŁĄCZNIE zapytanie SQL, bez komentarzy:"""
                 result = self._duckdb.execute(sql)
             columns = [desc[0] for desc in result.description] if result.description else []
             rows = result.fetchall()
-            return [dict(zip(columns, row)) for row in rows]
+            return [dict(zip(columns, row, strict=True)) for row in rows]
 
         return await anyio.to_thread.run_sync(_sync_query)
 

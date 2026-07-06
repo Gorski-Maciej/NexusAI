@@ -20,12 +20,66 @@ from __future__ import annotations
 import hashlib
 import json
 import uuid
-from typing import Any
+from typing import Any, Protocol
 
 import anyio
 import pendulum
 from msgspec import json as msgspec_json
 from structlog import get_logger
+
+
+# ── Protocols for duck-typed dependencies ─────────────────────────────────
+class _SupportsInfer(Protocol):
+    """Protocol for objects with infer/chat methods (ModelManager, etc.)."""
+    loaded_models: int
+    def get_or_create(self, model_path: str, **kwargs: object) -> object: ...
+    def infer(self, model_path: str, prompt: str, **kwargs: object) -> object: ...
+    def chat(self, model_path: str, messages: list[dict[str, str]], **kwargs: object) -> object: ...
+    def unload_all(self) -> None: ...
+
+
+class _SupportsGetSet(Protocol):
+    """Protocol for key-value stores (dyscache, sqlite-vec)."""
+    def get(self, key: str) -> object | None: ...
+    def set(self, key: str, value: object, ttl: int | None = None) -> None: ...
+    def close(self) -> None: ...
+    def execute(self, sql: str, params: object | None = None) -> object: ...
+    def commit(self) -> None: ...
+
+
+class _SupportsKnowledgeMesh(Protocol):
+    """Protocol for Agent Knowledge Mesh (GENIALNY POMYSŁ v5.3)."""
+    is_initialized: bool
+    async def initialize(self) -> None: ...
+    async def route(self, *, vendor_nip: str, amount: float, category: str) -> object: ...
+    async def update_trust(self, *, vendor_nip: str, correct: bool, agent_name: str, category: str, amount: float) -> None: ...
+    async def share_experience(self, *, event_type: str, source_agent: str, vendor_nip: str, category: str, amount: float, details: dict[str, object] | None = None) -> None: ...
+    def get_stats(self) -> dict[str, object]: ...
+    async def close(self) -> None: ...
+
+
+class _SupportsDuckDB(Protocol):
+    """Protocol for DuckDB manager (analytics, cashflow, materialized views)."""
+    def execute(self, sql: str, params: object | None = None) -> object: ...
+    def refresh_materialized_cashflow(self) -> None: ...
+    def close(self) -> None: ...
+
+
+class _SupportsDecisionLogger(Protocol):
+    """Protocol for DecisionLogger service (audit trail, trust trends)."""
+    async def log_decision(self, *, invoice_id: str, decision: str, amount_gross: float, ai_trust_score: float, agent_name: str) -> None: ...
+    async def record_correction(self, *, invoice_id: str, original_decision: str, corrected_decision: str, correction_reason: str) -> None: ...
+    async def get_trust_score_trend(self, *, days: int = 30) -> object: ...
+
+
+class _SupportsNotificationManager(Protocol):
+    """Protocol for notification dispatching (email, SMS, in-app)."""
+    def send(self, *, user_id: str, title: str, message: str, category: str, source_agent: str, reference_type: str | None = None, reference_id: str | None = None, requires_action: bool = False, expires_in_hours: int = 72) -> str: ...
+
+
+class _SupportsEventLog(Protocol):
+    """Protocol for event logging (audit, analytics)."""
+    def log(self, *, event_type: str, source: str, description: str, user_id: str, metadata: dict[str, object] | None = None, severity: str = "info") -> None: ...
 
 from nexus_ai.agents.models import (
     AgentContext,
@@ -67,8 +121,8 @@ class DecisionCache:
 
     def __init__(self, cache_dir: str = "/tmp/nexus-decision-cache") -> None:
         self._cache_dir = cache_dir
-        self._dyscache: Any = None
-        self._sqlite_vec: Any = None
+        self._dyscache: _SupportsGetSet | None = None
+        self._sqlite_vec: _SupportsGetSet | None = None
         self._initialized = False
         self._logger = get_logger("nexus.agents.cache")
 
@@ -105,22 +159,22 @@ class DecisionCache:
 
         self._initialized = True
 
-    async def get(self, key: str) -> Any | None:
+    async def get(self, key: str) -> object | None:
         """Pobierz decyzję z cache (L1 RAM → L2 SQLite)."""
         if self._dyscache:
             try:
                 return await self._dyscache.get(key)
-            except Exception:
-                pass
+            except Exception as exc:
+                self._logger.debug("[CACHE] dyscache get failed: %s", exc)
         return None
 
-    async def set(self, key: str, value: Any, expire: int = 86400) -> None:
+    async def set(self, key: str, value: object, expire: int = 86400) -> None:
         """Zapisz decyzję w cache (L1 RAM + L2 SQLite, domyślnie 24h)."""
         if self._dyscache:
             try:
                 await self._dyscache.set(key, value, ttl=expire)
-            except Exception:
-                pass
+            except Exception as exc:
+                self._logger.debug("[CACHE] dyscache set failed: %s", exc)
 
     async def find_similar(
         self,
@@ -427,7 +481,7 @@ class ContinuousLearningProvider:
         scored = []
         for block in blocks:
             if block.correction_embedding:
-                dot = sum(a * b for a, b in zip(embedding, block.correction_embedding))
+                dot = sum(a * b for a, b in zip(embedding, block.correction_embedding, strict=True))
                 norm_a = sum(a * a for a in embedding) ** 0.5
                 norm_b = sum(b * b for b in block.correction_embedding) ** 0.5
                 sim = dot / (norm_a * norm_b + 1e-9)
@@ -528,9 +582,9 @@ class BaseAgent:
     def __init__(
         self,
         name: str,
-        model_manager: Any = None,
+        model_manager: _SupportsInfer | None = None,
         config: dict[str, Any] | None = None,
-        knowledge_mesh: Any = None,
+        knowledge_mesh: _SupportsKnowledgeMesh | None = None,
     ) -> None:
         self.name = name
         self._model_manager = model_manager
@@ -620,7 +674,7 @@ class BaseAgent:
         return self._decision_mode
 
     @property
-    def mesh(self) -> Any:
+    def mesh(self) -> _SupportsKnowledgeMesh | None:
         """Dostęp do Agent Knowledge Mesh (GENIALNY POMYSŁ v5.3).
 
         Współdzielony między wszystkimi agentami.
@@ -631,7 +685,7 @@ class BaseAgent:
         """
         return self._knowledge_mesh
 
-    def set_mesh(self, mesh: Any) -> None:
+    def set_mesh(self, mesh: _SupportsKnowledgeMesh) -> None:
         """Ustaw współdzielony Knowledge Mesh dla agenta."""
         self._knowledge_mesh = mesh
 

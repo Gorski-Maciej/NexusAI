@@ -13,7 +13,7 @@ Każde zadanie jest uruchamiane przez PullBasedJetStreamBroker (NATS).
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Protocol, cast
 
 from structlog import get_logger
 from taskiq import TaskiqDepends
@@ -23,15 +23,17 @@ from nexus_ai.agents.orchestrator import AgentOrchestrator
 from nexus_ai.agents.extraction import AgentDataExtraction
 from nexus_ai.agents.analytics import AgentAnalytics
 from nexus_ai.agents.quality_validator import AgentQualityValidator
-from nexus_ai.agents.proactive_workflow import (
-    ProactiveWorkflowScheduler,
-    WorkflowExecution,
-    WorkflowType,
-)
+from nexus_ai.agents.proactive_workflow import WorkflowType
 from nexus_ai.core.broker import broker
+from nexus_ai.core.config import AppConfig
 from nexus_ai.core.di import get_config
 
 logger = get_logger("nexus.agents.tasks")
+
+
+# ── Protocol for state object that holds agent references ──────────────────
+class _AgentState(Protocol):
+    agents: dict[str, object]
 
 
 # ═════════════════════════════════════════════════════════════════════════
@@ -41,7 +43,7 @@ logger = get_logger("nexus.agents.tasks")
 _agents_initialized = False
 
 
-async def ensure_agents(state: Any, config: Any | None = None) -> dict[str, Any]:
+async def ensure_agents(state: _AgentState, config: AppConfig | None = None) -> dict[str, object]:
     """Inicjalizuj 5 agentów (zgodnie z aa3fvcx.txt)."""
     global _agents_initialized
     if _agents_initialized and hasattr(state, "agents"):
@@ -101,10 +103,11 @@ async def ensure_agents(state: Any, config: Any | None = None) -> dict[str, Any]
 @broker.task(task_name="agent_orchestrator.process_invoice", labels={"agent": "orchestrator"})
 async def orchestrator_process_invoice(
     invoice_data: dict[str, Any],
-    config: Any = TaskiqDepends(get_config),
+    config: AppConfig = TaskiqDepends(get_config),
 ) -> dict[str, Any]:
     agents = await ensure_agents(broker, config)
-    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    orchestrator = cast(AgentOrchestrator, agents["orchestrator"])
+    assert isinstance(orchestrator, AgentOrchestrator), f"Expected AgentOrchestrator, got {type(orchestrator)}"
     decision = await orchestrator.process_invoice(invoice_data)
     return {
         "decision_id": decision.decision_id,
@@ -124,10 +127,11 @@ async def extraction_extract(
     invoice_id: str,
     file_path: str,
     file_type: str = "",
-    config: Any = TaskiqDepends(get_config),
+    config: AppConfig = TaskiqDepends(get_config),
 ) -> dict[str, Any]:
     agents = await ensure_agents(broker, config)
-    extraction: AgentDataExtraction = agents["extraction"]
+    extraction = cast(AgentDataExtraction, agents["extraction"])
+    assert isinstance(extraction, AgentDataExtraction), f"Expected AgentDataExtraction, got {type(extraction)}"
     request = DataExtractionRequest(
         invoice_id=invoice_id,
         file_path=file_path,
@@ -156,10 +160,11 @@ async def analytics_query(
     natural_language: str = "",
     sql_query: str = "",
     params: dict[str, Any] | None = None,
-    config: Any = TaskiqDepends(get_config),
+    config: AppConfig = TaskiqDepends(get_config),
 ) -> dict[str, Any]:
     agents = await ensure_agents(broker, config)
-    analytics: AgentAnalytics = agents["analytics"]
+    analytics = cast(AgentAnalytics, agents["analytics"])
+    assert isinstance(analytics, AgentAnalytics), f"Expected AgentAnalytics, got {type(analytics)}"
     query = AnalyticsQuery(
         query_id=query_id,
         query_type=query_type,
@@ -188,10 +193,11 @@ async def quality_validate(
     proposed_decision: dict[str, Any],
     invoice_data: dict[str, Any] | None = None,
     checks: list[str] | None = None,
-    config: Any = TaskiqDepends(get_config),
+    config: AppConfig = TaskiqDepends(get_config),
 ) -> dict[str, Any]:
     agents = await ensure_agents(broker, config)
-    quality: AgentQualityValidator = agents["quality"]
+    quality = cast(AgentQualityValidator, agents["quality"])
+    assert isinstance(quality, AgentQualityValidator), f"Expected AgentQualityValidator, got {type(quality)}"
     request = QualityCheckRequest(
         decision_id=decision_id,
         proposed_decision=proposed_decision,
@@ -214,11 +220,12 @@ async def quality_validate(
 @broker.task(task_name="agent_workflow.process_and_validate", labels={"agent": "workflow"})
 async def workflow_process_and_validate(
     invoice_data: dict[str, Any],
-    config: Any = TaskiqDepends(get_config),
+    config: AppConfig = TaskiqDepends(get_config),
 ) -> dict[str, Any]:
     """Pełny workflow: ekstrakcja → decyzja → walidacja (5 agentów)."""
     agents = await ensure_agents(broker, config)
-    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    orchestrator = cast(AgentOrchestrator, agents["orchestrator"])
+    assert isinstance(orchestrator, AgentOrchestrator), f"Expected AgentOrchestrator, got {type(orchestrator)}"
     decision = await orchestrator.process_invoice(invoice_data)
     return {
         "decision_id": decision.decision_id,
@@ -243,10 +250,11 @@ async def workflow_process_and_validate(
     timeout=120.0,
 )
 async def proactive_daily_briefing(
-    config: Any = TaskiqDepends(get_config),
+    config: AppConfig = TaskiqDepends(get_config),
 ) -> dict[str, Any]:
     agents = await ensure_agents(broker, config)
-    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    orchestrator = cast(AgentOrchestrator, agents["orchestrator"])
+    assert isinstance(orchestrator, AgentOrchestrator), f"Expected AgentOrchestrator, got {type(orchestrator)}"
     result = await orchestrator.execute_proactive_workflow(WorkflowType.DAILY_BRIEFING)
     return result
 
@@ -258,10 +266,11 @@ async def proactive_daily_briefing(
     timeout=120.0,
 )
 async def proactive_evening_summary(
-    config: Any = TaskiqDepends(get_config),
+    config: AppConfig = TaskiqDepends(get_config),
 ) -> dict[str, Any]:
     agents = await ensure_agents(broker, config)
-    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    orchestrator = cast(AgentOrchestrator, agents["orchestrator"])
+    assert isinstance(orchestrator, AgentOrchestrator), f"Expected AgentOrchestrator, got {type(orchestrator)}"
     result = await orchestrator.execute_proactive_workflow(WorkflowType.EVENING_SUMMARY)
     return result
 
@@ -273,10 +282,11 @@ async def proactive_evening_summary(
     timeout=60.0,
 )
 async def proactive_health_check(
-    config: Any = TaskiqDepends(get_config),
+    config: AppConfig = TaskiqDepends(get_config),
 ) -> dict[str, Any]:
     agents = await ensure_agents(broker, config)
-    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    orchestrator = cast(AgentOrchestrator, agents["orchestrator"])
+    assert isinstance(orchestrator, AgentOrchestrator), f"Expected AgentOrchestrator, got {type(orchestrator)}"
     result = await orchestrator.execute_proactive_workflow(WorkflowType.HEALTH_CHECK)
     return result
 
@@ -288,10 +298,11 @@ async def proactive_health_check(
     timeout=60.0,
 )
 async def proactive_resource_optimizer(
-    config: Any = TaskiqDepends(get_config),
+    config: AppConfig = TaskiqDepends(get_config),
 ) -> dict[str, Any]:
     agents = await ensure_agents(broker, config)
-    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    orchestrator = cast(AgentOrchestrator, agents["orchestrator"])
+    assert isinstance(orchestrator, AgentOrchestrator), f"Expected AgentOrchestrator, got {type(orchestrator)}"
     result = await orchestrator.execute_proactive_workflow(WorkflowType.RESOURCE_OPTIMIZER)
     return result
 
@@ -303,10 +314,11 @@ async def proactive_resource_optimizer(
     timeout=60.0,
 )
 async def proactive_tax_deadline_alert(
-    config: Any = TaskiqDepends(get_config),
+    config: AppConfig = TaskiqDepends(get_config),
 ) -> dict[str, Any]:
     agents = await ensure_agents(broker, config)
-    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    orchestrator = cast(AgentOrchestrator, agents["orchestrator"])
+    assert isinstance(orchestrator, AgentOrchestrator), f"Expected AgentOrchestrator, got {type(orchestrator)}"
     result = await orchestrator.execute_proactive_workflow(WorkflowType.TAX_DEADLINE_ALERT)
     return result
 
@@ -318,10 +330,11 @@ async def proactive_tax_deadline_alert(
     timeout=180.0,
 )
 async def proactive_weekly_report(
-    config: Any = TaskiqDepends(get_config),
+    config: AppConfig = TaskiqDepends(get_config),
 ) -> dict[str, Any]:
     agents = await ensure_agents(broker, config)
-    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    orchestrator = cast(AgentOrchestrator, agents["orchestrator"])
+    assert isinstance(orchestrator, AgentOrchestrator), f"Expected AgentOrchestrator, got {type(orchestrator)}"
     result = await orchestrator.execute_proactive_workflow(WorkflowType.WEEKLY_REPORT)
     return result
 
@@ -333,10 +346,11 @@ async def proactive_weekly_report(
     timeout=60.0,
 )
 async def proactive_tax_calendar(
-    config: Any = TaskiqDepends(get_config),
+    config: AppConfig = TaskiqDepends(get_config),
 ) -> dict[str, Any]:
     agents = await ensure_agents(broker, config)
-    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    orchestrator = cast(AgentOrchestrator, agents["orchestrator"])
+    assert isinstance(orchestrator, AgentOrchestrator), f"Expected AgentOrchestrator, got {type(orchestrator)}"
     result = await orchestrator.execute_proactive_workflow(WorkflowType.TAX_CALENDAR)
     return result
 
@@ -348,10 +362,11 @@ async def proactive_tax_calendar(
     timeout=300.0,
 )
 async def proactive_monthly_closing(
-    config: Any = TaskiqDepends(get_config),
+    config: AppConfig = TaskiqDepends(get_config),
 ) -> dict[str, Any]:
     agents = await ensure_agents(broker, config)
-    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    orchestrator = cast(AgentOrchestrator, agents["orchestrator"])
+    assert isinstance(orchestrator, AgentOrchestrator), f"Expected AgentOrchestrator, got {type(orchestrator)}"
     result = await orchestrator.execute_proactive_workflow(WorkflowType.MONTHLY_CLOSING)
     return result
 
@@ -363,11 +378,12 @@ async def proactive_monthly_closing(
     timeout=60.0,
 )
 async def proactive_decision_feed_refresh(
-    config: Any = TaskiqDepends(get_config),
+    config: AppConfig = TaskiqDepends(get_config),
 ) -> dict[str, Any]:
     """Co 30 minut: buduje ActionCardFeed i publikuje na ui.feed.pending."""
     agents = await ensure_agents(broker, config)
-    orchestrator: AgentOrchestrator = agents["orchestrator"]
+    orchestrator = cast(AgentOrchestrator, agents["orchestrator"])
+    assert isinstance(orchestrator, AgentOrchestrator), f"Expected AgentOrchestrator, got {type(orchestrator)}"
     result = await orchestrator.execute_proactive_workflow(WorkflowType.DECISION_FEED_REFRESH)
     return result
 

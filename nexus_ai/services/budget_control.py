@@ -14,6 +14,7 @@ import anyio
 import pendulum
 from msgspec import Struct
 
+from nexus_ai.agents.base import _SupportsDuckDB
 from nexus_ai.services.tigerbeetle.client import TigerBeetleClient
 
 
@@ -40,7 +41,7 @@ class BudgetaryControlEngine:
 
 
     def __init__(
-        self, duckdb_manager: Any, tb_client: TigerBeetleClient, account_map: dict[str, int]
+        self, duckdb_manager: _SupportsDuckDB, tb_client: TigerBeetleClient, account_map: dict[str, int]
     ) -> None:
         self.duckdb = duckdb_manager
         self.tb_client = tb_client

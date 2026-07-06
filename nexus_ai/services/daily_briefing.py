@@ -21,6 +21,7 @@ import pendulum
 from msgspec import Struct, field
 from structlog import get_logger
 
+from nexus_ai.agents.base import _SupportsDecisionLogger, _SupportsDuckDB
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 
@@ -86,8 +87,8 @@ class DailyBriefingService:
         self,
         config: AppConfig | None = None,
         notification_service: Any = None,
-        decision_logger: Any = None,
-        duckdb_manager: Any = None,
+        decision_logger: _SupportsDecisionLogger | None = None,
+        duckdb_manager: _SupportsDuckDB | None = None,
     ) -> None:
         self._config = config or AppConfig()
         self._notification = notification_service

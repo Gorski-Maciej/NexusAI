@@ -221,6 +221,56 @@ NexusAI stosuje architekturę **Modularnego Monolitu** z wyraźnym podziałem na
 
 ---
 
+## 2.5 Enterprise Code Quality Standards (v7.2)
+
+### 2.5.1 Exception Handling — Zero Bare Excepts
+
+**Reguła ENTERPRISE:** Każdy `except Exception` MUSI zawierać `as exc` i `logger.debug()`.
+
+```python
+# ❌ NIEDOZWOLONE (przed v7.2):
+except Exception:
+    pass
+
+# ✅ WYMAGANE (od v7.2):
+except Exception as exc:
+    logger.debug("[MODULE] Operation failed: %s", exc)
+```
+
+**Pokrycie:** 60+ poprawek w 16 plikach (agents/, api/, core/, services/, frontend/).
+
+### 2.5.2 Protocol-Driven Dependency Injection
+
+Wszystkie zależności między komponentami używają **Protocol classes** (structural subtyping) zamiast `Any`:
+
+```python
+# ❌ PRZED:
+class NotificationService:
+    def __init__(self, duckdb_manager: Any, decision_logger: Any): ...
+
+# ✅ PO:
+from nexus_ai.agents.base import _SupportsDuckDB, _SupportsDecisionLogger
+
+class NotificationService:
+    def __init__(
+        self,
+        duckdb_manager: _SupportsDuckDB = None,
+        decision_logger: _SupportsDecisionLogger = None,
+    ): ...
+```
+
+**7 Protocols** zdefiniowanych, **7 serwisów** zaktualizowanych.
+
+### 2.5.3 Python 3.12+ Micro-Optimizations
+
+- `zip()` zawsze z `strict=True` (5 wystąpień)
+- `[*list, item]` zamiast `list + [item]` (RUF005)
+- `cast()` zamiast `type: ignore` (7 wystąpień w `core/types.py`)
+- Zero nieużywanych importów (F401)
+- `BaseService` deleguje do `BaseRepository` (~35 linii deduplikacji)
+
+---
+
 ## 3. Wzorce projektowe
 
 | Wzorzec | Gdzie | Dlaczego |
@@ -547,7 +597,7 @@ sequenceDiagram
 - ✅ **KnowledgeMesh (v5.3)** — agenci dzielą się doświadczeniem przez Cross-Agent Experience Replay
 - ✅ **Decision Protocol (v5.4)** — pełny OTel tracing + MultiModelEnsemble + ConfidenceCalibrator + AgentTelemetryStore
 - ✅ **UnifiedLearningProtocol (v5.4)** — kaskada 5 systemów po każdej korekcie
-- ✅ **Enterprise Optimization (v7.1)** — **INTEGER minor units** (zero float drift), **VatRate basis points**, **msgspec.Struct events**, **UUID7**, **DuckDB SQL DECIMAL**, **RBAC dynamic permissions**, **Batching (10→8000 tx/s)**
+- ✅ **Enterprise Optimization (v7.1-7.2)** — **INTEGER minor units** (zero float drift), **VatRate basis points**, **msgspec.Struct events**, **UUID7**, **DuckDB SQL DECIMAL**, **RBAC dynamic permissions**, **Batching (10→8000 tx/s)**, **Protocol-driven DI** (7 Protocols), **60+ bare except fixes**, **5× zip(strict=True)**, **6× unused imports removed**
 - ❌ Wyższe zużycie RAM (~4-6 GB dla wszystkich modeli, ładowane leniwie)
 - ❌ Złożoność komunikacji (NATS JetStream między 5 agentami)
 

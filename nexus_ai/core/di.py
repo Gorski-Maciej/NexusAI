@@ -7,7 +7,8 @@ import os
 import warnings
 from collections.abc import AsyncGenerator
 from dataclasses import dataclass, field
-from typing import Any
+from collections.abc import Callable
+from typing import Any, Protocol, cast
 
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
@@ -23,6 +24,15 @@ from nexus_ai.db.database import create_oltp_engine, create_session_factory
 from nexus_ai.events import EventStore, JetStreamEventBus
 
 logger = get_logger("nexus.core.di")
+
+
+# ── Protocol for lazy-loaded modules ──────────────────────────────────────
+class _SupportsGetAttr(Protocol):
+    def __getattr__(self, name: str) -> object: ...
+
+
+class _TaskiqBroker(Protocol):
+    def task(self, *args: Any, **kwargs: Any) -> Any: ...
 
 
 # ── Thread-local engine cache dla free-threaded Python 3.13t ──────────────
@@ -101,7 +111,7 @@ async def get_db_session(engine: Engine | None = None) -> AsyncGenerator[Session
         session.close()
 
 
-async def get_duckdb_manager(config: AppConfig | None = None) -> AsyncGenerator[Any]:
+async def get_duckdb_manager(config: AppConfig | None = None) -> AsyncGenerator[object]:
     """Zwraca DuckDBManager (scoped per task).
 
     Usage:
@@ -146,27 +156,26 @@ async def dispose_all_engines() -> None:
 # =========================================================================
 
 class LazyImport:
-    """Lazy import z opóźnionym ładowaniem."""
+    """Lazy import z opóźnionym ładowaniem i poprawnymi typami."""
     __slots__ = ("_module", "_name", "_mod")
 
     def __init__(self, module: str, name: str | None = None) -> None:
         self._module = module
         self._name = name
-        self._mod: Any = None
+        self._mod: _SupportsGetAttr | None = None
 
-    def __getattr__(self, attr: str) -> Any:
+    def __getattr__(self, attr: str) -> object:
         if self._mod is None:
-            self._mod = importlib.import_module(self._module)
+            self._mod = cast(_SupportsGetAttr, importlib.import_module(self._module))
         if self._name:
-            return getattr(self._mod, self._name)
+            return getattr(importlib.import_module(self._module), self._name)
         return getattr(self._mod, attr)
 
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        if self._mod is None:
-            self._mod = importlib.import_module(self._module)
+    def __call__(self, *args: object, **kwargs: object) -> object:
+        mod = importlib.import_module(self._module)
         if self._name:
-            return getattr(self._mod, self._name)(*args, **kwargs)
-        return self._mod(*args, **kwargs)
+            return cast(Callable[..., object], getattr(mod, self._name))(*args, **kwargs)
+        return cast(Callable[..., object], mod)(*args, **kwargs)
 
 
 @dataclass
@@ -174,9 +183,9 @@ class AppServices:
     """Centralny rejestr serwisów dla NexusaAI."""
     __slots__ = ()
     config: AppConfig = field(default_factory=AppConfig)
-    engine: Any = None
-    session_factory: Any = None
-    _services: dict[str, Any] = field(default_factory=dict)
+    engine: Engine | None = None
+    session_factory: sessionmaker[Session] | None = None
+    _services: dict[str, object] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.engine is None:
@@ -184,12 +193,12 @@ class AppServices:
         if self.session_factory is None:
             self.session_factory = create_session_factory(self.engine)
 
-    def get(self, name: str) -> Any:
+    def get(self, name: str) -> object:
         if name not in self._services:
             self._services[name] = self._create(name)
         return self._services[name]
 
-    def _create(self, name: str) -> Any:
+    def _create(self, name: str) -> object:
         match name:
             case "decision_engine":
                 return DecisionEngine(self.config)
@@ -207,28 +216,28 @@ class AppServices:
                 raise KeyError(f"Unknown service: {name}")
 
     @property
-    def decision_engine(self) -> Any:
+    def decision_engine(self) -> object:
         return self.get("decision_engine")
 
     @property
-    def duckdb_manager(self) -> Any:
+    def duckdb_manager(self) -> object:
         return self.get("duckdb_manager")
 
     @property
-    def event_store(self) -> Any:
+    def event_store(self) -> object:
         return self.get("event_store")
 
     @property
-    def jetstream_bus(self) -> Any:
+    def jetstream_bus(self) -> object:
         return self.get("jetstream_bus")
 
     @property
-    def model_manager(self) -> Any:
+    def model_manager(self) -> object:
         return self.get("model_manager")
 
     @property
-    def broker(self) -> Any:
-        return self.get("broker")
+    def broker(self) -> _TaskiqBroker:
+        return cast(_TaskiqBroker, self.get("broker"))
 
 
 def create_app_services(config: AppConfig | None = None) -> AppServices:

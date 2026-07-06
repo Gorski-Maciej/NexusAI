@@ -487,8 +487,8 @@ class ShadowSimulator:
                         hist.get("depreciation_method", "linear"),
                         int(hist.get("depreciation_years", 5)),
                     ])
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.debug("[SHADOW] Historical data insert skipped: %s", exc)
 
     # ── Zapytania symulacyjne ──────────────────────────────────────
 

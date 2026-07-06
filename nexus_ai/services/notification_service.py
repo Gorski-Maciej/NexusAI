@@ -13,6 +13,7 @@ import anyio
 import pendulum
 from structlog import get_logger
 
+from nexus_ai.agents.base import _SupportsDecisionLogger, _SupportsDuckDB
 from nexus_ai.core.broker import broker
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps
@@ -34,8 +35,8 @@ class DailyBriefingGenerator:
     def __init__(
         self,
         config: AppConfig | None = None,
-        duckdb_manager: Any = None,
-        decision_logger: Any = None,
+        duckdb_manager: _SupportsDuckDB | None = None,
+        decision_logger: _SupportsDecisionLogger | None = None,
     ) -> None:
         self._config = config or AppConfig()
         self._duckdb = duckdb_manager

@@ -19,6 +19,7 @@ from sqlalchemy import Engine
 from sqlmodel import text
 from structlog import get_logger
 
+from nexus_ai.agents.base import _SupportsDuckDB
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
 
 logger = get_logger("nexus.services.event_log")
@@ -48,7 +49,7 @@ class EventLog:
     def __init__(
         self,
         engine: Engine,
-        duckdb_manager: Any = None,
+        duckdb_manager: _SupportsDuckDB | None = None,
     ) -> None:
         self._engine = engine
         self._duckdb = duckdb_manager

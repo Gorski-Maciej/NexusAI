@@ -23,14 +23,11 @@ Technologie — wyłącznie z RAPORT_TECHNOLOGII_NEXUSAI.txt:
 from __future__ import annotations
 
 import hashlib
-import json
 from typing import Any
 
 import pendulum
 from msgspec import Struct, field
 from structlog import get_logger
-
-from nexus_ai.agents.models import DecisionMode, FeedbackType
 
 logger = get_logger("nexus.agents.error_handbook")
 
@@ -343,7 +340,7 @@ class DynamicErrorHandbook:
                 sql += f"WHERE {where_clause} "
             sql += "ORDER BY timestamp DESC LIMIT ?"
 
-            bind_params = list(params or ()) + [limit]
+            bind_params = [*list(params or ()), limit]
             rows = await anyio.to_thread.run_sync(
                 lambda: self._conn.execute(sql, bind_params).fetchall()  # type: ignore[union-attr]
             )
@@ -389,8 +386,8 @@ class DynamicErrorHandbook:
             if rows:
                 ex_id = str(rows[0][0])
                 return self._examples.get(ex_id)
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("[HANDBOOK] Find existing failed: %s", exc)
         return None
 
     async def _increment_count(self, example_id: str) -> None:
@@ -491,7 +488,7 @@ class DynamicErrorHandbook:
         scored = []
         for ex in self._examples.values():
             if ex.embedding and len(ex.embedding) == len(embedding):
-                dot = sum(a * b for a, b in zip(embedding, ex.embedding))
+                dot = sum(a * b for a, b in zip(embedding, ex.embedding, strict=True))
                 norm_a = sum(a * a for a in embedding) ** 0.5
                 norm_b = sum(b * b for b in ex.embedding) ** 0.5
                 sim = dot / (norm_a * norm_b + 1e-9)
@@ -509,8 +506,8 @@ class DynamicErrorHandbook:
                     "SELECT COUNT(*) FROM error_handbook"
                 ).fetchone()
                 return int(result[0]) if result else 0
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[HANDBOOK] Count failed: %s", exc)
         return len(self._examples)
 
     async def close(self) -> None:
@@ -519,8 +516,8 @@ class DynamicErrorHandbook:
             try:
                 import anyio
                 await anyio.to_thread.run_sync(self._conn.close)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[HANDBOOK] Close failed: %s", exc)
             self._conn = None
 
 

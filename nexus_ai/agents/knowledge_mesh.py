@@ -359,8 +359,8 @@ class CollectiveBayesianField:
                     "SELECT COUNT(*) FROM mesh_bayesian_field"
                 ).fetchone()
                 return int(row[0]) if row else 0
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[MESH] Bayesian count failed: %s", exc)
         return len(self._cache)
 
     async def close(self) -> None:
@@ -368,8 +368,8 @@ class CollectiveBayesianField:
         if self._conn:
             try:
                 await anyio.to_thread.run_sync(self._conn.close)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[MESH] Bayesian close failed: %s", exc)
             self._conn = None
 
 
@@ -732,8 +732,8 @@ class CrossAgentExperienceReplay:
                     "SELECT COUNT(*) FROM mesh_experience_replay"
                 ).fetchone()
                 return int(row[0]) if row else 0
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[MESH] Experience count failed: %s", exc)
         return len(self._rules)
 
     async def close(self) -> None:
@@ -741,8 +741,8 @@ class CrossAgentExperienceReplay:
         if self._conn:
             try:
                 await anyio.to_thread.run_sync(self._conn.close)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[MESH] Experience close failed: %s", exc)
             self._conn = None
 
 

@@ -33,6 +33,9 @@ from msgspec import Struct
 from sqlmodel import text
 
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads
+from structlog import get_logger
+
+logger = get_logger("nexus.api.services")
 
 
 def _load_fsspec_module():
@@ -95,8 +98,8 @@ class FileValidator:
             kind = filetype.guess(content)
             if kind is not None:
                 return kind.mime
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("[FILE-VALIDATOR] filetype detection failed: %s", exc)
         # Fallback: manual magic bytes
         if content[:5] == b"%PDF-":
             return "application/pdf"
@@ -193,8 +196,8 @@ class _FsspecFS:
     def remove(self, path: _SyncPath) -> None:
         try:
             self.fs.rm(str(path))
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("[STORAGE] fsspec remove failed: %s", exc)
 
 
 class ContentAddressableStorage:
@@ -256,8 +259,8 @@ class ContentAddressableStorage:
                 content, max_size=(2048, 2048), quality=80, apply_autocontrast=False
             )
             file_path.with_suffix(".jpg").write_bytes(jpeg_bytes)
-        except Exception:
-            return
+        except Exception as exc:
+            logger.debug("[STORAGE] JPEG conversion failed: %s", exc)
 
 
 class CursorPagination:
@@ -278,7 +281,8 @@ class CursorPagination:
             if len(parts) != 2:
                 return None
             return parts[0], int(parts[1])
-        except Exception:
+        except Exception as exc:
+            logger.debug("[PAGINATION] Cursor decode failed: %s", exc)
             return None
 
     @staticmethod

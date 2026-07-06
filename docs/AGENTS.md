@@ -1,8 +1,6 @@
 # 🤖 System Agentów AI NexusAI — Specyfikacja Enterprise (v6.0)
 
-> **"Autonomiczne Biuro Księgowe — 5 Agentów, 13 Modeli, Silent Partner v6.0"**
-
-> **"Autonomiczne Biuro Księgowe — 5 Agentów, 13 Modeli, Decision Protocol v5.4"**
+> **"Autonomiczne Biuro Księgowe — 5 Agentów, 13 Modeli, Silent Partner v6.0, Enterprise Optimization v2.0"**
 >
 > **Cel:** Umożliwić developerowi zrozumienie pełnego systemu agentów AI w 15 minut.
 > **Kiedy czytać:** Przed implementacją nowego agenta, debugowaniem decyzji, lub dodawaniem modelu AI.
@@ -531,6 +529,69 @@ O -->|TigerBeetle| TB[Księga główna]
 | **Platt Scaling** | Kalibracja Trust Score (ConfidenceCalibrator v5.4) |
 | **dyscache** | Dwupoziomowy cache L1 (RAM) + L2 (SQLite) — zastąpił diskcache w DecisionCache |
 
+### 1.8 Enterprise Optimization v2.0 — Type Safety & Code Hygiene
+
+**Data:** 2026-07-06  
+
+W ramach kompleksowego audytu kodu ENTERPRISE wdrożono następujące usprawnienia:
+
+#### 1.8.1 Protocol-Driven Dependency Injection
+
+Zamiast `Any` w sygnaturach konstruktorów, wszystkie zależności między agentami a serwisami są teraz typowane przez **Protocol classes**:
+
+```python
+# PRZED (Any — brak type safety):
+class NotificationService:
+    def __init__(self, duckdb_manager: Any, decision_logger: Any): ...
+
+# PO (Protocol — pełne type safety):
+from nexus_ai.agents.base import _SupportsDuckDB, _SupportsDecisionLogger
+
+class NotificationService:
+    def __init__(
+        self,
+        duckdb_manager: _SupportsDuckDB = None,
+        decision_logger: _SupportsDecisionLogger = None,
+    ): ...
+```
+
+**7 Protocol classes** zdefiniowanych w `agents/base.py`:
+- `_SupportsDuckDB` — execute, refresh_materialized_cashflow, close
+- `_SupportsDecisionLogger` — log_decision, record_correction, get_trust_score_trend
+- `_SupportsNotificationManager` — send (email/SMS/in-app)
+- `_SupportsEventLog` — log (audit/analytics)
+- `_SupportsInfer` — get_or_create, infer, chat, unload_all (ModelManager)
+- `_SupportsGetSet` — get, set, close, execute, commit (dyscache/sqlite-vec)
+- `_SupportsKnowledgeMesh` — initialize, route, update_trust, share_experience, get_stats, close
+
+**7 serwisów** zaktualizowanych: `notification_service`, `scheduler`, `daily_briefing`, `event_log`, `dunning_engine`, `budget_control`, `vat_reconciliation`.
+
+#### 1.8.2 Bare except Exception — Enterprise Hygiene
+
+**60+ bare `except Exception:`** zastąpionych przez `except Exception as exc:` z `logger.debug()` we wszystkich plikach agentów, API, serwisów i core:
+
+- **agents/** — `knowledge_mesh.py` (8), `telemetry_store.py` (7), `error_handbook.py` (4), `proactive_workflow.py` (5), `extraction.py` (2), `analytics.py` (2), `quality_validator.py` (1), `base.py` (2)
+- **api/** — `state.py` (7), `services.py` (3)
+- **core/** — `nats_utils.py` (11), `taskiq.py` (4)
+- **services/** — `shadow_simulator.py` (1)
+- **frontend/** — `api_client.py` (4)
+
+#### 1.8.3 Mikro-optymalizacje Python 3.12+
+
+- **`zip()`** — 5× dodane `strict=True` dla wczesnego wykrywania błędów długości
+- **RUF005** — `list + [item]` → `[*list, item]` dla lepszej wydajności
+- **F401** — 6 nieużywanych importów usuniętych
+- **`type: ignore`** — 7× zastąpione przez `cast()` w `core/types.py`
+- **Deduplikacja** — `BaseService` deleguje `count`/`exists`/`paginate` do `BaseRepository`
+- **Dead `pass`** — usunięte redundantne `pass` po `logger.debug()` w 10+ miejscach
+
+#### 1.8.4 Krytyczne bugi naprawione
+
+- **`extraction.py`** — złączone importy `get_loggerfrom` → rozbite na dwie linie
+- **`api/services.py`** — brakujący `logger` (dodany import + definicja)
+- **`error_handbook.py`** — `except` na złym wcięciu w `_increment_count` (IndentationError)
+- **`proactive_workflow.py`** — `except` sklejony z `return True` w `was_executed_recently`
+
 ---
 
 ## 2. Pięciu agentów AI — katalog
@@ -710,5 +771,5 @@ Po 10 korektach tego samego typu → automatyczna aktualizacja reguł OPA/Rego.
 
 ---
 
-> **Ostatnia aktualizacja:** 2026-07-06 · **Wersja:** 6.0.0-draft — "Silent Partner — Cichy Wspólnik"
+> **Ostatnia aktualizacja:** 2026-07-06 · **Wersja:** 6.0.0-draft — "Silent Partner — Cichy Wspólnik + Enterprise Optimization v2.0"
 > **Podstawa:** `docs/aa3fvcx.txt` + `RAPORT_TECHNOLOGII_NEXUSAI.txt` + `docs/GENIALNY_POMYSL_v6_SILENT_PARTNER.md`

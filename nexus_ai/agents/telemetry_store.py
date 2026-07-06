@@ -31,7 +31,6 @@ import uuid
 from typing import Any
 
 import anyio
-import pendulum
 from structlog import get_logger
 
 logger = get_logger("nexus.agents.telemetry")
@@ -166,8 +165,8 @@ class AgentTelemetryStore:
                         f"CREATE INDEX IF NOT EXISTS idx_td_{idx_col} "
                         f"ON telemetry_decisions({idx_col})"
                     )
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.debug("[TELEMETRY] Index creation failed for %s: %s", idx_col, exc)
 
             self._initialized = True
             logger.info(
@@ -420,7 +419,7 @@ class AgentTelemetryStore:
                 lambda: self._conn.execute(sql, params).fetchall()
             )
             columns = [desc[0] for desc in self._conn.description]
-            return [dict(zip(columns, row)) for row in rows]
+            return [dict(zip(columns, row, strict=True)) for row in rows]
         except Exception as exc:
             logger.debug("[TELEMETRY] Query failed: %s", exc)
             return []
@@ -449,7 +448,7 @@ class AgentTelemetryStore:
                 lambda: self._conn.execute(sql, params).fetchall()
             )
             columns = [desc[0] for desc in self._conn.description]
-            return [dict(zip(columns, row)) for row in rows]
+            return [dict(zip(columns, row, strict=True)) for row in rows]
         except Exception as exc:
             logger.debug("[TELEMETRY] Query corrections failed: %s", exc)
             return []
@@ -588,8 +587,8 @@ class AgentTelemetryStore:
                     "SELECT COUNT(*) FROM telemetry_decisions"
                 ).fetchone()
                 return int(row[0]) if row else 0
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[TELEMETRY] Count decisions failed: %s", exc)
         return 0
 
     @property
@@ -600,8 +599,8 @@ class AgentTelemetryStore:
                     "SELECT COUNT(*) FROM telemetry_corrections"
                 ).fetchone()
                 return int(row[0]) if row else 0
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[TELEMETRY] Count corrections failed: %s", exc)
         return 0
 
     async def close(self) -> None:
@@ -609,8 +608,8 @@ class AgentTelemetryStore:
         if self._conn:
             try:
                 await anyio.to_thread.run_sync(self._conn.close)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[TELEMETRY] Close failed: %s", exc)
             self._conn = None
             self._initialized = False
 
