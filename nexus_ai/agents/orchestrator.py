@@ -1557,6 +1557,87 @@ Czy ta decyzja jest poprawna? Odpowiedz TAK lub NIE i uzasadnij."""
         """
         return await self._card_generator.generate_card_from_decision(decision)
 
+    async def generate_financial_impact_card(
+        self,
+        decision: AgentDecision,
+        document_type: str = "INVOICE",
+    ) -> ActionCard:
+        """Generuj Financial Impact Card — GENIALNY POMYSŁ v7.0.
+
+        Pełny pipeline: Shadow Simulator → Financial Options → ActionCard.
+        Przyciski pokazują KWOTY i STRATEGIĘ, nie metody księgowe.
+
+        Args:
+            decision: Pełna decyzja agenta.
+            document_type: Typ dokumentu.
+
+        Returns:
+            ActionCard z opcjami wyrażonymi w PLN i strategii.
+        """
+        details = decision.verdict.details if hasattr(decision.verdict, 'details') else {}
+        extracted = details.get("extracted_data", {}) if isinstance(details, dict) else {}
+        invoice_data = dict(extracted) if extracted else {}
+        invoice_data.setdefault("amount_gross", 0)
+
+        # 1. Shadow Simulation — znajdź wszystkie warianty i ich skutki
+        report = await self.simulate_financial_impact(
+            invoice_data=invoice_data,
+            vendor_is_trusted=(decision.verdict.trust_score >= 0.85),
+        )
+
+        # 2. Konwertuj wyniki symulacji na FinancialImpactOption
+        financial_options = self.simulation_to_financial_options(report, decision)
+
+        # 3. Wygeneruj agent_hint na podstawie profilu decyzyjnego
+        strategy = self._decision_profile.strategy_profile.get_strategy_for_quarter()
+        strategy_hint = ""
+        if strategy:
+            hints = {
+                "cash_protect": "W tym okresie zwykle chronisz gotówkę",
+                "tax_minimize": "W tym kwartale zwykle minimalizujesz podatek",
+                "growth": "W tym okresie zwykle inwestujesz w rozwój",
+                "balanced": "Twoja strategia to wyważone podejście",
+            }
+            strategy_hint = hints.get(strategy.value.lower(), "")
+
+        # Dodaj kontekst miesiąca/kwartału
+        now = pendulum.now("UTC")
+        month = now.month
+        quarter = (month - 1) // 3 + 1
+        if quarter == 4 and strategy and strategy.value.lower() == "tax_minimize":
+            strategy_hint = "W Q4 zwykle maksymalizujesz koszty — pasuje do Twojej strategii"
+
+        # ── Dodaj opcję odrzucenia (zawsze dostępna) ──
+        from nexus_ai.agents.models import FinancialImpactOption
+        financial_options.append(FinancialImpactOption(
+            option_id=uuid.uuid4().hex[:8],
+            business_label="To nie mój wydatek",
+            business_subtitle="(odrzuć i prześlij do ręcznej weryfikacji)",
+            impact_highlight="",
+            cash_flow_impact=0.0,
+            is_positive=False,
+            strategy="REJECT",
+            is_recommended=False,
+            action_type="reject",
+            hidden_payload={
+                "decision_id": decision.decision_id,
+                "action": "reject",
+                "original_status": decision.verdict.status,
+                "original_trust_score": decision.verdict.trust_score,
+            },
+            trust_impact=-0.05,
+            description="",
+        ))
+
+        # 4. Generuj kartę z Financial Impact Options
+        return self._card_generator.generate_financial_impact_card(
+            decision=decision,
+            financial_options=financial_options,
+            document_type=document_type,
+            urgency="normal",
+            agent_hint=strategy_hint,
+        )
+
     async def build_daily_decision_feed(self) -> ActionCardFeed:
         """Zbuduj codzienny feed kart decyzyjnych.
 

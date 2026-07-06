@@ -359,36 +359,89 @@ def DecisionFeedView(page: ft.Page, api_client=None):
     # ── Przyciski akcji ─────────────────────────────────────────────
     options = current_card.get("options", [])
     option_buttons = []
+
+    # ── GENIALNY POMYSŁ v7.0: Financial Impact Indicator ──
+    context = current_card.get("context", {})
+    agent_hint = context.get("agent_hint", "")
+    has_financial_data = bool(agent_hint) or context.get("financial_options_count", 0) > 0
+
     for opt in options:
         action_type = opt.get("action_type", "confirm")
         colors = BUTTON_COLORS.get(action_type, BUTTON_COLORS["alternative"])
         is_rec = opt.get("is_recommended", False)
         label = opt.get("label", "?")
 
-        # ── GENIALNY POMYSŁ v7.0: Financial Impact Indicator ──
-        # Sprawdź czy karta zawiera dane finansowe (FinancialImpactCard)
-        context = current_card.get("context", {})
-        agent_hint = context.get("agent_hint", "")
-        has_financial_data = bool(agent_hint) or "financial_options_count" in context
-
         if is_rec and not label.startswith("⭐ "):
             label = f"⭐ {label}"
 
-        # Dla Financial Impact Cards: zbuduj wieloliniową etykietę
+        # ── Financial Impact Card: wieloliniowy przycisk z kwotą + strzałka ──
+        hidden = opt.get("hidden_payload", {})
+        cash_impact = hidden.get("cash_flow_impact", 0)
+        is_positive = hidden.get("is_positive", True)
+        strategy = hidden.get("strategy", "")
         description = opt.get("description", "")
-        if has_financial_data and description:
-            # description zawiera subtitle + impact_highlight
-            # Wyświetl jako wieloliniowy przycisk
-            btn_content = ft.Column(
+
+        if has_financial_data and (cash_impact != 0 or strategy):
+            # Zielona/czerwona strzałka + kwota
+            arrow_icon = ft.icons.ARROW_UPWARD if is_positive else ft.icons.ARROW_DOWNWARD
+            arrow_color = ft.colors.GREEN_400 if is_positive else ft.colors.RED_400
+            amount_text = f"{abs(cash_impact):,.0f} PLN"
+
+            # Główna linia: label + strzałka + kwota
+            top_row = ft.Row(
                 [
-                    ft.Text(label.replace("⭐ ", ""), size=15, weight=ft.FontWeight.BOLD, color=colors["text"]),
-                    ft.Container(height=2),
-                    ft.Text(description.replace("        ", ""), size=12, color=ft.colors.with_opacity(0.7, colors["text"])),
+                    ft.Text(label.replace("⭐ ", ""), size=15, weight=ft.FontWeight.BOLD, color=colors["text"], expand=True),
+                    ft.Row(
+                        [
+                            ft.Icon(arrow_icon, size=16, color=arrow_color),
+                            ft.Text(amount_text, size=14, weight=ft.FontWeight.BOLD, color=arrow_color),
+                        ],
+                        spacing=2,
+                    ),
                 ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            )
+
+            # Druga linia: description / subtitle / highlight
+            desc_lines = []
+            if description:
+                # Wyczyść wcięcia i pokaż jako osobne linie
+                clean_desc = description.replace("        ", "").strip()
+                if clean_desc:
+                    desc_lines.append(
+                        ft.Text(clean_desc, size=12, color=ft.colors.with_opacity(0.75, colors["text"]), italic=True)
+                    )
+
+            # Strategia jako badge
+            strategy_badge = ft.Container()
+            if strategy:
+                strategy_colors = {
+                    "CASH_PROTECT": (ft.colors.BLUE_400, "Chroń płynność"),
+                    "TAX_MINIMIZE": (ft.colors.AMBER_400, "Min. podatek"),
+                    "GROWTH": (ft.colors.PURPLE_400, "Rozwój"),
+                    "BALANCED": (ft.colors.GREY_400, "Wyważone"),
+                }
+                sc, st = strategy_colors.get(strategy.upper(), (ft.colors.GREY_400, strategy))
+                strategy_badge = ft.Container(
+                    content=ft.Text(st, size=10, weight=ft.FontWeight.MEDIUM, color=sc),
+                    padding=ft.padding.symmetric(horizontal=8, vertical=2),
+                    border_radius=4,
+                    bgcolor=ft.colors.with_opacity(0.1, sc),
+                )
+
+            col_children: list[ft.Control] = [top_row, ft.Container(height=4)]
+            col_children.extend(desc_lines)
+            if desc_lines:
+                col_children.append(ft.Container(height=4))
+            if strategy:
+                col_children.append(strategy_badge)
+            btn_content = ft.Column(
+                col_children,
                 spacing=0,
                 tight=True,
             )
         else:
+            # Standardowy przycisk (bez danych finansowych)
             btn_content = None
 
         handler = _make_card_action_handler(
@@ -406,7 +459,7 @@ def DecisionFeedView(page: ft.Page, api_client=None):
                 bgcolor=colors["bg"],
                 color=colors["text"],
                 overlay_color=colors["bg_hover"],
-                padding=ft.padding.symmetric(horizontal=20, vertical=14),
+                padding=ft.padding.symmetric(horizontal=20, vertical=16 if has_financial_data else 14),
                 shape=ft.RoundedRectangleBorder(radius=12),
                 text_style=ft.TextStyle(
                     size=15,
@@ -514,18 +567,22 @@ def DecisionFeedView(page: ft.Page, api_client=None):
                                 ft.ProgressBar(value=trust, color=trust_color, bgcolor=ft.colors.with_opacity(0.15, trust_color), height=6, border_radius=3),
                             ]),
                             ft.Container(height=20),
-                            ft.Column([b for b in option_buttons], spacing=8),
+                            ft.Column([b for b in option_buttons], spacing=10),
                             # ── GENIALNY POMYSŁ v7.0: Agent Hint ──
                             ft.Container(
                                 content=ft.Row([
-                                    ft.Icon(ft.icons.PSYCHOLOGY_OUTLINED, size=14, color=ft.colors.GREY_500),
+                                    ft.Icon(ft.icons.PSYCHOLOGY_OUTLINED, size=16, color=ft.colors.BLUE_300),
                                     ft.Text(
-                                        agent_hint if agent_hint else "",
-                                        size=12, color=ft.colors.GREY_500, italic=True,
+                                        agent_hint,
+                                        size=13, color=ft.colors.BLUE_200, italic=True, weight=ft.FontWeight.MEDIUM,
                                     ),
-                                ], spacing=6),
-                                padding=ft.padding.only(top=8),
+                                ], spacing=8),
+                                padding=ft.padding.symmetric(horizontal=12, vertical=10),
+                                bgcolor=ft.colors.with_opacity(0.08, ft.colors.BLUE_400),
+                                border_radius=8,
+                                border=ft.border.all(1, ft.colors.with_opacity(0.2, ft.colors.BLUE_400)),
                                 visible=bool(agent_hint),
+                                animate=ft.animation.Animation(300, ft.AnimationCurve.EASE_OUT),
                             ),
                             ft.Container(height=12),
                             ft.Row([

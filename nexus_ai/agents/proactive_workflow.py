@@ -509,13 +509,18 @@ class ActionCardGenerator:
                 desc_parts.append(f"        {fo.impact_highlight}")
             description = "\n".join(desc_parts) if desc_parts else fo.business_label
 
+            hidden = dict(fo.hidden_payload)
+            hidden["cash_flow_impact"] = fo.cash_flow_impact
+            hidden["is_positive"] = fo.is_positive
+            hidden["strategy"] = fo.strategy
+
             card_options.append(ActionCardOption(
                 option_id=fo.option_id,
                 label=label,
                 description=description or fo.description,
                 is_recommended=fo.is_recommended,
                 action_type=fo.action_type,
-                hidden_payload=fo.hidden_payload,
+                hidden_payload=hidden,
                 trust_impact=fo.trust_impact,
             ))
 
@@ -549,6 +554,13 @@ class ActionCardGenerator:
                 else pendulum.now("UTC").add(hours=24).isoformat()
             ),
         )
+
+    def generate_action_card(
+        self,
+        decision: AgentDecision,
+        document_type: str = "INVOICE",
+        urgency: str = "normal",
+    ) -> ActionCard:
         """Generuj kartę decyzyjną z AgentDecision.
 
         GENIALNY POMYSŁ v5.1:
@@ -563,8 +575,6 @@ class ActionCardGenerator:
         Returns:
             ActionCard z 2-4 prostymi opcjami.
         """
-        import uuid
-
         card_id = uuid.uuid4().hex[:12]
         status = decision.verdict.status
         trust = decision.verdict.trust_score

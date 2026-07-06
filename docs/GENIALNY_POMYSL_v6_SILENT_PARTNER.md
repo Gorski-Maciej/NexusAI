@@ -298,7 +298,17 @@ Invoice comes in
 | **M1** Executive Summary | ✅ **WDROŻONY** | Nowy widok z Accept-All | Czas ↓ 80% (3 min → 30s) |
 | **M2** Silent Auto-Post | ✅ **WDROŻONY** | Wszystkie decyzje AUTO_POST (strategicznie) | 0 decyzji dziennie |
 | **M3** Strategic Engine | ✅ **WDROŻONY** | 4 tryby + Learning by Context | 0 decyzji taktycznych |
-| **M4** Full Silent Partner | 🔴 W toku | Pełna pętla: strategia → działanie → raport | 1 decyzja strategiczna/tydz. |
+| **M4** Full Silent Partner | ✅ **WDROŻONY** | Pełna pętla: strategia → działanie → raport | 1 decyzja strategiczna/tydz. |
+
+---
+
+## ➡️ Następny krok: v7.0 Business Impact Decisions
+
+W v6.0 Silent Partner agent przejął 100% operacji, ale gdy przedsiębiorca MUSI podejmować decyzje (alerty krytyczne, wyjątki > 100k PLN), system nadal pokazywał parametry księgowe (VAT 23%, amortyzacja liniowa).
+
+**v7.0** rozwiązuje ten problem — zamiast parametrów księgowych, przyciski pokazują realne skutki finansowe: "ZACHOWAJ 2 400 PLN w kasie" zamiast "Amortyzacja liniowa". Wszystkie parametry księgowe → `hidden_payload`.
+
+Zobacz: [`docs/GENIALNY_POMYSL_v7_BUSINESS_IMPACT.md`](GENIALNY_POMYSL_v7_BUSINESS_IMPACT.md)
 
 ---
 

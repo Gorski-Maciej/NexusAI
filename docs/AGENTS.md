@@ -364,6 +364,64 @@ Agent NIE PYTA o decyzje — **PODEJMUJE je wszystkie** (100%). Następnie PREZE
 | Proactive Workflow (v5.0) | Silent Mode — wszystkie workflow 24/7 |
 | dyscache (v5.5) | Cache dla Executive Summary |
 
+### 1.5h GENIALNY POMYSŁ v7.0: Business Impact Decisions — Decyzje oparte na skutkach biznesowych
+
+**Przełom:** Agent przestaje pytać o metody księgowe (VAT 23%, amortyzacja liniowa), a pokazuje realne skutki finansowe każdej opcji. Przedsiębiorca widzi kwoty, nie parametry.
+
+```
+❌ PRZED (v6.x — parametry księgowe):
+   ┌──────────────────────────┐
+   │  ⭐ Amortyzacja liniowa  │
+   │  ○ Amortyzacja jednoraz. │
+   │  ○ Odrzuć                │
+   └──────────────────────────┘
+
+✅ PO (v7.0 — skutki biznesowe):
+   ┌──────────────────────────────────────┐
+   │  ⭐ ZACHOWAJ 2 400 PLN w kasie      │
+   │     (niższy PIT teraz)               │
+   │     ── VAT: +920 PLN ──              │
+   │     [CASH_PROTECT] Chroń płynność   │
+   │                                       │
+   │  ○ ROZBUDUJ WARTOŚĆ FIRMY           │
+   │     (koszty rozłożone na 3 lata)     │
+   │     ── PIT: -340 PLN ──              │
+   │     [GROWTH] Inwestuj w rozwój      │
+   │                                       │
+   │  💡 "W tym kwartale zwykle           │
+   │       chronisz gotówkę"              │
+   └──────────────────────────────────────┘
+```
+
+**Trzy perspektywy v7.0:**
+
+| Perspektywa | Co się zmienia | Co NIE zmienia się |
+|---|---|---|
+| **UX (Flet)** | Etykiety księgowe → kwoty i skutki biznesowe | Karty, AnimatedSwitcher, Trust Score bar, NATS subscriber |
+| **Agent (AI)** | Uczenie nawyków → uczenie strategii (5. wymiar) | 5 agentów, Decision Protocol, KnowledgeMesh, ULP |
+| **Architektura** | DuckDB Shadow Ledger z symulacjami równoległymi | TigerBeetle, SQLite, NATS, Litestar, Granian |
+
+**Shadow Simulation Engine:**
+- `ShadowSimulator` w `services/shadow_simulator.py` — DuckDB ATTACH `:memory:`, równoległe symulacje 2-4 wariantów
+- `ShadowLedger` — izolowana kopia ksiąg, zero wpływu na TigerBeetle
+- Wyniki: VAT, PIT, cash-flow 30-90 dni per wariant
+- Python 3.13t free-threaded → symulacje równoległe bez narzutu procesów
+
+**StrategyProfile (5. wymiar uczenia):**
+- `BusinessStrategy` enum: CASH_PROTECT, TAX_MINIMIZE, GROWTH, BALANCED
+- `StrategyProfile` w `user_decision_profile.py` — obserwuje dlaczego, nie co
+- Podpowiedzi kontekstowe: "W Q4 zwykle maksymalizujesz koszty"
+
+**Financial Impact Card rendering:**
+- Strzałki (↑/↓) + kolory (zielony/czerwony) w `decision_feed.py`
+- Kwota wpływu na cash flow w PLN
+- Badge strategii: "Chroń płynność", "Min. podatek", "Rozwój", "Wyważone"
+- Agent hint w niebieskim boxie
+
+**Implementacja:**
+- **Pliki:** `services/shadow_simulator.py`, `agents/user_decision_profile.py` (StrategyProfile), `agents/orchestrator.py` (bridge), `agents/proactive_workflow.py` (card generator), `frontend/views/decision_feed.py` (rendering)
+- **Struktury:** `ShadowLedger`, `ShadowVariant`, `ShadowSimulationReport`, `FinancialImpactOption`, `BusinessStrategy` w `models.py`
+
 ### 1.5f GENIALNY POMYSŁ v5.4: Decision Protocol + Unified Learning Protocol
 
 **Przełom:** Każda decyzja jest w pełni śledzona (DecisionTrace z OTel spanami), walidowana przez MultiModelEnsemble (≥2 modele), kalibrowana (Platt Scaling), a każda korekta uruchamia kaskadę 5 systemów uczących się jednocześnie.

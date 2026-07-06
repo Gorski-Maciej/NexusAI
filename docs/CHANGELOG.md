@@ -5,6 +5,73 @@
 
 ---
 
+## [7.0.0-draft] — 2026-07-06 — "Business Impact Decisions — Decyzje oparte na skutkach biznesowych"
+
+### 🧠 GENIALNY POMYSŁ v7.0: Business Impact Decisions
+
+**Przełom:** Agent przestaje pytać o metody księgowe (VAT 23%, amortyzacja liniowa), a pokazuje realne skutki finansowe każdej opcji (+2 400 PLN w kasie, niższy PIT, lepszy bilans). Wszystkie parametry księgowe → `hidden_payload`.
+
+#### ➕ Dodane
+- **`nexus_ai/services/shadow_simulator.py`** (~80 linii) — Shadow Simulation Engine v7.0
+  - `ShadowLedger` — tymczasowa, izolowana kopia ksiąg w DuckDB (`ATTACH ':memory:'`)
+  - `ShadowSimulator` — równoległe symulacje 2-4 wariantów księgowania przez `ThreadPoolExecutor`
+  - `build_accounting_variants()` — generuje warianty na podstawie strategii (CASH_PROTECT, TAX_MINIMIZE, GROWTH)
+  - Zero wpływu na TigerBeetle — wszystko w RAM, bez plików na dysku
+  - Wyniki: VAT, PIT, cash-flow 30-90 dni per wariant
+
+- **`nexus_ai/agents/user_decision_profile.py`** (~50 linii) — StrategyProfile v7.0
+  - `StrategyProfile` — 5. wymiar uczenia: Business Strategy
+  - 4 strategie: `CASH_PROTECT`, `TAX_MINIMIZE`, `GROWTH`, `BALANCED`
+  - `observe_strategy()` — uczy się strategii z kontekstu (kwartał, płynność, kwota)
+  - `get_strategy_for_quarter()` — zwraca strategię dla bieżącego kwartału
+  - `most_frequent_strategy()` — dominant strategy z historii
+  - Podpowiedzi kontekstowe: "W Q4 zwykle maksymalizujesz koszty"
+
+- **`nexus_ai/agents/models.py`** — nowe struktury danych v7.0:
+  - `BusinessStrategy` enum — CASH_PROTECT, TAX_MINIMIZE, GROWTH, BALANCED
+  - `ShadowLedger` — msgspec struct dla tymczasowej bazy DuckDB
+  - `ShadowVariant` — pojedynczy wariant symulacji (name, params, effects)
+  - `ShadowSimulationReport` — pełny raport z symulacji (variants, confidence)
+  - `FinancialImpactOption` — opcja dla UI (label, description, cash_flow_impact, is_positive, strategy, hidden_payload)
+
+#### 🔄 Rozszerzone
+- **`nexus_ai/agents/orchestrator.py`** — bridge Shadow Simulator → Financial Impact Card:
+  - `simulate_financial_impact()` — async bridge do ShadowSimulator w thread pool
+  - `simulation_to_financial_options()` — konwersja raportu → lista FinancialImpactOption
+  - `generate_financial_impact_card()` — pełny pipeline: simulate → options → card + agent_hint
+  - `agent_hint` generowany dynamicznie na podstawie StrategyProfile i kwartału
+  - Automatyczne dodawanie opcji odrzucenia "To nie mój wydatek"
+
+- **`nexus_ai/agents/proactive_workflow.py`** — `generate_financial_impact_card()` v7.0:
+  - Konwertuje `list[FinancialImpactOption]` → `ActionCard` z title="Jak chcesz to rozliczyć?"
+  - `card_options` z kwotami, strzałkami, badge'ami strategii
+  - `hidden_payload` z pełnymi parametrami księgowymi (nigdy nie widoczne)
+  - `agent_hint` w kontekście karty
+  - Współistnieje z `generate_action_card()` (v5.1) dla backward compatibility
+
+- **`nexus_ai/frontend/views/decision_feed.py`** — Financial Impact Card rendering:
+  - Strzałki (↑/↓) z kolorami: zielony (zwiększa cash flow), czerwony (zmniejsza)
+  - Kwota wpływu na cash flow w PLN (`+2 400 PLN`, `-340 PLN`)
+  - Badge strategii: "Chroń płynność", "Min. podatek", "Rozwój", "Wyważone"
+  - Agent hint w stylizowanym niebieskim boxie pod opcjami
+  - Warunkowe renderowanie — rich buttons tylko gdy `has_financial_data`
+
+### 📚 Dokumentacja
+- **`docs/GENIALNY_POMYSL_v7_BUSINESS_IMPACT.md`**: pełen koncept v7.0 (nowy plik)
+- **`docs/AGENTS.md`**: dodana sekcja 1.5h (Business Impact Decisions), zaktualizowany nagłówek i stopka
+- **`docs/CHANGELOG.md`**: ten wpis
+- **`docs/FRONTEND.md`**: dodana sekcja o Financial Impact Cards
+- **`docs/GENIALNY_POMYSL_v6_SILENT_PARTNER.md`**: odniesienie do v7.0
+
+### 📊 Statystyki
+- **1 nowy plik**: `services/shadow_simulator.py` (~80 linii)
+- **4 zmodyfikowane pliki agentów**: `orchestrator.py`, `proactive_workflow.py`, `user_decision_profile.py`, `models.py`
+- **1 zmodyfikowany plik UI**: `frontend/views/decision_feed.py`
+- **5 zmodyfikowanych docs**: nowy v7.md, AGENTS.md, CHANGELOG.md, FRONTEND.md, v6.md
+- **~350 linii nowego kodu**
+
+---
+
 ## [6.0.0-draft] — 2026-07-06 — "Silent Partner — Cichy Wspólnik"
 
 ### 🧠 GENIALNY POMYSŁ v6.0: Silent Partner — odwrócenie paradygmatu

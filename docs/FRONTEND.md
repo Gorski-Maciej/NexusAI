@@ -384,6 +384,87 @@ ROLE_MAP = {
 | **Partner Hub** | `views/partner_hub.py` | Panel biura rachunkowego |
 | **Task Monitor** | `views/task_monitor.py` | Status zadań async (Taskiq) |
 | **UI Triage** | `views/ui_triage.py` | Centrum decyzji (ASK_USER) |
+| **Decision Feed** | `views/decision_feed.py` | Karty decyzyjne — Action Cards + Financial Impact Cards |
+
+---
+
+## 8a. Financial Impact Cards (v7.0)
+
+### 8a.1 Karty Efektu Finansowego
+
+**Przełom:** Zamiast parametrów księgowych (VAT 23%, amortyzacja liniowa), przyciski pokazują realny wpływ na portfel przedsiębiorcy.
+
+```
+┌───────────────────────────────────────────────────────────┐
+│  📥 Jak chcesz to rozliczyć?                             │
+│                                                           │
+│  Faktura: ABC Tech — Laptopy — 15 000 PLN               │
+│  Trust: ████████████░░ 91%                               │
+│                                                           │
+│  ╔═════════════════════════════════════════════════════╗ │
+│  ║  ⭐ ZACHOWAJ 2 400 PLN w kasie                     ║ │
+│  ║     w tym miesiącu (niższy PIT teraz)              ║ │
+│  ║     ── VAT: +920 PLN ──                            ║ │
+│  ║     [CASH_PROTECT] Chroń płynność                  ║ │
+│  ╚═════════════════════════════════════════════════════╝ │
+│                                                           │
+│  ┌─────────────────────────────────────────────────────┐ │
+│  │  ○ ROZBUDUJ WARTOŚĆ FIRMY                         │ │
+│  │     (koszty rozłożone na 3 lata,                 │ │
+│  │      lepsza zdolność kredytowa)                   │ │
+│  │     ── PIT: -340 PLN ──                          │ │
+│  │     [GROWTH] Inwestuj w rozwój                   │ │
+│  └─────────────────────────────────────────────────────┘ │
+│                                                           │
+│  ┌─────────────────────────────────────────────────────┐ │
+│  │  ❌ To nie mój wydatek                             │ │
+│  └─────────────────────────────────────────────────────┘ │
+│                                                           │
+│  💡 Agent: "W tym kwartale zwykle                       │ │
+│             chronisz gotówkę"                            │ │
+└───────────────────────────────────────────────────────────┘
+```
+
+### 8a.2 Elementy wizualne
+
+| Element | Implementacja | Opis |
+|---|---|---|
+| **Strzałka kierunku** | `ft.Icon(ft.icons.ARROW_UPWARD / ARROW_DOWNWARD)` | ↑ zielona (zwiększa cash flow), ↓ czerwona (zmniejsza) |
+| **Kwota wpływu** | `ft.Text(f"{cash_impact:+,} PLN")` | Efekt finansowy w PLN, zawsze z znakiem |
+| **Badge strategii** | `ft.Container` z `ft.colors.GREEN_50/AMBER_50/BLUE_50` | "Chroń płynność", "Min. podatek", "Rozwój", "Wyważone" |
+| **Agent hint** | `ft.Container` z `ft.colors.BLUE_50` + `ft.Icon(ft.icons.LIGHTBULB)` | Podpowiedź kontekstowa pod opcjami |
+| **Hidden payload** | `ActionCardOption.hidden_payload` | Pełne parametry księgowe — nigdy nie renderowane |
+
+### 8a.3 Warunkowe renderowanie
+
+```python
+# decision_feed.py — _render_card()
+has_financial_data = bool(agent_hint) or context.get("financial_options_count", 0) > 0
+
+if has_financial_data and (cash_impact != 0 or strategy):
+    # Rich Financial Impact button:
+    # - Arrow icon (↑/↓) + color
+    # - Cash impact amount
+    # - Strategy badge
+    # - Description lines
+else:
+    # Standard button (backward compatibility v5.1)
+```
+
+### 8a.4 Dane wejściowe
+
+Financial Impact Cards otrzymują dane z NATS topic `ui.feed.pending` jako `ActionCard` z:
+- `title`: "Jak chcesz to rozliczyć?"
+- `card_options`: lista `ActionCardOption` z `hidden_payload` zawierającym `cash_flow_impact`, `is_positive`, `strategy`
+- `context`: dict z `agent_hint` (str) i `financial_options_count` (int)
+
+### 8a.5 Backward compatibility
+
+Standardowe Action Cards (v5.1) wciąż działąją — gdy `has_financial_data` jest False, renderowany jest klasyczny przycisk z etykietą i `hidden_payload`.
+
+---
+
+## 8. Widoki — przegląd (standardowe)
 
 ---
 
